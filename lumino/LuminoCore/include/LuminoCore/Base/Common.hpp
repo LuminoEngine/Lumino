@@ -2,6 +2,11 @@
 
 #pragma once
 #include <string>
+#include <vector>
+#include <atomic>
+#include <locale>
+#include <assert.h>
+#include <filesystem>
 
 //------------------------------------------------------------------------------
 // flags

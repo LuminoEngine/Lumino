@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoFont/Font.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/Controls/UICheckBox.hpp>
-#include "../../Font/FontManager.hpp"
+#include "../../Font/src/FontManager.hpp"
 
 namespace ln {
 
@@ -33,7 +33,7 @@ bool UICheckBox::init()
 	addVisualChild(m_checkMark);
 
 
-    m_checkMarkFont = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(_TT("Solid"), 20);
+    m_checkMarkFont = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeFont(_TT("Solid"), 20);
 	m_checkMarkCodePoint = 0xF00C;
 
 	m_squareCodePoint = 0xF0C8;

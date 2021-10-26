@@ -7,7 +7,7 @@
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
-#include "../Graphics/GraphicsManager.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Engine/EngineManager.hpp"
 #include "MainViewportToolPane.hpp"
@@ -225,7 +225,7 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 
 			ImGui::Separator();
 
-			ImGui::Text("GraphicsResources: %d", m_manager->graphicsManager()->graphicsResources().size());
+			ImGui::Text("GraphicsResources: %d", detail::GraphicsManager::instance()->graphicsResources().size());
 			
 
 			const auto& tex = m_manager->mainRenderView()->sceneRenderingPipeline()->viweNormalAndDepthBuffer();

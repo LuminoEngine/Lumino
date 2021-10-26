@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include "../src/Graphics/RenderTargetTextureCache.hpp"
+#include "../../Graphics/src/RenderTargetTextureCache.hpp"
 
 //==============================================================================
 class Test_Graphics_Texture : public ::testing::Test {};

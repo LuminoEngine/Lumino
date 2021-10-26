@@ -32,6 +32,7 @@ public:
     using reverse_iterator = typename container_type::reverse_iterator;
     using const_reverse_iterator = typename container_type::const_reverse_iterator;
     using size_type = int;
+    using index_type = int32_t;
     using difference_type = typename container_type::difference_type;
     using allocator_type = typename container_type::allocator_type;
 
@@ -201,6 +202,12 @@ public:
     /** Add element to the end. */
     void push_back(T&& value);
 
+    /** Add element to the end. */
+    void push(const T& value);
+
+    /** Add element to the end. */
+    void push(T&& value);
+
     /** Remove the last element. */
     void pop_back();
 
@@ -246,14 +253,41 @@ public:
 
     /** 指定した条件と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
     template<typename TPred>
-    Optional2<T&> findIf(TPred pred)
+    Optional2<const T&> findIf(TPred pred) const
     {
         auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
         if (itr != end()) {
-            return Optional2<T&>(*itr);
+            return Optional2<const T&>(*itr);
         }
-        return Optional2<T&>();
+        return Optional2<const T&>();
     }
+
+
+    /**
+     * 指定した条件と一致する最初のインデックスを返します。
+     * @param[in]   pred        : 検索条件
+     * @param[in]   startIndex  : 検索を開始するインデックス (省略した場合は先頭から)
+     * @return      検索した要素が最初に現れた位置。見つからなかった場合は -1。
+     */
+    template<typename TPred>
+    int indexOfIf(TPred pred, int startIndex = 0) const;
+
+
+    /** Insert a new element at specified position. */
+    iterator insert(int pos, const T& value);
+
+    /** Insert a new element at specified position. */
+    iterator insert(int pos, T&& value);
+
+    /** Insert a new element at specified position. */
+    iterator insert(int pos, int count, const T& value);
+
+    /** Insert a new element at specified position. */
+    template <class Iterator>
+    iterator insert(int pos, Iterator first, Iterator last);
+
+    /** Insert a new element at specified position. */
+    iterator insert(int pos, std::initializer_list<T> list);
 
     /** @} */
 

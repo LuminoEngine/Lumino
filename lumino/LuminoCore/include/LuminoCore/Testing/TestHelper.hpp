@@ -31,6 +31,11 @@ public:
 
 	// 2 つのファイル内容が一致するか確認する
 	static bool equalFiles(const Path& filePath1, const Path& filePath2);
+
+	template<class T>
+	static T rand() {
+
+	}
 };
 
 } // namespace ln
@@ -47,6 +52,6 @@ public:
 // obsolete: Please use LN_ASSETFILE
 #define LN_LOCALFILEW(fileName) ln::TestHelper::getFilePathW(__FILE__, fileName).c_str()
 
-#define LN_TEMPFILE(fileName) ln::TestHelper::getTempPath(fileName).c_str()
+#define LN_TEMPFILE(fileName) ln::TestHelper::getTempPath(fileName)
 
-#define LN_ASSETFILE(fileName) ln::TestHelper::getAssetPath(fileName).c_str()
+#define LN_ASSETFILE(fileName) ln::TestHelper::getAssetPath(fileName)

@@ -319,12 +319,9 @@ TEST_F(Test_Base_Array, Operators)
 
 TEST_F(Test_Base_Array, findIf)
 {
-	class Test2
+	struct Test2
 	{
-	public:
 		int v;
-	//private:
-	//	LN_DISALLOW_COPY_AND_ASSIGN(Test2);
 	};
 
 
@@ -332,6 +329,7 @@ TEST_F(Test_Base_Array, findIf)
 	auto r = list2.findIf([](const Test2& x) { return x.v == 2; });
 	ASSERT_EQ(true, r.hasValue());
 	ASSERT_EQ(2, r.value().v);
+
 	r.value().v = 10;
 	ASSERT_EQ(10, list2[1].v);
 
@@ -344,62 +342,6 @@ TEST_F(Test_Base_Array, findIf)
 
 TEST_F(Test_Base_Array, Modifiers)
 {
-	Array<int> list1;
-	Array<int> list2 = { 1, 2, 3 };
-
-	list1.assign(list2.begin(), list2.end());
-	ASSERT_EQ(3, list1.size());
-	ASSERT_EQ(1, list1[0]);
-	ASSERT_EQ(2, list1[1]);
-	ASSERT_EQ(3, list1[2]);
-
-	list1.add(4);
-	ASSERT_EQ(4, list1.size());
-	ASSERT_EQ(4, list1[3]);
-
-	list1.addRange(list2);
-	ASSERT_EQ(7, list1.size());
-	ASSERT_EQ(1, list1[4]);
-	ASSERT_EQ(2, list1[5]);
-	ASSERT_EQ(3, list1[6]);
-
-	list1.insert(1, 10);
-	ASSERT_EQ(8, list1.size());
-	ASSERT_EQ(10, list1[1]);
-
-	list1.insertRange(1, list2);
-	ASSERT_EQ(11, list1.size());
-	ASSERT_EQ(1, list1[1]);
-	ASSERT_EQ(2, list1[2]);
-	ASSERT_EQ(3, list1[3]);
-
-	list1.clear();
-	ASSERT_EQ(0, list1.size());
-
-
-	//list1.add(4);
-	//ASSERT_EQ(4, list1.size());
-	//ASSERT_EQ(4, list1[3]);
-
-	//list1.addRange(list2);
-	//ASSERT_EQ(7, list1.size());
-	//ASSERT_EQ(1, list1[4]);
-	//ASSERT_EQ(2, list1[5]);
-	//ASSERT_EQ(3, list1[6]);
-
-	//list1.insert(1, 10);
-	//ASSERT_EQ(8, list1.size());
-	//ASSERT_EQ(10, list1[1]);
-
-	//list1.insertRange(1, list2);
-	//ASSERT_EQ(11, list1.size());
-	//ASSERT_EQ(1, list1[1]);
-	//ASSERT_EQ(2, list1[2]);
-	//ASSERT_EQ(3, list1[3]);
-
-	//list1.clear();
-	//ASSERT_EQ(0, list1.size());
-
 
 	//* [ ] remove
 	{

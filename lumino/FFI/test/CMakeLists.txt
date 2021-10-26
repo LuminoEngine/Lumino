@@ -16,4 +16,4 @@ target_link_libraries(${PROJECT_NAME} LuminoEngine-static LuminoFFI GTest::gtest
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
 
-add_test(NAME LuminoEngine-test-all COMMAND $<TARGET_FILE:LuminoEngine-test>)
+add_test(NAME ${PROJECT_NAME}-runtest COMMAND ${PROJECT_NAME})

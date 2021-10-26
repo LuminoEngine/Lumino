@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include <LuminoEngine/Graphics/GraphicsExtension.hpp>
+#include <LuminoGraphics/GraphicsExtension.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../../Graphics/RHIs/GraphicsDeviceContext.hpp"
+#include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {

@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-#include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/ShaderInterfaceFramework.hpp>
-#include "../../Graphics/GraphicsManager.hpp"
+#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoGraphics/IndexBuffer.hpp>
+#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/ShaderInterfaceFramework.hpp>
+#include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
 #include "SpriteRenderFeature.hpp"
 

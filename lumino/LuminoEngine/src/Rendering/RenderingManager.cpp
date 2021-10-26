@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/Shader.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
+#include <LuminoGraphics/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "../../../ShaderCompiler/src/UnifiedShaderCompiler.hpp"

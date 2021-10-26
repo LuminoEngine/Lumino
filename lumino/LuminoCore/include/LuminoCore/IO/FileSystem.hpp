@@ -130,6 +130,7 @@ public:
      * 例えば "a/b" を指定した場合、ディレクトリ a が無ければ作成してから、b を作成します。
      */
     static void createDirectory(const StringRef& path);
+    // TODO: createDirectory と createDirectories
 
     /**
      * ディレクトリを削除します。

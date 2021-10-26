@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include "../Graphics/Common.hpp"
+#include <LuminoGraphics/Common.hpp>
 #include "Common.hpp"
-#include "../Graphics/ShaderInterfaceFramework.hpp"
+#include <LuminoGraphics/ShaderInterfaceFramework.hpp>
 
 namespace ln {
 class GraphicsContext;

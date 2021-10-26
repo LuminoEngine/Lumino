@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 //#include <LuminoEngine/Graphics/Bitmap.hpp>
-#include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
@@ -10,7 +10,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
-#include "../Graphics/GraphicsManager.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "UIManager.hpp"

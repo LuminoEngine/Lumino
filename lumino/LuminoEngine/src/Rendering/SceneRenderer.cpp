@@ -1,15 +1,15 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
-#include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/SamplerState.hpp>
-#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/ShaderDescriptor.hpp>
+#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/SamplerState.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include "../Graphics/GraphicsManager.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
 #include "CommandListServer.hpp"
 #include "RenderStage.hpp"

@@ -4,6 +4,7 @@
 #include "LuminoCore/Common.hpp"
 #include "LuminoCore/Base/Common.hpp"
 #include "LuminoCore/Base/Assertion.hpp"
+#include "LuminoCore/Base/Array.hpp"
 #include "LuminoCore/Base/Buffer.hpp"
 #include "LuminoCore/Base/Common.hpp"
 #include "LuminoCore/Base/CRCHash.hpp"

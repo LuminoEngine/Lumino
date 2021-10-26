@@ -1,21 +1,21 @@
 ﻿#include "Internal.hpp"
 #include <LuminoPlatform/PlatformEvent.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-#include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Graphics/RenderPass.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoGraphics/IndexBuffer.hpp>
+#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/Shader.hpp>
-#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
+#include <LuminoGraphics/Shader.hpp>
+#include <LuminoGraphics/ShaderDescriptor.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
-#include "../Font/FontManager.hpp"
-#include "../Graphics/GraphicsManager.hpp"
-#include "../Graphics/RHIs/GraphicsDeviceContext.hpp"
+#include "../../Font/src/FontManager.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
+#include "../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -34,7 +34,7 @@ bool ImGuiIntegration::init(UIFrameWindow* frameWindow)
 	ImGui::SetCurrentContext(m_imgui);
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	if (EngineDomain::graphicsManager()->deviceContext()->caps().graphicsAPI == GraphicsAPI::Vulkan) {
+	if (GraphicsManager::instance()->deviceContext()->caps().graphicsAPI == GraphicsAPI::Vulkan) {
 		io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 	}
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -51,7 +51,7 @@ bool ImGuiIntegration::init(UIFrameWindow* frameWindow)
     //colors[ImGuiCol_WindowBg] = ImVec4(0.94f, 0.94f, 0.94f, 0.70f);
 
 	// Load Fonts
-	if (ByteBuffer* data = EngineDomain::fontManager()->getDefaultFontData()) {
+	if (ByteBuffer* data = FontManager::instance()->getDefaultFontData()) {
 		void* file_data = IM_ALLOC(data->size());
 		memcpy(file_data, data->data(), data->size());
 		io.Fonts->AddFontFromMemoryTTF(file_data, data->size(), 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());

@@ -1,10 +1,5 @@
 ﻿
 #pragma once
-#include <vector>
-#include <string>
-#include <atomic>
-#include <locale>
-#include <assert.h>
 #include "Common.hpp"
 #include "List.hpp"
 #include "Buffer.hpp"
@@ -355,6 +350,16 @@ public:
     /** ローカルの std::wstring 型文字列を String へ変換します。 */
     static String fromStdString(const std::wstring& str);
 
+    std::string toUtf8() const;
+
+    static String fromUtf8(const std::string& s);
+
+    std::filesystem::path toStdPath() const { return std::filesystem::path(c_str()); }
+
+    //std::u16string toUtf16() const;
+
+    //static String fromUtf16(const std::u16string& s);
+
     /**
      * 数値を文字列に変換します。
      * 
@@ -390,6 +395,8 @@ public:
     String& operator+=(const Char* rhs);
     String& operator+=(Char rhs);
 
+    explicit operator bool() const LN_NOEXCEPT { return !isEmpty(); }
+
 #ifdef LN_STRING_FUZZY_CONVERSION
     String& operator=(const char* rhs);
     String& operator+=(const char* rhs);
@@ -397,6 +404,8 @@ public:
 
     /** 現在の環境で定義されている改行文字列を取得します。 */
     static const String& newLine();
+
+    bool equals(const StringRef rhs) const noexcept;
 
 private:
     static std::size_t const SSOCapacity = 15;
@@ -1058,6 +1067,10 @@ inline String String::format(const Locale& locale, const StringRef& format, TArg
     //else {
     //    return String();
     //}
+}
+
+inline bool String::equals(const StringRef rhs) const noexcept {
+    return (length() == rhs.length() && startsWith(rhs));
 }
 
 } // namespace ln

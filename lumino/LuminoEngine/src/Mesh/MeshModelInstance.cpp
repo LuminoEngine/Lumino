@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
 #include "MeshModelInstance.hpp"
 
 namespace ln {

@@ -9,7 +9,7 @@
 
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/Texture.hpp>
 
 namespace ln {
 

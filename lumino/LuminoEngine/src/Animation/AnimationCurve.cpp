@@ -30,8 +30,7 @@ float AnimationCurve::calculateLocalTime(float time, float duration, AnimationWr
 {
 	float localTime = 0.0f;
 
-	switch (wrapMode)
-	{
+	switch (wrapMode) {
 	case AnimationWrapMode::Once:
 		localTime = std::min(time, duration);
 		break;

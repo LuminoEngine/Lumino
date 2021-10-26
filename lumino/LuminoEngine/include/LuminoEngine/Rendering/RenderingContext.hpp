@@ -2,7 +2,7 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "Common.hpp"
-#include "../Font/Common.hpp"
+#include <LuminoFont/Common.hpp>
 
 namespace ln {
 

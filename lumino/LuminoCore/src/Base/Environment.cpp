@@ -48,7 +48,7 @@ Optional<String> Environment::getEnvironmentVariable(const StringRef& variableNa
 	if (value)
 		return String::fromCString(value);
 	else
-		return nullptr;
+		return std::nullopt;
 }
 
 void Environment::setEnvironmentVariable(const StringRef& variableName, const StringRef& value)

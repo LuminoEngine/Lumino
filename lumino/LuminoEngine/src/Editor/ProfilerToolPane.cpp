@@ -1,12 +1,12 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
-#include "../Graphics/GraphicsManager.hpp"
-#include "../Graphics/RHIs/RHIProfiler.hpp"
-#include "../Graphics/GraphicsProfiler.hpp"
-#include "../Graphics/RenderTargetTextureCache.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
+#include "../../../Graphics/src/RHIs/RHIProfiler.hpp"
+#include "../../../Graphics/src/GraphicsProfiler.hpp"
+#include "../../../Graphics/src/RenderTargetTextureCache.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../Rendering/RenderingProfiler.hpp"
 #include "../Engine/EngineManager.hpp"
@@ -141,7 +141,7 @@ void ProfilerToolPane::onGui()
 	};
 
 	if (ImGui::CollapsingHeader("RHI Objects:", ImGuiTreeNodeFlags_DefaultOpen)) {
-		const RHIProfiler* profiler = detail::EngineDomain::graphicsManager()->deviceContext()->profiler().get();
+		const RHIProfiler* profiler = detail::GraphicsManager::instance()->deviceContext()->profiler().get();
 		ImGui::Columns(2);
 
 		sprintf(num, "%d", profiler->vertexLayoutCount());
@@ -190,7 +190,7 @@ void ProfilerToolPane::onGui()
 	}
 
 	if (ImGui::CollapsingHeader("Graphics Objects:", ImGuiTreeNodeFlags_DefaultOpen)) {
-		const GraphicsManager* manager = detail::EngineDomain::graphicsManager();
+		const GraphicsManager* manager = detail::GraphicsManager::instance();
 		const GraphicsProfiler* profiler = manager->profiler().get();
 		ImGui::Columns(2);
 		addTextValue("ConstantBuffer", profiler->constantBufferCount());

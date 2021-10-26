@@ -2,6 +2,7 @@
 #pragma once
 #include <functional>
 #include "../Reflection/Object.hpp"
+#include "../Reflection/TypeInfo.hpp"
 
 namespace ln {
 class AssetModel;

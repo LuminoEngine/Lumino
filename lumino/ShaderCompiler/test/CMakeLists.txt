@@ -14,6 +14,6 @@ add_executable(${PROJECT_NAME} ${LOCAL_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_link_libraries(${PROJECT_NAME} LuminoEngine-static LuminoFFI GTest::gtest GTest::gtest_main)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
+ln_add_pch(${PROJECT_NAME} "pch.hpp" "pch.cpp")
 
-add_test(NAME LuminoEngine-test-all COMMAND $<TARGET_FILE:LuminoEngine-test>)
+add_test(NAME ${PROJECT_NAME}-runtest COMMAND ${PROJECT_NAME})

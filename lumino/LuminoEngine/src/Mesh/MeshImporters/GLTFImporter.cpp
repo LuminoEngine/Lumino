@@ -7,14 +7,14 @@
 //#include "D:\Tech\Graphics\tinygltf\tiny_gltf.h"
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-#include <LuminoEngine/Graphics/IndexBuffer.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoGraphics/IndexBuffer.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../../../../RuntimeCore/src/Asset/AssetManager.hpp"
-#include "../../Graphics/GraphicsManager.hpp"
+#include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../MeshManager.hpp"
 #include "GLTFImporter.hpp"
 

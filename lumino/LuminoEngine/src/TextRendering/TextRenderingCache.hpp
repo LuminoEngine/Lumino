@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Font/FontCore.hpp"
+#include "../../Font/src/FontCore.hpp"
 
 namespace ln {
 namespace detail {

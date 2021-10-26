@@ -1047,3 +1047,8 @@ TEST_F(Test_Base_String, SetAt)
 	}
 }
 
+TEST_F(Test_Base_String, StringHelper_indexOf)
+{
+	String str1 = U"abcdefg";
+	ASSERT_EQ(-1, StringHelper::indexOf(str1.c_str(), 3, U"fg", 2));
+}

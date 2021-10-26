@@ -7,7 +7,7 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -19,7 +19,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
-#include "../Graphics/GraphicsManager.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../Scene/SceneManager.hpp"
 
 namespace ln {

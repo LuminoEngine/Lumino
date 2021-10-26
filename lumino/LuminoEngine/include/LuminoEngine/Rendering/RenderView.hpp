@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "../Graphics/Common.hpp"
-#include "../Graphics/Texture.hpp"
-#include "../Graphics/DepthBuffer.hpp"
-#include "../Graphics/ShaderInterfaceFramework.hpp"
+#include <LuminoGraphics/Common.hpp>
+#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/DepthBuffer.hpp>
+#include <LuminoGraphics/ShaderInterfaceFramework.hpp>
 #include "../UI/UIEvents.hpp"
 #include "Common.hpp"
 

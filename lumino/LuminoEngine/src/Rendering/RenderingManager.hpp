@@ -23,6 +23,7 @@ class ShapesRenderFeature2;
 class PathRenderFeature;
 class ExtensionRenderFeature;
 class RenderingProfiler;
+class FontManager;
 
 enum class BuiltinShader
 {

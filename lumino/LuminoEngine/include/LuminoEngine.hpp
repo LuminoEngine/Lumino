@@ -7,6 +7,7 @@
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoFont/Font.hpp>
 
 #include "LuminoEngine/Common.hpp"
 #include "LuminoEngine/EngineContext.hpp"
@@ -40,19 +41,18 @@
 #include "LuminoEngine/Audio/Audio.hpp"
 
 
-#include "LuminoEngine/Graphics/Shader.hpp"
 #include "LuminoEngine/Graphics/RenderState.hpp"
-#include "LuminoEngine/Graphics/SamplerState.hpp"
-#include "LuminoEngine/Graphics/VertexLayout.hpp"
-#include "LuminoEngine/Graphics/VertexBuffer.hpp"
-#include "LuminoEngine/Graphics/IndexBuffer.hpp"
-#include "LuminoEngine/Graphics/Texture.hpp"
-#include "LuminoEngine/Graphics/RenderPass.hpp"
-#include "LuminoEngine/Graphics/SwapChain.hpp"
-#include "LuminoEngine/Graphics/GraphicsContext.hpp"
-#include "LuminoEngine/Graphics/Graphics.hpp"
+#include "LuminoGraphics/Shader.hpp"
+#include "LuminoGraphics/SamplerState.hpp"
+#include "LuminoGraphics/VertexLayout.hpp"
+#include "LuminoGraphics/VertexBuffer.hpp"
+#include "LuminoGraphics/IndexBuffer.hpp"
+#include "LuminoGraphics/Texture.hpp"
+#include "LuminoGraphics/RenderPass.hpp"
+#include "LuminoGraphics/SwapChain.hpp"
+#include "LuminoGraphics/GraphicsContext.hpp"
+#include "LuminoGraphics/Graphics.hpp"
 
-#include "LuminoEngine/Font/Font.hpp"
 
 #include "LuminoEngine/Mesh/MeshPrimitive.hpp"
 #include "LuminoEngine/Mesh/MeshModel.hpp"

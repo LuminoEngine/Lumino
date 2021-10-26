@@ -22,7 +22,7 @@ public:
 	/** アニメーションの繰り返しの動作を取得します。 */
 	AnimationWrapMode wrapMode() const { return m_wrapMode; }
 
-	/**　アニメーションの繰り返しの動作を設定します。(default: Once) */
+	/** アニメーションの繰り返しの動作を設定します。(default: Once) */
 	void setWrapMode(AnimationWrapMode mode) { m_wrapMode = mode; }
 
 	static float calculateLocalTime(float time, float duration, AnimationWrapMode wrapMode);

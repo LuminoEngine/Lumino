@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/Graphics/ShaderDescriptor.hpp>
-#include <LuminoEngine/Graphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 
 //==============================================================================
 //# Testing Shader

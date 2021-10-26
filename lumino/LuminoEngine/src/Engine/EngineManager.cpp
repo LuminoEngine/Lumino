@@ -6,7 +6,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
@@ -20,15 +20,15 @@
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
-#include "../Graphics/RenderTargetTextureCache.hpp"
+//#include "../Graphics/RenderTargetTextureCache.hpp"
 
 #include "../../../Platform/src/Platform/PlatformManager.hpp"
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
 #include "../../../ShaderCompiler/src/ShaderManager.hpp"
-#include "../Graphics/GraphicsManager.hpp"
-#include "../Font/FontManager.hpp"
+#include "../../../Graphics/src/GraphicsManager.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../Rendering/RenderingProfiler.hpp"
@@ -244,8 +244,8 @@ void EngineManager::dispose()
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
 	ShaderManager::terminate();
-	if (m_graphicsManager) m_graphicsManager->dispose();
-	if (m_fontManager) m_fontManager->dispose();
+	FontManager::terminate();
+	GraphicsManager::terminate();
 	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
@@ -448,7 +448,7 @@ void EngineManager::initializeShaderManager()
 		initializeGraphicsManager();
 
 		ShaderManager::Settings settings;
-		settings.graphicsManager = m_graphicsManager;
+		settings.graphicsManager = GraphicsManager::instance();
 
 		ShaderManager::initialize(settings);
 	}
@@ -456,7 +456,7 @@ void EngineManager::initializeShaderManager()
 
 void EngineManager::initializeFontManager()
 {
-	if (!m_fontManager && m_settings.features.hasFlag(EngineFeature::Graphics))
+	if (!FontManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
 		initializeAssetManager();
 
@@ -465,14 +465,13 @@ void EngineManager::initializeFontManager()
 		settings.engineAssetPath = m_engineResourcesPath;
 		settings.fontFile = m_settings.fontFile;
 
-		m_fontManager = ln::makeRef<FontManager>();
-		m_fontManager->init(settings);
+		FontManager::initialize(settings);
 	}
 }
 
 void EngineManager::initializeGraphicsManager()
 {
-	if (!m_graphicsManager && m_settings.features.hasFlag(EngineFeature::Graphics))
+	if (!GraphicsManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
         initializeAssetManager();
         initializePlatformManager();
@@ -485,8 +484,7 @@ void EngineManager::initializeGraphicsManager()
 		settings.priorityGPUName = m_settings.priorityGPUName;
 		settings.debugMode = m_settings.graphicsDebugEnabled;
 
-		m_graphicsManager = ln::makeRef<GraphicsManager>();
-		m_graphicsManager->init(settings);
+		GraphicsManager::initialize(settings);
 	}
 }
 
@@ -498,7 +496,7 @@ void EngineManager::initializeMeshManager()
 		initializeAssetManager();
 
 		MeshManager::Settings settings;
-		settings.graphicsManager = m_graphicsManager;
+		settings.graphicsManager = GraphicsManager::instance();
 		settings.assetManager = AssetManager::instance();
 
 		m_meshManager = ln::makeRef<MeshManager>();
@@ -513,8 +511,8 @@ void EngineManager::initializeRenderingManager()
 		initializeGraphicsManager();
 
 		RenderingManager::Settings settings;
-		settings.graphicsManager = m_graphicsManager;
-        settings.fontManager = m_fontManager;
+		settings.graphicsManager = GraphicsManager::instance();
+        settings.fontManager = FontManager::instance();
 
 		m_renderingManager = ln::makeRef<RenderingManager>();
 		m_renderingManager->init(settings);
@@ -530,7 +528,7 @@ void EngineManager::initializeEffectManager()
         initializeAssetManager();
 
         EffectManager::Settings settings;
-        settings.graphicsManager = m_graphicsManager;
+        settings.graphicsManager = GraphicsManager::instance();
         settings.assetManager = AssetManager::instance();
 		settings.renderingManager = m_renderingManager;
 
@@ -557,7 +555,7 @@ void EngineManager::initializeVisualManager()
         initializeGraphicsManager();
 
         VisualManager::Settings settings;
-        settings.graphicsManager = m_graphicsManager;
+        settings.graphicsManager = GraphicsManager::instance();
 
         m_visualManager = ln::makeRef<VisualManager>();
         m_visualManager->init(settings);
@@ -584,7 +582,7 @@ void EngineManager::initializeUIManager()
 		initializeGraphicsManager();
 
 		UIManager::Settings settings;
-		settings.graphicsManager = m_graphicsManager;
+		settings.graphicsManager = GraphicsManager::instance();
         settings.application = m_settings.application;
 		settings.defaultThemeName = m_settings.defaultUITheme;
 		
@@ -1123,16 +1121,6 @@ InputManager* EngineDomain::inputManager()
 AudioManager * EngineDomain::audioManager()
 {
 	return engineManager()->audioManager();
-}
-
-GraphicsManager* EngineDomain::graphicsManager()
-{
-	return engineManager()->graphicsManager();
-}
-
-FontManager* EngineDomain::fontManager()
-{
-	return engineManager()->fontManager();
 }
 
 MeshManager* EngineDomain::meshManager()

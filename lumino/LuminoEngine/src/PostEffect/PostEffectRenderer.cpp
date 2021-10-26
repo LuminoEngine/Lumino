@@ -1,11 +1,12 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/PostEffect/PostEffect.hpp>
 #include "PostEffectRenderer.hpp"
-#include "../Graphics/RenderTargetTextureCache.hpp"
+//#include "../../../Graphics/src/RenderTargetTextureCache.hpp"
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {

@@ -7,12 +7,12 @@
 
 
 #include "Internal.hpp"
-#include <LuminoEngine/Font/Font.hpp>	// for UILayoutContext
+#include <LuminoFont/Font.hpp>	// for UILayoutContext
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutElement.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
-#include "../Font/TextLayoutEngine.hpp"	// for UILayoutContext
-#include "../Font/FontManager.hpp"	// for UILayoutContext
+#include "../../Font/src/TextLayoutEngine.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "UIStyleInstance.hpp"
 
 namespace ln {

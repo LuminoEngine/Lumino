@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Base/Serializer.hpp>
+#include "Variant.hpp"
 
 namespace ln {
 class Variant;

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include "../Engine/LinearAllocator.hpp"
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
 
 namespace ln {
 namespace detail {

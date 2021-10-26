@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/VertexLayout.hpp>
+#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoFont/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CanvasContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
@@ -12,7 +12,7 @@
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include "../Font/FontManager.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "../Mesh/MeshGeneraters/MeshGenerater.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
 #include "CommandListServer.hpp"

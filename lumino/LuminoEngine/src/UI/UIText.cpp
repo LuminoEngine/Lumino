@@ -2,19 +2,19 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Reflection/VMProperty.hpp>
 
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoFont/Font.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIText.hpp>
 
-#include "../Font/TextLayoutEngine.hpp"
-#include "../Font/FontManager.hpp"
+#include "../../Font/src/TextLayoutEngine.hpp"
+#include "../../Font/src/FontManager.hpp"
 #include "UIStyleInstance.hpp"
 
 // TODO: Test
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 
 

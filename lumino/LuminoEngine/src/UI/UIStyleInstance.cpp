@@ -1,10 +1,8 @@
 ﻿
 #include "Internal.hpp"
-//#include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Font/Font.hpp>
-#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-//#include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include "UIStyleInstance.hpp"
 
 namespace ln {
