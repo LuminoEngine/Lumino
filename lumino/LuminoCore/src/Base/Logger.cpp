@@ -192,7 +192,7 @@ class StdErrLoggerAdapter : public ILoggerAdapter
 public:
     virtual void write(LogLocation source, LogLevel level, const char* str, size_t len) override
     {
-        std::cerr << str;
+        std::cerr << std::string_view(str, len) << std::endl;
     }
 };
 
@@ -404,7 +404,16 @@ LogLevel Logger::level()
 
 void Logger::log(LogLocation location, LogLevel level, std::string_view message)
 {
+    if (!shouldLog(level)) return;
 
+    if (detail::LoggerInterface::getInstance()->m_adapters.empty()) {
+        std::cerr << message << std::endl;
+    }
+    else {
+        for (auto& adapter : detail::LoggerInterface::getInstance()->m_adapters) {
+            adapter->write(location, level, message.data(), message.length());
+        }
+    }
 }
 
 } // namespace ln
