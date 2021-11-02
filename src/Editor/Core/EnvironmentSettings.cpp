@@ -272,7 +272,7 @@ ln::Path BuildEnvironment::findLocalPackageForTesting()
 		CLI::info(_TT("Using debug mode build environment pathes."));
 
 		auto luminoRepoRoot = ln::detail::EngineManager::findRepositoryRootForTesting();
-		LN_LOG_DEBUG << luminoRepoRoot;
+		LN_LOG_DEBUG(luminoRepoRoot);
 
 		result = ln::Path::combine(luminoRepoRoot, _TT("build"), _TT("NativePackage"));
 	}

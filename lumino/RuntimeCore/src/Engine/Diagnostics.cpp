@@ -86,13 +86,13 @@ void DiagnosticsManager::dumpToLog() const
 		switch (item->level())
 		{
 		case DiagnosticsLevel::Error:
-			LN_LOG_ERROR << item->message();
+			LN_LOG_ERROR(item->message());
 			break;
 		case DiagnosticsLevel::Warning:
-			LN_LOG_WARNING << item->message();
+			LN_LOG_WARNING(item->message());
 			break;
 		case DiagnosticsLevel::Info:
-			LN_LOG_INFO << item->message();
+			LN_LOG_INFO(item->message());
 			break;
 		default:
 			LN_UNREACHABLE();

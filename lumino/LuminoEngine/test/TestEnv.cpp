@@ -123,12 +123,12 @@ Ref<Bitmap2D> TestEnv::capture(RenderTargetTexture* renderTarget)
 		return detail::TextureInternal::readData(TestEnv::mainWindowSwapChain()->currentBackbuffer(), TestEnv::graphicsContext());
 }
 
-void TestEnv::saveScreenShot(const Char* filePath, RenderTargetTexture* renderTarget)
+void TestEnv::saveScreenShot(const Path& filePath, RenderTargetTexture* renderTarget)
 {
     capture(renderTarget)->save(filePath);
 }
 
-bool TestEnv::equalsScreenShot(const Char* filePath, RenderTargetTexture* renderTarget, int passRate)
+bool TestEnv::equalsScreenShot(const Path& filePath, RenderTargetTexture* renderTarget, int passRate)
 {
 	bool r = TestEnv::equalsBitmapFile(capture(renderTarget), filePath, passRate);
 	return r;
@@ -182,7 +182,7 @@ static ColorI mixPixels(Bitmap2D* bmp, int x, int y)
 	return ColorI(r / count, g / count, b / count, a / count);
 }
 
-bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRate)
+bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Path& filePath, int passRate)
 {
 	auto bmp2 = makeObject<Bitmap2D>();
 	bmp2->load(filePath);
@@ -217,7 +217,7 @@ bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRat
 	return pass >= thr;
 }
 
-bool TestEnv::checkScreenShot(const Char* filePath, RenderTargetTexture* renderTarget, int passRate, bool save)
+bool TestEnv::checkScreenShot(const Path& filePath, RenderTargetTexture* renderTarget, int passRate, bool save)
 {
 	if (save)
 	{

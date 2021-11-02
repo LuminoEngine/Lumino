@@ -19,7 +19,7 @@ RHIResource::RHIResource()
 	, m_mipmap(false)
 	, m_msaa(false)
 {
-	LN_LOG_VERBOSE << "RHIResource [0x" << this << "] constructed.";
+	LN_LOG_VERBOSE("RHIResource [0x{:x}] constructed.", (intptr_t)this);
 }
 
 RHIResource::~RHIResource()

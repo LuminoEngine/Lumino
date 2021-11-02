@@ -100,7 +100,7 @@ EngineManager::~EngineManager()
 
 void EngineManager::init(const EngineSettings& settings)
 {
-    LN_LOG_DEBUG << "EngineManager Initialization started.";
+    LN_LOG_DEBUG("EngineManager Initialization started.");
 	if (!EngineContext2::initialize()) return;
 
 	m_settings = settings;
@@ -147,7 +147,7 @@ void EngineManager::init(const EngineSettings& settings)
 			m_engineResourcesPath = Path::combine(repo, _TT("tools"), _TT("EngineResources"));
 		}
 
-		LN_LOG_INFO << "EngineResourcesPath: " << m_engineResourcesPath;
+		LN_LOG_INFO(U"EngineResourcesPath: {}", m_engineResourcesPath.str());
     }
 	
 
@@ -159,12 +159,12 @@ void EngineManager::init(const EngineSettings& settings)
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setMeasurementEnabled(true);
 
-    LN_LOG_DEBUG << "EngineManager Initialization ended.";
+    LN_LOG_DEBUG("EngineManager Initialization ended.");
 }
 
 void EngineManager::dispose()
 {
-	LN_LOG_DEBUG << "EngineManager finalization started.";
+	LN_LOG_DEBUG("EngineManager finalization started.");
 
 	if (m_debugWorldRenderView) {
 		m_mainViewport->removeRenderView(m_debugWorldRenderView);
@@ -270,7 +270,7 @@ void EngineManager::dispose()
 	}
 
 	EngineContext2::terminate();
-	LN_LOG_DEBUG << "EngineManager finalization ended.";
+	LN_LOG_DEBUG("EngineManager finalization ended.");
 }
 
 void EngineManager::initializeAllManagers()
@@ -298,7 +298,7 @@ void EngineManager::initializeAllManagers()
 void EngineManager::initializeCommon()
 {
 	if (!m_commonInitialized) {
-		LN_LOG_DEBUG << "EngineManager common initialization started.";
+		LN_LOG_DEBUG("EngineManager common initialization started.");
 
 #if defined(LN_OS_DESKTOP)
 		{
@@ -340,14 +340,14 @@ void EngineManager::initializeCommon()
 
 #ifdef __EMSCRIPTEN_PTHREADS__
 #else
-		LN_LOG_ERROR << "__EMSCRIPTEN_PTHREADS__ disabled.";
+		LN_LOG_ERROR("__EMSCRIPTEN_PTHREADS__ disabled.");
 #endif
 
 		resolveActiveGraphicsAPI();
 
 		m_commonInitialized = true;
 
-		LN_LOG_DEBUG << "EngineManager common initialization ended.";
+		LN_LOG_DEBUG("EngineManager common initialization ended.");
 	}
 }
 

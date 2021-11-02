@@ -23,7 +23,7 @@ bool D3DCompilerAPI::Initialize()
             D3DReflect = reinterpret_cast<PFN_D3DReflect>(::GetProcAddress(s_hD3DCompilerDLL, "D3DReflect"));
         }
         else {
-            LN_LOG_ERROR << D3DCOMPILER_DLL_A << " not found.";
+            LN_LOG_ERROR("{} not found.", D3DCOMPILER_DLL_A);
             return false;
         }
     }

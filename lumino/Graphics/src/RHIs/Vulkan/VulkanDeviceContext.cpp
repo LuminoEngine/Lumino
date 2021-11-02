@@ -54,10 +54,10 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	*outIsDriverSupported = true;
     m_enableValidationLayers = settings.debugMode;
 
-	LN_LOG_DEBUG << "VulkanDevice initialization started.";
+	LN_LOG_DEBUG("VulkanDevice initialization started.");
 
 	if (!VulkanHelper::initVulkanFunctions()) {
-		LN_LOG_WARNING << "Valid vulkan library not found.";
+		LN_LOG_WARNING("Valid vulkan library not found.");
 		*outIsDriverSupported = false;
 		return false;
 	}
@@ -95,7 +95,7 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
     //    vkGetPhysicalDeviceFormatProperties()
     //}
 
-	LN_LOG_DEBUG << "VulkanDevice initialization completed.";
+	LN_LOG_DEBUG("VulkanDevice initialization completed.");
 
 	return true;
 }
@@ -313,7 +313,7 @@ Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
         }
     }
 
-    LN_LOG_ERROR << "failed to find suitable memory type!";
+    LN_LOG_ERROR("failed to find suitable memory type!");
     return false;
 }
 
@@ -322,7 +322,7 @@ Result VulkanDevice::createInstance()
     if (m_enableValidationLayers) {
         m_availableValidationLayers = VulkanHelper::checkValidationLayerSupport();
         if (m_availableValidationLayers.empty()) {
-            LN_LOG_ERROR << "validation layers requested, but not available!";
+            LN_LOG_ERROR("validation layers requested, but not available!");
             return false;
         }
     }
@@ -406,7 +406,7 @@ Result VulkanDevice::pickPhysicalDevice()
         uint32_t count = 0;
         auto ret = vkEnumeratePhysicalDevices(m_instance, &count, nullptr);
         if (ret != VK_SUCCESS || count < 1) {
-            LN_LOG_ERROR << "Failed vkEnumeratePhysicalDevices";
+            LN_LOG_ERROR("Failed vkEnumeratePhysicalDevices");
             return false;
         }
 
@@ -414,7 +414,7 @@ Result VulkanDevice::pickPhysicalDevice()
 
         std::vector<VkPhysicalDevice> gpuDevices(count);
         if (vkEnumeratePhysicalDevices(m_instance, &count, gpuDevices.data()) != VK_SUCCESS) {
-            LN_LOG_ERROR << "Failed vkEnumeratePhysicalDevices";
+            LN_LOG_ERROR("Failed vkEnumeratePhysicalDevices");
             return false;
         }
 
@@ -471,9 +471,9 @@ Result VulkanDevice::pickPhysicalDevice()
         }
     }
 
-    LN_LOG_INFO << "Detected device:";
+    LN_LOG_INFO("Detected device:");
     for (const auto& i : m_physicalDeviceInfos) {
-        LN_LOG_INFO << "  deviceName: " << i.deviceProperty.deviceName;
+        LN_LOG_INFO("  deviceName: {}", i.deviceProperty.deviceName);
     }
 
 
@@ -515,127 +515,126 @@ Result VulkanDevice::pickPhysicalDevice()
 
     // Dump Caps
     {
-        const char* indent = "  ";
-        LN_LOG_INFO << "DeviceProperties:";
-        LN_LOG_INFO << indent << "VK_VERSION_MAJOR: " << VK_VERSION_MAJOR(info.deviceProperty.apiVersion);
-        LN_LOG_INFO << indent << "VK_VERSION_MAJOR: " << VK_VERSION_MINOR(info.deviceProperty.apiVersion);
-        LN_LOG_INFO << indent << "VK_VERSION_MAJOR: " << VK_VERSION_PATCH(info.deviceProperty.apiVersion);
-        LN_LOG_INFO << indent << "deviceName: " << info.deviceProperty.deviceName;
-        LN_LOG_INFO << indent << "limits.maxImageDimension1D: " << info.deviceProperty.limits.maxImageDimension1D;
-        LN_LOG_INFO << indent << "limits.maxImageDimension2D: " << info.deviceProperty.limits.maxImageDimension2D;
-        LN_LOG_INFO << indent << "limits.maxImageDimension3D: " << info.deviceProperty.limits.maxImageDimension3D;
-        LN_LOG_INFO << indent << "limits.maxImageDimensionCube: " << info.deviceProperty.limits.maxImageDimensionCube;
-        LN_LOG_INFO << indent << "limits.maxImageArrayLayers: " << info.deviceProperty.limits.maxImageArrayLayers;
-        LN_LOG_INFO << indent << "limits.maxTexelBufferElements: " << info.deviceProperty.limits.maxTexelBufferElements;
-        LN_LOG_INFO << indent << "limits.maxUniformBufferRange: " << info.deviceProperty.limits.maxUniformBufferRange;
-        LN_LOG_INFO << indent << "limits.maxStorageBufferRange: " << info.deviceProperty.limits.maxStorageBufferRange;
-        LN_LOG_INFO << indent << "limits.maxPushConstantsSize: " << info.deviceProperty.limits.maxPushConstantsSize;
-        LN_LOG_INFO << indent << "limits.maxMemoryAllocationCount: " << info.deviceProperty.limits.maxMemoryAllocationCount;
-        LN_LOG_INFO << indent << "limits.maxSamplerAllocationCount: " << info.deviceProperty.limits.maxSamplerAllocationCount;
-        LN_LOG_INFO << indent << "limits.bufferImageGranularity: " << info.deviceProperty.limits.bufferImageGranularity;
-        LN_LOG_INFO << indent << "limits.sparseAddressSpaceSize: " << info.deviceProperty.limits.sparseAddressSpaceSize;
-        LN_LOG_INFO << indent << "limits.maxBoundDescriptorSets: " << info.deviceProperty.limits.maxBoundDescriptorSets;
-        LN_LOG_INFO << indent << "limits.maxPerStageDescriptorSamplers: " << info.deviceProperty.limits.maxPerStageDescriptorSamplers;
-        LN_LOG_INFO << indent << "limits.maxPerStageDescriptorUniformBuffers: " << info.deviceProperty.limits.maxPerStageDescriptorUniformBuffers;
-        LN_LOG_INFO << indent << "limits.maxPerStageDescriptorStorageBuffers: " << info.deviceProperty.limits.maxPerStageDescriptorStorageBuffers;
-        LN_LOG_INFO << indent << "limits.maxPerStageDescriptorSampledImages: " << info.deviceProperty.limits.maxPerStageDescriptorSampledImages;
-        LN_LOG_INFO << indent << "limits.maxPerStageDescriptorStorageImages: " << info.deviceProperty.limits.maxPerStageDescriptorStorageImages;
-        LN_LOG_INFO << indent << "limits.maxPerStageDescriptorInputAttachments: " << info.deviceProperty.limits.maxPerStageDescriptorInputAttachments;
-        LN_LOG_INFO << indent << "limits.maxPerStageResources: " << info.deviceProperty.limits.maxPerStageResources;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetSamplers: " << info.deviceProperty.limits.maxDescriptorSetSamplers;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetUniformBuffers: " << info.deviceProperty.limits.maxDescriptorSetUniformBuffers;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetUniformBuffersDynamic: " << info.deviceProperty.limits.maxDescriptorSetUniformBuffersDynamic;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetStorageBuffers: " << info.deviceProperty.limits.maxDescriptorSetStorageBuffers;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetStorageBuffersDynamic: " << info.deviceProperty.limits.maxDescriptorSetStorageBuffersDynamic;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetSampledImages: " << info.deviceProperty.limits.maxDescriptorSetSampledImages;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetStorageImages: " << info.deviceProperty.limits.maxDescriptorSetStorageImages;
-        LN_LOG_INFO << indent << "limits.maxDescriptorSetInputAttachments: " << info.deviceProperty.limits.maxDescriptorSetInputAttachments;
-        LN_LOG_INFO << indent << "limits.maxVertexInputAttributes: " << info.deviceProperty.limits.maxVertexInputAttributes;
-        LN_LOG_INFO << indent << "limits.maxVertexInputBindings: " << info.deviceProperty.limits.maxVertexInputBindings;
-        LN_LOG_INFO << indent << "limits.maxVertexInputAttributeOffset: " << info.deviceProperty.limits.maxVertexInputAttributeOffset;
-        LN_LOG_INFO << indent << "limits.maxVertexInputBindingStride: " << info.deviceProperty.limits.maxVertexInputBindingStride;
-        LN_LOG_INFO << indent << "limits.maxVertexOutputComponents: " << info.deviceProperty.limits.maxVertexOutputComponents;
-        LN_LOG_INFO << indent << "limits.maxTessellationGenerationLevel: " << info.deviceProperty.limits.maxTessellationGenerationLevel;
-        LN_LOG_INFO << indent << "limits.maxTessellationPatchSize: " << info.deviceProperty.limits.maxTessellationPatchSize;
-        LN_LOG_INFO << indent << "limits.maxTessellationControlPerVertexInputComponents: " << info.deviceProperty.limits.maxTessellationControlPerVertexInputComponents;
-        LN_LOG_INFO << indent << "limits.maxTessellationControlPerVertexOutputComponents: " << info.deviceProperty.limits.maxTessellationControlPerVertexOutputComponents;
-        LN_LOG_INFO << indent << "limits.maxTessellationControlPerPatchOutputComponents: " << info.deviceProperty.limits.maxTessellationControlPerPatchOutputComponents;
-        LN_LOG_INFO << indent << "limits.maxTessellationControlTotalOutputComponents: " << info.deviceProperty.limits.maxTessellationControlTotalOutputComponents;
-        LN_LOG_INFO << indent << "limits.maxTessellationEvaluationInputComponents: " << info.deviceProperty.limits.maxTessellationEvaluationInputComponents;
-        LN_LOG_INFO << indent << "limits.maxTessellationEvaluationOutputComponents: " << info.deviceProperty.limits.maxTessellationEvaluationOutputComponents;
-        LN_LOG_INFO << indent << "limits.maxGeometryShaderInvocations: " << info.deviceProperty.limits.maxGeometryShaderInvocations;
-        LN_LOG_INFO << indent << "limits.maxGeometryInputComponents: " << info.deviceProperty.limits.maxGeometryInputComponents;
-        LN_LOG_INFO << indent << "limits.maxGeometryOutputComponents: " << info.deviceProperty.limits.maxGeometryOutputComponents;
-        LN_LOG_INFO << indent << "limits.maxGeometryOutputVertices: " << info.deviceProperty.limits.maxGeometryOutputVertices;
-        LN_LOG_INFO << indent << "limits.maxGeometryTotalOutputComponents: " << info.deviceProperty.limits.maxGeometryTotalOutputComponents;
-        LN_LOG_INFO << indent << "limits.maxFragmentInputComponents: " << info.deviceProperty.limits.maxFragmentInputComponents;
-        LN_LOG_INFO << indent << "limits.maxFragmentOutputAttachments: " << info.deviceProperty.limits.maxFragmentOutputAttachments;
-        LN_LOG_INFO << indent << "limits.maxFragmentDualSrcAttachments: " << info.deviceProperty.limits.maxFragmentDualSrcAttachments;
-        LN_LOG_INFO << indent << "limits.maxFragmentCombinedOutputResources: " << info.deviceProperty.limits.maxFragmentCombinedOutputResources;
-        LN_LOG_INFO << indent << "limits.maxComputeSharedMemorySize: " << info.deviceProperty.limits.maxComputeSharedMemorySize;
-        LN_LOG_INFO << indent << "limits.maxComputeWorkGroupCount[0]: " << info.deviceProperty.limits.maxComputeWorkGroupCount[0];
-        LN_LOG_INFO << indent << "limits.maxComputeWorkGroupCount[1]: " << info.deviceProperty.limits.maxComputeWorkGroupCount[1];
-        LN_LOG_INFO << indent << "limits.maxComputeWorkGroupCount[2]: " << info.deviceProperty.limits.maxComputeWorkGroupCount[2];
-        LN_LOG_INFO << indent << "limits.maxComputeWorkGroupInvocations: " << info.deviceProperty.limits.maxComputeWorkGroupInvocations;
-        LN_LOG_INFO << indent << "limits.maxComputeWorkGroupSize[0]: " << info.deviceProperty.limits.maxComputeWorkGroupSize[0];
-        LN_LOG_INFO << indent << "limits.maxComputeWorkGroupSize[1]: " << info.deviceProperty.limits.maxComputeWorkGroupSize[1];
-        LN_LOG_INFO << indent << "limits.maxComputeWorkGroupSize[2]: " << info.deviceProperty.limits.maxComputeWorkGroupSize[2];
-        LN_LOG_INFO << indent << "limits.subPixelPrecisionBits: " << info.deviceProperty.limits.subPixelPrecisionBits;
-        LN_LOG_INFO << indent << "limits.subTexelPrecisionBits: " << info.deviceProperty.limits.subTexelPrecisionBits;
-        LN_LOG_INFO << indent << "limits.mipmapPrecisionBits: " << info.deviceProperty.limits.mipmapPrecisionBits;
-        LN_LOG_INFO << indent << "limits.maxDrawIndexedIndexValue: " << info.deviceProperty.limits.maxDrawIndexedIndexValue;
-        LN_LOG_INFO << indent << "limits.maxDrawIndirectCount: " << info.deviceProperty.limits.maxDrawIndirectCount;
-        LN_LOG_INFO << indent << "limits.maxSamplerLodBias: " << info.deviceProperty.limits.maxSamplerLodBias;
-        LN_LOG_INFO << indent << "limits.maxSamplerAnisotropy: " << info.deviceProperty.limits.maxSamplerAnisotropy;
-        LN_LOG_INFO << indent << "limits.maxViewports: " << info.deviceProperty.limits.maxViewports;
-        LN_LOG_INFO << indent << "limits.maxViewportDimensions[0]: " << info.deviceProperty.limits.maxViewportDimensions[0];
-        LN_LOG_INFO << indent << "limits.maxViewportDimensions[1]: " << info.deviceProperty.limits.maxViewportDimensions[1];
-        LN_LOG_INFO << indent << "limits.viewportBoundsRange[0]: " << info.deviceProperty.limits.viewportBoundsRange[0];
-        LN_LOG_INFO << indent << "limits.viewportBoundsRange[1]: " << info.deviceProperty.limits.viewportBoundsRange[1];
-        LN_LOG_INFO << indent << "limits.viewportSubPixelBits: " << info.deviceProperty.limits.viewportSubPixelBits;
-        LN_LOG_INFO << indent << "limits.minMemoryMapAlignment: " << info.deviceProperty.limits.minMemoryMapAlignment;
-        LN_LOG_INFO << indent << "limits.minTexelBufferOffsetAlignment: " << info.deviceProperty.limits.minTexelBufferOffsetAlignment;
-        LN_LOG_INFO << indent << "limits.minUniformBufferOffsetAlignment: " << info.deviceProperty.limits.minUniformBufferOffsetAlignment;
-        LN_LOG_INFO << indent << "limits.minStorageBufferOffsetAlignment: " << info.deviceProperty.limits.minStorageBufferOffsetAlignment;
-        LN_LOG_INFO << indent << "limits.minTexelOffset: " << info.deviceProperty.limits.minTexelOffset;
-        LN_LOG_INFO << indent << "limits.minTexelOffset: " << info.deviceProperty.limits.minTexelOffset;
-        LN_LOG_INFO << indent << "limits.maxTexelOffset: " << info.deviceProperty.limits.maxTexelOffset;
-        LN_LOG_INFO << indent << "limits.minTexelGatherOffset: " << info.deviceProperty.limits.minTexelGatherOffset;
-        LN_LOG_INFO << indent << "limits.maxTexelGatherOffset: " << info.deviceProperty.limits.maxTexelGatherOffset;
-        LN_LOG_INFO << indent << "limits.minInterpolationOffset: " << info.deviceProperty.limits.minInterpolationOffset;
-        LN_LOG_INFO << indent << "limits.maxInterpolationOffset: " << info.deviceProperty.limits.maxInterpolationOffset;
-        LN_LOG_INFO << indent << "limits.subPixelInterpolationOffsetBits: " << info.deviceProperty.limits.subPixelInterpolationOffsetBits;
-        LN_LOG_INFO << indent << "limits.maxFramebufferWidth: " << info.deviceProperty.limits.maxFramebufferWidth;
-        LN_LOG_INFO << indent << "limits.maxFramebufferHeight: " << info.deviceProperty.limits.maxFramebufferHeight;
-        LN_LOG_INFO << indent << "limits.maxFramebufferLayers: " << info.deviceProperty.limits.maxFramebufferLayers;
-        LN_LOG_INFO << indent << "limits.framebufferColorSampleCounts: " << info.deviceProperty.limits.framebufferColorSampleCounts;
-        LN_LOG_INFO << indent << "limits.framebufferDepthSampleCounts: " << info.deviceProperty.limits.framebufferDepthSampleCounts;
-        LN_LOG_INFO << indent << "limits.framebufferStencilSampleCounts: " << info.deviceProperty.limits.framebufferStencilSampleCounts;
-        LN_LOG_INFO << indent << "limits.framebufferNoAttachmentsSampleCounts: " << info.deviceProperty.limits.framebufferNoAttachmentsSampleCounts;
-        LN_LOG_INFO << indent << "limits.maxColorAttachments: " << info.deviceProperty.limits.maxColorAttachments;
-        LN_LOG_INFO << indent << "limits.sampledImageColorSampleCounts: " << info.deviceProperty.limits.sampledImageColorSampleCounts;
-        LN_LOG_INFO << indent << "limits.sampledImageIntegerSampleCounts: " << info.deviceProperty.limits.sampledImageIntegerSampleCounts;
-        LN_LOG_INFO << indent << "limits.sampledImageDepthSampleCounts: " << info.deviceProperty.limits.sampledImageDepthSampleCounts;
-        LN_LOG_INFO << indent << "limits.sampledImageStencilSampleCounts: " << info.deviceProperty.limits.sampledImageStencilSampleCounts;
-        LN_LOG_INFO << indent << "limits.storageImageSampleCounts: " << info.deviceProperty.limits.storageImageSampleCounts;
-        LN_LOG_INFO << indent << "limits.maxSampleMaskWords: " << info.deviceProperty.limits.maxSampleMaskWords;
-        LN_LOG_INFO << indent << "limits.timestampComputeAndGraphics: " << info.deviceProperty.limits.timestampComputeAndGraphics;
-        LN_LOG_INFO << indent << "limits.timestampPeriod: " << info.deviceProperty.limits.timestampPeriod;
-        LN_LOG_INFO << indent << "limits.maxClipDistances: " << info.deviceProperty.limits.maxClipDistances;
-        LN_LOG_INFO << indent << "limits.maxCullDistances: " << info.deviceProperty.limits.maxCullDistances;
-        LN_LOG_INFO << indent << "limits.maxCombinedClipAndCullDistances: " << info.deviceProperty.limits.maxCombinedClipAndCullDistances;
-        LN_LOG_INFO << indent << "limits.discreteQueuePriorities: " << info.deviceProperty.limits.discreteQueuePriorities;
-        LN_LOG_INFO << indent << "limits.pointSizeRange[0]: " << info.deviceProperty.limits.pointSizeRange[0];
-        LN_LOG_INFO << indent << "limits.pointSizeRange[1]: " << info.deviceProperty.limits.pointSizeRange[1];
-        LN_LOG_INFO << indent << "limits.lineWidthRange[0]: " << info.deviceProperty.limits.lineWidthRange[0];
-        LN_LOG_INFO << indent << "limits.lineWidthRange[1]: " << info.deviceProperty.limits.lineWidthRange[1];
-        LN_LOG_INFO << indent << "limits.pointSizeGranularity: " << info.deviceProperty.limits.pointSizeGranularity;
-        LN_LOG_INFO << indent << "limits.lineWidthGranularity: " << info.deviceProperty.limits.lineWidthGranularity;
-        LN_LOG_INFO << indent << "limits.strictLines: " << info.deviceProperty.limits.strictLines;
-        LN_LOG_INFO << indent << "limits.standardSampleLocations: " << info.deviceProperty.limits.standardSampleLocations;
-        LN_LOG_INFO << indent << "limits.optimalBufferCopyOffsetAlignment: " << info.deviceProperty.limits.optimalBufferCopyOffsetAlignment;
-        LN_LOG_INFO << indent << "limits.optimalBufferCopyRowPitchAlignment: " << info.deviceProperty.limits.optimalBufferCopyRowPitchAlignment;
-        LN_LOG_INFO << indent << "limits.nonCoherentAtomSize: " << info.deviceProperty.limits.nonCoherentAtomSize;
+        LN_LOG_INFO("DeviceProperties:");
+        LN_LOG_INFO("  VK_VERSION_MAJOR: {}", VK_VERSION_MAJOR(info.deviceProperty.apiVersion));
+        LN_LOG_INFO("  VK_VERSION_MAJOR: {}", VK_VERSION_MINOR(info.deviceProperty.apiVersion));
+        LN_LOG_INFO("  VK_VERSION_MAJOR: {}", VK_VERSION_PATCH(info.deviceProperty.apiVersion));
+        LN_LOG_INFO("  deviceName: {}", info.deviceProperty.deviceName);
+        LN_LOG_INFO("  limits.maxImageDimension1D: {}", info.deviceProperty.limits.maxImageDimension1D);
+        LN_LOG_INFO("  limits.maxImageDimension2D: {}", info.deviceProperty.limits.maxImageDimension2D);
+        LN_LOG_INFO("  limits.maxImageDimension3D: {}", info.deviceProperty.limits.maxImageDimension3D);
+        LN_LOG_INFO("  limits.maxImageDimensionCube: {}", info.deviceProperty.limits.maxImageDimensionCube);
+        LN_LOG_INFO("  limits.maxImageArrayLayers: {}", info.deviceProperty.limits.maxImageArrayLayers);
+        LN_LOG_INFO("  limits.maxTexelBufferElements: {}", info.deviceProperty.limits.maxTexelBufferElements);
+        LN_LOG_INFO("  limits.maxUniformBufferRange: {}", info.deviceProperty.limits.maxUniformBufferRange);
+        LN_LOG_INFO("  limits.maxStorageBufferRange: {}", info.deviceProperty.limits.maxStorageBufferRange);
+        LN_LOG_INFO("  limits.maxPushConstantsSize: {}", info.deviceProperty.limits.maxPushConstantsSize);
+        LN_LOG_INFO("  limits.maxMemoryAllocationCount: {}", info.deviceProperty.limits.maxMemoryAllocationCount);
+        LN_LOG_INFO("  limits.maxSamplerAllocationCount: {}", info.deviceProperty.limits.maxSamplerAllocationCount);
+        LN_LOG_INFO("  limits.bufferImageGranularity: {}", info.deviceProperty.limits.bufferImageGranularity);
+        LN_LOG_INFO("  limits.sparseAddressSpaceSize: {}", info.deviceProperty.limits.sparseAddressSpaceSize);
+        LN_LOG_INFO("  limits.maxBoundDescriptorSets: {}", info.deviceProperty.limits.maxBoundDescriptorSets);
+        LN_LOG_INFO("  limits.maxPerStageDescriptorSamplers: {}", info.deviceProperty.limits.maxPerStageDescriptorSamplers);
+        LN_LOG_INFO("  limits.maxPerStageDescriptorUniformBuffers: {}", info.deviceProperty.limits.maxPerStageDescriptorUniformBuffers);
+        LN_LOG_INFO("  limits.maxPerStageDescriptorStorageBuffers: {}", info.deviceProperty.limits.maxPerStageDescriptorStorageBuffers);
+        LN_LOG_INFO("  limits.maxPerStageDescriptorSampledImages: {}", info.deviceProperty.limits.maxPerStageDescriptorSampledImages);
+        LN_LOG_INFO("  limits.maxPerStageDescriptorStorageImages: {}", info.deviceProperty.limits.maxPerStageDescriptorStorageImages);
+        LN_LOG_INFO("  limits.maxPerStageDescriptorInputAttachments: {}", info.deviceProperty.limits.maxPerStageDescriptorInputAttachments);
+        LN_LOG_INFO("  limits.maxPerStageResources: {}", info.deviceProperty.limits.maxPerStageResources);
+        LN_LOG_INFO("  limits.maxDescriptorSetSamplers: {}", info.deviceProperty.limits.maxDescriptorSetSamplers);
+        LN_LOG_INFO("  limits.maxDescriptorSetUniformBuffers: {}", info.deviceProperty.limits.maxDescriptorSetUniformBuffers);
+        LN_LOG_INFO("  limits.maxDescriptorSetUniformBuffersDynamic: {}", info.deviceProperty.limits.maxDescriptorSetUniformBuffersDynamic);
+        LN_LOG_INFO("  limits.maxDescriptorSetStorageBuffers: {}", info.deviceProperty.limits.maxDescriptorSetStorageBuffers);
+        LN_LOG_INFO("  limits.maxDescriptorSetStorageBuffersDynamic: {}", info.deviceProperty.limits.maxDescriptorSetStorageBuffersDynamic);
+        LN_LOG_INFO("  limits.maxDescriptorSetSampledImages: {}", info.deviceProperty.limits.maxDescriptorSetSampledImages);
+        LN_LOG_INFO("  limits.maxDescriptorSetStorageImages: {}", info.deviceProperty.limits.maxDescriptorSetStorageImages);
+        LN_LOG_INFO("  limits.maxDescriptorSetInputAttachments: {}", info.deviceProperty.limits.maxDescriptorSetInputAttachments);
+        LN_LOG_INFO("  limits.maxVertexInputAttributes: {}", info.deviceProperty.limits.maxVertexInputAttributes);
+        LN_LOG_INFO("  limits.maxVertexInputBindings: {}", info.deviceProperty.limits.maxVertexInputBindings);
+        LN_LOG_INFO("  limits.maxVertexInputAttributeOffset: {}", info.deviceProperty.limits.maxVertexInputAttributeOffset);
+        LN_LOG_INFO("  limits.maxVertexInputBindingStride: {}", info.deviceProperty.limits.maxVertexInputBindingStride);
+        LN_LOG_INFO("  limits.maxVertexOutputComponents: {}", info.deviceProperty.limits.maxVertexOutputComponents);
+        LN_LOG_INFO("  limits.maxTessellationGenerationLevel: {}", info.deviceProperty.limits.maxTessellationGenerationLevel);
+        LN_LOG_INFO("  limits.maxTessellationPatchSize: {}", info.deviceProperty.limits.maxTessellationPatchSize);
+        LN_LOG_INFO("  limits.maxTessellationControlPerVertexInputComponents: {}", info.deviceProperty.limits.maxTessellationControlPerVertexInputComponents);
+        LN_LOG_INFO("  limits.maxTessellationControlPerVertexOutputComponents: {}", info.deviceProperty.limits.maxTessellationControlPerVertexOutputComponents);
+        LN_LOG_INFO("  limits.maxTessellationControlPerPatchOutputComponents: {}", info.deviceProperty.limits.maxTessellationControlPerPatchOutputComponents);
+        LN_LOG_INFO("  limits.maxTessellationControlTotalOutputComponents: {}", info.deviceProperty.limits.maxTessellationControlTotalOutputComponents);
+        LN_LOG_INFO("  limits.maxTessellationEvaluationInputComponents: {}", info.deviceProperty.limits.maxTessellationEvaluationInputComponents);
+        LN_LOG_INFO("  limits.maxTessellationEvaluationOutputComponents: {}", info.deviceProperty.limits.maxTessellationEvaluationOutputComponents);
+        LN_LOG_INFO("  limits.maxGeometryShaderInvocations: {}", info.deviceProperty.limits.maxGeometryShaderInvocations);
+        LN_LOG_INFO("  limits.maxGeometryInputComponents: {}", info.deviceProperty.limits.maxGeometryInputComponents);
+        LN_LOG_INFO("  limits.maxGeometryOutputComponents: {}", info.deviceProperty.limits.maxGeometryOutputComponents);
+        LN_LOG_INFO("  limits.maxGeometryOutputVertices: {}", info.deviceProperty.limits.maxGeometryOutputVertices);
+        LN_LOG_INFO("  limits.maxGeometryTotalOutputComponents: {}", info.deviceProperty.limits.maxGeometryTotalOutputComponents);
+        LN_LOG_INFO("  limits.maxFragmentInputComponents: {}", info.deviceProperty.limits.maxFragmentInputComponents);
+        LN_LOG_INFO("  limits.maxFragmentOutputAttachments: {}", info.deviceProperty.limits.maxFragmentOutputAttachments);
+        LN_LOG_INFO("  limits.maxFragmentDualSrcAttachments: {}", info.deviceProperty.limits.maxFragmentDualSrcAttachments);
+        LN_LOG_INFO("  limits.maxFragmentCombinedOutputResources: {}", info.deviceProperty.limits.maxFragmentCombinedOutputResources);
+        LN_LOG_INFO("  limits.maxComputeSharedMemorySize: {}", info.deviceProperty.limits.maxComputeSharedMemorySize);
+        LN_LOG_INFO("  limits.maxComputeWorkGroupCount[0]: {}", info.deviceProperty.limits.maxComputeWorkGroupCount[0]);
+        LN_LOG_INFO("  limits.maxComputeWorkGroupCount[1]: {}", info.deviceProperty.limits.maxComputeWorkGroupCount[1]);
+        LN_LOG_INFO("  limits.maxComputeWorkGroupCount[2]: {}", info.deviceProperty.limits.maxComputeWorkGroupCount[2]);
+        LN_LOG_INFO("  limits.maxComputeWorkGroupInvocations: {}", info.deviceProperty.limits.maxComputeWorkGroupInvocations);
+        LN_LOG_INFO("  limits.maxComputeWorkGroupSize[0]: {}", info.deviceProperty.limits.maxComputeWorkGroupSize[0]);
+        LN_LOG_INFO("  limits.maxComputeWorkGroupSize[1]: {}", info.deviceProperty.limits.maxComputeWorkGroupSize[1]);
+        LN_LOG_INFO("  limits.maxComputeWorkGroupSize[2]: {}", info.deviceProperty.limits.maxComputeWorkGroupSize[2]);
+        LN_LOG_INFO("  limits.subPixelPrecisionBits: {}", info.deviceProperty.limits.subPixelPrecisionBits);
+        LN_LOG_INFO("  limits.subTexelPrecisionBits: {}", info.deviceProperty.limits.subTexelPrecisionBits);
+        LN_LOG_INFO("  limits.mipmapPrecisionBits: {}", info.deviceProperty.limits.mipmapPrecisionBits);
+        LN_LOG_INFO("  limits.maxDrawIndexedIndexValue: {}", info.deviceProperty.limits.maxDrawIndexedIndexValue);
+        LN_LOG_INFO("  limits.maxDrawIndirectCount: {}", info.deviceProperty.limits.maxDrawIndirectCount);
+        LN_LOG_INFO("  limits.maxSamplerLodBias: {}", info.deviceProperty.limits.maxSamplerLodBias);
+        LN_LOG_INFO("  limits.maxSamplerAnisotropy: {}", info.deviceProperty.limits.maxSamplerAnisotropy);
+        LN_LOG_INFO("  limits.maxViewports: {}", info.deviceProperty.limits.maxViewports);
+        LN_LOG_INFO("  limits.maxViewportDimensions[0]: {}", info.deviceProperty.limits.maxViewportDimensions[0]);
+        LN_LOG_INFO("  limits.maxViewportDimensions[1]: {}", info.deviceProperty.limits.maxViewportDimensions[1]);
+        LN_LOG_INFO("  limits.viewportBoundsRange[0]: {}", info.deviceProperty.limits.viewportBoundsRange[0]);
+        LN_LOG_INFO("  limits.viewportBoundsRange[1]: {}", info.deviceProperty.limits.viewportBoundsRange[1]);
+        LN_LOG_INFO("  limits.viewportSubPixelBits: {}", info.deviceProperty.limits.viewportSubPixelBits);
+        LN_LOG_INFO("  limits.minMemoryMapAlignment: {}", info.deviceProperty.limits.minMemoryMapAlignment);
+        LN_LOG_INFO("  limits.minTexelBufferOffsetAlignment: {}", info.deviceProperty.limits.minTexelBufferOffsetAlignment);
+        LN_LOG_INFO("  limits.minUniformBufferOffsetAlignment: {}", info.deviceProperty.limits.minUniformBufferOffsetAlignment);
+        LN_LOG_INFO("  limits.minStorageBufferOffsetAlignment: {}", info.deviceProperty.limits.minStorageBufferOffsetAlignment);
+        LN_LOG_INFO("  limits.minTexelOffset: {}", info.deviceProperty.limits.minTexelOffset);
+        LN_LOG_INFO("  limits.minTexelOffset: {}", info.deviceProperty.limits.minTexelOffset);
+        LN_LOG_INFO("  limits.maxTexelOffset: {}", info.deviceProperty.limits.maxTexelOffset);
+        LN_LOG_INFO("  limits.minTexelGatherOffset: {}", info.deviceProperty.limits.minTexelGatherOffset);
+        LN_LOG_INFO("  limits.maxTexelGatherOffset: {}", info.deviceProperty.limits.maxTexelGatherOffset);
+        LN_LOG_INFO("  limits.minInterpolationOffset: {}", info.deviceProperty.limits.minInterpolationOffset);
+        LN_LOG_INFO("  limits.maxInterpolationOffset: {}", info.deviceProperty.limits.maxInterpolationOffset);
+        LN_LOG_INFO("  limits.subPixelInterpolationOffsetBits: {}", info.deviceProperty.limits.subPixelInterpolationOffsetBits);
+        LN_LOG_INFO("  limits.maxFramebufferWidth: {}", info.deviceProperty.limits.maxFramebufferWidth);
+        LN_LOG_INFO("  limits.maxFramebufferHeight: {}", info.deviceProperty.limits.maxFramebufferHeight);
+        LN_LOG_INFO("  limits.maxFramebufferLayers: {}", info.deviceProperty.limits.maxFramebufferLayers);
+        LN_LOG_INFO("  limits.framebufferColorSampleCounts: {}", info.deviceProperty.limits.framebufferColorSampleCounts);
+        LN_LOG_INFO("  limits.framebufferDepthSampleCounts: {}", info.deviceProperty.limits.framebufferDepthSampleCounts);
+        LN_LOG_INFO("  limits.framebufferStencilSampleCounts: {}", info.deviceProperty.limits.framebufferStencilSampleCounts);
+        LN_LOG_INFO("  limits.framebufferNoAttachmentsSampleCounts: {}", info.deviceProperty.limits.framebufferNoAttachmentsSampleCounts);
+        LN_LOG_INFO("  limits.maxColorAttachments: {}", info.deviceProperty.limits.maxColorAttachments);
+        LN_LOG_INFO("  limits.sampledImageColorSampleCounts: {}", info.deviceProperty.limits.sampledImageColorSampleCounts);
+        LN_LOG_INFO("  limits.sampledImageIntegerSampleCounts: {}", info.deviceProperty.limits.sampledImageIntegerSampleCounts);
+        LN_LOG_INFO("  limits.sampledImageDepthSampleCounts: {}", info.deviceProperty.limits.sampledImageDepthSampleCounts);
+        LN_LOG_INFO("  limits.sampledImageStencilSampleCounts: {}", info.deviceProperty.limits.sampledImageStencilSampleCounts);
+        LN_LOG_INFO("  limits.storageImageSampleCounts: {}", info.deviceProperty.limits.storageImageSampleCounts);
+        LN_LOG_INFO("  limits.maxSampleMaskWords: {}", info.deviceProperty.limits.maxSampleMaskWords);
+        LN_LOG_INFO("  limits.timestampComputeAndGraphics: {}", info.deviceProperty.limits.timestampComputeAndGraphics);
+        LN_LOG_INFO("  limits.timestampPeriod: {}", info.deviceProperty.limits.timestampPeriod);
+        LN_LOG_INFO("  limits.maxClipDistances: {}", info.deviceProperty.limits.maxClipDistances);
+        LN_LOG_INFO("  limits.maxCullDistances: {}", info.deviceProperty.limits.maxCullDistances);
+        LN_LOG_INFO("  limits.maxCombinedClipAndCullDistances: {}", info.deviceProperty.limits.maxCombinedClipAndCullDistances);
+        LN_LOG_INFO("  limits.discreteQueuePriorities: {}", info.deviceProperty.limits.discreteQueuePriorities);
+        LN_LOG_INFO("  limits.pointSizeRange[0]: {}", info.deviceProperty.limits.pointSizeRange[0]);
+        LN_LOG_INFO("  limits.pointSizeRange[1]: {}", info.deviceProperty.limits.pointSizeRange[1]);
+        LN_LOG_INFO("  limits.lineWidthRange[0]: {}", info.deviceProperty.limits.lineWidthRange[0]);
+        LN_LOG_INFO("  limits.lineWidthRange[1]: {}", info.deviceProperty.limits.lineWidthRange[1]);
+        LN_LOG_INFO("  limits.pointSizeGranularity: {}", info.deviceProperty.limits.pointSizeGranularity);
+        LN_LOG_INFO("  limits.lineWidthGranularity: {}", info.deviceProperty.limits.lineWidthGranularity);
+        LN_LOG_INFO("  limits.strictLines: {}", info.deviceProperty.limits.strictLines);
+        LN_LOG_INFO("  limits.standardSampleLocations: {}", info.deviceProperty.limits.standardSampleLocations);
+        LN_LOG_INFO("  limits.optimalBufferCopyOffsetAlignment: {}", info.deviceProperty.limits.optimalBufferCopyOffsetAlignment);
+        LN_LOG_INFO("  limits.optimalBufferCopyRowPitchAlignment: {}", info.deviceProperty.limits.optimalBufferCopyRowPitchAlignment);
+        LN_LOG_INFO("  limits.nonCoherentAtomSize: {}", info.deviceProperty.limits.nonCoherentAtomSize);
     }
 
     return true;
@@ -999,7 +998,7 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
         destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     }
     else {
-        LN_LOG_ERROR << "unsupported layout transition!";
+        LN_LOG_ERROR("unsupported layout transition!");
         return false;
     }
 

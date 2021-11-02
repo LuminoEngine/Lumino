@@ -82,7 +82,7 @@ UIManager::UIManager()
 
 void UIManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "UIManager Initialization started.";
+    LN_LOG_DEBUG("UIManager Initialization started.");
 
 	m_graphicsManager = settings.graphicsManager;
     m_application = settings.application;
@@ -143,12 +143,12 @@ void UIManager::init(const Settings& settings)
 
     }
 
-    LN_LOG_DEBUG << "UIManager Initialization finished.";
+    LN_LOG_DEBUG("UIManager Initialization finished.");
 }
 
 void UIManager::dispose()
 {
-    LN_LOG_DEBUG << "UIManager dispose started.";
+    LN_LOG_DEBUG("UIManager dispose started.");
 
     if (m_application) {
         m_application->finalizeInternal2();
@@ -160,7 +160,7 @@ void UIManager::dispose()
     m_styleContext = nullptr;
     m_finalDefaultStyle = nullptr;
 
-    LN_LOG_DEBUG << "UIManager dispose finished.";
+    LN_LOG_DEBUG("UIManager dispose finished.");
 }
 
 void UIManager::resetApp(Application* app)

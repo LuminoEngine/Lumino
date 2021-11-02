@@ -30,7 +30,7 @@ AudioContext::AudioContext()
 
 void AudioContext::init()
 {
-    LN_LOG_DEBUG << "AudioContext Initialization started.";
+    LN_LOG_DEBUG("AudioContext Initialization started.");
 
 	m_manager = detail::EngineDomain::audioManager();
 
@@ -73,7 +73,7 @@ void AudioContext::init()
     if (!m_audioDevice) {
         auto device = makeRef<detail::NullAudioDevice>();
         m_audioDevice = device;
-        LN_LOG_INFO << "Use NullAudioDevice";
+        LN_LOG_INFO("Use NullAudioDevice");
     }
         
 	m_coreDestinationNode = makeRef<detail::ARIDestinationNode>(m_audioDevice, nullptr);
@@ -83,7 +83,7 @@ void AudioContext::init()
 	m_destinationNode = makeObject<AudioDestinationNode>(m_coreDestinationNode);
 	addAudioNode(m_destinationNode);
 
-    LN_LOG_DEBUG << "AudioContext Initialization ended.";
+    LN_LOG_DEBUG("AudioContext Initialization ended.");
 }
 
 void AudioContext::dispose()

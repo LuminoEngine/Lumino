@@ -29,7 +29,7 @@ AudioManager::~AudioManager()
 
 void AudioManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "AudioManager Initialization started.";
+    LN_LOG_DEBUG("AudioManager Initialization started.");
 
     m_assetManager = settings.assetManager;
 
@@ -43,7 +43,7 @@ void AudioManager::init(const Settings& settings)
 	//m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
 
 #ifdef LN_AUDIO_THREAD_ENABLED
-	LN_LOG_DEBUG << "Audio thread enabled.";
+	LN_LOG_DEBUG("Audio thread enabled.");
 	m_endRequested = false;
 	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
     m_dispatheThread = std::make_unique<std::thread>(std::bind(&AudioManager::dispatheThread, this));
@@ -52,7 +52,7 @@ void AudioManager::init(const Settings& settings)
     m_gameAudio = makeRef<GameAudioImpl>(this);
 	m_gameAudio2 = makeRef<GameAudioImpl2>(this);
 
-    LN_LOG_DEBUG << "AudioManager Initialization ended.";
+    LN_LOG_DEBUG("AudioManager Initialization ended.");
 }
 
 void AudioManager::dispose()
@@ -323,15 +323,15 @@ void AudioManager::updateSoundCores(float elapsedSeconds)
 
 void AudioManager::processThread()
 {
-	LN_LOG_DEBUG << "Audio thread started.";
+	LN_LOG_DEBUG("Audio thread started.");
 
 #ifdef _WIN32
 	// NOTE: Chromium の REALTIME_AUDIO
 	if (!::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL)) {
-		LN_LOG_WARNING << "SetThreadPriority Failed.";
+		LN_LOG_WARNING("SetThreadPriority Failed.");
 	}
 #else
-	LN_LOG_WARNING << "Audio thread priority - not implemented.";
+	LN_LOG_WARNING("Audio thread priority - not implemented.");
 #endif
 	try
 	{
@@ -367,9 +367,9 @@ void AudioManager::processThread()
 	catch (Exception& e)
 	{
 		m_audioThreadException.reset(e.copy());
-        LN_LOG_ERROR << m_audioThreadException->message();
+        LN_LOG_ERROR(m_audioThreadException->message());
 	}
-	LN_LOG_DEBUG << "Audio thread ended.";
+	LN_LOG_DEBUG("Audio thread ended.");
 }
 
 void AudioManager::dispatheThread()
@@ -385,7 +385,7 @@ void AudioManager::dispatheThread()
 	catch (Exception& e)
 	{
 		m_audioThreadException.reset(e.copy());
-		LN_LOG_ERROR << m_audioThreadException->message();
+		LN_LOG_ERROR(m_audioThreadException->message());
 	}
 }
 

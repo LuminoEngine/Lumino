@@ -319,7 +319,7 @@ set(
     BulletCollision
     BulletDynamics
     BulletSoftBody
-    tmxlite
+    #tmxlite
     toml11::toml11
     yaml-cpp
     nanovg::nanovg

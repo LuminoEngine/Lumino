@@ -11,6 +11,7 @@ namespace LuminoBuild.Tasks
      * - ExternalInstall    → ライブラリのインストールフォルダ 
      * を作る。
      */
+    [Obsolete]
     class BuildExternalProjects : BuildTask
     {
         public override string CommandName => "BuildExternalProjects";

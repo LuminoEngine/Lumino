@@ -15,7 +15,8 @@ void Log::allocConsole()
 
 void Log::write(LogLevel level, const StringRef& tag, const StringRef& text)
 {
-    LN_LOG(static_cast<ln::LogLevel>(level), ln::String(tag).toStdString().c_str()) << ln::String(text);
+    LN_LOG_LOGGER_CALL(static_cast<ln::LogLevel>(level), text);
+    //LN_LOG_LOGGER_CALL(static_cast<ln::LogLevel>(level), ln::String(tag).toStdString().c_str()) << ln::String(text);
 }
 
 } // namespace ln

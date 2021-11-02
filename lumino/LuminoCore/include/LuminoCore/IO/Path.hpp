@@ -290,6 +290,12 @@ inline Path Path::combine(TArgs&&... args)
 	return detail::combinePathImpl(std::forward<TArgs>(args)...);
 }
 
+
+inline Path operator+(const Char* lhs, const Path& rhs)
+{
+    return String::concat(lhs, rhs.str());
+}
+
 inline bool operator==(const Path& lhs, const Path& rhs) { return Path::compare(lhs, rhs) == 0; }
 inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lhs, rhs); }
 
@@ -301,6 +307,10 @@ inline Path operator/(const Path& x, const Path& y)
 inline Path operator/(const Path& x, const Char* y)
 {
     return Path::combine(x, Path(y));
+}
+
+inline std::u32string_view toStdStringView(const Path& v) {
+    return std::u32string_view(v.str().c_str(), v.str().length());
 }
 
 class StringRef;

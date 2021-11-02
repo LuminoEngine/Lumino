@@ -56,7 +56,7 @@ InputManager::~InputManager()
 //------------------------------------------------------------------------------
 void InputManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "InputManager Initialization started.";
+    LN_LOG_DEBUG("InputManager Initialization started.");
 
 #if defined(LN_OS_WIN32)
 	auto driver = makeRef<Win32InputDriver>();
@@ -123,7 +123,7 @@ void InputManager::init(const Settings& settings)
 
 	m_mouseInputDevice = makeRef<MouseInputDevice>();
 
-    LN_LOG_DEBUG << "InputManager Initialization ended.";
+    LN_LOG_DEBUG("InputManager Initialization ended.");
 }
 
 //------------------------------------------------------------------------------

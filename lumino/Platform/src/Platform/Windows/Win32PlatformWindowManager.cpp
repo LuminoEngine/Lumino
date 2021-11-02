@@ -577,7 +577,7 @@ Result WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManage
 
     m_originalWndProc = (WNDPROC)::GetWindowLong(m_hWnd, GWLP_WNDPROC);
     ::SetWindowLong(m_hWnd, GWLP_WNDPROC, (LONG)StaticWndProcHook);
-    LN_LOG_DEBUG << "Hook WndProc (original: " << m_originalWndProc << ")";
+    LN_LOG_DEBUG("Hook WndProc (original: {})", (intptr_t)m_originalWndProc);
 
     return true;
 }
@@ -587,7 +587,7 @@ void WrappedWin32PlatformWindow::dispose()
     if (m_originalWndProc) {
         ::SetWindowLong(m_hWnd, GWLP_WNDPROC, (LONG)m_originalWndProc);
         m_originalWndProc = nullptr;
-        LN_LOG_DEBUG << "Unhooked WndProc";
+        LN_LOG_DEBUG("Unhooked WndProc");
     }
 }
 
@@ -616,7 +616,7 @@ Win32PlatformWindowManager::Win32PlatformWindowManager(PlatformManager* manager)
 
 Result Win32PlatformWindowManager::init()
 {
-    LN_LOG_INFO << "Win32 native window manager";
+    LN_LOG_INFO("Win32 native window manager");
 
     m_hInst = (HINSTANCE)::GetModuleHandle(NULL);
 

@@ -193,7 +193,7 @@ void Workspace::dev_openIde(const ln::String& target) const
 			KEY_READ | KEY_WOW64_64KEY,	// https://stackoverflow.com/questions/252297/why-is-regopenkeyex-returning-error-code-2-on-vista-64bit
 			&hKey);
 		if (lRet != ERROR_SUCCESS) {
-			LN_LOG_ERROR << _TT("Android Studio not installed.");
+			LN_LOG_ERROR(_TT("Android Studio not installed."));
 			return;
 		}
 

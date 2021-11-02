@@ -76,7 +76,7 @@ void* VulkanBuffer::map()
 {
     void* mapped;
     if (vkMapMemory(m_deviceContext->vulkanDevice(), m_nativeBufferMemory, 0, m_size, 0, &mapped) != VK_SUCCESS) {
-        LN_LOG_ERROR << "Failed vkMapMemory";
+        LN_LOG_ERROR("Failed vkMapMemory");
         return nullptr;
     }
     return mapped;

@@ -180,7 +180,7 @@ GraphicsManager::GraphicsManager()
 
 bool GraphicsManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "GraphicsManager Initialization started.";
+    LN_LOG_DEBUG("GraphicsManager Initialization started.");
 
 	if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return false;
 
@@ -221,7 +221,7 @@ bool GraphicsManager::init(const Settings& settings)
 
     {
         auto& triple = m_deviceContext->caps().requestedShaderTriple;
-        LN_LOG_INFO << "requestedShaderTriple:" << triple.target << "-" << triple.version << "-" << triple.option;
+        LN_LOG_INFO("requestedShaderTriple: {}-{}-{}", triple.target, triple.version, triple.option);
     }
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
@@ -273,7 +273,7 @@ bool GraphicsManager::init(const Settings& settings)
 
 	EngineContext2::instance()->registerType<Texture2D>();
 
-    LN_LOG_DEBUG << "GraphicsManager Initialization ended.";
+    LN_LOG_DEBUG("GraphicsManager Initialization ended.");
 	return true;
 }
 

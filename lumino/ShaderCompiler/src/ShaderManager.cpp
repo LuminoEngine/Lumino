@@ -50,7 +50,7 @@ ShaderManager::~ShaderManager()
 
 bool ShaderManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "ShaderManager Initialization started.";
+    LN_LOG_DEBUG("ShaderManager Initialization started.");
 
     m_graphicsManager = settings.graphicsManager;
 
@@ -124,12 +124,12 @@ bool ShaderManager::init(const Settings& settings)
         D3DCompile2 = reinterpret_cast<PFN_D3DCompile2>(::GetProcAddress(m_hD3DCompilerDLL, "D3DCompile2"));
     }
     else {
-        LN_LOG_ERROR << D3DCOMPILER_DLL_A << " not found.";
+        LN_LOG_ERROR("{} not found.", D3DCOMPILER_DLL_A);
     }
     D3DCompilerAPI::Initialize();
 #endif
 
-    LN_LOG_DEBUG << "ShaderManager Initialization ended.";
+    LN_LOG_DEBUG("ShaderManager Initialization ended.");
     return true;
 }
 

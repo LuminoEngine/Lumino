@@ -286,7 +286,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	Ref<IShaderPass> ptr = onCreateShaderPass(createInfo, diag);
 
 	if (!diag->message.empty()) {
-		LN_LOG_VERBOSE << diag->message;
+		LN_LOG_VERBOSE(diag->message);
 	}
 
 	if (ptr) {
@@ -665,7 +665,7 @@ void ICommandList::endCommit(GraphicsContextSubmitSource submitSource)
 
 ISwapChain::ISwapChain()
 {
-	LN_LOG_VERBOSE << "ISwapChain [0x" << this << "] constructed.";
+	LN_LOG_VERBOSE("ISwapChain [0x{:x}] constructed.", (intptr_t)this);
 }
 
 ISwapChain::~ISwapChain()
@@ -723,7 +723,7 @@ void IRenderPass::releaseObjects()
 
 IVertexDeclaration::IVertexDeclaration()
 {
-	LN_LOG_VERBOSE << "IVertexDeclaration [0x" << this << "] constructed.";
+	LN_LOG_VERBOSE("IVertexDeclaration [0x{:x}] constructed.", (intptr_t)this);
 }
 
 IVertexDeclaration::~IVertexDeclaration()
@@ -768,7 +768,7 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
 
 IDepthBuffer::IDepthBuffer()
 {
-	LN_LOG_VERBOSE << "IDepthBuffer [0x" << this << "] constructed.";
+	LN_LOG_VERBOSE("IDepthBuffer [0x{:x}] constructed.", (intptr_t)this);
 }
 
 IDepthBuffer::~IDepthBuffer()
@@ -784,7 +784,7 @@ IDepthBuffer::~IDepthBuffer()
 
 ISamplerState::ISamplerState()
 {
-	LN_LOG_VERBOSE << "ISamplerState [0x" << this << "] constructed.";
+	LN_LOG_VERBOSE("ISamplerState [0x{:x}] constructed.", (intptr_t)this);
 }
 
 ISamplerState::~ISamplerState()
@@ -799,7 +799,7 @@ ISamplerState::~ISamplerState()
 
 IShaderPass::IShaderPass()
 {
-	LN_LOG_VERBOSE << "IShaderPass [0x" << this << "] constructed.";
+	LN_LOG_VERBOSE("IShaderPass [0x{:x}] constructed.", (intptr_t)this);
 }
 
 IShaderPass::~IShaderPass()

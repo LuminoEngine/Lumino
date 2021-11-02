@@ -42,7 +42,7 @@ SceneManager::~SceneManager()
 
 void SceneManager::init()
 {
-    LN_LOG_DEBUG << "SceneManager Initialization started.";
+    LN_LOG_DEBUG("SceneManager Initialization started.");
 
 
 	// SkyFromAtmosphere.lcfx.h
@@ -115,7 +115,7 @@ void SceneManager::init()
 	EngineDomain::registerType<PlaneMesh>();
 	EngineDomain::registerType<PlaneMeshComponent>();
 
-    LN_LOG_DEBUG << "SceneManager Initialization ended.";
+    LN_LOG_DEBUG("SceneManager Initialization ended.");
 }
 
 void SceneManager::dispose()
