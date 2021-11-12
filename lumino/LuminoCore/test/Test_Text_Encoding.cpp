@@ -48,7 +48,7 @@ TEST_F(Test_Text_Win32CodePageEncoding, convertFromUTF32)
 	auto encoding = makeRef<Win32CodePageEncoding>(932);
 	auto encoder = encoding->createEncoder();
 
-	const char* narrowStr = "日本語";
+	const char narrowStr[7] = { 0x93, 0xFA, 0x96, 0x7B, 0x8C, 0xEA, 0x00 }; // "日本語";
 	char narrowBuf[8] = {};
 	TextEncodeResult result;
 
@@ -94,7 +94,7 @@ TEST_F(Test_Text_Win32CodePageEncoding, convertToUTF32)
 	auto encoding = makeRef<Win32CodePageEncoding>(932);
 	auto decoder = encoding->createDecoder();
 
-	const char* narrowStr = "日本語";
+	const char narrowStr[7] = { 0x93, 0xFA, 0x96, 0x7B, 0x8C, 0xEA, 0x00 }; // "日本語";
 	UTF32 strBuf[8] = {};
 	TextDecodeResult result;
 
