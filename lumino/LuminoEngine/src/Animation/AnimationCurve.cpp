@@ -84,13 +84,11 @@ bool KeyFrameAnimationCurve::init()
 void KeyFrameAnimationCurve::addKeyFrame(const AnimationKeyFrame& keyFrame)
 {
 	// そのまま追加できる
-	if (m_keyFrames.isEmpty() || m_keyFrames.back().time <= keyFrame.time)
-	{
+	if (m_keyFrames.isEmpty() || m_keyFrames.back().time <= keyFrame.time) {
 		m_keyFrames.add(keyFrame);
 	}
 	// 追加後のソートが必要
-	else
-	{
+	else {
 		struct compare
 		{
 			bool operator()(const AnimationKeyFrame& l, const AnimationKeyFrame& r)
@@ -112,14 +110,12 @@ void KeyFrameAnimationCurve::addKeyFrame(float time, float value, TangentMode ri
 	k.rightTangentMode = rightTangentMode;
 	k.rightTangent = tangent;
 
-	if (!m_keyFrames.isEmpty() && m_keyFrames.front().time <= time)
-	{
+	if (!m_keyFrames.isEmpty() && m_keyFrames.front().time <= time) {
 		const AnimationKeyFrame* key0 = findKeyFrame(time);
 		k.leftTangentMode = key0->rightTangentMode;
 		k.leftTangent = -key0->rightTangent;
 	}
-	else
-	{
+	else {
 		k.leftTangentMode = TangentMode::Constant;
 		k.leftTangent = 0.0f;
 	}
@@ -129,43 +125,39 @@ void KeyFrameAnimationCurve::addKeyFrame(float time, float value, TangentMode ri
 
 float KeyFrameAnimationCurve::onEvaluate(float time)
 {
-	if (m_keyFrames.isEmpty())
-	{
+	if (m_keyFrames.isEmpty()) {
 		return m_defaultValue;
 	}
 	// time が最初のフレーム位置より前の場合は Clamp
-	if (time < m_keyFrames.front().time)
-	{
+	if (time < m_keyFrames.front().time) {
 		return m_keyFrames.front().value;
 	}
 	// キーがひとつだけの場合はそのキーの値
-	else if (m_keyFrames.size() == 1)
-	{
+	else if (m_keyFrames.size() == 1) {
 		return m_keyFrames.front().value;
 	}
 	// time が終端以降の場合は終端の値
-	else if (time >= m_keyFrames.back().time)
-	{
+	else if (time >= m_keyFrames.back().time) {
 		return m_keyFrames.back().value;
 	}
 	// 以上以外の場合は補間する
 	else
 	{
-		struct Compare
-		{
-			static int cmpKey(const void* a_, const void* b_)
-			{
-				AnimationKeyFrame* l = (AnimationKeyFrame*)a_;
-				AnimationKeyFrame* r = (AnimationKeyFrame*)b_;
+		//struct Compare
+		//{
+		//	static int cmpKey(const void* a_, const void* b_)
+		//	{
+		//		AnimationKeyFrame* l = (AnimationKeyFrame*)a_;
+		//		AnimationKeyFrame* r = (AnimationKeyFrame*)b_;
 
-				if ((l)->time < (r)->time)
-					return -1;
-				else if ((l)->time >= (r)->time && (l)->time < ((r + 1))->time)
-					return 0;
-				else
-					return 1;
-			}
-		};
+		//		if ((l)->time < (r)->time)
+		//			return -1;
+		//		else if ((l)->time >= (r)->time && (l)->time < ((r + 1))->time)
+		//			return 0;
+		//		else
+		//			return 1;
+		//	}
+		//};
 
 		const AnimationKeyFrame* key0 = findKeyFrame(time);
 		const AnimationKeyFrame* key1 = key0 + 1;
@@ -240,10 +232,8 @@ AnimationKeyFrame* KeyFrameAnimationCurve::findKeyFrame(float time)
 {
 	// TODO: 二分探索
 	//for (auto& key : m_keyFrames)
-	for (int i = m_keyFrames.size() - 1; i >= 0; i--)
-	{
-		if (m_keyFrames[i].time <= time)
-		{
+	for (int i = m_keyFrames.size() - 1; i >= 0; i--) {
+		if (m_keyFrames[i].time <= time) {
 			return &m_keyFrames[i];
 		}
 	}
