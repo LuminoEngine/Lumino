@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     
     <!-- disable auto blob https://docs.microsoft.com/ja-jp/dotnet/core/tools/csproj -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
@@ -13,7 +13,7 @@
     <BaseIntermediateOutputPath>build/LuminoBuild/obj</BaseIntermediateOutputPath>
     
     <!-- bin path -->
-    <OutputPath>build/LuminoBuild/bin/$(Configuration)/netcoreapp2.0/</OutputPath>
+    <OutputPath>build/LuminoBuild/bin/$(Configuration)/</OutputPath>
   </PropertyGroup>
   
   <ItemGroup>
@@ -43,9 +43,9 @@
     <Compile Include="tools/LuminoBuild/Tasks/MakePackage_HSP3.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakePackage_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakePackage_Ruby.cs" />
-    <Compile Include="tools\LuminoBuild\Env\EmscriptenEnv.cs" />
-    <Compile Include="tools\LuminoBuild\Proc.cs" />
-    <Compile Include="tools\LuminoBuild\Tasks\BuildExternals.cs" />
+    <Compile Include="tools/LuminoBuild/Env/EmscriptenEnv.cs" />
+    <Compile Include="tools/LuminoBuild/Proc.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildExternals.cs" />
   </ItemGroup>
   
 </Project>
