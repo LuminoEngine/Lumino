@@ -263,16 +263,16 @@ public:
 namespace integration {
 inline void useSpdlog()
 {
-    class Adapter : public ILoggerAdapter
+    class Adapter : public detail::ILoggerAdapter
     {
         void write(LogLocation source, LogLevel level, const char* str, size_t len) override
         {
-            ::spdlog::default_logger_raw()->log(source, toSpdlogLevel(level), std::string_view(str, len));
+            ::spdlog::default_logger_raw()->log({ source.filename, source.line, source.funcname }, toSpdlogLevel(level), std::string_view(str, len));
         }
 
-        spdlog::level::level_enum toSpdlogLevel() const
+        spdlog::level::level_enum toSpdlogLevel(LogLevel level) const
         {
-            switch ()
+            switch (level)
             {
             default:
             case LogLevel::Unknown:
