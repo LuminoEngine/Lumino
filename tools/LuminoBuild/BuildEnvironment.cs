@@ -21,7 +21,6 @@ namespace LuminoBuild
         public const string EngineBuildDirName = "EngineBuild";
         public const string EngineInstallDirName = "EngineInstall";
 
-        public static string BuildToolsDir { get; set; }
         public static bool FromCI { get; private set; }
 
         // Build settings
@@ -55,8 +54,6 @@ namespace LuminoBuild
 
         public static void Initialize(Build builder)
         {
-            BuildToolsDir = Path.Combine(builder.RootDir, "build", "BuildTools");
-
             FromCI = Environment.GetEnvironmentVariable("LN_BUILD_FROM_CI") != null;
 
             InstallTools(builder);
@@ -144,8 +141,6 @@ namespace LuminoBuild
             }
 
             AndoridBuildEnv.Initialize(builder);
-
-            Directory.CreateDirectory(BuildToolsDir);
         }
 
         private static void FindFbxSdk()
