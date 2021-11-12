@@ -39,7 +39,7 @@ bool ASCIIEncoding::ASCIIDecoder::convertToUTF32(const byte_t* input, size_t inB
         }
 
         outResult->usedByteCount++;
-        outResult->outputByteCount++;
+        outResult->outputByteCount += sizeof(UTF32);
         outResult->outputCharCount++;
     }
 
