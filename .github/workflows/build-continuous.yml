@@ -30,17 +30,10 @@ jobs:
         path: ./build/cache
         key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}
             
-    # - name: Cache (build/MSVC2019-x64-MT/ExternalInstall)
-    #   uses: actions/cache@v1
-    #   with:
-    #     path: ./build/MSVC2019-x64-MT/ExternalInstall
-    #     key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('**/BuildExternalProjects.cs') }}
-            
+    - name: Dependencies
+      run: dotnet run -- BuildExternals x64-windows
     - name: Build
-      run: |
-        echo "${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}"
-        dotnet run -- BuildExternals x64-windows
-        dotnet run -- BuildEngine_MSVC x64-windows
+      run: dotnet run -- BuildEngine_MSVC x64-windows
       
     # - uses: actions/upload-artifact@v1
     #   with:
