@@ -27,6 +27,7 @@ namespace LuminoBuild
 
         public string RootDir;
         public string BuildDir;
+        public string BuildCacheDir;    // CI cache
         //public string LuminoBuildCacheDir;
         public string BuildToolsDir;
         public string VcpkgDir;
@@ -81,14 +82,16 @@ namespace LuminoBuild
 
             var thisAssembly = Assembly.GetEntryAssembly();
             var exeDir = Path.GetDirectoryName(thisAssembly.Location);
-            RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
+            RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../")) + "/";
             BuildDir = Path.GetFullPath(Path.Combine(RootDir, "build"));
-            BuildToolsDir = Path.GetFullPath(Path.Combine(BuildDir, "tools"));
+            BuildCacheDir = Path.GetFullPath(Path.Combine(BuildDir, "cache"));
+            BuildToolsDir = Path.GetFullPath(Path.Combine(BuildCacheDir, "tools"));
             VcpkgDir = Path.GetFullPath(Path.Combine(BuildToolsDir, "vcpkg"));
             EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, "buildtrees", Triplet, "lumino"));
             EngineInstallDir = Path.GetFullPath(Path.Combine(BuildDir, "installed", Triplet));
 
             Directory.CreateDirectory(BuildDir);
+            Directory.CreateDirectory(BuildCacheDir);
             Directory.CreateDirectory(BuildToolsDir);
             Directory.CreateDirectory(EngineBuildDir);
             Directory.CreateDirectory(EngineInstallDir);

@@ -24,11 +24,11 @@ jobs:
       with:
         dotnet-version: '5.0.x'
 
-    # - name: Cache (build/BuildCache)
-    #   uses: actions/cache@v1
-    #   with:
-    #     path: ./build/MSVC2019-x64-MT/BuildCache
-    #     key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ./build/cache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}
             
     # - name: Cache (build/MSVC2019-x64-MT/ExternalInstall)
     #   uses: actions/cache@v1
@@ -38,6 +38,7 @@ jobs:
             
     - name: Build
       run: |
+        echo "${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}"
         dotnet run -- BuildExternals x64-windows
         dotnet run -- BuildEngine_MSVC x64-windows
       
