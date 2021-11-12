@@ -63,6 +63,14 @@ namespace LuminoBuild.Tasks
                         Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
                         Proc.Make("vcpkg", "install openal-soft:" + b.Triplet).WithSilent().Call();
                     }
+
+                    if (BuildEnvironment.FromCI)
+                    {
+                        // Free disk space
+                        // https://github.com/Microsoft/vcpkg/issues/2352
+                        Directory.Delete("downloads", true);
+                        Directory.Delete("buildtrees", true);
+                    }
                 }
 
                 File.WriteAllText(lockFile, "The presence of this file indicates that the dependency is ready to be placed by LuminoBuild.");
