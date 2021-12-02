@@ -19,7 +19,7 @@ RHIDeviceObject::RHIDeviceObject()
 RHIDeviceObject::~RHIDeviceObject()
 {
     if (!m_disposed) {
-        LN_LOG_ERROR << "object [0x" << this << "] is not disposed";
+        LN_LOG_ERROR("object [0x{:x}] is not disposed", (intptr_t)this);
     }
 }
 

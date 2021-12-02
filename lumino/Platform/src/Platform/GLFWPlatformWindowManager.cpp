@@ -562,7 +562,7 @@ GLFWPlatformWindowManager::~GLFWPlatformWindowManager()
 
 Result GLFWPlatformWindowManager::init()
 {
-	LN_LOG_INFO << "GLFW window manager";
+	LN_LOG_INFO("GLFW window manager");
 
 	int result = glfwInit();
 	if (LN_ENSURE(result != 0)) return false;

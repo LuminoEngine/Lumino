@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <LuminoCore/Text/Encoding.hpp>
 #include <LuminoCore/Base/String.hpp>
+#include "ASCIIEncoding.hpp"
 
 namespace ln {
 
@@ -34,7 +35,7 @@ private:
 
 public:
     // TextDecoder
-    class Win32CodePageDecoder : public TextDecoder
+    class Win32CodePageDecoder : public ASCIIEncoding::ASCIIDecoder
     {
     public:
         Win32CodePageDecoder(TextEncoding* encoding, const CPINFOEX* cpInfo);

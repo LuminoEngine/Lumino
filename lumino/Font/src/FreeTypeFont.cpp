@@ -543,7 +543,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 		if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 	}
 	else {
-		LN_LOG_VERBOSE << "\"" << m_face->family_name << "\" is fixed size font.";
+		LN_LOG_VERBOSE("\"{}\" is fixed size font.", m_face->family_name);
 
 		int bestMatch = 0;
 		int diff = std::abs(m_desc.Size - m_face->available_sizes[0].width);
@@ -560,14 +560,14 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 
 	m_loadFlags = FT_LOAD_DEFAULT;
 
-	LN_LOG_VERBOSE << "    x scale : " << (m_face->size->metrics.x_scale / 65536.0);
-	LN_LOG_VERBOSE << "    y scale : " << (m_face->size->metrics.y_scale / 65536.0);
-	LN_LOG_VERBOSE << "   ascender : " << FLValueToFloatPx(m_face->size->metrics.ascender);
-	LN_LOG_VERBOSE << "  descender : " << FLValueToFloatPx(m_face->size->metrics.descender);
-	LN_LOG_VERBOSE << "     height : " << FLValueToFloatPx(m_face->size->metrics.height);
-	LN_LOG_VERBOSE << "max_advance : " << FLValueToFloatPx(m_face->size->metrics.max_advance);
-	LN_LOG_VERBOSE << "     x ppem : " << (m_face->size->metrics.x_ppem);
-	LN_LOG_VERBOSE << "     y ppem : " << (m_face->size->metrics.y_ppem);
+	LN_LOG_VERBOSE("    x scale : {}", (m_face->size->metrics.x_scale / 65536.0));
+	LN_LOG_VERBOSE("    y scale : {}", (m_face->size->metrics.y_scale / 65536.0));
+	LN_LOG_VERBOSE("   ascender : {}", FLValueToFloatPx(m_face->size->metrics.ascender));
+	LN_LOG_VERBOSE("  descender : {}", FLValueToFloatPx(m_face->size->metrics.descender));
+	LN_LOG_VERBOSE("     height : {}", FLValueToFloatPx(m_face->size->metrics.height));
+	LN_LOG_VERBOSE("max_advance : {}", FLValueToFloatPx(m_face->size->metrics.max_advance));
+	LN_LOG_VERBOSE("     x ppem : {}", (m_face->size->metrics.x_ppem));
+	LN_LOG_VERBOSE("     y ppem : {}", (m_face->size->metrics.y_ppem));
 
 
 	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく

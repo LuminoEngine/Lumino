@@ -48,7 +48,7 @@ AssetManager::~AssetManager()
 
 bool AssetManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "AssetManager Initialization started.";
+    LN_LOG_DEBUG("AssetManager Initialization started.");
 
     m_storageAccessPriority = settings.assetStorageAccessPriority;
 
@@ -59,7 +59,7 @@ bool AssetManager::init(const Settings& settings)
         refreshActualArchives();
     }
 
-    LN_LOG_DEBUG << "AssetManager Initialization ended.";
+    LN_LOG_DEBUG("AssetManager Initialization ended.");
     return true;
 }
 
@@ -84,7 +84,7 @@ void AssetManager::addAssetDirectory(const StringRef& path)
     //    m_primaryLocalAssetDirectory = Path(path);
     //}
 
-    LN_LOG_INFO << "Asset directory added: " << path;
+    LN_LOG_INFO(U"Asset directory added: " + path);
 }
 
 void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& password)
@@ -95,7 +95,7 @@ void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& p
 	m_requestedArchives.add(archive);
 	refreshActualArchives();
 
-    LN_LOG_INFO << "Asset archive added: " << filePath;
+    LN_LOG_INFO(U"Asset archive added: " + filePath);
 }
 
 void AssetManager::removeAllAssetDirectory()

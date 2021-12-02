@@ -143,7 +143,7 @@ public:
 			return true;
 		}
 		catch (YAML::ParserException& e) {
-			LN_LOG_ERROR << "YAML:" << e.mark.line << ":" << e.mark.column << ": " << e.msg;
+			LN_LOG_ERROR("YAML: {}:{}:{}", e.mark.line, e.mark.column, e.msg);
 			return false;
 		}
 	}

@@ -17,10 +17,10 @@ public:
 	static void endFrame();
 	static RenderPass* renderPass();
 	static Ref<Bitmap2D> capture(RenderTargetTexture* renderTarget = nullptr);
-	static void saveScreenShot(const Char* filePath, RenderTargetTexture* renderTarget = nullptr);
-	static bool equalsScreenShot(const Char* filePath, RenderTargetTexture* renderTarget, int passRate);
-	static bool equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRate);
-	static bool checkScreenShot(const Char* filePath, RenderTargetTexture* renderTarget, int passRate = 95, bool save = false);	// 基本的に 95% くらい一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある
+	static void saveScreenShot(const  Path& filePath, RenderTargetTexture* renderTarget = nullptr);
+	static bool equalsScreenShot(const  Path& filePath, RenderTargetTexture* renderTarget, int passRate);
+	static bool equalsBitmapFile(Bitmap2D* bmp1, const  Path& filePath, int passRate);
+	static bool checkScreenShot(const Path& filePath, RenderTargetTexture* renderTarget, int passRate = 95, bool save = false);	// 基本的に 95% くらい一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある
 	static void waitRendering();
 
 	static String LuminoCLI;

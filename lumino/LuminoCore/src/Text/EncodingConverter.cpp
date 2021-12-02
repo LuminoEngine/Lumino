@@ -87,7 +87,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
     }
     // デコーダが変換状態を保持できない場合はやむを得ないので一時メモリを確保し、ソースバッファ全体を一度に変換する。
     else {
-        // Char を UTF16 へ全部変換するのに必要なバイト数で一時メモリ確保
+        // Char を UTF へ全部変換するのに必要なバイト数で一時メモリ確保
         size_t totalByteCount = TextEncoding::getConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
         m_tmpBuffer.resize(totalByteCount);
 
@@ -96,13 +96,13 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
         UTF32* utf32Buf = (UTF32*)m_tmpBuffer.data();
         int utf32ElementCount = m_tmpBuffer.size() / sizeof(UTF32);
 
-        // Char を中間コード(UTF16) へ
+        // Char を中間コード(UTF32) へ
         TextDecodeResult decodeResult;
         m_srcDecoder->convertToUTF32((const byte_t*)data, byteCount, utf32Buf, utf32ElementCount, &decodeResult);
 
-        // 中間コード(UTF16)を出力コードへ
+        // 中間コード(UTF32)を出力コードへ
         TextEncodeResult encodeResult;
-        m_dstEncoder->convertFromUTF32(utf32Buf, decodeResult.outputByteCount / sizeof(UTF16), m_outputBuffer.data(), m_outputBuffer.size(), &encodeResult);
+        m_dstEncoder->convertFromUTF32(utf32Buf, decodeResult.outputByteCount / sizeof(UTF32), m_outputBuffer.data(), m_outputBuffer.size(), &encodeResult);
 
 #else
         // 後のコードがキャストだらけにならないように

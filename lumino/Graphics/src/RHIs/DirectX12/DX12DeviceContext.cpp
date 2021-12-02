@@ -123,12 +123,11 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
             return false;
         }
 
-        const char* indent = "  ";
-        LN_LOG_INFO << "Adapter: ";
-        LN_LOG_INFO << indent << "Description: " << String::fromCString(selected->desc.Description);
-        LN_LOG_INFO << indent << "DedicatedVideoMemory: " << selected->desc.DedicatedVideoMemory;
-        LN_LOG_INFO << indent << "DedicatedSystemMemory: " << selected->desc.DedicatedSystemMemory;
-        LN_LOG_INFO << indent << "SharedSystemMemory: " << selected->desc.SharedSystemMemory;
+        LN_LOG_INFO("Adapter: ");
+        LN_LOG_INFO(U"  Description: {}", String::fromCString(selected->desc.Description));
+        LN_LOG_INFO("  DedicatedVideoMemory: {}", selected->desc.DedicatedVideoMemory);
+        LN_LOG_INFO("  DedicatedSystemMemory: {}", selected->desc.DedicatedSystemMemory);
+        LN_LOG_INFO("  SharedSystemMemory: {}", selected->desc.SharedSystemMemory);
 
         //{
         //    D3D12_FEATURE_DATA_D3D12_OPTIONS data;
@@ -160,7 +159,7 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         }
 
         if (m_sampleCount < 2) {
-            LN_LOG_INFO << "MSAA not supported.";
+            LN_LOG_INFO("MSAA not supported.");
         }
     }
 

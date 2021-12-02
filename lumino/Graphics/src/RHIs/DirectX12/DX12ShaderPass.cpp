@@ -206,7 +206,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
                         ID3D12ShaderReflectionConstantBuffer* cbuffer = shaderReflection->GetConstantBufferByIndex(i);
                         D3D12_SHADER_BUFFER_DESC desc;
                         cbuffer->GetDesc(&desc);
-                        LN_LOG_VERBOSE << "ConstantBuffer '" << desc.Name << "':";
+                        LN_LOG_VERBOSE("ConstantBuffer '{}':", desc.Name);
 
                         for (UINT iVariable = 0; iVariable < desc.Variables; iVariable++) {
                             D3D12_SHADER_VARIABLE_DESC varDesc;
@@ -216,10 +216,10 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
                             varRefl->GetDesc(&varDesc);
                             varTypeRefl->GetDesc(&typeDesc);
                             if (varDesc.uFlags & D3D_SVF_USED) {
-                                LN_LOG_VERBOSE << "  '" << varDesc.Name << "' used.";
+                                LN_LOG_VERBOSE("  '{}' used.", varDesc.Name);
                             }
                             else {
-                                LN_LOG_VERBOSE << "  '" << varDesc.Name << "' unused.";
+                                LN_LOG_VERBOSE("  '{}' unused.", varDesc.Name);
                             }
                         }
                     }

@@ -322,7 +322,7 @@ EffectManager::EffectManager()
 
 void EffectManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "EffectManager Initialization started.";
+    LN_LOG_DEBUG("EffectManager Initialization started.");
     m_graphicsManager = settings.graphicsManager;
     m_assetManager = settings.assetManager;
 
@@ -365,7 +365,7 @@ void EffectManager::init(const Settings& settings)
     material->setShader(settings.renderingManager->builtinShader(BuiltinShader::Sprite));
     m_defaultSpriteParticleGeometry->setMaterial(material);
 
-    LN_LOG_DEBUG << "EffectManager Initialization ended.";
+    LN_LOG_DEBUG("EffectManager Initialization ended.");
 }
 
 void EffectManager::dispose()

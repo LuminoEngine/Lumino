@@ -324,7 +324,7 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 	}
 	else
 	{
-        LN_LOG_WARNING << "The number of affect lights on clusters has exceeded 4.";
+        LN_LOG_WARNING("The number of affect lights on clusters has exceeded 4.");
 	}
 }
 

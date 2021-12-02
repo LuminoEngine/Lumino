@@ -91,7 +91,7 @@ MeshManager::MeshManager()
 
 void MeshManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "MeshManager Initialization started.";
+    LN_LOG_DEBUG("MeshManager Initialization started.");
 
 	m_graphicsManager = settings.graphicsManager;
 	m_assetManager = settings.assetManager;
@@ -144,7 +144,7 @@ void MeshManager::init(const Settings& settings)
 
 	m_meshModelCache.init(64, 0);
 
-    LN_LOG_DEBUG << "MeshManager Initialization ended.";
+    LN_LOG_DEBUG("MeshManager Initialization ended.");
 }
 
 void MeshManager::dispose()

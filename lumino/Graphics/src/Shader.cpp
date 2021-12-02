@@ -140,7 +140,7 @@ void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelS
             LN_ERROR(localDiag->toString());
             return;
         } else if (localDiag->hasWarning()) {
-            LN_LOG_WARNING << localDiag->toString();
+            LN_LOG_WARNING(localDiag->toString());
         }
     }
 }
@@ -155,11 +155,11 @@ void Shader::init(const String& name, Stream* stream)
     createFromStream(stream, localDiag);
 
     if (localDiag->hasError()) {
-        LN_LOG_ERROR << localDiag->toString();
+        LN_LOG_ERROR(localDiag->toString());
         LN_ERROR(name);
         return;
     } else if (localDiag->hasWarning()) {
-        LN_LOG_WARNING << localDiag->toString();
+        LN_LOG_WARNING(localDiag->toString());
     }
 }
 
@@ -221,7 +221,7 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
             return false;
         }
         else if (localDiag->hasWarning()) {
-            LN_LOG_WARNING << localDiag->toString();
+            LN_LOG_WARNING(localDiag->toString());
         }
     }
 

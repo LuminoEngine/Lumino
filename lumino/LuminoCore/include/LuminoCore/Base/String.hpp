@@ -534,11 +534,23 @@ public:
     /** 文字列の部分文字列を抽出します。 */
     StringRef substr(int start, int count) const;
 
+
+    /** @copydoc String::indexOf */
+    int indexOf(const StringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int indexOf(Char ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+
+    /** @copydoc String::lastIndexOf */
+    int lastIndexOf(const StringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int lastIndexOf(Char ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+
+    int toInt(int base = 0) const;
+
     /** ローカルの std::string 型文字列へ変換します。 */
     std::string toStdString() const;
 
     /** ローカルの std::wstring 型文字列へ変換します。 */
     std::wstring toStdWString() const;
+
 
     /** 任意の位置の要素にアクセスします。 */
     LN_CONSTEXPR const Char& operator[](int index) const { return *(data() + index); }
@@ -933,6 +945,12 @@ inline std::wostream& operator<<(std::wostream& os, const String& str)
 
 //==============================================================================
 // StringRef
+
+inline String operator+(const Char* lhs, const StringRef& rhs)
+{
+    return String::concat(lhs, rhs);
+}
+
 inline String operator+(const StringRef& lhs, const StringRef& rhs)
 {
     return String::concat(lhs, rhs);
@@ -1071,6 +1089,14 @@ inline String String::format(const Locale& locale, const StringRef& format, TArg
 
 inline bool String::equals(const StringRef rhs) const noexcept {
     return (length() == rhs.length() && startsWith(rhs));
+}
+
+inline std::u32string_view toStdStringView(const String& v) {
+    return std::u32string_view(v.c_str(), v.length());
+}
+
+inline std::u32string_view toStdStringView(const StringRef& v) {
+    return std::u32string_view(v.data(), v.length());
 }
 
 } // namespace ln

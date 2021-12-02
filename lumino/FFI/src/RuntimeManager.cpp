@@ -57,7 +57,7 @@ RuntimeManager::~RuntimeManager()
 
 bool RuntimeManager::init(const Settings& settings)
 {
-	LN_LOG_DEBUG << "RuntimeManager Initialization started.";
+	LN_LOG_DEBUG("RuntimeManager Initialization started.");
 
     m_settings = settings;
 
@@ -92,13 +92,13 @@ bool RuntimeManager::init(const Settings& settings)
 	// TODO: test
 	EngineDomain::registerType<ZVTestClass1>();
 
-	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
+	LN_LOG_DEBUG("RuntimeManager Initialization finished.");
 	return true;
 }
 
 void RuntimeManager::dispose()
 {
-	LN_LOG_DEBUG << "RuntimeManager finalization started.";
+	LN_LOG_DEBUG("RuntimeManager finalization started.");
 
 	EngineContext2::instance()->objectEventListener = nullptr;
 
@@ -119,7 +119,7 @@ void RuntimeManager::dispose()
         m_settings.runtimeFinalizedCallback = nullptr;
     }
 
-	LN_LOG_DEBUG << "RuntimeManager finalization finished.";
+	LN_LOG_DEBUG("RuntimeManager finalization finished.");
 }
 
 LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
@@ -154,7 +154,7 @@ LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 		data->fromCreate = fromCreate;
 		detail::ObjectHelper::setRuntimeData(obj, data);
 
-		LN_LOG_DEBUG << "nid registerd: " << e.index;
+		LN_LOG_DEBUG("nid registerd: {}", e.index);
 		return e.index;
 	}
 	else
@@ -175,7 +175,7 @@ LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 		data->fromCreate = fromCreate;
 		detail::ObjectHelper::setRuntimeData(obj, data);
 
-		LN_LOG_DEBUG << "nid registerd: " << e.index;
+		LN_LOG_DEBUG("nid registerd: {}", e.index);
 		return e.index;
 	}
 }
@@ -233,7 +233,7 @@ void RuntimeManager::onDestructObject(Object* obj)
 			m_objectIndexStack.push(runtimeData->index);
 			e.object = nullptr;
 		}
-		LN_LOG_DEBUG << "nid unregisterd: " << e.index;
+		LN_LOG_DEBUG("nid unregisterd: {}", e.index);
 
 		delete runtimeData;
 	}

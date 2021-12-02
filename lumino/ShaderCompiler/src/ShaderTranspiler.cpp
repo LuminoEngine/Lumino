@@ -655,17 +655,17 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			info.matrixRows = type->getMatrixRows();
 			info.matrixColumns = type->getMatrixCols();
 
-			LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
-			LN_LOG_VERBOSE << "  name : " << info.name;
-			LN_LOG_VERBOSE << "  type : " << info.type;
-			LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
-			LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
-			LN_LOG_VERBOSE << "  offset : " << info.offset;
-			LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBinding(i);	// cbuffer Global : register(b3) のように書かれると、mapIO しなくても 3 がとれる。
-			LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
-			LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
-			LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
-			LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
+			LN_LOG_VERBOSE("Uniform[{}] : ", i);
+			LN_LOG_VERBOSE("  name : {}", info.name);
+			LN_LOG_VERBOSE("  type : {}", info.type);
+			LN_LOG_VERBOSE("  basicType : {}", type->getBasicTypeString());
+			LN_LOG_VERBOSE("  basicString : {}", type->getBasicString());
+			LN_LOG_VERBOSE("  offset : {}", info.offset);
+			LN_LOG_VERBOSE("  bindingIndex : {}", m_program->getUniformBinding(i));	// cbuffer Global : register(b3) のように書かれると、mapIO しなくても 3 がとれる。
+			LN_LOG_VERBOSE("  vectorElements : {}", info.vectorElements);
+			LN_LOG_VERBOSE("  arrayElements : {}", info.arrayElements);
+			LN_LOG_VERBOSE("  matrixRows : {}", info.matrixRows);
+			LN_LOG_VERBOSE("  matrixColumns : {}", info.matrixColumns);
 
 
             if (info.type == ShaderUniformType_Texture) {

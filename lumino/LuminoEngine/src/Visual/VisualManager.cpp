@@ -22,7 +22,7 @@ VisualManager::~VisualManager()
 
 void VisualManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "VisualManager Initialization started.";
+    LN_LOG_DEBUG("VisualManager Initialization started.");
 
 	m_graphicsManager = settings.graphicsManager;
 
@@ -33,7 +33,7 @@ void VisualManager::init(const Settings& settings)
 	EngineDomain::registerType<VisualComponent>();
 	EngineDomain::registerType<SpriteComponent>();
 
-    LN_LOG_DEBUG << "VisualManager Initialization ended.";
+    LN_LOG_DEBUG("VisualManager Initialization ended.");
 }
 
 void VisualManager::dispose()

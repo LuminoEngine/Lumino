@@ -143,23 +143,23 @@ namespace detail {
 
 //==============================================================================
 // LogRecord
-
-LogRecord::LogRecord(LogLevel level, const char* tag, const char* file, const char* func, int line)
-    : m_level(level)
-    , m_tag(tag)
-    , m_file(file)
-    , m_func(func)
-    , m_line(line)
-    , m_threadId(std::this_thread::get_id())
-{
-    LogHelper::getTime(&m_time);
-}
-
-const char* LogRecord::getMessage() const
-{
-    m_messageStr = m_message.str();
-    return m_messageStr.c_str();
-}
+//
+//LogRecord::LogRecord(LogLevel level, const char* tag, const char* file, const char* func, int line)
+//    : m_level(level)
+//    , m_tag(tag)
+//    , m_file(file)
+//    , m_func(func)
+//    , m_line(line)
+//    , m_threadId(std::this_thread::get_id())
+//{
+//    LogHelper::getTime(&m_time);
+//}
+//
+//const char* LogRecord::getMessage() const
+//{
+//    m_messageStr = m_message.str();
+//    return m_messageStr.c_str();
+//}
 
 //LogRecord& LogRecord::operator<<(const wchar_t* str)
 //{
@@ -178,7 +178,7 @@ ILoggerAdapter::~ILoggerAdapter()
 class FileLoggerAdapter : public ILoggerAdapter
 {
 public:
-	virtual void write(LogLevel level, const char* str, size_t len) override
+	virtual void write(LogLocation source, LogLevel level, const char* str, size_t len) override
 	{
 		g_logFile.write(str, len);
 	}
@@ -190,9 +190,9 @@ public:
 class StdErrLoggerAdapter : public ILoggerAdapter
 {
 public:
-    virtual void write(LogLevel level, const char* str, size_t len) override
+    virtual void write(LogLocation source, LogLevel level, const char* str, size_t len) override
     {
-        std::cerr << str;
+        std::cerr << std::string_view(str, len) << std::endl;
     }
 };
 
@@ -240,16 +240,15 @@ public:
 };
 #endif
 
-//==============================================================================
-// LoggerInterface::Impl
-
-class LoggerInterface::Impl
-{
-public:
-	bool hasAdapter() const { return !m_adapters.empty(); }
-
-    std::vector<std::shared_ptr<ILoggerAdapter>> m_adapters;
-};
+////==============================================================================
+//// LoggerInterface::Impl
+//
+//class LoggerInterface::Impl
+//{
+//public:
+//	bool hasAdapter() const { return !m_adapters.empty(); }
+//
+//};
 
 //==============================================================================
 // LoggerInterface
@@ -288,15 +287,12 @@ LoggerInterface* LoggerInterface::getInstance()
 }
 
 LoggerInterface::LoggerInterface()
-    : m_impl(new Impl())
+    : m_adapters()
 {
 }
 
 LoggerInterface::~LoggerInterface()
 {
-    if (m_impl) {
-        delete m_impl;
-    }
 }
 
 bool LoggerInterface::checkLevel(LogLevel level)
@@ -304,39 +300,43 @@ bool LoggerInterface::checkLevel(LogLevel level)
     return level >= g_maxLevel;
 }
 
-void LoggerInterface::operator+=(const LogRecord& record)
+//void LoggerInterface::operator+=(const LogRecord& record)
+//{
+//	if (!m_adapters.empty())
+//	{
+//        std::lock_guard<std::mutex> lock(g_logMutex);
+//
+//		tm t;
+//		char date[64];
+//		LogHelper::GetLocalTime(&t, &record.getTime().time);
+//		strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
+//
+//		g_logSS.str("");                           // バッファをクリアする。
+//		g_logSS.clear(std::stringstream::goodbit); // ストリームの状態をクリアする。この行がないと意図通りに動作しない
+//		g_logSS << date << " ";
+//		g_logSS << GetLogLevelString(record.GetLevel()) << " ";
+//		g_logSS << "[" << record.getThreadId() << "]";
+//        // TODO: ログの量を圧迫するので一時封印。
+//        // Assertion の機能はメッセージの一部として位置を記録するため、そちらは問題なし。
+//        // LogFormat みたいな設定を増やしておく
+//		//g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")]";
+//        if (record.tag())
+//            g_logSS << "[" << record.tag() << "] ";
+//        else
+//            g_logSS << " ";
+//
+//		g_logSS << record.getMessage() << std::endl;
+//
+//		auto str = g_logSS.str();
+//
+//		for (auto& adapter : m_adapters) {
+//			adapter->write(record.location(), record.GetLevel(), str.c_str(), str.length());
+//		}
+//	}
+//}
+
+void LoggerInterface::write(LogLocation source, LogLevel level, const char* str, size_t len)
 {
-	if (m_impl->hasAdapter())
-	{
-        std::lock_guard<std::mutex> lock(g_logMutex);
-
-		tm t;
-		char date[64];
-		LogHelper::GetLocalTime(&t, &record.getTime().time);
-		strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
-
-		g_logSS.str("");                           // バッファをクリアする。
-		g_logSS.clear(std::stringstream::goodbit); // ストリームの状態をクリアする。この行がないと意図通りに動作しない
-		g_logSS << date << " ";
-		g_logSS << GetLogLevelString(record.GetLevel()) << " ";
-		g_logSS << "[" << record.getThreadId() << "]";
-        // TODO: ログの量を圧迫するので一時封印。
-        // Assertion の機能はメッセージの一部として位置を記録するため、そちらは問題なし。
-        // LogFormat みたいな設定を増やしておく
-		//g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")]";
-        if (record.tag())
-            g_logSS << "[" << record.tag() << "] ";
-        else
-            g_logSS << " ";
-
-		g_logSS << record.getMessage() << std::endl;
-
-		auto str = g_logSS.str();
-
-		for (auto& adapter : m_impl->m_adapters) {
-			adapter->write(record.GetLevel(), str.c_str(), str.length());
-		}
-	}
 }
 
 } // namespace detail
@@ -352,7 +352,7 @@ bool Logger::addFileAdapter(const std::string& filePath)
 
 	g_logFile.open(filePath.c_str());
 
-	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+	detail::LoggerInterface::getInstance()->m_adapters.push_back(
 		std::make_shared<detail::FileLoggerAdapter>());
 
     return true;
@@ -360,7 +360,7 @@ bool Logger::addFileAdapter(const std::string& filePath)
 
 void Logger::addStdErrAdapter()
 {
-    detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+    detail::LoggerInterface::getInstance()->m_adapters.push_back(
         std::make_shared<detail::StdErrLoggerAdapter>());
 }
 
@@ -384,7 +384,12 @@ void Logger::addNLogAdapter()
 
 bool Logger::hasAnyAdapter()
 {
-	return !detail::LoggerInterface::getInstance()->m_impl->m_adapters.empty();
+	return !detail::LoggerInterface::getInstance()->m_adapters.empty();
+}
+
+bool Logger::shouldLog(LogLevel level)
+{
+    return ::ln::detail::LoggerInterface::getInstance()->checkLevel(level);
 }
 
 void Logger::setLevel(LogLevel level)
@@ -395,6 +400,20 @@ void Logger::setLevel(LogLevel level)
 LogLevel Logger::level()
 {
     return detail::g_maxLevel;
+}
+
+void Logger::log(LogLocation location, LogLevel level, std::string_view message)
+{
+    if (!shouldLog(level)) return;
+
+    if (detail::LoggerInterface::getInstance()->m_adapters.empty()) {
+        std::cerr << message << std::endl;
+    }
+    else {
+        for (auto& adapter : detail::LoggerInterface::getInstance()->m_adapters) {
+            adapter->write(location, level, message.data(), message.length());
+        }
+    }
 }
 
 } // namespace ln

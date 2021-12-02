@@ -17,114 +17,108 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.7.2
       with:
-        dotnet-version: 2.2.108
+        dotnet-version: '5.0.x'
 
-    - name: Cache (build/BuildCache)
-      uses: actions/cache@v1
+    - name: Cache
+      uses: actions/cache@v2
       with:
-        path: ./build/MSVC2019-x64-MT/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+        path: ./build/cache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}
             
-    - name: Cache (build/MSVC2019-x64-MT/ExternalInstall)
-      uses: actions/cache@v1
-      with:
-        path: ./build/MSVC2019-x64-MT/ExternalInstall
-        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('**/BuildExternalProjects.cs') }}
-            
+    - name: Dependencies
+      run: dotnet run -- BuildExternals x64-windows
     - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects MSVC2019-x64-MT
-        dotnet run -- BuildEngine_MSVC MSVC2019-x64-MT
+      run: dotnet run -- BuildEngine_MSVC x64-windows
       
-    - uses: actions/upload-artifact@v1
-      with:
-        name: LuminoEngine-MSVC2019-x64-MT
-        path: ./build/MSVC2019-x64-MT/EngineInstall
+    # - uses: actions/upload-artifact@v1
+    #   with:
+    #     name: LuminoEngine-MSVC2019-x64-MT
+    #     path: ./build/MSVC2019-x64-MT/EngineInstall
 
   #==============================================================================
-  Native-Web:
-    runs-on: windows-latest
+  # Native-Web:
+  #   runs-on: windows-latest
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v1
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+  #   - name: Setup .NET Core
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 2.2.108
 
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+  #   - name: Common build cache (build/BuildCache)
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: ./build/BuildCache
+  #       key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
-    - uses: actions/cache@v1.0.3
-      with:
-        path: ./build/Emscripten/emsdk
-        key: ${{ env.cache-version }}-emsdk-${{ hashFiles(format('{0}{1}', github.workspace, '/tools/LuminoBuild/EmscriptenBuildEnv.cs')) }}
-        restore-keys: |
-          ${{ env.cache-version }}-emsdk-
+  #   - uses: actions/cache@v1.0.3
+  #     with:
+  #       path: ./build/Emscripten/emsdk
+  #       key: ${{ env.cache-version }}-emsdk-${{ hashFiles(format('{0}{1}', github.workspace, '/tools/LuminoBuild/EmscriptenBuildEnv.cs')) }}
+  #       restore-keys: |
+  #         ${{ env.cache-version }}-emsdk-
           
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects Emscripten
-        dotnet run -- BuildEngine_Emscripten Emscripten
+  #   - name: Build
+  #     run: |
+  #       dotnet run -- BuildExternalProjects Emscripten
+  #       dotnet run -- BuildEngine_Emscripten Emscripten
       
 
-  #==============================================================================
-  Native-Android:
-    runs-on: windows-latest
+  # #==============================================================================
+  # Native-Android:
+  #   runs-on: windows-latest
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v1
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+  #   - name: Setup .NET Core
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 2.2.108
 
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+  #   - name: Common build cache (build/BuildCache)
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: ./build/BuildCache
+  #       key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects Android-x86_64
-        dotnet run -- BuildEngine_Android
+  #   - name: Build
+  #     run: |
+  #       dotnet run -- BuildExternalProjects Android-x86_64
+  #       dotnet run -- BuildEngine_Android
 
-  #==============================================================================
-  Native-macOS:
-    runs-on: macos-11.0
+  # #==============================================================================
+  # Native-macOS:
+  #   runs-on: macos-11.0
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v1
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+  #   - name: Setup .NET Core
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 2.2.108
 
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+  #   - name: Common build cache (build/BuildCache)
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: ./build/BuildCache
+  #       key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects macOS
-        dotnet run -- BuildEngine_macOS
+  #   - name: Build
+  #     run: |
+  #       dotnet run -- BuildExternalProjects macOS
+  #       dotnet run -- BuildEngine_macOS
 
   #==============================================================================
 #  Native-iOS:

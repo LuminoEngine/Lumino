@@ -11,8 +11,12 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Build b)
         {
+            string lockFile = $"{b.Triplet}.lock";
+
             using (CurrentDir.Enter(b.BuildToolsDir))
             {
+                if (File.Exists(lockFile)) return;
+
                 if (!Directory.Exists(b.VcpkgDir))
                 {
                     Proc.Make("git", "clone -b 2021.05.12 https://github.com/microsoft/vcpkg.git").WithSilent().Call();
@@ -59,7 +63,17 @@ namespace LuminoBuild.Tasks
                         Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
                         Proc.Make("vcpkg", "install openal-soft:" + b.Triplet).WithSilent().Call();
                     }
+
+                    if (BuildEnvironment.FromCI)
+                    {
+                        // Free disk space
+                        // https://github.com/Microsoft/vcpkg/issues/2352
+                        Directory.Delete("downloads", true);
+                        Directory.Delete("buildtrees", true);
+                    }
                 }
+
+                File.WriteAllText(lockFile, "The presence of this file indicates that the dependency is ready to be placed by LuminoBuild.");
             }
         }
     }

@@ -242,7 +242,7 @@ struct VulkanSingleFrameBufferInfo
 { \
     VkResult r = (f); \
 	if (r != VK_SUCCESS) { \
-        LN_LOG_ERROR << #f << "; VkResult:" << r << "(" << VulkanHelper::getVkResultName(r) << ")"; \
+        LN_LOG_ERROR("{}; VkResult: {} ({})", #f, r, VulkanHelper::getVkResultName(r)); \
 		return false; \
 	} \
 }

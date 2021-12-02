@@ -690,7 +690,7 @@ bool VulkanHelper::initVulkanFunctions()
 bool VulkanHelper::checkVulkanSupported()
 {
 	if (!VulkanHelper::initVulkanFunctions()) {
-		LN_LOG_WARNING << "Valid vulkan library not found.";
+		LN_LOG_WARNING("Valid vulkan library not found.");
 		return false;
 	}
 

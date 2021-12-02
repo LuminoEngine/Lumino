@@ -20,9 +20,9 @@ PhysicsManager::~PhysicsManager()
 
 void PhysicsManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "PhysicsManager Initialization started.";
+    LN_LOG_DEBUG("PhysicsManager Initialization started.");
 
-    LN_LOG_DEBUG << "PhysicsManager Initialization ended.";
+    LN_LOG_DEBUG("PhysicsManager Initialization ended.");
 }
 
 void PhysicsManager::dispose()

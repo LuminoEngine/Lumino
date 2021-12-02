@@ -65,7 +65,7 @@ Ref<Object> TypeInfo::createInstance(const String& typeName)
 	}
 	else {
         // TODO: Objcet.hpp の serialize の TODO にもあるが、切り替えできるようにしたい
-        LN_LOG_WARNING << " Not found type.　(" << typeName << ")";
+		LN_LOG_WARNING(U" Not found type.　({})", typeName);
 		return nullptr;
 	}
 }

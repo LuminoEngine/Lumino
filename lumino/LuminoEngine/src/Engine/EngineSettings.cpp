@@ -19,7 +19,7 @@ bool EngineSettings::tryLoad()
         const auto priority_gpu_name = toml::find<std::string>(data, "priorityGpuName");
         priorityGPUName = String::fromStdString(priority_gpu_name);
 
-        LN_LOG_INFO << "lumino.ini Loaded.";
+        LN_LOG_INFO("lumino.ini Loaded.");
 
         return true;
     }

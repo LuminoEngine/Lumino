@@ -109,7 +109,7 @@ FontManager::FontManager()
 
 bool FontManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "FontManager Initialization started.";
+    LN_LOG_DEBUG("FontManager Initialization started.");
 
     m_assetManager = settings.assetManager;
     m_charToUTF32Converter.setDestinationEncoding(TextEncoding::utf32Encoding());
@@ -187,7 +187,7 @@ bool FontManager::init(const Settings& settings)
 	}
 
 
-    LN_LOG_DEBUG << "FontManager Initialization ended.";
+    LN_LOG_DEBUG("FontManager Initialization ended.");
     return true;
 }
 
@@ -260,7 +260,7 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
             e.dataBuffer = buffer;
             e.collectionIndex = 0;
             m_ttfDataEntryMap.insert({ key, e });
-            LN_LOG_INFO << "Registered font file." << familyName;
+            LN_LOG_INFO(U"Registered font file. " + familyName);
 
             //// set default name
             //if (defaultFamily) {
@@ -293,7 +293,7 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
                 e.dataBuffer = buffer;
                 e.collectionIndex = 0;
                 m_ttfDataEntryMap.insert({ key, e });
-                LN_LOG_INFO << "Registered font file." << familyName;
+                LN_LOG_INFO(U"Registered font file. " + familyName);
 
                 //// set default name
                 //if (defaultFamily) {

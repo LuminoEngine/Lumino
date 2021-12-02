@@ -243,16 +243,16 @@ int main(int argc, char** argv)
 	TestHelper::setAssetsDirPath(LN_LOCALFILE("TestData"));
 	TestHelper::setTempDirPath(_T("TestTemp"));
 	Logger::addStdErrAdapter();
-	LN_LOG_INFO << "Running test.";
-    LN_LOG_INFO << "SystemMultiByteEncoding: " << TextEncoding::systemMultiByteEncoding()->name();
-    LN_LOG_INFO << "WideCharEncoding: " << TextEncoding::wideCharEncoding()->name();
+	LN_LOG_INFO(U"Running test.");
+    LN_LOG_INFO(U"SystemMultiByteEncoding: {}", TextEncoding::systemMultiByteEncoding()->name());
+    LN_LOG_INFO(U"WideCharEncoding: {}", TextEncoding::wideCharEncoding()->name());
 
 	if (argc == 1) {
 		char* testArgs[] =
 		{
 			argv[0],
 			"--gtest_break_on_failure",
-			//"--gtest_filter=Test_Base_String.*",
+			//"--gtest_filter=Test_IO_Process.Redirect",
 		};
 		argc = sizeof(testArgs) / sizeof(char*);
 		argv = testArgs;

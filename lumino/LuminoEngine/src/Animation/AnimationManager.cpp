@@ -199,14 +199,14 @@ AnimationManager::~AnimationManager()
 
 void AnimationManager::init(const Settings& settings)
 {
-    LN_LOG_DEBUG << "AnimationManager Initialization started.";
+    LN_LOG_DEBUG("AnimationManager Initialization started.");
 
     m_assetManager = settings.assetManager;
     m_animationClipCache.init(64, 0);
 
 	m_defaultAnimationClipImportSettings = makeObject<AnimationClipImportSettings>();
 
-    LN_LOG_DEBUG << "AnimationManager Initialization ended.";
+    LN_LOG_DEBUG("AnimationManager Initialization ended.");
 }
 
 void AnimationManager::dispose()

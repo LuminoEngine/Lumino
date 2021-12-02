@@ -110,6 +110,50 @@ bool StringRef::endsWith(const StringRef& str, CaseSensitivity cs) const
     return StringHelper::endsWith(data(), length(), str.data(), str.length(), cs);
 }
 
+int StringRef::indexOf(const StringRef& str, int startIndex, CaseSensitivity cs) const
+{
+    return StringHelper::indexOf(data(), length(), str.data(), str.length(), startIndex, cs);
+}
+
+int StringRef::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
+{
+    return StringHelper::indexOf(data(), length(), &ch, 1, startIndex, cs);
+}
+
+int StringRef::lastIndexOf(const StringRef& str, int startIndex, int count, CaseSensitivity cs) const
+{
+    return StringHelper::lastIndexOf(data(), length(), str.data(), str.length(), startIndex, count, cs);
+}
+
+int StringRef::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const
+{
+    return StringHelper::lastIndexOf(data(), length(), &ch, 1, startIndex, count, cs);
+}
+
+#define TO_INT_DEF(type, func)                                   \
+    const Char* begin;                                           \
+    const Char* end;                                             \
+    int len;                                                     \
+    NumberConversionResult res;                                  \
+    StringHelper::trim(data(), length(), &begin, &len);          \
+    type num = StringHelper::func(begin, len, base, &end, &res); \
+    if (res == NumberConversionResult::ArgsError) {              \
+        LN_ENSURE(0);                                            \
+    }                                                            \
+    if (res == NumberConversionResult::FormatError) {            \
+        LN_ENSURE(0);                                            \
+    }                                                            \
+    if (res == NumberConversionResult::Overflow) {               \
+        LN_ENSURE(0);                                            \
+    }                                                            \
+    LN_ENSURE(end == begin + len);                               \
+    return num;
+int StringRef::toInt(int base) const
+{
+    TO_INT_DEF(int32_t, toInt32);
+}
+#undef TO_INT_DEF;
+
 std::string StringRef::toStdString() const
 {
     std::vector<byte_t> bytes = TextEncoding::systemMultiByteEncoding()->encode(data(), length());

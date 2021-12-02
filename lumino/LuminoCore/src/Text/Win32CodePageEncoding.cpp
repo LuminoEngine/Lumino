@@ -66,7 +66,7 @@ bool Win32CodePageEncoding::convertToUTF16Stateless(const byte_t* input, size_t 
 // Win32CodePageEncoding::Win32CodePageDecoder
 
 Win32CodePageEncoding::Win32CodePageDecoder::Win32CodePageDecoder(TextEncoding* encoding, const CPINFOEX* cpInfo)
-    : TextDecoder(encoding)
+    : ASCIIDecoder(encoding)
     , m_cpInfo(cpInfo)
     , m_lastLeadByte(0)
     , m_usedDefaultCharCount(0)
@@ -178,8 +178,7 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF32(const byte_t* i
 
     }
     else {
-        LN_NOTIMPLEMENTED();
-        return false;
+        return ASCIIDecoder::convertToUTF32(input, inputByteSize,  output, outputElementSize, outResult);
     }
 
 

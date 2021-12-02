@@ -17,7 +17,7 @@ GLFWInputDriver::~GLFWInputDriver()
 
 void GLFWInputDriver::init()
 {
-	LN_LOG_DEBUG << "GLFWInputDriver";
+	LN_LOG_DEBUG("GLFWInputDriver");
 }
 
 void GLFWInputDriver::dispose()
