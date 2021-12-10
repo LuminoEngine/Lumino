@@ -344,6 +344,19 @@ int Array<T>::indexOfIf(TPred pred, int startIndex) const
     return -1;
 }
 
+template<typename T>
+bool Array<T>::contains(const value_type& item) const
+{
+    return std::find(m_data.begin(), m_data.end(), item) != m_data.end();
+}
+
+template<typename T>
+template<typename TPred>
+bool Array<T>::containsIf(TPred pred) const
+{
+    return std::find_if(m_data.begin(), m_data.end(), pred) != m_data.end();
+}
+
 template<class T>
 inline typename Array<T>::iterator Array<T>::insert(int pos, const T& value)
 {

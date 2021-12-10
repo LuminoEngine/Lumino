@@ -261,6 +261,15 @@ public:
         }
         return Optional2<const T&>();
     }
+    template<typename TPred>
+    Optional2<T&> findIf(TPred pred)
+    {
+        auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
+        if (itr != end()) {
+            return Optional2<T&>(*itr);
+        }
+        return Optional2<T&>();
+    }
 
 
     /**
@@ -272,6 +281,12 @@ public:
     template<typename TPred>
     int indexOfIf(TPred pred, int startIndex = 0) const;
 
+    /** 指定した要素がこの配列内に存在するかどうかを判断します。*/
+    bool contains(const value_type& item) const;
+
+    /** 指定した条件と一致する要素がこの配列内に存在するかどうかを判断します。*/
+    template<typename TPred>
+    bool containsIf(TPred pred) const;
 
     /** Insert a new element at specified position. */
     iterator insert(int pos, const T& value);
@@ -291,9 +306,30 @@ public:
 
     /** @} */
 
+    
+    template<class TCallback>
+    auto map(TCallback callback) -> Array<decltype(callback(*reinterpret_cast<T*>(0)))> {
+        Array<decltype(callback(*reinterpret_cast<T*>(0)))> result = {};
+        for (size_t i = 0; i < m_data.size(); i++) {
+            result.push(callback(m_data[i]));
+        }
+        return result;
+    }
+
+    template<class TCallback>
+    auto map(TCallback callback) const -> Array<decltype(callback(*reinterpret_cast<T*>(0)))>
+    {
+        Array<decltype(callback(*reinterpret_cast<T*>(0)))> result = {};
+        for (size_t i = 0; i < m_data.size(); i++) {
+            result.push(callback(m_data[i]));
+        }
+        return result;
+    }
 
 private:
     container_type m_data;
+    template<class T>
+    friend class Array;
 };
 
 template<class T>
