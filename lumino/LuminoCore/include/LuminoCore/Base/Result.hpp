@@ -35,6 +35,8 @@ struct OkType<void> {};
 //==============================================================================
 // ErrType
 
+//struct DefaultTag {};
+
 template<typename E>
 struct ErrType {
     ErrType(const E& val)
@@ -48,39 +50,49 @@ struct ErrType {
     E val;
 };
 
+struct DefaultErrType {};
+
+//template<>
+//struct ErrType<DefaultTag> {
+//    ErrType() {}
+//};
+
 
 //==============================================================================
-// Ok /Err
+// ok /err
 
 //template<typename T, typename CleanT = typename std::decay<T>::type>
-//OkType<CleanT> Ok(T&& val) {
+//OkType<CleanT> ok(T&& val) {
 //    return OkType<CleanT>(std::forward<T>(val));
 //}
 template<typename T>
-OkType<T> Ok(T&& val) {
+OkType<T> ok(T&& val) {
     return OkType<T>(std::forward<T>(val));
 }
-//OkType<void> Ok() {
+//OkType<void> ok() {
 //    return OkType<void>();
 //}
 
-inline OkType<void> Ok() {
+inline OkType<void> ok() {
     return OkType<void>();
 }
 
 template<typename E, typename CleanE = typename std::decay<E>::type>
-ErrType<CleanE> Err(E&& val) {
+ErrType<CleanE> err(E&& val) {
     return ErrType<CleanE>(std::forward<E>(val));
 }
 
-inline ErrType<bool> Err() {
-    return ErrType<bool>(false);
+//inline ErrType<DefaultTag> err() {
+//    return ErrType<DefaultTag>();
+//}
+inline DefaultErrType err() {
+    return DefaultErrType();
 }
 
 //==============================================================================
 // Result
 
-template<typename T, typename E = bool>
+template<typename T = void, typename E = bool>
 struct Result {
     Result(T&& ok)
         : ok_(true)
@@ -96,6 +108,12 @@ struct Result {
     Result(ErrType<E> err)
         : ok_(false)
         , err_v(std::move(err.val)) {
+    }
+
+    Result(DefaultErrType)
+        : ok_(false)
+        , err_v{}
+    {
     }
 
     //Result(Result&& other) {
@@ -202,6 +220,11 @@ struct Result<T&, E> {
         , err_v(std::move(err.val)) {
     }
 
+    Result(DefaultErrType)
+        : ok_(false)
+        , err_v{} {
+    }
+
     //Result(Result&& other) {
     //}
 
@@ -301,6 +324,11 @@ struct Result<void, E> {
         , err_v(std::move(err.val)) {
     }
 
+    Result(DefaultErrType)
+        : ok_(false)
+        , err_v{} {
+    }
+
     //Result(Result&& other) {
     //}
 
@@ -325,6 +353,8 @@ struct Result<void, E> {
         LN_CHECK(isErr());
         return err_v;
     }
+
+    constexpr explicit operator bool() const noexcept { return ok_; }
 
 private:
     bool ok_;

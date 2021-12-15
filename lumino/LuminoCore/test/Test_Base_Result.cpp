@@ -16,36 +16,61 @@ struct TestErr1 {
 };
 
 static Result<std::string, TestErr1> testFunc1(int len) {
-    if (len > 10) return Err(TestErr1{TestErr1::Kind::TooLong, "error."});
+    if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return "aaa"; 
-    return Ok(std::string("123"));
+    return ok(std::string("123"));
 }
 
 static Result<void, int> testFunc2(int len) {
-    if (len > 10) return Err(1);
-    return Ok();
+    if (len > 10) return err(1);
+    return ok();
 }
 
 static Result<void> testFunc3(int len) {
-    if (len > 10) return Err();
-    return Ok();
+    if (len > 10) return err();
+    return ok();
 }
 
 static std::string g_str1 = "v1";
 static std::string g_str12 = "aaa";
 static Result<std::string&, TestErr1> testFunc4(int len) {
-    if (len > 10) return Err(TestErr1{TestErr1::Kind::TooLong, "error."});
+    if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return g_str12; 
-    return Ok<std::string&>(g_str1);
+    return ok<std::string&>(g_str1);
 }
 
 static std::string g_str2 = "v1";
 static std::string g_str22 = "aaa";
 static Result<const std::string&, TestErr1> testFunc5(int len) {
-    if (len > 10) return Err(TestErr1{TestErr1::Kind::TooLong, "error."});
+    if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return g_str22; 
-    return Ok<const std::string&>(g_str2);
+    return ok<const std::string&>(g_str2);
 }
+
+static Result<int, TestErr1> testFunc6(int len) {
+    if (len > 10) return err();
+    return 1;
+}
+
+void func1() {
+    Result a(ok());
+}
+//
+//static auto testFunc7(int len) -> Result  {
+//    if (len > 10) return err();
+//    return ok();
+//}
+//
+//template<typename T = int>
+//class Foo {};
+//
+//int maxxxin() {
+//    Foo f;
+//}
+//
+//Foo maxxxin2() {
+//    return Foo();
+//}
 
 TEST_F(Test_Base_Result, Basic) {
     auto r1 = testFunc1(1);
@@ -118,4 +143,10 @@ TEST_F(Test_Base_Result, Reference2) {
     ASSERT_EQ(true, r3.isOk());
     ASSERT_EQ(false, r3.isErr());
     ASSERT_EQ("aaa", r3.unwrap());
+}
+
+TEST_F(Test_Base_Result, DefaultError) {
+    auto r2 = testFunc6(100);
+    ASSERT_EQ(false, r2.isOk());
+    ASSERT_EQ(true, r2.isErr());
 }
