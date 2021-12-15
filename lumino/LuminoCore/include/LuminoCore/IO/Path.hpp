@@ -241,9 +241,6 @@ public:
 	template<class... TArgs>
 	static Path combine(TArgs&&... args);
 
-    /** システムの特別なフォルダのパスを取得します。 */
-    static Path getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath = StringRef(), SpecialFolderOption option = SpecialFolderOption::Create);
-
     /**    
         @brief        フォルダ内でユニークなファイルパス(絶対パス)を生成して返す
         @param[in]    directory    : フォルダパス

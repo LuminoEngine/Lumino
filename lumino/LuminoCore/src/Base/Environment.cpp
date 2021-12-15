@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoCore/Base/Environment.hpp>
 #include <LuminoCore/IO/FileSystem.hpp>
+#include "../IO/PathHelper.hpp"
 
 #if defined(LN_OS_WIN32)
 #include <Shlobj.h>
@@ -14,16 +15,21 @@
 
 namespace ln {
 
-String Environment::currentDirectory()
+Path Environment::currentDirectory()
 {
 	PlatformEnvironment::StringType path;
 	PlatformEnvironment::getCurrentDirectory(&path);
 	return String::fromStdString(path);
 }
 
-String Environment::executablePath()
+Path Environment::executablePath()
 {
 	return String::fromStdString(PlatformEnvironment::getExecutablePath());
+}
+
+Path Environment::executableDirectory()
+{
+    return executablePath().parent();
 }
 
 CaseSensitivity Environment::pathCaseSensitivity()
@@ -35,11 +41,43 @@ CaseSensitivity Environment::pathCaseSensitivity()
 #endif
 }
 
-String Environment::specialFolderPath(SpecialFolder specialFolder)
+Path Environment::specialFolderPath(SpecialFolder specialFolder)
 {
 	PlatformEnvironment::StringType path;
 	PlatformEnvironment::getSpecialFolderPath(specialFolder, &path);
 	return String::fromStdString(path);
+}
+
+Path Environment::specialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option)
+{
+    if (!relativeDirPath.isEmpty()) {
+        if (LN_REQUIRE(!detail::PathTraits::isAbsolutePath(relativeDirPath.data(), relativeDirPath.length()))) return Path();
+    }
+
+    Path path2(Environment::specialFolderPath(specialFolder));
+    if (!relativeDirPath.isEmpty()) {
+        path2.append(relativeDirPath);
+    }
+
+    switch (option) {
+        case SpecialFolderOption::None:
+            if (ln::FileSystem::existsDirectory(path2))
+                return path2;
+            else
+                return Path();
+
+        case SpecialFolderOption::Create:
+            if (!ln::FileSystem::existsDirectory(path2))
+                ln::FileSystem::createDirectory(path2);
+            return path2;
+
+        case SpecialFolderOption::DoNotVerify:
+            return path2;
+
+        default:
+            LN_UNREACHABLE();
+            return Path();
+    }
 }
 
 Optional<String> Environment::getEnvironmentVariable(const StringRef& variableName)

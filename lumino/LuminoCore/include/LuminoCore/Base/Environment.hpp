@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 #pragma once
 #include "String.hpp"
+#include "../IO/Path.hpp"
 
 namespace ln {
 
@@ -50,16 +51,22 @@ class Environment
 {
 public:
     /** カレントディレクトリのパスを取得します。 */
-    static String currentDirectory();
+    static Path currentDirectory();
 
     /** アプリケーションを開始した実行ファイルのパスを取得します。*/
-    static String executablePath();
+    static Path executablePath();
+
+    /** アプリケーションを開始した実行ファイルが保存されているディレクトリパスを取得します。*/
+    static Path executableDirectory();
 
     /** パス文字列の大文字と小文字を区別するかを確認します。 */
     static CaseSensitivity pathCaseSensitivity();
 
     /** システムの特別なフォルダのパスを取得します。 */
-    static String specialFolderPath(SpecialFolder specialFolder);
+    static Path specialFolderPath(SpecialFolder specialFolder);
+
+    /** システムの特別なフォルダのパスを取得します。 */
+    static Path specialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option);
 
     /** 環境変数の値を取得します。 */
     static Optional<String> getEnvironmentVariable(const StringRef& variableName);
