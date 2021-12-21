@@ -85,6 +85,8 @@ public:
     static Path fromStdPath(const std::filesystem::path& path);
     std::filesystem::path toStdPath() const;
 
+    static Path fromUtf8(const std::string_view& s) { return Path(String::fromUtf8(s)); }
+    std::string toUtf8() const { return m_path.toUtf8(); }
 
 public:
     /** パスが空であるかを確認します。*/

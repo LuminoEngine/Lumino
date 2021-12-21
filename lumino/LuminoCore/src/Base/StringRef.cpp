@@ -166,6 +166,11 @@ std::wstring StringRef::toStdWString() const
     return std::wstring(reinterpret_cast<const wchar_t*>(bytes.data()), bytes.size() / sizeof(wchar_t));
 }
 
+std::string StringRef::toUtf8() const {
+    std::vector<byte_t> bytes = TextEncoding::utf8Encoding()->encode(data(), length());
+    return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+}
+
 size_t StringRef::getHashCode() const
 {
     if (isEmpty()) return 0;

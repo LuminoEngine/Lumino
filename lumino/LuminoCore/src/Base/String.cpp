@@ -703,9 +703,8 @@ String String::fromCString(const wchar_t* str, int length)
     return result;
 }
 
-String String::fromStdString(const std::string& str, TextEncoding* encoding)
-{
-    return fromCString(str.c_str(), static_cast<int>(str.length()), encoding);
+String String::fromStdString(const std::string_view& str, TextEncoding* encoding) {
+    return fromCString(str.data(), static_cast<int>(str.length()), encoding);
 }
 
 String String::fromStdString(const std::wstring& str)
@@ -719,8 +718,7 @@ std::string String::toUtf8() const
     return toStdString(TextEncoding::utf8Encoding());
 }
 
-String String::fromUtf8(const std::string& s)
-{
+String String::fromUtf8(const std::string_view& s) {
     return fromStdString(s, TextEncoding::utf8Encoding());
 }
 
