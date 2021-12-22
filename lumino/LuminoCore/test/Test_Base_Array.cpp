@@ -336,6 +336,38 @@ TEST_F(Test_Base_Array, findIf)
 	std::optional<int> a;
 }
 
+TEST_F(Test_Base_Array, contains)
+{
+    Array<int> list1 = {1, 2, 3};
+    ASSERT_EQ(true, list1.contains(2));
+    ASSERT_EQ(false, list1.contains(5));
+}
+
+TEST_F(Test_Base_Array, containsIf)
+{
+    Array<int> list1 = {1, 2, 3};
+    ASSERT_EQ(true, list1.containsIf([](int i) { return i == 2; }));
+    ASSERT_EQ(false, list1.containsIf([](int i) { return i == 5; }));
+}
+
+TEST_F(Test_Base_Array, map)
+{
+    struct Test1 {
+        int v1;
+    };
+    struct Test2 : public Test1
+    {
+        int v2;
+    };
+
+    Array<Test2> ary1 = {Test2{}};
+    Array<Test2*> ary2 = ary1.map([](Test2& x) { return &x; });
+    Array<Test1*> ary3 = ary1.map([](Test2& x) { return static_cast<Test1*>(&x); });
+
+    const Array<Test2> ary4 = {Test2{}};
+    const Array<const Test2*> ary5 = ary4.map([](const Test2& x) { return &x; });
+}
+
 #if 0
 
 

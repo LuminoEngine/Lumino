@@ -445,7 +445,7 @@ public:
 
     constexpr explicit operator bool() const noexcept { return m_value != nullptr; }
 
-
+    
 private:
     T* m_value;
 };

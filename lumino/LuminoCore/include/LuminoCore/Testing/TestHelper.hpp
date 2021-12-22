@@ -52,6 +52,6 @@ public:
 // obsolete: Please use LN_ASSETFILE
 #define LN_LOCALFILEW(fileName) ln::TestHelper::getFilePathW(__FILE__, fileName).c_str()
 
-#define LN_TEMPFILE(fileName) ln::TestHelper::getTempPath(fileName).c_str()
+#define LN_TEMPFILE(fileName) ln::TestHelper::getTempPath(fileName)
 
-#define LN_ASSETFILE(fileName) ln::TestHelper::getAssetPath(fileName).c_str()
+#define LN_ASSETFILE(fileName) ln::TestHelper::getAssetPath(fileName)

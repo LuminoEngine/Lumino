@@ -1,67 +1,364 @@
-﻿/*
-エラー処理の方針 (テスト運用中)
-========
-
-### 例外 (LN_REQUIRE 系マクロ)
-前提条件のミスで使用する。プログラマが悪い系のエラー。
-一応例外を発生させているが、assert に直してもユーザーストーリーとしては影響ないようなものに使う。
-
-### Result 戻り値
-入力された引数やデータが悪い系のエラーで使用する。
-いわゆるビジネスエラー。
-
-return Result::Fail; する前に、原因となった個所では必ず CLI::error() して問題を通知する。
-※関数を使う側としては、↑のようにログが出て失敗する可能性があることを知ることができるようにする。bool はこの目的では使わない。
-
-
-### 将来的な共有モジュール化
-Project とかあたりは、今後作成予定の GUI ツールでも共有したい。
-で、多分 Qt Widgets 使うことになる。が、これは例外中立であって例外安全ではない。
-例外したら基本的にアプリ終了、が良い流れ。
-http://doc.qt.io/qt-5/exceptionsafety.html
-イベントハンドラの中で、必ず、キャンセルするのか再試行させるのか判断しなければならない。
-
-*/
-
-#pragma once
+﻿#pragma once
 
 namespace ln {
 
-enum class ResultCode
-{
-	Fail,
-	Success,
-};
+    
+//==============================================================================
+// OkType
 
-class Result
-{
-public:
-	static const Result Fail;
-	static const Result Success;
-
-    Result(bool result)
-        : m_code(result ? ResultCode::Success : ResultCode::Fail)
+template<typename T>
+struct OkType {
+    OkType(const T& val)
+        : val(val)
     {}
 
-	Result(ResultCode code)
-		: m_code(code)
-	{}
+    OkType(T&& val)
+        : val(std::move(val))
+    {}
 
-	Result(const Result& other)
-		: m_code(other.m_code)
-	{}
+    T val;
+};
 
-	Result& operator=(const Result& other)
-	{
-		m_code = other.m_code;
-		return *this;
-	}
 
-	operator bool() const { return m_code != ResultCode::Fail; }
+template<typename T>
+struct OkType<T&> {
+    OkType(T& val)
+        : val(val)
+    {}
+
+    T& val;
+};
+
+template<>
+struct OkType<void> {};
+
+//==============================================================================
+// ErrType
+
+//struct DefaultTag {};
+
+template<typename E>
+struct ErrType {
+    ErrType(const E& val)
+        : val(val)
+    {}
+
+    ErrType(E&& val)
+        : val(std::move(val))
+    {}
+
+    E val;
+};
+
+struct DefaultErrType {};
+
+//template<>
+//struct ErrType<DefaultTag> {
+//    ErrType() {}
+//};
+
+
+//==============================================================================
+// ok /err
+
+//template<typename T, typename CleanT = typename std::decay<T>::type>
+//OkType<CleanT> ok(T&& val) {
+//    return OkType<CleanT>(std::forward<T>(val));
+//}
+template<typename T>
+OkType<T> ok(T&& val) {
+    return OkType<T>(std::forward<T>(val));
+}
+//OkType<void> ok() {
+//    return OkType<void>();
+//}
+
+inline OkType<void> ok() {
+    return OkType<void>();
+}
+
+template<typename E, typename CleanE = typename std::decay<E>::type>
+ErrType<CleanE> err(E&& val) {
+    return ErrType<CleanE>(std::forward<E>(val));
+}
+
+//inline ErrType<DefaultTag> err() {
+//    return ErrType<DefaultTag>();
+//}
+inline DefaultErrType err() {
+    return DefaultErrType();
+}
+
+//==============================================================================
+// Result
+
+template<typename T = void, typename E = bool>
+struct Result {
+    Result(T&& ok)
+        : ok_(true)
+        , ok_v(std::forward<T>(ok))
+    {
+    }
+
+    Result(OkType<T> ok)
+        : ok_(true)
+        , ok_v(std::move(ok.val)) {
+    }
+
+    Result(ErrType<E> err)
+        : ok_(false)
+        , err_v(std::move(err.val)) {
+    }
+
+    Result(DefaultErrType)
+        : ok_(false)
+        , err_v{}
+    {
+    }
+
+    //Result(Result&& other) {
+    //}
+
+    //Result(const Result& other) {
+    //}
+
+    ~Result() {
+        if (ok_) {
+            ok_v.~T();
+        }
+        else {
+            err_v.~E();
+        }
+    }
+
+    bool isOk() const {
+        return ok_;
+    }
+
+    bool isErr() const {
+        return !ok_;
+    }
+
+    template<typename U = T>
+    typename std::enable_if< !std::is_same<U, void>::value, U>::type unwrapOr(const U& defaultValue) const {
+        if (isOk()) {
+            return ok_v;
+        }
+        return defaultValue;
+    }
+
+    template<typename U = T>
+    typename std::enable_if<!std::is_same<U, void>::value, U>::type unwrap() const {
+        LN_CHECK(isOk());
+        return ok_v;
+    }
+
+    E unwrapErr() const {
+        LN_CHECK(isErr());
+        return err_v;
+    }
+
+    /** 保持している値へのポインタを返します。 */
+    constexpr const T* operator->() const {
+        LN_CHECK(ok_);
+        return &ok_v;
+    }
+
+    /** 保持している値へのポインタを返します。 */
+    constexpr T* operator->() {
+        LN_CHECK(ok_);
+        return &ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr const T& operator*() const& {
+        LN_CHECK(ok_);
+        return ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr T& operator*() & {
+        LN_CHECK(ok_);
+        return ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr const T&& operator*() const&& {
+        LN_CHECK(ok_);
+        return ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr T&& operator*() && {
+        LN_CHECK(ok_);
+        return ok_v;
+    }
+
+    /** isOk */
+    constexpr explicit operator bool() const noexcept {
+        return ok_;
+    }
 
 private:
-	ResultCode m_code;
+    bool ok_;
+    union {
+        T ok_v;
+        E err_v;
+    };
+};
+
+// for reference
+template<typename T, typename E>
+struct Result<T&, E> {
+    Result(OkType<T&> ok)
+        : ok_(true)
+        , ok_v(&ok.val) {
+    }
+
+    Result(ErrType<E> err)
+        : ok_(false)
+        , err_v(std::move(err.val)) {
+    }
+
+    Result(DefaultErrType)
+        : ok_(false)
+        , err_v{} {
+    }
+
+    //Result(Result&& other) {
+    //}
+
+    //Result(const Result& other) {
+    //}
+
+    ~Result() {
+        if (!ok_) {
+            err_v.~E();
+        }
+    }
+
+    bool isOk() const {
+        return ok_;
+    }
+
+    bool isErr() const {
+        return !ok_;
+    }
+
+    template<typename U = T>
+    typename std::enable_if<!std::is_same<U, void>::value, U>::type unwrapOr(const U& defaultValue) const {
+        if (isOk()) {
+            return *ok_v;
+        }
+        return defaultValue;
+    }
+
+    T& unwrap() const {
+        LN_CHECK(isOk());
+        return *ok_v;
+    }
+
+    E unwrapErr() const {
+        LN_CHECK(isErr());
+        return err_v;
+    }
+
+    /** 保持している値へのポインタを返します。 */
+    constexpr const T* operator->() const {
+        LN_CHECK(ok_);
+        return ok_v;
+    }
+
+    /** 保持している値へのポインタを返します。 */
+    constexpr T* operator->() {
+        LN_CHECK(ok_);
+        return ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr const T& operator*() const& {
+        LN_CHECK(ok_);
+        return *ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr T& operator*() & {
+        LN_CHECK(ok_);
+        return *ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr const T&& operator*() const&& {
+        LN_CHECK(ok_);
+        return *ok_v;
+    }
+
+    /** 間接参照演算子で値を取得します。 */
+    constexpr T&& operator*() && {
+        LN_CHECK(ok_);
+        return *ok_v;
+    }
+
+    /** isOk */
+    constexpr explicit operator bool() const noexcept {
+        return ok_;
+    }
+
+
+private:
+    bool ok_;
+    union {
+        T* ok_v;
+        E err_v;
+    };
+};
+
+template<typename E>
+struct Result<void, E> {
+    Result(OkType<void> ok)
+        : ok_(true) {
+    }
+
+    Result(ErrType<E> err)
+        : ok_(false)
+        , err_v(std::move(err.val)) {
+    }
+
+    Result(DefaultErrType)
+        : ok_(false)
+        , err_v{} {
+    }
+
+    //Result(Result&& other) {
+    //}
+
+    //Result(const Result& other) {
+    //}
+
+    ~Result() {
+        if (!ok_) {
+            err_v.~E();
+        }
+    }
+
+    bool isOk() const {
+        return ok_;
+    }
+
+    bool isErr() const {
+        return !ok_;
+    }
+
+    E unwrapErr() const {
+        LN_CHECK(isErr());
+        return err_v;
+    }
+
+    constexpr explicit operator bool() const noexcept { return ok_; }
+
+private:
+    bool ok_;
+    E err_v;
 };
 
 } // namespace ln
-

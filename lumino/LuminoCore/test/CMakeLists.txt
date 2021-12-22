@@ -7,6 +7,7 @@ project(LuminoCore-test)
 set(LN_SOURCES
 	Common.hpp
 	Main.cpp
+	Test_Base_Array.cpp
 	Test_Base_Assertion.cpp
 	Test_Base_ByteBuffer.cpp
 	Test_Base_EnumFlags.cpp
@@ -16,6 +17,7 @@ set(LN_SOURCES
 	Test_Base_Logger.cpp
 	Test_Base_Optional.cpp
 	Test_Base_RefObject.cpp
+	Test_Base_Result.cpp
 	Test_Base_String.cpp
 	Test_Base_StringRef.cpp
 	Test_IO_BinaryReader.cpp

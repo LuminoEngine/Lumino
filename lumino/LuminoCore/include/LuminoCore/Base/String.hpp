@@ -19,8 +19,7 @@ struct StringLockContext;
 /**
  * Unicode 文字列を表します。
  * 
- * String クラスは環境に依らず、UTF-16 コードで表現される文字の配列です。
- * 文字は Char 型で表される 2Byte 値です。65535を 超えるコード値の文字は、サロゲートペア、つまり2つの連続した文字で格納されます。
+ * String クラスは環境に依らず、UTF-32 コードで表現される文字の配列です。
  * 
  * 文字列はメモリ上に連続的に確保され Null 終端文字を格納します。
  */
@@ -345,14 +344,14 @@ public:
     static String fromCString(const wchar_t* str, int length = -1);
 
     /** ローカルの std::string 型文字列を String へ変換します。 */
-    static String fromStdString(const std::string& str, TextEncoding* encoding = nullptr);
+    static String fromStdString(const std::string_view& str, TextEncoding* encoding = nullptr);
 
     /** ローカルの std::wstring 型文字列を String へ変換します。 */
     static String fromStdString(const std::wstring& str);
 
     std::string toUtf8() const;
 
-    static String fromUtf8(const std::string& s);
+    static String fromUtf8(const std::string_view& s);
 
     std::filesystem::path toStdPath() const { return std::filesystem::path(c_str()); }
 
@@ -551,6 +550,7 @@ public:
     /** ローカルの std::wstring 型文字列へ変換します。 */
     std::wstring toStdWString() const;
 
+    std::string toUtf8() const;
 
     /** 任意の位置の要素にアクセスします。 */
     LN_CONSTEXPR const Char& operator[](int index) const { return *(data() + index); }

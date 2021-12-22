@@ -298,39 +298,6 @@ bool Path::contains(const Path& subdir) const
     return detail::PathTraits::comparePathString(str().c_str(), length(), subdir.str().c_str(), length()) == 0;
 }
 
-Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option)
-{
-	if (!relativeDirPath.isEmpty()) {
-		if (LN_REQUIRE(!detail::PathTraits::isAbsolutePath(relativeDirPath.data(), relativeDirPath.length()))) return Path();
-	}
-
-	Path path2(Environment::specialFolderPath(specialFolder));
-	if (!relativeDirPath.isEmpty()) {
-		path2.append(relativeDirPath);
-	}
-
-	switch (option)
-	{
-	case SpecialFolderOption::None:
-		if (ln::FileSystem::existsDirectory(path2))
-			return path2;
-		else
-			return Path();
-	
-	case SpecialFolderOption::Create:
-		if (!ln::FileSystem::existsDirectory(path2))
-			ln::FileSystem::createDirectory(path2);
-		return path2;
-	
-	case SpecialFolderOption::DoNotVerify:
-		return path2;
-	
-	default:
-		LN_UNREACHABLE();
-		return Path();
-	}
-}
-
 Path Path::getUniqueFilePathInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
 {
 #if 1
