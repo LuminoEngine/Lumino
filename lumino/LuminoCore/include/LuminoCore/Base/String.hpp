@@ -353,6 +353,10 @@ public:
 
     static String fromUtf8(const std::string_view& s);
 
+    std::u16string toUtf16() const;
+
+    static String fromUtf16(const std::u16string_view& s);
+
     std::filesystem::path toStdPath() const { return std::filesystem::path(c_str()); }
 
     //std::u16string toUtf16() const;
@@ -430,6 +434,8 @@ private:
     // utils
     void assignFromCStr(const char* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
     void assignFromCStr(const wchar_t* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
+    void assignFromCStr(const char16_t* str, int length, bool* outUsedDefaultChar = nullptr);
+    void assignFromCStrInternal(const byte_t* bytes, int bytesCount, int elementSize, bool* outUsedDefaultChar, TextEncoding* encoding);
     void setAt(int index, Char ch);
     int getByteCount() const { return length() * sizeof(Char); }
     uint32_t getHashCode() const;

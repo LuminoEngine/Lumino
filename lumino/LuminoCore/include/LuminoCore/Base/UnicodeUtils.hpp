@@ -334,6 +334,14 @@ public:
         return result;
     }
 
+    static inline std::u16string U32ToU16(const char32_t* str, size_t len) noexcept {
+        std::u16string result(len * 2, '\0');
+        UTFConversionOptions options;
+        options.ReplacementChar = '?';
+        UnicodeUtils::convertUTF32toUTF16(reinterpret_cast<const UTF32*>(str), len, reinterpret_cast<UTF16*>(result.data()), result.length(), &options);
+        return result;
+    }
+
     static inline std::u32string U16ToU32(const char16_t* str, size_t len) noexcept
     {
         std::u32string result(len * 2, U'\0');
