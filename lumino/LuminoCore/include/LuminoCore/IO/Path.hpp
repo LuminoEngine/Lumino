@@ -34,8 +34,7 @@ namespace ln {
  * 
  *   
  */
-class Path
-{
+class Path {
 public:
     static const Path Empty;
 
@@ -47,7 +46,7 @@ public:
     /** 指定されたパス文字列から Path を構築します。 */
     Path(const Char* path);
 
-	/** 指定されたパス文字列から Path を構築します。 */
+    /** 指定されたパス文字列から Path を構築します。 */
     Path(const String& path);
 
     /** 指定されたパス文字列から Path を構築します。 */
@@ -58,27 +57,22 @@ public:
     Path(const Path& basePath, const String& relativePath);
     Path(const Path& basePath, const StringRef& relativePath);
     Path(const Path& basePath, const Path& relativePath);
-    
-
 
     // operators
-    Path& operator=(const String& str)
-    {
+    Path& operator=(const String& str) {
         assign(str.c_str());
         return (*this);
     }
-    Path& operator=(const Char* str)
-    {
+    Path& operator=(const Char* str) {
         assign(str);
         return (*this);
     }
-        //bool operator < (const Path& right) const;
-        //bool operator < (const Char* right) const;
+    //bool operator < (const Path& right) const;
+    //bool operator < (const Char* right) const;
 
 #ifdef LN_STRING_FUZZY_CONVERSION
     Path(const char* path)
-        : Path(String(path))
-    {
+        : Path(String(path)) {
     }
 #endif
 
@@ -87,6 +81,8 @@ public:
 
     static Path fromUtf8(const std::string_view& s) { return Path(String::fromUtf8(s)); }
     std::string toUtf8() const { return m_path.toUtf8(); }
+    static Path fromUtf16(const std::u16string_view& s) { return Path(String::fromUtf16(s)); }
+    std::u16string toUtf16() const { return m_path.toUtf16(); }
 
 public:
     /** パスが空であるかを確認します。*/
@@ -184,8 +180,8 @@ public:
     /** セパレータをネイティブの文字に変換したパスを返します。 */
     Path native() const;
 
-	/** セパレータを '/' に変換したパスを返します。 */
-	Path unify() const;
+    /** セパレータを '/' に変換したパスを返します。 */
+    Path unify() const;
 
     /**
      * パスを単純化し、絶対パスにしたものを返します。
@@ -240,8 +236,8 @@ public:
     bool contains(const Path& subdir) const;
 
 public:
-	template<class... TArgs>
-	static Path combine(TArgs&&... args);
+    template<class... TArgs>
+    static Path combine(TArgs&&... args);
 
     /**    
         @brief        フォルダ内でユニークなファイルパス(絶対パス)を生成して返す
@@ -269,42 +265,39 @@ private:
 
 namespace detail {
 
-template <class T>
-inline Path combinePathImpl(T&& s)
-{
-	return s;
+template<class T>
+inline Path combinePathImpl(T&& s) {
+    return s;
 }
 
-template <class T1, class T2, class... TRest>
-inline Path combinePathImpl(T1&& parent, T2&& local, TRest&&... rest)
-{
-	return combinePathImpl(Path(std::forward<T1>(parent), std::forward<T2>(local)), std::forward<TRest>(rest)...);
+template<class T1, class T2, class... TRest>
+inline Path combinePathImpl(T1&& parent, T2&& local, TRest&&... rest) {
+    return combinePathImpl(Path(std::forward<T1>(parent), std::forward<T2>(local)), std::forward<TRest>(rest)...);
 }
 
 } // namespace detail
 
 template<class... TArgs>
-inline Path Path::combine(TArgs&&... args)
-{
-	return detail::combinePathImpl(std::forward<TArgs>(args)...);
+inline Path Path::combine(TArgs&&... args) {
+    return detail::combinePathImpl(std::forward<TArgs>(args)...);
 }
 
-
-inline Path operator+(const Char* lhs, const Path& rhs)
-{
+inline Path operator+(const Char* lhs, const Path& rhs) {
     return String::concat(lhs, rhs.str());
 }
 
-inline bool operator==(const Path& lhs, const Path& rhs) { return Path::compare(lhs, rhs) == 0; }
-inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lhs, rhs); }
+inline bool operator==(const Path& lhs, const Path& rhs) {
+    return Path::compare(lhs, rhs) == 0;
+}
+inline bool operator!=(const Path& lhs, const Path& rhs) {
+    return !operator==(lhs, rhs);
+}
 
-inline Path operator/(const Path& x, const Path& y)
-{
+inline Path operator/(const Path& x, const Path& y) {
     return Path::combine(x, y);
 }
 
-inline Path operator/(const Path& x, const Char* y)
-{
+inline Path operator/(const Path& x, const Char* y) {
     return Path::combine(x, Path(y));
 }
 

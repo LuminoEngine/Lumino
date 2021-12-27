@@ -713,13 +713,22 @@ String String::fromStdString(const std::wstring& str)
 }
 
 
-std::string String::toUtf8() const
-{
+std::string String::toUtf8() const {
     return toStdString(TextEncoding::utf8Encoding());
 }
 
 String String::fromUtf8(const std::string_view& s) {
     return fromStdString(s, TextEncoding::utf8Encoding());
+}
+
+std::u16string String::toUtf16() const {
+    return UnicodeStringUtils::U32ToU16(c_str(), length());
+}
+
+String String::fromUtf16(const std::u16string_view& s) {
+    String result;
+    result.assignFromCStr(s.data(), s.length(), nullptr);
+    return result;
 }
 
 //std::u16string String::toUtf16() const
@@ -993,8 +1002,7 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
     int len = 0;
     bool ascii = true;
 
-    if (str) {
-        // ASCII だけの文字列か調べる。ついでに文字数も調べる。
+    if (str) { // Check if the string is ASCII only. Also, check the number of characters.
         length = (length < 0) ? INT_MAX : length;
         const char* pos = str;
         for (; *pos && len < length; ++pos, ++len) {
@@ -1007,25 +1015,25 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
     if (ascii) {
         detail::StringLockContext context;
         Char* buf = lockBuffer(len, &context);
-        for (int i = 0; i < len; ++i) {
-            buf[i] = str[i];
-        }
+        for (int i = 0; i < len; ++i) buf[i] = str[i];
         unlockBuffer(len, &context);
-    } else {
-		TextEncoding* actualEncoding = encoding;
-		if (!actualEncoding) actualEncoding = TextEncoding::systemMultiByteEncoding();
-
-        detail::StringLockContext context;
-        size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len) / sizeof(Char);
-        Char* buf = lockBuffer(bufSize, &context);
-
-        TextDecodeResult result;
-#if LN_USTRING32
-        actualEncoding->convertToUTF32Stateless((const byte_t*)str, len, (UTF32*)buf, bufSize, &result);
-#else
-        actualEncoding->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
-#endif
-        unlockBuffer(result.outputByteCount / sizeof(Char), &context);
+    }
+    else {
+        assignFromCStrInternal((const byte_t*)str, len, 1, outUsedDefaultChar, encoding ? encoding : TextEncoding::systemMultiByteEncoding());
+        //		TextEncoding* actualEncoding = encoding;
+//		if (!actualEncoding) actualEncoding = TextEncoding::systemMultiByteEncoding();
+//
+//        detail::StringLockContext context;
+//        size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len) / sizeof(Char);
+//        Char* buf = lockBuffer(bufSize, &context);
+//
+//        TextDecodeResult result;
+//#if LN_USTRING32
+//        actualEncoding->convertToUTF32Stateless((const byte_t*)str, len, (UTF32*)buf, bufSize, &result);
+//#else
+//        actualEncoding->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
+//#endif
+//        unlockBuffer(result.outputByteCount / sizeof(Char), &context);
     }
 }
 
@@ -1034,8 +1042,7 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
     int len = 0;
     bool ascii = true;
 
-    if (str) {
-        // ASCII だけの文字列か調べる。ついでに文字数も調べる。
+    if (str) { // Check if the string is ASCII only. Also, check the number of characters.
         length = (length < 0) ? INT_MAX : length;
         const wchar_t* pos = str;
         for (; *pos && len < length; ++pos, ++len) {
@@ -1048,30 +1055,54 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
     if (ascii) {
         detail::StringLockContext context;
         Char* buf = lockBuffer(len, &context);
-        for (int i = 0; i < len; ++i) {
-            buf[i] = str[i];
-        }
+        for (int i = 0; i < len; ++i) buf[i] = str[i];
         unlockBuffer(len, &context);
     } else {
-		TextEncoding* actualEncoding = encoding;
-		if (!actualEncoding) actualEncoding = TextEncoding::wideCharEncoding();
-
-        detail::StringLockContext context;
-        size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len * sizeof(wchar_t)) / sizeof(Char);
-        Char* buf = lockBuffer(bufSize, &context);
-
-        TextDecodeResult result;
-#if LN_USTRING32
-        actualEncoding->convertToUTF32Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF32*)buf, bufSize, &result);
-#else
-        actualEncoding->convertToUTF16Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
-#endif
-        unlockBuffer(result.outputByteCount / sizeof(Char), &context);
+        assignFromCStrInternal((const byte_t*)str, len, sizeof(wchar_t), outUsedDefaultChar, encoding ? encoding : TextEncoding::wideCharEncoding());
     }
 }
 
-void String::setAt(int index, Char ch)
-{
+void String::assignFromCStr(const char16_t* str, int length, bool* outUsedDefaultChar) {
+    int len = 0;
+    bool ascii = true;
+
+    if (str) { // Check if the string is ASCII only. Also, check the number of characters.
+        length = (length < 0) ? INT_MAX : length;
+        const char16_t* pos = str;
+        for (; *pos && len < length; ++pos, ++len) {
+            if (isascii(*pos) == 0) {
+                ascii = false;
+            }
+        }
+    }
+
+    if (ascii) {
+        detail::StringLockContext context;
+        Char* buf = lockBuffer(len, &context);
+        for (int i = 0; i < len; ++i)
+            buf[i] = str[i];
+        unlockBuffer(len, &context);
+    }
+    else {
+        assignFromCStrInternal((const byte_t*)str, len, sizeof(char16_t), outUsedDefaultChar, TextEncoding::utf16Encoding());
+    }
+}
+
+void String::assignFromCStrInternal(const byte_t* bytes, int bytesCount, int elementSize, bool* outUsedDefaultChar, TextEncoding* encoding) {
+    detail::StringLockContext context;
+    size_t bufSize = TextEncoding::getConversionRequiredByteCount(encoding, TextEncoding::tcharEncoding(), bytesCount * elementSize) / sizeof(Char);
+    Char* buf = lockBuffer(bufSize, &context);
+
+    TextDecodeResult result;
+#if LN_USTRING32
+    encoding->convertToUTF32Stateless(bytes, bytesCount * elementSize, (UTF32*)buf, bufSize, &result);
+#else
+    encoding->convertToUTF16Stateless(bytes, bytesCount * elementSize, (UTF16*)buf, bufSize, &result);
+#endif
+    unlockBuffer(result.outputByteCount / sizeof(Char), &context);
+}
+
+void String::setAt(int index, Char ch) {
     int len = length();
     LN_CHECK(0 <= index && index < len);
     detail::StringLockContext context;
