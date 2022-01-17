@@ -85,7 +85,7 @@ ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const 
 	auto templateProject = findTemplate(project->workspace()->primaryLang(), templateName);
 	if (!templateProject) {
 		CLI::error(_TT("Invalid project template."));
-		return false;
+		return ln::err();
 	}
 
 	auto projectTemplatesDir = project->workspace()->buildEnvironment()->projectTemplatesDirPath();
@@ -107,7 +107,7 @@ ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const 
 	}
 
 	CLI::info(_TT("Copied template."));
-	return true;
+	return ln::ok();
 }
 
 } // namespace lna

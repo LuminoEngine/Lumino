@@ -63,26 +63,26 @@ Workspace::~Workspace()
 
 ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::String& projectName)
 {
-	if (LN_REQUIRE(!m_mainProject)) return false;
+    if (LN_REQUIRE(!m_mainProject)) return ln::err();
     m_mainProject = ln::makeRef<Project>(this);
     if (!m_mainProject->newProject(projectDir, projectName, _TT(""), _TT("NativeProject"))) {
         m_mainProject = nullptr;
-        return false;
+        return ln::err();
     }
     postMainProjectLoaded();
-    return true;
+    return ln::ok();
 }
 
 ln::Result Workspace::openMainProject(const ln::Path& filePath)
 {
-	if (LN_REQUIRE(!m_mainProject)) return false;
+    if (LN_REQUIRE(!m_mainProject)) return ln::err();
     m_mainProject = ln::makeRef<Project>(this);
     if (!m_mainProject->openProject2(filePath)) {
         m_mainProject = nullptr;
-        return false;
+        return ln::err();
     }
     postMainProjectLoaded();
-    return true;
+    return ln::ok();
 }
 
 ln::Result Workspace::closeMainProject()
@@ -95,7 +95,7 @@ ln::Result Workspace::closeMainProject()
         m_mainProject->close();
         m_mainProject = nullptr;
     }
-	return true;
+    return ln::ok();
 }
 
 ln::Result Workspace::runProject(const ln::String& target)
@@ -149,7 +149,7 @@ httpd.serve_forever()
 			auto files = ln::FileSystem::getFiles(buildDir, _TT("*.html"));
 			if (files.isEmpty()) {
 				CLI::error(_TT("Not found *.html file."));
-				return false;
+				return ln::err();
 			}
 
 			ln::Process proc2;
@@ -163,22 +163,22 @@ httpd.serve_forever()
 	else
 	{
 		CLI::error(ln::format(_TT("{0} is invalid target."), target));
-		return false;
+		return ln::err();
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result Workspace::restoreProject()
 {
     m_mainProject->restore();
-    return true;
+    return ln::ok();
 }
 
 ln::Result Workspace::dev_installTools() const
 {
 	m_buildEnvironment->prepareEmscriptenSdk();
-    return true;
+    return ln::ok();
 }
 
 void Workspace::dev_openIde(const ln::String& target) const

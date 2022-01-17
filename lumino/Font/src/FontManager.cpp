@@ -531,7 +531,7 @@ Result GlyphIconFontManager::init(FontManager* fontManager)
 		m_fontManager->registerFontFromStream(&stream, false);
 	}
 
-	return true;
+	return ok();
 }
 
 void GlyphIconFontManager::dispose()

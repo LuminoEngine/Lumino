@@ -217,7 +217,7 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 		if (!ln::FileSystem::existsDirectory(m_emsdkRootDir))
 		{
 			if (!callProcess(_TT("git"), { _TT("clone"), _TT("https://github.com/juj/emsdk.git") }, m_toolsDir)) {
-				return false;
+				return ln::err();
 			}
 		}
 
@@ -231,13 +231,13 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 			auto emsdk = _TT("emsdk");
 #endif
 			if (!callProcess(_TT("git"), { _TT("pull") }, m_emsdkRootDir)) {
-				return false;
+				return ln::err();
 			}
 			if (!callProcess(emsdk, { _TT("update-tags") }, m_emsdkRootDir)) {
-				return false;
+				return ln::err();
 			}
 			if (!callProcess(emsdk, { _TT("install"), m_emsdkName }, m_emsdkRootDir)) {
-				return false;
+				return ln::err();
 			}
 		}
 
@@ -247,7 +247,7 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 
 		if (!ln::FileSystem::existsDirectory(m_emscriptenSysRootLocal)) {
 			CLI::fatal(_TT("Not found 'EmscriptenSysLocal' directory."));
-			return false;
+			return ln::err();
 		}
 	}
 
@@ -260,7 +260,7 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 		}
 	}
 
-    return true;
+    return ln::ok();
 }
 
 ln::Path BuildEnvironment::findLocalPackageForTesting()
@@ -321,10 +321,10 @@ ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::Li
 	proc1.start();
 	proc1.wait();
 	if (proc1.exitCode() == 0) {
-		return true;
+		return ln::ok();
 	}
 	else {
-		return false;
+		return ln::err();
 	}
 }
 

@@ -14,7 +14,7 @@ EmptyPlatformWindow::EmptyPlatformWindow()
 
 Result EmptyPlatformWindow::init(const WindowCreationSettings& settings)
 {
-    return true;
+    return ok();
 }
 
 void EmptyPlatformWindow::setAllowDragDrop(bool value)
@@ -41,7 +41,7 @@ EmptyPlatformWindowManager::~EmptyPlatformWindowManager()
 
 Result EmptyPlatformWindowManager::init()
 {
-    return true;
+    return ok();
 }
 
 void EmptyPlatformWindowManager::dispose()

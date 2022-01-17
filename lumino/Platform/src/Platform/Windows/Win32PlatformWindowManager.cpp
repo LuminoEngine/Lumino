@@ -522,7 +522,7 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
         CW_USEDEFAULT, CW_USEDEFAULT,
         clientRect.right - clientRect.left, clientRect.bottom - clientRect.top,
         NULL, NULL, windowManager->instanceHandle(), NULL);
-    if (LN_ENSURE(m_hWnd, "ErrorCode: %d", GetLastError())) return false;
+    if (LN_ENSURE(m_hWnd, "ErrorCode: %d", GetLastError())) return err();
 
     // アクセラレータの作成 (Alt+Enter の警告音を消す)
     ACCEL accels[1] =
@@ -530,7 +530,7 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
         { FALT | FVIRTKEY, VK_RETURN, 0 }
     };
     m_accelerator = ::CreateAcceleratorTable(accels, 1);
-    if (LN_ENSURE(m_accelerator, "ErrorCode: %d", GetLastError())) return false;
+    if (LN_ENSURE(m_accelerator, "ErrorCode: %d", GetLastError())) return err();
 
     //AbstractWin32PlatformWindow::setWindowClientSize(m_hWnd, settings.clientSize);
     AbstractWin32PlatformWindow::abjustLocationCentering(m_hWnd);
@@ -540,11 +540,11 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
 
     // ウィンドウハンドルと Win32Window のポインタを関連付ける
     BOOL r = ::SetProp(m_hWnd, Win32PlatformWindowManager::PropWinProc, this);
-    if (LN_ENSURE((r != FALSE), "ErrorCode: %d", GetLastError())) return false;
+    if (LN_ENSURE((r != FALSE), "ErrorCode: %d", GetLastError())) return err();
 
     ::ShowWindow(m_hWnd, SW_SHOW);
 
-    return true;
+    return ok();
 }
 
 void Win32PlatformWindow::dispose()
@@ -573,13 +573,13 @@ Result WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManage
     m_hWnd = (HWND)windowHandle;
 
     BOOL r = ::SetProp(m_hWnd, Win32PlatformWindowManager::PropWinProc, this);
-    if (LN_ENSURE((r != FALSE), "ErrorCode: %d", GetLastError())) return false;
+    if (LN_ENSURE((r != FALSE), "ErrorCode: %d", GetLastError())) return err();
 
     m_originalWndProc = (WNDPROC)::GetWindowLong(m_hWnd, GWLP_WNDPROC);
     ::SetWindowLong(m_hWnd, GWLP_WNDPROC, (LONG)StaticWndProcHook);
     LN_LOG_DEBUG("Hook WndProc (original: {})", (intptr_t)m_originalWndProc);
 
-    return true;
+    return ok();
 }
 
 void WrappedWin32PlatformWindow::dispose()
@@ -643,9 +643,9 @@ Result Win32PlatformWindowManager::init()
 
     // ウィンドウクラスの登録
     ATOM wc = ::RegisterClassEx(&wcex);
-    if (LN_ENSURE(wc, "ErrorCode: %d", ::GetLastError())) return false;
+    if (LN_ENSURE(wc, "ErrorCode: %d", ::GetLastError())) return err();
 
-    return true;
+    return ok();
 }
 
 void Win32PlatformWindowManager::dispose()

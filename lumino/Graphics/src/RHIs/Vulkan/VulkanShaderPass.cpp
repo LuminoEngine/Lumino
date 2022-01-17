@@ -22,7 +22,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
 {
     LN_DCHECK(deviceContext);
 	if (!IShaderPass::init(createInfo)) {
-		return false;
+		return err();
 	}
 
     m_deviceContext = deviceContext;
@@ -268,7 +268,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
     //    return false;
     //}
 
-    return true;
+    return ok();
 }
 
 void VulkanShaderPass::dispose()

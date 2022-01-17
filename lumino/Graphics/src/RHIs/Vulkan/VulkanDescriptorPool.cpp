@@ -85,7 +85,7 @@ void VulkanDescriptorPool2::reset()
 	m_activePageUsedCount = 0;
 }
 
-IDescriptor* VulkanDescriptorPool2::allocate()
+Result VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
 {
     if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_SET_COUNT)
     {
@@ -182,7 +182,8 @@ IDescriptor* VulkanDescriptorPool2::allocate()
     LN_VK_CHECK(vkAllocateDescriptorSets(m_device->vulkanDevice(), &allocInfo, descriptor->descriptorSets().data()));
     m_activePageUsedCount++;
 
-    return descriptor;
+    *outDescriptor = descriptor;
+    return ok();
 }
 
 } // namespace detail

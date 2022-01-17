@@ -20,7 +20,7 @@ VulkanBuffer::VulkanBuffer()
 
 Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
 {
-	if (LN_REQUIRE(deviceContext)) return false;
+    if (LN_REQUIRE(deviceContext)) return err();
     dispose();
 
 	m_deviceContext = deviceContext;
@@ -48,7 +48,7 @@ Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBuff
     LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_allocator, &m_nativeBufferMemory));
     LN_VK_CHECK(vkBindBufferMemory(device, m_nativeBuffer, m_nativeBufferMemory, 0));
 
-    return true;
+    return ok();
 }
 
 void VulkanBuffer::dispose()
@@ -109,7 +109,7 @@ VulkanVertexBuffer::VulkanVertexBuffer()
 
 Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-    if (!RHIResource::initAsVertexBuffer(usage, bufferSize)) return false;
+    if (!RHIResource::initAsVertexBuffer(usage, bufferSize)) return err();
 
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -120,14 +120,14 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
     // VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT で十分なのか、VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT を使った方がいいのか、
     // 実際にパフォーマンス測定できる段になったら改めて調査する。
     if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, nullptr)) {
-        return false;
+        return err();
     }
 
     if (initialData)
     {
         VulkanBuffer stagingBuffer;
         if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-            return false;
+            return err();
         }
         stagingBuffer.setData(0, initialData, bufferSize);
         m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.nativeBuffer(), vulkanBuffer(), bufferSize);
@@ -163,7 +163,7 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
     }
 #endif
 
-    return true;
+    return ok();
 }
 
 void VulkanVertexBuffer::dispose()
@@ -183,7 +183,7 @@ VulkanIndexBuffer::VulkanIndexBuffer()
 
 Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return false;
+    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
 
@@ -197,21 +197,21 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
     VkDeviceSize bufferSize = memorySize();
 
     if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, nullptr)) {
-        return false;
+        return err();
     }
 
     if (initialData)
     {
         VulkanBuffer stagingBuffer;
         if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-            return false;
+            return err();
         }
         stagingBuffer.setData(0, initialData, bufferSize);
         m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.nativeBuffer(), vulkanBuffer(), bufferSize);
         stagingBuffer.dispose();
     }
 
-    return true;
+    return ok();
 }
 
 void VulkanIndexBuffer::dispose()
@@ -231,9 +231,9 @@ VulkanUniformBuffer::VulkanUniformBuffer()
 Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size)
 {
     if (!m_buffer.init(deviceContext, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-        return false;
+        return err();
     }
-    return true;
+    return ok();
 }
 
 void VulkanUniformBuffer::dispose()

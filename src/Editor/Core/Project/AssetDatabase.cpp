@@ -18,7 +18,7 @@ ln::Result AssetDatabase::init(Project* owner)
 {
     ln::detail::AssetManager::instance()->buildAssetIndexFromLocalFiles(owner->assetsDir());
     ln::detail::AssetManager::instance()->addAssetDirectory(owner->assetsDir());
-    return true;
+    return ln::ok();
 }
 
 
@@ -63,7 +63,7 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
 
     //    return true;
     //}
-    return false;
+    return ln::err();
 }
 
 ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePath)
@@ -73,7 +73,7 @@ ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePat
     //asset->setAssetId(ln::Uuid::generate());
     //ln::String json = ln::JsonSerializer::serialize(*t, filePath.parent(), ln::JsonFormatting::Indented);
     //ln::FileSystem::writeAllText(filePath, json);
-    return true;
+    return ln::ok();
 }
 
 ln::Result AssetDatabase::saveAsset(ln::AssetModel* asset)
@@ -82,7 +82,7 @@ ln::Result AssetDatabase::saveAsset(ln::AssetModel* asset)
     //if (LN_REQUIRE(!asset->assetFilePath().isEmpty())) return false;
     //return asset->saveInternal(asset->assetFilePath());
     ln::detail::AssetManager::instance()->saveAssetModelToLocalFile(asset);
-    return true;
+    return ln::ok();
 }
 
 bool AssetDatabase::isAssetFile(const ln::Path& file)

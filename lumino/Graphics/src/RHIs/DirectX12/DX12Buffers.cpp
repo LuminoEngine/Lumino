@@ -289,7 +289,7 @@ DX12IndexBuffer::DX12IndexBuffer()
 
 Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return false;
+    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return err();
     m_device = device;
     m_usage = usage;
 
@@ -316,7 +316,7 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
     uint64_t size = memorySize();
     m_buffer = makeRHIRef<DX12Buffer>();
     if (!m_buffer->init(m_device, size, heapType, resourceState)) {
-        return false;
+        return err();
     }
 
     if (initialData) {
@@ -331,7 +331,7 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
 
             DX12Buffer uploadBuffer;
             if (!uploadBuffer.init(m_device, size, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ)) {
-                return false;
+                return err();
             }
             void* data = uploadBuffer.map();
             memcpy(data, initialData, size);
@@ -345,7 +345,7 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
         }
     }
 
-    return true;
+    return ok();
 }
 
 void DX12IndexBuffer::dispose()

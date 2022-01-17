@@ -74,23 +74,23 @@ ln::Result BuildCommand::buildWindowsTarget(lna::Workspace* workspace, bool debu
 	auto file = ln::FileSystem::getFile(m_project->rootDirPath(), _TT("*.sln"));
 	if (file.isEmpty()) {
 		CLI::error(_TT(".sln file not found."));
-		return false;
+		return ln::err();
 	}
 
 	if (debug) {
 		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), _TT("/t:build"), _TT("/p:Configuration=Debug;Platform=\"x86\"") }) != 0) {
 			CLI::error(_TT("Failed MSBuild."));
-			return false;
+			return ln::err();
 		}
 	}
 	else {
 		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), _TT("/t:build"), _TT("/p:Configuration=Release;Platform=\"x86\"") }) != 0) {
 			CLI::error(_TT("Failed MSBuild."));
-			return false;
+			return ln::err();
 		}
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result BuildCommand::buildWindowsPackage(lna::Project* project)
@@ -106,7 +106,7 @@ ln::Result BuildCommand::buildWindowsPackage(lna::Project* project)
 		ln::Path::combine(project->windowsProjectDir(), _TT("Assets.lca")),
 		ln::Path::combine(dstDir, _TT("Assets.lca")));
 
-	return true;
+	return ln::ok();
 }
 
 
@@ -158,5 +158,5 @@ ln::Result BuildCommand::buildAndroidTarget()
 #endif
 	}
 #endif
-	return true;
+    return ln::ok();
 }

@@ -24,10 +24,10 @@ LanguageContext::~LanguageContext()
 ln::Result LanguageContext::build(const ln::String& target)
 {
 	if (!buildAssets()) {
-		return false;
+		return ln::err();
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result LanguageContext::buildAssets() const
@@ -41,7 +41,7 @@ ln::Result LanguageContext::buildAssets() const
 
 			ln::Path outputFile;
 			if (!BuildAssetHelper::buildShaderFromAutoBuild(m_project, file, &outputFile)) {
-				return false;
+				return ln::err();
 			}
 
 			writer.addFile(outputFile, m_project->assetsDir().makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt));
@@ -104,7 +104,7 @@ ln::Result LanguageContext::buildAssets() const
 
 	CLI::info(_TT("Compilation succeeded."));
 
-	return true;
+	return ln::ok();
 }
 
 
@@ -129,7 +129,7 @@ void CppLanguageContext::restore()
 ln::Result CppLanguageContext::build(const ln::String& target)
 {
 	if (!LanguageContext::build(target)) {
-		return false;
+        return ln::err();
 	}
 
 	if (ln::String::compare(target, _TT("Windows"), ln::CaseSensitivity::CaseInsensitive) == 0) {
@@ -139,7 +139,7 @@ ln::Result CppLanguageContext::build(const ln::String& target)
 		return build_WebTarget();
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result CppLanguageContext::build_NativeCMakeTarget() const
@@ -174,10 +174,10 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 	cmake.wait();
 	if (cmake.exitCode() != 0) {
 		CLI::error(_TT("Failed cmake."));
-		return false;
+		return ln::err();
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result CppLanguageContext::build_WebTarget() const
@@ -218,7 +218,7 @@ ln::Result CppLanguageContext::build_WebTarget() const
 	}
 
 	ln::Process::execute(script);
-	return true;
+	return ln::ok();
 }
 
 } // namespace lna

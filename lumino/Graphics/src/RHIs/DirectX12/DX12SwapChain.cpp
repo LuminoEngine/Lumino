@@ -52,24 +52,24 @@ Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, co
     HRESULT hr = dxgiFactory->CreateSwapChain(m_device->dxCommandQueue(), &swapChainDesc, &swapChain);
     if (FAILED(hr)) {
         LN_ERROR("CreateSwapChain failed.");
-        return false;
+        return err();
     }
 
     if (FAILED(swapChain.As(&m_dxgiSwapChain))) {
         LN_ERROR("Cast to IDXGISwapChain3 failed.");
-        return false;
+        return err();
     }
 
     // Create a RTV for each frame.
     if (!createSwapChainResources()) {
-        return false;
+        return err();
     }
 
     // Barrior CommandList
     for (int i = 0; i < m_backbufferCount; i++) {
         Ref<DX12CommandListCore> list = makeRef<DX12CommandListCore>();
         if (!list->init(m_device)) {
-            return false;
+            return err();
         }
         m_presentBarriorCommandLists.push_back(list);
     }
@@ -81,17 +81,17 @@ Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, co
 
         if (FAILED(dxDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)))) {
             LN_ERROR("CreateFence failed.");
-            return false;
+            return err();
         }
 
         m_fenceEvent = ::CreateEvent(0, 0, 0, 0);
         if (!m_fenceEvent) {
             LN_ERROR("CreateEvent failed.");
-            return false;
+            return err();
         }
     }
 
-	return true;
+	return ok();
 }
 
 void DX12SwapChain::dispose()
@@ -139,7 +139,7 @@ Result DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
     // 現在のフレーム、つまり、最後の Present が終了するまで待つ。
     // (このため、バックバッファのリサイズは present の後、acquireNextImage() の前に行う必要がある)
     if (!waitForCurrentFrameFence()) {
-        return false;
+        return err();
     }
 
     disposeSwapChainResources();
@@ -147,14 +147,14 @@ Result DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
     HRESULT hr = m_dxgiSwapChain->ResizeBuffers(m_backbufferCount, width, height, m_backbufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
     if (FAILED(hr)) {
         LN_ERROR("ResizeBuffers failed.");
-        return false;
+        return err();
     }
 
     if (!createSwapChainResources()) {
-        return false;
+        return err();
     }
 
-	return true;
+	return ok();
 }
 
 void DX12SwapChain::present()

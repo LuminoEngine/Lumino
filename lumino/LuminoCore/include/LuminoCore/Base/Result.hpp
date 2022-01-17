@@ -119,7 +119,7 @@ struct BasicResult {
     }
 
 #if defined(LN_RESULT_BOOL_CONVERSION)
-    BasicResult(bool result)
+    explicit BasicResult(bool result)
         : ok_(result)
         , ok_v{} {
     }
@@ -235,7 +235,7 @@ struct BasicResult<T&, E> {
     }
 
 #if defined(LN_RESULT_BOOL_CONVERSION)
-    BasicResult(bool result)
+    explicit BasicResult(bool result)
         : ok_(result)
         , ok_v{} {
     }
@@ -346,7 +346,7 @@ struct BasicResult<void, E> {
     }
 
 #if defined(LN_RESULT_BOOL_CONVERSION)
-    BasicResult(bool result)
+    explicit BasicResult(bool result)
         : ok_(result)
         , err_v{} {
     }

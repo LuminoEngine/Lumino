@@ -18,7 +18,7 @@ VulkanTexture2D::VulkanTexture2D()
 
 Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-    if (!VulkanTexture::initAsTexture2D(usage, width, height, requestFormat, mipmap)) return false;
+    if (!VulkanTexture::initAsTexture2D(usage, width, height, requestFormat, mipmap)) return err();
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
 	//m_usage = usage;
@@ -46,14 +46,14 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
 
         VulkanBuffer stagingBuffer;
         if (!stagingBuffer.init(m_deviceContext, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-            return false;
+            return err();
         }
         stagingBuffer.setData(0, initialData, imageSize);
 
         m_image.init(m_deviceContext, width, height, m_nativeFormat, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
         if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, m_mipLevels, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
-            return false;
+            return err();
         }
 
         m_deviceContext->copyBufferToImageImmediately(stagingBuffer.nativeBuffer(), m_image.vulkanImage(), width, height);
@@ -61,20 +61,20 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
 
 		if (mipmap) {
 			if (!generateMipmaps(m_image.vulkanImage(), m_nativeFormat, width, height, m_mipLevels)) {
-				return false;
+				return err();
 			}
 			// transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
 		}
 		else {
 			if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, m_mipLevels, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
-				return false;
+				return err();
 			}
 		}
 
         stagingBuffer.dispose();
     }
 
-	return true;
+	return ok();
 }
 
 void VulkanTexture2D::dispose()
@@ -136,7 +136,7 @@ Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
 		LN_ERROR("texture image format does not support linear blitting!");
-		return false;
+		return err();
 	}
 
 	VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();
@@ -216,7 +216,7 @@ Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int
 
 	m_deviceContext->endSingleTimeCommands(commandBuffer);
 
-	return true;
+	return ok();
 }
 
 //==============================================================================
@@ -232,7 +232,7 @@ VulkanRenderTarget::VulkanRenderTarget()
 
 Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
 {
-    if (!VulkanTexture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return false;
+    if (!VulkanTexture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
     //m_size.width = width;
@@ -254,11 +254,11 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
 
         m_image = std::make_unique<VulkanImage>();
         if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
-            return false;
+            return err();
         }
 
         if (!m_deviceContext->transitionImageLayoutImmediately(m_image->vulkanImage(), nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
-            return false;
+            return err();
         }
 
         if (msaa) {
@@ -267,12 +267,12 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
                 m_deviceContext, width, height, nativeFormat, 1, m_deviceContext->msaaSamples(), VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,   // MultisampleColorBuffer は読み取り不要なので VK_IMAGE_USAGE_TRANSFER_SRC_BIT は不要
                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
-                return false;
+                return err();
             }
         }
     }
 
-    return true;
+    return ok();
 }
 
 Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
@@ -280,7 +280,7 @@ Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, u
     // TODO: SwapChain は BGRA フォーマットであることが多い。
     // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
     // ここではダミーとして RGBA8 を与えて初期化してみる。
-    if (!VulkanTexture::initAsRenderTarget(width, height, TextureFormat::RGBA8, false, false)) return false;
+    if (!VulkanTexture::initAsRenderTarget(width, height, TextureFormat::RGBA8, false, false)) return err();
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
 
@@ -294,9 +294,9 @@ Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, u
 
     m_image = std::make_unique<VulkanImage>();
     if (!m_image->initWrap(m_deviceContext, width, height, format, image, imageView)) {
-        return false;
+        return err();
     }
-    return true;
+    return ok();
 }
 
 void VulkanRenderTarget::dispose()
@@ -549,8 +549,8 @@ VulkanDepthBuffer::VulkanDepthBuffer()
 Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height)
 {
     LN_DCHECK(deviceContext);
-    if (LN_REQUIRE(width > 0)) return false;
-    if (LN_REQUIRE(height > 0)) return false;
+    if (LN_REQUIRE(width > 0)) return err();
+    if (LN_REQUIRE(height > 0)) return err();
     m_deviceContext = deviceContext;
     m_size.width = width;
     m_size.height = height;
@@ -558,14 +558,14 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
     VkFormat depthFormat = m_deviceContext->findDepthFormat();
 
     if (!m_image.init(m_deviceContext, width, height, depthFormat, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
-        return false;
+        return err();
     }
 
     if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
-        return false;
+        return err();
     }
 
-    return true;
+    return ok();
 }
 
 void VulkanDepthBuffer::dispose()

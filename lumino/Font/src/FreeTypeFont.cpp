@@ -515,32 +515,32 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
     // CSS (Web) のフォントポイントサイズに合わせる。
 	static const int resolution = 72;
 
-	if (LN_REQUIRE(manager)) return false;
+	if (LN_REQUIRE(manager)) return err();
 	FontCore::init(manager);
 	m_desc = desc;
 
 	auto faceSource = manager->lookupFontFaceSourceFromFamilyName(m_desc.Family);
 	if (!faceSource) {
 		LN_ERROR();
-		return false;
+		return err();
 	}
 
-	FT_Error err = FT_New_Memory_Face(manager->ftLibrary(), (const FT_Byte*)faceSource->buffer->data(), faceSource->buffer->size(), faceSource->faceIndex, &m_face);
-	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+	FT_Error errCode = FT_New_Memory_Face(manager->ftLibrary(), (const FT_Byte*)faceSource->buffer->data(), faceSource->buffer->size(), faceSource->faceIndex, &m_face);
+	if (LN_ENSURE(errCode == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", errCode)) return err();
 
 	if (m_face->num_fixed_sizes == 0) {
 		// For 3D space text drawing.
 		{
 			FT_F26Dot6 size = Font::DefaultSize * 64;
-			err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
+			errCode = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
 			getGlobalMetricsInternal(&m_engineDefaultGlobalMetrix, true);
-			if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+			if (LN_ENSURE(errCode == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", errCode)) return err();
 		}
 
 		// FT_Set_Char_Size() はポイントサイズと解像度をもとに m_face->size->metrics を作成する
 		float size = static_cast<float>(m_desc.Size) * 64.0f;
-		err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
-		if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+		errCode = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
+		if (LN_ENSURE(errCode == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", errCode)) return err();
 	}
 	else {
 		LN_LOG_VERBOSE("\"{}\" is fixed size font.", m_face->family_name);
@@ -554,8 +554,8 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 				diff = ndiff;
 			}
 		}
-		err = FT_Select_Size(m_face, bestMatch);
-		if (LN_ENSURE(err == FT_Err_Ok, "failed FT_Select_Size : %d\n", err)) return false;
+		errCode = FT_Select_Size(m_face, bestMatch);
+		if (LN_ENSURE(errCode == FT_Err_Ok, "failed FT_Select_Size : %d\n", errCode)) return err();
 	}
 
 	m_loadFlags = FT_LOAD_DEFAULT;
@@ -578,7 +578,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 		//m_internalCacheBitmap = makeObject<Bitmap2D>(metrix.lineSpace, metrix.lineSpace, PixelFormat::A8);
 	}
 	
-	return false;
+	return ok();
 }
 
 void FreeTypeFont::dispose()

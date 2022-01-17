@@ -41,7 +41,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
 {
     LN_DCHECK(deviceContext);
 	if (!IShaderPass::init(createInfo)) {
-		return false;
+        return err();
 	}
 
     m_deviceContext = deviceContext;
@@ -67,7 +67,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         if (createInfo.vsCodeLen > 0) {
             if (FAILED(D3DCompilerAPI::D3DCreateBlob(createInfo.vsCodeLen, &m_vsCode))) {
                 LN_ERROR("D3DCreateBlob failed.");
-                return false;
+                return err();
             }
             memcpy(m_vsCode->GetBufferPointer(), createInfo.vsCode, createInfo.vsCodeLen);
         }
@@ -75,7 +75,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         if (createInfo.psCodeLen > 0) {
             if (FAILED(D3DCompilerAPI::D3DCreateBlob(createInfo.psCodeLen, &m_psCode))) {
                 LN_ERROR("D3DCreateBlob failed.");
-                return false;
+                return err();
             }
             memcpy(m_psCode->GetBufferPointer(), createInfo.psCode, createInfo.psCodeLen);
         }
@@ -196,7 +196,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
                     ComPtr<ID3D12ShaderReflection> shaderReflection;
                     if (FAILED(D3DCompilerAPI::D3DReflect(shaderCodes[iStage].first, shaderCodes[iStage].second, IID_PPV_ARGS(&shaderReflection)))) {
                         LN_ERROR("D3DReflect failed.");
-                        return false;
+                        return err();
                     }
 
                     D3D12_SHADER_DESC desc;
@@ -262,7 +262,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
                     if (descriptor.type == DescriptorType_UniformBuffer) {
                         if (std::find_if(requiredDescriptors.begin(), requiredDescriptors.end(), [&](const DescriptorLayoutItem& item) { return item.name == descriptor.name; }) == requiredDescriptors.end()) {
                             LN_ERROR("Variables that appear to be constants are visible in '%s'. Use the 'static' keyword.", descriptor.name.c_str());
-                            return false;
+                            return err();
                         }
                     }
                 }
@@ -510,17 +510,17 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             if (FAILED(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error))) {
                 const char* message = static_cast<const char*>(error->GetBufferPointer());
                 LN_ERROR("D3D12SerializeRootSignature failed.");
-                return false;
+                return err();
             }
 
             if (FAILED(dxDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)))) {
                 LN_ERROR("CreateRootSignature failed.");
-                return false;
+                return err();
             }
         }
     }
 
-    return true;
+    return ok();
 }
 
 void DX12ShaderPass::dispose()
