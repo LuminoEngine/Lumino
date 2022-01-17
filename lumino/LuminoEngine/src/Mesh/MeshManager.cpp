@@ -365,7 +365,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 	}
 }
 
-Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)
+Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringView& filePath, DiagnosticsManager* diag)
 {
 	Path path(parentDir, filePath);
 

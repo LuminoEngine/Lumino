@@ -20,7 +20,7 @@ namespace ln {
 //==============================================================================
 // FileStream
 
-Ref<FileStream> FileStream::create(const StringRef& filePath, FileOpenMode openMode)
+Ref<FileStream> FileStream::create(const StringView& filePath, FileOpenMode openMode)
 {
     Ref<FileStream> ptr(LN_NEW FileStream(), false);
     ptr->open(filePath, openMode);
@@ -40,7 +40,7 @@ FileStream::~FileStream()
     close();
 }
 
-bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
+bool FileStream::open(const StringView& filePath, FileOpenMode openMode)
 {
     close();
 

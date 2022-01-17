@@ -150,7 +150,7 @@ String CommandLinePositionalArgument::helpDescriptionText() const
 //==============================================================================
 // CommandLineCommandBase
 
-CommandLineOption* CommandLineCommandBase::addFlagOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description)
+CommandLineOption* CommandLineCommandBase::addFlagOptionInternal(const StringView& shortName, const StringView& longName, const StringView& description)
 {
     auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
     option->setShortName(shortName);
@@ -161,7 +161,7 @@ CommandLineOption* CommandLineCommandBase::addFlagOptionInternal(const StringRef
     return option;
 }
 
-CommandLineOption* CommandLineCommandBase::addValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue)
+CommandLineOption* CommandLineCommandBase::addValueOptionInternal(const StringView& shortName, const StringView& longName, const StringView& description, const StringView& defaultValue)
 {
     auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
     option->setShortName(shortName);
@@ -173,7 +173,7 @@ CommandLineOption* CommandLineCommandBase::addValueOptionInternal(const StringRe
     return option;
 }
 
-CommandLineOption* CommandLineCommandBase::addNamedValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue)
+CommandLineOption* CommandLineCommandBase::addNamedValueOptionInternal(const StringView& shortName, const StringView& longName, const StringView& description, const List<String>& namedValues, const StringView& defaultValue)
 {
     auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
     option->setShortName(shortName);
@@ -425,17 +425,17 @@ CommandLineCommand::~CommandLineCommand()
 {
 }
 
-CommandLineOption* CommandLineCommand::addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description)
+CommandLineOption* CommandLineCommand::addFlagOption(const StringView& shortName, const StringView& longName, const StringView& description)
 {
     return addFlagOptionInternal(shortName, longName, description);
 }
 
-CommandLineOption* CommandLineCommand::addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue)
+CommandLineOption* CommandLineCommand::addValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const StringView& defaultValue)
 {
     return addValueOptionInternal(shortName, longName, description, defaultValue);
 }
 
-CommandLineOption* CommandLineCommand::addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue)
+CommandLineOption* CommandLineCommand::addNamedValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const List<String>& namedValues, const StringView& defaultValue)
 {
     return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
 }
@@ -489,7 +489,7 @@ bool CommandLineCommand::parse(
             const Char* flag = nameBegin;
             for (; flag < nameEnd; flag++) {
                 // find Option
-                StringRef nameRef(flag, 1);
+                StringView nameRef(flag, 1);
                 Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->shortName() == nameRef; });
                 if (!option) {
                     *outMessage = ln::format(_T("'{0}' is invalid flag option."), nameRef);
@@ -504,7 +504,7 @@ bool CommandLineCommand::parse(
             }
         } else if (prefix == 2) {
             // find Option
-            StringRef nameRef(nameBegin, nameEnd);
+            StringView nameRef(nameBegin, nameEnd);
             Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->longName() == nameRef; });
             if (!option) {
                 *outMessage = ln::format(_T("'{0}' is invalid option."), nameRef);
@@ -521,7 +521,7 @@ bool CommandLineCommand::parse(
             lastValuedShortOption = nullptr;
         } else {
             if (commands) {
-                StringRef nameRef(nameBegin, nameEnd);
+                StringView nameRef(nameBegin, nameEnd);
                 Optional<Ref<CommandLineCommand>> command = commands->findIf([nameRef](const Ref<CommandLineCommand>& cmd) { return cmd->name() == nameRef; });
                 if (command) {
                     // to analyze command
@@ -595,17 +595,17 @@ CommandLineCommand* CommandLineParser::addCommand(const String& name, const Stri
     return command;
 }
 
-CommandLineOption* CommandLineParser::addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description)
+CommandLineOption* CommandLineParser::addFlagOption(const StringView& shortName, const StringView& longName, const StringView& description)
 {
     return addFlagOptionInternal(shortName, longName, description);
 }
 
-CommandLineOption* CommandLineParser::addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue)
+CommandLineOption* CommandLineParser::addValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const StringView& defaultValue)
 {
     return addValueOptionInternal(shortName, longName, description, defaultValue);
 }
 
-CommandLineOption* CommandLineParser::addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue)
+CommandLineOption* CommandLineParser::addNamedValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const List<String>& namedValues, const StringView& defaultValue)
 {
     return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
 }
@@ -620,7 +620,7 @@ CommandLinePositionalArgument* CommandLineParser::addListPositionalArgument(cons
     return addListPositionalArgumentInternal(name, description, flags);
 }
 
-CommandLineOption* CommandLineParser::addVersionOption(const StringRef& versionText)
+CommandLineOption* CommandLineParser::addVersionOption(const StringView& versionText)
 {
     m_versionText = versionText;
     m_versionOption = addFlagOption(_T("v"), _T("version"), _T("Display version."));
@@ -633,12 +633,12 @@ CommandLineOption* CommandLineParser::addHelpOption()
     return m_helpOption;
 }
 
-void CommandLineParser::setApplicationDescription(const StringRef& description)
+void CommandLineParser::setApplicationDescription(const StringView& description)
 {
     m_applicationDescription = description;
 }
 
-Optional<Ref<CommandLineCommand>> CommandLineParser::findCommand(const StringRef& commandName) const
+Optional<Ref<CommandLineCommand>> CommandLineParser::findCommand(const StringView& commandName) const
 {
     const auto& commands = getCommandsInternal();
     return commands.findIf([commandName](const Ref<CommandLineCommand>& cmd) { return cmd->name() == commandName; });
@@ -664,7 +664,7 @@ bool CommandLineParser::process(int argc, char** argv)
     }
 
     if (hasHelp) {
-        StringRef name;
+        StringView name;
         if (helpTargetCommandIndex >= 0) {
             name = argList[helpTargetCommandIndex];
         }
@@ -743,7 +743,7 @@ void CommandLineParser::printVersion() const
     std::cout << m_versionText.toStdString() << std::endl;
 }
 
-void CommandLineParser::printHelp(const StringRef& commandName) const
+void CommandLineParser::printHelp(const StringView& commandName) const
 {
     if (!commandName.isEmpty()) {
         Optional<Ref<CommandLineCommand>> command = findCommand(commandName);

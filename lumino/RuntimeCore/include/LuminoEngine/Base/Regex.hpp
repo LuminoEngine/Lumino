@@ -18,22 +18,22 @@ class MatchResult;
 class Regex
 {
 public:
-    Regex(const StringRef& pattern);
+    Regex(const StringView& pattern);
     ~Regex();
     
-    bool match(const StringRef& input, MatchResult* outResult = nullptr) const;
+    bool match(const StringView& input, MatchResult* outResult = nullptr) const;
     
-    bool search(const StringRef& input, MatchResult* outResult = nullptr) const;
+    bool search(const StringView& input, MatchResult* outResult = nullptr) const;
 
     /** 
         @brief    対象の文字列が、正規表現パターンで表現できているかを調べます。（完全一致）
     */
-    static bool match(const StringRef& input, const StringRef& pattern, MatchResult* outResult = nullptr);
+    static bool match(const StringView& input, const StringView& pattern, MatchResult* outResult = nullptr);
 
     /**
         @brief    文字列の中から、正規表現パターンに該当する文字列があるかを調べます。（検索, 部分一致）
     */
-    static bool search(const StringRef& input, const StringRef& pattern, MatchResult* outResult = nullptr);
+    static bool search(const StringView& input, const StringView& pattern, MatchResult* outResult = nullptr);
 
 private:
     //std::basic_regex<Char>    m_regex;
@@ -56,14 +56,14 @@ public:
     int length() const;
 
     /** マッチ範囲全体の文字列を返します。*/
-    StringRef value() const;
+    StringView value() const;
     
     int groupCount() const;
     
     // index=0 はマッチした全体を返す
-    StringRef groupValue(int index) const;
+    StringView groupValue(int index) const;
     
-    //StringRef operator[](int index) const
+    //StringView operator[](int index) const
     //{
     //    return group(index);
     //}
@@ -84,12 +84,12 @@ private:
 //// Regex
 ////==============================================================================
 //
-//inline Regex::Regex(const StringRef& pattern)
+//inline Regex::Regex(const StringView& pattern)
 //    : m_regex(pattern.getBegin(), pattern.getLength(), std::basic_regex<Char>::ECMAScript)
 //{
 //}
 //
-//inline bool Regex::match(const StringRef& input, MatchResult* outResult) const
+//inline bool Regex::match(const StringView& input, MatchResult* outResult) const
 //{
 //    if (outResult != nullptr)
 //    {
@@ -101,7 +101,7 @@ private:
 //    }
 //}
 //
-//inline bool Regex::search(const StringRef& input, MatchResult* outResult) const
+//inline bool Regex::search(const StringView& input, MatchResult* outResult) const
 //{
 //    if (outResult != nullptr)
 //    {
@@ -113,13 +113,13 @@ private:
 //    }
 //}
 //
-//inline bool Regex::match(const StringRef& input, const StringRef& pattern, MatchResult* outResult)
+//inline bool Regex::match(const StringView& input, const StringView& pattern, MatchResult* outResult)
 //{
 //    Regex re(pattern);
 //    return re.search(input, outResult);
 //}
 //
-//inline bool Regex::search(const StringRef& input, const StringRef& pattern, MatchResult* outResult)
+//inline bool Regex::search(const StringView& input, const StringView& pattern, MatchResult* outResult)
 //{
 //    Regex re(pattern);
 //    return re.search(input, outResult);

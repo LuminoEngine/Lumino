@@ -22,7 +22,7 @@ namespace ln {
 //==============================================================================
 // UIViewModel
 
-void UIViewModel::notify(const StringRef& propertyName)
+void UIViewModel::notify(const StringView& propertyName)
 {
     auto args = UINotifyPropertyChangedEventArgs::create(nullptr, UIEvents::NotifyPropertyChanged, propertyName);
     notify(args);
@@ -505,7 +505,7 @@ const ColorTone & UIElement::tone() const
 //    return nullptr;
 //}
 
-void UIElement::addClass(const StringRef& className)
+void UIElement::addClass(const StringView& className)
 {
     if (!m_classList) {
         m_classList = makeList<String>();

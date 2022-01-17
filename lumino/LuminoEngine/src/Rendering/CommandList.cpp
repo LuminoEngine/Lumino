@@ -631,7 +631,7 @@ void CommandList::drawMeshInstanced(InstancedMeshList* list)
 	element->list = list;
 }
 
-void CommandList::drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
+void CommandList::drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
 {
 	if (text.isEmpty()) return;
 
@@ -660,7 +660,7 @@ void CommandList::drawTextSprite(const StringRef& text, const Color& color, cons
 	}
 }
 
-void CommandList::drawText(const StringRef& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
+void CommandList::drawText(const StringView& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
 {
 
 	// TODO: cache

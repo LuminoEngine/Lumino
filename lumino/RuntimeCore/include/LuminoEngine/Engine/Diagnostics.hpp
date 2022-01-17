@@ -19,9 +19,9 @@ class LN_API DiagnosticsManager
 public:
 	static DiagnosticsManager* activeDiagnostics();
 
-	void reportError(StringRef message);
-	void reportWarning(StringRef message);
-	void reportInfo(StringRef message);
+	void reportError(StringView message);
+	void reportWarning(StringView message);
+	void reportInfo(StringView message);
 
 	bool hasItems() const { return !m_items.isEmpty(); }
 	bool hasError() const { return m_hasError; }
@@ -73,7 +73,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	void setLevel(DiagnosticsLevel level) { m_level = level; }
-	void setMessage(StringRef message) { m_string = message; }
+	void setMessage(StringView message) { m_string = message; }
 
 	DiagnosticsLevel m_level;
 	String m_string;
@@ -98,7 +98,7 @@ public:
 	
 LN_CONSTRUCT_ACCESS:
 	ProfilingItem();
-	void init(ProfilingItemType type, const StringRef& name);
+	void init(ProfilingItemType type, const StringView& name);
 
 private:
 	ProfilingItemType m_type;

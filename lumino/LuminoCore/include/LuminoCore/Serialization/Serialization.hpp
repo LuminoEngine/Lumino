@@ -1041,14 +1041,14 @@ public:
 	 * @param[in] 	value 		: データを格納するオブジェクトへの参照
 	 */
 	template<typename TValue>
-	static void deserialize(const StringRef& jsonText, TValue& value)
+	static void deserialize(const StringView& jsonText, TValue& value)
 	{
 		JsonTextInputArchive ar(jsonText);
 		ar.load(value);
 	}
 
     template<typename TValue>
-    static void deserialize(const StringRef& jsonText, const String& basePath, TValue& value)
+    static void deserialize(const StringView& jsonText, const String& basePath, TValue& value)
     {
         JsonTextInputArchive ar(jsonText);
         ar.setBasePath(basePath);

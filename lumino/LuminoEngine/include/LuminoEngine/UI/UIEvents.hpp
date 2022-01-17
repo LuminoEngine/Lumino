@@ -416,7 +416,7 @@ class UINotifyPropertyChangedEventArgs
 {
     LN_OBJECT;
 public:
-    static Ref<UINotifyPropertyChangedEventArgs> create(UIElement* sender, UIEventType type, const StringRef& propertyName, bool caching = true);
+    static Ref<UINotifyPropertyChangedEventArgs> create(UIElement* sender, UIEventType type, const StringView& propertyName, bool caching = true);
     static Ref<UINotifyPropertyChangedEventArgs> create(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count, bool caching = true);
 
     UICollectionChangedAction action() const { return m_action; }
@@ -427,7 +427,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     UINotifyPropertyChangedEventArgs();
 	bool init();
-	bool init(UIElement* sender, UIEventType type, const StringRef& propertyName);
+	bool init(UIElement* sender, UIEventType type, const StringView& propertyName);
 	bool init(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count);
 
 public:

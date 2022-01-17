@@ -25,8 +25,8 @@ public:
 
     void addClockToAffiliation(AnimationClock* clock, AnimationClockAffiliation affiliation);
 
-	Ref<GenericTask<Ref<AnimationClip>>> loadAnimationClip(const StringRef& filePath);
-	//Ref<AnimationClipPromise> loadAnimationClipAsync(const StringRef& filePath);
+	Ref<GenericTask<Ref<AnimationClip>>> loadAnimationClip(const StringView& filePath);
+	//Ref<AnimationClipPromise> loadAnimationClipAsync(const StringView& filePath);
 	//Ref<AnimationClip> acquireAnimationClip(const AssetPath& assetPath);
 	//void loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath);
 

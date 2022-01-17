@@ -21,7 +21,7 @@ StringReader::StringReader(const Char* str)
 {
 }
 
-StringReader::StringReader(const StringRef& str)
+StringReader::StringReader(const StringView& str)
     : m_src()
     , m_range(str)
     , m_pos(0)

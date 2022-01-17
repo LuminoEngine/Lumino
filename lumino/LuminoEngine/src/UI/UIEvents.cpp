@@ -617,7 +617,7 @@ void UICommandEventArgs::raiseExecute(UIElement* target, UICommand* command)
 
 LN_OBJECT_IMPLEMENT(UINotifyPropertyChangedEventArgs, UIEventArgs) {}
 
-Ref<UINotifyPropertyChangedEventArgs> UINotifyPropertyChangedEventArgs::create(UIElement* sender, UIEventType type, const StringRef& propertyName, bool caching)
+Ref<UINotifyPropertyChangedEventArgs> UINotifyPropertyChangedEventArgs::create(UIElement* sender, UIEventType type, const StringView& propertyName, bool caching)
 {
     if (caching) {
         auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
@@ -653,7 +653,7 @@ bool UINotifyPropertyChangedEventArgs::init()
 	return UIEventArgs::init();
 }
 
-bool UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, const StringRef& propertyName)
+bool UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, const StringView& propertyName)
 {
 	if (!UIEventArgs::init(sender, type)) return false;
     m_action = UICollectionChangedAction::Reset;

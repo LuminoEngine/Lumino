@@ -144,12 +144,12 @@ void Application::run()
 //==============================================================================
 // AppData
 
-void AppData::setValue(const StringRef& key, Ref<Variant> value)
+void AppData::setValue(const StringView& key, Ref<Variant> value)
 {
 	detail::EngineDomain::engineManager()->appData()->setValue(key, value);
 }
 
-Ref<Variant> AppData::getValue(const StringRef& key)
+Ref<Variant> AppData::getValue(const StringView& key)
 {
 	return detail::EngineDomain::engineManager()->appData()->getValue(key);
 }
@@ -186,12 +186,12 @@ void ApplicationHelper::run(Application* app)
 //==============================================================================
 // AppDataInternal
 
-void AppDataInternal::setValue(const StringRef& key, Ref<Variant> value)
+void AppDataInternal::setValue(const StringView& key, Ref<Variant> value)
 {
 	m_values[key] = value;
 }
 
-Ref<Variant> AppDataInternal::getValue(const StringRef& key) const
+Ref<Variant> AppDataInternal::getValue(const StringView& key) const
 {
 	auto itr = m_values.find(key);
 	if (itr != m_values.end())

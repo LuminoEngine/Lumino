@@ -11,7 +11,7 @@ namespace ln {
  * https://fmt.dev/latest/index.html
  */
 template<typename... TArgs>
-inline String format(const StringRef& format, TArgs&&... args) {
+inline String format(const StringView& format, TArgs&&... args) {
     try {
         std::basic_string_view<Char> view(format.data(), format.length());
         auto str = ::fmt::format(view, std::forward<TArgs>(args)...);

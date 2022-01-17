@@ -71,7 +71,7 @@ void AssetManager::dispose()
 	m_requestedArchives.clear();
 }
 
-void AssetManager::addAssetDirectory(const StringRef& path)
+void AssetManager::addAssetDirectory(const StringView& path)
 {
     // "asset" scheme でアクセスする Archive を登録する
 	auto archive = makeRef<FileSystemReader>();
@@ -87,7 +87,7 @@ void AssetManager::addAssetDirectory(const StringRef& path)
     LN_LOG_INFO(U"Asset directory added: " + path);
 }
 
-void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& password)
+void AssetManager::addAssetArchive(const StringView& filePath, const StringView& password)
 {
     auto archive = makeRef<CryptedAssetArchiveReader>();
     bool result = archive->open(filePath, password, true);
@@ -122,12 +122,12 @@ void AssetManager::removeAllAssetDirectory()
 //    }
 //    else {
 //        for (int i = 0; i < extsCount; i++) {
-//            paths->add(Path(String(filePath) + exts[i]).unify());   // TODO: operator StringRef + Char*
+//            paths->add(Path(String(filePath) + exts[i]).unify());   // TODO: operator StringView + Char*
 //        }
 //    }
 //}
 
-Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const Char* const* exts, int extsCount) const
+Optional<AssetPath> AssetManager::findAssetPath(const StringView& filePath, const Char* const* exts, int extsCount) const
 {
     List<Path> paths;
     paths.reserve(extsCount);
@@ -274,7 +274,7 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
     return asset;
 }
 
-Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
+Optional<AssetPath> AssetManager::findAssetPath(const StringView& filePath) const
 {
     const Char* ext = AssetModel::AssetFileExtension.c_str();
     return findAssetPath(filePath, &ext, 1);
@@ -407,10 +407,10 @@ String AssetManager::canonicalizeAssetPath(const String& assetPath)
 {
     std::vector<Char> tmpPath(assetPath.length() + 1);
     int len = detail::PathTraits::canonicalizePath(assetPath.c_str(), assetPath.length(), tmpPath.data(), tmpPath.size());
-    return Path(StringRef(tmpPath.data(), len)).unify();
+    return Path(StringView(tmpPath.data(), len)).unify();
 }
 
-bool AssetManager::existsFile(const StringRef& filePath) const
+bool AssetManager::existsFile(const StringView& filePath) const
 {
     auto unifiedFilePath = Path(filePath).unify();
     for (auto& archive : m_actualArchives) {
@@ -424,7 +424,7 @@ bool AssetManager::existsFile(const StringRef& filePath) const
     return FileSystem::existsFile(filePath);
 }
 
-Ref<Stream> AssetManager::openFileStream(const StringRef& filePath)
+Ref<Stream> AssetManager::openFileStream(const StringView& filePath)
 {
 	auto unifiedFilePath = Path(filePath).unify();
 	for (auto& archive : m_actualArchives) {
@@ -439,7 +439,7 @@ Ref<Stream> AssetManager::openFileStream(const StringRef& filePath)
 	return FileStream::create(filePath, FileOpenMode::Read);
 }
 
-Ref<ByteBuffer> AssetManager::readAllBytes(const StringRef& filePath)
+Ref<ByteBuffer> AssetManager::readAllBytes(const StringView& filePath)
 {
 	auto stream = openFileStream(filePath);
 	auto buffer = makeRef<ByteBuffer>(stream->length());
@@ -514,7 +514,7 @@ void AssetManager::refreshActualArchives()
 	}
 }
 
-bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const
+bool AssetManager::existsFileInternal(const StringView& filePath, const Char** exts, int extsCount) const
 {
 	List<Path> paths;
 	paths.reserve(extsCount);	// TODO: 毎回メモリ確保したくない気がするので、template と lambda なコールバックで処理してみたい
@@ -532,7 +532,7 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 	return false;
 }
 
-Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath)
+Ref<Stream> AssetManager::openFileStreamInternal(const StringView& filePath, const Char** exts, int extsCount, Path* outPath)
 {
 	List<Path> paths;
 	paths.reserve(extsCount);
@@ -562,7 +562,7 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 	return nullptr;
 }
 
-void AssetManager::makeFindPaths(const StringRef& filePath, const Char* const* exts, int extsCount, List<Path>* paths) const
+void AssetManager::makeFindPaths(const StringView& filePath, const Char* const* exts, int extsCount, List<Path>* paths) const
 {
 	const Char* begin = filePath.data();
 	const Char* end = filePath.data() + filePath.length();
@@ -572,7 +572,7 @@ void AssetManager::makeFindPaths(const StringRef& filePath, const Char* const* e
 	}
 	else {
 		for (int i = 0; i < extsCount; i++) {
-			paths->add(Path(String(filePath) + exts[i]).unify());   // TODO: operator StringRef + Char*
+			paths->add(Path(String(filePath) + exts[i]).unify());   // TODO: operator StringView + Char*
 		}
 	}
 }

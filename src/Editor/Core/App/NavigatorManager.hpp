@@ -26,7 +26,7 @@ class NavigationBarItem : public ln::UICollectionItem
 {
 public:
 	void init(NavigatorManager* manager, Navigator* navigator);
-    void addIcon(const ln::StringRef& iconName);
+    void addIcon(const ln::StringView& iconName);
 	Navigator* navigator() const { return m_navigator; }
 
 protected:

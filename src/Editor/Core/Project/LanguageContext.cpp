@@ -36,7 +36,7 @@ ln::Result LanguageContext::buildAssets() const
 	auto outputFilePath = ln::Path(m_project->acquireBuildDir(), _TT("Assets.lca"));
 	writer.open(outputFilePath, ln::detail::CryptedArchiveHelper::DefaultPassword);
 
-	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
+	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringView(), ln::SearchOption::Recursive)) {
 		if (file.hasExtension(_TT(".fx"))) {
 
 			ln::Path outputFile;

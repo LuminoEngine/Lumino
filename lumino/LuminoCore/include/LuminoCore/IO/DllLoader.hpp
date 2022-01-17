@@ -13,7 +13,7 @@ class DllLoader
     : public RefObject
 {
 public:
-    static Ref<DllLoader> load(const StringRef& filePath);
+    static Ref<DllLoader> load(const StringView& filePath);
 
 public:
 
@@ -37,7 +37,7 @@ public:
 private:
     DllLoader();
     virtual ~DllLoader();
-    bool init(const StringRef& filePath);
+    bool init(const StringView& filePath);
 
 	void* m_module;
 };

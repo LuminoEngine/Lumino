@@ -32,11 +32,11 @@ public:
     void write(double value); /**< @copydoc write(float) */
 
     /** 文字列を書き込みます。 */
-    void write(const StringRef& str);
+    void write(const StringView& str);
 
     /** 書式指定された文字列を書き込みます。 */
     template<typename... TArgs>
-    void writeFormat(const StringRef& format, const TArgs&... args);
+    void writeFormat(const StringView& format, const TArgs&... args);
 
     /** 改行を書き込みます。 */
     void writeLine();
@@ -60,11 +60,11 @@ public:
     void writeLine(double value); /**< @copydoc writeLine(float) */
 
     /** 文字列を書き込み、続けて改行を書き込みます。 */
-    void writeLine(const StringRef& str);
+    void writeLine(const StringView& str);
 
     /** 書式指定された文字列を書き込み、続けて改行を書き込みます。 */
     template<typename... TArgs>
-    void writeLineFormat(const StringRef& str, const TArgs&... args);
+    void writeLineFormat(const StringView& str, const TArgs&... args);
 
     /** バッファリングデータを全てストリームに書き出します。 */
     void flush();
@@ -111,14 +111,14 @@ private:
 };
 
 template<typename... TArgs>
-inline void TextWriter::writeFormat(const StringRef& format, const TArgs&... args)
+inline void TextWriter::writeFormat(const StringView& format, const TArgs&... args)
 {
     String s = ln::format(format, args...);
     writeInternal(s.c_str(), s.length());
 }
 
 template<typename... TArgs>
-inline void TextWriter::writeLineFormat(const StringRef& str, const TArgs&... args)
+inline void TextWriter::writeLineFormat(const StringView& str, const TArgs&... args)
 {
     String s = ln::format(str, args...);
     writeInternal(s.c_str(), s.length());

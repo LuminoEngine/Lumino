@@ -9,7 +9,7 @@ class TextDiagnostics
 {
 public:
 	TextDiagnostics(DiagnosticsManager* baseDiag);
-	void reportError(const StringRef& message) {}
+	void reportError(const StringView& message) {}
 
 private:
 	Ref<DiagnosticsManager> m_baseDiag;

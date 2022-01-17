@@ -27,7 +27,7 @@ LN_OBJECT_IMPLEMENT(UIText, UIElement) {
 	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UIText, String, text, setText)));
 }
 
-ViewProperty* UIText::getViewProperty(StringRef name)
+ViewProperty* UIText::getViewProperty(StringView name)
 {
 	ViewPropertyInfo* info = TypeInfo::getTypeInfo(this)->findViewProperty(name);
 	auto itr = std::find_if(m_viewProperties.begin(), m_viewProperties.end(), [&](auto& x) { return x->m_info == info; });
@@ -48,7 +48,7 @@ Ref<UIText> UIText::create()
     return makeObject<UIText>();
 }
 
-Ref<UIText> UIText::create(const StringRef& text)
+Ref<UIText> UIText::create(const StringView& text)
 {
     return makeObject<UIText>(text);
 }
@@ -93,13 +93,13 @@ void UIText::init()
     //attemptAddToPrimaryElement();
 }
 
-void UIText::init(const StringRef& text)
+void UIText::init(const StringView& text)
 {
     init();
     setText(text);
 }
 
-void UIText::setText(const StringRef& value)
+void UIText::setText(const StringView& value)
 {
 	m_text = value;
 }

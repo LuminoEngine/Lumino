@@ -83,17 +83,17 @@ Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
     return makeObject<Texture2D>(width, height, format);
 }
 
-//Ref<Texture2D> Texture2D::create(const StringRef& filePath, TextureFormat format)
+//Ref<Texture2D> Texture2D::create(const StringView& filePath, TextureFormat format)
 //{
 //	return makeObject<Texture2D>(filePath, format);
 //}
 
-Ref<Texture2D> Texture2D::load(const StringRef& filePath)
+Ref<Texture2D> Texture2D::load(const StringView& filePath)
 {
     return detail::GraphicsManager::instance()->loadTexture2D(filePath);
 }
 
-Ref<Texture2DPromise> Texture2D::loadAsync(const StringRef& filePath)
+Ref<Texture2DPromise> Texture2D::loadAsync(const StringView& filePath)
 {
     // TODO: 排他処理が必要
     LN_NOTIMPLEMENTED();
@@ -103,7 +103,7 @@ Ref<Texture2DPromise> Texture2D::loadAsync(const StringRef& filePath)
     });
 }
 
-Ref<Texture2D> Texture2D::loadEmoji(StringRef code)
+Ref<Texture2D> Texture2D::loadEmoji(StringView code)
 {
 	// TODO: String.toUTF32() 作ってもいいかも
 	String str = code;
@@ -279,7 +279,7 @@ void Texture2D::blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw
     dst->blit(RectI(x, y, srcRect.getSize()), src, srcRect, ColorI::White, BitmapBlitOptions::AlphaBlend);
 }
 
-void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment)
+void Texture2D::drawText(const StringView& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment)
 {
     Bitmap2D* bitmap = map(MapMode::Write);
     detail::BitmapTextRenderer renderer;

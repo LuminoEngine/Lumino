@@ -154,13 +154,13 @@ void UIFileSystemCollectionModel::FileSystemNode::attemptConstructChildNodes(UIF
         m_children.clear();
 
         if (FileSystem::existsDirectory(m_path)) {
-            auto dirs = FileSystem::getDirectories(m_path, StringRef(), SearchOption::TopDirectoryOnly);
+            auto dirs = FileSystem::getDirectories(m_path, StringView(), SearchOption::TopDirectoryOnly);
             for (auto& dir : dirs) {
                 if (owner->testFilter(dir)) {
                     m_children.add(makeObject<FileSystemNode>(m_owner, dir));
                 }
             }
-            auto files = FileSystem::getFiles(m_path, StringRef(), SearchOption::TopDirectoryOnly);
+            auto files = FileSystem::getFiles(m_path, StringView(), SearchOption::TopDirectoryOnly);
             for (auto& file : files) {
                 if (owner->testFilter(file)) {
                     m_children.add(makeObject<FileSystemNode>(m_owner, file));
@@ -196,13 +196,13 @@ void UIFileSystemCollectionModel::FileSystemNode::refreshHierarchical(UIFileSyst
 //
 //		if (FileSystem::existsDirectory(node->path)) {
 //			auto& path = node->path;
-//			auto dirs = FileSystem::getDirectories(path, StringRef(), SearchOption::TopDirectoryOnly);
+//			auto dirs = FileSystem::getDirectories(path, StringView(), SearchOption::TopDirectoryOnly);
 //			for (auto& dir : dirs) {
 //                if (testFilter(dir)) {
 //                    node->children.add(makeRef<FileSystemNode>(dir));
 //                }
 //			}
-//			auto files = FileSystem::getFiles(path, StringRef(), SearchOption::TopDirectoryOnly);
+//			auto files = FileSystem::getFiles(path, StringView(), SearchOption::TopDirectoryOnly);
 //			for (auto& file : files) {
 //               if (testFilter(file)) {
 //                    node->children.add(makeRef<FileSystemNode>(file));

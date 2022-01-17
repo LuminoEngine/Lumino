@@ -73,7 +73,7 @@ void JsonWriter::writeEndArray()
     }
 }
 
-void JsonWriter::writePropertyName(const StringRef& str)
+void JsonWriter::writePropertyName(const StringView& str)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
@@ -160,7 +160,7 @@ void JsonWriter::writeDouble(double value)
     m_levelStack.top().valueCount++;
 }
 
-void JsonWriter::writeString(const StringRef& str)
+void JsonWriter::writeString(const StringView& str)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
@@ -257,15 +257,15 @@ void JsonWriter::onKey(const Char* str, int length)
 
 void JsonWriter::onNull()
 {
-    m_textWriter->write(StringRef(_LT("null"), 4));
+    m_textWriter->write(StringView(_LT("null"), 4));
 }
 
 void JsonWriter::onBool(bool value)
 {
     if (value) {
-        m_textWriter->write(StringRef(_LT("true"), 4));
+        m_textWriter->write(StringView(_LT("true"), 4));
     } else {
-        m_textWriter->write(StringRef(_LT("false"), 5));
+        m_textWriter->write(StringView(_LT("false"), 5));
     }
 }
 
@@ -297,12 +297,12 @@ void JsonWriter::onString(const Char* str, int length)
         switch (str[i]) {
             case '"': {
                 Char s[] = {'\\', '"'};
-                m_textWriter->write(StringRef(s, 2));
+                m_textWriter->write(StringView(s, 2));
                 break;
             }
             case '\\': {
                 Char s[] = {'\\', '\\'};
-                m_textWriter->write(StringRef(s, 2));
+                m_textWriter->write(StringView(s, 2));
                 break;
             }
 #if 0   // ファイル出力の時は / エスケープしなくてもいい。外部編集可能な設定を書き出すときにエスケープされていると少し混乱するので、今はスキップしておく。
@@ -315,27 +315,27 @@ void JsonWriter::onString(const Char* str, int length)
 #endif
             case '\b': {
                 Char s[] = {'\\', 'b'};
-                m_textWriter->write(StringRef(s, 2));
+                m_textWriter->write(StringView(s, 2));
                 break;
             }
             case '\f': {
                 Char s[] = {'\\', 'f'};
-                m_textWriter->write(StringRef(s, 2));
+                m_textWriter->write(StringView(s, 2));
                 break;
             }
             case '\n': {
                 Char s[] = {'\\', 'n'};
-                m_textWriter->write(StringRef(s, 2));
+                m_textWriter->write(StringView(s, 2));
                 break;
             }
             case '\r': {
                 Char s[] = {'\\', 'r'};
-                m_textWriter->write(StringRef(s, 2));
+                m_textWriter->write(StringView(s, 2));
                 break;
             }
             case '\t': {
                 Char s[] = {'\\', 't'};
-                m_textWriter->write(StringRef(s, 2));
+                m_textWriter->write(StringView(s, 2));
                 break;
             }
             default:

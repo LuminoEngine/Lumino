@@ -218,7 +218,7 @@ void FontManager::dispose()
 	m_ttfDataEntryMap.clear();
 }
 
-void FontManager::registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily)
+void FontManager::registerFontFromFile(const StringView& fontFilePath, bool defaultFamily)
 {
 	auto file = m_assetManager->openFileStream(fontFilePath);
     registerFontFromStream(file, defaultFamily);
@@ -540,7 +540,7 @@ void GlyphIconFontManager::dispose()
 	m_fontAwesomeFontMap_Solid.clear();
 }
 
-Font* GlyphIconFontManager::getFontAwesomeFont(const StringRef& style, int size)
+Font* GlyphIconFontManager::getFontAwesomeFont(const StringView& style, int size)
 {
 	const Char* familyName;
 	std::unordered_map<int, Ref<Font>>* fontMap;
@@ -566,7 +566,7 @@ Font* GlyphIconFontManager::getFontAwesomeFont(const StringRef& style, int size)
 	return font;
 }
 
-uint32_t GlyphIconFontManager::getFontAwesomeCodePoint(const StringRef& glyphName)
+uint32_t GlyphIconFontManager::getFontAwesomeCodePoint(const StringView& glyphName)
 {
 	auto itr = m_fontAwesomeVariablesMap.find(glyphName);
 	if (itr != m_fontAwesomeVariablesMap.end())

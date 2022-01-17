@@ -131,7 +131,7 @@ Shader* SceneManager::skydomeShader() const
 	return detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::SkyDome);
 }
 
-Level* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
+Level* SceneManager::loadScene(const StringView& sceneAssetFilePath)
 {
     auto scene = dynamic_pointer_cast<Level>(Assets::loadAsset(sceneAssetFilePath));
     activeWorld()->addScene(scene);
@@ -172,7 +172,7 @@ void SceneManager::releaseWorldObjectId(int id)
 
 Ref<WorldObject> SceneManager::instantiateObjectFromAnyFile(const Path& filePath) const
 {
-	const StringRef& ext = filePath.extension();
+	const StringView& ext = filePath.extension();
 	
 	if (std::find_if(
 		MeshHelper::CandidateExtensions_MeshModel.begin(), MeshHelper::CandidateExtensions_MeshModel.end(),

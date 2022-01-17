@@ -316,7 +316,7 @@ void Serializer2::init()
 	Object::init();
 }
 
-void Serializer2::writeName(const StringRef& name)
+void Serializer2::writeName(const StringView& name)
 {
 	m_store->nextName = str_to_ns(name);
 }
@@ -402,7 +402,7 @@ void Serializer2::writeInt(int value)
 	m_store->writePrimitive<int>(value);
 }
 
-void Serializer2::writeString(const StringRef& value)
+void Serializer2::writeString(const StringView& value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(str_to_ns(value));
@@ -507,7 +507,7 @@ void Serializer2::endList()
 	}
 }
 
-bool Serializer2::readName(const StringRef& name)
+bool Serializer2::readName(const StringView& name)
 {
 	if (isSaving()) {
 		LN_NOTIMPLEMENTED();
@@ -603,7 +603,7 @@ int Serializer2::readInt()
 	return v;
 }
 
-float Serializer2::readFloat(const StringRef& name)
+float Serializer2::readFloat(const StringView& name)
 {
 	float value = 0.0;
 	LN_NOTIMPLEMENTED();

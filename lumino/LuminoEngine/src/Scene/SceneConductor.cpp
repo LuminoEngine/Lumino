@@ -11,7 +11,7 @@ namespace detail {
 //==============================================================================
 // SceneConductor
 
-//Level* SceneConductor::loadScene(const StringRef& sceneAssetFilePath)
+//Level* SceneConductor::loadScene(const StringView& sceneAssetFilePath)
 //{
 //    return detail::EngineDomain::sceneManager()->loadScene(sceneAssetFilePath);
 //}

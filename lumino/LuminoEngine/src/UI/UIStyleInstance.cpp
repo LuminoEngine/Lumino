@@ -461,7 +461,7 @@ UIStyleClassInstance::UIStyleClassInstance()
 {
 }
 
-UIStyleInstance* UIStyleClassInstance::findStateStyle(const StringRef& stateName) const
+UIStyleInstance* UIStyleClassInstance::findStateStyle(const StringView& stateName) const
 {
     auto style = m_visualStateStyles.findIf([&](auto& x) { return String::compare(x.name, stateName, CaseSensitivity::CaseInsensitive); });
     if (style)
@@ -470,7 +470,7 @@ UIStyleInstance* UIStyleClassInstance::findStateStyle(const StringRef& stateName
         return m_style;
 }
 
-UIStyleInstance* UIStyleClassInstance::findSubElementStyle(const StringRef& elementName) const
+UIStyleInstance* UIStyleClassInstance::findSubElementStyle(const StringView& elementName) const
 {
     auto style = m_subElements.findIf([&](auto& x) { return String::compare(x.name, elementName, CaseSensitivity::CaseInsensitive); });
     if (style)

@@ -44,19 +44,19 @@ Path::Path(const String& path)
 {
     assign(path);
 }
-Path::Path(const StringRef& path)
+Path::Path(const StringView& path)
 {
     assign(path);
 }
 Path::Path(const Path& basePath, const Char* relativePath)
 {
-    assignUnderBasePath(basePath, StringRef(relativePath));
+    assignUnderBasePath(basePath, StringView(relativePath));
 }
 Path::Path(const Path& basePath, const String& relativePath)
 {
-    assignUnderBasePath(basePath, StringRef(relativePath));
+    assignUnderBasePath(basePath, StringView(relativePath));
 }
-Path::Path(const Path& basePath, const StringRef& relativePath)
+Path::Path(const Path& basePath, const StringView& relativePath)
 {
     assignUnderBasePath(basePath, relativePath);
 }
@@ -75,12 +75,12 @@ std::filesystem::path Path::toStdPath() const
     return std::filesystem::path(m_path.toStdWString());
 }
 
-void Path::assign(const StringRef& path)
+void Path::assign(const StringView& path)
 {
     m_path = path;
 }
 
-void Path::assignUnderBasePath(const Path& basePath, const StringRef& relativePath)
+void Path::assignUnderBasePath(const Path& basePath, const StringView& relativePath)
 {
     // フルパスの場合はそのまま割り当てる
     // basePath が空なら relativePath を使う
@@ -124,19 +124,19 @@ bool Path::isUnified() const
     return !m_path.contains(u'\\');
 }
 
-bool Path::hasExtension(const StringRef& ext) const
+bool Path::hasExtension(const StringView& ext) const
 {
     const Char* begin = m_path.c_str();
     const Char* end = m_path.c_str() + m_path.length();
-    StringRef thisExt(detail::PathTraits::getExtensionBegin(begin, end, false), end); // . は除く
+    StringView thisExt(detail::PathTraits::getExtensionBegin(begin, end, false), end); // . は除く
     if (thisExt.isEmpty()) {
         return false;
     } else if (ext.isEmpty()) {
         return !thisExt.isEmpty();
     } else {
-        StringRef otherExt = ext;
+        StringView otherExt = ext;
         if (otherExt[0] == '.') {
-            otherExt = StringRef(detail::PathTraits::getExtensionBegin(ext.data(), ext.data() + ext.length(), false), ext.data() + ext.length()); // . は除く
+            otherExt = StringView(detail::PathTraits::getExtensionBegin(ext.data(), ext.data() + ext.length(), false), ext.data() + ext.length()); // . は除く
         }
         if (thisExt.length() != otherExt.length()) {
             return false;
@@ -160,20 +160,20 @@ Path Path::withoutExtension() const
     return String(begin, detail::PathTraits::getWithoutExtensionEnd(begin, begin + m_path.length()));
 }
 
-StringRef Path::fileNameWithoutExtension() const
+StringView Path::fileNameWithoutExtension() const
 {
     const Char* begin = m_path.c_str();
     const Char* end = m_path.c_str() + m_path.length();
-    return StringRef(
+    return StringView(
         detail::PathTraits::getFileName(m_path.c_str(), end),
         detail::PathTraits::getExtensionBegin(begin, end, true));
 }
 
-StringRef Path::extension(bool withDot) const
+StringView Path::extension(bool withDot) const
 {
     const Char* begin = m_path.c_str();
     const Char* end = m_path.c_str() + m_path.length();
-    return StringRef(detail::PathTraits::getExtensionBegin(begin, end, withDot), end);
+    return StringView(detail::PathTraits::getExtensionBegin(begin, end, withDot), end);
 }
 
 Path Path::parent() const
@@ -187,7 +187,7 @@ Path Path::parent() const
     } else {
         const Char* begin = m_path.c_str();
         const Char* end = m_path.c_str() + m_path.length();
-        return StringRef(begin, detail::PathTraits::getDirectoryPathEnd(begin, end));
+        return StringView(begin, detail::PathTraits::getDirectoryPathEnd(begin, end));
     }
 }
 
@@ -226,12 +226,12 @@ Path Path::canonicalize() const
     if (isAbsolute()) {
         std::vector<Char> tmpPath(m_path.length() + 1);
         int len = detail::PathTraits::canonicalizePath(m_path.c_str(), m_path.length(), tmpPath.data(), tmpPath.size());
-        return Path(StringRef(tmpPath.data(), len));
+        return Path(StringView(tmpPath.data(), len));
     } else {
         Path fullPath(Environment::currentDirectory(), m_path);
         std::vector<Char> tmpPath(fullPath.m_path.length() + 1);
 		int len = detail::PathTraits::canonicalizePath(fullPath.m_path.c_str(), fullPath.m_path.length(), tmpPath.data(), tmpPath.size());
-        return Path(StringRef(tmpPath.data(), len));
+        return Path(StringView(tmpPath.data(), len));
     }
 }
 
@@ -254,10 +254,10 @@ Path Path::makeRelative(const Path& target) const
     return Path(relPath.c_str()); // TODO: un copy
 }
 
-Path Path::replaceExtension(const StringRef& newExt) const
+Path Path::replaceExtension(const StringView& newExt) const
 {
     const Char* begin = m_path.c_str();
-    StringRef prefix(begin, detail::PathTraits::getWithoutExtensionEnd(begin, begin + m_path.length()));
+    StringView prefix(begin, detail::PathTraits::getWithoutExtensionEnd(begin, begin + m_path.length()));
     if (newExt.length() <= 0) {
         return Path(prefix);
     } else if (newExt[0] == '.') {
@@ -276,7 +276,7 @@ Path Path::withEndSeparator() const
     return newStr;
 }
 
-void Path::append(const StringRef& path)
+void Path::append(const StringView& path)
 {
     if (detail::PathTraits::isAbsolutePath(path.data(), path.length())) {
         m_path = path;
@@ -288,7 +288,7 @@ void Path::append(const StringRef& path)
     }
 }
 
-int Path::compare(const StringRef& path1, const StringRef& path2)
+int Path::compare(const StringView& path1, const StringView& path2)
 {
     return detail::PathTraits::comparePathString(path1.data(), path1.length(), path2.data(), path2.length());
 }

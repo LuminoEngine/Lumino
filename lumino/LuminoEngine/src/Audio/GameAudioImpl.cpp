@@ -54,7 +54,7 @@ void GameAudioImpl::dispose()
     mME = nullptr;
 }
 
-void GameAudioImpl::playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGM(const StringView& filePath, float volume, float pitch, double fadeTime)
 {
     auto sound = createSound(filePath);
     playBGMFromSound(sound, volume, pitch, fadeTime);
@@ -80,7 +80,7 @@ void GameAudioImpl::stopBGM(double fadeTime)
     }
 }
 
-void GameAudioImpl::playBGS(const StringRef& filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGS(const StringView& filePath, float volume, float pitch, double fadeTime)
 {
     auto sound = createSound(filePath);
 
@@ -108,7 +108,7 @@ void GameAudioImpl::stopBGS(double fadeTime)
     }
 }
 
-void GameAudioImpl::playME(const StringRef& filePath, float volume, float pitch)
+void GameAudioImpl::playME(const StringView& filePath, float volume, float pitch)
 {
     auto sound = createSound(filePath);
     playMEFromSound(sound, volume, pitch);
@@ -137,7 +137,7 @@ void GameAudioImpl::stopME()
     }
 }
 
-void GameAudioImpl::playSE(const StringRef& filePath, float volume, float pitch)
+void GameAudioImpl::playSE(const StringView& filePath, float volume, float pitch)
 {
     auto sound = createSound(filePath);
 
@@ -154,7 +154,7 @@ void GameAudioImpl::playSE(const StringRef& filePath, float volume, float pitch)
     sound->play();
 }
 
-void GameAudioImpl::playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume, float pitch)
+void GameAudioImpl::playSE3D(const StringView& filePath, const Vector3& position, float distance, float volume, float pitch)
 {
     // サウンド作成
     auto sound = createSound(filePath);
@@ -499,7 +499,7 @@ void GameAudioImpl::pushReleaseAtPlayEndList(Sound* sound)
     }
 }
 
-Ref<Sound> GameAudioImpl::createSound(const StringRef& filePath)
+Ref<Sound> GameAudioImpl::createSound(const StringView& filePath)
 {
     return makeObject<Sound>(filePath);
 }
@@ -523,7 +523,7 @@ void GameAudioImpl2::dispose()
     }
 }
 
-void GameAudioImpl2::playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl2::playBGM(const StringView& filePath, float volume, float pitch, double fadeTime)
 {
     Command cmd;
     cmd.type = CommandType::PlayBGM;
@@ -544,7 +544,7 @@ void GameAudioImpl2::stopBGM(double fadeTime)
     m_commands.push_back(std::move(cmd));
 }
 
-void GameAudioImpl2::playBGS(const StringRef& filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl2::playBGS(const StringView& filePath, float volume, float pitch, double fadeTime)
 {
     Command cmd;
     cmd.type = CommandType::PlayBGS;
@@ -565,7 +565,7 @@ void GameAudioImpl2::stopBGS(double fadeTime)
     m_commands.push_back(std::move(cmd));
 }
 
-void GameAudioImpl2::playME(const StringRef& filePath, float volume, float pitch)
+void GameAudioImpl2::playME(const StringView& filePath, float volume, float pitch)
 {
     Command cmd;
     cmd.type = CommandType::PlayME;
@@ -584,7 +584,7 @@ void GameAudioImpl2::stopME()
     m_commands.push_back(std::move(cmd));
 }
 
-void GameAudioImpl2::playSE(const StringRef& filePath, float volume, float pitch)
+void GameAudioImpl2::playSE(const StringView& filePath, float volume, float pitch)
 {
     Command cmd;
     cmd.type = CommandType::PlaySE;
@@ -596,7 +596,7 @@ void GameAudioImpl2::playSE(const StringRef& filePath, float volume, float pitch
     }
 }
 
-void GameAudioImpl2::playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume, float pitch)
+void GameAudioImpl2::playSE3D(const StringView& filePath, const Vector3& position, float distance, float volume, float pitch)
 {
     Command cmd;
     cmd.type = CommandType::PlaySE3D;
@@ -691,7 +691,7 @@ void GameAudioImpl2::update(float elapsedSeconds)
     }
 }
 
-Ref<SoundCore> GameAudioImpl2::createSoundCore(const StringRef& filePath)
+Ref<SoundCore> GameAudioImpl2::createSoundCore(const StringView& filePath)
 {
     Ref<detail::AudioDecoder> decoder = m_manager->createAudioDecoder(filePath);
 

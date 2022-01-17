@@ -44,7 +44,7 @@ public:
 	static void setFrameRate(int value);
 //
 //	/** 指定したフォルダをアセットフォルダとして扱います。アセットフォルダのファイルにアクセスするには Assets クラスの機能を使用します。 */
-//	static void addAssetsDirectory(const StringRef& directoryPath);
+//	static void addAssetsDirectory(const StringView& directoryPath);
 //
 	/** グラフィックス機能で使用する描画 API を設定します。(default: false) */
 	static void setGraphicsAPI(GraphicsAPI graphicsAPI);

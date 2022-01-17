@@ -346,7 +346,7 @@ Rect UILayoutContext::makeContentRect(const UIElement* element, const Size& fina
 	return result;
 }
 
-Size UILayoutContext::measureTextSize(Font* font, const StringRef& text)
+Size UILayoutContext::measureTextSize(Font* font, const StringView& text)
 {
 	auto fc = detail::FontHelper::resolveFontCore(font, m_dpiScale);
 	detail::FontGlobalMetrics gm;
@@ -362,7 +362,7 @@ Size UILayoutContext::measureTextSize(Font* font, uint32_t codePoint)
 	return font->measureRenderSize(codePoint, m_dpiScale);
 }
 
-Size UILayoutContext::measureTextSize(const UIElement* element, const StringRef& text)
+Size UILayoutContext::measureTextSize(const UIElement* element, const StringView& text)
 {
 	return measureTextSize(element->finalStyle()->font, text);
 }

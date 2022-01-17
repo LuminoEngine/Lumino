@@ -104,7 +104,7 @@ void UIListItem::setSelectedInternal(bool selected)
 
 LN_OBJECT_IMPLEMENT(UIListBoxItem, UIListItem) {}
 
-Ref<UIListBoxItem> UIListBoxItem::create(StringRef text)
+Ref<UIListBoxItem> UIListBoxItem::create(StringView text)
 {
 	return makeObject<UIListBoxItem>(text);
 }
@@ -119,7 +119,7 @@ bool UIListBoxItem::init()
 	return true;
 }
 
-bool UIListBoxItem::init(StringRef text)
+bool UIListBoxItem::init(StringView text)
 {
 	if (!init()) return false;
 	addChild(makeObject<UIText>(text));

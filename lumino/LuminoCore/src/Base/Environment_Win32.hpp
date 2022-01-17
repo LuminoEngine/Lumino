@@ -25,7 +25,7 @@ public:
 		return result;
 	}
 
-	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+	static void setEnvironmentVariable(const StringView& variableName, const StringView& value)
 	{
 		BOOL r = ::SetEnvironmentVariableW(variableName.toStdWString().c_str(), value.toStdWString().c_str());
 		if (LN_ENSURE(r != FALSE, _TT("{}"), detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;

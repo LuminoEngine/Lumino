@@ -9,7 +9,7 @@ namespace ln {
 class FileInfo	// TODO: FileSystemInfo のほうがいい？
 {
 public:
-	FileInfo(const ln::StringRef& path);
+	FileInfo(const ln::StringView& path);
 
 	/** ファイルが最後に変更された日時を返します。 */
 	DateTime lastModifiedTime();

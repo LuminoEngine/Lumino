@@ -36,13 +36,13 @@ class AnimationClip
 {
 public:
     /** ひとつの AnimationTrack を持つ AnimationClip を作成します。 */
-	static Ref<AnimationClip> create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
+	static Ref<AnimationClip> create(/*const StringView& name, */const StringView& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
 	/** load */
 	LN_METHOD()
-	static Ref<AnimationClip> load(const StringRef& filePath);
+	static Ref<AnimationClip> load(const StringView& filePath);
 
-	static Ref<AnimationClipPromise> loadAsync(const StringRef& filePath);
+	static Ref<AnimationClipPromise> loadAsync(const StringView& filePath);
 
 
 	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
@@ -78,7 +78,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 	//bool init(const Path& assetPath);
 	//bool init(const detail::AssetPath& assetSourcePath);
-	void init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
+	void init(/*const StringView& name, */const StringView& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
 protected:	// TODO:
 	String m_name;

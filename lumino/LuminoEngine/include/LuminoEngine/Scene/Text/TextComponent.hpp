@@ -13,7 +13,7 @@ class TextComponent
 public:
 	/** 表示する文字列を設定します。 */
 	LN_METHOD(Property)
-	void setText(StringRef value) { m_text = value; }
+	void setText(StringView value) { m_text = value; }
 
 	/** 表示する文字列を取得します。 */
 	LN_METHOD(Property)

@@ -15,7 +15,7 @@ Ref<SkinnedMesh> SkinnedMesh::create()
     return makeObject<SkinnedMesh>();
 }
 
-Ref<SkinnedMesh> SkinnedMesh::load(const StringRef& filePath, float scale)
+Ref<SkinnedMesh> SkinnedMesh::load(const StringView& filePath, float scale)
 {
     return makeObject<SkinnedMesh>(filePath, scale);
 }
@@ -36,7 +36,7 @@ void SkinnedMesh::init()
     setMainVisualComponent(m_component);
 }
 
-void SkinnedMesh::init(const StringRef& filePath, float scale)
+void SkinnedMesh::init(const StringView& filePath, float scale)
 {
     init();
     m_component->setModel(MeshModel::load(filePath));

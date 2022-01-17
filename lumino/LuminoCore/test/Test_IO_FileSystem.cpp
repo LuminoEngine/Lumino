@@ -125,7 +125,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 
 	//* [ ] file enumeration
 	{
-		auto pathes = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1/dir3"), StringRef(), SearchOption::TopDirectoryOnly);
+		auto pathes = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1/dir3"), StringView(), SearchOption::TopDirectoryOnly);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
 		ASSERT_EQ(2, list.size());
@@ -144,7 +144,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 
 	//* [ ] file enumeration (recursive)
 	{
-		auto pathes = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1"), StringRef(), SearchOption::Recursive);
+		auto pathes = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1"), StringView(), SearchOption::Recursive);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
 		ASSERT_EQ(4, list.size());
@@ -166,7 +166,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 
 	//* [ ] check empty directory (recursive)
 	{
-		auto files = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1/dir3/dir4"), StringRef(), SearchOption::Recursive);
+		auto files = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1/dir3/dir4"), StringView(), SearchOption::Recursive);
 		List<Path> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(0, list.size());
@@ -174,7 +174,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 
 	//* [ ] directory enumeration
 	{
-		auto pathes = FileSystem::getDirectories(LN_TEMPFILE("GetFilesTest1"), StringRef(), SearchOption::TopDirectoryOnly);
+		auto pathes = FileSystem::getDirectories(LN_TEMPFILE("GetFilesTest1"), StringView(), SearchOption::TopDirectoryOnly);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
 		ASSERT_EQ(2, list.size());
@@ -184,7 +184,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 
 	//* [ ] directory enumeration (recursive)
 	{
-		auto pathes = FileSystem::getDirectories(LN_TEMPFILE("GetFilesTest1"), StringRef(), SearchOption::Recursive);
+		auto pathes = FileSystem::getDirectories(LN_TEMPFILE("GetFilesTest1"), StringView(), SearchOption::Recursive);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
 		ASSERT_EQ(3, list.size());

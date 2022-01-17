@@ -35,7 +35,7 @@
 #define LN_LOG_FATAL(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Fatal __VA_ARGS__)
 
 namespace ln {
-class StringRef;
+class StringView;
 
 /** ログの通知レベル */
 LN_ENUM()

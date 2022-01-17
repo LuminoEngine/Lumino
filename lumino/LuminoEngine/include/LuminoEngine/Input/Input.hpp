@@ -16,37 +16,37 @@ public:
      * ボタンが現在押されているかを判定します。
      */
     LN_METHOD()
-    static bool isPressed(const StringRef& buttonName);
+    static bool isPressed(const StringView& buttonName);
 
     /**
      * ボタンが新しく押された瞬間を判定します。
      */
     LN_METHOD()
-    static bool isTriggered(const StringRef& buttonName);
+    static bool isTriggered(const StringView& buttonName);
 
     /**
      * ボタンが離された瞬間を判定します。
      */
     LN_METHOD()
-    static bool isTriggeredOff(const StringRef& buttonName);
+    static bool isTriggeredOff(const StringView& buttonName);
 
     /**
      * ボタンが新しく押された瞬間とリピート状態を判定します。     
      */
     LN_METHOD()
-    static bool isRepeated(const StringRef& buttonName);
+    static bool isRepeated(const StringView& buttonName);
 
     /**
      * 指定した軸のアナログ値を取得します。      
      */
     LN_METHOD()
-    static float getAxisValue(const StringRef& buttonName);
+    static float getAxisValue(const StringView& buttonName);
 
     /**
      * ボタンのアクションマッピングを追加します。
      */
     LN_METHOD()
-    static void addBinding(const StringRef& buttonName, InputGesture* gesture);
+    static void addBinding(const StringView& buttonName, InputGesture* gesture);
 
     /**
      * アクションマッピングを除外します。
@@ -58,7 +58,7 @@ public:
      * 指定したボタンのアクションマッピングをすべて削除します。
      */
     LN_METHOD()
-    static void clearBindings(const StringRef& buttonName);
+    static void clearBindings(const StringView& buttonName);
 
     /**
      * 全てのアクションマッピングを削除します。       

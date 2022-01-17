@@ -145,7 +145,7 @@ void JsonValue::setDoubleValue(double value)
     m_double = value;
 }
 
-void JsonValue::setStringValue(const StringRef& value)
+void JsonValue::setStringValue(const StringView& value)
 {
     checkRelease();
     setType(JsonElementType::String);
@@ -328,7 +328,7 @@ void JsonArray::addDoubleValue(double value)
     m_itemList.add(ptr);
 }
 
-void JsonArray::addStringValue(const StringRef& value)
+void JsonArray::addStringValue(const StringView& value)
 {
     auto ptr = ownerDocument()->newElement<JsonValue>();
     ptr->setStringValue(value);
@@ -395,42 +395,42 @@ JsonObject::~JsonObject()
 {
 }
 
-void JsonObject::addNullValue(const StringRef& name)
+void JsonObject::addNullValue(const StringView& name)
 {
     getValue(name)->setNullValue();
 }
 
-void JsonObject::addBoolValue(const StringRef& name, bool value)
+void JsonObject::addBoolValue(const StringView& name, bool value)
 {
     getValue(name)->setBoolValue(value);
 }
 
-void JsonObject::addInt32Value(const StringRef& name, int32_t value)
+void JsonObject::addInt32Value(const StringView& name, int32_t value)
 {
     getValue(name)->setInt32Value(value);
 }
 
-void JsonObject::addInt64Value(const StringRef& name, int64_t value)
+void JsonObject::addInt64Value(const StringView& name, int64_t value)
 {
     getValue(name)->setInt64Value(value);
 }
 
-void JsonObject::addFloatValue(const StringRef& name, float value)
+void JsonObject::addFloatValue(const StringView& name, float value)
 {
     getValue(name)->setFloatValue(value);
 }
 
-void JsonObject::addDoubleValue(const StringRef& name, double value)
+void JsonObject::addDoubleValue(const StringView& name, double value)
 {
     getValue(name)->setDoubleValue(value);
 }
 
-void JsonObject::addStringValue(const StringRef& name, const StringRef& value)
+void JsonObject::addStringValue(const StringView& name, const StringView& value)
 {
     getValue(name)->setStringValue(value);
 }
 
-JsonArray* JsonObject::addArray(const StringRef& name)
+JsonArray* JsonObject::addArray(const StringView& name)
 {
     int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
     if (index >= 0) {
@@ -445,7 +445,7 @@ JsonArray* JsonObject::addArray(const StringRef& name)
     return ptr;
 }
 
-JsonObject* JsonObject::addObject(const StringRef& name)
+JsonObject* JsonObject::addObject(const StringView& name)
 {
 
     int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
@@ -461,7 +461,7 @@ JsonObject* JsonObject::addObject(const StringRef& name)
     return ptr;
 }
 
-JsonElement* JsonObject::find(const StringRef& name) const
+JsonElement* JsonObject::find(const StringView& name) const
 {
     int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
     if (index >= 0)
@@ -478,7 +478,7 @@ void JsonObject::onSave(JsonWriter* writer)
     writer->writeStartObject();
 
     for (auto& m : m_memberList) {
-        writer->writePropertyName(StringRef(m.name));
+        writer->writePropertyName(StringView(m.name));
         m.value->save(writer);
     }
 
@@ -515,7 +515,7 @@ JsonParseResult JsonObject::onLoad(JsonReader* reader)
     return JsonParseResult::Success;
 }
 
-JsonValue* JsonObject::getValue(const StringRef& name)
+JsonValue* JsonObject::getValue(const StringView& name)
 {
     int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
     if (index >= 0) {
@@ -615,7 +615,7 @@ void JsonDocument::parse(const String& text)
     parseInternal(&jr);
 }
 
-void JsonDocument::save(const StringRef& filePath, JsonFormatting formatting)
+void JsonDocument::save(const StringView& filePath, JsonFormatting formatting)
 {
     StreamWriter w(filePath);
     JsonWriter jw(&w);
@@ -623,7 +623,7 @@ void JsonDocument::save(const StringRef& filePath, JsonFormatting formatting)
     m_rootElement->save(&jw);
 }
 
-void JsonDocument::load(const StringRef& filePath)
+void JsonDocument::load(const StringView& filePath)
 {
     StreamReader r(filePath.data()); // TODO: end
     JsonReader jr(&r);

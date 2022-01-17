@@ -13,7 +13,7 @@ void Log::allocConsole()
     ln::Console::allocate();
 }
 
-void Log::write(LogLevel level, const StringRef& tag, const StringRef& text)
+void Log::write(LogLevel level, const StringView& tag, const StringView& text)
 {
     LN_LOG_LOGGER_CALL(static_cast<ln::LogLevel>(level), text);
     //LN_LOG_LOGGER_CALL(static_cast<ln::LogLevel>(level), ln::String(tag).toStdString().c_str()) << ln::String(text);

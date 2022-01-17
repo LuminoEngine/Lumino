@@ -66,13 +66,13 @@ public:
     static Path specialFolderPath(SpecialFolder specialFolder);
 
     /** システムの特別なフォルダのパスを取得します。 */
-    static Path specialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option);
+    static Path specialFolderPath(SpecialFolder specialFolder, const StringView& relativeDirPath, SpecialFolderOption option);
 
     /** 環境変数の値を取得します。 */
-    static Optional<String> getEnvironmentVariable(const StringRef& variableName);
+    static Optional<String> getEnvironmentVariable(const StringView& variableName);
 
 	/** 現在のプロセスの環境変数を設定します。(システム環境変数や他のプロセスの環境変数へ影響を及ぼしません) */
-	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value);
+	static void setEnvironmentVariable(const StringView& variableName, const StringView& value);
 
 	/** 現在の環境のバイトオーダー (エンディアン) を確認します。 */
 	static ByteOrder byteOrder();

@@ -47,7 +47,7 @@ protected:
 
 	virtual void visitMaterialChunk() = 0;
 	virtual void visitMaterial(Material* material) = 0;
-	virtual void visitObjectChunk(const StringRef& name) = 0;
+	virtual void visitObjectChunk(const StringView& name) = 0;
 	virtual void visitVertexChunk(int vertexCount) = 0;
 	virtual void visitVertex(const Vector3& vertex, int index) = 0;
 	virtual void visitFaceChunk(int faceCount) = 0;
@@ -59,9 +59,9 @@ private:
 	void loadObject(StreamReader* reader);
 	void readVertexChunk(StreamReader* reader);
 	void readFaceChunk(StreamReader* reader);
-	static void readInts(const StringRef& str, int* values, int valuesCount);
-	static void readUInts(const StringRef& str, uint32_t* values, int valuesCount);
-	static void readFloats(const StringRef& str, float* values, int valuesCount);
+	static void readInts(const StringView& str, int* values, int valuesCount);
+	static void readUInts(const StringView& str, uint32_t* values, int valuesCount);
+	static void readFloats(const StringView& str, float* values, int valuesCount);
 
 
 	MeshManager*			m_manager;
@@ -82,7 +82,7 @@ public:
 protected:
 	virtual void visitMaterialChunk() override;
 	virtual void visitMaterial(Material* material) override;
-	virtual void visitObjectChunk(const StringRef& name) override;
+	virtual void visitObjectChunk(const StringView& name) override;
 	virtual void visitVertexChunk(int vertexCount) override;
 	virtual void visitVertex(const Vector3& vertex, int index) override;
 	virtual void visitFaceChunk(int faceCount) override;

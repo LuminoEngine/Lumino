@@ -138,7 +138,7 @@ void BinaryWriter::writeDouble(double value)
 	m_stream->write(&value, 8);
 }
 
-void BinaryWriter::writeString(const StringRef& str, ln::TextEncoding* encoding)
+void BinaryWriter::writeString(const StringView& str, ln::TextEncoding* encoding)
 {
 	if (encoding) {
 		LN_NOTIMPLEMENTED();

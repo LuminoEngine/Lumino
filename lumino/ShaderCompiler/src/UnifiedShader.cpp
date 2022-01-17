@@ -606,7 +606,7 @@ const std::vector<VertexInputAttribute>& UnifiedShader::attributes(PassId pass) 
 	return m_passes[idToIndex(pass)].attributes;
 }
 
-void UnifiedShader::saveCodes(const StringRef& perfix) const
+void UnifiedShader::saveCodes(const StringView& perfix) const
 {
 	for (int iTech = 0; iTech < techniqueCount(); iTech++)
 	{

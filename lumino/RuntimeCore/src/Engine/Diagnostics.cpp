@@ -29,7 +29,7 @@ void DiagnosticsManager::init()
 	Object::init();
 }
 
-void DiagnosticsManager::reportError(StringRef message)
+void DiagnosticsManager::reportError(StringView message)
 {
 	auto item = makeObject<DiagnosticsItem>();
 	item->setMessage(message);
@@ -38,7 +38,7 @@ void DiagnosticsManager::reportError(StringRef message)
 	m_hasError = true;
 }
 
-void DiagnosticsManager::reportWarning(StringRef message)
+void DiagnosticsManager::reportWarning(StringView message)
 {
 	auto item = makeObject<DiagnosticsItem>();
 	item->setMessage(message);
@@ -47,7 +47,7 @@ void DiagnosticsManager::reportWarning(StringRef message)
 	m_hasWarning = true;
 }
 
-void DiagnosticsManager::reportInfo(StringRef message)
+void DiagnosticsManager::reportInfo(StringView message)
 {
 	auto item = makeObject<DiagnosticsItem>();
 	item->setMessage(message);
@@ -153,7 +153,7 @@ ProfilingItem::ProfilingItem()
 {
 }
 
-void ProfilingItem::init(ProfilingItemType type, const StringRef& name)
+void ProfilingItem::init(ProfilingItemType type, const StringView& name)
 {
 	Object::init();
 	m_type = type;

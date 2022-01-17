@@ -42,7 +42,7 @@ void TypeInfo::registerViewProperty(ViewPropertyInfo* prop)
 	prop->m_registerd = true;
 }
 
-ViewPropertyInfo* TypeInfo::findViewProperty(const StringRef& name) const
+ViewPropertyInfo* TypeInfo::findViewProperty(const StringView& name) const
 {
 	auto info = m_viewProperties.findIf([&](auto& x) { return x->name() == name; });
 	if (info)

@@ -34,12 +34,12 @@ void ShaderCompilationProperties::init()
 {
 }
 
-void ShaderCompilationProperties::addIncludeDirectory(const StringRef& value)
+void ShaderCompilationProperties::addIncludeDirectory(const StringView& value)
 {
     m_includeDirectories.add(value);
 }
 
-void ShaderCompilationProperties::addDefinition(const StringRef& value)
+void ShaderCompilationProperties::addDefinition(const StringView& value)
 {
     m_definitions.add(value);
 }
@@ -52,17 +52,17 @@ void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag)
 //=============================================================================
 // Shader
 
-Ref<Shader> Shader::create(const StringRef& filePath, ShaderCompilationProperties* properties)
+Ref<Shader> Shader::create(const StringView& filePath, ShaderCompilationProperties* properties)
 {
     return ln::makeObject<Shader>(filePath, properties);
 }
 
-Ref<Shader> Shader::load(const StringRef& filePath, AssetImportSettings* settings)
+Ref<Shader> Shader::load(const StringView& filePath, AssetImportSettings* settings)
 {
     return detail::GraphicsManager::instance()->loadShader(filePath);
 }
 
-Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
+Ref<Shader> Shader::create(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties)
 {
     return ln::makeObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, properties);
 }
@@ -84,14 +84,14 @@ void Shader::init()
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_graphicsManager);
 }
 
-void Shader::init(const StringRef& filePath, ShaderCompilationProperties* properties)
+void Shader::init(const StringView& filePath, ShaderCompilationProperties* properties)
 {
     Shader::init();
     auto stream = FileStream::create(filePath, FileOpenMode::Read);
     loadFromStream(detail::AssetPath::makeFromLocalFilePath(filePath), stream, properties);
 }
 
-void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
+void Shader::init(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties)
 {
     Shader::init();
     Ref<DiagnosticsManager> localDiag = nullptr;
@@ -294,15 +294,15 @@ void Shader::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPa
     loadFromStream(assetPath, stream, nullptr);
 }
 
-ShaderParameter2* Shader::findParameter(const StringRef& name) const
+ShaderParameter2* Shader::findParameter(const StringView& name) const
 {
     return m_descriptor->findParameter2(name);
 }
 
-ShaderTechnique* Shader::findTechnique(const StringRef& name) const
+ShaderTechnique* Shader::findTechnique(const StringView& name) const
 {
     for (auto& var : m_techniques) {
-        if (String::compare(StringRef(var->name()), 0, StringRef(name), 0, -1, CaseSensitivity::CaseSensitive) == 0) {
+        if (String::compare(StringView(var->name()), 0, StringView(name), 0, -1, CaseSensitivity::CaseSensitive) == 0) {
             return var;
         }
     }
@@ -314,26 +314,26 @@ Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
     return m_techniques;
 }
 
-void Shader::setFloat(const StringRef& parameterName, float value)
+void Shader::setFloat(const StringView& parameterName, float value)
 {
     if (auto* param = findParameter(parameterName)) {
         param->setFloat(value);
     }
 }
 
-void Shader::setVector(const StringRef& parameterName, const Vector3& value)
+void Shader::setVector(const StringView& parameterName, const Vector3& value)
 {
     setVector(parameterName, Vector4(value, 0.0));
 }
 
-void Shader::setVector(const StringRef& parameterName, const Vector4& value)
+void Shader::setVector(const StringView& parameterName, const Vector4& value)
 {
     if (auto* param = findParameter(parameterName)) {
         param->setVector(value);
     }
 }
 
-void Shader::setTexture(const StringRef& parameterName, Texture* value)
+void Shader::setTexture(const StringView& parameterName, Texture* value)
 {
     if (auto* param = findParameter(parameterName)) {
         param->setTexture(value);
@@ -664,22 +664,22 @@ ShaderDescriptorLayout* ShaderDefaultDescriptor::descriptorLayout() const
     return m_ownerShader->descriptorLayout();
 }
 
-ShaderParameter2* ShaderDefaultDescriptor::findParameter2(const StringRef& name) const
+ShaderParameter2* ShaderDefaultDescriptor::findParameter2(const StringView& name) const
 {
     return m_parameters.findIf([&](auto& x) { return x->name() == name; }).valueOr(nullptr);
 }
 
-//int ShaderDefaultDescriptor::findUniformBufferIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findUniformBufferIndex(const ln::StringView& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findUniformBufferRegisterIndex(name);
 //}
 //
-//int ShaderDefaultDescriptor::findTextureIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findTextureIndex(const ln::StringView& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findTextureRegisterIndex(name);
 //}
 //
-//int ShaderDefaultDescriptor::findSamplerIndex(const ln::StringRef& name) const
+//int ShaderDefaultDescriptor::findSamplerIndex(const ln::StringView& name) const
 //{
 //    return m_ownerShader->descriptorLayout()->findSamplerRegisterIndex(name);
 //}
@@ -856,27 +856,27 @@ bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
     return true;
 }
 
-int ShaderDescriptorLayout::findUniformBufferRegisterIndex(const ln::StringRef& name) const
+int ShaderDescriptorLayout::findUniformBufferRegisterIndex(const ln::StringView& name) const
 {
     return m_buffers.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findUniformMemberIndex(const ln::StringRef& name) const
+int ShaderDescriptorLayout::findUniformMemberIndex(const ln::StringView& name) const
 {
     return m_members.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringRef& name) const
+int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringView& name) const
 {
     return m_textures.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findSamplerRegisterIndex(const ln::StringRef& name) const
+int ShaderDescriptorLayout::findSamplerRegisterIndex(const ln::StringView& name) const
 {
     return m_samplers.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findStorageRegisterIndex(const ln::StringRef& name) const
+int ShaderDescriptorLayout::findStorageRegisterIndex(const ln::StringView& name) const
 {
     return m_storages.indexOfIf([&](const auto& x) { return x.name == name; });
 }

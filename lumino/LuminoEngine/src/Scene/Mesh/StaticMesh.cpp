@@ -14,7 +14,7 @@ namespace ln {
 
 LN_OBJECT_IMPLEMENT(StaticMesh, VisualObject) {}
 
-Ref<StaticMesh> StaticMesh::load(const StringRef& filePath, MeshImportSettings* settings)
+Ref<StaticMesh> StaticMesh::load(const StringView& filePath, MeshImportSettings* settings)
 {
     return makeObject<StaticMesh>(filePath, settings);
 }
@@ -53,7 +53,7 @@ bool StaticMesh::init(MeshModel* model)
     return true;
 }
 
-bool StaticMesh::init(const StringRef& filePath, MeshImportSettings* settings)
+bool StaticMesh::init(const StringView& filePath, MeshImportSettings* settings)
 {
     auto model = detail::EngineDomain::meshManager()->createSkinnedMeshModel(
         filePath, settings ? settings : MeshImportSettings::defaultSettings());
@@ -71,7 +71,7 @@ MeshModel* StaticMesh::model() const
     return m_component->model();
 }
 
-void StaticMesh::makeCollisionBody(StringRef meshContainerName)
+void StaticMesh::makeCollisionBody(StringView meshContainerName)
 {
     m_component->makeCollisionBody(meshContainerName);
 }

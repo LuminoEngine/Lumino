@@ -20,7 +20,7 @@ void UITextField::init()
 	addVisualChild(m_textArea);
 }
 
-void UITextField::setText(const StringRef& value)
+void UITextField::setText(const StringView& value)
 {
 	m_textArea->setText(value);
 }

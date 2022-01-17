@@ -70,7 +70,7 @@ public:
 	const detail::AssetPath& basePath() const { return m_basePath; }
 
 
-	void writeName(const StringRef& name);
+	void writeName(const StringView& name);
 
 	/** write */
 	//LN_METHOD()
@@ -95,7 +95,7 @@ public:
 
 	/** write */
 	//LN_METHOD()
-	void writeString(const StringRef& value);
+	void writeString(const StringView& value);
 
 
 
@@ -105,7 +105,7 @@ public:
 	void writeObject(Object* value);
 
 	//template<class T>
-	//void writeList(const StringRef& name, const List<T>& value)
+	//void writeList(const StringView& name, const List<T>& value)
 	//{
 	//	beginWriteList(name);
 
@@ -113,7 +113,7 @@ public:
 	//}
 
 
-	bool readName(const StringRef& name);
+	bool readName(const StringView& name);
 
 	//
 	/** read */
@@ -137,7 +137,7 @@ public:
 
 	/** read */
 	//LN_METHOD()
-	float readFloat(const StringRef& name);
+	float readFloat(const StringView& name);
 
 	/** read */
 	//LN_METHOD()

@@ -49,7 +49,7 @@ TEST_F(Test_IO_TextWriter, write)
 
 		StringWriter writer;
 		writer.setNewLine(_LT("\n"));
-		writer.writeLine(StringRef(_LT("abc"), 2));
+		writer.writeLine(StringView(_LT("abc"), 2));
 		writer.writeLine(String(_TT("def")));
 		writer.writeLine(_LT('g'));
 		writer.writeLine(v_int16_t);

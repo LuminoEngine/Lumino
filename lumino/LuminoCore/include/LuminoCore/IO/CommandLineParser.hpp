@@ -138,9 +138,9 @@ protected:
     void setInternalName(const String& value) { m_name = value; }
     void setInternalDescription(const String& value) { m_description = value; }
 
-    CommandLineOption* addFlagOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description);
-    CommandLineOption* addValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef());
-    CommandLineOption* addNamedValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef());
+    CommandLineOption* addFlagOptionInternal(const StringView& shortName, const StringView& longName, const StringView& description);
+    CommandLineOption* addValueOptionInternal(const StringView& shortName, const StringView& longName, const StringView& description, const StringView& defaultValue = StringView());
+    CommandLineOption* addNamedValueOptionInternal(const StringView& shortName, const StringView& longName, const StringView& description, const List<String>& namedValues, const StringView& defaultValue = StringView());
     CommandLinePositionalArgument* addPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags);
     CommandLinePositionalArgument* addListPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags);
     void addCommandInternal(CommandLineCommand* command);
@@ -173,9 +173,9 @@ public:
     void setName(const String& value) { setInternalName(value); }
     void setDescription(const String& value) { setInternalDescription(value); }
 
-    CommandLineOption* addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description);
-    CommandLineOption* addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef());
-    CommandLineOption* addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef());
+    CommandLineOption* addFlagOption(const StringView& shortName, const StringView& longName, const StringView& description);
+    CommandLineOption* addValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const StringView& defaultValue = StringView());
+    CommandLineOption* addNamedValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const List<String>& namedValues, const StringView& defaultValue = StringView());
     CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
     CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
 
@@ -207,13 +207,13 @@ public:
     CommandLineCommand* addCommand(const String& name, const String& description);
 
     /** フラグオプションを追加します。 */
-    CommandLineOption* addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description);
+    CommandLineOption* addFlagOption(const StringView& shortName, const StringView& longName, const StringView& description);
 
     /** 値を持つオプションを追加します。 */
-    CommandLineOption* addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef());
+    CommandLineOption* addValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const StringView& defaultValue = StringView());
 
     /** 列挙型のように、あらかじめ決められた値を指定する必要があるオプションを追加します。 */
-    CommandLineOption* addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef());
+    CommandLineOption* addNamedValueOption(const StringView& shortName, const StringView& longName, const StringView& description, const List<String>& namedValues, const StringView& defaultValue = StringView());
 
     /** 位置引数を追加します。 */
     CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
@@ -222,13 +222,13 @@ public:
     CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
 
     /** バージョンを表示するためのオプションを追加します。-v, --version が定義されます。 */
-    CommandLineOption* addVersionOption(const StringRef& versionText);
+    CommandLineOption* addVersionOption(const StringView& versionText);
 
     /** ヘルプを表示するためのオプションを追加します。-h, --help が定義されます。 */
     CommandLineOption* addHelpOption();
 
     /** アプリケーションの説明を追加します。この説明はヘルプに表示されます。 */
-    void setApplicationDescription(const StringRef& description);
+    void setApplicationDescription(const StringView& description);
 
     /**
 	 * コマンドライン引数の解析を実行します。
@@ -257,13 +257,13 @@ public:
     void printVersion() const;
 
     /** ヘルプ情報を標準出力します。 */
-    void printHelp(const StringRef& commandName = StringRef()) const;
+    void printHelp(const StringView& commandName = StringView()) const;
 
     virtual String buildHelpText() const override;
 
 private:
     CommandLineCommand* command() const { return m_activeCommand; }
-    Optional<Ref<CommandLineCommand>> findCommand(const StringRef& commandName) const;
+    Optional<Ref<CommandLineCommand>> findCommand(const StringView& commandName) const;
     bool parse(const List<String>& args);
 
     String m_message;

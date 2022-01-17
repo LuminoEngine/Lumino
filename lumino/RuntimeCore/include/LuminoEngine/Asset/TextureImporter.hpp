@@ -21,7 +21,7 @@ public:
 	 * @param[in]   height  : 高さ (px 単位)
 	 * @return 作成されたテクスチャ
 	 */
-	//static Ref<Texture2D> create(const StringRef& filePath);
+	//static Ref<Texture2D> create(const StringView& filePath);
 
 
 };

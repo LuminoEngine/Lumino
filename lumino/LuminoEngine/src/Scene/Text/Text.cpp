@@ -15,7 +15,7 @@ Ref<Text> Text::create()
 	return makeObject<Text>();
 }
 
-Ref<Text> Text::create(StringRef text)
+Ref<Text> Text::create(StringView text)
 {
 	return makeObject<Text>(text);
 }
@@ -34,14 +34,14 @@ bool Text::init()
 	return true;
 }
 
-bool Text::init(StringRef text)
+bool Text::init(StringView text)
 {
 	if (!init()) return false;
 	setText(text);
 	return true;
 }
 
-void Text::setText(StringRef value)
+void Text::setText(StringView value)
 {
 	m_component->setText(value);
 }

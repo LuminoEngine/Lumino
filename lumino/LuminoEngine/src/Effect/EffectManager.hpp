@@ -45,8 +45,8 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
-    Ref<ParticleModel> loadParticleModel(const StringRef& filePath);
-    Ref<ParticleModelPromise> loadParticleModelAsync(const StringRef& filePath);
+    Ref<ParticleModel> loadParticleModel(const StringView& filePath);
+    Ref<ParticleModelPromise> loadParticleModelAsync(const StringView& filePath);
 
     void testDraw(RenderingContext* renderingContext);
     //void testDraw2(GraphicsContext* graphicsContext);

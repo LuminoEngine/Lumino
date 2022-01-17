@@ -264,7 +264,7 @@ public:
      * - #RGB
      * - #ARGB
      */
-    static Color parse(const StringRef& str);
+    static Color parse(const StringView& str);
 
 	static bool nearEqual(const Color& value1, const Color& value2) { return Vector4::nearEqual(value1.toVector4(), value2.toVector4()); }
 
@@ -487,7 +487,7 @@ public:
             static_cast<uint8_t>(color.a * 255));
     }
 
-    static ColorI parse(const StringRef& str);
+    static ColorI parse(const StringView& str);
 
 public:
     bool operator==(const ColorI& color) const { return (memcmp(this, &color, sizeof(ColorI)) == 0); }

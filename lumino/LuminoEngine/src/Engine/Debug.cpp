@@ -36,17 +36,17 @@ void Debug::setPhysicsDebugDrawEnabled(bool value)
 	detail::EngineDomain::engineManager()->mainRenderView()->setPhysicsDebugDrawEnabled(value);
 }
 
-void Debug::print(StringRef str)
+void Debug::print(StringView str)
 {
 	detail::EngineDomain::engineManager()->debugInterface()->print(2.0f, Color::Black, str);
 }
 
-void Debug::print(float time, StringRef str)
+void Debug::print(float time, StringView str)
 {
 	detail::EngineDomain::engineManager()->debugInterface()->print(time, Color::Black, str);
 }
 
-void Debug::print(float time, const Color& color, StringRef str)
+void Debug::print(float time, const Color& color, StringView str)
 {
 	detail::EngineDomain::engineManager()->debugInterface()->print(time, color, str);
 }
@@ -72,7 +72,7 @@ bool DebugInterface::init()
 	return true;
 }
 
-void DebugInterface::print(float time, const Color& color, StringRef str)
+void DebugInterface::print(float time, const Color& color, StringView str)
 {
 	if (Math::nearEqual(time, 0.0f)) {
 		m_adhocPrintStrings.push_back({ color, str });

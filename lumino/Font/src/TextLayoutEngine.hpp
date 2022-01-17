@@ -166,7 +166,7 @@ class BitmapTextRenderer
     : public TextLayoutEngine
 {
 public:
-    void render(Bitmap2D* bitmap, const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment);
+    void render(Bitmap2D* bitmap, const StringView& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment);
 
 protected:
     virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;

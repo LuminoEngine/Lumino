@@ -127,7 +127,7 @@ public:
 
 	/* コマンドの実行内容を登録します。 */
 	LN_METHOD()
-	void registerCommandHandler(const StringRef& name, Ref<InterpreterCommandDelegate> handler);
+	void registerCommandHandler(const StringView& name, Ref<InterpreterCommandDelegate> handler);
 
 	/** setWaitMode */
 	LN_METHOD(Property)

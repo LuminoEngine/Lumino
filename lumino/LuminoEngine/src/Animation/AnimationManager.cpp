@@ -230,7 +230,7 @@ void AnimationManager::addClockToAffiliation(AnimationClock* clock, AnimationClo
     }
 }
 
-Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const StringRef& filePath)
+Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const StringView& filePath)
 {
 	static const std::vector<const Char*> exts = { _TT(".bvh"), _TT(".vmd") };
 	return AssetManager::loadObjectWithCacheHelperAsync<AnimationClip>(&m_animationClipCache, nullptr, exts, filePath);
@@ -254,7 +254,7 @@ Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const S
 	//return obj;
 }
 
-//Ref<AnimationClipPromise> AnimationManager::loadAnimationClipAsync(const StringRef& filePath)
+//Ref<AnimationClipPromise> AnimationManager::loadAnimationClipAsync(const StringView& filePath)
 //{
 //	LN_NOTIMPLEMENTED();
 //	return nullptr;

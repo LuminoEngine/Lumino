@@ -78,7 +78,7 @@ class Sound
 {
 public:
     ///** Sound クラスのインスタンスを作成します。 */
-    //static SoundPtr create(const StringRef& filePath);
+    //static SoundPtr create(const StringView& filePath);
 
     ///** Sound クラスのインスタンスを作成します。 */
     //static SoundPtr create(Stream* stream, SoundLoadingMode loadingMode);
@@ -246,7 +246,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     Sound();
     virtual ~Sound();
-    void init(const StringRef& filePath);
+    void init(const StringView& filePath);
     virtual void onDispose(bool explicitDisposing) override;
 
 private:

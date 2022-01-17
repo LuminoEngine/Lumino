@@ -64,7 +64,7 @@ void MeshSkeleton::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 //==============================================================================
 // MeshModel
 
-Ref<MeshModel> MeshModel::load(const StringRef& filePath, MeshImportSettings* settings)
+Ref<MeshModel> MeshModel::load(const StringView& filePath, MeshImportSettings* settings)
 {
 	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(
 		filePath, settings ? settings : MeshImportSettings::defaultSettings());
@@ -74,7 +74,7 @@ Ref<MeshModel> MeshModel::load(const StringRef& filePath, MeshImportSettings* se
 	//return model;
 }
 
-//Ref<MeshModel> MeshModel::loadSkinned(const StringRef& filePath)
+//Ref<MeshModel> MeshModel::loadSkinned(const StringView& filePath)
 //{
 //	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, 1.0f);
 //}
@@ -109,7 +109,7 @@ void MeshModel::serialize(Serializer2& ar)
 	}
 }
 
-MeshNode* MeshModel::findNode(StringRef name) const
+MeshNode* MeshModel::findNode(StringView name) const
 {
 	int index = findNodeIndex(name);
 	if (index < 0)
@@ -118,12 +118,12 @@ MeshNode* MeshModel::findNode(StringRef name) const
 		return m_nodes[index];
 }
 
-Material* MeshModel::findMaterial(StringRef name) const
+Material* MeshModel::findMaterial(StringView name) const
 {
 	return m_materials.findIf([&](const auto& x) { return x->m_name == name; }).valueOr(nullptr);
 }
 
-int MeshModel::findNodeIndex(StringRef name) const
+int MeshModel::findNodeIndex(StringView name) const
 {
 	return m_nodes.indexOfIf([&](const auto& x) { return x->name() == name; });
 }

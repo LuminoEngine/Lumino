@@ -43,7 +43,7 @@ public:
     //void loadStaticMeshModel(MeshModel* model, const Path& filePath, float scale);
 	void loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale);
     Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, MeshImportSettings* settings);
-	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
+	Ref<Texture> createTexture(const Path& parentDir, const StringView& filePath, DiagnosticsManager* diag);
 
 	void collectUnreferenceObjects();
 

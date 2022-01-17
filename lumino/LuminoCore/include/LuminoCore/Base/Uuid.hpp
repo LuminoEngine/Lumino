@@ -25,7 +25,7 @@ public:
 		- 中かっこで囲まれ、ハイフンで区切られた 32 桁 :  "{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"
 		- 丸かっこで囲まれ、ハイフンで区切られた 32 桁 :  "(xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)"
 	*/
-	Uuid(const StringRef& uuidText);
+	Uuid(const StringView& uuidText);
 	
 	/** 16Byte の配列を指定してインスタンスを生成します。*/
 	Uuid(const uint8_t* bytes);

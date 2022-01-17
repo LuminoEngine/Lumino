@@ -9,7 +9,7 @@ namespace ln {
 class TextEncoding;
 class Locale;
 class CharRef;
-class StringRef;
+class StringView;
 class Path;
 namespace detail {
 class UStringCore;
@@ -44,7 +44,7 @@ public:
     String(const Char* str, int length);
     String(const Char* begin, const Char* end);
     String(int count, Char ch);
-    String(const StringRef& str);
+    String(const StringView& str);
     String(const Path& path);
 
 #ifdef LN_STRING_FUZZY_CONVERSION
@@ -82,7 +82,7 @@ public:
     void assign(const Char* str);
     void assign(const Char* str, int length); /**< @overload assign */
     void assign(int count, Char ch);          /**< @overload assign */
-    void assign(const StringRef& str);        /**< @overload assign */
+    void assign(const StringView& str);        /**< @overload assign */
 
     /** 指定された文字列を追加します。 */
     void append(const Char* str, int length);
@@ -95,7 +95,7 @@ public:
      * @param[in]    cs        : 大文字と小文字の区別設定
      * @return        文字列が存在すれば true。str が空文字列である場合は必ず true となります。
      */
-    bool contains(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    bool contains(const StringView& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     bool contains(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const; /**< @overload contains */
 
     /**
@@ -106,7 +106,7 @@ public:
      * @param[in]    cs            : 大文字と小文字の区別設定
      * @return        見つからなかった場合は -1。str が空文字列である場合は 0。
      */
-    int indexOf(const StringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int indexOf(const StringView& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     int indexOf(Char ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
     /**
@@ -128,7 +128,7 @@ public:
      * str.lastIndexOf("bc", 4, 3); // => -1    (検索範囲 "cde" の中に "bc" は存在しない)
      * ~~~
      */
-    int lastIndexOf(const StringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int lastIndexOf(const StringView& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     int lastIndexOf(Char ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const; /**< @overload lastIndexOf */
 
     /**
@@ -138,7 +138,7 @@ public:
      * 
      * str が空文字の場合は必ず true が返ります。
      */
-    bool startsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    bool startsWith(const StringView& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     bool startsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const; /**< @overload startsWith */
 
     /**
@@ -154,7 +154,7 @@ public:
      * }
      * ~~~
      */
-    bool endsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    bool endsWith(const StringView& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     bool endsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const; /**< @overload endsWith */
 
     /**
@@ -169,7 +169,7 @@ public:
      * s.substr(2, 3);      // => "cde";
      * ~~~
      */
-    StringRef substr(int start, int count = -1) const;
+    StringView substr(int start, int count = -1) const;
 
     /**
      * 文字列の左側(先頭)から指定した文字数を抽出します。
@@ -182,7 +182,7 @@ public:
      * s.left(2);           // => "ab";
      * ~~~
      */
-    StringRef left(int count) const;
+    StringView left(int count) const;
 
     /**
      * 文字列の右側(末尾)から指定した文字数を抽出します。
@@ -195,7 +195,7 @@ public:
      * s.right(2);          // => "ef";
      * ~~~
      */
-    StringRef right(int count) const;
+    StringView right(int count) const;
 
     /** 文字列の先頭と末尾の空白を全て削除した文字列を返します。 */
     String trim() const;
@@ -215,7 +215,7 @@ public:
      * @param[in]   str     : 削除する文字列
      * @param[in]   cs      : 大文字と小文字の区別設定
      */
-    String remove(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    String remove(const StringView& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     String remove(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const; /**< @overload remove */
 
     /**
@@ -227,7 +227,7 @@ public:
      * 
      * from に一致するすべての文字列を to に置換します。
      */
-    String replace(const StringRef& from, const StringRef& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    String replace(const StringView& from, const StringView& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
     /**
      * 指定したインデックス位置に文字列を挿入します。
@@ -236,7 +236,7 @@ public:
      * @param[in]   value      : 挿入する文字列
      * @return     挿入結果の文字列
      */
-    String insert(int startIndex, const StringRef& value) const;
+    String insert(int startIndex, const StringView& value) const;
 
     /**
      * 文字列をデリミタで分割します。
@@ -253,7 +253,7 @@ public:
      * auto tokens = String("a::b").split("::");        // => ["a", "b"]
      * ~~~
      */
-    List<String> split(const StringRef& delim, StringSplitOptions option = StringSplitOptions::None) const;
+    List<String> split(const StringView& delim, StringSplitOptions option = StringSplitOptions::None) const;
 
     /**
      * この文字列を整数値に変換します。
@@ -306,12 +306,12 @@ public:
     std::wstring toStdWString() const;
 
     /** 指定した文字列を連結します。 */
-    static String concat(const StringRef& str1, const StringRef& str2);
-    static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3);                        /**< @overload concat */
-    static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3, const StringRef& str4); /**< @overload concat */
+    static String concat(const StringView& str1, const StringView& str2);
+    static String concat(const StringView& str1, const StringView& str2, const StringView& str3);                        /**< @overload concat */
+    static String concat(const StringView& str1, const StringView& str2, const StringView& str3, const StringView& str4); /**< @overload concat */
 
     /** 指定した文字列リストを結合した 1 つの文字列を生成します。各要素の間には、指定した区切り記号が挿入されます。 */
-    static String join(const List<String>& list, const StringRef& delim);
+    static String join(const List<String>& list, const StringView& delim);
 
     /**
      * 指定した2つの文字列を比較します。
@@ -329,7 +329,7 @@ public:
      *  - str1 が str2 より大きい → 0 より大きい値
      */
     static int compare(const String& str1, const String& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
-    static int compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive); /**< @overload compare */
+    static int compare(const StringView& str1, int index1, const StringView& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive); /**< @overload compare */
 
     /** ローカルの char 文字列を String へ変換します。 */
     static String fromCString(const char* str, int length = -1, TextEncoding* encoding = nullptr);
@@ -382,13 +382,13 @@ public:
     /** 任意の位置の要素へアクセスします。 */
     const Char& operator[](int index) const LN_NOEXCEPT;
 
-    String& operator=(const StringRef& rhs);
+    String& operator=(const StringView& rhs);
     String& operator=(const Char* rhs);
     String& operator=(Char ch);
     String& operator=(const Path& rhs);
 
     String& operator+=(const String& rhs);
-    String& operator+=(const StringRef& rhs);
+    String& operator+=(const StringView& rhs);
     String& operator+=(const Char* rhs);
     String& operator+=(Char rhs);
 
@@ -402,7 +402,7 @@ public:
     /** 現在の環境で定義されている改行文字列を取得します。 */
     static const String& newLine();
 
-    bool equals(const StringRef rhs) const noexcept;
+    bool equals(const StringView rhs) const noexcept;
 
 private:
     static std::size_t const SSOCapacity = 15;
@@ -479,35 +479,35 @@ private:
 };
 
 /** ある文字列に対する部分文字列の参照を保持します。 */
-class StringRef
+class StringView
 {
 public:
-    /** 空の StringRef を構築します。 */
-    StringRef() LN_NOEXCEPT;
+    /** 空の StringView を構築します。 */
+    StringView() LN_NOEXCEPT;
 
-    /** 別の StringRef と同じ文字列を参照します。(コピーコンストラクタ) */
-    StringRef(const StringRef& str) LN_NOEXCEPT;
+    /** 別の StringView と同じ文字列を参照します。(コピーコンストラクタ) */
+    StringView(const StringView& str) LN_NOEXCEPT;
 
     /** 指定された文字列の全体を参照します。 */
-    StringRef(const String& str);
+    StringView(const String& str);
 
     /** 文字列と長さを受け取り、その範囲を参照します。 */
-    StringRef(const String& str, int len);
+    StringView(const String& str, int len);
 
     /** 文字列と開始インデックスと長さを受け取り、その範囲を参照します。 */
-    StringRef(const String& str, int startIndex, int len);
+    StringView(const String& str, int startIndex, int len);
 
     /** 指定された文字列の全体を参照します。 */
-    StringRef(const Char* str);
+    StringView(const Char* str);
 
     /** 文字列と長さを受け取り、その範囲を参照します。 */
-    StringRef(const Char* str, int len);
+    StringView(const Char* str, int len);
 
     /** 文字列の範囲を参照します。 */
-    StringRef(const Char* begin, const Char* end);
+    StringView(const Char* begin, const Char* end);
 
     /** 指定された Path 全体を参照します。 */
-    StringRef(const Path& path);
+    StringView(const Path& path);
 
 #ifdef LN_STRING_FUZZY_CONVERSION
     /** 指定された文字列の全体を参照します。 */
@@ -528,18 +528,18 @@ public:
     LN_CONSTEXPR const Char* data() const LN_NOEXCEPT { return m_str; }
 
     /** この文字列の末尾が、指定した文字列と一致するかを判断します。 */
-    bool endsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    bool endsWith(const StringView& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
     /** 文字列の部分文字列を抽出します。 */
-    StringRef substr(int start, int count) const;
+    StringView substr(int start, int count) const;
 
 
     /** @copydoc String::indexOf */
-    int indexOf(const StringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int indexOf(const StringView& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     int indexOf(Char ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
     /** @copydoc String::lastIndexOf */
-    int lastIndexOf(const StringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int lastIndexOf(const StringView& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
     int lastIndexOf(Char ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
     int toInt(int base = 0) const;
@@ -555,9 +555,9 @@ public:
     /** 任意の位置の要素にアクセスします。 */
     LN_CONSTEXPR const Char& operator[](int index) const { return *(data() + index); }
 
-    ~StringRef() { clear(); }
-    StringRef& operator=(const StringRef& str);
-    StringRef& operator=(StringRef&& str);
+    ~StringView() { clear(); }
+    StringView& operator=(const StringView& str);
+    StringView& operator=(StringView&& str);
 
 private:
     size_t getHashCode() const;
@@ -725,7 +725,7 @@ inline const Char& String::operator[](int index) const LN_NOEXCEPT
     return getBuffer()[index];
 }
 
-inline String& String::operator=(const StringRef& rhs)
+inline String& String::operator=(const StringView& rhs)
 {
     assign(rhs);
     return *this;
@@ -746,7 +746,7 @@ inline String& String::operator+=(const String& rhs)
     append(rhs.c_str(), rhs.length());
     return *this;
 }
-inline String& String::operator+=(const StringRef& rhs)
+inline String& String::operator+=(const StringView& rhs)
 {
     append(rhs.data(), rhs.length());
     return *this;
@@ -768,19 +768,19 @@ inline String operator+(const String& lhs, const String& rhs)
 }
 inline String operator+(const String& lhs, const Char* rhs)
 {
-    return String::concat(lhs, StringRef(rhs));
+    return String::concat(lhs, StringView(rhs));
 }
 inline String operator+(const Char* lhs, const String& rhs)
 {
-    return String::concat(StringRef(lhs), rhs);
+    return String::concat(StringView(lhs), rhs);
 }
 inline String operator+(const String& lhs, Char rhs)
 {
-    return String::concat(lhs, StringRef(&rhs, 1));
+    return String::concat(lhs, StringView(&rhs, 1));
 }
 inline String operator+(Char lhs, const String& rhs)
 {
-    return String::concat(StringRef(&lhs, 1), rhs);
+    return String::concat(StringView(&lhs, 1), rhs);
 }
 
 inline bool operator==(const Char* lhs, const String& rhs)
@@ -795,7 +795,7 @@ inline bool operator==(const String& lhs, const Char* rhs)
 {
     return detail::UStringHelper::compare(lhs.c_str(), rhs) == 0;
 }
-inline bool operator==(const String& lhs, const StringRef& rhs)
+inline bool operator==(const String& lhs, const StringView& rhs)
 {
     return String::compare(lhs, 0, rhs, 0) == 0;
 }
@@ -944,39 +944,39 @@ inline std::wostream& operator<<(std::wostream& os, const String& str)
 }
 
 //==============================================================================
-// StringRef
+// StringView
 
-inline String operator+(const Char* lhs, const StringRef& rhs)
+inline String operator+(const Char* lhs, const StringView& rhs)
 {
     return String::concat(lhs, rhs);
 }
 
-inline String operator+(const StringRef& lhs, const StringRef& rhs)
+inline String operator+(const StringView& lhs, const StringView& rhs)
 {
     return String::concat(lhs, rhs);
 }
 
-inline bool operator==(const StringRef& lhs, const StringRef& rhs)
+inline bool operator==(const StringView& lhs, const StringView& rhs)
 {
     return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length())) == 0;
 }
-inline bool operator==(const Char* lhs, const StringRef& rhs)
+inline bool operator==(const Char* lhs, const StringView& rhs)
 {
-    return String::compare(StringRef(lhs), 0, rhs, 0, -1) == 0;
+    return String::compare(StringView(lhs), 0, rhs, 0, -1) == 0;
 }
-inline bool operator==(const StringRef& lhs, const Char* rhs)
+inline bool operator==(const StringView& lhs, const Char* rhs)
 {
-    return String::compare(lhs, 0, StringRef(rhs), 0, -1) == 0;
+    return String::compare(lhs, 0, StringView(rhs), 0, -1) == 0;
 }
-inline bool operator!=(const StringRef& lhs, const StringRef& rhs)
-{
-    return !operator==(lhs, rhs);
-}
-inline bool operator!=(const Char* lhs, const StringRef& rhs)
+inline bool operator!=(const StringView& lhs, const StringView& rhs)
 {
     return !operator==(lhs, rhs);
 }
-inline bool operator!=(const StringRef& lhs, const Char* rhs)
+inline bool operator!=(const Char* lhs, const StringView& rhs)
+{
+    return !operator==(lhs, rhs);
+}
+inline bool operator!=(const StringView& lhs, const Char* rhs)
 {
     return !operator==(lhs, rhs);
 }
@@ -1037,14 +1037,14 @@ template<> struct formatter<::ln::String, ln::Char> {
     }
 };
 
-template<> struct formatter<::ln::StringRef, ln::Char> {
+template<> struct formatter<::ln::StringView, ln::Char> {
     template<typename ParseContext>
     auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
         return ctx.begin();
     }
 
     template<typename FormatContext>
-    auto format(const ln::StringRef& v, FormatContext& ctx) -> decltype(ctx.out()) {
+    auto format(const ln::StringView& v, FormatContext& ctx) -> decltype(ctx.out()) {
         std::basic_string_view<ln::Char> view(v.data(), v.length());
         formatter<std::basic_string_view<ln::Char>, ln::Char> fff;
         return fff.format(view, ctx);
@@ -1058,7 +1058,7 @@ template<> struct formatter<::ln::StringRef, ln::Char> {
 
 namespace ln {
 
-inline bool String::equals(const StringRef rhs) const noexcept {
+inline bool String::equals(const StringView rhs) const noexcept {
     return (length() == rhs.length() && startsWith(rhs));
 }
 
@@ -1066,7 +1066,7 @@ inline std::u32string_view toStdStringView(const String& v) {
     return std::u32string_view(v.c_str(), v.length());
 }
 
-inline std::u32string_view toStdStringView(const StringRef& v) {
+inline std::u32string_view toStdStringView(const StringView& v) {
     return std::u32string_view(v.data(), v.length());
 }
 

@@ -81,8 +81,8 @@ private:
 class AppData
 {
 public:
-	static void setValue(const StringRef& key, Ref<Variant> value);
-	static Ref<Variant> getValue(const StringRef& key);	// null = NotFound.
+	static void setValue(const StringView& key, Ref<Variant> value);
+	static Ref<Variant> getValue(const StringView& key);	// null = NotFound.
 
 };
 
@@ -104,8 +104,8 @@ public:
 class AppDataInternal : public RefObject
 {
 public:
-	void setValue(const StringRef& key, Ref<Variant> value);
-	Ref<Variant> getValue(const StringRef& key) const;	// null = NotFound.
+	void setValue(const StringView& key, Ref<Variant> value);
+	Ref<Variant> getValue(const StringView& key) const;	// null = NotFound.
 	void attemptSave();
 	void attemptLoad();
 

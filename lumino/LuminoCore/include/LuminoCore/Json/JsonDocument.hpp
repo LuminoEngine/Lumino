@@ -71,7 +71,7 @@ public:
     void setInt64Value(int64_t value);
     void setFloatValue(float value);
     void setDoubleValue(double value);
-    void setStringValue(const StringRef& value);
+    void setStringValue(const StringView& value);
 
     bool isNull() const;
     bool boolValue() const;
@@ -113,7 +113,7 @@ public:
     void addInt64Value(int64_t value);
     void addFloatValue(float value);
     void addDoubleValue(double value);
-    void addStringValue(const StringRef& value);
+    void addStringValue(const StringView& value);
 
     JsonArray* addArray();
     JsonObject* addObject();
@@ -137,18 +137,18 @@ class JsonObject
     : public JsonElement
 {
 public:
-    void addNullValue(const StringRef& name);
-    void addBoolValue(const StringRef& name, bool value);
-    void addInt32Value(const StringRef& name, int32_t value);
-    void addInt64Value(const StringRef& name, int64_t value);
-    void addFloatValue(const StringRef& name, float value);
-    void addDoubleValue(const StringRef& name, double value);
-    void addStringValue(const StringRef& name, const StringRef& value);
+    void addNullValue(const StringView& name);
+    void addBoolValue(const StringView& name, bool value);
+    void addInt32Value(const StringView& name, int32_t value);
+    void addInt64Value(const StringView& name, int64_t value);
+    void addFloatValue(const StringView& name, float value);
+    void addDoubleValue(const StringView& name, double value);
+    void addStringValue(const StringView& name, const StringView& value);
 
-    JsonArray* addArray(const StringRef& name);
-    JsonObject* addObject(const StringRef& name);
+    JsonArray* addArray(const StringView& name);
+    JsonObject* addObject(const StringView& name);
 
-    JsonElement* find(const StringRef& name) const;
+    JsonElement* find(const StringView& name) const;
 
     int memberCount() const { return m_memberList.size(); }
     const String& memberKey(int index) const { return m_memberList[index].name; }
@@ -161,7 +161,7 @@ protected:
 
 private:
     void clear() { m_memberList.clear(); }
-    JsonValue* getValue(const StringRef& name);
+    JsonValue* getValue(const StringView& name);
 
     struct Member
     {
@@ -228,10 +228,10 @@ public:
     void setRootObject();
 
     /** JSON 文字列としてファイルに保存します。 */
-    void save(const StringRef& filePath, JsonFormatting formatting = JsonFormatting::None);
+    void save(const StringView& filePath, JsonFormatting formatting = JsonFormatting::None);
 
     /** JSON ファイルを読み込み、ドキュメントを構築します。 */
-    void load(const StringRef& filePath);
+    void load(const StringView& filePath);
 
     /** JSON 文字列を生成します。 */
     String toString(JsonFormatting formatting = JsonFormatting::None);

@@ -14,7 +14,7 @@
 
 namespace ln {
 
-static bool matchInternal(pcre2_code* re, uint32_t options, const StringRef& input, void** outResult)
+static bool matchInternal(pcre2_code* re, uint32_t options, const StringView& input, void** outResult)
 {
 	if (LN_REQUIRE(re)) {
 		return false;
@@ -58,7 +58,7 @@ static bool matchInternal(pcre2_code* re, uint32_t options, const StringRef& inp
 //==============================================================================
 // Regex
 
-Regex::Regex(const StringRef& pattern)
+Regex::Regex(const StringView& pattern)
 	: m_pcre(nullptr)
 {
 	if (LN_REQUIRE(!pattern.isEmpty())) {
@@ -87,7 +87,7 @@ Regex::~Regex()
 	}
 }
 
-bool Regex::match(const StringRef& input, MatchResult* outResult) const
+bool Regex::match(const StringView& input, MatchResult* outResult) const
 {
 	if (outResult) {
 		outResult->m_subject = input.data();
@@ -95,7 +95,7 @@ bool Regex::match(const StringRef& input, MatchResult* outResult) const
 	return matchInternal(reinterpret_cast<pcre2_code*>(m_pcre), PCRE2_ANCHORED | PCRE2_ENDANCHORED, input, (outResult) ? &outResult->m_matchData : nullptr);
 }
 
-bool Regex::search(const StringRef& input, MatchResult* outResult) const
+bool Regex::search(const StringView& input, MatchResult* outResult) const
 {
 	if (outResult) {
 		outResult->m_subject = input.data();
@@ -103,13 +103,13 @@ bool Regex::search(const StringRef& input, MatchResult* outResult) const
 	return matchInternal(reinterpret_cast<pcre2_code*>(m_pcre), 0, input, (outResult) ? &outResult->m_matchData : nullptr);
 }
 
-bool Regex::match(const StringRef& input, const StringRef& pattern, MatchResult* outResult)
+bool Regex::match(const StringView& input, const StringView& pattern, MatchResult* outResult)
 {
 	Regex re(pattern);
 	return re.match(input, outResult);
 }
 
-bool Regex::search(const StringRef& input, const StringRef& pattern, MatchResult* outResult)
+bool Regex::search(const StringView& input, const StringView& pattern, MatchResult* outResult)
 {
 	Regex re(pattern);
 	return re.search(input, outResult);
@@ -152,7 +152,7 @@ int MatchResult::length() const
 	return static_cast<int>(ovector[1] - ovector[0]);
 }
 
-StringRef MatchResult::value() const
+StringView MatchResult::value() const
 {
 	return groupValue(0);
 }
@@ -164,10 +164,10 @@ int MatchResult::groupCount() const
 	return pcre2_get_ovector_count(matchData);
 }
 
-StringRef MatchResult::groupValue(int index) const
+StringView MatchResult::groupValue(int index) const
 {
-	if (LN_REQUIRE(m_matchData)) return StringRef();
-	if (LN_REQUIRE(index < groupCount())) return StringRef();
+	if (LN_REQUIRE(m_matchData)) return StringView();
+	if (LN_REQUIRE(index < groupCount())) return StringView();
 
 	pcre2_match_data* matchData = reinterpret_cast<pcre2_match_data*>(m_matchData);
 	size_t* ovector = pcre2_get_ovector_pointer(matchData);
@@ -177,7 +177,7 @@ StringRef MatchResult::groupValue(int index) const
 	PCRE2_SPTR start = subject + ovector[2 * index];
 	size_t length = ovector[2 * index + 1] - ovector[2 * index];
 
-	return StringRef((const Char*)start, length);
+	return StringView((const Char*)start, length);
 }
 
 } // namespace ln

@@ -207,9 +207,9 @@ public:
 
 	void flipVerticalFlow();
 
-	void load(const StringRef& filePath);  // TODO: 種類の指定
+	void load(const StringView& filePath);  // TODO: 種類の指定
     void load(Stream* stream);   // TODO: 種類の指定
-	void save(const StringRef& filePath);
+	void save(const StringView& filePath);
 
 	Ref<Bitmap2D> clone() const;
 	Ref<Bitmap2D> transcodeTo(PixelFormat format, const ColorI& color = ColorI::White) const;
@@ -278,7 +278,7 @@ class BitmapHelper
 public:
 	static void blitRawSimple(void* dst, const void* src, size_t width, size_t height, size_t pixelBytes, bool flipVertical);
 	static void blitRawSimple3D(void* dst, const void* src, size_t width, size_t height, size_t depth, size_t pixelBytes, bool flipVertical);
-    //static void drawText(Bitmap2D* bitmap, const StringRef& text, const RectI& rect, Font* font, const Color& color);
+    //static void drawText(Bitmap2D* bitmap, const StringView& text, const RectI& rect, Font* font, const Color& color);
 };
 } // namespace detail
 } // namespace ln

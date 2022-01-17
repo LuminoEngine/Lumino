@@ -52,8 +52,8 @@ public:
 	static Ref<Sprite> create(SpriteSheet* frameSet);
 	
 	// 画像ファイルまたは spritesheet をロード
-	static Ref<Sprite> load(StringRef filePath);
-	static Ref<Sprite> loadEmoji(StringRef code);
+	static Ref<Sprite> load(StringView filePath);
+	static Ref<Sprite> loadEmoji(StringView code);
 	static Ref<Sprite> loadEmoji(uint32_t codePoint);
 
     /** スプライトが表示するテクスチャを設定します。 */
@@ -174,7 +174,7 @@ struct Sprite::Builder : public BuilderCore<Sprite, Builder, BuilderDetails>
 {
     Builder() {}
     Builder(Texture* texture) { d()->texture = texture; }
-    Builder(const StringRef& textureFilepath) { d()->texture = Texture2D::load(textureFilepath); }
+    Builder(const StringView& textureFilepath) { d()->texture = Texture2D::load(textureFilepath); }
 };
 	
 

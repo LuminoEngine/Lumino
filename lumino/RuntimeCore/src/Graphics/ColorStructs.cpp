@@ -47,7 +47,7 @@ static int ParseHexChar(int c)
     return 0;
 }
 
-static bool ParseHexColor(const StringRef& str, ColorI* outColor)
+static bool ParseHexColor(const StringView& str, ColorI* outColor)
 {
     uint8_t r, g, b, a;
     if (str.length() >= 3 && str[0] == _T('#')) {
@@ -95,7 +95,7 @@ static bool ParseHexColor(const StringRef& str, ColorI* outColor)
     return false;
 }
 
-ColorI ColorI::parse(const StringRef& str)
+ColorI ColorI::parse(const StringView& str)
 {
     ColorI c;
     if (!ParseHexColor(str, &c)) {
@@ -285,7 +285,7 @@ Color::Color(const ColorI& color) noexcept
 {
 }
 
-Color Color::parse(const StringRef& str)
+Color Color::parse(const StringView& str)
 {
     ColorI c = ColorI::parse(str);
     return Color(c);

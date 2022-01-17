@@ -15,17 +15,17 @@ namespace ln {
 
 LN_OBJECT_IMPLEMENT(UIIcon, UIElement) {}
 
-Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName)
+Ref<UIIcon> UIIcon::loadFontIcon(const StringView& iconName)
 {
 	return makeObject<UIIcon>(iconName);
 }
 
-Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName, int size)
+Ref<UIIcon> UIIcon::loadFontIcon(const StringView& iconName, int size)
 {
 	return makeObject<UIIcon>(iconName, size);
 }
 
-Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName, int size, const Color& color)
+Ref<UIIcon> UIIcon::loadFontIcon(const StringView& iconName, int size, const Color& color)
 {
 	return makeObject<UIIcon>(iconName, size, color);
 }
@@ -43,14 +43,14 @@ bool UIIcon::init()
 	return true;
 }
 
-bool UIIcon::init(const StringRef& iconName)
+bool UIIcon::init(const StringView& iconName)
 {
 	if (!init()) return false;
 	setIconName(iconName);
 	return true;
 }
 
-bool UIIcon::init(const StringRef& iconName, int size)
+bool UIIcon::init(const StringView& iconName, int size)
 {
 	if (!init()) return false;
 	setIconName(iconName);
@@ -58,7 +58,7 @@ bool UIIcon::init(const StringRef& iconName, int size)
 	return true;
 }
 
-bool UIIcon::init(const StringRef& iconName, int size, const Color& color)
+bool UIIcon::init(const StringView& iconName, int size, const Color& color)
 {
 	if (!init()) return false;
 	setIconName(iconName);
@@ -67,7 +67,7 @@ bool UIIcon::init(const StringRef& iconName, int size, const Color& color)
 	return true;
 }
 
-void UIIcon::setIconName(const StringRef& value)
+void UIIcon::setIconName(const StringView& value)
 {
     // TODO: size
 	m_codePoint = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeCodePoint(value);

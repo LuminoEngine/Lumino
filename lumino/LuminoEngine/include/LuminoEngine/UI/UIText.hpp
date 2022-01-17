@@ -15,18 +15,18 @@ class UIText
     LN_BUILDER;
 public:
     static Ref<UIText> create();
-    static Ref<UIText> create(const StringRef& text);
+    static Ref<UIText> create(const StringView& text);
 
     /** 表示文字列を設定します。 */
     LN_METHOD(Property)
-	void setText(const StringRef& value);
+	void setText(const StringView& value);
 
     /** 表示文字列を取得します。 */
     LN_METHOD(Property)
 	const String& text() const { return m_text; }
 
 
-	ViewProperty* getViewProperty(StringRef name);
+	ViewProperty* getViewProperty(StringView name);
 	std::vector<Ref<ViewProperty>> m_viewProperties;
 
 //LN_CONSTRUCT_ACCESS:
@@ -44,7 +44,7 @@ public: // TODO:
      * @param[in] text : 表示文字列
      */
     LN_METHOD(OverloadPostfix = "WithText")
-    void init(const StringRef& text);
+    void init(const StringView& text);
 
 protected:
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
@@ -84,13 +84,13 @@ struct UIText::BuilderCore : public UIElement::BuilderCore<T, B, D>
 {
     LN_BUILDER_CORE(UIElement::BuilderCore);
 
-    B& text(StringRef value) { d()->text = value; return self(); }
+    B& text(StringView value) { d()->text = value; return self(); }
 };
 
 struct UIText::Builder : public BuilderCore<UIText, Builder, BuilderDetails>
 {
     Builder() {}
-    Builder(StringRef text) { d()->text = text; }
+    Builder(StringView text) { d()->text = text; }
 };
 
 } // namespace ln

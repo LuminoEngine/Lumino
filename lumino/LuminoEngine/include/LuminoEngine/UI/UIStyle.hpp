@@ -112,7 +112,7 @@ public:	// TODO: internal
 	uint32_t m_codePoint = 0;
 
 
-	void setIconName(const StringRef& value, int size);
+	void setIconName(const StringView& value, int size);
 
 	void render(UIRenderingContext* context, const Size& slotRect);
 
@@ -364,14 +364,14 @@ class UIStyleSet
 {
 public:
     const String& elementName() const { return m_elementName; }
-    //void setClassName(const StringRef& value) { m_className = value; }
+    //void setClassName(const StringView& value) { m_className = value; }
 
 	UIStyleClass* mainStyleClass() const { return m_mainStyleClass; }
     void setMainStyleClass(UIStyleClass* value) { m_mainStyleClass = value; }
 
     void addStyleClass(UIStyleClass* styleClass);
-	UIStyleClass* addStyleClass(const StringRef& className);
-	UIStyleClass* findStyleClass(const StringRef& className) const;
+	UIStyleClass* addStyleClass(const StringView& className);
+	UIStyleClass* findStyleClass(const StringView& className) const;
 
     // TODO: internal
 	void copyFrom(const UIStyleSet* other);
@@ -380,7 +380,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIStyleSet();
     virtual ~UIStyleSet();
-    void init(const StringRef& elementName);
+    void init(const StringView& elementName);
 
 private:
 	String m_elementName;
@@ -401,9 +401,9 @@ public:
 	UIStyle* mainStyle() const { return m_mainStyle; }
 	void setMainStyle(UIStyle* value) { m_mainStyle = value; }
 
-	void addStateStyle(const StringRef& stateName, UIStyle* style);
-	UIStyle* addStateStyle(const StringRef& stateName);
-	UIStyle* findStateStyle(const StringRef& stateName) const;
+	void addStateStyle(const StringView& stateName, UIStyle* style);
+	UIStyle* addStateStyle(const StringView& stateName);
+	UIStyle* findStateStyle(const StringView& stateName) const;
 
 	// TODO: internal
 	void copyFrom(const UIStyleClass* other);
@@ -420,7 +420,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIStyleClass();
 	virtual ~UIStyleClass();
-	void init(const StringRef& name);
+	void init(const StringView& name);
 
 private:
 
@@ -436,11 +436,11 @@ class UIStyleSheet
     : public Object
 {
 public:
-    void addStyleSet(const StringRef& elementName, UIStyleSet* styleClass);
-    Ref<UIStyleSet> addStyleSet(const StringRef& elementName);
-    UIStyleSet* findStyleSet(const StringRef& elementName) const;
+    void addStyleSet(const StringView& elementName, UIStyleSet* styleClass);
+    Ref<UIStyleSet> addStyleSet(const StringView& elementName);
+    UIStyleSet* findStyleSet(const StringView& elementName) const;
 
-	UIStyle* obtainStyle(const StringRef& selector);
+	UIStyle* obtainStyle(const StringView& selector);
     
 LN_CONSTRUCT_ACCESS:
     UIStyleSheet();
@@ -463,10 +463,10 @@ public:
     // TODO: internal
 	// find を高速にするため、事前に確定できる継承関係を解決する。
     void build();
-    UIStyleSet* findStyleSet(const StringRef& elementName) const; // 無い場合は null
-    //detail::UIStyleClassInstance* findResolvedStyleClass(const StringRef& elementName) const; // 無い場合は global
+    UIStyleSet* findStyleSet(const StringView& elementName) const; // 無い場合は null
+    //detail::UIStyleClassInstance* findResolvedStyleClass(const StringView& elementName) const; // 無い場合は global
 	// VisualState 以外を結合 (mainStyle のみ結合)
-	void combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const;
+	void combineStyle(UIStyle* style, const StringView& elementName, const List<String>* classList) const;
 
 	Ref<UITheme> mainTheme;
 
@@ -503,7 +503,7 @@ public:
         int activeStateIndex;   // -1: no-state
     };
 
-    void registerState(const StringRef& groupName, const StringRef& stateName)
+    void registerState(const StringView& groupName, const StringView& stateName)
     {
         int groupIndex = m_groups.indexOfIf([&](const Group& g) { return g.name == groupName; });
         if (groupIndex >= 0) {
@@ -514,7 +514,7 @@ public:
         }
     }
 
-    void gotoState(const StringRef& stateName)
+    void gotoState(const StringView& stateName)
     {
         for (auto& g : m_groups) {
             bool stateFound = false;
@@ -603,10 +603,10 @@ class UITheme
     : public Object
 {
 public:
-    void add(const StringRef& name, const Color& color);
+    void add(const StringView& name, const Color& color);
 
     // ない場合は透明 (0, 0, 0, 0)
-    const Color& get(const StringRef& name) const;
+    const Color& get(const StringView& name) const;
 
     void setSpacing(float value) { m_spacing = value; }
 

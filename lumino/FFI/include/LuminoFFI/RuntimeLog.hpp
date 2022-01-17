@@ -18,7 +18,7 @@ public:
 
 	/** write */
 	LN_METHOD()
-	static void write(LogLevel level, const StringRef& tag, const StringRef& text);
+	static void write(LogLevel level, const StringView& tag, const StringView& text);
 	
 private:
 };

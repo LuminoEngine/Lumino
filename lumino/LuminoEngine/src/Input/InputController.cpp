@@ -39,7 +39,7 @@ InputController::~InputController()
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isPressed(const StringRef& bindingName) const
+bool InputController::isPressed(const StringView& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
@@ -48,7 +48,7 @@ bool InputController::isPressed(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isTriggered(const StringRef& bindingName) const
+bool InputController::isTriggered(const StringView& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
@@ -57,7 +57,7 @@ bool InputController::isTriggered(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isTriggeredOff(const StringRef& bindingName) const
+bool InputController::isTriggeredOff(const StringView& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
@@ -66,7 +66,7 @@ bool InputController::isTriggeredOff(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isRepeated(const StringRef& bindingName) const
+bool InputController::isRepeated(const StringView& bindingName) const
 {
 	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
@@ -76,7 +76,7 @@ bool InputController::isRepeated(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-float InputController::getAxisValue(const StringRef& bindingName) const
+float InputController::getAxisValue(const StringView& bindingName) const
 {
 	if (m_disabledUntilIdle) return 0.0f;
 	auto* state = LockupState(bindingName);
@@ -85,7 +85,7 @@ float InputController::getAxisValue(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-void InputController::addBinding(const StringRef& buttonName, InputGesture* gesture)
+void InputController::addBinding(const StringView& buttonName, InputGesture* gesture)
 {
 	BindingSlot slot = { buttonName, gesture };
 	m_bindingSlots.add(slot);
@@ -123,7 +123,7 @@ void InputController::removeBinding(InputGesture* gesture)
 }
 
 //------------------------------------------------------------------------------
-void InputController::clearBindings(const StringRef& buttonName)
+void InputController::clearBindings(const StringView& buttonName)
 {
 	List<BindingSlot> list = m_bindingSlots;
 	for (int i = list.size() - 1; i >= 0; --i)	// 後ろから回した方がちょっと削除の効率がいい
@@ -234,7 +234,7 @@ int InputController::getJoyNumber() const
 //}
 
 //------------------------------------------------------------------------------
-const detail::InputDeviceElement* InputController::LockupState(const StringRef& bindingName) const
+const detail::InputDeviceElement* InputController::LockupState(const StringView& bindingName) const
 {
 	if (bindingName.isEmpty() || String::compare(_TT("any"), bindingName, CaseSensitivity::CaseInsensitive) == 0)
 	{

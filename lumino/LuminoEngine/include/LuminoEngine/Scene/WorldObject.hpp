@@ -188,15 +188,15 @@ public:
 
 	/** タグを追加します。 */
 	LN_METHOD()
-    void addTag(const StringRef& tag) { m_tags->add(tag); }
+    void addTag(const StringView& tag) { m_tags->add(tag); }
 
 	/** タグを除外します。 */
 	LN_METHOD()
-    void removeTag(const StringRef& tag) { m_tags->remove(tag); }
+    void removeTag(const StringView& tag) { m_tags->remove(tag); }
 
 	/** 指定したタグを持っているかを確認します。 */
 	LN_METHOD()
-    bool hasTag(const StringRef& tag) const { return m_tags->contains(tag); }
+    bool hasTag(const StringView& tag) const { return m_tags->contains(tag); }
 
 	/**
 	 * WorldObject を破棄します。

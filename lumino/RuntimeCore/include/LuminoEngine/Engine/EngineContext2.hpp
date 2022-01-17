@@ -108,7 +108,7 @@ public:
 		return typeInfo;
 	}
 
-	TypeInfo* findTypeInfo(const StringRef& name) const
+	TypeInfo* findTypeInfo(const StringView& name) const
 	{
 		auto itr = m_typeInfoSet.find(name);
 		if (itr != m_typeInfoSet.end()) {
@@ -129,7 +129,7 @@ public:
 		}
 	}
 
-	TypeInfo* acquireTypeInfo(const StringRef& name);
+	TypeInfo* acquireTypeInfo(const StringView& name);
 
 	TypeInfo* objectTypeInfo() const { return m_objectTypeInfo; }
 

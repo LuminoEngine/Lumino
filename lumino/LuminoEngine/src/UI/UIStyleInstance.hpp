@@ -159,8 +159,8 @@ class UIStyleClassInstance
 public:
     UIStyleClassInstance();
     const Ref<UIStyleInstance>& style() const { return m_style; }
-    UIStyleInstance* findStateStyle(const StringRef& stateName) const;  // 無い場合は nullptr
-    UIStyleInstance* findSubElementStyle(const StringRef& elementName) const;   // 無い場合は nullptr
+    UIStyleInstance* findStateStyle(const StringView& stateName) const;  // 無い場合は nullptr
+    UIStyleInstance* findSubElementStyle(const StringView& elementName) const;   // 無い場合は nullptr
     void mergeFrom(const UIStyleSet* other);
 
 private:

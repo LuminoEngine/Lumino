@@ -61,7 +61,7 @@ namespace detail {
 //	detail::EngineSettings::instance.mainBackBufferSize.set(width, height);
 //}
 //
-//void EngineSettings::setMainWindowTitle(const StringRef& title)
+//void EngineSettings::setMainWindowTitle(const StringView& title)
 //{
 //	detail::EngineSettings::instance.mainWindowTitle = title;
 //}
@@ -786,7 +786,7 @@ ln::Path EngineManager::findRepositoryRootForTesting()
 	return findParentDirectoryContainingSpecifiedFile(_TT("build.csproj"));
 }
 
-ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringRef file)
+ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringView file)
 {
 	ln::Path path = ln::Path(ln::Environment::executablePath()).parent();
 	ln::Path luminoRepoRoot;

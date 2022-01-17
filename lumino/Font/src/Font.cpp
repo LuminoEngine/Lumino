@@ -27,7 +27,7 @@ void Font::setDefaultFont(Font* font)
     detail::FontManager::instance()->setDefaultFont(font);
 }
 
-void Font::registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily)
+void Font::registerFontFromFile(const StringView& fontFilePath, bool defaultFamily)
 {
 	detail::FontManager::instance()->registerFontFromFile(fontFilePath, defaultFamily);
 }
@@ -133,7 +133,7 @@ Ref<Font> Font::clone() const
     return ptr;
 }
 
-Size Font::measureRenderSize(const StringRef& text, float dpiScale)
+Size Font::measureRenderSize(const StringView& text, float dpiScale)
 {
     detail::FontCore* font = resolveFontCore(dpiScale);
     detail::MeasureTextLayoutEngine measureLayout;

@@ -16,11 +16,11 @@ class UILinkLabel
 public:
 	/** set text. */
 	LN_METHOD()
-    void setText(const StringRef& value);
+    void setText(const StringView& value);
 	
 	/** set url. */
 	LN_METHOD()
-    void setUrl(const StringRef& value);
+    void setUrl(const StringView& value);
 
 LN_CONSTRUCT_ACCESS:
 	UILinkLabel();

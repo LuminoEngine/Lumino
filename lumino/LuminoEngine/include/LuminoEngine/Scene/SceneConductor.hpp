@@ -17,7 +17,7 @@ public:
 	const Ref<TransitionPostEffect>& transitionEffect() const { return m_transitionEffect; }
 
     ///** Level を読み込み、アクティブな World にアタッチします。 */
-    //static Level* loadScene(const StringRef& sceneAssetFilePath);
+    //static Level* loadScene(const StringView& sceneAssetFilePath);
 
     //static void unloadScene(Level* scene);
 

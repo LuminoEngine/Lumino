@@ -186,7 +186,7 @@ public:
 
 	void registerViewProperty(ViewPropertyInfo* prop);
 	const List<Ref<ViewPropertyInfo>>& viewProperties() const { return m_viewProperties; }
-	ViewPropertyInfo* findViewProperty(const StringRef& name) const;
+	ViewPropertyInfo* findViewProperty(const StringView& name) const;
 
 	Ref<Object> createInstance() const;
 	static Ref<Object> createInstance(const String& typeName);	// TODO: EngineContext へ
@@ -241,7 +241,7 @@ struct TypeInfoInternal
 //	}
 //
 //	template<class T>
-//	static Ref<T> deserialize(const StringRef& jsonText)
+//	static Ref<T> deserialize(const StringView& jsonText)
 //	{
 //		Ref<T> value = makeObject<T>();
 //		JsonTextInputArchive ar(jsonText);

@@ -28,7 +28,7 @@ public:
 
     /** setText */
     LN_METHOD(Property)
-    void setText(const StringRef& value);
+    void setText(const StringView& value);
 
     /** setTypingSpeed */
     LN_METHOD(Property)
@@ -67,7 +67,7 @@ class UIMessageTextWindow
 public:
     static Ref<UIMessageTextWindow> create();
 
-    void setText(const StringRef& value);
+    void setText(const StringView& value);
     void setTypingSpeed(float value);
 
 

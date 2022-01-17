@@ -50,12 +50,12 @@ public:
     Path(const String& path);
 
     /** 指定されたパス文字列から Path を構築します。 */
-    Path(const StringRef& path);
+    Path(const StringView& path);
 
     /** 指定されたパス文字列を連結して Path を構築します。relativePath が絶対パスである場合、basePath は無視されます。 */
     Path(const Path& basePath, const Char* relativePath);
     Path(const Path& basePath, const String& relativePath);
-    Path(const Path& basePath, const StringRef& relativePath);
+    Path(const Path& basePath, const StringView& relativePath);
     Path(const Path& basePath, const Path& relativePath);
 
     // operators
@@ -110,7 +110,7 @@ public:
     bool isUnified() const;
 
     /** このパスが指定された拡張子を持っているかを確認します。 (ext の . の有無は問わない) */
-    bool hasExtension(const StringRef& ext = StringRef()) const;
+    bool hasExtension(const StringView& ext = StringView()) const;
 
     /**
      * パス文字列の中から拡張子を含むファイル名の部分を返します。
@@ -146,7 +146,7 @@ public:
      * ".file"              => ""
      * ~~~
      */
-    StringRef fileNameWithoutExtension() const;
+    StringView fileNameWithoutExtension() const;
 
     /**
      * ファイルの拡張子を取得します。
@@ -160,7 +160,7 @@ public:
      * ""                   => ""
      * ~~~
      */
-    StringRef extension(bool withDot = true) const;
+    StringView extension(bool withDot = true) const;
 
     /**
      * 親ディレクトリのパスを取得します。
@@ -209,7 +209,7 @@ public:
      * "dir/file.txt" with "md" => "dir/file.md"
      * ~~~
      */
-    Path replaceExtension(const StringRef& newExt) const;
+    Path replaceExtension(const StringView& newExt) const;
 
     /** 末尾にひとつのセパレータがあるようにした新しいパスを返します。 */
     Path withEndSeparator() const;
@@ -222,7 +222,7 @@ public:
      * @param[in]   path    : パス文字列
      * 現在のパスの末尾にセパレータが無い場合は付加し、文字列を連結します。path が絶対パスであれば、現在のパスを置き換えます。         
      */
-    void append(const StringRef& path);
+    void append(const StringView& path);
 
     /**
      * このパスと別のパス文字列が等しいかを確認します。
@@ -230,7 +230,7 @@ public:
      * 字句表現としての等価性を評価します。2つのパスが同一のファイルシステムオブジェクトを指すかは確認しません。
      * 環境により、ディレクトリセパレータ ('/' と '\') や大文字小文字を同一視します。
      */
-    static int compare(const StringRef& path1, const StringRef& path2);
+    static int compare(const StringView& path1, const StringView& path2);
 
     // 指定パスが this に含まれるかを調べる。双方 が絶対パスでなければならない。
     bool contains(const Path& subdir) const;
@@ -257,8 +257,8 @@ public:
 #endif
 
 private:
-    void assign(const StringRef& path);
-    void assignUnderBasePath(const Path& basePath, const StringRef& relativePath);
+    void assign(const StringView& path);
+    void assignUnderBasePath(const Path& basePath, const StringView& relativePath);
 
     String m_path;
 };
@@ -305,7 +305,7 @@ inline std::u32string_view toStdStringView(const Path& v) {
     return std::u32string_view(v.str().c_str(), v.str().length());
 }
 
-class StringRef;
+class StringView;
 
 //namespace fmt {
 //

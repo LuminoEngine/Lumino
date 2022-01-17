@@ -46,7 +46,7 @@ public:
 	static void terminate();
 	static inline FontManager* instance() { return static_cast<FontManager*>(EngineContext2::instance()->fontManager); }
 
-	void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily);
+	void registerFontFromFile(const StringView& fontFilePath, bool defaultFamily);
     void registerFontFromStream(Stream* stream, bool defaultFamily);
 	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc, float dpiScale);
 
@@ -127,8 +127,8 @@ public:
 	Result init(FontManager* fontManager);
 	void dispose();
 
-	Font* getFontAwesomeFont(const StringRef& style, int size);
-	uint32_t getFontAwesomeCodePoint(const StringRef& glyphName);
+	Font* getFontAwesomeFont(const StringView& style, int size);
+	uint32_t getFontAwesomeCodePoint(const StringView& glyphName);
 
 private:
 	FontManager* m_fontManager;

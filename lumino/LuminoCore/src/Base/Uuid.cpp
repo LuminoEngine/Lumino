@@ -85,7 +85,7 @@ Uuid::Uuid()
     m_data = std::vector<byte_t>(16, 0);
 }
 
-Uuid::Uuid(const StringRef& uuidText)
+Uuid::Uuid(const StringView& uuidText)
 {
     Char ch1;
     bool lookingCh1 = true;

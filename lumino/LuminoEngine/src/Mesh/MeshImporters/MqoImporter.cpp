@@ -106,7 +106,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 			//if (line.IndexOf(_LT("dbls"), dataHead, CaseSensitivity::CaseInsensitive)	両面表示
 			if (line.indexOf(_LT("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	色（ＲＧＢ）、不透明度
 			{
-				readFloats(StringRef(line.c_str() + numHead, line.c_str() + numEnd), reinterpret_cast<float*>(&color), 4);
+				readFloats(StringView(line.c_str() + numHead, line.c_str() + numEnd), reinterpret_cast<float*>(&color), 4);
 			}
 			if (line.indexOf(_LT("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	拡散光	0～1
 			{
@@ -132,7 +132,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 			//if (line.IndexOf(_LT("refract"), dataHead, CaseSensitivity::CaseInsensitive)	屈折率 （Ver4.0以降)	1～5
 			if (line.indexOf(_LT("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	模様マッピング名	相対パスまたは絶対パスで記述
 			{
-				texture = m_manager->createTexture(m_parentDir, StringRef(line.c_str() + numHead, line.c_str() + numEnd), diag());
+				texture = m_manager->createTexture(m_parentDir, StringView(line.c_str() + numHead, line.c_str() + numEnd), diag());
 			}
 			//if (line.IndexOf(_LT("aplane"), dataHead, CaseSensitivity::CaseInsensitive)	透明マッピング名	相対パスまたは絶対パスで記述
 			//if (line.IndexOf(_LT("bump"), dataHead, CaseSensitivity::CaseInsensitive)	凹凸マッピング名	相対パスまたは絶対パスで記述
@@ -252,7 +252,7 @@ void MqoParser::readFaceChunk(StreamReader* reader)
 			// V(%d ...)	頂点インデックス
 			else if (StringHelper::compare(line.c_str() + dataHead, _LT("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				readInts(StringRef(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
+				readInts(StringView(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
 				//for (int i = 0; i < face.vertexCount; i++) face.vertexIndices[i] += vertexIndexOffset;
 			}
 			// M(%d)	材質インデックス
@@ -263,12 +263,12 @@ void MqoParser::readFaceChunk(StreamReader* reader)
 			// UV(%.5f %.5f ...)	ＵＶ値
 			else if (StringHelper::compare(line.c_str() + dataHead, _LT("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				readFloats(StringRef(line, numHead, numEnd - numHead), reinterpret_cast<float*>(face.uv), face.vertexCount * 2);
+				readFloats(StringView(line, numHead, numEnd - numHead), reinterpret_cast<float*>(face.uv), face.vertexCount * 2);
 			}
 			// COL(%u)	頂点カラー
 			else if (StringHelper::compare(line.c_str() + dataHead, _LT("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				readUInts(StringRef(line, numHead, numEnd - numHead), face.colors, face.vertexCount);
+				readUInts(StringView(line, numHead, numEnd - numHead), face.colors, face.vertexCount);
 			}
 			// CRS(%f ...)	Catmull-Clark/OpenSubdiv曲面用のエッジの折れ目
 			//else if (line.Compare(_LT("CRS"), 3, CaseSensitivity::CaseInsensitive) == 0)
@@ -282,7 +282,7 @@ void MqoParser::readFaceChunk(StreamReader* reader)
 	}
 }
 
-void MqoParser::readInts(const StringRef& str, int* values, int valuesCount)
+void MqoParser::readInts(const StringView& str, int* values, int valuesCount)
 {
 	int* valuesEnd = values + valuesCount;
 	StringHelper::SplitHelper(
@@ -297,7 +297,7 @@ void MqoParser::readInts(const StringRef& str, int* values, int valuesCount)
 	});
 }
 
-void MqoParser::readUInts(const StringRef& str, uint32_t* values, int valuesCount)
+void MqoParser::readUInts(const StringView& str, uint32_t* values, int valuesCount)
 {
 	uint32_t* valuesEnd = values + valuesCount;
 	StringHelper::SplitHelper(
@@ -312,7 +312,7 @@ void MqoParser::readUInts(const StringRef& str, uint32_t* values, int valuesCoun
 	});
 }
 
-void MqoParser::readFloats(const StringRef& str, float* values, int valuesCount)
+void MqoParser::readFloats(const StringView& str, float* values, int valuesCount)
 {
 	float* valuesEnd = values + valuesCount;
 	StringHelper::SplitHelper(
@@ -361,7 +361,7 @@ void MqoImporter::visitMaterial(Material* material)
 	m_model->addMaterial(material);
 }
 
-void MqoImporter::visitObjectChunk(const StringRef& name)
+void MqoImporter::visitObjectChunk(const StringView& name)
 {
 	//auto mesh = makeObject<MeshResource>();
 	auto container = makeObject<MeshContainer>();

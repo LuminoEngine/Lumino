@@ -74,7 +74,7 @@ class UIViewModel
 	: public Object
 {
 public:
-    virtual void notify(const StringRef& propertyName = StringRef());
+    virtual void notify(const StringView& propertyName = StringView());
     virtual void notify(UINotifyPropertyChangedEventArgs* e);
 
 	void subscribe(UIElement* observer)	// TODO: connection 返すようにした方がいいかも？
@@ -405,7 +405,7 @@ public:
 
     //UIContext* getContext() const;
 
-    void addClass(const StringRef& className);
+    void addClass(const StringView& className);
 	void setViewModel(UIViewModel* value);
     virtual void setContent(UIElement* content);
     virtual void setContent(const String& content);

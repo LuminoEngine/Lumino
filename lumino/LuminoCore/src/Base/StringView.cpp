@@ -6,7 +6,7 @@
 
 namespace ln {
 
-StringRef::StringRef() LN_NOEXCEPT
+StringView::StringView() LN_NOEXCEPT
     : m_string(nullptr)
     , m_str(nullptr)
     , m_len(0)
@@ -14,59 +14,59 @@ StringRef::StringRef() LN_NOEXCEPT
 {
 }
 
-StringRef::StringRef(const StringRef& str) LN_NOEXCEPT
-    : StringRef()
+StringView::StringView(const StringView& str) LN_NOEXCEPT
+    : StringView()
 {
     m_str = str.data();
     m_len = str.length();
 }
 
-StringRef::StringRef(const String& str)
-    : StringRef()
+StringView::StringView(const String& str)
+    : StringView()
 {
     m_string = &str;
     m_str = str.c_str();
     m_len = str.length();
 }
 
-StringRef::StringRef(const String& str, int len)
-    : StringRef()
+StringView::StringView(const String& str, int len)
+    : StringView()
 {
     m_string = &str;
     m_str = str.c_str();
     m_len = len;
 }
 
-StringRef::StringRef(const String& str, int startIndex, int len)
-    : StringRef()
+StringView::StringView(const String& str, int startIndex, int len)
+    : StringView()
 {
     m_str = str.c_str() + startIndex;
     m_len = len;
 }
 
-StringRef::StringRef(const Char* str)
-    : StringRef()
+StringView::StringView(const Char* str)
+    : StringView()
 {
     m_str = str;
     m_len = detail::UStringHelper::strlen(str);
 }
 
-StringRef::StringRef(const Char* str, int len)
-    : StringRef()
+StringView::StringView(const Char* str, int len)
+    : StringView()
 {
     m_str = str;
     m_len = len;
 }
 
-StringRef::StringRef(const Char* begin, const Char* end)
-    : StringRef()
+StringView::StringView(const Char* begin, const Char* end)
+    : StringView()
 {
     m_str = begin;
     m_len = end - begin;
 }
 
-StringRef::StringRef(const Path& path)
-    : StringRef(path.str())
+StringView::StringView(const Path& path)
+    : StringView(path.str())
 {
 }
 
@@ -91,18 +91,18 @@ StringRef::StringRef(const wchar_t* str)
 #endif
 #endif
 
-StringRef StringRef::substr(int start, int count) const
+StringView StringView::substr(int start, int count) const
 {
     const Char* begin;
     const Char* end;
     StringHelper::substr(data(), length(), start, count, &begin, &end);
-    return StringRef(begin, end);
+    return StringView(begin, end);
     //// TODO: Ref で返していいよね？
     ////return StringHelper::mid(getBegin(), start, count);
     //return String(data(), count).substr(start, count);
 }
 
-bool StringRef::endsWith(const StringRef& str, CaseSensitivity cs) const
+bool StringView::endsWith(const StringView& str, CaseSensitivity cs) const
 {
     if (isEmpty() || str.isEmpty()) {
         return false;
@@ -110,22 +110,22 @@ bool StringRef::endsWith(const StringRef& str, CaseSensitivity cs) const
     return StringHelper::endsWith(data(), length(), str.data(), str.length(), cs);
 }
 
-int StringRef::indexOf(const StringRef& str, int startIndex, CaseSensitivity cs) const
+int StringView::indexOf(const StringView& str, int startIndex, CaseSensitivity cs) const
 {
     return StringHelper::indexOf(data(), length(), str.data(), str.length(), startIndex, cs);
 }
 
-int StringRef::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
+int StringView::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
 {
     return StringHelper::indexOf(data(), length(), &ch, 1, startIndex, cs);
 }
 
-int StringRef::lastIndexOf(const StringRef& str, int startIndex, int count, CaseSensitivity cs) const
+int StringView::lastIndexOf(const StringView& str, int startIndex, int count, CaseSensitivity cs) const
 {
     return StringHelper::lastIndexOf(data(), length(), str.data(), str.length(), startIndex, count, cs);
 }
 
-int StringRef::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const
+int StringView::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const
 {
     return StringHelper::lastIndexOf(data(), length(), &ch, 1, startIndex, count, cs);
 }
@@ -148,36 +148,36 @@ int StringRef::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity c
     }                                                            \
     LN_ENSURE(end == begin + len);                               \
     return num;
-int StringRef::toInt(int base) const
+int StringView::toInt(int base) const
 {
     TO_INT_DEF(int32_t, toInt32);
 }
 #undef TO_INT_DEF;
 
-std::string StringRef::toStdString() const
+std::string StringView::toStdString() const
 {
     std::vector<byte_t> bytes = TextEncoding::systemMultiByteEncoding()->encode(data(), length());
     return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 }
 
-std::wstring StringRef::toStdWString() const
+std::wstring StringView::toStdWString() const
 {
     std::vector<byte_t> bytes = TextEncoding::wideCharEncoding()->encode(data(), length());
     return std::wstring(reinterpret_cast<const wchar_t*>(bytes.data()), bytes.size() / sizeof(wchar_t));
 }
 
-std::string StringRef::toUtf8() const {
+std::string StringView::toUtf8() const {
     std::vector<byte_t> bytes = TextEncoding::utf8Encoding()->encode(data(), length());
     return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 }
 
-size_t StringRef::getHashCode() const
+size_t StringView::getHashCode() const
 {
     if (isEmpty()) return 0;
     return CRCHash::compute(data(), length());
 }
 
-void StringRef::clear()
+void StringView::clear()
 {
     if (m_localAlloc) {
         delete m_string;
@@ -188,7 +188,7 @@ void StringRef::clear()
     m_len = 0;
 }
 
-StringRef& StringRef::operator=(const StringRef& str)
+StringView& StringView::operator=(const StringView& str)
 {
     if (this != &str) {
         clear();
@@ -198,7 +198,7 @@ StringRef& StringRef::operator=(const StringRef& str)
     return *this;
 }
 
-StringRef& StringRef::operator=(StringRef&& str)
+StringView& StringView::operator=(StringView&& str)
 {
     clear();
     m_string = str.m_string;

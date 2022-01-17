@@ -30,7 +30,7 @@ public:
 	 * @param[in]	filePath	: 読み込み元ファイルのパス
 	 * @param[in]	encoding	: 読み込むテキストのエンコーディング (null の場合は UTF8Encoding を使用します)
 	 */
-    StreamReader(const StringRef& filePath, TextEncoding* encoding = nullptr);
+    StreamReader(const StringView& filePath, TextEncoding* encoding = nullptr);
 
     virtual ~StreamReader();
 
