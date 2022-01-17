@@ -162,7 +162,7 @@ httpd.serve_forever()
 	}
 	else
 	{
-		CLI::error(ln::String::format(_TT("{0} is invalid target."), target));
+		CLI::error(ln::format(_TT("{0} is invalid target."), target));
 		return false;
 	}
 

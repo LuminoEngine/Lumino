@@ -762,7 +762,7 @@ void EngineManager::presentFrame()
 
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
-		PlatformManager::instance()->mainWindow()->setWindowTitle(String::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
+		PlatformManager::instance()->mainWindow()->setWindowTitle(ln::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
     }
 
 	// TODO: Editor モードの時にも呼び出せるようにしないとだめそう

@@ -644,7 +644,7 @@ bool ShaderModuleParser::parse(const char* code, size_t length, DiagnosticsManag
         doc = YAML::Load(moduleText);
     }
     catch (YAML::ParserException& e) {
-        m_diag->reportError(String::format(_TT("YAML: {0}:{1}:{2}"), e.mark.line, e.mark.column, String::fromStdString(e.msg)));
+        m_diag->reportError(ln::format(_TT("YAML: {0}:{1}:{2}"), e.mark.line, e.mark.column, String::fromStdString(e.msg)));
         return false;
     }
 
@@ -691,7 +691,7 @@ bool ShaderModuleParser::readTechniques(const YAML::Node& techniques)
 bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node& technique)
 {
     if (!technique.IsMap()) {
-        m_diag->reportError(String::format(_TT("{0} is not map."), String::fromStdString(name)));
+        m_diag->reportError(ln::format(_TT("{0} is not map."), String::fromStdString(name)));
         return false;
     }
 
@@ -701,11 +701,11 @@ bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node
 
     auto passes = technique["passes"];
     if (!passes.IsDefined()) {
-        m_diag->reportError(String::format(_TT("{0} is don't have `passes`."), String::fromStdString(name)));
+        m_diag->reportError(ln::format(_TT("{0} is don't have `passes`."), String::fromStdString(name)));
         return false;
     }
     if (!passes.IsSequence()) {
-        m_diag->reportError(String::format(_TT("{0}:passes is not sequence."), String::fromStdString(name)));
+        m_diag->reportError(ln::format(_TT("{0}:passes is not sequence."), String::fromStdString(name)));
         return false;
     }
 
@@ -719,7 +719,7 @@ bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node
 
         auto itr = std::find_if(tech.passes.begin(), tech.passes.end(), [&](const auto& x) { return x.name == passInfo.name; });
         if (itr != tech.passes.end()) {
-            m_diag->reportError(String::format(_TT("{0} is duplicated name"), String::fromStdString(passInfo.name)));
+            m_diag->reportError(ln::format(_TT("{0} is duplicated name"), String::fromStdString(passInfo.name)));
             return false;
         }
 
@@ -734,7 +734,7 @@ bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node
 bool ShaderModuleParser::readPass(const std::string& techName, int passIndex, const YAML::Node& passItemNode, HLSLPass* outPass)
 {
     if (passItemNode.size() != 1) {
-        m_diag->reportError(String::format(_TT("Pass ({0}[{1}] is invalid pass item."), String::fromStdString(techName), passIndex));
+        m_diag->reportError(ln::format(_TT("Pass ({0}[{1}] is invalid pass item."), String::fromStdString(techName), passIndex));
         return false;
     }
 
@@ -743,12 +743,12 @@ bool ShaderModuleParser::readPass(const std::string& techName, int passIndex, co
 
     auto vertexShader = passNode["vertexShader"];
     if (!vertexShader.IsDefined()) {
-        m_diag->reportError(String::format(_TT("Pass ({0}[{1}] is don't have `vertexShader`."), String::fromStdString(techName), passIndex));
+        m_diag->reportError(ln::format(_TT("Pass ({0}[{1}] is don't have `vertexShader`."), String::fromStdString(techName), passIndex));
         return false;
     }
     auto pixelShader = passNode["pixelShader"];
     if (!pixelShader.IsDefined()) {
-        m_diag->reportError(String::format(_TT("Pass ({0}[{1}] is don't have `pixelShader`."), String::fromStdString(techName), passIndex));
+        m_diag->reportError(ln::format(_TT("Pass ({0}[{1}] is don't have `pixelShader`."), String::fromStdString(techName), passIndex));
         return false;
     }
 

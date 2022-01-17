@@ -113,14 +113,14 @@ private:
 template<typename... TArgs>
 inline void TextWriter::writeFormat(const StringRef& format, const TArgs&... args)
 {
-    String s = String::format(format, args...);
+    String s = ln::format(format, args...);
     writeInternal(s.c_str(), s.length());
 }
 
 template<typename... TArgs>
 inline void TextWriter::writeLineFormat(const StringRef& str, const TArgs&... args)
 {
-    String s = String::format(str, args...);
+    String s = ln::format(str, args...);
     writeInternal(s.c_str(), s.length());
     writeLine();
 }

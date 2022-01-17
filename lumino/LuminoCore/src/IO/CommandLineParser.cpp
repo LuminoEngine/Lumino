@@ -33,11 +33,11 @@ String CommandLineOption::helpUsageParams() const
     makeDislayParamsName(&shortName, &longName);
 
     if (!shortName.isEmpty() && !longName.isEmpty()) {
-        return String::format(_T("[-{0} | --{1}]"), shortName, longName);
+        return ln::format(_T("[-{0} | --{1}]"), shortName, longName);
     } else if (!shortName.isEmpty()) {
-        return String::format(_T("[-{0}]"), shortName);
+        return ln::format(_T("[-{0}]"), shortName);
     } else if (!longName.isEmpty()) {
-        return String::format(_T("[--{0}]"), longName);
+        return ln::format(_T("[--{0}]"), longName);
     } else {
         LN_UNREACHABLE();
         return String();
@@ -51,11 +51,11 @@ String CommandLineOption::helpDescriptionCaption() const
     makeDislayParamsName(&shortName, &longName);
 
     if (!shortName.isEmpty() && !longName.isEmpty()) {
-        caption = String::format(_T("-{0}, --{1}"), shortName, longName);
+        caption = ln::format(_T("-{0}, --{1}"), shortName, longName);
     } else if (!shortName.isEmpty()) {
-        caption = String::format(_T("-{0}"), shortName);
+        caption = ln::format(_T("-{0}"), shortName);
     } else if (!longName.isEmpty()) {
-        caption = String::format(_T("--{0}"), longName);
+        caption = ln::format(_T("--{0}"), longName);
     } else {
         LN_UNREACHABLE();
     }
@@ -492,7 +492,7 @@ bool CommandLineCommand::parse(
                 StringRef nameRef(flag, 1);
                 Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->shortName() == nameRef; });
                 if (!option) {
-                    *outMessage = String::format(_T("'{0}' is invalid flag option."), nameRef);
+                    *outMessage = ln::format(_T("'{0}' is invalid flag option."), nameRef);
                     return false;
                 }
 
@@ -507,7 +507,7 @@ bool CommandLineCommand::parse(
             StringRef nameRef(nameBegin, nameEnd);
             Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->longName() == nameRef; });
             if (!option) {
-                *outMessage = String::format(_T("'{0}' is invalid option."), nameRef);
+                *outMessage = ln::format(_T("'{0}' is invalid option."), nameRef);
                 return false;
             }
 
@@ -547,7 +547,7 @@ bool CommandLineCommand::parse(
         requires += 1;
     }
     if (positionalArguments.size() < requires) {
-        *outMessage = String::format(_T("requires {0} arguments, but {1} was provided."), requires, positionalArguments.size());
+        *outMessage = ln::format(_T("requires {0} arguments, but {1} was provided."), requires, positionalArguments.size());
         return false;
     }
 
@@ -562,7 +562,7 @@ bool CommandLineCommand::parse(
     }
     if (iOther < otherArgs.size()) {
         // 引数余り
-        *outMessage = String::format(_T("requires {0} arguments, but {1} was provided."), requires, positionalArguments.size());
+        *outMessage = ln::format(_T("requires {0} arguments, but {1} was provided."), requires, positionalArguments.size());
         return false;
     }
 
@@ -714,7 +714,7 @@ bool CommandLineParser::parse(const List<String>& args)
         auto& name = args[nextIndex];
         Optional<Ref<CommandLineCommand>> command = findCommand(name);
         if (!command) {
-            m_message = String::format(_T("'{0}' is invalid command name."), name);
+            m_message = ln::format(_T("'{0}' is invalid command name."), name);
             return false;
         }
         m_activeCommand = *command;

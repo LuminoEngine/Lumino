@@ -313,12 +313,6 @@ public:
     /** 指定した文字列リストを結合した 1 つの文字列を生成します。各要素の間には、指定した区切り記号が挿入されます。 */
     static String join(const List<String>& list, const StringRef& delim);
 
-    /** 複合書式文字列と可変長引数リストから文字列を生成します。 */
-    template<typename... TArgs>
-    static String format(const StringRef& format, TArgs&&... args);
-    template<typename... TArgs>
-    static String format(const Locale& locale, const StringRef& format, TArgs&&... args); /**< @overload format */
-
     /**
      * 指定した2つの文字列を比較します。
      * 
@@ -1064,35 +1058,6 @@ template<> struct formatter<::ln::StringRef, ln::Char> {
 
 namespace ln {
 
-template<typename... TArgs>
-inline String String::format(const StringRef& format, TArgs&&... args)
-{
-    try {
-        //std::u16string_view view(format.data(), format.length());
-        std::basic_string_view<Char> view(format.data(), format.length());
-        auto str = ::fmt::format(view, std::forward<TArgs>(args)...);
-        return String(str.c_str(), str.length());
-    }
-    catch (fmt::v7::format_error& e) {
-        LN_ERROR("String::format errro: {}", e.what());
-        return String::Empty;
-    }
-}
-
-template<typename... TArgs>
-inline String String::format(const Locale& locale, const StringRef& format, TArgs&&... args)
-{
-    throw "Not implemented";
-    //auto argList = fmt::detail::makeArgList<Char>(std::forward<TArgs>(args)...);
-    //fmt::GenericFormatStringBuilder<Char> sb;
-    //if (fmt::detail::formatInternal<Char>(locale, &sb, format.data(), format.length(), argList)) {
-    //    return String(sb.c_str(), sb.length());
-    //}
-    //else {
-    //    return String();
-    //}
-}
-
 inline bool String::equals(const StringRef rhs) const noexcept {
     return (length() == rhs.length() && startsWith(rhs));
 }
@@ -1106,3 +1071,5 @@ inline std::u32string_view toStdStringView(const StringRef& v) {
 }
 
 } // namespace ln
+
+#include "StringFormat.hpp"
