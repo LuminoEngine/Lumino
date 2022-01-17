@@ -220,7 +220,7 @@ void Interpreter::terminate()
 }
 
 //------------------------------------------------------------------------------
-void Interpreter::registerCommandHandler(const ln::StringRef& name, Ref<InterpreterCommandDelegate> handler)
+void Interpreter::registerCommandHandler(const ln::StringView& name, Ref<InterpreterCommandDelegate> handler)
 {
 	m_commandDelegateMap[name] = handler;
 }

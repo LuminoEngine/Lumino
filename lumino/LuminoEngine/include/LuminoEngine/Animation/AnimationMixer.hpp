@@ -150,7 +150,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	AnimationState* addClipAndCreateState(AnimationClip* animationClip);
 	void removeClipAndDeleteState(AnimationClip* animationClip);
-	AnimationState* findAnimationState(const StringRef& name);
+	AnimationState* findAnimationState(const StringView& name);
 	void advanceTime(float elapsedTime);
 	void updateStateWeights();
 	void updateTargetElements();
@@ -207,7 +207,7 @@ public:
 	AnimationState* addClip(AnimationClip* animationClip);
 
 	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
-	AnimationState* addClip(const StringRef& stateName, AnimationClip* animationClip);
+	AnimationState* addClip(const StringView& stateName, AnimationClip* animationClip);
 
 	/** アニメーションクリップを除外します。 (レイヤー0 から除外されます) */
 	void removeClip(AnimationClip* animationClip);
@@ -216,7 +216,7 @@ public:
 	bool isPlaying() const;
 
 	/// 再生
-	void play(const StringRef& clipName, float duration/* = 0.3f*//*, PlayMode mode = PlayMode_StopSameLayer*/);
+	void play(const StringView& clipName, float duration/* = 0.3f*//*, PlayMode mode = PlayMode_StopSameLayer*/);
 	void play(AnimationState* state, float duration/* = 0.3f*//*, PlayMode mode = PlayMode_StopSameLayer*/);
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)

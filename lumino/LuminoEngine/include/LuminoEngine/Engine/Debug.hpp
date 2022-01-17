@@ -27,7 +27,7 @@ public:
      * @param[in] str : 表示文字列
 	 */
 	LN_METHOD()
-	static void print(StringRef str);
+	static void print(StringView str);
 
 	/**
 	 * 表示時間を指定して、ウィンドウ上にデバッグ文字列を表示します。
@@ -35,7 +35,7 @@ public:
      * @param[in] str : 表示文字列
 	 */
 	LN_METHOD(OverloadPostfix = "WithTime")
-	static void print(float time, StringRef str);
+	static void print(float time, StringView str);
 
 	/**
 	 * 表示時間と文字色を指定して、ウィンドウ上にデバッグ文字列を表示します。
@@ -44,29 +44,29 @@ public:
      * @param[in] str : 表示文字列
 	 */
 	LN_METHOD(OverloadPostfix = "WithTimeAndColor")
-	static void print(float time, const Color& color, StringRef str);
+	static void print(float time, const Color& color, StringView str);
 
 
 	template<typename... TArgs>
-	static void printf(StringRef format, TArgs&&... args)
+	static void printf(StringView format, TArgs&&... args)
 	{
 		print(String::format(format, std::forward<TArgs>(args)...));
 	}
 
 	template<typename... TArgs>
-	static void printf(float time, StringRef format, TArgs&&... args)
+	static void printf(float time, StringView format, TArgs&&... args)
 	{
 		print(time, String::format(format, std::forward<TArgs>(args)...));
 	}
 
 	template<typename... TArgs>
-	static void printf(float time, const Color& color, StringRef format, TArgs&&... args)
+	static void printf(float time, const Color& color, StringView format, TArgs&&... args)
 	{
 		print(time, color, String::format(format, std::forward<TArgs>(args)...));
 	}
 
 //private:
-//	static void printInternal(float time, const Color& color, StringRef str);
+//	static void printInternal(float time, const Color& color, StringView str);
 
 };
 
@@ -76,7 +76,7 @@ class DebugInterface
 	: public Object
 {
 public:
-	void print(float time, const Color& color, StringRef str);
+	void print(float time, const Color& color, StringView str);
 
 	void update(float elapsedTimer);
 	void renderOnUI(UIRenderingContext* context);

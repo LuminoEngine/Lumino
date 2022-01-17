@@ -778,7 +778,7 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
         m_strides[e.StreamIndex] += static_cast<UINT>(GraphicsHelper::getVertexElementTypeSize(elements[i].Type));
     }
 
-    return true;
+    return ok();
 }
 
 void DX12VertexDeclaration::dispose()
@@ -825,7 +825,7 @@ Result DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData&
     m_samplerDesc.MinLOD = 0.0f;
     m_samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 
-	return true;
+	return ok();
 }
 
 void DX12SamplerState::dispose()

@@ -33,7 +33,7 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
 	m_projectFilePath = ln::Path(m_rootDir, m_projectName + ProjectFileExt);
 	if (ln::FileSystem::existsFile(m_projectFilePath)) {
 		CLI::error(_TT("Lumino project already exists."));
-		return false;
+		return ln::err();
 	}
 
 	CLI::info(_TT("\nCreating a new Lumino app in ") + m_rootDir + _TT("\n"));
@@ -54,7 +54,7 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
 	m_context = ln::makeRef<CppLanguageContext>(this);
 	
 	if (!m_workspace->projectTemplateManager()->applyTemplates(this, templateName)) {
-		return false;
+		return ln::err();
 	}
     //if (!m_context->applyEngine()) {
     //    return false;
@@ -104,11 +104,11 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
 	setupPathes();
 	if (m_projectFilePath.isEmpty()) {
 		CLI::error(_TT("Lumino project file not found in current directory."));
-		return false;
+		return ln::err();
 	}
 
 	if (!loadProject()) {
-		return false;
+		return ln::err();
 	}
 
 	if (m_properties->language == _TT("cpp")) {
@@ -122,21 +122,21 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
     //    return false;
     //}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result Project::saveProject()
 {
 	auto json = ln::JsonSerializer::serialize(*m_properties);
 	ln::FileSystem::writeAllText(m_projectFilePath, json);
-	return true;
+	return ln::ok();
 }
 
 ln::Result Project::loadProject()
 {
 	ln::String json = ln::FileSystem::readAllText(m_projectFilePath);
 	ln::JsonSerializer::deserialize(json, *m_properties);
-	return true;
+	return ln::ok();
 }
 
 void Project::close()

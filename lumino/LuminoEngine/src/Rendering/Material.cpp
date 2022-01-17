@@ -163,55 +163,55 @@ Shader* Material::shader() const
 	return m_shader;
 }
 
-void Material::setInt(const StringRef& name, int value)
+void Material::setInt(const StringView& name, int value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setInt(value);
 }
 
-void Material::setFloat(const StringRef& name, float value)
+void Material::setFloat(const StringView& name, float value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setFloat(value);
 }
 
-void Material::setFloatArray(const StringRef& name, const float* values, int length)
+void Material::setFloatArray(const StringView& name, const float* values, int length)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setFloatArray(values, length);
 }
 
-void Material::setVector(const StringRef& name, const Vector4& value)
+void Material::setVector(const StringView& name, const Vector4& value)
 {
     detail::ShaderParameterValue* param = getValue(name);
     param->setVector(value);
 }
 
-void Material::setVectorArray(const StringRef& name, const Vector4* values, int length)
+void Material::setVectorArray(const StringView& name, const Vector4* values, int length)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setVectorArray(values, length);
 }
 
-void Material::setMatrix(const StringRef& name, const Matrix& value)
+void Material::setMatrix(const StringView& name, const Matrix& value)
 {
     detail::ShaderParameterValue* param = getValue(name);
     param->setMatrix(value);
 }
 
-void Material::setTexture(const StringRef& name, Texture* value)
+void Material::setTexture(const StringView& name, Texture* value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setTexture(value);
 }
 
-void Material::setColor(const StringRef& name, const Color& value)
+void Material::setColor(const StringView& name, const Color& value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setVector(value.toVector4());
 }
 
-void Material::setBufferData(const StringRef& uniformBufferName, const void* data, int size)
+void Material::setBufferData(const StringView& uniformBufferName, const void* data, int size)
 {
     ByteBuffer* buffer;
 
@@ -252,7 +252,7 @@ void Material::setDepthWriteEnabled(Optional<bool> enabled)
     depthWriteEnabled = enabled;
 }
 
-detail::ShaderParameterValue* Material::getValue(const ln::StringRef& name)
+detail::ShaderParameterValue* Material::getValue(const ln::StringView& name)
 {
 	for (auto& pair : m_values) {
 		if (pair.first == name) {

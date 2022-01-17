@@ -138,7 +138,7 @@ DX12Texture2D::DX12Texture2D()
 
 Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData)
 {
-    if (!DX12Texture::initAsTexture2D(usage, width, height, format, mipmap)) return false;
+    if (!DX12Texture::initAsTexture2D(usage, width, height, format, mipmap)) return err();
     m_device = device;
 	//m_usage = usage;
  //   m_size.width = width;
@@ -155,7 +155,7 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
         DX12Helper::LNTextureFormatToDXFormat(format),
         D3D12_RESOURCE_FLAG_NONE,
         (initialData) ? D3D12_RESOURCE_STATE_COPY_DEST : D3D12_RESOURCE_STATE_GENERIC_READ)) {
-        return false;
+        return err();
     }
     
     if (initialData) {
@@ -164,7 +164,7 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
         // そのため横幅の差を考慮して転送しないと画像がくずれる。
         DX12Buffer uploadBuffer;
         if (!uploadBuffer.init(m_device, m_image->uploadBufferSize(), D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ)) {
-            return false;
+            return err();
         }
         const size_t pixelSize = GraphicsHelper::getPixelSize(format);
         void* data = uploadBuffer.map();
@@ -192,11 +192,11 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
 
     if (mipLevels >= 2) {
         if (!generateMips()) {
-            return false;
+            return err();
         }
     }
 
-	return true;
+	return ok();
 }
 
 void DX12Texture2D::dispose()
@@ -575,8 +575,8 @@ DX12DepthBuffer::DX12DepthBuffer()
 
 Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height)
 {
-    if (LN_REQUIRE(width > 0)) return false;
-    if (LN_REQUIRE(height > 0)) return false;
+    if (LN_REQUIRE(width > 0)) return err();
+    if (LN_REQUIRE(height > 0)) return err();
     m_deviceContext = device;
     m_size.width = width;
     m_size.height = height;
@@ -587,7 +587,7 @@ Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height
         DXGI_FORMAT_D24_UNORM_S8_UINT,
         D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
         D3D12_RESOURCE_STATE_GENERIC_READ)) {
-        return false;
+        return err();
     }
 
     m_multisampleBuffer = makeRHIRef<DX12Image>();
@@ -596,10 +596,10 @@ Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height
         DXGI_FORMAT_D24_UNORM_S8_UINT,
         D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
         D3D12_RESOURCE_STATE_GENERIC_READ)) {
-        return false;
+        return err();
     }
 
-    return true;
+    return ok();
 }
 
 void DX12DepthBuffer::dispose()

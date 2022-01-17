@@ -42,7 +42,7 @@ static void* GetProcAddr(void* module, const char* procName)
 #endif
 }
 
-Ref<DllLoader> DllLoader::load(const StringRef& filePath)
+Ref<DllLoader> DllLoader::load(const StringView& filePath)
 {
     auto ptr = Ref<DllLoader>(LN_NEW DllLoader(), false);
     if (!ptr->init(filePath)) return nullptr;
@@ -54,7 +54,7 @@ DllLoader::DllLoader()
 {
 }
 
-bool DllLoader::init(const StringRef& filePath)
+bool DllLoader::init(const StringView& filePath)
 {
     m_module = LoadDLL(String(filePath).c_str());
     if (LN_ENSURE(m_module)) return false;

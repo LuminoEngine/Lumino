@@ -274,8 +274,8 @@ public:
 	VkPipeline nativePipeline() const { return m_pipeline; }
 
 private:
-    bool createGraphicsPipeline(const DevicePipelineStateDesc& state);
-    bool createComputePipeline(const DevicePipelineStateDesc& state);
+    Result createGraphicsPipeline(const DevicePipelineStateDesc& state);
+    Result createComputePipeline(const DevicePipelineStateDesc& state);
 
 	VulkanDevice* m_device;
 	VulkanRenderPass2* m_ownerRenderPass;

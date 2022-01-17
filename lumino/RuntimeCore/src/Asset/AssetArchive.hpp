@@ -47,9 +47,9 @@ class CryptedAssetArchiveWriter
 {
 public:
 	CryptedAssetArchiveWriter();
-	void open(const StringRef& filePath, const StringRef& password);
+	void open(const StringView& filePath, const StringView& password);
 	void close();
-	void addFile(const StringRef& filePath, const StringRef& localPath);
+	void addFile(const StringView& filePath, const StringView& localPath);
 
 private:
 	struct FileEntry
@@ -71,7 +71,7 @@ class CryptedAssetArchiveReader
 public:
 	CryptedAssetArchiveReader();
     ~CryptedAssetArchiveReader();
-	bool open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative);
+	bool open(const StringView& filePath, const StringView& password, bool pathAsRawRelative);
     virtual const String& scheme() const;
     virtual const String& name() const;
     virtual void close() override;
@@ -131,7 +131,7 @@ class FileSystemReader
 {
 public:
 	FileSystemReader();
-	void setRootPath(const StringRef& path);
+	void setRootPath(const StringView& path);
 	const Path& rootPath() const { return m_rootPath; }
     virtual const String& scheme() const;
     virtual const String& name() const;

@@ -17,7 +17,7 @@ public:
 	AnimationState* addClip(AnimationClip* animationClip) { return m_core->addClip(animationClip); }
 
 	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
-	AnimationState* addClip(const StringRef& stateName, AnimationClip* animationClip) { m_core->addClip(stateName, animationClip); }
+	AnimationState* addClip(const StringView& stateName, AnimationClip* animationClip) { m_core->addClip(stateName, animationClip); }
 
 	/** アニメーションクリップを除外します。 (レイヤー0 から除外されます) */
 	void removeClip(AnimationClip* animationClip) { m_core->removeClip(animationClip); }
@@ -26,7 +26,7 @@ public:
 	//bool isPlaying() const;
 
 	/// 再生
-	void play(const StringRef& stateName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(stateName, duration); }
+	void play(const StringView& stateName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(stateName, duration); }
 
 	/** play */
 	LN_METHOD()

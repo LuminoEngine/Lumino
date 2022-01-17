@@ -16,7 +16,7 @@ public:
      * @param[in] filePath  : ファイル名
      * @param[in] openMode  : ファイルを開く方法 (FileOpenMode のフラグの組み合わせ)
      */
-    static Ref<FileStream> create(const StringRef& filePath, FileOpenMode openMode = FileOpenMode::Read);
+    static Ref<FileStream> create(const StringView& filePath, FileOpenMode openMode = FileOpenMode::Read);
 
     /** ファイルを閉じます。*/
     void close();
@@ -38,7 +38,7 @@ public:
 private:
     FileStream();
     virtual ~FileStream();
-    bool open(const StringRef& filePath, FileOpenMode openMode);
+    bool open(const StringView& filePath, FileOpenMode openMode);
     void checkOpen() const;
     void open() const;
 

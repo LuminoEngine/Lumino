@@ -26,7 +26,7 @@ public:
 	void init();
 	void dispose();
 
-    Level* loadScene(const StringRef& sceneAssetFilePath);
+    Level* loadScene(const StringView& sceneAssetFilePath);
     void unloadScene(Level* scene);
 
 #if 0

@@ -61,7 +61,7 @@ namespace detail {
 //	detail::EngineSettings::instance.mainBackBufferSize.set(width, height);
 //}
 //
-//void EngineSettings::setMainWindowTitle(const StringRef& title)
+//void EngineSettings::setMainWindowTitle(const StringView& title)
 //{
 //	detail::EngineSettings::instance.mainWindowTitle = title;
 //}
@@ -762,7 +762,7 @@ void EngineManager::presentFrame()
 
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
-		PlatformManager::instance()->mainWindow()->setWindowTitle(String::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
+		PlatformManager::instance()->mainWindow()->setWindowTitle(ln::format(_TT("FPS:{0:.1f}({1:.1f}), F8:Debug tool."), m_fpsController.totalFps(), m_fpsController.externalFps()));
     }
 
 	// TODO: Editor モードの時にも呼び出せるようにしないとだめそう
@@ -786,7 +786,7 @@ ln::Path EngineManager::findRepositoryRootForTesting()
 	return findParentDirectoryContainingSpecifiedFile(_TT("build.csproj"));
 }
 
-ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringRef file)
+ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringView file)
 {
 	ln::Path path = ln::Path(ln::Environment::executablePath()).parent();
 	ln::Path luminoRepoRoot;

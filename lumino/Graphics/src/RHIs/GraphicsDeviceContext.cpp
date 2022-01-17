@@ -402,7 +402,7 @@ ICommandList::~ICommandList()
 
 Result ICommandList::init(IGraphicsDevice* owner)
 {
-	return true;
+	return ok();
 }
 
 void ICommandList::dispose()

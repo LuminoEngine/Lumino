@@ -77,7 +77,7 @@ CryptedAssetArchiveWriter::CryptedAssetArchiveWriter()
 {
 }
 
-void CryptedAssetArchiveWriter::open(const StringRef& filePath, const StringRef& password)
+void CryptedAssetArchiveWriter::open(const StringView& filePath, const StringView& password)
 {
     ln::String actualPassword;
     if (password.isEmpty()) {
@@ -128,7 +128,7 @@ void CryptedAssetArchiveWriter::close()
 	}
 }
 
-void CryptedAssetArchiveWriter::addFile(const StringRef& filePath, const StringRef& localPath)
+void CryptedAssetArchiveWriter::addFile(const StringView& filePath, const StringView& localPath)
 {
 	auto file = FileStream::create(filePath, FileOpenMode::Read);
 
@@ -172,7 +172,7 @@ const String& CryptedAssetArchiveReader::name() const
     return m_name;
 }
 
-bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative)
+bool CryptedAssetArchiveReader::open(const StringView& filePath, const StringView& password, bool pathAsRawRelative)
 {
     LN_LOG_DEBUG(U"Archive: {}", filePath);
 
@@ -410,7 +410,7 @@ FileSystemReader::FileSystemReader()
     m_scheme = AssetPath::FileSchemeName;
 }
 
-void FileSystemReader::setRootPath(const StringRef& path)
+void FileSystemReader::setRootPath(const StringView& path)
 {
 	m_rootPath = Path(path);
     m_name = m_rootPath.fileName();

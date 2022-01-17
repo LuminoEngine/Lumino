@@ -71,8 +71,8 @@ void BuildEnvironment::setupPathes(bool developMode)
 			}
 		}
 
-		CLI::verbose(ln::String::format(_TT("PackageRootDir: {0}"), m_luminoPackageRootDir.str()));
-		CLI::verbose(ln::String::format(_TT("ProjectTemplatesDir: {0}"), m_projectTemplatesDirPath.str()));
+		CLI::verbose(ln::format(_TT("PackageRootDir: {0}"), m_luminoPackageRootDir.str()));
+		CLI::verbose(ln::format(_TT("ProjectTemplatesDir: {0}"), m_projectTemplatesDirPath.str()));
 	}
 
 
@@ -217,13 +217,13 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 		if (!ln::FileSystem::existsDirectory(m_emsdkRootDir))
 		{
 			if (!callProcess(_TT("git"), { _TT("clone"), _TT("https://github.com/juj/emsdk.git") }, m_toolsDir)) {
-				return false;
+				return ln::err();
 			}
 		}
 
 		if (!ln::FileSystem::existsDirectory(m_emscriptenRootDir))
 		{
-			CLI::info(ln::String::format(_TT("Setup emscripten : {0}"), m_emsdkName));
+			CLI::info(ln::format(_TT("Setup emscripten : {0}"), m_emsdkName));
 
 #ifdef LN_OS_WIN32
 			auto emsdk = ln::Path(m_emsdkRootDir, _TT("emsdk.bat")); // TODO: process クラス内で path 結合
@@ -231,23 +231,23 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 			auto emsdk = _TT("emsdk");
 #endif
 			if (!callProcess(_TT("git"), { _TT("pull") }, m_emsdkRootDir)) {
-				return false;
+				return ln::err();
 			}
 			if (!callProcess(emsdk, { _TT("update-tags") }, m_emsdkRootDir)) {
-				return false;
+				return ln::err();
 			}
 			if (!callProcess(emsdk, { _TT("install"), m_emsdkName }, m_emsdkRootDir)) {
-				return false;
+				return ln::err();
 			}
 		}
 
-		CLI::verbose(ln::String::format(_TT("EmsdkRootDir: {0}"), m_emsdkRootDir.str()));
-		CLI::verbose(ln::String::format(_TT("EmscriptenRootDir: {0}"), m_emscriptenRootDir.str()));
-		CLI::verbose(ln::String::format(_TT("EmscriptenSysLocal: {0}"), m_emscriptenSysRootLocal.str()));
+		CLI::verbose(ln::format(_TT("EmsdkRootDir: {0}"), m_emsdkRootDir.str()));
+		CLI::verbose(ln::format(_TT("EmscriptenRootDir: {0}"), m_emscriptenRootDir.str()));
+		CLI::verbose(ln::format(_TT("EmscriptenSysLocal: {0}"), m_emscriptenSysRootLocal.str()));
 
 		if (!ln::FileSystem::existsDirectory(m_emscriptenSysRootLocal)) {
 			CLI::fatal(_TT("Not found 'EmscriptenSysLocal' directory."));
-			return false;
+			return ln::err();
 		}
 	}
 
@@ -255,12 +255,12 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 		auto engineRoot = ln::Path::combine(m_emscriptenSysRootLocal, _TT("LuminoEngine"));
 		if (!ln::FileSystem::existsDirectory(engineRoot)) {
 			auto src = ln::Path::combine(m_luminoPackageEngineDir, _TT("Emscripten"));
-			CLI::info(ln::String::format(_TT("Copy Engine '{0}' to '{1}'"), src.str(), engineRoot.str()));
+			CLI::info(ln::format(_TT("Copy Engine '{0}' to '{1}'"), src.str(), engineRoot.str()));
 			ln::FileSystem::copyDirectory(src, engineRoot, true, true);
 		}
 	}
 
-    return true;
+    return ln::ok();
 }
 
 ln::Path BuildEnvironment::findLocalPackageForTesting()
@@ -321,10 +321,10 @@ ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::Li
 	proc1.start();
 	proc1.wait();
 	if (proc1.exitCode() == 0) {
-		return true;
+		return ln::ok();
 	}
 	else {
-		return false;
+		return ln::err();
 	}
 }
 

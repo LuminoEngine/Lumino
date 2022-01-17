@@ -16,7 +16,7 @@ void NavigationBarItem::init(NavigatorManager* manager, Navigator* navigator)
 	m_navigator = navigator;
 }
 
-void NavigationBarItem::addIcon(const ln::StringRef& iconName)
+void NavigationBarItem::addIcon(const ln::StringView& iconName)
 {
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(iconName);

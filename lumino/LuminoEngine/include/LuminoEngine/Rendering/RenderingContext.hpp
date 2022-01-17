@@ -141,11 +141,11 @@ public:
 
 	void drawMeshInstanced(InstancedMeshList* list);
 
-	void drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font);
+	void drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font);
 
 
     // font が nullptr の場合は defaultFont
-    void drawText(const StringRef& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward/*, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward*//*, const Color& color, Font* font = nullptr*/);
+    void drawText(const StringView& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward/*, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward*//*, const Color& color, Font* font = nullptr*/);
 	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr, const Matrix& transform = Matrix::Identity);
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
@@ -194,7 +194,7 @@ public:
 
 
 	/** 指定した文字列を描画する際のサイズを計算します。(unit: dp) */
-	Size measureTextSize(Font* font, const StringRef& text) const;
+	Size measureTextSize(Font* font, const StringView& text) const;
 	Size measureTextSize(Font* font, uint32_t codePoint) const;
 
 

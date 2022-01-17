@@ -82,7 +82,7 @@ ln::Result EditorApplication::init()
     // TODO: test
     //openProject(_TT("C:/Proj/LN/PrivateProjects/HC4/HC4.lnproj");
 
-    return true;
+    return ln::ok();
 }
 
 void EditorApplication::dispose()

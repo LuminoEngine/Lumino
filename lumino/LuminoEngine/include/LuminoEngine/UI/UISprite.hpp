@@ -14,7 +14,7 @@ public:
     static Ref<UISprite> create();
     static Ref<UISprite> create(Texture* texture);
 
-	static Ref<UISprite> load(StringRef filePath);
+	static Ref<UISprite> load(StringView filePath);
 
     /** スプライトが表示するテクスチャを設定します。 */
     LN_METHOD(Property)

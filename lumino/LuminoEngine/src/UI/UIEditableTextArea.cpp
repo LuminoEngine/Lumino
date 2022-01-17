@@ -79,13 +79,13 @@ Vector2 UILogicalRun::measure(const UITextRange& range) const
     return font->measureRenderSize(substr(range), 1.0f);  // TODO: dpi
 }
 
-StringRef UILogicalRun::str() const
+StringView UILogicalRun::str() const
 {
 	return m_ownerLine->m_text.substr(m_range.beginIndex, length());
 
 }
 
-StringRef UILogicalRun::substr(const UITextRange& range) const
+StringView UILogicalRun::substr(const UITextRange& range) const
 {
     return m_ownerLine->m_text.substr(m_range.beginIndex + range.beginIndex, range.length());
 }
@@ -180,7 +180,7 @@ void UITextLayout::setBaseTextStyle(Font* font, const Color& textColor)
 	m_dirtyPhysicalLines = true;
 }
 
-void UITextLayout::setText(const StringRef& value)
+void UITextLayout::setText(const StringView& value)
 {
     m_boundText = value;
 
@@ -210,7 +210,7 @@ void UITextLayout::clearText()
 	m_dirtyPhysicalLines = true;
 }
 
-void UITextLayout::insertAt(const UITextLocation& loc, const StringRef& text)
+void UITextLayout::insertAt(const UITextLocation& loc, const StringView& text)
 {
     if (LN_REQUIRE(!m_logicalLines.isOutOfRange(loc.lineIndex))) return;
     UILogicalLine* logicalLine = m_logicalLines[loc.lineIndex];
@@ -394,7 +394,7 @@ bool UITextLayout::handleTypeChar(Char ch)
 {
     if (true)   // TODO: readonly など
     {
-        insertAt(m_cursorInfo.position, StringRef(&ch, 1));
+        insertAt(m_cursorInfo.position, StringView(&ch, 1));
 
         m_cursorInfo.position = translateLocationToCharDirection(m_cursorInfo.position, 1);
 		updateCursorHighlight();
@@ -545,7 +545,7 @@ UITextLocation UITextLayout::translateLocationToCharDirection(const UITextLocati
     return UITextLocation(loc.lineIndex, newOffsetInLine);
 }
 
-int UITextLayout::moveToCandidate(const StringRef& text, int begin, int offset)
+int UITextLayout::moveToCandidate(const StringView& text, int begin, int offset)
 {
     if (begin + offset < 0) return -1;
     if (text.length() + 1 <= begin + offset) return -1;	// 仮想的な EOF への移動を許可する
@@ -588,7 +588,7 @@ void UITextArea::init()
 	//registerActiveTimer(m_cursorTimer);
 }
 
-void UITextArea::setText(const StringRef& value)
+void UITextArea::setText(const StringView& value)
 {
 	m_textLayout->setText(value);
 }

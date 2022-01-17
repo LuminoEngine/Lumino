@@ -13,7 +13,7 @@ public:
     /** 指定した文字列から読み取る StringReader を構築します。 */
     StringReader(const String& str);
     StringReader(const Char* str);
-    StringReader(const StringRef& str);
+    StringReader(const StringView& str);
 
     virtual ~StringReader();
 
@@ -25,7 +25,7 @@ public:
 
 private:
     String m_src;
-    StringRef m_range;
+    StringView m_range;
     int m_pos;
 };
 

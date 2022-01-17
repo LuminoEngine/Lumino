@@ -123,5 +123,5 @@ ln::Result StartupView::init()
     }
     
 
-    return true;
+    return ln::ok();
 }

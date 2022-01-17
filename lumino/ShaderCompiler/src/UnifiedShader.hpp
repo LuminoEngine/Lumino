@@ -106,7 +106,7 @@ public:
     // それ以外は、値は入っているが binding が正しくないので使用できない。
     const DescriptorLayout& globalDescriptorLayout() const { return m_globalDescriptorLayout; }
 
-    void saveCodes(const StringRef& perfix) const;
+    void saveCodes(const StringView& perfix) const;
 
 private:
     int idToIndex(uint32_t id) const { return id - 1; }

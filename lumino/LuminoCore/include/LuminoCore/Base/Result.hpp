@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#define LN_RESULT_BOOL_CONVERSION 1
+
 namespace ln {
 
     
@@ -90,39 +92,46 @@ inline DefaultErrType err() {
 }
 
 //==============================================================================
-// Result
+// BasicResult
 
 template<typename T = void, typename E = bool>
-struct Result {
-    Result(T&& ok)
+struct BasicResult {
+    BasicResult(T&& ok)
         : ok_(true)
         , ok_v(std::forward<T>(ok))
     {
     }
 
-    Result(OkType<T> ok)
+    BasicResult(OkType<T> ok)
         : ok_(true)
         , ok_v(std::move(ok.val)) {
     }
 
-    Result(ErrType<E> err)
+    BasicResult(ErrType<E> err)
         : ok_(false)
         , err_v(std::move(err.val)) {
     }
 
-    Result(DefaultErrType)
+    BasicResult(DefaultErrType)
         : ok_(false)
         , err_v{}
     {
     }
 
-    //Result(Result&& other) {
+#if defined(LN_RESULT_BOOL_CONVERSION)
+    explicit BasicResult(bool result)
+        : ok_(result)
+        , ok_v{} {
+    }
+#endif
+
+    //BasicResult(BasicResult&& other) {
     //}
 
-    //Result(const Result& other) {
+    //BasicResult(const BasicResult& other) {
     //}
 
-    ~Result() {
+    ~BasicResult() {
         if (ok_) {
             ok_v.~T();
         }
@@ -209,29 +218,36 @@ private:
 
 // for reference
 template<typename T, typename E>
-struct Result<T&, E> {
-    Result(OkType<T&> ok)
+struct BasicResult<T&, E> {
+    BasicResult(OkType<T&> ok)
         : ok_(true)
         , ok_v(&ok.val) {
     }
 
-    Result(ErrType<E> err)
+    BasicResult(ErrType<E> err)
         : ok_(false)
         , err_v(std::move(err.val)) {
     }
 
-    Result(DefaultErrType)
+    BasicResult(DefaultErrType)
         : ok_(false)
         , err_v{} {
     }
 
-    //Result(Result&& other) {
+#if defined(LN_RESULT_BOOL_CONVERSION)
+    explicit BasicResult(bool result)
+        : ok_(result)
+        , ok_v{} {
+    }
+#endif
+
+    //BasicResult(BasicResult&& other) {
     //}
 
-    //Result(const Result& other) {
+    //BasicResult(const BasicResult& other) {
     //}
 
-    ~Result() {
+    ~BasicResult() {
         if (!ok_) {
             err_v.~E();
         }
@@ -314,28 +330,35 @@ private:
 };
 
 template<typename E>
-struct Result<void, E> {
-    Result(OkType<void> ok)
+struct BasicResult<void, E> {
+    BasicResult(OkType<void> ok)
         : ok_(true) {
     }
 
-    Result(ErrType<E> err)
+    BasicResult(ErrType<E> err)
         : ok_(false)
         , err_v(std::move(err.val)) {
     }
 
-    Result(DefaultErrType)
+    BasicResult(DefaultErrType)
         : ok_(false)
         , err_v{} {
     }
 
-    //Result(Result&& other) {
+#if defined(LN_RESULT_BOOL_CONVERSION)
+    explicit BasicResult(bool result)
+        : ok_(result)
+        , err_v{} {
+    }
+#endif
+
+    //BasicResult(BasicResult&& other) {
     //}
 
-    //Result(const Result& other) {
+    //BasicResult(const BasicResult& other) {
     //}
 
-    ~Result() {
+    ~BasicResult() {
         if (!ok_) {
             err_v.~E();
         }
@@ -360,5 +383,15 @@ private:
     bool ok_;
     E err_v;
 };
+
+
+//=============================================================================
+// In library common resut
+
+enum class ErrorCode {
+	Unknown = 0,
+};
+
+using Result = BasicResult<void, ErrorCode>;
 
 } // namespace ln

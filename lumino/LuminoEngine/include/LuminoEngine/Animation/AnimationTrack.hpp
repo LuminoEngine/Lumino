@@ -65,7 +65,7 @@ public:
 	/** このトラックのアニメーション値の型を取得します。 */
 	AnimationValueType type() const { return m_type; }
 
-    void setTargetName(const StringRef& value) { m_targetKey.name = value; }
+    void setTargetName(const StringView& value) { m_targetKey.name = value; }
 	void setTargetHumanoidBone(HumanoidBones value) { m_targetKey.bone = value; }
 
     virtual float lastFrameTime() const { return 0; }

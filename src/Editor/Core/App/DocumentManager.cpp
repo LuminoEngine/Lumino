@@ -23,7 +23,7 @@ ln::Result Document::init()
     m_mainFrame->setFocusable(true);
 
     //m_mainFrame->getGridLayoutInfo()->layoutWeight = 1; // fill in box layout
-    return true;
+    return ln::ok();
 }
 
 //bool Document::close()
@@ -33,7 +33,7 @@ ln::Result Document::init()
 
 bool Document::onClosing()
 {
-	return true;
+    return true;
 }
 
 
@@ -75,7 +75,7 @@ ln::Result DocumentManager::init()
     m_toolPanesArea = ln::makeObject<ToolPanesArea>();
     m_inspectorPanesArea = ln::makeObject<ToolPanesArea>();
 
-    return true;
+    return ln::ok();
 }
 
 AssetEditorDocument* DocumentManager::activeDocument() const
@@ -179,12 +179,12 @@ AssetEditorDocument::AssetEditorDocument()
 
 ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditorModel* editorModel)
 {
-    if (!Document::init()) return false;
+    if (!Document::init()) return ln::err();
     m_asset = asset;
     m_editor = editorModel;
 
     m_editor->onOpened(m_asset, mainFrame());
-    return true;
+    return ln::ok();
 }
 
 //==============================================================================

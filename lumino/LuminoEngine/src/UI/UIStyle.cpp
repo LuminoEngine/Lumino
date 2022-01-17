@@ -95,7 +95,7 @@ void UIStyleDecorator::init()
 	Object::init();
 }
 
-void UIStyleDecorator::setIconName(const StringRef& value, int size)
+void UIStyleDecorator::setIconName(const StringView& value, int size)
 {
 	m_font = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeFont(_TT("Reguler"), size);
 	m_codePoint = detail::FontManager::instance()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
@@ -643,7 +643,7 @@ UIStyleSet::~UIStyleSet()
 {
 }
 
-void UIStyleSet::init(const StringRef& elementName)
+void UIStyleSet::init(const StringView& elementName)
 {
     Object::init();
 	m_elementName = elementName;
@@ -657,14 +657,14 @@ void UIStyleSet::addStyleClass(UIStyleClass* styleClass)
 	m_styleClasses.add(styleClass);
 }
 
-UIStyleClass* UIStyleSet::addStyleClass(const StringRef& className)
+UIStyleClass* UIStyleSet::addStyleClass(const StringView& className)
 {
 	auto ptr = makeObject<UIStyleClass>(className);
 	addStyleClass(ptr);
 	return ptr;
 }
 
-UIStyleClass* UIStyleSet::findStyleClass(const StringRef& className) const
+UIStyleClass* UIStyleSet::findStyleClass(const StringView& className) const
 {
     auto style = m_styleClasses.findIf([&](auto& x) { return String::compare(x->name(), className, CaseSensitivity::CaseInsensitive) == 0; });
     if (style)
@@ -718,27 +718,27 @@ UIStyleClass::~UIStyleClass()
 {
 }
 
-void UIStyleClass::init(const StringRef& name)
+void UIStyleClass::init(const StringView& name)
 {
 	Object::init();
 	m_name = name;
 	m_mainStyle = makeObject<UIStyle>();
 }
 
-void UIStyleClass::addStateStyle(const StringRef& stateName, UIStyle* style)
+void UIStyleClass::addStateStyle(const StringView& stateName, UIStyle* style)
 {
 	if (LN_REQUIRE(style)) return;
 	m_visualStateStyles.add({ stateName, style });
 }
 
-UIStyle* UIStyleClass::addStateStyle(const StringRef& stateName)
+UIStyle* UIStyleClass::addStateStyle(const StringView& stateName)
 {
 	auto ptr = makeObject<UIStyle>();
 	addStateStyle(stateName, ptr);
 	return ptr;
 }
 
-UIStyle* UIStyleClass::findStateStyle(const StringRef& stateName) const
+UIStyle* UIStyleClass::findStateStyle(const StringView& stateName) const
 {
 	auto style = m_visualStateStyles.findIf([&](auto& x) { return String::compare(x.name, stateName, CaseSensitivity::CaseInsensitive) == 0; });
 	if (style)
@@ -795,20 +795,20 @@ void UIStyleSheet::init()
     Object::init();
 }
 
-void UIStyleSheet::addStyleSet(const StringRef& elementName, UIStyleSet* styleClass)
+void UIStyleSheet::addStyleSet(const StringView& elementName, UIStyleSet* styleClass)
 {
     if (LN_REQUIRE(styleClass)) return;
     m_classes.insert({ elementName, styleClass });
 }
 
-Ref<UIStyleSet> UIStyleSheet::addStyleSet(const StringRef& elementName)
+Ref<UIStyleSet> UIStyleSheet::addStyleSet(const StringView& elementName)
 {
     auto cls = makeObject<UIStyleSet>(elementName);
     addStyleSet(elementName, cls);
     return cls;
 }
 
-UIStyleSet* UIStyleSheet::findStyleSet(const StringRef& elementName) const
+UIStyleSet* UIStyleSheet::findStyleSet(const StringView& elementName) const
 {
     auto itr = m_classes.find(elementName);
     if (itr != m_classes.end())
@@ -817,7 +817,7 @@ UIStyleSet* UIStyleSheet::findStyleSet(const StringRef& elementName) const
         return nullptr;
 }
 
-UIStyle* UIStyleSheet::obtainStyle(const StringRef& selector)
+UIStyle* UIStyleSheet::obtainStyle(const StringView& selector)
 {
 	String actualSelector = selector;
 	int classBegin = actualSelector.lastIndexOf(_TT("."));
@@ -827,9 +827,9 @@ UIStyle* UIStyleSheet::obtainStyle(const StringRef& selector)
 	int classEnd = (stateBegin > 0) ? stateBegin : actualSelector.length();
 	int stateEnd = actualSelector.length();
 
-	StringRef elementName;
-	StringRef className;
-	StringRef stateName;
+	StringView elementName;
+	StringView className;
+	StringView stateName;
 	if (classBegin == 0 || stateBegin == 0) {
 		// omitted
 	}
@@ -935,7 +935,7 @@ void UIStyleContext::build()
     }
 }
 
-UIStyleSet* UIStyleContext::findStyleSet(const StringRef& elementName) const
+UIStyleSet* UIStyleContext::findStyleSet(const StringView& elementName) const
 {
     auto itr = m_elementStyles.find(elementName);
     if (itr != m_elementStyles.end())
@@ -944,7 +944,7 @@ UIStyleSet* UIStyleContext::findStyleSet(const StringRef& elementName) const
         return nullptr;
 }
 
-//detail::UIStyleClassInstance* UIStyleContext::findResolvedStyleClass(const StringRef& elementName) const
+//detail::UIStyleClassInstance* UIStyleContext::findResolvedStyleClass(const StringView& elementName) const
 //{
 //    auto itr = m_resolvedClasses.find(elementName);
 //    if (itr != m_resolvedClasses.end())
@@ -953,7 +953,7 @@ UIStyleSet* UIStyleContext::findStyleSet(const StringRef& elementName) const
 //        return m_resolvedGlobalStyle;
 //}
 
-void UIStyleContext::combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const
+void UIStyleContext::combineStyle(UIStyle* style, const StringView& elementName, const List<String>* classList) const
 {
 	auto set = findStyleSet(elementName);
     if (!set) return;   // global は parent に乗って降りてくるので、個々の element では結合不要
@@ -1150,7 +1150,7 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleClass* styl
 //      inputValidation.errorBackground
 //      例:https://code.visualstudio.com/api/references/theme-color
 
-const Color& UITheme::get(const StringRef& name) const
+const Color& UITheme::get(const StringView& name) const
 {
     auto itr = m_colors.find(name);
     if (itr != m_colors.end())
@@ -1163,7 +1163,7 @@ UITheme::UITheme()
 {
 }
 
-void UITheme::add(const StringRef& name, const Color& color)
+void UITheme::add(const StringView& name, const Color& color)
 {
     m_colors[name] = color;
 }

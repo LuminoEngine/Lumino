@@ -25,7 +25,7 @@ ln::Result PluginManager::init(Project* owner)
     m_standartPluginModule = ln::makeObject<StandardPluginModule>();
     //m_tilesetExtensionModule = ln::makeObject<TilesetExtensionModule>();
     //m_tilemapSceneEditorExtensionModule = ln::makeObject<TilemapSceneEditorExtensionModule>();
-    return true;
+    return ln::ok();
 }
 
 void PluginManager::reloadPlugins()

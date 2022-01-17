@@ -98,19 +98,19 @@ class MeshModel
 public:
 	/** load */
 	LN_METHOD()
-    static Ref<MeshModel> load(const StringRef& filePath, MeshImportSettings* settings = nullptr);
-	//static Ref<MeshModel> loadSkinned(const StringRef& filePath);	// TODO: load 統一でいいかも
+    static Ref<MeshModel> load(const StringView& filePath, MeshImportSettings* settings = nullptr);
+	//static Ref<MeshModel> loadSkinned(const StringView& filePath);	// TODO: load 統一でいいかも
 
 	/** findNode */
 	LN_METHOD()
-	MeshNode* findNode(StringRef name) const;
+	MeshNode* findNode(StringView name) const;
 	
 	/** findMaterial */
 	LN_METHOD()
-	Material* findMaterial(StringRef name) const;
+	Material* findMaterial(StringView name) const;
 
-	//MeshContainer* findMeshContainer(StringRef name) const;
-	int findNodeIndex(StringRef name) const;
+	//MeshContainer* findMeshContainer(StringView name) const;
+	int findNodeIndex(StringView name) const;
 
 	MeshNode* addNode();
 	MeshContainer* addMeshContainer(MeshPrimitive* mesh);

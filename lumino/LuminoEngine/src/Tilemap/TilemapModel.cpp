@@ -76,7 +76,7 @@ void TilemapModel::init()
 #endif
 }
 
-void TilemapModel::init(const StringRef& filePath)
+void TilemapModel::init(const StringView& filePath)
 {
 #if 0
     tmx::Map tmxMap;

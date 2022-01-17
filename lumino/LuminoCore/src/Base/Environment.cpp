@@ -48,7 +48,7 @@ Path Environment::specialFolderPath(SpecialFolder specialFolder)
 	return String::fromStdString(path);
 }
 
-Path Environment::specialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option)
+Path Environment::specialFolderPath(SpecialFolder specialFolder, const StringView& relativeDirPath, SpecialFolderOption option)
 {
     if (!relativeDirPath.isEmpty()) {
         if (LN_REQUIRE(!detail::PathTraits::isAbsolutePath(relativeDirPath.data(), relativeDirPath.length()))) return Path();
@@ -80,7 +80,7 @@ Path Environment::specialFolderPath(SpecialFolder specialFolder, const StringRef
     }
 }
 
-Optional<String> Environment::getEnvironmentVariable(const StringRef& variableName)
+Optional<String> Environment::getEnvironmentVariable(const StringView& variableName)
 {
 	const char* value = ::getenv(variableName.toStdString().c_str());
 	if (value)
@@ -89,7 +89,7 @@ Optional<String> Environment::getEnvironmentVariable(const StringRef& variableNa
 		return std::nullopt;
 }
 
-void Environment::setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+void Environment::setEnvironmentVariable(const StringView& variableName, const StringView& value)
 {
 	PlatformEnvironment::setEnvironmentVariable(variableName, value);
 }

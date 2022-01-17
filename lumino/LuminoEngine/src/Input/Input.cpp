@@ -16,37 +16,37 @@ static InputController* Input_activeDevice()
 }
 
 //------------------------------------------------------------------------------
-bool Input::isPressed(const StringRef& buttonName)
+bool Input::isPressed(const StringView& buttonName)
 {
 	return Input_activeDevice()->isPressed(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::isTriggered(const StringRef& buttonName)
+bool Input::isTriggered(const StringView& buttonName)
 {
 	return Input_activeDevice()->isTriggered(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::isTriggeredOff(const StringRef& buttonName)
+bool Input::isTriggeredOff(const StringView& buttonName)
 {
 	return Input_activeDevice()->isTriggeredOff(buttonName);
 }
 
 //------------------------------------------------------------------------------
-bool Input::isRepeated(const StringRef& buttonName)
+bool Input::isRepeated(const StringView& buttonName)
 {
 	return Input_activeDevice()->isRepeated(buttonName);
 }
 
 //------------------------------------------------------------------------------
-float Input::getAxisValue(const StringRef& buttonName)
+float Input::getAxisValue(const StringView& buttonName)
 {
 	return Input_activeDevice()->getAxisValue(buttonName);
 }
 
 //------------------------------------------------------------------------------
-void Input::addBinding(const StringRef& buttonName, InputGesture* gesture)
+void Input::addBinding(const StringView& buttonName, InputGesture* gesture)
 {
 	return Input_activeDevice()->addBinding(buttonName, gesture);
 }
@@ -58,7 +58,7 @@ void Input::removeBinding(InputGesture* gesture)
 }
 
 //------------------------------------------------------------------------------
-void Input::clearBindings(const StringRef& buttonName)
+void Input::clearBindings(const StringView& buttonName)
 {
 	return Input_activeDevice()->clearBindings(buttonName);
 }

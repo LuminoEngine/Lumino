@@ -30,7 +30,7 @@ public:
     static void setDefaultFont(Font* font);
 
 	/** フォントを登録します。以降、ファミリ名でフォントを使用できるようになります。 */
-	static void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily = true);
+	static void registerFontFromFile(const StringView& fontFilePath, bool defaultFamily = true);
 
 public:
     /** フォントファミリ名の設定。空文字列はデフォルトのフォントファミリを示します。 */
@@ -67,7 +67,7 @@ public:
     Ref<Font> clone() const;
 
     /** 指定した文字列を描画する際のピクセルサイズを計算します。*/
-    Size measureRenderSize(const StringRef& text, float dpiScale = 1.0f);
+    Size measureRenderSize(const StringView& text, float dpiScale = 1.0f);
 	Size measureRenderSize(uint32_t codePoint, float dpiScale = 1.0f);
 
 LN_CONSTRUCT_ACCESS:

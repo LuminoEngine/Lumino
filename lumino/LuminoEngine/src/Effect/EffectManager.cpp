@@ -382,7 +382,7 @@ void EffectManager::dispose()
 #endif
 }
 
-Ref<ParticleModel> EffectManager::loadParticleModel(const StringRef& filePath)
+Ref<ParticleModel> EffectManager::loadParticleModel(const StringView& filePath)
 {
     // TODO: find cache
 
@@ -394,7 +394,7 @@ Ref<ParticleModel> EffectManager::loadParticleModel(const StringRef& filePath)
     return obj;
 }
 
-Ref<ParticleModelPromise> EffectManager::loadParticleModelAsync(const StringRef& filePath)
+Ref<ParticleModelPromise> EffectManager::loadParticleModelAsync(const StringView& filePath)
 {
     LN_NOTIMPLEMENTED();
     return nullptr;

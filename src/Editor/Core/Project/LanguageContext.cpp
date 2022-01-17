@@ -24,10 +24,10 @@ LanguageContext::~LanguageContext()
 ln::Result LanguageContext::build(const ln::String& target)
 {
 	if (!buildAssets()) {
-		return false;
+		return ln::err();
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result LanguageContext::buildAssets() const
@@ -36,12 +36,12 @@ ln::Result LanguageContext::buildAssets() const
 	auto outputFilePath = ln::Path(m_project->acquireBuildDir(), _TT("Assets.lca"));
 	writer.open(outputFilePath, ln::detail::CryptedArchiveHelper::DefaultPassword);
 
-	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
+	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringView(), ln::SearchOption::Recursive)) {
 		if (file.hasExtension(_TT(".fx"))) {
 
 			ln::Path outputFile;
 			if (!BuildAssetHelper::buildShaderFromAutoBuild(m_project, file, &outputFile)) {
-				return false;
+				return ln::err();
 			}
 
 			writer.addFile(outputFile, m_project->assetsDir().makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt));
@@ -104,7 +104,7 @@ ln::Result LanguageContext::buildAssets() const
 
 	CLI::info(_TT("Compilation succeeded."));
 
-	return true;
+	return ln::ok();
 }
 
 
@@ -129,7 +129,7 @@ void CppLanguageContext::restore()
 ln::Result CppLanguageContext::build(const ln::String& target)
 {
 	if (!LanguageContext::build(target)) {
-		return false;
+        return ln::err();
 	}
 
 	if (ln::String::compare(target, _TT("Windows"), ln::CaseSensitivity::CaseInsensitive) == 0) {
@@ -139,7 +139,7 @@ ln::Result CppLanguageContext::build(const ln::String& target)
 		return build_WebTarget();
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result CppLanguageContext::build_NativeCMakeTarget() const
@@ -160,7 +160,7 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 	// for tool development and debuging.
 	auto& envSettings = project()->workspace()->buildEnvironment();
 	if (lna::Workspace::developMode) {
-		args.add(ln::String::format(_TT("-DLUMINO_REPO_ROOT=\"{0}\""), envSettings->engineDevelopmentRepoRootDir().str()));
+		args.add(ln::format(_TT("-DLUMINO_REPO_ROOT=\"{0}\""), envSettings->engineDevelopmentRepoRootDir().str()));
 	}
 
 	auto buildDir = ln::Path(project()->acquireBuildDir(), arch);
@@ -174,10 +174,10 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 	cmake.wait();
 	if (cmake.exitCode() != 0) {
 		CLI::error(_TT("Failed cmake."));
-		return false;
+		return ln::err();
 	}
 
-	return true;
+	return ln::ok();
 }
 
 ln::Result CppLanguageContext::build_WebTarget() const
@@ -218,7 +218,7 @@ ln::Result CppLanguageContext::build_WebTarget() const
 	}
 
 	ln::Process::execute(script);
-	return true;
+	return ln::ok();
 }
 
 } // namespace lna

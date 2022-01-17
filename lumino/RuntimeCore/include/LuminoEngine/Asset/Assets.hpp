@@ -35,7 +35,7 @@ public:
      * ファイルの拡張子は .lnasset です。ただし、filePath に指定する値は拡張子を省略可能です。
      */
     LN_METHOD()
-    static Ref<Object> loadAsset(const StringRef& filePath);
+    static Ref<Object> loadAsset(const StringView& filePath);
     
     /**
      * 指定したアセットファイルを読み込み、作成済みのオブジェクトへ適用します。
@@ -43,7 +43,7 @@ public:
      * このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
      */
     LN_METHOD()
-    static void reloadAsset(const StringRef& filePath, Object* obj);
+    static void reloadAsset(const StringView& filePath, Object* obj);
 
     /**
      * 指定したアセットファイルへオブジェクトを保存します。
@@ -51,7 +51,7 @@ public:
      * 拡張子が無い場合は追加されます。
      * Lumino 標準の拡張子以外を明示的に指定した場合、アセットを読み込むときも同じように明示する必要があります。
      */
-    static void saveAsset(Object* obj, const StringRef& filePath);
+    static void saveAsset(Object* obj, const StringView& filePath);
 
     /**
      * 既存のオブジェクトに対して、指定したアセットファイルでデシリアライズを行います。
@@ -59,33 +59,33 @@ public:
      * このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
      */
     // obsolete: use reloadAsset
-    static void deserializeInstance(Object* obj, const StringRef& filePath);
+    static void deserializeInstance(Object* obj, const StringView& filePath);
 
 
 
 
-    static bool existsFile(const StringRef& filePath);
+    static bool existsFile(const StringView& filePath);
 
-	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
+	static Ref<ByteBuffer> readAllBytes(const StringView& filePath);
 
     /** readAllText */
     LN_METHOD()
-    static String readAllText(const StringRef& filePath, EncodingType encoding = EncodingType::Unknown);
+    static String readAllText(const StringView& filePath, EncodingType encoding = EncodingType::Unknown);
 
-    static Ref<Stream> openFileStream(const StringRef& filePath);
+    static Ref<Stream> openFileStream(const StringView& filePath);
 
 
 
     //static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
     //static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
 
-    //static void serializeAssetObjectInternal(Archive& ar, const StringRef& name, Ref<Object>& value);
+    //static void serializeAssetObjectInternal(Archive& ar, const StringView& name, Ref<Object>& value);
 
     // TODO: internal
     // assetPath() をキャッシュキーのソースとして、扱うような AssetObject を serialize する。
     // 
     //template<typename TValue>
-    //static void serializeAssetObject(Serializer2& ar, const StringRef& name, Ref<TValue>& value)
+    //static void serializeAssetObject(Serializer2& ar, const StringView& name, Ref<TValue>& value)
     //{
     //    if (ar.isSaving()) {
     //        Ref<Object> local = value;

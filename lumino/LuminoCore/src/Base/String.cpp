@@ -203,7 +203,7 @@ String::String(int count, Char ch)
     assign(count, ch);
 }
 
-String::String(const StringRef& str)
+String::String(const StringView& str)
     : String()
 {
     assign(str);
@@ -267,7 +267,7 @@ void String::reserve(int size)
     unlockBuffer(cur, &context);
 }
 
-bool String::contains(const StringRef& str, CaseSensitivity cs) const
+bool String::contains(const StringView& str, CaseSensitivity cs) const
 {
     return indexOf(str, 0, cs) >= 0;
 }
@@ -277,7 +277,7 @@ bool String::contains(Char ch, CaseSensitivity cs) const
     return indexOf(ch, 0, cs) >= 0;
 }
 
-int String::indexOf(const StringRef& str, int startIndex, CaseSensitivity cs) const
+int String::indexOf(const StringView& str, int startIndex, CaseSensitivity cs) const
 {
     return StringHelper::indexOf(c_str(), length(), str.data(), str.length(), startIndex, cs);
 }
@@ -287,7 +287,7 @@ int String::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
     return StringHelper::indexOf(c_str(), length(), &ch, 1, startIndex, cs);
 }
 
-int String::lastIndexOf(const StringRef& str, int startIndex, int count, CaseSensitivity cs) const
+int String::lastIndexOf(const StringView& str, int startIndex, int count, CaseSensitivity cs) const
 {
     return StringHelper::lastIndexOf(c_str(), length(), str.data(), str.length(), startIndex, count, cs);
 }
@@ -297,7 +297,7 @@ int String::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) 
     return StringHelper::lastIndexOf(c_str(), length(), &ch, 1, startIndex, count, cs);
 }
 
-bool String::startsWith(const StringRef& str, CaseSensitivity cs) const
+bool String::startsWith(const StringView& str, CaseSensitivity cs) const
 {
     return StringHelper::startsWith(c_str(), length(), str.data(), str.length(), cs);
 }
@@ -307,7 +307,7 @@ bool String::startsWith(Char ch, CaseSensitivity cs) const
     return StringHelper::endsWith(c_str(), length(), &ch, 1, cs);
 }
 
-bool String::endsWith(const StringRef& str, CaseSensitivity cs) const
+bool String::endsWith(const StringView& str, CaseSensitivity cs) const
 {
     return StringHelper::endsWith(c_str(), length(), str.data(), str.length(), cs);
 }
@@ -317,28 +317,28 @@ bool String::endsWith(Char ch, CaseSensitivity cs) const
     return StringHelper::endsWith(c_str(), length(), &ch, 1, cs);
 }
 
-StringRef String::substr(int start, int count) const
+StringView String::substr(int start, int count) const
 {
     const Char* begin;
     const Char* end;
     StringHelper::substr(c_str(), length(), start, count, &begin, &end);
-    return StringRef(begin, end);
+    return StringView(begin, end);
 }
 
-StringRef String::left(int count) const
+StringView String::left(int count) const
 {
     const Char* begin;
     const Char* end;
     StringHelper::left(c_str(), count, &begin, &end);
-    return StringRef(begin, end);
+    return StringView(begin, end);
 }
 
-StringRef String::right(int count) const
+StringView String::right(int count) const
 {
     const Char* begin;
     const Char* end;
     StringHelper::right(c_str(), count, &begin, &end);
-    return StringRef(begin, end);
+    return StringView(begin, end);
 }
 
 String String::trim() const
@@ -380,7 +380,7 @@ String String::toTitleCase() const
     return result;
 }
 
-String String::remove(const StringRef& str, CaseSensitivity cs) const
+String String::remove(const StringView& str, CaseSensitivity cs) const
 {
     String result;
     const Char* pos = c_str();
@@ -414,7 +414,7 @@ String String::remove(const StringRef& str, CaseSensitivity cs) const
     return result;
 }
 
-String String::replace(const StringRef& from, const StringRef& to, CaseSensitivity cs) const
+String String::replace(const StringView& from, const StringView& to, CaseSensitivity cs) const
 {
     String result;
     result.reserve(length());
@@ -442,7 +442,7 @@ String String::replace(const StringRef& from, const StringRef& to, CaseSensitivi
     return result;
 }
 
-String String::insert(int startIndex, const StringRef& value) const
+String String::insert(int startIndex, const StringView& value) const
 {
     if (value.isEmpty()) return *this;
     if (startIndex < 0) startIndex = 0;
@@ -466,7 +466,7 @@ String String::insert(int startIndex, const StringRef& value) const
     return result;
 }
 
-List<String> String::split(const StringRef& delim, StringSplitOptions option) const
+List<String> String::split(const StringView& delim, StringSplitOptions option) const
 {
     List<String> result;
     StringHelper::SplitHelper(
@@ -626,10 +626,10 @@ std::wstring String::toStdWString() const
 
 String String::remove(Char ch, CaseSensitivity cs) const
 {
-    return remove(StringRef(&ch, 1), cs);
+    return remove(StringView(&ch, 1), cs);
 }
 
-String String::concat(const StringRef& str1, const StringRef& str2)
+String String::concat(const StringView& str1, const StringView& str2)
 {
     String s;
     s.reserve(str1.length() + str2.length());
@@ -638,7 +638,7 @@ String String::concat(const StringRef& str1, const StringRef& str2)
     return s;
 }
 
-String String::concat(const StringRef& str1, const StringRef& str2, const StringRef& str3)
+String String::concat(const StringView& str1, const StringView& str2, const StringView& str3)
 {
     String s;
     s.reserve(str1.length() + str2.length() + str3.length());
@@ -647,7 +647,7 @@ String String::concat(const StringRef& str1, const StringRef& str2, const String
     s.append(str3.data(), str3.length());
     return s;
 }
-String String::concat(const StringRef& str1, const StringRef& str2, const StringRef& str3, const StringRef& str4)
+String String::concat(const StringView& str1, const StringView& str2, const StringView& str3, const StringView& str4)
 {
     String s;
     s.reserve(str1.length() + str2.length() + str3.length() + str4.length());
@@ -658,7 +658,7 @@ String String::concat(const StringRef& str1, const StringRef& str2, const String
     return s;
 }
 
-String String::join(const List<String>& list, const StringRef& delim)
+String String::join(const List<String>& list, const StringView& delim)
 {
     if (list.isEmpty()) return String();
 
@@ -682,7 +682,7 @@ int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
     return StringHelper::compare(str1.c_str(), str1.length(), str2.c_str(), str2.length(), LN_MAX(str1.length(), str2.length()), cs);
 }
 
-int String::compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length, CaseSensitivity cs)
+int String::compare(const StringView& str1, int index1, const StringView& str2, int index2, int length, CaseSensitivity cs)
 {
     const Char* s1 = str1.data() + index1;
     const Char* s2 = str2.data() + index2;
@@ -991,7 +991,7 @@ void String::assign(int count, Char ch)
     }
 }
 
-void String::assign(const StringRef& str)
+void String::assign(const StringView& str)
 {
     // TODO: String 参照のときの特殊化
     assign(str.data(), str.length());

@@ -8,7 +8,7 @@ namespace ln {
 //==============================================================================
 // FileStream
 
-FileInfo::FileInfo(const ln::StringRef& path)
+FileInfo::FileInfo(const ln::StringView& path)
 	: m_path(path)
 {
 }

@@ -121,7 +121,7 @@ void TextWriter::write(double value)
     }
 }
 
-void TextWriter::write(const StringRef& str)
+void TextWriter::write(const StringView& str)
 {
     writeInternal(str.data(), str.length());
 }
@@ -203,7 +203,7 @@ void TextWriter::writeLine(double value)
     writeLine();
 }
 
-void TextWriter::writeLine(const StringRef& str)
+void TextWriter::writeLine(const StringView& str)
 {
     writeInternal(str.data(), str.length());
     writeLine();

@@ -79,7 +79,7 @@ public:
 
     void traverse(detail::IWorldObjectVisitor* visitor) const;
     WorldObject* findObjectById(int id) const;
-    WorldObject* findObjectByName(const StringRef& name) const;
+    WorldObject* findObjectByName(const StringView& name) const;
 
 protected:
     // update sequence

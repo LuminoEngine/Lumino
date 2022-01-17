@@ -313,7 +313,7 @@ public:
 	const ln::String& name() const { return m_name; }
 
 	/** 名前を設定します。 */
-	void setName(const StringRef& name) { m_name = name; }
+	void setName(const StringView& name) { m_name = name; }
 
 	///** メインの MeshResource を設定します。 */
 	//void setMeshResource(MeshResource* mesh);

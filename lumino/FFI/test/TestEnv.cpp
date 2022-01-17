@@ -228,7 +228,7 @@ bool TestEnv::checkScreenShot(const Char* filePath, RenderTargetTexture* renderT
 	{
         bool result = equalsScreenShot(filePath, renderTarget, passRate);
         if (!result) {
-            saveScreenShot(LN_ASSETFILE("Result/0-latest-failer.png"), renderTarget);
+            saveScreenShot(LN_ASSETFILE("Result/0-latest-failer.png").c_str(), renderTarget);
         }
         return result;
 	}

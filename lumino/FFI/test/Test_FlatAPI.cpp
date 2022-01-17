@@ -240,7 +240,7 @@ TEST_F(Test_FlatAPI, VirtualProtoType)
 	LNEngine_GetWorld(&world);
 
 	LNHandle texture;
-	LNTexture2D_Load(LN_ASSETFILE("Sprite1.png"), &texture);
+	LNTexture2D_Load(LN_ASSETFILE("Sprite1.png").c_str(), &texture);
 
 	LNHandle delegate;
 	LNSpriteUpdateHandler_Create(Sprite_OnUpdate, &delegate);
@@ -255,7 +255,7 @@ TEST_F(Test_FlatAPI, VirtualProtoType)
 
 	Engine::mainLight()->setEnabled(false);
 	TestEnv::updateFrame();
-	ASSERT_SCREEN(LN_ASSETFILE("FlatAPI/Expects/Basic-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("FlatAPI/Expects/Basic-1.png").c_str());
 	LN_TEST_CLEAN_SCENE;
 
 	LNObject_Release(sprite);

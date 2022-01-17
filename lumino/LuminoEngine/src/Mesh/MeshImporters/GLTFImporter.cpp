@@ -342,7 +342,7 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 			coreMaterial->setOcclusionTexture(loadTexture(texture));
 		}
 		else {
-			m_diag->reportWarning(String::format(_TT("Material field '{}' is not supported."), String::fromStdString(value.first)));
+			m_diag->reportWarning(ln::format(_TT("Material field '{}' is not supported."), String::fromStdString(value.first)));
 		}
 	}
 

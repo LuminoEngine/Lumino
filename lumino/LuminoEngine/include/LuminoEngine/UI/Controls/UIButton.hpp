@@ -23,7 +23,7 @@ public:
 
 	/** set text. */
 	LN_METHOD()
-    void setText(const StringRef& text);
+    void setText(const StringView& text);
 
     void setCommand(UICommand* command);
 
@@ -47,7 +47,7 @@ class UIButton
 	LN_BUILDER;
 public:
     static Ref<UIButton> create();
-    static Ref<UIButton> create(const StringRef& text);
+    static Ref<UIButton> create(const StringView& text);
 
 	UIButton();
 
@@ -57,7 +57,7 @@ public:
 
 	/** 表示文字列を指定して UIButton を作成します。 */
 	LN_METHOD(OverloadPostfix = "WithText")
-    void init(const StringRef& text);
+    void init(const StringView& text);
 
     /** Clicked イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
@@ -127,13 +127,13 @@ struct UIButton::BuilderCore : public UIControl::BuilderCore<T, B, D>
 {
 	LN_BUILDER_CORE(UIControl::BuilderCore);
 
-	B& text(StringRef value) { d()->text = value; return self(); }
+	B& text(StringView value) { d()->text = value; return self(); }
 };
 
 struct UIButton::Builder : public BuilderCore<UIButton, Builder, BuilderDetails>
 {
 	Builder() {}
-	Builder(StringRef text) { d()->text = text; }
+	Builder(StringView text) { d()->text = text; }
 };
 
 } // namespace ln

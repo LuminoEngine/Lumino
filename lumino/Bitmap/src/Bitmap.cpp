@@ -426,7 +426,7 @@ void Bitmap2D::flipVerticalFlow()
 	}
 }
 
-void Bitmap2D::load(const StringRef& filePath)
+void Bitmap2D::load(const StringView& filePath)
 {
 	auto file = FileStream::create(filePath);
     load(file);
@@ -448,7 +448,7 @@ void Bitmap2D::load(Stream* stream)
     }
 }
 
-void Bitmap2D::save(const StringRef& filePath)
+void Bitmap2D::save(const StringView& filePath)
 {
 	auto file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
     detail::IBitmapEncoder::save(file, m_buffer->data(), m_size, m_format);
@@ -596,7 +596,7 @@ void BitmapHelper::blitRawSimple3D(void* dst, const void* src, size_t width, siz
 	}
 }
 
-//void BitmapHelper::drawText(Bitmap2D* bitmap, const StringRef& text, const RectI& rect, Font* font, const Color& color)
+//void BitmapHelper::drawText(Bitmap2D* bitmap, const StringView& text, const RectI& rect, Font* font, const Color& color)
 //{
 //
 //}

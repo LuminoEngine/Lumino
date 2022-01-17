@@ -90,7 +90,7 @@ void EngineContext2::unregisterModule(Module* mod)
     m_modules.removeIf([&](const auto& x) { return x == mod; });
 }
 
-TypeInfo* EngineContext2::acquireTypeInfo(const StringRef& name/*, TypeInfo* baseType, const std::function<Ref<Object>()>& factory*/)
+TypeInfo* EngineContext2::acquireTypeInfo(const StringView& name/*, TypeInfo* baseType, const std::function<Ref<Object>()>& factory*/)
 {
     auto* r = findTypeInfo(name);
     if (r) {

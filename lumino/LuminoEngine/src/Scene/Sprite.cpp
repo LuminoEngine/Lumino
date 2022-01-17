@@ -32,12 +32,12 @@ Ref<Sprite> Sprite::create(SpriteSheet* frameSet)
 	return makeObject<Sprite>(frameSet);
 }
 
-Ref<Sprite> Sprite::load(StringRef filePath)
+Ref<Sprite> Sprite::load(StringView filePath)
 {
 	return makeObject<Sprite>(Texture2D::load(filePath));
 }
 
-Ref<Sprite> Sprite::loadEmoji(StringRef code)
+Ref<Sprite> Sprite::loadEmoji(StringView code)
 {
 	return makeObject<Sprite>(Texture2D::loadEmoji(code));
 }

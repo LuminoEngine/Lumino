@@ -79,9 +79,9 @@ public:
 	void unregisterExtension(INativeGraphicsExtension* extension);
 	Ref<Texture> requestTexture(const AssetPath& assetPath);
 
-	Ref<Texture2D> loadTexture2D(const StringRef& filePath);
-	Ref<Texture2D> loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringRef& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory);
-	Ref<Shader> loadShader(const StringRef& filePath);
+	Ref<Texture2D> loadTexture2D(const StringView& filePath);
+    Ref<Texture2D> loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringView& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory);
+    Ref<Shader> loadShader(const StringView& filePath);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }

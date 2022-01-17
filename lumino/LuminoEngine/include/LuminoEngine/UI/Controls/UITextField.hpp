@@ -10,7 +10,7 @@ class UITextField
     : public UIElement
 {
 public:
-	void setText(const StringRef& value);
+	void setText(const StringView& value);
 	const String& text() const;
 
 LN_CONSTRUCT_ACCESS:

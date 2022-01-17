@@ -374,7 +374,7 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
 	}
 }
 
-Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
+Ref<Texture2D> GraphicsManager::loadTexture2D(const StringView& filePath)
 {
 	m_texture2DCache.collectUnreferenceObjects(false);
 
@@ -408,7 +408,7 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
 #endif
 }
 
-Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringRef& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory)
+Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringView& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory)
 {
 	static const std::vector<const Char*> exts = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
 	return AssetManager::loadObjectWithCacheHelper<Texture2D>(texture2DCache(), baseDir, exts, filePath, factory);
@@ -423,7 +423,7 @@ bool GraphicsManager::checkVulkanSupported()
 #endif
 }
 
-Ref<Shader> GraphicsManager::loadShader(const StringRef& filePath)
+Ref<Shader> GraphicsManager::loadShader(const StringView& filePath)
 {
 	m_shaderCache.collectUnreferenceObjects(false);
 

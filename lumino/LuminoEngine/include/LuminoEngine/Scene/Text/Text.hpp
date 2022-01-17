@@ -18,12 +18,12 @@ public:
 	static Ref<Text> create();
 
 	/** 表示文字列を指定して Text オブジェクトを作成します。 */
-	static Ref<Text> create(StringRef text);
+	static Ref<Text> create(StringView text);
 
 public:
 	/** 表示する文字列を設定します。 */
 	LN_METHOD(Property)
-	void setText(StringRef value);
+	void setText(StringView value);
 
 	/** 表示する文字列を取得します。 */
 	LN_METHOD(Property)
@@ -69,9 +69,9 @@ LN_CONSTRUCT_ACCESS:
     LN_METHOD()
 	bool init();
 
-	/** @copydoc create(StringRef) */
+	/** @copydoc create(StringView) */
 	LN_METHOD()
-	bool init(StringRef text);
+	bool init(StringView text);
 
 private:
     Ref<TextComponent> m_component;

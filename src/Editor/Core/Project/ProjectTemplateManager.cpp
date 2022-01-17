@@ -85,7 +85,7 @@ ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const 
 	auto templateProject = findTemplate(project->workspace()->primaryLang(), templateName);
 	if (!templateProject) {
 		CLI::error(_TT("Invalid project template."));
-		return false;
+		return ln::err();
 	}
 
 	auto projectTemplatesDir = project->workspace()->buildEnvironment()->projectTemplatesDirPath();
@@ -95,19 +95,19 @@ ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const 
 	CLI::info(_TT("Template: ") + templateName);
 
 	// 先にフォルダを作っておく
-	for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
+	for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringView(), ln::SearchOption::Recursive)) {
 		auto rel = srcRoot.makeRelative(dir);
 		ln::FileSystem::createDirectory(ln::Path(dstRoot, rel));
 	}
 
 	// ファイルをコピー
-	for (auto file : ln::FileSystem::getFiles(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
+	for (auto file : ln::FileSystem::getFiles(srcRoot, ln::StringView(), ln::SearchOption::Recursive)) {
 		auto rel = srcRoot.makeRelative(file);
 		ln::FileSystem::copyFile(file, ln::Path(dstRoot, rel));
 	}
 
 	CLI::info(_TT("Copied template."));
-	return true;
+	return ln::ok();
 }
 
 } // namespace lna

@@ -531,7 +531,7 @@ class IDescriptorPool
 public:
 	//virtual void dispose() = 0;
 	virtual void reset() = 0;
-	virtual IDescriptor* allocate() = 0;
+    virtual Result allocate(IDescriptor** outDescriptor) = 0;
 
 protected:
 	virtual ~IDescriptorPool();

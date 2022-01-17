@@ -63,9 +63,9 @@ public:
 	int getContainerElementCount() const { return onReadContainerElementCount(); }
 	//void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	//int getNextIndex() const { return m_nextIndex; }
-    virtual bool moveToNamedMember(const StringRef& name) = 0;
+    virtual bool moveToNamedMember(const StringView& name) = 0;
     virtual bool moveToIndexedMember(int index) = 0;
-	virtual bool hasKey(const StringRef& name) const = 0;
+	virtual bool hasKey(const StringView& name) const = 0;
 	virtual const String& memberKey(int index) const = 0;	// open済みmapコンテナのキーを探す
 	bool openContainer()
 	{
@@ -281,7 +281,7 @@ protected:
         m_mode = ArchiveMode::Load;
     }
 
-    virtual bool moveToNamedMember(const StringRef& name) override
+    virtual bool moveToNamedMember(const StringView& name) override
     {
         if (LN_REQUIRE(!m_nodeStack.empty())) return false;
         if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Object)) return false;
@@ -305,7 +305,7 @@ protected:
         return true;
     }
 
-	virtual bool hasKey(const StringRef& name) const override
+	virtual bool hasKey(const StringView& name) const override
 	{
         if (LN_REQUIRE(!m_nodeStack.empty())) return false;
         if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Object)) return false;

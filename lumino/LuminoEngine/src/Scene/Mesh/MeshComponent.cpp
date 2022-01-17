@@ -67,7 +67,7 @@ MeshModel* MeshComponent::model() const
     return m_model;
 }
 
-void MeshComponent::makeCollisionBody(StringRef meshContainerName)
+void MeshComponent::makeCollisionBody(StringView meshContainerName)
 {
     if (LN_REQUIRE(m_model)) return;
 

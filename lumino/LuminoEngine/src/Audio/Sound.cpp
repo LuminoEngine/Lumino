@@ -29,7 +29,7 @@ Sound::~Sound()
 {
 }
 
-void Sound::init(const StringRef& filePath)
+void Sound::init(const StringView& filePath)
 {
     Object::init();
 

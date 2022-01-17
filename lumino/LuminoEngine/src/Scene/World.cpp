@@ -190,12 +190,12 @@ WorldObject* World::findObjectById(int id) const
     return visitor.result;
 }
 
-WorldObject* World::findObjectByName(const StringRef& name) const
+WorldObject* World::findObjectByName(const StringView& name) const
 {
     class LocalVisitor : public detail::IWorldObjectVisitor
     {
     public:
-        StringRef name;
+        StringView name;
         WorldObject* result = nullptr;
         bool visit(WorldObject* obj) override
         {

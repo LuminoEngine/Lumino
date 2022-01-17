@@ -15,15 +15,15 @@ public:
     InputController(detail::InputManager* manager);
     virtual ~InputController();
 
-    bool isPressed(const StringRef& bindingName) const;
-    bool isTriggered(const StringRef& bindingName) const;
-    bool isTriggeredOff(const StringRef& bindingName) const;
-    bool isRepeated(const StringRef& bindingName) const;
-    float getAxisValue(const StringRef& bindingName) const;
+    bool isPressed(const StringView& bindingName) const;
+    bool isTriggered(const StringView& bindingName) const;
+    bool isTriggeredOff(const StringView& bindingName) const;
+    bool isRepeated(const StringView& bindingName) const;
+    float getAxisValue(const StringView& bindingName) const;
 
-    void addBinding(const StringRef& buttonName, InputGesture* gesture);
+    void addBinding(const StringView& buttonName, InputGesture* gesture);
     void removeBinding(InputGesture* gesture);
-    void clearBindings(const StringRef& buttonName);
+    void clearBindings(const StringView& buttonName);
     void clearAllBindings();
     void setRepeatInterval(int start, int step);
     void disableUntilIdle() { m_disabledUntilIdle = true; }
@@ -48,7 +48,7 @@ private:
     //};
 
     //void UpdateOneInputState(detail::InputDeviceElement* state);
-    const detail::InputDeviceElement* LockupState(const StringRef& bindingName) const;
+    const detail::InputDeviceElement* LockupState(const StringView& bindingName) const;
 
     detail::InputManager* m_manager;
     uint32_t m_attachedDevices; // TODO: 本当ならちゃんとインターフェイス組むべきかも

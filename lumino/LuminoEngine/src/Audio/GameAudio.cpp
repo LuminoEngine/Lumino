@@ -14,7 +14,7 @@ static detail::GameAudioImpl* coreInstance()
     return detail::EngineDomain::audioManager()->gameAudio();
 }
 
-void GameAudio::playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime)
+void GameAudio::playBGM(const StringView& filePath, float volume, float pitch, double fadeTime)
 {
     coreInstance()->playBGM(filePath, volume, pitch, fadeTime);
 }
@@ -24,7 +24,7 @@ void GameAudio::stopBGM(double fadeTime)
     coreInstance()->stopBGM(fadeTime);
 }
 
-void GameAudio::playBGS(const StringRef& filePath, float volume, float pitch, double fadeTime)
+void GameAudio::playBGS(const StringView& filePath, float volume, float pitch, double fadeTime)
 {
     coreInstance()->playBGS(filePath, volume, pitch, fadeTime);
 }
@@ -34,7 +34,7 @@ void GameAudio::stopBGS(double fadeTime)
     coreInstance()->stopBGS(fadeTime);
 }
 
-void GameAudio::playME(const StringRef& filePath, float volume, float pitch)
+void GameAudio::playME(const StringView& filePath, float volume, float pitch)
 {
     coreInstance()->playME(filePath, volume, pitch);
 }
@@ -44,12 +44,12 @@ void GameAudio::stopME()
     coreInstance()->stopME();
 }
 
-void GameAudio::playSE(const StringRef& filePath, float volume, float pitch)
+void GameAudio::playSE(const StringView& filePath, float volume, float pitch)
 {
     coreInstance()->playSE(filePath, volume, pitch);
 }
 
-void GameAudio::playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume, float pitch)
+void GameAudio::playSE3D(const StringView& filePath, const Vector3& position, float distance, float volume, float pitch)
 {
     coreInstance()->playSE3D(filePath, position, distance, volume, pitch);
 }

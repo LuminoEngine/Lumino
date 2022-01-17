@@ -26,7 +26,7 @@ bool UIButtonBase::init()
     return true;
 }
 
-void UIButtonBase::setText(const StringRef& text)
+void UIButtonBase::setText(const StringView& text)
 {
     if (!m_textContent) {
         m_textContent = makeObject<UIText>();
@@ -98,7 +98,7 @@ Ref<UIButton> UIButton::create()
     return makeObject<UIButton>();
 }
 
-Ref<UIButton> UIButton::create(const StringRef& text)
+Ref<UIButton> UIButton::create(const StringView& text)
 {
     return makeObject<UIButton>(text);
 }
@@ -113,7 +113,7 @@ bool UIButton::init()
     return true;
 }
 
-void UIButton::init(const StringRef& text)
+void UIButton::init(const StringView& text)
 {
     init();
     setText(text);

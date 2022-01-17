@@ -30,7 +30,7 @@ public:
     void writeEndArray();
 
     /** JSON object のメンバの名前を書き込みます。 */
-    void writePropertyName(const StringRef& str);
+    void writePropertyName(const StringView& str);
 
     /** Null 値を書き込みます。 */
     void writeNull();
@@ -51,7 +51,7 @@ public:
     void writeDouble(double value);
 
     /** 文字列値を書き込みます。 */
-    void writeString(const StringRef& str);
+    void writeString(const StringView& str);
 
 protected:
     enum class PrefixType

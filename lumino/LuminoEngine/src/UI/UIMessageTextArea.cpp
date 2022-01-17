@@ -412,7 +412,7 @@ bool UIMessageTextArea::init()
     return true;
 }
 
-void UIMessageTextArea::setText(const StringRef& value)
+void UIMessageTextArea::setText(const StringView& value)
 {
     m_text = value;
     m_textDirty = true;
@@ -497,7 +497,7 @@ void UIMessageTextWindow::init()
     m_document = makeObject<detail::RTDocument>();
 }
 
-void UIMessageTextWindow::setText(const StringRef& value)
+void UIMessageTextWindow::setText(const StringView& value)
 {
     detail::RTDocumentBuilder builder(m_document);
     builder.parse(finalStyle()->font, value);

@@ -14,12 +14,12 @@ namespace ln {
 //==============================================================================
 // AnimationClip
 
-Ref<AnimationClip> AnimationClip::create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
+Ref<AnimationClip> AnimationClip::create(/*const StringView& name, */const StringView& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
 {
 	return makeObject<AnimationClip>(/*name, */targetPath, keyframes);
 }
 
-Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
+Ref<AnimationClip> AnimationClip::load(const StringView& filePath)
 {
 	//return makeObject<AnimationClip>(filePath);
 
@@ -32,7 +32,7 @@ Ref<AnimationClip> AnimationClip::load(const StringRef& filePath)
 	//	return nullptr;
 }
 
-Ref<AnimationClipPromise> AnimationClip::loadAsync(const StringRef& filePath)
+Ref<AnimationClipPromise> AnimationClip::loadAsync(const StringView& filePath)
 {
 	auto task = detail::EngineDomain::animationManager()->loadAnimationClip(filePath);
 	return AnimationClipPromise::continueWith(task);
@@ -70,7 +70,7 @@ bool AnimationClip::init()
 //	return true;
 //}
 
-void AnimationClip::init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
+void AnimationClip::init(/*const StringView& name, */const StringView& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
 {
 	//if (LN_REQUIRE(!name.isEmpty())) return;
 

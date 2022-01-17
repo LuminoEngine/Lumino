@@ -222,7 +222,7 @@ void AnimationLayer::removeClipAndDeleteState(AnimationClip* animationClip)
 	m_animationStatus.removeIf([animationClip](const Ref<AnimationState>& state) { return state->animationClip() == animationClip; });
 }
 
-AnimationState* AnimationLayer::findAnimationState(const StringRef& name)
+AnimationState* AnimationLayer::findAnimationState(const StringView& name)
 {
 	auto state = m_animationStatus.findIf([name](const Ref<AnimationState>& state) { return state->name() == name; });
 	if (state)
@@ -380,7 +380,7 @@ AnimationState* AnimationMixerCore::addClip(AnimationClip* animationClip)
 	return state;
 }
 
-AnimationState* AnimationMixerCore::addClip(const StringRef& stateName, AnimationClip* animationClip)
+AnimationState* AnimationMixerCore::addClip(const StringView& stateName, AnimationClip* animationClip)
 {
 	AnimationState* state = addClip(animationClip);
 	state->setName(stateName);
@@ -392,7 +392,7 @@ void AnimationMixerCore::removeClip(AnimationClip* animationClip)
 	m_layers[0]->removeClipAndDeleteState(animationClip);
 }
 
-void AnimationMixerCore::play(const StringRef& clipName, float duration)
+void AnimationMixerCore::play(const StringView& clipName, float duration)
 {
 	AnimationState* state = m_layers[0]->findAnimationState(clipName);
 	play(state, duration);

@@ -286,7 +286,7 @@ void MeshBoneMapper::makeMajorKindByName(NodeInfo* info, const String& name)
 	}
 }
 
-const List<StringRef>& MeshBoneMapper::splitWords(const String& name)
+const List<StringView>& MeshBoneMapper::splitWords(const String& name)
 {
 	m_splitCache.clear();
 
@@ -295,18 +295,18 @@ const List<StringRef>& MeshBoneMapper::splitWords(const String& name)
 	for (; *pos; pos++) {
 		if (begin < pos) {
 			if (isupper(*pos)) {
-				m_splitCache.add(StringRef(begin, pos - begin));
+				m_splitCache.add(StringView(begin, pos - begin));
 				begin = pos;
 			}
 			else if (*pos == '_') {
-				m_splitCache.add(StringRef(begin, pos - begin));
+				m_splitCache.add(StringView(begin, pos - begin));
 				begin = pos + 1;
 				//pos++;
 			}
 		}
 	}
 	if (begin < pos) {
-		m_splitCache.add(StringRef(begin, pos - begin));
+		m_splitCache.add(StringView(begin, pos - begin));
 	}
 
 	// thumb_L0 や Body2 など、単語末尾に続く数字を除く
@@ -319,7 +319,7 @@ const List<StringRef>& MeshBoneMapper::splitWords(const String& name)
 					break;
 				}
 			}
-			m_splitCache[i] = StringRef(str.data(), str.length() - nums);
+			m_splitCache[i] = StringView(str.data(), str.length() - nums);
 		}
 	}
 

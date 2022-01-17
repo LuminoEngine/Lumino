@@ -822,7 +822,7 @@ Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image,
 
     LN_VK_CHECK(vkCreateImageView(deviceContext->vulkanDevice(), &viewInfo, deviceContext->vulkanAllocator(), outView));
 
-    return true;
+    return ok();
 }
 
 //=============================================================================
@@ -871,7 +871,7 @@ Result AbstractVulkanAllocator::init()
 	m_allocatorCallbacks.pfnInternalAllocation = nullptr;
 	m_allocatorCallbacks.pfnInternalFree = nullptr;
 	m_allocatorCallbacks.pUserData = this;
-	return true;
+	return ok();
 }
 
 //=============================================================================
@@ -1003,10 +1003,10 @@ Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t h
     vkBindImageMemory(device, m_image, m_imageMemory, 0);
 
 	if (!VulkanHelper::createImageView(m_deviceContext, m_image, format, mipLevel, aspectFlags, &m_imageView)) {
-		return false;
+        return err();
 	}
 
-	return true;
+	return ok();
 }
 
 Result VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
@@ -1019,7 +1019,7 @@ Result VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32
     m_format = format;
     m_image = image;
     m_imageView = imageView;
-    return true;
+    return ok();
 }
 
 void VulkanImage::dispose()
@@ -1053,11 +1053,11 @@ VulkanCommandBuffer::~VulkanCommandBuffer()
 
 Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
 {
-	if (LN_REQUIRE(deviceContext)) return false;
+    if (LN_REQUIRE(deviceContext)) return err();
     m_deviceContext = deviceContext;
 
 	if (!m_vulkanAllocator.init()) {
-		return false;
+        return err();
 	}
 
 	// ひとまず 16MB (100万頂点くらいでの見積)
@@ -1087,7 +1087,7 @@ Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
     LN_VK_CHECK(vkCreateFence(m_deviceContext->vulkanDevice(), &fenceInfo, m_deviceContext->vulkanAllocator(), &m_inFlightFence));
 
-	return true;
+	return ok();
 }
 
 void VulkanCommandBuffer::dispose()
@@ -1138,7 +1138,7 @@ Result VulkanCommandBuffer::beginRecording()
 
     m_lastFoundFramebuffer = nullptr;
 
-    return true;
+    return ok();
 }
 
 Result VulkanCommandBuffer::endRecording()
@@ -1156,7 +1156,7 @@ Result VulkanCommandBuffer::endRecording()
     //    pass->recodingPool = nullptr;
     //}
 
-    return true;
+    return ok();
 }
 
 void VulkanCommandBuffer::endRenderPassInRecordingIfNeeded()
@@ -1194,7 +1194,7 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
 
     LN_VK_CHECK(vkQueueSubmit(m_deviceContext->m_graphicsQueue, 1, &submitInfo, m_inFlightFence));
 
-    return true;
+    return ok();
 }
 
 //Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
@@ -1330,7 +1330,7 @@ Result VulkanCommandBuffer::glowStagingBufferPool()
 	//	}
 	//}
 
-	return true;
+	return ok();
 }
 
 //=============================================================================
@@ -1533,7 +1533,7 @@ Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebuff
 #endif
 
 
-    return true;
+    return ok();
 }
 
 void VulkanRenderPass::dispose()
@@ -1645,7 +1645,7 @@ Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ow
 
     LN_VK_CHECK(vkCreateFramebuffer(m_deviceContext->vulkanDevice(), &framebufferInfo, m_deviceContext->vulkanAllocator(), &m_framebuffer));
 
-    return true;
+    return ok();
 }
 
 void VulkanFramebuffer::dispose()

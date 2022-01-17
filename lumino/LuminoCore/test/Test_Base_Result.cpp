@@ -15,25 +15,25 @@ struct TestErr1 {
     std::string text;
 };
 
-static Result<std::string, TestErr1> testFunc1(int len) {
+static BasicResult<std::string, TestErr1> testFunc1(int len) {
     if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return "aaa"; 
     return ok(std::string("123"));
 }
 
-static Result<void, int> testFunc2(int len) {
+static BasicResult<void, int> testFunc2(int len) {
     if (len > 10) return err(1);
     return ok();
 }
 
-static Result<void> testFunc3(int len) {
+static BasicResult<void> testFunc3(int len) {
     if (len > 10) return err();
     return ok();
 }
 
 static std::string g_str1 = "v1";
 static std::string g_str12 = "aaa";
-static Result<std::string&, TestErr1> testFunc4(int len) {
+static BasicResult<std::string&, TestErr1> testFunc4(int len) {
     if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return g_str12; 
     return ok<std::string&>(g_str1);
@@ -41,22 +41,22 @@ static Result<std::string&, TestErr1> testFunc4(int len) {
 
 static std::string g_str2 = "v1";
 static std::string g_str22 = "aaa";
-static Result<const std::string&, TestErr1> testFunc5(int len) {
+static BasicResult<const std::string&, TestErr1> testFunc5(int len) {
     if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return g_str22; 
     return ok<const std::string&>(g_str2);
 }
 
-static Result<int, TestErr1> testFunc6(int len) {
+static BasicResult<int, TestErr1> testFunc6(int len) {
     if (len > 10) return err();
     return 1;
 }
 
 void func1() {
-    Result a(ok());
+    BasicResult a(ok());
 }
 //
-//static auto testFunc7(int len) -> Result  {
+//static auto testFunc7(int len) -> BasicResult  {
 //    if (len > 10) return err();
 //    return ok();
 //}

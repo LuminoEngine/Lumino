@@ -127,13 +127,13 @@ class ShaderDefaultDescriptor final
     : public Object
 {
 public:
-    //int findUniformBufferIndex(const ln::StringRef& name) const;
-    //int findTextureIndex(const ln::StringRef& name) const;
-    //int findSamplerIndex(const ln::StringRef& name) const;
+    //int findUniformBufferIndex(const ln::StringView& name) const;
+    //int findTextureIndex(const ln::StringView& name) const;
+    //int findSamplerIndex(const ln::StringView& name) const;
     ShaderDescriptorLayout* descriptorLayout() const;
 
 
-    ShaderParameter2* findParameter2(const StringRef& name) const;
+    ShaderParameter2* findParameter2(const StringView& name) const;
 
     void setData(int uniformBufferIndex, const void* data, size_t size);
 
@@ -199,11 +199,11 @@ public:
     int textureRegisterCount() const { return m_textures.size(); }
     int samplerRegisterCount() const { return m_samplers.size(); }
 
-    int findUniformBufferRegisterIndex(const ln::StringRef& name) const;
-    int findUniformMemberIndex(const ln::StringRef& name) const;
-    int findTextureRegisterIndex(const ln::StringRef& name) const;
-    int findSamplerRegisterIndex(const ln::StringRef& name) const;
-    int findStorageRegisterIndex(const ln::StringRef& name) const;
+    int findUniformBufferRegisterIndex(const ln::StringView& name) const;
+    int findUniformMemberIndex(const ln::StringView& name) const;
+    int findTextureRegisterIndex(const ln::StringView& name) const;
+    int findSamplerRegisterIndex(const ln::StringView& name) const;
+    int findStorageRegisterIndex(const ln::StringView& name) const;
 
 LN_CONSTRUCT_ACCESS:
     ShaderDescriptorLayout();
@@ -397,20 +397,20 @@ public:
      * シェーダプログラムファイルを読み込むことができるのは、デスクトップターゲットのみです。
      * モバイルターゲット、Web ターゲットでは事前コンパイル済みシェーダファイルのみを読み込むことができます。
      */
-    static Ref<Shader> create(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
+    static Ref<Shader> create(const StringView& filePath, ShaderCompilationProperties* properties = nullptr);
 
     /**
      * load
      */
     LN_METHOD()
-    static Ref<Shader> load(const StringRef& filePath, AssetImportSettings* settings = nullptr);
+    static Ref<Shader> load(const StringView& filePath, AssetImportSettings* settings = nullptr);
 
     /**
      * Lumino の独自拡張 (technique 構文など) を使用しない HLSL シェーダをコンパイルし、Shader オブジェクトを作成します。
      * 
      * 作成された Shader は、1 つの ShaderTechnique と 1 つの ShaderPass を持ちます。
      */
-    static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
+    static Ref<Shader> create(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
 
     /**
      * 名前を指定してこの Shader に含まれる ShaderParameter を検索します。
@@ -420,7 +420,7 @@ public:
      *
      * @attention 現在、SamplerState の設定は未サポートです。将来的には、この関数で SamplerState 型のパラメータを検索できるようにする予定です。
      */
-    ShaderParameter2* findParameter(const StringRef& name) const;
+    ShaderParameter2* findParameter(const StringView& name) const;
 
     /**
      * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。
@@ -428,7 +428,7 @@ public:
      * @param[in]   name : 定数バッファの名前
      * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
      */
-    ShaderTechnique* findTechnique(const StringRef& name) const;
+    ShaderTechnique* findTechnique(const StringView& name) const;
 
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
@@ -436,19 +436,19 @@ public:
 
     /** 浮動小数点値を設定します。 */
     LN_METHOD()
-    void setFloat(const StringRef& parameterName, float value);
+    void setFloat(const StringView& parameterName, float value);
     
     /** ベクトル値を設定します。 */
     LN_METHOD(OverloadPostfix = "3")
-    void setVector(const StringRef& parameterName, const Vector3& value);
+    void setVector(const StringView& parameterName, const Vector3& value);
 
     /** ベクトル値を設定します。 */
     LN_METHOD(OverloadPostfix = "4")
-    void setVector(const StringRef& parameterName, const Vector4& value);
+    void setVector(const StringView& parameterName, const Vector4& value);
 
     /** setTexture */
     LN_METHOD()
-    void setTexture(const StringRef& parameterName, Texture* value);
+    void setTexture(const StringView& parameterName, Texture* value);
 
     // ↑このあたりは HC4 のエフェクトで、ひとつの Shader をたくさんの Material から参照するときの共通パラメータを設定したいため、公開した。
 
@@ -470,8 +470,8 @@ LN_CONSTRUCT_ACCESS:
 	Shader();
     virtual ~Shader();
     void init();
-    void init(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
-    void init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
+    void init(const StringView& filePath, ShaderCompilationProperties* properties = nullptr);
+    void init(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
     void init(const String& name, Stream* stream);
     void init(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
@@ -592,8 +592,8 @@ class ShaderCompilationProperties
     : public Object
 {
 public:
-    void addIncludeDirectory(const StringRef& value);
-    void addDefinition(const StringRef& value);
+    void addIncludeDirectory(const StringView& value);
+    void addDefinition(const StringView& value);
     void setDiagnostics(DiagnosticsManager* diag);
 
     LN_CONSTRUCT_ACCESS : ShaderCompilationProperties();

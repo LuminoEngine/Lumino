@@ -18,18 +18,18 @@ namespace lna {
 
 ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const Project* project, const ln::Path& inputFile, ln::Path* outputFile)
 {
-	if (LN_REQUIRE(project)) return false;
+	if (LN_REQUIRE(project)) return ln::err();
 
 	auto rel = project->assetsDir().makeRelative(inputFile);
 	auto workFile = ln::Path::combine(project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
 	ln::FileSystem::createDirectory(workFile.parent());
 
 	if (!buildShader(inputFile, workFile, ln::Path::Empty)) {
-		return false;
+		return ln::err();
 	}
 
 	*outputFile = workFile;
-	return true;
+	return ln::ok();
 }
 
 ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir)
@@ -50,7 +50,7 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 		CLI::info(_TT("Compilation succeeded; see ") + outputFile);
 	}
 
-	return result;
+	return ln::Result(result);
 }
 
 } // namespace lna

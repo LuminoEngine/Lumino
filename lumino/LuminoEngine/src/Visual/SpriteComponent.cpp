@@ -55,7 +55,7 @@ void SpriteFrame::serialize(Serializer2& ar)
 */
 LN_OBJECT_IMPLEMENT(SpriteSheet, Object) {}
 
-Ref<SpriteSheet> SpriteSheet::load(StringRef path)
+Ref<SpriteSheet> SpriteSheet::load(StringView path)
 {
     auto assetModel = detail::AssetManager::instance()->loadAssetModelFromLocalFile(path);
     if (auto obj = (assetModel) ? assetModel->targetAs<SpriteSheet>() : nullptr)

@@ -88,7 +88,7 @@ private:
 	int humanoidBoneIndex(HumanoidBones kind) const { return m_humanoidBoneNodeIndices[static_cast<int>(kind)].nodeIndex; }
 	void calculateNodeDepthHieratical(NodeInfo* node, int depth);
 	void makeMajorKindByName(NodeInfo* info, const String& name);
-	const List<StringRef>& splitWords(const String& name);
+	const List<StringView>& splitWords(const String& name);
 	void resolveBodyBones();
 	void resolveArmBones(bool isRight);
 	void resolveLegBones(bool isRight);
@@ -101,7 +101,7 @@ private:
 	//MeshSkeleton* m_skeleton;
 	List<NodeInfo> m_nodes;
 	//List<BoneInfo> m_bones;
-	List<StringRef> m_splitCache;
+	List<StringView> m_splitCache;
 	std::array<List<NodeInfo*>, 22> m_majorGroups;
 	int m_lowerBranchNodeDepth = -1;
 	int m_upperBranchNodeDepth = -1;

@@ -197,8 +197,8 @@ public:
     Vector2 measure(const UITextRange& range) const;
 
     int length() const { return m_range.length(); }
-	StringRef str() const;
-    StringRef substr(const UITextRange& range) const;
+	StringView str() const;
+    StringView substr(const UITextRange& range) const;
 
 public:	// TODO: private
     UILogicalLine* m_ownerLine;
@@ -228,7 +228,7 @@ public:
 
     UITextRange rangeInLogicalLine() const { return UITextRange(m_run->m_range.beginIndex + m_range.beginIndex, m_run->m_range.beginIndex + m_range.beginIndex + m_range.length()); }
 	int length() const { return m_range.length(); }
-	StringRef str() const { return m_run->substr(m_range); }
+	StringView str() const { return m_run->substr(m_range); }
     float getLocalOffsetAt(int charIndex) const;
 	UIScreenRange getLocalScreenRange(const UITextRange& range) const;
 
@@ -272,11 +272,11 @@ class UITextLayout : public Object
 public:
 	UITextLayout();
 	void setBaseTextStyle(Font* font, const Color& textColor);	// PhysicalLine再構築
-	void setText(const StringRef& value);	// すべて再構築
+	void setText(const StringView& value);	// すべて再構築
 	const String& boundText() const { return m_boundText; }
 	void clearText();
 	// カーソル移動はしない
-	void insertAt(const UITextLocation& loc, const StringRef& text);
+	void insertAt(const UITextLocation& loc, const StringView& text);
 
 
 	Size measure();
@@ -301,7 +301,7 @@ public:	// TODO: private
     UITextLocation translateLocationToCharDirection(const UITextLocation& loc, int dir);
     
 	// サロゲート文字などを考慮し、begin から offset 文字グリフ分だけ前後に移動したいときの Char 数を計算する。
-	static int moveToCandidate(const StringRef& text, int begin, int offset);
+	static int moveToCandidate(const StringView& text, int begin, int offset);
 
 
 	Ref<Font> m_baseFont;
@@ -338,7 +338,7 @@ class UITextArea
 	: public UIElement
 {
 public:
-	void setText(const StringRef& value);
+	void setText(const StringView& value);
 	const String& text() const;
 
 LN_CONSTRUCT_ACCESS:

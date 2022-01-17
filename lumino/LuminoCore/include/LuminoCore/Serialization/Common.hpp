@@ -27,12 +27,12 @@ template<typename TValue>
 struct NameValuePair : public detail::NameValuePairBase
 {
 public:
-	StringRef name;
+	StringView name;
 	TValue* value;
 	const TValue* defaultValue;
 
-	NameValuePair(const StringRef& n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
-	NameValuePair(const StringRef& n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
+	NameValuePair(const StringView& n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
+	NameValuePair(const StringView& n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
 	NameValuePair(const NameValuePair& other) : name(other.name), value(other.value), defaultValue(other.defaultValue) {}
 
 	bool hasDefaultValue() const { return defaultValue != nullptr; }
@@ -45,13 +45,13 @@ private:
 #define LN_NVP(var, ...)		::ln::makeNVP(_LT(#var), var, ##__VA_ARGS__)
 
 template<typename TValue>
-NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef)
+NameValuePair<TValue> makeNVP(const StringView& name, TValue& valueRef)
 {
 	return NameValuePair<TValue>(name, &valueRef);
 }
 
 template<typename TValue>
-NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef, const TValue& defaultValue)
+NameValuePair<TValue> makeNVP(const StringView& name, TValue& valueRef, const TValue& defaultValue)
 {
 	return NameValuePair<TValue>(name, &valueRef, defaultValue);
 }

@@ -24,7 +24,7 @@ bool UILinkLabel::init()
     return true;
 }
 
-void UILinkLabel::setText(const StringRef& value)
+void UILinkLabel::setText(const StringView& value)
 {
     if (!m_textContent) {
         m_textContent = makeObject<UIText>();
@@ -33,7 +33,7 @@ void UILinkLabel::setText(const StringRef& value)
     m_textContent->setText(value);
 }
 
-void UILinkLabel::setUrl(const StringRef& value)
+void UILinkLabel::setUrl(const StringView& value)
 {
     m_url = value;
 }

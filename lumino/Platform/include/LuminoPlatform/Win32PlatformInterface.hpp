@@ -10,7 +10,7 @@ class Win32PlatformInterface
 public:
     //static void init(Application* app);
 	static int WinMain(Application* app);
-	//static ln::Path findParentDirectoryContainingSpecifiedFile(StringRef file);
+	//static ln::Path findParentDirectoryContainingSpecifiedFile(StringView file);
 };
 
 } // namespace ln

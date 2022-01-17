@@ -103,23 +103,23 @@ public:
 
 
 	/** 整数値を設定します。 */
-	void setInt(const StringRef& name, int value);
+	void setInt(const StringView& name, int value);
 
 	/** 整数値の配列を設定します。 */
-	void setIntArray(const StringRef& name, const int* value, int count);
+	void setIntArray(const StringView& name, const int* value, int count);
 
 	/** 浮動小数点値を設定します。 */
-	void setFloat(const StringRef& name, float value);
+	void setFloat(const StringView& name, float value);
 
 	/** 浮動小数点値の配列を設定します。 */
-	void setFloatArray(const StringRef& name, const float* values, int length);
-	void setVector(const StringRef& name, const Vector4& value);
-	void setVectorArray(const StringRef& name, const Vector4* values, int length);
-	void setMatrix(const StringRef& name, const Matrix& value);
-	void setTexture(const StringRef& name, Texture* value);
-	void setColor(const StringRef& name, const Color& value);
+	void setFloatArray(const StringView& name, const float* values, int length);
+	void setVector(const StringView& name, const Vector4& value);
+	void setVectorArray(const StringView& name, const Vector4* values, int length);
+	void setMatrix(const StringView& name, const Matrix& value);
+	void setTexture(const StringView& name, Texture* value);
+	void setColor(const StringView& name, const Color& value);
 
-	void setBufferData(const StringRef& uniformBufferName, const void* data, int size);
+	void setBufferData(const StringView& uniformBufferName, const void* data, int size);
 
 	//--------------------------------------------------------------------------
 	/** @name RenderState */
@@ -163,13 +163,13 @@ LN_CONSTRUCT_ACCESS:
 //LN_INTERNAL_ACCESS:
 //	void reset();
 //
-//	void setBuiltinIntParameter(const StringRef& name, int value);
-//	void setBuiltinFloatParameter(const StringRef& name, float value);
-//	void setBuiltinVectorParameter(const StringRef& name, const Vector4& value);
-//	void setBuiltinMatrixParameter(const StringRef& name, const Matrix& value);
-//	void setBuiltinTextureParameter(const StringRef& name, Texture* value);
-//	void setBuiltinColorParameter(const StringRef& name, const Color& value);
-//	void setBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a);
+//	void setBuiltinIntParameter(const StringView& name, int value);
+//	void setBuiltinFloatParameter(const StringView& name, float value);
+//	void setBuiltinVectorParameter(const StringView& name, const Vector4& value);
+//	void setBuiltinMatrixParameter(const StringView& name, const Matrix& value);
+//	void setBuiltinTextureParameter(const StringView& name, Texture* value);
+//	void setBuiltinColorParameter(const StringView& name, const Color& value);
+//	void setBuiltinColorParameter(const StringView& name, float r, float g, float b, float a);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 
@@ -209,10 +209,10 @@ public:	// TODO:
 
 	//Matrix GetUVTransform() const { /*auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->getMatrix() : */ return Matrix::Identity; }
 
-	//Color getColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->getVector()) : defaultValue; }
-	//float GetFloat(const StringRef& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
-	//Texture* getTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->getManagedTexture() : defaultValue; }
-	//int GetInt(const StringRef& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
+	//Color getColor(const StringView& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->getVector()) : defaultValue; }
+	//float GetFloat(const StringView& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
+	//Texture* getTexture(const StringView& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->getManagedTexture() : defaultValue; }
+	//int GetInt(const StringView& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
 
 
 	//static const Color DefaultDiffuse;	// (1.0f, 1.0f, 1.0f, 1.0f)
@@ -233,12 +233,12 @@ protected:  // TODO:
 	};
 
 	//void LinkVariables();
-	//ShaderValue* FindShaderValue(const StringRef& name);
-	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
+	//ShaderValue* FindShaderValue(const StringView& name);
+	//ShaderValue* FindShaderValueConst(const StringView& name) const;
 
 	//static void onRenderStateChanged(Object* obj);
 
-	detail::ShaderParameterValue* getValue(const ln::StringRef& name);
+	detail::ShaderParameterValue* getValue(const ln::StringView& name);
 
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;

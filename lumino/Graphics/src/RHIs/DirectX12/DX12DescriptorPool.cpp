@@ -366,8 +366,7 @@ void DX12DescriptorPool::reset()
     m_usedDescriptorCount = 0;
 }
 
-IDescriptor* DX12DescriptorPool::allocate()
-{
+Result DX12DescriptorPool::allocate(IDescriptor** outDescriptor) {
     // grow
     if (m_usedDescriptorCount >= m_descriptors.size()) {
         for (int i = 0; i < AllocatableCountPerPage; i++) {
@@ -378,11 +377,12 @@ IDescriptor* DX12DescriptorPool::allocate()
 
     DX12Descriptor* descriptor = m_descriptors[m_usedDescriptorCount];
     if (!descriptor->allocateInternal()) {
-        return nullptr;
+        return err();
     }
     m_usedDescriptorCount++;
 
-    return descriptor;
+    *outDescriptor = descriptor;
+    return ok();
 }
 
 } // namespace detail

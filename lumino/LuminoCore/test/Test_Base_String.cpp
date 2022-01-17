@@ -216,10 +216,10 @@ TEST_F(Test_Base_String, Operators)
 		str = NSSO_STR;
 		ASSERT_EQ(NSSO_STR, str);
 
-		// StringRef
-		str = StringRef(_TT("b"));
+		// StringView
+		str = StringView(_TT("b"));
 		ASSERT_EQ(_TT("b"), str);
-		str = StringRef(NSSO_STR);
+		str = StringView(NSSO_STR);
 		ASSERT_EQ(NSSO_STR, str);
 
 		// <Test> operator= (自己代入)
@@ -285,8 +285,8 @@ TEST_F(Test_Base_String, Operators)
 		s1 += s2;
 		ASSERT_EQ(_TT("a"), s1);
 
-		// StringRef
-		s1 += StringRef(_TT("b"));
+		// StringView
+		s1 += StringView(_TT("b"));
 		ASSERT_EQ(_TT("ab"), s1);
 
 		// Char*
@@ -593,12 +593,12 @@ TEST_F(Test_Base_String, replace)
 		String str2 = str1.replace(String(_TT("a")), String(_TT("b")));
 		ASSERT_EQ(_TT("b"), str2);
 	}
-	// <Test> StringRef を渡せること。
+	// <Test> StringView を渡せること。
 	{
 		String str1(_TT("reabcdef"));
 		Char buf1[] = _TT("abc");
 		Char buf2[] = _TT("def");
-		String str2 = str1.replace(StringRef(buf1, buf1 + 2), StringRef(buf2, buf2 + 2));
+		String str2 = str1.replace(StringView(buf1, buf1 + 2), StringView(buf2, buf2 + 2));
 		ASSERT_EQ(_TT("redecdef"), str2);
 	}
 	// <Test> 文字列を置換する
@@ -659,27 +659,27 @@ TEST_F(Test_Base_String, compare)
 		ASSERT_TRUE(str1 < str2);
 	}
 
-	// <Test> StringRef との比較
+	// <Test> StringView との比較
 	{
-		ASSERT_EQ(true, String(_TT("abc")) == StringRef(_TT("abc")));
-		ASSERT_EQ(false, String(_TT("abcd")) == StringRef(_TT("abc")));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("abcd")));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("a")));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("ab")));
-		ASSERT_EQ(false, String(_TT("a")) == StringRef(_TT("abc")));
-		ASSERT_EQ(false, String(_TT("ab")) == StringRef(_TT("abc")));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("")));
-		ASSERT_EQ(false, String(_TT("")) == StringRef(_TT("abc")));
+		ASSERT_EQ(true, String(_TT("abc")) == StringView(_TT("abc")));
+		ASSERT_EQ(false, String(_TT("abcd")) == StringView(_TT("abc")));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("abcd")));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("a")));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("ab")));
+		ASSERT_EQ(false, String(_TT("a")) == StringView(_TT("abc")));
+		ASSERT_EQ(false, String(_TT("ab")) == StringView(_TT("abc")));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("")));
+		ASSERT_EQ(false, String(_TT("")) == StringView(_TT("abc")));
 
-		ASSERT_EQ(true, String(_TT("abc")) == StringRef(_TT("abcd"), 3));
-		ASSERT_EQ(false, String(_TT("abcd")) == StringRef(_TT("abcd"), 3));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("abcd"), 4));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("abcd"), 1));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("abcd"), 2));
-		ASSERT_EQ(false, String(_TT("a")) == StringRef(_TT("abcd"), 3));
-		ASSERT_EQ(false, String(_TT("ab")) == StringRef(_TT("abcd"), 3));
-		ASSERT_EQ(false, String(_TT("abc")) == StringRef(_TT("abcd"), 0));
-		ASSERT_EQ(false, String(_TT("")) == StringRef(_TT("abcd"), 3));
+		ASSERT_EQ(true, String(_TT("abc")) == StringView(_TT("abcd"), 3));
+		ASSERT_EQ(false, String(_TT("abcd")) == StringView(_TT("abcd"), 3));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("abcd"), 4));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("abcd"), 1));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("abcd"), 2));
+		ASSERT_EQ(false, String(_TT("a")) == StringView(_TT("abcd"), 3));
+		ASSERT_EQ(false, String(_TT("ab")) == StringView(_TT("abcd"), 3));
+		ASSERT_EQ(false, String(_TT("abc")) == StringView(_TT("abcd"), 0));
+		ASSERT_EQ(false, String(_TT("")) == StringView(_TT("abcd"), 3));
 	}
 
 	// <Test> 比較
@@ -932,12 +932,12 @@ TEST_F(Test_Base_String, unordered_map)
 		std::hash<ln::String> hash1;
 		ASSERT_NE(hash1(String(_TT("key1"))), hash1(String(_TT("key2"))));
 	}
-	// <Test> StringRef で検索
+	// <Test> StringView で検索
 	{
 		String key1 = _TT("key1");
-		StringRef key1ref(key1);
+		StringView key1ref(key1);
 		String key2 = _TT("key2");
-		StringRef key2ref(key2);
+		StringView key2ref(key2);
 
 		std::unordered_map<String, int> map1;
 		map1[key1ref] = 1;
@@ -1007,28 +1007,28 @@ TEST_F(Test_Base_String, SelfAssign)
 	//- [ ] NonSSO -> NonSSO 
 	{
 		String str = _LT("1234567890abcdefg");
-		StringRef r1 = str.substr(1);
+		StringView r1 = str.substr(1);
 		str = r1;
 		ASSERT_EQ(_TT("234567890abcdefg"), str);
 	}
 	//- [ ] SSO -> SSO 
 	{
 		String str = _LT("123");
-		StringRef r1 = str.substr(1);
+		StringView r1 = str.substr(1);
 		str = r1;
 		ASSERT_EQ(_TT("23"), str);
 	}
 	//- [ ] NonSSO -> SSO 
 	{
 		String str = _LT("1234567890abcdefg");
-		StringRef r1 = str.substr(10);
+		StringView r1 = str.substr(10);
 		str = r1;
 		ASSERT_EQ(_TT("abcdefg"), str);
 	}
 	//- [ ] SSO ->  NonSSO
 	{
 		String str = _LT("1234567890");
-		StringRef r1 = str;
+		StringView r1 = str;
 		str += r1;
 		ASSERT_EQ(_TT("12345678901234567890"), str);
 	}

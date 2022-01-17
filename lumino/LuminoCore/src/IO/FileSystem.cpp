@@ -152,69 +152,69 @@ void PlatformFileFinder::clearCurrent()
 //==============================================================================
 // FileSystem
 
-bool FileSystem::existsFile(const StringRef& filePath)
+bool FileSystem::existsFile(const StringView& filePath)
 {
     return detail::FileSystemInternal::existsFile(filePath.data(), filePath.length());
 }
 
-FileAttribute FileSystem::getAttribute(const StringRef& filePath)
+FileAttribute FileSystem::getAttribute(const StringView& filePath)
 {
     return detail::FileSystemInternal::getAttribute(filePath.data(), filePath.length());
 }
 
-void FileSystem::setAttribute(const StringRef& filePath, FileAttribute attr)
+void FileSystem::setAttribute(const StringView& filePath, FileAttribute attr)
 {
     detail::FileSystemInternal::setAttribute(filePath.data(), filePath.length(), attr);
 }
 
-void FileSystem::copyFile(const StringRef& sourceFileName, const StringRef& destFileName, FileCopyOption option)
+void FileSystem::copyFile(const StringView& sourceFileName, const StringView& destFileName, FileCopyOption option)
 {
     detail::FileSystemInternal::copyFile(sourceFileName.data(), sourceFileName.length(), destFileName.data(), destFileName.length(), option);
 }
 
-void FileSystem::removeFile(const StringRef& filePath)
+void FileSystem::removeFile(const StringView& filePath)
 {
     detail::FileSystemInternal::removeFile(filePath.data(), filePath.length());
 }
 
-bool FileSystem::existsDirectory(const StringRef& path)
+bool FileSystem::existsDirectory(const StringView& path)
 {
     Flags<FileAttribute> attr = detail::FileSystemInternal::getAttribute(path.data(), path.length());
     return attr.hasFlag(FileAttribute::Directory);
 }
 
-void FileSystem::createDirectory(const StringRef& path)
+void FileSystem::createDirectory(const StringView& path)
 {
     detail::FileSystemInternal::createDirectory(path.data(), path.length());
 }
 
-void FileSystem::removeDirectory(const StringRef& path, bool recursive)
+void FileSystem::removeDirectory(const StringView& path, bool recursive)
 {
     detail::FileSystemInternal::removeDirectory(path.data(), path.length(), recursive);
 }
 
-void FileSystem::copyDirectory(const StringRef& srcPath, const StringRef& dstPath, bool overwrite, bool recursive)
+void FileSystem::copyDirectory(const StringView& srcPath, const StringView& dstPath, bool overwrite, bool recursive)
 {
     detail::FileSystemInternal::copyDirectory(srcPath.data(), srcPath.length(), dstPath.data(), dstPath.length(), overwrite, recursive);
 }
 
-bool FileSystem::matchPath(const StringRef& filePath, const StringRef& pattern)
+bool FileSystem::matchPath(const StringView& filePath, const StringView& pattern)
 {
     return detail::FileSystemInternal::matchPath(filePath.data(), filePath.length(), pattern.data(), pattern.length());
 }
 
-uint64_t FileSystem::getFileSize(const StringRef& filePath)
+uint64_t FileSystem::getFileSize(const StringView& filePath)
 {
     detail::GenericStaticallyLocalPath<PathChar> localPath(filePath.data(), filePath.length());
     return PlatformFileSystem::getFileSize(localPath.c_str());
 }
 
-ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
+ByteBuffer FileSystem::readAllBytes(const StringView& filePath)
 {
     detail::GenericStaticallyLocalPath<PathChar> localPath(filePath.data(), filePath.length());
     const PathChar mode[] = {'r', 'b', '\0'};
     FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-    if (LN_ENSURE_IO(fp, String::format(_TT("Access failed: {0}"), filePath))) return ByteBuffer();
+    if (LN_ENSURE_IO(fp, ln::format(_TT("Access failed: {0}"), filePath))) return ByteBuffer();
 
     size_t size = (size_t)detail::FileSystemInternal::getFileSize(fp);
     ByteBuffer buffer(size);
@@ -238,7 +238,7 @@ static String readAllTextHelper(const ByteBuffer& buffer, TextEncoding* encoding
     return encoding->decode(buffer.data(), buffer.size());
 }
 
-String FileSystem::readAllText(const StringRef& filePath, TextEncoding* encoding)
+String FileSystem::readAllText(const StringView& filePath, TextEncoding* encoding)
 {
     ByteBuffer buffer(FileSystem::readAllBytes(filePath));
     return readAllTextHelper(buffer, encoding);
@@ -253,7 +253,7 @@ String FileSystem::readAllText(Stream* stream, TextEncoding* encoding)
     return readAllTextHelper(buffer, encoding);
 }
 
-void FileSystem::writeAllBytes(const StringRef& filePath, const void* buffer, size_t size)
+void FileSystem::writeAllBytes(const StringView& filePath, const void* buffer, size_t size)
 {
     detail::GenericStaticallyLocalPath<PathChar> localPath(filePath.data(), filePath.length());
     const PathChar mode[] = {'w', 'b', '\0'};
@@ -265,7 +265,7 @@ void FileSystem::writeAllBytes(const StringRef& filePath, const void* buffer, si
     LN_EMSCRIPTEN_LAYZY_FLASH;
 }
 
-void FileSystem::writeAllText(const StringRef& filePath, const String& str, TextEncoding* encoding)
+void FileSystem::writeAllText(const StringView& filePath, const String& str, TextEncoding* encoding)
 {
     encoding = (encoding == nullptr) ? TextEncoding::utf8Encoding().get() : encoding;
 
@@ -653,7 +653,7 @@ void FileGlob::glob(const Path& rootDir, const Path& pathspec, const List<String
     else if (ln::FileSystem::existsDirectory(path))
     {
         // フォルダだったらその中のファイルを全部追加
-        auto files = ln::FileSystem::getFiles(path, ln::StringRef(), (recursive) ? ln::SearchOption::Recursive : ln::SearchOption::TopDirectoryOnly);
+        auto files = ln::FileSystem::getFiles(path, ln::StringView(), (recursive) ? ln::SearchOption::Recursive : ln::SearchOption::TopDirectoryOnly);
         for (auto& file : files) {
             if (filterFilePath(filters, file)) {
                 outPathes->add(file);
@@ -692,7 +692,7 @@ class DirectoryIterator2Impl
     : public RefObject
 {
 public:
-    DirectoryIterator2Impl(const StringRef& path, const StringRef& searchPattern, SearchOption searchOption, SearchTargetEntity targetEntity)
+    DirectoryIterator2Impl(const StringView& path, const StringView& searchPattern, SearchOption searchOption, SearchTargetEntity targetEntity)
         : m_path(path)
         , m_searchPattern(searchPattern.data(), searchPattern.length()) // TODO: check
         //, m_filterAttr(FileAttribute::All)
@@ -825,7 +825,7 @@ DirectoryIterator2::DirectoryIterator2()
 {
 }
 
-DirectoryIterator2::DirectoryIterator2(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption, SearchTargetEntity targetEntity)
+DirectoryIterator2::DirectoryIterator2(const StringView& dirPath, const StringView& pattern, SearchOption searchOption, SearchTargetEntity targetEntity)
     : m_impl()
 {
     m_impl = makeRef<DirectoryIterator2Impl>(dirPath, pattern, searchOption, targetEntity);
@@ -870,13 +870,13 @@ DirectoryIterator2 DirectoryIterator2::operator++(int) // postfix
 
 } // namespace detail
 
-DirectoryIteratorRange::DirectoryIteratorRange(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption, detail::SearchTargetEntity targetEntity)
+DirectoryIteratorRange::DirectoryIteratorRange(const StringView& dirPath, const StringView& pattern, SearchOption searchOption, detail::SearchTargetEntity targetEntity)
     : m_begin(dirPath, pattern, searchOption, targetEntity)
     , m_end()
 {
 }
 
-Path FileSystem::getFile(const StringRef& dirPath, const StringRef& pattern)
+Path FileSystem::getFile(const StringView& dirPath, const StringView& pattern)
 {
 	auto files = ln::FileSystem::getFiles(dirPath, pattern);
 	if (!files.isEmpty()) {
@@ -887,12 +887,12 @@ Path FileSystem::getFile(const StringRef& dirPath, const StringRef& pattern)
 	}
 }
 
-DirectoryIteratorRange FileSystem::getFiles(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption)
+DirectoryIteratorRange FileSystem::getFiles(const StringView& dirPath, const StringView& pattern, SearchOption searchOption)
 {
     return DirectoryIteratorRange(dirPath, pattern, searchOption, detail::SearchTargetEntity::File);
 }
 
-DirectoryIteratorRange FileSystem::getDirectories(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption)
+DirectoryIteratorRange FileSystem::getDirectories(const StringView& dirPath, const StringView& pattern, SearchOption searchOption)
 {
     return DirectoryIteratorRange(dirPath, pattern, searchOption, detail::SearchTargetEntity::Directory);
 }

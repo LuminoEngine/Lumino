@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     
     g_app = ::LuminoCreateApplicationInstance();
 
-    //ln::detail::EngineDomain::engineManager()->settings2().assetArchives.add({ u"Assets.lca", ln::StringRef() });
+    //ln::detail::EngineDomain::engineManager()->settings2().assetArchives.add({ u"Assets.lca", ln::StringView() });
 
     ln::detail::EngineSettings& settings = ln::detail::EngineManager::s_settings;
     settings.standaloneFpsControl = false;

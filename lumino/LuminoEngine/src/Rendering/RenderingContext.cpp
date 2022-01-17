@@ -244,12 +244,12 @@ void RenderingContext::drawMeshInstanced(InstancedMeshList* list)
 	m_commandList->drawMeshInstanced(list);
 }
 
-void RenderingContext::drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
+void RenderingContext::drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
 {
 	m_commandList->drawTextSprite(text, color, anchor, baseDirection, font);
 }
 
-void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
+void RenderingContext::drawText(const StringView& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
 {
 	m_commandList->drawText(text, area, alignment);
 }
@@ -313,7 +313,7 @@ void RenderingContext::addSpotLight(const Color& color, float intensity, const V
 	addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
 }
 
-Size RenderingContext::measureTextSize(Font* font, const StringRef& text) const
+Size RenderingContext::measureTextSize(Font* font, const StringView& text) const
 {
 	if (LN_REQUIRE(font)) return Size::Zero;
 	if (text.isEmpty()) return Size::Zero;

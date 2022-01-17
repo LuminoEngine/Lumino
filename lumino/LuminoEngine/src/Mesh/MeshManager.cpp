@@ -365,12 +365,12 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 	}
 }
 
-Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)
+Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringView& filePath, DiagnosticsManager* diag)
 {
 	Path path(parentDir, filePath);
 
 	if (!m_assetManager->existsFile(path)) {
-		diag->reportWarning(String::format(_TT("Texture file not found: {0}"), path.str()));
+		diag->reportWarning(ln::format(_TT("Texture file not found: {0}"), path.str()));
 		return nullptr;
 	}
 

@@ -41,7 +41,7 @@ int Win32PlatformInterface::WinMain(Application* app)
 	return 0;
 }
 
-//ln::Path Win32PlatformInterface::findParentDirectoryContainingSpecifiedFile(StringRef file)
+//ln::Path Win32PlatformInterface::findParentDirectoryContainingSpecifiedFile(StringView file)
 //{
 //	return detail::EngineManager::findParentDirectoryContainingSpecifiedFile(file);
 //}

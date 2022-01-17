@@ -92,7 +92,7 @@ public:
 	 *
 	 * このメソッドは TextureImporter のユーティリティです。
      */
-    //static Ref<Texture2D> create(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
+    //static Ref<Texture2D> create(const StringView& filePath, TextureFormat format = TextureFormat::RGBA8);
 
     /**
      * アセットからテクスチャを読み込みます。
@@ -103,9 +103,9 @@ public:
      * PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
      */
 	LN_METHOD()
-    static Ref<Texture2D> load(const StringRef& filePath);
+    static Ref<Texture2D> load(const StringView& filePath);
 
-    static Ref<Texture2DPromise> loadAsync(const StringRef& filePath);
+    static Ref<Texture2DPromise> loadAsync(const StringView& filePath);
 
     /**
      * loadEmoji
@@ -114,7 +114,7 @@ public:
      *
      */
 	LN_METHOD()
-	static Ref<Texture2D> loadEmoji(StringRef code);
+	static Ref<Texture2D> loadEmoji(StringView code);
 
 	static Ref<Texture2D> loadEmoji(uint32_t codePoint);
 
@@ -145,7 +145,7 @@ public:
     /** 別のテクスチャからこのテクスチャへ、ビットマップ転送を行います。 */
     void blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw, int sh);
 
-    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Forward);
+    void drawText(const StringView& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Forward);
 
     // TODO: internal
     //void setAssetSource(const Path& path) { m_assetSourcePath = path; }

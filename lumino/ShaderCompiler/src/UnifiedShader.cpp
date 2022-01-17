@@ -606,7 +606,7 @@ const std::vector<VertexInputAttribute>& UnifiedShader::attributes(PassId pass) 
 	return m_passes[idToIndex(pass)].attributes;
 }
 
-void UnifiedShader::saveCodes(const StringRef& perfix) const
+void UnifiedShader::saveCodes(const StringView& perfix) const
 {
 	for (int iTech = 0; iTech < techniqueCount(); iTech++)
 	{
@@ -620,7 +620,7 @@ void UnifiedShader::saveCodes(const StringRef& perfix) const
 			{
 				auto& container = m_codeContainers[idToIndex(containerId)];
 				for (auto& code : container.codes) {
-					auto file = String::format(
+					auto file = ln::format(
 						_TT("{0}.{1}.{2}.{3}.{4}-{5}-{6}"),
 						perfix, String::fromStdString(techniqueName(techId)), String::fromStdString(passName(passId)), String::fromStdString(container.entryPointName),
 						String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));

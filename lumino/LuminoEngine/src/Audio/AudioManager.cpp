@@ -124,7 +124,7 @@ void AudioManager::update(float elapsedSeconds)
 	}
 }
 
-Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
+Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringView& filePath)
 {
 	// TODO: diag
 	auto diag = makeObject<DiagnosticsManager>();
@@ -165,7 +165,7 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 	}
 }
 
-//void AudioManager::createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction)
+//void AudioManager::createAudioDecoderAsync(const StringView& filePath, const std::function<void(AudioDecoder* decoder)>& postAction)
 //{
 //    auto task = Task::create([this, filePath, postAction]() {
 //        auto decoder = createAudioDecoder(filePath);

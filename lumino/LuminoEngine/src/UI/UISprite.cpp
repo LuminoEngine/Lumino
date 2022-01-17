@@ -20,7 +20,7 @@ Ref<UISprite> UISprite::create(Texture* texture)
     return makeObject<UISprite>(texture);
 }
 
-Ref<UISprite> UISprite::load(StringRef filePath)
+Ref<UISprite> UISprite::load(StringView filePath)
 {
 	return makeObject<UISprite>(Texture2D::load(filePath));
 }

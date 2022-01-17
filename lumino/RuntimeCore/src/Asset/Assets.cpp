@@ -42,7 +42,7 @@ Ref<AssetModel> Assets::loadAssetFromLocalFile(const String& filePath)
     return detail::AssetManager::instance()->loadAssetModelFromLocalFile(filePath);
 }
 
-Ref<Object> Assets::loadAsset(const StringRef& filePath)
+Ref<Object> Assets::loadAsset(const StringView& filePath)
 {
     auto assetModel = detail::AssetManager::instance()->loadAssetModelFromLocalFile(filePath);
     if (assetModel)
@@ -51,7 +51,7 @@ Ref<Object> Assets::loadAsset(const StringRef& filePath)
         return nullptr;
 }
 
-void Assets::reloadAsset(const StringRef& filePath, Object* obj)
+void Assets::reloadAsset(const StringView& filePath, Object* obj)
 {
     auto assetPath = detail::AssetManager::instance()->findAssetPath(filePath);
     if (assetPath) {
@@ -62,13 +62,13 @@ void Assets::reloadAsset(const StringRef& filePath, Object* obj)
     }
 }
 
-void Assets::saveAsset(Object* obj, const StringRef& filePath)
+void Assets::saveAsset(Object* obj, const StringView& filePath)
 {
     auto model = makeObject<AssetModel>(obj);
     detail::AssetManager::instance()->saveAssetModelToLocalFile(model, filePath);
 }
 
-void Assets::deserializeInstance(Object* obj, const StringRef& filePath)
+void Assets::deserializeInstance(Object* obj, const StringView& filePath)
 {
     auto assetPath = detail::AssetManager::instance()->findAssetPath(filePath);
     if (assetPath) {
@@ -79,17 +79,17 @@ void Assets::deserializeInstance(Object* obj, const StringRef& filePath)
     }
 }
 
-bool Assets::existsFile(const StringRef& filePath)
+bool Assets::existsFile(const StringView& filePath)
 {
     return detail::AssetManager::instance()->existsFile(filePath);
 }
 
-Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
+Ref<ByteBuffer> Assets::readAllBytes(const StringView& filePath)
 {
 	return detail::AssetManager::instance()->readAllBytes(filePath);
 }
 
-String Assets::readAllText(const StringRef& filePath, EncodingType encoding)
+String Assets::readAllText(const StringView& filePath, EncodingType encoding)
 {
     auto stream = detail::AssetManager::instance()->openFileStream(filePath);
     if (!stream) {
@@ -101,12 +101,12 @@ String Assets::readAllText(const StringRef& filePath, EncodingType encoding)
     return FileSystem::readAllText(stream, e);
 }
 
-Ref<Stream> Assets::openFileStream(const StringRef& filePath)
+Ref<Stream> Assets::openFileStream(const StringView& filePath)
 {
     return detail::AssetManager::instance()->openFileStream(filePath);
 }
 //
-//void Assets::serializeAssetObjectInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
+//void Assets::serializeAssetObjectInternal(Archive& ar, const StringView& name, Ref<Object>& value)
 //{
 //    String localPath;
 //    if (ar.isSaving()) {
@@ -244,7 +244,7 @@ AssetPath AssetPath::combineAssetPath(const AssetPath& basePath, const String& l
             Path path = Path(basePath.path(), localAssetPath);
             std::vector<Char> tmpPath(path.length() + 1);
             int len = detail::PathTraits::canonicalizePath(path.c_str(), path.length(), tmpPath.data(), tmpPath.size());
-            result.m_components->path = Path(StringRef(tmpPath.data(), len)).unify();
+            result.m_components->path = Path(StringView(tmpPath.data(), len)).unify();
         }
         else {
             result.m_components->path = Path(basePath.path(), localAssetPath).canonicalize().unify();

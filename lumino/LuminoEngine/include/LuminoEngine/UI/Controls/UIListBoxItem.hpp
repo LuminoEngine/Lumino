@@ -71,7 +71,7 @@ class UIListBoxItem
 	LN_OBJECT;
 	LN_BUILDER;
 public:
-	static Ref<UIListBoxItem> create(StringRef text);
+	static Ref<UIListBoxItem> create(StringView text);
 
 
     // TODO: group
@@ -86,7 +86,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     UIListBoxItem();
     bool init();
-	bool init(StringRef text);
+	bool init(StringView text);
 
 	/** init */
 	LN_METHOD()
@@ -111,7 +111,7 @@ struct UIListBoxItem::BuilderCore : public UIListItem::BuilderCore<T, B, D>
 {
 	LN_BUILDER_CORE(UIListItem::BuilderCore);
 
-	B& text(StringRef value) { d()->text = value; return self(); }
+	B& text(StringView value) { d()->text = value; return self(); }
 
 	B& onSubmit(Ref<UIGeneralEventHandler> value) { d()->onSubmit = value; return self(); }
 };

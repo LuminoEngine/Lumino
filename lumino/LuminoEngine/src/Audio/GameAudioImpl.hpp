@@ -27,14 +27,14 @@ public:
 	virtual ~GameAudioImpl();
     void dispose();
 
-    void playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime);
+    void playBGM(const StringView& filePath, float volume, float pitch, double fadeTime);
     void stopBGM(double fadeTime);
-    void playBGS(const StringRef& filePath, float volume, float pitch, double fadeTime);
+    void playBGS(const StringView& filePath, float volume, float pitch, double fadeTime);
     void stopBGS(double fadeTime);
-    void playME(const StringRef& filePath, float volume, float pitch);
+    void playME(const StringView& filePath, float volume, float pitch);
     void stopME();
-    void playSE(const StringRef& filePath, float volume, float pitch);
-    void playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume, float pitch);
+    void playSE(const StringView& filePath, float volume, float pitch);
+    void playSE3D(const StringView& filePath, const Vector3& position, float distance, float volume, float pitch);
     void stopSE();
     void setMEFadeState(double begin, double end);
     void setBGMVolume(float volume, double fadeTime);
@@ -49,7 +49,7 @@ private:
     void playBGSFromSound(Sound* sound, float volume, float pitch, double fadeTime);
     void playMEFromSound(Sound* sound, float volume, float pitch);
     void pushReleaseAtPlayEndList(Sound* sound);
-    Ref<Sound> createSound(const StringRef& filePath);
+    Ref<Sound> createSound(const StringView& filePath);
 
     typedef std::list<Ref<Sound>>	ReleaseAtPlayEndList;
 
@@ -84,14 +84,14 @@ public:
     GameAudioImpl2(AudioManager* mamager);
     void dispose();
 
-    void playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime);
+    void playBGM(const StringView& filePath, float volume, float pitch, double fadeTime);
     void stopBGM(double fadeTime);
-    void playBGS(const StringRef& filePath, float volume, float pitch, double fadeTime);
+    void playBGS(const StringView& filePath, float volume, float pitch, double fadeTime);
     void stopBGS(double fadeTime);
-    void playME(const StringRef& filePath, float volume, float pitch);
+    void playME(const StringView& filePath, float volume, float pitch);
     void stopME();
-    void playSE(const StringRef& filePath, float volume, float pitch);
-    void playSE3D(const StringRef& filePath, const Vector3& position, float distance, float volume, float pitch);
+    void playSE(const StringView& filePath, float volume, float pitch);
+    void playSE3D(const StringView& filePath, const Vector3& position, float distance, float volume, float pitch);
     void stopSE();
     void setMEFadeTimes(float bgmFadeoutTime, float bgmFadeinTime);
 
@@ -123,7 +123,7 @@ private:
         // FIXME: これ以上増えるなら union にしたほうがいいかも
     };
 
-    Ref<SoundCore> createSoundCore(const StringRef& filePath);
+    Ref<SoundCore> createSoundCore(const StringView& filePath);
 
     AudioManager* m_manager;
     std::mutex m_mutex;

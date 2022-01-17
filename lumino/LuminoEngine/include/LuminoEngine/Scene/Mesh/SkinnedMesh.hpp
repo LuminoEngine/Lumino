@@ -10,7 +10,7 @@ class SkinnedMesh
 {
 public:
     static Ref<SkinnedMesh> create();
-    static Ref<SkinnedMesh> load(const StringRef& filePath, float scale = 1.0f);
+    static Ref<SkinnedMesh> load(const StringView& filePath, float scale = 1.0f);
 
     MeshComponent* meshComponent() const;
 
@@ -20,7 +20,7 @@ LN_CONSTRUCT_ACCESS:
 	SkinnedMesh();
 	virtual ~SkinnedMesh();
 	void init();
-    void init(const StringRef& filePath, float scale);
+    void init(const StringView& filePath, float scale);
 
 private:
     Ref<MeshComponent> m_component;

@@ -9,7 +9,7 @@ namespace ln {
 class TextEncoding;
 class Stream;
 class String;
-class StringRef;
+class StringView;
 class FileSystem;
 
 namespace detail {
@@ -25,7 +25,7 @@ class DirectoryIterator2
 {
 public:
     DirectoryIterator2();
-    DirectoryIterator2(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption, SearchTargetEntity targetEntity);
+    DirectoryIterator2(const StringView& dirPath, const StringView& pattern, SearchOption searchOption, SearchTargetEntity targetEntity);
     DirectoryIterator2(const DirectoryIterator2& other);
     ~DirectoryIterator2();
 
@@ -63,7 +63,7 @@ public:
     detail::DirectoryIterator2 end() { return m_end; }
 
 private:
-    DirectoryIteratorRange(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption, detail::SearchTargetEntity targetEntity);
+    DirectoryIteratorRange(const StringView& dirPath, const StringView& pattern, SearchOption searchOption, detail::SearchTargetEntity targetEntity);
     detail::DirectoryIterator2 m_begin;
     detail::DirectoryIterator2 m_end;
 
@@ -79,7 +79,7 @@ public:
      * 
      * この関数はファイルが存在し、かつ必要なアクセス許可を持つ場合 true を返します。
      */
-    static bool existsFile(const StringRef& filePath);
+    static bool existsFile(const StringView& filePath);
 
     /**
      * ファイルの属性を取得します。
@@ -87,7 +87,7 @@ public:
      * @param[in]    filePath    : ファイル名
      * @return        ファイルの属性 (FileAttribute のビットの組み合わせ)
      */
-    static FileAttribute getAttribute(const StringRef& filePath);
+    static FileAttribute getAttribute(const StringView& filePath);
 
     /**
      * ファイルの属性を設定します。
@@ -98,7 +98,7 @@ public:
      * この関数により変更できる属性は、読み取り属性のみです。(Unix では隠し属性はファイル名で表現されるためです)
      * それ以外のフラグビットは無視されます。
      */
-    static void setAttribute(const StringRef& filePath, FileAttribute attr);
+    static void setAttribute(const StringView& filePath, FileAttribute attr);
 
     /**
      * ファイルをコピーします。
@@ -107,7 +107,7 @@ public:
      * @param[in]    destFileName    : コピー先ファイル名
      * @param[in]    option        : コピー先を上書きするかどうか
      */
-    static void copyFile(const StringRef& sourceFileName, const StringRef& destFileName, FileCopyOption option = FileCopyOption::None);
+    static void copyFile(const StringView& sourceFileName, const StringView& destFileName, FileCopyOption option = FileCopyOption::None);
 
     /**
      * ファイルを削除します。
@@ -115,13 +115,13 @@ public:
      * @param[in]    filePath        : 削除するファイルのパス
      * @details    削除するファイルが存在しない場合、例外はスローされません。
      */
-    static void removeFile(const StringRef& filePath);
+    static void removeFile(const StringView& filePath);
 
     /**
      * 指定したディレクトリが存在するかを確認します。
      * @param[in]    path    : ディレクトリのパス
      */
-    static bool existsDirectory(const StringRef& path);
+    static bool existsDirectory(const StringView& path);
 
     /**
      * ディレクトリを作成します。
@@ -129,7 +129,7 @@ public:
      * 指定したパスへの全てのディレクトリを作成します。
      * 例えば "a/b" を指定した場合、ディレクトリ a が無ければ作成してから、b を作成します。
      */
-    static void createDirectory(const StringRef& path);
+    static void createDirectory(const StringView& path);
     // TODO: createDirectory と createDirectories
 
     /**
@@ -138,7 +138,7 @@ public:
      * @param[in]    path            : 削除するディレクトリのパス
      * @param[in]    recursive        : 全てのサブディレクトリも含めて削除する場合は true
      */
-    static void removeDirectory(const StringRef& path, bool recursive = false);
+    static void removeDirectory(const StringView& path, bool recursive = false);
 
     /**
      * ディレクトリをコピーします。
@@ -148,20 +148,20 @@ public:
      * @param[in]    overwrite        : コピー先のファイルとディレクトリを上書きする場合は true
      * @param[in]    recursive        : 全てのサブディレクトリも含めて削除する場合は true
      */
-    static void copyDirectory(const StringRef& srcPath, const StringRef& dstPath, bool overwrite, bool recursive);
+    static void copyDirectory(const StringView& srcPath, const StringView& dstPath, bool overwrite, bool recursive);
 
     /** パスのファイル名とファイル名パターンを照合します。 */
-    static bool matchPath(const StringRef& filePath, const StringRef& pattern);
+    static bool matchPath(const StringView& filePath, const StringView& pattern);
 
     /** ファイルサイズを取得します。 */
-    static uint64_t getFileSize(const StringRef& filePath);
+    static uint64_t getFileSize(const StringView& filePath);
 
     /**
      * ファイルの内容をバイナリ形式としてすべて読み込みます。 
      * @param[in]    filePath    : 読み込むファイルのパス
      * @return        読み込んだバイナリデータ
      */
-    static ByteBuffer readAllBytes(const StringRef& filePath);
+    static ByteBuffer readAllBytes(const StringView& filePath);
 
     /**
      * ファイルの内容をテキスト形式としてすべて読み込ます。
@@ -172,7 +172,7 @@ public:
      * 
      * ファイル先頭に UTF 系の BOM が含まれている場合、それに対応するエンコーディングで読み込みます。
      */
-    static String readAllText(const StringRef& filePath, TextEncoding* encoding = nullptr);
+    static String readAllText(const StringView& filePath, TextEncoding* encoding = nullptr);
 
     static String readAllText(Stream* stream, TextEncoding* encoding = nullptr);
 
@@ -183,7 +183,7 @@ public:
      * @param[in]    buffer        : バッファの先頭アドレス
      * @param[in]    size        : バッファのバイト数
      */
-    static void writeAllBytes(const StringRef& filePath, const void* buffer, size_t size);
+    static void writeAllBytes(const StringView& filePath, const void* buffer, size_t size);
 
     /**
      * 文字列をテキストデータとしてすべてファイルに書き込みます。 
@@ -192,7 +192,7 @@ public:
      * @param[in]    str    : ファイルに書き込む文字列
      * @param[in]    encoding    : 文字列に適用するエンコーディング (省略した場合、UTF8 テキストとして書き込みます)
      */
-    static void writeAllText(const StringRef& filePath, const String& str, TextEncoding* encoding = nullptr);
+    static void writeAllText(const StringView& filePath, const String& str, TextEncoding* encoding = nullptr);
 
     /**
      * 指定したディレクトリ内の1つのファイルパス返します。
@@ -204,7 +204,7 @@ public:
      * これは getFiles() のユーティリティです。getFiles() で見つかった最初のファイルパスを返します。
      * 特定の拡張子を持つファイルを1つだけ検索したい場合に使用します。
      */
-    static Path getFile(const StringRef& dirPath, const StringRef& pattern = StringRef());
+    static Path getFile(const StringView& dirPath, const StringView& pattern = StringView());
 
     /**
      * 指定したディレクトリ内のファイルパス返します。
@@ -213,7 +213,7 @@ public:
      * @param[in]    pattern    : ファイル名の検索文字列 (ワイルドカード (* および ?) を含めることができます。省略した場合はすべてのファイルを列挙します)
      * @param[in]    searchOption    : サブディレクトリも含めて検索するかどうか
      */
-    static DirectoryIteratorRange getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef(), SearchOption searchOption = SearchOption::TopDirectoryOnly);
+    static DirectoryIteratorRange getFiles(const StringView& dirPath, const StringView& pattern = StringView(), SearchOption searchOption = SearchOption::TopDirectoryOnly);
 
     /**
      * 指定したディレクトリ内のディレクトリパス返します。
@@ -222,7 +222,7 @@ public:
      * @param[in]    pattern    : ディレクトリ名の検索文字列 (ワイルドカード (* および ?) を含めることができます。省略した場合はすべてのファイルを列挙します)
      * @param[in]    searchOption    : サブディレクトリも含めて検索するかどうか
      */
-    static DirectoryIteratorRange getDirectories(const StringRef& dirPath, const StringRef& pattern = StringRef(), SearchOption searchOption = SearchOption::TopDirectoryOnly);
+    static DirectoryIteratorRange getDirectories(const StringView& dirPath, const StringView& pattern = StringView(), SearchOption searchOption = SearchOption::TopDirectoryOnly);
 
 private:
     static bool mkdir(const char* path);

@@ -309,12 +309,12 @@ Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
     for (uint32_t i = 0; i < m_deviceMemoryProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) && (m_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
             *outType = i;
-            return false;
+            return ok();
         }
     }
 
     LN_LOG_ERROR("failed to find suitable memory type!");
-    return false;
+    return err();
 }
 
 Result VulkanDevice::createInstance()
@@ -323,7 +323,7 @@ Result VulkanDevice::createInstance()
         m_availableValidationLayers = VulkanHelper::checkValidationLayerSupport();
         if (m_availableValidationLayers.empty()) {
             LN_LOG_ERROR("validation layers requested, but not available!");
-            return false;
+            return err();
         }
     }
 
@@ -368,7 +368,7 @@ Result VulkanDevice::createInstance()
 
     LN_VK_CHECK(vkCreateInstance(&createInfo, vulkanAllocator(), &m_instance));
 
-    return true;
+    return ok();
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
@@ -396,7 +396,7 @@ Result VulkanDevice::setupDebugMessenger()
         LN_VK_CHECK(CreateDebugUtilsMessengerEXT(vulkanInstance(), &createInfo, vulkanAllocator(), &m_debugMessenger));
     }
 
-	return true;
+	return ok();
 }
 
 Result VulkanDevice::pickPhysicalDevice()
@@ -407,7 +407,7 @@ Result VulkanDevice::pickPhysicalDevice()
         auto ret = vkEnumeratePhysicalDevices(m_instance, &count, nullptr);
         if (ret != VK_SUCCESS || count < 1) {
             LN_LOG_ERROR("Failed vkEnumeratePhysicalDevices");
-            return false;
+            return err();
         }
 
         m_physicalDeviceInfos.resize(count);
@@ -415,7 +415,7 @@ Result VulkanDevice::pickPhysicalDevice()
         std::vector<VkPhysicalDevice> gpuDevices(count);
         if (vkEnumeratePhysicalDevices(m_instance, &count, gpuDevices.data()) != VK_SUCCESS) {
             LN_LOG_ERROR("Failed vkEnumeratePhysicalDevices");
-            return false;
+            return err();
         }
 
         for (auto i = 0u; i < count; ++i) {
@@ -637,7 +637,7 @@ Result VulkanDevice::pickPhysicalDevice()
         LN_LOG_INFO("  limits.nonCoherentAtomSize: {}", info.deviceProperty.limits.nonCoherentAtomSize);
     }
 
-    return true;
+    return ok();
 }
 
 Result VulkanDevice::createLogicalDevice()
@@ -764,7 +764,7 @@ Result VulkanDevice::createLogicalDevice()
     m_graphicsQueueFamilyIndex = graphicsFamilyIndex;
 	vkGetDeviceQueue(m_device, graphicsFamilyIndex, graphicsQueueIndex, &m_graphicsQueue);
 
-	return true;
+	return ok();
 }
 
 Result VulkanDevice::createCommandPool()
@@ -784,7 +784,7 @@ Result VulkanDevice::createCommandPool()
 
     LN_VK_CHECK(vkCreateCommandPool(m_device, &poolInfo, vulkanAllocator(), &m_commandPool));
 
-    return true;
+    return ok();
 }
 
 
@@ -895,7 +895,7 @@ Result VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer)
 
     vkFreeCommandBuffers(m_device, vulkanCommandPool(), 1, &commandBuffer);
 
-    return true;
+    return ok();
 }
 
 void VulkanDevice::copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
@@ -999,7 +999,7 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     }
     else {
         LN_LOG_ERROR("unsupported layout transition!");
-        return false;
+        return err();
     }
 
 
@@ -1013,7 +1013,7 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     );
 
 
-    return true;
+    return ok();
 }
 
 Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout)
@@ -1057,7 +1057,7 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
 #endif
 
 	if (!createNativeSwapchain(backbufferSize)) {
-		return false;
+        return err();
 	}
 
     m_imageAvailableSemaphores.resize(maxFrameCount());
@@ -1070,7 +1070,7 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
     }
     m_currentFrame = 0;
 
-	return true;
+	return ok();
 }
 
 void VulkanSwapChain::dispose()
@@ -1255,10 +1255,10 @@ Result VulkanSwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
 	cleanupNativeSwapchain();
 
 	if (!createNativeSwapchain(SizeI(width, height))) {
-		return false;
+		return err();
 	}
 
-	return true;
+	return ok();
 }
 
 void VulkanSwapChain::present()
@@ -1474,7 +1474,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 			if (renderTarget->isSwapchainBackbuffer()) {
                 if (renderTarget->isMultisample()) {
                     LN_NOTIMPLEMENTED();
-                    return false;
+                    return err();
                 }
 
 				// swapchain の場合
@@ -1517,7 +1517,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 
                 if (renderTarget->isSwapchainBackbuffer()) {
                     LN_NOTIMPLEMENTED();
-                    return false;
+                    return err();
                 }
 
                 VkAttachmentDescription& colorAttachmentResolve = attachmentDescs[attachmentCount];
@@ -1608,7 +1608,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 
 	m_framebuffer = makeRef<VulkanFramebuffer2>();
 	if (!m_framebuffer->init(m_device, this, buffers)) {
-		return false;
+		return err();
 	}
 
 #ifdef LN_DEBUG
@@ -1616,7 +1616,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
     memcpy(m_attachmentRefs, attachmentRefs.data(), sizeof(m_attachmentRefs));
 #endif
 
-	return true;
+	return ok();
 }
 
 void VulkanRenderPass2::dispose()
@@ -1705,7 +1705,7 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
 
 	LN_VK_CHECK(vkCreateFramebuffer(m_device->vulkanDevice(), &framebufferInfo, m_device->vulkanAllocator(), &m_framebuffer));
     ff = framebufferInfo;
-	return true;
+	return ok();
 }
 
 void VulkanFramebuffer2::dispose()
@@ -1756,8 +1756,7 @@ void VulkanPipeline2::dispose()
 	IPipeline::dispose();
 }
 
-bool VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& state)
-{
+Result VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& state) {
     LN_DCHECK(state.renderPass);
     m_ownerRenderPass = static_cast<VulkanRenderPass2*>(state.renderPass);
 
@@ -2013,11 +2012,10 @@ bool VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& stat
 
     LN_VK_CHECK(vkCreateGraphicsPipelines(m_device->vulkanDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, m_device->vulkanAllocator(), &m_pipeline));
 
-    return true;
+    return ok();
 }
 
-bool VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& state)
-{
+Result VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& state) {
     auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 
     VkPipelineShaderStageCreateInfo shaderStage = {};
@@ -2060,7 +2058,7 @@ bool VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& state
     
     LN_VK_CHECK(vkCreateComputePipelines(m_device->vulkanDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &m_pipeline));
 
-    return true;
+    return ok();
 }
 
 //==============================================================================
@@ -2112,7 +2110,7 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
         m_bindings[element.StreamIndex].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
     }
 
-    return true;
+    return ok();
 }
 
 void VulkanVertexDeclaration::dispose()
@@ -2174,7 +2172,7 @@ Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateD
 
 	LN_VK_CHECK(vkCreateSampler(m_deviceContext->vulkanDevice(), &samplerInfo, m_deviceContext->vulkanAllocator(), &m_sampler));
 
-	return true;
+	return ok();
 }
 
 void VulkanSamplerState::dispose()

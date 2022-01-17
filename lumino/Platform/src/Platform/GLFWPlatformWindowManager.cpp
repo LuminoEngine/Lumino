@@ -262,7 +262,7 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 		m_glfwWindow = glfwCreateWindow(
 			settings.clientSize.width, settings.clientSize.height,
 			settings.title.toStdString().c_str(), nullptr, sharedWindow);
-		if (LN_ENSURE(m_glfwWindow)) return false;
+		if (LN_ENSURE(m_glfwWindow)) return err();
 
 
 #if defined(LN_OS_WIN32)
@@ -297,7 +297,7 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 
 
 	//glfwMakeContextCurrent(m_glfwWindow);
-    return true;
+    return ok();
 }
 
 void GLFWPlatformWindow::dispose()
@@ -565,7 +565,7 @@ Result GLFWPlatformWindowManager::init()
 	LN_LOG_INFO("GLFW window manager");
 
 	int result = glfwInit();
-	if (LN_ENSURE(result != 0)) return false;
+	if (LN_ENSURE(result != 0)) return err();
 
 	// OpenGL Version 3.2 を選択
 	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20120908
@@ -574,7 +574,7 @@ Result GLFWPlatformWindowManager::init()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
 
-    return true;
+    return ok();
 }
 
 void GLFWPlatformWindowManager::dispose()
