@@ -295,7 +295,7 @@ public:
 
 
         stbi_image_free(pixels);
-        return true;
+        return ok();
     }
 
     virtual BitmapFrame* getBitmapFrame() override { return &m_frame; }
