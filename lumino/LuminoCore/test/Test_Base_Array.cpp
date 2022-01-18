@@ -1,370 +1,434 @@
 #include "Common.hpp"
 #include <LuminoCore/Base/Array.hpp>
 
-class Test_Base_Array : public ::testing::Test
-{
+class Test_Base_Array : public ::testing::Test {
 protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
-TEST_F(Test_Base_Array, Construct)
-{
-	Array<int> list1;
-	ASSERT_EQ(0, list1.size());
+TEST_F(Test_Base_Array, Construct) {
+    Array<int> list1;
+    ASSERT_EQ(0, list1.size());
 
-	Array<int> list2 = { 1, 2, 3 };
-	ASSERT_EQ(3, list2.size());
-	ASSERT_EQ(1, list2[0]);
-	ASSERT_EQ(2, list2[1]);
-	ASSERT_EQ(3, list2[2]);
+    Array<int> list2 = { 1, 2, 3 };
+    ASSERT_EQ(3, list2.size());
+    ASSERT_EQ(1, list2[0]);
+    ASSERT_EQ(2, list2[1]);
+    ASSERT_EQ(3, list2[2]);
 
-	Array<int> list3 = list2;
-	ASSERT_EQ(3, list3.size());
-	ASSERT_EQ(1, list3[0]);
-	ASSERT_EQ(2, list3[1]);
-	ASSERT_EQ(3, list3[2]);
+    Array<int> list3 = list2;
+    ASSERT_EQ(3, list3.size());
+    ASSERT_EQ(1, list3[0]);
+    ASSERT_EQ(2, list3[1]);
+    ASSERT_EQ(3, list3[2]);
 
-	Array<int> list4 = std::move(list2);
-	ASSERT_EQ(0, list2.size());
-	ASSERT_EQ(3, list4.size());
-	ASSERT_EQ(1, list4[0]);
-	ASSERT_EQ(2, list4[1]);
-	ASSERT_EQ(3, list4[2]);
+    Array<int> list4 = std::move(list2);
+    ASSERT_EQ(0, list2.size());
+    ASSERT_EQ(3, list4.size());
+    ASSERT_EQ(1, list4[0]);
+    ASSERT_EQ(2, list4[1]);
+    ASSERT_EQ(3, list4[2]);
 
-	std::vector<int> vec1 = { 1, 2, 3 };
-	Array<int> list5(vec1);
-	ASSERT_EQ(3, list5.size());
-	ASSERT_EQ(1, list5[0]);
-	ASSERT_EQ(2, list5[1]);
-	ASSERT_EQ(3, list5[2]);
+    std::vector<int> vec1 = { 1, 2, 3 };
+    Array<int> list5(vec1);
+    ASSERT_EQ(3, list5.size());
+    ASSERT_EQ(1, list5[0]);
+    ASSERT_EQ(2, list5[1]);
+    ASSERT_EQ(3, list5[2]);
 
-	Array<int> list6(std::move(vec1));
-	ASSERT_EQ(0, vec1.size());
-	ASSERT_EQ(3, list6.size());
-	ASSERT_EQ(1, list6[0]);
-	ASSERT_EQ(2, list6[1]);
-	ASSERT_EQ(3, list6[2]);
+    Array<int> list6(std::move(vec1));
+    ASSERT_EQ(0, vec1.size());
+    ASSERT_EQ(3, list6.size());
+    ASSERT_EQ(1, list6[0]);
+    ASSERT_EQ(2, list6[1]);
+    ASSERT_EQ(3, list6[2]);
 
-	Array<int> list7(list4.begin(), list4.end());
-	ASSERT_EQ(3, list7.size());
-	ASSERT_EQ(1, list7[0]);
-	ASSERT_EQ(2, list7[1]);
-	ASSERT_EQ(3, list7[2]);
+    Array<int> list7(list4.begin(), list4.end());
+    ASSERT_EQ(3, list7.size());
+    ASSERT_EQ(1, list7[0]);
+    ASSERT_EQ(2, list7[1]);
+    ASSERT_EQ(3, list7[2]);
 }
 
-TEST_F(Test_Base_Array, AssignOperator)
-{
-	Array<int> list1 = { 1, 2 };
-	Array<int> list2, list3;
+TEST_F(Test_Base_Array, AssignOperator) {
+    Array<int> list1 = { 1, 2 };
+    Array<int> list2, list3;
 
-	list2 = list1;
-	ASSERT_EQ(2, list2.size());
-	ASSERT_EQ(1, list2[0]);
-	ASSERT_EQ(2, list2[1]);
+    list2 = list1;
+    ASSERT_EQ(2, list2.size());
+    ASSERT_EQ(1, list2[0]);
+    ASSERT_EQ(2, list2[1]);
 
-	list3 = std::move(list1);
-	ASSERT_EQ(0, list1.size());
-	ASSERT_EQ(2, list2.size());
-	ASSERT_EQ(1, list2[0]);
-	ASSERT_EQ(2, list2[1]);
+    list3 = std::move(list1);
+    ASSERT_EQ(0, list1.size());
+    ASSERT_EQ(2, list2.size());
+    ASSERT_EQ(1, list2[0]);
+    ASSERT_EQ(2, list2[1]);
 
-	std::vector<int> vec1 = { 1, 2 };
-	Array<int> list4, list5, list6;
+    std::vector<int> vec1 = { 1, 2 };
+    Array<int> list4, list5, list6;
 
-	list2 = vec1;
-	ASSERT_EQ(2, list2.size());
-	ASSERT_EQ(1, list2[0]);
-	ASSERT_EQ(2, list2[1]);
+    list2 = vec1;
+    ASSERT_EQ(2, list2.size());
+    ASSERT_EQ(1, list2[0]);
+    ASSERT_EQ(2, list2[1]);
 
-	list3 = std::move(vec1);
-	ASSERT_EQ(0, vec1.size());
-	ASSERT_EQ(2, list3.size());
-	ASSERT_EQ(1, list3[0]);
-	ASSERT_EQ(2, list3[1]);
+    list3 = std::move(vec1);
+    ASSERT_EQ(0, vec1.size());
+    ASSERT_EQ(2, list3.size());
+    ASSERT_EQ(1, list3[0]);
+    ASSERT_EQ(2, list3[1]);
 
-	list6 = { 5, 6 };
-	ASSERT_EQ(2, list6.size());
-	ASSERT_EQ(5, list6[0]);
-	ASSERT_EQ(6, list6[1]);
+    list6 = { 5, 6 };
+    ASSERT_EQ(2, list6.size());
+    ASSERT_EQ(5, list6[0]);
+    ASSERT_EQ(6, list6[1]);
 }
 
-TEST_F(Test_Base_Array, Access)
-{
-	Array<int> list1 = { 1, 2, 3, 4 };
-	list1.at(1) = 20;
-	list1[2] = 30;
-	list1.front() = 10;
-	list1.back() = 40;
+TEST_F(Test_Base_Array, Access) {
+    Array<int> list1 = { 1, 2, 3, 4 };
+    list1.at(1) = 20;
+    list1[2] = 30;
+    list1.front() = 10;
+    list1.back() = 40;
 
-	ASSERT_EQ(20, list1.at(1));
-	ASSERT_EQ(30, list1[2]);
-	ASSERT_EQ(10, list1.front());
-	ASSERT_EQ(40, list1.back());
-	ASSERT_EQ(30, list1.data()[2]);
+    ASSERT_EQ(20, list1.at(1));
+    ASSERT_EQ(30, list1[2]);
+    ASSERT_EQ(10, list1.front());
+    ASSERT_EQ(40, list1.back());
+    ASSERT_EQ(30, list1.data()[2]);
 
-	const Array<int> list2 = { 1, 2, 3, 4 };
-	ASSERT_EQ(2, list2.at(1));
-	ASSERT_EQ(3, list2[2]);
-	ASSERT_EQ(1, list2.front());
-	ASSERT_EQ(4, list2.back());
-	ASSERT_EQ(3, list2.data()[2]);
+    const Array<int> list2 = { 1, 2, 3, 4 };
+    ASSERT_EQ(2, list2.at(1));
+    ASSERT_EQ(3, list2[2]);
+    ASSERT_EQ(1, list2.front());
+    ASSERT_EQ(4, list2.back());
+    ASSERT_EQ(3, list2.data()[2]);
 }
 
-TEST_F(Test_Base_Array, Capacity)
-{
-	Array<int> list1;
-	ASSERT_EQ(std::numeric_limits<int>::max(), list1.max_size());
-	ASSERT_EQ(true, list1.empty());
-	ASSERT_EQ(true, list1.isEmpty());
-	ASSERT_EQ(false, static_cast<bool>(list1));
+TEST_F(Test_Base_Array, Capacity) {
+    Array<int> list1;
+    ASSERT_EQ(std::numeric_limits<int>::max(), list1.max_size());
+    ASSERT_EQ(true, list1.empty());
+    ASSERT_EQ(true, list1.isEmpty());
+    ASSERT_EQ(false, static_cast<bool>(list1));
 
-	list1.reserve(100);
-	ASSERT_EQ(100, list1.capacity());
+    list1.reserve(100);
+    ASSERT_EQ(100, list1.capacity());
 
-	list1.resize(1);
-	ASSERT_EQ(1, list1.size());
-	ASSERT_EQ(0, list1[0]);
+    list1.resize(1);
+    ASSERT_EQ(1, list1.size());
+    ASSERT_EQ(0, list1[0]);
 
-	list1.resize(2, 5);
-	ASSERT_EQ(2, list1.size());
-	ASSERT_EQ(0, list1[0]);
-	ASSERT_EQ(5, list1[1]);
+    list1.resize(2, 5);
+    ASSERT_EQ(2, list1.size());
+    ASSERT_EQ(0, list1[0]);
+    ASSERT_EQ(5, list1[1]);
 
-	list1.shrink_to_fit();
-	ASSERT_EQ(2, list1.capacity());
-	ASSERT_EQ(false, list1.empty());
-	ASSERT_EQ(false, list1.isEmpty());
-	ASSERT_EQ(true, static_cast<bool>(list1));
+    list1.shrink_to_fit();
+    ASSERT_EQ(2, list1.capacity());
+    ASSERT_EQ(false, list1.empty());
+    ASSERT_EQ(false, list1.isEmpty());
+    ASSERT_EQ(true, static_cast<bool>(list1));
 }
 
-TEST_F(Test_Base_Array, Iterator)
-{
-	Array<int> list1 = { 1, 2, 3 };
-	const Array<int> list2 = { 1, 2, 3 };
-	int s = 0;
+TEST_F(Test_Base_Array, Iterator) {
+    Array<int> list1 = { 1, 2, 3 };
+    const Array<int> list2 = { 1, 2, 3 };
+    int s = 0;
 
-	s = 0;
-	for (auto it = list1.begin(); it != list1.end(); it++) s += *it;
-	ASSERT_EQ(6, s);
+    s = 0;
+    for (auto it = list1.begin(); it != list1.end(); it++)
+        s += *it;
+    ASSERT_EQ(6, s);
 
-	s = 0;
-	for (auto it = list2.begin(); it != list2.end(); it++) s += *it;
-	ASSERT_EQ(6, s);
+    s = 0;
+    for (auto it = list2.begin(); it != list2.end(); it++)
+        s += *it;
+    ASSERT_EQ(6, s);
 
-	s = 0;
-	for (auto it = list1.cbegin(); it != list1.cend(); it++) s += *it;
-	ASSERT_EQ(6, s);
+    s = 0;
+    for (auto it = list1.cbegin(); it != list1.cend(); it++)
+        s += *it;
+    ASSERT_EQ(6, s);
 
-	s = 0;
-	for (auto i : list1) s += i;
-	ASSERT_EQ(6, s);
+    s = 0;
+    for (auto i : list1)
+        s += i;
+    ASSERT_EQ(6, s);
 
-	s = 0;
-	for (auto i : list2) s += i;
-	ASSERT_EQ(6, s);
+    s = 0;
+    for (auto i : list2)
+        s += i;
+    ASSERT_EQ(6, s);
 }
 
-TEST_F(Test_Base_Array, Modifiers)
-{
-	Array<int> list1;
-	Array<int> list2 = { 1, 2 };
+TEST_F(Test_Base_Array, Modifiers) {
+    Array<int> list1;
+    Array<int> list2 = { 1, 2 };
 
-	list1.assign(list2.begin(), list2.end());
-	ASSERT_EQ(2, list1.size());
-	ASSERT_EQ(1, list1[0]);
-	ASSERT_EQ(2, list1[1]);
+    list1.assign(list2.begin(), list2.end());
+    ASSERT_EQ(2, list1.size());
+    ASSERT_EQ(1, list1[0]);
+    ASSERT_EQ(2, list1[1]);
 
-	list1.assign(2, 1);
-	ASSERT_EQ(2, list1.size());
-	ASSERT_EQ(1, list1[0]);
-	ASSERT_EQ(1, list1[1]);
+    list1.assign(2, 1);
+    ASSERT_EQ(2, list1.size());
+    ASSERT_EQ(1, list1[0]);
+    ASSERT_EQ(1, list1[1]);
 
-	list1.assign({ 5, 6 });
-	ASSERT_EQ(2, list1.size());
-	ASSERT_EQ(5, list1[0]);
-	ASSERT_EQ(6, list1[1]);
+    list1.assign({ 5, 6 });
+    ASSERT_EQ(2, list1.size());
+    ASSERT_EQ(5, list1[0]);
+    ASSERT_EQ(6, list1[1]);
 
-	Array<int> list3;
-	list3.push_back(1);
-	ASSERT_EQ(1, list3.size());
-	ASSERT_EQ(1, list3[0]);
+    Array<int> list3;
+    list3.push_back(1);
+    ASSERT_EQ(1, list3.size());
+    ASSERT_EQ(1, list3[0]);
 
-	list3.assign(list1.begin(), list1.end());
-	ASSERT_EQ(2, list3.size());
-	ASSERT_EQ(5, list3[0]);
-	ASSERT_EQ(6, list3[1]);
+    list3.assign(list1.begin(), list1.end());
+    ASSERT_EQ(2, list3.size());
+    ASSERT_EQ(5, list3[0]);
+    ASSERT_EQ(6, list3[1]);
 
-	list3.pop_back();
-	ASSERT_EQ(1, list3.size());
-	ASSERT_EQ(5, list3[0]);
+    list3.pop_back();
+    ASSERT_EQ(1, list3.size());
+    ASSERT_EQ(5, list3[0]);
 
-	list2.insert(list2.begin() + 1, 10);
-	ASSERT_EQ(3, list2.size());
-	ASSERT_EQ(1, list2[0]);
-	ASSERT_EQ(10, list2[1]);
-	ASSERT_EQ(2, list2[2]);
+    list2.insert(list2.begin() + 1, 10);
+    ASSERT_EQ(3, list2.size());
+    ASSERT_EQ(1, list2[0]);
+    ASSERT_EQ(10, list2[1]);
+    ASSERT_EQ(2, list2[2]);
 
-	list2.insert(list2.begin() + 1, 2, 20);
-	ASSERT_EQ(5, list2.size());
-	ASSERT_EQ(1, list2[0]);
-	ASSERT_EQ(20, list2[1]);
-	ASSERT_EQ(20, list2[2]);
-	ASSERT_EQ(10, list2[3]);
-	ASSERT_EQ(2, list2[4]);
+    list2.insert(list2.begin() + 1, 2, 20);
+    ASSERT_EQ(5, list2.size());
+    ASSERT_EQ(1, list2[0]);
+    ASSERT_EQ(20, list2[1]);
+    ASSERT_EQ(20, list2[2]);
+    ASSERT_EQ(10, list2[3]);
+    ASSERT_EQ(2, list2[4]);
 
-	list1 = { 1, 2 };
-	list2 = { 3, 4 };
-	list1.insert(list1.begin() + 1, list2.begin(), list2.end());
-	ASSERT_EQ(4, list1.size());
-	ASSERT_EQ(1, list1[0]);
-	ASSERT_EQ(3, list1[1]);
-	ASSERT_EQ(4, list1[2]);
-	ASSERT_EQ(2, list1[3]);
+    list1 = { 1, 2 };
+    list2 = { 3, 4 };
+    list1.insert(list1.begin() + 1, list2.begin(), list2.end());
+    ASSERT_EQ(4, list1.size());
+    ASSERT_EQ(1, list1[0]);
+    ASSERT_EQ(3, list1[1]);
+    ASSERT_EQ(4, list1[2]);
+    ASSERT_EQ(2, list1[3]);
 
-	list1 = { 1, 2 };
-	list1.insert(list1.begin() + 1, { 5, 6 });
-	ASSERT_EQ(4, list1.size());
-	ASSERT_EQ(1, list1[0]);
-	ASSERT_EQ(5, list1[1]);
-	ASSERT_EQ(6, list1[2]);
-	ASSERT_EQ(2, list1[3]);
+    list1 = { 1, 2 };
+    list1.insert(list1.begin() + 1, { 5, 6 });
+    ASSERT_EQ(4, list1.size());
+    ASSERT_EQ(1, list1[0]);
+    ASSERT_EQ(5, list1[1]);
+    ASSERT_EQ(6, list1[2]);
+    ASSERT_EQ(2, list1[3]);
 
-	list1.clear();
-	ASSERT_EQ(0, list1.size());
+    list1.clear();
+    ASSERT_EQ(0, list1.size());
 
-	// erase
-	{
-		list1 = { 1, 2, 3 };
-		auto itr1 = list1.erase(list1.begin());
-		ASSERT_EQ(2, list1.size());
-		ASSERT_EQ(2, list1[0]);
-		ASSERT_EQ(3, list1[1]);
+    // erase
+    {
+        list1 = { 1, 2, 3 };
+        auto itr1 = list1.erase(list1.begin());
+        ASSERT_EQ(2, list1.size());
+        ASSERT_EQ(2, list1[0]);
+        ASSERT_EQ(3, list1[1]);
 
-		list1.erase(itr1);
-		ASSERT_EQ(1, list1.size());
-		ASSERT_EQ(3, list1[0]);
+        list1.erase(itr1);
+        ASSERT_EQ(1, list1.size());
+        ASSERT_EQ(3, list1[0]);
 
-		list1 = { 1, 2, 3 };
-		list1.erase(list1.begin() + 1, list1.end());
-		ASSERT_EQ(1, list1.size());
-		ASSERT_EQ(1, list1[0]);
-	}
+        list1 = { 1, 2, 3 };
+        list1.erase(list1.begin() + 1, list1.end());
+        ASSERT_EQ(1, list1.size());
+        ASSERT_EQ(1, list1[0]);
+    }
 
-	// swap
-	{
-		list1 = { 1, 2 };
-		list2 = { 3, 4 };
+    // swap
+    {
+        list1 = { 1, 2 };
+        list2 = { 3, 4 };
 
-		list1.swap(list2);
-		ASSERT_EQ(2, list1.size());
-		ASSERT_EQ(3, list1[0]);
-		ASSERT_EQ(4, list1[1]);
-		ASSERT_EQ(2, list2.size());
-		ASSERT_EQ(1, list2[0]);
-		ASSERT_EQ(2, list2[1]);
+        list1.swap(list2);
+        ASSERT_EQ(2, list1.size());
+        ASSERT_EQ(3, list1[0]);
+        ASSERT_EQ(4, list1[1]);
+        ASSERT_EQ(2, list2.size());
+        ASSERT_EQ(1, list2[0]);
+        ASSERT_EQ(2, list2[1]);
 
-		swap(list1, list2);
-		ASSERT_EQ(2, list1.size());
-		ASSERT_EQ(1, list1[0]);
-		ASSERT_EQ(2, list1[1]);
-		ASSERT_EQ(2, list2.size());
-		ASSERT_EQ(3, list2[0]);
-		ASSERT_EQ(4, list2[1]);
-	}
+        swap(list1, list2);
+        ASSERT_EQ(2, list1.size());
+        ASSERT_EQ(1, list1[0]);
+        ASSERT_EQ(2, list1[1]);
+        ASSERT_EQ(2, list2.size());
+        ASSERT_EQ(3, list2[0]);
+        ASSERT_EQ(4, list2[1]);
+    }
 
-	// emplace
-	{
-		struct Test1 {
-			std::string str;
-			Test1(int n, char c) : str(n, c) {}
-		};
-		Array<Test1> list5;
-		list5.emplace_back(2, 'a');
-		list5.emplace(list5.begin(), 3, 'b');
-		ASSERT_EQ(2, list5.size());
-		ASSERT_EQ("bbb", list5[0].str);
-		ASSERT_EQ("aa", list5[1].str);
-	}
+    // emplace
+    {
+        struct Test1 {
+            std::string str;
+            Test1(int n, char c)
+                : str(n, c) {}
+        };
+        Array<Test1> list5;
+        list5.emplace_back(2, 'a');
+        list5.emplace(list5.begin(), 3, 'b');
+        ASSERT_EQ(2, list5.size());
+        ASSERT_EQ("bbb", list5[0].str);
+        ASSERT_EQ("aa", list5[1].str);
+    }
 }
 
-TEST_F(Test_Base_Array, Operators)
-{
-	Array<int> list0 = { 0 };
-	Array<int> list1 = { 1 };
-	Array<int> list2 = { 1 };
-	Array<int> list3 = { 2 };
+TEST_F(Test_Base_Array, Operators) {
+    Array<int> list0 = { 0 };
+    Array<int> list1 = { 1 };
+    Array<int> list2 = { 1 };
+    Array<int> list3 = { 2 };
 
+    ASSERT_EQ(true, list1 == list2);
+    ASSERT_EQ(false, list1 == list3);
 
-	ASSERT_EQ(true, list1 == list2);
-	ASSERT_EQ(false, list1 == list3);
+    ASSERT_EQ(false, list1 != list2);
+    ASSERT_EQ(true, list1 != list3);
 
-	ASSERT_EQ(false, list1 != list2);
-	ASSERT_EQ(true, list1 != list3);
+    ASSERT_EQ(false, list1 < list2);
+    ASSERT_EQ(true, list1 < list3);
 
-	ASSERT_EQ(false, list1 < list2);
-	ASSERT_EQ(true, list1 < list3);
+    ASSERT_EQ(false, list1 <= list0);
+    ASSERT_EQ(true, list1 <= list2);
+    ASSERT_EQ(true, list1 <= list3);
 
-	ASSERT_EQ(false, list1 <= list0);
-	ASSERT_EQ(true, list1 <= list2);
-	ASSERT_EQ(true, list1 <= list3);
+    ASSERT_EQ(true, list1 > list0);
+    ASSERT_EQ(false, list1 > list2);
 
-	ASSERT_EQ(true, list1 > list0);
-	ASSERT_EQ(false, list1 > list2);
-
-	ASSERT_EQ(true, list1 >= list0);
-	ASSERT_EQ(true, list1 >= list2);
-	ASSERT_EQ(false, list1 >= list3);
+    ASSERT_EQ(true, list1 >= list0);
+    ASSERT_EQ(true, list1 >= list2);
+    ASSERT_EQ(false, list1 >= list3);
 }
 
-TEST_F(Test_Base_Array, findIf)
-{
-	struct Test2
-	{
-		int v;
-	};
+TEST_F(Test_Base_Array, findIf) {
+    struct Test2 {
+        int v;
+    };
 
+    Array<Test2> list2 = { Test2{ 1 }, Test2{ 2 } };
+    auto r = list2.findIf([](const Test2& x) { return x.v == 2; });
+    ASSERT_EQ(true, r.hasValue());
+    ASSERT_EQ(2, r.value().v);
 
-	Array<Test2> list2 = { Test2{1}, Test2{2} };
-	auto r = list2.findIf([](const Test2& x) { return x.v == 2; });
-	ASSERT_EQ(true, r.hasValue());
-	ASSERT_EQ(2, r.value().v);
+    r.value().v = 10;
+    ASSERT_EQ(10, list2[1].v);
 
-	r.value().v = 10;
-	ASSERT_EQ(10, list2[1].v);
-
-	std::optional<int> a;
+    std::optional<int> a;
 }
 
-TEST_F(Test_Base_Array, contains)
-{
-    Array<int> list1 = {1, 2, 3};
+TEST_F(Test_Base_Array, contains) {
+    Array<int> list1 = { 1, 2, 3 };
     ASSERT_EQ(true, list1.contains(2));
     ASSERT_EQ(false, list1.contains(5));
 }
 
-TEST_F(Test_Base_Array, containsIf)
-{
-    Array<int> list1 = {1, 2, 3};
+TEST_F(Test_Base_Array, containsIf) {
+    Array<int> list1 = { 1, 2, 3 };
     ASSERT_EQ(true, list1.containsIf([](int i) { return i == 2; }));
     ASSERT_EQ(false, list1.containsIf([](int i) { return i == 5; }));
 }
 
-TEST_F(Test_Base_Array, map)
-{
+TEST_F(Test_Base_Array, remove) {
+
+    //* [ ] remove
+    {
+        Array<int> list1 = { 1, 2, 3, 2, 1 };
+        bool r = list1.remove(2);
+        ASSERT_EQ(true, r);
+        ASSERT_EQ(4, list1.size());
+        ASSERT_EQ(1, list1[0]);
+        ASSERT_EQ(3, list1[1]);
+        ASSERT_EQ(2, list1[2]);
+        ASSERT_EQ(1, list1[3]);
+
+        r = list1.remove(20);
+        ASSERT_EQ(false, r);
+        ASSERT_EQ(4, list1.size());
+    }
+
+    //* [ ] removeIf
+    {
+        Array<int> list1 = { 1, 2, 3, 2, 1 };
+        bool r = list1.removeIf([](int i) { return i == 2; });
+        ASSERT_EQ(true, r);
+        ASSERT_EQ(4, list1.size());
+        ASSERT_EQ(1, list1[0]);
+        ASSERT_EQ(3, list1[1]);
+        ASSERT_EQ(2, list1[2]);
+        ASSERT_EQ(1, list1[3]);
+
+        r = list1.removeIf([](int i) { return i == 20; });
+        ASSERT_EQ(false, r);
+        ASSERT_EQ(4, list1.size());
+    }
+
+    //* [ ] removeAll
+    {
+        Array<int> list1 = { 1, 2, 3, 2, 1 };
+        int r = list1.removeAll(2);
+        ASSERT_EQ(2, r);
+        ASSERT_EQ(3, list1.size());
+        ASSERT_EQ(1, list1[0]);
+        ASSERT_EQ(3, list1[1]);
+        ASSERT_EQ(1, list1[2]);
+
+        r = list1.removeAll(20);
+        ASSERT_EQ(0, r);
+        ASSERT_EQ(3, list1.size());
+    }
+
+    //* [ ] removeAllIf
+    {
+        Array<int> list1 = { 1, 2, 3, 2, 1 };
+        int r = list1.removeAllIf([](int i) { return i == 2; });
+        ASSERT_EQ(2, r);
+        ASSERT_EQ(3, list1.size());
+        ASSERT_EQ(1, list1[0]);
+        ASSERT_EQ(3, list1[1]);
+        ASSERT_EQ(1, list1[2]);
+
+        r = list1.removeAllIf([](int i) { return i == 20; });
+        ASSERT_EQ(0, r);
+        ASSERT_EQ(3, list1.size());
+    }
+
+    //* [ ] removeAt
+    {
+        Array<int> list1 = { 1, 2, 3 };
+        list1.removeAt(1);
+        ASSERT_EQ(2, list1.size());
+        ASSERT_EQ(1, list1[0]);
+        ASSERT_EQ(3, list1[1]);
+    }
+}
+
+TEST_F(Test_Base_Array, map) {
     struct Test1 {
         int v1;
     };
-    struct Test2 : public Test1
-    {
+    struct Test2 : public Test1 {
         int v2;
     };
 
-    Array<Test2> ary1 = {Test2{}};
+    Array<Test2> ary1 = { Test2{} };
     Array<Test2*> ary2 = ary1.map([](Test2& x) { return &x; });
     Array<Test1*> ary3 = ary1.map([](Test2& x) { return static_cast<Test1*>(&x); });
 
-    const Array<Test2> ary4 = {Test2{}};
+    const Array<Test2> ary4 = { Test2{} };
     const Array<const Test2*> ary5 = ary4.map([](const Test2& x) { return &x; });
 }
 
@@ -555,7 +619,6 @@ TEST_F(Test_Base_Array, Algorithm)
 //{
 //	// something
 //}
-
 
 #if 0
 /** RefObject 用 スマートポインタ */

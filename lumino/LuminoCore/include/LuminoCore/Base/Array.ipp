@@ -26,6 +26,12 @@ Array<T>::Array(TIter begin, TIter end)
 {}
 
 template<class T>
+template<class TRange>
+Array<T>::Array(TRange&& range)
+    : m_data(range.begin(), range.end()) {
+}
+
+template<class T>
 Array<T>& Array<T>::operator=(const container_type& other)
 {
     m_data = other;
@@ -386,6 +392,53 @@ template<class T>
 inline typename Array<T>::iterator Array<T>::insert(int pos, std::initializer_list<T> ilist)
 {
     return m_data.insert(begin() + pos, ilist);
+}
+
+template<typename T>
+bool Array<T>::remove(const value_type& item) {
+    return detail::StlHelper::remove(m_data, item);
+}
+
+template<typename T>
+template<typename TPred>
+bool Array<T>::removeIf(TPred pred) {
+    auto itr = m_data.begin();
+    auto end = m_data.end();
+    for (; itr != end; ++itr) {
+        if (pred((*itr))) {
+            m_data.erase(itr);
+            return true;
+        }
+    }
+    return false;
+}
+
+template<typename T>
+int Array<T>::removeAll(const value_type& item) {
+    return static_cast<int>(detail::StlHelper::removeAll(m_data, item));
+}
+
+template<typename T>
+template<typename TPred>
+int Array<T>::removeAllIf(TPred pred) {
+    return static_cast<int>(detail::StlHelper::removeAll(m_data, pred));
+}
+
+template<typename T>
+void Array<T>::removeAt(int index) {
+    if (LN_REQUIRE(!isOutOfRange(index)))
+        return;
+    m_data.erase(m_data.begin() + index);
+}
+
+template<typename T>
+bool Array<T>::isOutOfRange(int index) const {
+    return (index < 0 || size() <= index);
+}
+
+template<typename T>
+bool Array<T>::isValidRange(int index) const {
+    return (0 <= index && index < size());
 }
 
 template<class T>
