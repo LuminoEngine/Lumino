@@ -21,8 +21,7 @@ enum class SearchTargetEntity
     Directory,
 };
 
-class DirectoryIterator2
-{
+class DirectoryIterator2 : public std::iterator<std::forward_iterator_tag, int> {
 public:
     DirectoryIterator2();
     DirectoryIterator2(const StringView& dirPath, const StringView& pattern, SearchOption searchOption, SearchTargetEntity targetEntity);

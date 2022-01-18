@@ -59,6 +59,10 @@ public:
     template<class TIter>
     Array(TIter begin, TIter end);
 
+    /** Range constructor. */
+    template<class TRange>
+    Array(TRange&& range);
+
     /** Destructor.  */
     ~Array() = default;
 
@@ -304,6 +308,23 @@ public:
     /** Insert a new element at specified position. */
     iterator insert(int pos, std::initializer_list<T> list);
 
+    /** item に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
+    bool remove(const value_type& item);
+
+    /** 指定した条件に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
+    template<typename TPred>
+    bool removeIf(TPred pred);
+
+    /** item に一致する全ての要素を削除し、削除された要素数を返します。 */
+    int removeAll(const value_type& item);
+
+    /** 指定した条件に一致する全ての要素を削除し、削除された要素数を返します。 */
+    template<typename TPred>
+    int removeAllIf(TPred pred);
+
+    /** 指定したインデックスにある要素を削除します。*/
+    void removeAt(int index);
+
     /** @} */
 
     
@@ -325,6 +346,30 @@ public:
         }
         return result;
     }
+
+    /** 重複を削除した新しい配列を返します。 */
+    template<typename TPred>
+    Array<T> distinct(TPred predicate) const {
+        ln::Array<T> result = *this;
+        std::sort(result.begin(), result.end());
+        result.erase(std::unique(result.begin(), result.end(), predicate), result.end());
+        return result;
+    }
+
+    /** この配列と指定した配列を連結した新しい配列を返します。 */
+    Array<T> concat(const Array<T>& ary) const {
+        ln::Array<T> result = *this;
+        for (const auto& i : ary) {
+            result.push(i);
+        }
+        return result;
+    }
+
+    /** 指定したインデックスがこの配列の境界の範囲外かを確認します。*/
+    bool isOutOfRange(int index) const;
+
+    /** 指定したインデックスがこの配列の境界の範囲内かを確認します。*/
+    bool isValidRange(int index) const;
 
 private:
     container_type m_data;
