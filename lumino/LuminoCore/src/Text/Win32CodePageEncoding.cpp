@@ -151,8 +151,12 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF32(const byte_t* i
             const size_t bufferSize = bItr - buffer;
 
             if (bufferSize > 0) {
+                // TODO: MB_PRECOMPOSED ではなく MB_ERR_INVALID_CHARS の方がセキュリティ的にはよい。
+                // オプションで変更できるようにしたい。
+                // 今は主に Process クラスで標準出力を受け取るために使っておりデフォルトは OS のコードページだが、
+                // その外部プロセスが UTF-8 でデータを送ってくることもある。（clang に UTF-8 コードを入力した時のエラーメッセージ等）
                 int convertedWideCount = ::MultiByteToWideChar(
-                    m_cpInfo->CodePage, MB_ERR_INVALID_CHARS,
+                    m_cpInfo->CodePage, MB_PRECOMPOSED,
                     (LPCSTR)buffer, bufferSize,
                     (LPWSTR)words, WORDS_COUNT);
                 if (LN_ENSURE(convertedWideCount > 0)) {
