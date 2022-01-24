@@ -483,10 +483,10 @@ class StringView
 {
 public:
     /** 空の StringView を構築します。 */
-    StringView() LN_NOEXCEPT;
+    constexpr StringView() LN_NOEXCEPT;
 
     /** 別の StringView と同じ文字列を参照します。(コピーコンストラクタ) */
-    StringView(const StringView& str) LN_NOEXCEPT;
+    constexpr StringView(const StringView& str) LN_NOEXCEPT;
 
     /** 指定された文字列の全体を参照します。 */
     StringView(const String& str);
@@ -498,16 +498,17 @@ public:
     StringView(const String& str, int startIndex, int len);
 
     /** 指定された文字列の全体を参照します。 */
-    StringView(const Char* str);
+    constexpr StringView(const Char* str);
 
     /** 文字列と長さを受け取り、その範囲を参照します。 */
-    StringView(const Char* str, int len);
+    constexpr StringView(const Char* str, int len);
 
     /** 文字列の範囲を参照します。 */
-    StringView(const Char* begin, const Char* end);
+    constexpr StringView(const Char* begin, const Char* end);
 
     /** 指定された Path 全体を参照します。 */
     StringView(const Path& path);
+
 
 #ifdef LN_STRING_FUZZY_CONVERSION
     /** 指定された文字列の全体を参照します。 */
@@ -516,6 +517,9 @@ public:
     /** 指定された文字列の全体を参照します。 */
     StringRef(const wchar_t* str);
 #endif
+    ~StringView() { clear(); }  // これだと constexpr にできないので、どのみち LN_STRING_FUZZY_CONVERSION は削除かな
+#else
+    ~StringView() = default;
 #endif
 
     /** 文字列の長さを取得します。 */
@@ -555,7 +559,6 @@ public:
     /** 任意の位置の要素にアクセスします。 */
     LN_CONSTEXPR const Char& operator[](int index) const { return *(data() + index); }
 
-    ~StringView() { clear(); }
     StringView& operator=(const StringView& str);
     StringView& operator=(StringView&& str);
 
@@ -568,6 +571,37 @@ private:
     size_t m_len;
     bool m_localAlloc;
 };
+
+constexpr StringView::StringView() LN_NOEXCEPT
+    : m_string(nullptr)
+    , m_str(nullptr)
+    , m_len(0)
+    , m_localAlloc(false) {
+}
+
+constexpr StringView::StringView(const StringView& str) LN_NOEXCEPT
+    : StringView() {
+    m_str = str.data();
+    m_len = str.length();
+}
+
+constexpr StringView::StringView(const Char* str)
+    : StringView() {
+    m_str = str;
+    m_len = detail::UStringHelper::strlen(str);
+}
+
+constexpr StringView::StringView(const Char* str, int len)
+    : StringView() {
+    m_str = str;
+    m_len = len;
+}
+
+constexpr StringView::StringView(const Char* begin, const Char* end)
+    : StringView() {
+    m_str = begin;
+    m_len = end - begin;
+}
 
 //namespace fmt {
 //

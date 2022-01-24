@@ -667,14 +667,6 @@ int StringHelper::doubleToString(double value, char format, int precision, char*
 
 namespace detail {
 
-size_t UStringHelper::strlen(const Char* str)
-{
-	if (!str) return 0;
-	size_t count = 0;
-	for (; *str; ++str) ++count;
-	return count;
-}
-
 int UStringHelper::compare(const Char* str1, const Char* str2)
 {
 	str1 = (str1) ? str1 : _TT("");

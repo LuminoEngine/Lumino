@@ -255,12 +255,26 @@ enum class UStringRefSource
 class UStringHelper
 {
 public:
-	static size_t strlen(const Char* str);
+    static constexpr size_t strlen(const Char* str) noexcept;
 	static int compare(const Char* str1, const Char* str2);
 
 	template<typename TChar>
 	static void toStringInt8(int8_t v, TChar* outStr, int size);
 };
+
+constexpr size_t UStringHelper::strlen(const Char* str) noexcept {
+    size_t count = 0;
+    while (*str) {
+        ++count;
+        ++str;
+    }
+    return count;
+    //if (!str) return 0;
+    //size_t count = 0;
+    //for (; *str; ++str)
+    //    ++count;
+    //return count;
+}
 
 
 class UStringConvert

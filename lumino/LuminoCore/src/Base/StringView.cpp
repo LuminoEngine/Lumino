@@ -6,21 +6,6 @@
 
 namespace ln {
 
-StringView::StringView() LN_NOEXCEPT
-    : m_string(nullptr)
-    , m_str(nullptr)
-    , m_len(0)
-    , m_localAlloc(false)
-{
-}
-
-StringView::StringView(const StringView& str) LN_NOEXCEPT
-    : StringView()
-{
-    m_str = str.data();
-    m_len = str.length();
-}
-
 StringView::StringView(const String& str)
     : StringView()
 {
@@ -42,27 +27,6 @@ StringView::StringView(const String& str, int startIndex, int len)
 {
     m_str = str.c_str() + startIndex;
     m_len = len;
-}
-
-StringView::StringView(const Char* str)
-    : StringView()
-{
-    m_str = str;
-    m_len = detail::UStringHelper::strlen(str);
-}
-
-StringView::StringView(const Char* str, int len)
-    : StringView()
-{
-    m_str = str;
-    m_len = len;
-}
-
-StringView::StringView(const Char* begin, const Char* end)
-    : StringView()
-{
-    m_str = begin;
-    m_len = end - begin;
 }
 
 StringView::StringView(const Path& path)
