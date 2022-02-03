@@ -51,8 +51,7 @@ namespace LuminoBuild
         {
             if (Shell)
             {
-                Utils.CallProcessShell(Program, Args);
-                return null;
+                return Utils.CallProcessShell(Program, Args);
             }
             else
             {

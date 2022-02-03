@@ -46,6 +46,7 @@
     <Compile Include="tools/LuminoBuild/Env/EmscriptenEnv.cs" />
     <Compile Include="tools/LuminoBuild/Proc.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildExternals.cs" />
+    <Compile Include="tools/LuminoBuild/Utils.cs" />
   </ItemGroup>
   
 </Project>
