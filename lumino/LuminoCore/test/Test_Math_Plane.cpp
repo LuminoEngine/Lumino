@@ -69,7 +69,6 @@ TEST_F(Test_Plane, Basic)
 		Plane pl1(Vector3(2, 3, 4), Vector3::UnitX);
 
 		Vector3 v;
-		bool r;
 		ASSERT_EQ(true, pl1.intersects(Ray(Vector3(0, 0, 0), Vector3(1, 0, 0)), &v));	// 直行
 		ASSERT_VEC3_NEAR(2, 0, 0, v);
 		ASSERT_EQ(false, pl1.intersects(Ray(Vector3(0, 0, 0), Vector3(0, 1, 0)), &v));	// 平行

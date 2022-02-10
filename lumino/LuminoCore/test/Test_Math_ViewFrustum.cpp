@@ -91,7 +91,6 @@ TEST_F(Test_ViewFrustum, intersects_Box)
 	Matrix proj1 = Matrix::makePerspectiveFovLH(Math::PI / 4, 640.0f / 480.0f, 1, 1000);
 	ViewFrustum vf1(view * proj1);
 
-	IntersectResult r;
 	ASSERT_EQ(IntersectResult::Outside, vf1.intersects(Box({ 0, 0, 1001 }, 1)));
 	ASSERT_EQ(IntersectResult::Intersect, vf1.intersects(Box({ 0, 0, 1000 }, 1)));
 	ASSERT_EQ(IntersectResult::Inside, vf1.intersects(Box({ 0, 0, 999 }, 1)));

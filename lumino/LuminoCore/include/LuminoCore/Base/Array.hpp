@@ -18,8 +18,7 @@ namespace ln {
  * インデックスは冗長なコンパイル警告や逆順ループの記述ミスの対策のため、size_t ではなく int となっています。
  */
 template<typename T>
-class Array
-{
+class Array {
 public:
     using container_type = std::vector<T>;
     using value_type = typename container_type::value_type;
@@ -35,7 +34,6 @@ public:
     using index_type = int32_t;
     using difference_type = typename container_type::difference_type;
     using allocator_type = typename container_type::allocator_type;
-
 
     /** Construct empty array. */
     Array() = default;
@@ -84,39 +82,33 @@ public:
     /** @defgroup Iterators: */
     /** @{ */
 
-    [[nodiscard]]
-    iterator begin() noexcept;
+    [[nodiscard]] iterator begin() noexcept;
 
-    [[nodiscard]]
-    iterator end() noexcept;
+    [[nodiscard]] iterator end() noexcept;
 
-    [[nodiscard]]
-    const_iterator begin() const noexcept;
+    [[nodiscard]] const_iterator begin() const noexcept;
 
-    [[nodiscard]]
-    const_iterator end() const noexcept;
+    [[nodiscard]] const_iterator end() const noexcept;
 
-    [[nodiscard]]
-    const_iterator cbegin() const noexcept;
+    [[nodiscard]] const_iterator cbegin() const noexcept;
 
-    [[nodiscard]]
-    const_iterator cend() const noexcept;
+    [[nodiscard]] const_iterator cend() const noexcept;
 
     /** @} */
     /** @defgroup Capacity */
     /** @{ */
 
-    /** Return size. */
-    [[nodiscard]]
-    int size() const noexcept;
+    /** Return number of elements in the array. size() は STL コンテナとの一貫性を持たせるために定義されています。普段は、length() の方が使いやすいかもしれません。 */
+    [[nodiscard]] size_t size() const noexcept;
+
+    /** Return number of elements in the array. */
+    [[nodiscard]] int length() const noexcept;
 
     /** Return maximum size. */
-    [[nodiscard]]
-    size_t max_size() const noexcept;
+    [[nodiscard]] size_t max_size() const noexcept;
 
     /** Return size of allocated storage capacity. */
-    [[nodiscard]]
-    size_t capacity() const noexcept;
+    [[nodiscard]] size_t capacity() const noexcept;
 
     /** Change size. */
     void resize(size_type count);
@@ -131,60 +123,47 @@ public:
     void shrink_to_fit();
 
     /** Test whether vector is empty. */
-    [[nodiscard]]
-    bool empty() const noexcept;
+    [[nodiscard]] bool empty() const noexcept;
 
     /** Test whether vector is empty. */
-    [[nodiscard]]
-    bool isEmpty() const noexcept;
+    [[nodiscard]] bool isEmpty() const noexcept;
 
     /** Test whether vector is empty. */
-    [[nodiscard]]
-    explicit operator bool() const noexcept;
+    [[nodiscard]] explicit operator bool() const noexcept;
 
     /** @} */
     /** @defgroup Element access */
     /** @{ */
 
     /** Access the element at the specified index. */
-    [[nodiscard]]
-    T& at(int index);
+    [[nodiscard]] T& at(int index);
 
     /** Access the element at the specified index. */
-    [[nodiscard]]
-    const T& at(int index) const;
+    [[nodiscard]] const T& at(int index) const;
 
     /** Access the element at the specified index. */
-    [[nodiscard]]
-    T& operator[](int index);
+    [[nodiscard]] T& operator[](int index);
 
     /** Access the element at the specified index. */
-    [[nodiscard]]
-    const T& operator[](int index) const;
+    [[nodiscard]] const T& operator[](int index) const;
 
     /** Access first element. */
-    [[nodiscard]]
-    reference front();
+    [[nodiscard]] reference front();
 
     /** Access first element. */
-    [[nodiscard]]
-    const_reference front() const;
+    [[nodiscard]] const_reference front() const;
 
     /** Access last element. */
-    [[nodiscard]]
-    reference back();
+    [[nodiscard]] reference back();
 
     /** Access last element. */
-    [[nodiscard]]
-    const_reference back() const;
+    [[nodiscard]] const_reference back() const;
 
     /** Access raw-data. */
-    [[nodiscard]]
-    T* data() noexcept;
+    [[nodiscard]] T* data() noexcept;
 
     /** Access raw-data. */
-    [[nodiscard]]
-    const T* data() const noexcept;
+    [[nodiscard]] const T* data() const noexcept;
 
     /** @} */
     /** @defgroup Modifiers */
@@ -194,7 +173,7 @@ public:
     void assign(int count, const T& value);
 
     /** Assign array content. */
-    template <class TIterator>
+    template<class TIterator>
     void assign(TIterator first, TIterator last);
 
     /** Assign array content. */
@@ -225,7 +204,7 @@ public:
     iterator insert(const_iterator pos, int count, const T& value);
 
     /** Insert a new element at specified position. */
-    template <class Iterator>
+    template<class Iterator>
     iterator insert(const_iterator pos, Iterator first, Iterator last);
 
     /** Insert a new element at specified position. */
@@ -248,7 +227,7 @@ public:
     iterator emplace(const_iterator pos, Args&&... args);
 
     /** Construct and insert element at the end. */
-    template <class... Args>
+    template<class... Args>
     reference emplace_back(Args&&... args);
 
     /** @} */
@@ -257,8 +236,7 @@ public:
 
     /** 指定した条件と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
     template<typename TPred>
-    Optional2<const T&> findIf(TPred pred) const
-    {
+    Optional2<const T&> findIf(TPred pred) const {
         auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
         if (itr != end()) {
             return Optional2<const T&>(*itr);
@@ -266,15 +244,13 @@ public:
         return Optional2<const T&>();
     }
     template<typename TPred>
-    Optional2<T&> findIf(TPred pred)
-    {
+    Optional2<T&> findIf(TPred pred) {
         auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
         if (itr != end()) {
             return Optional2<T&>(*itr);
         }
         return Optional2<T&>();
     }
-
 
     /**
      * 指定した条件と一致する最初のインデックスを返します。
@@ -302,7 +278,7 @@ public:
     iterator insert(int pos, int count, const T& value);
 
     /** Insert a new element at specified position. */
-    template <class Iterator>
+    template<class Iterator>
     iterator insert(int pos, Iterator first, Iterator last);
 
     /** Insert a new element at specified position. */
@@ -327,7 +303,6 @@ public:
 
     /** @} */
 
-    
     template<class TCallback>
     auto map(TCallback callback) -> Array<decltype(callback(*reinterpret_cast<T*>(0)))> {
         Array<decltype(callback(*reinterpret_cast<T*>(0)))> result = {};
@@ -338,8 +313,7 @@ public:
     }
 
     template<class TCallback>
-    auto map(TCallback callback) const -> Array<decltype(callback(*reinterpret_cast<T*>(0)))>
-    {
+    auto map(TCallback callback) const -> Array<decltype(callback(*reinterpret_cast<T*>(0)))> {
         Array<decltype(callback(*reinterpret_cast<T*>(0)))> result = {};
         for (size_t i = 0; i < m_data.size(); i++) {
             result.push(callback(m_data[i]));
@@ -387,28 +361,22 @@ private:
 };
 
 template<class T>
-[[nodiscard]]
-inline bool operator==(const Array<T>& a, const Array<T>& b);
+[[nodiscard]] inline bool operator==(const Array<T>& a, const Array<T>& b);
 
 template<class T>
-[[nodiscard]]
-inline bool operator!=(const Array<T>& a, const Array<T>& b);
+[[nodiscard]] inline bool operator!=(const Array<T>& a, const Array<T>& b);
 
 template<class T>
-[[nodiscard]]
-inline bool operator<(const Array<T>& a, const Array<T>& b);
+[[nodiscard]] inline bool operator<(const Array<T>& a, const Array<T>& b);
 
 template<class T>
-[[nodiscard]]
-inline bool operator<=(const Array<T>& a, const Array<T>& b);
+[[nodiscard]] inline bool operator<=(const Array<T>& a, const Array<T>& b);
 
 template<class T>
-[[nodiscard]]
-inline bool operator>(const Array<T>& a, const Array<T>& b);
+[[nodiscard]] inline bool operator>(const Array<T>& a, const Array<T>& b);
 
 template<class T>
-[[nodiscard]]
-inline bool operator>=(const Array<T>& a, const Array<T>& b);
+[[nodiscard]] inline bool operator>=(const Array<T>& a, const Array<T>& b);
 
 template<class T>
 inline void swap(Array<T>& a, Array<T>& b) noexcept;
