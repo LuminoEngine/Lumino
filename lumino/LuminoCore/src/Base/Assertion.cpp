@@ -10,99 +10,90 @@ namespace ln {
 
 namespace detail {
 
-
 template<class TChar>
-inline static void strcpy(TChar* dst, size_t dstLen, const TChar* src) noexcept
-{
-	assert(dst);
-	assert(src);
-	if (dstLen == 0) return;
-	dstLen--;
-	while (dstLen && *src)
-	{
-		dstLen--;
-		*dst++ = *src++;
-	}
-	*dst = '\0';
+inline static void strcpy(TChar* dst, size_t dstLen, const TChar* src) noexcept {
+    assert(dst);
+    assert(src);
+    if (dstLen == 0) return;
+    dstLen--;
+    while (dstLen && *src) {
+        dstLen--;
+        *dst++ = *src++;
+    }
+    *dst = '\0';
 }
 
-
-void convertCharToWChar(const char* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen)
-{
+void convertCharToWChar(const char* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen) {
 #ifdef LN_MSVC
-	size_t ret;
-	mbstowcs_s(&ret, outStr, outStrLen, inStr, inStrLen);
+    size_t ret;
+    mbstowcs_s(&ret, outStr, outStrLen, inStr, inStrLen);
 #else
-	mbstowcs(outStr, inStr, outStrLen - 1);
+    mbstowcs(outStr, inStr, outStrLen - 1);
 #endif
 }
 
-void convertWCharToChar16(const wchar_t* inStr, size_t inStrLen, char16_t* outStr, size_t outStrLen)
-{
-#if WCHAR_MAX <= 0xffff	// wchar_t == char16_t
-	// assumed windows
-	memcpy(outStr, inStr, sizeof(char16_t) * LN_MAX(inStrLen, outStrLen));
+void convertWCharToChar16(const wchar_t* inStr, size_t inStrLen, char16_t* outStr, size_t outStrLen) {
+#if WCHAR_MAX <= 0xffff // wchar_t == char16_t
+    // assumed windows
+    memcpy(outStr, inStr, sizeof(char16_t) * LN_MAX(inStrLen, outStrLen));
 #elif WCHAR_MAX <= 0xffffffff
-	// assumed unix
-	ln::UTFConversionOptions opt;
-	opt.ReplacementChar = '?';
-	ln::UnicodeUtils::convertUTF32toUTF16((const UTF32*)inStr, inStrLen, (UTF16*)outStr, outStrLen, &opt);
+    // assumed unix
+    ln::UTFConversionOptions opt;
+    opt.ReplacementChar = '?';
+    ln::UnicodeUtils::convertUTF32toUTF16((const UTF32*)inStr, inStrLen, (UTF16*)outStr, outStrLen, &opt);
 #else
 #error "Invalid wchar_t size."
 #endif
 }
 
-void convertChar16ToWChar(const char16_t* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen)
-{
-#if WCHAR_MAX <= 0xffff	// wchar_t == char16_t
-	// assumed windows
-	memcpy(outStr, inStr, sizeof(wchar_t) * LN_MAX(inStrLen, outStrLen));
+void convertChar16ToWChar(const char16_t* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen) {
+#if WCHAR_MAX <= 0xffff // wchar_t == char16_t
+    // assumed windows
+    memcpy(outStr, inStr, sizeof(wchar_t) * LN_MAX(inStrLen, outStrLen));
 #elif WCHAR_MAX <= 0xffffffff
-	// assumed unix
-	ln::UTFConversionOptions opt;
-	opt.ReplacementChar = '?';
-	ln::UnicodeUtils::convertUTF16toUTF32((const UTF16*)inStr, inStrLen, (UTF32*)outStr, outStrLen, &opt);
+    // assumed unix
+    ln::UTFConversionOptions opt;
+    opt.ReplacementChar = '?';
+    ln::UnicodeUtils::convertUTF16toUTF32((const UTF16*)inStr, inStrLen, (UTF32*)outStr, outStrLen, &opt);
 #else
 #error "Invalid wchar_t size."
 #endif
 }
 
-void convertChar16ToLocalChar(const char16_t* inStr, size_t inStrLen, char* outStr, size_t outStrLen)
-{
+void convertChar16ToLocalChar(const char16_t* inStr, size_t inStrLen, char* outStr, size_t outStrLen) {
 #ifdef LN_MSVC
-	size_t ret;
-	mbstate_t state;
-	memset(&state, 0, sizeof state);
+    size_t ret;
+    mbstate_t state;
+    memset(&state, 0, sizeof state);
     size_t len = std::min(outStrLen - 1, inStrLen);
-	wcsrtombs_s(&ret, outStr, outStrLen, (const wchar_t**)&inStr, len, &state);
+    wcsrtombs_s(&ret, outStr, outStrLen, (const wchar_t**)&inStr, len, &state);
 #else
-	size_t len = (inStrLen < outStrLen) ? inStrLen : outStrLen;
-	size_t i = 0;
-	for (; i < len && inStr[i]; i++) {
-		outStr[i] = static_cast<char>(inStr[i]);
-	}
-	outStr[i] = '\0';
+    size_t len = (inStrLen < outStrLen) ? inStrLen : outStrLen;
+    size_t i = 0;
+    for (; i < len && inStr[i]; i++) {
+        outStr[i] = static_cast<char>(inStr[i]);
+    }
+    outStr[i] = '\0';
 #endif
 }
 
-void convertChar32ToLocalChar(const char32_t* inStr, size_t inStrLen, char* outStr, size_t outStrLen)
-{
-	// TODO: 今のところ ASCII のみのエラーメッセージしか想定していないためこれでもOK.
-	// 後々 SJIS 対応するか、wchar_t で出力してしまってもいいだろう。
-	UTFConversionOptions options;
-	options.ReplacementChar = '?';
-	UnicodeUtils::convertUTF32toUTF8(reinterpret_cast<const UTF32*>(inStr), inStrLen, reinterpret_cast<UTF8*>(outStr), outStrLen, &options);
+void convertChar32ToLocalChar(const char32_t* inStr, size_t inStrLen, char* outStr, size_t outStrLen) {
+    // TODO: 今のところ ASCII のみのエラーメッセージしか想定していないためこれでもOK.
+    // 後々 SJIS 対応するか、wchar_t で出力してしまってもいいだろう。
+    UTFConversionOptions options;
+    options.ReplacementChar = '?';
+    UnicodeUtils::convertUTF32toUTF8(reinterpret_cast<const UTF32*>(inStr), inStrLen, reinterpret_cast<UTF8*>(outStr), outStrLen, &options);
 }
 
 //void errorPrintf(Char* buf, size_t bufSize, const char* format, ...)
 //{
 //	va_list args;
 //	va_start(args, format);
-//	
+//
 //	const size_t BUFFER_SIZE = 511;
 //	char str[BUFFER_SIZE + 1] = {};
 //	StringHelper::vsprintf(str, BUFFER_SIZE, format, args);
-//	
+//
 //#ifdef LN_USTRING16
 //	// char -> wchar_t
 //	wchar_t wstr[BUFFER_SIZE + 1] = {};
@@ -158,24 +149,20 @@ void convertChar32ToLocalChar(const char32_t* inStr, size_t inStrLen, char* outS
 //}
 
 // Lumino default error notification
-void printError(const Exception& e)
-{
-	const size_t BUFFER_SIZE = 512;
-	char buf[BUFFER_SIZE] = {};
-	int len = snprintf(
-		buf, BUFFER_SIZE, "%s(%d):\"%s\" ",
-		ExceptionHelper::getSourceFilePath(e),
-		ExceptionHelper::getSourceFileLine(e),
-		(ExceptionHelper::getAssertionMessage(e)) ? ExceptionHelper::getAssertionMessage(e) : "");
+void printError(const Exception& e) {
+    const size_t BUFFER_SIZE = 512;
+    char buf[BUFFER_SIZE] = {};
+    int len = snprintf(
+        buf, BUFFER_SIZE, "%s(%d):\"%s\" ", ExceptionHelper::getSourceFilePath(e), ExceptionHelper::getSourceFileLine(e), (ExceptionHelper::getAssertionMessage(e)) ? ExceptionHelper::getAssertionMessage(e) : "");
 
-	//if (!StringHelper::isNullOrEmpty(e.message())
-	{
-		buf[len] = '\n';
-		len++;
-        size_t messageLen = UnicodeStringUtils::strlen(e.message());
+    //if (!StringHelper::isNullOrEmpty(e.message())
+    {
+        buf[len] = '\n';
+        len++;
+        size_t messageLen = std::char_traits<Char>::length(e.message());
         size_t bufferLen = BUFFER_SIZE - len;
 #if LN_USTRING32
-		convertChar32ToLocalChar(e.message(), messageLen, buf + len, bufferLen);
+        convertChar32ToLocalChar(e.message(), messageLen, buf + len, bufferLen);
 #else
         convertChar16ToLocalChar(e.message(), messageLen, buf + len, bufferLen);
 #endif
@@ -185,122 +172,105 @@ void printError(const Exception& e)
             buf[BUFFER_SIZE - 2] = '.';
             buf[BUFFER_SIZE - 1] = '\0';
         }
-	}
+    }
 
-	//if (Logger::hasAnyAdapter()) {
-	//	LN_LOG_ERROR << buf;
-	//}
-	//else {
-		printf("%s\n", buf);
-	//}
+    //if (Logger::hasAnyAdapter()) {
+    //	LN_LOG_ERROR << buf;
+    //}
+    //else {
+    printf("%s\n", buf);
+    //}
 }
 
-void notifyFatalError(const char* file, int line, const char* message)
-{
-	printf("%s(%d): Fatal: %s", file, line, message);
-	*reinterpret_cast<int*>(0) = 0;	// crash
+void notifyFatalError(const char* file, int line, const char* message) {
+    printf("%s(%d): Fatal: %s", file, line, message);
+    *reinterpret_cast<int*>(0) = 0; // crash
 }
 
-void ExceptionHelper::setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage)
-{
-	e.m_level = level;
-	detail::strcpy(e.m_sourceFilePath, Exception::MaxPathSize - 1, filePath);
-	e.m_sourceFileLine = fileLine;
-	if (assertionMessage) {
-		detail::strcpy(e.m_assertionMessage, Exception::MaxAssertionMessageSize - 1, assertionMessage);
-	}
+void ExceptionHelper::setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage) {
+    e.m_level = level;
+    detail::strcpy(e.m_sourceFilePath, Exception::MaxPathSize - 1, filePath);
+    e.m_sourceFileLine = fileLine;
+    if (assertionMessage) {
+        detail::strcpy(e.m_assertionMessage, Exception::MaxAssertionMessageSize - 1, assertionMessage);
+    }
 }
 
-void ExceptionHelper::setMessage(Exception& e, const std::string& str)
-{
+void ExceptionHelper::setMessage(Exception& e, const std::string& str) {
 #if LN_USTRING32
-	e.m_message = UnicodeStringUtils::NarrowToU32(str.c_str(), str.length());
+    e.m_message = UnicodeStringUtils::NarrowToU32(str.c_str(), str.length());
 #else
-	e.m_message = UnicodeStringUtils::NarrowToU16(str.c_str(), str.length());
+    e.m_message = UnicodeStringUtils::NarrowToU16(str.c_str(), str.length());
 #endif
 }
 
-void ExceptionHelper::setMessage(Exception& e, const std::wstring& str)
-{
+void ExceptionHelper::setMessage(Exception& e, const std::wstring& str) {
 #if LN_USTRING32
-	e.m_message = UnicodeStringUtils::WideToU32(str.c_str(), str.length());
+    e.m_message = UnicodeStringUtils::WideToU32(str.c_str(), str.length());
 #else
-	e.m_message = UnicodeStringUtils::WideToU16(str.c_str(), str.length());
+    e.m_message = UnicodeStringUtils::WideToU16(str.c_str(), str.length());
 #endif
 }
 
-void ExceptionHelper::setMessage(Exception& e, const UStdString& str)
-{
-//#if LN_USTRING32
-//	e.m_message = UnicodeStringUtils::U16ToU32(str.c_str(), str.length());
-//#else
-	e.m_message = str;
-//#endif
+void ExceptionHelper::setMessage(Exception& e, const UStdString& str) {
+    //#if LN_USTRING32
+    //	e.m_message = UnicodeStringUtils::U16ToU32(str.c_str(), str.length());
+    //#else
+    e.m_message = str;
+    //#endif
 }
 
 } // namespace detail
 
-
 //==============================================================================
 // Exception
 
-static Exception::NotificationHandler	g_notifyVerificationHandler = nullptr;
+static Exception::NotificationHandler g_notifyVerificationHandler = nullptr;
 
-void Exception::setNotificationHandler(NotificationHandler handler)
-{
-	g_notifyVerificationHandler = handler;
+void Exception::setNotificationHandler(NotificationHandler handler) {
+    g_notifyVerificationHandler = handler;
 }
 
-Exception::NotificationHandler Exception::notificationHandler()
-{
-	return g_notifyVerificationHandler;
+Exception::NotificationHandler Exception::notificationHandler() {
+    return g_notifyVerificationHandler;
 }
 
-static void safeCharToUChar(const char* src, Char* dst, int dstSize) LN_NOEXCEPT
-{
-	// TODO: 日本語対応
-	int i = 0;
-	for (; i < dstSize - 1 && *src; i++, src++)
-	{
-		dst[i] = *src;
-	}
-	dst[i] = '\0';
+static void safeCharToUChar(const char* src, Char* dst, int dstSize) LN_NOEXCEPT {
+    // TODO: 日本語対応
+    int i = 0;
+    for (; i < dstSize - 1 && *src; i++, src++) {
+        dst[i] = *src;
+    }
+    dst[i] = '\0';
 }
 
-static void safeWCharToUChar(const wchar_t* src, Char* dst, int dstSize) LN_NOEXCEPT
-{
-	// TODO: 日本語対応
-	int i = 0;
-	for (; i < dstSize - 1 && *src; i++, src++)
-	{
-		dst[i] = *src;
-	}
-	dst[i] = '\0';
+static void safeWCharToUChar(const wchar_t* src, Char* dst, int dstSize) LN_NOEXCEPT {
+    // TODO: 日本語対応
+    int i = 0;
+    for (; i < dstSize - 1 && *src; i++, src++) {
+        dst[i] = *src;
+    }
+    dst[i] = '\0';
 }
 
 Exception::Exception(const Char* message)
-	: Exception()
-{
+    : Exception() {
 }
 
 Exception::Exception()
-	: m_level(ExceptionLevel::Fatal)
-	, m_sourceFilePath{}
-	, m_sourceFileLine(0)
-	, m_assertionMessage{}
-	, m_message()
-{
+    : m_level(ExceptionLevel::Fatal)
+    , m_sourceFilePath{}
+    , m_sourceFileLine(0)
+    , m_assertionMessage{}
+    , m_message() {
 }
 
-Exception::~Exception()
-{
+Exception::~Exception() {
 }
 
-Exception* Exception::copy() const
-{
-	return LN_NEW Exception(*this);
+Exception* Exception::copy() const {
+    return LN_NEW Exception(*this);
 }
-
 
 //void Exception::setMessage()
 //{
@@ -371,5 +341,3 @@ Exception* Exception::copy() const
 //}
 
 } // namespace ln
-
-

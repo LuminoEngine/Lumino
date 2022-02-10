@@ -8,8 +8,7 @@ namespace ln {
 
 /** ファイル用の Stream です。 */
 class FileStream
-    : public Stream
-{
+    : public Stream {
 public:
     /**
      * ファイルを開き、FileStream を作成します。

@@ -432,6 +432,16 @@ TEST_F(Test_Base_Array, map) {
     const Array<const Test2*> ary5 = ary4.map([](const Test2& x) { return &x; });
 }
 
+TEST_F(Test_Base_Array, fold) {
+    struct Test1 {
+        int v1;
+    };
+
+    const Array<Test1> ary1 = { Test1{ 1 }, Test1{ 2 }, Test1{ 3 } };
+    int value = ary1.fold(10, [](auto r, auto& x) { return r + x.v1; });
+    ASSERT_EQ(16, value);
+}
+
 #if 0
 
 

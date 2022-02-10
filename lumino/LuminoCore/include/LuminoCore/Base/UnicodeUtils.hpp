@@ -17,8 +17,7 @@
 namespace ln {
 
 /// 文字コード変換の処理結果
-enum UTFConversionResult
-{
+enum UTFConversionResult {
     UTFConversionResult_Success = 0,     ///< 変換成功
     UTFConversionResult_SourceExhausted, ///< ソースバッファが不正 (バッファ終端でマルチバイト文字が途切れた)
     UTFConversionResult_TargetExhausted, ///< ターゲットバッファが足りない
@@ -26,8 +25,7 @@ enum UTFConversionResult
 };
 
 /// 文字コード変換の追加情報
-struct UTFConversionOptions
-{
+struct UTFConversionOptions {
     unsigned long ReplacementChar; ///< [in] 不正文字を見つけた時、この文字に置換する (ASCII で指定すること。'\0' を指定した状態で不正文字を見つけると、変換は失敗する)
 
     int ConvertedSourceLength; ///< [out] 変換に使用したソースバッファの要素数が格納される (バイト数や文字数ではない)
@@ -35,8 +33,7 @@ struct UTFConversionOptions
     int CharCount;             ///< [out] 文字数が格納される (マルチバイト文字を1文字とみなした文字数)
     int IllegalCharCount;      ///< [out] 見つけた不正文字の数
 
-    static UTFConversionOptions make(unsigned long replacementChar)
-    {
+    static UTFConversionOptions make(unsigned long replacementChar) {
         UTFConversionOptions v;
         v.ReplacementChar = replacementChar;
         v.ConvertedSourceLength = 0;
@@ -51,18 +48,17 @@ struct UTFConversionOptions
 	@brief		Unicode の相互変換等を行うモジュール
 	@details	UTF-8 は最大 4 バイトとして扱います。
 */
-class UnicodeUtils
-{
+class UnicodeUtils {
 public:
-//#ifdef _WIN32
-//    typedef unsigned long UTF32;
-//    typedef wchar_t UTF16; // デバッガで見ることができるので wchar_t にしておく
-//    typedef unsigned char UTF8;
-//#else
-//    typedef uint32_t UTF32;
-//    typedef uint16_t UTF16;
-//    typedef uint8_t UTF8;
-//#endif
+    //#ifdef _WIN32
+    //    typedef unsigned long UTF32;
+    //    typedef wchar_t UTF16; // デバッガで見ることができるので wchar_t にしておく
+    //    typedef unsigned char UTF8;
+    //#else
+    //    typedef uint32_t UTF32;
+    //    typedef uint16_t UTF16;
+    //    typedef uint8_t UTF8;
+    //#endif
 
     static const UTF32 SurrogateHighStart = (UTF32)0xD800; ///< 上位サロゲート値の範囲 min
     static const UTF32 SurrogateHighEnd = (UTF32)0xDBFF;   ///< 上位サロゲート値の範囲 max
@@ -74,7 +70,7 @@ public:
     static const UTF32 MaxLegalUTF32 = 0x0010FFFF;         ///< この値以下が UTF32として有効
     static const UTF32 ReplacementChar = 0x0000FFFD;       ///< 不正文字が見つかった時、これに置換する
     static const UTF32 MaxBMP = 0x0000FFFF;                ///< Basic Multilingual Plane
-    static const int UTF8MaxBytes = 4;                      
+    static const int UTF8MaxBytes = 4;
 
 public:
     /**
@@ -250,22 +246,19 @@ private:
     static bool isStrictConversion(const UTFConversionOptions* options) { return (options->ReplacementChar == 0); }
 };
 
-class UnicodeStringUtils
-{
+class UnicodeStringUtils {
 public:
     template<typename TChar>
-    [[deprecated("use std::char_traits<char32_t>::length")]]
-    inline static size_t strlen(const TChar* str) noexcept
-    {
+    [[deprecated("use std::char_traits<char32_t>::length")]] inline static size_t strlen(const TChar* str) noexcept {
         assert(str);
         const TChar* s;
-        for (s = str; *s; ++s);
+        for (s = str; *s; ++s)
+            ;
         return (s - str);
     }
 
     template<typename TChar>
-    inline static char* strncpy(TChar* dst, const TChar* src, size_t n) noexcept
-    {
+    inline static char* strncpy(TChar* dst, const TChar* src, size_t n) noexcept {
         if (n != 0) {
             TChar* d = dst;
             const TChar* s = src;
@@ -281,8 +274,7 @@ public:
         return (dst);
     }
 
-    static inline std::wstring NarrowToWide(const char* str, size_t len) noexcept
-    {
+    static inline std::wstring NarrowToWide(const char* str, size_t len) noexcept {
         std::wstring result;
         result.reserve(len);
 
@@ -312,8 +304,7 @@ public:
         return result;
     }
 
-    static inline std::u16string WideToU16(const wchar_t* str, size_t len) noexcept
-    {
+    static inline std::u16string WideToU16(const wchar_t* str, size_t len) noexcept {
 #ifdef LN_UU_WCHAR_16
         return std::u16string(reinterpret_cast<const char16_t*>(str), len);
 #else
@@ -325,8 +316,7 @@ public:
 #endif
     }
 
-    static inline std::string U32ToU8(const char32_t* str, size_t len) noexcept
-    {
+    static inline std::string U32ToU8(const char32_t* str, size_t len) noexcept {
         std::string result(len * UnicodeUtils::UTF8MaxBytes, '\0');
         UTFConversionOptions options;
         options.ReplacementChar = '?';
@@ -342,8 +332,7 @@ public:
         return result;
     }
 
-    static inline std::u32string U16ToU32(const char16_t* str, size_t len) noexcept
-    {
+    static inline std::u32string U16ToU32(const char16_t* str, size_t len) noexcept {
         std::u32string result(len * 2, U'\0');
         UTFConversionOptions options;
         options.ReplacementChar = '?';
@@ -351,8 +340,7 @@ public:
         return result;
     }
 
-    static inline std::u32string WideToU32(const wchar_t* str, size_t len) noexcept
-    {
+    static inline std::u32string WideToU32(const wchar_t* str, size_t len) noexcept {
 #ifdef LN_UU_WCHAR_32
         return std::u32string(reinterpret_cast<const char32_t*>(str), len);
 #else
@@ -360,8 +348,7 @@ public:
 #endif
     }
 
-    static inline std::wstring U32ToWide(const char32_t* str, size_t len) noexcept
-    {
+    static inline std::wstring U32ToWide(const char32_t* str, size_t len) noexcept {
 #ifdef LN_UU_WCHAR_32
         return std::wstring(reinterpret_cast<const wchar_t*>(str), len);
 #else
@@ -373,20 +360,17 @@ public:
 #endif
     }
 
-    static inline std::u16string NarrowToU16(const char* str, size_t len) noexcept
-    {
+    static inline std::u16string NarrowToU16(const char* str, size_t len) noexcept {
         const auto s = NarrowToWide(str, len);
         return WideToU16(s.c_str(), s.length());
     }
 
-    static inline std::u32string NarrowToU32(const char* str, size_t len) noexcept
-    {
+    static inline std::u32string NarrowToU32(const char* str, size_t len) noexcept {
         const auto s = NarrowToWide(str, len);
         return WideToU32(s.c_str(), s.length());
     }
 
-    static inline UStdString NarrowToUString(const char* str, size_t len) noexcept
-    {
+    static inline UStdString NarrowToUString(const char* str, size_t len) noexcept {
 #if LN_USTRING32
         return NarrowToU32(str, len);
 #else
@@ -394,8 +378,7 @@ public:
 #endif
     }
 
-    static inline UStdString WideToUString(const wchar_t* str, size_t len) noexcept
-    {
+    static inline UStdString WideToUString(const wchar_t* str, size_t len) noexcept {
 #if LN_USTRING32
         return WideToU32(str, len);
 #else

@@ -7,37 +7,32 @@
 namespace ln {
 
 StringView::StringView(const String& str)
-    : StringView()
-{
+    : StringView() {
     m_string = &str;
     m_str = str.c_str();
     m_len = str.length();
 }
 
 StringView::StringView(const String& str, int len)
-    : StringView()
-{
+    : StringView() {
     m_string = &str;
     m_str = str.c_str();
     m_len = len;
 }
 
 StringView::StringView(const String& str, int startIndex, int len)
-    : StringView()
-{
+    : StringView() {
     m_str = str.c_str() + startIndex;
     m_len = len;
 }
 
 StringView::StringView(const Path& path)
-    : StringView(path.str())
-{
+    : StringView(path.str()) {
 }
 
 #ifdef LN_STRING_FUZZY_CONVERSION
 StringRef::StringRef(const char* str)
-    : StringRef()
-{
+    : StringRef() {
     m_string = new String(str);
     m_str = m_string->c_str();
     m_len = m_string->length();
@@ -45,8 +40,7 @@ StringRef::StringRef(const char* str)
 }
 #ifdef LN_USTRING16
 StringRef::StringRef(const wchar_t* str)
-    : StringRef()
-{
+    : StringRef() {
     m_string = new String(str);
     m_str = m_string->c_str();
     m_len = m_string->length();
@@ -55,8 +49,7 @@ StringRef::StringRef(const wchar_t* str)
 #endif
 #endif
 
-StringView StringView::substr(int start, int count) const
-{
+StringView StringView::substr(int start, int count) const {
     const Char* begin;
     const Char* end;
     StringHelper::substr(data(), length(), start, count, &begin, &end);
@@ -66,31 +59,26 @@ StringView StringView::substr(int start, int count) const
     //return String(data(), count).substr(start, count);
 }
 
-bool StringView::endsWith(const StringView& str, CaseSensitivity cs) const
-{
+bool StringView::endsWith(const StringView& str, CaseSensitivity cs) const {
     if (isEmpty() || str.isEmpty()) {
         return false;
     }
     return StringHelper::endsWith(data(), length(), str.data(), str.length(), cs);
 }
 
-int StringView::indexOf(const StringView& str, int startIndex, CaseSensitivity cs) const
-{
+int StringView::indexOf(const StringView& str, int startIndex, CaseSensitivity cs) const {
     return StringHelper::indexOf(data(), length(), str.data(), str.length(), startIndex, cs);
 }
 
-int StringView::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
-{
+int StringView::indexOf(Char ch, int startIndex, CaseSensitivity cs) const {
     return StringHelper::indexOf(data(), length(), &ch, 1, startIndex, cs);
 }
 
-int StringView::lastIndexOf(const StringView& str, int startIndex, int count, CaseSensitivity cs) const
-{
+int StringView::lastIndexOf(const StringView& str, int startIndex, int count, CaseSensitivity cs) const {
     return StringHelper::lastIndexOf(data(), length(), str.data(), str.length(), startIndex, count, cs);
 }
 
-int StringView::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const
-{
+int StringView::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const {
     return StringHelper::lastIndexOf(data(), length(), &ch, 1, startIndex, count, cs);
 }
 
@@ -112,20 +100,17 @@ int StringView::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity 
     }                                                            \
     LN_ENSURE(end == begin + len);                               \
     return num;
-int StringView::toInt(int base) const
-{
+int StringView::toInt(int base) const {
     TO_INT_DEF(int32_t, toInt32);
 }
-#undef TO_INT_DEF;
+#undef TO_INT_DEF
 
-std::string StringView::toStdString() const
-{
+std::string StringView::toStdString() const {
     std::vector<byte_t> bytes = TextEncoding::systemMultiByteEncoding()->encode(data(), length());
     return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 }
 
-std::wstring StringView::toStdWString() const
-{
+std::wstring StringView::toStdWString() const {
     std::vector<byte_t> bytes = TextEncoding::wideCharEncoding()->encode(data(), length());
     return std::wstring(reinterpret_cast<const wchar_t*>(bytes.data()), bytes.size() / sizeof(wchar_t));
 }
@@ -135,14 +120,12 @@ std::string StringView::toUtf8() const {
     return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 }
 
-size_t StringView::getHashCode() const
-{
+size_t StringView::getHashCode() const {
     if (isEmpty()) return 0;
     return CRCHash::compute(data(), length());
 }
 
-void StringView::clear()
-{
+void StringView::clear() {
     if (m_localAlloc) {
         delete m_string;
         m_localAlloc = false;
@@ -152,8 +135,7 @@ void StringView::clear()
     m_len = 0;
 }
 
-StringView& StringView::operator=(const StringView& str)
-{
+StringView& StringView::operator=(const StringView& str) {
     if (this != &str) {
         clear();
         m_str = str.data();
@@ -162,8 +144,7 @@ StringView& StringView::operator=(const StringView& str)
     return *this;
 }
 
-StringView& StringView::operator=(StringView&& str)
-{
+StringView& StringView::operator=(StringView&& str) {
     clear();
     m_string = str.m_string;
     m_str = str.m_str;

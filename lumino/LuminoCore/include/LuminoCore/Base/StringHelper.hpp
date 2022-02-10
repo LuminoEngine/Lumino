@@ -263,17 +263,13 @@ public:
 };
 
 constexpr size_t UStringHelper::strlen(const Char* str) noexcept {
+    if (!str) return 0;
     size_t count = 0;
     while (*str) {
         ++count;
         ++str;
     }
     return count;
-    //if (!str) return 0;
-    //size_t count = 0;
-    //for (; *str; ++str)
-    //    ++count;
-    //return count;
 }
 
 

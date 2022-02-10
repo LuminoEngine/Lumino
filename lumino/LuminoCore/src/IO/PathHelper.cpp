@@ -11,10 +11,8 @@ namespace detail {
 //==============================================================================
 // PathHelper
 
-
 template<typename TChar, typename TPred>
-static const TChar* findLast(const TChar* begin, const TChar* end, TPred pred)
-{
+static const TChar* findLast(const TChar* begin, const TChar* end, TPred pred) {
     const TChar* pos = end - 1;
     for (; pos >= begin; --pos) {
         if (pred(*pos)) {
@@ -25,8 +23,7 @@ static const TChar* findLast(const TChar* begin, const TChar* end, TPred pred)
 }
 
 template<typename TChar>
-const TChar* PathTraits::getFileName(const TChar* begin, const TChar* end)
-{
+const TChar* PathTraits::getFileName(const TChar* begin, const TChar* end) {
     const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch); });
     if (isSeparatorChar(*pos))
         return pos + 1;
@@ -37,8 +34,7 @@ template const wchar_t* PathTraits::getFileName(const wchar_t* begin, const wcha
 template const Char* PathTraits::getFileName(const Char* begin, const Char* end);
 
 template<typename TChar>
-const TChar* PathTraits::getWithoutExtensionEnd(const TChar* begin, const TChar* end)
-{
+const TChar* PathTraits::getWithoutExtensionEnd(const TChar* begin, const TChar* end) {
     const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch) || ch == '.'; });
     if (*pos == '.')
         return pos;
@@ -49,8 +45,7 @@ template const wchar_t* PathTraits::getWithoutExtensionEnd(const wchar_t* begin,
 template const Char* PathTraits::getWithoutExtensionEnd(const Char* begin, const Char* end);
 
 template<typename TChar>
-const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TChar* end, bool withDot)
-{
+const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TChar* end, bool withDot) {
     const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch) || ch == '.'; });
     if (*pos == '.') {
         if (withDot) {
@@ -58,7 +53,8 @@ const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TChar* end,
                 return end;
             else
                 return pos;
-        } else
+        }
+        else
             return pos + 1;
     }
     return end;
@@ -68,8 +64,7 @@ template const wchar_t* PathTraits::getExtensionBegin(const wchar_t* begin, cons
 template const Char* PathTraits::getExtensionBegin(const Char* begin, const Char* end, bool withDot);
 
 template<typename TChar>
-const TChar* PathTraits::getDirectoryPathEnd(const TChar* begin, const TChar* end)
-{
+const TChar* PathTraits::getDirectoryPathEnd(const TChar* begin, const TChar* end) {
     /* 参考：他のライブラリの、空文字やセパレータが無いなどで親ディレクトリが取れない時の動作
 	"C:"	"C:/"	"C:/file"
 	- Qt (QFileInfo)			…	"C:"	"C:/"	"C:/"
@@ -106,8 +101,7 @@ template const wchar_t* PathTraits::getDirectoryPathEnd(const wchar_t* begin, co
 template const Char* PathTraits::getDirectoryPathEnd(const Char* begin, const Char* end);
 
 template<typename TChar>
-bool PathTraits::endWithSeparator(const TChar* path, int len)
-{
+bool PathTraits::endWithSeparator(const TChar* path, int len) {
     if (LN_REQUIRE(path != nullptr))
         return false;
 
@@ -121,15 +115,13 @@ template bool PathTraits::endWithSeparator<char>(const char* path, int len);
 template bool PathTraits::endWithSeparator<wchar_t>(const wchar_t* path, int len);
 template bool PathTraits::endWithSeparator<Char>(const Char* path, int len);
 
-
-
 template<typename TChar>
-static bool IsInternalSeparator(const TChar* path, int i, int len /*, int slen*/)
-{
+static bool IsInternalSeparator(const TChar* path, int i, int len /*, int slen*/) {
     if (i == len) {
         if (!PathTraits::isSeparatorChar(path[i - 1])) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -140,8 +132,7 @@ static bool IsInternalSeparator(const TChar* path, int i, int len /*, int slen*/
 }
 
 template<typename TChar>
-static int compare(TChar ch1, TChar ch2, CaseSensitivity cs)
-{
+static int compare(TChar ch1, TChar ch2, CaseSensitivity cs) {
     if (PathTraits::isSeparatorChar(ch1) && PathTraits::isSeparatorChar(ch2)) {
         return 0;
     }
@@ -149,8 +140,7 @@ static int compare(TChar ch1, TChar ch2, CaseSensitivity cs)
 }
 
 template<typename TChar>
-std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs)
-{
+std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs) {
     // パス終端がセパレータでなければもう１字見るようにし、以降の処理でそれはセパレータとする
     int slen1 = (isSeparatorChar(path1[len1 - 1])) ? len1 : len1 + 1;
     int slen2 = (isSeparatorChar(path2[len2 - 1])) ? len2 : len2 + 1;
@@ -169,7 +159,8 @@ std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, cons
         //}
         else if (compare(path1[i], path2[i], cs) != 0) {
             break;
-        } else if (isSeparatorChar(path1[i])) {
+        }
+        else if (isSeparatorChar(path1[i])) {
             si = i;
         }
     }
@@ -194,8 +185,8 @@ std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, cons
     }
 
     // path1 の残りの部分からセパレータを探す。このセパレータの数が、戻る深さ(..) の数になる。
-    const TChar SLASH[] = {'/', '\0'};
-    const TChar DDOT[] = {'.', '.', '\0'};
+    const TChar SLASH[] = { '/', '\0' };
+    const TChar DDOT[] = { '.', '.', '\0' };
     std::basic_string<TChar> relLead;
     for (; i < slen1; ++i) {
         if (IsInternalSeparator(path1, i, len1)) {
@@ -234,15 +225,13 @@ template std::basic_string<Char> PathTraits::diffPath(const Char* path1, int len
 // GenericStaticallyLocalPath
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath()
-{
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath() {
     m_static[0] = '\0';
     m_length = 0;
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, int len)
-{
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, size_t len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {
@@ -253,8 +242,7 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, 
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* path, int len)
-{
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* path, size_t len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {
@@ -265,8 +253,7 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* pat
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* path, int len)
-{
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* path, size_t len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {
@@ -277,8 +264,7 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* pa
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char32_t* path, int len)
-{
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char32_t* path, size_t len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {

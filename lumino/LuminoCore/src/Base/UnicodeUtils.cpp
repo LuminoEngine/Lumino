@@ -44,8 +44,7 @@ UTFConversionResult UnicodeUtils::convertUTF8toUTF16(
     size_t sourceLength,
     UTF16* targetStart,
     size_t targetLength,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF8* source = sourceStart;
     const UTF8* sourceEnd = source + sourceLength;
@@ -70,8 +69,8 @@ UTFConversionResult UnicodeUtils::convertUTF8toUTF16(
         options->CharCount++;
     }
 
-    options->ConvertedSourceLength = source - sourceStart;
-    options->ConvertedTargetLength = target - targetStart;
+    options->ConvertedSourceLength = static_cast<int32_t>(source - sourceStart);
+    options->ConvertedTargetLength = static_cast<int32_t>(target - targetStart);
     return result;
 }
 
@@ -80,8 +79,7 @@ UTFConversionResult UnicodeUtils::convertUTF8toUTF32(
     size_t sourceLength,
     UTF32* targetStart,
     size_t targetLength,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF8* source = sourceStart;
     const UTF8* sourceEnd = source + sourceLength;
@@ -124,7 +122,8 @@ UTFConversionResult UnicodeUtils::convertUTF8toUTF32(
                 source = oldSource;
                 result = UTFConversionResult_SourceIllegal;
                 break;
-            } else {
+            }
+            else {
                 // 置換する
                 *target = options->ReplacementChar;
                 target++;
@@ -140,8 +139,8 @@ UTFConversionResult UnicodeUtils::convertUTF8toUTF32(
         options->CharCount++;
     }
 
-    options->ConvertedSourceLength = source - sourceStart;
-    options->ConvertedTargetLength = target - targetStart;
+    options->ConvertedSourceLength = static_cast<int32_t>(source - sourceStart);
+    options->ConvertedTargetLength = static_cast<int32_t>(target - targetStart);
     return result;
 }
 
@@ -151,8 +150,7 @@ UTFConversionResult UnicodeUtils::convertUTF16toUTF8(
     size_t sourceLength,
     UTF8* targetStart,
     size_t targetLength,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF16* source = sourceStart;
     const UTF16* sourceEnd = source + sourceLength;
@@ -180,8 +178,8 @@ UTFConversionResult UnicodeUtils::convertUTF16toUTF8(
         options->CharCount++;
     }
 
-    options->ConvertedSourceLength = source - sourceStart;
-    options->ConvertedTargetLength = target - targetStart;
+    options->ConvertedSourceLength = static_cast<int32_t>(source - sourceStart);
+    options->ConvertedTargetLength = static_cast<int32_t>(target - targetStart);
     return result;
 }
 
@@ -190,8 +188,7 @@ UTFConversionResult UnicodeUtils::convertUTF16toUTF32(
     size_t sourceLength,
     UTF32* targetStart,
     size_t targetLength,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF16* source = sourceStart;
     const UTF16* sourceEnd = source + sourceLength;
@@ -223,8 +220,8 @@ UTFConversionResult UnicodeUtils::convertUTF16toUTF32(
         options->CharCount++;
     }
 
-    options->ConvertedSourceLength = source - sourceStart;
-    options->ConvertedTargetLength = target - targetStart;
+    options->ConvertedSourceLength = static_cast<int32_t>(source - sourceStart);
+    options->ConvertedTargetLength = static_cast<int32_t>(target - targetStart);
     return result;
 }
 
@@ -233,8 +230,7 @@ UTFConversionResult UnicodeUtils::convertUTF32toUTF8(
     size_t sourceLength,
     UTF8* targetStart,
     size_t targetLength,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF32* source = sourceStart;
     const UTF32* sourceEnd = source + sourceLength;
@@ -252,7 +248,8 @@ UTFConversionResult UnicodeUtils::convertUTF32toUTF8(
                 source = oldSource;
                 result = UTFConversionResult_SourceIllegal;
                 break;
-            } else { // 置換する
+            }
+            else { // 置換する
                 ch = options->ReplacementChar;
                 options->IllegalCharCount++;
             }
@@ -268,8 +265,8 @@ UTFConversionResult UnicodeUtils::convertUTF32toUTF8(
         options->CharCount++;
     }
 
-    options->ConvertedSourceLength = source - sourceStart;
-    options->ConvertedTargetLength = target - targetStart;
+    options->ConvertedSourceLength = static_cast<int32_t>(source - sourceStart);
+    options->ConvertedTargetLength = static_cast<int32_t>(target - targetStart);
     return result;
 }
 
@@ -278,8 +275,7 @@ UTFConversionResult UnicodeUtils::convertUTF32toUTF16(
     size_t sourceLength,
     UTF16* targetStart,
     size_t targetLength,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF32* source = sourceStart;
     const UTF32* sourceEnd = source + sourceLength;
@@ -308,8 +304,8 @@ UTFConversionResult UnicodeUtils::convertUTF32toUTF16(
         options->CharCount++;
     }
 
-    options->ConvertedSourceLength = source - sourceStart;
-    options->ConvertedTargetLength = target - targetStart;
+    options->ConvertedSourceLength = static_cast<int32_t>(source - sourceStart);
+    options->ConvertedTargetLength = static_cast<int32_t>(target - targetStart);
     return result;
 }
 
@@ -317,8 +313,7 @@ UTFConversionResult UnicodeUtils::getUTF8CharCount(
     const UTF8* sourceStart,
     size_t sourceLength,
     bool isStrict,
-    int* outCount)
-{
+    int* outCount) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF8* source = sourceStart;
     const UTF8* sourceEnd = source + sourceLength;
@@ -345,8 +340,7 @@ UTFConversionResult UnicodeUtils::getUTF16CharCount(
     const UTF16* sourceStart,
     size_t sourceLength,
     bool isStrict,
-    int* count)
-{
+    int* count) {
     const UTF16* source = sourceStart;
     const UTF16* sourceEnd = source + sourceLength;
     UTF16 ch1, ch2;
@@ -364,11 +358,13 @@ UTFConversionResult UnicodeUtils::getUTF16CharCount(
                 // 2文字目が下位サロゲートである
                 if (ch2 >= SurrogateLowStart && ch2 <= SurrogateLowEnd) {
                     ++source;
-                } else if (isStrict) {
+                }
+                else if (isStrict) {
                     // 上位サロゲートがあるのに、下位サロゲートが見つからなかった
                     return UTFConversionResult_SourceIllegal;
                 }
-            } else {
+            }
+            else {
                 // 下位サロゲートを探している途中にバッファ終端に到達してしまった
                 return UTFConversionResult_SourceExhausted;
             }
@@ -392,8 +388,7 @@ UTFConversionResult UnicodeUtils::checkUTF8TrailingBytes(
     const UTF8* sourceStart,
     const UTF8* sourceEnd,
     bool strict,
-    int* outExtraByteCount)
-{
+    int* outExtraByteCount) {
     *outExtraByteCount = 0;
     int extra = TrailingBytesForUTF8[*sourceStart];
     *outExtraByteCount = extra;
@@ -415,8 +410,7 @@ UTFConversionResult UnicodeUtils::checkUTF16Surrogate(
     const UTF16* sourceStart,
     const UTF16* sourceEnd,
     bool strict,
-    bool* outSurrogate)
-{
+    bool* outSurrogate) {
     *outSurrogate = false;
 
     UTF32 ch = *sourceStart;
@@ -428,11 +422,13 @@ UTFConversionResult UnicodeUtils::checkUTF16Surrogate(
             // 下位サロゲートチェック
             if (SurrogateLowStart <= ch2 && ch2 <= SurrogateLowEnd) {
                 *outSurrogate = true;
-            } else if (strict) {
+            }
+            else if (strict) {
                 // 上位サロゲートがあるのに、下位サロゲートが見つからなかった
                 return UTFConversionResult_SourceIllegal;
             }
-        } else {
+        }
+        else {
             // 下位サロゲートを探している途中にバッファ終端に到達してしまった
             return UTFConversionResult_SourceExhausted;
         }
@@ -448,8 +444,7 @@ UTFConversionResult UnicodeUtils::convertCharUTF8toUTF32(
     const UTF8** sourceStart,
     const UTF8* sourceEnd,
     UTFConversionOptions* options,
-    UTF32* outChar)
-{
+    UTF32* outChar) {
     const UTF8* source = *sourceStart;
     UTF32 ch = 0;
 
@@ -494,8 +489,7 @@ UTFConversionResult UnicodeUtils::convertCharUTF32toUTF8(
     UTF8**
         targetStart, // 成否にかかわらず、ここのひとつ前まで文字が書かれている。
     UTF8* targetEnd,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTFConversionResult result = UTFConversionResult_Success;
     UTF8* target = *targetStart;
 
@@ -503,18 +497,23 @@ UTFConversionResult UnicodeUtils::convertCharUTF32toUTF8(
     unsigned short bytesToWrite = 0;
     if (ch < (UTF32)0x80) {
         bytesToWrite = 1;
-    } else if (ch < (UTF32)0x800) {
+    }
+    else if (ch < (UTF32)0x800) {
         bytesToWrite = 2;
-    } else if (ch < (UTF32)0x10000) {
+    }
+    else if (ch < (UTF32)0x10000) {
         bytesToWrite = 3;
-    } else if (ch <= MaxLegalUTF32) {
+    }
+    else if (ch <= MaxLegalUTF32) {
         bytesToWrite = 4;
-    } else {
+    }
+    else {
         // 不正文字が見つかった
         bytesToWrite = 3;
         if (isStrictConversion(options)) {
             return UTFConversionResult_SourceIllegal;
-        } else {
+        }
+        else {
             ch = options->ReplacementChar;
             options->IllegalCharCount++;
         }
@@ -522,7 +521,8 @@ UTFConversionResult UnicodeUtils::convertCharUTF32toUTF8(
 
     if (target + bytesToWrite > targetEnd) {
         return UTFConversionResult_TargetExhausted;
-    } else {
+    }
+    else {
         const UTF32 byteMask = 0xBF;
         const UTF32 byteMark = 0x80;
 
@@ -557,8 +557,7 @@ UTFConversionResult UnicodeUtils::convertCharUTF16toUTF32(
     const UTF16** sourceStart, // 失敗した場合は変化しない
     const UTF16* sourceEnd,
     UTFConversionOptions* options,
-    UTF32* outChar)
-{
+    UTF32* outChar) {
     UTFConversionResult result = UTFConversionResult_Success;
     const UTF16* source = *sourceStart;
     UTF32 ch, ch2;
@@ -576,11 +575,13 @@ UTFConversionResult UnicodeUtils::convertCharUTF16toUTF32(
                 ch = ((ch - SurrogateHighStart) << UTF16HalfShift) +
                      (ch2 - SurrogateLowStart) + UTF16HalfBase;
                 ++source;
-            } else if (isStrictConversion(options)) {
+            }
+            else if (isStrictConversion(options)) {
                 // 上位サロゲートがあるのに、下位サロゲートが見つからなかった
                 result = UTFConversionResult_SourceIllegal;
             }
-        } else {
+        }
+        else {
             // 下位サロゲートを探している途中にバッファ終端に到達してしまった
             result = UTFConversionResult_SourceExhausted;
         }
@@ -606,8 +607,7 @@ UTFConversionResult UnicodeUtils::convertCharUTF32toUTF16(
     UTF32 ch,
     UTF16** targetStart,
     UTF16* targetEnd,
-    UTFConversionOptions* options)
-{
+    UTFConversionOptions* options) {
     UTF16* target = *targetStart;
 
     // 0xFFFF 以下。普通の UTF-16 構成文字
@@ -617,12 +617,14 @@ UTFConversionResult UnicodeUtils::convertCharUTF32toUTF16(
             // 不正文字の処理
             if (isStrictConversion(options)) {
                 return UTFConversionResult_SourceExhausted;
-            } else {
+            }
+            else {
                 *target = (UTF16)options->ReplacementChar;
                 target++;
                 options->IllegalCharCount++;
             }
-        } else {
+        }
+        else {
             // サロゲートでなければ普通に格納
             *target = (UTF16)ch;
             target++;
@@ -633,7 +635,8 @@ UTFConversionResult UnicodeUtils::convertCharUTF32toUTF16(
         // 不正文字の処理
         if (isStrictConversion(options)) {
             return UTFConversionResult_SourceExhausted;
-        } else {
+        }
+        else {
             *target = (UTF16)options->ReplacementChar;
             target++;
             options->IllegalCharCount++;
@@ -655,8 +658,7 @@ UTFConversionResult UnicodeUtils::convertCharUTF32toUTF16(
     return UTFConversionResult_Success;
 }
 
-bool UnicodeUtils::isLegalUTF8(const UTF8* source, size_t length)
-{
+bool UnicodeUtils::isLegalUTF8(const UTF8* source, size_t length) {
     // length は UTF-8 の先行バイトによって事前に決定される。
     // length > 4 の場合は false を返す。
 

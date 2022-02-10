@@ -38,8 +38,7 @@
 
 namespace ln {
 
-static bool checkOverRange(const String& this_, const Char* str, int len)
-{
+static bool checkOverRange(const String& this_, const Char* str, int len) {
     const Char* b1 = this_.c_str();
     const Char* e1 = b1 + this_.length();
     const Char* b2 = str;
@@ -48,8 +47,7 @@ static bool checkOverRange(const String& this_, const Char* str, int len)
 }
 
 namespace detail {
-struct StringLockContext
-{
+struct StringLockContext {
     detail::UStringCore* newCore;
     detail::UStringCore* oldCore;
 };
@@ -64,35 +62,29 @@ UStringCore::UStringCore()
     : m_refCount(1)
     , m_str(nullptr)
     , m_capacity(0)
-    , m_length(0)
-{
+    , m_length(0) {
 }
 
-UStringCore::~UStringCore()
-{
+UStringCore::~UStringCore() {
     delete[] m_str;
 }
 
-bool UStringCore::isShared() const LN_NOEXCEPT
-{
+bool UStringCore::isShared() const LN_NOEXCEPT {
     return (m_refCount > 1);
 }
 
-void UStringCore::retain()
-{
+void UStringCore::retain() {
     ++m_refCount;
 }
 
-void UStringCore::release()
-{
+void UStringCore::release() {
     --m_refCount;
     if (m_refCount == 0) {
         delete this;
     }
 }
 
-void UStringCore::reserve(int length)
-{
+void UStringCore::reserve(size_t length) {
     LN_DCHECK(length >= 0);
     int size = length + 1;
     if (m_capacity < size) {
@@ -108,18 +100,15 @@ void UStringCore::reserve(int length)
         }
     }
 }
-void UStringCore::fixLength(int length)
-{
+void UStringCore::fixLength(size_t length) {
     m_str[length] = '\0';
     m_length = length;
 }
-void UStringCore::resize(int length)
-{
+void UStringCore::resize(size_t length) {
     reserve(length);
     fixLength(length);
 }
-void UStringCore::clear()
-{
+void UStringCore::clear() {
     if (m_str != nullptr) {
         m_str[0] = '\0';
     }
@@ -133,120 +122,102 @@ void UStringCore::clear()
 
 const String String::Empty;
 
-String::String()
-{
+String::String() {
     init();
 }
 
-String::~String()
-{
+String::~String() {
     release();
 }
 
 String::String(const String& str)
-    : String()
-{
+    : String() {
     copy(str);
 }
 
 String::String(String&& str) LN_NOEXCEPT
-    : String()
-{
+    : String() {
     move(std::forward<String>(str));
 }
 
-String& String::operator=(const String& str)
-{
+String& String::operator=(const String& str) {
     copy(str);
     return *this;
 }
 
-String& String::operator=(String&& str) LN_NOEXCEPT
-{
+String& String::operator=(String&& str) LN_NOEXCEPT {
     move(std::forward<String>(str));
     return *this;
 }
 
 String::String(const String& str, int begin)
-    : String()
-{
+    : String() {
     assign(str.c_str() + begin, str.length());
 }
 
 String::String(const String& str, int begin, int length)
-    : String()
-{
+    : String() {
     assign(str.c_str() + begin, length);
 }
 
 String::String(const Char* str)
-    : String()
-{
+    : String() {
     assign(str);
 }
 
 String::String(const Char* str, int length)
-    : String()
-{
+    : String() {
     assign(str, length);
 }
 
 String::String(const Char* begin, const Char* end)
-    : String()
-{
+    : String() {
     assign(begin, static_cast<int>(end - begin));
 }
 
 String::String(int count, Char ch)
-    : String()
-{
+    : String() {
     assign(count, ch);
 }
 
 String::String(const StringView& str)
-    : String()
-{
+    : String() {
     assign(str);
 }
 
 #ifdef LN_STRING_FUZZY_CONVERSION
 String::String(const char* str)
-    : String()
-{
+    : String() {
     assignFromCStr(str);
 }
 #ifdef LN_USTRING16
 String::String(const wchar_t* str)
-    : String()
-{
+    : String() {
     assignFromCStr(str);
 }
 #endif
 #endif
 
-bool String::isEmpty() const LN_NOEXCEPT
-{
+bool String::isEmpty() const LN_NOEXCEPT {
     if (isSSO()) {
         return getSSOLength() == 0;
-    } else {
+    }
+    else {
         return !m_data.core || m_data.core->length() <= 0;
     }
 }
 
-void String::clear()
-{
+void String::clear() {
     detail::StringLockContext context;
     lockBuffer(0, &context);
     unlockBuffer(0, &context);
 }
 
-void String::resize(int newLength)
-{
+void String::resize(int newLength) {
     resize(newLength, Char());
 }
 
-void String::resize(int newLength, Char ch)
-{
+void String::resize(int newLength, Char ch) {
     int oldLen = length();
     detail::StringLockContext context;
     Char* buf = lockBuffer(newLength, &context);
@@ -258,8 +229,7 @@ void String::resize(int newLength, Char ch)
     unlockBuffer(newLength, &context);
 }
 
-void String::reserve(int size)
-{
+void String::reserve(int size) {
     int cur = length();
     //reserveBuffer(size);
     detail::StringLockContext context;
@@ -267,90 +237,75 @@ void String::reserve(int size)
     unlockBuffer(cur, &context);
 }
 
-bool String::contains(const StringView& str, CaseSensitivity cs) const
-{
+bool String::contains(const StringView& str, CaseSensitivity cs) const {
     return indexOf(str, 0, cs) >= 0;
 }
 
-bool String::contains(Char ch, CaseSensitivity cs) const
-{
+bool String::contains(Char ch, CaseSensitivity cs) const {
     return indexOf(ch, 0, cs) >= 0;
 }
 
-int String::indexOf(const StringView& str, int startIndex, CaseSensitivity cs) const
-{
+int String::indexOf(const StringView& str, int startIndex, CaseSensitivity cs) const {
     return StringHelper::indexOf(c_str(), length(), str.data(), str.length(), startIndex, cs);
 }
 
-int String::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
-{
+int String::indexOf(Char ch, int startIndex, CaseSensitivity cs) const {
     return StringHelper::indexOf(c_str(), length(), &ch, 1, startIndex, cs);
 }
 
-int String::lastIndexOf(const StringView& str, int startIndex, int count, CaseSensitivity cs) const
-{
+int String::lastIndexOf(const StringView& str, int startIndex, int count, CaseSensitivity cs) const {
     return StringHelper::lastIndexOf(c_str(), length(), str.data(), str.length(), startIndex, count, cs);
 }
 
-int String::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const
-{
+int String::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const {
     return StringHelper::lastIndexOf(c_str(), length(), &ch, 1, startIndex, count, cs);
 }
 
-bool String::startsWith(const StringView& str, CaseSensitivity cs) const
-{
+bool String::startsWith(const StringView& str, CaseSensitivity cs) const {
     return StringHelper::startsWith(c_str(), length(), str.data(), str.length(), cs);
 }
 
-bool String::startsWith(Char ch, CaseSensitivity cs) const
-{
+bool String::startsWith(Char ch, CaseSensitivity cs) const {
     return StringHelper::endsWith(c_str(), length(), &ch, 1, cs);
 }
 
-bool String::endsWith(const StringView& str, CaseSensitivity cs) const
-{
+bool String::endsWith(const StringView& str, CaseSensitivity cs) const {
     return StringHelper::endsWith(c_str(), length(), str.data(), str.length(), cs);
 }
 
-bool String::endsWith(Char ch, CaseSensitivity cs) const
-{
+bool String::endsWith(Char ch, CaseSensitivity cs) const {
     return StringHelper::endsWith(c_str(), length(), &ch, 1, cs);
 }
 
-StringView String::substr(int start, int count) const
-{
+StringView String::substr(int start, int count) const {
     const Char* begin;
     const Char* end;
     StringHelper::substr(c_str(), length(), start, count, &begin, &end);
     return StringView(begin, end);
 }
 
-StringView String::left(int count) const
-{
+StringView String::left(int count) const {
     const Char* begin;
     const Char* end;
     StringHelper::left(c_str(), count, &begin, &end);
     return StringView(begin, end);
 }
 
-StringView String::right(int count) const
-{
+StringView String::right(int count) const {
     const Char* begin;
     const Char* end;
     StringHelper::right(c_str(), count, &begin, &end);
     return StringView(begin, end);
 }
 
-String String::trim() const
-{
+String String::trim() const {
     const Char* begin;
     int len;
     StringHelper::trim(c_str(), length(), &begin, &len);
     return String(begin, len);
 }
 
-String String::toUpper() const
-{
+String String::toUpper() const {
     int len = length();
     String result(c_str(), len);
     Char* buf = result.getBuffer();
@@ -359,8 +314,7 @@ String String::toUpper() const
     return result;
 }
 
-String String::toLower() const
-{
+String String::toLower() const {
     int len = length();
     String result(c_str(), len);
     Char* buf = result.getBuffer();
@@ -369,8 +323,7 @@ String String::toLower() const
     return result;
 }
 
-String String::toTitleCase() const
-{
+String String::toTitleCase() const {
     int len = length();
     String result(c_str(), len);
     Char* buf = result.getBuffer();
@@ -380,8 +333,7 @@ String String::toTitleCase() const
     return result;
 }
 
-String String::remove(const StringView& str, CaseSensitivity cs) const
-{
+String String::remove(const StringView& str, CaseSensitivity cs) const {
     String result;
     const Char* pos = c_str();
     const Char* end = pos + length();
@@ -394,12 +346,13 @@ String String::remove(const StringView& str, CaseSensitivity cs) const
 
     if (fsLen > 0) {
         for (; pos < end;) {
-            int index = StringHelper::indexOf(pos, end - pos, fs, fsLen, 0, cs);
+            int index = StringHelper::indexOf(pos, static_cast<int32_t>(end - pos), fs, fsLen, 0, cs);
             if (index >= 0) {
                 memcpy(buf, pos, index * sizeof(Char));
                 buf += index;
                 pos += index + fsLen;
-            } else {
+            }
+            else {
                 break;
             }
         }
@@ -414,8 +367,7 @@ String String::remove(const StringView& str, CaseSensitivity cs) const
     return result;
 }
 
-String String::replace(const StringView& from, const StringView& to, CaseSensitivity cs) const
-{
+String String::replace(const StringView& from, const StringView& to, CaseSensitivity cs) const {
     String result;
     result.reserve(length());
 
@@ -442,8 +394,7 @@ String String::replace(const StringView& from, const StringView& to, CaseSensiti
     return result;
 }
 
-String String::insert(int startIndex, const StringView& value) const
-{
+String String::insert(int startIndex, const StringView& value) const {
     if (value.isEmpty()) return *this;
     if (startIndex < 0) startIndex = 0;
     if (startIndex > length()) startIndex = length();
@@ -466,8 +417,7 @@ String String::insert(int startIndex, const StringView& value) const
     return result;
 }
 
-List<String> String::split(const StringView& delim, StringSplitOptions option) const
-{
+List<String> String::split(const StringView& delim, StringSplitOptions option) const {
     List<String> result;
     StringHelper::SplitHelper(
         c_str(), c_str() + length(), delim.data(), delim.length(), option, CaseSensitivity::CaseSensitive, [&result](const Char* begin, const Char* end) { result.add(String(begin, static_cast<int>(end - begin))); });
@@ -492,40 +442,31 @@ List<String> String::split(const StringView& delim, StringSplitOptions option) c
     }                                                            \
     LN_ENSURE(end == begin + len);                               \
     return num;
-int String::toInt(int base) const
-{
+int String::toInt(int base) const {
     TO_INT_DEF(int32_t, toInt32);
 }
-int8_t String::toInt8(int base) const
-{
+int8_t String::toInt8(int base) const {
     TO_INT_DEF(int8_t, toInt8);
 }
-int16_t String::toInt16(int base) const
-{
+int16_t String::toInt16(int base) const {
     TO_INT_DEF(int16_t, toInt16);
 }
-int32_t String::toInt32(int base) const
-{
+int32_t String::toInt32(int base) const {
     TO_INT_DEF(int32_t, toInt32);
 }
-int64_t String::toInt64(int base) const
-{
+int64_t String::toInt64(int base) const {
     TO_INT_DEF(int64_t, toInt64);
 }
-uint8_t String::toUInt8(int base) const
-{
+uint8_t String::toUInt8(int base) const {
     TO_INT_DEF(uint8_t, toUInt8);
 }
-uint16_t String::toUInt16(int base) const
-{
+uint16_t String::toUInt16(int base) const {
     TO_INT_DEF(uint16_t, toUInt16);
 }
-uint32_t String::toUInt32(int base) const
-{
+uint32_t String::toUInt32(int base) const {
     TO_INT_DEF(uint32_t, toUInt32);
 }
-uint64_t String::toUInt64(int base) const
-{
+uint64_t String::toUInt64(int base) const {
     TO_INT_DEF(uint64_t, toUInt64);
 }
 #undef TO_INT_DEF
@@ -547,46 +488,36 @@ uint64_t String::toUInt64(int base) const
         *outValue = num;                                         \
     }                                                            \
     return true;
-bool String::tryToInt(int* outValue, int base) const
-{
+bool String::tryToInt(int* outValue, int base) const {
     TRY_TO_INT_DEF(int, toInt32);
 }
-bool String::tryToInt8(int8_t* outValue, int base) const
-{
+bool String::tryToInt8(int8_t* outValue, int base) const {
     TRY_TO_INT_DEF(int8_t, toInt8);
 }
-bool String::tryToInt16(int16_t* outValue, int base) const
-{
+bool String::tryToInt16(int16_t* outValue, int base) const {
     TRY_TO_INT_DEF(int16_t, toInt16);
 }
-bool String::tryToInt32(int32_t* outValue, int base) const
-{
+bool String::tryToInt32(int32_t* outValue, int base) const {
     TRY_TO_INT_DEF(int32_t, toInt32);
 }
-bool String::tryToInt64(int64_t* outValue, int base) const
-{
+bool String::tryToInt64(int64_t* outValue, int base) const {
     TRY_TO_INT_DEF(int64_t, toInt64);
 }
-bool String::tryToUInt8(uint8_t* outValue, int base) const
-{
+bool String::tryToUInt8(uint8_t* outValue, int base) const {
     TRY_TO_INT_DEF(uint8_t, toUInt8);
 }
-bool String::tryToUInt16(uint16_t* outValue, int base) const
-{
+bool String::tryToUInt16(uint16_t* outValue, int base) const {
     TRY_TO_INT_DEF(uint16_t, toUInt16);
 }
-bool String::tryToUInt32(uint32_t* outValue, int base) const
-{
+bool String::tryToUInt32(uint32_t* outValue, int base) const {
     TRY_TO_INT_DEF(uint32_t, toUInt32);
 }
-bool String::tryToUInt64(uint64_t* outValue, int base) const
-{
+bool String::tryToUInt64(uint64_t* outValue, int base) const {
     TRY_TO_INT_DEF(uint64_t, toUInt64);
 }
 #undef TRY_TO_INT_DEF
 
-std::string String::toStdString(TextEncoding* encoding) const
-{
+std::string String::toStdString(TextEncoding* encoding) const {
     if (!encoding) {
         encoding = TextEncoding::systemMultiByteEncoding();
     }
@@ -594,8 +525,7 @@ std::string String::toStdString(TextEncoding* encoding) const
     return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 }
 
-std::wstring String::toStdWString() const
-{
+std::wstring String::toStdWString() const {
     std::vector<byte_t> bytes = TextEncoding::wideCharEncoding()->encode(*this);
     return std::wstring(reinterpret_cast<const wchar_t*>(bytes.data()), bytes.size() / sizeof(wchar_t));
 }
@@ -624,13 +554,11 @@ std::wstring String::toStdWString() const
 //}
 //#endif
 
-String String::remove(Char ch, CaseSensitivity cs) const
-{
+String String::remove(Char ch, CaseSensitivity cs) const {
     return remove(StringView(&ch, 1), cs);
 }
 
-String String::concat(const StringView& str1, const StringView& str2)
-{
+String String::concat(const StringView& str1, const StringView& str2) {
     String s;
     s.reserve(str1.length() + str2.length());
     s.append(str1.data(), str1.length());
@@ -638,8 +566,7 @@ String String::concat(const StringView& str1, const StringView& str2)
     return s;
 }
 
-String String::concat(const StringView& str1, const StringView& str2, const StringView& str3)
-{
+String String::concat(const StringView& str1, const StringView& str2, const StringView& str3) {
     String s;
     s.reserve(str1.length() + str2.length() + str3.length());
     s.append(str1.data(), str1.length());
@@ -647,8 +574,7 @@ String String::concat(const StringView& str1, const StringView& str2, const Stri
     s.append(str3.data(), str3.length());
     return s;
 }
-String String::concat(const StringView& str1, const StringView& str2, const StringView& str3, const StringView& str4)
-{
+String String::concat(const StringView& str1, const StringView& str2, const StringView& str3, const StringView& str4) {
     String s;
     s.reserve(str1.length() + str2.length() + str3.length() + str4.length());
     s.append(str1.data(), str1.length());
@@ -658,8 +584,7 @@ String String::concat(const StringView& str1, const StringView& str2, const Stri
     return s;
 }
 
-String String::join(const List<String>& list, const StringView& delim)
-{
+String String::join(const List<String>& list, const StringView& delim) {
     if (list.isEmpty()) return String();
 
     int len = delim.length() * (list.size() - 1);
@@ -677,27 +602,23 @@ String String::join(const List<String>& list, const StringView& delim)
     return s;
 }
 
-int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
-{
+int String::compare(const String& str1, const String& str2, CaseSensitivity cs) {
     return StringHelper::compare(str1.c_str(), str1.length(), str2.c_str(), str2.length(), LN_MAX(str1.length(), str2.length()), cs);
 }
 
-int String::compare(const StringView& str1, int index1, const StringView& str2, int index2, int length, CaseSensitivity cs)
-{
+int String::compare(const StringView& str1, int index1, const StringView& str2, int index2, int length, CaseSensitivity cs) {
     const Char* s1 = str1.data() + index1;
     const Char* s2 = str2.data() + index2;
     return StringHelper::compare(s1, str1.length() - index1, s2, str2.length() - index2, length, cs);
 }
 
-String String::fromCString(const char* str, int length, TextEncoding* encoding)
-{
+String String::fromCString(const char* str, int length, TextEncoding* encoding) {
     String result;
     result.assignFromCStr(str, length, nullptr, encoding);
     return result;
 }
 
-String String::fromCString(const wchar_t* str, int length)
-{
+String String::fromCString(const wchar_t* str, int length) {
     String result;
     result.assignFromCStr(str, length, nullptr, nullptr);
     return result;
@@ -707,11 +628,9 @@ String String::fromStdString(const std::string_view& str, TextEncoding* encoding
     return fromCString(str.data(), static_cast<int>(str.length()), encoding);
 }
 
-String String::fromStdString(const std::wstring& str)
-{
+String String::fromStdString(const std::wstring& str) {
     return fromCString(str.c_str(), static_cast<int>(str.length()));
 }
-
 
 std::string String::toUtf8() const {
     return toStdString(TextEncoding::utf8Encoding());
@@ -727,7 +646,7 @@ std::u16string String::toUtf16() const {
 
 String String::fromUtf16(const std::u16string_view& s) {
     String result;
-    result.assignFromCStr(s.data(), s.length(), nullptr);
+    result.assignFromCStr(s.data(), static_cast<int>(s.length()), nullptr);
     return result;
 }
 
@@ -739,74 +658,68 @@ String String::fromUtf16(const std::u16string_view& s) {
 //{
 //}
 
-String String::fromNumber(int32_t value, Char format)
-{
+String String::fromNumber(int32_t value, Char format) {
     return fromNumber((int64_t)value, format);
 }
 
-String String::fromNumber(int64_t value, Char format)
-{
+String String::fromNumber(int64_t value, Char format) {
     char buf[64];
     int len = StringHelper::int64ToString(value, static_cast<char>(format), buf, 64);
     return String::fromCString(buf, len);
 }
 
-String String::fromNumber(uint32_t value, Char format)
-{
+String String::fromNumber(uint32_t value, Char format) {
     return fromNumber((uint64_t)value, format);
 }
 
-String String::fromNumber(uint64_t value, Char format)
-{
+String String::fromNumber(uint64_t value, Char format) {
     char buf[64];
     int len = StringHelper::uint64ToString(value, static_cast<char>(format), buf, 64);
     return String::fromCString(buf, len);
 }
 
-String String::fromNumber(float value, Char format, int precision)
-{
+String String::fromNumber(float value, Char format, int precision) {
     return fromNumber((double)value, format, precision);
 }
 
-String String::fromNumber(double value, Char format, int precision)
-{
+String String::fromNumber(double value, Char format, int precision) {
     char buf[64];
     int len = StringHelper::doubleToString(value, static_cast<char>(format), precision, buf, 64);
     return String::fromCString(buf, len);
 }
 
-void String::init() LN_NOEXCEPT
-{
+void String::init() LN_NOEXCEPT {
     m_data.core = nullptr;
     m_data.sso.length = 0;
 }
 
-void String::release() LN_NOEXCEPT
-{
+void String::release() LN_NOEXCEPT {
     if (isNonSSO()) {
         LN_SAFE_RELEASE(m_data.core);
     }
 }
 
-void String::copy(const String& str)
-{
+void String::copy(const String& str) {
     if (this != &str) {
         if (isSSO()) {
             if (str.isSSO()) {
                 // SSO -> SSO
                 memcpy(&m_data, &str.m_data, sizeof(m_data));
-            } else {
+            }
+            else {
                 // SSO -> NonSSO
                 m_data.core = str.m_data.core;
                 LN_SAFE_RETAIN(m_data.core);
                 setNonSSO();
             }
-        } else {
+        }
+        else {
             if (str.isSSO()) {
                 // NonSSO -> SSO
                 release();
                 memcpy(&m_data, &str.m_data, sizeof(m_data));
-            } else {
+            }
+            else {
                 // NonSSO -> NonSSO
                 release();
                 m_data.core = str.m_data.core;
@@ -816,8 +729,7 @@ void String::copy(const String& str)
     }
 }
 
-void String::move(String&& str) LN_NOEXCEPT
-{
+void String::move(String&& str) LN_NOEXCEPT {
     if (isNonSSO()) {
         LN_SAFE_RELEASE(m_data.core);
     }
@@ -833,17 +745,17 @@ void String::move(String&& str) LN_NOEXCEPT
 // 今は自己代入回避のための細工に使っている。必ず unlockBuffer() に渡すこと。
 // unlock するまでは \0 終端を保障しない。
 // また、lock 前後でサイズが変わらなくても変更であるとみなし、COW 共有は解除され独立したバッファになる。
-Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context) noexcept
-{
+Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context) noexcept {
     context->newCore = nullptr;
     context->oldCore = nullptr;
     if (isSSO()) {
         if (requestSize < SSOCapacity) {
             // SSO -> SSO
-        } else {
+        }
+        else {
             // SSO -> NonSSO
             std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
-            core->reserve(requestSize);
+            core->reserve(static_cast<int>(requestSize));
             memcpy(core->get(), m_data.sso.buffer, LN_MIN(getSSOLength(), requestSize) * sizeof(Char));
             //core->get()[requestSize] = '\0';
             //m_data.core = core.get();
@@ -852,11 +764,13 @@ Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context)
             setNonSSO();
             return context->newCore->get();
         }
-    } else {
+    }
+    else {
         if (m_data.core && !m_data.core->isShared() && requestSize <= m_data.core->capacity()) {
             // NonSSO で、共有されてもいないしサイズも間に合っているならいろいろ作り直す必要は無い
             //m_data.core->get()[requestSize] = '\0';
-        } else {
+        }
+        else {
             if (requestSize < SSOCapacity) {
                 // NonSSO -> SSO
                 if (m_data.core) {
@@ -865,25 +779,29 @@ Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context)
                     memcpy(m_data.sso.buffer, oldCore->get(), LN_MIN(oldCore->length(), requestSize) * sizeof(Char));
                     //oldCore->release();
                     context->oldCore = oldCore; // release old buffer (on unlock)
-                } else {
+                }
+                else {
                     setSSO();
                 }
-            } else {
+            }
+            else {
                 // NonSSO -> NonSSO
                 if (m_data.core) {
                     if (m_data.core->isShared()) {
                         detail::UStringCore* oldCore = m_data.core;
                         m_data.core = LN_NEW detail::UStringCore();
-                        m_data.core->reserve(requestSize);
+                        m_data.core->reserve(static_cast<int>(requestSize));
                         memcpy(m_data.core->get(), oldCore->get(), LN_MIN(oldCore->length(), requestSize) * sizeof(Char));
                         //oldCore->release();
                         context->oldCore = oldCore; // release old buffer (on unlock)
-                    } else {
-                        m_data.core->reserve(requestSize);
                     }
-                } else {
+                    else {
+                        m_data.core->reserve(static_cast<int>(requestSize));
+                    }
+                }
+                else {
                     m_data.core = LN_NEW detail::UStringCore();
-                    m_data.core->reserve(requestSize);
+                    m_data.core->reserve(static_cast<int>(requestSize));
                 }
             }
         }
@@ -893,8 +811,7 @@ Char* String::lockBuffer(size_t requestSize, detail::StringLockContext* context)
 }
 
 // 実際のサイズを確定する
-void String::unlockBuffer(int confirmedSize, detail::StringLockContext* context) noexcept
-{
+void String::unlockBuffer(size_t confirmedSize, detail::StringLockContext* context) noexcept {
     if (context->oldCore) {
         context->oldCore->release();
     }
@@ -904,45 +821,39 @@ void String::unlockBuffer(int confirmedSize, detail::StringLockContext* context)
 
     if (isSSO()) {
         setSSOLength(confirmedSize);
-    } else {
+    }
+    else {
         m_data.core->get()[confirmedSize] = '\0';
         m_data.core->fixLength(confirmedSize);
     }
 }
 
-Char* String::getBuffer()
-{
+Char* String::getBuffer() {
     return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
 
-const Char* String::getBuffer() const LN_NOEXCEPT
-{
+const Char* String::getBuffer() const LN_NOEXCEPT {
     return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
 
-void String::setSSOLength(size_t len)
-{
+void String::setSSOLength(size_t len) {
     m_data.sso.length = (len & 0x7F) << 1;
     m_data.sso.buffer[len] = '\0';
 }
 
-size_t String::getSSOLength() const LN_NOEXCEPT
-{
+size_t String::getSSOLength() const LN_NOEXCEPT {
     return m_data.sso.length >> 1;
 }
 
-void String::setSSO()
-{
+void String::setSSO() {
     m_data.sso.length = (static_cast<size_t>(m_data.sso.length) & 0x07) << 1;
 }
 
-void String::setNonSSO()
-{
+void String::setNonSSO() {
     m_data.sso.length = 0x01;
 }
 
-void String::append(const Char* str, int len)
-{
+void String::append(const Char* str, int len) {
     int firstLen = length();
     detail::StringLockContext context;
     Char* b = lockBuffer(firstLen + len, &context) + firstLen;
@@ -950,18 +861,15 @@ void String::append(const Char* str, int len)
     unlockBuffer(firstLen + len, &context);
 }
 
-void String::append(const String& str)
-{
+void String::append(const String& str) {
     append(str.c_str(), str.length());
 }
 
-void String::assign(const Char* str)
-{
+void String::assign(const Char* str) {
     assign(str, static_cast<int>(detail::UStringHelper::strlen(str)));
 }
 
-void String::assign(const Char* str, int length)
-{
+void String::assign(const Char* str, int length) {
     if (str && *str) {
         //bool over = false;
         //if (checkOverRange(this, str, length))
@@ -974,31 +882,30 @@ void String::assign(const Char* str, int length)
         Char* buf = lockBuffer(length, &context);
         memmove(buf, str, sizeof(Char) * length);
         unlockBuffer(length, &context);
-    } else {
+    }
+    else {
         clear();
     }
 }
 
-void String::assign(int count, Char ch)
-{
+void String::assign(int count, Char ch) {
     if (count > 0) {
         detail::StringLockContext context;
         Char* buf = lockBuffer(count, &context);
         std::fill<Char*, Char>(buf, buf + count, ch);
         unlockBuffer(count, &context);
-    } else {
+    }
+    else {
         clear();
     }
 }
 
-void String::assign(const StringView& str)
-{
+void String::assign(const StringView& str) {
     // TODO: String 参照のときの特殊化
     assign(str.data(), str.length());
 }
 
-void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
-{
+void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding) {
     int len = 0;
     bool ascii = true;
 
@@ -1015,30 +922,30 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
     if (ascii) {
         detail::StringLockContext context;
         Char* buf = lockBuffer(len, &context);
-        for (int i = 0; i < len; ++i) buf[i] = str[i];
+        for (int i = 0; i < len; ++i)
+            buf[i] = str[i];
         unlockBuffer(len, &context);
     }
     else {
         assignFromCStrInternal((const byte_t*)str, len, 1, outUsedDefaultChar, encoding ? encoding : TextEncoding::systemMultiByteEncoding());
         //		TextEncoding* actualEncoding = encoding;
-//		if (!actualEncoding) actualEncoding = TextEncoding::systemMultiByteEncoding();
-//
-//        detail::StringLockContext context;
-//        size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len) / sizeof(Char);
-//        Char* buf = lockBuffer(bufSize, &context);
-//
-//        TextDecodeResult result;
-//#if LN_USTRING32
-//        actualEncoding->convertToUTF32Stateless((const byte_t*)str, len, (UTF32*)buf, bufSize, &result);
-//#else
-//        actualEncoding->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
-//#endif
-//        unlockBuffer(result.outputByteCount / sizeof(Char), &context);
+        //		if (!actualEncoding) actualEncoding = TextEncoding::systemMultiByteEncoding();
+        //
+        //        detail::StringLockContext context;
+        //        size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len) / sizeof(Char);
+        //        Char* buf = lockBuffer(bufSize, &context);
+        //
+        //        TextDecodeResult result;
+        //#if LN_USTRING32
+        //        actualEncoding->convertToUTF32Stateless((const byte_t*)str, len, (UTF32*)buf, bufSize, &result);
+        //#else
+        //        actualEncoding->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
+        //#endif
+        //        unlockBuffer(result.outputByteCount / sizeof(Char), &context);
     }
 }
 
-void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
-{
+void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding) {
     int len = 0;
     bool ascii = true;
 
@@ -1055,9 +962,11 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
     if (ascii) {
         detail::StringLockContext context;
         Char* buf = lockBuffer(len, &context);
-        for (int i = 0; i < len; ++i) buf[i] = str[i];
+        for (int i = 0; i < len; ++i)
+            buf[i] = str[i];
         unlockBuffer(len, &context);
-    } else {
+    }
+    else {
         assignFromCStrInternal((const byte_t*)str, len, sizeof(wchar_t), outUsedDefaultChar, encoding ? encoding : TextEncoding::wideCharEncoding());
     }
 }
@@ -1111,14 +1020,12 @@ void String::setAt(int index, Char ch) {
     unlockBuffer(len, &context);
 }
 
-uint32_t String::getHashCode() const
-{
+uint32_t String::getHashCode() const {
     if (isEmpty()) return 0;
     return ln::CRCHash::compute(c_str(), length());
 }
 
-const String& String::newLine()
-{
+const String& String::newLine() {
 #ifdef LN_OS_WIN32
     static String nl(_TT("\r\n"));
     return nl;
@@ -1133,12 +1040,10 @@ const String& String::newLine()
 
 #ifdef LN_STRING_WITH_PATH
 String::String(const Path& path)
-    : String(path.str())
-{
+    : String(path.str()) {
 }
 
-String& String::operator=(const Path& rhs)
-{
+String& String::operator=(const Path& rhs) {
     assign(rhs.str());
     return *this;
 }
@@ -1181,22 +1086,21 @@ namespace detail {
 //#endif
 //}
 
-int UStringConvert::convertNativeString(const char* src, int srcLen, char* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const char* src, int srcLen, char* dst, int dstSize) {
     if (!dst || dstSize <= 0) return 0;
     if (src && srcLen >= 0) {
         int len = LN_MIN(srcLen, dstSize - 1);
         memcpy_s(dst, dstSize, src, len);
         dst[len] = '\0';
         return len;
-    } else {
+    }
+    else {
         dst[0] = '\0';
         return 0;
     }
 }
 
-int UStringConvert::convertNativeString(const char* src, int srcLen, wchar_t* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const char* src, int srcLen, wchar_t* dst, int dstSize) {
     if (!dst || dstSize <= 0) return 0;
     if (src && srcLen >= 0) {
         if (srcLen >= dstSize) return -1;
@@ -1204,14 +1108,14 @@ int UStringConvert::convertNativeString(const char* src, int srcLen, wchar_t* ds
         errno_t err = mbstowcs_s(&size, dst, dstSize, src, srcLen);
         if (err != 0) return -1;
         return (int)size - 1;
-    } else {
+    }
+    else {
         dst[0] = '\0';
         return 0;
     }
 }
 
-int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, char* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, char* dst, int dstSize) {
     if (!dst || dstSize <= 0) return 0;
     if (src && srcLen >= 0) {
         if (srcLen >= dstSize) return -1;
@@ -1219,28 +1123,28 @@ int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, char* ds
         errno_t err = wcstombs_s(&size, dst, dstSize, src, srcLen);
         if (err != 0) return -1;
         return (int)size - 1;
-    } else {
+    }
+    else {
         dst[0] = '\0';
         return 0;
     }
 }
 
-int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t* dst, int dstSize) {
     if (!dst || dstSize <= 0) return 0;
     if (src && srcLen >= 0) {
         int len = LN_MIN(srcLen, dstSize - 1);
         memcpy_s(dst, dstSize * sizeof(wchar_t), src, len * sizeof(wchar_t));
         dst[len] = '\0';
         return len;
-    } else {
+    }
+    else {
         dst[0] = '\0';
         return 0;
     }
 }
 
-int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize) {
 #if defined(LN_OS_WIN32) && _MSC_VER >= 1900
     if (!dst || dstSize <= 0) return 0;
     if (src && srcLen >= 0) {
@@ -1252,7 +1156,8 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
             p += rc;
         }
         return p - dst;
-    } else {
+    }
+    else {
         dst[0] = '\0';
         return 0;
     }
@@ -1263,14 +1168,14 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
     if (result == UTFConversionResult_Success) {
         dst[options.ConvertedTargetLength] = '\0';
         return options.ConvertedTargetLength;
-    } else {
+    }
+    else {
         return 0;
     }
 #endif
 }
 
-int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_t* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_t* dst, int dstSize) {
 #ifdef LN_WCHAR_16
     return convertNativeString((const wchar_t*)src, srcSize, dst, dstSize);
 #else
@@ -1279,8 +1184,7 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_
 #endif
 }
 
-int UStringConvert::convertNativeString(const char32_t* src, int srcLen, char* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const char32_t* src, int srcLen, char* dst, int dstSize) {
 #ifdef LN_WCHAR_16
     LN_NOTIMPLEMENTED();
     return -1;
@@ -1290,8 +1194,7 @@ int UStringConvert::convertNativeString(const char32_t* src, int srcLen, char* d
 #endif
 }
 
-int UStringConvert::convertNativeString(const char32_t* src, int srcLen, wchar_t* dst, int dstSize)
-{
+int UStringConvert::convertNativeString(const char32_t* src, int srcLen, wchar_t* dst, int dstSize) {
 #ifdef LN_WCHAR_16
     UTFConversionOptions options;
     options.ReplacementChar = '?';
@@ -1326,30 +1229,24 @@ int UStringConvert::convertNativeString(const char32_t* src, int srcLen, wchar_t
 //int UStringConvert::getMaxNativeStringConverLength(const char16_t* src, int srcLen, const char* dst);
 //int UStringConvert::getMaxNativeStringConverLength(const char16_t* src, int srcLen, const wchar_t* dst);
 
-void UStringConvert::convertToStdString(const char* src, int srcLen, std::string* outString)
-{
+void UStringConvert::convertToStdString(const char* src, int srcLen, std::string* outString) {
     outString->assign(src, srcLen);
 }
-void UStringConvert::convertToStdString(const char* src, int srcLen, std::wstring* outString)
-{
+void UStringConvert::convertToStdString(const char* src, int srcLen, std::wstring* outString) {
     auto str = String::fromCString(src, srcLen);
     *outString = str.toStdWString();
 }
-void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::string* outString)
-{
+void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::string* outString) {
     auto str = String::fromCString(src, srcLen);
     *outString = str.toStdString();
 }
-void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::wstring* outString)
-{
+void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::wstring* outString) {
     outString->assign(src, srcLen);
 }
-void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::string* outString)
-{
+void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::string* outString) {
     LN_NOTIMPLEMENTED();
 }
-void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::wstring* outString)
-{
+void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::wstring* outString) {
 #ifdef LN_WCHAR_16
     outString->assign((const wchar_t*)(src), srcLen);
 #else
@@ -1363,8 +1260,7 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 #endif
 }
 
-void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::string* outString)
-{
+void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::string* outString) {
 #ifdef LN_OS_WIN32
     // SJIS へは変換したくない
     LN_NOTIMPLEMENTED();
@@ -1373,8 +1269,7 @@ void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::st
 #endif
 }
 
-void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::wstring* outString)
-{
+void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::wstring* outString) {
     *outString = UnicodeStringUtils::U32ToWide(src, srcLen);
 }
 
@@ -1387,8 +1282,7 @@ void UStringConvert::convertToStdString(const char32_t* src, int srcLen, std::ws
 namespace std {
 
 // for unordered_map key
-std::size_t hash<ln::String>::operator()(const ln::String& key) const
-{
+std::size_t hash<ln::String>::operator()(const ln::String& key) const {
     return ln::CRCHash::compute(key.c_str(), key.length());
 }
 

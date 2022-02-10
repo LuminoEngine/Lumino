@@ -365,6 +365,15 @@ public:
         return result;
     }
 
+    /** 配列のそれぞれの要素に対してコールバック関数を適用します。その際、直前の要素における計算結果の返値を渡し、最後の結果を返します。 */
+    template<class T, class TFunc>
+    T fold(T initialValue, TFunc func) const {
+        for (const auto& i : *this) {
+            initialValue = func(std::move(initialValue), i);
+        }
+        return initialValue;
+    }
+
     /** 指定したインデックスがこの配列の境界の範囲外かを確認します。*/
     bool isOutOfRange(int index) const;
 

@@ -11,7 +11,9 @@
 namespace ln {
 class Exception;
 class String;
-namespace detail { struct ExceptionHelper; }
+namespace detail {
+struct ExceptionHelper;
+}
 
 #define _LN_CHECK(expr, level, ...) (!(expr)) && ln::detail::notifyException(level, __FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
@@ -36,7 +38,7 @@ namespace detail { struct ExceptionHelper; }
  */
 #define LN_ERROR(...) ln::detail::notifyException(::ln::ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
- /**
+/**
   * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
   *
   * このマクロが例外ハンドラを呼び出すときのレベルは `Fatal` です。
@@ -88,91 +90,82 @@ namespace detail { struct ExceptionHelper; }
  *
  * このマクロが例外ハンドラを呼び出すときのレベルは `Fatal` です。
  */
-#define LN_NOTIMPLEMENTED()						::ln::detail::notifyFatalError(__FILE__, __LINE__, "Not implemented.")
+#define LN_NOTIMPLEMENTED() ::ln::detail::notifyFatalError(__FILE__, __LINE__, "Not implemented.")
 
-#define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::ExceptionLevel::Warning)
-#define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ##__VA_ARGS__)
-#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, _TT("IO Error"), ##__VA_ARGS__)
+#define LN_REQUIRE_RANGE(value, begin, end) _LN_CHECK(begin <= value && value < end, ::ln::ExceptionLevel::Warning)
+#define LN_REQUIRE_KEY(expr, ...) _LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ##__VA_ARGS__)
+#define LN_ENSURE_IO(expr, ...) _LN_CHECK(expr, ::ln::ExceptionLevel::Error, _TT("IO Error"), ##__VA_ARGS__)
 
 // internal
 #ifdef LN_USTRING16
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
-	className(const char* message); \
-	className(const wchar_t* message); \
-	className(const Char* message);
+    className(const char* message);                            \
+    className(const wchar_t* message);                         \
+    className(const Char* message);
 
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
-	className::className(const char* message) \
-	{ \
-		setMessage(message); \
-	} \
-	className::className(const wchar_t* message) \
-	{ \
-		setMessage(message); \
-	} \
-	className::className(const Char* message) \
-	{ \
-		setMessageU(message); \
-	}
+    className::className(const char* message) {                  \
+        setMessage(message);                                     \
+    }                                                            \
+    className::className(const wchar_t* message) {               \
+        setMessage(message);                                     \
+    }                                                            \
+    className::className(const Char* message) {                  \
+        setMessageU(message);                                    \
+    }
 #else
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
-	className(const char* message); \
-	className(const wchar_t* message);
+    className(const char* message);                            \
+    className(const wchar_t* message);
 
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
-	className::className(const char* message) \
-	{ \
-		setMessage(message); \
-	} \
-	className::className(const wchar_t* message) \
-	{ \
-		setMessage(message); \
-	}
+    className::className(const char* message) {                  \
+        setMessage(message);                                     \
+    }                                                            \
+    className::className(const wchar_t* message) {               \
+        setMessage(message);                                     \
+    }
 #endif
 
-
 /** 問題の通知レベル */
-enum class ExceptionLevel
-{
-	Fatal,
-	Error,
-	Warning,
-	Info,
+enum class ExceptionLevel {
+    Fatal,
+    Error,
+    Warning,
+    Info,
 };
 
-
 /** アプリケーションの実行中に発生したエラーを表します。 */
-class Exception
-{
+class Exception {
 public:
-	using NotificationHandler = bool(*)(Exception& e);
+    using NotificationHandler = bool (*)(Exception& e);
 
-	Exception();
-	Exception(const Char* message);
-	virtual ~Exception();
+    Exception();
+    Exception(const Char* message);
+    virtual ~Exception();
 
-	const Char* message() const { return m_message.c_str(); }
+    const Char* message() const { return m_message.c_str(); }
 
-	/** 例外のコピーを作成します。 */
-	virtual Exception* copy() const;
+    /** 例外のコピーを作成します。 */
+    virtual Exception* copy() const;
 
-	/** エラーハンドラを設定します。 */
-	static void setNotificationHandler(NotificationHandler handler);
+    /** エラーハンドラを設定します。 */
+    static void setNotificationHandler(NotificationHandler handler);
 
-	/** エラーハンドラを取得します。 */
-	static NotificationHandler notificationHandler();
+    /** エラーハンドラを取得します。 */
+    static NotificationHandler notificationHandler();
 
 private:
-	static const int MaxPathSize = 260;
-	static const int MaxAssertionMessageSize = 100;
+    static const int MaxPathSize = 260;
+    static const int MaxAssertionMessageSize = 100;
 
-	ExceptionLevel m_level;
-	char m_sourceFilePath[MaxPathSize];					// __FILE__
-	int m_sourceFileLine;								// __LINE__
-	char m_assertionMessage[MaxAssertionMessageSize];	// #expr (LN_REQUIRE)
-	std::basic_string<Char>	m_message;
+    ExceptionLevel m_level;
+    char m_sourceFilePath[MaxPathSize];               // __FILE__
+    int m_sourceFileLine;                             // __LINE__
+    char m_assertionMessage[MaxAssertionMessageSize]; // #expr (LN_REQUIRE)
+    std::basic_string<Char> m_message;
 
-	friend struct detail::ExceptionHelper;
+    friend struct detail::ExceptionHelper;
 };
 
 //namespace detail {
@@ -184,63 +177,61 @@ private:
 //
 //} // namespace detail
 
-
 namespace detail {
 
-struct ExceptionHelper
-{
-	static const char* getSourceFilePath(const Exception& e) { return e.m_sourceFilePath; }
-	static const int getSourceFileLine(const Exception& e) { return e.m_sourceFileLine; }
-	static const char* getAssertionMessage(const Exception& e) { return e.m_assertionMessage; }
-	static void setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage);
-	static void setMessage(Exception& e, const std::string& str);
-	static void setMessage(Exception& e, const std::wstring& str);
-	static void setMessage(Exception& e, const UStdString& str);
+struct ExceptionHelper {
+    static const char* getSourceFilePath(const Exception& e) { return e.m_sourceFilePath; }
+    static const int getSourceFileLine(const Exception& e) { return e.m_sourceFileLine; }
+    static const char* getAssertionMessage(const Exception& e) { return e.m_assertionMessage; }
+    static void setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage);
+    static void setMessage(Exception& e, const std::string& str);
+    static void setMessage(Exception& e, const std::wstring& str);
+    static void setMessage(Exception& e, const UStdString& str);
 };
 
-template<class... TArgs> inline UStdString formatMessage(const char* format, TArgs&&... args) noexcept
-{
-	const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
-	return UnicodeStringUtils::NarrowToUString(str.c_str(), str.length());
+template<class... TArgs>
+inline UStdString formatMessage(const char* format, TArgs&&... args) noexcept {
+    const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
+    return UnicodeStringUtils::NarrowToUString(str.c_str(), str.length());
 }
-template<class... TArgs> inline UStdString formatMessage(const wchar_t* format, TArgs&&... args) noexcept
-{
-	const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
-	return UnicodeStringUtils::WideToUString(str.c_str(), str.length());
+template<class... TArgs>
+inline UStdString formatMessage(const wchar_t* format, TArgs&&... args) noexcept {
+    const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
+    return UnicodeStringUtils::WideToUString(str.c_str(), str.length());
 }
-template<class... TArgs> inline UStdString formatMessage(const Char* format, TArgs&&... args) noexcept
-{
-	return ::fmt::format(format, std::forward<TArgs>(args)...);
+template<class... TArgs>
+inline UStdString formatMessage(const Char* format, TArgs&&... args) noexcept {
+    return ::fmt::format(format, std::forward<TArgs>(args)...);
 }
-template<class T, class... TArgs> inline UStdString formatMessage(const T& format, TArgs&&... args) noexcept
-{
-	return ::fmt::format(format.c_str(), std::forward<TArgs>(args)...);
+template<class T, class... TArgs>
+inline UStdString formatMessage(const T& format, TArgs&&... args) noexcept {
+    return ::fmt::format(format.c_str(), std::forward<TArgs>(args)...);
 }
-inline UStdString formatMessage() noexcept { return {}; }
+inline UStdString formatMessage() noexcept {
+    return {};
+}
 void printError(const Exception& e);
 void notifyFatalError(const char* file, int line, const char* message);
 
 template<class... TArgs>
-inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, TArgs&&... args)
-{
-	Exception e;
-	ExceptionHelper::setMessage(e, formatMessage(std::forward<TArgs>(args)...));
-	ExceptionHelper::setSourceLocationInfo(e, level, file, line, exprString);
+inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, TArgs&&... args) {
+    Exception e;
+    ExceptionHelper::setMessage(e, formatMessage(std::forward<TArgs>(args)...));
+    ExceptionHelper::setSourceLocationInfo(e, level, file, line, exprString);
 
-	auto h = Exception::notificationHandler();
-	if (h != nullptr && h(e)) {
-		return true;
-	}
+    auto h = Exception::notificationHandler();
+    if (h != nullptr && h(e)) {
+        return true;
+    }
 
-	printError(e);
+    printError(e);
 
-	if (level == ExceptionLevel::Fatal || level == ExceptionLevel::Error) {
-		throw e;
-	}
+    if (level == ExceptionLevel::Fatal || level == ExceptionLevel::Error) {
+        throw e;
+    }
 
-	return true;
+    return true;
 }
 
 } // namespace detail
 } // namespace ln
-

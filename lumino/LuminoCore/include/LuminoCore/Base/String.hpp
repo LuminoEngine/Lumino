@@ -23,8 +23,7 @@ struct StringLockContext;
  * 
  * 文字列はメモリ上に連続的に確保され Null 終端文字を格納します。
  */
-class LN_API String
-{
+class LN_API String {
 public:
     static const String Empty;
 
@@ -82,7 +81,7 @@ public:
     void assign(const Char* str);
     void assign(const Char* str, int length); /**< @overload assign */
     void assign(int count, Char ch);          /**< @overload assign */
-    void assign(const StringView& str);        /**< @overload assign */
+    void assign(const StringView& str);       /**< @overload assign */
 
     /** 指定された文字列を追加します。 */
     void append(const Char* str, int length);
@@ -307,7 +306,7 @@ public:
 
     /** 指定した文字列を連結します。 */
     static String concat(const StringView& str1, const StringView& str2);
-    static String concat(const StringView& str1, const StringView& str2, const StringView& str3);                        /**< @overload concat */
+    static String concat(const StringView& str1, const StringView& str2, const StringView& str3);                         /**< @overload concat */
     static String concat(const StringView& str1, const StringView& str2, const StringView& str3, const StringView& str4); /**< @overload concat */
 
     /** 指定した文字列リストを結合した 1 つの文字列を生成します。各要素の間には、指定した区切り記号が挿入されます。 */
@@ -413,7 +412,7 @@ private:
     void copy(const String& str);
     void move(String&& str) LN_NOEXCEPT;
     Char* lockBuffer(size_t requestSize, detail::StringLockContext* context) noexcept;
-    void unlockBuffer(int confirmedSize, detail::StringLockContext* context) noexcept;
+    void unlockBuffer(size_t confirmedSize, detail::StringLockContext* context) noexcept;
     Char* getBuffer();
     const Char* getBuffer() const LN_NOEXCEPT;
 
@@ -436,12 +435,10 @@ private:
 
     //static ByteBuffer convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar = nullptr);
 
-    union Data
-    {
+    union Data {
         detail::UStringCore* core;
 
-        struct SSO
-        {
+        struct SSO {
             Char buffer[SSOCapacity];
             Char length; // ---xxxxy    : x=size y:flag(0=sso,1=non sso)
         } sso;
@@ -451,16 +448,13 @@ private:
 };
 
 /** String のヘルパーです。 = 演算子による更新を参照元の String に伝えます。 */
-class CharRef
-{
+class CharRef {
 public:
-    operator Char() const
-    {
+    operator Char() const {
         return m_str.c_str()[m_index];
     }
 
-    CharRef& operator=(Char ch)
-    {
+    CharRef& operator=(Char ch) {
         m_str.setAt(m_index, ch);
         return *this;
     }
@@ -468,8 +462,7 @@ public:
 private:
     CharRef(String& str, int index)
         : m_str(str)
-        , m_index(index)
-    {
+        , m_index(index) {
     }
 
     String& m_str;
@@ -479,8 +472,7 @@ private:
 };
 
 /** ある文字列に対する部分文字列の参照を保持します。 */
-class StringView
-{
+class StringView {
 public:
     /** 空の StringView を構築します。 */
     constexpr StringView() LN_NOEXCEPT;
@@ -509,7 +501,6 @@ public:
     /** 指定された Path 全体を参照します。 */
     StringView(const Path& path);
 
-
 #ifdef LN_STRING_FUZZY_CONVERSION
     /** 指定された文字列の全体を参照します。 */
     StringRef(const char* str);
@@ -517,7 +508,7 @@ public:
     /** 指定された文字列の全体を参照します。 */
     StringRef(const wchar_t* str);
 #endif
-    ~StringView() { clear(); }  // これだと constexpr にできないので、どのみち LN_STRING_FUZZY_CONVERSION は削除かな
+    ~StringView() { clear(); } // これだと constexpr にできないので、どのみち LN_STRING_FUZZY_CONVERSION は削除かな
 #else
     ~StringView() = default;
 #endif
@@ -536,7 +527,6 @@ public:
 
     /** 文字列の部分文字列を抽出します。 */
     StringView substr(int start, int count) const;
-
 
     /** @copydoc String::indexOf */
     int indexOf(const StringView& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
@@ -702,8 +692,7 @@ constexpr StringView::StringView(const Char* begin, const Char* end)
 
 namespace detail {
 
-class UStringCore
-{
+class UStringCore {
 public:
     UStringCore();
     ~UStringCore();
@@ -713,18 +702,18 @@ public:
 
     Char* get() LN_NOEXCEPT { return m_str; }
     const Char* get() const LN_NOEXCEPT { return m_str; }
-    int length() const LN_NOEXCEPT { return m_length; }
-    int capacity() const { return m_capacity; }
-    void reserve(int length);
-    void fixLength(int length);
-    void resize(int length);
+    size_t length() const LN_NOEXCEPT { return m_length; }
+    size_t capacity() const { return m_capacity; }
+    void reserve(size_t length);
+    void fixLength(size_t length);
+    void resize(size_t length);
     void clear();
 
 private:
     std::atomic<int> m_refCount;
     Char* m_str;
-    int m_capacity;
-    int m_length;
+    size_t m_capacity;
+    size_t m_length;
 };
 
 } // namespace detail
@@ -732,247 +721,194 @@ private:
 //==============================================================================
 // String
 
-inline const Char* String::c_str() const LN_NOEXCEPT
-{
+inline const Char* String::c_str() const LN_NOEXCEPT {
     return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : _TT(""));
 }
 
-inline int String::length() const LN_NOEXCEPT
-{
+inline int String::length() const LN_NOEXCEPT {
     return static_cast<int>((isSSO()) ? getSSOLength() : ((m_data.core) ? m_data.core->length() : 0));
 }
 
-inline int String::capacity() const LN_NOEXCEPT
-{
+inline int String::capacity() const LN_NOEXCEPT {
     return static_cast<int>((isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->capacity() : 0));
 }
 
-inline CharRef String::operator[](int index)
-{
-	LN_CHECK(0 <= index && index < length());
+inline CharRef String::operator[](int index) {
+    LN_CHECK(0 <= index && index < length());
     return CharRef(*this, index);
 }
 
-inline const Char& String::operator[](int index) const LN_NOEXCEPT
-{
-	LN_CHECK(0 <= index && index < length());
+inline const Char& String::operator[](int index) const LN_NOEXCEPT {
+    LN_CHECK(0 <= index && index < length());
     return getBuffer()[index];
 }
 
-inline String& String::operator=(const StringView& rhs)
-{
+inline String& String::operator=(const StringView& rhs) {
     assign(rhs);
     return *this;
 }
-inline String& String::operator=(const Char* rhs)
-{
+inline String& String::operator=(const Char* rhs) {
     assign(rhs);
     return *this;
 }
-inline String& String::operator=(Char ch)
-{
+inline String& String::operator=(Char ch) {
     assign(&ch, 1);
     return *this;
 }
 
-inline String& String::operator+=(const String& rhs)
-{
+inline String& String::operator+=(const String& rhs) {
     append(rhs.c_str(), rhs.length());
     return *this;
 }
-inline String& String::operator+=(const StringView& rhs)
-{
+inline String& String::operator+=(const StringView& rhs) {
     append(rhs.data(), rhs.length());
     return *this;
 }
-inline String& String::operator+=(const Char* rhs)
-{
+inline String& String::operator+=(const Char* rhs) {
     append(rhs, static_cast<int>(detail::UStringHelper::strlen(rhs)));
     return *this;
 }
-inline String& String::operator+=(Char rhs)
-{
+inline String& String::operator+=(Char rhs) {
     append(&rhs, 1);
     return *this;
 }
 
-inline String operator+(const String& lhs, const String& rhs)
-{
+inline String operator+(const String& lhs, const String& rhs) {
     return String::concat(lhs, rhs);
 }
-inline String operator+(const String& lhs, const Char* rhs)
-{
+inline String operator+(const String& lhs, const Char* rhs) {
     return String::concat(lhs, StringView(rhs));
 }
-inline String operator+(const Char* lhs, const String& rhs)
-{
+inline String operator+(const Char* lhs, const String& rhs) {
     return String::concat(StringView(lhs), rhs);
 }
-inline String operator+(const String& lhs, Char rhs)
-{
+inline String operator+(const String& lhs, Char rhs) {
     return String::concat(lhs, StringView(&rhs, 1));
 }
-inline String operator+(Char lhs, const String& rhs)
-{
+inline String operator+(Char lhs, const String& rhs) {
     return String::concat(StringView(&lhs, 1), rhs);
 }
 
-inline bool operator==(const Char* lhs, const String& rhs)
-{
+inline bool operator==(const Char* lhs, const String& rhs) {
     return detail::UStringHelper::compare(lhs, rhs.c_str()) == 0;
 }
-inline bool operator==(const String& lhs, const String& rhs)
-{
+inline bool operator==(const String& lhs, const String& rhs) {
     return String::compare(lhs, 0, rhs, 0) == 0;
 }
-inline bool operator==(const String& lhs, const Char* rhs)
-{
+inline bool operator==(const String& lhs, const Char* rhs) {
     return detail::UStringHelper::compare(lhs.c_str(), rhs) == 0;
 }
-inline bool operator==(const String& lhs, const StringView& rhs)
-{
+inline bool operator==(const String& lhs, const StringView& rhs) {
     return String::compare(lhs, 0, rhs, 0) == 0;
 }
-inline bool operator!=(const Char* lhs, const String& rhs)
-{
+inline bool operator!=(const Char* lhs, const String& rhs) {
     return !operator==(lhs, rhs);
 }
-inline bool operator!=(const String& lhs, const String& rhs)
-{
+inline bool operator!=(const String& lhs, const String& rhs) {
     return !operator==(lhs, rhs);
 }
-inline bool operator!=(const String& lhs, const Char* rhs)
-{
+inline bool operator!=(const String& lhs, const Char* rhs) {
     return !operator==(lhs, rhs);
 }
 
-inline bool operator<(const String& lhs, const String& rhs)
-{
+inline bool operator<(const String& lhs, const String& rhs) {
     return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length()), CaseSensitivity::CaseSensitive) < 0;
 }
-inline bool operator<(const Char* lhs, const String& rhs)
-{
+inline bool operator<(const Char* lhs, const String& rhs) {
     return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0;
 }
-inline bool operator<(const String& lhs, const Char* rhs)
-{
+inline bool operator<(const String& lhs, const Char* rhs) {
     return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0;
 }
-inline bool operator>(const String& lhs, const String& rhs)
-{
+inline bool operator>(const String& lhs, const String& rhs) {
     return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length()), CaseSensitivity::CaseSensitive) > 0;
 }
-inline bool operator>(const Char* lhs, const String& rhs)
-{
+inline bool operator>(const Char* lhs, const String& rhs) {
     return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0;
 }
-inline bool operator>(const String& lhs, const Char* rhs)
-{
+inline bool operator>(const String& lhs, const Char* rhs) {
     return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0;
 }
 
-inline bool operator<=(const String& lhs, const String& rhs)
-{
+inline bool operator<=(const String& lhs, const String& rhs) {
     return !operator>(lhs, rhs);
 }
-inline bool operator<=(const Char* lhs, const String& rhs)
-{
+inline bool operator<=(const Char* lhs, const String& rhs) {
     return !operator>(lhs, rhs);
 }
-inline bool operator<=(const String& lhs, const Char* rhs)
-{
+inline bool operator<=(const String& lhs, const Char* rhs) {
     return !operator>(lhs, rhs);
 }
-inline bool operator>=(const String& lhs, const String& rhs)
-{
+inline bool operator>=(const String& lhs, const String& rhs) {
     return !operator<(lhs, rhs);
 }
-inline bool operator>=(const Char* lhs, const String& rhs)
-{
+inline bool operator>=(const Char* lhs, const String& rhs) {
     return !operator<(lhs, rhs);
 }
-inline bool operator>=(const String& lhs, const Char* rhs)
-{
+inline bool operator>=(const String& lhs, const Char* rhs) {
     return !operator<(lhs, rhs);
 }
 
 #ifdef LN_STRING_FUZZY_CONVERSION
-inline String& String::operator=(const char* rhs)
-{
+inline String& String::operator=(const char* rhs) {
     assignFromCStr(rhs);
     return *this;
 }
-inline String& String::operator+=(const char* rhs)
-{
+inline String& String::operator+=(const char* rhs) {
     String s(rhs);
     append(s.c_str(), s.length());
     return *this;
 }
 
-inline String operator+(const char* lhs, const String& rhs)
-{
+inline String operator+(const char* lhs, const String& rhs) {
     return operator+(String(lhs), rhs);
 }
 
-inline bool operator==(const char* lhs, const String& rhs)
-{
+inline bool operator==(const char* lhs, const String& rhs) {
     return operator==(String(lhs), rhs);
 }
-inline bool operator==(const String& lhs, const char* rhs)
-{
+inline bool operator==(const String& lhs, const char* rhs) {
     return operator==(lhs, String(rhs));
 }
-inline bool operator!=(const char* lhs, const String& rhs)
-{
+inline bool operator!=(const char* lhs, const String& rhs) {
     return operator!=(String(lhs), rhs);
 }
-inline bool operator!=(const String& lhs, const char* rhs)
-{
+inline bool operator!=(const String& lhs, const char* rhs) {
     return operator!=(lhs, String(rhs));
 }
 
-inline bool operator<(const char* lhs, const String& rhs)
-{
+inline bool operator<(const char* lhs, const String& rhs) {
     return operator<(String(lhs), rhs);
 }
-inline bool operator<(const String& lhs, const char* rhs)
-{
+inline bool operator<(const String& lhs, const char* rhs) {
     return operator<(lhs, String(rhs));
 }
-inline bool operator>(const char* lhs, const String& rhs)
-{
+inline bool operator>(const char* lhs, const String& rhs) {
     return operator>(String(lhs), rhs);
 }
-inline bool operator>(const String& lhs, const char* rhs)
-{
+inline bool operator>(const String& lhs, const char* rhs) {
     return operator>(lhs, String(rhs));
 }
 
-inline bool operator<=(const char* lhs, const String& rhs)
-{
+inline bool operator<=(const char* lhs, const String& rhs) {
     return operator<=(String(lhs), rhs);
 }
-inline bool operator<=(const String& lhs, const char* rhs)
-{
+inline bool operator<=(const String& lhs, const char* rhs) {
     return operator<=(lhs, String(rhs));
 }
-inline bool operator>=(const char* lhs, const String& rhs)
-{
+inline bool operator>=(const char* lhs, const String& rhs) {
     return operator>=(String(lhs), rhs);
 }
-inline bool operator>=(const String& lhs, const char* rhs)
-{
+inline bool operator>=(const String& lhs, const char* rhs) {
     return operator>=(lhs, String(rhs));
 }
 #endif
 
-inline std::ostream& operator<<(std::ostream& os, const String& str)
-{
+inline std::ostream& operator<<(std::ostream& os, const String& str) {
     os << str.toStdString();
     return os;
 }
-inline std::wostream& operator<<(std::wostream& os, const String& str)
-{
+inline std::wostream& operator<<(std::wostream& os, const String& str) {
     os << str.toStdWString();
     return os;
 }
@@ -980,38 +916,30 @@ inline std::wostream& operator<<(std::wostream& os, const String& str)
 //==============================================================================
 // StringView
 
-inline String operator+(const Char* lhs, const StringView& rhs)
-{
+inline String operator+(const Char* lhs, const StringView& rhs) {
     return String::concat(lhs, rhs);
 }
 
-inline String operator+(const StringView& lhs, const StringView& rhs)
-{
+inline String operator+(const StringView& lhs, const StringView& rhs) {
     return String::concat(lhs, rhs);
 }
 
-inline bool operator==(const StringView& lhs, const StringView& rhs)
-{
+inline bool operator==(const StringView& lhs, const StringView& rhs) {
     return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length())) == 0;
 }
-inline bool operator==(const Char* lhs, const StringView& rhs)
-{
+inline bool operator==(const Char* lhs, const StringView& rhs) {
     return String::compare(StringView(lhs), 0, rhs, 0, -1) == 0;
 }
-inline bool operator==(const StringView& lhs, const Char* rhs)
-{
+inline bool operator==(const StringView& lhs, const Char* rhs) {
     return String::compare(lhs, 0, StringView(rhs), 0, -1) == 0;
 }
-inline bool operator!=(const StringView& lhs, const StringView& rhs)
-{
+inline bool operator!=(const StringView& lhs, const StringView& rhs) {
     return !operator==(lhs, rhs);
 }
-inline bool operator!=(const Char* lhs, const StringView& rhs)
-{
+inline bool operator!=(const Char* lhs, const StringView& rhs) {
     return !operator==(lhs, rhs);
 }
-inline bool operator!=(const StringView& lhs, const Char* rhs)
-{
+inline bool operator!=(const StringView& lhs, const Char* rhs) {
     return !operator==(lhs, rhs);
 }
 
@@ -1020,14 +948,12 @@ inline bool operator!=(const StringView& lhs, const Char* rhs)
 // for unordered_map key
 namespace std {
 template<>
-struct hash<ln::String>
-{
+struct hash<ln::String> {
     std::size_t operator()(const ln::String& key) const;
 };
 } // namespace std
 
 //#include "StringFormat.inl"
-
 
 namespace fmt {
 
@@ -1051,10 +977,11 @@ namespace fmt {
 //    }
 //};
 
-template<> struct formatter<::ln::String, ln::Char> {
+template<>
+struct formatter<::ln::String, ln::Char> {
 
     template<typename ParseContext>
-    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
+    auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
         return ctx.begin();
     }
 
@@ -1063,17 +990,18 @@ template<> struct formatter<::ln::String, ln::Char> {
         //std::u16string ss = v.c_str();
         //return fmt::formatter<std::string>::format(ss, ctx);
         //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
-       // return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
-        
+        // return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
+
         std::basic_string_view<ln::Char> view(v.c_str(), v.length());
         formatter<std::basic_string_view<ln::Char>, ln::Char> fff;
         return fff.format(view, ctx);
     }
 };
 
-template<> struct formatter<::ln::StringView, ln::Char> {
+template<>
+struct formatter<::ln::StringView, ln::Char> {
     template<typename ParseContext>
-    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
+    auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
         return ctx.begin();
     }
 
@@ -1085,7 +1013,6 @@ template<> struct formatter<::ln::StringView, ln::Char> {
     }
 };
 } // namespace fmt
-
 
 //==============================================================================
 // String

@@ -15,14 +15,19 @@ class FileSystem;
 namespace detail {
 class DirectoryIterator2Impl;
 
-enum class SearchTargetEntity
-{
+enum class SearchTargetEntity {
     File,
     Directory,
 };
 
-class DirectoryIterator2 : public std::iterator<std::forward_iterator_tag, int> {
+class DirectoryIterator2 {
 public:
+    typedef std::forward_iterator_tag iterator_category;
+    typedef int value_type;
+    typedef ptrdiff_t difference_type;
+    typedef int* pointer;
+    typedef int& reference;
+
     DirectoryIterator2();
     DirectoryIterator2(const StringView& dirPath, const StringView& pattern, SearchOption searchOption, SearchTargetEntity targetEntity);
     DirectoryIterator2(const DirectoryIterator2& other);
@@ -47,15 +52,13 @@ private:
 
 } // namespace detail
 
-enum class FileCopyOption
-{
+enum class FileCopyOption {
     None,
     Overwrite,
 };
 
 /** ファイルリストを STL の範囲ベースのインターフェイスとして列挙するためのクラスです。 */
-class DirectoryIteratorRange
-{
+class DirectoryIteratorRange {
 public:
     bool isEmpty() const { return m_begin == m_end; }
     detail::DirectoryIterator2 begin() { return m_begin; }
@@ -70,8 +73,7 @@ private:
 };
 
 /** ファイルやディレクトリの作成、コピー、削除や列挙など、一般的な操作を提供します。 */
-class FileSystem
-{
+class FileSystem {
 public:
     /**
      * 指定されたファイルが存在するか確認します。
@@ -230,8 +232,7 @@ private:
 
 namespace detail {
 
-class FileSystemInternal
-{
+class FileSystemInternal {
 public:
     // TODO: ↓ StringView でいい気が
 
@@ -279,16 +280,15 @@ public:
     static bool matchPath(const wchar_t* path, int pathLen, const wchar_t* pattern, int patternLen);
     static bool matchPath(const Char* path, int pathLen, const Char* pattern, int patternLen);
 
-    static FILE* fopen(const char* path, int pathLen, const char* mode, int modeLen);
-    static FILE* fopen(const wchar_t* path, int pathLen, const wchar_t* mode, int modeLen);
-    static FILE* fopen(const Char* path, int pathLen, const Char* mode, int modeLen);
+    static FILE* fopen(const char* path, size_t pathLen, const char* mode, size_t modeLen);
+    static FILE* fopen(const wchar_t* path, size_t pathLen, const wchar_t* mode, size_t modeLen);
+    static FILE* fopen(const Char* path, size_t pathLen, const Char* mode, size_t modeLen);
 
     static uint64_t getFileSize(FILE* stream);
     static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
 };
 
-class FileGlob
-{
+class FileGlob {
 public:
     static void glob(const Path& rootDir, const Path& pathspec, const List<String>& filters, bool recursive, List<Path>* outPathes);
     static bool filterFilePath(const List<String>& filters, const String& filePath);
