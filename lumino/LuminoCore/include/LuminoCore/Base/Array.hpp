@@ -341,7 +341,7 @@ public:
 
     /** 配列のそれぞれの要素に対してコールバック関数を適用します。その際、直前の要素における計算結果の返値を渡し、最後の結果を返します。 */
     template<class T, class TFunc>
-    T fold(T initialValue, TFunc func) const {
+    T reduce(T initialValue, TFunc func) const {
         for (const auto& i : *this) {
             initialValue = func(std::move(initialValue), i);
         }
