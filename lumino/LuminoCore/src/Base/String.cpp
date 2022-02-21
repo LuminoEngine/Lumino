@@ -86,10 +86,10 @@ void UStringCore::release() {
 
 void UStringCore::reserve(size_t length) {
     LN_DCHECK(length >= 0);
-    int size = length + 1;
+    size_t size = length + 1;
     if (m_capacity < size) {
         Char* oldStr = m_str;
-        int oldLen = m_length;
+        size_t oldLen = m_length;
 
         m_str = LN_NEW Char[size];
         m_capacity = length;
@@ -1151,11 +1151,11 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
         mbstate_t state;
         char* p = dst;
         for (int n = 0; n < srcLen; ++n) {
-            int rc = std::c16rtomb(p, src[n], &state);
-            if (rc == -1) break;
+            size_t rc = std::c16rtomb(p, src[n], &state);
+            if (rc == (size_t)-1) break;
             p += rc;
         }
-        return p - dst;
+        return static_cast<int>(p - dst);
     }
     else {
         dst[0] = '\0';
