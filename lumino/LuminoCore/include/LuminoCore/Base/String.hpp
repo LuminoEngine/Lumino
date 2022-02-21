@@ -957,26 +957,6 @@ struct hash<ln::String> {
 
 namespace fmt {
 
-//template<typename TChar> struct formatter<::ln::String, TChar> {
-//
-//    template<typename ParseContext>
-//    auto parse(ParseContext& ctx) ->  decltype(ctx.begin()) {
-//        return ctx.begin();
-//    }
-//
-//    template<typename FormatContext>
-//    auto format(const ln::String& v, FormatContext& ctx) -> decltype(ctx.out()) {
-//        std::u16string_view view(v.c_str(), v.length());
-//        formatter<std::u16string_view, char16_t> fff;
-//        return fff.format(view, ctx);
-//
-//        ///std::u16string ss = v.c_str();
-//        //return fmt::formatter<std::string>::format(ss, ctx);
-//        //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
-//        //return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
-//    }
-//};
-
 template<>
 struct formatter<::ln::String, ln::Char> {
 
@@ -987,14 +967,9 @@ struct formatter<::ln::String, ln::Char> {
 
     template<typename FormatContext>
     auto format(const ln::String& v, FormatContext& ctx) -> decltype(ctx.out()) {
-        //std::u16string ss = v.c_str();
-        //return fmt::formatter<std::string>::format(ss, ctx);
-        //std::basic_string_view<::ln::Char> view(v.c_str(), v.length());
-        // return formatter<std::basic_string_view<::ln::Char>>::format(view, ctx);
-
         std::basic_string_view<ln::Char> view(v.c_str(), v.length());
-        formatter<std::basic_string_view<ln::Char>, ln::Char> fff;
-        return fff.format(view, ctx);
+        formatter<std::basic_string_view<ln::Char>, ln::Char> f;
+        return f.format(view, ctx);
     }
 };
 
@@ -1008,8 +983,8 @@ struct formatter<::ln::StringView, ln::Char> {
     template<typename FormatContext>
     auto format(const ln::StringView& v, FormatContext& ctx) -> decltype(ctx.out()) {
         std::basic_string_view<ln::Char> view(v.data(), v.length());
-        formatter<std::basic_string_view<ln::Char>, ln::Char> fff;
-        return fff.format(view, ctx);
+        formatter<std::basic_string_view<ln::Char>, ln::Char> f;
+        return f.format(view, ctx);
     }
 };
 } // namespace fmt

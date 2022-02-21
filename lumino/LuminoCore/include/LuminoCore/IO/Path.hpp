@@ -305,18 +305,22 @@ inline std::u32string_view toStdStringView(const Path& v) {
     return std::u32string_view(v.str().c_str(), v.str().length());
 }
 
-class StringView;
-
-//namespace fmt {
-//
-//template<typename Formatter>
-//void formatArg(Formatter& f, const ln::Path& value)
-//{
-//	f.getSB().appendString(value.str());
-//}
-//
-//}
-
 } // namespace ln
 
-//#include "../Base/Formatter.h"
+namespace fmt {
+
+template<>
+struct formatter<::ln::Path, ln::Char> {
+    template<typename ParseContext>
+    auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
+        return ctx.begin();
+    }
+    template<typename FormatContext>
+    auto format(const ln::Path& v, FormatContext& ctx) -> decltype(ctx.out()) {
+        std::basic_string_view<ln::Char> view(v.c_str(), v.length());
+        formatter<std::basic_string_view<ln::Char>, ln::Char> f;
+        return f.format(view, ctx);
+    }
+};
+
+} // namespace fmt
