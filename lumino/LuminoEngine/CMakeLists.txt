@@ -293,8 +293,9 @@ if (LN_USE_OPENAL)
 endif()
 
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Targets
+#-------------------------------------------------------------------------------
 
 set(
     _LN_ENGINE_LINK_LIBS
@@ -447,8 +448,10 @@ install(
 #add_custom_command(TARGET LuminoEngine-static POST_BUILD
 #    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LuminoEngine-static> ../../../../lib/${LN_TARGET_ARCH})
 
-#------------------------------------------------------------------------------
-# Install
+
+#-------------------------------------------------------------------------------
+# Installation
+#-------------------------------------------------------------------------------
 
 # Shared library
 if (LN_BUILD_SHARED_LIBRARY)
@@ -457,4 +460,13 @@ if (LN_BUILD_SHARED_LIBRARY)
         RUNTIME     DESTINATION bin
         ARCHIVE     DESTINATION lib
         LIBRARY     DESTINATION lib)
+endif()
+
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+
+if (LN_BUILD_TESTS)
+    add_subdirectory(examples/EmptyWindow)
+    add_subdirectory(examples/EditorWithImGui)
 endif()
