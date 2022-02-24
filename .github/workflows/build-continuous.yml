@@ -12,24 +12,20 @@ env:
 jobs:
       
   #==============================================================================
-  Native-MSVC2019-x64-MT:
+  x64-windows:
     runs-on: windows-2019
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Setup .NET Core
+    - name: Setup dotnet
       uses: actions/setup-dotnet@v1.7.2
       with:
         dotnet-version: '5.0.x'
-
     - name: Cache
       uses: actions/cache@v2
       with:
         path: ./build/cache
         key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}
-            
     - name: Dependencies
       run: dotnet run -- BuildExternals x64-windows
     - name: Build
@@ -39,6 +35,26 @@ jobs:
     #   with:
     #     name: LuminoEngine-MSVC2019-x64-MT
     #     path: ./build/MSVC2019-x64-MT/EngineInstall
+
+  #==============================================================================
+  x64-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: '5.0.x'
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ./build/cache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}
+    - name: Dependencies
+      run: dotnet run -- BuildExternals wasm32-emscripten
+    - name: Build
+      run: dotnet run -- BuildEngine_MSVC wasm32-emscripten
 
   #==============================================================================
   # Native-Web:

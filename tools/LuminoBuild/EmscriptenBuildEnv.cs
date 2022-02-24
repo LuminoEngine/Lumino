@@ -4,6 +4,7 @@ using System.IO;
 
 namespace LuminoBuild
 {
+    [Obsolete]
     class EmscriptenBuildEnv
     {
         public const string emsdkVer = "1.39.8";

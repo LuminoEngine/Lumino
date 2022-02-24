@@ -38,13 +38,85 @@ namespace LuminoBuild
                 }
             }
 
-            // $ emsdk activate xxxx
+
+
+            var var_PATH = new List<string>();
+            var var_EMSDK = "";
+            var var_EM_CONFIG = "";
+            var var_EMSDK_NODE = "";
+            var var_EMSDK_PYTHON = "";
+            var var_JAVA_HOME = "";
+            using (CurrentDir.Enter(EmsdkDir))
+            {
+                var proc = Proc.Make("emsdk", "activate " + emsdkVer)
+                    .WithShell()
+                    .WithSilent();
+                proc.Call();
+                var logs = proc.StdErrorString.ToString();
+
+                using (var reader = new StringReader(logs))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("PATH +="))
+                        {
+                            var_PATH.Add(line.Substring(7).Trim());
+                        }
+                        else if (line.StartsWith("EMSDK ="))
+                        {
+                            var_EMSDK = line.Substring(7).Trim();
+                        }
+                        else if (line.StartsWith("EM_CONFIG ="))
+                        {
+                            var_EM_CONFIG = line.Substring(11).Trim();
+                        }
+                        else if (line.StartsWith("EMSDK_NODE ="))
+                        {
+                            var_EMSDK_NODE = line.Substring(12).Trim();
+                        }
+                        else if (line.StartsWith("EMSDK_PYTHON"))
+                        {
+                            int i = line.IndexOf("=");
+                            var_EMSDK_PYTHON = line.Substring(i + 1).Trim();
+                        }
+                        else if (line.StartsWith("JAVA_HOME ="))
+                        {
+                            var_JAVA_HOME = line.Substring(11).Trim();
+                        }
+                    }
+                }
+            }
+
             var path = Environment.GetEnvironmentVariable("PATH");
-            path = EmsdkDir + ";" + path;
-            path = Path.Combine(EmsdkDir, "upstream", "emscripten") + ";" + path;
+            path = string.Join(";", var_PATH) + ";" + path;
             Environment.SetEnvironmentVariable("PATH", path);
-            Environment.SetEnvironmentVariable("EMSDK", EmsdkDir);
-            Environment.SetEnvironmentVariable("EM_CONFIG", Path.Combine(EmsdkDir, ".emscripten"));
+            Environment.SetEnvironmentVariable("EMSDK", var_EMSDK);
+            Environment.SetEnvironmentVariable("EM_CONFIG", var_EM_CONFIG);
+            Environment.SetEnvironmentVariable("EMSDK_NODE", var_EMSDK_NODE);
+            Environment.SetEnvironmentVariable("EMSDK_PYTHON", var_EMSDK_PYTHON);
+            Environment.SetEnvironmentVariable("JAVA_HOME", var_JAVA_HOME);
+
+            Console.WriteLine("Setting environment variables:");
+            Console.WriteLine("  PATH = " + path);
+            Console.WriteLine("  EMSDK = " + var_EMSDK);
+            Console.WriteLine("  EM_CONFIG = " + var_EM_CONFIG);
+            Console.WriteLine("  EMSDK_NODE = " + var_EMSDK_NODE);
+            Console.WriteLine("  EMSDK_PYTHON = " + var_EMSDK_PYTHON);
+            Console.WriteLine("  JAVA_HOME = " + var_JAVA_HOME);
+
+
+
+            // $ emsdk activate xxxx
+            //var path = Environment.GetEnvironmentVariable("PATH");
+            //path = EmsdkDir + ";" + path;
+            //path = Path.Combine(EmsdkDir, "upstream", "emscripten") + ";" + path;
+            //Environment.SetEnvironmentVariable("PATH", path);
+            //Environment.SetEnvironmentVariable("EMSDK", EmsdkDir);
+            //Environment.SetEnvironmentVariable("EM_CONFIG", Path.Combine(EmsdkDir, ".emscripten"));
+
+            //Environment.SetEnvironmentVariable("EMSDK_PYTHON", @"C:\Proj\LN\Lumino\build\cache\tools\emsdk\python\3.9.2-1_64bit\python.exe");
+            //Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Proj\LN\Lumino\build\cache\tools\emsdk\java\8.152_64bit");
 
             Ninja = b.VcpkgDir + "/downloads/tools/ninja/1.10.1-windows/ninja.exe";
 
