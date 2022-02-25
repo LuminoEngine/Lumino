@@ -428,20 +428,37 @@ endif()
 install(
     TARGETS     LuminoEngine-static
     EXPORT      LuminoEngine-Export
-    ARCHIVE     DESTINATION lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
+    ARCHIVE     DESTINATION ./lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
-    RUNTIME     DESTINATION bin
+    RUNTIME     DESTINATION ./bin
     FRAMEWORK   DESTINATION .
+    COMPONENT LuminoEngine
 )
 
-install(DIRECTORY include DESTINATION include)
-install(FILES include/Lumino.hpp DESTINATION include)
-install(FILES include/LuminoEngine.hpp DESTINATION include)
+install(DIRECTORY include DESTINATION .)
+# install(FILES include/Lumino.hpp DESTINATION .)
+# install(FILES include/LuminoEngine.hpp DESTINATION .)
 
 # install(
 #     EXPORT LuminoEngine-Export
 #     FILE LuminoEngineConfig.cmake
 #     DESTINATION lib/cmake/LuminoEngine
+#     EXPORT_LINK_INTERFACE_LIBRARIES)
+
+
+# install(
+#     TARGETS     LuminoEngine-static
+#     EXPORT      LuminoEngine-Export2
+#     ARCHIVE     DESTINATION ./lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
+#     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
+#     RUNTIME     DESTINATION ./bin
+#     FRAMEWORK   DESTINATION .
+# )
+# install(DIRECTORY include DESTINATION .)
+# install(
+#     EXPORT LuminoEngine-Export2
+#     FILE LuminoEngine2Config.cmake
+#     DESTINATION lib/cmake/LuminoEngine2
 #     EXPORT_LINK_INTERFACE_LIBRARIES)
 
 

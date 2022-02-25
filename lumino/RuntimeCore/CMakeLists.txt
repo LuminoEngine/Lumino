@@ -65,7 +65,6 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 #     INCLUDES DESTINATION ./include
 # )
 
-# install(DIRECTORY include DESTINATION .)
 
 # install(
 #     EXPORT ${LN_TARGETS_NAME}
@@ -81,6 +80,8 @@ install(
     ARCHIVE DESTINATION ./lib
     INCLUDES DESTINATION ./include
 )
+
+install(DIRECTORY include DESTINATION .)
 
 #-------------------------------------------------------------------------------
 # Sub-projects
