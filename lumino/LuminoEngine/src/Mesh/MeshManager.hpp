@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <unordered_map>
-#include "../../../RuntimeCore/src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 #include <LuminoEngine/Mesh/Common.hpp>
 
 namespace ln {

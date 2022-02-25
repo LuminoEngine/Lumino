@@ -4,7 +4,7 @@
 #include <LuminoEngine/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
-#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include "AnimationManager.hpp"
 #include "VmdLoader.hpp"
 #include "BvhImporter.hpp"

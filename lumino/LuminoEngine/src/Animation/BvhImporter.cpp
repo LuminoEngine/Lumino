@@ -3,7 +3,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
-#include "../../../RuntimeCore/src/Asset/AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include "BvhImporter.hpp"
 
 namespace ln {

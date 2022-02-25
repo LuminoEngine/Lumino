@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include "../src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 
 class Test_Base_ObjectCache : public ::testing::Test {};
 

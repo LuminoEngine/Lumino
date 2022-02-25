@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Effect/Common.hpp>
 #include <LuminoEngine/Base/Promise.hpp>
-#include "../src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 
 namespace Effekseer {
 class Manager;

@@ -5,7 +5,7 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include "AssetArchive.hpp"
-#include "AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
 namespace ln {
 namespace detail {

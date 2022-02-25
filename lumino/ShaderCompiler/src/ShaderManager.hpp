@@ -6,7 +6,7 @@
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoShaderCompiler/Common.hpp>
-#include "../../RuntimeCore/src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 
 namespace ln {
 namespace detail {

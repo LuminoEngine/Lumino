@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "AssetArchive.hpp"
-#include "AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
 namespace ln {
 namespace detail {

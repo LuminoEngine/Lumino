@@ -13,7 +13,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include "../../../../RuntimeCore/src/Asset/AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../MeshManager.hpp"
 #include "GLTFImporter.hpp"

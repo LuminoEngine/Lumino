@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"
-#include "../../RuntimeCore/src/Asset/AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
 #ifdef _WIN32
 #include <LuminoShaderCompiler/detail/D3DCompilerAPI.hpp>

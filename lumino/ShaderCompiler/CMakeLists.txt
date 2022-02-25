@@ -34,7 +34,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntimeCore)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoSystem)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")

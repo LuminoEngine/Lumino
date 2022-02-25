@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Asset/TextureImporter.hpp>
 
 namespace ln {

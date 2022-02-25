@@ -3,7 +3,7 @@
 //#include <LuminoEngine/Engine/RenderingCommandList.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
-#include "../../RuntimeCore/src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 #include "../../LuminoEngine/include/LuminoEngine/Engine/RenderingCommandList.hpp"
 
 namespace ln {

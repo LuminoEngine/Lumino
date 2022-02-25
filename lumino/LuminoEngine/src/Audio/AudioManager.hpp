@@ -2,7 +2,7 @@
 #include <memory>
 #include <thread>
 #include <LuminoEngine/Base/Task.hpp>
-#include "../../../RuntimeCore/src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 #include <LuminoEngine/Audio/InternalSharedMutex.inc>
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
 

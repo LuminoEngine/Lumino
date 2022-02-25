@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include "../src/Asset/AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include "../src/Asset/AssetArchive.hpp"
 
 class Test_Asset_AssetArchive : public ::testing::Test {};

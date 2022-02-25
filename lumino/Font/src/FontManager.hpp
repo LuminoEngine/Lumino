@@ -3,7 +3,7 @@
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoFont/Common.hpp>
-#include "../../RuntimeCore/src/Base/RefObjectCache.hpp"
+#include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 
 typedef int FT_Error;
 typedef void*  FT_Pointer;

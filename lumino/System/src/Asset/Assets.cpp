@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "../../../../lumino/LuminoCore/src/IO/PathHelper.hpp"
-#include "AssetManager.hpp"
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Base/MixHash.hpp>
