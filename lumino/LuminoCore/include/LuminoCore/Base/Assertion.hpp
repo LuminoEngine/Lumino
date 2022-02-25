@@ -59,8 +59,11 @@ struct ExceptionHelper;
  * }
  * ~~~
  *
- * このマクロが例外ハンドラを呼び出すときのレベルは `Warning` です。
+ * このマクロが例外ハンドラを呼び出すときのレベルは `Error` です。
  */
+#define LN_ASSERT(expr, ...) _LN_CHECK(expr, ::ln::ExceptionLevel::Error, ##__VA_ARGS__)
+
+/** @deprecated see LN_ASSERT */
 #define LN_REQUIRE(expr, ...) _LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ##__VA_ARGS__)
 
 /**
@@ -143,6 +146,8 @@ public:
     Exception();
     Exception(const Char* message);
     virtual ~Exception();
+
+   ExceptionLevel level() const { return m_level; }
 
     const Char* message() const { return m_message.c_str(); }
 

@@ -456,4 +456,23 @@ namespace LuminoBuild
             S_IRGRP | S_IXGRP |
             S_IROTH | S_IXOTH;
     }
+
+    class CurrentDir : IDisposable
+    {
+        private string _prev;
+
+        public static CurrentDir Enter(string path)
+        {
+            var c = new CurrentDir() { _prev = Directory.GetCurrentDirectory() };
+            Directory.SetCurrentDirectory(path);
+            Console.WriteLine("Enter CurrentDir: " + path);
+            return c;
+        }
+
+        public void Dispose()
+        {
+            Directory.SetCurrentDirectory(_prev);
+            Console.WriteLine("Leave CurrentDir: " + _prev);
+        }
+    }
 }

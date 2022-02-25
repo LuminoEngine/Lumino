@@ -73,7 +73,7 @@ namespace LuminoBuild
 
         public bool IsDesktopSystem { get => System == "windows" || System == "osx" || System == "linux"; }
 
-        public Build(string triplet)
+        public Build(string triplet, CmdOptions options)
         {
             Triplet = triplet;
             var tokens = triplet.Split("-");
@@ -86,7 +86,7 @@ namespace LuminoBuild
             BuildDir = Path.GetFullPath(Path.Combine(RootDir, "build"));
             BuildCacheDir = Path.GetFullPath(Path.Combine(BuildDir, "cache"));
             BuildToolsDir = Path.GetFullPath(Path.Combine(BuildCacheDir, "tools"));
-            VcpkgDir = Path.GetFullPath(Path.Combine(BuildToolsDir, "vcpkg"));
+            VcpkgDir = (options.ExternalVcpkgDir != null) ? options.ExternalVcpkgDir : Path.GetFullPath(Path.Combine(BuildToolsDir, "vcpkg"));
             EngineBuildDir = Path.GetFullPath(Path.Combine(BuildDir, "buildtrees", Triplet, "lumino"));
             EngineInstallDir = Path.GetFullPath(Path.Combine(BuildDir, "installed", Triplet));
 
@@ -297,86 +297,6 @@ namespace LuminoBuild
                 }
 
             }
-        }
-    }
-
-
-    /// <summary>
-    /// ビルドタスク
-    /// </summary>
-    /// <remarks>
-    /// タスク自体は依存関係を定義しない。一般的なビルドツールとはやや異なるが。
-    /// これは、特定のタスクだけを繰り返し実行できるようにするため。例えば Ruby バインダのデバッグ中、これだけビルドしなおすなど。
-    /// </remarks>
-    abstract class BuildTask
-    {
-        /// <summary>
-        /// ルールを実行するためのコマンド名
-        /// </summary>
-        public abstract string CommandName { get; }
-
-        /// <summary>
-        /// 依存 Task
-        /// </summary>
-        public virtual List<string> Dependencies { get { return null; } }
-
-        /// <summary>
-        /// このルールをビルドする
-        /// </summary>
-        /// <param name="builder">Builder.</param>
-		public abstract void Build(Build b);
-	}
-
-    /// <summary>
-    /// 一連の BuildTask
-    /// </summary>
-    abstract class BuildRule
-    {
-        /// <summary>
-        /// 名前
-        /// </summary>
-        public abstract string Name { get; }
-
-        /// <summary>
-        /// 実行
-        /// </summary>
-        /// <param name="builder"></param>
-        public abstract void Build(Build builder);
-    }
-
-    static class Logger
-    {
-        public static void WriteLine(string format, params object[] args)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(format, args);
-            Console.ResetColor(); // 色のリセット
-        }
-        public static void WriteLineError(string format, params object[] args)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(format, args);
-            Console.ResetColor();
-        }
-    }
-
-
-    class CurrentDir : IDisposable
-    {
-        private string _prev;
-
-        public static CurrentDir Enter(string path)
-        {
-            var c = new CurrentDir() { _prev = Directory.GetCurrentDirectory() };
-            Directory.SetCurrentDirectory(path);
-            Console.WriteLine("Enter CurrentDir: " + path);
-            return c;
-        }
-
-        public void Dispose()
-        {
-            Directory.SetCurrentDirectory(_prev);
-            Console.WriteLine("Leave CurrentDir: " + _prev);
         }
     }
 }

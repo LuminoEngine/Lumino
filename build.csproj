@@ -15,10 +15,21 @@
     <!-- bin path -->
     <OutputPath>build/LuminoBuild/bin/$(Configuration)/</OutputPath>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
   
   <ItemGroup>
     <Compile Include="tools/LuminoBuild/Main.cs" />
-    <Compile Include="tools/LuminoBuild/LuminoBuildTool.cs" />
+    <Compile Include="tools\LuminoBuild\BuildSystem\BuildSystem.cs" />
+    <Compile Include="tools\LuminoBuild\BuildSystem\BuildTask.cs" />
+    <Compile Include="tools\LuminoBuild\BuildSystem\Logger.cs" />
+    <Compile Include="tools\LuminoBuild\BuildSystem\TaskManager.cs" />
     <Compile Include="tools/LuminoBuild/BuildEnvironment.cs" />
     <Compile Include="tools/LuminoBuild/EmscriptenBuildEnv.cs" />
     <Compile Include="tools/LuminoBuild/AndroidBuildEnv.cs" />
@@ -44,9 +55,13 @@
     <Compile Include="tools/LuminoBuild/Tasks/MakePackage_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakePackage_Ruby.cs" />
     <Compile Include="tools/LuminoBuild/Env/EmscriptenEnv.cs" />
-    <Compile Include="tools/LuminoBuild/Proc.cs" />
+    <Compile Include="tools\LuminoBuild\BuildSystem\Proc.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildExternals.cs" />
-    <Compile Include="tools/LuminoBuild/Utils.cs" />
+    <Compile Include="tools\LuminoBuild\BuildSystem\Utils.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
   </ItemGroup>
   
 </Project>

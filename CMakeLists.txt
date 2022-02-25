@@ -230,3 +230,15 @@ else()
     endif()
 endif()
 
+
+#-------------------------------------------------------------------------------
+# Installation
+#-------------------------------------------------------------------------------
+
+install(
+    EXPORT LuminoEngine-Export
+    FILE LuminoEngineConfig.cmake
+    DESTINATION lib/cmake/LuminoEngine
+    EXPORT_LINK_INTERFACE_LIBRARIES
+)
+

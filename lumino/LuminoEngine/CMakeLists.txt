@@ -355,7 +355,7 @@ endif()
 
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
     target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
-    target_link_libraries(LuminoEngine-static PRIVATE glslang::HLSL glslang::SPIRV glslang::glslang glslang::OGLCompiler)
+    target_link_libraries(LuminoEngine-static PRIVATE HLSL SPIRV glslang OGLCompiler)
     #target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-c)
     target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-core)
     #target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-cpp)
@@ -421,32 +421,28 @@ if (LN_BUILD_SHARED_LIBRARY)
 endif()
 
 
-#------------------------------------------------------------------------------
-# Install
+#-------------------------------------------------------------------------------
+# Installation
+#-------------------------------------------------------------------------------
 
-install(TARGETS LuminoEngine-static
-    EXPORT LuminoEngineTargets
+install(
+    TARGETS     LuminoEngine-static
+    EXPORT      LuminoEngine-Export
     ARCHIVE     DESTINATION lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
     RUNTIME     DESTINATION bin
-    FRAMEWORK   DESTINATION .)
-    
+    FRAMEWORK   DESTINATION .
+)
+
 install(DIRECTORY include DESTINATION include)
 install(FILES include/Lumino.hpp DESTINATION include)
 install(FILES include/LuminoEngine.hpp DESTINATION include)
 
-install(
-    EXPORT LuminoEngineTargets
-    FILE LuminoEngineTargets.cmake
-    DESTINATION lib/cmake/LuminoEngine
-    EXPORT_LINK_INTERFACE_LIBRARIES)
-
-#install(
-#    FILES LuminoEngineConfig.cmake
-#    DESTINATION lib/cmake/LuminoEngine)
-
-#add_custom_command(TARGET LuminoEngine-static POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LuminoEngine-static> ../../../../lib/${LN_TARGET_ARCH})
+# install(
+#     EXPORT LuminoEngine-Export
+#     FILE LuminoEngineConfig.cmake
+#     DESTINATION lib/cmake/LuminoEngine
+#     EXPORT_LINK_INTERFACE_LIBRARIES)
 
 
 #-------------------------------------------------------------------------------

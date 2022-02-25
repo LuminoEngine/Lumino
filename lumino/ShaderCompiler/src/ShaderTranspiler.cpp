@@ -10,7 +10,7 @@
 #include <glslang/Include/intermediate.h>
 #include <glslang/MachineIndependent/localintermediate.h>
 #include <glslang/Include/ResourceLimits.h>
-#include <SPIRV/GlslangToSpv.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
 #include "Lexer/CppLexer.hpp"
 #include <LuminoShaderCompiler/ShaderHelper.hpp>

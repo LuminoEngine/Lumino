@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "../src/UnifiedShader.hpp"
 #include "../src/UnifiedShaderCompiler.hpp"
 #include "../src/ShaderManager.hpp"
@@ -129,3 +129,4 @@ TEST_F(Test_Shader_UnifiedShader, LayoutTest2)
         ASSERT_EQ(1, passDL.m_samplers[1].dataIndex);
     }
 }
+#endif
