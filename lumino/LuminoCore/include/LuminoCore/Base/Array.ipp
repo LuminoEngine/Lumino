@@ -289,7 +289,7 @@ int Array<T>::indexOfIf(TPred pred, int startIndex) const {
         return -1;
 
     // index based loop, for std::unique_ptr
-    const int count = m_data.size();
+    const int count = static_cast<int>(m_data.size());
     for (int i = startIndex; i < count; i++) {
         if (pred(m_data[i])) {
             return i;
