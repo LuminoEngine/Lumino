@@ -12,80 +12,70 @@ namespace ln {
 // Process
 
 Process::Process()
-	: m_impl(makeRef<detail::ProcessImpl>())
-	, m_startInfo()
-	, m_stdinEncoding(nullptr)
-	, m_stdoutEncoding(nullptr)
-	, m_stderrEncoding(nullptr)
-{
-	//m_startInfo.useShellExecute = true;
-	createRedirectStreams();
+    : m_impl(makeRef<detail::ProcessImpl>())
+    , m_startInfo()
+    , m_stdinEncoding(nullptr)
+    , m_stdoutEncoding(nullptr)
+    , m_stderrEncoding(nullptr) {
+    //m_startInfo.useShellExecute = true;
+    createRedirectStreams();
 }
 
 Process::Process(const String& program, const List<String>& arguments, TextEncoding* encoding)
-	: m_impl(makeRef<detail::ProcessImpl>())
-	, m_startInfo()
-	, m_stdinEncoding(encoding)
-	, m_stdoutEncoding(encoding)
-	, m_stderrEncoding(encoding)
-{
-	setProgram(program);
-	setArguments(arguments);
-	createRedirectStreams();
+    : m_impl(makeRef<detail::ProcessImpl>())
+    , m_startInfo()
+    , m_stdinEncoding(encoding)
+    , m_stdoutEncoding(encoding)
+    , m_stderrEncoding(encoding) {
+    setProgram(program);
+    setArguments(arguments);
+    createRedirectStreams();
 }
 
-Process::~Process()
-{
+Process::~Process() {
 }
 
-StreamWriter* Process::openStdin()
-{
-	if (!m_stdinWriter)
-	{
-		m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
-		m_startInfo.stdinPipe->init();
-		TextEncoding* encoding = m_stdinEncoding;
-		if (!encoding) {
-			encoding = TextEncoding::systemMultiByteEncoding();
-		}
-		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, encoding);
-	}
+StreamWriter* Process::openStdin() {
+    if (!m_stdinWriter) {
+        m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
+        m_startInfo.stdinPipe->init();
+        TextEncoding* encoding = m_stdinEncoding;
+        if (!encoding) {
+            encoding = TextEncoding::systemMultiByteEncoding();
+        }
+        m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, encoding);
+    }
 
-	return m_stdinWriter;
+    return m_stdinWriter;
 }
 
-StreamReader* Process::openStdout()
-{
-	if (!m_stdoutReader)
-	{
-		m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
-		m_startInfo.stdoutPipe->init();
-		TextEncoding* encoding = m_stdoutEncoding;
-		if (!encoding) {
-			encoding = TextEncoding::systemMultiByteEncoding();
-		}
-		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, encoding);
-	}
+StreamReader* Process::openStdout() {
+    if (!m_stdoutReader) {
+        m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
+        m_startInfo.stdoutPipe->init();
+        TextEncoding* encoding = m_stdoutEncoding;
+        if (!encoding) {
+            encoding = TextEncoding::systemMultiByteEncoding();
+        }
+        m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, encoding);
+    }
 
-	return m_stdoutReader;
+    return m_stdoutReader;
 }
 
-StreamReader* Process::openStderr()
-{
-	if (!m_stderrReader)
-	{
-		m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
-		m_startInfo.stderrPipe->init();
-		TextEncoding* encoding = m_stdoutEncoding;
-		if (!encoding) {
-			encoding = TextEncoding::systemMultiByteEncoding();
-		}
-		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, encoding);
-	}
+StreamReader* Process::openStderr() {
+    if (!m_stderrReader) {
+        m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
+        m_startInfo.stderrPipe->init();
+        TextEncoding* encoding = m_stdoutEncoding;
+        if (!encoding) {
+            encoding = TextEncoding::systemMultiByteEncoding();
+        }
+        m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, encoding);
+    }
 
-	return m_stderrReader;
+    return m_stderrReader;
 }
-
 
 //StreamWriter* Process::stdinWriter() const
 //{
@@ -102,69 +92,63 @@ StreamReader* Process::openStderr()
 //	return m_stderrReader;
 //}
 
-void Process::start()
-{
-	if (m_startInfo.useShellExecute) {
-		if (LN_REQUIRE(!m_startInfo.stdinPipe && !m_startInfo.stdoutPipe && !m_startInfo.stderrPipe, "Use with setUseShellExecute(false).")) return;
-		// TODO: 環境変数指定も NG
-		m_impl->startWithShell(m_startInfo);
-	}
-	else {
-		m_impl->start(m_startInfo);
-	}
+void Process::start() {
+    if (m_startInfo.useShellExecute) {
+        if (LN_REQUIRE(!m_startInfo.stdinPipe && !m_startInfo.stdoutPipe && !m_startInfo.stderrPipe, "Use with setUseShellExecute(false).")) return;
+        // TODO: 環境変数指定も NG
+        m_impl->startWithShell(m_startInfo);
+    }
+    else {
+        m_impl->start(m_startInfo);
+    }
 }
 
-bool Process::wait(int timeoutMilliseconds)
-{
-	return m_impl->waitForExit(timeoutMilliseconds);
+bool Process::wait(int timeoutMilliseconds) {
+    return m_impl->waitForExit(timeoutMilliseconds);
 }
 
-ProcessStatus Process::status()
-{
-	return m_impl->getStatus(nullptr);
+ProcessStatus Process::status() {
+    return m_impl->getStatus(nullptr);
 }
 
-int Process::exitCode()
-{
-	int n = 1;
-	m_impl->getStatus(&n);
-	return n;
+int Process::exitCode() {
+    int n = 1;
+    m_impl->getStatus(&n);
+    return n;
 }
 
-int Process::execute(const Path& program, const List<String>& args, String* outStdOutput, String* outStdError)
-{
-	Process proc(program, args);
-	StreamReader* stdoutReader = (outStdOutput) ? proc.openStdout() : nullptr;
-	StreamReader* stderrReader = (outStdError) ? proc.openStderr() : nullptr;
-	proc.start();
-	proc.wait();
-	if (stdoutReader && outStdOutput) *outStdOutput = stdoutReader->readToEnd();
-	if (stderrReader && outStdError) *outStdError = stderrReader->readToEnd();
-	return proc.exitCode();
+int Process::execute(const Path& program, const List<String>& args, String* outStdOutput, String* outStdError) {
+    Process proc(program, args);
+    StreamReader* stdoutReader = (outStdOutput) ? proc.openStdout() : nullptr;
+    StreamReader* stderrReader = (outStdError) ? proc.openStderr() : nullptr;
+    proc.start();
+    proc.wait();
+    if (stdoutReader && outStdOutput) *outStdOutput = stdoutReader->readToEnd();
+    if (stderrReader && outStdError) *outStdError = stderrReader->readToEnd();
+    return proc.exitCode();
 }
 
-void Process::createRedirectStreams()
-{
-	//if (!m_stdinWriter)
-	//{
-	//	m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
-	//	m_startInfo.stdinPipe->init();
-	//	m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
-	//}
+void Process::createRedirectStreams() {
+    //if (!m_stdinWriter)
+    //{
+    //	m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
+    //	m_startInfo.stdinPipe->init();
+    //	m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
+    //}
 
-	//if (!m_stdoutReader)
-	//{
-	//	m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
-	//	m_startInfo.stdoutPipe->init();
-	//	m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
-	//}
+    //if (!m_stdoutReader)
+    //{
+    //	m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
+    //	m_startInfo.stdoutPipe->init();
+    //	m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
+    //}
 
-	//if (!m_stderrReader)
-	//{
-	//	m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
-	//	m_startInfo.stderrPipe->init();
-	//	m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
-	//}
+    //if (!m_stderrReader)
+    //{
+    //	m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
+    //	m_startInfo.stderrPipe->init();
+    //	m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
+    //}
 }
 
 #if 0
@@ -418,5 +402,185 @@ void Process::thread_ReadStdError()
 	}
 }
 #endif
+
+//==============================================================================
+// ProcessCommand2
+
+Ref<ProcessStdio> ProcessStdio::piped(TextEncoding* encoding) {
+    auto io = Ref<ProcessStdio>(LN_NEW ProcessStdio(), false);
+    io->m_encoding = encoding; 
+    return io;
+}
+
+//==============================================================================
+// ProcessCommand2
+
+//Ref<ProcessCommand2> ProcessCommand2::create(const ln::String& command) {
+//    return Ref<ProcessCommand2>(LN_NEW ProcessCommand2(command), false);
+//}
+
+ProcessCommand2::ProcessCommand2(const ln::String& command) {
+    m_startInfo.program = command;
+}
+
+ProcessCommand2& ProcessCommand2::arg(const ln::String& value) {
+    m_startInfo.args.push_back(value);
+    return *this;
+}
+
+Ref<Process2> ProcessCommand2::start() {
+    auto proc = Ref<Process2>(LN_NEW Process2(), false);
+    proc->start(this);
+    return proc;
+}
+
+//Ref<detail::PipeImpl> ProcessCommand2::createPipe(ProcessStdio* io) {
+//    if (io) {
+//
+//    }
+//    else {
+//        return nullptr;
+//    }
+//}
+
+//==============================================================================
+// Process2
+
+Process2::Process2()
+    : m_impl() {
+}
+
+Process2::~Process2() {
+    dispose();
+}
+
+void Process2::start(const ProcessCommand2* cmd) {
+    detail::ProcessStartInfo startInfo;
+    startInfo.program = cmd->m_startInfo.program;
+    startInfo.args = cmd->m_startInfo.args;
+
+    Ref<detail::PipeImpl> stdIn;
+    if (cmd->m_stdIn) {
+        stdIn = makeRef<detail::PipeImpl>();
+        stdIn->init();
+        TextEncoding* encoding = cmd->m_stdIn->encoding();
+        if (!encoding) {
+            encoding = TextEncoding::systemMultiByteEncoding();
+        }
+        m_stdinWriter = makeRef<StreamWriter>(stdIn, encoding);
+    }
+
+    Ref<detail::PipeImpl> stdOut;
+    if (cmd->m_stdOut) {
+        stdOut = makeRef<detail::PipeImpl>();
+        stdOut->init();
+        TextEncoding* encoding = cmd->m_stdOut->encoding();
+        if (!encoding) {
+            encoding = TextEncoding::systemMultiByteEncoding();
+        }
+        m_stdoutReader = makeRef<StreamReader>(stdOut, encoding);
+    }
+
+    Ref<detail::PipeImpl> stdErr;
+    if (cmd->m_stdErr) {
+        stdErr = makeRef<detail::PipeImpl>();
+        stdErr->init();
+        TextEncoding* encoding = cmd->m_stdErr->encoding();
+        if (!encoding) {
+            encoding = TextEncoding::systemMultiByteEncoding();
+        }
+        m_stderrReader = makeRef<StreamReader>(stdErr, encoding);
+    }
+
+    startInfo.stdinPipe = stdIn;
+    startInfo.stdoutPipe = stdOut;
+    startInfo.stderrPipe = stdErr;
+
+    m_stdIn = stdIn;
+    m_stdOut = stdOut;
+    m_stdErr = stdErr;
+    m_onStdOutReceived = cmd->m_onStdOutReceived;
+    m_onStdErrReceived = cmd->m_onStdErrReceived;
+
+    m_impl = makeRef<detail::ProcessImpl>();
+    m_impl->start(startInfo);
+
+    if (m_onStdOutReceived) {
+        beginOutputReadLine();
+    }
+    if (m_onStdErrReceived) {
+        beginErrorReadLine();
+    }
+    ::Sleep(100);
+}
+
+void Process2::dispose() {
+    if (m_impl) {
+        m_impl->closeHandle();
+        m_impl = nullptr;
+    }
+
+    // Wait for reading threads.
+    endReadThreads();
+}
+
+bool Process2::wait(int timeoutMilliseconds) {
+    bool exit = m_impl->waitForExit(timeoutMilliseconds);
+    if (exit) {
+        endReadThreads();
+    }
+    return exit;
+}
+
+ProcessStatus Process2::status() {
+    return m_impl->getStatus(nullptr);
+}
+
+int Process2::exitCode() {
+    int n = 1;
+    m_impl->getStatus(&n);
+    return n;
+}
+
+void Process2::beginOutputReadLine() {
+    m_readStdOutThread = std::make_unique<std::thread>([this]() {
+        thread_readStdOut();
+    });
+}
+
+void Process2::beginErrorReadLine() {
+    m_readStdErrThread = std::make_unique<std::thread>([this]() {
+        thread_readStdErr();
+    });
+}
+
+void Process2::endReadThreads() {
+    if (m_readStdOutThread) {
+        m_readStdOutThread->join();
+        m_readStdOutThread = nullptr;
+    }
+    if (m_readStdErrThread) {
+        m_readStdErrThread->join();
+        m_readStdErrThread = nullptr;
+    }
+}
+
+void Process2::thread_readStdOut() {
+    String line;
+    while (m_stdoutReader->readLine(&line)) {
+        if (m_onStdOutReceived) {
+            m_onStdOutReceived(line);
+        }
+    }
+}
+
+void Process2::thread_readStdErr() {
+    String line;
+    while (m_stderrReader->readLine(&line)) {
+        if (m_onStdErrReceived) {
+            m_onStdErrReceived(line);
+        }
+    }
+}
 
 } // namespace ln
