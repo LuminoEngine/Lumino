@@ -124,6 +124,12 @@ if (MSVC)
     set(LN_COMMON_META_FILES "${CMAKE_CURRENT_LIST_DIR}/tools/VisualStudio/Lumino.natvis")
 endif()
 
+set(LN_BUILD_ENGINE ON)
+if (LN_BUILD_CORE_ONLY)
+    set(LN_BUILD_ENGINE OFF)
+endif()
+message("LN_BUILD_ENGINE: ${LN_BUILD_ENGINE}")
+
 #-------------------------------------------------------------------------------
 # Externals
 #-------------------------------------------------------------------------------
@@ -235,10 +241,11 @@ endif()
 # Installation
 #-------------------------------------------------------------------------------
 
-install(
-    EXPORT LuminoEngine-Export
-    FILE LuminoEngineConfig.cmake
-    DESTINATION lib/cmake/LuminoEngine
-    EXPORT_LINK_INTERFACE_LIBRARIES
-)
-
+if (LN_BUILD_ENGINE)
+    install(
+        EXPORT LuminoEngine-Export
+        FILE LuminoEngineConfig.cmake
+        DESTINATION lib/cmake/LuminoEngine
+        EXPORT_LINK_INTERFACE_LIBRARIES
+    )
+endif()
