@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <thread>
 #include "Common.hpp"
+#include "../Base/Array.hpp"
 #include "Path.hpp"
 #include "StreamReader.hpp"
 #include "StreamWriter.hpp"
@@ -171,11 +172,11 @@ using ProcessStdioReceivedHandler = std::function<void(ln::String)>;
  * このとき、Process::stdOut または Process::stdError は使用できません。
  * コールバックは受信用のスレッド (start() したスレッドとは別のスレッド) から呼び出されます。
  */
-class ProcessCommand2/* : public RefObject*/ {
+class ProcessCommand2 {
 public:
-    static Ref<ProcessCommand2> create(const ln::String& command);
-
     ProcessCommand2(const ln::String& command);
+
+    ProcessCommand2& args(const ln::Array<ln::String> value);
 
     ProcessCommand2& arg(const ln::String& value);
 
@@ -258,7 +259,7 @@ public:
     //Stream* stderrStream();
     StreamWriter* stdIn() const { return m_stdinWriter; }
     StreamReader* stdOut() const { return m_stdoutReader; }
-    StreamReader* stdError() const { return m_stderrReader; }
+    StreamReader* stdErr() const { return m_stderrReader; }
 
 
 private:

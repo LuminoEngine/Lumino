@@ -64,7 +64,7 @@ TEST_F(Test_IO_Process, Redirect2) {
                      .start();
     StreamWriter* w1 = proc1->stdIn();
     StreamReader* r1 = proc1->stdOut();
-    StreamReader* r2 = proc1->stdError();
+    StreamReader* r2 = proc1->stdErr();
     w1->writeLine(_TT("test"));
     String sr1 = r1->readToEnd();
     String sr2 = r2->readToEnd();

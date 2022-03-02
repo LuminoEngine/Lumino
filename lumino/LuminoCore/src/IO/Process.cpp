@@ -414,13 +414,29 @@ Ref<ProcessStdio> ProcessStdio::piped(TextEncoding* encoding) {
 
 //==============================================================================
 // ProcessCommand2
-
-//Ref<ProcessCommand2> ProcessCommand2::create(const ln::String& command) {
-//    return Ref<ProcessCommand2>(LN_NEW ProcessCommand2(command), false);
-//}
+/*
+start() method name?
+----------
+- Rust: spawn()
+- Python: run()
+- JavaScript: exec / spawn
+- Ruby: fork()
+- C#: start()
+- Go: start() https://qiita.com/hironobu_s/items/77d99436457ef57889d6
+- C++ reproc: run() https://github.com/DaanDeMeyer/reproc
+- C++ Qt: start()
+- C++ POCO: launch() https://docs.pocoproject.org/current/Poco.Process.html#18008
+*/
 
 ProcessCommand2::ProcessCommand2(const ln::String& command) {
     m_startInfo.program = command;
+}
+
+ProcessCommand2& ProcessCommand2::args(const ln::Array<ln::String> value) {
+    for (const auto& v : value) {
+        m_startInfo.args.push_back(v);
+    }
+    return *this;
 }
 
 ProcessCommand2& ProcessCommand2::arg(const ln::String& value) {
@@ -433,15 +449,6 @@ Ref<Process2> ProcessCommand2::start() {
     proc->start(this);
     return proc;
 }
-
-//Ref<detail::PipeImpl> ProcessCommand2::createPipe(ProcessStdio* io) {
-//    if (io) {
-//
-//    }
-//    else {
-//        return nullptr;
-//    }
-//}
 
 //==============================================================================
 // Process2
