@@ -5,6 +5,9 @@
 #include <string>
 #include <iostream>
 #include <fmt/format.h>
+#if FMT_VERSION > 80000
+#include <fmt/xchar.h>
+#endif
 #include "Common.hpp"
 #include "UnicodeUtils.hpp"
 

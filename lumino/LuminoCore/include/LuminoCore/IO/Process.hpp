@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <thread>
+#include <functional>
 #include "Common.hpp"
 #include "../Base/Array.hpp"
 #include "Path.hpp"
