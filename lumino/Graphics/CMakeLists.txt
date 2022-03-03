@@ -99,4 +99,5 @@ install(DIRECTORY include DESTINATION .)
 
 if (LN_BUILD_TESTS)
     add_subdirectory(test)
+    add_subdirectory(examples/HelloTriangle)
 endif()
