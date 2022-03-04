@@ -9,7 +9,6 @@ class PlatformWindow
 	: public RefObject
 {
 public:
-	PlatformWindow();
 	virtual ~PlatformWindow() = default;
 	//virtual void dispose() = 0;
 
@@ -33,9 +32,12 @@ public:
 	bool sendEventToAllListener(const PlatformEventArgs& e);	// return : isHandled
 
 protected:
+	PlatformWindow();
+	Result init(detail::PlatformWindowManager* windowManager);
 	void setDPIFactor(float value) { m_dpiFactor = value; }
 
 private:
+	detail::PlatformWindowManager* m_windowManager;
 	List<IPlatforEventListener*> m_eventListeners;
 	float m_dpiFactor;
 };

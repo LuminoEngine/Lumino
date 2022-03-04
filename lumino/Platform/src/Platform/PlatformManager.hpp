@@ -30,6 +30,8 @@ public:
 	bool glfwWithOpenGLAPI() const { return m_glfwWithOpenGLAPI; }
 	OpenGLContext* openGLContext() const;
 	void processSystemEventQueue();
+	void requestQuit() { m_quitRequested = true; }
+	bool shouldQuit() const { return m_quitRequested; }
 
 	virtual ~PlatformManager();
 
@@ -42,6 +44,7 @@ private:
 	Ref<PlatformWindow> m_mainWindow;	// v0.5.0 で持たないことを検討したが、Graphics, UI との初期化順の関係や、Android, Emscripten など既に出来上がっている View にアタッチしたいときなどに欲しい
 	bool m_glfwWithOpenGLAPI;
 	bool m_messageLoopProcessing;
+	bool m_quitRequested;
 };
 
 } // namespace detail

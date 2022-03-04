@@ -395,3 +395,8 @@ enum class ErrorCode {
 using Result = BasicResult<void, ErrorCode>;
 
 } // namespace ln
+
+#define LN_TRY(x) { \
+    const auto result = x; \
+    if (!result) return result; \
+}

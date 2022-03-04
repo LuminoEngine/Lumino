@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoPlatform/PlatformWindow.hpp>
+#include "PlatformManager.hpp"
 
 namespace ln {
 
@@ -8,9 +9,15 @@ namespace ln {
 // PlatformWindow
 
 PlatformWindow::PlatformWindow()
-	: m_eventListeners()
+	: m_windowManager(nullptr)
+	, m_eventListeners()
 	, m_dpiFactor(1.0f)
 {
+}
+
+Result PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
+	m_windowManager = windowManager;
+	return ok();
 }
 
 void PlatformWindow::attachEventListener(IPlatforEventListener* listener)
@@ -30,6 +37,17 @@ bool PlatformWindow::sendEventToAllListener(const PlatformEventArgs& e)
 			return true;
 		}
 	}
+
+	// Default event process
+	{
+		if (e.type == PlatformEventType::close) {
+			auto* manager = detail::PlatformManager::instance();
+			if (manager->mainWindow() == this) {
+				manager->requestQuit();
+			}
+		}
+	}
+
 	return false;
 }
 

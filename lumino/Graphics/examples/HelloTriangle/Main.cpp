@@ -10,8 +10,7 @@ int main() {
 
     PlatformWindow* mainWindow = Platform::mainWindow();
 
-    while (true) {
-        Platform::processEvents();
+    while (Platform::processEvents()) {
     }
 
     PlatformModule::terminate();

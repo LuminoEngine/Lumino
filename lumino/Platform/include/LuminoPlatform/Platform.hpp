@@ -9,7 +9,7 @@ public:
     /**
 	 * Processes event queue.
 	 */
-    static void processEvents();
+    static bool processEvents();
 
     /**
 	 * Get MainWindow.

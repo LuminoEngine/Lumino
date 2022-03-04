@@ -222,6 +222,8 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 
 Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext)
 {
+	LN_TRY(PlatformWindow::init(windowManager));
+	
 	initKeyTable();
 
 	//// とりあえず生成時固定。GLFW は実行中に変更したければ、

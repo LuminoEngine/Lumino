@@ -5,9 +5,10 @@
 
 namespace ln {
     
-void Platform::processEvents()
+bool Platform::processEvents()
 {
     detail::PlatformManager::instance()->processSystemEventQueue();
+    return !detail::PlatformManager::instance()->shouldQuit();
 }
 
 PlatformWindow* Platform::mainWindow()

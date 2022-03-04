@@ -34,6 +34,7 @@ PlatformManager::PlatformManager()
 	: m_windowManager()
     , m_glfwWithOpenGLAPI(true)
     , m_messageLoopProcessing(true)
+    , m_quitRequested(false)
 {
 }
 
