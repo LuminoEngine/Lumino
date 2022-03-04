@@ -19,7 +19,7 @@ namespace LuminoBuild.Tasks
 
                 if (!Directory.Exists(b.VcpkgDir))
                 {
-                    Proc.Make("git", "clone -b 2021.05.12 https://github.com/microsoft/vcpkg.git").WithSilent().Call();
+                    Proc.Make("git", "clone -b 2022.02.23 https://github.com/microsoft/vcpkg.git").WithSilent().Call();
                 }
 
                 using (CurrentDir.Enter(b.VcpkgDir))

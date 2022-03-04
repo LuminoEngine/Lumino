@@ -398,6 +398,7 @@ void* GLFWPlatformWindow::getWin32Window() const
 //	}
 //}
 
+// NOTE: GLFW 自体はウィンドウをクローズしない
 void GLFWPlatformWindow::window_close_callback(GLFWwindow* glfw_window)
 {
 	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(glfw_window);

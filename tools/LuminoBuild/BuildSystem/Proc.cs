@@ -1,5 +1,4 @@
-﻿using LuminoBuild;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -16,7 +15,9 @@ namespace LuminoBuild
         public bool Shell { get; private set; } = false;
 
         public bool Silent { get; private set; } = false;
-        
+
+        public string StdErrorString { get; private set; }
+
 
         public static Proc Make(string program)
         {
@@ -61,6 +62,7 @@ namespace LuminoBuild
                 {
                     var sb = new StringBuilder();
                     var sbAll = new StringBuilder();
+                    var stdErr = new StringBuilder();
                     p.StartInfo.Arguments = Args;
                     p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     p.StartInfo.UseShellExecute = false;
@@ -69,14 +71,17 @@ namespace LuminoBuild
                     if (!p.StartInfo.UseShellExecute)
                     {
                         p.StartInfo.RedirectStandardOutput = true;
-                        p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { 
+                        p.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                        {
                             if (!Silent) Console.WriteLine(e.Data);
                             sb.Append(e.Data);
                             sbAll.Append(e.Data + Environment.NewLine);
                         };
                         p.StartInfo.RedirectStandardError = true;
-                        p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => {
+                        p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+                        {
                             if (!Silent) Console.Error.WriteLine(e.Data);
+                            stdErr.Append(e.Data + Environment.NewLine);
                             sbAll.Append(e.Data + Environment.NewLine);
                         };
                     }
@@ -115,6 +120,8 @@ namespace LuminoBuild
 
                     p.WaitForExit();
 
+                    StdErrorString = stdErr.ToString();
+
                     if (p.ExitCode != 0)
                     {
                         Console.Error.WriteLine(sbAll.ToString());
@@ -124,7 +131,21 @@ namespace LuminoBuild
                     return sb.ToString();
                 }
             }
+        }
 
+        public static string Call(string command, bool silent = false)
+        {
+            var space1 = command.IndexOf(" ");
+            if (space1 >= 0)
+            {
+                var program = command.Substring(0, space1);
+                var args = command.Substring(space1 + 1);
+                return Make(program, args).WithShell().WithSilent(silent).Call();
+            }
+            else
+            {
+                return Make(command).WithShell().WithSilent(silent).Call();
+            }
         }
     }
 }

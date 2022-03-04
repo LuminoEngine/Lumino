@@ -4,18 +4,17 @@
 
 namespace ln {
 
-class Platform
-{
+class Platform {
 public:
-	/**
+    /**
 	 * Processes event queue.
 	 */
-	static void processEvents();
+    static void processEvents();
 
-	/**
+    /**
 	 * Get MainWindow.
 	 */
-	static PlatformWindow* mainWindow();
+    static PlatformWindow* mainWindow();
 };
 
 } // namespace ln

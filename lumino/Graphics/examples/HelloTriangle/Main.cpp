@@ -8,10 +8,11 @@ int main() {
     if (!EngineContext2::initialize()) return 1;
     if (!PlatformModule::initialize()) return 1;
 
+    PlatformWindow* mainWindow = Platform::mainWindow();
 
-    //while (!g_closed) {
-    //    Platform::processEvents();
-    //}
+    while (true) {
+        Platform::processEvents();
+    }
 
     PlatformModule::terminate();
     EngineContext2::terminate();

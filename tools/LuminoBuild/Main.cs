@@ -54,13 +54,13 @@ namespace LuminoBuild
                 //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
 
-                args = new string[] { "BuildExternals", "wasm32-emscripten" };
+                //args = new string[] { "BuildExternals", "wasm32-emscripten" };
                 //args = new string[] { "BuildEngine_Emscripten", "wasm32-emscripten" };
 
                 //args = new string[] { "BuildExternals", "x64-windows" };
-                //args = new string[] { "BuildEngine_MSVC" };
+                args = new string[] { "BuildEngine_MSVC" };
 
-                args = new string[] { "BuildExternals", @"--external-vcpkg-dir=D:\Proj\DTPlus-TPTracer\DTxDependencies\vcpkg" };
+                //args = new string[] { "BuildExternals" };
             }
 
             try

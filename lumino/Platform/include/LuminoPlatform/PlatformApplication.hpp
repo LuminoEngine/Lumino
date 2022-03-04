@@ -4,14 +4,16 @@
 namespace ln {
 
 class PlatformApplication
-	: public RefObject
-{
+    : public RefObject {
 public:
-	int run();
+    PlatformApplication();
+    int run();
 
 protected:
+    void onFrameBegin();
+
+private:
+    detail::PlatformManager* m_manager;
 };
 
-
 } // namespace ln
-
