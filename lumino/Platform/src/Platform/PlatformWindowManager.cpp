@@ -19,7 +19,7 @@
 	外部に公開する以上、可能な限りシンプルであるべき。
 */
 #include "Internal.hpp"
-#include "PlatformWindowManager.hpp"
+#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
 
 namespace ln {
 namespace detail {

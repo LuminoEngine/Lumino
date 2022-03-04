@@ -10,7 +10,7 @@
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
-#include "../../LuminoEngine/src/Engine/LinearAllocator.hpp"
+#include <LuminoGraphics/detail/RenderingCommandList.hpp>
 #include "SingleFrameAllocator.hpp"
 
 namespace ln {

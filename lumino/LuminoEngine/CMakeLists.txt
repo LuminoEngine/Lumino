@@ -300,7 +300,7 @@ endif()
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
-    LuminoSystem
+    LuminoRuntime
     LuminoPlatform
     LuminoShaderCompiler
     LuminoBitmap
@@ -308,9 +308,6 @@ set(
     LuminoGraphics
     #pcre
     pcre2_32
-    png
-    ZLIB::ZLIB
-    freetype
     Vorbis::vorbis
     Vorbis::vorbisenc
     Vorbis::vorbisfile
@@ -322,8 +319,6 @@ set(
     BulletSoftBody
     #tmxlite
     toml11::toml11
-    yaml-cpp
-    nanovg::nanovg
     tinyobjloader::tinyobjloader
     ${LN_PLATFORM_LIBS}
 )
@@ -342,7 +337,7 @@ target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} 
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoSystem LuminoShaderCompiler LuminoBitmap LuminoFont LuminoGraphics)
+target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoRuntime LuminoShaderCompiler LuminoBitmap LuminoFont LuminoGraphics)
 
 if (LN_OS_DESKTOP)
     target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})
@@ -355,15 +350,6 @@ endif()
 
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
     target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
-    target_link_libraries(LuminoEngine-static PRIVATE HLSL SPIRV glslang OGLCompiler)
-    #target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-c)
-    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-core)
-    #target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-cpp)
-    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-glsl)
-    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-hlsl)
-    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-msl)
-    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-reflect)
-    target_link_libraries(LuminoEngine-static PRIVATE spirv-cross-util)
 endif()
 
 #target_link_libraries(LuminoEngine-static PRIVATE glslang)

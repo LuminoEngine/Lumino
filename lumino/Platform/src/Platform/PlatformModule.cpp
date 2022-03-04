@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoPlatform/PlatformModule.hpp>
-#include "PlatformManager.hpp"
+#include <LuminoPlatform/detail/PlatformManager.hpp>
 
 namespace ln {
     

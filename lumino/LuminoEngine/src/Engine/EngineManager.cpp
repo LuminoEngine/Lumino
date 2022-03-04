@@ -22,7 +22,8 @@
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 
-#include "../../../Platform/src/Platform/PlatformManager.hpp"
+#include <LuminoPlatform/detail/PlatformManager.hpp>
+#include <LuminoPlatform/PlatformWindow.hpp>
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"

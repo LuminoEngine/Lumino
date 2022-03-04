@@ -15,7 +15,7 @@
 #ifdef _WIN32
 #include "RHIs/DirectX12/DX12DeviceContext.hpp"
 #endif
-#include "../../LuminoEngine/src/Engine/LinearAllocator.hpp"
+#include <LuminoGraphics/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include "SingleFrameAllocator.hpp"
 #include "GraphicsProfiler.hpp"

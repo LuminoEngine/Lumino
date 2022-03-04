@@ -6,7 +6,7 @@ project(LuminoPlatform)
 # Files
 #-------------------------------------------------------------------------------
 
-file(GLOB LN_SOURCES_Platform include/LuminoPlatform/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
+file(GLOB LN_SOURCES_Platform include/LuminoPlatform/*.hpp include/LuminoPlatform/detail/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
 
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
@@ -58,7 +58,7 @@ target_include_directories(
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
-target_link_libraries(${PROJECT_NAME} PUBLIC LuminoSystem)
+target_link_libraries(${PROJECT_NAME} PUBLIC LuminoRuntime)
 
 if (LN_OS_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoPlatform/PlatformModule.hpp>
-#include "PlatformWindowManager.hpp"
+#include "../Common.hpp"
 
 namespace ln {
 namespace detail {

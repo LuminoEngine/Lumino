@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <png.h>
+// vcpkg で nanovg を使う場合、その中で定義されている。
 //#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <LuminoEngine/Engine/Diagnostics.hpp>

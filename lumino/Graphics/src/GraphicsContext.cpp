@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "../../LuminoEngine/src/Engine/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>

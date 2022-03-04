@@ -1,8 +1,6 @@
 ﻿#pragma once
-
 #ifdef LN_GLFW
-
-#include "PlatformWindowManager.hpp"
+#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
 #include "OpenGLContext.hpp"
 
 struct GLFWwindow;

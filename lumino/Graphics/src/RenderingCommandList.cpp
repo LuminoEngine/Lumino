@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include "../Engine/LinearAllocator.hpp"
-#include <LuminoEngine/Engine/RenderingCommandList.hpp>
+#include <LuminoCore/Base/LinearAllocator.hpp>
+#include <LuminoGraphics/detail/RenderingCommandList.hpp>
 #include <LuminoGraphics/GraphicsContext.hpp>
 
 namespace ln {

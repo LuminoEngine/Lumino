@@ -13,7 +13,7 @@
 #	include <GLFW/glfw3native.h>
 #endif
 #include <LuminoPlatform/PlatformSupport.hpp>
-#include "PlatformManager.hpp"
+#include <LuminoPlatform/detail/PlatformManager.hpp>
 #include "GLFWPlatformWindowManager.hpp"
 
 // https://github.com/glfw/glfw/issues/310

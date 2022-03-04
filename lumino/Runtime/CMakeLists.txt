@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.0)
-project(LuminoSystem)
+project(LuminoRuntime)
 
 #-------------------------------------------------------------------------------
 # Files
@@ -46,7 +46,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src)
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore yaml-cpp)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")

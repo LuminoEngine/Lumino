@@ -6,17 +6,6 @@
 namespace ln {
 namespace detail {
 
-struct WindowCreationSettings
-{
-	String		title;							// ウィンドウタイトル
-	SizeI		clientSize = SizeI(640, 480);	// クライアント領域のピクセルサイズ
-	bool		fullscreen = false;				// フルスクリーンモードで作成するかどうか
-	bool		resizable = true;				// 可変ウィンドウとして作成するかどうか
-
-    intptr_t	userWindow = 0;
-    uint32_t    win32IconResourceId = 0;
-};
-
 enum class EventProcessingMode
 {
     Polling,

@@ -4,7 +4,7 @@ project(LuminoGraphics)
 # Files
 #-------------------------------------------------------------------------------
 
-file(GLOB LN_SOURCES_Graphics include/LuminoGraphics/*.hpp src/*.cpp src/*.hpp)
+file(GLOB LN_SOURCES_Graphics include/LuminoGraphics/*.hpp include/LuminoGraphics/detail/*.hpp src/*.cpp src/*.hpp)
 file(GLOB LN_SOURCES_Graphics_RHIs include/LuminoGraphics/RHIs/*.hpp src/RHIs/*.cpp src/RHIs/*.hpp)
 
 if (LN_USE_VULKAN)
@@ -52,7 +52,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoSystem LuminoPlatform LuminoShaderCompiler LuminoBitmap LuminoFont)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntime LuminoPlatform LuminoShaderCompiler LuminoBitmap LuminoFont)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
@@ -99,5 +99,5 @@ install(DIRECTORY include DESTINATION .)
 
 if (LN_BUILD_TESTS)
     add_subdirectory(test)
-    add_subdirectory(examples/HelloTriangle)
+    add_subdirectory(sandbox)
 endif()

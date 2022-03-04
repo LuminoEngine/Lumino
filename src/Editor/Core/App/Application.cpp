@@ -1,7 +1,8 @@
 ﻿
 #include "../../../lumino/LuminoEngine/src/Engine/EngineManager.hpp"
 #include "../../../lumino/LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "../../../lumino/Platform/src/Platform/PlatformManager.hpp"
+#include <LuminoPlatform/detail/PlatformManager.hpp>
+#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
 #include "../../../lumino/LuminoEngine/src/UI/UIManager.hpp"
 #include "../../../lumino/LuminoEngine/src/Scene/SceneManager.hpp"
 #include <LuminoPlatform/PlatformDialogs.hpp>

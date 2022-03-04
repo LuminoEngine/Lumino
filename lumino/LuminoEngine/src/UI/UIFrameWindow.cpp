@@ -13,7 +13,8 @@
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
 #include "../../../Graphics/src/GraphicsManager.hpp"
-#include "../../../Platform/src/Platform/PlatformManager.hpp"
+#include <LuminoPlatform/detail/PlatformManager.hpp>
+#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"

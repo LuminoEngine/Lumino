@@ -1,10 +1,9 @@
 ﻿#pragma once
 #include <LuminoGraphics/Common.hpp>
-//#include <LuminoEngine/Engine/RenderingCommandList.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
-#include "../../LuminoEngine/include/LuminoEngine/Engine/RenderingCommandList.hpp"
+#include <LuminoGraphics/detail/RenderingCommandList.hpp>
 
 namespace ln {
 class GraphicsContext; 

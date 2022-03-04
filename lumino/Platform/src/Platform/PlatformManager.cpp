@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoPlatform/detail/PlatformManager.hpp>
 #include "EmptyPlatformWindowManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 #include "Windows/Win32PlatformWindowManager.hpp"
-#include "PlatformManager.hpp"
 
 namespace ln {
 namespace detail {

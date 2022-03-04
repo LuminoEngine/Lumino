@@ -1,8 +1,6 @@
 ﻿#pragma once
-
 #ifdef _WIN32
-
-#include "../PlatformWindowManager.hpp"
+#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
 
 namespace ln {
 namespace detail {
