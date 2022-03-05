@@ -3,7 +3,7 @@
 #include <LuminoShaderCompiler/ShaderHelper.hpp>
 #include "UnifiedShader.hpp"
 #include "UnifiedShaderCompiler.hpp"
-#include "ShaderManager.hpp"
+#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 
 namespace ln {
 namespace detail {

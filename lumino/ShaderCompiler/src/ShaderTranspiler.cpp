@@ -14,7 +14,7 @@
 #include <spirv_cross/spirv_glsl.hpp>
 #include "Lexer/CppLexer.hpp"
 #include <LuminoShaderCompiler/ShaderHelper.hpp>
-#include "ShaderManager.hpp"
+#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include "ShaderTranspiler.hpp"
 
 #ifdef _WIN32

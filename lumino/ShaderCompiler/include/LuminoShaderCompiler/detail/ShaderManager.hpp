@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #ifdef _WIN32
+#define NOMINMAX
 #include <d3dcompiler.h>
 #endif
 #include <LuminoEngine/Engine/EngineContext2.hpp>

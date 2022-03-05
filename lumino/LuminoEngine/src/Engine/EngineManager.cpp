@@ -27,7 +27,7 @@
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
-#include "../../../ShaderCompiler/src/ShaderManager.hpp"
+#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../../Font/src/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"

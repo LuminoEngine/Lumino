@@ -13,7 +13,7 @@
 #include "RHIs/GraphicsDeviceContext.hpp"
 #include "GraphicsManager.hpp"
 #include "../../ShaderCompiler/src/UnifiedShaderCompiler.hpp"
-#include "../../ShaderCompiler/src/ShaderManager.hpp"
+#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include "../../ShaderCompiler/src/ShaderTranspiler.hpp"
 #include "../../ShaderCompiler/src/HLSLMetadataParser.hpp"
 

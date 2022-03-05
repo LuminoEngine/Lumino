@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Engine/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 
 namespace ln {
 class MeshResource;

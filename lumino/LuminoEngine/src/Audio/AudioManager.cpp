@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "../Engine/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>

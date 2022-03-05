@@ -4,7 +4,7 @@
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include "../Engine/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 #include "../../../ShaderCompiler/src/UnifiedShaderCompiler.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"

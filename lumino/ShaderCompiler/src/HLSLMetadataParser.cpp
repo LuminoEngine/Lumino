@@ -5,7 +5,7 @@
 #include "Lexer/CppLexer.hpp"
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoShaderCompiler/ShaderHelper.hpp>
-#include "ShaderManager.hpp"
+#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include "HLSLMetadataParser.hpp"
 
 namespace ln {
