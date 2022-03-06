@@ -1,4 +1,4 @@
-#include <LuminoCore/Testing/TestHelper.hpp>
+﻿#include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoPlatform/PlatformModule.hpp>
 #include <LuminoPlatform/Platform.hpp>
@@ -59,6 +59,7 @@ void run() {
     auto vertexLayout = makeObject<VertexLayout>();
     vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
+    // CCW
     Vector4 v[] = {
         Vector4(0, 0.5, 0, 1),
         Vector4(-0.5, -0.25, 0, 1),
@@ -87,7 +88,32 @@ void run() {
         ctx->drawPrimitive(0, 1);
         ctx->endRenderPass();
 
+        // NOTE:
+        // DX12で確認した現象。
+        // ここで時間を測ると、次のように待ち時間 0[ms], 15[ms] が繰り返されることがある。
+        // 
+        // ```
+        // 0[ms]
+        // 15[ms]
+        // 0[ms]
+        // 15[ms]
+        // ...
+        // ```
+        // 
+        // この現象については次の回答が参考になる。
+        // https://stackoverflow.com/questions/31499974/directx-11-optimization-with-waitable-object
+        // つまりメインループがノーウェイトで回り続けている場合、DX12 が必要に応じてウェイトを入れることがある。
+        // メインループで Sleep(16) のようにウェイトを入れると、Present の実行時間が 0[ms] となる。
+        // 
+        // このウェイトを無くすためには DXGI_PRESENT_DO_NOT_WAIT を使う。
+        // ただしその場合ウェイトが必要な時は Present が DXGI_ERROR_WAS_STILL_DRAWING を返すようになる。
+        // https://docs.microsoft.com/en-us/windows/win32/api/dxgi/nf-dxgi-idxgiswapchain-present
+        // https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-present
+        // 
+        //ElapsedTimer t;
         swapChain->endFrame();
+        //std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
+        //::Sleep(16);
     }
 }
 

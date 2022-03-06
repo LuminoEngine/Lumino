@@ -181,12 +181,26 @@ void DX12SwapChain::present()
         dxCommandQueue->ExecuteCommandLists(1, commandLists);
     }
 
+#if 1
+    ElapsedTimer t;
     const bool waitVSync = false;   // TODO:
     auto hr = m_dxgiSwapChain->Present(waitVSync ? 1 : 0, 0);
     if (FAILED(hr)) {
         LN_ERROR("Present failed.");
         return;
     }
+    std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
+#else
+    const bool waitVSync = false;   // TODO:
+    auto hr = m_dxgiSwapChain->Present(waitVSync ? 1 : 0, DXGI_PRESENT_DO_NOT_WAIT);
+    if (hr == DXGI_ERROR_WAS_STILL_DRAWING) {
+
+    }
+    else if (FAILED(hr)) {
+        LN_ERROR("Present failed.");
+        return;
+    }
+#endif
 
     // Schedule a Signal command in the queue.
     m_fenceValues[m_frameIndex] = m_device->m_fenceValue;
