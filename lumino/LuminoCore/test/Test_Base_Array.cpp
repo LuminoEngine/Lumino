@@ -420,9 +420,10 @@ TEST_F(Test_Base_Array, filter) {
     Array<int> ary1 = { 1, 2, 3, 4, 5 };
 
     Array<int> ary2 = ary1.filter([](auto x) { return x % 2; });
-    ASSERT_EQ(2, ary2.length());
-    ASSERT_EQ(2, ary2[0]);
-    ASSERT_EQ(4, ary2[1]);
+    ASSERT_EQ(3, ary2.length());
+    ASSERT_EQ(1, ary2[0]);
+    ASSERT_EQ(3, ary2[1]);
+    ASSERT_EQ(5, ary2[2]);
 
     Array<int> ary3 = ary1.filter([](auto x) { return false; });
     ASSERT_EQ(0, ary3.length());

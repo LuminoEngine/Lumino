@@ -11,6 +11,7 @@ using namespace clang::comments;
 
 class ClangVisitorRunner12;
 
+#if 0
 // このインタフェースは、プリプロセッサの動作を観察する方法を提供します。
 // https://clang.llvm.org/doxygen/classclang_1_1PPCallbacks.html
 // #XXXX を見つけたときや、マクロ展開が行われたときに呼ばれるコールバックを定義したりする。
@@ -31,6 +32,7 @@ private:
     Preprocessor& m_pp;
     CompilerInstance* m_ci;
 };
+#endif
 
 //------------------------------------------------------------------------------
 // 以下、決まり文句
@@ -89,6 +91,8 @@ class ClangVisitorRunner12 {
 public:
 
     virtual std::shared_ptr<clang::DiagnosticConsumer> onCreateDiagnosticConsumer(clang::DiagnosticOptions* options) = 0;
+
+    virtual std::unique_ptr<PPCallbacks> onCreatePPCallbacks(CompilerInstance* CI, Preprocessor& PP) = 0;
 
     virtual void onHandleTranslationUnit(CompilerInstance* CI, ASTContext* astContext) = 0;
 
@@ -201,11 +205,14 @@ LocalASTConsumer::LocalASTConsumer(CompilerInstance* CI, ClangVisitorRunner12* r
     : m_compilerInstance(CI)
     , m_runner(runner) {
     Preprocessor& PP = CI->getPreprocessor();
-    PP.addPPCallbacks(std::make_unique<LocalPPCallbacks>(PP, CI, runner));
+    auto PPCallbacks = runner->onCreatePPCallbacks(CI, PP);
+    if (PPCallbacks) {
+        PP.addPPCallbacks(std::move(PPCallbacks));
+    }
 }
 
 void LocalASTConsumer::HandleTranslationUnit(ASTContext& astContext) {
     m_runner->onHandleTranslationUnit(m_compilerInstance, &astContext);
 }
-
+//
 } // namespace local

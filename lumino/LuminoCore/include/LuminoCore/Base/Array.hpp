@@ -309,7 +309,9 @@ public:
         Array<T> result;
         result.reserve(m_data.size());
         for (const auto& i : *this) {
-            result.push_back(i);
+            if (predicate(i)) {
+                result.push_back(i);
+            }
         }
         return result;
     }

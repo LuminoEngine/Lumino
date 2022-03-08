@@ -42,6 +42,7 @@
 #endif
 
 #include "ParserUtils.hpp"
+#include "ClangVisitorRunner12.hpp"
 
 class SymbolDatabase;
 
@@ -782,66 +783,66 @@ private:
     CompilerInstance* m_ci;
     ::HeaderParser2* m_parser;
 };
-
-//------------------------------------------------------------------------------
-// 以下、決まり文句
-
-// ASTConsumer は、AST のエントリポイントとなる何らかの要素を見つけたときにそれを通知する。
-// 通常は HandleTranslationUnit() だけ実装すればよい。
-// https://clang.llvm.org/docs/RAVFrontendAction.html
-// clang は色々な AST の作成方法を持っているらしく、HandleTranslationUnit() 以外は
-// 通常の翻訳単位以外の解析で何かしたいときに使うようだ。
-class LocalASTConsumer : public ASTConsumer {
-private:
-    std::unique_ptr<LWIGVisitor> m_visitor;
-
-public:
-    explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser2* parser)
-        : m_visitor(std::make_unique<LWIGVisitor>(CI, parser)) {
-        //auto fe = CI->getSourceManager().getFileManager().getFile(, false);
-        //CI->getSourceManager().file
-
-        Preprocessor& PP = CI->getPreprocessor();
-        PP.addPPCallbacks(std::make_unique<LocalPPCallbacks>(PP, CI, parser));
-    }
-
-    virtual void HandleTranslationUnit(ASTContext& Context) {
-        m_visitor->EnumerateDecl(Context.getTranslationUnitDecl());
-    }
-};
-
-// FrontendAction は、コンパイラフロントエンドの共通のエントリポイント。具体的に何したいの？を表すために使う。
-// https://clang.llvm.org/docs/RAVFrontendAction.html
-// https://clang.llvm.org/doxygen/classclang_1_1ASTFrontendAction.html
-// 標準だと ASTFrontendAction の派生として、単に AST をダンプしたり、HTML に変換したりといったアクションが用意されている。
-// 今回は AST を全部自分でトラバースしたいので ASTFrontendAction を使う。
-class LocalFrontendAction : public ASTFrontendAction {
-public:
-    ::HeaderParser2* m_parser;
-
-    LocalFrontendAction(::HeaderParser2* parser)
-        : m_parser(parser) {
-    }
-
-    virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& CI, llvm::StringRef file) {
-        return std::make_unique<LocalASTConsumer>(&CI, m_parser);
-    }
-};
-
-// SilClangAnalyzer のポインタを ↑のクラスたちにわたすためのファクトリ
-std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser2* parser) {
-    class SimpleFrontendActionFactory : public FrontendActionFactory {
-    public:
-        ::HeaderParser2* m_parser;
-
-        SimpleFrontendActionFactory(::HeaderParser2* parser)
-            : m_parser(parser) {}
-
-        clang::FrontendAction* create() override { return new LocalFrontendAction(m_parser); }
-    };
-
-    return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(parser));
-}
+//
+////------------------------------------------------------------------------------
+//// 以下、決まり文句
+//
+//// ASTConsumer は、AST のエントリポイントとなる何らかの要素を見つけたときにそれを通知する。
+//// 通常は HandleTranslationUnit() だけ実装すればよい。
+//// https://clang.llvm.org/docs/RAVFrontendAction.html
+//// clang は色々な AST の作成方法を持っているらしく、HandleTranslationUnit() 以外は
+//// 通常の翻訳単位以外の解析で何かしたいときに使うようだ。
+//class LocalASTConsumer : public ASTConsumer {
+//private:
+//    std::unique_ptr<LWIGVisitor> m_visitor;
+//
+//public:
+//    explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser2* parser)
+//        : m_visitor(std::make_unique<LWIGVisitor>(CI, parser)) {
+//        //auto fe = CI->getSourceManager().getFileManager().getFile(, false);
+//        //CI->getSourceManager().file
+//
+//        Preprocessor& PP = CI->getPreprocessor();
+//        PP.addPPCallbacks(std::make_unique<LocalPPCallbacks>(PP, CI, parser));
+//    }
+//
+//    virtual void HandleTranslationUnit(ASTContext& Context) {
+//        m_visitor->EnumerateDecl(Context.getTranslationUnitDecl());
+//    }
+//};
+//
+//// FrontendAction は、コンパイラフロントエンドの共通のエントリポイント。具体的に何したいの？を表すために使う。
+//// https://clang.llvm.org/docs/RAVFrontendAction.html
+//// https://clang.llvm.org/doxygen/classclang_1_1ASTFrontendAction.html
+//// 標準だと ASTFrontendAction の派生として、単に AST をダンプしたり、HTML に変換したりといったアクションが用意されている。
+//// 今回は AST を全部自分でトラバースしたいので ASTFrontendAction を使う。
+//class LocalFrontendAction : public ASTFrontendAction {
+//public:
+//    ::HeaderParser2* m_parser;
+//
+//    LocalFrontendAction(::HeaderParser2* parser)
+//        : m_parser(parser) {
+//    }
+//
+//    virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& CI, llvm::StringRef file) {
+//        return std::make_unique<LocalASTConsumer>(&CI, m_parser);
+//    }
+//};
+//
+//// SilClangAnalyzer のポインタを ↑のクラスたちにわたすためのファクトリ
+//std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser2* parser) {
+//    class SimpleFrontendActionFactory : public FrontendActionFactory {
+//    public:
+//        ::HeaderParser2* m_parser;
+//
+//        SimpleFrontendActionFactory(::HeaderParser2* parser)
+//            : m_parser(parser) {}
+//
+//        clang::FrontendAction* create() override { return new LocalFrontendAction(m_parser); }
+//    };
+//
+//    return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(parser));
+//}
 
 } // namespace
 
@@ -913,12 +914,37 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
     }
     int argc = argv.size();
 
-    std::vector<std::string> sourcePathList = { localFilePath.c_str() };
 
-    ::clang::tooling::CommonOptionsParser op(argc, argv.data(), ::llvm::cl::GeneralCategory);
-    ::clang::tooling::ClangTool Tool(op.getCompilations(), sourcePathList /*op.getSourcePathList()*/);
-    int result = Tool.run(local::NewLocalFrontendActionFactory(this).get());
+    class LocalRunner : public local::ClangVisitorRunner12 {
+    private:
+        HeaderParser2* m_parser;
+    public:
+        LocalRunner(HeaderParser2* parser)
+            : m_parser(parser)
+        {}
 
+
+        std::shared_ptr<clang::DiagnosticConsumer> onCreateDiagnosticConsumer(clang::DiagnosticOptions* options) override {
+            return nullptr;
+        }
+
+        std::unique_ptr<clang::PPCallbacks> onCreatePPCallbacks(clang::CompilerInstance* CI, clang::Preprocessor& PP) override {
+            return std::make_unique<local::LocalPPCallbacks>(PP, CI, m_parser);
+        }
+
+        void onHandleTranslationUnit(clang::CompilerInstance* CI, clang::ASTContext* astContext) override {
+            auto visitor = local::LWIGVisitor(CI, m_parser);
+            visitor.EnumerateDecl(astContext->getTranslationUnitDecl());
+        }
+    };
+
+    //std::vector<std::string> sourcePathList = { localFilePath.c_str() };
+
+    //::clang::tooling::CommonOptionsParser op(argc, argv.data(), ::llvm::cl::GeneralCategory);
+    //::clang::tooling::ClangTool Tool(op.getCompilations(), sourcePathList /*op.getSourcePathList()*/);
+    //int result = Tool.run(local::NewLocalFrontendActionFactory(this).get());
+    LocalRunner runner(this);
+    int result = runner.run(argv);
     //FileSystem::deleteFile(tempFilePath);
     return result;
 }
