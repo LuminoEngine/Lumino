@@ -1,6 +1,6 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "../IO/Path.hpp"
+#include "../Base/Array.hpp"
 #include "../Base/Uuid.hpp"
 #include "../Base/Optional.hpp"
 
@@ -46,6 +46,20 @@ void serialize(Archive& ar, List<TValue>& value)
 	{
 		ar.process(v);
 	}
+}
+
+template<typename TValue>
+void serialize(Archive& ar, Array<TValue>& value) {
+    int size = 0;
+    ar.makeArrayTag(&size);
+
+    if (ar.isLoading()) {
+        value.resize(size);
+    }
+
+    for (TValue& v : value) {
+        ar.process(v);
+    }
 }
 
 inline void serialize(Archive& ar, Path& value)

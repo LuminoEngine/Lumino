@@ -10,16 +10,16 @@ static const bool LabelSyntax = true;
 //ln::String HSP3GeneratorBase::makeFlatConstantValue(const ConstantSymbol* constant) const
 //{
 //    if (constant->type()->isEnum()) {
-//        return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
+//        return ln::String::format(U"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
 //    }
 //    else if (constant->type() == PredefinedTypes::boolType) {
-//        return constant->value()->get<bool>() ? u"LN_TRUE" : u"LN_FALSE";
+//        return constant->value()->get<bool>() ? U"LN_TRUE" : U"LN_FALSE";
 //    }
 //    else if (constant->type() == PredefinedTypes::floatType) {
 //        return ln::String::fromNumber(constant->value()->get<float>());
 //    }
 //    else if (constant->type() == PredefinedTypes::nullptrType) {
-//        return u"LN_NULL_HANDLE";
+//        return U"LN_NULL_HANDLE";
 //    }
 //    else {
 //        return ln::String::fromNumber(constant->value()->get<int>());
@@ -29,7 +29,7 @@ static const bool LabelSyntax = true;
 //==============================================================================
 // HSP3HeaderGenerator
 
-static const ln::String ASFileTemplate = uR"(
+static const ln::String ASFileTemplate = UR"(
 #ifndef __lumino__
 #define __lumino__
 
@@ -59,55 +59,51 @@ _ln_return_discard = 0
 #endif // __lumino__
 )";
 
-void HSP3HeaderGenerator::generate()
-{
+void HSP3HeaderGenerator::generate() {
     OutputBuffer code;
-    code.setNewLineCode(u"\r\n");
+    code.setNewLineCode(U"\r\n");
     code.AppendLines(makeEnums());
     code.AppendLines(makeStructs());
     code.AppendLines(makeClasses());
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(U"HSP3", U""));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::String fileName = ln::String::format("{0}.as", config()->moduleName).toLower();
+        ln::String fileName = ln::format(U"{0}.as", config()->moduleName).toLower();
 
         ln::String src = ASFileTemplate
-            .replace(u"%%Contents%%", code.toString())
-            .replace(u"%%varhpi%%", ln::String::fromNumber((db()->structs()) | stream::op::count()));
+                             .replace(U"%%Contents%%", code.toString())
+                             .replace(U"%%varhpi%%", ln::String::fromNumber(db()->structs().length()));
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
     }
 }
 
-ln::String HSP3HeaderGenerator::makeEnums() const
-{
+ln::String HSP3HeaderGenerator::makeEnums() const {
     OutputBuffer code;
     for (const auto& enumSymbol : db()->enums()) {
         for (const auto& member : enumSymbol->constants()) {
-            code.AppendLine("#const global {0} {1}", makeFlatEnumMemberName(enumSymbol, member), member->value()->get<int>());
+            code.AppendLine(U"#const global {0} {1}", makeFlatEnumMemberName(enumSymbol, member), member->value()->get<int>());
         }
     }
     return code.toString();
 }
 
-ln::String HSP3HeaderGenerator::makeStructs() const
-{
+ln::String HSP3HeaderGenerator::makeStructs() const {
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
-        code.AppendLine(u"#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
+        code.AppendLine(U"#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
 
         for (const auto& methodSymbol : structSymbol->publicMethods()) {
-            code.AppendLine(u"#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
+            code.AppendLine(U"#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode), getCommandId(methodSymbol));
         }
     }
     return code.toString();
 }
 
-ln::String HSP3HeaderGenerator::makeClasses() const
-{
+ln::String HSP3HeaderGenerator::makeClasses() const {
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
@@ -116,7 +112,7 @@ ln::String HSP3HeaderGenerator::makeClasses() const
             }
             else {
                 const auto funcName = makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode);
-                code.AppendLine(u"#cmd _{0} ${1:X}", funcName, getCommandId(methodSymbol));
+                code.AppendLine(U"#cmd _{0} ${1:X}", funcName, getCommandId(methodSymbol));
 
                 // Engine::update やイベントの connect など、戻り値が不要な場合は省略できるようにしたい。
                 // ただ #cmd では Val 型の省略ができないため、#define でラップすることで対策する。
@@ -126,25 +122,25 @@ ln::String HSP3HeaderGenerator::makeClasses() const
                 for (int i = 0; i < flatParams.size(); i++) {
                     const auto& param = flatParams[i];
                     if (param->defaultValue())
-                        paramsText.AppendCommad(u"%{0}={1}", i + 1, makeFlatConstantValue(param->defaultValue()));
+                        paramsText.AppendCommad(U"%{0}={1}", i + 1, makeFlatConstantValue(param->defaultValue()));
                     else if (param->isReturn())
-                        paramsText.AppendCommad(u"%{0}=_ln_return_discard", i + 1);
+                        paramsText.AppendCommad(U"%{0}=_ln_return_discard", i + 1);
                     else
-                        paramsText.AppendCommad(u"%{0}", i + 1);
+                        paramsText.AppendCommad(U"%{0}", i + 1);
 
-                    argsText.AppendCommad(u"%{0}", i + 1);
+                    argsText.AppendCommad(U"%{0}", i + 1);
                 }
 
                 if (paramsText.isEmpty())
-                    code.AppendLine(u"#define {0} _{0}", funcName, paramsText.toString());
+                    code.AppendLine(U"#define {0} _{0}", funcName, paramsText.toString());
                 else
-                    code.AppendLine(u"#define {0}({1}) _{0} {2}", funcName, paramsText.toString(), argsText.toString());
+                    code.AppendLine(U"#define {0}({1}) _{0} {2}", funcName, paramsText.toString(), argsText.toString());
             }
         }
 
         const auto virtualMethods = classSymbol->virtualPrototypeSetters();
         for (int i = 0; i < virtualMethods.size(); i++) {
-            code.AppendLine(u"#cmd {0} ${1:X}", makeFlatFullFuncName(virtualMethods[i], FlatCharset::Unicode), getCommandId(virtualMethods[i]));
+            code.AppendLine(U"#cmd {0} ${1:X}", makeFlatFullFuncName(virtualMethods[i], FlatCharset::Unicode), getCommandId(virtualMethods[i]));
         }
     }
     return code.toString();
@@ -153,7 +149,7 @@ ln::String HSP3HeaderGenerator::makeClasses() const
 //==============================================================================
 // HSP3CommandsGenerator
 
-static const ln::String StructStorageCoreTemplate = uR"(
+static const ln::String StructStorageCoreTemplate = UR"(
 //-----------------------------------------------------------------------------
 // struct %%Type%%
 
@@ -243,10 +239,7 @@ static void hsp%%Type%%_reffunc(int* typeRes, void** retValPtr)
 }
 )";
 
-
-
-void HSP3CommandsGenerator::generate()
-{
+void HSP3CommandsGenerator::generate() {
     // Setup command map
     //for (const auto& classSymbol : db()->classes()) {
     //    for (const auto& methodSymbol : classSymbol->publicMethods()) {
@@ -261,39 +254,35 @@ void HSP3CommandsGenerator::generate()
     //    }
     //}
 
-
-
     OutputBuffer code;
-    code.AppendLine(u"#include \"LuminoHSP.h\"");
+    code.AppendLine(U"#include \"LuminoHSP.h\"");
     code.AppendLines(makeStructStorageCores());
     code.AppendLines(makeSubclassDefines());
     code.AppendLines(make_reffunc());
     code.AppendLines(make_cmdfunc());
     code.AppendLines(makeRegisterTypeFunc());
 
-    
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(U"HSP3", U""));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::String fileName = ln::String::format("{0}.HSPCommands.generated.cpp", config()->moduleName);
+        ln::String fileName = ln::format(U"{0}.HSPCommands.generated.cpp", config()->moduleName);
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), code.toString());
     }
 }
 
 // Ruby のように、Allocator などを定義していく
-ln::String HSP3CommandsGenerator::makeStructStorageCores() const
-{
+ln::String HSP3CommandsGenerator::makeStructStorageCores() const {
     OutputBuffer code;
 
     for (const auto& structSymbol : db()->structs()) {
 
         OutputBuffer initializer;
-        if (structSymbol->fullName() == u"ln::Matrix") {
+        if (structSymbol->fullName() == U"ln::Matrix") {
             // フィールドに float を使うか Vector4 を使うかちょっと揺れてるので、直接書き込む
-            static const ln::String MatrixInitializerTemplate = uR"(
+            static const ln::String MatrixInitializerTemplate = UR"(
 if (checkAndFetchDefault()) {
     LNMatrix_SetZeros(&returnValue);
 }
@@ -322,81 +311,78 @@ else {
         }
         else {
             initializer.IncreaseIndent();
-            initializer.AppendLine(u"if (checkAndFetchDefault()) {");
+            initializer.AppendLine(U"if (checkAndFetchDefault()) {");
             initializer.IncreaseIndent();
             {
                 //// 関数形式の初期化で、引数が省略されている場合
-                //if (structSymbol->fullName() == u"ln::Matrix") {
-                //    initializer.AppendLine(u"LNMatrix_SetZeros(&returnValue);");   // 行列の場合は単位行列にする TODO: Reset みたいな共通の名前の初期化関数作った方がいいかも
+                //if (structSymbol->fullName() == U"ln::Matrix") {
+                //    initializer.AppendLine(U"LNMatrix_SetZeros(&returnValue);");   // 行列の場合は単位行列にする TODO: Reset みたいな共通の名前の初期化関数作った方がいいかも
                 //}
                 //else {
-                    initializer.AppendLine(u"memset(&returnValue, 0, sizeof(returnValue));");
+                initializer.AppendLine(U"memset(&returnValue, 0, sizeof(returnValue));");
                 //}
             }
             initializer.DecreaseIndent();
-            initializer.AppendLine(u"} else {");
+            initializer.AppendLine(U"} else {");
             initializer.IncreaseIndent();
             {
                 // 各メンバ代入式
                 for (const auto& member : structSymbol->fields()) {
-                    initializer.AppendLine(u"returnValue.{0} = {1};", member->name(), makeFetchVAExpr(member->type(), true));
+                    initializer.AppendLine(U"returnValue.{0} = {1};", member->name(), makeFetchVAExpr(member->type(), true));
                 }
             }
             initializer.DecreaseIndent();
-            initializer.AppendLine(u"}");
+            initializer.AppendLine(U"}");
             initializer.DecreaseIndent();
         }
 
         code.AppendLines(StructStorageCoreTemplate
-            .replace(u"%%Type%%", makeFlatTypeName2(structSymbol))
-            .replace(u"%%MemeberInitializer%%", initializer.toString()));
+                             .replace(U"%%Type%%", makeFlatTypeName2(structSymbol))
+                             .replace(U"%%MemeberInitializer%%", initializer.toString()));
     }
-    
+
     return code.toString();
 }
 
-ln::String HSP3CommandsGenerator::makeRegisterTypeFunc() const
-{
+ln::String HSP3CommandsGenerator::makeRegisterTypeFunc() const {
     OutputBuffer code;
-    code.AppendLine(u"void RegisterTypes(HSP3TYPEINFO * info)");
-    code.AppendLine(u"{");
+    code.AppendLine(U"void RegisterTypes(HSP3TYPEINFO * info)");
+    code.AppendLine(U"{");
     code.IncreaseIndent();
     {
         for (const auto& structSymbol : db()->structs()) {
-            code.AppendLine(u"registvar(-1, hsp{0}_Init);", makeFlatTypeName2(structSymbol));
+            code.AppendLine(U"registvar(-1, hsp{0}_Init);", makeFlatTypeName2(structSymbol));
         }
 
         for (const auto& classSymbol : db()->classes()) {
             if (classSymbol->isStatic()) {
-
             }
             else {
-                code.AppendLine(u"{");
+                code.AppendLine(U"{");
                 code.IncreaseIndent();
                 {
-                    code.AppendLine(u"{0} info = {{}};", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
-                    code.AppendLine(u"info.subinstanceAllocFunc = {0};", makeName_SubinstanceAlloc(classSymbol));
-                    code.AppendLine(u"info.subinstanceFreeFunc = {0};", makeName_SubinstanceFree(classSymbol));
+                    code.AppendLine(U"{0} info = {{}};", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
+                    code.AppendLine(U"info.subinstanceAllocFunc = {0};", makeName_SubinstanceAlloc(classSymbol));
+                    code.AppendLine(U"info.subinstanceFreeFunc = {0};", makeName_SubinstanceFree(classSymbol));
 
                     for (const auto& methodSymbol : classSymbol->leafVirtualMethods()) {
-                        code.AppendLine(u"//info.{0} = {1};", makeFlatAPIName_OverrideFunc(methodSymbol, FlatCharset::Ascii), u"????");
+                        code.AppendLine(U"//info.{0} = {1};", makeFlatAPIName_OverrideFunc(methodSymbol, FlatCharset::Ascii), U"????");
                     }
 
-                    code.AppendLine(u"{0}(&info);", makeFlatAPIName_RegisterSubclassTypeInfo(classSymbol));
+                    code.AppendLine(U"{0}(&info);", makeFlatAPIName_RegisterSubclassTypeInfo(classSymbol));
                 }
                 code.DecreaseIndent();
-                code.AppendLine(u"}");
+                code.AppendLine(U"}");
             }
         }
     }
     code.DecreaseIndent();
-    code.AppendLine(u"}");
+    code.AppendLine(U"}");
     return code.toString();
 }
 
-ln::String HSP3CommandsGenerator::makeSubclassDefines() const
-{
-    static const ln::String SubclassCommonTemplate = uR"(
+ln::String HSP3CommandsGenerator::makeSubclassDefines() const {
+    static const ln::String SubclassCommonTemplate = UR"(
 static LNSubinstanceId HSPSubclass_%%FlatClassName%%_SubinstanceAlloc(LNHandle handle)
 {
     return reinterpret_cast<LNSubinstanceId>(malloc(sizeof(HSPSubclass_%%FlatClassName%%)));
@@ -411,21 +397,21 @@ static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LNHandle handle, LNSub
     OutputBuffer code;
 
     for (const auto& classSymbol : db()->classes()) {
-        code.AppendLine(u"//==============================================================================");
-        code.AppendLine(u"// " + classSymbol->fullName()).NewLine();
+        code.AppendLine(U"//==============================================================================");
+        code.AppendLine(U"// " + classSymbol->fullName()).NewLine();
 
-        code.AppendLine(u"struct HSPSubclass_" + makeFlatClassName(classSymbol));
-        code.AppendLine(u"{");
+        code.AppendLine(U"struct HSPSubclass_" + makeFlatClassName(classSymbol));
+        code.AppendLine(U"{");
         code.IncreaseIndent();
         {
             if (classSymbol->isDelegateObject()) {
-                code.AppendLine(u"unsigned short* labelPointer = nullptr;");
+                code.AppendLine(U"unsigned short* labelPointer = nullptr;");
             }
         }
         code.DecreaseIndent();
-        code.AppendLine(u"};").NewLine();
+        code.AppendLine(U"};").NewLine();
 
-        code.AppendLines(SubclassCommonTemplate.replace(u"%%FlatClassName%%", makeFlatClassName(classSymbol))).NewLine();
+        code.AppendLines(SubclassCommonTemplate.replace(U"%%FlatClassName%%", makeFlatClassName(classSymbol))).NewLine();
 
         // DelegateLabelCaller
         if (classSymbol->isDelegateObject()) {
@@ -435,96 +421,93 @@ static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LNHandle handle, LNSub
             //}
             const auto selfParamName = classSymbol->delegateProtoType()->flatThisParam()->name();
 
-            code.AppendLine(u"static LNResult {0}({1})", makeName_DelegateLabelCaller(classSymbol), makeFlatParamList(classSymbol->delegateProtoType(), FlatCharset::Ascii));
-            code.AppendLine(u"{");
+            code.AppendLine(U"static LNResult {0}({1})", makeName_DelegateLabelCaller(classSymbol), makeFlatParamList(classSymbol->delegateProtoType(), FlatCharset::Ascii));
+            code.AppendLine(U"{");
             code.IncreaseIndent();
             {
                 const auto& params = classSymbol->delegateProtoType()->flatParameters();
                 for (int i = 0; i < params.size(); i++) {
                     if (params[i]->isIn()) {
-                        code.AppendLine(u"setCallbackArg({0}, {1});", i, params[i]->name());
+                        code.AppendLine(U"setCallbackArg({0}, {1});", i, params[i]->name());
                     }
                 }
 
-                code.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), selfParamName);
-                code.AppendLine(u"stat = 0;");
-                code.AppendLine(u"code_call(localSelf->labelPointer);");
+                code.AppendLine(U"auto* localSelf = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), selfParamName);
+                code.AppendLine(U"stat = 0;");
+                code.AppendLine(U"code_call(localSelf->labelPointer);");
 
                 for (int i = 0; i < params.size(); i++) {
                     if (params[i]->isOut()) {
-                        code.AppendLine(u"setCallbackOutput({0}, {1});", i, params[i]->name());
+                        code.AppendLine(U"setCallbackOutput({0}, {1});", i, params[i]->name());
                     }
                 }
 
-                code.AppendLine(u"return static_cast<LNResult>(stat);");
+                code.AppendLine(U"return static_cast<LNResult>(stat);");
             }
             code.DecreaseIndent();
-            code.AppendLine(u"}").NewLine();
+            code.AppendLine(U"}").NewLine();
         }
     }
 
     return code.toString().trim();
 }
 
-ln::String HSP3CommandsGenerator::make_reffunc() const
-{
+ln::String HSP3CommandsGenerator::make_reffunc() const {
     OutputBuffer code;
-    code.AppendLine(u"bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)");
-    code.AppendLine(u"{");
+    code.AppendLine(U"bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)");
+    code.AppendLine(U"{");
     code.IncreaseIndent();
     {
-        code.AppendLine(u"g_leadSupport = false;");
-        code.AppendLine(u"switch (cmd) {");
+        code.AppendLine(U"g_leadSupport = false;");
+        code.AppendLine(U"switch (cmd) {");
         code.IncreaseIndent();
         {
             for (const auto& structSymbol : db()->structs()) {
-                code.AppendLine(u"// " + makeFlatTypeName2(structSymbol));
-                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(structSymbol));
+                code.AppendLine(U"// " + makeFlatTypeName2(structSymbol));
+                code.AppendLine(U"case 0x{0:X} : {{", getCommandId(structSymbol));
                 code.IncreaseIndent();
 
-                code.AppendLines(u"hsp{0}_reffunc(typeRes, retValPtr);", makeFlatTypeName2(structSymbol));
+                code.AppendLines(U"hsp{0}_reffunc(typeRes, retValPtr);", makeFlatTypeName2(structSymbol));
 
-                code.AppendLine(u"return true;");
+                code.AppendLine(U"return true;");
                 code.DecreaseIndent();
-                code.AppendLine(u"}");
+                code.AppendLine(U"}");
             }
 
-            code.AppendLine(u"// ln_args");
-            code.AppendLine(u"case 0x1 : {");
+            code.AppendLine(U"// ln_args");
+            code.AppendLine(U"case 0x1 : {");
             code.IncreaseIndent();
-            code.AppendLines(u"ln_args_reffunc(typeRes, retValPtr);");
-            code.AppendLine(u"return true;");
+            code.AppendLines(U"ln_args_reffunc(typeRes, retValPtr);");
+            code.AppendLine(U"return true;");
             code.DecreaseIndent();
-            code.AppendLine(u"}");
-
+            code.AppendLine(U"}");
         }
         code.DecreaseIndent();
-        code.AppendLine(u"}");
-        code.AppendLine(u"return false;");
+        code.AppendLine(U"}");
+        code.AppendLine(U"return false;");
     }
     code.DecreaseIndent();
-    code.AppendLine(u"}");
+    code.AppendLine(U"}");
     return code.toString();
 }
 
-ln::String HSP3CommandsGenerator::make_cmdfunc() const
-{
+ln::String HSP3CommandsGenerator::make_cmdfunc() const {
     OutputBuffer code;
-    code.AppendLine(u"bool Commands_cmdfunc(int cmd, int* retVal)");
-    code.AppendLine(u"{");
+    code.AppendLine(U"bool Commands_cmdfunc(int cmd, int* retVal)");
+    code.AppendLine(U"{");
     code.IncreaseIndent();
-    code.AppendLine(u"*retVal = RUNMODE_RUN;");
-    code.AppendLine(u"switch (cmd) {");
+    code.AppendLine(U"*retVal = RUNMODE_RUN;");
+    code.AppendLine(U"switch (cmd) {");
     code.IncreaseIndent();
 
     {
-        code.AppendLine(u"// ln_set_args");
-        code.AppendLine(u"case 0x2 : {");
+        code.AppendLine(U"// ln_set_args");
+        code.AppendLine(U"case 0x2 : {");
         code.IncreaseIndent();
-        code.AppendLines(u"ln_set_args_cmdfunc();");
-        code.AppendLine(u"return true;");
+        code.AppendLines(U"ln_set_args_cmdfunc();");
+        code.AppendLine(U"return true;");
         code.DecreaseIndent();
-        code.AppendLine(u"}");
+        code.AppendLine(U"}");
     }
 
     for (const auto& structSymbol : db()->structs()) {
@@ -534,57 +517,56 @@ ln::String HSP3CommandsGenerator::make_cmdfunc() const
                 // 個別フィールドアクセスはひとまず見送り。HSP3 だと冗長になりすぎる。まとめて取得する Get だけで十分だろう。
             }
             else {
-                code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
-                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol));
+                code.AppendLine(U"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
+                code.AppendLine(U"case 0x{0:X} : {{", getCommandId(methodSymbol));
                 code.IncreaseIndent();
 
                 code.AppendLines(makeCallCommandBlock(methodSymbol));
 
-                code.AppendLine(u"return true;");
+                code.AppendLine(U"return true;");
                 code.DecreaseIndent();
-                code.AppendLine(u"}");
+                code.AppendLine(U"}");
             }
         }
     }
-    
+
     for (const auto& classSymbol : db()->classes()) {
         auto methods = classSymbol->publicMethods();
         methods.addRange(classSymbol->virtualPrototypeSetters());
         for (const auto& methodSymbol : methods) {
-            code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
-            code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol));
+            code.AppendLine(U"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
+            code.AppendLine(U"case 0x{0:X} : {{", getCommandId(methodSymbol));
             code.IncreaseIndent();
 
             code.AppendLines(makeCallCommandBlock(methodSymbol));
-            
-            code.AppendLine(u"return true;");
+
+            code.AppendLine(U"return true;");
             code.DecreaseIndent();
-            code.AppendLine(u"}");
+            code.AppendLine(U"}");
         }
 
         //const auto virtualMethods = classSymbol->virtualMethods();
         //for (int i = 0; i < virtualMethods.size(); i++) {
         //    const auto& methodSymbol = virtualMethods[i];
-        //    code.AppendLine(u"// " + makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii));
-        //    code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol, 1 + i));
+        //    code.AppendLine(U"// " + makeFlatAPIName_SetPrototype(classSymbol, virtualMethods[i], FlatCharset::Ascii));
+        //    code.AppendLine(U"case 0x{0:X} : {{", getCommandId(methodSymbol, 1 + i));
         //    code.IncreaseIndent();
 
-        //    code.AppendLine(u"return true;");
+        //    code.AppendLine(U"return true;");
         //    code.DecreaseIndent();
-        //    code.AppendLine(u"}");
+        //    code.AppendLine(U"}");
         //}
     }
 
     code.DecreaseIndent();
-    code.AppendLine(u"}");
-    code.AppendLine(u"return false;");
+    code.AppendLine(U"}");
+    code.AppendLine(U"return false;");
     code.DecreaseIndent();
-    code.AppendLine(u"}");
+    code.AppendLine(U"}");
     return code.toString();
 }
 
-ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* methodSymbol) const
-{
+ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* methodSymbol) const {
     OutputBuffer prologue;
     OutputBuffer args;
     OutputBuffer epilogue;
@@ -592,66 +574,63 @@ ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* metho
     const TypeSymbol* classSymbol = methodSymbol->ownerType();
 
     for (const auto& param : methodSymbol->flatParameters()) {
-        auto localVarName = u"local_" + param->name();
-        prologue.AppendLine(u"// Fetch " + param->name());
+        auto localVarName = U"local_" + param->name();
+        prologue.AppendLine(U"// Fetch " + param->name());
 
         if (LabelSyntax && !classSymbol->isDelegateObject() && param->type()->isDelegateObject() && param->isIn()) {
             prologue.AppendLine(makeGetVAExpr(param));
 
             // Create temp delegate
             {
-                auto localDelegateName = u"localDelegate_" + param->name();
+                auto localDelegateName = U"localDelegate_" + param->name();
                 prologue.NewLine();
-                prologue.AppendLine(u"LNHandle {0};", localDelegateName);
-                prologue.AppendLine(u"{");
+                prologue.AppendLine(U"LNHandle {0};", localDelegateName);
+                prologue.AppendLine(U"{");
                 prologue.IncreaseIndent();
-                prologue.AppendLine(u"stat = {0}({1}, &{2});", makeFlatFullFuncName(param->type()->publicMethods()[0], FlatCharset::Ascii), makeName_DelegateLabelCaller(param->type()), localDelegateName);
-                prologue.AppendLine(u"if (stat != LN_OK) return true;");
-                prologue.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(param->type()), makeFlatAPIName_GetSubinstanceId(param->type()), localDelegateName);
-                prologue.AppendLine(u"localSelf->labelPointer = {0};", localVarName);
+                prologue.AppendLine(U"stat = {0}({1}, &{2});", makeFlatFullFuncName(param->type()->publicMethods()[0], FlatCharset::Ascii), makeName_DelegateLabelCaller(param->type()), localDelegateName);
+                prologue.AppendLine(U"if (stat != LN_OK) return true;");
+                prologue.AppendLine(U"auto* localSelf = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(param->type()), makeFlatAPIName_GetSubinstanceId(param->type()), localDelegateName);
+                prologue.AppendLine(U"localSelf->labelPointer = {0};", localVarName);
                 prologue.DecreaseIndent();
-                prologue.AppendLine(u"}");
+                prologue.AppendLine(U"}");
 
                 args.AppendCommad(localDelegateName);
 
-                epilogue.AppendLine(u"LNObject_Release({0});", localDelegateName);
+                epilogue.AppendLine(U"LNObject_Release({0});", localDelegateName);
             }
-
         }
         else if (classSymbol->isDelegateObject() && methodSymbol->isConstructor() && param->type()->isFunction() && param->isIn()) {
             prologue.AppendLine(makeGetVAExpr(param));
             args.AppendCommad(makeName_DelegateLabelCaller(classSymbol));
-            epilogue.AppendLine(u"auto* localSelf = reinterpret_cast<{0}*>({1}(local_{2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), methodSymbol->flatConstructorOutputThisParam()->name());
-            epilogue.AppendLine(u"localSelf->labelPointer = {0};", localVarName);
+            epilogue.AppendLine(U"auto* localSelf = reinterpret_cast<{0}*>({1}(local_{2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), methodSymbol->flatConstructorOutputThisParam()->name());
+            epilogue.AppendLine(U"localSelf->labelPointer = {0};", localVarName);
         }
         else if (param->isOut() || param->isReturn()) {
-            prologue.AppendLine(u"PVal* pval_{0};", param->name());
-            prologue.AppendLine(u"const APTR aptr_{0} = code_getva(&pval_{0});", param->name());
-            prologue.AppendLine(u"{0} {1};", makeFlatTypeName2(param->type()), localVarName);
+            prologue.AppendLine(U"PVal* pval_{0};", param->name());
+            prologue.AppendLine(U"const APTR aptr_{0} = code_getva(&pval_{0});", param->name());
+            prologue.AppendLine(U"{0} {1};", makeFlatTypeName2(param->type()), localVarName);
 
-
-            args.AppendCommad(u"&" + localVarName);
+            args.AppendCommad(U"&" + localVarName);
             epilogue.AppendLine(makeSetVAExpr(param));
         }
         else if (param->type()->isStruct()) {
-            prologue.AppendLine(u"PVal* pval_{0};", param->name());
-            prologue.AppendLine(u"CodeGetVA_TypeChecked(&pval_{0}, {1});", param->name(), makeFlatTypeName2(param->type()));
+            prologue.AppendLine(U"PVal* pval_{0};", param->name());
+            prologue.AppendLine(U"CodeGetVA_TypeChecked(&pval_{0}, {1});", param->name(), makeFlatTypeName2(param->type()));
 
-            ln::String mod = methodSymbol->isConst() ? u"const " : u"";
-            args.AppendCommad(u"reinterpret_cast<{0}{1}*>(pval_{2}->pt)", mod, makeFlatTypeName2(param->type()), param->name());
+            ln::String mod = methodSymbol->isConst() ? U"const " : U"";
+            args.AppendCommad(U"reinterpret_cast<{0}{1}*>(pval_{2}->pt)", mod, makeFlatTypeName2(param->type()), param->name());
         }
         else {
             prologue.AppendLine(makeGetVAExpr(param));
-            args.AppendCommad(u"static_cast<{0}>({1})", makeFlatCParamQualTypeName(methodSymbol, param, FlatCharset::Ascii), localVarName);
+            args.AppendCommad(U"static_cast<{0}>({1})", makeFlatCParamQualTypeName(methodSymbol, param, FlatCharset::Ascii), localVarName);
         }
-
     }
 
     OutputBuffer code;
     code.AppendLines(prologue.toString());
 
     ln::String callExpr;
-    callExpr = "stat = " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii) + "(" + args.toString() + ");";
+    callExpr = U"stat = " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii) + U"(" + args.toString() + U");";
 
     code.AppendLine(callExpr);
     code.AppendLines(epilogue.toString().trim());
@@ -659,28 +638,26 @@ ln::String HSP3CommandsGenerator::makeCallCommandBlock(const MethodSymbol* metho
     // LNEngine_Update は、await を実行して HSP3 ランタイムのメッセージ処理を行うようにする。
     // ※こうしておかないと、HSP3 が作ったメインウィンドウがクローズできない。
     //   ユーザープログラムで await してもらえばいいのだが、ちょっと煩わしい。hgimg のようにしておきたい。
-    if (classSymbol->shortName() == u"Engine" && methodSymbol->shortName() == u"update") {
-        code.AppendLine(u"ctx->waittick = 0;");
-        code.AppendLine(u"*retVal = RUNMODE_AWAIT;");
+    if (classSymbol->shortName() == U"Engine" && methodSymbol->shortName() == U"update") {
+        code.AppendLine(U"ctx->waittick = 0;");
+        code.AppendLine(U"*retVal = RUNMODE_AWAIT;");
     }
 
-    
     return code.toString();
 }
 
-ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc, const ConstantSymbol* defaultValue) const
-{
-    const ln::Char* postfix = (reffunc) ? u"_reffunc" : u"";
+ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc, const ConstantSymbol* defaultValue) const {
+    const ln::Char* postfix = (reffunc) ? U"_reffunc" : U"";
     const auto defaultValueStr = (defaultValue) ? makeFlatConstantValue(defaultValue) : ln::String();
 
     if (LabelSyntax) {
         if (typeSymbol->isDelegateObject()) {
-            return ln::String::format(u"fetchVALabelPointer{0}()", postfix);
+            return ln::format(U"fetchVALabelPointer{0}()", postfix);
         }
     }
 
     if (typeSymbol == PredefinedTypes::boolType) {
-        return ln::String::format(u"static_cast<LNBool>(fetchVAInt{0}())", postfix);
+        return ln::format(U"static_cast<LNBool>(fetchVAInt{0}())", postfix);
     }
     if (typeSymbol == PredefinedTypes::boolType ||
         typeSymbol == PredefinedTypes::intType ||
@@ -688,37 +665,35 @@ ln::String HSP3CommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, 
         typeSymbol == PredefinedTypes::uint32Type ||
         typeSymbol == PredefinedTypes::intptrType ||
         typeSymbol->isClass()) {
-        return ln::String::format(u"fetchVAInt{0}({1})", postfix, defaultValueStr);
+        return ln::format(U"fetchVAInt{0}({1})", postfix, defaultValueStr);
     }
     if (typeSymbol->isEnum()) {
-        return ln::String::format(u"static_cast<{0}>(fetchVAInt{1}({2}))", makeFlatTypeName2(typeSymbol), postfix, defaultValueStr);
+        return ln::format(U"static_cast<{0}>(fetchVAInt{1}({2}))", makeFlatTypeName2(typeSymbol), postfix, defaultValueStr);
     }
     if (typeSymbol == PredefinedTypes::floatType ||
         typeSymbol == PredefinedTypes::doubleType) {
-        return ln::String::format(u"fetchVADouble{0}({1})", postfix, defaultValueStr);
+        return ln::format(U"fetchVADouble{0}({1})", postfix, defaultValueStr);
     }
     if (typeSymbol == PredefinedTypes::stringType ||
-        typeSymbol == PredefinedTypes::stringRefType) {
-        return ln::String::format(u"fetchVAString{0}()", postfix);
+        typeSymbol == PredefinedTypes::StringViewType) {
+        return ln::format(U"fetchVAString{0}()", postfix);
     }
     if (typeSymbol->isFunction()) {
-        return ln::String::format(u"fetchVALabelPointer{0}()", postfix);
+        return ln::format(U"fetchVALabelPointer{0}()", postfix);
     }
-    return u"????";
+    return U"????";
 }
 
-ln::String HSP3CommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const
-{
-    const auto localName = ln::String::format(u"local_" + paramSymbol->name());
-    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type(), false, paramSymbol->defaultValue()));
+ln::String HSP3CommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const {
+    const auto localName = ln::format(U"local_" + paramSymbol->name());
+    return ln::format(U"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type(), false, paramSymbol->defaultValue()));
 }
 
-ln::String HSP3CommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const
-{
+ln::String HSP3CommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const {
     const TypeSymbol* typeSymbol = paramSymbol->type();
-    const auto pvalName = ln::String::format(u"pval_" + paramSymbol->name());
-    const auto aptrName = ln::String::format(u"aptr_" + paramSymbol->name());
-    const auto localName = ln::String::format(u"local_" + paramSymbol->name());
+    const auto pvalName = ln::format(U"pval_" + paramSymbol->name());
+    const auto aptrName = ln::format(U"aptr_" + paramSymbol->name());
+    const auto localName = ln::format(U"local_" + paramSymbol->name());
 
     if (typeSymbol == PredefinedTypes::boolType ||
         typeSymbol == PredefinedTypes::intType ||
@@ -726,28 +701,28 @@ ln::String HSP3CommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* par
         typeSymbol == PredefinedTypes::uint32Type ||
         typeSymbol->isClass() ||
         typeSymbol->isEnum()) {
-        return ln::String::format(u"setVAInt({0}, {1}, {2});", pvalName, aptrName, localName);
+        return ln::format(U"setVAInt({0}, {1}, {2});", pvalName, aptrName, localName);
     }
     if (typeSymbol == PredefinedTypes::floatType ||
         typeSymbol == PredefinedTypes::doubleType) {
-        return ln::String::format(u"setVADouble({0}, {1}, {2});", pvalName, aptrName, localName);
+        return ln::format(U"setVADouble({0}, {1}, {2});", pvalName, aptrName, localName);
     }
     if (typeSymbol == PredefinedTypes::stringType ||
-        typeSymbol == PredefinedTypes::stringRefType ||
+        typeSymbol == PredefinedTypes::StringViewType ||
         typeSymbol->isClass()) {
-        return ln::String::format(u"setVAStr({0}, {1}, {2});", pvalName, aptrName, localName);
+        return ln::format(U"setVAStr({0}, {1}, {2});", pvalName, aptrName, localName);
     }
     if (typeSymbol->isStruct()) {
-        return ln::String::format(u"code_setva({0}, {1}, hsp{2}_typeid(), &{3});", pvalName, aptrName, makeFlatTypeName2(typeSymbol), localName);
+        return ln::format(U"code_setva({0}, {1}, hsp{2}_typeid(), &{3});", pvalName, aptrName, makeFlatTypeName2(typeSymbol), localName);
     }
 
-    return u"??";
+    return U"??";
 }
 
 //==============================================================================
 // HSP3HelpGenerator
 
-static const ln::String HeaderTemplate = uR"(
+static const ln::String HeaderTemplate = UR"(
 ;============================================================
 ; Lumino ヘルプファイル
 ;============================================================
@@ -775,7 +750,7 @@ http ://nnmy.sakura.ne.jp/
 
 )";
 
-static const ln::String FuncTemplate = uR"(
+static const ln::String FuncTemplate = UR"(
 ;------------------------------------------------------------
 ;
 ;------------------------------------------------------------
@@ -793,21 +768,20 @@ _INST_
 _HREF_
 )";
 
-void HSP3HelpGenerator::generate()
-{
+void HSP3HelpGenerator::generate() {
     OutputBuffer code;
-    code.setNewLineCode(u"\r\n");
+    code.setNewLineCode(U"\r\n");
 
     // Header
     {
-        std::time_t t = std::time(0);   // get time now
+        std::time_t t = std::time(0); // get time now
         std::tm* now = std::localtime(&t);
         auto text = HeaderTemplate
-            .replace(u"_LIBRARY_VERSION_", config()->versionString)
-            .replace(u"_BUILD_TIME_", ln::String::format(u"{0}/{1}/{2}", (now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday));
+                        .replace(U"_LIBRARY_VERSION_", config()->versionString)
+                        .replace(U"_BUILD_TIME_", ln::format(U"{0}/{1}/{2}", (now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday));
         code.AppendLines(text);
     }
-    
+
     // Structs
     for (const auto& structSymbol : db()->structs()) {
         for (auto& methodSymbol : structSymbol->publicMethods()) {
@@ -829,17 +803,16 @@ void HSP3HelpGenerator::generate()
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"HSP3", u""));
+        auto outputDir = ln::Path(makeOutputFilePath(U"HSP3", U""));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::String fileName = ln::String::format("{0}.hs", config()->moduleName).toLower();
+        ln::String fileName = ln::format(U"{0}.hs", config()->moduleName).toLower();
 
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), code.toString(), ln::TextEncoding::getEncoding(ln::EncodingType::SJIS));
     }
 }
 
-ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) const
-{
+ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol) const {
     // 引数リスト
     OutputBuffer params;
     for (const auto& param : methodSymbol->flatParameters()) {
@@ -857,7 +830,7 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
         // 名前部分はデフォルト引数も含んだ長さで考える
         int nameLen = param->name().length();
         if (param->hasDefaultValue())
-            nameLen += makeFlatConstantValue(param->defaultValue()).length() + 2;   // +2 は () の分
+            nameLen += makeFlatConstantValue(param->defaultValue()).length() + 2; // +2 は () の分
 
         ioColumnWidth = std::max(ioColumnWidth, makeIOName(param).length());
         nameColumnWidth = std::max(nameColumnWidth, nameLen);
@@ -872,16 +845,16 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
         // デフォルト値がある場合は () を付けて表現
         // また outReturn も省略可能とする
         if (param->hasDefaultValue())
-            name += u"(" + makeFlatConstantValue(param->defaultValue()) + u")";
+            name += U"(" + makeFlatConstantValue(param->defaultValue()) + U")";
         else if (param->isReturn()) {
-            name += u"(0)";
+            name += U"(0)";
         }
 
-        paramsDetailText.append(ln::String::format(u"{0,-" + ln::String::fromNumber(ioColumnWidth) + u"}", u"[" + makeIOName(param) + "]"));
-        paramsDetailText.append(ln::String::format(u" {0,-" + ln::String::fromNumber(nameColumnWidth) + u"}", name));
-        paramsDetailText.append(u" : ");
+        paramsDetailText.append(ln::format(U"{0,-" + ln::String::fromNumber(ioColumnWidth) + U"}", U"[" + makeIOName(param) + U"]"));
+        paramsDetailText.append(ln::format(U" {0,-" + ln::String::fromNumber(nameColumnWidth) + U"}", name));
+        paramsDetailText.append(U" : ");
         if (param->type()->isStruct()) {
-            paramsDetailText.append(u"({0} 型の値) ", param->type()->shortName());
+            paramsDetailText.append(U"({0} 型の値) ", param->type()->shortName());
         }
         paramsDetailText.append(translateComment(methodSymbol->document()->flatParams()[param->flatParamIndex()]->description()));
         paramsDetailText.NewLine();
@@ -889,7 +862,7 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
         // enum 型の場合は候補値も追加しておく
         const auto& enumType = param->type();
         if (enumType->isEnum()) {
-            const auto indent = ln::String::format(u" {0,-" + ln::String::fromNumber(ioColumnWidth + 3 + nameColumnWidth + 3) + u"}", u" ");
+            const auto indent = ln::format(U" {0,-" + ln::String::fromNumber(ioColumnWidth + 3 + nameColumnWidth + 3) + U"}", U" ");
 
             for (const auto& member : enumType->constants()) {
                 paramsDetailText.AppendLine(indent + makeFlatEnumMemberName(enumType, member));
@@ -899,34 +872,30 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
     }
 
     paramsDetailText.NewLine();
-    paramsDetailText.AppendLine(u"stat : 0=成功, 負値=失敗");
-
+    paramsDetailText.AppendLine(U"stat : 0=成功, 負値=失敗");
 
     OutputBuffer detailText;
     detailText.AppendLines(methodSymbol->document()->details());
     if (TypeSymbol* baseClass = methodSymbol->ownerType()->baseClass()) {
         detailText.NewLine();
-        detailText.AppendLine(u"備考");
-        detailText.AppendLine(u"--------------------");
+        detailText.AppendLine(U"備考");
+        detailText.AppendLine(U"--------------------");
 
         TypeSymbol* thisClass = methodSymbol->ownerType();
         while (baseClass) {
-            detailText.AppendLine(u"{0} は {1} のサブクラスです。{0} ハンドルは {1} ハンドルとして扱うことができ、 {2}_ から始まる命令等で使用できます。",
-                thisClass->shortName(),
-                baseClass->shortName(),
-                makeFlatClassName(baseClass));
+            detailText.AppendLine(U"{0} は {1} のサブクラスです。{0} ハンドルは {1} ハンドルとして扱うことができ、 {2}_ から始まる命令等で使用できます。", thisClass->shortName(), baseClass->shortName(), makeFlatClassName(baseClass));
             baseClass = baseClass->baseClass();
         }
     }
 
     return FuncTemplate
-        .replace("_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode))    // FlatCharset::Unicode を指定して、"A" をつけないようにする
-        .replace("_BRIEF_", translateComment(methodSymbol->document()->summary()))
-        .replace("_INST_", translateComment(detailText.toString()))
-        .replace("_HREF_", "")
-        .replace("_GROUP_", makeFlatClassName(methodSymbol->ownerType()))
-        .replace("_PRM_LIST_", params.toString())
-        .replace("_PRM_DETAIL_", paramsDetailText.toString());
+        .replace(U"_NAME_", makeFlatFullFuncName(methodSymbol, FlatCharset::Unicode)) // FlatCharset::Unicode を指定して、"A" をつけないようにする
+        .replace(U"_BRIEF_", translateComment(methodSymbol->document()->summary()))
+        .replace(U"_INST_", translateComment(detailText.toString()))
+        .replace(U"_HREF_", U"")
+        .replace(U"_GROUP_", makeFlatClassName(methodSymbol->ownerType()))
+        .replace(U"_PRM_LIST_", params.toString())
+        .replace(U"_PRM_DETAIL_", paramsDetailText.toString());
 
     // サンプルコード
     //TestCode sampleCode;
@@ -937,19 +906,17 @@ ln::String HSP3HelpGenerator::makeFuncDocument(const MethodSymbol* methodSymbol)
     //}
 }
 
-ln::String HSP3HelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbol) const
-{
+ln::String HSP3HelpGenerator::makeIOName(const MethodParameterSymbol* paramSymbol) const {
     if (paramSymbol->isOut())
-        return u"out";
+        return U"out";
     else
-        return u"in";
+        return U"in";
 }
 
-ln::String HSP3HelpGenerator::translateComment(const ln::String& text) const
-{
-    auto result = text.replace("関数", "命令")
-        .replace("のポインタ", "");
-        //.replace("クラス", "モジュール")
+ln::String HSP3HelpGenerator::translateComment(const ln::String& text) const {
+    auto result = text.replace(U"関数", U"命令")
+                      .replace(U"のポインタ", U"");
+    //.replace("クラス", "モジュール")
 
     return result;
 

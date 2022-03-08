@@ -226,7 +226,7 @@ class PIDatabase : public ln::RefObject
 {
 public:
 	ln::List<Ref<PITypeInfo>> types;
-	ln::List<Ref<PIDocument>> relativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
+	ln::Array<Ref<PIDocument>> relativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
 	//ln::List<Ref<PIRelativeDocument>> releativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
 
 	PIDocument* findRelativeDocument(const ln::List<ln::String>& localSignature);

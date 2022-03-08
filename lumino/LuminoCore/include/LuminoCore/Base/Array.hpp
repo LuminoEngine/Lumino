@@ -303,6 +303,17 @@ public:
 
     /** @} */
 
+    /** 配列のそれぞれの要素に対してコールバック関数を適用します。その際、直前の要素における計算結果の返値を渡し、最後の結果を返します。 */
+    template<class TPredicate>
+    Array<T> filter(TPredicate predicate) const {
+        Array<T> result;
+        result.reserve(m_data.size());
+        for (const auto& i : *this) {
+            result.push_back(i);
+        }
+        return result;
+    }
+
     template<class TCallback>
     auto map(TCallback callback) -> Array<decltype(callback(*reinterpret_cast<T*>(0)))> {
         Array<decltype(callback(*reinterpret_cast<T*>(0)))> result = {};

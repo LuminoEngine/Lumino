@@ -4,55 +4,53 @@
 //==============================================================================
 // DotNetPInvokeGenerator
 
-void DotNetPInvokeGenerator::generate()
-{
+void DotNetPInvokeGenerator::generate() {
 
     OutputBuffer code;
-    code.AppendLine("using System;");
-    code.AppendLine("using System.Runtime.InteropServices;");
+    code.AppendLine(U"using System;");
+    code.AppendLine(U"using System.Runtime.InteropServices;");
     code.NewLine();
-    code.AppendLine(u"namespace {0}", config()->moduleName);
-    code.AppendLine(u"{");
+    code.AppendLine(U"namespace {0}", config()->moduleName);
+    code.AppendLine(U"{");
     code.IncreaseIndent();
     {
         code.AppendLines(generateEnums());
         code.AppendLines(generateStructs());
     }
     code.DecreaseIndent();
-    code.AppendLine(u"}");
+    code.AppendLine(U"}");
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(u"Dotnet", u"Lumino.Dotnet"));
+        auto outputDir = ln::Path(makeOutputFilePath(U"Dotnet", U"Lumino.Dotnet"));
         ln::FileSystem::createDirectory(outputDir);
 
-        auto fileName = ln::String::format("{0}.PInvoke.generated.cs", config()->moduleName);
+        auto fileName = ln::format(U"{0}.PInvoke.generated.cs", config()->moduleName);
         ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), code.toString());
     }
 }
 
-ln::String DotNetPInvokeGenerator::generateEnums()
-{
+ln::String DotNetPInvokeGenerator::generateEnums() {
     OutputBuffer code;
 
     for (auto& enumSymbol : db()->enums()) {
         code.AppendLines(makeDocumentComment(enumSymbol->document()));
 
         if (enumSymbol->isFlags())
-            code.AppendLine(u"[Flags]");
+            code.AppendLine(U"[Flags]");
 
-        code.AppendLine(u"public enum {0}", enumSymbol->shortName());
-        code.AppendLine(u"{");
+        code.AppendLine(U"public enum {0}", enumSymbol->shortName());
+        code.AppendLine(U"{");
         code.IncreaseIndent();
 
         for (auto& member : enumSymbol->constants()) {
             code.AppendLine(makeDocumentComment(member->document()));
-            code.AppendLine(u"{0} = {1},", member->name(), member->value()->get<int>());
+            code.AppendLine(U"{0} = {1},", member->name(), member->value()->get<int>());
             code.NewLine();
         }
 
         code.DecreaseIndent();
-        code.AppendLine(u"}");
+        code.AppendLine(U"}");
 
         code.NewLine();
     }
@@ -60,26 +58,25 @@ ln::String DotNetPInvokeGenerator::generateEnums()
     return code.toString();
 }
 
-ln::String DotNetPInvokeGenerator::generateStructs()
-{
+ln::String DotNetPInvokeGenerator::generateStructs() {
     OutputBuffer code;
 
     for (auto& structSymbol : db()->structs()) {
         code.AppendLines(makeDocumentComment(structSymbol->document()));
 
-        code.AppendLine(u"[StructLayout(LayoutKind.Sequential)]");
-        code.AppendLine(u"public struct {0}", structSymbol->shortName());
-        code.AppendLine(u"{");
+        code.AppendLine(U"[StructLayout(LayoutKind.Sequential)]");
+        code.AppendLine(U"public struct {0}", structSymbol->shortName());
+        code.AppendLine(U"{");
         code.IncreaseIndent();
 
         //for (auto& member : enumSymbol->constants()) {
         //    code.AppendLine(makeDocumentComment(member->document()));
-        //    code.AppendLine(u"{0} = {1},", member->name(), member->value()->get<int>());
+        //    code.AppendLine(U"{0} = {1},", member->name(), member->value()->get<int>());
         //    code.NewLine();
         //}
 
         code.DecreaseIndent();
-        code.AppendLine(u"}");
+        code.AppendLine(U"}");
 
         code.NewLine();
     }
@@ -87,24 +84,23 @@ ln::String DotNetPInvokeGenerator::generateStructs()
     return code.toString();
 }
 
-ln::String DotNetPInvokeGenerator::makeDocumentComment(DocumentInfo* doc) const
-{
+ln::String DotNetPInvokeGenerator::makeDocumentComment(DocumentInfo* doc) const {
     OutputBuffer code;
-    code.AppendLine(u"/// <summary>");
-    code.AppendLinesHeaderd2(u"/// ", doc->summary());
-    code.AppendLine(u"/// </summary>");
+    code.AppendLine(U"/// <summary>");
+    code.AppendLinesHeaderd2(U"/// ", doc->summary());
+    code.AppendLine(U"/// </summary>");
 
     for (auto& param : doc->params()) {
-        code.AppendLine(u"/// <param name=\"{0}\">{1}</param>", param->name(), param->description());
+        code.AppendLine(U"/// <param name=\"{0}\">{1}</param>", param->name(), param->description());
     }
 
     if (!doc->returns().isEmpty())
-        code.AppendLine(u"/// <returns>{0}</returns>", doc->returns());
+        code.AppendLine(U"/// <returns>{0}</returns>", doc->returns());
 
     if (!doc->details().isEmpty()) {
-        code.AppendLine(u"/// <remakes>");
-        code.AppendLinesHeaderd2(u"/// ", doc->details());
-        code.AppendLine(u"/// </remakes>");
+        code.AppendLine(U"/// <remakes>");
+        code.AppendLinesHeaderd2(U"/// ", doc->details());
+        code.AppendLine(U"/// </remakes>");
     }
 
     return code.toString().trim();

@@ -3,8 +3,7 @@
 #include "Generator.hpp"
 
 class HSP3GeneratorBase
-	: public Generator
-{
+    : public Generator {
 protected:
     // システムとして必要な定義済みコマンドの分だけオフセットを付ける
     // Note: 上限はドキュメントには見当たらなかったが、0x2B020 を呼び出したりすると「サポートされていない機能を呼び出そうとしました」エラーになった
@@ -19,8 +18,7 @@ protected:
 
 // .as
 class HSP3HeaderGenerator
-    : public HSP3GeneratorBase
-{
+    : public HSP3GeneratorBase {
 public:
     void generate();
 
@@ -32,8 +30,7 @@ private:
 
 // .cpp
 class HSP3CommandsGenerator
-    : public HSP3GeneratorBase
-{
+    : public HSP3GeneratorBase {
 public:
     void generate();
 
@@ -50,16 +47,15 @@ private:
 
     //std::unordered_map<MethodSymbol*, int> m_commandIdMap;
 
-    ln::String makeName_HSPSubclassType(const TypeSymbol* classSymbol) const { return u"HSPSubclass_" + makeFlatClassName(classSymbol); }
-    ln::String makeName_DelegateLabelCaller(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_DelegateLabelCaller"; }
-    ln::String makeName_SubinstanceAlloc(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_SubinstanceAlloc"; }
-    ln::String makeName_SubinstanceFree(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_SubinstanceFree"; }
+    ln::String makeName_HSPSubclassType(const TypeSymbol* classSymbol) const { return U"HSPSubclass_" + makeFlatClassName(classSymbol); }
+    ln::String makeName_DelegateLabelCaller(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + U"_DelegateLabelCaller"; }
+    ln::String makeName_SubinstanceAlloc(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + U"_SubinstanceAlloc"; }
+    ln::String makeName_SubinstanceFree(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + U"_SubinstanceFree"; }
 };
 
 // .hs
 class HSP3HelpGenerator
-    : public HSP3GeneratorBase
-{
+    : public HSP3GeneratorBase {
 public:
     void generate();
 

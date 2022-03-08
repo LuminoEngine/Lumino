@@ -416,6 +416,21 @@ TEST_F(Test_Base_Array, remove) {
     }
 }
 
+TEST_F(Test_Base_Array, filter) {
+    Array<int> ary1 = { 1, 2, 3, 4, 5 };
+
+    Array<int> ary2 = ary1.filter([](auto x) { return x % 2; });
+    ASSERT_EQ(2, ary2.length());
+    ASSERT_EQ(2, ary2[0]);
+    ASSERT_EQ(4, ary2[1]);
+
+    Array<int> ary3 = ary1.filter([](auto x) { return false; });
+    ASSERT_EQ(0, ary3.length());
+
+    Array<int> ary4 = ary3.filter([](auto x) { return true; });
+    ASSERT_EQ(0, ary4.length());
+}
+
 TEST_F(Test_Base_Array, map) {
     struct Test1 {
         int v1;
