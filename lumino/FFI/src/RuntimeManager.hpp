@@ -2,7 +2,7 @@
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoFFI/Common.hpp>
-#include <LuminoFFI/Runtime.hpp>
+#include <LuminoFFI/FFI.hpp>
 
 namespace ln {
 namespace detail {

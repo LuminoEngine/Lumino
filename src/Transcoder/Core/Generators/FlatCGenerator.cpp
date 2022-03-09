@@ -448,7 +448,7 @@ void FlatCSourceGenerator::generate() {
     {
         //auto fileName = ln::format(U"{0}.FlatC.generated.cpp", config()->moduleName);
         auto filePath = config()->flatC.outputSourceFile;
-        auto includeFile = ln::Path::makeRelative(filePath.canonicalize(), config()->flatC.outputHeaderFile.canonicalize());
+        auto includeFile = ln::Path::makeRelative(filePath.canonicalize().parent(), config()->flatC.outputHeaderFile.canonicalize());
         //if (!config()->flatCSourceOutputDirOverride.isEmpty())
         //    includeDirective = ln::format(U"#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
         //auto includeDirective = ln::format(U"#include \"{0}.FlatC.generated.h\"", config()->moduleName);

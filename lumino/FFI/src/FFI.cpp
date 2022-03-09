@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <cstdarg>
 #include <LuminoEngine/Engine/Application.hpp>
-#include <LuminoFFI/Runtime.hpp>
+#include <LuminoFFI/FFI.hpp>
 #include <LuminoFFI/Lumino.FlatC.generated.h>
 #include "../../LuminoEngine/src/Engine/EngineManager.hpp"
 #include "RuntimeManager.hpp"
@@ -9,37 +9,37 @@
 
 namespace ln {
 
-LNHandle Runtime::makeObjectWrap(Object* obj, bool fromCreate)
+LNHandle FFI::makeObjectWrap(Object* obj, bool fromCreate)
 {
     return detail::RuntimeManager::instance()->makeObjectWrap(obj, fromCreate);
 }
 
-Object* Runtime::getObject(LNHandle handle)
+Object* FFI::getObject(LNHandle handle)
 {
 	return detail::RuntimeManager::instance()->getObjectEntry(handle)->object;
 }
 
-void Runtime::setManagedObjectId(LNHandle handle, int64_t id)
+void FFI::setManagedObjectId(LNHandle handle, int64_t id)
 {
 	detail::RuntimeManager::instance()->setManagedObjectId(handle, id);
 }
 
-int64_t Runtime::getManagedObjectId(LNHandle handle)
+int64_t FFI::getManagedObjectId(LNHandle handle)
 {
 	return detail::RuntimeManager::instance()->getManagedObjectId(handle);
 }
 
-LNResult Runtime::processException(Exception* e)
+LNResult FFI::processException(Exception* e)
 {
 	return detail::RuntimeManager::instance()->processException(e);
 }
 
-//const Char* Runtime::getUTF16StringPtr(String str)
+//const Char* FFI::getUTF16StringPtr(String str)
 //{
 //    return str.c_str();
 //}
 
-const Char* Runtime::getUTF16StringPtr(const String& str)
+const Char* FFI::getUTF16StringPtr(const String& str)
 {
     // TODO: Assets::readAllText() のように、String の実態を返す関数の対策のため、必ず reset している。
     // 参照で返してくるものはふつうに return str.c_str(); すればよいだけなので、そのように最適化したい。
@@ -50,19 +50,19 @@ const Char* Runtime::getUTF16StringPtr(const String& str)
     //return str.c_str();
 }
 
-const char* Runtime::getAStringPtr(const String& str)
+const char* FFI::getAStringPtr(const String& str)
 {
     auto* sb = detail::RuntimeManager::instance()->requestCommonStringBuffer();
     sb->reset(str);
     return sb->getAscii();
 }
 
-void Runtime::setAStringEncoding(TextEncoding* value)
+void FFI::setAStringEncoding(TextEncoding* value)
 {
     detail::RuntimeManager::instance()->setAStringEncoding(value);
 }
 
-TextEncoding* Runtime::getAStringEncoding()
+TextEncoding* FFI::getAStringEncoding()
 {
     return detail::RuntimeManager::instance()->getAStringEncoding();
 }

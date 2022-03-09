@@ -206,12 +206,12 @@ int main(int argc, char** argv) {
     config->targetNamespace = U"ln";
     config->flatCOutputModuleName = U"LN";
     config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoEngine/Runtime/FlatCommon.h");
-    config->flatCHeaderString = U"#include <LuminoEngine.hpp>\n#include \"BindingValidation.hpp\"";
+    config->flatCHeaderString = U"#include <LuminoEngine.hpp>\n#include <LuminoEngine/Runtime/detail/BindingValidation.hpp>";
     //config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     //config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
     config->versionString = U"0.10.0";
-    config->flatC.outputHeaderFile = ln::Path(repoRoot, U"lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated2.h");
-    config->flatC.outputSourceFile = ln::Path(repoRoot, U"lumino/FFI/src/Lumino.FlatC.generated2.cpp");
+    config->flatC.outputHeaderFile = ln::Path(repoRoot, U"lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h");
+    config->flatC.outputSourceFile = ln::Path(repoRoot, U"lumino/FFI/src/Lumino.FlatC.generated.cpp");
 
     {
         FlatCHeaderGenerator g;

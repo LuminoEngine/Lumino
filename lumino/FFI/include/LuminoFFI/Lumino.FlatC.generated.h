@@ -40,7 +40,7 @@ struct LNQuaternion
 
 /**
     @brief 4x4 の行列を定義します。
-    @details 行列は数学的な定義とメモリレイアウト共に行優先 (column-major) です。
+    @details 行列は数学的な定義とメモリレイアウト共に行優先 (Row-major) です。
     このクラスは似た機能の static 関数とインスタンス関数があります。例えば makeRotationX(static 関数) と rotateX(インスタンス関数) です。前者は新しい行列を作成して返すのに対し、後者は現在の行列を変更します。例えば、以下の m1 と m2 は同じ結果になります。
     ~~~Matrix m1 = Matrix::makeRotationX(0.1) * Matrix::makeRotationY(0.2) * Matrix::makeRotationZ(0.3);
     Matrix m2;m2.rotateX(0.1);m2.rotateY(0.2);m2.rotateZ(0.3);~~~
@@ -52,28 +52,6 @@ struct LNMatrix
     LNVector4 row1;
     LNVector4 row2;
     LNVector4 row3;
-};
-
-/**
-    @brief 各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
-*/
-struct LNColor
-{
-    float r;
-    float g;
-    float b;
-    float a;
-};
-
-/**
-    @brief 色調を定義します。
-*/
-struct LNColorTone
-{
-    float r;
-    float g;
-    float b;
-    float s;
 };
 
 /**
@@ -125,6 +103,28 @@ struct LNCornerRadius
     float topRight;
     float bottomRight;
     float bottomLeft;
+};
+
+/**
+    @brief 各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
+*/
+struct LNColor
+{
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
+/**
+    @brief 色調を定義します。
+*/
+struct LNColorTone
+{
+    float r;
+    float g;
+    float b;
+    float s;
 };
 
 
@@ -668,38 +668,6 @@ typedef enum tagLNMouseButtons
 } LNMouseButtons;
 
 /**
-    @brief 音量フェード完了時の動作を表します。
-*/
-typedef enum tagLNSoundFadeBehavior
-{
-    /**
-        @brief 再生を継続する
-    */
-    LN_SOUND_FADE_BEHAVIOR_CONTINUE = 0,
-
-    /**
-        @brief 停止する
-    */
-    LN_SOUND_FADE_BEHAVIOR_STOP = 1,
-
-    /**
-        @brief 停止して、次の再生に備えてサウンドの音量を元の値に戻す
-    */
-    LN_SOUND_FADE_BEHAVIOR_STOP_RESET = 2,
-
-    /**
-        @brief 一時停止する
-    */
-    LN_SOUND_FADE_BEHAVIOR_PAUSE = 3,
-
-    /**
-        @brief 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す
-    */
-    LN_SOUND_FADE_BEHAVIOR_PAUSE_RESET = 4,
-
-} LNSoundFadeBehavior;
-
-/**
     @brief バックエンドグラフィックス API の種類
 */
 typedef enum tagLNGraphicsAPI
@@ -725,43 +693,6 @@ typedef enum tagLNGraphicsAPI
     LN_GRAPHICS_API_DIRECT_X12 = 3,
 
 } LNGraphicsAPI;
-
-/**
-    @brief ピクセルフォーマット
-*/
-typedef enum tagLNPixelFormat
-{
-    /**
-        @brief Unknown
-    */
-    LN_PIXEL_FORMAT_UNKNOWN = 0,
-
-    /**
-        @brief 8bit アルファ値のみのフォーマット
-    */
-    LN_PIXEL_FORMAT_A8 = 1,
-
-    /**
-        @brief RGBA オーダーの各要素 8bit フォーマット
-    */
-    LN_PIXEL_FORMAT_RGBA8 = 2,
-
-    /**
-        @brief RGB オーダーの各要素 8bit フォーマット
-    */
-    LN_PIXEL_FORMAT_RGB8 = 3,
-
-    /**
-        @brief RGBA オーダーの各要素 32bit 浮動小数点フォーマット
-    */
-    LN_PIXEL_FORMAT_RGBA32F = 4,
-
-    /**
-        @brief RGBA オーダーの各要素 32bit 浮動小数点フォーマット
-    */
-    LN_PIXEL_FORMAT_R32S = 5,
-
-} LNPixelFormat;
 
 /**
     @brief テクスチャのピクセルフォーマット
@@ -821,6 +752,38 @@ typedef enum tagLNDepthBufferFormat
     LN_DEPTH_BUFFER_FORMAT_D24S8 = 0,
 
 } LNDepthBufferFormat;
+
+/**
+    @brief 音量フェード完了時の動作を表します。
+*/
+typedef enum tagLNSoundFadeBehavior
+{
+    /**
+        @brief 再生を継続する
+    */
+    LN_SOUND_FADE_BEHAVIOR_CONTINUE = 0,
+
+    /**
+        @brief 停止する
+    */
+    LN_SOUND_FADE_BEHAVIOR_STOP = 1,
+
+    /**
+        @brief 停止して、次の再生に備えてサウンドの音量を元の値に戻す
+    */
+    LN_SOUND_FADE_BEHAVIOR_STOP_RESET = 2,
+
+    /**
+        @brief 一時停止する
+    */
+    LN_SOUND_FADE_BEHAVIOR_PAUSE = 3,
+
+    /**
+        @brief 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す
+    */
+    LN_SOUND_FADE_BEHAVIOR_PAUSE_RESET = 4,
+
+} LNSoundFadeBehavior;
 
 /**
     @brief ShadingModel
@@ -1313,7 +1276,7 @@ typedef enum tagLNUIInlinePlacement
 } LNUIInlinePlacement;
 
 /**
-    @brief 
+    @brief UIListSubmitMode
 */
 typedef enum tagLNUIListSubmitMode
 {
@@ -1350,10 +1313,10 @@ typedef LNResult(*LNSerializer2SerializeHandlerCallback)(LNHandle serializer2ser
 typedef LNResult(*LNAssetObjectSerializeHandlerCallback)(LNHandle assetobjectserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAssetImportSettingsSerializeHandlerCallback)(LNHandle assetimportsettingsserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNAssetModelSerializeHandlerCallback)(LNHandle assetmodelserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNSoundSerializeHandlerCallback)(LNHandle soundserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTextureSerializeHandlerCallback)(LNHandle textureserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTexture2DSerializeHandlerCallback)(LNHandle texture2dserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNShaderSerializeHandlerCallback)(LNHandle shaderserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNSoundSerializeHandlerCallback)(LNHandle soundserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNRenderViewSerializeHandlerCallback)(LNHandle renderviewserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNMaterialSerializeHandlerCallback)(LNHandle materialserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNMeshNodeSerializeHandlerCallback)(LNHandle meshnodeserializehandler, LNHandle self, LNHandle ar);
@@ -1410,9 +1373,9 @@ typedef LNResult(*LNShapeObjectUpdateHandlerCallback)(LNHandle shapeobjectupdate
 typedef LNResult(*LNPlaneMeshSerializeHandlerCallback)(LNHandle planemeshserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNPlaneMeshPreUpdateHandlerCallback)(LNHandle planemeshpreupdatehandler, LNHandle self);
 typedef LNResult(*LNPlaneMeshUpdateHandlerCallback)(LNHandle planemeshupdatehandler, LNHandle self, float elapsedSeconds);
-typedef LNResult(*LNBoxMeshSerializeHandlerCallback)(LNHandle boxmeshserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNBoxMeshPreUpdateHandlerCallback)(LNHandle boxmeshpreupdatehandler, LNHandle self);
-typedef LNResult(*LNBoxMeshUpdateHandlerCallback)(LNHandle boxmeshupdatehandler, LNHandle self, float elapsedSeconds);
+typedef LNResult(*LNStaticMeshSerializeHandlerCallback)(LNHandle staticmeshserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNStaticMeshPreUpdateHandlerCallback)(LNHandle staticmeshpreupdatehandler, LNHandle self);
+typedef LNResult(*LNStaticMeshUpdateHandlerCallback)(LNHandle staticmeshupdatehandler, LNHandle self, float elapsedSeconds);
 typedef LNResult(*LNMeshComponentSerializeHandlerCallback)(LNHandle meshcomponentserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNCollisionSerializeHandlerCallback)(LNHandle collisionserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNTriggerBodyComponentSerializeHandlerCallback)(LNHandle triggerbodycomponentserializehandler, LNHandle self, LNHandle ar);
@@ -1440,10 +1403,10 @@ typedef LNResult(*LNUIControlSerializeHandlerCallback)(LNHandle uicontrolseriali
 typedef LNResult(*LNUIButtonBaseSerializeHandlerCallback)(LNHandle uibuttonbaseserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIButtonSerializeHandlerCallback)(LNHandle uibuttonserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIWindowSerializeHandlerCallback)(LNHandle uiwindowserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNUIListItemSerializeHandlerCallback)(LNHandle uilistitemserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIListItemsControlSerializeHandlerCallback)(LNHandle uilistitemscontrolserializehandler, LNHandle self, LNHandle ar);
-typedef LNResult(*LNUIListBoxItemSerializeHandlerCallback)(LNHandle uilistboxitemserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNUIListBoxSerializeHandlerCallback)(LNHandle uilistboxserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIListItemSerializeHandlerCallback)(LNHandle uilistitemserializehandler, LNHandle self, LNHandle ar);
+typedef LNResult(*LNUIListBoxItemSerializeHandlerCallback)(LNHandle uilistboxitemserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInputGestureSerializeHandlerCallback)(LNHandle inputgestureserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNKeyGestureSerializeHandlerCallback)(LNHandle keygestureserializehandler, LNHandle self, LNHandle ar);
 typedef LNResult(*LNInterpreterCommandSerializeHandlerCallback)(LNHandle interpretercommandserializehandler, LNHandle self, LNHandle ar);
@@ -1615,48 +1578,6 @@ LN_FLAT_API LNResult LNMatrix_Set(LNMatrix* matrix, float m11, float m12, float 
 
 
 //==============================================================================
-// ln::Color
-
-/**
-    @brief すべての要素を 0.0 で初期化します。
-    @param[in] color : Color
-*/
-LN_FLAT_API LNResult LNColor_SetZeros(LNColor* color);
-
-
-/**
-    @brief 各要素を指定して初期化します。
-    @param[in] color : Color
-    @param[] r_ : 
-    @param[] g_ : 
-    @param[] b_ : 
-    @param[] a_ : 
-*/
-LN_FLAT_API LNResult LNColor_Set(LNColor* color, float r_, float g_, float b_, float a_);
-
-
-//==============================================================================
-// ln::ColorTone
-
-/**
-    @brief すべての要素を 0.0 で初期化します。
-    @param[in] colortone : ColorTone
-*/
-LN_FLAT_API LNResult LNColorTone_SetZeros(LNColorTone* colortone);
-
-
-/**
-    @brief 各要素を指定して初期化します。
-    @param[in] colortone : ColorTone
-    @param[] r_ : 
-    @param[] g_ : 
-    @param[] b_ : 
-    @param[] s_ : 
-*/
-LN_FLAT_API LNResult LNColorTone_Set(LNColorTone* colortone, float r_, float g_, float b_, float s_);
-
-
-//==============================================================================
 // ln::Point
 
 /**
@@ -1788,6 +1709,48 @@ LN_FLAT_API LNResult LNCornerRadius_SetZeros(LNCornerRadius* cornerradius);
     @param[] bottomLeft : 
 */
 LN_FLAT_API LNResult LNCornerRadius_Set(LNCornerRadius* cornerradius, float topLeft, float topRight, float bottomRight, float bottomLeft);
+
+
+//==============================================================================
+// ln::Color
+
+/**
+    @brief すべての要素を 0.0 で初期化します。
+    @param[in] color : Color
+*/
+LN_FLAT_API LNResult LNColor_SetZeros(LNColor* color);
+
+
+/**
+    @brief 各要素を指定して初期化します。
+    @param[in] color : Color
+    @param[] r_ : 
+    @param[] g_ : 
+    @param[] b_ : 
+    @param[] a_ : 
+*/
+LN_FLAT_API LNResult LNColor_Set(LNColor* color, float r_, float g_, float b_, float a_);
+
+
+//==============================================================================
+// ln::ColorTone
+
+/**
+    @brief すべての要素を 0.0 で初期化します。
+    @param[in] colortone : ColorTone
+*/
+LN_FLAT_API LNResult LNColorTone_SetZeros(LNColorTone* colortone);
+
+
+/**
+    @brief 各要素を指定して初期化します。
+    @param[in] colortone : ColorTone
+    @param[] r_ : 
+    @param[] g_ : 
+    @param[] b_ : 
+    @param[] s_ : 
+*/
+LN_FLAT_API LNResult LNColorTone_Set(LNColorTone* colortone, float r_, float g_, float b_, float s_);
 
 
 
@@ -2445,192 +2408,6 @@ LN_FLAT_API LNResult LNAssets_ReadAllTextA(const char* filePath, LNEncodingType 
 
 
 //==============================================================================
-// ln::Sound
-
-/**
-    @brief この Sound の音量を設定します。
-    @param[in] sound : Sound のハンドル
-    @param[] value : 
-*/
-LN_FLAT_API LNResult LNSound_SetVolume(LNHandle sound, float value);
-
-/**
-    @brief この Sound の音量を取得します。
-    @param[in] sound : Sound のハンドル
-    @param[out] outReturn : 結果を格納する変数。
-*/
-LN_FLAT_API LNResult LNSound_GetVolume(LNHandle sound, float* outReturn);
-
-/**
-    @brief この Sound のピッチ (音高) を設定します。
-    @param[in] sound : Sound のハンドル
-    @param[] value : 
-*/
-LN_FLAT_API LNResult LNSound_SetPitch(LNHandle sound, float value);
-
-/**
-    @brief この Sound のピッチ (音高) を取得します。
-    @param[in] sound : Sound のハンドル
-    @param[out] outReturn : 結果を格納する変数。
-*/
-LN_FLAT_API LNResult LNSound_GetPitch(LNHandle sound, float* outReturn);
-
-/**
-    @brief ループ再生の有無を設定します。
-    @param[in] sound : Sound のハンドル
-    @param[] enabled : 
-*/
-LN_FLAT_API LNResult LNSound_SetLoopEnabled(LNHandle sound, LNBool enabled);
-
-/**
-    @brief ループ再生が有効かを確認します。
-    @param[in] sound : Sound のハンドル
-    @param[out] outReturn : 結果を格納する変数。
-*/
-LN_FLAT_API LNResult LNSound_IsLoopEnabled(LNHandle sound, LNBool* outReturn);
-
-/**
-    @brief ループ範囲を設定します。
-    @param[in] sound : Sound のハンドル
-    @param[] begin : 
-    @param[] length : 
-*/
-LN_FLAT_API LNResult LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length);
-
-/**
-    @brief この Sound の再生を開始します。
-    @param[in] sound : Sound のハンドル
-*/
-LN_FLAT_API LNResult LNSound_Play(LNHandle sound);
-
-/**
-    @brief この Sound の再生を停止します。
-    @param[in] sound : Sound のハンドル
-*/
-LN_FLAT_API LNResult LNSound_Stop(LNHandle sound);
-
-/**
-    @brief この Sound の再生を一時停止します。
-    @param[in] sound : Sound のハンドル
-*/
-LN_FLAT_API LNResult LNSound_Pause(LNHandle sound);
-
-/**
-    @brief 一時停止中の再生を再開します。
-    @param[in] sound : Sound のハンドル
-*/
-LN_FLAT_API LNResult LNSound_Resume(LNHandle sound);
-
-/**
-    @brief 音量のフェードを開始します。
-    @param[in] sound : Sound のハンドル
-    @param[] targetVolume : 
-    @param[] time : 
-    @param[] behavior : 
-*/
-LN_FLAT_API LNResult LNSound_FadeVolume(LNHandle sound, float targetVolume, float time, LNSoundFadeBehavior behavior);
-
-typedef LNResult(*LNSound_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNSound_OnSerialize_SetOverrideCallback(LNSound_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNSound_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-
-/**
-    @brief 
-    @param[in] sound : Sound のハンドル
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNSound_SetPrototype_OnSerialize(LNHandle sound, LNHandle callback);
-
-extern LN_FLAT_API int LNSound_GetTypeInfoId();
-LN_FLAT_API void LNSound_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNSound_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNSound_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-
-} LNSound_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNSound_RegisterSubclassTypeInfo(const LNSound_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNSound_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
-// ln::Audio
-
-/**
-    @brief BGM を演奏する
-    @param[] filePath : 
-    @param[] volume : 
-    @param[] pitch : 
-    @param[] fadeTime : 
-*/
-LN_FLAT_API LNResult LNAudio_PlayBGM(const LNChar* filePath, float volume, float pitch, double fadeTime);
-LN_FLAT_API LNResult LNAudio_PlayBGMA(const char* filePath, float volume, float pitch, double fadeTime);
-
-/**
-    @brief BGM の演奏を停止する
-    @param[] fadeTime : 
-*/
-LN_FLAT_API LNResult LNAudio_StopBGM(double fadeTime);
-
-/**
-    @brief BGS (環境音) を演奏する
-    @param[] filePath : 
-    @param[] volume : 
-    @param[] pitch : 
-    @param[] fadeTime : 
-*/
-LN_FLAT_API LNResult LNAudio_PlayBGS(const LNChar* filePath, float volume, float pitch, double fadeTime);
-LN_FLAT_API LNResult LNAudio_PlayBGSA(const char* filePath, float volume, float pitch, double fadeTime);
-
-/**
-    @brief BGS の演奏を停止する
-    @param[] fadeTime : 
-*/
-LN_FLAT_API LNResult LNAudio_StopBGS(double fadeTime);
-
-/**
-    @brief ME (効果音楽) を演奏する
-    @param[] filePath : 
-    @param[] volume : 
-    @param[] pitch : 
-*/
-LN_FLAT_API LNResult LNAudio_PlayME(const LNChar* filePath, float volume, float pitch);
-LN_FLAT_API LNResult LNAudio_PlayMEA(const char* filePath, float volume, float pitch);
-
-/**
-    @brief ME の演奏を停止する
-*/
-LN_FLAT_API LNResult LNAudio_StopME();
-
-/**
-    @brief SE を演奏する
-    @param[] filePath : 
-    @param[] volume : 
-    @param[] pitch : 
-*/
-LN_FLAT_API LNResult LNAudio_PlaySE(const LNChar* filePath, float volume, float pitch);
-LN_FLAT_API LNResult LNAudio_PlaySEA(const char* filePath, float volume, float pitch);
-
-/**
-    @brief SE を 3D 空間上で演奏する
-    @param[] filePath : 
-    @param[] position : 
-    @param[] distance : 
-    @param[] volume : 
-    @param[] pitch : 
-*/
-LN_FLAT_API LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, float volume, float pitch);
-LN_FLAT_API LNResult LNAudio_PlaySE3DA(const char* filePath, const LNVector3* position, float distance, float volume, float pitch);
-
-/**
-    @brief 全ての SE の演奏を停止する
-*/
-LN_FLAT_API LNResult LNAudio_StopSE();
-
-
-//==============================================================================
 // ln::Texture2DDelegate
 
 LN_FLAT_API LNResult LNTexture2DDelegate_Create(LNTexture2DDelegateCallback callback, LNHandle* outDelegate);
@@ -2849,6 +2626,192 @@ typedef struct tagLNShader_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNShader_RegisterSubclassTypeInfo(const LNShader_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNShader_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Sound
+
+/**
+    @brief この Sound の音量を設定します。
+    @param[in] sound : Sound のハンドル
+    @param[] value : 
+*/
+LN_FLAT_API LNResult LNSound_SetVolume(LNHandle sound, float value);
+
+/**
+    @brief この Sound の音量を取得します。
+    @param[in] sound : Sound のハンドル
+    @param[out] outReturn : 結果を格納する変数。
+*/
+LN_FLAT_API LNResult LNSound_GetVolume(LNHandle sound, float* outReturn);
+
+/**
+    @brief この Sound のピッチ (音高) を設定します。
+    @param[in] sound : Sound のハンドル
+    @param[] value : 
+*/
+LN_FLAT_API LNResult LNSound_SetPitch(LNHandle sound, float value);
+
+/**
+    @brief この Sound のピッチ (音高) を取得します。
+    @param[in] sound : Sound のハンドル
+    @param[out] outReturn : 結果を格納する変数。
+*/
+LN_FLAT_API LNResult LNSound_GetPitch(LNHandle sound, float* outReturn);
+
+/**
+    @brief ループ再生の有無を設定します。
+    @param[in] sound : Sound のハンドル
+    @param[] enabled : 
+*/
+LN_FLAT_API LNResult LNSound_SetLoopEnabled(LNHandle sound, LNBool enabled);
+
+/**
+    @brief ループ再生が有効かを確認します。
+    @param[in] sound : Sound のハンドル
+    @param[out] outReturn : 結果を格納する変数。
+*/
+LN_FLAT_API LNResult LNSound_IsLoopEnabled(LNHandle sound, LNBool* outReturn);
+
+/**
+    @brief ループ範囲を設定します。
+    @param[in] sound : Sound のハンドル
+    @param[] begin : 
+    @param[] length : 
+*/
+LN_FLAT_API LNResult LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length);
+
+/**
+    @brief この Sound の再生を開始します。
+    @param[in] sound : Sound のハンドル
+*/
+LN_FLAT_API LNResult LNSound_Play(LNHandle sound);
+
+/**
+    @brief この Sound の再生を停止します。
+    @param[in] sound : Sound のハンドル
+*/
+LN_FLAT_API LNResult LNSound_Stop(LNHandle sound);
+
+/**
+    @brief この Sound の再生を一時停止します。
+    @param[in] sound : Sound のハンドル
+*/
+LN_FLAT_API LNResult LNSound_Pause(LNHandle sound);
+
+/**
+    @brief 一時停止中の再生を再開します。
+    @param[in] sound : Sound のハンドル
+*/
+LN_FLAT_API LNResult LNSound_Resume(LNHandle sound);
+
+/**
+    @brief 音量のフェードを開始します。
+    @param[in] sound : Sound のハンドル
+    @param[] targetVolume : 
+    @param[] time : 
+    @param[] behavior : 
+*/
+LN_FLAT_API LNResult LNSound_FadeVolume(LNHandle sound, float targetVolume, float time, LNSoundFadeBehavior behavior);
+
+typedef LNResult(*LNSound_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNSound_OnSerialize_SetOverrideCallback(LNSound_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNSound_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] sound : Sound のハンドル
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNSound_SetPrototype_OnSerialize(LNHandle sound, LNHandle callback);
+
+extern LN_FLAT_API int LNSound_GetTypeInfoId();
+LN_FLAT_API void LNSound_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNSound_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNSound_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNSound_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNSound_RegisterSubclassTypeInfo(const LNSound_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNSound_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::Audio
+
+/**
+    @brief BGM を演奏する
+    @param[] filePath : 
+    @param[] volume : 
+    @param[] pitch : 
+    @param[] fadeTime : 
+*/
+LN_FLAT_API LNResult LNAudio_PlayBGM(const LNChar* filePath, float volume, float pitch, double fadeTime);
+LN_FLAT_API LNResult LNAudio_PlayBGMA(const char* filePath, float volume, float pitch, double fadeTime);
+
+/**
+    @brief BGM の演奏を停止する
+    @param[] fadeTime : 
+*/
+LN_FLAT_API LNResult LNAudio_StopBGM(double fadeTime);
+
+/**
+    @brief BGS (環境音) を演奏する
+    @param[] filePath : 
+    @param[] volume : 
+    @param[] pitch : 
+    @param[] fadeTime : 
+*/
+LN_FLAT_API LNResult LNAudio_PlayBGS(const LNChar* filePath, float volume, float pitch, double fadeTime);
+LN_FLAT_API LNResult LNAudio_PlayBGSA(const char* filePath, float volume, float pitch, double fadeTime);
+
+/**
+    @brief BGS の演奏を停止する
+    @param[] fadeTime : 
+*/
+LN_FLAT_API LNResult LNAudio_StopBGS(double fadeTime);
+
+/**
+    @brief ME (効果音楽) を演奏する
+    @param[] filePath : 
+    @param[] volume : 
+    @param[] pitch : 
+*/
+LN_FLAT_API LNResult LNAudio_PlayME(const LNChar* filePath, float volume, float pitch);
+LN_FLAT_API LNResult LNAudio_PlayMEA(const char* filePath, float volume, float pitch);
+
+/**
+    @brief ME の演奏を停止する
+*/
+LN_FLAT_API LNResult LNAudio_StopME();
+
+/**
+    @brief SE を演奏する
+    @param[] filePath : 
+    @param[] volume : 
+    @param[] pitch : 
+*/
+LN_FLAT_API LNResult LNAudio_PlaySE(const LNChar* filePath, float volume, float pitch);
+LN_FLAT_API LNResult LNAudio_PlaySEA(const char* filePath, float volume, float pitch);
+
+/**
+    @brief SE を 3D 空間上で演奏する
+    @param[] filePath : 
+    @param[] position : 
+    @param[] distance : 
+    @param[] volume : 
+    @param[] pitch : 
+*/
+LN_FLAT_API LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, float volume, float pitch);
+LN_FLAT_API LNResult LNAudio_PlaySE3DA(const char* filePath, const LNVector3* position, float distance, float volume, float pitch);
+
+/**
+    @brief 全ての SE の演奏を停止する
+*/
+LN_FLAT_API LNResult LNAudio_StopSE();
+
 
 //==============================================================================
 // ln::RenderView
@@ -5336,44 +5299,20 @@ extern LN_FLAT_API LNSubinstanceId LNPlaneMesh_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNBoxMesh_Create(LNHandle* outBoxMesh);
 
 /**
-    @brief 
+    @brief サイズを指定して BoxMesh を作成します。
+    @param[] size : 
+    @param[out] outBoxMesh : 作成された BoxMesh のハンドルを格納する変数。
+*/
+LN_FLAT_API LNResult LNBoxMesh_CreateWithSize(const LNVector3* size, LNHandle* outBoxMesh);
+
+/**
+    @brief サイズを指定して BoxMesh を作成します。
     @param[] width : 
     @param[] height : 
     @param[] depth : 
     @param[out] outBoxMesh : 作成された BoxMesh のハンドルを格納する変数。
 */
-LN_FLAT_API LNResult LNBoxMesh_CreateWithSize(float width, float height, float depth, LNHandle* outBoxMesh);
-
-typedef LNResult(*LNBoxMesh_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNBoxMesh_OnSerialize_SetOverrideCallback(LNBoxMesh_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNBoxMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-typedef LNResult(*LNBoxMesh_OnPreUpdate_OverrideCallback)(LNHandle worldobject);
-LN_FLAT_API LNResult LNBoxMesh_OnPreUpdate_SetOverrideCallback(LNBoxMesh_OnPreUpdate_OverrideCallback callback);
-LN_FLAT_API LNResult LNBoxMesh_OnPreUpdate_CallOverrideBase(LNHandle worldobject);
-typedef LNResult(*LNBoxMesh_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
-LN_FLAT_API LNResult LNBoxMesh_OnUpdate_SetOverrideCallback(LNBoxMesh_OnUpdate_OverrideCallback callback);
-LN_FLAT_API LNResult LNBoxMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
-
-/**
-    @brief 
-    @param[in] boxmesh : BoxMesh のハンドル
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnSerialize(LNHandle boxmesh, LNHandle callback);
-
-/**
-    @brief 
-    @param[in] boxmesh : BoxMesh のハンドル
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnPreUpdate(LNHandle boxmesh, LNHandle callback);
-
-/**
-    @brief 
-    @param[in] boxmesh : BoxMesh のハンドル
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNBoxMesh_SetPrototype_OnUpdate(LNHandle boxmesh, LNHandle callback);
+LN_FLAT_API LNResult LNBoxMesh_CreateWithSizeWHD(float width, float height, float depth, LNHandle* outBoxMesh);
 
 extern LN_FLAT_API int LNBoxMesh_GetTypeInfoId();
 LN_FLAT_API void LNBoxMesh_SetManagedTypeInfoId(int64_t id); // deprecated
@@ -5382,14 +5321,85 @@ typedef struct tagLNBoxMesh_SubclassRegistrationInfo
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNBoxMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-    LNBoxMesh_OnPreUpdate_OverrideCallback OnPreUpdate_OverrideFunc;
-    LNBoxMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
 
 } LNBoxMesh_SubclassRegistrationInfo;
 
 extern LN_FLAT_API void LNBoxMesh_RegisterSubclassTypeInfo(const LNBoxMesh_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNBoxMesh_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::StaticMesh
+
+/**
+    @brief load
+    @param[] filePath : 
+    @param[] settings : 
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNStaticMesh_Load(const LNChar* filePath, LNHandle settings, LNHandle* outReturn);
+LN_FLAT_API LNResult LNStaticMesh_LoadA(const char* filePath, LNHandle settings, LNHandle* outReturn);
+
+/**
+    @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
+    @param[in] staticmesh : StaticMesh のハンドル
+    @param[out] outReturn : 結果を格納する変数。
+*/
+LN_FLAT_API LNResult LNStaticMesh_GetModel(LNHandle staticmesh, LNHandle* outReturn);
+
+/**
+    @brief 指定した名前の MeshContainer から、衝突判定用の Body を作成します。
+    @param[in] staticmesh : StaticMesh のハンドル
+    @param[] meshContainerName : 
+*/
+LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBody(LNHandle staticmesh, const LNChar* meshContainerName);
+LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBodyA(LNHandle staticmesh, const char* meshContainerName);
+
+typedef LNResult(*LNStaticMesh_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNStaticMesh_OnSerialize_SetOverrideCallback(LNStaticMesh_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNStaticMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+typedef LNResult(*LNStaticMesh_OnPreUpdate_OverrideCallback)(LNHandle worldobject);
+LN_FLAT_API LNResult LNStaticMesh_OnPreUpdate_SetOverrideCallback(LNStaticMesh_OnPreUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNStaticMesh_OnPreUpdate_CallOverrideBase(LNHandle worldobject);
+typedef LNResult(*LNStaticMesh_OnUpdate_OverrideCallback)(LNHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LNResult LNStaticMesh_OnUpdate_SetOverrideCallback(LNStaticMesh_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LNResult LNStaticMesh_OnUpdate_CallOverrideBase(LNHandle worldobject, float elapsedSeconds);
+
+/**
+    @brief 
+    @param[in] staticmesh : StaticMesh のハンドル
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnSerialize(LNHandle staticmesh, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] staticmesh : StaticMesh のハンドル
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnPreUpdate(LNHandle staticmesh, LNHandle callback);
+
+/**
+    @brief 
+    @param[in] staticmesh : StaticMesh のハンドル
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNStaticMesh_SetPrototype_OnUpdate(LNHandle staticmesh, LNHandle callback);
+
+extern LN_FLAT_API int LNStaticMesh_GetTypeInfoId();
+LN_FLAT_API void LNStaticMesh_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNStaticMesh_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNStaticMesh_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+    LNStaticMesh_OnPreUpdate_OverrideCallback OnPreUpdate_OverrideFunc;
+    LNStaticMesh_OnUpdate_OverrideCallback OnUpdate_OverrideFunc;
+
+} LNStaticMesh_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNStaticMesh_RegisterSubclassTypeInfo(const LNStaticMesh_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNStaticMesh_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::MeshComponent
@@ -5781,7 +5791,7 @@ LN_FLAT_API LNResult LNScene_SetColorTone(const LNColorTone* value);
 LN_FLAT_API LNResult LNScene_ColorTone(LNColorTone* outReturn);
 
 /**
-    @brief アンチエイリアスの有無を設定します。(default: false)
+    @brief アンチエイリアスの有無を設定します。(default: true)
     @param[] value : 
 */
 LN_FLAT_API LNResult LNScene_SetAntialiasEnabled(LNBool value);
@@ -7263,42 +7273,6 @@ extern LN_FLAT_API void LNUIWindow_RegisterSubclassTypeInfo(const LNUIWindow_Sub
 extern LN_FLAT_API LNSubinstanceId LNUIWindow_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::UIListItem
-
-/**
-    @brief Submit イベントの通知を受け取るコールバックを登録します。
-    @param[in] uilistitem : UIListItem のハンドル
-    @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
-*/
-LN_FLAT_API LNResult LNUIListItem_ConnectOnSubmit(LNHandle uilistitem, LNHandle handler, LNHandle* outReturn);
-
-typedef LNResult(*LNUIListItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNUIListItem_OnSerialize_SetOverrideCallback(LNUIListItem_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNUIListItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-
-/**
-    @brief 
-    @param[in] uilistitem : UIListItem のハンドル
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNUIListItem_SetPrototype_OnSerialize(LNHandle uilistitem, LNHandle callback);
-
-extern LN_FLAT_API int LNUIListItem_GetTypeInfoId();
-LN_FLAT_API void LNUIListItem_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNUIListItem_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNUIListItem_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-
-} LNUIListItem_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNUIListItem_RegisterSubclassTypeInfo(const LNUIListItem_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNUIListItem_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
 // ln::UIListItemsControl
 
 /**
@@ -7363,41 +7337,6 @@ extern LN_FLAT_API void LNUIListItemsControl_RegisterSubclassTypeInfo(const LNUI
 extern LN_FLAT_API LNSubinstanceId LNUIListItemsControl_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// ln::UIListBoxItem
-
-/**
-    @brief init
-    @param[] content : 
-    @param[out] outUIListBoxItem : 作成された UIListBoxItem のハンドルを格納する変数。
-*/
-LN_FLAT_API LNResult LNUIListBoxItem_Create(LNHandle content, LNHandle* outUIListBoxItem);
-
-typedef LNResult(*LNUIListBoxItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
-LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_SetOverrideCallback(LNUIListBoxItem_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
-
-/**
-    @brief 
-    @param[in] uilistboxitem : UIListBoxItem のハンドル
-    @param[] callback : 
-*/
-LN_FLAT_API LNResult LNUIListBoxItem_SetPrototype_OnSerialize(LNHandle uilistboxitem, LNHandle callback);
-
-extern LN_FLAT_API int LNUIListBoxItem_GetTypeInfoId();
-LN_FLAT_API void LNUIListBoxItem_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNUIListBoxItem_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-    LNUIListBoxItem_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-
-} LNUIListBoxItem_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNUIListBoxItem_RegisterSubclassTypeInfo(const LNUIListBoxItem_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNUIListBoxItem_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
 // ln::UIListBox
 
 /**
@@ -7438,6 +7377,77 @@ typedef struct tagLNUIListBox_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUIListBox_RegisterSubclassTypeInfo(const LNUIListBox_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUIListBox_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIListItem
+
+/**
+    @brief Submit イベントの通知を受け取るコールバックを登録します。
+    @param[in] uilistitem : UIListItem のハンドル
+    @param[] handler :  (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+    @param[out] outReturn : 結果を格納する変数。 (このオブジェクトは不要になったら LNObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LNResult LNUIListItem_ConnectOnSubmit(LNHandle uilistitem, LNHandle handler, LNHandle* outReturn);
+
+typedef LNResult(*LNUIListItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIListItem_OnSerialize_SetOverrideCallback(LNUIListItem_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIListItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uilistitem : UIListItem のハンドル
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNUIListItem_SetPrototype_OnSerialize(LNHandle uilistitem, LNHandle callback);
+
+extern LN_FLAT_API int LNUIListItem_GetTypeInfoId();
+LN_FLAT_API void LNUIListItem_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListItem_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIListItem_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIListItem_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListItem_RegisterSubclassTypeInfo(const LNUIListItem_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListItem_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// ln::UIListBoxItem
+
+/**
+    @brief init
+    @param[] content : 
+    @param[out] outUIListBoxItem : 作成された UIListBoxItem のハンドルを格納する変数。
+*/
+LN_FLAT_API LNResult LNUIListBoxItem_Create(LNHandle content, LNHandle* outUIListBoxItem);
+
+typedef LNResult(*LNUIListBoxItem_OnSerialize_OverrideCallback)(LNHandle object, LNHandle ar);
+LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_SetOverrideCallback(LNUIListBoxItem_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar);
+
+/**
+    @brief 
+    @param[in] uilistboxitem : UIListBoxItem のハンドル
+    @param[] callback : 
+*/
+LN_FLAT_API LNResult LNUIListBoxItem_SetPrototype_OnSerialize(LNHandle uilistboxitem, LNHandle callback);
+
+extern LN_FLAT_API int LNUIListBoxItem_GetTypeInfoId();
+LN_FLAT_API void LNUIListBoxItem_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListBoxItem_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+    LNUIListBoxItem_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
+
+} LNUIListBoxItem_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListBoxItem_RegisterSubclassTypeInfo(const LNUIListBoxItem_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListBoxItem_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // ln::InputGesture
@@ -7974,7 +7984,7 @@ LN_FLAT_API LNResult LNEngineSettings_SetPriorityGPUNameA(const char* filePath);
     @brief setDeveloperToolEnabled
     @param[] enabled : 
 */
-LN_FLAT_API LNResult LNEngineSettings_SetDeveloperToolEnabled(LNBool enabled);
+LN_FLAT_API LNResult LNEngineSettings_SetDevelopmentToolsEnabled(LNBool enabled);
 
 /**
     @brief ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。
@@ -8300,22 +8310,6 @@ extern LN_FLAT_API void LNAssetModelSerializeHandler_RegisterSubclassTypeInfo(co
 extern LN_FLAT_API LNSubinstanceId LNAssetModelSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// SoundSerializeHandler
-
-LN_FLAT_API LNResult LNSoundSerializeHandler_Create(LNSoundSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNSoundSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNSoundSerializeHandler_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-
-} LNSoundSerializeHandler_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNSoundSerializeHandler_RegisterSubclassTypeInfo(const LNSoundSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNSoundSerializeHandler_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
 // TextureSerializeHandler
 
 LN_FLAT_API LNResult LNTextureSerializeHandler_Create(LNTextureSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -8362,6 +8356,22 @@ typedef struct tagLNShaderSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNShaderSerializeHandler_RegisterSubclassTypeInfo(const LNShaderSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNShaderSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// SoundSerializeHandler
+
+LN_FLAT_API LNResult LNSoundSerializeHandler_Create(LNSoundSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNSoundSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNSoundSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNSoundSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNSoundSerializeHandler_RegisterSubclassTypeInfo(const LNSoundSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNSoundSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // RenderViewSerializeHandler
@@ -9260,52 +9270,52 @@ extern LN_FLAT_API void LNPlaneMeshUpdateHandler_RegisterSubclassTypeInfo(const 
 extern LN_FLAT_API LNSubinstanceId LNPlaneMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// BoxMeshSerializeHandler
+// StaticMeshSerializeHandler
 
-LN_FLAT_API LNResult LNBoxMeshSerializeHandler_Create(LNBoxMeshSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNBoxMeshSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNBoxMeshSerializeHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNStaticMeshSerializeHandler_Create(LNStaticMeshSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNStaticMeshSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNStaticMeshSerializeHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNBoxMeshSerializeHandler_SubclassRegistrationInfo;
+} LNStaticMeshSerializeHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNBoxMeshSerializeHandler_RegisterSubclassTypeInfo(const LNBoxMeshSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNBoxMeshSerializeHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNStaticMeshSerializeHandler_RegisterSubclassTypeInfo(const LNStaticMeshSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNStaticMeshSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// BoxMeshPreUpdateHandler
+// StaticMeshPreUpdateHandler
 
-LN_FLAT_API LNResult LNBoxMeshPreUpdateHandler_Create(LNBoxMeshPreUpdateHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNBoxMeshPreUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNBoxMeshPreUpdateHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNStaticMeshPreUpdateHandler_Create(LNStaticMeshPreUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNStaticMeshPreUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNStaticMeshPreUpdateHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNBoxMeshPreUpdateHandler_SubclassRegistrationInfo;
+} LNStaticMeshPreUpdateHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNBoxMeshPreUpdateHandler_RegisterSubclassTypeInfo(const LNBoxMeshPreUpdateHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNBoxMeshPreUpdateHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNStaticMeshPreUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshPreUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNStaticMeshPreUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// BoxMeshUpdateHandler
+// StaticMeshUpdateHandler
 
-LN_FLAT_API LNResult LNBoxMeshUpdateHandler_Create(LNBoxMeshUpdateHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNBoxMeshUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNBoxMeshUpdateHandler_SubclassRegistrationInfo
+LN_FLAT_API LNResult LNStaticMeshUpdateHandler_Create(LNStaticMeshUpdateHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNStaticMeshUpdateHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNStaticMeshUpdateHandler_SubclassRegistrationInfo
 {
     int64_t subclassId;	// ManagedTypeInfoId
     LNSubinstanceAllocFunc subinstanceAllocFunc;
     LNSubinstanceFreeFunc subinstanceFreeFunc;
 
-} LNBoxMeshUpdateHandler_SubclassRegistrationInfo;
+} LNStaticMeshUpdateHandler_SubclassRegistrationInfo;
 
-extern LN_FLAT_API void LNBoxMeshUpdateHandler_RegisterSubclassTypeInfo(const LNBoxMeshUpdateHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNBoxMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
+extern LN_FLAT_API void LNStaticMeshUpdateHandler_RegisterSubclassTypeInfo(const LNStaticMeshUpdateHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNStaticMeshUpdateHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // MeshComponentSerializeHandler
@@ -9740,22 +9750,6 @@ extern LN_FLAT_API void LNUIWindowSerializeHandler_RegisterSubclassTypeInfo(cons
 extern LN_FLAT_API LNSubinstanceId LNUIWindowSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// UIListItemSerializeHandler
-
-LN_FLAT_API LNResult LNUIListItemSerializeHandler_Create(LNUIListItemSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNUIListItemSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNUIListItemSerializeHandler_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-
-} LNUIListItemSerializeHandler_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNUIListItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListItemSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNUIListItemSerializeHandler_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
 // UIListItemsControlSerializeHandler
 
 LN_FLAT_API LNResult LNUIListItemsControlSerializeHandler_Create(LNUIListItemsControlSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -9772,22 +9766,6 @@ extern LN_FLAT_API void LNUIListItemsControlSerializeHandler_RegisterSubclassTyp
 extern LN_FLAT_API LNSubinstanceId LNUIListItemsControlSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
-// UIListBoxItemSerializeHandler
-
-LN_FLAT_API LNResult LNUIListBoxItemSerializeHandler_Create(LNUIListBoxItemSerializeHandlerCallback callback, LNHandle* outDelegate);
-LN_FLAT_API void LNUIListBoxItemSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLNUIListBoxItemSerializeHandler_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LNSubinstanceAllocFunc subinstanceAllocFunc;
-    LNSubinstanceFreeFunc subinstanceFreeFunc;
-
-} LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LNUIListBoxItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LNSubinstanceId LNUIListBoxItemSerializeHandler_GetSubinstanceId(LNHandle handle);
-
-//==============================================================================
 // UIListBoxSerializeHandler
 
 LN_FLAT_API LNResult LNUIListBoxSerializeHandler_Create(LNUIListBoxSerializeHandlerCallback callback, LNHandle* outDelegate);
@@ -9802,6 +9780,38 @@ typedef struct tagLNUIListBoxSerializeHandler_SubclassRegistrationInfo
 
 extern LN_FLAT_API void LNUIListBoxSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxSerializeHandler_SubclassRegistrationInfo* info);
 extern LN_FLAT_API LNSubinstanceId LNUIListBoxSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIListItemSerializeHandler
+
+LN_FLAT_API LNResult LNUIListItemSerializeHandler_Create(LNUIListItemSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIListItemSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListItemSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIListItemSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListItemSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListItemSerializeHandler_GetSubinstanceId(LNHandle handle);
+
+//==============================================================================
+// UIListBoxItemSerializeHandler
+
+LN_FLAT_API LNResult LNUIListBoxItemSerializeHandler_Create(LNUIListBoxItemSerializeHandlerCallback callback, LNHandle* outDelegate);
+LN_FLAT_API void LNUIListBoxItemSerializeHandler_SetManagedTypeInfoId(int64_t id); // deprecated
+typedef struct tagLNUIListBoxItemSerializeHandler_SubclassRegistrationInfo
+{
+    int64_t subclassId;	// ManagedTypeInfoId
+    LNSubinstanceAllocFunc subinstanceAllocFunc;
+    LNSubinstanceFreeFunc subinstanceFreeFunc;
+
+} LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo;
+
+extern LN_FLAT_API void LNUIListBoxItemSerializeHandler_RegisterSubclassTypeInfo(const LNUIListBoxItemSerializeHandler_SubclassRegistrationInfo* info);
+extern LN_FLAT_API LNSubinstanceId LNUIListBoxItemSerializeHandler_GetSubinstanceId(LNHandle handle);
 
 //==============================================================================
 // InputGestureSerializeHandler

@@ -1,4 +1,4 @@
-#include <LuminoEngine/Runtime/Runtime.hpp>
+#include <LuminoFFI/FFI.hpp>
 %%IncludeDirective%%
 
 %%HeaderString%%

@@ -5,7 +5,7 @@ namespace ln {
 class Exception;
 class Object;
 
-class Runtime
+class FFI
 {
 public:
 	static LNHandle makeObjectWrap(Object* obj, bool fromCreate);
