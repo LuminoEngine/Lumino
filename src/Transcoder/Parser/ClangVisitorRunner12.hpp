@@ -92,20 +92,13 @@ public:
 
     virtual std::shared_ptr<clang::DiagnosticConsumer> onCreateDiagnosticConsumer(clang::DiagnosticOptions* options) = 0;
 
-    virtual std::unique_ptr<PPCallbacks> onCreatePPCallbacks(CompilerInstance* CI, Preprocessor& PP) = 0;
+    virtual std::unique_ptr<PPCallbacks> onCreatePPCallbacks(CompilerInstance* CI, Preprocessor& PP) { return nullptr; }
 
     virtual void onHandleTranslationUnit(CompilerInstance* CI, ASTContext* astContext) = 0;
 
     int run(const std::vector<const char*>& argv) {
 
         
-    // clang 内部で発生した様々なエラーを受け取れるようにする。
-        // clang::DiagnosticOptions は TextDiagnosticPrinter の中で delete されるので自分で delete してはならない。
-        clang::DiagnosticOptions* diagnosticOptions = new clang::DiagnosticOptions();
-        diagnosticOptions->ShowColors = 1;
-        diagnosticOptions->ShowOptionNames = 1;
-
-        // ここで指定する Category は -help 用なので特に気にしなくてOK。
 
         /*
 		コマンドライン引数について [12.0.0]
@@ -142,18 +135,26 @@ public:
 
 		<Clang本体に渡す引数> は CommonOptionsParser を通すと、CommonOptionsParser::getCompilations() で取得できるリストに格納される。
 	*/
-#if 1
-        //std::unique_ptr<clang::TextDiagnosticPrinter> textDiagnosticPrinter =
-        //	std::make_unique<clang::TextDiagnosticPrinter>(llvm::outs(),
-        //	&diagnosticOptions);
+        //return runCompilerInstance(args);
+        return runCompilerInstance(argv);
+    }
+
+    // Tooling のユーティリティ無し実行。
+    // 環境ごとのシステムインクルードパスなどを自動検出 "しない"
+    int runCompilerInstance(const std::vector<const char*>& argv) {
+        // clang 内部で発生した様々なエラーを受け取れるようにする。
+        // clang::DiagnosticOptions は TextDiagnosticPrinter の中で delete されるので自分で delete してはならない。
+        clang::DiagnosticOptions* diagnosticOptions = new clang::DiagnosticOptions();
+        diagnosticOptions->ShowColors = 1;
+        diagnosticOptions->ShowOptionNames = 1;
         auto diag = onCreateDiagnosticConsumer(diagnosticOptions);
         if (!diag) {
             diag = std::make_shared<clang::TextDiagnosticPrinter>(llvm::outs(), diagnosticOptions);
         }
 
         llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagIDs;
-        //std::unique_ptr<clang::DiagnosticsEngine> diagnosticsEngine =
-        //    std::make_unique<clang::DiagnosticsEngine>(diagIDs, diagnosticOptions, diag.get() /*textDiagnosticPrinter.get()*/);
+        // std::unique_ptr<clang::DiagnosticsEngine> diagnosticsEngine =
+        //     std::make_unique<clang::DiagnosticsEngine>(diagIDs, diagnosticOptions, diag.get() /*textDiagnosticPrinter.get()*/);
         auto diagnosticsEngine = new clang::DiagnosticsEngine(diagIDs, diagnosticOptions, diag.get());
 
         std::unique_ptr<clang::CompilerInstance> compilerInstance(new clang::CompilerInstance());
@@ -161,7 +162,6 @@ public:
 
         // 引数エラーがある場合はここで出力される
         clang::CompilerInvocation::CreateFromArgs(compilerInvocation, argv, *diagnosticsEngine);
-
 
         compilerInstance->createDiagnostics(diag.get() /*textDiagnosticPrinter.get()*/, false);
 
@@ -174,37 +174,43 @@ public:
 
         auto actionFactory = local::NewLocalFrontendActionFactory(this);
         auto action = actionFactory->create();
-        //std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMOnlyAction>(&context);
+        // std::unique_ptr<clang::CodeGenAction> action = std::make_unique<clang::EmitLLVMOnlyAction>(&context);
 
         int result = 0;
         if (!compilerInstance->ExecuteAction(*action)) {
             result = 1;
         }
-#else
+        return result;
+    }
+
+    int runTooling(int argc, const char** argv) {
         // ClangTool を使用すると、cc1 ではなく GCC 互換モードで動く。
         // このとき -triplet も使えなくなる。
         // cc1 にする方法が見つからなかった。
 
-        auto diag = std::make_shared<local::LocalDiagnosticConsumer>(diagnosticOptions);
+        clang::DiagnosticOptions* diagnosticOptions = new clang::DiagnosticOptions();
+        diagnosticOptions->ShowColors = 1;
+        diagnosticOptions->ShowOptionNames = 1;
+        auto diag = onCreateDiagnosticConsumer(diagnosticOptions);
+        if (!diag) {
+            diag = std::make_shared<clang::TextDiagnosticPrinter>(llvm::outs(), diagnosticOptions);
+        }
 
         // args のパース処理
-        ::clang::tooling::CommonOptionsParser op(argc, argv.data(), ::llvm::cl::GeneralCategory);
+        auto ExpectedParser = ::clang::tooling::CommonOptionsParser::create(argc, argv, ::llvm::cl::getGeneralCategory());
+        CommonOptionsParser& Options = ExpectedParser.get();
 
-        const auto AllCompileCommands = op.getCompilations().getAllCompileCommands();
+        //const auto AllCompileCommands = op->getCompilations().getAllCompileCommands();
 
         // パースした情報 (CDB=CompilationDataBase) を使って、ClangTool を作る
-        ::clang::tooling::ClangTool Tool(op.getCompilations(), op.getSourcePathList());
+        ::clang::tooling::ClangTool Tool(Options.getCompilations(), Options.getSourcePathList());
         Tool.setDiagnosticConsumer(diag.get());
 
         // ClangTool を実行する
-        int result = Tool.run(local::NewLocalFrontendActionFactory(nullptr).get());
-#endif
-
-        return result;
+        return Tool.run(local::NewLocalFrontendActionFactory(this).get());
     }
 
 private:
-
 };
 
 LocalASTConsumer::LocalASTConsumer(CompilerInstance* CI, ClangVisitorRunner12* runner)

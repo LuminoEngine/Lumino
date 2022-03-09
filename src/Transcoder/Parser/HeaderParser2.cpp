@@ -1,5 +1,5 @@
 ﻿/*
-	clang -Xclang -ast-dump Test.cpp
+        clang -Xclang -ast-dump Test.cpp
 */
 #include <memory>
 #include <LuminoEngine/Base/Regex.hpp>
@@ -93,8 +93,8 @@ public:
 
     static unsigned getOffsetOnRootFile(const SourceManager& sm, SourceLocation loc) {
         if (sm.getFileID(loc) == sm.getMainFileID())
-        //auto ploc = sm.getPresumedLoc(loc);
-        //if (ploc.getIncludeLoc().isInvalid())
+        // auto ploc = sm.getPresumedLoc(loc);
+        // if (ploc.getIncludeLoc().isInvalid())
         {
             auto eloc = sm.getDecomposedExpansionLoc(loc);
             return eloc.second;
@@ -120,7 +120,7 @@ public:
     Ref<PIDocument> parseDocument(Decl* decl) {
         if (const FullComment* Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
             return parseDocument2(Comment);
-        //return HeaderParser2::parseDocument(getSourceText(Comment->getSourceRange()));
+        // return HeaderParser2::parseDocument(getSourceText(Comment->getSourceRange()));
         return ln::makeRef<PIDocument>();
     }
 
@@ -138,7 +138,7 @@ public:
         }
     }
 
-    //std::string getQualTypeNameSymple(QualType* type)
+    // std::string getQualTypeNameSymple(QualType* type)
     //{
     //	type->getAsString()
     //	type->dump()
@@ -170,33 +170,33 @@ public:
         }
 
         return name.trim().replace(U" ", U"");
-        //SplitQualType st = type.split();
-        //if (st.Ty->isRecordType())
+        // SplitQualType st = type.split();
+        // if (st.Ty->isRecordType())
         //{
         //	// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
         //	// Decl から定義名をとると、"Vector3" などが取れる。
         //	CXXRecordDecl* rd = st.Ty->getAsCXXRecordDecl();
         //	DeclarationName name = rd->getDeclName();
         //	return ln::String::fromStdString(name.getAsString());
-        //}
-        //else
+        // }
+        // else
         //{
         //	return ln::String::fromStdString(type.getAsString());
-        //}
+        // }
     }
 
     void EnumerateDecl(DeclContext* aDeclContext) {
         for (DeclContext::decl_iterator i = aDeclContext->decls_begin(), e = aDeclContext->decls_end(); i != e; i++) {
             Decl* D = *i;
-            //if (indentation.IndentLevel == 0) {
+            // if (indentation.IndentLevel == 0) {
             //	errs() << "TopLevel : " << D->getDeclKindName();                                    // Declの型表示
             //	if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();  // NamedDeclなら名前表示
             //	errs() << " (" << D->getLocation().printToString(SM) << ")\n";                      // ソース上の場所表示
-            //}
+            // }
 
-            //errs() << "TopLevel : " << D->getDeclKindName();
-            //if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();
-            //errs() << "\n";
+            // errs() << "TopLevel : " << D->getDeclKindName();
+            // if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();
+            // errs() << "\n";
 
             Visit(D);
         }
@@ -282,7 +282,7 @@ public:
         return true;
     }
 
-    //bool VisitTemplateDecl(TemplateDecl* decl)
+    // bool VisitTemplateDecl(TemplateDecl* decl)
     //{
     //	if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
     //	{
@@ -300,7 +300,7 @@ public:
     bool VisitCXXMethodDecl(CXXMethodDecl* decl) {
         if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation())) // 入力ファイルの内側で定義されているか？
         {
-            //ln::String localSigneture;
+            // ln::String localSigneture;
             //{
             //	for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++) {
             //		ParmVarDecl* paramDecl = decl->getParamDecl(iParam);
@@ -310,7 +310,7 @@ public:
             //		localSigneture += typeString;
             //	}
             //	localSigneture = ln::String::fromStdString(decl->getNameAsString()) + U"(" + localSigneture + U")";
-            //}
+            // }
 
             auto* attr = m_parser->findUnlinkedAttrMacro(offset);
             if (attr) {
@@ -338,7 +338,7 @@ public:
                 // check sema error (未定義の型など)
                 if (decl->isInvalidDecl()) {
                     // TODO: add location
-                    //m_parser->diag()->reportError(ln::String::format(_T("Invalid declaration {0}"), ln::String::fromStdString(getSourceText(decl->getSourceRange()))), getLocString(decl));
+                    // m_parser->diag()->reportError(ln::String::format(_T("Invalid declaration {0}"), ln::String::fromStdString(getSourceText(decl->getSourceRange()))), getLocString(decl));
                     m_parser->diag()->reportError(ln::format(U"Invalid declaration {0}", ln::String::fromStdString(getSourceText(decl->getSourceRange()))));
                 }
 
@@ -385,7 +385,13 @@ public:
                         else if (expr->getStmtClass() == Stmt::StmtClass::FloatingLiteralClass) {
                             auto literal = static_cast<FloatingLiteral*>(expr);
                             auto value = literal->getValue();
-                            paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
+
+                            if (value.isSignaling()) {
+                                paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
+                            }
+                            else {
+                                paramInfo->defaultValue = ln::makeVariant(value.convertToDouble());
+                            }
                         }
                         else if (expr->getStmtClass() == Stmt::StmtClass::CXXBoolLiteralExprClass) {
                             auto literal = static_cast<CXXBoolLiteralExpr*>(expr);
@@ -404,10 +410,10 @@ public:
                         }
                         else if (expr->getStmtClass() == Stmt::StmtClass::MaterializeTemporaryExprClass) {
                             LN_NOTIMPLEMENTED();
-                            //auto mte = static_cast<MaterializeTemporaryExpr*>(expr);
-                            //auto decl = mte->getExtendingDecl();
+                            // auto mte = static_cast<MaterializeTemporaryExpr*>(expr);
+                            // auto decl = mte->getExtendingDecl();
                             ////auto value = literal->getValue();
-                            //paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
+                            // paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
                         }
                         else {
                             std::cout << expr->getStmtClassName() << std::endl;
@@ -479,7 +485,7 @@ public:
             symbol->document = parseDocument(decl);
             symbol->name = ln::String::fromStdString(decl->getNameAsString());
             symbol->value = ln::makeVariant(decl->getInitVal().getSExtValue());
-            //symbol->type = m_currentRecord;
+            // symbol->type = m_currentRecord;
             m_currentRecord->constants.add(symbol);
         }
 
@@ -593,7 +599,7 @@ public:
                                     typeInfo->document = parseDocument(decl);
                                     m_parser->getDB()->types.add(typeInfo);
 
-                                    //for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
+                                    // for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
                                     //	QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
                                     //	SplitQualType paramTypeSplit = paramType.split();
 
@@ -690,7 +696,7 @@ public:
                     param->description = PIDocument::formatComment(ln::String::fromStdString(getSourceText(pcc->getParagraph()->getSourceRange()), ln::TextEncoding::utf8Encoding()));
 
                     // ↓全体を解析したいときはこれを使う
-                    //ln::String::fromStdString(getSourceText(block->getSourceRange()), ln::TextEncoding::utf8Encoding());
+                    // ln::String::fromStdString(getSourceText(block->getSourceRange()), ln::TextEncoding::utf8Encoding());
 
                     doc->params.add(param);
 
@@ -735,12 +741,12 @@ public:
         const LangOptions& opts = m_ci->getLangOpts();
         const MacroInfo* macroInfo = MD.getMacroInfo();
 
-        //clang::FileEntry
-        //sm.getOrCreateFileID
+        // clang::FileEntry
+        // sm.getOrCreateFileID
 
         // マクロが書かれている場所は input のルートであるか？ (include ファイルは解析したくない)
-        //auto ploc = sm.getPresumedLoc(range.getBegin());
-        //if (ploc.getIncludeLoc().isInvalid())
+        // auto ploc = sm.getPresumedLoc(range.getBegin());
+        // if (ploc.getIncludeLoc().isInvalid())
         if (sm.getFileID(range.getBegin()) == sm.getMainFileID()) {
             std::string name = Lexer::getSourceText(CharSourceRange::getTokenRange(range.getBegin()), sm, opts).str();
             if (name == "LN_CLASS" ||
@@ -758,7 +764,7 @@ public:
                 args = args.substr(0, args.find(')'));
                 attrMacro.args = args;
 
-                //for (int iArg = 0U; iArg < macroInfo->getNumArgs(); iArg++)
+                // for (int iArg = 0U; iArg < macroInfo->getNumArgs(); iArg++)
                 //{
                 //	const IdentifierInfo* param = *(macroInfo->arg_begin() + iArg);	// params がほしいときはこっち
                 //	const Token* argToks = args->getUnexpArgument(iArg);				// args がほしいときはこっち
@@ -793,57 +799,57 @@ private:
 //// https://clang.llvm.org/docs/RAVFrontendAction.html
 //// clang は色々な AST の作成方法を持っているらしく、HandleTranslationUnit() 以外は
 //// 通常の翻訳単位以外の解析で何かしたいときに使うようだ。
-//class LocalASTConsumer : public ASTConsumer {
-//private:
-//    std::unique_ptr<LWIGVisitor> m_visitor;
+// class LocalASTConsumer : public ASTConsumer {
+// private:
+//     std::unique_ptr<LWIGVisitor> m_visitor;
 //
-//public:
-//    explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser2* parser)
-//        : m_visitor(std::make_unique<LWIGVisitor>(CI, parser)) {
-//        //auto fe = CI->getSourceManager().getFileManager().getFile(, false);
-//        //CI->getSourceManager().file
+// public:
+//     explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser2* parser)
+//         : m_visitor(std::make_unique<LWIGVisitor>(CI, parser)) {
+//         //auto fe = CI->getSourceManager().getFileManager().getFile(, false);
+//         //CI->getSourceManager().file
 //
-//        Preprocessor& PP = CI->getPreprocessor();
-//        PP.addPPCallbacks(std::make_unique<LocalPPCallbacks>(PP, CI, parser));
-//    }
+//         Preprocessor& PP = CI->getPreprocessor();
+//         PP.addPPCallbacks(std::make_unique<LocalPPCallbacks>(PP, CI, parser));
+//     }
 //
-//    virtual void HandleTranslationUnit(ASTContext& Context) {
-//        m_visitor->EnumerateDecl(Context.getTranslationUnitDecl());
-//    }
-//};
+//     virtual void HandleTranslationUnit(ASTContext& Context) {
+//         m_visitor->EnumerateDecl(Context.getTranslationUnitDecl());
+//     }
+// };
 //
 //// FrontendAction は、コンパイラフロントエンドの共通のエントリポイント。具体的に何したいの？を表すために使う。
 //// https://clang.llvm.org/docs/RAVFrontendAction.html
 //// https://clang.llvm.org/doxygen/classclang_1_1ASTFrontendAction.html
 //// 標準だと ASTFrontendAction の派生として、単に AST をダンプしたり、HTML に変換したりといったアクションが用意されている。
 //// 今回は AST を全部自分でトラバースしたいので ASTFrontendAction を使う。
-//class LocalFrontendAction : public ASTFrontendAction {
-//public:
-//    ::HeaderParser2* m_parser;
+// class LocalFrontendAction : public ASTFrontendAction {
+// public:
+//     ::HeaderParser2* m_parser;
 //
-//    LocalFrontendAction(::HeaderParser2* parser)
-//        : m_parser(parser) {
-//    }
+//     LocalFrontendAction(::HeaderParser2* parser)
+//         : m_parser(parser) {
+//     }
 //
-//    virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& CI, llvm::StringRef file) {
-//        return std::make_unique<LocalASTConsumer>(&CI, m_parser);
-//    }
-//};
+//     virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& CI, llvm::StringRef file) {
+//         return std::make_unique<LocalASTConsumer>(&CI, m_parser);
+//     }
+// };
 //
 //// SilClangAnalyzer のポインタを ↑のクラスたちにわたすためのファクトリ
-//std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser2* parser) {
-//    class SimpleFrontendActionFactory : public FrontendActionFactory {
-//    public:
-//        ::HeaderParser2* m_parser;
+// std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser2* parser) {
+//     class SimpleFrontendActionFactory : public FrontendActionFactory {
+//     public:
+//         ::HeaderParser2* m_parser;
 //
-//        SimpleFrontendActionFactory(::HeaderParser2* parser)
-//            : m_parser(parser) {}
+//         SimpleFrontendActionFactory(::HeaderParser2* parser)
+//             : m_parser(parser) {}
 //
-//        clang::FrontendAction* create() override { return new LocalFrontendAction(m_parser); }
-//    };
+//         clang::FrontendAction* create() override { return new LocalFrontendAction(m_parser); }
+//     };
 //
-//    return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(parser));
-//}
+//     return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(parser));
+// }
 
 } // namespace
 
@@ -854,23 +860,24 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
     m_db = db;
     m_diag = diag;
 
-    //Path tempFilePath(filePath.getString() + _T(".cpp"));
-    //FileSystem::copyFile(filePath, tempFilePath, true);
+    // Path tempFilePath(filePath.getString() + _T(".cpp"));
+    // FileSystem::copyFile(filePath, tempFilePath, true);
 
     // TODO: Path から直接 toLocalPath
     std::string localFilePath = filePath.str().toStdString();
 
     std::vector<std::string> args;
-    //args.push_back(""); // program name
+     args.push_back(""); // program name
     args.push_back(localFilePath.c_str());
-    //args.push_back("--");
+     args.push_back("--");
 
     args.push_back("-x");
     args.push_back("c++");
     args.push_back("-std=c++17");
 
-    //args.push_back("-target");
-    //args.push_back("unknown-unknown-unknown-msvc");
+    // Enable C++ exceptions
+    args.push_back("-fcxx-exceptions");
+    args.push_back("-fexceptions");
 
     for (auto& path : m_includePathes) {
         args.push_back("-I");
@@ -884,20 +891,20 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
 
     args.push_back("-DLUMINO_TRANSCODER=1");
 
-    //args.push_back("-include");
-    //args.push_back(LUMINO_ROOT_DIR"/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
+    // args.push_back("-include");
+    // args.push_back(LUMINO_ROOT_DIR"/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
 
-    //args.push_back("-Xclang");
+    // args.push_back("-Xclang");
 
     args.push_back("-fsyntax-only");
     args.push_back("-fms-compatibility"); // Enable full Microsoft Visual C++ compatibility
     args.push_back("-fms-extensions");    // Enable full Microsoft Visual C++ compatibility
-    //args.push_back("-fmsc-version=1910"); // Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
+    // args.push_back("-fmsc-version=1910"); // Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
 
     // 基本的にヘッダを入力するので、warning: #pragma once in main file を隠す。https://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
     args.push_back("-Wno-pragma-once-outside-header");
 
-    //const char* argv[] =
+    // const char* argv[] =
     //{
     //	"",
     //	localFilePath.c_str(),
@@ -909,22 +916,20 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
     //	"-fms-compatibility",
     //	"-fms-extensions",
     //	"-fmsc-version=1900",
-    //};
+    // };
     std::vector<const char*> argv;
     for (auto& arg : args) {
         argv.push_back(arg.c_str());
     }
     int argc = argv.size();
 
-
     class LocalRunner : public local::ClangVisitorRunner12 {
     private:
         HeaderParser2* m_parser;
+
     public:
         LocalRunner(HeaderParser2* parser)
-            : m_parser(parser)
-        {}
-
+            : m_parser(parser) {}
 
         std::shared_ptr<clang::DiagnosticConsumer> onCreateDiagnosticConsumer(clang::DiagnosticOptions* options) override {
             return nullptr;
@@ -940,14 +945,14 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
         }
     };
 
-    //std::vector<std::string> sourcePathList = { localFilePath.c_str() };
+    // std::vector<std::string> sourcePathList = { localFilePath.c_str() };
 
     //::clang::tooling::CommonOptionsParser op(argc, argv.data(), ::llvm::cl::GeneralCategory);
     //::clang::tooling::ClangTool Tool(op.getCompilations(), sourcePathList /*op.getSourcePathList()*/);
-    //int result = Tool.run(local::NewLocalFrontendActionFactory(this).get());
+    // int result = Tool.run(local::NewLocalFrontendActionFactory(this).get());
     LocalRunner runner(this);
-    int result = runner.run(argv);
-    //FileSystem::deleteFile(tempFilePath);
+    int result = runner.runTooling(argc, argv.data());
+    // FileSystem::deleteFile(tempFilePath);
     return result;
 }
 
@@ -1017,9 +1022,9 @@ Ref<PIDocument> HeaderParser2::parseDocument(const std::string& comment) {
                 if (ln::Regex::search(con, _T(R"((\w+)(.*))"), &result)) {
                     ////info->copydocMethodName = result.groupValue(1);
                     ////info->copydocSignature = result.groupValue(2);
-                    //info->localSignature = result.groupValue(1);
-                    //info->localSignature += ln::String(result.groupValue(2));
-                    //info->localSignature = info->localSignature.remove(' ').remove('\t');
+                    // info->localSignature = result.groupValue(1);
+                    // info->localSignature += ln::String(result.groupValue(2));
+                    // info->localSignature = info->localSignature.remove(' ').remove('\t');
                     info->copydocLocalSignature = PIDatabase::parseLocalSigneture(con);
                     target = &info->details;
                     line.clear();

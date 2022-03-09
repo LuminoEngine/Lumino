@@ -12,7 +12,7 @@ enum class UIListSelectionMoveMode
 };
 
 /** UIListSubmitMode */
-LN_ENUM();
+LN_ENUM()
 enum class UIListSubmitMode
 {
 	/** ゲームUI用。Hover で選択状態、シングルクリックで Submit. Hover 状態は使用されない。 */

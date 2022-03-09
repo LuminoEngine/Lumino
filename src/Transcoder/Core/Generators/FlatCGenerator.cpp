@@ -139,7 +139,7 @@ void FlatCHeaderGenerator::generate() {
         src = src.replace(U"%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
         src = src.replace(U"%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
 
-        auto filePath = makeFlatCHeaderOutputPath();
+        auto filePath = config()->flatC.outputHeaderFile;
         ln::FileSystem::writeAllText(filePath, src, ln::TextEncoding::getEncoding(ln::EncodingType::UTF8));
     }
 }
@@ -446,11 +446,13 @@ void FlatCSourceGenerator::generate() {
 
     // save C API Source
     {
-        auto includeDirective = ln::format(U"#include \"{0}.FlatC.generated.h\"", config()->moduleName);
-        auto fileName = ln::format(U"{0}.FlatC.generated.cpp", config()->moduleName);
-
-        if (!config()->flatCSourceOutputDirOverride.isEmpty())
-            includeDirective = ln::format(U"#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
+        //auto fileName = ln::format(U"{0}.FlatC.generated.cpp", config()->moduleName);
+        auto filePath = config()->flatC.outputSourceFile;
+        auto includeFile = ln::Path::makeRelative(filePath.canonicalize(), config()->flatC.outputHeaderFile.canonicalize());
+        //if (!config()->flatCSourceOutputDirOverride.isEmpty())
+        //    includeDirective = ln::format(U"#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
+        //auto includeDirective = ln::format(U"#include \"{0}.FlatC.generated.h\"", config()->moduleName);
+        auto includeDirective = ln::format(U"#include \"{0}\"", includeFile);
 
         auto src = ln::FileSystem::readAllText(makeTemplateFilePath(U"Source.cpp.template"))
                        .replace(U"%%IncludeDirective%%", includeDirective)
@@ -459,7 +461,6 @@ void FlatCSourceGenerator::generate() {
                        .replace(U"%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString())
                        .replace(U"%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
-        auto filePath = (config()->flatCSourceOutputDirOverride.isEmpty()) ? makeOutputFilePath(U"FlatC/src", fileName) : ln::Path::combine(config()->flatCSourceOutputDirOverride, fileName);
         ln::FileSystem::writeAllText(filePath, src);
     }
 }

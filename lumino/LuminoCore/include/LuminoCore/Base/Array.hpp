@@ -307,7 +307,7 @@ public:
     template<class TPredicate>
     Array<T> filter(TPredicate predicate) const {
         Array<T> result;
-        result.reserve(m_data.size());
+        result.reserve(static_cast<size_type>(m_data.size()));
         for (const auto& i : *this) {
             if (predicate(i)) {
                 result.push_back(i);
