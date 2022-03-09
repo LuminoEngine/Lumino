@@ -396,6 +396,14 @@ using Result = BasicResult<void, ErrorCode>;
 
 } // namespace ln
 
+#define LN_DEFINE_RESULT_ALIAS \
+    using Result = ln::BasicResult<void, ln::ErrorCode>; \
+    template<typename... Args> \
+    auto ok(Args&&... args)->decltype(ln::ok(std::forward<Args>(args)...)) { return ln::ok(std::forward<Args>(args)...); } \
+    template<typename... Args> \
+    auto err(Args&&... args)->decltype(ln::err(std::forward<Args>(args)...)) { return ln::err(std::forward<Args>(args)...); } \
+
+
 #define LN_TRY(x) { \
     const auto result = x; \
     if (!result) return result; \

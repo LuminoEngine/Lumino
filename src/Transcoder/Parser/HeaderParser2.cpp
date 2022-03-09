@@ -29,6 +29,7 @@
 #include "clang/Frontend/ASTConsumers.h"
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/TextDiagnosticPrinter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
 #include "clang/Rewrite/Core/Rewriter.h"
@@ -860,12 +861,13 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
     std::string localFilePath = filePath.str().toStdString();
 
     std::vector<std::string> args;
-    args.push_back(""); // program name
+    //args.push_back(""); // program name
     args.push_back(localFilePath.c_str());
-    args.push_back("--");
+    //args.push_back("--");
 
     args.push_back("-x");
     args.push_back("c++");
+    args.push_back("-std=c++17");
 
     //args.push_back("-target");
     //args.push_back("unknown-unknown-unknown-msvc");
@@ -885,12 +887,12 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
     //args.push_back("-include");
     //args.push_back(LUMINO_ROOT_DIR"/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
 
-    args.push_back("-Xclang");
+    //args.push_back("-Xclang");
 
     args.push_back("-fsyntax-only");
     args.push_back("-fms-compatibility"); // Enable full Microsoft Visual C++ compatibility
     args.push_back("-fms-extensions");    // Enable full Microsoft Visual C++ compatibility
-    args.push_back("-fmsc-version=1910"); // Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
+    //args.push_back("-fmsc-version=1910"); // Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
 
     // 基本的にヘッダを入力するので、warning: #pragma once in main file を隠す。https://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
     args.push_back("-Wno-pragma-once-outside-header");

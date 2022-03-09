@@ -1,4 +1,5 @@
 ﻿#pragma once
+LN_DEFINE_RESULT_ALIAS;
 
 template<class T>
 using Ref = ln::Ref<T>;

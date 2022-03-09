@@ -1,7 +1,7 @@
 ﻿#include "Common.hpp"
 #include <LuminoFFI/Runtime.hpp>
 #include <LuminoFFI/Lumino.FlatC.generated.h>
-#include "../../FFI/src/BindingValidation.hpp"
+#include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 
 #define LN_ZV_CHECK(f) \
 { \

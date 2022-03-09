@@ -4,8 +4,28 @@
 CodeAnalyzer::CodeAnalyzer() {
 }
 
-void CodeAnalyzer::analyze(PIDatabase* pidb, ln::DiagnosticsManager* diag) {
+void CodeAnalyzer::makeInputs(const Project* project) {
+    for (const auto& mod : project->modules) {
+        for (const auto& file : mod->inputFiles) {
+            CompilationDatabase cdb;
+            cdb.inputFile = file->filePath();
+            cdb.includeDirectories = mod->includeDirectories;
+            cdb.forceIncludeFiles = mod->forceIncludeFiles;
+            inputs.add(cdb);
+        }
+    }
+}
+
+Result CodeAnalyzer::analyze(PIDatabase* pidb, ln::DiagnosticsManager* diag) {
     m_pidb = pidb;
+
+    
+    for (auto& cdb : inputs) {
+        if (!ln::FileSystem::existsFile(cdb.inputFile)) {
+            diag->reportError(U"File not found. " + cdb.inputFile);
+            return err();
+        }
+    }
 
     for (int i = 0; i < inputs.size(); i++) {
         callParser(inputs[i], i);
@@ -49,6 +69,8 @@ void CodeAnalyzer::analyze(PIDatabase* pidb, ln::DiagnosticsManager* diag) {
     ////{
     ////	pidb->load(U"pidb.json");
     ////}
+
+    return ok();
 }
 
 void CodeAnalyzer::callParser(CompilationDatabase& cdb, int index) {
@@ -59,6 +81,29 @@ void CodeAnalyzer::callParser(CompilationDatabase& cdb, int index) {
     cdb.save(cdbFile);
 
     {
+#if 1
+        auto proc1 = ln::ProcessCommand2(parserExecutable)
+                         .arg(cdbFile)
+                         .stdOut(ln::ProcessStdio::piped())
+                         .stdErr(ln::ProcessStdio::piped())
+                         .onStdOutReceived([&](ln::String line) {
+                             std::cerr << line.toStdString() << std::endl;
+                         })
+                         .onStdErrReceived([&](ln::String line) {
+                             std::cerr << line.toStdString() << std::endl;
+                         })
+                         .start();
+        proc1->wait();
+        // TODO: ログ出しちゃんと考える
+        int exitCode = proc1->exitCode();
+        std::cerr << "finish analysis (" << exitCode << ") : " << cdb.inputFile << std::endl;
+        if (exitCode != 0) {
+            std::cout << "Error occurred. (" << exitCode << ")" << std::endl;
+            // TODO: Record ファイルができていなければ FatalError.
+            return;
+        }
+
+#else
         ln::Process p;
         p.setProgram(parserExecutable);
         p.setArguments({ cdbFile });
@@ -80,10 +125,29 @@ void CodeAnalyzer::callParser(CompilationDatabase& cdb, int index) {
             // TODO: Record ファイルができていなければ FatalError.
             return;
         }
+#endif
     }
 
     // import PIDB
     auto localPIDB = ln::makeRef<PIDatabase>();
     localPIDB->load(pidbFile);
     m_pidb->mergeFrom(localPIDB);
+}
+
+//==============================================================================
+// Module
+
+Module::Module(const ln::Path& moduleRoot)
+    : m_moduleRoot(moduleRoot) {
+}
+
+void Module::addInputFile(const ln::Path& filePath) {
+    inputFiles.push(makeURef<InputFile>(ln::Path(m_moduleRoot, filePath)));
+}
+
+//==============================================================================
+// InputFile
+
+InputFile::InputFile(const ln::Path& filePath)
+    : m_filePath(filePath) {
 }

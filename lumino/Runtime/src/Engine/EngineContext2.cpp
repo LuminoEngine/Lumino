@@ -4,6 +4,7 @@
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 
 namespace ln {
 
@@ -51,6 +52,9 @@ bool EngineContext2::init()
     PredefinedTypes::String = registerType(_TT("String"), nullptr, TypeInfoClass::Primitive);
     PredefinedTypes::Object = registerType<Object>("Object", nullptr, {});
     PredefinedTypes::List = registerType<Object>("List", nullptr, {});
+
+    // TODO: test
+    registerType<ZVTestClass1>();
 
     m_objectTypeInfo = PredefinedTypes::Object;
 

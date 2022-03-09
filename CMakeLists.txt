@@ -67,11 +67,12 @@ set(CMAKE_DEBUG_POSTFIX "d")
 
 include(src/LuminoBuildCommon.cmake)
 
-set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
+set(LUMINO_REPO_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}")
+add_definitions(-DLUMINO_REPO_ROOT_DIR="${LUMINO_REPO_ROOT_DIR}")
 set(LUMINO_INCLUDE_DIRECTORIES
-    "${LUMINO_ROOT_PATH}/src/Core/include"
-    "${LUMINO_ROOT_PATH}/src/Engine/include"
-    "${LUMINO_ROOT_PATH}/src/Editor/Core")
+    "${LUMINO_REPO_ROOT_DIR}/src/Core/include"
+    "${LUMINO_REPO_ROOT_DIR}/src/Engine/include"
+    "${LUMINO_REPO_ROOT_DIR}/src/Editor/Core")
 
 if (LN_FBX_SDK_PATH)
     message("LN_FBX_SDK_PATH: ${LN_FBX_SDK_PATH}")

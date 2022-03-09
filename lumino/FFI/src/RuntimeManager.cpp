@@ -1,7 +1,6 @@
 ﻿#include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoEngine/Reflection/TypeInfo.hpp>
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "BindingValidation.hpp"
 #include "RuntimeManager.hpp"
 
 namespace ln {
@@ -87,10 +86,6 @@ bool RuntimeManager::init(const Settings& settings)
 	EngineContext2::initialize();
 	assert(!EngineContext2::instance()->objectEventListener);
 	EngineContext2::instance()->objectEventListener = this;
-
-
-	// TODO: test
-	EngineDomain::registerType<ZVTestClass1>();
 
 	LN_LOG_DEBUG("RuntimeManager Initialization finished.");
 	return true;

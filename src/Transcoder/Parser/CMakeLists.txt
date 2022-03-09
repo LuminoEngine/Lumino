@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project(LuminoTranscoder-Parser)
 
-# set(LN_LLVM_PACKAGE_DIR ${LUMINO_ROOT_PATH}/build/${LN_TARGET_ARCH}/BuildToolsInstall/llvm)
+# set(LN_LLVM_PACKAGE_DIR ${LUMINO_REPO_ROOT_DIR}/build/${LN_TARGET_ARCH}/BuildToolsInstall/llvm)
 # set(CLANG_DIR ${LN_LLVM_PACKAGE_DIR}/lib/cmake/clang)
 # set(LLVM_DIR ${LN_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
 # find_package(CLANG REQUIRED CONFIG)

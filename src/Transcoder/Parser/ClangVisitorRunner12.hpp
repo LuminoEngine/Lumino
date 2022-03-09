@@ -147,6 +147,10 @@ public:
         //	std::make_unique<clang::TextDiagnosticPrinter>(llvm::outs(),
         //	&diagnosticOptions);
         auto diag = onCreateDiagnosticConsumer(diagnosticOptions);
+        if (!diag) {
+            diag = std::make_shared<clang::TextDiagnosticPrinter>(llvm::outs(), diagnosticOptions);
+        }
+
         llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagIDs;
         //std::unique_ptr<clang::DiagnosticsEngine> diagnosticsEngine =
         //    std::make_unique<clang::DiagnosticsEngine>(diagIDs, diagnosticOptions, diag.get() /*textDiagnosticPrinter.get()*/);
@@ -158,13 +162,15 @@ public:
         // 引数エラーがある場合はここで出力される
         clang::CompilerInvocation::CreateFromArgs(compilerInvocation, argv, *diagnosticsEngine);
 
+
+        compilerInstance->createDiagnostics(diag.get() /*textDiagnosticPrinter.get()*/, false);
+
+        // Debug
         auto* languageOptions = compilerInvocation.getLangOpts();
         auto& preprocessorOptions = compilerInvocation.getPreprocessorOpts();
         auto& targetOptions = compilerInvocation.getTargetOpts();
         auto& frontEndOptions = compilerInvocation.getFrontendOpts();
         auto& codeGenOptions = compilerInvocation.getCodeGenOpts();
-
-        compilerInstance->createDiagnostics(diag.get() /*textDiagnosticPrinter.get()*/, false);
 
         auto actionFactory = local::NewLocalFrontendActionFactory(this);
         auto action = actionFactory->create();

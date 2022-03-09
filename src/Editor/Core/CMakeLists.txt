@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
 project(LuminoEditor)
 
-set(LN_ROOT_INCLUDE_DIR ${LUMINO_ROOT_PATH}/include)
+set(LN_ROOT_INCLUDE_DIR ${LUMINO_REPO_ROOT_DIR}/include)
 
 file(GLOB LOCAL_HEADERS ${LN_ROOT_INCLUDE_DIR}/LuminoEditor/*.hpp)
 source_group("Sources" FILES ${LOCAL_HEADERS})

@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include "BindingValidation.hpp"
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 
 namespace ln {
 

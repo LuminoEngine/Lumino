@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoFFI/RuntimeLog.hpp>
+#include <LuminoEngine/Runtime/RuntimeLog.hpp>
 
 namespace ln {
     

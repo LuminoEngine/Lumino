@@ -100,18 +100,18 @@ file(GLOB LN_SOURCES_UI_Controls ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Contro
 file(GLOB LN_SOURCES_UI_Layout ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Layout/*.hpp src/UI/Layout/*.cpp src/UI/Layout/*.hpp)
 
 # set(LN_SOURCES_UI_imgui
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imconfig.h
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.cpp
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.h
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_draw.cpp
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_internal.h
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_tables.cpp
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_widgets.cpp
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_rectpack.h
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_textedit.h
-#     ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_truetype.h
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imconfig.h
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imgui.cpp
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imgui.h
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imgui_draw.cpp
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imgui_internal.h
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imgui_tables.cpp
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imgui_widgets.cpp
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imstb_rectpack.h
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imstb_textedit.h
+#     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imstb_truetype.h
 # )
-set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/BuildCache/imgui)
+set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui)
 file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
 file(GLOB LN_SOURCES_Scripting ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scripting/*.hpp src/Scripting/*.cpp src/Scripting/*.hpp src/Scripting/*.md)

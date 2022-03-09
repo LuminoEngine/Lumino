@@ -8,139 +8,131 @@ namespace ln {
 //==============================================================================
 // DiagnosticsManager
 
-DiagnosticsManager* DiagnosticsManager::activeDiagnostics()
-{
-	return EngineContext2::instance()->activeDiagnostics();
+DiagnosticsManager* DiagnosticsManager::activeDiagnostics() {
+    return EngineContext2::instance()->activeDiagnostics();
 }
 
 DiagnosticsManager::DiagnosticsManager()
-	: m_items()
-	, m_hasError(false)
-	, m_hasWarning(false)
-{
+    : m_items()
+    , m_hasError(false)
+    , m_hasWarning(false)
+    , m_outputToStdErr(false) {
 }
 
-DiagnosticsManager::~DiagnosticsManager()
-{
+DiagnosticsManager::~DiagnosticsManager() {
 }
 
-void DiagnosticsManager::init()
-{
-	Object::init();
+void DiagnosticsManager::init() {
+    Object::init();
 }
 
-void DiagnosticsManager::reportError(StringView message)
-{
-	auto item = makeObject<DiagnosticsItem>();
-	item->setMessage(message);
-	item->setLevel(DiagnosticsLevel::Error);
-	m_items.add(item);
-	m_hasError = true;
+void DiagnosticsManager::reportError(StringView message) {
+    report(DiagnosticsLevel::Error, message);
 }
 
-void DiagnosticsManager::reportWarning(StringView message)
-{
-	auto item = makeObject<DiagnosticsItem>();
-	item->setMessage(message);
-	item->setLevel(DiagnosticsLevel::Warning);
-	m_items.add(item);
-	m_hasWarning = true;
+void DiagnosticsManager::reportWarning(StringView message) {
+    report(DiagnosticsLevel::Warning, message);
 }
 
-void DiagnosticsManager::reportInfo(StringView message)
-{
-	auto item = makeObject<DiagnosticsItem>();
-	item->setMessage(message);
-	item->setLevel(DiagnosticsLevel::Info);
-	m_items.add(item);
+void DiagnosticsManager::reportInfo(StringView message) {
+    report(DiagnosticsLevel::Info, message);
 }
 
-ln::String DiagnosticsManager::toString() const
-{
-	ln::String str;
-	for (auto& item : m_items)
-	{
-		switch (item->level())
-		{
-		case DiagnosticsLevel::Error:
-			str += _TT("[Error] ") + item->message();
-			break;
-		case DiagnosticsLevel::Warning:
-			str += _TT("[Warning] ") + item->message();
-			break;
-		case DiagnosticsLevel::Info:
-			str += _TT("[Info] ") + item->message();
-			break;
-		default:
-			LN_UNREACHABLE();
-			break;
-		}
-	}
-	return str;
+void DiagnosticsManager::report(DiagnosticsLevel level, const String& message) {
+    auto item = makeObject<DiagnosticsItem>();
+    item->setMessage(message);
+    item->setLevel(level);
+    m_items.add(item);
+    if (level >= DiagnosticsLevel::Warning) {
+        m_hasWarning = true;
+    }
+    if (level >= DiagnosticsLevel::Error) {
+        m_hasError = true;
+    }
+    if (m_outputToStdErr) {
+        std::cerr << item->toString() << std::endl;
+    }
 }
 
-void DiagnosticsManager::dumpToLog() const
-{
-	for (auto& item : m_items)
-	{
-		switch (item->level())
-		{
-		case DiagnosticsLevel::Error:
-			LN_LOG_ERROR(item->message());
-			break;
-		case DiagnosticsLevel::Warning:
-			LN_LOG_WARNING(item->message());
-			break;
-		case DiagnosticsLevel::Info:
-			LN_LOG_INFO(item->message());
-			break;
-		default:
-			LN_UNREACHABLE();
-			break;
-		}
-	}
+ln::String DiagnosticsManager::toString() const {
+    ln::String str;
+    for (auto& item : m_items) {
+        str += item->toString();
+    }
+    return str;
 }
 
-void DiagnosticsManager::registerProfilingItem(ProfilingItem* item)
-{
-	m_profilingItems.add(item);
-	auto section = Ref<ProfilingSection>(LN_NEW ProfilingSection(item), false);
-	section->init();
-	m_profilingValues[item] = section;
+void DiagnosticsManager::dumpToLog() const {
+    for (auto& item : m_items) {
+        switch (item->level()) {
+            case DiagnosticsLevel::Error:
+                LN_LOG_ERROR(item->message());
+                break;
+            case DiagnosticsLevel::Warning:
+                LN_LOG_WARNING(item->message());
+                break;
+            case DiagnosticsLevel::Info:
+                LN_LOG_INFO(item->message());
+                break;
+            default:
+                LN_UNREACHABLE();
+                break;
+        }
+    }
 }
 
-void DiagnosticsManager::setCounterValue(const ProfilingItem* key, int64_t value)
-{
-	auto itr = m_profilingValues.find(key);
-	if (itr != m_profilingValues.end()) {
-		itr->second->setValue(value);
-	}
+void DiagnosticsManager::registerProfilingItem(ProfilingItem* item) {
+    m_profilingItems.add(item);
+    auto section = Ref<ProfilingSection>(LN_NEW ProfilingSection(item), false);
+    section->init();
+    m_profilingValues[item] = section;
 }
 
-void DiagnosticsManager::commitFrame()
-{
-	for (auto& pair : m_profilingValues) {
-		pair.second->commitFrame();
-	}
+void DiagnosticsManager::setCounterValue(const ProfilingItem* key, int64_t value) {
+    auto itr = m_profilingValues.find(key);
+    if (itr != m_profilingValues.end()) {
+        itr->second->setValue(value);
+    }
+}
+
+void DiagnosticsManager::commitFrame() {
+    for (auto& pair : m_profilingValues) {
+        pair.second->commitFrame();
+    }
 }
 
 //==============================================================================
 // DiagnosticsItem
 
 DiagnosticsItem::DiagnosticsItem()
-	: m_level(DiagnosticsLevel::Error)
-	, m_string()
-{
+    : m_level(DiagnosticsLevel::Error)
+    , m_message() {
 }
 
-DiagnosticsItem::~DiagnosticsItem()
-{
+DiagnosticsItem::~DiagnosticsItem() {
 }
 
-void DiagnosticsItem::init()
-{
-	Object::init();
+void DiagnosticsItem::init() {
+    Object::init();
 }
+
+ln::String DiagnosticsItem::toString() const {
+    switch (m_level) {
+        case DiagnosticsLevel::Error:
+            return _TT("[Error] ") + m_message;
+            break;
+        case DiagnosticsLevel::Warning:
+            return _TT("[Warning] ") + m_message;
+            break;
+        case DiagnosticsLevel::Info:
+            return _TT("[Info] ") + m_message;
+            break;
+        default:
+            LN_UNREACHABLE();
+            return U"";
+    }
+}
+
 
 //==============================================================================
 // ProfilingItem
@@ -148,31 +140,26 @@ void DiagnosticsItem::init()
 Ref<ProfilingItem> ProfilingItem::Graphics_RenderPassCount;
 
 ProfilingItem::ProfilingItem()
-	: m_type(ProfilingItemType::Counter)
-	, m_name()
-{
+    : m_type(ProfilingItemType::Counter)
+    , m_name() {
 }
 
-void ProfilingItem::init(ProfilingItemType type, const StringView& name)
-{
-	Object::init();
-	m_type = type;
-	m_name = name;
+void ProfilingItem::init(ProfilingItemType type, const StringView& name) {
+    Object::init();
+    m_type = type;
+    m_name = name;
 }
 
 //==============================================================================
 // ProfilingSection
 
 ProfilingSection::ProfilingSection(ProfilingItem* owner)
-	: m_owner(owner)
-	, m_value(0)
-{
+    : m_owner(owner)
+    , m_value(0) {
 }
 
-void ProfilingSection::commitFrame()
-{
-	m_committedValue = m_value;
+void ProfilingSection::commitFrame() {
+    m_committedValue = m_value;
 }
 
 } // namespace ln
-

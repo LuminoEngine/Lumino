@@ -1,8 +1,8 @@
 #include <LuminoFFI/Runtime.hpp>
 #include <LuminoFFI/Lumino.FlatC.generated.h>
-
 #include <LuminoEngine.hpp>
-#include "BindingValidation.hpp"
+#include <LuminoEngine.hpp>
+#include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 
 // Auto generated override handler
 using ObjectSerializeHandler = ln::Delegate<void(ln::Object* self, ln::Serializer2* ar)>;

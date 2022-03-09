@@ -59,4 +59,4 @@ inline T1 convertStructForced(const T2& v)
 } // namespace detail
 } // namespace ln
 
-#include "RuntimeLog.hpp"
+#include <LuminoEngine/Runtime/RuntimeLog.hpp>

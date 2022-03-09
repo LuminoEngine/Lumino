@@ -7,133 +7,146 @@
 #include "../Core/Generators/DotNetPInvokeGenerator.hpp"
 #include "../Core/Generators/DotnetClassGenerator.hpp"
 
-#define TEST_ROOT U"C:/Proj/LN/Lumino/"
+//#define module_Engine->addInputFile(U
+#define USE_DEBUG_PARSER 1
+
 
 int main(int argc, char** argv) {
     ln::Logger::addStdErrAdapter();
+    ln::Runtime::initialize();
     auto diag = ln::makeObject<ln::DiagnosticsManager>();
+    diag->setOutputToStdErr(true);
     auto pidb = ln::makeRef<PIDatabase>();
 
     if (!ln::FileSystem::existsFile(U"pidb.json")) {
 
-        ln::List<ln::Path> files_LuminoCore = {
-            TEST_ROOT "include/LuminoCore/Base/Logger.hpp",
-            //TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
-            TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
-            TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
-            TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
-            TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
-            TEST_ROOT "include/LuminoCore/Text/Encoding.hpp",
-        };
+        auto project = makeURef<Project>();
 
-        ln::List<ln::Path> files_LuminoEngine = {
-            TEST_ROOT "include/LuminoEngine/Engine/Object.hpp",
-            TEST_ROOT "include/LuminoEngine/Base/Event.hpp",
-            TEST_ROOT "include/LuminoEngine/Base/Promise.hpp",
-            TEST_ROOT "include/LuminoEngine/Base/Variant.hpp",
-            TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
-            TEST_ROOT "include/LuminoEngine/Runtime/RuntimeLog.hpp",
-            TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
-            TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
-            TEST_ROOT "include/LuminoEngine/Platform/PlatformEvent.hpp",
-            TEST_ROOT "include/LuminoEngine/Asset/AssetObject.hpp",
-            TEST_ROOT "include/LuminoEngine/Asset/AssetModel.hpp",
-            TEST_ROOT "include/LuminoEngine/Asset/Assets.hpp",
-            TEST_ROOT "include/LuminoEngine/Audio/Sound.hpp",
-            TEST_ROOT "include/LuminoEngine/Audio/Audio.hpp",
-            TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
-            TEST_ROOT "include/LuminoEngine/Graphics/Graphics.hpp",
-            TEST_ROOT "include/LuminoEngine/Graphics/ColorStructs.hpp",
-            TEST_ROOT "include/LuminoEngine/Graphics/GeometryStructs.hpp",
-            TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
-            TEST_ROOT "include/LuminoEngine/Graphics/Texture.hpp",
-            TEST_ROOT "include/LuminoEngine/Shader/Shader.hpp",
-            TEST_ROOT "include/LuminoEngine/Rendering/Common.hpp",
-            TEST_ROOT "include/LuminoEngine/Rendering/RenderView.hpp",
-            TEST_ROOT "include/LuminoEngine/Rendering/Material.hpp",
-            TEST_ROOT "include/LuminoEngine/Mesh/MeshPrimitive.hpp",
-            TEST_ROOT "include/LuminoEngine/Mesh/AnimationController.hpp",
-            TEST_ROOT "include/LuminoEngine/Mesh/MeshModel.hpp",
-            TEST_ROOT "include/LuminoEngine/Mesh/SkinnedMeshModel.hpp",
-            TEST_ROOT "include/LuminoEngine/Physics/CollisionShape.hpp",
-            TEST_ROOT "include/LuminoEngine/Animation/Common.hpp",
-            TEST_ROOT "include/LuminoEngine/Animation/AnimationCurve.hpp",
-            TEST_ROOT "include/LuminoEngine/Animation/AnimationClip.hpp",
-            TEST_ROOT "include/LuminoEngine/Animation/AnimationMixer.hpp",
-            TEST_ROOT "include/LuminoEngine/Effect/EffectModel.hpp",
-            TEST_ROOT "include/LuminoEngine/Effect/ParticleEffectModel.hpp",
-            TEST_ROOT "include/LuminoEngine/Effect/ParticleEffectModel2.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Component.hpp",
-            TEST_ROOT "include/LuminoEngine/Visual/VisualComponent.hpp",
-            TEST_ROOT "include/LuminoEngine/Visual/SpriteComponent.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Common.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/CharacterController.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/World.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/WorldObject.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/VisualObject.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Camera.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Light.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Sprite.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/CameraOrbitControlComponent.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Raycaster.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/WorldRenderView.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Shapes/MeshPrimitives.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Mesh/Mesh.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Mesh/MeshComponent.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Physics/Collision.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Physics/RigidBodyComponent.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Effect/ParticleEmitter.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Scene.hpp",
-            TEST_ROOT "include/LuminoEngine/Scene/Level.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/Common.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UIColors.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UIEvents.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UILayoutElement.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UIElement.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UIText.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UISprite.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UIIcon.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UIMessageTextArea.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/UI.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/Layout/UILayoutPanel.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/Layout/UIGridLayout.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/Controls/UIControl.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/Controls/UIButton.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/Controls/UIWindow.hpp",
-            TEST_ROOT "include/LuminoEngine/UI/Controls/UIListBox.hpp",
-            TEST_ROOT "include/LuminoEngine/Input/InputBinding.hpp",
-            TEST_ROOT "include/LuminoEngine/Input/Input.hpp",
-            TEST_ROOT "include/LuminoEngine/Input/Mouse.hpp",
-            TEST_ROOT "include/LuminoEngine/Scripting/Interpreter.hpp",
-            TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
-            TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
-            TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
-            TEST_ROOT "include/LuminoEngine/Engine/Debug.hpp",
-        };
+        auto module_Core = makeURef<Module>(ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/LuminoCore");
+        module_Core->addIncludeDirectory(U"include");
+        module_Core->addForceIncludeFile(U"src/LuminoCore.PCH.h");
+        module_Core->addInputFile(U"include/LuminoCore/Base/Logger.hpp");
+        module_Core->addInputFile(U"include/LuminoCore/Math/Vector3.hpp");
+        module_Core->addInputFile(U"include/LuminoCore/Math/Vector4.hpp");
+        module_Core->addInputFile(U"include/LuminoCore/Math/Quaternion.hpp");
+        module_Core->addInputFile(U"include/LuminoCore/Math/Matrix.hpp");
+        module_Core->addInputFile(U"include/LuminoCore/Text/Encoding.hpp");
+        module_Core->addInputFile(U"include/LuminoCore/Geometries/GeometryStructs.hpp");
+        project->modules.push(std::move(module_Core));
+
+        auto module_Runtime = makeURef<Module>(ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Runtime");
+        module_Runtime->addIncludeDirectory(U"include");
+        module_Runtime->addForceIncludeFile(U"src/pch.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Reflection/Object.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Base/Event.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Base/Promise.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Base/Variant.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Runtime/detail/BindingValidation.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Runtime/RuntimeLog.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Base/Collection.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Base/Serializer.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Asset/AssetObject.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Asset/AssetModel.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Asset/Assets.hpp");
+        module_Runtime->addInputFile(U"include/LuminoEngine/Graphics/ColorStructs.hpp");
+        project->modules.push(std::move(module_Runtime));
+
+        auto module_Platform = makeURef<Module>(ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Platform");
+        module_Platform->addIncludeDirectory(U"include");
+        module_Platform->addForceIncludeFile(U"src/pch.hpp");
+        module_Platform->addInputFile(U"include/LuminoPlatform/PlatformEvent.hpp");
+        project->modules.push(std::move(module_Platform));
+
+        auto module_Graphics = makeURef<Module>(ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Graphics");
+        module_Graphics->addIncludeDirectory(U"include");
+        module_Graphics->addForceIncludeFile(U"src/pch.hpp");
+        module_Graphics->addInputFile(U"include/LuminoGraphics/Common.hpp");
+        module_Graphics->addInputFile(U"include/LuminoGraphics/Graphics.hpp");
+        module_Graphics->addInputFile(U"include/LuminoGraphics/GraphicsResource.hpp");
+        module_Graphics->addInputFile(U"include/LuminoGraphics/Texture.hpp");
+        module_Graphics->addInputFile(U"include/LuminoGraphics/Shader.hpp");
+        project->modules.push(std::move(module_Graphics));
+
+        auto module_Engine = makeURef<Module>(ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/LuminoEngine");
+        module_Engine->addIncludeDirectory(U"include");
+        module_Engine->addForceIncludeFile(U"src/LuminoEngine.PCH.h");
+        module_Engine->addInputFile(U"include/LuminoEngine/Audio/Sound.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Audio/Audio.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Rendering/Common.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Rendering/RenderView.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Rendering/Material.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Mesh/MeshPrimitive.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Mesh/AnimationController.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Mesh/MeshModel.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Mesh/SkinnedMeshModel.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Physics/CollisionShape.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Animation/Common.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Animation/AnimationCurve.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Animation/AnimationClip.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Animation/AnimationMixer.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Effect/EffectModel.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Effect/ParticleEffectModel.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Effect/ParticleEffectModel2.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Component.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Visual/VisualComponent.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Visual/SpriteComponent.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Common.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/CharacterController.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/World.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/WorldObject.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/VisualObject.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Camera.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Light.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Sprite.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/CameraOrbitControlComponent.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Raycaster.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/WorldRenderView.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Shapes/MeshPrimitives.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Mesh/StaticMesh.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Mesh/MeshComponent.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Physics/Collision.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Physics/RigidBodyComponent.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Effect/ParticleEmitter.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Scene.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scene/Level.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/Common.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UIColors.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UIEvents.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UILayoutElement.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UIElement.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UIText.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UISprite.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UIIcon.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UIMessageTextArea.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/UI.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/Layout/UILayoutPanel.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/Layout/UIGridLayout.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/Controls/UIControl.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/Controls/UIButton.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/Controls/UIWindow.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/UI/Controls/UIListBox.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Input/InputBinding.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Input/Input.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Input/Mouse.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Scripting/Interpreter.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Engine/EngineSettings.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Engine/Engine.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Engine/Application.hpp");
+        module_Engine->addInputFile(U"include/LuminoEngine/Engine/Debug.hpp");
+        project->modules.push(std::move(module_Engine));
+
 
         CodeAnalyzer ca;
+        ca.makeInputs(project.get());
+#ifdef USE_DEBUG_PARSER
+        ca.parserExecutable = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), U"../../Parser/Debug/LuminoTranscoder-Parser.exe").canonicalize();
+#else
         ca.parserExecutable = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), U"../../Parser/Release/LuminoTranscoder-Parser.exe").canonicalize();
+#endif
 
-        for (auto& file : files_LuminoCore) {
-            CompilationDatabase cdb;
-            cdb.inputFile = file;
-            cdb.includeDirectories.add(TEST_ROOT "include");
-            cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
-            ca.inputs.add(cdb);
+        if (!ca.analyze(pidb, diag)) {
+            return 1;
         }
-
-        for (auto& file : files_LuminoEngine) {
-            CompilationDatabase cdb;
-            cdb.inputFile = file;
-            cdb.includeDirectories.add(TEST_ROOT "include");
-            if (file.fileName().str() == U"Object.hpp") // Object class が force include されるものと合わせて再定義扱いになりクラス名が取れなくなるため、特別扱いする
-                cdb.forceIncludeFiles.add(TEST_ROOT "include/LuminoCore.hpp");
-            else
-                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
-            ca.inputs.add(cdb);
-        }
-
-        ca.analyze(pidb, diag);
 
         pidb->save(U"pidb.json");
         return 0;
@@ -168,36 +181,36 @@ int main(int argc, char** argv) {
         g.setup(db, config);
         g.generate();
     }
-    {
-        FlatCSourceGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
-    {
-        RubyExtGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
-    {
-        RubyYARDOCSourceGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
-    {
-        HSP3HeaderGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
-    {
-        HSP3CommandsGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
-    {
-        HSP3HelpGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
+    //{
+    //    FlatCSourceGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
+    //{
+    //    RubyExtGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
+    //{
+    //    RubyYARDOCSourceGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
+    //{
+    //    HSP3HeaderGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
+    //{
+    //    HSP3CommandsGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
+    //{
+    //    HSP3HelpGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
 
     //{
     //    DotNetPInvokeGenerator g;
