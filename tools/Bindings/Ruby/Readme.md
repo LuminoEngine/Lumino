@@ -3,6 +3,22 @@
 
 Rake に関する情報は https://ruby.github.io/rake/doc/rakefile_rdoc.html
 
+Install requirments
+----------
+
+https://community.chocolatey.org/packages/msys2
+
+```
+cinst ruby
+cinst msys2 --params "/NoUpdate"
+Update-SessionEnvironment
+ridk install 2 3
+```
+
+```
+ridk enable
+rake compile
+```
 
 Gem directory structure
 ----------
@@ -25,9 +41,13 @@ choco install -y ruby
 choco install -y msys2
 choco install -y ruby2.devkit
 Update-SessionEnvironment
-ridk install 2 3
+ridk install 1 2 3
 bundle install
+
+ruby dk.rb init
+ruby dk.rb install
 ```
+
 
 ### ドキュメントのビルド
 

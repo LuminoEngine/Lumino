@@ -611,6 +611,16 @@ void PropertySymbol::buildDocument() {
 }
 
 //==============================================================================
+// DependencyHelper
+
+int DependencyHelper::calcDepth(TypeSymbol* type, int depth) {
+    if (TypeSymbol* base = type->baseClass()) {
+        return calcDepth(base, depth + 1);
+    }
+    return depth;
+}
+
+//==============================================================================
 // TypeSymbol
 
 TypeSymbol::TypeSymbol(SymbolDatabase* db)
@@ -796,7 +806,6 @@ ln::Result TypeSymbol::link() {
             m_virtualMethods.add(method);
         }
     }
-
     return ln::ok();
 }
 
@@ -1122,6 +1131,16 @@ ln::Result SymbolDatabase::linkTypes() {
 
             m_allTypes[i]->createOverridePrototype(method, d);
         }
+    }
+
+
+
+    // 継承の深さを調べ、昇順で並べ替える。これで登録順がバラバラでも、継承の依存順に出力できる。
+    {
+        for (auto& type : m_allTypes) {
+            type->m_inheritanceDepth = DependencyHelper::calcDepth(type);
+        }
+        std::stable_sort(m_allTypes.begin(), m_allTypes.end(), [](auto& a, auto& b) { return a->inheritanceDepth() < b->inheritanceDepth(); });
     }
 
     return ln::ok();

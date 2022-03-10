@@ -199,6 +199,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    const ln::Path bindingsDir = LN_LOCALFILE("../../../tools/Bindings");
+
     auto config = ln::makeRef<GeneratorConfiguration>();
     config->moduleName = U"Lumino";
     config->outputDir = LN_LOCALFILE("../../../tools/Bindings");
@@ -212,6 +214,13 @@ int main(int argc, char** argv) {
     config->versionString = U"0.10.0";
     config->flatC.outputHeaderFile = ln::Path(repoRoot, U"lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h");
     config->flatC.outputSourceFile = ln::Path(repoRoot, U"lumino/FFI/src/Lumino.FlatC.generated.cpp");
+    config->ruby.outputSourceFile = ln::Path::combine(bindingsDir, U"Ruby/GemProject/ext/lumino", ln::format(U"{0}.RubyExt.generated.cpp", config->moduleName));
+
+    //auto outputDir = ln::Path(makeOutputFilePath(U"Ruby", U"GemProject/ext"));
+    //ln::FileSystem::createDirectory(outputDir);
+    //ln::String fileName = ln::format(U"{0}.RubyExt.generated.cpp", config()->moduleName);
+
+
 
     //{
     //    FlatCHeaderGenerator g;

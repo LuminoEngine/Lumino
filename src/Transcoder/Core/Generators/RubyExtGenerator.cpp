@@ -228,11 +228,6 @@ void RubyExtGenerator::generate() {
 
     // save
     {
-        auto outputDir = ln::Path(makeOutputFilePath(U"Ruby", U"GemProject/ext"));
-        ln::FileSystem::createDirectory(outputDir);
-
-        ln::String fileName = ln::format(U"{0}.RubyExt.generated.cpp", config()->moduleName);
-
         ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(U"RubyExt.template.cpp"))
                              .replace(U"%%Common%%", U"")
                              .replace(U"%%FlatCDecls%%", allFlatCApiDecls.toString())
@@ -241,7 +236,7 @@ void RubyExtGenerator::generate() {
                              .replace(U"%%Code%%", code.toString())
                              .replace(U"%%ModuleInitializer%%", moduleInitializer.toString());
 
-        ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
+        ln::FileSystem::writeAllText(config()->ruby.outputSourceFile, src);
     }
 }
 

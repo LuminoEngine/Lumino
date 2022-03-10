@@ -22,11 +22,11 @@ debug_mode = false
 #-------------------------------------------------------------------------------
 # デバッグビルド
 #-------------------------------------------------------------------------------
-desc "Debug build."
-task :build_debug do
-  debug_mode = true
-  Rake::Task["build"].invoke
-end
+# desc "Debug build."
+# task :build_debug do
+#   debug_mode = true
+#   Rake::Task["build"].invoke
+# end
 
 #-------------------------------------------------------------------------------
 # Engine 本体から色々コピーしてくる Task.
@@ -46,15 +46,10 @@ task :ln_copy_files do |t, args|
   end
   p "NativePackage copy (" + tools_dir + ", " + 'tools' + ")"
 
-
-  if debug_mode
-    copy_file_l(File.join(repo_root, "build/installed/x64-windows/bin/LuminoFFId.dll"), "ext/LuminoFFId.dll")
-  else
-    copy_file_l(File.join(repo_root, "build/installed/x64-windows/bin/LuminoFFI.dll"), "ext/LuminoFFI.dll")
-    copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Release/lumino.exe"), "tools/lumino.exe")
-  end
-  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h"), "ext/FlatC.generated.h")
-  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/FlatCommon.h"), "ext/FlatCommon.h")
+  copy_file_l(File.join(repo_root, "build/installed/x64-windows/bin/LuminoFFI.dll"), "ext/lumino/LuminoFFI.dll")
+  copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Release/lumino.exe"), "tools/lumino.exe")
+  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h"), "ext/lumino/FlatC.generated.h")
+  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/FlatCommon.h"), "ext/lumino/FlatCommon.h")
 
   # copy resources
   #resources = File.expand_path("../../../../../tools/EngineResources", __FILE__)
@@ -63,7 +58,7 @@ task :ln_copy_files do |t, args|
 
 end
 task build: :ln_copy_files  # ln_copy_files が build の前に実行されるようにする
-
+task compile: :ln_copy_files
 
 # ExtensionTask は rake-compiler に含まれている機能。 rake 上から Ruby拡張ライブラリのビルドを自動化するタスク。
 # 自分で make する必要が無くなる。

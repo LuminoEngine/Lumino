@@ -353,6 +353,11 @@ private:
     friend class TypeSymbol;
 };
 
+class DependencyHelper {
+public:
+    static int calcDepth(TypeSymbol* type, int depth = 0);
+};
+
 class TypeSymbol : public Symbol {
 public:
     TypeSymbol(SymbolDatabase* db);
@@ -378,6 +383,7 @@ public:
     TypeSymbol* baseClass() const { return m_baseClass; }
     TypeSymbol* collectionItemType() const { return m_collectionItemType; }
     MethodSymbol* delegateProtoType() const { return m_functionSignature; }
+    int inheritanceDepth() const { return m_inheritanceDepth; }
 
     bool isPrimitive() const { return kind() == TypeKind::Primitive; }
     bool isClass() const { return kind() == TypeKind::Class; }
@@ -400,6 +406,7 @@ public:
 
     bool createOverridePrototype(MethodSymbol* sourceMethod, TypeSymbol* delegateType);
 
+    int m_inheritanceDepth = 0;
 private:
     void setFullName(const ln::String& value);
     ln::Result linkOverload();

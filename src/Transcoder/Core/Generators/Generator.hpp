@@ -15,6 +15,10 @@ struct FlatCConfiguration {
     ln::Path outputSourceFile;
 };
 
+struct RubyConfiguration {
+    ln::Path outputSourceFile;
+};
+
 class GeneratorConfiguration : public ln::RefObject {
 public:
     // 出力ファイル名などに使用される、モジュールの正式名称
@@ -51,6 +55,7 @@ public:
     //ln::String flatCSourceOutputDirOverride;
 
     FlatCConfiguration flatC;
+    RubyConfiguration ruby;
 };
 
 class Generator {
