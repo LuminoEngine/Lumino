@@ -1,0 +1,27 @@
+PATH
+  remote: .
+  specs:
+    lumino (0.10.0)
+      thor
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (13.0.6)
+    rake-compiler (1.1.9)
+      rake
+    thor (1.2.1)
+    webrick (1.7.0)
+    yard (0.9.27)
+      webrick (~> 1.7.0)
+
+PLATFORMS
+  x64-mingw-ucrt
+
+DEPENDENCIES
+  lumino!
+  rake-compiler
+  yard
+
+BUNDLED WITH
+   2.3.7

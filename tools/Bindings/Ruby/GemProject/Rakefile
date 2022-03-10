@@ -4,65 +4,70 @@ require "rake/extensiontask"
 require 'yard'
 require 'yard/rake/yardoc_task'
 require "fileutils"
-task :default => :spec
 
-Rake::TestTask.new do |t|
-  t.test_files = FileList['test/test_*.rb'].exclude('test/test_assoccoords.rb')
+#task :default => :spec
+
+#Rake::TestTask.new do |t|
+#  t.test_files = FileList['test/test_*.rb'].exclude('test/test_assoccoords.rb')
+#end
+
+def copy_file_l(from, to)
+  FileUtils.cp(from, to)
+  puts "Copy: " + from + " > " + to
 end
 
-Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
+debug_mode = false
+
+
+#-------------------------------------------------------------------------------
+# デバッグビルド
+#-------------------------------------------------------------------------------
+desc "Debug build."
+task :build_debug do
+  debug_mode = true
+  Rake::Task["build"].invoke
+end
+
+#-------------------------------------------------------------------------------
+# Engine 本体から色々コピーしてくる Task.
+#-------------------------------------------------------------------------------
+desc "Copy depends files."
+task :ln_copy_files do |t, args|
+  puts "debug_mode: " + debug_mode.to_s
+  repo_root = File.expand_path("../../../../..", __FILE__)
 
   #--------------------
   # for release package
-
-  tools_dir = File.expand_path("../../../../../build/NativePackage/Tools", __FILE__)
-  FileUtils.rm_r("Tools") if Dir.exist?("Tools")
-  FileUtils.cp_r(tools_dir, 'Tools')
-  if File.exist?('Tools/lumino.exe')
-    File.rename('Tools/lumino.exe', 'Tools/lumino-rb.exe')
+  tools_dir = File.join(repo_root, "build/installed/x64-windows/bin")
+  FileUtils.rm_r("tools") if Dir.exist?("tools")
+  FileUtils.cp_r(tools_dir, 'tools')
+  if File.exist?('tools/lumino.exe')
+    File.rename('tools/lumino.exe', 'tools/lumino-rb.exe')
   end
-  p "NativePackage copy (" + tools_dir + ", " + 'Tools' + ")"
+  p "NativePackage copy (" + tools_dir + ", " + 'tools' + ")"
 
-  lib = File.expand_path("../../../../../build/NativePackage/Engine/MSVC2019-x64-MT/bin/LuminoEngine.dll", __FILE__)
-  if File.exist?(lib)
-    to = "ext/LuminoEngine.dll"
-    FileUtils.cp(lib, to)
-    p "Lib copy (" + lib + ", " + to + ")"
+
+  if debug_mode
+    copy_file_l(File.join(repo_root, "build/installed/x64-windows/bin/LuminoFFId.dll"), "ext/LuminoFFId.dll")
+  else
+    copy_file_l(File.join(repo_root, "build/installed/x64-windows/bin/LuminoFFI.dll"), "ext/LuminoFFI.dll")
+    copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Release/lumino.exe"), "tools/lumino.exe")
   end
-
-  #--------------------
-  # for development
-
-  # copy dll
-  lib = File.expand_path("../../../../../build/MSVC2019-x64-MT/EngineBuild/src/Engine/Release/LuminoEngine.dll", __FILE__)
-  if File.exist?(lib)
-    to = "ext/LuminoEngine.dll"
-    FileUtils.cp(lib, to)
-    p "Lib copy (" + lib + ", " + to + ")"
-  end
-
-  lumino_cmd = File.expand_path("../../../../../build/MSVC2019-x64-MT/EngineBuild/src/Editor/CLI/Release/lumino.exe", __FILE__)
-  if File.exist?(lumino_cmd)
-    to = "Tools/lumino-rb.exe"
-    FileUtils.cp(lumino_cmd, to)
-    p "exe copy (" + lumino_cmd + ", " + to + ")"
-  end
-
-  from = File.expand_path("../../../../../include/LuminoEngine/Runtime/Lumino.FlatC.generated.h", __FILE__)
-  to = "ext/FlatC.generated.h"
-  FileUtils.cp(from, to)
-  p "Copied " + from + " > " + to
-
-  from = File.expand_path("../../../../../include/LuminoEngine/Runtime/FlatCommon.h", __FILE__)
-  to = "ext/FlatCommon.h"
-  FileUtils.cp(from, to)
-  p "Copied " + from + " > " + to
+  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h"), "ext/FlatC.generated.h")
+  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/FlatCommon.h"), "ext/FlatCommon.h")
 
   # copy resources
   #resources = File.expand_path("../../../../../tools/EngineResources", __FILE__)
   #FileUtils.cp_r(resources, "ext")
   #p "Copied EngineResources."
 
+end
+task build: :ln_copy_files  # ln_copy_files が build の前に実行されるようにする
+
+
+# ExtensionTask は rake-compiler に含まれている機能。 rake 上から Ruby拡張ライブラリのビルドを自動化するタスク。
+# 自分で make する必要が無くなる。
+Rake::ExtensionTask.new("lumino") do |ext|
   ext.lib_dir = "lib/lumino"
 end
 

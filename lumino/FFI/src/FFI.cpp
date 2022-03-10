@@ -4,10 +4,13 @@
 #include <LuminoFFI/FFI.hpp>
 #include <LuminoFFI/Lumino.FlatC.generated.h>
 #include "../../LuminoEngine/src/Engine/EngineManager.hpp"
-#include "RuntimeManager.hpp"
-
+#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 
 namespace ln {
+
+LNResult FFI::processException(Exception* e) {
+    return LN_ERROR_UNKNOWN;
+}
 
 LNHandle FFI::makeObjectWrap(Object* obj, bool fromCreate)
 {
@@ -27,11 +30,6 @@ void FFI::setManagedObjectId(LNHandle handle, int64_t id)
 int64_t FFI::getManagedObjectId(LNHandle handle)
 {
 	return detail::RuntimeManager::instance()->getManagedObjectId(handle);
-}
-
-LNResult FFI::processException(Exception* e)
-{
-	return detail::RuntimeManager::instance()->processException(e);
 }
 
 //const Char* FFI::getUTF16StringPtr(String str)
@@ -71,31 +69,6 @@ TextEncoding* FFI::getAStringEncoding()
 // ShapesRendererCommandList
 
 namespace detail {
-
-RuntimeStringBuffer::RuntimeStringBuffer()
-    : m_translated(false)
-{
-}
-
-//void RuntimeStringBuffer::init(const String& str)
-//{
-//    Object::init();
-//    m_str = str;
-
-void RuntimeStringBuffer::reset(const String& str)
-{
-    m_str = str;
-    m_translated = false;
-}
-
-const char* RuntimeStringBuffer::getAscii()
-{
-    if (!m_translated) {
-        m_strAscii = m_str.toStdString();   // TODO: encoding
-        m_translated = true;
-    }
-    return m_strAscii.c_str();
-}
 
 static std::string std_string_vprintf(const char* format, std::va_list arg)
 {

@@ -1,5 +1,21 @@
 
 
+
+Rake に関する情報は https://ruby.github.io/rake/doc/rakefile_rdoc.html
+
+
+Gem directory structure
+----------
+
+- 📂gem_project
+  - 📂ext
+    - 📂lumino
+      - 📄extconf.rb
+
+
+[rake-compiler README.md](https://github.com/rake-compiler/rake-compiler) によると、 ext フォルダの中はパッケージ名で掘るのが良いらしい。
+Rake::ExtensionTask のコストラクタには Extension name が必須だが、これを基に ext/[name]/extconf.rb を探しに行くため。
+
 ----------
 
 ### 準備

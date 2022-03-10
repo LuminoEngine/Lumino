@@ -1,11 +1,36 @@
 ﻿#include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoEngine/Reflection/TypeInfo.hpp>
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
-#include "RuntimeManager.hpp"
+#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 
 namespace ln {
 namespace detail {
-    
+
+//==============================================================================
+// RuntimeStringBuffer
+
+RuntimeStringBuffer::RuntimeStringBuffer()
+    : m_translated(false) {
+}
+
+// void RuntimeStringBuffer::init(const String& str)
+//{
+//     Object::init();
+//     m_str = str;
+
+void RuntimeStringBuffer::reset(const String& str) {
+    m_str = str;
+    m_translated = false;
+}
+
+const char* RuntimeStringBuffer::getAscii() {
+    if (!m_translated) {
+        m_strAscii = m_str.toStdString(); // TODO: encoding
+        m_translated = true;
+    }
+    return m_strAscii.c_str();
+}
+
 //==============================================================================
 // RuntimeManager
 
@@ -304,11 +329,6 @@ void RuntimeManager::onReleasedObject(Object* obj)
             m_settings.referenceCountTrackerCallback(runtimeData->index, LNI_REFERENCE_RELEASED, RefObjectHelper::getReferenceCount(obj));
 		}
 	}
-}
-
-LNResult RuntimeManager::processException(Exception* e)
-{
-	return LN_ERROR_UNKNOWN;
 }
 
 void RuntimeManager::dumpInfo() const

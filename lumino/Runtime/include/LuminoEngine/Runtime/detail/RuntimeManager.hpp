@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
-#include <LuminoFFI/Common.hpp>
-#include <LuminoFFI/FFI.hpp>
+#include "../FFITypes.hpp"
 
 namespace ln {
 namespace detail {
@@ -24,6 +23,31 @@ struct ObjectEntry
 	// fromCreate が false の場合、この値は常に 0 である。（明示的 Release 禁止）
 	// Get (fromCreate=fasle && refCount==0) 後、明示的 Retain すると、fromCreate=true, refCount=1 となり object->retain し、Create と同じ扱いになる。
 	int refCount = 0;
+};
+
+// C++ 側が String 実体を返す時に、Binding 側のアクセサ(getter)として使用する
+// TODO: 寿命の短いオブジェクトなのでキャッシュ組みたい
+class RuntimeStringBuffer
+//: public Object
+{
+public:
+    void reset(const String& str);
+    const char* getAscii();
+    const Char* getUtf16() { return m_str.c_str(); }
+
+    void setAStringEncoding(TextEncoding* value) { m_astringEncoding = value; }
+    TextEncoding* getAStringEncoding() const { return m_astringEncoding; }
+
+    // LN_CONSTRUCT_ACCESS:
+    RuntimeStringBuffer();
+    //    void init(const String& str);
+
+private:
+    String m_str;
+    Ref<TextEncoding> m_astringEncoding;
+    // String m_str16;
+    std::string m_strAscii;
+    bool m_translated;
 };
 
 class RuntimeManager
@@ -69,7 +93,6 @@ public:
     //static void setRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback);
     //static void setRuntimeGetTypeInfoIdCallback(LNRuntimeGetTypeInfoIdCallback callback);
 
-	LNResult processException(Exception* e);
 	void dumpInfo() const;
 
     RuntimeStringBuffer* requestCommonStringBuffer() { return &m_commonStringBuffer; }
@@ -90,6 +113,7 @@ private:
 	std::mutex m_mutex;
     RuntimeStringBuffer m_commonStringBuffer;
 };
+
 
 } // namespace detail
 } // namespace ln

@@ -213,21 +213,21 @@ int main(int argc, char** argv) {
     config->flatC.outputHeaderFile = ln::Path(repoRoot, U"lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h");
     config->flatC.outputSourceFile = ln::Path(repoRoot, U"lumino/FFI/src/Lumino.FlatC.generated.cpp");
 
-    {
-        FlatCHeaderGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
+    //{
+    //    FlatCHeaderGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
     //{
     //    FlatCSourceGenerator g;
     //    g.setup(db, config);
     //    g.generate();
     //}
-    //{
-    //    RubyExtGenerator g;
-    //    g.setup(db, config);
-    //    g.generate();
-    //}
+    {
+        RubyExtGenerator g;
+        g.setup(db, config);
+        g.generate();
+    }
     //{
     //    RubyYARDOCSourceGenerator g;
     //    g.setup(db, config);

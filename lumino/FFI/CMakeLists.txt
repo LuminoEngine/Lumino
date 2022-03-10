@@ -24,7 +24,7 @@ set(LN_SOURCES
 # Targets
 #-------------------------------------------------------------------------------
 
-add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -47,6 +47,7 @@ set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
 install(
     TARGETS ${PROJECT_NAME}
     EXPORT ${LN_TARGETS_NAME}
+    RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     INCLUDES DESTINATION include
 )

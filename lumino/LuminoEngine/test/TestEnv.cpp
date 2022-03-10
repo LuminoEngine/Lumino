@@ -1,7 +1,7 @@
 ﻿#include "Common.hpp"
 #include "../src/Engine/EngineManager.hpp"
 #include "../src/Scene/SceneManager.hpp"
-#include "../../FFI/src/RuntimeManager.hpp"
+#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include "TestEnv.hpp"
 
 String TestEnv::LuminoCLI;

@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoFFI/Runtime.hpp>
+#include <LuminoFFI/FFI.hpp>
 #include <LuminoFFI/Lumino.FlatC.generated.h>
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 
