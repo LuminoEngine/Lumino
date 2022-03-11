@@ -1,8 +1,8 @@
 require "bundler/gem_tasks"
-require 'rake/testtask'
+require "rake/testtask"
 require "rake/extensiontask"
-require 'yard'
-require 'yard/rake/yardoc_task'
+require "yard"
+require "yard/rake/yardoc_task"
 require "fileutils"
 
 #task :default => :spec
@@ -37,11 +37,11 @@ task :ln_copy_files do |t, args|
   # for release package
   tools_dir = File.join(repo_root, "build/installed/x64-windows/bin")
   FileUtils.rm_r("tools") if Dir.exist?("tools")
-  FileUtils.cp_r(tools_dir, 'tools')
-  if File.exist?('tools/lumino.exe')
-    File.rename('tools/lumino.exe', 'tools/lumino-rb.exe')
+  FileUtils.cp_r(tools_dir, "tools")
+  if File.exist?("tools/lumino.exe")
+    File.rename("tools/lumino.exe", "tools/lumino-rb.exe")
   end
-  p "NativePackage copy (" + tools_dir + ", " + 'tools' + ")"
+  p "NativePackage copy (" + tools_dir + ", " + "tools" + ")"
 
   copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/lumino/FFI/Release/LuminoFFI.dll"), "ext/lumino_ext/LuminoFFI.dll")
   copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Release/lumino.exe"), "tools/lumino.exe")
@@ -62,30 +62,30 @@ task compile: :ln_copy_files
 #-------------------------------------------------------------------------------
 # ExtensionTask は rake-compiler に含まれている機能。 rake 上から Ruby拡張ライブラリのビルドを自動化するタスク。
 # 自分で make する必要が無くなる。
+# 名前は extconf.rb の存在するフォルダの名前にしておく必要がある。
 Rake::ExtensionTask.new("lumino_ext") do |ext|
   ext.lib_dir = "lib/lumino_ext"
 end
-
 
 #-------------------------------------------------------------------------------
 # TestTask
 #-------------------------------------------------------------------------------
 Rake::TestTask.new do |t|
-  t.test_files = FileList['test/test_*.rb'].exclude('test/test_assoccoords.rb')
+  t.test_files = FileList["test/test_*.rb"].exclude("test/test_assoccoords.rb")
 end
 
 #-------------------------------------------------------------------------------
 # YardocTask
 #-------------------------------------------------------------------------------
-FILES = ['app/controllers/**/*.rb',
-              'app/helpers/**/*.rb', 
-              'app/mailers/**/*.rb', 
-              'app/models/**/*.rb']
-OPTIONS = ['--debug', '--verbose']
+FILES = ["app/controllers/**/*.rb",
+              "app/helpers/**/*.rb", 
+              "app/mailers/**/*.rb", 
+              "app/models/**/*.rb"]
+OPTIONS = ["--debug", "--verbose"]
 YARD::Rake::YardocTask.new do |t|
-  t.files   = ['Lumino.RubyYARDOCSource.generated.rb']
+  t.files   = ["Lumino.RubyYARDOCSource.generated.rb"]
   if Rake.application.options.trace
-    t.options = ['--debug', '--verbose']
+    t.options = ["--debug", "--verbose"]
   end
 end
 

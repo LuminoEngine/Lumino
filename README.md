@@ -16,11 +16,11 @@ Build and Unit Tests
 Get started
 ----------
 
-[Website](https://luminoengine.github.io/)
+🌏 [Website](https://luminoengine.github.io/)
+
+🛠 [How to build](docs/HowToBuild.md)
 
 [Roadmap](docs/Roadmap.md)
-
-[How to build](docs/HowToBuild.md)
 
 [Contributing](.github/CONTRIBUTING.md)
 

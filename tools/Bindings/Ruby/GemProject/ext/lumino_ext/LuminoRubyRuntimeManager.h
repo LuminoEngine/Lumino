@@ -45,10 +45,10 @@ public:
     int registerTypeInfo(VALUE klass, ObjectFactoryFunc factory);
     void registerWrapperObject(VALUE obj, bool forNativeGetting);
     void unregisterWrapperObject(LNHandle handle);
+    void gc_mark();
 
     // for generator interface
     static LuminoRubyRuntimeManager* getInstance(VALUE managerInstance);
-    static void gc_mark(LuminoRubyRuntimeManager* obj);
     static void handleReferenceChangedStatic(LNHandle handle, int method, int count);
     void handleReferenceChanged(LNHandle handle, int method, int count);
 

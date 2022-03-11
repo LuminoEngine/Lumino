@@ -2,22 +2,21 @@
 require "fiddle/import"
 require "rbconfig"
 
-$LUMINO_ENGINE_RESOURCES_DIR = __dir__ + "/../Tools/EngineResources"
-
-module LNWin32API
-  extend Fiddle::Importer
-  dlload "Kernel32.dll"
-  extern "int AddDllDirectory(const wchar_t*)"
-end
+$LUMINO_ENGINE_RESOURCES_DIR = __dir__ + "/../tools/EngineResources"
 
 
 if (RbConfig::CONFIG["host_os"] =~ /mswin|mingw|cygwin/)
+  # 拡張ライブラリの .so を require すると、Ruby ランタイムはその .so が依存している DLL もロードしようとするが、
+  # .so と同じフォルダに保存しているだけではロードしてくれない。
+  # "LoadError 126: Module not found." が発生する。
+  # DLL のある場所へロードパスを通す必要がある。
+  module LNWin32API
+    extend Fiddle::Importer
+    dlload "Kernel32.dll"
+    extern "int AddDllDirectory(const wchar_t*)"
+  end
   dll_dir = File.join(__dir__, "lumino_ext")
-  p dll_dir
   LNWin32API.AddDllDirectory(dll_dir.encode("UTF-16LE"))
-
-  extend Fiddle::Importer
-  dlload "LuminoFFI.dll"
 else
   raise "Not supported platform."
 end

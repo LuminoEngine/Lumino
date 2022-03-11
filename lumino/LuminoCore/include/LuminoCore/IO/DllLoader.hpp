@@ -12,7 +12,7 @@ namespace detail {
 class DllLoader
     : public RefObject {
 public:
-    static Ref<DllLoader> load(const StringView& filePath);
+    static Ref<DllLoader> load(const String& filePath);
 
 public:
     /**
@@ -35,7 +35,7 @@ public:
 private:
     DllLoader();
     virtual ~DllLoader();
-    bool init(const StringView& filePath);
+    bool init(const String& filePath);
 
     void* m_module;
 };

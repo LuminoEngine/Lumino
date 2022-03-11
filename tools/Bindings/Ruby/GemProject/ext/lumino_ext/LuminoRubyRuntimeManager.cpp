@@ -4,26 +4,27 @@
 extern "C" LN_FLAT_API void LNRuntime_RunAppInternal(LNHandle app);
 
 //==============================================================================
-// 
+// Ruby Ext
 
-static VALUE Wrap_LNRuntime_RunAppInternal(VALUE self, VALUE app)
-{
+static VALUE g_LuminoRubyRuntimeManagerClass;
+static VALUE g_LuminoRubyRuntimeManager;
+
+static VALUE Wrap_LNRuntime_RunAppInternal(VALUE self, VALUE app) {
     LNHandle handle = LuminoRubyRuntimeManager::instance->getHandle(app);
     LNRuntime_RunAppInternal(handle);
     return Qnil;
 }
 
-VALUE Wrap_LNRuntime_RegisterType(VALUE self, VALUE type)
-{
+VALUE Wrap_LNRuntime_RegisterType(VALUE self, VALUE type) {
     std::string className;
     {
         VALUE v = rb_funcall(type, rb_intern("name"), 0, 0);
         className = StringValuePtr(v);
     }
-    
+
     std::string superclassName;
     {
-        VALUE v1  = rb_funcall(type, rb_intern("superclass"), 0, 0);
+        VALUE v1 = rb_funcall(type, rb_intern("superclass"), 0, 0);
         superclassName = RubyUtils::makeTypeInfoName(v1);
     }
 
@@ -43,16 +44,15 @@ VALUE Wrap_LNRuntime_RegisterType(VALUE self, VALUE type)
 
     int managedTypeInfoId = LuminoRubyRuntimeManager::instance->registerTypeInfo(type, nullptr);
     LNTypeInfo_SetManagedTypeInfoId(typeInfoId, managedTypeInfoId);
-    
+
     LNRB_LOG_D("Usesr type registerd. (typeInfoId: %d, baseTypeInfoId: %d, managedTypeInfoId: %d)", typeInfoId, baseTypeInfoId, managedTypeInfoId);
     return Qnil;
 }
 
-static VALUE Wrap_LNRuntime_inherited(VALUE self, VALUE type)
-{
-    VALUE v  = rb_funcall(type, rb_intern("name"), 0, 0);
+static VALUE Wrap_LNRuntime_inherited(VALUE self, VALUE type) {
+    VALUE v = rb_funcall(type, rb_intern("name"), 0, 0);
     std::string name2 = StringValuePtr(v);
-    if (name2.find("Lumino::") == 0) return Qnil;   // TODO: Engine::init 前は EngineContext が null なので使えない。ので逃げる
+    if (name2.find("Lumino::") == 0) return Qnil; // TODO: Engine::init 前は EngineContext が null なので使えない。ので逃げる
 
     auto name = RubyUtils::makeTypeInfoName(type);
     LNRB_LOG_D("Usesr type registering from 'self.inherited.' (%s)", name.c_str());
@@ -68,21 +68,55 @@ static VALUE Wrap_LNRuntime_inherited(VALUE self, VALUE type)
     return Qnil;
 }
 
+static void LuminoRubyRuntimeManager_mark(LuminoRubyRuntimeManager* obj) {
+    if (obj) {
+        obj->gc_mark();
+    }
+}
+
+static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj) {
+    if (obj) {
+        delete obj;
+        LuminoRubyRuntimeManager::instance = nullptr;
+    }
+}
+
+static VALUE LuminoRubyRuntimeManager_allocate(VALUE klass) {
+    VALUE obj;
+    LuminoRubyRuntimeManager* internalObj = new LuminoRubyRuntimeManager();
+    if (!internalObj) rb_raise(rb_eRuntimeError, "Faild alloc - LuminoRubyRuntimeManager_allocate");
+    internalObj->init();
+    obj = Data_Wrap_Struct(klass, LuminoRubyRuntimeManager_mark, LuminoRubyRuntimeManager_delete, internalObj);
+    return obj;
+}
+
+extern "C" void InitLuminoRubyRuntimeManager() {
+    VALUE manager = rb_eval_string_protect("defined? $lumino_ruby_runtime_manager", NULL);
+    if (manager == Qnil) {
+        // Create new LuminoRubyRuntimeManager.
+        g_LuminoRubyRuntimeManagerClass = rb_define_class("LuminoRubyRuntimeManager", rb_cObject);
+        g_LuminoRubyRuntimeManager = LuminoRubyRuntimeManager_allocate(g_LuminoRubyRuntimeManagerClass);
+        rb_define_readonly_variable("$lumino_ruby_runtime_manager", &g_LuminoRubyRuntimeManager);
+    }
+    else {
+        // Use defined LuminoRubyRuntimeManager.
+        LuminoRubyRuntimeManager::instance = LuminoRubyRuntimeManager::getInstance(manager);
+    }
+}
+
 //==============================================================================
 // LuminoRubyRuntimeManager
 
 LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::instance = nullptr;
 LNLogLevel LuminoRubyRuntimeManager::s_logLevel = LN_LOG_LEVEL_INFO;
 
-LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::getInstance(VALUE managerInstance)
-{
+LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::getInstance(VALUE managerInstance) {
     LuminoRubyRuntimeManager* instance;
     Data_Get_Struct(managerInstance, LuminoRubyRuntimeManager, instance);
     return instance;
 }
 
-void LuminoRubyRuntimeManager::init()
-{
+void LuminoRubyRuntimeManager::init() {
     instance = this;
 
     // Initialize runtime.
@@ -90,14 +124,16 @@ void LuminoRubyRuntimeManager::init()
         VALUE LUMINO_LOG_LEVEL = rb_eval_string_protect("$LUMINO_LOG_LEVEL", NULL);
         if (LUMINO_LOG_LEVEL != Qnil) {
             s_logLevel = (LNLogLevel)FIX2INT(LUMINO_LOG_LEVEL);
+            if (s_logLevel <= LN_LOG_LEVEL_DEBUG) {
+                std::cerr << "LUMINO_LOG_LEVEL: " << s_logLevel << std::endl;
+            }
             LNLog_SetLevel(s_logLevel);
             LNEngineSettings_SetDebugMode(LN_TRUE);
         }
-        
+
         VALUE LUMINO_ENGINE_RESOURCES_DIR = rb_eval_string_protect("$LUMINO_ENGINE_RESOURCES_DIR", NULL);
         if (LUMINO_ENGINE_RESOURCES_DIR != Qnil) {
             const char* path = StringValuePtr(LUMINO_ENGINE_RESOURCES_DIR);
-            printf("path: %s\n", path);
             LNInternalEngineSettings_SetEngineResourcesPathA(path);
         }
 
@@ -112,7 +148,7 @@ void LuminoRubyRuntimeManager::init()
     // Define core functions.
     {
         m_luminoModule = rb_define_module("Lumino");
-        
+
         int state = 0;
         rb_eval_string_protect(
             "module Lumino\n"
@@ -134,21 +170,20 @@ void LuminoRubyRuntimeManager::init()
             "      end\n"
             "    end\n"
             "  end\n"
-            "end\n"
-            ,
+            "end\n",
             &state);
         m_eventSignalClass = rb_eval_string("Lumino::EventSignal");
 
         m_objectClass = rb_define_class_under(m_luminoModule, "Object", rb_cObject);
-        rb_define_singleton_method(m_objectClass, "inherited", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LNRuntime_inherited), 1);
+        rb_define_singleton_method(m_objectClass, "inherited", reinterpret_cast<VALUE(__cdecl*)(...)>(Wrap_LNRuntime_inherited), 1);
 
         VALUE class_Application = rb_define_class_under(m_luminoModule, "Application", m_objectClass);
-        rb_define_singleton_method(class_Application, "run_app_internal", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LNRuntime_RunAppInternal), 1);
-        
-        rb_define_module_function(m_luminoModule, "register_type", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LNRuntime_RegisterType), 1);
+        rb_define_singleton_method(class_Application, "run_app_internal", reinterpret_cast<VALUE(__cdecl*)(...)>(Wrap_LNRuntime_RunAppInternal), 1);
+
+        rb_define_module_function(m_luminoModule, "register_type", reinterpret_cast<VALUE(__cdecl*)(...)>(Wrap_LNRuntime_RegisterType), 1);
     }
 
-    m_typeInfoList.push_back({});   // [0] is dummy
+    m_typeInfoList.push_back({}); // [0] is dummy
 
     for (int i = 0; i < InitialListSize; i++) {
         m_objectList.push_back({ Qnil, Qnil });
@@ -158,8 +193,7 @@ void LuminoRubyRuntimeManager::init()
     m_runtimeAliving = true;
 }
 
-VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LNHandle handle, bool retain)
-{
+VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LNHandle handle, bool retain) {
     if (handle == LN_NULL_HANDLE) return Qnil;
 
     int objectIndex = (int)LNRuntime_GetManagedObjectId(handle);
@@ -179,8 +213,7 @@ VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LNHandle handle, bool retai
     }
 }
 
-LNHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const
-{
+LNHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const {
     if (value == Qnil) {
         return LN_NULL_HANDLE;
     }
@@ -189,13 +222,12 @@ LNHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const
     return obj->handle;
 }
 
-int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc factory)
-{
+int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc factory) {
     TypeInfo t;
     t.klass = klass;
     t.factory = factory;
     m_typeInfoList.push_back(t);
-    int id =  m_typeInfoList.size() - 1;
+    int id = m_typeInfoList.size() - 1;
 
     if (s_logLevel == LN_LOG_LEVEL_DEBUG) {
         LNRB_LOG_D("Type registerd. (id: %d, displayName: %s)", id, RubyUtils::getClassNameFromClass(klass).c_str());
@@ -204,8 +236,7 @@ int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc fa
     return id;
 }
 
-void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGetting)
-{
+void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGetting) {
     LNHandle handle = getHandle(obj);
 
     int64_t id = LNRuntime_GetManagedObjectId(handle);
@@ -216,11 +247,9 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
     }
 
     // grow
-    if (m_objectListIndexStack.size() == 0)
-    {
+    if (m_objectListIndexStack.size() == 0) {
         int growCount = m_objectList.size();
-        for (int i = 0; i < growCount; i++)
-        {
+        for (int i = 0; i < growCount; i++) {
             m_objectList.push_back({ Qnil, Qnil });
             m_objectListIndexStack.push(growCount + i);
         }
@@ -232,7 +261,7 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
     if (forNativeGetting) {
         m_objectList[index].strongRef = obj;
     }
-    
+
     LNRuntime_SetManagedObjectId(handle, index);
     LNRB_LOG_D("registerWrapperObject (handle:%u, ManagedObjectId:%d)\n", handle, index);
 
@@ -249,11 +278,9 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
             LNRB_LOG_D("LNObject_SetTypeInfoId (handle:%u, itr->second:%d)\n", handle, itr->second);
         }
     }
-
 }
 
-void LuminoRubyRuntimeManager::unregisterWrapperObject(LNHandle handle)
-{
+void LuminoRubyRuntimeManager::unregisterWrapperObject(LNHandle handle) {
     LNRB_LOG_D("LuminoRubyRuntimeManager::unregisterWrapperObject: LNHandle=%u\n", handle);
     if (m_runtimeAliving) {
         LNObject_Release(handle);
@@ -264,44 +291,20 @@ void LuminoRubyRuntimeManager::unregisterWrapperObject(LNHandle handle)
     }
 }
 
-static VALUE g_LuminoRubyRuntimeManagerClass;
-static VALUE g_LuminoRubyRuntimeManager;
-
-static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj)
-{
-    if (obj) {
-        delete obj;
-        LuminoRubyRuntimeManager::instance = nullptr;
-    }
-}
-
-static VALUE LuminoRubyRuntimeManager_allocate(VALUE klass)
-{
-    VALUE obj;
-    LuminoRubyRuntimeManager* internalObj = new LuminoRubyRuntimeManager();
-    if (!internalObj) rb_raise(rb_eRuntimeError, "Faild alloc - LuminoRubyRuntimeManager_allocate");
-    internalObj->init();
-    obj = Data_Wrap_Struct(klass, LuminoRubyRuntimeManager::gc_mark, LuminoRubyRuntimeManager_delete, internalObj);
-    return obj;
-}
-
-void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
-{
+void LuminoRubyRuntimeManager::gc_mark() {
     LNRB_LOG_D("LuminoRubyRuntimeManager::gc_mark\n");
-    rb_gc_mark(obj->m_luminoModule);
-    rb_gc_mark(obj->m_eventSignalClass);
-    for (auto& item : instance->m_objectList) {
+    rb_gc_mark(m_luminoModule);
+    rb_gc_mark(m_eventSignalClass);
+    for (auto& item : m_objectList) {
         rb_gc_mark(item.strongRef);
     }
 }
 
-void LuminoRubyRuntimeManager::handleReferenceChangedStatic(LNHandle handle, int method, int count)
-{
+void LuminoRubyRuntimeManager::handleReferenceChangedStatic(LNHandle handle, int method, int count) {
     instance->handleReferenceChanged(handle, method, count);
 }
 
-void LuminoRubyRuntimeManager::handleReferenceChanged(LNHandle handle, int method, int count)
-{
+void LuminoRubyRuntimeManager::handleReferenceChanged(LNHandle handle, int method, int count) {
     int objectIndex = (int)LNRuntime_GetManagedObjectId(handle);
 
     if (method == LNI_REFERENCE_RETAINED) {
@@ -316,23 +319,20 @@ void LuminoRubyRuntimeManager::handleReferenceChanged(LNHandle handle, int metho
     }
 }
 
-void LuminoRubyRuntimeManager::handleRuntimeFinalized()
-{
+void LuminoRubyRuntimeManager::handleRuntimeFinalized() {
     if (instance) {
         instance->m_runtimeAliving = false;
     }
     LNRB_LOG_D("Runtime finalized.");
 }
 
-void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LNHandle* outHandle)
-{
+void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LNHandle* outHandle) {
     LNRB_LOG_D("start: handleCreateInstanceCallback");
     auto* manager = LuminoRubyRuntimeManager::instance;
 
     int managedTypeInfoId = -1;
     LNTypeInfo_GetManagedTypeInfoId(typeInfoId, &managedTypeInfoId);
 
-    
     printf("managedTypeInfoId: %d\n", managedTypeInfoId);
 
     const auto& typeInfo = manager->m_typeInfoList[managedTypeInfoId];
@@ -342,28 +342,25 @@ void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LNHa
     printf("obj: %llu\n", obj);
     manager->registerWrapperObject(obj, false);
 
-
     *outHandle = manager->getHandle(obj);
     printf("outHandle: %d\n", *outHandle);
     printf("e handleCreateInstanceCallback\n");
 
-    
     printf("!!!! new Object. Handle:%d (%s)\n", *outHandle, RubyUtils::makeTypeInfoName(CLASS_OF(obj)).c_str());
 
     LNRB_LOG_D("end: handleCreateInstanceCallback");
 }
 
-void LuminoRubyRuntimeManager::dumpInfo() const
-{
+void LuminoRubyRuntimeManager::dumpInfo() const {
     LNRuntime_DumpInfo();
-    
+
     std::cout << std::endl;
     std::cout << "Ruby alive objects" << std::endl;
     std::cout << "----------" << std::endl;
 
     for (size_t i = 0; i < m_objectList.size(); i++) {
         const auto& item = m_objectList[i];
-        
+
         if (item.weakRef != Qnil || item.strongRef != Qnil) {
             std::cout << "mid: " << i;
 
@@ -388,44 +385,24 @@ void LuminoRubyRuntimeManager::dumpInfo() const
     std::cout << std::endl;
 }
 
-extern "C" void InitLuminoRubyRuntimeManager()
-{
-    VALUE manager = rb_eval_string_protect("defined? $lumino_ruby_runtime_manager", NULL);
-    if (manager == Qnil) {
-        // Create new LuminoRubyRuntimeManager.
-        g_LuminoRubyRuntimeManagerClass = rb_define_class("LuminoRubyRuntimeManager", rb_cObject);
-        g_LuminoRubyRuntimeManager = LuminoRubyRuntimeManager_allocate(g_LuminoRubyRuntimeManagerClass);
-        rb_define_readonly_variable("$lumino_ruby_runtime_manager", &g_LuminoRubyRuntimeManager);
-    }
-    else {
-        // Use defined LuminoRubyRuntimeManager.
-        LuminoRubyRuntimeManager::instance = LuminoRubyRuntimeManager::getInstance(manager);
-    }
-}
-
 #endif
-
-
 
 //==============================================================================
 // RubyUtils
 
-std::string RubyUtils::getClassNameFromClass(VALUE klass)
-{
+std::string RubyUtils::getClassNameFromClass(VALUE klass) {
     VALUE v = rb_funcall(klass, rb_intern("name"), 0, 0);
     return std::string(StringValuePtr(v));
 }
 
-std::string RubyUtils::getClassNameFromObject(VALUE obj)
-{
+std::string RubyUtils::getClassNameFromObject(VALUE obj) {
     VALUE klass = CLASS_OF(obj);
     return getClassNameFromClass(klass);
 }
 
-std::string RubyUtils::makeTypeInfoName(VALUE klass)
-{
+std::string RubyUtils::makeTypeInfoName(VALUE klass) {
     VALUE v = rb_funcall(klass, rb_intern("name"), 0, 0);
-    //printf("superclassName: %s\n", StringValuePtr(v2));
+    // printf("superclassName: %s\n", StringValuePtr(v2));
     std::string name = StringValuePtr(v);
 
     // TODO: C++ 側が、LN_OBJECT_IMPLEMENT(Sprite) とか描いただけじゃ FullName で登録されない。
@@ -436,4 +413,3 @@ std::string RubyUtils::makeTypeInfoName(VALUE klass)
 
     return name;
 }
-

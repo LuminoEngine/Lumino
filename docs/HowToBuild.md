@@ -1,11 +1,13 @@
-ビルド方法
+How to build
 ========
 
-必要なパッケージをインストールする
+Install requirments
 --------
+
 ### Windows
 
 #### Visual Studio
+
 Visual Studio 2019 をインストールしてください。
 
 また、Visual Studio Installer では次のワークロードをインストールしてください。
@@ -77,3 +79,9 @@ dotnet run -- <タスク名>
 - tools/LuminoBuild/Rules
 - tools/LuminoBuild/Tasks
 
+
+Language bindings
+--------
+
+- C lang (TBD)
+- [Ruby](./HowToBuild-Ruby.md)
