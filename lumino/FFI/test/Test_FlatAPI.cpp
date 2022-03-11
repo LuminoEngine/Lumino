@@ -14,8 +14,6 @@ class Test_FlatAPI : public LuminoSceneTest
 {
 public:
 	void SetUp() override {
-		//EngineContext2::instance()->registerType<ZVTestPromise1>("ZVTestPromise1", ::ln::TypeInfo::getTypeInfo<baseclassType>(), {});
-		//EngineContext2::instance()->registerType<ZVTestPromise2>();
 	}
 };
 

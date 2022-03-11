@@ -48,13 +48,7 @@ public:
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
-
     static World* mainWorld();
-	
-	template<class T>
-	static void registerType() {
-		T::_lnref_registerTypeInfo();
-	}
 };
 
 } // namespace detail

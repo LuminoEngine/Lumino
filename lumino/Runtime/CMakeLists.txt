@@ -89,4 +89,7 @@ install(DIRECTORY include DESTINATION .)
 #-------------------------------------------------------------------------------
 # Sub-projects
 #-------------------------------------------------------------------------------
+if (LN_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
 

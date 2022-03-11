@@ -107,12 +107,14 @@ void LNRuntime_Initialize(const tagLNRuntimeSettings* settings)
         s.runtimeGetTypeInfoIdCallback = settings->runtimeGetTypeInfoIdCallback;
     }
 
+    ln::EngineContext2::initialize();
 	ln::detail::RuntimeManager::initialize(ln::detail::RuntimeManager::s_globalSettings);
 }
 
 void LNRuntime_Finalize()
 {
     ln::detail::RuntimeManager::terminate();
+    ln::EngineContext2::terminate();
 }
 
 void LNRuntime_SetManagedObjectId(LNHandle handle, int64_t id)

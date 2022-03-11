@@ -3,18 +3,17 @@
 
 namespace ln {
 
-class Module : public RefObject
-{
+class Module : public RefObject {
 public:
-
 protected:
-	Module();
-	virtual ~Module();
+    Module();
+    virtual ~Module();
+    virtual void onRegisterTypes(EngineContext2* context);
 
 private:
-	EngineContext2* m_context;
+    EngineContext2* m_context;
 
-	friend class EngineContext2;
+    friend class EngineContext2;
 };
 
 } // namespace ln

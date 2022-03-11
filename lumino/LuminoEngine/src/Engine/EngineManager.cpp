@@ -154,7 +154,8 @@ void EngineManager::init(const EngineSettings& settings)
 
     // register types
     {
-        EngineDomain::registerType<Application>();
+        auto* context = EngineContext2::instance();
+        context->registerType<Application>();
     }
 
 	m_fpsController.setFrameRate(m_settings.frameRate);

@@ -6,158 +6,146 @@
 namespace ln {
 
 namespace detail {
-class IObjectEventListener
-{
+class IObjectEventListener {
 public:
-	virtual void onDestructObject(Object* obj) = 0;
-	virtual void onRetainedObject(Object* obj) = 0;
-	virtual void onReleasedObject(Object* obj) = 0;
+    virtual void onDestructObject(Object* obj) = 0;
+    virtual void onRetainedObject(Object* obj) = 0;
+    virtual void onReleasedObject(Object* obj) = 0;
 };
 } // namespace detail
 
-class EngineContext2
-{
-	/*
-	 * [2021/9/10] なぜモジュールの細分化を行うのか？
-	 * ----------
-	 * - 移植やテストを段階的に進められるようにするため。
-	 *   - 全部まとめて Web に移植！とかだとつらい。
-	 *     動作確認大変な他、全部モジュールのビルドを通さないと動かすこともできない。
-	 * - 依存関係の違反を検出しやすくするため。
-	 *     - 一部だけモジュールを使いたいというときに対応できなくなる。
-	 * - 実験的な機能を分離しやすくするため。
-	 * 
-	 * ユーザーのためというより、検証をやりやすくするための対策。
-	 */
+class EngineContext2 {
+    /*
+     * [2021/9/10] なぜモジュールの細分化を行うのか？
+     * ----------
+     * - 移植やテストを段階的に進められるようにするため。
+     *   - 全部まとめて Web に移植！とかだとつらい。
+     *     動作確認大変な他、全部モジュールのビルドを通さないと動かすこともできない。
+     * - 依存関係の違反を検出しやすくするため。
+     *     - 一部だけモジュールを使いたいというときに対応できなくなる。
+     * - 実験的な機能を分離しやすくするため。
+     *
+     * ユーザーのためというより、検証をやりやすくするための対策。
+     */
 public:
-	static EngineContext2* instance() { return s_instance.get(); };
+    static EngineContext2* instance() { return s_instance.get(); };
 
-	/** Initialize context. */
-	static bool initialize(EngineContext2* sharedContext = nullptr);
+    /** Initialize context. */
+    static bool initialize(EngineContext2* sharedContext = nullptr);
 
-	/** Terminate context. */
-	static void terminate();
+    /** Terminate context. */
+    static void terminate();
 
-	/** Register module to this context. */
-	void registerModule(Module* mod);
+    /** Register module to this context. */
+    void registerModule(Module* mod);
 
-	/** Unregister module from this context. */
-	void unregisterModule(Module* mod);
+    /** Unregister module from this context. */
+    void unregisterModule(Module* mod);
 
-	const Ref<Dispatcher>& mainThreadTaskDispatcher() const { return m_mainThreadTaskDispatcher; }
+    const Ref<Dispatcher>& mainThreadTaskDispatcher() const { return m_mainThreadTaskDispatcher; }
 
-	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
+    const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
+    // TODO: 外部用。
+    template<class T>
+    void registerType() {
+        T::_lnref_registerTypeInfo(this);
+    }
 
-	// TODO: 外部用。
-	template<class T>
-	void registerType() {
-		T::_lnref_registerTypeInfo();
-	}
+    // TODO: 内部用。コールバックから呼び出す
+    template<class TClassType>
+    TypeInfo* registerType(const char* className, TypeInfo* baseType, std::initializer_list<Ref<PropertyInfo>> propInfos) //(std::initializer_list<Ref<PropertyAccessor>> accessors)
+    {
+        auto localName = String::fromCString(className);
+        // TypeInfo* typeInfo = TypeInfo::getTypeInfo<TClassType>();
 
+        // Promise や Delegate のテンプレートインスタンスは alias で定義したいが、そうすると型名を簡単に指定する方法が無い。
+        // ただこれらはシリアライズのように型名からインスタンスを作るようなことは無く、Binding の Managed 側のオブジェクトを new するときなど
+        // Managed 側の TypeInfo とマッピングさせるために異なるインスタンスを生成する必要がある。
+        if (localName == _TT("__Promise")) {
+            auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
+            typeInfo->m_id = static_cast<int>(m_typeInfos.size());
+            m_typeInfos.push_back(typeInfo);
+            return typeInfo;
+        }
 
+        auto itr = m_typeInfoSet.find(localName);
+        if (itr == m_typeInfoSet.end()) {
+            auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
 
-	// TODO: 内部用。コールバックから呼び出す
-	template<class TClassType>
-	TypeInfo* registerType(const char* className, TypeInfo* baseType, std::initializer_list<Ref<PropertyInfo>> propInfos)//(std::initializer_list<Ref<PropertyAccessor>> accessors)
-	{
-		auto localName = String::fromCString(className);
-		//TypeInfo* typeInfo = TypeInfo::getTypeInfo<TClassType>();
+            typeInfo->m_id = static_cast<int>(m_typeInfos.size());
+            m_typeInfos.push_back(typeInfo);
 
-		// Promise や Delegate のテンプレートインスタンスは alias で定義したいが、そうすると型名を簡単に指定する方法が無い。
-		// ただこれらはシリアライズのように型名からインスタンスを作るようなことは無く、Binding の Managed 側のオブジェクトを new するときなど
-		// Managed 側の TypeInfo とマッピングさせるために異なるインスタンスを生成する必要がある。
-		if (localName == _TT("__Promise")) {
-			auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
-			typeInfo->m_id = static_cast<int>(m_typeInfos.size());
-			m_typeInfos.push_back(typeInfo);
-			return typeInfo;
-		}
+            typeInfo->m_factory = [](const TypeInfo*) { return detail::makeObjectHelper<TClassType>(); };
 
-		auto itr = m_typeInfoSet.find(localName);
-		if (itr == m_typeInfoSet.end())
-		{
-			auto typeInfo = makeRef<TypeInfo>(String::fromCString(className), baseType);
+            m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
 
-			typeInfo->m_id = static_cast<int>(m_typeInfos.size());
-			m_typeInfos.push_back(typeInfo);
+            for (auto& p : propInfos) {
+                typeInfo->registerProperty(p);
+                // typeInfo->registerProperty(makeRef<PropertyInfo>(a));
+            }
 
-			typeInfo->m_factory = [](const TypeInfo*) { return detail::makeObjectHelper<TClassType>(); };
+            return typeInfo;
+        }
+        else {
+            return itr->second;
+        }
+    }
 
-			m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+    TypeInfo* registerType(const String& className, TypeInfo* baseType, TypeInfoClass typeClass) {
+        auto typeInfo = makeRef<TypeInfo>(className, baseType, typeClass);
+        typeInfo->m_id = static_cast<int>(m_typeInfos.size());
+        m_typeInfos.push_back(typeInfo);
+        m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+        return typeInfo;
+    }
 
-			for (auto& p : propInfos) {
-				typeInfo->registerProperty(p);
-				//typeInfo->registerProperty(makeRef<PropertyInfo>(a));
-			}
+    TypeInfo* findTypeInfo(const StringView& name) const {
+        auto itr = m_typeInfoSet.find(name);
+        if (itr != m_typeInfoSet.end()) {
+            return itr->second;
+        }
+        else {
+            return nullptr;
+        }
+    }
 
+    TypeInfo* findTypeInfo(int id) const {
+        if (0 <= id && id < static_cast<int>(m_typeInfos.size())) {
+            return m_typeInfos[id];
+        }
+        else {
+            return nullptr;
+        }
+    }
 
-			return typeInfo;
-		}
-		else {
-			return itr->second;
-		}
-	}
+    TypeInfo* acquireTypeInfo(const StringView& name);
 
-	TypeInfo* registerType(const String& className, TypeInfo* baseType, TypeInfoClass typeClass)
-	{
-		auto typeInfo = makeRef<TypeInfo>(className, baseType, typeClass);
-		typeInfo->m_id = static_cast<int>(m_typeInfos.size());
-		m_typeInfos.push_back(typeInfo);
-		m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
-		return typeInfo;
-	}
+    TypeInfo* objectTypeInfo() const { return m_objectTypeInfo; }
 
-	TypeInfo* findTypeInfo(const StringView& name) const
-	{
-		auto itr = m_typeInfoSet.find(name);
-		if (itr != m_typeInfoSet.end()) {
-			return itr->second;
-		}
-		else {
-			return nullptr;
-		}
-	}
-
-	TypeInfo* findTypeInfo(int id) const
-	{
-		if (0 <= id && id < static_cast<int>(m_typeInfos.size())) {
-			return m_typeInfos[id];
-		}
-		else {
-			return nullptr;
-		}
-	}
-
-	TypeInfo* acquireTypeInfo(const StringView& name);
-
-	TypeInfo* objectTypeInfo() const { return m_objectTypeInfo; }
-
-
-
-	// TODO:
-	RefObject* platformManager = nullptr;
-	RefObject* assetManager = nullptr;
-	RefObject* runtimeManager = nullptr;
-	RefObject* shaderManager = nullptr;
-	RefObject* fontManager = nullptr;
-	RefObject* graphicsManager = nullptr;
-	detail::IObjectEventListener* objectEventListener = nullptr;
+    // TODO:
+    RefObject* platformManager = nullptr;
+    RefObject* assetManager = nullptr;
+    RefObject* runtimeManager = nullptr;
+    RefObject* shaderManager = nullptr;
+    RefObject* fontManager = nullptr;
+    RefObject* graphicsManager = nullptr;
+    detail::IObjectEventListener* objectEventListener = nullptr;
 
 private:
-	EngineContext2();
-	bool init();
-	void dispose();
+    EngineContext2();
+    bool init();
+    void dispose();
 
-	static std::unique_ptr<EngineContext2> s_instance;
-	
-	List<Ref<Module>> m_modules;
-	Ref<Dispatcher> m_mainThreadTaskDispatcher;
-	Ref<DiagnosticsManager> m_activeDiagnostics;
+    static std::unique_ptr<EngineContext2> s_instance;
 
-	std::unordered_map<String, TypeInfo*> m_typeInfoSet;
-	std::vector<Ref<TypeInfo>> m_typeInfos;
-	TypeInfo* m_objectTypeInfo;
+    List<Ref<Module>> m_modules;
+    Ref<Dispatcher> m_mainThreadTaskDispatcher;
+    Ref<DiagnosticsManager> m_activeDiagnostics;
+
+    std::unordered_map<String, TypeInfo*> m_typeInfoSet;
+    std::vector<Ref<TypeInfo>> m_typeInfos;
+    TypeInfo* m_objectTypeInfo;
 };
 
 } // namespace ln

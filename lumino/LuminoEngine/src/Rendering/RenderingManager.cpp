@@ -39,7 +39,8 @@ RenderingManager::RenderingManager()
 void RenderingManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG("RenderingManager Initialization started.");
-    EngineDomain::registerType<Material>();
+    auto* context = EngineContext2::instance();
+    context->registerType<Material>();
 
     m_graphicsManager = settings.graphicsManager;
     m_fontManager = settings.fontManager;

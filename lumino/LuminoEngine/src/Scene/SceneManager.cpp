@@ -100,20 +100,21 @@ void SceneManager::init()
 
 	m_pathContext = PathShape_NVGcontext::nvgCreate(0);
 
-    EngineDomain::registerType<World>();
-    EngineDomain::registerType<Level>();
-    EngineDomain::registerType<Sprite>();
+    auto* context = EngineContext2::instance();
+    context->registerType<World>();
+    context->registerType<Level>();
+    context->registerType<Sprite>();
 
-    EngineDomain::registerType<Tileset>();
-    EngineDomain::registerType<TilemapLayer>();
-    EngineDomain::registerType<TilemapModel>();
-    EngineDomain::registerType<TilemapComponent>();
-    EngineDomain::registerType<Tilemap>();
+    context->registerType<Tileset>();
+    context->registerType<TilemapLayer>();
+    context->registerType<TilemapModel>();
+    context->registerType<TilemapComponent>();
+    context->registerType<Tilemap>();
 
-	EngineDomain::registerType<StaticMesh>();
+	context->registerType<StaticMesh>();
 
-	EngineDomain::registerType<PlaneMesh>();
-	EngineDomain::registerType<PlaneMeshComponent>();
+	context->registerType<PlaneMesh>();
+	context->registerType<PlaneMeshComponent>();
 
     LN_LOG_DEBUG("SceneManager Initialization ended.");
 }

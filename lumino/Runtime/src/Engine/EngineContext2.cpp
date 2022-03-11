@@ -67,6 +67,11 @@ bool EngineContext2::init()
         m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
     }
 
+    // Register types
+    {
+        this->registerType<EventConnection>();
+    }
+
     return true;
 }
 
@@ -86,6 +91,7 @@ void EngineContext2::registerModule(Module* mod)
 {
     if (LN_REQUIRE(!mod->m_context)) return;
     mod->m_context = this;
+    mod->onRegisterTypes(this);
     m_modules.add(mod);
 }
 
