@@ -22,6 +22,7 @@
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 
+#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include "../Animation/AnimationManager.hpp"
@@ -271,6 +272,7 @@ void EngineManager::dispose()
 		m_appData = nullptr;
 	}
 
+	RuntimeManager::terminate();
 	EngineContext2::terminate();
 	LN_LOG_DEBUG("EngineManager finalization ended.");
 }

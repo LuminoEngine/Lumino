@@ -281,8 +281,14 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
 }
 
 void LuminoRubyRuntimeManager::unregisterWrapperObject(LNHandle handle) {
-    LNRB_LOG_D("LuminoRubyRuntimeManager::unregisterWrapperObject: LNHandle=%u\n", handle);
+    // おそらく Ruby 3.0 以降、Ruby ランタイム終了時の拡張ライブラリのアンロード順は次のようになる
+    // 1. Fiddle で Ruby スクリプト上でロードした DLL
+    // 2. 各 Ruby オブジェクトの delete (delete コールバックから この関数が呼ばれる)
+    // 3. 拡張ライブラリ (.so) のアンロード
+    // 以前は 2 と 1 が逆だった。でも、新しい動作の方が正しい気はする。
+    // このため、2 で呼ばれるこの関数の時点では、既に LuminoFFI.dll の関数を呼び出すことはできない。 (クラッシュする)
     if (m_runtimeAliving) {
+        LNRB_LOG_D("LuminoRubyRuntimeManager::unregisterWrapperObject: LNHandle=%u\n", handle);
         LNObject_Release(handle);
         int index = (int)LNRuntime_GetManagedObjectId(handle);
         m_objectList[index].weakRef = Qnil;
@@ -292,6 +298,7 @@ void LuminoRubyRuntimeManager::unregisterWrapperObject(LNHandle handle) {
 }
 
 void LuminoRubyRuntimeManager::gc_mark() {
+    printf("gc_mark 1\n");
     LNRB_LOG_D("LuminoRubyRuntimeManager::gc_mark\n");
     rb_gc_mark(m_luminoModule);
     rb_gc_mark(m_eventSignalClass);
@@ -323,7 +330,7 @@ void LuminoRubyRuntimeManager::handleRuntimeFinalized() {
     if (instance) {
         instance->m_runtimeAliving = false;
     }
-    LNRB_LOG_D("Runtime finalized.");
+    LNRB_LOG_D("LuminoRubyRuntimeManager finalized.");
 }
 
 void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LNHandle* outHandle) {
