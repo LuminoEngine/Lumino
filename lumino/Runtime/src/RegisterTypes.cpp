@@ -8,13 +8,7 @@
 namespace ln {
 
 void registerModuleTypes_Runtime(EngineContext2* context) {
-    context->registerType<ZVTestClass1>();
-    context->registerType<ZVTestEventArgs1>();
-    context->registerType<EventConnection>();
-    context->registerType<Serializer2>();
-    context->registerType<AssetObject>();
-    context->registerType<AssetImportSettings>();
-    context->registerType<AssetModel>();
+#include "RegisterTypes.inl"
 }
 
 } // namespace ln

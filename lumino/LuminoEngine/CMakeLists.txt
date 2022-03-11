@@ -15,6 +15,7 @@ set(LN_SOURCES_Engine
 	${LN_SOURCES_Engine}
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/EngineContext.hpp
     src/EngineContext.cpp
+    src/RegisterTypes.cpp
 )
 
 file(GLOB LN_SOURCES_Animation ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/*.hpp src/Animation/*.cpp src/Animation/*.hpp)

@@ -115,6 +115,7 @@ void PIDatabase::load(const ln::Path& filePath) {
 void PIDatabase::mergeFrom(const PIDatabase* src) {
     for (auto& t : src->types) {
         if (!types.containsIf([&](auto& x) { return x->rawFullName == t->rawFullName; })) {
+            t->moduleName = src->moduleName;
             types.add(t);
         }
     }

@@ -1,4 +1,4 @@
-﻿
+﻿#include "Project.hpp"
 #include "CodeAnalyzer.hpp"
 
 CodeAnalyzer::CodeAnalyzer() {
@@ -11,6 +11,7 @@ void CodeAnalyzer::makeInputs(const Project* project) {
             cdb.inputFile = file->filePath();
             cdb.includeDirectories = mod->includeDirectories;
             cdb.forceIncludeFiles = mod->forceIncludeFiles;
+            cdb.moduleName = mod->name();
             inputs.add(cdb);
         }
     }
@@ -130,24 +131,7 @@ void CodeAnalyzer::callParser(CompilationDatabase& cdb, int index) {
 
     // import PIDB
     auto localPIDB = ln::makeRef<PIDatabase>();
+    localPIDB->moduleName = cdb.moduleName;
     localPIDB->load(pidbFile);
     m_pidb->mergeFrom(localPIDB);
-}
-
-//==============================================================================
-// Module
-
-Module::Module(const ln::Path& moduleRoot)
-    : m_moduleRoot(moduleRoot) {
-}
-
-void Module::addInputFile(const ln::Path& filePath) {
-    inputFiles.push(makeURef<InputFile>(ln::Path(m_moduleRoot, filePath)));
-}
-
-//==============================================================================
-// InputFile
-
-InputFile::InputFile(const ln::Path& filePath)
-    : m_filePath(filePath) {
 }

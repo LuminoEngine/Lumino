@@ -64,6 +64,8 @@ void MeshSkeleton::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 //==============================================================================
 // MeshModel
 
+LN_OBJECT_IMPLEMENT(MeshModel, Object) {}
+
 Ref<MeshModel> MeshModel::load(const StringView& filePath, MeshImportSettings* settings)
 {
 	return detail::EngineDomain::meshManager()->createSkinnedMeshModel(
@@ -495,6 +497,8 @@ std::array<const Char*, 1> MeshHelper::CandidateExtensions_MeshModel = { _TT(".g
 
 //==============================================================================
 // MeshImportSettings
+
+LN_OBJECT_IMPLEMENT(MeshImportSettings, Object) {}
 
 MeshImportSettings* MeshImportSettings::defaultSettings()
 {

@@ -6,6 +6,8 @@ namespace ln {
 
 //==============================================================================
 // AnimationCurve
+	
+LN_OBJECT_IMPLEMENT(AnimationCurve, Object) {}
 
 AnimationCurve::AnimationCurve()
 	: m_wrapMode(AnimationWrapMode::Once)
@@ -60,6 +62,8 @@ float AnimationCurve::calculateLocalTime(float time, float duration, AnimationWr
 
 //==============================================================================
 // KeyFrameAnimationCurve
+
+LN_OBJECT_IMPLEMENT(KeyFrameAnimationCurve, Object) {}
 
 Ref<KeyFrameAnimationCurve> KeyFrameAnimationCurve::create()
 {

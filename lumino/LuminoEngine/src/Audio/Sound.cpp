@@ -16,6 +16,8 @@ namespace ln {
 //==============================================================================
 // Sound
 
+LN_OBJECT_IMPLEMENT(Sound, Object) {}
+
 Sound::Sound()
     : m_manager(nullptr)
 	//, m_gameAudioFlags(0)
@@ -25,8 +27,11 @@ Sound::Sound()
 {
 }
 
-Sound::~Sound()
-{
+Sound::~Sound() {
+}
+
+void Sound::init() {
+    Object::init();
 }
 
 void Sound::init(const StringView& filePath)

@@ -271,8 +271,6 @@ bool GraphicsManager::init(const Settings& settings)
 		m_pointClampSamplerState->setFrozen(true);
 	}
 
-	EngineContext2::instance()->registerType<Texture2D>();
-
     LN_LOG_DEBUG("GraphicsManager Initialization ended.");
 	return true;
 }

@@ -368,8 +368,8 @@ private:
 // Bone and Container
 /** MeshNode */
 LN_CLASS()
-class MeshNode : public Object
-{
+class MeshNode : public Object {
+    LN_OBJECT;
 public:
 	int parentNodeIndex() const { return m_parent; }
 

@@ -172,11 +172,10 @@ public:
     Ref<Object> createInstance() const;
     static Ref<Object> createInstance(const String& typeName); // TODO: EngineContext へ
 
-    /** 型引数に指定したクラス型の型情報を取得します。 */
+    /** 型引数に指定したクラス型の型情報を取得します。型情報が定義されていない場合、nullptr を返します。 */
     template<class T>
     static TypeInfo* getTypeInfo() {
         TypeInfo* typeInfo = TypeInfoTraits<T>::typeInfo();
-        if (LN_REQUIRE(typeInfo, "An attempt was made to get unregistered type information.")) return nullptr;
         return typeInfo;
     }
 

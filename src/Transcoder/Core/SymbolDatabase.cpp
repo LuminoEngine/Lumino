@@ -624,11 +624,13 @@ int DependencyHelper::calcDepth(TypeSymbol* type, int depth) {
 // TypeSymbol
 
 TypeSymbol::TypeSymbol(SymbolDatabase* db)
-    : Symbol(db) {
+    : Symbol(db)
+    , m_module(nullptr) {
 }
 
-ln::Result TypeSymbol::init(PITypeInfo* piType) {
+ln::Result TypeSymbol::init(Module* module, PITypeInfo* piType) {
     if (!Symbol::init(piType->document, piType->metadata)) return ln::err();
+    m_module = module;
 
     LN_CHECK(piType);
     m_piType = piType;
@@ -1092,14 +1094,15 @@ SymbolDatabase::SymbolDatabase(ln::DiagnosticsManager* diag)
     : m_diag(diag) {
 }
 
-ln::Result SymbolDatabase::initTypes(PIDatabase* pidb) {
+ln::Result SymbolDatabase::initTypes(Project* project, PIDatabase* pidb) {
     LN_CHECK(pidb);
     m_pidb = pidb;
     initPredefineds();
 
     for (auto& t : m_pidb->types) {
         auto symbol = ln::makeRef<TypeSymbol>(this);
-        if (!symbol->init(t)) {
+        auto module = project->modules.findIf([&](auto& m) { return m->name() == t->moduleName; });
+        if (!symbol->init(module->get(), t)) {
             return ln::err();
         }
         m_allTypes.push(symbol);

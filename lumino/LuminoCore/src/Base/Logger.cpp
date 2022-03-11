@@ -392,6 +392,25 @@ bool Logger::shouldLog(LogLevel level)
     return ::ln::detail::LoggerInterface::getInstance()->checkLevel(level);
 }
 
+//const char* Logger::getLevelStringNarrow(LogLevel level) {
+//    switch (level) {
+//    case LogLevel::Fatal:
+//        return "Fatal";
+//    case LogLevel::Error:
+//        return "Error";
+//    case LogLevel::Warning:
+//        return "Warning";
+//    case LogLevel::Info:
+//        return "Info";
+//    case LogLevel::Debug:
+//        return "Debug";
+//    case LogLevel::Verbose:
+//        return "Verbose";
+//    default:
+//        return "Unknown";
+//    }
+//}
+//
 void Logger::setLevel(LogLevel level)
 {
 	detail::g_maxLevel = level;

@@ -1080,6 +1080,8 @@ void MeshContainer::addMeshPrimitive(MeshPrimitive* mesh)
 //==============================================================================
 // MeshNode
 
+LN_OBJECT_IMPLEMENT(MeshNode, Object) {}
+
 MeshNode::MeshNode()
     : m_model(nullptr)
 	, m_index(-1)

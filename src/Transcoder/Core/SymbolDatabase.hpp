@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "Common.hpp"
+#include "Project.hpp"
 #include "../Parser/ParserIntermediates.hpp"
 
 class SymbolDatabase;
@@ -361,7 +362,7 @@ public:
 class TypeSymbol : public Symbol {
 public:
     TypeSymbol(SymbolDatabase* db);
-    ln::Result init(PITypeInfo* piType);
+    ln::Result init(Module* module, PITypeInfo* piType);
     ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
     ln::Result initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture);                                           // delegate のコンストラクタに指定する関数ポインタ型を作るために使う
     ln::Result initAsVirtualDelegate(const ln::String& fullName, MethodSymbol* signeture, TypeSymbol* virtualMethodDefinedClass); // 仮想関数コールバック用の Delegate を内部生成する時に使う
@@ -380,6 +381,7 @@ public:
     const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }         // このクラスで定義されている仮想関数。isVirtual()==true であるもの
     const ln::List<Ref<MethodSymbol>>& virtualPrototypeSetters() const { return m_vitualPrototypeSetters; }
     //const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
+    Module* module() const { return m_module; }
     TypeSymbol* baseClass() const { return m_baseClass; }
     TypeSymbol* collectionItemType() const { return m_collectionItemType; }
     MethodSymbol* delegateProtoType() const { return m_functionSignature; }
@@ -432,6 +434,7 @@ private:
     ln::List<Ref<MethodSymbol>> m_vitualPrototypeSetters;
 
     //ln::List<Ref<MethodSymbol>> m_eventMethods;
+    Module* m_module;
     TypeSymbol* m_baseClass = nullptr;
     TypeSymbol* m_collectionItemType = nullptr;
 
@@ -516,7 +519,7 @@ public:
 
     SymbolDatabase(ln::DiagnosticsManager* diag);
     ln::DiagnosticsManager* diag() const { return m_diag; }
-    ln::Result initTypes(PIDatabase* pidb);
+    ln::Result initTypes(Project* project, PIDatabase* pidb);
     ln::Result linkTypes();
 
     //tr::Enumerator<ln::Ref<MethodSymbol>> GetAllMethods();

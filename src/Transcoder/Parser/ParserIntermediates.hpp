@@ -186,6 +186,7 @@ public:
     ln::List<Ref<PIField>> fields;
     ln::List<Ref<PIConstant>> constants;
     ln::List<Ref<PIMethod>> methods;
+    ln::String moduleName;
 
 protected:
     LN_SERIALIZE_CLASS_VERSION(1);
@@ -200,12 +201,14 @@ protected:
         ar& LN_NVP(fields);
         ar& LN_NVP(constants);
         ar& LN_NVP(methods);
+        ar& LN_NVP(moduleName);
     }
 };
 
 // 型情報データベース
 class PIDatabase : public ln::RefObject {
 public:
+    ln::String moduleName;
     ln::List<Ref<PITypeInfo>> types;
     ln::Array<Ref<PIDocument>> relativeDocuments; // マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
     // ln::List<Ref<PIRelativeDocument>> releativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
@@ -233,6 +236,7 @@ struct CompilationDatabase {
     ln::Array<ln::String> includeDirectories;
     ln::Array<ln::String> forceIncludeFiles;
     ln::String outputPIDB;
+    ln::String moduleName;
 
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(inputFile);

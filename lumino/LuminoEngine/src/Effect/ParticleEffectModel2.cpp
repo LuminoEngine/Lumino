@@ -157,6 +157,8 @@ uint64_t SpriteParticleGeometry::calculateRendererHashKey(ParticleEmitterModel* 
 //==============================================================================
 // ParticleEmitterModel
 
+LN_OBJECT_IMPLEMENT(ParticleEmitterModel, Object) {}
+
 ParticleEmitterModel::ParticleEmitterModel()
 {
     m_lifeTime = { 5.0f, 5.0f, ParticleRandomSource::Self };
@@ -200,6 +202,8 @@ void ParticleEmitterModel::setupBoxShape(const Vector3& size)
 
 //==============================================================================
 // ParticleModel
+
+LN_OBJECT_IMPLEMENT(ParticleModel, Object) {}
 
 ParticleModel::ParticleModel()
 {

@@ -94,6 +94,10 @@ static std::string std_string_vprintf(const char* format, std::va_list arg)
 //extern RuntimeManager::Settings g_globalRuntimeManagerSettings;
 
 } // namespace detail
+
+void registerTypes_Graphics(EngineContext2* context);
+void registerTypes_Engine(EngineContext2* context);
+
 } // namespace ln
 
 extern "C" {
@@ -108,7 +112,10 @@ void LNRuntime_Initialize(const tagLNRuntimeSettings* settings)
     }
 
     ln::EngineContext2::initialize();
+    auto* context = ln::EngineContext2::instance();
 	ln::detail::RuntimeManager::initialize(ln::detail::RuntimeManager::s_globalSettings);
+    ln::registerTypes_Graphics(context);
+    ln::registerTypes_Engine(context);
 }
 
 void LNRuntime_Finalize()

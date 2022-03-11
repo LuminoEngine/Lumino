@@ -9,8 +9,8 @@ class SkinnedMeshModel;
 LN_CLASS()
 class AnimationController
 	: public Object
-	, public detail::IAnimationMixerCoreHolder
-{
+	, public detail::IAnimationMixerCoreHolder {
+    LN_OBJECT;
 public:
 	/** アニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
 	LN_METHOD()
@@ -60,6 +60,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	AnimationController();
+	bool init();
 	bool init(SkinnedMeshModel* model);
 
 protected:

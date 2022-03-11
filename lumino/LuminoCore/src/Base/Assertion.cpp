@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <LuminoCore/Base/Assertion.hpp>
 #include <LuminoCore/Base/UnicodeUtils.hpp>
+#include <LuminoCore/Base/Logger.hpp>
 
 namespace ln {
 
@@ -148,12 +149,31 @@ void convertChar32ToLocalChar(const char32_t* inStr, size_t inStrLen, char* outS
 //	buf[0] = '\0';
 //}
 
+static const char* getLevelStringNarrow(ExceptionLevel level) {
+    switch (level) {
+    case ExceptionLevel::Fatal:
+        return "Fatal";
+    case ExceptionLevel::Error:
+        return "Error";
+    case ExceptionLevel::Warning:
+        return "Warning";
+    case ExceptionLevel::Info:
+        return "Info";
+    default:
+        return "Unknown";
+    }
+}
+
 // Lumino default error notification
 void printError(const Exception& e) {
     const size_t BUFFER_SIZE = 512;
     char buf[BUFFER_SIZE] = {};
     int len = snprintf(
-        buf, BUFFER_SIZE, "%s(%d):\"%s\" ", ExceptionHelper::getSourceFilePath(e), ExceptionHelper::getSourceFileLine(e), (ExceptionHelper::getAssertionMessage(e)) ? ExceptionHelper::getAssertionMessage(e) : "");
+        buf, BUFFER_SIZE, "%s(%d): %s: \"%s\" ",
+        ExceptionHelper::getSourceFilePath(e),
+        ExceptionHelper::getSourceFileLine(e),
+        getLevelStringNarrow(e.level()),
+        (ExceptionHelper::getAssertionMessage(e)) ? ExceptionHelper::getAssertionMessage(e) : "");
 
     //if (!StringHelper::isNullOrEmpty(e.message())
     {

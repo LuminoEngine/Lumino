@@ -8,9 +8,14 @@ require "fileutils"
 #task :default => :spec
 
 
-def copy_file_l(from, to)
-  FileUtils.cp(from, to)
+def copy_file_w(from, to)
   puts "Copy: " + from + " > " + to
+  FileUtils.cp(Dir.glob(from), to)
+end
+
+def copy_file_l(from, to)
+  puts "Copy: " + from + " > " + to
+  FileUtils.cp(from, to)
 end
 
 debug_mode = false
@@ -45,11 +50,11 @@ task :ln_copy_files do |t, args|
 
   # ローカルで開発中の時は、CMake の出力フォルダから直接取ってみる。いちいち install 実行するのが大変だし忘れやすいので。
   # CI から実行するときは CMake の出力フォルダは無いので、install 先から取ってくる。
-  primary_dll = File.join(repo_root, "build/buildtrees/x64-windows/lumino/lumino/FFI/Release/LuminoFFI.dll")
-  if File.exist?(primary_dll)
-    copy_file_l(primary_dll, "ext/lumino_ext/LuminoFFI.dll")
+  primary_dll_dir = File.join(repo_root, "build/buildtrees/x64-windows/lumino/lumino/FFI/Release")
+  if Dir.exist?(primary_dll_dir)
+    copy_file_w(File.join(primary_dll_dir, "/*.dll"), "ext/lumino_ext/")
   else
-    copy_file_l(File.join(repo_root, "build/installed/x64-windows/bin/LuminoFFI.dll"), "ext/lumino_ext/LuminoFFI.dll")
+    copy_file_w(File.join(repo_root, "build/installed/x64-windows/bin/*.dll"), "ext/lumino_ext/")
   end
 
   copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Release/lumino.exe"), "tools/lumino.exe")

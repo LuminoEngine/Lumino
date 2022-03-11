@@ -11,11 +11,10 @@ class PhysicsObject;
  * Collision
  */
 LN_CLASS()
-class Collision
-    : public Object
-{
+class Collision : public Object {
+    LN_OBJECT;
 public:
-	/** 自分自身と衝突している他の WorldObject */
+    /** 自分自身と衝突している他の WorldObject */
     LN_METHOD(Property)
     WorldObject* worldObject() const { return m_worldObject; }
 
@@ -25,6 +24,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     Collision();
     virtual ~Collision() = default;
+    void init();
     void init(WorldObject* worldObject, PhysicsObject* physicsObject);
 
 private:

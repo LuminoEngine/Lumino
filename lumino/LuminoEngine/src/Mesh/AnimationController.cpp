@@ -7,9 +7,16 @@ namespace ln {
 
 //==============================================================================
 // AnimationController
+	
+LN_OBJECT_IMPLEMENT(AnimationController, Object) {}
 
 AnimationController::AnimationController()
 {
+}
+
+bool AnimationController::init() {
+    LN_NOTIMPLEMENTED();
+    return false;
 }
 
 bool AnimationController::init(SkinnedMeshModel* model)

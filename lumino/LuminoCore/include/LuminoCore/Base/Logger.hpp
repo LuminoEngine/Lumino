@@ -120,6 +120,8 @@ public:
 
     static bool shouldLog(LogLevel level);
 
+    //static const char* getLevelStringNarrow(LogLevel level);
+
 
     /** ログ出力 */
 
