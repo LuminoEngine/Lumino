@@ -13,14 +13,14 @@ Gem::Specification.new do |spec|
   spec.description   = %q{Real-time graphics application framework.}
   spec.homepage      = "https://github.com/LuminoEngine/Lumino"
   spec.license       = "MIT"
-  spec.extensions    = %w[ext/extconf.rb]
+  spec.extensions    = %w[ext/lumino_ext/extconf.rb]
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   #spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
   #  `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   #end
-  spec.files = Dir['{bin/*,ext/**/*,lib/**/*,test/**/*,Tools/**/*}']
+  spec.files = Dir['{bin/*,ext/**/*,lib/**/*,test/**/*,tools/**/*}']
   #spec.files.push('exe/lumino-rb.exe')  # see "lumino-rb file" command
 
   spec.bindir        = "exe"

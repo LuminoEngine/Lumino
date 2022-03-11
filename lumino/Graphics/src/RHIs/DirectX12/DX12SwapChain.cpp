@@ -189,7 +189,6 @@ void DX12SwapChain::present()
         LN_ERROR("Present failed.");
         return;
     }
-    std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
 #else
     const bool waitVSync = false;   // TODO:
     auto hr = m_dxgiSwapChain->Present(waitVSync ? 1 : 0, DXGI_PRESENT_DO_NOT_WAIT);
