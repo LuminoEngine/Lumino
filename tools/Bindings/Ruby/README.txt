@@ -15,8 +15,27 @@ Update-SessionEnvironment
 ridk install 2 3
 ```
 
+ターミナルを起動するために次のコマンドが必要。
+
 ```
 ridk enable
+```
+
+Create pkg
+----------
+
+```
+rake build
+```
+
+Test compile
+----------
+
+`rake build` では実際にコンパイルしない。インストールした時にコンパイルされる。
+
+パッケージを作らずにコンパイルエラーをチェックしたい場合は次のコマンドを使う。
+
+```
 rake compile
 ```
 

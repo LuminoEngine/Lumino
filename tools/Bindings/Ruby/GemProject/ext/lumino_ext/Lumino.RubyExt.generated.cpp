@@ -26420,8 +26420,9 @@ LNResult Wrap_LNUIListBoxItem_OnSerialize_OverrideCallback(LNHandle object, LNHa
 
 
 
-extern "C" void Init_Lumino_RubyExt()
+extern "C" void Init_lumino_ext()
 {
+    printf("!!!!!!!!!!!!!!!!!!!!!!!!Init_lumino_ext\n");
     InitLuminoRubyRuntimeManager();
     g_rootModule = rb_define_module("Lumino");
 

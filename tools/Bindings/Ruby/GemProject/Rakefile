@@ -7,9 +7,6 @@ require "fileutils"
 
 #task :default => :spec
 
-#Rake::TestTask.new do |t|
-#  t.test_files = FileList['test/test_*.rb'].exclude('test/test_assoccoords.rb')
-#end
 
 def copy_file_l(from, to)
   FileUtils.cp(from, to)
@@ -46,10 +43,10 @@ task :ln_copy_files do |t, args|
   end
   p "NativePackage copy (" + tools_dir + ", " + 'tools' + ")"
 
-  copy_file_l(File.join(repo_root, "build/installed/x64-windows/bin/LuminoFFI.dll"), "ext/lumino/LuminoFFI.dll")
+  copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/lumino/FFI/Release/LuminoFFI.dll"), "ext/lumino_ext/LuminoFFI.dll")
   copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Release/lumino.exe"), "tools/lumino.exe")
-  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h"), "ext/lumino/FlatC.generated.h")
-  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/FlatCommon.h"), "ext/lumino/FlatCommon.h")
+  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h"), "ext/lumino_ext/FlatC.generated.h")
+  copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/FlatCommon.h"), "ext/lumino_ext/FlatCommon.h")
 
   # copy resources
   #resources = File.expand_path("../../../../../tools/EngineResources", __FILE__)
@@ -60,12 +57,26 @@ end
 task build: :ln_copy_files  # ln_copy_files が build の前に実行されるようにする
 task compile: :ln_copy_files
 
+#-------------------------------------------------------------------------------
+# ExtensionTask
+#-------------------------------------------------------------------------------
 # ExtensionTask は rake-compiler に含まれている機能。 rake 上から Ruby拡張ライブラリのビルドを自動化するタスク。
 # 自分で make する必要が無くなる。
-Rake::ExtensionTask.new("lumino") do |ext|
-  ext.lib_dir = "lib/lumino"
+Rake::ExtensionTask.new("lumino_ext") do |ext|
+  ext.lib_dir = "lib/lumino_ext"
 end
 
+
+#-------------------------------------------------------------------------------
+# TestTask
+#-------------------------------------------------------------------------------
+Rake::TestTask.new do |t|
+  t.test_files = FileList['test/test_*.rb'].exclude('test/test_assoccoords.rb')
+end
+
+#-------------------------------------------------------------------------------
+# YardocTask
+#-------------------------------------------------------------------------------
 FILES = ['app/controllers/**/*.rb',
               'app/helpers/**/*.rb', 
               'app/mailers/**/*.rb', 

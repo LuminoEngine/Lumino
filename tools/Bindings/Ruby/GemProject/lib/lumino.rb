@@ -1,18 +1,29 @@
 
-require 'fiddle/import'
-require 'rbconfig'
+require "fiddle/import"
+require "rbconfig"
 
 $LUMINO_ENGINE_RESOURCES_DIR = __dir__ + "/../Tools/EngineResources"
 
-extend Fiddle::Importer
-if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
-  dlload __dir__ + "/../ext/LuminoEngine.dll"
+module LNWin32API
+  extend Fiddle::Importer
+  dlload "Kernel32.dll"
+  extern "int AddDllDirectory(const wchar_t*)"
+end
+
+
+if (RbConfig::CONFIG["host_os"] =~ /mswin|mingw|cygwin/)
+  dll_dir = File.join(__dir__, "lumino_ext")
+  p dll_dir
+  LNWin32API.AddDllDirectory(dll_dir.encode("UTF-16LE"))
+
+  extend Fiddle::Importer
+  dlload "LuminoFFI.dll"
 else
   raise "Not supported platform."
 end
 
 require "lumino/version"
-require "Lumino_RubyExt"
+require __dir__ + "/lumino_ext/lumino_ext.so"
 
 current_assets_dir = File.expand_path("assets")
 if File.exist?(current_assets_dir)
@@ -30,7 +41,7 @@ module Lumino
 
   #class Sprite
   #  def self.inherited(subclass)
-  #    puts 'Sprite self.inherited'
+  #    puts "Sprite self.inherited"
   #    Lumino::register_type(subclass)
   #  end
   #end
