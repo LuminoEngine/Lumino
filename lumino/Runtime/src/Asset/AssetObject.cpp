@@ -10,6 +10,11 @@
 namespace ln {
 
 //=============================================================================
+// AssetImportSettings
+
+LN_OBJECT_IMPLEMENT(AssetImportSettings, Object) {}
+
+//=============================================================================
 // AssetObject
 
 LN_OBJECT_IMPLEMENT(AssetObject, Object) {}

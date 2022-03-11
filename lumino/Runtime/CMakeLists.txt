@@ -25,6 +25,7 @@ set(LN_SOURCES
     src/pch.cpp
     src/pch.hpp
     src/Internal.hpp
+    src/TypeRegister.cpp
     ${LN_SOURCES_Runtime}
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Reflection}

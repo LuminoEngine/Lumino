@@ -8,6 +8,8 @@
 
 namespace ln {
 
+void registerModuleTypes_Runtime(EngineContext2* context);
+
 std::unique_ptr<EngineContext2> EngineContext2::s_instance;
 
 bool EngineContext2::initialize(EngineContext2* sharedContext)
@@ -53,9 +55,6 @@ bool EngineContext2::init()
     PredefinedTypes::Object = registerType<Object>("Object", nullptr, {});
     PredefinedTypes::List = registerType<Object>("List", nullptr, {});
 
-    // TODO: test
-    registerType<ZVTestClass1>();
-
     m_objectTypeInfo = PredefinedTypes::Object;
 
     TaskScheduler::init();
@@ -68,9 +67,7 @@ bool EngineContext2::init()
     }
 
     // Register types
-    {
-        this->registerType<EventConnection>();
-    }
+    registerModuleTypes_Runtime(this);
 
     return true;
 }
