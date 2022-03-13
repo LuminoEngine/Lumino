@@ -7,13 +7,16 @@ project(LuminoGraphics)
 file(GLOB LN_SOURCES_Graphics include/LuminoGraphics/*.hpp include/LuminoGraphics/detail/*.hpp src/*.cpp src/*.hpp)
 file(GLOB LN_SOURCES_Graphics_RHIs include/LuminoGraphics/RHIs/*.hpp src/RHIs/*.cpp src/RHIs/*.hpp)
 
+if (LN_USE_OPENGL)
+    file(GLOB LN_SOURCES_Graphics_RHIs_OpenGL src/RHIs/OpenGL/*.cpp src/RHIs/OpenGL/*.hpp)
+endif()
+
 if (LN_USE_VULKAN)
     if (WIN32)
         file(GLOB LN_SOURCES_Graphics_RHIs_Vulkan src/RHIs/Vulkan/*.cpp src/RHIs/Vulkan/*.hpp)
         list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
     endif()
 endif()
-
 
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
@@ -23,6 +26,7 @@ endif()
 
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
+source_group("Graphics\\RHIs\\OpenGL" FILES ${LN_SOURCES_Graphics_RHIs_OpenGL})
 source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
 source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
 
@@ -32,6 +36,7 @@ set(LN_SOURCES
     src/Internal.hpp
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Graphics_RHIs}
+    ${LN_SOURCES_Graphics_RHIs_OpenGL}
     ${LN_SOURCES_Graphics_RHIs_Vulkan}
     ${LN_SOURCES_Graphics_RHIs_DirectX12}
 )

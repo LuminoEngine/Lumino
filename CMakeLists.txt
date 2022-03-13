@@ -46,6 +46,9 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 # Vulkan
 option(LN_USE_VULKAN "Vulkan" ON)
 
+# OpenGL
+option(LN_USE_OPENGL "OpenGL" ON)
+
 # FBX
 option(LN_FBX_SDK_PATH "FBX" "")
 

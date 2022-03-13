@@ -55,6 +55,15 @@ struct RHISizeI
 	int32_t height;
 };
 
+struct RHISize3D {
+    uint32_t width;
+    uint32_t height;
+    uint32_t depth;
+
+    bool operator==(const RHISize3D& obj) const { return (width == obj.width && height == obj.height && depth == obj.depth); }
+    bool operator!=(const RHISize3D& obj) const { return !operator==(obj); }
+};
+
 } // namespace detail
 } // namespace ln
 
