@@ -535,21 +535,6 @@ void ICommandList::setPrimitiveTopology(PrimitiveTopology value)
 {
     m_staging.pipelineState.topology = value;
 }
-//
-//void ICommandList::setRenderPass(IRenderPass* value)
-//{
-//	m_staging.renderPass = value;
-//}
-
-void* ICommandList::map(RHIResource* resource, uint32_t offset, uint32_t size)
-{
-    return onMapResource(resource, offset, size);
-}
-
-void ICommandList::unmap(RHIResource* resource)
-{
-    onUnmapResource(resource);
-}
 
 void ICommandList::setSubData(RHIResource* resource, size_t offset, const void* data, size_t length)
 {

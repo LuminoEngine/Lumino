@@ -314,17 +314,6 @@ void DX12GraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint
     }
 }
 
-void* DX12GraphicsContext::onMapResource(RHIResource* resource, uint32_t offset, uint32_t size)
-{
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-void DX12GraphicsContext::onUnmapResource(RHIResource* resource)
-{
-    LN_NOTIMPLEMENTED();
-}
-
 void DX12GraphicsContext::onSetSubData(RHIResource* baseResource, size_t offset, const void* data, size_t length)
 {
     // UPLOAD Buffer を使った動的なリソース更新は D3D12HDR.cpp が参考になる。

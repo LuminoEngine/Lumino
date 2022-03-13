@@ -278,8 +278,6 @@ public:
     void setPrimitiveTopology(PrimitiveTopology value);
 
     // write only
-    void* map(RHIResource* resource, uint32_t offset, uint32_t size);
-    void unmap(RHIResource* resource);
     void setSubData(RHIResource* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
@@ -310,8 +308,6 @@ public:	// TODO:
 	virtual void onEndRenderPass(IRenderPass* renderPass) = 0;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) = 0;
 
-	virtual void* onMapResource(RHIResource* resource, uint32_t offset, uint32_t size) = 0;
-	virtual void onUnmapResource(RHIResource* resource) = 0;
 	virtual void onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;

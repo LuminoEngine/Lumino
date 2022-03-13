@@ -203,54 +203,6 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 	}
 }
 
-void* VulkanGraphicsContext::onMapResource(RHIResource* resource, uint32_t offset, uint32_t size)
-{
-	if (offset != 0) {
-		LN_NOTIMPLEMENTED();
-		return 0;
-	}
-
-	// データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_commandBuffer->endRenderPassInRecordingIfNeeded();
-
-	switch (resource->resourceType())
-	{
-	case RHIResourceType::VertexBuffer:
-	{
-		VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
-		vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
-        return static_cast<uint8_t*>(vertexBuffer->m_mappedResource.buffer->map()) + vertexBuffer->m_mappedResource.offset;
-	}
-	case RHIResourceType::IndexBuffer:
-	{
-		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
-		indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
-        return static_cast<uint8_t*>(indexBuffer->m_mappedResource.buffer->map()) + indexBuffer->m_mappedResource.offset;
-	}
-	default:
-		LN_NOTIMPLEMENTED();
-		return nullptr;
-	}
-}
-
-void VulkanGraphicsContext::onUnmapResource(RHIResource* resource)
-{
-	switch (resource->resourceType())
-	{
-	case RHIResourceType::VertexBuffer:
-        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer->unmap();
-        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
-		break;
-	case RHIResourceType::IndexBuffer:
-        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer->unmap();
-        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource.buffer = nullptr;
-		break;
-	default:
-		LN_NOTIMPLEMENTED();
-		break;
-	}
-}
-
 void VulkanGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length)
 {
     // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
