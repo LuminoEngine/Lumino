@@ -105,6 +105,7 @@ void SceneRenderingPipeline::render(
     detail::CommandListServer* commandListServer,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
+
     RenderingProfiler* profiler = detail::EngineDomain::renderingManager()->profiler().get();
     profiler->beginSceneRenderer("Standard");
 

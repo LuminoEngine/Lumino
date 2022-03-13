@@ -23,11 +23,11 @@ void VisualManager::init(const Settings& settings) {
     m_graphicsManager = settings.graphicsManager;
 
     auto* context = EngineContext2::instance();
+    context->registerType<Component>();
+    context->registerType<VisualComponent>();
     context->registerType<SpriteComponent>();
     context->registerType<SpriteFrame>();
     context->registerType<SpriteSheet>();
-    context->registerType<VisualComponent>();
-    context->registerType<SpriteComponent>();
 
     LN_LOG_DEBUG("VisualManager Initialization ended.");
 }

@@ -182,7 +182,6 @@ void DX12SwapChain::present()
     }
 
 #if 1
-    ElapsedTimer t;
     const bool waitVSync = false;   // TODO:
     auto hr = m_dxgiSwapChain->Present(waitVSync ? 1 : 0, 0);
     if (FAILED(hr)) {

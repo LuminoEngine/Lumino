@@ -389,8 +389,7 @@ void UIFrameWindow::onDispose(bool explicitDisposing)
 }
 
 
-void UIFrameWindow::present()
-{
+void UIFrameWindow::present() {
 	m_renderingGraphicsContext = m_swapChain->beginFrame2();
 
 
@@ -491,11 +490,6 @@ void UIFrameWindow::present()
 #endif
 
 	m_swapChain->endFrame();
-
-	//detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
-    //detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
-
-    //std::cout << t.elapsedMilliseconds() << std::endl;
 }
 
 SwapChain* UIFrameWindow::swapChain() const

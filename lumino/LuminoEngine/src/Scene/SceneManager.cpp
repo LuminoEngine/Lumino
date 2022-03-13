@@ -103,6 +103,8 @@ void SceneManager::init()
     auto* context = EngineContext2::instance();
     context->registerType<World>();
     context->registerType<Level>();
+    context->registerType<WorldObject>();
+    context->registerType<VisualObject>();
     context->registerType<Sprite>();
 
     context->registerType<Tileset>();

@@ -5,7 +5,9 @@ class App : public Application {
 public:
     App() {
         EngineSettings::setMainWindowResizable(true);
-        EngineSettings::setDevelopmentToolsEnabled(true);
+        //EngineSettings::setDevelopmentToolsEnabled(true);
+        //EngineSettings::setDebugMode(true);
+        //EngineSettings::setDebugToolEnabled(true);
     }
 
     void onInit() override {
