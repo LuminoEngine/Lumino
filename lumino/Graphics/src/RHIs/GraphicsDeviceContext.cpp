@@ -603,6 +603,16 @@ IRenderPass::~IRenderPass() {
     }
 }
 
+RHIExtent2D IRenderPass::viewSize() const {
+    if (m_renderTargets[0]) {
+        const RHIExtent3D& size = m_renderTargets[0]->extentSize();
+        return RHIExtent2D{ size.width, size.height };
+    }
+    else {
+        return RHIExtent2D{ 0, 0 };
+    }
+}
+
 void IRenderPass::dispose() {
     if (IGraphicsDevice* d = device()) {
         d->pipelineCache()->invalidate(this);

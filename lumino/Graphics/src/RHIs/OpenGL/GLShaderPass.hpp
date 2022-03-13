@@ -4,6 +4,9 @@
 namespace ln {
 namespace detail {
 class OpenGLDevice;
+class GLShaderDescriptorTable;
+class GLUniformBuffer;
+class GLSamplerState;
 
 class GLSLShader {
 public:
@@ -35,9 +38,56 @@ public:
 private:
     OpenGLDevice* m_context;
     GLuint m_program;
-    //Ref<GLShaderDescriptorTable> m_descriptorTable;
+    Ref<GLShaderDescriptorTable> m_descriptorTable;
 };
 
+// GLDescriptor を Bind するためのクラス。
+// GLShaderPass と 1:1 で使う。
+class GLShaderDescriptorTable : public RefObject {
+public:
+    struct UniformBufferInfo {
+        GLuint bindingPoint = 0; // こちらは自由に決めていい。
+        GLuint blockIndex = 0;   // これが layout(binding=) と一致させる値
+        GLint blockSize;
+
+        // null になることもある。DescriptorLayout 側のインデックスと一致させるため、
+        // UniformBufferInfo のインスタンスは作られるが、Active な UBO ではない場合 0 になる。
+        //GLuint ubo = 0;
+        //GLUniformBuffer* buffer;
+        //size_t offset;
+        //size_t size;
+
+        // DescriptorLayout の UniformBuffer index.
+        // Descriptor からデータを取り出すときに使う。
+        int registerIndex; 
+    };
+
+    // textureXD と samplerState を結合するためのデータ構造
+    struct ResouceUniformInfo {
+        //std::string name; // lnCISlnTOg_texture1lnSOg_samplerState1 のような FullName
+        GLint uniformLocation = -1;
+        int registerIndex; // Index of DescriptorLayout::textureRegister.
+        //GLint isRenderTargetUniformLocation = -1; // texture または sampler の場合、それが RenderTarget であるかを示す値を入力する Uniform の Loc。末尾が lnIsRT になっているもの。
+        //int m_textureExternalUnifromIndex = -1;   // Index of m_externalTextureUniforms
+        //int m_samplerExternalUnifromIndex = -1;   // Index of m_externalSamplerUniforms
+    };
+
+    GLShaderDescriptorTable();
+    bool init(const GLShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
+    void dispose();
+    void setData(const ShaderDescriptorTableUpdateInfo* data);
+    void bind(GLuint program);
+
+private:
+    void addResourceUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout);
+    //void addIsRenderTargetUniform(const std::string& name, GLint uniformLocation);
+
+    // 以下、要素番号は DescriptorLayout の各メンバの要素番号と一致する。bindingIndex ではない。
+    std::vector<UniformBufferInfo> m_uniformBuffers;
+    std::vector<ResouceUniformInfo> m_resourceUniforms;
+    //std::vector<ExternalUnifrom> m_externalTextureUniforms;
+    //std::vector<ExternalUnifrom> m_externalSamplerUniforms;
+};
 
 #if 0
 class GLShaderDescriptorTable

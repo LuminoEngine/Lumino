@@ -55,6 +55,11 @@ struct RHISizeI
 	int32_t height;
 };
 
+struct RHIExtent2D {
+    uint32_t width;
+    uint32_t height;
+};
+
 struct RHIExtent3D {
     uint32_t width;
     uint32_t height;

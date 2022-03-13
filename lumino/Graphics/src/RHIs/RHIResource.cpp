@@ -101,6 +101,17 @@ Result RHIResource::initAsTexture2D(GraphicsResourceUsage usage, uint32_t width,
     return ok();
 }
 
+Result RHIResource::initAsTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, int32_t depth, TextureFormat format) {
+    m_type = RHIResourceType::Texture3D;
+    m_usage = usage;
+    m_extentSize.width = width;
+    m_extentSize.height = height;
+    m_extentSize.depth = depth;
+    m_memorySize = width * height * depth * GraphicsHelper::getPixelSize(format);
+    m_textureFormat = format;
+    return ok();
+}
+
 Result RHIResource::initAsRenderTarget(uint32_t width, uint32_t height, TextureFormat format, bool mipmap, bool multisample) {
     //if (LN_REQUIRE(format == TextureFormat::Unknown)) return err();
     m_type = RHIResourceType::RenderTarget;

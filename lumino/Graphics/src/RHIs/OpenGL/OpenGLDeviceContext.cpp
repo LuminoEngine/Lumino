@@ -10,8 +10,10 @@
 #include "GLBuffer.hpp"
 #include "GLUniformBuffer.hpp"
 #include "GLTextures.hpp"
+#include "GLDepthBuffer.hpp"
 #include "GLShaderPass.hpp"
-
+#include "GLDescriptorPool.hpp"
+#include "GLCommandList.hpp"
 #include "GLFWSwapChain.hpp"
 
 #ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
@@ -52,7 +54,7 @@ OpenGLDevice::OpenGLDevice()
     , m_uniformTempBufferWriter(&m_uniformTempBuffer) {
 }
 
-void OpenGLDevice::init(const Settings& settings) {
+Result OpenGLDevice::init(const Settings& settings) {
     LN_LOG_DEBUG("OpenGLDeviceContext::init start");
 
     // Create main context
@@ -84,7 +86,11 @@ void OpenGLDevice::init(const Settings& settings) {
 #if defined(LN_GRAPHICS_OPENGLES)
 #else
     int result = gladLoadGL();
-    if (LN_ENSURE(result, "Failed gladLoadGL()")) return;
+    if (LN_ENSURE(result, "Failed gladLoadGL()")) {
+        // OpenGL Context がアクティブになっていないと失敗する。
+        return err();
+    }
+
     LN_LOG_INFO("OpenGL {}.{}", GLVersion.major, GLVersion.minor);
 #endif
 
@@ -124,13 +130,18 @@ void OpenGLDevice::init(const Settings& settings) {
 
     m_graphicsQueue = makeRef<GLCommandQueue>();
     if (!m_graphicsQueue->init()) {
-        return;
+        return err();
     }
+
+    const size_t PageSize = 0x200000; // 2MB
+    m_uniformBufferAllocatorPageManager = makeRef<GLUniformBufferAllocatorPageManager>(this, PageSize);
+
 
     //m_graphicsContext = makeRef<GLGraphicsContext>();
     //m_graphicsContext->init(this);
 
     LN_LOG_DEBUG("OpenGLDeviceContext::init end");
+    return ok();
 }
 
 void OpenGLDevice::dispose() {
@@ -251,7 +262,7 @@ Ref<RHIResource> OpenGLDevice::onCreateWrappedRenderTarget(intptr_t nativeObject
     return ptr;
 }
 
-Ref<IDepthBuffer> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
+Ref<RHIResource> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
     auto ptr = makeRef<GLDepthBuffer>();
     ptr->init(width, height);
     return ptr;
@@ -277,6 +288,18 @@ Ref<RHIResource> OpenGLDevice::onCreateUniformBuffer(uint32_t size) {
     return ptr;
 }
 
+Ref<IDescriptorPool> OpenGLDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
+    auto ptr = makeRef<GLDescriptorPool>();
+    if (!ptr->init(this, static_cast<GLShaderPass*>(shaderPass))) {
+        return nullptr;
+    }
+    return ptr;
+}
+
+void OpenGLDevice::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
+    LN_NOTIMPLEMENTED();
+}
+
 ICommandQueue* OpenGLDevice::getGraphicsCommandQueue() {
     return m_graphicsQueue;
 }
@@ -285,254 +308,6 @@ ICommandQueue* OpenGLDevice::getComputeCommandQueue() {
     // Not supported.
     return nullptr;
 }
-
-//=============================================================================
-// GLGraphicsContext
-
-GLGraphicsContext::GLGraphicsContext()
-    : m_device(nullptr)
-    , m_vao(0)
-    , m_fbo(0)
-    , m_currentIndexBuffer(nullptr)
-    , m_activeShaderPass(nullptr) {
-}
-
-Result GLGraphicsContext::init(OpenGLDevice* owner) {
-    LN_CHECK(owner);
-    ICommandList::init(owner);
-    m_device = owner;
-
-    GL_CHECK(glGenVertexArrays(1, &m_vao));
-    GL_CHECK(glGenFramebuffers(1, &m_fbo));
-
-    return ok();
-}
-
-void GLGraphicsContext::dispose() {
-    if (m_vao) {
-        GL_CHECK(glBindVertexArray(0));
-        GL_CHECK(glDeleteVertexArrays(1, &m_vao));
-        m_vao = 0;
-    }
-    if (m_fbo != 0) {
-        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-        GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
-        m_fbo = 0;
-    }
-
-    ICommandList::dispose();
-}
-
-void GLGraphicsContext::setActiveShaderPass(GLShaderPass* pass) {
-    if (m_activeShaderPass != pass) {
-        m_activeShaderPass = pass;
-        ::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
-    }
-}
-
-void GLGraphicsContext::onSaveExternalRenderState() {
-    GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
-}
-
-void GLGraphicsContext::onRestoreExternalRenderState() {
-    if (m_savedState.state_GL_CULL_FACE) {
-        GL_CHECK(glEnable(GL_CULL_FACE));
-    }
-    else {
-        GL_CHECK(glDisable(GL_CULL_FACE));
-    }
-
-    GL_CHECK(glBindVertexArray(0));
-
-    setActiveShaderPass(nullptr);
-}
-
-void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {
-    m_currentRenderPass = static_cast<GLRenderPass*>(renderPass);
-    m_currentRenderPass->bind(this);
-}
-
-void GLGraphicsContext::onEndRenderPass(IRenderPass* renderPass) {
-}
-
-void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) {
-    // UpdateRegionRects
-    if (stateDirtyFlags & GraphicsContextStateDirtyFlags_RegionRects) {
-        auto& viewportRect = state.regionRects.viewportRect;
-        auto& scissorRect = state.regionRects.scissorRect;
-        auto targetSize = m_currentRenderPass->viewSize();
-
-        GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
-        GL_CHECK(glEnable(GL_SCISSOR_TEST));
-        GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
-    }
-
-    // Update primitive data
-    {
-        if (m_vao) {
-            GL_CHECK(glBindVertexArray(m_vao));
-        }
-
-        m_currentIndexBuffer = static_cast<GLIndexBuffer*>(state.primitive.indexBuffer);
-    }
-
-    if (pipeline) {
-        auto* glPipeline = static_cast<GLPipeline*>(pipeline);
-        glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer);
-    }
-}
-
-//void* GLGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
-//{
-//	switch (resource->resourceType())
-//	{
-//	case DeviceResourceType::VertexBuffer:
-//		return static_cast<GLVertexBuffer*>(resource)->map(offset, size);
-//	case DeviceResourceType::IndexBuffer:
-//		return static_cast<GLIndexBuffer*>(resource)->map(offset, size);
-//	default:
-//		LN_NOTIMPLEMENTED();
-//		return nullptr;
-//	}
-//}
-//
-//void GLGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
-//{
-//	switch (resource->resourceType())
-//	{
-//	case DeviceResourceType::VertexBuffer:
-//		static_cast<GLVertexBuffer*>(resource)->unmap();
-//		break;
-//	case DeviceResourceType::IndexBuffer:
-//		static_cast<GLIndexBuffer*>(resource)->unmap();
-//		break;
-//	default:
-//		LN_NOTIMPLEMENTED();
-//		break;
-//	}
-//}
-
-void GLGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) {
-    //switch (resource->resourceType()) {
-    //    case DeviceResourceType::VertexBuffer:
-    //        static_cast<GLVertexBuffer*>(resource)->setSubData(offset, data, length);
-    //        break;
-    //    case DeviceResourceType::IndexBuffer:
-    //        static_cast<GLIndexBuffer*>(resource)->setSubData(offset, data, length);
-    //        break;
-    //    default:
-    //        LN_NOTIMPLEMENTED();
-    //        break;
-    //}
-    LN_NOTIMPLEMENTED();
-}
-
-void GLGraphicsContext::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) {
-    static_cast<GLTextureBase*>(resource)->setSubData(x, y, width, height, data, dataSize);
-}
-
-void GLGraphicsContext::onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {
-    static_cast<GLTextureBase*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
-}
-
-//void GLGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) {
-//    GLShaderDescriptorTable* table = static_cast<GLShaderDescriptorTable*>(resource);
-//    table->setData(data);
-//}
-
-void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) {
-    //std::array<GLenum, MaxMultiRenderTargets> buffers = {
-    //	GL_COLOR_ATTACHMENT0, GL_NONE, GL_NONE, GL_NONE
-    //};
-    //GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
-
-    OpenGLHelper::clearBuffers(flags, color, z, stencil);
-}
-
-void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) {
-    GLenum gl_prim;
-    int vertexCount;
-    getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
-
-    GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
-}
-
-void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {
-    if (vertexOffset != 0) {
-        LN_NOTIMPLEMENTED();
-        return;
-    }
-
-    GLenum gl_prim;
-    int vertexCount;
-    getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
-
-    GLenum indexFormat = 0;
-    GLvoid* startIndexPtr = nullptr;
-    if (m_currentIndexBuffer->format() == IndexBufferFormat::UInt16) {
-        indexFormat = GL_UNSIGNED_SHORT;
-        startIndexPtr = (GLvoid*)(sizeof(GLushort) * startIndex);
-    }
-    else if (m_currentIndexBuffer->format() == IndexBufferFormat::UInt32) {
-        indexFormat = GL_UNSIGNED_INT;
-        startIndexPtr = (GLvoid*)(sizeof(GLuint) * startIndex);
-    }
-    else {
-        LN_UNREACHABLE();
-        return;
-    }
-
-    // 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
-    // http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
-    // ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
-    // TODO: ↑Radeon で稀に吹っ飛ぶ
-
-    if (instanceCount > 0) {
-        GL_CHECK(glDrawElementsInstanced(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount));
-    }
-    else {
-        GL_CHECK(glDrawElements(gl_prim, vertexCount, indexFormat, startIndexPtr));
-    }
-}
-
-void GLGraphicsContext::getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount) {
-    switch (primitive) {
-        case PrimitiveTopology::TriangleList:
-            *gl_prim = GL_TRIANGLES;
-            *vertexCount = primitiveCount * 3;
-            break;
-        case PrimitiveTopology::TriangleStrip:
-            *gl_prim = GL_TRIANGLE_STRIP;
-            *vertexCount = 2 + primitiveCount;
-            break;
-        case PrimitiveTopology::TriangleFan:
-            *gl_prim = GL_TRIANGLE_FAN;
-            *vertexCount = 2 + primitiveCount;
-            break;
-        case PrimitiveTopology::LineList:
-            *gl_prim = GL_LINES;
-            *vertexCount = primitiveCount * 2;
-            break;
-        case PrimitiveTopology::LineStrip:
-            *gl_prim = GL_LINE_STRIP;
-            *vertexCount = 1 + primitiveCount;
-            break;
-        case PrimitiveTopology::PointList:
-            *gl_prim = GL_POINTS;
-            *vertexCount = primitiveCount;
-            break;
-        default:
-            LN_UNREACHABLE();
-            break;
-    }
-}
-//
-////=============================================================================
-//// GLContext
-//
-//GLContext::GLContext()
-//{
-//}
 
 //=============================================================================
 // GLSwapChain
@@ -605,7 +380,7 @@ void GLSwapChain::present() {
     getBackendBufferSize(&endpointSize);
 
     auto backbuffer = static_cast<GLRenderTargetTexture*>(getRenderTarget(0));
-    auto bufferSize = backbuffer->size();
+    auto bufferSize = backbuffer->extentSize();
 
     beginMakeContext();
 
@@ -720,7 +495,7 @@ void GLRenderPass::bind(GLGraphicsContext* context) {
     }
 
     auto backbuffer = m_renderTargets[0].get();
-    auto baseSize = backbuffer->size();
+    auto baseSize = backbuffer->extentSize();
 
     // color buffers
     std::array<GLenum, MaxMultiRenderTargets> buffers;
@@ -729,7 +504,7 @@ void GLRenderPass::bind(GLGraphicsContext* context) {
     //int actualCount = 0;
     for (int i = 0; i < renderTargetsCount; ++i) {
         if (m_renderTargets[i]) {
-            LN_CHECK(m_renderTargets[i]->size() == baseSize);
+            LN_CHECK(m_renderTargets[i]->extentSize() == baseSize);
             GLuint id = static_cast<GLTextureBase*>(m_renderTargets[i])->id();
             GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
             buffers[i] = GL_COLOR_ATTACHMENT0 + i;
@@ -742,7 +517,7 @@ void GLRenderPass::bind(GLGraphicsContext* context) {
 
     // depth buffer
     if (m_depthBuffer) {
-        LN_CHECK(m_depthBuffer->size() == baseSize);
+        LN_CHECK(m_depthBuffer->extentSize() == baseSize);
         GLuint id = static_cast<GLDepthBuffer*>(m_depthBuffer)->id();
         GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id));
         GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id));

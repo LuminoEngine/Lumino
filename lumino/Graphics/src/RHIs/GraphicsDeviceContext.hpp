@@ -373,6 +373,8 @@ public:
 
     bool isMultisample() const { return m_isMultisample; }
 
+    RHIExtent2D viewSize() const;
+
     virtual void dispose();
 
     void retainObjects();
@@ -460,15 +462,12 @@ private:
     friend class NativePipelineCache;
 };
 
-// API ごとの Descriptor の実データ Allocate (UniformBuffer,Texture,Sampler,それらをまとめるDescriptorSetなど)
-// に必要な情報をラップするインターフェイス。VkDescriptorSetPool 相当。
+// API ごとの Descriptor の実データ。
+// Allocate に必要な情報をラップ (UniformBuffer,Texture,Sampler,それらをまとめるDescriptorSetなど)するインターフェイス。VkDescriptorSetPool 相当。
 //
 // 単純に考えるなら CommandList ごとに超巨大なバッファをひとつ作って使えばよいのだが、
 // Vulkan では VkDescriptorSetPool の作成時に必要な要素 (UBO はいくつ？Samplerはいくつ？など) を決めておかなければならない。
 // そのため最もメモリ効率良く確保するには、CommandList と ShaderPass(のもつLayout) をキーとして VkDescriptorSetPool を作る必要がある。
-//
-// また OpenGL サポート中はそれとの整合をとるためこの Descriptor 周りを不自然にラップしていたため、メンテが難しくなる事態が発生していた。
-// OpenGL を切ったので、上位レイヤーで共通化できる部分はそのようにして、少しでも下位レイヤーの複雑さを抑える。
 class IDescriptorPool
     : public RHIDeviceObject {
 public:
@@ -483,7 +482,18 @@ protected:
 class IDescriptor
     : public RefObject {
 public:
+    // CombinedSampler の場合、resources() へ Texture と SamplerState を同時にセットすることで、ペアを示す。
+    struct Reference {
+        Ref<RHIDeviceObject> object;
+        Ref<ISamplerState> samplerState;
+    };
+    using ReferenceList = std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements>;
+
     void setData(const ShaderDescriptorTableUpdateInfo& data);
+    const ReferenceList& buffers() const { return m_buffers; }
+    const ReferenceList& resources() const { return m_resources; }
+    const ReferenceList& samplers() const { return m_samplers; }
+    const ReferenceList& storages() const { return m_storages; }
 
 protected:
     virtual ~IDescriptor();
@@ -491,16 +501,11 @@ protected:
     void reset();
 
 private:
-    struct Reference {
-        Ref<RHIDeviceObject> object;
-        Ref<ISamplerState> samplerState;
-    };
-
     // CommandList 実行中の解放を防ぐため、参照を保持する
-    std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_buffers = {};
-    std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_resources = {};
-    std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_samplers = {};
-    std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements> m_storages = {};
+    ReferenceList m_buffers = {};
+    ReferenceList m_resources = {};
+    ReferenceList m_samplers = {};
+    ReferenceList m_storages = {};
 };
 
 } // namespace detail

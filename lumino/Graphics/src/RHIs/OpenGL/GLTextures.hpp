@@ -10,8 +10,6 @@ class GLTextureBase : public RHIResource {
 public:
     GLTextureBase();
     virtual ~GLTextureBase() = default;
-    Result init(uint32_t width, uint32_t height, uint32_t depth = 1);
-    const RHISize3D& size() const { return m_size; }
 
     virtual GLuint id() const = 0;
     virtual bool mipmap() const = 0;
@@ -19,7 +17,6 @@ public:
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 private:
-    RHISize3D m_size;
 };
 
 class GLTexture2D : public GLTextureBase {
@@ -95,7 +92,6 @@ public:
     virtual bool mipmap() const override { return false; }
 
 private:
-    TextureFormat m_textureFormat;
     GLuint m_id;
     GLenum m_pixelFormat;
     GLenum m_elementType;
@@ -129,20 +125,6 @@ private:
     //	GLenum				m_pixelFormat;
     //	GLenum				m_elementType;
     //	RawBitmap*	m_lockingBitmap;
-};
-
-class GLDepthBuffer : public IDepthBuffer {
-public:
-    GLDepthBuffer();
-    void init(uint32_t width, uint32_t height);
-    virtual void dispose() override;
-
-    GLuint id() const { return m_id; }
-    const SizeI& size() const { return m_size; }
-
-private:
-    GLuint m_id;
-    SizeI m_size;
 };
 
 class GLSamplerState : public ISamplerState {

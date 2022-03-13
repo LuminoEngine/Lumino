@@ -9,6 +9,14 @@ namespace detail {
 //==============================================================================
 // VulkanSingleFrameAllocatorPage
 
+VulkanSingleFrameAllocatorPage::~VulkanSingleFrameAllocatorPage()
+{
+	if (m_buffer) {
+		m_buffer->dispose();
+		m_buffer = nullptr;
+	}
+}
+
 bool VulkanSingleFrameAllocatorPage::init(VulkanDevice* device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
 	m_buffer = std::make_unique<VulkanBuffer>();
@@ -16,14 +24,6 @@ bool VulkanSingleFrameAllocatorPage::init(VulkanDevice* device, VkDeviceSize siz
 		return false;
 	}
 	return true;
-}
-
-VulkanSingleFrameAllocatorPage::~VulkanSingleFrameAllocatorPage()
-{
-	if (m_buffer) {
-		m_buffer->dispose();
-		m_buffer = nullptr;
-	}
 }
 
 //==============================================================================

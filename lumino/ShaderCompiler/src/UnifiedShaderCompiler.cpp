@@ -415,10 +415,10 @@ bool UnifiedShaderCompiler::link()
                 m_unifiedShader->setCode(containerId, triple1, tp->spirvCode());
 				UnifiedShaderTriple triple2 = { "hlsl", 5, "" };
 				m_unifiedShader->setCode(containerId, triple2, tp->generateHlslByteCode());
-				//UnifiedShaderTriple triple3 = { "glsl", 400, "" };
-				//m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(400, false));
-				//UnifiedShaderTriple triple4 = { "glsl", 300, "es" };
-				//m_unifiedShader->setCode(containerId, triple4, tp->generateGlsl(300, true));
+				UnifiedShaderTriple triple3 = { "glsl", 400, "" };
+				m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(400, false));
+				UnifiedShaderTriple triple4 = { "glsl", 300, "es" };
+				m_unifiedShader->setCode(containerId, triple4, tp->generateGlsl(300, true));
             }
 
             // PixelShader
@@ -431,10 +431,10 @@ bool UnifiedShaderCompiler::link()
                 m_unifiedShader->setCode(containerId, triple1, tp->spirvCode());
 				UnifiedShaderTriple triple2 = { "hlsl", 5, "" };
 				m_unifiedShader->setCode(containerId, triple2, tp->generateHlslByteCode());
-				//UnifiedShaderTriple triple3 = { "glsl", 400, "" };
-				//m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(400, false));
-				//UnifiedShaderTriple triple4 = { "glsl", 300, "es" };
-				//m_unifiedShader->setCode(containerId, triple4, tp->generateGlsl(300, true));
+				UnifiedShaderTriple triple3 = { "glsl", 400, "" };
+				m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(400, false));
+				UnifiedShaderTriple triple4 = { "glsl", 300, "es" };
+				m_unifiedShader->setCode(containerId, triple4, tp->generateGlsl(300, true));
             }
         }
     }

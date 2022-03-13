@@ -5,6 +5,8 @@ cbuffer ConstBuff: register(b0) {
     float4 _Color;
 };
 
+//sampler2D g_texture1;
+
 //------------------------------------------------------------------------------
 // VertexShader
 //------------------------------------------------------------------------------
@@ -31,6 +33,7 @@ struct PSInput {
 
 float4 PSMain(PSInput input): SV_TARGET {
     return _Color;
+    //return _Color * tex2D(g_texture1, float2(0, 0));
 }
 
 //------------------------------------------------------------------------------

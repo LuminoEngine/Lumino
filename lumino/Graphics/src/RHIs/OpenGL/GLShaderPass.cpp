@@ -8,142 +8,129 @@ namespace detail {
 // GLSLShader
 
 GLSLShader::GLSLShader()
-	: m_shader(0)
-	, m_type(0)
-{
+    : m_shader(0)
+    , m_type(0) {
 }
 
-GLSLShader::~GLSLShader()
-{
-	dispose();
+GLSLShader::~GLSLShader() {
+    dispose();
 }
 
-bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag)
-{
-	m_type = type;
+bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag) {
+    m_type = type;
 
-	m_shader = glCreateShader(m_type);
-	if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return false;
+    m_shader = glCreateShader(m_type);
+    if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return false;
 
     const GLchar* codes[] = {
         (const GLchar*)code,
     };
 
-	GLint codeSize[] = {
+    GLint codeSize[] = {
         length,
     };
-	GL_CHECK(glShaderSource(m_shader, LN_ARRAY_SIZE_OF(codeSize), codes, codeSize));
-	GL_CHECK(glCompileShader(m_shader));
+    GL_CHECK(glShaderSource(m_shader, LN_ARRAY_SIZE_OF(codeSize), codes, codeSize));
+    GL_CHECK(glCompileShader(m_shader));
 
-	// result
-	GLint compiled = 0;
-	GLint logSize = 0;
-	GL_CHECK(glGetShaderiv(m_shader, GL_COMPILE_STATUS, &compiled));
-	GL_CHECK(glGetShaderiv(m_shader, GL_INFO_LOG_LENGTH, &logSize));	// excluding the null terminator
+    // result
+    GLint compiled = 0;
+    GLint logSize = 0;
+    GL_CHECK(glGetShaderiv(m_shader, GL_COMPILE_STATUS, &compiled));
+    GL_CHECK(glGetShaderiv(m_shader, GL_INFO_LOG_LENGTH, &logSize)); // excluding the null terminator
 
-	if (logSize > 1)
-	{
-		std::vector<char> buf(logSize);
-		int length;
-		GL_CHECK(glGetShaderInfoLog(m_shader, logSize, &length, (GLchar*)buf.data()));
-		diag->message += (const char*)buf.data();
-		diag->level = ShaderCompilationResultLevel::Warning;
-	}
+    if (logSize > 1) {
+        std::vector<char> buf(logSize);
+        int length;
+        GL_CHECK(glGetShaderInfoLog(m_shader, logSize, &length, (GLchar*)buf.data()));
+        diag->message += (const char*)buf.data();
+        diag->level = ShaderCompilationResultLevel::Warning;
+    }
 
-	if (compiled == GL_FALSE)
-	{
-		diag->level = ShaderCompilationResultLevel::Error;
-		return false;
-	}
+    if (compiled == GL_FALSE) {
+        diag->level = ShaderCompilationResultLevel::Error;
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
-void GLSLShader::dispose()
-{
-	if (m_shader)
-	{
-		GL_CHECK(glDeleteShader(m_shader));
-		m_shader = 0;
-	}
+void GLSLShader::dispose() {
+    if (m_shader) {
+        GL_CHECK(glDeleteShader(m_shader));
+        m_shader = 0;
+    }
 }
 
 //=============================================================================
 // GLShaderPass
 
 GLShaderPass::GLShaderPass()
-	: m_context(nullptr)
-	, m_program(0)
-	//, m_descriptorTable()
+    : m_context(nullptr)
+    , m_program(0)
+//, m_descriptorTable()
 {
 }
 
-GLShaderPass::~GLShaderPass()
-{
+GLShaderPass::~GLShaderPass() {
 }
 
-void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
-{
-	if (!IShaderPass::init(createInfo)) {
-		return;
-	}
+void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag) {
+    if (!IShaderPass::init(createInfo)) {
+        return;
+    }
 
-	m_context = context;
+    m_context = context;
 
-	GLSLShader vertexShader;
-	GLSLShader fragmentShader;
-	if (!vertexShader.create(vsCode, vsCodeLen, GL_VERTEX_SHADER, diag)) return;
-	if (!fragmentShader.create(fsCode, fsCodeLen, GL_FRAGMENT_SHADER, diag)) return;
+    GLSLShader vertexShader;
+    GLSLShader fragmentShader;
+    if (!vertexShader.create(vsCode, vsCodeLen, GL_VERTEX_SHADER, diag)) return;
+    if (!fragmentShader.create(fsCode, fsCodeLen, GL_FRAGMENT_SHADER, diag)) return;
 
-	m_program = glCreateProgram();
+    m_program = glCreateProgram();
     LN_LOG_VERBOSE("Program create:{} vs:{} fs:{}", m_program, vertexShader.shader(), fragmentShader.shader());
 
-	GL_CHECK(glAttachShader(m_program, vertexShader.shader()));
-	GL_CHECK(glAttachShader(m_program, fragmentShader.shader()));
+    GL_CHECK(glAttachShader(m_program, vertexShader.shader()));
+    GL_CHECK(glAttachShader(m_program, fragmentShader.shader()));
 
-	GLint linked = 0;
-	GL_CHECK(glLinkProgram(m_program));
-	GL_CHECK(glGetProgramiv(m_program, GL_LINK_STATUS, &linked));
+    GLint linked = 0;
+    GL_CHECK(glLinkProgram(m_program));
+    GL_CHECK(glGetProgramiv(m_program, GL_LINK_STATUS, &linked));
 
-	int logSize;
-	GL_CHECK(glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &logSize));
+    int logSize;
+    GL_CHECK(glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &logSize));
 
-	if (logSize > 1)
-	{
-		std::vector<char> buf(logSize);
-		int length;
-		GL_CHECK(glGetProgramInfoLog(m_program, logSize, &length, (GLchar*)buf.data()));
-		diag->message += (const char*)buf.data();
-		diag->level = ShaderCompilationResultLevel::Warning;
-	}
+    if (logSize > 1) {
+        std::vector<char> buf(logSize);
+        int length;
+        GL_CHECK(glGetProgramInfoLog(m_program, logSize, &length, (GLchar*)buf.data()));
+        diag->message += (const char*)buf.data();
+        diag->level = ShaderCompilationResultLevel::Warning;
+    }
 
-	if (linked == GL_FALSE)
-	{
-		diag->level = ShaderCompilationResultLevel::Error;
-		return;
-	}
+    if (linked == GL_FALSE) {
+        diag->level = ShaderCompilationResultLevel::Error;
+        return;
+    }
 
-	//m_descriptorTable = makeRef<GLShaderDescriptorTable>();
-	//if (!m_descriptorTable->init(this, createInfo.descriptorLayout)) {
-	//	return;
-	//}
+    m_descriptorTable = makeRef<GLShaderDescriptorTable>();
+    if (!m_descriptorTable->init(this, createInfo.descriptorLayout)) {
+        return;
+    }
 }
 
-void GLShaderPass::dispose()
-{
-	//if (m_descriptorTable) {
-	//	m_descriptorTable->dispose();
-	//	m_descriptorTable = nullptr;
-	//}
+void GLShaderPass::dispose() {
+    //if (m_descriptorTable) {
+    //	m_descriptorTable->dispose();
+    //	m_descriptorTable = nullptr;
+    //}
 
-	if (m_program)
-	{
-		GL_CHECK(glUseProgram(0));
-		GL_CHECK(glDeleteProgram(m_program));
-		m_program = 0;
-	}
+    if (m_program) {
+        GL_CHECK(glUseProgram(0));
+        GL_CHECK(glDeleteProgram(m_program));
+        m_program = 0;
+    }
 
-	IShaderPass::dispose();
+    IShaderPass::dispose();
 }
 
 //IShaderDescriptorTable* GLShaderPass::descriptorTable() const
@@ -151,10 +138,102 @@ void GLShaderPass::dispose()
 //	return m_descriptorTable;
 //}
 
-void GLShaderPass::apply() const
-{
-	GL_CHECK(glUseProgram(m_program));
-	//m_descriptorTable->bind(m_program);
+void GLShaderPass::apply() const {
+    GL_CHECK(glUseProgram(m_program));
+    //m_descriptorTable->bind(m_program);
+}
+
+//=============================================================================
+// GLShaderDescriptorTable
+
+GLShaderDescriptorTable::GLShaderDescriptorTable() {
+}
+
+bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const DescriptorLayout* descriptorLayout) {
+    // NOTE: Mac では binding を GLSL 側で指定できないので
+    // コンパイルによってどのように binding index が割り当てられたか自分で調べる必要がある。
+
+    GLuint program = ownerPass->program();
+
+    // UniformBuffers
+    GLint count;
+    GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
+    for (int i = 0; i < count; i++) {
+        UniformBufferInfo info;
+        info.bindingPoint = i;
+
+        // UniformBuffer の名前を取得する
+        GLchar blockName[128];
+        GLsizei blockNameLen;
+        GL_CHECK(glGetActiveUniformBlockName(program, i, 128, &blockNameLen, blockName));
+
+        // OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
+        // 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
+        // 検索したいので、名前を合わせておく。
+        //if (strcmp(blockName, "_Global") == 0)
+        //    blockName[0] = '$';
+
+        // DescriptorLayout から、対応する名前の UniformBuffer を探す
+        info.registerIndex = descriptorLayout->findUniformBufferRegisterIndex(blockName);
+        if (LN_ASSERT(info.registerIndex >= 0)) return false; // 絶対に見つかるはず
+
+		// Get infomations.
+        info.blockIndex = glGetUniformBlockIndex(program, blockName);
+        GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
+        LN_LOG_VERBOSE("uniform block {}", i);
+        LN_LOG_VERBOSE("  blockName  : {}", blockName);
+        LN_LOG_VERBOSE("  blockIndex : {}", info.blockIndex);
+        LN_LOG_VERBOSE("  blockSize  : {}", info.blockSize);
+
+		m_uniformBuffers.push_back(info);
+    }
+
+	// Texture (CombinedSampler)
+    {
+        GLint count;
+        GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count));
+        for (int i = 0; i < count; i++) {
+            GLsizei nameLen = 0;
+            GLsizei varSize = 0;
+            GLenum varType = 0;
+            GLchar name[256] = { 0 };
+            GL_CHECK(glGetActiveUniform(program, i, 256, &nameLen, &varSize, &varType, name));
+            GLint loc = glGetUniformLocation(program, name);
+
+            ShaderUniformTypeDesc desc;
+            OpenGLHelper::convertVariableTypeGLToLN(
+                name, varType, varSize, &desc.type2, &desc.rows, &desc.columns, &desc.elements);
+
+            if (desc.type2 == ShaderUniformType_Texture) {
+                addResourceUniform(name, loc, descriptorLayout);
+            }
+        }
+
+        // lnIsRT 用にもう一度回す
+        //for (int i = 0; i < count; i++) {
+        //    GLsizei nameLen = 0;
+        //    GLsizei varSize = 0;
+        //    GLenum varType = 0;
+        //    GLchar name[256] = { 0 };
+        //    GL_CHECK(glGetActiveUniform(program, i, 256, &nameLen, &varSize, &varType, name));
+        //    GLint loc = glGetUniformLocation(program, name);
+
+        //    if (strncmp(name + nameLen - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0) {
+        //        addIsRenderTargetUniform(name, loc);
+        //    }
+        //}
+    }
+
+    return true;
+}
+
+void GLShaderDescriptorTable::addResourceUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout) {
+    ResouceUniformInfo info;
+    info.uniformLocation = uniformLocation;
+	info.registerIndex = descriptorLayout->findTextureRegisterIndex(name);
+    if (LN_ASSERT(info.registerIndex >= 0)) return; // 絶対に見つかるはず
+
+    m_resourceUniforms.push_back(info);
 }
 
 
@@ -262,8 +341,8 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 					}
 				}
 
-#if 0			// TODO: 以下、dataSize を求めるときにひとつ後ろのメンバを参照しているが、ドライバによっては定義順で返さないこともあるのでこのままだと使えない。
-				// 検証。縦の大きさはデータサイズから求めたものと一致するはず
+#if 0 // TODO: 以下、dataSize を求めるときにひとつ後ろのメンバを参照しているが、ドライバによっては定義順で返さないこともあるのでこのままだと使えない。 \
+    // 検証。縦の大きさはデータサイズから求めたものと一致するはず
 				{
 					auto blockSize = info.blockSize;
 
@@ -561,4 +640,3 @@ void GLShaderDescriptorTable::addIsRenderTargetUniform(const std::string& name, 
 
 } // namespace detail
 } // namespace ln
-

@@ -51,6 +51,7 @@ namespace ln {
 namespace detail {
 class PlatformManager;
 class OpenGLContext;
+class GLUniformBufferAllocatorPageManager;
 
 class OpenGLDevice : public IGraphicsDevice {
 public:
@@ -70,7 +71,7 @@ public:
     OpenGLDevice();
     virtual ~OpenGLDevice() = default;
 
-    void init(const Settings& settings);
+    Result init(const Settings& settings);
     virtual void dispose() override;
     PlatformWindow* mainWindow() const { return m_mainWindow; }
     OpenGLContext* mainGLContext() const { return m_mainGLContext; }
@@ -80,28 +81,32 @@ public:
     MemoryStream* uniformTempBuffer() { return &m_uniformTempBuffer; }
     BinaryWriter* uniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
+    const Ref<GLUniformBufferAllocatorPageManager>& uniformBufferAllocatorPageManager() const { return m_uniformBufferAllocatorPageManager; }
+
 protected:
-    virtual INativeGraphicsInterface* getNativeInterface() const { return nullptr; }
-    //virtual ICommandList* getGraphicsContext() const;
-    virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
-    virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
-    virtual Ref<ICommandList> onCreateCommandList() override;
-    virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
-    virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
-    virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
-    virtual Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
-    virtual Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
-    virtual Ref<RHIResource> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-    virtual Ref<RHIResource> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-    virtual Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) override;
-    virtual Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override;
-    virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
-    virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
-    virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
-    virtual Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
-    //virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override {}
-    virtual ICommandQueue* getGraphicsCommandQueue() override;
-    virtual ICommandQueue* getComputeCommandQueue() override;
+    INativeGraphicsInterface* getNativeInterface() const override { return nullptr; }
+    ICommandQueue* getGraphicsCommandQueue() override;
+    ICommandQueue* getComputeCommandQueue() override;
+
+    void onGetCaps(GraphicsDeviceCaps* outCaps) override;
+    Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+    Ref<ICommandList> onCreateCommandList() override;
+    Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
+    Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
+    Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
+    Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
+    Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
+    Ref<RHIResource> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+    Ref<RHIResource> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+    Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) override;
+    Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override;
+    Ref<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
+    Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
+    Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+    Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
+    Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
+    void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) override;
+
 
 private:
     PlatformWindow* m_mainWindow;
@@ -113,62 +118,9 @@ private:
     //Ref<GLGraphicsContext> m_graphicsContext;
     Caps m_caps;
     //bool m_commandListCreated;
+
+    Ref<GLUniformBufferAllocatorPageManager> m_uniformBufferAllocatorPageManager;
 };
-
-class GLGraphicsContext
-    : public ICommandList {
-public:
-    GLGraphicsContext();
-    Result init(OpenGLDevice* owner);
-    void dispose();
-    void setActiveShaderPass(GLShaderPass* pass);
-    GLuint fbo() const { return m_fbo; }
-
-protected:
-    virtual void onSaveExternalRenderState() override;
-    virtual void onRestoreExternalRenderState() override;
-    virtual void onBeginCommandRecoding() override {}
-    virtual void onEndCommandRecoding() override {}
-    virtual void onBeginRenderPass(IRenderPass* renderPass) override;
-    virtual void onEndRenderPass(IRenderPass* renderPass) override;
-    virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
-    virtual void onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) override;
-    virtual void onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-    virtual void onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
-    virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-    virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
-    virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;
-    virtual void onDrawExtension(INativeGraphicsExtension* extension) override { LN_NOTIMPLEMENTED(); }
-
-private:
-    static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
-
-    OpenGLDevice* m_device;
-    GLuint m_vao; // https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
-    GLuint m_fbo;
-    GLIndexBuffer* m_currentIndexBuffer;
-    GLRenderPass* m_currentRenderPass = nullptr;
-    GLShaderPass* m_activeShaderPass;
-
-    struct
-    {
-        GLboolean state_GL_CULL_FACE;
-
-    } m_savedState;
-};
-
-//class GLContext
-//	: public RefObject
-//{
-//public:
-//    GLContext();
-//	virtual ~GLContext() = default;
-//
-//	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
-//	virtual void makeCurrent(GLSwapChain* swapChain) = 0;
-//	virtual void swap(GLSwapChain* swapChain) = 0;
-//
-//};
 
 class GLSwapChain
     : public ISwapChain {

@@ -4,17 +4,24 @@
 
 namespace ln {
 namespace detail {
+class OpenGLDevice;
 class GLGraphicsContext;
 class GLSwapChain;
 class GLRenderPass;
 class GLCommandQueue;
 class GLVertexBuffer;
 class GLIndexBuffer;
+class GLUniformBuffer;
 class GLTextureBase;
 class GLRenderTargetTexture;
 class GLDepthBuffer;
 class GLShaderPass;
 class GLShaderDescriptorTable;
+
+struct GLUniformBufferView {
+    GLUniformBuffer* buffer;
+    uint32_t offset;
+};
 
 class OpenGLHelper {
 public:

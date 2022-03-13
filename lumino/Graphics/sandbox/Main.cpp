@@ -21,6 +21,7 @@ void init() {
     EngineContext2::initialize();
 
     detail::PlatformManager::Settings platformManagerrSettings;
+    platformManagerrSettings.glfwWithOpenGLAPI = true;
     auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
 
     detail::AssetManager::Settings assetManagerSettings;
@@ -30,7 +31,7 @@ void init() {
     graphicsManagerSettings.assetManager = assetManager;
     graphicsManagerSettings.platformManager = platformManager;
     graphicsManagerSettings.mainWindow = platformManager->mainWindow();
-    graphicsManagerSettings.graphicsAPI = GraphicsAPI::Vulkan;
+    graphicsManagerSettings.graphicsAPI = GraphicsAPI::OpenGL;
     graphicsManagerSettings.priorityGPUName = U"";
     graphicsManagerSettings.debugMode = true;
     auto graphicsManager = detail::GraphicsManager::initialize(graphicsManagerSettings);

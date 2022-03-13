@@ -227,6 +227,7 @@ struct DescriptorLayoutItem
     std::vector<ShaderUniformInfo> members;
 };
 
+// CombindSampler の場合、 textureRegister と samplerRegister に同名の Item が追加される。
 struct DescriptorLayout
 {
     // これらの index が binding と一致するわけではないため注意

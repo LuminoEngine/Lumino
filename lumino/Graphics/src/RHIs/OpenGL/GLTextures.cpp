@@ -8,16 +8,9 @@ namespace detail {
 //=============================================================================
 // GLTexture2D
 
-GLTextureBase::GLTextureBase()
-    : m_size() {
+GLTextureBase::GLTextureBase() {
 }
 
-Result GLTextureBase::init(uint32_t width, uint32_t height, uint32_t depth) {
-    m_size.width = width;
-    m_size.height = height;
-    m_size.depth = depth;
-    return ok();
-}
 
 //=============================================================================
 // GLTexture2D
@@ -35,7 +28,7 @@ GLTexture2D::~GLTexture2D() {
 }
 
 Result GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    LN_TRY(GLTextureBase::init(width, height, 1));
+    LN_TRY(GLTextureBase::initAsTexture2D(usage, width, height, requestFormat, mipmap));
 
     m_usage = usage;
     m_textureFormat = requestFormat;
@@ -155,7 +148,7 @@ GLTexture3D::~GLTexture3D() {
 }
 
 Result GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    LN_TRY(GLTextureBase::init(width, height, depth));
+    LN_TRY(GLTextureBase::initAsTexture3D(usage, width, height, depth, requestFormat));
     m_usage = usage;
     m_textureFormat = requestFormat;
     GLint levels = (mipmap) ? 4 : 0; // TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので
@@ -237,13 +230,11 @@ GLRenderTargetTexture::~GLRenderTargetTexture() {
 }
 
 Result GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) {
-    LN_TRY(GLTextureBase::init(width, height, 1));
+    LN_TRY(GLTextureBase::initAsRenderTarget(width, height, requestFormat, mipmap, false));
     if (mipmap) {
         LN_NOTIMPLEMENTED();
         return err();
     }
-
-    m_textureFormat = requestFormat;
 
     GL_CHECK(glGenTextures(1, &m_id));
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
@@ -279,9 +270,8 @@ Result GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureForma
 }
 
 Result GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
-    LN_TRY(GLTextureBase::init(hintWidth, hintHeight, 1));
+    LN_TRY(GLTextureBase::initAsRenderTarget(hintWidth, hintHeight, TextureFormat::Unknown, false, false));
     m_id = nativeObject;
-    m_textureFormat = TextureFormat::Unknown;
     return ok();
 }
 
@@ -295,8 +285,9 @@ void GLRenderTargetTexture::dispose() {
 }
 
 RHIRef<RHIBitmap> GLRenderTargetTexture::readData() {
+    const RHIExtent3D& size = extentSize();
     auto buf = makeRHIRef<RHIBitmap>();
-    if (!buf->init(GraphicsHelper::getPixelSize(m_textureFormat), size().width, size().height)) {
+    if (!buf->init(GraphicsHelper::getPixelSize(textureFormat()), size.width, size.height)) {
         return false;
     }
 
@@ -348,31 +339,6 @@ void GLRenderTargetTexture::setSubData(int x, int y, int width, int height, cons
 
 void GLRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {
     LN_UNREACHABLE();
-}
-
-//=============================================================================
-// GLDepthBuffer
-
-GLDepthBuffer::GLDepthBuffer()
-    : m_id(0) {
-}
-
-void GLDepthBuffer::init(uint32_t width, uint32_t height) {
-    if (LN_REQUIRE(!m_id)) return;
-    GL_CHECK(glGenRenderbuffers(1, &m_id));
-    GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_id));
-    GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));
-    GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, 0));
-    m_size.width = width;
-    m_size.height = height;
-}
-
-void GLDepthBuffer::dispose() {
-    if (m_id != 0) {
-        GL_CHECK(glDeleteRenderbuffers(1, &m_id));
-        m_id = 0;
-    }
-    IDepthBuffer::dispose();
 }
 
 //=============================================================================
