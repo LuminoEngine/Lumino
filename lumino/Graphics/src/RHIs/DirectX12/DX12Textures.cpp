@@ -7,7 +7,7 @@
 
 namespace ln {
 namespace detail {
-    
+
 //==============================================================================
 // DX12Image
 
@@ -17,12 +17,10 @@ DX12Image::DX12Image()
     , m_dxFormat(DXGI_FORMAT_UNKNOWN)
     , m_currentState(D3D12_RESOURCE_STATE_COMMON)
     , m_uploadBufferSize(0)
-    , m_footprint()
-{
+    , m_footprint() {
 }
 
-bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, bool msaa, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState)
-{
+bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, bool msaa, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState) {
     m_size.width = width;
     m_size.height = height;
     m_dxFormat = format;
@@ -51,8 +49,7 @@ bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32
 
     bool useClearValue = false;
     D3D12_CLEAR_VALUE clearValue;
-    if ((flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
-    {
+    if ((flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0) {
         clearValue.Format = m_dxFormat;
         clearValue.Color[0] = 1.0f;
         clearValue.Color[1] = 1.0f;
@@ -60,8 +57,7 @@ bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32
         clearValue.Color[3] = 1.0f;
         useClearValue = true;
     }
-    else if ((flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0)
-    {
+    else if ((flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL) != 0) {
         clearValue.Format = format;
         clearValue.DepthStencil.Depth = 1.0f;
         clearValue.DepthStencil.Stencil = 0;
@@ -86,8 +82,7 @@ bool DX12Image::init(DX12Device* device, uint32_t width, uint32_t height, uint32
     return true;
 }
 
-bool DX12Image::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget, D3D12_RESOURCE_STATES state)
-{
+bool DX12Image::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget, D3D12_RESOURCE_STATES state) {
     m_dxResource = dxRenderTarget;
 
     D3D12_RESOURCE_DESC desc = m_dxResource->GetDesc();
@@ -102,13 +97,11 @@ bool DX12Image::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderT
     return true;
 }
 
-void DX12Image::dispose()
-{
+void DX12Image::dispose() {
     m_dxResource.Reset();
 }
 
-void DX12Image::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
-{
+void DX12Image::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState) {
     if (m_currentState == newState) return;
 
     D3D12_RESOURCE_BARRIER barrier;
@@ -126,24 +119,22 @@ void DX12Image::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RE
 //==============================================================================
 // DX12Texture
 
-DX12Texture::DX12Texture()
-{}
+DX12Texture::DX12Texture() {
+}
 
 //==============================================================================
 // DX12Texture2D
 
-DX12Texture2D::DX12Texture2D()
-{
+DX12Texture2D::DX12Texture2D() {
 }
 
-Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData)
-{
+Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData) {
     if (!DX12Texture::initAsTexture2D(usage, width, height, format, mipmap)) return err();
     m_device = device;
-	//m_usage = usage;
- //   m_size.width = width;
- //   m_size.height = height;
-    
+    //m_usage = usage;
+    //   m_size.width = width;
+    //   m_size.height = height;
+
     UINT mipLevels = 1;
     if (mipmap) {
         mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
@@ -151,13 +142,10 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
 
     m_image = makeRHIRef<DX12Image>();
     if (!m_image->init(
-        device, width, height, mipLevels, false,
-        DX12Helper::LNTextureFormatToDXFormat(format),
-        D3D12_RESOURCE_FLAG_NONE,
-        (initialData) ? D3D12_RESOURCE_STATE_COPY_DEST : D3D12_RESOURCE_STATE_GENERIC_READ)) {
+            device, width, height, mipLevels, false, DX12Helper::LNTextureFormatToDXFormat(format), D3D12_RESOURCE_FLAG_NONE, (initialData) ? D3D12_RESOURCE_STATE_COPY_DEST : D3D12_RESOURCE_STATE_GENERIC_READ)) {
         return err();
     }
-    
+
     if (initialData) {
         // Upload Buffer は サイズが足りていれば Format は問わない。
         // また D3D12_HEAP_TYPE_DEFAULT に作成されたテクスチャは width にアライメントがついていることがある。
@@ -196,11 +184,10 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
         }
     }
 
-	return ok();
+    return ok();
 }
 
-void DX12Texture2D::dispose()
-{
+void DX12Texture2D::dispose() {
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
@@ -208,28 +195,26 @@ void DX12Texture2D::dispose()
     DX12Texture::dispose();
 }
 
-void DX12Texture2D::setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize)
-{
+void DX12Texture2D::setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {
     LN_NOTIMPLEMENTED();
 }
 
-struct DWParam
-{
-    DWParam(FLOAT f) : Float(f) {}
-    DWParam(UINT u) : Uint(u) {}
+struct DWParam {
+    DWParam(FLOAT f)
+        : Float(f) {}
+    DWParam(UINT u)
+        : Uint(u) {}
 
-    void operator= (FLOAT f) { Float = f; }
-    void operator= (UINT u) { Uint = u; }
+    void operator=(FLOAT f) { Float = f; }
+    void operator=(UINT u) { Uint = u; }
 
-    union
-    {
+    union {
         FLOAT Float;
         UINT Uint;
     };
 };
 
-bool DX12Texture2D::generateMips()
-{
+bool DX12Texture2D::generateMips() {
 #if 1
     HRESULT hr;
     ID3D12Device* dxDevice = m_device->device();
@@ -256,7 +241,7 @@ bool DX12Texture2D::generateMips()
     tempTextureDescriptor.Height = height;
     tempTextureDescriptor.DepthOrArraySize = depth;
     tempTextureDescriptor.MipLevels = mipMaps;
-    tempTextureDescriptor.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// TODO:
+    tempTextureDescriptor.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // TODO:
     tempTextureDescriptor.SampleDesc.Count = 1;
     tempTextureDescriptor.SampleDesc.Quality = 0;
     tempTextureDescriptor.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -304,7 +289,7 @@ bool DX12Texture2D::generateMips()
         heapDesc.NumDescriptors = 2 * requiredHeapSize;
         heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        
+
         hr = dxDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
         if (FAILED(hr)) {
             LN_ERROR("CreateDescriptorHeap failed.");
@@ -323,21 +308,16 @@ bool DX12Texture2D::generateMips()
     D3D12_CPU_DESCRIPTOR_HANDLE currentCPUHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
     D3D12_GPU_DESCRIPTOR_HANDLE currentGPUHandle = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 
-
-
     D3D12_SHADER_RESOURCE_VIEW_DESC srcTextureSRVDesc = {};
     srcTextureSRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srcTextureSRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srcTextureSRVDesc.Format = tempTextureDescriptor.Format;
 
-
     D3D12_UNORDERED_ACCESS_VIEW_DESC destTextureUAVDesc = {};
     destTextureUAVDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
     destTextureUAVDesc.Format = tempTextureDescriptor.Format;
 
-
-    for (uint32_t TopMip = 0; TopMip < mipMaps - 1; TopMip++)
-    {
+    for (uint32_t TopMip = 0; TopMip < mipMaps - 1; TopMip++) {
         uint32_t dstWidth = std::max(width >> (TopMip + 1), 1u);
         uint32_t dstHeight = std::max(height >> (TopMip + 1), 1u);
 
@@ -355,7 +335,7 @@ bool DX12Texture2D::generateMips()
         // ConstantBuffer
         commandList->SetComputeRoot32BitConstant(0, DWParam(1.0f / dstWidth).Uint, 0);  // TexelSize.x
         commandList->SetComputeRoot32BitConstant(0, DWParam(1.0f / dstHeight).Uint, 1); // TexelSize.y
-        commandList->SetComputeRoot32BitConstant(0, DWParam(1.0f).Uint, 2);         	// GammaCurve TODO: Gamma
+        commandList->SetComputeRoot32BitConstant(0, DWParam(1.0f).Uint, 2);             // GammaCurve TODO: Gamma
 
         // DescriptorTable
         commandList->SetComputeRootDescriptorTable(1, currentGPUHandle);
@@ -390,7 +370,7 @@ bool DX12Texture2D::generateMips()
         tmpTextureBarrier3.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
         tmpTextureBarrier3.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         commandList->ResourceBarrier(1, &tmpTextureBarrier3);
-       
+
         commandList->CopyResource(m_image->dxResource(), tmpTextureResource.Get());
 
         m_image->resourceBarrior(commandList, D3D12_RESOURCE_STATE_GENERIC_READ);
@@ -405,12 +385,10 @@ bool DX12Texture2D::generateMips()
 // DX12RenderTarget
 
 DX12RenderTarget::DX12RenderTarget()
-    : m_device(nullptr)
-{
+    : m_device(nullptr) {
 }
 
-bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
-{
+bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
     if (!DX12Texture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return false;
     m_device = device;
     //m_size.width = width;
@@ -422,20 +400,14 @@ bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height,
 
     m_image = makeRHIRef<DX12Image>();
     if (!m_image->init(
-        device, width, height, 1, false,
-        DX12Helper::LNTextureFormatToDXFormat(requestFormat),
-        D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
-        D3D12_RESOURCE_STATE_GENERIC_READ)) {
+            device, width, height, 1, false, DX12Helper::LNTextureFormatToDXFormat(requestFormat), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ)) {
         return false;
     }
 
     if (msaa) {
         m_multisampleBuffer = makeRHIRef<DX12Image>();
         if (!m_multisampleBuffer->init(
-            device, m_image->size().width, m_image->size().height, 1, true,
-            m_image->dxFormat(),
-            D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
-            D3D12_RESOURCE_STATE_GENERIC_READ)) {
+                device, m_image->size().width, m_image->size().height, 1, true, m_image->dxFormat(), D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ)) {
             return false;
         }
     }
@@ -443,8 +415,7 @@ bool DX12RenderTarget::init(DX12Device* device, uint32_t width, uint32_t height,
     return true;
 }
 
-bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget)
-{
+bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dxRenderTarget) {
     m_device = device;
 
     m_image = makeRHIRef<DX12Image>();
@@ -474,8 +445,7 @@ bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dx
     return true;
 }
 
-void DX12RenderTarget::dispose()
-{
+void DX12RenderTarget::dispose() {
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
@@ -487,13 +457,11 @@ void DX12RenderTarget::dispose()
     DX12Texture::dispose();
 }
 
-RHIRef<RHIBitmap> DX12RenderTarget::readData()
-{
+RHIRef<RHIBitmap> DX12RenderTarget::readData() {
     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
     D3D12_RESOURCE_DESC textureDesc = m_image->dxResource()->GetDesc();
     UINT64 totalSize;
     m_device->device()->GetCopyableFootprints(&textureDesc, 0, 1, 0, &footprint, nullptr, nullptr, &totalSize);
-
 
     // 読み取り用一時バッファ
     size_t size = totalSize;
@@ -502,8 +470,6 @@ RHIRef<RHIBitmap> DX12RenderTarget::readData()
     if (!buffer.init(m_device, size, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST)) {
         return nullptr;
     }
-
-
 
     ID3D12GraphicsCommandList* commandList = m_device->beginSingleTimeCommandList();
     if (!commandList) {
@@ -535,7 +501,6 @@ RHIRef<RHIBitmap> DX12RenderTarget::readData()
 
     const void* data = buffer.map();
 
-
     // width が 160 だと 192 に Alignment されることがあった。
     // 余分は切り捨てて返す。
     {
@@ -554,11 +519,8 @@ RHIRef<RHIBitmap> DX12RenderTarget::readData()
         return bitmap2;
     }
 
-
     //auto bitmap = makeObject<Bitmap2D>(w, m_size.height, PixelFormat::RGBA8, data);
     //bitmap->save(u"test2.png");
-
-
 
     //memcpy(outData, data, size2);
     //buffer.unmap();
@@ -568,42 +530,30 @@ RHIRef<RHIBitmap> DX12RenderTarget::readData()
 // DX12DepthBuffer
 
 DX12DepthBuffer::DX12DepthBuffer()
-    : m_deviceContext(nullptr)
-    , m_size(0, 0)
-{
+    : m_deviceContext(nullptr) {
 }
 
-Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height)
-{
-    if (LN_REQUIRE(width > 0)) return err();
-    if (LN_REQUIRE(height > 0)) return err();
+Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height) {
+    LN_DCHECK(device);
+    LN_TRY(RHIResource::initAsDepthBuffer(width, height, true));
     m_deviceContext = device;
-    m_size.width = width;
-    m_size.height = height;
 
     m_image = makeRHIRef<DX12Image>();
     if (!m_image->init(
-        device, width, height, 1, false,
-        DXGI_FORMAT_D24_UNORM_S8_UINT,
-        D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
-        D3D12_RESOURCE_STATE_GENERIC_READ)) {
+            device, width, height, 1, false, DXGI_FORMAT_D24_UNORM_S8_UINT, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, D3D12_RESOURCE_STATE_GENERIC_READ)) {
         return err();
     }
 
     m_multisampleBuffer = makeRHIRef<DX12Image>();
     if (!m_multisampleBuffer->init(
-        device, width, height, 1, true,
-        DXGI_FORMAT_D24_UNORM_S8_UINT,
-        D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
-        D3D12_RESOURCE_STATE_GENERIC_READ)) {
+            device, width, height, 1, true, DXGI_FORMAT_D24_UNORM_S8_UINT, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, D3D12_RESOURCE_STATE_GENERIC_READ)) {
         return err();
     }
 
     return ok();
 }
 
-void DX12DepthBuffer::dispose()
-{
+void DX12DepthBuffer::dispose() {
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
@@ -612,7 +562,7 @@ void DX12DepthBuffer::dispose()
         m_multisampleBuffer->dispose();
         m_multisampleBuffer = nullptr;
     }
-    IDepthBuffer::dispose();
+    RHIResource::dispose();
 }
 
 } // namespace detail

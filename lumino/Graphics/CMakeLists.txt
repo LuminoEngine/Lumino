@@ -14,7 +14,6 @@ endif()
 if (LN_USE_VULKAN)
     if (WIN32)
         file(GLOB LN_SOURCES_Graphics_RHIs_Vulkan src/RHIs/Vulkan/*.cpp src/RHIs/Vulkan/*.hpp)
-        list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
     endif()
 endif()
 
@@ -45,6 +44,9 @@ set(LN_SOURCES
 # Configuration
 #-------------------------------------------------------------------------------
 
+if (LN_USE_VULKAN)
+    list(APPEND LN_DEFINITIONS LN_USE_VULKAN=1)
+endif()
 
 #-------------------------------------------------------------------------------
 # Targets
@@ -58,6 +60,7 @@ target_include_directories(
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntime LuminoPlatform LuminoShaderCompiler LuminoBitmap LuminoFont)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_DEFINITIONS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")

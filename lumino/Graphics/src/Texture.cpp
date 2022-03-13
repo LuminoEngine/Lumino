@@ -548,7 +548,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
     bool modified = false;
     detail::RHIResource* rhiObject = resolveRHIObject(nullptr, &modified);
 
-    detail::RHISizeI size = rhiObject->extentSize();
+    detail::RHIExtent3D size = rhiObject->extentSize();
 
     auto rhiBitmap = rhiObject->readData();
 

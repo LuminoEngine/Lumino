@@ -74,7 +74,7 @@ protected:
 	Ref<RHIResource> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) override;
     Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
-    Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
+    Ref<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;

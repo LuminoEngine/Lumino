@@ -210,272 +210,235 @@ namespace detail {
 //=============================================================================
 // VulkanHelper
 
-const std::vector<const char*> VulkanHelper::validationLayers =
-{
+const std::vector<const char*> VulkanHelper::validationLayers = {
     "VK_LAYER_KHRONOS_validation",
     "VK_LAYER_LUNARG_standard_validation",
 };
 
-struct FormatConversionItem
-{
-	VkFormat vulkanFormat;
-	uint32_t bitPerPixel;
-	TextureFormat lnFormat;
-	bool isCompress;
+struct FormatConversionItem {
+    VkFormat vulkanFormat;
+    uint32_t bitPerPixel;
+    TextureFormat lnFormat;
+    bool isCompress;
 };
 
-struct BlendFactorConversionItem
-{
-	BlendFactor lnValue;
-	VkBlendFactor vkValueColor;
-	VkBlendFactor vkValueAlpha;
+struct BlendFactorConversionItem {
+    BlendFactor lnValue;
+    VkBlendFactor vkValueColor;
+    VkBlendFactor vkValueAlpha;
 };
 
-struct BlendOpConversionItem
-{
-	BlendOp lnValue;
-	VkBlendOp vkValue;
+struct BlendOpConversionItem {
+    BlendOp lnValue;
+    VkBlendOp vkValue;
 };
 
-struct ComparisonFuncConversionItem
-{
-	ComparisonFunc lnValue;
-	VkCompareOp vkValue;
+struct ComparisonFuncConversionItem {
+    ComparisonFunc lnValue;
+    VkCompareOp vkValue;
 };
 
-struct FillModeConversionItem
-{
-	FillMode lnValue;
-	VkPolygonMode vkValue;
+struct FillModeConversionItem {
+    FillMode lnValue;
+    VkPolygonMode vkValue;
 };
 
-struct CullModeConversionItem
-{
-	CullMode lnValue;
-	VkCullModeFlagBits vkValue;
+struct CullModeConversionItem {
+    CullMode lnValue;
+    VkCullModeFlagBits vkValue;
 };
 
-struct StencilOpConversionItem
-{
-	StencilOp lnValue;
-	VkStencilOp vkValue;
+struct StencilOpConversionItem {
+    StencilOp lnValue;
+    VkStencilOp vkValue;
 };
 
-struct FilterModeConversionItem
-{
-	TextureFilterMode lnValue;
-	VkFilter vkValue;
+struct FilterModeConversionItem {
+    TextureFilterMode lnValue;
+    VkFilter vkValue;
 };
 
-struct AddressModeConversionItem
-{
-	TextureAddressMode lnValue;
-	VkSamplerAddressMode vkValue;
+struct AddressModeConversionItem {
+    TextureAddressMode lnValue;
+    VkSamplerAddressMode vkValue;
 };
 
-struct PrimitiveTopologyConversionItem
-{
+struct PrimitiveTopologyConversionItem {
     PrimitiveTopology lnValue;
     VkPrimitiveTopology vkValue;
 };
 
-struct VertexElementTypeConversionItem
-{
-	VertexElementType lnValue;
-	VkFormat vkValue;
+struct VertexElementTypeConversionItem {
+    VertexElementType lnValue;
+    VkFormat vkValue;
 };
 
-static FormatConversionItem s_formatConversionTable[] =
-{
-	{VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false},
-	{VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA8, false},
-	{VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB8, false}, // TODO: remove
-	{VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::RGBA16F, false},
-	{VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::RGBA32F, false},
-	{VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16F, false},
-	{VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32F, false},
-	{VK_FORMAT_R32_SINT, 32, TextureFormat::R32S, false},
+static FormatConversionItem s_formatConversionTable[] = {
+    { VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false },
+    { VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA8, false },
+    { VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB8, false }, // TODO: remove
+    { VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::RGBA16F, false },
+    { VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::RGBA32F, false },
+    { VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16F, false },
+    { VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32F, false },
+    { VK_FORMAT_R32_SINT, 32, TextureFormat::R32S, false },
 };
 
-static const BlendFactorConversionItem s_blendFactorConversionTable[] =
-{
-	{BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO},
-	{BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE},
-	{BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA},
-	{BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
-	{BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA},
-	{BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
-	{BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA},
-	{BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
-	{BlendFactor::DestinationAlpha, VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA},
-	{BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
+static const BlendFactorConversionItem s_blendFactorConversionTable[] = {
+    { BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO },
+    { BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE },
+    { BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA },
+    { BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA },
+    { BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA },
+    { BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA },
+    { BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA },
+    { BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA },
+    { BlendFactor::DestinationAlpha, VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA },
+    { BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA },
 };
 
-static const BlendOpConversionItem s_blendOpConversionTable[] =
-{
-	{BlendOp::Add, VK_BLEND_OP_ADD},
-	{BlendOp::Subtract, VK_BLEND_OP_SUBTRACT},
-	{BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT},
-	{BlendOp::Min, VK_BLEND_OP_MIN},
-	{BlendOp::Max, VK_BLEND_OP_MAX},
+static const BlendOpConversionItem s_blendOpConversionTable[] = {
+    { BlendOp::Add, VK_BLEND_OP_ADD },
+    { BlendOp::Subtract, VK_BLEND_OP_SUBTRACT },
+    { BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT },
+    { BlendOp::Min, VK_BLEND_OP_MIN },
+    { BlendOp::Max, VK_BLEND_OP_MAX },
 };
 
-static const ComparisonFuncConversionItem s_comparisoFuncConversionTable[] =
-{
-	{ComparisonFunc::Never, VK_COMPARE_OP_NEVER},
-	{ComparisonFunc::Less, VK_COMPARE_OP_LESS},
-	{ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL},
-	{ComparisonFunc::Greater, VK_COMPARE_OP_GREATER},
-	{ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL},
-	{ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL},
-	{ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL},
-	{ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS},
+static const ComparisonFuncConversionItem s_comparisoFuncConversionTable[] = {
+    { ComparisonFunc::Never, VK_COMPARE_OP_NEVER },
+    { ComparisonFunc::Less, VK_COMPARE_OP_LESS },
+    { ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL },
+    { ComparisonFunc::Greater, VK_COMPARE_OP_GREATER },
+    { ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL },
+    { ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL },
+    { ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL },
+    { ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS },
 };
 
-static const FillModeConversionItem s_fillModeConversionTable[] =
-{
-	{FillMode::Solid, VK_POLYGON_MODE_FILL},
-	{FillMode::Wireframe, VK_POLYGON_MODE_LINE},
+static const FillModeConversionItem s_fillModeConversionTable[] = {
+    { FillMode::Solid, VK_POLYGON_MODE_FILL },
+    { FillMode::Wireframe, VK_POLYGON_MODE_LINE },
 };
 
-static const CullModeConversionItem s_cullModeConversionTable[] =
-{
-	{CullMode::None, VK_CULL_MODE_NONE},
-	{CullMode::Front, VK_CULL_MODE_FRONT_BIT},
-	{CullMode::Back, VK_CULL_MODE_BACK_BIT},
+static const CullModeConversionItem s_cullModeConversionTable[] = {
+    { CullMode::None, VK_CULL_MODE_NONE },
+    { CullMode::Front, VK_CULL_MODE_FRONT_BIT },
+    { CullMode::Back, VK_CULL_MODE_BACK_BIT },
 };
 
-static const StencilOpConversionItem s_stencilOpConversionTable[] =
-{
-	{StencilOp::Keep, VK_STENCIL_OP_KEEP},
-	{StencilOp::Replace, VK_STENCIL_OP_REPLACE},
+static const StencilOpConversionItem s_stencilOpConversionTable[] = {
+    { StencilOp::Keep, VK_STENCIL_OP_KEEP },
+    { StencilOp::Replace, VK_STENCIL_OP_REPLACE },
 };
 
-static const FilterModeConversionItem s_filterModeConversionTable[] =
-{
-	{TextureFilterMode::Point, VK_FILTER_NEAREST},
-	{TextureFilterMode::Linear, VK_FILTER_LINEAR},
+static const FilterModeConversionItem s_filterModeConversionTable[] = {
+    { TextureFilterMode::Point, VK_FILTER_NEAREST },
+    { TextureFilterMode::Linear, VK_FILTER_LINEAR },
 };
 
-static const AddressModeConversionItem s_addressModeConversionTable[] =
-{
-	{TextureAddressMode::Repeat, VK_SAMPLER_ADDRESS_MODE_REPEAT},
-	{TextureAddressMode::Clamp, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
+static const AddressModeConversionItem s_addressModeConversionTable[] = {
+    { TextureAddressMode::Repeat, VK_SAMPLER_ADDRESS_MODE_REPEAT },
+    { TextureAddressMode::Clamp, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE },
 };
 
-static const PrimitiveTopologyConversionItem s_primitiveTopologyConversionTable[] =
-{
-    {PrimitiveTopology::TriangleList, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST},
-    {PrimitiveTopology::TriangleStrip, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP},
-    {PrimitiveTopology::TriangleFan, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN},
-    {PrimitiveTopology::LineList, VK_PRIMITIVE_TOPOLOGY_LINE_LIST},
-    {PrimitiveTopology::LineStrip, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP},
-    {PrimitiveTopology::PointList, VK_PRIMITIVE_TOPOLOGY_POINT_LIST},
+static const PrimitiveTopologyConversionItem s_primitiveTopologyConversionTable[] = {
+    { PrimitiveTopology::TriangleList, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
+    { PrimitiveTopology::TriangleStrip, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+    { PrimitiveTopology::TriangleFan, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN },
+    { PrimitiveTopology::LineList, VK_PRIMITIVE_TOPOLOGY_LINE_LIST },
+    { PrimitiveTopology::LineStrip, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP },
+    { PrimitiveTopology::PointList, VK_PRIMITIVE_TOPOLOGY_POINT_LIST },
 };
 
-static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] =
-{
-	{VertexElementType::Unknown, VK_FORMAT_UNDEFINED},
+static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] = {
+    { VertexElementType::Unknown, VK_FORMAT_UNDEFINED },
 
-	{VertexElementType::Float1, VK_FORMAT_R32_SFLOAT},
-	{VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT},
-	{VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT},
-	{VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT},
+    { VertexElementType::Float1, VK_FORMAT_R32_SFLOAT },
+    { VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT },
+    { VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT },
+    { VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT },
 
-	{VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT},
-	{VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM}, // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+    { VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT },
+    { VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM }, // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
 
-	{VertexElementType::Short2, VK_FORMAT_R16G16_SINT},
-	{VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT},
+    { VertexElementType::Short2, VK_FORMAT_R16G16_SINT },
+    { VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT },
 };
 
-VkFormat VulkanHelper::LNFormatToVkFormat(TextureFormat format)
-{
-	assert(s_formatConversionTable[(int)format].lnFormat == format);
-	return s_formatConversionTable[(int)format].vulkanFormat;
+VkFormat VulkanHelper::LNFormatToVkFormat(TextureFormat format) {
+    assert(s_formatConversionTable[(int)format].lnFormat == format);
+    return s_formatConversionTable[(int)format].vulkanFormat;
 }
 
-TextureFormat VulkanHelper::VkFormatToLNFormat(VkFormat format)
-{
-	for (auto& i : s_formatConversionTable) {
-		if (i.vulkanFormat == format) {
-			return i.lnFormat;
-		}
-	}
-	return TextureFormat::Unknown;
+TextureFormat VulkanHelper::VkFormatToLNFormat(VkFormat format) {
+    for (auto& i : s_formatConversionTable) {
+        if (i.vulkanFormat == format) {
+            return i.lnFormat;
+        }
+    }
+    return TextureFormat::Unknown;
 }
 
-VkBlendFactor VulkanHelper::LNBlendFactorToVkBlendFactor_Color(BlendFactor value)
-{
-	assert(s_blendFactorConversionTable[(int)value].lnValue == value);
-	return s_blendFactorConversionTable[(int)value].vkValueColor;
+VkBlendFactor VulkanHelper::LNBlendFactorToVkBlendFactor_Color(BlendFactor value) {
+    assert(s_blendFactorConversionTable[(int)value].lnValue == value);
+    return s_blendFactorConversionTable[(int)value].vkValueColor;
 }
 
-VkBlendFactor VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(BlendFactor value)
-{
-	assert(s_blendFactorConversionTable[(int)value].lnValue == value);
-	return s_blendFactorConversionTable[(int)value].vkValueAlpha;
+VkBlendFactor VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(BlendFactor value) {
+    assert(s_blendFactorConversionTable[(int)value].lnValue == value);
+    return s_blendFactorConversionTable[(int)value].vkValueAlpha;
 }
 
-VkBlendOp VulkanHelper::LNBlendOpToVkBlendOp(BlendOp value)
-{
-	assert(s_blendOpConversionTable[(int)value].lnValue == value);
-	return s_blendOpConversionTable[(int)value].vkValue;
+VkBlendOp VulkanHelper::LNBlendOpToVkBlendOp(BlendOp value) {
+    assert(s_blendOpConversionTable[(int)value].lnValue == value);
+    return s_blendOpConversionTable[(int)value].vkValue;
 }
 
-VkCompareOp VulkanHelper::LNComparisonFuncToVkCompareOp(ComparisonFunc value)
-{
-	assert(s_comparisoFuncConversionTable[(int)value].lnValue == value);
-	return s_comparisoFuncConversionTable[(int)value].vkValue;
+VkCompareOp VulkanHelper::LNComparisonFuncToVkCompareOp(ComparisonFunc value) {
+    assert(s_comparisoFuncConversionTable[(int)value].lnValue == value);
+    return s_comparisoFuncConversionTable[(int)value].vkValue;
 }
 
-VkPolygonMode VulkanHelper::LNFillModeToVkPolygonMode(FillMode value)
-{
-	assert(s_fillModeConversionTable[(int)value].lnValue == value);
-	return s_fillModeConversionTable[(int)value].vkValue;
+VkPolygonMode VulkanHelper::LNFillModeToVkPolygonMode(FillMode value) {
+    assert(s_fillModeConversionTable[(int)value].lnValue == value);
+    return s_fillModeConversionTable[(int)value].vkValue;
 }
 
-VkCullModeFlagBits VulkanHelper::LNCullModeToVkCullMode(CullMode value)
-{
-	assert(s_cullModeConversionTable[(int)value].lnValue == value);
-	return s_cullModeConversionTable[(int)value].vkValue;
+VkCullModeFlagBits VulkanHelper::LNCullModeToVkCullMode(CullMode value) {
+    assert(s_cullModeConversionTable[(int)value].lnValue == value);
+    return s_cullModeConversionTable[(int)value].vkValue;
 }
 
-VkStencilOp VulkanHelper::LNStencilOpToVkStencilOp(StencilOp value)
-{
-	assert(s_stencilOpConversionTable[(int)value].lnValue == value);
-	return s_stencilOpConversionTable[(int)value].vkValue;
+VkStencilOp VulkanHelper::LNStencilOpToVkStencilOp(StencilOp value) {
+    assert(s_stencilOpConversionTable[(int)value].lnValue == value);
+    return s_stencilOpConversionTable[(int)value].vkValue;
 }
 
-VkFilter VulkanHelper::LNTextureFilterModeToVkFilter(TextureFilterMode value)
-{
-	assert(s_filterModeConversionTable[(int)value].lnValue == value);
-	return s_filterModeConversionTable[(int)value].vkValue;
+VkFilter VulkanHelper::LNTextureFilterModeToVkFilter(TextureFilterMode value) {
+    assert(s_filterModeConversionTable[(int)value].lnValue == value);
+    return s_filterModeConversionTable[(int)value].vkValue;
 }
 
-VkSamplerAddressMode VulkanHelper::LNTextureAddressModeModeToVkSamplerAddressMode(TextureAddressMode value)
-{
-	assert(s_addressModeConversionTable[(int)value].lnValue == value);
-	return s_addressModeConversionTable[(int)value].vkValue;
+VkSamplerAddressMode VulkanHelper::LNTextureAddressModeModeToVkSamplerAddressMode(TextureAddressMode value) {
+    assert(s_addressModeConversionTable[(int)value].lnValue == value);
+    return s_addressModeConversionTable[(int)value].vkValue;
 }
 
-VkPrimitiveTopology VulkanHelper::LNPrimitiveTopologyToVkPrimitiveTopology(PrimitiveTopology value)
-{
+VkPrimitiveTopology VulkanHelper::LNPrimitiveTopologyToVkPrimitiveTopology(PrimitiveTopology value) {
     assert(s_primitiveTopologyConversionTable[(int)value].lnValue == value);
     return s_primitiveTopologyConversionTable[(int)value].vkValue;
 }
 
-VkFormat VulkanHelper::LNVertexElementTypeToVkFormat(VertexElementType value)
-{
-	assert(s_vertexElementTypeConversionTable[(int)value].lnValue == value);
-	return s_vertexElementTypeConversionTable[(int)value].vkValue;
+VkFormat VulkanHelper::LNVertexElementTypeToVkFormat(VertexElementType value) {
+    assert(s_vertexElementTypeConversionTable[(int)value].lnValue == value);
+    return s_vertexElementTypeConversionTable[(int)value].vkValue;
 }
 
-bool VulkanHelper::initVulkanFunctions()
-{
-	static bool loaded = false;
+bool VulkanHelper::initVulkanFunctions() {
+    static bool loaded = false;
 
-	if (loaded) return true;
+    if (loaded) return true;
 
 #if defined(LN_OS_WIN32)
     HMODULE hModule = ::LoadLibraryW(L"vulkan-1.dll");
@@ -680,52 +643,50 @@ bool VulkanHelper::initVulkanFunctions()
     vkGetPhysicalDeviceWin32PresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
 #endif
 
-	vkGetPhysicalDeviceProperties2 = FUNC_PTR(PFN_vkGetPhysicalDeviceProperties2, "vkGetPhysicalDeviceProperties2");
-	
+    vkGetPhysicalDeviceProperties2 = FUNC_PTR(PFN_vkGetPhysicalDeviceProperties2, "vkGetPhysicalDeviceProperties2");
 
-	loaded = true;
+    loaded = true;
     return true;
 }
 
-bool VulkanHelper::checkVulkanSupported()
-{
-	if (!VulkanHelper::initVulkanFunctions()) {
-		LN_LOG_WARNING("Valid vulkan library not found.");
-		return false;
-	}
+bool VulkanHelper::checkVulkanSupported() {
+    if (!VulkanHelper::initVulkanFunctions()) {
+        LN_LOG_WARNING("Valid vulkan library not found.");
+        return false;
+    }
 
-	VkApplicationInfo appInfo = {};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Lumino Application";
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.pEngineName = "Lumino Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.apiVersion = VK_MAKE_VERSION(1, 1, 0);
+    VkApplicationInfo appInfo = {};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "Lumino Application";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "Lumino Engine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.apiVersion = VK_MAKE_VERSION(1, 1, 0);
 
-	VkInstanceCreateInfo createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo = &appInfo;
+    VkInstanceCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
 
-	VkInstance instance = VK_NULL_HANDLE;
-	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
-	if (instance) {
-		vkDestroyInstance(instance, nullptr);
-	}
+    VkInstance instance = VK_NULL_HANDLE;
+    VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
+    if (instance) {
+        vkDestroyInstance(instance, nullptr);
+    }
 
-	return result == VK_SUCCESS;
+    return result == VK_SUCCESS;
 }
 
-const char* VulkanHelper::getVkResultName(VkResult result)
-{
-#define VK_RESULT_VALUE(v) case v: return #v
-    switch (result)
-    {
+const char* VulkanHelper::getVkResultName(VkResult result) {
+#define VK_RESULT_VALUE(v) \
+    case v:                \
+        return #v
+    switch (result) {
         VK_RESULT_VALUE(VK_SUCCESS);
         VK_RESULT_VALUE(VK_NOT_READY);
         VK_RESULT_VALUE(VK_TIMEOUT);
         VK_RESULT_VALUE(VK_EVENT_SET);
         VK_RESULT_VALUE(VK_EVENT_RESET);
-        VK_RESULT_VALUE(VK_INCOMPLETE);	// and VK_RESULT_END_RANGE
+        VK_RESULT_VALUE(VK_INCOMPLETE); // and VK_RESULT_END_RANGE
         VK_RESULT_VALUE(VK_ERROR_OUT_OF_HOST_MEMORY);
         VK_RESULT_VALUE(VK_ERROR_OUT_OF_DEVICE_MEMORY);
         VK_RESULT_VALUE(VK_ERROR_INITIALIZATION_FAILED);
@@ -737,9 +698,9 @@ const char* VulkanHelper::getVkResultName(VkResult result)
         VK_RESULT_VALUE(VK_ERROR_INCOMPATIBLE_DRIVER);
         VK_RESULT_VALUE(VK_ERROR_TOO_MANY_OBJECTS);
         VK_RESULT_VALUE(VK_ERROR_FORMAT_NOT_SUPPORTED);
-        VK_RESULT_VALUE(VK_ERROR_FRAGMENTED_POOL);			// and VK_RESULT_BEGIN_RANGE
-        VK_RESULT_VALUE(VK_ERROR_OUT_OF_POOL_MEMORY);		// and VK_ERROR_OUT_OF_POOL_MEMORY_KHR
-        VK_RESULT_VALUE(VK_ERROR_INVALID_EXTERNAL_HANDLE);	// and VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR
+        VK_RESULT_VALUE(VK_ERROR_FRAGMENTED_POOL);         // and VK_RESULT_BEGIN_RANGE
+        VK_RESULT_VALUE(VK_ERROR_OUT_OF_POOL_MEMORY);      // and VK_ERROR_OUT_OF_POOL_MEMORY_KHR
+        VK_RESULT_VALUE(VK_ERROR_INVALID_EXTERNAL_HANDLE); // and VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR
         VK_RESULT_VALUE(VK_ERROR_SURFACE_LOST_KHR);
         VK_RESULT_VALUE(VK_ERROR_NATIVE_WINDOW_IN_USE_KHR);
         VK_RESULT_VALUE(VK_SUBOPTIMAL_KHR);
@@ -758,8 +719,7 @@ const char* VulkanHelper::getVkResultName(VkResult result)
     return "<Unkonwn VkResult>";
 }
 
-std::vector<const char*> VulkanHelper::checkValidationLayerSupport()
-{
+std::vector<const char*> VulkanHelper::checkValidationLayerSupport() {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -782,32 +742,29 @@ std::vector<const char*> VulkanHelper::checkValidationLayerSupport()
     return result;
 }
 
-int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount)
-{
-    switch (primitive)
-    {
-    case PrimitiveTopology::TriangleList:
-        return primitiveCount * 3;
-    case PrimitiveTopology::TriangleStrip:
-        return  2 + primitiveCount;
-    case PrimitiveTopology::TriangleFan:
-        return  2 + primitiveCount;
-    case PrimitiveTopology::LineList:
-        return  primitiveCount * 2;
-    case PrimitiveTopology::LineStrip:
-        return  1 + primitiveCount;
-    case PrimitiveTopology::PointList:
-        return  primitiveCount;
-    default:
-        LN_UNREACHABLE();
-        return 0;
+int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount) {
+    switch (primitive) {
+        case PrimitiveTopology::TriangleList:
+            return primitiveCount * 3;
+        case PrimitiveTopology::TriangleStrip:
+            return 2 + primitiveCount;
+        case PrimitiveTopology::TriangleFan:
+            return 2 + primitiveCount;
+        case PrimitiveTopology::LineList:
+            return primitiveCount * 2;
+        case PrimitiveTopology::LineStrip:
+            return 1 + primitiveCount;
+        case PrimitiveTopology::PointList:
+            return primitiveCount;
+        default:
+            LN_UNREACHABLE();
+            return 0;
     }
 }
 
-Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView)
-{
+Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView) {
     LN_CHECK(deviceContext);
-	LN_CHECK(mipLevel >= 1);
+    LN_CHECK(mipLevel >= 1);
 
     VkImageViewCreateInfo viewInfo = {};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -830,93 +787,83 @@ Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image,
 
 VKAPI_ATTR
 void* VKAPI_CALL AllocCallback(
-	void* pUserData,
-	size_t size,
-	size_t alignment,
-	VkSystemAllocationScope scope)
-{
-	AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
-	return allocator->alloc(size, alignment, scope);
+    void* pUserData,
+    size_t size,
+    size_t alignment,
+    VkSystemAllocationScope scope) {
+    AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
+    return allocator->alloc(size, alignment, scope);
 }
 
 VKAPI_ATTR
 void* VKAPI_CALL ReallocCallback(
-	void* pUserData,
-	void* pOriginal,
-	size_t size,
-	size_t alignment,
-	VkSystemAllocationScope scope)
-{
-	AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
-	return allocator->realloc(pOriginal, size, alignment, scope);
+    void* pUserData,
+    void* pOriginal,
+    size_t size,
+    size_t alignment,
+    VkSystemAllocationScope scope) {
+    AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
+    return allocator->realloc(pOriginal, size, alignment, scope);
 }
 
 VKAPI_ATTR
-void VKAPI_CALL FreeCallback(void* pUserData, void* pMemory)
-{
-	AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
-	return allocator->free(pMemory);
+void VKAPI_CALL FreeCallback(void* pUserData, void* pMemory) {
+    AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
+    return allocator->free(pMemory);
 }
 
 AbstractVulkanAllocator::AbstractVulkanAllocator()
-	: m_allocatorCallbacks()
-{
+    : m_allocatorCallbacks() {
 }
 
-Result AbstractVulkanAllocator::init()
-{
-	m_allocatorCallbacks.pfnAllocation = AllocCallback;
-	m_allocatorCallbacks.pfnFree = FreeCallback;
-	m_allocatorCallbacks.pfnReallocation = ReallocCallback;
-	m_allocatorCallbacks.pfnInternalAllocation = nullptr;
-	m_allocatorCallbacks.pfnInternalFree = nullptr;
-	m_allocatorCallbacks.pUserData = this;
-	return ok();
+Result AbstractVulkanAllocator::init() {
+    m_allocatorCallbacks.pfnAllocation = AllocCallback;
+    m_allocatorCallbacks.pfnFree = FreeCallback;
+    m_allocatorCallbacks.pfnReallocation = ReallocCallback;
+    m_allocatorCallbacks.pfnInternalAllocation = nullptr;
+    m_allocatorCallbacks.pfnInternalFree = nullptr;
+    m_allocatorCallbacks.pUserData = this;
+    return ok();
 }
 
 //=============================================================================
 // VulkanAllocator
 
 VulkanAllocator::VulkanAllocator()
-	: m_counter(0)
-	, m_allocationSize{}
-{
+    : m_counter(0)
+    , m_allocationSize{} {
 }
 
-Result VulkanAllocator::init()
-{
-	return AbstractVulkanAllocator::init();
+Result VulkanAllocator::init() {
+    return AbstractVulkanAllocator::init();
 }
 
-void* VulkanAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
-{
-	m_counter++;
-	m_allocationSize[scope] -= size;
+void* VulkanAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept {
+    m_counter++;
+    m_allocationSize[scope] -= size;
 #ifdef LN_OS_WIN32
-	return _aligned_malloc(size, alignment);
+    return _aligned_malloc(size, alignment);
 #else
-	return aligned_alloc(alignment, size);
+    return aligned_alloc(alignment, size);
 #endif
 }
 
-void* VulkanAllocator::realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
-{
-	m_counter++;
+void* VulkanAllocator::realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept {
+    m_counter++;
 #ifdef LN_OS_WIN32
-	return _aligned_realloc(ptr, size, alignment);
+    return _aligned_realloc(ptr, size, alignment);
 #else
-	A3D_UNUSED(alignment);
-	return realloc(ptr, size);
+    A3D_UNUSED(alignment);
+    return realloc(ptr, size);
 #endif
 }
 
-void VulkanAllocator::free(void* ptr) noexcept
-{
-	m_counter--;
+void VulkanAllocator::free(void* ptr) noexcept {
+    m_counter--;
 #ifdef LN_OS_WIN32
-	_aligned_free(ptr);
+    _aligned_free(ptr);
 #else
-	free(ptr);
+    free(ptr);
 #endif
 }
 
@@ -924,93 +871,85 @@ void VulkanAllocator::free(void* ptr) noexcept
 // VulkanLinearAllocator
 
 VulkanLinearAllocator::VulkanLinearAllocator()
-	: m_linearAllocator(nullptr)
-{
+    : m_linearAllocator(nullptr) {
 }
 
-Result VulkanLinearAllocator::init()
-{
-	return AbstractVulkanAllocator::init();
+Result VulkanLinearAllocator::init() {
+    return AbstractVulkanAllocator::init();
 }
 
-void* VulkanLinearAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
-{
-	// alignment しないと、Radeon Vega 8 で落ちることがあった
-	void* ptr = m_linearAllocator->allocate(size, alignment);
-	assert(((size_t)ptr) % alignment == 0);
-	return ptr;
+void* VulkanLinearAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept {
+    // alignment しないと、Radeon Vega 8 で落ちることがあった
+    void* ptr = m_linearAllocator->allocate(size, alignment);
+    assert(((size_t)ptr) % alignment == 0);
+    return ptr;
 }
 
-void* VulkanLinearAllocator::realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
-{
-	// TODO: NotImplemented
-	assert(0);
-	return nullptr;
+void* VulkanLinearAllocator::realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept {
+    // TODO: NotImplemented
+    assert(0);
+    return nullptr;
 }
 
-void VulkanLinearAllocator::free(void* ptr) noexcept
-{
-	// フレーム終了時にすべてクリアされるため不要
+void VulkanLinearAllocator::free(void* ptr) noexcept {
+    // フレーム終了時にすべてクリアされるため不要
 }
 
 //=============================================================================
 // VulkanImage
 
-VulkanImage::VulkanImage()
-{
+VulkanImage::VulkanImage() {
 }
 
-Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags)
-{
-	LN_DCHECK(deviceContext);
-	LN_CHECK(mipLevel >= 1);
-	m_deviceContext = deviceContext;
+Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags) {
+    LN_DCHECK(deviceContext);
+    LN_CHECK(mipLevel >= 1);
+    m_deviceContext = deviceContext;
     m_externalManagement = false;
     m_width = width;
     m_height = height;
     m_format = format;
 
-	VkDevice device = m_deviceContext->vulkanDevice();
+    VkDevice device = m_deviceContext->vulkanDevice();
 
-	VkImageCreateInfo imageInfo = {};
-	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	imageInfo.imageType = VK_IMAGE_TYPE_2D;
-	imageInfo.extent.width = width;
-	imageInfo.extent.height = height;
-	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = mipLevel;
-	imageInfo.arrayLayers = 1;
-	imageInfo.format = format;
-	imageInfo.tiling = tiling;
-	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	imageInfo.usage = usage;
+    VkImageCreateInfo imageInfo = {};
+    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageInfo.extent.width = width;
+    imageInfo.extent.height = height;
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = mipLevel;
+    imageInfo.arrayLayers = 1;
+    imageInfo.format = format;
+    imageInfo.tiling = tiling;
+    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageInfo.usage = usage;
     imageInfo.samples = numSamples;
-	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	LN_VK_CHECK(vkCreateImage(device, &imageInfo, m_deviceContext->vulkanAllocator(), &m_image));
+    LN_VK_CHECK(vkCreateImage(device, &imageInfo, m_deviceContext->vulkanAllocator(), &m_image));
 
-	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, m_image, &memRequirements);
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(device, m_image, &memRequirements);
 
-	VkMemoryAllocateInfo allocInfo = {};
-	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memRequirements.size;
+    VkMemoryAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
 
-	m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
+    m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
 
-	LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_deviceContext->vulkanAllocator(), &m_imageMemory));
+    LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_deviceContext->vulkanAllocator(), &m_imageMemory));
 
     vkBindImageMemory(device, m_image, m_imageMemory, 0);
 
-	if (!VulkanHelper::createImageView(m_deviceContext, m_image, format, mipLevel, aspectFlags, &m_imageView)) {
+    if (!VulkanHelper::createImageView(m_deviceContext, m_image, format, mipLevel, aspectFlags, &m_imageView)) {
         return err();
-	}
+    }
 
-	return ok();
+    return ok();
 }
 
-Result VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
-{
+Result VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
     LN_DCHECK(deviceContext);
     m_externalManagement = true;
     m_width = width;
@@ -1022,8 +961,7 @@ Result VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32
     return ok();
 }
 
-void VulkanImage::dispose()
-{
+void VulkanImage::dispose() {
     if (!m_externalManagement) {
         if (m_imageView) {
             vkDestroyImageView(m_deviceContext->vulkanDevice(), m_imageView, m_deviceContext->vulkanAllocator());
@@ -1043,36 +981,33 @@ void VulkanImage::dispose()
 //=============================================================================
 // VulkanCommandBuffer
 
-VulkanCommandBuffer::VulkanCommandBuffer()
-{
+VulkanCommandBuffer::VulkanCommandBuffer() {
 }
 
-VulkanCommandBuffer::~VulkanCommandBuffer()
-{
+VulkanCommandBuffer::~VulkanCommandBuffer() {
 }
 
-Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
-{
+Result VulkanCommandBuffer::init(VulkanDevice* deviceContext) {
     if (LN_REQUIRE(deviceContext)) return err();
     m_deviceContext = deviceContext;
 
-	if (!m_vulkanAllocator.init()) {
+    if (!m_vulkanAllocator.init()) {
         return err();
-	}
+    }
 
-	// ひとまず 16MB (100万頂点くらいでの見積)
-	// 1ページは、更新したいバッファ全体が乗るサイズになっていればよい。
-	// もしあふれる場合は一度 LinearAllocator の LargePage 扱いにして、
-	// 次のフレームに移る前にページサイズを大きくして LinearAllocator を作り直す。
-	// ただ、普通動的なバッファ更新でこんなに大きなサイズを使うことはないような気もする。
-	// なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
-	resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
+    // ひとまず 16MB (100万頂点くらいでの見積)
+    // 1ページは、更新したいバッファ全体が乗るサイズになっていればよい。
+    // もしあふれる場合は一度 LinearAllocator の LargePage 扱いにして、
+    // 次のフレームに移る前にページサイズを大きくして LinearAllocator を作り直す。
+    // ただ、普通動的なバッファ更新でこんなに大きなサイズを使うことはないような気もする。
+    // なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
+    resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
 
     //m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->uniformBufferSingleFrameAllocator());
     m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->transferBufferSingleFrameAllocator());
 
-	m_stagingBufferPoolUsed = 0;
-	glowStagingBufferPool();
+    m_stagingBufferPoolUsed = 0;
+    glowStagingBufferPool();
 
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -1087,11 +1022,10 @@ Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
     LN_VK_CHECK(vkCreateFence(m_deviceContext->vulkanDevice(), &fenceInfo, m_deviceContext->vulkanAllocator(), &m_inFlightFence));
 
-	return ok();
+    return ok();
 }
 
-void VulkanCommandBuffer::dispose()
-{
+void VulkanCommandBuffer::dispose() {
     // Wait for execution to complete as it may be pending.
     vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
 
@@ -1103,8 +1037,8 @@ void VulkanCommandBuffer::dispose()
 
     cleanInFlightResources();
 
-	m_stagingBufferPool.clear();
-	m_stagingBufferPoolUsed = 0;
+    m_stagingBufferPool.clear();
+    m_stagingBufferPoolUsed = 0;
 
     if (m_inFlightFence) {
         vkDestroyFence(m_deviceContext->vulkanDevice(), m_inFlightFence, m_deviceContext->vulkanAllocator());
@@ -1112,15 +1046,13 @@ void VulkanCommandBuffer::dispose()
     }
 }
 
-void VulkanCommandBuffer::wait()
-{
+void VulkanCommandBuffer::wait() {
     // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
     vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
     vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 }
 
-Result VulkanCommandBuffer::beginRecording()
-{
+Result VulkanCommandBuffer::beginRecording() {
 
     m_linearAllocator->cleanup();
     //m_uniformBufferSingleFrameAllocator->cleanup();
@@ -1141,8 +1073,7 @@ Result VulkanCommandBuffer::beginRecording()
     return ok();
 }
 
-Result VulkanCommandBuffer::endRecording()
-{
+Result VulkanCommandBuffer::endRecording() {
     if (m_currentRenderPass) {
         vkCmdEndRenderPass(vulkanCommandBuffer());
         m_currentRenderPass = nullptr;
@@ -1159,21 +1090,19 @@ Result VulkanCommandBuffer::endRecording()
     return ok();
 }
 
-void VulkanCommandBuffer::endRenderPassInRecordingIfNeeded()
-{
+void VulkanCommandBuffer::endRenderPassInRecordingIfNeeded() {
     if (m_currentRenderPass) {
         vkCmdEndRenderPass(vulkanCommandBuffer());
         m_currentRenderPass = false;
     }
 }
 
-Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore)
-{
+Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
     // 実行を開始する前に待機するセマフォ
-    VkSemaphore waitSemaphores[] = { waitSemaphore };//imageAvailableSemaphores[currentFrame] };
+    VkSemaphore waitSemaphores[] = { waitSemaphore }; //imageAvailableSemaphores[currentFrame] };
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     submitInfo.waitSemaphoreCount = (waitSemaphore == VK_NULL_HANDLE) ? 0 : 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
@@ -1185,9 +1114,9 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
     submitInfo.pCommandBuffers = &commandBuffer;
 
     // 実行を完了したときに通知されるセマフォ
-    VkSemaphore signalSemaphores[] = { signalSemaphore };// renderFinishedSemaphores[currentFrame]};
+    VkSemaphore signalSemaphores[] = { signalSemaphore }; // renderFinishedSemaphores[currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;    // validation layer: Queue 0xd51c110 is signaling semaphore 0x52 that was previously signaled by queue 0xd51c110 but has not since been waited on by any queue.
+    submitInfo.pSignalSemaphores = signalSemaphores; // validation layer: Queue 0xd51c110 is signaling semaphore 0x52 that was previously signaled by queue 0xd51c110 but has not since been waited on by any queue.
 
     // unsignaled にしておく。vkQueueSubmit で発行した実行が完了したときに signaled になる。
     LN_VK_CHECK(vkResetFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence));
@@ -1211,7 +1140,7 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
 //            usingShaderPass = i;
 //        }
 //    }
-//    
+//
 //    if (usingShaderPass == -1) {
 //        auto pool = shaderPass->getDescriptorSetsPool();
 //        m_usingDescriptorSetsPools.push_back(pool);
@@ -1222,8 +1151,7 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
 //    return m_usingDescriptorSetsPools[usingShaderPass]->allocateDescriptorSets(this, outSets);
 //}
 
-VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlags usage)
-{
+VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlags usage) {
     if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
         glowStagingBufferPool();
     }
@@ -1246,20 +1174,19 @@ VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlag
     return buffer;
 }
 
-VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
-{
+VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination) {
     //VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
     VulkanSingleFrameBufferInfo bufferInfo = m_transferBufferSingleFrameAllocator->allocate(size);
 
-	// コマンドバッファに乗せる
+    // コマンドバッファに乗せる
     VkBufferCopy copyRegion;
     copyRegion.srcOffset = bufferInfo.offset;
     copyRegion.dstOffset = 0;
-	copyRegion.size = size;
-	//vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
+    copyRegion.size = size;
+    //vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
     vkCmdCopyBuffer(m_commandBuffer, bufferInfo.buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
 
-#if 1   // TODO: test
+#if 1 // TODO: test
     VkBufferMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
 
@@ -1276,24 +1203,26 @@ VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, Vulk
 
     vkCmdPipelineBarrier(
         m_commandBuffer,
-		VK_PIPELINE_STAGE_TRANSFER_BIT,	// このパイプラインステージで、1セットのデータが完全に生成されたことを保証する
-        VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,		// このパイプラインステージがそれを消費することを許可する
+        VK_PIPELINE_STAGE_TRANSFER_BIT,     // このパイプラインステージで、1セットのデータが完全に生成されたことを保証する
+        VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, // このパイプラインステージがそれを消費することを許可する
         0,
-        0, nullptr,
-        1, &barrier,    // どのデータをブロック/ブロック解除するかを定義します。
-        0, nullptr);
-        // http://web.engr.oregonstate.edu/~mjb/vulkan/Handouts/PipelineBarriers.2pp.pdf
-        // https://stackoverflow.com/questions/48894573/how-to-synchronize-uniform-buffer-updates
-        //https://stackoverflow.com/questions/40577047/vulkan-vkcmdpipelinebarrier-for-data-coherence
+        0,
+        nullptr,
+        1,
+        &barrier, // どのデータをブロック/ブロック解除するかを定義します。
+        0,
+        nullptr);
+    // http://web.engr.oregonstate.edu/~mjb/vulkan/Handouts/PipelineBarriers.2pp.pdf
+    // https://stackoverflow.com/questions/48894573/how-to-synchronize-uniform-buffer-updates
+    //https://stackoverflow.com/questions/40577047/vulkan-vkcmdpipelinebarrier-for-data-coherence
     // https://chromium.googlesource.com/chromium/src/+/master/gpu/vulkan/vulkan_command_buffer.cc
 #endif
 
-	// 戻り先で書いてもらう
-	return bufferInfo;
+    // 戻り先で書いてもらう
+    return bufferInfo;
 }
 
-VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination)
-{
+VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination) {
     VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
     // コマンドバッファに乗せる
@@ -1303,34 +1232,31 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBuf
     return buffer;
 }
 
-void VulkanCommandBuffer::cleanInFlightResources()
-{
+void VulkanCommandBuffer::cleanInFlightResources() {
     for (auto& buf : m_stagingBufferPool) {
         buf.dispose();
     }
     m_stagingBufferPoolUsed = 0;
 }
 
-void VulkanCommandBuffer::resetAllocator(size_t pageSize)
-{
-	m_linearAllocatorManager = makeRef<LinearAllocatorPageManager>(pageSize);
-	m_linearAllocator = makeRef<LinearAllocator>(m_linearAllocatorManager);
-	m_vulkanAllocator.setLinearAllocator(m_linearAllocator);
+void VulkanCommandBuffer::resetAllocator(size_t pageSize) {
+    m_linearAllocatorManager = makeRef<LinearAllocatorPageManager>(pageSize);
+    m_linearAllocator = makeRef<LinearAllocator>(m_linearAllocatorManager);
+    m_vulkanAllocator.setLinearAllocator(m_linearAllocator);
 }
 
-Result VulkanCommandBuffer::glowStagingBufferPool()
-{
-	size_t oldSize = 0;
-	size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
+Result VulkanCommandBuffer::glowStagingBufferPool() {
+    size_t oldSize = 0;
+    size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
 
     m_stagingBufferPool.resize(newSize);
-	//for (size_t i = oldSize; i < newSize; i++) {
-	//	if (!m_stagingBufferPool[i].init(m_deviceContext)) {
-	//		return false;
-	//	}
-	//}
+    //for (size_t i = oldSize; i < newSize; i++) {
+    //	if (!m_stagingBufferPool[i].init(m_deviceContext)) {
+    //		return false;
+    //	}
+    //}
 
-	return ok();
+    return ok();
 }
 
 //=============================================================================
@@ -1338,12 +1264,10 @@ Result VulkanCommandBuffer::glowStagingBufferPool()
 
 VulkanRenderPass::VulkanRenderPass()
     : m_nativeRenderPass(VK_NULL_HANDLE)
-    , m_loadOpClear(false)
-{
+    , m_loadOpClear(false) {
 }
 
-Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear)
-{
+Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear) {
     LN_CHECK(deviceContext);
     m_deviceContext = deviceContext;
     m_loadOpClear = m_loadOpClear;
@@ -1351,12 +1275,12 @@ Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebuff
     VkDevice device = m_deviceContext->vulkanDevice();
 
     // TODO: 以下、ひとまず正しく動くことを優先に、VK_ATTACHMENT_LOAD_OP_LOAD や VK_ATTACHMENT_STORE_OP_STORE を毎回使っている。
-        // これは RT 全体をクリアする場合は CLEAR、ポストエフェクトなどで全体を再描画する場合は DONT_CARE にできる。
-        // 後で最適化を考えておく。
+    // これは RT 全体をクリアする場合は CLEAR、ポストエフェクトなどで全体を再描画する場合は DONT_CARE にできる。
+    // 後で最適化を考えておく。
 
-        // MaxRenderTargets + 1枚の depthbuffer
-    VkAttachmentDescription attachmentDescs[MaxMultiRenderTargets/* + 1*/] = {};
-    VkAttachmentReference attachmentRefs[MaxMultiRenderTargets/* + 1*/] = {};
+    // MaxRenderTargets + 1枚の depthbuffer
+    VkAttachmentDescription attachmentDescs[MaxMultiRenderTargets /* + 1*/] = {};
+    VkAttachmentReference attachmentRefs[MaxMultiRenderTargets /* + 1*/] = {};
     VkAttachmentReference* depthAttachmentRef = nullptr;
     int attachmentCount = 0;
     int colorAttachmentCount = 0;
@@ -1366,24 +1290,24 @@ Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebuff
             VulkanRenderTarget* renderTarget = static_cast<VulkanRenderTarget*>(state.renderTargets[i]);
 
             attachmentDescs[i].flags = 0;
-            attachmentDescs[i].format = renderTarget->image()->vulkanFormat();//VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
+            attachmentDescs[i].format = renderTarget->image()->vulkanFormat(); //VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
             attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
             //attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;//VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            attachmentDescs[i].loadOp = (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
+            attachmentDescs[i].loadOp = (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD; // サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
             attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-            attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;// VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
-            attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//VK_ATTACHMENT_STORE_OP_STORE; //VK_ATTACHMENT_STORE_OP_DONT_CARE;//    // TODO: stencil。今は未対応
+            attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;   // VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
+            attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE; //VK_ATTACHMENT_STORE_OP_STORE; //VK_ATTACHMENT_STORE_OP_DONT_CARE;//    // TODO: stencil。今は未対応
             if (renderTarget->isSwapchainBackbuffer()) {
                 // swapchain の場合
                 // TODO: initialLayout は、Swapchain 作成直後は VK_IMAGE_LAYOUT_UNDEFINED を指定しなければならない。
                 // なお、Barrier に乗せて遷移させることは許可されていない。ここで何とかする必要がある。
                 // https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
                 // validation layer: Submitted command buffer expects image 0x50 (subresource: aspectMask 0x1 array layer 0, mip level 0) to be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR--instead, image 0x50's current layout is VK_IMAGE_LAYOUT_UNDEFINED.
-                attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;// VK_IMAGE_LAYOUT_UNDEFINED;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
+                attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // VK_IMAGE_LAYOUT_UNDEFINED;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
                 attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
             }
             else {
-                attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;    // DONT_CARE と併用する場合は UNDEFINED にしておくとよい
+                attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; // DONT_CARE と併用する場合は UNDEFINED にしておくとよい
 
                 // パス終了後はシェーダ入力(テクスチャ)として使用できるように VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL に遷移する。
                 // https://qiita.com/Pctg-x8/items/a1a39678e9ca95c59d19
@@ -1405,14 +1329,14 @@ Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebuff
         int i = colorAttachmentCount;
 
         attachmentDescs[i].flags = 0;
-        attachmentDescs[i].format = m_deviceContext->findDepthFormat();//VK_FORMAT_D32_SFLOAT_S8_UINT; 
+        attachmentDescs[i].format = m_deviceContext->findDepthFormat(); //VK_FORMAT_D32_SFLOAT_S8_UINT;
         attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentDescs[i].loadOp = (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachmentDescs[i].loadOp = (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD; // VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         //attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;//VK_ATTACHMENT_STORE_OP_DONT_CARE;// 
-        attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;// VK_ATTACHMENT_STORE_OP_DONT_CARE;// VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;// VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;                           //VK_ATTACHMENT_STORE_OP_DONT_CARE;//
+        attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;                       // VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;                    // VK_ATTACHMENT_STORE_OP_DONT_CARE;// VK_ATTACHMENT_STORE_OP_STORE;
+        attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; // VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         attachmentRefs[i].attachment = attachmentCount;
@@ -1454,7 +1378,6 @@ Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebuff
     renderPassInfo.pDependencies = &dependency;
 
     LN_VK_CHECK(vkCreateRenderPass(m_deviceContext->vulkanDevice(), &renderPassInfo, m_deviceContext->vulkanAllocator(), &m_nativeRenderPass));
-
 
 #if 0
     std::array<VkAttachmentDescription, 2> colorAttachment = {};
@@ -1532,12 +1455,10 @@ Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebuff
     LN_VK_CHECK(vkCreateRenderPass(device, &renderPassInfo, m_deviceContext->vulkanAllocator(), &m_renderPass));
 #endif
 
-
     return ok();
 }
 
-void VulkanRenderPass::dispose()
-{
+void VulkanRenderPass::dispose() {
     if (m_nativeRenderPass) {
         vkDestroyRenderPass(m_deviceContext->vulkanDevice(), m_nativeRenderPass, m_deviceContext->vulkanAllocator());
         m_nativeRenderPass = VK_NULL_HANDLE;
@@ -1600,12 +1521,10 @@ void VulkanRenderPass::dispose()
 //=============================================================================
 // VulkanFramebuffer
 
-VulkanFramebuffer::VulkanFramebuffer()
-{
+VulkanFramebuffer::VulkanFramebuffer() {
 }
 
-Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash)
-{
+Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state /*, bool loadOpClear*/, uint64_t hash) {
     LN_CHECK(deviceContext);
     LN_CHECK(ownerRenderPass);
     m_deviceContext = deviceContext;
@@ -1630,7 +1549,7 @@ Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ow
         attachmentsCount++;
     }
 
-    RHISizeI size = m_renderTargets[0]->extentSize();
+    RHIExtent3D size = m_renderTargets[0]->extentSize();
 
     VkFramebufferCreateInfo framebufferInfo = {};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -1648,8 +1567,7 @@ Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ow
     return ok();
 }
 
-void VulkanFramebuffer::dispose()
-{
+void VulkanFramebuffer::dispose() {
     if (m_framebuffer) {
         vkDestroyFramebuffer(m_deviceContext->vulkanDevice(), m_framebuffer, m_deviceContext->vulkanAllocator());
         m_framebuffer = 0;
@@ -1661,8 +1579,7 @@ void VulkanFramebuffer::dispose()
     //}
 }
 
-bool VulkanFramebuffer::containsRenderTarget(RHIResource* renderTarget) const
-{
+bool VulkanFramebuffer::containsRenderTarget(RHIResource* renderTarget) const {
     for (auto& i : m_renderTargets) {
         if (i == renderTarget) {
             return true;
@@ -1671,25 +1588,19 @@ bool VulkanFramebuffer::containsRenderTarget(RHIResource* renderTarget) const
     return false;
 }
 
-bool VulkanFramebuffer::containsDepthBuffer(IDepthBuffer* depthBuffer) const
-{
+bool VulkanFramebuffer::containsDepthBuffer(RHIResource* depthBuffer) const {
     return m_depthBuffer == depthBuffer;
 }
 
-
 } // namespace detail
 } // namespace ln
-
-
-
 
 #include <LuminoGraphics/Texture.hpp>
 #include <LuminoGraphics/DepthBuffer.hpp>
 
 namespace ln {
 
-void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTargetTexture* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight)
-{
+void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTargetTexture* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight) {
     auto vulkanTexture = static_cast<detail::VulkanRenderTarget*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, texture, nullptr));
     auto image = vulkanTexture->image();
     *outImage = image->vulkanImage();
@@ -1699,16 +1610,14 @@ void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTar
     *outHeight = vulkanTexture->extentSize().height;
 }
 
-void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, DepthBuffer* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight)
-{
-    auto vulkanTexture = static_cast<detail::VulkanDepthBuffer*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(graphicsContext, texture, nullptr));
+void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, DepthBuffer* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight) {
+    auto vulkanTexture = static_cast<detail::VulkanDepthBuffer*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(graphicsContext, texture, nullptr));
     auto image = vulkanTexture->image();
     *outImage = image->vulkanImage();
     *outImageView = image->vulkanImageView();
     *outFormat = image->vulkanFormat();
-    *outWidth = vulkanTexture->size().width;
-    *outHeight = vulkanTexture->size().height;
+    *outWidth = vulkanTexture->extentSize().width;
+    *outHeight = vulkanTexture->extentSize().height;
 }
-
 
 } // namespace ln

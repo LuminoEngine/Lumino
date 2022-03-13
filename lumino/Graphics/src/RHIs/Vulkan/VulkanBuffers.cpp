@@ -5,7 +5,7 @@
 
 namespace ln {
 namespace detail {
-    
+
 //=============================================================================
 // VulkanBuffer
 
@@ -14,16 +14,14 @@ VulkanBuffer::VulkanBuffer()
     , m_nativeBuffer(VK_NULL_HANDLE)
     , m_nativeBufferMemory(VK_NULL_HANDLE)
     , m_size(0)
-	, m_allocator(nullptr)
-{
+    , m_allocator(nullptr) {
 }
 
-Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
-{
+Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator) {
     if (LN_REQUIRE(deviceContext)) return err();
     dispose();
 
-	m_deviceContext = deviceContext;
+    m_deviceContext = deviceContext;
     m_size = size;
     allocator = (allocator) ? allocator : m_deviceContext->vulkanAllocator();
     m_allocator = allocator;
@@ -42,7 +40,7 @@ Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBuff
 
     VkMemoryAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;    // アライメントされたサイズ
+    allocInfo.allocationSize = memRequirements.size; // アライメントされたサイズ
     m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
 
     LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_allocator, &m_nativeBufferMemory));
@@ -51,10 +49,8 @@ Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBuff
     return ok();
 }
 
-void VulkanBuffer::dispose()
-{
-    if (m_deviceContext)
-    {
+void VulkanBuffer::dispose() {
+    if (m_deviceContext) {
         auto device = m_deviceContext->vulkanDevice();
         const VkAllocationCallbacks* allocator = m_allocator ? m_allocator : m_deviceContext->vulkanAllocator();
 
@@ -72,8 +68,7 @@ void VulkanBuffer::dispose()
     }
 }
 
-void* VulkanBuffer::map()
-{
+void* VulkanBuffer::map() {
     void* mapped;
     if (vkMapMemory(m_deviceContext->vulkanDevice(), m_nativeBufferMemory, 0, m_size, 0, &mapped) != VK_SUCCESS) {
         LN_LOG_ERROR("Failed vkMapMemory");
@@ -82,13 +77,11 @@ void* VulkanBuffer::map()
     return mapped;
 }
 
-void VulkanBuffer::unmap()
-{
+void VulkanBuffer::unmap() {
     vkUnmapMemory(m_deviceContext->vulkanDevice(), m_nativeBufferMemory);
 }
 
-void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size)
-{
+void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size) {
     if (LN_REQUIRE(data)) return;
     if (LN_REQUIRE((offset + size) <= m_size)) return;
 
@@ -103,12 +96,11 @@ void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size)
 
 VulkanVertexBuffer::VulkanVertexBuffer()
     : m_buffer()
-    //, m_usage(GraphicsResourceUsage::Static)
+//, m_usage(GraphicsResourceUsage::Static)
 {
 }
 
-Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
-{
+Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
     if (!RHIResource::initAsVertexBuffer(usage, bufferSize)) return err();
 
     LN_DCHECK(deviceContext);
@@ -116,15 +108,14 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
 
     //m_usage = usage;
 
-#if 1   // TODO: Dynamic という特別な状態を持たせる必要があるか、まだわからない。
+#if 1 // TODO: Dynamic という特別な状態を持たせる必要があるか、まだわからない。
     // VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT で十分なのか、VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT を使った方がいいのか、
     // 実際にパフォーマンス測定できる段になったら改めて調査する。
     if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, nullptr)) {
         return err();
     }
 
-    if (initialData)
-    {
+    if (initialData) {
         VulkanBuffer stagingBuffer;
         if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
             return err();
@@ -146,8 +137,7 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
         return false;
     }
 
-    if (initialData)
-    {
+    if (initialData) {
         if (usage == GraphicsResourceUsage::Dynamic) {
             m_buffer.setData(0, initialData, bufferSize);
         }
@@ -166,8 +156,7 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
     return ok();
 }
 
-void VulkanVertexBuffer::dispose()
-{
+void VulkanVertexBuffer::dispose() {
     m_buffer.dispose();
     RHIResource::dispose();
 }
@@ -177,12 +166,10 @@ void VulkanVertexBuffer::dispose()
 
 VulkanIndexBuffer::VulkanIndexBuffer()
     : m_buffer()
-    , m_usage(GraphicsResourceUsage::Static)
-{
+    , m_usage(GraphicsResourceUsage::Static) {
 }
 
-Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
-{
+Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
     if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -200,8 +187,7 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
         return err();
     }
 
-    if (initialData)
-    {
+    if (initialData) {
         VulkanBuffer stagingBuffer;
         if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
             return err();
@@ -214,8 +200,7 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
     return ok();
 }
 
-void VulkanIndexBuffer::dispose()
-{
+void VulkanIndexBuffer::dispose() {
     m_buffer.dispose();
     RHIResource::dispose();
 }
@@ -224,31 +209,27 @@ void VulkanIndexBuffer::dispose()
 // VulkanUniformBuffer
 
 VulkanUniformBuffer::VulkanUniformBuffer()
-    : m_buffer()
-{
+    : m_buffer() {
 }
 
-Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size)
-{
+Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size) {
+    LN_TRY(RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size));
     if (!m_buffer.init(deviceContext, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
         return err();
     }
     return ok();
 }
 
-void VulkanUniformBuffer::dispose()
-{
+void VulkanUniformBuffer::dispose() {
     m_buffer.dispose();
     RHIResource::dispose();
 }
 
-void* VulkanUniformBuffer::map()
-{
+void* VulkanUniformBuffer::map() {
     return m_buffer.map();
 }
 
-void VulkanUniformBuffer::unmap()
-{
+void VulkanUniformBuffer::unmap() {
     m_buffer.unmap();
 }
 

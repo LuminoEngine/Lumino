@@ -5,7 +5,7 @@
 
 namespace ln {
 namespace detail {
-	
+
 //==============================================================================
 // DX12Buffer
 
@@ -66,17 +66,15 @@ UPLOAD は使い勝手いいので全部 UPLOAD にしてしまえ、は論外�
 
 
 */
-    
+
 DX12Buffer::DX12Buffer()
-	: m_dxResource()
-	, m_size(0)
-	, m_resourceState(D3D12_RESOURCE_STATE_COMMON)
-    , m_mapped(false)
-{
+    : m_dxResource()
+    , m_size(0)
+    , m_resourceState(D3D12_RESOURCE_STATE_COMMON)
+    , m_mapped(false) {
 }
 
-bool DX12Buffer::init(DX12Device* device, size_t size, D3D12_HEAP_TYPE heapType, D3D12_RESOURCE_STATES initialState)
-{
+bool DX12Buffer::init(DX12Device* device, size_t size, D3D12_HEAP_TYPE heapType, D3D12_RESOURCE_STATES initialState) {
     m_size = size;
     m_resourceState = initialState;
 
@@ -112,16 +110,14 @@ bool DX12Buffer::init(DX12Device* device, size_t size, D3D12_HEAP_TYPE heapType,
         return false;
     }
 
-	return true;
+    return true;
 }
 
-void DX12Buffer::dispose()
-{
+void DX12Buffer::dispose() {
     m_dxResource.Reset();
 }
 
-void* DX12Buffer::map()
-{
+void* DX12Buffer::map() {
     if (LN_REQUIRE(!m_mapped)) return nullptr;
 
     // Range(0,0) は、データの読み取りを行わないことを明示する。
@@ -137,14 +133,12 @@ void* DX12Buffer::map()
     return data;
 }
 
-void DX12Buffer::unmap()
-{
+void DX12Buffer::unmap() {
     if (LN_REQUIRE(m_mapped)) return;
     m_dxResource->Unmap(0, nullptr);
 }
 
-void DX12Buffer::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
-{
+void DX12Buffer::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState) {
     if (m_resourceState == newState) {
         return;
     }
@@ -167,20 +161,18 @@ void DX12Buffer::resourceBarrior(ID3D12GraphicsCommandList* commandList, D3D12_R
 DX12VertexBuffer::DX12VertexBuffer()
     : m_device(nullptr)
     , m_usage(GraphicsResourceUsage::Static)
-    , m_buffer()
-{
+    , m_buffer() {
 }
 
-bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData)
-{
+bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData) {
     if (!RHIResource::initAsVertexBuffer(usage, size)) return false;
     m_device = device;
     m_usage = usage;
 
     // NOTE: ↓ DirectX-Graphics-Samples, D3D12HelloTriangle.cpp より
-    //   Note: using upload heaps to transfer static data like vert buffers is not 
-    //   recommended. Every time the GPU needs it, the upload heap will be marshalled 
-    //   over. Please read up on Default Heap usage. An upload heap is used here for 
+    //   Note: using upload heaps to transfer static data like vert buffers is not
+    //   recommended. Every time the GPU needs it, the upload heap will be marshalled
+    //   over. Please read up on Default Heap usage. An upload heap is used here for
     //   code simplicity and because there are very few verts to actually transfer.
     // Dynamic な時は D3D12_HEAP_TYPE_UPLOAD を使う、でよさそう。
 
@@ -200,9 +192,6 @@ bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, siz
     if (!m_buffer->init(m_device, size, heapType, resourceState)) {
         return false;
     }
-
-
-
 
     //m_usage = usage;
     //m_size = size;
@@ -269,8 +258,7 @@ bool DX12VertexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, siz
     return true;
 }
 
-void DX12VertexBuffer::dispose()
-{
+void DX12VertexBuffer::dispose() {
     if (m_buffer) {
         m_buffer->dispose();
         m_buffer = nullptr;
@@ -283,12 +271,10 @@ void DX12VertexBuffer::dispose()
 
 DX12IndexBuffer::DX12IndexBuffer()
     : m_usage(GraphicsResourceUsage::Static)
-    , m_indexFormat(DXGI_FORMAT_R16_UINT)
-{
+    , m_indexFormat(DXGI_FORMAT_R16_UINT) {
 }
 
-Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
-{
+Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
     if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return err();
     m_device = device;
     m_usage = usage;
@@ -348,8 +334,7 @@ Result DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, In
     return ok();
 }
 
-void DX12IndexBuffer::dispose()
-{
+void DX12IndexBuffer::dispose() {
     if (m_buffer) {
         m_buffer->dispose();
         m_buffer = nullptr;
@@ -364,13 +349,12 @@ DX12UniformBuffer::DX12UniformBuffer()
     : m_deviceContext(nullptr)
     , m_size(0)
     , m_constantBuffer()
-    , m_mappedBuffer(nullptr)
-{
+    , m_mappedBuffer(nullptr) {
 }
 
-bool DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
-{
+bool DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size) {
     LN_DCHECK(deviceContext);
+    if (!RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size)) return false;
     m_deviceContext = deviceContext;
     m_size = size;
 
@@ -398,12 +382,12 @@ bool DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
     desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
     if (FAILED(device->CreateCommittedResource(
-        &prop,
-        D3D12_HEAP_FLAG_NONE,
-        &desc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS(&m_constantBuffer)))) {
+            &prop,
+            D3D12_HEAP_FLAG_NONE,
+            &desc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&m_constantBuffer)))) {
         LN_ERROR("CreateCommittedResource failed.");
         return false;
     }
@@ -417,8 +401,7 @@ bool DX12UniformBuffer::init(DX12Device* deviceContext, uint32_t size)
     return true;
 }
 
-void DX12UniformBuffer::dispose()
-{
+void DX12UniformBuffer::dispose() {
     if (m_constantBuffer) {
         m_constantBuffer->Unmap(0, nullptr);
         m_mappedBuffer = nullptr;
@@ -427,13 +410,11 @@ void DX12UniformBuffer::dispose()
     RHIResource::dispose();
 }
 
-void* DX12UniformBuffer::map()
-{
+void* DX12UniformBuffer::map() {
     return m_mappedBuffer;
 }
 
-void DX12UniformBuffer::unmap()
-{
+void DX12UniformBuffer::unmap() {
 }
 
 } // namespace detail

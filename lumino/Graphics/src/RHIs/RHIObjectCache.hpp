@@ -2,71 +2,66 @@
 
 namespace ln {
 namespace detail {
-	
-// IRenderPass のライフサイクル (createとdispose) はこの中で管理する
-class NativeRenderPassCache
-{
-public:
-	struct FindKey
-	{
-		std::array<RHIResource*, MaxMultiRenderTargets> renderTargets = {};
-		IDepthBuffer* depthBuffer = nullptr;
-		ClearFlags clearFlags = ClearFlags::All;
-		Color clearColor = Color(0, 0, 0, 0);
-		float clearDepth = 1.0f;
-		uint8_t clearStencil = 0x00;
-	};
 
-	NativeRenderPassCache(IGraphicsDevice* device);
-	void clear();
-	IRenderPass* findOrCreate(const FindKey& key);
-	void invalidate(RHIResource* renderTarget);
-	void invalidate(IDepthBuffer* depthBuffer);
-	void release2(IRenderPass* value);
-	static uint64_t computeHash(const FindKey& key);
+// IRenderPass のライフサイクル (createとdispose) はこの中で管理する
+class NativeRenderPassCache {
+public:
+    struct FindKey {
+        std::array<RHIResource*, MaxMultiRenderTargets> renderTargets = {};
+        RHIResource* depthBuffer = nullptr;
+        ClearFlags clearFlags = ClearFlags::All;
+        Color clearColor = Color(0, 0, 0, 0);
+        float clearDepth = 1.0f;
+        uint8_t clearStencil = 0x00;
+    };
+
+    NativeRenderPassCache(IGraphicsDevice* device);
+    void clear();
+    IRenderPass* findOrCreate(const FindKey& key);
+    void invalidateRenderTarget(RHIResource* renderTarget);
+    void invalidateDepthBuffer(RHIResource* depthBuffer);
+    void release2(IRenderPass* value);
+    static uint64_t computeHash(const FindKey& key);
 
 private:
-	struct Entry
-	{
-		int referenceCount = 0;
-		Ref<IRenderPass> value;
-	};
+    struct Entry {
+        int referenceCount = 0;
+        Ref<IRenderPass> value;
+    };
 
-	IGraphicsDevice* m_device;
-	std::unordered_map<uint64_t, Entry> m_hashMap;
+    IGraphicsDevice* m_device;
+    std::unordered_map<uint64_t, Entry> m_hashMap;
 };
 
 // IPipeline のライフサイクル (createとdispose) はこの中で管理する。
 // IShaderPass または IRenderPass の dispose 時に、invalidate が呼ばれ、関係している IPipeline が削除される。
-class NativePipelineCache
-{
+class NativePipelineCache {
 public:
-	using FindKey = DevicePipelineStateDesc;
+    using FindKey = DevicePipelineStateDesc;
 
-	NativePipelineCache(IGraphicsDevice* device);
-	void clear();
-	IPipeline* findOrCreate(const FindKey& key);
-	void invalidate(IVertexDeclaration* value);
-	void invalidate(IRenderPass* value);
-	void invalidate(IShaderPass* value);
-	static uint64_t computeHash(const FindKey& key);
+    NativePipelineCache(IGraphicsDevice* device);
+    void clear();
+    IPipeline* findOrCreate(const FindKey& key);
+    void invalidate(IVertexDeclaration* value);
+    void invalidate(IRenderPass* value);
+    void invalidate(IShaderPass* value);
+    static uint64_t computeHash(const FindKey& key);
 
 private:
-	IGraphicsDevice* m_device;
-	std::unordered_map<uint64_t, Ref<IPipeline>> m_hashMap;
+    IGraphicsDevice* m_device;
+    std::unordered_map<uint64_t, Ref<IPipeline>> m_hashMap;
 };
 
-class NativeCommandListPool
-{
+class NativeCommandListPool {
 public:
-	NativeCommandListPool(IGraphicsDevice* device);
-	ICommandList* get();	// get or wait
+    NativeCommandListPool(IGraphicsDevice* device);
+    ICommandList* get(); // get or wait
 
 private:
-	IGraphicsDevice* m_device;
-	std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
+    IGraphicsDevice* m_device;
+    std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
 
-	/*
+    /*
 	UseCases:
 
 	普通に使うとき:
@@ -89,4 +84,3 @@ private:
 
 } // namespace detail
 } // namespace ln
-

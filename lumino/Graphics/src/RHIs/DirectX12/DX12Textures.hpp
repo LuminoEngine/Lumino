@@ -6,8 +6,7 @@ namespace ln {
 namespace detail {
 
 class DX12Image
-    : public RHIRefObject
-{
+    : public RHIRefObject {
 public:
     DX12Image();
     bool init(DX12Device* device, uint32_t width, uint32_t height, uint32_t mipLevels, bool msaa, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState);
@@ -33,8 +32,7 @@ private:
 };
 
 class DX12Texture
-    : public RHIResource
-{
+    : public RHIResource {
 public:
     DX12Texture();
     //virtual const DX12Image* image() const = 0;
@@ -52,16 +50,18 @@ protected:
 };
 
 class DX12Texture2D
-	: public DX12Texture
-{
+    : public DX12Texture {
 public:
-	DX12Texture2D();
-	Result init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
+    DX12Texture2D();
+    Result init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
     void dispose() override;
-	//DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
-    RHIRef<RHIBitmap> readData() override { LN_UNREACHABLE(); return nullptr; }
+    //DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
+    RHIRef<RHIBitmap> readData() override {
+        LN_UNREACHABLE();
+        return nullptr;
+    }
     void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-	void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
+    void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
 
     //virtual const DX12Image* image() const override { return &m_image; }
 
@@ -71,14 +71,13 @@ public:
 private:
     bool generateMips();
 
-	DX12Device* m_device;
-	//GraphicsResourceUsage m_usage;
- //   RHISizeI m_size;
+    DX12Device* m_device;
+    //GraphicsResourceUsage m_usage;
+    //   RHISizeI m_size;
 };
 
 class DX12RenderTarget
-    : public DX12Texture
-{
+    : public DX12Texture {
 public:
     DX12RenderTarget();
     bool init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
@@ -94,7 +93,6 @@ public:
     //bool isMultisample() const override { return m_multisampleBuffer != nullptr; }
     DX12Image* multisampleBuffer() const { return m_multisampleBuffer.get(); }
 
-
 protected:
     DX12Device* m_device;
     //RHISizeI m_size;
@@ -102,25 +100,19 @@ protected:
     RHIRef<DX12Image> m_multisampleBuffer;
 };
 
-class DX12DepthBuffer
-    : public IDepthBuffer
-{
+class DX12DepthBuffer : public RHIResource {
 public:
     DX12DepthBuffer();
     Result init(DX12Device* device, uint32_t width, uint32_t height);
     void dispose();
-    const SizeI& size() const { return m_size; }
 
     DX12Image* image() const { return m_image.get(); }
     DXGI_FORMAT dxFormat() const { return m_image->dxFormat(); }
     ID3D12Resource* dxResource() const { return m_image->dxResource(); }
-
-    bool isMultisample() const override { return m_multisampleBuffer != nullptr; }
     DX12Image* multisampleBuffer() const { return m_multisampleBuffer.get(); }
 
 private:
     DX12Device* m_deviceContext;
-    SizeI m_size;
     RHIRef<DX12Image> m_image;
     RHIRef<DX12Image> m_multisampleBuffer;
 };

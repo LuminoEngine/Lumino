@@ -10,8 +10,8 @@
 #include "DX12SwapChain.hpp"
 #include "DX12DeviceContext.hpp"
 
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
 
 namespace ln {
 namespace detail {
@@ -20,14 +20,12 @@ namespace detail {
 // DX12Device
 
 DX12Device::DX12Device()
-    : m_fenceValue(1)
-{
+    : m_fenceValue(1) {
 }
 
-bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
-{
-	if (LN_REQUIRE(outIsDriverSupported)) return false;
-	*outIsDriverSupported = true;
+bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported) {
+    if (LN_REQUIRE(outIsDriverSupported)) return false;
+    *outIsDriverSupported = true;
 
     if (!D3DCompilerAPI::Initialize()) {
         return false;
@@ -69,12 +67,10 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
             return false;
         }
 
-
         //一番よさそうなものを採用したいので、 VRAM 量でソート
         // ※ SystemMemory をチェックするのは NG. ソフトウェアドライバを採用してしまうことがある。
         std::sort(
-            adapters.begin(), adapters.end(),
-            [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory > b.desc.DedicatedVideoMemory; });
+            adapters.begin(), adapters.end(), [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory > b.desc.DedicatedVideoMemory; });
 
         if (!settings.priorityAdapterName.empty()) {
             auto itr = std::find_if(adapters.begin(), adapters.end(), [&](const Adapter& a) { return settings.priorityAdapterName == a.desc.Description; });
@@ -85,7 +81,6 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
             }
         }
 
-
         //if ()
 
         //if (!settings.useBasicRenderDriver) {
@@ -95,7 +90,6 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
         //        adapters.begin(), adapters.end(),
         //        [](const Adapter& a, const Adapter& b) { return a.desc.DedicatedVideoMemory < b.desc.DedicatedVideoMemory; });
         //}
-
 
         const Adapter* selected = nullptr;
         for (const auto& adapter : adapters) {
@@ -205,8 +199,7 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
     }
 
     m_uploadBufferAllocatorManager = makeRef<DX12SingleFrameAllocatorPageManager>(
-        this, DX12SingleFrameAllocatorPageManager::DefaultPageSize,
-        D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
+        this, DX12SingleFrameAllocatorPageManager::DefaultPageSize, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
 
     {
 
@@ -288,29 +281,28 @@ bool DX12Device::init(const Settings& settings, bool* outIsDriverSupported)
             return false;
         }
 
-//#ifdef _DEBUG
-//        UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-//#else
-//        UINT compileFlags = 0;
-//#endif
-//        ID3DBlob* errorBlob = nullptr;
-//        HRESULT hr = D3DCompilerAPI::D3DCompileFromFile(L"C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/GenerateMipMaps.hlsl",
-//            nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-//            "GenerateMipMaps", "cs_5_1",
-//            compileFlags,
-//            0, &m_generateMipMapsShader, &errorBlob);
-//        if (FAILED(hr)) {
-//            const char* err = (const char*)errorBlob->GetBufferPointer();
-//            LN_ERROR("D3DCompileFromFile failed.");
-//            return false;
-//        }
+        //#ifdef _DEBUG
+        //        UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+        //#else
+        //        UINT compileFlags = 0;
+        //#endif
+        //        ID3DBlob* errorBlob = nullptr;
+        //        HRESULT hr = D3DCompilerAPI::D3DCompileFromFile(L"C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/GenerateMipMaps.hlsl",
+        //            nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        //            "GenerateMipMaps", "cs_5_1",
+        //            compileFlags,
+        //            0, &m_generateMipMapsShader, &errorBlob);
+        //        if (FAILED(hr)) {
+        //            const char* err = (const char*)errorBlob->GetBufferPointer();
+        //            LN_ERROR("D3DCompileFromFile failed.");
+        //            return false;
+        //        }
     }
 
-	return true;
+    return true;
 }
 
-void DX12Device::dispose()
-{
+void DX12Device::dispose() {
     IGraphicsDevice::dispose();
 
     m_pipelineCache.reset();
@@ -334,8 +326,7 @@ void DX12Device::dispose()
     m_dxgiFactory.Reset();
 }
 
-ID3D12GraphicsCommandList* DX12Device::beginSingleTimeCommandList()
-{
+ID3D12GraphicsCommandList* DX12Device::beginSingleTimeCommandList() {
     // https://docs.microsoft.com/ja-jp/windows/win32/direct3d12/recording-command-lists-and-bundles
     // 基本的な使い方 (1フレーム内で複数のコマンドリストをマルチスレッドで構築するようなケースではない) の場合、
     // ID3D12CommandAllocator と ID3D12GraphicsCommandList はワンセットと考えてよい。
@@ -353,8 +344,7 @@ ID3D12GraphicsCommandList* DX12Device::beginSingleTimeCommandList()
     return m_singleTimeCommandList.Get();
 }
 
-bool DX12Device::endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList)
-{
+bool DX12Device::endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList) {
     if (LN_REQUIRE(commandList == m_singleTimeCommandList.Get())) return false;
 
     // 記録終了
@@ -384,57 +374,50 @@ bool DX12Device::endSingleTimeCommandList(ID3D12GraphicsCommandList* commandList
     return true;
 }
 
-INativeGraphicsInterface* DX12Device::getNativeInterface() const
-{
-	return nullptr;
+INativeGraphicsInterface* DX12Device::getNativeInterface() const {
+    return nullptr;
 }
 
-void DX12Device::onGetCaps(GraphicsDeviceCaps * outCaps)
-{
+void DX12Device::onGetCaps(GraphicsDeviceCaps* outCaps) {
     outCaps->requestedShaderTriple.target = "hlsl";
     outCaps->requestedShaderTriple.version = 5;
     outCaps->requestedShaderTriple.option = "";
     outCaps->uniformBufferOffsetAlignment = 256;
 }
 
-Ref<ISwapChain> DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
-{
-	auto ptr = makeRef<DX12SwapChain>();
+Ref<ISwapChain> DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+    auto ptr = makeRef<DX12SwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
         return nullptr;
     }
-	return ptr;
+    return ptr;
 }
 
-Ref<ICommandList> DX12Device::onCreateCommandList()
-{
-	auto ptr = makeRef<DX12GraphicsContext>();
-	if (!ptr->init(this)) {
-		return nullptr;
-	}
-	return ptr;
+Ref<ICommandList> DX12Device::onCreateCommandList() {
+    auto ptr = makeRef<DX12GraphicsContext>();
+    if (!ptr->init(this)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
-Ref<IRenderPass> DX12Device::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
-{
-	auto ptr = makeRef<DX12RenderPass>();
-	if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
-		return nullptr;
-	}
-	return ptr;
+Ref<IRenderPass> DX12Device::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+    auto ptr = makeRef<DX12RenderPass>();
+    if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
-Ref<IPipeline> DX12Device::onCreatePipeline(const DevicePipelineStateDesc& state)
-{
-	auto ptr = makeRef<DX12Pipeline>();
-	if (!ptr->init(this, state)) {
-		return nullptr;
-	}
-	return ptr;
+Ref<IPipeline> DX12Device::onCreatePipeline(const DevicePipelineStateDesc& state) {
+    auto ptr = makeRef<DX12Pipeline>();
+    if (!ptr->init(this, state)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
-Ref<IVertexDeclaration> DX12Device::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
-{
+Ref<IVertexDeclaration> DX12Device::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
     auto ptr = makeRef<DX12VertexDeclaration>();
     if (!ptr->init(elements, elementsCount)) {
         return nullptr;
@@ -442,41 +425,36 @@ Ref<IVertexDeclaration> DX12Device::onCreateVertexDeclaration(const VertexElemen
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
-{
+Ref<RHIResource> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
     auto ptr = makeRef<DX12VertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {
         return nullptr;
     }
-	return ptr;
+    return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
-{
+Ref<RHIResource> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
     auto ptr = makeRef<DX12IndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {
         return nullptr;
     }
-	return ptr;
+    return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
-{
+Ref<RHIResource> DX12Device::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     auto ptr = makeRef<DX12Texture2D>();
     if (!ptr->init(this, usage, width, height, requestFormat, mipmap, initialData)) {
         return nullptr;
     }
-	return ptr;
+    return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+Ref<RHIResource> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+    LN_NOTIMPLEMENTED();
+    return nullptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa)
-{
+Ref<RHIResource> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
     auto ptr = makeRef<DX12RenderTarget>();
     if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
         return nullptr;
@@ -484,26 +462,23 @@ Ref<RHIResource> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t heigh
     return ptr;
 }
 
-Ref<IDepthBuffer> DX12Device::onCreateDepthBuffer(uint32_t width, uint32_t height)
-{
-	auto ptr = makeRef<DX12DepthBuffer>();
+Ref<RHIResource> DX12Device::onCreateDepthBuffer(uint32_t width, uint32_t height) {
+    auto ptr = makeRef<DX12DepthBuffer>();
     if (!ptr->init(this, width, height)) {
         return nullptr;
     }
-	return ptr;
+    return ptr;
 }
 
-Ref<ISamplerState> DX12Device::onCreateSamplerState(const SamplerStateData& desc)
-{
-	auto ptr = makeRef<DX12SamplerState>();
-	if (!ptr->init(this, desc)) {
-		return nullptr;
-	}
-	return ptr;
+Ref<ISamplerState> DX12Device::onCreateSamplerState(const SamplerStateData& desc) {
+    auto ptr = makeRef<DX12SamplerState>();
+    if (!ptr->init(this, desc)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
-Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
-{
+Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     auto ptr = makeRef<DX12ShaderPass>();
     if (!ptr->init(this, createInfo, diag)) {
         return nullptr;
@@ -511,8 +486,7 @@ Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& crea
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateUniformBuffer(uint32_t size)
-{
+Ref<RHIResource> DX12Device::onCreateUniformBuffer(uint32_t size) {
     auto ptr = makeRef<DX12UniformBuffer>();
     if (!ptr->init(this, size)) {
         return nullptr;
@@ -520,8 +494,7 @@ Ref<RHIResource> DX12Device::onCreateUniformBuffer(uint32_t size)
     return ptr;
 }
 
-Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
-{
+Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass) {
     auto ptr = makeRef<DX12DescriptorPool>();
     if (!ptr->init(this, static_cast<DX12ShaderPass*>(shaderPass))) {
         return nullptr;
@@ -529,28 +502,23 @@ Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
     return ptr;
 }
 
-void DX12Device::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget)
-{
+void DX12Device::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
     DX12GraphicsContext* commandList = static_cast<DX12GraphicsContext*>(context);
     commandList->submit(m_fenceValue);
     m_fenceValue++;
 }
 
-ICommandQueue* DX12Device::getGraphicsCommandQueue()
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+ICommandQueue* DX12Device::getGraphicsCommandQueue() {
+    LN_NOTIMPLEMENTED();
+    return nullptr;
 }
 
-ICommandQueue* DX12Device::getComputeCommandQueue()
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+ICommandQueue* DX12Device::getComputeCommandQueue() {
+    LN_NOTIMPLEMENTED();
+    return nullptr;
 }
 
-
-void DX12Device::enableDebugLayer() const
-{
+void DX12Device::enableDebugLayer() const {
     ID3D12Debug* debugLayer = nullptr;
     if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugLayer)))) {
         debugLayer->EnableDebugLayer();
@@ -562,15 +530,13 @@ void DX12Device::enableDebugLayer() const
 // DX12Pipeline
 
 DX12Pipeline::DX12Pipeline()
-	: m_device(nullptr)
-{
+    : m_device(nullptr) {
 }
 
-bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc& state)
-{
-	LN_DCHECK(deviceContext);
-	LN_DCHECK(state.renderPass);
-	m_device = deviceContext;
+bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc& state) {
+    LN_DCHECK(deviceContext);
+    LN_DCHECK(state.renderPass);
+    m_device = deviceContext;
 
     DX12ShaderPass* shaderPass = static_cast<DX12ShaderPass*>(state.shaderPass);
 
@@ -605,7 +571,8 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
             dst.SrcBlendAlpha = DX12Helper::LNBlendFactorToDX12Blend(src.sourceBlendAlpha);
             dst.DestBlendAlpha = DX12Helper::LNBlendFactorToDX12Blend(src.destinationBlendAlpha);
             dst.BlendOpAlpha = DX12Helper::LNBlendOpToDX12Blend(src.blendOpAlpha);
-            dst.LogicOp = D3D12_LOGIC_OP_NOOP;;
+            dst.LogicOp = D3D12_LOGIC_OP_NOOP;
+            ;
             dst.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
             if (!psoDesc.BlendState.IndependentBlendEnable) {
@@ -669,25 +636,23 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
 
     psoDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
 
-
-    switch (state.topology)
-    {
-    case PrimitiveTopology::TriangleList:
-    case PrimitiveTopology::TriangleStrip:
-        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        break;
-    case PrimitiveTopology::LineList:
-    case PrimitiveTopology::LineStrip:
-        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
-        break;
-    case PrimitiveTopology::PointList:
-        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
-        break;
-    default:
-        LN_UNREACHABLE();
-        return false;
+    switch (state.topology) {
+        case PrimitiveTopology::TriangleList:
+        case PrimitiveTopology::TriangleStrip:
+            psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+            break;
+        case PrimitiveTopology::LineList:
+        case PrimitiveTopology::LineStrip:
+            psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+            break;
+        case PrimitiveTopology::PointList:
+            psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+            break;
+        default:
+            LN_UNREACHABLE();
+            return false;
     }
-    
+
     // RenderPass
     {
         DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(state.renderPass);
@@ -730,29 +695,26 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
         return false;
     }
 
-	return true;
+    return true;
 }
 
-void DX12Pipeline::dispose()
-{
+void DX12Pipeline::dispose() {
     m_pipelineState.Reset();
-	IPipeline::dispose();
+    IPipeline::dispose();
 }
 
 //==============================================================================
 // DX12VertexDeclaration
 
 DX12VertexDeclaration::DX12VertexDeclaration()
-    : m_elements()
-{
+    : m_elements() {
 }
 
 // https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
-Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCount)
-{
+Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCount) {
     LN_DCHECK(elements);
 
-    //std::array<UINT, 16> offsets;   
+    //std::array<UINT, 16> offsets;
 
     std::fill(m_strides.begin(), m_strides.end(), 0);
 
@@ -781,8 +743,7 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
     return ok();
 }
 
-void DX12VertexDeclaration::dispose()
-{
+void DX12VertexDeclaration::dispose() {
     IVertexDeclaration::dispose();
 }
 
@@ -790,13 +751,11 @@ void DX12VertexDeclaration::dispose()
 // DX12SamplerState
 
 DX12SamplerState::DX12SamplerState()
-	: m_samplerDesc()
-{
+    : m_samplerDesc() {
 }
 
-Result DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData& desc)
-{
-	LN_DCHECK(deviceContext);
+Result DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData& desc) {
+    LN_DCHECK(deviceContext);
 
     if (desc.filter == TextureFilterMode::Point) {
         m_samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
@@ -825,12 +784,11 @@ Result DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData&
     m_samplerDesc.MinLOD = 0.0f;
     m_samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 
-	return ok();
+    return ok();
 }
 
-void DX12SamplerState::dispose()
-{
-	ISamplerState::dispose();
+void DX12SamplerState::dispose() {
+    ISamplerState::dispose();
 }
 
 } // namespace detail

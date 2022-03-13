@@ -457,7 +457,7 @@ public:
     Result init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
     void dispose();
     bool containsRenderTarget(RHIResource* renderTarget) const;
-    bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
+    bool containsDepthBuffer(RHIResource* depthBuffer) const;
     uint64_t hash() const { return m_hash; }
     VulkanRenderPass* ownerRenderPass() const { return m_ownerRenderPass; }
     VkFramebuffer vulkanFramebuffer() const { return m_framebuffer; }
@@ -472,7 +472,7 @@ private:
 
     // 以下、こちらからは参照を持たない。インスタンスが dispose されたときに、このクラスに対して削除要求が飛んでくる。
     std::array<RHIResource*, MaxMultiRenderTargets> m_renderTargets = {};
-    IDepthBuffer* m_depthBuffer = nullptr;
+    RHIResource* m_depthBuffer = nullptr;
 };
 
 } // namespace detail

@@ -3,9 +3,6 @@
 #include "GraphicsResource.hpp"
 
 namespace ln {
-namespace detail {
-class IDepthBuffer;
-}
 
 /** 深度バッファのクラスです。 */
 class DepthBuffer
@@ -47,10 +44,10 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height);
 
 private:
-    detail::IDepthBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified);
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::IDepthBuffer> m_rhiObject;
+    Ref<detail::RHIResource> m_rhiObject;
     SizeI m_size;
 
     friend class detail::GraphicsResourceInternal;
