@@ -4,6 +4,7 @@
 #include "../Reflection/Object.hpp"
 
 namespace ln {
+class AbstractObjectPoolManager;
 
 class AbstractObjectPoolPage : public RefObject {
 public:
@@ -14,6 +15,7 @@ protected:
 
 private:
     Array<Ref<RefObject>> m_objects;
+    friend class AbstractObjectPoolManager;
 };
 
 class AbstractObjectPoolManager : public RefObject {
@@ -25,7 +27,7 @@ public:
     void discardPage(AbstractObjectPoolPage* page);
 
 protected:
-    virtual Ref<AbstractObjectPoolPage> onCreateNewPage(size_t size) = 0;
+    virtual Ref<AbstractObjectPoolPage> onCreateNewPage() = 0;
 
 private:
     Ref<AbstractObjectPoolPage> createNewPage(size_t size);
@@ -43,7 +45,7 @@ public:
 protected:
     virtual Result onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) = 0;
 
-    Ref<AbstractObjectPoolPage> onCreateNewPage(size_t size) override;
+    Ref<AbstractObjectPoolPage> onCreateNewPage() override;
 
 private:
     class ObjectPoolPage : public AbstractObjectPoolPage {

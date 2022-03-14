@@ -135,7 +135,7 @@ Result OpenGLDevice::init(const Settings& settings) {
 
     const size_t PageSize = 0x200000; // 2MB
     m_uniformBufferAllocatorPageManager = makeRef<GLUniformBufferAllocatorPageManager>(this, PageSize);
-
+    m_descriptorObjectPoolManager = makeRef<GLDescriptorObjectPoolManager>(this);
 
     //m_graphicsContext = makeRef<GLGraphicsContext>();
     //m_graphicsContext->init(this);
@@ -297,7 +297,7 @@ Ref<IDescriptorPool> OpenGLDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 }
 
 void OpenGLDevice::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
-    LN_NOTIMPLEMENTED();
+    // CommandList と名前は付いているが、今は各操作がコマンド化されずに即実行されているため、「CommandList の実行」という意味でやることはない。
 }
 
 ICommandQueue* OpenGLDevice::getGraphicsCommandQueue() {

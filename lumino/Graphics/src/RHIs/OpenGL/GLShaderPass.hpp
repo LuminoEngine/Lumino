@@ -59,14 +59,14 @@ public:
 
         // DescriptorLayout の UniformBuffer index.
         // Descriptor からデータを取り出すときに使う。
-        int registerIndex; 
+        LayoutSlotIndex layoutSlotIndex; 
     };
 
     // textureXD と samplerState を結合するためのデータ構造
     struct ResouceUniformInfo {
         //std::string name; // lnCISlnTOg_texture1lnSOg_samplerState1 のような FullName
         GLint uniformLocation = -1;
-        int registerIndex; // Index of DescriptorLayout::textureRegister.
+        LayoutSlotIndex layoutSlotIndex; // Index of DescriptorLayout::textureRegister.
         //GLint isRenderTargetUniformLocation = -1; // texture または sampler の場合、それが RenderTarget であるかを示す値を入力する Uniform の Loc。末尾が lnIsRT になっているもの。
         //int m_textureExternalUnifromIndex = -1;   // Index of m_externalTextureUniforms
         //int m_samplerExternalUnifromIndex = -1;   // Index of m_externalSamplerUniforms
@@ -77,6 +77,9 @@ public:
     void dispose();
     void setData(const ShaderDescriptorTableUpdateInfo* data);
     void bind(GLuint program);
+
+    const std::vector<UniformBufferInfo>& bufferInfos() const { return m_uniformBuffers; }
+    const std::vector<ResouceUniformInfo>& resourceInfos() const { return m_resourceUniforms; }
 
 private:
     void addResourceUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout);

@@ -52,6 +52,7 @@ namespace detail {
 class PlatformManager;
 class OpenGLContext;
 class GLUniformBufferAllocatorPageManager;
+class GLDescriptorObjectPoolManager;
 
 class OpenGLDevice : public IGraphicsDevice {
 public:
@@ -82,6 +83,7 @@ public:
     BinaryWriter* uniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
     const Ref<GLUniformBufferAllocatorPageManager>& uniformBufferAllocatorPageManager() const { return m_uniformBufferAllocatorPageManager; }
+    const Ref<GLDescriptorObjectPoolManager>& descriptorObjectPoolManager() const { return m_descriptorObjectPoolManager; }
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override { return nullptr; }
@@ -120,6 +122,7 @@ private:
     //bool m_commandListCreated;
 
     Ref<GLUniformBufferAllocatorPageManager> m_uniformBufferAllocatorPageManager;
+    Ref<GLDescriptorObjectPoolManager> m_descriptorObjectPoolManager;
 };
 
 class GLSwapChain

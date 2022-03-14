@@ -32,17 +32,19 @@ void AbstractObjectPoolManager::discardPage(AbstractObjectPoolPage* page) {
 }
 
 Ref<AbstractObjectPoolPage> AbstractObjectPoolManager::createNewPage(size_t size) {
-    return onCreateNewPage(size);
+    auto page = onCreateNewPage();
+    page->onCreateObjects(size, &page->m_objects);
+    return page;
 }
 
 //=============================================================================
-// ObjectPool
+// ObjectPoolManager
 
 ObjectPoolManager::ObjectPoolManager(int32_t pageSize)
     : AbstractObjectPoolManager(pageSize) {
 }
 
-Ref<AbstractObjectPoolPage> ObjectPoolManager::onCreateNewPage(size_t size) {
+Ref<AbstractObjectPoolPage> ObjectPoolManager::onCreateNewPage() {
     return makeRef<ObjectPoolPage>(this);
 }
 

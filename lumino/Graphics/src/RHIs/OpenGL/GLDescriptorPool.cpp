@@ -1,6 +1,7 @@
 ﻿#include "Internal.hpp"
-#include "GLUniformBuffer.hpp"
 #include "OpenGLDeviceContext.hpp"
+#include "GLUniformBuffer.hpp"
+#include "GLShaderPass.hpp"
 #include "GLDescriptorPool.hpp"
 
 namespace ln {
@@ -82,15 +83,109 @@ Result GLDescriptorObjectPoolManager::onCreateObjects(int32_t count, Array<Ref<R
 //=============================================================================
 // GLDescriptor
 
-GLDescriptor::GLDescriptor() {
+GLDescriptor::GLDescriptor()
+    : m_uniformBufferView() {
 }
 
-Result GLDescriptor::init(OpenGLDevice* owner) {
+Result GLDescriptor::init(OpenGLDevice* owner/*, GLUniformBufferView view*/) {
+    //m_uniformBufferView = view;
     return ok();
 }
 
 void GLDescriptor::onUpdateData(const ShaderDescriptorTableUpdateInfo& data) {
-    LN_NOTIMPLEMENTED();
+    // OpenGL は DirectX12 や Vulkan のように、各リソースを GPU へマッピングするための専用のインターフェースは無い。
+}
+
+void GLDescriptor::bind(const GLShaderDescriptorTable* layout) {
+
+#if 0
+    const ReferenceList& bufferViews = IDescriptor::buffers();
+    for (const auto& bufferInfo : layout->bufferInfos()) {
+        
+    }
+
+
+    // int ii = 0;
+    for (const auto& info : buffers) {
+        if (info.object) {
+            GLUniformBuffer* buf = static_cast<GLUniformBuffer*>(info.object.get());
+            GLuint ubo = buf->ubo();
+
+            // TODO: 超暫定対応。
+            // Vulkan は commit までにバッファを unmap すればよいが、OpenGL では glDraw* を呼ぶ前に unmap しなければならない。
+            // map/unmap よりも setData のほうがいいかも。
+            buf->flush();
+
+            // GLint size = 0;
+            // glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+            // glGetBufferParameteriv(GL_UNIFORM_BUFFER, GL_BUFFER_SIZE, &size);
+
+            // GLint align = 0;
+            // glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &align);
+
+            // ubo を Global なテーブルの bindingPoint 番目にセット
+            // GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, ubo));
+            // size_t offset = info.offset + align - info.offset % align;
+
+            // glBindBufferRange
+            GL_CHECK(glBindBufferRange(GL_UNIFORM_BUFFER, info.bindingPoint, ubo, info.offset, info.blockSize));
+
+            // bindingPoint 番目にセットされている ubo を、blockIndex 番目の UniformBuffer として使う
+            GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+
+            // ii++;
+        }
+    }
+
+    for (int i = 0; i < m_samplerUniforms.size(); i++) {
+        const auto& uniform = m_samplerUniforms[i];
+        int unitIndex = i;
+
+        LN_CHECK(uniform.m_textureExternalUnifromIndex >= 0);
+        // LN_CHECK(uniform.m_samplerExternalUnifromIndex >= 0);
+        GLTextureBase* t = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].texture;
+        GLSamplerState* samplerState = nullptr;
+        if (uniform.m_samplerExternalUnifromIndex >= 0)
+            samplerState = m_externalSamplerUniforms[uniform.m_samplerExternalUnifromIndex].samplerState;
+        if (!samplerState) {
+            samplerState = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].samplerState;
+        }
+
+        GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
+
+        bool mipmap = false;
+        bool renderTarget = false;
+        if (t) {
+            if (t->type() == DeviceTextureType::Texture3D) {
+                GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+                GL_CHECK(glBindTexture(GL_TEXTURE_3D, t->id()));
+            }
+            else {
+                GL_CHECK(glBindTexture(GL_TEXTURE_2D, t->id()));
+                GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+            }
+            mipmap = t->mipmap();
+            renderTarget = (t->type() == DeviceTextureType::RenderTarget);
+        }
+        else {
+            GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+            GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+        }
+        // GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
+        GL_CHECK(glBindSampler(unitIndex, (samplerState) ? samplerState->resolveId(mipmap) : 0));
+        GL_CHECK(glUniform1i(uniform.uniformLocation, unitIndex));
+
+        if (uniform.isRenderTargetUniformLocation >= 0) {
+            GL_CHECK(glUniform1i(uniform.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
+            // if (t->type() == DeviceTextureType::RenderTarget) {
+            //     GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
+            // }
+            // else {
+            //     GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 0));
+            // }
+        }
+    }
+#endif
 }
 
 //=============================================================================
@@ -101,6 +196,7 @@ GLDescriptorPool::GLDescriptorPool() {
 
 Result GLDescriptorPool::init(OpenGLDevice* owner, GLShaderPass* shaderPass) {
     m_uniformBufferAllocator = makeRef<GLUniformBufferAllocator>(owner->uniformBufferAllocatorPageManager());
+    m_pool = makeRef<ObjectPool>(owner->descriptorObjectPoolManager());
     return ok();
 }
 

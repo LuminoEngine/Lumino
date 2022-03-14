@@ -89,9 +89,9 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         // set=0, 'b' register in HLSL
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->uniformBufferRegister.size());
-            m_bufferDescriptorBufferInfo.reserve(createInfo.descriptorLayout->uniformBufferRegister.size());
-            for (auto& item : createInfo.descriptorLayout->uniformBufferRegister) {
+            layoutBindings.reserve(createInfo.descriptorLayout->bufferSlots().size());
+            m_bufferDescriptorBufferInfo.reserve(createInfo.descriptorLayout->bufferSlots().size());
+            for (auto& item : createInfo.descriptorLayout->bufferSlots()) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -132,9 +132,9 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         // set=1, 't' register in HLSL (Texture and CombinedSampler)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
-            m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
-            for (auto& item : createInfo.descriptorLayout->textureRegister) {
+            layoutBindings.reserve(createInfo.descriptorLayout->resourceSlots().size());
+            m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->resourceSlots().size());
+            for (auto& item : createInfo.descriptorLayout->resourceSlots()) {
                 // FIXME: descriptorType を computeShader かどうかで固定しているが、 今は ComputeShader では Texture 型は許可しない (というか使えるのか未調査)
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
@@ -174,9 +174,9 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         // set=2, 's' register in HLSL (SamplerState)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->samplerRegister.size());
-            m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerRegister.size());
-            for (auto& item : createInfo.descriptorLayout->samplerRegister) {
+            layoutBindings.reserve(createInfo.descriptorLayout->samplerSlots().size());
+            m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerSlots().size());
+            for (auto& item : createInfo.descriptorLayout->samplerSlots()) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
@@ -215,9 +215,9 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         // set=3, 'u' register in HLSL (UnorderdAccess)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->unorderdRegister.size());
-            m_storageDescriptorBufferInfo.reserve(createInfo.descriptorLayout->unorderdRegister.size());
-            for (auto& item : createInfo.descriptorLayout->unorderdRegister) {
+            layoutBindings.reserve(createInfo.descriptorLayout->unorderdSlots().size());
+            m_storageDescriptorBufferInfo.reserve(createInfo.descriptorLayout->unorderdSlots().size());
+            for (auto& item : createInfo.descriptorLayout->unorderdSlots()) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;

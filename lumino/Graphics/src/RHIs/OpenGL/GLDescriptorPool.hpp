@@ -53,13 +53,15 @@ private:
 class GLDescriptor : public IDescriptor {
 public:
     GLDescriptor();
-    Result init(OpenGLDevice* owner);
+    Result init(OpenGLDevice* owner/*, GLUniformBufferView view*/);
     //void dispose();
+    void bind(const GLShaderDescriptorTable* layout);
 
 protected:
     void onUpdateData(const ShaderDescriptorTableUpdateInfo& data) override;
 
 private:
+    GLUniformBufferView m_uniformBufferView;
 };
 
 class GLDescriptorPool : public IDescriptorPool {

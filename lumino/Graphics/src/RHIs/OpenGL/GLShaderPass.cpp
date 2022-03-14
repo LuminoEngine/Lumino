@@ -174,8 +174,8 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
         //    blockName[0] = '$';
 
         // DescriptorLayout から、対応する名前の UniformBuffer を探す
-        info.registerIndex = descriptorLayout->findUniformBufferRegisterIndex(blockName);
-        if (LN_ASSERT(info.registerIndex >= 0)) return false; // 絶対に見つかるはず
+        info.layoutSlotIndex = descriptorLayout->findUniformBufferRegisterIndex(blockName);
+        if (LN_ASSERT(info.layoutSlotIndex.i >= 0)) return false; // 絶対に見つかるはず
 
 		// Get infomations.
         info.blockIndex = glGetUniformBlockIndex(program, blockName);
@@ -230,8 +230,8 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 void GLShaderDescriptorTable::addResourceUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout) {
     ResouceUniformInfo info;
     info.uniformLocation = uniformLocation;
-	info.registerIndex = descriptorLayout->findTextureRegisterIndex(name);
-    if (LN_ASSERT(info.registerIndex >= 0)) return; // 絶対に見つかるはず
+    info.layoutSlotIndex = descriptorLayout->findTextureRegisterIndex(name);
+    if (LN_ASSERT(info.layoutSlotIndex.i >= 0)) return; // 絶対に見つかるはず
 
     m_resourceUniforms.push_back(info);
 }

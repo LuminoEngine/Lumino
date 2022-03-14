@@ -782,36 +782,32 @@ bool DescriptorLayout::isReferenceFromComputeStage(DescriptorType registerType) 
     return itr != items.end();
 }
 
-int DescriptorLayout::findUniformBufferRegisterIndex(const std::string& name) const
-{
+LayoutSlotIndex DescriptorLayout::findUniformBufferRegisterIndex(const std::string& name) const {
     for (int i = 0; i < uniformBufferRegister.size(); i++) {
-        if (uniformBufferRegister[i].name == name) return i;
+        if (uniformBufferRegister[i].name == name) return LayoutSlotIndex(i);
     }
-    return -1;
+    return LayoutSlotIndex(-1);
 }
 
-int DescriptorLayout::findUnorderdRegisterIndex(const std::string& name) const
-{
+LayoutSlotIndex DescriptorLayout::findUnorderdRegisterIndex(const std::string& name) const {
     for (int i = 0; i < unorderdRegister.size(); i++) {
-        if (unorderdRegister[i].name == name) return i;
+        if (unorderdRegister[i].name == name) return LayoutSlotIndex(i);
     }
-    return -1;
+    return LayoutSlotIndex(-1);
 }
 
-int DescriptorLayout::findTextureRegisterIndex(const std::string& name) const
-{
+LayoutSlotIndex DescriptorLayout::findTextureRegisterIndex(const std::string& name) const {
     for (int i = 0; i < textureRegister.size(); i++) {
-        if (textureRegister[i].name == name) return i;
+        if (textureRegister[i].name == name) return LayoutSlotIndex(i);
     }
-    return -1;
+    return LayoutSlotIndex(-1);
 }
 
-int DescriptorLayout::findSamplerRegisterIndex(const std::string& name) const
-{
+LayoutSlotIndex DescriptorLayout::findSamplerRegisterIndex(const std::string& name) const {
     for (int i = 0; i < samplerRegister.size(); i++) {
-        if (samplerRegister[i].name == name) return i;
+        if (samplerRegister[i].name == name) return LayoutSlotIndex(i);
     }
-    return -1;
+    return LayoutSlotIndex(-1);
 }
 
 int DescriptorLayout::findUniformBufferMemberOffset(const std::string& name) const

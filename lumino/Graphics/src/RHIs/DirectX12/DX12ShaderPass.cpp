@@ -256,7 +256,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         // glslang だと定数として扱われるため、問題の原因が変わりづらい。
         // ひとまずの対策として、glslang が検出したものと不一致があればエラーとして通知する。
         {
-            const auto& requiredDescriptors = createInfo.descriptorLayout->uniformBufferRegister;
+            const auto& requiredDescriptors = createInfo.descriptorLayout->unorderdSlots();
             for (const auto& reflection : reflections) {
                 for (const auto& descriptor : reflection.descriptors) {
                     if (descriptor.type == DescriptorType_UniformBuffer) {
@@ -291,8 +291,8 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         // VS, PS、CS ごとに集計
         {
             // 'b' register
-            for (int32_t i = 0; i < createInfo.descriptorLayout->uniformBufferRegister.size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->uniformBufferRegister[i];
+            for (int32_t i = 0; i < createInfo.descriptorLayout->bufferSlots().size(); i++) {
+                const DescriptorLayoutItem& item = createInfo.descriptorLayout->bufferSlots()[i];
                 if (item.stageFlags & ShaderStageFlags_Vertex) {
                     int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_UniformBuffer, item.name);
                     if (bindingIndex >= 0) vsDescriptors.bufferDescriptors.push_back({ i, bindingIndex, (int32_t)item.size });
@@ -307,16 +307,16 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
                 }
             }
             // 'u' register
-            for (int32_t i = 0; i < createInfo.descriptorLayout->unorderdRegister.size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->unorderdRegister[i];
+            for (int32_t i = 0; i < createInfo.descriptorLayout->unorderdSlots().size(); i++) {
+                const DescriptorLayoutItem& item = createInfo.descriptorLayout->unorderdSlots()[i];
                 if (item.stageFlags & ShaderStageFlags_Compute) {
                     int32_t bindingIndex = getBindingIndex(ShaderStage2_Compute, DescriptorType_UnorderdAccess, item.name);
                     if (bindingIndex >= 0) csDescriptors.unorderedDescriptors.push_back({ i,bindingIndex, 0 });
                 }
             }
             // 't' register
-            for (int32_t i = 0; i < createInfo.descriptorLayout->textureRegister.size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->textureRegister[i];
+            for (int32_t i = 0; i < createInfo.descriptorLayout->resourceSlots().size(); i++) {
+                const DescriptorLayoutItem& item = createInfo.descriptorLayout->resourceSlots()[i];
                 if (item.stageFlags & ShaderStageFlags_Vertex) {
                     int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_Texture, item.name);
                     if (bindingIndex >= 0) vsDescriptors.textureDescriptors.push_back({ i,bindingIndex, 0 });
@@ -331,8 +331,8 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
                 }
             }
             // 's' register
-            for (int32_t i = 0; i < createInfo.descriptorLayout->samplerRegister.size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->samplerRegister[i];
+            for (int32_t i = 0; i < createInfo.descriptorLayout->samplerSlots().size(); i++) {
+                const DescriptorLayoutItem& item = createInfo.descriptorLayout->samplerSlots()[i];
                 if (item.stageFlags & ShaderStageFlags_Vertex) {
                     int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_SamplerState, item.name);
                     if (bindingIndex >= 0) vsDescriptors.samplerDescriptors.push_back({ i, bindingIndex, 0 });
