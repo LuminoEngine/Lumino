@@ -134,7 +134,7 @@ inline Array<T>::operator bool() const noexcept {
 }
 
 template<class T>
-inline typename T& Array<T>::at(int index) {
+inline T& Array<T>::at(int index) {
     return m_data.at(index);
 }
 

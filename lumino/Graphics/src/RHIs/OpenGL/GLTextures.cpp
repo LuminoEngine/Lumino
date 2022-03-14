@@ -288,7 +288,7 @@ RHIRef<RHIBitmap> GLRenderTargetTexture::readData() {
     const RHIExtent3D& size = extentSize();
     auto buf = makeRHIRef<RHIBitmap>();
     if (!buf->init(GraphicsHelper::getPixelSize(textureFormat()), size.width, size.height)) {
-        return false;
+        return nullptr;
     }
 
 

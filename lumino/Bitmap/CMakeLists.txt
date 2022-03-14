@@ -35,9 +35,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     LuminoCore
     LuminoRuntime
     nanovg::nanovg
-    png
     ZLIB::ZLIB
 )
+
+# libpng の static 版は名前が違う。
+# TODO: とりあえず wasm でリンクしたいのでこの条件にしているが、「ライブラリは static link するか」といったフラグを用意したほうがよさそう。
+if (LN_EMSCRIPTEN)
+    target_link_libraries(${PROJECT_NAME} PRIVATE png_static)
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE png)
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")

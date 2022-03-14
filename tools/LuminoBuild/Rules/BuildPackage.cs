@@ -12,6 +12,7 @@ namespace LuminoBuild.Rules
 
         public override void Build(Build builder)
         {
+#if false
             var local = new BuildLocalPackage();
             local.Build(builder);
 
@@ -20,6 +21,7 @@ namespace LuminoBuild.Rules
                 builder.DoTask("MakeNuGetPackage_Core");
                 builder.DoTask("MakeInstaller_Win32");
             }
+#endif
         }
     }
 }

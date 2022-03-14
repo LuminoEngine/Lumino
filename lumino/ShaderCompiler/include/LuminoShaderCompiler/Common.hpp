@@ -260,10 +260,10 @@ private:
     std::vector<DescriptorLayoutItem> textureRegister;       // Texture or StructuredBuffer
     std::vector<DescriptorLayoutItem> samplerRegister;
 
-    friend class UnifiedShader; // TODO:
-    friend class ShaderCodeTranspiler; // TODO:
-    friend class ShaderDescriptorLayout; // TODO:
-    friend class ShaderPassDescriptorLayout; // TODO:
+    friend class ::ln::detail::UnifiedShader; // TODO:
+    friend class ::ln::detail::ShaderCodeTranspiler; // TODO:
+    friend class ::ln::ShaderDescriptorLayout; // TODO:
+    friend class ::ln::ShaderPassDescriptorLayout; // TODO:
 };
 
 } // namespace detail

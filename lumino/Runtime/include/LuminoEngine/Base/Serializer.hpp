@@ -46,7 +46,8 @@ void serialize(Serializer2& ar, Path& value);
 void serialize(Serializer2& ar, detail::AssetPath& value);
 void serialize(Serializer2& ar, Vector2& value);
 void serialize(Serializer2& ar, Vector3& value);
-
+void serialize(Serializer2& ar, Size& value);
+void serialize(Serializer2& ar, Rect& value);
 
 namespace detail {
 class SerializerStore2;

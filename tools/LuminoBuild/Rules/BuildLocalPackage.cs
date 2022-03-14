@@ -13,6 +13,7 @@ namespace LuminoBuild.Rules
 
         public override void Build(Build builder)
         {
+#if false
             builder.DoTask("BuildExternalProjects");
 
             if (BuildEnvironment.IsMSVCTarget)
@@ -38,6 +39,7 @@ namespace LuminoBuild.Rules
             builder.DoTask("BuildDocuments");
 
             builder.DoTask("MakeNativePackage");
+#endif
         }
     }
 }

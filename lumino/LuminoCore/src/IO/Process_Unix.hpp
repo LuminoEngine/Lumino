@@ -138,6 +138,8 @@ public:
 	bool waitForExit(int timeoutMSec);
 	ProcessStatus getStatus(int* outExitCode);
 	
+	void closeHandle();
+
 private:
 	pid_t   m_pid;
 	int m_exitCode;
@@ -281,6 +283,10 @@ ProcessStatus ProcessImpl::getStatus(int* outExitCode)
 		return ProcessStatus::Crashed;
 	}
 #endif
+}
+
+void ProcessImpl::closeHandle() {
+	// TODO:
 }
 
 } // namespace detail

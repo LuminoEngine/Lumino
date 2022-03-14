@@ -518,7 +518,6 @@ void Process2::start(const ProcessCommand2* cmd) {
     if (m_onStdErrReceived) {
         beginErrorReadLine();
     }
-    ::Sleep(100);
 }
 
 void Process2::dispose() {

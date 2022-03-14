@@ -50,19 +50,19 @@ public:
 	template<typename... TArgs>
 	static void printf(StringView format, TArgs&&... args)
 	{
-		print(String::format(format, std::forward<TArgs>(args)...));
+		print(ln::format(format, std::forward<TArgs>(args)...));
 	}
 
 	template<typename... TArgs>
 	static void printf(float time, StringView format, TArgs&&... args)
 	{
-		print(time, String::format(format, std::forward<TArgs>(args)...));
+		print(time, ln::format(format, std::forward<TArgs>(args)...));
 	}
 
 	template<typename... TArgs>
 	static void printf(float time, const Color& color, StringView format, TArgs&&... args)
 	{
-		print(time, color, String::format(format, std::forward<TArgs>(args)...));
+		print(time, color, ln::format(format, std::forward<TArgs>(args)...));
 	}
 
 //private:

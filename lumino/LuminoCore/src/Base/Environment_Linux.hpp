@@ -28,9 +28,9 @@ public:
 #endif
 	}
 
-	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+	static void setEnvironmentVariable(const StringView& variableName, const StringView& value)
 	{
-		std::string str = ln::String::format(_TT("{0}={1}"), variableName, value).toStdString();
+		std::string str = ln::format(_TT("{0}={1}"), variableName, value).toStdString();
 		std::vector<char> buf(str.c_str(), str.c_str() + str.length());
 		putenv(buf.data());
 	}

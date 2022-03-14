@@ -136,7 +136,7 @@ void EngineManager::init(const EngineSettings& settings)
 		// Find folder in install.
 		if (m_settings.engineResourcesPath.isEmpty()) {
 			if (auto path = ln::Environment::getEnvironmentVariable(_TT("LUMINO_PATH"))) {
-				auto dir = Path::combine(*path, _TT("Tools", _TT("EngineResources")));
+				auto dir = Path::combine(*path, _TT("Tools"), _TT("EngineResources"));
 				if (FileSystem::existsDirectory(dir)) {
 					m_engineResourcesPath = dir;
 				}

@@ -50,86 +50,88 @@ namespace LuminoBuild
 
         public string Call(Dictionary<string, string> environmentVariables = null, Action<StreamWriter> stdinWrite = null)
         {
-            if (Shell)
-            {
-                return Utils.CallProcessShell(Program, Args);
-            }
-            else
-            {
-                Logger.WriteLine($"{Program} {Args}");
+            Logger.WriteLine($"{Program} {Args}");
 
-                using (var p = new System.Diagnostics.Process())
+            using (var p = new System.Diagnostics.Process())
+            {
+                var sb = new StringBuilder();
+                var sbAll = new StringBuilder();
+                var stdErr = new StringBuilder();
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.UseShellExecute = false;
+
+                if (Shell)
                 {
-                    var sb = new StringBuilder();
-                    var sbAll = new StringBuilder();
-                    var stdErr = new StringBuilder();
-                    p.StartInfo.Arguments = Args;
-                    p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.FileName = "cmd";
+                    p.StartInfo.Arguments = $" /c {Program} {Args}";
+                }
+                else
+                {
                     p.StartInfo.FileName = Program;
+                    p.StartInfo.Arguments = Args;
+                }
 
-                    if (!p.StartInfo.UseShellExecute)
+                if (!p.StartInfo.UseShellExecute)
+                {
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
                     {
-                        p.StartInfo.RedirectStandardOutput = true;
-                        p.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
-                        {
-                            if (!Silent) Console.WriteLine(e.Data);
-                            sb.Append(e.Data);
-                            sbAll.Append(e.Data + Environment.NewLine);
-                        };
-                        p.StartInfo.RedirectStandardError = true;
-                        p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
-                        {
-                            if (!Silent) Console.Error.WriteLine(e.Data);
-                            stdErr.Append(e.Data + Environment.NewLine);
-                            sbAll.Append(e.Data + Environment.NewLine);
-                        };
-                    }
-                    if (stdinWrite != null)
+                        if (!Silent) Console.WriteLine(e.Data);
+                        sb.Append(e.Data);
+                        sbAll.Append(e.Data + Environment.NewLine);
+                    };
+                    p.StartInfo.RedirectStandardError = true;
+                    p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
                     {
-                        p.StartInfo.RedirectStandardInput = true;
-                    }
+                        if (!Silent) Console.Error.WriteLine(e.Data);
+                        stdErr.Append(e.Data + Environment.NewLine);
+                        sbAll.Append(e.Data + Environment.NewLine);
+                    };
+                }
+                if (stdinWrite != null)
+                {
+                    p.StartInfo.RedirectStandardInput = true;
+                }
 
-                    if (environmentVariables != null)
+                if (environmentVariables != null)
+                {
+                    foreach (var pair in environmentVariables)
                     {
-                        foreach (var pair in environmentVariables)
+                        if (p.StartInfo.EnvironmentVariables.ContainsKey(pair.Key))
                         {
-                            if (p.StartInfo.EnvironmentVariables.ContainsKey(pair.Key))
-                            {
-                                p.StartInfo.EnvironmentVariables[pair.Key] = pair.Value;
-                            }
-                            else
-                            {
-                                p.StartInfo.EnvironmentVariables.Add(pair.Key, pair.Value);
-                            }
+                            p.StartInfo.EnvironmentVariables[pair.Key] = pair.Value;
+                        }
+                        else
+                        {
+                            p.StartInfo.EnvironmentVariables.Add(pair.Key, pair.Value);
                         }
                     }
-
-                    p.Start();
-
-                    if (stdinWrite != null)
-                    {
-                        stdinWrite(p.StandardInput);
-                    }
-
-                    if (!p.StartInfo.UseShellExecute)
-                    {
-                        p.BeginOutputReadLine();
-                        p.BeginErrorReadLine();
-                    }
-
-                    p.WaitForExit();
-
-                    StdErrorString = stdErr.ToString();
-
-                    if (p.ExitCode != 0)
-                    {
-                        Console.Error.WriteLine(sbAll.ToString());
-                        Logger.WriteLineError($"Error: {Program} {Args}");
-                        throw new InvalidOperationException($"Failed Process. ExitCode: {p.ExitCode}");
-                    }
-                    return sb.ToString();
                 }
+
+                p.Start();
+
+                if (stdinWrite != null)
+                {
+                    stdinWrite(p.StandardInput);
+                }
+
+                if (!p.StartInfo.UseShellExecute)
+                {
+                    p.BeginOutputReadLine();
+                    p.BeginErrorReadLine();
+                }
+
+                p.WaitForExit();
+
+                StdErrorString = stdErr.ToString();
+
+                if (p.ExitCode != 0)
+                {
+                    Console.Error.WriteLine(sbAll.ToString());
+                    Logger.WriteLineError($"Error: {Program} {Args}");
+                    throw new InvalidOperationException($"Failed Process. ExitCode: {p.ExitCode}");
+                }
+                return sb.ToString();
             }
         }
 

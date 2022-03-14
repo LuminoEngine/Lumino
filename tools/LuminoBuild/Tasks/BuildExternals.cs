@@ -33,8 +33,9 @@ namespace LuminoBuild.Tasks
                     {
                         Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
                     }
-
                     Proc.Make("vcpkg", "install fmt:" + b.Triplet).WithSilent().Call();
+                    Proc.Make("vcpkg", "install --editable nanovg:" + b.Triplet + $" --overlay-triplets={b.RootDir}/external/custom-triplets").WithSilent().Call();
+
                     Proc.Make("vcpkg", "install yaml-cpp:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install toml11:" + b.Triplet).WithSilent().Call();
 
@@ -47,7 +48,6 @@ namespace LuminoBuild.Tasks
                     Proc.Make("vcpkg", "install box2d:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install bullet3:" + b.Triplet).WithSilent().Call();
 
-                    Proc.Make("vcpkg", "install nanovg:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install stb:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install tinyobjloader:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install tinygltf:" + b.Triplet).WithSilent().Call();
@@ -55,11 +55,15 @@ namespace LuminoBuild.Tasks
 
                     if (b.IsDesktopSystem)
                     {
+                        // wasm ではそもそもビルドできない。
+                        // …というより glslangValidator がビルドされないことで vcpkg の vcpkg_copy_tools タスクが失敗している。
+                        Proc.Make("vcpkg", "install glslang:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", "install spirv-cross:" + b.Triplet).WithSilent().Call();
+
+                        // wasm で必要ないもの
                         Proc.Make("vcpkg", "install glfw3:" + b.Triplet).WithSilent().Call();
                         Proc.Make("vcpkg", "install vulkan-headers:" + b.Triplet).WithSilent().Call();
                         Proc.Make("vcpkg", "install glad:" + b.Triplet).WithSilent().Call();
-                        Proc.Make("vcpkg", "install glslang:" + b.Triplet).WithSilent().Call();
-                        Proc.Make("vcpkg", "install spirv-cross:" + b.Triplet).WithSilent().Call();
                         Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
                         Proc.Make("vcpkg", "install openal-soft:" + b.Triplet).WithSilent().Call();
                     }

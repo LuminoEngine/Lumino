@@ -927,7 +927,7 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
         unlockBuffer(len, &context);
     }
     else {
-        assignFromCStrInternal((const byte_t*)str, len, 1, outUsedDefaultChar, encoding ? encoding : TextEncoding::systemMultiByteEncoding());
+        assignFromCStrInternal((const byte_t*)str, len, 1, outUsedDefaultChar, encoding ? encoding : TextEncoding::systemMultiByteEncoding().get());
         //		TextEncoding* actualEncoding = encoding;
         //		if (!actualEncoding) actualEncoding = TextEncoding::systemMultiByteEncoding();
         //
@@ -967,7 +967,7 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
         unlockBuffer(len, &context);
     }
     else {
-        assignFromCStrInternal((const byte_t*)str, len, sizeof(wchar_t), outUsedDefaultChar, encoding ? encoding : TextEncoding::wideCharEncoding());
+        assignFromCStrInternal((const byte_t*)str, len, sizeof(wchar_t), outUsedDefaultChar, encoding ? encoding : TextEncoding::wideCharEncoding().get());
     }
 }
 

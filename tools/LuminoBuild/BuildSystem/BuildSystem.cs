@@ -42,8 +42,6 @@ namespace LuminoBuild
         public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
         public string LuminoExternalDir;
-        public List<BuildTask> Tasks = new List<BuildTask>();
-        public List<BuildRule> Rules = new List<BuildRule>();
         public string[] Args;
         public bool DirectTaskExecution { get { return Args.Contains("--direct-task-execution"); } }
 
@@ -136,108 +134,108 @@ namespace LuminoBuild
 
 
 
-        public void DoTaskOrRule(string name)
-        {
-            var rule = Rules.Find((r) => r.Name == name);
-            if (rule != null)
-            {
-                DoRule(name);
-            }
-            else
-            {
-                DoTask(name);
-            }
-        }
+        //public void DoTaskOrRule(string name)
+        //{
+        //    var rule = Rules.Find((r) => r.Name == name);
+        //    if (rule != null)
+        //    {
+        //        DoRule(name);
+        //    }
+        //    else
+        //    {
+        //        DoTask(name);
+        //    }
+        //}
 
-        public void DoTask(string name)
-        {
-            try
-            {
-                Execute(name);
-            }
-            catch (Exception e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(e.ToString());
-                Console.ResetColor(); // 色のリセット
-                throw new Exception($"[{name}] Task failed.");
-            }
-        }
-        public void DoTask(BuildTask task)
-        {
-            try
-            {
-                ExecuteTask(task);
-            }
-            catch (Exception e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(e.ToString());
-                Console.ResetColor(); // 色のリセット
-                throw new Exception($"[{task.CommandName}] Task failed.");
-            }
-        }
+        //public void DoTask(string name)
+        //{
+        //    try
+        //    {
+        //        Execute(name);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.ForegroundColor = ConsoleColor.Red;
+        //        Console.WriteLine(e.ToString());
+        //        Console.ResetColor(); // 色のリセット
+        //        throw new Exception($"[{name}] Task failed.");
+        //    }
+        //}
+        //public void DoTask(BuildTask task)
+        //{
+        //    try
+        //    {
+        //        ExecuteTask(task);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.ForegroundColor = ConsoleColor.Red;
+        //        Console.WriteLine(e.ToString());
+        //        Console.ResetColor(); // 色のリセット
+        //        throw new Exception($"[{task.CommandName}] Task failed.");
+        //    }
+        //}
 
-        public void DoRule(string name)
-        {
-            var rule = Rules.Find((r) => r.Name == name);
-            try
-            {
-                Logger.WriteLine("[{0}] Rule started.", rule.Name);
-                var sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
+        //public void DoRule(string name)
+        //{
+        //    var rule = Rules.Find((r) => r.Name == name);
+        //    try
+        //    {
+        //        Logger.WriteLine("[{0}] Rule started.", rule.Name);
+        //        var sw = new System.Diagnostics.Stopwatch();
+        //        sw.Start();
 
-                rule.Build(this);
+        //        rule.Build(this);
 
-                sw.Stop();
-                Logger.WriteLine("[{0}] Rule succeeded. ({1})", rule.Name, sw.Elapsed.ToString());
-            }
-            catch (Exception e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(e.ToString());
-                Console.ResetColor(); // 色のリセット
-                throw new Exception($"[{name}] Rule failed.");
-            }
-        }
+        //        sw.Stop();
+        //        Logger.WriteLine("[{0}] Rule succeeded. ({1})", rule.Name, sw.Elapsed.ToString());
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.ForegroundColor = ConsoleColor.Red;
+        //        Console.WriteLine(e.ToString());
+        //        Console.ResetColor(); // 色のリセット
+        //        throw new Exception($"[{name}] Rule failed.");
+        //    }
+        //}
 
-        private void Execute(string taskName)
-        {
-            var tasks = ResoleveDependencies(taskName);
+        //private void Execute(string taskName)
+        //{
+        //    var tasks = ResoleveDependencies(taskName);
 
-            if (DirectTaskExecution)
-            {
-                ExecuteTask(tasks.Last());
-            }
-            else
-            {
-                Console.WriteLine("Task execution order:");
-                tasks.ForEach(x => Console.WriteLine("  " + x.CommandName));
-                tasks.ForEach(x => ExecuteTask(x));
-            }
-        }
+        //    if (DirectTaskExecution)
+        //    {
+        //        ExecuteTask(tasks.Last());
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Task execution order:");
+        //        tasks.ForEach(x => Console.WriteLine("  " + x.CommandName));
+        //        tasks.ForEach(x => ExecuteTask(x));
+        //    }
+        //}
 
-        private void ExecuteTask(BuildTask task)
-        {
-            Logger.WriteLine("--------------------------------------------------------------------------------");
-            Logger.WriteLine("[{0}] Task started.", task.CommandName);
-            var sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
+        //private void ExecuteTask(BuildTask task)
+        //{
+        //    Logger.WriteLine("--------------------------------------------------------------------------------");
+        //    Logger.WriteLine("[{0}] Task started.", task.CommandName);
+        //    var sw = new System.Diagnostics.Stopwatch();
+        //    sw.Start();
 
-            string oldCD = Directory.GetCurrentDirectory();
-            try
-            {
-                task.Build(this);
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(oldCD);
-            }
+        //    string oldCD = Directory.GetCurrentDirectory();
+        //    try
+        //    {
+        //        task.Build(this);
+        //    }
+        //    finally
+        //    {
+        //        Directory.SetCurrentDirectory(oldCD);
+        //    }
 
-            sw.Stop();
-            Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
-            Logger.WriteLine("--------------------------------------------------------------------------------");
-        }
+        //    sw.Stop();
+        //    Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
+        //    Logger.WriteLine("--------------------------------------------------------------------------------");
+        //}
 
         public bool HasFlagArgument(string name)
         {
@@ -246,53 +244,53 @@ namespace LuminoBuild
 
 
 
-        class NeedTaskInfo
-        {
-            public BuildTask Task;
-            public int Depth;
-        }
+        //class NeedTaskInfo
+        //{
+        //    public BuildTask Task;
+        //    public int Depth;
+        //}
 
-        private List<BuildTask> ResoleveDependencies(string taskName)
-        {
-            var resultList = new List<NeedTaskInfo>();
-            var task = Tasks.Find((r) => r.CommandName == taskName);
-            //resultList.Add(new NeedTaskInfo() { Task = task, Depth = 0 });
-            ResoleveDependenciesHierarchical(resultList, task, 0);
+        //private List<BuildTask> ResoleveDependencies(string taskName)
+        //{
+        //    var resultList = new List<NeedTaskInfo>();
+        //    var task = Tasks.Find((r) => r.CommandName == taskName);
+        //    //resultList.Add(new NeedTaskInfo() { Task = task, Depth = 0 });
+        //    ResoleveDependenciesHierarchical(resultList, task, 0);
 
-            //foreach (var needTaskName in task.Dependencies)
-            //{
-            //    var needTask = Tasks.Find((r) => r.CommandName == needTaskName);
+        //    //foreach (var needTaskName in task.Dependencies)
+        //    //{
+        //    //    var needTask = Tasks.Find((r) => r.CommandName == needTaskName);
 
-            //    if (resultList.Find((x) => x.Task == needTask) == null)
-            //    {
-            //        resultList.Add(new NeedTaskInfo() { Task = needTask, Depth = 1 });
-            //    }
+        //    //    if (resultList.Find((x) => x.Task == needTask) == null)
+        //    //    {
+        //    //        resultList.Add(new NeedTaskInfo() { Task = needTask, Depth = 1 });
+        //    //    }
 
-            //    ResoleveDependenciesHierarchical(resultList, needTask, 1);
-            //}
+        //    //    ResoleveDependenciesHierarchical(resultList, needTask, 1);
+        //    //}
 
-            var stableSorted = resultList.OrderByDescending(x => x.Depth);
-            return stableSorted.Select(x => x.Task).ToList();
-        }
+        //    var stableSorted = resultList.OrderByDescending(x => x.Depth);
+        //    return stableSorted.Select(x => x.Task).ToList();
+        //}
 
-        private void ResoleveDependenciesHierarchical(List<NeedTaskInfo> resultList, BuildTask task, int depth)
-        {
-            if (resultList.Find((x) => x.Task == task) == null)
-            {
-                resultList.Add(new NeedTaskInfo() { Task = task, Depth = depth });
-            }
+        //private void ResoleveDependenciesHierarchical(List<NeedTaskInfo> resultList, BuildTask task, int depth)
+        //{
+        //    if (resultList.Find((x) => x.Task == task) == null)
+        //    {
+        //        resultList.Add(new NeedTaskInfo() { Task = task, Depth = depth });
+        //    }
 
-            var dependencies = task.Dependencies;
-            if (dependencies != null)
-            {
-                foreach (var needTaskName in dependencies)
-                {
-                    var needTask = Tasks.Find((r) => r.CommandName == needTaskName);
+        //    var dependencies = task.Dependencies;
+        //    if (dependencies != null)
+        //    {
+        //        foreach (var needTaskName in dependencies)
+        //        {
+        //            var needTask = Tasks.Find((r) => r.CommandName == needTaskName);
 
-                    ResoleveDependenciesHierarchical(resultList, needTask, depth + 1);
-                }
+        //            ResoleveDependenciesHierarchical(resultList, needTask, depth + 1);
+        //        }
 
-            }
-        }
+        //    }
+        //}
     }
 }

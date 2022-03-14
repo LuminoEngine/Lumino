@@ -42,7 +42,7 @@
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_iOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeNuGetPackage_Core.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Android.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Emscripten.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngine.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildExternalProjects.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildLLVM.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildRuntime.cs" />

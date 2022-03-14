@@ -4,11 +4,11 @@ using System.IO;
 
 namespace LuminoBuild.Tasks
 {
-    class BuildEngine_Emscripten : BuildTask
+    class BuildEngine : BuildTask
     {
-        public override string CommandName => "BuildEngine_Emscripten";
+        public override string CommandName => "BuildEngine";
 
-        //public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
+        public override string[] Depends => new string[] { "BuildExternals" };
 
         public override void Build(Build b)
         {

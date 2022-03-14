@@ -109,3 +109,7 @@ if (LN_BUILD_TESTS)
     add_subdirectory(test)
     add_subdirectory(sandbox)
 endif()
+
+if (LN_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()

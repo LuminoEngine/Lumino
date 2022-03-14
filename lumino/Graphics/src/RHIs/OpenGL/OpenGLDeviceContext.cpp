@@ -80,7 +80,7 @@ Result OpenGLDevice::init(const Settings& settings) {
     }
 
 #if defined(LN_GRAPHICS_OPENGLES)
-    LN_LOG_INFO << "OpenGL ES enabled.";
+    LN_LOG_INFO("OpenGL ES enabled.");
 #endif
 
 #if defined(LN_GRAPHICS_OPENGLES)

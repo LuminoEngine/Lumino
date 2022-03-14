@@ -10,6 +10,7 @@
 #include <time.h>
 #endif
 #include "UnicodeUtils.hpp"
+#include "String.hpp"
 
 #ifdef _MSC_VER
 #define LN_FUNC_MACRO __FUNCTION__

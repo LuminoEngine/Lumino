@@ -58,7 +58,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_Emscripten", "wasm32-emscripten" };
 
                 //args = new string[] { "BuildExternals", "x64-windows" };
-                args = new string[] { "BuildEngine_MSVC" };
+                args = new string[] { "BuildEngine", "wasm32-emscripten" };
 
                 //args = new string[] { "BuildExternals" };
             }
@@ -110,54 +110,54 @@ namespace LuminoBuild
                 if (b.System == "emscripten") EmscriptenEnv.Setup(b);
 
 
-                b.Tasks = new List<LuminoBuild.BuildTask>();
-                b.Tasks.Add(new Tasks.SetupTools());
-                b.Tasks.Add(new Tasks.BuildExternalProjects());
-                b.Tasks.Add(new Tasks.BuildExternals());
-                b.Tasks.Add(new Tasks.BuildLLVM());
-                b.Tasks.Add(new Tasks.BuildEngine_Linux());
-                b.Tasks.Add(new Tasks.BuildEngine_macOS());
-                b.Tasks.Add(new Tasks.BuildEngine_iOS());
-                b.Tasks.Add(new Tasks.BuildDocuments());
-                b.Tasks.Add(new Tasks.BuildEmbeddedResources());
-                b.Tasks.Add(new Tasks.BuildEngine_MSVC());
-                b.Tasks.Add(new Tasks.CompressPackage());
-                b.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
-                b.Tasks.Add(new Tasks.BuildEngine_Android());
-                b.Tasks.Add(new Tasks.BuildEngine_Emscripten());
-                b.Tasks.Add(new Tasks.MakeNativePackage());
-                b.Tasks.Add(new Tasks.MakeInstaller_Win32());
-                b.Tasks.Add(new Tasks.MakePackage_HSP3());
-                b.Tasks.Add(new Tasks.MakePackage_macOS());
-                b.Tasks.Add(new Tasks.MakePackage_Ruby());
-                b.Rules.Add(new Rules.BuildPackage());
-                b.Rules.Add(new Rules.BuildLocalPackage());
+                var taskManager = new TaskManager();
+                taskManager.Tasks.Add(new Tasks.SetupTools());
+                taskManager.Tasks.Add(new Tasks.BuildExternalProjects());
+                taskManager.Tasks.Add(new Tasks.BuildExternals());
+                taskManager.Tasks.Add(new Tasks.BuildLLVM());
+                taskManager.Tasks.Add(new Tasks.BuildEngine_Linux());
+                taskManager.Tasks.Add(new Tasks.BuildEngine_macOS());
+                taskManager.Tasks.Add(new Tasks.BuildEngine_iOS());
+                taskManager.Tasks.Add(new Tasks.BuildDocuments());
+                taskManager.Tasks.Add(new Tasks.BuildEmbeddedResources());
+                taskManager.Tasks.Add(new Tasks.BuildEngine_MSVC());
+                taskManager.Tasks.Add(new Tasks.CompressPackage());
+                taskManager.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
+                taskManager.Tasks.Add(new Tasks.BuildEngine_Android());
+                taskManager.Tasks.Add(new Tasks.BuildEngine());
+                taskManager.Tasks.Add(new Tasks.MakeNativePackage());
+                taskManager.Tasks.Add(new Tasks.MakeInstaller_Win32());
+                taskManager.Tasks.Add(new Tasks.MakePackage_HSP3());
+                taskManager.Tasks.Add(new Tasks.MakePackage_macOS());
+                taskManager.Tasks.Add(new Tasks.MakePackage_Ruby());
+                //taskManager.Rules.Add(new Rules.BuildPackage());
+                //taskManager.Rules.Add(new Rules.BuildLocalPackage());
 
 
                 if (args.Length >= 1)
                 {
-                    b.DoTaskOrRule(args[0]);
+                    taskManager.DoTask(b, options.Task);
                 }
                 else
                 {
-                    while (true)
-                    {
-                        Console.WriteLine("----------------------------------------");
-                        Console.WriteLine("{0,-8}   {1}", "Command", "Description");
-                        foreach (var rule in b.Tasks)
-                        {
-                            Console.WriteLine("{0,-8}", rule.CommandName);
-                        }
-                        Console.WriteLine("all      : Build all.");
-                        Console.WriteLine("exit     : Exit.");
-                        Console.WriteLine("----------------------------------------");
-                        Console.Write("Enter commands:");
-                        string commands = Console.ReadLine();
+                    //while (true)
+                    //{
+                    //    Console.WriteLine("----------------------------------------");
+                    //    Console.WriteLine("{0,-8}   {1}", "Command", "Description");
+                    //    foreach (var rule in taskManager.Tasks)
+                    //    {
+                    //        Console.WriteLine("{0,-8}", rule.CommandName);
+                    //    }
+                    //    Console.WriteLine("all      : Build all.");
+                    //    Console.WriteLine("exit     : Exit.");
+                    //    Console.WriteLine("----------------------------------------");
+                    //    Console.Write("Enter commands:");
+                    //    string commands = Console.ReadLine();
 
-                        if (commands == "exit") break;
+                    //    if (commands == "exit") break;
 
-                        b.DoTaskOrRule(commands);
-                    }
+                    //    //b.DoTaskOrRule(commands);
+                    //}
                 }
             }
             finally
