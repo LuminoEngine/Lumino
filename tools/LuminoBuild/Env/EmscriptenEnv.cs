@@ -118,7 +118,7 @@ namespace LuminoBuild
             //Environment.SetEnvironmentVariable("EMSDK_PYTHON", @"C:\Proj\LN\Lumino\build\cache\tools\emsdk\python\3.9.2-1_64bit\python.exe");
             //Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Proj\LN\Lumino\build\cache\tools\emsdk\java\8.152_64bit");
 
-            Ninja = b.VcpkgDir + "/downloads/tools/ninja/1.10.1-windows/ninja.exe";
+            Ninja = Directory.GetFiles(b.VcpkgDir + "/downloads/tools/ninja", "ninja.exe", SearchOption.AllDirectories).First();
 
             //                    EM_CONFIG = C:\Proj\LN\Lumino\_build\tools\emsdk\.emscripten
             //EMSDK_NODE = C:\Proj\LN\Lumino\_build\tools\emsdk\node\14.15.5_64bit\bin\node.exe

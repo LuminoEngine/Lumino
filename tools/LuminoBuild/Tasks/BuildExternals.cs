@@ -33,9 +33,10 @@ namespace LuminoBuild.Tasks
                     {
                         Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
                     }
-                    Proc.Make("vcpkg", "install fmt:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install --editable nanovg:" + b.Triplet + $" --overlay-triplets={b.RootDir}/external/custom-triplets").WithSilent().Call();
+                    //Proc.Make("vcpkg", "install --editable nanovg:" + b.Triplet + $" --overlay-triplets={b.RootDir}/external/custom-triplets").WithSilent().Call();
+                    Proc.Make("vcpkg", "install --editable nanovg:" + b.Triplet).WithSilent().Call();
 
+                    Proc.Make("vcpkg", "install fmt:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install yaml-cpp:" + b.Triplet).WithSilent().Call();
                     Proc.Make("vcpkg", "install toml11:" + b.Triplet).WithSilent().Call();
 
