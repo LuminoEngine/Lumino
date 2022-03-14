@@ -486,6 +486,7 @@ public:
     struct Reference {
         Ref<RHIDeviceObject> object;
         Ref<ISamplerState> samplerState;
+        size_t offset; // UniformBuffer offset;
     };
     using ReferenceList = std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements>;
 
@@ -494,6 +495,8 @@ public:
     const ReferenceList& resources() const { return m_resources; }
     const ReferenceList& samplers() const { return m_samplers; }
     const ReferenceList& storages() const { return m_storages; }
+
+    const Reference& bufferSlot(LayoutSlotIndex i) const { return m_buffers[i.i]; }
 
 protected:
     virtual ~IDescriptor();

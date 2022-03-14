@@ -100,12 +100,9 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 
     if (pipeline) {
         auto* glPipeline = static_cast<GLPipeline*>(pipeline);
-        glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer);
+        glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer, state.descriptor);
     }
 
-    if (state.descriptor) {
-        
-    }
 }
 
 //void* GLGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)

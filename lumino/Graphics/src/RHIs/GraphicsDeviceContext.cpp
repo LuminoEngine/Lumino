@@ -788,6 +788,7 @@ void IDescriptor::setData(const ShaderDescriptorTableUpdateInfo& data) {
     for (int32_t i = 0; i < ShaderDescriptorTableUpdateInfo::MaxElements; i++) {
         if (LN_ENSURE(!data.uniforms[i].stamplerState)) return;
         m_buffers[i].object = data.uniforms[i].object;
+        m_buffers[i].offset = data.uniforms[i].offset;
 
         m_resources[i].object = data.resources[i].object;
         m_resources[i].samplerState = data.resources[i].stamplerState;

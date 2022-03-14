@@ -32,7 +32,7 @@ namespace ln {
 namespace detail {
 
 // 外部の OpenGL Context に統合するときに使う
-//Result IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
+// Result IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
 //{
 //	GLint type;
 //	GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type));
@@ -137,8 +137,8 @@ Result OpenGLDevice::init(const Settings& settings) {
     m_uniformBufferAllocatorPageManager = makeRef<GLUniformBufferAllocatorPageManager>(this, PageSize);
     m_descriptorObjectPoolManager = makeRef<GLDescriptorObjectPoolManager>(this);
 
-    //m_graphicsContext = makeRef<GLGraphicsContext>();
-    //m_graphicsContext->init(this);
+    // m_graphicsContext = makeRef<GLGraphicsContext>();
+    // m_graphicsContext->init(this);
 
     LN_LOG_DEBUG("OpenGLDeviceContext::init end");
     return ok();
@@ -153,10 +153,10 @@ void OpenGLDevice::dispose() {
     IGraphicsDevice::dispose();
 }
 
-//ICommandList* OpenGLDevice::getGraphicsContext() const
+// ICommandList* OpenGLDevice::getGraphicsContext() const
 //{
 //	return m_graphicsContext;
-//}
+// }
 
 void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
     outCaps->graphicsAPI = GraphicsAPI::OpenGL;
@@ -189,14 +189,14 @@ Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const Si
 }
 
 Ref<ICommandList> OpenGLDevice::onCreateCommandList() {
-    //if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
+    // if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
 
     auto ptr = makeRef<GLGraphicsContext>();
     if (!ptr->init(this)) {
         return nullptr;
     }
 
-    //m_commandListCreated = true;
+    // m_commandListCreated = true;
     return ptr;
 }
 
@@ -389,7 +389,7 @@ void GLSwapChain::present() {
         GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, defaultFBO()));
         GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo()));
 
-        //LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
+        // LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
 
         // FIXME:
         // Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。
@@ -398,19 +398,19 @@ void GLSwapChain::present() {
         GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
         GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
 
-        //printf("bufferSize: %d %d\n", bufferSize.width, bufferSize.height);
+        // printf("bufferSize: %d %d\n", bufferSize.width, bufferSize.height);
         //// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
-        //GLint colorBufferName = 0;
-        //GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
+        // GLint colorBufferName = 0;
+        // GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
 
         //// レンダーバッファ(カラーバッファ)をバインド
-        //GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, colorBufferName));
+        // GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, colorBufferName));
 
         // カラーバッファの幅と高さを取得
-        //GLint endpointWidth;
-        //GLint endpointHeight;
-        //GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_WIDTH, &endpointWidth));
-        //GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_HEIGHT, &endpointHeight));
+        // GLint endpointWidth;
+        // GLint endpointHeight;
+        // GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_WIDTH, &endpointWidth));
+        // GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_HEIGHT, &endpointHeight));
 
         // Blit
         // ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
@@ -428,7 +428,7 @@ void GLSwapChain::present() {
 ////=============================================================================
 //// EmptyGLContext
 //
-//Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+// Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 //{
 //	auto ptr = makeRef<EmptyGLSwapChain>(nullptr);
 //    ptr->setBackendBufferSize(backbufferSize.width, backbufferSize.height);
@@ -436,11 +436,11 @@ void GLSwapChain::present() {
 //	return ptr;
 //}
 //
-//void EmptyGLContext::makeCurrent(GLSwapChain* swapChain)
+// void EmptyGLContext::makeCurrent(GLSwapChain* swapChain)
 //{
 //}
 //
-//void EmptyGLContext::swap(GLSwapChain* swapChain)
+// void EmptyGLContext::swap(GLSwapChain* swapChain)
 //{
 //}
 
@@ -484,9 +484,9 @@ void GLRenderPass::dispose() {
     IRenderPass::dispose();
 }
 
-//SizeI GLRenderPass::viewSize() const {
-//    return m_renderTargets[0]->realSize();
-//}
+// SizeI GLRenderPass::viewSize() const {
+//     return m_renderTargets[0]->realSize();
+// }
 
 void GLRenderPass::bind(GLGraphicsContext* context) {
     auto fbo = context->fbo();
@@ -501,7 +501,7 @@ void GLRenderPass::bind(GLGraphicsContext* context) {
     std::array<GLenum, MaxMultiRenderTargets> buffers;
     int renderTargetsCount = m_renderTargets.size();
     int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
-    //int actualCount = 0;
+    // int actualCount = 0;
     for (int i = 0; i < renderTargetsCount; ++i) {
         if (m_renderTargets[i]) {
             LN_CHECK(m_renderTargets[i]->extentSize() == baseSize);
@@ -591,11 +591,11 @@ void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElem
 
         elm.instance = (vertexElements[i].rate == VertexInputRate::Instance);
 
-        //elm.stride = getVertexSize(vertexElements, elementsCount, elm.streamIndex);
-        //elm.byteOffset = totalSize;
+        // elm.stride = getVertexSize(vertexElements, elementsCount, elm.streamIndex);
+        // elm.byteOffset = totalSize;
         outList->add(elm);
 
-        //totalSize += getVertexElementTypeSize(vertexElements[i].Type);
+        // totalSize += getVertexElementTypeSize(vertexElements[i].Type);
     }
 
     for (auto& e : *outList) {
@@ -677,213 +677,214 @@ void GLPipeline::dispose() {
     IPipeline::dispose();
 }
 
-void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer) {
-    // UpdateStatus
+void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer, IDescriptor* descriptor) {
+    
+    // BlendState
     {
-        // BlendState
-        {
-            GLenum blendOpTable[] = {
-                GL_FUNC_ADD,
-                GL_FUNC_SUBTRACT,
-                GL_FUNC_REVERSE_SUBTRACT,
-                GL_MIN,
-                GL_MAX,
-            };
+        GLenum blendOpTable[] = {
+            GL_FUNC_ADD,
+            GL_FUNC_SUBTRACT,
+            GL_FUNC_REVERSE_SUBTRACT,
+            GL_MIN,
+            GL_MAX,
+        };
 
-    GLenum blendFactorTable[] = {
-        GL_ZERO,
-        GL_ONE,
-        GL_SRC_COLOR,
-        GL_ONE_MINUS_SRC_COLOR,
-        GL_SRC_ALPHA,
-        GL_ONE_MINUS_SRC_ALPHA,
-        GL_DST_COLOR,
-        GL_ONE_MINUS_DST_COLOR,
-        GL_DST_ALPHA,
-        GL_ONE_MINUS_DST_ALPHA
-    };
+        GLenum blendFactorTable[] = {
+            GL_ZERO,
+            GL_ONE,
+            GL_SRC_COLOR,
+            GL_ONE_MINUS_SRC_COLOR,
+            GL_SRC_ALPHA,
+            GL_ONE_MINUS_SRC_ALPHA,
+            GL_DST_COLOR,
+            GL_ONE_MINUS_DST_COLOR,
+            GL_DST_ALPHA,
+            GL_ONE_MINUS_DST_ALPHA
+        };
 
 #ifdef GL_GLES_PROTOTYPES
-    // OpenGL ES is unsupported
+        // OpenGL ES is unsupported
 #else
-    if (m_blendState.independentBlendEnable) {
-        for (int i = 0; i < 8; i++) // TODO: num RT
+        if (m_blendState.independentBlendEnable) {
+            for (int i = 0; i < 8; i++) // TODO: num RT
+            {
+                const RenderTargetBlendDesc& desc = m_blendState.renderTargets[i];
+
+                // blendEnable
+                if (desc.blendEnable) {
+                    GL_CHECK(glEnablei(GL_BLEND, i));
+                }
+                else {
+                    GL_CHECK(glEnablei(GL_BLEND, i));
+                }
+
+                // sourceBlend
+                // destinationBlend
+                GL_CHECK(glBlendFuncSeparatei(i, blendFactorTable[(int)desc.sourceBlend], blendFactorTable[(int)desc.destinationBlend], blendFactorTable[(int)desc.sourceBlendAlpha], blendFactorTable[(int)desc.destinationBlendAlpha]));
+
+                // blendOp
+                GL_CHECK(glBlendEquationSeparatei(i, blendOpTable[(int)desc.blendOp], blendOpTable[(int)desc.blendOpAlpha]));
+            }
+        }
+        else
+#endif
         {
-            const RenderTargetBlendDesc& desc = m_blendState.renderTargets[i];
+            const RenderTargetBlendDesc& desc = m_blendState.renderTargets[0];
 
             // blendEnable
             if (desc.blendEnable) {
-                GL_CHECK(glEnablei(GL_BLEND, i));
+                GL_CHECK(glEnable(GL_BLEND));
             }
             else {
-                GL_CHECK(glEnablei(GL_BLEND, i));
+                GL_CHECK(glDisable(GL_BLEND));
+            }
+
+            // blendOp
+            {
+                GL_CHECK(glBlendEquationSeparate(
+                    blendOpTable[(int)desc.blendOp],
+                    blendOpTable[(int)desc.blendOpAlpha]));
             }
 
             // sourceBlend
             // destinationBlend
-            GL_CHECK(glBlendFuncSeparatei(i, blendFactorTable[(int)desc.sourceBlend], blendFactorTable[(int)desc.destinationBlend], blendFactorTable[(int)desc.sourceBlendAlpha], blendFactorTable[(int)desc.destinationBlendAlpha]));
-
-            // blendOp
-            GL_CHECK(glBlendEquationSeparatei(i, blendOpTable[(int)desc.blendOp], blendOpTable[(int)desc.blendOpAlpha]));
+            {
+                GL_CHECK(glBlendFuncSeparate(
+                    blendFactorTable[(int)desc.sourceBlend],
+                    blendFactorTable[(int)desc.destinationBlend],
+                    blendFactorTable[(int)desc.sourceBlendAlpha],
+                    blendFactorTable[(int)desc.destinationBlendAlpha]));
+            }
         }
     }
-    else
-#endif
+    
+    
+    // RasterizerState
     {
-        const RenderTargetBlendDesc& desc = m_blendState.renderTargets[0];
-
-        // blendEnable
-        if (desc.blendEnable) {
-            GL_CHECK(glEnable(GL_BLEND));
-        }
-        else {
-            GL_CHECK(glDisable(GL_BLEND));
-        }
-
-        // blendOp
-        {
-            GL_CHECK(glBlendEquationSeparate(
-                blendOpTable[(int)desc.blendOp],
-                blendOpTable[(int)desc.blendOpAlpha]));
-        }
-
-        // sourceBlend
-        // destinationBlend
-        {
-            GL_CHECK(glBlendFuncSeparate(
-                blendFactorTable[(int)desc.sourceBlend],
-                blendFactorTable[(int)desc.destinationBlend],
-                blendFactorTable[(int)desc.sourceBlendAlpha],
-                blendFactorTable[(int)desc.destinationBlendAlpha]));
-        }
-    }
-}
-
-// RasterizerState
-{
-    // fillMode
-    {
+        // fillMode
 #ifdef GL_GLES_PROTOTYPES
-// OpenGL ES is glPolygonMode unsupported
+        // OpenGL ES is glPolygonMode unsupported
 #else
         const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
-GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)m_rasterizerState.fillMode]));
+        GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)m_rasterizerState.fillMode]));
 #endif
-    }
-
-    // cullingMode
-    {
-        switch (m_rasterizerState.cullMode){
-            case CullMode::None :
+        // cullingMode
+        GL_CHECK(glFrontFace(GL_CCW));
+        switch (m_rasterizerState.cullMode) {
+            case CullMode::None:
                 GL_CHECK(glDisable(GL_CULL_FACE));
-break;
-case CullMode::Front:
-    GL_CHECK(glEnable(GL_CULL_FACE));
-    GL_CHECK(glCullFace(GL_BACK));
-    break;
-case CullMode::Back:
-    GL_CHECK(glEnable(GL_CULL_FACE));
-    GL_CHECK(glCullFace(GL_FRONT));
-    break;
-}
-}
-}
-
-// DepthStencilState
-{
-    GLenum cmpFuncTable[] = {
-        GL_NEVER,    // Never
-        GL_LESS,     // Less
-        GL_LEQUAL,   // LessEqual
-        GL_GREATER,  // Greater
-        GL_GEQUAL,   // GreaterEqual
-        GL_EQUAL,    // Equal
-        GL_NOTEQUAL, // NotEqual
-        GL_ALWAYS,   // Always
-    };
-
-    //// depthTestEnabled
-    //if (depthStencilState.depthTestEnabled) {
-    //	GL_CHECK(glEnable(GL_DEPTH_TEST));
-    //}
-    //else {
-    //	GL_CHECK(glDisable(GL_DEPTH_TEST));
-    //}
-
-    if (m_depthStencilState.depthTestFunc == ComparisonFunc::Always) {
-        GL_CHECK(glDisable(GL_DEPTH_TEST));
-    }
-    else {
-        GL_CHECK(glEnable(GL_DEPTH_TEST));
-        GL_CHECK(glDepthFunc(cmpFuncTable[(int)m_depthStencilState.depthTestFunc]));
-    }
-
-    // depthWriteEnabled
-    GL_CHECK(glDepthMask(m_depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
-
-    // stencilEnabled
-    if (m_depthStencilState.stencilEnabled) {
-        GL_CHECK(glEnable(GL_STENCIL_TEST));
-    }
-    else {
-        GL_CHECK(glDisable(GL_STENCIL_TEST));
-    }
-
-    // stencilFunc
-    // stencilReferenceValue
-    GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
-    GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
-
-    // stencilFailOp
-    // stencilDepthFailOp
-    // stencilPassOp
-    GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
-    GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
-    GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)m_depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilPassOp]));
-}
-}
-
-// PrimitiveData
-{
-    auto* glDecl = static_cast<const GLVertexDeclaration*>(vertexLayout());
-    if (glDecl) {
-        size_t count = shaderPass()->attributes().size();
-        for (size_t iAttr = 0; iAttr < count; iAttr++) {
-            auto& attr = shaderPass()->attributes()[iAttr];
-
-            if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
-
-                GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));
-                GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->vertexBufferId()));
-                GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->byteOffset)));
-
-                if (element->instance) {
-                    glVertexAttribDivisor(attr.layoutLocation, 1);
-                }
-                else {
-                    glVertexAttribDivisor(attr.layoutLocation, 0);
-                }
-            }
-            else {
-                GL_CHECK(glDisableVertexAttribArray(attr.layoutLocation));
-                GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
-            }
+                break;
+            case CullMode::Front:
+                GL_CHECK(glEnable(GL_CULL_FACE));
+                GL_CHECK(glCullFace(GL_FRONT));
+                break;
+            case CullMode::Back:
+                GL_CHECK(glEnable(GL_CULL_FACE));
+                GL_CHECK(glCullFace(GL_BACK));
+                break;
+            default:
+                LN_UNREACHABLE();
+                break;
         }
     }
 
-    auto* glIndexBuffer = static_cast<const GLIndexBuffer*>(indexBuffer);
-    if (glIndexBuffer) {
-        GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glIndexBuffer->indexBufferId()));
-    }
-    else {
-        GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-    }
-}
+    // DepthStencilState
+    {
+        GLenum cmpFuncTable[] = {
+            GL_NEVER,    // Never
+            GL_LESS,     // Less
+            GL_LEQUAL,   // LessEqual
+            GL_GREATER,  // Greater
+            GL_GEQUAL,   // GreaterEqual
+            GL_EQUAL,    // Equal
+            GL_NOTEQUAL, // NotEqual
+            GL_ALWAYS,   // Always
+        };
 
-// shaderPass
-if (auto* pass = static_cast<const GLShaderPass*>(shaderPass())) {
-    pass->apply();
-}
+        //// depthTestEnabled
+        // if (depthStencilState.depthTestEnabled) {
+        //	GL_CHECK(glEnable(GL_DEPTH_TEST));
+        // }
+        // else {
+        //	GL_CHECK(glDisable(GL_DEPTH_TEST));
+        // }
+
+        if (m_depthStencilState.depthTestFunc == ComparisonFunc::Always) {
+            GL_CHECK(glDisable(GL_DEPTH_TEST));
+        }
+        else {
+            GL_CHECK(glEnable(GL_DEPTH_TEST));
+            GL_CHECK(glDepthFunc(cmpFuncTable[(int)m_depthStencilState.depthTestFunc]));
+        }
+
+        // depthWriteEnabled
+        GL_CHECK(glDepthMask(m_depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
+
+        // stencilEnabled
+        if (m_depthStencilState.stencilEnabled) {
+            GL_CHECK(glEnable(GL_STENCIL_TEST));
+        }
+        else {
+            GL_CHECK(glDisable(GL_STENCIL_TEST));
+        }
+
+        // stencilFunc
+        // stencilReferenceValue
+        GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+        GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+
+        // stencilFailOp
+        // stencilDepthFailOp
+        // stencilPassOp
+        GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
+        GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
+        GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)m_depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilPassOp]));
+    }
+
+    // PrimitiveData
+    {
+        auto* glDecl = static_cast<const GLVertexDeclaration*>(vertexLayout());
+        if (glDecl) {
+            size_t count = shaderPass()->attributes().size();
+            for (size_t iAttr = 0; iAttr < count; iAttr++) {
+                auto& attr = shaderPass()->attributes()[iAttr];
+
+                if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
+
+                    GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));
+                    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->vertexBufferId()));
+                    GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->byteOffset)));
+
+                    if (element->instance) {
+                        glVertexAttribDivisor(attr.layoutLocation, 1);
+                    }
+                    else {
+                        glVertexAttribDivisor(attr.layoutLocation, 0);
+                    }
+                }
+                else {
+                    GL_CHECK(glDisableVertexAttribArray(attr.layoutLocation));
+                    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+                }
+            }
+        }
+
+        auto* glIndexBuffer = static_cast<const GLIndexBuffer*>(indexBuffer);
+        if (glIndexBuffer) {
+            GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glIndexBuffer->indexBufferId()));
+        }
+        else {
+            GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+        }
+    }
+
+    // shaderPass
+    if (auto* pass = static_cast<const GLShaderPass*>(shaderPass())) {
+        pass->apply();
+        if (auto* d = static_cast<GLDescriptor*>(descriptor)) {
+            d->bind(pass);
+        }
+    }
 }
 
 } // namespace detail

@@ -55,7 +55,7 @@ public:
     GLDescriptor();
     Result init(OpenGLDevice* owner/*, GLUniformBufferView view*/);
     //void dispose();
-    void bind(const GLShaderDescriptorTable* layout);
+    void bind(const GLShaderPass* shaderPass);
 
 protected:
     void onUpdateData(const ShaderDescriptorTableUpdateInfo& data) override;

@@ -96,19 +96,16 @@ void GLDescriptor::onUpdateData(const ShaderDescriptorTableUpdateInfo& data) {
     // OpenGL は DirectX12 や Vulkan のように、各リソースを GPU へマッピングするための専用のインターフェースは無い。
 }
 
-void GLDescriptor::bind(const GLShaderDescriptorTable* layout) {
+void GLDescriptor::bind(const GLShaderPass* shaderPass) {
+    const GLShaderDescriptorTable* layout = shaderPass->layout();
+    GLuint program = shaderPass->program();
 
-#if 0
-    const ReferenceList& bufferViews = IDescriptor::buffers();
-    for (const auto& bufferInfo : layout->bufferInfos()) {
-        
-    }
+    {
+        for (const auto& info : layout->bufferInfos()) {
+            const auto& slot = bufferSlot(info.layoutSlotIndex);
+            if (LN_ASSERT(slot.object)) return;
 
-
-    // int ii = 0;
-    for (const auto& info : buffers) {
-        if (info.object) {
-            GLUniformBuffer* buf = static_cast<GLUniformBuffer*>(info.object.get());
+            GLUniformBuffer* buf = static_cast<GLUniformBuffer*>(slot.object.get());
             GLuint ubo = buf->ubo();
 
             // TODO: 超暫定対応。
@@ -116,26 +113,18 @@ void GLDescriptor::bind(const GLShaderDescriptorTable* layout) {
             // map/unmap よりも setData のほうがいいかも。
             buf->flush();
 
-            // GLint size = 0;
-            // glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-            // glGetBufferParameteriv(GL_UNIFORM_BUFFER, GL_BUFFER_SIZE, &size);
-
-            // GLint align = 0;
-            // glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &align);
-
-            // ubo を Global なテーブルの bindingPoint 番目にセット
-            // GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, ubo));
-            // size_t offset = info.offset + align - info.offset % align;
-
-            // glBindBufferRange
-            GL_CHECK(glBindBufferRange(GL_UNIFORM_BUFFER, info.bindingPoint, ubo, info.offset, info.blockSize));
+            
+            // bindingPoint は View のようなもの。
+            // ここに対して ubo, offset, size をセットする。
+            GL_CHECK(glBindBufferRange(GL_UNIFORM_BUFFER, info.bindingPoint, ubo, slot.offset, info.blockSize));
 
             // bindingPoint 番目にセットされている ubo を、blockIndex 番目の UniformBuffer として使う
             GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
-
-            // ii++;
         }
     }
+
+#if 0
+
 
     for (int i = 0; i < m_samplerUniforms.size(); i++) {
         const auto& uniform = m_samplerUniforms[i];

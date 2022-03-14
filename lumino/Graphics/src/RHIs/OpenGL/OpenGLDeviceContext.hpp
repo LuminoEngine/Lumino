@@ -244,7 +244,7 @@ public:
     GLPipeline();
     Result init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
     virtual void dispose() override;
-    void bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer);
+    void bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer, IDescriptor* descriptor);
     GLenum primitiveTopology() const { return m_primitiveTopology; }
 
 private:
