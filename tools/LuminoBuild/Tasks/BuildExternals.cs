@@ -29,44 +29,45 @@ namespace LuminoBuild.Tasks
                         Proc.Make("bootstrap-vcpkg").WithShell().WithSilent().Call();
                     }
 
+                    // Toolchain ファイルのテストするときは --editable 付けると良い
+                    var options = $"--editable --overlay-triplets={b.RootDir}/external/custom-triplets";
+                    //var options = $"--overlay-triplets={b.RootDir}/external/custom-triplets";
+
+                    Proc.Make("vcpkg", $"install nanovg:{b.Triplet} {options}").Call();
+
+                    Proc.Make("vcpkg", $"install fmt:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install yaml-cpp:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install toml11:{b.Triplet} {options}").WithSilent().Call();
+
+                    Proc.Make("vcpkg", $"install zlib:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install libpng:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install freetype[core,png,zlib]:{b.Triplet} {options}").WithSilent().Call();    // emsdk では brotli がビルドエラーになるため機能を制限する
+                    Proc.Make("vcpkg", $"install libvorbis:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install pcre2:{b.Triplet} {options}").WithSilent().Call();
+
+                    Proc.Make("vcpkg", $"install box2d:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install bullet3:{b.Triplet} {options}").WithSilent().Call();
+
+                    Proc.Make("vcpkg", $"install stb:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install tinyobjloader:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install tinygltf:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install imgui[docking-experimental]:{b.Triplet} {options}").WithSilent().Call();
+
                     if (b.IsDesktopSystem)
                     {
-                        Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
-                    }
-                    //Proc.Make("vcpkg", "install --editable nanovg:" + b.Triplet + $" --overlay-triplets={b.RootDir}/external/custom-triplets").WithSilent().Call();
-                    Proc.Make("vcpkg", "install --editable nanovg:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", $"install gtest:{b.Triplet} {options}").WithSilent().Call();
 
-                    Proc.Make("vcpkg", "install fmt:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install yaml-cpp:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install toml11:" + b.Triplet).WithSilent().Call();
-
-                    Proc.Make("vcpkg", "install zlib:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install libpng:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install freetype[core,png,zlib]:" + b.Triplet).WithSilent().Call();    // emsdk では brotli がビルドエラーになるため機能を制限する
-                    Proc.Make("vcpkg", "install libvorbis:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install pcre2:" + b.Triplet).WithSilent().Call();
-
-                    Proc.Make("vcpkg", "install box2d:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install bullet3:" + b.Triplet).WithSilent().Call();
-
-                    Proc.Make("vcpkg", "install stb:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install tinyobjloader:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install tinygltf:" + b.Triplet).WithSilent().Call();
-                    Proc.Make("vcpkg", "install imgui[docking-experimental]:" + b.Triplet).WithSilent().Call();
-
-                    if (b.IsDesktopSystem)
-                    {
                         // wasm ではそもそもビルドできない。
                         // …というより glslangValidator がビルドされないことで vcpkg の vcpkg_copy_tools タスクが失敗している。
-                        Proc.Make("vcpkg", "install glslang:" + b.Triplet).WithSilent().Call();
-                        Proc.Make("vcpkg", "install spirv-cross:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", $"install glslang:{b.Triplet} {options}").WithSilent().Call();
+                        Proc.Make("vcpkg", $"install spirv-cross:{b.Triplet} {options}").WithSilent().Call();
 
                         // wasm で必要ないもの
-                        Proc.Make("vcpkg", "install glfw3:" + b.Triplet).WithSilent().Call();
-                        Proc.Make("vcpkg", "install vulkan-headers:" + b.Triplet).WithSilent().Call();
-                        Proc.Make("vcpkg", "install glad:" + b.Triplet).WithSilent().Call();
-                        Proc.Make("vcpkg", "install gtest:" + b.Triplet).WithSilent().Call();
-                        Proc.Make("vcpkg", "install openal-soft:" + b.Triplet).WithSilent().Call();
+                        Proc.Make("vcpkg", $"install glfw3:{b.Triplet} {options}").WithSilent().Call();
+                        Proc.Make("vcpkg", $"install vulkan-headers:{b.Triplet} {options}").WithSilent().Call();
+                        Proc.Make("vcpkg", $"install glad:{b.Triplet} {options}").WithSilent().Call();
+                        Proc.Make("vcpkg", $"install gtest:{b.Triplet} {options}").WithSilent().Call();
+                        Proc.Make("vcpkg", $"install openal-soft:{b.Triplet} {options}").WithSilent().Call();
                     }
 
                     if (BuildEnvironment.FromCI)

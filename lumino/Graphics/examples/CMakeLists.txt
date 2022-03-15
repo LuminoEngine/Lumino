@@ -1,3 +1,6 @@
 
 set(ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/Assets")
-add_subdirectory(WebGL)
+
+if (LN_EMSCRIPTEN)
+    add_subdirectory(WebGL)
+endif()

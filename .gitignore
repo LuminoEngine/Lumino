@@ -5,6 +5,7 @@ lib/
 build.sln
 ReleasePackage-*/
 .vscode
+.ln
 
 
 ## Ignore Visual Studio temporary files, build results, and

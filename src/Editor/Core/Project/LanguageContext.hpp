@@ -17,6 +17,8 @@ public:
 	virtual void restore() = 0;
 	virtual ln::Result build(const ln::String& target);
 
+	static ln::Result buildAssets(const ln::Path& intermediateDir, const ln::Path& inputDir, const ln::Path& outputFile);
+
 private:
 	ln::Result buildAssets() const;
 

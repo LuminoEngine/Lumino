@@ -267,6 +267,7 @@ Result GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureForma
     //GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+    return ok();
 }
 
 Result GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {

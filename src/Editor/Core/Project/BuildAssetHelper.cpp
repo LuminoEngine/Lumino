@@ -1,5 +1,6 @@
 ﻿
 #define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+#include <LuminoCore/Base/CRCHash.hpp>
 #include "../../../lumino/Runtime/src/Asset/AssetArchive.hpp"
 #include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include "../../../lumino/ShaderCompiler/src/ShaderTranspiler.hpp"
@@ -16,13 +17,15 @@ namespace lna {
 //==============================================================================
 // BuildAssetHelper
 
-ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const Project* project, const ln::Path& inputFile, ln::Path* outputFile)
+ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const ln::Path& intermediateDir, const ln::Path& inputFile, ln::Path* outputFile)
 {
-	if (LN_REQUIRE(project)) return ln::err();
+    const auto fileName = inputFile.fileName();
+    const auto crc = ln::String::fromNumber(ln::CRCHash::compute(fileName.c_str()));
+    const auto workFile = ln::Path::combine(intermediateDir, ln::format(U"{}-{}", crc, fileName));
 
-	auto rel = project->assetsDir().makeRelative(inputFile);
-	auto workFile = ln::Path::combine(project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
-	ln::FileSystem::createDirectory(workFile.parent());
+	//auto rel = project->assetsDir().makeRelative(inputFile);
+	//auto workFile = ln::Path::combine(project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
+	//ln::FileSystem::createDirectory(workFile.parent());
 
 	if (!buildShader(inputFile, workFile, ln::Path::Empty)) {
 		return ln::err();
