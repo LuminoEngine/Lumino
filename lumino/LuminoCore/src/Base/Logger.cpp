@@ -29,17 +29,14 @@ void writeNSLog(const char* str);
 //==============================================================================
 // LogHelper
 
-class LogHelper
-{
+class LogHelper {
 public:
 #ifdef _WIN32
-    static void getTime(detail::LogTime* t)
-    {
+    static void getTime(detail::LogTime* t) {
         ::ftime(t);
     }
 #else
-    static void getTime(detail::LogTime* t)
-    {
+    static void getTime(detail::LogTime* t) {
         timeval tv;
         ::gettimeofday(&tv, NULL);
 
@@ -48,8 +45,7 @@ public:
     }
 #endif
 
-    static void GetLocalTime(struct tm* t, const time_t* time)
-    {
+    static void GetLocalTime(struct tm* t, const time_t* time) {
 #ifdef _WIN32
         ::localtime_s(t, time);
 #else
@@ -61,67 +57,55 @@ public:
 //==============================================================================
 // LogFile
 
-class LogFile
-{
+class LogFile {
 public:
     LogFile()
-        : m_file(-1)
-    {
+        : m_file(-1) {
     }
 
-    ~LogFile()
-    {
+    ~LogFile() {
         close();
     }
 
-    bool IsOpend() const
-    {
+    bool IsOpend() const {
         return m_file != -1;
     }
 
 #ifdef _WIN32
-    void open(const char* filePath)
-    {
+    void open(const char* filePath) {
         close();
         ::_sopen_s(&m_file, filePath, _O_CREAT | _O_TRUNC | _O_WRONLY | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE);
     }
 
-    int write(const void* buf, size_t count)
-    {
+    int write(const void* buf, size_t count) {
         return (m_file != -1) ? ::_write(m_file, buf, static_cast<unsigned int>(count)) : -1;
     }
 
-    off_t seek(off_t offset, int whence)
-    {
+    off_t seek(off_t offset, int whence) {
         return (m_file != -1) ? ::_lseek(m_file, offset, whence) : -1;
     }
 
-    void close()
-    {
+    void close() {
         if (m_file != -1) {
             ::_close(m_file);
             m_file = -1;
         }
     }
 #else
-    void open(const char* filePath)
-    {
+    void open(const char* filePath) {
         close();
         m_file = ::open(filePath, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     }
 
-    int write(const void* buf, size_t count)
-    {
+    int write(const void* buf, size_t count) {
         return (m_file != -1) ? static_cast<int>(::write(m_file, buf, count)) : -1;
     }
 
-    off_t seek(off_t offset, int whence)
-    {
+    off_t seek(off_t offset, int whence) {
         return (m_file != -1) ? ::lseek(m_file, offset, whence) : -1;
     }
 
-    void close()
-    {
+    void close() {
         if (m_file != -1) {
             ::close(m_file);
             m_file = -1;
@@ -144,7 +128,7 @@ namespace detail {
 //==============================================================================
 // LogRecord
 //
-//LogRecord::LogRecord(LogLevel level, const char* tag, const char* file, const char* func, int line)
+// LogRecord::LogRecord(LogLevel level, const char* tag, const char* file, const char* func, int line)
 //    : m_level(level)
 //    , m_tag(tag)
 //    , m_file(file)
@@ -155,44 +139,49 @@ namespace detail {
 //    LogHelper::getTime(&m_time);
 //}
 //
-//const char* LogRecord::getMessage() const
+// const char* LogRecord::getMessage() const
 //{
 //    m_messageStr = m_message.str();
 //    return m_messageStr.c_str();
 //}
 
-//LogRecord& LogRecord::operator<<(const wchar_t* str)
+// LogRecord& LogRecord::operator<<(const wchar_t* str)
 //{
 //	StringA s = StringA::fromNativeCharString(str);
 //	m_message << s.c_str();
 //	return *this;
-//}
+// }
 
-ILoggerAdapter::~ILoggerAdapter()
-{
+ILoggerAdapter::~ILoggerAdapter() {
 }
 
 //==============================================================================
 // FileLoggerAdapter
 
-class FileLoggerAdapter : public ILoggerAdapter
-{
+class FileLoggerAdapter : public ILoggerAdapter {
 public:
-	virtual void write(LogLocation source, LogLevel level, const char* str, size_t len) override
-	{
-		g_logFile.write(str, len);
-	}
+    void write(LogLocation source, LogLevel level, const char* str, size_t len) override {
+        g_logFile.write(str, len);
+    }
+};
+
+//==============================================================================
+// StdOutLoggerAdapter
+
+class StdOutLoggerAdapter : public ILoggerAdapter {
+public:
+    void write(LogLocation source, LogLevel level, const char* str, size_t len) override {
+        std::cout << "[" << Logger::getLevelStringNarrow(level) << "] " << std::string_view(str, len) << std::endl;
+    }
 };
 
 //==============================================================================
 // StdErrLoggerAdapter
 
-class StdErrLoggerAdapter : public ILoggerAdapter
-{
+class StdErrLoggerAdapter : public ILoggerAdapter {
 public:
-    virtual void write(LogLocation source, LogLevel level, const char* str, size_t len) override
-    {
-        std::cerr << std::string_view(str, len) << std::endl;
+    void write(LogLocation source, LogLevel level, const char* str, size_t len) override {
+        std::cerr << "[" << Logger::getLevelStringNarrow(level) << "] " << std::string_view(str, len) << std::endl;
     }
 };
 
@@ -200,29 +189,26 @@ public:
 //==============================================================================
 // AndroidLogcatLoggerAdapter
 
-class AndroidLogcatLoggerAdapter : public ILoggerAdapter
-{
+class AndroidLogcatLoggerAdapter : public ILoggerAdapter {
 public:
-	virtual void write(LogLevel level, const char* str, size_t len) override
-	{
-		auto localLevel = ANDROID_LOG_ERROR;
-		switch (level)
-		{
-		case LogLevel::Fatal:
-			localLevel = ANDROID_LOG_FATAL;
-		case LogLevel::Error:
-			localLevel = ANDROID_LOG_ERROR;
-		case LogLevel::Warning:
-			localLevel = ANDROID_LOG_WARN;
-		case LogLevel::Info:
-			localLevel = ANDROID_LOG_INFO;
-		case LogLevel::Debug:
-			localLevel = ANDROID_LOG_DEBUG;
-		case LogLevel::Verbose:
-			localLevel = ANDROID_LOG_VERBOSE;
-		}
-		__android_log_print(localLevel, "Lumino", "%s", str);
-	}
+    virtual void write(LogLevel level, const char* str, size_t len) override {
+        auto localLevel = ANDROID_LOG_ERROR;
+        switch (level) {
+            case LogLevel::Fatal:
+                localLevel = ANDROID_LOG_FATAL;
+            case LogLevel::Error:
+                localLevel = ANDROID_LOG_ERROR;
+            case LogLevel::Warning:
+                localLevel = ANDROID_LOG_WARN;
+            case LogLevel::Info:
+                localLevel = ANDROID_LOG_INFO;
+            case LogLevel::Debug:
+                localLevel = ANDROID_LOG_DEBUG;
+            case LogLevel::Verbose:
+                localLevel = ANDROID_LOG_VERBOSE;
+        }
+        __android_log_print(localLevel, "Lumino", "%s", str);
+    }
 };
 #endif
 
@@ -230,22 +216,20 @@ public:
 //==============================================================================
 // NLogLoggerAdapter
 
-class NLogLoggerAdapter : public ILoggerAdapter
-{
+class NLogLoggerAdapter : public ILoggerAdapter {
 public:
-	virtual void write(LogLevel level, const char* str, size_t len) override
-	{
+    virtual void write(LogLevel level, const char* str, size_t len) override {
         writeNSLog(str);
-	}
+    }
 };
 #endif
 
 ////==============================================================================
 //// LoggerInterface::Impl
 //
-//class LoggerInterface::Impl
+// class LoggerInterface::Impl
 //{
-//public:
+// public:
 //	bool hasAdapter() const { return !m_adapters.empty(); }
 //
 //};
@@ -256,11 +240,14 @@ public:
 static LoggerInterface g_logger;
 static bool g_logEnabled = true;
 static std::string g_logFilePath = "LuminoLog.txt";
-static LogLevel g_maxLevel = LogLevel::Info;
 static std::mutex g_logMutex;
+#ifdef LN_DEBUG
+static LogLevel g_maxLevel = LogLevel::Debug;
+#else
+static LogLevel g_maxLevel = LogLevel::Info;
+#endif
 
-static const char* GetLogLevelString(LogLevel level)
-{
+static const char* GetLogLevelString(LogLevel level) {
     switch (level) {
         case LogLevel::Fatal:
             return "F";
@@ -279,32 +266,33 @@ static const char* GetLogLevelString(LogLevel level)
     }
 }
 
-LoggerInterface* LoggerInterface::getInstance()
-{
+LoggerInterface* LoggerInterface::getInstance() {
     if (!g_logEnabled)
         return nullptr;
     return &g_logger;
 }
 
 LoggerInterface::LoggerInterface()
-    : m_adapters()
-{
+    : m_adapters() {
+#ifdef LN_EMSCRIPTEN
+    m_adapters.push_back(std::make_shared<detail::StdOutLoggerAdapter>());
+#else
+    m_adapters.push_back(std::make_shared<detail::StdErrLoggerAdapter>());
+#endif
 }
 
-LoggerInterface::~LoggerInterface()
-{
+LoggerInterface::~LoggerInterface() {
 }
 
-bool LoggerInterface::checkLevel(LogLevel level)
-{
+bool LoggerInterface::checkLevel(LogLevel level) {
     return level >= g_maxLevel;
 }
 
-//void LoggerInterface::operator+=(const LogRecord& record)
+// void LoggerInterface::operator+=(const LogRecord& record)
 //{
 //	if (!m_adapters.empty())
 //	{
-//        std::lock_guard<std::mutex> lock(g_logMutex);
+//         std::lock_guard<std::mutex> lock(g_logMutex);
 //
 //		tm t;
 //		char date[64];
@@ -316,14 +304,14 @@ bool LoggerInterface::checkLevel(LogLevel level)
 //		g_logSS << date << " ";
 //		g_logSS << GetLogLevelString(record.GetLevel()) << " ";
 //		g_logSS << "[" << record.getThreadId() << "]";
-//        // TODO: ログの量を圧迫するので一時封印。
-//        // Assertion の機能はメッセージの一部として位置を記録するため、そちらは問題なし。
-//        // LogFormat みたいな設定を増やしておく
+//         // TODO: ログの量を圧迫するので一時封印。
+//         // Assertion の機能はメッセージの一部として位置を記録するため、そちらは問題なし。
+//         // LogFormat みたいな設定を増やしておく
 //		//g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")]";
-//        if (record.tag())
-//            g_logSS << "[" << record.tag() << "] ";
-//        else
-//            g_logSS << " ";
+//         if (record.tag())
+//             g_logSS << "[" << record.tag() << "] ";
+//         else
+//             g_logSS << " ";
 //
 //		g_logSS << record.getMessage() << std::endl;
 //
@@ -333,10 +321,9 @@ bool LoggerInterface::checkLevel(LogLevel level)
 //			adapter->write(record.location(), record.GetLevel(), str.c_str(), str.length());
 //		}
 //	}
-//}
+// }
 
-void LoggerInterface::write(LogLocation source, LogLevel level, const char* str, size_t len)
-{
+void LoggerInterface::write(LogLocation source, LogLevel level, const char* str, size_t len) {
 }
 
 } // namespace detail
@@ -344,85 +331,76 @@ void LoggerInterface::write(LogLocation source, LogLevel level, const char* str,
 //==============================================================================
 // Logger
 
-bool Logger::addFileAdapter(const std::string& filePath)
-{
-	if (g_logFile.IsOpend()) {
-		return false;
-	}
+bool Logger::addFileAdapter(const std::string& filePath) {
+    if (g_logFile.IsOpend()) {
+        return false;
+    }
 
-	g_logFile.open(filePath.c_str());
+    g_logFile.open(filePath.c_str());
 
-	detail::LoggerInterface::getInstance()->m_adapters.push_back(
-		std::make_shared<detail::FileLoggerAdapter>());
+    detail::LoggerInterface::getInstance()->m_adapters.push_back(
+        std::make_shared<detail::FileLoggerAdapter>());
 
     return true;
 }
 
-void Logger::addStdErrAdapter()
-{
+void Logger::addStdErrAdapter() {
     detail::LoggerInterface::getInstance()->m_adapters.push_back(
         std::make_shared<detail::StdErrLoggerAdapter>());
 }
 
-void Logger::addLogcatAdapter()
-{
+void Logger::addLogcatAdapter() {
 #ifdef LN_OS_ANDROID
-	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
-		std::make_shared<detail::AndroidLogcatLoggerAdapter>());
-	LN_LOG_INFO << "Attached AndroidLogcatLoggerAdapter.";
+    detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+        std::make_shared<detail::AndroidLogcatLoggerAdapter>());
+    LN_LOG_INFO << "Attached AndroidLogcatLoggerAdapter.";
 #endif
 }
 
-void Logger::addNLogAdapter()
-{
+void Logger::addNLogAdapter() {
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
-	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
-		std::make_shared<detail::NLogLoggerAdapter>());
-	LN_LOG_INFO << "Attached NLogLoggerAdapter.";
+    detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+        std::make_shared<detail::NLogLoggerAdapter>());
+    LN_LOG_INFO << "Attached NLogLoggerAdapter.";
 #endif
 }
 
-bool Logger::hasAnyAdapter()
-{
-	return !detail::LoggerInterface::getInstance()->m_adapters.empty();
+bool Logger::hasAnyAdapter() {
+    return !detail::LoggerInterface::getInstance()->m_adapters.empty();
 }
 
-bool Logger::shouldLog(LogLevel level)
-{
+bool Logger::shouldLog(LogLevel level) {
     return ::ln::detail::LoggerInterface::getInstance()->checkLevel(level);
 }
 
-//const char* Logger::getLevelStringNarrow(LogLevel level) {
-//    switch (level) {
-//    case LogLevel::Fatal:
-//        return "Fatal";
-//    case LogLevel::Error:
-//        return "Error";
-//    case LogLevel::Warning:
-//        return "Warning";
-//    case LogLevel::Info:
-//        return "Info";
-//    case LogLevel::Debug:
-//        return "Debug";
-//    case LogLevel::Verbose:
-//        return "Verbose";
-//    default:
-//        return "Unknown";
-//    }
-//}
-//
-void Logger::setLevel(LogLevel level)
-{
-	detail::g_maxLevel = level;
+ const char* Logger::getLevelStringNarrow(LogLevel level) {
+     switch (level) {
+     case LogLevel::Fatal:
+         return "Fatal";
+     case LogLevel::Error:
+         return "Error";
+     case LogLevel::Warning:
+         return "Warning";
+     case LogLevel::Info:
+         return "Info";
+     case LogLevel::Debug:
+         return "Debug";
+     case LogLevel::Verbose:
+         return "Verbose";
+     default:
+         return "Unknown";
+     }
+ }
+
+void Logger::setLevel(LogLevel level) {
+    detail::g_maxLevel = level;
 }
 
-LogLevel Logger::level()
-{
+LogLevel Logger::level() {
     return detail::g_maxLevel;
 }
 
-void Logger::log(LogLocation location, LogLevel level, std::string_view message)
-{
+void Logger::log(LogLocation location, LogLevel level, std::string_view message) {
     if (!shouldLog(level)) return;
 
     if (detail::LoggerInterface::getInstance()->m_adapters.empty()) {

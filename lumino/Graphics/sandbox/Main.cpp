@@ -51,7 +51,8 @@ void cleanup() {
 void run() {
     auto window = detail::PlatformManager::instance()->mainWindow();
 
-    auto shader = Shader::create(ASSETFILE("simple.hlsl"));
+    //auto shader = Shader::create(ASSETFILE("simple.hlsl"));
+    auto shader = Shader::load(U"simple");
 
     auto descriptorLayout = shader->descriptorLayout();
 

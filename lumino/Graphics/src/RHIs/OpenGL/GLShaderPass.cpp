@@ -29,6 +29,11 @@ bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompi
     GLint codeSize[] = {
         length,
     };
+
+#if 0
+    std::cout << std::string(codes[0], codeSize[0]) << std::endl;
+#endif
+
     GL_CHECK(glShaderSource(m_shader, LN_ARRAY_SIZE_OF(codeSize), codes, codeSize));
     GL_CHECK(glCompileShader(m_shader));
 

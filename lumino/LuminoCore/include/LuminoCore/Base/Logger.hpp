@@ -27,6 +27,20 @@
 //#define LN_LOG_VERBOSE LN_LOG(::ln::LogLevel::Verbose, nullptr)
 
 
+/** 
+ * 
+ * Logger usage samples
+ * ----------
+ * 
+ * ```
+ * LN_LOG_INFO("Hello!");
+ * LN_LOG_ERROR("Error message.");
+ * LN_LOG_ERROR("With arg: {}", 1); // by std::fmt format
+ * LN_LOG_INFO(U"UTF-32 string.");
+ * LN_LOG_INFO(U"UTF-32 with arg: {}", 1);
+ * ```
+ */
+
 #define LN_LOG_LOGGER_CALL(level, ...) ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_MACRO}, level, __VA_ARGS__)
 #define LN_LOG_VERBOSE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Verbose, __VA_ARGS__)
 #define LN_LOG_DEBUG(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Debug, __VA_ARGS__)
@@ -81,7 +95,17 @@ struct LogLocation
     }
 };
 
-/** グローバルなロギング機能をコントロールするためのクラスです。 */
+/**
+ * This class is for controlling the log function.
+ * 
+ * The default adapter depends on the runtime environment.
+ * - Emscripten: stdout
+ * - Other(Desktop, etc): stderr
+ * 
+ * The default log level changes depending on the build configuration.
+ * - DEBUG: LogLevel::Debug
+ * - RELEASE: LogLevel::Info
+ */
 class Logger
 {
 public:
@@ -121,7 +145,7 @@ public:
 
     static bool shouldLog(LogLevel level);
 
-    //static const char* getLevelStringNarrow(LogLevel level);
+    static const char* getLevelStringNarrow(LogLevel level);
 
 
     /** ログ出力 */

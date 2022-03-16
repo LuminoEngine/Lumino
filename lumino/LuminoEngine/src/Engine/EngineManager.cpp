@@ -365,7 +365,7 @@ void EngineManager::initializeAssetManager()
 		AssetManager::initialize(settings);
 
         for (auto& e : m_settings.assetArchives) {
-			AssetManager::instance()->addAssetArchive(e.filePath, e.password);
+			AssetManager::instance()->mountAssetArchive(e.filePath, e.password);
         }
         for (auto& e : m_settings.assetDirectories) {
 			AssetManager::instance()->addAssetDirectory(e);

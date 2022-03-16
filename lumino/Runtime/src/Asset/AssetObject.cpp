@@ -99,7 +99,7 @@ bool AssetObject::_resolveAssetRequiredPathSet(const detail::AssetPath* baseDir,
 			else {
 				// .yml が明示的に指定されていたが、Archive 内に見つからなかった。
 				// ネットワークファイルかもしれないが、これは未対応。TODO:
-				LN_ERROR("Network file not supported.");
+				LN_ERROR(U"Network file not supported. " + requiredLoadPath);
 				return false;
 			}
 		}
@@ -126,7 +126,7 @@ bool AssetObject::_resolveAssetRequiredPathSet(const detail::AssetPath* baseDir,
 		}
 		else {
 			// TODO: Archive 内にはないのでネットワークファイルとしてパスを作る
-			LN_ERROR("Network file not supported.");
+			LN_ERROR(U"Network file not supported. " + requiredLoadPath);
 			return false;
 		}
 	}

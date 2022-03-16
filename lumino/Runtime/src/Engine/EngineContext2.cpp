@@ -34,8 +34,6 @@ EngineContext2::EngineContext2() {
 }
 
 bool EngineContext2::init() {
-    ln::Logger::addStdErrAdapter();
-
     m_typeInfos.push_back(nullptr); // [0] is dummy
 
     PredefinedTypes::Char = registerType(_TT("Char"), nullptr, TypeInfoClass::Primitive);

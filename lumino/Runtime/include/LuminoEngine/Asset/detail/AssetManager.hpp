@@ -33,7 +33,7 @@ public:
 
 
 	void addAssetDirectory(const StringView& path);
-    void addAssetArchive(const StringView& filePath, const StringView& password);
+    void mountAssetArchive(const StringView& filePath, const StringView& password);
     void removeAllAssetDirectory();
 	//void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
 

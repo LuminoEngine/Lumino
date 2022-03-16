@@ -18,11 +18,14 @@ using namespace ln;
 
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)
 
+Ref<Shader> g_shader;
+Ref<VertexLayout> g_vertexLayout;
 Ref<VertexBuffer> g_vertexBuffer;
 Ref<SwapChain> g_swapChain;
 
 void init() {
     EngineContext2::initialize();
+    Logger::setLevel(LogLevel::Debug);
 
     detail::PlatformManager::Settings platformManagerrSettings;
     platformManagerrSettings.glfwWithOpenGLAPI = true;
@@ -30,7 +33,7 @@ void init() {
 
     detail::AssetManager::Settings assetManagerSettings;
     auto assetManager = detail::AssetManager::initialize(assetManagerSettings);
-    assetManager->addAssetArchive(U"Assets.lna", StringView());
+    assetManager->mountAssetArchive(U"Assets.lna", StringView());
 
     detail::GraphicsManager::Settings graphicsManagerSettings;
     graphicsManagerSettings.assetManager = assetManager;
@@ -49,13 +52,10 @@ void init() {
 void initApp() {
     auto window = detail::PlatformManager::instance()->mainWindow();
 
-    auto shader = Shader::load(U"Assets/simple");
-    auto descriptorLayout = shader->descriptorLayout();
-    auto shaderPass = shader->techniques()[0]->passes()[0];
-    printf("Shader OK.");
+    g_shader = Shader::load(U"simple");
 
-    auto vertexLayout = makeObject<VertexLayout>();
-    vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+    g_vertexLayout = makeObject<VertexLayout>();
+    g_vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
     // CCW
     Vector4 v[] = {
@@ -86,27 +86,23 @@ void cleanup() {
 
 void run() {
     Platform::processEvents();
+    
+    auto descriptorLayout = g_shader->descriptorLayout();
+    auto shaderPass = g_shader->techniques()[0]->passes()[0];
 
-    printf("run 2\n");
     auto ctx = g_swapChain->beginFrame2();
-
-    printf("run 3\n");
-    //auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
-    //descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
-
-    printf("run 4\n");
+    auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+    descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
     auto renderPass = g_swapChain->currentRenderPass();
     ctx->beginRenderPass(renderPass);
     ctx->clear(ClearFlags::All, Color::Azure);
-    // ctx->setVertexLayout(vertexLayout);
-    // ctx->setVertexBuffer(0, vertexBuffer);
-    // ctx->setShaderPass(shaderPass);
-    // ctx->setShaderDescriptor(descriptor);
-    // ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    // ctx->drawPrimitive(0, 1);
-    printf("run 5\n");
+    ctx->setVertexLayout(g_vertexLayout);
+    ctx->setVertexBuffer(0, g_vertexBuffer);
+    ctx->setShaderPass(shaderPass);
+    ctx->setShaderDescriptor(descriptor);
+    ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+    ctx->drawPrimitive(0, 1);
     ctx->endRenderPass();
-    printf("run 6\n");
 
     g_swapChain->endFrame();
     printf("run 7\n");

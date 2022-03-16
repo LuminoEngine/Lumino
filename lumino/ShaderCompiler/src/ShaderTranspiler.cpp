@@ -1149,10 +1149,10 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
     // テクスチャサンプリング時にレンダリングターゲットであるかを判断し、上下反転するマクロコードを挿入する。
     {
 
-        code = code.insert(13, "vec4 LN_xxTexture(sampler2D s, vec2 uv) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); }\n"
-            "vec4 LN_xxTexture(sampler3D s, vec3 uv) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); }\n"
-            "#define texture(s, uv) LN_xxTexture(s, uv)\n"
-            "#line 1\n");
+        //code = code.insert(15, "\nprecision lowp sampler3D;\nvec4 LN_xxTexture(sampler2D s, vec2 uv) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); }\n"
+        //    "vec4 LN_xxTexture(sampler3D s, vec3 uv) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); }\n"
+        //    "#define texture(s, uv) LN_xxTexture(s, uv)\n"
+        //    "#line 1\n");
 
    //     std::string declsIsRT;
    //     for (auto& name : combinedImageSamplerNames) {

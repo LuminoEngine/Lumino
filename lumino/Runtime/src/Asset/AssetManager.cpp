@@ -87,7 +87,7 @@ void AssetManager::addAssetDirectory(const StringView& path)
     LN_LOG_INFO(U"Asset directory added: " + path);
 }
 
-void AssetManager::addAssetArchive(const StringView& filePath, const StringView& password)
+void AssetManager::mountAssetArchive(const StringView& filePath, const StringView& password)
 {
     auto archive = makeRef<CryptedAssetArchiveReader>();
     bool result = archive->open(filePath, password, true);
