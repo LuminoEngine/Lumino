@@ -186,7 +186,7 @@ enum class StringSplitOptions
 };
 
 namespace detail {
-void notifyFatalError(const char* file, int line, const char* message);
+void notifyFatalError(const char* file, int line, const char* message) noexcept;
 } // namespace detail
 } // namespace ln
 

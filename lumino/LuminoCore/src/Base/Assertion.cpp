@@ -202,7 +202,7 @@ void printError(const Exception& e) {
     //}
 }
 
-void notifyFatalError(const char* file, int line, const char* message) {
+void notifyFatalError(const char* file, int line, const char* message) noexcept {
     printf("%s(%d): Fatal: %s", file, line, message);
     *reinterpret_cast<int*>(0) = 0; // crash
 }

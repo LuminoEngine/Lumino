@@ -1,8 +1,10 @@
 ﻿#include "Internal.hpp"
 #include "OpenGLDeviceContext.hpp"
-#include "GLBuffer.hpp"
+#include "GLVertexBuffer.hpp"
+#include "GLIndexBuffer.hpp"
 #include "GLTextures.hpp"
 #include "GLShaderPass.hpp"
+#include "GLRenderPass.hpp"
 #include "GLCommandList.hpp"
 
 namespace ln {

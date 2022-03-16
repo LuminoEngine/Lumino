@@ -219,7 +219,6 @@ inline UStdString formatMessage() noexcept {
     return {};
 }
 void printError(const Exception& e);
-void notifyFatalError(const char* file, int line, const char* message);
 
 template<class... TArgs>
 inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, TArgs&&... args) {

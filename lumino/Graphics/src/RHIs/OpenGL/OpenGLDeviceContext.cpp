@@ -2,16 +2,14 @@
 #include "Internal.hpp"
 #include <LuminoPlatform/detail/OpenGLContext.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
-//#include <LuminoEngine/Graphics/Bitmap.hpp>
-//#include <LuminoEngine/Platform/PlatformWindow.hpp>
-//#include "../../Platform/PlatformManager.hpp"
-//#include "../../Platform/OpenGLContext.hpp"
 #include "OpenGLDeviceContext.hpp"
-#include "GLBuffer.hpp"
+#include "GLVertexBuffer.hpp"
+#include "GLIndexBuffer.hpp"
 #include "GLUniformBuffer.hpp"
 #include "GLTextures.hpp"
 #include "GLDepthBuffer.hpp"
 #include "GLShaderPass.hpp"
+#include "GLRenderPass.hpp"
 #include "GLDescriptorPool.hpp"
 #include "GLCommandList.hpp"
 #include "GLFWSwapChain.hpp"
@@ -44,7 +42,7 @@ namespace detail {
 //	return true;
 //}
 
-//=============================================================================
+//==============================================================================
 // OpenGLDevice
 
 OpenGLDevice::OpenGLDevice()
@@ -230,7 +228,9 @@ Ref<RHIResource> OpenGLDevice::onCreateVertexBuffer(GraphicsResourceUsage usage,
 
 Ref<RHIResource> OpenGLDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
     auto ptr = makeRef<GLIndexBuffer>();
-    ptr->init(usage, format, indexCount, initialData);
+    if (!ptr->init(usage, format, indexCount, initialData)) {
+        return nullptr;
+    }
     return ptr;
 }
 
@@ -276,7 +276,9 @@ Ref<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& de
 
 Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     auto ptr = makeRef<GLShaderPass>();
-    ptr->init(this, createInfo, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag);
+    if (!ptr->init(this, createInfo, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag)) {
+        return nullptr;
+    }
     return ptr;
 }
 
@@ -309,7 +311,7 @@ ICommandQueue* OpenGLDevice::getComputeCommandQueue() {
     return nullptr;
 }
 
-//=============================================================================
+//==============================================================================
 // GLSwapChain
 
 GLSwapChain::GLSwapChain(OpenGLDevice* device)
@@ -425,7 +427,7 @@ void GLSwapChain::present() {
     endMakeContext();
 }
 
-////=============================================================================
+////==============================================================================
 //// EmptyGLContext
 //
 // Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -444,7 +446,7 @@ void GLSwapChain::present() {
 //{
 //}
 
-//==============================================================================
+//===============================================================================
 // GLCommandQueue
 
 GLCommandQueue::GLCommandQueue() {
@@ -459,82 +461,7 @@ Result GLCommandQueue::submit(ICommandList* commandList) {
     return ok();
 }
 
-//==============================================================================
-// GLRenderPass
-
-GLRenderPass::GLRenderPass() {
-}
-
-Result GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    m_device = device;
-
-    for (auto i = 0; i < buffers.renderTargets.size(); i++) {
-        m_renderTargets[i] = static_cast<GLTextureBase*>(buffers.renderTargets[i]);
-    }
-
-    m_depthBuffer = static_cast<GLDepthBuffer*>(buffers.depthBuffer);
-    m_clearFlags = clearFlags;
-    m_clearColor = clearColor;
-    m_clearDepth = clearDepth;
-    m_clearStencil = clearStencil;
-    return ok();
-}
-
-void GLRenderPass::dispose() {
-    IRenderPass::dispose();
-}
-
-// SizeI GLRenderPass::viewSize() const {
-//     return m_renderTargets[0]->realSize();
-// }
-
-void GLRenderPass::bind(GLGraphicsContext* context) {
-    auto fbo = context->fbo();
-    if (fbo) {
-        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
-    }
-
-    auto backbuffer = m_renderTargets[0].get();
-    auto baseSize = backbuffer->extentSize();
-
-    // color buffers
-    std::array<GLenum, MaxMultiRenderTargets> buffers;
-    int renderTargetsCount = m_renderTargets.size();
-    int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
-    // int actualCount = 0;
-    for (int i = 0; i < renderTargetsCount; ++i) {
-        if (m_renderTargets[i]) {
-            LN_CHECK(m_renderTargets[i]->extentSize() == baseSize);
-            GLuint id = static_cast<GLTextureBase*>(m_renderTargets[i])->id();
-            GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
-            buffers[i] = GL_COLOR_ATTACHMENT0 + i;
-        }
-        else {
-            GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0));
-            buffers[i] = GL_NONE;
-        }
-    }
-
-    // depth buffer
-    if (m_depthBuffer) {
-        LN_CHECK(m_depthBuffer->extentSize() == baseSize);
-        GLuint id = static_cast<GLDepthBuffer*>(m_depthBuffer)->id();
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id));
-    }
-    else {
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0));
-    }
-
-    LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER), "glCheckFramebufferStatus failed 0x%08x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
-
-    GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
-
-    OpenGLHelper::clearBuffers(m_clearFlags, m_clearColor, m_clearDepth, m_clearStencil);
-}
-
-//==============================================================================
+//===============================================================================
 // GLVertexDeclaration
 
 GLVertexDeclaration::GLVertexDeclaration()
@@ -629,7 +556,7 @@ void GLVertexDeclaration::convertDeclTypeLNToGL(VertexElementType type, GLenum* 
     *normalized = formatTable[(int)type].normalize;
 }
 
-//=============================================================================
+//==============================================================================
 // GLPipeline
 
 GLPipeline::GLPipeline()
@@ -852,7 +779,7 @@ void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBu
                 if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
 
                     GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));
-                    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->vertexBufferId()));
+                    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->objectId()));
                     GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->byteOffset)));
 
                     if (element->instance) {
@@ -871,7 +798,7 @@ void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBu
 
         auto* glIndexBuffer = static_cast<const GLIndexBuffer*>(indexBuffer);
         if (glIndexBuffer) {
-            GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glIndexBuffer->indexBufferId()));
+            GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glIndexBuffer->objectId()));
         }
         else {
             GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));

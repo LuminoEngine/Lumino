@@ -194,7 +194,9 @@ void GLDescriptorPool::dispose() {
         m_uniformBufferAllocator->cleanup();
         m_uniformBufferAllocator = nullptr;
     }
+    IDescriptorPool::dispose();
 }
+
 void GLDescriptorPool::reset() {
     m_uniformBufferAllocator->cleanup();
 }

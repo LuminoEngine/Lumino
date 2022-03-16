@@ -16,11 +16,11 @@ GLSLShader::~GLSLShader() {
     dispose();
 }
 
-bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag) {
+Result GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag) {
     m_type = type;
 
     m_shader = glCreateShader(m_type);
-    if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return false;
+    if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return err();
 
     const GLchar* codes[] = {
         (const GLchar*)code,
@@ -53,10 +53,10 @@ bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompi
 
     if (compiled == GL_FALSE) {
         diag->level = ShaderCompilationResultLevel::Error;
-        return false;
+        return err();
     }
 
-    return true;
+    return ok();
 }
 
 void GLSLShader::dispose() {
@@ -72,24 +72,24 @@ void GLSLShader::dispose() {
 GLShaderPass::GLShaderPass()
     : m_context(nullptr)
     , m_program(0)
-//, m_descriptorTable()
-{
+    , m_descriptorTable() {
 }
 
 GLShaderPass::~GLShaderPass() {
+    LN_CHECK(m_program == 0);
 }
 
-void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag) {
+Result GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag) {
     if (!IShaderPass::init(createInfo)) {
-        return;
+        return err();
     }
 
     m_context = context;
 
     GLSLShader vertexShader;
     GLSLShader fragmentShader;
-    if (!vertexShader.create(vsCode, vsCodeLen, GL_VERTEX_SHADER, diag)) return;
-    if (!fragmentShader.create(fsCode, fsCodeLen, GL_FRAGMENT_SHADER, diag)) return;
+    LN_TRY(vertexShader.create(vsCode, vsCodeLen, GL_VERTEX_SHADER, diag));
+    LN_TRY(fragmentShader.create(fsCode, fsCodeLen, GL_FRAGMENT_SHADER, diag));
 
     m_program = glCreateProgram();
     LN_LOG_VERBOSE("Program create:{} vs:{} fs:{}", m_program, vertexShader.shader(), fragmentShader.shader());
@@ -114,20 +114,22 @@ void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& creat
 
     if (linked == GL_FALSE) {
         diag->level = ShaderCompilationResultLevel::Error;
-        return;
+        return err();
     }
 
     m_descriptorTable = makeRef<GLShaderDescriptorTable>();
     if (!m_descriptorTable->init(this, createInfo.descriptorLayout)) {
-        return;
+        return err();
     }
+
+	return ok();
 }
 
 void GLShaderPass::dispose() {
-    //if (m_descriptorTable) {
+    // if (m_descriptorTable) {
     //	m_descriptorTable->dispose();
     //	m_descriptorTable = nullptr;
-    //}
+    // }
 
     if (m_program) {
         GL_CHECK(glUseProgram(0));
@@ -138,14 +140,14 @@ void GLShaderPass::dispose() {
     IShaderPass::dispose();
 }
 
-//IShaderDescriptorTable* GLShaderPass::descriptorTable() const
+// IShaderDescriptorTable* GLShaderPass::descriptorTable() const
 //{
 //	return m_descriptorTable;
-//}
+// }
 
 void GLShaderPass::apply() const {
     GL_CHECK(glUseProgram(m_program));
-    //m_descriptorTable->bind(m_program);
+    // m_descriptorTable->bind(m_program);
 }
 
 //=============================================================================
@@ -175,14 +177,14 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
         // OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
         // 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
         // 検索したいので、名前を合わせておく。
-        //if (strcmp(blockName, "_Global") == 0)
+        // if (strcmp(blockName, "_Global") == 0)
         //    blockName[0] = '$';
 
         // DescriptorLayout から、対応する名前の UniformBuffer を探す
         info.layoutSlotIndex = descriptorLayout->findUniformBufferRegisterIndex(blockName);
         if (LN_ASSERT(info.layoutSlotIndex.i >= 0)) return false; // 絶対に見つかるはず
 
-		// Get infomations.
+        // Get infomations.
         info.blockIndex = glGetUniformBlockIndex(program, blockName);
         GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
         LN_LOG_VERBOSE("uniform block {}", i);
@@ -190,10 +192,10 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
         LN_LOG_VERBOSE("  blockIndex : {}", info.blockIndex);
         LN_LOG_VERBOSE("  blockSize  : {}", info.blockSize);
 
-		m_uniformBuffers.push_back(info);
+        m_uniformBuffers.push_back(info);
     }
 
-	// Texture (CombinedSampler)
+    // Texture (CombinedSampler)
     {
         GLint count;
         GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count));
@@ -215,7 +217,7 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
         }
 
         // lnIsRT 用にもう一度回す
-        //for (int i = 0; i < count; i++) {
+        // for (int i = 0; i < count; i++) {
         //    GLsizei nameLen = 0;
         //    GLsizei varSize = 0;
         //    GLenum varType = 0;
@@ -240,7 +242,6 @@ void GLShaderDescriptorTable::addResourceUniform(const std::string& name, GLint 
 
     m_resourceUniforms.push_back(info);
 }
-
 
 #if 0
 //=============================================================================

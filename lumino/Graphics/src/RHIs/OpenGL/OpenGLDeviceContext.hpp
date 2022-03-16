@@ -179,26 +179,6 @@ public:
     virtual Result submit(ICommandList* commandList) override;
 };
 
-class GLRenderPass
-    : public IRenderPass {
-public:
-    GLRenderPass();
-    Result init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-    virtual void dispose() override;
-
-    //SizeI viewSize() const;
-    void bind(GLGraphicsContext* context);
-
-private:
-    OpenGLDevice* m_device;
-    std::array<Ref<GLTextureBase>, MaxMultiRenderTargets> m_renderTargets;
-    Ref<GLDepthBuffer> m_depthBuffer;
-    ClearFlags m_clearFlags;
-    Color m_clearColor;
-    float m_clearDepth;
-    uint8_t m_clearStencil;
-};
-
 struct GLVertexElement {
     uint32_t streamIndex;
 

@@ -12,7 +12,7 @@ class GLSLShader {
 public:
     GLSLShader();
     ~GLSLShader();
-    bool create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag);
+    Result create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag);
     void dispose();
 
     GLuint shader() const { return m_shader; }
@@ -28,9 +28,8 @@ class GLShaderPass
 public:
     GLShaderPass();
     virtual ~GLShaderPass();
-    void init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+    Result init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
     virtual void dispose() override;
-    //virtual IShaderDescriptorTable* descriptorTable() const;
 
     GLuint program() const { return m_program; }
     const GLShaderDescriptorTable* layout() const { return m_descriptorTable.get(); }
