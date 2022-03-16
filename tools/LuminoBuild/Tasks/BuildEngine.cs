@@ -19,11 +19,13 @@ namespace LuminoBuild.Tasks
                     //var generator = "MinGW Makefiles";
                     var generator = "Ninja";
 
+                    var buildType = b.Options.Debug ? "Debug" : "Release";
+
                     var args = new string[]
                     {
                         $"-G\"{generator}\"",
                         $"-DCMAKE_MAKE_PROGRAM=" + EmscriptenEnv.Ninja,
-                        $"-DCMAKE_BUILD_TYPE=Release",
+                        $"-DCMAKE_BUILD_TYPE={buildType}",
                         $"-DCMAKE_TOOLCHAIN_FILE=\"{b.VcpkgDir}/scripts/buildsystems/vcpkg.cmake\"",
                         $"-DCMAKE_INSTALL_PREFIX=\"{b.EngineInstallDir}\"",
                         $"-DCMAKE_DEBUG_POSTFIX=d",

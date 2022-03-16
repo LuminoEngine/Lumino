@@ -12,8 +12,7 @@ void registerModuleTypes_Runtime(EngineContext2* context);
 
 std::unique_ptr<EngineContext2> EngineContext2::s_instance;
 
-bool EngineContext2::initialize(EngineContext2* sharedContext)
-{
+bool EngineContext2::initialize(EngineContext2* sharedContext) {
     if (sharedContext) {
         LN_NOTIMPLEMENTED();
         return false;
@@ -24,20 +23,19 @@ bool EngineContext2::initialize(EngineContext2* sharedContext)
     return s_instance->init();
 }
 
-void EngineContext2::terminate()
-{
+void EngineContext2::terminate() {
     if (s_instance) {
         s_instance->dispose();
         s_instance = nullptr;
     }
 }
 
-EngineContext2::EngineContext2()
-{
+EngineContext2::EngineContext2() {
 }
 
-bool EngineContext2::init()
-{
+bool EngineContext2::init() {
+    ln::Logger::addStdErrAdapter();
+
     m_typeInfos.push_back(nullptr); // [0] is dummy
 
     PredefinedTypes::Char = registerType(_TT("Char"), nullptr, TypeInfoClass::Primitive);
@@ -72,8 +70,7 @@ bool EngineContext2::init()
     return true;
 }
 
-void EngineContext2::dispose()
-{
+void EngineContext2::dispose() {
     if (m_mainThreadTaskDispatcher) {
         m_mainThreadTaskDispatcher->dispose();
         m_mainThreadTaskDispatcher = nullptr;
@@ -84,28 +81,25 @@ void EngineContext2::dispose()
     m_typeInfoSet.clear();
 }
 
-void EngineContext2::registerModule(Module* mod)
-{
+void EngineContext2::registerModule(Module* mod) {
     if (LN_REQUIRE(!mod->m_context)) return;
     mod->m_context = this;
     mod->onRegisterTypes(this);
     m_modules.add(mod);
 }
 
-void EngineContext2::unregisterModule(Module* mod)
-{
+void EngineContext2::unregisterModule(Module* mod) {
     m_modules.removeIf([&](const auto& x) { return x == mod; });
 }
 
-TypeInfo* EngineContext2::acquireTypeInfo(const StringView& name/*, TypeInfo* baseType, const std::function<Ref<Object>()>& factory*/)
-{
+TypeInfo* EngineContext2::acquireTypeInfo(const StringView& name /*, TypeInfo* baseType, const std::function<Ref<Object>()>& factory*/) {
     auto* r = findTypeInfo(name);
     if (r) {
         return r;
     }
     else {
         auto typeInfo = makeRef<TypeInfo>(name);
-        //typeInfo->m_factory = factory;
+        // typeInfo->m_factory = factory;
         typeInfo->m_id = m_typeInfos.size();
         m_typeInfos.push_back(typeInfo);
         m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
@@ -114,4 +108,3 @@ TypeInfo* EngineContext2::acquireTypeInfo(const StringView& name/*, TypeInfo* ba
 }
 
 } // namespace ln
-

@@ -21,6 +21,7 @@ namespace LuminoBuild
         public int BuildVersion = 0;
         public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);
 
+        public CmdOptions Options;
         public string Triplet;
         public string Arch;
         public string System;
@@ -71,6 +72,7 @@ namespace LuminoBuild
 
         public Build(string triplet, CmdOptions options)
         {
+            Options = options;
             Triplet = triplet;
             var tokens = triplet.Split("-");
             Arch = tokens[0];

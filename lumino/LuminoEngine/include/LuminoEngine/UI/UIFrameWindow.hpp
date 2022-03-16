@@ -154,7 +154,7 @@ public:  // TODO: internal
 
 private:
     void updateLayoutTreeInternal(const Size& contentSize);
-    virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
+    void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor) override;
 
     friend class detail::MainViewportToolPane;
 };

@@ -367,9 +367,11 @@ void Bitmap2D::clear(const ColorI& color)
         //        dst[i] = *((uint32_t*)c);
         //    }
         //    return;
+        default:
+            LN_NOTIMPLEMENTED();
+            return;
         }
 
-        LN_NOTIMPLEMENTED();
     }
 }
 

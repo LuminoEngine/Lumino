@@ -152,18 +152,18 @@ public:
     void removeAllChildren();
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onAddChild(UIElement* child) override;
+    void onDispose(bool explicitDisposing) override;
+    void onAddChild(UIElement* child) override;
 
     // IScrollInfo interface
-    virtual float getExtentWidth() const;
-    virtual float getExtentHeight() const;
-    virtual float getViewportWidth() const;
-    virtual float getViewportHeight() const;
-    virtual void setHorizontalOffset(float offset);
-    virtual float getHorizontalOffset() const;
-    virtual void setVerticalOffset(float offset);
-    virtual float getVerticalOffset() const;
+    float getExtentWidth() const override;
+    float getExtentHeight() const override;
+    float getViewportWidth() const override;
+    float getViewportHeight() const override;
+    void setHorizontalOffset(float offset) override;
+    float getHorizontalOffset() const override;
+    void setVerticalOffset(float offset) override;
+    float getVerticalOffset() const override;
 
 public:	// TODO:
     Ref<Collection<Ref<UIElement>>> m_logicalChildren;

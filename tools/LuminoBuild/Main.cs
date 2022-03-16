@@ -17,6 +17,9 @@ namespace LuminoBuild
 
         [Option("external-vcpkg-dir", HelpText = "Externak vcpkg directory.")]
         public string? ExternalVcpkgDir { get; set; } = null;
+
+        [Option("debug", HelpText = "Enabled debug build.")]
+        public bool Debug { get; set; } = false;
     }
 
     class Program

@@ -49,7 +49,7 @@ void init() {
 void initApp() {
     auto window = detail::PlatformManager::instance()->mainWindow();
 
-    auto shader = Shader::create("simple");
+    auto shader = Shader::load(U"Assets/simple");
     auto descriptorLayout = shader->descriptorLayout();
     auto shaderPass = shader->techniques()[0]->passes()[0];
     printf("Shader OK.");

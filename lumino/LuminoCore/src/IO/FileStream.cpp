@@ -173,7 +173,7 @@ void FileStream::open() const {
 
     detail::GenericStaticallyLocalPath<PathChar> localPath(m_filePath.c_str(), m_filePath.length());
     m_stream = detail::FileSystemInternal::fopen(localPath.c_str(), localPath.getLength(), mode, StringHelper::strlen(mode));
-    LN_ENSURE_IO(m_stream != nullptr, _TT("{}"), m_filePath.c_str());
+    LN_ENSURE(m_stream != nullptr, _TT("{}"), m_filePath.c_str());
 }
 
 } // namespace ln

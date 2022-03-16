@@ -332,6 +332,8 @@ bool TransformControls::handleMouseMove(const Point& point)
                     break;
                 case OperationType::XYZ:
                     break;
+                case OperationType::ViewZ:
+                    break;
                 }
 
                 m_gizmoTransform = m_draggingStartGizmoTransform * Matrix::makeTranslation(localOffaet);

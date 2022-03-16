@@ -1185,13 +1185,16 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_
 }
 
 int UStringConvert::convertNativeString(const char32_t* src, int srcLen, char* dst, int dstSize) {
-#ifdef LN_WCHAR_16
-    LN_NOTIMPLEMENTED();
-    return -1;
-#else
-    LN_NOTIMPLEMENTED();
-    return -1;
-#endif
+    UTFConversionOptions options;
+    options.ReplacementChar = '?';
+    auto result = UnicodeUtils::convertUTF32toUTF8(reinterpret_cast<const UTF32*>(src), srcLen, reinterpret_cast<UTF8*>(dst), dstSize, &options);
+    if (result == UTFConversionResult_Success) {
+        dst[options.ConvertedTargetLength] = '\0';
+        return options.ConvertedTargetLength;
+    }
+    else {
+        return 0;
+    }
 }
 
 int UStringConvert::convertNativeString(const char32_t* src, int srcLen, wchar_t* dst, int dstSize) {
