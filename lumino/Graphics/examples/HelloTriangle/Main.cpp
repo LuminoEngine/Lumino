@@ -1,5 +1,6 @@
-﻿#include <emscripten.h>
-#include <LuminoCore/Testing/TestHelper.hpp>
+﻿#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoPlatform/PlatformModule.hpp>
 #include <LuminoPlatform/Platform.hpp>
@@ -16,8 +17,6 @@
 #include "../src/GraphicsManager.hpp"
 using namespace ln;
 
-#define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)
-
 Ref<Shader> g_shader;
 Ref<VertexLayout> g_vertexLayout;
 Ref<VertexBuffer> g_vertexBuffer;
@@ -33,7 +32,11 @@ void init() {
 
     detail::AssetManager::Settings assetManagerSettings;
     auto assetManager = detail::AssetManager::initialize(assetManagerSettings);
+#ifdef __EMSCRIPTEN__
     assetManager->mountAssetArchive(U"Assets.lna", StringView());
+#else
+    assetManager->addAssetDirectory(ASSETS_DIR);
+#endif
 
     detail::GraphicsManager::Settings graphicsManagerSettings;
     graphicsManagerSettings.assetManager = assetManager;
@@ -51,6 +54,10 @@ void init() {
 
 void initApp() {
     auto window = detail::PlatformManager::instance()->mainWindow();
+    int backbufferWidth;
+    int backbufferHeight;
+    window->getFramebufferSize(&backbufferWidth, &backbufferHeight);
+    g_swapChain = makeObject<SwapChain>(window, SizeI(backbufferWidth, backbufferHeight));
 
     g_shader = Shader::load(U"simple");
 
@@ -64,16 +71,12 @@ void initApp() {
         Vector4(0.5, -0.25, 0, 1),
     };
     g_vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-    // TODO: ローカス変数にして解放すると、のちに null アクセスエラーになる
-
-    int backbufferWidth;
-    int backbufferHeight;
-    window->getFramebufferSize(&backbufferWidth, &backbufferHeight);
-    g_swapChain = makeObject<SwapChain>(window, SizeI(backbufferWidth, backbufferHeight));
 }
 
 void cleanupApp() {
     g_vertexBuffer = nullptr;
+    g_vertexLayout = nullptr;
+    g_shader = nullptr;
     g_swapChain = nullptr;
 }
 
@@ -84,7 +87,7 @@ void cleanup() {
     EngineContext2::terminate();
 }
 
-void run() {
+void mainLoop() {
     Platform::processEvents();
     
     auto descriptorLayout = g_shader->descriptorLayout();
@@ -105,13 +108,19 @@ void run() {
     ctx->endRenderPass();
 
     g_swapChain->endFrame();
-    printf("run 7\n");
 }
 
 int main() {
     init();
     initApp();
-    emscripten_set_main_loop(run, 0, true);
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(mainLoop, 60, true);
+#else
+    while (!Platform::shouldQuit()) {
+        mainLoop();
+        Thread::sleep(16);
+    }
+#endif
     cleanupApp();
     cleanup();
     return 0;

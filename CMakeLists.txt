@@ -98,6 +98,11 @@ if (DEFINED EMSCRIPTEN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
     #set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
 
+    set(LN_LUMINO_CLI_TOOL "${CMAKE_CURRENT_LIST_DIR}/build/buildtrees/x64-windows/lumino/src/Editor/CLI/Debug/lumino.exe")
+    if (NOT EXISTS ${LN_LUMINO_CLI_TOOL})
+        message(FATAL_ERROR "Not found: ${LN_LUMINO_CLI_TOOL}")
+    endif()
+
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 
@@ -134,7 +139,7 @@ set(LN_BUILD_ENGINE ON)
 if (LN_BUILD_CORE_ONLY)
     set(LN_BUILD_ENGINE OFF)
 endif()
-message("LN_BUILD_ENGINE: ${LN_BUILD_ENGINE}")
+
 
 #-------------------------------------------------------------------------------
 # Externals

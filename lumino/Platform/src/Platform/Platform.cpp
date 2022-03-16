@@ -5,15 +5,17 @@
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 
 namespace ln {
-    
-bool Platform::processEvents()
-{
+
+bool Platform::processEvents() {
     detail::PlatformManager::instance()->processSystemEventQueue();
     return !detail::PlatformManager::instance()->shouldQuit();
 }
 
-PlatformWindow* Platform::mainWindow()
-{
+bool Platform::shouldQuit() {
+    return detail::PlatformManager::instance()->shouldQuit();
+}
+
+PlatformWindow* Platform::mainWindow() {
     return detail::PlatformManager::instance()->mainWindow();
 }
 

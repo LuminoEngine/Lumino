@@ -409,7 +409,7 @@ Ref<Shader> GraphicsManager::loadShader(const StringView& filePath) {
     m_shaderCache.collectUnreferenceObjects(false);
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-    static const std::vector<const Char*> exts = { _TT(".fx"), _TT(".lcfx") };
+    static const std::vector<const Char*> exts = { _TT(".hlsl"), _TT(".fx"), _TT(".lcfx") };
 #else
     static const std::vector<const Char*> exts = { _TT(".lcfx") };
 #endif

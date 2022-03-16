@@ -11,6 +11,8 @@ public:
 	 */
     static bool processEvents();
 
+    static bool shouldQuit();
+
     /**
 	 * Get MainWindow.
 	 */
