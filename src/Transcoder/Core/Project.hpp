@@ -4,24 +4,16 @@ class Project;
 class Module;
 class InputFile;
 
-template<class T>
-using URef = std::unique_ptr<T>;
-
-template<class T, class... TArgs>
-inline URef<T> makeURef(TArgs&&... args) {
-    return std::unique_ptr<T>(LN_NEW T(std::forward<TArgs>(args)...));
-}
-
-class Project {
+class Project : public ln::URefObject {
 public:
-    ln::Array<URef<Module>> modules;
+    ln::Array<ln::URef<Module>> modules;
 };
 
-class Module {
+class Module : public ln::URefObject {
 public:
     ln::Array<ln::String> includeDirectories;
     ln::Array<ln::String> forceIncludeFiles;
-    ln::Array<URef<InputFile>> inputFiles;
+    ln::Array<ln::URef<InputFile>> inputFiles;
     ln::String outputRegisterTypesFile;
 
     Module(const ln::String& name, const ln::Path& moduleRoot);
@@ -37,7 +29,7 @@ private:
     ln::Path m_moduleRoot;
 };
 
-class InputFile {
+class InputFile : public ln::URefObject {
 public:
     InputFile(const ln::Path& filePath);
 

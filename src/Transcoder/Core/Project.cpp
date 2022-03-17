@@ -9,7 +9,7 @@ Module::Module(const ln::String& name, const ln::Path& moduleRoot)
 }
 
 void Module::addInputFile(const ln::Path& filePath) {
-    inputFiles.push(makeURef<InputFile>(ln::Path(m_moduleRoot, filePath)));
+    inputFiles.push(ln::makeURef<InputFile>(ln::Path(m_moduleRoot, filePath)));
 }
 
 //==============================================================================

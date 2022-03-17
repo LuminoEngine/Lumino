@@ -17,6 +17,7 @@
 #include "LuminoCore/Base/Optional.hpp"
 #include "LuminoCore/Base/Platform.hpp"
 #include "LuminoCore/Base/RefObject.hpp"
+#include "LuminoCore/Base/URefObject.hpp"
 #include "LuminoCore/Base/StlHelper.hpp"
 #include "LuminoCore/Base/String.hpp"
 #include "LuminoCore/Base/StringHelper.hpp"

@@ -27,11 +27,11 @@ int main(int argc, char** argv) {
     const auto include_ShaderCompiler = ln::Path(repoRoot, U"lumino/ShaderCompiler/include");
     const auto include_vcpkg = ln::Path(repoRoot, U"build/tools/vcpkg/installed/x64-windows/include");
 
-    auto project = makeURef<Project>();
+    auto project = ln::makeURef<Project>();
 
     // Core
     {
-        auto module = makeURef<Module>(U"LuminoCore", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/LuminoCore");
+        auto module = ln::makeURef<Module>(U"LuminoCore", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/LuminoCore");
         module->addIncludeDirectory(U"include");
         module->addIncludeDirectory(include_vcpkg);
         module->addForceIncludeFile(U"src/LuminoCore.PCH.h");
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
     // Runtime
     {
-        auto module = makeURef<Module>(U"LuminoRuntime", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Runtime");
+        auto module = ln::makeURef<Module>(U"LuminoRuntime", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Runtime");
         module->addIncludeDirectory(U"include");
         module->addIncludeDirectory(include_vcpkg);
         module->addIncludeDirectory(include_LuminoCore);
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 
     // Platform
     {
-        auto module = makeURef<Module>(U"LuminoPlatform", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Platform");
+        auto module = ln::makeURef<Module>(U"LuminoPlatform", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Platform");
         module->addIncludeDirectory(U"include");
         module->addIncludeDirectory(include_vcpkg);
         module->addIncludeDirectory(include_LuminoCore);
@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
 
     // Graphics
     {
-        auto module = makeURef<Module>(U"LuminoGraphics", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Graphics");
+        auto module = ln::makeURef<Module>(U"LuminoGraphics", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Graphics");
         module->addIncludeDirectory(U"include");
         module->addIncludeDirectory(include_vcpkg);
         module->addIncludeDirectory(include_LuminoCore);
@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
 
     // LuminoEngine
     {
-        auto module = makeURef<Module>(U"LuminoEngine", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/LuminoEngine");
+        auto module = ln::makeURef<Module>(U"LuminoEngine", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/LuminoEngine");
         module->addIncludeDirectory(U"include");
         module->addIncludeDirectory(include_vcpkg);
         module->addIncludeDirectory(include_LuminoCore);
