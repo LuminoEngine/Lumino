@@ -33,7 +33,7 @@ void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir,
     farClip = f;
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderTechniqueSemanticsManager
 //		参考:
 //		Unity Builtin Shader variables

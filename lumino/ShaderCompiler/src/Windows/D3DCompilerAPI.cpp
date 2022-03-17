@@ -5,7 +5,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // D3DCompilerAPI
 
 D3DCompilerAPI::PFN_D3DCreateBlob D3DCompilerAPI::D3DCreateBlob;

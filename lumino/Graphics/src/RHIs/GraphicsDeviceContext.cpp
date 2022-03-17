@@ -8,7 +8,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // RHIDeviceObject
 
 AttributeUsage IGraphicsHelper::ElementUsageToAttributeUsage(VertexElementUsage value) {
@@ -55,7 +55,7 @@ VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(AttributeUsage 
     return s_conversionTable[(int)value].v2;
 }
 
-//=============================================================================
+//==============================================================================
 // IGraphicsDevice
 
 IGraphicsDevice::IGraphicsDevice()
@@ -352,7 +352,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
     return pass;
 }
 
-//=============================================================================
+//==============================================================================
 // ICommandList
 
 ICommandList::ICommandList()
@@ -581,7 +581,7 @@ void ICommandList::endCommit(GraphicsContextSubmitSource submitSource) {
     }
 }
 
-//=============================================================================
+//==============================================================================
 // ISwapChain
 
 ISwapChain::ISwapChain() {
@@ -594,7 +594,7 @@ ISwapChain::~ISwapChain() {
     }
 }
 
-//=============================================================================
+//==============================================================================
 // IRenderPass
 
 IRenderPass::~IRenderPass() {
@@ -643,7 +643,7 @@ void IRenderPass::releaseObjects() {
     }
 }
 
-//=============================================================================
+//==============================================================================
 // IVertexDeclaration
 
 IVertexDeclaration::IVertexDeclaration() {
@@ -683,7 +683,7 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
     return hash.value();
 }
 
-//=============================================================================
+//==============================================================================
 // ISamplerState
 
 ISamplerState::ISamplerState() {
@@ -696,7 +696,7 @@ ISamplerState::~ISamplerState() {
     }
 }
 
-//=============================================================================
+//==============================================================================
 // IShaderPass
 
 IShaderPass::IShaderPass() {
@@ -733,7 +733,7 @@ const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage,
     return nullptr;
 }
 
-////=============================================================================
+////==============================================================================
 //// IShaderPass
 //
 //IShaderUniformBuffer::IShaderUniformBuffer()
@@ -741,7 +741,7 @@ const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage,
 //	LN_LOG_VERBOSE << "IShaderUniformBuffer [0x" << this << "] constructed.";
 //}
 //
-////=============================================================================
+////==============================================================================
 //// IShaderUniform
 //
 //IShaderUniform::IShaderUniform()
@@ -749,7 +749,7 @@ const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage,
 //	LN_LOG_VERBOSE << "IShaderUniform [0x" << this << "] constructed.";
 //}
 
-//=============================================================================
+//==============================================================================
 // IShaderSamplerBuffer
 
 //IShaderSamplerBuffer::IShaderSamplerBuffer()
@@ -757,7 +757,7 @@ const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage,
 //	LN_LOG_VERBOSE << "IShaderSamplerBuffer [0x" << this << "] constructed.";
 //}
 
-//=============================================================================
+//==============================================================================
 // IPipeline
 
 IPipeline::~IPipeline() {
@@ -770,7 +770,7 @@ void IPipeline::dispose() {
     RHIDeviceObject::dispose();
 }
 
-//=============================================================================
+//==============================================================================
 // IDescriptorPool
 
 IDescriptorPool::~IDescriptorPool() {
@@ -779,7 +779,7 @@ IDescriptorPool::~IDescriptorPool() {
     }
 }
 
-//=============================================================================
+//==============================================================================
 // IDescriptor
 
 IDescriptor::~IDescriptor() = default;

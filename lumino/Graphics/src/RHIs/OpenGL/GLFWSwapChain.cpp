@@ -8,7 +8,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // GLFWSwapChain
 
 GLFWSwapChain::GLFWSwapChain(OpenGLDevice* device)

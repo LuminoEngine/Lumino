@@ -7,7 +7,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // GLUniformBufferAllocatorPage
 
 GLUniformBufferAllocatorPage::~GLUniformBufferAllocatorPage() {
@@ -63,7 +63,7 @@ GLUniformBufferView GLUniformBufferAllocator::allocate(size_t size, size_t align
 }
 
 
-//=============================================================================
+//==============================================================================
 // GLDescriptorObjectPoolManager
 
 GLDescriptorObjectPoolManager::GLDescriptorObjectPoolManager(OpenGLDevice* device)
@@ -80,7 +80,7 @@ Result GLDescriptorObjectPoolManager::onCreateObjects(int32_t count, Array<Ref<R
     return ok();
 }
 
-//=============================================================================
+//==============================================================================
 // GLDescriptor
 
 GLDescriptor::GLDescriptor()
@@ -177,7 +177,7 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
 #endif
 }
 
-//=============================================================================
+//==============================================================================
 // GLDescriptorPool
 
 GLDescriptorPool::GLDescriptorPool() {

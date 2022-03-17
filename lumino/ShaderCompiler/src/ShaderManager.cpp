@@ -11,7 +11,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // ShaderManager
 
 ShaderManager* ShaderManager::initialize(const Settings& settings)

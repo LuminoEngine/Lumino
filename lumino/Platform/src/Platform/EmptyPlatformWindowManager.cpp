@@ -5,7 +5,7 @@
 namespace ln {
 namespace detail {
 	
-//=============================================================================
+//==============================================================================
 // EmptyPlatformWindow
 
 EmptyPlatformWindow::EmptyPlatformWindow()
@@ -27,7 +27,7 @@ bool EmptyPlatformWindow::isAllowDragDrop() const
     return false;
 }
 
-//=============================================================================
+//==============================================================================
 // EmptyPlatformWindowManager
 
 EmptyPlatformWindowManager::EmptyPlatformWindowManager(PlatformManager* manager)

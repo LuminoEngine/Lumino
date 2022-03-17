@@ -4,7 +4,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // GLSLShader
 
 GLSLShader::GLSLShader()
@@ -66,7 +66,7 @@ void GLSLShader::dispose() {
     }
 }
 
-//=============================================================================
+//==============================================================================
 // GLShaderPass
 
 GLShaderPass::GLShaderPass()
@@ -150,7 +150,7 @@ void GLShaderPass::apply() const {
     // m_descriptorTable->bind(m_program);
 }
 
-//=============================================================================
+//==============================================================================
 // GLShaderDescriptorTable
 
 GLShaderDescriptorTable::GLShaderDescriptorTable() {
@@ -244,7 +244,7 @@ void GLShaderDescriptorTable::addResourceUniform(const std::string& name, GLint 
 }
 
 #if 0
-//=============================================================================
+//==============================================================================
 // GLShaderDescriptorTable
 
 GLShaderDescriptorTable::GLShaderDescriptorTable()

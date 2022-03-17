@@ -207,7 +207,7 @@ PFN_vkGetPhysicalDeviceProperties2 vkGetPhysicalDeviceProperties2;
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // VulkanHelper
 
 const std::vector<const char*> VulkanHelper::validationLayers = {
@@ -782,7 +782,7 @@ Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image,
     return ok();
 }
 
-//=============================================================================
+//==============================================================================
 // AbstractVulkanAllocator
 
 VKAPI_ATTR
@@ -826,7 +826,7 @@ Result AbstractVulkanAllocator::init() {
     return ok();
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanAllocator
 
 VulkanAllocator::VulkanAllocator()
@@ -867,7 +867,7 @@ void VulkanAllocator::free(void* ptr) noexcept {
 #endif
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanLinearAllocator
 
 VulkanLinearAllocator::VulkanLinearAllocator()
@@ -895,7 +895,7 @@ void VulkanLinearAllocator::free(void* ptr) noexcept {
     // フレーム終了時にすべてクリアされるため不要
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanImage
 
 VulkanImage::VulkanImage() {
@@ -978,7 +978,7 @@ void VulkanImage::dispose() {
     }
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanCommandBuffer
 
 VulkanCommandBuffer::VulkanCommandBuffer() {
@@ -1259,7 +1259,7 @@ Result VulkanCommandBuffer::glowStagingBufferPool() {
     return ok();
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanRenderPass
 
 VulkanRenderPass::VulkanRenderPass()
@@ -1465,7 +1465,7 @@ void VulkanRenderPass::dispose() {
     }
 }
 
-////=============================================================================
+////==============================================================================
 //// VulkanRenderPassCache
 //
 //VulkanRenderPassCache::VulkanRenderPassCache()
@@ -1518,7 +1518,7 @@ void VulkanRenderPass::dispose() {
 //    return hash.value();
 //}
 
-//=============================================================================
+//==============================================================================
 // VulkanFramebuffer
 
 VulkanFramebuffer::VulkanFramebuffer() {

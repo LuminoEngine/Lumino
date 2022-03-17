@@ -11,7 +11,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // HLSLPass
 
 //void HLSLPass::save(BinaryWriter* w, int version)
@@ -78,7 +78,7 @@ namespace detail {
 //    //readOptionalUInt8(r, &renderState->stencilFunc);
 //}
 
-////=============================================================================
+////==============================================================================
 //// HLSLTechnique
 //
 //void HLSLTechnique::save(BinaryWriter* w, int version)
@@ -136,7 +136,7 @@ std::string HLSLTechnique::readString(BinaryReader* r)
 //{
 //}
 
-//=============================================================================
+//==============================================================================
 // RenderStateParser
 
 class RenderStateParser
@@ -283,7 +283,7 @@ public:
     }
 };
 
-//=============================================================================
+//==============================================================================
 // HLSLMetadataParser
 
 bool HLSLMetadataParser::parse(const char* code, size_t length, DiagnosticsManager* diag)
@@ -626,7 +626,7 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 }
 
 
-//=============================================================================
+//==============================================================================
 // ShaderModuleParser
 
 bool ShaderModuleParser::checkHasModuleBlock(const char* code, size_t length)

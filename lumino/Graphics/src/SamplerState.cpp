@@ -13,7 +13,7 @@ const detail::SamplerStateData detail::SamplerStateData::defaultState =
     false,
 };
 
-//=============================================================================
+//==============================================================================
 // SamplerState
 
 Ref<SamplerState> SamplerState::create()

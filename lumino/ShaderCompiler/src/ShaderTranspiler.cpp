@@ -193,7 +193,7 @@ protected:
     std::vector<std::string> processes; // what should be recorded by OpModuleProcessed, or equivalent
 };
 
-//=============================================================================
+//==============================================================================
 // LocalIncluder
 
 class LocalIncluder
@@ -238,7 +238,7 @@ public:
     }
 };
 
-//=============================================================================
+//==============================================================================
 // ShaderCodeTranspiler
 
 struct OpenGLTypeConvertionItem
@@ -1215,7 +1215,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
     return std::vector<byte_t>(code.begin(), code.end());
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderUniformBufferInfo
 
 void ShaderUniformBufferInfo::mergeFrom(const ShaderUniformBufferInfo& other)

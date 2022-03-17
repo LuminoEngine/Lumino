@@ -6,7 +6,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // CryptedArchiveHelper
 
 const String CryptedArchiveHelper::DefaultPassword = _TT("n7OeL8Hh");
@@ -70,7 +70,7 @@ uint32_t CryptedArchiveHelper::crc(uint32_t key, int c)
 	return ((*(g_crctab + (((int)(c) ^ (key)) & 0xff))) ^ ((c) >> 8));
 }
 
-//=============================================================================
+//==============================================================================
 // CryptedAssetArchiveWriter
 
 CryptedAssetArchiveWriter::CryptedAssetArchiveWriter()
@@ -150,7 +150,7 @@ void CryptedAssetArchiveWriter::addFile(const StringView& filePath, const String
 }
 
 
-//=============================================================================
+//==============================================================================
 // CryptedAssetArchiveReader
 
 CryptedAssetArchiveReader::CryptedAssetArchiveReader()
@@ -349,7 +349,7 @@ std::string CryptedAssetArchiveReader::readString(BinaryReader* r)
 }
 
 
-//=============================================================================
+//==============================================================================
 // CryptedArchiveFileStream
 
 CryptedArchiveFileStream::CryptedArchiveFileStream(CryptedAssetArchiveReader* archive, size_t dataOffset, size_t dataSize)
@@ -402,7 +402,7 @@ void CryptedArchiveFileStream::flush()
 }
 
 
-//=============================================================================
+//==============================================================================
 // FileSystemReader
 
 FileSystemReader::FileSystemReader()

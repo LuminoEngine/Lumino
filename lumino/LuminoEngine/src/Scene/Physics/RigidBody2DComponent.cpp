@@ -6,7 +6,7 @@
 
 namespace ln {
 
-//=============================================================================
+//==============================================================================
 // Collision2D
 
 Collision2D::Collision2D()
@@ -22,7 +22,7 @@ void Collision2D::init(WorldObject* worldObject/*, RigidBody2DComponent* compone
     m_physicsObject = physicsObject;
 }
 
-//=============================================================================
+//==============================================================================
 // RigidBody2DComponent
 
 Ref<RigidBody2DComponent> RigidBody2DComponent::create()
@@ -130,7 +130,7 @@ void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Contact
 
 
 
-//=============================================================================
+//==============================================================================
 // TriggerBody2DComponent
 
 Ref<TriggerBody2DComponent> TriggerBody2DComponent::create()

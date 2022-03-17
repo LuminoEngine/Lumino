@@ -7,7 +7,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // VulkanDescriptor2
 
 VulkanDescriptor2::VulkanDescriptor2(VulkanDescriptorPool2* pool)
@@ -38,7 +38,7 @@ void VulkanDescriptor2::onUpdateData(const ShaderDescriptorTableUpdateInfo& data
     vkUpdateDescriptorSets(device->vulkanDevice(), static_cast<uint32_t>(writeInfos.size()), writeInfos.data(), 0, nullptr);
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanDescriptorPool2
 
 VulkanDescriptorPool2::VulkanDescriptorPool2()

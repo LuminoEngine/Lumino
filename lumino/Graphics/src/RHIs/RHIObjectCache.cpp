@@ -7,7 +7,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // NativeRenderPassCache
 
 NativeRenderPassCache::NativeRenderPassCache(IGraphicsDevice* device)
@@ -102,7 +102,7 @@ uint64_t NativeRenderPassCache::computeHash(const FindKey& key) {
     return hash.value();
 }
 
-//=============================================================================
+//==============================================================================
 // NativePipelineCache
 
 NativePipelineCache::NativePipelineCache(IGraphicsDevice* device)

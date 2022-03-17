@@ -17,7 +17,7 @@
 
 namespace ln {
     
-//=============================================================================
+//==============================================================================
 // ShapeComponent
 
 LN_OBJECT_IMPLEMENT(ShapeComponent, VisualComponent) {}
@@ -50,7 +50,7 @@ void ShapeComponent::serialize(Serializer2& ar)
     ar& makeNVP(_TT("material"), m_material);
 }
 
-//=============================================================================
+//==============================================================================
 // PlaneMeshComponent
 
 LN_OBJECT_IMPLEMENT(PlaneMeshComponent, VisualComponent) {}
@@ -88,7 +88,7 @@ void PlaneMeshComponent::onRender(RenderingContext* context)
     context->drawPlane(m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
 }
 
-//=============================================================================
+//==============================================================================
 // SphereMeshComponent
 
 SphereMeshComponent::SphereMeshComponent()
@@ -110,7 +110,7 @@ void SphereMeshComponent::onRender(RenderingContext* context)
     context->drawSphere(0.5, 16, 16, Color::White);
 }
 
-////=============================================================================
+////==============================================================================
 //// BoxMeshComponent
 //
 //BoxMeshComponent::BoxMeshComponent()

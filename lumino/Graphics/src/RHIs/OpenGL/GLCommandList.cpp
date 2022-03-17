@@ -10,7 +10,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // GLGraphicsContext
 
 GLGraphicsContext::GLGraphicsContext()
@@ -138,18 +138,17 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 //}
 
 void GLGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) {
-    //switch (resource->resourceType()) {
-    //    case DeviceResourceType::VertexBuffer:
-    //        static_cast<GLVertexBuffer*>(resource)->setSubData(offset, data, length);
-    //        break;
-    //    case DeviceResourceType::IndexBuffer:
-    //        static_cast<GLIndexBuffer*>(resource)->setSubData(offset, data, length);
-    //        break;
-    //    default:
-    //        LN_NOTIMPLEMENTED();
-    //        break;
-    //}
-    LN_NOTIMPLEMENTED();
+    switch (resource->resourceType()) {
+        case RHIResourceType::VertexBuffer:
+            static_cast<GLVertexBuffer*>(resource)->setSubData(offset, data, length);
+            break;
+        case RHIResourceType::IndexBuffer:
+            static_cast<GLIndexBuffer*>(resource)->setSubData(offset, data, length);
+            break;
+        default:
+            LN_NOTIMPLEMENTED();
+            break;
+    }
 }
 
 void GLGraphicsContext::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) {

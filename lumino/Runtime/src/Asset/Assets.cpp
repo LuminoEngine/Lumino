@@ -8,7 +8,7 @@
 
 namespace ln {
 
-//=============================================================================
+//==============================================================================
 // Assets
 
 //void Assets::setAssetPath(AssetObject* obj, const String& filePath)
@@ -133,7 +133,7 @@ const String& Assets::engineAssetsDirectory()
     return AssetModel::EngineAssetsDirectory;
 }
 
-//=============================================================================
+//==============================================================================
 // AssetImporter
 
 AssetImporter::AssetImporter()
@@ -161,7 +161,7 @@ Ref<AssetModel> AssetImporter::import(const ln::Path& sourceFilePath)
 //
 //}
 
-////=============================================================================
+////==============================================================================
 //// TextureImporter
 //
 //TextureImporter::TextureImporter()

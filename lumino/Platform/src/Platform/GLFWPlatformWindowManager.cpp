@@ -85,7 +85,7 @@ static void glfwSetWindowCenter(GLFWwindow* window) {
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // GLFWContext
 
 GLFWContext::GLFWContext(GLFWPlatformWindow* mainWindow)
@@ -114,7 +114,7 @@ void GLFWContext::makeCurrent(PlatformWindow* window)
 	}
 }
 
-//=============================================================================
+//==============================================================================
 // GLFWPlatformWindow
 
 static Keys GLFWKeyToLNKey[GLFW_KEY_LAST];
@@ -550,7 +550,7 @@ ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
 	return modifierKeys;
 }
 
-//=============================================================================
+//==============================================================================
 // GLFWPlatformWindowManager
 
 GLFWPlatformWindowManager::GLFWPlatformWindowManager(PlatformManager* manager)
@@ -633,7 +633,7 @@ OpenGLContext* GLFWPlatformWindowManager::getOpenGLContext() const
 	return m_glContext;
 }
 
-//=============================================================================
+//==============================================================================
 
 bool checkGraphicsSupport()
 {

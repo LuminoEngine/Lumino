@@ -6,7 +6,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // DX12Helper
 
 static const std::pair<TextureFormat, DXGI_FORMAT> s_textureFormatConversionTable[] =

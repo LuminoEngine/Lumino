@@ -13,7 +13,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // EditorViewportToolPane
 
 EditorViewportToolPane::EditorViewportToolPane()

@@ -6,7 +6,7 @@
 namespace ln {
 namespace detail {
 	
-//=============================================================================
+//==============================================================================
 // ShaderParameterValue
 
 ShaderParameterValue::ShaderParameterValue()
@@ -248,7 +248,7 @@ bool ShaderParameterValue::isShortSizeType(ShaderVariableType type)
            type == ShaderVariableType::Matrix;
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderParameterValue
 
 size_t ShaderValueSerializer::measureBufferSize(const ShaderPass* pass)
@@ -328,7 +328,7 @@ void ShaderValueSerializer::writeValue(const ShaderParameterValue& value)
 //}
 
 
-//=============================================================================
+//==============================================================================
 // ShaderValueDeserializer
 
 ShaderValueDeserializer::ShaderValueDeserializer(const void* buffer, size_t size)

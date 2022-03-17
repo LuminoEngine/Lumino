@@ -12,7 +12,7 @@ namespace ln {
 namespace detail {
 
 
-//=============================================================================
+//==============================================================================
 // AbstractWin32PlatformWindow
 
 AbstractWin32PlatformWindow::AbstractWin32PlatformWindow()
@@ -486,7 +486,7 @@ float AbstractWin32PlatformWindow::getDpiFactor(HWND hWnd)
 }
 
 
-//=============================================================================
+//==============================================================================
 // Win32PlatformWindow
 
 Win32PlatformWindow::Win32PlatformWindow()
@@ -560,7 +560,7 @@ void Win32PlatformWindow::dispose()
     }
 }
 
-//=============================================================================
+//==============================================================================
 // WrappedWin32PlatformWindow
 
 WrappedWin32PlatformWindow::WrappedWin32PlatformWindow()
@@ -602,7 +602,7 @@ LRESULT WrappedWin32PlatformWindow::StaticWndProcHook(HWND hwnd, UINT msg, WPARA
     return CallWindowProc(window->m_originalWndProc, hwnd, msg, wparam, lparam);
 }
 
-//=============================================================================
+//==============================================================================
 // Win32PlatformWindowManager
 
 const wchar_t*	Win32PlatformWindowManager::WindowClassName = L"LuminoWindow";

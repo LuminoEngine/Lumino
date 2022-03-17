@@ -9,7 +9,7 @@ namespace detail {
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
-//=============================================================================
+//==============================================================================
 // UnifiedShaderCompiler
 
 UnifiedShaderCompiler::UnifiedShaderCompiler(ShaderManager* manager, DiagnosticsManager* diag)

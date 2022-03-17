@@ -8,7 +8,7 @@
 
 namespace ln {
 
-//=============================================================================
+//==============================================================================
 // ReflectorComponent
 
 LN_OBJECT_IMPLEMENT(ReflectorComponent, VisualComponent) {}

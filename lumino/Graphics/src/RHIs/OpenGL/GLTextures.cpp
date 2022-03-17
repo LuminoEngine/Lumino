@@ -5,14 +5,14 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // GLTexture2D
 
 GLTextureBase::GLTextureBase() {
 }
 
 
-//=============================================================================
+//==============================================================================
 // GLTexture2D
 
 GLTexture2D::GLTexture2D()
@@ -133,7 +133,7 @@ void GLTexture2D::setSubData3D(int x, int y, int z, int width, int height, int d
     LN_UNREACHABLE();
 }
 
-//=============================================================================
+//==============================================================================
 // GLTexture3D
 
 GLTexture3D::GLTexture3D()
@@ -220,7 +220,7 @@ void GLTexture3D::setSubData3D(int x, int y, int z, int width, int height, int d
     GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 }
 
-//=============================================================================
+//==============================================================================
 // GLRenderTargetTexture
 
 GLRenderTargetTexture::GLRenderTargetTexture() {
@@ -342,7 +342,7 @@ void GLRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int hei
     LN_UNREACHABLE();
 }
 
-//=============================================================================
+//==============================================================================
 // GLSamplerState
 
 GLSamplerState::GLSamplerState()

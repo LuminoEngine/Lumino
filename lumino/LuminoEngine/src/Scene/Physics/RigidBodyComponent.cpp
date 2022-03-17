@@ -8,7 +8,7 @@
 
 namespace ln {
 
-//=============================================================================
+//==============================================================================
 // RigidBodyComponent
 
 Ref<RigidBodyComponent> RigidBodyComponent::create()
@@ -119,7 +119,7 @@ void RigidBodyComponent::onCollisionStay(PhysicsObject* otherObject, ContactPoin
 
 
 
-//=============================================================================
+//==============================================================================
 // TriggerBodyComponent
 LN_OBJECT_IMPLEMENT(TriggerBodyComponent, Component) {}
 

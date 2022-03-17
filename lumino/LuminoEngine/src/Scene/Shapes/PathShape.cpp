@@ -9,7 +9,7 @@
 
 namespace ln {
 
-//=============================================================================
+//==============================================================================
 // PathShapeComponent
 
 LN_OBJECT_IMPLEMENT(PathShapeComponent, VisualComponent) {}
@@ -149,7 +149,7 @@ void PathShapeComponent::onRender(RenderingContext* context)
     }
 }
 
-//=============================================================================
+//==============================================================================
 // PathShape
 
 LN_OBJECT_IMPLEMENT(PathShape, VisualObject) {}

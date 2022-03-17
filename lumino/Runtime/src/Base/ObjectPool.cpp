@@ -3,7 +3,7 @@
 
 namespace ln {
 
-//=============================================================================
+//==============================================================================
 // AbstractObjectPoolManager
 
 AbstractObjectPoolManager::AbstractObjectPoolManager(int32_t pageSize)
@@ -37,7 +37,7 @@ Ref<AbstractObjectPoolPage> AbstractObjectPoolManager::createNewPage(size_t size
     return page;
 }
 
-//=============================================================================
+//==============================================================================
 // ObjectPoolManager
 
 ObjectPoolManager::ObjectPoolManager(int32_t pageSize)
@@ -48,7 +48,7 @@ Ref<AbstractObjectPoolPage> ObjectPoolManager::onCreateNewPage() {
     return makeRef<ObjectPoolPage>(this);
 }
 
-//=============================================================================
+//==============================================================================
 // ObjectPool
     
 ObjectPool::ObjectPool(AbstractObjectPoolManager* manager)

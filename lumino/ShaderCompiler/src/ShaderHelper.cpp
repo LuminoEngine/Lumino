@@ -8,7 +8,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // ShaderTechniqueClass
 
 void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet)
@@ -57,7 +57,7 @@ bool ShaderTechniqueClass::equals(const ShaderTechniqueClass& a, const ShaderTec
 
 
 
-//=============================================================================
+//==============================================================================
 // ShaderHelper
 
 // https://www.khronos.org/registry/vulkan/specs/1.0-wsi_extensions/html/vkspec.html#interfaces-resources

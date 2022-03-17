@@ -421,7 +421,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
     return m_descriptorWriteInfo;
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanShaderDescriptorTable
 
 //VulkanShaderDescriptorTable::VulkanShaderDescriptorTable()

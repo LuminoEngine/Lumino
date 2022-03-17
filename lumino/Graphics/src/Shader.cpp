@@ -19,7 +19,7 @@
 
 namespace ln {
 
-//=============================================================================
+//==============================================================================
 // ShaderCompilationProperties
 
 ShaderCompilationProperties::ShaderCompilationProperties()
@@ -49,7 +49,7 @@ void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag)
     m_diag = diag;
 }
 
-//=============================================================================
+//==============================================================================
 // Shader
 
 Ref<Shader> Shader::create(const StringView& filePath, ShaderCompilationProperties* properties)
@@ -370,7 +370,7 @@ ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass
     return nullptr;
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderTechnique
 
 ShaderTechnique::ShaderTechnique()
@@ -407,7 +407,7 @@ void ShaderTechnique::addShaderPass(ShaderPass* pass)
     pass->setOwner(this);
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderPass
 
 ShaderPass::ShaderPass()
@@ -611,7 +611,7 @@ void ShaderPass::releaseDescriptorSetsPool(detail::IDescriptorPool* pool)
 }
 
 
-//=============================================================================
+//==============================================================================
 // ShaderDefaultDescriptor
 
 ShaderDefaultDescriptor::ShaderDefaultDescriptor()
@@ -786,7 +786,7 @@ void ShaderDefaultDescriptor::setSamplerState(int samplerIndex, SamplerState* va
     m_samplers[samplerIndex] = value;
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderDescriptorLayout
 
 ShaderDescriptorLayout::ShaderDescriptorLayout()
@@ -881,7 +881,7 @@ int ShaderDescriptorLayout::findStorageRegisterIndex(const ln::StringView& name)
     return m_storages.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderParameter2
 
 ShaderParameter2::ShaderParameter2()
@@ -1005,7 +1005,7 @@ void ShaderParameter2::setSamplerState(SamplerState* value)
     m_owner->setSamplerState(m_dataIndex, value);
 }
 
-//=============================================================================
+//==============================================================================
 // ShaderPassDescriptorLayout
 
 void ShaderPassDescriptorLayout::init(const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout)

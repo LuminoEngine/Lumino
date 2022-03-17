@@ -15,7 +15,7 @@ size_t AlignUp(size_t value, size_t alignment)
 	return AlignUpWithMask(value, alignment - 1);
 }
 
-//=============================================================================
+//==============================================================================
 // HeapLinearAllocatorPage
 
 HeapLinearAllocatorPage::HeapLinearAllocatorPage(size_t size)
@@ -29,7 +29,7 @@ HeapLinearAllocatorPage::~HeapLinearAllocatorPage()
 	LN_OPERATOR_DELETE(m_data);
 }
 
-//=============================================================================
+//==============================================================================
 // AbstractLinearAllocatorPageManager
 
 AbstractLinearAllocatorPageManager::AbstractLinearAllocatorPageManager(size_t pageSize)
@@ -87,7 +87,7 @@ void AbstractLinearAllocatorPageManager::clear()
 	m_pagePool.clear();
 }
 
-//=============================================================================
+//==============================================================================
 // LinearAllocatorPageManager
 
 LinearAllocatorPageManager::LinearAllocatorPageManager(size_t pageSize)
@@ -100,7 +100,7 @@ Ref<AbstractLinearAllocatorPage> LinearAllocatorPageManager::onCreateNewPage(siz
 	return makeRef<HeapLinearAllocatorPage>(size);
 }
 
-//=============================================================================
+//==============================================================================
 // AbstractLinearAllocator
 
 AbstractLinearAllocator::AbstractLinearAllocator(LinearAllocatorPageManager* manager)
@@ -179,7 +179,7 @@ AbstractLinearAllocatorPage* AbstractLinearAllocator::allocateLarge(size_t size)
 	return page;
 }
 
-//=============================================================================
+//==============================================================================
 // LinearAllocator
 
 LinearAllocator::LinearAllocator(LinearAllocatorPageManager* manager)

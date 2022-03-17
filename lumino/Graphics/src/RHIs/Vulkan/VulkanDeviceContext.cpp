@@ -2115,7 +2115,7 @@ void VulkanSamplerState::dispose() {
     ISamplerState::dispose();
 }
 
-//=============================================================================
+//==============================================================================
 // VulkanNativeGraphicsInterface
 
 VulkanNativeGraphicsInterface::VulkanNativeGraphicsInterface(VulkanDevice* device)

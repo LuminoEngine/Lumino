@@ -45,7 +45,7 @@ static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue)
     }
 }
 
-//=============================================================================
+//==============================================================================
 // UnifiedShader
 
 const String UnifiedShader::FileExt = _TT("lcfx");
@@ -714,7 +714,7 @@ bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len,
     return true;
 }
 
-//=============================================================================
+//==============================================================================
 // DescriptorLayout
 
 void DescriptorLayout::clear()

@@ -7,7 +7,7 @@
 namespace ln {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 // RenderBulkData
 
 RenderBulkData::RenderBulkData(const void* srcData, size_t size)
@@ -40,7 +40,7 @@ void RenderBulkData::commitAllocation(RenderingCommandList* commandList)
     }
 }
 
-//=============================================================================
+//==============================================================================
 // RenderingCommandList
 
 RenderingCommandList::RenderingCommandList(LinearAllocatorPageManager* manager)
@@ -81,7 +81,7 @@ void RenderingCommandList::execute()
     }
 }
 
-//=============================================================================
+//==============================================================================
 // RenderingCommand
 
 RenderingCommand::RenderingCommand()
@@ -92,7 +92,7 @@ RenderingCommand::~RenderingCommand()
 {
 }
 
-//=============================================================================
+//==============================================================================
 // RenderingQueue
 
 RenderingQueue::RenderingQueue()
