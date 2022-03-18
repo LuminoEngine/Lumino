@@ -497,6 +497,9 @@ public:
     const ReferenceList& storages() const { return m_storages; }
 
     const Reference& bufferSlot(LayoutSlotIndex i) const { return m_buffers[i.i]; }
+    const Reference& resourceSlot(LayoutSlotIndex i) const { return m_resources[i.i]; }
+    const Reference& samplerSlot(LayoutSlotIndex i) const { return m_samplers[i.i]; }
+    const Reference& storageSlot(LayoutSlotIndex i) const { return m_storages[i.i]; }
 
 protected:
     virtual ~IDescriptor();

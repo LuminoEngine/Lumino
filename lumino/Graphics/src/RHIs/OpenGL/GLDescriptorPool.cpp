@@ -1,6 +1,7 @@
 ﻿#include "Internal.hpp"
 #include "OpenGLDeviceContext.hpp"
 #include "GLUniformBuffer.hpp"
+#include "GLTextures.hpp"
 #include "GLShaderPass.hpp"
 #include "GLDescriptorPool.hpp"
 
@@ -123,9 +124,60 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
         }
     }
 
+    // Resource (texture)
+    for (auto i = 0; i < layout->resourceInfos().size(); i++) {
+        const auto& info = layout->resourceInfos()[i];
+        const auto& slot = resourceSlot(info.layoutSlotIndex);
+        if (LN_ASSERT(slot.object)) return;
+
+        GLTextureBase* texture = static_cast<GLTextureBase*>(slot.object.get());
+        GLSamplerState* samplerState = static_cast<GLSamplerState*>(slot.samplerState.get());
+
+        // TextureUnit は ResourceView のようなもの。
+        // これに対して Texture を Bind してから、 この Index を glUniform() を使って uniform へセットする。
+        int textureUnitIndex = i;
+        GL_CHECK(glActiveTexture(GL_TEXTURE0 + textureUnitIndex));
+
+        // GL_TEXTURE_2D と GL_TEXTURE_3D が同時に値を持つとエラーになることがあるため、他方をクリアしながら Bind する。
+        bool mipmap = false;
+        if (texture) {
+            mipmap = texture->mipmap();
+            switch (texture->resourceType()) {
+                case RHIResourceType::Texture2D:
+                    GL_CHECK(glBindTexture(GL_TEXTURE_2D, texture->id()));
+                    GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+                    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+                    break;
+                case RHIResourceType::Texture3D:
+                    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+                    GL_CHECK(glBindTexture(GL_TEXTURE_3D, texture->id()));
+                    GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+                    break;
+                default:
+                    LN_UNREACHABLE();
+                    break;
+            }
+        }
+        else {
+            GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+            GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+            GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+        }
+
+        // Bind sampler state.
+        if (samplerState) {
+            GL_CHECK(glBindSampler(textureUnitIndex, samplerState->resolveId(mipmap)));
+        }
+        else {
+            GL_CHECK(glBindSampler(textureUnitIndex, 0));
+        }
+
+        // Set TextureUnit to uniform.
+        GL_CHECK(glUniform1i(info.uniformLocation, textureUnitIndex));
+    }
+
+    
 #if 0
-
-
     for (int i = 0; i < m_samplerUniforms.size(); i++) {
         const auto& uniform = m_samplerUniforms[i];
         int unitIndex = i;
