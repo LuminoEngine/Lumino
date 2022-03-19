@@ -15,6 +15,7 @@ GLUniformBuffer::GLUniformBuffer()
 }
 
 Result GLUniformBuffer::init(size_t size) {
+    LN_TRY(RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size));
     m_size = size;
 
     // 大きなバッファをずっと持つ可能性があるが、UBO は通常、毎フレームデータの書き込みが行われるため、

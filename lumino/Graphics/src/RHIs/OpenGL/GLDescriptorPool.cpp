@@ -144,6 +144,7 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
             mipmap = texture->mipmap();
             switch (texture->resourceType()) {
                 case RHIResourceType::Texture2D:
+                case RHIResourceType::RenderTarget:
                     GL_CHECK(glBindTexture(GL_TEXTURE_2D, texture->id()));
                     GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
                     GL_CHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));

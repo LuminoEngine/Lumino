@@ -2,6 +2,7 @@
 #include <mutex>
 #include <functional>
 #define LN_COORD_RH 1
+#define LN_FACE_FRONT_CCW 1
 
 namespace ln {
 class EngineContext2;

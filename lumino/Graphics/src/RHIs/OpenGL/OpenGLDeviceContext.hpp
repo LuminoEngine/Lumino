@@ -43,6 +43,11 @@
  *
  * 
  * マルチターゲットの参考:http://ramemiso.hateblo.jp/entry/2013/10/20/001909
+ * 
+ * 
+ * 
+ * 
+ * 
  */
 #pragma once
 #include "GLHelper.hpp"

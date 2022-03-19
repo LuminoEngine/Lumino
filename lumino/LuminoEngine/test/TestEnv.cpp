@@ -15,7 +15,7 @@ void TestEnv::setup()
 	//Logger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
-	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//GraphicsAPI::DirectX12);//
+	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);//
     EngineSettings::setPriorityGPUName(_TT("Microsoft Basic Render Driver"));
 	EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setEngineFeatures(feature);

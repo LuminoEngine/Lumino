@@ -7,9 +7,9 @@ class ProfilingItem;
 class ProfilingSection;
 
 enum class DiagnosticsLevel {
-    Error,
-    Warning,
     Info,
+    Warning,
+    Error,
 };
 
 class LN_API DiagnosticsManager

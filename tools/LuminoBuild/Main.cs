@@ -97,7 +97,6 @@ namespace LuminoBuild
                 b.LuminoLibDir = Path.GetFullPath(Path.Combine(b.RootDir, "lib"));
                 b.LuminoToolsDir = Path.GetFullPath(Path.Combine(b.RootDir, "tools"));
                 b.LuminoDocDir = Path.GetFullPath(Path.Combine(b.RootDir, "docs"));
-                b.LuminoSourceDir = Path.GetFullPath(Path.Combine(b.RootDir, "src"));
                 b.LuminoPackageDir = Path.GetFullPath(Path.Combine(b.BuildDir, "Package"));
                 b.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(b.LuminoPackageDir, "lib"));
                 b.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(b.RootDir, "tools/PackageSource"));

@@ -260,8 +260,8 @@ void RenderingManager::init(const Settings& settings)
 		createBuiltinShader(BuiltinShader::MToon, _TT("MToon"), data, LN_ARRAY_SIZE_OF(data));
 	}
 
-#define ROOT_PATH _TT("C:/Proj/LN/Lumino/src/Engine/"
-	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/Sprite.fx");
+#define ROOT_PATH _TT("C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/")
+	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH _TT("Sprite.fx"));
 #if 0	// テスト用
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SSRRayTracing.fx");

@@ -757,27 +757,38 @@ void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBu
 
         // stencilFunc
         // stencilReferenceValue
-        GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
-        GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
-
         // stencilFailOp
         // stencilDepthFailOp
         // stencilPassOp
         GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
+#if LN_FACE_FRONT_CCW
+        GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+        GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+        GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
+        GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)m_depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilPassOp]));
+#else
+        GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+        GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
         GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
         GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)m_depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilPassOp]));
+#endif
+
+        //GL_CHECK(glStencilOp(stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
     }
 
     // PrimitiveData
     {
         auto* glDecl = static_cast<const GLVertexDeclaration*>(vertexLayout());
         if (glDecl) {
-            size_t count = shaderPass()->attributes().size();
+            const auto& attributes = shaderPass()->attributes();
+            size_t count = attributes.size();
             for (size_t iAttr = 0; iAttr < count; iAttr++) {
-                auto& attr = shaderPass()->attributes()[iAttr];
-
+                auto& attr = attributes[iAttr];
+                
+                // glslang からは、 SV_InstanceID も取得できるが、これには layoutLocation が付いていない。
+                if (attr.usage == AttributeUsage_InstanceID) continue;
+                
                 if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
-
                     GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));
                     GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->objectId()));
                     GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->byteOffset)));

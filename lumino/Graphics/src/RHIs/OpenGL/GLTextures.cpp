@@ -311,17 +311,19 @@ RHIRef<RHIBitmap> GLRenderTargetTexture::readData() {
 
     //BitmapHelper::blitRawSimple(outData, buf->data(), m_size.width, m_size.height, GraphicsHelper::getPixelSize(m_textureFormat), true);
 
-    //struct Color3 { uint8_t r, g, b; };
-    //const Color3* c = (const Color3*)outData;
-    //for (int y = 0; y < m_size.height; y++) {
-    //	int count = 0;
-    //	for (int x = 0; x < m_size.width; x++) {
-    //		if (c[y * m_size.height + x].g < 255) {
-    //			count++;
-    //		}
-    //	}
-    //	printf("%d\n", count);
-    //}
+#if 0   // 検証用
+    struct Color3 { uint8_t r, g, b; };
+    const Color3* c = (const Color3*)buf->data();
+    for (int y = 0; y < size.height; y++) {
+    	int count = 0;
+    	for (int x = 0; x < size.width; x++) {
+    		if (c[y *size.height + x].g < 255) {
+    			count++;
+    		}
+    	}
+    	printf("%d\n", count);
+    }
+#endif
 
     return buf;
 }

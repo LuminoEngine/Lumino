@@ -256,7 +256,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         // glslang だと定数として扱われるため、問題の原因が変わりづらい。
         // ひとまずの対策として、glslang が検出したものと不一致があればエラーとして通知する。
         {
-            const auto& requiredDescriptors = createInfo.descriptorLayout->unorderdSlots();
+            const auto& requiredDescriptors = createInfo.descriptorLayout->bufferSlots();
             for (const auto& reflection : reflections) {
                 for (const auto& descriptor : reflection.descriptors) {
                     if (descriptor.type == DescriptorType_UniformBuffer) {

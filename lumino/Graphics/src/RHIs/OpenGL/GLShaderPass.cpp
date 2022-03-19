@@ -22,11 +22,19 @@ Result GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCom
     m_shader = glCreateShader(m_type);
     if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return err();
 
+//	static const std::string_view predefined = R"(
+//vec4 LN_xxTexture(sampler2D s, vec2 uv) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); }
+//vec4 LN_xxTexture(sampler3D s, vec3 uv) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); }
+//#define texture(s, uv) LN_xxTexture(s, uv)
+//#line 1
+//)";
     const GLchar* codes[] = {
-        (const GLchar*)code,
+        //static_cast<const GLchar*>(predefined.data()),
+        reinterpret_cast<const GLchar*>(code),
     };
 
     GLint codeSize[] = {
+        //static_cast<GLint>(predefined.size()),
         length,
     };
 
@@ -182,17 +190,16 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 
         // DescriptorLayout から、対応する名前の UniformBuffer を探す
         info.layoutSlotIndex = descriptorLayout->findUniformBufferRegisterIndex(blockName);
-        if (LN_ASSERT(info.layoutSlotIndex.i >= 0)) return false; // 絶対に見つかるはず
+        if (info.layoutSlotIndex.i >= 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
+			info.blockIndex = glGetUniformBlockIndex(program, blockName);
+			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
+			LN_LOG_VERBOSE("uniform block {}", i);
+			LN_LOG_VERBOSE("  blockName  : {}", blockName);
+			LN_LOG_VERBOSE("  blockIndex : {}", info.blockIndex);
+			LN_LOG_VERBOSE("  blockSize  : {}", info.blockSize);
 
-        // Get infomations.
-        info.blockIndex = glGetUniformBlockIndex(program, blockName);
-        GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
-        LN_LOG_VERBOSE("uniform block {}", i);
-        LN_LOG_VERBOSE("  blockName  : {}", blockName);
-        LN_LOG_VERBOSE("  blockIndex : {}", info.blockIndex);
-        LN_LOG_VERBOSE("  blockSize  : {}", info.blockSize);
-
-        m_uniformBuffers.push_back(info);
+			m_uniformBuffers.push_back(info);
+        }
     }
 
     // Texture (CombinedSampler)

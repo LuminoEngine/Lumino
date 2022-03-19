@@ -354,7 +354,9 @@ void World::prepareRender(const WorldRenderView* renderView)
         m_sceneConductor->collectRenderObjects(this, m_renderingContext);
     }
 
-    m_renderingContext->collectPostEffect(renderView->finishingProcess());
+    if (auto& finishingProcess = renderView->finishingProcess()) {
+        m_renderingContext->collectPostEffect(finishingProcess);
+    }
     m_renderingContext->collectPostEffect(m_sceneConductor->transitionEffect());
 }
 

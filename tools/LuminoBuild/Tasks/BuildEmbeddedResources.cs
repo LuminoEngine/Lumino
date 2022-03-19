@@ -12,7 +12,7 @@ namespace LuminoBuild.Tasks
         {
             var searchDirs = new string[]
             {
-                Path.Combine(builder.LuminoSourceDir, "LuminoEngine", "src"),
+                Path.Combine(builder.RootDir, "lumino", "LuminoEngine", "src"),
             };
 
             foreach (var searchDir in searchDirs)
@@ -27,7 +27,7 @@ namespace LuminoBuild.Tasks
 
         private void BuildFX(Build builder, string searchDir)
         {
-            var compiler = Path.Combine(builder.RootDir, "build/MSVC2019-x64-MT/EngineBuild/src/LuminoEditor/CLI/Debug/lumino.exe");
+            var compiler = Path.Combine(builder.RootDir, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Debug/lumino.exe");
 
             foreach (var file in Directory.EnumerateFiles(searchDir, "*.fx", SearchOption.AllDirectories))
             {
