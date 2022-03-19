@@ -181,17 +181,18 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
         GLchar blockName[128];
         GLsizei blockNameLen;
         GL_CHECK(glGetActiveUniformBlockName(program, i, 128, &blockNameLen, blockName));
+        GLuint blockIndex = glGetUniformBlockIndex(program, blockName);
 
-        // OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
-        // 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
-        // 検索したいので、名前を合わせておく。
-        // if (strcmp(blockName, "_Global") == 0)
-        //    blockName[0] = '$';
+		// OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
+		// 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
+		// 検索したいので、名前を合わせておく。
+		if (strcmp(blockName, "_Global") == 0)
+			blockName[0] = '$';
 
         // DescriptorLayout から、対応する名前の UniformBuffer を探す
         info.layoutSlotIndex = descriptorLayout->findUniformBufferRegisterIndex(blockName);
         if (info.layoutSlotIndex.i >= 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
-			info.blockIndex = glGetUniformBlockIndex(program, blockName);
+            info.blockIndex = blockIndex;
 			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
 			LN_LOG_VERBOSE("uniform block {}", i);
 			LN_LOG_VERBOSE("  blockName  : {}", blockName);

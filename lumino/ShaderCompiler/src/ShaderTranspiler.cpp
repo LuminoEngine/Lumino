@@ -1184,12 +1184,17 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
         if (hasSamper2D) {
             lines.insert(insertionLineIndex, U"vec4 LN_xxTexture(sampler2D s, vec2 uv) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); }");
             insertionLineIndex++;
+            lines.insert(insertionLineIndex, U"vec4 LN_xxTextureLod(sampler2D s, vec2 uv, float lod) { return textureLod(s, vec2(uv.x, (uv.y * -1.0) + 1.0), lod); }");
+            insertionLineIndex++;
         }
         if (hasSamper3D) {
             lines.insert(insertionLineIndex, U"vec4 LN_xxTexture(sampler3D s, vec3 uv) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); }");
             insertionLineIndex++;
         }
         lines.insert(insertionLineIndex, U"#define texture(s, uv) LN_xxTexture(s, uv)");
+        insertionLineIndex++;
+        lines.insert(insertionLineIndex, U"#define textureLod(s, uv, lod) LN_xxTextureLod(s, uv, lod)");
+        insertionLineIndex++;
 
         StringWriter writer;
         for (const auto& line : lines) {

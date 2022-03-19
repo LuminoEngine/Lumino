@@ -261,14 +261,15 @@ void RenderingManager::init(const Settings& settings)
 	}
 
 #define ROOT_PATH _TT("C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/")
-	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH _TT("Sprite.fx"));
+#define PS_ROOT_PATH _TT("C:/Proj/LN/Lumino/lumino/LuminoEngine/src/PostEffect/Resource/")
 #if 0	// テスト用
+    m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(PS_ROOT_PATH _TT("FilmicPostEffect.fx"));
+    m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH _TT("Sprite.fx"));
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/ClusteredShadingDefault.fx");
 	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SSRRayTracing.fx");
 	m_builtinShaders[(int)BuiltinShader::MToon] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/MToon.hlsl");
 	m_builtinShaders[(int)BuiltinShader::SSAOOcclusionMap] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SSAOOcclusionMap.fx");
 	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/RadialBlur.fx");
-	m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/FilmicPostEffect.fx");
 	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/CopyScreen.fx");
 	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/LuminosityHighPassShader.fx");;
