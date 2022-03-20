@@ -143,24 +143,25 @@ ln::Result CppLanguageContext::build(const ln::String& target) {
 }
 
 ln::Result CppLanguageContext::build_NativeCMakeTarget() const {
-    ln::String arch = _TT("MSVC2019-x64-MT");
+    ln::String arch = U"x64-windows";
 
     ln::List<ln::String> args = {
         project()->rootDirPath(),
-        _TT("-G \"Visual Studio 16 2019\""),
-        _TT("-A x64"),
-        _TT("-DLN_TARGET_ARCH=") + arch,
-        _TT("-DLN_MSVC_STATIC_RUNTIME=ON"),
+        U"-G \"Visual Studio 16 2019\"",
+        U"-A x64",
+        U"-DLN_TARGET_ARCH=" + arch,
+        U"-DLN_MSVC_STATIC_RUNTIME=ON",
+        U"-DCMAKE_PREFIX_PATH=" + ln::Path(APP->buildEnvironment()->cmakePackagesDir(), arch),
         //_TT("-DLUMINO_ENGINE_ROOT=\"") + ln::Path(m_project->engineDirPath(), _TT("Native")).str().replace("\\", "/") + _TT("\""),
         //_TT("-DLN_TARGET_ARCH=Emscripten"),
         // cmakeSourceDir,
     };
 
     // for tool development and debuging.
-    auto& envSettings = project()->workspace()->buildEnvironment();
-    if (lna::Workspace::developMode) {
-        args.add(ln::format(_TT("-DLUMINO_REPO_ROOT=\"{0}\""), envSettings->engineDevelopmentRepoRootDir().str()));
-    }
+    //auto& envSettings = project()->workspace()->buildEnvironment();
+    //if (lna::Workspace::developMode) {
+    //    args.add(ln::format(_TT("-DLUMINO_REPO_ROOT=\"{0}\""), envSettings->engineDevelopmentRepoRootDir().str()));
+    //}
 
     auto buildDir = ln::Path(project()->acquireBuildDir(), arch);
     ln::FileSystem::createDirectory(buildDir);

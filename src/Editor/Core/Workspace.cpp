@@ -8,14 +8,11 @@
 
 namespace lna {
 
+#ifdef LN_DEBUG
+bool Workspace::developMode = true;
+#else
 bool Workspace::developMode = false;
-static Workspace* s_instance = nullptr;
-
-Workspace* Workspace::instance()
-{
-    assert(s_instance);
-    return s_instance;
-}
+#endif
 
 //ln::Result Workspace::init()
 //{
@@ -33,11 +30,8 @@ Workspace* Workspace::instance()
 //}
 
 Workspace::Workspace()
-	: m_buildEnvironment(ln::makeRef<BuildEnvironment>(this))
+	: m_buildEnvironment(ln::makeRef<BuildEnvironment>())
 {
-    assert(!s_instance);
-    s_instance = this;
-
 	ln::String name = ln::Path(ln::Environment::executablePath()).fileNameWithoutExtension();
 	if (name.endsWith(_TT("-rb")))
 		m_primaryLang = _TT("ruby");
@@ -56,9 +50,7 @@ Workspace::Workspace()
 	
 }
 
-Workspace::~Workspace()
-{
-    s_instance = nullptr;
+Workspace ::~Workspace() {
 }
 
 ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::String& projectName)

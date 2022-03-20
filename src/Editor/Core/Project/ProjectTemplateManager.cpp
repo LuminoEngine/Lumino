@@ -17,7 +17,7 @@ void ProjectTemplateManager::search()
 {
 	m_templates.clear();
 
-	for (auto dir : ln::FileSystem::getDirectories(Workspace::instance()->buildEnvironment()->projectTemplatesDirPath())) {
+	for (auto dir : ln::FileSystem::getDirectories(APP->buildEnvironment()->projectTemplatesDirPath())) {
 		auto t = ln::makeObject2<ProjectTemplate>();
 		t->fullName = dir.fileName();
 		if (t->fullName.indexOf(_TT("cpp-"), 0, ln::CaseSensitivity::CaseInsensitive) == 0) {

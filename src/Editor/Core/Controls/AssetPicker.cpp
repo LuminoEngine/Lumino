@@ -35,7 +35,7 @@ void AssetPicker::init()
         m_popup->addElement(m_listView);
 
 
-        auto project = lna::Workspace::instance()->mainProject();
+        auto project = APP->mainProject();
         auto assetRootDir = _TT("D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets");//ln::Path(project->assetsDir(), _TT("Tilesets");
 
         m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();

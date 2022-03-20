@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Engine/CoreApplication.hpp>
 
 namespace lna {
 
@@ -8,12 +9,9 @@ class PluginManager;
 class AssetDatabase;
 class ProjectTemplateManager;
 
-class Workspace
-    : public ln::Object
-{
+class Workspace : public ln::CoreApplication {
 public:
 	static bool developMode;
-    static Workspace* instance();
 	Workspace();
 	virtual ~Workspace();
 
@@ -47,3 +45,5 @@ private:
 };
 
 } // namespace lna
+
+#define APP static_cast<::lna::Workspace*>(ln::CoreApplication::instance())
