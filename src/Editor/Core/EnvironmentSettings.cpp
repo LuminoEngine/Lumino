@@ -42,6 +42,7 @@ void BuildEnvironment::setupPathes(bool developMode) {
                 m_projectTemplatesDirPath = ln::Path::combine(m_engineDevelopmentRepoRootDir, U"tools", U"ProjectTemplates");
             
                 m_cmakePackagesDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, U"build", U"installed");
+                m_vcpkgDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, U"build", U"tools", U"vcpkg");
             }
         }
 

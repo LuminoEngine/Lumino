@@ -36,6 +36,7 @@ public:
 
     // CMake
     const ln::Path& cmakePackagesDir() const { return m_cmakePackagesDir; }
+    const ln::Path& vcpkgDir() const { return m_vcpkgDir; }
 
     // Emscripten
     const ln::Path& luminoEmscriptenSdkDirPath() const { return m_luminoEmscriptenSdkDirPath; }
@@ -77,6 +78,7 @@ private:
     ln::Path m_luminoPackageEngineDir;
 
     ln::Path m_cmakePackagesDir;
+    ln::Path m_vcpkgDir;
 
     ln::Path m_luminoEmscriptenSdkDirPath;
     ln::Path m_projectTemplatesDirPath;

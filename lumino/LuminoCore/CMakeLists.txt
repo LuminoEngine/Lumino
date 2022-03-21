@@ -111,7 +111,7 @@ install(FILES cmake/LuminoCoreConfig-AddPCH.cmake DESTINATION lib/cmake/LuminoCo
 install(
     EXPORT ${LN_TARGETS_NAME}
     FILE ${LN_CONFIG_NAME}.cmake
-    DESTINATION lib/cmake/LuminoCore
+    DESTINATION lib/cmake/${PROJECT_NAME}
     EXPORT_LINK_INTERFACE_LIBRARIES)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

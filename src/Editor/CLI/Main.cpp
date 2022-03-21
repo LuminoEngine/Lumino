@@ -20,7 +20,7 @@ static int processCommands(int argc, char** argv);
 int main(int argc, char** argv) {
 #if defined(LN_DEBUG) && defined(_WIN32)
     if (argc == 1) {
-        ::SetCurrentDirectoryW(L"D:/Proj/Lumino/lumino/Graphics/examples/WebGL");
+        ::SetCurrentDirectoryW(L"D:/Proj/TH10");
         ln::Logger::setLevel(ln::LogLevel::Verbose);
 
         const char* debugArgv[] = {
@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
             //"new", "test4",
             //"new", "TH-10", "-t", "cmake",
 
-            //"build", "Web",
+            "build",
             //"build", "Windows"
             //"build", "assets",
 
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",
 
-            "build-assets", "-i", "D:/Proj/Lumino/lumino/Graphics/examples/Assets", "-o", "D:/Proj/Lumino/build/buildtrees/wasm32-emscripten/lumino/lumino/Graphics/examples/WebGL"
+            //"build-assets", "-i", "D:/Proj/Lumino/lumino/Graphics/examples/Assets", "-o", "D:/Proj/Lumino/build/buildtrees/wasm32-emscripten/lumino/lumino/Graphics/examples/WebGL"
 
 
         };

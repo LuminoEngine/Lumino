@@ -5,6 +5,15 @@ project(LuminoEngine)
 set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 
 #-------------------------------------------------------------------------------
+# Externals
+#-------------------------------------------------------------------------------
+
+include(cmake/LuminoEngineConfig-FindPackages.cmake)
+
+# デフォルトでは不足している include path を追加しておく
+set_target_properties(Bullet3Common PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LN_VCPKG_INSTALLED_DIR}/include/bullet")
+
+#-------------------------------------------------------------------------------
 # Files
 #-------------------------------------------------------------------------------
 

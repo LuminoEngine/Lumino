@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.0)
 project(LuminoRuntime)
 
 #-------------------------------------------------------------------------------
+# Externals
+#-------------------------------------------------------------------------------
+
+include(cmake/LuminoRuntimeConfig-FindPackages.cmake NO_POLICY_SCOPE)
+
+#-------------------------------------------------------------------------------
 # Files
 #-------------------------------------------------------------------------------
 
@@ -59,6 +65,31 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 # Installation
 #-------------------------------------------------------------------------------
 
+set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
+set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
+
+install(
+    TARGETS     ${PROJECT_NAME}
+    EXPORT      ${LN_TARGETS_NAME}
+    ARCHIVE     DESTINATION ./lib
+    INCLUDES    DESTINATION ./include
+)
+
+#install(DIRECTORY include/LuminoCore DESTINATION ./include)
+#install(FILES include/LuminoCore.hpp DESTINATION include)
+
+# find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
+# install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
+# LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
+install(FILES cmake/${PROJECT_NAME}-FindPackages.cmake DESTINATION lib/cmake/${PROJECT_NAME})
+
+install(
+    EXPORT      ${LN_TARGETS_NAME}
+    FILE        ${LN_CONFIG_NAME}.cmake
+    DESTINATION lib/cmake/${PROJECT_NAME}
+    EXPORT_LINK_INTERFACE_LIBRARIES)
+
+
 # set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
 # set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
 
@@ -78,14 +109,14 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 # )
 
 
-install(
-    TARGETS ${PROJECT_NAME}
-    EXPORT LuminoEngine-Export
-    ARCHIVE DESTINATION ./lib
-    INCLUDES DESTINATION ./include
-)
+# install(
+#     TARGETS ${PROJECT_NAME}
+#     EXPORT LuminoEngine-Export
+#     ARCHIVE DESTINATION ./lib
+#     INCLUDES DESTINATION ./include
+# )
 
-install(DIRECTORY include DESTINATION .)
+# install(DIRECTORY include DESTINATION .)
 
 #-------------------------------------------------------------------------------
 # Sub-projects
