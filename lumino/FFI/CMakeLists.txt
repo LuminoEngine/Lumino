@@ -46,7 +46,7 @@ set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
 
 install(
     TARGETS ${PROJECT_NAME}
-    EXPORT ${LN_TARGETS_NAME}
+    EXPORT LuminoExport
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     INCLUDES DESTINATION include
@@ -54,12 +54,12 @@ install(
 
 install(DIRECTORY include DESTINATION .)
 
-install(
-    EXPORT ${LN_TARGETS_NAME}
-    FILE ${LN_TARGETS_NAME}.cmake
-    DESTINATION lib/cmake/${PROJECT_NAME}
-    EXPORT_LINK_INTERFACE_LIBRARIES
-)
+# install(
+#     EXPORT ${LN_TARGETS_NAME}
+#     FILE ${LN_TARGETS_NAME}.cmake
+#     DESTINATION lib/cmake/${PROJECT_NAME}
+#     EXPORT_LINK_INTERFACE_LIBRARIES
+# )
 
 #-------------------------------------------------------------------------------
 # Sub-projects

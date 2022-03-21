@@ -104,7 +104,7 @@ endif()
 
 install(
     TARGETS ${PROJECT_NAME}
-    EXPORT LuminoEngine-Export
+    EXPORT LuminoExport
     ARCHIVE DESTINATION ./lib
     INCLUDES DESTINATION ./include
 )

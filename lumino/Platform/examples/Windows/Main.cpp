@@ -1,5 +1,6 @@
 #define NOMINMAX
 #include <Windows.h>
+#include <LuminoCore.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoPlatform/PlatformModule.hpp>
 #include <LuminoPlatform/Platform.hpp>

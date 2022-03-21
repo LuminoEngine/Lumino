@@ -207,11 +207,11 @@ endif()
 # Installation
 #-------------------------------------------------------------------------------
 
-if (LN_BUILD_ENGINE)
-    install(
-        EXPORT LuminoEngine-Export
-        FILE LuminoEngineConfig.cmake
-        DESTINATION lib/cmake/LuminoEngine
-        EXPORT_LINK_INTERFACE_LIBRARIES
-    )
-endif()
+#if (LN_BUILD_ENGINE)
+install(
+    EXPORT LuminoExport
+    FILE LuminoConfig.cmake
+    DESTINATION lib/cmake/Lumino
+    EXPORT_LINK_INTERFACE_LIBRARIES
+)
+#endif()

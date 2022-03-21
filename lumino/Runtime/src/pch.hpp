@@ -1,2 +1,6 @@
 ﻿#pragma once
-#include "../include/LuminoEngine/Common.hpp"
+#include <LuminoCore.hpp>
+#include <functional>
+#include <algorithm>
+#include <thread>
+#include <mutex>

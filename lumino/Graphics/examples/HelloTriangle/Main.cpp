@@ -1,6 +1,7 @@
 ﻿#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
+#include <LuminoCore.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoPlatform/PlatformModule.hpp>
 #include <LuminoPlatform/Platform.hpp>

@@ -423,12 +423,12 @@ endif()
 
 install(
     TARGETS     LuminoEngine-static
-    EXPORT      LuminoEngine-Export
+    EXPORT      LuminoExport
     ARCHIVE     DESTINATION ./lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
     RUNTIME     DESTINATION ./bin
     FRAMEWORK   DESTINATION .
-    COMPONENT LuminoEngine
+    COMPONENT LuminoC
 )
 
 install(DIRECTORY include DESTINATION .)

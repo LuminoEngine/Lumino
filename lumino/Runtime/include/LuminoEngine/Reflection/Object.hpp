@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <mutex>
 #include <functional>
+#include <LuminoCore/Base/RefObject.hpp>
 #define LN_COORD_RH 1
 #define LN_FACE_FRONT_CCW 1
 

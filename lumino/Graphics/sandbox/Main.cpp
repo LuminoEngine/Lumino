@@ -1,4 +1,5 @@
-﻿#include <LuminoCore/Testing/TestHelper.hpp>
+﻿#include <LuminoCore.hpp>
+#include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoPlatform/PlatformModule.hpp>
 #include <LuminoPlatform/Platform.hpp>

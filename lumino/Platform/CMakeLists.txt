@@ -101,7 +101,7 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 
 install(
     TARGETS ${PROJECT_NAME}
-    EXPORT LuminoEngine-Export
+    EXPORT LuminoExport
     ARCHIVE DESTINATION ./lib
     INCLUDES DESTINATION ./include
 )
