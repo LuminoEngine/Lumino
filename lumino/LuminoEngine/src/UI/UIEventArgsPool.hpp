@@ -31,9 +31,9 @@ public:
 	EventArgsPool() = default;
 	~EventArgsPool()
 	{
-		for (auto list : m_pool)
+		for (auto& list : m_pool)
 		{
-			for (auto e : (*list.second))
+			for (auto& e : (*list.second))
 			{
                 RefObjectHelper::release(e);
 			}

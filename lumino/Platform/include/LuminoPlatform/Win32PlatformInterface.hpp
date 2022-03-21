@@ -3,14 +3,11 @@
 #ifdef _WIN32
 
 namespace ln {
-class Application;
+class CoreApplication;
 
-class Win32PlatformInterface
-{
+class Win32PlatformInterface {
 public:
-    //static void init(Application* app);
-	static int WinMain(Application* app);
-	//static ln::Path findParentDirectoryContainingSpecifiedFile(StringView file);
+    static int WinMain(CoreApplication* app);
 };
 
 } // namespace ln

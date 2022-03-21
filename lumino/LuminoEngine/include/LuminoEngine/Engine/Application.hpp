@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoEngine/Base/Variant.hpp>
+#include <LuminoEngine/Engine/CoreApplication.hpp>
 #include "Common.hpp"
 
 namespace ln {
@@ -14,115 +15,114 @@ class UIAction;
 class UIEventArgs;
 class UIMainWindow;
 
-
 /** グローバルなアプリケーション状態を扱うための基本クラスです。 */
 LN_CLASS()
-class LN_API Application
-	: public Object
-{
+class LN_API Application : public CoreApplication {
     LN_OBJECT;
 public:
     /** エンジンの初期化処理が完了した後に呼び出されます。 */
     LN_METHOD()
-	virtual void onInit();
+    virtual void onInit();
 
-	//virtual void onStart();
+    //virtual void onStart();
 
     /** 毎フレーム呼び出されます。 */
     LN_METHOD()
-	virtual void onUpdate();
+    virtual void onUpdate();
 
-	//virtual void onStop();
+    //virtual void onStop();
 
-	virtual void onDestroy();
+    virtual void onDestroy();
 
     void addApplicationCommand(UICommand* command);
     void addAction(UIAction* action);
 
-
-	
-	/** デフォルトで作成されるメインの World を取得します。 */
+    /** デフォルトで作成されるメインの World を取得します。 */
     LN_METHOD()
-	World* world() const;
+    World* world() const;
 
-	/**
+    /**
 	 * Application の実行を開始します。
 	 */
-	LN_METHOD()
-	void run();
+    LN_METHOD()
+    void run();
 
 LN_CONSTRUCT_ACCESS:
-	Application();
-	virtual ~Application();
+    Application();
+    virtual ~Application();
 
     /**  */
     LN_METHOD(RuntimeInitializer)
     void init();
 
 protected:
-	void setupMainWindow(UIMainWindow* window, bool createBasicObjects);	// onInit でのみ可
+    void setupMainWindow(UIMainWindow* window, bool createBasicObjects); // onInit でのみ可
 
     virtual void onRoutedEvent(UIEventArgs* e);
 
 private:
-	void initInternal2();
-	void updateInertnal2();
-	void finalizeInternal2();
+    Result initializeEngine();
+    bool updateEngine() override;
+    void terminateEngine() override;
 
-	detail::EngineManager* m_manager;
+    [[deprecated]]
+    void initInternal2();
+    [[deprecated]]
+    void updateInertnal2();
+    [[deprecated]]
+    void finalizeInternal2();
+
+    detail::EngineManager* m_manager;
     List<Ref<UICommand>> m_commands;
     List<Ref<UIAction>> m_actions;
-	bool m_initialized;
+    bool m_initialized;
 
-	friend class detail::ApplicationHelper;
-	friend class detail::UIManager;
+    friend class detail::ApplicationHelper;
+    friend class detail::UIManager;
 };
 
-class AppData
-{
+class AppData {
 public:
-	static void setValue(const StringView& key, Ref<Variant> value);
-	static Ref<Variant> getValue(const StringView& key);	// null = NotFound.
-
+    static void setValue(const StringView& key, Ref<Variant> value);
+    static Ref<Variant> getValue(const StringView& key); // null = NotFound.
 };
 
 namespace detail {
-class LN_API ApplicationHelper
-{
+class LN_API ApplicationHelper {
 public:
-	// for external main loop (emscripten, android)
-	static void init(Application* app);
-	static bool processTick(Application* app);
-	static void finalize(Application* app);
+    // for external main loop (emscripten, android)
+    static void init(Application* app);
+    static bool processTick(Application* app);
+    static void finalize(Application* app);
 
-	// for internal main loop (win32, macOS...)
-	static void run(Application* app);
+    // for internal main loop (win32, macOS...)
+    static void run(Application* app);
 
     static void callOnRoutedEvent(Application* app, UIEventArgs* e) { app->onRoutedEvent(e); }
 };
 
-class AppDataInternal : public RefObject
-{
+class AppDataInternal : public RefObject {
 public:
-	void setValue(const StringView& key, Ref<Variant> value);
-	Ref<Variant> getValue(const StringView& key) const;	// null = NotFound.
-	void attemptSave();
-	void attemptLoad();
+    void setValue(const StringView& key, Ref<Variant> value);
+    Ref<Variant> getValue(const StringView& key) const; // null = NotFound.
+    void attemptSave();
+    void attemptLoad();
 
 private:
-	Path makeFilePath() const;
-	void save(const Path& filePath);
-	void load(const Path& filePath);
+    Path makeFilePath() const;
+    void save(const Path& filePath);
+    void load(const Path& filePath);
 
-	std::unordered_map<String, Ref<Variant>> m_values;
+    std::unordered_map<String, Ref<Variant>> m_values;
 };
 
 } // namespace detail
 } // namespace ln
 
-#define LUMINO_APP(appClass) \
-    extern "C" ::ln::Application* LuminoCreateApplicationInstance() \
-    { \
-        return new appClass(); \
+#define LUMINO_APP(appClass)                                          \
+    extern "C" void LuminoConfigureApplication() {                    \
+        appClass::configure();                                        \
+    }                                                                 \
+    extern "C" ::ln::Application* LuminoCreateApplicationInstance() { \
+        return new appClass();                                        \
     }
-

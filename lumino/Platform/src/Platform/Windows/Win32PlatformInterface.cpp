@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Windows.h>
-//#include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/Engine/CoreApplication.hpp>
 //#include "../../LuminoEngine/include/LuminoEngine/Engine/Application.hpp"
 #include <LuminoPlatform/Win32PlatformInterface.hpp>
 #include "../GLFWPlatformWindowManager.hpp"
@@ -12,7 +12,7 @@
 
 namespace ln {
 
-//static ln::Application* g_app = nullptr;
+static Ref<ln::CoreApplication> g_app = nullptr;
 
 //void Win32PlatformInterface::init(Application* app)
 //{
@@ -28,16 +28,11 @@ namespace ln {
 //    detail::ApplicationHelper::init(g_app);
 //}
 //
-int Win32PlatformInterface::WinMain(Application* app)
+int Win32PlatformInterface::WinMain(CoreApplication* app)
 {
-	LN_NOTIMPLEMENTED();
-   //g_app = app;
-
-	//detail::ApplicationHelper::run(g_app);
-	//detail::ApplicationHelper::finalize(g_app);
-	//RefObjectHelper::release(g_app);
-	//g_app = nullptr;
-
+    g_app = app;
+	AppIntegration::run(g_app);
+    g_app = nullptr;
 	return 0;
 }
 
