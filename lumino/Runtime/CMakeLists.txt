@@ -1,12 +1,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 project(LuminoRuntime)
-
-#-------------------------------------------------------------------------------
-# Externals
-#-------------------------------------------------------------------------------
-
-include(cmake/LuminoRuntimeConfig-FindPackages.cmake NO_POLICY_SCOPE)
+include(cmake/LuminoConfig-LuminoRuntime.cmake)
 
 #-------------------------------------------------------------------------------
 # Files
@@ -65,9 +60,6 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 # Installation
 #-------------------------------------------------------------------------------
 
-set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
-set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
-
 install(
     TARGETS     ${PROJECT_NAME}
     EXPORT      LuminoExport
@@ -77,20 +69,10 @@ install(
 
 install(DIRECTORY include DESTINATION .)
 
-#install(DIRECTORY include/LuminoCore DESTINATION ./include)
-#install(FILES include/LuminoCore.hpp DESTINATION include)
-
 # find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
 # install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
 # LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
-install(FILES cmake/${LN_CONFIG_NAME}-FindPackages.cmake DESTINATION lib/cmake/${PROJECT_NAME})
-
-# install(
-#     EXPORT      ${LN_TARGETS_NAME}
-#     FILE        ${LN_CONFIG_NAME}.cmake
-#     DESTINATION lib/cmake/${PROJECT_NAME}
-#     EXPORT_LINK_INTERFACE_LIBRARIES)
-
+install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
 
 #-------------------------------------------------------------------------------
 # Sub-projects

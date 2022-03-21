@@ -1,9 +1,9 @@
 project(LuminoGraphics)
+include(cmake/LuminoConfig-LuminoGraphics.cmake)
 
 #-------------------------------------------------------------------------------
 # Files
 #-------------------------------------------------------------------------------
-
 file(GLOB LN_SOURCES_Graphics include/LuminoGraphics/*.hpp include/LuminoGraphics/detail/*.hpp src/*.cpp src/*.hpp)
 file(GLOB LN_SOURCES_Graphics_RHIs include/LuminoGraphics/RHIs/*.hpp src/RHIs/*.cpp src/RHIs/*.hpp)
 
@@ -43,7 +43,6 @@ set(LN_SOURCES
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
-
 if (LN_USE_VULKAN)
     list(APPEND LN_DEFINITIONS LN_USE_VULKAN=1)
 endif()
@@ -59,7 +58,14 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntime LuminoPlatform LuminoShaderCompiler LuminoBitmap LuminoFont)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    LuminoCore
+    LuminoRuntime
+    LuminoPlatform
+    LuminoShaderCompiler
+    LuminoBitmap
+    LuminoFont
+)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_DEFINITIONS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
@@ -72,34 +78,14 @@ endif()
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-
-# set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
-# set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
-
-# install(
-#     TARGETS ${PROJECT_NAME}
-#     EXPORT ${LN_TARGETS_NAME}
-#     ARCHIVE DESTINATION ./lib
-#     INCLUDES DESTINATION ./include
-# )
-
-# install(DIRECTORY include DESTINATION .)
-
-# install(
-#     EXPORT ${LN_TARGETS_NAME}
-#     FILE ${LN_CONFIG_NAME}.cmake
-#     DESTINATION lib/cmake/${PROJECT_NAME}
-#     EXPORT_LINK_INTERFACE_LIBRARIES
-# )
-
 install(
-    TARGETS ${PROJECT_NAME}
-    EXPORT LuminoExport
-    ARCHIVE DESTINATION ./lib
-    INCLUDES DESTINATION ./include
+    TARGETS     ${PROJECT_NAME}
+    EXPORT      LuminoExport
+    ARCHIVE     DESTINATION ./lib
+    INCLUDES    DESTINATION ./include
 )
-
 install(DIRECTORY include DESTINATION .)
+install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
 
 #-------------------------------------------------------------------------------
 # Sub-projects

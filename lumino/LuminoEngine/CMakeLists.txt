@@ -1,6 +1,10 @@
 
 cmake_minimum_required(VERSION 3.0)
 project(LuminoEngine)
+include(cmake/LuminoConfig-LuminoEngine.cmake)
+
+# デフォルトでは不足している include path を追加しておく
+set_target_properties(Bullet3Common PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LN_VCPKG_INSTALLED_DIR}/include/bullet")
 
 set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 
@@ -8,10 +12,7 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 # Externals
 #-------------------------------------------------------------------------------
 
-include(cmake/LuminoEngineConfig-FindPackages.cmake)
 
-# デフォルトでは不足している include path を追加しておく
-set_target_properties(Bullet3Common PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LN_VCPKG_INSTALLED_DIR}/include/bullet")
 
 #-------------------------------------------------------------------------------
 # Files
@@ -420,56 +421,30 @@ endif()
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-
 install(
     TARGETS     LuminoEngine-static
     EXPORT      LuminoExport
-    ARCHIVE     DESTINATION ./lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
-    INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
+    ARCHIVE     DESTINATION ./lib
+    INCLUDES    DESTINATION ./include
     RUNTIME     DESTINATION ./bin
     FRAMEWORK   DESTINATION .
-    COMPONENT LuminoC
+    #COMPONENT LuminoC
 )
-
 install(DIRECTORY include DESTINATION .)
-# install(FILES include/Lumino.hpp DESTINATION .)
-# install(FILES include/LuminoEngine.hpp DESTINATION .)
+install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
 
-# install(
-#     EXPORT LuminoEngine-Export
-#     FILE LuminoEngineConfig.cmake
-#     DESTINATION lib/cmake/LuminoEngine
-#     EXPORT_LINK_INTERFACE_LIBRARIES)
+# #-------------------------------------------------------------------------------
+# # Installation
+# #-------------------------------------------------------------------------------
 
-
-# install(
-#     TARGETS     LuminoEngine-static
-#     EXPORT      LuminoEngine-Export2
-#     ARCHIVE     DESTINATION ./lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
-#     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
-#     RUNTIME     DESTINATION ./bin
-#     FRAMEWORK   DESTINATION .
-# )
-# install(DIRECTORY include DESTINATION .)
-# install(
-#     EXPORT LuminoEngine-Export2
-#     FILE LuminoEngine2Config.cmake
-#     DESTINATION lib/cmake/LuminoEngine2
-#     EXPORT_LINK_INTERFACE_LIBRARIES)
-
-
-#-------------------------------------------------------------------------------
-# Installation
-#-------------------------------------------------------------------------------
-
-# Shared library
-if (LN_BUILD_SHARED_LIBRARY)
-    install(TARGETS LuminoEngine
-        EXPORT ${PROJECT_NAME}Targets
-        RUNTIME     DESTINATION bin
-        ARCHIVE     DESTINATION lib
-        LIBRARY     DESTINATION lib)
-endif()
+# # Shared library
+# if (LN_BUILD_SHARED_LIBRARY)
+#     install(TARGETS LuminoEngine
+#         EXPORT ${PROJECT_NAME}Targets
+#         RUNTIME     DESTINATION bin
+#         ARCHIVE     DESTINATION lib
+#         LIBRARY     DESTINATION lib)
+# endif()
 
 #-------------------------------------------------------------------------------
 # Tests

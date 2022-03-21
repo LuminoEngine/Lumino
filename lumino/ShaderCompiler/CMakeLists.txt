@@ -1,17 +1,5 @@
 project(LuminoShaderCompiler)
-
-#-------------------------------------------------------------------------------
-# Externals
-#-------------------------------------------------------------------------------
-find_package(glslang CONFIG REQUIRED)
-#find_package(spirv_cross_c CONFIG REQUIRED)
-find_package(spirv_cross_core CONFIG REQUIRED)
-#find_package(spirv_cross_cpp CONFIG REQUIRED)
-find_package(spirv_cross_glsl CONFIG REQUIRED)
-find_package(spirv_cross_hlsl CONFIG REQUIRED)
-find_package(spirv_cross_msl CONFIG REQUIRED)
-find_package(spirv_cross_reflect CONFIG REQUIRED)
-find_package(spirv_cross_util CONFIG REQUIRED)
+include(cmake/LuminoConfig-LuminoShaderCompiler.cmake)
 
 #-------------------------------------------------------------------------------
 # Files
@@ -81,35 +69,14 @@ endif()
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-
-# set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
-# set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
-
-# install(
-#     TARGETS ${PROJECT_NAME}
-#     EXPORT ${LN_TARGETS_NAME}
-#     ARCHIVE DESTINATION ./lib
-#     INCLUDES DESTINATION ./include
-# )
-
-# install(DIRECTORY include DESTINATION .)
-
-# install(
-#     EXPORT ${LN_TARGETS_NAME}
-#     FILE ${LN_CONFIG_NAME}.cmake
-#     DESTINATION lib/cmake/${PROJECT_NAME}
-#     EXPORT_LINK_INTERFACE_LIBRARIES
-# )
-
-
 install(
     TARGETS ${PROJECT_NAME}
     EXPORT LuminoExport
     ARCHIVE DESTINATION ./lib
     INCLUDES DESTINATION ./include
 )
-
 install(DIRECTORY include DESTINATION .)
+install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
 
 #-------------------------------------------------------------------------------
 # Sub-projects

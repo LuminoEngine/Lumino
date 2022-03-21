@@ -163,6 +163,8 @@ set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/gl
 
 #------------------------------------------------------------------------------
 
+
+
 if (LN_BUILD_CORE_ONLY)
     add_subdirectory(lumino/LuminoCore)
 elseif (LN_EMSCRIPTEN)
@@ -202,16 +204,38 @@ else()
     endif()
 endif()
 
-
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
+# ちょっと複雑になってるので注意。
+# このようにした動機は、
+# - find_package(Lumino CONFIG REQUIRED) したときに、fmt など外部ライブラリもまとめて find_package したいため
+# である。
+# find_package(Lumino CONFIG REQUIRED) では、まず LuminoConfig.cmake を読みに行こうとする。
+# 当初はこのファイルは install(EXPORT) コマンドで cmake に自動生成させていたのだが、
+# この場合、生成コードをカスタマイズすることができない。
+# そのため install(EXPORT) では LuminoTargets.cmake(及び、LuminoTargets-debug.cmake など) を生成させて、
+# 自分で作った LuminoConfig.cmake からそれらを include することにしている。
+
+# configure_package_config_file によって Configure 実行時に、
+# LuminoConfig.cmake を ${CMAKE_CURRENT_BINARY_DIR} へ生成する。
+include(CMakePackageConfigHelpers)
+configure_package_config_file( 
+    "cmake/LuminoConfig.cmake.in" 
+    "LuminoConfig.cmake"
+    INSTALL_DESTINATION cmake
+)
 
 #if (LN_BUILD_ENGINE)
 install(
     EXPORT LuminoExport
-    FILE LuminoConfig.cmake
+    FILE LuminoTargets.cmake
     DESTINATION lib/cmake/Lumino
     EXPORT_LINK_INTERFACE_LIBRARIES
+)
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/LuminoConfig.cmake"
+    DESTINATION lib/cmake/Lumino
 )
 #endif()

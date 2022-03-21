@@ -1,12 +1,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 project(LuminoPlatform)
-
-#-------------------------------------------------------------------------------
-# Externals
-#-------------------------------------------------------------------------------
-find_package(glfw3 CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED)
+include(cmake/LuminoConfig-LuminoPlatform.cmake)
 
 #-------------------------------------------------------------------------------
 # Files
@@ -79,34 +74,14 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-
-# set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
-# set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
-
-# install(
-#     TARGETS ${PROJECT_NAME}
-#     EXPORT ${LN_TARGETS_NAME}
-#     ARCHIVE DESTINATION ./lib
-#     INCLUDES DESTINATION ./include
-# )
-
-# install(DIRECTORY include DESTINATION .)
-
-# install(
-#     EXPORT ${LN_TARGETS_NAME}
-#     FILE ${LN_CONFIG_NAME}.cmake
-#     DESTINATION lib/cmake/${PROJECT_NAME}
-#     EXPORT_LINK_INTERFACE_LIBRARIES
-# )
-
 install(
-    TARGETS ${PROJECT_NAME}
-    EXPORT LuminoExport
-    ARCHIVE DESTINATION ./lib
-    INCLUDES DESTINATION ./include
+    TARGETS     ${PROJECT_NAME}
+    EXPORT      LuminoExport
+    ARCHIVE     DESTINATION ./lib
+    INCLUDES    DESTINATION ./include
 )
-
 install(DIRECTORY include DESTINATION .)
+install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
 
 #-------------------------------------------------------------------------------
 # Sub-projects
