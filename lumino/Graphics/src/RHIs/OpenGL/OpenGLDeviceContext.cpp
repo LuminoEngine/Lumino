@@ -47,7 +47,7 @@ namespace detail {
 
 OpenGLDevice::OpenGLDevice()
     : m_mainWindow(nullptr)
-    , m_mainGLContext(nullptr)
+    //, m_mainGLContext(nullptr)
     , m_uniformTempBuffer()
     , m_uniformTempBufferWriter(&m_uniformTempBuffer) {
 }
@@ -58,8 +58,11 @@ Result OpenGLDevice::init(const Settings& settings) {
     // Create main context
     {
         m_mainWindow = settings.mainWindow;
-        m_mainGLContext = settings.platformManager->openGLContext();
-        m_mainGLContext->makeCurrentMain();
+        auto mainGLContext = settings.platformManager->openGLContext();
+        if (mainGLContext) {
+            mainGLContext->makeCurrentMain();
+        }
+        //m_mainGLContext->makeCurrentMain();
         //		if (settings.mainWindow)
         //		{
         //#ifdef LN_GLFW

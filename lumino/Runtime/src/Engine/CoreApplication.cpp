@@ -24,8 +24,14 @@ CoreApplication::~CoreApplication() {
     }
 }
 
+void CoreApplication::configure() {
+}
+
 bool CoreApplication::updateEngine() {
     return true;
+}
+
+void CoreApplication::renderEngine() {
 }
 
 void CoreApplication::terminateEngine() {
@@ -39,6 +45,10 @@ bool CoreApplication::updateInertnal() {
     return updateEngine();
 }
 
+void CoreApplication::renderInertnal() {
+    renderEngine();
+}
+
 void CoreApplication::terminateInternal() {
     terminateEngine();
 }
@@ -50,8 +60,12 @@ Result AppIntegration::initialize(CoreApplication* app) {
     return app->initializeInternal();
 }
 
-bool AppIntegration::processTick(CoreApplication* app) {
+bool AppIntegration::update(CoreApplication* app) {
     return app->updateInertnal();
+}
+
+void AppIntegration::render(CoreApplication* app) {
+    app->renderInertnal();
 }
 
 void AppIntegration::terminate(CoreApplication* app) {
@@ -60,8 +74,9 @@ void AppIntegration::terminate(CoreApplication* app) {
 
 void AppIntegration::run(CoreApplication* app) {
     initialize(app);
-    do {
-    } while (processTick(app));
+    while (update(app)) {
+        render(app);
+    }
     terminate(app);
 }
 

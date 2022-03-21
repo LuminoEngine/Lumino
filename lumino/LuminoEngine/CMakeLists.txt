@@ -453,5 +453,6 @@ install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lum
 if (LN_BUILD_TESTS)
     add_subdirectory(examples/EmptyWindow)
     add_subdirectory(examples/HelloApp)
+    add_subdirectory(examples/ExternalOpenGLContext)
     add_subdirectory(examples/EditorWithImGui)
 endif()

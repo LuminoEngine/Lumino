@@ -47,9 +47,10 @@ public:
     LN_METHOD()
     void run();
 
+    virtual ~Application();
+
 LN_CONSTRUCT_ACCESS:
     Application();
-    virtual ~Application();
 
     /**  */
     LN_METHOD(RuntimeInitializer)
@@ -63,6 +64,7 @@ protected:
 private:
     Result initializeEngine();
     bool updateEngine() override;
+    void renderEngine() override;
     void terminateEngine() override;
 
     [[deprecated]]
@@ -124,5 +126,6 @@ private:
         appClass::configure();                                        \
     }                                                                 \
     extern "C" ::ln::Application* LuminoCreateApplicationInstance() { \
+        LuminoConfigureApplication();                                 \
         return new appClass();                                        \
     }

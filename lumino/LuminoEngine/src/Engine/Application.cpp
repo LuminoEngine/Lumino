@@ -92,8 +92,11 @@ Result Application::initializeEngine() {
 
 bool Application::updateEngine() {
     detail::EngineDomain::engineManager()->updateFrame();
-    detail::EngineDomain::engineManager()->presentFrame();
     return !detail::EngineDomain::engineManager()->isExitRequested();
+}
+
+void Application::renderEngine() {
+    detail::EngineDomain::engineManager()->presentFrame();
 }
 
 void Application::terminateEngine() {

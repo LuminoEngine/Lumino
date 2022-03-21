@@ -609,7 +609,7 @@ void EngineManager::initializeUIManager()
 void EngineManager::initializeDefaultObjects()
 {
 	if (m_settings.defaultObjectsCreation) {
-		setupMainWindow(makeObject<UIMainWindow>(), true);
+		setupMainWindow(makeObject<UIMainWindow>(m_settings.useExternalSwapChain), true);
 	}
 }
 

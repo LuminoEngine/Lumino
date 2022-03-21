@@ -22,18 +22,16 @@ class UIRenderView;
 class UIViewport;
 class UIFrameWindow;
 
-enum class UIFrameWindowUpdateMode
-{
-	Polling,
-	EventDispatches,
+enum class UIFrameWindowUpdateMode {
+    Polling,
+    EventDispatches,
 };
 
 namespace detail {
-   
+
 // マウスキャプチャは inject する側でとっておくこと。UI モジュール内ではキャプチャの管理は行わない。
 class UIInputInjector
-    : public RefObject
-{
+    : public RefObject {
 public:
     UIInputInjector(UIFrameWindow* owner);
     bool injectMouseMove(float clientX, float clientY, float grabOffsetX, float grabOffsetY);
@@ -50,8 +48,7 @@ private:
     UIElement* forcusedElement();
     UIElement* mouseHoveredElement();
 
-    struct MouseClickTracker
-    {
+    struct MouseClickTracker {
         double lastTime = 0.0;
         int clickCount = 0;
         UIElement* hoverElement = nullptr;
@@ -67,9 +64,8 @@ private:
 } // namespace detail
 
 class LN_API UIFrameWindow
-	: public UIDomainProvidor
-	, public IPlatforEventListener
-{
+    : public UIDomainProvidor
+    , public IPlatforEventListener {
 public:
     /** ウィンドウ上へのファイルのドラッグ＆ドロップを許可するかどうかを設定します。 */
     LN_METHOD(Property)
@@ -81,72 +77,66 @@ public:
 
     //void setSize(float width, float height);
 
+    virtual void onDispose(bool explicitDisposing) override;
 
+    void present();
 
-	virtual void onDispose(bool explicitDisposing) override;
-
-	void present();
-
-
-
-	// TODO: UI ツリーのシステムをちゃんと作っていないが、ひとまず UIViewport を使った動きを作りたいので一時的に設けてある
-	//Ref<UIViewport> m_viewport;
-	//virtual int getVisualChildrenCount() const override { return 1; }
-	//virtual UIElement* getVisualChild(int index) const override;
+    // TODO: UI ツリーのシステムをちゃんと作っていないが、ひとまず UIViewport を使った動きを作りたいので一時的に設けてある
+    //Ref<UIViewport> m_viewport;
+    //virtual int getVisualChildrenCount() const override { return 1; }
+    //virtual UIElement* getVisualChild(int index) const override;
 
     // TODO: inernal
-	SwapChain* swapChain() const;
-	const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
+    SwapChain* swapChain() const;
+    const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
     void updateStyleTree();
-	void updateLayoutTree();
-	const Ref<PlatformWindow>& platformWindow() const { return m_platformWindow; }
+    void updateLayoutTree();
+    const Ref<PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
     //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
-    const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
+    const Ref<detail::UIInputInjector>& inputInjector() const { return m_inputInjector; }
 
     void setImGuiLayerEnabled(bool value);
 
 protected:
-    void setupPlatformWindow(PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
-	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
-	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
+    void setupPlatformWindow(PlatformWindow* platformMainWindow, const SizeI& backbufferSize, bool useExternalSwapChain);
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
-	//virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
-	virtual void render(UIRenderingContext* context, const Matrix& parentTransform) override;
+    //virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
+    virtual void render(UIRenderingContext* context, const Matrix& parentTransform) override;
     virtual void onRender(UIRenderingContext* context) override;
 
     // TODO: internal
     void resetSizeFromPlatformWindow();
 
-LN_CONSTRUCT_ACCESS:
-	UIFrameWindow();
-	virtual ~UIFrameWindow();
-    void init(bool mainWindow = false);    // Swapchain 無し。外部制御用
+    LN_CONSTRUCT_ACCESS : UIFrameWindow();
+    virtual ~UIFrameWindow();
+    void init(bool mainWindow = false); // Swapchain 無し。外部制御用
 
-public:  // TODO: internal
-	bool onPlatformEvent(const PlatformEventArgs& e) override;
+public: // TODO: internal
+    bool onPlatformEvent(const PlatformEventArgs& e) override;
     void onRoutedEvent(UIEventArgs* e) override;
 
-
-	//detail::UIManager* m_manager;
-	Ref<PlatformWindow>	m_platformWindow;
+    //detail::UIManager* m_manager;
+    Ref<PlatformWindow> m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
     Ref<UILayoutContext> m_layoutContext;
     //Ref<GraphicsContext> m_graphicsContext;
-	GraphicsContext* m_renderingGraphicsContext;
-	Ref<SwapChain>	m_swapChain;
-	Ref<DepthBuffer> m_depthBuffer;
-	//Ref<RenderPass> m_renderPass;
-	Ref<UIRenderView> m_renderView;
+    GraphicsContext* m_renderingGraphicsContext;
+    Ref<SwapChain> m_swapChain;
+    Ref<DepthBuffer> m_depthBuffer;
+    //Ref<RenderPass> m_renderPass;
+    Ref<UIRenderView> m_renderView;
     Size m_clientSize;
     Rect m_contentArea;
-	UIFrameWindowUpdateMode m_updateMode;
-	std::unique_ptr<detail::ImGuiIntegration> m_imguiContext;
-	Ref<detail::DebugInterface> m_debugInterface;
+    UIFrameWindowUpdateMode m_updateMode;
+    std::unique_ptr<detail::ImGuiIntegration> m_imguiContext;
+    Ref<detail::DebugInterface> m_debugInterface;
 
-	Event<UIGeneralEventHandler> m_onClosed;
-	Event<UIGeneralEventHandler> m_onImGuiLayer;
-	bool m_ImGuiLayerEnabled;
+    Event<UIGeneralEventHandler> m_onClosed;
+    Event<UIGeneralEventHandler> m_onImGuiLayer;
+    bool m_ImGuiLayerEnabled;
 
     // RedrawEvent で描画しなくなる。
     // ゲームランタイムでは true, エディタでは false.
@@ -160,23 +150,18 @@ private:
 };
 
 class LN_API UIMainWindow
-	: public UIFrameWindow
-{
+    : public UIFrameWindow {
 public:
-
-LN_CONSTRUCT_ACCESS:
-	UIMainWindow();
-	virtual ~UIMainWindow();
-	void init();	// for Editor
-	//void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+    LN_CONSTRUCT_ACCESS : UIMainWindow();
+    virtual ~UIMainWindow();
+    void init(bool useExternalSwapChain); // for Editor
+                                          //void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 private:
 };
 
-
 class LN_API UINativeFrameWindow
-    : public UIFrameWindow
-{
+    : public UIFrameWindow {
 public:
     //void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
 
@@ -188,19 +173,15 @@ public:
     void endRendering();
 
 protected:
-	virtual void onDispose(bool explicitDisposing) override;
+    virtual void onDispose(bool explicitDisposing) override;
 
-LN_CONSTRUCT_ACCESS:
-    UINativeFrameWindow();
+    LN_CONSTRUCT_ACCESS : UINativeFrameWindow();
     void init();
 
 private:
-	// TODO: ↓不要かも
+    // TODO: ↓不要かも
     Ref<RenderTargetTexture> m_renderingRenderTarget;
     Ref<DepthBuffer> m_renderingDepthBuffer;
 };
 
-
-
 } // namespace ln
-

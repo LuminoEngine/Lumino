@@ -8,7 +8,6 @@ public:
     }
 
     App() {
-
     }
 
     void onUpdate() override {

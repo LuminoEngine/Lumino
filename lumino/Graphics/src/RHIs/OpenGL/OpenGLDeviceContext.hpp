@@ -80,7 +80,7 @@ public:
     Result init(const Settings& settings);
     virtual void dispose() override;
     PlatformWindow* mainWindow() const { return m_mainWindow; }
-    OpenGLContext* mainGLContext() const { return m_mainGLContext; }
+    //OpenGLContext* mainGLContext() const { return m_mainGLContext; }
     const Caps& caps() const { return m_caps; }
 
     // uniform set の時、Vector4[] → vec2[] に変換するための一時バッファ
@@ -117,7 +117,7 @@ protected:
 
 private:
     PlatformWindow* m_mainWindow;
-    OpenGLContext* m_mainGLContext;
+    //OpenGLContext* m_mainGLContext;
     MemoryStream m_uniformTempBuffer;
     BinaryWriter m_uniformTempBufferWriter;
     //int m_lastUsedAttribIndex;

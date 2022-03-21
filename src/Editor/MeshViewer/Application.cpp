@@ -106,7 +106,7 @@ struct List
 
 void Application::onInit()
 {
-	setupMainWindow(ln::makeObject<MainWindow>(), true);
+	setupMainWindow(ln::makeObject<MainWindow>(false), true);
     ln::Engine::renderView()->setGuideGridEnabled(true);
     ln::Engine::mainCamera()->addComponent(ln::CameraOrbitControlComponent::create());
     ln::Engine::renderView()->setBackgroundColor(ln::Color::Gray);
