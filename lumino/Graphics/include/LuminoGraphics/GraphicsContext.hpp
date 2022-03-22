@@ -161,16 +161,14 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     GraphicsContext();
     virtual ~GraphicsContext();
-    void init(RenderingType renderingType);
+    void init(/*RenderingType renderingType*/);
     void resetCommandList(detail::GraphicsCommandList* commandList);
 
-    void enterRenderState();
-    void leaveRenderState();
-    RenderingType renderingType() const { return m_renderingType; }
+    //RenderingType renderingType() const { return m_renderingType; }
     //detail::RenderingCommandList* renderingCommandList();
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
-    void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
+    //void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
     // void closeRenderPass();
     detail::ICommandList* commitState();
     // void submitCommandList();
@@ -219,9 +217,9 @@ private:
     detail::ICommandList* m_rhiCommandList;
     //Ref<detail::RenderingCommandList> m_recordingCommandList;
     //Ref<detail::RenderingCommandList> m_executingCommandList;
-    RenderingType m_renderingType;
+    //RenderingType m_renderingType;
     State m_staging;
-    State m_lastCommit;
+    //State m_lastCommit;
     Ref<RenderPass> m_currentRenderPass;
     Ref<detail::IRenderPass> m_currentRHIRenderPass;
     uint32_t m_dirtyFlags;
@@ -236,16 +234,16 @@ namespace detail {
 class GraphicsContextInternal {
 public:
     static void resetCommandList(GraphicsContext* self, detail::GraphicsCommandList* commandLsit) { self->resetCommandList(commandLsit); }
-    static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
+    //static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
      //static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }
     static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecodingIfNeeded(); }
-    static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
-    static detail::ICommandList* getCommandListForTransfer(GraphicsContext* self) { return self->m_rhiCommandList; }
-    static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
-    static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
-    static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
-    static const Ref<RenderPass>& currentRenderPass(GraphicsContext* self) { return self->m_currentRenderPass; }
+    //static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
+    //static detail::ICommandList* getCommandListForTransfer(GraphicsContext* self) { return self->m_rhiCommandList; }
+    //static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
+    //static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
+    //static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
+    //static const Ref<RenderPass>& currentRenderPass(GraphicsContext* self) { return self->m_currentRenderPass; }
 };
 }
 } // namespace ln

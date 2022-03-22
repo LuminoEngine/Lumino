@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/RenderPass.hpp>
 #include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
 #include <LuminoGraphics/SamplerState.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -732,7 +733,7 @@ void UINativeFrameWindow::init() {
     UIFrameWindow::init();
 }
 
-void UINativeFrameWindow::attachRenderingThread(RenderingType renderingType) {
+void UINativeFrameWindow::attachRenderingThread(/*RenderingType renderingType*/) {
     // TODO: GraphicsContext の持ち方を変えた。要検討
     assert(0);
     //if (LN_REQUIRE(!m_graphicsContext)) return;
@@ -762,8 +763,7 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget) {
     m_renderingRenderTarget = renderTarget;
     m_depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
 
-    detail::GraphicsContextInternal::enterRenderState(m_renderingGraphicsContext);
-
+    m_renderingGraphicsContext->commandList()->enterRenderState();
     m_renderingGraphicsContext->resetState();
     ////m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
     ////m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
@@ -786,7 +786,7 @@ void UINativeFrameWindow::endRendering() {
     }
     m_renderingRenderTarget = nullptr;
 
-    detail::GraphicsContextInternal::leaveRenderState(m_renderingGraphicsContext);
+    m_renderingGraphicsContext->commandList()->leaveRenderState();
 }
 
 } // namespace ln

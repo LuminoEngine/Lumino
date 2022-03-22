@@ -26,6 +26,9 @@ public:
 
     void* allocateBulkData(size_t size);
 
+    void enterRenderState();
+    void leaveRenderState();
+
     // Profiling
     int32_t m_drawCall;
     int64_t m_vertexBufferDataTransferredSize;

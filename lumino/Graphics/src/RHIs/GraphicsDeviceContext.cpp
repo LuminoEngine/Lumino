@@ -24,12 +24,10 @@ AttributeUsage IGraphicsHelper::ElementUsageToAttributeUsage(VertexElementUsage 
         { VertexElementUsage::TexCoord, AttributeUsage_TexCoord },
         { VertexElementUsage::PointSize, AttributeUsage_Unknown },
         { VertexElementUsage::Tangent, AttributeUsage_Tangent },
-        {
-            VertexElementUsage::Binormal,
-            AttributeUsage_Binormal,
-        },
+        { VertexElementUsage::Binormal, AttributeUsage_Binormal },
         { VertexElementUsage::BlendIndices, AttributeUsage_BlendIndices },
         { VertexElementUsage::BlendWeight, AttributeUsage_BlendWeight },
+        { VertexElementUsage::InstanceID, AttributeUsage_InstanceID },
     };
     assert(s_conversionTable[(int)value].v1 == value);
     return s_conversionTable[(int)value].v2;
@@ -50,6 +48,7 @@ VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(AttributeUsage 
         { AttributeUsage_Tangent, VertexElementUsage::Tangent },
         { AttributeUsage_Binormal, VertexElementUsage::Binormal },
         { AttributeUsage_Color, VertexElementUsage::Color },
+        { AttributeUsage_InstanceID, VertexElementUsage::InstanceID },
     };
     assert(s_conversionTable[(int)value].v1 == value);
     return s_conversionTable[(int)value].v2;

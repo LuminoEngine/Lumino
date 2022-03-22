@@ -232,7 +232,7 @@ detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsContext* context, boo
    //         m_rhiMappedBuffer = nullptr;
    //     } else 
         {
-			detail::ICommandList* commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
+            detail::ICommandList* commandList = context->commandList()->rhiResource();
             size_t requiredSize = bytesSize();
             if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
                 m_rhiObject = device->createIndexBuffer(GraphicsResourceUsage::Static, m_format, size(), m_buffer.data());

@@ -24,9 +24,9 @@ GraphicsContext::GraphicsContext()
     : m_manager(nullptr)
     , m_commandList(nullptr)
     , m_rhiCommandList(nullptr)
-    , m_renderingType(RenderingType::Immediate)
+    //, m_renderingType(RenderingType::Immediate)
     , m_staging()
-    , m_lastCommit()
+    //, m_lastCommit()
     , m_dirtyFlags(DirtyFlags_All)
     , m_renderPassStep(RenderPassStep::None)
     , m_recordingBegan(false) {
@@ -35,14 +35,14 @@ GraphicsContext::GraphicsContext()
 GraphicsContext::~GraphicsContext() {
 }
 
-void GraphicsContext::init(RenderingType renderingType) {
+void GraphicsContext::init(/*RenderingType renderingType*/) {
     Object::init();
-    m_renderingType = renderingType;
+    //m_renderingType = renderingType;
     m_manager = detail::GraphicsManager::instance();
     // m_context = m_manager->deviceContext()->createCommandList();
     //m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
     //m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-    m_lastCommit.reset();
+    //m_lastCommit.reset();
     resetState();
 }
 
@@ -74,14 +74,6 @@ void GraphicsContext::resetCommandList(detail::GraphicsCommandList* commandList)
     }
 }
 
-void GraphicsContext::enterRenderState() {
-    m_rhiCommandList->enterRenderState();
-}
-
-void GraphicsContext::leaveRenderState() {
-    m_rhiCommandList->leaveRenderState();
-}
-
 //detail::RenderingCommandList* GraphicsContext::renderingCommandList() {
 //    return m_recordingCommandList;
 //}
@@ -91,7 +83,7 @@ void GraphicsContext::onDispose(bool explicitDisposing) {
         endCommandRecodingIfNeeded();
         m_rhiCommandList = nullptr;
     }
-    m_lastCommit.reset();
+    //m_lastCommit.reset();
     m_staging.reset();
     Object::onDispose(explicitDisposing);
 }
@@ -396,16 +388,12 @@ void GraphicsContext::endCommandRecodingIfNeeded() {
     }
 }
 
-void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarget) {
-    // Vulkan: CommandBuffer が空の状態で VkSubmitQueue するとエラーするので、一度もコマンドを作っていない場合は flush が呼ばれても何もしないようにする
-    if (m_recordingBegan) {
-        endCommandRecodingIfNeeded();
-
-        auto device = m_manager->deviceContext();
-        detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(this, affectRendreTarget, nullptr);
-        device->submitCommandBuffer(m_rhiCommandList, rhiObject);
-    }
-}
+//void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarget) {
+//    // Vulkan: CommandBuffer が空の状態で VkSubmitQueue するとエラーするので、一度もコマンドを作っていない場合は flush が呼ばれても何もしないようにする
+//    if (m_recordingBegan) {
+//        endCommandRecodingIfNeeded();
+//    }
+//}
 
 // void GraphicsContext::closeRenderPass()
 //{
@@ -466,21 +454,21 @@ detail::ICommandList* GraphicsContext::commitState() {
     if ((m_dirtyFlags & DirtyFlags_BlendState) != 0) {
         auto& blendState = m_staging.blendState;
         m_rhiCommandList->setBlendState(blendState);
-        m_lastCommit.blendState = m_staging.blendState;
+        //m_lastCommit.blendState = m_staging.blendState;
     }
 
     // RasterizerState
     if ((m_dirtyFlags & DirtyFlags_RasterizerState) != 0) {
         auto& rasterizerState = m_staging.rasterizerState;
         m_rhiCommandList->setRasterizerState(rasterizerState);
-        m_lastCommit.rasterizerState = m_staging.rasterizerState;
+        //m_lastCommit.rasterizerState = m_staging.rasterizerState;
     }
 
     // DepthStencilState
     if ((m_dirtyFlags & DirtyFlags_DepthStencilState) != 0) {
         auto& depthStencilState = m_staging.depthStencilState;
         m_rhiCommandList->setDepthStencilState(depthStencilState);
-        m_lastCommit.depthStencilState = m_staging.depthStencilState;
+        //m_lastCommit.depthStencilState = m_staging.depthStencilState;
     }
 
     // RenderTarget, DepthBuffer
@@ -541,8 +529,8 @@ detail::ICommandList* GraphicsContext::commitState() {
         m_rhiCommandList->setViewportRect(viewportRect);
         m_rhiCommandList->setScissorRect(scissorRect);
 
-        m_lastCommit.viewportRect = m_staging.viewportRect;
-        m_lastCommit.scissorRect = m_staging.scissorRect;
+        //m_lastCommit.viewportRect = m_staging.viewportRect;
+        //m_lastCommit.scissorRect = m_staging.scissorRect;
     }
 
     // VertexLayout, Topology
@@ -555,8 +543,8 @@ detail::ICommandList* GraphicsContext::commitState() {
             m_rhiCommandList->setPrimitiveTopology(topology);
             m_rhiCommandList->setVertexDeclaration(vertexLayoutRHI);
 
-            m_lastCommit.VertexLayout = m_staging.VertexLayout;
-            m_lastCommit.topology = m_staging.topology;
+            //m_lastCommit.VertexLayout = m_staging.VertexLayout;
+            //m_lastCommit.topology = m_staging.topology;
         }
     }
 
@@ -582,8 +570,8 @@ detail::ICommandList* GraphicsContext::commitState() {
             }
             m_rhiCommandList->setIndexBuffer(indexBufferRHI);
 
-            m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
-            m_lastCommit.indexBuffer = m_staging.indexBuffer;
+            //m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
+            //m_lastCommit.indexBuffer = m_staging.indexBuffer;
         }
     }
 
@@ -593,8 +581,8 @@ detail::ICommandList* GraphicsContext::commitState() {
         if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0) {
             m_rhiCommandList->setShaderPass(shaderPassRHI);
 
-            m_lastCommit.shader = m_staging.shader;
-            m_lastCommit.shaderPass = m_staging.shaderPass;
+            //m_lastCommit.shader = m_staging.shader;
+            //m_lastCommit.shaderPass = m_staging.shaderPass;
         }
     }
 

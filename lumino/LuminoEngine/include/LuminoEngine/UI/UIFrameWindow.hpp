@@ -165,7 +165,7 @@ class LN_API UINativeFrameWindow
 public:
     //void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
 
-    void attachRenderingThread(RenderingType renderingType);
+    void attachRenderingThread(/*RenderingType renderingType*/);
     void detachRenderingThread();
 
     void beginRendering(RenderTargetTexture* renderTarget);

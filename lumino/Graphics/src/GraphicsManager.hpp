@@ -61,7 +61,7 @@ public:
     const std::unique_ptr<GraphicsProfiler>& profiler() const { return m_profiler; }
     const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
     const Ref<RenderingQueue>& renderingQueue() const { return m_renderingQueue; }
-    RenderingType renderingType() const { return RenderingType::Immediate; }
+    //RenderingType renderingType() const { return RenderingType::Immediate; }
     //const Ref<RenderingCommandList>& primaryRenderingCommandList2() const { return m_primaryRenderingCommandList; }
     const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
     const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }

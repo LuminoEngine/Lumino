@@ -37,7 +37,7 @@ void SwapChain::init(PlatformWindow* window, const SizeI& backbufferSize)
 	detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
-	m_graphicsContext = makeObject<GraphicsContext>(detail::GraphicsManager::instance()->renderingType());
+	m_graphicsContext = makeObject<GraphicsContext>(/*detail::GraphicsManager::instance()->renderingType()*/);
 	
 	resetRHIBackbuffers();
 
@@ -106,8 +106,13 @@ RenderPass* SwapChain::currentRenderPass() const
 void SwapChain::endFrame()
 {
 	currentCommandList()->m_singleFrameUniformBufferAllocator->unmap();
-	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
+	//detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
 	detail::GraphicsContextInternal::endCommandRecoding(m_graphicsContext);
+
+    auto device = m_manager->deviceContext();
+    detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(m_graphicsContext, currentBackbuffer(), nullptr);
+    device->submitCommandBuffer(m_graphicsContext->commandList()->rhiResource(), rhiObject);
+
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
 

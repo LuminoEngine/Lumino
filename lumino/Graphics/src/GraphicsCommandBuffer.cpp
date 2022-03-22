@@ -98,6 +98,14 @@ void* GraphicsCommandList::allocateBulkData(size_t size) {
     return m_allocator->allocate(size);
 }
 
+void GraphicsCommandList::enterRenderState() {
+    m_rhiResource->enterRenderState();
+}
+
+void GraphicsCommandList::leaveRenderState() {
+    m_rhiResource->leaveRenderState();
+}
+
 } // namespace detail
 
 #if 0

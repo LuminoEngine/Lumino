@@ -193,7 +193,7 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsContext* context, bo
    //         m_rhiMappedBuffer = nullptr;
    //     } else
         {
-			auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
+            detail::ICommandList* commandList = context->commandList()->rhiResource();
             size_t requiredSize = size();
             if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
                 m_rhiObject = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());

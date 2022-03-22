@@ -35,15 +35,15 @@ LN_PROMISE()
 using Texture2DPromise = Promise<Ref<Texture2D>>;
 
 
-/** 描画方式 */
-enum class RenderingType
-{
-	/** 即時描画 */
-	Immediate,
-
-	/** 遅延描画 */
-	Threaded,
-};
+///** 描画方式 */
+//enum class RenderingType
+//{
+//	/** 即時描画 */
+//	Immediate,
+//
+//	/** 遅延描画 */
+//	Threaded,
+//};
 
 /** バックエンドグラフィックス API の種類 */
 LN_ENUM()
@@ -172,6 +172,8 @@ enum class VertexElementUsage
 
     /** ブレンディング (スキニング) のウェイト */
     BlendWeight,
+
+    InstanceID,
 };
 
 /** 頂点バッファのレート */
