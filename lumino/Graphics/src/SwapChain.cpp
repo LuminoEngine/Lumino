@@ -143,18 +143,8 @@ void SwapChain::present(GraphicsContext* context)
 	detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
 	auto device = manager->deviceContext();
 
-
-    // TODO: threading
 	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);
-
-	
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		SwapChain_present, context,
-		detail::IGraphicsDevice*, device,
-		detail::ISwapChain*, rhi,
-		{
-			rhi->present();
-		});
+	rhi->present();
 
 	manager->frameBufferCache()->gcObjects();
 }

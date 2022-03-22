@@ -94,6 +94,10 @@ IDescriptorPool* GraphicsCommandList::getDescriptorPool(ShaderPass* shaderPass)
     return m_usingDescriptorPools[usingShaderPass].descriptorPool;
 }
 
+void* GraphicsCommandList::allocateBulkData(size_t size) {
+    return m_allocator->allocate(size);
+}
+
 } // namespace detail
 
 #if 0

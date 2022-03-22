@@ -23,8 +23,7 @@ class GraphicsCommandList;
  * グラフィクスデバイスへの描画呼出しを発行するためのクラスです。
  */
 class LN_API GraphicsContext
-    : public Object
-{
+    : public Object {
 public:
     /** 同時に設定できる RenderTarget の最大数です。 */
     static const int MaxMultiRenderTargets = detail::MaxMultiRenderTargets;
@@ -52,16 +51,16 @@ public:
     const DepthStencilStateDesc& depthStencilState() const { return m_staging.depthStencilState; }
 
     ///** RenderTarget を設定します。index 0 に設定した場合、Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
-    //void setRenderTarget(int index, RenderTargetTexture* value);
+    // void setRenderTarget(int index, RenderTargetTexture* value);
 
     ///** RenderTarget を取得します。 */
-    //RenderTargetTexture* renderTarget(int index) const;
+    // RenderTargetTexture* renderTarget(int index) const;
 
     ///** DepthBuffer を設定します。 */
-    //void setDepthBuffer(DepthBuffer* value);
+    // void setDepthBuffer(DepthBuffer* value);
 
     ///** DepthBuffer を取得します。 */
-    //DepthBuffer* depthBuffer() const;
+    // DepthBuffer* depthBuffer() const;
 
     /** ビューポートの矩形を設定します。 */
     void setViewportRect(const Rect& value);
@@ -109,23 +108,22 @@ public:
     void setShaderDescriptor(detail::ShaderSecondaryDescriptor* value);
 
     ///** ShaderPass を取得します。 */
-    //ShaderDefaultDescriptor* shaderDescriptor() const;
+    // ShaderDefaultDescriptor* shaderDescriptor() const;
 
     /** デフォルト設定を復元します。 */
     void resetState();
 
-	///** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
-	//void setRenderPass(RenderPass* value);
+    ///** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
+    // void setRenderPass(RenderPass* value);
 
+    /** RenderPass を開始します。 */
+    void beginRenderPass(RenderPass* value);
 
-	/** RenderPass を開始します。 */
-	void beginRenderPass(RenderPass* value);
+    /** RenderPass を終了します。 */
+    void endRenderPass();
 
-	/** RenderPass を終了します。 */
-	void endRenderPass();
-
-	/** RenderPass を取得します。 */
-	RenderPass* renderPass() const;
+    /** RenderPass を取得します。 */
+    RenderPass* renderPass() const;
 
     void dispatch(int groupCountX, int groupCountY, int groupCountZ);
 
@@ -147,7 +145,7 @@ public:
      */
     void drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount = 0, int vertexOffset = 0);
 
-	void drawExtension(INativeGraphicsExtension* extension);
+    void drawExtension(INativeGraphicsExtension* extension);
 
     ln::detail::ShaderSecondaryDescriptor* allocateShaderDescriptor(ShaderPass* shaderPass);
 
@@ -164,37 +162,35 @@ private:
     GraphicsContext();
     virtual ~GraphicsContext();
     void init(RenderingType renderingType);
-	void resetCommandList(detail::GraphicsCommandList* commandList);
+    void resetCommandList(detail::GraphicsCommandList* commandList);
 
     void enterRenderState();
     void leaveRenderState();
     RenderingType renderingType() const { return m_renderingType; }
-    detail::RenderingCommandList* renderingCommandList();
+    //detail::RenderingCommandList* renderingCommandList();
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
-	//void closeRenderPass();
+    // void closeRenderPass();
     detail::ICommandList* commitState();
-    //void submitCommandList();
+    // void submitCommandList();
 
-    enum DirtyFlags
-    {
+    enum DirtyFlags {
         DirtyFlags_None = 0,
         DirtyFlags_BlendState = 1 << 1,
         DirtyFlags_RasterizerState = 1 << 2,
         DirtyFlags_DepthStencilState = 1 << 3,
         DirtyFlags_RegionRects = 1 << 4,
-        //DirtyFlags_Framebuffer = 1 << 5,
+        // DirtyFlags_Framebuffer = 1 << 5,
         DirtyFlags_PipelinePrimitiveState = 1 << 6,
         DirtyFlags_PrimitiveBuffers = 1 << 7,
         DirtyFlags_ShaderPass = 1 << 8,
-		DirtyFlags_RenderPass = 1 << 9,
+        DirtyFlags_RenderPass = 1 << 9,
         DirtyFlags_ShaderDescriptor = 1 << 10,
         DirtyFlags_All = 0xFFFFFFFF,
     };
 
-    struct State
-    {
+    struct State {
         BlendStateDesc blendState;
         RasterizerStateDesc rasterizerState;
         DepthStencilStateDesc depthStencilState;
@@ -205,15 +201,14 @@ private:
         Ref<IndexBuffer> indexBuffer;
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
-        //Ref<ShaderDefaultDescriptor> shaderDescriptor;
+        // Ref<ShaderDefaultDescriptor> shaderDescriptor;
         detail::ShaderSecondaryDescriptor* shaderDescriptor;
         PrimitiveTopology topology;
 
         void reset();
     };
 
-    enum class RenderPassStep
-    {
+    enum class RenderPassStep {
         None,
         BeginRequired,
         Active,
@@ -222,13 +217,13 @@ private:
     detail::GraphicsManager* m_manager;
     Ref<detail::GraphicsCommandList> m_commandList;
     detail::ICommandList* m_rhiCommandList;
-    Ref<detail::RenderingCommandList> m_recordingCommandList;
-    Ref<detail::RenderingCommandList> m_executingCommandList;
+    //Ref<detail::RenderingCommandList> m_recordingCommandList;
+    //Ref<detail::RenderingCommandList> m_executingCommandList;
     RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
-	Ref<RenderPass> m_currentRenderPass;
-	Ref<detail::IRenderPass> m_currentRHIRenderPass;
+    Ref<RenderPass> m_currentRenderPass;
+    Ref<detail::IRenderPass> m_currentRHIRenderPass;
     uint32_t m_dirtyFlags;
     RenderPassStep m_renderPassStep;
     bool m_recordingBegan;
@@ -238,20 +233,19 @@ private:
 };
 
 namespace detail {
-class GraphicsContextInternal
-{
+class GraphicsContextInternal {
 public:
-	static void resetCommandList(GraphicsContext* self, detail::GraphicsCommandList* commandLsit) { self->resetCommandList(commandLsit); }
+    static void resetCommandList(GraphicsContext* self, detail::GraphicsCommandList* commandLsit) { self->resetCommandList(commandLsit); }
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
-    static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
-	static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }
-	static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecodingIfNeeded(); }
+     //static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
+    static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }
+    static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecodingIfNeeded(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
-	static detail::ICommandList* getCommandListForTransfer(GraphicsContext* self) { return self->m_rhiCommandList; }
+    static detail::ICommandList* getCommandListForTransfer(GraphicsContext* self) { return self->m_rhiCommandList; }
     static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
     static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
     static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
-	static const Ref<RenderPass>& currentRenderPass(GraphicsContext* self) { return self->m_currentRenderPass; }
+    static const Ref<RenderPass>& currentRenderPass(GraphicsContext* self) { return self->m_currentRenderPass; }
 };
 }
 } // namespace ln

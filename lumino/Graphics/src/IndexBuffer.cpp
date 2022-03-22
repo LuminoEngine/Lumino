@@ -238,13 +238,9 @@ detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsContext* context, boo
                 m_rhiObject = device->createIndexBuffer(GraphicsResourceUsage::Static, m_format, size(), m_buffer.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
-                detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::RHIResource* rhiObject = m_rhiObject;
-                LN_ENQUEUE_RENDER_COMMAND_3(
-                    IndexBuffer_setSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::RHIResource>, rhiObject, {
-						commandList->setSubData(rhiObject, 0, data.data(), data.size());
-                    });
-                context->commandList()->m_vertexBufferDataTransferredSize += data.size();
+                commandList->setSubData(rhiObject, 0, m_buffer.data(), m_buffer.size());
+                context->commandList()->m_vertexBufferDataTransferredSize += m_buffer.size();
             }
         }
     }

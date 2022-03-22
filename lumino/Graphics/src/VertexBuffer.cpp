@@ -199,20 +199,10 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsContext* context, bo
                 m_rhiObject = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
-                //detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
-                detail::RenderBulkData data(m_buffer.data() + m_dirtyOffset, m_dirtySize);
                 detail::RHIResource* rhiObject = m_rhiObject;
                 uint64_t offset = m_dirtyOffset;
-                LN_ENQUEUE_RENDER_COMMAND_4(
-                    VertexBuffer_SetSubData, context,
-                    detail::ICommandList*, commandList,
-                    detail::RenderBulkData, data,
-                    Ref<detail::RHIResource>, rhiObject,
-                    uint64_t, offset,
-                    {
-						commandList->setSubData(rhiObject, 0, data.data(), data.size());
-                    });
-                context->commandList()->m_vertexBufferDataTransferredSize += data.size();
+                commandList->setSubData(rhiObject, 0, m_buffer.data() + m_dirtyOffset, m_dirtySize);
+                context->commandList()->m_vertexBufferDataTransferredSize += m_dirtySize;
             }
         }
     }

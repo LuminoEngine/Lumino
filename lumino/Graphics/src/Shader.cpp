@@ -579,16 +579,8 @@ void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const
     detail::IDescriptor* descriptor = nullptr;
     commandList->getDescriptorPool(this)->allocate(&descriptor);
     assert(descriptor);
-
-    LN_ENQUEUE_RENDER_COMMAND_3(
-        ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
-        detail::ICommandList*, rhiCommandList,
-        detail::ShaderDescriptorTableUpdateInfo, updateInfo,
-        detail::IDescriptor*, descriptor,
-        {
-            descriptor->setData(updateInfo);
-            rhiCommandList->setDescriptor(descriptor);
-        });
+    descriptor->setData(updateInfo);
+    rhiCommandList->setDescriptor(descriptor);
 }
 
 Ref<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool()

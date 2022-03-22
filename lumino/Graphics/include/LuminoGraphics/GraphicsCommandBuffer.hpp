@@ -24,6 +24,7 @@ public:
 
     IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
 
+    void* allocateBulkData(size_t size);
 
     // Profiling
     int32_t m_drawCall;

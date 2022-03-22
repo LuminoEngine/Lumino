@@ -310,26 +310,19 @@ detail::RHIResource* Texture2D::resolveRHIObject(GraphicsContext* context, bool*
 
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             SizeI bmpSize(m_bitmap->width(), m_bitmap->height());
-            detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
+            size_t bmpByteSize = bmpBuffer->size();
+            void* bmpRawData = context->commandList()->allocateBulkData(bmpByteSize);
             detail::BitmapHelper::blitRawSimple(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), detail::BlitHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
+                bmpRawData, bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), detail::BlitHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
             if (!m_rhiObject || m_usage != m_rhiObject->usage() || mipmap() != m_rhiObject->mipmap()) {
-                m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), bmpRawData.data());
+                m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), bmpRawData);
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RHIResource* rhiObject = m_rhiObject;
 				auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
-                LN_ENQUEUE_RENDER_COMMAND_4(
-                    Texture2D_setSubData, context,
-                    detail::ICommandList*, commandList,
-                    detail::RenderBulkData, bmpRawData,
-                    SizeI, bmpSize,
-                    Ref<detail::RHIResource>, rhiObject,
-                    {
-						commandList->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData.data(), bmpRawData.size());
-                    });
-                context->commandList()->m_vertexBufferDataTransferredSize += bmpRawData.size();
+				commandList->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData, bmpByteSize);
+                context->commandList()->m_vertexBufferDataTransferredSize += bmpByteSize;
             }
         }
     }
@@ -675,23 +668,17 @@ detail::RHIResource* Texture3D::resolveRHIObject(GraphicsContext* context, bool*
 
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             BoxSizeI bmpSize = {m_bitmap->width(), m_bitmap->height(), m_bitmap->depth()};
-            detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
+            size_t bmpByteSize = bmpBuffer->size();
+            void* bmpRawData = context->commandList()->allocateBulkData(bmpByteSize);
             detail::BitmapHelper::blitRawSimple3D(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), detail::BlitHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
+                bmpRawData, bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), detail::BlitHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
             if (!m_rhiObject || m_usage != m_rhiObject->usage()) {
                 m_rhiObject = deviceContext->createTexture3D(m_usage, width(), height(), depth(), format(), mipmap(), m_bitmap->data());
             } else {
                 detail::RHIResource* rhiObject = m_rhiObject;
 				auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
-                LN_ENQUEUE_RENDER_COMMAND_4(
-                    Texture3D_setSubData, context,
-                    detail::ICommandList*, commandList,
-                    detail::RenderBulkData, bmpRawData,
-                    BoxSizeI, bmpSize,
-                    Ref<detail::RHIResource>, rhiObject, {
-						commandList->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
-                    });
+                commandList->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData, bmpByteSize);
             }
         }
     }

@@ -126,6 +126,8 @@ void RenderingQueue::dispose()
 void RenderingQueue::submit(GraphicsContext* context)
 {
 	if (LN_REQUIRE(context)) return;
+
+#if 0
     if (context->renderingType() == RenderingType::Immediate) {
         // 一時メモリのクリアはしておく
         context->m_executingCommandList->clear();
@@ -147,6 +149,7 @@ void RenderingQueue::submit(GraphicsContext* context)
 
         //execute(); // TODO: test
     }
+#endif
 
 }
 

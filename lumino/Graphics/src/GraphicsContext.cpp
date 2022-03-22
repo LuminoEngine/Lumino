@@ -29,82 +29,64 @@ GraphicsContext::GraphicsContext()
     , m_lastCommit()
     , m_dirtyFlags(DirtyFlags_All)
     , m_renderPassStep(RenderPassStep::None)
-    , m_recordingBegan(false)
-{
+    , m_recordingBegan(false) {
 }
 
-GraphicsContext::~GraphicsContext()
-{
+GraphicsContext::~GraphicsContext() {
 }
 
-void GraphicsContext::init(RenderingType renderingType)
-{
+void GraphicsContext::init(RenderingType renderingType) {
     Object::init();
     m_renderingType = renderingType;
     m_manager = detail::GraphicsManager::instance();
-    //m_context = m_manager->deviceContext()->createCommandList();
-    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    // m_context = m_manager->deviceContext()->createCommandList();
+    //m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    //m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
     m_lastCommit.reset();
     resetState();
 }
 
-//void GraphicsContext::init(detail::ICommandList* context)
+// void GraphicsContext::init(detail::ICommandList* context)
 //{
-//    LN_DCHECK(context);
-//    Object::init();
-//    m_manager = detail::EngineDomain::graphicsManager();
-//    m_context = context;
-//    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-//    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-//    m_lastCommit.reset();
-//    resetState();
-//}
+//     LN_DCHECK(context);
+//     Object::init();
+//     m_manager = detail::EngineDomain::graphicsManager();
+//     m_context = context;
+//     m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+//     m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+//     m_lastCommit.reset();
+//     resetState();
+// }
 
-void GraphicsContext::resetCommandList(detail::GraphicsCommandList* commandList)
-{
-	if (commandList) {
-		// begin frame
-		if (LN_REQUIRE(!m_commandList)) return;
+void GraphicsContext::resetCommandList(detail::GraphicsCommandList* commandList) {
+    if (commandList) {
+        // begin frame
+        if (LN_REQUIRE(!m_commandList)) return;
         m_commandList = commandList;
         m_commandList->reset();
         m_rhiCommandList = m_commandList->rhiResource();
-	}
-	else {
-		// end frame
-		if (LN_REQUIRE(m_commandList)) return;
+    }
+    else {
+        // end frame
+        if (LN_REQUIRE(m_commandList)) return;
         m_commandList = nullptr;
         m_rhiCommandList = nullptr;
-	}
+    }
 }
 
-void GraphicsContext::enterRenderState()
-{
-    LN_ENQUEUE_RENDER_COMMAND_1(
-        GraphicsContext_clear, this,
-        detail::ICommandList*, m_rhiCommandList,
-        {
-            m_rhiCommandList->enterRenderState();
-        });
+void GraphicsContext::enterRenderState() {
+    m_rhiCommandList->enterRenderState();
 }
 
-void GraphicsContext::leaveRenderState()
-{
-    LN_ENQUEUE_RENDER_COMMAND_1(
-        GraphicsContext_clear, this,
-        detail::ICommandList*, m_rhiCommandList,
-        {
-            m_rhiCommandList->leaveRenderState();
-        });
+void GraphicsContext::leaveRenderState() {
+    m_rhiCommandList->leaveRenderState();
 }
 
-detail::RenderingCommandList* GraphicsContext::renderingCommandList()
-{
-    return m_recordingCommandList;
-}
+//detail::RenderingCommandList* GraphicsContext::renderingCommandList() {
+//    return m_recordingCommandList;
+//}
 
-void GraphicsContext::onDispose(bool explicitDisposing)
-{
+void GraphicsContext::onDispose(bool explicitDisposing) {
     if (m_rhiCommandList) {
         endCommandRecodingIfNeeded();
         m_rhiCommandList = nullptr;
@@ -114,123 +96,112 @@ void GraphicsContext::onDispose(bool explicitDisposing)
     Object::onDispose(explicitDisposing);
 }
 
-void GraphicsContext::setShaderDescriptor(detail::ShaderSecondaryDescriptor* value)
-{
+void GraphicsContext::setShaderDescriptor(detail::ShaderSecondaryDescriptor* value) {
     m_staging.shaderDescriptor = value;
 }
 
-void GraphicsContext::resetState()
-{
+void GraphicsContext::resetState() {
     m_staging.reset();
     m_dirtyFlags = DirtyFlags_All;
 }
 
-//void GraphicsContext::beginRenderPass(RenderPass* value)
+// void GraphicsContext::beginRenderPass(RenderPass* value)
 //{
-//}
+// }
 //
-//void GraphicsContext::endRenderPass()
+// void GraphicsContext::endRenderPass()
 //{
-//}
+// }
 
-void GraphicsContext::setBlendState(const BlendStateDesc& value)
-{
+void GraphicsContext::setBlendState(const BlendStateDesc& value) {
     if (!BlendStateDesc::equals(m_staging.blendState, value)) {
         m_staging.blendState = value;
         m_dirtyFlags |= DirtyFlags_BlendState;
     }
 }
 
-void GraphicsContext::setRasterizerState(const RasterizerStateDesc& value)
-{
+void GraphicsContext::setRasterizerState(const RasterizerStateDesc& value) {
     if (!RasterizerStateDesc::equals(m_staging.rasterizerState, value)) {
         m_staging.rasterizerState = value;
         m_dirtyFlags |= DirtyFlags_RasterizerState;
     }
 }
 
-void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
-{
+void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value) {
     if (!DepthStencilStateDesc::equals(m_staging.depthStencilState, value)) {
         m_staging.depthStencilState = value;
         m_dirtyFlags |= DirtyFlags_DepthStencilState;
     }
 }
 
-//void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
+// void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
 //{
-//    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return;
+//     if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return;
 //
-//    if (m_staging.renderTargets[index] != value) {
-//        m_staging.renderTargets[index] = value;
-//        m_dirtyFlags |= DirtyFlags_Framebuffer;
-//    }
+//     if (m_staging.renderTargets[index] != value) {
+//         m_staging.renderTargets[index] = value;
+//         m_dirtyFlags |= DirtyFlags_Framebuffer;
+//     }
 //
-//    if (index == 0 && value) {
-//        auto rect = Rect(0, 0, value->width(), value->height());
-//        setViewportRect(rect);
-//        setScissorRect(rect);
-//    }
-//}
+//     if (index == 0 && value) {
+//         auto rect = Rect(0, 0, value->width(), value->height());
+//         setViewportRect(rect);
+//         setScissorRect(rect);
+//     }
+// }
 //
-//RenderTargetTexture* GraphicsContext::renderTarget(int index) const
+// RenderTargetTexture* GraphicsContext::renderTarget(int index) const
 //{
-//    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return nullptr;
-//    return m_staging.renderTargets[index];
-//}
+//     if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return nullptr;
+//     return m_staging.renderTargets[index];
+// }
 //
-//void GraphicsContext::setDepthBuffer(DepthBuffer* value)
+// void GraphicsContext::setDepthBuffer(DepthBuffer* value)
 //{
-//    if (m_staging.depthBuffer != value) {
-//        m_staging.depthBuffer = value;
-//        m_dirtyFlags |= DirtyFlags_Framebuffer;
-//    }
-//}
+//     if (m_staging.depthBuffer != value) {
+//         m_staging.depthBuffer = value;
+//         m_dirtyFlags |= DirtyFlags_Framebuffer;
+//     }
+// }
 //
-//DepthBuffer* GraphicsContext::depthBuffer() const
+// DepthBuffer* GraphicsContext::depthBuffer() const
 //{
-//    return m_staging.depthBuffer;
-//}
+//     return m_staging.depthBuffer;
+// }
 
-void GraphicsContext::setViewportRect(const Rect& value)
-{
+void GraphicsContext::setViewportRect(const Rect& value) {
     if (m_staging.viewportRect != value) {
         m_staging.viewportRect = value;
         m_dirtyFlags |= DirtyFlags_RegionRects;
     }
 }
 
-void GraphicsContext::setScissorRect(const Rect& value)
-{
+void GraphicsContext::setScissorRect(const Rect& value) {
     if (m_staging.scissorRect != value) {
         m_staging.scissorRect = value;
         m_dirtyFlags |= DirtyFlags_RegionRects;
     }
 }
 
-void GraphicsContext::setVertexLayout(VertexLayout* value)
-{
+void GraphicsContext::setVertexLayout(VertexLayout* value) {
     if (m_staging.VertexLayout != value) {
         m_staging.VertexLayout = value;
         m_dirtyFlags |= DirtyFlags_PipelinePrimitiveState;
     }
 }
 
-VertexLayout* GraphicsContext::vertexLayout() const
-{
+VertexLayout* GraphicsContext::vertexLayout() const {
     return m_staging.VertexLayout;
 }
 
-void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
-{
+void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value) {
     if (m_staging.topology != value) {
         m_staging.topology = value;
         m_dirtyFlags |= DirtyFlags_PipelinePrimitiveState;
     }
 }
 
-void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
-{
+void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value) {
     if (LN_REQUIRE_RANGE(streamIndex, 0, MaxVertexStreams)) return;
     if (m_staging.vertexBuffers[streamIndex] != value) {
         m_staging.vertexBuffers[streamIndex] = value;
@@ -238,58 +209,54 @@ void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
     }
 }
 
-VertexBuffer* GraphicsContext::vertexBuffer(int streamIndex) const
-{
+VertexBuffer* GraphicsContext::vertexBuffer(int streamIndex) const {
     if (LN_REQUIRE_RANGE(streamIndex, 0, MaxVertexStreams)) return nullptr;
     return m_staging.vertexBuffers[streamIndex];
 }
 
-void GraphicsContext::setIndexBuffer(IndexBuffer* value)
-{
+void GraphicsContext::setIndexBuffer(IndexBuffer* value) {
     if (m_staging.indexBuffer != value) {
         m_staging.indexBuffer = value;
         m_dirtyFlags |= DirtyFlags_PrimitiveBuffers;
     }
 }
 
-IndexBuffer* GraphicsContext::indexBuffer() const
-{
+IndexBuffer* GraphicsContext::indexBuffer() const {
     return m_staging.indexBuffer;
 }
 
-void GraphicsContext::setShaderPass(ShaderPass* value)
-{
+void GraphicsContext::setShaderPass(ShaderPass* value) {
     if (m_staging.shaderPass != value) {
         if (value) {
             m_staging.shader = value->shader();
             m_staging.shaderPass = value;
-        } else {
+        }
+        else {
             m_staging.shader = nullptr;
             m_staging.shaderPass = nullptr;
         }
         m_dirtyFlags |= DirtyFlags_ShaderPass;
     }
 }
-    
-ShaderPass* GraphicsContext::shaderPass() const
-{
+
+ShaderPass* GraphicsContext::shaderPass() const {
     return m_staging.shaderPass;
 }
 
-//void GraphicsContext::setShaderDescriptor(ShaderDefaultDescriptor* value)
+// void GraphicsContext::setShaderDescriptor(ShaderDefaultDescriptor* value)
 //{
-//    if (m_staging.shaderDescriptor != value) {
-//        m_staging.shaderDescriptor = value;
-//        m_dirtyFlags |= DirtyFlags_ShaderDescriptor;
-//    }
-//}
+//     if (m_staging.shaderDescriptor != value) {
+//         m_staging.shaderDescriptor = value;
+//         m_dirtyFlags |= DirtyFlags_ShaderDescriptor;
+//     }
+// }
 //
-//ShaderDefaultDescriptor* GraphicsContext::shaderDescriptor() const
+// ShaderDefaultDescriptor* GraphicsContext::shaderDescriptor() const
 //{
-//    return m_staging.shaderDescriptor;
-//}
+//     return m_staging.shaderDescriptor;
+// }
 
-//void GraphicsContext::setRenderPass(RenderPass* value)
+// void GraphicsContext::setRenderPass(RenderPass* value)
 //{
 //	if (m_staging.renderPass != value) {
 //		m_staging.renderPass = value;
@@ -303,15 +270,14 @@ ShaderPass* GraphicsContext::shaderPass() const
 //			setScissorRect(rect);
 //		}
 //	}
-//}
+// }
 
-void GraphicsContext::beginRenderPass(RenderPass* value)
-{
-	if (LN_REQUIRE(value)) return;
-	if (LN_REQUIRE(!m_currentRenderPass)) return;
+void GraphicsContext::beginRenderPass(RenderPass* value) {
+    if (LN_REQUIRE(value)) return;
+    if (LN_REQUIRE(!m_currentRenderPass)) return;
 
-	m_currentRenderPass = value;
-	m_currentRenderPass->m_active = true;
+    m_currentRenderPass = value;
+    m_currentRenderPass->m_active = true;
 
     assert(m_renderPassStep == RenderPassStep::None);
     m_renderPassStep = RenderPassStep::BeginRequired;
@@ -344,184 +310,104 @@ void GraphicsContext::beginRenderPass(RenderPass* value)
 #endif
 }
 
-void GraphicsContext::endRenderPass()
-{
-	if (LN_REQUIRE(m_currentRenderPass)) return;
+void GraphicsContext::endRenderPass() {
+    if (LN_REQUIRE(m_currentRenderPass)) return;
     assert(m_renderPassStep != RenderPassStep::None);
 
     if (m_renderPassStep == RenderPassStep::BeginRequired) {
         commitState();
     }
-    
+
     if (m_renderPassStep == RenderPassStep::Active) {
         if (m_currentRHIRenderPass) {
-            LN_ENQUEUE_RENDER_COMMAND_2(
-                GraphicsContext_closeRenderPass, this,
-                detail::ICommandList*, m_rhiCommandList,
-                detail::IRenderPass*, m_currentRHIRenderPass,
-                {
-                    m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
-                });
+            m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
             m_currentRHIRenderPass = nullptr;
         }
     }
 
-	m_currentRenderPass->m_active = false;
-	m_currentRenderPass = nullptr;
+    m_currentRenderPass->m_active = false;
+    m_currentRenderPass = nullptr;
     m_renderPassStep = RenderPassStep::None;
 }
 
-RenderPass* GraphicsContext::renderPass() const
-{
-	return m_currentRenderPass;
+RenderPass* GraphicsContext::renderPass() const {
+    return m_currentRenderPass;
 }
 
-void GraphicsContext::dispatch(int groupCountX, int groupCountY, int groupCountZ)
-{
+void GraphicsContext::dispatch(int groupCountX, int groupCountY, int groupCountZ) {
     commitState();
-    LN_ENQUEUE_RENDER_COMMAND_4(
-        GraphicsContext_dispatch, this,
-        detail::ICommandList*, m_rhiCommandList,
-        int, groupCountX,
-        int, groupCountY,
-        int, groupCountZ,
-        {
-            m_rhiCommandList->dispatch(groupCountX, groupCountY, groupCountZ);
-        });
+    m_rhiCommandList->dispatch(groupCountX, groupCountY, groupCountZ);
 }
 
-void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
-{
-	if (LN_REQUIRE(m_recordingBegan)) return;
-	if (LN_REQUIRE(m_currentRenderPass)) return;
+void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil) {
+    if (LN_REQUIRE(m_recordingBegan)) return;
+    if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
-    LN_ENQUEUE_RENDER_COMMAND_5(
-        GraphicsContext_clear, this,
-        detail::ICommandList*, m_rhiCommandList,
-        ClearFlags, flags,
-        Color, color,
-        float, z,
-        uint8_t, stencil, {
-            m_rhiCommandList->clearBuffers(flags, color, z, stencil);
-        });
+    m_rhiCommandList->clearBuffers(flags, color, z, stencil);
 }
 
-void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
-{
-	if (LN_REQUIRE(m_recordingBegan)) return;
-	if (LN_REQUIRE(m_currentRenderPass)) return;
+void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount) {
+    if (LN_REQUIRE(m_recordingBegan)) return;
+    if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
-    LN_ENQUEUE_RENDER_COMMAND_3(
-        GraphicsContext_drawPrimitive, this,
-        detail::ICommandList*, m_rhiCommandList,
-        int, startVertex,
-        int, primitiveCount,
-        {
-            m_rhiCommandList->drawPrimitive(startVertex, primitiveCount);
-        });
+    m_rhiCommandList->drawPrimitive(startVertex, primitiveCount);
     m_commandList->m_drawCall++;
 }
 
-void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset)
-{
-	if (LN_REQUIRE(m_recordingBegan)) return;
-	if (LN_REQUIRE(m_currentRenderPass)) return;
+void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {
+    if (LN_REQUIRE(m_recordingBegan)) return;
+    if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
-    LN_ENQUEUE_RENDER_COMMAND_5(
-        GraphicsContext_drawPrimitiveIndexed, this,
-        detail::ICommandList*, m_rhiCommandList,
-        int, startIndex,
-        int, primitiveCount,
-        int, instanceCount,
-        int, vertexOffset,
-        {
-            m_rhiCommandList->drawPrimitiveIndexed(startIndex, primitiveCount, instanceCount, vertexOffset);
-        });
+    m_rhiCommandList->drawPrimitiveIndexed(startIndex, primitiveCount, instanceCount, vertexOffset);
     m_commandList->m_drawCall++;
 }
 
-void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
-{
-	if (LN_REQUIRE(m_recordingBegan)) return;
-	commitState();
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		GraphicsContext_drawExtension, this,
-		detail::ICommandList*, m_rhiCommandList,
-		INativeGraphicsExtension*, extension,
-		{
-            m_rhiCommandList->drawExtension(extension);
-		});
+void GraphicsContext::drawExtension(INativeGraphicsExtension* extension) {
+    if (LN_REQUIRE(m_recordingBegan)) return;
+    commitState();
+    m_rhiCommandList->drawExtension(extension);
 }
 
-detail::ShaderSecondaryDescriptor* GraphicsContext::allocateShaderDescriptor(ShaderPass* shaderPass)
-{
+detail::ShaderSecondaryDescriptor* GraphicsContext::allocateShaderDescriptor(ShaderPass* shaderPass) {
     detail::ShaderSecondaryDescriptor* d = m_commandList->acquireShaderDescriptor(shaderPass->shader());
     d->reset(m_commandList);
     return d;
 }
 
-void GraphicsContext::interruptCurrentRenderPassFromResolveRHI()
-{
+void GraphicsContext::interruptCurrentRenderPassFromResolveRHI() {
     if (m_renderPassStep == RenderPassStep::Active && m_currentRHIRenderPass) {
-        LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_closeRenderPass, this,
-            detail::ICommandList*, m_rhiCommandList,
-            detail::IRenderPass*, m_currentRHIRenderPass,
-            {
-                m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
-            });
+        m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
         m_currentRHIRenderPass = nullptr;
     }
 }
 
-void GraphicsContext::beginCommandRecodingIfNeeded()
-{
+void GraphicsContext::beginCommandRecodingIfNeeded() {
     if (!m_recordingBegan) {
-        LN_ENQUEUE_RENDER_COMMAND_1(
-            GraphicsContext_beginCommandRecodingIfNeeded, this,
-            detail::ICommandList*, m_rhiCommandList,
-            {
-                m_rhiCommandList->begin();
-            });
-
+        m_rhiCommandList->begin();
         m_recordingBegan = true;
     }
 }
 
-void GraphicsContext::endCommandRecodingIfNeeded()
-{
+void GraphicsContext::endCommandRecodingIfNeeded() {
     if (m_recordingBegan) {
-		//closeRenderPass();
-        LN_ENQUEUE_RENDER_COMMAND_1(
-            GraphicsContext_beginCommandRecodingIfNeeded, this,
-            detail::ICommandList*, m_rhiCommandList,
-            {
-                m_rhiCommandList->end();
-            });
+        // closeRenderPass();
+        m_rhiCommandList->end();
         m_recordingBegan = false;
     }
 }
 
-void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarget)
-{
+void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarget) {
     // Vulkan: CommandBuffer が空の状態で VkSubmitQueue するとエラーするので、一度もコマンドを作っていない場合は flush が呼ばれても何もしないようにする
     if (m_recordingBegan) {
         endCommandRecodingIfNeeded();
 
-		auto device = m_manager->deviceContext();
+        auto device = m_manager->deviceContext();
         detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(this, affectRendreTarget, nullptr);
-        LN_ENQUEUE_RENDER_COMMAND_3(
-            GraphicsContext_flushCommandRecoding, this,
-			detail::IGraphicsDevice*, device,
-            detail::ICommandList*, m_rhiCommandList,
-            detail::RHIResource*, rhiObject,
-            {
-				device->submitCommandBuffer(m_rhiCommandList, rhiObject);
-            });
+        device->submitCommandBuffer(m_rhiCommandList, rhiObject);
     }
 }
 
-//void GraphicsContext::closeRenderPass()
+// void GraphicsContext::closeRenderPass()
 //{
 //	if (m_currentRHIRenderPass) {
 //		LN_ENQUEUE_RENDER_COMMAND_2(
@@ -533,12 +419,11 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
 //			});
 //		m_currentRHIRenderPass = nullptr;
 //	}
-//}
+// }
 
 // IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
 // GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDevice へ送信した状態にする。
-detail::ICommandList* GraphicsContext::commitState()
-{
+detail::ICommandList* GraphicsContext::commitState() {
     using VertexBufferArray = std::array<detail::RHIResource*, detail::MaxVertexStreams>;
 
     // ポインタとしては変わっていなくても、resolve は毎回呼び出す。
@@ -577,48 +462,24 @@ detail::ICommandList* GraphicsContext::commitState()
         resourceModified |= primitiveBufferModified;
     }
 
-
-
-
     // BlendState
     if ((m_dirtyFlags & DirtyFlags_BlendState) != 0) {
         auto& blendState = m_staging.blendState;
-        LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_setPipelineState, this,
-            detail::ICommandList*, m_rhiCommandList,
-            BlendStateDesc, blendState,
-            {
-                m_rhiCommandList->setBlendState(blendState);
-            });
-
+        m_rhiCommandList->setBlendState(blendState);
         m_lastCommit.blendState = m_staging.blendState;
     }
 
     // RasterizerState
     if ((m_dirtyFlags & DirtyFlags_RasterizerState) != 0) {
         auto& rasterizerState = m_staging.rasterizerState;
-        LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_setPipelineState, this,
-            detail::ICommandList*, m_rhiCommandList,
-            RasterizerStateDesc, rasterizerState,
-            {
-                m_rhiCommandList->setRasterizerState(rasterizerState);
-            });
-
+        m_rhiCommandList->setRasterizerState(rasterizerState);
         m_lastCommit.rasterizerState = m_staging.rasterizerState;
     }
 
     // DepthStencilState
     if ((m_dirtyFlags & DirtyFlags_DepthStencilState) != 0) {
         auto& depthStencilState = m_staging.depthStencilState;
-        LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_setPipelineState, this,
-            detail::ICommandList*, m_rhiCommandList,
-            DepthStencilStateDesc, depthStencilState,
-            {
-                m_rhiCommandList->setDepthStencilState(depthStencilState);
-            });
-
+        m_rhiCommandList->setDepthStencilState(depthStencilState);
         m_lastCommit.depthStencilState = m_staging.depthStencilState;
     }
 
@@ -663,30 +524,22 @@ detail::ICommandList* GraphicsContext::commitState()
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
 
-		if (viewportRect.width < 0 || viewportRect.height < 0) {
-			viewportRect.width = viewRect.width;
-			viewportRect.height = viewRect.height;
-		}
-		if (scissorRect.width < 0 || scissorRect.height < 0) {
-			scissorRect.width = viewRect.width;
-			scissorRect.height = viewRect.height;
-		}
+        if (viewportRect.width < 0 || viewportRect.height < 0) {
+            viewportRect.width = viewRect.width;
+            viewportRect.height = viewRect.height;
+        }
+        if (scissorRect.width < 0 || scissorRect.height < 0) {
+            scissorRect.width = viewRect.width;
+            scissorRect.height = viewRect.height;
+        }
 
         viewportRect.clip(viewRect);
         scissorRect.clip(viewRect);
 
         // TODO: Size 0 なら描画不要
 
-
-        LN_ENQUEUE_RENDER_COMMAND_3(
-            GraphicsContext_setDepthBuffer, this,
-            detail::ICommandList*, m_rhiCommandList,
-            RectI, viewportRect,
-            RectI, scissorRect,
-            {
-                m_rhiCommandList->setViewportRect(viewportRect);
-                m_rhiCommandList->setScissorRect(scissorRect);
-            });
+        m_rhiCommandList->setViewportRect(viewportRect);
+        m_rhiCommandList->setScissorRect(scissorRect);
 
         m_lastCommit.viewportRect = m_staging.viewportRect;
         m_lastCommit.scissorRect = m_staging.scissorRect;
@@ -694,20 +547,13 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // VertexLayout, Topology
     {
-        //bool modified = false;
-        //detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &modified);
+        // bool modified = false;
+        // detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &modified);
         PrimitiveTopology topology = m_staging.topology;
 
         if ((m_dirtyFlags & DirtyFlags_PipelinePrimitiveState) != 0 || vertexLayoutModified) {
-            LN_ENQUEUE_RENDER_COMMAND_3(
-                GraphicsContext_setPrimitiveBuffers, this,
-                detail::ICommandList*, m_rhiCommandList,
-                PrimitiveTopology, topology,
-                detail::IVertexDeclaration*, vertexLayoutRHI,
-                {
-                    m_rhiCommandList->setPrimitiveTopology(topology);
-                    m_rhiCommandList->setVertexDeclaration(vertexLayoutRHI);
-                });
+            m_rhiCommandList->setPrimitiveTopology(topology);
+            m_rhiCommandList->setVertexDeclaration(vertexLayoutRHI);
 
             m_lastCommit.VertexLayout = m_staging.VertexLayout;
             m_lastCommit.topology = m_staging.topology;
@@ -716,32 +562,25 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // VertexBuffer, IndexBuffer
     {
-        //bool anyModified = false;
-        //bool modified = false;
+        // bool anyModified = false;
+        // bool modified = false;
 
-        //using VertexBufferArray = std::array<detail::RHIResource*, detail::MaxVertexStreams>;
-        //VertexBufferArray vertexBuffers;
-        //for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
-        //    auto& value = m_staging.vertexBuffers[i];
-        //    vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(this, value, &modified);
-        //    anyModified |= modified;
-        //}
+        // using VertexBufferArray = std::array<detail::RHIResource*, detail::MaxVertexStreams>;
+        // VertexBufferArray vertexBuffers;
+        // for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
+        //     auto& value = m_staging.vertexBuffers[i];
+        //     vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(this, value, &modified);
+        //     anyModified |= modified;
+        // }
 
-        //detail::RHIResource* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
-        //anyModified |= modified;
+        // detail::RHIResource* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
+        // anyModified |= modified;
 
         if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || primitiveBufferModified) {
-            LN_ENQUEUE_RENDER_COMMAND_3(
-                GraphicsContext_setPrimitiveBuffers, this,
-                detail::ICommandList*, m_rhiCommandList,
-                VertexBufferArray, vertexBuffersRHI,
-                detail::RHIResource*, indexBufferRHI,
-                {
-                    for (int i = 0; i < detail::MaxVertexStreams; i++) {
-                        m_rhiCommandList->setVertexBuffer(i, vertexBuffersRHI[i]);
-                    }
-                    m_rhiCommandList->setIndexBuffer(indexBufferRHI);
-                });
+            for (int i = 0; i < detail::MaxVertexStreams; i++) {
+                m_rhiCommandList->setVertexBuffer(i, vertexBuffersRHI[i]);
+            }
+            m_rhiCommandList->setIndexBuffer(indexBufferRHI);
 
             m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
             m_lastCommit.indexBuffer = m_staging.indexBuffer;
@@ -752,13 +591,7 @@ detail::ICommandList* GraphicsContext::commitState()
     {
 
         if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0) {
-            LN_ENQUEUE_RENDER_COMMAND_2(
-                GraphicsContext_setShaderPass, this,
-                detail::ICommandList*, m_rhiCommandList,
-                detail::IShaderPass*, shaderPassRHI,
-                {
-                    m_rhiCommandList->setShaderPass(shaderPassRHI);
-                });
+            m_rhiCommandList->setShaderPass(shaderPassRHI);
 
             m_lastCommit.shader = m_staging.shader;
             m_lastCommit.shaderPass = m_staging.shaderPass;
@@ -767,10 +600,9 @@ detail::ICommandList* GraphicsContext::commitState()
 
     m_dirtyFlags = DirtyFlags_None;
 
-
     // RenderPass
-    if (m_renderPassStep == RenderPassStep::BeginRequired ||                    // 普通に beginRenderPass した直後
-        (m_renderPassStep == RenderPassStep::Active && !m_currentRHIRenderPass))// resolve でリソース更新したのでRenderPass中断した直後
+    if (m_renderPassStep == RenderPassStep::BeginRequired ||                     // 普通に beginRenderPass した直後
+        (m_renderPassStep == RenderPassStep::Active && !m_currentRHIRenderPass)) // resolve でリソース更新したのでRenderPass中断した直後
     {
         detail::IRenderPass* newRenderPass = nullptr;
         bool modified = false;
@@ -781,24 +613,17 @@ detail::ICommandList* GraphicsContext::commitState()
 
         if (newRenderPass) {
             m_currentRHIRenderPass = newRenderPass;
-            LN_ENQUEUE_RENDER_COMMAND_2(
-                GraphicsContext_closeRenderPass, this,
-                detail::ICommandList*, m_rhiCommandList,
-                detail::IRenderPass*, m_currentRHIRenderPass,
-                {
-                    m_rhiCommandList->beginRenderPass(m_currentRHIRenderPass);
-                });
+            m_rhiCommandList->beginRenderPass(m_currentRHIRenderPass);
         }
         //}
         m_renderPassStep = RenderPassStep::Active;
     }
-    //else if (m_renderPassStep == RenderPassStep::Active && resourceModified) {
-    //    
-
+    // else if (m_renderPassStep == RenderPassStep::Active && resourceModified) {
+    //
 
     //    detail::IRenderPass* newRenderPass = nullptr;
     //    bool modified = false;
-    //    
+    //
     //    if (newRenderPass) {
     //        m_currentRHIRenderPass = newRenderPass;
     //        LN_ENQUEUE_RENDER_COMMAND_2(
@@ -811,7 +636,6 @@ detail::ICommandList* GraphicsContext::commitState()
     //    }
 
     //}
-
 
     //{
     //    detail::DevicePipelineStateDesc pipelineDesc;
@@ -827,18 +651,17 @@ detail::ICommandList* GraphicsContext::commitState()
     return m_rhiCommandList;
 }
 
-//void GraphicsContext::submitCommandList()
+// void GraphicsContext::submitCommandList()
 //{
-//    m_manager->submitCommandList(m_recordingCommandList);
-//}
+//     m_manager->submitCommandList(m_recordingCommandList);
+// }
 
-void GraphicsContext::State::reset()
-{
+void GraphicsContext::State::reset() {
     blendState = BlendStateDesc();
     rasterizerState = RasterizerStateDesc();
     depthStencilState = DepthStencilStateDesc();
-    //renderTargets = {};
-    //depthBuffer = nullptr;
+    // renderTargets = {};
+    // depthBuffer = nullptr;
     viewportRect = Rect(0, 0, -1, -1);
     scissorRect = Rect(0, 0, -1, -1);
     VertexLayout = nullptr;
@@ -848,7 +671,7 @@ void GraphicsContext::State::reset()
     shaderPass = nullptr;
     shaderDescriptor = nullptr;
     topology = PrimitiveTopology::TriangleList;
-	//renderPass = nullptr;
+    // renderPass = nullptr;
 }
 
 } // namespace ln
