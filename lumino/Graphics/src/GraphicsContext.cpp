@@ -28,8 +28,7 @@ GraphicsContext::GraphicsContext()
     , m_staging()
     //, m_lastCommit()
     , m_dirtyFlags(DirtyFlags_All)
-    , m_renderPassStep(RenderPassStep::None)
-    , m_recordingBegan(false) {
+    , m_scopeState(ScopeState::Idle) {
 }
 
 GraphicsContext::~GraphicsContext() {
@@ -80,7 +79,7 @@ void GraphicsContext::resetCommandList(detail::GraphicsCommandList* commandList)
 
 void GraphicsContext::onDispose(bool explicitDisposing) {
     if (m_rhiCommandList) {
-        endCommandRecodingIfNeeded();
+        endCommandRecoding();
         m_rhiCommandList = nullptr;
     }
     //m_lastCommit.reset();
@@ -266,13 +265,12 @@ ShaderPass* GraphicsContext::shaderPass() const {
 
 void GraphicsContext::beginRenderPass(RenderPass* value) {
     if (LN_REQUIRE(value)) return;
+    if (LN_REQUIRE(m_scopeState == ScopeState::RenderPassOutside)) return;
     if (LN_REQUIRE(!m_currentRenderPass)) return;
 
     m_currentRenderPass = value;
     m_currentRenderPass->m_active = true;
-
-    assert(m_renderPassStep == RenderPassStep::None);
-    m_renderPassStep = RenderPassStep::BeginRequired;
+    m_scopeState = ScopeState::BeginRenderPassRequired;
 
     // 次の commitState() で実際に開始する。
     // 各リソースの実際の copy は commitState() まで遅延されるので、
@@ -304,13 +302,12 @@ void GraphicsContext::beginRenderPass(RenderPass* value) {
 
 void GraphicsContext::endRenderPass() {
     if (LN_REQUIRE(m_currentRenderPass)) return;
-    assert(m_renderPassStep != RenderPassStep::None);
 
-    if (m_renderPassStep == RenderPassStep::BeginRequired) {
+    if (m_scopeState == ScopeState::BeginRenderPassRequired) {
         commitState();
     }
 
-    if (m_renderPassStep == RenderPassStep::Active) {
+    if (m_scopeState == ScopeState::Active) {
         if (m_currentRHIRenderPass) {
             m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
             m_currentRHIRenderPass = nullptr;
@@ -319,7 +316,7 @@ void GraphicsContext::endRenderPass() {
 
     m_currentRenderPass->m_active = false;
     m_currentRenderPass = nullptr;
-    m_renderPassStep = RenderPassStep::None;
+    m_scopeState = ScopeState::RenderPassOutside;
 }
 
 RenderPass* GraphicsContext::renderPass() const {
@@ -332,30 +329,27 @@ void GraphicsContext::dispatch(int groupCountX, int groupCountY, int groupCountZ
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil) {
-    if (LN_REQUIRE(m_recordingBegan)) return;
-    if (LN_REQUIRE(m_currentRenderPass)) return;
+    if (!checkRenderPassInside()) return;
     commitState();
     m_rhiCommandList->clearBuffers(flags, color, z, stencil);
 }
 
 void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount) {
-    if (LN_REQUIRE(m_recordingBegan)) return;
-    if (LN_REQUIRE(m_currentRenderPass)) return;
+    if (!checkRenderPassInside()) return;
     commitState();
     m_rhiCommandList->drawPrimitive(startVertex, primitiveCount);
     m_commandList->m_drawCall++;
 }
 
 void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {
-    if (LN_REQUIRE(m_recordingBegan)) return;
-    if (LN_REQUIRE(m_currentRenderPass)) return;
+    if (!checkRenderPassInside()) return;
     commitState();
     m_rhiCommandList->drawPrimitiveIndexed(startIndex, primitiveCount, instanceCount, vertexOffset);
     m_commandList->m_drawCall++;
 }
 
 void GraphicsContext::drawExtension(INativeGraphicsExtension* extension) {
-    if (LN_REQUIRE(m_recordingBegan)) return;
+    if (!checkRenderPassInside()) return;
     commitState();
     m_rhiCommandList->drawExtension(extension);
 }
@@ -366,32 +360,33 @@ detail::ShaderSecondaryDescriptor* GraphicsContext::allocateShaderDescriptor(Sha
     return d;
 }
 
+// Vulkan の vkCmdCopyBuffer は、RenderPass の Outside でしか使用することができない。
+// 今ところ Rendering モジュールがそのような仕組みに対応していないので、
+// GraphicsCommandList としては RenderPass Outside でも setSubData できるようにしておきたい。
 void GraphicsContext::interruptCurrentRenderPassFromResolveRHI() {
-    if (m_renderPassStep == RenderPassStep::Active && m_currentRHIRenderPass) {
+    if (m_scopeState == ScopeState::Active && m_currentRHIRenderPass) {
         m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
         m_currentRHIRenderPass = nullptr;
+        m_scopeState = ScopeState::RenderPassInterrupted;
     }
 }
 
-void GraphicsContext::beginCommandRecodingIfNeeded() {
-    if (!m_recordingBegan) {
-        m_rhiCommandList->begin();
-        m_recordingBegan = true;
-    }
+void GraphicsContext::beginCommandRecoding() {
+    if (LN_ASSERT(m_scopeState == ScopeState::Idle)) return;
+    m_rhiCommandList->begin();
+    m_scopeState = ScopeState::RenderPassOutside;
 }
 
-void GraphicsContext::endCommandRecodingIfNeeded() {
-    if (m_recordingBegan) {
-        // closeRenderPass();
-        m_rhiCommandList->end();
-        m_recordingBegan = false;
-    }
+void GraphicsContext::endCommandRecoding() {
+    if (LN_ASSERT(m_scopeState == ScopeState::RenderPassOutside)) return;
+    m_rhiCommandList->end();
+    m_scopeState = ScopeState::Idle;
 }
 
 //void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarget) {
 //    // Vulkan: CommandBuffer が空の状態で VkSubmitQueue するとエラーするので、一度もコマンドを作っていない場合は flush が呼ばれても何もしないようにする
 //    if (m_recordingBegan) {
-//        endCommandRecodingIfNeeded();
+//        endCommandRecoding();
 //    }
 //}
 
@@ -589,12 +584,12 @@ detail::ICommandList* GraphicsContext::commitState() {
     m_dirtyFlags = DirtyFlags_None;
 
     // RenderPass
-    if (m_renderPassStep == RenderPassStep::BeginRequired ||                     // 普通に beginRenderPass した直後
-        (m_renderPassStep == RenderPassStep::Active && !m_currentRHIRenderPass)) // resolve でリソース更新したのでRenderPass中断した直後
+    if (m_scopeState == ScopeState::BeginRenderPassRequired ||  // 普通に beginRenderPass した直後
+        m_scopeState == ScopeState::RenderPassInterrupted)      // resolve でリソース更新したのでRenderPass中断した直後
     {
         detail::IRenderPass* newRenderPass = nullptr;
         bool modified = false;
-        if (m_renderPassStep == RenderPassStep::BeginRequired)
+        if (m_scopeState == ScopeState::BeginRenderPassRequired)
             newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_currentRenderPass, &modified);
         else
             newRenderPass = m_currentRenderPass->resolveRHIObjectNoClear(this, &modified);
@@ -604,9 +599,9 @@ detail::ICommandList* GraphicsContext::commitState() {
             m_rhiCommandList->beginRenderPass(m_currentRHIRenderPass);
         }
         //}
-        m_renderPassStep = RenderPassStep::Active;
+        m_scopeState = ScopeState::Active;
     }
-    // else if (m_renderPassStep == RenderPassStep::Active && resourceModified) {
+    // else if (m_scopeState == ScopeState::Active && resourceModified) {
     //
 
     //    detail::IRenderPass* newRenderPass = nullptr;
@@ -643,6 +638,33 @@ detail::ICommandList* GraphicsContext::commitState() {
 //{
 //     m_manager->submitCommandList(m_recordingCommandList);
 // }
+
+
+bool GraphicsContext::checkRenderPassInside() const {
+    if (LN_ASSERT(
+        m_scopeState == ScopeState::BeginRenderPassRequired ||
+        m_scopeState == ScopeState::RenderPassInterrupted ||
+        m_scopeState == ScopeState::Active)) {
+        return false;
+    }
+    
+    if (m_scopeState == ScopeState::BeginRenderPassRequired) {
+        if (LN_ASSERT(m_currentRenderPass)) return false;
+        if (LN_ASSERT(!m_currentRHIRenderPass)) return false;
+        return true;
+    }
+    else if (m_scopeState == ScopeState::RenderPassInterrupted) {
+        if (LN_ASSERT(m_currentRenderPass)) return false;
+        if (LN_ASSERT(!m_currentRHIRenderPass)) return false;
+        return true;
+    }
+    else if (m_scopeState == ScopeState::Active) {
+        if (LN_ASSERT(m_currentRenderPass)) return false;
+        if (LN_ASSERT(m_currentRHIRenderPass)) return false;
+        return true;
+    }
+    return false;
+}
 
 void GraphicsContext::State::reset() {
     blendState = BlendStateDesc();

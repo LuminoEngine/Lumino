@@ -15,7 +15,7 @@ public:
     void init(GraphicsManager* manager);
     void dispose();
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
-    const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
+    //const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
     void reset();
     detail::ConstantBufferView allocateUniformBuffer(size_t size);
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;

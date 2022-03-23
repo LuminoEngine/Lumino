@@ -166,8 +166,8 @@ private:
 
     //RenderingType renderingType() const { return m_renderingType; }
     //detail::RenderingCommandList* renderingCommandList();
-    void beginCommandRecodingIfNeeded();
-    void endCommandRecodingIfNeeded();
+    void beginCommandRecoding();
+    void endCommandRecoding();
     //void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
     // void closeRenderPass();
     detail::ICommandList* commitState();
@@ -206,11 +206,15 @@ private:
         void reset();
     };
 
-    enum class RenderPassStep {
-        None,
-        BeginRequired,
+    enum class ScopeState {
+        Idle,
+        RenderPassOutside,
+        BeginRenderPassRequired, // 次の Commit で実際に RenderPass を開始したい
+        RenderPassInterrupted,   // 次の Commit で実際に RenderPass を開始したい
         Active,
     };
+
+    bool checkRenderPassInside() const;
 
     detail::GraphicsManager* m_manager;
     Ref<detail::GraphicsCommandList> m_commandList;
@@ -223,8 +227,8 @@ private:
     Ref<RenderPass> m_currentRenderPass;
     Ref<detail::IRenderPass> m_currentRHIRenderPass;
     uint32_t m_dirtyFlags;
-    RenderPassStep m_renderPassStep;
-    bool m_recordingBegan;
+    ScopeState m_scopeState;
+    //bool m_recordingBegan;
 
     friend class detail::GraphicsContextInternal;
     friend class detail::RenderingQueue;
@@ -236,8 +240,8 @@ public:
     static void resetCommandList(GraphicsContext* self, detail::GraphicsCommandList* commandLsit) { self->resetCommandList(commandLsit); }
     //static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
      //static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
-    static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }
-    static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecodingIfNeeded(); }
+    static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecoding(); }
+    static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecoding(); }
     //static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
     //static detail::ICommandList* getCommandListForTransfer(GraphicsContext* self) { return self->m_rhiCommandList; }
     //static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
