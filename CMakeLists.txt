@@ -146,7 +146,9 @@ endif()
 #-------------------------------------------------------------------------------
 
 find_package(fmt CONFIG REQUIRED)
-find_package(GTest CONFIG REQUIRED)
+if (LN_OS_DESKTOP)
+    find_package(GTest CONFIG REQUIRED)
+endif()
 
 #------------------------------------------------------------------------------
 # gtest

@@ -10,7 +10,6 @@ if (LN_EMSCRIPTEN)
     string(APPEND LOCAL_LINK_FLAGS " -s USE_GLFW=3")
     string(APPEND LOCAL_LINK_FLAGS " -s USE_WEBGL2=1")
     string(APPEND LOCAL_LINK_FLAGS " -s FULL_ES3=1")
-    string(APPEND LOCAL_LINK_FLAGS " -s FULL_ES3=1")
 
     # 今のところ、Lumino のランタイムは消費メモリがかなり大きい。普通に実行すると次のようなエラーが発生する。
     # Uncaught RuntimeError: abort(Cannot enlarge memory arrays to size 16781312 bytes (OOM). Either

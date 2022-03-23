@@ -1,9 +1,11 @@
 ﻿#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
 #else
 #include <glad/glad.h>
-#endif
 #define GLFW_INCLUDE_NONE
+#endif
 #include <GLFW/glfw3.h>
 
 #include <LuminoCore.hpp>
@@ -49,6 +51,26 @@ void initGLFW() {
         { 0.f, 0.6f, 0.f, 0.f, 1.f }
     };
 
+#ifdef __EMSCRIPTEN__
+    static const char *vertex_shader_text =
+        "uniform mat4 MVP;\n"
+        "attribute vec3 vCol;\n"
+        "attribute vec2 vPos;\n"
+        "varying vec3 color;\n"
+        "void main()\n"
+        "{\n"
+        "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+        "    color = vCol;\n"
+        "}\n";
+
+    static const char *fragment_shader_text =
+        "precision mediump float;\n"
+        "varying vec3 color;\n"
+        "void main()\n"
+        "{\n"
+        "    gl_FragColor = vec4(color, 1.0);\n"
+        "}\n";
+#else
     static const char* vertex_shader_text =
         "#version 400\n"
         "uniform mat4 MVP;\n"
@@ -68,18 +90,23 @@ void initGLFW() {
         "{\n"
         "    gl_FragColor = vec4(color, 1.0);\n"
         "}\n";
+#endif
 
-
-    GLuint vertex_shader, fragment_shader;
-    GLint vpos_location, vcol_location;
+    GLuint vertex_shader;
+    GLuint fragment_shader;
+    GLint vpos_location;
+    GLint vcol_location;
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+#ifdef __EMSCRIPTEN__
+#else
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+#endif
 
     g_glfwWindow = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
     if (!g_glfwWindow) {
@@ -88,7 +115,10 @@ void initGLFW() {
     }
 
     glfwMakeContextCurrent(g_glfwWindow);
+#ifdef __EMSCRIPTEN__
+#else
     gladLoadGL();
+#endif
     glfwSwapInterval(1);
 
     // NOTE: OpenGL error checks have been omitted for brevity
@@ -127,10 +157,6 @@ void initLumino() {
     EngineContext2::initialize();
     Logger::setLevel(LogLevel::Debug);
 
-    //detail::PlatformManager::Settings platformManagerrSettings;
-    //platformManagerrSettings.windowSystem = WindowSystem::External;
-    //auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
-
     detail::AssetManager::Settings assetManagerSettings;
     auto assetManager = detail::AssetManager::initialize(assetManagerSettings);
 #ifdef __EMSCRIPTEN__
@@ -142,9 +168,7 @@ void initLumino() {
     detail::GraphicsManager::Settings graphicsManagerSettings;
     graphicsManagerSettings.assetManager = assetManager;
     graphicsManagerSettings.platformManager = nullptr;
-    //platformManager;
     graphicsManagerSettings.mainWindow = nullptr;
-    //platformManager->mainWindow();
     graphicsManagerSettings.graphicsAPI = GraphicsAPI::OpenGL;
     graphicsManagerSettings.priorityGPUName = U"";
     graphicsManagerSettings.debugMode = true;
@@ -153,8 +177,6 @@ void initLumino() {
     detail::ShaderManager::Settings shaderManagerSettings;
     shaderManagerSettings.graphicsManager = graphicsManager;
     auto shaderManager = detail::ShaderManager::initialize(shaderManagerSettings);
-
-    
 }
 
 void initApp() {
