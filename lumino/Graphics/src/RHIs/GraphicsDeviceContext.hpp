@@ -373,7 +373,7 @@ public:
 
     bool isMultisample() const { return m_isMultisample; }
 
-    RHIExtent2D viewSize() const;
+    virtual RHIExtent2D viewSize() const;
 
     virtual void dispose();
 
@@ -381,12 +381,13 @@ public:
     void releaseObjects();
 
 protected:
+    IRenderPass();
     virtual ~IRenderPass();
 
-protected:
+public: // TODO:
     std::array<RHIResource*, MaxMultiRenderTargets> m_renderTargets;
     RHIResource* m_depthBuffer;
-    bool m_isMultisample = false;
+    bool m_isMultisample;
 
     // TODO: init 用意した方がいい気がする
     friend class IGraphicsDevice;

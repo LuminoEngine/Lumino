@@ -407,7 +407,7 @@ void CommandList::blit(Material* source, RenderTargetTexture* destination, Rende
 	RenderTargetTexture* oldTarget = nullptr;
 	if (destination)
 	{
-		RenderTargetTexture* oldTarget = renderTarget(0);
+		oldTarget = renderTarget(0);
 		setRenderTarget(0, destination);
 	}
 

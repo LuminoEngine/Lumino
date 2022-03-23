@@ -20,10 +20,16 @@
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GraphicsExtensionOpenGL.hpp>
 #include "../src/GraphicsManager.hpp"
 using namespace ln;
 
 GLFWwindow* g_glfwWindow;
+GLuint vao;
+GLuint program;
+GLuint vertex_buffer;
+GLint mvp_location; 
+
 Ref<Shader> g_shader;
 Ref<VertexLayout> g_vertexLayout;
 Ref<VertexBuffer> g_vertexBuffer;
@@ -64,8 +70,8 @@ void initGLFW() {
         "}\n";
 
 
-    GLuint vao, vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    GLuint vertex_shader, fragment_shader;
+    GLint vpos_location, vcol_location;
 
     glfwSetErrorCallback(error_callback);
 
@@ -185,25 +191,51 @@ void cleanupGLFW() {
 }
 
 void mainLoop() {
-    //auto descriptorLayout = g_shader->descriptorLayout();
-    //auto shaderPass = g_shader->techniques()[0]->passes()[0];
+    int width, height;
+    glfwGetFramebufferSize(g_glfwWindow, &width, &height);
 
-    //auto ctx = g_swapChain->beginFrame2();
-    //auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
-    //descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
-    //auto renderPass = g_swapChain->currentRenderPass();
-    //ctx->beginRenderPass(renderPass);
-    //ctx->clear(ClearFlags::All, Color::Azure);
-    //ctx->setVertexLayout(g_vertexLayout);
-    //ctx->setVertexBuffer(0, g_vertexBuffer);
-    //ctx->setShaderPass(shaderPass);
-    //ctx->setShaderDescriptor(descriptor);
-    //ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    //ctx->drawPrimitive(0, 1);
-    //ctx->endRenderPass();
+    // OpenGL rendering
+    {
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDepthMask(GL_TRUE);
+        glClearDepth(0);
 
-    //g_swapChain->endFrame();
+        Matrix m = Matrix::makeRotationZ((float)glfwGetTime());
 
+        glBindVertexArray(vao);
+        glUseProgram(program);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)m.data());
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
+
+    // Lumino rendering
+    {
+        auto descriptorLayout = g_shader->descriptorLayout();
+        auto shaderPass = g_shader->techniques()[0]->passes()[0];
+
+        auto commandList = OpenGLIntegration::getCommandListFromCurrentContext();
+        detail::GraphicsCommandListInternal::beginCommandRecoding(commandList);
+        commandList->enterRenderState();
+
+        auto renderPass = OpenGLIntegration::getRenderPass(0, width, height);
+
+        auto descriptor = commandList->allocateShaderDescriptor(shaderPass);
+        descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
+        commandList->beginRenderPass(renderPass);
+        commandList->clear(ClearFlags::Depth, Color());
+        commandList->setVertexLayout(g_vertexLayout);
+        commandList->setVertexBuffer(0, g_vertexBuffer);
+        commandList->setShaderPass(shaderPass);
+        commandList->setShaderDescriptor(descriptor);
+        commandList->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+        commandList->drawPrimitive(0, 1);
+        commandList->endRenderPass();
+
+        commandList->leaveRenderState();
+        detail::GraphicsCommandListInternal::endCommandRecoding(commandList);
+    }
     
     glfwSwapBuffers(g_glfwWindow);
     glfwPollEvents();

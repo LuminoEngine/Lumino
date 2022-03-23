@@ -596,6 +596,12 @@ ISwapChain::~ISwapChain() {
 //==============================================================================
 // IRenderPass
 
+IRenderPass::IRenderPass()
+    : m_renderTargets{}
+    , m_depthBuffer(nullptr)
+    , m_isMultisample(false) {
+}
+
 IRenderPass::~IRenderPass() {
     if (IGraphicsDevice* d = device()) {
         d->profiler()->removeRenderPass(this);

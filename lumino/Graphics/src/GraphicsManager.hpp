@@ -85,6 +85,8 @@ public:
     const Ref<SamplerState>& pointClampSamplerState() const { return m_pointClampSamplerState; }
     const Ref<SamplerState>& linearClampSamplerState() const { return m_linearClampSamplerState; }
 
+    GraphicsCommandList* getOpenGLIntegrationCommandList();
+
     static bool checkVulkanSupported();
 
 private:
@@ -121,6 +123,8 @@ private:
     Ref<SamplerState> m_linearSamplerState;
     Ref<SamplerState> m_pointClampSamplerState;
     Ref<SamplerState> m_linearClampSamplerState;
+
+    Ref<GraphicsCommandList> m_openglIntegrationCommandList;
 };
 
 } // namespace detail

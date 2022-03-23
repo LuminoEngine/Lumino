@@ -528,10 +528,9 @@ void PathRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureB
 	auto localBatch = static_cast<Batch*>(batch);
 
 	RenderPass* pass = context->renderPass();
-	RenderTargetTexture* target = pass->renderTarget(0);
 
 	m_glnvgContext->g = context;
-	nvgBeginFrame(m_nvgContext, target->width(), target->height(), 1.0);	// TODO: DPI
+	nvgBeginFrame(m_nvgContext, pass->width(), pass->height(), 1.0);	// TODO: DPI
 
 
 	// Drop shadow

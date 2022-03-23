@@ -268,6 +268,11 @@ bool GraphicsManager::init(const Settings& settings) {
 }
 
 void GraphicsManager::dispose() {
+    if (m_openglIntegrationCommandList) {
+        m_openglIntegrationCommandList->dispose();
+        m_openglIntegrationCommandList = nullptr;
+    }
+
     if (m_renderingQueue) {
         m_renderingQueue->dispose();
         m_renderingQueue = nullptr;
@@ -394,6 +399,13 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringView& filePath) {
 Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringView& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory) {
     static const std::vector<const Char*> exts = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
     return AssetManager::loadObjectWithCacheHelper<Texture2D>(texture2DCache(), baseDir, exts, filePath, factory);
+}
+
+GraphicsCommandList* GraphicsManager::getOpenGLIntegrationCommandList() {
+    if (!m_openglIntegrationCommandList) {
+        m_openglIntegrationCommandList = makeObject<GraphicsCommandList>(this);
+    }
+    return m_openglIntegrationCommandList;
 }
 
 bool GraphicsManager::checkVulkanSupported() {

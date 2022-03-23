@@ -56,6 +56,8 @@
     for (;;) { \
         call; \
         GLenum gl_err = glGetError(); \
-        LN_ENSURE(0 == gl_err, #call "; GL error 0x%x: %s", gl_err, OpenGLHelper::glEnumName(gl_err)); \
+        if (gl_err != 0) { \
+            LN_ERROR(#call "; GL error {:#x}: {}", gl_err, ::ln::detail::OpenGLHelper::glEnumName(gl_err)); \
+        } \
         break; \
     }

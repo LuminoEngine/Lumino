@@ -28,7 +28,8 @@ RenderPass::RenderPass()
     , m_clearDepth(1.0f)
     , m_clearStencil(0x00)
     , m_dirty(true)
-    , m_active(false) {
+    , m_active(false)
+    , m_externalRHIRenderPass(false) {
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
     detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderPass(this);
 }
@@ -49,6 +50,15 @@ void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffe
     setDepthBuffer(depthBuffer);
 }
 
+void RenderPass::init(detail::IRenderPass* rhiRenderPass) {
+    init();
+    m_rhiObject = rhiRenderPass;
+    m_rhiObjectNoClear = rhiRenderPass;
+    auto viewSize = rhiRenderPass->viewSize();
+    m_viewSize = SizeI(viewSize.width, viewSize.height);
+    m_externalRHIRenderPass = true;
+}
+
 void RenderPass::onDispose(bool explicitDisposing) {
     releaseRHI();
 
@@ -56,12 +66,18 @@ void RenderPass::onDispose(bool explicitDisposing) {
 }
 
 void RenderPass::setRenderTarget(int index, RenderTargetTexture* value) {
+    if (LN_REQUIRE(!m_externalRHIRenderPass)) return;
     if (LN_REQUIRE(!m_active)) return;
     if (LN_REQUIRE_RANGE(index, 0, GraphicsCommandList::MaxMultiRenderTargets)) return;
 
     if (m_renderTargets[index] != value) {
         m_renderTargets[index] = value;
         m_dirty = true;
+
+        if (value && index == 0) {
+            m_viewSize.width = value->width();
+            m_viewSize.height = value->height();
+        }
     }
 }
 
@@ -71,6 +87,7 @@ RenderTargetTexture* RenderPass::renderTarget(int index) const {
 }
 
 void RenderPass::setDepthBuffer(DepthBuffer* value) {
+    if (LN_REQUIRE(!m_externalRHIRenderPass)) return;
     if (LN_REQUIRE(!m_active)) return;
     if (m_depthBuffer != value) {
         m_depthBuffer = value;
@@ -133,6 +150,10 @@ void RenderPass::onChangeDevice(detail::IGraphicsDevice* device) {
 }
 
 detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
+    if (m_externalRHIRenderPass) {
+        return m_rhiObject;
+    }
+
     if (m_dirty) {
         releaseRHI();
         m_dirty = false;
@@ -194,6 +215,10 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, 
 //
 // もうひとつ、泥臭いけど今のところあまり時間掛けないで回避できるのが、この方法。
 detail::IRenderPass* RenderPass::resolveRHIObjectNoClear(GraphicsCommandList* context, bool* outModified) {
+    if (m_externalRHIRenderPass) {
+        return m_rhiObjectNoClear;
+    }
+
     resolveRHIObject(context, outModified);
     return m_rhiObjectNoClear;
 }

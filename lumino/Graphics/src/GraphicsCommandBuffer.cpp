@@ -341,8 +341,8 @@ detail::ICommandList* GraphicsCommandList::commitState() {
     if ((m_dirtyFlags & DirtyFlags_RegionRects) != 0) {
         RectI viewRect = RectI(0, 0, 0, 0);
         if (m_currentRenderPass) {
-            viewRect.width = m_currentRenderPass->renderTarget(0)->width();
-            viewRect.height = m_currentRenderPass->renderTarget(0)->height();
+            viewRect.width = m_currentRenderPass->width();
+            viewRect.height = m_currentRenderPass->height();
         }
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);

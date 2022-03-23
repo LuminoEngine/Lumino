@@ -77,6 +77,7 @@ void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {
 }
 
 void GLGraphicsContext::onEndRenderPass(IRenderPass* renderPass) {
+    m_currentRenderPass = nullptr;
 }
 
 void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) {

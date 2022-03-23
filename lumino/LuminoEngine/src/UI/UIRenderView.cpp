@@ -68,10 +68,6 @@ void UIFrameRenderView::render(GraphicsCommandList* graphicsContext, RenderTarge
 
 
 
-        //FrameBuffer fb;
-        //fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
-        //fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
-
         // TODO:
         {
             m_viewPoint->viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？

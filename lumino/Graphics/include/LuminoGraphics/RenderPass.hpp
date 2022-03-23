@@ -17,75 +17,89 @@ class IRenderPass;
 // 動的に変化させる必要が無ければ事前作成して、set～ はしないようにしておくとパフォーマンスが良くなる。
 class RenderPass
     : public Object
-	, public IGraphicsResource
-{
+    , public IGraphicsResource {
 public:
-	/** RenderTarget を設定します。 */
-	void setRenderTarget(int index, RenderTargetTexture* value);
+    /** この RenderPass が示すレンダリング先のビューの幅を取得します。 */
+    int width() const { return m_viewSize.width; }
 
-	/** RenderTarget を取得します。 */
-	RenderTargetTexture* renderTarget(int index) const;
+    /** この RenderPass が示すレンダリング先のビューの高さを取得します。 */
+    int height() const { return m_viewSize.height; }
 
-	/** DepthBuffer を設定します。 */
-	void setDepthBuffer(DepthBuffer* value);
+    /** RenderTarget を設定します。 */
+    void setRenderTarget(int index, RenderTargetTexture* value);
 
-	/** DepthBuffer を取得します。 */
-	DepthBuffer* depthBuffer() const;
+    /**
+     * RenderTarget を取得します。
+     *
+     * renderTarget(0) が nullptr を返すことがある点に注意してください。
+     * これはユーザーが作成した OpenGL の FBO をラップしている場合に発生します。
+     * このためビューサイズを得る目的で renderTarget(0) を使用することはできません。
+     */
+    RenderTargetTexture* renderTarget(int index) const;
 
-	/** RenderPass 開始時にクリアする要素を設定します。(Default: None) */
-	void setClearFlags(ClearFlags value);
+    /** DepthBuffer を設定します。 */
+    void setDepthBuffer(DepthBuffer* value);
 
-	/** RenderPass 開始時にレンダーターゲットをクリアする場合に使用する色を設定します。(Default: (0, 0, 0, 0)) */
-	void setClearColor(const Color& value);
+    /** DepthBuffer を取得します。 */
+    DepthBuffer* depthBuffer() const;
 
-	/** RenderPass 開始時に深度バッファをクリアする場合に使用する Z 値を設定します。(Default: 1.0) */
-	void setClearDepth(float value);
+    /** RenderPass 開始時にクリアする要素を設定します。(Default: None) */
+    void setClearFlags(ClearFlags value);
 
-	/** RenderPass 開始時にステンシルバッファをクリアする場合に使用するステンシル値を設定します。(Default: 0x00) */
-	void setClearStencil(uint8_t value);
+    /** RenderPass 開始時にレンダーターゲットをクリアする場合に使用する色を設定します。(Default: (0, 0, 0, 0)) */
+    void setClearColor(const Color& value);
 
-	void setClearValues(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
+    /** RenderPass 開始時に深度バッファをクリアする場合に使用する Z 値を設定します。(Default: 1.0) */
+    void setClearDepth(float value);
+
+    /** RenderPass 開始時にステンシルバッファをクリアする場合に使用するステンシル値を設定します。(Default: 0x00) */
+    void setClearStencil(uint8_t value);
+
+    void setClearValues(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
 protected:
     void onDispose(bool explicitDisposing) override;
-	void onManagerFinalizing() override { dispose(); }
-	void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
-	RenderPass();
+    RenderPass();
     virtual ~RenderPass();
 
     /** @copydoc create() */
     void init();
-	void init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+    void init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+    void init(detail::IRenderPass* rhiRenderPass);
 
 private:
     detail::IRenderPass* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
     detail::IRenderPass* resolveRHIObjectNoClear(GraphicsCommandList* context, bool* outModified);
-	void releaseRHI();
+    void releaseRHI();
 
-	detail::GraphicsManager* m_manager;
+    detail::GraphicsManager* m_manager;
     Ref<detail::IRenderPass> m_rhiObject;
     Ref<detail::IRenderPass> m_rhiObjectNoClear;
     std::array<Ref<RenderTargetTexture>, GraphicsCommandList::MaxMultiRenderTargets> m_renderTargets;
-	Ref<DepthBuffer> m_depthBuffer;
-	ClearFlags m_clearFlags;
-	Color m_clearColor;
-	float m_clearDepth;
-	uint8_t m_clearStencil;
-	bool m_dirty;
-	bool m_active;
+    Ref<DepthBuffer> m_depthBuffer;
+    ClearFlags m_clearFlags;
+    Color m_clearColor;
+    float m_clearDepth;
+    uint8_t m_clearStencil;
+    SizeI m_viewSize;
+    bool m_dirty;
+    bool m_active;
+    bool m_externalRHIRenderPass;
 
     friend class detail::GraphicsResourceInternal;
     friend class GraphicsCommandList;
 };
 
-//namespace detail {
-//class GraphicsManager;
+// namespace detail {
+// class GraphicsManager;
 //
-//class RenderPassPool
+// class RenderPassPool
 //{
-//public:
+// public:
 //	struct FindKey
 //	{
 //		std::array<RenderTargetTexture*, MaxMultiRenderTargets> renderTargets = {};
@@ -100,7 +114,7 @@ private:
 //	RenderPass* findOrCreate(const FindKey& key);
 //	static uint64_t computeHash(const FindKey& key);
 //
-//private:
+// private:
 //	struct Entry
 //	{
 //		int referenceCount = 0;
@@ -109,7 +123,7 @@ private:
 //
 //	GraphicsManager* m_manager;
 //	std::unordered_map<uint64_t, Ref<RenderPass>> m_hashMap;
-//};
+// };
 //
-//} // namespace detail
+// } // namespace detail
 } // namespace ln

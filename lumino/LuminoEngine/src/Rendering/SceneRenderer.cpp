@@ -538,8 +538,7 @@ void SceneRenderer::renderPass(GraphicsCommandList* graphicsContext, RenderTarge
 		        const RectI& scissorRect = stage->getScissorRectFinal();
 		        if (scissorRect.width < 0) {
                     RenderPass* renderPass = (currentRenderPass) ? currentRenderPass : pass->renderPass();
-                    auto renderTarget = renderPass->renderTarget(0);
-                    graphicsContext->setScissorRect(Rect(0, 0, renderTarget->width(), renderTarget->height()));
+                    graphicsContext->setScissorRect(Rect(0, 0, renderPass->width(), renderPass->height()));
 		        }
                 else {
                     graphicsContext->setScissorRect(scissorRect.toFloatRect());
@@ -548,8 +547,7 @@ void SceneRenderer::renderPass(GraphicsCommandList* graphicsContext, RenderTarge
 				const RectI& viewportRect = stage->getViewportRectFinal();
 				if (viewportRect.width < 0) {
 					RenderPass* renderPass = (currentRenderPass) ? currentRenderPass : pass->renderPass();
-					auto renderTarget = renderPass->renderTarget(0);
-					graphicsContext->setViewportRect(Rect(0, 0, renderTarget->width(), renderTarget->height()));
+					graphicsContext->setViewportRect(Rect(0, 0, renderPass->width(), renderPass->height()));
 				}
 				else {
 					graphicsContext->setViewportRect(viewportRect.toFloatRect());
