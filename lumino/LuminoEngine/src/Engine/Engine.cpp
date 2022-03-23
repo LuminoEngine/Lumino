@@ -119,8 +119,8 @@ void EngineSettings::setDefaultObjectsCreation(bool value) {
     detail::EngineManager::s_settings.defaultObjectsCreation = value;
 }
 
-void EngineSettings::setUseGLFWWindowSystem(bool value) {
-    detail::EngineManager::s_settings.useGLFWWindowSystem = value;
+void EngineSettings::setWindowSystem(WindowSystem value) {
+    detail::EngineManager::s_settings.windowSystem = value;
 }
 
 void EngineSettings::setGraphicsContextManagement(bool value) {

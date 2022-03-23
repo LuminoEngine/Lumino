@@ -13,16 +13,18 @@ public:
     GLFWPlatformWindowManager(PlatformManager* manager);
     virtual ~GLFWPlatformWindowManager();
 
-    Result init();
+    Result init(bool withOpenGLAPI);
     void dispose() override;
     Ref<PlatformWindow> createMainWindow(const WindowCreationSettings& settings) override;
     Ref<PlatformWindow> createSubWindow(const WindowCreationSettings& settings) override;
     void destroyWindow(PlatformWindow* window) override;
     void processSystemEventQueue(EventProcessingMode mode) override;
     OpenGLContext* getOpenGLContext() const override;
+    bool withOpenGLAPI() const { return m_withOpenGLAPI; }
 
 private:
     Ref<GLFWContext> m_glContext;
+    bool m_withOpenGLAPI;
 };
 
 } // namespace detail

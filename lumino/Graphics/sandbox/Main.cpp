@@ -22,7 +22,7 @@ void init() {
     EngineContext2::initialize();
 
     detail::PlatformManager::Settings platformManagerrSettings;
-    platformManagerrSettings.glfwWithOpenGLAPI = true;
+    platformManagerrSettings.windowSystem = WindowSystem::GLFW;
     auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
 
     detail::AssetManager::Settings assetManagerSettings;

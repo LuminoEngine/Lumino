@@ -32,7 +32,7 @@ void PlatformManager::terminate()
 
 PlatformManager::PlatformManager()
 	: m_windowManager()
-    , m_glfwWithOpenGLAPI(true)
+    //, m_glfwWithOpenGLAPI(true)
     , m_messageLoopProcessing(true)
     , m_quitRequested(false)
 {
@@ -45,12 +45,11 @@ PlatformManager::~PlatformManager()
 Result PlatformManager::init(const Settings& settings)
 {
 #ifdef LN_GLFW
-    if (settings.useGLFWWindowSystem && !settings.mainWindowSettings.userWindow) {
+    if ((settings.windowSystem == WindowSystem::GLFW || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) &&
+        !settings.mainWindowSettings.userWindow) {
         if (!m_windowManager) {
             auto windowManager = ln::makeRef<GLFWPlatformWindowManager>(this);
-            if (!windowManager->init()) {
-                return err();
-            }
+            LN_TRY(windowManager->init(settings.windowSystem == WindowSystem::GLFW));
             m_windowManager = windowManager;
         }
     }
@@ -65,7 +64,7 @@ Result PlatformManager::init(const Settings& settings)
     }
 #endif
 
-    m_glfwWithOpenGLAPI = settings.glfwWithOpenGLAPI;
+    //m_glfwWithOpenGLAPI = settings.glfwWithOpenGLAPI;
 
     // ユーザーウィンドウが指定されている場合、イベント処理は外部に任せる
     // ※ HSP3 ランタイム上では、Lumino 側がイベント処理してしまうと、termfunc() が呼ばれなくなる

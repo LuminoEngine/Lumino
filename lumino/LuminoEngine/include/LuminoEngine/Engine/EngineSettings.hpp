@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include <LuminoEngine/Asset/Common.hpp>
 #include "../Input/Common.hpp"
+#include <LuminoPlatform/Common.hpp>
 #include <LuminoGraphics/Common.hpp>
 
 namespace ln {
@@ -144,7 +145,7 @@ public:
     static void setEngineFeatures(Flags<EngineFeature> features);
 
     static void setDefaultObjectsCreation(bool value);
-    static void setUseGLFWWindowSystem(bool value);
+    static void setWindowSystem(WindowSystem value);
     static void setGraphicsContextManagement(bool value);
     static void setExternalMainLoop(bool value);
 };

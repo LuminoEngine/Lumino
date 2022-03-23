@@ -58,9 +58,11 @@ Result OpenGLDevice::init(const Settings& settings) {
     // Create main context
     {
         m_mainWindow = settings.mainWindow;
-        auto mainGLContext = settings.platformManager->openGLContext();
-        if (mainGLContext) {
-            mainGLContext->makeCurrentMain();
+        if (settings.platformManager) {
+            auto mainGLContext = settings.platformManager->openGLContext();
+            if (mainGLContext) {
+                mainGLContext->makeCurrentMain();
+            }
         }
         //m_mainGLContext->makeCurrentMain();
         //		if (settings.mainWindow)

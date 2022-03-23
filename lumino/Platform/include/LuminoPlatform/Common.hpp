@@ -1,8 +1,15 @@
-﻿
-#pragma once
+﻿#pragma once
 
 namespace ln {
 class PlatformWindow;
+
+enum class WindowSystem {
+	Native,
+	GLFW,
+	GLFWWithoutOpenGL,
+	External,
+};
+
 namespace detail {
 class OpenGLContext;
 class PlatformManager;
