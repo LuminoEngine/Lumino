@@ -28,8 +28,8 @@ public:
 
 protected:
     virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+    virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+    virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
 	virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
@@ -71,7 +71,7 @@ public:
     Thickness borderThickness;
     Rect srcRect;
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
 	{
 		m_srcTextureSize.width = state->m_subsetInfo.materialTexture->width();
 		m_srcTextureSize.height = state->m_subsetInfo.materialTexture->height();

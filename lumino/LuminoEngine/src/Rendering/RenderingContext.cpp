@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoFont/Font.hpp>

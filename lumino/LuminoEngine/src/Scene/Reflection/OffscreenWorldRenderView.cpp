@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
@@ -53,7 +53,7 @@ RenderTargetTexture* OffscreenWorldRenderView::renderTarget() const
 //{
 //	auto depthBuffer = DepthBuffer::getTemporary(m_renderTarget->width(), m_renderTarget->height());
 //
-//    GraphicsContext* context = m_renderingManager->graphicsManager()->graphicsContext();
+//    GraphicsCommandList* context = m_renderingManager->graphicsManager()->graphicsContext();
 //    context->setRenderTarget(0, m_renderTarget);
 //    context->setDepthBuffer(depthBuffer);
 //    WorldRenderView::render(context);
@@ -63,7 +63,7 @@ RenderTargetTexture* OffscreenWorldRenderView::renderTarget() const
 //}
 //
 
-void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* targetWorld)
+void OffscreenWorldRenderView::render(GraphicsCommandList* graphicsContext, World* targetWorld)
 {
     RenderingContext* context = targetWorld->m_renderingContext;
 
@@ -101,7 +101,7 @@ void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, World* t
 
 }
 
-void OffscreenWorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
+void OffscreenWorldRenderView::render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget)
 {
     LN_UNREACHABLE();
 }

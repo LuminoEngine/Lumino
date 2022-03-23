@@ -57,7 +57,7 @@ public:
     const Ref<TransformControls>& transformControls() const{ return m_transformControls; }
 
     // TODO: internal
-    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
+    virtual void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override;
     const Ref<detail::SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
     const Ref<FilmicPostEffect>& finishingProcess() const { return m_finishingProcess; }
 

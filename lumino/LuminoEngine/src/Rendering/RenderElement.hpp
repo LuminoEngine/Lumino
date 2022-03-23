@@ -24,14 +24,14 @@ public:
     //virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo);
 
 #ifdef LN_RLI_BATCH
-	virtual RequestBatchResult onRequestBatch(RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) = 0;
+	virtual RequestBatchResult onRequestBatch(RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) = 0;
 #else
 	// 描画実行。
 	// 純粋に描画のみを行うこと。
 	// ステートは RenderFeature::onStateChanged に通知済み。
 	// もしどうしてもステートを変更したい場合、描画した後は必ず元に戻さなければならない。
-	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
-	virtual RequestBatchResult onRequestBatch(RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const SubsetInfo* subsetInfo) = 0;
+	// この中で使えるのは GraphicsContext のみ。GraphicsCommandList や Device 側の機能を呼び出してはならない。
+	virtual RequestBatchResult onRequestBatch(RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const SubsetInfo* subsetInfo) = 0;
 #endif
 
     // DrawElementListBuilder で DrawElement が作られたときに確定する。

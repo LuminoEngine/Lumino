@@ -15,8 +15,8 @@ public:
 	RequestBatchResult clear(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
 protected:
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, detail::RenderFeatureBatch* batch) override;
+    virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+    virtual void renderBatch(GraphicsCommandList* context, detail::RenderFeatureBatch* batch) override;
 
 private:
 	struct ClearInfo

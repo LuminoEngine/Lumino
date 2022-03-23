@@ -3,7 +3,7 @@
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
 #include <LuminoGraphics/Texture.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/ShaderInterfaceFramework.hpp>
 #include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
@@ -35,7 +35,7 @@ void SpriteRenderFeature2::init(RenderingManager* manager)
 RequestBatchResult SpriteRenderFeature2::drawRequest(
 	RenderFeatureBatchList* batchList,
 	const RLIBatchState& batchState,
-	GraphicsContext* context,
+	GraphicsCommandList* context,
 	const Matrix& transform,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -350,7 +350,7 @@ void SpriteRenderFeature2::onActiveRenderFeatureChanged(const detail::CameraInfo
 	//m_viewPosition = m_viewInverseMatrix.position();
 }
 
-void SpriteRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void SpriteRenderFeature2::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -367,7 +367,7 @@ void SpriteRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderF
 #endif
 }
 
-void SpriteRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void SpriteRenderFeature2::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 	context->setVertexLayout(m_vertexLayout);
@@ -412,7 +412,7 @@ void SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(Texture* texture, c
 	*outSourceRect = renderSourceRect;
 }
 
-void SpriteRenderFeature2::prepareBuffers(GraphicsContext* context, int spriteCount)
+void SpriteRenderFeature2::prepareBuffers(GraphicsCommandList* context, int spriteCount)
 {
 	if (context) {
 		// TODO: 実行中の map は context->map 用意した方がいいかも

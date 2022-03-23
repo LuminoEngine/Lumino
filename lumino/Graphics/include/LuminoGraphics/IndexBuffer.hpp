@@ -88,7 +88,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     int getIndexStride() const;
-    detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     static int getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }

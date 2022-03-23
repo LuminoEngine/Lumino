@@ -4,7 +4,6 @@
 #include <LuminoGraphics/DepthBuffer.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/ShaderDescriptor.hpp>
 #include "GraphicsManager.hpp"
@@ -22,6 +21,7 @@ SwapChain::SwapChain()
     : m_manager(nullptr)
     , m_rhiObject(nullptr)
     , m_backbuffers()
+    , m_currentCommandList(nullptr)
     , m_imageIndex(-1) {
 }
 
@@ -34,7 +34,6 @@ void SwapChain::init(PlatformWindow* window, const SizeI& backbufferSize) {
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
-    m_graphicsContext = makeObject<GraphicsContext>(/*detail::GraphicsManager::instance()->renderingType()*/);
 
     resetRHIBackbuffers();
 
@@ -78,17 +77,17 @@ void SwapChain::resizeBackbuffer(int width, int height) {
     resetRHIBackbuffers();
 }
 
-GraphicsContext* SwapChain::beginFrame2() {
+GraphicsCommandList* SwapChain::beginFrame2() {
     m_rhiObject->acquireNextImage(&m_imageIndex);
 
-    GraphicsCommandList* rhiCommandList = currentCommandList();
-    rhiCommandList->reset();
-    detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, rhiCommandList);
-    detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
+    m_currentCommandList = currentCommandList();
+    m_currentCommandList->reset();
+    //detail::GraphicsCommandListInternal::resetCommandList(m_graphicsContext, rhiCommandList);
+    detail::GraphicsCommandListInternal::beginCommandRecoding(m_currentCommandList);
     currentCommandList()->m_singleFrameUniformBufferAllocator->cleanup();
-    m_graphicsContext->resetState();
+    m_currentCommandList->resetState();
 
-    return m_graphicsContext;
+    return m_currentCommandList;
 }
 
 RenderPass* SwapChain::currentRenderPass() const {
@@ -99,16 +98,18 @@ RenderPass* SwapChain::currentRenderPass() const {
 void SwapChain::endFrame() {
     currentCommandList()->m_singleFrameUniformBufferAllocator->unmap();
     // detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
-    detail::GraphicsContextInternal::endCommandRecoding(m_graphicsContext);
+    detail::GraphicsCommandListInternal::endCommandRecoding(m_currentCommandList);
 
     auto device = m_manager->deviceContext();
-    detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(m_graphicsContext, currentBackbuffer(), nullptr);
-    device->submitCommandBuffer(m_graphicsContext->commandList()->rhiResource(), rhiObject);
+    detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(m_currentCommandList, currentBackbuffer(), nullptr);
+    device->submitCommandBuffer(m_currentCommandList->rhiResource(), rhiObject);
 
-    detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
-    detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
+    detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_currentCommandList);
+    //detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
 
-    present(m_graphicsContext);
+    present(m_currentCommandList);
+
+    m_currentCommandList = nullptr;
 }
 
 void SwapChain::resetRHIBackbuffers() {
@@ -134,7 +135,7 @@ void SwapChain::resetRHIBackbuffers() {
     m_imageIndex = -1;
 }
 
-void SwapChain::present(GraphicsContext* context) {
+void SwapChain::present(GraphicsCommandList* context) {
     detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
     auto device = manager->deviceContext();
 
@@ -144,13 +145,14 @@ void SwapChain::present(GraphicsContext* context) {
     manager->frameBufferCache()->gcObjects();
 }
 
-detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsContext* context, bool* outModified) const {
+detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsCommandList* context, bool* outModified) const {
     *outModified = false;
     return m_rhiObject;
 }
 
 //==============================================================================
-// GraphicsContext
+// SwapChainInternal
+
 namespace detail {
 
 void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, int height) {

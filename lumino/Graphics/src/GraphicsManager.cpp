@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GraphicsResource.hpp>
 #include <LuminoGraphics/CommandQueue.hpp>
 #include <LuminoGraphics/Texture.hpp>
@@ -220,7 +220,6 @@ bool GraphicsManager::init(const Settings& settings) {
 
     m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
-    //m_graphicsContext = makeObject<GraphicsContext>(renderingType());
 
     //if (auto queue = m_deviceContext->getGraphicsCommandQueue()) {
     //	m_graphicsQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);

@@ -14,12 +14,12 @@ public:
     ExtensionRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult invoke(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, INativeGraphicsExtension* extension);
+	RequestBatchResult invoke(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList, INativeGraphicsExtension* extension);
 
 protected:
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+    virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
 
 private:
 

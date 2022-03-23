@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RLIBatchState.hpp"
 #include "RLIMaterial.hpp"
@@ -47,8 +47,7 @@ bool RLIMaterial::equals(const RLIMaterial* other) const
 		primitiveTopology == other->primitiveTopology;
 }
 
-void RLIMaterial::applyRenderStates(GraphicsContext* context) const
-{
+void RLIMaterial::applyRenderStates(GraphicsCommandList* context) const {
 	// BlendState
 	{
 		BlendStateDesc state;

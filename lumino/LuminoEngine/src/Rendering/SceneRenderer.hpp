@@ -34,7 +34,7 @@ public:
 	void setClearInfo(const ClearInfo& value) { m_clearInfo = value; }
 	const ClearInfo& clearInfo() const { return m_clearInfo; }
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void onEndRender(SceneRenderer* sceneRenderer);
 
 	// このパスのデフォルトの RenderPass を構築する。
@@ -81,7 +81,7 @@ class SceneRenderer
 public:
 	// render の前準備として、効率的な描画を行うためのZソートなどを実施した Element リストを作成する。
 	void prepare(
-		GraphicsContext* graphicsContext,
+		GraphicsCommandList* graphicsContext,
 		RenderingPipeline* renderingPipeline,
 		RenderingContext* renderingContext,
 		//detail::CommandListServer* commandListServer,
@@ -91,7 +91,7 @@ public:
 		const RLICulling* culling);
 
 	void renderPass(
-		GraphicsContext* graphicsContext,
+		GraphicsCommandList* graphicsContext,
 		RenderTargetTexture* renderTarget,
 		DepthBuffer* depthBuffer,
 		SceneRendererPass* pass);
@@ -131,7 +131,7 @@ public:	// TODO
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 private:
-	void buildBatchList(GraphicsContext* graphicsContext, const RLICulling* culling);
+	void buildBatchList(GraphicsCommandList* graphicsContext, const RLICulling* culling);
 
 	detail::RenderingManager* m_manager;
 	//List<Ref<SceneRendererPass>> m_renderingPassList;

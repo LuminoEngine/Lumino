@@ -82,7 +82,7 @@ void TestEnv::resetScene()
 	Engine::mainLight()->setIntensity(1.0f);
 }
 
-GraphicsContext* TestEnv::graphicsContext()
+GraphicsCommandList* TestEnv::graphicsContext()
 {
 	return Engine::graphicsContext();
 }
@@ -92,14 +92,14 @@ SwapChain* TestEnv::mainWindowSwapChain()
 	return Engine::mainWindow()->swapChain();
 }
 
-void TestEnv::resetGraphicsContext(GraphicsContext* context)
+void TestEnv::resetGraphicsContext(GraphicsCommandList* context)
 {
 	context->resetState();
 	//context->setRenderTarget(0, Engine::mainWindow()->swapChain()->currentBackbuffer());
 	//context->setDepthBuffer(depthBuffer);
 }
 
-GraphicsContext* TestEnv::beginFrame()
+GraphicsCommandList* TestEnv::beginFrame()
 {
 	auto ctx = TestEnv::mainWindowSwapChain()->beginFrame2();
 	return ctx;

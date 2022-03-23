@@ -3,7 +3,7 @@
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "PrimitiveRenderFeature.hpp"
@@ -69,7 +69,7 @@ void MeshGeneraterRenderFeature::beginRendering()
     resetBatchData();
 }
 
-void MeshGeneraterRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void MeshGeneraterRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -85,7 +85,7 @@ void MeshGeneraterRenderFeature::submitBatch(GraphicsContext* context, detail::R
 #endif
 }
 
-void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void MeshGeneraterRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	if (m_generators.isEmpty()) return;
     auto localBatch = static_cast<Batch*>(batch);
@@ -213,7 +213,7 @@ void PrimitiveRenderFeature::beginRendering()
 	m_primitives.clear();
 }
 
-void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void PrimitiveRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -226,7 +226,7 @@ void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::Rende
 #endif
 }
 
-void PrimitiveRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void PrimitiveRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 

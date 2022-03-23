@@ -6,7 +6,6 @@
 
 namespace ln {
 class IGraphicsResource;
-class GraphicsContext;
 class GraphicsCommandList;
 class SamplerState;
 class SwapChain;
@@ -352,6 +351,7 @@ class GraphicsContextInternal;
 class IGraphicsDevice;
 class ICommandList;
 class ISamplerState;
+class IRenderPass;
 class ShaderSecondaryDescriptor;
 class GraphicsProfiler;
 class RHIResource;

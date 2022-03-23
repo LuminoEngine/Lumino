@@ -3,7 +3,7 @@
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "../../../../Graphics/src/GraphicsManager.hpp"
@@ -107,8 +107,7 @@ void FrameRectRenderFeature::beginRendering()
 {
 }
 
-void FrameRectRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
-{
+void FrameRectRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
 #else
@@ -124,8 +123,7 @@ void FrameRectRenderFeature::submitBatch(GraphicsContext* context, detail::Rende
 #endif
 }
 
-void FrameRectRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
-{
+void FrameRectRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) {
 	auto localBatch = static_cast<Batch*>(batch);
 	context->setVertexLayout(m_vertexLayout);
 	context->setVertexBuffer(0, m_vertexBuffer);

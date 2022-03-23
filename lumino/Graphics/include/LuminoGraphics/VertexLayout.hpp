@@ -45,7 +45,7 @@ LN_CONSTRUCT_ACCESS:
     void init(const VertexElement* elements, int count);
 
 private:
-    detail::IVertexDeclaration* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::IVertexDeclaration* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
 
     detail::GraphicsManager* m_manager;
     Ref<detail::IVertexDeclaration> m_deviceObj;

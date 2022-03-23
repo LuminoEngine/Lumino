@@ -4,7 +4,6 @@
 #include <LuminoGraphics/Texture.hpp>
 #include <LuminoGraphics/SamplerState.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/ConstantBuffer.hpp>
@@ -452,16 +451,14 @@ Shader* ShaderPass::shader() const
     return m_owner->shader();
 }
 
-detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified)
-{
+detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified) {
     // TODO: submitShaderDescriptor はここでやったほうがいいかも
     return m_rhiPass;
 }
 
-void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified)
-{
+void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified) {
     auto* manager = m_owner->shader()->m_graphicsManager;
-    GraphicsCommandList* commandList = graphicsContext->commandList();
+    GraphicsCommandList* commandList = graphicsContext;
     detail::ICommandList* rhiCommandList = commandList->rhiResource();
 
 

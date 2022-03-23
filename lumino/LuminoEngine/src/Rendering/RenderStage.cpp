@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -44,8 +44,7 @@ bool RenderStage::equals(const RenderStage* other) const
 		m_objectId == other->m_objectId;
 }
 
-void RenderStage::flush(GraphicsContext* context)
-{
+void RenderStage::flush(GraphicsCommandList* context) {
 	if (renderFeature) {
 		// TODO: batch list
 		renderFeature->submitBatch(context, nullptr);

@@ -7,7 +7,7 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -241,7 +241,7 @@ const Path& Engine::persistentDataPath() {
 //    return detail::EngineDomain::engineManager()->setShowDebugFpsEnabled(enabled);
 //}
 
-GraphicsContext* Engine::graphicsContext() {
+GraphicsCommandList* Engine::graphicsContext() {
     return detail::EngineDomain::engineManager()->mainWindow()->m_renderingGraphicsContext;
     //return detail::EngineDomain::graphicsManager()->mainWindowGraphicsContext();
 }

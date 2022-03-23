@@ -4,7 +4,6 @@
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/ShaderDescriptor.hpp>
 #include "../../../../Graphics/src/GraphicsManager.hpp"
@@ -51,8 +50,8 @@ struct GLNVGcontext : public GLNVGcontextBase {
 	ln::Ref<ln::VertexLayout> vertexLayout;
 	ln::Ref<ln::VertexBuffer> vertexBuffer;
 	ln::Shader* shader;
-	ln::GraphicsContext* g = nullptr;
-	ln::GraphicsCommandList* commandList() const { return g->commandList(); }
+	ln::GraphicsCommandList* g = nullptr;
+	ln::GraphicsCommandList* commandList() const { return g; }	// TODO: 不要
 };
 
 
@@ -163,7 +162,7 @@ static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 // 頂点バッファは呼び出し側で bind 済み
 static void glnvg__fill(GLNVGcontext* gl, GLNVGcall* call)
 {
-	ln::GraphicsContext* g = gl->g;
+	ln::GraphicsCommandList* g = gl->g;
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int i, npaths = call->pathCount;
 
@@ -504,7 +503,7 @@ void PathRenderFeature::beginRendering()
 	m_batchData.offset = 0;
 }
 
-RequestBatchResult PathRenderFeature::draw(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context)
+RequestBatchResult PathRenderFeature::draw(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context)
 {
 	LN_NOTIMPLEMENTED();
 	//submitBatch(context, batchList);
@@ -512,7 +511,7 @@ RequestBatchResult PathRenderFeature::draw(RenderFeatureBatchList* batchList, co
 	return RequestBatchResult::Staging;
 }
 
-void PathRenderFeature::submitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList)
+void PathRenderFeature::submitBatch(GraphicsCommandList* context, RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -524,7 +523,7 @@ void PathRenderFeature::submitBatch(GraphicsContext* context, RenderFeatureBatch
 #endif
 }
 
-void PathRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void PathRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 

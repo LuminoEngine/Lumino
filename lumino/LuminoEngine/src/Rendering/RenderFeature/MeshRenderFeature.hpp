@@ -17,14 +17,14 @@ public:
 	MeshRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-    RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
-	RequestBatchResult drawMeshInstanced(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list);
+	RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshResource* mesh, int sectionIndex);
+    RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
+	RequestBatchResult drawMeshInstanced(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, InstancedMeshList* list);
 
-	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList, bool instanced);
+	RequestBatchResult attemptSubmitBatch(GraphicsCommandList* context, RenderFeatureBatchList* batchList, bool instanced);
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual void submitBatch(GraphicsCommandList* context, RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
 
 private:
 	struct DrawMeshData

@@ -33,7 +33,7 @@ public:
 
  //   //void drawMeshGenerater(const MeshGenerater* generator);
  //   template<class TFactory>
-	//RequestBatchResult drawMeshGenerater(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const TFactory& generator)
+	//RequestBatchResult drawMeshGenerater(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, const TFactory& generator)
  //   {
 	//	//// TODO: toporogy も RenderStage のパラメータに持っていく
  // //      if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
@@ -62,8 +62,8 @@ public:
 		const MeshGenerater* generator);
 
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
     //virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
@@ -115,8 +115,8 @@ public:
 		int primitiveCount);
 
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
 
 private:
 	struct PrimitveData

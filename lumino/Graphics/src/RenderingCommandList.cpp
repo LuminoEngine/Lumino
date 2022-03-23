@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoGraphics/detail/RenderingCommandList.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 
 namespace ln {
 namespace detail {
@@ -123,8 +123,7 @@ void RenderingQueue::dispose()
 //	m_commandListQueue.push_back(commandList);
 //}
 
-void RenderingQueue::submit(GraphicsContext* context)
-{
+void RenderingQueue::submit(GraphicsCommandList* context) {
 	if (LN_REQUIRE(context)) return;
 
 #if 0

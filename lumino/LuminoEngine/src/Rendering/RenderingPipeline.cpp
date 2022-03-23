@@ -25,7 +25,7 @@ void RenderingPipeline::init()
     m_clearRenderPass = makeObject<RenderPass>();
 }
 
-//void RenderingPipeline::clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo)
+//void RenderingPipeline::clear(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo)
 //{
 //    if (clearInfo.flags != ClearFlags::None) {
 //        m_clearRenderPass->setRenderTarget(0, renderTarget);
@@ -96,7 +96,7 @@ void SceneRenderingPipeline::prepare(RenderTargetTexture* renderTarget)
 }
 
 void SceneRenderingPipeline::render(
-    GraphicsContext* graphicsContext,
+    GraphicsCommandList* graphicsContext,
     RenderingContext* renderingContext,
 	RenderTargetTexture* renderTarget,
     const ClearInfo& mainPassClearInfo,
@@ -262,7 +262,7 @@ void FlatRenderingPipeline::init()
 }
 
 void FlatRenderingPipeline::render(
-	GraphicsContext* graphicsContext,
+	GraphicsCommandList* graphicsContext,
     RenderingContext* renderingContext,
 	RenderTargetTexture* renderTarget,
     const ClearInfo& mainPassClearInfo,

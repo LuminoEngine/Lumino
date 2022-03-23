@@ -9,7 +9,7 @@
 
 namespace ln {
 class Shader;
-class GraphicsContext;
+class GraphicsCommandList;
 class Material;
 class RenderFeature;
 namespace detail {
@@ -169,7 +169,7 @@ public:
 	RenderStage();
 
 	bool equals(const RenderStage* other) const;
-	void flush(GraphicsContext* context);
+	void flush(GraphicsCommandList* context);
 
 
 	RenderTargetTexture* getRenderTargetFinal(int index) const { return frameBufferStageParameters->m_renderTargets[index]; }
@@ -197,7 +197,7 @@ public:
     const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
 	//static void applyFrameBufferStatus(RenderPass* renderPass, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
-	//static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const Material* priorityMaterial);
+	//static void applyGeometryStatus(GraphicsCommandList* context, const RenderStage* stage, const Material* priorityMaterial);
 	//static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 private:

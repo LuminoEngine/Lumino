@@ -3,7 +3,7 @@
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "../../../../Graphics/src/GraphicsManager.hpp"
@@ -194,7 +194,7 @@ void ShapesRenderFeature::init(RenderingManager* manager)
 }
 
 //------------------------------------------------------------------------------
-RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
+RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsCommandList* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
 {
 	extractBasePoints(commandList);
 	calcExtrudedDirection();
@@ -327,7 +327,7 @@ void ShapesRenderFeature::beginRendering()
 	m_batchData.indexCount = 0;
 }
 
-void ShapesRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void ShapesRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 	//if (m_mappedVertices) {
 	//	// TODO: unmap (今は自動だけど、明示した方が安心かも)
@@ -340,7 +340,7 @@ void ShapesRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFe
 	m_batchData.indexCount = 0;
 }
 
-void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void ShapesRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 
@@ -357,7 +357,7 @@ void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBat
 //	m_manager->getShapesRendererCommandListCache()->releaseCommandList(commandList);
 //}
 
-//void ShapesRenderFeature::prepareBuffers(GraphicsContext* context, int triangleCount)
+//void ShapesRenderFeature::prepareBuffers(GraphicsCommandList* context, int triangleCount)
 //{
 //	//if (context) {
 //	//	// TODO: 実行中の map は context->map 用意した方がいいかも
@@ -1024,7 +1024,7 @@ void ShapesRenderFeature::init(RenderingManager* manager)
     m_internal->init(manager);
 }
 
-void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const ShapesRendererCommandList& commandList)
+void ShapesRenderFeature::renderCommandList(GraphicsCommandList* context, const ShapesRendererCommandList& commandList)
 {
     // commandList が持っているポインタは RenderingCommandList の LinearAllocator で確保したものなのでそのまま RenderCommand に乗せてOK
 
@@ -1040,12 +1040,12 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
         });
 }
 
-void ShapesRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void ShapesRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 	// TODO:
 }
 
-void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void ShapesRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	LN_NOTIMPLEMENTED();
 }
@@ -3595,7 +3595,7 @@ void ShapesRenderFeature2::beginRendering()
 	m_indexUsedCount = 0;
 }
 
-void ShapesRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void ShapesRenderFeature2::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
     LN_UNREACHABLE();
@@ -3612,7 +3612,7 @@ void ShapesRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderF
 #endif
 }
 
-void ShapesRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void ShapesRenderFeature2::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 

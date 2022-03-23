@@ -3,7 +3,7 @@
 #include "RLIs/RLICulling.hpp"
 
 namespace ln {
-class GraphicsContext;
+class GraphicsCommandList;
 namespace detail {
 class ClusteredShadingSceneRenderer;
 class UnLigitingSceneRenderer;
@@ -23,7 +23,7 @@ public:
     //const detail::CommandListServer* commandListServer() const { return m_commandListServer; }
 
 protected:
-    //void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
+    //void clear(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
 
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
@@ -43,7 +43,7 @@ public:
     void init();
     void prepare(RenderTargetTexture* renderTarget);
     void render(
-        GraphicsContext* graphicsContext,
+        GraphicsCommandList* graphicsContext,
         RenderingContext* renderingContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
@@ -108,7 +108,7 @@ public:
 	FlatRenderingPipeline();
 	void init();
     void render(
-        GraphicsContext* graphicsContext,
+        GraphicsCommandList* graphicsContext,
         RenderingContext* renderingContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,

@@ -26,7 +26,7 @@ TEST_F(Test_Graphics_Texture, clear)
     //* [ ] 別色クリア
     {
 #ifdef LN_NEW_GRAPHICS_MIGRATION
-        // TODO: GraphicsContext への map 実装が必要
+        // TODO: GraphicsCommandList への map 実装が必要
 #else
         texture->clear(Color::Green);
 
@@ -127,7 +127,7 @@ TEST_F(Test_Graphics_Texture, Issues)
     //* [ ] <Issue> Drawtext 連続で描画すると、1フレーム前の内容がクリアされる問題の修正。
     {
 #ifdef LN_NEW_GRAPHICS_MIGRATION
-        // TODO: GraphicsContext への map 実装が必要
+        // TODO: GraphicsCommandList への map 実装が必要
 #else
         auto font = Font::create();
         auto texture = Texture2D::create(160, 120);

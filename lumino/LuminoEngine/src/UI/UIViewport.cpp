@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 //#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
@@ -171,7 +171,7 @@ void UIViewport::onUpdateLayout(UILayoutContext* layoutContext)
 void UIViewport::onRender(UIRenderingContext* context)
 {
 
-    GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
+    GraphicsCommandList* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
     //auto* renderTarget = graphicsContext->renderTarget(0);
 	//Ref<RenderPass> oldRenderPass = graphicsContext->renderPass();
 

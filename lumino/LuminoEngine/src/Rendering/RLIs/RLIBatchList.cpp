@@ -100,7 +100,7 @@ bool RenderFeatureBatchList::equalsLastBatchState(RenderFeature* renderFeature, 
 //	subsetInfo.tone = stage->getToneFinal(element);
 //}
 //
-//void RenderFeatureBatchList::render(GraphicsContext* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo)
+//void RenderFeatureBatchList::render(GraphicsCommandList* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo)
 //{
 //#if 1
 //	const detail::RenderStage* currentStage = nullptr;

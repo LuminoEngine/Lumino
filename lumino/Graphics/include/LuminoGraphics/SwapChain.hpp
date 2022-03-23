@@ -37,7 +37,7 @@ public:
     /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
     RenderTargetTexture* currentBackbuffer() const;
 
-    GraphicsContext* beginFrame2(); // 続いで currentRenderPass() で取得したパスの begin が必要。※begin 前に data-translate したりしたいので分けている。
+    GraphicsCommandList* beginFrame2(); // 続いで currentRenderPass() で取得したパスの begin が必要。※begin 前に data-translate したりしたいので分けている。
     RenderPass* currentRenderPass() const;
 
     void endFrame();
@@ -55,8 +55,8 @@ private:
     const Ref<GraphicsCommandList>& currentCommandList() const { return m_commandLists[m_imageIndex]; }
     void resizeBackbuffer(int width, int height);
     void resetRHIBackbuffers();
-    void present(GraphicsContext* context);
-    detail::ISwapChain* resolveRHIObject(GraphicsContext* context, bool* outModified) const;
+    void present(GraphicsCommandList* context);
+    detail::ISwapChain* resolveRHIObject(GraphicsCommandList* context, bool* outModified) const;
     int imageIndex() const { return m_imageIndex; }
 
     detail::GraphicsManager* m_manager;
@@ -65,7 +65,7 @@ private:
     std::vector<Ref<DepthBuffer>> m_depthBuffers;
     std::vector<Ref<RenderPass>> m_renderPasses;
     std::vector<Ref<GraphicsCommandList>> m_commandLists;
-    Ref<GraphicsContext> m_graphicsContext;
+    GraphicsCommandList* m_currentCommandList;
     int m_imageIndex;
 
     friend class detail::GraphicsResourceInternal;
@@ -80,7 +80,6 @@ public:
     static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
     static const Ref<GraphicsCommandList>& currentCommandList(SwapChain* swapChain) { return swapChain->currentCommandList(); }
     static void resizeBackbuffer(SwapChain* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
-    // static void present(SwapChain* swapChain, GraphicsContext* context) { swapChain->present(context); }
     static int imageIndex(SwapChain* swapChain) { return swapChain->imageIndex(); }
     static int swapBufferCount(SwapChain* swapChain) { return static_cast<int>(swapChain->m_backbuffers.size()); }
 };

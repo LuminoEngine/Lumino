@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/SamplerState.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
@@ -47,8 +47,7 @@ void ForwardGBufferPrepass::init()
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
+void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
 	const auto* renderingPipeline = static_cast<SceneRenderingPipeline*>(sceneRenderer->renderingPipeline());
 	auto size = renderingPipeline->renderingFrameBufferSize();
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
@@ -77,11 +76,11 @@ void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
 	m_depthBuffer = nullptr;
 }
 
-//void ForwardGBufferPrepass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+//void ForwardGBufferPrepass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 //{
 //}
 
-//void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//void ForwardGBufferPrepass::onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer)
 //{
 //	frameBuffer->renderTarget[0] = m_depthMap;
 //	frameBuffer->depthBuffer = m_depthBuffer;
@@ -160,7 +159,7 @@ void LightOcclusionPass::onEndRender(SceneRenderer* sceneRenderer)
 	m_depthBuffer = nullptr;
 }
 
-void LightOcclusionPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void LightOcclusionPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, m_lensflareOcclusionMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
@@ -262,8 +261,7 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void ClusteredShadingGeometryRenderingPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
+void ClusteredShadingGeometryRenderingPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
 	//m_renderPass->setClearValues(ClearFlags::None, Color::Transparency, 1.0f, 0);
@@ -271,7 +269,7 @@ void ClusteredShadingGeometryRenderingPass::onBeginRender(SceneRenderer* sceneRe
 	m_renderPass->setClearValues(info.flags, info.color, info.depth, info.stencil);
 }
 
-//void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer)
 //{
 //	frameBuffer->renderTarget[0] = m_depthMap;
 //	frameBuffer->depthBuffer = m_depthBuffer;
@@ -403,8 +401,7 @@ void ShadowCasterPass::init()
 //	return m_defaultShader;
 //}
 
-void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
+void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
 	const auto* renderingPipeline = static_cast<SceneRenderingPipeline*>(sceneRenderer->renderingPipeline());
 	//RenderTargetTexture* shadowMap = 
 
@@ -421,7 +418,7 @@ void ShadowCasterPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsConte
 	//sceneRenderer->m_mainCameraInfo.mainLightShadowMapPixelSize = 
 }
 
-//void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//void ShadowCasterPass::onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer)
 //{
 //	frameBuffer->renderTarget[0] = m_shadowMap;
 //	frameBuffer->depthBuffer = m_depthBuffer;

@@ -5,7 +5,6 @@
 #include <LuminoGraphics/ShaderInterfaceFramework.hpp>
 
 namespace ln {
-class GraphicsContext;
 class ShaderTechnique;
 class RenderFeature;
 class Material;
@@ -34,8 +33,8 @@ public:
 
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo);
 
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) = 0;
-	virtual void renderBatch(GraphicsContext* context, detail::RenderFeatureBatch* batch) = 0;
+	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) = 0;
+    virtual void renderBatch(GraphicsCommandList* context, detail::RenderFeatureBatch* batch) = 0;
 
     // 主に PrimitiveRenderFeature など、バッチ描画を行うクラスのために用意したプロパティ。
     // true を返すようにオーバーライドすると、SceneRenderer は DrawElement が持っている Transform を ElementInfo に渡さなくなる。(単位行列になる)

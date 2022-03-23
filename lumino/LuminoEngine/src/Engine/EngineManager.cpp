@@ -6,7 +6,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>

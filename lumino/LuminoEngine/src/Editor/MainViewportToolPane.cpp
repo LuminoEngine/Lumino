@@ -12,7 +12,7 @@ namespace detail {
 void MainViewportToolPane::onGui()
 {
     UIRenderView* renderView = m_frameWindow->m_renderView;
-    GraphicsContext* graphicsContext = m_frameWindow->m_renderingGraphicsContext;
+    GraphicsCommandList* graphicsContext = m_frameWindow->m_renderingGraphicsContext;
     ImGuiWindow* window = ImGui::GetCurrentWindow();
 
     const ImVec2 contentSize = ImGui::GetContentRegionAvail();

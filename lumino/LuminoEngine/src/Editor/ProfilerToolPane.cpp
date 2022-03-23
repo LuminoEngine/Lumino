@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include "../../../Graphics/src/GraphicsManager.hpp"
@@ -27,7 +26,7 @@ static ImU32 toImU32(const Color& c)
 void ProfilerToolPane::onGui()
 {
 	UIFrameWindow* window = frameWindow();
-	GraphicsContext* graphicsContext = window->m_renderingGraphicsContext;
+    GraphicsCommandList* graphicsContext = window->m_renderingGraphicsContext;
 
 	//
 
@@ -130,7 +129,7 @@ void ProfilerToolPane::onGui()
 
 		{
 
-			ImGui::Text("DrawCall: %d", graphicsContext->commandList()->m_drawCall);
+			ImGui::Text("DrawCall: %d", graphicsContext->m_drawCall);
 		}
 	}
 
@@ -202,7 +201,7 @@ void ProfilerToolPane::onGui()
 		ImGui::Columns(1);
 
 		{
-			GraphicsCommandList* commandList = graphicsContext->commandList();
+			GraphicsCommandList* commandList = graphicsContext;
 			ImGui::Text("Transferred data size:");
 			ImGui::Columns(2);
 			addTextValue("VertexBuffer", commandList->m_vertexBufferDataTransferredSize);

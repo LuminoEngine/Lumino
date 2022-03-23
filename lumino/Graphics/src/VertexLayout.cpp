@@ -70,8 +70,7 @@ void VertexLayout::addElement(const VertexElement& element)
     m_vertexElements.add(element);
 }
 
-detail::IVertexDeclaration* VertexLayout::resolveRHIObject(GraphicsContext* context, bool* outModified)
-{
+detail::IVertexDeclaration* VertexLayout::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
 	*outModified = m_modified;
 
     if (m_modified) {

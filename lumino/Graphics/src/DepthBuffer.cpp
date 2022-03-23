@@ -59,7 +59,7 @@ void DepthBuffer::onChangeDevice(detail::IGraphicsDevice* device) {
     }
 }
 
-detail::RHIResource* DepthBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified) {
+detail::RHIResource* DepthBuffer::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
     *outModified = false;
     return m_rhiObject;
 }

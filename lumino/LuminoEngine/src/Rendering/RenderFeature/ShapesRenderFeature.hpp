@@ -163,12 +163,12 @@ public:
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
 
-	RequestBatchResult requestDrawCommandList(GraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
+	RequestBatchResult requestDrawCommandList(GraphicsCommandList* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
 
 protected:
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
 	virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
@@ -238,7 +238,7 @@ private:
 		float	alpha;
 	};
 
-	//void prepareBuffers(GraphicsContext* context, int triangleCount);
+	//void prepareBuffers(GraphicsCommandList* context, int triangleCount);
 	Path* addPath(PathType type, const Matrix* transform, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void endPath(Path* path);
 	void extractBasePoints(ShapesRendererCommandList* commandList);
@@ -663,8 +663,8 @@ public:
 
 protected:
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
 	
     // モノによってはかなりの頂点数となるため、CPU 側での頂点変換はコストが高すぎる
     virtual bool drawElementTransformNegate() const override { return false; }
@@ -705,7 +705,7 @@ class DrawShapesElement : public RenderDrawElement
 public:
 	ShapesRendererCommandList commandList;
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
 	{
 #ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
 		return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(batchList, *state, &commandList);
@@ -723,7 +723,7 @@ class DrawBoxElementShape : public RenderDrawElement
 public:
     BoxElementShapeCommandList commandList;
 
-    virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+    virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
     {
         return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(batchList, *state, &commandList);
     }

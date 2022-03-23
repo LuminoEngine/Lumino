@@ -2,7 +2,6 @@
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
 
@@ -220,8 +219,7 @@ void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
-{
+detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
 
@@ -232,7 +230,7 @@ detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsContext* context, boo
    //         m_rhiMappedBuffer = nullptr;
    //     } else 
         {
-            detail::ICommandList* commandList = context->commandList()->rhiResource();
+            detail::ICommandList* commandList = context->rhiResource();
             size_t requiredSize = bytesSize();
             if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
                 m_rhiObject = device->createIndexBuffer(GraphicsResourceUsage::Static, m_format, size(), m_buffer.data());
@@ -240,7 +238,7 @@ detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsContext* context, boo
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RHIResource* rhiObject = m_rhiObject;
                 commandList->setSubData(rhiObject, 0, m_buffer.data(), m_buffer.size());
-                context->commandList()->m_vertexBufferDataTransferredSize += m_buffer.size();
+                context->m_vertexBufferDataTransferredSize += m_buffer.size();
             }
         }
     }

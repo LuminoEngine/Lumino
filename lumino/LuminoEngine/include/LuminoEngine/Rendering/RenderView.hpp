@@ -7,7 +7,6 @@
 #include "Common.hpp"
 
 namespace ln {
-class GraphicsContext;
 class UIEventArgs;
 class UIStyleContext;
 class UILayoutContext;
@@ -23,7 +22,7 @@ class UIStyleInstance;
 }
 
 // RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
-// そのため render の実装は RenderingContext や GraphicsContext の状態に依存しないようにしなければならない。
+// そのため render の実装は RenderingContext や GraphicsCommandList の状態に依存しないようにしなければならない。
 // TODO: onUpdateUILayout() など、少し UI に依存してきている。UI モジュールにもっていくのが正しい？
 
 /**
@@ -41,7 +40,7 @@ public:
 
 	UIViewport* viewport() const { return m_parentViewport; }
 
-    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) = 0;
+    virtual void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) = 0;
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;

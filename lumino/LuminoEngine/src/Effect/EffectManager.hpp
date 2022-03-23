@@ -49,7 +49,6 @@ public:
     Ref<ParticleModelPromise> loadParticleModelAsync(const StringView& filePath);
 
     void testDraw(RenderingContext* renderingContext);
-    //void testDraw2(GraphicsContext* graphicsContext);
 
 
     Ref<EffectEmitter> createEmitterFromFile(const Path& filePath);

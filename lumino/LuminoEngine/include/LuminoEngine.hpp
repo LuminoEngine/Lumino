@@ -50,7 +50,7 @@
 #include "LuminoGraphics/Texture.hpp"
 #include "LuminoGraphics/RenderPass.hpp"
 #include "LuminoGraphics/SwapChain.hpp"
-#include "LuminoGraphics/GraphicsContext.hpp"
+#include "LuminoGraphics/GraphicsCommandBuffer.hpp"
 #include "LuminoGraphics/Graphics.hpp"
 
 

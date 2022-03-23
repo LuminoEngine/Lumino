@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/Texture.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

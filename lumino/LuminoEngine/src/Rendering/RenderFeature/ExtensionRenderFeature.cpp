@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GraphicsExtension.hpp>
 #include "ExtensionRenderFeature.hpp"
 
@@ -20,8 +20,7 @@ void ExtensionRenderFeature::init(RenderingManager* manager)
 	RenderFeature::init();
 }
 
-RequestBatchResult ExtensionRenderFeature::invoke(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, INativeGraphicsExtension* extension)
-{
+RequestBatchResult ExtensionRenderFeature::invoke(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList, INativeGraphicsExtension* extension) {
 #ifdef LN_RLI_BATCH
     LN_NOTIMPLEMENTED();
     return RequestBatchResult::Submitted;
@@ -56,8 +55,7 @@ void ExtensionRenderFeature::beginRendering()
     m_batchData.count = 0;
 }
 
-void ExtensionRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
-{
+void ExtensionRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) {
 #ifdef LN_RLI_BATCH
     LN_UNREACHABLE();
 #else
@@ -70,8 +68,7 @@ void ExtensionRenderFeature::submitBatch(GraphicsContext* context, detail::Rende
 #endif
 }
 
-void ExtensionRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
-{
+void ExtensionRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) {
     auto localBatch = static_cast<Batch*>(batch);
     for (int i = 0; i < localBatch->data.count; i++) {
         context->drawExtension(m_extensions[localBatch->data.offset + i]);

@@ -14,7 +14,7 @@ public:
 
 
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(

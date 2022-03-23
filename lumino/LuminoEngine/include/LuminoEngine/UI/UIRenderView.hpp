@@ -27,8 +27,8 @@ public:
 
     // TODO: internal
     // 描画コマンド構築と実行まですべて行う
-    //void renderTree(GraphicsContext* graphicsContext, UIElement* element);
-    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
+    //void renderTree(GraphicsCommandList* graphicsContext, UIElement* element);
+    virtual void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override;
 
     void invalidate(detail::UIElementDirtyFlags flags);
 

@@ -44,7 +44,7 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height);
 
 private:
-    detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
 
     detail::GraphicsManager* m_manager;
     Ref<detail::RHIResource> m_rhiObject;

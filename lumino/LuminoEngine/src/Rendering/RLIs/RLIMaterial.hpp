@@ -32,7 +32,7 @@ public:
 	RLIMaterial(const RLIBatchState& src);
 	void reset();
 	bool equals(const RLIMaterial* other) const;
-	void applyRenderStates(GraphicsContext* context) const;
+	void applyRenderStates(GraphicsCommandList* context) const;
 	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 };

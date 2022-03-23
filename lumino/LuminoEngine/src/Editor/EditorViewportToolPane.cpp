@@ -43,7 +43,7 @@ bool EditorViewportToolPane::init(UIMainWindow* mainWindow)
 
 void EditorViewportToolPane::onGui()
 {
-    GraphicsContext* graphicsContext = m_mainWindow->m_renderingGraphicsContext;
+    GraphicsCommandList* graphicsContext = m_mainWindow->m_renderingGraphicsContext;
     ImGuiWindow* window = ImGui::GetCurrentWindow();
 
     const ImVec2 contentSize = ImGui::GetContentRegionAvail();

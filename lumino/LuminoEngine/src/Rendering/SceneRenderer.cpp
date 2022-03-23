@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/ShaderDescriptor.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/SamplerState.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
@@ -39,7 +39,7 @@ void SceneRendererPass::init()
 {
 }
 
-void SceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void SceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 }
 
@@ -57,8 +57,8 @@ bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 		RenderDrawElementTypeFlags::Transparent)) != RenderDrawElementTypeFlags::None;
 }
 
-//void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
-//void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+//void SceneRendererPass::onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer)
+//void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 //{
 //}
 
@@ -119,7 +119,7 @@ void SceneRenderer::init()
 }
 
 void SceneRenderer::prepare(
-	GraphicsContext* graphicsContext,
+	GraphicsCommandList* graphicsContext,
 	RenderingPipeline* renderingPipeline,
 	RenderingContext* renderingContext,
 	//detail::CommandListServer* commandListServer,
@@ -144,7 +144,7 @@ void SceneRenderer::prepare(
 
 #if 0
 void SceneRenderer::render(
-	GraphicsContext* graphicsContext,
+	GraphicsCommandList* graphicsContext,
     RenderingPipeline* renderingPipeline,
 	RenderTargetTexture* renderTarget,
 	DepthBuffer* depthBuffer,
@@ -259,7 +259,7 @@ void SceneRenderer::render(
 
 //#define LN_PRINT_PROFILE 1
 
-void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICulling* culling)
+void SceneRenderer::buildBatchList(GraphicsCommandList* graphicsContext, const RLICulling* culling)
 {
 
 	m_renderFeatureBatchList.clear();
@@ -470,7 +470,7 @@ void SceneRenderer::buildBatchList(GraphicsContext* graphicsContext, const RLICu
 #endif
 }
 
-void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
+void SceneRenderer::renderPass(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
 #ifdef LN_PRINT_PROFILE
 	ElapsedTimer pt;
@@ -623,7 +623,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 
 
-				const auto& commandList = graphicsContext->commandList();
+				const auto& commandList = graphicsContext;
 
 				//if (batch->morph) {
 				//	const auto& shader = detail::EngineDomain::renderingManager()->blendShapeShader;
@@ -745,7 +745,7 @@ RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, 
 {
 	//assert(currentRenderPass);
 	FrameBuffer fb;
-	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
+	for (int i = 0; i < GraphicsCommandList::MaxMultiRenderTargets; i++) {
 		//if (i == 0)
 		//	fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i] ? stage->frameBufferStageParameters->m_renderTargets[i] : defaultRenderTarget;
 		//else
@@ -782,7 +782,7 @@ RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, 
 	renderPass->setClearValues(ClearFlags::Depth, Color::Transparency, 1.0f, 0x00);
     //renderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
 
-	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
+	for (int i = 0; i < GraphicsCommandList::MaxMultiRenderTargets; i++) {
 		renderPass->setRenderTarget(i, fb.renderTarget[i]);
 	}
 	renderPass->setDepthBuffer(fb.depthBuffer);
@@ -794,7 +794,7 @@ RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, 
 
 bool SceneRenderer::equalsFramebuffer(RenderPass* renderPass, const FrameBuffer& fb)
 {
-	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
+	for (int i = 0; i < GraphicsCommandList::MaxMultiRenderTargets; i++) {
 		if (renderPass->renderTarget(i) != fb.renderTarget[i]) {
 			return false;
 		}

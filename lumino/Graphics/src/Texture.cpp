@@ -6,7 +6,6 @@
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoGraphics/Texture.hpp>
 #include <LuminoGraphics/SamplerState.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
 #include <LuminoFont/Font.hpp>
@@ -298,8 +297,7 @@ void Texture2D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::RHIResource* Texture2D::resolveRHIObject(GraphicsContext* context, bool* outModified)
-{
+detail::RHIResource* Texture2D::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
     *outModified = m_modified;
 
     if (m_modified) {
@@ -311,7 +309,7 @@ detail::RHIResource* Texture2D::resolveRHIObject(GraphicsContext* context, bool*
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             SizeI bmpSize(m_bitmap->width(), m_bitmap->height());
             size_t bmpByteSize = bmpBuffer->size();
-            void* bmpRawData = context->commandList()->allocateBulkData(bmpByteSize);
+            void* bmpRawData = context->allocateBulkData(bmpByteSize);
             detail::BitmapHelper::blitRawSimple(
                 bmpRawData, bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), detail::BlitHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
@@ -320,9 +318,9 @@ detail::RHIResource* Texture2D::resolveRHIObject(GraphicsContext* context, bool*
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RHIResource* rhiObject = m_rhiObject;
-                detail::ICommandList* commandList = context->commandList()->rhiResource();
+                detail::ICommandList* commandList = context->rhiResource();
 				commandList->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData, bmpByteSize);
-                context->commandList()->m_vertexBufferDataTransferredSize += bmpByteSize;
+                context->m_vertexBufferDataTransferredSize += bmpByteSize;
             }
         }
     }
@@ -536,8 +534,7 @@ void RenderTargetTexture::onDispose(bool explicitDisposing)
     Texture::onDispose(explicitDisposing);
 }
 
-Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
-{
+Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsCommandList* context) {
     bool modified = false;
     detail::RHIResource* rhiObject = resolveRHIObject(nullptr, &modified);
 
@@ -559,8 +556,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
     return bitmap;
 }
 
-detail::RHIResource* RenderTargetTexture::resolveRHIObject(GraphicsContext* context, bool* outModified)
-{
+detail::RHIResource* RenderTargetTexture::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
     *outModified = m_modified;
 
     if (m_modified) {
@@ -656,8 +652,7 @@ void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::RHIResource* Texture3D::resolveRHIObject(GraphicsContext* context, bool* outModified)
-{
+detail::RHIResource* Texture3D::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
     *outModified = m_modified;
 
     if (m_modified) {
@@ -669,7 +664,7 @@ detail::RHIResource* Texture3D::resolveRHIObject(GraphicsContext* context, bool*
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             BoxSizeI bmpSize = {m_bitmap->width(), m_bitmap->height(), m_bitmap->depth()};
             size_t bmpByteSize = bmpBuffer->size();
-            void* bmpRawData = context->commandList()->allocateBulkData(bmpByteSize);
+            void* bmpRawData = context->allocateBulkData(bmpByteSize);
             detail::BitmapHelper::blitRawSimple3D(
                 bmpRawData, bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), detail::BlitHelper::getPixelSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
@@ -677,7 +672,7 @@ detail::RHIResource* Texture3D::resolveRHIObject(GraphicsContext* context, bool*
                 m_rhiObject = deviceContext->createTexture3D(m_usage, width(), height(), depth(), format(), mipmap(), m_bitmap->data());
             } else {
                 detail::RHIResource* rhiObject = m_rhiObject;
-                detail::ICommandList* commandList = context->commandList()->rhiResource();
+                detail::ICommandList* commandList = context->rhiResource();
                 commandList->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData, bmpByteSize);
             }
         }

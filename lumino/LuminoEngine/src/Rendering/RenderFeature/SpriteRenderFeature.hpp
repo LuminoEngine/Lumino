@@ -22,7 +22,7 @@ public:
 	RequestBatchResult drawRequest(
 		RenderFeatureBatchList* batchList,
 		const RLIBatchState& batchState,
-		GraphicsContext* context,
+		GraphicsCommandList* context,
 		const Matrix& transform,
 		const Vector2& size,
 		const Vector2& anchorRatio,
@@ -34,8 +34,8 @@ public:
 
 	virtual bool drawElementTransformNegate() const override { return true; }
 	virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
 
 	static void makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect);
 
@@ -56,7 +56,7 @@ private:
 		BatchData data;
 	};
 
-	void prepareBuffers(GraphicsContext* context, int spriteCount);
+	void prepareBuffers(GraphicsCommandList* context, int spriteCount);
 
 	RenderingManager* m_manager;
 	Matrix m_viewMatrix;

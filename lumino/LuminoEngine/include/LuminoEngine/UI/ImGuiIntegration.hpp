@@ -5,7 +5,7 @@
 struct ImGuiContext;
 
 namespace ln {
-class GraphicsContext;
+class GraphicsCommandList;
 class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
@@ -39,7 +39,7 @@ public:
 	void dispose();
     void updateFrame(float elapsedSeconds);
 	void prepareRender(float width, float height);
-	void render(GraphicsContext* graphicsContext, RenderTargetTexture* target);
+    void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* target);
     bool handlePlatformEvent(const PlatformEventArgs& e);
 
 	const List<Ref<ImGuiDockPane>>& dockPanes() const { return m_dockPanes; }

@@ -131,6 +131,7 @@ public:
 		@param[out]	outStdError		: 標準エラー出力をリダイレクトし文字列として受け取る場合、その文字列を格納する変数のポインタを指定する
 		@return		プロセスの終了コード
 	*/
+    [[deprecated("There is a possibility of deadlock when getting a long standard output.")]]
     static int execute(const Path& program, const List<String>& args = List<String>(), String* outStdOutput = nullptr, String* outStdError = nullptr);
 
 private:

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 #include "GraphicsResource.hpp"
-#include "GraphicsContext.hpp"
+#include "GraphicsCommandBuffer.hpp"
 
 namespace ln {
-class GraphicsContext;
+class GraphicsCommandList;
 class RenderTargetTexture;
 class DepthBuffer;
 namespace detail {
@@ -12,7 +12,7 @@ class IRenderPass;
 }
 
 /**  */
-// Note: GraphicsContext に set 済みの RenderPass に対して後から setRenderTarget() しても描画結果は正しくなる。
+// Note: GraphicsCommandList に set 済みの RenderPass に対して後から setRenderTarget() しても描画結果は正しくなる。
 // ただし変更が発生するたびに IRenderPass の共有のためキャッシュを検索しに行くので、若干のオーバーヘッドが発生する。
 // 動的に変化させる必要が無ければ事前作成して、set～ はしないようにしておくとパフォーマンスが良くなる。
 class RenderPass
@@ -60,14 +60,14 @@ LN_CONSTRUCT_ACCESS:
 	void init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 private:
-    detail::IRenderPass* resolveRHIObject(GraphicsContext* context, bool* outModified);
-    detail::IRenderPass* resolveRHIObjectNoClear(GraphicsContext* context, bool* outModified);
+    detail::IRenderPass* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
+    detail::IRenderPass* resolveRHIObjectNoClear(GraphicsCommandList* context, bool* outModified);
 	void releaseRHI();
 
 	detail::GraphicsManager* m_manager;
     Ref<detail::IRenderPass> m_rhiObject;
     Ref<detail::IRenderPass> m_rhiObjectNoClear;
-	std::array<Ref<RenderTargetTexture>, GraphicsContext::MaxMultiRenderTargets> m_renderTargets;
+    std::array<Ref<RenderTargetTexture>, GraphicsCommandList::MaxMultiRenderTargets> m_renderTargets;
 	Ref<DepthBuffer> m_depthBuffer;
 	ClearFlags m_clearFlags;
 	Color m_clearColor;
@@ -77,7 +77,7 @@ private:
 	bool m_active;
 
     friend class detail::GraphicsResourceInternal;
-	friend class GraphicsContext;
+    friend class GraphicsCommandList;
 };
 
 //namespace detail {

@@ -17,7 +17,7 @@ class ShaderTechnique;
 class ShaderPass;
 class ShaderDescriptorLayout;
 class ShaderCompilationProperties;
-class GraphicsContext;
+class GraphicsCommandList;
 namespace detail {
 class UnifiedShader;
 class IShaderPass;
@@ -44,7 +44,7 @@ class ShaderInternal;
 
     まず UniformBuffer を扱えるようにする。
     現状 m_descriptor->setData() で struct を設定している個所で、SingleFrame な UniformBuffer を
-    GraphicsContext から作り、それ経由でデータをセットするように変更する。
+    GraphicsCommandList から作り、それ経由でデータをセットするように変更する。
 
     極限まで最適化するなら SingleFrame 以外の UniformBuffer もほしいが、ひとまず保留。
     というか Vulkan の allocationCount の問題があったけど、Buffer 自体はそれほど多く作れるものではない。
@@ -56,7 +56,7 @@ class ShaderInternal;
     必須ではない気もするけど、UniformBuffer は個別にしたのに DescriptorSet は Shader ごとに唯一なインスタンスなのが不自然。
     RHI 側の肥大化も防止したい。DX12 や Metal 対応の前にやっておきたいところ。
 
-    ShaderDefaultDescriptor はすべて SingleFrame なオブジェクトなので、GraphicsContext に shader を与えて生成してもらう感じがいいかな。
+    ShaderDefaultDescriptor はすべて SingleFrame なオブジェクトなので、GraphicsCommandList に shader を与えて生成してもらう感じがいいかな。
 
     ### Shader 自体が値を保持する必要は？
 
@@ -117,7 +117,7 @@ class ShaderInternal;
     Unity とかは Shader に対して直接フィールドをセットすることはできないけど、
     前述の通り直接設定したほうが作業効率が良いこともある。
 
-    ただ GraphicsContext を使うときにもこれが必要になるので、どのみち公開することになる。
+    ただ GraphicsCommandList を使うときにもこれが必要になるので、どのみち公開することになる。
     Binding への公開はそもそも Graphics 全体の課題なのでいいとしても、
     Descriptor 自体はある程度本来の使い方に似せたデザインにしたい。
 
@@ -567,8 +567,8 @@ private:
     void init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState, const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
-    detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
-    void submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified);
+    detail::IShaderPass* resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified);
+    void submitShaderDescriptor2(GraphicsCommandList* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;
@@ -584,7 +584,7 @@ private:
     friend class Shader;
     friend class ShaderTechnique;
     friend class detail::ShaderValueSerializer;
-    friend class GraphicsContext;
+    friend class GraphicsCommandList;
     friend class detail::ShaderInternal;
 };
 

@@ -20,15 +20,15 @@ public:
 
 	
 
-	RequestBatchResult drawText(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform);
-	RequestBatchResult drawChar(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform);
-	RequestBatchResult drawFlexGlyphRun(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
+	RequestBatchResult drawText(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform);
+	RequestBatchResult drawChar(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform);
+	RequestBatchResult drawFlexGlyphRun(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
 
 protected:
 	// RenderFeature interface
 	virtual void beginRendering() override;
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }
 
 	// TextLayoutEngine interface
@@ -55,20 +55,20 @@ private:
 	};
 
 	// TODO: バッファの準備周りは spriteRenderer と同じ。共通化した方がいいかも
-	void prepareBuffers(GraphicsContext* context, int spriteCount);
+	void prepareBuffers(GraphicsCommandList* context, int spriteCount);
 	FontCore* resolveFontCore(Font* font, FontRequester* fontRequester, const CameraInfo* cameraInfo, const Matrix& transform) const;
 	void beginLayout();
 	void addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform);
-	//RequestBatchResult resolveCache(RenderFeatureBatchList* batchList, GraphicsContext* context);
+	//RequestBatchResult resolveCache(RenderFeatureBatchList* batchList, GraphicsCommandList* context);
 	void endLayout();
-	Batch* endLayoutAndAcquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, FontCore* newFontCore, const Matrix& transform);
+	Batch* endLayoutAndAcquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, FontCore* newFontCore, const Matrix& transform);
 
-	void buildSpriteList(Batch* batch, GraphicsContext* context);
+	void buildSpriteList(Batch* batch, GraphicsCommandList* context);
 	void addSprite(Batch* batch, Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
 	bool isPixelSnapEnabled() const { return m_drawingBaseDirection == SpriteBaseDirection::Basic2D; }
 
 	//
-	//void flushInternal(GraphicsContext* context, FontGlyphTextureCache* cache);
+	//void flushInternal(GraphicsCommandList* context, FontGlyphTextureCache* cache);
 
 	RenderingManager* m_manager;
 	FontCore* m_lastFont;
@@ -95,7 +95,7 @@ private:
 	SamplerState* m_drawingSamplerState = nullptr;
 
 	//Ref<InternalSpriteTextRender> m_internal;
-	//GraphicsContext* m_drawingGraphicsContext;
+	//GraphicsCommandList* m_drawingGraphicsContext;
 	//const FormattedText* m_drawingFormattedText;
  //   Matrix m_drawingTransform;
 	//FontCore* m_drawingFont;
@@ -118,7 +118,7 @@ public:
 	SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
 	Ref<SamplerState> samplerState;
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
 	{
 		if (glyphRun) {
 			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, *state, context, glyphRun->font, glyphRun, anchor, baseDirection, combinedWorldMatrix());
@@ -142,7 +142,7 @@ public:
 	//	return FontHelper::resolveFontCore(font, dpiScale);
 	//}
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
 	{
 		return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawChar(batchList, *state, context, font, codePoint, color, combinedWorldMatrix() * transform);
 	}
@@ -154,7 +154,7 @@ public:
 //public:
 //	//Ref<detail::FlexText> flexText;
 //
-//	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+//	virtual void onDraw(GraphicsCommandList* context, RenderFeature* renderFeatures) override
 //	{
 //	}
 //};

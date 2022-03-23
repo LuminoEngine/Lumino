@@ -14,7 +14,6 @@ class MainViewportToolPane;
 }
 class PlatformWindow;
 class RenderPass;
-class GraphicsContext;
 class SwapChain;
 class RenderTargetTexture;
 class DepthBuffer;
@@ -93,7 +92,6 @@ public:
     void updateLayoutTree();
     const Ref<PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
-    //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const { return m_inputInjector; }
 
     void setImGuiLayerEnabled(bool value);
@@ -122,11 +120,9 @@ public: // TODO: internal
     Ref<PlatformWindow> m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
     Ref<UILayoutContext> m_layoutContext;
-    //Ref<GraphicsContext> m_graphicsContext;
-    GraphicsContext* m_renderingGraphicsContext;
+    GraphicsCommandList* m_renderingGraphicsContext;
     Ref<SwapChain> m_swapChain;
     Ref<DepthBuffer> m_depthBuffer;
-    //Ref<RenderPass> m_renderPass;
     Ref<UIRenderView> m_renderView;
     Size m_clientSize;
     Rect m_contentArea;

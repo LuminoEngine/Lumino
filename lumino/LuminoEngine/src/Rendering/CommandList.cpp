@@ -149,7 +149,7 @@ void CommandList::clear(Flags<ClearFlags> flags, const Color& color, float z, ui
 		float z;
 		uint8_t stencil;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::ClearRenderFeature*>(renderFeature)->clear(batchList, *state, flags, color, z, stencil);
 		}
@@ -174,7 +174,7 @@ void CommandList::drawLine(const Vector3& from, const Color& fromColor, const Ve
 	public:
 		detail::SingleLineGenerater data;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(batchList, *state, &data);
 		}
@@ -197,7 +197,7 @@ void CommandList::drawLineList(const Vector3* points, int pointCount, const Colo
 		detail::LineListPrimitiveGenerater data;
 		Color color;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(batchList, *state, &data);
 		}
@@ -225,7 +225,7 @@ void CommandList::drawLineStripPrimitive(int pointCount, const Vector3* points, 
 	public:
 		detail::LineStripPrimitiveGenerater data;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(batchList, *state, &data);
 		}
@@ -265,7 +265,7 @@ void CommandList::drawPlane(float width, float depth, const Vector2& uv1, const 
 	public:
 		detail::PlaneMeshGenerater data;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(batchList, *state, &data);
 		}
@@ -287,7 +287,7 @@ void CommandList::drawSphere(float radius, int slices, int stacks, const Color& 
 	public:
 		detail::RegularSphereMeshFactory data;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(batchList, *state, &data);
 		}
@@ -311,7 +311,7 @@ void CommandList::drawBox(const Box& box, const Color& color, const Matrix& loca
 	public:
 		detail::RegularBoxMeshFactory data;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(batchList, *state, &data);
 		}
@@ -332,7 +332,7 @@ void CommandList::drawScreenRectangle()
 	class DrawScreenRectangle : public detail::RenderDrawElement
 	{
 	public:
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, *state);
 		}
@@ -367,7 +367,7 @@ void CommandList::drawScreenRectangle()
 //            }
 //        }
 //
-//        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+//        virtual void onDraw(GraphicsCommandList* context, RenderFeature* renderFeatures) override
 //        {
 //            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
 //        }
@@ -397,7 +397,7 @@ void CommandList::blit(Material* source, RenderTargetTexture* destination, Rende
 	class Blit : public detail::RenderDrawElement
 	{
 	public:
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, *state);
 		}
@@ -457,7 +457,7 @@ void CommandList::drawSprite(
 		BillboardType billboardType;
 		detail::SpriteFlipFlags flipFlags;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::SpriteRenderFeature2*>(renderFeature)->drawRequest(
 				batchList, *state, context, combinedWorldMatrix() * transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
@@ -495,7 +495,7 @@ void CommandList::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* v
 		int startVertex;
 		int primitiveCount;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::PrimitiveRenderFeature*>(renderFeature)->drawPrimitive(batchList, *state, vertexLayout, vertexBuffer, startVertex, primitiveCount);
 		}
@@ -538,7 +538,7 @@ void CommandList::drawMesh(MeshResource* meshResource, int sectionIndex)
 		//    }
 		//}
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			// TODO: boneTexture を送る仕組み
 			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, *state, context, meshResource, sectionIndex);
@@ -566,7 +566,7 @@ void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex)
 		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
 		//Ref<SkinnedMeshModel> skinnedMeshModel;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			// TODO: boneTexture を送る仕組み
 			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, *state, context, mesh, sectionIndex, nullptr, nullptr);
@@ -595,7 +595,7 @@ void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail:
 		Ref<detail::SkeletonInstance> skeleton;
 		Ref<detail::MorphInstance> morph;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, *state, context, mesh, sectionIndex, skeleton, morph);
 		}
@@ -618,7 +618,7 @@ void CommandList::drawMeshInstanced(InstancedMeshList* list)
 	public:
 		Ref<InstancedMeshList> list;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMeshInstanced(batchList, *state, context, list);
 		}
@@ -728,7 +728,7 @@ void CommandList::drawPath(CanvasContext* context)
 	class DrawMeshInstanced : public detail::RenderDrawElement
 	{
 	public:
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::PathRenderFeature*>(renderFeature)->draw(batchList, *state, context);
 		}
@@ -758,7 +758,7 @@ void CommandList::invokeExtensionRendering(INativeGraphicsExtension* extension)
 	public:
 		INativeGraphicsExtension* extension;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::ExtensionRenderFeature*>(renderFeature)->invoke(context, batchList, extension);
 			//context->drawExtension(extension);
@@ -778,7 +778,7 @@ void CommandList::drawRegularPolygonPrimitive(int vertexCount, float radius, con
 	public:
 		detail::RegularPolygon2DGenerater data;
 
-		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override
 		{
 			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(batchList, *state, &data);
 		}

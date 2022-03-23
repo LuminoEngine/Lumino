@@ -24,7 +24,7 @@ public:
 	//void prepareState(const CameraInfo& cameraInfo, RenderStage* stage, RenderDrawElement* element);
 
 	//
-	//void render(GraphicsContext* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
+	//void render(GraphicsCommandList* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
 
     // TODO: とりいそぎ
     RenderTargetTexture* renderTarget = nullptr;

@@ -43,7 +43,7 @@ public:
     static detail::GraphicsManager* manager(T* obj) { return obj->m_manager; }
 
     template<class TReturn, class TObject>
-    static TReturn* resolveRHIObject(GraphicsContext* context, const TObject& obj, bool* outModified)
+    static TReturn* resolveRHIObject(GraphicsCommandList* context, const TObject& obj, bool* outModified)
     {
         bool modified = false;
         TReturn* rhi = nullptr;

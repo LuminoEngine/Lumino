@@ -14,7 +14,7 @@
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include "../src/GraphicsManager.hpp"
 using namespace ln;
 

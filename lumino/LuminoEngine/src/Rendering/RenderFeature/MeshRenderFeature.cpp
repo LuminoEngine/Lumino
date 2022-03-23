@@ -3,7 +3,6 @@
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/ShaderDescriptor.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
@@ -28,7 +27,7 @@ void MeshRenderFeature::init(RenderingManager* manager)
 	RenderFeature::init();
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshResource* mesh, int sectionIndex)
 {
 	if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
@@ -62,7 +61,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
 {
     if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
@@ -97,7 +96,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 		bool hasAnyWeight = morph->getMorphWeights(&weights);
 		if (hasAnyWeight) {
 
-			const auto& commandList = context->commandList();
+			const auto& commandList = context;
 			const int targetCount = mesh->morphTargetCount();
 
 
@@ -156,7 +155,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsContext* context, InstancedMeshList* list)
+RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, InstancedMeshList* list)
 {
 	if (LN_REQUIRE(list != nullptr)) return RequestBatchResult::Staging;
 
@@ -191,7 +190,7 @@ RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBat
 	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced)
+RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList, bool instanced)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -216,7 +215,7 @@ void MeshRenderFeature::beginRendering()
 	m_drawList.clear();
 }
 
-void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void MeshRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -235,7 +234,7 @@ void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeat
 #endif
 }
 
-void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void MeshRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 

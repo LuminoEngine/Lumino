@@ -72,7 +72,7 @@ LN_CONSTRUCT_ACCESS:
     void init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
 
 private:
-    detail::RHIResource* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     detail::GraphicsManager* m_manager;

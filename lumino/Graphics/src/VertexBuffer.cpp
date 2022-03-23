@@ -20,7 +20,6 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
 #include "RHIs/GraphicsDeviceContext.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 
@@ -181,8 +180,7 @@ void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
-{
+detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
 
@@ -193,7 +191,7 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsContext* context, bo
    //         m_rhiMappedBuffer = nullptr;
    //     } else
         {
-            detail::ICommandList* commandList = context->commandList()->rhiResource();
+            detail::ICommandList* commandList = context->rhiResource();
             size_t requiredSize = size();
             if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
                 m_rhiObject = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
@@ -202,7 +200,7 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsContext* context, bo
                 detail::RHIResource* rhiObject = m_rhiObject;
                 uint64_t offset = m_dirtyOffset;
                 commandList->setSubData(rhiObject, 0, m_buffer.data() + m_dirtyOffset, m_dirtySize);
-                context->commandList()->m_vertexBufferDataTransferredSize += m_dirtySize;
+                context->m_vertexBufferDataTransferredSize += m_dirtySize;
             }
         }
     }

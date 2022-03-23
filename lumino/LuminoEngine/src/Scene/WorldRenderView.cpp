@@ -3,7 +3,7 @@
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoFont/Font.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/SamplerState.hpp>
 #include <LuminoGraphics/Shader.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
@@ -142,8 +142,7 @@ void WorldRenderView::removePostEffect(PostEffect* effect)
 	}
 }
 
-void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
-{
+void WorldRenderView::render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) {
 	if (m_camera)
 	{
         {

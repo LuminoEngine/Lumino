@@ -23,10 +23,10 @@ public:
 	void init();
 
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
 
-	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	//virtual void onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
 	virtual void overrideFinalMaterial(RLIMaterial* material) override;
@@ -60,7 +60,7 @@ public:
 
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
-	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual RenderPass* renderPass() const;
 	virtual bool filterElement(RenderDrawElement* element) const;
 	virtual ShaderTechnique* selectShaderTechnique(
@@ -87,8 +87,8 @@ public:
 	virtual ~ClusteredShadingGeometryRenderingPass();
 	void init(ClusteredShadingSceneRenderer* ownerRenderer);
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
-	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
 	//virtual bool filterElement(RenderDrawElement* element) const override;
@@ -124,8 +124,8 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
-	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(

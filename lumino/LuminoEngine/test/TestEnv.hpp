@@ -10,10 +10,10 @@ public:
     static void updateFrame();
 	static void resetScene();
 
-	static GraphicsContext* graphicsContext();
+	static GraphicsCommandList* graphicsContext();
 	static SwapChain* mainWindowSwapChain();
-	static void resetGraphicsContext(GraphicsContext* context);
-	static GraphicsContext* beginFrame();
+	static void resetGraphicsContext(GraphicsCommandList* context);
+	static GraphicsCommandList* beginFrame();
 	static void endFrame();
 	static RenderPass* renderPass();
 	static Ref<Bitmap2D> capture(RenderTargetTexture* renderTarget = nullptr);

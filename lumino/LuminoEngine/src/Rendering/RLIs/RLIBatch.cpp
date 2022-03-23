@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "RLIBatchList.hpp"
@@ -31,8 +31,7 @@ void RenderFeatureBatch::setup(const Matrix* worldTransformPtr, Material* finalM
 	m_material.mergeFrom(m_stage->geometryStageParameters, finalMaterial);
 }
 
-void RenderFeatureBatch::render(GraphicsContext* context)
-{
+void RenderFeatureBatch::render(GraphicsCommandList* context) {
 	m_owner->renderBatch(context, this);
 }
 

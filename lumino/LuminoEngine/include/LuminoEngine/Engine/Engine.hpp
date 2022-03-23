@@ -2,7 +2,7 @@
 
 namespace ln {
 class Application;
-class GraphicsContext;
+class GraphicsCommandList;
 //class UIContext;
 class UIFrameWindow;
 class UIViewport;
@@ -69,7 +69,7 @@ public:
 
 
 
-	static GraphicsContext* graphicsContext();
+	static GraphicsCommandList* graphicsContext();
     //static UIContext* mainUIContext();
 	static UIFrameWindow* mainWindow();
     /** デフォルトで作成される UIViewport は、MainWindow の直接の子要素となっています。 */

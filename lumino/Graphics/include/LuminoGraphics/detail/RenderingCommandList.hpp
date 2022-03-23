@@ -3,8 +3,7 @@
 //#include "LinearAllocator.hpp"
 
 namespace ln {
-class GraphicsContext;
-
+class GraphicsCommandList;
 namespace detail {
 class LinearAllocatorPageManager;
 class LinearAllocator;
@@ -127,7 +126,7 @@ public:
 
     //void pushRenderingCommand(RenderingCommandList* commandList);
 
-	void submit(GraphicsContext* context);
+	void submit(GraphicsCommandList* context);
 
     // 溜まっている list をすべて実行
     void execute();

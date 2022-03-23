@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
@@ -55,13 +55,11 @@ RequestBatchResult BlitRenderFeature::blit(RenderFeatureBatchList* batchList, co
 	return RequestBatchResult::Submitted;
 }
 
-void BlitRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
-{
+void BlitRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) {
 	LN_UNREACHABLE();
 }
 
-void BlitRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
-{
+void BlitRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) {
 	context->setVertexLayout(m_vertexLayout);
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->drawPrimitive(0, 2);

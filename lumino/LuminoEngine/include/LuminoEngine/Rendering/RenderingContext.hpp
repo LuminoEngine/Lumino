@@ -130,7 +130,7 @@ public:
 	// TODO: GraphicsのRenderPass内の map 禁止に伴い。Rendering で直接 VertexBuffer や IndexBuffer を扱うことを禁止したほうがいいかも。
 	// 代わりに、Mesh を使う。
 	// VertexBuffer::map の意味が直接転送に変わるので、(mapImmediatly() とかにしたい) まずこれを使うわけにはいかない。
-	// そうすると GraphicsContext::map を使ってコマンドバッファに乗せて転送することになるけど、GraphicsContext は RenderingContext の内側に隠蔽されているので
+	// そうすると GraphicsCommandList::map を使ってコマンドバッファに乗せて転送することになるけど、GraphicsContext は RenderingContext の内側に隠蔽されているので
 	// 直接触ることはできない。（やってしまうと、コマンド順序が間違う）
 	void drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount);
 
@@ -221,7 +221,7 @@ public:
 	const Ref<detail::CommandListServer>& commandListServer() const { return m_listServer; }
 	
 	RenderView* baseRenderView = nullptr;	// for PostEffect
-    GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
+    GraphicsCommandList* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;
 	void collectPostEffect(PostEffect* effect) { m_imageEffects.add(effect); }
 	const List<PostEffect*>& imageEffects() const { return m_imageEffects; }

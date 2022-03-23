@@ -6,7 +6,6 @@
 #include <LuminoGraphics/IndexBuffer.hpp>
 #include <LuminoGraphics/Texture.hpp>
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoGraphics/Shader.hpp>
@@ -119,8 +118,7 @@ void ImGuiIntegration::prepareRender(float width, float height)
 	io.DisplaySize = ImVec2(width, height);
 }
 
-void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetTexture* target)
-{
+void ImGuiIntegration::render(GraphicsCommandList* graphicsContext, RenderTargetTexture* target) {
 	ImGuiIO& io = ImGui::GetIO();
 
 	ImGui::SetCurrentContext(m_imgui);
@@ -215,7 +213,7 @@ void ImGuiIntegration::render(GraphicsContext* graphicsContext, RenderTargetText
 	graphicsContext->beginRenderPass(m_renderPass);
 
 
-	const auto& commandList = graphicsContext->commandList();
+	const auto& commandList = graphicsContext;
 	ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(m_shader);
 	{
 		descriptor->setUniformBuffer(0, commandList->allocateUniformBuffer(sizeof(LNRenderElementBuffer)));

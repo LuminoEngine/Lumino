@@ -28,7 +28,7 @@ class INativeGraphicsExtension
 public:
     // カレントの Scene rendering のデフォルトターゲット
     // TODO: INativeGraphicsInterface に移動したい
-    GraphicsContext* graphicsContext = nullptr;
+    GraphicsCommandList* graphicsContext = nullptr;
     RenderTargetTexture* renderTarget = nullptr;
     DepthBuffer* depthBuffer = nullptr;
 

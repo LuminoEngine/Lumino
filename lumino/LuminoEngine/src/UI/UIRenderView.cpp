@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
@@ -62,8 +62,7 @@ UIAdornerLayer* UIFrameRenderView::adornerLayer() const
     return m_adornerLayer;
 }
 
-void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
-{
+void UIFrameRenderView::render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) {
     if (m_rootElement)
     {
 

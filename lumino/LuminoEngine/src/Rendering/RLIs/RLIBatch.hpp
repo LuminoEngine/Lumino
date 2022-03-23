@@ -9,7 +9,7 @@ namespace detail {
 // Rendering モジュールの後段の出力結果。
 // RenderingContext(DrawElementListBuilder) によって作られた DrawElementList は SceneRenderer に入力されると、
 // Zソートやカリング・ステートのグループ化を考慮して RenderFeatureBatch のリストに変換される。
-// 最終的には各 RenderFeature が RenderFeatureBatch を実行することで、GraphicsContext へ描画命令が渡る。
+// 最終的には各 RenderFeature が RenderFeatureBatch を実行することで、GraphicsCommandList へ描画命令が渡る。
 // 
 // RenderFeatureBatch が出来上がっている時点で、SpriteRenderer など Dynamic な VertexBuffer 等はすべて出来上がっている状態にしておく。
 // RenderFeatureBatch 実行中は map や setData で、VertexBuffer や Texture 等への書きこみはできない。
@@ -48,7 +48,7 @@ public:
 	// Extension 用。RenderPass を開始しない。
 	bool ensureRenderPassOutside = false;
 
-	void render(GraphicsContext* context);
+	void render(GraphicsCommandList* context);
 
 private:
 	RenderFeature* m_owner;

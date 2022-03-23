@@ -12,9 +12,9 @@ class OffscreenWorldRenderView
 public:
 	void setRenderTarget(RenderTargetTexture* renderTarget);
 	RenderTargetTexture* renderTarget() const;
-    void render(GraphicsContext* graphicsContext, World* targetWorld);
+    void render(GraphicsCommandList* graphicsContext, World* targetWorld);
 
-	void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
+	void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override;
 
 
 	//detail::CameraInfo m_cameraInfo;

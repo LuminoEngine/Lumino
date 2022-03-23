@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
@@ -24,13 +24,11 @@ RequestBatchResult ClearRenderFeature::clear(RenderFeatureBatchList* batchList, 
 	return RequestBatchResult::Submitted;
 }
 
-void ClearRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
-{
+void ClearRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) {
 	LN_UNREACHABLE();
 }
 
-void ClearRenderFeature::renderBatch(GraphicsContext* context, detail::RenderFeatureBatch* batch)
-{
+void ClearRenderFeature::renderBatch(GraphicsCommandList* context, detail::RenderFeatureBatch* batch) {
 	auto localBatch = static_cast<ClearBatch*>(batch);
 	context->clear(localBatch->data.flags, localBatch->data.color, localBatch->data.depth, localBatch->data.stencil);
 }

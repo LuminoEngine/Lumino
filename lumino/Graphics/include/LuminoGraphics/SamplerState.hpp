@@ -80,7 +80,7 @@ LN_CONSTRUCT_ACCESS:
     void init(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled);
 
 private:
-    detail::ISamplerState* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::ISamplerState* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
     void setFrozen(bool value) { m_frozen = value; }
 
     detail::GraphicsManager* m_manager;

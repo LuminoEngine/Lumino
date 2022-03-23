@@ -6,7 +6,6 @@
 #include <LuminoGraphics/detail/RenderingCommandList.hpp>
 
 namespace ln {
-class GraphicsContext;
 class CommandQueue;
 class SamplerState;
 class PlatformWindow;
@@ -49,12 +48,11 @@ public:
 
     AssetManager* assetManager() const { return m_assetManager; }
     // deviceContext() は、リソースの CRUD のみを目的として IGraphicsDevice にアクセスしたいときに使うこと。
-    // 描画を目的としたステートの変更や、clear、draw 系は GraphicsContext::commitState() の戻り値を使うこと。
+    // 描画を目的としたステートの変更や、clear、draw 系は GraphicsCommandList::commitState() の戻り値を使うこと。
     // またこれらの予防として、IGraphicsDevice のポインタは持ち出してメンバに保持したりせず、
-    // 必要な時に GraphicsManager または GraphicsContext から取得すること。
+    // 必要な時に GraphicsManager または GraphicsCommandList から取得すること。
     // TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDevice をリソース関係と描画関係で分離するのもアリかもしれない。
     const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
-    //const Ref<GraphicsContext>& mainWindowGraphicsContext() const { return m_graphicsContext; }
     const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
     const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 
@@ -101,7 +99,6 @@ private:
     AssetManager* m_assetManager;
     PlatformManager* m_platformManager;
     Ref<IGraphicsDevice> m_deviceContext;
-    //Ref<GraphicsContext> m_graphicsContext;
     Ref<CommandQueue> m_graphicsQueue;
     Ref<CommandQueue> m_computeQueue;
 

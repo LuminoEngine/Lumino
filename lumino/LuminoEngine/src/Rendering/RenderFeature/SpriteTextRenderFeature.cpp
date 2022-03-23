@@ -4,7 +4,7 @@
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/IndexBuffer.hpp>
 #include <LuminoGraphics/SamplerState.hpp>
-#include <LuminoGraphics/GraphicsContext.hpp>
+#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../Font/src/FontCore.hpp"
@@ -41,7 +41,7 @@ void SpriteTextRenderFeature::init(RenderingManager* manager)
 RequestBatchResult SpriteTextRenderFeature::drawText(
 	RenderFeatureBatchList* batchList,
 	const RLIBatchState& batchState, 
-	GraphicsContext* context,
+	GraphicsCommandList* context,
 	const FormattedText* text,
 	const Vector2& anchor,
 	SpriteBaseDirection baseDirection,
@@ -86,7 +86,7 @@ RequestBatchResult SpriteTextRenderFeature::drawText(
 RequestBatchResult SpriteTextRenderFeature::drawChar(
 	RenderFeatureBatchList* batchList,
 	const RLIBatchState& batchState,
-	GraphicsContext* context,
+	GraphicsCommandList* context,
 	Font* font,
 	uint32_t codePoint,
 	const Color& color,
@@ -112,7 +112,7 @@ RequestBatchResult SpriteTextRenderFeature::drawChar(
 RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(
 	RenderFeatureBatchList* batchList,
 	const RLIBatchState& batchState,
-	GraphicsContext* context,
+	GraphicsCommandList* context,
 	Font* font,
 	const FlexGlyphRun* glyphRun,
 	const Vector2& anchor,
@@ -169,7 +169,7 @@ void SpriteTextRenderFeature::beginRendering()
 	m_spriteCount = 0;
 }
 
-void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void SpriteTextRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -194,7 +194,7 @@ void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::Rend
 #endif
 }
 
-void SpriteTextRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void SpriteTextRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 	context->setVertexLayout(m_vertexLayout);
@@ -208,7 +208,7 @@ void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, con
 	addLayoutedGlyphItem(ch, pos, m_drawingFormattedText->color, m_drawingTransform);
 }
 
-void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int spriteCount)
+void SpriteTextRenderFeature::prepareBuffers(GraphicsCommandList* context, int spriteCount)
 {
 		// TODO: 実行中の map は context->map 用意した方がいいかも
 	//if (context) {
@@ -303,7 +303,7 @@ void SpriteTextRenderFeature::addLayoutedGlyphItem(uint32_t codePoint, const Vec
 SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::endLayoutAndAcquireBatch(
 	RenderFeatureBatchList* batchList,
 	const RLIBatchState& batchState,
-	GraphicsContext* context,
+	GraphicsCommandList* context,
 	FontCore* newFontCore,
 	const Matrix& transform)
 {
@@ -379,7 +379,7 @@ SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::endLayoutAndAcquireBatc
 //{
 //}
 
-//RequestBatchResult SpriteTextRenderFeature::resolveCache(RenderFeatureBatchList* batchList, GraphicsContext* context)
+//RequestBatchResult SpriteTextRenderFeature::resolveCache(RenderFeatureBatchList* batchList, GraphicsCommandList* context)
 //{
 //	m_currentFont->getFontGlyphTextureCache(&m_cacheRequest);
 //	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
@@ -392,7 +392,7 @@ SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::endLayoutAndAcquireBatc
 //	}
 //}
 
-void SpriteTextRenderFeature::buildSpriteList(Batch* batch, GraphicsContext* context)
+void SpriteTextRenderFeature::buildSpriteList(Batch* batch, GraphicsCommandList* context)
 {
 	//size_t spriteCount = m_batchData.spriteOffset + m_batchData.spriteCount;
 	size_t dataCount = m_glyphLayoutDataList.size();
