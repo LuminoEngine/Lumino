@@ -266,7 +266,7 @@ detail::ShaderParameterValue* Material::getValue(const ln::StringView& name)
 	return m_values.back().second.get();
 }
 
-void Material::updateShaderVariables(detail::GraphicsCommandList* commandList, detail::ShaderSecondaryDescriptor* descriptor)
+void Material::updateShaderVariables(GraphicsCommandList* commandList, detail::ShaderSecondaryDescriptor* descriptor)
 {
     Shader* target = descriptor->shader();
     const ShaderDescriptorLayout* layout = target->descriptorLayout();

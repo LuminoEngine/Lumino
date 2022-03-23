@@ -1112,7 +1112,7 @@ ln::Result SymbolDatabase::initTypes(Project* project, PIDatabase* pidb) {
 }
 
 ln::Result SymbolDatabase::linkTypes() {
-    int count = m_allTypes.size();
+    int count = m_allTypes.length();
     for (int i = 0; i < count; i++) { // iterate 中に m_allTypes へ新しい Type が add されることもある
         if (!m_allTypes[i]->link()) return ln::err();
     }

@@ -7,22 +7,28 @@ namespace detail {
 class ICommandList;
 class IDescriptorPool;
 class SingleFrameUniformBufferAllocator;
+} // namespace detail
 
-class GraphicsCommandList : public RefObject
-{
+class GraphicsCommandList : public RefObject {
 public:
     GraphicsCommandList();
-    void init(GraphicsManager* manager);
+
+
+
+
+    /** @defgroup TODO: Internal */
+    /** @{ */
+
+    void init(detail::GraphicsManager* manager);
     void dispose();
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
-    //const Ref<LinearAllocator>& allocator_deprecated() const { return m_allocator; }
     void reset();
     detail::ConstantBufferView allocateUniformBuffer(size_t size);
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
-    ShaderSecondaryDescriptor* acquireShaderDescriptor(Shader* shader);
+    detail::ShaderSecondaryDescriptor* acquireShaderDescriptor(Shader* shader);
 
-    IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
+    detail::IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
 
     void* allocateBulkData(size_t size);
 
@@ -35,19 +41,19 @@ public:
     int64_t m_indexBufferDataTransferredSize;
     int64_t m_textureDataTransferredSize;
 
+    /** @} */
+
 private:
-    struct ShaderPassDescriptorPair
-    {
-        Ref<ShaderPass> shaderPass;// m_usingDescriptorSetsPools で持っている DescriptorSetsPool は ShaderPass への強い参照を持たないので、これでカバーする
-        Ref<IDescriptorPool> descriptorPool;
+    struct ShaderPassDescriptorPair {
+        Ref<ShaderPass> shaderPass; // m_usingDescriptorSetsPools で持っている DescriptorSetsPool は ShaderPass への強い参照を持たないので、これでカバーする
+        Ref<detail::IDescriptorPool> descriptorPool;
     };
 
     Ref<detail::ICommandList> m_rhiResource;
-    Ref<LinearAllocator> m_allocator;
+    Ref<detail::LinearAllocator> m_allocator;
     size_t m_uniformBufferOffsetAlignment;
 
     std::vector<ShaderPassDescriptorPair> m_usingDescriptorPools;
 };
 
-} // namespace detail
 } // namespace ln

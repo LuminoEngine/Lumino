@@ -52,7 +52,7 @@ struct GLNVGcontext : public GLNVGcontextBase {
 	ln::Ref<ln::VertexBuffer> vertexBuffer;
 	ln::Shader* shader;
 	ln::GraphicsContext* g = nullptr;
-	ln::detail::GraphicsCommandList* commandList() const { return g->commandList(); }
+	ln::GraphicsCommandList* commandList() const { return g->commandList(); }
 };
 
 
@@ -136,7 +136,7 @@ static int glnvg__renderGetTextureSize(void* uptr, int image, int* w, int* h)
 
 static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 {
-	ln::detail::GraphicsCommandList* commandList = gl->commandList();
+	ln::GraphicsCommandList* commandList = gl->commandList();
 	ln::detail::ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(gl->shader);
 
 	// ConstantBuffer

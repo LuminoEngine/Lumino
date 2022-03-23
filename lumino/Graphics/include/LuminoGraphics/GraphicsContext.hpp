@@ -5,6 +5,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class GraphicsCommandList;
 class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
@@ -16,7 +17,6 @@ class SwapChain;
 namespace detail {
 class RenderingQueue;
 class IRenderPass;
-class GraphicsCommandList;
 }
 
 /*
@@ -49,18 +49,6 @@ public:
 
     /** DepthStencilState を取得します。 */
     const DepthStencilStateDesc& depthStencilState() const { return m_staging.depthStencilState; }
-
-    ///** RenderTarget を設定します。index 0 に設定した場合、Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
-    // void setRenderTarget(int index, RenderTargetTexture* value);
-
-    ///** RenderTarget を取得します。 */
-    // RenderTargetTexture* renderTarget(int index) const;
-
-    ///** DepthBuffer を設定します。 */
-    // void setDepthBuffer(DepthBuffer* value);
-
-    ///** DepthBuffer を取得します。 */
-    // DepthBuffer* depthBuffer() const;
 
     /** ビューポートの矩形を設定します。 */
     void setViewportRect(const Rect& value);
@@ -152,7 +140,7 @@ public:
     void interruptCurrentRenderPassFromResolveRHI();
 
     // TODO: intenral
-    const Ref<detail::GraphicsCommandList>& commandList() const { return m_commandList; }
+    const Ref<GraphicsCommandList>& commandList() const { return m_commandList; }
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -161,17 +149,12 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     GraphicsContext();
     virtual ~GraphicsContext();
-    void init(/*RenderingType renderingType*/);
-    void resetCommandList(detail::GraphicsCommandList* commandList);
+    void init();
+    void resetCommandList(GraphicsCommandList* commandList);
 
-    //RenderingType renderingType() const { return m_renderingType; }
-    //detail::RenderingCommandList* renderingCommandList();
     void beginCommandRecoding();
     void endCommandRecoding();
-    //void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
-    // void closeRenderPass();
     detail::ICommandList* commitState();
-    // void submitCommandList();
 
     enum DirtyFlags {
         DirtyFlags_None = 0,
@@ -179,7 +162,6 @@ private:
         DirtyFlags_RasterizerState = 1 << 2,
         DirtyFlags_DepthStencilState = 1 << 3,
         DirtyFlags_RegionRects = 1 << 4,
-        // DirtyFlags_Framebuffer = 1 << 5,
         DirtyFlags_PipelinePrimitiveState = 1 << 6,
         DirtyFlags_PrimitiveBuffers = 1 << 7,
         DirtyFlags_ShaderPass = 1 << 8,
@@ -199,7 +181,6 @@ private:
         Ref<IndexBuffer> indexBuffer;
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
-        // Ref<ShaderDefaultDescriptor> shaderDescriptor;
         detail::ShaderSecondaryDescriptor* shaderDescriptor;
         PrimitiveTopology topology;
 
@@ -217,18 +198,13 @@ private:
     bool checkRenderPassInside() const;
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::GraphicsCommandList> m_commandList;
+    Ref<GraphicsCommandList> m_commandList;
     detail::ICommandList* m_rhiCommandList;
-    //Ref<detail::RenderingCommandList> m_recordingCommandList;
-    //Ref<detail::RenderingCommandList> m_executingCommandList;
-    //RenderingType m_renderingType;
+    ScopeState m_scopeState;
     State m_staging;
-    //State m_lastCommit;
+    uint32_t m_dirtyFlags;
     Ref<RenderPass> m_currentRenderPass;
     Ref<detail::IRenderPass> m_currentRHIRenderPass;
-    uint32_t m_dirtyFlags;
-    ScopeState m_scopeState;
-    //bool m_recordingBegan;
 
     friend class detail::GraphicsContextInternal;
     friend class detail::RenderingQueue;
@@ -237,17 +213,9 @@ private:
 namespace detail {
 class GraphicsContextInternal {
 public:
-    static void resetCommandList(GraphicsContext* self, detail::GraphicsCommandList* commandLsit) { self->resetCommandList(commandLsit); }
-    //static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
-     //static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
+    static void resetCommandList(GraphicsContext* self, GraphicsCommandList* commandLsit) { self->resetCommandList(commandLsit); }
     static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecoding(); }
     static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecoding(); }
-    //static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
-    //static detail::ICommandList* getCommandListForTransfer(GraphicsContext* self) { return self->m_rhiCommandList; }
-    //static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
-    //static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
-    //static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
-    //static const Ref<RenderPass>& currentRenderPass(GraphicsContext* self) { return self->m_currentRenderPass; }
 };
 }
 } // namespace ln

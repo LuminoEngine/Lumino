@@ -24,7 +24,7 @@ bool ShaderSecondaryDescriptor::init(Shader* shader)
 	return true;
 }
 
-void ShaderSecondaryDescriptor::reset(detail::GraphicsCommandList* commandList)
+void ShaderSecondaryDescriptor::reset(GraphicsCommandList* commandList)
 {
 	const auto& defaulValues = m_shader->descriptor();
 	const auto& layout = descriptorLayout();
@@ -42,7 +42,7 @@ void ShaderSecondaryDescriptor::reset(detail::GraphicsCommandList* commandList)
 	}
 }
 
-void ShaderSecondaryDescriptor::reallocFromSemanticsManager(detail::GraphicsCommandList* commandList, const detail::ShaderTechniqueSemanticsManager* semanticsManager)
+void ShaderSecondaryDescriptor::reallocFromSemanticsManager(GraphicsCommandList* commandList, const detail::ShaderTechniqueSemanticsManager* semanticsManager)
 {
 	const auto& layout = descriptorLayout();
 	const auto& defaulValues = m_shader->descriptor();

@@ -461,7 +461,7 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsConte
 void ShaderPass::submitShaderDescriptor2(GraphicsContext* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified)
 {
     auto* manager = m_owner->shader()->m_graphicsManager;
-    detail::GraphicsCommandList* commandList = graphicsContext->commandList();
+    GraphicsCommandList* commandList = graphicsContext->commandList();
     detail::ICommandList* rhiCommandList = commandList->rhiResource();
 
 

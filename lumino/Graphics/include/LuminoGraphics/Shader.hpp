@@ -9,6 +9,7 @@
 namespace ln {
 class AssetImportSettings;
 class DiagnosticsManager;
+class GraphicsCommandList;
 class Texture;
 class Shader;
 class ShaderParameter2;
@@ -22,7 +23,6 @@ class UnifiedShader;
 class IShaderPass;
 class IDescriptorPool;
 class ShaderTechniqueSemanticsManager;
-class GraphicsCommandList;
 class ShaderValueSerializer;
 class ShaderInternal;
 }
