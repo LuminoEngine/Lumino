@@ -93,3 +93,35 @@ TEST_F(Test_IO_Process, AsyncRedirect) {
     ASSERT_EQ(_LT("[test]"), out);
     ASSERT_EQ(_LT("err:test"), err);
 }
+
+TEST_F(Test_IO_Process, Redirect4_LongTime) {
+    auto proc1 = ProcessCommand2(ln::Environment::executablePath())
+                     .arg(_T("proctest4_LongTime"))
+                     .stdOut(ProcessStdio::piped())
+                     .stdErr(ProcessStdio::piped())
+                     .start();
+    StreamReader* r1 = proc1->stdOut();
+    StreamReader* r2 = proc1->stdErr();
+    String sr1 = r1->readToEnd();
+    String sr2 = r2->readToEnd();
+    proc1->wait();
+    ASSERT_EQ(U"0123456789", sr1.replace(U"\r", U"").replace(U"\n", U""));
+    ASSERT_EQ(U"9876543210", sr2.remove(U"\r").remove(U"\n"));
+    ASSERT_EQ(10, proc1->exitCode());
+}
+
+TEST_F(Test_IO_Process, Redirect5_BigData) {
+    auto proc1 = ProcessCommand2(ln::Environment::executablePath())
+                     .arg(_T("proctest5_BigData"))
+                     .stdOut(ProcessStdio::piped())
+                     .stdErr(ProcessStdio::piped())
+                     .start();
+    StreamReader* r1 = proc1->stdOut();
+    StreamReader* r2 = proc1->stdErr();
+    String sr1 = r1->readToEnd();
+    String sr2 = r2->readToEnd();
+    proc1->wait();
+    const auto lines = sr1.remove(U"\r").split(U"\n");
+    ASSERT_EQ(51, lines.size());    // last is empty
+    ASSERT_EQ(5, proc1->exitCode());
+}

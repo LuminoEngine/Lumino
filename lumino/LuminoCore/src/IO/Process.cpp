@@ -543,9 +543,12 @@ ProcessStatus Process2::status() {
 }
 
 int Process2::exitCode() {
-    int n = 1;
-    m_impl->getStatus(&n);
-    return n;
+    int result = 1;
+    ProcessStatus status = m_impl->getStatus(&result);
+    if (status == ProcessStatus::Running) {
+        LN_ERROR(U"Process is running. Use wait().");
+    } 
+    return result;
 }
 
 void Process2::beginOutputReadLine() {
