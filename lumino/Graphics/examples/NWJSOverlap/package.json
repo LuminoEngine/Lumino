@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nw": "^0.62.1",
+    "nw": "^0.62.1-sdk",
     "pixi.js": "^6.3.0"
   }
 }

@@ -74,12 +74,13 @@ void EMSCRIPTEN_KEEPALIVE initApp() {
 }
 
 void EMSCRIPTEN_KEEPALIVE renderApp(int32_t width, int32_t height) {
+    printf("w:%d h:%d\n", width, height);
     auto descriptorLayout = g_shader->descriptorLayout();
     auto shaderPass = g_shader->techniques()[0]->passes()[0];
 
     auto commandList = OpenGLIntegration::getCommandListFromCurrentContext();
     detail::GraphicsCommandListInternal::beginCommandRecoding(commandList);
-    commandList->enterRenderState();
+    //commandList->enterRenderState();
 
     auto renderPass = OpenGLIntegration::getRenderPass(0, width, height);
 
@@ -95,7 +96,8 @@ void EMSCRIPTEN_KEEPALIVE renderApp(int32_t width, int32_t height) {
     commandList->drawPrimitive(0, 1);
     commandList->endRenderPass();
 
-    commandList->leaveRenderState();
+
+    //commandList->leaveRenderState();
     detail::GraphicsCommandListInternal::endCommandRecoding(commandList);
 }
 

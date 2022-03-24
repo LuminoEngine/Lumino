@@ -29,6 +29,7 @@ Result GLGraphicsContext::init(OpenGLDevice* owner) {
     GL_CHECK(glGenVertexArrays(1, &m_vao));
     GL_CHECK(glGenFramebuffers(1, &m_fbo));
 
+    memset(&m_savedState, sizeof(m_savedState), 0);
     return ok();
 }
 
@@ -68,12 +69,20 @@ void GLGraphicsContext::onSaveExternalRenderState() {
     GL_CHECK(glGetIntegerv(GL_BLEND_SRC_ALPHA, &m_savedState.m_GL_BLEND_SRC_ALPHA));
     GL_CHECK(glGetIntegerv(GL_BLEND_DST_ALPHA, &m_savedState.m_GL_BLEND_DST_ALPHA));
     GL_CHECK(glGetIntegerv(GL_BLEND_EQUATION, &m_savedState.m_GL_BLEND_EQUATION));
-    GL_CHECK(glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ARRAY_BUFFER_BINDING));
-    GL_CHECK(glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
     GL_CHECK(glGetIntegerv(GL_CURRENT_PROGRAM, &m_savedState.m_GL_CURRENT_PROGRAM));
 
-	GL_CHECK(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &m_savedState.m_vao));
+    std::cout << "-----------------" << std::endl;
+    GL_CHECK(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &m_savedState.m_vao));
+    GL_CHECK(glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ARRAY_BUFFER_BINDING));
+    GL_CHECK(glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
     GL_CHECK(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &m_savedState.m_drawFBO));
+
+    std::cout << "m_savedState.m_vao: " << m_savedState.m_vao << std::endl;
+    std::cout << "m_savedState.m_GL_ARRAY_BUFFER_BINDING: " << m_savedState.m_GL_ARRAY_BUFFER_BINDING << std::endl;
+    std::cout << "m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING: " << m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING << std::endl;
+    std::cout << "m_savedState.m_GL_CURRENT_PROGRAM: " << m_savedState.m_GL_CURRENT_PROGRAM << std::endl;
+    std::cout << "m_savedState.m_drawFBO: " << m_savedState.m_drawFBO << std::endl;
+    
     //glGetIntegerv(GL_VIEWPORT, viewport)
         /*
                 GL_CHECK(glEnable(GL_SCISSOR_TEST));
@@ -116,12 +125,15 @@ void GLGraphicsContext::onRestoreExternalRenderState() {
         m_savedState.m_GL_BLEND_DST_ALPHA));
     GL_CHECK(glBlendEquation(m_savedState.m_GL_BLEND_EQUATION));
 
-    GL_CHECK(glBindVertexArray(m_savedState.m_vao));
-    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_savedState.m_GL_ARRAY_BUFFER_BINDING));
-    GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
-    GL_CHECK(glUseProgram(m_savedState.m_GL_CURRENT_PROGRAM));
 
-    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_savedState.m_drawFBO));
+    //GL_CHECK(glBindVertexArray(m_savedState.m_vao));
+    //
+    //GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_savedState.m_GL_ARRAY_BUFFER_BINDING));
+    //GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
+    ////return;
+    ////GL_CHECK(glUseProgram(m_savedState.m_GL_CURRENT_PROGRAM));
+
+    //GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_savedState.m_drawFBO));
 }
 
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {

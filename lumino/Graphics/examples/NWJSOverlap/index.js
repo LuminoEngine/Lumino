@@ -38,10 +38,24 @@ class App extends PIXI.Application {
         super.render();
 
         if (inited) {
+            const gl = this.renderer.gl;
+            console.log("VERTEX_ARRAY_BINDING", gl.getParameter(gl.VERTEX_ARRAY_BINDING));
+            console.log("ARRAY_BUFFER_BINDING", gl.getParameter(gl.ARRAY_BUFFER_BINDING));
+            console.log("ELEMENT_ARRAY_BUFFER_BINDING", gl.getParameter(gl.ELEMENT_ARRAY_BUFFER_BINDING));
+            console.log("FRAMEBUFFER_BINDING", gl.getParameter(gl.FRAMEBUFFER_BINDING));
+            
+
             renderer_lib.Module.GL.makeContextCurrent(this.contextHandle);
-            renderer_lib.native.renderApp();
+            renderer_lib.native.renderApp(this.view.width, this.view.height);
             console.log("render.");
+        
+            this.renderer.texture.reset();
+            this.renderer.geometry.reset();
+            this.renderer.state.reset();
+            this.renderer.shader.reset();
+            this.renderer.framebuffer.reset();
         }
+
     }
 }
 
@@ -66,9 +80,7 @@ window.onload = async () =>{
     app.stage.addChild(container);
 
     // Create a new texture
-    const texture = PIXI.Texture.from('assets/bunny.png');
-
-    console.log("texture", texture);
+    const texture = PIXI.Texture.from('assets/icon256.png');
 
     // Create a 5x5 grid of bunnies
     for (let i = 0; i < 25; i++) {
