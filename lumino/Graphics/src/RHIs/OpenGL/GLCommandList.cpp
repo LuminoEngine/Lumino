@@ -55,20 +55,73 @@ void GLGraphicsContext::setActiveShaderPass(GLShaderPass* pass) {
 }
 
 void GLGraphicsContext::onSaveExternalRenderState() {
-    GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
+    // NOTE: この辺りで INVALID_OPERATION するときは、Lumino 外部の OpenGL API の呼び出しに対して glGetError() されていない可能性がある。
+    GL_CHECK(glGetBooleanv(GL_BLEND, &m_savedState.m_GL_BLEND));
+    GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.m_GL_CULL_FACE));
+    GL_CHECK(glGetBooleanv(GL_DEPTH_TEST, &m_savedState.m_GL_DEPTH_TEST));
+    GL_CHECK(glGetBooleanv(GL_DEPTH_WRITEMASK, &m_savedState.m_GL_DEPTH_WRITEMASK));
+    
+    GL_CHECK(glGetIntegerv(GL_DEPTH_FUNC, &m_savedState.m_GL_DEPTH_FUNC));
+    GL_CHECK(glGetIntegerv(GL_CULL_FACE_MODE, &m_savedState.m_GL_CULL_FACE_MODE));
+    GL_CHECK(glGetIntegerv(GL_BLEND_SRC_RGB, &m_savedState.m_GL_BLEND_SRC_RGB));
+    GL_CHECK(glGetIntegerv(GL_BLEND_DST_RGB, &m_savedState.m_GL_BLEND_DST_RGB));
+    GL_CHECK(glGetIntegerv(GL_BLEND_SRC_ALPHA, &m_savedState.m_GL_BLEND_SRC_ALPHA));
+    GL_CHECK(glGetIntegerv(GL_BLEND_DST_ALPHA, &m_savedState.m_GL_BLEND_DST_ALPHA));
+    GL_CHECK(glGetIntegerv(GL_BLEND_EQUATION, &m_savedState.m_GL_BLEND_EQUATION));
+    GL_CHECK(glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ARRAY_BUFFER_BINDING));
+    GL_CHECK(glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
+    GL_CHECK(glGetIntegerv(GL_CURRENT_PROGRAM, &m_savedState.m_GL_CURRENT_PROGRAM));
+
+	GL_CHECK(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &m_savedState.m_vao));
+    GL_CHECK(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &m_savedState.m_drawFBO));
+    //glGetIntegerv(GL_VIEWPORT, viewport)
+        /*
+                GL_CHECK(glEnable(GL_SCISSOR_TEST));
+        GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
+
+        */
 }
 
 void GLGraphicsContext::onRestoreExternalRenderState() {
-    if (m_savedState.state_GL_CULL_FACE) {
+    setActiveShaderPass(nullptr);
+
+    if (m_savedState.m_GL_BLEND) {
+        GL_CHECK(glEnable(GL_BLEND));
+    }
+    else {
+        GL_CHECK(glDisable(GL_BLEND));
+    }
+
+    if (m_savedState.m_GL_CULL_FACE) {
         GL_CHECK(glEnable(GL_CULL_FACE));
     }
     else {
         GL_CHECK(glDisable(GL_CULL_FACE));
     }
 
-    GL_CHECK(glBindVertexArray(0));
+    if (m_savedState.m_GL_DEPTH_TEST) {
+        GL_CHECK(glEnable(GL_DEPTH_TEST));
+    }
+    else {
+        GL_CHECK(glDisable(GL_DEPTH_TEST));
+    }
 
-    setActiveShaderPass(nullptr);
+    GL_CHECK(glDepthMask(m_savedState.m_GL_DEPTH_WRITEMASK));
+    GL_CHECK(glDepthFunc(m_savedState.m_GL_DEPTH_FUNC));
+    GL_CHECK(glCullFace(m_savedState.m_GL_CULL_FACE_MODE));
+    GL_CHECK(glBlendFuncSeparate(
+        m_savedState.m_GL_BLEND_SRC_RGB,
+        m_savedState.m_GL_BLEND_DST_RGB,
+        m_savedState.m_GL_BLEND_SRC_ALPHA,
+        m_savedState.m_GL_BLEND_DST_ALPHA));
+    GL_CHECK(glBlendEquation(m_savedState.m_GL_BLEND_EQUATION));
+
+    GL_CHECK(glBindVertexArray(m_savedState.m_vao));
+    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_savedState.m_GL_ARRAY_BUFFER_BINDING));
+    GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
+    GL_CHECK(glUseProgram(m_savedState.m_GL_CURRENT_PROGRAM));
+
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_savedState.m_drawFBO));
 }
 
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {

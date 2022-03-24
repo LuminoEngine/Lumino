@@ -43,10 +43,23 @@ private:
     GLRenderPass* m_currentRenderPass = nullptr;
     GLShaderPass* m_activeShaderPass;
 
-    struct
-    {
-        GLboolean state_GL_CULL_FACE;
-
+    struct {
+        GLboolean m_GL_BLEND;
+        GLboolean m_GL_CULL_FACE;
+        GLboolean m_GL_DEPTH_TEST;
+        GLboolean m_GL_DEPTH_WRITEMASK;
+        GLint m_GL_DEPTH_FUNC;
+        GLint m_GL_CULL_FACE_MODE;
+        GLint m_GL_BLEND_SRC_RGB;
+        GLint m_GL_BLEND_DST_RGB;
+        GLint m_GL_BLEND_SRC_ALPHA;
+        GLint m_GL_BLEND_DST_ALPHA;
+        GLint m_GL_BLEND_EQUATION;
+        GLint m_GL_ARRAY_BUFFER_BINDING;
+        GLint m_GL_ELEMENT_ARRAY_BUFFER_BINDING;
+        GLint m_GL_CURRENT_PROGRAM;
+        GLint m_vao;
+        GLint m_drawFBO;
     } m_savedState;
 };
 

@@ -81,6 +81,13 @@ Result PlatformManager::init(const Settings& settings)
 		m_windowManager = windowManager;
 	}
 
+    //WindowCreationSettings mainWindowSettings;
+    //mainWindowSettings.title = settings.windowTitle;
+    //mainWindowSettings.clientSize = settings.clientSize;
+    //mainWindowSettings.fullscreen = false;
+    //mainWindowSettings.resizable = settings.resizable;
+    //mainWindowSettings.userWindow = settings.userWindow;
+    //mainWindowSettings.win32IconResourceId = settings.win32IconResourceId;
 	m_mainWindow = m_windowManager->createMainWindow(settings.mainWindowSettings);
 
     return ok();

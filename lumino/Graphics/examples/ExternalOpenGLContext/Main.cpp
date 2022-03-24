@@ -203,7 +203,6 @@ void cleanupApp() {
 void cleanupLumino() {
     detail::GraphicsManager::terminate();
     detail::AssetManager::terminate();
-    detail::PlatformManager::terminate();
     EngineContext2::terminate();
 }
 
