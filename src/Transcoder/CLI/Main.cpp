@@ -13,7 +13,7 @@
 
 int main(int argc, char** argv) {
     ln::Logger::addStdErrAdapter();
-    ln::Runtime::initialize();
+    ln::RuntimeModule::initialize();
     auto diag = ln::makeObject<ln::DiagnosticsManager>();
     diag->setOutputToStdErr(true);
     auto pidb = ln::makeRef<PIDatabase>();

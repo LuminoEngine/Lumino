@@ -30,7 +30,7 @@ int main(int argc, const char** argv)
 	for (auto& path : cdb.includeDirectories) parser.addIncludePath(path);
 	for (auto& path : cdb.forceIncludeFiles) parser.addForceIncludeFile(path);
 
-	ln::Runtime::initialize();
+	ln::RuntimeModule::initialize();
 	auto pidb = ln::makeRef<PIDatabase>();
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	int result = parser.parse(cdb.inputFile, pidb, diag);

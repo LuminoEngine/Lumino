@@ -5,15 +5,15 @@ class PlatformWindow;
 
 enum class WindowSystem {
     Native,
-    GLFW,
+    GLFWWithOpenGL,
     GLFWWithoutOpenGL,
     External,
 };
 
 struct WindowCreationSettings {
     String title; // ウィンドウタイトル
-    int clientWidth;
-    int clientHeight;
+    int clientWidth = 0;
+    int clientHeight = 0;
     // SizeI		clientSize = SizeI(640, 480);	// クライアント領域のピクセルサイズ
     bool fullscreen = false; // フルスクリーンモードで作成するかどうか
     bool resizable = true;   // 可変ウィンドウとして作成するかどうか

@@ -18,7 +18,7 @@ using namespace ln;
 
 void init() {
     RuntimeModule::initialize();
-    PlatformModule::initialize({ WindowSystem::GLFW });
+    PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::GLFWWithOpenGL });
     RHIModule::initialize({ GraphicsAPI::OpenGL });
 
     RuntimeModule::mountAssetDirectory(ASSETS_DIR);
@@ -31,7 +31,7 @@ void cleanup() {
 }
 
 void run() {
-    auto window = detail::PlatformManager::instance()->mainWindow();
+    auto window = Platform::mainWindow();
 
     //auto shader = Shader::create(ASSETFILE("simple.hlsl"));
     auto shader = Shader::load(U"simple");
@@ -51,10 +51,7 @@ void run() {
     };
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    int backbufferWidth;
-    int backbufferHeight;
-    window->getFramebufferSize(&backbufferWidth, &backbufferHeight);
-    auto swapChain = makeObject<SwapChain>(window, SizeI(backbufferWidth, backbufferHeight));
+    auto swapChain = makeObject<SwapChain>(window);
 
     while (Platform::processEvents()) {
         auto commandList = swapChain->beginFrame2();

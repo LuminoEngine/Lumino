@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoGraphics/Texture.hpp>
 #include <LuminoGraphics/DepthBuffer.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
@@ -28,10 +29,13 @@ SwapChain::SwapChain()
 SwapChain::~SwapChain() {
 }
 
-void SwapChain::init(PlatformWindow* window, const SizeI& backbufferSize) {
+void SwapChain::init(PlatformWindow* window) {
     // TODO: onChangeDevice でバックバッファをアタッチ
     Object::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+
+    SizeI backbufferSize;
+    window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
 
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
 

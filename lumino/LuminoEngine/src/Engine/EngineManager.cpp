@@ -362,24 +362,24 @@ void EngineManager::initializePlatformManager() {
         PlatformManager::Settings settings;
         settings.windowSystem = m_settings.windowSystem;
 
-        if (settings.windowSystem == WindowSystem::GLFW) {
+        if (settings.windowSystem == WindowSystem::GLFWWithOpenGL) {
             if (m_activeGraphicsAPI == GraphicsAPI::Vulkan ||
                 m_activeGraphicsAPI == GraphicsAPI::DirectX12) {
                 settings.windowSystem = WindowSystem::GLFWWithoutOpenGL;
             }
         }
 
+        settings.mainWindowSettings.title = m_settings.mainWindowTitle;
+        settings.mainWindowSettings.clientWidth = m_settings.mainWindowSize.width;
+        settings.mainWindowSettings.clientHeight = m_settings.mainWindowSize.height;
+        settings.mainWindowSettings.fullscreen = false;
+        settings.mainWindowSettings.resizable = m_settings.mainWindowResizable;
+        settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
+
         PlatformManager::initialize(settings);
 
-        WindowCreationSettings mainWindowSettings;
-        mainWindowSettings.title = m_settings.mainWindowTitle;
-        mainWindowSettings.clientWidth = m_settings.mainWindowSize.width;
-        mainWindowSettings.clientHeight = m_settings.mainWindowSize.height;
-        mainWindowSettings.fullscreen = false;
-        mainWindowSettings.resizable = m_settings.mainWindowResizable;
-        mainWindowSettings.userWindow = m_settings.userMainWindow;
-        auto mainWindow = PlatformManager::instance()->createWindow(mainWindowSettings);
-        PlatformManager::instance()->setMainWindow(mainWindow);
+        //auto mainWindow = PlatformManager::instance()->createWindow(mainWindowSettings);
+        //PlatformManager::instance()->setMainWindow(mainWindow);
         PlatformManager::instance()->mainWindow()->attachEventListener(this);
     }
 }

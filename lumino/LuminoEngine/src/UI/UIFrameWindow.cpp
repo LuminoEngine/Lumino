@@ -277,7 +277,6 @@ void UIFrameWindow::init(bool mainWindow) {
         auto* platformManager = detail::PlatformManager::instance();
         setupPlatformWindow(
             platformManager->createWindow(settings),
-            SizeI(settings.clientWidth, settings.clientHeight),
             false);
     }
 
@@ -309,12 +308,12 @@ void UIFrameWindow::setImGuiLayerEnabled(bool value) {
     }
 }
 
-void UIFrameWindow::setupPlatformWindow(PlatformWindow* platformMainWindow, const SizeI& backbufferSize, bool useExternalSwapChain) {
+void UIFrameWindow::setupPlatformWindow(PlatformWindow* platformMainWindow, bool useExternalSwapChain) {
     m_platformWindow = platformMainWindow;
 
     // TODO: このフラグは PlatformWindow に持たせていいかも
     if (!useExternalSwapChain) {
-        m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
+        m_swapChain = makeObject<SwapChain>(platformMainWindow);
     }
 
     m_platformWindow->attachEventListener(this);
@@ -708,7 +707,6 @@ void UIMainWindow::init(bool useExternalSwapChain) {
     // そのためこの時点で PlatformWindow をアタッチしておきたい。
     setupPlatformWindow(
         detail::PlatformManager::instance()->mainWindow(),
-        detail::EngineDomain::engineManager()->settings().mainWindowSize,
         useExternalSwapChain);
 
     // TODO: ここでいい？

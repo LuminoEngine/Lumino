@@ -26,18 +26,9 @@ Ref<SwapChain> g_swapChain;
 void init() {
     RuntimeModule::initialize();
 
-    //PlatformModule::initialize();
+    PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::GLFWWithOpenGL });
 
-    //detail::PlatformManager::Settings platformManagerrSettings;
-    //platformManagerrSettings.windowSystem = 
-    //auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
-
-    PlatformModule::initialize({ WindowSystem::GLFW });
-
-    RHIModuleSettings rhiModuleSettings;
-    rhiModuleSettings.graphicsAPI = GraphicsAPI::OpenGL;
-    rhiModuleSettings.debugMode = true;
-    RHIModule::initialize(rhiModuleSettings);
+    RHIModule::initialize({ GraphicsAPI::OpenGL });
 
 #ifdef __EMSCRIPTEN__
     RuntimeModule::mountAssetArchive(U"Assets.lna", StringView());
@@ -47,12 +38,9 @@ void init() {
 }
 
 void initApp() {
-    g_window = Platform::createWindow({ U"Example", 640, 480 });
+    g_window = Platform::mainWindow();
 
-    int backbufferWidth;
-    int backbufferHeight;
-    g_window->getFramebufferSize(&backbufferWidth, &backbufferHeight);
-    g_swapChain = makeObject<SwapChain>(g_window, SizeI(backbufferWidth, backbufferHeight));
+    g_swapChain = makeObject<SwapChain>(g_window);
 
     g_shader = Shader::load(U"simple");
 
@@ -73,6 +61,7 @@ void cleanupApp() {
     g_vertexLayout = nullptr;
     g_shader = nullptr;
     g_swapChain = nullptr;
+    g_window = nullptr;
 }
 
 void cleanup() {

@@ -97,7 +97,7 @@ public:
     void setImGuiLayerEnabled(bool value);
 
 protected:
-    void setupPlatformWindow(PlatformWindow* platformMainWindow, const SizeI& backbufferSize, bool useExternalSwapChain);
+    void setupPlatformWindow(PlatformWindow* platformMainWindow, bool useExternalSwapChain);
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;

@@ -39,10 +39,10 @@ PlatformManager::~PlatformManager() {
 
 Result PlatformManager::init(const Settings& settings) {
 #ifdef LN_GLFW
-    if (settings.windowSystem == WindowSystem::GLFW || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) {
+    if (settings.windowSystem == WindowSystem::GLFWWithOpenGL || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) {
         if (!m_windowManager) {
             auto windowManager = ln::makeRef<GLFWPlatformWindowManager>(this);
-            LN_TRY(windowManager->init(settings.windowSystem == WindowSystem::GLFW));
+            LN_TRY(windowManager->init(settings.windowSystem == WindowSystem::GLFWWithOpenGL));
             m_windowManager = windowManager;
         }
     }
@@ -73,14 +73,9 @@ Result PlatformManager::init(const Settings& settings) {
         m_windowManager = windowManager;
     }
 
-    // WindowCreationSettings mainWindowSettings;
-    // mainWindowSettings.title = settings.windowTitle;
-    // mainWindowSettings.clientSize = settings.clientSize;
-    // mainWindowSettings.fullscreen = false;
-    // mainWindowSettings.resizable = settings.resizable;
-    // mainWindowSettings.userWindow = settings.userWindow;
-    // mainWindowSettings.win32IconResourceId = settings.win32IconResourceId;
-    // m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings, nullptr);
+    if (settings.mainWindowSettings.clientWidth != 0 || settings.mainWindowSettings.clientHeight != 0) {
+        m_mainWindow = createWindow(settings.mainWindowSettings);
+    }
 
     return ok();
 }

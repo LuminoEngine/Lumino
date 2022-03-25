@@ -47,9 +47,10 @@ protected:
     void onManagerFinalizing() override { dispose(); }
     void onChangeDevice(detail::IGraphicsDevice* device) override;
 
-    LN_CONSTRUCT_ACCESS : SwapChain();
+LN_CONSTRUCT_ACCESS:
+    SwapChain();
     virtual ~SwapChain();
-    void init(PlatformWindow* window, const SizeI& backbufferSize);
+    void init(PlatformWindow* window);
 
 private:
     const Ref<GraphicsCommandList>& currentCommandList() const { return m_commandLists[m_imageIndex]; }

@@ -3,4 +3,4 @@
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoCore/Base/Result.hpp>
-#include <LuminoEngine/Runtime/Runtime.hpp>
+#include <LuminoEngine/RuntimeModule.hpp>

@@ -86,7 +86,7 @@ struct EngineSettings {
     Path fontFile;
 
     bool defaultObjectsCreation = true;
-    WindowSystem windowSystem = WindowSystem::GLFW;
+    WindowSystem windowSystem = WindowSystem::GLFWWithOpenGL;
     bool graphicsContextManagement = true;
     bool externalMainLoop = true;
     bool useExternalSwapChain = false;

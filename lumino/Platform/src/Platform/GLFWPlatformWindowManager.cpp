@@ -265,6 +265,8 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 #endif
     }
 
+    
+
     glfwSetWindowUserPointer(m_glfwWindow, this);
     glfwSetWindowCloseCallback(m_glfwWindow, window_close_callback);
     glfwSetWindowFocusCallback(m_glfwWindow, window_focus_callback);
