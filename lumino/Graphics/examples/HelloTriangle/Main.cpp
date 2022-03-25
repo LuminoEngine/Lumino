@@ -8,14 +8,13 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoGraphics/Shader.hpp>
 #include <LuminoGraphics/ShaderDescriptor.hpp>
 #include <LuminoGraphics/VertexLayout.hpp>
 #include <LuminoGraphics/VertexBuffer.hpp>
 #include <LuminoGraphics/SwapChain.hpp>
 #include <LuminoGraphics/GraphicsCommandBuffer.hpp>
-#include "../src/GraphicsManager.hpp"
+#include <LuminoGraphics/RHIModule.hpp>
 using namespace ln;
 
 Ref<Shader> g_shader;
@@ -25,7 +24,6 @@ Ref<SwapChain> g_swapChain;
 
 void init() {
     EngineContext2::initialize();
-    Logger::setLevel(LogLevel::Debug);
 
     detail::PlatformManager::Settings platformManagerrSettings;
     platformManagerrSettings.windowSystem = WindowSystem::GLFW;
@@ -39,18 +37,13 @@ void init() {
     assetManager->addAssetDirectory(ASSETS_DIR);
 #endif
 
-    detail::GraphicsManager::Settings graphicsManagerSettings;
-    graphicsManagerSettings.assetManager = assetManager;
-    graphicsManagerSettings.platformManager = platformManager;
-    graphicsManagerSettings.mainWindow = platformManager->mainWindow();
-    graphicsManagerSettings.graphicsAPI = GraphicsAPI::OpenGL;
-    graphicsManagerSettings.priorityGPUName = U"";
-    graphicsManagerSettings.debugMode = true;
-    auto graphicsManager = detail::GraphicsManager::initialize(graphicsManagerSettings);
-
-    detail::ShaderManager::Settings shaderManagerSettings;
-    shaderManagerSettings.graphicsManager = graphicsManager;
-    auto shaderManager = detail::ShaderManager::initialize(shaderManagerSettings);
+    RHIModuleSettings rhiModuleSettings;
+    rhiModuleSettings.assetManager = assetManager;
+    rhiModuleSettings.platformManager = platformManager;
+    rhiModuleSettings.mainWindow = platformManager->mainWindow();
+    rhiModuleSettings.graphicsAPI = GraphicsAPI::OpenGL;
+    rhiModuleSettings.debugMode = true;
+    auto rhiModule = RHIModule::initialize(rhiModuleSettings);
 }
 
 void initApp() {
@@ -82,7 +75,7 @@ void cleanupApp() {
 }
 
 void cleanup() {
-    detail::GraphicsManager::terminate();
+    RHIModule::terminate();
     detail::AssetManager::terminate();
     detail::PlatformManager::terminate();
     EngineContext2::terminate();

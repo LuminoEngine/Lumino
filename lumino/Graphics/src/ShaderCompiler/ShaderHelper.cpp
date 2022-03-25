@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoShaderCompiler/ShaderHelper.hpp>
-#include "UnifiedShader.hpp"
-#include "UnifiedShaderCompiler.hpp"
+#include <LuminoShaderCompiler/detail/UnifiedShader.hpp>
 #include <LuminoShaderCompiler/detail/ShaderManager.hpp>
+#include "UnifiedShaderCompiler.hpp"
 
 namespace ln {
 namespace detail {

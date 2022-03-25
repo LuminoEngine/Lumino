@@ -5,7 +5,7 @@
 #include <LuminoGraphics/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include "../../../ShaderCompiler/src/UnifiedShaderCompiler.hpp"
+//#include "../../../ShaderCompiler/src/UnifiedShaderCompiler.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/SpriteRenderFeature.hpp"

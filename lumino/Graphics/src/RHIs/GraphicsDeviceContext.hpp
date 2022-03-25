@@ -4,7 +4,7 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoShaderCompiler/Common.hpp>
-#include "../../../ShaderCompiler/src/UnifiedShader.hpp"
+#include <LuminoShaderCompiler/detail/UnifiedShader.hpp>
 #include "RHIObject.hpp"
 #include "RHIResource.hpp"
 

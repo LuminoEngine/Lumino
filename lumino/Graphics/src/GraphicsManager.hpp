@@ -4,6 +4,7 @@
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 #include <LuminoGraphics/detail/RenderingCommandList.hpp>
+#include <LuminoGraphics/RHIModule.hpp>
 
 namespace ln {
 class CommandQueue;
@@ -21,17 +22,14 @@ struct AssetRequiredPathSet;
 class SingleFrameUniformBufferAllocatorPageManager;
 class AssetManager;
 class PlatformManager;
+class ShaderManager;
 
-class GraphicsManager
-    : public Module {
+class GraphicsManager : public RHIModule {
 public:
-    struct Settings {
-        AssetManager* assetManager = nullptr;
-        PlatformManager* platformManager = nullptr;
-        PlatformWindow* mainWindow = nullptr;
-        GraphicsAPI graphicsAPI;
-        String priorityGPUName;
-        bool debugMode = false;
+    struct Settings : public RHIModuleSettings {
+        Settings() {}
+        Settings(const RHIModuleSettings& base)
+            : RHIModuleSettings(base) {}
     };
 
     static GraphicsManager* initialize(const Settings& settings);
@@ -100,6 +98,7 @@ private:
 
     AssetManager* m_assetManager;
     PlatformManager* m_platformManager;
+    ShaderManager* m_shaderManager;
     Ref<IGraphicsDevice> m_deviceContext;
     Ref<CommandQueue> m_graphicsQueue;
     Ref<CommandQueue> m_computeQueue;

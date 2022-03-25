@@ -62,7 +62,7 @@ string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
 
 add_executable(${PROJECT_NAME} renderer_lib/renderer_lib.cpp)
 #set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "mylib")
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoPlatform LuminoGraphics LuminoShaderCompiler LuminoBitmap)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoPlatform LuminoGraphics LuminoBitmap)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
 
 # Build assets

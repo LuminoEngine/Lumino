@@ -313,7 +313,6 @@ set(
     LuminoCore
     LuminoRuntime
     LuminoPlatform
-    LuminoShaderCompiler
     LuminoBitmap
     LuminoFont
     LuminoGraphics
@@ -348,7 +347,7 @@ target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} 
 target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoRuntime LuminoShaderCompiler LuminoBitmap LuminoFont LuminoGraphics)
+target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoRuntime LuminoBitmap LuminoFont LuminoGraphics)
 
 if (LN_OS_DESKTOP)
     target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})

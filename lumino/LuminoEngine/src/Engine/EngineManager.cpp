@@ -28,7 +28,6 @@
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
-#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../../Font/src/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
@@ -241,7 +240,6 @@ void EngineManager::dispose() {
     if (m_effectManager) m_effectManager->dispose();
     if (m_renderingManager) m_renderingManager->dispose();
     if (m_meshManager) m_meshManager->dispose();
-    ShaderManager::terminate();
     FontManager::terminate();
     GraphicsManager::terminate();
     if (m_audioManager) m_audioManager->dispose();
@@ -279,7 +277,6 @@ void EngineManager::initializeAllManagers() {
     initializeAnimationManager();
     initializeInputManager();
     initializeAudioManager();
-    initializeShaderManager();
     initializeGraphicsManager();
     initializeFontManager();
     initializeMeshManager();
@@ -420,17 +417,6 @@ void EngineManager::initializeAudioManager() {
 
         m_audioManager = ln::makeRef<AudioManager>();
         m_audioManager->init(settings);
-    }
-}
-
-void EngineManager::initializeShaderManager() {
-    if (!ShaderManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics)) {
-        initializeGraphicsManager();
-
-        ShaderManager::Settings settings;
-        settings.graphicsManager = GraphicsManager::instance();
-
-        ShaderManager::initialize(settings);
     }
 }
 

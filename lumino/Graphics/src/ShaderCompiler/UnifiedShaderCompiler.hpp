@@ -1,6 +1,6 @@
-﻿
-#pragma once
-#include "UnifiedShader.hpp"
+﻿#pragma once
+#include <LuminoShaderCompiler/detail/UnifiedShader.hpp>
+#include "HLSLMetadataParser.hpp"
 
 namespace ln {
 namespace detail {

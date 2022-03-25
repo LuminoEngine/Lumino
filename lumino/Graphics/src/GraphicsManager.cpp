@@ -20,6 +20,7 @@
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include "SingleFrameAllocator.hpp"
 #include "GraphicsProfiler.hpp"
+#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 
 namespace ln {
 namespace detail {
@@ -263,6 +264,14 @@ bool GraphicsManager::init(const Settings& settings) {
         m_pointClampSamplerState->setFrozen(true);
     }
 
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+    {
+        ShaderManager::Settings shaderManagerSettings;
+        shaderManagerSettings.graphicsManager = this;
+        m_shaderManager = ShaderManager::initialize(shaderManagerSettings);
+    }
+#endif
+
     LN_LOG_DEBUG("GraphicsManager Initialization ended.");
     return true;
 }
@@ -305,6 +314,13 @@ void GraphicsManager::dispose() {
     m_renderTargetTextureCacheManager = nullptr;
 
     m_deviceContext->dispose();
+
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+    if (m_shaderManager) {
+        ShaderManager::terminate();
+        m_shaderManager = nullptr;
+    }
+ #endif
 }
 
 //void GraphicsManager::enterRendering()

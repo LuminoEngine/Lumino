@@ -1,8 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoShaderCompiler/ShaderHelper.hpp>
+#include <LuminoShaderCompiler/detail/UnifiedShader.hpp>
+#include "HLSLMetadataParser.hpp"
 #include "ShaderTranspiler.hpp"
-#include "UnifiedShader.hpp"
 
 namespace ln {
 namespace detail {

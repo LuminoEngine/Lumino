@@ -173,10 +173,6 @@ void initLumino() {
     graphicsManagerSettings.priorityGPUName = U"";
     graphicsManagerSettings.debugMode = true;
     auto graphicsManager = detail::GraphicsManager::initialize(graphicsManagerSettings);
-
-    detail::ShaderManager::Settings shaderManagerSettings;
-    shaderManagerSettings.graphicsManager = graphicsManager;
-    auto shaderManager = detail::ShaderManager::initialize(shaderManagerSettings);
 }
 
 void initApp() {

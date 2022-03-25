@@ -44,7 +44,7 @@ public:
     static void terminate();
     static inline ShaderManager* instance() { return static_cast<ShaderManager*>(EngineContext2::instance()->shaderManager); }
 
-    GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+    GraphicsManager* graphicsManager2() const { return m_graphicsManager; }
     const std::vector<std::pair<std::string, std::string>>& builtinShaderList() const { return m_builtinShaderList; }
 
 #ifdef _WIN32

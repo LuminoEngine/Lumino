@@ -121,7 +121,6 @@ public:
     void initializeAnimationManager();
     void initializeInputManager();
     void initializeAudioManager();
-    void initializeShaderManager();
     void initializeFontManager();
     void initializeGraphicsManager();
     void initializeMeshManager();

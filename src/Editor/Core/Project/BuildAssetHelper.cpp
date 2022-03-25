@@ -3,10 +3,10 @@
 #include <LuminoCore/Base/CRCHash.hpp>
 #include "../../../lumino/Runtime/src/Asset/AssetArchive.hpp"
 #include <LuminoShaderCompiler/detail/ShaderManager.hpp>
-#include "../../../lumino/ShaderCompiler/src/ShaderTranspiler.hpp"
-#include "../../../lumino/ShaderCompiler/src/HLSLMetadataParser.hpp"
-#include "../../../lumino/ShaderCompiler/src/UnifiedShader.hpp"
-#include "../../../lumino/ShaderCompiler/src/UnifiedShaderCompiler.hpp"
+//#include "../../../lumino/ShaderCompiler/src/ShaderTranspiler.hpp"
+//#include "../../../lumino/ShaderCompiler/src/HLSLMetadataParser.hpp"
+//#include "../../../lumino/ShaderCompiler/src/UnifiedShader.hpp"
+//#include "../../../lumino/ShaderCompiler/src/UnifiedShaderCompiler.hpp"
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"

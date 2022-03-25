@@ -6,6 +6,8 @@ include(cmake/LuminoConfig-LuminoGraphics.cmake)
 #-------------------------------------------------------------------------------
 file(GLOB LN_SOURCES_Graphics include/LuminoGraphics/*.hpp include/LuminoGraphics/detail/*.hpp src/*.cpp src/*.hpp)
 file(GLOB LN_SOURCES_Graphics_RHIs include/LuminoGraphics/RHIs/*.hpp src/RHIs/*.cpp src/RHIs/*.hpp)
+file(GLOB LN_SOURCES_ShaderCompiler include/LuminoShaderCompiler/*.hpp include/LuminoShaderCompiler/detail/*.hpp  src/ShaderCompiler/*.cpp src/ShaderCompiler/*.hpp)
+file(GLOB LN_SOURCES_Lexer src/ShaderCompiler/Lexer/*.cpp src/ShaderCompiler/Lexer/*.hpp)
 
 if (LN_USE_OPENGL)
     file(GLOB LN_SOURCES_Graphics_RHIs_OpenGL src/RHIs/OpenGL/*.cpp src/RHIs/OpenGL/*.hpp)
@@ -23,11 +25,19 @@ elseif (WIN32)
 elseif (APPLE)
 endif()
 
+
+if (WIN32)
+    file(GLOB LN_SOURCES_Windows src/ShaderCompiler/Windows/*.cpp src/ShaderCompiler/Windows/*.hpp)
+endif()
+
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
-source_group("Graphics\\RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
-source_group("Graphics\\RHIs\\OpenGL" FILES ${LN_SOURCES_Graphics_RHIs_OpenGL})
-source_group("Graphics\\RHIs\\Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
-source_group("Graphics\\RHIs\\DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
+source_group("Graphics/RHIs" FILES ${LN_SOURCES_Graphics_RHIs})
+source_group("Graphics/RHIs/OpenGL" FILES ${LN_SOURCES_Graphics_RHIs_OpenGL})
+source_group("Graphics/RHIs/Vulkan" FILES ${LN_SOURCES_Graphics_RHIs_Vulkan})
+source_group("Graphics/RHIs/DirectX12" FILES ${LN_SOURCES_Graphics_RHIs_DirectX12})
+source_group("ShaderCompiler" FILES ${LN_SOURCES_ShaderCompiler})
+source_group("ShaderCompiler/Lexer" FILES ${LN_SOURCES_Lexer})
+source_group("ShaderCompiler/Windows" FILES ${LN_SOURCES_Windows})
 
 set(LN_SOURCES
     src/pch.cpp
@@ -38,6 +48,9 @@ set(LN_SOURCES
     ${LN_SOURCES_Graphics_RHIs_OpenGL}
     ${LN_SOURCES_Graphics_RHIs_Vulkan}
     ${LN_SOURCES_Graphics_RHIs_DirectX12}
+    ${LN_SOURCES_ShaderCompiler}
+    ${LN_SOURCES_Lexer}
+    ${LN_SOURCES_Windows}
 )
 
 #-------------------------------------------------------------------------------
@@ -62,7 +75,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     LuminoCore
     LuminoRuntime
     LuminoPlatform
-    LuminoShaderCompiler
     LuminoBitmap
     LuminoFont
 )
@@ -73,6 +85,18 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
     target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        HLSL
+        SPIRV
+        glslang
+        OGLCompiler
+        spirv-cross-core
+        spirv-cross-glsl
+        spirv-cross-hlsl
+        spirv-cross-msl
+        spirv-cross-reflect
+        spirv-cross-util
+    )
 endif()
 
 #-------------------------------------------------------------------------------

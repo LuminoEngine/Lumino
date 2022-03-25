@@ -298,7 +298,13 @@ public:
     bool tryToUInt32(uint32_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
     bool tryToUInt64(uint64_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
 
-    /** ローカルの std::string 型文字列へ変換します。 */
+    /**
+     * ローカルの std::string 型文字列へ変換します。
+     * 
+     * @attention
+     * encoding を省略した場合、エンコーディングは現在のシステムに依存します。例えば、 Windows 日本語環境であれば Shift_SJI となります。
+     * UTF-8 への変換であれば、toUtf8() が便利です。
+     */
     std::string toStdString(TextEncoding* encoding = nullptr) const;
 
     /** ローカルの std::wstring 型文字列へ変換します。 */
