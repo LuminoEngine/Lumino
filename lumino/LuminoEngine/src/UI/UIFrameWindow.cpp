@@ -273,11 +273,11 @@ void UIFrameWindow::init(bool mainWindow) {
     }
 
     if (!mainWindow) {
-        detail::WindowCreationSettings settings;
+        WindowCreationSettings settings;
         auto* platformManager = detail::PlatformManager::instance();
         setupPlatformWindow(
-            platformManager->windowManager()->createSubWindow(settings),
-            settings.clientSize,
+            platformManager->createWindow(settings),
+            SizeI(settings.clientWidth, settings.clientHeight),
             false);
     }
 

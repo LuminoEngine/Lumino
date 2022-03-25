@@ -17,37 +17,42 @@
 #include <LuminoGraphics/RHIModule.hpp>
 using namespace ln;
 
+Ref<PlatformWindow> g_window;
 Ref<Shader> g_shader;
 Ref<VertexLayout> g_vertexLayout;
 Ref<VertexBuffer> g_vertexBuffer;
 Ref<SwapChain> g_swapChain;
 
 void init() {
-    RuntimeModule::initialize({});
+    RuntimeModule::initialize();
+
+    //PlatformModule::initialize();
+
+    //detail::PlatformManager::Settings platformManagerrSettings;
+    //platformManagerrSettings.windowSystem = 
+    //auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
+
+    PlatformModule::initialize({ WindowSystem::GLFW });
+
+    RHIModuleSettings rhiModuleSettings;
+    rhiModuleSettings.graphicsAPI = GraphicsAPI::OpenGL;
+    rhiModuleSettings.debugMode = true;
+    RHIModule::initialize(rhiModuleSettings);
+
 #ifdef __EMSCRIPTEN__
     RuntimeModule::mountAssetArchive(U"Assets.lna", StringView());
 #else
     RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 #endif
-
-    //PlatformModule::initialize();
-
-    detail::PlatformManager::Settings platformManagerrSettings;
-    platformManagerrSettings.windowSystem = WindowSystem::GLFW;
-    auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
-
-    RHIModuleSettings rhiModuleSettings;
-    rhiModuleSettings.graphicsAPI = GraphicsAPI::OpenGL;
-    rhiModuleSettings.debugMode = true;
-    auto rhiModule = RHIModule::initialize(rhiModuleSettings);
 }
 
 void initApp() {
-    auto window = detail::PlatformManager::instance()->mainWindow();
+    g_window = Platform::createWindow({ U"Example", 640, 480 });
+
     int backbufferWidth;
     int backbufferHeight;
-    window->getFramebufferSize(&backbufferWidth, &backbufferHeight);
-    g_swapChain = makeObject<SwapChain>(window, SizeI(backbufferWidth, backbufferHeight));
+    g_window->getFramebufferSize(&backbufferWidth, &backbufferHeight);
+    g_swapChain = makeObject<SwapChain>(g_window, SizeI(backbufferWidth, backbufferHeight));
 
     g_shader = Shader::load(U"simple");
 
@@ -72,7 +77,7 @@ void cleanupApp() {
 
 void cleanup() {
     RHIModule::terminate();
-    detail::PlatformManager::terminate();
+    PlatformModule::terminate();
     RuntimeModule::terminate();
 }
 

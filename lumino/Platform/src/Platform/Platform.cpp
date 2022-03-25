@@ -19,4 +19,8 @@ PlatformWindow* Platform::mainWindow() {
     return detail::PlatformManager::instance()->mainWindow();
 }
 
+Ref<PlatformWindow> Platform::createWindow(const WindowCreationSettings& settings) {
+    return detail::PlatformManager::instance()->createWindow(settings);
+}
+
 } // namespace ln

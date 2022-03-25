@@ -253,7 +253,7 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
         }
 
         m_glfwWindow = glfwCreateWindow(
-            settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), nullptr, sharedWindow);
+            settings.clientWidth, settings.clientHeight, settings.title.toStdString().c_str(), nullptr, sharedWindow);
         if (LN_ENSURE(m_glfwWindow)) return err();
 
 #if defined(LN_OS_WIN32)
@@ -261,7 +261,7 @@ Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const 
 
         SetWindowLongPtr((HWND)getWin32Window(), GWL_STYLE, GetWindowLongPtrA((HWND)getWin32Window(), GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
         glfwSetWindowSizeLimits(m_glfwWindow, 100, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
-        glfwSetWindowSize(m_glfwWindow, settings.clientSize.width, settings.clientSize.height);
+        glfwSetWindowSize(m_glfwWindow, settings.clientWidth, settings.clientHeight);
 #endif
     }
 
@@ -544,29 +544,29 @@ void GLFWPlatformWindowManager::dispose() {
     glfwTerminate();
 }
 
-Ref<PlatformWindow> GLFWPlatformWindowManager::createMainWindow(const WindowCreationSettings& settings) {
-    if (LN_REQUIRE(!m_glContext)) return nullptr;
-    if (LN_REQUIRE(!settings.userWindow)) return nullptr;
+Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) {
+    if (!mainWindow) {
+        if (LN_REQUIRE(!m_glContext)) return nullptr;
+        if (LN_REQUIRE(!settings.userWindow)) return nullptr;
 
-    auto ptr = ln::makeRef<GLFWPlatformWindow>();
-    if (!ptr->init(this, settings, nullptr)) {
-        return nullptr;
+        auto ptr = ln::makeRef<GLFWPlatformWindow>();
+        if (!ptr->init(this, settings, nullptr)) {
+            return nullptr;
+        }
+
+        m_glContext = ln::makeRef<GLFWContext>(ptr);
+        return ptr;
     }
+    else {
+        if (LN_REQUIRE(m_glContext)) return nullptr;
+        if (LN_REQUIRE(!settings.userWindow)) return nullptr;
 
-    m_glContext = ln::makeRef<GLFWContext>(ptr);
-
-    return ptr;
-}
-
-Ref<PlatformWindow> GLFWPlatformWindowManager::createSubWindow(const WindowCreationSettings& settings) {
-    if (LN_REQUIRE(m_glContext)) return nullptr;
-    if (LN_REQUIRE(!settings.userWindow)) return nullptr;
-
-    auto ptr = ln::makeRef<GLFWPlatformWindow>();
-    if (!ptr->init(this, settings, m_glContext)) {
-        return nullptr;
+        auto ptr = ln::makeRef<GLFWPlatformWindow>();
+        if (!ptr->init(this, settings, m_glContext)) {
+            return nullptr;
+        }
+        return ptr;
     }
-    return ptr;
 }
 
 void GLFWPlatformWindowManager::destroyWindow(PlatformWindow* window) {

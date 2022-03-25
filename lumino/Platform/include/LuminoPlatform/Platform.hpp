@@ -16,7 +16,11 @@ public:
     /**
 	 * Get MainWindow.
 	 */
+    [[deprecated]]
     static PlatformWindow* mainWindow();
+
+    static Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings);
+
 };
 
 } // namespace ln

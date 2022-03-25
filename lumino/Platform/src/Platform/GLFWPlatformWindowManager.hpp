@@ -15,8 +15,7 @@ public:
 
     Result init(bool withOpenGLAPI);
     void dispose() override;
-    Ref<PlatformWindow> createMainWindow(const WindowCreationSettings& settings) override;
-    Ref<PlatformWindow> createSubWindow(const WindowCreationSettings& settings) override;
+    Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
     void destroyWindow(PlatformWindow* window) override;
     void processSystemEventQueue(EventProcessingMode mode) override;
     OpenGLContext* getOpenGLContext() const override;

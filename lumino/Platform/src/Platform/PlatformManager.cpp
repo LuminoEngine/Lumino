@@ -8,9 +8,7 @@
 namespace ln {
 namespace detail {
 
-
-PlatformManager* PlatformManager::initialize(const Settings& settings)
-{
+PlatformManager* PlatformManager::initialize(const Settings& settings) {
     if (instance()) return instance();
 
     auto m = Ref<PlatformManager>(LN_NEW detail::PlatformManager(), false);
@@ -21,8 +19,7 @@ PlatformManager* PlatformManager::initialize(const Settings& settings)
     return m;
 }
 
-void PlatformManager::terminate()
-{
+void PlatformManager::terminate() {
     if (instance()) {
         instance()->dispose();
         EngineContext2::instance()->unregisterModule(instance());
@@ -31,22 +28,18 @@ void PlatformManager::terminate()
 }
 
 PlatformManager::PlatformManager()
-	: m_windowManager()
+    : m_windowManager()
     //, m_glfwWithOpenGLAPI(true)
     , m_messageLoopProcessing(true)
-    , m_quitRequested(false)
-{
+    , m_quitRequested(false) {
 }
 
-PlatformManager::~PlatformManager()
-{
+PlatformManager::~PlatformManager() {
 }
 
-Result PlatformManager::init(const Settings& settings)
-{
+Result PlatformManager::init(const Settings& settings) {
 #ifdef LN_GLFW
-    if ((settings.windowSystem == WindowSystem::GLFW || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) &&
-        !settings.mainWindowSettings.userWindow) {
+    if (settings.windowSystem == WindowSystem::GLFW || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) {
         if (!m_windowManager) {
             auto windowManager = ln::makeRef<GLFWPlatformWindowManager>(this);
             LN_TRY(windowManager->init(settings.windowSystem == WindowSystem::GLFW));
@@ -64,58 +57,69 @@ Result PlatformManager::init(const Settings& settings)
     }
 #endif
 
-    //m_glfwWithOpenGLAPI = settings.glfwWithOpenGLAPI;
+    // m_glfwWithOpenGLAPI = settings.glfwWithOpenGLAPI;
 
     // ユーザーウィンドウが指定されている場合、イベント処理は外部に任せる
     // ※ HSP3 ランタイム上では、Lumino 側がイベント処理してしまうと、termfunc() が呼ばれなくなる
-    if (settings.mainWindowSettings.userWindow) {
-        m_messageLoopProcessing = false;
+    //if (settings.mainWindowSettings.userWindow) {
+    //    m_messageLoopProcessing = false;
+    //}
+
+    if (!m_windowManager) {
+        auto windowManager = ln::makeRef<EmptyPlatformWindowManager>(this);
+        if (!windowManager->init()) {
+            return err();
+        }
+        m_windowManager = windowManager;
     }
 
-	if (!m_windowManager)
-	{
-		auto windowManager = ln::makeRef<EmptyPlatformWindowManager>(this);
-        if (!windowManager->init()) {
-                    return err();
-        }
-		m_windowManager = windowManager;
-	}
-
-    //WindowCreationSettings mainWindowSettings;
-    //mainWindowSettings.title = settings.windowTitle;
-    //mainWindowSettings.clientSize = settings.clientSize;
-    //mainWindowSettings.fullscreen = false;
-    //mainWindowSettings.resizable = settings.resizable;
-    //mainWindowSettings.userWindow = settings.userWindow;
-    //mainWindowSettings.win32IconResourceId = settings.win32IconResourceId;
-	m_mainWindow = m_windowManager->createMainWindow(settings.mainWindowSettings);
+    // WindowCreationSettings mainWindowSettings;
+    // mainWindowSettings.title = settings.windowTitle;
+    // mainWindowSettings.clientSize = settings.clientSize;
+    // mainWindowSettings.fullscreen = false;
+    // mainWindowSettings.resizable = settings.resizable;
+    // mainWindowSettings.userWindow = settings.userWindow;
+    // mainWindowSettings.win32IconResourceId = settings.win32IconResourceId;
+    // m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings, nullptr);
 
     return ok();
 }
 
-void PlatformManager::dispose()
-{
+void PlatformManager::dispose() {
     LN_LOG_DEBUG("PlatformManager dispose started.");
 
-	if (m_mainWindow) {
-		m_windowManager->destroyWindow(m_mainWindow);
-		m_mainWindow = nullptr;
-	}
-	if (m_windowManager) {
-		m_windowManager->dispose();
-		m_windowManager = nullptr;
-	}
+    if (m_mainWindow) {
+        m_windowManager->destroyWindow(m_mainWindow);
+        m_mainWindow = nullptr;
+    }
+    if (m_windowManager) {
+        m_windowManager->dispose();
+        m_windowManager = nullptr;
+    }
 
     LN_LOG_DEBUG("PlatformManager dispose finished.");
 }
 
-OpenGLContext* PlatformManager::openGLContext() const
-{
+void PlatformManager::setMainWindow(PlatformWindow* window) {
+    m_mainWindow = window;
+}
+
+Ref<PlatformWindow> PlatformManager::createWindow(const WindowCreationSettings& settings) {
+    if (!m_mainWindow) {
+        auto window = m_windowManager->createWindow(settings, nullptr);
+        m_mainWindow = window;
+        return window;
+    }
+    else {
+        return m_windowManager->createWindow(settings, m_mainWindow);
+    }
+}
+
+OpenGLContext* PlatformManager::openGLContext() const {
     return m_windowManager->getOpenGLContext();
 }
 
-void PlatformManager::processSystemEventQueue()
-{
+void PlatformManager::processSystemEventQueue() {
     if (m_messageLoopProcessing) {
         m_windowManager->processSystemEventQueue(EventProcessingMode::Polling);
     }
@@ -123,4 +127,3 @@ void PlatformManager::processSystemEventQueue()
 
 } // namespace detail
 } // namespace ln
-

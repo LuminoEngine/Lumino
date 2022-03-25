@@ -361,11 +361,6 @@ void EngineManager::initializePlatformManager() {
 
         PlatformManager::Settings settings;
         settings.windowSystem = m_settings.windowSystem;
-        settings.mainWindowSettings.title = m_settings.mainWindowTitle;
-        settings.mainWindowSettings.clientSize = m_settings.mainWindowSize;
-        settings.mainWindowSettings.fullscreen = false;
-        settings.mainWindowSettings.resizable = m_settings.mainWindowResizable;
-        settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
         if (settings.windowSystem == WindowSystem::GLFW) {
             if (m_activeGraphicsAPI == GraphicsAPI::Vulkan ||
@@ -375,6 +370,16 @@ void EngineManager::initializePlatformManager() {
         }
 
         PlatformManager::initialize(settings);
+
+        WindowCreationSettings mainWindowSettings;
+        mainWindowSettings.title = m_settings.mainWindowTitle;
+        mainWindowSettings.clientWidth = m_settings.mainWindowSize.width;
+        mainWindowSettings.clientHeight = m_settings.mainWindowSize.height;
+        mainWindowSettings.fullscreen = false;
+        mainWindowSettings.resizable = m_settings.mainWindowResizable;
+        mainWindowSettings.userWindow = m_settings.userMainWindow;
+        auto mainWindow = PlatformManager::instance()->createWindow(mainWindowSettings);
+        PlatformManager::instance()->setMainWindow(mainWindow);
         PlatformManager::instance()->mainWindow()->attachEventListener(this);
     }
 }

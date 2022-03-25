@@ -4,26 +4,22 @@
 
 namespace ln {
 namespace detail {
-	
+
 //==============================================================================
 // EmptyPlatformWindow
 
-EmptyPlatformWindow::EmptyPlatformWindow()
-{
+EmptyPlatformWindow::EmptyPlatformWindow() {
 }
 
-Result EmptyPlatformWindow::init(const WindowCreationSettings& settings)
-{
+Result EmptyPlatformWindow::init(const WindowCreationSettings& settings) {
     return ok();
 }
 
-void EmptyPlatformWindow::setAllowDragDrop(bool value)
-{
+void EmptyPlatformWindow::setAllowDragDrop(bool value) {
     LN_NOTIMPLEMENTED();
 }
 
-bool EmptyPlatformWindow::isAllowDragDrop() const
-{
+bool EmptyPlatformWindow::isAllowDragDrop() const {
     return false;
 }
 
@@ -31,25 +27,20 @@ bool EmptyPlatformWindow::isAllowDragDrop() const
 // EmptyPlatformWindowManager
 
 EmptyPlatformWindowManager::EmptyPlatformWindowManager(PlatformManager* manager)
-    : PlatformWindowManager(manager)
-{
+    : PlatformWindowManager(manager) {
 }
 
-EmptyPlatformWindowManager::~EmptyPlatformWindowManager()
-{
+EmptyPlatformWindowManager::~EmptyPlatformWindowManager() {
 }
 
-Result EmptyPlatformWindowManager::init()
-{
+Result EmptyPlatformWindowManager::init() {
     return ok();
 }
 
-void EmptyPlatformWindowManager::dispose()
-{
+void EmptyPlatformWindowManager::dispose() {
 }
 
-Ref<PlatformWindow> EmptyPlatformWindowManager::createMainWindow(const WindowCreationSettings& settings)
-{
+Ref<PlatformWindow> EmptyPlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) {
     auto ptr = ln::makeRef<EmptyPlatformWindow>();
     if (!ptr->init(settings)) {
         return nullptr;
@@ -57,28 +48,15 @@ Ref<PlatformWindow> EmptyPlatformWindowManager::createMainWindow(const WindowCre
     return ptr;
 }
 
-Ref<PlatformWindow> EmptyPlatformWindowManager::createSubWindow(const WindowCreationSettings& settings)
-{
-    auto ptr = ln::makeRef<EmptyPlatformWindow>();
-    if (!ptr->init(settings)) {
-        return nullptr;
-    }
-    return ptr;
+void EmptyPlatformWindowManager::destroyWindow(PlatformWindow* window) {
 }
 
-void EmptyPlatformWindowManager::destroyWindow(PlatformWindow* window)
-{
+void EmptyPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode) {
 }
 
-void EmptyPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode)
-{
-}
-
-OpenGLContext* EmptyPlatformWindowManager::getOpenGLContext() const
-{
+OpenGLContext* EmptyPlatformWindowManager::getOpenGLContext() const {
     return nullptr;
 }
 
 } // namespace detail
 } // namespace ln
-

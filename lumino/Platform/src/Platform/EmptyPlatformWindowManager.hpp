@@ -5,39 +5,39 @@ namespace ln {
 namespace detail {
 
 class EmptyPlatformWindow
-	: public PlatformWindow
-{
+    : public PlatformWindow {
 public:
-	EmptyPlatformWindow();
+    EmptyPlatformWindow();
     Result init(const WindowCreationSettings& settings);
-    virtual void setWindowTitle(const String& title) override {}
-	virtual void getSize(SizeI* size) override { *size = SizeI(); }
-	virtual void setSize(const SizeI& size) override { LN_NOTIMPLEMENTED(); }
-	virtual void getFramebufferSize(int* width, int* height) override { *width = 0; *height = 0; }
-	virtual void setAllowDragDrop(bool value) override;
-	virtual bool isAllowDragDrop() const override;
-	virtual PointI pointFromScreen(const PointI& screenPoint) override { return screenPoint; }
-	virtual PointI pointToScreen(const PointI& clientPoint) override { return clientPoint; }
-	virtual void grabCursor() override {}
-	virtual void releaseCursor() override {}
+    void setWindowTitle(const String& title) override {}
+    void getSize(SizeI* size) override { *size = SizeI(); }
+    void setSize(const SizeI& size) override { LN_NOTIMPLEMENTED(); }
+    void getFramebufferSize(int* width, int* height) override {
+        *width = 0;
+        *height = 0;
+    }
+    void setAllowDragDrop(bool value) override;
+    bool isAllowDragDrop() const override;
+    PointI pointFromScreen(const PointI& screenPoint) override { return screenPoint; }
+    PointI pointToScreen(const PointI& clientPoint) override { return clientPoint; }
+    void grabCursor() override {}
+    void releaseCursor() override {}
 
 private:
 };
 
 class EmptyPlatformWindowManager
-	: public PlatformWindowManager
-{
+    : public PlatformWindowManager {
 public:
-	EmptyPlatformWindowManager(PlatformManager* manager);
-	virtual ~EmptyPlatformWindowManager();
+    EmptyPlatformWindowManager(PlatformManager* manager);
+    virtual ~EmptyPlatformWindowManager();
 
     Result init();
-	virtual void dispose() override;
-	virtual Ref<PlatformWindow> createMainWindow(const WindowCreationSettings& settings) override;
-	virtual Ref<PlatformWindow> createSubWindow(const WindowCreationSettings& settings) override;
-	virtual void destroyWindow(PlatformWindow* window) override;
-	virtual void processSystemEventQueue(EventProcessingMode mode) override;
-	virtual OpenGLContext* getOpenGLContext() const override;
+    void dispose() override;
+    Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
+    void destroyWindow(PlatformWindow* window) override;
+    void processSystemEventQueue(EventProcessingMode mode) override;
+    OpenGLContext* getOpenGLContext() const override;
 };
 
 } // namespace detail

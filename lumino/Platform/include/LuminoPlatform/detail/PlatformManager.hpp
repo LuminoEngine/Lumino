@@ -10,7 +10,7 @@ class PlatformWindowManager;
 class PlatformManager : public PlatformModule {
 public:
     struct Settings : public PlatformModuleSettings {
-        WindowCreationSettings mainWindowSettings;
+        //WindowCreationSettings mainWindowSettings;
 
         Settings() {}
         Settings(const PlatformModuleSettings& base) : PlatformModuleSettings(base) {} 
@@ -21,8 +21,12 @@ public:
     static inline PlatformManager* instance() { return static_cast<PlatformManager*>(EngineContext2::instance()->platformManager); }
 
     const Ref<PlatformWindowManager>& windowManager() const { return m_windowManager; }
+
+    void setMainWindow(PlatformWindow* window);
     const Ref<PlatformWindow>& mainWindow() const { return m_mainWindow; }
     // bool glfwWithOpenGLAPI() const { return m_glfwWithOpenGLAPI; }
+
+    Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings);
     OpenGLContext* openGLContext() const;
     void processSystemEventQueue();
     void requestQuit() { m_quitRequested = true; }
