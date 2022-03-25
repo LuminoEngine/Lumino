@@ -12,6 +12,8 @@ file(GLOB LN_SOURCES_RHI_Backend "src/RHI/Backend/*.cpp" "src/RHI/Backend/*.hpp"
 file(GLOB LN_SOURCES_ShaderCompiler "include/LuminoGraphics/ShaderCompiler/*.hpp" "include/LuminoGraphics/ShaderCompiler/detail/*.hpp" "src/ShaderCompiler/*.cpp" "src/ShaderCompiler/*.hpp")
 file(GLOB LN_SOURCES_ShaderCompiler_Lexer "src/ShaderCompiler/Lexer/*.cpp" "src/ShaderCompiler/Lexer/*.hpp")
 
+file(GLOB LN_SOURCES_Rendering "include/LuminoGraphics/Rendering/*.hpp" "src/Rendering/*.cpp" "src/Rendering/*.hpp")
+
 if (LN_USE_OPENGL)
     file(GLOB LN_SOURCES_RHI_Backend_OpenGL "src/RHI/Backend/OpenGL/*.cpp" "src/RHI/Backend/OpenGL/*.hpp")
 endif()
@@ -41,6 +43,7 @@ source_group("RHI/Backend/DirectX12" FILES ${LN_SOURCES_RHI_Backend_DirectX12})
 source_group("ShaderCompiler" FILES ${LN_SOURCES_ShaderCompiler})
 source_group("ShaderCompiler/Lexer" FILES ${LN_SOURCES_ShaderCompiler_Lexer})
 source_group("ShaderCompiler/Windows" FILES ${LN_SOURCES_ShaderCompiler_Windows})
+source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 
 set(LN_SOURCES
     ${LN_SOURCES}
@@ -52,6 +55,7 @@ set(LN_SOURCES
     ${LN_SOURCES_ShaderCompiler}
     ${LN_SOURCES_ShaderCompiler_Lexer}
     ${LN_SOURCES_ShaderCompiler_Windows}
+    ${LN_SOURCES_Rendering}
 )
 
 #-------------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
-#include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Common.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 
 namespace ln {
 namespace detail {

@@ -4,7 +4,7 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoGraphics/RHI/VertexLayout.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp>

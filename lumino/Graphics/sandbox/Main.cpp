@@ -13,8 +13,8 @@ using namespace ln;
 
 void init() {
     RuntimeModule::initialize();
-    PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::GLFWWithOpenGL });
-    RHIModule::initialize({ GraphicsAPI::OpenGL });
+    PlatformModule::initialize({ { U"Example", 640, 480 } });
+    RHIModule::initialize();
 
     RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 }

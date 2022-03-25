@@ -20,7 +20,7 @@ public:
     /**
      * Initialize Module.
      */
-    static RHIModule* initialize(const RHIModuleSettings& settings);
+    static RHIModule* initialize(const RHIModuleSettings& settings = {});
 
     /**
      * Terminate Module.

@@ -495,6 +495,30 @@ void UnifiedShader::makeGlobalDescriptorLayout()
     }
 }
 
+UnifiedShaderTechnique* UnifiedShader::addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet) {
+    auto tech = makeURef<UnifiedShaderTechnique>();
+    tech->id = indexToId(m_techniques2.size());
+    tech->variantSet = variantSet;
+    m_techniques2.push(std::move(tech));
+    return m_techniques2.back();
+}
+
+UnifiedShaderPass* UnifiedShader::addPass2(UnifiedShaderTechnique* parentTech, const std::string& name) {
+    auto pass = makeURef<UnifiedShaderPass>();
+    pass->id = indexToId(m_passes2.size());
+    m_passes2.push(std::move(pass));
+    return m_passes2.back();
+}
+
+void UnifiedShader::addMergeDescriptorLayoutItem2(UnifiedShaderPass* pass, const DescriptorLayout& layout) {
+    DescriptorLayout& descriptorLayout = pass->descriptorLayout;
+    descriptorLayout.mergeFrom(layout);
+
+    // Apply global
+    m_globalDescriptorLayout.mergeFrom(descriptorLayout);
+}
+
+
 bool UnifiedShader::addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass, TechniqueId* outTech)
 {
     if (findTechniqueInfoIndex(name) >= 0) {
@@ -572,17 +596,17 @@ void UnifiedShader::addMergeDescriptorLayoutItem(PassId pass, const DescriptorLa
 //	m_passes[idToIndex(pass)].refrection = buffers;
 //}
 
-UnifiedShader::CodeContainerId UnifiedShader::vertexShader(PassId pass) const
+CodeContainerId UnifiedShader::vertexShader(PassId pass) const
 {
     return m_passes[idToIndex(pass)].vertexShader;
 }
 
-UnifiedShader::CodeContainerId UnifiedShader::pixelShader(PassId pass) const
+CodeContainerId UnifiedShader::pixelShader(PassId pass) const
 {
     return m_passes[idToIndex(pass)].pixelShader;
 }
 
-UnifiedShader::CodeContainerId UnifiedShader::computeShader(PassId pass) const
+CodeContainerId UnifiedShader::computeShader(PassId pass) const
 {
     return m_passes[idToIndex(pass)].computeShader;
 }

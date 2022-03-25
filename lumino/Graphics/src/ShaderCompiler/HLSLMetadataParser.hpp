@@ -39,9 +39,11 @@ struct HLSLTechnique
 {
     std::string name;
     ShaderTechniqueClass techniqueClass;
+    std::vector<std::vector<std::string>> multiCompiles;
     std::vector<HLSLPass> passes;
     size_t blockBegin = 0; // "technique"
     size_t blockEnd = 0;   // next to "}"
+
 
     //void save(BinaryWriter* w, int version);
     //void load(BinaryReader* r, int version);

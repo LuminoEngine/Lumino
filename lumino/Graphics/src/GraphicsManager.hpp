@@ -23,6 +23,7 @@ class SingleFrameUniformBufferAllocatorPageManager;
 class AssetManager;
 class PlatformManager;
 class ShaderManager;
+class StreamingBufferAllocatorManager;
 
 class GraphicsManager : public RHIModule {
 public:
@@ -84,6 +85,9 @@ public:
 
     GraphicsCommandList* getOpenGLIntegrationCommandList();
 
+    StreamingBufferAllocatorManager* obtainVertexBufferStreamingAllocatorManager(size_t elementSize);
+    StreamingBufferAllocatorManager* obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format);
+
     static bool checkVulkanSupported();
 
 private:
@@ -123,6 +127,9 @@ private:
     Ref<SamplerState> m_linearClampSamplerState;
 
     Ref<GraphicsCommandList> m_openglIntegrationCommandList;
+
+    Array<URef<StreamingBufferAllocatorManager>> m_vertexBufferStreamingAllocatorManager;
+    Array<URef<StreamingBufferAllocatorManager>> m_indexBufferStreamingAllocatorManager;
 };
 
 } // namespace detail

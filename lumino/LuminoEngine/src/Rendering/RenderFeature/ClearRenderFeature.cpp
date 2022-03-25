@@ -3,7 +3,7 @@
 #include <LuminoGraphics/RHI/VertexLayout.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../RenderingManager.hpp"
 #include "ClearRenderFeature.hpp"

@@ -15,6 +15,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     LuminoGraphics
     LuminoBitmap
+    LuminoPlatform
     LuminoRuntime
     LuminoCore
     GTest::gtest
@@ -22,5 +23,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
+
+if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+endif()
 
 add_test(NAME ${PROJECT_NAME}-runtest COMMAND ${PROJECT_NAME})

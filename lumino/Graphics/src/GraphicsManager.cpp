@@ -21,6 +21,7 @@
 #include "RHI/SingleFrameAllocator.hpp"
 #include "RHI/GraphicsProfiler.hpp"
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include "RHI/StreamingBufferAllocator.hpp"
 
 namespace ln {
 namespace detail {
@@ -280,6 +281,9 @@ bool GraphicsManager::init(const Settings& settings) {
 }
 
 void GraphicsManager::dispose() {
+    m_vertexBufferStreamingAllocatorManager.clear();
+    m_indexBufferStreamingAllocatorManager.clear();
+
     if (m_openglIntegrationCommandList) {
         m_openglIntegrationCommandList->dispose();
         m_openglIntegrationCommandList = nullptr;
@@ -433,6 +437,31 @@ bool GraphicsManager::checkVulkanSupported() {
 #else
     return false;
 #endif
+}
+
+StreamingBufferAllocatorManager* GraphicsManager::obtainVertexBufferStreamingAllocatorManager(size_t elementSize) {
+    auto r = m_vertexBufferStreamingAllocatorManager.findIf([elementSize](auto& x) { return x->elementSize() == elementSize; });
+    if (r) {
+        return *r;
+    }
+    else {
+        auto manager = makeURef<StreamingBufferAllocatorManager>(StreamingBufferPage::Type::VertexBuffer, elementSize);
+        m_vertexBufferStreamingAllocatorManager.push(std::move(manager));
+        return m_vertexBufferStreamingAllocatorManager.back();
+    }
+}
+
+StreamingBufferAllocatorManager* GraphicsManager::obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format) {
+    size_t elementSize = GraphicsHelper::getIndexStride(format);
+    auto r = m_indexBufferStreamingAllocatorManager.findIf([elementSize](auto& x) { return x->elementSize() == elementSize; });
+    if (r) {
+        return *r;
+    }
+    else {
+        auto manager = makeURef<StreamingBufferAllocatorManager>(StreamingBufferPage::Type::VertexBuffer, elementSize);
+        m_indexBufferStreamingAllocatorManager.push(std::move(manager));
+        return m_indexBufferStreamingAllocatorManager.back();
+    }
 }
 
 Ref<Shader> GraphicsManager::loadShader(const StringView& filePath) {

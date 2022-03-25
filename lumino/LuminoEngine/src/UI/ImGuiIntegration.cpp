@@ -10,7 +10,7 @@
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoGraphics/RHI/Shader.hpp>
 #include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include "../../Font/src/FontManager.hpp"
 #include "../../../Graphics/src/GraphicsManager.hpp"

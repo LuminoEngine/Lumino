@@ -337,6 +337,7 @@ public:
     static size_t getPixelSize(TextureFormat format);
     static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
     static size_t getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
+    static IndexBufferFormat getIndexBufferFormat(size_t size) { return (size == 2) ? IndexBufferFormat::UInt16 : IndexBufferFormat::UInt32; }
 
 
 

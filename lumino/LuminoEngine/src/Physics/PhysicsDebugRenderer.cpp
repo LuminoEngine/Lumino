@@ -2,8 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>>
-#include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "../Rendering/RenderingManager.hpp"
 #include "PhysicsDebugRenderer.hpp"

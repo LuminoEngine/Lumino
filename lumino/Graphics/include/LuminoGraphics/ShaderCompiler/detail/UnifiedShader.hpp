@@ -7,6 +7,34 @@ namespace ln {
 namespace detail {
 class ShaderRenderState;
 
+class UnifiedShaderVariantSet {
+public:
+    Array<String> values;
+};
+
+// 0 is invalid value.
+using CodeContainerId = uint32_t;
+using UnifiedShaderTechniqueId = uint32_t;
+using UnifiedShadePassId = uint32_t;
+
+class UnifiedShaderTechnique : public URefObject {
+public:
+    UnifiedShaderTechniqueId id;
+    UnifiedShaderVariantSet variantSet;
+};
+
+class UnifiedShaderPass : public URefObject {
+public:
+    UnifiedShadePassId id;
+    std::string name;
+    CodeContainerId vertexShader;
+    CodeContainerId pixelShader;
+    CodeContainerId computeShader;
+    Ref<ShaderRenderState> renderState;
+    DescriptorLayout descriptorLayout;
+    std::vector<VertexInputAttribute> attributes; // used by vertexShader
+};
+
 /*
  * データ構造
  * --------
@@ -44,7 +72,6 @@ public:
     };
 
     // 0 is invalid value.
-    using CodeContainerId = uint32_t;
     using TechniqueId = uint32_t;
     using PassId = uint32_t;
 
@@ -72,6 +99,13 @@ public:
     const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
     const std::string& entryPointName(CodeContainerId conteinreId) const;
     void makeGlobalDescriptorLayout();
+
+    UnifiedShaderTechnique* addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet);
+
+    UnifiedShaderPass* addPass2(UnifiedShaderTechnique* parentTech, const std::string& name);
+    void addMergeDescriptorLayoutItem2(UnifiedShaderPass* pass, const DescriptorLayout& layout);
+
+
 
     bool addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass, TechniqueId* outTech);
     int techniqueCount() const { return m_techniques.size(); }
@@ -147,7 +181,9 @@ private:
     DiagnosticsManager* m_diag;
     List<CodeContainerInfo> m_codeContainers;
     List<TechniqueInfo> m_techniques;
+    Array<URef<UnifiedShaderTechnique>> m_techniques2;
     List<PassInfo> m_passes;
+    Array<URef<UnifiedShaderPass>> m_passes2;
     DescriptorLayout m_globalDescriptorLayout; // Result of merging all pass layouts
 };
 

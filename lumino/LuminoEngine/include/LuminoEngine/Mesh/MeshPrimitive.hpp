@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoGraphics/Common.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "../Rendering/Common.hpp"
-#include "../Rendering/Vertex.hpp"
 
 namespace ln {
 class VertexLayout;

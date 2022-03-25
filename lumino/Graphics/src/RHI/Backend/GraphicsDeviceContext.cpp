@@ -300,9 +300,9 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
     LN_DCHECK(diag);
     auto& triple = caps().requestedShaderTriple;
 
-    detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader->vertexShader(passId);
-    detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader->pixelShader(passId);
-    detail::UnifiedShader::CodeContainerId cscodeId = unifiedShader->computeShader(passId);
+    detail::CodeContainerId vscodeId = unifiedShader->vertexShader(passId);
+    detail::CodeContainerId pscodeId = unifiedShader->pixelShader(passId);
+    detail::CodeContainerId cscodeId = unifiedShader->computeShader(passId);
 
     const char* vsEntryPointName = nullptr;
     const char* psEntryPointName = nullptr;

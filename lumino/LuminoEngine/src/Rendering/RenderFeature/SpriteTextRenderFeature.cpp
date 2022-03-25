@@ -6,7 +6,7 @@
 #include <LuminoGraphics/RHI/SamplerState.hpp>
 #include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "../../Font/src/FontCore.hpp"
 #include "../../TextRendering/TextRenderingCache.hpp"
 #include "../../../../Graphics/src/GraphicsManager.hpp"

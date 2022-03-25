@@ -4,7 +4,7 @@
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoGraphics/RHI/IndexBuffer.hpp>
 #include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "PrimitiveRenderFeature.hpp"
 
 namespace ln {
