@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
 #include <LuminoEngine/Scene/World.hpp>

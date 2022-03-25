@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoGraphics/SamplerState.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoGraphics/RHI/SamplerState.hpp>
 #include "MainViewportToolPane.hpp"
 
 namespace ln {

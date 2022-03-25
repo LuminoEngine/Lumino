@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>

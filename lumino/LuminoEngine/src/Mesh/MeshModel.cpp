@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/IndexBuffer.hpp>
+#include <LuminoGraphics/RHI/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>

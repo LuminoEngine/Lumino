@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include <LuminoGraphics/Common.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
-#include <LuminoGraphics/detail/RenderingCommandList.hpp>
+#include <LuminoGraphics/RHI/Common.hpp>
+#include <LuminoGraphics/RHI/detail/RenderingCommandList.hpp>
 #include <LuminoGraphics/RHIModule.hpp>
 
 namespace ln {

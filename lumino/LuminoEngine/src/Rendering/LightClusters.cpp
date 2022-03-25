@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <float.h>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include "LightClusters.hpp"
 
 namespace ln {

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/RenderPass.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderingManager.hpp"

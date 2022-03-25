@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>

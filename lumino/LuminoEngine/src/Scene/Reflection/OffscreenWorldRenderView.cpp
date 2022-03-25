@@ -1,11 +1,9 @@
 ﻿
 #include "../Internal.hpp"
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
 #include "../../../../Graphics/src/GraphicsManager.hpp"
-#include "../../../../Graphics/src/RenderTargetTextureCache.hpp"
 #include "../../Rendering/CommandListServer.hpp"
 #include "../../Rendering/RenderingManager.hpp"
 #include "../../Rendering/RenderingPipeline.hpp"

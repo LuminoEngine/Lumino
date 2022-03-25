@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/RHI/RenderPass.hpp>
 #include "RenderingManager.hpp"
 #include "UnLigitingSceneRenderer.hpp"
 

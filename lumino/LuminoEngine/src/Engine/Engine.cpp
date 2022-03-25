@@ -7,7 +7,7 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>

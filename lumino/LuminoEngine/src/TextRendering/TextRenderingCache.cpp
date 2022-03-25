@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include "TextRenderingCache.hpp"
 #include "FontGlyphCache.hpp"
 

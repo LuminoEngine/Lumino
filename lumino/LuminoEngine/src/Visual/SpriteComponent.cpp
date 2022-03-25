@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Reflection/Property.hpp>
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>

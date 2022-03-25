@@ -1,20 +1,20 @@
 ﻿#include "Internal.hpp"
 #include <LuminoPlatform/PlatformEvent.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
-#include <LuminoGraphics/VertexLayout.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/Texture.hpp>
-#include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/IndexBuffer.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/RHI/RenderPass.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/Shader.hpp>
-#include <LuminoGraphics/ShaderDescriptor.hpp>
+#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include "../../Font/src/FontManager.hpp"
 #include "../../../Graphics/src/GraphicsManager.hpp"
-#include "../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
+#include "../../../Graphics/src/RHI/Backend/GraphicsDeviceContext.hpp"
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {

@@ -4,8 +4,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>

@@ -13,11 +13,6 @@
 #include "../../Font/src/FontManager.hpp"
 #include "UIStyleInstance.hpp"
 
-// TODO: Test
-#include <LuminoGraphics/Texture.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
-
-
 namespace ln {
 
 //==============================================================================

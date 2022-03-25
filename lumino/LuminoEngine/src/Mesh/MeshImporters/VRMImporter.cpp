@@ -3,7 +3,7 @@
 #include "Internal.hpp"
 #include <tiny_gltf.h>
 //#include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../../Rendering/RenderingManager.hpp"

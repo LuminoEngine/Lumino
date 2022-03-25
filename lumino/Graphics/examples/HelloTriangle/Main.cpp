@@ -8,12 +8,12 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoGraphics/Shader.hpp>
-#include <LuminoGraphics/ShaderDescriptor.hpp>
-#include <LuminoGraphics/VertexLayout.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/SwapChain.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
+#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/SwapChain.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/RHIModule.hpp>
 using namespace ln;
 

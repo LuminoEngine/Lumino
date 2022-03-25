@@ -1,11 +1,10 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include "../../../Graphics/src/GraphicsManager.hpp"
-#include "../../../Graphics/src/RHIs/RHIProfiler.hpp"
-#include "../../../Graphics/src/GraphicsProfiler.hpp"
-#include "../../../Graphics/src/RenderTargetTextureCache.hpp"
+#include "../../../Graphics/src/RHI/Backend/RHIProfiler.hpp"
+#include "../../../Graphics/src/RHI/GraphicsProfiler.hpp"
+#include "../../../Graphics/src/RHI/RenderTargetTextureCache.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../Rendering/RenderingProfiler.hpp"
 #include "../Engine/EngineManager.hpp"

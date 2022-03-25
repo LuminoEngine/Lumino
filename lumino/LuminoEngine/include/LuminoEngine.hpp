@@ -42,16 +42,16 @@
 
 
 #include "LuminoEngine/Graphics/RenderState.hpp"
-#include "LuminoGraphics/Shader.hpp"
-#include "LuminoGraphics/SamplerState.hpp"
-#include "LuminoGraphics/VertexLayout.hpp"
-#include "LuminoGraphics/VertexBuffer.hpp"
-#include "LuminoGraphics/IndexBuffer.hpp"
-#include "LuminoGraphics/Texture.hpp"
-#include "LuminoGraphics/RenderPass.hpp"
-#include "LuminoGraphics/SwapChain.hpp"
-#include "LuminoGraphics/GraphicsCommandBuffer.hpp"
-#include "LuminoGraphics/Graphics.hpp"
+#include "LuminoGraphics/RHI/Shader.hpp"
+#include "LuminoGraphics/RHI/SamplerState.hpp"
+#include "LuminoGraphics/RHI/VertexLayout.hpp"
+#include "LuminoGraphics/RHI/VertexBuffer.hpp"
+#include "LuminoGraphics/RHI/IndexBuffer.hpp"
+#include "LuminoGraphics/RHI/Texture.hpp"
+#include "LuminoGraphics/RHI/RenderPass.hpp"
+#include "LuminoGraphics/RHI/SwapChain.hpp"
+#include "LuminoGraphics/RHI/GraphicsCommandBuffer.hpp"
+#include "LuminoGraphics/RHI/Graphics.hpp"
 
 
 #include "LuminoEngine/Mesh/MeshPrimitive.hpp"

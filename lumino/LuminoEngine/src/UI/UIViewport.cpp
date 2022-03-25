@@ -1,8 +1,4 @@
-﻿
-#include "Internal.hpp"
-//#include <LuminoEngine/Graphics/Bitmap.hpp>
-#include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>

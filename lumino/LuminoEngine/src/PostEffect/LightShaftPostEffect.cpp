@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Texture.hpp>
-#include <LuminoGraphics/SamplerState.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/RHI/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>

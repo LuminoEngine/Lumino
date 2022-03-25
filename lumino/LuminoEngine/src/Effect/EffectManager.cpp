@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Texture.hpp>
-#include <LuminoGraphics/SwapChain.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/RHI/SwapChain.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

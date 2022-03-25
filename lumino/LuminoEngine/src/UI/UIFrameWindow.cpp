@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/SwapChain.hpp>
-#include <LuminoGraphics/SamplerState.hpp>
+#include <LuminoGraphics/RHI/RenderPass.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/SwapChain.hpp>
+#include <LuminoGraphics/RHI/SamplerState.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>

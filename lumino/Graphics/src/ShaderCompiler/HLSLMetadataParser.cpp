@@ -4,8 +4,8 @@
 #include <yaml-cpp/yaml.h>
 #include "Lexer/CppLexer.hpp"
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoShaderCompiler/ShaderHelper.hpp>
-#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoGraphics/ShaderCompiler/ShaderHelper.hpp>
+#include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "HLSLMetadataParser.hpp"
 
 namespace ln {

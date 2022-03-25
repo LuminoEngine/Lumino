@@ -1,28 +1,26 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/GraphicsResource.hpp>
-#include <LuminoGraphics/CommandQueue.hpp>
-#include <LuminoGraphics/Texture.hpp>
-#include <LuminoGraphics/Shader.hpp>
-#include <LuminoGraphics/SamplerState.hpp>
-#include <LuminoGraphics/GraphicsExtension.hpp>
+﻿#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/GraphicsResource.hpp>
+#include <LuminoGraphics/RHI/CommandQueue.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/RHI/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
-#include "RenderTargetTextureCache.hpp"
-#include "RHIs/OpenGL/OpenGLDeviceContext.hpp"
+#include "RHI/RenderTargetTextureCache.hpp"
+#include "RHI/Backend/OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
-#include "RHIs/Vulkan/VulkanDeviceContext.hpp"
+#include "RHI/Backend/Vulkan/VulkanDeviceContext.hpp"
 #endif
 #ifdef _WIN32
-#include "RHIs/DirectX12/DX12DeviceContext.hpp"
+#include "RHI/Backend/DirectX12/DX12DeviceContext.hpp"
 #endif
-#include <LuminoGraphics/detail/RenderingCommandList.hpp>
+#include <LuminoGraphics/RHI/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
-#include "SingleFrameAllocator.hpp"
-#include "GraphicsProfiler.hpp"
-#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
+#include "RHI/SingleFrameAllocator.hpp"
+#include "RHI/GraphicsProfiler.hpp"
+#include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 
 namespace ln {
 namespace detail {

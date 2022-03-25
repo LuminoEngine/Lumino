@@ -1,6 +1,6 @@
 ﻿
 #include "../../../lumino/Runtime/src/Asset/AssetArchive.hpp"
-#include <LuminoShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoGraphics/ShaderCompiler/detail/UnifiedShader.hpp>
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"

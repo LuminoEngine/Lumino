@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/SamplerState.hpp>
-#include <LuminoGraphics/RenderPass.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/RHI/RenderPass.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"

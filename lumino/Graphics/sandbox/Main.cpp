@@ -5,12 +5,7 @@
 #include <LuminoPlatform/Platform.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
-#include <LuminoGraphics/Shader.hpp>
-#include <LuminoGraphics/ShaderDescriptor.hpp>
-#include <LuminoGraphics/VertexLayout.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/SwapChain.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics.hpp>
 #include "../src/GraphicsManager.hpp"
 using namespace ln;
 

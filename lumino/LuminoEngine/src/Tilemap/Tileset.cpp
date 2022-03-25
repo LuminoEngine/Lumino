@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoGraphics/Texture.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>

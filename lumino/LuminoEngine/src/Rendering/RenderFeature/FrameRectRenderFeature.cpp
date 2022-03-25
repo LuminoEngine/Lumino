@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/VertexLayout.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/IndexBuffer.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
+#include "../../../../Graphics/src/RHI/Backend/GraphicsDeviceContext.hpp"
 #include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../../Rendering/RenderingManager.hpp"
 #include "FrameRectRenderFeature.hpp"

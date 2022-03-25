@@ -2,8 +2,6 @@
 #include "Internal.hpp"
 #include <LuminoFont/Font.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoGraphics/Shader.hpp>
-#include <LuminoGraphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>

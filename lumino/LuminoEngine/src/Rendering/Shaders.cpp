@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Shader.hpp>
+#include <LuminoGraphics/RHI/Shader.hpp>
 #include <LuminoEngine/Rendering/Shaders.hpp>
 #include "RenderingManager.hpp"
 

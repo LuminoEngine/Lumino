@@ -1,15 +1,14 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/VertexLayout.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/IndexBuffer.hpp>
-#include <LuminoGraphics/SamplerState.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/IndexBuffer.hpp>
+#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../../Font/src/FontCore.hpp"
 #include "../../TextRendering/TextRenderingCache.hpp"
-#include "../../../../Graphics/src/RHIs/GraphicsDeviceContext.hpp"
 #include "../../../../Graphics/src/GraphicsManager.hpp"
 #include "../../Rendering/RenderingManager.hpp"
 #include "SpriteTextRenderFeature.hpp"

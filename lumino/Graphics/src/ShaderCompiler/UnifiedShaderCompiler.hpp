@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoGraphics/ShaderCompiler/detail/UnifiedShader.hpp>
 #include "HLSLMetadataParser.hpp"
 
 namespace ln {

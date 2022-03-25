@@ -2,8 +2,8 @@
 #include "Internal.hpp"
 #include <box2d/box2d.h>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoGraphics/VertexLayout.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>

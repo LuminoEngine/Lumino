@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/SamplerState.hpp>
-#include <LuminoGraphics/RenderPass.hpp>
+#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/RHI/RenderPass.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderStage.hpp"
 #include "RenderElement.hpp"

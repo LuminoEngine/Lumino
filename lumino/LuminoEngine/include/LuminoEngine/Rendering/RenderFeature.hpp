@@ -2,7 +2,7 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoGraphics/Common.hpp>
 #include "Common.hpp"
-#include <LuminoGraphics/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/RHI/ShaderInterfaceFramework.hpp>
 
 namespace ln {
 class ShaderTechnique;

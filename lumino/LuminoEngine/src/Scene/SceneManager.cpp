@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include "SceneManager.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/Texture.hpp>
+#include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
 #include "../Rendering/RenderingManager.hpp"
 #include "Shapes/PathShapeContext.hpp"
@@ -12,7 +12,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Level.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
-#include <LuminoGraphics/Shader.hpp>
+#include <LuminoGraphics/RHI/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
 #include <LuminoEngine/Tilemap/TilemapLayer.hpp>
