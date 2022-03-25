@@ -10,9 +10,6 @@ class PlatformManager;
 } // namespace detail
 
 struct RHIModuleSettings {
-    detail::AssetManager* assetManager = nullptr;
-    detail::PlatformManager* platformManager = nullptr;
-    PlatformWindow* mainWindow = nullptr;
     GraphicsAPI graphicsAPI = GraphicsAPI::Default;
     String priorityGPUName;
     bool debugMode = false;

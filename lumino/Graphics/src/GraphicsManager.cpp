@@ -18,6 +18,8 @@
 #endif
 #include <LuminoGraphics/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
+#include <LuminoPlatform/detail/PlatformManager.hpp>
+#include <LuminoPlatform/PlatformWindow.hpp>
 #include "SingleFrameAllocator.hpp"
 #include "GraphicsProfiler.hpp"
 #include <LuminoShaderCompiler/detail/ShaderManager.hpp>
@@ -178,8 +180,11 @@ bool GraphicsManager::init(const Settings& settings) {
 
     if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return false;
 
-    m_assetManager = settings.assetManager;
-    m_platformManager = settings.platformManager;
+    m_assetManager = AssetManager::instance();
+    if (LN_ASSERT(m_assetManager)) return false;
+    
+    m_platformManager = PlatformManager::instance();
+    if (LN_ASSERT(m_platformManager)) return false;
 
     m_profiler = std::make_unique<GraphicsProfiler>();
 
@@ -445,8 +450,8 @@ Ref<Shader> GraphicsManager::loadShader(const StringView& filePath) {
 
 void GraphicsManager::createOpenGLContext(const Settings& settings) {
     OpenGLDevice::Settings dcSettings;
-    dcSettings.platformManager = settings.platformManager;
-    dcSettings.mainWindow = settings.mainWindow;
+    dcSettings.platformManager = m_platformManager;
+    dcSettings.mainWindow = m_platformManager->mainWindow();
     dcSettings.defaultFramebuffer = 0;
     auto device = makeRef<OpenGLDevice>();
     bool driverSupported = false;
@@ -462,7 +467,7 @@ void GraphicsManager::createOpenGLContext(const Settings& settings) {
 void GraphicsManager::createVulkanContext(const Settings& settings) {
 #ifdef LN_USE_VULKAN
     VulkanDevice::Settings dcSettings;
-    dcSettings.mainWindow = settings.mainWindow;
+    dcSettings.mainWindow = m_platformManager->mainWindow();
     dcSettings.debugMode = settings.debugMode;
     auto ctx = makeRef<VulkanDevice>();
     bool driverSupported = false;
@@ -484,7 +489,7 @@ void GraphicsManager::createVulkanContext(const Settings& settings) {
 void GraphicsManager::createDirectX12Context(const Settings& settings) {
 #if _WIN32
     DX12Device::Settings dcSettings;
-    dcSettings.mainWindow = settings.mainWindow;
+    dcSettings.mainWindow = m_platformManager->mainWindow();
     dcSettings.debugMode = settings.debugMode;
     dcSettings.priorityAdapterName = settings.priorityGPUName.toStdWString();
     auto ctx = makeRef<DX12Device>();

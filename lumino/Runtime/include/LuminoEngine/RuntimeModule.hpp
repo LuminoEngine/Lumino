@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Asset/Common.hpp"
+#include "Asset/Common.hpp"
 
 namespace ln {
 
@@ -7,7 +7,7 @@ struct RuntimeModuleSettings {
     AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
 };
 
-class Runtime {
+class RuntimeModule {
 public:
     /**
 	 * Initialize Runtime.

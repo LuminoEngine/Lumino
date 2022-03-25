@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common2.hpp"
-#include "../Runtime/Runtime.hpp"
+#include "../RuntimeModule.hpp"
 #include "../Reflection/TypeInfo.hpp"
 #include "../Reflection/Property.hpp"
 

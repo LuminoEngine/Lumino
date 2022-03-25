@@ -10,7 +10,7 @@ public:
 LN_OBJECT_IMPLEMENT(MyObject1, Object) {}
 
 TEST_F(Test_TypeInfo, Basic) {
-    Runtime::initialize();
+    RuntimeModule::initialize();
 
     auto* context = EngineContext2::instance();
     context->registerType<MyObject1>();
@@ -21,5 +21,5 @@ TEST_F(Test_TypeInfo, Basic) {
     auto* typeInfo2 = context->findTypeInfo(U"MyObject1");
     ASSERT_TRUE(typeInfo1 != nullptr);
 
-    Runtime::terminate();
+    RuntimeModule::terminate();
 }

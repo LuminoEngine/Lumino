@@ -28,8 +28,7 @@ class GraphicsManager : public RHIModule {
 public:
     struct Settings : public RHIModuleSettings {
         Settings() {}
-        Settings(const RHIModuleSettings& base)
-            : RHIModuleSettings(base) {}
+        Settings(const RHIModuleSettings& base) : RHIModuleSettings(base) {}
     };
 
     static GraphicsManager* initialize(const Settings& settings);

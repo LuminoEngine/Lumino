@@ -23,21 +23,20 @@ Ref<VertexBuffer> g_vertexBuffer;
 Ref<SwapChain> g_swapChain;
 
 void init() {
-    Runtime::initialize({});
+    RuntimeModule::initialize({});
 #ifdef __EMSCRIPTEN__
-    Runtime::mountAssetArchive(U"Assets.lna", StringView());
+    RuntimeModule::mountAssetArchive(U"Assets.lna", StringView());
 #else
-    Runtime::mountAssetDirectory(ASSETS_DIR);
+    RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 #endif
+
+    //PlatformModule::initialize();
 
     detail::PlatformManager::Settings platformManagerrSettings;
     platformManagerrSettings.windowSystem = WindowSystem::GLFW;
     auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
 
     RHIModuleSettings rhiModuleSettings;
-    rhiModuleSettings.assetManager = detail::AssetManager::instance();
-    rhiModuleSettings.platformManager = platformManager;
-    rhiModuleSettings.mainWindow = platformManager->mainWindow();
     rhiModuleSettings.graphicsAPI = GraphicsAPI::OpenGL;
     rhiModuleSettings.debugMode = true;
     auto rhiModule = RHIModule::initialize(rhiModuleSettings);
@@ -74,7 +73,7 @@ void cleanupApp() {
 void cleanup() {
     RHIModule::terminate();
     detail::PlatformManager::terminate();
-    Runtime::terminate();
+    RuntimeModule::terminate();
 }
 
 void mainLoop() {

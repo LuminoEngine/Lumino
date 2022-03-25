@@ -1,7 +1,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #include <LuminoCore.hpp>
-#include <LuminoEngine/Runtime/Runtime.hpp>
+#include <LuminoEngine/RuntimeModule.hpp>
 #include <LuminoPlatform/PlatformModule.hpp>
 #include <LuminoPlatform/Platform.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
@@ -21,7 +21,7 @@ struct EventListener : IPlatforEventListener {
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
-    if (!Runtime::initialize({})) return 1;
+    if (!RuntimeModule::initialize()) return 1;
     if (!PlatformModule::initialize()) return 1;
 
     EventListener listener;
@@ -32,6 +32,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     }
 
     PlatformModule::terminate();
-    Runtime::terminate();
+    RuntimeModule::terminate();
     return 0;
 }

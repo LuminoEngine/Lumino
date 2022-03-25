@@ -5,8 +5,6 @@
 #include <LuminoPlatform/Platform.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
-#include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoGraphics/Shader.hpp>
 #include <LuminoGraphics/ShaderDescriptor.hpp>
 #include <LuminoGraphics/VertexLayout.hpp>
@@ -19,24 +17,17 @@ using namespace ln;
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)
 
 void init() {
-    Runtime::initialize({});
+    RuntimeModule::initialize();
+    PlatformModule::initialize({ WindowSystem::GLFW });
+    RHIModule::initialize({ GraphicsAPI::OpenGL });
 
-    detail::PlatformManager::Settings platformManagerrSettings;
-    platformManagerrSettings.windowSystem = WindowSystem::GLFW;
-    auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
-
-    RHIModuleSettings rhiModuleSettings;
-    rhiModuleSettings.assetManager = detail::AssetManager::instance();
-    rhiModuleSettings.platformManager = platformManager;
-    rhiModuleSettings.mainWindow = platformManager->mainWindow();
-    rhiModuleSettings.graphicsAPI = GraphicsAPI::OpenGL;
-    auto rhiModule = RHIModule::initialize(rhiModuleSettings);
+    RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 }
 
 void cleanup() {
     RHIModule::terminate();
-    detail::PlatformManager::terminate();
-    Runtime::terminate();
+    PlatformModule::terminate();
+    RuntimeModule::terminate();
 }
 
 void run() {
@@ -66,20 +57,20 @@ void run() {
     auto swapChain = makeObject<SwapChain>(window, SizeI(backbufferWidth, backbufferHeight));
 
     while (Platform::processEvents()) {
-        auto ctx = swapChain->beginFrame2();
+        auto commandList = swapChain->beginFrame2();
 
-        auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+        auto descriptor = commandList->allocateShaderDescriptor(shaderPass);
         descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
 
         auto renderPass = swapChain->currentRenderPass();
-        ctx->beginRenderPass(renderPass);
-        ctx->setVertexLayout(vertexLayout);
-        ctx->setVertexBuffer(0, vertexBuffer);
-        ctx->setShaderPass(shaderPass);
-        ctx->setShaderDescriptor(descriptor);
-        ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-        ctx->drawPrimitive(0, 1);
-        ctx->endRenderPass();
+        commandList->beginRenderPass(renderPass);
+        commandList->setVertexLayout(vertexLayout);
+        commandList->setVertexBuffer(0, vertexBuffer);
+        commandList->setShaderPass(shaderPass);
+        commandList->setShaderDescriptor(descriptor);
+        commandList->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+        commandList->drawPrimitive(0, 1);
+        commandList->endRenderPass();
 
         // NOTE:
         // DX12で確認した現象。
