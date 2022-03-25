@@ -1,7 +1,6 @@
 ﻿#include "Common.hpp"
 #include "../src/Engine/EngineManager.hpp"
 #include "../src/Scene/SceneManager.hpp"
-#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include "TestEnv.hpp"
 
 String TestEnv::LuminoCLI;
@@ -24,7 +23,6 @@ void TestEnv::setup()
 	EngineContext::current()->initializeEngineManager();
 	detail::EngineDomain::engineManager()->initializeAllManagers();
     detail::EngineDomain::engineManager()->sceneManager()->autoAddingToActiveWorld = true;
-	//detail::RuntimeManager::initialize(detail::RuntimeManager::s_globalSettings);
 
 
     if (feature == EngineFeature::Experimental)  // Experimental
@@ -53,7 +51,6 @@ void TestEnv::setup()
 void TestEnv::teardown()
 {
 	depthBuffer = nullptr;
-	//detail::RuntimeManager::terminate();
     detail::EngineDomain::release();
 }
 

@@ -154,19 +154,15 @@ void initGLFW() {
 }
 
 void initLumino() {
-    EngineContext2::initialize();
-    Logger::setLevel(LogLevel::Debug);
-
-    detail::AssetManager::Settings assetManagerSettings;
-    auto assetManager = detail::AssetManager::initialize(assetManagerSettings);
+    Runtime::initialize({});
 #ifdef __EMSCRIPTEN__
-    assetManager->mountAssetArchive(U"Assets.lna", StringView());
+    Runtime::mountAssetArchive(U"Assets.lna", StringView());
 #else
-    assetManager->addAssetDirectory(ASSETS_DIR);
+    Runtime::mountAssetDirectory(ASSETS_DIR);
 #endif
 
     detail::GraphicsManager::Settings graphicsManagerSettings;
-    graphicsManagerSettings.assetManager = assetManager;
+    graphicsManagerSettings.assetManager = detail::AssetManager::instance();
     graphicsManagerSettings.platformManager = nullptr;
     graphicsManagerSettings.mainWindow = nullptr;
     graphicsManagerSettings.graphicsAPI = GraphicsAPI::OpenGL;
@@ -198,8 +194,7 @@ void cleanupApp() {
 
 void cleanupLumino() {
     detail::GraphicsManager::terminate();
-    detail::AssetManager::terminate();
-    EngineContext2::terminate();
+    Runtime::terminate();
 }
 
 void cleanupGLFW() {

@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include "Common2.hpp"
+#include "../Runtime/Runtime.hpp"
 #include "../Reflection/TypeInfo.hpp"
 #include "../Reflection/Property.hpp"
 
 namespace ln {
-
 namespace detail {
+class RuntimeManager;
+class AssetManager;
 class IObjectEventListener {
 public:
     virtual void onDestructObject(Object* obj) = 0;
@@ -31,7 +33,7 @@ public:
     static EngineContext2* instance() { return s_instance.get(); };
 
     /** Initialize context. */
-    static bool initialize(EngineContext2* sharedContext = nullptr);
+    static bool initialize(const RuntimeModuleSettings& settings, EngineContext2* sharedContext = nullptr);
 
     /** Terminate context. */
     static void terminate();
@@ -125,16 +127,17 @@ public:
 
     // TODO:
     RefObject* platformManager = nullptr;
-    RefObject* assetManager = nullptr;
     RefObject* runtimeManager = nullptr;
     RefObject* shaderManager = nullptr;
     RefObject* fontManager = nullptr;
     RefObject* graphicsManager = nullptr;
     detail::IObjectEventListener* objectEventListener = nullptr;
 
+    const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
+
 private:
     EngineContext2();
-    bool init();
+    bool init(const RuntimeModuleSettings& settings);
     void dispose();
 
     static std::unique_ptr<EngineContext2> s_instance;
@@ -146,6 +149,9 @@ private:
     std::unordered_map<String, TypeInfo*> m_typeInfoSet;
     std::vector<Ref<TypeInfo>> m_typeInfos;
     TypeInfo* m_objectTypeInfo;
+
+    URef<detail::RuntimeManager> m_runtimeManager;
+    URef<detail::AssetManager> m_assetManager;
 };
 
 } // namespace ln

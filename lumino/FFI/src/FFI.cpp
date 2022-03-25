@@ -111,7 +111,7 @@ void LNRuntime_Initialize(const tagLNRuntimeSettings* settings)
         s.runtimeGetTypeInfoIdCallback = settings->runtimeGetTypeInfoIdCallback;
     }
 
-    ln::EngineContext2::initialize();
+    ln::EngineContext2::initialize({});
     auto* context = ln::EngineContext2::instance();
 	ln::detail::RuntimeManager::initialize(ln::detail::RuntimeManager::s_globalSettings);
     ln::registerTypes_Graphics(context);

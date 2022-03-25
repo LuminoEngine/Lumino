@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
+#include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
 namespace ln {
 
@@ -12,7 +13,7 @@ void registerModuleTypes_Runtime(EngineContext2* context);
 
 std::unique_ptr<EngineContext2> EngineContext2::s_instance;
 
-bool EngineContext2::initialize(EngineContext2* sharedContext) {
+bool EngineContext2::initialize(const RuntimeModuleSettings& settings, EngineContext2* sharedContext) {
     if (sharedContext) {
         LN_NOTIMPLEMENTED();
         return false;
@@ -20,7 +21,7 @@ bool EngineContext2::initialize(EngineContext2* sharedContext) {
 
     if (s_instance) return true;
     s_instance = std::unique_ptr<EngineContext2>(LN_NEW EngineContext2());
-    return s_instance->init();
+    return s_instance->init(settings);
 }
 
 void EngineContext2::terminate() {
@@ -33,7 +34,7 @@ void EngineContext2::terminate() {
 EngineContext2::EngineContext2() {
 }
 
-bool EngineContext2::init() {
+bool EngineContext2::init(const RuntimeModuleSettings& settings) {
     m_typeInfos.push_back(nullptr); // [0] is dummy
 
     PredefinedTypes::Char = registerType(_TT("Char"), nullptr, TypeInfoClass::Primitive);
@@ -62,13 +63,29 @@ bool EngineContext2::init() {
         m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
     }
 
+    {
+        detail::AssetManager::Settings settings2;
+        settings2.assetStorageAccessPriority = settings.assetStorageAccessPriority;
+        m_assetManager = makeURef<detail::AssetManager>();
+        if (!m_assetManager->init(settings2)) {
+            return false;
+        }
+    }
+
+
     // Register types
     registerModuleTypes_Runtime(this);
+
 
     return true;
 }
 
 void EngineContext2::dispose() {
+    if (m_assetManager) {
+        m_assetManager->dispose();
+        m_assetManager = nullptr;
+    }
+
     if (m_mainThreadTaskDispatcher) {
         m_mainThreadTaskDispatcher->dispose();
         m_mainThreadTaskDispatcher = nullptr;

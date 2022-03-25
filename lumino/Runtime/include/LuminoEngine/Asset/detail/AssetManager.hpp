@@ -8,7 +8,7 @@
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 
 namespace ln {
-//class Texture2D;
+// class Texture2D;
 class Shader;
 class AssetModel;
 namespace detail {
@@ -16,26 +16,27 @@ class AssetArchive;
 class FileSystemReader;
 struct AssetRequiredPathSet;
 
-class AssetManager
-	: public Module
-{
+class AssetManager : public URefObject {
 public:
     static const String AssetPathPrefix;
     static const String LocalhostPrefix;
 
-	struct Settings
-	{
+    struct Settings {
         AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
-	};
-    static AssetManager* initialize(const Settings& settings);
-    static void terminate();
-    static inline AssetManager* instance() { return static_cast<AssetManager*>(EngineContext2::instance()->assetManager); }
+    };
+    // static AssetManager* initialize(const Settings& settings);
+    // static void terminate();
+     static inline AssetManager* instance() { return EngineContext2::instance()->assetManager(); }
 
+    AssetManager();
+    virtual ~AssetManager();
+    bool init(const Settings& settings);
+    void dispose();
 
-	void addAssetDirectory(const StringView& path);
+    void addAssetDirectory(const StringView& path);
     void mountAssetArchive(const StringView& filePath, const StringView& password);
     void removeAllAssetDirectory();
-	//void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
+    // void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
 
     // ファイルパスを入力として、そのファイルが存在する場合は内部表現のパス（セパレータ /）を返す。
     // この値は各種キャッシュのキーとして使用できる。また、findAssetPath() で使用する。
@@ -52,35 +53,30 @@ public:
     Ref<AssetModel> loadAssetModelFromLocalFile(const String& filePath) const;
     Ref<AssetModel> loadAssetModelFromAssetPath(const AssetPath& assetPath) const;
     bool loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const;
-    void saveAssetModelToLocalFile(AssetModel* asset, const String& filePath = String::Empty) const;  // 別名で保存するときは filePath を指定する
+    void saveAssetModelToLocalFile(AssetModel* asset, const String& filePath = String::Empty) const; // 別名で保存するときは filePath を指定する
 
     String assetPathToLocalFullPath(const AssetPath& assetPath) const;
-    //String localFullPathToAssetPath(const String& localFullPath) const;
-    //static String getParentAssetPath(const String& assetPath);  // 親フォルダ
-    //static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
-    //static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
+    // String localFullPathToAssetPath(const String& localFullPath) const;
+    // static String getParentAssetPath(const String& assetPath);  // 親フォルダ
+    // static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
+    // static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
     static String canonicalizeAssetPath(const String& assetPath);
 
-    [[deprecated]]
-	bool existsFile(const StringView& filePath) const;
-    [[deprecated]]
-    Ref<Stream> openFileStream(const StringView& filePath);
-    [[deprecated]]
-	Ref<ByteBuffer> readAllBytes(const StringView& filePath);
+    [[deprecated]] bool existsFile(const StringView& filePath) const;
+    [[deprecated]] Ref<Stream> openFileStream(const StringView& filePath);
+    [[deprecated]] Ref<ByteBuffer> readAllBytes(const StringView& filePath);
 
     // TODO: for develop & debug
     void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
-
 
     // TODO: deprecated. use loadObjectWithCacheHelperAsync
     template<class TObject, class TCache>
     static Ref<TObject> loadObjectWithCacheHelper(
         TCache* cache,
-        const detail::AssetPath* baseDir,   // モデルファイルからのテクスチャロード等で使用する。不要なら nullptr
+        const detail::AssetPath* baseDir, // モデルファイルからのテクスチャロード等で使用する。不要なら nullptr
         const std::vector<const Char*>& exts,
         const StringView& filePath,
-        std::function<Ref<TObject>(const AssetRequiredPathSet*)> factory)
-    {
+        std::function<Ref<TObject>(const AssetRequiredPathSet*)> factory) {
         auto pathSet = std::make_unique<AssetRequiredPathSet>();
         if (!AssetObject::_resolveAssetRequiredPathSet(baseDir, filePath, exts, pathSet.get())) {
             return nullptr;
@@ -113,14 +109,12 @@ public:
         return obj;
     }
 
-
     template<class TObject, class TCache>
     static Ref<GenericTask<Ref<TObject>>> loadObjectWithCacheHelperAsync(
         TCache* cache,
-        const detail::AssetPath* baseDir,   // モデルファイルからのテクスチャロード等で使用する。不要なら nullptr
+        const detail::AssetPath* baseDir, // モデルファイルからのテクスチャロード等で使用する。不要なら nullptr
         const std::vector<const Char*>& exts,
-        const StringView& filePath)
-    {
+        const StringView& filePath) {
         auto pathSet = std::make_unique<AssetRequiredPathSet>();
         if (!AssetObject::_resolveAssetRequiredPathSet(baseDir, filePath, exts, pathSet.get())) {
             return nullptr;
@@ -140,7 +134,6 @@ public:
             return task;
         }
 
-
         auto obj = makeObject<TObject>();
 
         // reload 前に先にインスタンスを登録して、
@@ -156,26 +149,19 @@ public:
         return task;
     }
 
-
-    virtual ~AssetManager();
-
 private:
-    AssetManager();
-    bool init(const Settings& settings);
-    void dispose();
-
-	void refreshActualArchives();
-	bool existsFileInternal(const StringView& filePath, const Char** exts, int extsCount) const;
+    void refreshActualArchives();
+    bool existsFileInternal(const StringView& filePath, const Char** exts, int extsCount) const;
     Ref<Stream> openFileStreamInternal(const StringView& filePath, const Char** exts, int extsCount, Path* outPath);
-	void makeFindPaths(const StringView& filePath, const Char* const* exts, int extsCount, List<Path>* paths) const;
+    void makeFindPaths(const StringView& filePath, const Char* const* exts, int extsCount, List<Path>* paths) const;
     static bool tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outLocalPath);
     FileSystemReader* primaryAssetDirectoryArchive() const { return m_fileSystemArchives[0]; }
 
     List<Ref<AssetArchive>> m_requestedArchives;
-	List<AssetArchive*> m_actualArchives;
-	AssetStorageAccessPriority m_storageAccessPriority;
+    List<AssetArchive*> m_actualArchives;
+    AssetStorageAccessPriority m_storageAccessPriority;
     std::unordered_map<ln::Uuid, ln::Path> m_assetIndex;
-    //Path m_primaryLocalAssetDirectory;
+    // Path m_primaryLocalAssetDirectory;
 
     // file スキーマでアクセスできる Archive
     Ref<FileSystemReader> m_localFileSystemArchive;
@@ -186,4 +172,3 @@ private:
 
 } // namespace detail
 } // namespace ln
-

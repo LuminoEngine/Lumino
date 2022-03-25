@@ -19,30 +19,24 @@ using namespace ln;
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)
 
 void init() {
-    EngineContext2::initialize();
+    Runtime::initialize({});
 
     detail::PlatformManager::Settings platformManagerrSettings;
     platformManagerrSettings.windowSystem = WindowSystem::GLFW;
     auto platformManager = detail::PlatformManager::initialize(platformManagerrSettings);
 
-    detail::AssetManager::Settings assetManagerSettings;
-    auto assetManager = detail::AssetManager::initialize(assetManagerSettings);
-
-    detail::GraphicsManager::Settings graphicsManagerSettings;
-    graphicsManagerSettings.assetManager = assetManager;
-    graphicsManagerSettings.platformManager = platformManager;
-    graphicsManagerSettings.mainWindow = platformManager->mainWindow();
-    graphicsManagerSettings.graphicsAPI = GraphicsAPI::OpenGL;
-    graphicsManagerSettings.priorityGPUName = U"";
-    graphicsManagerSettings.debugMode = true;
-    auto graphicsManager = detail::GraphicsManager::initialize(graphicsManagerSettings);
+    RHIModuleSettings rhiModuleSettings;
+    rhiModuleSettings.assetManager = detail::AssetManager::instance();
+    rhiModuleSettings.platformManager = platformManager;
+    rhiModuleSettings.mainWindow = platformManager->mainWindow();
+    rhiModuleSettings.graphicsAPI = GraphicsAPI::OpenGL;
+    auto rhiModule = RHIModule::initialize(rhiModuleSettings);
 }
 
 void cleanup() {
-    detail::GraphicsManager::terminate();
-    detail::AssetManager::terminate();
+    RHIModule::terminate();
     detail::PlatformManager::terminate();
-    EngineContext2::terminate();
+    Runtime::terminate();
 }
 
 void run() {

@@ -101,7 +101,7 @@ bool RuntimeManager::init(const Settings& settings) {
     // EngineContext2::instance()->m_onReleasedObject = [](EngineContext2* context, Object* obj) {
     //	static_cast<RuntimeManager*>(context->runtimeManager)->onReleasedObject(obj);
     // };
-    EngineContext2::initialize();
+    //EngineContext2::initialize();
     assert(!EngineContext2::instance()->objectEventListener);
     EngineContext2::instance()->objectEventListener = this;
 

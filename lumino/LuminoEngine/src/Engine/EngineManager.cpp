@@ -100,11 +100,24 @@ EngineManager::~EngineManager() {
 
 void EngineManager::init(const EngineSettings& settings) {
     LN_LOG_DEBUG("EngineManager Initialization started.");
-    if (!EngineContext2::initialize()) return;
 
     m_settings = settings;
-
     m_settings.tryLoad();
+
+    {
+        RuntimeModuleSettings settings2;
+        settings2.assetStorageAccessPriority = m_settings.assetStorageAccessPriority;
+        if (!EngineContext2::initialize(settings2)) return;
+
+        for (auto& e : m_settings.assetArchives) {
+            AssetManager::instance()->mountAssetArchive(e.filePath, e.password);
+        }
+        for (auto& e : m_settings.assetDirectories) {
+            AssetManager::instance()->addAssetDirectory(e);
+        }
+    }
+
+
 
     // check settings
     {
@@ -246,7 +259,6 @@ void EngineManager::dispose() {
     if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
     PlatformManager::terminate();
-    AssetManager::terminate();
 
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {
@@ -272,7 +284,6 @@ void EngineManager::dispose() {
 
 void EngineManager::initializeAllManagers() {
     initializeCommon();
-    initializeAssetManager();
     initializePlatformManager();
     initializeAnimationManager();
     initializeInputManager();
@@ -344,22 +355,6 @@ void EngineManager::initializeCommon() {
     }
 }
 
-void EngineManager::initializeAssetManager() {
-    if (!AssetManager::instance() && m_settings.features.hasFlag(EngineFeature::Application)) {
-        AssetManager::Settings settings;
-        settings.assetStorageAccessPriority = m_settings.assetStorageAccessPriority;
-
-        AssetManager::initialize(settings);
-
-        for (auto& e : m_settings.assetArchives) {
-            AssetManager::instance()->mountAssetArchive(e.filePath, e.password);
-        }
-        for (auto& e : m_settings.assetDirectories) {
-            AssetManager::instance()->addAssetDirectory(e);
-        }
-    }
-}
-
 void EngineManager::initializePlatformManager() {
     if (!PlatformManager::instance() && m_settings.features.hasFlag(EngineFeature::Application)) {
         initializeCommon();
@@ -386,7 +381,6 @@ void EngineManager::initializePlatformManager() {
 
 void EngineManager::initializeAnimationManager() {
     if (!m_animationManager && m_settings.features.hasFlag(EngineFeature::Rendering)) {
-        initializeAssetManager();
 
         AnimationManager::Settings settings;
         settings.assetManager = AssetManager::instance();
@@ -410,7 +404,6 @@ void EngineManager::initializeInputManager() {
 void EngineManager::initializeAudioManager() {
     if (!m_audioManager && m_settings.features.hasFlag(EngineFeature::Audio)) {
         initializeCommon();
-        initializeAssetManager();
 
         AudioManager::Settings settings;
         settings.assetManager = AssetManager::instance();
@@ -422,7 +415,6 @@ void EngineManager::initializeAudioManager() {
 
 void EngineManager::initializeFontManager() {
     if (!FontManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics)) {
-        initializeAssetManager();
 
         FontManager::Settings settings;
         settings.assetManager = AssetManager::instance();
@@ -435,7 +427,6 @@ void EngineManager::initializeFontManager() {
 
 void EngineManager::initializeGraphicsManager() {
     if (!GraphicsManager::instance() && m_settings.features.hasFlag(EngineFeature::Graphics)) {
-        initializeAssetManager();
         initializePlatformManager();
 
         GraphicsManager::Settings settings;
@@ -453,7 +444,6 @@ void EngineManager::initializeGraphicsManager() {
 void EngineManager::initializeMeshManager() {
     if (!m_meshManager && m_settings.features.hasFlag(EngineFeature::Rendering)) {
         initializeGraphicsManager();
-        initializeAssetManager();
 
         MeshManager::Settings settings;
         settings.graphicsManager = GraphicsManager::instance();
@@ -481,7 +471,6 @@ void EngineManager::initializeEffectManager() {
     if (!m_effectManager && m_settings.features.hasFlag(EngineFeature::Rendering)) {
         initializeGraphicsManager();
         initializeRenderingManager();
-        initializeAssetManager();
 
         EffectManager::Settings settings;
         settings.graphicsManager = GraphicsManager::instance();

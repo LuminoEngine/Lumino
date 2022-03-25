@@ -116,7 +116,6 @@ public:
 
     void initializeAllManagers();
     void initializeCommon();
-    void initializeAssetManager();
     void initializePlatformManager();
     void initializeAnimationManager();
     void initializeInputManager();

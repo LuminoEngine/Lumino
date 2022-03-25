@@ -76,7 +76,6 @@ int main(int argc, char** argv) {
         ln::Logger::addStdErrAdapter();
 
         ln::EngineContext::current()->initializeEngineManager();
-        ln::EngineContext::current()->engineManager()->initializeAssetManager();
 
         exitCode = processCommands(argc, argv);
     }

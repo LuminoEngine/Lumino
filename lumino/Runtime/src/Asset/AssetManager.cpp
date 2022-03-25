@@ -16,26 +16,26 @@ namespace detail {
 const String AssetManager::AssetPathPrefix = _TT("asset://");
 const String AssetManager::LocalhostPrefix = _TT("local");
 
-AssetManager* AssetManager::initialize(const Settings& settings)
-{
-    if (instance()) return instance();
-
-    auto m = Ref<AssetManager>(LN_NEW detail::AssetManager(), false);
-    if (!m->init(settings)) return nullptr;
-
-    EngineContext2::instance()->registerModule(m);
-    EngineContext2::instance()->assetManager = m;
-    return m;
-}
-
-void AssetManager::terminate()
-{
-    if (instance()) {
-        instance()->dispose();
-        EngineContext2::instance()->unregisterModule(instance());
-        EngineContext2::instance()->assetManager = nullptr;
-    }
-}
+//AssetManager* AssetManager::initialize(const Settings& settings)
+//{
+//    if (instance()) return instance();
+//
+//    auto m = Ref<AssetManager>(LN_NEW detail::AssetManager(), false);
+//    if (!m->init(settings)) return nullptr;
+//
+//    EngineContext2::instance()->registerModule(m);
+//    EngineContext2::instance()->assetManager = m;
+//    return m;
+//}
+//
+//void AssetManager::terminate()
+//{
+//    if (instance()) {
+//        instance()->dispose();
+//        EngineContext2::instance()->unregisterModule(instance());
+//        EngineContext2::instance()->assetManager = nullptr;
+//    }
+//}
 
 AssetManager::AssetManager()
 	: m_storageAccessPriority(AssetStorageAccessPriority::DirectoryFirst)
