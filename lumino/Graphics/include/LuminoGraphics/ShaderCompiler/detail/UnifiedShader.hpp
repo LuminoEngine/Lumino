@@ -6,6 +6,8 @@
 namespace ln {
 namespace detail {
 class ShaderRenderState;
+class UnifiedShader;
+class UnifiedShaderPass;
 
 class UnifiedShaderVariantSet {
 public:
@@ -41,8 +43,18 @@ private:
 
 class UnifiedShaderTechnique : public URefObject {
 public:
-    UnifiedShaderTechniqueId id;
     UnifiedShaderVariantSet variantSet;
+
+    std::string name;
+    ShaderTechniqueClass techniqueClass;
+    Array<UnifiedShadePassId> passes;
+
+    UnifiedShaderTechnique(UnifiedShader* shader, UnifiedShaderTechniqueId id);
+    UnifiedShaderTechniqueId id() const { return m_id; }
+
+private:
+    UnifiedShader* m_shader;
+    UnifiedShaderTechniqueId m_id;
 };
 
 class UnifiedShaderPass : public URefObject {
@@ -122,24 +134,24 @@ public:
 
     //UnifiedShaderTechnique* addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet);
 
+    UnifiedShaderPass* addPass(TechniqueId parentTech, const std::string& name);
     const Array<URef<UnifiedShaderPass>>& passes() const { return m_passes; }
     UnifiedShaderPass* pass(PassId id) const { return m_passes[idToIndex(id)]; }
-    UnifiedShaderPass* addPass(TechniqueId parentTech, const std::string& name);
     void addMergeDescriptorLayoutItem(UnifiedShaderPass* pass, const DescriptorLayout& layout);
 
-
-
-    bool addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass, TechniqueId* outTech);
-    int techniqueCount() const { return m_techniques.size(); }
-    TechniqueId techniqueId(int index) const { return indexToId(index); }
-    const std::string& techniqueName(TechniqueId techId) const { return m_techniques[idToIndex(techId)].name; }
-    const ShaderTechniqueClass& techniqueClass(TechniqueId techId) const { return m_techniques[idToIndex(techId)].techniqueClass; }
+    UnifiedShaderTechnique* addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass);
+    const Array<URef<UnifiedShaderTechnique>>& techniques() const { return m_techniques; }
+    UnifiedShaderTechnique* technique(UnifiedShaderTechniqueId id) const { return m_techniques[idToIndex(id)]; }
+    //int techniqueCount() const { return m_techniques.size(); }
+    //TechniqueId techniqueId(int index) const { return indexToId(index); }
+    //const std::string& techniqueName(TechniqueId techId) const { return m_techniques[idToIndex(techId)].name; }
+    //const ShaderTechniqueClass& techniqueClass(TechniqueId techId) const { return m_techniques[idToIndex(techId)].techniqueClass; }
 
     //bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
-    int getPassCountInTechnique(TechniqueId parentTech) const;
-    PassId getPassIdInTechnique(TechniqueId parentTech, int index) const;
-    int passCount() const { return m_passes.size(); }
-    PassId passId(int index) const { return indexToId(index); }
+    //int getPassCountInTechnique(TechniqueId parentTech) const;
+    //PassId getPassIdInTechnique(TechniqueId parentTech, int index) const;
+    //int passCount() const { return m_passes.size(); }
+    //PassId passId(int index) const { return indexToId(index); }
     //const std::string& passName(PassId passId) const { return m_passes[idToIndex(passId)].name; }
     //void setVertexShader(PassId pass, CodeContainerId code);
     //void setPixelShader(PassId pass, CodeContainerId code);
@@ -176,17 +188,10 @@ private:
     static bool checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag);
 
 
-    struct TechniqueInfo
-    {
-        std::string name;
-        ShaderTechniqueClass techniqueClass;
-        List<PassId> passes;
-    };
 
     DiagnosticsManager* m_diag;
     Array<URef<USCodeContainerInfo>> m_codeContainers;
-    List<TechniqueInfo> m_techniques;
-    //Array<URef<UnifiedShaderTechnique>> m_techniques2;
+    Array<URef<UnifiedShaderTechnique>> m_techniques;
     Array<URef<UnifiedShaderPass>> m_passes;
     DescriptorLayout m_globalDescriptorLayout; // Result of merging all pass layouts
 };

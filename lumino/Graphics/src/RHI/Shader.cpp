@@ -241,18 +241,20 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
     m_descriptor = makeObject<ShaderDefaultDescriptor>(this);
 
-	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
-		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
-		auto tech = makeObject<ShaderTechnique>(String::fromStdString(unifiedShader->techniqueName(techId)), unifiedShader->techniqueClass(techId));
+	//for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
+	//	detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
+    for (const auto& kokageTech : unifiedShader->techniques()) {
+        auto tech = makeObject<ShaderTechnique>(String::fromStdString(kokageTech->name), kokageTech->techniqueClass);
 		tech->setOwner(this);
 		m_techniques->add(tech);
 
-		int passCount = unifiedShader->getPassCountInTechnique(techId);
-		for (int iPass = 0; iPass < passCount; iPass++) {
-			detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
-            const auto* kokagePass = unifiedShader->pass(passId);
-
-			auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, asciiName, diag);
+		//int passCount = kokageTech->passes.length();
+		//for (int iPass = 0; iPass < passCount; iPass++) {
+		//	detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
+  //          const auto* kokagePass = unifiedShader->pass(passId);
+        for (const auto& kokagePassId : kokageTech->passes) {
+            const auto* kokagePass = unifiedShader->pass(kokagePassId);
+			auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, kokagePassId, asciiName, diag);
 			if (rhiPass) {
 				auto pass = makeObject<ShaderPass>(
                     String::fromStdString(kokagePass->name),

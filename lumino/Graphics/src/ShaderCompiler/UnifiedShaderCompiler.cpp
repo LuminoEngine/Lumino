@@ -121,30 +121,27 @@ bool UnifiedShaderCompiler::compile(
 #if 1
 
     // Tech と Pass を作り、各 Pass のシェーダを Compile
-    for (auto& tech : m_metadataTechniques) {
-        UnifiedShader::TechniqueId techId;
-        if (!m_unifiedShader->addTechnique(tech.name, tech.techniqueClass, &techId)) {
-            return false;
-        }
+    for (auto& metaTech : m_metadataTechniques) {
+        auto* tech = m_unifiedShader->addTechnique(metaTech.name, metaTech.techniqueClass);
 
         List<String> actualDefinitions = definitions;
         {
-            if (tech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Default)
+            if (metaTech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Default)
                 actualDefinitions.add(_TT("LN_SHADINGMODEL_DEFAULT=1"));
-            if (tech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Unlit)
+            if (metaTech.techniqueClass.shadingModel == ShaderTechniqueClass_ShadingModel::Unlit)
                 actualDefinitions.add(_TT("LN_SHADINGMODEL_UNLIT=1"));
-            if (tech.techniqueClass.meshProcess == ShaderTechniqueClass_MeshProcess::SkinnedMesh)
+            if (metaTech.techniqueClass.meshProcess == ShaderTechniqueClass_MeshProcess::SkinnedMesh)
                 actualDefinitions.add(_TT("LN_USE_SKINNING=1"));
-            if (tech.techniqueClass.normalClass == ShaderTechniqueClass_Normal::NormalMap)
+            if (metaTech.techniqueClass.normalClass == ShaderTechniqueClass_Normal::NormalMap)
                 actualDefinitions.add(_TT("LN_USE_NORMALMAP=1"));
-            if (tech.techniqueClass.roughnessClass == ShaderTechniqueClass_Roughness::RoughnessMap)
+            if (metaTech.techniqueClass.roughnessClass == ShaderTechniqueClass_Roughness::RoughnessMap)
                 actualDefinitions.add(_TT("LN_USE_ROUGHNESS_MAP=1"));
-            if (tech.techniqueClass.drawMode == ShaderTechniqueClass_DrawMode::Instancing)
+            if (metaTech.techniqueClass.drawMode == ShaderTechniqueClass_DrawMode::Instancing)
                 actualDefinitions.add(_TT("LN_USE_INSTANCING=1"));
         }
 
-        for (auto& metaPass : tech.passes) {
-            auto* pass = m_unifiedShader->addPass(techId,  metaPass.name);
+        for (auto& metaPass : metaTech.passes) {
+            auto* pass = m_unifiedShader->addPass(tech->id(), metaPass.name);
 
             // Vertex shader
             {
@@ -159,7 +156,7 @@ bool UnifiedShaderCompiler::compile(
                 pass->attributes = transpiler->attributes();
                 m_unifiedShader->addMergeDescriptorLayoutItem(pass, transpiler->descriptorLayout);
                 transpiler->passId = pass->id;
-                m_transpilerMap[makeKey2(tech.name, metaPass.name, ShaderStage2_Vertex, entryPointName)] = transpiler;
+                m_transpilerMap[makeKey2(metaTech.name, metaPass.name, ShaderStage2_Vertex, entryPointName)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
                 auto container = m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, entryPointName);
@@ -178,7 +175,7 @@ bool UnifiedShaderCompiler::compile(
                 }
                 m_unifiedShader->addMergeDescriptorLayoutItem(pass, transpiler->descriptorLayout);
                 transpiler->passId = pass->id;
-                m_transpilerMap[makeKey2(tech.name, metaPass.name, ShaderStage2_Fragment, entryPointName)] = transpiler;
+                m_transpilerMap[makeKey2(metaTech.name, metaPass.name, ShaderStage2_Fragment, entryPointName)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
                 auto container = m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, entryPointName);
@@ -228,12 +225,8 @@ bool UnifiedShaderCompiler::compileCompute(
     const List<Path>& includeDirectories,
     const List<String>& definitions) {
     ShaderTechniqueClass techClass;
-    UnifiedShader::TechniqueId techId;
-    if (!m_unifiedShader->addTechnique("Compute", techClass, &techId)) {
-        return false;
-    }
-
-    auto* pass = m_unifiedShader->addPass(techId, "Compute");
+    auto* tech = m_unifiedShader->addTechnique("Compute", techClass);
+    auto* pass = m_unifiedShader->addPass(tech->id(), "Compute");
 
     auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
     transpiler->compileAndLinkFromHlsl(ShaderStage2_Compute, code, len, entryPoint, includeDirectories, &definitions, m_diag);
@@ -268,8 +261,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
     const std::string& psEntryPoint,
     const List<Path>& includeDirectories,
     const List<String>& definitions) {
-    HLSLTechnique tech;
-    tech.name = "MainTech";
+    HLSLTechnique metaTech;
+    metaTech.name = "MainTech";
 
     HLSLPass metaPass;
     metaPass.name = "Pass1";
@@ -278,14 +271,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
     metaPass.renderState = makeRef<ShaderRenderState>();
 
 #if 1
-
-    UnifiedShader::TechniqueId techId;
-    if (!m_unifiedShader->addTechnique(tech.name, tech.techniqueClass, &techId)) {
-        return false;
-    }
-
-    UnifiedShader::PassId passId;
-    auto* pass = m_unifiedShader->addPass(techId, metaPass.name);
+    auto* tech = m_unifiedShader->addTechnique(metaTech.name, metaTech.techniqueClass);
+    auto* pass = m_unifiedShader->addPass(tech->id(), metaPass.name);
 
     // Vertex shader
     {
@@ -296,8 +283,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
         }
         pass->attributes = transpiler->attributes();
         m_unifiedShader->addMergeDescriptorLayoutItem(pass, transpiler->descriptorLayout);
-        transpiler->passId = passId;
-        m_transpilerMap[makeKey2(tech.name, pass->name, ShaderStage2_Vertex, metaPass.vertexShader)] = transpiler;
+        transpiler->passId = pass->id;
+        m_transpilerMap[makeKey2(metaTech.name, pass->name, ShaderStage2_Vertex, metaPass.vertexShader)] = transpiler;
 
         // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
         auto* container = m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, metaPass.vertexShader);
@@ -312,8 +299,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
             return false;
         }
         m_unifiedShader->addMergeDescriptorLayoutItem(pass, transpiler->descriptorLayout);
-        transpiler->passId = passId;
-        m_transpilerMap[makeKey2(tech.name, metaPass.name, ShaderStage2_Fragment, metaPass.pixelShader)] = transpiler;
+        transpiler->passId = pass->id;
+        m_transpilerMap[makeKey2(metaTech.name, metaPass.name, ShaderStage2_Fragment, metaPass.pixelShader)] = transpiler;
 
         // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
         auto* container = m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, metaPass.pixelShader);
@@ -348,8 +335,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
     }
 #endif
 
-    tech.passes.push_back(std::move(metaPass));
-    m_metadataTechniques.push_back(std::move(tech));
+    metaTech.passes.push_back(std::move(metaPass));
+    m_metadataTechniques.push_back(std::move(metaTech));
 
     return true;
 }
@@ -429,11 +416,11 @@ bool UnifiedShaderCompiler::link() {
         //}
     }
 
-    for (int iTech = 0; iTech < m_unifiedShader->techniqueCount(); iTech++) {
-        UnifiedShader::TechniqueId techId = m_unifiedShader->techniqueId(iTech);
-
-        for (int iPass = 0; iPass < m_unifiedShader->getPassCountInTechnique(techId); iPass++) {
-            UnifiedShader::PassId passId = m_unifiedShader->getPassIdInTechnique(techId, iPass);
+    //for (int iTech = 0; iTech < m_unifiedShader->techniqueCount(); iTech++) {
+    //    UnifiedShader::TechniqueId techId = m_unifiedShader->techniqueId(iTech);
+    for (const auto& tech : m_unifiedShader->techniques()) {
+        for (int iPass = 0; iPass < tech->passes.length(); iPass++) {
+            UnifiedShader::PassId passId = tech->passes[iPass];
             const auto* pass = m_unifiedShader->pass(passId);
 
             // VertexShader
@@ -441,7 +428,7 @@ bool UnifiedShaderCompiler::link() {
                 CodeContainerId containerId = pass->vertexShader;
                 auto* container = m_unifiedShader->codeContainer(containerId);
 
-                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), pass->name, ShaderStage2_Vertex, container->entryPointName)];
+                auto& tp = m_transpilerMap[makeKey2(tech->name, pass->name, ShaderStage2_Vertex, container->entryPointName)];
 
                 UnifiedShaderTriple triple1 = { "spv", 110, "" };
                 container->setCode(triple1, tp->spirvCode());
@@ -458,7 +445,7 @@ bool UnifiedShaderCompiler::link() {
                 CodeContainerId containerId = pass->pixelShader;
                 auto* container = m_unifiedShader->codeContainer(containerId);
 
-                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), pass->name, ShaderStage2_Fragment, container->entryPointName)];
+                auto& tp = m_transpilerMap[makeKey2(tech->name, pass->name, ShaderStage2_Fragment, container->entryPointName)];
 
                 UnifiedShaderTriple triple1 = { "spv", 110, "" };
                 container->setCode(triple1, tp->spirvCode());

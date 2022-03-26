@@ -43,7 +43,7 @@ static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue) {
 }
 
 //==============================================================================
-// UnifiedShader
+// USCodeContainerInfo
 
 USCodeContainerInfo::USCodeContainerInfo(CodeContainerId id)
     : m_id(id) {
@@ -89,6 +89,14 @@ const USCodeInfo* USCodeContainerInfo::findCode(const UnifiedShaderTriple& tripl
     else {
         return nullptr;
     }
+}
+
+//==============================================================================
+// UnifiedShaderTechnique
+
+UnifiedShaderTechnique::UnifiedShaderTechnique(UnifiedShader* shader, UnifiedShaderTechniqueId id)
+    : m_shader(shader)
+    , m_id(id) {
 }
 
 //==============================================================================
@@ -142,7 +150,7 @@ bool UnifiedShader::save(const Path& filePath) {
 
         writer->writeUInt32(m_techniques.size());
         for (int i = 0; i < m_techniques.size(); i++) {
-            TechniqueInfo* info = &m_techniques[i];
+            auto& info = m_techniques[i];
             writeString(writer, info->name);
 
             // class
@@ -311,27 +319,27 @@ bool UnifiedShader::load(Stream* stream) {
 
         size_t count = reader->readUInt32();
         for (size_t iTech = 0; iTech < count; iTech++) {
-            TechniqueInfo info;
-            info.name = readString(reader);
+            auto info = makeURef<UnifiedShaderTechnique>(this, indexToId(iTech));
+            info->name = readString(reader);
 
             // class
             if (fileVersion >= FileVersion_4) {
-                info.techniqueClass.defaultTechnique = reader->readUInt8() != 0;
-                info.techniqueClass.phase = static_cast<ShaderTechniqueClass_Phase>(reader->readUInt8());
-                info.techniqueClass.meshProcess = static_cast<ShaderTechniqueClass_MeshProcess>(reader->readUInt8());
-                info.techniqueClass.shadingModel = static_cast<ShaderTechniqueClass_ShadingModel>(reader->readUInt8());
-                info.techniqueClass.drawMode = static_cast<ShaderTechniqueClass_DrawMode>(reader->readUInt8());
-                info.techniqueClass.normalClass = static_cast<ShaderTechniqueClass_Normal>(reader->readUInt8());
-                info.techniqueClass.roughnessClass = static_cast<ShaderTechniqueClass_Roughness>(reader->readUInt8());
+                info->techniqueClass.defaultTechnique = reader->readUInt8() != 0;
+                info->techniqueClass.phase = static_cast<ShaderTechniqueClass_Phase>(reader->readUInt8());
+                info->techniqueClass.meshProcess = static_cast<ShaderTechniqueClass_MeshProcess>(reader->readUInt8());
+                info->techniqueClass.shadingModel = static_cast<ShaderTechniqueClass_ShadingModel>(reader->readUInt8());
+                info->techniqueClass.drawMode = static_cast<ShaderTechniqueClass_DrawMode>(reader->readUInt8());
+                info->techniqueClass.normalClass = static_cast<ShaderTechniqueClass_Normal>(reader->readUInt8());
+                info->techniqueClass.roughnessClass = static_cast<ShaderTechniqueClass_Roughness>(reader->readUInt8());
             }
 
             // passes
             size_t passCount = reader->readUInt32();
             for (size_t iPass = 0; iPass < passCount; iPass++) {
-                info.passes.add(reader->readUInt32());
+                info->passes.push(reader->readUInt32());
             }
 
-            m_techniques.add(info);
+            m_techniques.push(std::move(info));
         }
     }
 
@@ -494,7 +502,7 @@ void UnifiedShader::makeGlobalDescriptorLayout() {
 
 UnifiedShaderPass* UnifiedShader::addPass(TechniqueId parentTech, const std::string& name) {
     if (findPassInfoIndex(parentTech, name) >= 0) {
-        m_diag->reportError(String::fromStdString("Pass '" + name + "' in '" + m_techniques[idToIndex(parentTech)].name + "' is already exists."));
+        m_diag->reportError(String::fromStdString("Pass '" + name + "' in '" + m_techniques[idToIndex(parentTech)]->name + "' is already exists."));
         return nullptr;
     }
 
@@ -502,7 +510,7 @@ UnifiedShaderPass* UnifiedShader::addPass(TechniqueId parentTech, const std::str
     pass->id = indexToId(m_passes.length());
     pass->name = name;
 
-    m_techniques[idToIndex(parentTech)].passes.add(pass->id);
+    m_techniques[idToIndex(parentTech)]->passes.push(pass->id);
 
     m_passes.push(std::move(pass));
     return m_passes.back();
@@ -516,15 +524,17 @@ void UnifiedShader::addMergeDescriptorLayoutItem(UnifiedShaderPass* pass, const 
     m_globalDescriptorLayout.mergeFrom(descriptorLayout);
 }
 
-bool UnifiedShader::addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass, TechniqueId* outTech) {
+UnifiedShaderTechnique* UnifiedShader::addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass) {
     if (findTechniqueInfoIndex(name) >= 0) {
         m_diag->reportError(String::fromStdString("Technique '" + name + "' is already exists."));
         return false;
     }
 
-    m_techniques.add({ name, techniqueClass });
-    *outTech = indexToId(m_techniques.size() - 1);
-    return true;
+    auto tech = makeURef<UnifiedShaderTechnique>(this, indexToId(m_techniques.length()));
+    tech->name = name;
+    tech->techniqueClass = techniqueClass;
+    m_techniques.push(std::move(tech));
+    return m_techniques.back();
 }
 
 //bool UnifiedShader::addPass(TechniqueId parentTech, const std::string& name, PassId* outPass)
@@ -544,13 +554,13 @@ bool UnifiedShader::addTechnique(const std::string& name, const ShaderTechniqueC
 //    return true;
 //}
 
-int UnifiedShader::getPassCountInTechnique(TechniqueId parentTech) const {
-    return m_techniques[idToIndex(parentTech)].passes.size();
-}
-
-UnifiedShader::PassId UnifiedShader::getPassIdInTechnique(TechniqueId parentTech, int index) const {
-    return m_techniques[idToIndex(parentTech)].passes[index];
-}
+//int UnifiedShader::getPassCountInTechnique(TechniqueId parentTech) const {
+//    return m_techniques[idToIndex(parentTech)].passes.size();
+//}
+//
+//UnifiedShader::PassId UnifiedShader::getPassIdInTechnique(TechniqueId parentTech, int index) const {
+//    return m_techniques[idToIndex(parentTech)].passes[index];
+//}
 //
 //void UnifiedShader::setVertexShader(PassId pass, CodeContainerId code)
 //{
@@ -621,11 +631,11 @@ UnifiedShader::PassId UnifiedShader::getPassIdInTechnique(TechniqueId parentTech
 //}
 
 void UnifiedShader::saveCodes(const StringView& perfix) const {
-    for (int iTech = 0; iTech < techniqueCount(); iTech++) {
-        UnifiedShader::TechniqueId techId = techniqueId(iTech);
+    for (int iTech = 0; iTech < m_techniques.length(); iTech++) {
+        const auto& tech = m_techniques[iTech];
 
-        for (int iPass = 0; iPass < getPassCountInTechnique(techId); iPass++) {
-            UnifiedShader::PassId passId = getPassIdInTechnique(techId, iPass);
+        for (int iPass = 0; iPass < tech->passes.length(); iPass++) {
+            UnifiedShader::PassId passId = tech->passes[iPass];
             auto* pass = this->pass(passId);
             CodeContainerId containerIds[] = { pass->vertexShader, pass->pixelShader };
             for (auto containerId : containerIds) {
@@ -634,7 +644,7 @@ void UnifiedShader::saveCodes(const StringView& perfix) const {
                     auto file = ln::format(
                         _TT("{0}.{1}.{2}.{3}.{4}-{5}-{6}"),
                         perfix,
-                        String::fromStdString(techniqueName(techId)),
+                        String::fromStdString(tech->name),
                         String::fromStdString(pass->name),
                         String::fromStdString(container->entryPointName),
                         String::fromStdString(code->triple.target),
@@ -665,12 +675,12 @@ void UnifiedShader::saveCodes(const StringView& perfix) const {
 //}
 
 int UnifiedShader::findTechniqueInfoIndex(const std::string& name) const {
-    return m_techniques.indexOfIf([&](const TechniqueInfo& info) { return info.name == name; });
+    return m_techniques.indexOfIf([&](const auto& info) { return info->name == name; });
 }
 
 int UnifiedShader::findPassInfoIndex(TechniqueId tech, const std::string& name) const {
     auto& t = m_techniques[idToIndex(tech)];
-    for (auto& passId : t.passes) {
+    for (auto& passId : t->passes) {
         int index = idToIndex(passId);
         if (m_passes[index]->name == name) {
             return index;
