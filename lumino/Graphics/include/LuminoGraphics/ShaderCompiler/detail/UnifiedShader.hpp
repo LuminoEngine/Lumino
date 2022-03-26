@@ -1,5 +1,4 @@
-﻿
-#pragma once
+﻿#pragma once
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "../ShaderHelper.hpp"
 
@@ -9,7 +8,7 @@ class ShaderRenderState;
 class UnifiedShader;
 class UnifiedShaderPass;
 
-class UnifiedShaderVariantSet {
+class VariantSet {
 public:
     std::vector<std::string> values;
 
@@ -31,23 +30,23 @@ using CodeContainerId = uint32_t;
 using UnifiedShaderTechniqueId = uint32_t;
 using UnifiedShadePassId = uint32_t;
 
-struct USCodeInfo : public URefObject {
+struct Code : public URefObject {
 public:
     UnifiedShaderTriple triple;
     std::vector<byte_t> code;
 };
 
-struct USCodeContainerInfo : public URefObject {
+struct CodeContainer : public URefObject {
 public:
-    USCodeContainerInfo(CodeContainerId id);
+    CodeContainer(CodeContainerId id);
 
     ShaderStage2 stage;
     std::string entryPointName;
-    ln::Array<URef<USCodeInfo>> codes;
+    Array<URef<Code>> codes;
 
     CodeContainerId id() const { return m_id; }
     void setCode(const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
-    const USCodeInfo* findCode(const UnifiedShaderTriple& triple) const;
+    const Code* findCode(const UnifiedShaderTriple& triple) const;
 
 private:
     CodeContainerId m_id;
@@ -55,7 +54,7 @@ private:
 
 class UnifiedShaderTechnique : public URefObject {
 public:
-    UnifiedShaderVariantSet variantSet;
+    VariantSet variantSet;
 
     std::string name;
     ShaderTechniqueClass techniqueClass;
@@ -142,9 +141,9 @@ public:
     bool save(const Path& filePath);
     bool load(Stream* stream);
 
-    const Array<URef<USCodeContainerInfo>>& codeContainers() const { return m_codeContainers; }
-    USCodeContainerInfo* codeContainer(CodeContainerId id) const { return m_codeContainers[idToIndex(id)]; }
-    USCodeContainerInfo* addCodeContainer(ShaderStage2 stage, const std::string& entryPointName);
+    const Array<URef<CodeContainer>>& codeContainers() const { return m_codeContainers; }
+    CodeContainer* codeContainer(CodeContainerId id) const { return m_codeContainers[idToIndex(id)]; }
+    CodeContainer* addCodeContainer(ShaderStage2 stage, const std::string& entryPointName);
     void makeGlobalDescriptorLayout();
 
     UnifiedShaderPass* addPass(TechniqueId parentTech, const std::string& name);
@@ -156,7 +155,7 @@ public:
     const Array<URef<UnifiedShaderTechnique>>& techniques() const { return m_techniques; }
     UnifiedShaderTechnique* technique(UnifiedShaderTechniqueId id) const { return m_techniques[idToIndex(id)]; }
 
-    UnifiedShaderTechnique* addVariantTechnique(const std::string& name, const UnifiedShaderVariantSet& variantSet);
+    UnifiedShaderTechnique* addVariantTechnique(const std::string& name, const VariantSet& variantSet);
 
     // DescriptorLayout.uniformBufferRegister のみ有効。
     // それ以外は、値は入っているが binding が正しくないので使用できない。
@@ -177,7 +176,7 @@ private:
     static bool checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag);
 
     DiagnosticsManager* m_diag;
-    Array<URef<USCodeContainerInfo>> m_codeContainers;
+    Array<URef<CodeContainer>> m_codeContainers;
     Array<URef<UnifiedShaderTechnique>> m_techniques;
     Array<URef<UnifiedShaderPass>> m_passes;
     DescriptorLayout m_globalDescriptorLayout; // Result of merging all pass layouts

@@ -242,12 +242,17 @@ void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, flo
     OpenGLHelper::clearBuffers(flags, color, z, stencil);
 }
 
-void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) {
+void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount, int instanceCount) {
     GLenum gl_prim;
     int vertexCount;
     getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
 
-    GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
+    if (instanceCount > 0) {
+        glDrawArraysInstanced(gl_prim, startVertex, vertexCount, instanceCount);
+    }
+    else {
+        GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
+    }
 }
 
 void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {

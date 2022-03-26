@@ -308,9 +308,9 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const ko
     const char* vsEntryPointName = nullptr;
     const char* psEntryPointName = nullptr;
     const char* csEntryPointName = nullptr;
-    const kokage::USCodeInfo* vscode = nullptr;
-    const kokage::USCodeInfo* pscode = nullptr;
-    const kokage::USCodeInfo* cscode = nullptr;
+    const kokage::Code* vscode = nullptr;
+    const kokage::Code* pscode = nullptr;
+    const kokage::Code* cscode = nullptr;
     if (vscodeId) {
         auto* contaier = unifiedShader->codeContainer(vscodeId);
         vsEntryPointName = contaier->entryPointName.c_str();
@@ -515,9 +515,9 @@ void ICommandList::clearBuffers(ClearFlags flags, const Color& color, float z, u
     endCommit(GraphicsContextSubmitSource_Clear);
 }
 
-void ICommandList::drawPrimitive(int startVertex, int primitiveCount) {
+void ICommandList::drawPrimitive(int startVertex, int primitiveCount, int instanceCount) {
     commitStatus(GraphicsContextSubmitSource_Draw);
-    onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
+    onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount, instanceCount);
     endCommit(GraphicsContextSubmitSource_Draw);
 }
 

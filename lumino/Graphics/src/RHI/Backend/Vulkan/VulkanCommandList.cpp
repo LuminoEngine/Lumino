@@ -400,9 +400,11 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 	}
 }
 
-void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
-{
-	vkCmdDraw(m_commandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
+void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount, int instanceCount) {
+	vkCmdDraw(
+		m_commandBuffer->vulkanCommandBuffer(),
+		VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
+		std::max(instanceCount, 1), startVertex, 0);
 }
 
 void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)

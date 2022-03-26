@@ -65,7 +65,7 @@ TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
     {
         auto shader = Shader::load(file);
         Array<String> keys = { U"LN_USE_INSTANCING", U"LN_PHASE_FORWARD" };
-        uint64_t key = kokage::UnifiedShaderVariantSet::calcHash(keys);
+        uint64_t key = kokage::VariantSet::calcHash(keys);
         ShaderTechnique* tech = shader->findTechniqueByVariantKey(key);
         ASSERT_TRUE(tech != nullptr);
     }

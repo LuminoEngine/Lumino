@@ -43,20 +43,20 @@ static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue) {
 }
 
 //==============================================================================
-// USCodeContainerInfo
+// CodeContainer
 
-USCodeContainerInfo::USCodeContainerInfo(CodeContainerId id)
+CodeContainer::CodeContainer(CodeContainerId id)
     : m_id(id) {
 }
 
-void USCodeContainerInfo::setCode(const UnifiedShaderTriple& triple, const std::vector<byte_t>& code) {
-    auto obj = makeURef<USCodeInfo>();
+void CodeContainer::setCode(const UnifiedShaderTriple& triple, const std::vector<byte_t>& code) {
+    auto obj = makeURef<Code>();
     obj->triple = triple;
     obj->code = code;
     codes.push(std::move(obj));
 }
 
-const USCodeInfo* USCodeContainerInfo::findCode(const UnifiedShaderTriple& triple) const {
+const Code* CodeContainer::findCode(const UnifiedShaderTriple& triple) const {
     if (LN_REQUIRE(!triple.target.empty())) {
         return nullptr;
     }
@@ -130,12 +130,12 @@ bool UnifiedShader::save(const Path& filePath) {
 
         writer->writeUInt32(m_codeContainers.size());
         for (int i = 0; i < m_codeContainers.size(); i++) {
-            USCodeContainerInfo* info = m_codeContainers[i];
+            CodeContainer* info = m_codeContainers[i];
             writeString(writer, info->entryPointName);
 
             writer->writeUInt8(info->codes.size());
             for (int iCode = 0; iCode < info->codes.size(); iCode++) {
-                USCodeInfo* codeInfo = info->codes[iCode];
+                Code* codeInfo = info->codes[iCode];
                 writeString(writer, codeInfo->triple.target);
                 writer->writeUInt32(codeInfo->triple.version);
                 writeString(writer, codeInfo->triple.option);
@@ -303,12 +303,12 @@ bool UnifiedShader::load(Stream* stream) {
 
         size_t count = reader->readUInt32();
         for (size_t i = 0; i < count; i++) {
-            auto info = makeURef<USCodeContainerInfo>(indexToId(i));
+            auto info = makeURef<CodeContainer>(indexToId(i));
             info->entryPointName = readString(reader);
 
             uint8_t count = reader->readUInt8();
             for (int iCode = 0; iCode < count; iCode++) {
-                auto code = makeURef<USCodeInfo>();
+                auto code = makeURef<Code>();
                 code->triple.target = readString(reader);
                 code->triple.version = reader->readUInt32();
                 code->triple.option = readString(reader);
@@ -494,8 +494,8 @@ bool UnifiedShader::load(Stream* stream) {
     return true;
 }
 
-USCodeContainerInfo* UnifiedShader::addCodeContainer(ShaderStage2 stage, const std::string& entryPointName) {
-    auto obj = makeURef<USCodeContainerInfo>(indexToId(m_codeContainers.length()));
+CodeContainer* UnifiedShader::addCodeContainer(ShaderStage2 stage, const std::string& entryPointName) {
+    auto obj = makeURef<CodeContainer>(indexToId(m_codeContainers.length()));
     obj->stage = stage;
     obj->entryPointName = entryPointName;
     m_codeContainers.push(std::move(obj));
@@ -508,14 +508,6 @@ void UnifiedShader::makeGlobalDescriptorLayout() {
         m_globalDescriptorLayout.mergeFrom(pass->descriptorLayout);
     }
 }
-
-//UnifiedShaderTechnique* UnifiedShader::addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet) {
-//    auto tech = makeURef<UnifiedShaderTechnique>();
-//    tech->id = indexToId(m_techniques2.size());
-//    tech->variantSet = variantSet;
-//    m_techniques2.push(std::move(tech));
-//    return m_techniques2.back();
-//}
 
 UnifiedShaderPass* UnifiedShader::addPass(TechniqueId parentTech, const std::string& name) {
     if (findPassInfoIndex(parentTech, name) >= 0) {
@@ -554,7 +546,7 @@ UnifiedShaderTechnique* UnifiedShader::addTechnique(const std::string& name, con
     return m_techniques.back();
 }
 
-UnifiedShaderTechnique* UnifiedShader::addVariantTechnique(const std::string& name, const UnifiedShaderVariantSet& variantSet) {
+UnifiedShaderTechnique* UnifiedShader::addVariantTechnique(const std::string& name, const VariantSet& variantSet) {
     auto tech = makeURef<UnifiedShaderTechnique>(this, indexToId(m_techniques.length()));
     tech->name = name;
     tech->variantSet = variantSet;

@@ -6,15 +6,17 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoGraphics.hpp>
+#include <LuminoGraphics/ShaderCompiler/detail/UnifiedShader.hpp>
 #include "../src/GraphicsManager.hpp"
+#include "../src/Rendering/SpriteRenderer.hpp"
 using namespace ln;
 
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)
 
 void init() {
     RuntimeModule::initialize();
-    PlatformModule::initialize({ { U"Example", 640, 480 } });
-    RHIModule::initialize();
+    PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::GLFWWithoutOpenGL });
+    RHIModule::initialize({ GraphicsAPI::Vulkan });
 
     RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 }
@@ -30,10 +32,13 @@ void run() {
 
     //auto shader = Shader::create(ASSETFILE("simple.hlsl"));
     auto shader = Shader::load(U"simple");
-
     auto descriptorLayout = shader->descriptorLayout();
-
     auto shaderPass = shader->techniques()[0]->passes()[0];
+
+    auto shader2 = Shader::load(U"Sprite");
+    auto descriptorLayout2 = shader2->descriptorLayout();
+    auto shaderVariants2 = Array<String>{ U"LN_USE_INSTANCING" };
+    auto shaderPass2 = shader2->findTechniqueByVariantKey(kokage::VariantSet::calcHash(shaderVariants2))->passes()[0];
 
     auto vertexLayout = makeObject<VertexLayout>();
     vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
@@ -47,6 +52,9 @@ void run() {
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     auto swapChain = makeObject<SwapChain>(window);
+
+    auto spriteRenderer = makeURef<detail::SpriteRenderer>();
+    spriteRenderer->init();
 
     while (Platform::processEvents()) {
         auto commandList = swapChain->beginFrame2();
@@ -62,6 +70,13 @@ void run() {
         commandList->setShaderDescriptor(descriptor);
         commandList->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         commandList->drawPrimitive(0, 1);
+
+        commandList->setShaderDescriptor(nullptr);
+        commandList->setShaderPass(shaderPass2);
+        spriteRenderer->begin();
+        spriteRenderer->end();
+        spriteRenderer->render(commandList);
+
         commandList->endRenderPass();
 
         // NOTE:

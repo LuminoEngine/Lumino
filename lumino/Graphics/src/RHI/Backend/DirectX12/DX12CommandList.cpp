@@ -471,8 +471,7 @@ void DX12GraphicsContext::onClearBuffers(ClearFlags clearFlags, const Color& col
     }
 }
 
-void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
-{
+void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount, int instanceCount) {
     D3D_PRIMITIVE_TOPOLOGY topology;
     UINT vertexCount;
     if (!DX12Helper::getDrawPrimitiveData(primitive, primitiveCount, &topology, &vertexCount)) {
@@ -480,7 +479,7 @@ void DX12GraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int start
     }
 
     m_dxCommandList->IASetPrimitiveTopology(topology);
-    m_dxCommandList->DrawInstanced(vertexCount, 1, startVertex, 0);
+    m_dxCommandList->DrawInstanced(vertexCount, std::max(instanceCount, 1), startVertex, 0);
 }
 
 void DX12GraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset)

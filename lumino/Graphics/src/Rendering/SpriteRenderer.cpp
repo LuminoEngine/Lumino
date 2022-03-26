@@ -1,22 +1,79 @@
-﻿#include "SpriteRenderer.hpp"
+﻿#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/Rendering/Vertex.hpp>
+#include "../GraphicsManager.hpp"
+#include "RenderingManager2.hpp"
+#include "SpriteRenderer.hpp"
 
 namespace ln {
 namespace detail {
 
-#if 0
 //==============================================================================
 // SpriteRenderFeature
 
-SpriteRenderer::SpriteRenderer()
-{
+SpriteRenderer::SpriteRenderer() {
 }
 
-void SpriteRenderer::init()
-{
-	m_vertexLayout = manager->standardVertexDeclaration();
-	m_spriteCount = 0;
+void SpriteRenderer::init() {
+    RenderingManager2* manager = GraphicsManager::instance()->renderingManager();
+    const auto& elements = manager->standardVertexLayout()->vertexElements();
+
+	m_vertexLayout = makeObject<VertexLayout>();
+    for (const auto& element : elements) {
+		m_vertexLayout->addElement(element);
+    }
+    m_vertexLayout->addElement(1, VertexElementType::Float4, VertexElementUsage::Position, 1, VertexInputRate::Instance);
+    m_vertexLayout->addElement(1, VertexElementType::Float4, VertexElementUsage::Position, 2, VertexInputRate::Instance);
+    m_vertexLayout->addElement(1, VertexElementType::Float4, VertexElementUsage::Position, 3, VertexInputRate::Instance);
+    m_vertexLayout->addElement(1, VertexElementType::Float4, VertexElementUsage::Position, 4, VertexInputRate::Instance);
+    m_vertexLayout->addElement(1, VertexElementType::Float4, VertexElementUsage::TexCoord, 2, VertexInputRate::Instance);
+    m_vertexLayout->addElement(1, VertexElementType::Float4, VertexElementUsage::Color, 1, VertexInputRate::Instance);
+
+	Vertex vertices[4] = {
+        Vertex(Vector3(-1, 1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White),
+        Vertex(Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White),
+        Vertex(Vector3(1, 1, 0), Vector3::UnitZ, Vector2(1, 0), Color::White),
+        Vertex(Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White),
+    };
+    m_sprite = makeObject<VertexBuffer>(sizeof(vertices), vertices, GraphicsResourceUsage::Static);
+
+    m_spriteCount = 0;
+
+	// test
+	{
+        InstanceData data;
+        data.transform0 = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+        data.transform1 = Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+        data.transform2 = Vector4(0.0f, 0.0f, 1.0f, 0.0f);
+        data.transform3 = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+        data.uvOffset = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+        data.colorScale = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        m_instanceData.push_back(data);
+        m_spriteCount = 1;
+    }
 }
 
+void SpriteRenderer::begin() {
+}
+
+void SpriteRenderer::end() {
+    if (!m_instanceBuffer || (m_instanceBuffer->size() / sizeof(InstanceData)) < m_spriteCount) {
+        m_instanceBuffer = makeObject<VertexBuffer>(m_spriteCount * sizeof(InstanceData), GraphicsResourceUsage::Dynamic);
+    }
+
+    void* data = m_instanceBuffer->writableData();
+    memcpy(data, m_instanceData.data(), m_spriteCount * sizeof(InstanceData));
+}
+
+void SpriteRenderer::render(GraphicsCommandList* commandList) {
+    commandList->setVertexLayout(m_vertexLayout);
+    commandList->setVertexBuffer(0, m_sprite);
+    commandList->setVertexBuffer(1, m_instanceBuffer);
+    commandList->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+    commandList->drawPrimitive(0, 2, 1);
+}
+#if 0
 RequestBatchResult SpriteRenderer::drawRequest(
 	RenderFeatureBatchList* batchList,
 	const RLIBatchState& batchState,
@@ -56,7 +113,7 @@ RequestBatchResult SpriteRenderer::drawRequest(
 	{
 		//Vector3 origin(-center);
 		float l, t, r, b;
-#if 1   // 原点左下、povot.y+ が↑
+#if 1 // 原点左下、povot.y+ が↑
 		r = size.x;
 		b = 0;
 		l = 0;
@@ -80,7 +137,7 @@ RequestBatchResult SpriteRenderer::drawRequest(
 		b -= center.y;
 #endif
 
-#define LN_WRITE_V3( x_, y_, z_ ) x_, y_, z_
+#define LN_WRITE_V3(x_, y_, z_) x_, y_, z_
 
 		switch (baseDirection)
 		{
@@ -445,4 +502,3 @@ void SpriteRenderer::prepareBuffers(GraphicsCommandList* context, int spriteCoun
 #endif
 } // namespace detail
 } // namespace ln
-

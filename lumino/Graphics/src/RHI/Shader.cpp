@@ -365,7 +365,7 @@ void ShaderTechnique::init(const kokage::UnifiedShaderTechnique* kokageTech) {
         // シンボル名を StringArray または String のまま検索する場合、効率的に検索するにはソートが必要だったりとかなり手間が多く、
         // 検索よりもキーの前処理に時間がかかってしまう。
         // この Hash はシンボル名ごとの Hash の単純な加算結果なので、並び順も気にせず、整数の比較だけで検索できる。
-        m_variantKey = kokage::UnifiedShaderVariantSet::calcHash(kokageTech->variantSet.values);
+        m_variantKey = kokage::VariantSet::calcHash(kokageTech->variantSet.values);
     }
 }
 

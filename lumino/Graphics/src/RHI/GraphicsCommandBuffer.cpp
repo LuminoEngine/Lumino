@@ -227,10 +227,10 @@ void GraphicsCommandList::clear(ClearFlags flags, const Color& color, float z, u
     m_rhiResource->clearBuffers(flags, color, z, stencil);
 }
 
-void GraphicsCommandList::drawPrimitive(int startVertex, int primitiveCount) {
+void GraphicsCommandList::drawPrimitive(int startVertex, int primitiveCount, int instanceCount) {
     if (!checkRenderPassInside()) return;
     commitState();
-    m_rhiResource->drawPrimitive(startVertex, primitiveCount);
+    m_rhiResource->drawPrimitive(startVertex, primitiveCount, instanceCount);
     m_drawCall++;
 }
 

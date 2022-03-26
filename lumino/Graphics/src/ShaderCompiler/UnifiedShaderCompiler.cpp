@@ -54,7 +54,7 @@ bool UnifiedShaderCompiler::compile(
         multiCompileCombination.expand(metaTech.multiCompiles);
 
         for (const auto& values : multiCompileCombination.variantSets()) {
-            UnifiedShaderVariantSet variantSet;
+            VariantSet variantSet;
             variantSet.values = values;
 
             UnifiedShaderTechnique* tech = m_unifiedShader->addVariantTechnique("V", variantSet);

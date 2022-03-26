@@ -22,6 +22,7 @@
 #include "RHI/GraphicsProfiler.hpp"
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "RHI/StreamingBufferAllocator.hpp"
+#include "Rendering/RenderingManager2.hpp"
 
 namespace ln {
 namespace detail {
@@ -276,6 +277,14 @@ bool GraphicsManager::init(const Settings& settings) {
     }
 #endif
 
+    {
+        RenderingManager2::Settings settings;
+        m_renderingManager = makeURef<RenderingManager2>();
+        if (!m_renderingManager->init(settings)) {
+            return false;
+        }
+    }
+
     LN_LOG_DEBUG("GraphicsManager Initialization ended.");
     return true;
 }
@@ -292,6 +301,11 @@ void GraphicsManager::dispose() {
     if (m_renderingQueue) {
         m_renderingQueue->dispose();
         m_renderingQueue = nullptr;
+    }
+
+    if (m_renderingManager) {
+        m_renderingManager->dispose();
+        m_renderingManager = nullptr;
     }
 
     m_shaderCache.dispose();

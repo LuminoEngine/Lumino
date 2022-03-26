@@ -37,7 +37,7 @@ protected:
     void onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
     void onDispatch(const GraphicsContextState& state, IPipeline* basePipeline, int groupCountX, int groupCountY, int groupCountZ) override;
     void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-    void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
+    void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount, int instanceCount) override;
     void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) override;
     void onDrawExtension(INativeGraphicsExtension* extension) override;
     void wait() override;

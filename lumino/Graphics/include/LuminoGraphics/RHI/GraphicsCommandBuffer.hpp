@@ -128,7 +128,7 @@ public:
     /**
      * プリミティブを描画します。
      */
-    void drawPrimitive(int startVertex, int primitiveCount);
+    void drawPrimitive(int startVertex, int primitiveCount, int instanceCount = 0);
 
     /**
      * インデックス付きのプリミティブを描画します。

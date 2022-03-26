@@ -24,6 +24,7 @@ class AssetManager;
 class PlatformManager;
 class ShaderManager;
 class StreamingBufferAllocatorManager;
+class RenderingManager2;
 
 class GraphicsManager : public RHIModule {
 public:
@@ -45,6 +46,8 @@ public:
     void removeGraphicsResource(IGraphicsResource* resource);
 
     AssetManager* assetManager() const { return m_assetManager; }
+    const URef<RenderingManager2>& renderingManager() const { return m_renderingManager; }
+
     // deviceContext() は、リソースの CRUD のみを目的として IGraphicsDevice にアクセスしたいときに使うこと。
     // 描画を目的としたステートの変更や、clear、draw 系は GraphicsCommandList::commitState() の戻り値を使うこと。
     // またこれらの予防として、IGraphicsDevice のポインタは持ち出してメンバに保持したりせず、
@@ -102,6 +105,7 @@ private:
     AssetManager* m_assetManager;
     PlatformManager* m_platformManager;
     ShaderManager* m_shaderManager;
+    URef<RenderingManager2> m_renderingManager;
     Ref<IGraphicsDevice> m_deviceContext;
     Ref<CommandQueue> m_graphicsQueue;
     Ref<CommandQueue> m_computeQueue;
