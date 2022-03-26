@@ -165,11 +165,8 @@ bool UnifiedShaderCompiler::compile(
                 m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, entryPointName)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
-                CodeContainerId containerId;
-                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, entryPointName, &containerId)) {
-                    return false;
-                }
-                m_unifiedShader->setVertexShader(passId, containerId);
+                auto container = m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, entryPointName);
+                m_unifiedShader->setVertexShader(passId, container->id());
             }
 
             // Pixel shader
@@ -187,11 +184,8 @@ bool UnifiedShaderCompiler::compile(
                 m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, entryPointName)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
-                CodeContainerId containerId;
-                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, entryPointName, &containerId)) {
-                    return false;
-                }
-                m_unifiedShader->setPixelShader(passId, containerId);
+                auto container = m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, entryPointName);
+                m_unifiedShader->setPixelShader(passId, container->id());
             }
 
             // ShaderRenderState
@@ -259,17 +253,14 @@ bool UnifiedShaderCompiler::compileCompute(
         return false;
     }
 
-    CodeContainerId containerId;
-    if (!m_unifiedShader->addCodeContainer(ShaderStage2_Compute, entryPoint, &containerId)) {
-        return false;
-    }
+    auto* container = m_unifiedShader->addCodeContainer(ShaderStage2_Compute, entryPoint);
 
     UnifiedShaderTriple triple1 = { "spv", 110, "" };
-    m_unifiedShader->setCode(containerId, triple1, transpiler->spirvCode());
+    container->setCode(triple1, transpiler->spirvCode());
     UnifiedShaderTriple triple2 = { "hlsl", 5, "" };
-    m_unifiedShader->setCode(containerId, triple2, transpiler->generateHlslByteCode());
+    container->setCode(triple2, transpiler->generateHlslByteCode());
 
-    m_unifiedShader->setComputeShader(passId, containerId);
+    m_unifiedShader->setComputeShader(passId, container->id());
 
     return true;
 }
@@ -317,11 +308,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
         m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, pass.vertexShader)] = transpiler;
 
         // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
-        CodeContainerId containerId;
-        if (!m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, pass.vertexShader, &containerId)) {
-            return false;
-        }
-        m_unifiedShader->setVertexShader(passId, containerId);
+        auto* container = m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, pass.vertexShader);
+        m_unifiedShader->setVertexShader(passId, container->id());
     }
 
     // Pixel shader
@@ -336,11 +324,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
         m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, pass.pixelShader)] = transpiler;
 
         // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
-        CodeContainerId containerId;
-        if (!m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, pass.pixelShader, &containerId)) {
-            return false;
-        }
-        m_unifiedShader->setPixelShader(passId, containerId);
+        auto* container = m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, pass.pixelShader);
+        m_unifiedShader->setPixelShader(passId, container->id());
     }
 
     // ShaderRenderState
@@ -461,33 +446,35 @@ bool UnifiedShaderCompiler::link() {
             // VertexShader
             {
                 CodeContainerId containerId = m_unifiedShader->vertexShader(passId);
+                auto* container = m_unifiedShader->codeContainer(containerId);
 
-                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Vertex, m_unifiedShader->entryPointName(containerId))];
+                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Vertex, container->entryPointName)];
 
                 UnifiedShaderTriple triple1 = { "spv", 110, "" };
-                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode());
+                container->setCode(triple1, tp->spirvCode());
                 UnifiedShaderTriple triple2 = { "hlsl", 5, "" };
-                m_unifiedShader->setCode(containerId, triple2, tp->generateHlslByteCode());
+                container->setCode(triple2, tp->generateHlslByteCode());
                 UnifiedShaderTriple triple3 = { "glsl", 400, "" };
-                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(400, false));
+                container->setCode(triple3, tp->generateGlsl(400, false));
                 UnifiedShaderTriple triple4 = { "glsl", 300, "es" };
-                m_unifiedShader->setCode(containerId, triple4, tp->generateGlsl(300, true));
+                container->setCode(triple4, tp->generateGlsl(300, true));
             }
 
             // PixelShader
             {
                 CodeContainerId containerId = m_unifiedShader->pixelShader(passId);
+                auto* container = m_unifiedShader->codeContainer(containerId);
 
-                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Fragment, m_unifiedShader->entryPointName(containerId))];
+                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Fragment, container->entryPointName)];
 
                 UnifiedShaderTriple triple1 = { "spv", 110, "" };
-                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode());
+                container->setCode(triple1, tp->spirvCode());
                 UnifiedShaderTriple triple2 = { "hlsl", 5, "" };
-                m_unifiedShader->setCode(containerId, triple2, tp->generateHlslByteCode());
+                container->setCode(triple2, tp->generateHlslByteCode());
                 UnifiedShaderTriple triple3 = { "glsl", 400, "" };
-                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(400, false));
+                container->setCode(triple3, tp->generateGlsl(400, false));
                 UnifiedShaderTriple triple4 = { "glsl", 300, "es" };
-                m_unifiedShader->setCode(containerId, triple4, tp->generateGlsl(300, true));
+                container->setCode(triple4, tp->generateGlsl(300, true));
             }
         }
     }

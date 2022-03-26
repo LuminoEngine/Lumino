@@ -17,6 +17,28 @@ using CodeContainerId = uint32_t;
 using UnifiedShaderTechniqueId = uint32_t;
 using UnifiedShadePassId = uint32_t;
 
+struct USCodeInfo : public URefObject {
+public:
+    UnifiedShaderTriple triple;
+    std::vector<byte_t> code;
+};
+
+struct USCodeContainerInfo : public URefObject {
+public:
+    USCodeContainerInfo(CodeContainerId id);
+
+    ShaderStage2 stage;
+    std::string entryPointName;
+    ln::Array<URef<USCodeInfo>> codes;
+
+    CodeContainerId id() const { return m_id; }
+    void setCode(const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
+    const USCodeInfo* findCode(const UnifiedShaderTriple& triple) const;
+
+private:
+    CodeContainerId m_id;
+};
+
 class UnifiedShaderTechnique : public URefObject {
 public:
     UnifiedShaderTechniqueId id;
@@ -65,11 +87,6 @@ class UnifiedShader
     : public RefObject
 {
 public:
-    struct CodeInfo
-    {
-        UnifiedShaderTriple triple;
-        std::vector<byte_t> code;
-    };
 
     // 0 is invalid value.
     using TechniqueId = uint32_t;
@@ -93,11 +110,9 @@ public:
     bool save(const Path& filePath);
     bool load(Stream* stream);
 
-
-    bool addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId);
-    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
-    const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
-    const std::string& entryPointName(CodeContainerId conteinreId) const;
+    const Array<URef<USCodeContainerInfo>>& codeContainers() const { return m_codeContainers; }
+    USCodeContainerInfo* codeContainer(CodeContainerId id) const { return m_codeContainers[idToIndex(id)]; }
+    USCodeContainerInfo* addCodeContainer(ShaderStage2 stage, const std::string& entryPointName);
     void makeGlobalDescriptorLayout();
 
     UnifiedShaderTechnique* addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet);
@@ -153,12 +168,6 @@ private:
 	static std::vector<byte_t> readByteArray(BinaryReader* r);
     static bool checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag);
 
-    struct CodeContainerInfo
-    {
-		ShaderStage2 stage;
-        std::string entryPointName;
-        std::vector<CodeInfo> codes;
-    };
 
     struct TechniqueInfo
     {
@@ -179,7 +188,7 @@ private:
     };
 
     DiagnosticsManager* m_diag;
-    List<CodeContainerInfo> m_codeContainers;
+    Array<URef<USCodeContainerInfo>> m_codeContainers;
     List<TechniqueInfo> m_techniques;
     Array<URef<UnifiedShaderTechnique>> m_techniques2;
     List<PassInfo> m_passes;

@@ -46,6 +46,57 @@ static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue)
     }
 }
 
+
+
+//==============================================================================
+// UnifiedShader
+
+USCodeContainerInfo::USCodeContainerInfo(CodeContainerId id)
+    : m_id(id) {
+}
+
+void USCodeContainerInfo::setCode(const UnifiedShaderTriple& triple, const std::vector<byte_t>& code) {
+    auto obj = makeURef<USCodeInfo>();
+    obj->triple = triple;
+    obj->code = code;
+    codes.push(std::move(obj));
+}
+
+const USCodeInfo* USCodeContainerInfo::findCode(const UnifiedShaderTriple& triple) const {
+    if (LN_REQUIRE(!triple.target.empty())) {
+        return nullptr;
+    }
+
+    //auto& codes = m_codeContainers[idToIndex(conteinreId)].codes;
+
+    int candidateVersion = 0;
+    int candidate = -1;
+    for (int iCode = 0; iCode < codes.size(); iCode++) {
+        auto& codeTriple = codes[iCode]->triple;
+        if (codeTriple.target != triple.target) {
+            // not adopted
+        }
+        else if (!triple.option.empty() && codeTriple.option != triple.option) {
+            // not adopted
+        }
+        else {
+            // check version
+            if (codeTriple.version <= triple.version && // first, less than requested version
+                codeTriple.version > candidateVersion) {
+                candidate = iCode;
+                candidateVersion = codeTriple.version;
+            }
+        }
+    }
+
+    if (candidate >= 0) {
+        return codes[candidate];
+    }
+    else {
+        return nullptr;
+    }
+}
+
 //==============================================================================
 // UnifiedShader
 
@@ -80,12 +131,12 @@ bool UnifiedShader::save(const Path& filePath)
 
         writer->writeUInt32(m_codeContainers.size());
         for (int i = 0; i < m_codeContainers.size(); i++) {
-            CodeContainerInfo* info = &m_codeContainers[i];
+            USCodeContainerInfo* info = m_codeContainers[i];
             writeString(writer, info->entryPointName);
 
             writer->writeUInt8(info->codes.size());
             for (int iCode = 0; iCode < info->codes.size(); iCode++) {
-				CodeInfo* codeInfo = &info->codes[iCode];
+				USCodeInfo* codeInfo = info->codes[iCode];
                 writeString(writer, codeInfo->triple.target);
                 writer->writeUInt32(codeInfo->triple.version);
                 writeString(writer, codeInfo->triple.option);
@@ -246,20 +297,20 @@ bool UnifiedShader::load(Stream* stream)
 
         size_t count = reader->readUInt32();
         for (size_t i = 0; i < count; i++) {
-            CodeContainerInfo info;
-            info.entryPointName = readString(reader);
+            auto info = makeURef<USCodeContainerInfo>(indexToId(i));
+            info->entryPointName = readString(reader);
 
             uint8_t count = reader->readUInt8();
             for (int iCode = 0; iCode < count; iCode++) {
-                CodeInfo code;
-                code.triple.target = readString(reader);
-                code.triple.version = reader->readUInt32();
-                code.triple.option = readString(reader);
-                code.code = readByteArray(reader);
-				info.codes.push_back(std::move(code));
+                auto code = makeURef<USCodeInfo>();
+                code->triple.target = readString(reader);
+                code->triple.version = reader->readUInt32();
+                code->triple.option = readString(reader);
+                code->code = readByteArray(reader);
+                info->codes.push(std::move(code));
             }
 
-            m_codeContainers.add(std::move(info));
+            m_codeContainers.push(std::move(info));
         }
     }
 
@@ -431,60 +482,12 @@ bool UnifiedShader::load(Stream* stream)
     return true;
 }
 
-bool UnifiedShader::addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId)
-{
-    //if (findCodeContainerInfoIndex(stage, entryPointName) >= 0) {
-    //    m_diag->reportError(String::fromStdString("Code entory point '" + entryPointName + "' is already exists."));
-    //    return false;
-    //}
-
-    m_codeContainers.add({ stage, entryPointName});
-    *outId = indexToId(m_codeContainers.size() - 1);
-    return true;
-}
-
-void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code)
-{
-    //if (LN_REQUIRE(refrection)) return;
-	m_codeContainers[idToIndex(container)].codes.push_back({triple, code });
-}
-
-const UnifiedShader::CodeInfo* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
-{
-    if (LN_REQUIRE(!triple.target.empty())) {
-        return nullptr;
-    }
-
-    auto& codes = m_codeContainers[idToIndex(conteinreId)].codes;
-
-    int candidateVersion = 0;
-    int candidate = -1;
-    for (int iCode = 0; iCode < codes.size(); iCode++) {
-        auto& codeTriple = codes[iCode].triple;
-        if (codeTriple.target != triple.target) {
-            // not adopted
-        } else if (!triple.option.empty() && codeTriple.option != triple.option) {
-            // not adopted
-        } else {
-            // check version
-            if (codeTriple.version <= triple.version && // first, less than requested version
-                codeTriple.version > candidateVersion) {
-                candidate = iCode;
-                candidateVersion = codeTriple.version;
-            }
-        }
-    }
-
-    if (candidate >= 0) {
-        return &codes[candidate];
-    } else {
-        return nullptr;
-    }
-}
-
-const std::string& UnifiedShader::entryPointName(CodeContainerId conteinreId) const
-{
-    return m_codeContainers[idToIndex(conteinreId)].entryPointName;
+USCodeContainerInfo* UnifiedShader::addCodeContainer(ShaderStage2 stage, const std::string& entryPointName) {
+    auto obj = makeURef<USCodeContainerInfo>(indexToId(m_codeContainers.length()));
+    obj->stage = stage;
+    obj->entryPointName = entryPointName;
+    m_codeContainers.push(std::move(obj));
+    return m_codeContainers.back();
 }
 
 void UnifiedShader::makeGlobalDescriptorLayout()
@@ -644,12 +647,12 @@ void UnifiedShader::saveCodes(const StringView& perfix) const
 			for (auto containerId : containerIds)
 			{
 				auto& container = m_codeContainers[idToIndex(containerId)];
-				for (auto& code : container.codes) {
+				for (auto& code : container->codes) {
 					auto file = ln::format(
 						_TT("{0}.{1}.{2}.{3}.{4}-{5}-{6}"),
-						perfix, String::fromStdString(techniqueName(techId)), String::fromStdString(passName(passId)), String::fromStdString(container.entryPointName),
-						String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
-					FileSystem::writeAllBytes(file, code.code.data(), code.code.size());
+						perfix, String::fromStdString(techniqueName(techId)), String::fromStdString(passName(passId)), String::fromStdString(container->entryPointName),
+						String::fromStdString(code->triple.target), code->triple.version, String::fromStdString(code->triple.option));
+					FileSystem::writeAllBytes(file, code->code.data(), code->code.size());
 				}
 			}
 		}

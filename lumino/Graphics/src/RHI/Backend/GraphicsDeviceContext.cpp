@@ -307,20 +307,23 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
     const char* vsEntryPointName = nullptr;
     const char* psEntryPointName = nullptr;
     const char* csEntryPointName = nullptr;
-    const detail::UnifiedShader::CodeInfo* vscode = nullptr;
-    const detail::UnifiedShader::CodeInfo* pscode = nullptr;
-    const detail::UnifiedShader::CodeInfo* cscode = nullptr;
+    const detail::USCodeInfo* vscode = nullptr;
+    const detail::USCodeInfo* pscode = nullptr;
+    const detail::USCodeInfo* cscode = nullptr;
     if (vscodeId) {
-        vsEntryPointName = unifiedShader->entryPointName(vscodeId).c_str();
-        vscode = unifiedShader->findCode(vscodeId, triple);
+        auto* contaier = unifiedShader->codeContainer(vscodeId);
+        vsEntryPointName = contaier->entryPointName.c_str();
+        vscode = contaier->findCode(triple);
     }
     if (pscodeId) {
-        psEntryPointName = unifiedShader->entryPointName(pscodeId).c_str();
-        pscode = unifiedShader->findCode(pscodeId, triple);
+        auto* contaier = unifiedShader->codeContainer(pscodeId);
+        psEntryPointName = contaier->entryPointName.c_str();
+        pscode = contaier->findCode(triple);
     }
     if (cscodeId) {
-        csEntryPointName = unifiedShader->entryPointName(cscodeId).c_str();
-        cscode = unifiedShader->findCode(cscodeId, triple);
+        auto* contaier = unifiedShader->codeContainer(cscodeId);
+        csEntryPointName = contaier->entryPointName.c_str();
+        cscode = contaier->findCode(triple);
     }
 
     detail::ShaderPassCreateInfo createInfo = {
