@@ -55,6 +55,11 @@ public:
     Ref<ShaderRenderState> renderState;
     DescriptorLayout descriptorLayout;
     std::vector<VertexInputAttribute> attributes; // used by vertexShader
+
+    UnifiedShaderPass()
+        : vertexShader(0)
+        , pixelShader(0)
+        , computeShader(0) {}
 };
 
 /*
@@ -115,10 +120,12 @@ public:
     USCodeContainerInfo* addCodeContainer(ShaderStage2 stage, const std::string& entryPointName);
     void makeGlobalDescriptorLayout();
 
-    UnifiedShaderTechnique* addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet);
+    //UnifiedShaderTechnique* addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet);
 
-    UnifiedShaderPass* addPass2(UnifiedShaderTechnique* parentTech, const std::string& name);
-    void addMergeDescriptorLayoutItem2(UnifiedShaderPass* pass, const DescriptorLayout& layout);
+    const Array<URef<UnifiedShaderPass>>& passes() const { return m_passes; }
+    UnifiedShaderPass* pass(PassId id) const { return m_passes[idToIndex(id)]; }
+    UnifiedShaderPass* addPass(TechniqueId parentTech, const std::string& name);
+    void addMergeDescriptorLayoutItem(UnifiedShaderPass* pass, const DescriptorLayout& layout);
 
 
 
@@ -128,26 +135,26 @@ public:
     const std::string& techniqueName(TechniqueId techId) const { return m_techniques[idToIndex(techId)].name; }
     const ShaderTechniqueClass& techniqueClass(TechniqueId techId) const { return m_techniques[idToIndex(techId)].techniqueClass; }
 
-    bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
+    //bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
     int getPassCountInTechnique(TechniqueId parentTech) const;
     PassId getPassIdInTechnique(TechniqueId parentTech, int index) const;
     int passCount() const { return m_passes.size(); }
     PassId passId(int index) const { return indexToId(index); }
-    const std::string& passName(PassId passId) const { return m_passes[idToIndex(passId)].name; }
-    void setVertexShader(PassId pass, CodeContainerId code);
-    void setPixelShader(PassId pass, CodeContainerId code);
-    void setComputeShader(PassId pass, CodeContainerId code);
-    void setRenderState(PassId pass, ShaderRenderState* state);
+    //const std::string& passName(PassId passId) const { return m_passes[idToIndex(passId)].name; }
+    //void setVertexShader(PassId pass, CodeContainerId code);
+    //void setPixelShader(PassId pass, CodeContainerId code);
+    //void setComputeShader(PassId pass, CodeContainerId code);
+    //void setRenderState(PassId pass, ShaderRenderState* state);
 	//void setRefrection(PassId pass, UnifiedShaderRefrectionInfo* value);
-    void addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout);
-    CodeContainerId vertexShader(PassId pass) const;
-    CodeContainerId pixelShader(PassId pass) const;
-    CodeContainerId computeShader(PassId pass) const;
-    ShaderRenderState* renderState(PassId pass) const;
-	const DescriptorLayout& descriptorLayout(PassId pass) const;
+    //void addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout);
+ //   CodeContainerId vertexShader(PassId pass) const;
+ //   CodeContainerId pixelShader(PassId pass) const;
+ //   CodeContainerId computeShader(PassId pass) const;
+ //   ShaderRenderState* renderState(PassId pass) const;
+	//const DescriptorLayout& descriptorLayout(PassId pass) const;
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
-    void setAttributes(PassId pass, const std::vector<VertexInputAttribute>& attrs);
-	const std::vector<VertexInputAttribute>& attributes(PassId pass) const;
+ //   void setAttributes(PassId pass, const std::vector<VertexInputAttribute>& attrs);
+	//const std::vector<VertexInputAttribute>& attributes(PassId pass) const;
 
     // DescriptorLayout.uniformBufferRegister のみ有効。
     // それ以外は、値は入っているが binding が正しくないので使用できない。
@@ -176,23 +183,11 @@ private:
         List<PassId> passes;
     };
 
-    struct PassInfo
-    {
-        std::string name;
-        CodeContainerId vertexShader;
-        CodeContainerId pixelShader;
-        CodeContainerId computeShader;
-        Ref<ShaderRenderState> renderState;
-		DescriptorLayout descriptorLayout;
-		std::vector<VertexInputAttribute> attributes;	// used by vertexShader
-    };
-
     DiagnosticsManager* m_diag;
     Array<URef<USCodeContainerInfo>> m_codeContainers;
     List<TechniqueInfo> m_techniques;
-    Array<URef<UnifiedShaderTechnique>> m_techniques2;
-    List<PassInfo> m_passes;
-    Array<URef<UnifiedShaderPass>> m_passes2;
+    //Array<URef<UnifiedShaderTechnique>> m_techniques2;
+    Array<URef<UnifiedShaderPass>> m_passes;
     DescriptorLayout m_globalDescriptorLayout; // Result of merging all pass layouts
 };
 

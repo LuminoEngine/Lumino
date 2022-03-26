@@ -250,14 +250,15 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 		int passCount = unifiedShader->getPassCountInTechnique(techId);
 		for (int iPass = 0; iPass < passCount; iPass++) {
 			detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
+            const auto* kokagePass = unifiedShader->pass(passId);
 
 			auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, asciiName, diag);
 			if (rhiPass) {
 				auto pass = makeObject<ShaderPass>(
-                    String::fromStdString(unifiedShader->passName(passId)),
+                    String::fromStdString(kokagePass->name),
                     rhiPass,
-                    unifiedShader->renderState(passId),
-                    unifiedShader->descriptorLayout(passId),
+                    kokagePass->renderState,
+                    kokagePass->descriptorLayout,
                     m_descriptorLayout);
 				tech->addShaderPass(pass);
 			}
