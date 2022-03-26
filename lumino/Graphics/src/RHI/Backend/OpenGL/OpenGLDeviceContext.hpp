@@ -211,7 +211,7 @@ public:
 
     const List<GLVertexElement>& vertexElements() const { return m_vertexElements; }
 
-    const GLVertexElement* findGLVertexElement(AttributeUsage usage, int usageIndex) const;
+    const GLVertexElement* findGLVertexElement(kokage::AttributeUsage usage, int usageIndex) const;
 
     // 頂点宣言から GL 用の頂点宣言を生成する
     static void createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<GLVertexElement>* outList);

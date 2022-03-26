@@ -21,77 +21,63 @@ namespace ln {
 //==============================================================================
 // ShaderCompilationProperties
 
-ShaderCompilationProperties::ShaderCompilationProperties()
-{
+ShaderCompilationProperties::ShaderCompilationProperties() {
 }
 
-ShaderCompilationProperties::~ShaderCompilationProperties()
-{
+ShaderCompilationProperties::~ShaderCompilationProperties() {
 }
 
-void ShaderCompilationProperties::init()
-{
+void ShaderCompilationProperties::init() {
 }
 
-void ShaderCompilationProperties::addIncludeDirectory(const StringView& value)
-{
+void ShaderCompilationProperties::addIncludeDirectory(const StringView& value) {
     m_includeDirectories.add(value);
 }
 
-void ShaderCompilationProperties::addDefinition(const StringView& value)
-{
+void ShaderCompilationProperties::addDefinition(const StringView& value) {
     m_definitions.add(value);
 }
 
-void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag)
-{
+void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag) {
     m_diag = diag;
 }
 
 //==============================================================================
 // Shader
 
-Ref<Shader> Shader::create(const StringView& filePath, ShaderCompilationProperties* properties)
-{
+Ref<Shader> Shader::create(const StringView& filePath, ShaderCompilationProperties* properties) {
     return ln::makeObject<Shader>(filePath, properties);
 }
 
-Ref<Shader> Shader::load(const StringView& filePath, AssetImportSettings* settings)
-{
+Ref<Shader> Shader::load(const StringView& filePath, AssetImportSettings* settings) {
     return detail::GraphicsManager::instance()->loadShader(filePath);
 }
 
-Ref<Shader> Shader::create(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties)
-{
+Ref<Shader> Shader::create(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties) {
     return ln::makeObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, properties);
 }
 
 Shader::Shader()
     : m_graphicsManager(nullptr)
     , m_name()
-    , m_techniques(makeList<Ref<ShaderTechnique>>())
-{
+    , m_techniques(makeList<Ref<ShaderTechnique>>()) {
 }
 
-Shader::~Shader()
-{
+Shader::~Shader() {
 }
 
-void Shader::init()
-{
+void Shader::init() {
     AssetObject::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_graphicsManager);
 }
 
-void Shader::init(const StringView& filePath, ShaderCompilationProperties* properties)
-{
+void Shader::init(const StringView& filePath, ShaderCompilationProperties* properties) {
     Shader::init();
     auto stream = FileStream::create(filePath, FileOpenMode::Read);
     loadFromStream(detail::AssetPath::makeFromLocalFilePath(filePath), stream, properties);
 }
 
-void Shader::init(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties)
-{
+void Shader::init(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties) {
     Shader::init();
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
@@ -100,33 +86,31 @@ void Shader::init(const StringView& vertexShaderFilePath, const StringView& pixe
     auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
     auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
 
-	{
+    {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-		List<Path> includeDirs;
-		if (properties) {
-			for (auto& path : properties->m_includeDirectories)
-				includeDirs.add(path);
-		}
+        List<Path> includeDirs;
+        if (properties) {
+            for (auto& path : properties->m_includeDirectories)
+                includeDirs.add(path);
+        }
 
-		detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), localDiag);
-		if (!compiler.compileSingleCodes(
-			reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main",
-			reinterpret_cast<const char*>(psData.data()), psData.size(), "main",
-			includeDirs, {})) {
-			LN_ERROR();
-			return;
-		}
-		if (!compiler.link()) {
-			LN_ERROR();
-			return;
-		}
+        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), localDiag);
+        if (!compiler.compileSingleCodes(
+                reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main", reinterpret_cast<const char*>(psData.data()), psData.size(), "main", includeDirs, {})) {
+            LN_ERROR();
+            return;
+        }
+        if (!compiler.link()) {
+            LN_ERROR();
+            return;
+        }
 
-		createFromUnifiedShader(compiler.unifiedShader(), localDiag);
+        createFromUnifiedShader(compiler.unifiedShader(), localDiag);
 #else
         LN_NOTIMPLEMENTED();
         return;
 #endif
-	}
+    }
     //createSinglePassShader(
     //    reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
 
@@ -138,14 +122,14 @@ void Shader::init(const StringView& vertexShaderFilePath, const StringView& pixe
         if (localDiag->hasError()) {
             LN_ERROR(localDiag->toString());
             return;
-        } else if (localDiag->hasWarning()) {
+        }
+        else if (localDiag->hasWarning()) {
             LN_LOG_WARNING(localDiag->toString());
         }
     }
 }
 
-void Shader::init(const String& name, Stream* stream)
-{
+void Shader::init(const String& name, Stream* stream) {
     Shader::init();
     Ref<DiagnosticsManager> localDiag = makeObject<DiagnosticsManager>();
 
@@ -157,19 +141,18 @@ void Shader::init(const String& name, Stream* stream)
         LN_LOG_ERROR(localDiag->toString());
         LN_ERROR(name);
         return;
-    } else if (localDiag->hasWarning()) {
+    }
+    else if (localDiag->hasWarning()) {
         LN_LOG_WARNING(localDiag->toString());
     }
 }
 
-void Shader::init(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
-{
+void Shader::init(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag) {
     Shader::init();
     createFromUnifiedShader(unifiedShader, diag);
 }
 
-bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties)
-{
+bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties) {
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
     if (!localDiag) localDiag = makeObject<DiagnosticsManager>();
@@ -178,7 +161,7 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
 
     //Path path = filePath;
     //if (path.hasExtension(detail::UnifiedShader::FileExt)) {
-    if (path.path().hasExtension(detail::UnifiedShader::FileExt)) {
+    if (path.path().hasExtension(kokage::UnifiedShader::FileExt)) {
         //auto file = FileStream::create(filePath, FileOpenMode::Read);
         createFromStream(stream, localDiag);
     }
@@ -186,18 +169,19 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
         //if (LN_REQUIRE(path.scheme() == detail::AssetPath::FileSchemeName)) return false;
 
-
         //ByteBuffer buffer = FileSystem::readAllBytes(filePath);
         auto buffer = stream->readToEnd();
 
         List<Path> includeDirs = { path.path().parent() };
         List<String> definitions;
         if (properties) {
-            for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
-            for (auto& def : properties->m_definitions) definitions.add(def);
+            for (auto& path : properties->m_includeDirectories)
+                includeDirs.add(path);
+            for (auto& def : properties->m_definitions)
+                definitions.add(def);
         }
 
-        detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), localDiag);
+        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), localDiag);
         if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
             LN_ERROR(localDiag->toString());
             return false;
@@ -213,7 +197,6 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
 #endif
     }
 
-
     if (!properties || !properties->m_diag) {
         if (localDiag->hasError()) {
             LN_ERROR(localDiag->toString());
@@ -227,52 +210,49 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
     return true;
 }
 
-void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
-{
-    detail::UnifiedShader unifiedShader(diag);
+void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag) {
+    kokage::UnifiedShader unifiedShader(diag);
     if (unifiedShader.load(stream)) {
-		createFromUnifiedShader(&unifiedShader, diag);
+        createFromUnifiedShader(&unifiedShader, diag);
     }
 }
 
-void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
-{
+void Shader::createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag) {
     const std::string asciiName = m_name.toStdString();
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
     m_descriptor = makeObject<ShaderDefaultDescriptor>(this);
 
-	//for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
-	//	detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
+    //for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
+    //	detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
     for (const auto& kokageTech : unifiedShader->techniques()) {
         auto tech = makeObject<ShaderTechnique>(String::fromStdString(kokageTech->name), kokageTech->techniqueClass);
-		tech->setOwner(this);
-		m_techniques->add(tech);
+        tech->setOwner(this);
+        m_techniques->add(tech);
 
-		//int passCount = kokageTech->passes.length();
-		//for (int iPass = 0; iPass < passCount; iPass++) {
-		//	detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
-  //          const auto* kokagePass = unifiedShader->pass(passId);
+        //int passCount = kokageTech->passes.length();
+        //for (int iPass = 0; iPass < passCount; iPass++) {
+        //	detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
+        //          const auto* kokagePass = unifiedShader->pass(passId);
         for (const auto& kokagePassId : kokageTech->passes) {
             const auto* kokagePass = unifiedShader->pass(kokagePassId);
-			auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, kokagePassId, asciiName, diag);
-			if (rhiPass) {
-				auto pass = makeObject<ShaderPass>(
+            auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, kokagePassId, asciiName, diag);
+            if (rhiPass) {
+                auto pass = makeObject<ShaderPass>(
                     String::fromStdString(kokagePass->name),
                     rhiPass,
                     kokagePass->renderState,
                     kokagePass->descriptorLayout,
                     m_descriptorLayout);
-				tech->addShaderPass(pass);
-			}
-		}
+                tech->addShaderPass(pass);
+            }
+        }
 
         tech->setupSemanticsManager();
         m_descriptor2 = makeObject<detail::ShaderSecondaryDescriptor>(this);
-	}
+    }
 }
 
-void Shader::onDispose(bool explicitDisposing)
-{
+void Shader::onDispose(bool explicitDisposing) {
     for (auto& tech : m_techniques) {
         for (auto& pass : tech->passes()) {
             pass->dispose();
@@ -284,25 +264,21 @@ void Shader::onDispose(bool explicitDisposing)
     AssetObject::onDispose(explicitDisposing);
 }
 
-void Shader::onChangeDevice(detail::IGraphicsDevice* device)
-{
+void Shader::onChangeDevice(detail::IGraphicsDevice* device) {
     LN_NOTIMPLEMENTED();
 }
 
-void Shader::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath)
-{
+void Shader::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) {
     if (!stream) return;
 
     loadFromStream(assetPath, stream, nullptr);
 }
 
-ShaderParameter2* Shader::findParameter(const StringView& name) const
-{
+ShaderParameter2* Shader::findParameter(const StringView& name) const {
     return m_descriptor->findParameter2(name);
 }
 
-ShaderTechnique* Shader::findTechnique(const StringView& name) const
-{
+ShaderTechnique* Shader::findTechnique(const StringView& name) const {
     for (auto& var : m_techniques) {
         if (String::compare(StringView(var->name()), 0, StringView(name), 0, -1, CaseSensitivity::CaseSensitive) == 0) {
             return var;
@@ -311,32 +287,27 @@ ShaderTechnique* Shader::findTechnique(const StringView& name) const
     return nullptr;
 }
 
-Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
-{
+Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const {
     return m_techniques;
 }
 
-void Shader::setFloat(const StringView& parameterName, float value)
-{
+void Shader::setFloat(const StringView& parameterName, float value) {
     if (auto* param = findParameter(parameterName)) {
         param->setFloat(value);
     }
 }
 
-void Shader::setVector(const StringView& parameterName, const Vector3& value)
-{
+void Shader::setVector(const StringView& parameterName, const Vector3& value) {
     setVector(parameterName, Vector4(value, 0.0));
 }
 
-void Shader::setVector(const StringView& parameterName, const Vector4& value)
-{
+void Shader::setVector(const StringView& parameterName, const Vector4& value) {
     if (auto* param = findParameter(parameterName)) {
         param->setVector(value);
     }
 }
 
-void Shader::setTexture(const StringView& parameterName, Texture* value)
-{
+void Shader::setTexture(const StringView& parameterName, Texture* value) {
     if (auto* param = findParameter(parameterName)) {
         param->setTexture(value);
     }
@@ -347,17 +318,15 @@ void Shader::setTexture(const StringView& parameterName, Texture* value)
 //    return makeObject<ShaderDefaultDescriptor>(this);
 //}
 
-Ref<detail::ShaderSecondaryDescriptor> Shader::acquireDescriptor()
-{
+Ref<detail::ShaderSecondaryDescriptor> Shader::acquireDescriptor() {
     return m_descriptor2;
 }
 
 // TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
-ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
-{
+ShaderTechnique* Shader::findTechniqueByClass(const kokage::ShaderTechniqueClass& techniqueClass) const {
     ShaderTechnique* defaultTech = nullptr;
     for (auto& tech : m_techniques) {
-        if (detail::ShaderTechniqueClass::equals(detail::ShaderInternal::techniqueClass(tech), techniqueClass)) {
+        if (kokage::ShaderTechniqueClass::equals(detail::ShaderInternal::techniqueClass(tech), techniqueClass)) {
             return tech;
         }
         if (detail::ShaderInternal::techniqueClass(tech).defaultTechnique) {
@@ -376,35 +345,29 @@ ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass
 // ShaderTechnique
 
 ShaderTechnique::ShaderTechnique()
-    : m_passes(makeList<Ref<ShaderPass>>())
-{
+    : m_passes(makeList<Ref<ShaderPass>>()) {
 }
 
-ShaderTechnique::~ShaderTechnique()
-{
+ShaderTechnique::~ShaderTechnique() {
 }
 
-void ShaderTechnique::init(const String& name, const detail::ShaderTechniqueClass& techniqueClass)
-{
+void ShaderTechnique::init(const String& name, const kokage::ShaderTechniqueClass& techniqueClass) {
     Object::init();
     m_name = name;
     m_techniqueClass = techniqueClass;
-    detail::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
+    kokage::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
 }
 
-void ShaderTechnique::setupSemanticsManager()
-{
+void ShaderTechnique::setupSemanticsManager() {
     m_semanticsManager = std::make_unique<detail::ShaderTechniqueSemanticsManager>();
     m_semanticsManager->init(this);
 }
 
-Ref<ReadOnlyList<Ref<ShaderPass>>> ShaderTechnique::passes() const
-{
+Ref<ReadOnlyList<Ref<ShaderPass>>> ShaderTechnique::passes() const {
     return m_passes;
 }
 
-void ShaderTechnique::addShaderPass(ShaderPass* pass)
-{
+void ShaderTechnique::addShaderPass(ShaderPass* pass) {
     m_passes->add(pass);
     pass->setOwner(this);
 }
@@ -416,16 +379,13 @@ ShaderPass::ShaderPass()
     : m_owner(nullptr)
     , m_name()
     , m_rhiPass(nullptr)
-    , m_renderState(nullptr)
-{
+    , m_renderState(nullptr) {
 }
 
-ShaderPass::~ShaderPass()
-{
+ShaderPass::~ShaderPass() {
 }
 
-void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState, const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout)
-{
+void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout) {
     if (LN_REQUIRE(rhiPass)) return;
     Object::init();
 
@@ -434,11 +394,9 @@ void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::
     m_renderState = renderState;
 
     m_descriptorLayout.init(layout, globalLayout);
-
 }
 
-void ShaderPass::onDispose(bool explicitDisposing)
-{
+void ShaderPass::onDispose(bool explicitDisposing) {
     for (auto& pool : m_descriptorSetsPools) {
         pool->dispose();
     }
@@ -449,8 +407,7 @@ void ShaderPass::onDispose(bool explicitDisposing)
     Object::onDispose(explicitDisposing);
 }
 
-Shader* ShaderPass::shader() const
-{
+Shader* ShaderPass::shader() const {
     return m_owner->shader();
 }
 
@@ -464,9 +421,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
     GraphicsCommandList* commandList = graphicsContext;
     detail::ICommandList* rhiCommandList = commandList->rhiResource();
 
-
     detail::ShaderDescriptorTableUpdateInfo updateInfo;
-
 
     // Uniforms
     for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
@@ -488,7 +443,6 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
         const auto& info = m_descriptorLayout.m_textures[i];
         IGraphicsResource* resource = descripter->texture(info.dataIndex);
         if (isComputeShader() && resource == nullptr) {
-
         }
         else if (resource == nullptr || resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
             Texture* texture = static_cast<Texture*>(resource);
@@ -518,7 +472,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
             LN_UNREACHABLE();
         }
 #else
-        
+
         const auto& info = m_descriptorLayout.m_textures[i];
         Texture* texture = descripter->texture(info.dataIndex);
         if (!texture) {
@@ -583,8 +537,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
     rhiCommandList->setDescriptor(descriptor);
 }
 
-Ref<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool()
-{
+Ref<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool() {
     if (m_descriptorSetsPools.empty()) {
         return m_owner->m_owner->m_graphicsManager->deviceContext()->createDescriptorPool(m_rhiPass);
     }
@@ -595,23 +548,19 @@ Ref<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool()
     }
 }
 
-void ShaderPass::releaseDescriptorSetsPool(detail::IDescriptorPool* pool)
-{
+void ShaderPass::releaseDescriptorSetsPool(detail::IDescriptorPool* pool) {
     LN_DCHECK(pool);
     pool->reset();
     m_descriptorSetsPools.push_back(pool);
 }
 
-
 //==============================================================================
 // ShaderDefaultDescriptor
 
-ShaderDefaultDescriptor::ShaderDefaultDescriptor()
-{
+ShaderDefaultDescriptor::ShaderDefaultDescriptor() {
 }
 
-bool ShaderDefaultDescriptor::init(Shader* ownerShader)
-{
+bool ShaderDefaultDescriptor::init(Shader* ownerShader) {
     if (LN_REQUIRE(ownerShader)) return false;
     if (!Object::init()) return false;
 
@@ -626,8 +575,6 @@ bool ShaderDefaultDescriptor::init(Shader* ownerShader)
 
     m_textures.resize(layout->textureRegisterCount());
     m_samplers.resize(layout->samplerRegisterCount());
-
-
 
     // parameters は Layout 側に持たせる方がメモリ効率はいいんだけど、
     // ユーザープログラムからは使いづらくなってしまうのでこちらに置いている。
@@ -647,17 +594,14 @@ bool ShaderDefaultDescriptor::init(Shader* ownerShader)
         m_parameters.add(makeObject<ShaderParameter2>(this, ShaderParameter2::IndexType::SamplerState, i));
     }
 
-
     return true;
 }
 
-ShaderDescriptorLayout* ShaderDefaultDescriptor::descriptorLayout() const
-{
+ShaderDescriptorLayout* ShaderDefaultDescriptor::descriptorLayout() const {
     return m_ownerShader->descriptorLayout();
 }
 
-ShaderParameter2* ShaderDefaultDescriptor::findParameter2(const StringView& name) const
-{
+ShaderParameter2* ShaderDefaultDescriptor::findParameter2(const StringView& name) const {
     return m_parameters.findIf([&](auto& x) { return x->name() == name; }).valueOr(nullptr);
 }
 
@@ -676,9 +620,7 @@ ShaderParameter2* ShaderDefaultDescriptor::findParameter2(const StringView& name
 //    return m_ownerShader->descriptorLayout()->findSamplerRegisterIndex(name);
 //}
 
-
-void ShaderDefaultDescriptor::setData(int uniformBufferIndex, const void* data, size_t size)
-{
+void ShaderDefaultDescriptor::setData(int uniformBufferIndex, const void* data, size_t size) {
     auto& buffer = m_buffers[uniformBufferIndex];
 
     buffer.assign(data, size);
@@ -686,7 +628,7 @@ void ShaderDefaultDescriptor::setData(int uniformBufferIndex, const void* data, 
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     // TODO: Shader 側で行優先にするべきかも…
     for (const auto& member : descriptorLayout()->m_buffers[uniformBufferIndex].members) {
-        const auto& desc = descriptorLayout()->m_members[member].desc;//param->desc();
+        const auto& desc = descriptorLayout()->m_members[member].desc; //param->desc();
         if (desc.type2 == detail::ShaderUniformType_Matrix &&
             desc.columns == 4 && desc.rows == 4) {
             Matrix* m = reinterpret_cast<Matrix*>(buffer.data() + desc.offset);
@@ -696,50 +638,43 @@ void ShaderDefaultDescriptor::setData(int uniformBufferIndex, const void* data, 
 #endif
 }
 
-void ShaderDefaultDescriptor::setInt(int memberIndex, int value)
-{
+void ShaderDefaultDescriptor::setInt(int memberIndex, int value) {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
+    kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
-void ShaderDefaultDescriptor::setIntArray(int memberIndex, const int* value, int count)
-{
+void ShaderDefaultDescriptor::setIntArray(int memberIndex, const int* value, int count) {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+    kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDefaultDescriptor::setFloat(int memberIndex, float value)
-{
+void ShaderDefaultDescriptor::setFloat(int memberIndex, float value) {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
+    kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
 }
 
-void ShaderDefaultDescriptor::setFloatArray(int memberIndex, const float* value, int count)
-{
+void ShaderDefaultDescriptor::setFloatArray(int memberIndex, const float* value, int count) {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+    kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
-void ShaderDefaultDescriptor::setVector(int memberIndex, const Vector4& value)
-{
+void ShaderDefaultDescriptor::setVector(int memberIndex, const Vector4& value) {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
+    kokage::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
 }
 
-void ShaderDefaultDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
-{
+void ShaderDefaultDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count) {
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
+    kokage::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
 }
 
-void ShaderDefaultDescriptor::setMatrix(int memberIndex, const Matrix& value)
-{
+void ShaderDefaultDescriptor::setMatrix(int memberIndex, const Matrix& value) {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     const bool transpose = true;
 #else
@@ -748,11 +683,10 @@ void ShaderDefaultDescriptor::setMatrix(int memberIndex, const Matrix& value)
 
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
+    kokage::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
-void ShaderDefaultDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
-{
+void ShaderDefaultDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count) {
 #ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     const bool transpose = true;
 #else
@@ -760,33 +694,28 @@ void ShaderDefaultDescriptor::setMatrixArray(int memberIndex, const Matrix* valu
 #endif
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
+    kokage::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
-void ShaderDefaultDescriptor::setTexture(int textureIndex, Texture* value)
-{
+void ShaderDefaultDescriptor::setTexture(int textureIndex, Texture* value) {
     m_textures[textureIndex] = value;
 }
 
-void ShaderDefaultDescriptor::setSampler(int textureIndex, Texture* value)
-{
+void ShaderDefaultDescriptor::setSampler(int textureIndex, Texture* value) {
     m_textures[textureIndex] = value;
 }
 
-void ShaderDefaultDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
-{
+void ShaderDefaultDescriptor::setSamplerState(int samplerIndex, SamplerState* value) {
     m_samplers[samplerIndex] = value;
 }
 
 //==============================================================================
 // ShaderDescriptorLayout
 
-ShaderDescriptorLayout::ShaderDescriptorLayout()
-{
+ShaderDescriptorLayout::ShaderDescriptorLayout() {
 }
 
-bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
-{
+bool ShaderDescriptorLayout::init(const kokage::DescriptorLayout& layout) {
     if (!Object::init()) return false;
 
     // 'b'
@@ -798,21 +727,20 @@ bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
 
         for (const auto& member : item.members) {
             detail::ShaderUniformTypeDesc desc;
-            desc.type2 = static_cast<detail::ShaderUniformType>(member.type);
+            desc.type2 = static_cast<kokage::ShaderUniformType>(member.type);
 
             desc.rows = member.matrixRows;
             desc.columns = member.matrixColumns;
             desc.elements = member.arrayElements;
-            if (desc.columns == 0) { // OpenGL Dirver の動作に合わせる
-                desc.columns = member.vectorElements;// *sizeof(float);
+            if (desc.columns == 0) {                  // OpenGL Dirver の動作に合わせる
+                desc.columns = member.vectorElements; // *sizeof(float);
             }
 
             desc.offset = member.offset;
             if (member.arrayElements > 0) {
-                detail::ShaderHelper::resolveStd140Layout(member, &desc.arrayStride);
+                kokage::ShaderHelper::resolveStd140Layout(member, &desc.arrayStride);
             }
             desc.matrixStride = member.matrixColumns * sizeof(float);
-
 
             UniformMemberInfo memberInfo;
             memberInfo.uniformBufferRegisterIndex = i;
@@ -848,40 +776,33 @@ bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
     return true;
 }
 
-int ShaderDescriptorLayout::findUniformBufferRegisterIndex(const ln::StringView& name) const
-{
+int ShaderDescriptorLayout::findUniformBufferRegisterIndex(const ln::StringView& name) const {
     return m_buffers.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findUniformMemberIndex(const ln::StringView& name) const
-{
+int ShaderDescriptorLayout::findUniformMemberIndex(const ln::StringView& name) const {
     return m_members.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringView& name) const
-{
+int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringView& name) const {
     return m_textures.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findSamplerRegisterIndex(const ln::StringView& name) const
-{
+int ShaderDescriptorLayout::findSamplerRegisterIndex(const ln::StringView& name) const {
     return m_samplers.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
-int ShaderDescriptorLayout::findStorageRegisterIndex(const ln::StringView& name) const
-{
+int ShaderDescriptorLayout::findStorageRegisterIndex(const ln::StringView& name) const {
     return m_storages.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
 //==============================================================================
 // ShaderParameter2
 
-ShaderParameter2::ShaderParameter2()
-{
+ShaderParameter2::ShaderParameter2() {
 }
 
-bool ShaderParameter2::init(ShaderDefaultDescriptor* owner, IndexType type, int dataIndex)
-{
+bool ShaderParameter2::init(ShaderDefaultDescriptor* owner, IndexType type, int dataIndex) {
     if (!Object::init()) return false;
     m_owner = owner;
     m_indexType = type;
@@ -889,32 +810,28 @@ bool ShaderParameter2::init(ShaderDefaultDescriptor* owner, IndexType type, int 
     return true;
 }
 
-const String ShaderParameter2::name() const
-{
-    switch (m_indexType)
-    {
-    case ln::ShaderParameter2::IndexType::UniformBuffer:
-        return m_owner->descriptorLayout()->m_buffers[m_dataIndex].name;
-    case ln::ShaderParameter2::IndexType::UniformMember:
-        return m_owner->descriptorLayout()->m_members[m_dataIndex].name;
-    case ln::ShaderParameter2::IndexType::Texture:
-        return m_owner->descriptorLayout()->m_textures[m_dataIndex].name;
-    case ln::ShaderParameter2::IndexType::SamplerState:
-        return m_owner->descriptorLayout()->m_samplers[m_dataIndex].name;
-    default:
-        LN_UNREACHABLE();
-        return String::Empty;
+const String ShaderParameter2::name() const {
+    switch (m_indexType) {
+        case ln::ShaderParameter2::IndexType::UniformBuffer:
+            return m_owner->descriptorLayout()->m_buffers[m_dataIndex].name;
+        case ln::ShaderParameter2::IndexType::UniformMember:
+            return m_owner->descriptorLayout()->m_members[m_dataIndex].name;
+        case ln::ShaderParameter2::IndexType::Texture:
+            return m_owner->descriptorLayout()->m_textures[m_dataIndex].name;
+        case ln::ShaderParameter2::IndexType::SamplerState:
+            return m_owner->descriptorLayout()->m_samplers[m_dataIndex].name;
+        default:
+            LN_UNREACHABLE();
+            return String::Empty;
     }
 }
 
-void ShaderParameter2::setData(const void* data, size_t size)
-{
+void ShaderParameter2::setData(const void* data, size_t size) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformBuffer)) return;
     m_owner->setData(m_dataIndex, data, size);
 }
 
-void ShaderParameter2::setInt(int value, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setInt(int value, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setInt(m_dataIndex, value);
@@ -922,8 +839,7 @@ void ShaderParameter2::setInt(int value, detail::ShaderSecondaryDescriptor* desc
         m_owner->setInt(m_dataIndex, value);
 }
 
-void ShaderParameter2::setIntArray(const int* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setIntArray(const int* value, int count, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setIntArray(m_dataIndex, value, count);
@@ -931,8 +847,7 @@ void ShaderParameter2::setIntArray(const int* value, int count, detail::ShaderSe
         m_owner->setIntArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setFloat(float value, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setFloat(float value, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setFloat(m_dataIndex, value);
@@ -940,8 +855,7 @@ void ShaderParameter2::setFloat(float value, detail::ShaderSecondaryDescriptor* 
         m_owner->setFloat(m_dataIndex, value);
 }
 
-void ShaderParameter2::setFloatArray(const float* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setFloatArray(const float* value, int count, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setFloatArray(m_dataIndex, value, count);
@@ -949,8 +863,7 @@ void ShaderParameter2::setFloatArray(const float* value, int count, detail::Shad
         m_owner->setFloatArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setVector(const Vector4& value, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setVector(const Vector4& value, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setVector(m_dataIndex, value);
@@ -958,8 +871,7 @@ void ShaderParameter2::setVector(const Vector4& value, detail::ShaderSecondaryDe
         m_owner->setVector(m_dataIndex, value);
 }
 
-void ShaderParameter2::setVectorArray(const Vector4* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setVectorArray(const Vector4* value, int count, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setVectorArray(m_dataIndex, value, count);
@@ -967,8 +879,7 @@ void ShaderParameter2::setVectorArray(const Vector4* value, int count, detail::S
         m_owner->setVectorArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setMatrix(const Matrix& value, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setMatrix(const Matrix& value, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setMatrix(m_dataIndex, value);
@@ -976,8 +887,7 @@ void ShaderParameter2::setMatrix(const Matrix& value, detail::ShaderSecondaryDes
         m_owner->setMatrix(m_dataIndex, value);
 }
 
-void ShaderParameter2::setMatrixArray(const Matrix* value, int count, detail::ShaderSecondaryDescriptor* descriptor)
-{
+void ShaderParameter2::setMatrixArray(const Matrix* value, int count, detail::ShaderSecondaryDescriptor* descriptor) {
     if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
     if (descriptor)
         descriptor->setMatrixArray(m_dataIndex, value, count);
@@ -985,14 +895,12 @@ void ShaderParameter2::setMatrixArray(const Matrix* value, int count, detail::Sh
         m_owner->setMatrixArray(m_dataIndex, value, count);
 }
 
-void ShaderParameter2::setTexture(Texture* value)
-{
+void ShaderParameter2::setTexture(Texture* value) {
     if (LN_REQUIRE(m_indexType == IndexType::Texture)) return;
     m_owner->setTexture(m_dataIndex, value);
 }
 
-void ShaderParameter2::setSamplerState(SamplerState* value)
-{
+void ShaderParameter2::setSamplerState(SamplerState* value) {
     if (LN_REQUIRE(m_indexType == IndexType::SamplerState)) return;
     m_owner->setSamplerState(m_dataIndex, value);
 }
@@ -1000,8 +908,7 @@ void ShaderParameter2::setSamplerState(SamplerState* value)
 //==============================================================================
 // ShaderPassDescriptorLayout
 
-void ShaderPassDescriptorLayout::init(const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout)
-{
+void ShaderPassDescriptorLayout::init(const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout) {
     m_buffers.resize(layout.uniformBufferRegister.size());
     for (int i = 0; i < layout.uniformBufferRegister.size(); i++) {
         const auto& item = layout.uniformBufferRegister[i];
@@ -1052,18 +959,15 @@ void ShaderPassDescriptorLayout::init(const detail::DescriptorLayout& layout, co
 }
 
 namespace detail {
-ShaderRenderState* ShaderInternal::getShaderRenderState(ShaderPass* pass)
-{
+kokage::ShaderRenderState* ShaderInternal::getShaderRenderState(ShaderPass* pass) {
     return pass->m_renderState;
 }
 
-ShaderTechnique* ShaderInternal::findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass)
-{
+ShaderTechnique* ShaderInternal::findTechniqueByClass(const Shader* shader, const kokage::ShaderTechniqueClass& techniqueClass) {
     return shader->findTechniqueByClass(techniqueClass);
 }
 
-const detail::ShaderTechniqueClass& ShaderInternal::techniqueClass(ShaderTechnique* technique)
-{
+const kokage::ShaderTechniqueClass& ShaderInternal::techniqueClass(ShaderTechnique* technique) {
     return technique->m_techniqueClass;
 }
 } // namespace detail

@@ -79,7 +79,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         //   set=2 を Sampler として扱いたい。
         //   GLSL でいうところの layout(set=*) を変えるには、複数の DescriptorSet を作らなければならない。
 
-        const auto stageFlag = [](const DescriptorLayout* d, DescriptorType t) {
+        const auto stageFlag = [](const kokage::DescriptorLayout* d, kokage::DescriptorType t) {
             return
                 ((d->isReferenceFromVertexStage(t)) ? VK_SHADER_STAGE_VERTEX_BIT : 0) |
                 ((d->isReferenceFromPixelStage(t)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0) |
@@ -96,7 +96,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, DescriptorType_UniformBuffer);
+                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, kokage::DescriptorType_UniformBuffer);
                 // NOTE: ↑この getShaderVisibility() は全ての CBV に対しての設定となるため、最適解ではない。
                 // ただ個々の CBV まで対応となると非常に複雑になるためここまでにしておく。
                 layoutBinding.pImmutableSamplers = nullptr;
@@ -126,7 +126,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
             layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[DescriptorType_UniformBuffer]));
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[kokage::DescriptorType_UniformBuffer]));
         }
 
         // set=1, 't' register in HLSL (Texture and CombinedSampler)
@@ -140,7 +140,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = (m_compShaderModule) ? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, DescriptorType_Texture);
+                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, kokage::DescriptorType_Texture);
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
 
@@ -168,7 +168,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
             layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[DescriptorType_Texture]));
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[kokage::DescriptorType_Texture]));
         }
 
         // set=2, 's' register in HLSL (SamplerState)
@@ -181,7 +181,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
                 layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, DescriptorType_SamplerState);
+                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, kokage::DescriptorType_SamplerState);
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
 
@@ -209,7 +209,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
             layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[DescriptorType_SamplerState]));
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[kokage::DescriptorType_SamplerState]));
         }
 
         // set=3, 'u' register in HLSL (UnorderdAccess)
@@ -222,7 +222,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
                 layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, DescriptorType_UnorderdAccess);
+                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, kokage::DescriptorType_UnorderdAccess);
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
 
@@ -250,7 +250,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
             layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[DescriptorType_UnorderdAccess]));
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[kokage::DescriptorType_UnorderdAccess]));
         }
     }
 
@@ -312,7 +312,7 @@ void VulkanShaderPass::dispose()
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(
     VulkanCommandBuffer* commandBuffer,
-    const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets,
+    const std::array<VkDescriptorSet, kokage::DescriptorType_Count>& descriptorSets,
     const ShaderDescriptorTableUpdateInfo& data)
 {
     uint32_t writeIndex = 0;
@@ -352,7 +352,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
 #endif
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
-        writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
+        writeInfo.dstSet = descriptorSets[kokage::DescriptorType_UniformBuffer];
 
         writeIndex++;
     }
@@ -368,7 +368,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
             info.imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
             info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             writeInfo.pImageInfo = &info.imageInfo;
-            writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
+            writeInfo.dstSet = descriptorSets[kokage::DescriptorType_Texture];
         }
         else {
             if (data.resources[i].object) {
@@ -383,7 +383,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
             }
             info.bufferInfo.offset = 0;
             writeInfo.pBufferInfo = &info.bufferInfo;
-            writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
+            writeInfo.dstSet = descriptorSets[kokage::DescriptorType_Texture];
         }
         writeIndex++;
     }
@@ -395,7 +395,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         VulkanSamplerState* samplerState = static_cast<VulkanSamplerState*>(data.samplers[i].stamplerState);
         info.imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
         //writeInfo.pImageInfo = &info.imageInfo;
-        writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
+        writeInfo.dstSet = descriptorSets[kokage::DescriptorType_SamplerState];
         writeIndex++;
 
         //const auto& info = m_textureDescripterImageInfo[i];
@@ -413,7 +413,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         info.bufferInfo.offset = 0;
         info.bufferInfo.range = buffer->buffer()->size();
         writeInfo.pBufferInfo = &info.bufferInfo;
-        writeInfo.dstSet = descriptorSets[DescriptorType_UnorderdAccess];
+        writeInfo.dstSet = descriptorSets[kokage::DescriptorType_UnorderdAccess];
         
         writeIndex++;
     }

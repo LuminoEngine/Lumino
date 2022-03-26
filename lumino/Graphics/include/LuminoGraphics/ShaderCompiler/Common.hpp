@@ -11,16 +11,63 @@ class ShaderPass;
 class ShaderDescriptorLayout;
 class ShaderPassDescriptorLayout;
 
-namespace detail {
-class ShaderSecondaryDescriptor;
-class ShaderDescriptorPool;
+namespace kokage {
 class UnifiedShader;
 class ShaderCodeTranspiler;
+class ShaderRenderState;
+} // namespace kokage
+
+namespace detail {
+class ShaderManager;
+class GraphicsManager;
+class ShaderSecondaryDescriptor;
+class ShaderDescriptorPool;
     //
 //// LigitingModel
 // enum class ShaderTechniqueClass_Ligiting : uint8_t
 //{
 // };
+
+
+#define LN_CIS_PREFIX "lnCIS"
+#define LN_TO_PREFIX "lnTO"
+#define LN_SO_PREFIX "lnSO"
+//#define LN_IS_RT_POSTFIX "lnIsRT"
+#define LN_CIS_PREFIX_LEN 5
+#define LN_TO_PREFIX_LEN 4
+#define LN_SO_PREFIX_LEN 4
+//#define LN_IS_RT_POSTFIX_LEN 6
+
+
+
+} // namespace detail
+
+namespace kokage {
+
+enum ShaderUniformType {
+    ShaderUniformType_Unknown = 0,
+    ShaderUniformType_Bool = 1,
+    // ShaderUniformType_BoolArray = 2,
+    ShaderUniformType_Int = 3,
+    // ShaderUniformType_IntArray = 4,
+    ShaderUniformType_Float = 5,
+    // ShaderUniformType_FloatArray = 6,
+    ShaderUniformType_Vector = 7,
+    // ShaderUniformType_VectorArray = 8,
+    ShaderUniformType_Matrix = 9,
+    // ShaderUniformType_MatrixArray = 10,
+    ShaderUniformType_Texture = 11,
+    ShaderUniformType_SamplerState = 12, // HLSL の SamplerState または samplerXX
+
+    // SamplerState か samplerXX であるかは glslang では区別ができない。
+
+    // https://docs.microsoft.com/en-us/windows/desktop/direct3dhlsl/dx-graphics-hlsl-sampler
+    // http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_graph_effectsample.htm
+
+    // texture 型 uniform は "COMBINED_IMAGE_SAMPLER" と呼ばれている。
+    // Lumino の OpenGL ドライバは UnifiedShader としては CombinedImageSampler は扱わない。
+    // OpenGL ドライバ側で、名前一致により検索を行う。
+};
 
 enum class ShaderTechniqueClass_Phase : uint8_t {
     Forward, // default
@@ -57,20 +104,30 @@ enum class ShaderTechniqueClass_Roughness : uint8_t {
     RoughnessMap,
 };
 
-struct UnifiedShaderTriple {
-    std::string target;
-    uint32_t version;
-    std::string option;
+// TODO: name: DescriptorRegisterType の方がいいと思う。
+// TextureRegister の中には Texture または StorageBuffer が入る。
+enum DescriptorType {
+    DescriptorType_UniformBuffer = 0,
+    DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
+    DescriptorType_SamplerState = 2,
+    DescriptorType_UnorderdAccess = 3,
+
+    LN_LAST_ELEMENT_MARKER(DescriptorType_Count) = 4,
 };
 
-#define LN_CIS_PREFIX "lnCIS"
-#define LN_TO_PREFIX "lnTO"
-#define LN_SO_PREFIX "lnSO"
-//#define LN_IS_RT_POSTFIX "lnIsRT"
-#define LN_CIS_PREFIX_LEN 5
-#define LN_TO_PREFIX_LEN 4
-#define LN_SO_PREFIX_LEN 4
-//#define LN_IS_RT_POSTFIX_LEN 6
+enum ShaderStage2 {
+    ShaderStage2_Vertex = 0,
+    ShaderStage2_Fragment = 1,
+    ShaderStage2_Compute = 2,
+    LN_LAST_ELEMENT_MARKER(ShaderStage2_Count) = 3,
+};
+
+enum ShaderStageFlags {
+    ShaderStageFlags_None = 0x00,
+    ShaderStageFlags_Vertex = 0x01,
+    ShaderStageFlags_Pixel = 0x02,
+    ShaderStageFlags_Compute = 0x04,
+};
 
 enum AttributeUsage {
     AttributeUsage_Unknown = 0,
@@ -94,30 +151,10 @@ struct VertexInputAttribute {
 };
 
 using VertexInputAttributeTable = std::vector<VertexInputAttribute>;
-
-enum ShaderUniformType {
-    ShaderUniformType_Unknown = 0,
-    ShaderUniformType_Bool = 1,
-    // ShaderUniformType_BoolArray = 2,
-    ShaderUniformType_Int = 3,
-    // ShaderUniformType_IntArray = 4,
-    ShaderUniformType_Float = 5,
-    // ShaderUniformType_FloatArray = 6,
-    ShaderUniformType_Vector = 7,
-    // ShaderUniformType_VectorArray = 8,
-    ShaderUniformType_Matrix = 9,
-    // ShaderUniformType_MatrixArray = 10,
-    ShaderUniformType_Texture = 11,
-    ShaderUniformType_SamplerState = 12, // HLSL の SamplerState または samplerXX
-
-    // SamplerState か samplerXX であるかは glslang では区別ができない。
-
-    // https://docs.microsoft.com/en-us/windows/desktop/direct3dhlsl/dx-graphics-hlsl-sampler
-    // http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_graph_effectsample.htm
-
-    // texture 型 uniform は "COMBINED_IMAGE_SAMPLER" と呼ばれている。
-    // Lumino の OpenGL ドライバは UnifiedShader としては CombinedImageSampler は扱わない。
-    // OpenGL ドライバ側で、名前一致により検索を行う。
+struct UnifiedShaderTriple {
+    std::string target;
+    uint32_t version;
+    std::string option;
 };
 
 struct ShaderUniformInfo {
@@ -164,45 +201,6 @@ struct ShaderUniformInfo {
     // }
 };
 
-// TODO: 不要
-struct ShaderUniformBufferInfo {
-    std::string name;
-    uint32_t size; // UniformBuffer 全体のサイズ
-    std::vector<ShaderUniformInfo> members;
-
-    void mergeFrom(const ShaderUniformBufferInfo& other);
-
-    static void mergeBuffers(
-        const std::vector<ShaderUniformBufferInfo>& a,
-        const std::vector<ShaderUniformBufferInfo>& b,
-        std::vector<ShaderUniformBufferInfo>* out);
-};
-
-// TODO: name: DescriptorRegisterType の方がいいと思う。
-// TextureRegister の中には Texture または StorageBuffer が入る。
-enum DescriptorType {
-    DescriptorType_UniformBuffer = 0,
-    DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
-    DescriptorType_SamplerState = 2,
-    DescriptorType_UnorderdAccess = 3,
-
-    LN_LAST_ELEMENT_MARKER(DescriptorType_Count) = 4,
-};
-
-enum ShaderStage2 {
-    ShaderStage2_Vertex = 0,
-    ShaderStage2_Fragment = 1,
-    ShaderStage2_Compute = 2,
-    LN_LAST_ELEMENT_MARKER(ShaderStage2_Count) = 3,
-};
-
-enum ShaderStageFlags {
-    ShaderStageFlags_None = 0x00,
-    ShaderStageFlags_Vertex = 0x01,
-    ShaderStageFlags_Pixel = 0x02,
-    ShaderStageFlags_Compute = 0x04,
-};
-
 struct DescriptorLayoutItem {
     std::string name;
     uint8_t stageFlags; // ShaderStageFlags どのステージで使われるか
@@ -236,8 +234,8 @@ struct LayoutSlotIndex {
 class DescriptorLayout {
 public:
     const std::vector<DescriptorLayoutItem>& bufferSlots() const { return uniformBufferRegister; } // ConstantBuffer
-    const std::vector<DescriptorLayoutItem>& unorderdSlots() const { return unorderdRegister; }     // RWStructuredBuffer
-    const std::vector<DescriptorLayoutItem>& resourceSlots() const { return textureRegister; }   // Texture or StructuredBuffer
+    const std::vector<DescriptorLayoutItem>& unorderdSlots() const { return unorderdRegister; }    // RWStructuredBuffer
+    const std::vector<DescriptorLayoutItem>& resourceSlots() const { return textureRegister; }     // Texture or StructuredBuffer
     const std::vector<DescriptorLayoutItem>& samplerSlots() const { return samplerRegister; }
 
     void clear();
@@ -261,11 +259,25 @@ private:
     std::vector<DescriptorLayoutItem> textureRegister;       // Texture or StructuredBuffer
     std::vector<DescriptorLayoutItem> samplerRegister;
 
-    friend class ::ln::detail::UnifiedShader; // TODO:
-    friend class ::ln::detail::ShaderCodeTranspiler; // TODO:
-    friend class ::ln::ShaderDescriptorLayout; // TODO:
-    friend class ::ln::ShaderPassDescriptorLayout; // TODO:
+    friend class ::ln::kokage::UnifiedShader;        // TODO:
+    friend class ::ln::kokage::ShaderCodeTranspiler; // TODO:
+    friend class ::ln::ShaderDescriptorLayout;       // TODO:
+    friend class ::ln::ShaderPassDescriptorLayout;   // TODO:
 };
 
-} // namespace detail
+// TODO: 不要
+struct ShaderUniformBufferInfo {
+    std::string name;
+    uint32_t size; // UniformBuffer 全体のサイズ
+    std::vector<ShaderUniformInfo> members;
+
+    void mergeFrom(const ShaderUniformBufferInfo& other);
+
+    static void mergeBuffers(
+        const std::vector<ShaderUniformBufferInfo>& a,
+        const std::vector<ShaderUniformBufferInfo>& b,
+        std::vector<ShaderUniformBufferInfo>* out);
+};
+
+} // namespace kokage
 } // namespace ln

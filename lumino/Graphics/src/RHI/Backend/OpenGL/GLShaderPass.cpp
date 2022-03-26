@@ -163,7 +163,7 @@ void GLShaderPass::apply() const {
 GLShaderDescriptorTable::GLShaderDescriptorTable() {
 }
 
-bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const DescriptorLayout* descriptorLayout) {
+bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const kokage::DescriptorLayout* descriptorLayout) {
     // NOTE: Mac では binding を GLSL 側で指定できないので
     // コンパイルによってどのように binding index が割り当てられたか自分で調べる必要がある。
 
@@ -218,7 +218,7 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
             OpenGLHelper::convertVariableTypeGLToLN(
                 name, varType, varSize, &desc.type2, &desc.rows, &desc.columns, &desc.elements);
 
-            if (desc.type2 == ShaderUniformType_Texture) {
+            if (desc.type2 == kokage::ShaderUniformType_Texture) {
                 addResourceUniform(name, loc, descriptorLayout);
             }
         }
@@ -241,7 +241,7 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
     return true;
 }
 
-void GLShaderDescriptorTable::addResourceUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout) {
+void GLShaderDescriptorTable::addResourceUniform(const std::string& name, GLint uniformLocation, const kokage::DescriptorLayout* descriptorLayout) {
     ResouceUniformInfo info;
     info.uniformLocation = uniformLocation;
     info.layoutSlotIndex = descriptorLayout->findTextureRegisterIndex(name);

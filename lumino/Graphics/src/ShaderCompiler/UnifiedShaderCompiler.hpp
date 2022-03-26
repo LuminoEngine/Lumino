@@ -3,14 +3,14 @@
 #include "HLSLMetadataParser.hpp"
 
 namespace ln {
-namespace detail {
+namespace kokage {
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 class UnifiedShaderCompiler
 {
 public:
-	UnifiedShaderCompiler(ShaderManager* manager, DiagnosticsManager* diag);
+	UnifiedShaderCompiler(detail::ShaderManager* manager, DiagnosticsManager* diag);
 
 	// ※ inputCode は非 const。中身が書き換わる。
 	bool compile(
@@ -35,7 +35,7 @@ private:
 	static std::string makeKey(ShaderStage2 stage, const std::string& entryPoint);
     static std::string makeKey2(const std::string& techName, const std::string& passName, ShaderStage2 stage, const std::string& entryPoint);
 
-	ShaderManager* m_manager;
+	detail::ShaderManager* m_manager;
 	Ref<UnifiedShader> m_unifiedShader;
 	DiagnosticsManager* m_diag;
 	std::vector<HLSLTechnique> m_metadataTechniques;
@@ -46,5 +46,5 @@ private:
 
 #endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln

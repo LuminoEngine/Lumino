@@ -115,7 +115,7 @@ bool ShaderManager::init(const Settings& settings)
     }
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-    ShaderCodeTranspiler::initializeGlobals();
+    kokage::ShaderCodeTranspiler::initializeGlobals();
 #endif
 
 #ifdef _WIN32
@@ -144,7 +144,7 @@ void ShaderManager::dispose()
 #endif
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-    ShaderCodeTranspiler::finalizeGlobals();
+    kokage::ShaderCodeTranspiler::finalizeGlobals();
 #endif
 
 }

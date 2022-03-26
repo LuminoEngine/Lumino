@@ -9,7 +9,7 @@
 #include "HLSLMetadataParser.hpp"
 
 namespace ln {
-namespace detail {
+namespace kokage {
 
 //==============================================================================
 // HLSLPass
@@ -780,7 +780,7 @@ bool ShaderModuleParser::readPass(const std::string& techName, int passIndex, co
     return true;
 }
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln
 
 #endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER

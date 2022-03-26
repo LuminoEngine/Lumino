@@ -42,7 +42,7 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 
-	auto result = ln::detail::ShaderHelper::generateShader(ln::detail::ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
+	auto result = ln::kokage::ShaderHelper::generateShader(ln::detail::ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
 
 	diag->dumpToLog();
 

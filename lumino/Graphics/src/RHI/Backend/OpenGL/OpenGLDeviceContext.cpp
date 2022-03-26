@@ -486,7 +486,7 @@ void GLVertexDeclaration::dispose() {
     IVertexDeclaration::dispose();
 }
 
-const GLVertexElement* GLVertexDeclaration::findGLVertexElement(AttributeUsage usage, int usageIndex) const {
+const GLVertexElement* GLVertexDeclaration::findGLVertexElement(kokage::AttributeUsage usage, int usageIndex) const {
     // TODO: これ線形探索じゃなくて、map 作った方がいいかも。
     // usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
     auto u = IGraphicsHelper::AttributeUsageToElementUsage(usage);
@@ -789,7 +789,7 @@ void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBu
                 auto& attr = attributes[iAttr];
                 
                 // glslang からは、 SV_InstanceID も取得できるが、これには layoutLocation が付いていない。
-                if (attr.usage == AttributeUsage_InstanceID) continue;
+                if (attr.usage == kokage::AttributeUsage_InstanceID) continue;
                 
                 if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
                     GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));

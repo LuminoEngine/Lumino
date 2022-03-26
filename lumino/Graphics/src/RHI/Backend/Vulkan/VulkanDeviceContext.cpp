@@ -2051,7 +2051,7 @@ void VulkanVertexDeclaration::dispose() {
     IVertexDeclaration::dispose();
 }
 
-const VulkanVertexDeclaration::AttributeDescriptionSource* VulkanVertexDeclaration::findAttributeDescriptionSource(AttributeUsage usage, int usageIndex) const {
+const VulkanVertexDeclaration::AttributeDescriptionSource* VulkanVertexDeclaration::findAttributeDescriptionSource(kokage::AttributeUsage usage, int usageIndex) const {
     // TODO: これ線形探索じゃなくて、map 作った方がいいかも。
     // usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
     auto u = IGraphicsHelper::AttributeUsageToElementUsage(usage);

@@ -305,7 +305,7 @@ public:
     uint32_t maxStreamCount() const { return m_maxStreamCount; }
     const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
     const std::vector<AttributeDescriptionSource>& vertexAttributeDescriptionSources() const { return m_attributeSources; }
-    const VulkanVertexDeclaration::AttributeDescriptionSource* findAttributeDescriptionSource(AttributeUsage usage, int usageIndex) const;
+    const VulkanVertexDeclaration::AttributeDescriptionSource* findAttributeDescriptionSource(kokage::AttributeUsage usage, int usageIndex) const;
 
 private:
 

@@ -19,12 +19,14 @@ class ShaderDescriptorLayout;
 class ShaderCompilationProperties;
 class GraphicsCommandList;
 namespace detail {
-class UnifiedShader;
 class IShaderPass;
 class IDescriptorPool;
 class ShaderTechniqueSemanticsManager;
 class ShaderValueSerializer;
 class ShaderInternal;
+}
+namespace kokage {
+class UnifiedShader;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
@@ -207,7 +209,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     ShaderDescriptorLayout();
-    bool init(const detail::DescriptorLayout& layout);
+    bool init(const kokage::DescriptorLayout& layout);
 
 public: // TODO:
     struct UniformBufferRegisterInfo
@@ -360,7 +362,7 @@ struct ShaderPassDescriptorLayout
     List<SamplerRegisterInfo> m_samplers;
     List<StorageRegisterInfo> m_storages;
 
-    void init(const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
+    void init(const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
 };
 
 
@@ -473,13 +475,13 @@ LN_CONSTRUCT_ACCESS:
     void init(const StringView& filePath, ShaderCompilationProperties* properties = nullptr);
     void init(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
     void init(const String& name, Stream* stream);
-    void init(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
+    void init(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
 private:
-    ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
+    ShaderTechnique* findTechniqueByClass(const kokage::ShaderTechniqueClass& techniqueClass) const;
     bool loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties);
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
-	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
+    void createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
     detail::GraphicsManager* m_graphicsManager;
     String m_name;
@@ -516,7 +518,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderTechnique();
     virtual ~ShaderTechnique();
-    void init(const String& name, const detail::ShaderTechniqueClass& techniqueClass);
+    void init(const String& name, const kokage::ShaderTechniqueClass& techniqueClass);
     void setupSemanticsManager();
 
     void setOwner(Shader* owner) { m_owner = owner; }
@@ -525,7 +527,7 @@ private:
     Shader* m_owner;
     String m_name;
     Ref<List<Ref<ShaderPass>>> m_passes;
-    detail::ShaderTechniqueClass m_techniqueClass;
+    kokage::ShaderTechniqueClass m_techniqueClass;
     std::unique_ptr<detail::ShaderTechniqueSemanticsManager> m_semanticsManager;
 
     friend class Shader;
@@ -564,7 +566,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderPass();
     virtual ~ShaderPass();
-    void init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState, const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
+    void init(const String& name, detail::IShaderPass* rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified);
@@ -575,7 +577,7 @@ private:
     Ref<detail::IShaderPass> m_rhiPass;
     ShaderPassDescriptorLayout m_descriptorLayout;
 
-    Ref<detail::ShaderRenderState> m_renderState;
+    Ref<kokage::ShaderRenderState> m_renderState;
     const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;
     int m_lastShaderDescriptorRevision = 0;
 
@@ -612,9 +614,9 @@ namespace detail {
 class ShaderInternal
 {
 public:
-    static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
-    static ShaderTechnique* findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
-    static const detail::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
+    static kokage::ShaderRenderState* getShaderRenderState(ShaderPass* pass);
+    static ShaderTechnique* findTechniqueByClass(const Shader* shader, const kokage::ShaderTechniqueClass& techniqueClass);
+    static const kokage::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
 };
 } // namespace detail
 } // namespace ln

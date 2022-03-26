@@ -6,14 +6,14 @@
 #include "UnifiedShaderCompiler.hpp"
 
 namespace ln {
-namespace detail {
+namespace kokage {
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 //==============================================================================
 // UnifiedShaderCompiler
 
-UnifiedShaderCompiler::UnifiedShaderCompiler(ShaderManager* manager, DiagnosticsManager* diag)
+UnifiedShaderCompiler::UnifiedShaderCompiler(detail::ShaderManager* manager, DiagnosticsManager* diag)
     : m_manager(manager)
     , m_diag(diag) {
     m_unifiedShader = makeRef<UnifiedShader>(m_diag);
@@ -526,5 +526,5 @@ std::string UnifiedShaderCompiler::makeKey2(const std::string& techName, const s
 
 #endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln

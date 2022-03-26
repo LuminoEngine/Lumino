@@ -11,7 +11,7 @@ TEST_F(Test_Shader_ShaderCompiler, Simple) {
     auto diag = makeObject<DiagnosticsManager>();
 
     {
-        detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
+        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
 
         List<Path> includeDirs;
         List<String> definitions;
@@ -22,7 +22,7 @@ TEST_F(Test_Shader_ShaderCompiler, Simple) {
         compiler.unifiedShader()->save(file);
     }
 
-    detail::UnifiedShader shader(diag);
+    kokage::UnifiedShader shader(diag);
     shader.load(FileStream::create(file));
 
     const auto& codeContainers = shader.codeContainers();
@@ -35,7 +35,7 @@ TEST_F(Test_Shader_ShaderCompiler, Simple) {
 
 TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
     auto diag = makeObject<DiagnosticsManager>();
-    detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
+    kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
 
     ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("ShaderVariant.hlsl"));
 
@@ -45,7 +45,7 @@ TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
 
     compiler.link();
 
-    detail::UnifiedShader* shader = compiler.unifiedShader();
+    kokage::UnifiedShader* shader = compiler.unifiedShader();
 
     shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
     //shader->saveCodes(String(LN_TEMPFILE("")) + u"/");

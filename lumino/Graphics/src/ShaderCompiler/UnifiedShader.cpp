@@ -6,7 +6,7 @@
 #include "ShaderTranspiler.hpp"
 
 namespace ln {
-namespace detail {
+namespace kokage {
 
 template<typename TValue>
 static void writeOptionalUInt8(BinaryWriter* w, const Optional<TValue>& value) {
@@ -859,5 +859,5 @@ void DescriptorLayout::mergeFrom(const DescriptorLayout& other) {
     }
 }
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln

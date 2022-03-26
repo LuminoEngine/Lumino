@@ -14,10 +14,7 @@ class TProgram;
 namespace ln {
 class Token;
 
-namespace detail {
-class ShaderManager;
-class GraphicsManager;
-class ShaderRenderState;
+namespace kokage {
 
 // VertexShader, PixelShader など、シェーダコード１つ分。
 // HLSL 入力可能だが、technique 構文はあらかじめ取り除いておく必要がある。
@@ -30,7 +27,7 @@ public:
     static void initializeGlobals();
     static void finalizeGlobals();
 
-    ShaderCodeTranspiler(ShaderManager* manager);
+    ShaderCodeTranspiler(detail::ShaderManager* manager);
     ~ShaderCodeTranspiler();
 
     bool compileAndLinkFromHlsl(
@@ -52,7 +49,7 @@ public:
     std::vector<byte_t> generateGlsl(uint32_t version, bool es);
 
 private:
-    ShaderManager* m_manager;
+    detail::ShaderManager* m_manager;
     DiagnosticsManager* m_diag;
 	ShaderStage2 m_stage;
     std::string m_filename;
@@ -67,7 +64,7 @@ private:
 
 };
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln
 
 #endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER

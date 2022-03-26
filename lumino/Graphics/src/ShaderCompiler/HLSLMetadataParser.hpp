@@ -13,9 +13,7 @@ namespace YAML {
 namespace ln {
 class Token;
 
-namespace detail {
-class GraphicsManager;
-class ShaderRenderState;
+namespace kokage {
 
 struct HLSLPass
 {
@@ -125,7 +123,7 @@ private:
     DiagnosticsManager* m_diag;
 };
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln
 
 #endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER

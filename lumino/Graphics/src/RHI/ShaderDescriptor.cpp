@@ -120,42 +120,42 @@ void ShaderSecondaryDescriptor::setInt(int memberIndex, int value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
+	kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
 }
 
 void ShaderSecondaryDescriptor::setIntArray(int memberIndex, const int* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+	kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
 void ShaderSecondaryDescriptor::setFloat(int memberIndex, float value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
+	kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0);
 }
 
 void ShaderSecondaryDescriptor::setFloatArray(int memberIndex, const float* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+	kokage::ShaderHelper::alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride);
 }
 
 void ShaderSecondaryDescriptor::setVector(int memberIndex, const Vector4& value)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0, member.desc.columns);
+	kokage::ShaderHelper::alignVectorsToBuffer((const byte_t*)&value, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, 0, member.desc.columns);
 }
 
 void ShaderSecondaryDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
 {
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
+	kokage::ShaderHelper::alignVectorsToBuffer((const byte_t*)value, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
 }
 
 void ShaderSecondaryDescriptor::setMatrix(int memberIndex, const Matrix& value)
@@ -168,7 +168,7 @@ void ShaderSecondaryDescriptor::setMatrix(int memberIndex, const Matrix& value)
 
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
+	kokage::ShaderHelper::alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
 void ShaderSecondaryDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
@@ -180,7 +180,7 @@ void ShaderSecondaryDescriptor::setMatrixArray(int memberIndex, const Matrix* va
 #endif
 	const auto& member = descriptorLayout()->m_members[memberIndex];
 	auto& buffer = m_uniformBufferViews[member.uniformBufferRegisterIndex];
-	detail::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
+	kokage::ShaderHelper::alignMatricesToBuffer((const byte_t*)value, 4, 4, count, static_cast<byte_t*>(buffer.writableData()), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
 //void ShaderSecondaryDescriptor::setTexture(int textureIndex, Texture* value)

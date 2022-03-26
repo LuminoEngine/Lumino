@@ -578,10 +578,10 @@ void SceneRenderer::renderPass(GraphicsCommandList* graphicsContext, RenderTarge
 				}
 
 				ShaderTechniqueRequestClasses requester = {
-					(elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh,
-					(batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive,
-					(subsetInfo.normalMap) ? ShaderTechniqueClass_Normal::NormalMap : ShaderTechniqueClass_Normal::Default,
-					(subsetInfo.metallicRoughnessTexture) ? ShaderTechniqueClass_Roughness::RoughnessMap : ShaderTechniqueClass_Roughness::Default,
+					(elementInfo.boneTexture) ? kokage::ShaderTechniqueClass_MeshProcess::SkinnedMesh : kokage::ShaderTechniqueClass_MeshProcess::StaticMesh,
+					(batch->instancing) ? kokage::ShaderTechniqueClass_DrawMode::Instancing : kokage::ShaderTechniqueClass_DrawMode::Primitive,
+					(subsetInfo.normalMap) ? kokage::ShaderTechniqueClass_Normal::NormalMap : kokage::ShaderTechniqueClass_Normal::Default,
+					(subsetInfo.metallicRoughnessTexture) ? kokage::ShaderTechniqueClass_Roughness::RoughnessMap : kokage::ShaderTechniqueClass_Roughness::Default,
 				};
 
 				const ShadingModel shadingModel = finalMaterial->shadingModel;

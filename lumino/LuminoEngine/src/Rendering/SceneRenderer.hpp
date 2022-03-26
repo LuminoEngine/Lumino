@@ -16,10 +16,10 @@ class RenderingPipeline;
 
 struct ShaderTechniqueRequestClasses
 {
-	ShaderTechniqueClass_MeshProcess meshProcess;
-	ShaderTechniqueClass_DrawMode drawMode;
-	ShaderTechniqueClass_Normal normal;
-	ShaderTechniqueClass_Roughness roughness;
+	kokage::ShaderTechniqueClass_MeshProcess meshProcess;
+    kokage::ShaderTechniqueClass_DrawMode drawMode;
+    kokage::ShaderTechniqueClass_Normal normal;
+    kokage::ShaderTechniqueClass_Roughness roughness;
 };
 
 
@@ -58,7 +58,7 @@ public:
 
 	RenderingManager* manager() const { return m_manager; }
 
-	static ShaderTechniqueClass_ShadingModel tlanslateShadingModel(ShadingModel value) { return (ShaderTechniqueClass_ShadingModel)value; }
+	static kokage::ShaderTechniqueClass_ShadingModel tlanslateShadingModel(ShadingModel value) { return (kokage::ShaderTechniqueClass_ShadingModel)value; }
 
 protected:
 	//static ShaderTechnique* selectShaderTechniqueHelper(

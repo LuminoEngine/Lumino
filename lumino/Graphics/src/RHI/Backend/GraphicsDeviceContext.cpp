@@ -11,44 +11,44 @@ namespace detail {
 //==============================================================================
 // RHIDeviceObject
 
-AttributeUsage IGraphicsHelper::ElementUsageToAttributeUsage(VertexElementUsage value) {
+kokage::AttributeUsage IGraphicsHelper::ElementUsageToAttributeUsage(VertexElementUsage value) {
     static struct
     {
         VertexElementUsage v1;
-        AttributeUsage v2;
+        kokage::AttributeUsage v2;
     } s_conversionTable[] = {
-        { VertexElementUsage::Unknown, AttributeUsage_Unknown },
-        { VertexElementUsage::Position, AttributeUsage_Position },
-        { VertexElementUsage::Normal, AttributeUsage_Normal },
-        { VertexElementUsage::Color, AttributeUsage_Color },
-        { VertexElementUsage::TexCoord, AttributeUsage_TexCoord },
-        { VertexElementUsage::PointSize, AttributeUsage_Unknown },
-        { VertexElementUsage::Tangent, AttributeUsage_Tangent },
-        { VertexElementUsage::Binormal, AttributeUsage_Binormal },
-        { VertexElementUsage::BlendIndices, AttributeUsage_BlendIndices },
-        { VertexElementUsage::BlendWeight, AttributeUsage_BlendWeight },
-        { VertexElementUsage::InstanceID, AttributeUsage_InstanceID },
+        { VertexElementUsage::Unknown, kokage::AttributeUsage_Unknown },
+        { VertexElementUsage::Position, kokage::AttributeUsage_Position },
+        { VertexElementUsage::Normal, kokage::AttributeUsage_Normal },
+        { VertexElementUsage::Color, kokage::AttributeUsage_Color },
+        { VertexElementUsage::TexCoord, kokage::AttributeUsage_TexCoord },
+        { VertexElementUsage::PointSize, kokage::AttributeUsage_Unknown },
+        { VertexElementUsage::Tangent, kokage::AttributeUsage_Tangent },
+        { VertexElementUsage::Binormal, kokage::AttributeUsage_Binormal },
+        { VertexElementUsage::BlendIndices, kokage::AttributeUsage_BlendIndices },
+        { VertexElementUsage::BlendWeight, kokage::AttributeUsage_BlendWeight },
+        { VertexElementUsage::InstanceID, kokage::AttributeUsage_InstanceID },
     };
     assert(s_conversionTable[(int)value].v1 == value);
     return s_conversionTable[(int)value].v2;
 }
 
-VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(AttributeUsage value) {
+VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(kokage::AttributeUsage value) {
     static struct
     {
-        AttributeUsage v1;
+        kokage::AttributeUsage v1;
         VertexElementUsage v2;
     } s_conversionTable[] = {
-        { AttributeUsage_Unknown, VertexElementUsage::Unknown },
-        { AttributeUsage_Position, VertexElementUsage::Position },
-        { AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
-        { AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
-        { AttributeUsage_Normal, VertexElementUsage::Normal },
-        { AttributeUsage_TexCoord, VertexElementUsage::TexCoord },
-        { AttributeUsage_Tangent, VertexElementUsage::Tangent },
-        { AttributeUsage_Binormal, VertexElementUsage::Binormal },
-        { AttributeUsage_Color, VertexElementUsage::Color },
-        { AttributeUsage_InstanceID, VertexElementUsage::InstanceID },
+        { kokage::AttributeUsage_Unknown, VertexElementUsage::Unknown },
+        { kokage::AttributeUsage_Position, VertexElementUsage::Position },
+        { kokage::AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
+        { kokage::AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
+        { kokage::AttributeUsage_Normal, VertexElementUsage::Normal },
+        { kokage::AttributeUsage_TexCoord, VertexElementUsage::TexCoord },
+        { kokage::AttributeUsage_Tangent, VertexElementUsage::Tangent },
+        { kokage::AttributeUsage_Binormal, VertexElementUsage::Binormal },
+        { kokage::AttributeUsage_Color, VertexElementUsage::Color },
+        { kokage::AttributeUsage_InstanceID, VertexElementUsage::InstanceID },
     };
     assert(s_conversionTable[(int)value].v1 == value);
     return s_conversionTable[(int)value].v2;
@@ -295,22 +295,22 @@ void IGraphicsDevice::submitCommandBuffer(ICommandList* context, RHIResource* af
     onSubmitCommandBuffer(context, affectRendreTarget);
 }
 
-Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag) {
+Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag) {
     LN_DCHECK(unifiedShader);
     LN_DCHECK(diag);
     auto& triple = caps().requestedShaderTriple;
 
     const auto* kokagePass = unifiedShader->pass(passId);
-    detail::CodeContainerId vscodeId = kokagePass->vertexShader;
-    detail::CodeContainerId pscodeId = kokagePass->pixelShader;
-    detail::CodeContainerId cscodeId = kokagePass->computeShader;
+    kokage::CodeContainerId vscodeId = kokagePass->vertexShader;
+    kokage::CodeContainerId pscodeId = kokagePass->pixelShader;
+    kokage::CodeContainerId cscodeId = kokagePass->computeShader;
 
     const char* vsEntryPointName = nullptr;
     const char* psEntryPointName = nullptr;
     const char* csEntryPointName = nullptr;
-    const detail::USCodeInfo* vscode = nullptr;
-    const detail::USCodeInfo* pscode = nullptr;
-    const detail::USCodeInfo* cscode = nullptr;
+    const kokage::USCodeInfo* vscode = nullptr;
+    const kokage::USCodeInfo* pscode = nullptr;
+    const kokage::USCodeInfo* cscode = nullptr;
     if (vscodeId) {
         auto* contaier = unifiedShader->codeContainer(vscodeId);
         vsEntryPointName = contaier->entryPointName.c_str();
@@ -730,7 +730,7 @@ bool IShaderPass::init(const ShaderPassCreateInfo& createInfo) {
     return true;
 }
 
-const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage, int usageIndex) const {
+const kokage::VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage, int usageIndex) const {
     // TODO: これ線形探索じゃなくて、map 作った方がいいかも。
     // usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
     auto au = IGraphicsHelper::ElementUsageToAttributeUsage(usage);

@@ -41,7 +41,7 @@ ln::Result LanguageContext::buildAssets(const ln::Path& intermediateDir, const l
                 return ln::err();
             }
 
-            const auto relPath = inputDir.makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt);
+            const auto relPath = inputDir.makeRelative(file).replaceExtension(ln::kokage::UnifiedShader::FileExt);
             CLI::info(ln::format(U"{} > {}", file, relPath));
             writer.addFile(outputFile, relPath);
             CLI::info(file);

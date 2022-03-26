@@ -6,7 +6,7 @@
 #include "UnifiedShaderCompiler.hpp"
 
 namespace ln {
-namespace detail {
+namespace kokage {
 
 //==============================================================================
 // ShaderTechniqueClass
@@ -68,17 +68,17 @@ bool ShaderHelper::resolveStd140Layout(const ShaderUniformInfo& info, size_t* ou
     size_t aligndElemenSize = 0;
     switch (info.type)
     {
-    case ln::detail::ShaderUniformType_Unknown:
+    case kokage::ShaderUniformType_Unknown:
         return false;
-    case ln::detail::ShaderUniformType_Bool:
-    case ln::detail::ShaderUniformType_Int:
-    case ln::detail::ShaderUniformType_Float:
+    case kokage::ShaderUniformType_Bool:
+    case kokage::ShaderUniformType_Int:
+    case kokage::ShaderUniformType_Float:
         aligndElemenSize = 4;
         if (info.arrayElements > 0) {   // 配列の場合は 16byte alignment
             aligndElemenSize = 16;
         }
         break;
-    case ln::detail::ShaderUniformType_Vector:
+    case kokage::ShaderUniformType_Vector:
         if (info.vectorElements == 2) {
             aligndElemenSize = 8;
         }
@@ -93,7 +93,7 @@ bool ShaderHelper::resolveStd140Layout(const ShaderUniformInfo& info, size_t* ou
             aligndElemenSize = 16;
         }
         break;
-    case ln::detail::ShaderUniformType_Matrix:
+    case kokage::ShaderUniformType_Matrix:
     {
         // https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)
         // matNxM : N=columns, M=rows
@@ -108,7 +108,7 @@ bool ShaderHelper::resolveStd140Layout(const ShaderUniformInfo& info, size_t* ou
         aligndElemenSize = minorSize * 16;
         break;
     }
-    case ln::detail::ShaderUniformType_Texture:
+    case kokage::ShaderUniformType_Texture:
         LN_UNREACHABLE();
         return false;
     default:
@@ -124,7 +124,7 @@ bool ShaderHelper::buildShader(const ln::Path& inputFile, const ln::Path& output
 {
     auto diag = ln::makeObject<ln::DiagnosticsManager>();
 
-    auto result = ln::detail::ShaderHelper::generateShader(ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
+    auto result = ShaderHelper::generateShader(detail::ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
 
     diag->dumpToLog();
 
@@ -139,7 +139,7 @@ bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::
     ln::Path inputFilePath = inputFile.canonicalize();
     ln::Path outputFilePath = outputFile;
     if (outputFilePath.isEmpty()) {
-        outputFilePath = inputFilePath.replaceExtension(ln::detail::UnifiedShader::FileExt);
+        outputFilePath = inputFilePath.replaceExtension(UnifiedShader::FileExt);
     }
 
     ln::List<ln::Path> includeDirectories = { inputFilePath.parent() };
@@ -150,7 +150,7 @@ bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::
     size_t inputCodeLength = inputCodeBuffer.size();
 
 
-    ln::detail::UnifiedShaderCompiler compiler(manager, diag);
+    UnifiedShaderCompiler compiler(manager, diag);
     if (!compiler.compile(inputCode, inputCodeLength, includeDirectories, definitions)) {
         return false;
     }
@@ -176,5 +176,5 @@ bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::
 #endif
 }
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln

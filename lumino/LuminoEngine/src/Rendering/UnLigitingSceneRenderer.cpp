@@ -43,14 +43,14 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 {
 	ShaderTechnique* tech = nullptr;
 	if (requestedShader) {
-		ShaderTechniqueClass key = {
+		kokage::ShaderTechniqueClass key = {
             false,
-			ShaderTechniqueClass_Phase::Forward,
+			kokage::ShaderTechniqueClass_Phase::Forward,
 			requester.meshProcess,
-			ShaderTechniqueClass_ShadingModel::Unlit,	// requestedShadingModel が同指定されていても、Pass 優先
+			kokage::ShaderTechniqueClass_ShadingModel::Unlit,	// requestedShadingModel が同指定されていても、Pass 優先
 			requester.drawMode,
-			ShaderTechniqueClass_Normal::Default,
-			ShaderTechniqueClass_Roughness::Default,
+			kokage::ShaderTechniqueClass_Normal::Default,
+			kokage::ShaderTechniqueClass_Roughness::Default,
 		};
 		tech = ShaderInternal::findTechniqueByClass(requestedShader, key);
 	}

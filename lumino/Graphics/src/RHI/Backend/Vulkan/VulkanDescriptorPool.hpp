@@ -13,7 +13,7 @@ public:
     VulkanDescriptor2(VulkanDescriptorPool2* pool);
     void reset() { IDescriptor::reset(); }
 
-    std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets() { return m_descriptorSets; }
+    std::array<VkDescriptorSet, kokage::DescriptorType_Count>& descriptorSets() { return m_descriptorSets; }
 
     std::array<RHIDeviceObject*, ShaderDescriptorTableUpdateInfo::MaxElements * 2> m_refarencedResources;
     int32_t m_refarencedResourceCount;
@@ -23,7 +23,7 @@ protected:
 
 private:
     VulkanDescriptorPool2* m_pool;
-    std::array<VkDescriptorSet, DescriptorType_Count> m_descriptorSets;
+    std::array<VkDescriptorSet, kokage::DescriptorType_Count> m_descriptorSets;
 };
 
 class VulkanDescriptorPool2

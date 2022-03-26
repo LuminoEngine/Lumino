@@ -392,7 +392,7 @@ using ShaderRefrectionParameterType = ShaderVariableType;
 // rows, columns はデータレイアウトとしての領域サイズ。
 struct ShaderUniformTypeDesc
 {
-    ShaderUniformType type2;
+    kokage::ShaderUniformType type2;
     int rows;
     int columns;
     int elements; // 配列要素数。glslang から取り出せるのは 実際に使われているサイズ。float values[3] だけれどシェーダ内で value[1] しか使っていなければ elements=2 になる

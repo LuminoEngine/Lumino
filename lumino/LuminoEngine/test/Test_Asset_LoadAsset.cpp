@@ -10,7 +10,7 @@ TEST_F(Test_Asset_LoadAsset, Basic)
 {
 	const Path assetFile = LN_TEMPFILE("LoadAssetTest.lca");
 	{
-		detail::ShaderHelper::buildShader(
+		kokage::ShaderHelper::buildShader(
 			LN_ASSETFILE("Shader/UniformBufferTest-1.fx"),
 			LN_TEMPFILE("UniformBufferTest-1.lcfx"),
 			String::Empty);

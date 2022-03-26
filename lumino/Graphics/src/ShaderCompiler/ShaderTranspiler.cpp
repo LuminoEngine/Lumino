@@ -22,7 +22,7 @@
 #endif
 
 namespace ln {
-namespace detail {
+namespace kokage {
 
 // from glslang: StanAalone/ResourceLimits.cpp
 
@@ -195,7 +195,7 @@ protected:
 class LocalIncluder
     : public glslang::TShader::Includer {
 public:
-    ShaderManager* m_manager;
+    detail::ShaderManager* m_manager;
     const List<Path>* includeDirs;
 
     virtual IncludeResult* includeSystem(const char* headerName, const char* sourceName, size_t inclusionDepth) {
@@ -301,7 +301,7 @@ void ShaderCodeTranspiler::finalizeGlobals() {
     glslang::FinalizeProcess();
 }
 
-ShaderCodeTranspiler::ShaderCodeTranspiler(ShaderManager* manager)
+ShaderCodeTranspiler::ShaderCodeTranspiler(detail::ShaderManager* manager)
     : m_manager(manager)
     , m_filename("shadercode")
     , m_stage(ShaderStage2_Vertex) {
@@ -900,7 +900,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const {
 
     class Includer : public ID3DInclude {
     public:
-        ShaderManager* manager;
+        detail::ShaderManager* manager;
         const List<Path>* includeDirs;
         std::vector<Ref<ByteBuffer>> cache;
 
@@ -1265,7 +1265,7 @@ void ShaderUniformBufferInfo::mergeBuffers(
     }
 }
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln
 
 #endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER

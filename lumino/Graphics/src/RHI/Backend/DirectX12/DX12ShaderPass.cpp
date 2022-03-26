@@ -6,26 +6,23 @@
 
 namespace ln {
 namespace detail {
-	
+
 //==============================================================================
 // DX12ShaderPass
 
-DX12ShaderPass::DX12ShaderPass()
-{
+DX12ShaderPass::DX12ShaderPass() {
 }
 
-static D3D12_SHADER_VISIBILITY getShaderVisibility(const DescriptorLayoutItem& item)
-{
-    if (item.stageFlags == ShaderStageFlags_Vertex)
+static D3D12_SHADER_VISIBILITY getShaderVisibility(const kokage::DescriptorLayoutItem& item) {
+    if (item.stageFlags == kokage::ShaderStageFlags_Vertex)
         return D3D12_SHADER_VISIBILITY_VERTEX;
-    else if (item.stageFlags == ShaderStageFlags_Pixel)
+    else if (item.stageFlags == kokage::ShaderStageFlags_Pixel)
         return D3D12_SHADER_VISIBILITY_PIXEL;
     else
         return D3D12_SHADER_VISIBILITY_ALL;
 }
 
-static D3D12_SHADER_VISIBILITY getShaderVisibility(const DescriptorLayout* layout, DescriptorType type)
-{
+static D3D12_SHADER_VISIBILITY getShaderVisibility(const kokage::DescriptorLayout* layout, kokage::DescriptorType type) {
     bool vs = layout->isReferenceFromVertexStage(type);
     bool ps = layout->isReferenceFromPixelStage(type);
     if (vs && ps)
@@ -36,13 +33,11 @@ static D3D12_SHADER_VISIBILITY getShaderVisibility(const DescriptorLayout* layou
         return D3D12_SHADER_VISIBILITY_PIXEL;
 }
 
-
-Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
-{
+Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     LN_DCHECK(deviceContext);
-	if (!IShaderPass::init(createInfo)) {
+    if (!IShaderPass::init(createInfo)) {
         return err();
-	}
+    }
 
     m_deviceContext = deviceContext;
 
@@ -89,7 +84,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         //
         // DirectX12 では ShaderVisibility を、実際にシェーダコードが要求しているものと完全に一致させなければならない。
         // 例えば次のようなコードを考えてみる。
-        // 
+        //
         // ```
         // cbuffer Camera {
         //     ...
@@ -104,7 +99,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         //    // Material を使ってシェーディング
         // }
         // ```
-        // 
+        //
         // Vulkan では最適化を考えず雑に "VS と PS 両方で使用可能な Descriptor を 2 つ作る" でも問題なかった。
         //
         // DirectX12 では、HLSL で register を省略した場合、
@@ -114,8 +109,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         //
         // ここでもし D3D12_DESCRIPTOR_RANGE_TYPE_CBV, BaseShaderRegister=0, D3D12_SHADER_VISIBILITY_ALL な Range を作ってしまうと、
         // PS の b0 が Camera を参照してしまう。この矛盾はデバッグレイヤーで通知されない。
-        // 
-
+        //
 
         /*
         Layout(BindingIndex)
@@ -171,26 +165,25 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         HLSL bitcode を D3DCompiler で作ったのであれば、Refrection も D3DCompiler を使わなければならない。
         */
 
-        struct Descriptor
-        {
-            DescriptorType type;
+        struct Descriptor {
+            kokage::DescriptorType type;
             std::string name;
             int32_t bindingIndex;
         };
-        struct Reflection
-        {
+        struct Reflection {
             std::vector<Descriptor> descriptors;
         };
-        static const int ShaderStageCount = ShaderStage2_Count;//2;
+        static const int ShaderStageCount = kokage::ShaderStage2_Count; //2;
         Reflection reflections[ShaderStageCount];
 
         // まず D3DReflect を使って、D3DCompiler が必要としている Descriptor を取得する。
-        // この時点で、glslang では最適化で削除された Descriptor が、D3DCompiler では存在していることもある。 
+        // この時点で、glslang では最適化で削除された Descriptor が、D3DCompiler では存在していることもある。
         {
             std::pair<const void*, size_t> shaderCodes[ShaderStageCount] = {
                 { createInfo.vsCode, createInfo.vsCodeLen },
                 { createInfo.psCode, createInfo.psCodeLen },
-                { createInfo.csCode, createInfo.csCodeLen } };
+                { createInfo.csCode, createInfo.csCodeLen }
+            };
             for (int iStage = 0; iStage < ShaderStageCount; iStage++) {
                 if (shaderCodes[iStage].first) {
                     ComPtr<ID3D12ShaderReflection> shaderReflection;
@@ -228,19 +221,19 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
                         D3D12_SHADER_INPUT_BIND_DESC desc2;
                         shaderReflection->GetResourceBindingDesc(i, &desc2);
 
-                        DescriptorType type = DescriptorType_Count;
+                        kokage::DescriptorType type = kokage::DescriptorType_Count;
                         if (desc2.Type == D3D_SIT_CBUFFER)
-                            type = DescriptorType_UniformBuffer;
+                            type = kokage::DescriptorType_UniformBuffer;
                         else if (desc2.Type == D3D_SIT_TEXTURE)
-                            type = DescriptorType_Texture;
+                            type = kokage::DescriptorType_Texture;
                         else if (desc2.Type == D3D_SIT_SAMPLER)
-                            type = DescriptorType_SamplerState;
+                            type = kokage::DescriptorType_SamplerState;
                         else if (desc2.Type == D3D_SIT_STRUCTURED) // StructuredBuffer<> xxx : register(t#);
-                            type = DescriptorType_Texture;
+                            type = kokage::DescriptorType_Texture;
                         else if (desc2.Type == D3D_SIT_UAV_RWSTRUCTURED) // RWStructuredBuffer<> xxx : register(u#);
-                            type = DescriptorType_UnorderdAccess;
+                            type = kokage::DescriptorType_UnorderdAccess;
 
-                        if (type != DescriptorType_Count) {
+                        if (type != kokage::DescriptorType_Count) {
                             std::string name = desc2.Name;
                             if (name == "$Globals") name = "$Global";
                             reflections[iStage].descriptors.push_back({ type, std::move(name), (int32_t)desc2.BindPoint });
@@ -259,8 +252,8 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             const auto& requiredDescriptors = createInfo.descriptorLayout->bufferSlots();
             for (const auto& reflection : reflections) {
                 for (const auto& descriptor : reflection.descriptors) {
-                    if (descriptor.type == DescriptorType_UniformBuffer) {
-                        if (std::find_if(requiredDescriptors.begin(), requiredDescriptors.end(), [&](const DescriptorLayoutItem& item) { return item.name == descriptor.name; }) == requiredDescriptors.end()) {
+                    if (descriptor.type == kokage::DescriptorType_UniformBuffer) {
+                        if (std::find_if(requiredDescriptors.begin(), requiredDescriptors.end(), [&](const kokage::DescriptorLayoutItem& item) { return item.name == descriptor.name; }) == requiredDescriptors.end()) {
                             LN_ERROR("Variables that appear to be constants are visible in '%s'. Use the 'static' keyword.", descriptor.name.c_str());
                             return err();
                         }
@@ -269,7 +262,7 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
             }
         }
 
-        auto getBindingIndex = [&](ShaderStage2 stage, DescriptorType type, const std::string& name) -> int32_t {
+        auto getBindingIndex = [&](kokage::ShaderStage2 stage, kokage::DescriptorType type, const std::string& name) -> int32_t {
             const auto& list = reflections[stage].descriptors;
             const auto itr = std::find_if(list.begin(), list.end(), [&](const Descriptor& d) {
                 if (d.type != type) return false;
@@ -292,59 +285,59 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
         {
             // 'b' register
             for (int32_t i = 0; i < createInfo.descriptorLayout->bufferSlots().size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->bufferSlots()[i];
-                if (item.stageFlags & ShaderStageFlags_Vertex) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_UniformBuffer, item.name);
+                const kokage::DescriptorLayoutItem& item = createInfo.descriptorLayout->bufferSlots()[i];
+                if (item.stageFlags & kokage::ShaderStageFlags_Vertex) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Vertex, kokage::DescriptorType_UniformBuffer, item.name);
                     if (bindingIndex >= 0) vsDescriptors.bufferDescriptors.push_back({ i, bindingIndex, (int32_t)item.size });
                 }
-                if (item.stageFlags & ShaderStageFlags_Pixel) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, DescriptorType_UniformBuffer, item.name);
+                if (item.stageFlags & kokage::ShaderStageFlags_Pixel) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Fragment, kokage::DescriptorType_UniformBuffer, item.name);
                     if (bindingIndex >= 0) psDescriptors.bufferDescriptors.push_back({ i, bindingIndex, (int32_t)item.size });
                 }
-                if (item.stageFlags & ShaderStageFlags_Compute) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Compute, DescriptorType_UniformBuffer, item.name);
+                if (item.stageFlags & kokage::ShaderStageFlags_Compute) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Compute, kokage::DescriptorType_UniformBuffer, item.name);
                     if (bindingIndex >= 0) csDescriptors.bufferDescriptors.push_back({ i, bindingIndex, (int32_t)item.size });
                 }
             }
             // 'u' register
             for (int32_t i = 0; i < createInfo.descriptorLayout->unorderdSlots().size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->unorderdSlots()[i];
-                if (item.stageFlags & ShaderStageFlags_Compute) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Compute, DescriptorType_UnorderdAccess, item.name);
-                    if (bindingIndex >= 0) csDescriptors.unorderedDescriptors.push_back({ i,bindingIndex, 0 });
+                const kokage::DescriptorLayoutItem& item = createInfo.descriptorLayout->unorderdSlots()[i];
+                if (item.stageFlags & kokage::ShaderStageFlags_Compute) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Compute, kokage::DescriptorType_UnorderdAccess, item.name);
+                    if (bindingIndex >= 0) csDescriptors.unorderedDescriptors.push_back({ i, bindingIndex, 0 });
                 }
             }
             // 't' register
             for (int32_t i = 0; i < createInfo.descriptorLayout->resourceSlots().size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->resourceSlots()[i];
-                if (item.stageFlags & ShaderStageFlags_Vertex) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_Texture, item.name);
-                    if (bindingIndex >= 0) vsDescriptors.textureDescriptors.push_back({ i,bindingIndex, 0 });
+                const kokage::DescriptorLayoutItem& item = createInfo.descriptorLayout->resourceSlots()[i];
+                if (item.stageFlags & kokage::ShaderStageFlags_Vertex) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Vertex, kokage::DescriptorType_Texture, item.name);
+                    if (bindingIndex >= 0) vsDescriptors.textureDescriptors.push_back({ i, bindingIndex, 0 });
                 }
-                if (item.stageFlags & ShaderStageFlags_Pixel) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, DescriptorType_Texture, item.name);
+                if (item.stageFlags & kokage::ShaderStageFlags_Pixel) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Fragment, kokage::DescriptorType_Texture, item.name);
                     if (bindingIndex >= 0) psDescriptors.textureDescriptors.push_back({ i, bindingIndex, 0 });
                 }
-                if (item.stageFlags & ShaderStageFlags_Compute) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Compute, DescriptorType_Texture, item.name);
+                if (item.stageFlags & kokage::ShaderStageFlags_Compute) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Compute, kokage::DescriptorType_Texture, item.name);
                     if (bindingIndex >= 0) csDescriptors.textureDescriptors.push_back({ i, bindingIndex, 0 });
                 }
             }
             // 's' register
             for (int32_t i = 0; i < createInfo.descriptorLayout->samplerSlots().size(); i++) {
-                const DescriptorLayoutItem& item = createInfo.descriptorLayout->samplerSlots()[i];
-                if (item.stageFlags & ShaderStageFlags_Vertex) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Vertex, DescriptorType_SamplerState, item.name);
+                const kokage::DescriptorLayoutItem& item = createInfo.descriptorLayout->samplerSlots()[i];
+                if (item.stageFlags & kokage::ShaderStageFlags_Vertex) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Vertex, kokage::DescriptorType_SamplerState, item.name);
                     if (bindingIndex >= 0) vsDescriptors.samplerDescriptors.push_back({ i, bindingIndex, 0 });
                 }
-                if (item.stageFlags & ShaderStageFlags_Pixel) {
-                    int32_t bindingIndex = getBindingIndex(ShaderStage2_Fragment, DescriptorType_SamplerState, item.name);
+                if (item.stageFlags & kokage::ShaderStageFlags_Pixel) {
+                    int32_t bindingIndex = getBindingIndex(kokage::ShaderStage2_Fragment, kokage::DescriptorType_SamplerState, item.name);
                     if (bindingIndex >= 0) psDescriptors.samplerDescriptors.push_back({ i, bindingIndex, 0 });
                 }
             }
         }
 
-        std::array<D3D12_DESCRIPTOR_RANGE, MaxDescriptors * 8> ranges = {};
+        std::array<D3D12_DESCRIPTOR_RANGE, MaxDescriptors* 8> ranges = {};
         std::array<D3D12_ROOT_PARAMETER, 8> params = {};
         //int i = 0;
         int rangeCount = 0;
@@ -523,24 +516,21 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
     return ok();
 }
 
-void DX12ShaderPass::dispose()
-{
+void DX12ShaderPass::dispose() {
     m_rootSignature.Reset();
     m_vsCode.Reset();
     m_psCode.Reset();
     IShaderPass::dispose();
 }
 
-D3D12_SHADER_BYTECODE DX12ShaderPass::dxVSByteCode() const
-{
+D3D12_SHADER_BYTECODE DX12ShaderPass::dxVSByteCode() const {
     if (m_vsCode)
         return D3D12_SHADER_BYTECODE{ m_vsCode->GetBufferPointer(), m_vsCode->GetBufferSize() };
     else
         return D3D12_SHADER_BYTECODE{ nullptr, 0 };
 }
 
-D3D12_SHADER_BYTECODE DX12ShaderPass::dxPSByteCode() const
-{
+D3D12_SHADER_BYTECODE DX12ShaderPass::dxPSByteCode() const {
     if (m_psCode)
         return D3D12_SHADER_BYTECODE{ m_psCode->GetBufferPointer(), m_psCode->GetBufferSize() };
     else

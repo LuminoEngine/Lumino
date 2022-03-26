@@ -28,8 +28,9 @@ enum class ShaderParameterClass
 
 namespace detail {
 class ShaderManager;
+} // namespace detail
 
-
+namespace kokage {
 
 // Rendering モジュールで、Pass が ShaderTechnique を検索するときに使うデータ
 struct ShaderTechniqueClass
@@ -87,7 +88,7 @@ public:
 
     // for testing.
     static bool buildShader(const Path& inputFile, const Path& outputFile, const Path& exportDir);
-    static bool generateShader(ShaderManager* manager, const Path& inputFile, const Path& outputFile, const Path& exportDir, DiagnosticsManager* diag);
+    static bool generateShader(detail::ShaderManager* manager, const Path& inputFile, const Path& outputFile, const Path& exportDir, DiagnosticsManager* diag);
 
 
     // int or float
@@ -169,5 +170,5 @@ public:
 
 
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln

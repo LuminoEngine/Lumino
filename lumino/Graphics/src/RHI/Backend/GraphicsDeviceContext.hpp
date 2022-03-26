@@ -35,7 +35,7 @@ class RHIProfiler;
 
 struct GraphicsDeviceCaps {
     GraphicsAPI graphicsAPI;
-    UnifiedShaderTriple requestedShaderTriple;
+    kokage::UnifiedShaderTriple requestedShaderTriple;
     bool imageLayoytVFlip = false;
     size_t uniformBufferOffsetAlignment;
 };
@@ -147,14 +147,14 @@ struct ShaderPassCreateInfo {
     const char* vsEntryPointName;
     const char* psEntryPointName;
     const char* csEntryPointName;
-    const DescriptorLayout* descriptorLayout;
-    const std::vector<VertexInputAttribute>* attributes;
+    const kokage::DescriptorLayout* descriptorLayout;
+    const std::vector<kokage::VertexInputAttribute>* attributes;
 };
 
 class IGraphicsHelper {
 public:
-    static AttributeUsage ElementUsageToAttributeUsage(VertexElementUsage value);
-    static VertexElementUsage AttributeUsageToElementUsage(AttributeUsage value);
+    static kokage::AttributeUsage ElementUsageToAttributeUsage(VertexElementUsage value);
+    static VertexElementUsage AttributeUsageToElementUsage(kokage::AttributeUsage value);
 };
 
 class IGraphicsDevice
@@ -193,7 +193,7 @@ public:
     virtual ICommandQueue* getComputeCommandQueue() = 0;
 
     // utility
-    Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag);
+    Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag);
 
     const std::unique_ptr<NativeRenderPassCache>& renderPassCache() const { return m_renderPassCache; }
     const std::unique_ptr<NativePipelineCache>& pipelineCache() const { return m_pipelineCache; }
@@ -423,8 +423,8 @@ protected:
 class IShaderPass
     : public RHIDeviceObject {
 public:
-    const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
-    const VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
+    const std::vector<kokage::VertexInputAttribute>& attributes() const { return m_attributes; }
+    const kokage::VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
     void dispose() override;
 
 protected:
@@ -435,7 +435,7 @@ protected:
 private:
     //IGraphicsDevice* m_device = nullptr;
     std::string m_name;
-    std::vector<VertexInputAttribute> m_attributes;
+    std::vector<kokage::VertexInputAttribute> m_attributes;
 
     friend class IGraphicsDevice;
 };
@@ -497,10 +497,10 @@ public:
     const ReferenceList& samplers() const { return m_samplers; }
     const ReferenceList& storages() const { return m_storages; }
 
-    const Reference& bufferSlot(LayoutSlotIndex i) const { return m_buffers[i.i]; }
-    const Reference& resourceSlot(LayoutSlotIndex i) const { return m_resources[i.i]; }
-    const Reference& samplerSlot(LayoutSlotIndex i) const { return m_samplers[i.i]; }
-    const Reference& storageSlot(LayoutSlotIndex i) const { return m_storages[i.i]; }
+    const Reference& bufferSlot(kokage::LayoutSlotIndex i) const { return m_buffers[i.i]; }
+    const Reference& resourceSlot(kokage::LayoutSlotIndex i) const { return m_resources[i.i]; }
+    const Reference& samplerSlot(kokage::LayoutSlotIndex i) const { return m_samplers[i.i]; }
+    const Reference& storageSlot(kokage::LayoutSlotIndex i) const { return m_storages[i.i]; }
 
 protected:
     virtual ~IDescriptor();

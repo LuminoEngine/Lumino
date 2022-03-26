@@ -4,7 +4,7 @@
 #include "../ShaderHelper.hpp"
 
 namespace ln {
-namespace detail {
+namespace kokage {
 class ShaderRenderState;
 class UnifiedShader;
 class UnifiedShaderPass;
@@ -196,5 +196,5 @@ private:
     DescriptorLayout m_globalDescriptorLayout; // Result of merging all pass layouts
 };
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln

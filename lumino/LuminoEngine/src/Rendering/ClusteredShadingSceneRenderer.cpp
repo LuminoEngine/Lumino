@@ -114,12 +114,12 @@ ShaderTechnique* ForwardGBufferPrepass::selectShaderTechnique(
 {
 	const Shader* actualShader = (requestedShader) ? requestedShader : m_defaultShader.get();
 
-	ShaderTechniqueClass classSet;
+	kokage::ShaderTechniqueClass classSet;
 	classSet.defaultTechnique = false;
-	classSet.phase = ShaderTechniqueClass_Phase::ForwardGBufferPrepass;
+	classSet.phase = kokage::ShaderTechniqueClass_Phase::ForwardGBufferPrepass;
 	classSet.meshProcess = requester.meshProcess;
 	classSet.drawMode = requester.drawMode;
-	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+	classSet.shadingModel = kokage::ShaderTechniqueClass_ShadingModel::Default;
 	classSet.normalClass = requester.normal;		// Normal を出力したいので考慮する
 	classSet.roughnessClass = requester.roughness;  // Roughness を出力したいので考慮する
 	ShaderTechnique* technique = ShaderInternal::findTechniqueByClass(actualShader, classSet);
@@ -308,9 +308,9 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
         // TODO: わざわざ Unlit テクニック用意しないとならないので面倒というか忘れやすい
 	}
 
-	ShaderTechniqueClass classSet;
+	kokage::ShaderTechniqueClass classSet;
     classSet.defaultTechnique = false;
-	classSet.phase = ShaderTechniqueClass_Phase::Forward;
+	classSet.phase = kokage::ShaderTechniqueClass_Phase::Forward;
 	classSet.meshProcess = requester.meshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
 	classSet.drawMode = requester.drawMode;

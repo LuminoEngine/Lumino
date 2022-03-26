@@ -98,19 +98,19 @@ Result VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
         }
 
         if (!m_activePage) {
-            std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
-            poolSizes[DescriptorType_UniformBuffer].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[DescriptorType_UniformBuffer].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-            poolSizes[DescriptorType_Texture].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[DescriptorType_Texture].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-            poolSizes[DescriptorType_SamplerState].type = VK_DESCRIPTOR_TYPE_SAMPLER;
-            poolSizes[DescriptorType_SamplerState].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
-            poolSizes[DescriptorType_UnorderdAccess].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-            poolSizes[DescriptorType_UnorderdAccess].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            std::array<VkDescriptorPoolSize, kokage::DescriptorType_Count> poolSizes;
+            poolSizes[kokage::DescriptorType_UniformBuffer].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSizes[kokage::DescriptorType_UniformBuffer].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[kokage::DescriptorType_Texture].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[kokage::DescriptorType_Texture].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[kokage::DescriptorType_SamplerState].type = VK_DESCRIPTOR_TYPE_SAMPLER;
+            poolSizes[kokage::DescriptorType_SamplerState].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[kokage::DescriptorType_UnorderdAccess].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            poolSizes[kokage::DescriptorType_UnorderdAccess].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
 
             VkDescriptorPoolCreateInfo poolInfo = {};
             poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * DescriptorType_Count;    // 基本4セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * kokage::DescriptorType_Count; // 基本4セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
             poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
             poolInfo.pPoolSizes = poolSizes.data();
 
