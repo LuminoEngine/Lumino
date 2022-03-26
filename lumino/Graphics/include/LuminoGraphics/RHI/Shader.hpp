@@ -27,7 +27,12 @@ class ShaderInternal;
 }
 namespace kokage {
 class UnifiedShader;
+class UnifiedShaderTechnique;
 }
+
+//struct ShaderVariantKey {
+//    Array<String> values;
+//};
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
 // 本来は Pass に持たせるべきだが、そうするとユーザープログラムから Material(=Effect) として使いたい場合、
@@ -432,6 +437,8 @@ public:
      */
     ShaderTechnique* findTechnique(const StringView& name) const;
 
+    ShaderTechnique* findTechniqueByVariantKey(uint64_t key) const;
+
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
@@ -515,10 +522,10 @@ public:
     detail::ShaderTechniqueSemanticsManager* semanticsManager2() { return m_semanticsManager.get(); }
 
 private:
-    LN_INTERNAL_NEW_OBJECT;
+LN_INTERNAL_NEW_OBJECT;
     ShaderTechnique();
     virtual ~ShaderTechnique();
-    void init(const String& name, const kokage::ShaderTechniqueClass& techniqueClass);
+    void init(const kokage::UnifiedShaderTechnique* kokageTech);
     void setupSemanticsManager();
 
     void setOwner(Shader* owner) { m_owner = owner; }
@@ -529,6 +536,7 @@ private:
     Ref<List<Ref<ShaderPass>>> m_passes;
     kokage::ShaderTechniqueClass m_techniqueClass;
     std::unique_ptr<detail::ShaderTechniqueSemanticsManager> m_semanticsManager;
+    uint64_t m_variantKey;
 
     friend class Shader;
     friend class ShaderPass;

@@ -4,9 +4,16 @@
 #include "TestEnv.hpp"
 
 void TestEnv::setup() {
+    auto graphicsAPI = GraphicsAPI::OpenGL;
+
+    auto windowSystem = ln::WindowSystem::Native;
+    if (graphicsAPI == GraphicsAPI::OpenGL) {
+        windowSystem = ln::WindowSystem::GLFWWithOpenGL;
+    }
+
     RuntimeModule::initialize();
-    PlatformModule::initialize({ {U"Test", 160, 120 }, ln::WindowSystem::Native });
-    RHIModule::initialize({ GraphicsAPI::Vulkan });
+    PlatformModule::initialize({ { U"Test", 160, 120 }, windowSystem });
+    RHIModule::initialize({ graphicsAPI });
 
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));

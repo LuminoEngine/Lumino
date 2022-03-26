@@ -34,7 +34,7 @@ TEST_F(Test_Shader_ShaderCompiler, Simple) {
 }
 
 TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
-    const auto file = LN_TEMPFILE("Test_Shader_ShaderCompiler.ShaderVariant");
+    const auto file = LN_TEMPFILE("Test_Shader_ShaderCompiler.ShaderVariant.lcfx");
     auto diag = makeObject<DiagnosticsManager>();
     diag->setOutputToStdErr(true);
 
@@ -61,6 +61,14 @@ TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
 
     //shader->saveCodes(String(LN_TEMPFILE("")) + U"/");
     //shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
+
+    {
+        auto shader = Shader::load(file);
+        Array<String> keys = { U"LN_USE_INSTANCING", U"LN_PHASE_FORWARD" };
+        uint64_t key = kokage::UnifiedShaderVariantSet::calcHash(keys);
+        ShaderTechnique* tech = shader->findTechniqueByVariantKey(key);
+        ASSERT_TRUE(tech != nullptr);
+    }
 }
 
 #endif

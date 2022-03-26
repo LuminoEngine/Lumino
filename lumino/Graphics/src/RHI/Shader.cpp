@@ -222,17 +222,11 @@ void Shader::createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, Diagn
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
     m_descriptor = makeObject<ShaderDefaultDescriptor>(this);
 
-    //for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
-    //	detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
     for (const auto& kokageTech : unifiedShader->techniques()) {
-        auto tech = makeObject<ShaderTechnique>(String::fromStdString(kokageTech->name), kokageTech->techniqueClass);
+        auto tech = makeObject<ShaderTechnique>(kokageTech);
         tech->setOwner(this);
         m_techniques->add(tech);
 
-        //int passCount = kokageTech->passes.length();
-        //for (int iPass = 0; iPass < passCount; iPass++) {
-        //	detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
-        //          const auto* kokagePass = unifiedShader->pass(passId);
         for (const auto& kokagePassId : kokageTech->passes) {
             const auto* kokagePass = unifiedShader->pass(kokagePassId);
             auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, kokagePassId, asciiName, diag);
@@ -279,9 +273,19 @@ ShaderParameter2* Shader::findParameter(const StringView& name) const {
 }
 
 ShaderTechnique* Shader::findTechnique(const StringView& name) const {
-    for (auto& var : m_techniques) {
-        if (String::compare(StringView(var->name()), 0, StringView(name), 0, -1, CaseSensitivity::CaseSensitive) == 0) {
-            return var;
+    for (auto& tech : m_techniques) {
+        if (String::compare(StringView(tech->name()), 0, StringView(name), 0, -1, CaseSensitivity::CaseSensitive) == 0) {
+            return tech;
+        }
+    }
+    return nullptr;
+}
+
+ShaderTechnique* Shader::findTechniqueByVariantKey(uint64_t key) const {
+    // TODO: ソート済み配列を二分探索
+    for (auto& tech : m_techniques) {
+        if (tech->m_variantKey == key) {
+            return tech;
         }
     }
     return nullptr;
@@ -351,11 +355,18 @@ ShaderTechnique::ShaderTechnique()
 ShaderTechnique::~ShaderTechnique() {
 }
 
-void ShaderTechnique::init(const String& name, const kokage::ShaderTechniqueClass& techniqueClass) {
+void ShaderTechnique::init(const kokage::UnifiedShaderTechnique* kokageTech) {
     Object::init();
-    m_name = name;
-    m_techniqueClass = techniqueClass;
+    m_name = String::fromUtf8(kokageTech->name);
+    m_techniqueClass = kokageTech->techniqueClass;
     kokage::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
+    if (kokageTech->hasVariant()) {
+        // VariantKey の検索には Hash を使う。
+        // シンボル名を StringArray または String のまま検索する場合、効率的に検索するにはソートが必要だったりとかなり手間が多く、
+        // 検索よりもキーの前処理に時間がかかってしまう。
+        // この Hash はシンボル名ごとの Hash の単純な加算結果なので、並び順も気にせず、整数の比較だけで検索できる。
+        m_variantKey = kokage::UnifiedShaderVariantSet::calcHash(kokageTech->variantSet.values);
+    }
 }
 
 void ShaderTechnique::setupSemanticsManager() {

@@ -12,6 +12,18 @@ class UnifiedShaderPass;
 class UnifiedShaderVariantSet {
 public:
     std::vector<std::string> values;
+
+    template<class TStringArray>
+    static uint64_t calcHash(const TStringArray& ary) {
+        const uint32_t* table = detail::CRCHashInternal::getCRCTable();
+        uint64_t result = 0;
+        for (const auto& str : ary) {
+            for (size_t i = 0; i < str.size(); i++) {
+                result += table[static_cast<uint8_t>(str[i])];
+            }
+        }
+        return result;
+    }
 };
 
 // 0 is invalid value.
