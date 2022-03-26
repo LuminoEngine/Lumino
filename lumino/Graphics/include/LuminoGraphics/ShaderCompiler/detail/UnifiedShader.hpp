@@ -11,7 +11,7 @@ class UnifiedShaderPass;
 
 class UnifiedShaderVariantSet {
 public:
-    Array<String> values;
+    std::vector<std::string> values;
 };
 
 // 0 is invalid value.
@@ -51,6 +51,7 @@ public:
 
     UnifiedShaderTechnique(UnifiedShader* shader, UnifiedShaderTechniqueId id);
     UnifiedShaderTechniqueId id() const { return m_id; }
+    bool hasVariant() const { return !variantSet.values.empty(); }
 
 private:
     UnifiedShader* m_shader;
@@ -67,6 +68,10 @@ public:
     Ref<ShaderRenderState> renderState;
     DescriptorLayout descriptorLayout;
     std::vector<VertexInputAttribute> attributes; // used by vertexShader
+
+    // Working variables.
+    ShaderCodeTranspiler* vsTranspiler = nullptr;
+    ShaderCodeTranspiler* psTranspiler = nullptr;
 
     UnifiedShaderPass()
         : vertexShader(0)
@@ -100,25 +105,23 @@ public:
  * - glsl-430-.
  * - glsl-300-es
  */
-class UnifiedShader
-    : public RefObject
-{
+class UnifiedShader : public RefObject {
 public:
-
     // 0 is invalid value.
     using TechniqueId = uint32_t;
     using PassId = uint32_t;
 
     //static const int FileVersion = 1;
-	enum FileVersion {
-		FileVersion_1 = 1,  // 0.7.0
-        FileVersion_2,      // 0.8.0
-		FileVersion_3,      // 0.9.0
-        FileVersion_4,      // 0.10.0
-        FileVersion_5,      // 0.11.0
-		FileVersion_Last,
-		FileVersion_Current = FileVersion_Last - 1,
-	};
+    enum FileVersion {
+        FileVersion_1 = 1, // 0.7.0
+        FileVersion_2,     // 0.8.0
+        FileVersion_3,     // 0.9.0
+        FileVersion_4,     // 0.10.0
+        FileVersion_5,     // 0.11.0
+        FileVersion_6,     // 0.11.0
+        FileVersion_Last,
+        FileVersion_Current = FileVersion_Last - 1,
+    };
     static const String FileExt;
 
     UnifiedShader(DiagnosticsManager* diag);
@@ -132,8 +135,6 @@ public:
     USCodeContainerInfo* addCodeContainer(ShaderStage2 stage, const std::string& entryPointName);
     void makeGlobalDescriptorLayout();
 
-    //UnifiedShaderTechnique* addTechnique2(const std::string& name, const UnifiedShaderVariantSet& variantSet);
-
     UnifiedShaderPass* addPass(TechniqueId parentTech, const std::string& name);
     const Array<URef<UnifiedShaderPass>>& passes() const { return m_passes; }
     UnifiedShaderPass* pass(PassId id) const { return m_passes[idToIndex(id)]; }
@@ -142,31 +143,8 @@ public:
     UnifiedShaderTechnique* addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass);
     const Array<URef<UnifiedShaderTechnique>>& techniques() const { return m_techniques; }
     UnifiedShaderTechnique* technique(UnifiedShaderTechniqueId id) const { return m_techniques[idToIndex(id)]; }
-    //int techniqueCount() const { return m_techniques.size(); }
-    //TechniqueId techniqueId(int index) const { return indexToId(index); }
-    //const std::string& techniqueName(TechniqueId techId) const { return m_techniques[idToIndex(techId)].name; }
-    //const ShaderTechniqueClass& techniqueClass(TechniqueId techId) const { return m_techniques[idToIndex(techId)].techniqueClass; }
 
-    //bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
-    //int getPassCountInTechnique(TechniqueId parentTech) const;
-    //PassId getPassIdInTechnique(TechniqueId parentTech, int index) const;
-    //int passCount() const { return m_passes.size(); }
-    //PassId passId(int index) const { return indexToId(index); }
-    //const std::string& passName(PassId passId) const { return m_passes[idToIndex(passId)].name; }
-    //void setVertexShader(PassId pass, CodeContainerId code);
-    //void setPixelShader(PassId pass, CodeContainerId code);
-    //void setComputeShader(PassId pass, CodeContainerId code);
-    //void setRenderState(PassId pass, ShaderRenderState* state);
-	//void setRefrection(PassId pass, UnifiedShaderRefrectionInfo* value);
-    //void addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout);
- //   CodeContainerId vertexShader(PassId pass) const;
- //   CodeContainerId pixelShader(PassId pass) const;
- //   CodeContainerId computeShader(PassId pass) const;
- //   ShaderRenderState* renderState(PassId pass) const;
-	//const DescriptorLayout& descriptorLayout(PassId pass) const;
-    //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
- //   void setAttributes(PassId pass, const std::vector<VertexInputAttribute>& attrs);
-	//const std::vector<VertexInputAttribute>& attributes(PassId pass) const;
+    UnifiedShaderTechnique* addVariantTechnique(const std::string& name, const UnifiedShaderVariantSet& variantSet);
 
     // DescriptorLayout.uniformBufferRegister のみ有効。
     // それ以外は、値は入っているが binding が正しくないので使用できない。
@@ -177,17 +155,14 @@ public:
 private:
     int idToIndex(uint32_t id) const { return id - 1; }
     uint32_t indexToId(int index) const { return index + 1; }
-    //int findCodeContainerInfoIndex(ShaderStage2 stage, const std::string& entryPointName) const;
     int findTechniqueInfoIndex(const std::string& name) const;
     int findPassInfoIndex(TechniqueId tech, const std::string& name) const;
 
     static void writeString(BinaryWriter* w, const std::string& str);
-	static void writeByteArray(BinaryWriter* w, const std::vector<byte_t>& data);
+    static void writeByteArray(BinaryWriter* w, const std::vector<byte_t>& data);
     static std::string readString(BinaryReader* r);
-	static std::vector<byte_t> readByteArray(BinaryReader* r);
+    static std::vector<byte_t> readByteArray(BinaryReader* r);
     static bool checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag);
-
-
 
     DiagnosticsManager* m_diag;
     Array<URef<USCodeContainerInfo>> m_codeContainers;

@@ -18,7 +18,7 @@ namespace kokage {
 
 // VertexShader, PixelShader など、シェーダコード１つ分。
 // HLSL 入力可能だが、technique 構文はあらかじめ取り除いておく必要がある。
-class ShaderCodeTranspiler
+class ShaderCodeTranspiler : public URefObject
 {
 public:
     DescriptorLayout descriptorLayout;

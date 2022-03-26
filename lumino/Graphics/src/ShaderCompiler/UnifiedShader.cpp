@@ -153,6 +153,15 @@ bool UnifiedShader::save(const Path& filePath) {
             auto& info = m_techniques[i];
             writeString(writer, info->name);
 
+            // variant
+            {
+                const auto& values = info->variantSet.values;
+                writer->writeUInt32(values.size());
+                for (int i = 0; i < values.size(); i++) {
+                    writeString(writer, values[i]);
+                }
+            }
+
             // class
             {
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.defaultTechnique ? 1 : 0));
@@ -321,6 +330,14 @@ bool UnifiedShader::load(Stream* stream) {
         for (size_t iTech = 0; iTech < count; iTech++) {
             auto info = makeURef<UnifiedShaderTechnique>(this, indexToId(iTech));
             info->name = readString(reader);
+
+            // variant
+            if (fileVersion >= FileVersion_6) {
+                size_t count = reader->readUInt32();
+                for (size_t i = 0; i < count; i++) {
+                    info->variantSet.values.push_back(readString(reader));
+                }
+            }
 
             // class
             if (fileVersion >= FileVersion_4) {
@@ -537,6 +554,14 @@ UnifiedShaderTechnique* UnifiedShader::addTechnique(const std::string& name, con
     return m_techniques.back();
 }
 
+UnifiedShaderTechnique* UnifiedShader::addVariantTechnique(const std::string& name, const UnifiedShaderVariantSet& variantSet) {
+    auto tech = makeURef<UnifiedShaderTechnique>(this, indexToId(m_techniques.length()));
+    tech->name = name;
+    tech->variantSet = variantSet;
+    m_techniques.push(std::move(tech));
+    return m_techniques.back();
+}
+
 //bool UnifiedShader::addPass(TechniqueId parentTech, const std::string& name, PassId* outPass)
 //{
 //
@@ -631,30 +656,43 @@ UnifiedShaderTechnique* UnifiedShader::addTechnique(const std::string& name, con
 //}
 
 void UnifiedShader::saveCodes(const StringView& perfix) const {
-    for (int iTech = 0; iTech < m_techniques.length(); iTech++) {
-        const auto& tech = m_techniques[iTech];
-
-        for (int iPass = 0; iPass < tech->passes.length(); iPass++) {
-            UnifiedShader::PassId passId = tech->passes[iPass];
-            auto* pass = this->pass(passId);
-            CodeContainerId containerIds[] = { pass->vertexShader, pass->pixelShader };
-            for (auto containerId : containerIds) {
-                auto& container = m_codeContainers[idToIndex(containerId)];
-                for (auto& code : container->codes) {
-                    auto file = ln::format(
-                        _TT("{0}.{1}.{2}.{3}.{4}-{5}-{6}"),
-                        perfix,
-                        String::fromStdString(tech->name),
-                        String::fromStdString(pass->name),
-                        String::fromStdString(container->entryPointName),
-                        String::fromStdString(code->triple.target),
-                        code->triple.version,
-                        String::fromStdString(code->triple.option));
-                    FileSystem::writeAllBytes(file, code->code.data(), code->code.size());
-                }
-            }
+    for (const auto& container : m_codeContainers) {
+        for (auto& code : container->codes) {
+            auto file = ln::format(
+                _TT("{}container.{}.{}-{}-{}"),
+                perfix,
+                String::fromNumber(container->id()),
+                String::fromStdString(code->triple.target),
+                code->triple.version,
+                String::fromStdString(code->triple.option));
+            FileSystem::writeAllBytes(file, code->code.data(), code->code.size());
         }
     }
+
+    //for (int iTech = 0; iTech < m_techniques.length(); iTech++) {
+    //    const auto& tech = m_techniques[iTech];
+
+    //    for (int iPass = 0; iPass < tech->passes.length(); iPass++) {
+    //        UnifiedShader::PassId passId = tech->passes[iPass];
+    //        auto* pass = this->pass(passId);
+    //        CodeContainerId containerIds[] = { pass->vertexShader, pass->pixelShader };
+    //        for (auto containerId : containerIds) {
+    //            auto& container = m_codeContainers[idToIndex(containerId)];
+    //            for (auto& code : container->codes) {
+    //                auto file = ln::format(
+    //                    _TT("{0}.{1}.{2}.{3}.{4}-{5}-{6}"),
+    //                    perfix,
+    //                    String::fromStdString(tech->name),
+    //                    String::fromStdString(pass->name),
+    //                    String::fromStdString(container->entryPointName),
+    //                    String::fromStdString(code->triple.target),
+    //                    code->triple.version,
+    //                    String::fromStdString(code->triple.option));
+    //                FileSystem::writeAllBytes(file, code->code.data(), code->code.size());
+    //            }
+    //        }
+    //    }
+    //}
 
     //for (auto& container : m_codeContainers) {
     //    for (auto& code : container.codes) {
@@ -680,6 +718,8 @@ int UnifiedShader::findTechniqueInfoIndex(const std::string& name) const {
 
 int UnifiedShader::findPassInfoIndex(TechniqueId tech, const std::string& name) const {
     auto& t = m_techniques[idToIndex(tech)];
+    if (t->hasVariant()) return -1;
+
     for (auto& passId : t->passes) {
         int index = idToIndex(passId);
         if (m_passes[index]->name == name) {
@@ -832,6 +872,8 @@ int DescriptorLayout::findUniformBufferMemberOffset(const std::string& name) con
     return -1;
 }
 
+// VertexShader と PixelShader の合計2回呼ばれる。
+// 片方だけだと使われていない Uniform が inactive になっていたりするが、マージすることで、 ShaderPass 全体として何が必要なのかが明らかになる。
 void DescriptorLayout::mergeFrom(const DescriptorLayout& other) {
     for (int iType = 0; iType < DescriptorType_Count; iType++) {
 

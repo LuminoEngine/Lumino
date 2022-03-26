@@ -2,7 +2,7 @@
 #include "MultiCompileCombination.hpp"
 
 namespace ln {
-namespace detail {
+namespace kokage {
 
 void MultiCompileCombination::expand(const std::vector<std::vector<std::string>>& directives) {
     if (directives.size() <= 0) return;
@@ -18,20 +18,20 @@ void MultiCompileCombination::expand(const std::vector<std::vector<std::string>>
     //     ["LN_PHASE_FORWARD", "LN_PHASE_SHADOW_CASTER", "LN_PHASE_FORWARD_PREPASS"],
     //   ]
     for (const auto& d : directives) {
-        Array<String> tokens;
+        std::vector<std::string> tokens;
         if (d.size() == 1) {
-            tokens.push(U"UNDEFINED");
+            tokens.push_back("UNDEFINED");
         }
         for (const auto& token : d) {
             auto value = String::fromUtf8(token).trim();
             if (value == U"_") {
-                tokens.push(U"UNDEFINED");
+                tokens.push_back("UNDEFINED");
             }
             else {
-                tokens.push(value.trim());
+                tokens.push_back(value.trim().toUtf8());
             }
         }
-        m_table.push(std::move(tokens));
+        m_table.push_back(std::move(tokens));
     }
 
     for (const auto& token : m_table[0]) {
@@ -39,12 +39,12 @@ void MultiCompileCombination::expand(const std::vector<std::vector<std::string>>
     }
 
     for (auto& set : m_result) {
-        set.removeAll(U"UNDEFINED");
+        detail::StlHelper::removeAll(set, std::string("UNDEFINED"));
         std::sort(set.begin(), set.end());
     }
 
     // 一応検証。UNDEFINED を除いても、一致するバリアントは無いはず。
-    for (int i = 0; i < m_result.length(); i++) {
+    for (size_t i = 0; i < m_result.size(); i++) {
         int index = find(i);
         if (index >= 0) {
             LN_ERROR();
@@ -53,11 +53,11 @@ void MultiCompileCombination::expand(const std::vector<std::vector<std::string>>
     }
 }
 
-void MultiCompileCombination::traverse(const String& token, int level) {
-    m_stack.push(token);
+void MultiCompileCombination::traverse(const std::string& token, int level) {
+    m_stack.push_back(token);
 
-    if (level >= m_table.length()) {
-        m_result.push(m_stack);
+    if (level >= m_table.size()) {
+        m_result.push_back(m_stack);
     }
     else {
         for (const auto& token : m_table[level]) {
@@ -68,13 +68,13 @@ void MultiCompileCombination::traverse(const String& token, int level) {
 }
 
 int MultiCompileCombination::find(int selfIndex) const {
-    const Array<String>& tokens = m_result[selfIndex];
-    for (int i = 0; i < m_result.length(); i++) {
-        const Array<String>& it = m_result[i]; 
-        if (i != selfIndex && it.length() == tokens.length()) {
+    const auto& tokens = m_result[selfIndex];
+    for (size_t i = 0; i < m_result.size(); i++) {
+        const auto& it = m_result[i]; 
+        if (i != selfIndex && it.size() == tokens.size()) {
             int match = 0;
             for (const auto& token : tokens) {
-                if (it.findIf([&](auto& x) { return x == token; })) {
+                if (std::find_if(it.begin(), it.end(), [&](auto& x) { return x == token; }) != it.end()) {
                     match++;
                 }
                 else {
@@ -89,6 +89,6 @@ int MultiCompileCombination::find(int selfIndex) const {
     return -1;
 }
 
-} // namespace detail
+} // namespace kokage
 } // namespace ln
 

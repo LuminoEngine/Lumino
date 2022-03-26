@@ -34,21 +34,33 @@ TEST_F(Test_Shader_ShaderCompiler, Simple) {
 }
 
 TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
+    const auto file = LN_TEMPFILE("Test_Shader_ShaderCompiler.ShaderVariant");
     auto diag = makeObject<DiagnosticsManager>();
-    kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
+    diag->setOutputToStdErr(true);
 
-    ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("ShaderVariant.hlsl"));
+    {
+        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
 
-    List<Path> includeDirs;
-    List<String> definitions;
-    compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions);
+        List<Path> includeDirs;
+        List<String> definitions;
+        ByteBuffer code = FileSystem::readAllBytes(LN_ASSETFILE("ShaderCompiler/ShaderVariant.hlsl"));
+        compiler.compile(reinterpret_cast<char*>(code.data()), code.size(), includeDirs, definitions);
+        compiler.link();
 
-    compiler.link();
+        compiler.unifiedShader()->save(file);
+    }
 
-    kokage::UnifiedShader* shader = compiler.unifiedShader();
+    kokage::UnifiedShader shader(diag);
+    shader.load(FileStream::create(file));
 
-    shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
-    //shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
+    const auto& codeContainers = shader.codeContainers();
+    ASSERT_EQ(146, codeContainers.length());
+
+    const auto& techniques = shader.techniques();
+    ASSERT_TRUE(techniques[0]->hasVariant());
+
+    //shader->saveCodes(String(LN_TEMPFILE("")) + U"/");
+    //shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
 }
 
 #endif
