@@ -79,7 +79,7 @@ BloomPostEffectCore::BloomPostEffectCore()
 
 bool BloomPostEffectCore::init(Material* compositeMaterial)
 {
-    const auto* manager = detail::EngineDomain::renderingManager();
+    const auto* manager = detail::RenderingManager::instance();
 
     auto luminosityHighPassShader = manager->builtinShader(detail::BuiltinShader::LuminosityHighPassShader);
     m_materialHighPassFilter = makeObject<Material>();

@@ -26,7 +26,7 @@ OffscreenWorldRenderView::~OffscreenWorldRenderView()
 void OffscreenWorldRenderView::init()
 {
     RenderView::init();
-    m_renderingManager = detail::EngineDomain::renderingManager();
+    m_renderingManager = detail::RenderingManager::instance();
 
     // TODO: SceneRenderingPipeline は WorldRenderView が持っているものとほとんど同じなので、
     // こっちでインスタンスを new するのは無駄が多い。共有したいところ。

@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
+#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
 namespace ln {
@@ -32,6 +33,9 @@ void EngineContext2::terminate() {
 }
 
 EngineContext2::EngineContext2() {
+}
+
+EngineContext2::~EngineContext2() {
 }
 
 bool EngineContext2::init(const RuntimeModuleSettings& settings) {

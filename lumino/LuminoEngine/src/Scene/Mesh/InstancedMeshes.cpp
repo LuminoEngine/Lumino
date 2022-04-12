@@ -17,7 +17,7 @@ bool InstancedMeshesComponent::init()
 {
     if (!VisualComponent::init()) return false;
     m_material = makeObject<Material>();
-    m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::Sprite));
+    m_material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
     m_material->setShadingModel(ShadingModel::Unlit);
     return true;
 }

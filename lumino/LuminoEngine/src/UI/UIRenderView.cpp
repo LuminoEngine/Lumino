@@ -33,6 +33,8 @@ void UIFrameRenderView::init()
     //m_clearRenderPass = makeObject<RenderPass>();
 
     m_adornerLayer = makeObject<UIAdornerLayer>(this);
+
+    //setClearMode(SceneClearMode::ColorAndDepth);
 }
 
 void UIFrameRenderView::setRootElement(UIDomainProvidor* element)

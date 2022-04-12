@@ -71,7 +71,7 @@ TEST_F(Test_Effect_Particle, SingleSprite)
 	material->setMainTexture(Texture2D::load(_TT("Effect/ColorGrid.png")));
 	material->setShadingModel(ShadingModel::Unlit);
 	// TODO: tmp, for Instancing
-	material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::Sprite));
+	material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
 
 	auto particleModel = makeObject<ParticleModel>();
     auto emitter1 = makeObject<ParticleEmitterModel>();

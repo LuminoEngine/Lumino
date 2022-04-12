@@ -290,8 +290,8 @@ LN_INTERNAL_ACCESS:
 
 	//uint32_t getHashCode();
 
-private:
 	const detail::PbrMaterialData& getPbrMaterialData() const { return m_data; }
+private:
 
 	detail::PbrMaterialData m_data;
 	bool m_needRefreshShaderBinding;

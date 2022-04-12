@@ -16,9 +16,9 @@ namespace detail {
 // PostEffectRenderer
 
 PostEffectRenderer::PostEffectRenderer()
-    : m_manager(detail::EngineDomain::renderingManager())
-	, m_copyMaterial(makeObject<Material>())
-{
+    : m_manager(detail::RenderingManager::instance())
+	, m_copyMaterial(makeObject<Material>()) {
+    m_copyMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::CopyScreen));
 }
 
 void PostEffectRenderer::dispose()
@@ -101,7 +101,6 @@ void PostEffectRenderer::render(RenderingContext* context, RenderTargetTexture* 
         CommandList* commandList = context->getCommandList(RenderPart::PostEffect);
 
         commandList->pushState(true);
-        commandList->setDepthBuffer(nullptr);
 
         bool renderd = false;
         int renderCount = 0;

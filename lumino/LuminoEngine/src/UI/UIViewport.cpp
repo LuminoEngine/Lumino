@@ -35,7 +35,7 @@ void UIViewport::init()
     //m_imageEffectRenderer = makeRef<detail::PostEffectRenderer>();
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
-	m_blitMaterial->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::CopyScreen));
+    m_blitMaterial->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::CopyScreen));
 
 	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonePostEffect.fx");
 	//m_blitMaterial->setShader(shader);
@@ -221,7 +221,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 	commandList->setCullingMode(CullMode::None);
 	commandList->setBlendMode(BlendMode::Normal);
 	m_blitMaterial->setMainTexture(m_primaryTarget);
-	commandList->blit(m_blitMaterial, nullptr, RenderPart::Geometry);
+	commandList->blit(m_blitMaterial, nullptr/*, RenderPart::Geometry*/);
 #else
 	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
 	// 現状、RenderPhaseClass::PostEffect を使っている blit を利用する必要がある。

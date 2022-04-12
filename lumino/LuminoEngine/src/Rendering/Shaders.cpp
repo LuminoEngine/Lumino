@@ -11,12 +11,12 @@ namespace ln {
 
 Shader* Shaders::standard()
 {
-	return detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ClusteredShadingDefault);
+    return detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::ClusteredShadingDefault);
 }
 
 Shader* Shaders::unlit()
 {
-	return detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::Sprite);
+    return detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite);
 }
 
 } // namespace ln

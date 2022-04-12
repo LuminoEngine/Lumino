@@ -19,6 +19,9 @@ UnifiedShaderCompiler::UnifiedShaderCompiler(detail::ShaderManager* manager, Dia
     m_unifiedShader = makeRef<UnifiedShader>(m_diag);
 }
 
+UnifiedShaderCompiler ::~UnifiedShaderCompiler() {
+}
+
 bool UnifiedShaderCompiler::compile(
     char* inputCode,
     size_t inputCodeLength,
@@ -48,24 +51,37 @@ bool UnifiedShaderCompiler::compile(
         memset((inputCode + tech.blockBegin), ' ', tech.blockEnd - tech.blockBegin);
     }
 
-#if 1   // TODO: variant test
-    for (auto& metaTech : m_metadataTechniques) {
-        MultiCompileCombination multiCompileCombination;
-        multiCompileCombination.expand(metaTech.multiCompiles);
+#if 1 // TODO: variant test
+    {
+        for (auto& metaTech : m_metadataTechniques) {
+            //auto multiCompiles = metaTech.multiCompiles;
+            //if (multiCompiles.empty()) {
+            //    multiCompiles = {
+            //        { "LN_USE_INSTANCING" },
+            //        { "LN_USE_SKINNING" },
+            //        { "LN_USE_NORMALMAP" },
+            //        { "LN_USE_ROUGHNESS_MAP" },
+            //        { "LN_SHADINGMODEL_DEFAULT", "LN_SHADINGMODEL_UNLIT" },
+            //    };
+            //}
 
-        for (const auto& values : multiCompileCombination.variantSets()) {
-            VariantSet variantSet;
-            variantSet.values = values;
+            MultiCompileCombination multiCompileCombination;
+            multiCompileCombination.expand(metaTech.multiCompiles);
 
-            UnifiedShaderTechnique* tech = m_unifiedShader->addVariantTechnique("V", variantSet);
+            for (const auto& values : multiCompileCombination.variantSets()) {
+                VariantSet variantSet;
+                variantSet.values = values;
 
-            List<String> actualDefinitions = definitions;
-            for (const auto& def : variantSet.values) {
-                actualDefinitions.add(String::fromUtf8(def) + U"=1");
-            }
+                UnifiedShaderTechnique* tech = m_unifiedShader->addVariantTechnique("V", variantSet);
 
-            for (auto& metaPass : metaTech.passes) {
-                createVSPSPass(tech, metaPass, inputCode, inputCodeLength, includeDirectories, actualDefinitions);
+                List<String> actualDefinitions = definitions;
+                for (const auto& def : variantSet.values) {
+                    actualDefinitions.add(String::fromUtf8(def) + U"=1");
+                }
+
+                for (auto& metaPass : metaTech.passes) {
+                    createVSPSPass(tech, metaPass, inputCode, inputCodeLength, includeDirectories, actualDefinitions);
+                }
             }
         }
     }
@@ -96,6 +112,7 @@ bool UnifiedShaderCompiler::compile(
             createVSPSPass(tech, metaPass, inputCode, inputCodeLength, includeDirectories, actualDefinitions);
         }
     }
+
 
 #else
 

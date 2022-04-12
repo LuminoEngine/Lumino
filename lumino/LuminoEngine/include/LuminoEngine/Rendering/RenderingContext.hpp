@@ -5,7 +5,7 @@
 #include <LuminoFont/Common.hpp>
 
 namespace ln {
-
+class World;	// TODO: 上位モジュールなので避けたい
 
 
 
@@ -17,18 +17,8 @@ public:
 	/** @name render targets */
 	/** @{ */
 
-	/** レンダリングターゲットを設定します。index 0 のレンダリングターゲットを変更すると、ビューポート領域とシザー領域がリセットされます。 */
-	void setRenderTarget(int index, RenderTargetTexture* value);
-
-	/** 現在設定されているレンダリングターゲットを取得します。*/
-	//RenderTargetTexture* getRenderTarget(int index) const;
-    RenderTargetTexture* renderTarget(int index) const;
-
-	/** 深度バッファを設定します。*/
-	void setDepthBuffer(DepthBuffer* value);
-
-	/** 現在設定されている深度バッファを取得します。*/
-	//DepthBuffer* getDepthBuffer() const;
+    void setRenderPass(RenderPass* value);
+    RenderPass* renderPass() const;
 
 	/** ビューポート領域を設定します。*/
 	void setViewportRect(const RectI& value);	// これも optional でいい気がする
@@ -113,7 +103,7 @@ public:
     //void blit(Material* material);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material);
-	void blit(Material* source, RenderTargetTexture* destination, RenderPart phase = RenderPart::PostEffect);
+	void blit(Material* source, RenderTargetTexture* destination/*, RenderPart phase = RenderPart::PostEffect*/);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -234,17 +224,17 @@ public:
 
 	const List<detail::DynamicLightInfo>& dynamicLightInfoList() const { return m_dynamicLightInfoList; }
 
-LN_PROTECTED_INTERNAL_ACCESS:
+protected:
 	RenderingContext();
 	void resetForBeginRendering();
 
 protected:  // TODO:
 	detail::RenderingManager* m_manager;
 	List<PostEffect*> m_imageEffects;
-	Ref<CommandList> m_commandList;
-	Ref<detail::CommandListServer> m_listServer;
 
 private:
+	Ref<detail::CommandListServer> m_listServer;
+	Ref<CommandList> m_commandList;
 	Ref<CanvasContext> m_pathContext;
 	bool m_pathBegan;
 	List<detail::DynamicLightInfo> m_dynamicLightInfoList;

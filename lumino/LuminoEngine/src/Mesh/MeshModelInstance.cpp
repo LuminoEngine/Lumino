@@ -160,10 +160,12 @@ MeshModelInstance::MeshModelInstance(MeshModel* model)
 		m_skeletons.add(makeRef<SkeletonInstance>(this, i));
 	}
 
+#if 0	// TODO: meshContainers を直接 Morph にすると、完全に Static な Mesh でも Morph 有効になってしまうので考え直す
 	const auto& meshContainers = m_model->meshContainers();
 	for (int i = 0; i < meshContainers.size(); i++) {
 		m_morphs.add(makeRef<MorphInstance>(this, i));
 	}
+#endif
 }
 
 void MeshModelInstance::updateSkinningMatrices()

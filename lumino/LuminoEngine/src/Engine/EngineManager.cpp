@@ -251,7 +251,7 @@ void EngineManager::dispose() {
     if (m_visualManager) m_visualManager->dispose();
     if (m_physicsManager) m_physicsManager->dispose();
     if (m_effectManager) m_effectManager->dispose();
-    if (m_renderingManager) m_renderingManager->dispose();
+    RenderingManager::terminate();
     if (m_meshManager) m_meshManager->dispose();
     FontManager::terminate();
     GraphicsManager::terminate();
@@ -457,15 +457,13 @@ void EngineManager::initializeMeshManager() {
 }
 
 void EngineManager::initializeRenderingManager() {
-    if (!m_renderingManager && m_settings.features.hasFlag(EngineFeature::Rendering)) {
+    if (!RenderingManager::instance() && m_settings.features.hasFlag(EngineFeature::Rendering)) {
         initializeGraphicsManager();
 
         RenderingManager::Settings settings;
         settings.graphicsManager = GraphicsManager::instance();
         settings.fontManager = FontManager::instance();
-
-        m_renderingManager = ln::makeRef<RenderingManager>();
-        m_renderingManager->init(settings);
+        RenderingManager::initialize(settings);
     }
 }
 
@@ -477,7 +475,7 @@ void EngineManager::initializeEffectManager() {
         EffectManager::Settings settings;
         settings.graphicsManager = GraphicsManager::instance();
         settings.assetManager = AssetManager::instance();
-        settings.renderingManager = m_renderingManager;
+        settings.renderingManager = RenderingManager::instance();
 
         m_effectManager = ln::makeRef<EffectManager>();
         m_effectManager->init(settings);
@@ -672,8 +670,8 @@ void EngineManager::presentFrame() {
         m_engineProfiler->endFrame();
     }
 
-    if (m_renderingManager) {
-        m_renderingManager->profiler()->reset();
+    if (auto* m = RenderingManager::instance()) {
+        m->profiler()->reset();
     }
 
     //
@@ -1016,10 +1014,6 @@ AudioManager* EngineDomain::audioManager() {
 
 MeshManager* EngineDomain::meshManager() {
     return engineManager()->meshManager();
-}
-
-RenderingManager* EngineDomain::renderingManager() {
-    return engineManager()->renderingManager();
 }
 
 EffectManager* EngineDomain::effectManager() {

@@ -8,6 +8,7 @@
 #include "BuildCommand.hpp"
 #include "NewAssetCommand.hpp"
 #include "BuildAssetCommand.hpp"
+#include "Bin2InlCommand.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -28,7 +29,7 @@ int main(int argc, char** argv) {
             //"new", "test4",
             //"new", "TH-10", "-t", "cmake",
 
-            "build",
+            //"build",
             //"build", "Windows"
             //"build", "assets",
 
@@ -50,6 +51,10 @@ int main(int argc, char** argv) {
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.lcfx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx",
+
+            //"fxc", "C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/Sprite.fx",
+            "bin2inl", "C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/Sprite.lcfx",
+
 
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
@@ -198,6 +203,12 @@ static int processCommands(int argc, char** argv) {
     auto buildAssetsCommand = parser.addCommand(_TT("build-assets"), _TT("Make assets archive."));
     auto buildAssetsCommand_input = buildAssetsCommand->addValueOption(_TT("i"), _TT("input"), _TT("Input directory path."));
     auto buildAssetsCommand_output = buildAssetsCommand->addValueOption(_TT("o"), _TT("output"), _TT("Output directory path."));
+    
+    //--------------------------------------------------------------------------------
+    // bin2inl command
+    auto bin2inlCommand = parser.addCommand(_TT("bin2inl"), _TT("."));
+    auto bin2inlCommand_input = bin2inlCommand->addPositionalArgument(_TT("input"), _TT("Input file path."));
+    auto bin2inlCommand_output = bin2inlCommand->addValueOption(_TT("o"), _TT("output"), _TT("Output directory path."));
 
     //--------------------------------------------------------------------------------
     auto dev_installTools = parser.addCommand(_TT("dev-install-tools"), _TT("internal."));
@@ -325,6 +336,13 @@ static int processCommands(int argc, char** argv) {
             cmd.inputDir = buildAssetsCommand_input->value();
             cmd.outputDir = buildAssetsCommand_output->value();
             return cmd.execute();
+        }
+        //--------------------------------------------------------------------------------
+        // new command
+        else if (parser.has(bin2inlCommand)) {
+            Bin2InlCommand cmd;
+            cmd.outputFile = bin2inlCommand_output->value();
+            return cmd.execute(bin2inlCommand_input->value());
         }
         //--------------------------------------------------------------------------------
         // build-assets command

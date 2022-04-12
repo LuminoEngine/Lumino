@@ -42,7 +42,6 @@ public:
 	static InputManager* inputManager();
 	static AudioManager* audioManager();
 	static MeshManager* meshManager();
-	static RenderingManager* renderingManager();
     static EffectManager* effectManager();
     static PhysicsManager* physicsManager();
     static VisualManager* visualManager();

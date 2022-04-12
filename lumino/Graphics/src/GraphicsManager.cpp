@@ -22,6 +22,7 @@
 #include "RHI/GraphicsProfiler.hpp"
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "RHI/StreamingBufferAllocator.hpp"
+#include "RHI/RenderPassCache.hpp"
 #include "Rendering/RenderingManager2.hpp"
 
 namespace ln {
@@ -241,6 +242,7 @@ bool GraphicsManager::init(const Settings& settings) {
     m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
     m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
     m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
+    m_renderPassCache = makeURef<detail::RenderPassCache>();
     m_singleFrameUniformBufferAllocatorPageManager = makeRef<SingleFrameUniformBufferAllocatorPageManager>(0x200000); // 2MB
 
     m_extensions.add(nullptr); // [0] is dummy
@@ -310,6 +312,10 @@ void GraphicsManager::dispose() {
 
     m_shaderCache.dispose();
     m_texture2DCache.dispose();
+    if (m_renderPassCache) {
+        m_renderPassCache->clear();
+        m_renderPassCache = nullptr;
+    }
 
     // default objects
     {

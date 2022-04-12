@@ -36,7 +36,7 @@ static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 
 Material* Material::defaultMaterial()
 {
-    return detail::EngineDomain::renderingManager()->defaultMaterial();
+    return detail::RenderingManager::instance()->defaultMaterial();
 }
 
 Ref<Material> Material::create()

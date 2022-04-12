@@ -46,7 +46,7 @@ RenderView::~RenderView()
 void RenderView::init()
 {
 	Object::init();
-	m_manager = detail::EngineDomain::renderingManager();
+    m_manager = detail::RenderingManager::instance();
 }
 
 void RenderView::makeViewProjections(const detail::CameraInfo& base, float dpiScale)

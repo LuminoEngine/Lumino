@@ -71,6 +71,8 @@ file(GLOB LN_SOURCES_Mesh_MeshGeneraters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/M
 file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp src/Rendering/*.md)
 file(GLOB LN_SOURCES_Rendering_RLIs src/Rendering/RLIs/*.cpp src/Rendering/RLIs/*.hpp)
 file(GLOB LN_SOURCES_Rendering_RenderFeature ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature/*.hpp src/Rendering/RenderFeature/*.cpp src/Rendering/RenderFeature/*.hpp)
+file(GLOB LN_SOURCES_Rendering_Kanata ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Kanata/*.hpp src/Rendering/Kanata/*.cpp src/Rendering/Kanata/*.hpp)
+file(GLOB LN_SOURCES_Rendering_Kanata_RenderFeature ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Kanata/RenderFeature/*.hpp src/Rendering/Kanata/RenderFeature/*.cpp src/Rendering/Kanata/RenderFeature/*.hpp)
 
 file(GLOB LN_SOURCES_PostEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/PostEffect/*.hpp src/PostEffect/*.cpp src/PostEffect/*.hpp)
 
@@ -164,6 +166,8 @@ source_group("Mesh\\MeshGeneraters" FILES ${LN_SOURCES_Mesh_MeshGeneraters})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("Rendering\\RLIs" FILES ${LN_SOURCES_Rendering_RLIs})
 source_group("Rendering\\RenderFeature" FILES ${LN_SOURCES_Rendering_RenderFeature})
+source_group("Rendering\\Kanata" FILES ${LN_SOURCES_Rendering_Kanata})
+source_group("Rendering/Kanata/RenderFeature" FILES ${LN_SOURCES_Rendering_Kanata_RenderFeature})
 source_group("PostEffect" FILES ${LN_SOURCES_PostEffect})
 source_group("Effect" FILES ${LN_SOURCES_Effect})
 source_group("Physics" FILES ${LN_SOURCES_Physics})
@@ -211,6 +215,8 @@ set(LN_SOURCES
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_Rendering_RLIs}
     ${LN_SOURCES_Rendering_RenderFeature}
+    ${LN_SOURCES_Rendering_Kanata}
+    ${LN_SOURCES_Rendering_Kanata_RenderFeature}
     ${LN_SOURCES_PostEffect}
     ${LN_SOURCES_Effect}
     ${LN_SOURCES_Physics}
@@ -450,8 +456,5 @@ install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lum
 #-------------------------------------------------------------------------------
 
 if (LN_BUILD_TESTS)
-    add_subdirectory(examples/EmptyWindow)
-    add_subdirectory(examples/HelloApp)
-    add_subdirectory(examples/ExternalOpenGLContext)
-    add_subdirectory(examples/EditorWithImGui)
+    add_subdirectory(examples)
 endif()

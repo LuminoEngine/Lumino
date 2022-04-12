@@ -119,7 +119,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 			std::array<VertexBuffer*, MaxRenderMorphTargets> targets;
 			mesh->commitMorphTargets(morph, &targets);
 
-			const auto& shader = detail::EngineDomain::renderingManager()->blendShapeShader;
+			const auto& shader = detail::RenderingManager::instance()->blendShapeShader;
 			ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(shader.shader);
 			descriptor->setStorageData(shader.dstVerticesGID, morph->m_blendResult);
 			descriptor->setTexture(shader.srcVerticesGID, vb[0]);

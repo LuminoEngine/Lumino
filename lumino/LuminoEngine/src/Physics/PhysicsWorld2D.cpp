@@ -940,13 +940,13 @@ public:
 		context->setShadingModel(ShadingModel::Unlit);
 
 		context->drawPrimitive(
-			detail::EngineDomain::renderingManager()->standardVertexDeclaration(),
+			detail::RenderingManager::instance()->standardVertexDeclaration(),
 			m_trianglesBuffer,
 			PrimitiveTopology::TriangleList,
 			0, m_trianglesVertexCount / 3);
 
 		context->drawPrimitive(
-			detail::EngineDomain::renderingManager()->standardVertexDeclaration(),
+			detail::RenderingManager::instance()->standardVertexDeclaration(),
 			m_linesBuffer,
 			PrimitiveTopology::LineList,
 			0, m_linesVertexCount / 2);

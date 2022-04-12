@@ -58,11 +58,11 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     if (!PostEffectInstance::init()) return false;
     m_owner = owner;
 
-    auto shader2 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSAOOcclusionMap);
+    auto shader2 = RenderingManager::instance()->builtinShader(BuiltinShader::SSAOOcclusionMap);
     m_ssaoMaterial = makeObject<Material>();
     m_ssaoMaterial->setShader(shader2);
 
-    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::FilmicPostEffect);
+    auto shader1 = RenderingManager::instance()->builtinShader(BuiltinShader::FilmicPostEffect);
     //auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
     m_integrationMaterial = makeObject<Material>();
     m_integrationMaterial->setShader(shader1);
@@ -183,7 +183,7 @@ bool FilmicPostEffectInstance::onRender(RenderView* renderView, CommandList* con
 
     Texture* viewNormalMap = renderView->gbuffer(GBuffer::ViewNormalMap);
     Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
-    Texture* randomTexture = EngineDomain::renderingManager()->randomTexture();
+    Texture* randomTexture = RenderingManager::instance()->randomTexture();
 
     viewNormalMap->setSamplerState(SamplerState::pointClamp());
     viewDepthMap->setSamplerState(SamplerState::pointClamp());

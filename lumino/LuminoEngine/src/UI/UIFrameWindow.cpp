@@ -13,6 +13,7 @@
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
 #include "../../../Graphics/src/GraphicsManager.hpp"
+#include "../Rendering/RenderingManager.hpp"
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoPlatform/detail/PlatformWindowManager.hpp>
 #include "../Engine/EngineManager.hpp"
@@ -266,7 +267,7 @@ void UIFrameWindow::init(bool mainWindow) {
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
 
-    if (detail::EngineDomain::renderingManager()) {
+    if (detail::RenderingManager::instance()) {
         m_renderView = Ref<UIRenderView>(LN_NEW UIRenderView(), false);
         m_renderView->init();
         m_renderView->setRootElement(this);

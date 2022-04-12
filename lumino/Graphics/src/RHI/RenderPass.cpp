@@ -9,6 +9,7 @@
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/DepthBuffer.hpp>
 #include <LuminoGraphics/RHI/RenderPass.hpp>
+#include "RenderPassCache.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsProfiler.hpp"
 #include "Backend/GraphicsDeviceContext.hpp"
@@ -17,6 +18,29 @@ namespace ln {
 
 //==============================================================================
 // RenderPass
+
+RenderPass* RenderPass::get(RenderTargetTexture* renderTarget) {
+    detail::RenderPassCache::FindKey key;
+    key.renderTargets[0] = renderTarget;
+    return detail::GraphicsManager::instance()->renderPassCache()->getOrCreate(key);
+}
+
+RenderPass* RenderPass::get(
+    RenderTargetTexture* renderTarget,
+    DepthBuffer* depthBuffer,
+    ClearFlags clearFlags,
+    const Color& clearColor,
+    float clearDepth,
+    uint8_t clearStencil) {
+    detail::RenderPassCache::FindKey key;
+    key.renderTargets[0] = renderTarget;
+    key.depthBuffer = depthBuffer;
+    key.clearFlags = clearFlags;
+    key.clearColor = clearColor;
+    key.clearDepth = clearDepth;
+    key.clearStencil = clearStencil;
+    return detail::GraphicsManager::instance()->renderPassCache()->getOrCreate(key);
+}
 
 RenderPass::RenderPass()
     : m_manager(nullptr)
@@ -29,7 +53,8 @@ RenderPass::RenderPass()
     , m_clearStencil(0x00)
     , m_dirty(true)
     , m_active(false)
-    , m_externalRHIRenderPass(false) {
+    , m_externalRHIRenderPass(false)
+    , m_freezed(false) {
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
     detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderPass(this);
 }
@@ -66,8 +91,9 @@ void RenderPass::onDispose(bool explicitDisposing) {
 }
 
 void RenderPass::setRenderTarget(int index, RenderTargetTexture* value) {
-    if (LN_REQUIRE(!m_externalRHIRenderPass)) return;
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_freezed)) return;
+    if (LN_ASSERT(!m_externalRHIRenderPass)) return;
+    if (LN_ASSERT(!m_active)) return;
     if (LN_REQUIRE_RANGE(index, 0, GraphicsCommandList::MaxMultiRenderTargets)) return;
 
     if (m_renderTargets[index] != value) {
@@ -87,8 +113,9 @@ RenderTargetTexture* RenderPass::renderTarget(int index) const {
 }
 
 void RenderPass::setDepthBuffer(DepthBuffer* value) {
-    if (LN_REQUIRE(!m_externalRHIRenderPass)) return;
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_freezed)) return;
+    if (LN_ASSERT(!m_externalRHIRenderPass)) return;
+    if (LN_ASSERT(!m_active)) return;
     if (m_depthBuffer != value) {
         m_depthBuffer = value;
         m_dirty = true;
@@ -96,7 +123,8 @@ void RenderPass::setDepthBuffer(DepthBuffer* value) {
 }
 
 void RenderPass::setClearFlags(ClearFlags value) {
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_freezed)) return;
+    if (LN_ASSERT(!m_active)) return;
     if (m_clearFlags != value) {
         m_clearFlags = value;
         m_dirty = true;
@@ -104,7 +132,8 @@ void RenderPass::setClearFlags(ClearFlags value) {
 }
 
 void RenderPass::setClearColor(const Color& value) {
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_freezed)) return;
+    if (LN_ASSERT(!m_active)) return;
     if (m_clearColor != value) {
         m_clearColor = value;
         m_dirty = true;
@@ -112,7 +141,8 @@ void RenderPass::setClearColor(const Color& value) {
 }
 
 void RenderPass::setClearDepth(float value) {
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_freezed)) return;
+    if (LN_ASSERT(!m_active)) return;
     if (m_clearDepth != value) {
         m_clearDepth = value;
         m_dirty = true;
@@ -120,7 +150,8 @@ void RenderPass::setClearDepth(float value) {
 }
 
 void RenderPass::setClearStencil(uint8_t value) {
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_freezed)) return;
+    if (LN_ASSERT(!m_active)) return;
     if (m_clearStencil != value) {
         m_clearStencil = value;
         m_dirty = true;
@@ -128,7 +159,8 @@ void RenderPass::setClearStencil(uint8_t value) {
 }
 
 void RenderPass::setClearValues(ClearFlags flags, const Color& color, float depth, uint8_t stencil) {
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_freezed)) return;
+    if (LN_ASSERT(!m_active)) return;
     setClearFlags(flags);
     setClearColor(color);
     setClearDepth(depth);
@@ -139,8 +171,16 @@ DepthBuffer* RenderPass::depthBuffer() const {
     return m_depthBuffer;
 }
 
+bool RenderPass::containsRenderTarget(RenderTargetTexture* renderTarget) const {
+    return std::find(m_renderTargets.begin(), m_renderTargets.end(), renderTarget) != m_renderTargets.end();
+}
+
+bool RenderPass::containsDepthBuffer(DepthBuffer* depthBuffer) const {
+    return m_depthBuffer == depthBuffer;
+}
+
 void RenderPass::onChangeDevice(detail::IGraphicsDevice* device) {
-    if (LN_REQUIRE(!m_active)) return;
+    if (LN_ASSERT(!m_active)) return;
     if (!device) {
         releaseRHI();
     }
@@ -159,14 +199,14 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, 
         m_dirty = false;
 
         const RenderTargetTexture* primaryTarget = m_renderTargets[0];
-        if (LN_REQUIRE(primaryTarget, "RenderPass: [0] Invalid render target.")) return nullptr;
-        const Size primarySize(primaryTarget->width(), primaryTarget->height());
+        if (LN_ASSERT(primaryTarget, "RenderPass: [0] Invalid render target.")) return nullptr;
+        const SizeI primarySize(primaryTarget->width(), primaryTarget->height());
 
         detail::NativeRenderPassCache::FindKey key;
         for (auto i = 0; i < m_renderTargets.size(); i++) {
             RenderTargetTexture* rt = m_renderTargets[i];
             if (rt) {
-                if (LN_REQUIRE(rt->width() == primarySize.width && rt->height() == primarySize.height, _TT("RenderPass: Invalid render target dimensions."))) return nullptr;
+                if (LN_ASSERT(rt->width() == primarySize.width && rt->height() == primarySize.height, _TT("RenderPass: Invalid render target dimensions."))) return nullptr;
             }
 
             key.renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(context, rt, nullptr);
@@ -180,11 +220,12 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, 
         if (!m_renderTargets[0]->m_cleared && !testFlag(key.clearFlags, ClearFlags::Color)) {
             key.clearFlags = Flags<ClearFlags>(key.clearFlags) | ClearFlags::Color;
             m_dirty = true;
+            //LN_ERROR(); // 自動的に RenderTarget クリア用の RenderPass に差し替えると、キャッシュとの整合性をとるのが大変になる
         }
         m_renderTargets[0]->m_cleared = true;
 
         if (m_depthBuffer) {
-            if (LN_REQUIRE(m_depthBuffer->width() == primarySize.width && m_depthBuffer->height() == primarySize.height, _TT("RenderPass: Invalid depth buffer dimensions."))) return nullptr;
+            if (LN_ASSERT(m_depthBuffer->width() == primarySize.width && m_depthBuffer->height() == primarySize.height, _TT("RenderPass: Invalid depth buffer dimensions."))) return nullptr;
 
             if (!m_depthBuffer->m_cleared && !testFlag(key.clearFlags, Flags<ClearFlags>(ClearFlags::Depth | ClearFlags::Stencil).get())) {
                 key.clearFlags = Flags<ClearFlags>(key.clearFlags) | ClearFlags::Depth | ClearFlags::Stencil;

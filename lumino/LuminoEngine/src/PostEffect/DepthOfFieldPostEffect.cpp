@@ -43,7 +43,7 @@ bool DepthOfFieldPostEffectCore::init(Material* compositeMaterial)
 {
     m_compositeMaterial = compositeMaterial;
 
-    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::Copy);
+    auto shader1 = RenderingManager::instance()->builtinShader(BuiltinShader::Copy);
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->setShader(shader1);
 

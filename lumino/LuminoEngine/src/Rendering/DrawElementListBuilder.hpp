@@ -46,9 +46,8 @@ public:
 	void reset2();   // スタックに積んである分はリセットしないしスタックも消さない
     void advanceFence();	// zソートなどの境界。特に、clear や blit など、深度が関係ないものとの境界
 
-	void setRenderTarget(int index, RenderTargetTexture* value);
-    RenderTargetTexture* renderTarget(int index) const;
-	void setDepthBuffer(DepthBuffer* value);
+	void setRenderPass(RenderPass* value);
+    RenderPass* renderPass() const;
 	void setViewportRect(const RectI& value);
 	void setScissorRect(const RectI& value);
 

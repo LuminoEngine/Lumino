@@ -1,0 +1,8 @@
+project(Example-Engine-MeshObject)
+
+#-------------------------------------------------------------------------------
+# Targets
+#-------------------------------------------------------------------------------
+add_executable(${PROJECT_NAME} Main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoEngine-static)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Examples")

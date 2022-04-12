@@ -65,6 +65,7 @@ public:
     const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
     const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
     const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
+    const URef<RenderPassCache>& renderPassCache() const { return m_renderPassCache; }
     ObjectCache<String, Texture2D>* texture2DCache() { return &m_texture2DCache; }
     const Ref<SingleFrameUniformBufferAllocatorPageManager>& singleFrameUniformBufferAllocatorPageManager() const { return m_singleFrameUniformBufferAllocatorPageManager; }
 
@@ -115,7 +116,8 @@ private:
     Ref<RenderingQueue> m_renderingQueue;
     Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
     Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
-    Ref<FrameBufferCache> m_frameBufferCache;
+    Ref<FrameBufferCache> m_frameBufferCache;// TODO: いらないかも
+    URef<RenderPassCache> m_renderPassCache;
     ObjectCache<String, Texture2D> m_texture2DCache;
     ObjectCache<String, Shader> m_shaderCache;
     Ref<SingleFrameUniformBufferAllocatorPageManager> m_singleFrameUniformBufferAllocatorPageManager;

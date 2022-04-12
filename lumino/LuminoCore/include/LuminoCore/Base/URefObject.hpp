@@ -100,19 +100,21 @@ public:
     explicit operator bool() const LN_NOEXCEPT { return (m_ptr != nullptr); }
 
     /** オブジェクトのポインタへの変換をサポートします。 */
-    operator T*() const { return static_cast<T*>(m_ptr); } // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
+    operator T*() const { return static_cast<T*>(m_ptr); }
 
     URefObject* basePointer() const { return m_ptr; }
 
 private:
     void safeDelete() {
         if (m_ptr) {
-            delete m_ptr;
+            // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
+            static_assert(0 < sizeof(T), "can't delete an incomplete type");
+            delete basePointer();
             m_ptr = nullptr;
         }
     }
 
-    URefObject* m_ptr;
+    T* m_ptr;
 
     template<class U>
     friend class URef;

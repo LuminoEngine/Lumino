@@ -34,7 +34,6 @@ using Texture2DDelegate = Delegate<void(Ref<Texture2D> value)>;
 LN_PROMISE()
 using Texture2DPromise = Promise<Ref<Texture2D>>;
 
-
 ///** 描画方式 */
 //enum class RenderingType
 //{
@@ -47,8 +46,7 @@ using Texture2DPromise = Promise<Ref<Texture2D>>;
 
 /** バックエンドグラフィックス API の種類 */
 LN_ENUM()
-enum class GraphicsAPI
-{
+enum class GraphicsAPI {
     /** 自動選択 */
     Default,
 
@@ -62,8 +60,7 @@ enum class GraphicsAPI
 };
 
 /** レンダーターゲットのクリア方法 */
-enum class ClearFlags
-{
+enum class ClearFlags : uint8_t {
     /** 指定なし */
     None = 0x0000,
 
@@ -82,8 +79,7 @@ enum class ClearFlags
 LN_FLAGS_OPERATORS(ClearFlags);
 
 /** グラフィックスリソースの使用方法 */
-enum class GraphicsResourceUsage : uint8_t
-{
+enum class GraphicsResourceUsage : uint8_t {
     /** 頻繁に更新を行わないリソース */
     Static,
 
@@ -92,8 +88,7 @@ enum class GraphicsResourceUsage : uint8_t
 };
 
 /** グラフィックスリソースの管理方法 */
-enum class GraphicsResourcePool
-{
+enum class GraphicsResourcePool {
     /** デバイス変更時に内容を復元しません。*/
     None,
 
@@ -102,8 +97,7 @@ enum class GraphicsResourcePool
 };
 
 /** グラフィックスリソースのマップ方法 */
-enum class MapMode
-{
+enum class MapMode {
     /** 読み取りモード */
     Read,
 
@@ -112,8 +106,7 @@ enum class MapMode
 };
 
 /** 頂点宣言の要素の型 */
-enum class VertexElementType : uint8_t
-{
+enum class VertexElementType : uint8_t {
     /** Unknown */
     Unknown,
 
@@ -143,8 +136,7 @@ enum class VertexElementType : uint8_t
 };
 
 /** 頂点宣言の要素の用途 */
-enum class VertexElementUsage
-{
+enum class VertexElementUsage {
     /** Unknown (指定なし) */
     Unknown,
 
@@ -163,9 +155,9 @@ enum class VertexElementUsage
     /** (obsolete) ポイントスプライトサイズ */
     PointSize,
 
-	Tangent,
+    Tangent,
 
-	Binormal,
+    Binormal,
 
     /** ブレンディング (スキニング) のインデックス */
     BlendIndices,
@@ -177,8 +169,7 @@ enum class VertexElementUsage
 };
 
 /** 頂点バッファのレート */
-enum class VertexInputRate
-{
+enum class VertexInputRate {
     /** 頂点バッファを頂点データのストリームとして扱う。 */
     Vertex,
 
@@ -187,8 +178,7 @@ enum class VertexInputRate
 };
 
 /** 頂点宣言の1要素 */
-struct VertexElement
-{
+struct VertexElement {
     /** ストリーム番号 */
     uint32_t StreamIndex;
 
@@ -205,8 +195,7 @@ struct VertexElement
 };
 
 /** インデックスバッファのフォーマット */
-enum class IndexBufferFormat
-{
+enum class IndexBufferFormat {
     /** 16 bit */
     UInt16,
 
@@ -216,8 +205,7 @@ enum class IndexBufferFormat
 
 /** テクスチャのピクセルフォーマット */
 LN_ENUM()
-enum class TextureFormat : uint8_t
-{
+enum class TextureFormat : uint8_t {
     /** Unknown */
     Unknown,
 
@@ -245,15 +233,13 @@ enum class TextureFormat : uint8_t
 
 /** 深度バッファのフォーマット */
 LN_ENUM()
-enum class DepthBufferFormat
-{
+enum class DepthBufferFormat {
     /** S8 32 ビット*/
     D24S8,
 };
 
 /** テクスチャフィルタ */
-enum class TextureFilterMode
-{
+enum class TextureFilterMode {
     /** 補間を行わない*/
     Point,
 
@@ -262,8 +248,7 @@ enum class TextureFilterMode
 };
 
 /** テクスチャアドレッシング */
-enum class TextureAddressMode
-{
+enum class TextureAddressMode {
     /** 繰り返し */
     Repeat,
 
@@ -272,8 +257,7 @@ enum class TextureAddressMode
 };
 
 /** 描画プリミティブの種類 */
-enum class PrimitiveTopology : uint8_t
-{
+enum class PrimitiveTopology : uint8_t {
     /** 独立した三角形のリスト */
     TriangleList,
 
@@ -293,21 +277,18 @@ enum class PrimitiveTopology : uint8_t
     PointList,
 };
 
-enum class ShaderCompilationResultLevel
-{
+enum class ShaderCompilationResultLevel {
     Success,
     Warning,
     Error,
 };
 
-struct ShaderCompilationDiag
-{
+struct ShaderCompilationDiag {
     ShaderCompilationResultLevel level;
     std::string message;
 };
 
-enum class ShaderVariableType
-{
+enum class ShaderVariableType {
     Unknown,
     Bool,
     BoolArray,
@@ -327,8 +308,7 @@ enum class ShaderVariableType
      */
 };
 
-class GraphicsHelper
-{
+class GraphicsHelper {
 public:
     static size_t getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
     static size_t getVertexElementTypeSize(VertexElementType type);
@@ -338,8 +318,6 @@ public:
     static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
     static size_t getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
     static IndexBufferFormat getIndexBufferFormat(size_t size) { return (size == 2) ? IndexBufferFormat::UInt16 : IndexBufferFormat::UInt32; }
-
-
 
     static const Char* CandidateExts_Texture2D[5];
 };
@@ -356,6 +334,7 @@ class IRenderPass;
 class ShaderSecondaryDescriptor;
 class GraphicsProfiler;
 class RHIResource;
+class RenderPassCache;
 
 static const int MaxMultiRenderTargets = 4;
 
@@ -364,8 +343,7 @@ static const int MaxVertexStreams = 16;
 
 static const int MaxDescriptors = 16;
 
-struct SamplerStateData
-{
+struct SamplerStateData {
     TextureFilterMode filter;
     TextureAddressMode address;
     bool anisotropy;
@@ -390,8 +368,7 @@ using ShaderRefrectionParameterType = ShaderVariableType;
 //};
 
 // rows, columns はデータレイアウトとしての領域サイズ。
-struct ShaderUniformTypeDesc
-{
+struct ShaderUniformTypeDesc {
     kokage::ShaderUniformType type2;
     int rows;
     int columns;
@@ -404,8 +381,7 @@ struct ShaderUniformTypeDesc
 
     //size_t aligndElementSize;   // アライメントが考慮された配列1要素分のサイズ
 
-    static bool equals(const ShaderUniformTypeDesc& a, const ShaderUniformTypeDesc& b)
-    {
+    static bool equals(const ShaderUniformTypeDesc& a, const ShaderUniformTypeDesc& b) {
         return a.type2 == b.type2 &&
                a.rows == b.rows &&
                a.columns == b.columns &&
@@ -415,13 +391,15 @@ struct ShaderUniformTypeDesc
     bool isArray() const { return elements > 0; }
 };
 
-struct ConstantBufferView
-{
+struct ConstantBufferView {
     ConstantBuffer* buffer;
     size_t offset;
     void setData(const void* data, size_t size);
     void* writableData();
-    void clear() { buffer = nullptr; offset = 0; }
+    void clear() {
+        buffer = nullptr;
+        offset = 0;
+    }
 };
 
 } // namespace detail

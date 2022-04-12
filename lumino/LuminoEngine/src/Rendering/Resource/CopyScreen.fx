@@ -37,6 +37,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
 
 technique Default
 {
+    ShadingModel = Unlit;
     pass Pass0
     {
         VertexShader = VS_Main;

@@ -405,7 +405,7 @@ Ref<VRM_Material> VRMImporter::parseMaterial(const tinygltf::Value& value)
 Shader* VRMImporter::getShader(const String& name) const
 {
 	if (name == _TT("VRM/MToon")) {
-		return EngineDomain::renderingManager()->builtinShader(BuiltinShader::MToon);
+        return RenderingManager::instance()->builtinShader(BuiltinShader::MToon);
 	}
 	else {
 		LN_NOTIMPLEMENTED();

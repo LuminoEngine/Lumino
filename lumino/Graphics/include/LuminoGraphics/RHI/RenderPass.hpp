@@ -19,6 +19,15 @@ class RenderPass
     : public Object
     , public IGraphicsResource {
 public:
+    static RenderPass* get(RenderTargetTexture* renderTarget);
+    static RenderPass* get(
+        RenderTargetTexture* renderTarget,
+        DepthBuffer* depthBuffer,
+        ClearFlags clearFlags = ClearFlags::None,
+        const Color& clearColor = Color(0, 0, 0, 0),
+        float clearDepth = 1.0f,
+        uint8_t clearStencil = 0x00);
+
     /** この RenderPass が示すレンダリング先のビューの幅を取得します。 */
     int width() const { return m_viewSize.width; }
 
@@ -57,6 +66,12 @@ public:
 
     void setClearValues(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
+    /** 指定した RenderTargetTexture がこの RenderPass にアタッチされているかを確認します。 */
+    bool containsRenderTarget(RenderTargetTexture* renderTarget) const;
+
+    /** 指定した RenderTargetTexture がこの RenderPass にアタッチされているかを確認します。 */
+    bool containsDepthBuffer(DepthBuffer* depthBuffer) const;
+
 protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
@@ -81,17 +96,19 @@ private:
     Ref<detail::IRenderPass> m_rhiObjectNoClear;
     std::array<Ref<RenderTargetTexture>, GraphicsCommandList::MaxMultiRenderTargets> m_renderTargets;
     Ref<DepthBuffer> m_depthBuffer;
-    ClearFlags m_clearFlags;
+    SizeI m_viewSize;
     Color m_clearColor;
     float m_clearDepth;
     uint8_t m_clearStencil;
-    SizeI m_viewSize;
-    bool m_dirty;
-    bool m_active;
-    bool m_externalRHIRenderPass;
+    ClearFlags m_clearFlags;
+    bool m_dirty : 1;
+    bool m_active : 1;
+    bool m_externalRHIRenderPass : 1;
+    bool m_freezed : 1;
 
-    friend class detail::GraphicsResourceInternal;
     friend class GraphicsCommandList;
+    friend class detail::GraphicsResourceInternal;
+    friend class detail::RenderPassCache;
 };
 
 // namespace detail {

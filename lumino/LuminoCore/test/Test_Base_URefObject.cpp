@@ -26,6 +26,10 @@ static void TestFunc1(const URef<UTestObjA>& ptr) {
 static void TestFunc2(UTestObjA* ptr) {
 }
 
+class TestObjC : public URefObject {
+public:
+};
+
 TEST_F(Test_Base_URefObject, Construct) {
     URef<UTestObjA> ref1;
     URef<UTestObjA> ref2(nullptr);

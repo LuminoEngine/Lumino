@@ -488,7 +488,7 @@ void WorldRenderView::createGridPlane()
 //#else
 //    auto shader = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 //#endif
-    auto shader = detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::InfinitePlaneGrid);
+    auto shader = detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::InfinitePlaneGrid);
 
     m_gridPlaneMaterial = makeObject<Material>();
     m_gridPlaneMaterial->setShader(shader);

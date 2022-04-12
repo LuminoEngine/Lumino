@@ -145,7 +145,6 @@ public:
     const Ref<InputManager>& inputManager() const { return m_inputManager; }
     const Ref<AudioManager>& audioManager() const { return m_audioManager; }
     const Ref<MeshManager>& meshManager() const { return m_meshManager; }
-    const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
     const Ref<EffectManager>& effectManager() const { return m_effectManager; }
     const Ref<PhysicsManager>& physicsManager() const { return m_physicsManager; }
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
@@ -207,7 +206,6 @@ private:
     Ref<InputManager> m_inputManager;
     Ref<AudioManager> m_audioManager;
     Ref<MeshManager> m_meshManager;
-    Ref<RenderingManager> m_renderingManager;
     Ref<EffectManager> m_effectManager;
     Ref<PhysicsManager> m_physicsManager;
     Ref<VisualManager> m_visualManager;

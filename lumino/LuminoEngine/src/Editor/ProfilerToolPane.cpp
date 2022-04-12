@@ -119,7 +119,7 @@ void ProfilerToolPane::onGui()
 		}
 
 		{
-			RenderingProfiler* profiler = EngineDomain::renderingManager()->profiler().get();
+			RenderingProfiler* profiler = RenderingManager::instance()->profiler().get();
 			for (int i = 0; i < profiler->sceneRendererSectionCount(); i++) {
 				const auto& section = profiler->sceneRendererSection(i);
 				ImGui::Text("Render[%d:%s]: %.3f", i, section.name, section.time());

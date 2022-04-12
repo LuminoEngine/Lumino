@@ -10,6 +10,7 @@ namespace kokage {
 class UnifiedShaderCompiler {
 public:
     UnifiedShaderCompiler(detail::ShaderManager* manager, DiagnosticsManager* diag);
+    ~UnifiedShaderCompiler();
 
     // ※ inputCode は非 const。中身が書き換わる。
     bool compile(

@@ -1,0 +1,81 @@
+﻿#include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
+#include <LuminoEngine/Rendering/Kanata/KPrimitiveMeshRenderer.hpp>
+#include "../RenderingManager.hpp"
+#include "../../Mesh/MeshGeneraters/MeshGenerater.hpp"
+
+namespace ln {
+namespace kanata {
+
+PrimitiveMeshRenderer::PrimitiveMeshRenderer(detail::RenderingManager* manager)
+    : m_currentCollector(nullptr) {
+}
+void PrimitiveMeshRenderer::beginBatch(BatchCollector* collector) {
+    LN_DCHECK(!m_currentCollector);
+    LN_DCHECK(collector);
+    m_currentCollector = collector;
+    m_generators.clear();
+}
+
+void PrimitiveMeshRenderer::endBatch(BatchCollector* collector) {
+    LN_DCHECK(m_currentCollector);
+    LN_DCHECK(m_currentCollector == collector);
+
+    // Prepare buffers
+    int32_t vertexCount = 0;
+    int32_t indexCount = 0;
+    for (auto* gen : m_generators) {
+        assert(gen->primitiveType() == PrimitiveTopology::TriangleList);    // TODO: 今のところこれだけ対応
+        vertexCount += gen->vertexCount();
+        indexCount += gen->indexCount();
+    }
+    auto view = m_currentCollector->allocateMeshBuffer(vertexCount, indexCount);
+
+    
+    // Create Vertex and Index buffers
+    //Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->writableData(0, vertexCount * sizeof(Vertex));
+    //uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map(MapMode::Write);
+    detail::MeshGeneraterBuffer buffer(m_currentCollector->dataAllocator());
+    size_t vertexOffset = 0;
+    size_t indexOffset = 0;
+    for (auto* gen : m_generators) {
+        buffer.setBuffer(view.vertexData + vertexOffset, view.indexData + indexOffset, IndexBufferFormat::UInt32, vertexOffset);
+        buffer.generate(gen);
+        vertexOffset += gen->vertexCount();
+        indexOffset += gen->indexCount();
+    }
+
+    Batch* batch = m_currentCollector->newBatch<Batch>();
+    BatchElement batchElement;
+    batchElement.vertexBuffers[0] = view.vertexBuffer;
+    batchElement.indexBuffer = view.indexBuffer;
+    batchElement.firstIndex = view.firstIndex;
+    batchElement.firstVertex = view.vertexOffset;
+    batchElement.primitiveCount = indexCount / 3;   // TODO: TriangleList only
+    batch->elemets.push(batchElement);
+    batch->vertexLayout = m_currentCollector->standardVertexDeclaration();
+    batch->primitiveTopology = PrimitiveTopology::TriangleList;
+
+    m_currentCollector = nullptr;
+}
+
+void PrimitiveMeshRenderer::drawMeshGenerater(detail::MeshGenerater* generater) {
+    m_generators.push(generater);
+}
+
+void PrimitiveMeshRenderer::drawBox(const Box& box, const Color& color, const Matrix& localTransform) {
+    auto* g = m_currentCollector->newFrameRawData<detail::RegularBoxMeshFactory>();
+
+    // m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+    //  TODO: box.center
+    g->m_size = Vector3(box.width, box.height, box.depth);
+    g->setColor(color);
+    g->setTransform(localTransform); // TODO:
+                                    // TODO: bouding box
+
+    m_generators.push(g);
+}
+
+} // namespace kanata
+} // namespace ln
+

@@ -414,7 +414,6 @@ namespace detail {
 
 WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
 {
-    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry);
 }
 
 void WorldSceneGraphRenderingContext::resetForBeginRendering()

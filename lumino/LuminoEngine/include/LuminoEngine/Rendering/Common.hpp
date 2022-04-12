@@ -5,6 +5,7 @@
 
 #define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
 #define LN_RLI_BATCH 1
+//#define LN_USE_KANATA 1
 
 namespace ln {
 class Font;
@@ -533,6 +534,12 @@ public:
 	}
 };
 
+struct ShaderTechniqueRequestClasses {
+    kokage::ShaderTechniqueClass_MeshProcess meshProcess;
+    kokage::ShaderTechniqueClass_DrawMode drawMode;
+    kokage::ShaderTechniqueClass_Normal normal;
+    kokage::ShaderTechniqueClass_Roughness roughness;
+};
 
 } // namespace detail
 } // namespace ln

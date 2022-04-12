@@ -135,6 +135,8 @@ public:
 
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
 
+    ~EngineContext2();
+
 private:
     EngineContext2();
     bool init(const RuntimeModuleSettings& settings);
@@ -150,7 +152,7 @@ private:
     std::vector<Ref<TypeInfo>> m_typeInfos;
     TypeInfo* m_objectTypeInfo;
 
-    URef<detail::RuntimeManager> m_runtimeManager;
+    Ref<detail::RuntimeManager> m_runtimeManager;
     URef<detail::AssetManager> m_assetManager;
 };
 

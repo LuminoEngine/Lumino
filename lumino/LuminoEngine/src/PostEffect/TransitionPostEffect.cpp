@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/RHI/RenderPass.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
@@ -94,13 +95,14 @@ bool TransitionPostEffectInstance::init(TransitionPostEffect* owner)
     m_owner = owner;
 
     m_withoutMaskMaterial = makeObject<Material>();
-    m_withoutMaskMaterial->setShader(EngineDomain::renderingManager()->builtinShader(BuiltinShader::TransitionEffectWithoutMask));
+    m_withoutMaskMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::TransitionEffectWithoutMask));
 
     m_withMaskMaterial = makeObject<Material>();
-    m_withMaskMaterial->setShader(EngineDomain::renderingManager()->builtinShader(BuiltinShader::TransitionEffectWithMask));
+    m_withMaskMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::TransitionEffectWithMask));
     
     m_copyMaterial = makeObject<Material>();
-    m_copyMaterial->setShadingModel(ShadingModel::Unlit);
+    m_copyMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::CopyScreen));
+    //m_copyMaterial->setShadingModel(ShadingModel::Unlit);
 
     return true;
 }
@@ -114,10 +116,11 @@ bool TransitionPostEffectInstance::onRender(RenderView* renderView, CommandList*
             // このときはビューの背景色を使う。
 
             // TODO: scoped または blit みたいに RT 直接指定の Clear
-            Ref<RenderTargetTexture> oldTarget = context->renderTarget(0);
-            context->setRenderTarget(0, m_overrayTarget);
+            auto* oldTarget = context->renderPass();
+            auto* newTarget = RenderPass::get(m_overrayTarget, nullptr);
+            context->setRenderPass(oldTarget);
             context->clear(ClearFlags::Color, renderView->backgroundColor());
-            context->setRenderTarget(0, oldTarget);
+            context->setRenderPass(oldTarget);
         }
         else {
             std::swap(m_previousFrameTarget, m_overrayTarget);

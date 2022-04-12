@@ -131,7 +131,7 @@ void SceneManager::dispose()
 
 Shader* SceneManager::skydomeShader() const
 {
-	return detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::SkyDome);
+    return detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::SkyDome);
 }
 
 Level* SceneManager::loadScene(const StringView& sceneAssetFilePath)

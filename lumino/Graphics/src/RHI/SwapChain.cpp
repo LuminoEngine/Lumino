@@ -11,6 +11,7 @@
 #include "RenderTargetTextureCache.hpp"
 #include "Backend/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/RHI/detail/RenderingCommandList.hpp>
+#include "RenderPassCache.hpp"
 #include "SingleFrameAllocator.hpp"
 
 namespace ln {
@@ -147,6 +148,7 @@ void SwapChain::present(GraphicsCommandList* context) {
     rhi->present();
 
     manager->frameBufferCache()->gcObjects();
+    manager->renderPassCache()->collectGarbage();
 }
 
 detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsCommandList* context, bool* outModified) const {

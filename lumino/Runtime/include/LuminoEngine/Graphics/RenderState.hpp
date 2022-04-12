@@ -207,6 +207,9 @@ struct DepthStencilStateDesc
 
     /** ステンシルテストの参照値 (default:0xFF) */
     uint8_t stencilReferenceValue;
+    // TODO: stencilRef は他のパラメータと比べて頻繁に変わる可能性がある。
+    // DepthStencilState には含めないほうがいいかもしれない。
+    // OMSetStencilRef、vkCmdSetStencilReference などで個別指定できる。
 
     /** 法線がカメラの方向を向いている面のステンシル処理 */
     StencilOpDesc frontFace;

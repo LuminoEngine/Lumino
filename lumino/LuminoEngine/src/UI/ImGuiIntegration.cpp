@@ -76,8 +76,8 @@ bool ImGuiIntegration::init(UIFrameWindow* frameWindow)
 	//memcpy(, pixels, width * height * bytes_per_pixel);
 	io.Fonts->TexID = (ImTextureID)m_fontTexture;
 
-	m_vertexLayout = detail::EngineDomain::renderingManager()->standardVertexDeclaration();
-	m_shader = detail::EngineDomain::renderingManager()->builtinShader(BuiltinShader::Sprite);
+	m_vertexLayout = detail::RenderingManager::instance()->standardVertexDeclaration();
+	m_shader = detail::RenderingManager::instance()->builtinShader(BuiltinShader::Sprite);
 	m_renderPass = makeObject<RenderPass>();
 	m_renderPass->setClearFlags(ClearFlags::All);
 

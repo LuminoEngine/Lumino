@@ -13,10 +13,10 @@ public:
 
     StreamingBufferPage();
     Result init(Type type, size_t elementSize, size_t count);
-    const Ref<Object>& resource() const { return m_resource; }
+    const Ref<RefObject>& resource() const { return m_resource; }
 
 private:
-    Ref<Object> m_resource;
+    Ref<RefObject> m_resource;
 };
 
 class StreamingBufferAllocatorManager : public URefObject {
@@ -37,10 +37,10 @@ private:
     std::deque<StreamingBufferPage*> m_freePages;   // page references
 };
 
-class StreamingBufferAllocator {
+class StreamingBufferAllocator : public URefObject {
 public:
     struct View {
-        Object* resource;
+        RefObject* resource;
         size_t offset;
         size_t count;
     };
@@ -49,7 +49,8 @@ public:
 
     void cleanup();
 
-    // LinearAllocator とは異なり、現在の Page が要求した count よりも小さいときは残数を返す。
+    // LinearAllocator とは異なり、現在の Page が要求した count よりも小さいときは、
+    // ラージバッファを確保せずに残数を返す。
     // 返されたバッファのサイズが足りないときは、呼び出し側で繰り返し allocate() を呼ぶ必要がある。
 	View allocate(size_t count);
 

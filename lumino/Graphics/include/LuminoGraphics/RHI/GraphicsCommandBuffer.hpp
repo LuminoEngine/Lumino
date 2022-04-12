@@ -26,7 +26,23 @@ public:
     static const int MaxVertexStreams = detail::MaxVertexStreams;
 
 public:
-    /** @defgroup State */
+    /** @defgroup View rects */
+    /** @{ */
+
+    /** ビューポートの矩形を設定します。 */
+    void setViewportRect(const Rect& value);
+
+    /** ビューポートの矩形を取得します。 */
+    const Rect& viewportRect() const { return m_staging.viewportRect; }
+
+    /** シザー領域の矩形を設定します。 */
+    void setScissorRect(const Rect& value);
+
+    /** シザー領域の矩形を取得します。 */
+    const Rect& scissorRect() const { return m_staging.scissorRect; }
+
+    /** @} */
+    /** @defgroup Pipeline state */
     /** @{ */
 
     /** BlendState を設定します。 */
@@ -46,18 +62,6 @@ public:
 
     /** DepthStencilState を取得します。 */
     const DepthStencilStateDesc& depthStencilState() const { return m_staging.depthStencilState; }
-
-    /** ビューポートの矩形を設定します。 */
-    void setViewportRect(const Rect& value);
-
-    /** ビューポートの矩形を取得します。 */
-    const Rect& viewportRect() const { return m_staging.viewportRect; }
-
-    /** シザー領域の矩形を設定します。 */
-    void setScissorRect(const Rect& value);
-
-    /** シザー領域の矩形を取得します。 */
-    const Rect& scissorRect() const { return m_staging.scissorRect; }
 
     /** VertexLayout を設定します。 */
     void setVertexLayout(VertexLayout* value);

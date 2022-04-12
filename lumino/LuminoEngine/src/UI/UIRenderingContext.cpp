@@ -17,7 +17,6 @@ namespace ln {
 
 UIRenderingContext::UIRenderingContext()
 {
-    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry);
     builder()->m_stateStackMode = detail::StateStackMode::ScissorPushPop;
 }
 

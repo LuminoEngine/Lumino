@@ -42,7 +42,7 @@ SSRPostEffectCore::SSRPostEffectCore()
 bool SSRPostEffectCore::init(Material* compositeMaterial)
 {
 
-    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRRayTracing);
+    auto shader1 = RenderingManager::instance()->builtinShader(BuiltinShader::SSRRayTracing);
     m_ssrMaterial = makeObject<Material>();
     m_ssrMaterial->setShader(shader1);
     m_ssrMaterial_ColorSampler = shader1->findParameter(_TT("_ColorSampler"));
@@ -50,7 +50,7 @@ bool SSRPostEffectCore::init(Material* compositeMaterial)
     m_ssrMaterial_ViewDepthSampler = shader1->findParameter(_TT("_ViewDepthSampler"));
     m_ssrMaterial_MetalRoughSampler = shader1->findParameter(_TT("_MetalRoughSampler"));
 
-    auto shader2 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRBlur);
+    auto shader2 = RenderingManager::instance()->builtinShader(BuiltinShader::SSRBlur);
     m_ssrBlurMaterial1 = makeObject<Material>();
     m_ssrBlurMaterial1->setShader(shader2);
 
@@ -58,7 +58,7 @@ bool SSRPostEffectCore::init(Material* compositeMaterial)
     m_ssrBlurMaterial2->setShader(shader2);
 
     if (!compositeMaterial) {
-        auto shader3 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRComposite);
+        auto shader3 = RenderingManager::instance()->builtinShader(BuiltinShader::SSRComposite);
         m_ssrCompositeMaterial = makeObject<Material>();
         m_ssrCompositeMaterial->setShader(shader3);
         m_paramColorSampler = shader3->findParameter(_TT("_ColorSampler"));

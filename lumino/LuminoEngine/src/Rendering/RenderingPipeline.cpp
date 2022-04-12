@@ -19,7 +19,7 @@ namespace detail {
 
 void RenderingPipeline::init()
 {
-    //RenderingManager* manager = detail::EngineDomain::renderingManager();
+    //RenderingManager* manager = detail::RenderingManager::instance();
     //m_frameBufferCache = makeRef<detail::FrameBufferCache>(
     //    manager->renderTargetTextureCacheManager(), manager->depthBufferCacheManager());
     m_clearRenderPass = makeObject<RenderPass>();
@@ -50,7 +50,7 @@ SceneRenderingPipeline::~SceneRenderingPipeline()
 void SceneRenderingPipeline::init()
 {
     RenderingPipeline::init();
-    RenderingManager* manager = detail::EngineDomain::renderingManager();
+    RenderingManager* manager = detail::RenderingManager::instance();
 
     m_sceneRenderer = makeRef<detail::ClusteredShadingSceneRenderer>();
     m_sceneRenderer->init(manager);
@@ -106,7 +106,7 @@ void SceneRenderingPipeline::render(
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
 
-    RenderingProfiler* profiler = detail::EngineDomain::renderingManager()->profiler().get();
+    RenderingProfiler* profiler = detail::RenderingManager::instance()->profiler().get();
     profiler->beginSceneRenderer("Standard");
 
     m_elementList = elementList;
@@ -174,28 +174,44 @@ void SceneRenderingPipeline::render(
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPart::BackgroundSky, nullptr);
 
     m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
+
+    
     m_sceneRenderer->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::Geometry, sceneGlobalParams, &m_cullingResult);
+#if LN_USE_KANATA
+    if (m_sceneRenderer->mainLightInfo()) {
+        m_sceneRenderer->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_sceneRenderer->shadowCasterPass());
+    }
+    m_sceneRenderer->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
+    m_sceneRenderer->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+    m_sceneRenderer->render_Kanata(graphicsContext);
+#else
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
     //}
     if (m_sceneRenderer->mainLightInfo()) {
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->shadowCasterPass());
+        m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->shadowCasterPass());
     }
-    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
-    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+    m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
+    m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+#endif
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
     m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
     m_sceneRenderer->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::Gizmo, nullptr, &m_cullingResult);
+#if LN_USE_KANATA
+    m_sceneRenderer->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+    m_sceneRenderer->render_Kanata(graphicsContext);
+#else
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     //    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, pass);
     //}
     //m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->gbufferPass());
-    m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+    m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_sceneRenderer->geometryPass());
+#endif
 
 
 
@@ -204,10 +220,15 @@ void SceneRenderingPipeline::render(
         //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
 		//m_sceneRenderer_PostEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
         m_sceneRenderer_PostEffectPhase->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::PostEffect, nullptr, &m_cullingResult);  // TODO: PostEffect なので ZSort 要らないモード追加していいかも
+#if LN_USE_KANATA
+        m_sceneRenderer_PostEffectPhase->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
+        m_sceneRenderer_PostEffectPhase->render_Kanata(graphicsContext);
+#else
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
-            m_sceneRenderer_PostEffectPhase->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
+        m_sceneRenderer_PostEffectPhase->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
         //}
+#endif
     }
 
 
@@ -218,7 +239,12 @@ void SceneRenderingPipeline::render(
         m_unlitRendererPass_Normal->setClearInfo(localClearInfo);
         renderViewInfo.cameraInfo = renderView->viewProjection(RenderPart::Gizmo2D);
         m_sceneRenderer->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::Gizmo2D, nullptr, &m_cullingResult);
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_Normal);
+#if LN_USE_KANATA
+        m_sceneRenderer->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_unlitRendererPass_Normal);
+        m_sceneRenderer->render_Kanata(graphicsContext);
+#else
+        m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_Normal);
+#endif
     }
 
 
@@ -246,7 +272,7 @@ FlatRenderingPipeline::FlatRenderingPipeline()
 void FlatRenderingPipeline::init()
 {
 	RenderingPipeline::init();
-	RenderingManager* manager = detail::EngineDomain::renderingManager();
+	RenderingManager* manager = detail::RenderingManager::instance();
 
 	m_sceneRenderer = makeRef<detail::SceneRenderer>();
 	m_sceneRenderer->init();
@@ -270,7 +296,7 @@ void FlatRenderingPipeline::render(
     detail::DrawElementList* elementList,
     detail::CommandListServer* commandListServer)
 {
-    RenderingProfiler* profiler = detail::EngineDomain::renderingManager()->profiler().get();
+    RenderingProfiler* profiler = detail::RenderingManager::instance()->profiler().get();
     profiler->beginSceneRenderer("Flat");
 
     // Culling
@@ -290,10 +316,16 @@ void FlatRenderingPipeline::render(
 
     //clear(graphicsContext, renderTarget, clearInfo);
     m_unlitRendererPass->setClearInfo(mainPassClearInfo);
+
     m_sceneRenderer->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::Geometry, nullptr, &m_cullingResult);
+#if LN_USE_KANATA
+    m_sceneRenderer->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_unlitRendererPass);
+    m_sceneRenderer->render_Kanata(graphicsContext);
+#else
+    //m_sceneRenderer->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::Geometry, nullptr, &m_cullingResult);
 	//m_sceneRenderer->render(graphicsContext, this, renderTarget, depthBuffer, *mainCameraInfo);
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
+    m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
     //}
 
 	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
@@ -308,9 +340,10 @@ void FlatRenderingPipeline::render(
         m_sceneRenderer->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::PostEffect, nullptr, &m_cullingResult);
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, renderViewInfo.cameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
-        m_sceneRenderer->renderPass(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
+        m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
         //}
     }
+#endif
 
     // TODO: scoped
     DepthBuffer::releaseTemporary(depthBuffer);

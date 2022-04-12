@@ -11,7 +11,7 @@ namespace detail {
 // DrawElementListBuilder
 
 DrawElementListBuilder::DrawElementListBuilder()
-    : m_manager(EngineDomain::renderingManager())
+    : m_manager(RenderingManager::instance())
     , m_currentCommandFence(0)
 {
 }
@@ -53,27 +53,16 @@ void DrawElementListBuilder::advanceFence()
     m_currentCommandFence++;
 }
 
-void DrawElementListBuilder::setRenderTarget(int index, RenderTargetTexture * value)
-{
-	if (primaryFrameBufferStageParameters().m_renderTargets[index] != value) {
-		primaryFrameBufferStageParameters().m_renderTargets[index] = value;
-		m_modified = true;
+void DrawElementListBuilder::setRenderPass(RenderPass* value) {
+    if (primaryFrameBufferStageParameters().m_renderPass != value) {
+        primaryFrameBufferStageParameters().m_renderPass = value;
+        m_modified = true;
         advanceFence();
-	}
+    }
 }
 
-RenderTargetTexture* DrawElementListBuilder::renderTarget(int index) const
-{
-    return primaryFrameBufferStageParameters().m_renderTargets[index];
-}
-
-void DrawElementListBuilder::setDepthBuffer(DepthBuffer * value)
-{
-	if (primaryFrameBufferStageParameters().m_depthBuffer != value) {
-		primaryFrameBufferStageParameters().m_depthBuffer = value;
-		m_modified = true;
-        advanceFence();
-	}
+RenderPass* DrawElementListBuilder::renderPass() const {
+    return primaryFrameBufferStageParameters().m_renderPass;
 }
 
 void DrawElementListBuilder::setViewportRect(const RectI & value)
