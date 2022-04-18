@@ -233,7 +233,7 @@ void ImGuiIntegration::render(GraphicsCommandList* graphicsContext, RenderTarget
 		LNRenderViewBuffer buf3;
 		descriptor->setUniformBufferData(2, &buf3, sizeof(LNRenderViewBuffer));
 	}
-	graphicsContext->setShaderDescriptor(descriptor);
+	graphicsContext->setShaderDescriptor_deprecated(descriptor);
 
 	//std::cout << "----" << std::endl;
 	//std::cout << "CmdListsCount: " << draw_data->CmdListsCount << std::endl;
@@ -291,7 +291,7 @@ void ImGuiIntegration::render(GraphicsCommandList* graphicsContext, RenderTarget
 	//std::cout << "----" << std::endl;
 
 	graphicsContext->endRenderPass();	// TODO: scoped
-	graphicsContext->setShaderDescriptor(nullptr);
+	graphicsContext->setShaderDescriptor_deprecated(nullptr);
 	graphicsContext->resetState();
 }
 

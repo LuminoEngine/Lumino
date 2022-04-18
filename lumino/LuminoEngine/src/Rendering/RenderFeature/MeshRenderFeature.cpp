@@ -131,7 +131,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 			descriptor->setUniformBufferData(shader.blendInfoGID, &blendInfo, sizeof(blendInfo));
 
 			context->setShaderPass(shader.shaderPass);
-			context->setShaderDescriptor(descriptor);
+			context->setShaderDescriptor_deprecated(descriptor);
 			context->dispatch(std::max(1, mesh->vertexCount() / 64), 1, 1);
 
 			//descriptor->setst

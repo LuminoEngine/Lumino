@@ -7,8 +7,12 @@
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KScreenRectangleRenderFeature.hpp>
+#include <LuminoEngine/Rendering/Kanata/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KMeshRenderFeature.hpp>
+#include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteRenderFeature.hpp>
+#include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
 #include "../../Font/src/FontManager.hpp"
 #include "../Mesh/MeshModelInstance.hpp"
 #include "RenderElement.hpp"
@@ -23,14 +27,28 @@ CommandList::CommandList()
     : m_manager(detail::RenderingManager::instance())
     , m_elementList(makeRef<detail::DrawElementList>(detail::RenderingManager::instance()))
     , m_builder(makeRef<detail::DrawElementListBuilder>())
+    , m_batchProxyCollector(makeURef<kanata::BatchProxyCollector>(detail::RenderingManager::instance())) 
     , m_batchCollector(makeURef<kanata::BatchCollector>(detail::RenderingManager::instance())) {
     m_builder->setTargetList(m_elementList);
 }
 
-void CommandList::clearCommandsAndState() {
+CommandList::~CommandList() {
+    if (m_batchCollector) {
+        m_batchCollector->dispose();
+        m_batchCollector = nullptr;
+    }
+    if (m_batchProxyCollector) {
+        m_batchProxyCollector->dispose();
+        m_batchProxyCollector = nullptr;
+    }
+}
+
+void CommandList::clearCommandsAndState(const RenderViewPoint* viewPoint) {
     m_builder->resetForBeginRendering();
     m_elementList->clear();
-    m_batchCollector->clear();
+    m_batchCollector->clear(viewPoint);
+    m_batchProxyCollector->clear();
+    m_builder->setViewPoint(viewPoint);
 }
 
 //void CommandList::resolveSingleFrameBatchProxies() {
@@ -55,26 +73,32 @@ void CommandList::setScissorRect(const RectI& value) {
 
 void CommandList::setTransfrom(const Matrix& value) {
     m_builder->setTransfrom(value);
+    m_batchProxyCollector->primaryState()->setTransform(value);
 }
 
 void CommandList::setBlendMode(Optional<BlendMode> value) {
     m_builder->setBlendMode(value);
+    m_batchProxyCollector->primaryState()->setBlendMode(value);
 }
 
 void CommandList::setShadingModel(Optional<ShadingModel> value) {
     m_builder->setShadingModel(value);
+    m_batchProxyCollector->primaryState()->setShadingModel(value);
 }
 
 void CommandList::setCullingMode(Optional<CullMode> value) {
     m_builder->setCullingMode(value);
+    m_batchProxyCollector->primaryState()->setCullingMode(value);
 }
 
 void CommandList::setDepthTestEnabled(Optional<bool> value) {
     m_builder->setDepthTestEnabled(value);
+    m_batchProxyCollector->primaryState()->setDepthTestEnabled(value);
 }
 
 void CommandList::setDepthWriteEnabled(Optional<bool> value) {
     m_builder->setDepthWriteEnabled(value);
+    m_batchProxyCollector->primaryState()->setDepthWriteEnabled(value);
 }
 
 void CommandList::setOpacity(float value) {
@@ -111,14 +135,17 @@ void CommandList::setTextColor(const Color& value) {
 
 void CommandList::resetState() {
     m_builder->reset2();
+    m_batchProxyCollector->primaryState()->reset();
 }
 
 void CommandList::pushState(bool reset) {
     m_builder->pushState(reset);
+    m_batchProxyCollector->pushState(reset);
 }
 
 void CommandList::popState() {
     m_builder->popState();
+    m_batchProxyCollector->popState();
 }
 
 void CommandList::clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil) {
@@ -152,7 +179,7 @@ void CommandList::clear(Flags<ClearFlags> flags, const Color& color, float z, ui
 
 void CommandList::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor) {
 #ifdef LN_USE_KANATA
-    auto* proxy = m_batchCollector->newSingleFrameBatchProxy<kanata::SingleLineSingleFrameBatchProxy>();
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<kanata::SingleLineSingleFrameBatchProxy>();
     proxy->data.point1 = from;
     proxy->data.point1Color = fromColor;
     proxy->data.point2 = to;
@@ -240,13 +267,29 @@ void CommandList::drawLineStripPrimitive(int pointCount, const Vector3* points, 
 #endif
 }
 
-void CommandList::drawPlane(float width, float depth, const Color& color) {
-    drawPlane(width, depth, Vector2::Zero, Vector2::Ones, color);
+void CommandList::drawPlane(Material* material, float width, float depth, const Color& color) {
+    drawPlane(material, width, depth, Vector2::Zero, Vector2::Ones, color);
 }
 
-void CommandList::drawPlane(float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color) {
+void CommandList::drawPlane(Material* material, float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color) {
 #ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
+    class DrawPlaneSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        detail::PlaneMeshGenerater data;
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::PrimitiveMeshRenderer* r = collector->primitiveRenderer();
+            r->beginBatch(collector, material);
+            r->drawMeshGenerater(&data);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawPlaneSFBatchProxy>();
+    proxy->material = material;
+    proxy->data.size.set(width, depth);
+    proxy->data.uv[0] = uv1;
+    proxy->data.uv[1] = uv2;
+    proxy->data.setColor(color);
 #else
     class DrawPlane : public detail::RenderDrawElement {
     public:
@@ -267,9 +310,26 @@ void CommandList::drawPlane(float width, float depth, const Vector2& uv1, const 
 #endif
 }
 
-void CommandList::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform) {
+void CommandList::drawSphere(Material* material, float radius, int slices, int stacks, const Color& color, const Matrix& localTransform) {
 #ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
+    class DrawSphereSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        detail::RegularSphereMeshFactory data;
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::PrimitiveMeshRenderer* r = collector->primitiveRenderer();
+            r->beginBatch(collector, material);
+            r->drawMeshGenerater(&data);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawSphereSFBatchProxy>();
+    proxy->material = material;
+    proxy->data.m_radius = radius;
+    proxy->data.m_slices = slices;
+    proxy->data.m_stacks = stacks;
+    proxy->data.setColor(color);
+    proxy->data.setTransform(/*element->combinedWorldMatrix() * */ localTransform);
 #else
     class DrawSphere : public detail::RenderDrawElement {
     public:
@@ -294,7 +354,7 @@ void CommandList::drawSphere(float radius, int slices, int stacks, const Color& 
 
 void CommandList::drawBox(const Box& box, const Color& color, const Matrix& localTransform) {
 #ifdef LN_USE_KANATA
-    auto* proxy = m_batchCollector->newSingleFrameBatchProxy<kanata::RegularBoxSingleFrameBatchProxy>();
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<kanata::RegularBoxSingleFrameBatchProxy>();
     proxy->data.m_size = Vector3(box.width, box.height, box.depth);
     proxy->data.setColor(color);
     proxy->data.setTransform(/*element->combinedWorldMatrix() **/ localTransform);
@@ -398,9 +458,16 @@ void CommandList::blit(Material* source, RenderTargetTexture* destination/*, Ren
         }
     };
 
-    auto* proxy = m_batchCollector->newSingleFrameBatchProxy<ScreenRectangleSingleFrameBatchProxy>();
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<ScreenRectangleSingleFrameBatchProxy>();
     proxy->material = source;
     proxy->renderPass = destination ? RenderPass::get(destination) : nullptr;
+#ifdef LN_DEBUG
+    if (proxy->renderPass) {
+        if (proxy->renderPass->renderTarget(0) != destination) {
+            LN_ERROR();
+        }
+    }
+#endif
 #else
     class Blit : public detail::RenderDrawElement {
     public:
@@ -453,7 +520,27 @@ void CommandList::drawSprite(
     const Flags<detail::SpriteFlipFlags>& flipFlags,
     Material* material) {
 #ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
+    class DrawSpriteSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        kanata::SpriteData sprite;
+        void getBatch(kanata::BatchCollector* collector) override {
+            auto* r = collector->spriteRenderFeature().get();
+            r->beginBatch(collector, material);
+            r->drawSprite(sprite);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawSpriteSFBatchProxy>();
+    proxy->material = material;
+    proxy->sprite.transform = transform;
+    proxy->sprite.size = size;
+    proxy->sprite.anchorRatio = anchor;
+    proxy->sprite.srcRect = srcRect;
+    proxy->sprite.color = color;
+    proxy->sprite.baseDirection = baseDirection;
+    proxy->sprite.billboardType = billboardType;
+    proxy->sprite.flipFlags = flipFlags;
 #else
     class DrawSprite : public detail::RenderDrawElement {
     public:
@@ -566,6 +653,7 @@ void CommandList::drawMesh(MeshResource* meshResource, int sectionIndex) {
 }
 
 void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex) {
+    if (LN_ASSERT(mesh)) return;
 #ifdef LN_USE_KANATA
     class MeshSingleFrameBatchProxy : public kanata::SingleFrameBatchProxy {
     public:
@@ -577,7 +665,7 @@ void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex) {
         }
     };
 
-    auto* proxy = m_batchCollector->newSingleFrameBatchProxy<MeshSingleFrameBatchProxy>();
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<MeshSingleFrameBatchProxy>();
     proxy->material = m_builder->material();
     proxy->mesh = mesh;
     proxy->sectionIndex = sectionIndex;
@@ -636,20 +724,24 @@ void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail:
 #endif
 }
 
-void CommandList::drawMeshInstanced(InstancedMeshList* list) {
+void CommandList::drawMeshInstanced(Material* material, InstancedMeshList* list) {
+    if (LN_ASSERT(material)) return;
+    if (LN_ASSERT(list)) return;
 #ifdef LN_USE_KANATA
     class InstancedMeshListSingleFrameBatchProxy : public kanata::SingleFrameBatchProxy {
     public:
+        Ref<Material> material;
         Ref<InstancedMeshList> list;
         void getBatch(kanata::BatchCollector* collector) override {
-            collector->meshRenderFeature()->drawMeshInstanced(collector, list);
+            collector->meshRenderFeature()->drawMeshInstanced(collector, material, list);
         }
     };
     if (list->instanceCount() <= 0) {
         return;
     }
 
-    auto* proxy = m_batchCollector->newSingleFrameBatchProxy<InstancedMeshListSingleFrameBatchProxy>();
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<InstancedMeshListSingleFrameBatchProxy>();
+    proxy->material = material;
     proxy->list = list;
 #else
     class DrawMeshInstanced : public detail::RenderDrawElement {
@@ -670,9 +762,6 @@ void CommandList::drawMeshInstanced(InstancedMeshList* list) {
 }
 
 void CommandList::drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font) {
-#ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
-#else
     if (text.isEmpty()) return;
 
     // TODO: cache
@@ -688,6 +777,35 @@ void CommandList::drawTextSprite(const StringView& text, const Color& color, con
         formattedText->font = m_manager->fontManager()->defaultFont();
     }
 
+#ifdef LN_USE_KANATA
+    class DrawTextElementSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        Ref<detail::FormattedText> formattedText;
+        // detail::FlexGlyphRun* glyphRun = nullptr; // TODO: RefObj
+        Vector2 anchor;
+        SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
+        Ref<SamplerState> samplerState;
+
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::SpriteTextRenderFeature* r = collector->spriteTextRenderFeature();
+            r->beginBatch(collector, material);
+            r->drawText(formattedText, anchor, baseDirection, samplerState, Matrix::Identity);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawTextElementSFBatchProxy>();
+    proxy->material = m_builder->material();
+    proxy->formattedText = formattedText;
+    proxy->anchor = anchor;
+    proxy->baseDirection = baseDirection;
+
+    if (baseDirection != SpriteBaseDirection::Basic2D) {
+        // is 3D.
+        proxy->samplerState = detail::GraphicsManager::instance()->linearSamplerState();
+    }
+#else
+
     m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
     element->formattedText = formattedText;
@@ -702,10 +820,6 @@ void CommandList::drawTextSprite(const StringView& text, const Color& color, con
 }
 
 void CommandList::drawText(const StringView& text, const Rect& area, TextAlignment alignment /*, TextCrossAlignment crossAlignment*/ /*, const Color& color, Font* font*/) {
-
-#ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
-#else
     // TODO: cache
     auto formattedText = makeRef<detail::FormattedText>();
     formattedText->text = text;
@@ -717,6 +831,28 @@ void CommandList::drawText(const StringView& text, const Rect& area, TextAlignme
     if (!formattedText->font) {
         formattedText->font = m_manager->fontManager()->defaultFont();
     }
+#ifdef LN_USE_KANATA
+
+    class DrawTextElementSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        Ref<detail::FormattedText> formattedText;
+        // detail::FlexGlyphRun* glyphRun = nullptr; // TODO: RefObj
+        Vector2 anchor;
+        SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
+        Ref<SamplerState> samplerState;
+
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::SpriteTextRenderFeature* r = collector->spriteTextRenderFeature();
+            r->beginBatch(collector, material);
+            r->drawText(formattedText, anchor, baseDirection, samplerState, Matrix::Identity);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawTextElementSFBatchProxy>();
+    proxy->material = m_builder->material();
+    proxy->formattedText = formattedText;
+#else
 
     m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
@@ -847,16 +983,13 @@ void CommandList::drawRegularPolygonPrimitive(int vertexCount, float radius, con
 #endif
 }
 
-RenderViewPoint* CommandList::viewPoint() const {
+const RenderViewPoint* CommandList::viewPoint() const {
     return m_builder->viewPoint();
-}
-
-void CommandList::setViewPoint(RenderViewPoint* value) {
-    m_builder->setViewPoint(value);
 }
 
 void CommandList::setBaseTransfrom(const Optional<Matrix>& value) {
     m_builder->setBaseTransfrom(value);
+    m_batchProxyCollector->primaryState()->setBaseTransform(value);
 }
 
 const Matrix& CommandList::baseTransform() const {
@@ -869,6 +1002,7 @@ void CommandList::setRenderPriority(int value) {
 
 void CommandList::setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value) {
     m_builder->setBaseBuiltinEffectData(value);
+    m_batchProxyCollector->primaryState()->setBuiltinEffectData(value);
 }
 
 void CommandList::setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value) {
@@ -878,5 +1012,25 @@ void CommandList::setAdditionalElementFlags(detail::RenderDrawElementTypeFlags v
 void CommandList::setObjectId(int value) {
     m_builder->setObjectId(value);
 }
+
+// FIXME: 旧 SceneRenderer のステートフルな実装と、新しい方式をつなぐための一時的な措置
+//void CommandList::applyBatchMaterial(kanata::Batch* batch) {
+//    const auto& params = m_builder->primaryGeometryStageParameters();
+//    if (params.m_blendMode) {
+//        batch->material.blendMode = *params.m_blendMode;
+//    }
+//    if (params.m_cullingMode) {
+//        batch->material.cullingMode = *params.m_cullingMode;
+//    }
+//    if (params.m_depthTestEnabled) {
+//        batch->material.depthTestEnabled = *params.m_depthTestEnabled;
+//    }
+//    if (params.m_depthWriteEnabled) {
+//        batch->material.depthWriteEnabled = *params.m_depthWriteEnabled;
+//    }
+//    if (params.shadingModel) {
+//        batch->material.shadingModel = *params.shadingModel;
+//    }
+//}
 
 } // namespace ln

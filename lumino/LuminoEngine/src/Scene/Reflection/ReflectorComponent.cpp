@@ -193,7 +193,7 @@ void ReflectorComponent::onRender(RenderingContext* context)
 
         auto uv1 = Vector2(1.0, 1.0);
 
-        context->drawPlane(m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
+        context->drawPlane(m_material, m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
     }
 }
 

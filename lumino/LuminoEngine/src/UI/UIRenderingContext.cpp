@@ -1,6 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
+#include <LuminoEngine/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
+#include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -45,21 +50,47 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
 
     Rect actualSourceRect = textureSourceRect;
     if (actualSourceRect.isZero()) actualSourceRect = Rect(0, 0, texture->width(), texture->height());
+    
+#if LN_USE_KANATA
+    class DrawFrameSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        Rect rect;
+        //Matrix transform;
+        Sprite9DrawMode imageDrawMode;
+        Thickness borderThickness;
+        Rect srcRect;
 
-    //if (mode == BrushImageDrawMode::Image) {
-    //    drawSolidRectangle(rect, color);
-    //}
-    //else {
-        auto* element = builder()->addNewDrawElement<detail::DrawFrameRectElement>(m_manager->frameRectRenderFeature());
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::FrameRectRenderFeature* r = collector->frameRectRenderFeature();
+            r->beginBatch(collector, material);
+            r->draw(rect, Matrix::Identity, borderThickness, srcRect, imageDrawMode);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = commandList()->batchProxyCollector()->newSingleFrameBatchProxy<DrawFrameSFBatchProxy>();
+    proxy->material = builder()->material();
+    proxy->rect = rect;
+    //proxy->transform = element->combinedWorldMatrix();
+    proxy->imageDrawMode = mode;
+    proxy->borderThickness = borderThickness;
+    proxy->srcRect = actualSourceRect;
+#else
+    // if (mode == BrushImageDrawMode::Image) {
+    //     drawSolidRectangle(rect, color);
+    // }
+    // else {
+    auto* element = builder()->addNewDrawElement<detail::DrawFrameRectElement>(m_manager->frameRectRenderFeature());
 
-        element->rect = rect;
-        element->transform = element->combinedWorldMatrix();
-        element->imageDrawMode = mode;
-        element->borderThickness = borderThickness;
-        element->srcRect = actualSourceRect;
-        //element->wrapMode = Sprite9DrawMode::StretchedBoxFrame;
-        //element->wrapMode = mode;
+    element->rect = rect;
+    element->transform = element->combinedWorldMatrix();
+    element->imageDrawMode = mode;
+    element->borderThickness = borderThickness;
+    element->srcRect = actualSourceRect;
+    // element->wrapMode = Sprite9DrawMode::StretchedBoxFrame;
+    // element->wrapMode = mode;
     //}
+#endif
 }
 
 //void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, Material* material*/, const Rect& textureSourceRect, const Color& color)
@@ -123,6 +154,28 @@ void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cor
 
 void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyle, const BoxElementShapeBackgroundStyle* backbroundStyle, const BoxElementShapeBorderStyle* borderStyle, const BoxElementShapeShadowStyle* shadowStyle)
 {
+#if LN_USE_KANATA
+    class DrawBoxElementSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        detail::BoxElementShapeCommandList commandList;
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::ShapesRenderFeature* r = collector->shapesRenderFeature();
+            r->beginBatch(collector, material);
+            r->drawCommandList(&commandList);
+            r->endBatch(collector);
+        }
+    };
+    auto& allocator = builder()->targetList()->dataAllocator();
+    auto* proxy = commandList()->batchProxyCollector()->newSingleFrameBatchProxy<DrawBoxElementSFBatchProxy>();
+    proxy->material = builder()->material();
+    proxy->commandList.addResetCommand(allocator);
+    proxy->commandList.addBaseCommand(allocator, baseStyle);
+    if (backbroundStyle) proxy->commandList.addBackgroundCommand(allocator, *backbroundStyle);
+    if (borderStyle) proxy->commandList.addBorderCommand(allocator, *borderStyle);
+    if (shadowStyle) proxy->commandList.addShadowCommand(allocator, *shadowStyle);
+    proxy->commandList.addSubmitCommand(allocator);
+#else
     auto* element = builder()->addNewDrawElement<detail::DrawBoxElementShape>(m_manager->shapesRenderFeature());
 
     auto& allocator = builder()->targetList()->dataAllocator();
@@ -132,6 +185,7 @@ void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyl
     if (borderStyle) element->commandList.addBorderCommand(allocator, *borderStyle);
     if (shadowStyle) element->commandList.addShadowCommand(allocator, *shadowStyle);
     element->commandList.addSubmitCommand(allocator);
+#endif
 }
 
 void UIRenderingContext::drawImage(const Rect& destinationRect, Material* material)
@@ -187,9 +241,8 @@ UITheme* UIRenderingContext::theme() const
 //    }
 //}
 
-void UIRenderingContext::resetForBeginRendering()
-{
-	RenderingContext::resetForBeginRendering();
+void UIRenderingContext::resetForBeginRendering(const RenderViewPoint* value) {
+	RenderingContext::resetForBeginRendering(value);
 }
 
 } // namespace ln

@@ -337,6 +337,91 @@ void Material::updateShaderVariables(GraphicsCommandList* commandList, detail::S
     }
 }
 
+void Material::updateShaderVariables2(GraphicsCommandList* commandList, ShaderDescriptor* descriptor) {
+    const ShaderPass* target = descriptor->shaderPass();
+    const ShaderDescriptorLayout* layout = target->shaderPassDescriptorLayout();
+
+    if (m_needRefreshShaderBinding) {
+        for (UniformBufferEntiry& e : m_uniformBufferData) {
+            e.descriptorIndex = layout->findUniformBufferRegisterIndex(e.name);
+        }
+        m_needRefreshShaderBinding = false;
+    }
+
+    // Material から Shader へ検索をかける。
+    // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
+
+    for (const auto& pair : m_values) {
+        if (pair.second->type() == ShaderVariableType::Texture) {
+            int memberIndex = layout->findTextureRegisterIndex(pair.first);
+            if (memberIndex >= 0) {
+                descriptor->setTexture(memberIndex, pair.second->getTexture());
+            }
+        }
+        else {
+            int memberIndex = layout->findUniformMemberIndex(pair.first);
+            if (memberIndex >= 0) {
+                const auto& memberInfo = layout->m_members[memberIndex];
+
+                switch (pair.second->type()) {
+                    case ShaderVariableType::Unknown:
+                        LN_UNREACHABLE();
+                        break;
+                    case ShaderVariableType::Bool:
+                        LN_NOTIMPLEMENTED();
+                        break;
+                    case ShaderVariableType::BoolArray:
+                        LN_NOTIMPLEMENTED();
+                        break;
+                    case ShaderVariableType::Int:
+                        descriptor->setInt(memberIndex, pair.second->getInt());
+                        break;
+                    case ShaderVariableType::Float:
+                        descriptor->setFloat(memberIndex, pair.second->getFloat());
+                        break;
+                    case ShaderVariableType::FloatArray:
+                        descriptor->setFloatArray(memberIndex, pair.second->getFloatArray(), pair.second->getArrayLength());
+                        break;
+                    case ShaderVariableType::Vector:
+                        descriptor->setVector(memberIndex, pair.second->getVector());
+                        break;
+                    case ShaderVariableType::VectorArray:
+                        descriptor->setVectorArray(memberIndex, pair.second->getVectorArray(), pair.second->getArrayLength());
+                        break;
+                    case ShaderVariableType::Matrix:
+                        descriptor->setMatrix(memberIndex, pair.second->getMatrix());
+                        break;
+                    case ShaderVariableType::MatrixArray:
+                        descriptor->setMatrixArray(memberIndex, pair.second->getMatrixArray(), pair.second->getArrayLength());
+                        break;
+                    case ShaderVariableType::Texture:
+                        //param->setTexture(pair.second->getTexture(), descriptor);
+                        //descriptor->setTexture(param->m_dataIndex, pair.second->getTexture());
+                        break;
+                    case ShaderVariableType::Pointer:
+                        LN_NOTIMPLEMENTED();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+
+
+        //auto* param = target->findParameter(pair.first);
+        //if (param) {
+        //}
+    }
+
+    for (const UniformBufferEntiry& e : m_uniformBufferData) {
+        if (!descriptor->uniformBuffer(e.descriptorIndex).buffer) {
+            descriptor->setUniformBuffer(e.descriptorIndex, commandList->allocateUniformBuffer(layout->m_buffers[e.descriptorIndex].size));
+        }
+        descriptor->setUniformBufferData(e.descriptorIndex, e.data->data(), e.data->size());
+    }
+}
+
 //void Material::serialize(Archive& ar)
 //{
 //    Material::serialize(ar);

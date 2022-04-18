@@ -204,7 +204,7 @@ struct ShaderUniformInfo {
 struct DescriptorLayoutItem {
     std::string name;
     uint8_t stageFlags; // ShaderStageFlags どのステージで使われるか
-    uint8_t binding;
+    uint8_t binding;    // Vulkan で使用している。DX12 では 名前から求めているので今は使っていない。
 
     // 以下、UniformBuffer でのみ使用
     uint32_t size = 0; // UniformBuffer 全体のサイズ
@@ -231,8 +231,12 @@ struct LayoutSlotIndex {
 };
 
 // CombindSampler の場合、 textureRegister と samplerRegister に同名の Item が追加される。
+// TODO: DescriptorLayout というクラスを global, pass 両方で使っているので混乱する。分けたい。
 class DescriptorLayout {
 public:
+    // SlotIndex は、 BindingIndex(RegisterIndex, register(b1) の値) ではない点に注意。
+    // VS と PS がすべて同じ UniformBuffer を使っている場合などは一致するが、
+    // 片方だけで使われている場合、検出した順序によっては、BindingIndex と一致しないことがある。
     const std::vector<DescriptorLayoutItem>& bufferSlots() const { return uniformBufferRegister; } // ConstantBuffer
     const std::vector<DescriptorLayoutItem>& unorderdSlots() const { return unorderdRegister; }    // RWStructuredBuffer
     const std::vector<DescriptorLayoutItem>& resourceSlots() const { return textureRegister; }     // Texture or StructuredBuffer

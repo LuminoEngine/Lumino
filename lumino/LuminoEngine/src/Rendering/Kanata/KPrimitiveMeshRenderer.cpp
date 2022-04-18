@@ -10,10 +10,11 @@ namespace kanata {
 PrimitiveMeshRenderer::PrimitiveMeshRenderer(detail::RenderingManager* manager)
     : m_currentCollector(nullptr) {
 }
-void PrimitiveMeshRenderer::beginBatch(BatchCollector* collector) {
+void PrimitiveMeshRenderer::beginBatch(BatchCollector* collector, Material* material) {
     LN_DCHECK(!m_currentCollector);
     LN_DCHECK(collector);
     m_currentCollector = collector;
+    m_material = material;
     m_generators.clear();
 }
 
@@ -45,18 +46,17 @@ void PrimitiveMeshRenderer::endBatch(BatchCollector* collector) {
         indexOffset += gen->indexCount();
     }
 
-    Batch* batch = m_currentCollector->newBatch<Batch>();
-    BatchElement batchElement;
-    batchElement.vertexBuffers[0] = view.vertexBuffer;
-    batchElement.indexBuffer = view.indexBuffer;
-    batchElement.firstIndex = view.firstIndex;
-    batchElement.firstVertex = view.vertexOffset;
-    batchElement.primitiveCount = indexCount / 3;   // TODO: TriangleList only
-    batch->elemets.push(batchElement);
+    Batch* batch = m_currentCollector->newBatch<Batch>(1, m_material);
+    batch->elemets2[0].vertexBuffers[0] = view.vertexBuffer;
+    batch->elemets2[0].indexBuffer = view.indexBuffer;
+    batch->elemets2[0].firstIndex = view.firstIndex;
+    batch->elemets2[0].firstVertex = view.vertexOffset;
+    batch->elemets2[0].primitiveCount = indexCount / 3; // TODO: TriangleList only
     batch->vertexLayout = m_currentCollector->standardVertexDeclaration();
     batch->primitiveTopology = PrimitiveTopology::TriangleList;
 
     m_currentCollector = nullptr;
+    m_material = nullptr;
 }
 
 void PrimitiveMeshRenderer::drawMeshGenerater(detail::MeshGenerater* generater) {

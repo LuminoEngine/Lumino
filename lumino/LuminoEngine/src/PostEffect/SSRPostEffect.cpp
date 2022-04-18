@@ -85,10 +85,18 @@ bool SSRPostEffectCore::prepare(RenderView* renderView, CommandList* context, Re
             resetResources(resx, resy);
         }
 
+#if LN_USE_KANATA
+        // TODO: 毎回名前検索ではなく最適化したい
+        m_ssrMaterial->setTexture(_TT("_ColorSampler"), source);
+        m_ssrMaterial->setTexture(_TT("_NormalAndDepthSampler"), viewNormalMap);
+        m_ssrMaterial->setTexture(_TT("_ViewDepthSampler"), viewDepthMap);
+        m_ssrMaterial->setTexture(_TT("_MetalRoughSampler"), viewMaterialMap);
+#else
         m_ssrMaterial_ColorSampler->setTexture(source);
         m_ssrMaterial_NormalAndDepthSampler->setTexture(viewNormalMap);
         m_ssrMaterial_ViewDepthSampler->setTexture(viewDepthMap);
         m_ssrMaterial_MetalRoughSampler->setTexture(viewMaterialMap);
+#endif
         context->blit(m_ssrMaterial, m_ssrTarget);
 
 #if 0   // DEBUG: Ray-trace result
@@ -110,8 +118,14 @@ bool SSRPostEffectCore::prepare(RenderView* renderView, CommandList* context, Re
 
 void SSRPostEffectCore::render(CommandList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+#if LN_USE_KANATA
+    // TODO: 毎回名前検索ではなく最適化したい
+    m_ssrCompositeMaterial->setTexture(_TT("_ColorSampler"), source);
+    m_ssrCompositeMaterial->setTexture(_TT("_SSRSampler"), m_blurTarget2);
+#else
     m_paramColorSampler->setTexture(source);
     m_paramSSRSampler->setTexture(m_blurTarget2);
+#endif
     context->blit(m_ssrCompositeMaterial, destination);
 }
 

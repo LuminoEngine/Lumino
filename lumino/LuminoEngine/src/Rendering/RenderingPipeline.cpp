@@ -327,6 +327,7 @@ void FlatRenderingPipeline::render(
     //for (SceneRendererPass* pass : m_sceneRenderer->m_renderingPassList) {
     m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass);
     //}
+#endif
 
 	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
 	//m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPart::Gizmo, nullptr);
@@ -338,12 +339,16 @@ void FlatRenderingPipeline::render(
         //CameraInfo camera;
         renderViewInfo.cameraInfo = renderView->viewProjection(RenderPart::PostEffect);//.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
         m_sceneRenderer->prepare(graphicsContext, this, renderingContext, renderViewInfo, RenderPart::PostEffect, nullptr, &m_cullingResult);
+#if LN_USE_KANATA
+        m_sceneRenderer->buildBatchList_Kanata(graphicsContext, &m_cullingResult, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
+        m_sceneRenderer->render_Kanata(graphicsContext);
+#else
         //m_sceneRenderer_PostEffectPhase->render(graphicsContext, this, renderTarget, depthBuffer, renderViewInfo.cameraInfo);
         //for (SceneRendererPass* pass : m_sceneRenderer_PostEffectPhase->m_renderingPassList) {
         m_sceneRenderer->renderPass_Legacy(graphicsContext, renderTarget, depthBuffer, m_unlitRendererPass_PostEffect);
         //}
-    }
 #endif
+    }
 
     // TODO: scoped
     DepthBuffer::releaseTemporary(depthBuffer);

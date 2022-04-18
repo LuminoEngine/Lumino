@@ -18,6 +18,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
             .size(3, 3)
             .position(-6, 0, 0)
             .visible(false)
+            .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
         // Normal
@@ -25,6 +26,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
             .texture(tex1)
             .size(3, 3)
             .position(-3, 0, 0)
+            .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
         // Opacity
@@ -34,6 +36,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
             .position(-6, 3, 0)
             .blendMode(BlendMode::Alpha)
             .opacity(0.5)
+            .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
         // ColorScale
@@ -42,6 +45,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
             .size(3, 3)
             .position(-3, 3, 0)
             .colorScale(Color(1, 0, 0, 1))
+            .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
         // BlendColor
@@ -50,6 +54,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
             .size(3, 3)
             .position(0, 3, 0)
             .blendColor(Color(1, 0, 0, 1))
+            .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
         // Tone
@@ -58,6 +63,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
             .size(3, 3)
             .position(3, 3, 0)
             .colorTone(ColorTone(0.5, 0.3, 0.1, 1.0))
+            .shadingModel(ShadingModel::Unlit)
             .buildInto();
 
         TestEnv::updateFrame();

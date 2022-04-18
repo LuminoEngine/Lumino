@@ -255,13 +255,11 @@ void DrawElementListBuilder::setTextColor(const Color& value)
 	primaryState()->textColor = value;
 }
 
-void DrawElementListBuilder::setViewPoint(RenderViewPoint* value)
-{
+void DrawElementListBuilder::setViewPoint(const RenderViewPoint* value) {
     primaryState()->viewPoint = value;
 }
 
-RenderViewPoint* DrawElementListBuilder::viewPoint() const
-{
+const RenderViewPoint* DrawElementListBuilder::viewPoint() const {
     return primaryStateConst()->viewPoint;
 }
 

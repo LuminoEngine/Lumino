@@ -5,6 +5,7 @@ class App : public Application {
 public:
     static void configure() {
         EngineSettings::setMainWindowTitle(U"HelloApp Example");
+        EngineSettings::setGraphicsDebugEnabled(true);
     }
 
     App() {

@@ -81,8 +81,8 @@ public:
 	void setTextColor(const Color& value);
 	const Color& textColor() const { return primaryStateConst()->textColor; }
 
-    void setViewPoint(RenderViewPoint* value);
-    RenderViewPoint* viewPoint() const;
+    void setViewPoint(const RenderViewPoint* value);
+    const RenderViewPoint* viewPoint() const;
 
     void pushState(bool reset); // ※ 単純に state を退避するための仕組みなので、OpenGL の push/pop Matrix のように transform の乗算などは行わない。
     void popState();
@@ -101,7 +101,7 @@ public:
 
 	//
 
-private:
+public:	// TODO: internal
     class State : public RefObject
     {
     public:
@@ -120,7 +120,7 @@ private:
 		Ref<Font> font;
 		Color textColor;
 
-        RenderViewPoint* viewPoint; // DrawElement には流れない、RenderingContext を使う人のための情報
+        const RenderViewPoint* viewPoint; // DrawElement には流れない、RenderingContext を使う人のための情報
 
         void reset();
         void copyFrom(const State* other);

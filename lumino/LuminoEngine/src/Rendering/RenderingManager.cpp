@@ -267,24 +267,28 @@ Result RenderingManager::init(const Settings& settings) {
         createBuiltinShader(BuiltinShader::MToon, _TT("MToon"), data, LN_ARRAY_SIZE_OF(data));
     }
     
-#define ROOT_PATH _TT("C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/")
-#define PS_ROOT_PATH _TT("C:/Proj/LN/Lumino/lumino/LuminoEngine/src/PostEffect/Resource/")
     const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
+    m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(dir / _TT("Sprite.fx"));
     m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(dir / _TT("ClusteredShadingDefault.fx"));
     m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(dir / _TT("CopyScreen.fx"));
+    m_builtinShaders[(int)BuiltinShader::SSAOOcclusionMap] = Shader::create(dir / _TT("../../PostEffect/Resource/SSAOOcclusionMap.fx"));
+    m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(dir / _TT("../../PostEffect/Resource/FilmicPostEffect.fx"));
+
+    m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(dir / _TT("../../PostEffect/Resource/LuminosityHighPassShader.fx"));
+    m_builtinShaders[(int)BuiltinShader::SeperableBlur] = Shader::create(dir / _TT("../../PostEffect/Resource/SeperableBlur.fx"));
+    m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(dir / _TT("../../PostEffect/Resource/BloomComposite.fx"));
+    m_builtinShaders[(int)BuiltinShader::SSRComposite] = Shader::create(dir / _TT("../../PostEffect/Resource/SSRComposite.fx"));
+    m_builtinShaders[(int)BuiltinShader::SSRBlur] = Shader::create(dir / _TT("../../PostEffect/Resource/SSRBlur.fx"));
+    m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(dir / _TT("../../PostEffect/Resource/SSRRayTracing.fx"));
+    
 #if 0 // テスト用
-    m_builtinShaders[(int)BuiltinShader::FilmicPostEffect] = Shader::create(PS_ROOT_PATH _TT("FilmicPostEffect.fx"));
-    m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(ROOT_PATH _TT("Sprite.fx"));
 	m_builtinShaders[(int)BuiltinShader::SSRRayTracing] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SSRRayTracing.fx");
 	m_builtinShaders[(int)BuiltinShader::MToon] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/MToon.hlsl");
-	m_builtinShaders[(int)BuiltinShader::SSAOOcclusionMap] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SSAOOcclusionMap.fx");
 	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/RadialBlur.fx");
 	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/LuminosityHighPassShader.fx");;
 	m_builtinShaders[(int)BuiltinShader::SeperableBlur] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SeperableBlur.fx");
 	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/BloomComposite.fx");
-	m_builtinShaders[(int)BuiltinShader::SSRComposite] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SSRComposite.fx");
-	m_builtinShaders[(int)BuiltinShader::SSRBlur] = Shader::create(ROOT_PATH _TT("src/PostEffect/Resource/SSRBlur.fx");
 	m_builtinShaders[(int)BuiltinShader::NanoVG] = Shader::create(ROOT_PATH _TT("src/Rendering/Resource/nanovg.fx");
 
 

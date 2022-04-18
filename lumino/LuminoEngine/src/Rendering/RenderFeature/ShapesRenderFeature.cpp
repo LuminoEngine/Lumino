@@ -1256,6 +1256,13 @@ void BoxElementShapeBuilderCommon::writeToBuffer(Vertex* vertexBuffer, uint16_t*
     //indexBuffer[5] = 3;
 }
 
+void BoxElementShapeBuilderCommon::writeToBuffer32(Vertex* vertexBuffer, uint32_t* indexBuffer) {
+    memcpy(vertexBuffer, m_vertexCache.getBuffer(), m_vertexCache.getCount() * sizeof(Vertex));
+    for (int i = 0; i < m_indexCache.getCount(); i++) {
+        indexBuffer[i] = ((uint16_t*)m_indexCache.getBuffer())[i];
+    }
+}
+
 void BoxElementShapeBuilderCommon::setupGuideline()
 {
     if (Math::nearEqual(m_baseStyle.cornerRadius.topLeft, 0.0f) &&

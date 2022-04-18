@@ -59,7 +59,7 @@ void run() {
     while (Platform::processEvents()) {
         auto commandList = swapChain->beginFrame2();
 
-        auto descriptor = commandList->allocateShaderDescriptor(shaderPass);
+        auto descriptor = commandList->allocateShaderDescriptor_deprecated(shaderPass);
         descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
 
         auto renderPass = swapChain->currentRenderPass();
@@ -67,11 +67,11 @@ void run() {
         commandList->setVertexLayout(vertexLayout);
         commandList->setVertexBuffer(0, vertexBuffer);
         commandList->setShaderPass(shaderPass);
-        commandList->setShaderDescriptor(descriptor);
+        commandList->setShaderDescriptor_deprecated(descriptor);
         commandList->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         commandList->drawPrimitive(0, 1);
 
-        commandList->setShaderDescriptor(nullptr);
+        commandList->setShaderDescriptor_deprecated(nullptr);
         commandList->setShaderPass(shaderPass2);
         spriteRenderer->begin();
         spriteRenderer->end();

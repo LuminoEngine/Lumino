@@ -331,10 +331,9 @@ void World::onPostUpdate(float elapsedSeconds)
 //    }
 //}
 
-detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* viewPoint)
+detail::WorldSceneGraphRenderingContext* World::prepareRender(const RenderViewPoint* viewPoint)
 {
-	m_renderingContext->resetForBeginRendering();
-	m_renderingContext->setViewPoint(viewPoint);
+	m_renderingContext->resetForBeginRendering(viewPoint);
 	return m_renderingContext;
 }
 
@@ -416,9 +415,8 @@ WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
 {
 }
 
-void WorldSceneGraphRenderingContext::resetForBeginRendering()
-{
-	RenderingContext::resetForBeginRendering();
+void WorldSceneGraphRenderingContext::resetForBeginRendering(const RenderViewPoint* viewPoint) {
+    RenderingContext::resetForBeginRendering(viewPoint);
 }
 
 } // namespace detail

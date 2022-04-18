@@ -42,7 +42,7 @@ public:
 	//void popScissorRect();
 
 public: // TODO: inernal
-	void resetForBeginRendering();
+	void resetForBeginRendering(const RenderViewPoint* value);
 
     bool m_adornerRendering = false;
 	Ref<UITheme> m_theme;

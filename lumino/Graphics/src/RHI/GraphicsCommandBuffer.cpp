@@ -33,6 +33,7 @@ void GraphicsCommandList::init(detail::GraphicsManager* manager) {
     m_manager = detail::GraphicsManager::instance();
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<detail::LinearAllocator>(manager->linearAllocatorPageManager());
+    m_descriptorPool = makeURef<detail::ShaderDescriptorPool>();
     m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(manager->singleFrameUniformBufferAllocatorPageManager());
     m_uniformBufferOffsetAlignment = manager->deviceContext()->caps().uniformBufferOffsetAlignment;
     resetState();
@@ -42,6 +43,10 @@ void GraphicsCommandList::dispose() {
     reset();
     if (m_rhiResource) {
         m_rhiResource = nullptr;
+    }
+    if (m_descriptorPool) {
+        m_descriptorPool->dispose();
+        m_descriptorPool = nullptr;
     }
     // for (const auto& pair : m_usingDescriptorPools) {
     //     pair.descriptorPool->dispose();
@@ -66,6 +71,8 @@ void GraphicsCommandList::reset() {
     }
     m_usingDescriptorPools.clear();
 
+    m_descriptorPool->reset();
+
     m_drawCall = 0;
     m_vertexBufferDataTransferredSize = 0;
     m_indexBufferDataTransferredSize = 0;
@@ -75,8 +82,8 @@ void GraphicsCommandList::reset() {
 
 
 
-void GraphicsCommandList::setShaderDescriptor(detail::ShaderSecondaryDescriptor* value) {
-    m_staging.shaderDescriptor = value;
+void GraphicsCommandList::setShaderDescriptor_deprecated(detail::ShaderSecondaryDescriptor* value) {
+    m_staging.shaderDescriptor_deprecated = value;
 }
 
 void GraphicsCommandList::resetState() {
@@ -179,6 +186,10 @@ ShaderPass* GraphicsCommandList::shaderPass() const {
     return m_staging.shaderPass;
 }
 
+void GraphicsCommandList::setShaderDescriptor(ShaderDescriptor* value) {
+    m_staging.shaderDescriptor = value;
+}
+
 void GraphicsCommandList::beginRenderPass(RenderPass* value) {
     if (LN_REQUIRE(value)) return;
     if (LN_REQUIRE(m_scopeState == ScopeState::RenderPassOutside)) return;
@@ -191,6 +202,10 @@ void GraphicsCommandList::beginRenderPass(RenderPass* value) {
     // 次の commitState() で実際に開始する。
     // 各リソースの実際の copy は commitState() まで遅延されるので、
     // RenderPass の being も遅延しておかないと、Vulkan の「RenderPass inside では copy できない」仕様に引っかかる。
+
+    Rect viewport(0, 0, m_currentRenderPass->width(), m_currentRenderPass->height());
+    setViewportRect(viewport);
+    setScissorRect(viewport);
 }
 
 void GraphicsCommandList::endRenderPass() {
@@ -247,7 +262,19 @@ void GraphicsCommandList::drawExtension(INativeGraphicsExtension* extension) {
     m_rhiResource->drawExtension(extension);
 }
 
-detail::ShaderSecondaryDescriptor* GraphicsCommandList::allocateShaderDescriptor(ShaderPass* shaderPass) {
+ln::ShaderDescriptor* GraphicsCommandList::allocateDescriptor(ShaderPass* shaderPass, bool allocateBuffers) {
+    ShaderDescriptor* d = m_descriptorPool->allocate(shaderPass);
+    if (allocateBuffers) {
+        const auto& sizes = shaderPass->bufferSizes();
+        for (int iSlot = 0; iSlot < sizes.length(); iSlot++) {
+            auto view = allocateUniformBuffer(sizes[iSlot]);
+            d->setUniformBuffer(iSlot, view);
+        }
+    }
+    return d;
+}
+
+detail::ShaderSecondaryDescriptor* GraphicsCommandList::allocateShaderDescriptor_deprecated(ShaderPass* shaderPass) {
     detail::ShaderSecondaryDescriptor* d = acquireShaderDescriptor(shaderPass->shader());
     d->reset(this);
     return d;
@@ -291,13 +318,26 @@ detail::ICommandList* GraphicsCommandList::commitState() {
     bool resourceModified = false;
 
     detail::IShaderPass* shaderPassRHI = (m_staging.shaderPass) ? m_staging.shaderPass->resolveRHIObject(this, &resourceModified) : nullptr;
-    if (m_staging.shaderPass && m_staging.shaderDescriptor) {
-        assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor->shader());
-        m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor, &resourceModified);
+    if (m_staging.shaderDescriptor_deprecated && m_staging.shaderDescriptor) {
+        LN_ERROR();
+    }
+
+    if (m_staging.shaderDescriptor_deprecated) {
+        if (m_staging.shaderPass && m_staging.shaderDescriptor_deprecated) {
+            assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor_deprecated->shader());
+            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor_deprecated, &resourceModified);
+        }
+        else {
+            m_rhiResource->setDescriptor(nullptr);
+        }
+    }
+    else if (m_staging.shaderDescriptor) {
+        m_staging.shaderDescriptor->submit(this);
     }
     else {
         m_rhiResource->setDescriptor(nullptr);
     }
+    
 
     bool vertexLayoutModified = false;
     detail::IVertexDeclaration* vertexLayoutRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &vertexLayoutModified);
@@ -502,6 +542,7 @@ void GraphicsCommandList::State::reset() {
     indexBuffer = nullptr;
     shader = nullptr;
     shaderPass = nullptr;
+    shaderDescriptor_deprecated = nullptr;
     shaderDescriptor = nullptr;
     topology = PrimitiveTopology::TriangleList;
 }

@@ -38,7 +38,7 @@ void InstancedMeshList::reset()
 	m_stagingData.transform1 = Vector4(0.0f, 1.0f, 0.0f, 0.0f);
 	m_stagingData.transform2 = Vector4(0.0f, 0.0f, 1.0f, 0.0f);
 	m_stagingData.transform3 = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-	m_stagingData.uvOffset = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	m_stagingData.uvOffset = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 	m_stagingData.colorScale = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 

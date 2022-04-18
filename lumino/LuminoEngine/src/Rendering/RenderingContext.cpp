@@ -31,11 +31,11 @@ RenderingContext::RenderingContext()
     , m_pathBegan(false)
     , m_commandList(nullptr)
     , m_listServer(makeRef<detail::CommandListServer>()) {
-    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry);
+    m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, nullptr);
 }
 
-void RenderingContext::resetForBeginRendering() {
-    m_listServer->clearCommandsAndState();
+void RenderingContext::resetForBeginRendering(const RenderViewPoint* viewPoint) {
+    m_listServer->clearCommandsAndState(viewPoint);
     m_dynamicLightInfoList.clear();
 }
 
@@ -131,16 +131,16 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     m_commandList->drawLine(from, fromColor, to, toColor);
 }
 
-void RenderingContext::drawPlane(float width, float depth, const Color& color) {
-    m_commandList->drawPlane(width, depth, Vector2::Zero, Vector2::Ones, color);
+void RenderingContext::drawPlane(Material* material, float width, float depth, const Color& color) {
+    m_commandList->drawPlane(material, width, depth, Vector2::Zero, Vector2::Ones, color);
 }
 
-void RenderingContext::drawPlane(float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color) {
-    m_commandList->drawPlane(width, depth, uv1, uv2, color);
+void RenderingContext::drawPlane(Material* material, float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color) {
+    m_commandList->drawPlane(material, width, depth, uv1, uv2, color);
 }
 
-void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform) {
-    m_commandList->drawSphere(radius, slices, stacks, color, localTransform);
+void RenderingContext::drawSphere(Material* material, float radius, int slices, int stacks, const Color& color, const Matrix& localTransform) {
+    m_commandList->drawSphere(material, radius, slices, stacks, color, localTransform);
 }
 
 void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix& localTransform) {
@@ -198,8 +198,8 @@ void RenderingContext::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, de
     m_commandList->drawSkinnedMesh(mesh, sectionIndex, skeleton, morph);
 }
 
-void RenderingContext::drawMeshInstanced(InstancedMeshList* list) {
-    m_commandList->drawMeshInstanced(list);
+void RenderingContext::drawMeshInstanced(Material* material, InstancedMeshList* list) {
+    m_commandList->drawMeshInstanced(material, list);
 }
 
 void RenderingContext::drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font) {
@@ -271,15 +271,11 @@ Size RenderingContext::measureTextSize(Font* font, uint32_t codePoint) const {
 }
 
 CommandList* RenderingContext::getCommandList(RenderPart index1) {
-    return m_listServer->acquirePrimaryList(index1);
+    return m_listServer->acquirePrimaryList(index1, viewPoint());
 }
 
-RenderViewPoint* RenderingContext::viewPoint() const {
+const RenderViewPoint* RenderingContext::viewPoint() const {
     return m_commandList->viewPoint();
-}
-
-void RenderingContext::setViewPoint(RenderViewPoint* value) {
-    m_commandList->setViewPoint(value);
 }
 
 void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value) {

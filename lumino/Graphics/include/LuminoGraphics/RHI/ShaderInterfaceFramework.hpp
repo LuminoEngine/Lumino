@@ -292,6 +292,7 @@ enum BuiltinShaderTextures
 };
 
 // セマンティクスが関係するシェーダ変数の管理
+// deprecated
 class ShaderTechniqueSemanticsManager
 {
 public:
@@ -329,6 +330,34 @@ private:
     std::array<int, BuiltinShaderTextures__Count> m_builtinShaderTextures;
 };
 
+
+class ShaderPassSemanticsManager : public URefObject {
+public:
+    ShaderPassSemanticsManager();
+    void init(const ShaderPass* shaderPass, const kokage::DescriptorLayout& layout);
+    void reset();
+
+    //int getBuiltinShaderUniformBufferIndex(BuiltinShaderUniformBuffers buffer) const { return m_builtinUniformBuffers[static_cast<int>(buffer)]; }
+
+    // call by rendering time.
+    void updateRenderViewVariables(ShaderDescriptor* descriptor, const RenderViewInfo& info, const SceneInfo& sceneInfo) const;
+    void updateElementVariables(ShaderDescriptor* descriptor, const CameraInfo& cameraInfo, const ElementInfo& info) const;
+    void updateSubsetVariables(ShaderDescriptor* descriptor, const SubsetInfo& info) const;
+    void updateSubsetVariables_PBR(ShaderDescriptor* descriptor, const PbrMaterialData& materialData) const;
+    void updateClusteredShadingVariables(ShaderDescriptor* descriptor, const ClusteredShadingRendererInfo& info) const;
+
+private:
+    bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & (1ULL << v)) != 0; }
+
+    // Boolean flags BuiltinShaderParameters
+    uint64_t m_hasBuiltinShaderParameters;
+
+    // SlotIndex
+    std::array<int, BuiltinShaderUniformBuffers__Count> m_builtinUniformBuffers;
+
+    // SlotIndex
+    std::array<int, BuiltinShaderTextures__Count> m_builtinShaderTextures;
+};
 
 
 } // namespace detail

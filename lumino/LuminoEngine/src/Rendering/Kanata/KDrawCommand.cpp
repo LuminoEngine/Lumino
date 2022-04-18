@@ -27,6 +27,8 @@ void DrawCommandList::submitMeshDrawCommands(GraphicsCommandList* commandList) {
 
 void DrawCommandList::submitMeshDrawCommand(GraphicsCommandList* commandList, const IDrawCommand* command) {
 
+    commandList->setShaderDescriptor_deprecated(nullptr);
+
     switch (command->type) {
         case DrawCommandType::BeginRenderPass: {
             auto* cmd = static_cast<const BeginRenderPassCommand*>(command);
@@ -67,7 +69,7 @@ void DrawCommandList::submitMeshDrawCommand(GraphicsCommandList* commandList, co
             }
 
             if (cmd->indexBuffer) {
-                commandList->drawPrimitiveIndexed(cmd->firstIndex, cmd->primitiveCount, cmd->instanceCount);
+                commandList->drawPrimitiveIndexed(cmd->firstIndex, cmd->primitiveCount, cmd->instanceCount, cmd->firstVertex);
             }
             else {
                 commandList->drawPrimitive(cmd->firstVertex, cmd->primitiveCount, cmd->instanceCount);
@@ -79,6 +81,7 @@ void DrawCommandList::submitMeshDrawCommand(GraphicsCommandList* commandList, co
             break;
     }
 
+    commandList->setShaderDescriptor(nullptr);
 }
 
 } // namespace kanata

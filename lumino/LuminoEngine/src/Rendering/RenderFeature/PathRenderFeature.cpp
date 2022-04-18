@@ -157,7 +157,7 @@ static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 		descriptor->setTexture(0, tex->tex);
 	}
 
-	gl->g->setShaderDescriptor(descriptor);
+	gl->g->setShaderDescriptor_deprecated(descriptor);
 }
 
 // 頂点バッファは呼び出し側で bind 済み
@@ -396,7 +396,7 @@ static void glnvg__renderFlush(void* uptr)
 		// Cleanup
 		gl->g->setVertexBuffer(0, nullptr);
 		gl->g->setVertexLayout(nullptr);
-		gl->g->setShaderDescriptor(nullptr);
+		gl->g->setShaderDescriptor_deprecated(nullptr);
 		gl->g->setShaderPass(nullptr);
 	}
 

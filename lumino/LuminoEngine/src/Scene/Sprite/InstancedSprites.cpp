@@ -172,8 +172,7 @@ void InstancedSpritesModel::render(RenderingContext* context)
         m_meshList->drawMesh();
     }
 
-    context->setMaterial(m_material);
-    context->drawMeshInstanced(m_meshList);
+    context->drawMeshInstanced(m_material, m_meshList);
 }
 
 //==============================================================================

@@ -6,96 +6,93 @@
 class Test_Effect_Particle : public ::testing::Test {};
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Effect_Particle, Lifetime)
-{
+TEST_F(Test_Effect_Particle, Lifetime) {
     auto particleModel = makeObject<ParticleModel>();
     auto emitterModel = makeObject<ParticleEmitterModel>();
     particleModel->addEmitter(emitterModel);
-	emitterModel->m_lifeTime = { 1, 1 };	// 1s で消えるようにする
-	emitterModel->m_maxParticles = 1;
+    emitterModel->m_lifeTime = { 1, 1 }; // 1s で消えるようにする
+    emitterModel->m_maxParticles = 1;
 
-	// Loop off
-	{
-		particleModel->m_loop = false;
+    // Loop off
+    {
+        particleModel->m_loop = false;
 
-		auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
-		auto emitterInstance = particleInstance->emitters()[0];
+        auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+        auto emitterInstance = particleInstance->emitters()[0];
 
-		// 1フレーム分進める。1つ Particle ができている。
-		{
-			particleInstance->updateFrame(0.016);
-			ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
-		}
-		// さらに1秒進める。Particle は消えている。
-		{
-			particleInstance->updateFrame(1.0);
-			ASSERT_EQ(false, emitterInstance->particleData(0).isActive());
-		}
-	}
+        // 1フレーム分進める。1つ Particle ができている。
+        {
+            particleInstance->updateFrame(0.016);
+            ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
+        }
+        // さらに1秒進める。Particle は消えている。
+        {
+            particleInstance->updateFrame(1.0);
+            ASSERT_EQ(false, emitterInstance->particleData(0).isActive());
+        }
+    }
 
-	// Loop on
-	{
-		particleModel->m_loop = true;
+    // Loop on
+    {
+        particleModel->m_loop = true;
 
-		auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
-		auto emitterInstance = particleInstance->emitters()[0];
+        auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+        auto emitterInstance = particleInstance->emitters()[0];
 
-		// 1フレーム分進める。1つ Particle ができている。
-		{
-			particleInstance->updateFrame(0.016);
-			ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
-		}
-		// さらに0.9秒進める。1秒経ってないのでまだ存在している
-		{
-			particleInstance->updateFrame(0.9);
-			ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
-		}
-		// さらに1秒進める。Particle は新しいものが生成されている。
-		{
-			particleInstance->updateFrame(1.0);
-			ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
-		}
-	}
+        // 1フレーム分進める。1つ Particle ができている。
+        {
+            particleInstance->updateFrame(0.016);
+            ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
+        }
+        // さらに0.9秒進める。1秒経ってないのでまだ存在している
+        {
+            particleInstance->updateFrame(0.9);
+            ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
+        }
+        // さらに1秒進める。Particle は新しいものが生成されている。
+        {
+            particleInstance->updateFrame(1.0);
+            ASSERT_EQ(true, emitterInstance->particleData(0).isActive());
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Effect_Particle, SingleSprite)
-{
+TEST_F(Test_Effect_Particle, SingleSprite) {
 #ifdef LN_COORD_RH
-	Engine::mainCamera()->setPosition(0, 0, 2);
+    Engine::mainCamera()->setPosition(0, 0, 2);
 #else
-	Engine::mainCamera()->setPosition(0, 0, -2);
+    Engine::mainCamera()->setPosition(0, 0, -2);
 #endif
 
-	auto material = Material::create();
-	material->setMainTexture(Texture2D::load(_TT("Effect/ColorGrid.png")));
-	material->setShadingModel(ShadingModel::Unlit);
-	// TODO: tmp, for Instancing
-	material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
+    auto material = Material::create();
+    material->setMainTexture(Texture2D::load(_TT("Effect/ColorGrid.png")));
+    material->setShadingModel(ShadingModel::Unlit);
+    material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
 
-	auto particleModel = makeObject<ParticleModel>();
+    auto particleModel = makeObject<ParticleModel>();
     auto emitter1 = makeObject<ParticleEmitterModel>();
     particleModel->addEmitter(emitter1);
-	emitter1->setupSpriteModule(material);
-	emitter1->setLifeTime(1);
-	emitter1->setMaxParticles(1);
-	emitter1->setSpawnRate(1);
+    emitter1->setupSpriteModule(material);
+    emitter1->setLifeTime(1);
+    emitter1->setMaxParticles(1);
+    emitter1->setSpawnRate(1);
 
-	auto obj1 = WorldObject::Builder()
-		.components(makeObject<ParticleEmitterComponent2>(particleModel))
-		.buildInto();
+    auto obj1 = WorldObject::Builder()
+                    .components(makeObject<ParticleEmitterComponent2>(particleModel))
+                    .buildInto();
 
-	// 1フレーム更新 -> 表示される
-	TestEnv::updateFrame();
-	//ASSERT_SCREEN(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-1.png"));
+    // 1フレーム更新 -> 表示される
+    TestEnv::updateFrame();
+    ASSERT_SCREEN(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-1.png"));
 
-	// 1秒以上経過させてみる -> 消える
-	for (int i = 0; i < 100; i++) {
-		TestEnv::updateFrame();
-	}
-	ASSERT_SCREEN(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-2.png"));
+    // 1秒以上経過させてみる -> 消える
+    for (int i = 0; i < 100; i++) {
+        TestEnv::updateFrame();
+    }
+    ASSERT_SCREEN(LN_ASSETFILE("Effect/Expects/Test_Effect_Particle-SingleSprite-2.png"));
 
-	LN_TEST_CLEAN_SCENE;
+    LN_TEST_CLEAN_SCENE;
 }
 
 #if 0
@@ -235,7 +232,7 @@ TEST_F(Test_Effect_Particle, BoxShape)
 
 #endif
 
-#if 0	// TODO: 内部的にハードコーディングされたパスがあるため一時的に無効
+#if 0 // TODO: 内部的にハードコーディングされたパスがあるため一時的に無効
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, Trail)
 {

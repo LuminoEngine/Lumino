@@ -193,6 +193,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
     }
     */
     if (_antialiasEnabled) {
+#if 0
         // TODO: 今のところ src と dst のサイズが同じなのでこれでいいが、本当は ln_MaterialTexture のサイズを取った方が良い
         const float dx = ln_Resolution.z; // 1.0 / ln_Resolution.x
         const float dy = ln_Resolution.w; // 1.0 / ln_Resolution.z
@@ -218,6 +219,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
         ).rgb;
         result.rgb = aa;
         //result = float4(1, 0, 0, 1);
+#endif
     }
 
     //--------------------
@@ -308,7 +310,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 //==============================================================================
 // Technique
 
-technique Forward_Geometry_UnLighting
+technique Default
 {
     ShadingModel = Unlit;
     pass Pass1

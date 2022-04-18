@@ -93,8 +93,11 @@ public:
     /** ShaderPass を取得します。 */
     ShaderPass* shaderPass() const;
 
+    /** ShaderDescriptor を設定します。 */
+    void setShaderDescriptor(ShaderDescriptor* value);
+
     ///** ShaderPass を設定します。 */
-    void setShaderDescriptor(detail::ShaderSecondaryDescriptor* value);
+    void setShaderDescriptor_deprecated(detail::ShaderSecondaryDescriptor* value);
 
     ///** ShaderPass を取得します。 */
     // ShaderDefaultDescriptor* shaderDescriptor() const;
@@ -145,7 +148,9 @@ public:
     /** @defgroup Streaming support */
     /** @{ */
 
-    ln::detail::ShaderSecondaryDescriptor* allocateShaderDescriptor(ShaderPass* shaderPass);
+    ln::ShaderDescriptor* allocateDescriptor(ShaderPass* shaderPass, bool allocateBuffers);
+
+    ln::detail::ShaderSecondaryDescriptor* allocateShaderDescriptor_deprecated(ShaderPass* shaderPass);
 
     /** @} */
     /** @defgroup TODO: Internal */
@@ -192,6 +197,7 @@ private:
     detail::GraphicsManager* m_manager;
     Ref<detail::ICommandList> m_rhiResource;
     Ref<detail::LinearAllocator> m_allocator;
+    URef<detail::ShaderDescriptorPool> m_descriptorPool;
     size_t m_uniformBufferOffsetAlignment;
 
     std::vector<ShaderPassDescriptorPair> m_usingDescriptorPools;
@@ -226,7 +232,8 @@ private:
         Ref<IndexBuffer> indexBuffer;
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
-        detail::ShaderSecondaryDescriptor* shaderDescriptor;
+        detail::ShaderSecondaryDescriptor* shaderDescriptor_deprecated;
+        ShaderDescriptor* shaderDescriptor;
         PrimitiveTopology topology;
 
         void reset();
@@ -249,6 +256,7 @@ private:
     Ref<detail::IRenderPass> m_currentRHIRenderPass;
 
     friend class detail::GraphicsCommandListInternal;
+    friend class ShaderDescriptor;
 };
 
 namespace detail {

@@ -18,8 +18,6 @@ public:
 	SpriteTextRenderFeature();
 	void init(RenderingManager* manager);
 
-	
-
 	RequestBatchResult drawText(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform);
 	RequestBatchResult drawChar(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform);
 	RequestBatchResult drawFlexGlyphRun(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);

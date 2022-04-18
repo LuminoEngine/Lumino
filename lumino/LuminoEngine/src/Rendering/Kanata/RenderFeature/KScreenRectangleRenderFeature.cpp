@@ -38,14 +38,11 @@ Result ScreenRectangleRenderFeature::init() {
 }
 
 void ScreenRectangleRenderFeature::drawScreenRectangle(BatchCollector* collector, Material* material) const {
-    Batch* batch = collector->newBatch<Batch>();
-    BatchElement batchElement;
-    batchElement.vertexBuffers[0] = m_vertexBuffer;
-    batchElement.primitiveCount = 2;
-    batch->elemets.push(batchElement);
+    Batch* batch = collector->newBatch<Batch>(1, material);
+    batch->elemets2[0].vertexBuffers[0] = m_vertexBuffer;
+    batch->elemets2[0].primitiveCount = 2;
     batch->vertexLayout = m_vertexLayout;
     batch->primitiveTopology = PrimitiveTopology::TriangleStrip;
-    batch->material = material;
 }
 
 } // namespace kanata

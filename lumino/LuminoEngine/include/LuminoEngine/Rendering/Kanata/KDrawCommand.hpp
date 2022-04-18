@@ -38,7 +38,7 @@ struct DrawCommand final : public IDrawCommand {
     PipelineState pipelineState;
     ShaderPass* shaderPass;
 
-    detail::ShaderSecondaryDescriptor* shaderDescriptor;
+    ShaderDescriptor* shaderDescriptor;
     int32_t firstIndex;     // Indexed only
     int32_t firstVertex;    // No indexed only
     int32_t primitiveCount;

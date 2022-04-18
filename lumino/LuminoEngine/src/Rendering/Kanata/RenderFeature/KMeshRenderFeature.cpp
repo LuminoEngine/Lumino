@@ -25,18 +25,15 @@ void MeshRenderFeature::drawMesh(BatchCollector* collector, Material* material, 
     LN_DCHECK(section.primitiveCount > 0);
 
     // Make batch
-    Batch* batch = collector->newBatch<Batch>();
-    BatchElement batchElement;
+    Batch* batch = collector->newBatch<Batch>(1, material);
     for (int i = 0; i < vbCount; ++i) {
-        batchElement.vertexBuffers[i] = vb[i];
+        batch->elemets2[0].vertexBuffers[i] = vb[i];
     }
-    batchElement.indexBuffer = ib;
-    batchElement.firstIndex = section.startIndex;
-    batchElement.primitiveCount = section.primitiveCount;
-    batch->elemets.push(batchElement);
+    batch->elemets2[0].indexBuffer = ib;
+    batch->elemets2[0].firstIndex = section.startIndex;
+    batch->elemets2[0].primitiveCount = section.primitiveCount;
     batch->vertexLayout = layout;
     batch->primitiveTopology = section.topology;
-    batch->material = material;
     batch->skeleton = skeleton;
 
 #if 0   // TODO: morph
@@ -102,7 +99,7 @@ void MeshRenderFeature::drawMesh(BatchCollector* collector, Material* material, 
 #endif
 }
 
-void MeshRenderFeature::drawMeshInstanced(BatchCollector* collector, InstancedMeshList* list) const {
+void MeshRenderFeature::drawMeshInstanced(BatchCollector* collector, Material* material, InstancedMeshList* list) const {
     // Commit dirty data
     MeshSection2 section;
     VertexLayout* layout;
@@ -115,16 +112,14 @@ void MeshRenderFeature::drawMeshInstanced(BatchCollector* collector, InstancedMe
     LN_DCHECK(list->instanceCount() > 0);
 
     // Make batch
-    Batch* batch = collector->newBatch<Batch>();
-    BatchElement batchElement;
+    Batch* batch = collector->newBatch<Batch>(1, material);
     for (int i = 0; i < vbCount; ++i) {
-        batchElement.vertexBuffers[i] = vb[i];
+        batch->elemets2[0].vertexBuffers[i] = vb[i];
     }
-    batchElement.indexBuffer = ib;
-    batchElement.firstIndex = section.startIndex;
-    batchElement.primitiveCount = section.primitiveCount;
-    batchElement.instanceCount = list->instanceCount();
-    batch->elemets.push(batchElement);
+    batch->elemets2[0].indexBuffer = ib;
+    batch->elemets2[0].firstIndex = section.startIndex;
+    batch->elemets2[0].primitiveCount = section.primitiveCount;
+    batch->elemets2[0].instanceCount = list->instanceCount();
     batch->vertexLayout = layout;
     batch->primitiveTopology = section.topology;
 }

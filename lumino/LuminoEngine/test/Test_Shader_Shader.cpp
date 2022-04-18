@@ -61,7 +61,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
-        auto shd = ctx->allocateShaderDescriptor(shaderPass1);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass1);
         shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture")), tex1);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
@@ -69,7 +69,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
         ctx->setShaderPass(shaderPass1);
-        ctx->setShaderDescriptor(shd);
+        ctx->setShaderDescriptor_deprecated(shd);
 
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
         ctx->drawPrimitive(0, 2);
@@ -109,7 +109,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
 	auto ctx = TestEnv::beginFrame();
     auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
     auto crp = TestEnv::renderPass();
-    auto shd = ctx->allocateShaderDescriptor(shaderPass1);
+    auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass1);
 
     // VertexShader からのみ参照されるパラメータ
     shd->setVector(descriptorLayout1->findUniformMemberIndex(_TT("_Color1")), Vector4(1, 0, 0, 1));
@@ -121,7 +121,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
     ctx->setShaderPass(shaderPass1);
-    ctx->setShaderDescriptor(shd);
+    ctx->setShaderDescriptor_deprecated(shd);
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->drawPrimitive(0, 1);
 	ctx->endRenderPass();
@@ -158,7 +158,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
     auto ctx = TestEnv::beginFrame();
     auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
     auto crp = TestEnv::renderPass();
-    auto shd = ctx->allocateShaderDescriptor(shaderPass1);
+    auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass1);
 
 
     struct Element
@@ -177,7 +177,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
     ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
     ctx->setShaderPass(shaderPass1);
-    ctx->setShaderDescriptor(shd);
+    ctx->setShaderDescriptor_deprecated(shd);
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->drawPrimitive(0, 1);
     ctx->endRenderPass();
@@ -223,7 +223,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
-        auto shd = ctx->allocateShaderDescriptor(shaderPass1);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass1);
         shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture1")), t1);
         shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture2")), t2);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
@@ -233,7 +233,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 
         ctx->setShaderPass(shaderPass1);
-        ctx->setShaderDescriptor(shd);
+        ctx->setShaderDescriptor_deprecated(shd);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
@@ -245,7 +245,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
-        auto shd = ctx->allocateShaderDescriptor(shaderPass2);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass2);
         shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture1")), t1);
         shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture2")), t2);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
@@ -255,7 +255,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 
 		ctx->setShaderPass(shaderPass2);
-        ctx->setShaderDescriptor(shd);
+        ctx->setShaderDescriptor_deprecated(shd);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
@@ -267,7 +267,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto crp = TestEnv::renderPass();
-        auto shd = ctx->allocateShaderDescriptor(shaderPass3);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass3);
         shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture1")), t1);
         shd->setTexture(descriptorLayout1->findTextureRegisterIndex(_TT("_Texture2")), t2);
         crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
@@ -277,7 +277,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 
         ctx->setShaderPass(shaderPass3);
-        ctx->setShaderDescriptor(shd);
+        ctx->setShaderDescriptor_deprecated(shd);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();

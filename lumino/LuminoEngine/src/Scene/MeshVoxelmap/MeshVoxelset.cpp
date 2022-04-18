@@ -544,15 +544,14 @@ void MeshAutoVoxelset::drawVoxel(const detail::MeshTile& tile, const detail::Mes
 
 void MeshAutoVoxelset::flushBatch(RenderingContext* context)
 {
-	context->setMaterial(m_material);
 	for (auto& batch : m_meshList) {
 		if (batch) {
-			context->drawMeshInstanced(batch);
+			context->drawMeshInstanced(m_material, batch);
 		}
 	}
 	for (auto& batch : m_dentMeshList) {
 		if (batch) {
-			context->drawMeshInstanced(batch);
+			context->drawMeshInstanced(m_material, batch);
 		}
 	}
 }

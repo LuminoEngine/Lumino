@@ -128,6 +128,7 @@ public: // TODO:
 
     virtual void onCollectLight(const DynamicLightInfo& light);
     virtual void onSetAdditionalShaderPassVariables(ShaderSecondaryDescriptor* descriptor, ShaderTechnique* technique);
+    virtual void onSetAdditionalShaderPassVariables2(ShaderDescriptor* descriptor, ShaderPass* shaderPass);
 
 public: // TODO
     // RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage);

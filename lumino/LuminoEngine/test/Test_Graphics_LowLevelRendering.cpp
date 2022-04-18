@@ -47,13 +47,13 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
             auto target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
             renderPass->setRenderTarget(0, target);
             renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-			auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+            auto descriptor = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 			descriptor->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			ctx->beginRenderPass(renderPass);
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer);
             ctx->setShaderPass(shaderPass);
-			ctx->setShaderDescriptor(descriptor);
+			ctx->setShaderDescriptor_deprecated(descriptor);
             ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
@@ -78,13 +78,13 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 	{
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
-		auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+		auto descriptor = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		descriptor->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		ctx->beginRenderPass(TestEnv::renderPass());
         ctx->setVertexLayout(m_vertexDecl1);
         ctx->setVertexBuffer(0, vertexBuffer);
         ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(descriptor);
+		ctx->setShaderDescriptor_deprecated(descriptor);
         ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         ctx->drawPrimitive(0, 1);                           // (ちゃんと全体に clear 効くか確認 & Vulkan 警告回避のため、) 適当に描いてから
 		ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);  // clear
@@ -97,7 +97,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 	{
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
-		auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+		auto descriptor = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		descriptor->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setViewportRect(Rect(0, 0, 10, 10));
@@ -105,7 +105,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
         ctx->setVertexLayout(m_vertexDecl1);
         ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(descriptor);
+		ctx->setShaderDescriptor_deprecated(descriptor);
         ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         ctx->drawPrimitive(0, 1);
 		ctx->clear(ClearFlags::All, Color::Green, 1.0f, 0);
@@ -207,14 +207,14 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
-			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setShaderPass(shaderPass);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 #ifdef LN_COORD_RH
 			Vector4 v1[] = {
 				Vector4(0, 0.5, 0, 1),
@@ -243,7 +243,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
-			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 #ifdef LN_COORD_RH
@@ -265,7 +265,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setShaderPass(shaderPass);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
@@ -278,7 +278,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
-			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 #ifdef LN_COORD_RH
@@ -305,7 +305,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setShaderPass(shaderPass);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);
@@ -320,7 +320,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
-			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
@@ -350,7 +350,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setShaderPass(shaderPass);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 3);
@@ -459,7 +459,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
-			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(0, 0, 1, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
@@ -471,7 +471,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setIndexBuffer(ib1);
 			ctx->setShaderPass(shaderPass);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitiveIndexed(0, 1);
 			ctx->endRenderPass();
@@ -484,7 +484,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			auto ctx = TestEnv::beginFrame();
             auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto crp = TestEnv::renderPass();
-			auto shd = ctx->allocateShaderDescriptor(shaderPass);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 			shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(0, 0, 1, 1));
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
@@ -496,7 +496,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setIndexBuffer(ib1);
 			ctx->setShaderPass(shaderPass);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitiveIndexed(0, 1);
 			ctx->endRenderPass();
@@ -514,7 +514,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				auto ctx = TestEnv::beginFrame();
                 auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 				auto crp = TestEnv::renderPass();
-				auto shd = ctx->allocateShaderDescriptor(shaderPass);
+                auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 				shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(0, 0, 1, 1));
 				crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 				ib1->setFormat(IndexBufferFormat::UInt32);
@@ -524,7 +524,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				ctx->setVertexBuffer(0, vb1);
 				ctx->setIndexBuffer(ib1);
 				ctx->setShaderPass(shaderPass);
-				ctx->setShaderDescriptor(shd);
+				ctx->setShaderDescriptor_deprecated(shd);
 				ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 				ctx->drawPrimitiveIndexed(0, 1);
 				ctx->endRenderPass();
@@ -561,14 +561,14 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 
 		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -590,14 +590,14 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 
 		ctx->setScissorRect(Rect(0, 0, 80, 60));		// 左上
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -619,14 +619,14 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		shd->setVector(descriptorLayout->findUniformMemberIndex(_TT("g_color")), Vector4(1, 0, 0, 1));
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 
 		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
 		ctx->setScissorRect(Rect(40, 30, 80, 60));		// 中央
@@ -666,14 +666,14 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		setDescriptor(shd);
 		crp->setClearValues(ClearFlags::All, Color::Black, 1.0f, 0);
 		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
@@ -958,7 +958,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), tex1);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
@@ -966,7 +966,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		ctx->drawPrimitive(0, 2);
@@ -1073,7 +1073,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), tex1);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
@@ -1081,7 +1081,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		ctx->drawPrimitive(0, 2);
@@ -1096,7 +1096,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+        auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), tex1);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
@@ -1104,7 +1104,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 
 		auto sampler = makeObject<SamplerState>();
 		sampler->setFilterMode(TextureFilterMode::Linear);
@@ -1486,14 +1486,14 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 
         // まず renderTarget1 へ緑色の三角形を描く
         {
-			auto shd = ctx->allocateShaderDescriptor(shaderPass1);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass1);
 			shd->setVector(descriptorLayout1->findUniformMemberIndex(_TT("g_color")), Vector4(0, 1, 0, 1));
 			renderPass->setRenderTarget(0, renderTarget1);
 			ctx->beginRenderPass(renderPass);
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer1);
 			ctx->setShaderPass(shaderPass1);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
@@ -1503,14 +1503,14 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         // 次に renderTarget1 からバックバッファへ全体を描く
         {
 			auto crp = TestEnv::renderPass();
-			auto shd = ctx->allocateShaderDescriptor(shaderPass2);
+            auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass2);
 			shd->setTexture(descriptorLayout2->findTextureRegisterIndex(_TT("g_texture1")), renderTarget1);
 			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->beginRenderPass(crp);
             ctx->setVertexLayout(vertexDecl2);
             ctx->setVertexBuffer(0, vertexBuffer2);
 			ctx->setShaderPass(shaderPass2);
-			ctx->setShaderDescriptor(shd);
+			ctx->setShaderDescriptor_deprecated(shd);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
             ctx->drawPrimitive(0, 2);
 			ctx->endRenderPass();
@@ -1694,7 +1694,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MipMap)
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto crp = TestEnv::renderPass();
-		auto shd = ctx->allocateShaderDescriptor(shaderPass);
+		auto shd = ctx->allocateShaderDescriptor_deprecated(shaderPass);
 		shd->setTexture(descriptorLayout->findTextureRegisterIndex(_TT("g_texture1")), gridTex);
 		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->beginRenderPass(crp);
@@ -1702,7 +1702,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MipMap)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
 		ctx->setShaderPass(shaderPass);
-		ctx->setShaderDescriptor(shd);
+		ctx->setShaderDescriptor_deprecated(shd);
 
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		ctx->drawPrimitive(0, 2);

@@ -49,6 +49,7 @@ int TextComponent::fontSize() const
 
 void TextComponent::onRender(RenderingContext* context)
 {
+    context->setMaterial(Material::defaultMaterial());
 	context->drawTextSprite(m_text, m_color, m_anchorPoint, SpriteBaseDirection::ZMinus, m_font);
 }
 

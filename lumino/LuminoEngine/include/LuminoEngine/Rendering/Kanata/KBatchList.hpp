@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
+#include <LuminoGraphics/RHI/ShaderInterfaceFramework.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "Common.hpp"
+#include "KBatch.hpp"
 #include "../../Graphics/src/RHI/StreamingBufferAllocator.hpp"
 
 namespace ln {
@@ -11,9 +13,11 @@ struct MeshBufferView {
     VertexBuffer* vertexBuffer;
     IndexBuffer* indexBuffer;
     Vertex* vertexData;     // Mapped VertexBuffer (with offset)
-    int32_t* indexData;     // Mapped IndexBuffer (with offset)
-    int32_t firstIndex;     // for drawPrimitiveIndexed
-    int32_t vertexOffset;   // for drawPrimitiveIndexed
+    uint32_t* indexData;    // Mapped IndexBuffer (with offset)
+    uint32_t firstIndex;    // for drawPrimitiveIndexed
+    uint32_t vertexOffset;  // for drawPrimitiveIndexed
+    uint32_t vertexCount;
+    uint32_t indexCount;
 };
 
 // DrawElementList::newFrameData() で確保するデータのインターフェイス。
@@ -31,7 +35,6 @@ private:
     friend class BatchCollector;
 };
 
-// TODO: proxy のリストは分けたほうがいいかもしれない
 class BatchCollector final : public URefObject {
     // FMeshElementCollector
 public:
@@ -51,13 +54,17 @@ public:
         RenderPass* m_oldValue;
     };
 
+    const BatchProxyState* batchProxyState = nullptr;
+
     BatchCollector(detail::RenderingManager* manager);
     ~BatchCollector();
-    void clear();
+    void dispose();
+    void clear(const RenderViewPoint* viewPoint);
 
     VertexLayout* standardVertexDeclaration() const;
     detail::LinearAllocator* dataAllocator() const { return m_dataAllocator; }
     const Array<Batch*>& batches() const { return m_batchList; }
+    const RenderViewPoint* viewPoint() const { return m_viewPoint; }
 
     // 次の addBatch() で Batch に set する RenderPass.
     // 他にも Material や Skeleton など似たようなものがあるが、
@@ -68,29 +75,32 @@ public:
     const URef<ScreenRectangleRenderFeature>& screenRectangleRenderFeature() const { return m_screenRectangleRenderFeature; }
     const URef<PrimitiveMeshRenderer>& primitiveRenderer() const { return m_primitiveRenderer; }
     const URef<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
+    const URef<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
+    const URef<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
+    const URef<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
+    const URef<FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
 
-
-    // UE4 と違って、Proxy は Scene の Node から作るだけではなく、
-    // RenderingContext::drawXXXX() の中で動的に作ることもある。そのためのアロケータ。
-    template<class TBatchProxy, class... TArgs>
-    TBatchProxy* newSingleFrameBatchProxy(TArgs&&... args) {
-        void* buffer = m_dataAllocator->allocate(sizeof(TBatchProxy));
-        TBatchProxy* data = new (buffer) TBatchProxy(std::forward<TArgs>(args)...);
-        addSingleFrameBatchProxy(data);
-        return data;
-    }
-
-    void resolveSingleFrameBatchProxies();
-        
     // StaticMesh など、外部でキャッシュしている Batch を使うこともできる。
     void addBatch(Batch* batch);
 
     template<class TBatch, class... TArgs>
-    TBatch* newBatch(TArgs&&... args) {
+    TBatch* newBatch(size_t elementCount, Material* material, TArgs && ... args) {
         void* buffer = m_dataAllocator->allocate(sizeof(TBatch));
         TBatch* data = new (buffer) TBatch(std::forward<TArgs>(args)...);
         addBatch(data);
+        allocateBatchElements(data, elementCount);
+        resolveBatchMaterial(data, material);
         return data;
+    }
+
+    void allocateBatchElements(Batch* batch, size_t count) {
+        LN_DCHECK(count < 128);
+        auto* elements = reinterpret_cast<BatchElement*>(m_dataAllocator->allocate(sizeof(BatchElement) * count));
+        for (size_t i = 0; i < count; i++) {
+            new (elements + i) BatchElement();
+        }
+        batch->elemets2 = elements;
+        batch->elementsCount = count;
     }
 
     template<class T, class... TArgs>
@@ -112,13 +122,11 @@ public:
     MeshBufferView allocateMeshBuffer(int32_t vertexCount, int32_t indexCount);
 
 private:
-    void addSingleFrameBatchProxy(SingleFrameBatchProxy* batchProxy);
     void addFrameData(IBatchFrameData* data);
+    void resolveBatchMaterial(Batch* batch, Material* material);
 
     detail::RenderingManager* m_manager;
     Ref<detail::LinearAllocator> m_dataAllocator;
-    SingleFrameBatchProxy* m_headSingleFrameBatchProxy; // head of link list.
-    SingleFrameBatchProxy* m_tailSingleFrameBatchProxy; // tail of link list.
     IBatchFrameData* m_headFrameData;   // head of link list.
     IBatchFrameData* m_tailFrameData;   // tail of link list.
     Array<Batch*> m_batchList;  // TODO: LinkedList のほうがいいか？
@@ -127,14 +135,16 @@ private:
     URef<detail::StreamingBufferAllocator> m_vertexBufferAllocator;
     URef<detail::StreamingBufferAllocator> m_indexBufferAllocator;
 
+    const RenderViewPoint* m_viewPoint;
     RenderPass* m_currentRenderPass;
 
     URef<ScreenRectangleRenderFeature> m_screenRectangleRenderFeature;
     URef<PrimitiveMeshRenderer> m_primitiveRenderer;
     URef<MeshRenderFeature> m_meshRenderFeature;
-
-    // 検証用。clear() と resolveSingleFrameBatchProxies() は、1フレーム中に 1:1 で呼ばれなければならない。
-    bool m_resolvedSingleFrameBatchProxies;
+    URef<SpriteRenderFeature> m_spriteRenderFeature;
+    URef<ShapesRenderFeature> m_shapesRenderFeature;
+    URef<SpriteTextRenderFeature> m_spriteTextRenderFeature;
+    URef<FrameRectRenderFeature> m_frameRectRenderFeature;
 };
 
 } // namespace kanata

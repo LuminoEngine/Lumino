@@ -224,14 +224,14 @@ void mainLoop() {
 
         auto renderPass = OpenGLIntegration::getRenderPass(0, width, height);
 
-        auto descriptor = commandList->allocateShaderDescriptor(shaderPass);
+        auto descriptor = commandList->allocateShaderDescriptor_deprecated(shaderPass);
         descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
         commandList->beginRenderPass(renderPass);
         commandList->clear(ClearFlags::Depth, Color());
         commandList->setVertexLayout(g_vertexLayout);
         commandList->setVertexBuffer(0, g_vertexBuffer);
         commandList->setShaderPass(shaderPass);
-        commandList->setShaderDescriptor(descriptor);
+        commandList->setShaderDescriptor_deprecated(descriptor);
         commandList->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         commandList->drawPrimitive(0, 1);
         commandList->endRenderPass();

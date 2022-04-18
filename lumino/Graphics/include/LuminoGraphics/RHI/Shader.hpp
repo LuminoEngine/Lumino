@@ -560,6 +560,10 @@ public:
 
     // TODO: for test
     const ShaderPassDescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
+    const Array<size_t>& bufferSizes() const { return m_bufferSizes; }
+    const detail::ShaderPassSemanticsManager* semanticsManager() const { return m_semanticsManager; }
+    const ShaderDescriptorLayout* shaderPassDescriptorLayout() const { return m_shaderPassDescriptorLayout; }
+
 
     // CommandBuffer に対するインターフェイス
     Ref<detail::IDescriptorPool> getDescriptorSetsPool();
@@ -583,7 +587,10 @@ private:
     ShaderTechnique* m_owner;
     String m_name;
     Ref<detail::IShaderPass> m_rhiPass;
-    ShaderPassDescriptorLayout m_descriptorLayout;
+    ShaderPassDescriptorLayout m_descriptorLayout;  // deprecated
+    Array<size_t> m_bufferSizes;
+    URef<detail::ShaderPassSemanticsManager> m_semanticsManager;
+    Ref<ShaderDescriptorLayout> m_shaderPassDescriptorLayout;
 
     Ref<kokage::ShaderRenderState> m_renderState;
     const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;

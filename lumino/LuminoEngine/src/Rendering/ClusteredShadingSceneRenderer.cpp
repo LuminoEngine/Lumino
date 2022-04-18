@@ -4,6 +4,7 @@
 #include <LuminoGraphics/RHI/RenderPass.hpp>
 #include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawCommand.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
@@ -42,7 +43,15 @@ void ForwardGBufferPrepass::init() {
     }
     m_renderPass = makeObject<RenderPass>();
 
-    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader);
+    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ForwardGBufferPrepass);
+    m_internalSceneRenderPass->overrideCommand = [](kanata::DrawCommand* cmd) {
+        // このパスではブレンドを禁止する。
+        // 例えば法線の向きをブレンドしてしまうと描画がおかしくなる。
+        // また G-Buffer で R32S を使っているものがあるが、これはそもそも Blend が禁止されている。 (Vulkan の Validation にひっかかる)
+        cmd->pipelineState.blendState.independentBlendEnable = false;
+        cmd->pipelineState.blendState.renderTargets[0].blendEnable = false;
+    };
+
 }
 
 void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
@@ -250,7 +259,7 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
     //	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 
     m_renderPass = makeObject<RenderPass>();
-    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader);
+    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::Forward);
 }
 
 void ClusteredShadingGeometryRenderingPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
@@ -379,7 +388,7 @@ void ShadowCasterPass::init() {
 
     m_renderPass = makeObject<RenderPass>();
 
-    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader);
+    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ShadowCaster);
 }
 
 //Shader* ShadowCasterPass::getDefaultShader() const
@@ -623,6 +632,61 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderSec
 
     v = shader->findParameter(_T("ln_FogParams"));
     if (v) v->setVector(Vector4(m_fogParams.color.rgb() * m_fogParams.color.a, m_fogParams.density));
+#endif
+}
+
+void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables2(ShaderDescriptor* descriptor, ShaderPass* shaderPass) {
+    // TODO:
+    // 毎回 findParameter していたのをテーブル対応にしたことで 50us → 1us 以下にできた。
+    // ただ、もう少し最適化の余地はある。以下のパラメータはシーン全体でひとつなので、
+    // 今 onSetAdditionalShaderPassVariables は DrawElement ごとに呼び出されているが、
+    // 事前に描画で使うシェーダを集めておいて Scene 単位はまとめて設定する。
+
+    Shader* shader = shaderPass->shader();
+    const auto* ssm = shaderPass->semanticsManager();
+
+    ShaderParameter2* v;
+
+    const auto* params = sceneGlobalParams();
+
+    ClusteredShadingRendererInfo info = {
+        m_lightClusters.getGlobalLightInfoTexture(),
+        m_lightClusters.getLightInfoTexture(),
+        m_lightClusters.getClustersVolumeTexture(),
+        (mainLightInfo() ? mainLightInfo()->m_direction : Vector3(0, -1, 0)),
+        (params ? Vector4(params->startDistance, params->lowerHeight, params->upperHeight, params->heightFogDensity) : Vector4::Zero),
+        (params ? Vector4(params->fogColor.rgb() * params->fogColor.a, params->fogDensity) : Vector4::Zero),
+        m_lightClusters.m_nearClip,
+        m_lightClusters.m_farClip,
+    };
+
+    ssm->updateClusteredShadingVariables(descriptor, info);
+
+#if 0
+    //// TODO: Test
+    //v = shader->findParameter(_TT("_LensflareOcclusionMap");
+    //if (v) {
+    //	v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
+    //}
+
+    // TODO: Test
+    if (auto param = shader->findParameter(_TT("ln_ViewProjection_Light0"))) {
+        if (const auto* mainLight = mainLightInfo()) {
+
+            //const auto pos = Vector3(10, 10, 10);
+            //const auto view = Matrix::makeLookAtLH(
+            //	pos,
+            //	Vector3::Zero,
+            //	Vector3::UnitY);
+            //const auto proj = Matrix::makePerspectiveFovLH(
+            //	Math::PI / 2.0f,
+            //	1024.0 / 1024.0,	// TODO: LightMapSize
+            //	0.5f, 100.0f);	// TODO: clip range
+
+            //param->setMatrix(Matrix::multiply(view, proj))
+            param->setMatrix(mainRenderViewInfo().mainLightViewProjection);
+        }
+    }
 #endif
 }
 

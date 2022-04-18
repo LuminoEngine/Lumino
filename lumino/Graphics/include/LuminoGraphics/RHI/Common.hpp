@@ -21,6 +21,7 @@ class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class INativeGraphicsExtension;
+class ShaderDescriptor;
 
 /**
  * Texture2DDelegate
@@ -342,6 +343,7 @@ static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;
 
 static const int MaxDescriptors = 16;
+static const int MaxDescriptorSlots = 16;
 
 struct SamplerStateData {
     TextureFilterMode filter;

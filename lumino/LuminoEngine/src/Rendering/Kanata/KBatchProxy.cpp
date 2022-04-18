@@ -11,13 +11,60 @@
 namespace ln {
 namespace kanata {
 
-    
+//==============================================================================
+// BatchProxyState
+
+void BatchProxyState::reset() {
+    baseTransform = nullptr;
+    transform = Matrix::Identity;
+    renderPriority = 0;
+    objectId = 0;
+
+    m_blendMode = nullptr;
+    m_cullingMode = nullptr;
+    m_depthTestEnabled = nullptr;
+    m_depthWriteEnabled = nullptr;
+    shadingModel = nullptr;
+    builtinEffectData = nullptr;
+}
+
+void BatchProxyState::copyFrom(const BatchProxyState* other) {
+    baseTransform = other->baseTransform;
+    transform = other->transform;
+    renderPriority = other->renderPriority;
+    objectId = other->objectId;
+
+    m_blendMode = other->m_blendMode;
+    m_cullingMode = other->m_cullingMode;
+    m_depthTestEnabled = other->m_depthTestEnabled;
+    m_depthWriteEnabled = other->m_depthWriteEnabled;
+    shadingModel = other->shadingModel;
+    builtinEffectData = other->builtinEffectData;
+}
+
+//==============================================================================
+// BatchProxyStateStackItem
+
+BatchProxyStateStackItem::BatchProxyStateStackItem() {
+    reset();
+}
+
+void BatchProxyStateStackItem::reset() {
+    s.reset();
+    m_dirty = true;
+}
+
+void BatchProxyStateStackItem::copyFrom(const BatchProxyStateStackItem* other) {
+    s.copyFrom(&other->s);
+}
+
 //==============================================================================
 // SingleLineSingleFrameBatchProxy
 
 void SingleLineSingleFrameBatchProxy::getBatch(BatchCollector* collector) {
     PrimitiveMeshRenderer* r = collector->primitiveRenderer();
-    r->beginBatch(collector);
+    LN_NOTIMPLEMENTED(); // TODO: material
+    r->beginBatch(collector, nullptr);
     r->drawMeshGenerater(&data);
     r->endBatch(collector);
 }
@@ -27,7 +74,8 @@ void SingleLineSingleFrameBatchProxy::getBatch(BatchCollector* collector) {
 
 void RegularBoxSingleFrameBatchProxy::getBatch(BatchCollector* collector) {
     PrimitiveMeshRenderer* r = collector->primitiveRenderer();
-    r->beginBatch(collector);
+    LN_NOTIMPLEMENTED(); // TODO: material
+    r->beginBatch(collector, nullptr);
     r->drawMeshGenerater(&data);
     r->endBatch(collector);
 }
@@ -63,16 +111,14 @@ void BoxMeshBatchProxy::getBatch(BatchCollector* collector) {
         buffer.generate(&factory);
     }
 
-    Batch* batch = collector->newBatch<Batch>();
-    BatchElement batchElement;
-    batchElement.vertexBuffers = {};
-    batchElement.vertexBuffers[0] = m_vertexBuffer;
-    batchElement.indexBuffer = m_indexBuffer;
-    batchElement.firstIndex = 0;
-    batchElement.firstVertex = 0;
-    batchElement.primitiveCount = 12;
-    batchElement.instanceCount = 0;
-    batch->elemets.push(batchElement);
+    LN_NOTIMPLEMENTED();    // TODO: material
+    Batch* batch = collector->newBatch<Batch>(1, nullptr);
+    batch->elemets2[0].vertexBuffers[0] = m_vertexBuffer;
+    batch->elemets2[0].indexBuffer = m_indexBuffer;
+    batch->elemets2[0].firstIndex = 0;
+    batch->elemets2[0].firstVertex = 0;
+    batch->elemets2[0].primitiveCount = 12;
+    batch->elemets2[0].instanceCount = 0;
     batch->vertexLayout = collector->standardVertexDeclaration();
     batch->primitiveTopology = PrimitiveTopology::TriangleList;
 }

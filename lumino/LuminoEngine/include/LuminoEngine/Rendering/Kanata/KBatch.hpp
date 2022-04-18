@@ -23,12 +23,26 @@ struct BatchElement final {
      {}
 };
 
+struct BatchMaterial {
+    Material* material;
+
+    // 以下、Material の継承を解決した、Batch 生成時点で確定しているステート。
+    // SceneRenderPass で必要に応じてオーバーライドされたあと、最終的に確定する。 
+    BlendMode blendMode;
+    CullMode cullingMode;
+    bool depthTestEnabled;
+    bool depthWriteEnabled;
+    ShadingModel shadingModel;
+};
+
 struct Batch {
 public:
-    Array<BatchElement> elemets;    // TODO: SSOArray
+    BatchElement* elemets2;
+    uint8_t elementsCount;
     VertexLayout* vertexLayout;
     PrimitiveTopology primitiveTopology;
-    Material* material = nullptr;
+    //Material* material = nullptr;
+    BatchMaterial material;
     Matrix worldTransform;
     detail::SkeletonInstance* skeleton = nullptr;
     detail::BuiltinEffectData builtinEffectData;
@@ -36,6 +50,10 @@ public:
     //LODIndex
     //castshadow
     //Selectable
+
+    // For TextRendering
+    Texture* overrideTexture = nullptr;
+    SamplerState* overrideSamplerState = nullptr;
 
     // 今のところ blit 用。他ではあまり使ってほしくないところ。
     RenderPass* renderPass;

@@ -224,6 +224,7 @@ public:	// TODO:
 
     // TODO: internal
     void updateShaderVariables(GraphicsCommandList* commandList, detail::ShaderSecondaryDescriptor* descriptor);
+    void updateShaderVariables2(GraphicsCommandList* commandList, ShaderDescriptor* descriptor);
 
 protected:  // TODO:
 	struct UniformBufferEntiry

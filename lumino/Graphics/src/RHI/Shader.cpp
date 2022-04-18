@@ -405,6 +405,15 @@ void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, kokage::
     m_renderState = renderState;
 
     m_descriptorLayout.init(layout, globalLayout);
+
+    for (const auto& slot : layout.bufferSlots()) {
+        m_bufferSizes.push(slot.size);
+    }
+
+    m_semanticsManager = makeURef<detail::ShaderPassSemanticsManager>();
+    m_semanticsManager->init(this, layout);
+
+    m_shaderPassDescriptorLayout = makeObject<ShaderDescriptorLayout>(layout);
 }
 
 void ShaderPass::onDispose(bool explicitDisposing) {
@@ -460,7 +469,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
             if (!texture) {
                 texture = manager->whiteTexture();
             }
-
+            
             SamplerState* sampler = nullptr;
             if (texture->samplerState())
                 sampler = texture->samplerState();

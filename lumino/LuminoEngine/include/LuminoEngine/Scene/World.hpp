@@ -106,7 +106,7 @@ public: // TODO: internal
     const Ref<detail::SceneConductor>& sceneConductor() const { return m_sceneConductor; }
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
-	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
+	detail::WorldSceneGraphRenderingContext* prepareRender(const RenderViewPoint* viewPoint);
     void prepareRender(const WorldRenderView* renderView);
     void renderObjects();  // call by WorldRenderView
     void renderGizmos(RenderingContext* context);
@@ -148,7 +148,7 @@ class WorldSceneGraphRenderingContext
 public:
     WorldSceneGraphRenderingContext();
     
-    void resetForBeginRendering();
+    void resetForBeginRendering(const RenderViewPoint* viewPoint);
     
 private:
 };

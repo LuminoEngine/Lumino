@@ -142,7 +142,7 @@ void RLIMaterial::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)
 		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
 		//	break;
 	default:
-		assert(0);
+            LN_UNREACHABLE();
 		break;
 	}
 }

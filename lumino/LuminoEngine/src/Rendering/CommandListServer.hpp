@@ -15,9 +15,9 @@ public:
 		Ref<CommandList> primaryList;
 	};
 
-	CommandList* acquirePrimaryList(RenderPart index1);
+	CommandList* acquirePrimaryList(RenderPart index1, const RenderViewPoint* viewPoint);
 	CommandList* getPrimaryList(RenderPart index1) const;
-	void clearCommandsAndState();
+	void clearCommandsAndState(const RenderViewPoint* viewPoint);
 
 
 

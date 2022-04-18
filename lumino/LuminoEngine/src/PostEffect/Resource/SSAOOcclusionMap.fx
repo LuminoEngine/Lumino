@@ -249,7 +249,7 @@ float4 PSMain(PSInput input) : SV_TARGET0
 //==============================================================================
 // Technique
 
-technique Forward_Geometry_UnLighting
+technique Default
 {
     ShadingModel = Unlit;
     pass Pass1

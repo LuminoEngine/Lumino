@@ -179,6 +179,8 @@ private:
     Array<URef<CodeContainer>> m_codeContainers;
     Array<URef<UnifiedShaderTechnique>> m_techniques;
     Array<URef<UnifiedShaderPass>> m_passes;
+
+    // TODO: DescriptorLayout というクラスを global, pass 両方で使っているので混乱する。分けたい。
     DescriptorLayout m_globalDescriptorLayout; // Result of merging all pass layouts
 };
 

@@ -40,15 +40,12 @@ Ref<SwapChain> g_swapChain;
 class MyRenderingContext : public RenderingContext {
 public:
     MyRenderingContext() {}
-
-    void resetForBeginRendering() {
-        RenderingContext::resetForBeginRendering();
-    }
 };
 
 class MyRenderView : public RenderView {
 public:
     MyRenderView() {
+        m_viewPoint = makeObject<RenderViewPoint>();
         m_renderingContext = makeRef<MyRenderingContext>();
         m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
         m_sceneRenderingPipeline->init();
@@ -65,7 +62,8 @@ public:
             detail::SceneInfo sceneInfo;
             
             makeViewProjections(renderViewInfo.cameraInfo, 1.0); // TODO: dpiscale
-            m_renderingContext->resetForBeginRendering();
+            LN_NOTIMPLEMENTED();    // m_viewPoint 構築
+            m_renderingContext->resetForBeginRendering(m_viewPoint);
         }
 
         // draw
@@ -94,6 +92,7 @@ public:
             m_renderingContext->commandListServer());
     }
 
+    Ref<RenderViewPoint> m_viewPoint;
     Ref<MyRenderingContext> m_renderingContext;
     Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
 };

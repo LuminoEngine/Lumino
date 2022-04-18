@@ -92,8 +92,8 @@ void StreamingBufferAllocator::cleanup() {
     m_usedCount = 0;
 }
 
-StreamingBufferAllocator::View StreamingBufferAllocator::allocate(size_t count) {
-    if (count > m_manager->pageElementCount()) {
+StreamingBufferAllocator::View StreamingBufferAllocator::allocate(size_t elementCount) {
+    if (elementCount > m_manager->pageElementCount()) {
         LN_ERROR();
         return {};
     }
@@ -112,7 +112,7 @@ StreamingBufferAllocator::View StreamingBufferAllocator::allocate(size_t count) 
 
     if (LN_REQUIRE(m_currentPage)) return {};
 
-    size_t actualCount = std::min(count, pageElementCount - m_usedCount);
+    size_t actualCount = std::min(elementCount, pageElementCount - m_usedCount);
 
     View view = {
         m_currentPage->resource(),
@@ -120,7 +120,7 @@ StreamingBufferAllocator::View StreamingBufferAllocator::allocate(size_t count) 
         actualCount,
     };
 
-    m_usedCount += count;
+    m_usedCount += elementCount;
 
     return view;
 }

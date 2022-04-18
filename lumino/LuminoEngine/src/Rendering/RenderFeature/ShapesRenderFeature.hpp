@@ -338,6 +338,7 @@ public:
     int vertexCount() const;
     int indexCount() const;
     void writeToBuffer(Vertex* vertexBuffer, uint16_t* indexBuffer, uint16_t indexOffset);
+    void writeToBuffer32(Vertex* vertexBuffer, uint32_t* indexBuffer);
 
 protected:
     enum Side

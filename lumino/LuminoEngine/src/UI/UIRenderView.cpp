@@ -126,10 +126,7 @@ void UIFrameRenderView::render(GraphicsCommandList* graphicsContext, RenderTarge
 
         // build draw elements
         {
-            m_renderingContext->resetForBeginRendering();
-            //m_renderingContext->setRenderTarget(0, fb.renderTarget[0]);
-            //m_renderingContext->setDepthBuffer(fb.depthBuffer);
-            m_renderingContext->setViewPoint(m_viewPoint);
+            m_renderingContext->resetForBeginRendering(m_viewPoint);
             m_renderingContext->m_frameWindowRenderingGraphicsContext = graphicsContext;
             m_renderingContext->baseRenderView = this;
             m_renderingContext->clearPostEffects();

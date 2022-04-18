@@ -60,11 +60,19 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material, Particle
         //vertices[3] = Vertex{ Vector3( 0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
         //indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
         // Front: Z+
+#if LN_COORD_RH
+        vertices[0] = Vertex{ Vector3(-0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(0, 0), Color::White };
+        vertices[1] = Vertex{ Vector3(-0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(0, 1), Color::White };
+        vertices[2] = Vertex{ Vector3( 0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(1, 0), Color::White };
+        vertices[3] = Vertex{ Vector3( 0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
+        indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
+#else
         vertices[0] = Vertex{ Vector3( 0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(0, 0), Color::White };
         vertices[1] = Vertex{ Vector3(-0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(1, 0), Color::White };
         vertices[2] = Vertex{ Vector3( 0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(0, 1), Color::White };
         vertices[3] = Vertex{ Vector3(-0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
         indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
+#endif
         break;
     case ln::ParticleGeometryDirection::HorizontalBillboard:
     case ln::ParticleGeometryDirection::Top:
@@ -255,8 +263,7 @@ void SpriteParticleRenderer::submit(RenderingContext* context)
 {
 
 
-    context->setMaterial(m_material);
-    context->drawMeshInstanced(m_batch);
+    context->drawMeshInstanced(m_material, m_batch);
 
     //m_ribbonRenderer->submit(context);
 }

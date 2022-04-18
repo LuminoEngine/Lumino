@@ -35,8 +35,7 @@ InstancedMeshList* InstancedMeshesComponent::model() const
 void InstancedMeshesComponent::onRender(RenderingContext* context)
 {
     if (m_model) {
-        context->setMaterial(m_material);
-        context->drawMeshInstanced(m_model);
+        context->drawMeshInstanced(m_material, m_model);
     }
 }
 

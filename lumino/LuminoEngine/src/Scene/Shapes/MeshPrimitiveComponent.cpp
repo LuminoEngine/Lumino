@@ -85,7 +85,7 @@ void PlaneMeshComponent::onRender(RenderingContext* context)
         Math::nearEqual(m_uvParUnit.x, 0.0f) ? 1.0f : m_size.x / m_uvParUnit.x,
         Math::nearEqual(m_uvParUnit.y, 0.0f) ? 1.0f : m_size.y / m_uvParUnit.y);
     
-    context->drawPlane(m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
+    context->drawPlane(material(), m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
 }
 
 //==============================================================================
@@ -106,8 +106,7 @@ bool SphereMeshComponent::init()
 
 void SphereMeshComponent::onRender(RenderingContext* context)
 {
-    context->setMaterial(material());
-    context->drawSphere(0.5, 16, 16, Color::White);
+    context->drawSphere(material(), 0.5, 16, 16, Color::White);
 }
 
 ////==============================================================================

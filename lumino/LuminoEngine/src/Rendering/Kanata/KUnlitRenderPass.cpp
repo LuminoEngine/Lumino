@@ -6,7 +6,7 @@ namespace ln {
 namespace kanata {
 
 UnlitRenderPass::UnlitRenderPass(detail::RenderingManager* manager)
-    : SceneRenderPass(manager, manager->builtinShader(detail::BuiltinShader::Sprite)) {
+    : SceneRenderPass(manager, manager->builtinShader(detail::BuiltinShader::Sprite), kokage::ShaderTechniqueClass_Phase::Forward) {
 }
 
 } // namespace kanata

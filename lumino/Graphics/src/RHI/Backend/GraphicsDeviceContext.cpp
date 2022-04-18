@@ -534,6 +534,16 @@ void ICommandList::drawExtension(INativeGraphicsExtension* extension) {
 }
 
 void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource) {
+#ifdef LN_DEBUG
+    if (m_staging.descriptor && m_currentRenderPass) {
+        for (auto& res : m_staging.descriptor->resources()) {
+            if (m_currentRenderPass->m_renderTargets[0] == res.object) {
+                // ここで引っかかる場合、描画先と参照元に同じテクスチャを使っている。
+                LN_ERROR();
+            }
+        }
+    }
+#endif
     //if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 

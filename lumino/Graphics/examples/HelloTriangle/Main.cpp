@@ -77,7 +77,7 @@ void mainLoop() {
     auto shaderPass = g_shader->techniques()[0]->passes()[0];
 
     auto ctx = g_swapChain->beginFrame2();
-    auto descriptor = ctx->allocateShaderDescriptor(shaderPass);
+    auto descriptor = ctx->allocateShaderDescriptor_deprecated(shaderPass);
     descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
     auto renderPass = g_swapChain->currentRenderPass();
     ctx->beginRenderPass(renderPass);
@@ -85,7 +85,7 @@ void mainLoop() {
     ctx->setVertexLayout(g_vertexLayout);
     ctx->setVertexBuffer(0, g_vertexBuffer);
     ctx->setShaderPass(shaderPass);
-    ctx->setShaderDescriptor(descriptor);
+    ctx->setShaderDescriptor_deprecated(descriptor);
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->drawPrimitive(0, 1);
     ctx->endRenderPass();

@@ -9,7 +9,7 @@ public:
     MeshRenderFeature(detail::RenderingManager* manager);
 
     void drawMesh(BatchCollector* collector, Material* material, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton = nullptr, detail::MorphInstance* morph = nullptr);
-    void drawMeshInstanced(BatchCollector* collector, InstancedMeshList* list) const;
+    void drawMeshInstanced(BatchCollector* collector, Material* material, InstancedMeshList* list) const;
 
 private:
 };

@@ -92,9 +92,9 @@ public:
     void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
     void drawLineList(const Vector3* points, int pointCount, const Color& color);
     void drawLineStripPrimitive(int pointCount, const Vector3* points, const Color* colors);
-    void drawPlane(float width, float depth, const Color& color = Color::White);
-    void drawPlane(float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color = Color::White);
-    void drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform = Matrix());
+    void drawPlane(Material* material, float width, float depth, const Color& color = Color::White);
+    void drawPlane(Material* material, float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color = Color::White);
+    void drawSphere(Material* material, float radius, int slices, int stacks, const Color& color, const Matrix& localTransform = Matrix());
     void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix());
 
     /** 四辺の位置が -1.0~1.0 の矩形を描画します。座標変換行列に単位行列を使用することで、スクリーン全体を覆う矩形を描画することができます。 */
@@ -132,7 +132,7 @@ public:
     void drawMesh(MeshPrimitive* mesh, int sectionIndex);
     void drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph);
 
-    void drawMeshInstanced(InstancedMeshList* list);
+    void drawMeshInstanced(Material* material, InstancedMeshList* list);
 
     void drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font);
 
@@ -158,14 +158,14 @@ public:
     /** @} */
 
     // TODO: internal
-    void clearCommandsAndState();
+    void clearCommandsAndState(const RenderViewPoint* viewPoint);
     //void resolveSingleFrameBatchProxies();
     const Ref<detail::DrawElementListBuilder>& builder() const { return m_builder; }
     const Ref<detail::DrawElementList>& elementList() const { return m_elementList; }
+    const URef<kanata::BatchProxyCollector>& batchProxyCollector() const { return m_batchProxyCollector; }
     const URef<kanata::BatchCollector>& batchCollector() const { return m_batchCollector; }
 
-    RenderViewPoint* viewPoint() const;
-    void setViewPoint(RenderViewPoint* value);
+    const RenderViewPoint* viewPoint() const;
     void setBaseTransfrom(const Optional<Matrix>& value);
     const Matrix& baseTransform() const;
     void setRenderPriority(int value);
@@ -175,11 +175,15 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     CommandList();
+    ~CommandList();
 
 private:
+    //void applyBatchMaterial(kanata::Batch* batch);
+
     detail::RenderingManager* m_manager;
     Ref<detail::DrawElementList> m_elementList;
     Ref<detail::DrawElementListBuilder> m_builder;
+    URef<kanata::BatchProxyCollector> m_batchProxyCollector;
     URef<kanata::BatchCollector> m_batchCollector;
 };
 

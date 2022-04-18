@@ -539,9 +539,9 @@ void SceneRenderer::renderPass_Legacy(GraphicsCommandList* graphicsContext, Rend
 
                 for (ShaderPass* pass2 : tech->passes()) {
                     graphicsContext->setShaderPass(pass2);
-                    graphicsContext->setShaderDescriptor(descriptor);
+                    graphicsContext->setShaderDescriptor_deprecated(descriptor);
                     batch->render(graphicsContext);
-                    graphicsContext->setShaderDescriptor(nullptr);
+                    graphicsContext->setShaderDescriptor_deprecated(nullptr);
                 }
             }
 
@@ -597,6 +597,9 @@ void SceneRenderer::onCollectLight(const DynamicLightInfo& light) {
 }
 
 void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderSecondaryDescriptor* descriptor, ShaderTechnique* technique) {
+}
+
+void SceneRenderer::onSetAdditionalShaderPassVariables2(ShaderDescriptor* descriptor, ShaderPass* shaderPass) {
 }
 
 bool SceneRenderer::equalsFramebuffer(RenderPass* renderPass, const FrameBuffer& fb) {

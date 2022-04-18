@@ -5,7 +5,7 @@
 
 #define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
 #define LN_RLI_BATCH 1
-//#define LN_USE_KANATA 1
+#define LN_USE_KANATA 1
 
 namespace ln {
 class Font;
@@ -29,7 +29,6 @@ class CanvasContext;
 
 static const int MaxRenderMorphTargets = 4;
 
-// Note: ShadingModel は組み込みの SurfaceShader を選択するもの。Unlit にしても陰はつく。
 /** ShadingModel */
 LN_ENUM()
 enum class ShadingModel : uint8_t
@@ -40,6 +39,10 @@ enum class ShadingModel : uint8_t
 	/** Unlit */
 	Unlit,
 };
+// NOTE: Lumino の ShadingModel は UE を参考にはしているが、あまり大げさなものではない。
+// 動機は、Default ⇔ Unlit などを動的に簡単に切り替えられるようにするためのもの。
+// Unlit 用のシェーダを用意してそれを Material にアタッチすることでも同様の表現はできるようになる。(Unity 方式)
+// DX9 の頃の ShaderFragment のイメージが近いかもしれない。
 
 /** 合成方法 */
 LN_ENUM()
@@ -236,6 +239,27 @@ enum class GBuffer
 	ViewNormalMap,	// experiment
 	ViewDepthMap,
 	ViewMaterialMap,
+};
+
+// RenderingContext を使った描画の起点となった視点情報。
+// 特に Partcle や Tilemap で使用する。これらは Camera が視点となるが、onRender() から Camera までの参照はかなり遠い。
+// また UI でも使うことがあるため、単に Camera ではなく、もう一段抽象化したデータ構造を用意しておく。(UI では Camera という概念はイメージしづらい)
+class RenderViewPoint
+    : public Object {
+public:
+    Matrix worldMatrix;
+    Size viewPixelSize;
+    Vector3 viewPosition;
+    Vector3 viewDirection;
+    Matrix viewMatrix;
+    Matrix projMatrix;
+    Matrix viewProjMatrix;
+    ViewFrustum viewFrustum;
+
+    float fovY = 1.0f;
+    float nearClip = 0;
+    float farClip = 0;
+    float dpiScale = 1.0;
 };
 
 namespace detail {
@@ -533,6 +557,10 @@ public:
 		tone.addClamp(parent.tone);
 	}
 };
+
+inline bool operator==(const BuiltinEffectData& lhs, const BuiltinEffectData& rhs) {
+    return lhs.equals(&rhs);
+}
 
 struct ShaderTechniqueRequestClasses {
     kokage::ShaderTechniqueClass_MeshProcess meshProcess;

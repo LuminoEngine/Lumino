@@ -30,7 +30,7 @@ float4 PSMain(VSOutput input): SV_TARGET
 //==============================================================================
 // Techniques
 
-technique Forward_Geometry_UnLighting
+technique Default
 {
     pass Pass0
     {

@@ -3,6 +3,7 @@
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include "../CommandListServer.hpp"
 #include "RLICulling.hpp"
 
@@ -30,8 +31,11 @@ void RLICulling::cull(
 
         // Proxy list -> Batch list
         {
-            auto& batchCollector = renderingContext->getCommandList(renderPart)->batchCollector();
-            batchCollector->resolveSingleFrameBatchProxies();
+            auto* commandList = renderingContext->getCommandList(renderPart);
+            auto& batchProxyCollector = commandList->batchProxyCollector();
+            auto& batchCollector = commandList->batchCollector();
+
+            batchProxyCollector->resolveSingleFrameBatchProxies(batchCollector);
             partInfo->batchCollector = batchCollector;
         }
 
