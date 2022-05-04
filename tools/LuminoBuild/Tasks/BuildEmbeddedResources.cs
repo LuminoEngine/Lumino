@@ -13,6 +13,7 @@ namespace LuminoBuild.Tasks
             var searchDirs = new string[]
             {
                 Path.Combine(builder.RootDir, "lumino", "LuminoEngine", "src"),
+                Path.Combine(builder.RootDir, "lumino", "Graphics", "src"),
             };
 
             foreach (var searchDir in searchDirs)

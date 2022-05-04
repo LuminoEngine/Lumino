@@ -19,7 +19,7 @@ void TestEnv::setup() {
         printf("LN_BUILD_FROM_CI defined.\n");
     }
 
-    auto graphicsAPI = GraphicsAPI::Default;
+    auto graphicsAPI = GraphicsAPI::Vulkan;
     auto windowSystem = ln::WindowSystem::Native;
     detail::GraphicsManager::selectDefaultSystem(&graphicsAPI, &windowSystem);
 

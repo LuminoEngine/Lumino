@@ -2,7 +2,7 @@ name: Package
 
 on:
   push:
-    branches:s
+    branches:
     - master
 
 env:
