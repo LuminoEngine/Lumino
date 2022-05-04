@@ -2,7 +2,7 @@ name: Package
 
 on:
   push:
-    branches:
+    branches:s
     - master
 
 env:
@@ -11,7 +11,7 @@ env:
 
 jobs:
   #==============================================================================
-  Build-Native-MSVC2019-x64-MT:
+  Build-x64-windows-static:
     runs-on: windows-2019
     
     steps:
@@ -19,59 +19,30 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 2.2.108
+        dotnet-version: 5.0.x
 
-    - name: Common build cache (build/BuildCache)
+    - name: Prepare cache (./build/tools)
       uses: actions/cache@v1
       with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+        path: ./build/tools
+        key: ${{ env.cache-version }}-x64-windows-${{ hashFiles('**/BuildExternals.cs') }}
             
+    - name: Dependencies
+      run: dotnet run -- BuildExternals x64-windows-static
     - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects MSVC2019-x64-MT
-        dotnet run -- BuildEngine_MSVC MSVC2019-x64-MT
-        dotnet run -- MakeNativePackage
+      run: dotnet run -- BuildEngine_MSVC x64-windows-static
+    - name: Package
+      run: dotnet run -- MakeNativePackage x64-windows-static
         
     - uses: actions/upload-artifact@v1
       with:
-        name: NativePackage-MSVC2019-x64-MT
+        name: NativePackage-x64-windows-static
         path: ./build/NativePackage
 
   #==============================================================================
-  Build-Native-MSVC2019-x86-MT:
-    runs-on: windows-2019
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
-
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
-            
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects MSVC2019-x86-MT
-        dotnet run -- BuildEngine_MSVC MSVC2019-x86-MT
-        dotnet run -- MakeNativePackage
-        
-    - uses: actions/upload-artifact@v1
-      with:
-        name: NativePackage-MSVC2019-x86-MT
-        path: ./build/NativePackage
-
-  #==============================================================================
-  Build-Native-Web:
+  Build-wasm32-emscripten:
     runs-on: windows-latest
 
     steps:
@@ -79,89 +50,90 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 2.2.108
+        dotnet-version: 5.0.x
 
-    - name: Common build cache (build/BuildCache)
+    - name: Prepare cache (./build/tools)
       uses: actions/cache@v1
       with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+        path: ./build/tools
+        key: ${{ env.cache-version }}-wasm32-emscripten-${{ hashFiles('**/BuildExternals.cs') }}
 
+    - name: Dependencies
+      run: dotnet run -- BuildExternals wasm32-emscripten
     - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects Emscripten
-        dotnet run -- BuildEngine_Emscripten Emscripten
-        dotnet run -- MakeNativePackage
+      run: dotnet run -- BuildEngine wasm32-emscripten
+    - name: Package
+      run: dotnet run -- MakeNativePackage wasm32-emscripten
         
     - uses: actions/upload-artifact@v1
       with:
-        name: NativePackage-Web
+        name: NativePackage-wasm32-emscripten
         path: ./build/NativePackage
 
-  #==============================================================================
-  Build-Native-Android:
-    runs-on: windows-2019
+  # #==============================================================================
+  # Build-Native-Android:
+  #   runs-on: windows-2019
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v1
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+  #   - name: Setup .NET Core
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 2.2.108
 
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+  #   - name: Common build cache (build/BuildCache)
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: ./build/BuildCache
+  #       key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects Android-x86_64
-        dotnet run -- BuildExternalProjects Android-x86
-        dotnet run -- BuildExternalProjects Android-arm64-v8a
-        dotnet run -- BuildExternalProjects Android-armeabi-v7a
-        dotnet run -- BuildEngine_Android
-        dotnet run -- MakeNativePackage
+  #   - name: Build
+  #     run: |
+  #       dotnet run -- BuildExternalProjects Android-x86_64
+  #       dotnet run -- BuildExternalProjects Android-x86
+  #       dotnet run -- BuildExternalProjects Android-arm64-v8a
+  #       dotnet run -- BuildExternalProjects Android-armeabi-v7a
+  #       dotnet run -- BuildEngine_Android
+  #       dotnet run -- MakeNativePackage
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: NativePackage-Android
-        path: ./build/NativePackage
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: NativePackage-Android
+  #       path: ./build/NativePackage
 
-  #==============================================================================
-  Build-Native-macOS:
-    runs-on: macos-11.0
+  # #==============================================================================
+  # Build-Native-macOS:
+  #   runs-on: macos-11.0
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v1
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+  #   - name: Setup .NET Core
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 2.2.108
 
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
+  #   - name: Common build cache (build/BuildCache)
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: ./build/BuildCache
+  #       key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildEnvironment.cs') }}
             
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects macOS
-        dotnet run -- BuildEngine_macOS
-        dotnet run -- MakeNativePackage
+  #   - name: Build
+  #     run: |
+  #       dotnet run -- BuildExternalProjects macOS
+  #       dotnet run -- BuildEngine_macOS
+  #       dotnet run -- MakeNativePackage
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: NativePackage-macOS
-        path: ./build/NativePackage
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: NativePackage-macOS
+  #       path: ./build/NativePackage
         
   #==============================================================================
 #  Build-Native-iOS:
@@ -195,83 +167,73 @@ jobs:
 #        path: ./build/NativePackage
 
   #==============================================================================
-  Package-Windows:
-    needs: [Build-Native-MSVC2019-x64-MT, Build-Native-Web, Build-Native-Android]
-    runs-on: windows-2019
+  # Package-Windows:
+  #   needs: [Build-Native-MSVC2019-x64-MT, Build-Native-Web, Build-Native-Android]
+  #   runs-on: windows-2019
     
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v1
       
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+  #   - name: Setup .NET Core
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 2.2.108
         
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-MSVC2019-x64-MT
-        path: ./build/NativePackage
+  #   - uses: actions/download-artifact@v1
+  #     with:
+  #       name: NativePackage-MSVC2019-x64-MT
+  #       path: ./build/NativePackage
     
-#    - uses: actions/download-artifact@v1
-#      with:
-#        name: NativePackage-Web
-#        path: ./build/NativePackage
-    
-#    - uses: actions/download-artifact@v1
-#      with:
-#        name: NativePackage-Android
-#        path: ./build/NativePackage
+  #   - name: Build
+  #     run: dotnet run -- MakeInstaller_Win32
 
-    - name: Build
-      run: dotnet run -- MakeInstaller_Win32
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: Lumino-latest-Windows.msi
+  #       path: ./build/Lumino-latest-Windows.msi
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: Lumino-latest-Windows.msi
-        path: ./build/Lumino-latest-Windows.msi
-
-    - uses: actions/upload-artifact@v1
-      with:
-        name: Lumino-latest-Windows.zip
-        path: ./build/Lumino-latest-Windows
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: Lumino-latest-Windows.zip
+  #       path: ./build/Lumino-latest-Windows
 
   #==============================================================================
-  Package-macOS:
-#    needs: [Build-Native-macOS, Build-Native-iOS]
-    needs: [Build-Native-macOS]
-    runs-on: macos-11.0
+#   Package-macOS:
+# #    needs: [Build-Native-macOS, Build-Native-iOS]
+#     needs: [Build-Native-macOS]
+#     runs-on: macos-11.0
     
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v1
       
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
+#     - name: Setup .NET Core
+#       uses: actions/setup-dotnet@v1
+#       with:
+#         dotnet-version: 2.2.108
         
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-macOS
-        path: ./build/NativePackage
+#     - uses: actions/download-artifact@v1
+#       with:
+#         name: NativePackage-macOS
+#         path: ./build/NativePackage
     
-#    - uses: actions/download-artifact@v1
-#      with:
-#        name: NativePackage-iOS
-#        path: ./build/NativePackage
+# #    - uses: actions/download-artifact@v1
+# #      with:
+# #        name: NativePackage-iOS
+# #        path: ./build/NativePackage
 
-    - name: Build
-      run: dotnet run -- MakePackage_macOS
+#     - name: Build
+#       run: dotnet run -- MakePackage_macOS
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: Lumino-latest-macOS.zip
-        path: ./build/Lumino-latest-macOS
+#     - uses: actions/upload-artifact@v1
+#       with:
+#         name: Lumino-latest-macOS.zip
+#         path: ./build/Lumino-latest-macOS
 
   #==============================================================================
   Package-Ruby:
-    needs: Build-Native-MSVC2019-x64-MT
+    needs: Build-x64-windows-static
     runs-on: windows-2019
 
     steps:
@@ -286,7 +248,7 @@ jobs:
 
     - uses: actions/download-artifact@v1
       with:
-        name: NativePackage-MSVC2019-x64-MT
+        name: NativePackage-x64-windows-static
         path: ./build/NativePackage
 
     - name: Build and test with Rake
@@ -300,24 +262,24 @@ jobs:
         path: ./tools/Bindings/Ruby/GemProject/pkg
 
   #==============================================================================
-  Package-HSP3:
-    needs: Build-Native-MSVC2019-x86-MT
-    runs-on: windows-2019
+  # Package-HSP3:
+  #   needs: Build-Native-MSVC2019-x86-MT
+  #   runs-on: windows-2019
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v1
 
-    - uses: actions/download-artifact@v1
-      with:
-        name: NativePackage-MSVC2019-x86-MT
-        path: ./build/NativePackage
+  #   - uses: actions/download-artifact@v1
+  #     with:
+  #       name: NativePackage-MSVC2019-x86-MT
+  #       path: ./build/NativePackage
 
-    - name: Build and test with Rake
-      run: |
-        dotnet run -- MakePackage_HSP3
+  #   - name: Build and test with Rake
+  #     run: |
+  #       dotnet run -- MakePackage_HSP3
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: Lumino-latest-HSP3
-        path: ./tools/Bindings/HSP3/_package/LuminoHSP3-latest
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: Lumino-latest-HSP3
+  #       path: ./tools/Bindings/HSP3/_package/LuminoHSP3-latest

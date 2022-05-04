@@ -1,10 +1,10 @@
 ﻿
 #include <filesystem>
 #include <LuminoEngine.hpp>
+#include <LuminoGraphics/Mesh/MeshModeEntity.hpp>
 #include <LuminoEngine/UI/Controls/UIComboBox.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include <LuminoEngine/Editor/Editor.hpp>
-#include "../src/Mesh/MeshModelInstance.hpp"
 using namespace ln;
 namespace fs = std::filesystem;
 

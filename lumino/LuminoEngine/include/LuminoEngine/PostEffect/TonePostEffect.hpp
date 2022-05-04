@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Animation/EasingFunctions.hpp"
+#include <LuminoGraphics/Animation/EasingFunctions.hpp>
 #include "PostEffect.hpp"
 
 namespace ln {

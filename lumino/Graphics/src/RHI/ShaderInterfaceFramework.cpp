@@ -10,30 +10,6 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// CameraInfo
-
-void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f)
-{
-    viewPixelSize = size;
-    viewPosition = viewPos;
-    viewDirection = viewDir;
-#ifdef LN_COORD_RH
-    viewMatrix = Matrix::makeLookAtRH(viewPos, viewPos + viewDir, Vector3::UnitY);
-    //projMatrix = Matrix::makeOrthoRH(size.width, size.height, n, f);//Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
-    projMatrix = Matrix::makePerspectiveFovRH(fovY, size.width / size.height, n, f);
-#else
-    viewMatrix = Matrix::makeLookAtLH(viewPos, viewPos + viewDir, Vector3::UnitY);
-    //projMatrix = Matrix::makeOrthoLH(size.width, size.height, n, f);//Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
-    projMatrix = Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
-#endif
-    viewProjMatrix = viewMatrix * projMatrix;
-    viewFrustum = ViewFrustum(viewProjMatrix);
-    //zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
-    nearClip = n;
-    farClip = f;
-}
-
-//==============================================================================
 // ShaderTechniqueSemanticsManager
 //		参考:
 //		Unity Builtin Shader variables

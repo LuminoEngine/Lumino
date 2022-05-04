@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/RenderView.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Effect/ParticleEmitterComponent.hpp>
 #include "../../Effect/ParticleEffectInstance.hpp"

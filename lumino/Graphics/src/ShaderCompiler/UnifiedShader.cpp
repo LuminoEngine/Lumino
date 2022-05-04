@@ -536,7 +536,7 @@ void UnifiedShader::addMergeDescriptorLayoutItem(UnifiedShaderPass* pass, const 
 UnifiedShaderTechnique* UnifiedShader::addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass) {
     if (findTechniqueInfoIndex(name) >= 0) {
         m_diag->reportError(String::fromStdString("Technique '" + name + "' is already exists."));
-        return false;
+        return nullptr;
     }
 
     auto tech = makeURef<UnifiedShaderTechnique>(this, indexToId(m_techniques.length()));

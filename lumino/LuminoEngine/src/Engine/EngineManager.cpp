@@ -25,14 +25,14 @@
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
-#include "../Animation/AnimationManager.hpp"
+#include "../../Graphics/src/Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
-#include "../../../Graphics/src/GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "../../Font/src/FontManager.hpp"
-#include "../Mesh/MeshManager.hpp"
-#include "../Rendering/RenderingManager.hpp"
-#include "../Rendering/RenderingProfiler.hpp"
+#include "../../../Graphics/src/Mesh/MeshManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include "../../Graphics/src/Rendering/RenderingProfiler.hpp"
 #include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -252,12 +252,11 @@ void EngineManager::dispose() {
     if (m_physicsManager) m_physicsManager->dispose();
     if (m_effectManager) m_effectManager->dispose();
     RenderingManager::terminate();
-    if (m_meshManager) m_meshManager->dispose();
     FontManager::terminate();
     GraphicsManager::terminate();
     if (m_audioManager) m_audioManager->dispose();
     if (m_inputManager) m_inputManager->dispose();
-    if (m_animationManager) m_animationManager->dispose();
+    AnimationManager::terminate();
     PlatformManager::terminate();
 
 #if defined(LN_OS_WIN32)
@@ -290,7 +289,6 @@ void EngineManager::initializeAllManagers() {
     initializeAudioManager();
     initializeGraphicsManager();
     initializeFontManager();
-    initializeMeshManager();
     initializePhysicsManager();
     initializeRenderingManager();
     initializeEffectManager();
@@ -385,12 +383,11 @@ void EngineManager::initializePlatformManager() {
 }
 
 void EngineManager::initializeAnimationManager() {
-    if (!m_animationManager && m_settings.features.hasFlag(EngineFeature::Rendering)) {
+    if (!AnimationManager::instance() && m_settings.features.hasFlag(EngineFeature::Rendering)) {
 
         AnimationManager::Settings settings;
         settings.assetManager = AssetManager::instance();
-        m_animationManager = ln::makeRef<AnimationManager>();
-        m_animationManager->init(settings);
+        AnimationManager::initialize(settings);
     }
 }
 
@@ -440,19 +437,6 @@ void EngineManager::initializeGraphicsManager() {
         settings.debugMode = m_settings.graphicsDebugEnabled;
 
         GraphicsManager::initialize(settings);
-    }
-}
-
-void EngineManager::initializeMeshManager() {
-    if (!m_meshManager && m_settings.features.hasFlag(EngineFeature::Rendering)) {
-        initializeGraphicsManager();
-
-        MeshManager::Settings settings;
-        settings.graphicsManager = GraphicsManager::instance();
-        settings.assetManager = AssetManager::instance();
-
-        m_meshManager = ln::makeRef<MeshManager>();
-        m_meshManager->init(settings);
     }
 }
 
@@ -510,7 +494,7 @@ void EngineManager::initializeSceneManager() {
         m_sceneManager = ln::makeRef<SceneManager>();
         m_sceneManager->init();
 
-        m_animationManager->setSceneManager(m_sceneManager);
+        //m_animationManager->setSceneManager(m_sceneManager);
     }
 }
 
@@ -520,7 +504,6 @@ void EngineManager::initializeUIManager() {
 
         UIManager::Settings settings;
         settings.graphicsManager = GraphicsManager::instance();
-        settings.application = m_settings.application;
         settings.defaultThemeName = m_settings.defaultUITheme;
 
         m_uiManager = makeRef<UIManager>();
@@ -689,8 +672,8 @@ void EngineManager::presentFrame() {
     }
 
     // TODO: Editor モードの時にも呼び出せるようにしないとだめそう
-    if (m_meshManager) {
-        m_meshManager->collectUnreferenceObjects();
+    if (auto* meshManager = MeshManager::instance()) {
+        meshManager->collectUnreferenceObjects();
     }
 }
 
@@ -823,6 +806,13 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
     if (m_settings.developmentToolsEnabled && m_mainWindow) {
         m_runtimeEditor = makeRef<detail::RuntimeEditor>();
         m_runtimeEditor->init(this, m_mainWindow);
+    }
+}
+
+void EngineManager::setApplication(Application* app) {
+    m_application = app;
+    if (m_uiManager) {
+        m_uiManager->resetApp(m_application);
     }
 }
 
@@ -1000,20 +990,12 @@ EngineManager* EngineDomain::engineManager() {
 //	return engineManager()->PlatformManager::instance()();
 // }
 
-AnimationManager* EngineDomain::animationManager() {
-    return engineManager()->animationManager();
-}
-
 InputManager* EngineDomain::inputManager() {
     return engineManager()->inputManager();
 }
 
 AudioManager* EngineDomain::audioManager() {
     return engineManager()->audioManager();
-}
-
-MeshManager* EngineDomain::meshManager() {
-    return engineManager()->meshManager();
 }
 
 EffectManager* EngineDomain::effectManager() {

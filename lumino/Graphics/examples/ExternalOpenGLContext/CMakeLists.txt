@@ -20,7 +20,7 @@ if (LN_EMSCRIPTEN)
 
     # for Debug
     string(APPEND LOCAL_LINK_FLAGS " --minify 0")
-    string(APPEND LOCAL_LINK_FLAGS " -gsource-map")
+    #string(APPEND LOCAL_LINK_FLAGS " -gsource-map")
     string(APPEND LOCAL_LINK_FLAGS " -g3")
     string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
 endif()

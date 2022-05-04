@@ -1,13 +1,14 @@
 ﻿
 #include "../Internal.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
-#include "../../../../Graphics/src/GraphicsManager.hpp"
-#include "../../Rendering/CommandListServer.hpp"
-#include "../../Rendering/RenderingManager.hpp"
-#include "../../Rendering/RenderingPipeline.hpp"
-#include "../../Rendering/RenderElement.hpp"
+#include "../../Graphics/src/Rendering//CommandListServer.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoGraphics/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
+#include "../SceneManager.hpp"
+#include "../../Graphics/src/Rendering//RenderElement.hpp"
 
 namespace ln {
 
@@ -25,14 +26,15 @@ OffscreenWorldRenderView::~OffscreenWorldRenderView()
 
 void OffscreenWorldRenderView::init()
 {
-    RenderView::init();
+    RenderView::init(nullptr);
     m_renderingManager = detail::RenderingManager::instance();
 
     // TODO: SceneRenderingPipeline は WorldRenderView が持っているものとほとんど同じなので、
     // こっちでインスタンスを new するのは無駄が多い。共有したいところ。
     // ただ、GBuffe のように Viewサイズや視点に依存するデータを独立させる必要がある。
-    m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
-    m_sceneRenderingPipeline->init();
+    setRenderingPipeline(makeObject<SceneRenderingPipeline>());
+
+    m_viewPoint = makeObject<RenderViewPoint>();
 }
 
 void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)
@@ -61,47 +63,35 @@ RenderTargetTexture* OffscreenWorldRenderView::renderTarget() const
 //}
 //
 
-void OffscreenWorldRenderView::render(GraphicsCommandList* graphicsContext, World* targetWorld)
-{
-    RenderingContext* context = targetWorld->m_renderingContext;
-
+void OffscreenWorldRenderView::render(GraphicsCommandList* graphicsContext, World* targetWorld) {
+    m_targetWorld = targetWorld;
+    auto* context = getContext();
     setClearMode(context->baseRenderView->clearMode());
     setBackgroundColor(context->baseRenderView->backgroundColor());
-
-    ClearInfo clearInfo;
-    clearInfo.color = backgroundColor();
-    clearInfo.depth = 1.0f;
-    clearInfo.stencil = 0x00;
-    if (clearMode() == SceneClearMode::ColorAndDepth) {
-        clearInfo.flags = ClearFlags::All;
-    }
-    else {
-        clearInfo.flags = ClearFlags::Depth | ClearFlags::Stencil;
-    }
-
-    if (clearMode() == SceneClearMode::ColorAndDepth) {
-    }
-    else {
-        LN_NOTIMPLEMENTED();
-    }
-
-    m_sceneRenderingPipeline->prepare(m_renderTarget);
+    RenderView::render(graphicsContext, m_renderTarget);
 
 
-    targetWorld->renderObjects();
+    //LN_NOTIMPLEMENTED();
+    //renderingPipeline()->prepare(this, m_renderTarget);
 
-    m_sceneRenderingPipeline->render(
-        graphicsContext, targetWorld->m_renderingContext,
-        m_renderTarget, clearInfo, this,
-        targetWorld->m_renderingContext->commandList()->elementList(),
-        targetWorld->m_renderingContext->commandListServer(),
-        &targetWorld->m_combinedSceneGlobalRenderParams);
+
+     //renderingPipeline()->render(
+     //   graphicsContext, targetWorld->m_renderingContext,
+     //   m_renderTarget, this,
+     //   &targetWorld->m_combinedSceneGlobalRenderParams);
 
 }
 
-void OffscreenWorldRenderView::render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget)
-{
+void OffscreenWorldRenderView::render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) {
     LN_UNREACHABLE();
+}
+
+void OffscreenWorldRenderView::onUpdateViewPoint(RenderViewPoint* viewPoint, RenderTargetTexture* renderTarget) {
+    LN_UNREACHABLE();
+}
+
+void OffscreenWorldRenderView::onRender(GraphicsCommandList* graphicsContext, RenderingContext* renderingContext, RenderTargetTexture* renderTarget) {
+    m_targetWorld->renderObjects(renderingContext);
 }
 
 } // namespace ln

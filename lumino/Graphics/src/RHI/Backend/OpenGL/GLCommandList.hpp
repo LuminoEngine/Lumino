@@ -42,6 +42,7 @@ private:
     GLIndexBuffer* m_currentIndexBuffer;
     GLRenderPass* m_currentRenderPass = nullptr;
     GLShaderPass* m_activeShaderPass;
+    GLPipeline* m_pipeline = nullptr;
 
     struct {
         GLboolean m_GL_BLEND;

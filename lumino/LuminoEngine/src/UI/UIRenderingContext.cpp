@@ -1,28 +1,31 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
-#include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
-#include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
-#include <LuminoEngine/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
-#include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/Kanata/KBatchList.hpp>
+#include <LuminoGraphics/Rendering/Kanata/KBatchProxy.hpp>
+#include <LuminoGraphics/Rendering/Kanata/KBatchProxyCollector.hpp>
+#include <LuminoGraphics/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
+#include <LuminoGraphics/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
+#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include "../Rendering/CommandListServer.hpp"
-#include "../Rendering/RenderStage.hpp"
-#include "../Rendering/DrawElementListBuilder.hpp"
-#include "../Rendering/RenderFeature/FrameRectRenderFeature.hpp"
-#include "../Rendering/RenderFeature/ShapesRenderFeature.hpp"
+#include "../../Graphics/src/Rendering/CommandListServer.hpp"
+#include "../../Graphics/src/Rendering/RenderStage.hpp"
+#include "../../Graphics/src/Rendering/DrawElementListBuilder.hpp"
+#include "../../Graphics/src/Rendering/RenderFeature/FrameRectRenderFeature.hpp"
+#include "../../Graphics/src/Rendering/RenderFeature/ShapesRenderFeature.hpp"
 
 namespace ln {
 
 //==============================================================================
 // UIRenderingContext
 
-UIRenderingContext::UIRenderingContext()
-{
+UIRenderingContext::UIRenderingContext() {
+#if LN_USE_KANATA
+#else
     builder()->m_stateStackMode = detail::StateStackMode::ScissorPushPop;
+#endif
 }
 
 void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color)
@@ -62,7 +65,7 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
         Rect srcRect;
 
         void getBatch(kanata::BatchCollector* collector) override {
-            kanata::FrameRectRenderFeature* r = collector->frameRectRenderFeature();
+            kanata::FrameRectRenderFeature* r = detail::RenderingManager::instance()->frameRectRenderFeature();
             r->beginBatch(collector, material);
             r->draw(rect, Matrix::Identity, borderThickness, srcRect, imageDrawMode);
             r->endBatch(collector);
@@ -128,12 +131,16 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
 
 void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
+#if LN_USE_KANATA
+    LN_NOTIMPLEMENTED();
+#else
     auto* element = builder()->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
 
     element->commandList.drawBoxBorderLine(builder()->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, thickness, leftColor, topColor, rightColor, bottomColor, cornerRadius, borderInset);
 
 
     // TODO: bounding box
+#endif
 }
 
 void UIRenderingContext::drawBoxBorderLine(const Rect& rect, float thickness, const Color& color, bool borderInset)
@@ -141,15 +148,17 @@ void UIRenderingContext::drawBoxBorderLine(const Rect& rect, float thickness, co
 	drawBoxBorderLine(rect, Thickness(thickness), color, color, color, color, CornerRadius(), borderInset);
 }
 
-void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset)
-{
+void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset) {
+#if LN_USE_KANATA
+    LN_NOTIMPLEMENTED();
+#else
 	auto* element = builder()->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
 
 	element->commandList.addDrawBoxShadow(builder()->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, offset, color, blur, width, inset);
 
 
 	// TODO: bounding box
-
+#endif
 }
 
 void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyle, const BoxElementShapeBackgroundStyle* backbroundStyle, const BoxElementShapeBorderStyle* borderStyle, const BoxElementShapeShadowStyle* shadowStyle)
@@ -160,7 +169,7 @@ void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyl
         Material* material;
         detail::BoxElementShapeCommandList commandList;
         void getBatch(kanata::BatchCollector* collector) override {
-            kanata::ShapesRenderFeature* r = collector->shapesRenderFeature();
+            kanata::ShapesRenderFeature* r = detail::RenderingManager::instance()->shapesRenderFeature();
             r->beginBatch(collector, material);
             r->drawCommandList(&commandList);
             r->endBatch(collector);
@@ -191,7 +200,9 @@ void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyl
 void UIRenderingContext::drawImage(const Rect& destinationRect, Material* material)
 {
     auto texture = material->mainTexture();
-    drawSprite(
+    auto r = SpriteRenderer::get();
+    r->begin(this, material);
+    r->drawSprite(
         Matrix::makeTranslation(destinationRect.x, destinationRect.y, 0),
         destinationRect.getSize(),
         Vector2::Zero,
@@ -199,8 +210,8 @@ void UIRenderingContext::drawImage(const Rect& destinationRect, Material* materi
         Color::White,
         SpriteBaseDirection::Basic2D,
         BillboardType::None,
-        detail::SpriteFlipFlags::None,
-        material);
+        SpriteFlipFlags::None);
+    r->end();
 }
 
 void UIRenderingContext::drawVisual(UIElement* element, const Matrix& transform)

@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Rendering/RenderingContext.hpp"
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include "Common.hpp"
 
 namespace ln {
@@ -18,7 +18,6 @@ namespace detail {
 struct CameraInfo;
 class EngineManager;
 class DrawElementList;
-class WorldSceneGraphRenderingContext;
 class SceneConductor;
 }
 
@@ -106,9 +105,9 @@ public: // TODO: internal
     const Ref<detail::SceneConductor>& sceneConductor() const { return m_sceneConductor; }
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
-	detail::WorldSceneGraphRenderingContext* prepareRender(const RenderViewPoint* viewPoint);
-    void prepareRender(const WorldRenderView* renderView);
-    void renderObjects();  // call by WorldRenderView
+	//detail::WorldSceneGraphRenderingContext* prepareRender2(const RenderViewPoint* viewPoint);
+    void prepareRender(RenderingContext* context, const WorldRenderView* renderView);
+    void renderObjects(RenderingContext* context);  // call by WorldRenderView
     void renderGizmos(RenderingContext* context);
     void enqueueActiveWorldObject(WorldObject* obj);
     void enqueueWorldRenderingElement(IWorldRenderingElement* element);
@@ -131,28 +130,10 @@ public: // TODO: internal
     List<WorldObject*> m_activeObjects;
     List<IWorldRenderingElement*> m_worldRenderingElement;
     List<OffscreenWorldRenderView*> m_offscreenRenderViews;
-    Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
-	//Ref<detail::WorldSceneGraphRenderingContext> m_debugRenderingContext;
     float m_timeScale;
 
     friend class WorldRenderView;
     friend class detail::EngineManager;
 };
-
-
-namespace detail {
-
-class WorldSceneGraphRenderingContext
-    : public RenderingContext
-{
-public:
-    WorldSceneGraphRenderingContext();
-    
-    void resetForBeginRendering(const RenderViewPoint* viewPoint);
-    
-private:
-};
-
-} // namespace detail
 
 } // namespace ln

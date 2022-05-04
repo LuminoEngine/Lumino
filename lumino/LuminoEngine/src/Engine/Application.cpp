@@ -21,8 +21,6 @@ Application::Application()
     , m_commands()
     , m_actions()
     , m_initialized(false) {
-    detail::EngineManager::s_settings.application = this;
-    initializeEngine();
 }
 
 Application::~Application() {
@@ -84,45 +82,21 @@ void Application::onRoutedEvent(UIEventArgs* e) {
     }
 }
 
-Result Application::initializeEngine() {
-    EngineContext::current()->initializeEngineManager();
-    EngineContext::current()->engineManager()->initializeAllManagers();
-    return ok();
-}
-
-bool Application::updateEngine() {
-    detail::EngineDomain::engineManager()->updateFrame();
-    return !detail::EngineDomain::engineManager()->isExitRequested();
-}
-
-void Application::renderEngine() {
-    detail::EngineDomain::engineManager()->presentFrame();
-}
-
-void Application::terminateEngine() {
-    detail::EngineDomain::release();
-}
-
-void Application::initInternal2() {
-    //EngineContext::current()->initializeEngineManager();
-    //EngineContext::current()->engineManager()->initializeAllManagers();
+void Application::initInternal() {
     m_manager = detail::EngineDomain::engineManager();
     onInit();
-    //onStart();
 }
 
-void Application::updateInertnal2() {
+void Application::updateInertnal() {
     if (!m_initialized) {
-        initInternal2();
+        initInternal();
         m_initialized = true;
     }
 
     onUpdate();
-    //return !detail::EngineDomain::engineManager()->isExitRequested();
 }
 
-void Application::finalizeInternal2() {
-    //onStop();
+void Application::finalizeInternal() {
     onDestroy();
 }
 
@@ -156,6 +130,66 @@ Ref<Variant> AppData::getValue(const StringView& key) {
     return detail::EngineDomain::engineManager()->appData()->getValue(key);
 }
 
+//==============================================================================
+// AppIntegration
+
+Ref<Application> AppIntegration::s_app;
+
+Result AppIntegration::initialize(ConfigureApp configureApp, CreateAppInstance createAppInstance) {
+    configureApp();
+
+    if (!initializeEngine()) {
+        return err();
+    }
+
+    s_app = Ref<Application>(createAppInstance(), false);
+
+    return ok();
+}
+
+bool AppIntegration::update() {
+    return updateEngine();
+}
+
+void AppIntegration::render() {
+    renderEngine();
+}
+
+void AppIntegration::terminate() {
+    terminateEngine();
+    s_app = nullptr;
+}
+
+void AppIntegration::run(ConfigureApp configureApp, CreateAppInstance createAppInstance) {
+    if (!initialize(configureApp, createAppInstance)) {
+        return;
+    }
+
+    while (update()) {
+        render();
+    }
+    terminate();
+}
+
+Result AppIntegration::initializeEngine() {
+    EngineContext::current()->initializeEngineManager();
+    EngineContext::current()->engineManager()->initializeAllManagers();
+    return ok();
+}
+
+bool AppIntegration::updateEngine() {
+    detail::EngineDomain::engineManager()->updateFrame();
+    return !detail::EngineDomain::engineManager()->isExitRequested();
+}
+
+void AppIntegration::renderEngine() {
+    detail::EngineDomain::engineManager()->presentFrame();
+}
+
+void AppIntegration::terminateEngine() {
+    detail::EngineDomain::release();
+}
+ 
 //==============================================================================
 // ApplicationHelper
 

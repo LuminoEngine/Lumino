@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.hpp"
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
@@ -45,7 +46,8 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
 
     const auto* viewPoint = context->viewPoint();
     //auto& virtualCamera = m_offscreenRenderView->m_cameraInfo;
-    detail::CameraInfo virtualCamera;
+    //detail::CameraInfo virtualCamera;
+    RenderViewPoint* virtualViewPoint = m_offscreenRenderView->m_viewPoint;
     {
 
         WorldObject* scope = worldObject();
@@ -91,44 +93,48 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
         up = Vector3::reflect(up, normal);
         //Vector3 up = Vector3(0, 1, 0);
 
-        virtualCamera.viewPosition = view;
-        virtualCamera.viewDirection = Vector3::normalize(target - view);
+        virtualViewPoint->viewPosition = view;
+        virtualViewPoint->viewDirection = Vector3::normalize(target - view);
 #ifdef LN_COORD_RH
-        virtualCamera.viewMatrix = Matrix::makeLookAtRH(view, target, up);
+        virtualViewPoint->viewMatrix = Matrix::makeLookAtRH(view, target, up);
 #else
-        virtualCamera.viewMatrix = Matrix::makeLookAtLH(view, target, up);
+        virtualViewPoint->viewMatrix = Matrix::makeLookAtLH(view, target, up);
 #endif
-        //virtualCamera.up.set(0, 1, 0);
-        //virtualCamera.up.applyMatrix4(rotationMatrix);
-        //virtualCamera.up.reflect(normal);
-        //virtualCamera.lookAt(target);
+        //virtualViewPoint->up.set(0, 1, 0);
+        //virtualViewPoint->up.applyMatrix4(rotationMatrix);
+        //virtualViewPoint->up.reflect(normal);
+        //virtualViewPoint->lookAt(target);
 
-        //virtualCamera.far = camera.far; // Used in WebGLBackground
+        //virtualViewPoint->far = camera.far; // Used in WebGLBackground
 
-        //virtualCamera.updateMatrixWorld();
-        //virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
+        //virtualViewPoint->updateMatrixWorld();
+        //virtualViewPoint->projectionMatrix.copy(camera.projectionMatrix);
 
         {
-            virtualCamera.viewPixelSize = Size(m_renderTarget->width(), m_renderTarget->height());
-            //virtualCamera.viewPosition = viewPoint->viewPosition;
-            //virtualCamera.viewDirection = viewPoint->viewDirection;
-            //virtualCamera.viewMatrix = viewPoint->viewMatrix;
-            virtualCamera.projMatrix = viewPoint->projMatrix;
-            virtualCamera.viewProjMatrix = Matrix::multiply(virtualCamera.viewMatrix, virtualCamera.projMatrix);
-            virtualCamera.viewFrustum = ViewFrustum(viewPoint->viewProjMatrix);
-            virtualCamera.nearClip = viewPoint->nearClip;
-            virtualCamera.farClip = viewPoint->farClip;
+            virtualViewPoint->viewPixelSize = Size(m_renderTarget->width(), m_renderTarget->height());
+            //virtualViewPoint->viewPosition = viewPoint->viewPosition;
+            //virtualViewPoint->viewDirection = viewPoint->viewDirection;
+            //virtualViewPoint->viewMatrix = viewPoint->viewMatrix;
+            virtualViewPoint->projMatrix = viewPoint->projMatrix;
+            virtualViewPoint->viewProjMatrix = Matrix::multiply(virtualViewPoint->viewMatrix, virtualViewPoint->projMatrix);
+            virtualViewPoint->viewFrustum = ViewFrustum(viewPoint->viewProjMatrix);
+            virtualViewPoint->fovY = viewPoint->fovY;
+            virtualViewPoint->nearClip = viewPoint->nearClip;
+            virtualViewPoint->farClip = viewPoint->farClip;
+            virtualViewPoint->dpiScale = 1.0f; // TODO: dpiScale
         }
 
-        m_offscreenRenderView->makeViewProjections(virtualCamera, 1.0f);    // TODO: dpiScale
+        // TODO: RenderView::onUpdateViewPoint で実装
+        LN_NOTIMPLEMENTED();
+        //m_offscreenRenderView->makeViewProjections(virtualViewPoint);
 
 
 
         Matrix virtualCameraWorldMatrix = Matrix::makeAffineLookAtLH(
-            virtualCamera.viewPosition,
-            virtualCamera.viewPosition + virtualCamera.viewDirection,
+            virtualViewPoint->viewPosition,
+            virtualViewPoint->viewPosition + virtualViewPoint->viewDirection,
             up);
-        virtualCameraWorldMatrix.translate(virtualCamera.viewPosition);
+        virtualCameraWorldMatrix.translate(virtualViewPoint->viewPosition);
 
         // Update the texture matrix
         //Matrix textureMatrix(
@@ -137,12 +143,12 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
         //    0.0, 0.0, 0.5, 0.5,
         //    0.0, 0.0, 0.0, 1.0
         //);
-        //textureMatrix.multiply(virtualCamera.projectionMatrix);
-        //textureMatrix.multiply(virtualCamera.matrixWorldInverse);
+        //textureMatrix.multiply(virtualViewPoint->projectionMatrix);
+        //textureMatrix.multiply(virtualViewPoint->matrixWorldInverse);
         //textureMatrix.multiply(scope.matrixWorld);
         //↑逆順注意。
         // まず scope.matrixWorld で普通に座標変換。
-        // virtualCamera.matrixWorldInverse でカメラのローカル空間に変換 (普通に viewMatrix?)
+        // virtualViewPoint->matrixWorldInverse でカメラのローカル空間に変換 (普通に viewMatrix?)
         // 最後に proj 変換。
 #if 0
         Matrix textureMatrix(
@@ -151,7 +157,7 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
             0.0, 0.0, 0.5, 0.5,
             0.0, 0.0, 0.0, 1.0
         );
-        textureMatrix = Matrix::multiply(virtualCamera.projMatrix, textureMatrix);
+        textureMatrix = Matrix::multiply(virtualViewPoint->projMatrix, textureMatrix);
         textureMatrix = Matrix::multiply(Matrix::makeInverse(virtualCameraWorldMatrix), textureMatrix);
         textureMatrix = Matrix::multiply(scope->worldMatrix(), textureMatrix);
 
@@ -164,16 +170,16 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
         //);
         //textureMatrix = Matrix::multiply(textureMatrix, scope->worldMatrix());
         //textureMatrix = Matrix::multiply(textureMatrix, Matrix::makeInverse(virtualCameraWorldMatrix));
-        //textureMatrix = Matrix::multiply(textureMatrix, virtualCamera.projMatrix);
+        //textureMatrix = Matrix::multiply(textureMatrix, virtualViewPoint->projMatrix);
         //auto virtualCameraWorldMatrixInverse = Matrix::makeInverse(virtualCameraWorldMatrix);
-        //Matrix textureMatrix = scope->worldMatrix() * virtualCameraWorldMatrixInverse * virtualCamera.projMatrix
+        //Matrix textureMatrix = scope->worldMatrix() * virtualCameraWorldMatrixInverse * virtualViewPoint->projMatrix
         //* Matrix (
         //        0.5, 0.0, 0.0, 0.0,
         //        0.0, 0.5, 0.0, 0.0,
         //        0.0, 0.0, 0.5, 0.0,
         //        0.5, 0.5, 0.5, 1.0
         //    );
-        Matrix textureMatrix = scope->worldMatrix() * virtualCamera.viewMatrix * virtualCamera.projMatrix;
+        Matrix textureMatrix = scope->worldMatrix() * virtualViewPoint->viewMatrix * virtualViewPoint->projMatrix;
 #endif
 
         m_material->setMatrix(_TT("_TextureMatrix"), textureMatrix);
@@ -188,12 +194,8 @@ void ReflectorComponent::onRender(RenderingContext* context)
     if (dynamic_cast<OffscreenWorldRenderView*>(context->currentRenderView)) {
     }
     else {
-
-        context->setMaterial(m_material);
-
-        auto uv1 = Vector2(1.0, 1.0);
-
-        context->drawPlane(m_material, m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
+        const auto uv1 = Vector2(1.0, 1.0);
+        PrimitiveMeshRenderer::drawPlane(context, m_material, m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
     }
 }
 

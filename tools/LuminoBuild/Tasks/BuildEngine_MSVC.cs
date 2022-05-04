@@ -85,6 +85,8 @@ namespace LuminoBuild.Tasks
                         Utils.CallProcess("cmake", $"--build . --config Debug");
                         Utils.CallProcess("ctest", $"-C Debug --output-on-failure --verbose");
                         Utils.CallProcess("cmake", $"--build . --config Debug --target INSTALL");
+                        if (BuildEnvironment.FromCI)
+                            Utils.CallProcess("cmake", $"--build . --config Debug --target clean"); // Free disk space.
                     }
 
                     if (string.IsNullOrEmpty(BuildEnvironment.Configuration) || BuildEnvironment.Configuration == "Release")
@@ -92,6 +94,8 @@ namespace LuminoBuild.Tasks
                         Utils.CallProcess("cmake", $"--build . --config Release");
                         Utils.CallProcess("ctest", $"-C Release --output-on-failure --verbose");
                         Utils.CallProcess("cmake", $"--build . --config Release --target INSTALL");
+                        if (BuildEnvironment.FromCI)
+                            Utils.CallProcess("cmake", $"--build . --config Release --target clean"); // Free disk space.
                     }
                 }
 

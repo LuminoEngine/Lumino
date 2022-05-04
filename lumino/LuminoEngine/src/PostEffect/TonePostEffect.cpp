@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/CommandList.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/TonePostEffect.hpp>
 
 namespace ln {

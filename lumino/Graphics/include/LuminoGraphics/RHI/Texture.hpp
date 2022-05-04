@@ -250,7 +250,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     bool init();
 	void resetRHIObject(detail::RHIResource* rhiObject);
-    Ref<Bitmap2D> readData(GraphicsCommandList* context);
+    Ref<Bitmap2D> readData();
 
     Ref<detail::RHIResource> m_rhiObject;
     SwapChain* m_ownerSwapchain;
@@ -270,7 +270,7 @@ public:
     static void setMappedData(Texture2D* texture, const void* data);
     static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
     static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
-    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget, GraphicsCommandList* context) { return renderTarget->readData(context); }
+    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
 	static void resetRHIObject(RenderTargetTexture* renderTarget, detail::RHIResource* rhiObject) { renderTarget->resetRHIObject(rhiObject); }
     static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
     static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }

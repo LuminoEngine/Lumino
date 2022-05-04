@@ -678,7 +678,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		return TestEnv::capture(cbb)->getPixel32(0, 0);
+		return GraphicsTestHelper::capture(cbb)->getPixel32(0, 0);
 	};
 
 	// * [ ] float

@@ -72,7 +72,7 @@
 */
 #include "Internal.hpp"
 #include <LuminoFont/Font.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>

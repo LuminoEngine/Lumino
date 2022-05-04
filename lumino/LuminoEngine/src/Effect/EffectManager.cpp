@@ -1,15 +1,15 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/SwapChain.hpp>
 #include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/RenderView.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
-#include "../../../Graphics/src/GraphicsManager.hpp"
 //#include "../../../Engine/src/Asset/AssetManager.hpp"
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 

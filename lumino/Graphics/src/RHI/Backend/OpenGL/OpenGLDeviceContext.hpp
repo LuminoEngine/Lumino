@@ -232,6 +232,8 @@ public:
     void bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer, IDescriptor* descriptor);
     GLenum primitiveTopology() const { return m_primitiveTopology; }
 
+    void rebindAttr(int vertexOffset);
+
 private:
     OpenGLDevice* m_device;
     BlendStateDesc m_blendState;

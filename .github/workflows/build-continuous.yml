@@ -12,49 +12,53 @@ env:
 jobs:
       
   #==============================================================================
-  x64-windows:
+  #==============================================================================
+  Build-x64-windows-static:
     runs-on: windows-2019
+    
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v1.7.2
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '5.0.x'
-    - name: Cache
-      uses: actions/cache@v2
+        dotnet-version: 5.0.x
+
+    - name: Prepare cache (./build/tools)
+      uses: actions/cache@v1
       with:
-        path: ./build/cache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}
+        path: ./build/tools
+        key: ${{ env.cache-version }}-x64-windows-${{ hashFiles('**/BuildExternals.cs') }}
+            
     - name: Dependencies
-      run: dotnet run -- BuildExternals x64-windows
+      run: dotnet run -- BuildExternals x64-windows-static
     - name: Build
-      run: dotnet run -- BuildEngine_MSVC x64-windows
-      
-    # - uses: actions/upload-artifact@v1
-    #   with:
-    #     name: LuminoEngine-MSVC2019-x64-MT
-    #     path: ./build/MSVC2019-x64-MT/EngineInstall
+      run: dotnet run -- BuildEngine_MSVC x64-windows-static
 
   #==============================================================================
-  x64-windows:
+  Build-wasm32-emscripten:
     runs-on: windows-latest
+
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v1.7.2
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '5.0.x'
-    - name: Cache
-      uses: actions/cache@v2
+        dotnet-version: 5.0.x
+
+    - name: Prepare cache (./build/tools)
+      uses: actions/cache@v1
       with:
-        path: ./build/cache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/**/BuildExternals.cs') }}
+        path: ./build/tools
+        key: ${{ env.cache-version }}-wasm32-emscripten-${{ hashFiles('**/BuildExternals.cs') }}
+
     - name: Dependencies
       run: dotnet run -- BuildExternals wasm32-emscripten
     - name: Build
-      run: dotnet run -- BuildEngine_MSVC wasm32-emscripten
+      run: dotnet run -- BuildEngine wasm32-emscripten
 
   #==============================================================================
   # Native-Web:

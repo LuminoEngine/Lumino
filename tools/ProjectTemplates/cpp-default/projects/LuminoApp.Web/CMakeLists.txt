@@ -7,7 +7,7 @@ set(CMAKE_EXECUTABLE_SUFFIX ".html")
 file(GLOB APP_SOURCES "../../src/*.h" "../../src/*.cpp")
  
 set(_LINK_FLAGS "--pre-js ${CMAKE_CURRENT_LIST_DIR}/pre.js")
-set(_LINK_FLAGS "${_LINK_FLAGS} -s WASM=1")
+set(_LINK_FLAGS "${_LINK_FLAGS} -s WASM=2")
 set(_LINK_FLAGS "${_LINK_FLAGS} -s USE_SDL=2")
 set(_LINK_FLAGS "${_LINK_FLAGS} -s USE_GLFW=3")
 set(_LINK_FLAGS "${_LINK_FLAGS} -s USE_WEBGL2=1")

@@ -584,7 +584,7 @@ String String::concat(const StringView& str1, const StringView& str2, const Stri
     return s;
 }
 
-String String::join(const List<String>& list, const StringView& delim) {
+String String::join(const Array<String>& list, const StringView& delim) {
     if (list.isEmpty()) return String();
 
     int len = delim.length() * (list.size() - 1);

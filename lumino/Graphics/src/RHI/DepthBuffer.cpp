@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include "GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include <LuminoGraphics/RHI/DepthBuffer.hpp>

@@ -33,7 +33,6 @@ class AnimationManager;
 class InputManager;
 class AudioManager;
 class GraphicsManager;
-class MeshManager;
 class RenderingManager;
 class EffectManager;
 class PhysicsManager;
@@ -52,7 +51,7 @@ struct EngineSettingsAssetArchiveEntry {
 };
 
 struct EngineSettings {
-    Application* application = nullptr;
+    //Application* application = nullptr;
     Flags<EngineFeature> features = EngineFeature::Experimental;
     String bundleIdentifier = _TT("lumino");
     SizeI mainWindowSize = SizeI(640, 480);
@@ -122,7 +121,6 @@ public:
     void initializeAudioManager();
     void initializeFontManager();
     void initializeGraphicsManager();
-    void initializeMeshManager();
     void initializeRenderingManager();
     void initializeEffectManager();
     void initializePhysicsManager();
@@ -141,10 +139,8 @@ public:
     void quit();
 
     const EngineSettings& settings() { return m_settings; }
-    const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
     const Ref<InputManager>& inputManager() const { return m_inputManager; }
     const Ref<AudioManager>& audioManager() const { return m_audioManager; }
-    const Ref<MeshManager>& meshManager() const { return m_meshManager; }
     const Ref<EffectManager>& effectManager() const { return m_effectManager; }
     const Ref<PhysicsManager>& physicsManager() const { return m_physicsManager; }
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
@@ -160,7 +156,8 @@ public:
     // void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
     void setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects);
 
-    Application* application() const { return m_settings.application; }
+    void setApplication(Application* app);
+    const Ref<Application>& application() const { return m_application; }
     const Ref<AppDataInternal>& appData() const { return m_appData; }
     // const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
     const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
@@ -202,10 +199,8 @@ private:
     GraphicsAPI m_activeGraphicsAPI;
 
     bool m_commonInitialized = false;
-    Ref<AnimationManager> m_animationManager;
     Ref<InputManager> m_inputManager;
     Ref<AudioManager> m_audioManager;
-    Ref<MeshManager> m_meshManager;
     Ref<EffectManager> m_effectManager;
     Ref<PhysicsManager> m_physicsManager;
     Ref<VisualManager> m_visualManager;
@@ -216,7 +211,7 @@ private:
     Path m_persistentDataPath;
     Path m_engineResourcesPath;
 
-    // Ref<UIContext> m_mainUIContext;
+    Ref<Application> m_application;
     Ref<UIMainWindow> m_mainWindow;
     Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView; // m_mainViewport の ViewBox 内部に配置する

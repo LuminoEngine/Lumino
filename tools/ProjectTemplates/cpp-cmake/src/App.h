@@ -1,11 +1,10 @@
 ﻿#pragma once
 
-class HelloApp : public ln::Application
-{
+class HelloApp : public ln::Application {
 public:
     HelloApp();
-    virtual void onStart() override;
-    virtual void onUpdate() override;
+    void onInit() override;
+    void onUpdate() override;
 
 private:
 };

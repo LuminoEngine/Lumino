@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Rendering/Common.hpp"
+#include <LuminoGraphics/Rendering/Common.hpp>
 #include "Common.hpp"
 
 namespace ln {

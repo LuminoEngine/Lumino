@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/Controls/UISplitter.hpp>
@@ -7,8 +8,7 @@
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
-#include "../../../Graphics/src/GraphicsManager.hpp"
-#include "../Rendering/RenderingPipeline.hpp"
+#include <LuminoGraphics/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "MainViewportToolPane.hpp"
 #include "EditorViewportToolPane.hpp"
@@ -228,9 +228,9 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e)
 			ImGui::Text("GraphicsResources: %d", detail::GraphicsManager::instance()->graphicsResources().size());
 			
 
-			const auto& tex = m_manager->mainRenderView()->sceneRenderingPipeline()->viweNormalAndDepthBuffer();
+			const auto& tex = m_manager->mainRenderView()->builtinRenderTexture(BuiltinRenderTextureType::ViewNormalMap);
 			if (tex) {
-				ImGui::Image((ImTextureID)tex.get(), ImVec2(tex->width(), tex->height()));
+				ImGui::Image((ImTextureID)tex, ImVec2(tex->width(), tex->height()));
 			}
 
 

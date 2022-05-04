@@ -1,12 +1,12 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
 
-#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
 
 
 namespace ln {

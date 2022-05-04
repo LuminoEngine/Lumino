@@ -49,7 +49,7 @@ RenderPass* RenderPassCache::getOrCreate(const FindKey& key) {
 }
 
 void RenderPassCache::collectGarbage() {
-    for (auto& it = m_items.begin(); it != m_items.end(); it++) {
+    for (auto it = m_items.begin(); it != m_items.end(); it++) {
         it->lifeFrames--;
         if (it->lifeFrames < 0) {
             it->renderPass->dispose();

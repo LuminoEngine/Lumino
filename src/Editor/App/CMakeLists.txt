@@ -11,6 +11,6 @@ set(
 
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES} )
 target_include_directories(${PROJECT_NAME} PRIVATE ${LUMINO_INCLUDE_DIRECTORIES})
-target_link_libraries(${PROJECT_NAME} LuminoEngine-static LuminoEditor)
+target_link_libraries(${PROJECT_NAME} LuminoEngine LuminoEditor)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Editor")
 ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")

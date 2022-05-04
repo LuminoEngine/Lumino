@@ -27,7 +27,7 @@ namespace LuminoBuild.Tasks
 
         private void BuildFX(Build builder, string searchDir)
         {
-            var compiler = Path.Combine(builder.RootDir, "build/buildtrees/x64-windows/lumino/src/Editor/CLI/Debug/lumino.exe");
+            var compiler = Path.Combine(builder.RootDir, "build/buildtrees/x64-windows-static/lumino/src/Editor/CLI/Debug/lumino.exe");
 
             foreach (var file in Directory.EnumerateFiles(searchDir, "*.fx", SearchOption.AllDirectories))
             {
@@ -55,8 +55,8 @@ namespace LuminoBuild.Tasks
 
         private void BinaryToHexCSVHeader(Build builder, string file)
         {
-            var csv = Path.Combine(builder.RootDir, "tools/BinaryToIntArray/BinaryToIntArray.rb");
-            Utils.CallProcess("ruby", $"{csv} {file}");
+            var compiler = Path.Combine(builder.RootDir, "build/buildtrees/x64-windows-static/lumino/src/Editor/CLI/Debug/lumino.exe");
+            Utils.CallProcess(compiler, $"bin2inl {file}");
         }
     }
 }

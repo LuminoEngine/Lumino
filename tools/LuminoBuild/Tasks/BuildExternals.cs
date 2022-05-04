@@ -11,12 +11,34 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Build b)
         {
-            string lockFile = $"{b.Triplet}.lock";
+            string lockFile = Path.Combine(b.BuildToolsDir, $"{b.Triplet}.lock");
+            if (File.Exists(lockFile))
+            {
+                Logger.WriteLine($"{lockFile} exists.");
+                return;
+            }
+            else
+            {
+                Logger.WriteLine($"{lockFile} not found. Start externals building.");
+            }
+
+
+            // GitHub Actions 上で vcpkg 叩いても、ninja がダウンロードされなかったため、こちらで準備する
+            if (Utils.IsWin32)
+            {
+                if (!File.Exists(EmscriptenEnv.Ninja))
+                {
+                    var zip = Path.Combine(b.BuildToolsDir, "ninja-win.zip");
+                    Utils.DownloadFile(
+                        "https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip",
+                        zip);
+                    Utils.ExtractZipFile(zip, Path.Combine(b.BuildToolsDir, "ninja-win"));
+                }
+            }
+
 
             using (CurrentDir.Enter(b.BuildToolsDir))
             {
-                if (File.Exists(lockFile)) return;
-
                 if (!Directory.Exists(b.VcpkgDir))
                 {
                     Proc.Make("git", "clone -b 2022.02.23 https://github.com/microsoft/vcpkg.git").WithSilent().Call();
@@ -30,19 +52,30 @@ namespace LuminoBuild.Tasks
                     }
 
                     // Toolchain ファイルのテストするときは --editable 付けると良い
-                    var options = $"--editable --overlay-triplets={b.RootDir}/external/custom-triplets";
-                    //var options = $"--overlay-triplets={b.RootDir}/external/custom-triplets";
+                    //var options = $"--editable --overlay-triplets={b.RootDir}/external/custom-triplets";
+                    var options = $"--overlay-triplets={b.RootDir}/external/custom-triplets";
 
-                    Proc.Make("vcpkg", $"install nanovg:{b.Triplet} {options}").Call();
+                    if (BuildEnvironment.FromCI)
+                    {
+                        // Free disk space
+                        options += " --clean-buildtrees-after-build --clean-packages-after-build --clean-downloads-after-build";
+                    }
+
+                    if (!b.IsWebSystem)
+                    {
+                        Proc.Make("vcpkg", $"install curl:{b.Triplet} {options}").WithSilent().Call();
+                    }
+
+                    Proc.Make("vcpkg", $"install nanovg:{b.Triplet} {options}").WithSilent().Call();
 
                     Proc.Make("vcpkg", $"install fmt:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install yaml-cpp:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install toml11:{b.Triplet} {options}").WithSilent().Call();
-
                     Proc.Make("vcpkg", $"install zlib:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install libpng:{b.Triplet} {options}").WithSilent().Call();
-                    Proc.Make("vcpkg", $"install freetype[core,png,zlib]:{b.Triplet} {options}").WithSilent().Call();    // emsdk では brotli がビルドエラーになるため機能を制限する
+                    Proc.Make("vcpkg", $"install libogg:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install libvorbis:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install freetype[core,png,zlib]:{b.Triplet} {options}").WithSilent().Call();    // emsdk では brotli がビルドエラーになるため機能を制限する
                     Proc.Make("vcpkg", $"install pcre2:{b.Triplet} {options}").WithSilent().Call();
 
                     Proc.Make("vcpkg", $"install box2d:{b.Triplet} {options}").WithSilent().Call();
@@ -69,18 +102,11 @@ namespace LuminoBuild.Tasks
                         Proc.Make("vcpkg", $"install gtest:{b.Triplet} {options}").WithSilent().Call();
                         Proc.Make("vcpkg", $"install openal-soft:{b.Triplet} {options}").WithSilent().Call();
                     }
-
-                    if (BuildEnvironment.FromCI)
-                    {
-                        // Free disk space
-                        // https://github.com/Microsoft/vcpkg/issues/2352
-                        Directory.Delete("downloads", true);
-                        Directory.Delete("buildtrees", true);
-                    }
                 }
-
-                File.WriteAllText(lockFile, "The presence of this file indicates that the dependency is ready to be placed by LuminoBuild.");
             }
+
+            File.WriteAllText(lockFile, "The presence of this file indicates that the dependency is ready to be placed by LuminoBuild.");
+            Logger.WriteLine($"Lock file created. {lockFile}");
         }
     }
 }

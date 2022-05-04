@@ -5,11 +5,11 @@
 #include <LuminoGraphics/RHI/VertexLayout.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "PhysicsManager.hpp"
 
 namespace ln {

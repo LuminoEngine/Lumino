@@ -828,5 +828,25 @@ void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBu
     }
 }
 
+// WebGL や OpenGLES で glDrawElementsBaseVertex() が使えないので、glVertexAttribPointer() の pointer にオフセットを加える対策 
+void GLPipeline::rebindAttr(int vertexOffset) {
+
+    auto* glDecl = static_cast<const GLVertexDeclaration*>(vertexLayout());
+    if (glDecl) {
+        const auto& attributes = shaderPass()->attributes();
+        size_t count = attributes.size();
+        for (size_t iAttr = 0; iAttr < count; iAttr++) {
+            auto& attr = attributes[iAttr];
+
+            // glslang からは、 SV_InstanceID も取得できるが、これには layoutLocation が付いていない。
+            if (attr.usage == kokage::AttributeUsage_InstanceID) continue;
+
+            if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
+                GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->stride * vertexOffset + element->byteOffset)));
+            }
+        }
+    }
+}
+
 } // namespace detail
 } // namespace ln

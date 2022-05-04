@@ -14720,7 +14720,7 @@ LNSubinstanceId LNZVTestEventHandler2_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNZVTestPromise1_ThenWith(LNHandle zvtestpromise1, LNHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->thenWith(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate3, callback)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->then(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate3, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -14764,7 +14764,7 @@ LNSubinstanceId LNZVTestPromise1_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNZVTestPromise2_ThenWith(LNHandle zvtestpromise2, LNHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->thenWith(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate1, callback)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->then(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate1, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -15477,7 +15477,7 @@ LNSubinstanceId LNTexture2DDelegate_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNTexture2DPromise_ThenWith(LNHandle texture2dpromise, LNHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture2DPromise, texture2dpromise)->thenWith(LNI_HANDLE_TO_OBJECT(ln::Texture2DDelegate, callback)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture2DPromise, texture2dpromise)->then(LNI_HANDLE_TO_OBJECT(ln::Texture2DDelegate, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

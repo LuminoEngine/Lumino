@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/RHI/VertexLayout.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>

@@ -45,7 +45,7 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} ${LN_SOURCES} ${LN_SOURCES_Generator})
-target_link_libraries(${PROJECT_NAME} LuminoEngine-static)
+target_link_libraries(${PROJECT_NAME} LuminoEngine)
 target_link_libraries(${PROJECT_NAME} clangToolingCore clangAnalysis clangARCMigrate clangAST clangASTMatchers clangBasic clangCodeGen clangDriver clangDynamicASTMatchers clangEdit clangFormat clangFrontend clangFrontendTool clangIndex clangLex clangParse clangRewrite clangRewriteFrontend clangSema clangSerialization clangTooling LLVMSupport LLVMCore LLVMOption LLVMProfileData LLVMBitReader LLVMMC LLVMMCParser LLVMBinaryFormat Version)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")

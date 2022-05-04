@@ -2,10 +2,10 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 

@@ -2,8 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>  // TODO:
-#include <LuminoEngine/Rendering/Material.hpp>  // TODO:
-#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"  // TODO:
+#include <LuminoGraphics/Rendering/Material.hpp>  // TODO:
+#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include "../../Graphics/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 #include "../Engine/EngineManager.hpp"  // TODO:
 #include <LuminoEngine/Scene/World.hpp>  // TODO:
 #include <LuminoEngine/Effect/ParticleEffectModel.hpp>  // TODO:
@@ -217,9 +218,13 @@ void SpriteFrameEffectEmitter::onRender(RenderingContext* renderingContext)
 
        // Matrix transform = Matrix::makeTranslation(position());
 
-        renderingContext->drawSprite(
+        
+        auto r = SpriteRenderer::get();
+        r->begin(renderingContext, m_data->m_material);
+        r->drawSprite(
             transform(), renderSize, anchorPoint, renderSourceRect, Color::White,
-            SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None, m_data->m_material);
+            SpriteBaseDirection::ZMinus, BillboardType::None, SpriteFlipFlags::None);
+        r->end();
     }
 }
 

@@ -34,6 +34,8 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
+                args = new string[] { "Bootstrap" };
+
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildLocalPackage", "Android-x86_64" };
@@ -61,9 +63,9 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_Emscripten", "wasm32-emscripten" };
 
                 //args = new string[] { "BuildExternals", "x64-windows" };
-                args = new string[] { "BuildEngine", "wasm32-emscripten" };
+                //args = new string[] { "BuildEngine", "wasm32-emscripten" };
 
-                //args = new string[] { "BuildExternals" };
+                //args = new string[] { "MakePackage_Ruby" };
             }
 
             try
@@ -84,7 +86,7 @@ namespace LuminoBuild
 
         static void Run(CmdOptions options, string[] args)
         {
-            var triplet = (options.Triplet != null) ? options.Triplet : "x64-windows";
+            var triplet = (options.Triplet != null) ? options.Triplet : "x64-windows-static";
             var b = new Build(triplet, options);
             b.Args = args;
             Logger.Init(b);
@@ -132,6 +134,7 @@ namespace LuminoBuild
                 taskManager.Tasks.Add(new Tasks.MakePackage_HSP3());
                 taskManager.Tasks.Add(new Tasks.MakePackage_macOS());
                 taskManager.Tasks.Add(new Tasks.MakePackage_Ruby());
+                taskManager.Tasks.Add(new Tasks.Bootstrap());
                 //taskManager.Rules.Add(new Rules.BuildPackage());
                 //taskManager.Rules.Add(new Rules.BuildLocalPackage());
 

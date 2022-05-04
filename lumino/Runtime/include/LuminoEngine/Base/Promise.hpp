@@ -5,7 +5,7 @@
 #include "Task.hpp"
 
 namespace ln {
-	
+
 /**
  * Promise failure.
  */
@@ -13,167 +13,166 @@ LN_DELEGATE()
 using PromiseFailureDelegate = Delegate<void(void)>;
 
 class PromiseBase
-	: public Object
-{
+    : public Object {
 public:
-	//template<class TInput>
-	//Ref<Promise> then(const std::function<void(Promise* p, TInput value)>& action)
-	//{
-	//	auto p = makeObject<PromiseTask>(action);
+    // template<class TInput>
+    // Ref<Promise> then(const std::function<void(Promise* p, TInput value)>& action)
+    //{
+    //	auto p = makeObject<PromiseTask>(action);
 
-	//	return p;
-	//}
+    //	return p;
+    //}
 
 public:
-	virtual void invoke() = 0;
-	virtual void callNext() = 0;
-	static void enqueueInvoke(const Ref<PromiseBase>& p);
-	static void enqueueContinueWith(const Ref<PromiseBase>& p, Task* task);
-	static void enqueueThen(const Ref<PromiseBase>& p);
+    virtual void invoke() = 0;
+    virtual void callNext() = 0;
+    static void enqueueInvoke(const Ref<PromiseBase>& p);
+    static void enqueueContinueWith(const Ref<PromiseBase>& p, Task* task);
+    static void enqueueThen(const Ref<PromiseBase>& p);
 };
 
 /**
- * (メソッドチェーンを実装するためのものではない。Binding でそれを作るのは非常に骨が折れるが、多くの場合単一メソッドで足りる)
+ *
+ * @note
+ * JavaScript の Promise と異なり、メソッドチェーンは表現できない。
+ * これは Promise を FFI に公開する際、実装が極めて煩雑になってしまうため。
  */
 template<class TResult>
 class Promise
-	: public PromiseBase
-{
+    : public PromiseBase {
 public:
-	//LN_OBJECT;
-	friend class ::ln::TypeInfo;
-	friend class ::ln::detail::EngineDomain;
-	friend class ::ln::EngineContext2;
-	static ::ln::TypeInfo* _lnref_getTypeInfo()
-	{
-		static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
-		return _lnref_typeInfo;
-	}
-	::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
+    class Context final {
+    public:
+        void resolve(TResult value) { m_owner->resolve(value); }
+        void reject() { m_owner->reject(); }
 
-	static ::ln::TypeInfo* _lnref_registerTypeInfo()
-	{
-		auto* context = ::ln::EngineContext2::instance();
-		return context->registerType<Promise<TResult>>("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>() , {});
-	}
-	
-	//static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_;
+    private:
+        Context(Promise* owner) : m_owner(owner) {}
+        Promise* m_owner;
+        friend class Promise;
+    };
 
+    // LN_OBJECT;
+    friend class ::ln::TypeInfo;
+    friend class ::ln::detail::EngineDomain;
+    friend class ::ln::EngineContext2;
+    static ::ln::TypeInfo* _lnref_getTypeInfo() {
+        static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
+        return _lnref_typeInfo;
+    }
+    ::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
+    static ::ln::TypeInfo* _lnref_registerTypeInfo() {
+        auto* context = ::ln::EngineContext2::instance();
+        return context->registerType<Promise<TResult>>("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>(), {});
+    }
 
+    // static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_;
 
-	static Ref<Promise> run(const std::function<void(Promise<TResult>*)>& action)
-	{
-		auto p = Ref<Promise>(LN_NEW Promise(action), false);
-		PromiseBase::enqueueInvoke(p);
-		return p;
-	}
+    static Ref<Promise> run(const std::function<void(Promise<TResult>::Context*)>& action) {
+        auto p = Ref<Promise>(LN_NEW Promise(action), false);
+        PromiseBase::enqueueInvoke(p);
+        return p;
+    }
 
-	// TODO: internal
-	static Ref<Promise> continueWith(Ref<GenericTask<TResult>> task)
-	{
-		auto p = Ref<Promise>(LN_NEW Promise([task](Promise<TResult>* p) {
-			p->resolve(task->result());
-		}), false);
-		PromiseBase::enqueueContinueWith(p, task);
-		return p;
-	}
+    // TODO: internal
+    static Ref<Promise> continueWith(Ref<GenericTask<TResult>> task) {
+        auto p = Ref<Promise>(LN_NEW Promise([task](Promise<TResult>::Context* p) {
+                                  p->resolve(task->result());
+                              }),
+                              false);
+        PromiseBase::enqueueContinueWith(p, task);
+        return p;
+    }
 
-	void resolve(TResult value)
-	{
-		std::lock_guard<std::mutex> locl(m_mutex);
-		std::cout << "resolve 1 " << m_rejected << std::endl;
-		m_result = value;
-		std::cout << "resolve 2 " << m_rejected << std::endl;
-	}
+    const TResult& result() const { return m_result; }
 
-	void reject()
-	{
-		std::lock_guard<std::mutex> locl(m_mutex);
-		m_rejected = true;
-		std::cout << "reject 2" << std::endl;
-	}
+    Promise* then(Delegate<void(TResult value)>* action) {
+        std::lock_guard<std::mutex> locl(m_mutex);
+        m_thenAction = action;
+        return this;
+    }
 
-	const TResult& result() const { return m_result; }
+    Promise* then(std::function<void(TResult value)> action) {
+        std::lock_guard<std::mutex> locl(m_mutex);
+        m_thenAction = makeObject<Delegate<void(TResult)>>(action);
+        return this;
+    }
 
-	void thenWith(Delegate<void(TResult value)>* action)
-	{
-		std::cout << "Promise(" << this << ") thenWith 1 " << m_rejected << std::endl;
-		std::lock_guard<std::mutex> locl(m_mutex);
-		std::cout << "xxxx" << std::endl;
-		std::cout << RefObjectHelper::getReferenceCount(this) << std::endl;
-		m_thenAction = action;
-		std::cout << "Promise(" << this << ") thenWith 1 " << m_rejected << std::endl;
-	}
+    Promise* catchWith(PromiseFailureDelegate* action) {
+        std::lock_guard<std::mutex> locl(m_mutex);
+        m_failAction = action;
+        return this;
+    }
 
-	void thenWith(std::function<void(TResult value)> action)
-	{
-		std::lock_guard<std::mutex> locl(m_mutex);
-		std::cout << "Promise(" << this << ") thenWith 2 " << m_rejected << std::endl;
-		m_thenAction = makeObject<Delegate<void(TResult)>>(action);
-		std::cout << "Promise(" << this << ") thenWith 2 " << m_rejected << std::endl;
-	}
+    Promise* catchWith(std::function<void()> action) {
+        std::lock_guard<std::mutex> locl(m_mutex);
+        m_failAction = makeObject<Delegate<void()>>(action);
+        return this;
+    }
 
-	void catchWith(PromiseFailureDelegate* action)
-	{
-		std::lock_guard<std::mutex> locl(m_mutex);
-		m_failAction = action;
-	}
+    ~Promise() {
+    }
 
 protected:
-	// called task thread.
-	virtual void invoke() override
-	{
-		std::cout << "invoke 1 " << m_rejected << std::endl;
-		m_action(this);
-		std::cout << "invoke 2 " << m_rejected << std::endl;
-	}
+    // called task thread.
+    void invoke() override {
+        Context context(this);
+        try {
+            m_action(&context);
+        }
+        catch (...) {
+            LN_ERROR("An unhandled exception occurred during Promise processing.");
+            reject();
+        }
+    }
 
-	virtual void callNext() override
-	{
-		if (m_rejected) {
-			if (m_failAction) {
-				m_failAction->call();
-			}
-			else {
-				LN_ERROR(_TT("Promise rejected. (unhandling error)"));
-			}
-		}
-		else if (m_thenAction) {
-			m_thenAction->call(m_result);
-		}
-	}
+    void callNext() override {
+        if (m_rejected) {
+            if (m_failAction) {
+                m_failAction->call();
+            }
+            else {
+                LN_ERROR(_TT("Promise rejected. (unhandling error)"));
+            }
+        }
+        else if (m_thenAction) {
+            m_thenAction->call(m_result);
+        }
+    }
 
 LN_CONSTRUCT_ACCESS:
-	Promise()
-		: m_action()
-		, m_rejected(false)
-	{
-		std::cout << "Promise(" << this << ") cotr " << m_rejected << std::endl;
-	}
+    Promise()
+        : m_action()
+        , m_rejected(false) {
+    }
 
-	Promise(const std::function<void(Promise<TResult>*)>& action)
-		: m_action(action)
-		, m_rejected(false)
-	{
-		std::cout << "Promise(" << this << ") cotr " << m_rejected << std::endl;
-	}
+    Promise(const std::function<void(Promise<TResult>::Context*)>& action)
+        : m_action(action)
+        , m_rejected(false) {
+    }
 
-	~Promise()
-	{
-		std::cout << "Promise(" << this << ") destructor"  << std::endl;
-	}
+private:
 
-public:
-	std::function<void(Promise<TResult>*)> m_action;
-	TResult m_result;
-	std::atomic<bool> m_rejected;
-	Ref<Delegate<void(TResult value)>> m_thenAction;
-	Ref<PromiseFailureDelegate> m_failAction;
-	std::mutex m_mutex;
+    void resolve(TResult value) {
+        std::lock_guard<std::mutex> locl(m_mutex);
+        m_result = value;
+    }
+
+    void reject() {
+        std::lock_guard<std::mutex> locl(m_mutex);
+        m_rejected = true;
+    }
+
+    std::function<void(Promise<TResult>::Context*)> m_action;
+    TResult m_result;
+    std::atomic<bool> m_rejected;
+    Ref<Delegate<void(TResult value)>> m_thenAction;
+    Ref<PromiseFailureDelegate> m_failAction;
+    std::mutex m_mutex;
 };
 
-//template<class TResult>
+// template<class TResult>
 //::ln::TypeInfo* const Promise<TResult>::_lnref_typeInfo = Promise<TResult>::_lnref_registerTypeInfo();
 
 } // namespace ln

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Animation/AnimationContext.hpp>
+#include <LuminoGraphics/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
@@ -14,49 +14,45 @@
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include "../Rendering/CommandListServer.hpp"
-#include "../Rendering/RenderStage.hpp"
-#include "../Rendering/RenderElement.hpp"
+#include "../../Graphics/src/Rendering/CommandListServer.hpp"
+#include "../../Graphics/src/Rendering/RenderStage.hpp"
+#include "../../Graphics/src/Rendering/RenderElement.hpp"
 
 namespace ln {
 
 //==============================================================================
 // World
 
-LN_OBJECT_IMPLEMENT(World, Object) {}
+LN_OBJECT_IMPLEMENT(World, Object) {
+}
 
 World::World()
-	: m_masterScene(makeObject<Level>())
+    : m_masterScene(makeObject<Level>())
     , m_sceneList(makeList<Ref<Level>>())
-    , m_timeScale(1.0f)
-{
+    , m_timeScale(1.0f) {
     m_masterScene->m_ownerWorld = this;
     m_masterScene->m_initialUpdate = true;
     m_activeObjects.reserve(100);
 }
 
-World::~World()
-{
+World::~World() {
 }
 
-void World::init()
-{
+void World::init() {
     Object::init();
     m_animationContext = makeObject<AnimationContext>();
     m_physicsWorld = makeObject<PhysicsWorld>();
-	m_physicsWorld2D = makeObject<PhysicsWorld2D>();
+    m_physicsWorld2D = makeObject<PhysicsWorld2D>();
     m_effectContext = makeObject<EffectContext>();
-    m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 
     m_sceneConductor = makeRef<detail::SceneConductor>();
 
-	m_mainLight = makeObject<EnvironmentLight>();
+    m_mainLight = makeObject<EnvironmentLight>();
     m_mainLight->setSpecialObject(true);
-	add(m_mainLight);
+    add(m_mainLight);
 }
 
-void World::onDispose(bool explicitDisposing)
-{
+void World::onDispose(bool explicitDisposing) {
     removeAllObjects();
 
     if (m_sceneConductor) {
@@ -70,36 +66,31 @@ void World::onDispose(bool explicitDisposing)
         m_effectContext = nullptr;
     }
 
-    m_renderingContext.reset();
     m_physicsWorld.reset();
-	m_physicsWorld2D.reset();
+    m_physicsWorld2D.reset();
     m_animationContext.reset();
     Object::onDispose(explicitDisposing);
 }
 
-void World::add(WorldObject* obj)
-{
+void World::add(WorldObject* obj) {
     masterScene()->addObject(obj);
 }
 
 // TODO: テスト用。置き場考えておく。
-void World::removeAllObjects()
-{
+void World::removeAllObjects() {
     masterScene()->removeAllObjects();
 }
 
-ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const
-{
-	return masterScene()->m_rootWorldObjectList;
+ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const {
+    return masterScene()->m_rootWorldObjectList;
 }
 
-//void World::setMainAmbientLight(AmbientLight* value)
+// void World::setMainAmbientLight(AmbientLight* value)
 //{
 //	m_mainAmbientLight = value;
-//}
+// }
 
-WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
-{
+WorldObject* World::findObjectByComponentType(const TypeInfo* type) const {
     for (auto& scene : m_sceneList) {
         auto obj = scene->findObjectByComponentType(type);
         if (obj) {
@@ -110,50 +101,46 @@ WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
     return nullptr;
 }
 
-Level* World::masterScene() const
-{
+Level* World::masterScene() const {
     return m_masterScene;
 }
 
-Level* World::activeLevel() const
-{
+Level* World::activeLevel() const {
     if (Level* active = m_sceneConductor->activeScene())
         return active;
     else
         return m_masterScene;
 }
 
-void World::addScene(Level* scene)
-{
-	if (LN_REQUIRE(scene)) return;
-	if (LN_REQUIRE(!scene->m_ownerWorld)) return;
-	m_sceneList->add(scene);
-	scene->m_ownerWorld = this;
-	scene->m_initialUpdate = true;
+void World::addScene(Level* scene) {
+    if (LN_REQUIRE(scene)) return;
+    if (LN_REQUIRE(!scene->m_ownerWorld)) return;
+    m_sceneList->add(scene);
+    scene->m_ownerWorld = this;
+    scene->m_initialUpdate = true;
 }
 
-//void World::gotoScene(Level* scene)
+// void World::gotoScene(Level* scene)
 //{
-//    m_sceneConductor->gotoScene(scene);
-//}
+//     m_sceneConductor->gotoScene(scene);
+// }
 //
-//void World::callScene(Level* scene)
+// void World::callScene(Level* scene)
 //{
-//    m_sceneConductor->callScene(scene);
-//}
+//     m_sceneConductor->callScene(scene);
+// }
 //
-//void World::returnScene()
+// void World::returnScene()
 //{
-//    m_sceneConductor->returnScene();
-//}
+//     m_sceneConductor->returnScene();
+// }
 
-//Level* World::activeScene() const
+// Level* World::activeScene() const
 //{
-//    return m_sceneConductor->activeScene();
-//}
+//     return m_sceneConductor->activeScene();
+// }
 
-void World::traverse(detail::IWorldObjectVisitor* visitor) const
-{
+void World::traverse(detail::IWorldObjectVisitor* visitor) const {
     for (auto& scene : m_sceneList) {
         for (auto& obj : scene->m_rootWorldObjectList) {
             if (!obj->traverse(visitor)) {
@@ -167,15 +154,12 @@ void World::traverse(detail::IWorldObjectVisitor* visitor) const
     }
 }
 
-WorldObject* World::findObjectById(int id) const
-{
-    class LocalVisitor : public detail::IWorldObjectVisitor
-    {
+WorldObject* World::findObjectById(int id) const {
+    class LocalVisitor : public detail::IWorldObjectVisitor {
     public:
         int id;
         WorldObject* result = nullptr;
-        bool visit(WorldObject* obj) override
-        {
+        bool visit(WorldObject* obj) override {
             if (obj->m_id == id) {
                 result = obj;
                 return false;
@@ -190,15 +174,12 @@ WorldObject* World::findObjectById(int id) const
     return visitor.result;
 }
 
-WorldObject* World::findObjectByName(const StringView& name) const
-{
-    class LocalVisitor : public detail::IWorldObjectVisitor
-    {
+WorldObject* World::findObjectByName(const StringView& name) const {
+    class LocalVisitor : public detail::IWorldObjectVisitor {
     public:
         StringView name;
         WorldObject* result = nullptr;
-        bool visit(WorldObject* obj) override
-        {
+        bool visit(WorldObject* obj) override {
             if (obj->name() == name) {
                 result = obj;
                 return false;
@@ -213,8 +194,7 @@ WorldObject* World::findObjectByName(const StringView& name) const
     return visitor.result;
 }
 
-void World::updateObjectsWorldMatrix()
-{
+void World::updateObjectsWorldMatrix() {
     m_masterScene->updateObjectsWorldMatrix();
     for (auto& scene : m_sceneList) {
         scene->updateObjectsWorldMatrix();
@@ -225,8 +205,7 @@ void World::updateObjectsWorldMatrix()
     }
 }
 
-void World::updateFrame(float elapsedSeconds)
-{
+void World::updateFrame(float elapsedSeconds) {
     m_sceneConductor->transitionEffect()->onUpdateFrame(elapsedSeconds);
     m_sceneConductor->executeCommands();
 
@@ -243,7 +222,6 @@ void World::updateFrame(float elapsedSeconds)
         }
     }
 
-
     // TODO: イベントの実行順序はこれで決定。ドキュメントに書いておく
     float t = elapsedSeconds * m_timeScale;
     onPreUpdate(t);
@@ -253,8 +231,7 @@ void World::updateFrame(float elapsedSeconds)
     onPostUpdate(t);
 }
 
-void World::onPreUpdate(float elapsedSeconds)
-{
+void World::onPreUpdate(float elapsedSeconds) {
     m_effectContext->update(elapsedSeconds);
 
     m_combinedSceneGlobalRenderParams.reset();
@@ -274,8 +251,7 @@ void World::onPreUpdate(float elapsedSeconds)
     }
 }
 
-void World::onInternalPhysicsUpdate(float elapsedSeconds)
-{
+void World::onInternalPhysicsUpdate(float elapsedSeconds) {
     // Physics モジュールの Component が、WorldObject の WorldMatrix を元にシミュレーション前準備を行うことがあるので
     // ここで WorldMatrix を更新しておく。
     updateObjectsWorldMatrix();
@@ -283,13 +259,12 @@ void World::onInternalPhysicsUpdate(float elapsedSeconds)
     if (m_physicsWorld) {
         m_physicsWorld->stepSimulation(elapsedSeconds);
     }
-	if (m_physicsWorld2D) {
-		m_physicsWorld2D->stepSimulation(elapsedSeconds);
-	}
+    if (m_physicsWorld2D) {
+        m_physicsWorld2D->stepSimulation(elapsedSeconds);
+    }
 }
 
-void World::onUpdate(float elapsedSeconds)
-{
+void World::onUpdate(float elapsedSeconds) {
     m_masterScene->update(elapsedSeconds);
     for (auto& scene : m_sceneList) {
         scene->update(elapsedSeconds);
@@ -299,12 +274,10 @@ void World::onUpdate(float elapsedSeconds)
     }
 }
 
-void World::onInternalAnimationUpdate(float elapsedSeconds)
-{
+void World::onInternalAnimationUpdate(float elapsedSeconds) {
 }
 
-void World::onPostUpdate(float elapsedSeconds)
-{
+void World::onPostUpdate(float elapsedSeconds) {
     m_masterScene->onPostUpdate(elapsedSeconds);
     for (auto& scene : m_sceneList) {
         scene->onPostUpdate(elapsedSeconds);
@@ -318,70 +291,65 @@ void World::onPostUpdate(float elapsedSeconds)
     }
 }
 
-//void World::serialize(Archive& ar)
+// void World::serialize(Archive& ar)
 //{
-//    Object::serialize(ar);
+//     Object::serialize(ar);
 //
-//    ar & ln::makeNVP(u"Children", *m_rootWorldObjectList);
+//     ar & ln::makeNVP(u"Children", *m_rootWorldObjectList);
 //
-//    if (ar.isLoading()) {
-//        for (auto& obj : m_rootWorldObjectList) {
-//            obj->attachWorld(this);
-//        }
-//    }
-//}
+//     if (ar.isLoading()) {
+//         for (auto& obj : m_rootWorldObjectList) {
+//             obj->attachWorld(this);
+//         }
+//     }
+// }
 
-detail::WorldSceneGraphRenderingContext* World::prepareRender(const RenderViewPoint* viewPoint)
-{
-	m_renderingContext->resetForBeginRendering(viewPoint);
-	return m_renderingContext;
-}
+//detail::WorldSceneGraphRenderingContext* World::prepareRender2(const RenderViewPoint* viewPoint) {
+//    m_renderingContext->resetForBeginRendering(viewPoint);
+//    return m_renderingContext;
+//}
 
 // Offscreen 描画など、何回か描画を行うものを List に集める。
 // ビューカリングなどはこの時点では行わない。
-void World::prepareRender(const WorldRenderView* renderView)
-{
-    m_renderingContext->world = this;
+void World::prepareRender(RenderingContext* context, const WorldRenderView* renderView) {
+    context->world = this;
     m_worldRenderingElement.clear();
     m_offscreenRenderViews.clear();
 
-    m_masterScene->collectRenderObjects(this, m_renderingContext);
+    m_masterScene->collectRenderObjects(this, context);
     for (auto& scene : m_sceneList) {
-        scene->collectRenderObjects(this, m_renderingContext);
+        scene->collectRenderObjects(this, context);
     }
     if (m_sceneConductor) {
-        m_sceneConductor->collectRenderObjects(this, m_renderingContext);
+        m_sceneConductor->collectRenderObjects(this, context);
     }
 
     if (auto& finishingProcess = renderView->finishingProcess()) {
-        m_renderingContext->collectPostEffect(finishingProcess);
+        context->collectPostEffect(finishingProcess);
     }
-    m_renderingContext->collectPostEffect(m_sceneConductor->transitionEffect());
+    context->collectPostEffect(m_sceneConductor->transitionEffect());
 }
 
-void World::renderObjects()
-{
-    //m_masterScene->collectRenderObjects(m_renderingContext);
-    //for (auto& scene : m_sceneList) {
-    //    scene->renderObjects(m_renderingContext);
-    //}
-    //if (auto* scene = m_sceneConductor->activeScene()) {
-    //    scene->renderObjects(m_renderingContext);
-    //}
+void World::renderObjects(RenderingContext* context) {
+    // m_masterScene->collectRenderObjects(m_renderingContext);
+    // for (auto& scene : m_sceneList) {
+    //     scene->renderObjects(m_renderingContext);
+    // }
+    // if (auto* scene = m_sceneConductor->activeScene()) {
+    //     scene->renderObjects(m_renderingContext);
+    // }
     for (IWorldRenderingElement* element : m_worldRenderingElement) {
-        //element->onPrepareRender(m_renderingContext); // TODO: 全体の前にした方がいいかも
-        element->render(m_renderingContext);
+        // element->onPrepareRender(m_renderingContext); // TODO: 全体の前にした方がいいかも
+        element->render(context);
     }
 
-	m_renderingContext->pushState(true);
-    m_effectContext->render(m_renderingContext);
-    m_renderingContext->popState();
-    m_renderingContext->setObjectId(0);
-
+    context->pushState(true);
+    m_effectContext->render(context);
+    context->popState();
+    context->setObjectId(0);
 }
 
-void World::renderGizmos(RenderingContext* context)
-{
+void World::renderGizmos(RenderingContext* context) {
     m_masterScene->renderGizmos(context);
     for (auto& scene : m_sceneList) {
         scene->renderGizmos(context);
@@ -391,34 +359,16 @@ void World::renderGizmos(RenderingContext* context)
     }
 }
 
-void World::enqueueActiveWorldObject(WorldObject* obj)
-{
+void World::enqueueActiveWorldObject(WorldObject* obj) {
     m_activeObjects.add(obj);
 }
 
-void World::enqueueWorldRenderingElement(IWorldRenderingElement* element)
-{
+void World::enqueueWorldRenderingElement(IWorldRenderingElement* element) {
     m_worldRenderingElement.add(element);
 }
 
-void World::enqueueOffscreenRenderView(OffscreenWorldRenderView* element)
-{
+void World::enqueueOffscreenRenderView(OffscreenWorldRenderView* element) {
     m_offscreenRenderViews.add(element);
 }
 
-//==============================================================================
-// WorldSceneGraphRenderingContext
-
-namespace detail {
-
-WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
-{
-}
-
-void WorldSceneGraphRenderingContext::resetForBeginRendering(const RenderViewPoint* viewPoint) {
-    RenderingContext::resetForBeginRendering(viewPoint);
-}
-
-} // namespace detail
 } // namespace ln
-

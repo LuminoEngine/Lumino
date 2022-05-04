@@ -1,8 +1,9 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
-#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include "../../Graphics/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 namespace detail {
@@ -217,11 +218,14 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 				detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
 					texture, tileSize, sourceRect, &renderSize, &renderSourceRect);
 
-				context->drawSprite(
+				// TODO: 最適化の余地あり。ここで begin end しない。
+				auto r = SpriteRenderer::get();
+				r->begin(context, autotilest->material);
+				r->drawSprite(
 					Matrix::makeTranslation(points[i]), hsz, Vector2::Zero,
 					renderSourceRect, Color::White,
-					SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
-					autotilest->material);
+					SpriteBaseDirection::ZMinus, BillboardType::None, SpriteFlipFlags::None);
+				r->end();
 			}
 		}
 
@@ -248,11 +252,13 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 #else
 		const SpriteBaseDirection frontDir = SpriteBaseDirection::ZMinus;
 #endif
-		context->drawSprite(
+        auto r = SpriteRenderer::get();
+        r->begin(context, m_material);
+		r->drawSprite(
 			Matrix::makeTranslation(pos), tileSize, Vector2::Zero,
 			renderSourceRect, Color::White,
-			frontDir, BillboardType::None, detail::SpriteFlipFlags::None,
-			m_material);
+			frontDir, BillboardType::None, SpriteFlipFlags::None);
+        r->end();
 	}
 }
 

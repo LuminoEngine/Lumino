@@ -16,16 +16,14 @@ namespace ln {
  * Temporary       | C:/Users/\<USER\>/AppData/Local/Temp |                 | /tmp
  * Home            | C:/Users/\<USER\>/AppData/Local/Temp | /Users/\<USER\> | ~
  */
-enum class SpecialFolder
-{
+enum class SpecialFolder {
     ApplicationData,
     Temporary,
-	Home,
+    Home,
 };
 
 /** システムの特別なフォルダパス を取得する際の動作 */
-enum class SpecialFolderOption
-{
+enum class SpecialFolderOption {
     /** フォルダパスが存在しなければ、空の文字列を返します。 */
     None,
 
@@ -37,21 +35,37 @@ enum class SpecialFolderOption
 };
 
 /** データのバイトオーダー (エンディアン) */
-enum class ByteOrder
-{
-	/** リトルエンディアン */
-	LittleEndian,
+enum class ByteOrder {
+    /** リトルエンディアン */
+    LittleEndian,
 
-	/** ビッグエンディアン */
-	BigEndian,
+    /** ビッグエンディアン */
+    BigEndian,
+};
+
+/** Represents an runtime system platform. */
+enum class RuntimePlatform {
+    /** Linux operating system. */
+    Linux,
+
+    /** OSX operating system. */
+    OSX,
+
+    /** Windows operating system. */
+    Windows,
+
+    /** Web browser system. */
+    Web,
 };
 
 /** 現在の動作環境やプラットフォームに関する情報へのアクセス手段を提供します。 */
-class Environment
-{
+class Environment {
 public:
     /** カレントディレクトリのパスを取得します。 */
     static Path currentDirectory();
+
+    /** カレントディレクトリを変更します。 */
+    static void setCurrentDirectory(const Path& path);
 
     /** アプリケーションを開始した実行ファイルのパスを取得します。*/
     static Path executablePath();
@@ -71,14 +85,22 @@ public:
     /** 環境変数の値を取得します。 */
     static Optional<String> getEnvironmentVariable(const StringView& variableName);
 
-	/** 現在のプロセスの環境変数を設定します。(システム環境変数や他のプロセスの環境変数へ影響を及ぼしません) */
-	static void setEnvironmentVariable(const StringView& variableName, const StringView& value);
+    /** 現在のプロセスの環境変数を設定します。(システム環境変数や他のプロセスの環境変数へ影響を及ぼしません) */
+    static void setEnvironmentVariable(const StringView& variableName, const StringView& value);
 
-	/** 現在の環境のバイトオーダー (エンディアン) を確認します。 */
-	static ByteOrder byteOrder();
+    /** 現在の環境のバイトオーダー (エンディアン) を確認します。 */
+    static ByteOrder byteOrder();
 
     /** システム起動からの時間を ms 単位で取得します。 */
     static uint64_t getTickCount();
+
+    /**
+     * Indicates whether the current application is running on the specified platform.
+     *
+     * 主に、特定の OS でのみ使用可能な API やセキュリティ要件を区別するために使用します。
+     * ファイルシステムやディレクトリセパレータを区別するためのものではない点に注意してください。
+     */
+    static bool isRuntimePlatform(RuntimePlatform value);
 };
 
 } // namespace ln

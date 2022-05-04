@@ -69,6 +69,8 @@ namespace LuminoBuild
 
         public bool IsDesktopSystem { get => System == "windows" || System == "osx" || System == "linux"; }
 
+        public bool IsWebSystem { get => System == "emscripten"; }
+
         public Build(string triplet, CmdOptions options)
         {
             Options = options;
@@ -90,6 +92,11 @@ namespace LuminoBuild
             Directory.CreateDirectory(BuildToolsDir);
             Directory.CreateDirectory(EngineBuildDir);
             Directory.CreateDirectory(EngineInstallDir);
+
+            Console.WriteLine($"BuildEnv");
+            Console.WriteLine($"  Triplet: {Triplet}");
+            Console.WriteLine($"  Arch: {Arch}");
+            Console.WriteLine($"  System: {System}");
         }
 
 

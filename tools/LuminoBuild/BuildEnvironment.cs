@@ -39,17 +39,15 @@ namespace LuminoBuild
 
         public static TargetInfo[] Targets = new TargetInfo[]
         {
-            //new TargetInfo(){ Name = "MSVC2017-x64-MT", LibraryExt = "*.lib", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2019-x64-MT", LibraryExt = "*.lib", PdbCopy = true, Package = true },
-            new TargetInfo(){ Name = "MSVC2019-x86-MT", LibraryExt = "*.lib", PdbCopy = true, Package = true },
-            new TargetInfo(){ Name = "Emscripten", LibraryExt = "*.a" },
-            new TargetInfo(){ Name = "Android-arm64-v8a", LibraryExt = "*.a" },
-            new TargetInfo(){ Name = "Android-armeabi-v7a", LibraryExt = "*.a" },
-            new TargetInfo(){ Name = "Android-x86", LibraryExt = "*.a"},
-            new TargetInfo(){ Name = "Android-x86_64", LibraryExt = "*.a" },
-            new TargetInfo(){ Name = "macOS", LibraryExt = "*.a", Package = true },
-            new TargetInfo(){ Name = "iOS-SIMULATOR64", LibraryExt = "*.a" },
-            new TargetInfo(){ Name = "iOS-OS", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "x64-windows-static", LibraryExt = "*.lib", PdbCopy = true, Package = true },
+            //new TargetInfo(){ Name = "Emscripten", LibraryExt = "*.a" },
+            //new TargetInfo(){ Name = "Android-arm64-v8a", LibraryExt = "*.a" },
+            //new TargetInfo(){ Name = "Android-armeabi-v7a", LibraryExt = "*.a" },
+            //new TargetInfo(){ Name = "Android-x86", LibraryExt = "*.a"},
+            //new TargetInfo(){ Name = "Android-x86_64", LibraryExt = "*.a" },
+            //new TargetInfo(){ Name = "macOS", LibraryExt = "*.a", Package = true },
+            //new TargetInfo(){ Name = "iOS-SIMULATOR64", LibraryExt = "*.a" },
+            //new TargetInfo(){ Name = "iOS-OS", LibraryExt = "*.a" },
         };
 
         public static void Initialize(Build builder)

@@ -18,7 +18,7 @@
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoGraphics.hpp>
 #include <LuminoGraphics/RHI/GraphicsExtensionOpenGL.hpp>
-#include "../src/GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 using namespace ln;
 
 GLFWwindow* g_glfwWindow;

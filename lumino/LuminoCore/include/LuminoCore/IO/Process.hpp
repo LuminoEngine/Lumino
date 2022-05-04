@@ -182,6 +182,8 @@ public:
 
     ProcessCommand2& arg(const ln::String& value);
 
+    ProcessCommand2& workingDirectory(const ln::String& value);
+
     ProcessCommand2& stdIn(ProcessStdio* value) {
         m_stdIn = value;
         return *this;
@@ -263,6 +265,7 @@ public:
     StreamReader* stdOut() const { return m_stdoutReader; }
     StreamReader* stdErr() const { return m_stderrReader; }
 
+    static int exec(const String& command, String* outStdOutput = nullptr, String* outStdError = nullptr);
 
 private:
     Process2();

@@ -20,7 +20,7 @@ if (LN_EMSCRIPTEN)
 
     # for Debug
     string(APPEND LOCAL_LINK_FLAGS " --minify 0")
-    string(APPEND LOCAL_LINK_FLAGS " -gsource-map")
+    #string(APPEND LOCAL_LINK_FLAGS " -gsource-map")
     string(APPEND LOCAL_LINK_FLAGS " -g3")
     string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
 endif()
@@ -30,7 +30,7 @@ endif()
 #-------------------------------------------------------------------------------
 add_executable(${PROJECT_NAME} Main.cpp)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_DIR=U"${ASSETS_DIR}")
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoPlatform LuminoGraphics LuminoBitmap)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoPlatform LuminoGraphics LuminoBitmap LuminoFont)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "index")
 

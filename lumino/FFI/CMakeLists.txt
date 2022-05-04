@@ -31,7 +31,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoEngine-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoEngine)
 target_link_libraries(${PROJECT_NAME} PUBLIC LuminoRuntime)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
@@ -53,13 +53,6 @@ install(
 )
 
 install(DIRECTORY include DESTINATION .)
-
-# install(
-#     EXPORT ${LN_TARGETS_NAME}
-#     FILE ${LN_TARGETS_NAME}.cmake
-#     DESTINATION lib/cmake/${PROJECT_NAME}
-#     EXPORT_LINK_INTERFACE_LIBRARIES
-# )
 
 #-------------------------------------------------------------------------------
 # Sub-projects

@@ -2,12 +2,12 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/CommandList.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 
@@ -181,8 +181,8 @@ bool FilmicPostEffectInstance::onRender(RenderView* renderView, CommandList* con
     Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
     occlusionMap->setSamplerState(m_samplerState);
 
-    Texture* viewNormalMap = renderView->gbuffer(GBuffer::ViewNormalMap);
-    Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
+    Texture* viewNormalMap = renderView->builtinRenderTexture(BuiltinRenderTextureType::ViewNormalMap);
+    Texture* viewDepthMap = renderView->builtinRenderTexture(BuiltinRenderTextureType::ViewDepthMap);
     Texture* randomTexture = RenderingManager::instance()->randomTexture();
 
     viewNormalMap->setSamplerState(SamplerState::pointClamp());

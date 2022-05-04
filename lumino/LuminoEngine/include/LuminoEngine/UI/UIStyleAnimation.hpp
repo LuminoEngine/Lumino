@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "../Animation/EasingFunctions.hpp"
-#include "../Animation/AnimationCurve.hpp"
+#include <LuminoGraphics/Animation/EasingFunctions.hpp>
+#include <LuminoGraphics/Animation/AnimationCurve.hpp>
 #include "UIElement.hpp"
 
 namespace ln {

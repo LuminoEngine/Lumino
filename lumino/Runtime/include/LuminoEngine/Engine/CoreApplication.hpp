@@ -19,15 +19,15 @@ public:
 
 protected:
     static void configure();
-    virtual bool updateEngine();
-    virtual void renderEngine();
-    virtual void terminateEngine();
+    //virtual bool updateEngine();
+    //virtual void renderEngine();
+    //virtual void terminateEngine();
 
 private:
-    Result initializeInternal();
-    bool updateInertnal();
-    void renderInertnal();
-    void terminateInternal();
+    //Result initializeInternal();
+    //bool updateInertnal();
+    //void renderInertnal();
+    //void terminateInternal();
 
     static CoreApplication* s_instance;
 
@@ -35,17 +35,24 @@ private:
     friend class AppIntegration;
 };
 
-class AppIntegration {
-public:
-    // for external main loop (emscripten, android)
-    static Result initialize(CoreApplication* app);
-    static bool update(CoreApplication* app);
-    static void render(CoreApplication* app);
-    static void terminate(CoreApplication* app);
-
-    // for internal main loop (win32, macOS...)
-    static void run(CoreApplication* app);
-};
+//class AppIntegration {
+//public:
+//    typedef void (*ConfigureApp)();
+//    typedef bool (*InitializeEngine)();
+//    typedef CoreApplication* (*CreateAppInstance)();
+//
+//    // for external main loop (emscripten, android)
+//    //static Result initialize(CoreApplication* app);
+//    //static bool update(CoreApplication* app);
+//    //static void render(CoreApplication* app);
+//    //static void terminate(CoreApplication* app);
+//
+//    // for internal main loop (win32, macOS...)
+//    //static void run(ConfigureApp configureApp, InitializeEngine initializeEngine, CreateAppInstance createAppInstance);
+//
+//private:
+//    static Ref<CoreApplication> s_app;
+//};
 
 } // namespace ln
 

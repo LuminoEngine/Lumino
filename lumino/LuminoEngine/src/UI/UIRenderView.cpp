@@ -8,10 +8,10 @@
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/Controls/UIDialog.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
-#include "../Rendering/CommandListServer.hpp"
-#include "../Rendering/RenderStage.hpp"
-#include "../Rendering/RenderElement.hpp"
-#include "../Rendering/RenderingPipeline.hpp"
+#include "../../Graphics/src/Rendering/CommandListServer.hpp"
+#include "../../Graphics/src/Rendering/RenderStage.hpp"
+#include "../../Graphics/src/Rendering/RenderElement.hpp"
+#include <LuminoGraphics/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 
 namespace ln {
 
@@ -23,12 +23,11 @@ UIFrameRenderView::UIFrameRenderView()
 
 void UIFrameRenderView::init()
 {
-    RenderView::init();
+    m_renderingContext = makeObject<UIRenderingContext>();
 
-    m_renderingContext = makeRef<UIRenderingContext>();
-    m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
-    m_sceneRenderingPipeline->init();
-    m_viewPoint = makeObject<RenderViewPoint>();
+    RoutingRenderView::init(m_renderingContext);
+
+    setRenderingPipeline(makeObject<FlatRenderingPipeline>());
 
     //m_clearRenderPass = makeObject<RenderPass>();
 
@@ -63,70 +62,61 @@ UIAdornerLayer* UIFrameRenderView::adornerLayer() const
 }
 
 void UIFrameRenderView::render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) {
+    renderPipeline(graphicsContext, renderTarget);
+}
+
+void UIFrameRenderView::onUpdateViewPoint(RenderViewPoint* viewPoint, RenderTargetTexture* renderTarget) {
+    viewPoint->viewPosition = Vector3::Zero;
+    viewPoint->viewDirection = Vector3::UnitZ;
+#ifdef LN_COORD_RH
+    viewPoint->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+    viewPoint->projMatrix = Matrix::makePerspective2DRH(viewPoint->viewPixelSize.width, viewPoint->viewPixelSize.height, 0, 1000);
+#else
+    m_viewPoint->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+    m_viewPoint->projMatrix = Matrix::makePerspective2DLH(m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, 0, 1000);
+#endif
+    viewPoint->viewProjMatrix = viewPoint->viewMatrix * viewPoint->projMatrix;
+    viewPoint->viewFrustum = ViewFrustum(viewPoint->viewProjMatrix);
+    viewPoint->fovY = 1.0f;
+    viewPoint->nearClip = 0.0f;
+    viewPoint->farClip = 1000.0f;
+    viewPoint->dpiScale = 1.0f; // TODO: dpiscale
+
+    // detail::CameraInfo camera;
+    // camera.viewPixelSize = m_viewPoint->viewPixelSize;
+    // camera.viewPosition = m_viewPoint->viewPosition;
+    // camera.viewDirection = m_viewPoint->viewDirection;
+    // camera.viewMatrix = m_viewPoint->viewMatrix;
+    // camera.projMatrix = m_viewPoint->projMatrix;
+    // camera.viewProjMatrix = m_viewPoint->viewProjMatrix;
+    // camera.viewFrustum = m_viewPoint->viewFrustum;
+    // camera.nearClip = m_viewPoint->nearClip;
+    // camera.farClip = m_viewPoint->farClip;
+
+    // auto p1 = Vector3::transformCoord(Vector3(0, 0, 0), m_viewPoint->viewMatrix);
+    // auto p2 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewMatrix);
+    // auto p3 = Vector3::transformCoord(Vector3(100, 0, 0), m_viewPoint->viewMatrix);
+
+    // auto p11 = Vector3::transformCoord(Vector3(0, 0, 0), m_viewPoint->viewProjMatrix);
+    // auto p22 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewProjMatrix);
+    // auto p33 = Vector3::transformCoord(Vector3(100, 0, 0), m_viewPoint->viewProjMatrix);
+
+    // camera.makePerspective(
+    //     Vector3::Zero, Vector3::UnitZ,
+    //     Math::PI / 4, m_viewPoint->viewPixelSize,
+    //     0.0f, 1000.0f);
+}
+
+void UIFrameRenderView::onRender(GraphicsCommandList* graphicsContext, RenderingContext* renderingContext, RenderTargetTexture* renderTarget) {
+
     if (m_rootElement)
     {
 
 
-
-        // TODO:
-        {
-            m_viewPoint->viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
-            m_viewPoint->viewPosition = Vector3::Zero;
-            m_viewPoint->viewDirection = Vector3::UnitZ;
-#ifdef LN_COORD_RH
-            m_viewPoint->viewMatrix = Matrix::makeLookAtRH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
-            m_viewPoint->projMatrix = Matrix::makePerspective2DRH(m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, 0, 1000);
-#else
-            m_viewPoint->viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
-            m_viewPoint->projMatrix = Matrix::makePerspective2DLH(m_viewPoint->viewPixelSize.width, m_viewPoint->viewPixelSize.height, 0, 1000);
-#endif
-            m_viewPoint->viewProjMatrix = m_viewPoint->viewMatrix * m_viewPoint->projMatrix;
-            m_viewPoint->viewFrustum = ViewFrustum(m_viewPoint->viewProjMatrix);
-            m_viewPoint->fovY = 1.0f;
-            m_viewPoint->nearClip = 0.0f;
-            m_viewPoint->farClip = 1000.0f;
-
-            detail::CameraInfo camera;
-            camera.viewPixelSize = m_viewPoint->viewPixelSize;
-            camera.viewPosition = m_viewPoint->viewPosition;
-            camera.viewDirection = m_viewPoint->viewDirection;
-            camera.viewMatrix = m_viewPoint->viewMatrix;
-            camera.projMatrix = m_viewPoint->projMatrix;
-            camera.viewProjMatrix = m_viewPoint->viewProjMatrix;
-            camera.viewFrustum = m_viewPoint->viewFrustum;
-            camera.nearClip = m_viewPoint->nearClip;
-            camera.farClip = m_viewPoint->farClip;
-
-            //auto p1 = Vector3::transformCoord(Vector3(0, 0, 0), m_viewPoint->viewMatrix);
-            //auto p2 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewMatrix);
-            //auto p3 = Vector3::transformCoord(Vector3(100, 0, 0), m_viewPoint->viewMatrix);
-
-            //auto p11 = Vector3::transformCoord(Vector3(0, 0, 0), m_viewPoint->viewProjMatrix);
-            //auto p22 = Vector3::transformCoord(Vector3(0, 100, 0), m_viewPoint->viewProjMatrix);
-            //auto p33 = Vector3::transformCoord(Vector3(100, 0, 0), m_viewPoint->viewProjMatrix);
-
-            //camera.makePerspective(
-            //    Vector3::Zero, Vector3::UnitZ,
-            //    Math::PI / 4, m_viewPoint->viewPixelSize,
-            //    0.0f, 1000.0f);
-            makeViewProjections(camera, 1.0);   // TODO: dpiscale
-        }
-
-
-        ClearInfo clearInfo;
-        clearInfo.color = backgroundColor();
-        clearInfo.depth = 1.0f;
-        clearInfo.stencil = 0x00;
-        if (clearMode() == SceneClearMode::ColorAndDepth) {
-            clearInfo.flags = ClearFlags::All;
-        }
-        else {
-            clearInfo.flags = ClearFlags::Depth | ClearFlags::Stencil;
-        }
+        
 
         // build draw elements
         {
-            m_renderingContext->resetForBeginRendering(m_viewPoint);
             m_renderingContext->m_frameWindowRenderingGraphicsContext = graphicsContext;
             m_renderingContext->baseRenderView = this;
             m_renderingContext->clearPostEffects();
@@ -151,15 +141,6 @@ void UIFrameRenderView::render(GraphicsCommandList* graphicsContext, RenderTarge
             //    m_dialog->render(m_renderingContext);
             //}
         }
-
-
-
-
-        m_sceneRenderingPipeline->render(
-            graphicsContext, m_renderingContext,
-            renderTarget, clearInfo, this,
-            m_renderingContext->commandList()->elementList(),
-            m_renderingContext->commandListServer());
     }
 }
 

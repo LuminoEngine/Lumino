@@ -38,10 +38,8 @@ public:
 
 	static EngineContext* engineContext();
 	static EngineManager* engineManager();
-    static AnimationManager* animationManager();
 	static InputManager* inputManager();
 	static AudioManager* audioManager();
-	static MeshManager* meshManager();
     static EffectManager* effectManager();
     static PhysicsManager* physicsManager();
     static VisualManager* visualManager();

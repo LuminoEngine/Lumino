@@ -1,14 +1,15 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoEngine/Animation/AnimationCurve.hpp>
+#include <LuminoGraphics/Animation/AnimationCurve.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
 #include <LuminoGraphics/RHI/Shader.hpp>
-#include <LuminoEngine/Mesh/MeshModel.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Rendering/RenderView.hpp>
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Mesh/MeshModel.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/RenderView.hpp>
+#include <LuminoGraphics/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "SceneManager.hpp"
 #include "InternalSkyBox.hpp"
 
@@ -18,55 +19,50 @@ namespace detail {
 //==============================================================================
 // InternalSkyBox
 
-InternalSkyBox::InternalSkyBox()
-{
+InternalSkyBox::InternalSkyBox() {
 }
 
-void InternalSkyBox::init()
-{
-	Object::init();
-	auto shader = RenderingManager::instance()->builtinShader(BuiltinShader::SkyLowAltitudeOptimized);
+void InternalSkyBox::init() {
+    Object::init();
+    auto shader = RenderingManager::instance()->builtinShader(BuiltinShader::SkyLowAltitudeOptimized);
 
-	m_material = makeObject<Material>();
-	m_material->setShader(shader);
+    m_material = makeObject<Material>();
+    m_material->setShader(shader);
     m_material->setShadingModel(ShadingModel::Unlit);
 
     m_lightDirection = Vector3::UnitY;
 }
 
-void InternalSkyBox::setLightDirection(const Vector3& value)
-{
+void InternalSkyBox::setLightDirection(const Vector3& value) {
     m_lightDirection = value;
 }
 
-void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* viewPoint)
-{
-	const float sunDistance = 400000;
+void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* viewPoint) {
+    const float sunDistance = 400000;
 
-    
     //m_material->setVector(_TT("_RayleighColorScale"), Vector4(0.1, 0.2, 0.6, 0.0));
     m_material->setVector(_TT("_RayleighColorScale"), Color(0.5, 0.2, 0.5).toVector4());
-	//m_material->setFloat(_TT("turbidity"), 10.0f);
+    //m_material->setFloat(_TT("turbidity"), 10.0f);
     m_material->setFloat(_TT("turbidity"), 1.0f);
     //m_material->setFloat(_TT("rayleigh"), 2.0f);
-	m_material->setFloat(_TT("rayleigh"), 0.5f);
-	m_material->setFloat(_TT("mieCoefficient"), 0.005f);
-	m_material->setFloat(_TT("mieDirectionalG"), 0.8f);
-	m_material->setFloat(_TT("luminance"), 1.0f);
-	m_material->setVector(_TT("up"), Vector4(0, 1, 0, 0));
-	m_material->setVector(_TT("sunPosition"), Vector4(m_lightDirection * sunDistance, 0));
+    m_material->setFloat(_TT("rayleigh"), 0.5f);
+    m_material->setFloat(_TT("mieCoefficient"), 0.005f);
+    m_material->setFloat(_TT("mieDirectionalG"), 0.8f);
+    m_material->setFloat(_TT("luminance"), 1.0f);
+    m_material->setVector(_TT("up"), Vector4(0, 1, 0, 0));
+    m_material->setVector(_TT("sunPosition"), Vector4(m_lightDirection * sunDistance, 0));
 
-	context->pushState();
-	context->setBlendMode(BlendMode::Normal);
-	context->setAdditionalElementFlags(detail::RenderDrawElementTypeFlags::BackgroundSky);
+    context->pushState();
+    context->setBlendMode(BlendMode::Normal);
+    context->setAdditionalElementFlags(detail::RenderDrawElementTypeFlags::BackgroundSky);
     //context->setRenderPhase(RenderPart::BackgroundSky);
     //context->setDepthTestEnabled(false);
-	context->setDepthWriteEnabled(false);
+    context->setDepthWriteEnabled(false);
     context->setBaseTransfrom(Matrix::makeTranslation(viewPoint->viewPosition));
-	context->setMaterial(m_material);
-	context->setCullingMode(CullMode::Front);
-    context->drawBox(Box(Vector3::Zero, 100));// , Color::White, Matrix::makeTranslation(viewPoint->viewPosition));
-	context->popState();
+    //context->setMaterial(m_material);
+    context->setCullingMode(CullMode::Front);
+    PrimitiveMeshRenderer::drawBox(context, m_material, Box(Vector3::Zero, 100));
+    context->popState();
 }
 
 //==============================================================================
@@ -74,12 +70,10 @@ void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* vi
 
 #include "SkyDomeMesh.inl"
 
-InternalSkyDome::InternalSkyDome()
-{
+InternalSkyDome::InternalSkyDome() {
 }
 
-bool InternalSkyDome::init()
-{
+bool InternalSkyDome::init() {
 #if 0 // Dump
     m_model = MeshModel::load(_TT("Sphere.glb");
     auto mesh = m_model->meshContainers()[0]->mesh();
@@ -117,8 +111,7 @@ bool InternalSkyDome::init()
         const int vertexCount = LN_ARRAY_SIZE_OF(s_skyDomeVertices);
         const int indexCount = LN_ARRAY_SIZE_OF(s_skyDomeIndices);
         auto mesh = makeObject<MeshPrimitive>(
-            vertexCount, indexCount,
-            IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
+            vertexCount, indexCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
 
         auto* vertices = static_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
         for (int i = 0; i < vertexCount; i++) {
@@ -142,7 +135,6 @@ bool InternalSkyDome::init()
         m_model->addMaterial(m_material);
         m_model->updateNodeTransforms();
     }
-
 
     auto manager = detail::EngineDomain::sceneManager();
 
@@ -346,9 +338,8 @@ bool InternalSkyDome::init()
     return true;
 }
 
-void InternalSkyDome::update(float elapsedTimer)
-{
-    m_timeOfDay += 0.016;   // TODO:
+void InternalSkyDome::update(float elapsedTimer) {
+    m_timeOfDay += 0.016; // TODO:
     m_timeOfDay = std::fmod(m_timeOfDay, 24.0f);
 
     float timeOfDay = m_timeOfDay;
@@ -371,7 +362,6 @@ void InternalSkyDome::update(float elapsedTimer)
         m_allOverlayColorB->evaluate(timeOfDay),
         m_allOverlayColorA->evaluate(timeOfDay));
 
-
     //c *= overlayColor.xyz() * (overlayColor.w + 1.0);
 
     //c.mutatingNormalize();
@@ -384,12 +374,9 @@ void InternalSkyDome::update(float elapsedTimer)
     m_fixedBackGroundHorizonColor = Color(Vector3::lerp(horizonColor, m_horizonColor.xyz(), m_horizonColor.w), 1.0f);
     m_fixedBaseCloudColorAndIntensity = Color(Vector3::lerp(baseCloudColorAndIntensity.xyz(), m_cloudColor.xyz(), m_cloudColor.w), baseCloudColorAndIntensity.w);
     m_fixedAllOverlayColor = Color(Vector3::lerp(overlayColor.xyz(), m_overlayColor.xyz(), m_overlayColor.w), overlayColor.w);
-
-
 }
 
-void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* viewPoint)
-{
+void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* viewPoint) {
     {
         //float timeOfDay = m_timeOfDay;
 
@@ -424,7 +411,6 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         m_material->setColor(_TT("_Curve_AllOverlayColor"), m_fixedAllOverlayColor);
         m_material->setColor(_TT("_Curve_BaseCloudColorAndIntensity"), m_fixedBaseCloudColorAndIntensity);
 
-
         m_material->setFloat(_TT("_Main_Clouds_Falloff_Intensity"), 0.8);
         m_material->setFloat(_TT("_Second_Clouds_Falloff_Intensity"), 0.8);
         m_material->setFloat(_TT("_ThirdCloudsIntensity"), 0.25);
@@ -436,7 +422,6 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         //m_material->setFloat(_TT("_ThirdCloudsIntensity", 0.0);
         //m_material->setFloat(_TT("_AllCloudsFalloffIntensity", 1.4);
         //m_material->setFloat(_TT("_AllCloudsIntensity", 0.6);
-
 
         //m_material->setFloat(_TT("_Main_Clouds_Falloff_Intensity", 0.0);
         //m_material->setFloat(_TT("_Second_Clouds_Falloff_Intensity", 0.0);
@@ -483,8 +468,7 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         */
     }
 
-
-    Matrix transform = Matrix::makeScaling(viewPoint->farClip - 0.0001);    // 視界最遠まで拡大してみる
+    Matrix transform = Matrix::makeScaling(viewPoint->farClip - 0.0001); // 視界最遠まで拡大してみる
     transform.translate(viewPoint->viewPosition);
 
     for (const auto& node : m_model->meshNodes()) {
@@ -503,7 +487,5 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
     }
 }
 
-
 } // namespace detail
 } // namespace ln
-

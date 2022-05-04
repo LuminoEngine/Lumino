@@ -3,11 +3,12 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include "../../Graphics/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 
@@ -183,7 +184,7 @@ SpriteComponent::SpriteComponent()
     , m_size(-1.0f, -1.0f)
     , m_anchorPoint(0.5, 0.5)
 	, m_frameIndex(0)
-    , m_flipFlags(detail::SpriteFlipFlags::None)
+    , m_flipFlags(SpriteFlipFlags::None)
     , m_pixelsParUnit(0.0f)
     , m_billboardType(BillboardType::None)
 {
@@ -316,9 +317,12 @@ void SpriteComponent::onRender(RenderingContext* context)
     const SpriteBaseDirection frontDir = SpriteBaseDirection::ZMinus;
 #endif
 
-	context->drawSprite(
+    auto r = SpriteRenderer::get();
+    r->begin(context, m_material);
+	r->drawSprite(
 		Matrix(), actualSize, anchorPoint, uvRect, Color::White,
-        frontDir, m_billboardType, m_flipFlags, m_material);
+        frontDir, m_billboardType, m_flipFlags);
+    r->end();
 
 #else
     Vector2 anchorPoint = m_anchorPoint;

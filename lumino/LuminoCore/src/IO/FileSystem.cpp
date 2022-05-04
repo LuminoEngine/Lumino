@@ -192,7 +192,10 @@ ByteBuffer FileSystem::readAllBytes(const StringView& filePath) {
     detail::GenericStaticallyLocalPath<PathChar> localPath(filePath.data(), filePath.length());
     const PathChar mode[] = { 'r', 'b', '\0' };
     FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-    if (LN_ENSURE_IO(fp, ln::format(_TT("Access failed: {0}"), filePath))) return ByteBuffer();
+    if (!fp) {
+        LN_ERROR(ln::format(U"Access failed: {}", filePath));
+        return ByteBuffer();
+    }
 
     size_t size = (size_t)detail::FileSystemInternal::getFileSize(fp);
     ByteBuffer buffer(size);

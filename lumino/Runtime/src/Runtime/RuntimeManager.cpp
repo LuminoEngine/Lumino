@@ -105,6 +105,7 @@ bool RuntimeManager::init(const Settings& settings) {
     assert(!EngineContext2::instance()->objectEventListener);
     EngineContext2::instance()->objectEventListener = this;
 
+
     LN_LOG_DEBUG("RuntimeManager Initialization finished.");
     return true;
 }

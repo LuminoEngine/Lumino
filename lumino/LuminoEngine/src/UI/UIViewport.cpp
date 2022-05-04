@@ -1,13 +1,14 @@
 ﻿#include "Internal.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
-#include "../../../Graphics/src/GraphicsManager.hpp"
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoEngine/UI/RoutingRenderView.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/RenderView.hpp>
+#include <LuminoGraphics/Rendering/CommandList.hpp>
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "UIManager.hpp"
 
@@ -54,8 +55,7 @@ void UIViewport::onDispose(bool explicitDisposing)
 	UIContainerElement::onDispose(explicitDisposing);
 }
 
-void UIViewport::addRenderView(RenderView* view)
-{
+void UIViewport::addRenderView(RoutingRenderView* view) {
 	if (LN_REQUIRE(view)) return;
 	if (LN_REQUIRE(!view->m_parentViewport)) return;
 
@@ -69,8 +69,7 @@ void UIViewport::addRenderView(RenderView* view)
 	view->m_parentViewport = this;
 }
 
-void UIViewport::removeRenderView(RenderView* view)
-{
+void UIViewport::removeRenderView(RoutingRenderView* view) {
     m_renderViews.remove(view);
 
 	// TODO: dynamic_cast じゃなくて flag とか で判定
@@ -192,7 +191,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 
 	//context->pushState();
     for (auto& view : m_renderViews) {
-        view->render(graphicsContext, m_primaryTarget);
+        view->render(graphicsContext, /*context, */m_primaryTarget);
     }
     //m_imageEffectRenderer->render(context, m_primaryTarget);
 	//context->popState();

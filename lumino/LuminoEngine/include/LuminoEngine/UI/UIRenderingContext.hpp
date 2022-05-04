@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include "../Rendering/Drawing.hpp"
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/Drawing.hpp>
 
 namespace ln {
 class UIElement;
@@ -13,6 +13,16 @@ class UITheme;
 class UIRenderingContext
 	: public RenderingContext
 {
+    /*
+	RenderingContext と UIRenderingContext は分けるべきか？
+	----------
+	機能的にはまとめしまってもよい。でも、UI と Scene の境界で分けるようにしたい。
+	ただ、RenderView で分ける、というよりは、エディタコンテンツか、ランタイムコンテンツか、で分けたい気持ち。
+	例えばフレームデバッガを使うときは、ランタイムコンテンツだけに対して使いたい。
+	なので、最低限、次の2つで分けることにしてみたい。
+	- UIFrameWindow 
+	- Scene と、Scene 内の UI
+	*/
 public:
     UIRenderingContext();
 

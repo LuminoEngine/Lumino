@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Animation/Common.hpp"
+#include <LuminoGraphics/Animation/Common.hpp>
 #include "UIElement.hpp"
 #include "UIStyleAnimation.hpp"
 

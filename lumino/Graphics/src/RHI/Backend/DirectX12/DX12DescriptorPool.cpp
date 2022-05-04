@@ -150,6 +150,9 @@ void DX12Descriptor::onUpdateData(const ShaderDescriptorTableUpdateInfo& data)
 
 bool DX12Descriptor::allocateInternal()
 {
+    // ID3D12DescriptorHeap の概念図は次のリンク先がわかりやすい
+    // https://yasyamanoi.github.io/BaseDx12/1105.html
+
     const DX12ShaderPassLayoutInfo& layout = m_pool->shaderPass()->layoutInfo();
 
     m_heapCount = 0;
@@ -177,11 +180,6 @@ bool DX12Descriptor::allocateInternal()
                 return false;
             }
         }
-
-        if (layout.vs_CBV_Count() > 0 && layout.vs_SRV_Count() > 0) {
-            // Allocator は (layout.cbvCount + layout.srvCount) の倍数で作ってあるので、必ず同じ Heap から Allocate されるはず
-            assert(m_descriptorHandles2[DescriptorParamIndex_VS_CBV].descriptorHeap == m_descriptorHandles2[DescriptorParamIndex_VS_SRV].descriptorHeap);
-        }
         
         // 'b' 't' の2つの register は同一の TYPE (D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) を使用する必要がある。
         // 同じ TYPE を持つ複数の Heap は SetDescriptorHeaps() で設定することができないため、
@@ -204,37 +202,87 @@ bool DX12Descriptor::allocateInternal()
             m_heapCount++;
         }
         else {
-            // 'b' 't' 両方未使用
+            // 'b' 't' 両方未使用。でも先頭の if でガードしているので、ここに来ることはないはず。
+            LN_UNREACHABLE();
         }
 
-        //if (handles_CBV.descriptorHeap == handles_SRV.descriptorHeap) {
-        //    m_heaps[m_heapCount] = handles_CBV.descriptorHeap;
-        //    m_heapCount++;
-        //}
-        //else {
-        //    m_heaps[m_heapCount] = handles_CBV.descriptorHeap;
-        //    m_heapCount++;
-        //    m_heaps[m_heapCount] = handles_SRV.descriptorHeap;
-        //    m_heapCount++;
-        //}
-    }
-    if (layout.vs_Sampler_Count() > 0) {
-        if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.vs_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_VS_Sampler])) {
-            return false;
+#ifdef LN_DEBUG
+        // 事後検証。 CBV,SRV,UAV は同じ ID3D12DescriptorHeap から Allocate されていなければならない。
+        {
+            ID3D12DescriptorHeap* base = m_heaps[m_heapCount - 1];
+            if (m_descriptorHandles2[DescriptorParamIndex_VS_CBV].descriptorHeap) {
+                assert(m_descriptorHandles2[DescriptorParamIndex_VS_CBV].descriptorHeap == base);
+            }
+            if (m_descriptorHandles2[DescriptorParamIndex_VS_SRV].descriptorHeap) {
+                assert(m_descriptorHandles2[DescriptorParamIndex_VS_SRV].descriptorHeap == base);
+            }
+            if (m_descriptorHandles2[DescriptorParamIndex_PS_CBV].descriptorHeap) {
+                assert(m_descriptorHandles2[DescriptorParamIndex_PS_CBV].descriptorHeap == base);
+            }
+            if (m_descriptorHandles2[DescriptorParamIndex_PS_SRV].descriptorHeap) {
+                assert(m_descriptorHandles2[DescriptorParamIndex_PS_SRV].descriptorHeap == base);
+            }
         }
-        m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].descriptorHeap;
-        m_heapCount++;
+#endif
     }
-    if (layout.ps_Sampler_Count() > 0) {
-        if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.ps_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_PS_Sampler])) {
-            return false;
-        }
 
-        if (m_heaps[m_heapCount] != m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].descriptorHeap) {
+    
+    if (layout.vs_Sampler_Count() > 0 || layout.ps_Sampler_Count() > 0) {
+        if (layout.vs_Sampler_Count() > 0) {
+            if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.vs_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_VS_Sampler])) {
+                return false;
+            }
+        }
+        if (layout.ps_Sampler_Count() > 0) {
+            if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.ps_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_PS_Sampler])) {
+                return false;
+            }
+        }
+        
+        if (layout.vs_Sampler_Count() > 0) {
+            m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].descriptorHeap;
+            m_heapCount++;
+        }
+        else if (layout.ps_Sampler_Count() > 0) {
             m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].descriptorHeap;
             m_heapCount++;
         }
+        else {
+            // 先頭の if でガードしているので、ここに来ることはないはず。
+            LN_UNREACHABLE();
+        }
+
+#ifdef LN_DEBUG
+        // 事後検証。 Sampler も、同じ ID3D12DescriptorHeap から Allocate されていなければならない。
+        {
+            ID3D12DescriptorHeap* base = m_heaps[m_heapCount - 1];
+            if (m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].descriptorHeap) {
+                assert(m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].descriptorHeap == base);
+            }
+            if (m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].descriptorHeap) {
+                assert(m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].descriptorHeap == base);
+            }
+        }
+#endif
     }
+
+    //if (layout.vs_Sampler_Count() > 0) {
+    //    if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.vs_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_VS_Sampler])) {
+    //        return false;
+    //    }
+    //    m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_VS_Sampler].descriptorHeap;
+    //    m_heapCount++;
+    //}
+    //if (layout.ps_Sampler_Count() > 0) {
+    //    if (!m_pool->descriptorHeapAllocator_SAMPLER()->allocate(layout.ps_Sampler_Count(), &m_descriptorHandles2[DescriptorParamIndex_PS_Sampler])) {
+    //        return false;
+    //    }
+
+    //    if (m_heaps[m_heapCount] != m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].descriptorHeap) {
+    //        m_heaps[m_heapCount] = m_descriptorHandles2[DescriptorParamIndex_PS_Sampler].descriptorHeap;
+    //        m_heapCount++;
+    //    }
+    //}
 
     return true;
 }

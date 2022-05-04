@@ -47,10 +47,10 @@ dotnet run -- MakeNativePackage
 ```
 
 ```
-cp build/Emscripten/EngineInstall/lib/libLuminoEngine-static.a build/NativePackage/Engine/Emscripten/lib/libLuminoEngine-static.a
+cp build/Emscripten/EngineInstall/lib/libLuminoEngine.a build/NativePackage/Engine/Emscripten/lib/libLuminoEngine.a
 or
 cp build/Emscripten/src/LuminoCore/libLuminoCore.a build/Emscripten/emsdk/upstream/emscripten/system/local/LuminoEngine/lib/libLuminoCore.a
-cp build/Emscripten/src/LuminoEngine/libLuminoEngine-static.a build/Emscripten/emsdk/upstream/emscripten/system/local/LuminoEngine/lib/libLuminoEngine-static.a
+cp build/Emscripten/src/LuminoEngine/libLuminoEngine.a build/Emscripten/emsdk/upstream/emscripten/system/local/LuminoEngine/lib/libLuminoEngine.a
 ```
 
 ```

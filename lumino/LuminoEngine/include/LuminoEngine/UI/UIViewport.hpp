@@ -2,8 +2,8 @@
 #include "UIContainerElement.hpp"
 
 namespace ln {
-class RenderView;
 class PostEffect;
+class RoutingRenderView;
 namespace detail {
 class UIManager;
 class PostEffectRenderer;
@@ -25,8 +25,8 @@ class UIViewport
 	: public UIContainerElement
 {
 public:
-    void addRenderView(RenderView* view);
-    void removeRenderView(RenderView* view);
+    void addRenderView(RoutingRenderView* view);
+    void removeRenderView(RoutingRenderView* view);
 
     //void addPostEffect(PostEffect* effect);
     //void removePostEffect(PostEffect* effect);
@@ -62,7 +62,7 @@ private:
 
     detail::UIManager* m_manager;
     //Ref<detail::PostEffectRenderer> m_imageEffectRenderer;
-    List<Ref<RenderView>> m_renderViews;
+    List<Ref<RoutingRenderView>> m_renderViews;
 	//Ref<RenderPass> m_renderPass;
     Size m_actualViewboxSize;
     Ref<Material> m_blitMaterial;

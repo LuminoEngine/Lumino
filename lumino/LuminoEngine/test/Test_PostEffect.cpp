@@ -39,10 +39,6 @@ TEST_F(Test_PostEffect, SSR) {
         .material(plane1Material)
         .buildInto();
 
-    //auto box1Material = Material::create();
-    //box1Material->setColor(Color::Green);
-    //box1Material->setRoughness(1.0f);
-    //box1Material->setMetallic(0.0f);
     auto box1Material = Material::With()
                             .color(Color::Green)
                             .roughness(1.0f)

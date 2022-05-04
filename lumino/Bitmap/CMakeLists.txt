@@ -40,11 +40,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 # libpng の static 版は名前が違う。
-# TODO: とりあえず wasm でリンクしたいのでこの条件にしているが、「ライブラリは static link するか」といったフラグを用意したほうがよさそう。
-if (LN_EMSCRIPTEN)
-    target_link_libraries(${PROJECT_NAME} PRIVATE png_static)
-else()
+if (LN_LINK_CMAKE_SHARED_LIB_PACKAGE)
     target_link_libraries(${PROJECT_NAME} PRIVATE png)
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE png_static)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

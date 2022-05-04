@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Mesh/MeshModel.hpp>
-#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoGraphics/Mesh/MeshModel.hpp>
+#include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
-#include "../../Mesh/MeshManager.hpp"
+#include "../../Graphics/src/Mesh/MeshManager.hpp"
 
 namespace ln {
 
@@ -55,7 +55,7 @@ bool StaticMesh::init(MeshModel* model)
 
 bool StaticMesh::init(const StringView& filePath, MeshImportSettings* settings)
 {
-    auto model = detail::EngineDomain::meshManager()->createSkinnedMeshModel(
+    auto model = detail::MeshManager::instance()->createSkinnedMeshModel(
         filePath, settings ? settings : MeshImportSettings::defaultSettings());
     if (!init(model)) return false;
     return true;

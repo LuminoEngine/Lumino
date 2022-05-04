@@ -28,13 +28,13 @@ static Ref<ln::CoreApplication> g_app = nullptr;
 //    detail::ApplicationHelper::init(g_app);
 //}
 //
-int Win32PlatformInterface::WinMain(CoreApplication* app)
-{
-    g_app = app;
-	AppIntegration::run(g_app);
-    g_app = nullptr;
-	return 0;
-}
+//int Win32PlatformInterface::WinMain(CoreApplication* app)
+//{
+//    g_app = app;
+//	AppIntegration::run(g_app);
+//    g_app = nullptr;
+//	return 0;
+//}
 
 //ln::Path Win32PlatformInterface::findParentDirectoryContainingSpecifiedFile(StringView file)
 //{

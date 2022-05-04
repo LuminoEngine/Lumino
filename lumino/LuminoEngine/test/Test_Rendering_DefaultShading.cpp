@@ -25,7 +25,7 @@ TEST_F(Test_Rendering_DefaultShading, Basic)
 
         TestEnv::updateFrame();
 
-        auto bmp = TestEnv::capture();
+        auto bmp = detail::TextureInternal::readData(TestEnv::mainWindowSwapChain()->currentBackbuffer());
         ASSERT_EQ(ColorI(255, 255, 255, 255), bmp->getPixel32(50, 50));
     }
 
@@ -37,7 +37,7 @@ TEST_F(Test_Rendering_DefaultShading, Basic)
 
         TestEnv::updateFrame();
 
-        auto bmp = TestEnv::capture();
+        auto bmp = detail::TextureInternal::readData(TestEnv::mainWindowSwapChain()->currentBackbuffer());
         ASSERT_EQ(ColorI(0, 0, 0, 255), bmp->getPixel32(50, 50));
     }
 

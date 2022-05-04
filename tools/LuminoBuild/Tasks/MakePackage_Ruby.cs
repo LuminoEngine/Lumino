@@ -23,6 +23,8 @@ namespace LuminoBuild.Tasks
                 {
                     Utils.CallProcessShell("bundle", "install");    // bundle.cmd
                     Utils.CallProcessShell("rake", "build");
+
+                    // 実際にインストールしてコンパイルできるかテストする
                     Utils.CallProcessShell("gem", "install " + Directory.EnumerateFiles("pkg", "*.gem").First());
                 }
             }

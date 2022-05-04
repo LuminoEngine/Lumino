@@ -5,7 +5,7 @@
 #include <LuminoGraphics/RHI/Shader.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
 #include <LuminoGraphics/RHI/GraphicsExtension.hpp>
-#include "GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "RHI/RenderTargetTextureCache.hpp"
 #include "RHI/Backend/OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
@@ -23,7 +23,8 @@
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "RHI/StreamingBufferAllocator.hpp"
 #include "RHI/RenderPassCache.hpp"
-#include "Rendering/RenderingManager2.hpp"
+//#include "Rendering/RenderingManager2.hpp"
+#include "Mesh/MeshManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -280,9 +281,11 @@ bool GraphicsManager::init(const Settings& settings) {
 #endif
 
     {
-        RenderingManager2::Settings settings;
-        m_renderingManager = makeURef<RenderingManager2>();
-        if (!m_renderingManager->init(settings)) {
+        MeshManager::Settings settings;
+        settings.graphicsManager = this;
+        settings.assetManager = m_assetManager;
+        m_meshManager = makeURef<MeshManager>();
+        if (!m_meshManager->init(settings)) {
             return false;
         }
     }
@@ -305,9 +308,9 @@ void GraphicsManager::dispose() {
         m_renderingQueue = nullptr;
     }
 
-    if (m_renderingManager) {
-        m_renderingManager->dispose();
-        m_renderingManager = nullptr;
+    if (m_meshManager) {
+        m_meshManager->dispose();
+        m_meshManager = nullptr;
     }
 
     m_shaderCache.dispose();
@@ -457,6 +460,20 @@ bool GraphicsManager::checkVulkanSupported() {
 #else
     return false;
 #endif
+}
+
+void GraphicsManager::selectDefaultSystem(GraphicsAPI* api, WindowSystem* ws) {
+    if (Environment::isRuntimePlatform(RuntimePlatform::Windows)) {
+        *api = GraphicsAPI::DirectX12;
+        *ws = WindowSystem::Native;
+    }
+    else if (Environment::isRuntimePlatform(RuntimePlatform::Web)) {
+        *api = GraphicsAPI::OpenGL;
+        *ws = WindowSystem::GLFWWithOpenGL;
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+    }
 }
 
 StreamingBufferAllocatorManager* GraphicsManager::obtainVertexBufferStreamingAllocatorManager(size_t elementSize) {

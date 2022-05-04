@@ -11,17 +11,17 @@ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-    // CI 環境でテストをスキップする
-    if (!ln::detail::checkGraphicsSupport()) {
-        printf("Info: The driver does not appear to support Graphics. Skip LuminoEngine unit tests.\n");
-        return 0;
-    }
+    //// CI 環境でテストをスキップする
+    //if (!ln::detail::checkGraphicsSupport()) {
+    //    printf("Info: The driver does not appear to support Graphics. Skip LuminoEngine unit tests.\n");
+    //    return 0;
+    //}
 
 	if (argc == 1) {
 		char* testArgs[] = {
 			argv[0],
 			"--gtest_break_on_failure",
-			//"--gtest_filter=Test_Graphics_LowLevelRendering.*"
+			//"--gtest_filter=Test_Rendering_BoxElement.Background"
 		};
 		argc = sizeof(testArgs) / sizeof(char*);
 		argv = testArgs;

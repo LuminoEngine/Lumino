@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoEngine/Scene/Mesh/InstancedMeshes.hpp>
-#include "../../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 

@@ -3,7 +3,7 @@
 #include "Common.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
-#include "../Rendering/Common.hpp"
+#include <LuminoGraphics/Rendering/Common.hpp>
 
 namespace ln {
 class Texture;

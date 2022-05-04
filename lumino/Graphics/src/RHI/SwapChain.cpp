@@ -1,13 +1,13 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/DepthBuffer.hpp>
 #include <LuminoGraphics/RHI/SwapChain.hpp>
 #include <LuminoGraphics/RHI/RenderPass.hpp>
 #include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include "Backend/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/RHI/detail/RenderingCommandList.hpp>

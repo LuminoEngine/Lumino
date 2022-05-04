@@ -2,12 +2,12 @@
 #include "Internal.hpp"
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/CommandList.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/CommandList.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 
@@ -73,9 +73,9 @@ bool SSRPostEffectCore::init(Material* compositeMaterial)
 
 bool SSRPostEffectCore::prepare(RenderView* renderView, CommandList* context, RenderTargetTexture* source)
 {
-    Texture* viewNormalMap = renderView->gbuffer(GBuffer::ViewNormalMap);
-    Texture* viewDepthMap = renderView->gbuffer(GBuffer::ViewDepthMap);
-    Texture* viewMaterialMap = renderView->gbuffer(GBuffer::ViewMaterialMap);
+    Texture* viewNormalMap = renderView->builtinRenderTexture(BuiltinRenderTextureType::ViewNormalMap);
+    Texture* viewDepthMap = renderView->builtinRenderTexture(BuiltinRenderTextureType::ViewDepthMap);
+    Texture* viewMaterialMap = renderView->builtinRenderTexture(BuiltinRenderTextureType::ViewMaterialMap);
 
     if (viewNormalMap && viewDepthMap && viewMaterialMap) {
 

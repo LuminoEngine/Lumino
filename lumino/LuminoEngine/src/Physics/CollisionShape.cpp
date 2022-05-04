@@ -11,7 +11,7 @@
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
+#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include "BulletUtils.hpp"
 
 namespace ln {

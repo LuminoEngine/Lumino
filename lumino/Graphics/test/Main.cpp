@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
         char* testArgs[] = {
             argv[0],
             "--gtest_break_on_failure",
-            "--gtest_filter=Test_Shader_ShaderCompiler.ShaderVariant"
+            //"--gtest_filter=Test_Shader_ShaderCompiler.ShaderVariant"
         };
         argc = sizeof(testArgs) / sizeof(char*);
         argv = testArgs;

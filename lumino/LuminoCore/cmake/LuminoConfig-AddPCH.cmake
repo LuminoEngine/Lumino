@@ -7,39 +7,60 @@
 # e.g.) ln_add_pch(LuminoCore ${LN_SOURCES} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 function(ln_add_pch project_name header_file_path source_file_path)
 
-	get_filename_component(header_file_name ${header_file_path} NAME)
+    get_filename_component(header_file_name ${header_file_path} NAME)
 
-	if (MSVC)
-		set(ln_compile_flags
-			#"/Yu\"${header_file_name}\" /FI\"${header_file_name}\""	# use PCH, ForcedIncludeFiles
-			"/Yu\"${header_file_name}\""
-		)
-		#target_compile_definitions(${project_name} PUBLIC /FI\"${header_file_name}\")
-		target_compile_options(${project_name} PRIVATE /FI\"${header_file_name}\")
+    if (MSVC)
+        set(ln_compile_flags
+            #"/Yu\"${header_file_name}\" /FI\"${header_file_name}\""    # use PCH, ForcedIncludeFiles
+            "/Yu\"${header_file_name}\""
+        )
+        #target_compile_definitions(${project_name} PUBLIC /FI\"${header_file_name}\")
+        target_compile_options(${project_name} PRIVATE /FI\"${header_file_name}\")
 
-	else()
-		# https://github.com/nanoant/CMakePCHCompiler/blob/master/CMakePCHCompiler.cmake
+    else()
+        # https://github.com/nanoant/CMakePCHCompiler/blob/master/CMakePCHCompiler.cmake
 
-		get_filename_component(result ${header_file_path} ABSOLUTE)
+        get_filename_component(result ${header_file_path} ABSOLUTE)
 
-		# force include header
-		set(ln_compile_flags "-include \"${result}\"")
-	endif()
+        # force include header
+        set(ln_compile_flags "-include \"${result}\"")
+    endif()
 
 
-	# get source files from project (referred LLVM)
-	get_property(source_files TARGET ${project_name} PROPERTY SOURCES)
+    # get source files from project (referred LLVM)
+    get_property(source_files TARGET ${project_name} PROPERTY SOURCES)
 
-	# set ln_compile_flags to all *.cpp
-	foreach (file ${source_files})
-		if (${file} MATCHES ".+\\.cpp")
-			set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})
-		endif()
-	endforeach()
+    # set ln_compile_flags to all *.cpp
+    foreach (file ${source_files})
+        if (${file} MATCHES ".+\\.cpp")
+            set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})
+        endif()
+    endforeach()
 
-	# create .pch config
-	if (MSVC)
-		set_source_files_properties(${source_file_path} PROPERTIES COMPILE_FLAGS "/Yc\"${header_file_name}\"")
-	endif()
+    # create .pch config
+    if (MSVC)
+        set_source_files_properties(${source_file_path} PROPERTIES COMPILE_FLAGS "/Yc\"${header_file_name}\"")
+    endif()
 
 endfunction()
+
+macro(ln_use_msvc_static_runtime_library)
+    if (MSVC)
+        foreach (flag CMAKE_C_FLAGS_DEBUG_INIT CMAKE_C_FLAGS_MINSIZEREL_INIT CMAKE_C_FLAGS_RELEASE_INIT CMAKE_C_FLAGS_RELWITHDEBINFO_INIT CMAKE_CXX_FLAGS_DEBUG_INIT CMAKE_CXX_FLAGS_MINSIZEREL_INIT CMAKE_CXX_FLAGS_RELEASE_INIT CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT)
+            if (${flag} MATCHES "/MD")
+                string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+            endif()
+            if (${flag} MATCHES "/MDd")
+                string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
+            endif()
+        endforeach()
+        foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
+            if (${flag} MATCHES "/MD")
+                string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+            endif()
+            if (${flag} MATCHES "/MDd")
+                string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
+            endif()
+        endforeach()
+    endif()
+endmacro()

@@ -4,8 +4,8 @@
 #include <LuminoGraphics/RHI/VertexLayout.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "PhysicsDebugRenderer.hpp"
 
 namespace ln {

@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/MixHash.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
@@ -10,7 +12,6 @@
 #include <LuminoGraphics/RHI/Shader.hpp>
 #include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"
-#include "GraphicsManager.hpp"
 #include "ShaderCompiler/UnifiedShaderCompiler.hpp"
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "ShaderCompiler/ShaderTranspiler.hpp"
@@ -223,8 +224,7 @@ void Shader::createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, Diagn
     m_descriptor = makeObject<ShaderDefaultDescriptor>(this);
 
     for (const auto& kokageTech : unifiedShader->techniques()) {
-        auto tech = makeObject<ShaderTechnique>(kokageTech);
-        tech->setOwner(this);
+        auto tech = makeObject<ShaderTechnique>(this, kokageTech);
         m_techniques->add(tech);
 
         for (const auto& kokagePassId : kokageTech->passes) {
@@ -281,12 +281,17 @@ ShaderTechnique* Shader::findTechnique(const StringView& name) const {
     return nullptr;
 }
 
-ShaderTechnique* Shader::findTechniqueByVariantKey(uint64_t key) const {
+ShaderTechnique* Shader::findTechniqueByVariantKey(uint32_t key, bool strict) const {
     // TODO: ソート済み配列を二分探索
     for (auto& tech : m_techniques) {
         if (tech->m_variantKey == key) {
             return tech;
         }
+    }
+
+    if (!strict) {
+        // 全フラグ OFF または最初の値である者を使う
+        return m_techniques[0];
     }
     return nullptr;
 }
@@ -326,6 +331,12 @@ Ref<detail::ShaderSecondaryDescriptor> Shader::acquireDescriptor() {
     return m_descriptor2;
 }
 
+void Shader::addAffectVariantKey(uint32_t crc32key) {
+    if (!m_affectVariantKeys.contains(crc32key)) {
+        m_affectVariantKeys.push(crc32key);
+    }
+}
+
 // TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const kokage::ShaderTechniqueClass& techniqueClass) const {
     ShaderTechnique* defaultTech = nullptr;
@@ -349,14 +360,16 @@ ShaderTechnique* Shader::findTechniqueByClass(const kokage::ShaderTechniqueClass
 // ShaderTechnique
 
 ShaderTechnique::ShaderTechnique()
-    : m_passes(makeList<Ref<ShaderPass>>()) {
+    : m_owner(nullptr)
+    , m_passes(makeList<Ref<ShaderPass>>()) {
 }
 
 ShaderTechnique::~ShaderTechnique() {
 }
 
-void ShaderTechnique::init(const kokage::UnifiedShaderTechnique* kokageTech) {
+void ShaderTechnique::init(Shader* owner, const kokage::UnifiedShaderTechnique* kokageTech) {
     Object::init();
+    m_owner = owner;
     m_name = String::fromUtf8(kokageTech->name);
     m_techniqueClass = kokageTech->techniqueClass;
     kokage::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
@@ -366,6 +379,13 @@ void ShaderTechnique::init(const kokage::UnifiedShaderTechnique* kokageTech) {
         // 検索よりもキーの前処理に時間がかかってしまう。
         // この Hash はシンボル名ごとの Hash の単純な加算結果なので、並び順も気にせず、整数の比較だけで検索できる。
         m_variantKey = kokage::VariantSet::calcHash(kokageTech->variantSet.values);
+#ifdef LN_DEBUG
+        m_variantKeys = kokageTech->variantSet.values;
+#endif
+
+        for (const auto& value : kokageTech->variantSet.values) {
+            owner->addAffectVariantKey(detail::MixHash::computeSingle(value.data(), value.length()));
+        }
     }
 }
 

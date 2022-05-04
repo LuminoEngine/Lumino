@@ -19,7 +19,6 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
-#include "../../../Graphics/src/GraphicsManager.hpp"
 #include "../Scene/SceneManager.hpp"
 
 namespace ln {

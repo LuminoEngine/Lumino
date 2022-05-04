@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
@@ -97,7 +97,7 @@ Ref<Texture2DPromise> Texture2D::loadAsync(const StringView& filePath)
     // TODO: 排他処理が必要
     LN_NOTIMPLEMENTED();
 
-    return Texture2DPromise::run([filePath](Texture2DPromise* p) {
+    return Texture2DPromise::run([filePath](Texture2DPromise::Context* p) {
         p->resolve(load(filePath));
     });
 }
@@ -534,7 +534,7 @@ void RenderTargetTexture::onDispose(bool explicitDisposing)
     Texture::onDispose(explicitDisposing);
 }
 
-Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsCommandList* context) {
+Ref<Bitmap2D> RenderTargetTexture::readData() {
     bool modified = false;
     detail::RHIResource* rhiObject = resolveRHIObject(nullptr, &modified);
 

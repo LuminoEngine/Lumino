@@ -17,7 +17,5 @@ public:
 LUMINO_APP(App);
 
 int main() {
-    ::LuminoConfigureApplication();
-    auto* app = ::LuminoCreateApplicationInstance();
-    AppIntegration::run(app);
+    AppIntegration::run(LuminoConfigureApplication, LuminoCreateApplicationInstance);
 }

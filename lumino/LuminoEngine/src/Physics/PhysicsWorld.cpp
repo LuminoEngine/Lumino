@@ -19,7 +19,7 @@
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
 #include <bullet/LinearMath/btDefaultMotionState.h>
 
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsObject.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/Joint.hpp>

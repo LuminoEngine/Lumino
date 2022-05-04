@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Base/MixHash.hpp>
 #include "../ShaderHelper.hpp"
 
 namespace ln {
@@ -12,16 +13,15 @@ class VariantSet {
 public:
     std::vector<std::string> values;
 
+    // ary はソート済みであること。
     template<class TStringArray>
-    static uint64_t calcHash(const TStringArray& ary) {
-        const uint32_t* table = detail::CRCHashInternal::getCRCTable();
-        uint64_t result = 0;
+    static uint32_t calcHash(const TStringArray& ary) {
+        const uint32_t* table = ln::crc32_table;
+        detail::MixHash result;
         for (const auto& str : ary) {
-            for (size_t i = 0; i < str.size(); i++) {
-                result += table[static_cast<uint8_t>(str[i])];
-            }
+            result.addHash(detail::MixHash::computeSingle(str.data(), str.length()));
         }
-        return result;
+        return result.value();
     }
 };
 

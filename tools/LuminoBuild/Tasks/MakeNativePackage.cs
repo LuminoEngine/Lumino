@@ -20,7 +20,7 @@ namespace LuminoBuild.Tasks
 
             foreach (var target in BuildEnvironment.Targets.Where(x => x.Package))
             {
-                string sourceBuildDir = Path.Combine(builder.BuildDir, target.Name);
+                string sourceBuildDir = Path.Combine(builder.BuildDir, "installed", target.Name);
                 if (Directory.Exists(sourceBuildDir))
                 {
                     Console.WriteLine($"{target.Name}...");
@@ -28,70 +28,76 @@ namespace LuminoBuild.Tasks
                     string destinationEngineRoot = Path.Combine(destinationRootDir, "Engine", target.Name);
                     string destinationEngineIncludeDir = Path.Combine(destinationEngineRoot, "include");
                     string destinationEngineLibDir = Path.Combine(destinationEngineRoot, "lib");
-                    string destinationEngineBinDir = Path.Combine(destinationEngineRoot, "bin");
-                    Directory.CreateDirectory(destinationEngineRoot);
-                    Directory.CreateDirectory(destinationEngineIncludeDir);
-                    Directory.CreateDirectory(destinationEngineLibDir);
+                    //string destinationEngineBinDir = Path.Combine(destinationEngineRoot, "bin");
+                    //Directory.CreateDirectory(destinationEngineRoot);
+                    //Directory.CreateDirectory(destinationEngineIncludeDir);
+                    //Directory.CreateDirectory(destinationEngineLibDir);
 
                     string engineInstallDir = Path.Combine(builder.BuildDir, target.Name, BuildEnvironment.EngineInstallDirName);
 
-                    // Engine include
-                    {
-                        Utils.CopyDirectory(
-                            Path.Combine(engineInstallDir, "include"),
-                            Path.Combine(destinationEngineIncludeDir));
-                    }
+                    Utils.CopyDirectory(sourceBuildDir, destinationEngineRoot);
 
-                    // Engine lib
-                    {
-                        var srcDir = Path.Combine(engineInstallDir, "lib");
-                        Utils.CopyDirectory(srcDir, destinationEngineLibDir, recursive: false);
-                        if (fileMoving)
-                            Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
-                    }
+                    //// Engine include
+                    //{
+                    //    Utils.CopyDirectory(
+                    //        Path.Combine(engineInstallDir, "include"),
+                    //        Path.Combine(destinationEngineIncludeDir));
+                    //}
 
-                    // Engine bin
-                    {
-                        var srcDir = Path.Combine(engineInstallDir, "bin");
-                        if (Directory.Exists(srcDir))
-                        {
-                            Utils.CopyDirectory(srcDir, destinationEngineBinDir, recursive: false);
-                            if (fileMoving)
-                                Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
-                        }
-                    }
+                    //// Engine lib
+                    //{
+                    //    var srcDir = Path.Combine(engineInstallDir, "lib");
+                    //    Utils.CopyDirectory(srcDir, destinationEngineLibDir, recursive: false);
+                    //    if (fileMoving)
+                    //        Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                    //}
+
+                    //// Engine bin
+                    //{
+                    //    var srcDir = Path.Combine(engineInstallDir, "bin");
+                    //    if (Directory.Exists(srcDir))
+                    //    {
+                    //        Utils.CopyDirectory(srcDir, destinationEngineBinDir, recursive: false);
+                    //        if (fileMoving)
+                    //            Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                    //    }
+                    //}
 
                     // External libs
-                    var externalInstallDir = Path.Combine(builder.BuildDir, target.Name, "ExternalInstall");
-                    foreach (var dir in Directory.EnumerateDirectories(externalInstallDir))
-                    {
-                        var srcDir = Path.Combine(dir, "lib");
-                        if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
-                        {
-                            Console.WriteLine($"Copy {srcDir} to {destinationEngineLibDir}");
+                    var externalInstallDir = Path.Combine(builder.VcpkgDir, "installed", target.Name);
+                    Utils.CopyDirectory(Path.Combine(externalInstallDir, "include"), destinationEngineIncludeDir);
+                    Utils.CopyDirectory(Path.Combine(externalInstallDir, "lib"), destinationEngineLibDir);
 
-                            foreach (var lib in Directory.EnumerateFiles(srcDir, target.LibraryExt, SearchOption.TopDirectoryOnly))
-                            {
-                                if (fileMoving)
-                                    File.Move(lib, Path.Combine(destinationEngineLibDir, Path.GetFileName(lib)));
-                                else
-                                    File.Copy(lib, Path.Combine(destinationEngineLibDir, Path.GetFileName(lib)), true);
-                            }
-                        }
-                    }
+
+                    //foreach (var dir in Directory.EnumerateDirectories(externalInstallDir))
+                    //{
+                    //    var srcDir = Path.Combine(dir, "lib");
+                    //    if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
+                    //    {
+                    //        Console.WriteLine($"Copy {srcDir} to {destinationEngineLibDir}");
+
+                    //        foreach (var lib in Directory.EnumerateFiles(srcDir, target.LibraryExt, SearchOption.TopDirectoryOnly))
+                    //        {
+                    //            if (fileMoving)
+                    //                File.Move(lib, Path.Combine(destinationEngineLibDir, Path.GetFileName(lib)));
+                    //            else
+                    //                File.Copy(lib, Path.Combine(destinationEngineLibDir, Path.GetFileName(lib)), true);
+                    //        }
+                    //    }
+                    //}
 
                     // cmake
-                    {
-                        Utils.CopyFile2(
-                            Path.Combine(builder.RootDir, "src", "LuminoConfig.cmake"),
-                            Path.Combine(destinationEngineRoot, "LuminoConfig.cmake"));
-                        Utils.CopyFile2(
-                            Path.Combine(builder.RootDir, "src", "LuminoCommon.cmake"),
-                            Path.Combine(destinationEngineRoot, "LuminoCommon.cmake"));
-                        Utils.CopyFile2(
-                            Path.Combine(builder.RootDir, "external", "ImportExternalLibraries.cmake"),
-                            Path.Combine(destinationEngineRoot, "ImportExternalLibraries.cmake"));
-                    }
+                    //{
+                    //    Utils.CopyFile2(
+                    //        Path.Combine(builder.RootDir, "src", "LuminoConfig.cmake"),
+                    //        Path.Combine(destinationEngineRoot, "LuminoConfig.cmake"));
+                    //    Utils.CopyFile2(
+                    //        Path.Combine(builder.RootDir, "src", "LuminoCommon.cmake"),
+                    //        Path.Combine(destinationEngineRoot, "LuminoCommon.cmake"));
+                    //    Utils.CopyFile2(
+                    //        Path.Combine(builder.RootDir, "external", "ImportExternalLibraries.cmake"),
+                    //        Path.Combine(destinationEngineRoot, "ImportExternalLibraries.cmake"));
+                    //}
                 }
             }
 
@@ -99,31 +105,31 @@ namespace LuminoBuild.Tasks
             {
                 Console.WriteLine($"Copy tools...");
 
-                if (Utils.IsWin32)
-                {
-                    var engineInstallDir = Path.Combine(builder.BuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
-                    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
-                    if (Directory.Exists(sourceBinDir))
-                    {
-                        Utils.CopyDirectory(sourceBinDir, destinationToolDir, pattern: "*.exe");
+                //if (Utils.IsWin32)
+                //{
+                //    var engineInstallDir = Path.Combine(builder.BuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
+                //    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
+                //    if (Directory.Exists(sourceBinDir))
+                //    {
+                //        Utils.CopyDirectory(sourceBinDir, destinationToolDir, pattern: "*.exe");
 
-                        Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));
-                    }
-                }
-                else if (Utils.IsMac)
-                {
-                    var engineInstallDir = Path.Combine(builder.BuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
-                    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
+                //        Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));
+                //    }
+                //}
+                //else if (Utils.IsMac)
+                //{
+                //    var engineInstallDir = Path.Combine(builder.BuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
+                //    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
 
-                    if (Directory.Exists(sourceBinDir))
-                    {
-                        Utils.CopyDirectory(sourceBinDir, destinationToolDir);
+                //    if (Directory.Exists(sourceBinDir))
+                //    {
+                //        Utils.CopyDirectory(sourceBinDir, destinationToolDir);
 
-                        var setupFile = Path.Combine(destinationToolDir, "setup.sh");
-                        File.Copy(Path.Combine(builder.RootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
-                        Utils.chmod(setupFile, Utils.S_0755);
-                    }
-                }
+                //        var setupFile = Path.Combine(destinationToolDir, "setup.sh");
+                //        File.Copy(Path.Combine(builder.RootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
+                //        Utils.chmod(setupFile, Utils.S_0755);
+                //    }
+                //}
 
                 // Templates
                 {
@@ -141,7 +147,7 @@ namespace LuminoBuild.Tasks
 
             // Engine assets
             {
-                var reposDir = Path.Combine(builder.BuildDir, "ExternalSource");
+                var reposDir = Path.Combine(builder.BuildToolsDir);
                 using (var cd = CurrentDir.Enter(reposDir))
                 {
                     if (!Directory.Exists("noto-emoji"))

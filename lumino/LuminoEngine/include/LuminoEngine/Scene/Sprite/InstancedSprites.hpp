@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../../Mesh/Common.hpp"
+#include <LuminoGraphics/Mesh/Common.hpp>
 #include "../../Visual/VisualComponent.hpp"
 #include "../VisualObject.hpp"
 

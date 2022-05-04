@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Task.hpp>
+#include <LuminoEngine/Base/Fetch.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
@@ -61,6 +62,8 @@ bool EngineContext2::init(const RuntimeModuleSettings& settings) {
     TaskScheduler::init();
     m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 
+    detail::FetchManager::initialize();
+
     {
         m_activeDiagnostics = makeObject<DiagnosticsManager>();
         ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, _TT("RenderPass count"));
@@ -89,6 +92,8 @@ void EngineContext2::dispose() {
         m_assetManager->dispose();
         m_assetManager = nullptr;
     }
+
+    detail::FetchManager::terminate();
 
     if (m_mainThreadTaskDispatcher) {
         m_mainThreadTaskDispatcher->dispose();

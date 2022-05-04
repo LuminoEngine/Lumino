@@ -37,7 +37,7 @@ namespace LuminoBuild
         {
             try
             {
-                var tasks = CollectDepends(name);
+                var tasks = CollectDepends(buildSystem, name);
                 foreach (var task in tasks)
                 {
                     Execute(buildSystem, task);
@@ -48,7 +48,9 @@ namespace LuminoBuild
                 Console.ForegroundColor = ConsoleColor.Red;
                 Logger.WriteLineV(e.ToString());
                 Console.ResetColor(); // 色のリセット
-                throw new Exception($"[{name}] Task failed.");
+
+                DriveInfo drive = new DriveInfo(Path.GetPathRoot(Environment.CurrentDirectory));
+                throw new Exception($"[{name}] Task failed. (AvailableFreeSpace: {drive.AvailableFreeSpace})");
             }
         }
 
@@ -59,7 +61,7 @@ namespace LuminoBuild
             return task;
         }
 
-        private List<BuildTask> CollectDepends(string entryTaskName)
+        private List<BuildTask> CollectDepends(Build buildSystem, string entryTaskName)
         {
             var result = new List<BuildTask>();
             var entryTask = GetTask(entryTaskName);
@@ -71,7 +73,7 @@ namespace LuminoBuild
                 foreach (var task in next)
                 {
                     // 次に調べたい対象 Task を取り出しておく
-                    foreach (var d in task.Depends)
+                    foreach (var d in task.GetDepends(buildSystem))
                     {
                         depends.Add(GetTask(d));
                     }

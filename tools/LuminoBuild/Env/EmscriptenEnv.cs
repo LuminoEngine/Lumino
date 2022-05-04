@@ -13,8 +13,8 @@ namespace LuminoBuild
      */
     static class EmscriptenEnv
     {
-        public const string emsdkVer = "1.40.1";
-        public const string emVer = "1.40.1";
+        public const string emsdkVer = "3.1.9";
+        public const string emVer = "3.1.9";
         public static string EmsdkDir;
         public static string Ninja;
 
@@ -118,7 +118,14 @@ namespace LuminoBuild
             //Environment.SetEnvironmentVariable("EMSDK_PYTHON", @"C:\Proj\LN\Lumino\build\cache\tools\emsdk\python\3.9.2-1_64bit\python.exe");
             //Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Proj\LN\Lumino\build\cache\tools\emsdk\java\8.152_64bit");
 
-            Ninja = Directory.GetFiles(b.VcpkgDir + "/downloads/tools/ninja", "ninja.exe", SearchOption.AllDirectories).First();
+
+            if (Directory.Exists(b.VcpkgDir))
+            {
+                // 自分で cmake を叩くときはこれが必要。
+                // 最初の BuildExternals 時点では存在しないが、その時は必要ない。
+                Ninja = Path.Combine(b.BuildToolsDir, "ninja-win", "ninja.exe");
+                //Ninja = Directory.GetFiles(b.VcpkgDir + "/downloads/tools/ninja", "ninja.exe", SearchOption.AllDirectories).First();
+            }
 
             //                    EM_CONFIG = C:\Proj\LN\Lumino\_build\tools\emsdk\.emscripten
             //EMSDK_NODE = C:\Proj\LN\Lumino\_build\tools\emsdk\node\14.15.5_64bit\bin\node.exe

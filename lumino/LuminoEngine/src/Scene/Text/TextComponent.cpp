@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoFont/Font.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/Scene/Text/TextComponent.hpp>
 
 namespace ln {

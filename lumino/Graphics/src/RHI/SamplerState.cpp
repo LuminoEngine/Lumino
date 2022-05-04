@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"
-#include "GraphicsManager.hpp"
 
 namespace ln {
 

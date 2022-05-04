@@ -37,6 +37,7 @@ public:
     // CMake
     const ln::Path& cmakePackagesDir() const { return m_cmakePackagesDir; }
     const ln::Path& vcpkgDir() const { return m_vcpkgDir; }
+    const ln::Path& ninja() const { return m_ninja; }
 
     // Emscripten
     const ln::Path& luminoEmscriptenSdkDirPath() const { return m_luminoEmscriptenSdkDirPath; }
@@ -44,7 +45,7 @@ public:
     const ln::String& emsdkName() const { return m_emsdkName; }
     const ln::Path& emsdkDirPath() const { return m_emsdkRootDir; }
     const ln::Path& emscriptenDirPath() const { return m_emscriptenRootDir; }
-    const ln::Path& emscriptenSysRootLocalDir() const { return m_emscriptenSysRootLocal; }
+    //const ln::Path& emscriptenSysRootLocalDir() const { return m_emscriptenSysRootLocal; }
     const ln::Path& python() const { return m_python; }
 
     // Visual Studio
@@ -65,7 +66,7 @@ public:
 private:
     //void setupPathesFromPackageRoot(const ln::Path& packageRoot);
     //void setupPathesFromRepositoryRoot(const ln::Path& repoRoot);
-    static ln::Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
+    static ln::Result callProcess(const ln::String& program, const ln::Array<ln::String>& arguments, const ln::Path& workingDir);
     ln::Path findNativePackageRootDir() const;
     static ln::Path findRepositoryRootDir();
 
@@ -79,6 +80,7 @@ private:
 
     ln::Path m_cmakePackagesDir;
     ln::Path m_vcpkgDir;
+    ln::Path m_ninja;
 
     ln::Path m_luminoEmscriptenSdkDirPath;
     ln::Path m_projectTemplatesDirPath;
@@ -88,7 +90,7 @@ private:
     ln::String m_emsdkName;
     ln::Path m_emsdkRootDir;
     ln::Path m_emscriptenRootDir;
-    ln::Path m_emscriptenSysRootLocal;
+    ln::Path m_emscriptenSysRoot;
     ln::Path m_python;
 
     ln::Path m_msbuild;
@@ -101,6 +103,25 @@ private:
 
     ln::Path m_engineDevelopmentRepoRootDir;
     //bool m_engineDevelopmentMode;
+};
+
+class ScopedCurrentDir final {
+public:
+    static ScopedCurrentDir enter(const ln::Path& path) {
+        return ScopedCurrentDir(path);
+    }
+
+    ~ScopedCurrentDir() {
+        ln::Environment::setCurrentDirectory(m_prev);
+    }
+
+private:
+    ScopedCurrentDir(const ln::Path& path)
+        : m_prev(ln::Environment::currentDirectory()) {
+        ln::Environment::setCurrentDirectory(path);
+    }
+
+    ln::Path m_prev;
 };
 
 } // namespace lna

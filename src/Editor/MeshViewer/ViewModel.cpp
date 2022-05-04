@@ -1,6 +1,6 @@
 ﻿
+#include <LuminoGraphics/Mesh/MeshModeEntity.hpp>
 #include "ViewModel.hpp"
-#include "../../../lumino/LuminoEngine/src/Mesh/MeshModelInstance.hpp"
 
 ViewModel* ViewModel::instance()
 {
@@ -43,11 +43,11 @@ void ViewModel::load()
 	//ac->play();
 	//ac->addClip(ln::AnimationClip::load(_TT("D:/Materials/Mixamo/Idle.bvh"));
 
-	//ln::AnimationClip::loadAsync(_TT("D:/Materials/Mixamo/Idle.bvh")->thenWith([=](auto clip) {
+	//ln::AnimationClip::loadAsync(_TT("D:/Materials/Mixamo/Idle.bvh")->then([=](auto clip) {
 	//	ac->addClip(clip);
 	//});
 
-	//ln::AnimationClip::loadAsync(_TT("D:/Materials/Mixamo/Walk.bvh")->thenWith([=](auto clip) {
+	//ln::AnimationClip::loadAsync(_TT("D:/Materials/Mixamo/Walk.bvh")->then([=](auto clip) {
 	//	ac->addClip(clip);
 	//});
 

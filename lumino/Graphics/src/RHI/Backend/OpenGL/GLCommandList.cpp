@@ -168,6 +168,7 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
     if (pipeline) {
         auto* glPipeline = static_cast<GLPipeline*>(pipeline);
         glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer, state.descriptor);
+        m_pipeline = glPipeline;
     }
 
 }
@@ -257,8 +258,9 @@ void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVe
 
 void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {
     if (vertexOffset != 0) {
-        LN_NOTIMPLEMENTED();
-        return;
+        //LN_NOTIMPLEMENTED();
+        //return;
+        m_pipeline->rebindAttr(vertexOffset);
     }
 
     GLenum gl_prim;
@@ -287,9 +289,19 @@ void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int 
 
     if (instanceCount > 0) {
         GL_CHECK(glDrawElementsInstanced(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount));
+        //#ifdef LN_EMSCRIPTEN
+//        GL_CHECK(glDrawElementsInstanced(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount));
+//#else
+//        GL_CHECK(glDrawElementsInstancedBaseVertex(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount, vertexOffset));
+//#endif
     }
     else {
         GL_CHECK(glDrawElements(gl_prim, vertexCount, indexFormat, startIndexPtr));
+        //#ifdef LN_EMSCRIPTEN
+//        GL_CHECK(glDrawElements(gl_prim, vertexCount, indexFormat, startIndexPtr));
+//#else
+//        GL_CHECK(glDrawElementsBaseVertex(gl_prim, vertexCount, indexFormat, startIndexPtr, vertexOffset));
+//#endif
     }
 }
 

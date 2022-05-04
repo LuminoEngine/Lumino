@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/RHI/GraphicsResource.hpp>
-#include "GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"
 
 namespace ln {

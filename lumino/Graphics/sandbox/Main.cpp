@@ -5,10 +5,9 @@
 #include <LuminoPlatform/Platform.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics.hpp>
 #include <LuminoGraphics/ShaderCompiler/detail/UnifiedShader.hpp>
-#include "../src/GraphicsManager.hpp"
-#include "../src/Rendering/SpriteRenderer.hpp"
 using namespace ln;
 
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)
@@ -37,8 +36,8 @@ void run() {
 
     auto shader2 = Shader::load(U"Sprite");
     auto descriptorLayout2 = shader2->descriptorLayout();
-    auto shaderVariants2 = Array<String>{ U"LN_USE_INSTANCING" };
-    auto shaderPass2 = shader2->findTechniqueByVariantKey(kokage::VariantSet::calcHash(shaderVariants2))->passes()[0];
+    auto shaderVariants2 = Array<std::string>{ "LN_USE_INSTANCING" };
+    auto shaderPass2 = shader2->findTechniqueByVariantKey(kokage::VariantSet::calcHash(shaderVariants2), true)->passes()[0];
 
     auto vertexLayout = makeObject<VertexLayout>();
     vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
@@ -53,8 +52,8 @@ void run() {
 
     auto swapChain = makeObject<SwapChain>(window);
 
-    auto spriteRenderer = makeURef<detail::SpriteRenderer>();
-    spriteRenderer->init();
+    //auto spriteRenderer = makeURef<detail::SpriteRenderer>();
+    //spriteRenderer->init();
 
     while (Platform::processEvents()) {
         auto commandList = swapChain->beginFrame2();
@@ -73,9 +72,9 @@ void run() {
 
         commandList->setShaderDescriptor_deprecated(nullptr);
         commandList->setShaderPass(shaderPass2);
-        spriteRenderer->begin();
-        spriteRenderer->end();
-        spriteRenderer->render(commandList);
+        //spriteRenderer->begin();
+        //spriteRenderer->end();
+        //spriteRenderer->render(commandList);
 
         commandList->endRenderPass();
 

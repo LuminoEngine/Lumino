@@ -61,18 +61,9 @@ protected:
 
     virtual void onRoutedEvent(UIEventArgs* e);
 
-private:
-    Result initializeEngine();
-    bool updateEngine() override;
-    void renderEngine() override;
-    void terminateEngine() override;
-
-    [[deprecated]]
-    void initInternal2();
-    [[deprecated]]
-    void updateInertnal2();
-    [[deprecated]]
-    void finalizeInternal2();
+    void initInternal();
+    void updateInertnal();
+    void finalizeInternal();
 
     detail::EngineManager* m_manager;
     List<Ref<UICommand>> m_commands;
@@ -88,6 +79,31 @@ public:
     static void setValue(const StringView& key, Ref<Variant> value);
     static Ref<Variant> getValue(const StringView& key); // null = NotFound.
 };
+
+class AppIntegration {
+public:
+    typedef void (*ConfigureApp)();
+    typedef Application* (*CreateAppInstance)();
+
+    // for external main loop (emscripten, android)
+    static Result initialize(ConfigureApp configureApp, CreateAppInstance createAppInstance);
+    static bool update();
+    static void render();
+    static void terminate();
+
+    // for internal main loop (win32, macOS...)
+    static void run(ConfigureApp configureApp, CreateAppInstance createAppInstance);
+
+private:
+    static Result initializeEngine();
+    static bool updateEngine();
+    static void renderEngine();
+    static void terminateEngine();
+
+    static Ref<Application> s_app;
+};
+
+
 
 namespace detail {
 class LN_API ApplicationHelper {
@@ -126,6 +142,5 @@ private:
         appClass::configure();                                        \
     }                                                                 \
     extern "C" ::ln::Application* LuminoCreateApplicationInstance() { \
-        LuminoConfigureApplication();                                 \
         return new appClass();                                        \
     }

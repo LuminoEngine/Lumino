@@ -62,11 +62,12 @@ TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
     //shader->saveCodes(String(LN_TEMPFILE("")) + U"/");
     //shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
 
+    // VariantKey で検索できることを確認する
     {
         auto shader = Shader::load(file);
-        Array<String> keys = { U"LN_USE_INSTANCING", U"LN_PHASE_FORWARD" };
+        Array<std::string> keys = { "LN_PHASE_FORWARD", "LN_USE_INSTANCING" };  // ソート済みであること
         uint64_t key = kokage::VariantSet::calcHash(keys);
-        ShaderTechnique* tech = shader->findTechniqueByVariantKey(key);
+        ShaderTechnique* tech = shader->findTechniqueByVariantKey(key, true);
         ASSERT_TRUE(tech != nullptr);
     }
 }

@@ -12,13 +12,14 @@
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
-#include "../../../Graphics/src/GraphicsManager.hpp"
-#include "../Rendering/RenderingManager.hpp"
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoPlatform/detail/PlatformWindowManager.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
+#include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 
 #include "../Effect/EffectManager.hpp" // TODO: tests
@@ -417,7 +418,7 @@ void UIFrameWindow::present() {
     }
     else {
         if (m_renderView) {
-            m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+            m_renderView->render(m_renderingGraphicsContext,/* m_renderView->m_renderingContext, */m_swapChain->currentBackbuffer());
         }
     }
 
@@ -773,7 +774,7 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget) {
 void UINativeFrameWindow::renderContents() {
     if (m_renderView) {
         m_renderView->setRootElement(this);
-        m_renderView->render(m_renderingGraphicsContext, m_renderingRenderTarget);
+        m_renderView->render(m_renderingGraphicsContext, /*m_renderView->m_renderingContext, */m_renderingRenderTarget);
     }
 }
 

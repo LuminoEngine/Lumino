@@ -1,7 +1,7 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "Common.hpp"
-#include "../Rendering/RenderView.hpp"
+#include <LuminoGraphics/Rendering/RenderView.hpp>
+#include "../UI/RoutingRenderView.hpp"
 #include "TransformControls.hpp"
 
 namespace ln {
@@ -14,7 +14,6 @@ class PostEffect;
 class FilmicPostEffect;
 namespace detail {
 class PostEffectRenderer;
-class SceneRenderingPipeline;
 class InternalSkyBox;
 class InternalSkyDome;
 }
@@ -26,8 +25,7 @@ class InternalSkyDome;
  */
 LN_CLASS()
 class WorldRenderView
-	: public RenderView
-{
+    : public RoutingRenderView {
     LN_OBJECT;
 public:
     void setTargetWorld(World* world);
@@ -51,20 +49,22 @@ public:
     void setGizmoEnabled(bool value) { m_gizmoEnabled = value; }
     bool gizmoEnabled() const { return m_gizmoEnabled; }
 
-    void setHDREnabled(bool value) { m_hdrEnabled = value; }
-    bool isHDREnabled() const { return m_hdrEnabled; }
+    void setHDREnabled(bool value);
+    bool isHDREnabled() const;
 
     const Ref<TransformControls>& transformControls() const{ return m_transformControls; }
 
     // TODO: internal
-    virtual void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override;
-    const Ref<detail::SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
+    void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override;
+    void onUpdateViewPoint(RenderViewPoint* viewPoint, RenderTargetTexture* renderTarget) override;
+    void onRender(GraphicsCommandList* graphicsContext, RenderingContext* renderingContext, RenderTargetTexture* renderTarget) override;
+    //const Ref<SceneRenderingPipeline>& sceneRenderingPipeline() const { return m_sceneRenderingPipeline; }
     const Ref<FilmicPostEffect>& finishingProcess() const { return m_finishingProcess; }
 
     WorldObject* findObjectInPoint(int x, int y);
 
 protected:
-	virtual void onUpdateFrame(float elapsedSeconds) override;
+    virtual void onUpdateFrame(float elapsedSeconds) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -75,13 +75,13 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::PostEffectRenderer* acquirePostEffectPresenter();
     void createGridPlane();
-    void renderGridPlane(RenderingContext* renderingContext, RenderView* renderView);
-    void adjustGridPlane(const ViewFrustum& viewFrustum, RenderView* renderView);
+    void renderGridPlane(RenderingContext* renderingContext, RoutingRenderView* renderView);
+    void adjustGridPlane(const ViewFrustum& viewFrustum, RoutingRenderView* renderView);
 
-    Ref<detail::SceneRenderingPipeline> m_sceneRenderingPipeline;
+    //Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
+    Ref<SceneRenderingPipeline> m_sceneRenderingPipeline;
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
-    Ref<RenderViewPoint> m_viewPoint;
 	Ref<detail::PostEffectRenderer> m_imageEffectRenderer;
 
     Ref<Material> m_clearMaterial;
@@ -98,11 +98,6 @@ private:
     Ref<FilmicPostEffect> m_finishingProcess;
     Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
 
-    // Unity だと HDR の設定は Camera につく。Viewport を使って画面を分割したとき、
-    // HDR ON/OFF の画面を同時にバックバッファに書いたりできる。
-    // 実際のところそんな用途があるかはわからないけど、ひとまず同じ実装にしておく。
-    Ref<RenderTargetTexture> m_hdrRenderTarget;
-    bool m_hdrEnabled = false;
 };
 
 } // namespace ln

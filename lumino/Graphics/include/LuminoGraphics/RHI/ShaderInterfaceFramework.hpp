@@ -126,19 +126,6 @@ struct CameraInfo
     float farClip = 0;
 
 	float dpiScale = 1.0f;
-
-    void makeUnproject(const Size& size)
-    {
-        viewPixelSize = size;
-        viewPosition = Vector3::Zero;
-        viewDirection = Vector3::UnitZ;
-        viewMatrix = Matrix::Identity;
-        projMatrix = Matrix::Identity;
-        viewProjMatrix = Matrix::Identity;
-        viewFrustum = ViewFrustum();
-        nearClip = 0.0f;
-        farClip = 1.0f;
-    }
     void makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
 };
 

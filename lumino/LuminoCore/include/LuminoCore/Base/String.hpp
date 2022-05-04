@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "List.hpp"
+#include "Array.hpp"
 #include "Buffer.hpp"
 #include "StringHelper.hpp"
 
@@ -316,7 +317,7 @@ public:
     static String concat(const StringView& str1, const StringView& str2, const StringView& str3, const StringView& str4); /**< @overload concat */
 
     /** 指定した文字列リストを結合した 1 つの文字列を生成します。各要素の間には、指定した区切り記号が挿入されます。 */
-    static String join(const List<String>& list, const StringView& delim);
+    static String join(const Array<String>& list, const StringView& delim);
 
     /**
      * 指定した2つの文字列を比較します。

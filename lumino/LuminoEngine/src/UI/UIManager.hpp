@@ -21,7 +21,6 @@ public:
 	struct Settings
 	{
 		GraphicsManager* graphicsManager;
-        Application* application = nullptr;
         String defaultThemeName;
 	};
 

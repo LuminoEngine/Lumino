@@ -1,9 +1,10 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UISprite.hpp>
-#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include "../../Graphics/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 
@@ -96,9 +97,12 @@ void UISprite::onRender(UIRenderingContext* context)
     detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
         m_material->mainTexture(), m_size, m_sourceRect, &renderSize, &renderSourceRect);
 
-    context->drawSprite(
+    auto r = SpriteRenderer::get();
+    r->begin(context, m_material);
+    r->drawSprite(
         Matrix(), renderSize, Vector2(0, 0), renderSourceRect, Color::White,
-        SpriteBaseDirection::Basic2D, BillboardType::None, detail::SpriteFlipFlags::None, m_material);
+        SpriteBaseDirection::Basic2D, BillboardType::None, SpriteFlipFlags::None);
+    r->end();
 }
 
 } // namespace ln

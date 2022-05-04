@@ -7,6 +7,7 @@
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 #include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
 #include "../Engine/EngineManager.hpp"
+#include "../Scene/SceneManager.hpp"
 #include "EditorViewportToolPane.hpp"
 
 namespace ln {
@@ -43,6 +44,7 @@ bool EditorViewportToolPane::init(UIMainWindow* mainWindow)
 void EditorViewportToolPane::onGui()
 {
     GraphicsCommandList* graphicsContext = m_mainWindow->m_renderingGraphicsContext;
+    //RenderingContext* renderingContext = detail::EngineDomain::sceneManager()->renderingContext();
     ImGuiWindow* window = ImGui::GetCurrentWindow();
 
     const ImVec2 contentSize = ImGui::GetContentRegionAvail();
@@ -58,6 +60,7 @@ void EditorViewportToolPane::onGui()
 
         m_renderTarget = RenderTargetTexture::realloc(m_renderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
         m_renderView->render(graphicsContext, m_renderTarget);
+
     }
 
 

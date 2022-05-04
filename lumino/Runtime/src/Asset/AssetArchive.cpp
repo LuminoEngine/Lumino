@@ -14,11 +14,11 @@ const char CryptedArchiveHelper::FileSignature[4] = { 'l', 'c', 'a', 'c' };
 const uint16_t CryptedArchiveHelper::FileVersion = 1;
 const char CryptedArchiveHelper::FileEntrySignature[4] = { 'l', 'c', '3', '4' };
 const char CryptedArchiveHelper::CentralDirectorySignature[4] = { 'l', 'c', '1', '2' };
-extern const unsigned* g_crctab = nullptr;
+//extern const unsigned* g_crctab = nullptr;
 
 void CryptedArchiveHelper::initKeys(const char* password, uint32_t* keys)
 {
-    g_crctab = CRCHashInternal::getCRCTable();
+    //g_crctab = CRCHashInternal::getCRCTable();
 
 	*(keys + 0) = 305419896L;
 	*(keys + 1) = 591751049L;
@@ -67,7 +67,7 @@ void CryptedArchiveHelper::shiftKey(uint32_t* keys, int c)
 
 uint32_t CryptedArchiveHelper::crc(uint32_t key, int c)
 {
-	return ((*(g_crctab + (((int)(c) ^ (key)) & 0xff))) ^ ((c) >> 8));
+	return ((*(ln::crc32_table + (((int)(c) ^ (key)) & 0xff))) ^ ((c) >> 8));
 }
 
 //==============================================================================

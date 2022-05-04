@@ -1,17 +1,14 @@
 ﻿
 #include "App.h"
 
-HelloApp::HelloApp()
-{
+HelloApp::HelloApp() {
 	ln::Logger::setLevel(ln::LogLevel::Debug);
 }
 
-void HelloApp::onStart()
-{
+void HelloApp::onInit() {
 }
 
-void HelloApp::onUpdate()
-{
+void HelloApp::onUpdate() {
 }
 
 LUMINO_APP(HelloApp);

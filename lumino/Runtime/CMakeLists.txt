@@ -44,12 +44,18 @@ set(LN_SOURCES
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
+set(LINK_LIBS
+    LuminoCore
+    yaml-cpp
+)
 
+if (NOT DEFINED EMSCRIPTEN)
+    list(APPEND LINK_LIBS CURL::libcurl)
+endif()
 
 #-------------------------------------------------------------------------------
 # Targets
 #-------------------------------------------------------------------------------
-
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
@@ -57,7 +63,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src)
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
@@ -65,7 +71,6 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-
 install(
     TARGETS     ${PROJECT_NAME}
     EXPORT      LuminoExport

@@ -43,6 +43,7 @@ void BuildEnvironment::setupPathes(bool developMode) {
             
                 m_cmakePackagesDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, U"build", U"installed");
                 m_vcpkgDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, U"build", U"tools", U"vcpkg");
+                m_ninja = ln::Path::combine(m_engineDevelopmentRepoRootDir, U"build", U"tools", U"ninja-win", U"ninja.exe");
             }
         }
 
@@ -142,8 +143,8 @@ void BuildEnvironment::setupPathes(bool developMode) {
 
     // Emscripten
     {
-        m_emsdkVer = _TT("1.39.8");
-        m_emsdkName = _TT("1.39.8");
+        m_emsdkVer = _TT("3.1.9");
+        m_emsdkName = _TT("3.1.9");
     }
 
     // Android
@@ -191,11 +192,20 @@ void BuildEnvironment::setupPathes(bool developMode) {
 
 ln::Result BuildEnvironment::prepareEmscriptenSdk() {
 
-    // Emscripten
-    {
-        if (engineDevelopmentMode()) {
-            m_emsdkRootDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, _TT("build"), _TT("Emscripten"), _TT("emsdk"));
-        }
+    if (engineDevelopmentMode()) {
+        m_emsdkRootDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, _TT("build"), _TT("tools"), _TT("emsdk"));
+        m_emscriptenRootDir = ln::Path::combine(m_emsdkRootDir, _TT("upstream"), _TT("emscripten"));
+        m_emscriptenSysRoot = ln::Path::combine(m_emscriptenRootDir, U"cache", _TT("sysroot"));
+
+        //auto dst = ln::Path::combine(m_emscriptenSysRoot);
+        auto dst = ln::Path::combine(m_vcpkgDir, U"installed", U"wasm32-emscripten");
+        //if (ln::FileSystem::existsDirectory(engineRoot)) {
+        auto src = ln::Path::combine(m_cmakePackagesDir, _TT("wasm32-emscripten"));
+        CLI::info(ln::format(_TT("Copy Engine '{0}' to '{1}'"), src.str(), dst.str()));
+        ln::FileSystem::copyDirectory(src, dst, true, true);
+        //}
+    }
+    else {
 
         if (m_emsdkRootDir.isEmpty()) {
             m_emsdkRootDir = ln::Path::combine(m_toolsDir, _TT("emsdk"));
@@ -204,8 +214,8 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk() {
         ln::FileSystem::createDirectory(m_emsdkRootDir);
 
         m_emscriptenRootDir = ln::Path::combine(m_emsdkRootDir, _TT("upstream"), _TT("emscripten"));
-        m_emscriptenSysRootLocal = ln::Path::combine(m_emscriptenRootDir, _TT("system"), _TT("local"));
-        m_python = ln::Path::combine(m_emsdkRootDir, _TT("python"), _TT("3.7.4_64bit"), _TT("python"));
+        //m_emscriptenSysRootLocal = ln::Path::combine(m_emscriptenRootDir, _TT("system"), _TT("local"));
+        // m_python = ln::Path::combine(m_emsdkRootDir, _TT("python"), _TT("3.7.4_64bit"), _TT("python"));
 
         if (!ln::FileSystem::existsDirectory(m_emsdkRootDir)) {
             if (!callProcess(_TT("git"), { _TT("clone"), _TT("https://github.com/juj/emsdk.git") }, m_toolsDir)) {
@@ -232,24 +242,76 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk() {
             }
         }
 
-        CLI::verbose(ln::format(_TT("EmsdkRootDir: {0}"), m_emsdkRootDir.str()));
-        CLI::verbose(ln::format(_TT("EmscriptenRootDir: {0}"), m_emscriptenRootDir.str()));
-        CLI::verbose(ln::format(_TT("EmscriptenSysLocal: {0}"), m_emscriptenSysRootLocal.str()));
 
-        if (!ln::FileSystem::existsDirectory(m_emscriptenSysRootLocal)) {
-            CLI::fatal(_TT("Not found 'EmscriptenSysLocal' directory."));
+        //CLI::verbose(ln::format(_TT("EmscriptenSysLocal: {0}"), m_emscriptenSysRootLocal.str()));
+
+        //if (!ln::FileSystem::existsDirectory(m_emscriptenSysRootLocal)) {
+        //    CLI::fatal(_TT("Not found 'EmscriptenSysLocal' directory."));
+        //    return ln::err();
+        //}
+    }
+
+    // Find python
+    {
+        auto files = ln::FileSystem::getFiles(ln::Path(m_emsdkRootDir, U"python"), U"python.exe", ln::SearchOption::Recursive);
+        if (!files.isEmpty()) {
+            m_python = *files.begin();
+        }
+        else {
+            LN_ERROR(U"Not found python executable in emsdk.");
             return ln::err();
         }
     }
 
+    CLI::verbose(ln::format(_TT("EmsdkRootDir: {0}"), m_emsdkRootDir.str()));
+    CLI::verbose(ln::format(_TT("EmscriptenRootDir: {0}"), m_emscriptenRootDir.str()));
+
     {
-        auto engineRoot = ln::Path::combine(m_emscriptenSysRootLocal, _TT("LuminoEngine"));
-        if (!ln::FileSystem::existsDirectory(engineRoot)) {
-            auto src = ln::Path::combine(m_luminoPackageEngineDir, _TT("Emscripten"));
-            CLI::info(ln::format(_TT("Copy Engine '{0}' to '{1}'"), src.str(), engineRoot.str()));
-            ln::FileSystem::copyDirectory(src, engineRoot, true, true);
+        auto cd = ScopedCurrentDir::enter(m_emsdkRootDir);
+        ln::String logs;
+        ln::Process2::exec(U"cmd /c emsdk activate " + m_emsdkName, nullptr, &logs);
+        ln::StringReader reader(logs);
+
+        ln::Array<ln::String> var_PATH;
+        ln::String var_EMSDK;
+        ln::String var_EM_CONFIG;
+        ln::String var_EMSDK_NODE;
+        ln::String var_EMSDK_PYTHON;
+        ln::String var_JAVA_HOME;
+        ln::String line;
+        while (reader.readLine(&line)) {
+            if (line.startsWith(U"PATH +=")) {
+                var_PATH.push(ln::String(line.substr(7)).trim());
+            }
+            else if (line.startsWith(U"EMSDK =")) {
+                var_EMSDK = ln::String(line.substr(7)).trim();  // TODO: StringView::trim()
+            }
+            else if (line.startsWith(U"EM_CONFIG =")) {
+                var_EM_CONFIG = ln::String(line.substr(11)).trim();
+            }
+            else if (line.startsWith(U"EMSDK_NODE =")) {
+                var_EMSDK_NODE = ln::String(line.substr(12)).trim();
+            }
+            else if (line.startsWith(U"EMSDK_PYTHON")) {
+                int i = line.indexOf(U"=");
+                var_EMSDK_PYTHON = ln::String(line.substr(i + 1)).trim();
+            }
+            else if (line.startsWith(U"JAVA_HOME =")) {
+                var_JAVA_HOME = ln::String(line.substr(11)).trim();
+            }
         }
+
+        auto path = ln::Environment::getEnvironmentVariable(U"PATH").value();
+        path = ln::String::join(var_PATH, U";") + U";" + path;
+        ln::Environment::setEnvironmentVariable(U"PATH", path);
+        ln::Environment::setEnvironmentVariable(U"EMSDK", var_EMSDK);
+        ln::Environment::setEnvironmentVariable(U"EM_CONFIG", var_EM_CONFIG);
+        ln::Environment::setEnvironmentVariable(U"EMSDK_NODE", var_EMSDK_NODE);
+        ln::Environment::setEnvironmentVariable(U"EMSDK_PYTHON", var_EMSDK_PYTHON);
+        ln::Environment::setEnvironmentVariable(U"JAVA_HOME", var_JAVA_HOME);
     }
+
+    
 
     return ln::ok();
 }
@@ -301,15 +363,14 @@ ln::Path BuildEnvironment::findLocalPackageForTesting() {
 //	m_projectTemplatesDirPath = ln::Path::combine(repoRoot, _TT("Tools", _TT("ProjectTemplates");
 //}
 
-ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir) {
-    ln::Process proc1;
-    proc1.setUseShellExecute(false);
-    proc1.setProgram(program);
-    proc1.setArguments(arguments);
-    proc1.setWorkingDirectory(workingDir);
-    proc1.start();
-    proc1.wait();
-    if (proc1.exitCode() == 0) {
+ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::Array<ln::String>& arguments, const ln::Path& workingDir) {
+    auto proc = ln::ProcessCommand2(program)
+        .args(arguments)
+        .workingDirectory(workingDir)
+        .start();
+
+    proc->wait();
+    if (proc->exitCode() == 0) {
         return ln::ok();
     }
     else {

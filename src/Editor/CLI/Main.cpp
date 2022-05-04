@@ -21,7 +21,7 @@ static int processCommands(int argc, char** argv);
 int main(int argc, char** argv) {
 #if defined(LN_DEBUG) && defined(_WIN32)
     if (argc == 1) {
-        ::SetCurrentDirectoryW(L"D:/Proj/TH10");
+        ::SetCurrentDirectoryW(L"D:/Proj/THRE18/ui");
         ln::Logger::setLevel(ln::LogLevel::Verbose);
 
         const char* debugArgv[] = {
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 
             //"build",
             //"build", "Windows"
-            //"build", "assets",
+            "build", "Web",
 
             //"run", "Web", //"Windows",
 
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx",
 
             //"fxc", "C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/Sprite.fx",
-            "bin2inl", "C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/Sprite.lcfx",
+            //"bin2inl", "C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/Sprite.lcfx",
 
 
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"

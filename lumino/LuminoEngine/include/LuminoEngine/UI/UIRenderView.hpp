@@ -1,6 +1,7 @@
 ﻿#pragma once
-#include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoGraphics/Rendering/RenderView.hpp>
 #include "UIContainerElement.hpp"
+#include "RoutingRenderView.hpp"
 
 namespace ln {
 class UIRenderingContext;
@@ -9,16 +10,11 @@ class UIFrameWindow;
 class UIAdornerLayer;
 class UIDialog;
 class UIFocusNavigator;
-namespace detail {
-class FlatRenderingPipeline;
-} // namespace detail
-
 
 // UIFrameWindow 用の RenderView.
 // その Window のすべてのレンダリングのルートとなる。
 class UIFrameRenderView
-    : public RenderView
-{
+    : public RoutingRenderView {
 public:
     void setRootElement(UIDomainProvidor* element);
 
@@ -28,21 +24,24 @@ public:
     // TODO: internal
     // 描画コマンド構築と実行まですべて行う
     //void renderTree(GraphicsCommandList* graphicsContext, UIElement* element);
-    virtual void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override;
+    void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override;
+    void onRender(GraphicsCommandList* graphicsContext, RenderingContext* renderingContext, RenderTargetTexture* renderTarget) override;
 
     void invalidate(detail::UIElementDirtyFlags flags);
+
+    // TODO: 
+    Ref<UIRenderingContext> m_renderingContext;
 
 protected:
     UIFrameRenderView();
     void init();
+    void onUpdateViewPoint(RenderViewPoint* viewPoint, RenderTargetTexture* renderTarget) override;
 
 private:
     UIViewport* m_ownerViewport;    // TODO: obsolete. ベースクラスに追加した
     Ref<UIDomainProvidor> m_rootElement;
-    Ref<UIRenderingContext> m_renderingContext;
 	//Ref<UIRenderingContext> m_debugRenderingContext;
-    Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
-    Ref<RenderViewPoint> m_viewPoint;
+    Ref<FlatRenderingPipeline> m_sceneRenderingPipeline;
     Ref<UIAdornerLayer> m_adornerLayer;
 
     friend class UIFrameWindow;

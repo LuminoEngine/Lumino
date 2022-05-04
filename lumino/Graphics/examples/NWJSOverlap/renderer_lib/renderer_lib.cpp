@@ -9,15 +9,15 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoShaderCompiler/detail/ShaderManager.hpp>
-#include <LuminoGraphics/Shader.hpp>
-#include <LuminoGraphics/ShaderDescriptor.hpp>
-#include <LuminoGraphics/VertexLayout.hpp>
-#include <LuminoGraphics/VertexBuffer.hpp>
-#include <LuminoGraphics/SwapChain.hpp>
-#include <LuminoGraphics/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/GraphicsExtensionOpenGL.hpp>
-#include "../src/GraphicsManager.hpp"
+#include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
+#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/RHI/SwapChain.hpp>
+#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/RHI/GraphicsExtensionOpenGL.hpp>
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 using namespace ln;
 
 #ifdef __cplusplus
@@ -36,17 +36,12 @@ void EMSCRIPTEN_KEEPALIVE myFunction(int argc, char ** argv) {
 }
 
 void EMSCRIPTEN_KEEPALIVE initLumino() {
-    EngineContext2::initialize();
+    RuntimeModule::initialize();
     Logger::setLevel(LogLevel::Debug);
 
-    detail::AssetManager::Settings assetManagerSettings;
-    auto assetManager = detail::AssetManager::initialize(assetManagerSettings);
-    assetManager->mountAssetArchive(U"Assets.lna", StringView());
+    detail::AssetManager::instance()->mountAssetArchive(U"Assets.lna", StringView());
 
     detail::GraphicsManager::Settings graphicsManagerSettings;
-    graphicsManagerSettings.assetManager = assetManager;
-    graphicsManagerSettings.platformManager = nullptr;
-    graphicsManagerSettings.mainWindow = nullptr;
     graphicsManagerSettings.graphicsAPI = GraphicsAPI::OpenGL;
     graphicsManagerSettings.priorityGPUName = U"";
     graphicsManagerSettings.debugMode = true;
@@ -84,14 +79,14 @@ void EMSCRIPTEN_KEEPALIVE renderApp(int32_t width, int32_t height) {
 
     auto renderPass = OpenGLIntegration::getRenderPass(0, width, height);
 
-    auto descriptor = commandList->allocateShaderDescriptor(shaderPass);
+    auto descriptor = commandList->allocateShaderDescriptor_deprecated(shaderPass);
     descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
     commandList->beginRenderPass(renderPass);
     commandList->clear(ClearFlags::Depth, Color());
     commandList->setVertexLayout(g_vertexLayout);
     commandList->setVertexBuffer(0, g_vertexBuffer);
     commandList->setShaderPass(shaderPass);
-    commandList->setShaderDescriptor(descriptor);
+    commandList->setShaderDescriptor_deprecated(descriptor);
     commandList->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     commandList->drawPrimitive(0, 1);
     commandList->endRenderPass();

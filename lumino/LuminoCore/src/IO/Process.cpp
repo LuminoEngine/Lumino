@@ -444,6 +444,11 @@ ProcessCommand2& ProcessCommand2::arg(const ln::String& value) {
     return *this;
 }
 
+ProcessCommand2& ProcessCommand2::workingDirectory(const ln::String& value) {
+    m_startInfo.workingDirectory = value;
+    return *this;
+}
+
 Ref<Process2> ProcessCommand2::start() {
     auto proc = Ref<Process2>(LN_NEW Process2(), false);
     proc->start(this);
@@ -465,6 +470,7 @@ void Process2::start(const ProcessCommand2* cmd) {
     detail::ProcessStartInfo startInfo;
     startInfo.program = cmd->m_startInfo.program;
     startInfo.args = cmd->m_startInfo.args;
+    startInfo.workingDirectory = cmd->m_startInfo.workingDirectory;
 
     Ref<detail::PipeImpl> stdIn;
     if (cmd->m_stdIn) {
@@ -549,6 +555,41 @@ int Process2::exitCode() {
         LN_ERROR(U"Process is running. Use wait().");
     } 
     return result;
+}
+
+int Process2::exec(const String& command, String* outStdOutput, String* outStdError) {
+    String program;
+    String args;
+    int i = command.indexOf(' ');
+    if (i >= 0) {
+        program = command.substr(0, i);
+    }
+    else {
+        program = command;
+    }
+
+    ProcessCommand2 cmd(program);
+    if (i >= 0) {
+        cmd.arg(command.substr(i + 1));
+    }
+    if (outStdOutput) {
+        cmd.stdOut(ProcessStdio::piped());
+    }
+    if (outStdError) {
+        cmd.stdErr(ProcessStdio::piped());
+    }
+
+    auto proc = cmd.start();
+
+    if (outStdOutput) {
+        *outStdOutput = proc->stdOut()->readToEnd();
+    }
+    if (outStdError) {
+        *outStdError = proc->stdErr()->readToEnd();
+    }
+
+    proc->wait();
+    return proc->exitCode();
 }
 
 void Process2::beginOutputReadLine() {

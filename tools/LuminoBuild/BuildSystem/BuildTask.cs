@@ -36,7 +36,7 @@ namespace LuminoBuild
         /// <summary>
         /// 依存タスク。このタスクの前に実行したいタスクがあれば、名前を列挙する。
         /// </summary>
-        public virtual string[] Depends { get => new string[] { }; }
+        public virtual string[] GetDepends(Build b) { return new string[] { }; }
 
         /// <summary>
         /// このルールをビルドする

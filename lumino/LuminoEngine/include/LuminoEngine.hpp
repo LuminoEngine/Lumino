@@ -19,12 +19,12 @@
 #include "LuminoEngine/Engine/Diagnostics.hpp"
 #include "LuminoEngine/Engine/Debug.hpp"
 
-#include "LuminoEngine/Animation/Common.hpp"
-#include "LuminoEngine/Animation/AnimationCurve.hpp"
-#include "LuminoEngine/Animation/AnimationTrack.hpp"
-#include "LuminoEngine/Animation/AnimationClip.hpp"
-#include "LuminoEngine/Animation/AnimationClock.hpp"
-#include "LuminoEngine/Animation/EasingFunctions.hpp"
+#include "LuminoGraphics/Animation/Common.hpp"
+#include "LuminoGraphics/Animation/AnimationCurve.hpp"
+#include "LuminoGraphics/Animation/AnimationTrack.hpp"
+#include "LuminoGraphics/Animation/AnimationClip.hpp"
+#include "LuminoGraphics/Animation/AnimationClock.hpp"
+#include "LuminoGraphics/Animation/EasingFunctions.hpp"
 
 #include "LuminoEngine/Input/Common.hpp"
 #include "LuminoEngine/Input/Input.hpp"
@@ -54,18 +54,18 @@
 #include "LuminoGraphics/RHI/Graphics.hpp"
 
 
-#include "LuminoEngine/Mesh/MeshPrimitive.hpp"
-#include "LuminoEngine/Mesh/MeshModel.hpp"
-#include "LuminoEngine/Mesh/AnimationController.hpp"
-#include "LuminoEngine/Mesh/SkinnedMeshModel.hpp"
+#include "LuminoGraphics/Mesh/MeshPrimitive.hpp"
+#include "LuminoGraphics/Mesh/MeshModel.hpp"
+#include "LuminoGraphics/Mesh/AnimationController.hpp"
+#include "LuminoGraphics/Mesh/SkinnedMeshModel.hpp"
 
-#include "LuminoEngine/Rendering/Common.hpp"
-#include "LuminoEngine/Rendering/Material.hpp"
-#include "LuminoEngine/Rendering/CommandList.hpp"
-#include "LuminoEngine/Rendering/RenderView.hpp"
-#include "LuminoEngine/Rendering/RenderFeature.hpp"
-#include "LuminoEngine/Rendering/RenderingContext.hpp"
-#include "LuminoEngine/Rendering/Shaders.hpp"
+#include "LuminoGraphics/Rendering/Common.hpp"
+#include "LuminoGraphics/Rendering/Material.hpp"
+#include "LuminoGraphics/Rendering/CommandList.hpp"
+#include "LuminoGraphics/Rendering/RenderView.hpp"
+#include "LuminoGraphics/Rendering/RenderFeature.hpp"
+#include "LuminoGraphics/Rendering/RenderingContext.hpp"
+#include "LuminoGraphics/Rendering/Shaders.hpp"
 
 #include "LuminoEngine/PostEffect/PostEffect.hpp"
 #include "LuminoEngine/PostEffect/TonePostEffect.hpp"
@@ -162,7 +162,7 @@
 #pragma comment(lib, "spirv-cross-util" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "vorbis" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "vorbisfile" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
-#pragma comment(lib, "LuminoEngine-static" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "LuminoEngine" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "freetype" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "glad" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "glslang" LN_MSVC_AUTO_LINK_POSTFIX ".lib")

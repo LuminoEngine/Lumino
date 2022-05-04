@@ -6,11 +6,11 @@
 		CommandBuffer と RenderPass は全て pool からインスタンスを得る。インスタンスを外側で保持し続けてはならない。
 */
 #include "Internal.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/DepthBuffer.hpp>
 #include <LuminoGraphics/RHI/RenderPass.hpp>
 #include "RenderPassCache.hpp"
-#include "GraphicsManager.hpp"
 #include "GraphicsProfiler.hpp"
 #include "Backend/GraphicsDeviceContext.hpp"
 

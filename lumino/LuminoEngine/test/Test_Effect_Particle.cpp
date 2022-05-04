@@ -1,7 +1,7 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
 #include "../src/Effect/ParticleEffectInstance.hpp"
-#include "../src/Rendering/RenderingManager.hpp"
+#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
 class Test_Effect_Particle : public ::testing::Test {};
 

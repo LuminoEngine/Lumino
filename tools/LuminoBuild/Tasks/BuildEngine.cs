@@ -8,7 +8,10 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine";
 
-        public override string[] Depends => new string[] { "BuildExternals" };
+        public override string[] GetDepends(Build b)
+        {
+            return new string[] { "BuildExternals" };
+        }
 
         public override void Build(Build b)
         {
@@ -16,13 +19,13 @@ namespace LuminoBuild.Tasks
             {
                 // Configuration
                 {
-                    //var generator = "MinGW Makefiles";
                     var generator = "Ninja";
 
                     var buildType = b.Options.Debug ? "Debug" : "Release";
 
-                    var args = new string[]
+                    var args = new List<string>()
                     {
+                        b.RootDir,
                         $"-G\"{generator}\"",
                         $"-DCMAKE_MAKE_PROGRAM=" + EmscriptenEnv.Ninja,
                         $"-DCMAKE_BUILD_TYPE={buildType}",
@@ -30,11 +33,15 @@ namespace LuminoBuild.Tasks
                         $"-DCMAKE_INSTALL_PREFIX=\"{b.EngineInstallDir}\"",
                         $"-DCMAKE_DEBUG_POSTFIX=d",
                         $"-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE={EmscriptenEnv.EmsdkDir}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
-                        //$"-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
                         $"-DVCPKG_TARGET_TRIPLET=\"{b.Triplet}\"",
                         $"-DLN_BUILD_TESTS=OFF",
-                        b.RootDir,
                     };
+
+                    if (BuildEnvironment.FromCI)
+                    {
+                        args.Add($"-DLN_BUILD_EXAMPLES=OFF");
+                    }
+
                     Utils.CallProcess("cmake", string.Join(' ', args));
                 }
 

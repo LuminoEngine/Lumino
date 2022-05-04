@@ -6,6 +6,6 @@ source_group("Sources" FILES ${LOCAL_SOURCES})
 
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES} ${LN_SOURCES_gtest})
 target_include_directories(${PROJECT_NAME} PRIVATE ${LN_INCLUDES_gtest})
-target_link_libraries(${PROJECT_NAME} LuminoEngine-static LuminoTranscoder-Core)
+target_link_libraries(${PROJECT_NAME} LuminoEngine LuminoTranscoder-Core)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
 ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")

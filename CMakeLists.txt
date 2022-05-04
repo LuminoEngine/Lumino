@@ -69,6 +69,11 @@ set(LN_VCPKG_INSTALLED_DIR "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 set(CMAKE_DEBUG_POSTFIX "d")
 
 include(src/LuminoBuildCommon.cmake)
+include(lumino/LuminoCore/cmake/LuminoConfig-AddPCH.cmake)
+
+if (LN_MSVC_STATIC_RUNTIME)
+    ln_use_msvc_static_runtime_library()
+endif()
 
 set(LUMINO_REPO_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}")
 add_definitions(-DLUMINO_REPO_ROOT_DIR="${LUMINO_REPO_ROOT_DIR}")
@@ -96,11 +101,13 @@ if (DEFINED EMSCRIPTEN)
     set(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER OFF)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    #set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
+    #set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-pthread")
 
-    set(LN_LUMINO_CLI_TOOL "${CMAKE_CURRENT_LIST_DIR}/build/buildtrees/x64-windows/lumino/src/Editor/CLI/Debug/lumino.exe")
-    if (NOT EXISTS ${LN_LUMINO_CLI_TOOL})
-        message(FATAL_ERROR "Not found: ${LN_LUMINO_CLI_TOOL}")
+    if (LN_BUILD_EXAMPLES)
+        set(LN_LUMINO_CLI_TOOL "${CMAKE_CURRENT_LIST_DIR}/build/buildtrees/x64-windows-static/lumino/src/Editor/CLI/Debug/lumino.exe")
+        if (NOT EXISTS ${LN_LUMINO_CLI_TOOL})
+            message(FATAL_ERROR "Not found: ${LN_LUMINO_CLI_TOOL}")
+        endif()
     endif()
 
 elseif (LN_ANDROID)
@@ -140,12 +147,13 @@ if (LN_BUILD_CORE_ONLY)
     set(LN_BUILD_ENGINE OFF)
 endif()
 
+# TODO: triplet から判断したい
+set(LN_LINK_CMAKE_SHARED_LIB_PACKAGE OFF)
 
 #-------------------------------------------------------------------------------
 # Externals
 #-------------------------------------------------------------------------------
 
-find_package(fmt CONFIG REQUIRED)
 if (LN_OS_DESKTOP)
     find_package(GTest CONFIG REQUIRED)
 endif()
@@ -173,7 +181,6 @@ elseif (LN_EMSCRIPTEN)
     add_subdirectory(lumino/LuminoCore)
     add_subdirectory(lumino/Runtime)
     add_subdirectory(lumino/Platform)
-    add_subdirectory(lumino/ShaderCompiler)
     add_subdirectory(lumino/Bitmap)
     add_subdirectory(lumino/Font)
     add_subdirectory(lumino/Graphics)

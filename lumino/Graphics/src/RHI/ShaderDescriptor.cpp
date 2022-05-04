@@ -1,4 +1,5 @@
 ﻿#include "Internal.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/RHI/VertexBuffer.hpp>
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/SamplerState.hpp>
@@ -6,7 +7,6 @@
 #include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"
-#include "GraphicsManager.hpp"
 
 namespace ln {
 

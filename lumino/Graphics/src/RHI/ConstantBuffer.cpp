@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/RHI/ConstantBuffer.hpp>
-#include "GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "GraphicsProfiler.hpp"
 #include "Backend/GraphicsDeviceContext.hpp"
 

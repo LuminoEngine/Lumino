@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include "GraphicsManager.hpp"
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/RHI/CommandQueue.hpp>
 #include <LuminoGraphics/RHI/Graphics.hpp>
 #include "Backend/GraphicsDeviceContext.hpp"

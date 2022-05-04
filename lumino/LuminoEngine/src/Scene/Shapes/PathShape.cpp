@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Scene/Shapes/PathShape.hpp>
-#include "../../Rendering/RenderFeature/NanoVGHelper.hpp"
+#include "../../Graphics/src/Rendering/RenderFeature/NanoVGHelper.hpp"
 #include "../SceneManager.hpp"
 #include "PathShapeContext.hpp"
 

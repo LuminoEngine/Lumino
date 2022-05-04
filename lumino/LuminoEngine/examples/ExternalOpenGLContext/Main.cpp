@@ -148,8 +148,7 @@ int main(void) {
     EngineSettings::setUseExternalSwapChain(true);
     EngineSettings::setUserMainWindow((intptr_t)glfwGetWin32Window(window));
     EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
-    Application* app = ::LuminoCreateApplicationInstance();
-    AppIntegration::initialize(app);
+    AppIntegration::initialize(LuminoConfigureApplication, LuminoCreateApplicationInstance);
 
     while (!glfwWindowShouldClose(window)) {
         float ratio;
@@ -176,8 +175,7 @@ int main(void) {
         glfwPollEvents();
     }
 
-    AppIntegration::terminate(app);
-    delete app;
+    AppIntegration::terminate();
 
     glfwDestroyWindow(window);
 

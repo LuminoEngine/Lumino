@@ -437,7 +437,7 @@ public:
      */
     ShaderTechnique* findTechnique(const StringView& name) const;
 
-    ShaderTechnique* findTechniqueByVariantKey(uint64_t key) const;
+    ShaderTechnique* findTechniqueByVariantKey(uint32_t key, bool strict) const;
 
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
@@ -468,6 +468,8 @@ public:
     const Ref<ShaderDefaultDescriptor>& descriptor() const { return m_descriptor; }
     const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
 
+    void addAffectVariantKey(uint32_t crc32key);
+    bool hasAffectVariantKey(uint32_t crc32key) const { return m_affectVariantKeys.contains(crc32key); }
 
 protected:
     void onDispose(bool explicitDisposing) override;
@@ -496,6 +498,7 @@ private:
     Ref<ShaderDefaultDescriptor> m_descriptor;
     Ref<detail::ShaderSecondaryDescriptor> m_descriptor2;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
+    Array<uint32_t> m_affectVariantKeys;
 
     friend class ShaderPass;
     friend class detail::ShaderInternal;
@@ -525,10 +528,8 @@ private:
 LN_INTERNAL_NEW_OBJECT;
     ShaderTechnique();
     virtual ~ShaderTechnique();
-    void init(const kokage::UnifiedShaderTechnique* kokageTech);
+    void init(Shader* owner, const kokage::UnifiedShaderTechnique* kokageTech);
     void setupSemanticsManager();
-
-    void setOwner(Shader* owner) { m_owner = owner; }
     void addShaderPass(ShaderPass* pass);
 
     Shader* m_owner;
@@ -536,7 +537,10 @@ LN_INTERNAL_NEW_OBJECT;
     Ref<List<Ref<ShaderPass>>> m_passes;
     kokage::ShaderTechniqueClass m_techniqueClass;
     std::unique_ptr<detail::ShaderTechniqueSemanticsManager> m_semanticsManager;
-    uint64_t m_variantKey;
+    uint32_t m_variantKey;
+#ifdef LN_DEBUG
+    std::vector<std::string> m_variantKeys;
+#endif
 
     friend class Shader;
     friend class ShaderPass;

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
-#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
@@ -85,7 +85,6 @@ void UIManager::init(const Settings& settings)
     LN_LOG_DEBUG("UIManager Initialization started.");
 
 	m_graphicsManager = settings.graphicsManager;
-    m_application = settings.application;
     m_defaultThemeName = settings.defaultThemeName;
     m_eventArgsPool = makeRef<EventArgsPool>();
     //m_mainContext = makeObject<UIContext>();
@@ -151,7 +150,7 @@ void UIManager::dispose()
     LN_LOG_DEBUG("UIManager dispose started.");
 
     if (m_application) {
-        m_application->finalizeInternal2();
+        m_application->finalizeInternal();
         m_application = nullptr;
     }
 
@@ -168,7 +167,7 @@ void UIManager::resetApp(Application* app)
     if (m_application == app) return;
 
     if (m_application) {
-        m_application->finalizeInternal2();
+        m_application->finalizeInternal();
         m_application = nullptr;
     }
 
@@ -424,7 +423,7 @@ void UIManager::unregisterActiveTimer(UIActiveTimer* timer)
 void UIManager::updateFrame(float elapsedSeconds)
 {
     if (m_application) {
-        m_application->updateInertnal2();
+        m_application->updateInertnal();
     }
 
 	for (auto& timer : m_activeTimers) {

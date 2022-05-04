@@ -1,6 +1,6 @@
 ﻿#pragma once
+#include <LuminoGraphics/Animation/EasingFunctions.hpp>
 #include "PostEffect.hpp"
-#include "../Animation/EasingFunctions.hpp"
 
 namespace ln {
 namespace detail { class ScreenBlurPostEffectInstance; }

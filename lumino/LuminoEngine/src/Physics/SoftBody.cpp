@@ -4,7 +4,7 @@
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
 #include <bullet/BulletSoftBody/btSoftBodyHelpers.h>
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
-#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
+#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/SoftBody.hpp>
 #include "BulletUtils.hpp"

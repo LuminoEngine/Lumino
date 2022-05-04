@@ -12,7 +12,7 @@ string(APPEND LOCAL_LINK_FLAGS " -s USE_WEBGL2=1")
 string(APPEND LOCAL_LINK_FLAGS " -s FULL_ES3=1")
 string(APPEND LOCAL_LINK_FLAGS " -s ALLOW_MEMORY_GROWTH=1")
 
-string(APPEND LOCAL_LINK_FLAGS " --shell-file ${CMAKE_CURRENT_LIST_DIR}/shell_minimal.html")
+#string(APPEND LOCAL_LINK_FLAGS " --shell-file ${CMAKE_CURRENT_LIST_DIR}/shell_minimal.html")
 
 # MODULARIZE 有効にすると、次のようにモジュール全体がラップされる。
 #   var Module = function(Module) { /* Emscripten の生成コード */ }
@@ -56,7 +56,7 @@ string(APPEND LOCAL_LINK_FLAGS " --js-library ${CMAKE_CURRENT_LIST_DIR}/renderer
 
 # for Debug
 string(APPEND LOCAL_LINK_FLAGS " --minify 0")
-string(APPEND LOCAL_LINK_FLAGS " -gsource-map")
+#string(APPEND LOCAL_LINK_FLAGS " -gsource-map")
 string(APPEND LOCAL_LINK_FLAGS " -g3")
 string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
 

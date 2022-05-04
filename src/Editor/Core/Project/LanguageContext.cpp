@@ -143,7 +143,7 @@ ln::Result CppLanguageContext::build(const ln::String& target) {
 }
 
 ln::Result CppLanguageContext::build_NativeCMakeTarget() const {
-    ln::String arch = U"x64-windows";
+    ln::String arch = U"x64-windows-static";
 
     ln::List<ln::String> args = {
         project()->rootDirPath(),
@@ -151,6 +151,7 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const {
         U"-A x64",
         U"-DCMAKE_TOOLCHAIN_FILE=\"" + ln::Path(APP->buildEnvironment()->vcpkgDir(), U"scripts/buildsystems/vcpkg.cmake").unify() + U"\"",
         U"-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
+        U"-DVCPKG_TARGET_TRIPLET=" + arch,
         U"-DLN_TARGET_ARCH=" + arch,
         U"-DLN_MSVC_STATIC_RUNTIME=ON",
         U"-DCMAKE_PREFIX_PATH=\"" + ln::Path(APP->buildEnvironment()->cmakePackagesDir(), arch).unify() + U"\"",
@@ -190,35 +191,58 @@ ln::Result CppLanguageContext::build_WebTarget() const {
 
     auto buildDir = ln::Path::combine(project()->acquireBuildDir(), _TT("Web")).canonicalize();
     auto installDir = ln::Path::combine(buildDir, _TT("Release"));
-    auto cmakeSourceDir = project()->emscriptenProjectDir();
-    auto script = ln::Path::combine(buildDir, _TT("build.bat"));
-    auto engineRootPath = ln::Path(workspace->buildEnvironment()->emscriptenSysRootLocalDir(), _TT("LuminoEngine"));
+    auto sourceDir = project()->rootDirPath();
+    //auto script = ln::Path::combine(buildDir, _TT("build.bat"));
+    //auto engineRootPath = ln::Path(workspace->buildEnvironment()->emscriptenSysRootLocalDir(), _TT("LuminoEngine"));
 
     ln::FileSystem::createDirectory(buildDir);
 
     {
-        auto engineRoot = engineRootPath.str().replace(_TT("\\"), _TT("/"));
-        ln::List<ln::String> emcmakeArgs = {
-            _TT("-DCMAKE_BUILD_TYPE=Release"),
-            _TT("-DCMAKE_INSTALL_PREFIX=") + installDir,
-            //_TT("-DCMAKE_PREFIX_PATH=\"") + ln::String::concat(engineRoot, _TT("/"), _TT("Emscripten")) + _TT("\""),
-            _TT("-DCMAKE_PREFIX_PATH=\"") + engineRoot + _TT("\""),
-            _TT("-DLUMINO_ENGINE_ROOT=\"") + engineRoot + _TT("\""),
-            _TT("-DLN_TARGET_ARCH=Emscripten"),
-            _TT("-G \"MinGW Makefiles\""),
-            cmakeSourceDir,
-        };
+        auto cd = ScopedCurrentDir::enter(buildDir);
+        ln::String buildType = true ? U"Debug" : U"Release";    // TODO:
+        ln::String triplet = U"wasm32-emscripten";
 
-        ln::StreamWriter sw(script);
-        sw.writeLineFormat(_TT("cd /d \"{0}\""), workspace->buildEnvironment()->emsdkDirPath().str());
-        sw.writeLineFormat(_TT("call emsdk activate ") + workspace->buildEnvironment()->emsdkName());
-        sw.writeLineFormat(_TT("call emsdk_env.bat"));
-        sw.writeLineFormat(_TT("cd /d \"{0}\""), buildDir.str());
-        sw.writeLineFormat(_TT("call emcmake cmake ") + ln::String::join(emcmakeArgs, _TT(" ")));
-        sw.writeLineFormat(_TT("call cmake --build ."));
+        ln::String d = ln::Path(APP->buildEnvironment()->emsdkDirPath(), U"upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake").unify();
+
+        ln::Array<ln::String> args {
+            U"cmake",
+            sourceDir,
+            U"-G\"Ninja\"",
+            U"-DCMAKE_MAKE_PROGRAM=" + APP->buildEnvironment()->ninja(),
+            U"-DCMAKE_BUILD_TYPE=" + buildType,
+            U"-DCMAKE_TOOLCHAIN_FILE=\"" + ln::Path(APP->buildEnvironment()->vcpkgDir(), U"scripts/buildsystems/vcpkg.cmake").unify() + U"\"",
+            //U"-DCMAKE_PREFIX_PATH=\"" + ln::Path(APP->buildEnvironment()->cmakePackagesDir(), triplet).unify() + U"\"",
+            //$ "-DCMAKE_INSTALL_PREFIX=\"{b.EngineInstallDir}\"",
+            //$ "-DCMAKE_DEBUG_POSTFIX=d",
+            U"-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=\"" + d + U"\"",
+            U"-DVCPKG_TARGET_TRIPLET=" + triplet,
+            U"-DLN_BUILD_TESTS=OFF",
+        };
+        ln::Process2::exec(ln::String::join(args, U" "));
+
+
+        //auto engineRoot = engineRootPath.str().replace(_TT("\\"), _TT("/"));
+        //ln::List<ln::String> emcmakeArgs = {
+        //    _TT("-DCMAKE_BUILD_TYPE=Release"),
+        //    _TT("-DCMAKE_INSTALL_PREFIX=") + installDir,
+        //    //_TT("-DCMAKE_PREFIX_PATH=\"") + ln::String::concat(engineRoot, _TT("/"), _TT("Emscripten")) + _TT("\""),
+        //    _TT("-DCMAKE_PREFIX_PATH=\"") + engineRoot + _TT("\""),
+        //    _TT("-DLUMINO_ENGINE_ROOT=\"") + engineRoot + _TT("\""),
+        //    _TT("-DLN_TARGET_ARCH=Emscripten"),
+        //    _TT("-G \"MinGW Makefiles\""),
+        //    cmakeSourceDir,
+        //};
+
+        //ln::StreamWriter sw(script);
+        //sw.writeLineFormat(_TT("cd /d \"{0}\""), workspace->buildEnvironment()->emsdkDirPath().str());
+        //sw.writeLineFormat(_TT("call emsdk activate ") + workspace->buildEnvironment()->emsdkName());
+        //sw.writeLineFormat(_TT("call emsdk_env.bat"));
+        //sw.writeLineFormat(_TT("cd /d \"{0}\""), buildDir.str());
+        //sw.writeLineFormat(_TT("call emcmake cmake ") + ln::String::join(emcmakeArgs, _TT(" ")));
+        //sw.writeLineFormat(_TT("call cmake --build ."));
     }
 
-    ln::Process::execute(script);
+    //ln::Process::execute(script);
     return ln::ok();
 }
 

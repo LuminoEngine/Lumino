@@ -86,7 +86,7 @@
     
 */
 #include "Internal.hpp"
-#include <LuminoEngine/Animation/AnimationCurve.hpp>
+#include <LuminoGraphics/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIStyleAnimation.hpp>
 

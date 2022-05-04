@@ -28,7 +28,6 @@ set(LN_SOURCES_Engine
     src/RegisterTypes.cpp
 )
 
-file(GLOB LN_SOURCES_Animation ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/*.hpp src/Animation/*.cpp src/Animation/*.hpp)
 
 set(LN_SOURCES_Input
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Common.hpp
@@ -62,17 +61,6 @@ file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp s
 file(GLOB LN_SOURCES_Shader_Lexer ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Lexer/*.hpp src/Shader/Lexer/*.cpp src/Shader/Lexer/*.hpp src/Shader/Lexer/*.md)
 
 
-file(GLOB LN_SOURCES_TextRendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/TextRendering/*.hpp src/TextRendering/*.cpp src/TextRendering/*.hpp)
-
-file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/Mesh/*.cpp src/Mesh/*.hpp)
-file(GLOB LN_SOURCES_Mesh_MeshImporters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshImporters/*.hpp src/Mesh/MeshImporters/*.cpp src/Mesh/MeshImporters/*.hpp)
-file(GLOB LN_SOURCES_Mesh_MeshGeneraters ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/MeshGeneraters/*.hpp src/Mesh/MeshGeneraters/*.cpp src/Mesh/MeshGeneraters/*.hpp)
-
-file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp src/Rendering/*.md)
-file(GLOB LN_SOURCES_Rendering_RLIs src/Rendering/RLIs/*.cpp src/Rendering/RLIs/*.hpp)
-file(GLOB LN_SOURCES_Rendering_RenderFeature ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature/*.hpp src/Rendering/RenderFeature/*.cpp src/Rendering/RenderFeature/*.hpp)
-file(GLOB LN_SOURCES_Rendering_Kanata ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Kanata/*.hpp src/Rendering/Kanata/*.cpp src/Rendering/Kanata/*.hpp)
-file(GLOB LN_SOURCES_Rendering_Kanata_RenderFeature ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Kanata/RenderFeature/*.hpp src/Rendering/Kanata/RenderFeature/*.cpp src/Rendering/Kanata/RenderFeature/*.hpp)
 
 file(GLOB LN_SOURCES_PostEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/PostEffect/*.hpp src/PostEffect/*.cpp src/PostEffect/*.hpp)
 
@@ -152,41 +140,31 @@ source_group("Base" FILES ${LN_SOURCES_Base})
 source_group("Engine" FILES ${LN_SOURCES_Engine})
 source_group("Input" FILES ${LN_SOURCES_Input})
 source_group("Grammar" FILES ${LN_SOURCES_Grammar})
-source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio" FILES ${LN_SOURCES_Audio})
-source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
-source_group("Audio\\Backend" FILES ${LN_SOURCES_Audio_Backend})
-source_group("Audio\\ARIs" FILES ${LN_SOURCES_Audio_ARIs})
+source_group("Audio/Decoder" FILES ${LN_SOURCES_Audio_Decoder})
+source_group("Audio/Backend" FILES ${LN_SOURCES_Audio_Backend})
+source_group("Audio/ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 source_group("Shader" FILES ${LN_SOURCES_Shader})
-source_group("Shader\\Lexer" FILES ${LN_SOURCES_Shader_Lexer})
-source_group("TextRendering" FILES ${LN_SOURCES_TextRendering})
-source_group("Mesh" FILES ${LN_SOURCES_Mesh})
-source_group("Mesh\\MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
-source_group("Mesh\\MeshGeneraters" FILES ${LN_SOURCES_Mesh_MeshGeneraters})
-source_group("Rendering" FILES ${LN_SOURCES_Rendering})
-source_group("Rendering\\RLIs" FILES ${LN_SOURCES_Rendering_RLIs})
-source_group("Rendering\\RenderFeature" FILES ${LN_SOURCES_Rendering_RenderFeature})
-source_group("Rendering\\Kanata" FILES ${LN_SOURCES_Rendering_Kanata})
-source_group("Rendering/Kanata/RenderFeature" FILES ${LN_SOURCES_Rendering_Kanata_RenderFeature})
+source_group("Shader/Lexer" FILES ${LN_SOURCES_Shader_Lexer})
 source_group("PostEffect" FILES ${LN_SOURCES_PostEffect})
 source_group("Effect" FILES ${LN_SOURCES_Effect})
 source_group("Physics" FILES ${LN_SOURCES_Physics})
 source_group("Asset" FILES ${LN_SOURCES_Asset})
 source_group("Visual" FILES ${LN_SOURCES_Visual})
 source_group("Scene" FILES ${LN_SOURCES_Scene})
-source_group("Scene\\Text" FILES ${LN_SOURCES_Scene_Text})
-source_group("Scene\\Shapes" FILES ${LN_SOURCES_Scene_Shapes})
-source_group("Scene\\Mesh" FILES ${LN_SOURCES_Scene_Mesh})
-source_group("Scene\\MeshTilemap" FILES ${LN_SOURCES_Scene_MeshTilemap})
-source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
-source_group("Scene\\Reflection" FILES ${LN_SOURCES_Scene_Reflection})
-source_group("Scene\\Physics" FILES ${LN_SOURCES_Scene_Physics})
-source_group("Scene\\Effect" FILES ${LN_SOURCES_Scene_Effect})
-source_group("Scene\\Sprite" FILES ${LN_SOURCES_Scene_Sprite})
+source_group("Scene/Text" FILES ${LN_SOURCES_Scene_Text})
+source_group("Scene/Shapes" FILES ${LN_SOURCES_Scene_Shapes})
+source_group("Scene/Mesh" FILES ${LN_SOURCES_Scene_Mesh})
+source_group("Scene/MeshTilemap" FILES ${LN_SOURCES_Scene_MeshTilemap})
+source_group("Scene/MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
+source_group("Scene/Reflection" FILES ${LN_SOURCES_Scene_Reflection})
+source_group("Scene/Physics" FILES ${LN_SOURCES_Scene_Physics})
+source_group("Scene/Effect" FILES ${LN_SOURCES_Scene_Effect})
+source_group("Scene/Sprite" FILES ${LN_SOURCES_Scene_Sprite})
 source_group("UI" FILES ${LN_SOURCES_UI})
-source_group("UI\\Controls" FILES ${LN_SOURCES_UI_Controls})
-source_group("UI\\Layout" FILES ${LN_SOURCES_UI_Layout})
-# source_group("UI\\imgui" FILES ${LN_SOURCES_UI_imgui})
+source_group("UI/Controls" FILES ${LN_SOURCES_UI_Controls})
+source_group("UI/Layout" FILES ${LN_SOURCES_UI_Layout})
+# source_group("UI/imgui" FILES ${LN_SOURCES_UI_imgui})
 source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
 source_group("Scripting" FILES ${LN_SOURCES_Scripting})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
@@ -200,7 +178,6 @@ set(LN_SOURCES
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Grammar}
-    ${LN_SOURCES_Animation}
     ${LN_SOURCES_Input}
     ${LN_SOURCES_Audio}
     ${LN_SOURCES_Audio_Decoder}
@@ -209,14 +186,6 @@ set(LN_SOURCES
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Shader_Lexer}
     ${LN_SOURCES_TextRendering}
-    ${LN_SOURCES_Mesh}
-    ${LN_SOURCES_Mesh_MeshImporters}
-    ${LN_SOURCES_Mesh_MeshGeneraters}
-    ${LN_SOURCES_Rendering}
-    ${LN_SOURCES_Rendering_RLIs}
-    ${LN_SOURCES_Rendering_RenderFeature}
-    ${LN_SOURCES_Rendering_Kanata}
-    ${LN_SOURCES_Rendering_Kanata_RenderFeature}
     ${LN_SOURCES_PostEffect}
     ${LN_SOURCES_Effect}
     ${LN_SOURCES_Physics}
@@ -336,6 +305,7 @@ set(
     #tmxlite
     toml11::toml11
     tinyobjloader::tinyobjloader
+    imgui::imgui
     ${LN_PLATFORM_LIBS}
 )
 
@@ -344,42 +314,41 @@ if (LN_USE_Effekseer)
     list(APPEND _LN_ENGINE_LINK_LIBS ${Vulkan_LIBRARIES} Effekseer EffekseerRendererVulkan LLGI)   # for LLGI
 endif()
 
-add_library(LuminoEngine-static STATIC ${LN_SOURCES})
-target_include_directories(LuminoEngine-static PUBLIC  
+add_library(LuminoEngine STATIC ${LN_SOURCES})
+target_include_directories(LuminoEngine PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
 )
-target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-#target_compile_definitions(LuminoEngine-static PUBLIC LUMINO_BUILD_DLL=1)
-target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine-static INTERFACE LuminoPlatform LuminoRuntime LuminoBitmap LuminoFont LuminoGraphics)
+target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+#target_compile_definitions(LuminoEngine PUBLIC LUMINO_BUILD_DLL=1)
+target_compile_definitions(LuminoEngine PRIVATE ${LN_PLATFORM_DEFINITIONS})
+target_link_libraries(LuminoEngine INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS})
+target_link_libraries(LuminoEngine INTERFACE LuminoPlatform LuminoRuntime LuminoBitmap LuminoFont LuminoGraphics)
 
 if (LN_OS_DESKTOP)
-    target_include_directories(LuminoEngine-static PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})
-    target_include_directories(LuminoEngine-static PRIVATE ${STB_INCLUDE_DIRS})
-    target_include_directories(LuminoEngine-static PRIVATE ${TINYGLTF_INCLUDE_DIRS})
-    target_link_libraries(LuminoEngine-static PRIVATE glfw glad::glad)
-    target_link_libraries(LuminoEngine-static PRIVATE OpenAL::OpenAL)
-    target_link_libraries(LuminoEngine-static PRIVATE imgui::imgui)
+    target_include_directories(LuminoEngine PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})
+    target_include_directories(LuminoEngine PRIVATE ${STB_INCLUDE_DIRS})
+    target_include_directories(LuminoEngine PRIVATE ${TINYGLTF_INCLUDE_DIRS})
+    target_link_libraries(LuminoEngine PRIVATE glfw glad::glad)
+    target_link_libraries(LuminoEngine PRIVATE OpenAL::OpenAL)
 endif()
 
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 endif()
 
-#target_link_libraries(LuminoEngine-static PRIVATE glslang)
-set_target_properties(LuminoEngine-static PROPERTIES FOLDER "Lumino")
-ln_add_pch(LuminoEngine-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+#target_link_libraries(LuminoEngine PRIVATE glslang)
+set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
+ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 if (LN_EMSCRIPTEN)
-    set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
-    set_target_properties(LuminoEngine-static PROPERTIES LINK_FLAGS "-s USE_SDL=2")
+    set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-pthread")
+    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS "-s USE_SDL=2")
 endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.
-    set_target_properties(LuminoEngine-static PROPERTIES
+    set_target_properties(LuminoEngine PROPERTIES
         FRAMEWORK TRUE
         #VERSION 1.0.0
         #SOVERSION 1.0.0
@@ -405,13 +374,13 @@ if (LN_BUILD_SHARED_LIBRARY)
     add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib})
     target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
     target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1)
-    target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
+    target_link_libraries(LuminoEngine PRIVATE LuminoEngine)
     set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
 
     # Export symbols defined in another static library.
     if (MSVC)
-        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngine-staticd")
-        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine-static")
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngined")
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine")
     else()
         set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "--no-whole-archive")
         set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "--no-whole-archive")
@@ -427,7 +396,7 @@ endif()
 # Installation
 #-------------------------------------------------------------------------------
 install(
-    TARGETS     LuminoEngine-static
+    TARGETS     LuminoEngine
     EXPORT      LuminoExport
     ARCHIVE     DESTINATION ./lib
     INCLUDES    DESTINATION ./include
@@ -455,6 +424,6 @@ install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lum
 # Tests
 #-------------------------------------------------------------------------------
 
-if (LN_BUILD_TESTS)
+if (LN_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()

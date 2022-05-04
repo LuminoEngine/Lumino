@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-// ビルド時間短縮のため、LuminoEngine.dll を作るときは LuminoEngine-static.lib をリンクして、
+// ビルド時間短縮のため、LuminoEngine.dll を作るときは LuminoEngine.lib をリンクして、
 // Static-lib 内の関数を Export している。
 // ただし、関数の実態定義側に __declspec(dllexport) がないと Export されなかったので、
 // Static-lib ビルド時は常に有効にしている。
