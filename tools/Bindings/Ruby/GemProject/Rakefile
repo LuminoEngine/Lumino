@@ -37,10 +37,13 @@ desc "Copy depends files."
 task :ln_copy_files do |t, args|
   puts "debug_mode: " + debug_mode.to_s
   repo_root = File.expand_path("../../../../..", __FILE__)
+  tools_dir = File.join(repo_root, "build/installed/x64-windows-static/bin")
+  if !Dir.exist?(tools_dir)
+    tools_dir = File.join(repo_root, "build/NativePackage/Engine/x64-windows-static/bin")
+  end
 
   #--------------------
   # for release package
-  tools_dir = File.join(repo_root, "build/installed/x64-windows-static/bin")
   FileUtils.rm_r("tools") if Dir.exist?("tools")
   FileUtils.cp_r(tools_dir, "tools")
   if File.exist?("tools/lumino.exe")
@@ -51,13 +54,11 @@ task :ln_copy_files do |t, args|
   # ローカルで開発中の時は、CMake の出力フォルダから直接取ってみる。いちいち install 実行するのが大変だし忘れやすいので。
   # CI から実行するときは CMake の出力フォルダは無いので、install 先から取ってくる。
   primary_dll_dir = File.join(repo_root, "build/buildtrees/x64-windows-static/lumino/lumino/FFI/Release")
-  if Dir.exist?(primary_dll_dir)
-    copy_file_w(File.join(primary_dll_dir, "/*.dll"), "ext/lumino_ext/")
-  else
-    copy_file_w(File.join(repo_root, "build/installed/x64-windows-static/bin/*.dll"), "ext/lumino_ext/")
+  if !Dir.exist?(primary_dll_dir)
+    primary_dll_dir = File.join(repo_root, "build/NativePackage/Engine/x64-windows-static/bin")
   end
+  copy_file_w(File.join(primary_dll_dir, "/*.dll"), "ext/lumino_ext/")
 
-  copy_file_l(File.join(repo_root, "build/buildtrees/x64-windows-static/lumino/src/Editor/CLI/Release/lumino.exe"), "tools/lumino.exe")
   copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/Lumino.FlatC.generated.h"), "ext/lumino_ext/FlatC.generated.h")
   copy_file_l(File.join(repo_root, "lumino/FFI/include/LuminoFFI/FlatCommon.h"), "ext/lumino_ext/FlatCommon.h")
 
