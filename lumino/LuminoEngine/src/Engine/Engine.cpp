@@ -97,6 +97,10 @@ void EngineSettings::setPriorityGPUName(const String& filePath) {
 void EngineSettings::setUserMainWindow(intptr_t value) {
     detail::EngineManager::s_settings.userMainWindow = value;
 }
+//
+//void EngineSettings::setUseProxyPlatformWindow(bool value) {
+//    detail::EngineManager::s_settings.useProxyPlatformWindow = value;
+//}
 
 void EngineSettings::setInputBindingSet(InputBindingSet value) {
     detail::EngineManager::s_settings.inputConfig = value;
@@ -142,7 +146,7 @@ static void beginFrame() {
 }
 
 static void endFrame() {
-    detail::EngineDomain::engineManager()->presentFrame();
+    detail::EngineDomain::engineManager()->presentFrame(nullptr, nullptr);
 }
 
 // Naming Note:

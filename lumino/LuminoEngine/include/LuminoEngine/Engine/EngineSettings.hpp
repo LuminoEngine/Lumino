@@ -136,6 +136,12 @@ public:
 	LN_METHOD()
 	static void setUserMainWindow(intptr_t value);
 
+    /**
+     * デフォルトで生成される PlatformWindow のインスタンスを ProxyPlatformWindow とするかどうかを設定します。
+     */
+	static void setUseProxyPlatformWindow(bool value);
+
+
     static void setUseExternalSwapChain(bool value);
 
 	static void setInputBindingSet(InputBindingSet value);

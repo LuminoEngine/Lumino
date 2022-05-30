@@ -17,8 +17,9 @@ TEST_F(Test_Rendering_Mesh, Basic) {
     auto proxy = makeURef<MeshBatchProxy>();
     proxy->modelInstance = instance1;
 
-    auto* commandList = TestEnv::swapChain->beginFrame2();
+    auto* commandList = TestEnv::swapChain->currentCommandList2();
     auto* target = TestEnv::swapChain->currentBackbuffer();
+    commandList->beginCommandRecoding();
     auto* ctx = TestEnv::renderView->begin(commandList, target);
     {
         ctx->drawBatchProxy(proxy);
@@ -44,7 +45,8 @@ TEST_F(Test_Rendering_Mesh, Basic) {
         //}
     }
     TestEnv::renderView->end();
-    TestEnv::swapChain->endFrame();
+    commandList->endCommandRecoding();
+    TestEnv::swapChain->present();
 
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.Basic.png"), target);
 }
@@ -58,8 +60,9 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh1) {
     auto proxy = makeURef<MeshBatchProxy>();
     proxy->modelInstance = instance1;
 
-    auto* commandList = TestEnv::swapChain->beginFrame2();
+    auto* commandList = TestEnv::swapChain->currentCommandList2();
     auto* target = TestEnv::swapChain->currentBackbuffer();
+    commandList->beginCommandRecoding();
     auto* ctx = TestEnv::renderView->begin(commandList, target);
     {
         instance1->updateFrame(0.016);
@@ -93,7 +96,8 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh1) {
         //}
     }
     TestEnv::renderView->end();
-    TestEnv::swapChain->endFrame();
+    commandList->endCommandRecoding();
+    TestEnv::swapChain->present();
 
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.SkinnedMesh1.png"), target);
 }
@@ -112,8 +116,9 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh2) {
     auto proxy2 = makeURef<MeshBatchProxy>();
     proxy2->modelInstance = instance2;
 
-    auto* commandList = TestEnv::swapChain->beginFrame2();
+    auto* commandList = TestEnv::swapChain->currentCommandList2();
     auto* target = TestEnv::swapChain->currentBackbuffer();
+    commandList->beginCommandRecoding();
     auto* ctx = TestEnv::renderView->begin(commandList, target);
     {
         instance1->updateFrame(0.016);
@@ -136,7 +141,8 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh2) {
         ctx->drawBatchProxy(proxy2);
     }
     TestEnv::renderView->end();
-    TestEnv::swapChain->endFrame();
+    commandList->endCommandRecoding();
+    TestEnv::swapChain->present();
 
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.SkinnedMesh2.png"), target);
 }
@@ -157,8 +163,9 @@ TEST_F(Test_Rendering_Mesh, RuntimeMaterial) {
     auto proxy2 = makeURef<MeshBatchProxy>();
     proxy2->modelInstance = instance2;
 
-    auto* commandList = TestEnv::swapChain->beginFrame2();
+    auto* commandList = TestEnv::swapChain->currentCommandList2();
     auto* target = TestEnv::swapChain->currentBackbuffer();
+    commandList->beginCommandRecoding();
     auto* ctx = TestEnv::renderView->begin(commandList, target);
     {
         instance1->updateFrame(0.016);
@@ -171,7 +178,8 @@ TEST_F(Test_Rendering_Mesh, RuntimeMaterial) {
         ctx->drawBatchProxy(proxy2);
     }
     TestEnv::renderView->end();
-    TestEnv::swapChain->endFrame();
+    commandList->endCommandRecoding();
+    TestEnv::swapChain->present();
 
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.RuntimeMaterial.png"), target);
 }

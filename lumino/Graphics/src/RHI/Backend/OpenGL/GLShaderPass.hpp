@@ -60,6 +60,14 @@ public:
         // DescriptorLayout の UniformBuffer index.
         // Descriptor からデータを取り出すときに使う。
         kokage::LayoutSlotIndex layoutSlotIndex; 
+
+        // glCompileShader() でランタイムコンパイルした Shader の各 ActiveUniformBlock のうち、実際には使われていないものに Bind するダミーの UBO。
+        // ActiveUniformBlock には、定義だけあるが実際には参照していないものも含む。kokage はそういった Buffer を見つけても、Layout 情報として出力しない。
+        // しかし WebGL では、そのような参照されていない UBO に対しても、十分なサイズを持つ UBO をバインドしないと GL_INVALID_OPERATION が発生する。
+        // https://github.com/mikolalysenko/angle/blob/master/src/libANGLE/validationES.cpp#L1772-L1799
+        // 今のところ WebGL でのみ確認しており、DX12 や Vulkan では Bind しなくてもエラーにはならない。
+        // 無駄に VRAM を消費するのもイヤなので、OpenGL バックエンド側でダミーを持たせることで対策している。
+        GLuint deactiveUBO = 0;
     };
 
     // textureXD と samplerState を結合するためのデータ構造

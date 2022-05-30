@@ -54,14 +54,14 @@ namespace detail {
       x  +  *  < 1.ここに focus() する
      /|\   /|\
     + x + + + *  < 2. 子へフラグを探しに行って、ここから通常の focus() する
- 
+
          *
         /|\
        / | \
       x  +  *  < フラグは子が持つのではなく、親が持つ。この Level では、同時に２つの子がフラグを持つことになってしまうため。
      /|\   /|\
     + x + + + *
-      
+
 
 */
 
@@ -71,25 +71,23 @@ namespace detail {
 const float UIManager::MouseButtonClickTimeout = 0.3f;
 
 UIManager::UIManager()
-	: m_graphicsManager(nullptr)
+    : m_graphicsManager(nullptr)
     , m_application(nullptr)
     , m_primaryElement(nullptr)
     , m_mouseHoverElement(nullptr)
-	, m_capturedElement(nullptr)
-    , m_forcusedElement(nullptr)
-{
+    , m_capturedElement(nullptr)
+    , m_forcusedElement(nullptr) {
 }
 
-void UIManager::init(const Settings& settings)
-{
+void UIManager::init(const Settings& settings) {
     LN_LOG_DEBUG("UIManager Initialization started.");
 
-	m_graphicsManager = settings.graphicsManager;
+    m_graphicsManager = settings.graphicsManager;
     m_defaultThemeName = settings.defaultThemeName;
     m_eventArgsPool = makeRef<EventArgsPool>();
-    //m_mainContext = makeObject<UIContext>();
+    // m_mainContext = makeObject<UIContext>();
 
-	//m_defaultLayout = makeObject<UIFrameLayout>();
+    // m_defaultLayout = makeObject<UIFrameLayout>();
 
     m_commonInputCommands.left = makeObject<UICommand>(_TT("left"));
     m_commonInputCommands.right = makeObject<UICommand>(_TT("right"));
@@ -121,10 +119,9 @@ void UIManager::init(const Settings& settings)
     {
         m_finalDefaultStyle = makeRef<detail::UIStyleInstance>();
         m_styleContext = makeObject<UIStyleContext>();
-        //m_defaultStyle = makeObject<UIStyle>();
-        //m_defaultStyle->setupDefault();
-        //m_finalDefaultStyle->setupDefault();
-
+        // m_defaultStyle = makeObject<UIStyle>();
+        // m_defaultStyle->setupDefault();
+        // m_finalDefaultStyle->setupDefault();
 
         if (String::compare(detail::EngineDomain::uiManager()->defaultThemeName(), _TT("Chocotelier"), CaseSensitivity::CaseInsensitive) == 0) {
             auto theme = makeObject<UITheme>();
@@ -136,17 +133,14 @@ void UIManager::init(const Settings& settings)
             setupDefaultStyle();
         }
 
-
         m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
         detail::UIStyleInstance::updateStyleDataHelper(m_styleContext, nullptr, m_styleContext->mainTheme->defaultStyle(), m_finalDefaultStyle);
-
     }
 
     LN_LOG_DEBUG("UIManager Initialization finished.");
 }
 
-void UIManager::dispose()
-{
+void UIManager::dispose() {
     LN_LOG_DEBUG("UIManager dispose started.");
 
     if (m_application) {
@@ -155,15 +149,14 @@ void UIManager::dispose()
     }
 
     m_eventArgsPool = nullptr;
-    //m_mainContext = nullptr;
+    // m_mainContext = nullptr;
     m_styleContext = nullptr;
     m_finalDefaultStyle = nullptr;
 
     LN_LOG_DEBUG("UIManager dispose finished.");
 }
 
-void UIManager::resetApp(Application* app)
-{
+void UIManager::resetApp(Application* app) {
     if (m_application == app) return;
 
     if (m_application) {
@@ -174,38 +167,33 @@ void UIManager::resetApp(Application* app)
     m_application = app;
 }
 
-void UIManager::onElementDisposing(UIElement* element)
-{
-    //if (m_forcusedElement == element) {
-    //    m_forcusedElement = nullptr;
-    //}
-    //if (m_capturedElement == element) {
-    //    m_capturedElement = nullptr;
-    //}
-    //if (m_mouseHoverElement == element) {
-    //    m_mouseHoverElement = nullptr;
-    //}
+void UIManager::onElementDisposing(UIElement* element) {
+    // if (m_forcusedElement == element) {
+    //     m_forcusedElement = nullptr;
+    // }
+    // if (m_capturedElement == element) {
+    //     m_capturedElement = nullptr;
+    // }
+    // if (m_mouseHoverElement == element) {
+    //     m_mouseHoverElement = nullptr;
+    // }
 }
 
-void UIManager::setPrimaryElement(UIControl* element)
-{
+void UIManager::setPrimaryElement(UIControl* element) {
     m_primaryElement = element;
 }
 
-UIControl* UIManager::primaryElement() const
-{
-	return m_primaryElement;
+UIControl* UIManager::primaryElement() const {
+    return m_primaryElement;
 }
 //
-//void UIManager::setMainContext(UIContext* context)
+// void UIManager::setMainContext(UIContext* context)
 //{
 //    m_mainContext = context;
 //}
 
-void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition)
-{
+void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition) {
     if (LN_REQUIRE(mouseEventSource)) return;
-
 
 #if 1
     UIElement* old = m_mouseHoverElement;
@@ -214,29 +202,25 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
     if (m_mouseHoverElement != hoverdElement) {
         clearMouseHover();
 
-
-
-        if (hoverdElement)
-        {
+        if (hoverdElement) {
             m_mouseHoverElement = hoverdElement;
             auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, ModifierKeys::None, true);
             m_mouseHoverElement->raiseEvent(args);
         }
 
-        //if (m_mouseHoverElement) {
-        //    printf("m_mouseHoverElement: %p %s\n", m_mouseHoverElement, typeid(*(m_mouseHoverElement.get())).name());
-        //    if (auto tt = dynamic_cast<UIText*>(m_mouseHoverElement.get())) {
-        //        std::cout << tt->text() << std::endl;
-        //    }
-        //}
+        // if (m_mouseHoverElement) {
+        //     printf("m_mouseHoverElement: %p %s\n", m_mouseHoverElement, typeid(*(m_mouseHoverElement.get())).name());
+        //     if (auto tt = dynamic_cast<UIText*>(m_mouseHoverElement.get())) {
+        //         std::cout << tt->text() << std::endl;
+        //     }
+        // }
     }
-
 
 #else
     UIElement* old = m_mouseHoverElement;
 
     // TODO:IME側のイベントを処理する
-    //if ( m_pIme != NULL )
+    // if ( m_pIme != NULL )
     //{
     //	if ( m_pIme->OnMouseHoverCheck( m_MousePosition, &mMouseHoverControl ) )
     //	{
@@ -244,15 +228,14 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
     //	}
     //}
 
-
     // m_adornerLayer を調べる
-    //m_mouseHoverElement = m_adornerLayer->checkMouseHoverElement(mousePos);
-    //if (m_mouseHoverElement != nullptr) {
+    // m_mouseHoverElement = m_adornerLayer->checkMouseHoverElement(mousePos);
+    // if (m_mouseHoverElement != nullptr) {
     //	goto EXIT;
     //}
 
     // Popup を調べる
-    //for (auto& popup : m_popupContainers)
+    // for (auto& popup : m_popupContainers)
     //{
     //    m_mouseHoverElement = popup->GetPopup()->checkMouseHoverElement(mousePos);
     //    if (m_mouseHoverElement != nullptr) {
@@ -261,7 +244,7 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
     //}
 
     // 通常のウィンドウのイベントを処理する
-    //if (m_rootElement != NULL)
+    // if (m_rootElement != NULL)
     {
         m_mouseHoverElement = mouseEventSource->onLookupMouseHoverElement(frameClientPosition);
         if (m_mouseHoverElement != nullptr) {
@@ -273,16 +256,13 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
 
 EXIT:
     // 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
-    if (m_mouseHoverElement != old)
-    {
-        if (old)
-        {
+    if (m_mouseHoverElement != old) {
+        if (old) {
             auto args = UIMouseEventArgs::create(old, UIEvents::MouseLeaveEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
             old->raiseEvent(args);
         }
 
-        if (m_mouseHoverElement)
-        {
+        if (m_mouseHoverElement) {
             auto args = UIMouseEventArgs::create(old, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
             m_mouseHoverElement->raiseEvent(args);
         }
@@ -292,81 +272,71 @@ EXIT:
 #endif
 }
 
-void UIManager::retainCapture(UIElement* element)
-{
-	m_capturedElement = element;
+void UIManager::retainCapture(UIElement* element) {
+    m_capturedElement = element;
 }
 
-void UIManager::releaseCapture(UIElement* element)
-{
-	if (m_capturedElement == element) {
-		m_capturedElement = nullptr;
-	}
+void UIManager::releaseCapture(UIElement* element) {
+    if (m_capturedElement == element) {
+        m_capturedElement = nullptr;
+    }
 }
 
-void UIManager::grabCursor(UIElement* element)
-{
+void UIManager::grabCursor(UIElement* element) {
     if (UIFrameWindow* window = static_cast<UIFrameWindow*>(element->getFrameWindow())) {
         window->platformWindow()->grabCursor();
     }
 }
 
-void UIManager::releaseCursor(UIElement* element)
-{
+void UIManager::releaseCursor(UIElement* element) {
     if (UIFrameWindow* window = static_cast<UIFrameWindow*>(element->getFrameWindow())) {
         window->platformWindow()->releaseCursor();
     }
 }
 
-void UIManager::clearFocus(UIElement* element)
-{
+void UIManager::clearFocus(UIElement* element) {
     if (m_forcusedElement == element) {
         deactivateElement(m_forcusedElement);
         m_forcusedElement = nullptr;
     }
 }
 
-void UIManager::tryGetInputFocus(UIElement* element)
-{
-	activateTree(element);
-	m_forcusedElement = element;
+void UIManager::tryGetInputFocus(UIElement* element) {
+    activateTree(element);
+    m_forcusedElement = element;
 }
 
-void UIManager::activateTree(UIElement* element)
-{
-	m_activationCache.clear();
+void UIManager::activateTree(UIElement* element) {
+    m_activationCache.clear();
 
-	// VisualTree を遡ってすべて列挙
-	UIElement* e = element;
-	while (e)
-	{
-		m_activationCache.add(e);
-		e = e->m_visualParent;
-	}
+    // VisualTree を遡ってすべて列挙
+    UIElement* e = element;
+    while (e) {
+        m_activationCache.add(e);
+        e = e->m_visualParent;
+    }
 
-	// activation と deactivation の分岐点を探しつつ deactivate する
-	UIElement* branchRoot = nullptr;
-	e = m_forcusedElement;
-	while (e)
-	{
-		if (m_activationCache.contains(e)) {
-			branchRoot = e;
-			break;
-		}
+    // activation と deactivation の分岐点を探しつつ deactivate する
+    UIElement* branchRoot = nullptr;
+    e = m_forcusedElement;
+    while (e) {
+        if (m_activationCache.contains(e)) {
+            branchRoot = e;
+            break;
+        }
 
         // deactivate
         deactivateElement(e);
 
-		e = e->m_visualParent;
-	}
+        e = e->m_visualParent;
+    }
 
-	// 基点から分岐点までを activate
-	e = element;
-	while (e)
-	{
-		if (e == branchRoot) {
-			break;
-		}
+    // 基点から分岐点までを activate
+    e = element;
+    while (e) {
+        if (e == branchRoot) {
+            break;
+        }
 
         // activate
         if (e->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Control)) {
@@ -381,20 +351,18 @@ void UIManager::activateTree(UIElement* element)
             e->m_visualParent->m_focusedVisualChild = e;
         }
 
-		e = e->m_visualParent;
-	}
+        e = e->m_visualParent;
+    }
 
     m_activationCache.clear();
 }
 
-void UIManager::postEvent(UIElement* target, UIEventArgs* e)
-{
+void UIManager::postEvent(UIElement* target, UIEventArgs* e) {
     m_eventQueue.push_back({ target, e });
 }
 
-void UIManager::dispatchPostedEvents()
-{
-    int count = m_eventQueue.size();    // 以下で発行したイベント内からさらに postEvent されたものは次のフレームで処理したいので、今回フレームで処理する数を決める
+void UIManager::dispatchPostedEvents() {
+    int count = m_eventQueue.size(); // 以下で発行したイベント内からさらに postEvent されたものは次のフレームで処理したいので、今回フレームで処理する数を決める
     while (count > 0) {
         auto& item = m_eventQueue.front();
         item.target->raiseEvent(item.args);
@@ -403,51 +371,43 @@ void UIManager::dispatchPostedEvents()
     }
 }
 
-void UIManager::handleGlobalRoutedEvent(UIEventArgs* e)
-{
+void UIManager::handleGlobalRoutedEvent(UIEventArgs* e) {
     if (m_application) {
         ApplicationHelper::callOnRoutedEvent(m_application, e);
     }
 }
 
-void UIManager::registerActiveTimer(UIActiveTimer* timer)
-{
-	m_activeTimers.add(timer);
+void UIManager::registerActiveTimer(UIActiveTimer* timer) {
+    m_activeTimers.add(timer);
 }
 
-void UIManager::unregisterActiveTimer(UIActiveTimer* timer)
-{
-	m_activeTimers.remove(timer);
+void UIManager::unregisterActiveTimer(UIActiveTimer* timer) {
+    m_activeTimers.remove(timer);
 }
 
-void UIManager::updateFrame(float elapsedSeconds)
-{
+void UIManager::updateFrame(float elapsedSeconds) {
     if (m_application) {
         m_application->updateInertnal();
     }
 
-	for (auto& timer : m_activeTimers) {
-		timer->tick(elapsedSeconds);
-	}
+    for (auto& timer : m_activeTimers) {
+        timer->tick(elapsedSeconds);
+    }
 }
 
-void UIManager::clearMouseHover()
-{
-    if (m_mouseHoverElement)
-    {
+void UIManager::clearMouseHover() {
+    if (m_mouseHoverElement) {
         auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseLeaveEvent, MouseButtons::None, 0, 0, 0, ModifierKeys::None, true);
         m_mouseHoverElement->raiseEvent(args);
         m_mouseHoverElement = nullptr;
     }
 }
 
-void UIManager::clearFocus()
-{
+void UIManager::clearFocus() {
     m_forcusedElement = nullptr;
 }
 
-void UIManager::handleDetachFromUITree(UIElement* element)
-{
+void UIManager::handleDetachFromUITree(UIElement* element) {
     if (m_mouseHoverElement == element) {
         clearMouseHover();
     }
@@ -457,8 +417,7 @@ void UIManager::handleDetachFromUITree(UIElement* element)
     }
 }
 
-bool UIManager::handleCommonInputCommands(UIEventArgs* e)
-{
+bool UIManager::handleCommonInputCommands(UIEventArgs* e) {
     for (const auto& c : m_inputCommands) {
         if (c->testInputEvent(e)) {
             e->handled = true;
@@ -469,15 +428,14 @@ bool UIManager::handleCommonInputCommands(UIEventArgs* e)
     return false;
 }
 
-//void UIManager::handleRootBubbleEvent(UIEventArgs* e)
+// void UIManager::handleRootBubbleEvent(UIEventArgs* e)
 //{
-//    if (m_application) {
+//     if (m_application) {
 //
-//    }
-//}
+//     }
+// }
 
-void UIManager::deactivateElement(UIElement* element)
-{
+void UIManager::deactivateElement(UIElement* element) {
     if (element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Control)) {
         static_cast<UIControl*>(element)->deactivateInternal();
     }
@@ -487,8 +445,7 @@ void UIManager::deactivateElement(UIElement* element)
     }
 }
 
-void UIManager::setupDefaultStyle()
-{
+void UIManager::setupDefaultStyle() {
     auto defaultStyle = makeObject<UIStyle>();
     defaultStyle->setupDefault();
     defaultStyle->fontSize = 15;
@@ -505,8 +462,8 @@ void UIManager::setupDefaultStyle()
 
     Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
-    //Color containerBackground = UIColors::get(UIColorHues::Grey, 3);
-    //Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
+    // Color containerBackground = UIColors::get(UIColorHues::Grey, 3);
+    // Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
     theme->setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::White.withAlpha(0.5f));
     theme->setColor(UIThemeConstantPalette::DefaultMainColor, UIColors::get(UIColorHues::Grey, 2));
@@ -533,9 +490,9 @@ void UIManager::setupDefaultStyle()
             auto e = sheet->addStyleSet(_TT("UIButton"));
             {
                 auto s = e->mainStyleClass()->mainStyle();
-                s->minWidth = 64;//
+                s->minWidth = 64; //
                 s->minHeight = theme->lineContentHeight();
-                s->margin = Thickness(8);   // TODO: spacing?
+                s->margin = Thickness(8); // TODO: spacing?
                 s->padding = theme->spacing(1);
                 s->hAlignment = UIHAlignment::Center;
                 s->vAlignment = UIVAlignment::Center;
@@ -544,7 +501,7 @@ void UIManager::setupDefaultStyle()
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
                 s->cornerRadius = CornerRadius(4);
                 s->shadowBlurRadius = 4;
-                //s->shadowSpreadRadius = -1;
+                // s->shadowSpreadRadius = -1;
                 s->shadowOffsetY = 1;
                 s->shadowColor = Color(0, 0, 0, 0.5);
             }
@@ -560,7 +517,7 @@ void UIManager::setupDefaultStyle()
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
                 e->mainStyleClass()->addStateStyle(_TT("MouseOver"), s);
             }
-            // 
+            //
             if (auto s = sheet->obtainStyle(_TT("UIButton:Pressed"))) {
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
                 e->mainStyleClass()->addStateStyle(_TT("Pressed"), s);
@@ -604,8 +561,7 @@ void UIManager::setupDefaultStyle()
                 s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
                 e->mainStyleClass()->addStateStyle(_TT("UITrack-Thumb"), s);
             }
-            if (auto s = sheet->obtainStyle(_TT("UIThumb.SplitterBar")))
-            {
+            if (auto s = sheet->obtainStyle(_TT("UIThumb.SplitterBar"))) {
                 s->backgroundColor = Color(0, 1, 0, 0.2); // debug
                 s->margin = Thickness(-2, -2, -2, -2);
             }
@@ -624,7 +580,7 @@ void UIManager::setupDefaultStyle()
                 s->hAlignment = UIHAlignment::Stretch;
                 s->vAlignment = UIVAlignment::Stretch;
             }
-            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-DecreaseButton:MouseOver"))) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
+            if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-DecreaseButton:MouseOver"))) { // ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
                 s->backgroundColor = Color::Transparency;
             }
             if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-DecreaseButton:Pressed"))) {
@@ -644,7 +600,6 @@ void UIManager::setupDefaultStyle()
             if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-IncreaseButton:Pressed"))) {
                 s->backgroundColor = Color::Transparency;
             }
-
         }
         //--------------------------------
         // UIListView
@@ -669,7 +624,7 @@ void UIManager::setupDefaultStyle()
         // UIListBoxItem
         {
             if (auto s = sheet->obtainStyle(_TT("UIListBoxItem"))) {
-                //s->backgroundColor = Color::Green;
+                // s->backgroundColor = Color::Green;
             }
             if (auto s = sheet->obtainStyle(_TT("UIListBoxItem:MouseOver"))) {
                 s->backgroundColor = theme->get(_TT("collection.hoverBackground"));
@@ -716,20 +671,20 @@ void UIManager::setupDefaultStyle()
                 s->minHeight = 30;
                 s->hAlignment = UIHAlignment::Stretch;
                 s->vAlignment = UIVAlignment::Top;
-                //s->borderThickness = 1;
-                //s->setBorderColor(Color::Gray);
+                // s->borderThickness = 1;
+                // s->setBorderColor(Color::Gray);
             }
-            if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander"))) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
+            if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander"))) { // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
                 s->width = 16;
                 s->height = 16;
                 s->hAlignment = UIHAlignment::Center;
                 s->vAlignment = UIVAlignment::Center;
                 s->backgroundColor = Color::Transparency;
             }
-            //if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:MouseOver")) {
-            //}
-            //if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Pressed")) {
-            //}
+            // if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:MouseOver")) {
+            // }
+            // if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Pressed")) {
+            // }
             if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Checked"))) {
                 auto icon = makeObject<UIStyleDecorator>();
                 icon->setIconName(_TT("angle-down"), 15);
@@ -766,7 +721,7 @@ void UIManager::setupDefaultStyle()
                 s->padding = Thickness(4);
                 s->borderThickness = Thickness(1);
                 s->setBorderColor(Color::Gray);
-                //s->backgroundColor = theme->get(_TT("tab.inactiveBackground");
+                // s->backgroundColor = theme->get(_TT("tab.inactiveBackground");
             }
         }
         //--------------------------------
@@ -799,9 +754,8 @@ void UIManager::setupDefaultStyle()
 
     m_styleContext->addStyleSheet(sheet);
     m_styleContext->mainTheme = theme;
-    //m_styleContext->build();
+    // m_styleContext->build();
 }
 
 } // namespace detail
 } // namespace ln
-

@@ -101,25 +101,46 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
     GLuint program = shaderPass->program();
 
     {
+        //GLint count;
+        //GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
+        //std::cout << "GL_ACTIVE_UNIFORM_BLOCKS: " << count << std::endl;
+
         for (const auto& info : layout->bufferInfos()) {
-            const auto& slot = bufferSlot(info.layoutSlotIndex);
-            if (LN_ASSERT(slot.object)) return;
+            if (info.layoutSlotIndex.i >= 0) {
+                const auto& slot = bufferSlot(info.layoutSlotIndex);
+                if (LN_ASSERT(slot.object)) return;
 
-            GLUniformBuffer* buf = static_cast<GLUniformBuffer*>(slot.object.get());
-            GLuint ubo = buf->ubo();
+                GLUniformBuffer* buf = static_cast<GLUniformBuffer*>(slot.object.get());
+                GLuint ubo = buf->ubo();
 
-            // TODO: 超暫定対応。
-            // Vulkan は commit までにバッファを unmap すればよいが、OpenGL では glDraw* を呼ぶ前に unmap しなければならない。
-            // map/unmap よりも setData のほうがいいかも。
-            buf->flush();
+                // TODO: 超暫定対応。
+                // Vulkan は commit までにバッファを unmap すればよいが、OpenGL では glDraw* を呼ぶ前に unmap しなければならない。
+                // map/unmap よりも setData のほうがいいかも。
+                buf->flush();
 
-            
-            // bindingPoint は View のようなもの。
-            // ここに対して ubo, offset, size をセットする。
-            GL_CHECK(glBindBufferRange(GL_UNIFORM_BUFFER, info.bindingPoint, ubo, slot.offset, info.blockSize));
+                //std::cout << "blockIndex: " << info.blockIndex << std::endl;
+                //std::cout << "  ubo: " << ubo << std::endl;
+                //std::cout << "  slot.offset: " << slot.offset << std::endl;
+                //std::cout << "  blockSize: " << info.blockSize << std::endl;
+                //std::cout << "  uf->memorySize(): " << buf->memorySize() << std::endl;
+                //std::cout << "  info.bindingPoint: " << info.bindingPoint << std::endl;
 
-            // bindingPoint 番目にセットされている ubo を、blockIndex 番目の UniformBuffer として使う
-            GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+                //GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, ubo));
+                //GLint size = 0;
+                //glGetBufferParameteriv(GL_UNIFORM_BUFFER, GL_BUFFER_SIZE, &size);
+                //std::cout << "  GL_BUFFER_SIZE: " << size << std::endl;
+
+                // bindingPoint は View のようなもの。
+                // ここに対して ubo, offset, size をセットする。
+                GL_CHECK(glBindBufferRange(GL_UNIFORM_BUFFER, info.bindingPoint, ubo, slot.offset, info.blockSize));
+
+                // bindingPoint 番目にセットされている ubo を、blockIndex 番目の UniformBuffer として使う
+                GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+            }
+            else {
+                GL_CHECK(glBindBufferRange(GL_UNIFORM_BUFFER, info.bindingPoint, info.deactiveUBO, 0, info.blockSize));
+                GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+            }
         }
     }
 

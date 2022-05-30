@@ -80,51 +80,19 @@ public:
     Result init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
     virtual void dispose() override;
 
-    //virtual DeviceTextureType type() const override { return DeviceTextureType::RenderTarget; }
     virtual RHIRef<RHIBitmap> readData() override;
-    //virtual SizeI realSize() override;
-    //virtual TextureFormat getTextureFormat() const override;
-    //virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
     virtual GLuint id() const override { return m_id; }
     virtual bool mipmap() const override { return false; }
 
+    bool isBackbuffer() const { return m_id == 0; }
+
 private:
     GLuint m_id;
     GLenum m_pixelFormat;
     GLenum m_elementType;
-
-    //public:
-    //	// override IDeviceObject
-    //	virtual void onLostDevice();
-    //	virtual void onResetDevice();
-    //
-    //	// override ITexture
-    //	virtual TextureType getTextureType() const { return TextureType_RenderTarget; }
-    //	virtual TextureFormat getTextureFormat() const { return m_format; }
-    //	virtual const SizeI& getSize() const { return m_size; }
-    //	virtual const SizeI& getRealSize() const { return m_realSize; }
-    //	virtual void setSamplerState(const SamplerState& state) { LN_UNREACHABLE(); }
-    //	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
-    //	virtual void setSubData3D(const BoxI& box, const void* data, size_t dataBytes);
-    //	virtual void getData(const RectI& rect, void* outData) override;
-    //	virtual RawBitmap* lock();
-    //	virtual void unlock();
-    //
-    //	// override GLTextureBase
-    //	virtual GLuint getGLTexture() { return m_glTexture; }
-    //
-    //private:
-    //	GLuint				m_glTexture;
-    //	TextureFormat		m_format;
-    //	SizeI				m_size;
-    //	SizeI				m_realSize;
-    //	int					m_mipLevels;
-    //	GLenum				m_pixelFormat;
-    //	GLenum				m_elementType;
-    //	RawBitmap*	m_lockingBitmap;
 };
 
 class GLSamplerState : public ISamplerState {

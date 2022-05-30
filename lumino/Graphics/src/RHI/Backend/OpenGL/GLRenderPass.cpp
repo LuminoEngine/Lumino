@@ -14,47 +14,49 @@ GLRenderPass::GLRenderPass()
     , m_clearColor()
     , m_clearDepth(1.0f)
     , m_clearStencil(0x00)
-    , m_fbo(0) {
+    , m_fbo(0)
+    , m_aliveAttachments{} {
 }
 
 Result GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& createInfo, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
     m_device = device;
-
-    //for (auto i = 0; i < buffers.renderTargets.size(); i++) {
-    //    m_renderTargets[i] = static_cast<GLTextureBase*>(buffers.renderTargets[i]);
-    //}
-
-    //m_depthBuffer = static_cast<GLDepthBuffer*>(buffers.depthBuffer);
     m_clearFlags = clearFlags;
     m_clearColor = clearColor;
     m_clearDepth = clearDepth;
     m_clearStencil = clearStencil;
-    GL_CHECK(glGenFramebuffers(1, &m_fbo));
 
-    {
+    GLRenderTargetTexture* renderTarget0 = static_cast<GLRenderTargetTexture*>(createInfo.renderTargets[0]);
+
+    if (renderTarget0->isBackbuffer()) {
+        // RT0 がバックバッファを示す場合、強制的にデフォルト FBO を使う。というかこうしないと動かない。
+        // このケースは外部の OpenGL アプリに組み込むときに使うことになる特殊なものなので、
+        // 特に手厚くケアはしない。十分注意して使うこと。
+        return initFromNativeFBO(0, renderTarget0);
+    }
+    else {
+        GL_CHECK(glGenFramebuffers(1, &m_fbo));
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
 
-        GLRenderTargetTexture* backbuffer = static_cast<GLRenderTargetTexture*>(createInfo.renderTargets[0]);
-        RHIExtent3D baseSize = backbuffer->extentSize();
+        RHIExtent3D baseSize = renderTarget0->extentSize();
 
         m_viewSize.width = baseSize.width;
         m_viewSize.height = baseSize.height;
 
         // color buffers
-        std::array<GLenum, MaxMultiRenderTargets> buffers;
+        m_renderTargetCount = 0;
         int renderTargetsCount = createInfo.renderTargets.size();
         int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
-        // int actualCount = 0;
         for (int i = 0; i < renderTargetsCount; ++i) {
             if (createInfo.renderTargets[i]) {
                 LN_CHECK(createInfo.renderTargets[i]->extentSize() == baseSize);
                 GLuint id = static_cast<GLTextureBase*>(createInfo.renderTargets[i])->id();
                 GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
-                buffers[i] = GL_COLOR_ATTACHMENT0 + i;
+                m_aliveAttachments[i] = GL_COLOR_ATTACHMENT0 + i;
+                m_renderTargetCount++;
             }
             else {
                 GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0));
-                buffers[i] = GL_NONE;
+                m_aliveAttachments[i] = GL_NONE;
             }
         }
 
@@ -72,14 +74,13 @@ Result GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& cr
 
         LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER), "glCheckFramebufferStatus failed 0x%08x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
 
-        GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
-
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     }
+
     return ok();
 }
 
-Result GLRenderPass::initFromNativeFBO(GLuint fbo, int32_t width, int32_t height) {
+Result GLRenderPass::initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget) {
     // ユーザーが作成した FBO ならば次のコードでサイズが取れるのだが、
     // OpenGL デフォルトの FBO は glGetFramebufferAttachmentParameteriv で失敗する。
     // 一応、デフォルトの FBO がバインドされている場合、glGetIntegerv(GL_FRAMEBUFFER_BINDING) は 0 をを返す。
@@ -115,8 +116,11 @@ Result GLRenderPass::initFromNativeFBO(GLuint fbo, int32_t width, int32_t height
 #endif
     m_fbo = fbo;
     m_clearFlags = ClearFlags::None;
-    m_viewSize.width = width;
-    m_viewSize.height = height;
+    m_viewSize.width = renderTarget->extentSize().width;
+    m_viewSize.height = renderTarget->extentSize().height;
+    m_renderTargets[0] = renderTarget;
+    m_renderTargetCount = 1;
+    m_aliveAttachments[0] = GL_COLOR_ATTACHMENT0;
     return ok();
 }
 
@@ -178,7 +182,16 @@ void GLRenderPass::bind(GLGraphicsContext* context) {
     GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
 #endif
 
+    //std::cout << "glBindFramebuffer: " << m_fbo << std::endl;
+    //std::cout << "  m_clearFlags: " << (int)m_clearFlags << std::endl;
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+    //if (m_fbo != 0) {
+    //    GL_CHECK(glDrawBuffers(m_aliveAttachments.size(), m_aliveAttachments.data()));
+    //}
+    //else {
+    //    // Default FBO に対して glDrawBuffers は使用不可能
+    //}
+
     OpenGLHelper::clearBuffers(m_clearFlags, m_clearColor, m_clearDepth, m_clearStencil);
 }
 

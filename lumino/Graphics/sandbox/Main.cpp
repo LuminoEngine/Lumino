@@ -56,7 +56,8 @@ void run() {
     //spriteRenderer->init();
 
     while (Platform::processEvents()) {
-        auto commandList = swapChain->beginFrame2();
+        auto commandList = swapChain->currentCommandList2();
+        commandList->beginCommandRecoding();
 
         auto descriptor = commandList->allocateShaderDescriptor_deprecated(shaderPass);
         descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
@@ -75,8 +76,8 @@ void run() {
         //spriteRenderer->begin();
         //spriteRenderer->end();
         //spriteRenderer->render(commandList);
-
         commandList->endRenderPass();
+        commandList->endCommandRecoding();
 
         // NOTE:
         // DX12で確認した現象。
@@ -101,7 +102,7 @@ void run() {
         // https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-present
         // 
         //ElapsedTimer t;
-        swapChain->endFrame();
+        swapChain->present();
         //std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
         //::Sleep(16);
     }

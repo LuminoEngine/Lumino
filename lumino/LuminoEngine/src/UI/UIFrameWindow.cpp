@@ -360,11 +360,7 @@ void UIFrameWindow::onDispose(bool explicitDisposing) {
     UIDomainProvidor::onDispose(explicitDisposing);
 }
 
-void UIFrameWindow::present() {
-    m_renderingGraphicsContext = m_swapChain->beginFrame2();
-
-#if 1
-
+void UIFrameWindow::renderContents(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget) {
     if (m_ImGuiLayerEnabled) {
         // TODO: time
         m_imguiContext->updateFrame(0.0166f);
@@ -390,9 +386,9 @@ void UIFrameWindow::present() {
             ImGui::PopStyleVar(2);
         }
 
-        //if (m_tools.mainViewportToolPane) {
-        //    m_tools.mainViewportToolPane->prepare(this, m_renderingGraphicsContext, m_renderView);
-        //}
+        // if (m_tools.mainViewportToolPane) {
+        //     m_tools.mainViewportToolPane->prepare(this, commandList, m_renderView);
+        // }
 
         //{
         //    ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
@@ -404,7 +400,7 @@ void UIFrameWindow::present() {
         //        if (m_renderView)
         //        {
         //            m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
-        //            m_renderView->render(m_renderingGraphicsContext, m_tools.mainViewportRenderTarget);
+        //            m_renderView->render(commandList, m_tools.mainViewportRenderTarget);
         //        }
         //        ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
         //    }
@@ -414,43 +410,26 @@ void UIFrameWindow::present() {
         m_imguiContext->updateDocks(imguiWindowID);
 
         ImGui::EndFrame();
-        m_imguiContext->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+        m_imguiContext->render(commandList, renderTarget);
     }
     else {
         if (m_renderView) {
-            m_renderView->render(m_renderingGraphicsContext,/* m_renderView->m_renderingContext, */m_swapChain->currentBackbuffer());
+            m_renderView->render(commandList, renderTarget);
         }
     }
+}
 
-#else
+void UIFrameWindow::present() {
+    m_renderingGraphicsContext = m_swapChain->currentCommandList2();
+    m_renderingGraphicsContext->beginCommandRecoding();
+    renderContents(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
+    m_renderingGraphicsContext->endCommandRecoding();
+    m_swapChain->present();
+}
 
-    //ElapsedTimer t;
-    //t.start();
-
-    if (m_renderView) {
-        m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
-    }
-
-    //detail::EngineDomain::effectManager()->testDraw(m_renderingGraphicsContext);
-
-    if (m_ImGuiLayerEnabled) {
-        m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
-
-        ImGui::NewFrame();
-
-        m_onImGuiLayer.raise(nullptr);
-
-        ImGui::EndFrame();
-
-        m_imguiContext->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
-    }
-    //   auto r = makeObject<RenderPass>(m_swapChain->currentBackbuffer(), nullptr);
-    //   m_renderingGraphicsContext->beginRenderPass(r);
-    //   m_renderingGraphicsContext->clear(ClearFlags::All, Color::Aqua);
-    //   m_renderingGraphicsContext->endRenderPass();
-#endif
-
-    m_swapChain->endFrame();
+void UIFrameWindow::updateLayoutIfNeeded() {
+    updateStyleTree();
+    updateLayoutTree();
 }
 
 SwapChain* UIFrameWindow::swapChain() const {

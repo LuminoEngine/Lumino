@@ -64,9 +64,9 @@ Result GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t h
     //		GL_CLAMP_TO_EDGE,	// TextureWrapMode_Clamp
     //	};
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]));
     //if (LN_ENSURE_GLERROR()) return;
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]));
     //if (LN_ENSURE_GLERROR()) return;
 
     //	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[1]);
@@ -80,6 +80,7 @@ Result GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t h
     }
 
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+    return ok();
 }
 
 void GLTexture2D::dispose() {

@@ -111,7 +111,7 @@ void Application::run() {
     do {
 
         detail::EngineDomain::engineManager()->updateFrame();
-        detail::EngineDomain::engineManager()->presentFrame();
+        detail::EngineDomain::engineManager()->presentFrame(nullptr, nullptr);
         //detail::EngineDomain::engineManager()->renderFrame();
     } while (!detail::EngineDomain::engineManager()->isExitRequested());
 
@@ -130,6 +130,7 @@ Ref<Variant> AppData::getValue(const StringView& key) {
     return detail::EngineDomain::engineManager()->appData()->getValue(key);
 }
 
+#if 0
 //==============================================================================
 // AppIntegration
 
@@ -151,8 +152,8 @@ bool AppIntegration::update() {
     return updateEngine();
 }
 
-void AppIntegration::render() {
-    renderEngine();
+void AppIntegration::render(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget) {
+    renderEngine(commandList, renderTarget);
 }
 
 void AppIntegration::terminate() {
@@ -166,9 +167,16 @@ void AppIntegration::run(ConfigureApp configureApp, CreateAppInstance createAppI
     }
 
     while (update()) {
-        render();
+        render(nullptr, nullptr);
     }
     terminate();
+}
+
+void AppIntegration::preConfigure() {
+    // v0.11.0 以降、ln::Enigne を使ったメインループよりも ln::Application 及び ln::AppIntegration を推奨する。
+    // ln::Enigne はより低レイヤーのものと位置づけ、各種モジュールの初期化のみを行い、ウィンドウ等のオブジェクトは
+    // デフォルトでは生成しないようにしたい。より細かく Lumino を制御したい人向けのクラスとする。
+    detail::EngineManager::s_settings.defaultObjectsCreation = true;
 }
 
 Result AppIntegration::initializeEngine() {
@@ -182,18 +190,26 @@ bool AppIntegration::updateEngine() {
     return !detail::EngineDomain::engineManager()->isExitRequested();
 }
 
-void AppIntegration::renderEngine() {
-    detail::EngineDomain::engineManager()->presentFrame();
+void AppIntegration::renderEngine(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget) {
+    detail::EngineDomain::engineManager()->presentFrame(commandList, renderTarget);
 }
 
 void AppIntegration::terminateEngine() {
     detail::EngineDomain::release();
 }
+#endif
  
 //==============================================================================
 // ApplicationHelper
 
 namespace detail {
+
+void ApplicationHelper::preConfigure() {
+    // v0.11.0 以降、ln::Enigne を使ったメインループよりも ln::Application 及び ln::AppIntegration を推奨する。
+    // ln::Enigne はより低レイヤーのものと位置づけ、各種モジュールの初期化のみを行い、ウィンドウ等のオブジェクトは
+    // デフォルトでは生成しないようにしたい。より細かく Lumino を制御したい人向けのクラスとする。
+    detail::EngineManager::s_settings.defaultObjectsCreation = true;
+}
 
 void ApplicationHelper::init(Application* app) {
     //app->initInternal();

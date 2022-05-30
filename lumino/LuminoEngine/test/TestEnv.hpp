@@ -21,7 +21,7 @@ public:
     static bool isCI;
     static String LuminoCLI;
     static Ref<DepthBuffer> depthBuffer;
-    //static RenderTargetTexture* lastBackBuffer;
+    static RenderTargetTexture* lastBackBuffer;
 };
 
 #define LN_TEST_CLEAN_SCENE TestEnv::resetScene();

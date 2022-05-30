@@ -7,7 +7,7 @@
 bool TestEnv::isCI = false;
 String TestEnv::LuminoCLI;
 Ref<DepthBuffer> TestEnv::depthBuffer;
-//RenderTargetTexture* TestEnv::lastBackBuffer;
+RenderTargetTexture* TestEnv::lastBackBuffer = nullptr;
 
 void TestEnv::setup() {
     if (Environment::getEnvironmentVariable(U"LN_BUILD_FROM_CI")) {
@@ -36,6 +36,7 @@ void TestEnv::setup() {
     EngineSettings::setEngineFeatures(feature);
     EngineSettings::addAssetDirectory(LN_LOCALFILE(_TT("Assets")));
     //EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
+    detail::EngineManager::s_settings.defaultObjectsCreation = true;
     EngineContext::current()->initializeEngineManager();
     detail::EngineDomain::engineManager()->initializeAllManagers();
     detail::EngineDomain::engineManager()->sceneManager()->autoAddingToActiveWorld = true;
@@ -69,8 +70,9 @@ void TestEnv::teardown() {
 }
 
 void TestEnv::updateFrame() {
+    lastBackBuffer = TestEnv::mainWindowSwapChain()->currentBackbuffer();
     detail::EngineDomain::engineManager()->updateFrame();
-    detail::EngineDomain::engineManager()->presentFrame();
+    detail::EngineDomain::engineManager()->presentFrame(nullptr, nullptr);
 }
 
 void TestEnv::resetScene() {
@@ -106,12 +108,16 @@ void TestEnv::resetGraphicsContext(GraphicsCommandList* context) {
 }
 
 GraphicsCommandList* TestEnv::beginFrame() {
-    auto ctx = TestEnv::mainWindowSwapChain()->beginFrame2();
-    return ctx;
+    lastBackBuffer = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+    auto commandList = TestEnv::mainWindowSwapChain()->currentCommandList2();
+    commandList->beginCommandRecoding();
+    return commandList;
 }
 
 void TestEnv::endFrame() {
-    TestEnv::mainWindowSwapChain()->endFrame();
+    auto commandList = TestEnv::mainWindowSwapChain()->currentCommandList2();
+    commandList->endCommandRecoding();
+    TestEnv::mainWindowSwapChain()->present();
 }
 
 RenderPass* TestEnv::renderPass() {
@@ -119,5 +125,5 @@ RenderPass* TestEnv::renderPass() {
 }
 
 bool TestEnv::checkCurrentBackbufferScreenShot(const Path& filePath, int passRate, bool save) {
-    return GraphicsTestHelper::checkScreenShot(filePath, TestEnv::mainWindowSwapChain()->currentBackbuffer(), passRate, save);
+    return GraphicsTestHelper::checkScreenShot(filePath, lastBackBuffer, passRate, save);
 }

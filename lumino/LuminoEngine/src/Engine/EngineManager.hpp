@@ -72,6 +72,7 @@ struct EngineSettings {
     String priorityGPUName;
 
     intptr_t userMainWindow = 0;
+    //bool useProxyPlatformWindow = false;
 
     InputBindingSet inputConfig = InputBindingSet::Keyboard;
 
@@ -84,7 +85,7 @@ struct EngineSettings {
     String defaultUITheme;
     Path fontFile;
 
-    bool defaultObjectsCreation = true;
+    bool defaultObjectsCreation = false;
     WindowSystem windowSystem = WindowSystem::GLFWWithOpenGL;
     bool graphicsContextManagement = true;
     bool externalMainLoop = true;
@@ -133,7 +134,7 @@ public:
 
     bool updateUnitily();
     void updateFrame();
-    void presentFrame(); // swap。renderFrame() と分けているのは、間に コールバック以外の Engine 外部のレンダリングを許可するため
+    void presentFrame(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget); // swap。renderFrame() と分けているのは、間に コールバック以外の Engine 外部のレンダリングを許可するため
     void resetFrameDelay();
     bool isExitRequested() const { return m_exitRequested; }
     void quit();

@@ -1,4 +1,4 @@
-project(Example-Engine-ExternalOpenGLContext)
+project(Example_Engine_ExternalGLFW)
 
 #-------------------------------------------------------------------------------
 # Targets

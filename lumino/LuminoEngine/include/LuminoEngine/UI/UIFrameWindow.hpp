@@ -78,7 +78,6 @@ public:
 
     virtual void onDispose(bool explicitDisposing) override;
 
-    void present();
 
     // TODO: UI ツリーのシステムをちゃんと作っていないが、ひとまず UIViewport を使った動きを作りたいので一時的に設けてある
     //Ref<UIViewport> m_viewport;
@@ -86,10 +85,12 @@ public:
     //virtual UIElement* getVisualChild(int index) const override;
 
     // TODO: inernal
+    void renderContents(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget);
+    void present();
+    void updateLayoutIfNeeded();
+
     SwapChain* swapChain() const;
     const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
-    void updateStyleTree();
-    void updateLayoutTree();
     const Ref<PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
     const Ref<detail::UIInputInjector>& inputInjector() const { return m_inputInjector; }
@@ -139,6 +140,8 @@ public: // TODO: internal
     bool m_realtimeRenderingEnabled;
 
 private:
+    void updateStyleTree();
+    void updateLayoutTree();
     void updateLayoutTreeInternal(const Size& contentSize);
     void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor) override;
 

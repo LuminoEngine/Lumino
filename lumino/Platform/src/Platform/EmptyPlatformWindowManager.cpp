@@ -3,25 +3,32 @@
 #include "EmptyPlatformWindowManager.hpp"
 
 namespace ln {
-namespace detail {
 
 //==============================================================================
-// EmptyPlatformWindow
+// ExternalProxyPlatformWindow
 
-EmptyPlatformWindow::EmptyPlatformWindow() {
+ExternalProxyPlatformWindow::ExternalProxyPlatformWindow() {
 }
 
-Result EmptyPlatformWindow::init(const WindowCreationSettings& settings) {
+Result ExternalProxyPlatformWindow::init(const WindowCreationSettings& settings) {
     return ok();
 }
 
-void EmptyPlatformWindow::setAllowDragDrop(bool value) {
+void ExternalProxyPlatformWindow::setAllowDragDrop(bool value) {
     LN_NOTIMPLEMENTED();
 }
 
-bool EmptyPlatformWindow::isAllowDragDrop() const {
+bool ExternalProxyPlatformWindow::isAllowDragDrop() const {
     return false;
 }
+
+void ExternalProxyPlatformWindow::injectSizeChanged(int width, int height) {
+    m_size.width = width;
+    m_size.height = height;
+    sendEventToAllListener(PlatformEventArgs::makeWindowSizeChangedEvent(this, width, height));
+}
+
+namespace detail {
 
 //==============================================================================
 // EmptyPlatformWindowManager
@@ -41,7 +48,7 @@ void EmptyPlatformWindowManager::dispose() {
 }
 
 Ref<PlatformWindow> EmptyPlatformWindowManager::createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) {
-    auto ptr = ln::makeRef<EmptyPlatformWindow>();
+    auto ptr = ln::makeRef<ExternalProxyPlatformWindow>();
     if (!ptr->init(settings)) {
         return nullptr;
     }

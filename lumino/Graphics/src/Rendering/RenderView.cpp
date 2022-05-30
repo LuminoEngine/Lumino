@@ -1,4 +1,25 @@
-﻿#include "Internal.hpp"
+﻿/*
+[2022/5/8] 描画先は RenderTatget で指定るるべきか？ RenderPass で指定するべきか？
+----------
+外部 OpenGL のバックバッファへの直接描画を行うときは、RenderPass を使わざるを得ない。
+そういった時は中間の RenderTarget を1枚用意してくれ、という仕様にするのもアリだが、VRAM がすごく無駄になるのが気になる。
+
+RenderPass を受け取るということは、内部での beginRenderPass 呼び出し時にクリア処理が走る可能性を考慮する必要がある、ということ。
+-> これに関しては今もそんなに変わらなくて、SceneRenderPass を複数回 begin/end してはならない制約がある。
+
+RenderPass で指定する場合、 RenderView でクリアができなくなる。
+-> RenderPass のクローンをサポートするのもありか？
+   手動で RenderTarget などを付け替えるのではなく、コピー用の関数を用意する。
+   -> ただ、クリア方法が内部の都合で変わるので、外部で作った RenderPass が単なる RenderTarget の入れ物にしかならない点が混乱しないか心配。
+
+RenderView に、２通りの render() を用意する。(RenderPass と RenderTarget)
+-> わかりやすいけど冗長か？間違いづらくなるならアリだが…。
+
+GLRenderPass を bind するとき、RT[0] がバックバッファを示す RenderTarget であれば、強制的に FBO 0 を使う。
+-> とりあえずこれで逃げる。
+*/
+
+#include "Internal.hpp"
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Rendering/RenderView.hpp>
 #include <LuminoGraphics/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>

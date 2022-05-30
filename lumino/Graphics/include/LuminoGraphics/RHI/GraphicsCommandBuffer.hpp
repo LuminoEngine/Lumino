@@ -15,6 +15,9 @@ class GraphicsCommandListInternal;
 
 class GraphicsCommandList : public Object {
 public:
+    static Ref<GraphicsCommandList> create();
+
+
     GraphicsCommandList();
 
     
@@ -181,12 +184,14 @@ public:
 
     /** @} */
 
+    // 外部アプリに組み込むときに使いたい
+    void beginCommandRecoding();
+    void endCommandRecoding();
+
 protected:
      void onDispose(bool explicitDisposing) override;
 
 private:
-    void beginCommandRecoding();
-    void endCommandRecoding();
     detail::ICommandList* commitState();
 
     struct ShaderPassDescriptorPair {

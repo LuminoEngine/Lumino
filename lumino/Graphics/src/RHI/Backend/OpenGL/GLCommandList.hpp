@@ -56,11 +56,12 @@ private:
         GLint m_GL_BLEND_SRC_ALPHA;
         GLint m_GL_BLEND_DST_ALPHA;
         GLint m_GL_BLEND_EQUATION;
-        GLint m_GL_ARRAY_BUFFER_BINDING;
-        GLint m_GL_ELEMENT_ARRAY_BUFFER_BINDING;
+        //GLint m_GL_ARRAY_BUFFER_BINDING;
+        //GLint m_GL_ELEMENT_ARRAY_BUFFER_BINDING;
         GLint m_GL_CURRENT_PROGRAM;
         GLint m_vao;
         GLint m_drawFBO;
+        GLfloat m_clearColor[4];
     } m_savedState;
 };
 

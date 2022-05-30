@@ -54,7 +54,7 @@ void TestEnv::teardown() {
 
 void TestEnv::updateFrame() {
     detail::EngineDomain::engineManager()->updateFrame();
-    detail::EngineDomain::engineManager()->presentFrame();
+    detail::EngineDomain::engineManager()->presentFrame(nullptr, nullptr);
 }
 
 void TestEnv::resetScene() {
@@ -90,12 +90,15 @@ void TestEnv::resetGraphicsContext(GraphicsCommandList* context) {
 }
 
 GraphicsCommandList* TestEnv::beginFrame() {
-    auto ctx = TestEnv::mainWindowSwapChain()->beginFrame2();
-    return ctx;
+    auto commandList = TestEnv::mainWindowSwapChain()->currentCommandList2();
+    commandList->beginCommandRecoding();
+    return commandList;
 }
 
 void TestEnv::endFrame() {
-    TestEnv::mainWindowSwapChain()->endFrame();
+    auto commandList = TestEnv::mainWindowSwapChain()->currentCommandList2();
+    commandList->endCommandRecoding();
+    TestEnv::mainWindowSwapChain()->present();
 }
 
 RenderPass* TestEnv::renderPass() {

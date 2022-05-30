@@ -81,6 +81,13 @@ void RenderPass::init(detail::IRenderPass* rhiRenderPass) {
     m_rhiObjectNoClear = rhiRenderPass;
     auto viewSize = rhiRenderPass->viewSize();
     m_viewSize = SizeI(viewSize.width, viewSize.height);
+    
+    auto* rhiRenderTarget = rhiRenderPass->m_renderTargets[0];
+    LN_CHECK(rhiRenderTarget);
+    auto renderTarget = makeObject<RenderTargetTexture>();
+    detail::TextureInternal::resetRHIObject(renderTarget, rhiRenderTarget);
+    setRenderTarget(0, renderTarget);
+
     m_externalRHIRenderPass = true;
 }
 

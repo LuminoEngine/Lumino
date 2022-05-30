@@ -13,7 +13,8 @@ TEST_F(Test_Rendering_Sprite, Basic) {
     auto texture1 = Texture2D::load(LN_ASSETFILE("Rendering/Sprite3.png"));
     auto material1 = Material::create(texture1);
 
-    auto* commandList = TestEnv::swapChain->beginFrame2();
+    auto* commandList = TestEnv::swapChain->currentCommandList2();
+    commandList->beginCommandRecoding();
     auto* target = TestEnv::swapChain->currentBackbuffer();
     auto* ctx = TestEnv::renderView->begin(commandList, target);
 
@@ -26,7 +27,8 @@ TEST_F(Test_Rendering_Sprite, Basic) {
     }
     
     TestEnv::renderView->end();
-    TestEnv::swapChain->endFrame();
+    commandList->endCommandRecoding();
+    TestEnv::swapChain->present();
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Sprite.Basic.png"), target);
 }
 

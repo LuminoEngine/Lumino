@@ -48,7 +48,7 @@ Result PlatformManager::init(const Settings& settings) {
     }
 #endif
 #ifdef LN_OS_WIN32
-    if (!m_windowManager) {
+    if (!m_windowManager && settings.windowSystem != WindowSystem::External) {
         auto windowManager = ln::makeRef<Win32PlatformWindowManager>(this);
         if (!windowManager->init()) {
             return err();

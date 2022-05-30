@@ -76,7 +76,8 @@ void mainLoop() {
     auto descriptorLayout = g_shader->descriptorLayout();
     auto shaderPass = g_shader->techniques()[0]->passes()[0];
 
-    auto ctx = g_swapChain->beginFrame2();
+    auto ctx = g_swapChain->currentCommandList2();
+    ctx->beginCommandRecoding();
     auto descriptor = ctx->allocateShaderDescriptor_deprecated(shaderPass);
     descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
     auto renderPass = g_swapChain->currentRenderPass();
@@ -89,8 +90,9 @@ void mainLoop() {
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->drawPrimitive(0, 1);
     ctx->endRenderPass();
+    ctx->endCommandRecoding();
 
-    g_swapChain->endFrame();
+    g_swapChain->present();
 }
 
 int main() {

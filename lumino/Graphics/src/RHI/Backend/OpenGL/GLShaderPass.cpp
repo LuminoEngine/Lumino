@@ -133,10 +133,10 @@ Result GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& cre
 }
 
 void GLShaderPass::dispose() {
-    // if (m_descriptorTable) {
-    //	m_descriptorTable->dispose();
-    //	m_descriptorTable = nullptr;
-    // }
+     if (m_descriptorTable) {
+    	m_descriptorTable->dispose();
+    	m_descriptorTable = nullptr;
+     }
 
     if (m_program) {
         GL_CHECK(glUseProgram(0));
@@ -174,6 +174,7 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const kokage::
     GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
     for (int i = 0; i < count; i++) {
         UniformBufferInfo info;
+        info.deactiveUBO = 0;
         info.bindingPoint = i;
 
         // UniformBuffer の名前を取得する
@@ -188,18 +189,23 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const kokage::
 		if (strcmp(blockName, "_Global") == 0)
 			blockName[0] = '$';
 
+        info.blockIndex = blockIndex;
+		GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
+		LN_LOG_VERBOSE("uniform block {}", i);
+		LN_LOG_VERBOSE("  blockName  : {}", blockName);
+		LN_LOG_VERBOSE("  blockIndex : {}", info.blockIndex);
+		LN_LOG_VERBOSE("  blockSize  : {}", info.blockSize);
+
         // DescriptorLayout から、対応する名前の UniformBuffer を探す
         info.layoutSlotIndex = descriptorLayout->findUniformBufferRegisterIndex(blockName);
-        if (info.layoutSlotIndex.i >= 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
-            info.blockIndex = blockIndex;
-			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
-			LN_LOG_VERBOSE("uniform block {}", i);
-			LN_LOG_VERBOSE("  blockName  : {}", blockName);
-			LN_LOG_VERBOSE("  blockIndex : {}", info.blockIndex);
-			LN_LOG_VERBOSE("  blockSize  : {}", info.blockSize);
-
-			m_uniformBuffers.push_back(info);
+        if (info.layoutSlotIndex.i < 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
+            GL_CHECK(glGenBuffers(1, &info.deactiveUBO));
+            GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, info.deactiveUBO));
+            GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, info.blockSize, nullptr, GL_STATIC_DRAW));
+            GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
         }
+
+		m_uniformBuffers.push_back(info);
     }
 
     // Texture (CombinedSampler)
@@ -239,6 +245,15 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const kokage::
     }
 
     return true;
+}
+
+void GLShaderDescriptorTable::dispose() {
+    for (auto& info : m_uniformBuffers) {
+        if (info.deactiveUBO) {
+            GL_CHECK(glDeleteBuffers(1, &info.deactiveUBO));
+            info.deactiveUBO = 0;
+        }
+	}
 }
 
 void GLShaderDescriptorTable::addResourceUniform(const std::string& name, GLint uniformLocation, const kokage::DescriptorLayout* descriptorLayout) {

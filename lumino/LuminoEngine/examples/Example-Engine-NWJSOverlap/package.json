@@ -1,0 +1,22 @@
+{
+  "name": "ln_nwjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "chromium-args": "--remote-debugging-port=9222 --ignore-gpu-blacklist --enable-gpu-rasterization --enable-gpu-memory-buffer-video-frames --enable-native-gpu-memory-buffers --enable-zero-copy",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nw ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pixi.js": "^6.3.0"
+  },
+  "developer": {
+    "showDevToolsOnStartup": true
+  },
+  "devDependencies": {
+    "nw": "^0.64.1"
+  }
+}

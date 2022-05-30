@@ -23,7 +23,6 @@ SwapChain::SwapChain()
     : m_manager(nullptr)
     , m_rhiObject(nullptr)
     , m_backbuffers()
-    , m_currentCommandList(nullptr)
     , m_imageIndex(-1) {
 }
 
@@ -50,9 +49,16 @@ void SwapChain::init(PlatformWindow* window) {
         commandList->init(detail::GraphicsResourceInternal::manager(this));
         m_commandLists[i] = commandList;
     }
+
+    nextFrame();
 }
 
 void SwapChain::onDispose(bool explicitDisposing) {
+    //if (!m_commandLists.empty()) {
+    //    // End command list
+    //    detail::GraphicsCommandListInternal::endCommandRecoding(currentCommandList2());
+    //}
+
     m_rhiObject = nullptr;
     for (auto& x : m_commandLists)
         x->dispose();
@@ -72,27 +78,19 @@ Size SwapChain::backbufferSize() const {
     return Size(backbuffers->width(), backbuffers->height());
 }
 
-RenderTargetTexture* SwapChain::currentBackbuffer() const {
-    if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
-    return m_backbuffers[m_imageIndex];
-}
-
 void SwapChain::resizeBackbuffer(int width, int height) {
     if (LN_ENSURE(m_rhiObject->resizeBackbuffer(width, height))) return;
     resetRHIBackbuffers();
 }
 
-GraphicsCommandList* SwapChain::beginFrame2() {
-    m_rhiObject->acquireNextImage(&m_imageIndex);
+RenderTargetTexture* SwapChain::currentBackbuffer() const {
+    if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
+    return m_backbuffers[m_imageIndex];
+}
 
-    m_currentCommandList = currentCommandList();
-    m_currentCommandList->reset();
-    //detail::GraphicsCommandListInternal::resetCommandList(m_graphicsContext, rhiCommandList);
-    detail::GraphicsCommandListInternal::beginCommandRecoding(m_currentCommandList);
-    currentCommandList()->m_singleFrameUniformBufferAllocator->cleanup();
-    m_currentCommandList->resetState();
-
-    return m_currentCommandList;
+GraphicsCommandList* SwapChain::currentCommandList2() const {
+    if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
+    return m_commandLists[m_imageIndex];
 }
 
 RenderPass* SwapChain::currentRenderPass() const {
@@ -100,21 +98,21 @@ RenderPass* SwapChain::currentRenderPass() const {
     return m_renderPasses[m_imageIndex];
 }
 
-void SwapChain::endFrame() {
-    currentCommandList()->m_singleFrameUniformBufferAllocator->unmap();
-    // detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
-    detail::GraphicsCommandListInternal::endCommandRecoding(m_currentCommandList);
+void SwapChain::present() {
+    GraphicsCommandList* commandList = currentCommandList2();
 
+    //// End command list
+    //detail::GraphicsCommandListInternal::endCommandRecoding(commandList);
+
+    // Submit queue
     auto device = m_manager->deviceContext();
-    detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(m_currentCommandList, currentBackbuffer(), nullptr);
-    device->submitCommandBuffer(m_currentCommandList->rhiResource(), rhiObject);
+    detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, currentBackbuffer(), nullptr);
+    device->submitCommandBuffer(commandList->rhiResource(), rhiObject);
+    detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(commandList);
 
-    detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_currentCommandList);
-    //detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
+    presentInternal();
 
-    present(m_currentCommandList);
-
-    m_currentCommandList = nullptr;
+    nextFrame();
 }
 
 void SwapChain::resetRHIBackbuffers() {
@@ -140,7 +138,15 @@ void SwapChain::resetRHIBackbuffers() {
     m_imageIndex = -1;
 }
 
-void SwapChain::present(GraphicsCommandList* context) {
+void SwapChain::nextFrame() {
+    m_rhiObject->acquireNextImage(&m_imageIndex);
+
+    GraphicsCommandList* commandList = currentCommandList2();
+    commandList->reset();
+    //detail::GraphicsCommandListInternal::beginCommandRecoding(commandList);
+}
+
+void SwapChain::presentInternal() {
     detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
     auto device = manager->deviceContext();
 

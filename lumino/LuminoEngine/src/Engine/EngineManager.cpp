@@ -539,7 +539,7 @@ void EngineManager::resetApp(Application* app) {
 
 bool EngineManager::updateUnitily() {
     updateFrame();
-    presentFrame();
+    presentFrame(nullptr, nullptr);
     return !isExitRequested();
 }
 
@@ -557,6 +557,7 @@ void EngineManager::updateFrame() {
 
     //------------------------------------------------
     // Pre update phase
+    //   このフレームのウィンドウサイズ (バックバッファサイズ) はこのフェーズで確定させる
 
     if (m_inputManager) {
         m_inputManager->preUpdateFrame();
@@ -572,6 +573,12 @@ void EngineManager::updateFrame() {
     const auto& mainThreadTaskDispatcher = EngineContext2::instance()->mainThreadTaskDispatcher();
     if (mainThreadTaskDispatcher) {
         mainThreadTaskDispatcher->executeTasks(1);
+    }
+
+    // ユーザーコードの update に渡す前に、UI レイアウトを再計算しておき、
+    // onUpdate 時点で Viewport サイズなどを正しく参照できるようにする。
+    if (m_mainWindow) {
+        m_mainWindow->updateLayoutIfNeeded();
     }
 
     //------------------------------------------------
@@ -616,7 +623,7 @@ void EngineManager::updateFrame() {
     }
 }
 
-void EngineManager::presentFrame() {
+void EngineManager::presentFrame(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget) {
     // 大体他の updateFrame で要素位置の調整が入るので、その後にレイアウトする。
     if (m_mainWindow) {
         if (m_engineProfiler) m_engineProfiler->lapBeginUIUpdate();
@@ -624,8 +631,7 @@ void EngineManager::presentFrame() {
         // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
         // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
         // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
-        m_mainWindow->updateStyleTree();
-        m_mainWindow->updateLayoutTree();
+        m_mainWindow->updateLayoutIfNeeded();
 
         if (m_engineProfiler) m_engineProfiler->lapEndUIUpdate();
     }
@@ -641,7 +647,12 @@ void EngineManager::presentFrame() {
     }
 
     if (m_mainWindow) {
-        m_mainWindow->present();
+        if (commandList) {
+            m_mainWindow->renderContents(commandList, renderTarget);
+        }
+        else {
+            m_mainWindow->present();
+        }
     }
 
     // if (m_renderingManager) {
@@ -799,8 +810,7 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 
     // init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
     if (m_mainWindow) {
-        m_mainWindow->updateStyleTree();
-        m_mainWindow->updateLayoutTree();
+        m_mainWindow->updateLayoutIfNeeded();
     }
 
     if (m_settings.developmentToolsEnabled && m_mainWindow) {

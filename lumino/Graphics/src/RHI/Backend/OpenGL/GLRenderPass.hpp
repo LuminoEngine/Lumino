@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoCore/Base/FixedArray.hpp>
 #include "GLHelper.hpp"
 #include "GLTextures.hpp"
 #include "GLDepthBuffer.hpp"
@@ -10,7 +11,7 @@ class GLRenderPass : public IRenderPass {
 public:
     GLRenderPass();
     Result init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-    Result initFromNativeFBO(GLuint fbo, int32_t width, int32_t height);
+    Result initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget);
     void dispose() override;
     RHIExtent2D viewSize() const override;
 
@@ -30,6 +31,8 @@ private:
     uint8_t m_clearStencil;
     GLuint m_fbo;
     RHIExtent2D m_viewSize;
+    int m_renderTargetCount;
+    std::array<GLenum, MaxMultiRenderTargets> m_aliveAttachments;
 };
 
 } // namespace detail

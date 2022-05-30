@@ -1,17 +1,43 @@
-﻿#include <LuminoEngine.hpp>
+﻿
+#include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <LuminoEngine.hpp>
+#include <LuminoGraphics/RHI/GraphicsExtensionOpenGL.hpp>
+#include <LuminoPlatform/ExternalProxyPlatformWindow.hpp>
+#include <LuminoEngine/Engine/ApplicationRunner.hpp>
 using namespace ln;
 
 class App : public Application {
 public:
     static void configure() {
         EngineSettings::setMainWindowTitle(U"HelloApp Example");
+        EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
+
+        // Lumino 自体はウィンドウシステムを初期化しないようにする
+        EngineSettings::setWindowSystem(WindowSystem::External);
+
+        // Lumino の内部的な SwapChain を作成しない。 SwapChain の制御は外部に任せる。
+        EngineSettings::setUseExternalSwapChain(true);
     }
 
     App() {
+
+        m_boxMesh = BoxMesh::With().buildInto();
+
+        ln::Engine::mainCamera()->setPosition(5, 5, 5);
+        ln::Engine::mainCamera()->lookAt(0, 0, 0);
+        //ln::Engine::renderView()->setClearMode(SceneClearMode::None);
+        ln::Engine::renderView()->setBackgroundColor(Color::Transparency);
     }
 
     void onUpdate() override {
     }
+
+    Ref<BoxMesh> m_boxMesh;
 };
 
 LUMINO_APP(App);
@@ -20,16 +46,6 @@ LUMINO_APP(App);
 //========================================================================
 //========================================================================
 
-#include <glad/glad.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
-
-//#include "linmath.h"
-
-#include <stdlib.h>
-#include <stdio.h>
 
 static const struct
 {
@@ -145,10 +161,9 @@ int main(void) {
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void*)(sizeof(float) * 2));
 
-    EngineSettings::setUseExternalSwapChain(true);
-    EngineSettings::setUserMainWindow((intptr_t)glfwGetWin32Window(window));
-    EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
-    AppIntegration::initialize(LuminoConfigureApplication, LuminoCreateApplicationInstance);
+    ExternalWindowApplicationRunner runner;
+    runner.init(LuminoConfigureApplication, LuminoCreateApplicationInstance);
+    auto commandList = GraphicsCommandList::create();
 
     while (!glfwWindowShouldClose(window)) {
         float ratio;
@@ -168,14 +183,21 @@ int main(void) {
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)m.data());
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        //AppIntegration::update(app);
-        //AppIntegration::render(app);
+        runner.updateFrame(width, height);
+
+        auto renderPass = OpenGLIntegration::getRenderPass(0, width, height);
+        commandList->enterRenderState();
+        commandList->beginCommandRecoding();
+        runner.renderFrame(commandList, renderPass->renderTarget(0));
+        commandList->endCommandRecoding();
+        commandList->leaveRenderState();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    AppIntegration::terminate();
+    commandList = nullptr;
+    runner.terminate();
 
     glfwDestroyWindow(window);
 

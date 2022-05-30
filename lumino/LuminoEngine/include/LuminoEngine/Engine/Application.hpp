@@ -10,6 +10,8 @@ class ApplicationHelper;
 class UIManager;
 class EngineManager;
 }
+class GraphicsCommandList;
+class RenderTargetTexture;
 class UICommand;
 class UIAction;
 class UIEventArgs;
@@ -80,6 +82,7 @@ public:
     static Ref<Variant> getValue(const StringView& key); // null = NotFound.
 };
 
+#if 0
 class AppIntegration {
 public:
     typedef void (*ConfigureApp)();
@@ -88,26 +91,27 @@ public:
     // for external main loop (emscripten, android)
     static Result initialize(ConfigureApp configureApp, CreateAppInstance createAppInstance);
     static bool update();
-    static void render();
+    static void render(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget);
     static void terminate();
 
     // for internal main loop (win32, macOS...)
     static void run(ConfigureApp configureApp, CreateAppInstance createAppInstance);
 
+    // for internal
+    static void preConfigure();
+
 private:
-    static Result initializeEngine();
-    static bool updateEngine();
-    static void renderEngine();
-    static void terminateEngine();
 
     static Ref<Application> s_app;
 };
-
+#endif
 
 
 namespace detail {
 class LN_API ApplicationHelper {
 public:
+    static void preConfigure();
+
     // for external main loop (emscripten, android)
     static void init(Application* app);
     static bool processTick(Application* app);
@@ -139,6 +143,7 @@ private:
 
 #define LUMINO_APP(appClass)                                          \
     extern "C" void LuminoConfigureApplication() {                    \
+        ::ln::detail::ApplicationHelper::preConfigure();              \
         appClass::configure();                                        \
     }                                                                 \
     extern "C" ::ln::Application* LuminoCreateApplicationInstance() { \

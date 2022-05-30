@@ -117,9 +117,11 @@ void render(GraphicsCommandList* commandList) {
 void mainLoop() {
     Platform::processEvents();
 
-    auto commandList = g_swapChain->beginFrame2();
+    auto commandList = g_swapChain->currentCommandList2();
+    commandList->beginCommandRecoding();
     render(commandList);
-    g_swapChain->endFrame();
+    commandList->endCommandRecoding();
+    g_swapChain->present();
 
     Thread::sleep(10);
 }

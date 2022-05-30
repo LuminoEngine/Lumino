@@ -1,5 +1,4 @@
-﻿
-#include "../Internal.hpp""
+﻿#include "../Internal.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/Physics/Collision.hpp>
 #include <LuminoEngine/Scene/Physics/RigidBodyComponent.hpp>

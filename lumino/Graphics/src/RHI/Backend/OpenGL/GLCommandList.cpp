@@ -70,17 +70,19 @@ void GLGraphicsContext::onSaveExternalRenderState() {
     GL_CHECK(glGetIntegerv(GL_BLEND_EQUATION, &m_savedState.m_GL_BLEND_EQUATION));
     GL_CHECK(glGetIntegerv(GL_CURRENT_PROGRAM, &m_savedState.m_GL_CURRENT_PROGRAM));
 
-    std::cout << "-----------------" << std::endl;
+    //std::cout << "-----------------" << std::endl;
     GL_CHECK(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &m_savedState.m_vao));
-    GL_CHECK(glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ARRAY_BUFFER_BINDING));
-    GL_CHECK(glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
+    // GL_ARRAY_BUFFER_BINDING と GL_ELEMENT_ARRAY_BUFFER_BINDING は VAO に含まれるため対応不要
+    //GL_CHECK(glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ARRAY_BUFFER_BINDING));
+    //GL_CHECK(glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
     GL_CHECK(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &m_savedState.m_drawFBO));
+    GL_CHECK(glGetFloatv(GL_COLOR_CLEAR_VALUE, m_savedState.m_clearColor));
 
-    std::cout << "m_savedState.m_vao: " << m_savedState.m_vao << std::endl;
-    std::cout << "m_savedState.m_GL_ARRAY_BUFFER_BINDING: " << m_savedState.m_GL_ARRAY_BUFFER_BINDING << std::endl;
-    std::cout << "m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING: " << m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING << std::endl;
-    std::cout << "m_savedState.m_GL_CURRENT_PROGRAM: " << m_savedState.m_GL_CURRENT_PROGRAM << std::endl;
-    std::cout << "m_savedState.m_drawFBO: " << m_savedState.m_drawFBO << std::endl;
+    //std::cout << "m_savedState.m_vao: " << m_savedState.m_vao << std::endl;
+    //std::cout << "m_savedState.m_GL_ARRAY_BUFFER_BINDING: " << m_savedState.m_GL_ARRAY_BUFFER_BINDING << std::endl;
+    //std::cout << "m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING: " << m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING << std::endl;
+    //std::cout << "m_savedState.m_GL_CURRENT_PROGRAM: " << m_savedState.m_GL_CURRENT_PROGRAM << std::endl;
+    //std::cout << "m_savedState.m_drawFBO: " << m_savedState.m_drawFBO << std::endl;
     
     //glGetIntegerv(GL_VIEWPORT, viewport)
         /*
@@ -125,14 +127,16 @@ void GLGraphicsContext::onRestoreExternalRenderState() {
     GL_CHECK(glBlendEquation(m_savedState.m_GL_BLEND_EQUATION));
 
 
-    //GL_CHECK(glBindVertexArray(m_savedState.m_vao));
+    GL_CHECK(glBindVertexArray(m_savedState.m_vao));
+    
     //
     //GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_savedState.m_GL_ARRAY_BUFFER_BINDING));
     //GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_savedState.m_GL_ELEMENT_ARRAY_BUFFER_BINDING));
     ////return;
     ////GL_CHECK(glUseProgram(m_savedState.m_GL_CURRENT_PROGRAM));
 
-    //GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_savedState.m_drawFBO));
+    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_savedState.m_drawFBO));
+    GL_CHECK(glClearColor(m_savedState.m_clearColor[0], m_savedState.m_clearColor[1], m_savedState.m_clearColor[2], m_savedState.m_clearColor[3]));
 }
 
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {

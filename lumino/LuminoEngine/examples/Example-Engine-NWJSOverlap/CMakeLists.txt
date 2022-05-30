@@ -1,12 +1,13 @@
-project(NWJSOverlap_Native)
+project(Example_Engine_NWJSOverlap)
 
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
 set(CMAKE_EXECUTABLE_SUFFIX ".js")
 set(VERBOSE 1)
-string(APPEND LOCAL_LINK_FLAGS " --pre-js ${CMAKE_CURRENT_LIST_DIR}/renderer_lib/pre.js")
+string(APPEND LOCAL_LINK_FLAGS " --pre-js ${CMAKE_CURRENT_LIST_DIR}/app/pre.js")
 string(APPEND LOCAL_LINK_FLAGS " -s WASM=2")
+string(APPEND LOCAL_LINK_FLAGS " -s USE_SDL=2")
 string(APPEND LOCAL_LINK_FLAGS " -s USE_GLFW=3")
 string(APPEND LOCAL_LINK_FLAGS " -s USE_WEBGL2=1")
 string(APPEND LOCAL_LINK_FLAGS " -s FULL_ES3=1")
@@ -37,7 +38,7 @@ string(APPEND LOCAL_LINK_FLAGS " -s ENVIRONMENT=web,worker")
 # ただし、ccall には string や array の変換ユーティリティがついている。特に理由が無ければ、 ccall または cwrap を利用するのが無難。
 string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','GL']\"")
 
-string(APPEND LOCAL_LINK_FLAGS " --js-library ${CMAKE_CURRENT_LIST_DIR}/renderer_lib/import_funcs.js")
+string(APPEND LOCAL_LINK_FLAGS " --js-library ${CMAKE_CURRENT_LIST_DIR}/app/import_funcs.js")
 
 # set(_LINK_FLAGS "--pre-js ${CMAKE_CURRENT_LIST_DIR}/pre.js")
 # set(_LINK_FLAGS "${_LINK_FLAGS} -s WASM=2")
@@ -59,8 +60,8 @@ string(APPEND LOCAL_LINK_FLAGS " --minify 0")
 string(APPEND LOCAL_LINK_FLAGS " -g3")
 string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
 
-add_executable(${PROJECT_NAME} renderer_lib/renderer_lib.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoPlatform LuminoGraphics LuminoBitmap)
+add_executable(${PROJECT_NAME} app/ExampleApp.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoEngine LuminoCore LuminoPlatform LuminoGraphics LuminoBitmap)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
 
 # Build assets

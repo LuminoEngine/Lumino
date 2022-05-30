@@ -1,7 +1,7 @@
 ﻿
 #include "GLHelper.hpp"
 #include "OpenGLDeviceContext.hpp"
-//#include "RHIs/OpenGL/GLTextures.hpp"
+#include "GLTextures.hpp"
 #include "GLRenderPass.hpp"
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/RHI/RenderPass.hpp>
@@ -17,11 +17,13 @@ GraphicsCommandList* OpenGLIntegration::getCommandListFromCurrentContext() {
 
 RenderPass* OpenGLIntegration::getRenderPass(GLuint fbo, int32_t width, int32_t height) {
 
-    static Ref<RenderPass> ppp;
-    if (!ppp) {
-
-        //auto renderTarget = makeObject<RenderTargetTexture>(width, height);
-        //detail::TextureInternal::resetNativeObject(renderTarget, 0);
+    // TODO: これは dispose のタイミングが NG なので Manager とかに持たせないとダメ
+    static Ref<RenderPass> cachedRenderPass;
+    if (!cachedRenderPass) {
+        auto rhiRenderTarget = makeRef<detail::GLRenderTargetTexture>();
+        if (!rhiRenderTarget->init(0, width, height)) {
+            return nullptr;
+        }
 
         // GLint fbo;
         // GL_CHECK(glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &fbo));
@@ -35,19 +37,14 @@ RenderPass* OpenGLIntegration::getRenderPass(GLuint fbo, int32_t width, int32_t 
         // GL_CHECK(glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height));
 
         auto rhiRenderPass = makeRef<detail::GLRenderPass>();
-        if (!rhiRenderPass->initFromNativeFBO(fbo, width, height)) {
+        if (!rhiRenderPass->initFromNativeFBO(fbo, rhiRenderTarget)) {
             return nullptr;
         }
 
-        //rhiRenderPass->m_renderTargets[0] = renderTarget->reso
-
-        ppp = makeObject<RenderPass>(rhiRenderPass);
+        cachedRenderPass = makeObject<RenderPass>(rhiRenderPass);
     }
 
-
-
-    return ppp;
-
+    return cachedRenderPass;
 }
 
 

@@ -1,4 +1,5 @@
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/Engine/ApplicationRunner.hpp>
 using namespace ln;
 
 class App : public Application {
@@ -29,5 +30,6 @@ private:
 LUMINO_APP(App);
 
 int main() {
-    AppIntegration::run(LuminoConfigureApplication, LuminoCreateApplicationInstance);
+    StandaloneApplicationRunner runner;
+    runner.run(LuminoConfigureApplication, LuminoCreateApplicationInstance);
 }

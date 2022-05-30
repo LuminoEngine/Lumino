@@ -18,6 +18,12 @@ namespace ln {
 //==============================================================================
 // GraphicsCommandList
 
+Ref<GraphicsCommandList> GraphicsCommandList::create() {
+    auto commandList = makeRef<GraphicsCommandList>();
+    commandList->init(detail::GraphicsManager::instance());
+    return commandList;
+}
+
 GraphicsCommandList::GraphicsCommandList()
     : m_manager(nullptr) 
     , m_drawCall(0) 
@@ -77,6 +83,8 @@ void GraphicsCommandList::reset() {
     m_vertexBufferDataTransferredSize = 0;
     m_indexBufferDataTransferredSize = 0;
     m_textureDataTransferredSize = 0;
+
+    resetState();
 }
 
 
@@ -296,12 +304,14 @@ void GraphicsCommandList::interruptCurrentRenderPassFromResolveRHI() {
 void GraphicsCommandList::beginCommandRecoding() {
     if (LN_ASSERT(m_scopeState == ScopeState::Idle)) return;
     m_rhiResource->begin();
+    m_singleFrameUniformBufferAllocator->cleanup();
     m_scopeState = ScopeState::RenderPassOutside;
 }
 
 void GraphicsCommandList::endCommandRecoding() {
     if (LN_ASSERT(m_scopeState == ScopeState::RenderPassOutside)) return;
     m_rhiResource->end();
+    m_singleFrameUniformBufferAllocator->unmap();
     m_scopeState = ScopeState::Idle;
 }
 
