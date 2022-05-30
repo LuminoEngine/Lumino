@@ -18,7 +18,6 @@ void RoutingRenderView::updateUIStyle(const UIStyleContext* styleContext, const 
 }
 
 void RoutingRenderView::updateUILayout(UILayoutContext* layoutContext) {
-    // TODO: こんなのでいいのか要チェック
     onUpdateUILayout(layoutContext);
 }
 

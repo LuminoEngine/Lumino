@@ -2,6 +2,12 @@
 #include <LuminoEngine/Base/Event.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 
+struct YGConfig;
+struct YGNode;
+typedef struct YGConfig* YGConfigRef;
+typedef struct YGNode* YGNodeRef;
+#define LN_USE_YOGA 1
+
 namespace ln {
 class Material;
 class UITheme;

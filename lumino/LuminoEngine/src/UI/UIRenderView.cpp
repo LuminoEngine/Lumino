@@ -188,6 +188,9 @@ void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const det
 void UIRenderView::onUpdateUILayout(UILayoutContext* layoutContext)
 {
     Rect finalGlobalRect(0, 0, actualSize());
+#ifdef LN_USE_YOGA
+    YGNodeCalculateLayout(rootElement()->yogaNode(), finalGlobalRect.width, finalGlobalRect.height, YGDirectionLTR);
+#endif
     rootElement()->updateLayout(layoutContext, finalGlobalRect);
     rootElement()->updateFinalLayoutHierarchical(layoutContext, Matrix());
     adornerLayer()->measureLayout(layoutContext, finalGlobalRect.getSize());

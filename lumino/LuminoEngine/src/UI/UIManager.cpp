@@ -17,6 +17,7 @@
 #include "UIEventArgsPool.hpp"
 #include "UIManager.hpp"
 
+
 namespace ln {
 namespace detail {
 
@@ -76,7 +77,8 @@ UIManager::UIManager()
     , m_primaryElement(nullptr)
     , m_mouseHoverElement(nullptr)
     , m_capturedElement(nullptr)
-    , m_forcusedElement(nullptr) {
+    , m_forcusedElement(nullptr)
+    , m_defaultYogaConfig(nullptr) {
 }
 
 void UIManager::init(const Settings& settings) {
@@ -137,11 +139,55 @@ void UIManager::init(const Settings& settings) {
         detail::UIStyleInstance::updateStyleDataHelper(m_styleContext, nullptr, m_styleContext->mainTheme->defaultStyle(), m_finalDefaultStyle);
     }
 
+    m_defaultYogaConfig = YGConfigNew();
+
     LN_LOG_DEBUG("UIManager Initialization finished.");
+
+    //{
+
+    //    
+    //    const YGNodeRef root = YGNodeNewWithConfig(m_defaultYogaConfig);
+    //    YGNodeStyleSetWidth(root, 100);
+    //    YGNodeStyleSetHeight(root, 100);
+
+    //    const YGNodeRef root_child0 = YGNodeNewWithConfig(m_defaultYogaConfig);
+    //    YGNodeStyleSetFlexGrow(root_child0, 1);
+    //    YGNodeStyleSetFlexBasis(root_child0, 50);
+    //    YGNodeInsertChild(root, root_child0, 0);
+
+    //    float l0 = YGNodeLayoutGetLeft(root_child0);
+    //    float r0 = YGNodeLayoutGetTop(root_child0);
+    //    float w0 = YGNodeLayoutGetWidth(root_child0);
+    //    float h0 = YGNodeLayoutGetHeight(root_child0);
+
+    //    YGValue a = YGNodeStyleGetPosition(root_child0, YGEdgeRight);
+    //    YGNodeStyleSetPositionType(root_child0, YGPositionTypeAbsolute);
+    //    YGNodeStyleSetWidth(root_child0, 20);
+    //    YGNodeStyleSetPosition(root_child0, YGEdgeRight, 0);
+    //    YGValue b = YGNodeStyleGetPosition(root_child0, YGEdgeRight);
+
+    //    YGNodeCalculateLayout(root, YGUndefined, YGUndefined, YGDirectionLTR);
+
+    //    
+    //    float l1 = YGNodeLayoutGetLeft(root_child0);
+    //    float r1 =YGNodeLayoutGetTop(root_child0);
+    //    float w1 =YGNodeLayoutGetWidth(root_child0);
+    //    float h1 =YGNodeLayoutGetHeight(root_child0);
+
+    //    YGNodeRemoveChild(root, root_child0);
+    //    YGNodeFree(root_child0);
+    //    YGNodeFree(root);
+
+    //}
 }
 
 void UIManager::dispose() {
     LN_LOG_DEBUG("UIManager dispose started.");
+
+    if (m_defaultYogaConfig) {
+        YGConfigFree(m_defaultYogaConfig);
+        m_defaultYogaConfig = nullptr;
+    }
 
     if (m_application) {
         m_application->finalizeInternal();

@@ -8,6 +8,7 @@ if(NOT EMSCRIPTEN)
     add_subdirectory(EditorWithImGui)
     add_subdirectory(Example-Engine-MeshObject)
     add_subdirectory(Example_Engine_ExternalGLFW)
+    add_subdirectory(Example_Engine_UILayout)
 endif()
 
 if(LN_EMSCRIPTEN)

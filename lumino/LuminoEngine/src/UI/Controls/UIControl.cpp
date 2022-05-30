@@ -263,6 +263,13 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
 
 Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+#ifdef LN_USE_YOGA
+    for (auto& child : *m_logicalChildren) {
+        child->arrangeLayout(layoutContext, finalArea);
+    }
+    return UIElement::arrangeOverride(layoutContext, finalArea);
+#else
+
     //Rect finalArea(0, 0, finalSize);
 
     if (m_aligned3x3GridLayoutArea) {
@@ -287,6 +294,7 @@ Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
     else {
         return UIElement::arrangeOverride(layoutContext, finalArea);
     }
+#endif
 }
 
 // fix: 

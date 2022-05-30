@@ -96,6 +96,8 @@ public:
     const Ref<UIStyleContext>& styleContext() const { return m_styleContext; }
     const Ref<detail::UIStyleInstance>& finalDefaultStyle() const { return m_finalDefaultStyle; }
 
+    const YGConfigRef defaultYogaConfig() const { return m_defaultYogaConfig; }
+
 private:
     struct EventQueueItem {
         Ref<UIElement> target; // 送信待ち中の削除に備え、強参照で持つ
@@ -126,6 +128,8 @@ private:
 
     //
     List<Ref<UIElement>> m_activationCache;
+
+    YGConfigRef m_defaultYogaConfig;
 };
 
 } // namespace detail

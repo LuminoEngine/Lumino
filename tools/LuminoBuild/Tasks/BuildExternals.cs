@@ -80,6 +80,7 @@ namespace LuminoBuild.Tasks
 
                     Proc.Make("vcpkg", $"install box2d:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install bullet3:{b.Triplet} {options}").WithSilent().Call();
+                    Proc.Make("vcpkg", $"install yoga:{b.Triplet} {options}").WithSilent().Call();
 
                     Proc.Make("vcpkg", $"install stb:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install tinyobjloader:{b.Triplet} {options}").WithSilent().Call();

@@ -306,6 +306,7 @@ set(
     toml11::toml11
     tinyobjloader::tinyobjloader
     imgui::imgui
+    yoga
     ${LN_PLATFORM_LIBS}
 )
 
