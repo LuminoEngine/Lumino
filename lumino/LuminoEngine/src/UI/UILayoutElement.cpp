@@ -96,6 +96,79 @@ void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& 
     if (desiredSize.height > 0.0f) {
         YGNodeStyleSetHeight(m_yogaNode, desiredSize.height);
     }
+
+#if 0
+    // LeftToRight? とか
+    YGNodeStyleSetDirection();
+
+    // MainAxis の方向
+    YGNodeStyleSetFlexDirection();
+
+    YGNodeStyleSetFlexBasis();
+    YGNodeStyleSetFlexBasisAuto();
+    YGNodeStyleSetFlexBasisPercent();
+    //YGValue YGNodeStyleGetFlexBasis();
+    YGNodeStyleSetFlexGrow();   // サイズの明示された要素をレイアウトした後、残りのスペースをどのように割り当てるかを決める "重み"。1 異常の場合、width, size は効果を発揮しない。
+    YGNodeStyleSetFlexShrink(); // MainAxis のコンテナサイズを超えた場合に、子要素を縮小する重み。0 の場合、縮小しない。また親コンテナの折り返しが有効になっている場合は効果を発揮しない。
+
+    // 子要素の折り返し
+    YGNodeStyleSetFlexWrap();
+    
+
+    // YGJustify
+    /*
+    YGJustifyFlexStart,
+    YGJustifyCenter,
+    YGJustifyFlexEnd,
+    YGJustifySpaceBetween,
+    YGJustifySpaceAround,
+    YGJustifySpaceEvenly
+    */
+    YGNodeStyleSetJustifyContent();
+
+    // YGAlign
+    /*
+    YGAlignAuto,
+    YGAlignFlexStart,
+    YGAlignCenter,
+    YGAlignFlexEnd,
+    YGAlignStretch,
+    YGAlignBaseline,
+    YGAlignSpaceBetween,
+    YGAlignSpaceAround
+    */
+    YGNodeStyleSetAlignItems();
+
+    // YGAlign
+    YGNodeStyleSetAlignSelf();
+
+    // YGAlign
+    YGNodeStyleSetAlignContent();
+
+
+
+
+    YGNodeStyleSetWidth();
+    YGNodeStyleSetWidthPercent();
+    YGNodeStyleSetWidthAuto();
+
+    YGNodeStyleSetHeight();
+    YGNodeStyleSetHeightPercent();
+    YGNodeStyleSetHeightAuto();
+
+    YGUndefined;
+    YGNodeStyleSetMaxWidth();
+    YGNodeStyleSetMaxWidthPercent();
+    YGNodeStyleSetMaxHeight();
+    YGNodeStyleSetMaxHeightPercent();
+
+    YGNodeStyleSetMinHeight();  // YGValue
+    YGNodeStyleSetMinHeightPercent();       // 親コンテナに対する割合
+    YGNodeStyleSetMinWidth(); // YGValue
+    YGNodeStyleSetMinWidthPercent();
+
+    YGNodeStyleSetAspectRatio();
+#endif
 #endif
 }
 
