@@ -186,12 +186,12 @@ void UIElement::setAlignments(UIHAlignment halign, UIVAlignment valign) {
     setVAlignment(valign);
 }
 
-void UIElement::setPosition(const Vector3& pos) {
-    m_localStyle->mainStyle()->position = pos;
+void UIElement::setOrigin(const Vector3& pos) {
+    m_localStyle->mainStyle()->origin = pos;
 }
 
-const Vector3& UIElement::position() const {
-    return m_localStyle->mainStyle()->position.getOrDefault(Vector3::Zero);
+const Vector3& UIElement::origin() const {
+    return m_localStyle->mainStyle()->origin.getOrDefault(Vector3::Zero);
 }
 
 void UIElement::setRotation(const Quaternion& rot) {

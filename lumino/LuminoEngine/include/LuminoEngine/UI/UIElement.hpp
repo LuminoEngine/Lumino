@@ -180,15 +180,15 @@ public:
 
     /** このオブジェクトの位置を設定します。 */
     LN_METHOD(Property)
-    void setPosition(const Vector3& pos);
+    void setOrigin(const Vector3& pos);
 
     /** このオブジェクトの位置を設定します。 */
     LN_METHOD(OverloadPostfix = "XYZ")
-    void setPosition(float x, float y, float z = 0.0f) { setPosition(Vector3(x, y, z)); }
+    void setOrigin(float x, float y, float z = 0.0f) { setOrigin(Vector3(x, y, z)); }
 
     /** このオブジェクトの位置を位置を取得します。 */
     LN_METHOD(Property)
-    const Vector3& position() const;
+    const Vector3& origin() const;
 
     /** このオブジェクトの回転を設定します。 */
     LN_METHOD(Property)

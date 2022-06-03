@@ -30,7 +30,7 @@ class App_Example_GameAudio : public Application
 		Engine::ui()->add(button2);
 
 		addButton->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
-		addButton->setPosition(0, 0);
+		addButton->setOrigin(0, 0);
     }
 
     virtual void onUpdate() override

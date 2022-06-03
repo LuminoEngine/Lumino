@@ -15,6 +15,69 @@ namespace detail {
 class LayoutHelper;
 }
 
+
+enum class UIStyleValueUnit {
+    Point,
+    Percent,
+};
+
+class UIStyleValue {
+public:
+    constexpr UIStyleValue()
+        : m_value(std::numeric_limits<float>::quiet_NaN())
+        , m_unit(UIStyleValueUnit::Point) {}
+
+    constexpr float value() const { return m_value; }
+
+    constexpr UIStyleValueUnit unit() const { return m_unit; }
+
+    bool isNull() const { return std::isnan(m_value); }
+
+private:
+    float m_value;
+    UIStyleValueUnit m_unit;
+};
+
+enum class UILayoutFlexDirection {
+    Column,
+    ColumnReverse,
+    Row,
+    RowReverse,
+};
+
+enum class UILayoutFlexWrap {
+    NoWrap,
+    Wrap,
+    Reverse,
+};
+
+enum class UILayoutPositionType {
+    Relative,
+    Absolute,
+};
+
+enum class UILayoutJustify {
+    FlexStart,
+    Center,
+    FlexEnd,
+    SpaceBetween,
+    SpaceAround,
+    SpaceEvenly
+};
+
+enum class UILayoutAlign {
+    Auto,
+    FlexStart,
+    Center,
+    FlexEnd,
+    Stretch,
+    Baseline,
+    SpaceBetween,
+    SpaceAround
+};
+
+
+
 enum class UIFontWeight {
     Normal,
     Bold,

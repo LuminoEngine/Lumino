@@ -11,15 +11,13 @@ namespace ln {
 
 namespace detail {
 
-UIStyleInstance::UIStyleInstance()
-{
+UIStyleInstance::UIStyleInstance() {
 }
 
-void UIStyleInstance::setupDefault()
-{
+void UIStyleInstance::setupDefault() {
     margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
     padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-    hAlignment = UIHAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
+    hAlignment = UIHAlignment::Stretch; // Alignment は HTML のデフォルトに合わせてみる
     vAlignment = UIVAlignment::Stretch;
     horizontalContentAlignment = UIHAlignment::Stretch;
     verticalContentAlignment = UIVAlignment::Stretch;
@@ -27,8 +25,8 @@ void UIStyleInstance::setupDefault()
     minHeight = Math::NaN;
     maxWidth = Math::NaN;
     maxHeight = Math::NaN;
-	overflowX = UIOverflowBehavior::Visible;
-	overflowY = UIOverflowBehavior::Visible;
+    overflowX = UIOverflowBehavior::Visible;
+    overflowY = UIOverflowBehavior::Visible;
 
     position = Vector3::Zero;
     rotation = Quaternion::Identity;
@@ -41,7 +39,7 @@ void UIStyleInstance::setupDefault()
 
     textColor = Color::Black;
     fontFamily = String::Empty;
-    fontSize = 20.0f;	// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 20 をデフォルトとする。
+    fontSize = 20.0f; // WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 20 をデフォルトとする。
     fontWeight = UIFontWeight::Normal;
     fontStyle = UIFontStyle::Normal;
 
@@ -53,16 +51,15 @@ void UIStyleInstance::setupDefault()
     blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
     tone = ColorTone(0.0f, 0.0f, 0.0f, 0.0f);
 
- //   auto tmp = makeObject<UIStyle>();
- //   tmp->setupDefault();
-	//backgroundMaterial = makeObject<Material>();
- //   mergeFrom(tmp);
+    //   auto tmp = makeObject<UIStyle>();
+    //   tmp->setupDefault();
+    // backgroundMaterial = makeObject<Material>();
+    //   mergeFrom(tmp);
 }
 
-void UIStyleInstance::mergeFrom(const UIStyle* other)
-{
+void UIStyleInstance::mergeFrom(const UIStyle* other) {
     if (LN_REQUIRE(other)) return;
-    
+
     // layout
     if (other->width.hasValue()) width = other->width.get();
     if (other->height.hasValue()) height = other->height.get();
@@ -76,11 +73,11 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->minHeight.hasValue()) minHeight = other->minHeight.get();
     if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.get();
     if (other->maxHeight.hasValue()) maxHeight = other->maxHeight.get();
-	if (other->overflowX.hasValue()) overflowX = other->overflowX.get();
-	if (other->overflowY.hasValue()) overflowY = other->overflowY.get();
+    if (other->overflowX.hasValue()) overflowX = other->overflowX.get();
+    if (other->overflowY.hasValue()) overflowY = other->overflowY.get();
 
     // layout transform
-    if (other->position.hasValue()) position = other->position.get();
+    if (other->origin.hasValue()) position = other->origin.get();
     if (other->rotation.hasValue()) rotation = other->rotation.get();
     if (other->scale.hasValue()) scale = other->scale.get();
     if (other->centerPoint.hasValue()) centerPoint = other->centerPoint.get();
@@ -101,15 +98,15 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->rightBorderColor.hasValue()) rightBorderColor = other->rightBorderColor.get();
     if (other->bottomBorderColor.hasValue()) bottomBorderColor = other->bottomBorderColor.get();
     if (other->borderDirection.hasValue()) borderDirection = other->borderDirection.get();
-	if (other->borderInset.hasValue()) borderInset = other->borderInset.get();
+    if (other->borderInset.hasValue()) borderInset = other->borderInset.get();
 
-	// shadow
-	if (other->shadowOffsetX.hasValue()) shadowOffsetX = other->shadowOffsetX.get();
-	if (other->shadowOffsetY.hasValue()) shadowOffsetY = other->shadowOffsetY.get();
-	if (other->shadowBlurRadius.hasValue()) shadowBlurRadius = other->shadowBlurRadius.get();
-	if (other->shadowSpreadRadius.hasValue()) shadowSpreadRadius = other->shadowSpreadRadius.get();
-	if (other->shadowColor.hasValue()) shadowColor = other->shadowColor.get();
-	if (other->shadowInset.hasValue()) shadowInset = other->shadowInset.get();
+    // shadow
+    if (other->shadowOffsetX.hasValue()) shadowOffsetX = other->shadowOffsetX.get();
+    if (other->shadowOffsetY.hasValue()) shadowOffsetY = other->shadowOffsetY.get();
+    if (other->shadowBlurRadius.hasValue()) shadowBlurRadius = other->shadowBlurRadius.get();
+    if (other->shadowSpreadRadius.hasValue()) shadowSpreadRadius = other->shadowSpreadRadius.get();
+    if (other->shadowColor.hasValue()) shadowColor = other->shadowColor.get();
+    if (other->shadowInset.hasValue()) shadowInset = other->shadowInset.get();
 
     // text
     if (other->textColor.hasValue()) textColor = other->textColor.get();
@@ -126,14 +123,13 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->blendColor.hasValue()) blendColor = other->blendColor.get();
     if (other->tone.hasValue()) tone = other->tone.get();
 
-	// decorators
-	for (auto& d : other->decorators) {
-		decorators.add(d);
-	}
+    // decorators
+    for (auto& d : other->decorators) {
+        decorators.add(d);
+    }
 }
 
-void UIStyleInstance::copyFrom(const UIStyleInstance* other)
-{
+void UIStyleInstance::copyFrom(const UIStyleInstance* other) {
     if (LN_REQUIRE(other)) return;
 
     // layout
@@ -149,8 +145,8 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     minHeight = other->minHeight;
     maxWidth = other->maxWidth;
     maxHeight = other->maxHeight;
-	overflowX = other->overflowX;
-	overflowY = other->overflowY;
+    overflowX = other->overflowX;
+    overflowY = other->overflowY;
 
     // layout transform
     position = other->position;
@@ -174,15 +170,15 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     rightBorderColor = other->rightBorderColor;
     bottomBorderColor = other->bottomBorderColor;
     borderDirection = other->borderDirection;
-	borderInset = other->borderInset;
+    borderInset = other->borderInset;
 
-	// shadow
-	shadowOffsetX = other->shadowOffsetX;
-	shadowOffsetY = other->shadowOffsetY;
-	shadowBlurRadius = other->shadowBlurRadius;
-	shadowSpreadRadius = other->shadowSpreadRadius;
-	shadowColor = other->shadowColor;
-	shadowInset = other->shadowInset;
+    // shadow
+    shadowOffsetX = other->shadowOffsetX;
+    shadowOffsetY = other->shadowOffsetY;
+    shadowBlurRadius = other->shadowBlurRadius;
+    shadowSpreadRadius = other->shadowSpreadRadius;
+    shadowColor = other->shadowColor;
+    shadowInset = other->shadowInset;
 
     // text
     textColor = other->textColor;
@@ -199,64 +195,60 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     blendColor = other->blendColor;
     tone = other->tone;
 
-	// decorators
-	for (auto& d : other->decorators) {
-		decorators.add(d);
-	}
+    // decorators
+    for (auto& d : other->decorators) {
+        decorators.add(d);
+    }
 }
 
-void UIStyleInstance::makeRenderObjects()
-{
-
+void UIStyleInstance::makeRenderObjects() {
 }
 
-void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
-{
-	// animations
-	//	StartValue は最新のスタイルの値にする前の、現在値を使いたいので、animation 更新は最初に行う。
-	{
-		if (combinedStyle->m_animationData) {
-			const auto& sd = combinedStyle->m_animationData;
-			auto* d = outStyleData->acquireAnimationData();
+void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData) {
+    // animations
+    //	StartValue は最新のスタイルの値にする前の、現在値を使いたいので、animation 更新は最初に行う。
+    {
+        if (combinedStyle->m_animationData) {
+            const auto& sd = combinedStyle->m_animationData;
+            auto* d = outStyleData->acquireAnimationData();
 
-			//if (!d->backgroundColor) {	// TODO: test
-			if (sd->hasValue(UIStyleAnimationElement_BackgroundColor)) {
-				if (UIVector4AnimationInstance::realloc(sd->backgroundColor, &d->backgroundColor)) {
-					d->backgroundColor->reset(outStyleData->backgroundColor.toVector4());
-				}
-			}
-			else {
-				// TODO: 消すとメモリ効率悪い。poolにする
-				d->backgroundColor = nullptr;
-			}
+            // if (!d->backgroundColor) {	// TODO: test
+            if (sd->hasValue(UIStyleAnimationElement_BackgroundColor)) {
+                if (UIVector4AnimationInstance::realloc(sd->backgroundColor, &d->backgroundColor)) {
+                    d->backgroundColor->reset(outStyleData->backgroundColor.toVector4());
+                }
+            }
+            else {
+                // TODO: 消すとメモリ効率悪い。poolにする
+                d->backgroundColor = nullptr;
+            }
 
-			if (sd->hasValue(UIStyleAnimationElement_Opacity)) {
-				if (UIScalarAnimationInstance::realloc(sd->opacity, &d->opacity)) {
-					d->opacity->reset(outStyleData->opacity);
-				}
-			}
-			else {
-				// TODO: 消すとメモリ効率悪い。poolにする
-				d->opacity = nullptr;
-			}
-		}
-		else {
-			// TODO: 消すとメモリ効率悪い。poolにする
-			outStyleData->m_animationData = nullptr;
-		}
-	}
+            if (sd->hasValue(UIStyleAnimationElement_Opacity)) {
+                if (UIScalarAnimationInstance::realloc(sd->opacity, &d->opacity)) {
+                    d->opacity->reset(outStyleData->opacity);
+                }
+            }
+            else {
+                // TODO: 消すとメモリ効率悪い。poolにする
+                d->opacity = nullptr;
+            }
+        }
+        else {
+            // TODO: 消すとメモリ効率悪い。poolにする
+            outStyleData->m_animationData = nullptr;
+        }
+    }
 
-
-	//const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
-	//if (parentStyle)
-	//{
-	//	// text 関係は継承する
-	//	localStyle->textColor.inherit(parentStyle->textColor);
-	//	localStyle->fontFamily.inherit(parentStyle->fontFamily);
-	//	localStyle->fontSize.inherit(parentStyle->fontSize);
-	//	localStyle->fontWeight.inherit(parentStyle->fontWeight);
-	//	localStyle->fontStyle.inherit(parentStyle->fontStyle);
-	//}
+    // const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
+    // if (parentStyle)
+    //{
+    //	// text 関係は継承する
+    //	localStyle->textColor.inherit(parentStyle->textColor);
+    //	localStyle->fontFamily.inherit(parentStyle->fontFamily);
+    //	localStyle->fontSize.inherit(parentStyle->fontSize);
+    //	localStyle->fontWeight.inherit(parentStyle->fontWeight);
+    //	localStyle->fontStyle.inherit(parentStyle->fontStyle);
+    // }
 
     // inheritance
     {
@@ -272,11 +264,11 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
         }
         else {
             // for root default style
-			assert(combinedStyle->textColor.hasValue());
-			assert(combinedStyle->fontFamily.hasValue());
-			assert(combinedStyle->fontSize.hasValue());
-			assert(combinedStyle->fontWeight.hasValue());
-			assert(combinedStyle->fontStyle.hasValue());
+            assert(combinedStyle->textColor.hasValue());
+            assert(combinedStyle->fontFamily.hasValue());
+            assert(combinedStyle->fontSize.hasValue());
+            assert(combinedStyle->fontWeight.hasValue());
+            assert(combinedStyle->fontStyle.hasValue());
             outStyleData->textColor = (combinedStyle->textColor.getOrDefault(UIStyle::DefaultTextColor));
             outStyleData->fontFamily = (combinedStyle->fontFamily.getOrDefault(UIStyle::DefaultFontFamily));
             outStyleData->fontSize = (combinedStyle->fontSize.getOrDefault(UIStyle::DefaultFontSize));
@@ -285,45 +277,44 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
         }
     }
 
-	//outStyleData->sourceLocalStyle = localStyle;
+    // outStyleData->sourceLocalStyle = localStyle;
 
-
-	// layout
-	{
+    // layout
+    {
         outStyleData->width = (combinedStyle->width.getOrDefault(UIStyle::DefaultWidth));
         outStyleData->height = (combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
-		outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
-		outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
-		outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
-		outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
+        outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
+        outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
+        outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
+        outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
         outStyleData->horizontalContentAlignment = (combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
         outStyleData->verticalContentAlignment = (combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
-		outStyleData->minWidth = (combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));
-		outStyleData->minHeight = (combinedStyle->minHeight.getOrDefault(UIStyle::DefaultMinHeight));
-		outStyleData->maxWidth = (combinedStyle->maxWidth.getOrDefault(UIStyle::DefaultMaxWidth));
-		outStyleData->maxHeight = (combinedStyle->maxHeight.getOrDefault(UIStyle::DefaultMaxHeight));
-		outStyleData->overflowX = (combinedStyle->overflowX.getOrDefault(UIStyle::DefaultOverflowX));
-		outStyleData->overflowY = (combinedStyle->overflowY.getOrDefault(UIStyle::DefaultOverflowY));
-	}
+        outStyleData->minWidth = (combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));
+        outStyleData->minHeight = (combinedStyle->minHeight.getOrDefault(UIStyle::DefaultMinHeight));
+        outStyleData->maxWidth = (combinedStyle->maxWidth.getOrDefault(UIStyle::DefaultMaxWidth));
+        outStyleData->maxHeight = (combinedStyle->maxHeight.getOrDefault(UIStyle::DefaultMaxHeight));
+        outStyleData->overflowX = (combinedStyle->overflowX.getOrDefault(UIStyle::DefaultOverflowX));
+        outStyleData->overflowY = (combinedStyle->overflowY.getOrDefault(UIStyle::DefaultOverflowY));
+    }
 
-	// layout transform
-	{
-		outStyleData->position = (combinedStyle->position.getOrDefault(UIStyle::DefaultPosition));
-		outStyleData->rotation = (combinedStyle->rotation.getOrDefault(UIStyle::DefaultRotation));
-		outStyleData->scale = (combinedStyle->scale.getOrDefault(UIStyle::DefaultScale));
-		outStyleData->centerPoint = (combinedStyle->centerPoint.getOrDefault(UIStyle::DefaultCenterPoint));
-	}
+    // layout transform
+    {
+        outStyleData->position = (combinedStyle->origin.getOrDefault(UIStyle::DefaultOrigin));
+        outStyleData->rotation = (combinedStyle->rotation.getOrDefault(UIStyle::DefaultRotation));
+        outStyleData->scale = (combinedStyle->scale.getOrDefault(UIStyle::DefaultScale));
+        outStyleData->centerPoint = (combinedStyle->centerPoint.getOrDefault(UIStyle::DefaultCenterPoint));
+    }
 
-	// background
-	{
-		assert(outStyleData->backgroundMaterial);
+    // background
+    {
+        assert(outStyleData->backgroundMaterial);
         outStyleData->backgroundDrawMode = (combinedStyle->backgroundDrawMode.getOrDefault(UIStyle::DefaultBackgroundDrawMode));
-		outStyleData->backgroundColor = (combinedStyle->backgroundColor.getOrDefault(UIStyle::DefaultBackgroundColor));
-		outStyleData->backgroundMaterial->setMainTexture((combinedStyle->backgroundImage.getOrDefault(UIStyle::DefaultBackgroundImage)));
-		outStyleData->backgroundMaterial->setShader((combinedStyle->backgroundShader.getOrDefault(UIStyle::DefaultBackgroundShader)));
+        outStyleData->backgroundColor = (combinedStyle->backgroundColor.getOrDefault(UIStyle::DefaultBackgroundColor));
+        outStyleData->backgroundMaterial->setMainTexture((combinedStyle->backgroundImage.getOrDefault(UIStyle::DefaultBackgroundImage)));
+        outStyleData->backgroundMaterial->setShader((combinedStyle->backgroundShader.getOrDefault(UIStyle::DefaultBackgroundShader)));
         outStyleData->backgroundImageRect = (combinedStyle->backgroundImageRect.getOrDefault(UIStyle::DefaultBackgroundImageRect));
         outStyleData->backgroundImageBorder = (combinedStyle->backgroundImageBorder.getOrDefault(UIStyle::DefaultBackgroundImageBorder));
-	}
+    }
 
     // border
     {
@@ -334,134 +325,126 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
         outStyleData->rightBorderColor = (combinedStyle->rightBorderColor.getOrDefault(UIStyle::DefaultRightBorderColor));
         outStyleData->bottomBorderColor = (combinedStyle->bottomBorderColor.getOrDefault(UIStyle::DefaultBottomBorderColor));
         outStyleData->borderDirection = (combinedStyle->borderDirection.getOrDefault(UIStyle::DefaultBorderDirection));
-		outStyleData->borderInset = (combinedStyle->borderInset.getOrDefault(UIStyle::DefaultBorderInset));
-	}
+        outStyleData->borderInset = (combinedStyle->borderInset.getOrDefault(UIStyle::DefaultBorderInset));
+    }
 
-	// shadow
-	{
-		outStyleData->shadowOffsetX = (combinedStyle->shadowOffsetX.getOrDefault(UIStyle::DefaultShadowOffsetX));
-		outStyleData->shadowOffsetY = (combinedStyle->shadowOffsetY.getOrDefault(UIStyle::DefaultShadowOffsetY));
-		outStyleData->shadowBlurRadius = (combinedStyle->shadowBlurRadius.getOrDefault(UIStyle::DefaultShadowBlurRadius));
-		outStyleData->shadowSpreadRadius = (combinedStyle->shadowSpreadRadius.getOrDefault(UIStyle::DefaultShadowSpreadRadius));
-		outStyleData->shadowColor = (combinedStyle->shadowColor.getOrDefault(UIStyle::DefaultShadowColor));
-		outStyleData->shadowInset = (combinedStyle->shadowInset.getOrDefault(UIStyle::DefaultShadowInset));
-	}
+    // shadow
+    {
+        outStyleData->shadowOffsetX = (combinedStyle->shadowOffsetX.getOrDefault(UIStyle::DefaultShadowOffsetX));
+        outStyleData->shadowOffsetY = (combinedStyle->shadowOffsetY.getOrDefault(UIStyle::DefaultShadowOffsetY));
+        outStyleData->shadowBlurRadius = (combinedStyle->shadowBlurRadius.getOrDefault(UIStyle::DefaultShadowBlurRadius));
+        outStyleData->shadowSpreadRadius = (combinedStyle->shadowSpreadRadius.getOrDefault(UIStyle::DefaultShadowSpreadRadius));
+        outStyleData->shadowColor = (combinedStyle->shadowColor.getOrDefault(UIStyle::DefaultShadowColor));
+        outStyleData->shadowInset = (combinedStyle->shadowInset.getOrDefault(UIStyle::DefaultShadowInset));
+    }
 
-	// text
-	{
-		//outStyleData->textColor = localStyle->textColor.getOrDefault(combinedStyle->textColor.get());
+    // text
+    {
+        // outStyleData->textColor = localStyle->textColor.getOrDefault(combinedStyle->textColor.get());
 
-		if (outStyleData->font) {
-			// 前回の update で選択した font があるのでそのままにする
-		}
-		else {
-			// element 作成直後。まだ font の選択処理を行っていないときはとりあえず親のフォントを参照
-			outStyleData->font = (parentStyleData) ? parentStyleData->font : nullptr;
-		}
+        if (outStyleData->font) {
+            // 前回の update で選択した font があるのでそのままにする
+        }
+        else {
+            // element 作成直後。まだ font の選択処理を行っていないときはとりあえず親のフォントを参照
+            outStyleData->font = (parentStyleData) ? parentStyleData->font : nullptr;
+        }
 
-		detail::FontDesc desc;
-		desc.Family = outStyleData->fontFamily;
-		desc.Size = outStyleData->fontSize;
-		desc.isBold = (outStyleData->fontWeight == UIFontWeight::Bold);
-		desc.isItalic = (outStyleData->fontStyle == UIFontStyle::Italic);
-		desc.isAntiAlias = true;
+        detail::FontDesc desc;
+        desc.Family = outStyleData->fontFamily;
+        desc.Size = outStyleData->fontSize;
+        desc.isBold = (outStyleData->fontWeight == UIFontWeight::Bold);
+        desc.isItalic = (outStyleData->fontStyle == UIFontStyle::Italic);
+        desc.isAntiAlias = true;
 
-		bool modified = true;
-		if (outStyleData->font) {
-			if (detail::FontHelper::equalsFontDesc(outStyleData->font, desc)) {
-				modified = false;
-			}
-		}
-		else {
-			// 親が font を持っていなかった
-		}
+        bool modified = true;
+        if (outStyleData->font) {
+            if (detail::FontHelper::equalsFontDesc(outStyleData->font, desc)) {
+                modified = false;
+            }
+        }
+        else {
+            // 親が font を持っていなかった
+        }
 
-		if (modified) {
-			outStyleData->font = makeObject<Font>(desc);
-		}
-	}
+        if (modified) {
+            outStyleData->font = makeObject<Font>(desc);
+        }
+    }
 
-	// render effects
-	{
-		outStyleData->visible = (combinedStyle->visible.getOrDefault(UIStyle::DefaultVisible));
-		outStyleData->blendMode = (combinedStyle->blendMode.getOrDefault(UIStyle::DefaultBlendMode));
-		outStyleData->opacity = (combinedStyle->opacity.getOrDefault(UIStyle::DefaultOpacity));
-		outStyleData->colorScale = (combinedStyle->colorScale.getOrDefault(UIStyle::DefaultColorScale));
-		outStyleData->blendColor = (combinedStyle->blendColor.getOrDefault(UIStyle::DefaultBlendColor));
-		outStyleData->tone = (combinedStyle->tone.getOrDefault(UIStyle::DefaultTone));
-	}
+    // render effects
+    {
+        outStyleData->visible = (combinedStyle->visible.getOrDefault(UIStyle::DefaultVisible));
+        outStyleData->blendMode = (combinedStyle->blendMode.getOrDefault(UIStyle::DefaultBlendMode));
+        outStyleData->opacity = (combinedStyle->opacity.getOrDefault(UIStyle::DefaultOpacity));
+        outStyleData->colorScale = (combinedStyle->colorScale.getOrDefault(UIStyle::DefaultColorScale));
+        outStyleData->blendColor = (combinedStyle->blendColor.getOrDefault(UIStyle::DefaultBlendColor));
+        outStyleData->tone = (combinedStyle->tone.getOrDefault(UIStyle::DefaultTone));
+    }
 
-	// decorators
-	outStyleData->decorators.clear();
-	//for (auto& d : localStyle->decorators) {
-	//	outStyleData->decorators.add(d);
-	//}
-	for (auto& d : combinedStyle->decorators) {
-		outStyleData->decorators.add(d);
-	}
-
+    // decorators
+    outStyleData->decorators.clear();
+    // for (auto& d : localStyle->decorators) {
+    //	outStyleData->decorators.add(d);
+    // }
+    for (auto& d : combinedStyle->decorators) {
+        outStyleData->decorators.add(d);
+    }
 }
 
-void UIStyleInstance::updateAnimationData()
-{
-
+void UIStyleInstance::updateAnimationData() {
 }
 
-void UIStyleInstance::advanceAnimation(float elapsedTime)
-{
-	if (m_animationData) {
-		AnimationData* d = m_animationData.get();
-		if (d->width) d->width->advanceTime(elapsedTime);
-		if (d->height) d->height->advanceTime(elapsedTime);
-		if (d->positionX) d->positionX->advanceTime(elapsedTime);
-		if (d->positionY) d->positionY->advanceTime(elapsedTime);
-		if (d->positionZ) d->positionZ->advanceTime(elapsedTime);
-		if (d->backgroundColor) d->backgroundColor->advanceTime(elapsedTime);
-		if (d->opacity) d->opacity->advanceTime(elapsedTime);
-	}
+void UIStyleInstance::advanceAnimation(float elapsedTime) {
+    if (m_animationData) {
+        AnimationData* d = m_animationData.get();
+        if (d->width) d->width->advanceTime(elapsedTime);
+        if (d->height) d->height->advanceTime(elapsedTime);
+        if (d->positionX) d->positionX->advanceTime(elapsedTime);
+        if (d->positionY) d->positionY->advanceTime(elapsedTime);
+        if (d->positionZ) d->positionZ->advanceTime(elapsedTime);
+        if (d->backgroundColor) d->backgroundColor->advanceTime(elapsedTime);
+        if (d->opacity) d->opacity->advanceTime(elapsedTime);
+    }
 }
 
 template<typename T, typename TValue>
-static UIElementDirtyFlags applyAnimation(const T& instance, TValue* value, UIElementDirtyFlags flag)
-{
-	if (instance/* && instance->isActive()*/) {	// TODO: 今は毎フレーム style の reset してるので、アニメ適用しないと初期値になってしまう
-		*value = instance->evaluate();
-		return flag;
-	}
-	else {
-		return UIElementDirtyFlags::None;
-	}
+static UIElementDirtyFlags applyAnimation(const T& instance, TValue* value, UIElementDirtyFlags flag) {
+    if (instance /* && instance->isActive()*/) { // TODO: 今は毎フレーム style の reset してるので、アニメ適用しないと初期値になってしまう
+        *value = instance->evaluate();
+        return flag;
+    }
+    else {
+        return UIElementDirtyFlags::None;
+    }
 }
 
-UIElementDirtyFlags UIStyleInstance::applyAnimationValues()
-{
-	Flags<UIElementDirtyFlags> dirty = UIElementDirtyFlags::None;
+UIElementDirtyFlags UIStyleInstance::applyAnimationValues() {
+    Flags<UIElementDirtyFlags> dirty = UIElementDirtyFlags::None;
 
-	if (m_animationData) {
-		AnimationData* d = m_animationData.get();
-		dirty |= applyAnimation(d->width, &width, UIElementDirtyFlags::Layout);
-		dirty |= applyAnimation(d->height, &height, UIElementDirtyFlags::Layout);
-		dirty |= applyAnimation(d->positionX, &position.x, UIElementDirtyFlags::Layout);
-		dirty |= applyAnimation(d->positionY, &position.y, UIElementDirtyFlags::Layout);
-		dirty |= applyAnimation(d->positionZ, &position.z, UIElementDirtyFlags::Layout);
-		dirty |= applyAnimation(d->backgroundColor, &backgroundColor, UIElementDirtyFlags::Render);
-		dirty |= applyAnimation(d->opacity, &opacity, UIElementDirtyFlags::Render);
-		//dirty |= applyAnimation(d->opacity, &builtinEffect.opacity, UIElementDirtyFlags::Render);
-	}
+    if (m_animationData) {
+        AnimationData* d = m_animationData.get();
+        dirty |= applyAnimation(d->width, &width, UIElementDirtyFlags::Layout);
+        dirty |= applyAnimation(d->height, &height, UIElementDirtyFlags::Layout);
+        dirty |= applyAnimation(d->positionX, &position.x, UIElementDirtyFlags::Layout);
+        dirty |= applyAnimation(d->positionY, &position.y, UIElementDirtyFlags::Layout);
+        dirty |= applyAnimation(d->positionZ, &position.z, UIElementDirtyFlags::Layout);
+        dirty |= applyAnimation(d->backgroundColor, &backgroundColor, UIElementDirtyFlags::Render);
+        dirty |= applyAnimation(d->opacity, &opacity, UIElementDirtyFlags::Render);
+        // dirty |= applyAnimation(d->opacity, &builtinEffect.opacity, UIElementDirtyFlags::Render);
+    }
 
-	return dirty;
+    return dirty;
 }
 
 //==============================================================================
 // UIStyleClassInstance
 
 UIStyleClassInstance::UIStyleClassInstance()
-    : m_style(makeRef<UIStyleInstance>())
-{
+    : m_style(makeRef<UIStyleInstance>()) {
 }
 
-UIStyleInstance* UIStyleClassInstance::findStateStyle(const StringView& stateName) const
-{
+UIStyleInstance* UIStyleClassInstance::findStateStyle(const StringView& stateName) const {
     auto style = m_visualStateStyles.findIf([&](auto& x) { return String::compare(x.name, stateName, CaseSensitivity::CaseInsensitive); });
     if (style)
         return style->style;
@@ -469,8 +452,7 @@ UIStyleInstance* UIStyleClassInstance::findStateStyle(const StringView& stateNam
         return m_style;
 }
 
-UIStyleInstance* UIStyleClassInstance::findSubElementStyle(const StringView& elementName) const
-{
+UIStyleInstance* UIStyleClassInstance::findSubElementStyle(const StringView& elementName) const {
     auto style = m_subElements.findIf([&](auto& x) { return String::compare(x.name, elementName, CaseSensitivity::CaseInsensitive); });
     if (style)
         return style->style;
@@ -516,4 +498,3 @@ void UIStyleClassInstance::mergeFrom(const UIStyleSet* other)
 
 } // namespace detail
 } // namespace ln
-

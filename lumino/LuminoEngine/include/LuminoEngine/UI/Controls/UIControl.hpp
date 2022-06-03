@@ -140,17 +140,17 @@ public:
 
 
 
-    /** コンテンツの横方向の配置方法を設定します。 */
-    void setHorizontalContentAlignment(UIHAlignment value);
+    ///** コンテンツの横方向の配置方法を設定します。 */
+    //void setHorizontalContentAlignment(UIHAlignment value);
 
-    /** コンテンツの横方向の配置方法を取得します。 */
-    UIHAlignment horizontalContentAlignment() const;
+    ///** コンテンツの横方向の配置方法を取得します。 */
+    //UIHAlignment horizontalContentAlignment() const;
 
-    /** コンテンツの縦方向の配置方法を設定します。 */
-    void setVerticalContentAlignment(UIVAlignment value);
+    ///** コンテンツの縦方向の配置方法を設定します。 */
+    //void setVerticalContentAlignment(UIVAlignment value);
 
-    /** コンテンツの縦方向の配置方法を取得します。 */
-    UIVAlignment verticalContentAlignment() const;
+    ///** コンテンツの縦方向の配置方法を取得します。 */
+    //UIVAlignment verticalContentAlignment() const;
 
 
 	void addElement(UIElement* element);

@@ -21704,7 +21704,7 @@ LN_FLAT_API LNResult LNUIElement_SetAlignments(LNHandle uielement, LNUIHAlignmen
 LN_FLAT_API LNResult LNUIElement_SetPosition(LNHandle uielement, const LNVector3* pos)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setPosition(*reinterpret_cast<const ln::Vector3*>(pos)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setOrigin(*reinterpret_cast<const ln::Vector3*>(pos)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -21712,7 +21712,7 @@ LN_FLAT_API LNResult LNUIElement_SetPosition(LNHandle uielement, const LNVector3
 LN_FLAT_API LNResult LNUIElement_SetPositionXYZ(LNHandle uielement, float x, float y, float z)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setPosition(x, y, z));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setOrigin(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -21721,10 +21721,10 @@ LN_FLAT_API LNResult LNUIElement_GetPosition(LNHandle uielement, LNVector3* outR
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = ln::detail::convertStructForced<LNVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+        *outReturn = ln::detail::convertStructForced<LNVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->origin());
     }
     else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->origin());
     }
 
     LNI_FUNC_TRY_END_RETURN;

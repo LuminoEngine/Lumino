@@ -49,25 +49,25 @@ void UIControl::onDispose(bool explicitDisposing)
 	UIElement::onDispose(explicitDisposing);
 }
 
-void UIControl::setHorizontalContentAlignment(UIHAlignment value)
-{
-    m_localStyle->mainStyle()->horizontalContentAlignment = value;
-}
-
-UIHAlignment UIControl::horizontalContentAlignment() const
-{
-    return m_localStyle->mainStyle()->horizontalContentAlignment;
-}
-
-void UIControl::setVerticalContentAlignment(UIVAlignment value)
-{
-    m_localStyle->mainStyle()->verticalContentAlignment = value;
-}
-
-UIVAlignment UIControl::verticalContentAlignment() const
-{
-    return m_localStyle->mainStyle()->verticalContentAlignment;
-}
+//void UIControl::setHorizontalContentAlignment(UIHAlignment value)
+//{
+//    m_localStyle->mainStyle()->horizontalContentAlignment = value;
+//}
+//
+//UIHAlignment UIControl::horizontalContentAlignment() const
+//{
+//    return m_localStyle->mainStyle()->horizontalContentAlignment;
+//}
+//
+//void UIControl::setVerticalContentAlignment(UIVAlignment value)
+//{
+//    m_localStyle->mainStyle()->verticalContentAlignment = value;
+//}
+//
+//UIVAlignment UIControl::verticalContentAlignment() const
+//{
+//    return m_localStyle->mainStyle()->verticalContentAlignment;
+//}
 
 void UIControl::addElement(UIElement* element)
 {

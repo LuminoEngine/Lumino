@@ -70,7 +70,7 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 		e1->setBackgroundColor(Color::Red);
 		e1->setWidth(80);
 		e1->setHeight(60);
-		e1->setPosition(10, 20);
+		e1->setOrigin(10, 20);
 		Engine::mainUIView()->addElement(e1);
 
 		TestEnv::updateFrame();

@@ -17,7 +17,7 @@ TEST_F(Test_UI_UITextBlock, Basic)
     auto text2 = UIText::create();
     text2->setText(_TT("ABCHIJabchij"));
     text2->setTextColor(Color::White);
-    text2->setPosition(0, 60, 0);
+    text2->setOrigin(0, 60, 0);
 	text2->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
     Engine::mainUIView()->addElement(text2);
 

@@ -96,13 +96,24 @@ void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& 
     if (desiredSize.height > 0.0f) {
         YGNodeStyleSetHeight(m_yogaNode, desiredSize.height);
     }
-
+    
 #if 0
+
+
+    YGNodeStyleSetPosition();
+    YGNodeStyleSetPositionPercent();
+    YGNodeStyleSetPositionType();
+
+    YGNodeSetMeasureFunc
+
+
+
+
     // LeftToRight? とか
     YGNodeStyleSetDirection();
 
     // MainAxis の方向
-    YGNodeStyleSetFlexDirection();
+    YGNodeStyleSetFlexDirection();  // YGFlexDirection
 
     YGNodeStyleSetFlexBasis();
     YGNodeStyleSetFlexBasisAuto();
