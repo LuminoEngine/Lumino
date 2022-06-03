@@ -23,8 +23,8 @@ void UIDialog::init()
     specialElementFlags().set(detail::UISpecialElementFlags::Popup);
 
     // UIAdorner で左上を PlacementTarget と合わせてもらう
-    setHAlignment(UIHAlignment::Left);
-    setVAlignment(UIVAlignment::Top);
+    //setHAlignment(UIHAlignment::Left);
+    //setVAlignment(UIVAlignment::Top);
 }
 
 void UIDialog::open()

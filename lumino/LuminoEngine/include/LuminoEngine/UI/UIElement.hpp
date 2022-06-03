@@ -129,6 +129,9 @@ public:
     /** setWidth */
     LN_METHOD(Property)
     void setWidth(float value);
+    // NOTE: UIElement の スタイル設定ユーティリティ系は、DP 単位で設定する。
+    // これは % よりもよく使うと考えられるため。
+    // より細かく指定したい場合は style()->setWidth(UIStyleValue::ofPercent(50)) と指定する。
 
     /** width */
     LN_METHOD(Property)
@@ -144,39 +147,39 @@ public:
 
     /** 要素の margin 値 (外側の余白) を設定します。 */
     LN_METHOD(Property)
-    void setMargin(const Thickness& margin);
+    void setMargin(const Thickness& value);
 
     /** 要素の margin 値 (外側の余白) を取得します。 */
     LN_METHOD(Property)
-    const Thickness& margin() const;
+    Thickness margin() const;
 
     /** 要素の padding 値 (内側の余白) を設定します。この余白は論理ツリーの子要素のレイアウトに影響します。 */
     LN_METHOD(Property)
-    void setPadding(const Thickness& padding);
+    void setPadding(const Thickness& value);
 
     /** 要素の padding 値 (内側の余白) を取得します。この余白は論理ツリーの子要素のレイアウトに影響します。 */
     LN_METHOD(Property)
-    const Thickness& padding() const;
+    Thickness padding() const;
 
-    /** 要素の横方向の配置方法を設定します。 */
-    LN_METHOD(Property)
-    void setHAlignment(UIHAlignment value);
+    ///** 要素の横方向の配置方法を設定します。 */
+    //LN_METHOD(Property)
+    //void setHAlignment(UIHAlignment value);
 
-    /** 要素の横方向の配置方法を取得します。 */
-    LN_METHOD(Property)
-    UIHAlignment hAlignment() const;
+    ///** 要素の横方向の配置方法を取得します。 */
+    //LN_METHOD(Property)
+    //UIHAlignment hAlignment() const;
 
-    /** 要素の縦方向の配置方法を設定します。 */
-    LN_METHOD(Property)
-    void setVAlignment(UIVAlignment value);
+    ///** 要素の縦方向の配置方法を設定します。 */
+    //LN_METHOD(Property)
+    //void setVAlignment(UIVAlignment value);
 
-    /** 要素の縦方向の配置方法を取得します。 */
-    LN_METHOD(Property)
-    UIVAlignment vAlignment() const;
+    ///** 要素の縦方向の配置方法を取得します。 */
+    //LN_METHOD(Property)
+    //UIVAlignment vAlignment() const;
 
-    /** 要素の配置方法を設定します。 */
-    LN_METHOD()
-    void setAlignments(UIHAlignment halign, UIVAlignment valign);
+    ///** 要素の配置方法を設定します。 */
+    //LN_METHOD()
+    //void setAlignments(UIHAlignment halign, UIVAlignment valign);
 
     /** このオブジェクトの位置を設定します。 */
     LN_METHOD(Property)
@@ -643,8 +646,8 @@ struct UIElement::BuilderDetails : public AbstractBuilderDetails {
     Optional<float> width;
     Optional<float> height;
     Optional<Color> backgroundColor;
-    Optional<UIHAlignment> hAlignment;
-    Optional<UIVAlignment> vAlignment;
+    //Optional<UIHAlignment> hAlignment;
+    //Optional<UIVAlignment> vAlignment;
 
     void apply(UIElement* p) const;
 };
@@ -671,12 +674,12 @@ struct UIElement::BuilderCore : public AbstractBuilder<T, B, D> {
         return self();
     }
 
-    /** alignment property */
-    B& alignment(UIHAlignment h, UIVAlignment v) {
-        d()->hAlignment = h;
-        d()->vAlignment = v;
-        return self();
-    }
+    ///** alignment property */
+    //B& alignment(UIHAlignment h, UIVAlignment v) {
+    //    d()->hAlignment = h;
+    //    d()->vAlignment = v;
+    //    return self();
+    //}
 
     Ref<T> buildInto(UIElement* parent = nullptr) {
         auto p = AbstractBuilder<T, B, D>::build();

@@ -200,8 +200,8 @@ public:
     Optional<UIStyleValue> positionRight;
     Optional<UIStyleValue> positionBottom;
     Optional<UIStyleValue> positionLeft;
-    UILayoutPositionType positionType;
-    UIStyleValue aspectRatio;
+    Optional<UILayoutPositionType> positionType;
+    Optional<UIStyleValue> aspectRatio;
     Optional<UIStyleValue> zIndex;
     //detail::UIStyleAttribute<float> width;
     //detail::UIStyleAttribute<float> height;
@@ -218,18 +218,20 @@ public:
     detail::UIStyleAttribute<UIOverflowBehavior> overflowX;
     detail::UIStyleAttribute<UIOverflowBehavior> overflowY;
 
+    static constexpr UILayoutFlexDirection DefaultFlexDirection = UILayoutFlexDirection::Row;
+    static constexpr UIStyleValue DefaultFlexBasis = UIStyleValue();
     static const float DefaultWidth;
     static const float DefaultHeight;
-    static const Thickness DefaultMargin;
-    static const Thickness DefaultPadding;
-    static const UIHAlignment DefaultHorizontalAlignment;
-    static const UIVAlignment DefaultVerticalAlignment;
-    static const UIHAlignment DefaultHorizontalContentAlignment;
-    static const UIVAlignment DefaultVerticalContentAlignment;
     static const float DefaultMinWidth;
     static const float DefaultMinHeight;
     static const float DefaultMaxWidth;
     static const float DefaultMaxHeight;
+    //static const Thickness DefaultMargin;
+    //static const Thickness DefaultPadding;
+    //static const UIHAlignment DefaultHorizontalAlignment;
+    //static const UIVAlignment DefaultVerticalAlignment;
+    //static const UIHAlignment DefaultHorizontalContentAlignment;
+    //static const UIVAlignment DefaultVerticalContentAlignment;
     static const UIOverflowBehavior DefaultOverflowX;
     static const UIOverflowBehavior DefaultOverflowY;
 
@@ -328,6 +330,22 @@ public:
     // decorators
     List<Ref<UIStyleDecorator>> decorators;
 
+
+    
+    void setMargin(const Thickness& value) {
+        marginTop = UIStyleValue(value.top);
+        marginRight = UIStyleValue(value.right);
+        marginBottom = UIStyleValue(value.bottom);
+        marginLeft = UIStyleValue(value.left);
+    }
+
+    void setPadding(const Thickness& value) {
+        paddingTop = UIStyleValue(value.top);
+        paddingRight = UIStyleValue(value.right);
+        paddingBottom = UIStyleValue(value.bottom);
+        paddingLeft = UIStyleValue(value.left);
+    }
+
     void setBorderColor(const Color& color) {
         leftBorderColor = color;
         topBorderColor = color;
@@ -400,8 +418,7 @@ private:
 };
 
 // 要素ひとつに対応。複数の class を管理する
-class UIStyleSet
-    : public Object {
+class UIStyleSet : public Object {
 public:
     const String& elementName() const { return m_elementName; }
     // void setClassName(const StringView& value) { m_className = value; }
@@ -417,7 +434,8 @@ public:
     void copyFrom(const UIStyleSet* other);
     void mergeFrom(const UIStyleSet* other);
 
-    LN_CONSTRUCT_ACCESS : UIStyleSet();
+LN_CONSTRUCT_ACCESS:
+    UIStyleSet();
     virtual ~UIStyleSet();
     void init(const StringView& elementName);
 
@@ -431,8 +449,7 @@ private:
 };
 
 // 要素ひとつ、class ひとつに対応。VisualState を管理する
-class UIStyleClass
-    : public Object {
+class UIStyleClass : public Object {
 public:
     const String& name() const { return m_name; }
 
@@ -454,7 +471,8 @@ public:
 
     const List<VisualStateSlot>& visualStateStyles() const { return m_visualStateStyles; }
 
-    LN_CONSTRUCT_ACCESS : UIStyleClass();
+LN_CONSTRUCT_ACCESS:
+    UIStyleClass();
     virtual ~UIStyleClass();
     void init(const StringView& name);
 
@@ -467,8 +485,7 @@ private:
     friend class UIStyleContext;
 };
 
-class UIStyleSheet
-    : public Object {
+class UIStyleSheet : public Object {
 public:
     void addStyleSet(const StringView& elementName, UIStyleSet* styleClass);
     Ref<UIStyleSet> addStyleSet(const StringView& elementName);
@@ -476,7 +493,8 @@ public:
 
     UIStyle* obtainStyle(const StringView& selector);
 
-    LN_CONSTRUCT_ACCESS : UIStyleSheet();
+LN_CONSTRUCT_ACCESS:
+    UIStyleSheet();
     virtual ~UIStyleSheet();
     void init();
 

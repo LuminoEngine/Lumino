@@ -779,8 +779,8 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 
             m_mainUIRoot = makeObject<UIDomainProvidor>();
             m_mainUIRoot->setupNavigator();
-            m_mainUIRoot->setHAlignment(UIHAlignment::Stretch);
-            m_mainUIRoot->setVAlignment(UIVAlignment::Stretch);
+            //m_mainUIRoot->setHAlignment(UIHAlignment::Stretch);
+            //m_mainUIRoot->setVAlignment(UIVAlignment::Stretch);
             m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel; // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
             m_mainUIRenderView->setRootElement(m_mainUIRoot);
             m_uiManager->setPrimaryElement(m_mainUIRoot);

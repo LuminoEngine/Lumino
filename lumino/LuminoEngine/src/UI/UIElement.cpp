@@ -74,8 +74,8 @@ void UIElement::BuilderDetails::apply(UIElement* p) const {
     if (width) p->setWidth(*width);
     if (height) p->setHeight(*height);
     if (backgroundColor) p->setBackgroundColor(*backgroundColor);
-    if (hAlignment) p->setHAlignment(*hAlignment);
-    if (vAlignment) p->setVAlignment(*vAlignment);
+    //if (hAlignment) p->setHAlignment(*hAlignment);
+    //if (vAlignment) p->setVAlignment(*vAlignment);
 }
 
 //==============================================================================
@@ -134,57 +134,67 @@ bool UIElement::init() {
 }
 
 void UIElement::setWidth(float value) {
-    m_localStyle->mainStyle()->width = value;
+    m_localStyle->mainStyle()->width = UIStyleValue(value);
 }
 
 float UIElement::width() const {
-    return m_localStyle->mainStyle()->width.getOrDefault(UIStyle::DefaultWidth);
+    return m_localStyle->mainStyle()->width.valueOr(UIStyleValue::ofNull()).value();
 }
 
 void UIElement::setHeight(float value) {
-    m_localStyle->mainStyle()->height = value;
+    m_localStyle->mainStyle()->height = UIStyleValue(value);
 }
 
 float UIElement::height() const {
-    return m_localStyle->mainStyle()->height.getOrDefault(UIStyle::DefaultHeight);
+    return m_localStyle->mainStyle()->height.valueOr(UIStyleValue::ofNull()).value();
 }
 
-void UIElement::setMargin(const Thickness& margin) {
-    m_localStyle->mainStyle()->margin = margin;
+void UIElement::setMargin(const Thickness& value) {
+    m_localStyle->mainStyle()->setMargin(value);
 }
 
-const Thickness& UIElement::margin() const {
-    return m_localStyle->mainStyle()->margin;
+Thickness UIElement::margin() const {
+    UIStyle* style = m_localStyle->mainStyle();
+    return Thickness(
+        style->marginLeft.valueOr(UIStyleValue::ofNull()).value(),
+        style->marginTop.valueOr(UIStyleValue::ofNull()).value(),
+        style->marginRight.valueOr(UIStyleValue::ofNull()).value(),
+        style->marginBottom.valueOr(UIStyleValue::ofNull()).value());
 }
 
-void UIElement::setPadding(const Thickness& padding) {
-    m_localStyle->mainStyle()->padding = padding;
+void UIElement::setPadding(const Thickness& value) {
+    m_localStyle->mainStyle()->setPadding(value);
 }
 
-const Thickness& UIElement::padding() const {
-    return m_localStyle->mainStyle()->padding;
+Thickness UIElement::padding() const {
+    UIStyle* style = m_localStyle->mainStyle();
+    return Thickness(
+        style->paddingLeft.valueOr(UIStyleValue::ofNull()).value(),
+        style->paddingTop.valueOr(UIStyleValue::ofNull()).value(),
+        style->paddingRight.valueOr(UIStyleValue::ofNull()).value(),
+        style->paddingBottom.valueOr(UIStyleValue::ofNull()).value());
 }
 
-void UIElement::setHAlignment(UIHAlignment value) {
-    m_localStyle->mainStyle()->hAlignment = value;
-}
-
-UIHAlignment UIElement::hAlignment() const {
-    return m_localStyle->mainStyle()->hAlignment;
-}
-
-void UIElement::setVAlignment(UIVAlignment value) {
-    m_localStyle->mainStyle()->vAlignment = value;
-}
-
-UIVAlignment UIElement::vAlignment() const {
-    return m_localStyle->mainStyle()->vAlignment;
-}
-
-void UIElement::setAlignments(UIHAlignment halign, UIVAlignment valign) {
-    setHAlignment(halign);
-    setVAlignment(valign);
-}
+//void UIElement::setHAlignment(UIHAlignment value) {
+//    m_localStyle->mainStyle()->hAlignment = value;
+//}
+//
+//UIHAlignment UIElement::hAlignment() const {
+//    return m_localStyle->mainStyle()->hAlignment;
+//}
+//
+//void UIElement::setVAlignment(UIVAlignment value) {
+//    m_localStyle->mainStyle()->vAlignment = value;
+//}
+//
+//UIVAlignment UIElement::vAlignment() const {
+//    return m_localStyle->mainStyle()->vAlignment;
+//}
+//
+//void UIElement::setAlignments(UIHAlignment halign, UIVAlignment valign) {
+//    setHAlignment(halign);
+//    setVAlignment(valign);
+//}
 
 void UIElement::setOrigin(const Vector3& pos) {
     m_localStyle->mainStyle()->origin = pos;

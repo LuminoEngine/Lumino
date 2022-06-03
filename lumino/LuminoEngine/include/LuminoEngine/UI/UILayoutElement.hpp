@@ -23,6 +23,10 @@ enum class UIStyleValueUnit {
 
 class UIStyleValue {
 public:
+    constexpr UIStyleValue(float pointValue)
+        : m_value(pointValue)
+        , m_unit(UIStyleValueUnit::Point) {}
+
     constexpr UIStyleValue()
         : m_value(std::numeric_limits<float>::quiet_NaN())
         , m_unit(UIStyleValueUnit::Point) {}
@@ -32,6 +36,8 @@ public:
     constexpr UIStyleValueUnit unit() const { return m_unit; }
 
     bool isNull() const { return std::isnan(m_value); }
+
+    static constexpr UIStyleValue ofNull() { return UIStyleValue{}; }
 
 private:
     float m_value;
@@ -208,14 +214,14 @@ public: // TODO: internal
      *
      * クライアント領域は、境界領域に Border 幅を適用したものです。
      */
-    Rect clientRect_Obsolete() const;
+    //Rect clientRect_Obsolete() const;
 
     /**
      * 要素のコンテンツ領域を返します。座標は要素の境界領域内の相対座標です。
      *
      * コンテンツ領域は、境界領域に Border 幅と Padding を適用したものです。
      */
-    Rect contentRect_Obsolete() const;
+    //Rect contentRect_Obsolete() const;
 
     // const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
 
@@ -242,11 +248,11 @@ public: // TODO: internal
     // const Size& getLayoutSize() const { return m_layoutSize; }
     void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
     const Size& getLayoutDesiredSize() const { return m_desiredSize; }
-    const Thickness& getLayoutMargin() const;
-    const Thickness& getLayoutPadding() const;
-    UIHAlignment getLayoutHAlignment() const;
-    UIVAlignment getLayoutVAlignment() const;
-    void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const;
+    //const Thickness& getLayoutMargin() const;
+    //const Thickness& getLayoutPadding() const;
+    //UIHAlignment getLayoutHAlignment() const;
+    //UIVAlignment getLayoutVAlignment() const;
+    //void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const;
 #ifdef LN_USE_YOGA
     YGNodeRef yogaNode() const { return m_yogaNode; }
 #endif

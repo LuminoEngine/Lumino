@@ -15,16 +15,16 @@ UIStyleInstance::UIStyleInstance() {
 }
 
 void UIStyleInstance::setupDefault() {
-    margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-    padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-    hAlignment = UIHAlignment::Stretch; // Alignment は HTML のデフォルトに合わせてみる
-    vAlignment = UIVAlignment::Stretch;
-    horizontalContentAlignment = UIHAlignment::Stretch;
-    verticalContentAlignment = UIVAlignment::Stretch;
-    minWidth = Math::NaN;
-    minHeight = Math::NaN;
-    maxWidth = Math::NaN;
-    maxHeight = Math::NaN;
+    //margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+    //padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+    //hAlignment = UIHAlignment::Stretch; // Alignment は HTML のデフォルトに合わせてみる
+    //vAlignment = UIVAlignment::Stretch;
+    //horizontalContentAlignment = UIHAlignment::Stretch;
+    //verticalContentAlignment = UIVAlignment::Stretch;
+    //minWidth = Math::NaN;
+    //minHeight = Math::NaN;
+    //maxWidth = Math::NaN;
+    //maxHeight = Math::NaN;
     overflowX = UIOverflowBehavior::Visible;
     overflowY = UIOverflowBehavior::Visible;
 
@@ -60,19 +60,40 @@ void UIStyleInstance::setupDefault() {
 void UIStyleInstance::mergeFrom(const UIStyle* other) {
     if (LN_REQUIRE(other)) return;
 
-    // layout
-    if (other->width.hasValue()) width = other->width.get();
-    if (other->height.hasValue()) height = other->height.get();
-    if (other->margin.hasValue()) margin = other->margin.get();
-    if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
-    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
-    if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
-    if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
-    if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
-    if (other->minHeight.hasValue()) minHeight = other->minHeight.get();
-    if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.get();
-    if (other->maxHeight.hasValue()) maxHeight = other->maxHeight.get();
+    if (other->flexDirection.hasValue()) flexDirection = other->flexDirection.value();
+    if (other->flexBasis.hasValue()) flexBasis = other->flexBasis.value();
+    if (other->flexGrow.hasValue()) flexGrow = other->flexGrow.value();
+    if (other->flexShrink.hasValue()) flexShrink = other->flexShrink.value();
+    if (other->flexWrap.hasValue()) flexWrap = other->flexWrap.value();
+    if (other->justifyContent.hasValue()) justifyContent = other->justifyContent.value();
+    if (other->alignItems.hasValue()) alignItems = other->alignItems.value();
+    if (other->alignSelf.hasValue()) alignSelf = other->alignSelf.value();
+    if (other->alignContent.hasValue()) alignContent = other->alignContent.value();
+    if (other->width.hasValue()) width = other->width.value();
+    if (other->height.hasValue()) height = other->height.value();
+    if (other->minWidth.hasValue()) minWidth = other->minWidth.value();
+    if (other->minHeight.hasValue()) minHeight = other->minHeight.value();
+    if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.value();
+    if (other->maxHeight.hasValue()) maxHeight = other->maxHeight.value();
+    if (other->marginTop.hasValue()) marginTop = other->marginTop.value();
+    if (other->marginRight.hasValue()) marginRight = other->marginRight.value();
+    if (other->marginBottom.hasValue()) marginBottom = other->marginBottom.value();
+    if (other->marginLeft.hasValue()) marginLeft = other->marginLeft.value();
+    if (other->borderTop.hasValue()) borderTop = other->borderTop.value();
+    if (other->borderRight.hasValue()) borderRight = other->borderRight.value();
+    if (other->borderBottom.hasValue()) borderBottom = other->borderBottom.value();
+    if (other->borderLeft.hasValue()) borderLeft = other->borderLeft.value();
+    if (other->paddingTop.hasValue()) paddingTop = other->paddingTop.value();
+    if (other->paddingRight.hasValue()) paddingRight = other->paddingRight.value();
+    if (other->paddingBottom.hasValue()) paddingBottom = other->paddingBottom.value();
+    if (other->paddingLeft.hasValue()) paddingLeft = other->paddingLeft.value();
+    if (other->positionTop.hasValue()) positionTop = other->positionTop.value();
+    if (other->positionRight.hasValue()) positionRight = other->positionRight.value();
+    if (other->positionBottom.hasValue()) positionBottom = other->positionBottom.value();
+    if (other->positionLeft.hasValue()) positionLeft = other->positionLeft.value();
+    if (other->positionType.hasValue()) positionType = other->positionType.value();
+    if (other->aspectRatio.hasValue()) aspectRatio = other->aspectRatio.value();
+    if (other->zIndex.hasValue()) zIndex = other->zIndex.value();
     if (other->overflowX.hasValue()) overflowX = other->overflowX.get();
     if (other->overflowY.hasValue()) overflowY = other->overflowY.get();
 
@@ -133,18 +154,40 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other) {
     if (LN_REQUIRE(other)) return;
 
     // layout
+    flexDirection = other->flexDirection;
+    flexBasis = other->flexBasis;
+    flexGrow = other->flexGrow;
+    flexShrink = other->flexShrink;
+    flexWrap = other->flexWrap;
+    justifyContent = other->justifyContent;
+    alignItems = other->alignItems;
+    alignSelf = other->alignSelf;
+    alignContent = other->alignContent;
     width = other->width;
     height = other->height;
-    margin = other->margin;
-    padding = other->padding;
-    hAlignment = other->hAlignment;
-    vAlignment = other->vAlignment;
-    horizontalContentAlignment = other->horizontalContentAlignment;
-    verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
     minHeight = other->minHeight;
     maxWidth = other->maxWidth;
     maxHeight = other->maxHeight;
+    marginTop = other->marginTop;
+    marginRight = other->marginRight;
+    marginBottom = other->marginBottom;
+    marginLeft = other->marginLeft;
+    borderTop = other->borderTop;
+    borderRight = other->borderRight;
+    borderBottom = other->borderBottom;
+    borderLeft = other->borderLeft;
+    paddingTop = other->paddingTop;
+    paddingRight = other->paddingRight;
+    paddingBottom = other->paddingBottom;
+    paddingLeft = other->paddingLeft;
+    positionTop = other->positionTop;
+    positionRight = other->positionRight;
+    positionBottom = other->positionBottom;
+    positionLeft = other->positionLeft;
+    positionType = other->positionType;
+    aspectRatio = other->aspectRatio;
+    zIndex = other->zIndex;
     overflowX = other->overflowX;
     overflowY = other->overflowY;
 

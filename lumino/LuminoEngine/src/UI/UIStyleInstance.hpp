@@ -15,26 +15,46 @@ class UIStyleClassInstance;
 // UIStyle の optional 等を解決したもの。
 // メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
 class UIStyleInstance
-    : public RefObject
-{
+    : public RefObject {
 public:
-    //UIStyle* sourceLocalStyle = nullptr;	// 以下のデータの生成元となったローカスのスタイル
-
+    UILayoutFlexDirection flexDirection;
+    UIStyleValue flexBasis;
+    float flexGrow;
+    float flexShrink;
+    UILayoutFlexWrap flexWrap;
+    // Alignment
+    UILayoutJustify justifyContent;
+    UILayoutAlign alignItems;
+    UILayoutAlign alignSelf;
+    UILayoutAlign alignContent;
     // layout
-    float width;
-    float height;
-    Thickness margin;
-    Thickness padding;
-    UIHAlignment hAlignment;
-    UIVAlignment vAlignment;
-    UIHAlignment horizontalContentAlignment;
-    UIVAlignment verticalContentAlignment;
-    float minWidth;
-    float minHeight;
-    float maxWidth;
-    float maxHeight;
-	UIOverflowBehavior overflowX;
-	UIOverflowBehavior overflowY;
+    UIStyleValue width;
+    UIStyleValue height;
+    UIStyleValue minWidth;
+    UIStyleValue minHeight;
+    UIStyleValue maxWidth;
+    UIStyleValue maxHeight;
+    UIStyleValue marginTop;
+    UIStyleValue marginRight;
+    UIStyleValue marginBottom;
+    UIStyleValue marginLeft;
+    UIStyleValue borderTop;
+    UIStyleValue borderRight;
+    UIStyleValue borderBottom;
+    UIStyleValue borderLeft;
+    UIStyleValue paddingTop;
+    UIStyleValue paddingRight;
+    UIStyleValue paddingBottom;
+    UIStyleValue paddingLeft;
+    UIStyleValue positionTop;
+    UIStyleValue positionRight;
+    UIStyleValue positionBottom;
+    UIStyleValue positionLeft;
+    UILayoutPositionType positionType;
+    UIStyleValue aspectRatio;
+    UIStyleValue zIndex;
+    UIOverflowBehavior overflowX;
+    UIOverflowBehavior overflowY;
 
     // layout transform
     Vector3 position;
@@ -52,21 +72,21 @@ public:
 
     // border
     Thickness borderThickness = Thickness::Zero;
-    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0);	// TODO: borderRadius
-    Color 		leftBorderColor = Color::Gray;
-    Color 		topBorderColor = Color::Gray;
-    Color 		rightBorderColor = Color::Gray;
-    Color 		bottomBorderColor = Color::Gray;
+    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0); // TODO: borderRadius
+    Color leftBorderColor = Color::Gray;
+    Color topBorderColor = Color::Gray;
+    Color rightBorderColor = Color::Gray;
+    Color bottomBorderColor = Color::Gray;
     BorderDirection borderDirection = BorderDirection::Outside;
-	bool borderInset = false;
+    bool borderInset = false;
 
-	// shadow
-	float shadowOffsetX;
-	float shadowOffsetY;
-	float shadowBlurRadius;
-	float shadowSpreadRadius;
-	Color shadowColor;
-	bool shadowInset;
+    // shadow
+    float shadowOffsetX;
+    float shadowOffsetY;
+    float shadowBlurRadius;
+    float shadowSpreadRadius;
+    Color shadowColor;
+    bool shadowInset;
 
     // text
     Color textColor;
@@ -79,24 +99,20 @@ public:
     UIVisibility visible;
     BlendMode blendMode;
 
-    //detail::BuiltinEffectData builtinEffect;
+    // detail::BuiltinEffectData builtinEffect;
     float opacity;
     Color colorScale;
     Color blendColor;
-	ColorTone tone;
+    ColorTone tone;
 
-
-	// decorators
-	List<Ref<UIStyleDecorator>> decorators;
+    // decorators
+    List<Ref<UIStyleDecorator>> decorators;
 
     // commited cache
     Ref<Font> font;
     Ref<Material> backgroundMaterial;
 
-	UITheme* theme = nullptr;
-
-
-
+    UITheme* theme = nullptr;
 
     // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 
@@ -109,18 +125,16 @@ public:
 
     static void updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
 
-	Size actualOuterSpace() const
-	{
-		return Size(margin.width(), margin.height());
-		//if (borderInset)
-		//	return Size(margin.width(), margin.height());
-		//else
-		//	return Size(margin.width() + borderThickness.width(), margin.height() + borderThickness.height());
-	}
-	Size actualOuterOffset() const
-	{
-		return Size(margin.left, margin.top);
-	}
+    //Size actualOuterSpace() const {
+    //    return Size(margin.width(), margin.height());
+    //    // if (borderInset)
+    //    //	return Size(margin.width(), margin.height());
+    //    // else
+    //    //	return Size(margin.width() + borderThickness.width(), margin.height() + borderThickness.height());
+    //}
+    //Size actualOuterOffset() const {
+    //    return Size(margin.left, margin.top);
+    //}
 
     void updateAnimationData();
     bool hasAnimationData() const { return m_animationData != nullptr; }
@@ -130,8 +144,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 
 private:
-    struct AnimationData
-    {
+    struct AnimationData {
         Ref<UIScalarAnimationInstance> width;
         Ref<UIScalarAnimationInstance> height;
         Ref<UIScalarAnimationInstance> positionX;
@@ -141,8 +154,7 @@ private:
         Ref<UIScalarAnimationInstance> opacity;
     };
 
-    AnimationData* acquireAnimationData()
-    {
+    AnimationData* acquireAnimationData() {
         if (!m_animationData) {
             m_animationData = std::make_unique<AnimationData>();
         }
@@ -154,24 +166,21 @@ private:
 };
 
 class UIStyleClassInstance
-    : public RefObject
-{
+    : public RefObject {
 public:
     UIStyleClassInstance();
     const Ref<UIStyleInstance>& style() const { return m_style; }
-    UIStyleInstance* findStateStyle(const StringView& stateName) const;  // 無い場合は nullptr
-    UIStyleInstance* findSubElementStyle(const StringView& elementName) const;   // 無い場合は nullptr
+    UIStyleInstance* findStateStyle(const StringView& stateName) const;        // 無い場合は nullptr
+    UIStyleInstance* findSubElementStyle(const StringView& elementName) const; // 無い場合は nullptr
     void mergeFrom(const UIStyleSet* other);
 
 private:
-    struct VisualStateSlot
-    {
+    struct VisualStateSlot {
         String name;
         Ref<UIStyleInstance> style;
     };
 
-    struct SubElementSlot
-    {
+    struct SubElementSlot {
         String name;
         Ref<UIStyleInstance> style;
     };
@@ -185,4 +194,3 @@ private:
 
 } // namespace detail
 } // namespace ln
-

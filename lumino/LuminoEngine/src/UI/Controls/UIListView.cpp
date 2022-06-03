@@ -54,8 +54,8 @@ void UIListView::init()
     layout->setOrientation(UILayoutOrientation::Vertical);
     setItemsLayoutPanel(layout);
 
-    setHorizontalContentAlignment(UIHAlignment::Left);
-    setVerticalContentAlignment(UIVAlignment::Center);
+    //setHorizontalContentAlignment(UIHAlignment::Left);
+    //setVerticalContentAlignment(UIVAlignment::Center);
 }
 
 void UIListView::refresh()

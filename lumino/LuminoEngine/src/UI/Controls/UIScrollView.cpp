@@ -531,8 +531,8 @@ void UIScrollBar::init()
     //m_lineUpButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineUpButton"));
     //m_lineDownButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineDownButton"));
 	// TODO: styleseet
-    m_track->setHAlignment(UIHAlignment::Stretch);
-    m_track->setVAlignment(UIVAlignment::Stretch);
+    //m_track->setHAlignment(UIHAlignment::Stretch);
+    //m_track->setVAlignment(UIVAlignment::Stretch);
     //m_lineUpButton->setHAlignment(UIHAlignment::Stretch);
     //m_lineUpButton->setVAlignment(UIVAlignment::Stretch);
     //m_lineDownButton->setHAlignment(UIHAlignment::Stretch);
@@ -726,7 +726,7 @@ void UIScrollViewHelper::setHScrollbarVisible(bool value)
 			m_horizontalScrollBar = makeObject<UIScrollBar>();
 			m_horizontalScrollBar->setOrientation(UILayoutOrientation::Horizontal);
 			//m_horizontalScrollBar->setWidth(16);	// TODO: style
-			m_horizontalScrollBar->setVAlignment(UIVAlignment::Stretch);
+			//m_horizontalScrollBar->setVAlignment(UIVAlignment::Stretch);
 			m_owner->addVisualChild(m_horizontalScrollBar);
 		}
 	}
@@ -745,7 +745,7 @@ void UIScrollViewHelper::setVScrollbarVisible(bool value)
 			m_verticalScrollBar = makeObject<UIScrollBar>();
 			//m_verticalScrollBar->setHeight(16);	// TODO: style
 			m_verticalScrollBar->setOrientation(UILayoutOrientation::Vertical);
-			m_verticalScrollBar->setHAlignment(UIHAlignment::Stretch);
+			//m_verticalScrollBar->setHAlignment(UIHAlignment::Stretch);
 			m_owner->addVisualChild(m_verticalScrollBar);
 		}
 	}

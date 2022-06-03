@@ -47,7 +47,7 @@ void UILayoutElement::init(const detail::UIStyleInstance* finalStyle) {
 }
 
 void UILayoutElement::updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect) {
-    Size itemSize(m_finalStyle->width, m_finalStyle->height); // = //getLayoutSize();
+    Size itemSize;//(m_finalStyle->width, m_finalStyle->height); // = //getLayoutSize();
     Size size(
         Math::isNaNOrInf(itemSize.width) ? parentFinalGlobalRect.width : itemSize.width,
         Math::isNaNOrInf(itemSize.height) ? parentFinalGlobalRect.height : itemSize.height);
@@ -60,24 +60,24 @@ void UILayoutElement::updateLayout(UILayoutContext* layoutContext, const Rect& p
     arrangeLayout(layoutContext, parentFinalGlobalRect);
 }
 
-Rect UILayoutElement::clientRect_Obsolete() const {
-    return Rect(
-        m_finalStyle->borderThickness.left,
-        m_finalStyle->borderThickness.top,
-        m_actualSize.width - m_finalStyle->borderThickness.width(),
-        m_actualSize.height - m_finalStyle->borderThickness.height());
-}
-
-Rect UILayoutElement::contentRect_Obsolete() const {
-    return Rect(
-        m_finalStyle->borderThickness.left + m_finalStyle->padding.left,
-        m_finalStyle->borderThickness.top + m_finalStyle->padding.top,
-        std::max(0.0f, m_actualSize.width - m_finalStyle->borderThickness.width() - m_finalStyle->padding.width()),
-        std::max(0.0f, m_actualSize.height - m_finalStyle->borderThickness.height() - m_finalStyle->padding.height()));
-}
+//Rect UILayoutElement::clientRect_Obsolete() const {
+//    return Rect(
+//        m_finalStyle->borderThickness.left,
+//        m_finalStyle->borderThickness.top,
+//        m_actualSize.width - m_finalStyle->borderThickness.width(),
+//        m_actualSize.height - m_finalStyle->borderThickness.height());
+//}
+//
+//Rect UILayoutElement::contentRect_Obsolete() const {
+//    return Rect(
+//        m_finalStyle->borderThickness.left + m_finalStyle->padding.left,
+//        m_finalStyle->borderThickness.top + m_finalStyle->padding.top,
+//        std::max(0.0f, m_actualSize.width - m_finalStyle->borderThickness.width() - m_finalStyle->padding.width()),
+//        std::max(0.0f, m_actualSize.height - m_finalStyle->borderThickness.height() - m_finalStyle->padding.height()));
+//}
 
 void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& availableSize) {
-    Size outerSpace = m_finalStyle->actualOuterSpace();
+    Size outerSpace;//    = m_finalStyle->actualOuterSpace();
     Size localAvailableSize(std::max(availableSize.width - outerSpace.width, 0.0f), std::max(availableSize.height - outerSpace.height, 0.0f));
 
     Size desiredSize = measureOverride(layoutContext, localAvailableSize);
@@ -343,28 +343,28 @@ Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Rect
 void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext) {
 }
 
-const Thickness& UILayoutElement::getLayoutMargin() const {
-    return m_finalStyle->margin;
-}
-
-const Thickness& UILayoutElement::getLayoutPadding() const {
-    return m_finalStyle->padding;
-}
-
-UIHAlignment UILayoutElement::getLayoutHAlignment() const {
-    return m_finalStyle->hAlignment;
-}
-
-UIVAlignment UILayoutElement::getLayoutVAlignment() const {
-    return m_finalStyle->vAlignment;
-}
-
-void UILayoutElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const {
-    outMin->width = m_finalStyle->minWidth;
-    outMin->height = m_finalStyle->minHeight;
-    outMax->width = m_finalStyle->maxWidth;
-    outMax->height = m_finalStyle->maxHeight;
-}
+//const Thickness& UILayoutElement::getLayoutMargin() const {
+//    return m_finalStyle->margin;
+//}
+//
+//const Thickness& UILayoutElement::getLayoutPadding() const {
+//    return m_finalStyle->padding;
+//}
+//
+//UIHAlignment UILayoutElement::getLayoutHAlignment() const {
+//    return m_finalStyle->hAlignment;
+//}
+//
+//UIVAlignment UILayoutElement::getLayoutVAlignment() const {
+//    return m_finalStyle->vAlignment;
+//}
+//
+//void UILayoutElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const {
+//    outMin->width = m_finalStyle->minWidth;
+//    outMin->height = m_finalStyle->minHeight;
+//    outMax->width = m_finalStyle->maxWidth;
+//    outMax->height = m_finalStyle->maxHeight;
+//}
 
 //==============================================================================
 // UILayoutContext
@@ -390,47 +390,49 @@ bool UILayoutContext::testLayoutEnabled(UIElement* element) const {
 // }
 
 Size UILayoutContext::makeDesiredSize(const UIElement* element, const Size& contentAreaSize) const {
-    // TODO: https://saruwakakun.com/html-css/reference/box-sizing
+    //// TODO: https://saruwakakun.com/html-css/reference/box-sizing
 
-    detail::UIStyleInstance* style = element->m_finalStyle;
+    //detail::UIStyleInstance* style = element->m_finalStyle;
 
-    // 要素サイズが明示されている場合、はそちらを優先する
-    Size desiredSize(
-        !Math::isNaNOrInf(style->width) ? style->width : contentAreaSize.width,
-        !Math::isNaNOrInf(style->height) ? style->height : contentAreaSize.height);
+    //// 要素サイズが明示されている場合、はそちらを優先する
+    //Size desiredSize(
+    //    !Math::isNaNOrInf(style->width) ? style->width : contentAreaSize.width,
+    //    !Math::isNaNOrInf(style->height) ? style->height : contentAreaSize.height);
 
-    // Apply min/max. width/height よりも優先
-    Size minSize, maxSize;
-    element->getLayoutMinMaxInfo(&minSize, &maxSize);
-    if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
-    if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
-    if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
-    if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+    //// Apply min/max. width/height よりも優先
+    //Size minSize, maxSize;
+    //element->getLayoutMinMaxInfo(&minSize, &maxSize);
+    //if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
+    //if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
+    //if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
+    //if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
 
-    // Padding
-    desiredSize.width += style->padding.width();
-    desiredSize.height += style->padding.height();
+    //// Padding
+    //desiredSize.width += style->padding.width();
+    //desiredSize.height += style->padding.height();
 
-    // Border
-    if (!style->borderInset) {
-        desiredSize.width += style->borderThickness.width();
-        desiredSize.height += style->borderThickness.height();
-    }
+    //// Border
+    //if (!style->borderInset) {
+    //    desiredSize.width += style->borderThickness.width();
+    //    desiredSize.height += style->borderThickness.height();
+    //}
 
-    return desiredSize;
+    //return desiredSize;
+    return Size();
 }
 
 Rect UILayoutContext::makeContentRect(const UIElement* element, const Size& finalSize) const {
-    detail::UIStyleInstance* style = element->m_finalStyle;
+    //detail::UIStyleInstance* style = element->m_finalStyle;
 
-    Rect result(0, 0, finalSize);
-    result = result.makeDeflate(style->padding);
+    //Rect result(0, 0, finalSize);
+    //result = result.makeDeflate(style->padding);
 
-    if (!style->borderInset) {
-        result = result.makeDeflate(style->borderThickness);
-    }
+    //if (!style->borderInset) {
+    //    result = result.makeDeflate(style->borderThickness);
+    //}
 
-    return result;
+    //return result;
+    return Rect();
 }
 
 Size UILayoutContext::measureTextSize(Font* font, const StringView& text) {
@@ -466,33 +468,35 @@ ILayoutPanel::ILayoutPanel() {
 namespace detail {
 
 Size LayoutHelper::measureElementSpacing(UILayoutElement* element) {
-    Size spacing;
+    //Size spacing;
 
-    spacing.width = element->m_finalStyle->padding.width();
-    spacing.height = element->m_finalStyle->padding.height();
+    //spacing.width = element->m_finalStyle->padding.width();
+    //spacing.height = element->m_finalStyle->padding.height();
 
-    if (!element->m_finalStyle->borderInset) {
-        spacing.width += element->m_finalStyle->borderThickness.width();
-        spacing.height += element->m_finalStyle->borderThickness.height();
-    }
+    //if (!element->m_finalStyle->borderInset) {
+    //    spacing.width += element->m_finalStyle->borderThickness.width();
+    //    spacing.height += element->m_finalStyle->borderThickness.height();
+    //}
 
-    return spacing;
+    //return spacing;
+    return Size();
 }
 
 Size LayoutHelper::measureElementClientSize(UILayoutElement* element) {
-    Size size(element->m_finalStyle->width, element->m_finalStyle->height);
-    Size bodySize;
-    bodySize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
-    bodySize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
+    //Size size(element->m_finalStyle->width, element->m_finalStyle->height);
+    //Size bodySize;
+    //bodySize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
+    //bodySize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
 
-    Size minSize, maxSize;
-    element->getLayoutMinMaxInfo(&minSize, &maxSize);
-    if (!Math::isNaNOrInf(minSize.width)) bodySize.width = std::max(bodySize.width, minSize.width);
-    if (!Math::isNaNOrInf(minSize.height)) bodySize.height = std::max(bodySize.height, minSize.height);
-    if (!Math::isNaNOrInf(maxSize.width)) bodySize.width = std::min(bodySize.width, maxSize.width);
-    if (!Math::isNaNOrInf(maxSize.height)) bodySize.height = std::min(bodySize.height, maxSize.height);
+    //Size minSize, maxSize;
+    //element->getLayoutMinMaxInfo(&minSize, &maxSize);
+    //if (!Math::isNaNOrInf(minSize.width)) bodySize.width = std::max(bodySize.width, minSize.width);
+    //if (!Math::isNaNOrInf(minSize.height)) bodySize.height = std::max(bodySize.height, minSize.height);
+    //if (!Math::isNaNOrInf(maxSize.width)) bodySize.width = std::min(bodySize.width, maxSize.width);
+    //if (!Math::isNaNOrInf(maxSize.height)) bodySize.height = std::min(bodySize.height, maxSize.height);
 
-    return bodySize;
+    //return bodySize;
+    return Size();
 }
 
 Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize) {
@@ -518,22 +522,24 @@ Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constrai
 }
 
 Rect LayoutHelper::arrangeClientArea(UILayoutElement* element, const Rect& finalArea) {
-    Rect area;
+    //Rect area;
 
-    area.x = finalArea.x + element->m_finalStyle->padding.left;
-    area.y = finalArea.y + element->m_finalStyle->padding.top;
-    area.width = finalArea.width - element->m_finalStyle->padding.width();
-    area.height = finalArea.height - element->m_finalStyle->padding.height();
+    //area.x = finalArea.x + element->m_finalStyle->padding.left;
+    //area.y = finalArea.y + element->m_finalStyle->padding.top;
+    //area.width = finalArea.width - element->m_finalStyle->padding.width();
+    //area.height = finalArea.height - element->m_finalStyle->padding.height();
 
-    // arrange では inset に関わらず border が影響する (inset=true のとき、最終サイズが width,height 直接指定と矛盾すると見切れたりするが、それでよい (WPF))
-    area = area.makeDeflate(element->m_finalStyle->borderThickness);
+    //// arrange では inset に関わらず border が影響する (inset=true のとき、最終サイズが width,height 直接指定と矛盾すると見切れたりするが、それでよい (WPF))
+    //area = area.makeDeflate(element->m_finalStyle->borderThickness);
 
-    return area;
+    //return area;
+    return Rect();
 }
 
 Rect LayoutHelper::makePaddingRect(const UIElement* element, const Size& clientSize) {
-    Rect contentSlotRect(0, 0, clientSize);
-    return contentSlotRect.makeDeflate(element->finalStyle()->padding);
+    //Rect contentSlotRect(0, 0, clientSize);
+    //return contentSlotRect.makeDeflate(element->finalStyle()->padding);
+    return Rect();
 }
 
 } // namespace detail
