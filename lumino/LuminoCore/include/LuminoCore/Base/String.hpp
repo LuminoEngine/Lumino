@@ -452,6 +452,16 @@ private:
     } m_data;
 
     friend class CharRef;
+
+public:
+#ifdef __AFXSTR_H__ // MFC Integration
+    String(const CString& str)
+        : String(String::fromCString(static_cast<const TCHAR*>(str), str.GetLength())) {
+    }
+    operator CString() const {
+        return CString(toStdWString().c_str());
+    }
+#endif
 };
 
 /** String のヘルパーです。 = 演算子による更新を参照元の String に伝えます。 */

@@ -261,6 +261,16 @@ private:
     void assignUnderBasePath(const Path& basePath, const StringView& relativePath);
 
     String m_path;
+
+public:
+#ifdef __AFXSTR_H__ // MFC Integration
+    Path(const CString& path)
+        : Path(String::fromCString(static_cast<const TCHAR*>(path), path.GetLength())) {
+    }
+    operator CString() const {
+        return CString(m_path.toStdWString().c_str());
+    }
+#endif
 };
 
 namespace detail {
