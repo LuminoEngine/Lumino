@@ -220,12 +220,12 @@ public:
 
     static constexpr UILayoutFlexDirection DefaultFlexDirection = UILayoutFlexDirection::Row;
     static constexpr UIStyleValue DefaultFlexBasis = UIStyleValue();
-    static const float DefaultWidth;
-    static const float DefaultHeight;
-    static const float DefaultMinWidth;
-    static const float DefaultMinHeight;
-    static const float DefaultMaxWidth;
-    static const float DefaultMaxHeight;
+    static constexpr UIStyleValue DefaultWidth = UIStyleValue();
+    static constexpr UIStyleValue DefaultHeight = UIStyleValue();
+    static constexpr UIStyleValue DefaultMinWidth = UIStyleValue();
+    static constexpr UIStyleValue DefaultMinHeight = UIStyleValue();
+    static constexpr UIStyleValue DefaultMaxWidth = UIStyleValue();
+    static constexpr UIStyleValue DefaultMaxHeight = UIStyleValue();
     //static const Thickness DefaultMargin;
     //static const Thickness DefaultPadding;
     //static const UIHAlignment DefaultHorizontalAlignment;

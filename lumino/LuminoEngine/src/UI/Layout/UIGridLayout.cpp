@@ -218,8 +218,11 @@ Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& c
 	return Size::max(desiredSize, cellsDesiredSize);
 }
 
-Size UIGridLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
+Size UIGridLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return Size();
+#else
 	const auto finalSize = finalArea.getSize();
 	const Thickness& padding = finalStyle()->padding;
 	Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -314,6 +317,7 @@ Size UIGridLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& f
 	}
 
 	return finalSize;
+#endif
 }
 
 int UIGridLayout::actualColumnCount() const

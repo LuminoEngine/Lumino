@@ -23,6 +23,8 @@ enum class UIStyleValueUnit {
 
 class UIStyleValue {
 public:
+    static const UIStyleValue Null;
+
     constexpr UIStyleValue(float pointValue)
         : m_value(pointValue)
         , m_unit(UIStyleValueUnit::Point) {}
@@ -38,6 +40,8 @@ public:
     bool isNull() const { return std::isnan(m_value); }
 
     static constexpr UIStyleValue ofNull() { return UIStyleValue{}; }
+
+    //static inline constexpr UIStyleValue Null = UIStyleValue();
 
 private:
     float m_value;

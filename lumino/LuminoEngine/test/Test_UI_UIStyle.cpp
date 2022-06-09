@@ -14,6 +14,8 @@ protected:
 	virtual const String& elementName() const  override { static String name = _TT("TestElement"); return name; }
 };
 
+#if LN_USE_YOGA
+#else
 //------------------------------------------------------------------------------
 //## Background
 TEST_F(Test_UI_UIStyle, Background)
@@ -151,3 +153,4 @@ TEST_F(Test_UI_UIStyle, BoxShadow)
 }
 
 //#endif // LN_UNIT_TEST_EXPERIMENTAL
+#endif

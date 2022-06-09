@@ -4,6 +4,8 @@
 //# Testing Test_UI_UITextBlock
 class Test_UI_UITextBlock : public LuminoSceneTest {};
 
+#if LN_USE_YOGA
+#else
 //------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_UI_UITextBlock, Basic)
@@ -26,4 +28,4 @@ TEST_F(Test_UI_UITextBlock, Basic)
     // TODO: DrawCall 確認
 	LN_TEST_CLEAN_SCENE;
 }
-
+#endif

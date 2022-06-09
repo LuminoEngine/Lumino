@@ -395,6 +395,10 @@ Size UIStackLayout2_Obsolete::measureOverride(UILayoutContext* layoutContext, co
 
 Size UIStackLayout2_Obsolete::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return Size();
+#else
     const auto finalSize = finalArea.getSize();
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -523,6 +527,7 @@ Size UIStackLayout2_Obsolete::arrangeOverride(UILayoutContext* layoutContext, co
 
     return finalSize;
 #endif
+#endif
 }
 
 //==============================================================================
@@ -600,8 +605,11 @@ Size UIBoxLayout::measureOverride(UILayoutContext* layoutContext, const Size& co
     return desiredSize;
 }
 
-Size UIBoxLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
+Size UIBoxLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return Size();
+#else
     const auto finalSize = finalArea.getSize();
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -679,10 +687,14 @@ Size UIBoxLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& fi
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
     Size selfSize = UIElement::arrangeOverride(layoutContext, finalArea);
     return selfSize;
+#endif
 }
 
-UILayoutLengthType UIBoxLayout::layoutType(int index) const
-{
+UILayoutLengthType UIBoxLayout::layoutType(int index) const {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return UILayoutLengthType::Ratio;
+#else
     if (LN_REQUIRE(m_logicalChildren)) return UILayoutLengthType::Ratio;
 
     auto& child = m_logicalChildren->at(index);
@@ -721,6 +733,7 @@ UILayoutLengthType UIBoxLayout::layoutType(int index) const
         else
             return UILayoutLengthType::Ratio;
     }
+#endif
 }
 
 float UIBoxLayout::layoutWeight(int index) const
@@ -734,8 +747,11 @@ float UIBoxLayout::layoutWeight(int index) const
         return 1.0f;
 }
 
-float UIBoxLayout::layoutDirectSize(int index) const
-{
+float UIBoxLayout::layoutDirectSize(int index) const {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return 0.0f;
+#else
     if (LN_REQUIRE(m_logicalChildren)) return 1.0f;
 
     auto& child = m_logicalChildren->at(index);
@@ -750,10 +766,13 @@ float UIBoxLayout::layoutDirectSize(int index) const
         }
     }
     return 0.0f;
+#endif
 }
 
-void UIBoxLayout::getLayoutMinMaxSize(int index, float* minSize, float* maxSize) const
-{
+void UIBoxLayout::getLayoutMinMaxSize(int index, float* minSize, float* maxSize) const {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     *minSize = 0.0f;
     *maxSize = std::numeric_limits<float>::max();
 
@@ -772,6 +791,7 @@ void UIBoxLayout::getLayoutMinMaxSize(int index, float* minSize, float* maxSize)
         if (!Math::isNaN(child->m_finalStyle->maxHeight))
             *maxSize = child->m_finalStyle->maxHeight;
     }
+#endif
 }
 
 //==============================================================================
@@ -1111,8 +1131,11 @@ Size UIStackLayout::arrangeOverrideImpl(
     UILayoutOrientation orientation,
     detail::UIStyleInstance* style,
     bool lastStretch,
-    const Vector2& scrollOffset)
-{
+    const Vector2& scrollOffset) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return Size();
+#else
     const auto finalSize = finalArea.getSize();
     const Thickness& padding = style->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -1180,6 +1203,7 @@ Size UIStackLayout::arrangeOverrideImpl(
     }
 
     return finalSlotRect.getSize();
+#endif
 }
 
 Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)

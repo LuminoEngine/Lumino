@@ -56,6 +56,9 @@ void UIText::init()
 {
     UIElement::init();
 
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     // Alignment は Center をデフォルトにしてみる。
     // Web だと Top-Left だが、これは下方向のサイズ上限がないっていうのと、活版印刷を意識しているため…と思ってる。
     //
@@ -82,6 +85,7 @@ void UIText::init()
     // そうするとほぼ必ず setAlignments は呼び出すことになるので、デフォルト左上もあまり嬉しくない。デバッグしやすさを優先してみる。
     setHAlignment(UIHAlignment::Center);
     setVAlignment(UIVAlignment::Center);
+#endif
 
     setBlendMode(BlendMode::Alpha);
 
@@ -120,8 +124,10 @@ Size UIText::measureOverride(UILayoutContext* layoutContext, const Size& constra
 	return baseSize;
 }
 
-void UIText::onRender(UIRenderingContext* context)
-{
+void UIText::onRender(UIRenderingContext* context) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, Rect(0, 0, actualSize()));
 
     UIHAlignment ha = m_finalStyle->horizontalContentAlignment == UIHAlignment::Stretch ? UIHAlignment::Center : m_finalStyle->horizontalContentAlignment;
@@ -146,6 +152,7 @@ void UIText::onRender(UIRenderingContext* context)
     context->setTextColor(color);
 
     context->drawText(m_text);
+#endif
 }
 
 //==============================================================================

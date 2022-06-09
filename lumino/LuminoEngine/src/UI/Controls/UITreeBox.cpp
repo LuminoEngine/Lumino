@@ -31,8 +31,12 @@ bool UITreeBoxItem::init()
 {
 	if (!UIControl::init()) return false;
 
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
 	// TODO: Style
-	setHorizontalContentAlignment(UIHAlignment::Left);
+        setHorizontalContentAlignment(UIHAlignment::Left);
+#endif
 
 	return true;
 }

@@ -27,8 +27,12 @@ UIViewport::~UIViewport() {
 
 void UIViewport::init() {
     UIContainerElement::init();
+
+#if LN_USE_YOGA
+#else
     setHAlignment(UIHAlignment::Stretch);
     setVAlignment(UIVAlignment::Stretch);
+#endif
 
     // m_imageEffectRenderer = makeRef<detail::PostEffectRenderer>();
     m_blitMaterial = makeObject<Material>();

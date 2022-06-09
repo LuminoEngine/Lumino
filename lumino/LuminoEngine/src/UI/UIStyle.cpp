@@ -121,18 +121,18 @@ void UIStyleDecorator::render(UIRenderingContext* context, const Size& slotRect)
 // UIStyle
 
 // layout
-const float UIStyle::DefaultWidth = std::numeric_limits<float>::quiet_NaN();
-const float UIStyle::DefaultHeight = std::numeric_limits<float>::quiet_NaN();
-const Thickness UIStyle::DefaultMargin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-const Thickness UIStyle::DefaultPadding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-const UIHAlignment UIStyle::DefaultHorizontalAlignment = UIHAlignment::Stretch; // WPF FrameworkElement default
-const UIVAlignment UIStyle::DefaultVerticalAlignment = UIVAlignment::Stretch;
-const UIHAlignment UIStyle::DefaultHorizontalContentAlignment = UIHAlignment::Stretch; // デフォルト Stretch. WPF は Left だが、ListItem が Fill されずにカスタム Item 作るときに毎回混乱していたので。
-const UIVAlignment UIStyle::DefaultVerticalContentAlignment = UIVAlignment::Stretch;
-const float UIStyle::DefaultMinWidth = std::numeric_limits<float>::quiet_NaN();
-const float UIStyle::DefaultMinHeight = std::numeric_limits<float>::quiet_NaN();
-const float UIStyle::DefaultMaxWidth = std::numeric_limits<float>::quiet_NaN();
-const float UIStyle::DefaultMaxHeight = std::numeric_limits<float>::quiet_NaN();
+//const float UIStyle::DefaultWidth = std::numeric_limits<float>::quiet_NaN();
+//const float UIStyle::DefaultHeight = std::numeric_limits<float>::quiet_NaN();
+//const Thickness UIStyle::DefaultMargin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+//const Thickness UIStyle::DefaultPadding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+//const UIHAlignment UIStyle::DefaultHorizontalAlignment = UIHAlignment::Stretch; // WPF FrameworkElement default
+//const UIVAlignment UIStyle::DefaultVerticalAlignment = UIVAlignment::Stretch;
+//const UIHAlignment UIStyle::DefaultHorizontalContentAlignment = UIHAlignment::Stretch; // デフォルト Stretch. WPF は Left だが、ListItem が Fill されずにカスタム Item 作るときに毎回混乱していたので。
+//const UIVAlignment UIStyle::DefaultVerticalContentAlignment = UIVAlignment::Stretch;
+//const float UIStyle::DefaultMinWidth = std::numeric_limits<float>::quiet_NaN();
+//const float UIStyle::DefaultMinHeight = std::numeric_limits<float>::quiet_NaN();
+//const float UIStyle::DefaultMaxWidth = std::numeric_limits<float>::quiet_NaN();
+//const float UIStyle::DefaultMaxHeight = std::numeric_limits<float>::quiet_NaN();
 const UIOverflowBehavior UIStyle::DefaultOverflowX = UIOverflowBehavior::Visible;
 const UIOverflowBehavior UIStyle::DefaultOverflowY = UIOverflowBehavior::Visible;
 
@@ -280,12 +280,12 @@ void UIStyle::setupDefault() {
     // layout
     width = DefaultWidth;
     height = DefaultHeight;
-    margin = DefaultMargin;
-    padding = DefaultPadding;
-    hAlignment = DefaultHorizontalAlignment;
-    vAlignment = DefaultVerticalAlignment;
-    horizontalContentAlignment = DefaultHorizontalContentAlignment;
-    verticalContentAlignment = DefaultVerticalContentAlignment;
+    //margin = DefaultMargin;
+    //padding = DefaultPadding;
+    //hAlignment = DefaultHorizontalAlignment;
+    //vAlignment = DefaultVerticalAlignment;
+    //horizontalContentAlignment = DefaultHorizontalContentAlignment;
+    //verticalContentAlignment = DefaultVerticalContentAlignment;
     minWidth = DefaultMinWidth;
     minHeight = DefaultMinHeight;
     maxWidth = DefaultMaxWidth;
@@ -351,16 +351,29 @@ void UIStyle::reset() {
     // layout
     width.reset();
     height.reset();
-    margin.reset();
-    padding.reset();
-    hAlignment.reset();
-    vAlignment.reset();
-    horizontalContentAlignment.reset();
-    verticalContentAlignment.reset();
     minWidth.reset();
     minHeight.reset();
     maxWidth.reset();
     maxHeight.reset();
+    marginTop.reset();
+    marginRight.reset();
+    marginBottom.reset();
+    marginLeft.reset();
+    borderTop.reset();
+    borderRight.reset();
+    borderBottom.reset();
+    borderLeft.reset();
+    paddingTop.reset();
+    paddingRight.reset();
+    paddingBottom.reset();
+    paddingLeft.reset();
+    positionTop.reset();
+    positionRight.reset();
+    positionBottom.reset();
+    positionLeft.reset();
+    positionType.reset();
+    aspectRatio.reset();
+    zIndex.reset();
     overflowX.reset();
     overflowY.reset();
 
@@ -422,18 +435,44 @@ void UIStyle::mergeFrom(const UIStyle* other) {
     if (LN_REQUIRE(other)) return;
 
     // layout
-    if (other->width.hasValue()) width = other->width.get();
-    if (other->height.hasValue()) height = other->height.get();
-    if (other->margin.hasValue()) margin = other->margin.get();
-    if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
-    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
-    if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
-    if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
-    if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
-    if (other->minHeight.hasValue()) minHeight = other->minHeight.get();
-    if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.get();
-    if (other->maxHeight.hasValue()) maxHeight = other->maxHeight.get();
+    if (other->width.hasValue()) width = other->width.value();
+    if (other->height.hasValue()) height = other->height.value();
+
+    
+    if (other->marginTop.hasValue()) marginTop = other->marginTop.value();
+    if (other->marginRight.hasValue()) marginRight = other->marginRight.value();
+    if (other->marginBottom.hasValue()) marginBottom = other->marginBottom.value();
+    if (other->marginLeft.hasValue()) marginLeft = other->marginLeft.value();
+
+    if (other->borderTop.hasValue()) borderTop = other->borderTop.value();
+    if (other->borderRight.hasValue()) borderRight = other->borderRight.value();
+    if (other->borderBottom.hasValue()) borderBottom = other->borderBottom.value();
+    if (other->borderLeft.hasValue()) borderLeft = other->borderLeft.value();
+
+    if (other->paddingTop.hasValue()) paddingTop = other->paddingTop.value();
+    if (other->paddingRight.hasValue()) paddingRight = other->paddingRight.value();
+    if (other->paddingBottom.hasValue()) paddingBottom = other->paddingBottom.value();
+    if (other->paddingLeft.hasValue()) paddingLeft = other->paddingLeft.value();
+
+    if (other->positionTop.hasValue()) positionTop = other->positionTop.value();
+    if (other->positionRight.hasValue()) positionRight = other->positionRight.value();
+    if (other->positionBottom.hasValue()) positionBottom = other->positionBottom.value();
+    if (other->positionLeft.hasValue()) positionLeft = other->positionLeft.value();
+
+    if (other->positionType.hasValue()) positionType = other->positionType.value();
+    if (other->aspectRatio.hasValue()) aspectRatio = other->aspectRatio.value();
+    if (other->zIndex.hasValue()) zIndex = other->zIndex.value();
+
+    //if (other->margin.hasValue()) margin = other->margin.get();
+    //if (other->padding.hasValue()) padding = other->padding.get();
+    //if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
+    //if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
+    //if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
+    //if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
+    if (other->minWidth.hasValue()) minWidth = other->minWidth.value();
+    if (other->minHeight.hasValue()) minHeight = other->minHeight.value();
+    if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.value();
+    if (other->maxHeight.hasValue()) maxHeight = other->maxHeight.value();
     if (other->overflowX.hasValue()) overflowX = other->overflowX.get();
     if (other->overflowY.hasValue()) overflowY = other->overflowY.get();
 
@@ -516,16 +555,41 @@ void UIStyle::copyFrom(const UIStyle* other) {
     // layout
     width = other->width;
     height = other->height;
-    margin = other->margin;
-    padding = other->padding;
-    hAlignment = other->hAlignment;
-    vAlignment = other->vAlignment;
-    horizontalContentAlignment = other->horizontalContentAlignment;
-    verticalContentAlignment = other->verticalContentAlignment;
+    //margin = other->margin;
+    //padding = other->padding;
+    //hAlignment = other->hAlignment;
+    //vAlignment = other->vAlignment;
+    //horizontalContentAlignment = other->horizontalContentAlignment;
+    //verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
     minHeight = other->minHeight;
     maxWidth = other->maxWidth;
     maxHeight = other->maxHeight;
+
+    marginTop = other->marginTop;
+    marginRight = other->marginRight;
+    marginBottom = other->marginBottom;
+    marginLeft = other->marginLeft;
+
+    borderTop = other->borderTop;
+    borderRight = other->borderRight;
+    borderBottom = other->borderBottom;
+    borderLeft = other->borderLeft;
+
+    paddingTop = other->paddingTop;
+    paddingRight = other->paddingRight;
+    paddingBottom = other->paddingBottom;
+    paddingLeft = other->paddingLeft;
+
+    positionTop = other->positionTop;
+    positionRight = other->positionRight;
+    positionBottom = other->positionBottom;
+    positionLeft = other->positionLeft;
+
+    positionType = other->positionType;
+    aspectRatio = other->aspectRatio;
+    zIndex = other->zIndex;
+
     overflowX = other->overflowX;
     overflowY = other->overflowY;
 
@@ -1148,14 +1212,14 @@ void UITheme::buildLumitelier() {
     // UIButton
     {
         if (auto s = sheet->obtainStyle(_TT("UIButton"))) {
-            s->minWidth = 64;
-            s->minHeight = lineContentHeight();
-            s->margin = Thickness(8); // TODO: spacing?
-            s->padding = Thickness(spacing(2), 0);
-            s->hAlignment = UIHAlignment::Center;
-            s->vAlignment = UIVAlignment::Center;
-            s->horizontalContentAlignment = UIHAlignment::Center;
-            s->verticalContentAlignment = UIVAlignment::Center;
+            s->minWidth = UIStyleValue(64);
+            s->minHeight = UIStyleValue(lineContentHeight());
+            //s->margin = Thickness(8); // TODO: spacing?
+            //s->padding = Thickness(spacing(2), 0);
+            //s->hAlignment = UIHAlignment::Center;
+            //s->vAlignment = UIVAlignment::Center;
+            //s->horizontalContentAlignment = UIHAlignment::Center;
+            //s->verticalContentAlignment = UIVAlignment::Center;
             s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
             s->cornerRadius = CornerRadius(4);
             s->shadowBlurRadius = 1;
@@ -1189,14 +1253,14 @@ void UITheme::buildLumitelier() {
     // UICheckBox
     {
         if (auto s = sheet->obtainStyle(_TT("UICheckBox"))) {
-            s->minHeight = lineContentHeight();
+            s->minHeight = UIStyleValue(lineContentHeight());
         }
         if (auto s = sheet->obtainStyle(_TT("UIElement.UICheckBox-CheckMark"))) {
             s->backgroundColor = color(UIThemeConstantPalette::ControlBackgroundColor);
             s->cornerRadius = CornerRadius(4);
-            s->width = 14;
-            s->height = 14;
-            s->margin = 4;
+            //s->width = 14;
+            //s->height = 14;
+            //s->margin = 4;
         }
         if (auto s = sheet->obtainStyle(_TT("UIElement.UICheckBox-CheckMark:Checked"))) {
             auto icon = makeObject<UIStyleDecorator>();
@@ -1213,9 +1277,9 @@ void UITheme::buildLumitelier() {
         //	auto s = e->mainStyleClass()->mainStyle();
 
         if (auto s = sheet->obtainStyle(_TT("UIWindow"))) {
-            s->minWidth = 64;
-            s->minHeight = 64;
-            s->padding = spacing(1);
+            s->minWidth = UIStyleValue(64);
+            s->minHeight = UIStyleValue(64);
+            //s->padding = spacing(1);
             s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor).withAlpha(0.5);
             s->cornerRadius = CornerRadius(4);
             s->borderThickness = 1;
@@ -1226,7 +1290,7 @@ void UITheme::buildLumitelier() {
     // UIListBoxItem
     {
         if (auto s = sheet->obtainStyle(_TT("UIListBoxItem"))) {
-            s->minHeight = lineContentHeight();
+            s->minHeight = UIStyleValue(lineContentHeight());
             // s->padding = Thickness(spacing(1), 0);
             // s->setBackgroundColorTransition(color(UIThemeConstantPalette::ItemHoverAction), 1.0f);
             // s->setBackgroundColorTransition(Color::Transparency, 1.0f);
@@ -1268,9 +1332,9 @@ void UITheme::buildLumitelier() {
     // UITreeItem
     {
         if (auto s = sheet->obtainStyle(_TT("UITreeItem"))) {
-            s->minHeight = lineContentHeight();
-            s->hAlignment = UIHAlignment::Stretch;
-            s->vAlignment = UIVAlignment::Top;
+            s->minHeight = UIStyleValue(lineContentHeight());
+            //s->hAlignment = UIHAlignment::Stretch;
+            //s->vAlignment = UIVAlignment::Top;
         }
         if (auto s = sheet->obtainStyle(_TT("UITreeItem:MouseOver"))) {
             s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
@@ -1279,10 +1343,10 @@ void UITheme::buildLumitelier() {
             s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
         }
         if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander"))) { // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
-            s->width = 16;
-            s->height = 16;
-            s->hAlignment = UIHAlignment::Center;
-            s->vAlignment = UIVAlignment::Center;
+            s->width = UIStyleValue(16);
+            s->height = UIStyleValue(16);
+            //s->hAlignment = UIHAlignment::Center;
+            //s->vAlignment = UIVAlignment::Center;
             s->backgroundColor = Color::Transparency;
         }
         // if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:MouseOver")) {
@@ -1341,7 +1405,7 @@ void UITheme::buildLumitelier() {
     {
         if (auto s = sheet->obtainStyle(_TT("UIScrollBar"))) {
             // s->backgroundColor = UIColors::get(UIColorHues::Green, 7);
-            s->minWidth = 6;
+            s->minWidth = UIStyleValue(6);
         }
     }
     //--------------------------------
@@ -1393,14 +1457,14 @@ void UITheme::buildLumitelier() {
     // UIComboBox
     {
         if (auto s = sheet->obtainStyle(_TT("UIComboBox"))) {
-            s->minWidth = 64;
-            s->minHeight = lineContentHeight();
-            s->margin = Thickness(8); // TODO: spacing?
-            s->padding = Thickness(spacing(2), 0);
-            s->hAlignment = UIHAlignment::Center;
-            s->vAlignment = UIVAlignment::Center;
-            s->horizontalContentAlignment = UIHAlignment::Center;
-            s->verticalContentAlignment = UIVAlignment::Center;
+            s->minWidth = UIStyleValue(64);
+            s->minHeight = UIStyleValue(lineContentHeight());
+            //s->margin = Thickness(8); // TODO: spacing?
+            //s->padding = Thickness(spacing(2), 0);
+            //s->hAlignment = UIHAlignment::Center;
+            //s->vAlignment = UIVAlignment::Center;
+            //s->horizontalContentAlignment = UIHAlignment::Center;
+            //s->verticalContentAlignment = UIVAlignment::Center;
             s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
             s->cornerRadius = CornerRadius(4);
             s->shadowBlurRadius = 1;
@@ -1413,8 +1477,8 @@ void UITheme::buildLumitelier() {
     // UITabBarItem
     {
         if (auto s = sheet->obtainStyle(_TT("UITabBarItem"))) {
-            s->minHeight = lineContentHeight();
-            s->padding = Thickness(spacing(2), 0);
+            s->minHeight = UIStyleValue(lineContentHeight());
+            //s->padding = Thickness(spacing(2), 0);
             s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor);
         }
         if (auto s = sheet->obtainStyle(_TT("UITabBarItem:Selected"))) {

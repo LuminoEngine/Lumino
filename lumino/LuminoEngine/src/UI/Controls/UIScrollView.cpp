@@ -887,8 +887,10 @@ UIScrollViewer::~UIScrollViewer()
 {
 }
 
-void UIScrollViewer::setHScrollbarVisible(bool value)
-{
+void UIScrollViewer::setHScrollbarVisible(bool value) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
 	if (value) {
 		if (!m_horizontalScrollBar) {
 			m_horizontalScrollBar = makeObject<UIScrollBar>();
@@ -903,11 +905,14 @@ void UIScrollViewer::setHScrollbarVisible(bool value)
 			removeVisualChild(m_horizontalScrollBar);
 			m_horizontalScrollBar = nullptr;
 		}
-	}
+        }
+#endif
 }
 
-void UIScrollViewer::setVScrollbarVisible(bool value)
-{
+void UIScrollViewer::setVScrollbarVisible(bool value) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
 	if (value) {
 		if (!m_verticalScrollBar) {
 			m_verticalScrollBar = makeObject<UIScrollBar>();
@@ -922,7 +927,8 @@ void UIScrollViewer::setVScrollbarVisible(bool value)
 			removeVisualChild(m_verticalScrollBar);
 			m_verticalScrollBar = nullptr;
 		}
-	}
+        }
+#endif
 }
 
 void UIScrollViewer::init()

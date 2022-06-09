@@ -4,6 +4,8 @@
 //# Testing Test_UI_UILayout
 class Test_UI_UILayout : public LuminoSceneTest {};
 
+#if LN_USE_YOGA
+#else
 //------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_UI_UILayout, Basic)
@@ -452,3 +454,5 @@ TEST_F(Test_UI_UILayout, BoxLayout)
 
 	LN_TEST_CLEAN_SCENE;
 }
+
+#endif

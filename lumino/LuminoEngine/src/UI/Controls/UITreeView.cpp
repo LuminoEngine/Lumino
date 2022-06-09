@@ -145,8 +145,11 @@ Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& con
     return Size::max(size, desiredSize);
 }
 
-Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
+Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return Size();
+#else
     const auto finalSize = finalArea.getSize();
 
     struct ElementList : public IUIElementList {
@@ -185,6 +188,7 @@ Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& fin
     m_itemsLayout->arrangeLayout(layoutContext, area);
 
     return finalSize;
+#endif
 }
 
 void UITreeItem::onRoutedEvent(UIEventArgs* e)
@@ -237,8 +241,12 @@ void UITreeView::init()
     layout->setOrientation(UILayoutOrientation::Vertical);
     setItemsLayoutPanel(layout);
 
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     setHorizontalContentAlignment(UIHAlignment::Left);
     setVerticalContentAlignment(UIVAlignment::Center);
+#endif
 }
 
 //void UITreeView::setModel(UICollectionViewModel* model)
@@ -512,8 +520,11 @@ void UITreeItem2::onRoutedEvent(UIEventArgs* e)
     UIControl::onRoutedEvent(e);
 }
 
-Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
+Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return Size();
+#else
     //for (auto& item : *m_logicalChildren) {
     //    static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = m_layoutingOwnerTreeView;
     //    static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = m_layoutDepth + 1;
@@ -543,10 +554,14 @@ Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& co
     Size desiredSize = UIControl::measureOverride(layoutContext, constraint);
 
     return Size::max(size, desiredSize);
+#endif
 }
 
-Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
+Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+    return Size();
+#else
     const auto finalSize = finalArea.getSize();
     UITreeView2* treeView = getTreeView();
 
@@ -597,6 +612,7 @@ Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Rect& fi
     }
 
     return finalSize;
+#endif
 }
 
 void UITreeItem2::expander_Checked(UIEventArgs* e)

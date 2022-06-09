@@ -21652,7 +21652,7 @@ LN_FLAT_API LNResult LNUIElement_GetPadding(LNHandle uielement, LNThickness* out
 LN_FLAT_API LNResult LNUIElement_SetHAlignment(LNHandle uielement, LNUIHAlignment value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setHAlignment(static_cast<ln::UIHAlignment>(value)));
+    //(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setHAlignment(static_cast<ln::UIHAlignment>(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -21660,12 +21660,12 @@ LN_FLAT_API LNResult LNUIElement_SetHAlignment(LNHandle uielement, LNUIHAlignmen
 LN_FLAT_API LNResult LNUIElement_GetHAlignment(LNHandle uielement, LNUIHAlignment* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = static_cast<LNUIHAlignment>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->hAlignment());
-    }
-    else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->hAlignment());
-    }
+    //if (outReturn) {
+    //    *outReturn = static_cast<LNUIHAlignment>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->hAlignment());
+    //}
+    //else {
+    //    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->hAlignment());
+    //}
 
     LNI_FUNC_TRY_END_RETURN;
 }
@@ -21674,7 +21674,7 @@ LN_FLAT_API LNResult LNUIElement_GetHAlignment(LNHandle uielement, LNUIHAlignmen
 LN_FLAT_API LNResult LNUIElement_SetVAlignment(LNHandle uielement, LNUIVAlignment value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setVAlignment(static_cast<ln::UIVAlignment>(value)));
+    //(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setVAlignment(static_cast<ln::UIVAlignment>(value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -21682,12 +21682,12 @@ LN_FLAT_API LNResult LNUIElement_SetVAlignment(LNHandle uielement, LNUIVAlignmen
 LN_FLAT_API LNResult LNUIElement_GetVAlignment(LNHandle uielement, LNUIVAlignment* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = static_cast<LNUIVAlignment>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->vAlignment());
-    }
-    else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->vAlignment());
-    }
+    //if (outReturn) {
+    //    *outReturn = static_cast<LNUIVAlignment>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->vAlignment());
+    //}
+    //else {
+    //    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->vAlignment());
+    //}
 
     LNI_FUNC_TRY_END_RETURN;
 }
@@ -21696,7 +21696,7 @@ LN_FLAT_API LNResult LNUIElement_GetVAlignment(LNHandle uielement, LNUIVAlignmen
 LN_FLAT_API LNResult LNUIElement_SetAlignments(LNHandle uielement, LNUIHAlignment halign, LNUIVAlignment valign)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setAlignments(static_cast<ln::UIHAlignment>(halign), static_cast<ln::UIVAlignment>(valign)));
+    //(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setAlignments(static_cast<ln::UIHAlignment>(halign), static_cast<ln::UIVAlignment>(valign)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

@@ -36,16 +36,24 @@ ln::Result StartupView::init()
     m_newProjectButton->setWidth(200);
     m_newProjectButton->setText(_TT("New project..."));
     m_newProjectButton->setCommand(EditorApplication::NewCommand);
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     m_newProjectButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
     m_newProjectButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
+#endif
     layout->addChild(m_newProjectButton);
 
     m_openProjectButton = ln::makeObject<ln::UIButton>();
     m_openProjectButton->setWidth(200);
     m_openProjectButton->setText(_TT("Open project..."));
     m_openProjectButton->setCommand(EditorApplication::OpenCommand);
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     m_openProjectButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
     m_openProjectButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
+#endif
     layout->addChild(m_openProjectButton);
 
     m_recentProjectListView = ln::makeObject<RecentProjectListView>();
@@ -59,7 +67,11 @@ ln::Result StartupView::init()
 
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(_TT("file"));
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     icon->setHAlignment(ln::UIHAlignment::Center);
+#endif
     icon->setMargin(ln::Thickness(0, 0, 0, 4));
     m_openProjectButton->addInlineVisual(icon, ln::UIInlinePlacement::Top);
 
@@ -79,8 +91,12 @@ ln::Result StartupView::init()
     auto popupButton = ln::makeObject<ln::UIButton>();
     popupButton->setWidth(200);
     popupButton->setText(_TT("Popup"));
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     popupButton->setHorizontalContentAlignment(ln::UIHAlignment::Center);
     popupButton->setVerticalContentAlignment(ln::UIVAlignment::Center);
+#endif
     popupButton->connectOnClicked([popup]() { if (!popup->isOpend()) popup->open(); else popup->close(); });
     layout->addChild(popupButton);
 

@@ -35,7 +35,7 @@ class App_Example_Navigator : public Application
 
 
         m_window1 = UIWindow::create();
-		m_window1->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		//m_window1->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
         m_window1->setOrigin(10, 10);
         m_window1->setSize(200, 300);
 		//m_window1->setMargin(8);
@@ -61,7 +61,7 @@ class App_Example_Navigator : public Application
 
 
         m_window2 = UIWindow::create();
-		m_window2->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		//m_window2->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
         m_window2->setOrigin(220, 20);
 		m_window2->setSize(200, 300);
 		//m_window2->setMargin(8);

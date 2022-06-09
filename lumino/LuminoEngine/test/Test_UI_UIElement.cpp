@@ -4,6 +4,8 @@
 //# Testing UIElement
 class Test_UI_UIElement : public LuminoSceneTest {};
 
+#if LN_USE_YOGA
+#else
 //------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_UI_UIElement, RenderEffects) {
@@ -78,3 +80,4 @@ TEST_F(Test_UI_UIElement, Background)
 	//LN_TEST_CLEAN_SCENE;
 }
 
+#endif

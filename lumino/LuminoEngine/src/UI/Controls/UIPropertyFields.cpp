@@ -130,20 +130,24 @@ void UISliderField::onRoutedEvent(UIEventArgs* e)
 	UIElement::onRoutedEvent(e);
 }
 
-void UISliderField::onRender(UIRenderingContext* context)
-{
-	float r = (m_value - m_minimum) / (m_maximum - m_minimum);
-	auto cr = clientRect_Obsolete();
-	auto bar = cr.makeDeflate(2);
-	bar.width = bar.width * r;
-	context->drawSolidRectangle(bar, context->theme()->color(UIThemeConstantPalette::PrimaryMainColor));
+void UISliderField::onRender(UIRenderingContext* context) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
+    float r = (m_value - m_minimum) / (m_maximum - m_minimum);
+    auto cr = clientRect_Obsolete();
+    auto bar = cr.makeDeflate(2);
+    bar.width = bar.width * r;
+    context->drawSolidRectangle(bar, context->theme()->color(UIThemeConstantPalette::PrimaryMainColor));
 
-	
-	context->drawText(String::fromNumber(m_value, 'F', 3), cr, TextAlignment::Center);
+    context->drawText(String::fromNumber(m_value, 'F', 3), cr, TextAlignment::Center);
+#endif
 }
 
-void UISliderField::updateValue(const Point& pos)
-{
+void UISliderField::updateValue(const Point& pos) {
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
 	float oldValue = m_value;
 	auto cr = clientRect_Obsolete();
 	//if (cr.contains(pos)) {
@@ -152,7 +156,8 @@ void UISliderField::updateValue(const Point& pos)
 	//}
 	if (m_value != oldValue) {
 		onChanged(oldValue, m_value);
-	}
+        }
+#endif
 }
 
 
@@ -329,14 +334,16 @@ void UIColorField::onRoutedEvent(UIEventArgs* e)
 	UIPropertyField::onRoutedEvent(e);
 }
 
-void UIColorField::onRender(UIRenderingContext* context)
-{
+void UIColorField::onRender(UIRenderingContext* context) {
+#if LN_USE_YOGA
+        LN_NOTIMPLEMENTED();
+#else
 	UIPropertyField::onRender(context);
 
 	auto cr = clientRect_Obsolete();
 	auto bar = cr.makeDeflate(2);
 	context->drawSolidRectangle(bar, m_value);
-
+#endif
 }
 
 //void UIColorField::updateValue(const Point& pos)

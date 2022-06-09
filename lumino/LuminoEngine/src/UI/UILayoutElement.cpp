@@ -17,6 +17,8 @@
 
 namespace ln {
 
+const UIStyleValue UIStyleValue::Null;
+
 //==============================================================================
 // UILayoutElement
 

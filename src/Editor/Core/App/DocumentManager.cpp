@@ -53,7 +53,11 @@ ln::Result DocumentManager::init()
     //addElement(m_mainLayout);
 
     m_documentTabBar = ln::makeObject<ln::UITabBar>();
+#if LN_USE_YOGA
+    LN_NOTIMPLEMENTED();
+#else
     m_documentTabBar->setVAlignment(ln::UIVAlignment::Top);
+#endif
     m_documentTabBar->connectOnSelectionChanged(ln::bind(this, &DocumentManager::documentTabBar_SelectionChanged));
     m_documentTabBar->setBackgroundColor(ln::Color::Azure);
     //m_documentTabBar->setHeight(30);

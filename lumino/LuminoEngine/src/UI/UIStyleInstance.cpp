@@ -324,18 +324,44 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 
     // layout
     {
-        outStyleData->width = (combinedStyle->width.getOrDefault(UIStyle::DefaultWidth));
-        outStyleData->height = (combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
-        outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
-        outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
-        outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
-        outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
-        outStyleData->horizontalContentAlignment = (combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
-        outStyleData->verticalContentAlignment = (combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
-        outStyleData->minWidth = (combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));
-        outStyleData->minHeight = (combinedStyle->minHeight.getOrDefault(UIStyle::DefaultMinHeight));
-        outStyleData->maxWidth = (combinedStyle->maxWidth.getOrDefault(UIStyle::DefaultMaxWidth));
-        outStyleData->maxHeight = (combinedStyle->maxHeight.getOrDefault(UIStyle::DefaultMaxHeight));
+        outStyleData->width = (combinedStyle->width.valueOr(UIStyle::DefaultWidth));
+        outStyleData->height = (combinedStyle->height.valueOr(UIStyle::DefaultHeight));
+
+        //outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
+        //outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
+        //outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
+        //outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
+        //outStyleData->horizontalContentAlignment = (combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
+        //outStyleData->verticalContentAlignment = (combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
+
+        outStyleData->marginTop = combinedStyle->marginTop.valueOr(UIStyleValue::Null);
+        outStyleData->marginRight = combinedStyle->marginRight.valueOr(UIStyleValue::Null);
+        outStyleData->marginBottom = combinedStyle->marginBottom.valueOr(UIStyleValue::Null);
+        outStyleData->marginLeft = combinedStyle->marginLeft.valueOr(UIStyleValue::Null);
+
+        outStyleData->borderTop = combinedStyle->borderTop.valueOr(UIStyleValue::Null);
+        outStyleData->borderRight = combinedStyle->borderRight.valueOr(UIStyleValue::Null);
+        outStyleData->borderBottom = combinedStyle->borderBottom.valueOr(UIStyleValue::Null);
+        outStyleData->borderLeft = combinedStyle->borderLeft.valueOr(UIStyleValue::Null);
+
+        outStyleData->paddingTop = combinedStyle->paddingTop.valueOr(UIStyleValue::Null);
+        outStyleData->paddingRight = combinedStyle->paddingRight.valueOr(UIStyleValue::Null);
+        outStyleData->paddingBottom = combinedStyle->paddingBottom.valueOr(UIStyleValue::Null);
+        outStyleData->paddingLeft = combinedStyle->paddingLeft.valueOr(UIStyleValue::Null);
+
+        outStyleData->positionTop = combinedStyle->positionTop.valueOr(UIStyleValue::Null);
+        outStyleData->positionRight = combinedStyle->positionRight.valueOr(UIStyleValue::Null);
+        outStyleData->positionBottom = combinedStyle->positionBottom.valueOr(UIStyleValue::Null);
+        outStyleData->positionLeft = combinedStyle->positionLeft.valueOr(UIStyleValue::Null);
+
+        outStyleData->positionType = combinedStyle->positionType.valueOr(UILayoutPositionType::Relative);
+        outStyleData->aspectRatio = combinedStyle->aspectRatio.valueOr(UIStyleValue::Null);
+        outStyleData->zIndex = combinedStyle->zIndex.valueOr(UIStyleValue::Null);
+
+        outStyleData->minWidth = (combinedStyle->minWidth.valueOr(UIStyle::DefaultMinWidth));
+        outStyleData->minHeight = (combinedStyle->minHeight.valueOr(UIStyle::DefaultMinHeight));
+        outStyleData->maxWidth = (combinedStyle->maxWidth.valueOr(UIStyle::DefaultMaxWidth));
+        outStyleData->maxHeight = (combinedStyle->maxHeight.valueOr(UIStyle::DefaultMaxHeight));
         outStyleData->overflowX = (combinedStyle->overflowX.getOrDefault(UIStyle::DefaultOverflowX));
         outStyleData->overflowY = (combinedStyle->overflowY.getOrDefault(UIStyle::DefaultOverflowY));
     }
