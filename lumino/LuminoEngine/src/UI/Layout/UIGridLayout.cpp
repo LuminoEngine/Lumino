@@ -165,57 +165,58 @@ void UIGridLayout::onAddChild(UIElement* child)
 	m_nextCellIndex += colSpan + (rowSpan * actualColumnCount());
 }
 
-Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	// Measure layout and grid size.
-	int childCount = getVisualChildrenCount();
-	int rowCount = 0;
-	int colCount = 0;
-	for (int i = 0; i < childCount; i++) {
-		auto* child = getVisualChild(i);
-		child->measureLayout(layoutContext, constraint);
+Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//// Measure layout and grid size.
+	//int childCount = getVisualChildrenCount();
+	//int rowCount = 0;
+	//int colCount = 0;
+	//for (int i = 0; i < childCount; i++) {
+	//	auto* child = getVisualChild(i);
+	//	child->measureLayout(layoutContext, constraint);
 
-		const auto* info = child->getGridLayoutInfo();
-		rowCount = std::max(rowCount, info->actualLayoutRow + 1);
-		colCount = std::max(colCount, info->actualLayoutColumn + 1);
-	}
+	//	const auto* info = child->getGridLayoutInfo();
+	//	rowCount = std::max(rowCount, info->actualLayoutRow + 1);
+	//	colCount = std::max(colCount, info->actualLayoutColumn + 1);
+	//}
 
-	// Allocate definitions
-	while (m_rowDefinitions.size() < rowCount) {
-		m_rowDefinitions.add(GridDefinitionData({ defaultRowLengthType() }));
-	}
-	while (m_columnDefinitions.size() < colCount) {
-		m_columnDefinitions.add(GridDefinitionData({ defaultColumnLengthType() }));
-	}
+	//// Allocate definitions
+	//while (m_rowDefinitions.size() < rowCount) {
+	//	m_rowDefinitions.add(GridDefinitionData({ defaultRowLengthType() }));
+	//}
+	//while (m_columnDefinitions.size() < colCount) {
+	//	m_columnDefinitions.add(GridDefinitionData({ defaultColumnLengthType() }));
+	//}
 
-	// Measure desired sizes per cells.
-	for (int i = 0; i < childCount; i++) {
-		auto* child = getVisualChild(i);
+	//// Measure desired sizes per cells.
+	//for (int i = 0; i < childCount; i++) {
+	//	auto* child = getVisualChild(i);
 
-		const auto* info = child->getGridLayoutInfo();
-		auto& row = m_rowDefinitions[info->actualLayoutRow];
-		auto& col = m_columnDefinitions[info->actualLayoutColumn];
+	//	const auto* info = child->getGridLayoutInfo();
+	//	auto& row = m_rowDefinitions[info->actualLayoutRow];
+	//	auto& col = m_columnDefinitions[info->actualLayoutColumn];
 
-		const auto& childDesiredSize = child->desiredSize();
-		if (row.type == UILayoutLengthType::Auto || row.type == UILayoutLengthType::Ratio) {
-			row.desiredSize = std::max(row.desiredSize, childDesiredSize.height);
-		}
-		if (col.type == UILayoutLengthType::Auto || row.type == UILayoutLengthType::Ratio) {
-			col.desiredSize = std::max(col.desiredSize, childDesiredSize.width);
-		}
-	}
+	//	const auto& childDesiredSize = child->desiredSize();
+	//	if (row.type == UILayoutLengthType::Auto || row.type == UILayoutLengthType::Ratio) {
+	//		row.desiredSize = std::max(row.desiredSize, childDesiredSize.height);
+	//	}
+	//	if (col.type == UILayoutLengthType::Auto || row.type == UILayoutLengthType::Ratio) {
+	//		col.desiredSize = std::max(col.desiredSize, childDesiredSize.width);
+	//	}
+	//}
 
-	// Aggregate DesiredSize of each cell to find DesiredSize of entire Grid
-	Size cellsDesiredSize;
-	for (const auto& row : m_rowDefinitions) {
-		cellsDesiredSize.height += row.getAvailableDesiredSize();
-	}
-	for (const auto& col : m_columnDefinitions) {
-		cellsDesiredSize.width += col.getAvailableDesiredSize();
-	}
+	//// Aggregate DesiredSize of each cell to find DesiredSize of entire Grid
+	//Size cellsDesiredSize;
+	//for (const auto& row : m_rowDefinitions) {
+	//	cellsDesiredSize.height += row.getAvailableDesiredSize();
+	//}
+	//for (const auto& col : m_columnDefinitions) {
+	//	cellsDesiredSize.width += col.getAvailableDesiredSize();
+	//}
 
-	Size desiredSize = UILayoutPanel::measureOverride(layoutContext, constraint);
-	return Size::max(desiredSize, cellsDesiredSize);
+	//Size desiredSize = UILayoutPanel::measureOverride(layoutContext, constraint);
+	//return Size::max(desiredSize, cellsDesiredSize);
 }
 
 Size UIGridLayout::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {

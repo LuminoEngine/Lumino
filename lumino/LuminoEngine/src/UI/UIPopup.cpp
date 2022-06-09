@@ -116,51 +116,53 @@ void UIPopupAdorner::init(UIElement* adornedElement, UIPopup* popup)
     m_popup = popup;
     //addVisualChild(m_popup);
 }
-
-Size UIPopupAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    m_popup->measureLayout(layoutContext, constraint);
-
-    Size contentSize;
-    if (m_popup->placementTarget()) {
-        contentSize = m_popup->placementTarget()->desiredSize();
-    }
-
-    return Size::max(contentSize, UIElement::measureOverride(layoutContext, constraint));
-}
+//
+//Size UIPopupAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+//{
+//    m_popup->measureLayout(layoutContext, constraint);
+//
+//    Size contentSize;
+//    if (m_popup->placementTarget()) {
+//        contentSize = m_popup->placementTarget()->desiredSize();
+//    }
+//
+//    return Size::max(contentSize, UIElement::measureOverride(layoutContext, constraint));
+//}
 
 Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
-    const auto finalSize = finalArea.getSize();
-    UIElement::arrangeOverride(layoutContext, finalArea);
+    LN_NOTIMPLEMENTED();
+    return Size();
+ //   const auto finalSize = finalArea.getSize();
+ //   UIElement::arrangeOverride(layoutContext, finalArea);
 
-	switch (m_popup->placementMode())
-	{
-		case PlacementMode::Bottom:
-        {
-            // TODO: 簡易 bottom
-            const auto& p1 = m_combinedFinalRenderTransform.position();
-            const auto& p2 = m_popup->placementTarget()->m_combinedFinalRenderTransform.position();
-            const auto& pos = p2 - p1;
+	//switch (m_popup->placementMode())
+	//{
+	//	case PlacementMode::Bottom:
+ //       {
+ //           // TODO: 簡易 bottom
+ //           const auto& p1 = m_combinedFinalRenderTransform.position();
+ //           const auto& p2 = m_popup->placementTarget()->m_combinedFinalRenderTransform.position();
+ //           const auto& pos = p2 - p1;
 
-            m_popup->arrangeLayout(layoutContext, Rect(pos.x, pos.y + finalSize.height, finalSize));
-            break;
-        }
+ //           m_popup->arrangeLayout(layoutContext, Rect(pos.x, pos.y + finalSize.height, finalSize));
+ //           break;
+ //       }
 
-		default:	// overray
-		{
-			auto desiredSize = m_popup->desiredSize();
-			Rect rect;
-			rect.x = (finalSize.width - desiredSize.width) / 2;
-			rect.y = (finalSize.height - desiredSize.height) / 2;
-			rect.width = desiredSize.width;
-			rect.height = desiredSize.height;
-			m_popup->arrangeLayout(layoutContext, rect);
-			break;
-		}
-	}
+	//	default:	// overray
+	//	{
+	//		auto desiredSize = m_popup->desiredSize();
+	//		Rect rect;
+	//		rect.x = (finalSize.width - desiredSize.width) / 2;
+	//		rect.y = (finalSize.height - desiredSize.height) / 2;
+	//		rect.width = desiredSize.width;
+	//		rect.height = desiredSize.height;
+	//		m_popup->arrangeLayout(layoutContext, rect);
+	//		break;
+	//	}
+	//}
 
-    return finalSize;
+ //   return finalSize;
 }
 
 void UIPopupAdorner::onUpdateLayout(UILayoutContext* layoutContext)

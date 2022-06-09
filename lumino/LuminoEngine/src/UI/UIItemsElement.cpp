@@ -247,18 +247,18 @@ void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const det
 	//}
 }
 
-Size UIItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    if (m_layoutItemsHostLayoutEnabled && m_itemssHostLayout) {
-        m_itemssHostLayout->measureLayout(layoutContext, constraint);
-        Size layoutSize = m_itemssHostLayout->desiredSize();
-        Size localSize = UIElement::measureOverride(layoutContext, constraint);
-        return Size::max(layoutSize, localSize);
-    }
-    else {
-        return UIControl::measureOverride(layoutContext, constraint);
-    }
-}
+//Size UIItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+//{
+//    //if (m_layoutItemsHostLayoutEnabled && m_itemssHostLayout) {
+//    //    m_itemssHostLayout->measureLayout(layoutContext, constraint);
+//    //    Size layoutSize = m_itemssHostLayout->desiredSize();
+//    //    Size localSize = UIElement::measureOverride(layoutContext, constraint);
+//    //    return Size::max(layoutSize, localSize);
+//    //}
+//    //else {
+//    //    return UIControl::measureOverride(layoutContext, constraint);
+//    //}
+//}
 
 Size UIItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {

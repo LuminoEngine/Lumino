@@ -297,21 +297,22 @@ UIThumb* UITrack::getThumb() const
 	return m_thumb;
 }
 
-Size UITrack::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	if (m_decreaseButton) {
-		m_decreaseButton->measureLayout(layoutContext, constraint);
-	}
+Size UITrack::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//if (m_decreaseButton) {
+	//	m_decreaseButton->measureLayout(layoutContext, constraint);
+	//}
 
-	if (m_thumb) {
-		m_thumb->measureLayout(layoutContext, constraint);
-	}
+	//if (m_thumb) {
+	//	m_thumb->measureLayout(layoutContext, constraint);
+	//}
 
-	if (m_increaseButton) {
-		m_increaseButton->measureLayout(layoutContext, constraint);
-	}
+	//if (m_increaseButton) {
+	//	m_increaseButton->measureLayout(layoutContext, constraint);
+	//}
 
-	return UIElement::measureOverride(layoutContext, constraint);
+	//return UIElement::measureOverride(layoutContext, constraint);
 }
 
 Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
@@ -415,16 +416,17 @@ void UITrack::calcSliderComponentsSize(
 	float trackLength;
 	float thumbLength;
 
-	if (isVertical)
-	{
-		trackLength = arrangeSize.height;
-		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->desiredSize().height;
-	}
-	else
-	{
-		trackLength = arrangeSize.width;
-		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->desiredSize().width;
-	}
+    LN_NOTIMPLEMENTED();
+	//if (isVertical)
+	//{
+	//	trackLength = arrangeSize.height;
+	//	thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->desiredSize().height;
+	//}
+	//else
+	//{
+	//	trackLength = arrangeSize.width;
+	//	thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->desiredSize().width;
+	//}
 
 	coerceLength(thumbLength, trackLength);
 
@@ -632,62 +634,64 @@ void UIScrollBar::onRoutedEvent(UIEventArgs* e)
     UIElement::onRoutedEvent(e);
 }
 
-Size UIScrollBar::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    if (m_track) {
-        m_track->measureLayout(layoutContext, constraint);
-    }
+Size UIScrollBar::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+    //if (m_track) {
+    //    m_track->measureLayout(layoutContext, constraint);
+    //}
 
-    if (m_lineUpButton) {
-        m_lineUpButton->measureLayout(layoutContext, constraint);
-    }
+    //if (m_lineUpButton) {
+    //    m_lineUpButton->measureLayout(layoutContext, constraint);
+    //}
 
-    if (m_lineDownButton) {
-        m_lineDownButton->measureLayout(layoutContext, constraint);
-    }
+    //if (m_lineDownButton) {
+    //    m_lineDownButton->measureLayout(layoutContext, constraint);
+    //}
 
-    return UIElement::measureOverride(layoutContext, constraint);
+    //return UIElement::measureOverride(layoutContext, constraint);
 }
 
-Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
-	const auto finalSize = finalArea.getSize();
-    Size upSize;
-    Size downSize;
-    UILayoutOrientation orientation = getOrientation();
+Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//const auto finalSize = finalArea.getSize();
+ //   Size upSize;
+ //   Size downSize;
+ //   UILayoutOrientation orientation = getOrientation();
 
-    switch (orientation)
-    {
-    case UILayoutOrientation::Horizontal:
-        if (m_lineUpButton) {
-            upSize = m_lineUpButton->desiredSize();
-            downSize = m_lineUpButton->desiredSize();
-            m_lineUpButton->arrangeLayout(layoutContext, Rect(0, 0, upSize.width, finalSize.height));
-        }
-        if (m_lineDownButton) {
-            m_lineDownButton->arrangeLayout(layoutContext, Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
-        }
-        if (m_track) {
-            m_track->arrangeLayout(layoutContext, Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
-        }
-        break;
-    case UILayoutOrientation::Vertical:
-        if (m_track) {
-            m_track->arrangeLayout(layoutContext, Rect(0, 0, finalSize));
-        }
-        if (m_lineUpButton) {
-            m_lineUpButton->arrangeLayout(layoutContext, Rect(0, 0, finalSize.width, m_lineUpButton->desiredSize().height));
-        }
-        if (m_lineDownButton) {
-            m_lineDownButton->arrangeLayout(layoutContext, Rect(0, finalSize.height - m_lineDownButton->desiredSize().height, finalSize.width, m_lineDownButton->desiredSize().height));
-        }
-        break;
-    default:
-        LN_NOTIMPLEMENTED();
-        break;
-    }
+ //   switch (orientation)
+ //   {
+ //   case UILayoutOrientation::Horizontal:
+ //       if (m_lineUpButton) {
+ //           upSize = m_lineUpButton->desiredSize();
+ //           downSize = m_lineUpButton->desiredSize();
+ //           m_lineUpButton->arrangeLayout(layoutContext, Rect(0, 0, upSize.width, finalSize.height));
+ //       }
+ //       if (m_lineDownButton) {
+ //           m_lineDownButton->arrangeLayout(layoutContext, Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
+ //       }
+ //       if (m_track) {
+ //           m_track->arrangeLayout(layoutContext, Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
+ //       }
+ //       break;
+ //   case UILayoutOrientation::Vertical:
+ //       if (m_track) {
+ //           m_track->arrangeLayout(layoutContext, Rect(0, 0, finalSize));
+ //       }
+ //       if (m_lineUpButton) {
+ //           m_lineUpButton->arrangeLayout(layoutContext, Rect(0, 0, finalSize.width, m_lineUpButton->desiredSize().height));
+ //       }
+ //       if (m_lineDownButton) {
+ //           m_lineDownButton->arrangeLayout(layoutContext, Rect(0, finalSize.height - m_lineDownButton->desiredSize().height, finalSize.width, m_lineDownButton->desiredSize().height));
+ //       }
+ //       break;
+ //   default:
+ //       LN_NOTIMPLEMENTED();
+ //       break;
+ //   }
 
-    return UIElement::arrangeOverride(layoutContext, finalArea);
+ //   return UIElement::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta)
@@ -757,89 +761,91 @@ void UIScrollViewHelper::setVScrollbarVisible(bool value)
 	}
 }
 
-Size UIScrollViewHelper::measure(UILayoutContext* layoutContext, const Size& ownerAreaSize)
-{
-	Size desiredSize(0, 0);
+Size UIScrollViewHelper::measure(UILayoutContext* layoutContext, const Size& ownerAreaSize) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//Size desiredSize(0, 0);
 
-	if (m_horizontalScrollBar) {
-		m_horizontalScrollBar->measureLayout(layoutContext, ownerAreaSize);
-		desiredSize.height += m_horizontalScrollBar->desiredSize().height;
-	}
+	//if (m_horizontalScrollBar) {
+	//	m_horizontalScrollBar->measureLayout(layoutContext, ownerAreaSize);
+	//	desiredSize.height += m_horizontalScrollBar->desiredSize().height;
+	//}
 
-	if (m_verticalScrollBar) {
-		m_verticalScrollBar->measureLayout(layoutContext, ownerAreaSize);
-		desiredSize.width += m_verticalScrollBar->desiredSize().width;
-	}
+	//if (m_verticalScrollBar) {
+	//	m_verticalScrollBar->measureLayout(layoutContext, ownerAreaSize);
+	//	desiredSize.width += m_verticalScrollBar->desiredSize().width;
+	//}
 
-	return desiredSize;
-	//Rect clientArea(0, 0, desiredSize.width, desiredSize.height);
-	//return clientArea;
+	//return desiredSize;
+	////Rect clientArea(0, 0, desiredSize.width, desiredSize.height);
+	////return clientArea;
 }
 
-Rect UIScrollViewHelper::calculateClientArea(const Size& ownerAreaSize)
-{
+Rect UIScrollViewHelper::calculateClientArea(const Size& ownerAreaSize) {
 	Rect clientArea(0, 0, ownerAreaSize.width, ownerAreaSize.height);
 
-	if (m_horizontalScrollBar) {
-		clientArea.height -= m_horizontalScrollBar->desiredSize().height;
-	}
+    LN_NOTIMPLEMENTED();
+	//if (m_horizontalScrollBar) {
+	//	clientArea.height -= m_horizontalScrollBar->desiredSize().height;
+	//}
 
-	if (m_verticalScrollBar) {
-		clientArea.width -= m_verticalScrollBar->desiredSize().width;
-	}
+	//if (m_verticalScrollBar) {
+	//	clientArea.width -= m_verticalScrollBar->desiredSize().width;
+	//}
 
 	return clientArea;
 }
 
-void UIScrollViewHelper::arrange(UILayoutContext* layoutContext, const Size& ownerAreaSize)
-{
+void UIScrollViewHelper::arrange(UILayoutContext* layoutContext, const Size& ownerAreaSize) {
+    LN_NOTIMPLEMENTED();
+    return;
 
-	if (m_scrollTarget)
-	{
-		if (m_horizontalScrollBar) {
-			m_horizontalScrollBar->setMinimum(0.0f);
-			m_horizontalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentWidth() - m_scrollTarget->getViewportWidth()));
-			m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
-		}
-		if (m_verticalScrollBar) {
-			m_verticalScrollBar->setMinimum(0.0f);
-			m_verticalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentHeight() - m_scrollTarget->getViewportHeight()));
-			m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
-		}
-	}
-	else
-	{
-		if (m_horizontalScrollBar) {
-			m_horizontalScrollBar->setMinimum(0.0f);
-			m_horizontalScrollBar->setMaximum(0.0f);
-			m_horizontalScrollBar->setViewportSize(0.0f);
-		}
-		if (m_verticalScrollBar) {
-			m_verticalScrollBar->setMinimum(0.0f);
-			m_verticalScrollBar->setMaximum(0.0f);
-			m_verticalScrollBar->setViewportSize(0.0f);
-		}
-	}
+	//if (m_scrollTarget)
+	//{
+	//	if (m_horizontalScrollBar) {
+	//		m_horizontalScrollBar->setMinimum(0.0f);
+	//		m_horizontalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentWidth() - m_scrollTarget->getViewportWidth()));
+	//		m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
+	//	}
+	//	if (m_verticalScrollBar) {
+	//		m_verticalScrollBar->setMinimum(0.0f);
+	//		m_verticalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentHeight() - m_scrollTarget->getViewportHeight()));
+	//		m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
+	//	}
+	//}
+	//else
+	//{
+	//	if (m_horizontalScrollBar) {
+	//		m_horizontalScrollBar->setMinimum(0.0f);
+	//		m_horizontalScrollBar->setMaximum(0.0f);
+	//		m_horizontalScrollBar->setViewportSize(0.0f);
+	//	}
+	//	if (m_verticalScrollBar) {
+	//		m_verticalScrollBar->setMinimum(0.0f);
+	//		m_verticalScrollBar->setMaximum(0.0f);
+	//		m_verticalScrollBar->setViewportSize(0.0f);
+	//	}
+	//}
 
-	Rect rc;
+	//Rect rc;
 
-	if (m_horizontalScrollBar) {
-		auto desiredSize = m_horizontalScrollBar->desiredSize();
-		rc.width = ownerAreaSize.width;
-		rc.height = desiredSize.height;
-		rc.x = 0;
-		rc.y = ownerAreaSize.height - desiredSize.height;
-		m_horizontalScrollBar->arrangeLayout(layoutContext, rc);
-	}
+	//if (m_horizontalScrollBar) {
+	//	auto desiredSize = m_horizontalScrollBar->desiredSize();
+	//	rc.width = ownerAreaSize.width;
+	//	rc.height = desiredSize.height;
+	//	rc.x = 0;
+	//	rc.y = ownerAreaSize.height - desiredSize.height;
+	//	m_horizontalScrollBar->arrangeLayout(layoutContext, rc);
+	//}
 
-	if (m_verticalScrollBar) {
-		auto desiredSize = m_verticalScrollBar->desiredSize();
-		rc.width = desiredSize.width;
-		rc.height = ownerAreaSize.height;
-		rc.x = ownerAreaSize.width - desiredSize.width;
-		rc.y = 0;
-		m_verticalScrollBar->arrangeLayout(layoutContext, rc);
-	}
+	//if (m_verticalScrollBar) {
+	//	auto desiredSize = m_verticalScrollBar->desiredSize();
+	//	rc.width = desiredSize.width;
+	//	rc.height = ownerAreaSize.height;
+	//	rc.x = ownerAreaSize.width - desiredSize.width;
+	//	rc.y = 0;
+	//	m_verticalScrollBar->arrangeLayout(layoutContext, rc);
+	//}
 
 
 
@@ -948,20 +954,21 @@ void UIScrollViewer::init()
     //m_verticalScrollBar->setVAlignment(UIVAlignment::Stretch);
 }
 
-Size UIScrollViewer::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    Size desiredSize = UIControl::measureOverride(layoutContext, constraint);
+Size UIScrollViewer::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+    //Size desiredSize = UIControl::measureOverride(layoutContext, constraint);
 
-    if (m_verticalScrollBar) {
-        m_verticalScrollBar->measureLayout(layoutContext, constraint);
-        desiredSize.width += m_verticalScrollBar->desiredSize().width;
-    }
-    if (m_horizontalScrollBar) {
-        m_horizontalScrollBar->measureLayout(layoutContext, constraint);
-        desiredSize.height += m_horizontalScrollBar->desiredSize().height;
-    }
+    //if (m_verticalScrollBar) {
+    //    m_verticalScrollBar->measureLayout(layoutContext, constraint);
+    //    desiredSize.width += m_verticalScrollBar->desiredSize().width;
+    //}
+    //if (m_horizontalScrollBar) {
+    //    m_horizontalScrollBar->measureLayout(layoutContext, constraint);
+    //    desiredSize.height += m_horizontalScrollBar->desiredSize().height;
+    //}
 
-    return desiredSize;
+    //return desiredSize;
 }
 
 Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)

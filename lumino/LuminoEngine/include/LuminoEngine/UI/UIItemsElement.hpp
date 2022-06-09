@@ -78,7 +78,7 @@ protected:
 	// base interfaces
     void onAddChild(UIElement* child) override;
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
-    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    //virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
 LN_CONSTRUCT_ACCESS:

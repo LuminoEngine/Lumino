@@ -16,6 +16,8 @@ public:
 
 };
 
+#if LN_USE_YOGA
+#else
 #ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
 
 //------------------------------------------------------------------------------
@@ -782,4 +784,5 @@ TEST_F(Test_Rendering_BoxElement, BorderIlls)
 }
 
 
+#endif
 #endif

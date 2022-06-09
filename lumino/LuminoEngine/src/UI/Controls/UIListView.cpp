@@ -246,20 +246,21 @@ void UIListView2::onUpdateStyle(const UIStyleContext* styleContext, const detail
     UIListItemsControl::onUpdateStyle(styleContext, finalStyle);
 }
 
-Size UIListView2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
-    const auto finalSize = finalArea.getSize();
-    attemptRefreshItemInstance(layoutContext, finalSize);
+Size UIListView2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+    //const auto finalSize = finalArea.getSize();
+    //attemptRefreshItemInstance(layoutContext, finalSize);
 
-    if (attemptRefreshContents()) {
-        // Arrange で RefreshContents を実施した場合は、子要素の Style 更新と Measure を行っておく
-        for (auto& child: *m_logicalChildren) {
-            child->updateStyleHierarchical(layoutContext->styleContext(), m_finalStyle);
-            child->measureLayout(layoutContext, finalSize);
-        }
-    }
+    //if (attemptRefreshContents()) {
+    //    // Arrange で RefreshContents を実施した場合は、子要素の Style 更新と Measure を行っておく
+    //    for (auto& child: *m_logicalChildren) {
+    //        child->updateStyleHierarchical(layoutContext->styleContext(), m_finalStyle);
+    //        child->measureLayout(layoutContext, finalSize);
+    //    }
+    //}
 
-    return UIListItemsControl::arrangeOverride(layoutContext, finalArea);
+    //return UIListItemsControl::arrangeOverride(layoutContext, finalArea);
 }
 
 int UIListView2::getModelItemCount() const
@@ -272,47 +273,48 @@ int UIListView2::getModelItemCount() const
         return 0;
 }
 
-void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, const Size& finalSize)
-{
-    if (m_dirtyItemInstances) {
-        int modelItemCount = getModelItemCount();
-        if (modelItemCount > 0) {
+void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, const Size& finalSize) {
+    LN_NOTIMPLEMENTED();
+    return;
+    //if (m_dirtyItemInstances) {
+    //    int modelItemCount = getModelItemCount();
+    //    if (modelItemCount > 0) {
 
-            // 代表 Item から、Item の基本サイズを求めておく
-            {
-                Ref<UIListViewItem2> representative;
-                if (m_logicalChildren->isEmpty()) {
-                    representative = onGenerateItem();
-                    addListItem(representative);
-                    m_dirtyItemContent = true;
-                    // arrangeOverride の中で新たに作ったものは style 更新と masure しておかないと、サイズが取れない
-                    representative->updateStyleHierarchical(layoutContext->styleContext(), m_finalStyle);
-                    representative->measureLayout(layoutContext, finalSize);
-                }
-                else {
-                    // TODO: ちゃんと型チェック
-                    representative = static_pointer_cast<UIListViewItem2>(m_logicalChildren->at(0));
-                }
-                m_baseItemHeight = representative->desiredSize().height;
-                if (LN_ENSURE(m_baseItemHeight > 0.0f)) return;
-            }
+    //        // 代表 Item から、Item の基本サイズを求めておく
+    //        {
+    //            Ref<UIListViewItem2> representative;
+    //            if (m_logicalChildren->isEmpty()) {
+    //                representative = onGenerateItem();
+    //                addListItem(representative);
+    //                m_dirtyItemContent = true;
+    //                // arrangeOverride の中で新たに作ったものは style 更新と masure しておかないと、サイズが取れない
+    //                representative->updateStyleHierarchical(layoutContext->styleContext(), m_finalStyle);
+    //                representative->measureLayout(layoutContext, finalSize);
+    //            }
+    //            else {
+    //                // TODO: ちゃんと型チェック
+    //                representative = static_pointer_cast<UIListViewItem2>(m_logicalChildren->at(0));
+    //            }
+    //            m_baseItemHeight = representative->desiredSize().height;
+    //            if (LN_ENSURE(m_baseItemHeight > 0.0f)) return;
+    //        }
 
-            // View サイズに収まる分だけ、足りない分の Item があれば作る。
-            // 内容についてはこの時点では更新しない。
-            int maxRequiredCount = std::ceil(finalSize.height / m_baseItemHeight);
-            int requiredCount = std::min(modelItemCount, maxRequiredCount);
-            int diff = requiredCount - m_logicalChildren->size();
-            for (int i = 0; i < diff; i++) {
-                addListItem(onGenerateItem());
-                m_dirtyItemContent = true;
-            }
-        }
-        else {
-            removeAllItems();
-        }
+    //        // View サイズに収まる分だけ、足りない分の Item があれば作る。
+    //        // 内容についてはこの時点では更新しない。
+    //        int maxRequiredCount = std::ceil(finalSize.height / m_baseItemHeight);
+    //        int requiredCount = std::min(modelItemCount, maxRequiredCount);
+    //        int diff = requiredCount - m_logicalChildren->size();
+    //        for (int i = 0; i < diff; i++) {
+    //            addListItem(onGenerateItem());
+    //            m_dirtyItemContent = true;
+    //        }
+    //    }
+    //    else {
+    //        removeAllItems();
+    //    }
 
-        m_dirtyItemInstances = true;
-    }
+    //    m_dirtyItemInstances = true;
+    //}
 }
 
 bool UIListView2::attemptRefreshContents()

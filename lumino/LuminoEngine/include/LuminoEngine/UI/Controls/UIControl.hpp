@@ -198,7 +198,7 @@ protected:
 
     virtual void onAddChild(UIElement* child) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
-	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	//virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
 
     bool m_enabledDirectChildrenContentAlignment;

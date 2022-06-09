@@ -28,19 +28,21 @@ LN_OBJECT_IMPLEMENT(UILayoutElement, Object) {
 UILayoutElement::UILayoutElement()
 //: m_layoutSize(Math::NaN, Math::NaN)
 {
-#ifdef LN_USE_YOGA
-    m_yogaNode = YGNodeNewWithConfig(detail::EngineDomain::uiManager()->defaultYogaConfig());
-#endif
+//#ifdef LN_USE_YOGA
+//    m_yogaNode = YGNodeNewWithConfig(detail::EngineDomain::uiManager()->defaultYogaConfig());
+//#endif
 }
 
 UILayoutElement::~UILayoutElement() {
-#ifdef LN_USE_YOGA
-    if (m_yogaNode) {
-        YGNodeFree(m_yogaNode);
-        m_yogaNode = nullptr;
-    }
-#endif
+//#ifdef LN_USE_YOGA
+//    if (m_yogaNode) {
+//        YGNodeFree(m_yogaNode);
+//        m_yogaNode = nullptr;
+//    }
+//#endif
 }
+
+#if 0
 
 // actualStyle : サブクラスの m_actualStyle へのポインタ。細かい値をとるのにいちいち仮想関数を呼び出すのがパフォーマンス的に心配なのでこの形にしている。
 void UILayoutElement::init(const detail::UIStyleInstance* finalStyle) {
@@ -191,7 +193,7 @@ void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& 
     m_localPosition.y = YGNodeLayoutGetTop(m_yogaNode);
     m_actualSize.width = YGNodeLayoutGetWidth(m_yogaNode);
     m_actualSize.height = YGNodeLayoutGetHeight(m_yogaNode);
-    arrangeOverride(layoutContext, Rect(0, 0, m_actualSize));
+    //arrangeOverride(layoutContext, Rect(0, 0, m_actualSize));
 
     
 #else
@@ -368,6 +370,7 @@ void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext) {
 //    outMax->height = m_finalStyle->maxHeight;
 //}
 
+#endif
 //==============================================================================
 // UILayoutContext
 

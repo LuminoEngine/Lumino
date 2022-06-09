@@ -106,43 +106,44 @@ void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
     UIElement::setContent(m_model->getValue(_TT("")));
 }
 
-Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    //bool expanderVisible = false;
-    //if (m_model) {
-    //    //m_model
+Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+    ////bool expanderVisible = false;
+    ////if (m_model) {
+    ////    //m_model
+    ////}
+
+
+    //struct ElementList : public IUIElementList {
+    //    List<Ref<UITreeItem>>* list;
+    //    virtual int getElementCount() const { return list->size(); }
+    //    virtual UIElement* getElement(int i) const { return list->at(i); }
+    //} list;
+    //list.list = &m_items;
+
+    //Size size;
+
+    //// expander
+    //m_expanderButton->measureLayout(layoutContext, constraint);
+    //size.width += m_expanderButton->desiredSize().width;
+    //size.height = std::max(size.height, m_expanderButton->desiredSize().height);
+
+    //// header
+    //if (m_headerContent) {
+    //    m_headerContent->measureLayout(layoutContext, constraint);
+    //    size.width += m_headerContent->desiredSize().width;
+    //    size.height = std::max(size.height, m_headerContent->desiredSize().height);
     //}
 
+    //// children
+    //m_itemsLayout->measureLayout(layoutContext, constraint);
+    //size.width = std::max(size.width, m_itemsLayout->desiredSize().width);
+    //size.height += m_itemsLayout->desiredSize().height;
 
-    struct ElementList : public IUIElementList {
-        List<Ref<UITreeItem>>* list;
-        virtual int getElementCount() const { return list->size(); }
-        virtual UIElement* getElement(int i) const { return list->at(i); }
-    } list;
-    list.list = &m_items;
+    //Size desiredSize = UICollectionItem::measureOverride(layoutContext, constraint);
 
-    Size size;
-
-    // expander
-    m_expanderButton->measureLayout(layoutContext, constraint);
-    size.width += m_expanderButton->desiredSize().width;
-    size.height = std::max(size.height, m_expanderButton->desiredSize().height);
-
-    // header
-    if (m_headerContent) {
-        m_headerContent->measureLayout(layoutContext, constraint);
-        size.width += m_headerContent->desiredSize().width;
-        size.height = std::max(size.height, m_headerContent->desiredSize().height);
-    }
-
-    // children
-    m_itemsLayout->measureLayout(layoutContext, constraint);
-    size.width = std::max(size.width, m_itemsLayout->desiredSize().width);
-    size.height += m_itemsLayout->desiredSize().height;
-
-    Size desiredSize = UICollectionItem::measureOverride(layoutContext, constraint);
-
-    return Size::max(size, desiredSize);
+    //return Size::max(size, desiredSize);
 }
 
 Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
@@ -842,38 +843,39 @@ void UITreeView2::onUpdateStyle(const UIStyleContext* styleContext, const detail
     UIControl::onUpdateStyle(styleContext, finalStyle);
 }
 
-Size UITreeView2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    //m_scrollBarV->measureLayout(layoutContext, constraint);
-    Size scrollBarDesiredSize = m_scrollViewHelper->measure(layoutContext, constraint);
+Size UITreeView2::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+    ////m_scrollBarV->measureLayout(layoutContext, constraint);
+    //Size scrollBarDesiredSize = m_scrollViewHelper->measure(layoutContext, constraint);
 
-    //auto old_collectingTreeItem = layoutContext->collectingTreeItem;
-    //auto old_treeView = layoutContext->treeView;
-    //if (m_dirtyItemVisualTree) {
-    //    layoutContext->collectingTreeItem = true;
-    //    layoutContext->treeView = this;
-    //    m_itemsHostLayout->removeAllVisualChild();
-    //    m_dirtyItemVisualTree = false;
-    //}
+    ////auto old_collectingTreeItem = layoutContext->collectingTreeItem;
+    ////auto old_treeView = layoutContext->treeView;
+    ////if (m_dirtyItemVisualTree) {
+    ////    layoutContext->collectingTreeItem = true;
+    ////    layoutContext->treeView = this;
+    ////    m_itemsHostLayout->removeAllVisualChild();
+    ////    m_dirtyItemVisualTree = false;
+    ////}
 
-    //for (auto& item : *m_logicalChildren) {
-    //    static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = this;
-    //    static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = 0;
-    //}
+    ////for (auto& item : *m_logicalChildren) {
+    ////    static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = this;
+    ////    static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = 0;
+    ////}
 
 
-    m_itemsHostLayout->measureLayout(layoutContext, constraint);
-    Size layoutSize = m_itemsHostLayout->desiredSize();
-    Size localSize = UIElement::measureOverride(layoutContext, constraint);
+    //m_itemsHostLayout->measureLayout(layoutContext, constraint);
+    //Size layoutSize = m_itemsHostLayout->desiredSize();
+    //Size localSize = UIElement::measureOverride(layoutContext, constraint);
 
-    // Restore context state.
-    //layoutContext->collectingTreeItem = old_collectingTreeItem;
-    //layoutContext->treeView = old_treeView;
+    //// Restore context state.
+    ////layoutContext->collectingTreeItem = old_collectingTreeItem;
+    ////layoutContext->treeView = old_treeView;
 
-    Size desiredSize = Size::max(layoutSize, localSize);
-    desiredSize.width += scrollBarDesiredSize.width;
-    desiredSize.height += scrollBarDesiredSize.height;
-    return desiredSize;
+    //Size desiredSize = Size::max(layoutSize, localSize);
+    //desiredSize.width += scrollBarDesiredSize.width;
+    //desiredSize.height += scrollBarDesiredSize.height;
+    //return desiredSize;
 }
 
 Size UITreeView2::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)

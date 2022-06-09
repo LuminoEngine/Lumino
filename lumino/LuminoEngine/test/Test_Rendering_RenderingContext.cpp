@@ -14,6 +14,8 @@ public:
     };
 };
 
+#if LN_USE_YOGA
+#else
 TEST_F(Test_Rendering_RenderingContext, RenderTargetCrossDrawing)
 {
     auto element1 = makeObject<TestElement>();
@@ -44,3 +46,4 @@ TEST_F(Test_Rendering_RenderingContext, RenderTargetCrossDrawing)
     LN_TEST_CLEAN_SCENE;
 }
 
+#endif

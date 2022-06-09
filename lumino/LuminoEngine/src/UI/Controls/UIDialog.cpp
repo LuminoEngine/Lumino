@@ -105,41 +105,43 @@ void UIDialog::handleDialogButtonClicked()
 	close();
 }
 
-Size UIDialog::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	Size baseSize = UIContainerElement::measureOverride(layoutContext, constraint);
+Size UIDialog::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//Size baseSize = UIContainerElement::measureOverride(layoutContext, constraint);
 
 
-	if (m_dialogButtonsLayout) {
-		m_dialogButtonsLayout->measureLayout(layoutContext, constraint);
-		Size buttonsSize = m_dialogButtonsLayout->desiredSize();
+	//if (m_dialogButtonsLayout) {
+	//	m_dialogButtonsLayout->measureLayout(layoutContext, constraint);
+	//	Size buttonsSize = m_dialogButtonsLayout->desiredSize();
 
-		return baseSize;
-		//return Size(
-		//	std::max(baseSize.width, buttonsSize.height),
-		//	baseSize.height + buttonsSize.height);
-	}
-	else {
-		return baseSize;
-	}
+	//	return baseSize;
+	//	//return Size(
+	//	//	std::max(baseSize.width, buttonsSize.height),
+	//	//	baseSize.height + buttonsSize.height);
+	//}
+	//else {
+	//	return baseSize;
+	//}
 }
 
-Size UIDialog::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
-	const auto finalSize = finalArea.getSize();
-	Size baseSize = UIContainerElement::arrangeOverride(layoutContext, finalArea);
+Size UIDialog::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//const auto finalSize = finalArea.getSize();
+	//Size baseSize = UIContainerElement::arrangeOverride(layoutContext, finalArea);
 
-	if (m_dialogButtonsLayout) {
-		Size buttonsSize = m_dialogButtonsLayout->desiredSize();
-		Rect buttonsRect(
-			std::max(0.0f, finalSize.width - buttonsSize.width),
-			std::max(0.0f, finalSize.height - buttonsSize.height),
-			std::min(buttonsSize.width, finalSize.width),
-			std::min(buttonsSize.height, finalSize.height));
-		m_dialogButtonsLayout->arrangeLayout(layoutContext, buttonsRect);
-	}
+	//if (m_dialogButtonsLayout) {
+	//	Size buttonsSize = m_dialogButtonsLayout->desiredSize();
+	//	Rect buttonsRect(
+	//		std::max(0.0f, finalSize.width - buttonsSize.width),
+	//		std::max(0.0f, finalSize.height - buttonsSize.height),
+	//		std::min(buttonsSize.width, finalSize.width),
+	//		std::min(buttonsSize.height, finalSize.height));
+	//	m_dialogButtonsLayout->arrangeLayout(layoutContext, buttonsRect);
+	//}
 
-	return baseSize;
+	//return baseSize;
 }
 
 //==============================================================================
@@ -168,26 +170,28 @@ void UIDialogAdorner::onRoutedEvent(UIEventArgs* e)
 	return UIAdorner::onRoutedEvent(e);
 }
 
-Size UIDialogAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    m_popup->measureLayout(layoutContext, constraint);
-    return Size::max(m_popup->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
+Size UIDialogAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+    //m_popup->measureLayout(layoutContext, constraint);
+    //return Size::max(m_popup->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
 }
 
-Size UIDialogAdorner::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
-	const auto finalSize = finalArea.getSize();
-    UIElement::arrangeOverride(layoutContext, finalArea);
+Size UIDialogAdorner::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//const auto finalSize = finalArea.getSize();
+ //   UIElement::arrangeOverride(layoutContext, finalArea);
 
-	auto desiredSize = m_popup->desiredSize();
-	Rect rect;
-	rect.x = (finalSize.width - desiredSize.width) / 2;
-	rect.y = (finalSize.height - desiredSize.height) / 2;
-	rect.width = desiredSize.width;
-	rect.height = desiredSize.height;
-	m_popup->arrangeLayout(layoutContext, rect);
+	//auto desiredSize = m_popup->desiredSize();
+	//Rect rect;
+	//rect.x = (finalSize.width - desiredSize.width) / 2;
+	//rect.y = (finalSize.height - desiredSize.height) / 2;
+	//rect.width = desiredSize.width;
+	//rect.height = desiredSize.height;
+	//m_popup->arrangeLayout(layoutContext, rect);
 
-    return finalSize;
+ //   return finalSize;
 }
 
 void UIDialogAdorner::onUpdateLayout(UILayoutContext* layoutContext)

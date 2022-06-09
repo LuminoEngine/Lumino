@@ -102,186 +102,188 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
     return UIControl::onUpdateStyle(styleContext, finalStyle);
 }
 
-Size UISplitter::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	// Create missing cells.
-	auto& children = logicalChildren();
-	if (m_cellDefinitions.size() < children->size()) {
-		m_cellDefinitions.resize(children->size());
-	}
+Size UISplitter::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//// Create missing cells.
+	//auto& children = logicalChildren();
+	//if (m_cellDefinitions.size() < children->size()) {
+	//	m_cellDefinitions.resize(children->size());
+	//}
 
-    // first, measure. and total size.
-    Size childrenSize;
-    for (int iChild = 0; iChild < children->size(); iChild++) {
-        auto& child = children->at(iChild);
-        child->measureLayout(layoutContext, constraint);
-        const Size& childDesiredSize = child->desiredSize();
+ //   // first, measure. and total size.
+ //   Size childrenSize;
+ //   for (int iChild = 0; iChild < children->size(); iChild++) {
+ //       auto& child = children->at(iChild);
+ //       child->measureLayout(layoutContext, constraint);
+ //       const Size& childDesiredSize = child->desiredSize();
 
-        int cellIndex = getGridLayoutInfo()->layoutRow;
-        if (cellIndex < 0) cellIndex = iChild;
+ //       int cellIndex = getGridLayoutInfo()->layoutRow;
+ //       if (cellIndex < 0) cellIndex = iChild;
 
-		CellDefinition& cell = m_cellDefinitions[cellIndex];
+	//	CellDefinition& cell = m_cellDefinitions[cellIndex];
 
-        // セルサイズを子要素のサイズに合わせる場合
-        if (cell.type == UILayoutLengthType::Auto) {
-            if (Math::isNaN(cell.desiredSize)) cell.desiredSize = 0.0f; // initial
-            if (isHorizontal())
-                cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.width);
-            else
-                cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.height);
-        }
+ //       // セルサイズを子要素のサイズに合わせる場合
+ //       if (cell.type == UILayoutLengthType::Auto) {
+ //           if (Math::isNaN(cell.desiredSize)) cell.desiredSize = 0.0f; // initial
+ //           if (isHorizontal())
+ //               cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.width);
+ //           else
+ //               cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.height);
+ //       }
 
-        // total size
-		if (isHorizontal()) {
-			childrenSize.width += childDesiredSize.width;
-			childrenSize.height = std::max(childrenSize.height, childDesiredSize.height);
-		}
-		else {
-			childrenSize.width = std::max(childrenSize.width, childDesiredSize.width);
-			childrenSize.height += childDesiredSize.height;
-		}
-    }
+ //       // total size
+	//	if (isHorizontal()) {
+	//		childrenSize.width += childDesiredSize.width;
+	//		childrenSize.height = std::max(childrenSize.height, childDesiredSize.height);
+	//	}
+	//	else {
+	//		childrenSize.width = std::max(childrenSize.width, childDesiredSize.width);
+	//		childrenSize.height += childDesiredSize.height;
+	//	}
+ //   }
 
-	for (auto& thumb : m_thumbs) {
-		thumb->measureLayout(layoutContext, constraint);
-	}
+	//for (auto& thumb : m_thumbs) {
+	//	thumb->measureLayout(layoutContext, constraint);
+	//}
 
-	// bar area
-	if (isHorizontal()) {
-		for (auto& thumb : m_thumbs) {
-			childrenSize.width += thumb->desiredSize().width;
-		}
-	}
-	else {
-		for (auto& thumb : m_thumbs) {
-			childrenSize.height += thumb->desiredSize().height;
-		}
-	}
+	//// bar area
+	//if (isHorizontal()) {
+	//	for (auto& thumb : m_thumbs) {
+	//		childrenSize.width += thumb->desiredSize().width;
+	//	}
+	//}
+	//else {
+	//	for (auto& thumb : m_thumbs) {
+	//		childrenSize.height += thumb->desiredSize().height;
+	//	}
+	//}
 
-    // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::measureOverride(layoutContext, constraint);
-    return Size::max(selfSize, childrenSize);
+ //   // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
+ //   Size selfSize = UIElement::measureOverride(layoutContext, constraint);
+ //   return Size::max(selfSize, childrenSize);
 }
 
-Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
-	const auto finalSize = finalArea.getSize();
+Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//const auto finalSize = finalArea.getSize();
 
-	if (m_lastArrangeFinalSize != finalSize) {
-		// 最後に actualSize を決定した時と比べてサイズが変わっていたら再計算されるようにする
-		for (int i = 0; i < m_cellDefinitions.size(); i++) {
-			m_cellDefinitions[i].actualSize = Math::NaN;
-		}
-		m_lastArrangeFinalSize = finalSize;
-	}
+	//if (m_lastArrangeFinalSize != finalSize) {
+	//	// 最後に actualSize を決定した時と比べてサイズが変わっていたら再計算されるようにする
+	//	for (int i = 0; i < m_cellDefinitions.size(); i++) {
+	//		m_cellDefinitions[i].actualSize = Math::NaN;
+	//	}
+	//	m_lastArrangeFinalSize = finalSize;
+	//}
 
 
-    float boundSize = 0.0f;
-    if (isHorizontal())
-        boundSize = finalSize.width;
-    else
-        boundSize = finalSize.height;
+ //   float boundSize = 0.0f;
+ //   if (isHorizontal())
+ //       boundSize = finalSize.width;
+ //   else
+ //       boundSize = finalSize.height;
 
-	float barTotalSize = 0.0f;
-	for (auto& thumb : m_thumbs) {
-		if (isHorizontal()) {
-			barTotalSize += thumb->desiredSize().width;
-		}
-		else {
-			barTotalSize += thumb->desiredSize().height;
-		}
-	}
-	boundSize -= barTotalSize;
+	//float barTotalSize = 0.0f;
+	//for (auto& thumb : m_thumbs) {
+	//	if (isHorizontal()) {
+	//		barTotalSize += thumb->desiredSize().width;
+	//	}
+	//	else {
+	//		barTotalSize += thumb->desiredSize().height;
+	//	}
+	//}
+	//boundSize -= barTotalSize;
 
-	// Fix size of 'Auto' and 'Direct', and count 'Ratio'
-    float totalActualSize = 0.0f;
-    float ratioCellCount = 0.0f;
-    for (auto& cell : m_cellDefinitions) {
-		if (cell.type == UILayoutLengthType::Ratio) {
-			ratioCellCount += cell.size;
-		}
-		else {
-			if (cell.type == UILayoutLengthType::Auto) {
-				// measure で計算した desiredSize をそのまま使う
-			}
-			else if (cell.type == UILayoutLengthType::Direct) {
-				cell.desiredSize = cell.size;
-			}
-			totalActualSize += cell.desiredSize;
-		}
-    }
+	//// Fix size of 'Auto' and 'Direct', and count 'Ratio'
+ //   float totalActualSize = 0.0f;
+ //   float ratioCellCount = 0.0f;
+ //   for (auto& cell : m_cellDefinitions) {
+	//	if (cell.type == UILayoutLengthType::Ratio) {
+	//		ratioCellCount += cell.size;
+	//	}
+	//	else {
+	//		if (cell.type == UILayoutLengthType::Auto) {
+	//			// measure で計算した desiredSize をそのまま使う
+	//		}
+	//		else if (cell.type == UILayoutLengthType::Direct) {
+	//			cell.desiredSize = cell.size;
+	//		}
+	//		totalActualSize += cell.desiredSize;
+	//	}
+ //   }
 
-    // "1*" 分のセルの領域を計算する
-    float ratioUnit = (ratioCellCount != 0.0f) ? (boundSize - totalActualSize) / ratioCellCount : 0.0f;
-    ratioUnit = std::max(0.0f, ratioUnit);	// 負値はダメ
+ //   // "1*" 分のセルの領域を計算する
+ //   float ratioUnit = (ratioCellCount != 0.0f) ? (boundSize - totalActualSize) / ratioCellCount : 0.0f;
+ //   ratioUnit = std::max(0.0f, ratioUnit);	// 負値はダメ
 
-    // "*" 指定である Row/Column の最終サイズを確定させ、
-    // 全セルのオフセット (位置) も確定させる
-    float totalOffset = 0.0f;
-    //for (auto& cell : m_cellDefinitions) {
-    for (int i = 0; i < m_cellDefinitions.size(); i++) {
-        auto& cell = m_cellDefinitions[i];
-        if (cell.type == UILayoutLengthType::Ratio) {
-            cell.desiredSize = ratioUnit * cell.size;
-        }
+ //   // "*" 指定である Row/Column の最終サイズを確定させ、
+ //   // 全セルのオフセット (位置) も確定させる
+ //   float totalOffset = 0.0f;
+ //   //for (auto& cell : m_cellDefinitions) {
+ //   for (int i = 0; i < m_cellDefinitions.size(); i++) {
+ //       auto& cell = m_cellDefinitions[i];
+ //       if (cell.type == UILayoutLengthType::Ratio) {
+ //           cell.desiredSize = ratioUnit * cell.size;
+ //       }
 
-		// initial
-		if (Math::isNaN(cell.actualSize)) {
-			cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
-		}
+	//	// initial
+	//	if (Math::isNaN(cell.actualSize)) {
+	//		cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
+	//	}
 
-        // fix offset
-		cell.actualOffset = totalOffset;
-        totalOffset += cell.actualSize;
+ //       // fix offset
+	//	cell.actualOffset = totalOffset;
+ //       totalOffset += cell.actualSize;
 
-        // calculate next offset
-		if (i < m_thumbs.size()) {
-			if (isHorizontal())
-				totalOffset += m_thumbs[i]->desiredSize().width;
-			else
-				totalOffset += m_thumbs[i]->desiredSize().height;
-		}
-    }
+ //       // calculate next offset
+	//	if (i < m_thumbs.size()) {
+	//		if (isHorizontal())
+	//			totalOffset += m_thumbs[i]->desiredSize().width;
+	//		else
+	//			totalOffset += m_thumbs[i]->desiredSize().height;
+	//	}
+ //   }
 
-    // 子要素の最終位置・サイズを確定させる
-    auto& children = logicalChildren();
-    if (isHorizontal()) {
-        for (int iChild = 0; iChild < children->size(); iChild++) {
-            auto& child = children->at(iChild);
-            int cellIndex = child->getGridLayoutInfo()->layoutRow;
-            if (cellIndex < 0) cellIndex = iChild;
-            auto& cell = m_cellDefinitions[cellIndex];
-            Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
-            child->arrangeLayout(layoutContext, childRect);
-        }
-    }
-    else {
-        for (int iChild = 0; iChild < children->size(); iChild++) {
-			auto& child = children->at(iChild);
-            int cellIndex = child->getGridLayoutInfo()->layoutRow;
-            if (cellIndex < 0) cellIndex = iChild;
-            auto& cell = m_cellDefinitions[cellIndex];
-            Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
-            child->arrangeLayout(layoutContext, childRect);
-        }
-    }
+ //   // 子要素の最終位置・サイズを確定させる
+ //   auto& children = logicalChildren();
+ //   if (isHorizontal()) {
+ //       for (int iChild = 0; iChild < children->size(); iChild++) {
+ //           auto& child = children->at(iChild);
+ //           int cellIndex = child->getGridLayoutInfo()->layoutRow;
+ //           if (cellIndex < 0) cellIndex = iChild;
+ //           auto& cell = m_cellDefinitions[cellIndex];
+ //           Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
+ //           child->arrangeLayout(layoutContext, childRect);
+ //       }
+ //   }
+ //   else {
+ //       for (int iChild = 0; iChild < children->size(); iChild++) {
+	//		auto& child = children->at(iChild);
+ //           int cellIndex = child->getGridLayoutInfo()->layoutRow;
+ //           if (cellIndex < 0) cellIndex = iChild;
+ //           auto& cell = m_cellDefinitions[cellIndex];
+ //           Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
+ //           child->arrangeLayout(layoutContext, childRect);
+ //       }
+ //   }
 
-	for (int iThumb = 0; iThumb < m_thumbs.size(); iThumb++) {
-		auto& thumb = m_thumbs[iThumb];
-		auto& cell = m_cellDefinitions[iThumb];
-		Rect rect;
-		if (isHorizontal()) {
-			rect = Rect(cell.actualOffset + cell.actualSize, 0, thumb->desiredSize().width, finalSize.height);
-		}
-		else {
-			rect = Rect(0, cell.actualOffset + cell.actualSize, finalSize.width, thumb->desiredSize().height);
-		}
-		thumb->arrangeLayout(layoutContext, rect);
-	}
+	//for (int iThumb = 0; iThumb < m_thumbs.size(); iThumb++) {
+	//	auto& thumb = m_thumbs[iThumb];
+	//	auto& cell = m_cellDefinitions[iThumb];
+	//	Rect rect;
+	//	if (isHorizontal()) {
+	//		rect = Rect(cell.actualOffset + cell.actualSize, 0, thumb->desiredSize().width, finalSize.height);
+	//	}
+	//	else {
+	//		rect = Rect(0, cell.actualOffset + cell.actualSize, finalSize.width, thumb->desiredSize().height);
+	//	}
+	//	thumb->arrangeLayout(layoutContext, rect);
+	//}
 
-    // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::arrangeOverride(layoutContext, finalArea);
-    return selfSize;
+ //   // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
+ //   Size selfSize = UIElement::arrangeOverride(layoutContext, finalArea);
+ //   return selfSize;
 }
 
 void UISplitter::onRoutedEvent(UIEventArgs* e)
@@ -342,7 +344,7 @@ bool UISplitter::findNearThumb(const Point& pos, UIThumb** outThumb, float* outD
 	const auto normal = isHorizontal() ? Vector3::UnitX : Vector3::UnitY;
 
 	for (const auto& thumb : m_thumbs) {
-		Plane plane(Vector3(thumb->localPosition(), 0.0f), normal);
+		Plane plane(Vector3(thumb->actualPosition(), 0.0f), normal);
 		const float d = std::abs(plane.getDistanceToPoint(Vector3(pos, 0.0f)));
 		if (d < *outDistance) {
 			*outThumb = thumb;

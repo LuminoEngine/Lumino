@@ -41,19 +41,20 @@ bool UICheckBox::init()
     return true;
 }
 
-Size UICheckBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	m_checkMark->measureLayout(layoutContext, constraint);
-	m_boxSize = m_checkMark->desiredSize();
-	//m_boxSize = layoutContext->measureTextSize(m_checkMarkFont, m_squareCodePoint);
+Size UICheckBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//m_checkMark->measureLayout(layoutContext, constraint);
+	//m_boxSize = m_checkMark->desiredSize();
+	////m_boxSize = layoutContext->measureTextSize(m_checkMarkFont, m_squareCodePoint);
 
-	Size baseSize = UIToggleButton::measureOverride(layoutContext, constraint);
+	//Size baseSize = UIToggleButton::measureOverride(layoutContext, constraint);
 
 
-	
-	Size desiredSize(baseSize.width + m_boxSize.width, std::max(baseSize.height, m_boxSize.height));
+	//
+	//Size desiredSize(baseSize.width + m_boxSize.width, std::max(baseSize.height, m_boxSize.height));
 
-	return desiredSize;
+	//return desiredSize;
 }
 
 Size UICheckBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)

@@ -61,9 +61,9 @@ void UIAdornerLayer::updateStyleHierarchical(const UIStyleContext* styleContext,
 
 void UIAdornerLayer::measureLayout(UILayoutContext* layoutContext, const Size& availableSize)
 {
-    for (auto& adorner : m_adorners) {
-        adorner->measureLayout(layoutContext, availableSize);
-    }
+    //for (auto& adorner : m_adorners) {
+    //    adorner->measureLayout(layoutContext, availableSize);
+    //}
 }
 
 void UIAdornerLayer::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)
@@ -71,7 +71,7 @@ void UIAdornerLayer::arrangeLayout(UILayoutContext* layoutContext, const Rect& l
     for (auto& adorner : m_adorners) {
 		Rect adornedRect = localSlotRect;
 		if (adorner->adornedElement()) {
-            adornedRect = Rect(adorner->adornedElement()->localPosition(), adorner->adornedElement()->actualSize());
+            adornedRect = Rect(adorner->adornedElement()->actualPosition(), adorner->adornedElement()->actualSize());
             // = adorner->adornedElement()->m_finalGlobalRect;
 		}
 

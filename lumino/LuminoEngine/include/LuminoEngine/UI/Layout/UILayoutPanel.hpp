@@ -182,21 +182,22 @@ public:
 
     // TODO: internal
     template<class TElement>
-    static Size staticMeasureLogicalChildrenAreaSize(UILayoutContext* layoutContext, TElement* ownerElement, const Size& constraint)
-    {
-        int childrenCount = (ownerElement->m_logicalChildren) ? ownerElement->m_logicalChildren->size() : 0;//->getVisualChildrenCount();
-        Size childMaxSize(0, 0);
-        for (int i = 0; i < childrenCount; i++)
-        {
-            UIElement* child = ownerElement->m_logicalChildren->at(i);//ownerElement->getVisualChild(i);
-            if (layoutContext->testLayoutEnabled(child)) {
-                child->measureLayout(layoutContext, constraint);
-                const Size& desiredSize = child->desiredSize();
-                childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
-                childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
-            }
-        }
-        return childMaxSize;
+    static Size staticMeasureLogicalChildrenAreaSize(UILayoutContext* layoutContext, TElement* ownerElement, const Size& constraint) {
+        LN_NOTIMPLEMENTED();
+        return Size();
+        //int childrenCount = (ownerElement->m_logicalChildren) ? ownerElement->m_logicalChildren->size() : 0;//->getVisualChildrenCount();
+        //Size childMaxSize(0, 0);
+        //for (int i = 0; i < childrenCount; i++)
+        //{
+        //    UIElement* child = ownerElement->m_logicalChildren->at(i);//ownerElement->getVisualChild(i);
+        //    if (layoutContext->testLayoutEnabled(child)) {
+        //        child->measureLayout(layoutContext, constraint);
+        //        const Size& desiredSize = child->desiredSize();
+        //        childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+        //        childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+        //    }
+        //}
+        //return childMaxSize;
     }
 
 

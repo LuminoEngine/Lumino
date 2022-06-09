@@ -99,6 +99,7 @@ UIElement::UIElement()
     , m_clipToBounds(false)
     , m_dirtyFlags(detail::UIElementDirtyFlags::None)
 {
+    m_yogaNode = YGNodeNewWithConfig(detail::EngineDomain::uiManager()->defaultYogaConfig());
     m_localStyle = makeObject<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     m_localStyle->setMainStyle(makeObject<UIStyle>());
     m_specialElementFlags.set(detail::UISpecialElementFlags::Enabled, true);
@@ -112,6 +113,10 @@ UIElement::~UIElement() {
 }
 
 void UIElement::onDispose(bool explicitDisposing) {
+    if (m_yogaNode) {
+        YGNodeFree(m_yogaNode);
+        m_yogaNode = nullptr;
+    }
     if (m_manager) {
         m_manager->onElementDisposing(this);
         m_manager = nullptr;
@@ -121,7 +126,7 @@ void UIElement::onDispose(bool explicitDisposing) {
 }
 
 bool UIElement::init() {
-    UILayoutElement::init(m_finalStyle);
+    UILayoutElement::init();
     m_manager = detail::EngineDomain::uiManager();
     // if (LN_REQUIRE(m_manager->mainContext())) return false;
 
@@ -722,41 +727,40 @@ void UIElement::onUpdateStyle(const UIStyleContext* styleContext, const detail::
 //{
 //}
 
+void UIElement::updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect) {
+    Size itemSize; //(m_finalStyle->width, m_finalStyle->height); // = //getLayoutSize();
+    Size size(
+        Math::isNaNOrInf(itemSize.width) ? parentFinalGlobalRect.width : itemSize.width,
+        Math::isNaNOrInf(itemSize.height) ? parentFinalGlobalRect.height : itemSize.height);
+
+    // サイズが定まっていない場合はレイアウトを決定できない
+    // TODO: 例外の方が良いかも？
+    // if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
+
+    //measureLayout(layoutContext, size);
+    arrangeLayout(layoutContext, parentFinalGlobalRect);
+}
+
 Size UIElement::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
-    // Note: Web は padding が大きくなると、要素のサイズ自体も大きくなる。というより、
-    // Web: width,height はコンテンツエリアのサイズ。
-    // WPF: width,height は margin の内側のエリアのサイズ。
-
-    auto size = UILayoutElement::measureOverride(layoutContext, constraint);
-    // size.width += m_finalStyle->borderThickness.width();
-    // size.height += m_finalStyle->borderThickness.height();
-
-    // size.width += m_finalStyle->padding.width();
-    // size.height += m_finalStyle->padding.height();
-
-    return size;
+    LN_UNREACHABLE();
+    return Size();
 }
 
 Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
-    return UILayoutElement::arrangeOverride(layoutContext, finalArea);
+    LN_UNREACHABLE();
+    return Size();
 }
 
 void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect) {
-    UILayoutElement::arrangeLayout(layoutContext, localSlotRect);
-
-    // updateFinalRects(layoutContext, (m_visualParent) ? m_visualParent->m_combinedFinalRenderTransform : Matrix::Identity);
-
-    //// child elements
-    // int count = getVisualChildrenCount();
-    // for (int i = 0; i < count; i++) {
-    //     getVisualChild(i)->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
-    // }
 
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
 
     // Re-draw
     // TODO: 本当に描画に影響するプロパティが変わったときだけにしたい
     invalidate(detail::UIElementDirtyFlags::Render, true);
+}
+
+void UIElement::onUpdateLayout(UILayoutContext* layoutContext) {
 }
 
 void UIElement::onRender(UIRenderingContext* context) {
@@ -822,22 +826,31 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 }
 
 void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform) {
-    // NOTE: 行列更新パスはいったん arrangeLayout でやることにしてみる。Popup でターゲットの位置を知りたいときに、グローバル座標が決定していないと計算が大変になるので。
-    //
-    // [2020/8/19] やっぱり arrangeLayout でやるのは都合が悪かった。
-    // 親要素は子要素の arrangeLayout の結果を arrangeOverride で受け取ってからローカル位置を決定する。
-    // この時 子要素の arrangeLayout を呼んでいるので、arrangeLayoutでグローバル行列更新するということは、親のグローバル行列もこの時点で決まっている必要がある。
-    // しかし、このパスだとそれは不可能。
-    // もともとは Popup のターゲット位置のための対応だったが、やむなし。
-    // Popup なら普通は前フレームで位置は計算済みなので、それを使う、でもいいかも。
 
-    updateFinalRects(layoutContext, parentCombinedRenderTransform);
+    m_actualPosition.x = YGNodeLayoutGetLeft(m_yogaNode);
+    m_actualPosition.y = YGNodeLayoutGetTop(m_yogaNode);
+    m_actualSize.width = YGNodeLayoutGetWidth(m_yogaNode);
+    m_actualSize.height = YGNodeLayoutGetHeight(m_yogaNode);
+    
+    auto pos = Vector3(m_actualPosition.x, m_actualPosition.y, 0.0);
+
+    // Pixel snap
+    pos.x = std::floor(pos.x);
+    pos.y = std::floor(pos.y);
+
+    m_localTransform = Matrix::makeTranslation(-m_finalStyle->centerPoint);
+    m_localTransform.scale(m_finalStyle->scale);
+    m_localTransform.rotateQuaternion(m_finalStyle->rotation);
+    m_localTransform.translate(pos);
+    m_combinedFinalRenderTransform = parentCombinedRenderTransform * m_localTransform;
 
     // child elements
     int count = getVisualChildrenCount();
     for (int i = 0; i < count; i++) {
         getVisualChild(i)->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
     }
+
+    onUpdateLayout(layoutContext);
 
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
 

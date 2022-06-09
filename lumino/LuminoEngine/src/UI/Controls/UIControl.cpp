@@ -213,53 +213,53 @@ void UIControl::onRoutedEvent(UIEventArgs* e)
     UIElement::onRoutedEvent(e);
 }
 
-Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-    Size size;
-
-    if (m_aligned3x3GridLayoutArea) {
-        // 論理子要素の領域 (content area)
-		Size childrenAreaSize = detail::LayoutHelper::UIFrameLayout_staticMeasureChildrenAreaSize(layoutContext, m_logicalChildren, constraint);//UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
-        // Inline 要素も含めた領域 (client area)
-        Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(layoutContext, m_inlineElements, constraint, childrenAreaSize);
-        // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
-        size = layoutContext->makeDesiredSize(this, clientAreaSize);
-    }
-    else if (m_autoLayoutLogicalChildren) {
-        //   struct ElementList : public IUIElementList {
-        //       List<Ref<UIElement>>* list;
-        //       virtual int getElementCount() const { return list->size(); }
-        //       virtual UIElement* getElement(int i) const { return list->at(i); }
-        //   } list;
-        //   list.list = &m_logicalChildren;
-
-           //UILayoutPanel2_Deprecated* layout = layoutPanel();
-           //layout->measureLayout(&list, constraint);
-        //   Size desiredSize = layout->desiredSize();
-        //   Size localSize = UIElement::measureOverride(constraint);
-        //   return Size::max(desiredSize, localSize);
-
-           //if (m_logicalChildrenHost) {
-        //       m_logicalChildrenHost->measureLayout(constraint);
-        //       Size layoutSize = m_logicalChildrenHost->desiredSize();
-        //       Size localSize = UIElement::measureOverride(constraint);
-        //       return Size::max(layoutSize, localSize);
-           //}
-           //else {
-        size = UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
-
-        //}
-    }
-    else {
-        size = UIElement::measureOverride(layoutContext, constraint);
-    }
-
-    // デフォルトの最小サイズ
-    if (const UITheme* theme = layoutContext->styleContext()->mainTheme) {
-        size.height = std::max(size.height, theme->lineContentHeight());
-    }
-    return size;
-}
+//Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+//{
+//    Size size;
+//
+//    if (m_aligned3x3GridLayoutArea) {
+//        // 論理子要素の領域 (content area)
+//		Size childrenAreaSize = detail::LayoutHelper::UIFrameLayout_staticMeasureChildrenAreaSize(layoutContext, m_logicalChildren, constraint);//UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
+//        // Inline 要素も含めた領域 (client area)
+//        Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(layoutContext, m_inlineElements, constraint, childrenAreaSize);
+//        // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
+//        size = layoutContext->makeDesiredSize(this, clientAreaSize);
+//    }
+//    else if (m_autoLayoutLogicalChildren) {
+//        //   struct ElementList : public IUIElementList {
+//        //       List<Ref<UIElement>>* list;
+//        //       virtual int getElementCount() const { return list->size(); }
+//        //       virtual UIElement* getElement(int i) const { return list->at(i); }
+//        //   } list;
+//        //   list.list = &m_logicalChildren;
+//
+//           //UILayoutPanel2_Deprecated* layout = layoutPanel();
+//           //layout->measureLayout(&list, constraint);
+//        //   Size desiredSize = layout->desiredSize();
+//        //   Size localSize = UIElement::measureOverride(constraint);
+//        //   return Size::max(desiredSize, localSize);
+//
+//           //if (m_logicalChildrenHost) {
+//        //       m_logicalChildrenHost->measureLayout(constraint);
+//        //       Size layoutSize = m_logicalChildrenHost->desiredSize();
+//        //       Size localSize = UIElement::measureOverride(constraint);
+//        //       return Size::max(layoutSize, localSize);
+//           //}
+//           //else {
+//        size = UIFrameLayout2::staticMeasureLogicalChildren(layoutContext, this, constraint);
+//
+//        //}
+//    }
+//    else {
+//        size = UIElement::measureOverride(layoutContext, constraint);
+//    }
+//
+//    // デフォルトの最小サイズ
+//    if (const UITheme* theme = layoutContext->styleContext()->mainTheme) {
+//        size.height = std::max(size.height, theme->lineContentHeight());
+//    }
+//    return size;
+//}
 
 Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
 {
@@ -351,75 +351,76 @@ void  UIAligned3x3GridLayoutArea::init()
     Object::init();
 }
 
-Size UIAligned3x3GridLayoutArea::measure(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize)
-{
-#if 1
-    // 各セルの desiredSize を測定
-    for (int i = 0; i < inlineElements.size(); i++) {
-        UIElement* child = inlineElements[i];
-        child->measureLayout(layoutContext, constraint);
-        const Size& childDesiredSize = child->getLayoutDesiredSize();
-
-        int row, column, rowSpan, columnSpan;
-        getGridInfoHelper(child, &row, &column, &rowSpan, &columnSpan);
-
-        m_rows[row].desiredSize = std::max(m_rows[row].desiredSize, childDesiredSize.height);
-        m_columns[column].desiredSize = std::max(m_columns[column].desiredSize, childDesiredSize.width);
-    }
-
-    // contentSize を中央のセルとして計算する
-    m_rows[1].desiredSize = std::max(m_rows[1].desiredSize, contentDesiredSize.height);
-    m_columns[1].desiredSize = std::max(m_columns[1].desiredSize, contentDesiredSize.width);
-
-    // 全体の desiredSize を測定
-    Size desiredSize;
-    for (int i = 0; i < 3; i++) {
-        desiredSize.height += m_rows[i].desiredSize;
-        desiredSize.width += m_columns[i].desiredSize;
-    }
-
-    return desiredSize;
-#else
-    for (int i = 0; i < inlineElements.size(); i++)
-    {
-        UIElement* child = inlineElements[i];
-        child->measureLayout(layoutContext, constraint);
-        const Size& childDesiredSize = child->getLayoutDesiredSize();
-
-        int row, column, rowSpan, columnSpan;
-        getGridInfoHelper(child, &row, &column, &rowSpan, &columnSpan);
-
-        // span を考慮し、この child が影響するセル範囲の 右と下 の分割線の位置を押し上げるように領域の調整を行う
-        int br = std::min(std::max(row, 0), 3);
-        int bc = std::min(std::max(column, 0), 3);
-        int tr = std::min(std::max(row + rowSpan - 1, 0), 3);
-        int tc = std::min(std::max(column + columnSpan - 1, 0), 3);
-        float leftLineOffset = (br == 0) ? 0 : m_rows[br - 1].desiredLastOffset;
-        float topLineOffset = (bc == 0) ? 0 : m_columns[bc - 1].desiredLastOffset;
-        m_rows[tr].desiredLastOffset = std::max(m_rows[tr].desiredLastOffset, leftLineOffset + childDesiredSize.height);
-        m_columns[tc].desiredLastOffset = std::max(m_columns[tr].desiredLastOffset, topLineOffset + childDesiredSize.width);
-    }
-
-    // contentSize を中央のセルとして計算する
-    m_rows[1].desiredLastOffset = std::max(m_rows[1].desiredLastOffset, m_rows[0].desiredLastOffset + contentDesiredSize.height);
-    m_columns[1].desiredLastOffset = std::max(m_columns[1].desiredLastOffset, m_columns[0].desiredLastOffset + contentDesiredSize.width);
-
-    // 各セルの desiredSize を確定させる
-    for (int i = 0; i < 3; i++)
-    {
-        float pr = (i == 0) ? 0.0f : m_rows[i - 1].desiredLastOffset;
-        float pc = (i == 0) ? 0.0f : m_columns[i - 1].desiredLastOffset;
-
-        if (m_rows[i].desiredLastOffset < pr) m_rows[i].desiredLastOffset = pr;
-        if (m_columns[i].desiredLastOffset < pc) m_columns[i].desiredLastOffset = pc;
-
-        m_rows[i].desiredSize = m_rows[i].desiredLastOffset - pr;
-        m_columns[i].desiredSize = m_columns[i].desiredLastOffset - pc;
-    }
-
-    // 計算が終わると、右端と下端の次の分割線の位置がサイズとみなせる
-    return Size(m_columns[2].desiredLastOffset, m_rows[2].desiredLastOffset);
-#endif
+Size UIAligned3x3GridLayoutArea::measure(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+    //#if 1
+//    // 各セルの desiredSize を測定
+//    for (int i = 0; i < inlineElements.size(); i++) {
+//        UIElement* child = inlineElements[i];
+//        child->measureLayout(layoutContext, constraint);
+//        const Size& childDesiredSize = child->getLayoutDesiredSize();
+//
+//        int row, column, rowSpan, columnSpan;
+//        getGridInfoHelper(child, &row, &column, &rowSpan, &columnSpan);
+//
+//        m_rows[row].desiredSize = std::max(m_rows[row].desiredSize, childDesiredSize.height);
+//        m_columns[column].desiredSize = std::max(m_columns[column].desiredSize, childDesiredSize.width);
+//    }
+//
+//    // contentSize を中央のセルとして計算する
+//    m_rows[1].desiredSize = std::max(m_rows[1].desiredSize, contentDesiredSize.height);
+//    m_columns[1].desiredSize = std::max(m_columns[1].desiredSize, contentDesiredSize.width);
+//
+//    // 全体の desiredSize を測定
+//    Size desiredSize;
+//    for (int i = 0; i < 3; i++) {
+//        desiredSize.height += m_rows[i].desiredSize;
+//        desiredSize.width += m_columns[i].desiredSize;
+//    }
+//
+//    return desiredSize;
+//#else
+//    for (int i = 0; i < inlineElements.size(); i++)
+//    {
+//        UIElement* child = inlineElements[i];
+//        child->measureLayout(layoutContext, constraint);
+//        const Size& childDesiredSize = child->getLayoutDesiredSize();
+//
+//        int row, column, rowSpan, columnSpan;
+//        getGridInfoHelper(child, &row, &column, &rowSpan, &columnSpan);
+//
+//        // span を考慮し、この child が影響するセル範囲の 右と下 の分割線の位置を押し上げるように領域の調整を行う
+//        int br = std::min(std::max(row, 0), 3);
+//        int bc = std::min(std::max(column, 0), 3);
+//        int tr = std::min(std::max(row + rowSpan - 1, 0), 3);
+//        int tc = std::min(std::max(column + columnSpan - 1, 0), 3);
+//        float leftLineOffset = (br == 0) ? 0 : m_rows[br - 1].desiredLastOffset;
+//        float topLineOffset = (bc == 0) ? 0 : m_columns[bc - 1].desiredLastOffset;
+//        m_rows[tr].desiredLastOffset = std::max(m_rows[tr].desiredLastOffset, leftLineOffset + childDesiredSize.height);
+//        m_columns[tc].desiredLastOffset = std::max(m_columns[tr].desiredLastOffset, topLineOffset + childDesiredSize.width);
+//    }
+//
+//    // contentSize を中央のセルとして計算する
+//    m_rows[1].desiredLastOffset = std::max(m_rows[1].desiredLastOffset, m_rows[0].desiredLastOffset + contentDesiredSize.height);
+//    m_columns[1].desiredLastOffset = std::max(m_columns[1].desiredLastOffset, m_columns[0].desiredLastOffset + contentDesiredSize.width);
+//
+//    // 各セルの desiredSize を確定させる
+//    for (int i = 0; i < 3; i++)
+//    {
+//        float pr = (i == 0) ? 0.0f : m_rows[i - 1].desiredLastOffset;
+//        float pc = (i == 0) ? 0.0f : m_columns[i - 1].desiredLastOffset;
+//
+//        if (m_rows[i].desiredLastOffset < pr) m_rows[i].desiredLastOffset = pr;
+//        if (m_columns[i].desiredLastOffset < pc) m_columns[i].desiredLastOffset = pc;
+//
+//        m_rows[i].desiredSize = m_rows[i].desiredLastOffset - pr;
+//        m_columns[i].desiredSize = m_columns[i].desiredLastOffset - pc;
+//    }
+//
+//    // 計算が終わると、右端と下端の次の分割線の位置がサイズとみなせる
+//    return Size(m_columns[2].desiredLastOffset, m_rows[2].desiredLastOffset);
+//#endif
 }
 
 void UIAligned3x3GridLayoutArea::arrange(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect)

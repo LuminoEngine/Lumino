@@ -165,7 +165,7 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 					UIElement* next = nullptr;
 					float distance = std::numeric_limits<float>::max();
 					for (const auto& item : *m_logicalChildren) {
-						auto diff = item->localPosition() - selected->localPosition();
+						auto diff = item->actualPosition() - selected->actualPosition();
 						auto f = diff * dir;
 						if (f.x >= 1.0f || f.y >= 1.0f) {
 							float len = diff.lengthSquared();
@@ -180,7 +180,7 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 						dir *= -1.0f;
 						distance = 0.0f;
 						for (const auto& item : *m_logicalChildren) {
-							auto diff = item->localPosition() - selected->localPosition();
+							auto diff = item->actualPosition() - selected->actualPosition();
 							auto f = diff * dir;
 							if (f.x >= 1.0f || f.y >= 1.0f) {
 								float len = diff.lengthSquared();
@@ -221,16 +221,17 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 
 }
 
-Size UIListItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	if (m_itemsHostLayout) {
-		m_itemsHostLayout->measureLayout(layoutContext, constraint);
-		return layoutContext->makeDesiredSize(this, m_itemsHostLayout->desiredSize());
-	}
-	else {
-		LN_NOTIMPLEMENTED();
-		return UIControl::measureOverride(layoutContext, constraint);
-	}
+Size UIListItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//if (m_itemsHostLayout) {
+	//	m_itemsHostLayout->measureLayout(layoutContext, constraint);
+	//	return layoutContext->makeDesiredSize(this, m_itemsHostLayout->desiredSize());
+	//}
+	//else {
+	//	LN_NOTIMPLEMENTED();
+	//	return UIControl::measureOverride(layoutContext, constraint);
+	//}
 }
 
 Size UIListItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)

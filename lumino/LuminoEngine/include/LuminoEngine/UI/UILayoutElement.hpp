@@ -193,25 +193,25 @@ class UILayoutElement : public Object {
 
 public: // TODO: internal
     UILayoutElement();
-    void init() { LN_UNREACHABLE(); } // dummy
-    void init(const detail::UIStyleInstance* finalStyle);
+    //void init() { LN_UNREACHABLE(); } // dummy
+    //void init(const detail::UIStyleInstance* finalStyle);
 
-    // 基本的にルート要素のみ呼び出すべき
-    void updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+    //// 基本的にルート要素のみ呼び出すべき
+    //void updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
-    /**
-     * レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。
-     *
-     * この値は子要素が親要素へ要求する、子要素自身の最低サイズです。
-     * 必ずしも width,height プロパティや actual-size と一致するものではありません。
-     * margin, padding, border を考慮した、要素を配置する領域の要求サイズです。
-     */
-    const Size& desiredSize() const { return m_desiredSize; }
+    ///**
+    // * レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。
+    // *
+    // * この値は子要素が親要素へ要求する、子要素自身の最低サイズです。
+    // * 必ずしも width,height プロパティや actual-size と一致するものではありません。
+    // * margin, padding, border を考慮した、要素を配置する領域の要求サイズです。
+    // */
+    //const Size& desiredSize() const { return m_desiredSize; }
 
-    // arrangeOverride の戻り値。
-    // border + padding + ContentSize. margin は含まれない。
-    // つまり、この要素を描画するために必要な領域を示す。
-    const Size& actualSize() const { return m_actualSize; }
+    //// arrangeOverride の戻り値。
+    //// border + padding + ContentSize. margin は含まれない。
+    //// つまり、この要素を描画するために必要な領域を示す。
+    //const Size& actualSize() const { return m_actualSize; }
 
     /**
      * 要素のクライアント領域を返します。座標は要素の境界領域内の相対座標です。
@@ -230,58 +230,58 @@ public: // TODO: internal
     // const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
 
     // TODO: internal
-    const Point& localPosition() const { return m_localPosition; }
+    //const Point& localPosition() const { return m_localPosition; }
 
 protected:
     virtual ~UILayoutElement();
 
-    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint);
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea);
+    //virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint);
+    //virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea);
 
-    // virtual int getChildLayoutItemCount() const = 0;
-    // virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
+    //// virtual int getChildLayoutItemCount() const = 0;
+    //// virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
 
-    virtual void onUpdateLayout(UILayoutContext* layoutContext);
+    //virtual void onUpdateLayout(UILayoutContext* layoutContext);
 
-public: // TODO: internal
-    void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
-    virtual void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
-    ///*virtual*/ void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
-    void updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
-
-    // const Size& getLayoutSize() const { return m_layoutSize; }
-    void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-    const Size& getLayoutDesiredSize() const { return m_desiredSize; }
-    //const Thickness& getLayoutMargin() const;
-    //const Thickness& getLayoutPadding() const;
-    //UIHAlignment getLayoutHAlignment() const;
-    //UIVAlignment getLayoutVAlignment() const;
-    //void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const;
-#ifdef LN_USE_YOGA
-    YGNodeRef yogaNode() const { return m_yogaNode; }
-#endif
-
-    // void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
-    // const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
-    // void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
-
-    // Size m_layoutSize;
-    const detail::UIStyleInstance* m_finalStyle;
-    Size m_desiredSize; // includes, margin, border
-
-    // メインのレイアウトツリー上での座標変換に使用する。特にマウス位置。
-    Matrix m_combinedFinalRenderTransform;
-
-    Matrix m_localTransform;
-
-private:
-    Point m_localPosition; // 親コンテナ内の相対座標
-    Size m_actualSize;
-    // Rect m_finalGlobalRect; // TODO: obsolete
-
-#ifdef LN_USE_YOGA
-    YGNodeRef m_yogaNode;
-#endif
+//public: // TODO: internal
+//    void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
+//    virtual void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
+//    ///*virtual*/ void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+//    void updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
+//
+//    // const Size& getLayoutSize() const { return m_layoutSize; }
+//    void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
+//    const Size& getLayoutDesiredSize() const { return m_desiredSize; }
+//    //const Thickness& getLayoutMargin() const;
+//    //const Thickness& getLayoutPadding() const;
+//    //UIHAlignment getLayoutHAlignment() const;
+//    //UIVAlignment getLayoutVAlignment() const;
+//    //void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const;
+//#ifdef LN_USE_YOGA
+//    YGNodeRef yogaNode() const { return m_yogaNode; }
+//#endif
+//
+//    // void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+//    // const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
+//    // void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
+//
+//    // Size m_layoutSize;
+//    const detail::UIStyleInstance* m_finalStyle;
+//    Size m_desiredSize; // includes, margin, border
+//
+//    // メインのレイアウトツリー上での座標変換に使用する。特にマウス位置。
+//    Matrix m_combinedFinalRenderTransform;
+//
+//    Matrix m_localTransform;
+//
+//private:
+//    Point m_localPosition; // 親コンテナ内の相対座標
+//    Size m_actualSize;
+//    // Rect m_finalGlobalRect; // TODO: obsolete
+//
+//#ifdef LN_USE_YOGA
+//    YGNodeRef m_yogaNode;
+//#endif
 
     friend class detail::LayoutHelper;
 };
@@ -315,7 +315,8 @@ public:
     Size measureTextSize(const UIElement* element, const StringView& text);
     Size measureTextSize(const UIElement* element, uint32_t codePoint);
 
-    LN_CONSTRUCT_ACCESS : UILayoutContext();
+public:
+    UILayoutContext();
     void init();
 
 private:

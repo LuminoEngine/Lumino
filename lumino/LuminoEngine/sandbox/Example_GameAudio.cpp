@@ -29,7 +29,7 @@ class App_Example_GameAudio : public Application
 		//Engine::mainUIView()->addChild(addButton);
 		Engine::ui()->add(button2);
 
-		addButton->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		//addButton->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
 		addButton->setOrigin(0, 0);
     }
 

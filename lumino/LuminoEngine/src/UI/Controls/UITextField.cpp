@@ -30,12 +30,13 @@ const String& UITextField::text() const
 	return m_textArea->text();
 }
 
-Size UITextField::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	m_textArea->measureLayout(layoutContext, constraint);
-	return Size::max(
-		m_textArea->desiredSize(),
-		UIElement::measureOverride(layoutContext, constraint));
+Size UITextField::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//m_textArea->measureLayout(layoutContext, constraint);
+	//return Size::max(
+	//	m_textArea->desiredSize(),
+	//	UIElement::measureOverride(layoutContext, constraint));
 }
 
 Size UITextField::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)

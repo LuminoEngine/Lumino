@@ -174,10 +174,11 @@ void UITabBar2::onAddChild(UIElement* child)
 	}
 }
 
-Size UITabBar2::measureOverride(UILayoutContext* context, const Size& constraint)
-{
-	m_itemsHostLayout->measureLayout(context, constraint);
-	return UIControl::measureOverride(context, constraint);
+Size UITabBar2::measureOverride(UILayoutContext* context, const Size& constraint) {
+    LN_NOTIMPLEMENTED();
+    return Size();
+	//m_itemsHostLayout->measureLayout(context, constraint);
+	//return UIControl::measureOverride(context, constraint);
 }
 
 Size UITabBar2::arrangeOverride(UILayoutContext* context, const Rect& finalArea)

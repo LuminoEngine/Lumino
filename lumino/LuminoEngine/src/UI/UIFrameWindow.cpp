@@ -497,7 +497,7 @@ Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& 
 
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
-    Rect rect = (m_ImGuiLayerEnabled) ? m_contentArea : Rect(0, 0, desiredSize());
+    Rect rect = (m_ImGuiLayerEnabled) ? m_contentArea : Rect(0, 0, m_clientSize);
 
     UIFrameLayout2::staticArrangeLogicalChildren(layoutContext, this, rect);
 

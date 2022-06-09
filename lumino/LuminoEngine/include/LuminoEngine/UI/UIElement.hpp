@@ -421,6 +421,13 @@ public:
     LN_METHOD()
     void addInto(UIElement* parent = nullptr);
 
+    
+    // arrangeOverride の戻り値。
+    // border + padding + ContentSize. margin は含まれない。
+    // つまり、この要素を描画するために必要な領域を示す。
+    const Size& actualSize() const { return m_actualSize; }
+    const Point& actualPosition() const { return m_actualPosition; }
+
     UIElement();
     virtual ~UIElement();
     bool init();
@@ -471,6 +478,8 @@ public: // TODO: internal protected
 
     // この中で addVisualChild することができる。関数を抜けた後に、それらのスタイルは更新される。
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
+    
+    void updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
     /**
         @brief		この要素を表示するために必要なサイズを計測します。
@@ -495,7 +504,7 @@ public: // TODO: internal protected
                         - レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は Inf が含まれることがある。
                         - 実装では padding と border のサイズを考慮する必要があるが、これは VisualChild をレイアウトしてほしいためこうする必要がある。(LogicalChild ではなく)
     */
-    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint);
 
     /**
         @brief		Visual 子要素の配置を確定し、この要素の最終サイズを返します。
@@ -512,10 +521,10 @@ public: // TODO: internal protected
                     親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
                     そうでない場合、子要素はレンダリングされません。(UIElement::arrangeOverride() は、子要素の配置は行いません)
     */
-    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea);
 
-    virtual void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect) override;
-
+    virtual void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
+    virtual void onUpdateLayout(UILayoutContext* layoutContext);
     /** この要素内の子ビジュアル要素の数を取得します。 */
     // virtual int getVisualChildrenCount() const;
     //  マウスのヒットテスト (Hierarchical)
@@ -574,6 +583,7 @@ public: // TODO: internal protected
     UIVisualStateManager* getVisualStateManager();
 
 public: // TODO: internal
+    YGNodeRef yogaNode() const { return m_yogaNode; }
     void raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy);
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
     detail::GridLayoutInfo* getGridLayoutInfo();
@@ -589,6 +599,13 @@ public: // TODO: internal
     String m_name;
     Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
     Flags<detail::UISpecialElementFlags> m_specialElementFlags;
+
+    YGNodeRef m_yogaNode;
+    Point m_actualPosition; // Global offset
+    Size m_actualSize;
+    Matrix m_localTransform;
+    Matrix m_combinedFinalRenderTransform;
+
 
     // TODO: ↓ UIRenderView にまとめてしまっていいかも
     // TODO: ↓ UILayoutContext や UIStyleContxt 経由でもらう
