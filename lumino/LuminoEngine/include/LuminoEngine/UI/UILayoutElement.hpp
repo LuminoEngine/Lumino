@@ -25,22 +25,31 @@ class UIStyleValue {
 public:
     static const UIStyleValue Null;
 
-    constexpr UIStyleValue(float pointValue)
+    constexpr UIStyleValue(float pointValue) noexcept
         : m_value(pointValue)
         , m_unit(UIStyleValueUnit::Point) {}
 
-    constexpr UIStyleValue()
-        : m_value(std::numeric_limits<float>::quiet_NaN())
+    constexpr UIStyleValue() noexcept
+        : m_value(std::numeric_limits<float>::quiet_NaN()) 
         , m_unit(UIStyleValueUnit::Point) {}
 
-    constexpr float value() const { return m_value; }
+    constexpr UIStyleValue(float value, UIStyleValueUnit unit) noexcept
+        : m_value(value)
+        , m_unit(unit) {}
 
-    constexpr UIStyleValueUnit unit() const { return m_unit; }
+    constexpr float value() const noexcept { return m_value; }
 
-    bool isNull() const { return std::isnan(m_value); }
+    float valueOr(float defaultValue) const noexcept { return isNull() ? defaultValue : m_value; }
 
-    static constexpr UIStyleValue ofNull() { return UIStyleValue{}; }
+    constexpr UIStyleValueUnit unit() const noexcept { return m_unit; }
 
+    bool isNull() const noexcept { return std::isnan(m_value); }
+
+    bool isPercent() const { return m_unit == UIStyleValueUnit::Percent; }
+
+    static constexpr UIStyleValue ofNull() noexcept { return UIStyleValue{}; }
+
+    static constexpr UIStyleValue makePercent(float percent) noexcept { return UIStyleValue(percent, UIStyleValueUnit::Percent); }
     //static inline constexpr UIStyleValue Null = UIStyleValue();
 
 private:

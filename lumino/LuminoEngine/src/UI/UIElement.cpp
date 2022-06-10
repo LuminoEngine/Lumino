@@ -138,6 +138,10 @@ bool UIElement::init() {
     return true;
 }
 
+UIStyle* UIElement::style() const {
+    return m_localStyle->mainStyle();
+}
+
 void UIElement::setWidth(float value) {
     m_localStyle->mainStyle()->width = UIStyleValue(value);
 }
@@ -728,10 +732,7 @@ void UIElement::onUpdateStyle(const UIStyleContext* styleContext, const detail::
 //}
 
 void UIElement::updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect) {
-    Size itemSize; //(m_finalStyle->width, m_finalStyle->height); // = //getLayoutSize();
-    Size size(
-        Math::isNaNOrInf(itemSize.width) ? parentFinalGlobalRect.width : itemSize.width,
-        Math::isNaNOrInf(itemSize.height) ? parentFinalGlobalRect.height : itemSize.height);
+
 
     // サイズが定まっていない場合はレイアウトを決定できない
     // TODO: 例外の方が良いかも？
@@ -739,6 +740,10 @@ void UIElement::updateLayout(UILayoutContext* layoutContext, const Rect& parentF
 
     //measureLayout(layoutContext, size);
     arrangeLayout(layoutContext, parentFinalGlobalRect);
+
+#ifdef LN_USE_YOGA
+    YGNodeCalculateLayout(yogaNode(), parentFinalGlobalRect.width, parentFinalGlobalRect.height, YGDirectionLTR);
+#endif
 }
 
 Size UIElement::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
@@ -752,6 +757,47 @@ Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Rect& fina
 }
 
 void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect) {
+
+    // width
+    if (m_finalStyle->width.isNull())
+        YGNodeStyleSetWidthAuto(m_yogaNode);
+    else if (m_finalStyle->width.isPercent())
+        YGNodeStyleSetWidthPercent(m_yogaNode, m_finalStyle->width.value());
+    else
+        YGNodeStyleSetWidth(m_yogaNode, m_finalStyle->width.value());
+
+    // height
+    if (m_finalStyle->height.isNull())
+        YGNodeStyleSetHeightAuto(m_yogaNode);
+    else if (m_finalStyle->height.isPercent())
+        YGNodeStyleSetHeightPercent(m_yogaNode, m_finalStyle->height.value());
+    else
+        YGNodeStyleSetHeight(m_yogaNode, m_finalStyle->height.value());
+    
+    // positionTop
+    if (m_finalStyle->positionTop.isPercent())
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeTop, m_finalStyle->positionTop.valueOr(0));
+    else
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeTop, m_finalStyle->positionTop.valueOr(0));
+
+    // positionRight
+    if (m_finalStyle->positionRight.isPercent())
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeRight, m_finalStyle->positionRight.valueOr(0));
+    else
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeRight, m_finalStyle->positionRight.valueOr(0));
+
+    // positionBottom
+    if (m_finalStyle->positionBottom.isPercent())
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeBottom, m_finalStyle->positionBottom.valueOr(0));
+    else
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeBottom, m_finalStyle->positionBottom.valueOr(0));
+
+    // positionLeft
+    if (m_finalStyle->positionLeft.isPercent())
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeLeft, m_finalStyle->positionLeft.valueOr(0));
+    else
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeLeft, m_finalStyle->positionLeft.valueOr(0));
+
 
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
 

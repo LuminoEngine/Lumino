@@ -2,6 +2,7 @@
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/RoutingRenderView.hpp>
@@ -27,6 +28,8 @@ UIViewport::~UIViewport() {
 
 void UIViewport::init() {
     UIContainerElement::init();
+
+    style()->height = UIStyleValue::makePercent(100);
 
 #if LN_USE_YOGA
 #else
