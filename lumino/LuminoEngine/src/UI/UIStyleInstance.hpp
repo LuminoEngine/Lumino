@@ -17,6 +17,7 @@ class UIStyleClassInstance;
 class UIStyleInstance
     : public RefObject {
 public:
+    // Flex
     UILayoutFlexDirection flexDirection;
     UIStyleValue flexBasis;
     float flexGrow;

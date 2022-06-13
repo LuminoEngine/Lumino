@@ -219,7 +219,10 @@ public:
     detail::UIStyleAttribute<UIOverflowBehavior> overflowY;
 
     static constexpr UILayoutFlexDirection DefaultFlexDirection = UILayoutFlexDirection::Row;
-    static constexpr UIStyleValue DefaultFlexBasis = UIStyleValue();
+    static constexpr UIStyleValue DefaultFlexBasis = UIStyleValue();    // https://yogalayout.com/docs/flex/
+    static constexpr float DefaultFlexGlow = 0.0f;        // https://yogalayout.com/docs/flex/
+    static constexpr float DefaultFlexShrink = 1.0f;  // https://yogalayout.com/docs/flex/
+    static constexpr UILayoutFlexWrap DefaultFlexWrap = UILayoutFlexWrap::NoWrap;
     static constexpr UIStyleValue DefaultWidth = UIStyleValue();
     static constexpr UIStyleValue DefaultHeight = UIStyleValue();
     static constexpr UIStyleValue DefaultMinWidth = UIStyleValue();

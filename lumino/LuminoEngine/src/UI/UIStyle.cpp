@@ -434,6 +434,13 @@ void UIStyle::reset() {
 void UIStyle::mergeFrom(const UIStyle* other) {
     if (LN_REQUIRE(other)) return;
 
+    // flex
+    if (other->flexDirection.hasValue()) flexDirection = other->flexDirection.value();
+    if (other->flexBasis.hasValue()) flexBasis = other->flexBasis.value();
+    if (other->flexGrow.hasValue()) flexGrow = other->flexGrow.value();
+    if (other->flexShrink.hasValue()) flexShrink = other->flexShrink.value();
+    if (other->flexWrap.hasValue()) flexWrap = other->flexWrap.value();
+
     // layout
     if (other->width.hasValue()) width = other->width.value();
     if (other->height.hasValue()) height = other->height.value();

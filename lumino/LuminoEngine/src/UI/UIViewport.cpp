@@ -29,6 +29,7 @@ UIViewport::~UIViewport() {
 void UIViewport::init() {
     UIContainerElement::init();
 
+    style()->width = UIStyleValue::makePercent(100);
     style()->height = UIStyleValue::makePercent(100);
 
 #if LN_USE_YOGA
@@ -116,12 +117,12 @@ void UIViewport::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
     // Update m_actualViewboxSize
     {
-        if (m_placement == UIViewportPlacement::Fill) {
-            m_actualViewboxSize = finalArea.getSize();
-        }
-        else {
-            LN_NOTIMPLEMENTED();
-        }
+        //if (m_placement == UIViewportPlacement::Fill) {
+        //    m_actualViewboxSize = finalArea.getSize();
+        //}
+        //else {
+        //    LN_NOTIMPLEMENTED();
+        //}
         // if (m_placement == UIViewportPlacement::ResizableViewBox) {
         //	const Size baseSize = finalArea.getSize();
         //	if (baseSize.width > baseSize.height) {
@@ -141,16 +142,21 @@ Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Rect& fin
     //	m_actualViewboxSize = m_viewBoxSize;
     // }
 
-    // TODO: tmp
-    for (auto& rv : m_renderViews) {
-        rv->setActualSize(m_actualViewboxSize);
-    }
 
     return UIContainerElement::arrangeOverride(layoutContext, finalArea);
 }
 
 void UIViewport::onUpdateLayout(UILayoutContext* layoutContext) {
+
+    if (m_placement == UIViewportPlacement::Fill) {
+        m_actualViewboxSize = actualSize();
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+    }
+
     for (auto& view : m_renderViews) {
+        view->setActualSize(m_actualViewboxSize);
         view->updateUILayout(layoutContext);
         // TODO: view box
         // view->setActualScreenOffset(Point(finalGlobalRect.x, finalGlobalRect.y));

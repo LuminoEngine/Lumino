@@ -322,6 +322,15 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 
     // outStyleData->sourceLocalStyle = localStyle;
 
+    // Flex
+    {
+        outStyleData->flexDirection = combinedStyle->flexDirection.valueOr(UIStyle::DefaultFlexDirection);
+        outStyleData->flexBasis = combinedStyle->flexBasis.valueOr(UIStyle::DefaultFlexBasis);
+        outStyleData->flexGrow = combinedStyle->flexGrow.valueOr(UIStyle::DefaultFlexGlow);
+        outStyleData->flexShrink = combinedStyle->flexShrink.valueOr(UIStyle::DefaultFlexShrink);
+        outStyleData->flexWrap = combinedStyle->flexWrap.valueOr(UIStyle::DefaultFlexWrap);
+    }
+
     // layout
     {
         outStyleData->width = (combinedStyle->width.valueOr(UIStyle::DefaultWidth));

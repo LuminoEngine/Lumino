@@ -646,7 +646,7 @@ void UIElement::addVisualChild(UIElement* element) {
 
     
 #ifdef LN_USE_YOGA
-    YGNodeInsertChild(yogaNode(), element->yogaNode(), 0);
+    YGNodeInsertChild(yogaNode(), element->yogaNode(), YGNodeGetChildCount(yogaNode()));
 #endif
 
     updateEnabledPropertyOnChildren();
@@ -776,28 +776,73 @@ void UIElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localS
     
     // positionTop
     if (m_finalStyle->positionTop.isPercent())
-        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeTop, m_finalStyle->positionTop.valueOr(0));
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeTop, m_finalStyle->positionTop.valueOr(YGUndefined));
     else
-        YGNodeStyleSetPosition(m_yogaNode, YGEdgeTop, m_finalStyle->positionTop.valueOr(0));
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeTop, m_finalStyle->positionTop.valueOr(YGUndefined));
 
     // positionRight
     if (m_finalStyle->positionRight.isPercent())
-        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeRight, m_finalStyle->positionRight.valueOr(0));
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeRight, m_finalStyle->positionRight.valueOr(YGUndefined));
     else
-        YGNodeStyleSetPosition(m_yogaNode, YGEdgeRight, m_finalStyle->positionRight.valueOr(0));
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeRight, m_finalStyle->positionRight.valueOr(YGUndefined));
 
     // positionBottom
     if (m_finalStyle->positionBottom.isPercent())
-        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeBottom, m_finalStyle->positionBottom.valueOr(0));
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeBottom, m_finalStyle->positionBottom.valueOr(YGUndefined));
     else
-        YGNodeStyleSetPosition(m_yogaNode, YGEdgeBottom, m_finalStyle->positionBottom.valueOr(0));
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeBottom, m_finalStyle->positionBottom.valueOr(YGUndefined));
 
     // positionLeft
     if (m_finalStyle->positionLeft.isPercent())
-        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeLeft, m_finalStyle->positionLeft.valueOr(0));
+        YGNodeStyleSetPositionPercent(m_yogaNode, YGEdgeLeft, m_finalStyle->positionLeft.valueOr(YGUndefined));
     else
-        YGNodeStyleSetPosition(m_yogaNode, YGEdgeLeft, m_finalStyle->positionLeft.valueOr(0));
+        YGNodeStyleSetPosition(m_yogaNode, YGEdgeLeft, m_finalStyle->positionLeft.valueOr(YGUndefined));
 
+    //auto x1 = YGNodeStyleGetPositionType(m_yogaNode);
+    //YGNodeStyleSetPositionType(m_yogaNode, YGPositionTypeRelative);
+
+    //auto x1 = YGNodeStyleGetFlexBasis(m_yogaNode);
+    //auto x2 = YGNodeStyleGetFlexGrow(m_yogaNode);
+    //auto x3 = YGNodeStyleGetFlexShrink(m_yogaNode);
+
+    switch (m_finalStyle->flexDirection) {
+        case UILayoutFlexDirection::Column:
+            YGNodeStyleSetFlexDirection(m_yogaNode, YGFlexDirectionColumn);
+            break;
+        case UILayoutFlexDirection::ColumnReverse:
+            YGNodeStyleSetFlexDirection(m_yogaNode, YGFlexDirectionColumnReverse);
+            break;
+        case UILayoutFlexDirection::Row:
+            YGNodeStyleSetFlexDirection(m_yogaNode, YGFlexDirectionRow);
+            break;
+        case UILayoutFlexDirection::RowReverse:
+            YGNodeStyleSetFlexDirection(m_yogaNode, YGFlexDirectionRowReverse);
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+    }
+
+    // flexBasis
+    if (m_finalStyle->flexBasis.isNull())
+        YGNodeStyleSetFlexBasisAuto(m_yogaNode);
+    else if (m_finalStyle->flexBasis.isPercent())
+        YGNodeStyleSetFlexBasisPercent(m_yogaNode, m_finalStyle->flexBasis.value());
+    else
+        YGNodeStyleSetFlexBasis(m_yogaNode, m_finalStyle->flexBasis.value());
+
+    // flexGrow
+    YGNodeStyleSetFlexGrow(m_yogaNode, m_finalStyle->flexGrow);
+
+    // flexShrink
+    YGNodeStyleSetFlexShrink(m_yogaNode, m_finalStyle->flexShrink);
+
+
+    // child elements
+    int count = getVisualChildrenCount();
+    for (int i = 0; i < count; i++) {
+        getVisualChild(i)->arrangeLayout(layoutContext, localSlotRect);
+    }
 
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
 
