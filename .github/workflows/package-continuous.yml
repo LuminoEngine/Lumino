@@ -3,7 +3,7 @@ name: Package
 on:
   push:
     branches:
-    - master
+    - main
 
 env:
   cache-version: v1
