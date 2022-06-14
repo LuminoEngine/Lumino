@@ -204,7 +204,7 @@ public:
 			{
 				auto layout2 = makeObject<UIStackLayout>();
 				layout2->setOrientation(UILayoutOrientation::Horizontal);
-				layout2->setHAlignment(UIHAlignment::Center);
+				layout2->setAlignments(UIAlignment::HorizontalStretch);
 
 				auto icon1 = makeObject<UIIcon>();
 				icon1->setIconName(_TT("file"));
@@ -231,7 +231,7 @@ public:
 			{
 				auto layout2 = makeObject<UIStackLayout>();
 				layout2->setOrientation(UILayoutOrientation::Horizontal);
-				layout2->setHAlignment(UIHAlignment::Center);
+				layout2->setAlignments(UIAlignment::HorizontalStretch);
 
 				layout2->addChild(UIIcon::loadFontIcon(_TT("align-justify"), 20));
 				layout2->addChild(UIIcon::loadFontIcon(_TT("arrow-alt-circle-up)"), 20));
@@ -310,7 +310,7 @@ public:
 			layout1->addChild(makeObject<UIText>(_TT("ComboBox")));
 
 			auto comboBox1 = makeObject<UIComboBox>();
-			comboBox1->setHAlignment(UIHAlignment::Left);
+			comboBox1->setAlignments(UIAlignment::Left);
 			comboBox1->addChild(_TT("CItem1"));
 			comboBox1->addChild(_TT("CItem2"));
 			layout1->addChild(comboBox1);

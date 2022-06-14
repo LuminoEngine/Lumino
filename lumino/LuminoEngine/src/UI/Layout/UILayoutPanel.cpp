@@ -53,7 +53,9 @@ UILayoutPanel::UILayoutPanel()
 
 bool UILayoutPanel::init()
 {
-    return UIElement::init();
+    if (!UIElement::init()) return false;
+    style()->setMargin(0);  // Fill parent rect.
+    return true;
 }
 
 void UILayoutPanel::removeChild(UIElement* child)

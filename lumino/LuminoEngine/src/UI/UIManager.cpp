@@ -377,6 +377,16 @@ void UIManager::handleGlobalRoutedEvent(UIEventArgs* e) {
     }
 }
 
+void UIManager::addFrameWindow(UIFrameWindow* value) {
+    LN_DCHECK(value);
+    m_frameWindows.push(value);
+}
+
+void UIManager::removeFrameWindow(UIFrameWindow* value) {
+    LN_DCHECK(value);
+    m_frameWindows.remove(value);
+}
+
 void UIManager::registerActiveTimer(UIActiveTimer* timer) {
     m_activeTimers.add(timer);
 }
@@ -392,6 +402,16 @@ void UIManager::updateFrame(float elapsedSeconds) {
 
     for (auto& timer : m_activeTimers) {
         timer->tick(elapsedSeconds);
+    }
+
+    // ユーザーコードの update に渡す前に、UI レイアウトを再計算しておき、
+    // onUpdate 時点で Viewport サイズなどを正しく参照できるようにする。
+    for (UIFrameWindow* value : m_frameWindows) {
+        value->updateLayoutIfNeeded();
+    }
+
+    for (UIFrameWindow* value : m_frameWindows) {
+        value->updateFrame(elapsedSeconds);
     }
 }
 
@@ -492,10 +512,10 @@ void UIManager::setupDefaultStyle() {
                 auto s = e->mainStyleClass()->mainStyle();
                 s->minWidth = 64; //
                 s->minHeight = theme->lineContentHeight();
-                s->margin = Thickness(8); // TODO: spacing?
-                s->padding = theme->spacing(1);
-                s->hAlignment = UIHAlignment::Center;
-                s->vAlignment = UIVAlignment::Center;
+                s->setMargin(Thickness(8)); // TODO: spacing?
+                s->setPadding(theme->spacing(1));
+                //s->hAlignment = UIHAlignment::Center;
+                //s->vAlignment = UIVAlignment::Center;
                 s->horizontalContentAlignment = UIHAlignment::Center;
                 s->verticalContentAlignment = UIVAlignment::Center;
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
@@ -552,18 +572,18 @@ void UIManager::setupDefaultStyle() {
             {
                 auto s = makeObject<UIStyle>();
 
-                s->margin = Thickness(2);
+                s->setMargin(Thickness(2));
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
                 s->cornerRadius = CornerRadius(4);
-                s->hAlignment = UIHAlignment::Stretch;
-                s->vAlignment = UIVAlignment::Stretch;
+                //s->hAlignment = UIHAlignment::Stretch;
+                //s->vAlignment = UIVAlignment::Stretch;
 
                 s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
                 e->mainStyleClass()->addStateStyle(_TT("UITrack-Thumb"), s);
             }
             if (auto s = sheet->obtainStyle(_TT("UIThumb.SplitterBar"))) {
                 s->backgroundColor = Color(0, 1, 0, 0.2); // debug
-                s->margin = Thickness(-2, -2, -2, -2);
+                s->setMargin(Thickness(-2, -2, -2, -2));
             }
         }
         //--------------------------------
@@ -577,8 +597,8 @@ void UIManager::setupDefaultStyle() {
                 s->cornerRadius = CornerRadius(0);
                 s->shadowBlurRadius = 0;
                 s->shadowOffsetY = 0;
-                s->hAlignment = UIHAlignment::Stretch;
-                s->vAlignment = UIVAlignment::Stretch;
+                //s->hAlignment = UIHAlignment::Stretch;
+                //s->vAlignment = UIVAlignment::Stretch;
             }
             if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-DecreaseButton:MouseOver"))) { // ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
                 s->backgroundColor = Color::Transparency;
@@ -591,8 +611,8 @@ void UIManager::setupDefaultStyle() {
                 s->cornerRadius = CornerRadius(0);
                 s->shadowBlurRadius = 0;
                 s->shadowOffsetY = 0;
-                s->hAlignment = UIHAlignment::Stretch;
-                s->vAlignment = UIVAlignment::Stretch;
+                //s->hAlignment = UIHAlignment::Stretch;
+                //s->vAlignment = UIVAlignment::Stretch;
             }
             if (auto s = sheet->obtainStyle(_TT("UIButton.UITrack-IncreaseButton:MouseOver"))) {
                 s->backgroundColor = Color::Transparency;
@@ -606,7 +626,7 @@ void UIManager::setupDefaultStyle() {
         {
             if (auto s = sheet->obtainStyle(_TT("UIListView"))) {
                 s->backgroundColor = theme->get(_TT("control.background"));
-                s->padding = Thickness(0, theme->spacing(1));
+                s->setPadding(Thickness(0, theme->spacing(1)));
             }
         }
         //--------------------------------
@@ -614,7 +634,7 @@ void UIManager::setupDefaultStyle() {
         {
             if (auto s = sheet->obtainStyle(_TT("UIListViewItem"))) {
                 s->minHeight = 30;
-                s->padding = theme->spacing(1);
+                s->setPadding(theme->spacing(1));
             }
             if (auto s = sheet->obtainStyle(_TT("UIListViewItem:Selected"))) {
                 s->backgroundColor = theme->get(_TT("collection.selectedBackground"));
@@ -640,9 +660,9 @@ void UIManager::setupDefaultStyle() {
                 s->minHeight = theme->lineContentHeight();
                 s->setBorderColor(Color::Gray);
                 s->borderThickness = 1;
-                s->padding = theme->spacing(1);
-                s->hAlignment = UIHAlignment::Center;
-                s->vAlignment = UIVAlignment::Center;
+                s->setPadding(theme->spacing(1));
+                //s->hAlignment = UIHAlignment::Center;
+                //s->vAlignment = UIVAlignment::Center;
 
                 auto icon = makeObject<UIStyleDecorator>();
                 icon->setIconName(_TT("angle-down"), 15);
@@ -669,16 +689,16 @@ void UIManager::setupDefaultStyle() {
         {
             if (auto s = sheet->obtainStyle(_TT("UITreeItem"))) {
                 s->minHeight = 30;
-                s->hAlignment = UIHAlignment::Stretch;
-                s->vAlignment = UIVAlignment::Top;
+                //s->hAlignment = UIHAlignment::Stretch;
+                //s->vAlignment = UIVAlignment::Top;
                 // s->borderThickness = 1;
                 // s->setBorderColor(Color::Gray);
             }
             if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander"))) { // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
                 s->width = 16;
                 s->height = 16;
-                s->hAlignment = UIHAlignment::Center;
-                s->vAlignment = UIVAlignment::Center;
+                //s->hAlignment = UIHAlignment::Center;
+                //s->vAlignment = UIVAlignment::Center;
                 s->backgroundColor = Color::Transparency;
             }
             // if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:MouseOver")) {
@@ -707,7 +727,7 @@ void UIManager::setupDefaultStyle() {
         // UITabItem
         {
             if (auto s = sheet->obtainStyle(_TT("UITabItem"))) {
-                s->padding = theme->spacing(1);
+                s->setPadding(theme->spacing(1));
                 s->backgroundColor = theme->get(_TT("tab.inactiveBackground"));
             }
             if (auto s = sheet->obtainStyle(_TT("UITabItem:Selected"))) {
@@ -718,7 +738,7 @@ void UIManager::setupDefaultStyle() {
         // UITextField
         {
             if (auto s = sheet->obtainStyle(_TT("UITextField"))) {
-                s->padding = Thickness(4);
+                s->setPadding(Thickness(4));
                 s->borderThickness = Thickness(1);
                 s->setBorderColor(Color::Gray);
                 // s->backgroundColor = theme->get(_TT("tab.inactiveBackground");
@@ -730,7 +750,7 @@ void UIManager::setupDefaultStyle() {
             if (auto s = sheet->obtainStyle(_TT("UIPopup"))) {
                 s->minWidth = 8;
                 s->minHeight = 8;
-                s->padding = theme->spacing(1);
+                s->setPadding(theme->spacing(1));
                 s->backgroundColor = UIColors::get(UIColorHues::White);
                 s->cornerRadius = CornerRadius(4);
                 s->shadowBlurRadius = 4;
@@ -743,7 +763,7 @@ void UIManager::setupDefaultStyle() {
             if (auto s = sheet->obtainStyle(_TT("UIDialog"))) {
                 s->minWidth = 200;
                 s->minHeight = 200;
-                s->padding = theme->spacing(1);
+                s->setPadding(theme->spacing(1));
                 s->backgroundColor = UIColors::get(UIColorHues::White);
                 s->cornerRadius = CornerRadius(4);
                 s->shadowBlurRadius = 4;

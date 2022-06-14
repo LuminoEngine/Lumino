@@ -109,7 +109,8 @@ protected:
     // TODO: internal
     void resetSizeFromPlatformWindow();
 
-    LN_CONSTRUCT_ACCESS : UIFrameWindow();
+LN_CONSTRUCT_ACCESS:
+    UIFrameWindow();
     virtual ~UIFrameWindow();
     void init(bool mainWindow = false); // Swapchain 無し。外部制御用
 

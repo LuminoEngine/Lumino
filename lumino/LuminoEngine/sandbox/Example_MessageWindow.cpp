@@ -51,8 +51,7 @@ public:
 
         auto window2 = UIWindow::create();
         //window2->setPosition(10, 100);
-        window2->setHAlignment(UIHAlignment::Stretch);
-        window2->setVAlignment(UIVAlignment::Stretch);
+        window2->setAlignments(UIAlignment::Stretch);
         window2->setWidth(400);
         //window2->setHeight(100);
         //window2->setBackgroundColor(Color(0,0,0,0.5));

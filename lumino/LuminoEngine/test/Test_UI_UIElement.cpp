@@ -14,7 +14,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 
         //* [ ] Visible
         auto sprite1 = makeObject<UISprite>();
-		sprite1->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		sprite1->setAlignments(UIAlignment::TopLeft);
         sprite1->setTexture(tex1);
         sprite1->setPosition(0, 0, 0);
         sprite1->setVisibility(UIVisibility::Hidden);
@@ -22,7 +22,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 
         //* [ ] BlendMode
         auto sprite2 = makeObject<UISprite>();
-		sprite2->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		sprite2->setAlignments(UIAlignment::TopLeft);
         sprite2->setTexture(tex1);
         sprite2->setBlendMode(BlendMode::Add);
         sprite2->setPosition(32, 0, 0);
@@ -30,7 +30,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 
         //* [ ] Opacity
         auto sprite3 = makeObject<UISprite>();
-		sprite3->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		sprite3->setAlignments(UIAlignment::TopLeft);
         sprite3->setTexture(tex1);
         sprite3->setPosition(64, 0, 0);
         sprite3->setOpacity(0.5);
@@ -38,7 +38,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 
         //* [ ] ColorScale
         auto sprite4 = makeObject<UISprite>();
-		sprite4->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		sprite4->setAlignments(UIAlignment::TopLeft);
         sprite4->setTexture(tex1);
         sprite4->setPosition(96, 0, 0);
         sprite4->setColorScale(Color(1, 0, 0, 1));
@@ -46,7 +46,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 
         //* [ ] BlendColor
         auto sprite5 = makeObject<UISprite>();
-		sprite5->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		sprite5->setAlignments(UIAlignment::TopLeft);
         sprite5->setTexture(tex1);
         sprite5->setPosition(0, 32, 0);
         sprite5->setBlendColor(Color(1, 0, 0, 1));
@@ -54,7 +54,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 
         //* [ ] Tone
         auto sprite6 = makeObject<UISprite>();
-		sprite6->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		sprite6->setAlignments(UIAlignment::TopLeft);
         sprite6->setTexture(tex1);
         sprite6->setPosition(32, 32, 0);
         sprite6->setTone(ColorTone(0.5, 0.3, 0.1, 1.0));

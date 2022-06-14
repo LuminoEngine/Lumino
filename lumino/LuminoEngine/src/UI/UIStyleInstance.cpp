@@ -17,10 +17,11 @@ UIStyleInstance::UIStyleInstance()
 
 void UIStyleInstance::setupDefault()
 {
-    margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+    margin2 = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+    border = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
     padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-    hAlignment = UIHAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
-    vAlignment = UIVAlignment::Stretch;
+    //hAlignment = UIHAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
+    //vAlignment = UIVAlignment::Stretch;
     horizontalContentAlignment = UIHAlignment::Stretch;
     verticalContentAlignment = UIVAlignment::Stretch;
     minWidth = Math::NaN;
@@ -66,10 +67,20 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     // layout
     if (other->width.hasValue()) width = other->width.get();
     if (other->height.hasValue()) height = other->height.get();
-    if (other->margin.hasValue()) margin = other->margin.get();
-    if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
-    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
+    if (other->marginTop.hasValue()) margin2.top = other->marginTop.value();
+    if (other->marginRight.hasValue()) margin2.right = other->marginRight.value();
+    if (other->marginBottom.hasValue()) margin2.bottom = other->marginBottom.value();
+    if (other->marginLeft.hasValue()) margin2.left = other->marginLeft.value();
+    if (other->borderTop.hasValue()) border.top = other->borderTop.value();
+    if (other->borderRight.hasValue()) border.right = other->borderRight.value();
+    if (other->borderBottom.hasValue()) border.bottom = other->borderBottom.value();
+    if (other->borderLeft.hasValue()) border.left = other->borderLeft.value();
+    if (other->paddingTop.hasValue()) padding.top = other->paddingTop.value();
+    if (other->paddingRight.hasValue()) padding.right = other->paddingRight.value();
+    if (other->paddingBottom.hasValue()) padding.bottom = other->paddingBottom.value();
+    if (other->paddingLeft.hasValue()) padding.left = other->paddingLeft.value();
+    //if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
+    //if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
     if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
     if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
@@ -139,10 +150,11 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     // layout
     width = other->width;
     height = other->height;
-    margin = other->margin;
+    margin2 = other->margin2;
+    border = other->border;
     padding = other->padding;
-    hAlignment = other->hAlignment;
-    vAlignment = other->vAlignment;
+    //hAlignment = other->hAlignment;
+    //vAlignment = other->vAlignment;
     horizontalContentAlignment = other->horizontalContentAlignment;
     verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
@@ -292,10 +304,20 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 	{
         outStyleData->width = (combinedStyle->width.getOrDefault(UIStyle::DefaultWidth));
         outStyleData->height = (combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
-		outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
-		outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
-		outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
-		outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
+        outStyleData->margin2.top = (combinedStyle->marginTop.valueOr(Math::NaN));
+        outStyleData->margin2.right = (combinedStyle->marginRight.valueOr(Math::NaN));
+        outStyleData->margin2.bottom = (combinedStyle->marginBottom.valueOr(Math::NaN));
+        outStyleData->margin2.left = (combinedStyle->marginLeft.valueOr(Math::NaN));
+        outStyleData->border.top = (combinedStyle->borderTop.valueOr(0.0f));
+        outStyleData->border.right = (combinedStyle->borderRight.valueOr(0.0f));
+        outStyleData->border.bottom = (combinedStyle->borderBottom.valueOr(0.0f));
+        outStyleData->border.left = (combinedStyle->borderLeft.valueOr(0.0f));
+        outStyleData->padding.top = (combinedStyle->paddingTop.valueOr(0.0f));
+        outStyleData->padding.right = (combinedStyle->paddingRight.valueOr(0.0f));
+        outStyleData->padding.bottom = (combinedStyle->paddingBottom.valueOr(0.0f));
+        outStyleData->padding.left = (combinedStyle->paddingLeft.valueOr(0.0f));
+		//outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
+		//outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
         outStyleData->horizontalContentAlignment = (combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
         outStyleData->verticalContentAlignment = (combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
 		outStyleData->minWidth = (combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));

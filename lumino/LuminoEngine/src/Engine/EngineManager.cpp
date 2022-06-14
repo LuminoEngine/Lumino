@@ -575,12 +575,6 @@ void EngineManager::updateFrame() {
         mainThreadTaskDispatcher->executeTasks(1);
     }
 
-    // ユーザーコードの update に渡す前に、UI レイアウトを再計算しておき、
-    // onUpdate 時点で Viewport サイズなどを正しく参照できるようにする。
-    if (m_mainWindow) {
-        m_mainWindow->updateLayoutIfNeeded();
-    }
-
     //------------------------------------------------
     // Main update phase
 
@@ -602,9 +596,6 @@ void EngineManager::updateFrame() {
     // Application::onUpdate の呼び出しはここから。
     if (m_uiManager) {
         m_uiManager->updateFrame(elapsedSeconds);
-    }
-    if (m_mainWindow) {
-        m_mainWindow->updateFrame(elapsedSeconds);
     }
 
     if (m_mainWorld) {
@@ -779,8 +770,7 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 
             m_mainUIRoot = makeObject<UIDomainProvidor>();
             m_mainUIRoot->setupNavigator();
-            m_mainUIRoot->setHAlignment(UIHAlignment::Stretch);
-            m_mainUIRoot->setVAlignment(UIVAlignment::Stretch);
+            m_mainUIRoot->setAlignments(UIAlignment::Stretch);
             m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel; // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
             m_mainUIRenderView->setRootElement(m_mainUIRoot);
             m_uiManager->setPrimaryElement(m_mainUIRoot);

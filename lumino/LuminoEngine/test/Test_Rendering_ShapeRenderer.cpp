@@ -24,8 +24,7 @@ TEST_F(Test_Rendering_BoxElement, Basic)
 {
 
     auto element1 = makeObject<TestElement>();
-    element1->setHAlignment(UIHAlignment::Stretch);
-    element1->setVAlignment(UIVAlignment::Stretch);
+    element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 
 	element1->render = [](UIRenderingContext* context)
@@ -77,8 +76,7 @@ TEST_F(Test_Rendering_BoxElement, Basic)
 TEST_F(Test_Rendering_BoxElement, Background)
 {
 	auto element1 = makeObject<TestElement>();
-	element1->setHAlignment(UIHAlignment::Stretch);
-	element1->setVAlignment(UIVAlignment::Stretch);
+	element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 
 	element1->render = [](UIRenderingContext* context)
@@ -115,8 +113,7 @@ TEST_F(Test_Rendering_BoxElement, Background)
 TEST_F(Test_Rendering_BoxElement, Border)
 {
 	auto element1 = makeObject<TestElement>();
-	element1->setHAlignment(UIHAlignment::Stretch);
-	element1->setVAlignment(UIVAlignment::Stretch);
+	element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 
 	// outset, disable-corner
@@ -332,8 +329,7 @@ TEST_F(Test_Rendering_BoxElement, Border)
 TEST_F(Test_Rendering_BoxElement, ShadowOutset)
 {
     auto element1 = makeObject<TestElement>();
-    element1->setHAlignment(UIHAlignment::Stretch);
-    element1->setVAlignment(UIVAlignment::Stretch);
+    element1->setAlignments(UIAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
 
     // outset
@@ -430,8 +426,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowOutset)
 TEST_F(Test_Rendering_BoxElement, OutsetShadowOffset)
 {
     auto element1 = makeObject<TestElement>();
-    element1->setHAlignment(UIHAlignment::Stretch);
-    element1->setVAlignment(UIVAlignment::Stretch);
+    element1->setAlignments(UIAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
 
     // FIXME: ちょっと上部の境界が怪しいが現状とする。小さければ問題は少ない。
@@ -525,10 +520,8 @@ TEST_F(Test_Rendering_BoxElement, OutsetShadowOffset)
 TEST_F(Test_Rendering_BoxElement, ShadowInset)
 {
     auto element1 = makeObject<TestElement>();
-    element1->setHAlignment(UIHAlignment::Stretch);
-    element1->setVAlignment(UIVAlignment::Stretch);
+    element1->setAlignments(UIAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
-
 
     // inset
     {
@@ -760,8 +753,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
 TEST_F(Test_Rendering_BoxElement, BorderIlls)
 {
 	auto element1 = makeObject<TestElement>();
-	element1->setHAlignment(UIHAlignment::Stretch);
-	element1->setVAlignment(UIVAlignment::Stretch);
+	element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 
 	element1->render = [](UIRenderingContext* context)

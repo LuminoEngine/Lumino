@@ -19,7 +19,7 @@ class App_Sandbox_GridListBox : public Application
 
 		auto listbox1 = UIListBox::create();
 		listbox1->setItemsLayoutPanel(panel);
-		listbox1->setAlignments(UIHAlignment::Stretch, UIVAlignment::Stretch);
+		listbox1->setAlignments(UIAlignment::Stretch);
 		//listbox1->setSize(300, 400);
 		
 
@@ -27,10 +27,10 @@ class App_Sandbox_GridListBox : public Application
 			auto icon = makeObject<UIIcon>();
 			icon->setIconName(_TT("file"));
 			icon->setFontSize(40);
-			icon->setAlignments(UIHAlignment::Center, UIVAlignment::Top);
+			icon->setAlignments(UIAlignment::Top);
 
 			auto text = makeObject<UIText>(_TT("Item1"));
-			text->setAlignments(UIHAlignment::Center, UIVAlignment::Bottom);
+			text->setAlignments(UIAlignment::Bottom);
 
 			auto item = makeObject<UIListBoxItem>();
 			item->addChild(icon);
@@ -54,7 +54,7 @@ class App_Sandbox_GridListBox : public Application
 		UIGridLayout::setPlacement(item4, 1, 0);
 
 		auto text = makeObject<UIText>(_TT("Inventory"));
-		text->setAlignments(UIHAlignment::Left, UIVAlignment::Top);
+		text->setAlignments(UIAlignment::TopLeft);
 
 		auto layout = makeObject<UIBoxLayout>();
 		layout->setOrientation(UILayoutOrientation::Vertical);

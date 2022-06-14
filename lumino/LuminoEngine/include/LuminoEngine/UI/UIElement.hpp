@@ -168,26 +168,9 @@ public:
 	LN_METHOD(Property)
     const Thickness& padding() const;
 
-	/** 要素の横方向の配置方法を設定します。 */
-	LN_METHOD(Property)
-	void setHAlignment(UIHAlignment value);
-
-	/** 要素の横方向の配置方法を取得します。 */
-	LN_METHOD(Property)
-	UIHAlignment hAlignment() const;
-
-	/** 要素の縦方向の配置方法を設定します。 */
-	LN_METHOD(Property)
-	void setVAlignment(UIVAlignment value);
-
-	/** 要素の縦方向の配置方法を取得します。 */
-	LN_METHOD(Property)
-	UIVAlignment vAlignment() const;
-
-	/** 要素の配置方法を設定します。 */
+	/** 指定された配置方法に基づいて、スタイルの Margin を設定します。 */
 	LN_METHOD()
-	void setAlignments(UIHAlignment halign, UIVAlignment valign);
-
+	void setAlignments(UIAlignment value);
     
 	/** このオブジェクトの位置を設定します。 */
 	LN_METHOD(Property)
@@ -402,6 +385,8 @@ public:
 
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。
+
+	UIStyle* style() const;
 
     //UIContext* getContext() const;
 
@@ -661,8 +646,8 @@ struct UIElement::BuilderDetails : public AbstractBuilderDetails
 	Optional<float> width;
 	Optional<float> height;
 	Optional<Color> backgroundColor;
-	Optional<UIHAlignment> hAlignment;
-	Optional<UIVAlignment> vAlignment;
+	//Optional<UIHAlignment> hAlignment;
+	//Optional<UIVAlignment> vAlignment;
 
 	void apply(UIElement* p) const;
 };
@@ -682,7 +667,7 @@ struct UIElement::BuilderCore : public AbstractBuilder<T, B, D>
 	B& backgroundColor(const Color& value) { d()->backgroundColor = value; return self(); }
 
 	/** alignment property */
-	B& alignment(UIHAlignment h, UIVAlignment v) { d()->hAlignment = h; d()->vAlignment = v; return self(); }
+	//B& alignment(UIHAlignment h, UIVAlignment v) { d()->hAlignment = h; d()->vAlignment = v; return self(); }
 
 	Ref<T> buildInto(UIElement* parent = nullptr) { auto p = AbstractBuilder<T, B, D>::build(); p->addInto(parent); return p; }
 };

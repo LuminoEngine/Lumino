@@ -20,8 +20,7 @@ void NavigationBarItem::addIcon(const ln::StringView& iconName)
 {
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(iconName);
-    icon->setHAlignment(ln::UIHAlignment::Center);
-    icon->setVAlignment(ln::UIVAlignment::Center);
+    icon->setAlignments(ln::UIAlignment::Center);
     icon->setFontSize(24);
     addElement(icon);
 }
@@ -48,8 +47,7 @@ void NavigationBar::init(NavigatorManager* manager)
     setItemsLayoutPanel(ln::makeObject<ln::UIVBoxLayout2>());
     setWidth(ItemSize);
     setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 8));
-    setHAlignment(ln::UIHAlignment::Left);
-    setVAlignment(ln::UIVAlignment::Stretch);
+    setAlignments(ln::UIAlignment::LeftStretch);
     //setHorizontalContentAlignment(ln::UIHAlignment::Center);
     //setVerticalContentAlignment(ln::UIVAlignment::Center);
 }
@@ -65,8 +63,7 @@ void NavigationBar::addNavigator(Navigator* navigator)
 
     // TODO: ContentAlignment でカバーしたい
     ln::UIElement* element = navigator->getNavigationMenuItem();
-    element->setHAlignment(ln::UIHAlignment::Center);
-    element->setVAlignment(ln::UIVAlignment::Center);
+    element->setAlignments(ln::UIAlignment::Center);
     element->setFontSize(24);
     
     auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, navigator);

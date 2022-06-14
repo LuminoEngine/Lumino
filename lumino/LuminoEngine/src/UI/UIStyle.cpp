@@ -303,10 +303,22 @@ void UIStyle::setupDefault()
     // layout
     width = DefaultWidth;
     height = DefaultHeight;
-	margin = DefaultMargin;
-	padding = DefaultPadding;
-	hAlignment = DefaultHorizontalAlignment;
-	vAlignment = DefaultVerticalAlignment;
+    marginTop = Math::NaN;
+    marginRight = Math::NaN;
+    marginBottom = Math::NaN;
+    marginLeft = Math::NaN;
+    borderTop = 0.0f;//Math::NaN;
+    borderRight = 0.0f; //Math::NaN;
+    borderBottom = 0.0f; //Math::NaN;
+    borderLeft = 0.0f;   //Math::NaN;
+    paddingTop = 0.0f;   //Math::NaN;
+    paddingRight = 0.0f; //Math::NaN;
+    paddingBottom = 0.0f; //Math::NaN;
+    paddingLeft = 0.0f;   //Math::NaN;
+	//margin = DefaultMargin;
+	//padding = DefaultPadding;
+	//hAlignment = DefaultHorizontalAlignment;
+	//vAlignment = DefaultVerticalAlignment;
     horizontalContentAlignment = DefaultHorizontalContentAlignment;
     verticalContentAlignment = DefaultVerticalContentAlignment;
 	minWidth = DefaultMinWidth;
@@ -375,10 +387,20 @@ void UIStyle::reset()
 	// layout
     width.reset();
     height.reset();
-	margin.reset();
-	padding.reset();
-	hAlignment.reset();
-	vAlignment.reset();
+    marginTop.reset();
+    marginRight.reset();
+    marginBottom.reset();
+    marginLeft.reset();
+    borderTop.reset();
+    borderRight.reset();
+    borderBottom.reset();
+    borderLeft.reset();
+    paddingTop.reset();
+    paddingRight.reset();
+    paddingBottom.reset();
+    paddingLeft.reset();
+	//hAlignment.reset();
+	//vAlignment.reset();
 	horizontalContentAlignment.reset();
 	verticalContentAlignment.reset();
 	minWidth.reset();
@@ -449,10 +471,20 @@ void UIStyle::mergeFrom(const UIStyle* other)
     // layout
     if (other->width.hasValue()) width = other->width.get();
     if (other->height.hasValue()) height = other->height.get();
-    if (other->margin.hasValue()) margin = other->margin.get();
-    if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
-    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
+    if (other->marginTop.hasValue()) marginTop = other->marginTop.value();
+    if (other->marginRight.hasValue()) marginRight = other->marginRight.value();
+    if (other->marginBottom.hasValue()) marginBottom = other->marginBottom.value();
+    if (other->marginLeft.hasValue()) marginLeft = other->marginLeft.value();
+    if (other->borderTop.hasValue()) borderTop = other->borderTop.value();
+    if (other->borderRight.hasValue()) borderRight = other->borderRight.value();
+    if (other->borderBottom.hasValue()) borderBottom = other->borderBottom.value();
+    if (other->borderLeft.hasValue()) borderLeft = other->borderLeft.value();
+    if (other->paddingTop.hasValue()) paddingTop = other->paddingTop.value();
+    if (other->paddingRight.hasValue()) paddingRight = other->paddingRight.value();
+    if (other->paddingBottom.hasValue()) paddingBottom = other->paddingBottom.value();
+    if (other->paddingLeft.hasValue()) paddingLeft = other->paddingLeft.value();
+    //if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
+    //if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
     if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
     if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
@@ -542,10 +574,20 @@ void UIStyle::copyFrom(const UIStyle* other)
     // layout
     width = other->width;
     height = other->height;
-    margin = other->margin;
-    padding = other->padding;
-    hAlignment = other->hAlignment;
-    vAlignment = other->vAlignment;
+    marginTop = other->marginTop;
+    marginRight = other->marginRight;
+    marginBottom = other->marginBottom;
+    marginLeft = other->marginLeft;
+    borderTop = other->borderTop;
+    borderRight = other->borderRight;
+    borderBottom = other->borderBottom;
+    borderLeft = other->borderLeft;
+    paddingTop = other->paddingTop;
+    paddingRight = other->paddingRight;
+    paddingBottom = other->paddingBottom;
+    paddingLeft = other->paddingLeft;
+    //hAlignment = other->hAlignment;
+    //vAlignment = other->vAlignment;
     horizontalContentAlignment = other->horizontalContentAlignment;
     verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
@@ -1220,10 +1262,10 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(_TT("UIButton"))) {
 			s->minWidth = 64;
 			s->minHeight = lineContentHeight();
-			s->margin = Thickness(8);   // TODO: spacing?
-			s->padding = Thickness(spacing(2), 0);
-			s->hAlignment = UIHAlignment::Center;
-			s->vAlignment = UIVAlignment::Center;
+			s->setMargin(Thickness(8));   // TODO: spacing?
+			s->setPadding(Thickness(spacing(2), 0));
+			//s->hAlignment = UIHAlignment::Center;
+			//s->vAlignment = UIVAlignment::Center;
 			s->horizontalContentAlignment = UIHAlignment::Center;
 			s->verticalContentAlignment = UIVAlignment::Center;
 			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
@@ -1267,7 +1309,7 @@ void UITheme::buildLumitelier()
 			s->cornerRadius = CornerRadius(4);
 			s->width = 14;
 			s->height = 14;
-			s->margin = 4;
+			s->setMargin(4);
 		}
 		if (auto s = sheet->obtainStyle(_TT("UIElement.UICheckBox-CheckMark:Checked"))) {
 			auto icon = makeObject<UIStyleDecorator>();
@@ -1286,7 +1328,7 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(_TT("UIWindow"))) {
 			s->minWidth = 64;
 			s->minHeight = 64;
-			s->padding = spacing(1);
+			s->setPadding(spacing(1));
 			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor).withAlpha(0.5);
 			s->cornerRadius = CornerRadius(4);
 			s->borderThickness = 1;
@@ -1341,8 +1383,8 @@ void UITheme::buildLumitelier()
 	{
 		if (auto s = sheet->obtainStyle(_TT("UITreeItem"))) {
 			s->minHeight = lineContentHeight();
-			s->hAlignment = UIHAlignment::Stretch;
-			s->vAlignment = UIVAlignment::Top;
+			//s->hAlignment = UIHAlignment::Stretch;
+			//s->vAlignment = UIVAlignment::Top;
 		}
 		if (auto s = sheet->obtainStyle(_TT("UITreeItem:MouseOver"))) {
 			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
@@ -1353,8 +1395,8 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander"))) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
 			s->width = 16;
 			s->height = 16;
-			s->hAlignment = UIHAlignment::Center;
-			s->vAlignment = UIVAlignment::Center;
+			//s->hAlignment = UIHAlignment::Center;
+			//s->vAlignment = UIVAlignment::Center;
 			s->backgroundColor = Color::Transparency;
 		}
 		//if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:MouseOver")) {
@@ -1469,10 +1511,10 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(_TT("UIComboBox"))) {
 			s->minWidth = 64;
 			s->minHeight = lineContentHeight();
-			s->margin = Thickness(8);   // TODO: spacing?
-			s->padding = Thickness(spacing(2), 0);
-			s->hAlignment = UIHAlignment::Center;
-			s->vAlignment = UIVAlignment::Center;
+			s->setMargin(Thickness(8));   // TODO: spacing?
+			s->setPadding(Thickness(spacing(2), 0));
+			//s->hAlignment = UIHAlignment::Center;
+			//s->vAlignment = UIVAlignment::Center;
 			s->horizontalContentAlignment = UIHAlignment::Center;
 			s->verticalContentAlignment = UIVAlignment::Center;
 			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
@@ -1488,7 +1530,7 @@ void UITheme::buildLumitelier()
 	{
 		if (auto s = sheet->obtainStyle(_TT("UITabBarItem"))) {
 			s->minHeight = lineContentHeight();
-			s->padding = Thickness(spacing(2), 0);
+			s->setPadding(Thickness(spacing(2), 0));
 			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor);
 		}
 		if (auto s = sheet->obtainStyle(_TT("UITabBarItem:Selected"))) {

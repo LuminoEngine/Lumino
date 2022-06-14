@@ -184,10 +184,6 @@ private:
         Activated,
     };
 
-    // struct DebugToolState
-    //{
-    //	bool
-    // };
 
     void resolveActiveGraphicsAPI();
     virtual bool onPlatformEvent(const PlatformEventArgs& e) override;

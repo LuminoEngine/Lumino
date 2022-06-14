@@ -230,7 +230,7 @@ bool AssetBrowserPane::init(lna::EditorContext* context)
 
         // TODO: とりいそぎ LevelEditor に追加したい臨時ボタン
         auto button = ln::UIButton::create(_TT(">"));
-        button->setAlignments(ln::UIHAlignment::Right, ln::UIVAlignment::Center);
+        button->setAlignments(ln::UIAlignment::Right);
         button->setMargin(1);
         item->addChild(button);
 
@@ -257,8 +257,7 @@ bool AssetBrowserNavigator::init(lna::EditorContext* context)
 
     m_navigationItem = ln::makeObject<ln::UIIcon>();
     m_navigationItem->setIconName(_TT("file"));
-    m_navigationItem->setHAlignment(ln::UIHAlignment::Center);
-    m_navigationItem->setVAlignment(ln::UIVAlignment::Center);
+    m_navigationItem->setAlignments(ln::UIAlignment::Center);
     m_navigationItem->setFontSize(24);
 
     m_mainPane = ln::makeObject<AssetBrowserPane>(context);

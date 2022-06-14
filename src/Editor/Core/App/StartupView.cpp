@@ -59,7 +59,7 @@ ln::Result StartupView::init()
 
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(_TT("file"));
-    icon->setHAlignment(ln::UIHAlignment::Center);
+    icon->setAlignments(ln::UIAlignment::Center);
     icon->setMargin(ln::Thickness(0, 0, 0, 4));
     m_openProjectButton->addInlineVisual(icon, ln::UIInlinePlacement::Top);
 

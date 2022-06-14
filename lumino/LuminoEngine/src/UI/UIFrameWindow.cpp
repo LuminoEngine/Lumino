@@ -274,6 +274,8 @@ void UIFrameWindow::init(bool mainWindow) {
         m_renderView->setRootElement(this);
     }
 
+    m_manager->addFrameWindow(this);
+
     if (!mainWindow) {
         WindowCreationSettings settings;
         auto* platformManager = detail::PlatformManager::instance();
@@ -284,6 +286,38 @@ void UIFrameWindow::init(bool mainWindow) {
 
     // EditorMode の時の初回描画用
     invalidateVisual();
+}
+
+void UIFrameWindow::onDispose(bool explicitDisposing) {
+    if (m_imguiContext) {
+        m_imguiContext->dispose();
+        m_imguiContext = nullptr;
+    }
+
+    if (m_renderView) {
+        m_renderView->dispose();
+        m_renderView = nullptr;
+    }
+    if (m_swapChain) {
+        m_swapChain->dispose();
+        m_swapChain = nullptr;
+    }
+
+    if (m_platformWindow) {
+        m_platformWindow->detachEventListener(this);
+        if (!specialElementFlags().hasFlag(detail::UISpecialElementFlags::MainWindow)) {
+            // TODO: platformManager とるよりも m_platformWindow->dispose() で消せるようにした方がいいかも
+            detail::PlatformManager::instance()->windowManager()->destroyWindow(m_platformWindow);
+        }
+        m_platformWindow = nullptr;
+    }
+
+    if (m_manager) {
+        m_manager->removeFrameWindow(this);
+        m_manager = nullptr;
+    }
+
+    UIDomainProvidor::onDispose(explicitDisposing);
 }
 
 void UIFrameWindow::setAllowDragDrop(bool value) {
@@ -333,34 +367,19 @@ void UIFrameWindow::resetSizeFromPlatformWindow() {
     m_clientSize = size;
 }
 
-void UIFrameWindow::onDispose(bool explicitDisposing) {
-    if (m_imguiContext) {
-        m_imguiContext->dispose();
-        m_imguiContext = nullptr;
-    }
-
-    if (m_renderView) {
-        m_renderView->dispose();
-        m_renderView = nullptr;
-    }
-    if (m_swapChain) {
-        m_swapChain->dispose();
-        m_swapChain = nullptr;
-    }
-
-    if (m_platformWindow) {
-        m_platformWindow->detachEventListener(this);
-        if (!specialElementFlags().hasFlag(detail::UISpecialElementFlags::MainWindow)) {
-            // TODO: platformManager とるよりも m_platformWindow->dispose() で消せるようにした方がいいかも
-            detail::PlatformManager::instance()->windowManager()->destroyWindow(m_platformWindow);
-        }
-        m_platformWindow = nullptr;
-    }
-
-    UIDomainProvidor::onDispose(explicitDisposing);
-}
-
 void UIFrameWindow::renderContents(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget) {
+    if (m_swapChain) {
+        if (LN_ASSERT(!commandList)) return;
+        if (LN_ASSERT(!renderTarget)) return;
+        m_renderingGraphicsContext = m_swapChain->currentCommandList2();
+        m_renderingGraphicsContext->beginCommandRecoding();
+        commandList = m_renderingGraphicsContext;
+        renderTarget = m_swapChain->currentBackbuffer();
+    }
+    else {
+        // for external graphics context.
+    }
+
     if (m_ImGuiLayerEnabled) {
         // TODO: time
         m_imguiContext->updateFrame(0.0166f);
@@ -417,13 +436,14 @@ void UIFrameWindow::renderContents(GraphicsCommandList* commandList, RenderTarge
             m_renderView->render(commandList, renderTarget);
         }
     }
+
+    if (m_swapChain) {
+        m_renderingGraphicsContext->endCommandRecoding();
+    }
 }
 
 void UIFrameWindow::present() {
-    m_renderingGraphicsContext = m_swapChain->currentCommandList2();
-    m_renderingGraphicsContext->beginCommandRecoding();
-    renderContents(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
-    m_renderingGraphicsContext->endCommandRecoding();
+    renderContents(nullptr, nullptr);
     m_swapChain->present();
 }
 

@@ -61,12 +61,14 @@ public:
     void updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition);
     const Ref<UIElement>& mouseHoverElement() const { return m_mouseHoverElement; }
 
+    // Capture controls
     void retainCapture(UIElement* element);
     void releaseCapture(UIElement* element);
     void grabCursor(UIElement* element);
     void releaseCursor(UIElement* element);
     const Ref<UIElement>& capturedElement() const { return m_capturedElement; }
 
+    // Focus controls
     void clearFocus(UIElement* element);
     void tryGetInputFocus(UIElement* element);
     const Ref<UIElement>& forcusedElement() const { return m_forcusedElement; }
@@ -79,6 +81,8 @@ public:
 
     // const Ref<UIFrameLayout>& defaultLayout() const { return m_defaultLayout; }
 
+    void addFrameWindow(UIFrameWindow* value);
+    void removeFrameWindow(UIFrameWindow* value);
     void registerActiveTimer(UIActiveTimer* timer);
     void unregisterActiveTimer(UIActiveTimer* timer);
     void updateFrame(float elapsedSeconds);
@@ -107,6 +111,8 @@ private:
 
     GraphicsManager* m_graphicsManager;
     Ref<Application> m_application;
+    Array<UIFrameWindow*> m_frameWindows;
+
     String m_defaultThemeName;
     // PlatformManager* platformManager;
     Ref<UIControl> m_primaryElement;

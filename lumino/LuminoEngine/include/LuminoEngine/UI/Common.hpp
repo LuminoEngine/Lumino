@@ -8,6 +8,7 @@ class UITheme;
 class UIStyleContext;
 class UICommand;
 class UIElement;
+class UIFrameWindow;
 class UILayoutPanel;
 class UIDomainProvidor;
 class UIViewport;

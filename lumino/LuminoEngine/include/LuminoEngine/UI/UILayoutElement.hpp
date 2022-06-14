@@ -13,6 +13,49 @@ class UIElement;
 class UITreeView2;
 namespace detail { class LayoutHelper; }
 
+enum class UIStyleValueUnit {
+    Point,
+    Percent,
+};
+
+class UIStyleValue {
+public:
+    static const UIStyleValue Null;
+
+    constexpr UIStyleValue(float pointValue) noexcept
+        : m_value(pointValue)
+        , m_unit(UIStyleValueUnit::Point) {}
+
+    constexpr UIStyleValue() noexcept
+        : m_value(std::numeric_limits<float>::quiet_NaN())
+        , m_unit(UIStyleValueUnit::Point) {}
+
+    constexpr UIStyleValue(float value, UIStyleValueUnit unit) noexcept
+        : m_value(value)
+        , m_unit(unit) {}
+
+    constexpr float value() const noexcept { return m_value; }
+
+    float valueOr(float defaultValue) const noexcept { return isNull() ? defaultValue : m_value; }
+
+    constexpr UIStyleValueUnit unit() const noexcept { return m_unit; }
+
+    bool isNull() const noexcept { return std::isnan(m_value); }
+
+    bool isPercent() const { return m_unit == UIStyleValueUnit::Percent; }
+
+    static constexpr UIStyleValue ofNull() noexcept { return UIStyleValue{}; }
+
+    static constexpr UIStyleValue makePercent(float percent) noexcept { return UIStyleValue(percent, UIStyleValueUnit::Percent); }
+    //static inline constexpr UIStyleValue Null = UIStyleValue();
+
+private:
+    float m_value;
+    UIStyleValueUnit m_unit;
+};
+
+
+
 
 enum class UIFontWeight
 {
@@ -58,6 +101,56 @@ enum class UIHAlignment
 
 	/** 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
 	Stretch,
+};
+
+/** UI要素の表示位置を示します。*/
+LN_ENUM()
+enum class UIAlignment {
+    /** 子要素を、親のレイアウト スロットの左側に揃えて配置します。*/
+    Left = 0,
+
+    /** 子要素を、親のレイアウト スロットの上端に揃えて配置します。*/
+    Top,
+
+    /** 子要素を、親のレイアウト スロットの右側に揃えて配置します。*/
+    Right,
+
+    /** 子要素を、親のレイアウト スロットの下端に揃えて配置します。*/
+    Bottom,
+
+    /** 子要素を、親のレイアウト スロットの中央に揃えて配置します。*/
+    Center,
+
+    /** 子要素を、親のレイアウト スロットの左上に揃えて配置します。*/
+    TopLeft,
+
+    /** 子要素を、親のレイアウト スロットの右上に揃えて配置します。*/
+    TopRight,
+
+    /** 子要素を、親のレイアウト スロットの左下に揃えて配置します。*/
+    BottomLeft,
+
+    /** 子要素を、親のレイアウト スロットの右下に揃えて配置します。*/
+    BottomRight,
+
+	HorizontalStretch,
+
+    VerticalStretch,
+
+    /** 子要素を、親のレイアウト スロットの左側に揃え、上下を引き延ばして配置します。*/
+    LeftStretch,
+
+    /** 子要素を、親のレイアウト スロットの上側に揃え、左右を引き延ばして配置します。*/
+    TopStretch,
+
+    /** 子要素を、親のレイアウト スロットの右側に揃え、上下を引き延ばして配置します。*/
+    RightStretch,
+
+    /** 子要素を、親のレイアウト スロットの下側に揃え、左右を引き延ばして配置します。*/
+    BottomStretch,
+
+    /** 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
+    Stretch,
 };
 
 

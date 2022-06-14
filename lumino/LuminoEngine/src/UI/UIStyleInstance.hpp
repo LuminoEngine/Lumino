@@ -15,26 +15,26 @@ class UIStyleClassInstance;
 // UIStyle の optional 等を解決したもの。
 // メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
 class UIStyleInstance
-    : public RefObject
-{
+    : public RefObject {
 public:
     //UIStyle* sourceLocalStyle = nullptr;	// 以下のデータの生成元となったローカスのスタイル
 
     // layout
     float width;
     float height;
-    Thickness margin;
+    Thickness margin2;
+    Thickness border;
     Thickness padding;
-    UIHAlignment hAlignment;
-    UIVAlignment vAlignment;
+    //UIHAlignment hAlignment;
+    //UIVAlignment vAlignment;
     UIHAlignment horizontalContentAlignment;
     UIVAlignment verticalContentAlignment;
     float minWidth;
     float minHeight;
     float maxWidth;
     float maxHeight;
-	UIOverflowBehavior overflowX;
-	UIOverflowBehavior overflowY;
+    UIOverflowBehavior overflowX;
+    UIOverflowBehavior overflowY;
 
     // layout transform
     Vector3 position;
@@ -52,21 +52,21 @@ public:
 
     // border
     Thickness borderThickness = Thickness::Zero;
-    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0);	// TODO: borderRadius
-    Color 		leftBorderColor = Color::Gray;
-    Color 		topBorderColor = Color::Gray;
-    Color 		rightBorderColor = Color::Gray;
-    Color 		bottomBorderColor = Color::Gray;
+    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0); // TODO: borderRadius
+    Color leftBorderColor = Color::Gray;
+    Color topBorderColor = Color::Gray;
+    Color rightBorderColor = Color::Gray;
+    Color bottomBorderColor = Color::Gray;
     BorderDirection borderDirection = BorderDirection::Outside;
-	bool borderInset = false;
+    bool borderInset = false;
 
-	// shadow
-	float shadowOffsetX;
-	float shadowOffsetY;
-	float shadowBlurRadius;
-	float shadowSpreadRadius;
-	Color shadowColor;
-	bool shadowInset;
+    // shadow
+    float shadowOffsetX;
+    float shadowOffsetY;
+    float shadowBlurRadius;
+    float shadowSpreadRadius;
+    Color shadowColor;
+    bool shadowInset;
 
     // text
     Color textColor;
@@ -83,20 +83,16 @@ public:
     float opacity;
     Color colorScale;
     Color blendColor;
-	ColorTone tone;
+    ColorTone tone;
 
-
-	// decorators
-	List<Ref<UIStyleDecorator>> decorators;
+    // decorators
+    List<Ref<UIStyleDecorator>> decorators;
 
     // commited cache
     Ref<Font> font;
     Ref<Material> backgroundMaterial;
 
-	UITheme* theme = nullptr;
-
-
-
+    UITheme* theme = nullptr;
 
     // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 
@@ -109,18 +105,14 @@ public:
 
     static void updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
 
-	Size actualOuterSpace() const
-	{
-		return Size(margin.width(), margin.height());
-		//if (borderInset)
-		//	return Size(margin.width(), margin.height());
-		//else
-		//	return Size(margin.width() + borderThickness.width(), margin.height() + borderThickness.height());
-	}
-	Size actualOuterOffset() const
-	{
-		return Size(margin.left, margin.top);
-	}
+    Size actualOuterSpace() const {
+        float w = margin2.width();
+        float h = margin2.height();
+        return Size(Math::isNaN(w) ? 0.0f : w, Math::isNaN(h) ? 0.0f : h);
+    }
+    Vector2 actualOuterOffset() const {
+        return Vector2(Math::isNaN(margin2.left) ? 0.0f : margin2.left, Math::isNaN(margin2.top) ? 0.0f : margin2.top);
+    }
 
     void updateAnimationData();
     bool hasAnimationData() const { return m_animationData != nullptr; }
@@ -130,8 +122,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 
 private:
-    struct AnimationData
-    {
+    struct AnimationData {
         Ref<UIScalarAnimationInstance> width;
         Ref<UIScalarAnimationInstance> height;
         Ref<UIScalarAnimationInstance> positionX;
@@ -141,8 +132,7 @@ private:
         Ref<UIScalarAnimationInstance> opacity;
     };
 
-    AnimationData* acquireAnimationData()
-    {
+    AnimationData* acquireAnimationData() {
         if (!m_animationData) {
             m_animationData = std::make_unique<AnimationData>();
         }
@@ -154,24 +144,21 @@ private:
 };
 
 class UIStyleClassInstance
-    : public RefObject
-{
+    : public RefObject {
 public:
     UIStyleClassInstance();
     const Ref<UIStyleInstance>& style() const { return m_style; }
-    UIStyleInstance* findStateStyle(const StringView& stateName) const;  // 無い場合は nullptr
-    UIStyleInstance* findSubElementStyle(const StringView& elementName) const;   // 無い場合は nullptr
+    UIStyleInstance* findStateStyle(const StringView& stateName) const;        // 無い場合は nullptr
+    UIStyleInstance* findSubElementStyle(const StringView& elementName) const; // 無い場合は nullptr
     void mergeFrom(const UIStyleSet* other);
 
 private:
-    struct VisualStateSlot
-    {
+    struct VisualStateSlot {
         String name;
         Ref<UIStyleInstance> style;
     };
 
-    struct SubElementSlot
-    {
+    struct SubElementSlot {
         String name;
         Ref<UIStyleInstance> style;
     };
@@ -185,4 +172,3 @@ private:
 
 } // namespace detail
 } // namespace ln
-

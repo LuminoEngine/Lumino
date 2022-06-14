@@ -160,7 +160,7 @@ public:
 #if 1
         auto label = makeObject<UIControl>();
         //label->setBackgroundColor(Color::Blue);
-        label->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
+        label->setAlignments(UIAlignment::Center);
 
         auto textblock = UIText::create(_T("E"));
         textblock->setBackgroundColor(Color::Gray);
@@ -172,7 +172,7 @@ public:
         label->addInlineVisual(textblock, UIInlinePlacement::Left);
 
         auto text2 = UIText::create(_T("Examine"));
-        text2->setAlignments(UIHAlignment::Center, UIVAlignment::Center);
+        text2->setAlignments(UIAlignment::Center);
         text2->setMargin(Thickness(8, 0, 0, 0));
         label->addChild(text2);
 

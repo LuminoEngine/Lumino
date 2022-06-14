@@ -80,8 +80,7 @@ void UIText::init()
     // また Alignment で一番使うのは (UIHAlignment::Left, UIVAlignment::Center) だったりする。
     // でもこれをデフォルトにするのはちょっと驚き大きめ。
     // そうするとほぼ必ず setAlignments は呼び出すことになるので、デフォルト左上もあまり嬉しくない。デバッグしやすさを優先してみる。
-    setHAlignment(UIHAlignment::Center);
-    setVAlignment(UIVAlignment::Center);
+    setAlignments(UIAlignment::Center);
 
     setBlendMode(BlendMode::Alpha);
 

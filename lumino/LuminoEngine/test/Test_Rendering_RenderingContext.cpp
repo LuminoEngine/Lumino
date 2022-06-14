@@ -17,8 +17,7 @@ public:
 TEST_F(Test_Rendering_RenderingContext, RenderTargetCrossDrawing)
 {
     auto element1 = makeObject<TestElement>();
-    element1->setHAlignment(UIHAlignment::Stretch);
-    element1->setVAlignment(UIVAlignment::Stretch);
+    element1->setAlignments(UIAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
 
 	auto tex1 = Texture2D::load(LN_ASSETFILE("Sprite2.png"));
