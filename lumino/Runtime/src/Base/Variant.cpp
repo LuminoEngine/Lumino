@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Variant.hpp>
+#include <LuminoEngine/Reflection/Serializer3.hpp>
 
 namespace ln {
 
@@ -305,6 +306,141 @@ void Variant::copy(const Variant& value)
 		assert(0);
 		break;
 	}
+}
+
+void Variant::serializeInternal3(Serializer3& ar, ArchiveNodeType loadType) {
+
+    Variant& value = *this;
+
+    if (ar.isSaving()) {
+        switch (value.type()) {
+            case VariantType::Null: {
+                // LN_NOTIMPLEMENTED();
+                // Ref<Object> null = nullptr;
+                // ar.process(null);
+                ar.processNull();
+                break;
+            }
+            case VariantType::Bool: {
+                auto v = value.get<bool>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::Char: {
+                LN_NOTIMPLEMENTED();
+                break;
+            }
+            case VariantType::Int8: {
+                auto v = value.get<int8_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::Int16: {
+                auto v = value.get<int16_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::Int32: {
+                auto v = value.get<int32_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::Int64: {
+                auto v = value.get<int64_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::UInt8: {
+                auto v = value.get<uint8_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::UInt16: {
+                auto v = value.get<uint16_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::UInt32: {
+                auto v = value.get<uint32_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::UInt64: {
+                auto v = value.get<uint64_t>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::Float: {
+                auto v = value.get<float>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::Double: {
+                auto v = value.get<double>();
+                ar.process(v);
+                break;
+            }
+            case VariantType::String: {
+                auto v = value.get<String>();
+                ar.process(v);
+                break;
+            }
+            //case VariantType::List: {
+            //    List<Ref<Variant>>& v = value.list();
+            //    ar.process(v);
+            //    break;
+            //}
+            default:
+                LN_UNREACHABLE();
+                break;
+        }
+    }
+    else {
+        auto type = loadType;
+        switch (type) {
+            case ln::ArchiveNodeType::Null: {
+                value.clear();
+                break;
+            }
+            case ln::ArchiveNodeType::Bool: {
+                bool v;
+                ar.process(v);
+                value = v;
+                break;
+            }
+            case ln::ArchiveNodeType::Int64: {
+                int64_t v;
+                ar.process(v);
+                value = v;
+                break;
+            }
+            case ln::ArchiveNodeType::Double: {
+                double v;
+                ar.process(v);
+                value = v;
+                break;
+            }
+            case ln::ArchiveNodeType::String: {
+                String v;
+                ar.process(v);
+                value = v;
+                break;
+            }
+            case ln::ArchiveNodeType::Object: {
+                LN_NOTIMPLEMENTED();
+                break;
+            }
+            //case ln::ArchiveNodeType::Array: {
+            //    auto v = makeRef<List<Ref<Variant>>>();
+            //    ar.process(v);
+            //    value = v;
+            //    break;
+            //}
+            default:
+                LN_UNREACHABLE();
+                break;
+        }
+    }
 }
 
 } // namespace ln

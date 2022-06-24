@@ -6,7 +6,6 @@ include(cmake/LuminoConfig-LuminoRuntime.cmake)
 #-------------------------------------------------------------------------------
 # Files
 #-------------------------------------------------------------------------------
-
 set(LN_SOURCES
     include/LuminoEngine/RuntimeModule.hpp
     src/pch.cpp
@@ -46,6 +45,7 @@ set(LN_SOURCES
 #-------------------------------------------------------------------------------
 set(LINK_LIBS
     LuminoCore
+    rapidjson
     yaml-cpp
 )
 

@@ -63,10 +63,6 @@ public:
 	int getContainerElementCount() const { return onReadContainerElementCount(); }
 	//void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	//int getNextIndex() const { return m_nextIndex; }
-    virtual bool moveToNamedMember(const StringView& name) = 0;
-    virtual bool moveToIndexedMember(int index) = 0;
-	virtual bool hasKey(const StringView& name) const = 0;
-	virtual const String& memberKey(int index) const = 0;	// open済みmapコンテナのキーを探す
 	bool openContainer()
 	{
 		//int dummy;
@@ -77,18 +73,22 @@ public:
 		return r;
 	}		// Object Container をカレントにする
 	void closeContainer() { onCloseContainer(); /*m_nodeStack.pop();*/ }
+    bool moveToNamedMember(const StringView& name) { return onMoveToNamedMember(name); };
+    bool moveToIndexedMember(int index) { return onMoveToIndexedMember(index); }
+    bool hasKey(const StringView& name) const { return onHasKey(name); }
+    const String& memberKey(int index) const { return onGetMemberKey(index); } // open済みmapコンテナのキーを探す
+    ArchiveNodeType getReadingValueType() { return onGetReadingValueType(); }    // 次に readValue で読まれる(setNextXXXX されている)値の型を取得
 	bool readValue(bool* outValue) { bool r = onReadValueBool(outValue); postRead(); return r; }
 	bool readValue(int64_t* outValue) { bool r = onReadValueInt64(outValue); postRead(); return r; }
 	bool readValue(double* outValue) { bool r = onReadValueDouble(outValue); postRead(); return r; }
 	bool readValue(String* outValue) { bool r = onReadValueString(outValue); postRead(); return r; }
-	virtual ArchiveNodeType getReadingValueType() = 0;	// 次に readValue で読まれる(setNextXXXX されている)値の型を取得
 
 protected:
 	virtual ArchiveContainerType onGetContainerType() const = 0;
 
 	virtual void onWriteObject() = 0;
-	virtual void onWriteArray() = 0;
 	virtual void onWriteObjectEnd() = 0;
+	virtual void onWriteArray() = 0;
 	virtual void onWriteArrayEnd() = 0;
 	virtual void onWriteValueNull() = 0;
 	virtual void onWriteValueBool(bool value) = 0;
@@ -98,7 +98,12 @@ protected:
 
 	virtual bool onOpenContainer(/*int* outElementCount*/) = 0;
 	virtual bool onCloseContainer() = 0;
-	virtual int onReadContainerElementCount() const = 0;
+    virtual int onReadContainerElementCount() const = 0;
+    virtual bool onMoveToNamedMember(const StringView& name) = 0;
+    virtual bool onMoveToIndexedMember(int index) = 0;
+    virtual bool onHasKey(const StringView& name) const = 0;
+    virtual const String& onGetMemberKey(int index) const = 0;
+	virtual ArchiveNodeType onGetReadingValueType() = 0;	// 次に readValue で読まれる(setNextXXXX されている)値の型を取得
 	virtual bool onReadValueBool(bool* outValue) = 0;
 	virtual bool onReadValueInt64(int64_t* outValue) = 0;
 	virtual bool onReadValueDouble(double* outValue) = 0;
@@ -245,6 +250,12 @@ protected:
 		if (checkTopTypeForWrite(JsonElementType::Object)) {
 			static_cast<JsonObject*>(m_nodeStack.top())->addNullValue(getNextName());
 		}
+		else if (checkTopTypeForWrite(JsonElementType::Array)) {
+			static_cast<JsonArray*>(m_nodeStack.top())->addNullValue();
+		}
+		else {
+			LN_UNREACHABLE();  
+		}
 	}
 
 #define ON_WRITE_VALUE_FUNC(type, name) \
@@ -281,7 +292,7 @@ protected:
         m_mode = ArchiveMode::Load;
     }
 
-    virtual bool moveToNamedMember(const StringView& name) override
+    virtual bool onMoveToNamedMember(const StringView& name) override
     {
         if (LN_REQUIRE(!m_nodeStack.empty())) return false;
         if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Object)) return false;
@@ -293,7 +304,7 @@ protected:
         return true;
     }
 
-    virtual bool moveToIndexedMember(int index) override
+    virtual bool onMoveToIndexedMember(int index) override
     {
         if (LN_REQUIRE(!m_nodeStack.empty())) return false;
         if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Array)) return false;
@@ -305,7 +316,7 @@ protected:
         return true;
     }
 
-	virtual bool hasKey(const StringView& name) const override
+	virtual bool onHasKey(const StringView& name) const override
 	{
         if (LN_REQUIRE(!m_nodeStack.empty())) return false;
         if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Object)) return false;
@@ -324,7 +335,7 @@ protected:
 		//}
 	}
 
-	virtual const String& memberKey(int index) const override
+	virtual const String& onGetMemberKey(int index) const override
 	{
 		if (checkCurrentContainerType(JsonElementType::Object))
 		{
@@ -378,6 +389,7 @@ protected:
         //}
 
         if (LN_REQUIRE(m_current)) return false;
+        if (LN_ASSERT(m_current->type() == JsonElementType::Array || m_current->type() == JsonElementType::Object)) return false;
 
         m_nodeStack.push(m_current);
         m_current = nullptr;
@@ -513,7 +525,7 @@ protected:
 		return true;
 	}
 
-	virtual ArchiveNodeType getReadingValueType() override
+	virtual ArchiveNodeType onGetReadingValueType() override
 	{
 		//JsonValue* v = readValueHelper();
 		//if (!v) return ArchiveNodeType::Null;

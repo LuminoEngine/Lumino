@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 		char* testArgs[] = {
 			argv[0],
 			"--gtest_break_on_failure",
-			//"--gtest_filter=Test_UI_UITextBlock.*"
+			//"--gtest_filter=Test_Base_Serializer.ClassVersion"
 		};
 		argc = sizeof(testArgs) / sizeof(char*);
 		argv = testArgs;

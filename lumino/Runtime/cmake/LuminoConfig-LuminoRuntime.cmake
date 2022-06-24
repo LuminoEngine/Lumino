@@ -1,4 +1,5 @@
 
+find_package(RapidJSON CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 
 

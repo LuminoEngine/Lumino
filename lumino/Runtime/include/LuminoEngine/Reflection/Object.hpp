@@ -11,6 +11,7 @@ class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
 class Serializer2;
+class Serializer3;
 class ViewProperty;
 class ViewPropertyInfo;
 class ObservablePropertyBase;
@@ -28,8 +29,7 @@ class TypeInfoTraits;
 //   なので代案としてグローバル変数。切り詰めても ThreadLocalStorage か。
 // postInit() みたいなのを作って、ActiveWorkd への追加などはここでやる？
 // → 代替案としてはあり。後でちゃんと検討してみよう。
-class ObjectInitializeContext : public RefObject
-{
+class ObjectInitializeContext : public RefObject {
 public:
     static Ref<ObjectInitializeContext> Default;
 
@@ -37,7 +37,7 @@ public:
 };
 
 namespace detail {
-class WeakRefInfo; 
+class WeakRefInfo;
 class ObjectHelper;
 class EngineDomain;
 struct ObjectRuntimeData;
@@ -45,8 +45,7 @@ struct ObjectRuntimeData;
 // ファイルを一意に識別する。
 // Lumino の各 AssetObject は load() にて拡張子省略されたパスを受け入れるが、
 // AssetPath はそれが解決された後の、本当に読み込みたいファイルのパスとなる。
-class AssetPath
-{
+class AssetPath {
 public:
     static const String FileSchemeName;
     static const String AssetSchemeName;
@@ -70,8 +69,7 @@ public:
     //static AssetPath resolveAssetPath(const Path& filePath, const std::initializer_list<const Char*>& candidateExts);
     static AssetPath resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount);
     template<size_t N>
-    static AssetPath resolveAssetPath(const Path& filePath, const Char* (&candidateExts)[N])
-    {
+    static AssetPath resolveAssetPath(const Path& filePath, const Char* (&candidateExts)[N]) {
         return resolveAssetPath(filePath, candidateExts, N);
     }
 
@@ -83,9 +81,9 @@ public:
     const String& host() const { return m_components->host; }
     const Path& path() const { return m_components->path; }
 
-    bool isAssetFilePath() const;   // .yml か
+    bool isAssetFilePath() const; // .yml か
     static bool isAssetFilePath(const Path& path);
-    AssetPath getParentAssetPath() const;  // 親フォルダ
+    AssetPath getParentAssetPath() const; // 親フォルダ
     String toString() const;
     bool isNull() const noexcept { return m_components == nullptr || m_components->scheme.isEmpty(); }
     bool hasValue() const noexcept { return !isNull(); }
@@ -95,16 +93,14 @@ public:
 
     static AssetPath resolveAssetPath(const AssetPath& assetPath, const Char** exts, size_t extsCount);
     template<size_t N>
-    static AssetPath resolveAssetPath(const AssetPath& assetPath, const Char*(&candidateExts)[N])
-    {
+    static AssetPath resolveAssetPath(const AssetPath& assetPath, const Char* (&candidateExts)[N]) {
         return resolveAssetPath(assetPath, candidateExts, N);
     }
 
 private:
-    struct Components
-    {
-        String scheme;    // e.g) "asset", "file"
-        String host;      // e.g) "", "MyAtchive"
+    struct Components {
+        String scheme; // e.g) "asset", "file"
+        String host;   // e.g) "", "MyAtchive"
 
         // パス文字列 ("asset://MyArchive/file" など) からは、Unix 形式のフルパスかどうかを判断できない。
         // scheme によって解釈を変える。
@@ -117,7 +113,7 @@ private:
         //  Note: そもそも file scheme は次の目的で使用するものであり、リリースランタイムで使用するべきではない。
         //  - Editor で、Assets フォルダ以外のローカルファイルを、インポートなどの目的で読み込む
         //  - ローカルでのお試し動作でファイルのフルパスを指定する。
-        Path path;        // e.g) "C:/dir/file.txt", "dir/file.txt"
+        Path path; // e.g) "C:/dir/file.txt", "dir/file.txt"
     };
 
     static AssetPath makeEmpty();
@@ -125,94 +121,94 @@ private:
     std::shared_ptr<Components> m_components;
 };
 
-enum class ObjectFlags
-{
-	None = 0x0000,
-	Property = 0x0001,
+enum class ObjectFlags {
+    None = 0x0000,
+    Property = 0x0001,
 };
 
 } // namespace detail
 
 #if defined(__GNUC__) && !defined(COMPILER_ICC)
-# define LN_ATTRIBUTE_UNUSED_ __attribute__ ((unused))
+#define LN_ATTRIBUTE_UNUSED_ __attribute__((unused))
 #else
-# define LN_ATTRIBUTE_UNUSED_
+#define LN_ATTRIBUTE_UNUSED_
 #endif
 
-#define LN_OBJECT \
-    friend class ::ln::TypeInfo; \
-    friend class ::ln::detail::EngineDomain; \
-    friend class ::ln::EngineContext2; \
-	template<class T> friend class TypeInfoTraits; \
-    static ::ln::TypeInfo* _lnref_getTypeInfo(); \
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
-	static ::ln::TypeInfo* _lnref_typeInfo; \
+#define LN_OBJECT                                                       \
+    friend class ::ln::TypeInfo;                                        \
+    friend class ::ln::detail::EngineDomain;                            \
+    friend class ::ln::EngineContext2;                                  \
+    template<class T>                                                   \
+    friend class TypeInfoTraits;                                        \
+    static ::ln::TypeInfo* _lnref_getTypeInfo();                        \
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;    \
+    static ::ln::TypeInfo* _lnref_typeInfo;                             \
     static void _lnref_registerTypeInfo(::ln::EngineContext2* context); \
-	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo);
+    static void _lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo);
 
-#define LN_OBJECT_IMPLEMENT(classType, baseClassType) \
-    ::ln::TypeInfo* classType::_lnref_getTypeInfo() { return _lnref_typeInfo; } \
-    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
-	::ln::TypeInfo* classType::_lnref_typeInfo = nullptr; \
-    void classType::_lnref_registerTypeInfo(::ln::EngineContext2* context) { \
-        ::ln::TypeInfo* baseTypeInfo = ::ln::TypeInfo::getTypeInfo<baseClassType>(); \
+#define LN_OBJECT_IMPLEMENT(classType, baseClassType)                                                      \
+    ::ln::TypeInfo* classType::_lnref_getTypeInfo() { return _lnref_typeInfo; }                            \
+    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }             \
+    ::ln::TypeInfo* classType::_lnref_typeInfo = nullptr;                                                  \
+    void classType::_lnref_registerTypeInfo(::ln::EngineContext2* context) {                               \
+        ::ln::TypeInfo* baseTypeInfo = ::ln::TypeInfo::getTypeInfo<baseClassType>();                       \
         if (LN_ASSERT(baseTypeInfo, "Base type '" #baseClassType "' TypeInfo is not registered.")) return; \
-        ::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, baseTypeInfo, {}); \
-        _lnref_registerTypeInfoInitializer(context, typeInfo); \
-        _lnref_typeInfo = typeInfo; \
-    } \
-	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo)
+        ::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, baseTypeInfo, {});         \
+        _lnref_registerTypeInfoInitializer(context, typeInfo);                                             \
+        _lnref_typeInfo = typeInfo;                                                                        \
+    }                                                                                                      \
+    void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo)
 
-#define LN_INTERNAL_NEW_OBJECT \
-    template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
-    template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); 
+#define LN_INTERNAL_NEW_OBJECT                         \
+    template<class T, typename... TArgs>               \
+    friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
+    template<class T, typename... TArgs>               \
+    friend void ln::placementNewObject(void* ptr, TArgs&&... args);
 
 #ifndef LN_CONSTRUCT_ACCESS
-#define LN_CONSTRUCT_ACCESS \
-		template<class T_, typename... TArgs_> friend ln::Ref<T_> ln::makeObject(TArgs_&&... args); \
-		template<class T_, typename... TArgs_> friend ln::Ref<T_> ln::makeObject2(TArgs_&&... args); \
-		template<class T_, typename... TArgs_> friend void ln::placementNewObject(void* ptr, TArgs_&&... args); \
-		protected
+#define LN_CONSTRUCT_ACCESS                                          \
+    template<class T_, typename... TArgs_>                           \
+    friend ln::Ref<T_> ln::makeObject(TArgs_&&... args);             \
+    template<class T_, typename... TArgs_>                           \
+    friend ln::Ref<T_> ln::makeObject2(TArgs_&&... args);            \
+    template<class T_, typename... TArgs_>                           \
+    friend void ln::placementNewObject(void* ptr, TArgs_&&... args); \
+protected
 #endif
 
 //#define LN_BASE_INIT(base, ...) \
 //	if (base::init(__VA_ARGS__)) return false;
 
 template<class T, typename... TArgs>
-Ref<T> makeObject(TArgs&&... args)
-{
-	auto ptr = Ref<T>(new T(), false);
-	ptr->init(std::forward<TArgs>(args)...);
-	return ptr;
+Ref<T> makeObject(TArgs&&... args) {
+    auto ptr = Ref<T>(new T(), false);
+    ptr->init(std::forward<TArgs>(args)...);
+    return ptr;
 }
 
 template<class T, typename... TArgs>
-Ref<T> makeObject2(TArgs&&... args)
-{
-	auto ptr = Ref<T>(new T(std::forward<TArgs>(args)...), false);
-	ptr->init();
-	return ptr;
+Ref<T> makeObject2(TArgs&&... args) {
+    auto ptr = Ref<T>(new T(std::forward<TArgs>(args)...), false);
+    ptr->init();
+    return ptr;
 }
 
 template<class T, typename... TArgs>
-void placementNewObject(void* ptr, TArgs&&... args)
-{
-	new (ptr)T();
-	static_cast<T*>(ptr)->init(std::forward<TArgs>(args)...);
+void placementNewObject(void* ptr, TArgs&&... args) {
+    new (ptr) T();
+    static_cast<T*>(ptr)->init(std::forward<TArgs>(args)...);
 }
 
 LN_CLASS()
-class Object
-	: public RefObject
-{
+class Object : public RefObject {
 LN_CONSTRUCT_ACCESS:
-	Object();
-	bool init();
+    Object();
+    bool init();
 
 protected:
-	virtual ~Object();
-	virtual void finalize() override;
-	virtual void onDispose(bool explicitDisposing);
+    virtual ~Object();
+    virtual void finalize() override;
+    virtual void onDispose(bool explicitDisposing);
 
     virtual void serialize(Serializer2& ar);
 
@@ -220,8 +216,10 @@ protected:
     LN_METHOD()
     virtual void onSerialize(Serializer2* ar);
 
+    virtual void serialize3(Serializer3& ar);
+
 public:
-	/**
+    /**
 	 * このオブジェクトが保持しているリソースを開放します。
 	 *
 	 * このメソッドは通常、明示的に呼び出す必要はありません。オブジェクトが保持しているリソースの開放の処理は、
@@ -231,10 +229,10 @@ public:
 	 *
 	 * @attention このメソッドは virtual です。RAII の実装を目的としてデストラクタで呼び出すことはできません。代わりに finalize() からコールされます。
 	 */
-	virtual void dispose();
+    virtual void dispose();
 
-	// TODO: internal
-	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
+    // TODO: internal
+    virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
     //virtual void onSetAssetFilePath(const Path& filePath);
 
     void setAssetPath(const detail::AssetPath& value) { m_assetPath = value; }
@@ -243,7 +241,6 @@ public:
     virtual void setTypeInfoOverride(TypeInfo* value);
 
     //void reloadAsset();
-
 
 #if defined(LUMINO_TRANSCODER)
     /** オブジェクトの参照を開放します。 */
@@ -260,52 +257,50 @@ public:
 #endif
 
 private:
-	virtual void onRetained() override;
-	virtual void onReleased() override;
+    virtual void onRetained() override;
+    virtual void onReleased() override;
     detail::WeakRefInfo* requestWeakRefInfo();
     static TypeInfo* _lnref_getTypeInfo();
     virtual TypeInfo* _lnref_getThisTypeInfo() const;
 
     detail::WeakRefInfo* m_weakRefInfo;
     std::mutex m_weakRefInfoMutex;
-	detail::ObjectRuntimeData* m_runtimeData;
+    detail::ObjectRuntimeData* m_runtimeData;
     detail::AssetPath m_assetPath;
-	Flags<detail::ObjectFlags> m_objectFlags;
+    Flags<detail::ObjectFlags> m_objectFlags;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
     friend class Serializer2;
-	template<class U> friend class Ref;
-	template<class T> friend class TypeInfoTraits;
+    friend class Serializer3;
+    template<class U>
+    friend class Ref;
+    template<class T>
+    friend class TypeInfoTraits;
 };
 
-class ObjectHelper
-{
+class ObjectHelper {
 public:
-	static void dispose(Object* obj)
-    {
+    static void dispose(Object* obj) {
         if (obj) obj->dispose();
     }
 };
 
-
 namespace detail {
 
-class ObjectHelper
-{
+class ObjectHelper {
 public:
     template<class T>
     static detail::WeakRefInfo* requestWeakRefInfo(T* obj) { return obj->requestWeakRefInfo(); }
     static void destructObject(Object* obj) { obj->~Object(); }
-	static void setRuntimeData(Object* obj, ObjectRuntimeData* data) { obj->m_runtimeData = data; }
-	static ObjectRuntimeData* getRuntimeData(Object* obj) { return obj->m_runtimeData; }
-	static Flags<ObjectFlags> getObjectFlags(Object* obj) { return obj->m_objectFlags; }
-	static void setObjectFlags(Object* obj, Flags<ObjectFlags> value) { obj->m_objectFlags = value; }
-	static bool isObservableProperty(Object* obj) { return getObjectFlags(obj).hasFlag(ObjectFlags::Property); }
+    static void setRuntimeData(Object* obj, ObjectRuntimeData* data) { obj->m_runtimeData = data; }
+    static ObjectRuntimeData* getRuntimeData(Object* obj) { return obj->m_runtimeData; }
+    static Flags<ObjectFlags> getObjectFlags(Object* obj) { return obj->m_objectFlags; }
+    static void setObjectFlags(Object* obj, Flags<ObjectFlags> value) { obj->m_objectFlags = value; }
+    static bool isObservableProperty(Object* obj) { return getObjectFlags(obj).hasFlag(ObjectFlags::Property); }
 };
 
-class WeakRefInfo final
-{
+class WeakRefInfo final {
 public:
     Object* owner;
     std::atomic<int> weakRefCount;
@@ -315,7 +310,6 @@ public:
 };
 
 } // namespace detail
-
 
 /**
     @brief
@@ -336,88 +330,72 @@ public:
             ptr->Func();
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-template <class T>
-class WeakRefPtr
-{
+template<class T>
+class WeakRefPtr {
 public:
-
     /** コンストラクタ */
     WeakRefPtr()
-        : m_weakRefInfo(nullptr)
-    {}
+        : m_weakRefInfo(nullptr) {}
 
     /** コンストラクタ */
     WeakRefPtr(T* obj)
-        : m_weakRefInfo(nullptr)
-    {
+        : m_weakRefInfo(nullptr) {
         set(detail::ObjectHelper::requestWeakRefInfo(obj));
     }
 
     /** コピーコンストラクタ */
     WeakRefPtr(const WeakRefPtr<T>& obj)
-        : m_weakRefInfo(nullptr)
-    {
+        : m_weakRefInfo(nullptr) {
         set(obj.m_weakRefInfo);
     }
 
     /** デストラクタ */
-    virtual ~WeakRefPtr()
-    {
+    virtual ~WeakRefPtr() {
         release();
     }
 
     /** 監視しているオブジェクトが削除されておらず、使用できるかを確認します。*/
-    bool isAlive() const
-    {
+    bool isAlive() const {
         return (m_weakRefInfo != nullptr && m_weakRefInfo->owner != nullptr);
     }
 
     /** 監視しているオブジェクトへの Ref を取得します。*/
-    Ref<T> resolve() const
-    {
-        if (!isAlive())
-        {
+    Ref<T> resolve() const {
+        if (!isAlive()) {
             return Ref<T>();
         }
         return Ref<T>(static_cast<T*>(m_weakRefInfo->owner));
     }
 
     /** */
-    WeakRefPtr<T>& operator =(const WeakRefPtr<T>& obj)
-    {
+    WeakRefPtr<T>& operator=(const WeakRefPtr<T>& obj) {
         set(obj.m_weakRefInfo);
         return *this;
     }
 
     /** */
-    WeakRefPtr<T>& operator =(T* obj)
-    {
+    WeakRefPtr<T>& operator=(T* obj) {
         set(detail::ObjectHelper::requestWeakRefInfo(obj));
         return *this;
     }
 
 private:
-
-    void set(detail::WeakRefInfo* info)
-    {
+    void set(detail::WeakRefInfo* info) {
         release();
         m_weakRefInfo = info;
-        if (m_weakRefInfo != nullptr)
-        {
+        if (m_weakRefInfo != nullptr) {
             m_weakRefInfo->addRef();
         }
     }
 
-    void release()
-    {
-        if (m_weakRefInfo != nullptr)
-        {
+    void release() {
+        if (m_weakRefInfo != nullptr) {
             m_weakRefInfo->release();
             m_weakRefInfo = nullptr;
         }
     }
 
-    detail::WeakRefInfo*	m_weakRefInfo;
+    detail::WeakRefInfo* m_weakRefInfo;
 };
 
 } // namespace ln
