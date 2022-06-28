@@ -15,11 +15,7 @@ namespace LuminoBuild.Tasks
         {
             var depends = new List<string>();
             depends.Add("BuildExternals");
-
-            if (Utils.IsWin32)
-            {
-                depends.Add("BuildEngine_MSVC");
-            }
+            depends.Add("BuildEngine");
 
             return depends.ToArray();
         }

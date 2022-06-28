@@ -51,8 +51,6 @@ namespace LuminoBuild
                 //args = new string[] { "BuildExternalProjects", "Android-x86_64" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MD" };
-                //args = new string[] { "BuildEngine_MSVC", "MSVC2019-x64-MT" };
-                //args = new string[] { "BuildEngine_MSVC", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildEngine_Emscripten" };
                 //args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "MakePackage_Ruby" };
@@ -127,7 +125,6 @@ namespace LuminoBuild
                 taskManager.Tasks.Add(new Tasks.BuildEngine_iOS());
                 taskManager.Tasks.Add(new Tasks.BuildDocuments());
                 taskManager.Tasks.Add(new Tasks.BuildEmbeddedResources());
-                taskManager.Tasks.Add(new Tasks.BuildEngine_MSVC());
                 taskManager.Tasks.Add(new Tasks.CompressPackage());
                 taskManager.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
                 taskManager.Tasks.Add(new Tasks.BuildEngine_Android());

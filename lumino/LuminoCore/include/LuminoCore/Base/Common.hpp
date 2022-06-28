@@ -6,6 +6,7 @@
 #include <atomic>
 #include <locale>
 #include <assert.h>
+#include <errno.h>
 #include <filesystem>
 
 //------------------------------------------------------------------------------

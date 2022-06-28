@@ -15,16 +15,30 @@ Build and Unit Tests
 Quick-start
 ----------
 
-```
-dotnet run -- BuildEngine_MSVC --components=core
-```
+とりあえず使ってみたい方へ。(CMake)
 
-TODO:
+1. .NET SDK をインストールする。
+2. このリポジトリをクローンする。
+3. 次のコマンドで Lumino をビルドする。
+    ```
+    dotnet run -- BuildEngine
+    ```
+4. CMakeLists.txt で `ImportLumino.cmake` を include し、 LuminoEngine がリンクする。
+    ```cmake
+    cmake_minimum_required(VERSION 3.15)
+    project(TestProject)
+    include(ImportLumino.cmake)    # Path to repository root.
 
-Get started
+    add_executable(${PROJECT_NAME} Main.cpp)
+    target_link_libraries(${PROJECT_NAME} PRIVATE LuminoEngine)
+    ```
+
+実際の例: `tools/TestProjects/CMake`
+
+Get started (⚠️少し情報が古いです)
 ----------
 
-🌏 [Website](https://luminoengine.github.io/)
+🌏 [Website](https://luminoengine.github.io/) 
 
 🛠 [How to build](docs/HowToBuild.md)
 

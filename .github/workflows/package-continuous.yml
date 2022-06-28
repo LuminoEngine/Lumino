@@ -32,7 +32,7 @@ jobs:
     - name: Dependencies
       run: dotnet run -- BuildExternals x64-windows-static
     - name: Build
-      run: dotnet run -- BuildEngine_MSVC x64-windows-static
+      run: dotnet run -- BuildEngine x64-windows-static
     - name: Package
       run: dotnet run -- MakeNativePackage x64-windows-static
         

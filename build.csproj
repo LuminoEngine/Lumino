@@ -34,7 +34,6 @@
     <Compile Include="tools/LuminoBuild/EmscriptenBuildEnv.cs" />
     <Compile Include="tools/LuminoBuild/AndroidBuildEnv.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/SetupTools.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_MSVC.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildDocuments.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEmbeddedResources.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Linux.cs" />

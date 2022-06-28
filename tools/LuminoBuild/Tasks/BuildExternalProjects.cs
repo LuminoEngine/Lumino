@@ -64,7 +64,7 @@ namespace LuminoBuild.Tasks
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(b.RootDir, "src", "CFlagOverrides.cmake");
 
-            var targetInfo = BuildEngine_MSVC.TargetInfoMap[b.Triplet];
+            var targetInfo = BuildEngine.TargetInfoMap[b.Triplet];
 
             Logger.WriteLine($"BuildProject ({projectDirName}) buildDir:{buildDir}");
 
@@ -279,7 +279,7 @@ namespace LuminoBuild.Tasks
                     var targetFullName = BuildEnvironment.TargetFullName;
                     var configuration = BuildEnvironment.Configuration;
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "ogg"));
-                    var targetInfo = BuildEngine_MSVC.TargetInfoMap[builder.Triplet];
+                    var targetInfo = BuildEngine.TargetInfoMap[builder.Triplet];
                     var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
                     var cppyamlRuntime = "-DYAML_MSVC_SHARED_RT=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
 
