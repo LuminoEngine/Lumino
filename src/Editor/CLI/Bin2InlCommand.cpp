@@ -3,7 +3,7 @@
 int Bin2InlCommand::execute(const ln::Path& inputFile) {
     ln::String actualOutput = (outputFile.isEmpty()) ? inputFile.str() + U".inl" : outputFile.str();
     
-    auto data = ln::FileSystem::readAllBytes(inputFile);
+    auto data = ln::FileSystem::readAllBytes(inputFile).unwrap();
     ln::StreamWriter writer(actualOutput);
 
     for (int i = 0; i < data.size(); i++) {

@@ -198,9 +198,10 @@ public:
         return stbuf.st_size;
     }
 
-    static FILE* fopen(const char* path, const char* mode)
+    static IOError<FILE*> fopen(const char* path, const char* mode)
     {
-        return ::fopen(path, mode);
+        FILE* fp = ::fopen(path, mode);
+        
     }
 };
 

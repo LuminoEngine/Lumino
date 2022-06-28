@@ -98,17 +98,8 @@ void AssetModel::onSerialize(Serializer2* sr)
 
 ln::Uuid AssetModel::readAssetId(const ln::Path& filePath)
 {
-    struct Dummy
-    {
-        ln::Uuid id;
-        void serialize(Archive& ar)
-        {
-            ar & makeNVP(_TT("AssetId"), id);
-        }
-    } d;
-    String json = FileSystem::readAllText(filePath);
-    JsonSerializer::deserialize(json, d);
-    return d.id;
+    LN_NOTIMPLEMENTED();
+    return {};
 }
 
 Object* AssetModel::target() const

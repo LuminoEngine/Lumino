@@ -87,7 +87,7 @@ bool TestHelper::checkArrays(const void* ary1, const void* ary2, size_t count)
 bool TestHelper::equalFiles(const Path& filePath1, const Path& filePath2)
 {
 	if (FileSystem::getFileSize(filePath1) != FileSystem::getFileSize(filePath2)) return false;
-	return FileSystem::readAllBytes(filePath1) == FileSystem::readAllBytes(filePath2);
+	return FileSystem::readAllBytes(filePath1).unwrap() == FileSystem::readAllBytes(filePath2).unwrap();
 }
 
 } // namespace ln

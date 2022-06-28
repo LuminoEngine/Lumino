@@ -424,6 +424,74 @@ List<String> String::split(const StringView& delim, StringSplitOptions option) c
     return result;
 }
 
+Array<String> String::splitLines() const {
+    if (isEmpty()) {
+        return {};
+    }
+
+    const String& code = *this;
+    const auto getNextLineLast = [&](int32_t lineHead, int32_t* last, int32_t* nlLen) {
+        int32_t i = lineHead;
+        int32_t end = code.length();
+        bool lastCR = false;
+        for (; i < end;) {
+            if (lastCR) {
+                if (code[i] == '\n') {
+                    // CRLF
+                    *last = i;
+                    *nlLen = 2;
+                    return;
+                }
+                else {
+                    // CR
+                    *last = i - 1;
+                    *nlLen = 1;
+                    return;
+                }
+            }
+            else if (code[i] == '\r') {
+                lastCR = true;
+                i++;
+            }
+            else if (code[i] == '\n') { // LF
+                *last = i;
+                *nlLen = 1;
+                return;
+            }
+            else {
+                i++;
+            }
+        }
+        if (lastCR) {
+            *last = i - 1;
+            *nlLen = 1;
+        }
+        else {
+            *last = code.length(); // \0(EOF) の前
+            *nlLen = 0;            // EOF
+        }
+    };
+
+
+    Array<String> result;
+    const Char* buf = code.c_str();
+    int32_t pos = 0;
+    int32_t end = code.length();
+    while (pos <= end) {
+        int32_t lineBegin = pos;
+        int32_t lineEnd = 0;
+        int32_t nlLen = 0;
+        getNextLineLast(pos, &lineEnd, &nlLen);
+        lineEnd += 1;
+
+        result.push(code.substr(lineBegin, lineEnd - lineBegin - nlLen));
+
+        pos = lineEnd;
+    }
+
+    return result;
+}
+
 #define TO_INT_DEF(type, func)                                   \
     const Char* begin;                                           \
     const Char* end;                                             \

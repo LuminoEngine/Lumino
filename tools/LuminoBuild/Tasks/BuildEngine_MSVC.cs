@@ -48,12 +48,14 @@ namespace LuminoBuild.Tasks
             {
                 // Configuration
                 {
-
                     var additional = "";
                     if (!string.IsNullOrEmpty(targetInfo.Arch))
                         additional += "-A " + targetInfo.Arch;
                     if (!string.IsNullOrEmpty(BuildEnvironment.FbxSdkVS2017))
                         additional += "-DLN_FBX_SDK_PATH:STRING=\"{BuildEnvironment.FbxSdkVS2017}\"";
+
+                    if (b.Options.Components == "core")
+                        additional += "-DLN_BUILD_CORE_ONLY=ON";
 
                     var args = new string[]
                     {
@@ -98,60 +100,6 @@ namespace LuminoBuild.Tasks
                             Utils.CallProcess("cmake", $"--build . --config Release --target clean"); // Free disk space.
                     }
                 }
-
-                /*
-                // Copy external libs to EngineInstall dir
-                {
-                    var externalInstallDir = Path.Combine(b.BuildDir, targetName, "ExternalInstall");
-                    var installLibDir = Path.Combine(installDir, "lib");
-
-                    foreach (var dir in Directory.GetDirectories(externalInstallDir))
-                    {
-                        var libDir = Path.Combine(dir, "lib");
-                        if (Directory.Exists(libDir))
-                        {
-                            foreach (var file in Directory.GetFiles(libDir, "*.lib", SearchOption.TopDirectoryOnly))
-                            {
-                                if (fileMoving)
-                                    File.Move(file, Path.Combine(installLibDir, Path.GetFileName(file)));
-                                else
-                                    File.Copy(file, Path.Combine(installLibDir, Path.GetFileName(file)), true);
-                            }
-                        }
-                    }
-                }
-
-                // Copy .pdb
-                {
-                    // CMake では static library の PDB 出力先をコントロールできない。https://cmake.org/cmake/help/v3.1/prop_tgt/PDB_OUTPUT_DIRECTORY.html
-                    // そのためビルドスクリプト側でコントロールする。
-                    // 以下、パスに "Debug" を含むもののうち、lib と同じ名前の pdb ファイルをコピーする。
-
-                    var installLibDir = Path.Combine(installDir, "lib");
-                    var libfiles = Directory.GetFiles(installLibDir, "*.lib", SearchOption.TopDirectoryOnly);
-                    var libnames = new HashSet<string>(libfiles.Select(x => Path.GetFileNameWithoutExtension(x)));
-                    var pdbFiles = Directory.GetFiles(buildDir, "*.pdb", SearchOption.AllDirectories);
-                    foreach (var pdbFile in pdbFiles)
-                    {
-                        var pdbName = Path.GetFileNameWithoutExtension(pdbFile);
-
-                        // png と glfw は出力ファイル名がカスタマイズされており .pdb と名前が異なっているため個別に指定する
-                        if (pdbName.StartsWith("png16"))
-                            pdbName = "libpng16";
-                        else if (pdbName.StartsWith("glfw"))
-                            pdbName = "glfw3";
-
-                        if (pdbFile.Contains("Debug") && libnames.Contains(pdbName))
-                        {
-                            // FIXME: CI サーバのストレージ不足対策
-                            if (fileMoving)
-                                File.Move(pdbFile, Path.Combine(installLibDir, Path.GetFileName(pdbFile)));
-                            else
-                                File.Copy(pdbFile, Path.Combine(installLibDir, Path.GetFileName(pdbFile)), true);
-                        }
-                    }
-                }
-                */
             }
 
             if (BuildEnvironment.FromCI) Utils.DeleteDirectory(b.EngineBuildDir);   // Free disk space.

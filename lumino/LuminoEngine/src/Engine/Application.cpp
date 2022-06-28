@@ -289,7 +289,7 @@ void AppDataInternal::save(const Path& filePath) {
 // JSON にしたほうがよさそう。
 void AppDataInternal::load(const Path& filePath) {
     const auto buffer = FileSystem::readAllBytes(filePath);
-    const auto text = std::string(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+    const auto text = std::string(reinterpret_cast<const char*>(buffer.unwrap().data()), buffer.unwrap().size());
     YAML::Node doc = YAML::Load(text);
 
     for (auto itr = doc.begin(); itr != doc.end(); ++itr) {

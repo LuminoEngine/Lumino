@@ -59,7 +59,7 @@ TEST_F(Test_IO_FileStream, open)
 		ASSERT_EQ(2, file1->length());
 		file1->close();
 
-		auto data = FileSystem::readAllBytes(filePath);
+		auto data = FileSystem::readAllBytes(filePath).unwrap();
 		ASSERT_EQ(2, data.size());
 		ASSERT_EQ('B', data[0]);
 		ASSERT_EQ('C', data[1]);

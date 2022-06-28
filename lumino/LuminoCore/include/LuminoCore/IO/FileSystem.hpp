@@ -2,8 +2,10 @@
 #pragma once
 #include "../Base/RefObject.hpp"
 #include "../Base/String.hpp"
+#include "../Base/Result.hpp"
 #include "Common.hpp"
 #include "Path.hpp"
+#include "IOError.hpp"
 
 namespace ln {
 class TextEncoding;
@@ -162,7 +164,7 @@ public:
      * @param[in]    filePath    : 読み込むファイルのパス
      * @return        読み込んだバイナリデータ
      */
-    static ByteBuffer readAllBytes(const StringView& filePath);
+    static IOResult<ByteBuffer> readAllBytes(const StringView& filePath);
 
     /**
      * ファイルの内容をテキスト形式としてすべて読み込ます。
@@ -173,9 +175,9 @@ public:
      * 
      * ファイル先頭に UTF 系の BOM が含まれている場合、それに対応するエンコーディングで読み込みます。
      */
-    static String readAllText(const StringView& filePath, TextEncoding* encoding = nullptr);
+    static IOResult<String> readAllText(const StringView& filePath, TextEncoding* encoding = nullptr);
 
-    static String readAllText(Stream* stream, TextEncoding* encoding = nullptr);
+    static IOResult<String> readAllText(Stream* stream, TextEncoding* encoding = nullptr);
 
     /** 
      * 指定されたバッファの内容をバイナリデータとしてすべてファイルに書き込みます。 
@@ -184,7 +186,7 @@ public:
      * @param[in]    buffer        : バッファの先頭アドレス
      * @param[in]    size        : バッファのバイト数
      */
-    static void writeAllBytes(const StringView& filePath, const void* buffer, size_t size);
+    static IOResult<> writeAllBytes(const StringView& filePath, const void* buffer, size_t size);
 
     /**
      * 文字列をテキストデータとしてすべてファイルに書き込みます。 
@@ -193,7 +195,7 @@ public:
      * @param[in]    str    : ファイルに書き込む文字列
      * @param[in]    encoding    : 文字列に適用するエンコーディング (省略した場合、UTF8 テキストとして書き込みます)
      */
-    static void writeAllText(const StringView& filePath, const String& str, TextEncoding* encoding = nullptr);
+    static IOResult<> writeAllText(const StringView& filePath, const String& str, TextEncoding* encoding = nullptr);
 
     /**
      * 指定したディレクトリ内の1つのファイルパス返します。
@@ -280,8 +282,8 @@ public:
     static bool matchPath(const wchar_t* path, int pathLen, const wchar_t* pattern, int patternLen);
     static bool matchPath(const Char* path, int pathLen, const Char* pattern, int patternLen);
 
-    static FILE* fopen(const char* path, size_t pathLen, const char* mode, size_t modeLen);
-    static FILE* fopen(const wchar_t* path, size_t pathLen, const wchar_t* mode, size_t modeLen);
+    //static FILE* fopen(const char* path, size_t pathLen, const char* mode, size_t modeLen);
+    //static FILE* fopen(const wchar_t* path, size_t pathLen, const wchar_t* mode, size_t modeLen);
     static FILE* fopen(const Char* path, size_t pathLen, const Char* mode, size_t modeLen);
 
     static uint64_t getFileSize(FILE* stream);

@@ -212,7 +212,7 @@ public:
         for (auto& dir : (*includeDirs)) {
             auto path = Path(dir, String::fromCString(headerName));
             if (FileSystem::existsFile(path)) {
-                ByteBuffer* buf = new ByteBuffer(FileSystem::readAllBytes(path));
+                ByteBuffer* buf = new ByteBuffer(FileSystem::readAllBytes(path).unwrap());
                 return new IncludeResult(path.str().toStdString(), (const char*)buf->data(), buf->size(), buf);
             }
         }
@@ -920,7 +920,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateHlslByteCode() const {
                     for (const auto& dir : (*includeDirs)) {
                         auto path = Path(dir, String::fromCString(pFileName));
                         if (FileSystem::existsFile(path)) {
-                            Ref<ByteBuffer> data(new ByteBuffer(FileSystem::readAllBytes(path)), false);
+                            Ref<ByteBuffer> data(new ByteBuffer(FileSystem::readAllBytes(path).unwrap()), false);
                             *ppData = data->data();
                             *pBytes = data->size();
                             cache.push_back(data);

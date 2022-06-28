@@ -79,12 +79,12 @@ public:
 	ln::String language;	// "cpp", "cs" ...
 	ln::String engine = _TT("");	// "x.y.z" or "" or "repo:master"
 
-	LN_SERIALIZE_CLASS_VERSION(1)
-	void serialize(ln::Archive& ar)
-	{
-		ar & LN_NVP(language);
-		ar & LN_NVP(engine);
-	}
+	//LN_SERIALIZE_CLASS_VERSION(1)
+	//void serialize(ln::Archive& ar)
+	//{
+	//	ar & LN_NVP(language);
+	//	ar & LN_NVP(engine);
+	//}
 };
 
 

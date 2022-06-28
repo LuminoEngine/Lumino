@@ -37,8 +37,8 @@ namespace ln {
 /**
  * オブジェクトのシリアライズ/デシリアライズを実装するためのインターフェイスです。
  */
-class Archive
-{
+
+class [[deprecated]] Archive {
 public:
 	template<typename TBase>
 	struct BaseClass

@@ -64,6 +64,11 @@ TEST_F(Test_Base_URefObject, Construct) {
         TestFunc1(std::move(ref5)); // can implicit cast
     }
     ASSERT_EQ(0, UTestObjA::s_counter);
+
+    {
+        // Can create instances of URefObject on the stack. Copying is not allowed.
+        TestObjC obj1;
+    }
 }
 
 TEST_F(Test_Base_URefObject, Assign) {

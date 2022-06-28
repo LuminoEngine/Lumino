@@ -161,6 +161,17 @@ namespace LuminoBuild.Tasks
                     Path.Combine(builder.LuminoToolsDir, "EngineResources"),
                     Path.Combine(destinationToolDir, "EngineResources"));
             }
+
+            // [Test] Import a locally cloned project
+            {
+                var buildDir = Path.Combine(builder.RootDir, "tools", "TestProjects", "CMake", "build");
+                Directory.CreateDirectory(buildDir);
+                using (var cd = CurrentDir.Enter(buildDir))
+                {
+                    Proc.Make("cmake", $"..").WithSilent().Call();
+                    Proc.Make("cmake", $"--build .").WithSilent().Call();
+                }
+            }
         }
 
         public static void GenerateReadme(Build builder, string dstDir)

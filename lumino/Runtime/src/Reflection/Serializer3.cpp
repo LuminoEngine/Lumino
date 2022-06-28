@@ -584,7 +584,8 @@ JsonTextInputSerializer3::~JsonTextInputSerializer3() {
 }
 
 Result JsonTextInputSerializer3::setup(const String& jsonText) {
-    LN_TRY(m_store->setupLoad(jsonText));
+    auto result = m_store->setupLoad(jsonText);
+    if (!result) return result;
     Serializer3::setup(m_store.get(), ArchiveMode::Load);
     return ok();
 }

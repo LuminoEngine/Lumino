@@ -15,7 +15,7 @@ TEST_F(Test_Shader_ShaderCompiler, Simple) {
 
         List<Path> includeDirs;
         List<String> definitions;
-        ByteBuffer code = FileSystem::readAllBytes(LN_ASSETFILE("ShaderCompiler/Simple.hlsl"));
+        ByteBuffer code = FileSystem::readAllBytes(LN_ASSETFILE("ShaderCompiler/Simple.hlsl")).unwrap();
         compiler.compile(reinterpret_cast<char*>(code.data()), code.size(), includeDirs, definitions);
         compiler.link();
 
@@ -43,7 +43,7 @@ TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
 
         List<Path> includeDirs;
         List<String> definitions;
-        ByteBuffer code = FileSystem::readAllBytes(LN_ASSETFILE("ShaderCompiler/ShaderVariant.hlsl"));
+        ByteBuffer code = FileSystem::readAllBytes(LN_ASSETFILE("ShaderCompiler/ShaderVariant.hlsl")).unwrap();
         compiler.compile(reinterpret_cast<char*>(code.data()), code.size(), includeDirs, definitions);
         compiler.link();
 

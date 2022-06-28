@@ -562,3 +562,89 @@ TEST_F(Test_Base_Serializer, Variant) {
         //ASSERT_EQ(3, data->v_List->list()[2]->get<int32_t>());
     }
 }
+
+#if 0
+
+TEST_F(Test_Base_Variant, UseCase1)
+{
+	class Command : public Object
+	{
+	public:
+		String code;
+		Ref<List<Ref<Variant>>> params;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(code);
+			ar & LN_NVP(params);
+		}
+	};
+
+	class Script : public Object
+	{
+	public:
+		String name;
+		Ref<List<Ref<Command>>> commandList;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(name);
+			ar & LN_NVP(commandList);
+		}
+	};
+
+	String json;
+
+	//- [ ]  Save
+	{
+		auto script1 = makeObject<Script>();
+		script1->name = _TT("script1");
+		script1->commandList = makeList<Ref<Command>>();
+
+		auto c1 = makeObject<Command>();
+		c1->code = _TT("c1");
+		c1->params = makeList<Ref<Variant>>({ makeVariant(1), makeVariant(_TT("test1")) });
+		script1->commandList->add(c1);
+		auto c2 = makeObject<Command>();
+		c2->code = _TT("c2");
+		c2->params = makeList<Ref<Variant>>({ makeVariant(2), makeVariant(_TT("test2")) });
+		script1->commandList->add(c2);
+
+		JsonTextOutputArchive ar;
+		ar.process(script1);
+		json = ar.toString(JsonFormatting::None);
+	}
+
+	//- [ ] Load
+	{
+		auto script2 = makeObject<Script>();
+
+		JsonTextInputArchive ar(json);
+		ar.process(*script2);
+
+		ASSERT_EQ(_TT("script1"), script2->name);
+		ASSERT_EQ(2, script2->commandList->size());
+
+		ASSERT_EQ(_TT("c1"), script2->commandList[0]->code);
+		ASSERT_EQ(1, script2->commandList[0]->params[0]->get<int>());
+		ASSERT_EQ(_TT("test1"), script2->commandList[0]->params[1]->get<String>());
+
+		ASSERT_EQ(_TT("c2"), script2->commandList[1]->code);
+		ASSERT_EQ(2, script2->commandList[1]->params[0]->get<int>());
+		ASSERT_EQ(_TT("test2"), script2->commandList[1]->params[1]->get<String>());
+	}
+}
+
+
+TEST_F(Test_Base_Variant, Value_Rect)
+{
+	struct S { Ref<Variant> v; void serialize(Archive& ar) { ar & LN_NVP(v); } };
+	S s1 = { makeVariant(Rect(1, 2, 3, 4)) };
+	S s2;
+
+	// Note: struct は型情報を保存しないので、Rect の復元はできない。
+	//auto json = JsonSerializer::serialize(s1, JsonFormatting::None);
+	//JsonSerializer::deserialize(json, s2);
+}
+
+#endif

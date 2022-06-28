@@ -269,7 +269,7 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
 {
     auto stream = openStreamFromAssetPath(assetPath);
     auto text = FileSystem::readAllText(stream);
-    auto asset = Serializer2::deserialize(text, assetPath.getParentAssetPath());
+    auto asset = Serializer2::deserialize(text.unwrap(), assetPath.getParentAssetPath());
     asset->target()->setAssetPath(assetPath);
     return asset;
 }
@@ -288,7 +288,7 @@ bool AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const Asse
     auto text = FileSystem::readAllText(stream);
 
     auto asset = makeObject<AssetModel>(obj);
-    Serializer2::deserializeInstance(asset, text, assetPath.getParentAssetPath());
+    Serializer2::deserializeInstance(asset, text.unwrap(), assetPath.getParentAssetPath());
 
     obj->setAssetPath(assetPath);
 

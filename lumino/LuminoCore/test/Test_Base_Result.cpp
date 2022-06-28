@@ -1,5 +1,6 @@
 ﻿#include "Common.hpp"
 #include <LuminoCore/Base/Result.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
 
 //==============================================================================
 
@@ -14,6 +15,13 @@ struct TestErr1 {
     Kind kind;
     std::string text;
 };
+
+namespace ln {
+template<>
+static String toString<TestErr1>(const TestErr1& e) {
+    return ln::format(U"kind:{},text:{}", static_cast<int>(e.kind), String::fromStdString(e.text));
+}
+} // namespace ln 
 
 static BasicResult<std::string, TestErr1> testFunc1(int len) {
     if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
@@ -77,11 +85,15 @@ TEST_F(Test_Base_Result, Basic) {
     ASSERT_EQ(true, r1.isOk());
     ASSERT_EQ(false, r1.isErr());
     ASSERT_EQ("123", r1.unwrap());
+    bool r1r = !r1;
+    ASSERT_EQ(false, r1r);
 
     auto r2 = testFunc1(100);
     ASSERT_EQ(false, r2.isOk());
     ASSERT_EQ(true, r2.isErr());
     ASSERT_EQ("error.", r2.unwrapErr().text);
+    bool r2r = !r2;
+    ASSERT_EQ(true, r2r);
 
     auto r3 = testFunc1(2);
     ASSERT_EQ(true, r3.isOk());
@@ -150,3 +162,66 @@ TEST_F(Test_Base_Result, DefaultError) {
     ASSERT_EQ(false, r2.isOk());
     ASSERT_EQ(true, r2.isErr());
 }
+
+using TestResultA = BasicResult<void, String>;
+TestResultA testFunc7() {
+    return err(U"abc");
+}
+
+Result testFunc8(int a) {
+    if (a == 1) {
+        // Value -> void
+        auto r1 = FileSystem::readAllText(U"aaa");
+        if (!r1) return r1;
+    }
+    if (a == 2) {
+        // void -> void
+        TestResultA r2 = testFunc7();
+        if (!r2) return r2;
+    }
+
+    //Result r3 = link(r2.unwrap());
+    //if (!r3) return err("link error.", r3);
+
+    return ok();
+}
+
+TEST_F(Test_Base_Result, Box1) {
+    auto r1 = testFunc8(1);
+    auto s1 = r1.toString();
+
+    //auto r1 = FileSystem::read
+    auto r2 = testFunc7();
+}
+
+// ok型の無い Result に unwrap() を呼び出してもコンパイルエラーにならないこと。
+TEST_F(Test_Base_Result, VoidUnwrap) {
+    struct Test {
+        static ln::IOResult<> func() { return ok(); }
+    };
+    Test::func().unwrap();
+}
+
+/*
+FileSystem などで Result 返す関数は、その中でエラーが発生しても assertion 扱いしたくない。
+unwrap() したときに assertion したい。
+
+ResultのBox
+----------
+
+```
+Result compileShader(filename) [
+    IOResult r1 = FileSystem::readText(filename);
+    if (!r1) retunr err(r1);    // これで internal error にしてみようか (unique_ptr にして Heap に Move)
+
+    CompilationResult r2 = compile(r1.unwrap());
+    if (!r2) retunr err(r2);
+    
+    Result r3 = link(r2.unwrap());
+    if (!r3) retunr err("link error.", r3);
+
+    return ok();
+}
+```
+
+*/

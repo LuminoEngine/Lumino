@@ -133,46 +133,47 @@ void FileStream::checkOpen() const {
 }
 
 void FileStream::open() const {
-    if (LN_REQUIRE(m_stream == NULL)) return;
+    if (LN_REQUIRE(m_stream == nullptr)) return;
 
-    const CChar* mode = NULL;
+    const Char* mode = nullptr;
     if (m_openModeFlags.hasFlag(FileOpenMode::ReadWrite)) {
         if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
-            mode = _CT("a+b"); // 読み取りと書き込み (末尾に追加する)
+            mode = U"a+b"; // 読み取りと書き込み (末尾に追加する)
         }
         else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
-            mode = _CT("w+b"); // 読み取りと書き込み (ファイルを空にする)
+            mode = U"w+b"; // 読み取りと書き込み (ファイルを空にする)
         }
         else {
-            mode = _CT("r+b"); // 読み取りと書き込み (ファイルが存在しない場合はエラー)
+            mode = U"r+b"; // 読み取りと書き込み (ファイルが存在しない場合はエラー)
         }
     }
     else if (m_openModeFlags.hasFlag(FileOpenMode::Write)) {
         if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
-            mode = _CT("ab"); // 書き込み (末尾に追加する。ファイルが無ければ新規作成)
+            mode = U"ab"; // 書き込み (末尾に追加する。ファイルが無ければ新規作成)
         }
         else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
-            mode = _CT("wb"); // 書き込み (ファイルを空にする)
+            mode = U"wb"; // 書き込み (ファイルを空にする)
         }
         else {
-            mode = _CT("wb"); // 書き込み (モード省略。Truncate)
+            mode = U"wb"; // 書き込み (モード省略。Truncate)
         }
     }
     else if (m_openModeFlags.hasFlag(FileOpenMode::Read)) {
         if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
-            mode = NULL; // 読み込みなのに末尾追加はできない
+            mode = nullptr; // 読み込みなのに末尾追加はできない
         }
         else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
-            mode = NULL; // 読み込みなのにファイルを空にはできない
+            mode = nullptr; // 読み込みなのにファイルを空にはできない
         }
         else {
-            mode = _CT("rb"); // 読み込み
+            mode = U"rb"; // 読み込み
         }
     }
     if (LN_REQUIRE(mode)) return;
 
-    detail::GenericStaticallyLocalPath<PathChar> localPath(m_filePath.c_str(), m_filePath.length());
-    m_stream = detail::FileSystemInternal::fopen(localPath.c_str(), localPath.getLength(), mode, StringHelper::strlen(mode));
+    //detail::GenericStaticallyLocalPath<PathChar> localPath(m_filePath.c_str(), m_filePath.length());
+    //m_stream = detail::FileSystemInternal::fopen(localPath.c_str(), localPath.getLength(), mode, StringHelper::strlen(mode));
+    m_stream = detail::FileSystemInternal::fopen(m_filePath.c_str(), m_filePath.length(), mode, StringHelper::strlen(mode));
     LN_ENSURE(m_stream != nullptr, _TT("{}"), m_filePath.c_str());
 }
 

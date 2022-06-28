@@ -111,11 +111,14 @@ public:
         return stbuf.st_size;
     }
 
-    static FILE* fopen(const wchar_t* path, const wchar_t* mode)
+    static IOResult<FILE*> fopen(const wchar_t* path, const wchar_t* mode)
     {
         FILE* fp;
-        if (_wfopen_s(&fp, path, mode) != 0) return 0;
-        return fp;
+        errno_t e = _wfopen_s(&fp, path, mode);
+        if (e != 0) {
+            return err(e);
+        }
+        return ok(fp);
     }
 };
 

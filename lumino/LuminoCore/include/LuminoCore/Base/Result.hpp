@@ -1,10 +1,13 @@
 ﻿#pragma once
+#include "String.hpp"
 
 #define LN_RESULT_BOOL_CONVERSION 1
 
 namespace ln {
 
-    
+template<class T>
+String toString(const T& value);
+
 //==============================================================================
 // OkType
 
@@ -91,36 +94,80 @@ inline DefaultErrType err() {
     return DefaultErrType();
 }
 
+class ResultBase {
+public:
+    typedef String (*Serializer)(const ResultBase* self);
+
+    ResultBase(Serializer serializer)
+        : m_serializer(serializer) {}
+    virtual ~ResultBase() = default;
+    virtual std::unique_ptr<ResultBase> moveBoxing() = 0;
+    //String toString() const { return m_serializer(this); }
+    virtual String toString() const = 0;
+
+    Serializer m_serializer;
+};
+
 //==============================================================================
 // BasicResult
 
 template<typename T = void, typename E = bool>
-struct BasicResult {
+class BasicResult : public ResultBase {
+public:
     BasicResult(T&& ok)
-        : ok_(true)
+        : ResultBase(toStringInternal)
+        , ok_(true)
         , ok_v(std::forward<T>(ok))
     {
     }
 
     BasicResult(OkType<T> ok)
-        : ok_(true)
+        : ResultBase(toStringInternal)
+        , ok_(true)
         , ok_v(std::move(ok.val)) {
     }
 
     BasicResult(ErrType<E> err)
-        : ok_(false)
+        : ResultBase(toStringInternal)
+        , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
     BasicResult(DefaultErrType)
-        : ok_(false)
+        : ResultBase(toStringInternal)
+        , ok_(false)
         , err_v{}
     {
     }
 
+    template<class U>
+    BasicResult(OkType<U> ok)
+        : ResultBase(toStringInternal)
+        , ok_(true)
+        , ok_v(std::move(ok.val)) {
+    }
+
+    /** Converting copy constructor. */
+    template<class U>
+    BasicResult(ErrType<U> err)
+        : ResultBase(toStringInternal)
+        , ok_(false)
+        , err_v(std::move(err.val)) {
+    }
+
+    /** Boxing copy(move) constructor. */
+    template<class UT, class UE>
+    BasicResult(BasicResult<UT, UE>& other)
+        : ResultBase(toStringInternal) 
+        , ok_(other.isOk())
+        , err_v{}
+        , internalResult_(other.moveBoxing()) {
+    }
+
 #if defined(LN_RESULT_BOOL_CONVERSION)
     explicit BasicResult(bool result)
-        : ok_(result)
+        : ResultBase(toStringInternal)
+        , ok_(result)
         , ok_v{} {
     }
 #endif
@@ -158,6 +205,9 @@ struct BasicResult {
 
     template<typename U = T>
     typename std::enable_if<!std::is_same<U, void>::value, U>::type unwrap() const {
+        if (isErr()) {
+            LN_ERROR(toString());
+        }
         LN_CHECK(isOk());
         return ok_v;
     }
@@ -208,35 +258,69 @@ struct BasicResult {
         return ok_;
     }
 
+    std::unique_ptr<ResultBase> moveBoxing() override {
+        return std::unique_ptr<ResultBase>(new BasicResult<T, E>(std::move(*this)));
+    }
+    
+    String toString() const override {
+        if (isOk()) return {};
+        if (internalResult_) return ln::toString(err_v) + U"\n" + internalResult_->toString();
+        return ln::toString(err_v);
+    }
+
+    static String toStringInternal(const ResultBase* s) {
+        const auto* self = static_cast<const BasicResult*>(s);
+        if (self->isOk()) return {};
+        if (self->internalResult_) return ln::toString(self->err_v) + U"\n" + self->internalResult_->toString();
+        return ln::toString(self->err_v);
+    }
+
 private:
+    //BasicResult() 
+    //    : ResultBase(toStringInternal)
+    //{}
+
+    BasicResult(BasicResult&& other)
+        : ResultBase(toStringInternal)
+        , ok_(other.ok_)
+        , err_v(std::move(other.err_v))
+        , internalResult_(std::move(other.internalResult_)) {
+    }
+
     bool ok_;
     union {
         T ok_v;
         E err_v;
     };
+    std::unique_ptr<ResultBase> internalResult_;
 };
 
 // for reference
 template<typename T, typename E>
-struct BasicResult<T&, E> {
+class BasicResult<T&, E> : public ResultBase {
+public:
     BasicResult(OkType<T&> ok)
-        : ok_(true)
+        : ResultBase(toStringInternal)
+        , ok_(true)
         , ok_v(&ok.val) {
     }
 
     BasicResult(ErrType<E> err)
-        : ok_(false)
+        : ResultBase(toStringInternal)
+        , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
     BasicResult(DefaultErrType)
-        : ok_(false)
+        : ResultBase(toStringInternal)
+        , ok_(false)
         , err_v{} {
     }
 
 #if defined(LN_RESULT_BOOL_CONVERSION)
     explicit BasicResult(bool result)
-        : ok_(result)
+        : ResultBase(toStringInternal)
+        , ok_(result)
         , ok_v{} {
     }
 #endif
@@ -320,34 +404,93 @@ struct BasicResult<T&, E> {
         return ok_;
     }
 
+    std::unique_ptr<ResultBase> moveBoxing() override {
+        return std::unique_ptr<ResultBase>(new BasicResult<T&, E>(std::move(*this)));
+    }
+
+    String toString() const override {
+        LN_NOTIMPLEMENTED();
+        return U"";
+    }
+
+    static String toStringInternal(const ResultBase* s) {
+        LN_NOTIMPLEMENTED();
+        return U"";
+    }
 
 private:
+    BasicResult(BasicResult&& other)
+        : ResultBase(toStringInternal)
+        , ok_(other.ok_)
+        , err_v(std::move(other.err_v))
+        , internalResult_(std::move(other.internalResult_)) {
+    }
+
     bool ok_;
     union {
         T* ok_v;
         E err_v;
     };
+    std::unique_ptr<ResultBase> internalResult_;
 };
 
+// void type
 template<typename E>
-struct BasicResult<void, E> {
+class BasicResult<void, E> : public ResultBase {
+public:
     BasicResult(OkType<void> ok)
-        : ok_(true) {
+        : ResultBase(toStringInternal)
+        , ok_(true) {
     }
 
     BasicResult(ErrType<E> err)
-        : ok_(false)
+        : ResultBase(toStringInternal)
+        , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
     BasicResult(DefaultErrType)
-        : ok_(false)
+        : ResultBase(toStringInternal)
+        , ok_(false)
         , err_v{} {
     }
 
+    /** Converting copy constructor. */
+    template<class U>
+    BasicResult(ErrType<U> err)
+        : ResultBase(toStringInternal)
+        , ok_(false)
+        , err_v(std::move(err.val)) {
+    }
+
+    /** Boxing copy(move) constructor. */
+    template<class UT, class UE>
+    BasicResult(BasicResult<UT, UE>& other)
+        : ResultBase(toStringInternal)
+        , ok_(false)
+        , err_v{}
+        , internalResult_(other.moveBoxing()) {
+    }
+
+    /** Boxing copy(move) constructor. */
+    BasicResult(BasicResult& other)
+        : ResultBase(toStringInternal)
+        , ok_(other.ok_)
+        , err_v{}
+        , internalResult_(other.moveBoxing()) {
+    }
+
+    //BasicResult(ResultBase&& other)
+    //    : ok_(false)
+    //    , err_v{}
+    //    , internalResult_(other.moveBoxing()) {
+    //}
+
+
 #if defined(LN_RESULT_BOOL_CONVERSION)
     explicit BasicResult(bool result)
-        : ok_(result)
+        : ResultBase(toStringInternal)
+        , ok_(result)
         , err_v{} {
     }
 #endif
@@ -377,11 +520,46 @@ struct BasicResult<void, E> {
         return err_v;
     }
 
+    void unwrap() const {
+        if (isErr()) {
+            LN_ERROR(toString());
+        }
+        LN_CHECK(isOk());
+    }
+
     constexpr explicit operator bool() const noexcept { return ok_; }
 
+    std::unique_ptr<ResultBase> moveBoxing() override {
+        return std::unique_ptr<ResultBase>(new BasicResult<void, E>(std::move(*this), true));
+    }
+    
+    String toString() const override {
+        if (isOk()) return {};
+        if (internalResult_) return ln::toString(err_v) + U"\n" + internalResult_->toString();
+        return ln::toString(err_v);
+    }
+
+    static String toStringInternal(const ResultBase* s) {
+        const auto* self = static_cast<const BasicResult*>(s);
+        if (self->isOk()) return {};
+        if (self->internalResult_) return ln::toString(self->err_v) + U"\n" + self->internalResult_->toString();
+        return ln::toString(self->err_v);
+    }
+
 private:
+    //BasicResult()
+    //    : ResultBase(toStringInternal) {}
+
+    explicit BasicResult(BasicResult&& other, bool)
+        : ResultBase(toStringInternal)
+        , ok_(other.ok_)
+        , err_v(std::move(other.err_v))
+        , internalResult_(std::move(other.internalResult_)) {
+    }
+
     bool ok_;
     E err_v;
+    std::unique_ptr<ResultBase> internalResult_;
 };
 
 
@@ -394,10 +572,30 @@ enum class ErrorCode {
 
 using Result = BasicResult<void, ErrorCode>;
 
+template<>
+inline String toString<String>(const String& str) {
+    return str;
+}
+
+template<>
+inline String toString<int>(const int& v) {
+    return String::fromNumber(v);
+}
+
+template<>
+inline String toString<bool>(const bool& v) {
+    return v ? String(U"true") : String(U"false");
+}
+
+template<>
+inline String toString<ErrorCode>(const ErrorCode& e) {
+    return ln::format(U"ErrorCode:{}", static_cast<int>(e));
+}
+
 } // namespace ln
 
 #define LN_DEFINE_RESULT_ALIAS \
-    using Result = ln::BasicResult<void, ln::ErrorCode>; \
+    using Result = ln::BasicResult<void, ln::ErrorCode2>; \
     template<typename... Args> \
     auto ok(Args&&... args)->decltype(ln::ok(std::forward<Args>(args)...)) { return ln::ok(std::forward<Args>(args)...); } \
     template<typename... Args> \
@@ -405,6 +603,6 @@ using Result = BasicResult<void, ErrorCode>;
 
 
 #define LN_TRY(x) { \
-    const auto result = x; \
+    auto result = x; \
     if (!result) return result; \
 }

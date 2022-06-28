@@ -127,15 +127,16 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
 
 ln::Result Project::saveProject()
 {
-	auto json = ln::JsonSerializer::serialize(*m_properties);
-	ln::FileSystem::writeAllText(m_projectFilePath, json);
+    LN_NOTIMPLEMENTED();
+	//auto json = ln::JsonSerializer::serialize(*m_properties);
+	//ln::FileSystem::writeAllText(m_projectFilePath, json);
 	return ln::ok();
 }
 
-ln::Result Project::loadProject()
-{
-	ln::String json = ln::FileSystem::readAllText(m_projectFilePath);
-	ln::JsonSerializer::deserialize(json, *m_properties);
+ln::Result Project::loadProject() {
+    LN_NOTIMPLEMENTED();
+	//ln::String json = ln::FileSystem::readAllText(m_projectFilePath).unwrap();
+	//ln::JsonSerializer::deserialize(json, *m_properties);
 	return ln::ok();
 }
 

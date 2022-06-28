@@ -256,6 +256,11 @@ public:
     List<String> split(const StringView& delim, StringSplitOptions option = StringSplitOptions::None) const;
 
     /**
+     * 文字列を改行 (LF, CR, CRLF) で分割します。
+     */
+    Array<String> splitLines() const;
+
+    /**
      * この文字列を整数値に変換します。
      * 
      * @param[in]   base    : 基数 (0、2、8、10、16 のいずれかであること)
@@ -1022,6 +1027,9 @@ inline std::u32string_view toStdStringView(const String& v) {
 inline std::u32string_view toStdStringView(const StringView& v) {
     return std::u32string_view(v.data(), v.length());
 }
+
+template<class T>
+String toString(const T& value);    
 
 } // namespace ln
 

@@ -1,6 +1,7 @@
 ﻿#include "Common.hpp"
 #include <LuminoCore/Json/JsonDocument.hpp>
 #include <LuminoCore/Serialization/Serialization.hpp>
+//#include <LuminoCore/Math/MathSerialization.hpp>
 #include <LuminoCore/Math/Math.hpp>
 
 //==============================================================================
@@ -117,6 +118,7 @@ TEST_F(Test_Serialization2, ValueObject)
 	ASSERT_EQ(100, data2.value);
 }
 
+#if 0
 //------------------------------------------------------------------------------
 //## Ref<> test
 TEST_F(Test_Serialization2, RefObject)
@@ -196,6 +198,7 @@ TEST_F(Test_Serialization2, RefObject)
         ASSERT_EQ(nullptr, data2.child->child);
     }
 }
+#endif
 
 //------------------------------------------------------------------------------
 //## PrimitiveValues test

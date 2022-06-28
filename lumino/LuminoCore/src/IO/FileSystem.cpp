@@ -188,14 +188,17 @@ uint64_t FileSystem::getFileSize(const StringView& filePath) {
     return PlatformFileSystem::getFileSize(localPath.c_str());
 }
 
-ByteBuffer FileSystem::readAllBytes(const StringView& filePath) {
+IOResult<ByteBuffer> FileSystem::readAllBytes(const StringView& filePath) {
     detail::GenericStaticallyLocalPath<PathChar> localPath(filePath.data(), filePath.length());
     const PathChar mode[] = { 'r', 'b', '\0' };
-    FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-    if (!fp) {
-        LN_ERROR(ln::format(U"Access failed: {}", filePath));
-        return ByteBuffer();
-    }
+    auto r = PlatformFileSystem::fopen(localPath.c_str(), mode);
+    if (!r) return r;
+    FILE* fp = *r;
+    //FILE* fp = 
+    //if (!fp) {
+    //    LN_ERROR(ln::format(U"Access failed: {}", filePath));
+    //    return err();   // TODO: message
+    //}
 
     size_t size = (size_t)detail::FileSystemInternal::getFileSize(fp);
     ByteBuffer buffer(size);
@@ -203,7 +206,7 @@ ByteBuffer FileSystem::readAllBytes(const StringView& filePath) {
 
     fclose(fp);
     LN_EMSCRIPTEN_LAYZY_FLASH;
-    return buffer;
+    return ok(std::move(buffer));
 }
 
 static String readAllTextHelper(const ByteBuffer& buffer, TextEncoding* encoding) {
@@ -218,36 +221,46 @@ static String readAllTextHelper(const ByteBuffer& buffer, TextEncoding* encoding
     return encoding->decode(buffer.data(), buffer.size());
 }
 
-String FileSystem::readAllText(const StringView& filePath, TextEncoding* encoding) {
-    ByteBuffer buffer(FileSystem::readAllBytes(filePath));
-    return readAllTextHelper(buffer, encoding);
+IOResult<String> FileSystem::readAllText(const StringView& filePath, TextEncoding* encoding) {
+    auto result = FileSystem::readAllBytes(filePath);
+    if (!result) return result; //err(result.unwrapErr());
+    return ok(readAllTextHelper(result.unwrap(), encoding));
 }
 
-String FileSystem::readAllText(Stream* stream, TextEncoding* encoding) {
-    if (LN_REQUIRE(stream->canRead())) return String::Empty;
+IOResult<String> FileSystem::readAllText(Stream* stream, TextEncoding* encoding) {
+    if (LN_REQUIRE(stream->canRead())) return err();
     size_t size = stream->length();
     ByteBuffer buffer(size);
     stream->read(buffer.data(), size);
-    return readAllTextHelper(buffer, encoding);
+    return ok(readAllTextHelper(buffer, encoding));
 }
 
-void FileSystem::writeAllBytes(const StringView& filePath, const void* buffer, size_t size) {
+IOResult<> FileSystem::writeAllBytes(const StringView& filePath, const void* buffer, size_t size) {
     detail::GenericStaticallyLocalPath<PathChar> localPath(filePath.data(), filePath.length());
     const PathChar mode[] = { 'w', 'b', '\0' };
-    FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-    if (LN_ENSURE(fp != NULL, localPath.c_str())) return;
+
+    auto result = PlatformFileSystem::fopen(localPath.c_str(), mode);
+    if (!result) return result;
+    FILE* fp = *result;
+
+    //FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
+    //if (LN_ENSURE(fp != NULL, localPath.c_str())) return;
 
     fwrite(buffer, 1, size, fp);
     fclose(fp);
     LN_EMSCRIPTEN_LAYZY_FLASH;
+    return ok();
 }
 
-void FileSystem::writeAllText(const StringView& filePath, const String& str, TextEncoding* encoding) {
+IOResult<> FileSystem::writeAllText(const StringView& filePath, const String& str, TextEncoding* encoding) {
     encoding = (encoding == nullptr) ? TextEncoding::utf8Encoding().get() : encoding;
 
     auto buffer = encoding->encode(str);
 
-    writeAllBytes(filePath, buffer.data(), buffer.size());
+    auto result = writeAllBytes(filePath, buffer.data(), buffer.size());
+    if (!result) return result;
+
+    return ok();
 }
 
 //==============================================================================
@@ -534,20 +547,20 @@ bool FileSystemInternal::matchPath(const Char* path, int pathLen, const Char* pa
     return PlatformFileSystem::matchPath(localPath.c_str(), localPattern.c_str());
 }
 
-FILE* FileSystemInternal::fopen(const char* path, size_t pathLen, const char* mode, size_t modeLen) {
-    detail::GenericStaticallyLocalPath<PathChar> localPath(path, pathLen);
-    detail::GenericStaticallyLocalPath<PathChar> localMode(mode, modeLen);
-    return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
-}
-FILE* FileSystemInternal::fopen(const wchar_t* path, size_t pathLen, const wchar_t* mode, size_t modeLen) {
-    detail::GenericStaticallyLocalPath<PathChar> localPath(path, pathLen);
-    detail::GenericStaticallyLocalPath<PathChar> localMode(mode, modeLen);
-    return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
-}
+//FILE* FileSystemInternal::fopen(const char* path, size_t pathLen, const char* mode, size_t modeLen) {
+//    detail::GenericStaticallyLocalPath<PathChar> localPath(path, pathLen);
+//    detail::GenericStaticallyLocalPath<PathChar> localMode(mode, modeLen);
+//    return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
+//}
+//FILE* FileSystemInternal::fopen(const wchar_t* path, size_t pathLen, const wchar_t* mode, size_t modeLen) {
+//    detail::GenericStaticallyLocalPath<PathChar> localPath(path, pathLen);
+//    detail::GenericStaticallyLocalPath<PathChar> localMode(mode, modeLen);
+//    return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
+//}
 FILE* FileSystemInternal::fopen(const Char* path, size_t pathLen, const Char* mode, size_t modeLen) {
     detail::GenericStaticallyLocalPath<PathChar> localPath(path, pathLen);
     detail::GenericStaticallyLocalPath<PathChar> localMode(mode, modeLen);
-    return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
+    return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str()).unwrap();    // TODO: result 返す
 }
 
 uint64_t FileSystemInternal::getFileSize(FILE* stream) {

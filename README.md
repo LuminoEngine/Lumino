@@ -12,6 +12,14 @@ Build and Unit Tests
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
+Quick-start
+----------
+
+```
+dotnet run -- BuildEngine_MSVC --components=core
+```
+
+TODO:
 
 Get started
 ----------

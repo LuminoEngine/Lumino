@@ -71,9 +71,7 @@
 
 #include "LuminoCore/Serialization/Common.hpp"
 #include "LuminoCore/Serialization/ArchiveStore.hpp"
-#include "LuminoCore/Serialization/Serialization.hpp"
 
-#include "LuminoCore/Math/MathSerialization.hpp"
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES
 #ifdef _MSC_VER

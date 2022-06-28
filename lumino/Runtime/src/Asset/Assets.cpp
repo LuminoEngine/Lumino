@@ -98,7 +98,7 @@ String Assets::readAllText(const StringView& filePath, EncodingType encoding)
     }
 
     TextEncoding* e = (encoding == EncodingType::Unknown) ? nullptr : TextEncoding::getEncoding(encoding);
-    return FileSystem::readAllText(stream, e);
+    return FileSystem::readAllText(stream, e).unwrap();
 }
 
 Ref<Stream> Assets::openFileStream(const StringView& filePath)

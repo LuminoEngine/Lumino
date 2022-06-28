@@ -20,6 +20,9 @@ namespace LuminoBuild
 
         [Option("debug", HelpText = "Enabled debug build.")]
         public bool Debug { get; set; } = false;
+
+        [Option("components", HelpText = "; separated component list.")]
+        public string Components { get; set; } = "";
     }
 
     class Program

@@ -146,8 +146,8 @@ bool ShaderHelper::generateShader(ln::detail::ShaderManager* manager, const ln::
     ln::List<ln::String> definitions;
 
     auto inputCodeBuffer = ln::FileSystem::readAllBytes(inputFilePath);
-    char* inputCode = (char*)inputCodeBuffer.data();
-    size_t inputCodeLength = inputCodeBuffer.size();
+    char* inputCode = (char*)inputCodeBuffer.unwrap().data();
+    size_t inputCodeLength = inputCodeBuffer.unwrap().size();
 
 
     UnifiedShaderCompiler compiler(manager, diag);

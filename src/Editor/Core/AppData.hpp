@@ -18,8 +18,8 @@ public:
 private:
     AppData();
 
-    LN_SERIALIZE_CLASS_VERSION(1)
-    void serialize(ln::Archive& ar);
+    //LN_SERIALIZE_CLASS_VERSION(1)
+    //void serialize(ln::Archive& ar);
 };
 
 } // namespace lna

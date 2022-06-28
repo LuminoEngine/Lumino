@@ -97,7 +97,7 @@ void Shader::init(const StringView& vertexShaderFilePath, const StringView& pixe
 
         kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), localDiag);
         if (!compiler.compileSingleCodes(
-                reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main", reinterpret_cast<const char*>(psData.data()), psData.size(), "main", includeDirs, {})) {
+                reinterpret_cast<const char*>(vsData.unwrap().data()), vsData.unwrap().size(), "main", reinterpret_cast<const char*>(psData.unwrap().data()), psData.unwrap().size(), "main", includeDirs, {})) {
             LN_ERROR();
             return;
         }

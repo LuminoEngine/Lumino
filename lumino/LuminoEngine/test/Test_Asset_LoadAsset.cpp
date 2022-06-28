@@ -95,7 +95,7 @@ TEST_F(Test_Asset_LoadAsset, MultiArchive)
 		archive.close();
 
 		auto data = FileSystem::readAllBytes(LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_2ch.wav"));
-		hash1 = CRCHash::compute((const char*)data.data(), data.size());
+		hash1 = CRCHash::compute((const char*)data.unwrap().data(), data.unwrap().size());
 	}
 
 	const Path assetFile2 = LN_TEMPFILE("LoadAssetTest2.lca");
@@ -107,7 +107,7 @@ TEST_F(Test_Asset_LoadAsset, MultiArchive)
 		archive.close();
 
 		auto data = FileSystem::readAllBytes(LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_2ch.wav"));
-		hash2 = CRCHash::compute((const char*)data.data(), data.size());
+		hash2 = CRCHash::compute((const char*)data.unwrap().data(), data.unwrap().size());
 	}
 
 	detail::AssetManager::instance()->mountAssetArchive(assetFile1, _TT("pass1"));
