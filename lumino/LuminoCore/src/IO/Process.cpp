@@ -43,7 +43,7 @@ StreamWriter* Process::openStdin() {
         if (!encoding) {
             encoding = TextEncoding::systemMultiByteEncoding();
         }
-        m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, encoding);
+        m_stdinWriter = StreamWriter::create(m_startInfo.stdinPipe, encoding);
     }
 
     return m_stdinWriter;
@@ -57,7 +57,7 @@ StreamReader* Process::openStdout() {
         if (!encoding) {
             encoding = TextEncoding::systemMultiByteEncoding();
         }
-        m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, encoding);
+        m_stdoutReader = StreamReader::create(m_startInfo.stdoutPipe, encoding);
     }
 
     return m_stdoutReader;
@@ -71,7 +71,7 @@ StreamReader* Process::openStderr() {
         if (!encoding) {
             encoding = TextEncoding::systemMultiByteEncoding();
         }
-        m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, encoding);
+        m_stderrReader = StreamReader::create(m_startInfo.stderrPipe, encoding);
     }
 
     return m_stderrReader;
@@ -480,7 +480,7 @@ void Process2::start(const ProcessCommand2* cmd) {
         if (!encoding) {
             encoding = TextEncoding::systemMultiByteEncoding();
         }
-        m_stdinWriter = makeRef<StreamWriter>(stdIn, encoding);
+        m_stdinWriter = StreamWriter::create(stdIn, encoding);
     }
 
     Ref<detail::PipeImpl> stdOut;
@@ -491,7 +491,7 @@ void Process2::start(const ProcessCommand2* cmd) {
         if (!encoding) {
             encoding = TextEncoding::systemMultiByteEncoding();
         }
-        m_stdoutReader = makeRef<StreamReader>(stdOut, encoding);
+        m_stdoutReader = StreamReader::create(stdOut, encoding);
     }
 
     Ref<detail::PipeImpl> stdErr;
@@ -502,7 +502,7 @@ void Process2::start(const ProcessCommand2* cmd) {
         if (!encoding) {
             encoding = TextEncoding::systemMultiByteEncoding();
         }
-        m_stderrReader = makeRef<StreamReader>(stdErr, encoding);
+        m_stderrReader = StreamReader::create(stdErr, encoding);
     }
 
     startInfo.stdinPipe = stdIn;

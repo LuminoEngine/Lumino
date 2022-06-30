@@ -655,7 +655,7 @@ String String::concat(const StringView& str1, const StringView& str2, const Stri
 String String::join(const Array<String>& list, const StringView& delim) {
     if (list.isEmpty()) return String();
 
-    int len = delim.length() * (list.size() - 1);
+    int len = delim.length() * (list.length() - 1);
     for (auto& str : list) {
         len += str.length();
     }
@@ -663,7 +663,7 @@ String String::join(const Array<String>& list, const StringView& delim) {
     String s;
     s.reserve(len);
     s.append(list[0]);
-    for (int i = 1; i < list.size(); i++) {
+    for (int i = 1; i < list.length(); i++) {
         s.append(delim);
         s.append(list[i]);
     }

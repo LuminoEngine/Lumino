@@ -22,7 +22,7 @@ namespace ln {
 class PlatformFileFinder
     : public RefObject {
 public:
-    PlatformFileFinder(const PathChar* dirPath, int dirPathLen, FileAttribute attr, const PathChar* pattern, int patternLen);
+    PlatformFileFinder(const PathChar* dirPath, size_t dirPathLen, FileAttribute attr, const PathChar* pattern, int patternLen);
     ~PlatformFileFinder();
     bool isWorking() const;
     bool isFirst() const;
@@ -44,7 +44,7 @@ private:
     bool m_first;
 };
 
-PlatformFileFinder::PlatformFileFinder(const PathChar* dirPath, int dirPathLen, FileAttribute attr, const PathChar* pattern, int patternLen)
+PlatformFileFinder::PlatformFileFinder(const PathChar* dirPath, size_t dirPathLen, FileAttribute attr, const PathChar* pattern, int patternLen)
     : m_impl()
     , m_dirPath(dirPath)
     , m_current()

@@ -139,7 +139,7 @@ public:
         }
     }
 
-    void initialize(const wchar_t* path, int len)
+    void initialize(const wchar_t* path, size_t len)
     {
         std::wstring pattern;
         pattern.reserve(len + 2);

@@ -617,17 +617,18 @@ void JsonDocument::parse(const String& text)
 
 void JsonDocument::save(const StringView& filePath, JsonFormatting formatting)
 {
-    StreamWriter w(filePath);
-    JsonWriter jw(&w);
-    jw.setFormatting(formatting);
-    m_rootElement->save(&jw);
+    LN_NOTIMPLEMENTED();
+    //StreamWriter w(filePath);
+    //JsonWriter jw(&w);
+    //jw.setFormatting(formatting);
+    //m_rootElement->save(&jw);
 }
 
-void JsonDocument::load(const StringView& filePath)
-{
-    StreamReader r(filePath.data()); // TODO: end
-    JsonReader jr(&r);
-    parseInternal(&jr);
+void JsonDocument::load(const StringView& filePath) {
+    LN_NOTIMPLEMENTED();
+    //StreamReader r(filePath.data()); // TODO: end
+    //JsonReader jr(&r);
+    //parseInternal(&jr);
 }
 
 String JsonDocument::toString(JsonFormatting formatting)

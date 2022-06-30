@@ -7,41 +7,39 @@ class Test_IO_StreamReader : public ::testing::Test {};
 //## Example1
 class Test_IO_StreamReader_P1 : public ::testing::TestWithParam<ln::String> {};
 INSTANTIATE_TEST_CASE_P(
-	t1, Test_IO_StreamReader_P1,
-	::testing::Values(
-		LN_LOCALFILE(_TT("TestData/ASCII_CRLF.txt")),
-		LN_LOCALFILE(_TT("TestData/ASCII_CR.txt")),
-		LN_LOCALFILE(_TT("TestData/ASCII_LF.txt"))));
-TEST_P(Test_IO_StreamReader_P1, Example1)
-{
-	StreamReader reader(GetParam());
-	String line;
-	String str;
-	while (reader.readLine(&line))
-	{
-		str += line;
-	}
-	ASSERT_EQ(_T("abcdefghi"), str);
+    t1,
+    Test_IO_StreamReader_P1,
+    ::testing::Values(
+        LN_LOCALFILE(_TT("TestData/ASCII_CRLF.txt")),
+        LN_LOCALFILE(_TT("TestData/ASCII_CR.txt")),
+        LN_LOCALFILE(_TT("TestData/ASCII_LF.txt"))));
+TEST_P(Test_IO_StreamReader_P1, Example1) {
+    auto reader = StreamReader::open(GetParam()).unwrap();
+    String line;
+    String str;
+    while (reader->readLine(&line)) {
+        str += line;
+    }
+    ASSERT_EQ(_T("abcdefghi"), str);
 }
 
 //# check UTF8
 class Test_IO_StreamReader_P2 : public ::testing::TestWithParam<ln::String> {};
 INSTANTIATE_TEST_CASE_P(
-	t1, Test_IO_StreamReader_P2,
-	::testing::Values(
-		LN_LOCALFILE(_TT("TestData/UTF8_LF.txt")),
-		LN_LOCALFILE(_TT("TestData/UTF8_BOM_LF.txt"))));
-TEST_P(Test_IO_StreamReader_P2, UTF8)
-{
-	StreamReader reader(GetParam());
-	String line;
-	String str;
-	while (reader.readLine(&line))
-	{
-		str += line;
-	}
-	ASSERT_EQ(0x25CF, str[0]);
-	ASSERT_EQ(0x25A0, str[1]);
+    t1,
+    Test_IO_StreamReader_P2,
+    ::testing::Values(
+        LN_LOCALFILE(_TT("TestData/UTF8_LF.txt")),
+        LN_LOCALFILE(_TT("TestData/UTF8_BOM_LF.txt"))));
+TEST_P(Test_IO_StreamReader_P2, UTF8) {
+    auto reader = StreamReader::open(GetParam()).unwrap();
+    String line;
+    String str;
+    while (reader->readLine(&line)) {
+        str += line;
+    }
+    ASSERT_EQ(0x25CF, str[0]);
+    ASSERT_EQ(0x25A0, str[1]);
 }
 
 #if 0
@@ -92,4 +90,3 @@ TEST_F(Test_IO_StreamReader, readLine)
 	}
 }
 #endif
-

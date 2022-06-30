@@ -202,7 +202,23 @@ TEST_F(Test_Base_Result, VoidUnwrap) {
     Test::func().unwrap();
 }
 
-/*
+// RefObject を Box してもコンパイルエラーにならないこと。
+TEST_F(Test_Base_Result, BoxRefObject) {
+    class TestObject1 : public RefObject {
+
+    };
+
+    struct Local {
+        static IOResult<Ref<TestObject1>> open1() {
+            return ok(makeRef<TestObject1>());
+        }
+        static BasicResult<Ref<TestObject1>> open2() {
+            return open1();
+        }
+    };
+}
+
+    /*
 FileSystem などで Result 返す関数は、その中でエラーが発生しても assertion 扱いしたくない。
 unwrap() したときに assertion したい。
 

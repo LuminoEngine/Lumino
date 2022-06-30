@@ -108,9 +108,9 @@ static int commnad_localInitialSetup(const char* packageDir_) {
     if (ln::FileSystem::existsFile(profile)) {
         int beginLine = -1;
         int endLine = -1;
-        ln::StreamReader r(profile);
+        auto r = ln::StreamReader::open(profile).unwrap();
         ln::String line;
-        while (r.readLine(&line)) {
+        while (r->readLine(&line)) {
             if (line.indexOf(_TT("# [Lumino begin]")) == 0)
                 beginLine = lines.size();
             if (line.indexOf(_TT("# [Lumino end]")) == 0)
@@ -144,10 +144,10 @@ static int commnad_localInitialSetup(const char* packageDir_) {
         lines.add(_TT("# [Lumino end]"));
     }
 
-    ln::StreamWriter w(profile);
-    w.setNewLine(_TT("\n")); // for macOS (\r is invalid)
+    auto writer = ln::StreamWriter::open(profile).unwrap();
+    writer->setNewLine(_TT("\n")); // for macOS (\r is invalid)
     for (auto& line : lines) {
-        w.writeLine(line);
+        writer->writeLine(line);
     }
 
     CLI::info(ln::format(_TT("Lumino environment variable added to {0}."), profile.str()));

@@ -9,31 +9,29 @@ namespace ln {
 //==============================================================================
 // StreamWriter
 
-StreamWriter::StreamWriter(Stream* stream, TextEncoding* encoding)
-{
-    init(stream, encoding);
-}
-
-StreamWriter::StreamWriter(const Path& filePath, FileWriteMode mode, TextEncoding* encoding)
-{
+IOResult<Ref<StreamWriter>> StreamWriter::open(const Path& filePath, FileWriteMode mode, TextEncoding* encoding) {
     FileOpenMode openMode;
     if (mode == FileWriteMode::Truncate) {
         openMode = FileOpenMode::Write | FileOpenMode::Truncate;
-    } else {
+    }
+    else {
         openMode = FileOpenMode::Write | FileOpenMode::Append;
     }
+    auto stream = FileStream::create(filePath.c_str(), openMode);
+    if (!stream) {
+        return err();   // TODO: FileStream からエラーを取る
+    }
 
-    Ref<FileStream> stream = FileStream::create(filePath.c_str(), openMode);
-    init(stream, encoding);
+    return Ref<StreamWriter>(LN_NEW StreamWriter(stream, encoding), false);
 }
 
-StreamWriter::~StreamWriter()
-{
+Ref<StreamWriter> StreamWriter::create(Stream* stream, TextEncoding* encoding) {
+    if (LN_REQUIRE(stream)) return nullptr;
+    return Ref<StreamWriter>(LN_NEW StreamWriter(stream, encoding), false);
 }
 
-void StreamWriter::init(Stream* stream, TextEncoding* encoding)
-{
-    if (LN_ENSURE(stream)) return;
+StreamWriter::StreamWriter(Stream* stream, TextEncoding* encoding) {
+    LN_DCHECK(stream);
 
     // encoding 未指定であれば UTF8 とする
     if (encoding == nullptr) {
@@ -44,15 +42,16 @@ void StreamWriter::init(Stream* stream, TextEncoding* encoding)
     setEncoding(encoding);
 }
 
-void StreamWriter::onWriteOverride(const void* data, size_t byteCount)
-{
+StreamWriter::~StreamWriter() {
+}
+
+void StreamWriter::onWriteOverride(const void* data, size_t byteCount) {
     if (data && byteCount > 0) {
         m_stream->write(data, byteCount);
     }
 }
 
-void StreamWriter::onFlush()
-{
+void StreamWriter::onFlush() {
     m_stream->flush();
 }
 

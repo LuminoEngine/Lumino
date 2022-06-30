@@ -65,6 +65,9 @@ TEST_F(Test_IO_Path, Concat) {
 #else
         ASSERT_EQ(_TT("dir1/dir2/file.txt"), path.str());
 #endif
+
+        auto path2 = Path::combine(U"");
+        ASSERT_TRUE(path2.isEmpty());
     }
 }
 

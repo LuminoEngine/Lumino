@@ -61,13 +61,6 @@ file(
     "${CMAKE_CURRENT_LIST_DIR}/src/Threading/*.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Threading/*.hpp")
 
-file(
-    GLOB
-    LN_SOURCES_Xml
-    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Xml/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Xml/*.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Xml/*.hpp")
-
 #--------------------------------------
 # Platform source files.
 
@@ -95,7 +88,6 @@ source_group("Text"             FILES ${LN_SOURCES_Text})
 source_group("IO"               FILES ${LN_SOURCES_IO})
 source_group("Json"             FILES ${LN_SOURCES_Json})
 source_group("Threading"        FILES ${LN_SOURCES_Threading})
-source_group("Xml"              FILES ${LN_SOURCES_Xml})
 source_group("Math"             FILES ${LN_SOURCES_Math})
 source_group("Serialization"    FILES ${LN_SOURCES_Serialization})
 source_group("Testing"          FILES ${LN_SOURCES_Testing})
@@ -107,7 +99,6 @@ set(LN_SOURCES
     ${LN_SOURCES_IO}
     ${LN_SOURCES_Json}
     ${LN_SOURCES_Threading}
-    ${LN_SOURCES_Xml}
     ${LN_SOURCES_Math}
     ${LN_SOURCES_Serialization}
     ${LN_SOURCES_Testing})

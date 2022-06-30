@@ -157,7 +157,7 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF32(const byte_t* i
                 // その外部プロセスが UTF-8 でデータを送ってくることもある。（clang に UTF-8 コードを入力した時のエラーメッセージ等）
                 int convertedWideCount = ::MultiByteToWideChar(
                     m_cpInfo->CodePage, MB_PRECOMPOSED,
-                    (LPCSTR)buffer, bufferSize,
+                    (LPCSTR)buffer, static_cast<int>(bufferSize),
                     (LPWSTR)words, WORDS_COUNT);
                 if (LN_ENSURE(convertedWideCount > 0)) {
                     return false;
@@ -400,7 +400,7 @@ bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF32(const UTF32* 
             words,
             convertedWords,
             (LPSTR)oItr,
-            oEnd - oItr,
+            static_cast<int>(oEnd - oItr),
             pDefault,
             &bUsedDefaultChar);
         if (convertedByteCount <= 0) {

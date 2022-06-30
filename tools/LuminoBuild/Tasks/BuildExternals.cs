@@ -11,6 +11,15 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Build b)
         {
+            BuildCore(b);
+
+            // CI 環境の監視
+            if (BuildEnvironment.FromCI)
+                Logger.WriteLine($"{b.BuildDir} directory size: {(Utils.GetDirectorySize(b.BuildDir) / 1048576).ToString("#,0")} MB");
+        }
+
+        private void BuildCore(Build b)
+        {
             string lockFile = Path.Combine(b.BuildToolsDir, $"{b.Triplet}.lock");
             if (File.Exists(lockFile))
             {

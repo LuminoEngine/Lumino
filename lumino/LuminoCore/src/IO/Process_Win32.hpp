@@ -27,8 +27,8 @@ public:
     virtual ~PipeImpl();
 
     void init();
-    int readBytes(void* buffer, int length);
-    int writeBytes(const void* buffer, int length);
+    int readBytes(void* buffer, size_t length);
+    int writeBytes(const void* buffer, size_t length);
     HANDLE readHandle() const { return m_readHandle; }
     HANDLE writeHandle() const { return m_writeHandle; }
     void closeRead();
@@ -75,14 +75,14 @@ PipeImpl::~PipeImpl() {
     closeBoth();
 }
 
-int PipeImpl::writeBytes(const void* buffer, int length) {
+int PipeImpl::writeBytes(const void* buffer, size_t length) {
     DWORD written = 0;
     BOOL result = ::WriteFile(m_writeHandle, buffer, length, &written, NULL);
     if (LN_ENSURE(result)) return 0;
     return written;
 }
 
-int PipeImpl::readBytes(void* buffer, int length) {
+int PipeImpl::readBytes(void* buffer, size_t length) {
     DWORD bytesRead = 0;
     BOOL result = ::ReadFile(m_readHandle, buffer, length, &bytesRead, NULL);
     if (result || ::GetLastError() == ERROR_BROKEN_PIPE) {

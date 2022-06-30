@@ -143,7 +143,7 @@ public:
 		@details	DirectorySeparatorChar と AltDirectorySeparatorChar は等価とみなします。
 	*/
     template<typename TChar>
-    static int comparePathString(const TChar* path1, int len1, const TChar* path2, int len) noexcept;
+    static int comparePathString(const TChar* path1, size_t len1, const TChar* path2, size_t len) noexcept;
 
     /**
 		@brief		パスを単純化する

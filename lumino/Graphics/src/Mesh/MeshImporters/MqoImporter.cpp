@@ -31,17 +31,17 @@ void MqoParser::parse(MeshManager* manager, const Path& filePath, DiagnosticsMan
 	m_parentDir = filePath.parent();
 
 	// Metasequoia4 で出力される .mqo ファイルの文字コードは Shift_JIS だった
-	StreamReader reader(filePath.c_str(), TextEncoding::getEncoding(EncodingType::SJIS));
+    auto reader = StreamReader::open(filePath, TextEncoding::getEncoding(EncodingType::SJIS)).unwrap();
 
 	String line;
-	while (reader.readLine(&line))
+	while (reader->readLine(&line))
 	{
 		// CommonMaterial
 		int index = line.indexOf(_LT("Material"));
 		if (index > -1)
 		{
 			visitMaterialChunk();
-			loadMaterials(&reader);
+			loadMaterials(reader);
 			continue;
 		}
 
@@ -52,7 +52,7 @@ void MqoParser::parse(MeshManager* manager, const Path& filePath, DiagnosticsMan
 			int nameBegin = line.indexOf(_LT('"'), index + 6) + 1;
 			int nameEnd = line.indexOf(_LT('"'), nameBegin);
 			visitObjectChunk(line.substr(nameBegin, nameEnd - nameBegin));
-			loadObject(&reader);
+			loadObject(reader);
 			continue;
 		}
 	}

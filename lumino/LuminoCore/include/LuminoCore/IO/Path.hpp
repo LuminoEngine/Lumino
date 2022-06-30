@@ -235,6 +235,10 @@ public:
     // 指定パスが this に含まれるかを調べる。双方 が絶対パスでなければならない。
     bool contains(const Path& subdir) const;
 
+    // for STL interface
+    int size() const { return m_path.length(); }
+    void reserve(int size) { m_path.reserve(size); }
+
 public:
     template<class... TArgs>
     static Path combine(TArgs&&... args);
@@ -273,23 +277,40 @@ public:
 #endif
 };
 
+
 namespace detail {
+    
 
 template<class T>
-inline Path combinePathImpl(T&& s) {
-    return s;
+inline size_t combinePathImpl_Length(size_t len, T&& s) {
+    return len + std::size(s) + 1;
 }
 
-template<class T1, class T2, class... TRest>
-inline Path combinePathImpl(T1&& parent, T2&& local, TRest&&... rest) {
-    return combinePathImpl(Path(std::forward<T1>(parent), std::forward<T2>(local)), std::forward<TRest>(rest)...);
+template<class T, class... TRest>
+inline size_t combinePathImpl_Length(size_t len, T&& s, TRest&&... rest) {
+    return combinePathImpl_Length(len + std::size(s) + 1, std::forward<TRest>(rest)...);
+}
+
+template<class T>
+inline void combinePathImpl(Path& result, T&& s) {
+    result.append(s);
+}
+
+template<class T, class... TRest>
+inline void combinePathImpl(Path& result, T&& s, TRest&&... rest) {
+    result.append(std::forward<T>(s));
+    combinePathImpl(result, std::forward<TRest>(rest)...);
 }
 
 } // namespace detail
 
 template<class... TArgs>
 inline Path Path::combine(TArgs&&... args) {
-    return detail::combinePathImpl(std::forward<TArgs>(args)...);
+    size_t len = detail::combinePathImpl_Length(0, std::forward<TArgs>(args)...);
+    Path path;
+    path.reserve(static_cast<int>(len));
+    detail::combinePathImpl(path, std::forward<TArgs>(args)...);
+    return path;
 }
 
 inline Path operator+(const Char* lhs, const Path& rhs) {

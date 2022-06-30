@@ -101,8 +101,8 @@ TEST_F(Test_Json_JsonReader, Integrate)
 	// http://json.org/example.html
 	// <Integrate> オフィシャルページのサンプル1
 	{
-		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample1.json")));
-		JsonReader jr(&r);
+		auto r = StreamReader::open(LN_LOCALFILE(_TT("TestData/JSONExample1.json"))).unwrap();
+		JsonReader jr(r);
 		ASSERT_EQ(true, jr.read()); ASSERT_EQ(JsonNode::StartObject, jr.nodeType());
 			ASSERT_EQ(true, jr.read()); ASSERT_EQ(JsonNode::PropertyName, jr.nodeType()); ASSERT_EQ(_LT("glossary"), jr.value());
 			ASSERT_EQ(true, jr.read()); ASSERT_EQ(JsonNode::StartObject, jr.nodeType());
@@ -147,35 +147,35 @@ TEST_F(Test_Json_JsonReader, Integrate)
 	}
 	// <Integrate> オフィシャルページのサンプル2
 	{
-		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample2.json")));
-		JsonReader jr(&r);
+        auto r = StreamReader::open(LN_LOCALFILE(_TT("TestData/JSONExample2.json"))).unwrap();
+		JsonReader jr(r);
 		while (jr.read());
 		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
-		ASSERT_EQ(true, r.isEOF());
+		ASSERT_EQ(true, r->isEOF());
 	}
 	// <Integrate> オフィシャルページのサンプル3
 	{
-		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample3.json")));
-		JsonReader jr(&r);
+		auto r = StreamReader::open(LN_LOCALFILE(_TT("TestData/JSONExample3.json"))).unwrap();
+		JsonReader jr(r);
 		while (jr.read());
 		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
-		ASSERT_EQ(true, r.isEOF());
+		ASSERT_EQ(true, r->isEOF());
 	}
 	// <Integrate> オフィシャルページのサンプル4
 	{
-		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample4.json")));
-		JsonReader jr(&r);
+		auto r = StreamReader::open(LN_LOCALFILE(_TT("TestData/JSONExample4.json"))).unwrap();
+		JsonReader jr(r);
 		while (jr.read());
 		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
-		ASSERT_EQ(true, r.isEOF());
+		ASSERT_EQ(true, r->isEOF());
 	}
 	// <Integrate> オフィシャルページのサンプル5
 	{
-		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample5.json")));
-		JsonReader jr(&r);
+		auto r = StreamReader::open(LN_LOCALFILE(_TT("TestData/JSONExample5.json"))).unwrap();
+		JsonReader jr(r);
 		while (jr.read());
 		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
-		ASSERT_EQ(true, r.isEOF());
+		ASSERT_EQ(true, r->isEOF());
 	}
 }
 
@@ -252,7 +252,7 @@ TEST_F(Test_Json_JsonReader, Issues)
 //---------------------------------------------------------------------
 //TEST_F(Test_Json_JsonReader, JsonGenerator)
 //{
-//	StreamReader r(Test_GetTempFilePath(_LT("JsonGenerator.txt")));
+//	auto r = StreamReader::open(Test_GetTempFilePath(_LT("JsonGenerator.txt")));
 //	JsonReader jr(&r);
 //
 //	while (jr.Read())

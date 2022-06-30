@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license..
 #pragma once
 #include "../Text/EncodingConverter.hpp"
+#include "IOError.hpp"
 #include "Stream.hpp"
 #include "TextReader.hpp"
 
@@ -12,41 +13,45 @@ namespace ln {
  * エンコーディングを明示しない場合、ファイルは UTF-8 テキストとして読み込まれます。
  * ただし明示した場合でも、UTF 系の BOM を検出した場合は BOM が示すエンコーディングが優先されます。
  */
-class StreamReader
-    : public TextReader
+class StreamReader : public TextReader
 {
 public:
     /**
-	 * 指定したストリーム用の StreamReader を構築します。
-	 *
-	 * @param[in]	stream		: 読み込み元ストリーム
-	 * @param[in]	encoding	: 読み込むテキストのエンコーディング (null の場合は UTF8Encoding を使用します)
-	 */
-    StreamReader(Stream* stream, TextEncoding* encoding = nullptr);
+     * 指定したパスのファイルから読み込む StreamReader を構築します。
+     *
+     * @param[in] filePath  : 読み込み元ファイルのパス
+     * @param[in] encoding  : 読み込むテキストのエンコーディング
+     * 
+     * encoding を省略した場合は UTF-8 文字列として書き込みます。
+     */
+    static IOResult<Ref<StreamReader>> open(const StringView& filePath, TextEncoding* encoding = nullptr);
 
     /**
-	 * 指定したパスのファイルから読み込むの StreamReader を構築します。
-	 *
-	 * @param[in]	filePath	: 読み込み元ファイルのパス
-	 * @param[in]	encoding	: 読み込むテキストのエンコーディング (null の場合は UTF8Encoding を使用します)
-	 */
-    StreamReader(const StringView& filePath, TextEncoding* encoding = nullptr);
+     * 指定したストリーム用の StreamReader を構築します。
+     *
+     * @param[in] stream    : 読み込み元ストリーム
+     * @param[in] encoding  : 読み込むテキストのエンコーディング
+     * 
+     * encoding を省略した場合は UTF-8 文字列として書き込みます。
+     */
+    static Ref<StreamReader> create(Stream* stream, TextEncoding* encoding = nullptr);
 
     virtual ~StreamReader();
 
     Stream* stream() const { return m_stream; }
 
-    virtual int peek() override;
-    virtual int read() override;
-    virtual bool readLine(String* line) override;
-    virtual String readToEnd() override;
-    virtual bool isEOF() override;
+    int peek() override;
+    int read() override;
+    bool readLine(String* line) override;
+    String readToEnd() override;
+    bool isEOF() override;
 
 private:
+    StreamReader(Stream* stream, TextEncoding* encoding);
     void initReader(Stream* stream, TextEncoding* encoding);
     int readBuffer();
 
-    static const int DefaultBufferSize = 1024;
+    static constexpr int DefaultBufferSize = 1024;
 
     Ref<Stream> m_stream;
     EncodingConverter m_converter;

@@ -8,23 +8,28 @@ namespace ln {
 //==============================================================================
 // StreamReader
 
-StreamReader::StreamReader(Stream* stream, TextEncoding* encoding)
-{
-    initReader(stream, encoding);
-}
-
-StreamReader::StreamReader(const StringView& filePath, TextEncoding* encoding)
-{
+IOResult<Ref<StreamReader>> StreamReader::open(const StringView& filePath, TextEncoding* encoding) {
     auto stream = FileStream::create(filePath, FileOpenMode::Read);
+    if (!stream) {
+        return err(); // TODO: FileStream からエラーを取る
+    }
+    
+    return Ref<StreamReader>(LN_NEW StreamReader(stream, encoding), false);
+}
+
+Ref<StreamReader> StreamReader::create(Stream* stream, TextEncoding* encoding) {
+    return Ref<StreamReader>(LN_NEW StreamReader(stream, encoding), false);
+}
+
+StreamReader::StreamReader(Stream* stream, TextEncoding* encoding) {
+    LN_DCHECK(stream);
     initReader(stream, encoding);
 }
 
-StreamReader::~StreamReader()
-{
+StreamReader::~StreamReader() {
 }
 
-int StreamReader::peek()
-{
+int StreamReader::peek() {
     // バッファリングデータを最後まで読んでいた場合は追加読み込み。
     // それでも1つも読み込めなかったら EOF。
     if (m_charPos >= m_charElementLen) {
@@ -36,8 +41,7 @@ int StreamReader::peek()
     return buf[m_charPos];
 }
 
-int StreamReader::read()
-{
+int StreamReader::read() {
     // バッファリングデータを最後まで読んでいた場合は追加読み込み。
     // それでも1つも読み込めなかったら EOF。
     if (m_charPos >= m_charElementLen) {
@@ -49,8 +53,7 @@ int StreamReader::read()
     return buf[m_charPos++];
 }
 
-bool StreamReader::readLine(String* line)
-{
+bool StreamReader::readLine(String* line) {
     // 変換済みの文字列を全て返していれば (または初回)、次のバッファを読みに行く
     if (m_charPos == m_charElementLen) {
         if (readBuffer() == 0) {
@@ -91,8 +94,7 @@ bool StreamReader::readLine(String* line)
     return true;
 }
 
-String StreamReader::readToEnd()
-{
+String StreamReader::readToEnd() {
     m_readLineCache.clear();
     do {
         if (m_charElementLen - m_charPos > 0) {
@@ -106,16 +108,14 @@ String StreamReader::readToEnd()
     return String(m_readLineCache.c_str());
 }
 
-bool StreamReader::isEOF()
-{
+bool StreamReader::isEOF() {
     if (m_charPos < m_charElementLen) {
         return false; // まだバッファリングされていて読まれていない文字がある
     }
     return (readBuffer() == 0);
 }
 
-void StreamReader::initReader(Stream* stream, TextEncoding* encoding)
-{
+void StreamReader::initReader(Stream* stream, TextEncoding* encoding) {
     if (LN_ENSURE(stream)) return;
 
     // encoding 未指定であれば UTF8 とする
@@ -127,7 +127,7 @@ void StreamReader::initReader(Stream* stream, TextEncoding* encoding)
     m_converter.getSourceEncoding(encoding);
     m_converter.setDestinationEncoding(TextEncoding::getEncodingTemplate<Char>());
 
-	detail::GenericBufferHelper::setAutoClear(&m_byteBuffer, false);
+    detail::GenericBufferHelper::setAutoClear(&m_byteBuffer, false);
     m_byteBuffer.resize(DefaultBufferSize);
 
     m_byteLen = 0;
@@ -137,8 +137,7 @@ void StreamReader::initReader(Stream* stream, TextEncoding* encoding)
 }
 
 // ストリームからバイト列を読み取って変換し、現在バッファリングされている文字要素数(THCAR)を返す。
-int StreamReader::readBuffer()
-{
+int StreamReader::readBuffer() {
     m_charPos = 0;
     m_charElementLen = 0;
 

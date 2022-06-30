@@ -297,7 +297,7 @@ std::vector<byte_t> TextEncoding::encode(const TEIMChar* str, int length, int* o
     // TODO: this が UTF16 なら memcpy でよい
 
     const byte_t* pr = preamble();
-    int preambleLen = (pr) ? strlen(reinterpret_cast<const char*>(pr)) : 0;
+    size_t preambleLen = (pr) ? strlen(reinterpret_cast<const char*>(pr)) : 0;
 
     // 入力に入っている最悪パターンの文字数
     size_t srcMaxCharCount = length;

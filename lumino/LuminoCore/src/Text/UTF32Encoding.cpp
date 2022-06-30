@@ -34,7 +34,7 @@ byte_t* UTF32Encoding::preamble() const
 
 int UTF32Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
-    return bufferSize / sizeof(UTF32);
+    return static_cast<int>(bufferSize / sizeof(UTF32));
 }
 #if LN_USTRING32
 bool UTF32Encoding::convertToUTF32Stateless(const byte_t* input, size_t inputByteSize, UTF32* output, size_t outputElementSize, TextDecodeResult* outResult)

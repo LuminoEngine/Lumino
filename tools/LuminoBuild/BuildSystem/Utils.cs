@@ -117,6 +117,34 @@ namespace LuminoBuild
         }
 
         /// <summary>
+        /// フォルダのサイズを取得する
+        /// </summary>
+        public static long GetDirectorySize(DirectoryInfo dirInfo)
+        {
+            long size = 0;
+
+            foreach (FileInfo fi in dirInfo.GetFiles())
+            {
+                size += fi.Length;
+            }
+
+            foreach (DirectoryInfo di in dirInfo.GetDirectories())
+            {
+                size += GetDirectorySize(di);
+            }
+
+            return size;
+        }
+
+        /// <summary>
+        /// フォルダのサイズを取得する
+        /// </summary>
+        public static long GetDirectorySize(string dirPath)
+        {
+            return GetDirectorySize(new System.IO.DirectoryInfo(dirPath));
+        }
+
+        /// <summary>
         /// ファイルをダウンロードする
         /// </summary>
         /// <param name="url"></param>
