@@ -53,17 +53,17 @@ constexpr const uint32_t crc32_table[256] = {
 /** ハッシュ値の計算を行うクラスです。 */
 class CRCHash {
 public:
-    static constexpr uint32_t calcCrcHash(const char* data, uint32_t len) {
-        uint32_t hash = len;
-        for (uint32_t i = 0; i < len; ++i) {
+    static constexpr uint32_t calcCrcHash(const char* data, size_t len) {
+        auto hash = static_cast<uint32_t>(len);
+        for (size_t i = 0; i < len; ++i) {
             hash = (hash >> 8) ^ crc32_table[(hash & 0xff) ^ data[i]];
         }
         return hash;
     }
 
-    static constexpr uint32_t calcCrcHash(const uint8_t* data, uint32_t len) {
-        uint32_t hash = len;
-        for (uint32_t i = 0; i < len; ++i) {
+    static constexpr uint32_t calcCrcHash(const uint8_t* data, size_t len) {
+        auto hash = static_cast<uint32_t>(len);
+        for (size_t i = 0; i < len; ++i) {
             hash = (hash >> 8) ^ crc32_table[(hash & 0xff) ^ data[i]];
         }
         return hash;

@@ -862,7 +862,6 @@ TEST_F(Test_Base_Variant, Value_Rect)
 
 #endif
 
-#if 0
 TEST_F(Test_Base_Serializer, unordered_map) {
     struct Test {
         ln::String name;
@@ -887,5 +886,4 @@ TEST_F(Test_Base_Serializer, unordered_map) {
     ASSERT_EQ(_TT("s1"), t2.values[_TT("f1")]);
     ASSERT_EQ(_TT("s2"), t2.values[_TT("f2")]);
 }
-#endif
 

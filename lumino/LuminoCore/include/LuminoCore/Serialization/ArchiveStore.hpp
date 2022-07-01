@@ -75,7 +75,7 @@ public:
     bool moveToNamedMember(const StringView& name) { return onMoveToNamedMember(name); };
     bool moveToIndexedMember(int index) { return onMoveToIndexedMember(index); }
     bool hasKey(const StringView& name) const { return onHasKey(name); }
-    const String& memberKey(int index) const { return onGetMemberKey(index); } // open済みmapコンテナのキーを探す
+    StringView memberKey(int index) const { return onGetMemberKey(index); } // open済みmapコンテナのキーを探す
     ArchiveNodeType getReadingValueType() { return onGetReadingValueType(); }    // 次に readValue で読まれる(setNextXXXX されている)値の型を取得
 	bool readValue(bool* outValue) { bool r = onReadValueBool(outValue); postRead(); return r; }
 	bool readValue(int64_t* outValue) { bool r = onReadValueInt64(outValue); postRead(); return r; }
@@ -101,7 +101,7 @@ protected:
     virtual bool onMoveToNamedMember(const StringView& name) = 0;
     virtual bool onMoveToIndexedMember(int index) = 0;
     virtual bool onHasKey(const StringView& name) const = 0;
-    virtual const String& onGetMemberKey(int index) const = 0;
+    virtual StringView onGetMemberKey(int index) const = 0;
 	virtual ArchiveNodeType onGetReadingValueType() = 0;	// 次に readValue で読まれる(setNextXXXX されている)値の型を取得
 	virtual bool onReadValueBool(bool* outValue) = 0;
 	virtual bool onReadValueInt64(int64_t* outValue) = 0;
@@ -334,7 +334,7 @@ protected:
 		//}
 	}
 
-	virtual const String& onGetMemberKey(int index) const override
+	virtual StringView onGetMemberKey(int index) const override
 	{
 		if (checkCurrentContainerType(JsonElementType::Object))
 		{

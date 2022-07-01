@@ -43,7 +43,7 @@ protected:
     bool onMoveToNamedMember(const StringView& name) override;
     bool onMoveToIndexedMember(int index) override;
     bool onHasKey(const StringView& name) const override;
-    const String& onGetMemberKey(int index) const override;
+    StringView onGetMemberKey(int index) const override;
     ArchiveNodeType onGetReadingValueType() override;
     bool onReadValueBool(bool* outValue) override;
     bool onReadValueInt64(int64_t* outValue) override;
@@ -93,10 +93,10 @@ void Serializer3::makeArrayTag(int* outSize) {
 
 void Serializer3::makeMapTag(int* outSize) {
     if (isSaving()) {
-        setParentNodeType(NodeType::Object);
+        setCurrentNodeType(NodeType::Object);
     }
     else if (isLoading()) {
-        setParentNodeType(NodeType::Object);
+        setCurrentNodeType(NodeType::Object);
         tryOpenContainer();
         if (outSize) *outSize = m_store->getContainerElementCount();
     }
@@ -405,6 +405,9 @@ int JsonArchiveStore3::onReadContainerElementCount() const {
     if (container->IsArray()) {
         return container->Size();
     }
+    else if(container->IsObject()) {
+        return container->MemberCount();
+    }
     else {
         LN_NOTIMPLEMENTED();
         return 0;
@@ -447,13 +450,16 @@ bool JsonArchiveStore3::onHasKey(const StringView& name) const {
     if (LN_REQUIRE(value->IsObject())) return false;
 
     RapidJsonValue k(name.data(), name.length());
-    const auto itr = value->FindMember(k);
-    return itr != value->MemberEnd();
+    return value->HasMember(k);
 }
 
-const String& JsonArchiveStore3::onGetMemberKey(int index) const {
-    LN_NOTIMPLEMENTED();
-    return String::Empty;
+StringView JsonArchiveStore3::onGetMemberKey(int index) const {
+    RapidJsonValue* value = m_loadingStack.top();
+    if (LN_REQUIRE(value->IsObject())) return String::Empty;
+
+    const auto itr = value->MemberBegin() + index;
+    const auto& name = itr->name;
+    return StringView(name.GetString(), name.GetStringLength());
 }
 
 ArchiveNodeType JsonArchiveStore3::onGetReadingValueType() {

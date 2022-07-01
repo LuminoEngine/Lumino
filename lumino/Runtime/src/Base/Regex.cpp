@@ -177,7 +177,7 @@ StringView MatchResult::groupValue(int index) const
 	PCRE2_SPTR start = subject + ovector[2 * index];
 	size_t length = ovector[2 * index + 1] - ovector[2 * index];
 
-	return StringView((const Char*)start, length);
+	return StringView((const Char*)start, static_cast<int>(length));
 }
 
 } // namespace ln

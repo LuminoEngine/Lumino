@@ -15,35 +15,6 @@ protected:
 
 
 
-//------------------------------------------------------------------------------
-//## unordered_map
-TEST_F(Test_Serialization2, unordered_map)
-{
-	struct Test
-	{
-		ln::String name;
-		std::unordered_map<ln::String, ln::String> values;
-
-		void serialize(Archive& ar)
-		{
-			ar & LN_NVP(name);
-			ar & LN_NVP(values);
-		}
-	};
-
-	Test t1;
-	t1.name = _TT("test");
-	t1.values = { {_TT("f1"), _TT("s1")}, {_TT("f2"), _TT("s2")} };
-	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
-	ASSERT_EQ(_TT("{\"name\":\"test\",\"values\":{\"f1\":\"s1\",\"f2\":\"s2\"}}"), json);
-
-	Test t2;
-	JsonSerializer::deserialize(json, t2);
-	ASSERT_EQ(_TT("test"), t2.name);
-	ASSERT_EQ(2, t2.values.size());
-	ASSERT_EQ(_TT("s1"), t2.values[_TT("f1")]);
-	ASSERT_EQ(_TT("s2"), t2.values[_TT("f2")]);
-}
 
 //------------------------------------------------------------------------------
 //## Examples
