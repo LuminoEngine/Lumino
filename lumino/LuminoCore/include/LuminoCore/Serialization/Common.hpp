@@ -1,8 +1,13 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license..
 #pragma once
 
+#define LN_USE_DEPRECATED_ARCHIVE 1
+
 namespace ln {
+
+#if LN_USE_DEPRECATED_ARCHIVE
 class Archive;
+#endif // LN_USE_DEPRECATED_ARCHIVE
 
 enum class ArchiveMode
 {
@@ -59,6 +64,8 @@ NameValuePair<TValue> makeNVP(const StringView& name, TValue& valueRef, const TV
 namespace detail
 {
 
+#if LN_USE_DEPRECATED_ARCHIVE
+
 // void serialize(Archive& ar) をメンバ関数として持っているか
 template<typename T>
 class has_member_serialize_function
@@ -114,6 +121,7 @@ public:
 	typedef decltype(check(std::declval<T>())) type;
 	static bool const value = type::value;
 };
+#endif // LN_USE_DEPRECATED_ARCHIVE
 
 template <class T> struct SerializeClassVersionInfo
 {

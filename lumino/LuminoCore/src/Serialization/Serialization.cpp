@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoCore/Serialization/Serialization.hpp>
 
+#if LN_USE_DEPRECATED_ARCHIVE
+
 namespace ln {
 
 /*
@@ -282,3 +284,5 @@ JsonTextInputArchive::~JsonTextInputArchive()
 }
 
 } // namespace ln
+
+#endif // LN_USE_DEPRECATED_ARCHIVE

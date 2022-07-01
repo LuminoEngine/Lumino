@@ -447,6 +447,123 @@ TEST_F(Test_Base_Serializer, OptionalArray) {
     ASSERT_EQ(10, obj2->value3[1].value());
 }
 
+TEST_F(Test_Base_Serializer, OptionalSampleCode) {
+    struct MyData : public Object {
+        Optional<int> value1;
+
+        void serialize3(Serializer3& ar) override {
+            ar& LN_NVP(value1);
+        }
+    };
+
+    // has value
+    {
+        auto data1 = makeObject<MyData>();
+        data1->value1 = 10;
+        String json = JsonSerializer3::serialize<MyData>(data1, JsonFormatting::None);
+        ASSERT_EQ(_TT("{\"value1\":10}"), json);
+
+        auto data2 = JsonSerializer3::deserialize<MyData>(json);
+        ASSERT_EQ(10, data2->value1.value());
+    }
+
+    // not has
+    {
+        auto data1 = makeObject<MyData>();
+        data1->value1 = nullptr;
+        String json = JsonSerializer3::serialize<MyData>(data1, JsonFormatting::None);
+        ASSERT_EQ(_TT("{\"value1\":null}"), json);
+
+        auto data2 = JsonSerializer3::deserialize<MyData>(json);
+        ASSERT_EQ(false, data2->value1.hasValue());
+    }
+
+    // innter struct
+    {
+        struct DataB {
+            int value1;
+            void serialize3(Serializer3& ar) { ar& LN_NVP(value1); }
+        };
+        struct DataA {
+            Optional<DataB> value2;
+            void serialize3(Serializer3& ar) { ar& LN_NVP(value2); }
+        };
+
+        DataA data1;
+        data1.value2 = DataB{ 100 };
+        String json = JsonSerializer3::serializeData(data1, JsonFormatting::None);
+        ASSERT_EQ(_TT("{\"value2\":{\"value1\":100}}"), json);
+
+        DataA data2;
+        JsonSerializer3::deserializeData(data2, json);
+        ASSERT_EQ(100, data2.value2.value().value1);
+    }
+
+    struct Test {
+        ln::Optional<ln::Array<ln::String>> includePaths;
+        ln::Optional<ln::Array<ln::String>> defines;
+        ln::Optional<ln::String> precompiledHeaderFile;
+        ln::Optional<ln::String> mscFullVer;
+
+        void serialize3(Serializer3& ar) {
+            ar& LN_NVP(includePaths);
+            ar& LN_NVP(defines);
+            ar& LN_NVP(precompiledHeaderFile);
+            ar& LN_NVP(mscFullVer);
+        }
+    };
+
+    Test t1;
+    Test t2;
+    ln::String json;
+
+    t1.includePaths = ln::Array<ln::String>({ _TT("dir1"), _TT("dir2") });
+    t1.defines = nullptr;
+    t1.precompiledHeaderFile = ln::String(_TT("pch.h"));
+    t1.mscFullVer = nullptr;
+
+    // Save
+    {
+        json = JsonSerializer3::serializeData(t1, JsonFormatting::None);
+        ASSERT_EQ(_TT("{\"includePaths\":[\"dir1\",\"dir2\"],\"defines\":null,\"precompiledHeaderFile\":\"pch.h\",\"mscFullVer\":null}"), json);
+    }
+
+    // Load
+    t2.mscFullVer = ln::String(_TT("123"));
+    {
+        JsonSerializer3::deserializeData(t2, json);
+        ASSERT_EQ(2, t2.includePaths.value().size());
+        ASSERT_EQ(_TT("dir1"), t2.includePaths.value().at(0));
+        ASSERT_EQ(_TT("dir2"), t2.includePaths.value().at(1));
+        ASSERT_EQ(false, t2.defines.hasValue());
+        ASSERT_EQ(_TT("pch.h"), t2.precompiledHeaderFile.value());
+        ASSERT_EQ(false, t2.mscFullVer.hasValue());
+    }
+
+    // データ構造バージョンアップ
+    {
+        struct TestV2 {
+            ln::Optional<ln::Array<ln::String>> includePaths;
+            ln::Optional<ln::String> compilerVer;
+
+            void serialize3(Serializer3& ar) {
+                ar& LN_NVP(includePaths);
+                ar& LN_NVP(compilerVer);
+            }
+        };
+
+        TestV2 tv2;
+        tv2.compilerVer = ln::String(_TT("567"));
+
+        JsonSerializer3::deserializeData(tv2, json);
+        ASSERT_EQ(2, tv2.includePaths.value().size());
+        ASSERT_EQ(_TT("dir1"), tv2.includePaths.value().at(0)); // 同じ名前は引き継ぐ
+        ASSERT_EQ(_TT("dir2"), tv2.includePaths.value().at(1));
+        ASSERT_EQ(_TT("567"), tv2.compilerVer.value()); // 新しい名前は serialize からは設定されない
+    }
+}
+
+
 class ClassVersionTestClass1 : public Object {
 public:
     int x = 0;
@@ -479,6 +596,102 @@ TEST_F(Test_Base_Serializer, ClassVersion) {
     ASSERT_EQ(10, obj2->value->x);
     ASSERT_EQ(7, obj2->_ver);
     ASSERT_EQ(5, obj2->value->_ver);
+}
+
+class ClassVersionTestClass3 : public Object {
+public:
+    int x = -1;
+    int flags = 0;
+    int _ver = 0;
+    void serialize3(Serializer3& ar) override {
+        ar& LN_NVP(x);
+
+        if (ar.isSaving()) {
+            ar& LN_NVP(flags);
+        }
+        else {
+            int oldFlag = true;
+            ar& ln::makeNVP(_T("flags"), oldFlag);
+            if (!oldFlag) flags = 0xFF;
+        }
+        _ver = ar.classVersion();
+    }
+};
+LN_SERIALIZE_CLASS_VERSION3_NI(ClassVersionTestClass3, 2);
+
+TEST_F(Test_Base_Serializer, NonIntrusiveClassVersion) {
+    // Save
+    auto obj1 = makeObject<ClassVersionTestClass3>();
+    String json = JsonSerializer3::serialize<ClassVersionTestClass3>(obj1, JsonFormatting::None);
+    ASSERT_EQ(U"{\"lumino_class_version\":2,\"x\":-1,\"flags\":0}", json);
+
+    // Load
+    auto obj2 = JsonSerializer3::deserialize<ClassVersionTestClass3>(json);
+    ASSERT_EQ(-1, obj2->x);
+    ASSERT_EQ(0xFF, obj2->flags);
+    ASSERT_EQ(2, obj2->_ver);
+}
+
+
+TEST_F(Test_Base_Serializer, ListTypes) {
+    {
+        struct MyData0 : public Object {
+            int a;
+
+            MyData0()
+                : a(0) {}
+            MyData0(int v)
+                : a(v) {}
+
+            void serialize3(Serializer3& ar) override {
+                ar& LN_NVP(a);
+            }
+        };
+        struct MyData1 {
+            int a;
+
+            void serialize3(Serializer3& ar) {
+                ar& LN_NVP(a);
+            }
+        };
+        struct MyData2 : public Object {
+            Array<int> list1;
+            Array<String> list2;
+            Array<MyData1> list3;
+            Array<Ref<MyData0>> list4;
+
+            void serialize3(Serializer3& ar) override {
+                ar& LN_NVP(list1);
+                ar& LN_NVP(list2);
+                ar& LN_NVP(list3);
+                ar& LN_NVP(list4);
+            }
+        };
+
+        auto data1 = makeObject<MyData2>();
+        data1->list1 = { 1, 2, 3 };
+        data1->list2 = { _T("a"), _T("b"), _T("c") };
+        data1->list3 = { MyData1{ 1 }, MyData1{ 2 }, MyData1{ 3 } };
+        data1->list4 = { makeRef<MyData0>(4), makeRef<MyData0>(5), makeRef<MyData0>(6) };
+        String json = JsonSerializer3::serialize<MyData2>(data1, JsonFormatting::None);
+
+        auto data2 = JsonSerializer3::deserialize<MyData2>(json);
+        ASSERT_EQ(3, data2->list1.size());
+        ASSERT_EQ(3, data2->list2.size());
+        ASSERT_EQ(3, data2->list3.size());
+        ASSERT_EQ(1, data2->list1[0]);
+        ASSERT_EQ(2, data2->list1[1]);
+        ASSERT_EQ(3, data2->list1[2]);
+        ASSERT_EQ(_T("a"), data2->list2[0]);
+        ASSERT_EQ(_T("b"), data2->list2[1]);
+        ASSERT_EQ(_T("c"), data2->list2[2]);
+        ASSERT_EQ(1, data2->list3[0].a);
+        ASSERT_EQ(2, data2->list3[1].a);
+        ASSERT_EQ(3, data2->list3[2].a);
+        ASSERT_EQ(4, data2->list4[0]->a);
+        ASSERT_EQ(5, data2->list4[1]->a);
+        ASSERT_EQ(6, data2->list4[2]->a);
+    }
 }
 
 TEST_F(Test_Base_Serializer, Variant) {
@@ -648,3 +861,31 @@ TEST_F(Test_Base_Variant, Value_Rect)
 }
 
 #endif
+
+#if 0
+TEST_F(Test_Base_Serializer, unordered_map) {
+    struct Test {
+        ln::String name;
+        std::unordered_map<ln::String, ln::String> values;
+
+        void serialize3(Serializer3& ar) {
+            ar& LN_NVP(name);
+            ar& LN_NVP(values);
+        }
+    };
+
+    Test t1;
+    t1.name = _TT("test");
+    t1.values = { { _TT("f1"), _TT("s1") }, { _TT("f2"), _TT("s2") } };
+    String json = JsonSerializer3::serializeData(t1, JsonFormatting::None);
+    ASSERT_EQ(_TT("{\"name\":\"test\",\"values\":{\"f1\":\"s1\",\"f2\":\"s2\"}}"), json);
+
+    Test t2;
+    JsonSerializer3::deserializeData(t2, json);
+    ASSERT_EQ(_TT("test"), t2.name);
+    ASSERT_EQ(2, t2.values.size());
+    ASSERT_EQ(_TT("s1"), t2.values[_TT("f1")]);
+    ASSERT_EQ(_TT("s2"), t2.values[_TT("f2")]);
+}
+#endif
+

@@ -44,7 +44,10 @@ public:
     static void sinCos(float value, float* outSin, float* outCos);
 
     /** 誤差を考慮し、浮動小数点の比較を行います。 */
-    static bool nearEqual(float value1, float value2);
+    static bool nearEqual(float value1, float value2) noexcept;
+
+    /** 誤差を考慮し、浮動小数点の比較を行います。 */
+    static bool nearEqual(double value1, double value2) noexcept;
 
     /** 値が NaN(非数) かを判定します。 */
     static bool isNaN(float value);
@@ -120,6 +123,15 @@ public:
 	 */
     static constexpr float cubicBezier(float v1, float v2, float v3, float v4, float t) noexcept;
 };
+
+
+inline bool Math::nearEqual(float value1, float value2) noexcept {
+    return std::abs(value1 - value2) < FLT_EPSILON;
+}
+
+inline bool Math::nearEqual(double value1, double value2) noexcept {
+    return std::abs(value1 - value2) < DBL_EPSILON;
+}
 
 constexpr float Math::quadAccel(float p, float v, float a, float t) noexcept
 {

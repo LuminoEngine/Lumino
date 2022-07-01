@@ -9,6 +9,9 @@
 #include "Common.hpp"
 #include "ArchiveStore.hpp"
 
+
+#if LN_USE_DEPRECATED_ARCHIVE
+
 namespace ln {
 
 // non‐intrusive
@@ -1059,3 +1062,5 @@ public:
 } // namespace ln
 
 #include "SerializeTypes.inl"
+
+#endif // LN_USE_DEPRECATED_ARCHIVE

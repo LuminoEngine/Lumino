@@ -248,7 +248,7 @@ String JsonArchiveStore3::toString(JsonFormatting formatting) const {
         LN_ERROR();
         return String::Empty;
     }
-    return String(buffer.GetString(), buffer.GetLength());
+    return String(buffer.GetString(), static_cast<int>(buffer.GetLength()));
 }
 
 RapidJsonValue* JsonArchiveStore3::savingContainer() {

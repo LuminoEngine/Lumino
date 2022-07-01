@@ -58,11 +58,6 @@ void Math::sinCos(float value, float* outSin, float* outCos)
     *outCos = sign * p;
 }
 
-bool Math::nearEqual(float value1, float value2)
-{
-    return std::abs(value1 - value2) < FLT_EPSILON;
-}
-
 bool Math::isNaN(float value)
 {
 #ifdef _MSC_VER

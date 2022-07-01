@@ -982,6 +982,13 @@ public:
         return ar.toString(formatting);
     }
 
+    template<typename TObject>
+    static String serializeData(TObject& value, JsonFormatting formatting = JsonFormatting::Indented) {
+        JsonTextOutputSerializer3 ar;
+        ar.save(value);
+        return ar.toString(formatting);
+    }
+
     //template<typename TValue>
     //static String serialize(TValue&& value, const String& basePath, JsonFormatting formatting = JsonFormatting::Indented) {
     //    JsonTextOutputArchive ar;
@@ -1001,6 +1008,12 @@ public:
         Ref<TObject> value;
         ar.load(jsonText, value);
         return value;
+    }
+
+    template<typename TObject>
+    static void deserializeData(TObject& value, const StringView& jsonText) {
+        JsonTextInputSerializer3 ar;
+        ar.load(jsonText, value);
     }
 
     //template<typename TValue>
@@ -1056,3 +1069,14 @@ inline void serialize3(Serializer3& ar, Optional<TValue>& value) {
     friend class ::ln::detail::non_member_serialize_function; \
     friend class ::ln::Serializer3;                               \
     static const int lumino_class_version = version;
+
+// non‐intrusive
+#define LN_SERIALIZE_CLASS_VERSION3_NI(type, version) \
+    namespace ln {                                   \
+    namespace detail {                               \
+    template<>                                       \
+    struct SerializeClassVersionInfo<type> {         \
+        static const int value = version;            \
+    };                                               \
+    }                                                \
+    }

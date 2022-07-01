@@ -6,7 +6,7 @@ include(cmake/LuminoConfig-LuminoRuntime.cmake)
 #-------------------------------------------------------------------------------
 # Files
 #-------------------------------------------------------------------------------
-set(LN_SOURCES
+set(LN_SOURCES_Common
     include/LuminoEngine/RuntimeModule.hpp
     src/pch.cpp
     src/pch.hpp
@@ -22,7 +22,7 @@ file(GLOB LN_SOURCES_Asset include/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/
 file(GLOB LN_SOURCES_Graphics include/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 
 # Grouping.
-source_group("" FILES ${LN_SOURCES})
+source_group("" FILES ${LN_SOURCES_Common})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
 source_group("Base" FILES ${LN_SOURCES_Base})
 source_group("Reflection" FILES ${LN_SOURCES_Reflection})
@@ -31,7 +31,7 @@ source_group("Asset" FILES ${LN_SOURCES_Asset})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 
 set(LN_SOURCES
-    ${LN_SOURCES}
+    ${LN_SOURCES_Common}
     ${LN_SOURCES_Runtime}
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Reflection}

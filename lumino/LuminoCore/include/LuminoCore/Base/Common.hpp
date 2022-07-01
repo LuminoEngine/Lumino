@@ -7,6 +7,7 @@
 #include <locale>
 #include <assert.h>
 #include <errno.h>
+#include <unordered_map>
 #include <filesystem>
 
 //------------------------------------------------------------------------------

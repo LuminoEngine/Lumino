@@ -287,6 +287,8 @@ Ref<T> makeObjectHelper() {
 
 } // namespace detail
 
+#if LN_USE_DEPRECATED_ARCHIVE
+
 template<
     typename TValue,
     typename std::enable_if<detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
@@ -332,5 +334,6 @@ void serialize(Archive& ar, Ref<TValue>& value) {
         }
     }
 }
+#endif // LN_USE_DEPRECATED_ARCHIVE
 
 } // namespace ln

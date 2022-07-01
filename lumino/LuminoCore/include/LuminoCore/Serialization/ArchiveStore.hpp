@@ -7,7 +7,6 @@
 #include "Common.hpp"
 
 namespace ln {
-class Archive;
 
 enum class ArchiveContainerType
 {

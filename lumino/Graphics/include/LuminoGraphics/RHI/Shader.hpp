@@ -332,8 +332,9 @@ public: // TODO:
 
 // ShaderPass が持つレイアウト情報。
 // ShaderDescriptorLayout が共通でもっている各データを、どの binding に割り当てるかを管理する。
-struct ShaderPassDescriptorLayout
+class ShaderPassDescriptorLayout
 {
+public:
     struct UniformBufferRegisterInfo
     {
         int8_t dataIndex; // Index of ShaderDescriptorLayout.m_buffers
