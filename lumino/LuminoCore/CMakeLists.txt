@@ -1,6 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
 project (LuminoCore)
-include(cmake/LuminoConfig-AddPCH.cmake)
 include(cmake/LuminoConfig-LuminoCore.cmake)
 
 #-------------------------------------------------------------------------------
@@ -107,7 +106,7 @@ install(FILES include/LuminoCore.hpp DESTINATION include)
 # find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
 # install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
 # LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
-install(FILES cmake/LuminoConfig-AddPCH.cmake DESTINATION lib/cmake/Lumino)
+install(FILES cmake/LuminoConfig-Common.cmake DESTINATION lib/cmake/Lumino)
 install(FILES cmake/LuminoConfig-LuminoCore.cmake DESTINATION lib/cmake/Lumino)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

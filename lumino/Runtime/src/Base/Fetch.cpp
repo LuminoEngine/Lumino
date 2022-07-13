@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#if 0
 #ifdef LN_EMSCRIPTEN
 #else
 #include <curl/curl.h>
@@ -112,3 +113,4 @@ FetchResponse FetchManager::getSync(StringView url) {
 } // namespace detail
 } // namespace ln
 
+#endif

@@ -128,6 +128,7 @@ public:
     void start(const ProcessStartInfo& startInfo);
     void startWithShell(const ProcessStartInfo& startInfo);
     bool waitForExit(int timeoutMSec);
+    int64_t processId() const;
     ProcessStatus getStatus(int* outExitCode);
 
     void closeHandle();
@@ -226,6 +227,11 @@ bool ProcessImpl::waitForExit(int timeoutMSec) {
     } while (timeoutMSec == -1 || elapsedTime < timeoutMSec);
 
     return m_exited;
+}
+
+int64_t ProcessImpl::processId() const {
+    LN_NOTIMPLEMENTED();
+    return 0;
 }
 
 ProcessStatus ProcessImpl::getStatus(int* outExitCode) {

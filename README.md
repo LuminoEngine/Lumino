@@ -46,6 +46,8 @@ Get started (⚠️少し情報が古いです)
 
 [Contributing](.github/CONTRIBUTING.md)
 
+🛡️ [API design policy](docs/APIDesignPolicy.md)
+
 [Blog](http://luminolog.hatenablog.com/)
 
 

@@ -809,12 +809,12 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
     }
 }
 
-void EngineManager::setApplication(Application* app) {
-    m_application = app;
-    if (m_uiManager) {
-        m_uiManager->resetApp(m_application);
-    }
-}
+//void EngineManager::setApplication(Application* app) {
+//    m_application = app;
+//    if (m_uiManager) {
+//        m_uiManager->resetApp(m_application);
+//    }
+//}
 
 void EngineManager::resolveActiveGraphicsAPI() {
     m_activeGraphicsAPI = m_settings.graphicsAPI;

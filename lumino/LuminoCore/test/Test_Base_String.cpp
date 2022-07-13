@@ -1,6 +1,7 @@
 ﻿#include "Common.hpp"
 #include <unordered_map>
 #include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Base/ElapsedTimer.hpp>
 #include <LuminoCore/Text/Encoding.hpp>
 
 class Test_Base_String : public ::testing::Test {
@@ -958,6 +959,32 @@ TEST_F(Test_Base_String, convertNativeCharString) {
         wchar_t s[] = { 0x3042, 0x0000 };
         ASSERT_EQ(str1, String::fromCString(s));
     }
+
+
+
+#if 0   // (std::string_view) vs (char* + length) vs (char* only)
+    {
+        for (int i = 0; i < 10; i++) {
+            String s;
+            ElapsedTimer t;
+            for (int i = 0; i < 10000000; i++) {
+                s = String::fromNarrow("aaa", nullptr);
+                // s = String::fromCString("aaa", 3);
+                // s = String::fromCString("aaa");
+            }
+            std::cout << t.elapsedMicroseconds() << std::endl; //<< "[us]" << std::endl;
+        }
+    }
+    
+    // Processor: 11th Gen Intel(R) Core(TM) i9-11900 @ 2.50GHz (16 CPUs), ~2.5GHz
+	// - (std::string_view)  : 116085.5[us]
+	// - (std::string_view&) : 116791.4[us]
+    // - (char* + length)    : 115696.5[us]
+    // - (char* only)        : 118611.3[us]
+	// 上3つは実質誤差と考えてよいだろう。
+    // 上２つは参照と実体コピーの速度がほとんど同等なので、これも誤差ぽい。
+	// length=-1 でデフォルト引数を作るくらいなら、string_view を使った方が高速。
+#endif
 }
 
 TEST_F(Test_Base_String, unordered_map) {

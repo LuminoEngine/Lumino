@@ -1,4 +1,23 @@
-﻿#include "Internal.hpp"
+﻿/*
+NOTE: QProcess::startDetached()
+----------
+
+QProcess のデストラクタでは、kill() 及び waitForFinished() が実行される。
+Reference にも「プロセスが終了するまで戻らないことに注意してください」とある。https://doc.qt.io/qt-6/qprocess.html#dtor.QProcess
+startDetached() は、この動作をやめるものであると考えることができる。
+
+そもそもプロセスの仕組みとして、子プロセスを親から終了するには次のような仕組みを使う必要がある。
+- TerminateProcess() などで強制終了
+- WM_QUIT を投げて、子側で終了をハンドリング
+安全に終了するには後者あるいはそれに似た仕組みを子プロセスが備えている必要がある。
+
+Lumino としては、やや危険になる可能性がある TerminateProcess() は避けたいところ。
+kill() する仕組みを用意するのはいいとしても、デストラクタで必ず kill() はナシにしたい。
+
+そうすると QProcess::startDetached() がデフォであるような動作になる。
+*/
+
+#include "Internal.hpp"
 #include <LuminoCore/IO/Process.hpp>
 #if defined(LN_OS_WIN32)
 #include "Process_Win32.hpp"
@@ -534,6 +553,10 @@ void Process2::dispose() {
 
     // Wait for reading threads.
     endReadThreads();
+}
+
+int64_t Process2::processId() const {
+    return m_impl->processId();
 }
 
 bool Process2::wait(int timeoutMilliseconds) {

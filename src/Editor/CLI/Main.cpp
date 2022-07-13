@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 
             //"build",
             //"build", "Windows"
-            "build", "Web",
+            //"build", "Web",
 
             //"run", "Web", //"Windows",
 
@@ -52,7 +52,8 @@ int main(int argc, char** argv) {
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx", "C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.lcfx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx",
 
-            //"fxc", "C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/Sprite.fx",
+            //"fxc", "D:/Proj/DTPlus-TPTracer/DTxDependencies/cmake/sources/Lumino/lumino/Graphics/src/Rendering/Resource/ImGui.fx",
+            "bin2inl", "D:/Proj/DTPlus-TPTracer/DTxDependencies/cmake/sources/Lumino/lumino/Graphics/src/Rendering/Resource/ImGui.lcfx",
             //"bin2inl", "C:/Proj/LN/Lumino/lumino/LuminoEngine/src/Rendering/Resource/Sprite.lcfx",
 
 

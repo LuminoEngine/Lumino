@@ -30,7 +30,14 @@ if (LN_OS_DESKTOP)
 endif()
 
 # pcre2
-set(pcre2_ROOT ${LN_VCPKG_INSTALLED_DIR})
+if (NOT LN_VCPKG_INSTALLED_DIR)
+    # 外部の vcpkg と一緒に使うときに LN_VCPKG_INSTALLED_DIR を定義しなければならないのは忘れやすい。
+    # _VCPKG_INSTALLED_DIR は非公開変数ではあるようだが、(https://github.com/Microsoft/vcpkg/issues/3915)
+    # zlib\vcpkg-cmake-wrapper.cmake で使っているので真似してみる。
+    set(pcre2_ROOT "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+else()
+    set(pcre2_ROOT ${LN_VCPKG_INSTALLED_DIR})
+endif()
 if (LN_LINK_CMAKE_SHARED_LIB_PACKAGE OR EMSCRIPTEN)
     # Emscripten での find_package(Lumino) 時は、 SYSTEM_PATH とみなされている vcpkg からも探したい。
     # というよりそもそも Emscripten 環境下では、 Emscripten のツールチェインファイルにより、

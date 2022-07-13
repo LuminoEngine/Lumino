@@ -111,6 +111,7 @@ public:
 //==============================================================================
 // BasicResult
 
+/** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
 template<typename T = void, typename E = bool>
 class BasicResult : public ResultBase {
 public:
@@ -203,14 +204,31 @@ public:
         return defaultValue;
     }
 
-    template<typename U = T>
-    typename std::enable_if<!std::is_same<U, void>::value, U>::type unwrap() const {
+    //template<typename U = T>
+    //typename std::enable_if<!std::is_same<U, void>::value, U>::type unwrap() const {
+    //    if (isErr()) {
+    //        LN_ERROR(toString());
+    //    }
+    //    LN_CHECK(isOk());
+    //    return ok_v;
+    //}
+
+    typename T& unwrap() & {
         if (isErr()) {
             LN_ERROR(toString());
         }
         LN_CHECK(isOk());
         return ok_v;
     }
+
+    typename const T& unwrap() const & {
+        if (isErr()) {
+            LN_ERROR(toString());
+        }
+        LN_CHECK(isOk());
+        return ok_v;
+    }
+
 
     E unwrapErr() const {
         LN_CHECK(isErr());
@@ -570,6 +588,7 @@ enum class ErrorCode {
 	Unknown = 0,
 };
 
+/** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
 using Result = BasicResult<void, ErrorCode>;
 
 template<>

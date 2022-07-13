@@ -3,6 +3,7 @@
 #include <LuminoPlatform/ExternalProxyPlatformWindow.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Engine/ApplicationRunner.hpp>
+#include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
 
 namespace ln {
@@ -43,8 +44,23 @@ StandaloneApplicationRunner::StandaloneApplicationRunner() {
 
 Result StandaloneApplicationRunner::run(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance) {
     configureApp();
+
+    detail::EngineManager::s_settings.defaultObjectsCreation = false;
     LN_TRY(initEngine());
+
     m_app = Ref<Application>(createAppInstance(), false);
+
+    auto settings = makeObject<ApplicationSetupSettings>();
+    m_app->onSetup(settings);
+    if (settings->m_mainWindow) {
+        m_app->setupMainWindow(settings->m_mainWindow, true);
+        settings->m_mainWindow->setImGuiLayerEnabled(true);
+    }
+    else {
+        m_app->setupMainWindow(makeObject<UIMainWindow>(detail::EngineManager::s_settings.useExternalSwapChain), true);
+    }
+
+    detail::EngineDomain::uiManager()->resetApp(m_app);
 
     while (updateEngine()) {
         renderEngine(nullptr, nullptr);

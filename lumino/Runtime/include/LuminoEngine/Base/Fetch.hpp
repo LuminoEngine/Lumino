@@ -1,6 +1,8 @@
 ﻿
 #pragma once
 
+#if 0
+
 namespace ln {
 
 class Fetch {
@@ -55,3 +57,6 @@ public:
 };
 } // namespace detail
 } // namespace ln
+
+#endif
+

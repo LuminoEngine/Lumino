@@ -284,7 +284,7 @@ String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefault
     // 出力バッファのサイズを、実際に使用したバイト数にする
     output.resize(result.outputByteCount);
 
-    return String((Char*)output.data(), output.size() / sizeof(Char));
+    return String((Char*)output.data(), static_cast<int>(output.size() / sizeof(Char)));
 }
 
 std::vector<byte_t> TextEncoding::encode(const String& str, int* outUsedDefaultCharCount)

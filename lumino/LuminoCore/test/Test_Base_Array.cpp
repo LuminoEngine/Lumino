@@ -16,7 +16,7 @@ TEST_F(Test_Base_Array, Construct) {
     ASSERT_EQ(1, list2[0]);
     ASSERT_EQ(2, list2[1]);
     ASSERT_EQ(3, list2[2]);
-
+	
     Array<int> list3 = list2;
     ASSERT_EQ(3, list3.size());
     ASSERT_EQ(1, list3[0]);

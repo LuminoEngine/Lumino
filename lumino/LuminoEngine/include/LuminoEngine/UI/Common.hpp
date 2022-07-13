@@ -17,6 +17,7 @@ class UIListItemsControl;
 class UIListBox;
 class UIText;
 class UIPopup;
+//class UIImGuiContext;
 
 /** コントロールのレイアウト方向を示します。*/
 LN_ENUM()

@@ -68,8 +68,8 @@ set(LN_VCPKG_INSTALLED_DIR "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
-include(src/LuminoBuildCommon.cmake)
-include(lumino/LuminoCore/cmake/LuminoConfig-AddPCH.cmake)
+# ビルド時にリポジトリ全体に共通設定を伝播させるため、ここで、 include が必要。
+include(lumino/LuminoCore/cmake/LuminoConfig-Common.cmake)
 
 if (LN_MSVC_STATIC_RUNTIME)
     ln_use_msvc_static_runtime_library()
@@ -146,9 +146,6 @@ set(LN_BUILD_ENGINE ON)
 if (LN_BUILD_CORE_ONLY)
     set(LN_BUILD_ENGINE OFF)
 endif()
-
-# TODO: triplet から判断したい
-set(LN_LINK_CMAKE_SHARED_LIB_PACKAGE OFF)
 
 #-------------------------------------------------------------------------------
 # Externals

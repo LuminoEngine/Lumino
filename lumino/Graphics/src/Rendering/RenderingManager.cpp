@@ -276,9 +276,17 @@ Result RenderingManager::init(const Settings& settings) {
         };
         createBuiltinShader(BuiltinShader::MToon, _TT("MToon"), data, LN_ARRAY_SIZE_OF(data));
     }
+    // ImGui
+    {
+        const unsigned char data[] = {
+#include "../Rendering/Resource/ImGui.lcfx.inl"
+        };
+        createBuiltinShader(BuiltinShader::ImGui, _TT("ImGui"), data, LN_ARRAY_SIZE_OF(data));
+    }
     
 #if 0 // テスト用
     const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
+    m_builtinShaders[(int)BuiltinShader::ImGui] = Shader::create(dir / _TT("ImGui.fx"));
     m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(dir / _TT("Sprite.fx"));
     m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(dir / _TT("ClusteredShadingDefault.fx"));
     m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(dir / _TT("CopyScreen.fx"));

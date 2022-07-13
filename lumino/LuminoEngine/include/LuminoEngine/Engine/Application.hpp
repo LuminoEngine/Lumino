@@ -16,12 +16,24 @@ class UICommand;
 class UIAction;
 class UIEventArgs;
 class UIMainWindow;
+class ApplicationSetupSettings;
+class StandaloneApplicationRunner;
 
 /** グローバルなアプリケーション状態を扱うための基本クラスです。 */
 LN_CLASS()
 class LN_API Application : public CoreApplication {
     LN_OBJECT;
+
 public:
+    /**
+     * アプリケーションの初期化中に呼び出されます。
+     * 
+     * この関数は、フレームワーク内部で作成される基本オブジェクトをオーバーライドするために実装できます。
+     * 代表的なものでは、ユーザーが実装した UIMainWindow の派生クラスをアプリケーションに登録できます。
+     */
+    LN_METHOD()
+    virtual void onSetup(ApplicationSetupSettings* settings);
+
     /** エンジンの初期化処理が完了した後に呼び出されます。 */
     LN_METHOD()
     virtual void onInit();
@@ -63,6 +75,7 @@ protected:
 
     virtual void onRoutedEvent(UIEventArgs* e);
 
+    [[deprecated]]
     void initInternal();
     void updateInertnal();
     void finalizeInternal();
@@ -74,12 +87,25 @@ protected:
 
     friend class detail::ApplicationHelper;
     friend class detail::UIManager;
+    friend class StandaloneApplicationRunner;
 };
 
 class AppData {
 public:
     static void setValue(const StringView& key, Ref<Variant> value);
     static Ref<Variant> getValue(const StringView& key); // null = NotFound.
+};
+
+/**  */
+LN_CLASS()
+class ApplicationSetupSettings : public Object {
+public:
+    void setMainWindow(UIMainWindow* value) noexcept;
+
+private:
+    Ref<UIMainWindow> m_mainWindow;
+
+    friend class StandaloneApplicationRunner;
 };
 
 #if 0

@@ -201,7 +201,6 @@ void Engine::terminate() {
 
 bool Engine::update() {
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
-    if (LN_REQUIRE(!manager->application())) return false;
 
     if (manager->settings().externalMainLoop) {
         endFrame();

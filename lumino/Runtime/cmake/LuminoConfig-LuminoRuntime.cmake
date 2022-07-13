@@ -3,6 +3,6 @@ find_package(RapidJSON CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 
 
-if (NOT DEFINED EMSCRIPTEN)
-    find_package(CURL CONFIG REQUIRED)
-endif()
+#if (NOT DEFINED EMSCRIPTEN)
+#    find_package(CURL CONFIG REQUIRED)
+#endif()

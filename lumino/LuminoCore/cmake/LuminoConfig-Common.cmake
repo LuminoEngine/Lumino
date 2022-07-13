@@ -1,5 +1,23 @@
 
 #-------------------------------------------------------------------------------
+# Configuration
+#-------------------------------------------------------------------------------
+set(CMAKE_CXX_STANDARD 17)
+set(LN_LIB_OUTPUT_LOCAL_DIR "lib/") # TODO: deprecated?
+
+# Unicode char set.
+add_definitions(-DUNICODE)
+add_definitions(-D_UNICODE)
+
+set(LN_LINK_CMAKE_SHARED_LIB_PACKAGE OFF)
+if (MSVC)
+    if (NOT LN_MSVC_STATIC_RUNTIME)
+        set(LN_LINK_CMAKE_SHARED_LIB_PACKAGE ON)
+    endif()
+endif()
+
+
+#-------------------------------------------------------------------------------
 # functions
 #-------------------------------------------------------------------------------
 

@@ -62,7 +62,7 @@ bool EngineContext2::init(const RuntimeModuleSettings& settings) {
     TaskScheduler::init();
     m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 
-    detail::FetchManager::initialize();
+    //detail::FetchManager::initialize();
 
     {
         m_activeDiagnostics = makeObject<DiagnosticsManager>();
@@ -93,7 +93,7 @@ void EngineContext2::dispose() {
         m_assetManager = nullptr;
     }
 
-    detail::FetchManager::terminate();
+    //detail::FetchManager::terminate();
 
     if (m_mainThreadTaskDispatcher) {
         m_mainThreadTaskDispatcher->dispose();

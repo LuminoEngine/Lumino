@@ -6,6 +6,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include "UI/UIManager.hpp"
 
@@ -32,6 +33,14 @@ void Application::init() {
 
 void Application::setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects) {
     return ln::detail::EngineDomain::engineManager()->setupMainWindow(window, createBasicObjects);
+}
+
+// NOTE: なぜデフォルトでは UIMainWindow を内部で作るのか？
+// ----------
+// ゲームアプリやシングルページアプリを作るときはあまり縁が無いため。
+// UI を作る際も、UIMainWindow ではなく UIRenderView をよく使う。
+// UIMainWindow を使うのは、ImGui 等と一緒にエディタ系のアプリを作る場合がほとんどである。
+void Application::onSetup(ApplicationSetupSettings* settings) {
 }
 
 void Application::onInit() {
@@ -128,6 +137,13 @@ void AppData::setValue(const StringView& key, Ref<Variant> value) {
 
 Ref<Variant> AppData::getValue(const StringView& key) {
     return detail::EngineDomain::engineManager()->appData()->getValue(key);
+}
+
+//==============================================================================
+// ApplicationSetupSettings
+
+void ApplicationSetupSettings::setMainWindow(UIMainWindow* value) noexcept {
+    m_mainWindow = value;
 }
 
 #if 0

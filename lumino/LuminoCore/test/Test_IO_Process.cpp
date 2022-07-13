@@ -1,5 +1,8 @@
 ﻿#include "Common.hpp"
 #include <LuminoCore/IO/Process.hpp>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 //==============================================================================
 //# Process
@@ -122,6 +125,37 @@ TEST_F(Test_IO_Process, Redirect5_BigData) {
     String sr2 = r2->readToEnd();
     proc1->wait();
     const auto lines = sr1.remove(U"\r").split(U"\n");
-    ASSERT_EQ(51, lines.size());    // last is empty
+    ASSERT_EQ(51, lines.size()); // last is empty
     ASSERT_EQ(5, proc1->exitCode());
+}
+
+TEST_F(Test_IO_Process, Detached) {
+    int64_t processId1 = 0;
+    int64_t processId2 = 0;
+    {
+        auto proc1 = ProcessCommand2(ln::Environment::executablePath())
+                         .arg(_T("proctest6_Detached1"))
+                         .start();
+        proc1->wait();
+        processId1 = proc1->processId();
+        processId2 = proc1->exitCode();
+    }
+
+    // 子プロセスは消えているが、孫プロセスは残っている。
+#ifdef _WIN32
+    // Child process
+    HANDLE process1 = ::OpenProcess(SYNCHRONIZE, FALSE, processId1);
+    ::CloseHandle(process1);
+    ASSERT_TRUE(process1 == 0);
+
+    // Grandchild process
+    HANDLE process2 = ::OpenProcess(SYNCHRONIZE, FALSE, processId2);
+    ::CloseHandle(process2);
+    ASSERT_TRUE(process2 != 0);
+
+    // NOTE: 例えば次のようにしただけだと、親プロセスを終了してもメモ帳は開かれ続ける。
+    // auto proc1 = ProcessCommand2(U"notepad").start();
+#else
+    LN_NOTIMPLEMENTED();
+#endif
 }

@@ -157,8 +157,8 @@ public:
     // void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
     void setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects);
 
-    void setApplication(Application* app);
-    const Ref<Application>& application() const { return m_application; }
+    //void setApplication(Application* app);
+    //const Ref<Application>& application() const { return m_application; }
     const Ref<AppDataInternal>& appData() const { return m_appData; }
     // const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
     const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
@@ -208,7 +208,7 @@ private:
     Path m_persistentDataPath;
     Path m_engineResourcesPath;
 
-    Ref<Application> m_application;
+    //Ref<Application> m_application;
     Ref<UIMainWindow> m_mainWindow;
     Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView; // m_mainViewport の ViewBox 内部に配置する

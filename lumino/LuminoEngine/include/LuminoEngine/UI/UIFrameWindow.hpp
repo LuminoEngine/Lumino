@@ -20,6 +20,7 @@ class DepthBuffer;
 class UIRenderView;
 class UIViewport;
 class UIFrameWindow;
+class ImGuiDockManager;
 
 enum class UIFrameWindowUpdateMode {
     Polling,
@@ -74,7 +75,13 @@ public:
     LN_METHOD(Property)
     bool isAllowDragDrop() const;
 
+    //void setImGuiContext(UIImGuiContext* context);
+
     //void setSize(float width, float height);
+
+    ImGuiDockManager* dockManager() const;
+
+
 
     virtual void onDispose(bool explicitDisposing) override;
 
@@ -97,8 +104,22 @@ public:
 
     void setImGuiLayerEnabled(bool value);
 
+    virtual ~UIFrameWindow();
+
 protected:
-    void setupPlatformWindow(PlatformWindow* platformMainWindow, bool useExternalSwapChain);
+    /**
+     * 
+     */
+    virtual void onInit();
+
+    /**
+     * ImGui の表示処理を実装します。
+     *
+     * この関数は ImGui::NewFrame() と ImGui::EndFrame() の間で呼び出されます。
+     * onImGui() の実装の中でこれらを呼び出す必要はありません。
+     */
+    virtual void onImGui();
+
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) override;
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -109,10 +130,14 @@ protected:
     // TODO: internal
     void resetSizeFromPlatformWindow();
 
-LN_CONSTRUCT_ACCESS:
+protected:
+    struct InitInfo {
+        PlatformWindow* platformWindow;
+        bool createSwapChain;
+    };
+
     UIFrameWindow();
-    virtual ~UIFrameWindow();
-    void init(bool mainWindow = false); // Swapchain 無し。外部制御用
+    Result init(const InitInfo& initInfo);
 
 public: // TODO: internal
     bool onPlatformEvent(const PlatformEventArgs& e) override;
@@ -141,25 +166,28 @@ public: // TODO: internal
     bool m_realtimeRenderingEnabled;
 
 private:
+    void setupPlatformWindow(PlatformWindow* platformMainWindow, bool useExternalSwapChain);
     void updateStyleTree();
     void updateLayoutTree();
     void updateLayoutTreeInternal(const Size& contentSize);
     void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor) override;
 
     friend class detail::MainViewportToolPane;
+    friend class detail::ImGuiIntegration;
 };
 
 class LN_API UIMainWindow
     : public UIFrameWindow {
 public:
-    LN_CONSTRUCT_ACCESS : UIMainWindow();
+LN_CONSTRUCT_ACCESS:
+    UIMainWindow();
     virtual ~UIMainWindow();
-    void init(bool useExternalSwapChain); // for Editor
-                                          //void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+    void init(bool useExternalSwapChain = false); // for Editor
 
 private:
 };
 
+#if 0
 class LN_API UINativeFrameWindow
     : public UIFrameWindow {
 public:
@@ -175,7 +203,8 @@ public:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
 
-    LN_CONSTRUCT_ACCESS : UINativeFrameWindow();
+LN_CONSTRUCT_ACCESS:
+    UINativeFrameWindow();
     void init();
 
 private:
@@ -183,5 +212,6 @@ private:
     Ref<RenderTargetTexture> m_renderingRenderTarget;
     Ref<DepthBuffer> m_renderingDepthBuffer;
 };
+#endif
 
 } // namespace ln

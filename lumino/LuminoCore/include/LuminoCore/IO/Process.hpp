@@ -243,6 +243,9 @@ private:
  */
 class Process2 : public RefObject {
 public:
+    /** 実行中のプロセスのネイティブプロセス識別子を返します。 */
+    int64_t processId() const;
+
     /**
      * プロセスの終了を待機します。
      * 

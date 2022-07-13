@@ -71,6 +71,7 @@ enum class BuiltinShader {
     BlendShape,
 
     MToon,
+    ImGui,
 };
 
 enum class BuiltinMaterial {
@@ -303,7 +304,7 @@ private:
 
     Ref<Material> m_defaultMaterial;
     Ref<Texture2D> m_randomTexture;
-    std::array<Ref<Shader>, 26> m_builtinShaders;
+    std::array<Ref<Shader>, 27> m_builtinShaders;
     std::array<Ref<Material>, 2> m_builtinMaterials;
     Ref<Material> m_primitiveMeshDefaultMaterial;       // FIXME: リファクタリングで SceneManager から移動してきたもの。m_builtinMaterials に混ぜていいかも
 

@@ -49,9 +49,9 @@ set(LINK_LIBS
     yaml-cpp
 )
 
-if (NOT DEFINED EMSCRIPTEN)
-    list(APPEND LINK_LIBS CURL::libcurl)
-endif()
+#if (NOT DEFINED EMSCRIPTEN)
+#    list(APPEND LINK_LIBS CURL::libcurl)
+#endif()
 
 #-------------------------------------------------------------------------------
 # Targets

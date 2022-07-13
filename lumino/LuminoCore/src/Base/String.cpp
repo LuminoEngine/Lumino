@@ -585,19 +585,6 @@ bool String::tryToUInt64(uint64_t* outValue, int base) const {
 }
 #undef TRY_TO_INT_DEF
 
-std::string String::toStdString(TextEncoding* encoding) const {
-    if (!encoding) {
-        encoding = TextEncoding::systemMultiByteEncoding();
-    }
-    std::vector<byte_t> bytes = encoding->encode(*this);
-    return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
-}
-
-std::wstring String::toStdWString() const {
-    std::vector<byte_t> bytes = TextEncoding::wideCharEncoding()->encode(*this);
-    return std::wstring(reinterpret_cast<const wchar_t*>(bytes.data()), bytes.size() / sizeof(wchar_t));
-}
-
 //#ifdef LN_STRING_WITH_ENCODING
 //ByteBuffer String::convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar)
 //{
@@ -680,6 +667,28 @@ int String::compare(const StringView& str1, int index1, const StringView& str2, 
     return StringHelper::compare(s1, str1.length() - index1, s2, str2.length() - index2, length, cs);
 }
 
+std::string String::toUtf8() const {
+    return toStdString(TextEncoding::utf8Encoding());
+}
+
+String String::fromUtf8(const std::string_view& s) {
+    return fromStdString(s, TextEncoding::utf8Encoding());
+}
+
+std::u16string String::toUtf16() const {
+    return UnicodeStringUtils::U32ToU16(c_str(), length());
+}
+
+String String::fromUtf16(const std::u16string_view& s) {
+    String result;
+    result.assignFromCStr(s.data(), static_cast<int>(s.length()), nullptr);
+    return result;
+}
+
+std::filesystem::path String::toStdPath() const {
+    return std::filesystem::path(c_str());
+}
+
 String String::fromCString(const char* str, int length, TextEncoding* encoding) {
     String result;
     result.assignFromCStr(str, length, nullptr, encoding);
@@ -700,31 +709,24 @@ String String::fromStdString(const std::wstring& str) {
     return fromCString(str.c_str(), static_cast<int>(str.length()));
 }
 
-std::string String::toUtf8() const {
-    return toStdString(TextEncoding::utf8Encoding());
-}
-
-String String::fromUtf8(const std::string_view& s) {
-    return fromStdString(s, TextEncoding::utf8Encoding());
-}
-
-std::u16string String::toUtf16() const {
-    return UnicodeStringUtils::U32ToU16(c_str(), length());
-}
-
-String String::fromUtf16(const std::u16string_view& s) {
+String String::fromNarrow(std::string_view str, TextEncoding* encoding) {
     String result;
-    result.assignFromCStr(s.data(), static_cast<int>(s.length()), nullptr);
+    result.assignFromCStr(str.data(), static_cast<int>(str.length()), nullptr, encoding);
     return result;
 }
 
-//std::u16string String::toUtf16() const
-//{
-//}
-//
-//static String String::fromUtf16(const std::u16string& s)
-//{
-//}
+std::string String::toStdString(TextEncoding* encoding) const {
+    if (!encoding) {
+        encoding = TextEncoding::systemMultiByteEncoding();
+    }
+    std::vector<byte_t> bytes = encoding->encode(*this);
+    return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+}
+
+std::wstring String::toStdWString() const {
+    std::vector<byte_t> bytes = TextEncoding::wideCharEncoding()->encode(*this);
+    return std::wstring(reinterpret_cast<const wchar_t*>(bytes.data()), bytes.size() / sizeof(wchar_t));
+}
 
 String String::fromNumber(int32_t value, Char format) {
     return fromNumber((int64_t)value, format);

@@ -12,24 +12,19 @@ namespace ln {
 //==============================================================================
 // Editor
 
-void Editor::addPane(ImGuiDockPane* pane)
-{
-	const auto& imgui = detail::EngineDomain::engineManager()->mainWindow()->m_imguiContext;
-	imgui->addDock(pane);
+void Editor::addPane(ImGuiDockPane* pane) {
+    detail::EngineDomain::engineManager()->mainWindow()->dockManager()->addDockPane(pane);
 }
 
-void Editor::closeAllPanes()
-{
-	const auto& imgui = detail::EngineDomain::engineManager()->mainWindow()->m_imguiContext;
-	for (auto& dock : imgui->dockPanes()) {
-		dock->close();
-	}
+void Editor::closeAllPanes() {
+    const auto& dockManager = detail::EngineDomain::engineManager()->mainWindow()->dockManager();
+    for (auto& dock : dockManager->dockPanes()) {
+        dock->close();
+    }
 }
 
-ImGuiDockPane* Editor::editorViewportToolPane()
-{
-	return detail::EngineDomain::engineManager()->runtimeEditor()->editorViewportToolPane();
+ImGuiDockPane* Editor::editorViewportToolPane() {
+    return detail::EngineDomain::engineManager()->runtimeEditor()->editorViewportToolPane();
 }
 
 } // namespace ln
-

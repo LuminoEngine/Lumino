@@ -261,8 +261,9 @@ UIFrameWindow::UIFrameWindow()
 UIFrameWindow::~UIFrameWindow() {
 }
 
-void UIFrameWindow::init(bool mainWindow) {
-    UIDomainProvidor::init();
+Result UIFrameWindow::init(const InitInfo& initInfo) {
+    if (!UIDomainProvidor::init()) return err();
+
     m_manager = detail::EngineDomain::uiManager();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
@@ -276,7 +277,10 @@ void UIFrameWindow::init(bool mainWindow) {
 
     m_manager->addFrameWindow(this);
 
-    if (!mainWindow) {
+    if (initInfo.platformWindow) {
+        setupPlatformWindow(initInfo.platformWindow, !initInfo.createSwapChain);
+    }
+    else {
         WindowCreationSettings settings;
         auto* platformManager = detail::PlatformManager::instance();
         setupPlatformWindow(
@@ -286,6 +290,10 @@ void UIFrameWindow::init(bool mainWindow) {
 
     // EditorMode の時の初回描画用
     invalidateVisual();
+
+    onInit();
+
+    return ok();
 }
 
 void UIFrameWindow::onDispose(bool explicitDisposing) {
@@ -328,6 +336,15 @@ bool UIFrameWindow::isAllowDragDrop() const {
     return m_platformWindow->isAllowDragDrop();
 }
 
+ImGuiDockManager* UIFrameWindow::dockManager() const {
+    return m_imguiContext->dockManager();
+}
+
+//void UIFrameWindow::setImGuiContext(UIImGuiContext* context) {
+//    setImGuiLayerEnabled(true);
+//    m_imguiContext->setImGuiContext(context);
+//}
+
 //void UIFrameWindow::setSize(float width, float height)
 //{
 //    m_requestedSize.set(width, height);
@@ -342,6 +359,16 @@ void UIFrameWindow::setImGuiLayerEnabled(bool value) {
             return;
         }
     }
+}
+
+void UIFrameWindow::onInit() {
+
+}
+
+// DesignNote: 
+// UIFrameWindow はゲームアプリで使われることは少ない。ほとんどエディタアプリで使われる。
+// エディタアプリでは合わせて ImGui もよく使う。そのため UIFrameWindow に統合している。
+void UIFrameWindow::onImGui() {
 }
 
 void UIFrameWindow::setupPlatformWindow(PlatformWindow* platformMainWindow, bool useExternalSwapChain) {
@@ -383,52 +410,8 @@ void UIFrameWindow::renderContents(GraphicsCommandList* commandList, RenderTarge
     if (m_ImGuiLayerEnabled) {
         // TODO: time
         m_imguiContext->updateFrame(0.0166f);
-
         m_imguiContext->prepareRender(m_clientSize.width, m_clientSize.height);
-        ImGui::NewFrame();
-
-        // DockArea 用に、ウィンドウ全体に広がる背景用 Window をつくる
-        ImGuiID imguiWindowID;
-        {
-            const ImGuiWindowFlags flags =
-                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize |
-                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoTitleBar;
-            ImGui::SetNextWindowSize(ImVec2(m_clientSize.width, m_clientSize.height));
-            ImGui::SetNextWindowPos(ImVec2(0, 0));
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 1.0f));
-            ImGui::Begin("##LN.FrameWindowPane", nullptr, flags);
-            imguiWindowID = ImGui::GetCurrentWindow()->ID;
-            ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_NoCloseButton;
-            ImGui::DockSpace(imguiWindowID, ImVec2(0.0f, 0.0f), dockFlags);
-            ImGui::End();
-            ImGui::PopStyleVar(2);
-        }
-
-        // if (m_tools.mainViewportToolPane) {
-        //     m_tools.mainViewportToolPane->prepare(this, commandList, m_renderView);
-        // }
-
-        //{
-        //    ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
-        //    if (ImGui::Begin("Main")) {
-        //        ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-        //        const ImVec2 contentSize = ImGui::GetContentRegionAvail();
-
-        //        if (m_renderView)
-        //        {
-        //            m_tools.mainViewportRenderTarget = RenderTargetTexture::realloc(m_tools.mainViewportRenderTarget, contentSize.x, contentSize.y, TextureFormat::RGBA8, false, SamplerState::pointClamp());
-        //            m_renderView->render(commandList, m_tools.mainViewportRenderTarget);
-        //        }
-        //        ImGui::Image(m_tools.mainViewportRenderTarget, contentSize);
-        //    }
-        //    ImGui::End();
-        //}
-
-        m_imguiContext->updateDocks(imguiWindowID);
-
-        ImGui::EndFrame();
+        m_imguiContext->renderContents();
         m_imguiContext->render(commandList, renderTarget);
     }
     else {
@@ -700,15 +683,16 @@ UIMainWindow::~UIMainWindow() {
 }
 
 void UIMainWindow::init(bool useExternalSwapChain) {
-    UIFrameWindow::init(true);
-
-    m_updateMode = UIFrameWindowUpdateMode::Polling;
 
     // サブクラスの init 等で、AllowDragDrop や WindowSize など PlatformWindow が実態をもつプロパティにアクセス試合ことがある。
     // そのためこの時点で PlatformWindow をアタッチしておきたい。
-    setupPlatformWindow(
-        detail::PlatformManager::instance()->mainWindow(),
-        useExternalSwapChain);
+    InitInfo info;
+    info.platformWindow = detail::PlatformManager::instance()->mainWindow();
+    info.createSwapChain = !useExternalSwapChain;
+    UIFrameWindow::init(info);
+
+    m_updateMode = UIFrameWindowUpdateMode::Polling;
+
 
     // TODO: ここでいい？
     onLoaded();
@@ -721,6 +705,7 @@ void UIMainWindow::init(bool useExternalSwapChain) {
 //    m_graphicsContext = m_manager->graphicsManager()->mainWindowGraphicsContext();
 //}
 
+#if 0
 //==============================================================================
 // UINativeFrameWindow
 
@@ -786,5 +771,6 @@ void UINativeFrameWindow::endRendering() {
 
     m_renderingGraphicsContext->leaveRenderState();
 }
+#endif
 
 } // namespace ln

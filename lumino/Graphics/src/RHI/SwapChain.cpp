@@ -79,8 +79,14 @@ Size SwapChain::backbufferSize() const {
 }
 
 void SwapChain::resizeBackbuffer(int width, int height) {
+    GraphicsCommandList* commandList = currentCommandList2();
+    if (commandList) {
+        LN_ASSERT(commandList->m_scopeState == GraphicsCommandList::ScopeState::Idle);
+    }
+
     if (LN_ENSURE(m_rhiObject->resizeBackbuffer(width, height))) return;
     resetRHIBackbuffers();
+    nextFrame();
 }
 
 RenderTargetTexture* SwapChain::currentBackbuffer() const {

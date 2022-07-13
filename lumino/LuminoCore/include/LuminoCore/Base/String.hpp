@@ -304,17 +304,6 @@ public:
     bool tryToUInt32(uint32_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
     bool tryToUInt64(uint64_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
 
-    /**
-     * ローカルの std::string 型文字列へ変換します。
-     * 
-     * @attention
-     * encoding を省略した場合、エンコーディングは現在のシステムに依存します。例えば、 Windows 日本語環境であれば Shift_SJI となります。
-     * UTF-8 への変換であれば、toUtf8() が便利です。
-     */
-    std::string toStdString(TextEncoding* encoding = nullptr) const;
-
-    /** ローカルの std::wstring 型文字列へ変換します。 */
-    std::wstring toStdWString() const;
 
     /** 指定した文字列を連結します。 */
     static String concat(const StringView& str1, const StringView& str2);
@@ -342,31 +331,6 @@ public:
     static int compare(const String& str1, const String& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
     static int compare(const StringView& str1, int index1, const StringView& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive); /**< @overload compare */
 
-    /** ローカルの char 文字列を String へ変換します。 */
-    static String fromCString(const char* str, int length = -1, TextEncoding* encoding = nullptr);
-
-    /** ローカルの wchar_t 文字列を String へ変換します。 */
-    static String fromCString(const wchar_t* str, int length = -1);
-
-    /** ローカルの std::string 型文字列を String へ変換します。 */
-    static String fromStdString(const std::string_view& str, TextEncoding* encoding = nullptr);
-
-    /** ローカルの std::wstring 型文字列を String へ変換します。 */
-    static String fromStdString(const std::wstring& str);
-
-    std::string toUtf8() const;
-
-    static String fromUtf8(const std::string_view& s);
-
-    std::u16string toUtf16() const;
-
-    static String fromUtf16(const std::u16string_view& s);
-
-    std::filesystem::path toStdPath() const { return std::filesystem::path(c_str()); }
-
-    //std::u16string toUtf16() const;
-
-    //static String fromUtf16(const std::u16string& s);
 
     /**
      * 数値を文字列に変換します。
@@ -386,6 +350,53 @@ public:
     static String fromNumber(uint64_t value, Char format = 'D');                  /**< @overload fromNumber */
     static String fromNumber(float value, Char format = 'F', int precision = 6);  /**< @overload fromNumber */
     static String fromNumber(double value, Char format = 'F', int precision = 6); /**< @overload fromNumber */
+
+    
+    /** @defgroup Type or Encoding conversion: */
+    /** @{ */
+
+	/** UTF-8 文字列へ変換します。 */
+    std::string toUtf8() const;
+
+    /** UTF-8 文字列から String を作成します。 */
+    static String fromUtf8(const std::string_view& s);
+
+    /** UTF-16 文字列へ変換します。 */
+    std::u16string toUtf16() const;
+
+    /** UTF-16 文字列から String を作成します。 */
+    static String fromUtf16(const std::u16string_view& s);
+
+	/** std::filesystem::path へ変換します。 */
+    std::filesystem::path toStdPath() const;
+
+    /** ローカルの char 文字列を String へ変換します。 */
+    static String fromCString(const char* str, int length = -1, TextEncoding* encoding = nullptr);
+
+    /** ローカルの wchar_t 文字列を String へ変換します。 */
+    static String fromCString(const wchar_t* str, int length = -1);
+
+    /** ローカルの std::string 型文字列を String へ変換します。 */
+    static String fromStdString(const std::string_view& str, TextEncoding* encoding = nullptr);
+
+    /** ローカルの std::wstring 型文字列を String へ変換します。 */
+    static String fromStdString(const std::wstring& str);
+
+    static String fromNarrow(std::string_view str, TextEncoding* encoding);
+
+    /**
+     * ローカルの std::string 型文字列へ変換します。
+     *
+     * @attention
+     * encoding を省略した場合、エンコーディングは現在のシステムに依存します。例えば、 Windows 日本語環境であれば Shift_SJI となります。
+     * UTF-8 への変換であれば、toUtf8() が便利です。
+     */
+    std::string toStdString(TextEncoding* encoding = nullptr) const;
+
+    /** ローカルの std::wstring 型文字列へ変換します。 */
+    std::wstring toStdWString() const;
+	
+    /** @} */
 
     /** 任意の位置の要素へアクセスします。 */
     CharRef operator[](int index);
@@ -823,6 +834,10 @@ inline bool operator==(const String& lhs, const Char* rhs) {
 inline bool operator==(const String& lhs, const StringView& rhs) {
     return String::compare(lhs, 0, rhs, 0) == 0;
 }
+inline bool operator==(const StringView& lhs, const String& rhs) {
+	return String::compare(rhs, 0, lhs, 0) == 0;
+}
+
 inline bool operator!=(const Char* lhs, const String& rhs) {
     return !operator==(lhs, rhs);
 }
@@ -830,6 +845,12 @@ inline bool operator!=(const String& lhs, const String& rhs) {
     return !operator==(lhs, rhs);
 }
 inline bool operator!=(const String& lhs, const Char* rhs) {
+    return !operator==(lhs, rhs);
+}
+inline bool operator!=(const String& lhs, const StringView& rhs) {
+    return !operator==(lhs, rhs);
+}
+inline bool operator!=(const StringView& lhs, const String& rhs) {
     return !operator==(lhs, rhs);
 }
 
@@ -949,19 +970,20 @@ inline String operator+(const StringView& lhs, const StringView& rhs) {
 inline bool operator==(const StringView& lhs, const StringView& rhs) {
     return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length())) == 0;
 }
-inline bool operator==(const Char* lhs, const StringView& rhs) {
-    return String::compare(StringView(lhs), 0, rhs, 0, -1) == 0;
-}
 inline bool operator==(const StringView& lhs, const Char* rhs) {
     return String::compare(lhs, 0, StringView(rhs), 0, -1) == 0;
 }
+inline bool operator==(const Char* lhs, const StringView& rhs) {
+    return String::compare(StringView(lhs), 0, rhs, 0, -1) == 0;
+}
+
 inline bool operator!=(const StringView& lhs, const StringView& rhs) {
     return !operator==(lhs, rhs);
 }
-inline bool operator!=(const Char* lhs, const StringView& rhs) {
+inline bool operator!=(const StringView& lhs, const Char* rhs) {
     return !operator==(lhs, rhs);
 }
-inline bool operator!=(const StringView& lhs, const Char* rhs) {
+inline bool operator!=(const Char* lhs, const StringView& rhs) {
     return !operator==(lhs, rhs);
 }
 
