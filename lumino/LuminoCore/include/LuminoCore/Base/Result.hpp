@@ -262,13 +262,13 @@ public:
     /** 間接参照演算子で値を取得します。 */
     constexpr const T&& operator*() const&& {
         LN_CHECK(ok_);
-        return ok_v;
+        return std::move(ok_v);
     }
 
     /** 間接参照演算子で値を取得します。 */
     constexpr T&& operator*() && {
         LN_CHECK(ok_);
-        return ok_v;
+        return std::move(ok_v);
     }
 
     /** isOk */
@@ -408,13 +408,13 @@ public:
     /** 間接参照演算子で値を取得します。 */
     constexpr const T&& operator*() const&& {
         LN_CHECK(ok_);
-        return *ok_v;
+        return std::move(*ok_v);
     }
 
     /** 間接参照演算子で値を取得します。 */
     constexpr T&& operator*() && {
         LN_CHECK(ok_);
-        return *ok_v;
+        return std::move(*ok_v);
     }
 
     /** isOk */

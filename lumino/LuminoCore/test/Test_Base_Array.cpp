@@ -448,6 +448,26 @@ TEST_F(Test_Base_Array, map) {
     const Array<const Test2*> ary5 = ary4.map([](const Test2& x) { return &x; });
 }
 
+TEST_F(Test_Base_Array, distinct) {
+    struct Test1 {
+        int v1;
+    };
+
+    //const Array<Test1> ary1 = { Test1{ 1 }, Test1{ 2 }, Test1{ 3 }, Test1{ 2 } };
+    //const Array<Test1> result1 = ary1.distinct([](auto& x, auto& y) { return x.v1 == y.v1; });
+    //ASSERT_EQ(3, result1.length());
+    //ASSERT_EQ(1, ary1[0].v1);
+    //ASSERT_EQ(2, ary1[1].v1);
+    //ASSERT_EQ(3, ary1[2].v1);
+
+	Array<int> ary2 = { 1, 2, 3, 2 };
+    Array<int> result2 = ary2.distinct();
+    ASSERT_EQ(3, result2.length());
+    ASSERT_EQ(1, ary2[0]);
+    ASSERT_EQ(2, ary2[1]);
+    ASSERT_EQ(3, ary2[2]);
+}
+
 TEST_F(Test_Base_Array, reduce) {
     struct Test1 {
         int v1;

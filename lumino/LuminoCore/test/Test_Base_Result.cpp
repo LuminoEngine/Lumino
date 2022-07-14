@@ -218,26 +218,11 @@ TEST_F(Test_Base_Result, BoxRefObject) {
     };
 }
 
-    /*
-FileSystem などで Result 返す関数は、その中でエラーが発生しても assertion 扱いしたくない。
-unwrap() したときに assertion したい。
-
-ResultのBox
-----------
-
-```
-Result compileShader(filename) [
-    IOResult r1 = FileSystem::readText(filename);
-    if (!r1) retunr err(r1);    // これで internal error にしてみようか (unique_ptr にして Heap に Move)
-
-    CompilationResult r2 = compile(r1.unwrap());
-    if (!r2) retunr err(r2);
-    
-    Result r3 = link(r2.unwrap());
-    if (!r3) retunr err("link error.", r3);
-
-    return ok();
+// 右辺値 operator* で値を戻したときにコンパイルエラーにならないこと。
+TEST_F(Test_Base_Result, MoveReference) {
+    struct Test {
+        static IOResult<String> func() { return U"abc"; }
+    };
+	auto str = *Test::func();
+	ASSERT_EQ(U"abc", str);
 }
-```
-
-*/

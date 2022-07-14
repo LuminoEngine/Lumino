@@ -335,6 +335,15 @@ public:
     }
 
     /** 重複を削除した新しい配列を返します。 */
+    Array<T> distinct() const {
+        ln::Array<T> result = *this;
+        std::sort(result.begin(), result.end());
+        result.erase(std::unique(result.begin(), result.end()), result.end());
+        return result;
+    }
+
+    // 重複を削除した新しい配列を返します。 
+	// TODO: sort できない型に対応する
     template<typename TPred>
     Array<T> distinct(TPred predicate) const {
         ln::Array<T> result = *this;
@@ -342,7 +351,7 @@ public:
         result.erase(std::unique(result.begin(), result.end(), predicate), result.end());
         return result;
     }
-
+	
     /** この配列と指定した配列を連結した新しい配列を返します。 */
     Array<T> concat(const Array<T>& ary) const {
         ln::Array<T> result = *this;
