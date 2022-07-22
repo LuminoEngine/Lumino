@@ -330,52 +330,5 @@ void Scene::setTonemapToeDenominator(float value)
     detail::EngineDomain::engineManager()->mainRenderView()->finishingProcess()->m_toeDenominator = value;
 }
 
-////==============================================================================
-//// SceneAsset
-//
-//namespace ed {
-//
-//LN_OBJECT_IMPLEMENT(SceneAsset, AssetModel) {}
-//
-//SceneAsset::SceneAsset()
-//{
-//}
-//
-//void SceneAsset::init()
-//{
-//    AssetModel::init();
-//}
-//
-//void SceneAsset::setup(const ln::Path& filePath)
-//{
-//	m_filePath = filePath;
-//}
-//
-//void SceneAsset::clear()
-//{
-//}
-//
-//void SceneAsset::save()
-//{
-//	auto json = ln::JsonSerializer::serialize(*this);
-//	ln::FileSystem::writeAllText(m_filePath, json);
-//}
-//
-//void SceneAsset::load()
-//{
-//}
-//
-//void SceneAsset::serialize(Archive& ar)
-//{
-//	ar & makeNVP(u"objects", m_rootWorldObjectList);
-//}
-//
-//void SceneAsset::addNewWorldObject()
-//{
-//	auto obj = makeObject<WorldObjectAsset>();
-//	m_rootWorldObjectList.add(obj);
-//}
-
-//} // namespace ed
 } // namespace ln
 

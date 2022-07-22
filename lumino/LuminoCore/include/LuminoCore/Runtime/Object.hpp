@@ -1,20 +1,20 @@
 ﻿#pragma once
-#include <mutex>
-#include <functional>
-#include <LuminoCore/Base/RefObject.hpp>
+#include "Common.hpp"
+#include "../IO/Path.hpp"
+#include "../Serialization/Serialization.hpp"
 #define LN_COORD_RH 1
 #define LN_FACE_FRONT_CCW 1
 
 namespace ln {
-class EngineContext2;
+class RuntimeContext;
 class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
-class Serializer2;
-class Serializer3;
+class Serializer2_deprecated;
+class Archive;
 class ViewProperty;
-class ViewPropertyInfo;
-class ObservablePropertyBase;
+//class ViewPropertyInfo;
+//class ObservablePropertyBase;
 
 template<class T>
 class TypeInfoTraits;
@@ -137,27 +137,27 @@ enum class ObjectFlags {
 #define LN_OBJECT                                                       \
     friend class ::ln::TypeInfo;                                        \
     friend class ::ln::detail::EngineDomain;                            \
-    friend class ::ln::EngineContext2;                                  \
+    friend class ::ln::RuntimeContext;                                  \
     template<class T>                                                   \
     friend class TypeInfoTraits;                                        \
     static ::ln::TypeInfo* _lnref_getTypeInfo();                        \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;    \
     static ::ln::TypeInfo* _lnref_typeInfo;                             \
-    static void _lnref_registerTypeInfo(::ln::EngineContext2* context); \
-    static void _lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo);
+    static void _lnref_registerTypeInfo(::ln::RuntimeContext* context); \
+    static void _lnref_registerTypeInfoInitializer(::ln::RuntimeContext* context, ::ln::TypeInfo* typeInfo);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseClassType)                                                      \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() { return _lnref_typeInfo; }                            \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }             \
     ::ln::TypeInfo* classType::_lnref_typeInfo = nullptr;                                                  \
-    void classType::_lnref_registerTypeInfo(::ln::EngineContext2* context) {                               \
+    void classType::_lnref_registerTypeInfo(::ln::RuntimeContext* context) {                               \
         ::ln::TypeInfo* baseTypeInfo = ::ln::TypeInfo::getTypeInfo<baseClassType>();                       \
         if (LN_ASSERT(baseTypeInfo, "Base type '" #baseClassType "' TypeInfo is not registered.")) return; \
         ::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, baseTypeInfo, {});         \
         _lnref_registerTypeInfoInitializer(context, typeInfo);                                             \
         _lnref_typeInfo = typeInfo;                                                                        \
     }                                                                                                      \
-    void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext2* context, ::ln::TypeInfo* typeInfo)
+    void classType::_lnref_registerTypeInfoInitializer(::ln::RuntimeContext* context, ::ln::TypeInfo* typeInfo)
 
 #define LN_INTERNAL_NEW_OBJECT                         \
     template<class T, typename... TArgs>               \
@@ -210,13 +210,13 @@ protected:
     virtual void finalize() override;
     virtual void onDispose(bool explicitDisposing);
 
-    virtual void serialize(Serializer2& ar);
+    virtual void serialize_deprecated(Serializer2_deprecated& ar);
 
     /** onSerialize */
     LN_METHOD()
-    virtual void onSerialize(Serializer2* ar);
+    virtual void onSerialize_deprecated(Serializer2_deprecated* ar);
 
-    virtual void serialize3(Serializer3& ar);
+    virtual void serialize(Archive& ar);
 
 public:
     /**
@@ -271,8 +271,8 @@ private:
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
-    friend class Serializer2;
-    friend class Serializer3;
+    friend class Serializer2_deprecated;
+    friend class Archive;
     template<class U>
     friend class Ref;
     template<class T>

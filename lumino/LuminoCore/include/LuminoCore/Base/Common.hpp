@@ -1,17 +1,28 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
-
 #pragma once
+#include <assert.h>
+#include <errno.h>
 #include <string>
 #include <vector>
 #include <atomic>
 #include <locale>
-#include <assert.h>
-#include <errno.h>
+#include <algorithm>
+#include <memory>
 #include <unordered_map>
+#include <thread>
+#include <mutex>
+#include <functional>
 #include <filesystem>
+#include <functional>
+
+//------------------------------------------------------------------------------
+// Configuration
+//------------------------------------------------------------------------------
+#define LN_EXPERIMENTAL_VARIANT_SERIALIZATION 0
 
 //------------------------------------------------------------------------------
 // flags
+//------------------------------------------------------------------------------
 
 // Debug build flag
 #if defined(DEBUG) || defined(_DEBUG)
@@ -102,6 +113,7 @@
 
 //------------------------------------------------------------------------------
 // string
+//------------------------------------------------------------------------------
 
 #define LN_STRING_WITH_TYPESAFEFORMAT
 #define LN_STRING_WITH_PATH
@@ -194,6 +206,7 @@ void notifyFatalError(const char* file, int line, const char* message) noexcept;
 
 //------------------------------------------------------------------------------
 // CHECK macro
+//------------------------------------------------------------------------------
 
 #ifdef LN_DEBUG
 #	define	LN_DCHECK_ENABLED

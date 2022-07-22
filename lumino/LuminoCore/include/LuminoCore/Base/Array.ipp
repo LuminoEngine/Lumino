@@ -418,5 +418,3 @@ inline void swap(Array<T>& a, Array<T>& b) noexcept {
 }
 
 } // namespace ln
-
-#include "Array.ipp"

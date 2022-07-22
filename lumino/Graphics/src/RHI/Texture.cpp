@@ -336,9 +336,9 @@ detail::RHIResource* Texture2D::resolveRHIObject(GraphicsCommandList* context, b
     return m_rhiObject;
 }
 
-void Texture2D::serialize(Serializer2& ar)
+void Texture2D::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    Texture::serialize(ar);
+    Texture::serialize_deprecated(ar);
 
 
     //// TODO: Object::assetPath 使いたい

@@ -592,11 +592,6 @@ enum class ErrorCode {
 using Result = BasicResult<void, ErrorCode>;
 
 template<>
-inline String toString<String>(const String& str) {
-    return str;
-}
-
-template<>
 inline String toString<int>(const int& v) {
     return String::fromNumber(v);
 }
@@ -609,6 +604,11 @@ inline String toString<bool>(const bool& v) {
 template<>
 inline String toString<ErrorCode>(const ErrorCode& e) {
     return ln::format(U"ErrorCode:{}", static_cast<int>(e));
+}
+
+template<class TResultValue, class TResultError>
+inline String toString(const BasicResult<TResultValue, TResultError>& e) {
+    return e.toString();
 }
 
 } // namespace ln

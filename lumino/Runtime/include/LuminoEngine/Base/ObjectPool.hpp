@@ -1,7 +1,5 @@
-﻿
-#pragma once
-#include <functional>
-#include "../Reflection/Object.hpp"
+﻿#pragma once
+#include <LuminoCore/Runtime/Object.hpp>
 
 namespace ln {
 class AbstractObjectPoolManager;

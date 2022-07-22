@@ -89,7 +89,7 @@ void SceneManager::init() {
 
     m_pathContext = PathShape_NVGcontext::nvgCreate(0);
 
-    auto* context = EngineContext2::instance();
+    auto* context = RuntimeContext::current();
     context->registerType<World>();
     context->registerType<Level>();
     context->registerType<WorldObject>();

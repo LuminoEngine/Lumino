@@ -12,7 +12,7 @@ LN_OBJECT_IMPLEMENT(MyObject1, Object) {}
 TEST_F(Test_Reflection_TypeInfo, Basic) {
     RuntimeModule::initialize();
 
-    auto* context = EngineContext2::instance();
+    auto* context = RuntimeContext::current();
     context->registerType<MyObject1>();
 
     auto* typeInfo1 = TypeInfo::getTypeInfo<MyObject1>();

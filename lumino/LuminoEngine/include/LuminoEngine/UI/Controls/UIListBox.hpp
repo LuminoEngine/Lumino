@@ -120,7 +120,7 @@ public:
 	// LsitBoxItem なら、デフォルトで作成される TextBlock に bind する。
 	// ListBoxItem をカスタマイズしたいときは、今は未実装だが、generate() みたいなのをユーザープログラムで実装し、そのなかで main の prop を参照することになりそう。
 	// WPF でいうところの DataContext = prop.
-	void bind(ObservablePropertyBase* prop);
+	//void bind(ObservablePropertyBase* prop);
 
 protected:
 	// base interface

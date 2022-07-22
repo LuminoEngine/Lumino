@@ -174,7 +174,7 @@ const String& CryptedAssetArchiveReader::name() const
 
 bool CryptedAssetArchiveReader::open(const StringView& filePath, const StringView& password, bool pathAsRawRelative)
 {
-    LN_LOG_DEBUG(U"Archive: {}", filePath);
+    LN_LOG_DEBUG(U"CryptedAssetArchive: {}", filePath);
 
     ln::String actualPassword;
     if (password.isEmpty()) {

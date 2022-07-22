@@ -1,9 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Reflection/Object.hpp>
-#include <LuminoEngine/Reflection/Property.hpp>
-#include <LuminoEngine/Reflection/VMProperty.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+﻿#include <LuminoCore/Runtime/Object.hpp>
+#include <LuminoCore/Runtime/Property.hpp>
+#include <LuminoCore/Runtime/RuntimeContext.hpp>
 
 namespace ln {
 
@@ -29,7 +26,7 @@ Object::~Object() {
     }
 
     if (m_runtimeData) {
-        auto c = EngineContext2::instance();
+        RuntimeContext* c = RuntimeContext::current();
         if (c->objectEventListener) {
             c->objectEventListener->onDestructObject(this);
         }
@@ -52,14 +49,14 @@ void Object::dispose() {
 void Object::onDispose(bool explicitDisposing) {
 }
 
-void Object::serialize(Serializer2& ar) {
-    onSerialize(&ar);
+void Object::serialize_deprecated(Serializer2_deprecated& ar) {
+    onSerialize_deprecated(&ar);
 }
 
-void Object::onSerialize(Serializer2* ar) {
+void Object::onSerialize_deprecated(Serializer2_deprecated* ar) {
 }
 
-void Object::serialize3(Serializer3& ar) {
+void Object::serialize(Archive& ar) {
 }
 
 bool Object::traverseRefrection(ReflectionObjectVisitor* visitor) {
@@ -89,7 +86,7 @@ void Object::setTypeInfoOverride(TypeInfo* value) {
 
 void Object::onRetained() {
     if (m_runtimeData) {
-        auto c = EngineContext2::instance();
+        RuntimeContext* c = RuntimeContext::current();
         if (c->objectEventListener) {
             c->objectEventListener->onRetainedObject(this);
         }
@@ -98,7 +95,7 @@ void Object::onRetained() {
 
 void Object::onReleased() {
     if (m_runtimeData) {
-        auto c = EngineContext2::instance();
+        RuntimeContext* c = RuntimeContext::current();
         if (c->objectEventListener) {
             c->objectEventListener->onReleasedObject(this);
         }
@@ -115,7 +112,7 @@ detail::WeakRefInfo* Object::requestWeakRefInfo() {
 }
 
 TypeInfo* Object::_lnref_getTypeInfo() {
-    return EngineContext2::instance()->objectTypeInfo();
+    return RuntimeContext::current()->objectTypeInfo();
 }
 
 TypeInfo* Object::_lnref_getThisTypeInfo() const {

@@ -79,8 +79,7 @@ const ln::TypeInfo* AssetModel::assetType() const
 //    //}
 //}
 //
-void AssetModel::onSerialize(Serializer2* sr)
-{
+void AssetModel::onSerialize_deprecated(Serializer2_deprecated* sr) {
     if (sr->isSaving()) {
         sr->writeName(_TT("object"));
         sr->writeObject(m_target);
@@ -143,35 +142,6 @@ void AssetProperty::init(const PropertyRef& prop)
 	Object::init();
 	m_property = prop;
 }
-
-
-//==============================================================================
-// AssetSerializer
-
-//ln::String AssetSerializer::serialize(AssetModel* asset)
-//{
-//    Ploxy p{ asset };
-//    return JsonSerializer::serialize(p, JsonFormatting::None);
-//    //return Serializer::serialize<AssetModel>(Ref<AssetModel>(asset));
-//}
-//
-//Ref<AssetModel> AssetSerializer::deserialize(const String& str)
-//{
-//    return Serializer::deserialize<AssetModel>(str);
-//}
-//
-//void AssetSerializer::processAsset(AssetModel* asset)
-//{
-//
-//}
-//
-//void AssetSerializer::Ploxy::serialize(Archive& ar)
-//{
-//    const List<Ref<PropertyInfo>>& props = TypeInfo::getTypeInfo(asset)->properties();
-//    for (auto& prop : props) {
-//        prop->accessor()->serializeMember(asset, ar, prop->name());
-//    }
-//}
 
 } // namespace ln
 

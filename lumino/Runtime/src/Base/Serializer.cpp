@@ -21,7 +21,7 @@ static std::string str_to_ns(const String& str) { return str.toStdString(); }
 static String ns_to_str(const std::string& str) { return String::fromStdString(str); }
 
 namespace detail {
-class SerializerStore2 : public RefObject
+class SerializerStore2_deprecated : public RefObject
 {
 public:
 	enum class ContainerType
@@ -72,17 +72,17 @@ public:
 		auto& parent = stack[stack.size() - 2];
 		
 
-		if (current.containerType == SerializerStore2::ContainerType::List && current.writingPrimitiveOnly) {
+		if (current.containerType == SerializerStore2_deprecated::ContainerType::List && current.writingPrimitiveOnly) {
 			current.node.SetStyle(YAML::EmitterStyle::Flow);
 		}
 		else {
 			//current.node.SetStyle(YAML::EmitterStyle::Default);
 		}
 
-		if (parent.containerType == SerializerStore2::ContainerType::Object) {
+		if (parent.containerType == SerializerStore2_deprecated::ContainerType::Object) {
 			parent.node[current.name] = std::move(current.node);
 		}
-		else if (parent.containerType == SerializerStore2::ContainerType::List) {
+		else if (parent.containerType == SerializerStore2_deprecated::ContainerType::List) {
 			parent.node.push_back(std::move(current.node));
 		}
 		else {
@@ -96,9 +96,9 @@ public:
 	template<typename T>
 	void writePrimitive(T value)
 	{
-		if (current().containerType == SerializerStore2::ContainerType::Object)
+		if (current().containerType == SerializerStore2_deprecated::ContainerType::Object)
 			current().node[nextName] = value;
-		else if (current().containerType == SerializerStore2::ContainerType::List) {
+		else if (current().containerType == SerializerStore2_deprecated::ContainerType::List) {
 			current().node.push_back(value);
 			//current().node.SetStyle(YAML::EmitterStyle::Flow);
 		}
@@ -106,7 +106,7 @@ public:
 
 	void writeString(const std::string& v)
 	{
-		if (current().containerType == SerializerStore2::ContainerType::Object) {
+		if (current().containerType == SerializerStore2_deprecated::ContainerType::Object) {
 			current().node[nextName] = v;
 		}
 		else {
@@ -116,7 +116,7 @@ public:
 
 	void writeNull()
 	{
-		if (current().containerType == SerializerStore2::ContainerType::Object) {
+		if (current().containerType == SerializerStore2_deprecated::ContainerType::Object) {
 			current().node[nextName] = YAML::Node(YAML::NodeType::Null);
 		}
 		else {
@@ -163,7 +163,7 @@ public:
 				reportError("Serializer expects an Object, but wasn't actual an Object.");
 				return false;
 			}
-			stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::Object, node });
+			stack.push_back(SerializerStore2_deprecated::StackItem{ SerializerStore2_deprecated::ContainerType::Object, node });
 			if (outItemCount) *outItemCount = node.size();
 			return true;
 		}
@@ -172,7 +172,7 @@ public:
 				reportError("Serializer expects an List, but wasn't actual an List.");
 				return false;
 			}
-			stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::List, node });
+			stack.push_back(SerializerStore2_deprecated::StackItem{ SerializerStore2_deprecated::ContainerType::List, node });
 			if (outItemCount) *outItemCount = node.size();
 
 			if (node.size() > 0) {
@@ -269,7 +269,7 @@ public:
 
 #if 1
 //==============================================================================
-// Serializer2
+// Serializer2_deprecated
 
 /*
 	Struct の serialize について
@@ -290,12 +290,12 @@ public:
 	}
 */
 
-LN_OBJECT_IMPLEMENT(Serializer2, Object) {}
+LN_OBJECT_IMPLEMENT(Serializer2_deprecated, Object) {}
 
-Serializer2::Serializer2()
+Serializer2_deprecated::Serializer2_deprecated()
 {
 	std::string::value_type;
-	m_store = makeRef<detail::SerializerStore2>();
+	m_store = makeRef<detail::SerializerStore2_deprecated>();
 	//nlohmann::json j;
 	//j[u"pi"] = 3.141;
 	//j[u"happy"] = true;
@@ -311,104 +311,104 @@ Serializer2::Serializer2()
 	//std::cout << s << std::endl;
 }
 
-void Serializer2::init()
+void Serializer2_deprecated::init()
 {
 	Object::init();
 }
 
-void Serializer2::writeName(const StringView& name)
+void Serializer2_deprecated::writeName(const StringView& name)
 {
 	m_store->nextName = str_to_ns(name);
 }
 
-void Serializer2::writeBool(bool value)
+void Serializer2_deprecated::writeBool(bool value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive<bool>(value);
 }
 
-void Serializer2::writeInt8(int8_t value)
+void Serializer2_deprecated::writeInt8(int8_t value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(static_cast<int>(value));
 }
 
-void Serializer2::writeInt16(int16_t value)
+void Serializer2_deprecated::writeInt16(int16_t value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(value);
 }
 
-void Serializer2::writeInt32(int32_t value)
+void Serializer2_deprecated::writeInt32(int32_t value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(value);
 }
 
-void Serializer2::writeInt64(int64_t value)
+void Serializer2_deprecated::writeInt64(int64_t value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(value);
 }
 
-void Serializer2::writeUInt8(uint8_t value)
+void Serializer2_deprecated::writeUInt8(uint8_t value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(static_cast<int>(value));
 }
 
-void Serializer2::writeUInt16(uint16_t value)
+void Serializer2_deprecated::writeUInt16(uint16_t value)
 {
 	LN_NOTIMPLEMENTED();	// unsigned 系は未サポート。yaml-cpp の中で encode に失敗する
 	//if (LN_REQUIRE(isSaving())) return;
 	//m_store->writePrimitive(value);
 }
 
-void Serializer2::writeUInt32(uint32_t value)
+void Serializer2_deprecated::writeUInt32(uint32_t value)
 {
 	LN_NOTIMPLEMENTED();	// unsigned 系は未サポート。yaml-cpp の中で encode に失敗する
 	//if (LN_REQUIRE(isSaving())) return;
 	//m_store->writePrimitive(value);
 }
 
-void Serializer2::writeUInt64(uint64_t value)
+void Serializer2_deprecated::writeUInt64(uint64_t value)
 {
 	LN_NOTIMPLEMENTED();	// unsigned 系は未サポート。yaml-cpp の中で encode に失敗する
 	//if (LN_REQUIRE(isSaving())) return;
 	//m_store->writePrimitive(value);
 }
 
-void Serializer2::writeFloat(float value)
+void Serializer2_deprecated::writeFloat(float value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(value);
 }
 
-void Serializer2::writeDouble(double value)
+void Serializer2_deprecated::writeDouble(double value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(value);
 }
 
-void Serializer2::writeNull()
+void Serializer2_deprecated::writeNull()
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writeNull();
 }
 
-void Serializer2::writeInt(int value)
+void Serializer2_deprecated::writeInt(int value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive<int>(value);
 }
 
-void Serializer2::writeString(const StringView& value)
+void Serializer2_deprecated::writeString(const StringView& value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	m_store->writePrimitive(str_to_ns(value));
 }
 
-void Serializer2::writeObject(Object* value)
+void Serializer2_deprecated::writeObject(Object* value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 #if 1
@@ -417,7 +417,7 @@ void Serializer2::writeObject(Object* value)
 		auto typeName = TypeInfo::getTypeInfo(value)->name();
 		m_store->nextName = "class." + str_to_ns(typeName);
 		beginWriteObject();
-		static_cast<Object*>(value)->serialize(*this);
+		static_cast<Object*>(value)->serialize_deprecated(*this);
 		endWriteObject();
 		endWriteObject();
 	}
@@ -434,59 +434,59 @@ void Serializer2::writeObject(Object* value)
 #endif
 }
 
-void Serializer2::beginWriteObject()
+void Serializer2_deprecated::beginWriteObject()
 {
-	m_store->pushWrite(detail::SerializerStore2::ContainerType::Object);
+	m_store->pushWrite(detail::SerializerStore2_deprecated::ContainerType::Object);
 }
 
-void Serializer2::endWriteObject()
+void Serializer2_deprecated::endWriteObject()
 {
 	m_store->popWrite();
 }
 
-void Serializer2::beginWriteList()
+void Serializer2_deprecated::beginWriteList()
 {
-	m_store->pushWrite(detail::SerializerStore2::ContainerType::List);
+	m_store->pushWrite(detail::SerializerStore2_deprecated::ContainerType::List);
 }
 
-void Serializer2::endWriteList()
+void Serializer2_deprecated::endWriteList()
 {
 	m_store->popWrite();
 }
 
-void Serializer2::beginReadObject()
+void Serializer2_deprecated::beginReadObject()
 {
-	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, *(m_store->current().readPos) });
+	//m_store->stack.push_back(detail::SerializerStore2_deprecated::StackItem{ detail::SerializerStore2_deprecated::ContainerType::Object, *(m_store->current().readPos) });
 	int itemCount = 0;
-	m_store->pushRead(detail::SerializerStore2::ContainerType::Object, &itemCount);
+	m_store->pushRead(detail::SerializerStore2_deprecated::ContainerType::Object, &itemCount);
 }
 
-void Serializer2::endReadObject()
+void Serializer2_deprecated::endReadObject()
 {
 	m_store->popRead();
 }
 
-bool Serializer2::readingValueIsObject() const
+bool Serializer2_deprecated::readingValueIsObject() const
 {
 	return m_store->current().readingNode.IsMap();
 }
 
-bool Serializer2::readingValueIsNull() const
+bool Serializer2_deprecated::readingValueIsNull() const
 {
 	return m_store->current().readingNode.IsNull();
 }
 
-bool Serializer2::beginReadList(int* outItemCount)
+bool Serializer2_deprecated::beginReadList(int* outItemCount)
 {
-	return m_store->pushRead(detail::SerializerStore2::ContainerType::List, outItemCount);
+	return m_store->pushRead(detail::SerializerStore2_deprecated::ContainerType::List, outItemCount);
 }
 
-void Serializer2::endReadList()
+void Serializer2_deprecated::endReadList()
 {
 	m_store->popRead();
 }
 
-bool Serializer2::beginList(int* outItemCount)
+bool Serializer2_deprecated::beginList(int* outItemCount)
 {
 	if (isSaving()) {
 		beginWriteList();
@@ -497,7 +497,7 @@ bool Serializer2::beginList(int* outItemCount)
 	}
 }
 
-void Serializer2::endList()
+void Serializer2_deprecated::endList()
 {
 	if (isSaving()) {
 		endWriteList();
@@ -507,7 +507,7 @@ void Serializer2::endList()
 	}
 }
 
-bool Serializer2::readName(const StringView& name)
+bool Serializer2_deprecated::readName(const StringView& name)
 {
 	if (isSaving()) {
 		LN_NOTIMPLEMENTED();
@@ -518,84 +518,84 @@ bool Serializer2::readName(const StringView& name)
 	}
 }
 
-bool Serializer2::readBool()
+bool Serializer2_deprecated::readBool()
 {
 	bool v = false;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-int8_t Serializer2::readInt8()
+int8_t Serializer2_deprecated::readInt8()
 {
 	int v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-int16_t Serializer2::readInt16()
+int16_t Serializer2_deprecated::readInt16()
 {
 	int16_t v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-int32_t Serializer2::readInt32()
+int32_t Serializer2_deprecated::readInt32()
 {
 	int32_t v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-int64_t Serializer2::readInt64()
+int64_t Serializer2_deprecated::readInt64()
 {
 	int64_t v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-uint8_t Serializer2::readUInt8()
+uint8_t Serializer2_deprecated::readUInt8()
 {
 	int v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-uint16_t Serializer2::readUInt16()
+uint16_t Serializer2_deprecated::readUInt16()
 {
 	uint16_t v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-uint32_t Serializer2::readUInt32()
+uint32_t Serializer2_deprecated::readUInt32()
 {
 	uint32_t v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-uint64_t Serializer2::readUInt64()
+uint64_t Serializer2_deprecated::readUInt64()
 {
 	uint64_t v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-float Serializer2::readFloat()
+float Serializer2_deprecated::readFloat()
 {
 	float v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-double Serializer2::readDouble()
+double Serializer2_deprecated::readDouble()
 {
 	double v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
 
-int Serializer2::readInt()
+int Serializer2_deprecated::readInt()
 {
 	int v = 0;
 	m_store->readPrimitive(&v);
@@ -603,26 +603,26 @@ int Serializer2::readInt()
 	return v;
 }
 
-float Serializer2::readFloat(const StringView& name)
+float Serializer2_deprecated::readFloat(const StringView& name)
 {
 	float value = 0.0;
 	LN_NOTIMPLEMENTED();
 	return value;
 }
 
-String Serializer2::readString()
+String Serializer2_deprecated::readString()
 {
 	std::string v;
 	m_store->readPrimitive(&v);
 	return ns_to_str(v);
 }
 
-Ref<Object> Serializer2::readObject(Object* existing)
+Ref<Object> Serializer2_deprecated::readObject(Object* existing)
 {
 	return readObjectInteral(nullptr, existing);
 }
 
-Ref<Object> Serializer2::readObjectInteral(std::function<Ref<Object>()> knownTypeCreator, Object* existing)
+Ref<Object> Serializer2_deprecated::readObjectInteral(std::function<Ref<Object>()> knownTypeCreator, Object* existing)
 {
 	if (LN_REQUIRE(isLoading())) return nullptr;
 
@@ -659,7 +659,7 @@ Ref<Object> Serializer2::readObjectInteral(std::function<Ref<Object>()> knownTyp
 	}
 
 	beginReadObject();
-	obj->serialize(*this);
+	obj->serialize_deprecated(*this);
 	endReadObject();
 
 	endReadObject();
@@ -688,7 +688,7 @@ Ref<Object> Serializer2::readObjectInteral(std::function<Ref<Object>()> knownTyp
 #endif
 }
 
-String Serializer2::serialize(AssetModel* value, const detail::AssetPath& basePath)
+String Serializer2_deprecated::serialize(AssetModel* value, const detail::AssetPath& basePath)
 {
 	//YAML::Node n;
 	//n["a"] = 10;
@@ -708,29 +708,29 @@ String Serializer2::serialize(AssetModel* value, const detail::AssetPath& basePa
 	////auto b = a["aaa"];
 
 	if (LN_REQUIRE(value)) return String::Empty;
-	auto sr = makeObject<Serializer2>();
+	auto sr = makeObject<Serializer2_deprecated>();
 	sr->m_mode = ArchiveMode::Save;
 	sr->m_basePath = basePath;
 	sr->m_store->initWrite();
-	static_cast<Object*>(value)->serialize(*sr);
+	static_cast<Object*>(value)->serialize_deprecated(*sr);
 	LN_ENSURE(sr->m_store->stack.size() == 1);
 	return ns_to_str(sr->m_store->str());
 }
 
-Ref<AssetModel> Serializer2::deserialize(const String& str, const detail::AssetPath& basePath)
+Ref<AssetModel> Serializer2_deprecated::deserialize(const String& str, const detail::AssetPath& basePath)
 {
 	Ref<AssetModel> asset;
 
 	try {
 		ObjectInitializeContext::Default->autoAdd = false;
 
-		auto sr = makeObject<Serializer2>();
+		auto sr = makeObject<Serializer2_deprecated>();
 		sr->m_mode = ArchiveMode::Load;
 		sr->m_basePath = basePath;
 		sr->m_store->initRead(str_to_ns(str));
-		//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
+		//sr->m_store->stack.push_back(detail::SerializerStore2_deprecated::StackItem{ detail::SerializerStore2_deprecated::ContainerType::Object, ljson::parse(str.toStdString()) });
 		auto asset = makeObject<AssetModel>();
-		static_cast<Object*>(asset)->serialize(*sr);
+		static_cast<Object*>(asset)->serialize_deprecated(*sr);
 
 		ObjectInitializeContext::Default->autoAdd = true;
 		return asset;
@@ -741,19 +741,19 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const detail::AssetP
 	}
 }
 
-void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const detail::AssetPath& basePath)
+void Serializer2_deprecated::deserializeInstance(AssetModel* asset, const String& str, const detail::AssetPath& basePath)
 {
 	try {
 		ObjectInitializeContext::Default->autoAdd = false;
 
 		asset->m_externalObjectDeserialization = true;
 
-		auto sr = makeObject<Serializer2>();
+		auto sr = makeObject<Serializer2_deprecated>();
 		sr->m_mode = ArchiveMode::Load;
 		sr->m_basePath = basePath;
 		sr->m_store->initRead(str_to_ns(str));
-		//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
-		static_cast<Object*>(asset)->serialize(*sr);
+		//sr->m_store->stack.push_back(detail::SerializerStore2_deprecated::StackItem{ detail::SerializerStore2_deprecated::ContainerType::Object, ljson::parse(str.toStdString()) });
+		static_cast<Object*>(asset)->serialize_deprecated(*sr);
 
 		ObjectInitializeContext::Default->autoAdd = true;
 	}

@@ -88,9 +88,6 @@ protected:
     virtual void onInternalAnimationUpdate(float elapsedSeconds);
     virtual void onPostUpdate(float elapsedSeconds);
 
-    //LN_SERIALIZE_CLASS_VERSION(1);
-    //virtual void serialize(Archive& ar) override;
-
 LN_CONSTRUCT_ACCESS:
 	World();
 	virtual ~World();

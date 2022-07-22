@@ -2,10 +2,8 @@
 
 #include <LuminoCore.hpp>
 #include <LuminoEngine/Base/Regex.hpp>
-#include <LuminoEngine/Base/Variant.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Base/Task.hpp>
-#include <LuminoEngine/Reflection/Object.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoFont/Font.hpp>
 

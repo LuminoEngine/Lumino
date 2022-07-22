@@ -9,7 +9,6 @@
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
-#include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Animation/Animator.hpp>

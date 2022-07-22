@@ -56,29 +56,29 @@ class ShaderRenderState
 {
 public:
     // RenderTargetBlendDesc
-    Optional<bool> blendEnable;
-    Optional<BlendFactor> sourceBlend;
-    Optional<BlendFactor> destinationBlend;
-    Optional<BlendOp> blendOp;
-    Optional<BlendFactor> sourceBlendAlpha;
-    Optional<BlendFactor> destinationBlendAlpha;
-    Optional<BlendOp> blendOpAlpha;
+    Optional_deprecated<bool> blendEnable;
+    Optional_deprecated<BlendFactor> sourceBlend;
+    Optional_deprecated<BlendFactor> destinationBlend;
+    Optional_deprecated<BlendOp> blendOp;
+    Optional_deprecated<BlendFactor> sourceBlendAlpha;
+    Optional_deprecated<BlendFactor> destinationBlendAlpha;
+    Optional_deprecated<BlendOp> blendOpAlpha;
 
     // RasterizerStateDesc
-    Optional<FillMode> fillMode;
-    Optional<CullMode> cullMode;
+    Optional_deprecated<FillMode> fillMode;
+    Optional_deprecated<CullMode> cullMode;
 
     // DepthStencilStateDesc
-    Optional<ComparisonFunc> depthTestFunc;
-    Optional<bool> depthWriteEnabled;
+    Optional_deprecated<ComparisonFunc> depthTestFunc;
+    Optional_deprecated<bool> depthWriteEnabled;
 
     // StencilOpDesc
-    Optional<bool> stencilEnabled;
-    Optional<uint8_t> stencilReferenceValue;
-    Optional<StencilOp> stencilFailOp;
-    Optional<StencilOp> stencilDepthFailOp;
-    Optional<StencilOp> stencilPassOp;
-    Optional<ComparisonFunc> stencilFunc;
+    Optional_deprecated<bool> stencilEnabled;
+    Optional_deprecated<uint8_t> stencilReferenceValue;
+    Optional_deprecated<StencilOp> stencilFailOp;
+    Optional_deprecated<StencilOp> stencilDepthFailOp;
+    Optional_deprecated<StencilOp> stencilPassOp;
+    Optional_deprecated<ComparisonFunc> stencilFunc;
 };
 
 class ShaderHelper

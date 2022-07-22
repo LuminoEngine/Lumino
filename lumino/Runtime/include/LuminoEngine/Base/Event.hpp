@@ -1,10 +1,7 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 
 #pragma once
-#include <vector>
-#include <memory>
-#include <functional>
-#include "../Reflection/Object.hpp"
+#include <LuminoCore/Runtime/Object.hpp>
 #include "Delegate.hpp"
 
 namespace ln {

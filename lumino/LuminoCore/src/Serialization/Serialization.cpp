@@ -78,13 +78,13 @@ namespace ln {
 */
 
 //==============================================================================
-// Archive
+// Archive_deprecated
 
-const String Archive::ClassNameKey = _TT("lumino_class_name");
-const String Archive::ClassVersionKey = _TT("lumino_class_version");
-const String Archive::ClassBaseKey = _TT("lumino_base_class");
+const String Archive_deprecated::ClassNameKey = _TT("lumino_class_name");
+const String Archive_deprecated::ClassVersionKey = _TT("lumino_class_version");
+const String Archive_deprecated::ClassBaseKey = _TT("lumino_base_class");
 
-void Archive::makeArrayTag(int* outSize)
+void Archive_deprecated::makeArrayTag(int* outSize)
 {
 	//
 	if (isSaving())
@@ -104,7 +104,7 @@ void Archive::makeArrayTag(int* outSize)
 	}
 }
 
-void Archive::makeMapTag(int* outSize)
+void Archive_deprecated::makeMapTag(int* outSize)
 {
 	if (isSaving())
 	{
@@ -118,7 +118,7 @@ void Archive::makeMapTag(int* outSize)
 	}
 }
 
-void Archive::makeVariantTag(ArchiveNodeType* type)
+void Archive_deprecated::makeVariantTag(ArchiveNodeType* type)
 {
 
     if (isSaving()) {
@@ -151,7 +151,7 @@ void Archive::makeVariantTag(ArchiveNodeType* type)
 
 }
 
-void Archive::makeTypeInfo(String* value)
+void Archive_deprecated::makeTypeInfo(String* value)
 {
     if (isSaving()) {
         // この時点では Ref<> の serialize、つまり WrapperObject の serialize 中。
@@ -178,7 +178,7 @@ void Archive::makeTypeInfo(String* value)
     //}
 }
 
-const String& Archive::readTypeInfo()
+const String& Archive_deprecated::readTypeInfo()
 {
     m_store->moveToNamedMember(_TT("_type"));
     ln::String type;
@@ -189,7 +189,7 @@ const String& Archive::readTypeInfo()
 }
 
 
-void Archive::popNodeWrite()
+void Archive_deprecated::popNodeWrite()
 {
     // 空の serialize を呼び出した場合、state は変わっていない。
     // 空の Object として扱いたいので、ここで Object 状態にしておく。
@@ -244,43 +244,6 @@ void Archive::popNodeWrite()
     if (!m_nodeInfoStack.empty()) {
         m_nodeInfoStack.back().nextBaseCall = false;
     }
-}
-
-
-//==============================================================================
-// JsonTextOutputArchive
-
-JsonTextOutputArchive::JsonTextOutputArchive()
-    : m_localDoc()
-    , m_localStore(&m_localDoc)
-    , m_processing(false)
-{
-    setup(&m_localStore, ArchiveMode::Save);
-}
-
-JsonTextOutputArchive::~JsonTextOutputArchive()
-{
-}
-
-String JsonTextOutputArchive::toString(JsonFormatting formatting)
-{
-    return m_localDoc.toString(formatting);
-}
-
-//==============================================================================
-// JsonTextInputArchive
-
-JsonTextInputArchive::JsonTextInputArchive(const String& jsonText)
-    : m_localDoc()
-    , m_localStore(&m_localDoc)
-    , m_processing(false)
-{
-    m_localDoc.parse(jsonText);
-    setup(&m_localStore, ArchiveMode::Load);
-}
-
-JsonTextInputArchive::~JsonTextInputArchive()
-{
 }
 
 } // namespace ln

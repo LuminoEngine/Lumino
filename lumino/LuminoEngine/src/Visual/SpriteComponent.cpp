@@ -1,7 +1,6 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoGraphics/RHI/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
@@ -35,9 +34,9 @@ void SpriteFrame::init()
 	m_anchorPoint = Vector2(Math::NaN, Math::NaN);
 }
 
-void SpriteFrame::serialize(Serializer2& ar)
+void SpriteFrame::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    Object::serialize(ar);
+    Object::serialize_deprecated(ar);
     ar & makeNVP(_TT("SourceRect"), m_sourceRect);
     ar & makeNVP(_TT("AnchorPoint"), m_anchorPoint);
 }
@@ -137,9 +136,9 @@ void SpriteSheet::splitFrames()
     }
 }
 
-void SpriteSheet::serialize(Serializer2& ar)
+void SpriteSheet::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    Object::serialize(ar);
+    Object::serialize_deprecated(ar);
     if (ar.isSaving()) {
         ar & makeNVP(_TT("texture"), m_texture);
         if (m_frameWidth != 0 && m_frameHeight != 0) {
@@ -358,16 +357,10 @@ void SpriteComponent::onRender(RenderingContext* context)
         SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
 #endif
 }
-//
-//void SpriteComponent::serialize(Archive& ar)
-//{
-//    VisualComponent::serialize(ar);
-//    ar & makeNVP(_TT("material", m_material);
-//}
 
-void SpriteComponent::serialize(Serializer2& ar)
+void SpriteComponent::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    VisualComponent::serialize(ar);
+    VisualComponent::serialize_deprecated(ar);
     ar & makeNVP(_TT("material"), m_material);
 }
 

@@ -175,7 +175,7 @@ bool testProcess(int argc, char** argv, int* outExitCode) {
             auto proc1 = ProcessCommand2(ln::Environment::executablePath())
                              .arg(_T("proctest6_Detached2"))
                              .start();
-            *outExitCode = proc1->processId();
+            *outExitCode = static_cast<int>(proc1->processId());
             return true;
         }
         else if (strcmp(argv[1], "proctest6_Detached2") == 0) {
@@ -254,7 +254,7 @@ int main(int argc, char** argv) {
         char* testArgs[] = {
             argv[0],
             "--gtest_break_on_failure",
-            //"--gtest_filter=Test_Base_String.convertNativeCharString",
+            //"--gtest_filter=Test_Base_Serializer.*",
         };
         argc = sizeof(testArgs) / sizeof(char*);
         argv = testArgs;

@@ -76,23 +76,23 @@ void RenderingContext::setTransfrom(const Matrix& value) {
     m_commandList->setTransfrom(value);
 }
 
-void RenderingContext::setBlendMode(Optional<BlendMode> value) {
+void RenderingContext::setBlendMode(Optional_deprecated<BlendMode> value) {
     m_commandList->setBlendMode(value);
 }
 
-void RenderingContext::setShadingModel(Optional<ShadingModel> value) {
+void RenderingContext::setShadingModel(Optional_deprecated<ShadingModel> value) {
     m_commandList->setShadingModel(value);
 }
 
-void RenderingContext::setCullingMode(Optional<CullMode> value) {
+void RenderingContext::setCullingMode(Optional_deprecated<CullMode> value) {
     m_commandList->setCullingMode(value);
 }
 
-void RenderingContext::setDepthTestEnabled(Optional<bool> value) {
+void RenderingContext::setDepthTestEnabled(Optional_deprecated<bool> value) {
     m_commandList->setDepthTestEnabled(value);
 }
 
-void RenderingContext::setDepthWriteEnabled(Optional<bool> value) {
+void RenderingContext::setDepthWriteEnabled(Optional_deprecated<bool> value) {
     m_commandList->setDepthWriteEnabled(value);
 }
 
@@ -299,7 +299,7 @@ const RenderViewPoint* RenderingContext::viewPoint() const {
     return m_commandList->viewPoint();
 }
 
-void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value) {
+void RenderingContext::setBaseTransfrom(const Optional_deprecated<Matrix>& value) {
     m_commandList->setBaseTransfrom(value);
 }
 
@@ -311,7 +311,7 @@ void RenderingContext::setRenderPriority(int value) {
     m_commandList->setRenderPriority(value);
 }
 
-void RenderingContext::setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value) {
+void RenderingContext::setBaseBuiltinEffectData(const Optional_deprecated<detail::BuiltinEffectData>& value) {
     m_commandList->setBaseBuiltinEffectData(value);
 }
 

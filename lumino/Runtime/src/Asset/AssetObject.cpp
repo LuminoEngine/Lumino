@@ -48,9 +48,9 @@ bool AssetObject::init()
 //}
 //
 
-void AssetObject::serialize(Serializer2& ar)
+void AssetObject::serialize_deprecated(Serializer2_deprecated& ar)
 {
-	Object::serialize(ar);
+    Object::serialize_deprecated(ar);
 
 	String file = (m_data) ? m_data->resourceFilePath.str() : String::Empty;
 

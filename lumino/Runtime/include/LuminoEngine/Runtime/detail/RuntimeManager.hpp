@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoCore/Runtime/RuntimeContext.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include "../FFITypes.hpp"

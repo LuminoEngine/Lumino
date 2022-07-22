@@ -41,7 +41,7 @@ public:
 	PlaneMeshComponent* planeMeshComponent() const;
 
 protected:
-	void serialize(Serializer2& ar) override;
+	void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	PlaneMesh();

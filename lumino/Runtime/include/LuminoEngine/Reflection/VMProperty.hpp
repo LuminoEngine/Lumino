@@ -38,9 +38,9 @@
 	主にユーザーコードで使用する。
 */
 #pragma once
-
-#include "../Base/Variant.hpp"
 #include "../Base/Event.hpp"
+
+#if 0
 
 namespace ln {
 class TypeInfo;
@@ -348,3 +348,5 @@ Ref<ViewPropertyAccessor> makeViewPropertyAccessor(TGetFunction getFunction, TSe
 		[](className* self, const typeName& value) { self->setFunction(value); }) \
 
 } // namespace ln
+
+#endif

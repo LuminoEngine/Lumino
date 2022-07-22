@@ -1053,6 +1053,16 @@ inline std::u32string_view toStdStringView(const StringView& v) {
 template<class T>
 String toString(const T& value);    
 
+template<>
+inline String toString<String>(const String& str) {
+    return str;
+}
+
+template<>
+inline String toString<StringView>(const StringView& str) {
+    return String(str);
+}
+
 } // namespace ln
 
 #include "StringFormat.hpp"

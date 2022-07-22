@@ -86,9 +86,9 @@ void MeshComponent::makeCollisionBody(StringView meshContainerName)
     }
 }
 
-void MeshComponent::serialize(Serializer2& ar)
+void MeshComponent::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    VisualComponent::serialize(ar);
+    VisualComponent::serialize_deprecated(ar);
     ar & makeNVP(_TT("model"), m_model);
 }
 

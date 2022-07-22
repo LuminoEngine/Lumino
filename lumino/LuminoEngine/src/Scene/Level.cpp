@@ -11,7 +11,7 @@ namespace ln {
 //==============================================================================
 // LevelRenderParameters
 
-void LevelRenderParameters::serialize(Serializer2& ar)
+void LevelRenderParameters::serialize_deprecated(Serializer2_deprecated& ar)
 {
     ar & ln::makeNVP(_TT("fogStartDistance"), m_fogStartDistance);
     ar & ln::makeNVP(_TT("fogColor"), m_fogColor);
@@ -353,9 +353,9 @@ bool Level::traverse(detail::IWorldObjectVisitor* visitor) const
     return true;
 }
 
-void Level::serialize(Serializer2& ar)
+void Level::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    AssetObject::serialize(ar);
+    AssetObject::serialize_deprecated(ar);
 
     if (ar.isLoading()) {
         removeAllObjects();

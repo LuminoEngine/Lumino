@@ -90,7 +90,7 @@ void DrawElementListBuilder::setObjectId(int value)
     m_objectId = value;
 }
 
-void DrawElementListBuilder::setBlendMode(const Optional<BlendMode>& value)
+void DrawElementListBuilder::setBlendMode(const Optional_deprecated<BlendMode>& value)
 {
 	if (primaryGeometryStageParameters().m_blendMode != value) {
 		primaryGeometryStageParameters().m_blendMode = value;
@@ -98,7 +98,7 @@ void DrawElementListBuilder::setBlendMode(const Optional<BlendMode>& value)
 	}
 }
 
-void DrawElementListBuilder::setCullingMode(const Optional<CullMode>& value)
+void DrawElementListBuilder::setCullingMode(const Optional_deprecated<CullMode>& value)
 {
 	if (primaryGeometryStageParameters().m_cullingMode != value) {
 		primaryGeometryStageParameters().m_cullingMode = value;
@@ -106,7 +106,7 @@ void DrawElementListBuilder::setCullingMode(const Optional<CullMode>& value)
 	}
 }
 
-void DrawElementListBuilder::setDepthTestEnabled(const Optional<bool>& value)
+void DrawElementListBuilder::setDepthTestEnabled(const Optional_deprecated<bool>& value)
 {
 	if (primaryGeometryStageParameters().m_depthTestEnabled != value) {
 		primaryGeometryStageParameters().m_depthTestEnabled = value;
@@ -114,7 +114,7 @@ void DrawElementListBuilder::setDepthTestEnabled(const Optional<bool>& value)
 	}
 }
 
-void DrawElementListBuilder::setDepthWriteEnabled(const Optional<bool>& value)
+void DrawElementListBuilder::setDepthWriteEnabled(const Optional_deprecated<bool>& value)
 {
 	if (primaryGeometryStageParameters().m_depthWriteEnabled != value) {
 		primaryGeometryStageParameters().m_depthWriteEnabled = value;
@@ -130,7 +130,7 @@ void DrawElementListBuilder::setPrimitiveTopology(PrimitiveTopology value)
 	}
 }
 
-void DrawElementListBuilder::setShadingModel(const Optional<ShadingModel>& value)
+void DrawElementListBuilder::setShadingModel(const Optional_deprecated<ShadingModel>& value)
 {
 	if (primaryGeometryStageParameters().shadingModel != value) {
 		primaryGeometryStageParameters().shadingModel = value;
@@ -160,7 +160,7 @@ void DrawElementListBuilder::setTransfrom(const Matrix & value)
     primaryState()->transform = value;
 }
 
-void DrawElementListBuilder::setBaseTransfrom(const Optional<Matrix>& value)
+void DrawElementListBuilder::setBaseTransfrom(const Optional_deprecated<Matrix>& value)
 {
     primaryState()->baseTransform = value;
 }
@@ -226,7 +226,7 @@ void DrawElementListBuilder::setTone(const ColorTone& value)
 	}
 }
 
-void DrawElementListBuilder::setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value)
+void DrawElementListBuilder::setBaseBuiltinEffectData(const Optional_deprecated<BuiltinEffectData>& value)
 {
     bool modify = false;
     if (primaryState()->baseBuiltinEffectData.hasValue() != value.hasValue()) {

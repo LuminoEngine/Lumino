@@ -44,8 +44,8 @@ public:
     // "asset://local/dir/file.txt"    => Unix 形式の絶対パス。 ファイルシステム上のファイルを指す。
     // "asset:///dir/file.txt"         => ローカルファイルパス。登録されているいずれかの AssetArchive 内のファイルを指す。
     // TODO: "asset://ArchiveName/" とかで AssetArchive を明示できるようにしてもいい気がする
-    Optional<AssetPath> findAssetPath(const StringView& filePath, const Char* const* exts, int extsCount) const;
-    Optional<AssetPath> findAssetPath(const StringView& filePath) const;
+    Optional_deprecated<AssetPath> findAssetPath(const StringView& filePath, const Char* const* exts, int extsCount) const;
+    Optional_deprecated<AssetPath> findAssetPath(const StringView& filePath) const;
     bool existsAsset(const AssetPath& assetPath) const;
     Ref<Stream> openStreamFromAssetPath(const AssetPath& assetPath) const;
     AssetPath resolveAssetPath(const AssetPath& assetPath, const Char** exts, int extsCount) const;

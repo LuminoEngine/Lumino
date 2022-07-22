@@ -133,13 +133,13 @@ bool UIListBoxItem::init(UIElement* content)
 	return true;
 }
 
-void UIListBoxItem::bind(ObservablePropertyBase* prop)
-{
-	auto textblock = makeObject<UIText>();
-	auto viewProp = textblock->getViewProperty(_TT("text"));
-	viewProp->bind(prop);
-	addChild(textblock);
-}
+//void UIListBoxItem::bind(ObservablePropertyBase* prop)
+//{
+//	auto textblock = makeObject<UIText>();
+//	auto viewProp = textblock->getViewProperty(_TT("text"));
+//	viewProp->bind(prop);
+//	addChild(textblock);
+//}
 
 //==============================================================================
 // UIListBox::BuilderDetails

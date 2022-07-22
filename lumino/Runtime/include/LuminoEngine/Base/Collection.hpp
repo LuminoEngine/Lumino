@@ -1,7 +1,6 @@
-﻿
-#pragma once
+﻿#pragma once
+#include <LuminoCore/Runtime/Variant.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
-#include "Variant.hpp"
 
 namespace ln {
 class Variant;
@@ -294,7 +293,7 @@ public:
 
 	/** 指定した条件と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
 	template<typename TPred>
-	Optional<T> findIf(TPred pred) const
+	Optional_deprecated<T> findIf(TPred pred) const
 	{
 		auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
 		if (itr != end()) {
@@ -413,7 +412,7 @@ protected:
 		return m_newItemCache;
 	}
 
-	void serialize(Serializer2& ar) override
+	void serialize_deprecated(Serializer2_deprecated& ar) override
 	{
 		if (ar.isSaving()) {
 			ar.beginWriteList();

@@ -14,7 +14,7 @@ public:
     String m_code;
     List<String> m_params;
 
-    void serialize(Serializer2& ar) override {
+    void serialize_deprecated(Serializer2_deprecated& ar) override {
         ar& makeNVP(_TT("code"), m_code);
         ar& makeNVP(_TT("params"), m_params);
     }
@@ -48,7 +48,7 @@ public:
         commands.add(cmd);
     }
 
-    void serialize(Serializer2& ar) override {
+    void serialize_deprecated(Serializer2_deprecated& ar) override {
         ar& makeNVP(_TT("commands"), commands);
     }
 
@@ -168,38 +168,5 @@ private:
     int m_waitCount;
     std::unordered_map<String, Ref<InterpreterCommandDelegate>> m_commandDelegateMap;
 };
-
-//struct TkMVSoundData
-//{
-//	String		name;
-//	int				pitch;
-//	int				volume;
-//
-//	void serialize(tr::Archive& ar, int version)
-//	{
-//		ar & LN_NVP(name);
-//		ar & LN_NVP(pitch);
-//		ar & LN_NVP(volume);
-//	}
-//};
-//
-//struct TkMVMapData
-//{
-//	bool			autoplayBgm;
-//	bool			autoplayBgs;
-//	TkMVSoundData	bgm;
-//	TkMVSoundData	bgs;
-//	String		displayName;
-//
-//	void serialize(tr::Archive& ar, int version)
-//	{
-//		ar & LN_NVP(autoplayBgm);
-//		ar & LN_NVP(autoplayBgs);
-//		ar & LN_NVP(bgm);
-//		ar & LN_NVP(bgs);
-//		ar & LN_NVP(displayName);
-//	}
-//};
-//
 
 } // namespace ln

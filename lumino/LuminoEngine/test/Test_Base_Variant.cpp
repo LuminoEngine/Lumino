@@ -110,10 +110,10 @@ TEST_F(Test_Base_Variant, SetAndGet)
     }
     //* [ ] List
     {
-        auto ref = makeRef<List<Ref<Variant>>>();
-        ref->add(makeVariant(1));
+        auto ref = Array<Ref<Variant>>();
+        ref.push(makeVariant(1));
 		Ref<Variant> var = makeVariant(ref);
-        ASSERT_EQ(VariantType::List, var->type());
+        ASSERT_EQ(VariantType::Array, var->type());
         ASSERT_EQ(1, var->list().size());
     }
 }

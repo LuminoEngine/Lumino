@@ -2,7 +2,6 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Base/Task.hpp>
-#include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
@@ -164,7 +163,7 @@ void EngineManager::init(const EngineSettings& settings) {
 
     // register types
     {
-        auto* context = EngineContext2::instance();
+        auto* context = RuntimeContext::current();
         context->registerType<Application>();
     }
 

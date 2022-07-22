@@ -46,19 +46,19 @@ public:
     // (特に、ヒットエフェクトのための BlendColor や、エディタでの両面表示設定など、Material 自体のパラメータを変更したくない場合)
 
     /** BlendMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
-    void setBlendMode(Optional<BlendMode> value);
+    void setBlendMode(Optional_deprecated<BlendMode> value);
 
     /** ShadingModel を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
-    void setShadingModel(Optional<ShadingModel> value);
+    void setShadingModel(Optional_deprecated<ShadingModel> value);
 
     /** CullMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
-    void setCullingMode(Optional<CullMode> value);
+    void setCullingMode(Optional_deprecated<CullMode> value);
 
     /** 深度テストの有無を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
-    void setDepthTestEnabled(Optional<bool> value);
+    void setDepthTestEnabled(Optional_deprecated<bool> value);
 
     /** 深度書き込みの有無を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
-    void setDepthWriteEnabled(Optional<bool> value);
+    void setDepthWriteEnabled(Optional_deprecated<bool> value);
 
     /** @} */
 
@@ -168,10 +168,10 @@ public:
     const URef<kanata::BatchCollector>& batchCollector() const { return m_batchCollector; }
 
     const RenderViewPoint* viewPoint() const;
-    void setBaseTransfrom(const Optional<Matrix>& value);
+    void setBaseTransfrom(const Optional_deprecated<Matrix>& value);
     const Matrix& baseTransform() const;
     void setRenderPriority(int value);
-    void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
+    void setBaseBuiltinEffectData(const Optional_deprecated<detail::BuiltinEffectData>& value);
     void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
     void setObjectId(int value);
 

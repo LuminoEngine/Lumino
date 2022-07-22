@@ -107,6 +107,10 @@ void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int 
 
 void ShaderDescriptor::reset(ShaderPass* shaderPass) {
     m_shaderPass = shaderPass;
+    m_uniformBufferViews = {};
+    m_textures = {};
+    m_samplers = {};
+    m_storages = {};
 }
 
 void ShaderDescriptor::submit(GraphicsCommandList* commandList) {

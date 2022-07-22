@@ -10,8 +10,7 @@ namespace ln {
 template<
 	typename TValue,
 	typename std::enable_if<!detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
-void serialize(Archive& ar, Ref<TValue>& value)
-{
+void serialize(Archive_deprecated& ar, Ref<TValue>& value) {
     bool isNull = (value == nullptr);
 	ar.makeSmartPtrTag(&isNull);
 
@@ -32,8 +31,7 @@ void serialize(Archive& ar, Ref<TValue>& value)
 }
 
 template<typename TValue>
-void serialize(Archive& ar, List<TValue>& value)
-{
+void serialize(Archive_deprecated& ar, List<TValue>& value) {
 	int size = 0;
 	ar.makeArrayTag(&size);
 
@@ -49,7 +47,7 @@ void serialize(Archive& ar, List<TValue>& value)
 }
 
 template<typename TValue>
-void serialize(Archive& ar, Array<TValue>& value) {
+void serialize(Archive_deprecated& ar, Array<TValue>& value) {
     int size = 0;
     ar.makeArrayTag(&size);
 
@@ -62,8 +60,7 @@ void serialize(Archive& ar, Array<TValue>& value) {
     }
 }
 
-inline void serialize(Archive& ar, Path& value)
-{
+inline void serialize(Archive_deprecated& ar, Path& value) {
 	if (ar.isSaving())
 	{
 		String str = value.str();
@@ -77,8 +74,7 @@ inline void serialize(Archive& ar, Path& value)
 	}
 }
 
-inline void serialize(Archive& ar, Uuid& value)
-{
+inline void serialize(Archive_deprecated& ar, Uuid& value) {
 	if (ar.isSaving())
 	{
 		String str = value.toString();
@@ -93,8 +89,7 @@ inline void serialize(Archive& ar, Uuid& value)
 }
 
 template<typename TValue>
-void serialize(Archive& ar, Optional<TValue>& value)
-{
+void serialize(Archive_deprecated& ar, Optional_deprecated<TValue>& value) {
 	bool hasValue = value.hasValue();
 	ar.makeOptionalTag(&hasValue);
 
@@ -116,8 +111,7 @@ void serialize(Archive& ar, Optional<TValue>& value)
 }
 
 template<typename TKey, typename TValue>
-void serialize(Archive& ar, std::unordered_map<TKey, TValue>& value)
-{
+void serialize(Archive_deprecated& ar, std::unordered_map<TKey, TValue>& value) {
 	int size = static_cast<int>(value.size());
 	ar.makeMapTag(&size);
 	if (ar.isSaving()) {

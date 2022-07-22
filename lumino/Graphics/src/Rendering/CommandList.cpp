@@ -77,27 +77,27 @@ void CommandList::setTransfrom(const Matrix& value) {
     m_batchProxyCollector->primaryState()->setTransform(value);
 }
 
-void CommandList::setBlendMode(Optional<BlendMode> value) {
+void CommandList::setBlendMode(Optional_deprecated<BlendMode> value) {
     m_builder->setBlendMode(value);
     m_batchProxyCollector->primaryState()->setBlendMode(value);
 }
 
-void CommandList::setShadingModel(Optional<ShadingModel> value) {
+void CommandList::setShadingModel(Optional_deprecated<ShadingModel> value) {
     m_builder->setShadingModel(value);
     m_batchProxyCollector->primaryState()->setShadingModel(value);
 }
 
-void CommandList::setCullingMode(Optional<CullMode> value) {
+void CommandList::setCullingMode(Optional_deprecated<CullMode> value) {
     m_builder->setCullingMode(value);
     m_batchProxyCollector->primaryState()->setCullingMode(value);
 }
 
-void CommandList::setDepthTestEnabled(Optional<bool> value) {
+void CommandList::setDepthTestEnabled(Optional_deprecated<bool> value) {
     m_builder->setDepthTestEnabled(value);
     m_batchProxyCollector->primaryState()->setDepthTestEnabled(value);
 }
 
-void CommandList::setDepthWriteEnabled(Optional<bool> value) {
+void CommandList::setDepthWriteEnabled(Optional_deprecated<bool> value) {
     m_builder->setDepthWriteEnabled(value);
     m_batchProxyCollector->primaryState()->setDepthWriteEnabled(value);
 }
@@ -1012,7 +1012,7 @@ const RenderViewPoint* CommandList::viewPoint() const {
     return m_builder->viewPoint();
 }
 
-void CommandList::setBaseTransfrom(const Optional<Matrix>& value) {
+void CommandList::setBaseTransfrom(const Optional_deprecated<Matrix>& value) {
     m_builder->setBaseTransfrom(value);
     m_batchProxyCollector->primaryState()->setBaseTransform(value);
 }
@@ -1025,7 +1025,7 @@ void CommandList::setRenderPriority(int value) {
     m_builder->setRenderPriority(value);
 }
 
-void CommandList::setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value) {
+void CommandList::setBaseBuiltinEffectData(const Optional_deprecated<detail::BuiltinEffectData>& value) {
     m_builder->setBaseBuiltinEffectData(value);
     m_batchProxyCollector->primaryState()->setBuiltinEffectData(value);
 }

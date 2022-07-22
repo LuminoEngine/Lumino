@@ -7,19 +7,19 @@ namespace ln {
 namespace kanata {
 
 struct BatchProxyState {
-    Optional<Matrix> baseTransform;
+    Optional_deprecated<Matrix> baseTransform;
     Matrix transform;
     int32_t renderPriority;
     int32_t objectId;
 
     // TODO: 以下は廃止したい。旧 SceneRenderer との互換性のために残してある。 SceneRenderer レベルまで継承を重ねる意味があまりない。
     // SceneNode 側の Material の継承機能を強化したいところ。
-    Optional<BlendMode> m_blendMode;
-    Optional<CullMode> m_cullingMode;
-    Optional<bool> m_depthTestEnabled;
-    Optional<bool> m_depthWriteEnabled;
-    Optional<ShadingModel> shadingModel;
-    Optional<detail::BuiltinEffectData> builtinEffectData;
+    Optional_deprecated<BlendMode> m_blendMode;
+    Optional_deprecated<CullMode> m_cullingMode;
+    Optional_deprecated<bool> m_depthTestEnabled;
+    Optional_deprecated<bool> m_depthWriteEnabled;
+    Optional_deprecated<ShadingModel> shadingModel;
+    Optional_deprecated<detail::BuiltinEffectData> builtinEffectData;
 
     void reset();
     void copyFrom(const BatchProxyState* other);
@@ -33,7 +33,7 @@ public:
     bool m_dirty;
     //bool m_freezed;
 
-    void setBaseTransform(const Optional<Matrix>& value) {
+    void setBaseTransform(const Optional_deprecated<Matrix>& value) {
         if (!s.baseTransform.equals(value)) {
             s.baseTransform = value;
             m_dirty = true;
@@ -61,42 +61,42 @@ public:
         }
     }
 
-    void setBlendMode(const Optional<BlendMode>& value) {
+    void setBlendMode(const Optional_deprecated<BlendMode>& value) {
         if (!s.m_blendMode.equals(value)) {
             s.m_blendMode = value;
             m_dirty = true;
         }
     }
 
-    void setCullingMode(const Optional<CullMode>& value) {
+    void setCullingMode(const Optional_deprecated<CullMode>& value) {
         if (!s.m_cullingMode.equals(value)) {
             s.m_cullingMode = value;
             m_dirty = true;
         }
     }
 
-    void setDepthTestEnabled(const Optional<bool>& value) {
+    void setDepthTestEnabled(const Optional_deprecated<bool>& value) {
         if (!s.m_depthTestEnabled.equals(value)) {
             s.m_depthTestEnabled = value;
             m_dirty = true;
         }
     }
 
-    void setDepthWriteEnabled(const Optional<bool>& value) {
+    void setDepthWriteEnabled(const Optional_deprecated<bool>& value) {
         if (!s.m_depthWriteEnabled.equals(value)) {
             s.m_depthWriteEnabled = value;
             m_dirty = true;
         }
     }
 
-    void setShadingModel(const Optional<ShadingModel>& value) {
+    void setShadingModel(const Optional_deprecated<ShadingModel>& value) {
         if (!s.shadingModel.equals(value)) {
             s.shadingModel = value;
             m_dirty = true;
         }
     }
 
-    void setBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value) {
+    void setBuiltinEffectData(const Optional_deprecated<detail::BuiltinEffectData>& value) {
         if (!s.builtinEffectData.equals(value)) {
             s.builtinEffectData = value;
             m_dirty = true;

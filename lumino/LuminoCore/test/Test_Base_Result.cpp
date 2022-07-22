@@ -99,6 +99,8 @@ TEST_F(Test_Base_Result, Basic) {
     ASSERT_EQ(true, r3.isOk());
     ASSERT_EQ(false, r3.isErr());
     ASSERT_EQ("aaa", r3.unwrap());
+
+	LN_LOG_WARNING(r3);
 }
 
 TEST_F(Test_Base_Result, VoidOk) {

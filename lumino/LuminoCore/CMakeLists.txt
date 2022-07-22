@@ -9,12 +9,15 @@ include(cmake/LuminoConfig-LuminoCore.cmake)
 include(LuminoCoreSources.cmake)
 
 file(GLOB LN_LOCAL_SOURCES_Geometries include/LuminoCore/Geometries/*.hpp src/Geometries/*.cpp src/Geometries/*.hpp)
+file(GLOB LN_LOCAL_SOURCES_Runtime include/LuminoCore/Runtime/*.hpp src/Runtime/*.cpp src/Runtime/*.hpp)
 
 source_group("Geometries" FILES ${LN_LOCAL_SOURCES_Geometries})
+source_group("Runtime" FILES ${LN_LOCAL_SOURCES_Runtime})
 
 set(LN_SOURCES
     ${LN_SOURCES_LuminoCore}
     ${LN_LOCAL_SOURCES_Geometries}
+    ${LN_LOCAL_SOURCES_Runtime}
     src/LuminoCore.PCH.cpp
     src/LuminoCore.PCH.h)
 

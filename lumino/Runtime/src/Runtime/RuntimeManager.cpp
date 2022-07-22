@@ -1,5 +1,5 @@
-﻿#include <LuminoEngine/Reflection/Object.hpp>
-#include <LuminoEngine/Reflection/TypeInfo.hpp>
+﻿#include <LuminoCore/Runtime/Object.hpp>
+#include <LuminoCore/Runtime/TypeInfo.hpp>
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 
@@ -102,8 +102,8 @@ bool RuntimeManager::init(const Settings& settings) {
     //	static_cast<RuntimeManager*>(context->runtimeManager)->onReleasedObject(obj);
     // };
     //EngineContext2::initialize();
-    assert(!EngineContext2::instance()->objectEventListener);
-    EngineContext2::instance()->objectEventListener = this;
+    assert(!RuntimeContext::current()->objectEventListener);
+    RuntimeContext::current()->objectEventListener = this;
 
 
     LN_LOG_DEBUG("RuntimeManager Initialization finished.");
@@ -113,7 +113,7 @@ bool RuntimeManager::init(const Settings& settings) {
 void RuntimeManager::dispose() {
     LN_LOG_DEBUG("RuntimeManager finalization started.");
 
-    EngineContext2::instance()->objectEventListener = nullptr;
+    RuntimeContext::current()->objectEventListener = nullptr;
 
     for (auto& e : m_objectEntryList) {
         if (e.object) {

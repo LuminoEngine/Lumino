@@ -232,22 +232,22 @@ void Material::setBufferData(const StringView& uniformBufferName, const void* da
     buffer->assign(data, size);
 }
 
-void Material::setBlendMode(Optional<BlendMode> mode)
+void Material::setBlendMode(Optional_deprecated<BlendMode> mode)
 {
     blendMode = mode;
 }
 
-void Material::setCullingMode(Optional<CullMode> mode)
+void Material::setCullingMode(Optional_deprecated<CullMode> mode)
 {
     cullingMode = mode;
 }
 
-void Material::setDepthTestEnabled(Optional<bool> enabled)
+void Material::setDepthTestEnabled(Optional_deprecated<bool> enabled)
 {
     depthTestEnabled = enabled;
 }
 
-void Material::setDepthWriteEnabled(Optional<bool> enabled)
+void Material::setDepthWriteEnabled(Optional_deprecated<bool> enabled)
 {
     depthWriteEnabled = enabled;
 }
@@ -422,16 +422,9 @@ void Material::updateShaderVariables2(GraphicsCommandList* commandList, ShaderDe
     }
 }
 
-//void Material::serialize(Archive& ar)
-//{
-//    Material::serialize(ar);
-//    ar & makeNVP(u"mainTexture", m_mainTexture);
-//}
-//
-
-void Material::serialize(Serializer2& ar)
+void Material::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    Object::serialize(ar);
+    Object::serialize_deprecated(ar);
     LN_NOTIMPLEMENTED();
 
     //// TODO: ↓Assets辺りに関数化

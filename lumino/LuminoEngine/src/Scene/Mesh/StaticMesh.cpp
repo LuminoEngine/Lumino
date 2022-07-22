@@ -76,9 +76,9 @@ void StaticMesh::makeCollisionBody(StringView meshContainerName)
     m_component->makeCollisionBody(meshContainerName);
 }
 
-void StaticMesh::serialize(Serializer2& ar)
+void StaticMesh::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    VisualObject::serialize(ar);
+    VisualObject::serialize_deprecated(ar);
 
     
 

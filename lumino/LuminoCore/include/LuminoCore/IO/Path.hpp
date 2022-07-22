@@ -336,6 +336,11 @@ inline std::u32string_view toStdStringView(const Path& v) {
     return std::u32string_view(v.str().c_str(), v.str().length());
 }
 
+template<>
+inline String toString<Path>(const Path& value) {
+    return value.str();
+}
+
 } // namespace ln
 
 namespace fmt {

@@ -65,11 +65,11 @@ class GeometryStageParameters
 public:
     // まだ確定状態となるわけではないので Optional が含まれることもある。
     Ref<Material> m_material; // setMaterial() で指定されたマテリアル
-    Optional<BlendMode> m_blendMode;
-    Optional<CullMode> m_cullingMode;
-    Optional<bool> m_depthTestEnabled;
-    Optional<bool> m_depthWriteEnabled;
-    Optional<ShadingModel> shadingModel;
+    Optional_deprecated<BlendMode> m_blendMode;
+    Optional_deprecated<CullMode> m_cullingMode;
+    Optional_deprecated<bool> m_depthTestEnabled;
+    Optional_deprecated<bool> m_depthWriteEnabled;
+    Optional_deprecated<ShadingModel> shadingModel;
     PrimitiveTopology primitiveTopology;
     //int m_objectId = 0;
 

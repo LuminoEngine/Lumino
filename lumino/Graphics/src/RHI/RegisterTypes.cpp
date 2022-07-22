@@ -4,7 +4,7 @@
 
 namespace ln {
 
-void registerTypes_Graphics(EngineContext2* context) {
+void registerTypes_Graphics(RuntimeContext* context) {
 #include "RegisterTypes.inl"
 }
 

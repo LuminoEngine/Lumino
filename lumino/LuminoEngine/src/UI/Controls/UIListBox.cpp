@@ -328,32 +328,32 @@ UIListBoxItem* UIListBox::addItem(UIElement* content)
 	}
 }
 
-void UIListBox::bind(ObservablePropertyBase* prop)
-{
-	if (prop->type()->typeClass() == TypeInfoClass::Object) {
-		auto obj = prop->getValue()->getObject<Object>();
-		if (auto collection = dynamic_pointer_cast<CollectionObject>(obj)) {	// TODO: TypeInfo で Collection かどうか調べたいところ
-			int count = collection->getItemCount();
-			for (int i = 0; i < count; i++) {
-				auto item = ln::makeObject<UIListBoxItem>();
-				auto data = collection->getItemAsVariant(i);
-				if (auto dataObj = data->getAsObject<Object>()) {
-					if (detail::ObjectHelper::isObservableProperty(dataObj)) {
-						item->bind(static_pointer_cast<ObservablePropertyBase>(dataObj));
-					}
-					else {
-						LN_NOTIMPLEMENTED();
-					}
-				}
-				else {
-					LN_NOTIMPLEMENTED();
-				}
-				
-				addListItem(item);
-			}
-		}
-	}
-}
+//void UIListBox::bind(ObservablePropertyBase* prop)
+//{
+//	if (prop->type()->typeClass() == TypeInfoClass::Object) {
+//		auto obj = prop->getValue()->getObject<Object>();
+//		if (auto collection = dynamic_pointer_cast<CollectionObject>(obj)) {	// TODO: TypeInfo で Collection かどうか調べたいところ
+//			int count = collection->getItemCount();
+//			for (int i = 0; i < count; i++) {
+//				auto item = ln::makeObject<UIListBoxItem>();
+//				auto data = collection->getItemAsVariant(i);
+//				if (auto dataObj = data->getAsObject<Object>()) {
+//					if (detail::ObjectHelper::isObservableProperty(dataObj)) {
+//						item->bind(static_pointer_cast<ObservablePropertyBase>(dataObj));
+//					}
+//					else {
+//						LN_NOTIMPLEMENTED();
+//					}
+//				}
+//				else {
+//					LN_NOTIMPLEMENTED();
+//				}
+//				
+//				addListItem(item);
+//			}
+//		}
+//	}
+//}
 
 void UIListBox::onAddChild(UIElement* child)
 {

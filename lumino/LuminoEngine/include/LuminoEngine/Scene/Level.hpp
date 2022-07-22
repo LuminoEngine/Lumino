@@ -22,20 +22,20 @@ class LevelRenderParameters
 	: public Object
 {
 public:
-	void serialize(Serializer2& ar) override;
+	void serialize_deprecated(Serializer2_deprecated& ar) override;
 	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
 
-	Optional<float> m_fogStartDistance;
-	Optional<Color> m_fogColor;
-	Optional<float> m_fogDensity;
-	Optional<float> m_fogHeightDensity;
-	Optional<float> m_fogLowerHeight;
-	Optional<float> m_fogUpperHeight;
+	Optional_deprecated<float> m_fogStartDistance;
+	Optional_deprecated<Color> m_fogColor;
+	Optional_deprecated<float> m_fogDensity;
+	Optional_deprecated<float> m_fogHeightDensity;
+	Optional_deprecated<float> m_fogLowerHeight;
+	Optional_deprecated<float> m_fogUpperHeight;
 
-	Optional<Color> m_skydomeSkyColor;
-	Optional<Color> m_skydomeHorizonColor;
-	Optional<Color> m_skydomeCloudColor;
-	Optional<Color> m_skydomeOverlayColor;
+	Optional_deprecated<Color> m_skydomeSkyColor;
+	Optional_deprecated<Color> m_skydomeHorizonColor;
+	Optional_deprecated<Color> m_skydomeCloudColor;
+	Optional_deprecated<Color> m_skydomeOverlayColor;
 };
 
 enum class LevelUpdateMode
@@ -136,7 +136,7 @@ public:	// TODO: Editor integration
 	//void updateObjectsWorldMatrix() const;
 
 protected:
-	void serialize(Serializer2& ar) override;
+	void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 
 LN_CONSTRUCT_ACCESS:

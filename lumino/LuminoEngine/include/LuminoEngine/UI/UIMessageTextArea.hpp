@@ -121,28 +121,28 @@ class RTTextElement
 public:
 
     /** フォントファミリ名を設定します。*/
-    void setFontFamily(const Optional<String>& value) { m_fontFamily = value; }
+    void setFontFamily(const Optional_deprecated<String>& value) { m_fontFamily = value; }
 
     /** フォントファミリ名を取得します。*/
-    const Optional<String>& getFontFamily() const { return m_fontFamily; }
+    const Optional_deprecated<String>& getFontFamily() const { return m_fontFamily; }
 
     /** フォントサイズを設定します。*/
-    void setFontSize(const Optional<float>& value) { m_fontSize = value; }
+    void setFontSize(const Optional_deprecated<float>& value) { m_fontSize = value; }
 
     /** フォントサイズを取得します。*/
-    const Optional<float>& getFontSize() const { return m_fontSize; }
+    const Optional_deprecated<float>& getFontSize() const { return m_fontSize; }
 
     /** フォントの太字有無を設定します。*/
-    void setFontBold(const Optional<UIFontWeight>& value) { m_fontWeight = value; }
+    void setFontBold(const Optional_deprecated<UIFontWeight>& value) { m_fontWeight = value; }
 
     /** フォントの太字有無を取得します。*/
-    const Optional<UIFontWeight>& fontWeight() const { return m_fontWeight; }
+    const Optional_deprecated<UIFontWeight>& fontWeight() const { return m_fontWeight; }
 
     /** フォントのイタリック体有無を設定します。*/
-    void setFontItalic(const Optional<UIFontStyle>& value) { m_fontStyle = value; }
+    void setFontItalic(const Optional_deprecated<UIFontStyle>& value) { m_fontStyle = value; }
 
     /** フォントのイタリック体有無を取得します。*/
-    const Optional<UIFontStyle>& isFontItalic() const { return m_fontStyle; }
+    const Optional_deprecated<UIFontStyle>& isFontItalic() const { return m_fontStyle; }
 
     ///** フォントのアンチエイリアス有無を設定します。*/
     //void setFontAntiAlias(bool value) { m_fontData.isAntiAlias = value; m_fontDataModified = true; }
@@ -169,10 +169,10 @@ protected:
     void setActualSize(const Size& size) { m_actualSize = size; }
 
 private:
-    Optional<String> m_fontFamily;
-    Optional<float> m_fontSize;
-    Optional<UIFontWeight> m_fontWeight;
-    Optional<UIFontStyle> m_fontStyle;
+    Optional_deprecated<String> m_fontFamily;
+    Optional_deprecated<float> m_fontSize;
+    Optional_deprecated<UIFontWeight> m_fontWeight;
+    Optional_deprecated<UIFontStyle> m_fontStyle;
     Ref<Font> m_finalFont;	// TODO: これと、updateFontDescHierarchical での作成処理は Run にだけあればいいので、派生側に移動した方がメモリ消費少なくて済む
     Size m_extentSize;
     Size m_actualSize;

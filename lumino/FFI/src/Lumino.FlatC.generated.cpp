@@ -6,7 +6,7 @@
 //#include "BindingValidation.hpp"
 
 // Auto generated override handler
-using ObjectSerializeHandler = ln::Delegate<void(ln::Object* self, ln::Serializer2* ar)>;
+using ObjectSerializeHandler = ln::Delegate<void(ln::Object* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ObjectSerializeHandler : public ObjectSerializeHandler
 {
@@ -25,7 +25,7 @@ public:
     LNObjectSerializeHandlerCallback m_callback;
 
     LNWS_ObjectSerializeHandler()
-      : ObjectSerializeHandler([this](ln::Object* self, ln::Serializer2* ar) -> void
+      : ObjectSerializeHandler([this](ln::Object* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNObjectSerializeHandlerCallback"); }
@@ -73,7 +73,7 @@ LN_FLAT_API LNResult LNObjectSerializeHandler_Create(LNObjectSerializeHandlerCal
 
 
 // Auto generated override handler
-using EventConnectionSerializeHandler = ln::Delegate<void(ln::EventConnection* self, ln::Serializer2* ar)>;
+using EventConnectionSerializeHandler = ln::Delegate<void(ln::EventConnection* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_EventConnectionSerializeHandler : public EventConnectionSerializeHandler
 {
@@ -92,7 +92,7 @@ public:
     LNEventConnectionSerializeHandlerCallback m_callback;
 
     LNWS_EventConnectionSerializeHandler()
-      : EventConnectionSerializeHandler([this](ln::EventConnection* self, ln::Serializer2* ar) -> void
+      : EventConnectionSerializeHandler([this](ln::EventConnection* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNEventConnectionSerializeHandlerCallback"); }
@@ -140,7 +140,7 @@ LN_FLAT_API LNResult LNEventConnectionSerializeHandler_Create(LNEventConnectionS
 
 
 // Auto generated override handler
-using VariantSerializeHandler = ln::Delegate<void(ln::Variant* self, ln::Serializer2* ar)>;
+using VariantSerializeHandler = ln::Delegate<void(ln::Variant* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_VariantSerializeHandler : public VariantSerializeHandler
 {
@@ -159,7 +159,7 @@ public:
     LNVariantSerializeHandlerCallback m_callback;
 
     LNWS_VariantSerializeHandler()
-      : VariantSerializeHandler([this](ln::Variant* self, ln::Serializer2* ar) -> void
+      : VariantSerializeHandler([this](ln::Variant* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNVariantSerializeHandlerCallback"); }
@@ -207,7 +207,7 @@ LN_FLAT_API LNResult LNVariantSerializeHandler_Create(LNVariantSerializeHandlerC
 
 
 // Auto generated override handler
-using ZVTestClass1SerializeHandler = ln::Delegate<void(ln::ZVTestClass1* self, ln::Serializer2* ar)>;
+using ZVTestClass1SerializeHandler = ln::Delegate<void(ln::ZVTestClass1* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ZVTestClass1SerializeHandler : public ZVTestClass1SerializeHandler
 {
@@ -226,7 +226,7 @@ public:
     LNZVTestClass1SerializeHandlerCallback m_callback;
 
     LNWS_ZVTestClass1SerializeHandler()
-      : ZVTestClass1SerializeHandler([this](ln::ZVTestClass1* self, ln::Serializer2* ar) -> void
+      : ZVTestClass1SerializeHandler([this](ln::ZVTestClass1* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNZVTestClass1SerializeHandlerCallback"); }
@@ -274,7 +274,7 @@ LN_FLAT_API LNResult LNZVTestClass1SerializeHandler_Create(LNZVTestClass1Seriali
 
 
 // Auto generated override handler
-using ZVTestEventArgs1SerializeHandler = ln::Delegate<void(ln::ZVTestEventArgs1* self, ln::Serializer2* ar)>;
+using ZVTestEventArgs1SerializeHandler = ln::Delegate<void(ln::ZVTestEventArgs1* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ZVTestEventArgs1SerializeHandler : public ZVTestEventArgs1SerializeHandler
 {
@@ -293,7 +293,7 @@ public:
     LNZVTestEventArgs1SerializeHandlerCallback m_callback;
 
     LNWS_ZVTestEventArgs1SerializeHandler()
-      : ZVTestEventArgs1SerializeHandler([this](ln::ZVTestEventArgs1* self, ln::Serializer2* ar) -> void
+      : ZVTestEventArgs1SerializeHandler([this](ln::ZVTestEventArgs1* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNZVTestEventArgs1SerializeHandlerCallback"); }
@@ -341,7 +341,7 @@ LN_FLAT_API LNResult LNZVTestEventArgs1SerializeHandler_Create(LNZVTestEventArgs
 
 
 // Auto generated override handler
-using Serializer2SerializeHandler = ln::Delegate<void(ln::Serializer2* self, ln::Serializer2* ar)>;
+using Serializer2SerializeHandler = ln::Delegate<void(ln::Serializer2_deprecated* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_Serializer2SerializeHandler : public Serializer2SerializeHandler
 {
@@ -360,7 +360,7 @@ public:
     LNSerializer2SerializeHandlerCallback m_callback;
 
     LNWS_Serializer2SerializeHandler()
-      : Serializer2SerializeHandler([this](ln::Serializer2* self, ln::Serializer2* ar) -> void
+      : Serializer2SerializeHandler([this](ln::Serializer2_deprecated* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNSerializer2SerializeHandlerCallback"); }
@@ -408,7 +408,7 @@ LN_FLAT_API LNResult LNSerializer2SerializeHandler_Create(LNSerializer2Serialize
 
 
 // Auto generated override handler
-using AssetObjectSerializeHandler = ln::Delegate<void(ln::AssetObject* self, ln::Serializer2* ar)>;
+using AssetObjectSerializeHandler = ln::Delegate<void(ln::AssetObject* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_AssetObjectSerializeHandler : public AssetObjectSerializeHandler
 {
@@ -427,7 +427,7 @@ public:
     LNAssetObjectSerializeHandlerCallback m_callback;
 
     LNWS_AssetObjectSerializeHandler()
-      : AssetObjectSerializeHandler([this](ln::AssetObject* self, ln::Serializer2* ar) -> void
+      : AssetObjectSerializeHandler([this](ln::AssetObject* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNAssetObjectSerializeHandlerCallback"); }
@@ -475,7 +475,7 @@ LN_FLAT_API LNResult LNAssetObjectSerializeHandler_Create(LNAssetObjectSerialize
 
 
 // Auto generated override handler
-using AssetImportSettingsSerializeHandler = ln::Delegate<void(ln::AssetImportSettings* self, ln::Serializer2* ar)>;
+using AssetImportSettingsSerializeHandler = ln::Delegate<void(ln::AssetImportSettings* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_AssetImportSettingsSerializeHandler : public AssetImportSettingsSerializeHandler
 {
@@ -494,7 +494,7 @@ public:
     LNAssetImportSettingsSerializeHandlerCallback m_callback;
 
     LNWS_AssetImportSettingsSerializeHandler()
-      : AssetImportSettingsSerializeHandler([this](ln::AssetImportSettings* self, ln::Serializer2* ar) -> void
+      : AssetImportSettingsSerializeHandler([this](ln::AssetImportSettings* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNAssetImportSettingsSerializeHandlerCallback"); }
@@ -542,7 +542,7 @@ LN_FLAT_API LNResult LNAssetImportSettingsSerializeHandler_Create(LNAssetImportS
 
 
 // Auto generated override handler
-using AssetModelSerializeHandler = ln::Delegate<void(ln::AssetModel* self, ln::Serializer2* ar)>;
+using AssetModelSerializeHandler = ln::Delegate<void(ln::AssetModel* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_AssetModelSerializeHandler : public AssetModelSerializeHandler
 {
@@ -561,7 +561,7 @@ public:
     LNAssetModelSerializeHandlerCallback m_callback;
 
     LNWS_AssetModelSerializeHandler()
-      : AssetModelSerializeHandler([this](ln::AssetModel* self, ln::Serializer2* ar) -> void
+      : AssetModelSerializeHandler([this](ln::AssetModel* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNAssetModelSerializeHandlerCallback"); }
@@ -609,7 +609,7 @@ LN_FLAT_API LNResult LNAssetModelSerializeHandler_Create(LNAssetModelSerializeHa
 
 
 // Auto generated override handler
-using TextureSerializeHandler = ln::Delegate<void(ln::Texture* self, ln::Serializer2* ar)>;
+using TextureSerializeHandler = ln::Delegate<void(ln::Texture* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_TextureSerializeHandler : public TextureSerializeHandler
 {
@@ -628,7 +628,7 @@ public:
     LNTextureSerializeHandlerCallback m_callback;
 
     LNWS_TextureSerializeHandler()
-      : TextureSerializeHandler([this](ln::Texture* self, ln::Serializer2* ar) -> void
+      : TextureSerializeHandler([this](ln::Texture* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNTextureSerializeHandlerCallback"); }
@@ -676,7 +676,7 @@ LN_FLAT_API LNResult LNTextureSerializeHandler_Create(LNTextureSerializeHandlerC
 
 
 // Auto generated override handler
-using Texture2DSerializeHandler = ln::Delegate<void(ln::Texture2D* self, ln::Serializer2* ar)>;
+using Texture2DSerializeHandler = ln::Delegate<void(ln::Texture2D* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_Texture2DSerializeHandler : public Texture2DSerializeHandler
 {
@@ -695,7 +695,7 @@ public:
     LNTexture2DSerializeHandlerCallback m_callback;
 
     LNWS_Texture2DSerializeHandler()
-      : Texture2DSerializeHandler([this](ln::Texture2D* self, ln::Serializer2* ar) -> void
+      : Texture2DSerializeHandler([this](ln::Texture2D* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNTexture2DSerializeHandlerCallback"); }
@@ -743,7 +743,7 @@ LN_FLAT_API LNResult LNTexture2DSerializeHandler_Create(LNTexture2DSerializeHand
 
 
 // Auto generated override handler
-using ShaderSerializeHandler = ln::Delegate<void(ln::Shader* self, ln::Serializer2* ar)>;
+using ShaderSerializeHandler = ln::Delegate<void(ln::Shader* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ShaderSerializeHandler : public ShaderSerializeHandler
 {
@@ -762,7 +762,7 @@ public:
     LNShaderSerializeHandlerCallback m_callback;
 
     LNWS_ShaderSerializeHandler()
-      : ShaderSerializeHandler([this](ln::Shader* self, ln::Serializer2* ar) -> void
+      : ShaderSerializeHandler([this](ln::Shader* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNShaderSerializeHandlerCallback"); }
@@ -810,7 +810,7 @@ LN_FLAT_API LNResult LNShaderSerializeHandler_Create(LNShaderSerializeHandlerCal
 
 
 // Auto generated override handler
-using SoundSerializeHandler = ln::Delegate<void(ln::Sound* self, ln::Serializer2* ar)>;
+using SoundSerializeHandler = ln::Delegate<void(ln::Sound* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_SoundSerializeHandler : public SoundSerializeHandler
 {
@@ -829,7 +829,7 @@ public:
     LNSoundSerializeHandlerCallback m_callback;
 
     LNWS_SoundSerializeHandler()
-      : SoundSerializeHandler([this](ln::Sound* self, ln::Serializer2* ar) -> void
+      : SoundSerializeHandler([this](ln::Sound* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNSoundSerializeHandlerCallback"); }
@@ -877,7 +877,7 @@ LN_FLAT_API LNResult LNSoundSerializeHandler_Create(LNSoundSerializeHandlerCallb
 
 
 // Auto generated override handler
-using RenderViewSerializeHandler = ln::Delegate<void(ln::RenderView* self, ln::Serializer2* ar)>;
+using RenderViewSerializeHandler = ln::Delegate<void(ln::RenderView* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_RenderViewSerializeHandler : public RenderViewSerializeHandler
 {
@@ -896,7 +896,7 @@ public:
     LNRenderViewSerializeHandlerCallback m_callback;
 
     LNWS_RenderViewSerializeHandler()
-      : RenderViewSerializeHandler([this](ln::RenderView* self, ln::Serializer2* ar) -> void
+      : RenderViewSerializeHandler([this](ln::RenderView* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNRenderViewSerializeHandlerCallback"); }
@@ -944,7 +944,7 @@ LN_FLAT_API LNResult LNRenderViewSerializeHandler_Create(LNRenderViewSerializeHa
 
 
 // Auto generated override handler
-using MaterialSerializeHandler = ln::Delegate<void(ln::Material* self, ln::Serializer2* ar)>;
+using MaterialSerializeHandler = ln::Delegate<void(ln::Material* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_MaterialSerializeHandler : public MaterialSerializeHandler
 {
@@ -963,7 +963,7 @@ public:
     LNMaterialSerializeHandlerCallback m_callback;
 
     LNWS_MaterialSerializeHandler()
-      : MaterialSerializeHandler([this](ln::Material* self, ln::Serializer2* ar) -> void
+      : MaterialSerializeHandler([this](ln::Material* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNMaterialSerializeHandlerCallback"); }
@@ -1011,7 +1011,7 @@ LN_FLAT_API LNResult LNMaterialSerializeHandler_Create(LNMaterialSerializeHandle
 
 
 // Auto generated override handler
-using MeshNodeSerializeHandler = ln::Delegate<void(ln::MeshNode* self, ln::Serializer2* ar)>;
+using MeshNodeSerializeHandler = ln::Delegate<void(ln::MeshNode* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_MeshNodeSerializeHandler : public MeshNodeSerializeHandler
 {
@@ -1030,7 +1030,7 @@ public:
     LNMeshNodeSerializeHandlerCallback m_callback;
 
     LNWS_MeshNodeSerializeHandler()
-      : MeshNodeSerializeHandler([this](ln::MeshNode* self, ln::Serializer2* ar) -> void
+      : MeshNodeSerializeHandler([this](ln::MeshNode* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNMeshNodeSerializeHandlerCallback"); }
@@ -1078,7 +1078,7 @@ LN_FLAT_API LNResult LNMeshNodeSerializeHandler_Create(LNMeshNodeSerializeHandle
 
 
 // Auto generated override handler
-using AnimationControllerSerializeHandler = ln::Delegate<void(ln::AnimationController* self, ln::Serializer2* ar)>;
+using AnimationControllerSerializeHandler = ln::Delegate<void(ln::AnimationController* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_AnimationControllerSerializeHandler : public AnimationControllerSerializeHandler
 {
@@ -1097,7 +1097,7 @@ public:
     LNAnimationControllerSerializeHandlerCallback m_callback;
 
     LNWS_AnimationControllerSerializeHandler()
-      : AnimationControllerSerializeHandler([this](ln::AnimationController* self, ln::Serializer2* ar) -> void
+      : AnimationControllerSerializeHandler([this](ln::AnimationController* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNAnimationControllerSerializeHandlerCallback"); }
@@ -1145,7 +1145,7 @@ LN_FLAT_API LNResult LNAnimationControllerSerializeHandler_Create(LNAnimationCon
 
 
 // Auto generated override handler
-using MeshModelSerializeHandler = ln::Delegate<void(ln::MeshModel* self, ln::Serializer2* ar)>;
+using MeshModelSerializeHandler = ln::Delegate<void(ln::MeshModel* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_MeshModelSerializeHandler : public MeshModelSerializeHandler
 {
@@ -1164,7 +1164,7 @@ public:
     LNMeshModelSerializeHandlerCallback m_callback;
 
     LNWS_MeshModelSerializeHandler()
-      : MeshModelSerializeHandler([this](ln::MeshModel* self, ln::Serializer2* ar) -> void
+      : MeshModelSerializeHandler([this](ln::MeshModel* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNMeshModelSerializeHandlerCallback"); }
@@ -1212,7 +1212,7 @@ LN_FLAT_API LNResult LNMeshModelSerializeHandler_Create(LNMeshModelSerializeHand
 
 
 // Auto generated override handler
-using MeshImportSettingsSerializeHandler = ln::Delegate<void(ln::MeshImportSettings* self, ln::Serializer2* ar)>;
+using MeshImportSettingsSerializeHandler = ln::Delegate<void(ln::MeshImportSettings* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_MeshImportSettingsSerializeHandler : public MeshImportSettingsSerializeHandler
 {
@@ -1231,7 +1231,7 @@ public:
     LNMeshImportSettingsSerializeHandlerCallback m_callback;
 
     LNWS_MeshImportSettingsSerializeHandler()
-      : MeshImportSettingsSerializeHandler([this](ln::MeshImportSettings* self, ln::Serializer2* ar) -> void
+      : MeshImportSettingsSerializeHandler([this](ln::MeshImportSettings* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNMeshImportSettingsSerializeHandlerCallback"); }
@@ -1279,7 +1279,7 @@ LN_FLAT_API LNResult LNMeshImportSettingsSerializeHandler_Create(LNMeshImportSet
 
 
 // Auto generated override handler
-using SkinnedMeshModelSerializeHandler = ln::Delegate<void(ln::SkinnedMeshModel* self, ln::Serializer2* ar)>;
+using SkinnedMeshModelSerializeHandler = ln::Delegate<void(ln::SkinnedMeshModel* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_SkinnedMeshModelSerializeHandler : public SkinnedMeshModelSerializeHandler
 {
@@ -1298,7 +1298,7 @@ public:
     LNSkinnedMeshModelSerializeHandlerCallback m_callback;
 
     LNWS_SkinnedMeshModelSerializeHandler()
-      : SkinnedMeshModelSerializeHandler([this](ln::SkinnedMeshModel* self, ln::Serializer2* ar) -> void
+      : SkinnedMeshModelSerializeHandler([this](ln::SkinnedMeshModel* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNSkinnedMeshModelSerializeHandlerCallback"); }
@@ -1346,7 +1346,7 @@ LN_FLAT_API LNResult LNSkinnedMeshModelSerializeHandler_Create(LNSkinnedMeshMode
 
 
 // Auto generated override handler
-using CollisionShapeSerializeHandler = ln::Delegate<void(ln::CollisionShape* self, ln::Serializer2* ar)>;
+using CollisionShapeSerializeHandler = ln::Delegate<void(ln::CollisionShape* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_CollisionShapeSerializeHandler : public CollisionShapeSerializeHandler
 {
@@ -1365,7 +1365,7 @@ public:
     LNCollisionShapeSerializeHandlerCallback m_callback;
 
     LNWS_CollisionShapeSerializeHandler()
-      : CollisionShapeSerializeHandler([this](ln::CollisionShape* self, ln::Serializer2* ar) -> void
+      : CollisionShapeSerializeHandler([this](ln::CollisionShape* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNCollisionShapeSerializeHandlerCallback"); }
@@ -1413,7 +1413,7 @@ LN_FLAT_API LNResult LNCollisionShapeSerializeHandler_Create(LNCollisionShapeSer
 
 
 // Auto generated override handler
-using BoxCollisionShapeSerializeHandler = ln::Delegate<void(ln::BoxCollisionShape* self, ln::Serializer2* ar)>;
+using BoxCollisionShapeSerializeHandler = ln::Delegate<void(ln::BoxCollisionShape* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_BoxCollisionShapeSerializeHandler : public BoxCollisionShapeSerializeHandler
 {
@@ -1432,7 +1432,7 @@ public:
     LNBoxCollisionShapeSerializeHandlerCallback m_callback;
 
     LNWS_BoxCollisionShapeSerializeHandler()
-      : BoxCollisionShapeSerializeHandler([this](ln::BoxCollisionShape* self, ln::Serializer2* ar) -> void
+      : BoxCollisionShapeSerializeHandler([this](ln::BoxCollisionShape* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNBoxCollisionShapeSerializeHandlerCallback"); }
@@ -1480,7 +1480,7 @@ LN_FLAT_API LNResult LNBoxCollisionShapeSerializeHandler_Create(LNBoxCollisionSh
 
 
 // Auto generated override handler
-using AnimationCurveSerializeHandler = ln::Delegate<void(ln::AnimationCurve* self, ln::Serializer2* ar)>;
+using AnimationCurveSerializeHandler = ln::Delegate<void(ln::AnimationCurve* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_AnimationCurveSerializeHandler : public AnimationCurveSerializeHandler
 {
@@ -1499,7 +1499,7 @@ public:
     LNAnimationCurveSerializeHandlerCallback m_callback;
 
     LNWS_AnimationCurveSerializeHandler()
-      : AnimationCurveSerializeHandler([this](ln::AnimationCurve* self, ln::Serializer2* ar) -> void
+      : AnimationCurveSerializeHandler([this](ln::AnimationCurve* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNAnimationCurveSerializeHandlerCallback"); }
@@ -1547,7 +1547,7 @@ LN_FLAT_API LNResult LNAnimationCurveSerializeHandler_Create(LNAnimationCurveSer
 
 
 // Auto generated override handler
-using KeyFrameAnimationCurveSerializeHandler = ln::Delegate<void(ln::KeyFrameAnimationCurve* self, ln::Serializer2* ar)>;
+using KeyFrameAnimationCurveSerializeHandler = ln::Delegate<void(ln::KeyFrameAnimationCurve* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_KeyFrameAnimationCurveSerializeHandler : public KeyFrameAnimationCurveSerializeHandler
 {
@@ -1566,7 +1566,7 @@ public:
     LNKeyFrameAnimationCurveSerializeHandlerCallback m_callback;
 
     LNWS_KeyFrameAnimationCurveSerializeHandler()
-      : KeyFrameAnimationCurveSerializeHandler([this](ln::KeyFrameAnimationCurve* self, ln::Serializer2* ar) -> void
+      : KeyFrameAnimationCurveSerializeHandler([this](ln::KeyFrameAnimationCurve* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNKeyFrameAnimationCurveSerializeHandlerCallback"); }
@@ -1614,7 +1614,7 @@ LN_FLAT_API LNResult LNKeyFrameAnimationCurveSerializeHandler_Create(LNKeyFrameA
 
 
 // Auto generated override handler
-using AnimationClipSerializeHandler = ln::Delegate<void(ln::AnimationClip* self, ln::Serializer2* ar)>;
+using AnimationClipSerializeHandler = ln::Delegate<void(ln::AnimationClip* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_AnimationClipSerializeHandler : public AnimationClipSerializeHandler
 {
@@ -1633,7 +1633,7 @@ public:
     LNAnimationClipSerializeHandlerCallback m_callback;
 
     LNWS_AnimationClipSerializeHandler()
-      : AnimationClipSerializeHandler([this](ln::AnimationClip* self, ln::Serializer2* ar) -> void
+      : AnimationClipSerializeHandler([this](ln::AnimationClip* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNAnimationClipSerializeHandlerCallback"); }
@@ -1681,7 +1681,7 @@ LN_FLAT_API LNResult LNAnimationClipSerializeHandler_Create(LNAnimationClipSeria
 
 
 // Auto generated override handler
-using AnimationStateSerializeHandler = ln::Delegate<void(ln::AnimationState* self, ln::Serializer2* ar)>;
+using AnimationStateSerializeHandler = ln::Delegate<void(ln::AnimationState* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_AnimationStateSerializeHandler : public AnimationStateSerializeHandler
 {
@@ -1700,7 +1700,7 @@ public:
     LNAnimationStateSerializeHandlerCallback m_callback;
 
     LNWS_AnimationStateSerializeHandler()
-      : AnimationStateSerializeHandler([this](ln::AnimationState* self, ln::Serializer2* ar) -> void
+      : AnimationStateSerializeHandler([this](ln::AnimationState* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNAnimationStateSerializeHandlerCallback"); }
@@ -1748,7 +1748,7 @@ LN_FLAT_API LNResult LNAnimationStateSerializeHandler_Create(LNAnimationStateSer
 
 
 // Auto generated override handler
-using EffectResourceSerializeHandler = ln::Delegate<void(ln::EffectResource* self, ln::Serializer2* ar)>;
+using EffectResourceSerializeHandler = ln::Delegate<void(ln::EffectResource* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_EffectResourceSerializeHandler : public EffectResourceSerializeHandler
 {
@@ -1767,7 +1767,7 @@ public:
     LNEffectResourceSerializeHandlerCallback m_callback;
 
     LNWS_EffectResourceSerializeHandler()
-      : EffectResourceSerializeHandler([this](ln::EffectResource* self, ln::Serializer2* ar) -> void
+      : EffectResourceSerializeHandler([this](ln::EffectResource* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNEffectResourceSerializeHandlerCallback"); }
@@ -1815,7 +1815,7 @@ LN_FLAT_API LNResult LNEffectResourceSerializeHandler_Create(LNEffectResourceSer
 
 
 // Auto generated override handler
-using ParticleEmitterModelSerializeHandler = ln::Delegate<void(ln::ParticleEmitterModel* self, ln::Serializer2* ar)>;
+using ParticleEmitterModelSerializeHandler = ln::Delegate<void(ln::ParticleEmitterModel* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ParticleEmitterModelSerializeHandler : public ParticleEmitterModelSerializeHandler
 {
@@ -1834,7 +1834,7 @@ public:
     LNParticleEmitterModelSerializeHandlerCallback m_callback;
 
     LNWS_ParticleEmitterModelSerializeHandler()
-      : ParticleEmitterModelSerializeHandler([this](ln::ParticleEmitterModel* self, ln::Serializer2* ar) -> void
+      : ParticleEmitterModelSerializeHandler([this](ln::ParticleEmitterModel* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNParticleEmitterModelSerializeHandlerCallback"); }
@@ -1882,7 +1882,7 @@ LN_FLAT_API LNResult LNParticleEmitterModelSerializeHandler_Create(LNParticleEmi
 
 
 // Auto generated override handler
-using ParticleModelSerializeHandler = ln::Delegate<void(ln::ParticleModel* self, ln::Serializer2* ar)>;
+using ParticleModelSerializeHandler = ln::Delegate<void(ln::ParticleModel* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ParticleModelSerializeHandler : public ParticleModelSerializeHandler
 {
@@ -1901,7 +1901,7 @@ public:
     LNParticleModelSerializeHandlerCallback m_callback;
 
     LNWS_ParticleModelSerializeHandler()
-      : ParticleModelSerializeHandler([this](ln::ParticleModel* self, ln::Serializer2* ar) -> void
+      : ParticleModelSerializeHandler([this](ln::ParticleModel* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNParticleModelSerializeHandlerCallback"); }
@@ -1949,7 +1949,7 @@ LN_FLAT_API LNResult LNParticleModelSerializeHandler_Create(LNParticleModelSeria
 
 
 // Auto generated override handler
-using ComponentSerializeHandler = ln::Delegate<void(ln::Component* self, ln::Serializer2* ar)>;
+using ComponentSerializeHandler = ln::Delegate<void(ln::Component* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ComponentSerializeHandler : public ComponentSerializeHandler
 {
@@ -1968,7 +1968,7 @@ public:
     LNComponentSerializeHandlerCallback m_callback;
 
     LNWS_ComponentSerializeHandler()
-      : ComponentSerializeHandler([this](ln::Component* self, ln::Serializer2* ar) -> void
+      : ComponentSerializeHandler([this](ln::Component* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNComponentSerializeHandlerCallback"); }
@@ -2016,7 +2016,7 @@ LN_FLAT_API LNResult LNComponentSerializeHandler_Create(LNComponentSerializeHand
 
 
 // Auto generated override handler
-using VisualComponentSerializeHandler = ln::Delegate<void(ln::VisualComponent* self, ln::Serializer2* ar)>;
+using VisualComponentSerializeHandler = ln::Delegate<void(ln::VisualComponent* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_VisualComponentSerializeHandler : public VisualComponentSerializeHandler
 {
@@ -2035,7 +2035,7 @@ public:
     LNVisualComponentSerializeHandlerCallback m_callback;
 
     LNWS_VisualComponentSerializeHandler()
-      : VisualComponentSerializeHandler([this](ln::VisualComponent* self, ln::Serializer2* ar) -> void
+      : VisualComponentSerializeHandler([this](ln::VisualComponent* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNVisualComponentSerializeHandlerCallback"); }
@@ -2083,7 +2083,7 @@ LN_FLAT_API LNResult LNVisualComponentSerializeHandler_Create(LNVisualComponentS
 
 
 // Auto generated override handler
-using SpriteComponentSerializeHandler = ln::Delegate<void(ln::SpriteComponent* self, ln::Serializer2* ar)>;
+using SpriteComponentSerializeHandler = ln::Delegate<void(ln::SpriteComponent* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_SpriteComponentSerializeHandler : public SpriteComponentSerializeHandler
 {
@@ -2102,7 +2102,7 @@ public:
     LNSpriteComponentSerializeHandlerCallback m_callback;
 
     LNWS_SpriteComponentSerializeHandler()
-      : SpriteComponentSerializeHandler([this](ln::SpriteComponent* self, ln::Serializer2* ar) -> void
+      : SpriteComponentSerializeHandler([this](ln::SpriteComponent* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNSpriteComponentSerializeHandlerCallback"); }
@@ -2150,7 +2150,7 @@ LN_FLAT_API LNResult LNSpriteComponentSerializeHandler_Create(LNSpriteComponentS
 
 
 // Auto generated override handler
-using CharacterControllerSerializeHandler = ln::Delegate<void(ln::CharacterController* self, ln::Serializer2* ar)>;
+using CharacterControllerSerializeHandler = ln::Delegate<void(ln::CharacterController* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_CharacterControllerSerializeHandler : public CharacterControllerSerializeHandler
 {
@@ -2169,7 +2169,7 @@ public:
     LNCharacterControllerSerializeHandlerCallback m_callback;
 
     LNWS_CharacterControllerSerializeHandler()
-      : CharacterControllerSerializeHandler([this](ln::CharacterController* self, ln::Serializer2* ar) -> void
+      : CharacterControllerSerializeHandler([this](ln::CharacterController* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNCharacterControllerSerializeHandlerCallback"); }
@@ -2217,7 +2217,7 @@ LN_FLAT_API LNResult LNCharacterControllerSerializeHandler_Create(LNCharacterCon
 
 
 // Auto generated override handler
-using WorldSerializeHandler = ln::Delegate<void(ln::World* self, ln::Serializer2* ar)>;
+using WorldSerializeHandler = ln::Delegate<void(ln::World* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_WorldSerializeHandler : public WorldSerializeHandler
 {
@@ -2236,7 +2236,7 @@ public:
     LNWorldSerializeHandlerCallback m_callback;
 
     LNWS_WorldSerializeHandler()
-      : WorldSerializeHandler([this](ln::World* self, ln::Serializer2* ar) -> void
+      : WorldSerializeHandler([this](ln::World* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNWorldSerializeHandlerCallback"); }
@@ -2284,7 +2284,7 @@ LN_FLAT_API LNResult LNWorldSerializeHandler_Create(LNWorldSerializeHandlerCallb
 
 
 // Auto generated override handler
-using ComponentListSerializeHandler = ln::Delegate<void(ln::ComponentList* self, ln::Serializer2* ar)>;
+using ComponentListSerializeHandler = ln::Delegate<void(ln::ComponentList* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ComponentListSerializeHandler : public ComponentListSerializeHandler
 {
@@ -2303,7 +2303,7 @@ public:
     LNComponentListSerializeHandlerCallback m_callback;
 
     LNWS_ComponentListSerializeHandler()
-      : ComponentListSerializeHandler([this](ln::ComponentList* self, ln::Serializer2* ar) -> void
+      : ComponentListSerializeHandler([this](ln::ComponentList* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNComponentListSerializeHandlerCallback"); }
@@ -2351,7 +2351,7 @@ LN_FLAT_API LNResult LNComponentListSerializeHandler_Create(LNComponentListSeria
 
 
 // Auto generated override handler
-using WorldObjectSerializeHandler = ln::Delegate<void(ln::WorldObject* self, ln::Serializer2* ar)>;
+using WorldObjectSerializeHandler = ln::Delegate<void(ln::WorldObject* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_WorldObjectSerializeHandler : public WorldObjectSerializeHandler
 {
@@ -2370,7 +2370,7 @@ public:
     LNWorldObjectSerializeHandlerCallback m_callback;
 
     LNWS_WorldObjectSerializeHandler()
-      : WorldObjectSerializeHandler([this](ln::WorldObject* self, ln::Serializer2* ar) -> void
+      : WorldObjectSerializeHandler([this](ln::WorldObject* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNWorldObjectSerializeHandlerCallback"); }
@@ -2552,7 +2552,7 @@ LN_FLAT_API LNResult LNWorldObjectUpdateHandler_Create(LNWorldObjectUpdateHandle
 
 
 // Auto generated override handler
-using VisualObjectSerializeHandler = ln::Delegate<void(ln::VisualObject* self, ln::Serializer2* ar)>;
+using VisualObjectSerializeHandler = ln::Delegate<void(ln::VisualObject* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_VisualObjectSerializeHandler : public VisualObjectSerializeHandler
 {
@@ -2571,7 +2571,7 @@ public:
     LNVisualObjectSerializeHandlerCallback m_callback;
 
     LNWS_VisualObjectSerializeHandler()
-      : VisualObjectSerializeHandler([this](ln::VisualObject* self, ln::Serializer2* ar) -> void
+      : VisualObjectSerializeHandler([this](ln::VisualObject* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNVisualObjectSerializeHandlerCallback"); }
@@ -2753,7 +2753,7 @@ LN_FLAT_API LNResult LNVisualObjectUpdateHandler_Create(LNVisualObjectUpdateHand
 
 
 // Auto generated override handler
-using CameraSerializeHandler = ln::Delegate<void(ln::Camera* self, ln::Serializer2* ar)>;
+using CameraSerializeHandler = ln::Delegate<void(ln::Camera* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_CameraSerializeHandler : public CameraSerializeHandler
 {
@@ -2772,7 +2772,7 @@ public:
     LNCameraSerializeHandlerCallback m_callback;
 
     LNWS_CameraSerializeHandler()
-      : CameraSerializeHandler([this](ln::Camera* self, ln::Serializer2* ar) -> void
+      : CameraSerializeHandler([this](ln::Camera* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNCameraSerializeHandlerCallback"); }
@@ -2954,7 +2954,7 @@ LN_FLAT_API LNResult LNCameraUpdateHandler_Create(LNCameraUpdateHandlerCallback 
 
 
 // Auto generated override handler
-using EnvironmentLightSerializeHandler = ln::Delegate<void(ln::EnvironmentLight* self, ln::Serializer2* ar)>;
+using EnvironmentLightSerializeHandler = ln::Delegate<void(ln::EnvironmentLight* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_EnvironmentLightSerializeHandler : public EnvironmentLightSerializeHandler
 {
@@ -2973,7 +2973,7 @@ public:
     LNEnvironmentLightSerializeHandlerCallback m_callback;
 
     LNWS_EnvironmentLightSerializeHandler()
-      : EnvironmentLightSerializeHandler([this](ln::EnvironmentLight* self, ln::Serializer2* ar) -> void
+      : EnvironmentLightSerializeHandler([this](ln::EnvironmentLight* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNEnvironmentLightSerializeHandlerCallback"); }
@@ -3155,7 +3155,7 @@ LN_FLAT_API LNResult LNEnvironmentLightUpdateHandler_Create(LNEnvironmentLightUp
 
 
 // Auto generated override handler
-using DirectionalLightSerializeHandler = ln::Delegate<void(ln::DirectionalLight* self, ln::Serializer2* ar)>;
+using DirectionalLightSerializeHandler = ln::Delegate<void(ln::DirectionalLight* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_DirectionalLightSerializeHandler : public DirectionalLightSerializeHandler
 {
@@ -3174,7 +3174,7 @@ public:
     LNDirectionalLightSerializeHandlerCallback m_callback;
 
     LNWS_DirectionalLightSerializeHandler()
-      : DirectionalLightSerializeHandler([this](ln::DirectionalLight* self, ln::Serializer2* ar) -> void
+      : DirectionalLightSerializeHandler([this](ln::DirectionalLight* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNDirectionalLightSerializeHandlerCallback"); }
@@ -3356,7 +3356,7 @@ LN_FLAT_API LNResult LNDirectionalLightUpdateHandler_Create(LNDirectionalLightUp
 
 
 // Auto generated override handler
-using PointLightSerializeHandler = ln::Delegate<void(ln::PointLight* self, ln::Serializer2* ar)>;
+using PointLightSerializeHandler = ln::Delegate<void(ln::PointLight* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_PointLightSerializeHandler : public PointLightSerializeHandler
 {
@@ -3375,7 +3375,7 @@ public:
     LNPointLightSerializeHandlerCallback m_callback;
 
     LNWS_PointLightSerializeHandler()
-      : PointLightSerializeHandler([this](ln::PointLight* self, ln::Serializer2* ar) -> void
+      : PointLightSerializeHandler([this](ln::PointLight* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNPointLightSerializeHandlerCallback"); }
@@ -3557,7 +3557,7 @@ LN_FLAT_API LNResult LNPointLightUpdateHandler_Create(LNPointLightUpdateHandlerC
 
 
 // Auto generated override handler
-using SpotLightSerializeHandler = ln::Delegate<void(ln::SpotLight* self, ln::Serializer2* ar)>;
+using SpotLightSerializeHandler = ln::Delegate<void(ln::SpotLight* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_SpotLightSerializeHandler : public SpotLightSerializeHandler
 {
@@ -3576,7 +3576,7 @@ public:
     LNSpotLightSerializeHandlerCallback m_callback;
 
     LNWS_SpotLightSerializeHandler()
-      : SpotLightSerializeHandler([this](ln::SpotLight* self, ln::Serializer2* ar) -> void
+      : SpotLightSerializeHandler([this](ln::SpotLight* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNSpotLightSerializeHandlerCallback"); }
@@ -3758,7 +3758,7 @@ LN_FLAT_API LNResult LNSpotLightUpdateHandler_Create(LNSpotLightUpdateHandlerCal
 
 
 // Auto generated override handler
-using SpriteSerializeHandler = ln::Delegate<void(ln::Sprite* self, ln::Serializer2* ar)>;
+using SpriteSerializeHandler = ln::Delegate<void(ln::Sprite* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_SpriteSerializeHandler : public SpriteSerializeHandler
 {
@@ -3777,7 +3777,7 @@ public:
     LNSpriteSerializeHandlerCallback m_callback;
 
     LNWS_SpriteSerializeHandler()
-      : SpriteSerializeHandler([this](ln::Sprite* self, ln::Serializer2* ar) -> void
+      : SpriteSerializeHandler([this](ln::Sprite* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNSpriteSerializeHandlerCallback"); }
@@ -3959,7 +3959,7 @@ LN_FLAT_API LNResult LNSpriteUpdateHandler_Create(LNSpriteUpdateHandlerCallback 
 
 
 // Auto generated override handler
-using CameraOrbitControlComponentSerializeHandler = ln::Delegate<void(ln::CameraOrbitControlComponent* self, ln::Serializer2* ar)>;
+using CameraOrbitControlComponentSerializeHandler = ln::Delegate<void(ln::CameraOrbitControlComponent* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_CameraOrbitControlComponentSerializeHandler : public CameraOrbitControlComponentSerializeHandler
 {
@@ -3978,7 +3978,7 @@ public:
     LNCameraOrbitControlComponentSerializeHandlerCallback m_callback;
 
     LNWS_CameraOrbitControlComponentSerializeHandler()
-      : CameraOrbitControlComponentSerializeHandler([this](ln::CameraOrbitControlComponent* self, ln::Serializer2* ar) -> void
+      : CameraOrbitControlComponentSerializeHandler([this](ln::CameraOrbitControlComponent* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNCameraOrbitControlComponentSerializeHandlerCallback"); }
@@ -4026,7 +4026,7 @@ LN_FLAT_API LNResult LNCameraOrbitControlComponentSerializeHandler_Create(LNCame
 
 
 // Auto generated override handler
-using RaycasterSerializeHandler = ln::Delegate<void(ln::Raycaster* self, ln::Serializer2* ar)>;
+using RaycasterSerializeHandler = ln::Delegate<void(ln::Raycaster* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_RaycasterSerializeHandler : public RaycasterSerializeHandler
 {
@@ -4045,7 +4045,7 @@ public:
     LNRaycasterSerializeHandlerCallback m_callback;
 
     LNWS_RaycasterSerializeHandler()
-      : RaycasterSerializeHandler([this](ln::Raycaster* self, ln::Serializer2* ar) -> void
+      : RaycasterSerializeHandler([this](ln::Raycaster* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNRaycasterSerializeHandlerCallback"); }
@@ -4093,7 +4093,7 @@ LN_FLAT_API LNResult LNRaycasterSerializeHandler_Create(LNRaycasterSerializeHand
 
 
 // Auto generated override handler
-using RaycastResultSerializeHandler = ln::Delegate<void(ln::RaycastResult* self, ln::Serializer2* ar)>;
+using RaycastResultSerializeHandler = ln::Delegate<void(ln::RaycastResult* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_RaycastResultSerializeHandler : public RaycastResultSerializeHandler
 {
@@ -4112,7 +4112,7 @@ public:
     LNRaycastResultSerializeHandlerCallback m_callback;
 
     LNWS_RaycastResultSerializeHandler()
-      : RaycastResultSerializeHandler([this](ln::RaycastResult* self, ln::Serializer2* ar) -> void
+      : RaycastResultSerializeHandler([this](ln::RaycastResult* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNRaycastResultSerializeHandlerCallback"); }
@@ -4160,7 +4160,7 @@ LN_FLAT_API LNResult LNRaycastResultSerializeHandler_Create(LNRaycastResultSeria
 
 
 // Auto generated override handler
-using WorldRenderViewSerializeHandler = ln::Delegate<void(ln::WorldRenderView* self, ln::Serializer2* ar)>;
+using WorldRenderViewSerializeHandler = ln::Delegate<void(ln::WorldRenderView* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_WorldRenderViewSerializeHandler : public WorldRenderViewSerializeHandler
 {
@@ -4179,7 +4179,7 @@ public:
     LNWorldRenderViewSerializeHandlerCallback m_callback;
 
     LNWS_WorldRenderViewSerializeHandler()
-      : WorldRenderViewSerializeHandler([this](ln::WorldRenderView* self, ln::Serializer2* ar) -> void
+      : WorldRenderViewSerializeHandler([this](ln::WorldRenderView* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNWorldRenderViewSerializeHandlerCallback"); }
@@ -4227,7 +4227,7 @@ LN_FLAT_API LNResult LNWorldRenderViewSerializeHandler_Create(LNWorldRenderViewS
 
 
 // Auto generated override handler
-using ShapeObjectSerializeHandler = ln::Delegate<void(ln::ShapeObject* self, ln::Serializer2* ar)>;
+using ShapeObjectSerializeHandler = ln::Delegate<void(ln::ShapeObject* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ShapeObjectSerializeHandler : public ShapeObjectSerializeHandler
 {
@@ -4246,7 +4246,7 @@ public:
     LNShapeObjectSerializeHandlerCallback m_callback;
 
     LNWS_ShapeObjectSerializeHandler()
-      : ShapeObjectSerializeHandler([this](ln::ShapeObject* self, ln::Serializer2* ar) -> void
+      : ShapeObjectSerializeHandler([this](ln::ShapeObject* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNShapeObjectSerializeHandlerCallback"); }
@@ -4428,7 +4428,7 @@ LN_FLAT_API LNResult LNShapeObjectUpdateHandler_Create(LNShapeObjectUpdateHandle
 
 
 // Auto generated override handler
-using PlaneMeshSerializeHandler = ln::Delegate<void(ln::PlaneMesh* self, ln::Serializer2* ar)>;
+using PlaneMeshSerializeHandler = ln::Delegate<void(ln::PlaneMesh* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_PlaneMeshSerializeHandler : public PlaneMeshSerializeHandler
 {
@@ -4447,7 +4447,7 @@ public:
     LNPlaneMeshSerializeHandlerCallback m_callback;
 
     LNWS_PlaneMeshSerializeHandler()
-      : PlaneMeshSerializeHandler([this](ln::PlaneMesh* self, ln::Serializer2* ar) -> void
+      : PlaneMeshSerializeHandler([this](ln::PlaneMesh* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNPlaneMeshSerializeHandlerCallback"); }
@@ -4629,7 +4629,7 @@ LN_FLAT_API LNResult LNPlaneMeshUpdateHandler_Create(LNPlaneMeshUpdateHandlerCal
 
 
 // Auto generated override handler
-using StaticMeshSerializeHandler = ln::Delegate<void(ln::StaticMesh* self, ln::Serializer2* ar)>;
+using StaticMeshSerializeHandler = ln::Delegate<void(ln::StaticMesh* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_StaticMeshSerializeHandler : public StaticMeshSerializeHandler
 {
@@ -4648,7 +4648,7 @@ public:
     LNStaticMeshSerializeHandlerCallback m_callback;
 
     LNWS_StaticMeshSerializeHandler()
-      : StaticMeshSerializeHandler([this](ln::StaticMesh* self, ln::Serializer2* ar) -> void
+      : StaticMeshSerializeHandler([this](ln::StaticMesh* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNStaticMeshSerializeHandlerCallback"); }
@@ -4830,7 +4830,7 @@ LN_FLAT_API LNResult LNStaticMeshUpdateHandler_Create(LNStaticMeshUpdateHandlerC
 
 
 // Auto generated override handler
-using MeshComponentSerializeHandler = ln::Delegate<void(ln::MeshComponent* self, ln::Serializer2* ar)>;
+using MeshComponentSerializeHandler = ln::Delegate<void(ln::MeshComponent* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_MeshComponentSerializeHandler : public MeshComponentSerializeHandler
 {
@@ -4849,7 +4849,7 @@ public:
     LNMeshComponentSerializeHandlerCallback m_callback;
 
     LNWS_MeshComponentSerializeHandler()
-      : MeshComponentSerializeHandler([this](ln::MeshComponent* self, ln::Serializer2* ar) -> void
+      : MeshComponentSerializeHandler([this](ln::MeshComponent* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNMeshComponentSerializeHandlerCallback"); }
@@ -4897,7 +4897,7 @@ LN_FLAT_API LNResult LNMeshComponentSerializeHandler_Create(LNMeshComponentSeria
 
 
 // Auto generated override handler
-using CollisionSerializeHandler = ln::Delegate<void(ln::Collision* self, ln::Serializer2* ar)>;
+using CollisionSerializeHandler = ln::Delegate<void(ln::Collision* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_CollisionSerializeHandler : public CollisionSerializeHandler
 {
@@ -4916,7 +4916,7 @@ public:
     LNCollisionSerializeHandlerCallback m_callback;
 
     LNWS_CollisionSerializeHandler()
-      : CollisionSerializeHandler([this](ln::Collision* self, ln::Serializer2* ar) -> void
+      : CollisionSerializeHandler([this](ln::Collision* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNCollisionSerializeHandlerCallback"); }
@@ -4964,7 +4964,7 @@ LN_FLAT_API LNResult LNCollisionSerializeHandler_Create(LNCollisionSerializeHand
 
 
 // Auto generated override handler
-using TriggerBodyComponentSerializeHandler = ln::Delegate<void(ln::TriggerBodyComponent* self, ln::Serializer2* ar)>;
+using TriggerBodyComponentSerializeHandler = ln::Delegate<void(ln::TriggerBodyComponent* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_TriggerBodyComponentSerializeHandler : public TriggerBodyComponentSerializeHandler
 {
@@ -4983,7 +4983,7 @@ public:
     LNTriggerBodyComponentSerializeHandlerCallback m_callback;
 
     LNWS_TriggerBodyComponentSerializeHandler()
-      : TriggerBodyComponentSerializeHandler([this](ln::TriggerBodyComponent* self, ln::Serializer2* ar) -> void
+      : TriggerBodyComponentSerializeHandler([this](ln::TriggerBodyComponent* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNTriggerBodyComponentSerializeHandlerCallback"); }
@@ -5031,7 +5031,7 @@ LN_FLAT_API LNResult LNTriggerBodyComponentSerializeHandler_Create(LNTriggerBody
 
 
 // Auto generated override handler
-using ParticleEmitterSerializeHandler = ln::Delegate<void(ln::ParticleEmitter* self, ln::Serializer2* ar)>;
+using ParticleEmitterSerializeHandler = ln::Delegate<void(ln::ParticleEmitter* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ParticleEmitterSerializeHandler : public ParticleEmitterSerializeHandler
 {
@@ -5050,7 +5050,7 @@ public:
     LNParticleEmitterSerializeHandlerCallback m_callback;
 
     LNWS_ParticleEmitterSerializeHandler()
-      : ParticleEmitterSerializeHandler([this](ln::ParticleEmitter* self, ln::Serializer2* ar) -> void
+      : ParticleEmitterSerializeHandler([this](ln::ParticleEmitter* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNParticleEmitterSerializeHandlerCallback"); }
@@ -5232,7 +5232,7 @@ LN_FLAT_API LNResult LNParticleEmitterUpdateHandler_Create(LNParticleEmitterUpda
 
 
 // Auto generated override handler
-using LevelSerializeHandler = ln::Delegate<void(ln::Level* self, ln::Serializer2* ar)>;
+using LevelSerializeHandler = ln::Delegate<void(ln::Level* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_LevelSerializeHandler : public LevelSerializeHandler
 {
@@ -5251,7 +5251,7 @@ public:
     LNLevelSerializeHandlerCallback m_callback;
 
     LNWS_LevelSerializeHandler()
-      : LevelSerializeHandler([this](ln::Level* self, ln::Serializer2* ar) -> void
+      : LevelSerializeHandler([this](ln::Level* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNLevelSerializeHandlerCallback"); }
@@ -5634,7 +5634,7 @@ LN_FLAT_API LNResult LNLevelUpdateHandler_Create(LNLevelUpdateHandlerCallback ca
 
 
 // Auto generated override handler
-using UIEventArgsSerializeHandler = ln::Delegate<void(ln::UIEventArgs* self, ln::Serializer2* ar)>;
+using UIEventArgsSerializeHandler = ln::Delegate<void(ln::UIEventArgs* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIEventArgsSerializeHandler : public UIEventArgsSerializeHandler
 {
@@ -5653,7 +5653,7 @@ public:
     LNUIEventArgsSerializeHandlerCallback m_callback;
 
     LNWS_UIEventArgsSerializeHandler()
-      : UIEventArgsSerializeHandler([this](ln::UIEventArgs* self, ln::Serializer2* ar) -> void
+      : UIEventArgsSerializeHandler([this](ln::UIEventArgs* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIEventArgsSerializeHandlerCallback"); }
@@ -5701,7 +5701,7 @@ LN_FLAT_API LNResult LNUIEventArgsSerializeHandler_Create(LNUIEventArgsSerialize
 
 
 // Auto generated override handler
-using UILayoutElementSerializeHandler = ln::Delegate<void(ln::UILayoutElement* self, ln::Serializer2* ar)>;
+using UILayoutElementSerializeHandler = ln::Delegate<void(ln::UILayoutElement* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UILayoutElementSerializeHandler : public UILayoutElementSerializeHandler
 {
@@ -5720,7 +5720,7 @@ public:
     LNUILayoutElementSerializeHandlerCallback m_callback;
 
     LNWS_UILayoutElementSerializeHandler()
-      : UILayoutElementSerializeHandler([this](ln::UILayoutElement* self, ln::Serializer2* ar) -> void
+      : UILayoutElementSerializeHandler([this](ln::UILayoutElement* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUILayoutElementSerializeHandlerCallback"); }
@@ -5768,7 +5768,7 @@ LN_FLAT_API LNResult LNUILayoutElementSerializeHandler_Create(LNUILayoutElementS
 
 
 // Auto generated override handler
-using UIElementSerializeHandler = ln::Delegate<void(ln::UIElement* self, ln::Serializer2* ar)>;
+using UIElementSerializeHandler = ln::Delegate<void(ln::UIElement* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIElementSerializeHandler : public UIElementSerializeHandler
 {
@@ -5787,7 +5787,7 @@ public:
     LNUIElementSerializeHandlerCallback m_callback;
 
     LNWS_UIElementSerializeHandler()
-      : UIElementSerializeHandler([this](ln::UIElement* self, ln::Serializer2* ar) -> void
+      : UIElementSerializeHandler([this](ln::UIElement* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIElementSerializeHandlerCallback"); }
@@ -5835,7 +5835,7 @@ LN_FLAT_API LNResult LNUIElementSerializeHandler_Create(LNUIElementSerializeHand
 
 
 // Auto generated override handler
-using UITextSerializeHandler = ln::Delegate<void(ln::UIText* self, ln::Serializer2* ar)>;
+using UITextSerializeHandler = ln::Delegate<void(ln::UIText* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UITextSerializeHandler : public UITextSerializeHandler
 {
@@ -5854,7 +5854,7 @@ public:
     LNUITextSerializeHandlerCallback m_callback;
 
     LNWS_UITextSerializeHandler()
-      : UITextSerializeHandler([this](ln::UIText* self, ln::Serializer2* ar) -> void
+      : UITextSerializeHandler([this](ln::UIText* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUITextSerializeHandlerCallback"); }
@@ -5902,7 +5902,7 @@ LN_FLAT_API LNResult LNUITextSerializeHandler_Create(LNUITextSerializeHandlerCal
 
 
 // Auto generated override handler
-using UISpriteSerializeHandler = ln::Delegate<void(ln::UISprite* self, ln::Serializer2* ar)>;
+using UISpriteSerializeHandler = ln::Delegate<void(ln::UISprite* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UISpriteSerializeHandler : public UISpriteSerializeHandler
 {
@@ -5921,7 +5921,7 @@ public:
     LNUISpriteSerializeHandlerCallback m_callback;
 
     LNWS_UISpriteSerializeHandler()
-      : UISpriteSerializeHandler([this](ln::UISprite* self, ln::Serializer2* ar) -> void
+      : UISpriteSerializeHandler([this](ln::UISprite* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUISpriteSerializeHandlerCallback"); }
@@ -5969,7 +5969,7 @@ LN_FLAT_API LNResult LNUISpriteSerializeHandler_Create(LNUISpriteSerializeHandle
 
 
 // Auto generated override handler
-using UIIconSerializeHandler = ln::Delegate<void(ln::UIIcon* self, ln::Serializer2* ar)>;
+using UIIconSerializeHandler = ln::Delegate<void(ln::UIIcon* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIIconSerializeHandler : public UIIconSerializeHandler
 {
@@ -5988,7 +5988,7 @@ public:
     LNUIIconSerializeHandlerCallback m_callback;
 
     LNWS_UIIconSerializeHandler()
-      : UIIconSerializeHandler([this](ln::UIIcon* self, ln::Serializer2* ar) -> void
+      : UIIconSerializeHandler([this](ln::UIIcon* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIIconSerializeHandlerCallback"); }
@@ -6036,7 +6036,7 @@ LN_FLAT_API LNResult LNUIIconSerializeHandler_Create(LNUIIconSerializeHandlerCal
 
 
 // Auto generated override handler
-using UIMessageTextAreaSerializeHandler = ln::Delegate<void(ln::UIMessageTextArea* self, ln::Serializer2* ar)>;
+using UIMessageTextAreaSerializeHandler = ln::Delegate<void(ln::UIMessageTextArea* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIMessageTextAreaSerializeHandler : public UIMessageTextAreaSerializeHandler
 {
@@ -6055,7 +6055,7 @@ public:
     LNUIMessageTextAreaSerializeHandlerCallback m_callback;
 
     LNWS_UIMessageTextAreaSerializeHandler()
-      : UIMessageTextAreaSerializeHandler([this](ln::UIMessageTextArea* self, ln::Serializer2* ar) -> void
+      : UIMessageTextAreaSerializeHandler([this](ln::UIMessageTextArea* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIMessageTextAreaSerializeHandlerCallback"); }
@@ -6103,7 +6103,7 @@ LN_FLAT_API LNResult LNUIMessageTextAreaSerializeHandler_Create(LNUIMessageTextA
 
 
 // Auto generated override handler
-using UILayoutPanelSerializeHandler = ln::Delegate<void(ln::UILayoutPanel* self, ln::Serializer2* ar)>;
+using UILayoutPanelSerializeHandler = ln::Delegate<void(ln::UILayoutPanel* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UILayoutPanelSerializeHandler : public UILayoutPanelSerializeHandler
 {
@@ -6122,7 +6122,7 @@ public:
     LNUILayoutPanelSerializeHandlerCallback m_callback;
 
     LNWS_UILayoutPanelSerializeHandler()
-      : UILayoutPanelSerializeHandler([this](ln::UILayoutPanel* self, ln::Serializer2* ar) -> void
+      : UILayoutPanelSerializeHandler([this](ln::UILayoutPanel* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUILayoutPanelSerializeHandlerCallback"); }
@@ -6170,7 +6170,7 @@ LN_FLAT_API LNResult LNUILayoutPanelSerializeHandler_Create(LNUILayoutPanelSeria
 
 
 // Auto generated override handler
-using UIBoxLayoutSerializeHandler = ln::Delegate<void(ln::UIBoxLayout* self, ln::Serializer2* ar)>;
+using UIBoxLayoutSerializeHandler = ln::Delegate<void(ln::UIBoxLayout* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIBoxLayoutSerializeHandler : public UIBoxLayoutSerializeHandler
 {
@@ -6189,7 +6189,7 @@ public:
     LNUIBoxLayoutSerializeHandlerCallback m_callback;
 
     LNWS_UIBoxLayoutSerializeHandler()
-      : UIBoxLayoutSerializeHandler([this](ln::UIBoxLayout* self, ln::Serializer2* ar) -> void
+      : UIBoxLayoutSerializeHandler([this](ln::UIBoxLayout* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIBoxLayoutSerializeHandlerCallback"); }
@@ -6237,7 +6237,7 @@ LN_FLAT_API LNResult LNUIBoxLayoutSerializeHandler_Create(LNUIBoxLayoutSerialize
 
 
 // Auto generated override handler
-using UIStackLayoutSerializeHandler = ln::Delegate<void(ln::UIStackLayout* self, ln::Serializer2* ar)>;
+using UIStackLayoutSerializeHandler = ln::Delegate<void(ln::UIStackLayout* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIStackLayoutSerializeHandler : public UIStackLayoutSerializeHandler
 {
@@ -6256,7 +6256,7 @@ public:
     LNUIStackLayoutSerializeHandlerCallback m_callback;
 
     LNWS_UIStackLayoutSerializeHandler()
-      : UIStackLayoutSerializeHandler([this](ln::UIStackLayout* self, ln::Serializer2* ar) -> void
+      : UIStackLayoutSerializeHandler([this](ln::UIStackLayout* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIStackLayoutSerializeHandlerCallback"); }
@@ -6304,7 +6304,7 @@ LN_FLAT_API LNResult LNUIStackLayoutSerializeHandler_Create(LNUIStackLayoutSeria
 
 
 // Auto generated override handler
-using UIGridLayoutSerializeHandler = ln::Delegate<void(ln::UIGridLayout* self, ln::Serializer2* ar)>;
+using UIGridLayoutSerializeHandler = ln::Delegate<void(ln::UIGridLayout* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIGridLayoutSerializeHandler : public UIGridLayoutSerializeHandler
 {
@@ -6323,7 +6323,7 @@ public:
     LNUIGridLayoutSerializeHandlerCallback m_callback;
 
     LNWS_UIGridLayoutSerializeHandler()
-      : UIGridLayoutSerializeHandler([this](ln::UIGridLayout* self, ln::Serializer2* ar) -> void
+      : UIGridLayoutSerializeHandler([this](ln::UIGridLayout* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIGridLayoutSerializeHandlerCallback"); }
@@ -6371,7 +6371,7 @@ LN_FLAT_API LNResult LNUIGridLayoutSerializeHandler_Create(LNUIGridLayoutSeriali
 
 
 // Auto generated override handler
-using UIControlSerializeHandler = ln::Delegate<void(ln::UIControl* self, ln::Serializer2* ar)>;
+using UIControlSerializeHandler = ln::Delegate<void(ln::UIControl* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIControlSerializeHandler : public UIControlSerializeHandler
 {
@@ -6390,7 +6390,7 @@ public:
     LNUIControlSerializeHandlerCallback m_callback;
 
     LNWS_UIControlSerializeHandler()
-      : UIControlSerializeHandler([this](ln::UIControl* self, ln::Serializer2* ar) -> void
+      : UIControlSerializeHandler([this](ln::UIControl* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIControlSerializeHandlerCallback"); }
@@ -6438,7 +6438,7 @@ LN_FLAT_API LNResult LNUIControlSerializeHandler_Create(LNUIControlSerializeHand
 
 
 // Auto generated override handler
-using UIButtonBaseSerializeHandler = ln::Delegate<void(ln::UIButtonBase* self, ln::Serializer2* ar)>;
+using UIButtonBaseSerializeHandler = ln::Delegate<void(ln::UIButtonBase* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIButtonBaseSerializeHandler : public UIButtonBaseSerializeHandler
 {
@@ -6457,7 +6457,7 @@ public:
     LNUIButtonBaseSerializeHandlerCallback m_callback;
 
     LNWS_UIButtonBaseSerializeHandler()
-      : UIButtonBaseSerializeHandler([this](ln::UIButtonBase* self, ln::Serializer2* ar) -> void
+      : UIButtonBaseSerializeHandler([this](ln::UIButtonBase* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIButtonBaseSerializeHandlerCallback"); }
@@ -6505,7 +6505,7 @@ LN_FLAT_API LNResult LNUIButtonBaseSerializeHandler_Create(LNUIButtonBaseSeriali
 
 
 // Auto generated override handler
-using UIButtonSerializeHandler = ln::Delegate<void(ln::UIButton* self, ln::Serializer2* ar)>;
+using UIButtonSerializeHandler = ln::Delegate<void(ln::UIButton* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIButtonSerializeHandler : public UIButtonSerializeHandler
 {
@@ -6524,7 +6524,7 @@ public:
     LNUIButtonSerializeHandlerCallback m_callback;
 
     LNWS_UIButtonSerializeHandler()
-      : UIButtonSerializeHandler([this](ln::UIButton* self, ln::Serializer2* ar) -> void
+      : UIButtonSerializeHandler([this](ln::UIButton* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIButtonSerializeHandlerCallback"); }
@@ -6572,7 +6572,7 @@ LN_FLAT_API LNResult LNUIButtonSerializeHandler_Create(LNUIButtonSerializeHandle
 
 
 // Auto generated override handler
-using UIWindowSerializeHandler = ln::Delegate<void(ln::UIWindow* self, ln::Serializer2* ar)>;
+using UIWindowSerializeHandler = ln::Delegate<void(ln::UIWindow* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIWindowSerializeHandler : public UIWindowSerializeHandler
 {
@@ -6591,7 +6591,7 @@ public:
     LNUIWindowSerializeHandlerCallback m_callback;
 
     LNWS_UIWindowSerializeHandler()
-      : UIWindowSerializeHandler([this](ln::UIWindow* self, ln::Serializer2* ar) -> void
+      : UIWindowSerializeHandler([this](ln::UIWindow* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIWindowSerializeHandlerCallback"); }
@@ -6639,7 +6639,7 @@ LN_FLAT_API LNResult LNUIWindowSerializeHandler_Create(LNUIWindowSerializeHandle
 
 
 // Auto generated override handler
-using UIListItemsControlSerializeHandler = ln::Delegate<void(ln::UIListItemsControl* self, ln::Serializer2* ar)>;
+using UIListItemsControlSerializeHandler = ln::Delegate<void(ln::UIListItemsControl* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIListItemsControlSerializeHandler : public UIListItemsControlSerializeHandler
 {
@@ -6658,7 +6658,7 @@ public:
     LNUIListItemsControlSerializeHandlerCallback m_callback;
 
     LNWS_UIListItemsControlSerializeHandler()
-      : UIListItemsControlSerializeHandler([this](ln::UIListItemsControl* self, ln::Serializer2* ar) -> void
+      : UIListItemsControlSerializeHandler([this](ln::UIListItemsControl* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIListItemsControlSerializeHandlerCallback"); }
@@ -6706,7 +6706,7 @@ LN_FLAT_API LNResult LNUIListItemsControlSerializeHandler_Create(LNUIListItemsCo
 
 
 // Auto generated override handler
-using UIListBoxSerializeHandler = ln::Delegate<void(ln::UIListBox* self, ln::Serializer2* ar)>;
+using UIListBoxSerializeHandler = ln::Delegate<void(ln::UIListBox* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIListBoxSerializeHandler : public UIListBoxSerializeHandler
 {
@@ -6725,7 +6725,7 @@ public:
     LNUIListBoxSerializeHandlerCallback m_callback;
 
     LNWS_UIListBoxSerializeHandler()
-      : UIListBoxSerializeHandler([this](ln::UIListBox* self, ln::Serializer2* ar) -> void
+      : UIListBoxSerializeHandler([this](ln::UIListBox* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIListBoxSerializeHandlerCallback"); }
@@ -6773,7 +6773,7 @@ LN_FLAT_API LNResult LNUIListBoxSerializeHandler_Create(LNUIListBoxSerializeHand
 
 
 // Auto generated override handler
-using UIListItemSerializeHandler = ln::Delegate<void(ln::UIListItem* self, ln::Serializer2* ar)>;
+using UIListItemSerializeHandler = ln::Delegate<void(ln::UIListItem* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIListItemSerializeHandler : public UIListItemSerializeHandler
 {
@@ -6792,7 +6792,7 @@ public:
     LNUIListItemSerializeHandlerCallback m_callback;
 
     LNWS_UIListItemSerializeHandler()
-      : UIListItemSerializeHandler([this](ln::UIListItem* self, ln::Serializer2* ar) -> void
+      : UIListItemSerializeHandler([this](ln::UIListItem* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIListItemSerializeHandlerCallback"); }
@@ -6840,7 +6840,7 @@ LN_FLAT_API LNResult LNUIListItemSerializeHandler_Create(LNUIListItemSerializeHa
 
 
 // Auto generated override handler
-using UIListBoxItemSerializeHandler = ln::Delegate<void(ln::UIListBoxItem* self, ln::Serializer2* ar)>;
+using UIListBoxItemSerializeHandler = ln::Delegate<void(ln::UIListBoxItem* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_UIListBoxItemSerializeHandler : public UIListBoxItemSerializeHandler
 {
@@ -6859,7 +6859,7 @@ public:
     LNUIListBoxItemSerializeHandlerCallback m_callback;
 
     LNWS_UIListBoxItemSerializeHandler()
-      : UIListBoxItemSerializeHandler([this](ln::UIListBoxItem* self, ln::Serializer2* ar) -> void
+      : UIListBoxItemSerializeHandler([this](ln::UIListBoxItem* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNUIListBoxItemSerializeHandlerCallback"); }
@@ -6907,7 +6907,7 @@ LN_FLAT_API LNResult LNUIListBoxItemSerializeHandler_Create(LNUIListBoxItemSeria
 
 
 // Auto generated override handler
-using InputGestureSerializeHandler = ln::Delegate<void(ln::InputGesture* self, ln::Serializer2* ar)>;
+using InputGestureSerializeHandler = ln::Delegate<void(ln::InputGesture* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_InputGestureSerializeHandler : public InputGestureSerializeHandler
 {
@@ -6926,7 +6926,7 @@ public:
     LNInputGestureSerializeHandlerCallback m_callback;
 
     LNWS_InputGestureSerializeHandler()
-      : InputGestureSerializeHandler([this](ln::InputGesture* self, ln::Serializer2* ar) -> void
+      : InputGestureSerializeHandler([this](ln::InputGesture* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNInputGestureSerializeHandlerCallback"); }
@@ -6974,7 +6974,7 @@ LN_FLAT_API LNResult LNInputGestureSerializeHandler_Create(LNInputGestureSeriali
 
 
 // Auto generated override handler
-using KeyGestureSerializeHandler = ln::Delegate<void(ln::KeyGesture* self, ln::Serializer2* ar)>;
+using KeyGestureSerializeHandler = ln::Delegate<void(ln::KeyGesture* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_KeyGestureSerializeHandler : public KeyGestureSerializeHandler
 {
@@ -6993,7 +6993,7 @@ public:
     LNKeyGestureSerializeHandlerCallback m_callback;
 
     LNWS_KeyGestureSerializeHandler()
-      : KeyGestureSerializeHandler([this](ln::KeyGesture* self, ln::Serializer2* ar) -> void
+      : KeyGestureSerializeHandler([this](ln::KeyGesture* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNKeyGestureSerializeHandlerCallback"); }
@@ -7041,7 +7041,7 @@ LN_FLAT_API LNResult LNKeyGestureSerializeHandler_Create(LNKeyGestureSerializeHa
 
 
 // Auto generated override handler
-using InterpreterCommandSerializeHandler = ln::Delegate<void(ln::InterpreterCommand* self, ln::Serializer2* ar)>;
+using InterpreterCommandSerializeHandler = ln::Delegate<void(ln::InterpreterCommand* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_InterpreterCommandSerializeHandler : public InterpreterCommandSerializeHandler
 {
@@ -7060,7 +7060,7 @@ public:
     LNInterpreterCommandSerializeHandlerCallback m_callback;
 
     LNWS_InterpreterCommandSerializeHandler()
-      : InterpreterCommandSerializeHandler([this](ln::InterpreterCommand* self, ln::Serializer2* ar) -> void
+      : InterpreterCommandSerializeHandler([this](ln::InterpreterCommand* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNInterpreterCommandSerializeHandlerCallback"); }
@@ -7108,7 +7108,7 @@ LN_FLAT_API LNResult LNInterpreterCommandSerializeHandler_Create(LNInterpreterCo
 
 
 // Auto generated override handler
-using InterpreterCommandListSerializeHandler = ln::Delegate<void(ln::InterpreterCommandList* self, ln::Serializer2* ar)>;
+using InterpreterCommandListSerializeHandler = ln::Delegate<void(ln::InterpreterCommandList* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_InterpreterCommandListSerializeHandler : public InterpreterCommandListSerializeHandler
 {
@@ -7127,7 +7127,7 @@ public:
     LNInterpreterCommandListSerializeHandlerCallback m_callback;
 
     LNWS_InterpreterCommandListSerializeHandler()
-      : InterpreterCommandListSerializeHandler([this](ln::InterpreterCommandList* self, ln::Serializer2* ar) -> void
+      : InterpreterCommandListSerializeHandler([this](ln::InterpreterCommandList* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNInterpreterCommandListSerializeHandlerCallback"); }
@@ -7175,7 +7175,7 @@ LN_FLAT_API LNResult LNInterpreterCommandListSerializeHandler_Create(LNInterpret
 
 
 // Auto generated override handler
-using InterpreterSerializeHandler = ln::Delegate<void(ln::Interpreter* self, ln::Serializer2* ar)>;
+using InterpreterSerializeHandler = ln::Delegate<void(ln::Interpreter* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_InterpreterSerializeHandler : public InterpreterSerializeHandler
 {
@@ -7194,7 +7194,7 @@ public:
     LNInterpreterSerializeHandlerCallback m_callback;
 
     LNWS_InterpreterSerializeHandler()
-      : InterpreterSerializeHandler([this](ln::Interpreter* self, ln::Serializer2* ar) -> void
+      : InterpreterSerializeHandler([this](ln::Interpreter* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNInterpreterSerializeHandlerCallback"); }
@@ -7311,7 +7311,7 @@ LN_FLAT_API LNResult LNInterpreterUpdateWaitHandler_Create(LNInterpreterUpdateWa
 
 
 // Auto generated override handler
-using ApplicationSerializeHandler = ln::Delegate<void(ln::Application* self, ln::Serializer2* ar)>;
+using ApplicationSerializeHandler = ln::Delegate<void(ln::Application* self, ln::Serializer2_deprecated* ar)>;
 
 class LNWS_ApplicationSerializeHandler : public ApplicationSerializeHandler
 {
@@ -7330,7 +7330,7 @@ public:
     LNApplicationSerializeHandlerCallback m_callback;
 
     LNWS_ApplicationSerializeHandler()
-      : ApplicationSerializeHandler([this](ln::Application* self, ln::Serializer2* ar) -> void
+      : ApplicationSerializeHandler([this](ln::Application* self, ln::Serializer2_deprecated* ar) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(self), LNI_OBJECT_TO_HANDLE(ar));
         if (r != LN_OK) { LN_ERROR("LNApplicationSerializeHandlerCallback"); }
@@ -7538,7 +7538,7 @@ public:
 
     // Overrides
     static LNObject_OnSerialize_OverrideCallback s_LNObject_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -7547,11 +7547,11 @@ public:
             }
         }
         if (s_LNObject_OnSerialize_OverrideCallback) s_LNObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Object::onSerialize(ar);
+        ln::Object::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Object::onSerialize(ar);
+        ln::Object::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -7600,7 +7600,7 @@ public:
 
     // Overrides
     static LNEventConnection_OnSerialize_OverrideCallback s_LNEventConnection_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -7609,11 +7609,11 @@ public:
             }
         }
         if (s_LNEventConnection_OnSerialize_OverrideCallback) s_LNEventConnection_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::EventConnection::onSerialize(ar);
+        ln::EventConnection::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::EventConnection::onSerialize(ar);
+        ln::EventConnection::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -7726,7 +7726,7 @@ public:
 
     // Overrides
     static LNVariant_OnSerialize_OverrideCallback s_LNVariant_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -7735,11 +7735,11 @@ public:
             }
         }
         if (s_LNVariant_OnSerialize_OverrideCallback) s_LNVariant_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Variant::onSerialize(ar);
+        ln::Variant::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Variant::onSerialize(ar);
+        ln::Variant::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8196,7 +8196,7 @@ public:
 
     // Overrides
     static LNZVTestClass1_OnSerialize_OverrideCallback s_LNZVTestClass1_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8205,11 +8205,11 @@ public:
             }
         }
         if (s_LNZVTestClass1_OnSerialize_OverrideCallback) s_LNZVTestClass1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::ZVTestClass1::onSerialize(ar);
+        ln::ZVTestClass1::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::ZVTestClass1::onSerialize(ar);
+        ln::ZVTestClass1::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8258,7 +8258,7 @@ public:
 
     // Overrides
     static LNZVTestEventArgs1_OnSerialize_OverrideCallback s_LNZVTestEventArgs1_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8267,11 +8267,11 @@ public:
             }
         }
         if (s_LNZVTestEventArgs1_OnSerialize_OverrideCallback) s_LNZVTestEventArgs1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::ZVTestEventArgs1::onSerialize(ar);
+        ln::ZVTestEventArgs1::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::ZVTestEventArgs1::onSerialize(ar);
+        ln::ZVTestEventArgs1::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8300,7 +8300,7 @@ public:
 
 
 
-class LNWS_ln_Serializer2 : public ln::Serializer2
+class LNWS_ln_Serializer2 : public ln::Serializer2_deprecated
 {
 public:
     // Override functions per instance for FlatAPI User.
@@ -8327,7 +8327,7 @@ public:
 
     // Overrides
     static LNSerializer2_OnSerialize_OverrideCallback s_LNSerializer2_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8336,11 +8336,11 @@ public:
             }
         }
         if (s_LNSerializer2_OnSerialize_OverrideCallback) s_LNSerializer2_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Serializer2::onSerialize(ar);
+        ln::Serializer2_deprecated::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Serializer2::onSerialize(ar);
+        ln::Serializer2_deprecated::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8389,7 +8389,7 @@ public:
 
     // Overrides
     static LNAssetObject_OnSerialize_OverrideCallback s_LNAssetObject_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8398,11 +8398,11 @@ public:
             }
         }
         if (s_LNAssetObject_OnSerialize_OverrideCallback) s_LNAssetObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::AssetObject::onSerialize(ar);
+        ln::AssetObject::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::AssetObject::onSerialize(ar);
+        ln::AssetObject::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8451,7 +8451,7 @@ public:
 
     // Overrides
     static LNAssetImportSettings_OnSerialize_OverrideCallback s_LNAssetImportSettings_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8460,11 +8460,11 @@ public:
             }
         }
         if (s_LNAssetImportSettings_OnSerialize_OverrideCallback) s_LNAssetImportSettings_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::AssetImportSettings::onSerialize(ar);
+        ln::AssetImportSettings::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::AssetImportSettings::onSerialize(ar);
+        ln::AssetImportSettings::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8513,7 +8513,7 @@ public:
 
     // Overrides
     static LNAssetModel_OnSerialize_OverrideCallback s_LNAssetModel_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8522,11 +8522,11 @@ public:
             }
         }
         if (s_LNAssetModel_OnSerialize_OverrideCallback) s_LNAssetModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::AssetModel::onSerialize(ar);
+        ln::AssetModel::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::AssetModel::onSerialize(ar);
+        ln::AssetModel::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8696,7 +8696,7 @@ public:
 
     // Overrides
     static LNTexture_OnSerialize_OverrideCallback s_LNTexture_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8705,11 +8705,11 @@ public:
             }
         }
         if (s_LNTexture_OnSerialize_OverrideCallback) s_LNTexture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Texture::onSerialize(ar);
+        ln::Texture::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Texture::onSerialize(ar);
+        ln::Texture::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8758,7 +8758,7 @@ public:
 
     // Overrides
     static LNTexture2D_OnSerialize_OverrideCallback s_LNTexture2D_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8767,11 +8767,11 @@ public:
             }
         }
         if (s_LNTexture2D_OnSerialize_OverrideCallback) s_LNTexture2D_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Texture2D::onSerialize(ar);
+        ln::Texture2D::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Texture2D::onSerialize(ar);
+        ln::Texture2D::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8820,7 +8820,7 @@ public:
 
     // Overrides
     static LNShader_OnSerialize_OverrideCallback s_LNShader_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8829,11 +8829,11 @@ public:
             }
         }
         if (s_LNShader_OnSerialize_OverrideCallback) s_LNShader_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Shader::onSerialize(ar);
+        ln::Shader::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Shader::onSerialize(ar);
+        ln::Shader::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8882,7 +8882,7 @@ public:
 
     // Overrides
     static LNSound_OnSerialize_OverrideCallback s_LNSound_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8891,11 +8891,11 @@ public:
             }
         }
         if (s_LNSound_OnSerialize_OverrideCallback) s_LNSound_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Sound::onSerialize(ar);
+        ln::Sound::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Sound::onSerialize(ar);
+        ln::Sound::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -8951,7 +8951,7 @@ public:
 
     // Overrides
     static LNRenderView_OnSerialize_OverrideCallback s_LNRenderView_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -8960,11 +8960,11 @@ public:
             }
         }
         if (s_LNRenderView_OnSerialize_OverrideCallback) s_LNRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::RenderView::onSerialize(ar);
+        ln::RenderView::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::RenderView::onSerialize(ar);
+        ln::RenderView::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9013,7 +9013,7 @@ public:
 
     // Overrides
     static LNMaterial_OnSerialize_OverrideCallback s_LNMaterial_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9022,11 +9022,11 @@ public:
             }
         }
         if (s_LNMaterial_OnSerialize_OverrideCallback) s_LNMaterial_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Material::onSerialize(ar);
+        ln::Material::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Material::onSerialize(ar);
+        ln::Material::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9075,7 +9075,7 @@ public:
 
     // Overrides
     static LNMeshNode_OnSerialize_OverrideCallback s_LNMeshNode_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9084,11 +9084,11 @@ public:
             }
         }
         if (s_LNMeshNode_OnSerialize_OverrideCallback) s_LNMeshNode_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::MeshNode::onSerialize(ar);
+        ln::MeshNode::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::MeshNode::onSerialize(ar);
+        ln::MeshNode::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9137,7 +9137,7 @@ public:
 
     // Overrides
     static LNAnimationController_OnSerialize_OverrideCallback s_LNAnimationController_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9146,11 +9146,11 @@ public:
             }
         }
         if (s_LNAnimationController_OnSerialize_OverrideCallback) s_LNAnimationController_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::AnimationController::onSerialize(ar);
+        ln::AnimationController::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::AnimationController::onSerialize(ar);
+        ln::AnimationController::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9199,7 +9199,7 @@ public:
 
     // Overrides
     static LNMeshModel_OnSerialize_OverrideCallback s_LNMeshModel_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9208,11 +9208,11 @@ public:
             }
         }
         if (s_LNMeshModel_OnSerialize_OverrideCallback) s_LNMeshModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::MeshModel::onSerialize(ar);
+        ln::MeshModel::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::MeshModel::onSerialize(ar);
+        ln::MeshModel::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9261,7 +9261,7 @@ public:
 
     // Overrides
     static LNMeshImportSettings_OnSerialize_OverrideCallback s_LNMeshImportSettings_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9270,11 +9270,11 @@ public:
             }
         }
         if (s_LNMeshImportSettings_OnSerialize_OverrideCallback) s_LNMeshImportSettings_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::MeshImportSettings::onSerialize(ar);
+        ln::MeshImportSettings::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::MeshImportSettings::onSerialize(ar);
+        ln::MeshImportSettings::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9323,7 +9323,7 @@ public:
 
     // Overrides
     static LNSkinnedMeshModel_OnSerialize_OverrideCallback s_LNSkinnedMeshModel_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9332,11 +9332,11 @@ public:
             }
         }
         if (s_LNSkinnedMeshModel_OnSerialize_OverrideCallback) s_LNSkinnedMeshModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::SkinnedMeshModel::onSerialize(ar);
+        ln::SkinnedMeshModel::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::SkinnedMeshModel::onSerialize(ar);
+        ln::SkinnedMeshModel::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9385,7 +9385,7 @@ public:
 
     // Overrides
     static LNCollisionShape_OnSerialize_OverrideCallback s_LNCollisionShape_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9394,11 +9394,11 @@ public:
             }
         }
         if (s_LNCollisionShape_OnSerialize_OverrideCallback) s_LNCollisionShape_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::CollisionShape::onSerialize(ar);
+        ln::CollisionShape::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::CollisionShape::onSerialize(ar);
+        ln::CollisionShape::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9447,7 +9447,7 @@ public:
 
     // Overrides
     static LNBoxCollisionShape_OnSerialize_OverrideCallback s_LNBoxCollisionShape_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9456,11 +9456,11 @@ public:
             }
         }
         if (s_LNBoxCollisionShape_OnSerialize_OverrideCallback) s_LNBoxCollisionShape_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::BoxCollisionShape::onSerialize(ar);
+        ln::BoxCollisionShape::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::BoxCollisionShape::onSerialize(ar);
+        ln::BoxCollisionShape::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9509,7 +9509,7 @@ public:
 
     // Overrides
     static LNAnimationCurve_OnSerialize_OverrideCallback s_LNAnimationCurve_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9518,11 +9518,11 @@ public:
             }
         }
         if (s_LNAnimationCurve_OnSerialize_OverrideCallback) s_LNAnimationCurve_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::AnimationCurve::onSerialize(ar);
+        ln::AnimationCurve::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::AnimationCurve::onSerialize(ar);
+        ln::AnimationCurve::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9571,7 +9571,7 @@ public:
 
     // Overrides
     static LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9580,11 +9580,11 @@ public:
             }
         }
         if (s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback) s_LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::KeyFrameAnimationCurve::onSerialize(ar);
+        ln::KeyFrameAnimationCurve::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::KeyFrameAnimationCurve::onSerialize(ar);
+        ln::KeyFrameAnimationCurve::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9633,7 +9633,7 @@ public:
 
     // Overrides
     static LNAnimationClip_OnSerialize_OverrideCallback s_LNAnimationClip_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9642,11 +9642,11 @@ public:
             }
         }
         if (s_LNAnimationClip_OnSerialize_OverrideCallback) s_LNAnimationClip_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::AnimationClip::onSerialize(ar);
+        ln::AnimationClip::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::AnimationClip::onSerialize(ar);
+        ln::AnimationClip::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9695,7 +9695,7 @@ public:
 
     // Overrides
     static LNAnimationState_OnSerialize_OverrideCallback s_LNAnimationState_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9704,11 +9704,11 @@ public:
             }
         }
         if (s_LNAnimationState_OnSerialize_OverrideCallback) s_LNAnimationState_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::AnimationState::onSerialize(ar);
+        ln::AnimationState::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::AnimationState::onSerialize(ar);
+        ln::AnimationState::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9757,7 +9757,7 @@ public:
 
     // Overrides
     static LNEffectResource_OnSerialize_OverrideCallback s_LNEffectResource_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9766,11 +9766,11 @@ public:
             }
         }
         if (s_LNEffectResource_OnSerialize_OverrideCallback) s_LNEffectResource_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::EffectResource::onSerialize(ar);
+        ln::EffectResource::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::EffectResource::onSerialize(ar);
+        ln::EffectResource::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9819,7 +9819,7 @@ public:
 
     // Overrides
     static LNParticleEmitterModel_OnSerialize_OverrideCallback s_LNParticleEmitterModel_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9828,11 +9828,11 @@ public:
             }
         }
         if (s_LNParticleEmitterModel_OnSerialize_OverrideCallback) s_LNParticleEmitterModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::ParticleEmitterModel::onSerialize(ar);
+        ln::ParticleEmitterModel::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::ParticleEmitterModel::onSerialize(ar);
+        ln::ParticleEmitterModel::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9881,7 +9881,7 @@ public:
 
     // Overrides
     static LNParticleModel_OnSerialize_OverrideCallback s_LNParticleModel_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9890,11 +9890,11 @@ public:
             }
         }
         if (s_LNParticleModel_OnSerialize_OverrideCallback) s_LNParticleModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::ParticleModel::onSerialize(ar);
+        ln::ParticleModel::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::ParticleModel::onSerialize(ar);
+        ln::ParticleModel::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -9943,7 +9943,7 @@ public:
 
     // Overrides
     static LNComponent_OnSerialize_OverrideCallback s_LNComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -9952,11 +9952,11 @@ public:
             }
         }
         if (s_LNComponent_OnSerialize_OverrideCallback) s_LNComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Component::onSerialize(ar);
+        ln::Component::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Component::onSerialize(ar);
+        ln::Component::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -10005,7 +10005,7 @@ public:
 
     // Overrides
     static LNVisualComponent_OnSerialize_OverrideCallback s_LNVisualComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10014,11 +10014,11 @@ public:
             }
         }
         if (s_LNVisualComponent_OnSerialize_OverrideCallback) s_LNVisualComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::VisualComponent::onSerialize(ar);
+        ln::VisualComponent::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::VisualComponent::onSerialize(ar);
+        ln::VisualComponent::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -10067,7 +10067,7 @@ public:
 
     // Overrides
     static LNSpriteComponent_OnSerialize_OverrideCallback s_LNSpriteComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10076,11 +10076,11 @@ public:
             }
         }
         if (s_LNSpriteComponent_OnSerialize_OverrideCallback) s_LNSpriteComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::SpriteComponent::onSerialize(ar);
+        ln::SpriteComponent::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::SpriteComponent::onSerialize(ar);
+        ln::SpriteComponent::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -10193,7 +10193,7 @@ public:
 
     // Overrides
     static LNCharacterController_OnSerialize_OverrideCallback s_LNCharacterController_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10202,11 +10202,11 @@ public:
             }
         }
         if (s_LNCharacterController_OnSerialize_OverrideCallback) s_LNCharacterController_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::CharacterController::onSerialize(ar);
+        ln::CharacterController::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::CharacterController::onSerialize(ar);
+        ln::CharacterController::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -10255,7 +10255,7 @@ public:
 
     // Overrides
     static LNWorld_OnSerialize_OverrideCallback s_LNWorld_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10264,11 +10264,11 @@ public:
             }
         }
         if (s_LNWorld_OnSerialize_OverrideCallback) s_LNWorld_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::World::onSerialize(ar);
+        ln::World::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::World::onSerialize(ar);
+        ln::World::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -10317,7 +10317,7 @@ public:
 
     // Overrides
     static LNComponentList_OnSerialize_OverrideCallback s_LNComponentList_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10326,11 +10326,11 @@ public:
             }
         }
         if (s_LNComponentList_OnSerialize_OverrideCallback) s_LNComponentList_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::ComponentList::onSerialize(ar);
+        ln::ComponentList::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::ComponentList::onSerialize(ar);
+        ln::ComponentList::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -10381,7 +10381,7 @@ public:
 
     // Overrides
     static LNWorldObject_OnSerialize_OverrideCallback s_LNWorldObject_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10390,11 +10390,11 @@ public:
             }
         }
         if (s_LNWorldObject_OnSerialize_OverrideCallback) s_LNWorldObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::WorldObject::onSerialize(ar);
+        ln::WorldObject::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::WorldObject::onSerialize(ar);
+        ln::WorldObject::onSerialize_deprecated(ar);
     }
 
     static LNWorldObject_OnPreUpdate_OverrideCallback s_LNWorldObject_OnPreUpdate_OverrideCallback; // deprecated
@@ -10481,7 +10481,7 @@ public:
 
     // Overrides
     static LNVisualObject_OnSerialize_OverrideCallback s_LNVisualObject_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10490,11 +10490,11 @@ public:
             }
         }
         if (s_LNVisualObject_OnSerialize_OverrideCallback) s_LNVisualObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::VisualObject::onSerialize(ar);
+        ln::VisualObject::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::VisualObject::onSerialize(ar);
+        ln::VisualObject::onSerialize_deprecated(ar);
     }
 
     static LNVisualObject_OnPreUpdate_OverrideCallback s_LNVisualObject_OnPreUpdate_OverrideCallback; // deprecated
@@ -10581,7 +10581,7 @@ public:
 
     // Overrides
     static LNCamera_OnSerialize_OverrideCallback s_LNCamera_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10590,11 +10590,11 @@ public:
             }
         }
         if (s_LNCamera_OnSerialize_OverrideCallback) s_LNCamera_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Camera::onSerialize(ar);
+        ln::Camera::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Camera::onSerialize(ar);
+        ln::Camera::onSerialize_deprecated(ar);
     }
 
     static LNCamera_OnPreUpdate_OverrideCallback s_LNCamera_OnPreUpdate_OverrideCallback; // deprecated
@@ -10681,7 +10681,7 @@ public:
 
     // Overrides
     static LNEnvironmentLight_OnSerialize_OverrideCallback s_LNEnvironmentLight_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10690,11 +10690,11 @@ public:
             }
         }
         if (s_LNEnvironmentLight_OnSerialize_OverrideCallback) s_LNEnvironmentLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::EnvironmentLight::onSerialize(ar);
+        ln::EnvironmentLight::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::EnvironmentLight::onSerialize(ar);
+        ln::EnvironmentLight::onSerialize_deprecated(ar);
     }
 
     static LNEnvironmentLight_OnPreUpdate_OverrideCallback s_LNEnvironmentLight_OnPreUpdate_OverrideCallback; // deprecated
@@ -10781,7 +10781,7 @@ public:
 
     // Overrides
     static LNDirectionalLight_OnSerialize_OverrideCallback s_LNDirectionalLight_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10790,11 +10790,11 @@ public:
             }
         }
         if (s_LNDirectionalLight_OnSerialize_OverrideCallback) s_LNDirectionalLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::DirectionalLight::onSerialize(ar);
+        ln::DirectionalLight::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::DirectionalLight::onSerialize(ar);
+        ln::DirectionalLight::onSerialize_deprecated(ar);
     }
 
     static LNDirectionalLight_OnPreUpdate_OverrideCallback s_LNDirectionalLight_OnPreUpdate_OverrideCallback; // deprecated
@@ -10881,7 +10881,7 @@ public:
 
     // Overrides
     static LNPointLight_OnSerialize_OverrideCallback s_LNPointLight_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10890,11 +10890,11 @@ public:
             }
         }
         if (s_LNPointLight_OnSerialize_OverrideCallback) s_LNPointLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::PointLight::onSerialize(ar);
+        ln::PointLight::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::PointLight::onSerialize(ar);
+        ln::PointLight::onSerialize_deprecated(ar);
     }
 
     static LNPointLight_OnPreUpdate_OverrideCallback s_LNPointLight_OnPreUpdate_OverrideCallback; // deprecated
@@ -10981,7 +10981,7 @@ public:
 
     // Overrides
     static LNSpotLight_OnSerialize_OverrideCallback s_LNSpotLight_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -10990,11 +10990,11 @@ public:
             }
         }
         if (s_LNSpotLight_OnSerialize_OverrideCallback) s_LNSpotLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::SpotLight::onSerialize(ar);
+        ln::SpotLight::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::SpotLight::onSerialize(ar);
+        ln::SpotLight::onSerialize_deprecated(ar);
     }
 
     static LNSpotLight_OnPreUpdate_OverrideCallback s_LNSpotLight_OnPreUpdate_OverrideCallback; // deprecated
@@ -11147,7 +11147,7 @@ public:
 
     // Overrides
     static LNSprite_OnSerialize_OverrideCallback s_LNSprite_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11156,11 +11156,11 @@ public:
             }
         }
         if (s_LNSprite_OnSerialize_OverrideCallback) s_LNSprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Sprite::onSerialize(ar);
+        ln::Sprite::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Sprite::onSerialize(ar);
+        ln::Sprite::onSerialize_deprecated(ar);
     }
 
     static LNSprite_OnPreUpdate_OverrideCallback s_LNSprite_OnPreUpdate_OverrideCallback; // deprecated
@@ -11245,7 +11245,7 @@ public:
 
     // Overrides
     static LNCameraOrbitControlComponent_OnSerialize_OverrideCallback s_LNCameraOrbitControlComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11254,11 +11254,11 @@ public:
             }
         }
         if (s_LNCameraOrbitControlComponent_OnSerialize_OverrideCallback) s_LNCameraOrbitControlComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::CameraOrbitControlComponent::onSerialize(ar);
+        ln::CameraOrbitControlComponent::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::CameraOrbitControlComponent::onSerialize(ar);
+        ln::CameraOrbitControlComponent::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -11307,7 +11307,7 @@ public:
 
     // Overrides
     static LNRaycaster_OnSerialize_OverrideCallback s_LNRaycaster_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11316,11 +11316,11 @@ public:
             }
         }
         if (s_LNRaycaster_OnSerialize_OverrideCallback) s_LNRaycaster_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Raycaster::onSerialize(ar);
+        ln::Raycaster::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Raycaster::onSerialize(ar);
+        ln::Raycaster::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -11369,7 +11369,7 @@ public:
 
     // Overrides
     static LNRaycastResult_OnSerialize_OverrideCallback s_LNRaycastResult_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11378,11 +11378,11 @@ public:
             }
         }
         if (s_LNRaycastResult_OnSerialize_OverrideCallback) s_LNRaycastResult_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::RaycastResult::onSerialize(ar);
+        ln::RaycastResult::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::RaycastResult::onSerialize(ar);
+        ln::RaycastResult::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -11431,7 +11431,7 @@ public:
 
     // Overrides
     static LNWorldRenderView_OnSerialize_OverrideCallback s_LNWorldRenderView_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11440,11 +11440,11 @@ public:
             }
         }
         if (s_LNWorldRenderView_OnSerialize_OverrideCallback) s_LNWorldRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::WorldRenderView::onSerialize(ar);
+        ln::WorldRenderView::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::WorldRenderView::onSerialize(ar);
+        ln::WorldRenderView::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -11495,7 +11495,7 @@ public:
 
     // Overrides
     static LNShapeObject_OnSerialize_OverrideCallback s_LNShapeObject_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11504,11 +11504,11 @@ public:
             }
         }
         if (s_LNShapeObject_OnSerialize_OverrideCallback) s_LNShapeObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::ShapeObject::onSerialize(ar);
+        ln::ShapeObject::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::ShapeObject::onSerialize(ar);
+        ln::ShapeObject::onSerialize_deprecated(ar);
     }
 
     static LNShapeObject_OnPreUpdate_OverrideCallback s_LNShapeObject_OnPreUpdate_OverrideCallback; // deprecated
@@ -11595,7 +11595,7 @@ public:
 
     // Overrides
     static LNPlaneMesh_OnSerialize_OverrideCallback s_LNPlaneMesh_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11604,11 +11604,11 @@ public:
             }
         }
         if (s_LNPlaneMesh_OnSerialize_OverrideCallback) s_LNPlaneMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::PlaneMesh::onSerialize(ar);
+        ln::PlaneMesh::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::PlaneMesh::onSerialize(ar);
+        ln::PlaneMesh::onSerialize_deprecated(ar);
     }
 
     static LNPlaneMesh_OnPreUpdate_OverrideCallback s_LNPlaneMesh_OnPreUpdate_OverrideCallback; // deprecated
@@ -11738,7 +11738,7 @@ public:
 
     // Overrides
     static LNStaticMesh_OnSerialize_OverrideCallback s_LNStaticMesh_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11747,11 +11747,11 @@ public:
             }
         }
         if (s_LNStaticMesh_OnSerialize_OverrideCallback) s_LNStaticMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::StaticMesh::onSerialize(ar);
+        ln::StaticMesh::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::StaticMesh::onSerialize(ar);
+        ln::StaticMesh::onSerialize_deprecated(ar);
     }
 
     static LNStaticMesh_OnPreUpdate_OverrideCallback s_LNStaticMesh_OnPreUpdate_OverrideCallback; // deprecated
@@ -11836,7 +11836,7 @@ public:
 
     // Overrides
     static LNMeshComponent_OnSerialize_OverrideCallback s_LNMeshComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11845,11 +11845,11 @@ public:
             }
         }
         if (s_LNMeshComponent_OnSerialize_OverrideCallback) s_LNMeshComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::MeshComponent::onSerialize(ar);
+        ln::MeshComponent::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::MeshComponent::onSerialize(ar);
+        ln::MeshComponent::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -11898,7 +11898,7 @@ public:
 
     // Overrides
     static LNCollision_OnSerialize_OverrideCallback s_LNCollision_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11907,11 +11907,11 @@ public:
             }
         }
         if (s_LNCollision_OnSerialize_OverrideCallback) s_LNCollision_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Collision::onSerialize(ar);
+        ln::Collision::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Collision::onSerialize(ar);
+        ln::Collision::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -11960,7 +11960,7 @@ public:
 
     // Overrides
     static LNTriggerBodyComponent_OnSerialize_OverrideCallback s_LNTriggerBodyComponent_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -11969,11 +11969,11 @@ public:
             }
         }
         if (s_LNTriggerBodyComponent_OnSerialize_OverrideCallback) s_LNTriggerBodyComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::TriggerBodyComponent::onSerialize(ar);
+        ln::TriggerBodyComponent::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::TriggerBodyComponent::onSerialize(ar);
+        ln::TriggerBodyComponent::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12024,7 +12024,7 @@ public:
 
     // Overrides
     static LNParticleEmitter_OnSerialize_OverrideCallback s_LNParticleEmitter_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12033,11 +12033,11 @@ public:
             }
         }
         if (s_LNParticleEmitter_OnSerialize_OverrideCallback) s_LNParticleEmitter_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::ParticleEmitter::onSerialize(ar);
+        ln::ParticleEmitter::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::ParticleEmitter::onSerialize(ar);
+        ln::ParticleEmitter::onSerialize_deprecated(ar);
     }
 
     static LNParticleEmitter_OnPreUpdate_OverrideCallback s_LNParticleEmitter_OnPreUpdate_OverrideCallback; // deprecated
@@ -12134,7 +12134,7 @@ public:
 
     // Overrides
     static LNLevel_OnSerialize_OverrideCallback s_LNLevel_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12143,11 +12143,11 @@ public:
             }
         }
         if (s_LNLevel_OnSerialize_OverrideCallback) s_LNLevel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Level::onSerialize(ar);
+        ln::Level::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Level::onSerialize(ar);
+        ln::Level::onSerialize_deprecated(ar);
     }
 
     static LNLevel_OnStart_OverrideCallback s_LNLevel_OnStart_OverrideCallback; // deprecated
@@ -12293,7 +12293,7 @@ public:
 
     // Overrides
     static LNUIEventArgs_OnSerialize_OverrideCallback s_LNUIEventArgs_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12302,11 +12302,11 @@ public:
             }
         }
         if (s_LNUIEventArgs_OnSerialize_OverrideCallback) s_LNUIEventArgs_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIEventArgs::onSerialize(ar);
+        ln::UIEventArgs::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIEventArgs::onSerialize(ar);
+        ln::UIEventArgs::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12483,7 +12483,7 @@ public:
 
     // Overrides
     static LNUILayoutElement_OnSerialize_OverrideCallback s_LNUILayoutElement_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12492,11 +12492,11 @@ public:
             }
         }
         if (s_LNUILayoutElement_OnSerialize_OverrideCallback) s_LNUILayoutElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UILayoutElement::onSerialize(ar);
+        ln::UILayoutElement::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UILayoutElement::onSerialize(ar);
+        ln::UILayoutElement::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12545,7 +12545,7 @@ public:
 
     // Overrides
     static LNUIElement_OnSerialize_OverrideCallback s_LNUIElement_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12554,11 +12554,11 @@ public:
             }
         }
         if (s_LNUIElement_OnSerialize_OverrideCallback) s_LNUIElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIElement::onSerialize(ar);
+        ln::UIElement::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIElement::onSerialize(ar);
+        ln::UIElement::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12607,7 +12607,7 @@ public:
 
     // Overrides
     static LNUIText_OnSerialize_OverrideCallback s_LNUIText_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12616,11 +12616,11 @@ public:
             }
         }
         if (s_LNUIText_OnSerialize_OverrideCallback) s_LNUIText_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIText::onSerialize(ar);
+        ln::UIText::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIText::onSerialize(ar);
+        ln::UIText::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12669,7 +12669,7 @@ public:
 
     // Overrides
     static LNUISprite_OnSerialize_OverrideCallback s_LNUISprite_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12678,11 +12678,11 @@ public:
             }
         }
         if (s_LNUISprite_OnSerialize_OverrideCallback) s_LNUISprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UISprite::onSerialize(ar);
+        ln::UISprite::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UISprite::onSerialize(ar);
+        ln::UISprite::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12731,7 +12731,7 @@ public:
 
     // Overrides
     static LNUIIcon_OnSerialize_OverrideCallback s_LNUIIcon_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12740,11 +12740,11 @@ public:
             }
         }
         if (s_LNUIIcon_OnSerialize_OverrideCallback) s_LNUIIcon_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIIcon::onSerialize(ar);
+        ln::UIIcon::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIIcon::onSerialize(ar);
+        ln::UIIcon::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12793,7 +12793,7 @@ public:
 
     // Overrides
     static LNUIMessageTextArea_OnSerialize_OverrideCallback s_LNUIMessageTextArea_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12802,11 +12802,11 @@ public:
             }
         }
         if (s_LNUIMessageTextArea_OnSerialize_OverrideCallback) s_LNUIMessageTextArea_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIMessageTextArea::onSerialize(ar);
+        ln::UIMessageTextArea::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIMessageTextArea::onSerialize(ar);
+        ln::UIMessageTextArea::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12862,7 +12862,7 @@ public:
 
     // Overrides
     static LNUILayoutPanel_OnSerialize_OverrideCallback s_LNUILayoutPanel_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12871,11 +12871,11 @@ public:
             }
         }
         if (s_LNUILayoutPanel_OnSerialize_OverrideCallback) s_LNUILayoutPanel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UILayoutPanel::onSerialize(ar);
+        ln::UILayoutPanel::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UILayoutPanel::onSerialize(ar);
+        ln::UILayoutPanel::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12924,7 +12924,7 @@ public:
 
     // Overrides
     static LNUIBoxLayout_OnSerialize_OverrideCallback s_LNUIBoxLayout_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12933,11 +12933,11 @@ public:
             }
         }
         if (s_LNUIBoxLayout_OnSerialize_OverrideCallback) s_LNUIBoxLayout_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIBoxLayout::onSerialize(ar);
+        ln::UIBoxLayout::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIBoxLayout::onSerialize(ar);
+        ln::UIBoxLayout::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -12986,7 +12986,7 @@ public:
 
     // Overrides
     static LNUIStackLayout_OnSerialize_OverrideCallback s_LNUIStackLayout_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -12995,11 +12995,11 @@ public:
             }
         }
         if (s_LNUIStackLayout_OnSerialize_OverrideCallback) s_LNUIStackLayout_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIStackLayout::onSerialize(ar);
+        ln::UIStackLayout::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIStackLayout::onSerialize(ar);
+        ln::UIStackLayout::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13048,7 +13048,7 @@ public:
 
     // Overrides
     static LNUIGridLayout_OnSerialize_OverrideCallback s_LNUIGridLayout_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13057,11 +13057,11 @@ public:
             }
         }
         if (s_LNUIGridLayout_OnSerialize_OverrideCallback) s_LNUIGridLayout_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIGridLayout::onSerialize(ar);
+        ln::UIGridLayout::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIGridLayout::onSerialize(ar);
+        ln::UIGridLayout::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13110,7 +13110,7 @@ public:
 
     // Overrides
     static LNUIControl_OnSerialize_OverrideCallback s_LNUIControl_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13119,11 +13119,11 @@ public:
             }
         }
         if (s_LNUIControl_OnSerialize_OverrideCallback) s_LNUIControl_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIControl::onSerialize(ar);
+        ln::UIControl::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIControl::onSerialize(ar);
+        ln::UIControl::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13172,7 +13172,7 @@ public:
 
     // Overrides
     static LNUIButtonBase_OnSerialize_OverrideCallback s_LNUIButtonBase_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13181,11 +13181,11 @@ public:
             }
         }
         if (s_LNUIButtonBase_OnSerialize_OverrideCallback) s_LNUIButtonBase_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIButtonBase::onSerialize(ar);
+        ln::UIButtonBase::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIButtonBase::onSerialize(ar);
+        ln::UIButtonBase::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13234,7 +13234,7 @@ public:
 
     // Overrides
     static LNUIButton_OnSerialize_OverrideCallback s_LNUIButton_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13243,11 +13243,11 @@ public:
             }
         }
         if (s_LNUIButton_OnSerialize_OverrideCallback) s_LNUIButton_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIButton::onSerialize(ar);
+        ln::UIButton::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIButton::onSerialize(ar);
+        ln::UIButton::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13296,7 +13296,7 @@ public:
 
     // Overrides
     static LNUIWindow_OnSerialize_OverrideCallback s_LNUIWindow_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13305,11 +13305,11 @@ public:
             }
         }
         if (s_LNUIWindow_OnSerialize_OverrideCallback) s_LNUIWindow_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIWindow::onSerialize(ar);
+        ln::UIWindow::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIWindow::onSerialize(ar);
+        ln::UIWindow::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13358,7 +13358,7 @@ public:
 
     // Overrides
     static LNUIListItemsControl_OnSerialize_OverrideCallback s_LNUIListItemsControl_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13367,11 +13367,11 @@ public:
             }
         }
         if (s_LNUIListItemsControl_OnSerialize_OverrideCallback) s_LNUIListItemsControl_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIListItemsControl::onSerialize(ar);
+        ln::UIListItemsControl::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIListItemsControl::onSerialize(ar);
+        ln::UIListItemsControl::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13420,7 +13420,7 @@ public:
 
     // Overrides
     static LNUIListBox_OnSerialize_OverrideCallback s_LNUIListBox_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13429,11 +13429,11 @@ public:
             }
         }
         if (s_LNUIListBox_OnSerialize_OverrideCallback) s_LNUIListBox_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIListBox::onSerialize(ar);
+        ln::UIListBox::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIListBox::onSerialize(ar);
+        ln::UIListBox::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13482,7 +13482,7 @@ public:
 
     // Overrides
     static LNUIListItem_OnSerialize_OverrideCallback s_LNUIListItem_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13491,11 +13491,11 @@ public:
             }
         }
         if (s_LNUIListItem_OnSerialize_OverrideCallback) s_LNUIListItem_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIListItem::onSerialize(ar);
+        ln::UIListItem::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIListItem::onSerialize(ar);
+        ln::UIListItem::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13544,7 +13544,7 @@ public:
 
     // Overrides
     static LNUIListBoxItem_OnSerialize_OverrideCallback s_LNUIListBoxItem_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13553,11 +13553,11 @@ public:
             }
         }
         if (s_LNUIListBoxItem_OnSerialize_OverrideCallback) s_LNUIListBoxItem_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::UIListBoxItem::onSerialize(ar);
+        ln::UIListBoxItem::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::UIListBoxItem::onSerialize(ar);
+        ln::UIListBoxItem::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13606,7 +13606,7 @@ public:
 
     // Overrides
     static LNInputGesture_OnSerialize_OverrideCallback s_LNInputGesture_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13615,11 +13615,11 @@ public:
             }
         }
         if (s_LNInputGesture_OnSerialize_OverrideCallback) s_LNInputGesture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::InputGesture::onSerialize(ar);
+        ln::InputGesture::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::InputGesture::onSerialize(ar);
+        ln::InputGesture::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13668,7 +13668,7 @@ public:
 
     // Overrides
     static LNKeyGesture_OnSerialize_OverrideCallback s_LNKeyGesture_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13677,11 +13677,11 @@ public:
             }
         }
         if (s_LNKeyGesture_OnSerialize_OverrideCallback) s_LNKeyGesture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::KeyGesture::onSerialize(ar);
+        ln::KeyGesture::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::KeyGesture::onSerialize(ar);
+        ln::KeyGesture::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13744,7 +13744,7 @@ public:
 
     // Overrides
     static LNInterpreterCommand_OnSerialize_OverrideCallback s_LNInterpreterCommand_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13753,11 +13753,11 @@ public:
             }
         }
         if (s_LNInterpreterCommand_OnSerialize_OverrideCallback) s_LNInterpreterCommand_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::InterpreterCommand::onSerialize(ar);
+        ln::InterpreterCommand::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::InterpreterCommand::onSerialize(ar);
+        ln::InterpreterCommand::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13806,7 +13806,7 @@ public:
 
     // Overrides
     static LNInterpreterCommandList_OnSerialize_OverrideCallback s_LNInterpreterCommandList_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13815,11 +13815,11 @@ public:
             }
         }
         if (s_LNInterpreterCommandList_OnSerialize_OverrideCallback) s_LNInterpreterCommandList_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::InterpreterCommandList::onSerialize(ar);
+        ln::InterpreterCommandList::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::InterpreterCommandList::onSerialize(ar);
+        ln::InterpreterCommandList::onSerialize_deprecated(ar);
     }
 
     // TypeInfo
@@ -13935,7 +13935,7 @@ public:
 
     // Overrides
     static LNInterpreter_OnSerialize_OverrideCallback s_LNInterpreter_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -13944,11 +13944,11 @@ public:
             }
         }
         if (s_LNInterpreter_OnSerialize_OverrideCallback) s_LNInterpreter_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Interpreter::onSerialize(ar);
+        ln::Interpreter::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Interpreter::onSerialize(ar);
+        ln::Interpreter::onSerialize_deprecated(ar);
     }
 
     static LNInterpreter_OnUpdateWait_OverrideCallback s_LNInterpreter_OnUpdateWait_OverrideCallback; // deprecated
@@ -14029,7 +14029,7 @@ public:
 
     // Overrides
     static LNApplication_OnSerialize_OverrideCallback s_LNApplication_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer2* ar) override
+    virtual void onSerialize_deprecated(ln::Serializer2_deprecated* ar) override
     {
         if (m_overridePrototypes) {
             if (auto func = m_overridePrototypes->OnSerialize_OverrideFunc) {
@@ -14038,11 +14038,11 @@ public:
             }
         }
         if (s_LNApplication_OnSerialize_OverrideCallback) s_LNApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-        ln::Application::onSerialize(ar);
+        ln::Application::onSerialize_deprecated(ar);
     }
-    void onSerialize_CallBase(ln::Serializer2* ar)
+    void onSerialize_CallBase(ln::Serializer2_deprecated* ar)
     {
-        ln::Application::onSerialize(ar);
+        ln::Application::onSerialize_deprecated(ar);
     }
 
     static LNApplication_OnInit_OverrideCallback s_LNApplication_OnInit_OverrideCallback; // deprecated
@@ -14417,7 +14417,7 @@ LN_FLAT_API LNResult LNColorTone_Set(LNColorTone* colortone, float r_, float g_,
 LN_FLAT_API LNResult LNObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Object, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Object, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNObject_OnSerialize_SetOverrideCallback(LNObject_OnSerialize_OverrideCallback callback)
@@ -14462,7 +14462,7 @@ LNSubinstanceId LNObject_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNEventConnection_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EventConnection, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EventConnection, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNEventConnection_OnSerialize_SetOverrideCallback(LNEventConnection_OnSerialize_OverrideCallback callback)
@@ -14560,7 +14560,7 @@ LN_FLAT_API LNResult LNVariant_GetInt(LNHandle variant, int* outReturn)
 LN_FLAT_API LNResult LNVariant_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Variant, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNVariant_OnSerialize_SetOverrideCallback(LNVariant_OnSerialize_OverrideCallback callback)
@@ -14984,7 +14984,7 @@ LN_FLAT_API LNResult LNZVTestClass1_RaiseEvent2(LNHandle zvtestclass1)
 LN_FLAT_API LNResult LNZVTestClass1_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNZVTestClass1_OnSerialize_SetOverrideCallback(LNZVTestClass1_OnSerialize_OverrideCallback callback)
@@ -15059,7 +15059,7 @@ LN_FLAT_API LNResult LNZVTestEventArgs1_GetValue(LNHandle zvtesteventargs1, int*
 LN_FLAT_API LNResult LNZVTestEventArgs1_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNZVTestEventArgs1_OnSerialize_SetOverrideCallback(LNZVTestEventArgs1_OnSerialize_OverrideCallback callback)
@@ -15136,7 +15136,7 @@ LN_FLAT_API LNResult LNLog_WriteA(LNLogLevel level, const char* tag, const char*
 LN_FLAT_API LNResult LNSerializer2_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer2, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer2, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNSerializer2_OnSerialize_SetOverrideCallback(LNSerializer2_OnSerialize_OverrideCallback callback)
@@ -15152,18 +15152,18 @@ LN_FLAT_API LNResult LNSerializer2_SetPrototype_OnSerialize(LNHandle serializer2
 }
 extern LN_FLAT_API int LNSerializer2_GetTypeInfoId()
 {
-    return ln::TypeInfo::getTypeInfo<ln::Serializer2>()->id();
+    return ln::TypeInfo::getTypeInfo<ln::Serializer2_deprecated>()->id();
 }
 
 LN_FLAT_API void LNSerializer2_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Serializer2>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Serializer2_deprecated>(), id);
 }
 
 void LNSerializer2_RegisterSubclassTypeInfo(const LNSerializer2_SubclassRegistrationInfo* info)
 {
     if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Serializer2>(), info->subclassId);
+        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Serializer2_deprecated>(), info->subclassId);
         *LNWS_ln_Serializer2::subclassInfo() = *info;
     }
 }
@@ -15181,7 +15181,7 @@ LNSubinstanceId LNSerializer2_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNAssetObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNAssetObject_OnSerialize_SetOverrideCallback(LNAssetObject_OnSerialize_OverrideCallback callback)
@@ -15226,7 +15226,7 @@ LNSubinstanceId LNAssetObject_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNAssetImportSettings_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetImportSettings, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetImportSettings, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNAssetImportSettings_OnSerialize_SetOverrideCallback(LNAssetImportSettings_OnSerialize_OverrideCallback callback)
@@ -15293,7 +15293,7 @@ LN_FLAT_API LNResult LNAssetModel_Target(LNHandle assetmodel, LNHandle* outRetur
 LN_FLAT_API LNResult LNAssetModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNAssetModel_OnSerialize_SetOverrideCallback(LNAssetModel_OnSerialize_OverrideCallback callback)
@@ -15535,7 +15535,7 @@ LN_FLAT_API LNResult LNGraphics_GetActiveGraphicsAPI(LNGraphicsAPI* outReturn)
 LN_FLAT_API LNResult LNTexture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNTexture_OnSerialize_SetOverrideCallback(LNTexture_OnSerialize_OverrideCallback callback)
@@ -15652,7 +15652,7 @@ LN_FLAT_API LNResult LNTexture2D_LoadEmojiA(const char* code, LNHandle* outRetur
 LN_FLAT_API LNResult LNTexture2D_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture2D, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture2D, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNTexture2D_OnSerialize_SetOverrideCallback(LNTexture2D_OnSerialize_OverrideCallback callback)
@@ -15789,7 +15789,7 @@ LN_FLAT_API LNResult LNShader_SetTextureA(LNHandle shader, const char* parameter
 LN_FLAT_API LNResult LNShader_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Shader, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNShader_OnSerialize_SetOverrideCallback(LNShader_OnSerialize_OverrideCallback callback)
@@ -15948,7 +15948,7 @@ LN_FLAT_API LNResult LNSound_FadeVolume(LNHandle sound, float targetVolume, floa
 LN_FLAT_API LNResult LNSound_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sound, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNSound_OnSerialize_SetOverrideCallback(LNSound_OnSerialize_OverrideCallback callback)
@@ -16105,7 +16105,7 @@ LN_FLAT_API LNResult LNAudio_StopSE()
 LN_FLAT_API LNResult LNRenderView_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_RenderView, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_RenderView, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNRenderView_OnSerialize_SetOverrideCallback(LNRenderView_OnSerialize_OverrideCallback callback)
@@ -16256,7 +16256,7 @@ LN_FLAT_API LNResult LNMaterial_GetShader(LNHandle material, LNHandle* outReturn
 LN_FLAT_API LNResult LNMaterial_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Material, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNMaterial_OnSerialize_SetOverrideCallback(LNMaterial_OnSerialize_OverrideCallback callback)
@@ -16323,7 +16323,7 @@ LN_FLAT_API LNResult LNMeshNode_IsVisible(LNHandle meshnode, LNBool* outReturn)
 LN_FLAT_API LNResult LNMeshNode_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshNode, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshNode, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNMeshNode_OnSerialize_SetOverrideCallback(LNMeshNode_OnSerialize_OverrideCallback callback)
@@ -16390,7 +16390,7 @@ LN_FLAT_API LNResult LNAnimationController_Play(LNHandle animationcontroller, LN
 LN_FLAT_API LNResult LNAnimationController_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationController, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationController, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNAnimationController_OnSerialize_SetOverrideCallback(LNAnimationController_OnSerialize_OverrideCallback callback)
@@ -16561,7 +16561,7 @@ LN_FLAT_API LNResult LNMeshModel_GetAnimationController(LNHandle meshmodel, LNHa
 LN_FLAT_API LNResult LNMeshModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNMeshModel_OnSerialize_SetOverrideCallback(LNMeshModel_OnSerialize_OverrideCallback callback)
@@ -16614,7 +16614,7 @@ LN_FLAT_API LNResult LNMeshImportSettings_Create(LNHandle* outMeshImportSettings
 LN_FLAT_API LNResult LNMeshImportSettings_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshImportSettings, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshImportSettings, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNMeshImportSettings_OnSerialize_SetOverrideCallback(LNMeshImportSettings_OnSerialize_OverrideCallback callback)
@@ -16659,7 +16659,7 @@ LNSubinstanceId LNMeshImportSettings_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNSkinnedMeshModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SkinnedMeshModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SkinnedMeshModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNSkinnedMeshModel_OnSerialize_SetOverrideCallback(LNSkinnedMeshModel_OnSerialize_OverrideCallback callback)
@@ -16704,7 +16704,7 @@ LNSubinstanceId LNSkinnedMeshModel_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNCollisionShape_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CollisionShape, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CollisionShape, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNCollisionShape_OnSerialize_SetOverrideCallback(LNCollisionShape_OnSerialize_OverrideCallback callback)
@@ -16765,7 +16765,7 @@ LN_FLAT_API LNResult LNBoxCollisionShape_CreateWHD(float width, float height, fl
 LN_FLAT_API LNResult LNBoxCollisionShape_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxCollisionShape, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxCollisionShape, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNBoxCollisionShape_OnSerialize_SetOverrideCallback(LNBoxCollisionShape_OnSerialize_OverrideCallback callback)
@@ -16824,7 +16824,7 @@ LN_FLAT_API LNResult LNAnimationCurve_Evaluate(LNHandle animationcurve, float ti
 LN_FLAT_API LNResult LNAnimationCurve_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationCurve, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationCurve, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNAnimationCurve_OnSerialize_SetOverrideCallback(LNAnimationCurve_OnSerialize_OverrideCallback callback)
@@ -16885,7 +16885,7 @@ LN_FLAT_API LNResult LNKeyFrameAnimationCurve_AddKeyFrame(LNHandle keyframeanima
 LN_FLAT_API LNResult LNKeyFrameAnimationCurve_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyFrameAnimationCurve, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyFrameAnimationCurve, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNKeyFrameAnimationCurve_OnSerialize_SetOverrideCallback(LNKeyFrameAnimationCurve_OnSerialize_OverrideCallback callback)
@@ -17002,7 +17002,7 @@ LN_FLAT_API LNResult LNAnimationClip_GetHierarchicalAnimationMode(LNHandle anima
 LN_FLAT_API LNResult LNAnimationClip_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationClip, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNAnimationClip_OnSerialize_SetOverrideCallback(LNAnimationClip_OnSerialize_OverrideCallback callback)
@@ -17047,7 +17047,7 @@ LNSubinstanceId LNAnimationClip_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNAnimationState_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationState, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AnimationState, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNAnimationState_OnSerialize_SetOverrideCallback(LNAnimationState_OnSerialize_OverrideCallback callback)
@@ -17092,7 +17092,7 @@ LNSubinstanceId LNAnimationState_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNEffectResource_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EffectResource, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EffectResource, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNEffectResource_OnSerialize_SetOverrideCallback(LNEffectResource_OnSerialize_OverrideCallback callback)
@@ -17241,7 +17241,7 @@ LN_FLAT_API LNResult LNParticleEmitterModel_SetupSpriteModule(LNHandle particlee
 LN_FLAT_API LNResult LNParticleEmitterModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleEmitterModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleEmitterModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNParticleEmitterModel_OnSerialize_SetOverrideCallback(LNParticleEmitterModel_OnSerialize_OverrideCallback callback)
@@ -17324,7 +17324,7 @@ LN_FLAT_API LNResult LNParticleModel_AddEmitter(LNHandle particlemodel, LNHandle
 LN_FLAT_API LNResult LNParticleModel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNParticleModel_OnSerialize_SetOverrideCallback(LNParticleModel_OnSerialize_OverrideCallback callback)
@@ -17369,7 +17369,7 @@ LNSubinstanceId LNParticleModel_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Component, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Component, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNComponent_OnSerialize_SetOverrideCallback(LNComponent_OnSerialize_OverrideCallback callback)
@@ -17436,7 +17436,7 @@ LN_FLAT_API LNResult LNVisualComponent_IsVisible(LNHandle visualcomponent, LNBoo
 LN_FLAT_API LNResult LNVisualComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNVisualComponent_OnSerialize_SetOverrideCallback(LNVisualComponent_OnSerialize_OverrideCallback callback)
@@ -17489,7 +17489,7 @@ LN_FLAT_API LNResult LNSpriteComponent_SetTexture(LNHandle spritecomponent, LNHa
 LN_FLAT_API LNResult LNSpriteComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpriteComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpriteComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNSpriteComponent_OnSerialize_SetOverrideCallback(LNSpriteComponent_OnSerialize_OverrideCallback callback)
@@ -17693,7 +17693,7 @@ LN_FLAT_API LNResult LNCharacterController_SetCollisionStay(LNHandle characterco
 LN_FLAT_API LNResult LNCharacterController_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CharacterController, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNCharacterController_OnSerialize_SetOverrideCallback(LNCharacterController_OnSerialize_OverrideCallback callback)
@@ -17746,7 +17746,7 @@ LN_FLAT_API LNResult LNWorld_Add(LNHandle world, LNHandle obj)
 LN_FLAT_API LNResult LNWorld_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_World, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_World, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNWorld_OnSerialize_SetOverrideCallback(LNWorld_OnSerialize_OverrideCallback callback)
@@ -17819,7 +17819,7 @@ LN_FLAT_API LNResult LNComponentList_GetItem(LNHandle componentlist, int index, 
 LN_FLAT_API LNResult LNComponentList_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNComponentList_OnSerialize_SetOverrideCallback(LNComponentList_OnSerialize_OverrideCallback callback)
@@ -18122,7 +18122,7 @@ LN_FLAT_API LNResult LNWorldObject_AddInto(LNHandle worldobject, LNHandle world)
 LN_FLAT_API LNResult LNWorldObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNWorldObject_OnSerialize_SetOverrideCallback(LNWorldObject_OnSerialize_OverrideCallback callback)
@@ -18253,7 +18253,7 @@ LN_FLAT_API LNResult LNVisualObject_GetOpacity(LNHandle visualobject, float* out
 LN_FLAT_API LNResult LNVisualObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNVisualObject_OnSerialize_SetOverrideCallback(LNVisualObject_OnSerialize_OverrideCallback callback)
@@ -18332,7 +18332,7 @@ LNSubinstanceId LNVisualObject_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNCamera_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Camera, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Camera, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNCamera_OnSerialize_SetOverrideCallback(LNCamera_OnSerialize_OverrideCallback callback)
@@ -18587,7 +18587,7 @@ LN_FLAT_API LNResult LNEnvironmentLight_GetShadowEffectiveDepth(LNHandle environ
 LN_FLAT_API LNResult LNEnvironmentLight_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EnvironmentLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EnvironmentLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNEnvironmentLight_OnSerialize_SetOverrideCallback(LNEnvironmentLight_OnSerialize_OverrideCallback callback)
@@ -18792,7 +18792,7 @@ LN_FLAT_API LNResult LNDirectionalLight_GetShadowEffectiveDepth(LNHandle directi
 LN_FLAT_API LNResult LNDirectionalLight_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNDirectionalLight_OnSerialize_SetOverrideCallback(LNDirectionalLight_OnSerialize_OverrideCallback callback)
@@ -18997,7 +18997,7 @@ LN_FLAT_API LNResult LNPointLight_GetAttenuation(LNHandle pointlight, float* out
 LN_FLAT_API LNResult LNPointLight_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNPointLight_OnSerialize_SetOverrideCallback(LNPointLight_OnSerialize_OverrideCallback callback)
@@ -19246,7 +19246,7 @@ LN_FLAT_API LNResult LNSpotLight_GetPenumbra(LNHandle spotlight, float* outRetur
 LN_FLAT_API LNResult LNSpotLight_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNSpotLight_OnSerialize_SetOverrideCallback(LNSpotLight_OnSerialize_OverrideCallback callback)
@@ -19412,7 +19412,7 @@ LN_FLAT_API LNResult LNSprite_SetCallerTest(LNHandle sprite, LNHandle callback)
 LN_FLAT_API LNResult LNSprite_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNSprite_OnSerialize_SetOverrideCallback(LNSprite_OnSerialize_OverrideCallback callback)
@@ -19499,7 +19499,7 @@ LN_FLAT_API LNResult LNCameraOrbitControlComponent_Create(LNHandle* outCameraOrb
 LN_FLAT_API LNResult LNCameraOrbitControlComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CameraOrbitControlComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CameraOrbitControlComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNCameraOrbitControlComponent_OnSerialize_SetOverrideCallback(LNCameraOrbitControlComponent_OnSerialize_OverrideCallback callback)
@@ -19572,7 +19572,7 @@ LN_FLAT_API LNResult LNRaycaster_IntersectPlane(LNHandle raycaster, float normal
 LN_FLAT_API LNResult LNRaycaster_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Raycaster, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Raycaster, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNRaycaster_OnSerialize_SetOverrideCallback(LNRaycaster_OnSerialize_OverrideCallback callback)
@@ -19631,7 +19631,7 @@ LN_FLAT_API LNResult LNRaycastResult_GetPoint(LNHandle raycastresult, LNVector3*
 LN_FLAT_API LNResult LNRaycastResult_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_RaycastResult, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_RaycastResult, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNRaycastResult_OnSerialize_SetOverrideCallback(LNRaycastResult_OnSerialize_OverrideCallback callback)
@@ -19698,7 +19698,7 @@ LN_FLAT_API LNResult LNWorldRenderView_GetGuideGridEnabled(LNHandle worldrenderv
 LN_FLAT_API LNResult LNWorldRenderView_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldRenderView, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldRenderView, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNWorldRenderView_OnSerialize_SetOverrideCallback(LNWorldRenderView_OnSerialize_OverrideCallback callback)
@@ -19743,7 +19743,7 @@ LNSubinstanceId LNWorldRenderView_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNShapeObject_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ShapeObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ShapeObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNShapeObject_OnSerialize_SetOverrideCallback(LNShapeObject_OnSerialize_OverrideCallback callback)
@@ -19830,7 +19830,7 @@ LN_FLAT_API LNResult LNPlaneMesh_Create(LNHandle* outPlaneMesh)
 LN_FLAT_API LNResult LNPlaneMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PlaneMesh, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PlaneMesh, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNPlaneMesh_OnSerialize_SetOverrideCallback(LNPlaneMesh_OnSerialize_OverrideCallback callback)
@@ -20019,7 +20019,7 @@ LN_FLAT_API LNResult LNStaticMesh_MakeCollisionBodyA(LNHandle staticmesh, const 
 LN_FLAT_API LNResult LNStaticMesh_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_StaticMesh, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNStaticMesh_OnSerialize_SetOverrideCallback(LNStaticMesh_OnSerialize_OverrideCallback callback)
@@ -20130,7 +20130,7 @@ LN_FLAT_API LNResult LNMeshComponent_MakeCollisionBodyA(LNHandle meshcomponent, 
 LN_FLAT_API LNResult LNMeshComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_MeshComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNMeshComponent_OnSerialize_SetOverrideCallback(LNMeshComponent_OnSerialize_OverrideCallback callback)
@@ -20189,7 +20189,7 @@ LN_FLAT_API LNResult LNCollision_GetWorldObject(LNHandle collision, LNHandle* ou
 LN_FLAT_API LNResult LNCollision_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Collision, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Collision, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNCollision_OnSerialize_SetOverrideCallback(LNCollision_OnSerialize_OverrideCallback callback)
@@ -20250,7 +20250,7 @@ LN_FLAT_API LNResult LNTriggerBodyComponent_AddCollisionShape(LNHandle triggerbo
 LN_FLAT_API LNResult LNTriggerBodyComponent_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_TriggerBodyComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_TriggerBodyComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNTriggerBodyComponent_OnSerialize_SetOverrideCallback(LNTriggerBodyComponent_OnSerialize_OverrideCallback callback)
@@ -20303,7 +20303,7 @@ LN_FLAT_API LNResult LNParticleEmitter_Create(LNHandle model, LNHandle* outParti
 LN_FLAT_API LNResult LNParticleEmitter_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleEmitter, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ParticleEmitter, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNParticleEmitter_OnSerialize_SetOverrideCallback(LNParticleEmitter_OnSerialize_OverrideCallback callback)
@@ -21002,7 +21002,7 @@ LN_FLAT_API LNResult LNLevel_RemoveAllSubLevels(LNHandle level)
 LN_FLAT_API LNResult LNLevel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Level, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Level, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNLevel_OnSerialize_SetOverrideCallback(LNLevel_OnSerialize_OverrideCallback callback)
@@ -21412,7 +21412,7 @@ LN_FLAT_API LNResult LNUIEventArgs_Sender(LNHandle uieventargs, LNHandle* outRet
 LN_FLAT_API LNResult LNUIEventArgs_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIEventArgs_OnSerialize_SetOverrideCallback(LNUIEventArgs_OnSerialize_OverrideCallback callback)
@@ -21503,7 +21503,7 @@ LNSubinstanceId LNUIEventHandler_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNUILayoutElement_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UILayoutElement, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UILayoutElement, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUILayoutElement_OnSerialize_SetOverrideCallback(LNUILayoutElement_OnSerialize_OverrideCallback callback)
@@ -22046,7 +22046,7 @@ LN_FLAT_API LNResult LNUIElement_AddInto(LNHandle uielement, LNHandle parent)
 LN_FLAT_API LNResult LNUIElement_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIElement_OnSerialize_SetOverrideCallback(LNUIElement_OnSerialize_OverrideCallback callback)
@@ -22159,7 +22159,7 @@ LN_FLAT_API LNResult LNUIText_GetTextA(LNHandle uitext, const char** outReturn)
 LN_FLAT_API LNResult LNUIText_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIText, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIText, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIText_OnSerialize_SetOverrideCallback(LNUIText_OnSerialize_OverrideCallback callback)
@@ -22266,7 +22266,7 @@ LN_FLAT_API LNResult LNUISprite_SetShader(LNHandle uisprite, LNHandle shader)
 LN_FLAT_API LNResult LNUISprite_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUISprite_OnSerialize_SetOverrideCallback(LNUISprite_OnSerialize_OverrideCallback callback)
@@ -22395,7 +22395,7 @@ LN_FLAT_API LNResult LNUIIcon_LoadFontIconWithNameSizeColorA(const char* iconNam
 LN_FLAT_API LNResult LNUIIcon_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIIcon, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIIcon, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIIcon_OnSerialize_SetOverrideCallback(LNUIIcon_OnSerialize_OverrideCallback callback)
@@ -22472,7 +22472,7 @@ LN_FLAT_API LNResult LNUIMessageTextArea_SetTypingSpeed(LNHandle uimessagetextar
 LN_FLAT_API LNResult LNUIMessageTextArea_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIMessageTextArea, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIMessageTextArea_OnSerialize_SetOverrideCallback(LNUIMessageTextArea_OnSerialize_OverrideCallback callback)
@@ -22533,7 +22533,7 @@ LN_FLAT_API LNResult LNUI_Remove(LNHandle element)
 LN_FLAT_API LNResult LNUILayoutPanel_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UILayoutPanel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UILayoutPanel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUILayoutPanel_OnSerialize_SetOverrideCallback(LNUILayoutPanel_OnSerialize_OverrideCallback callback)
@@ -22608,7 +22608,7 @@ LN_FLAT_API LNResult LNUIBoxLayout_GetOrientation(LNHandle uiboxlayout, LNUILayo
 LN_FLAT_API LNResult LNUIBoxLayout_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIBoxLayout, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIBoxLayout, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIBoxLayout_OnSerialize_SetOverrideCallback(LNUIBoxLayout_OnSerialize_OverrideCallback callback)
@@ -22683,7 +22683,7 @@ LN_FLAT_API LNResult LNUIStackLayout_GetOrientation(LNHandle uistacklayout, LNUI
 LN_FLAT_API LNResult LNUIStackLayout_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIStackLayout, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIStackLayout_OnSerialize_SetOverrideCallback(LNUIStackLayout_OnSerialize_OverrideCallback callback)
@@ -22768,7 +22768,7 @@ LN_FLAT_API LNResult LNUIGridLayout_SetPlacement(LNHandle element, int row, int 
 LN_FLAT_API LNResult LNUIGridLayout_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIGridLayout, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIGridLayout, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIGridLayout_OnSerialize_SetOverrideCallback(LNUIGridLayout_OnSerialize_OverrideCallback callback)
@@ -22829,7 +22829,7 @@ LN_FLAT_API LNResult LNUIControl_AddInlineVisual(LNHandle uicontrol, LNHandle el
 LN_FLAT_API LNResult LNUIControl_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIControl_OnSerialize_SetOverrideCallback(LNUIControl_OnSerialize_OverrideCallback callback)
@@ -22890,7 +22890,7 @@ LN_FLAT_API LNResult LNUIButtonBase_SetTextA(LNHandle uibuttonbase, const char* 
 LN_FLAT_API LNResult LNUIButtonBase_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIButtonBase_OnSerialize_SetOverrideCallback(LNUIButtonBase_OnSerialize_OverrideCallback callback)
@@ -22973,7 +22973,7 @@ LN_FLAT_API LNResult LNUIButton_ConnectOnClicked(LNHandle uibutton, LNHandle han
 LN_FLAT_API LNResult LNUIButton_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIButton_OnSerialize_SetOverrideCallback(LNUIButton_OnSerialize_OverrideCallback callback)
@@ -23026,7 +23026,7 @@ LN_FLAT_API LNResult LNUIWindow_Create(LNHandle* outUIWindow)
 LN_FLAT_API LNResult LNUIWindow_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIWindow, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIWindow, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIWindow_OnSerialize_SetOverrideCallback(LNUIWindow_OnSerialize_OverrideCallback callback)
@@ -23129,7 +23129,7 @@ LN_FLAT_API LNResult LNUIListItemsControl_ConnectOnSubmit(LNHandle uilistitemsco
 LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItemsControl, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIListItemsControl_OnSerialize_SetOverrideCallback(LNUIListItemsControl_OnSerialize_OverrideCallback callback)
@@ -23196,7 +23196,7 @@ LN_FLAT_API LNResult LNUIListBox_AddItem(LNHandle uilistbox, LNHandle content, L
 LN_FLAT_API LNResult LNUIListBox_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBox, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBox, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIListBox_OnSerialize_SetOverrideCallback(LNUIListBox_OnSerialize_OverrideCallback callback)
@@ -23255,7 +23255,7 @@ LN_FLAT_API LNResult LNUIListItem_ConnectOnSubmit(LNHandle uilistitem, LNHandle 
 LN_FLAT_API LNResult LNUIListItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItem, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListItem, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIListItem_OnSerialize_SetOverrideCallback(LNUIListItem_OnSerialize_OverrideCallback callback)
@@ -23308,7 +23308,7 @@ LN_FLAT_API LNResult LNUIListBoxItem_Create(LNHandle content, LNHandle* outUILis
 LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBoxItem, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIListBoxItem, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNUIListBoxItem_OnSerialize_SetOverrideCallback(LNUIListBoxItem_OnSerialize_OverrideCallback callback)
@@ -23353,7 +23353,7 @@ LNSubinstanceId LNUIListBoxItem_GetSubinstanceId(LNHandle handle)
 LN_FLAT_API LNResult LNInputGesture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InputGesture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InputGesture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNInputGesture_OnSerialize_SetOverrideCallback(LNInputGesture_OnSerialize_OverrideCallback callback)
@@ -23406,7 +23406,7 @@ LN_FLAT_API LNResult LNKeyGesture_Create(LNKeys key, LNHandle* outKeyGesture)
 LN_FLAT_API LNResult LNKeyGesture_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyGesture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_KeyGesture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNKeyGesture_OnSerialize_SetOverrideCallback(LNKeyGesture_OnSerialize_OverrideCallback callback)
@@ -23779,7 +23779,7 @@ LN_FLAT_API LNResult LNInterpreterCommand_ParamA(LNHandle interpretercommand, in
 LN_FLAT_API LNResult LNInterpreterCommand_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommand, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNInterpreterCommand_OnSerialize_SetOverrideCallback(LNInterpreterCommand_OnSerialize_OverrideCallback callback)
@@ -23912,7 +23912,7 @@ LN_FLAT_API LNResult LNInterpreterCommandList_AddCommand4A(LNHandle interpreterc
 LN_FLAT_API LNResult LNInterpreterCommandList_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_InterpreterCommandList, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNInterpreterCommandList_OnSerialize_SetOverrideCallback(LNInterpreterCommandList_OnSerialize_OverrideCallback callback)
@@ -24116,7 +24116,7 @@ LN_FLAT_API LNResult LNInterpreter_GetWaitCount(LNHandle interpreter, int* outRe
 LN_FLAT_API LNResult LNInterpreter_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Interpreter, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNInterpreter_OnSerialize_SetOverrideCallback(LNInterpreter_OnSerialize_OverrideCallback callback)
@@ -24500,7 +24500,7 @@ LN_FLAT_API LNResult LNApplication_Run(LNHandle application)
 LN_FLAT_API LNResult LNApplication_OnSerialize_CallOverrideBase(LNHandle object, LNHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2_deprecated, ar)));
     LNI_FUNC_TRY_END_RETURN;
 }
 LN_FLAT_API LNResult LNApplication_OnSerialize_SetOverrideCallback(LNApplication_OnSerialize_OverrideCallback callback)

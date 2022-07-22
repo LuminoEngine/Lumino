@@ -98,7 +98,6 @@ private:
 
         Rect sourceRect;    // unit: px
 
-        void serialize(Archive& ar);
     };
 
 

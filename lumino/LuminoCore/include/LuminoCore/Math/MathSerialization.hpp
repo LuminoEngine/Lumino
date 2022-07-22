@@ -4,8 +4,6 @@
 
 namespace ln {
 
-#if LN_USE_DEPRECATED_ARCHIVE
-
 inline void serialize(Archive& ar, Vector2& value)
 {
 	int size = 0;
@@ -41,7 +39,5 @@ inline void serialize(Archive& ar, Vector4& value)
 	ar.process(value.z);
 	ar.process(value.w);
 }
-
-#endif // LN_USE_DEPRECATED_ARCHIVE
 
 } // namespace ln

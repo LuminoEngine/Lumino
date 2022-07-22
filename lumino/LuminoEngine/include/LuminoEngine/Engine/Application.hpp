@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include <LuminoEngine/Reflection/Object.hpp>
-#include <LuminoEngine/Base/Variant.hpp>
 #include <LuminoEngine/Engine/CoreApplication.hpp>
 #include "Common.hpp"
 

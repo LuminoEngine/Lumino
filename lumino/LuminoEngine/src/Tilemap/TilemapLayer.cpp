@@ -625,14 +625,6 @@ void TilemapLayer::render(TilemapModel* model, RenderingContext* context, const 
 	//}
 
 }
-//
-//void TilemapLayer::serialize(Archive& ar)
-//{
-//	Object::serialize(ar);
-//	ar & makeNVP(u"width", m_width);
-//	ar & makeNVP(u"height", m_height);
-//	ar & makeNVP(u"data", m_data);
-//}
-//
+
 } // namespace ln
 

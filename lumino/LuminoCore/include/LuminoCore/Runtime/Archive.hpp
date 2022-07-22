@@ -1,8 +1,13 @@
 ﻿#pragma once
-#include "../Base/Variant.hpp"
+#include "../Base/Result.hpp"
+#include "../Base/Uuid.hpp"
+#include "../Serialization/Serialization.hpp"
+#include "Common.hpp"
+#include "Object.hpp"
+#include "Variant.hpp"
 
 namespace ln {
-class Serializer3;
+class Archive;
 
 namespace detail {
 class ArchiveStore3;
@@ -10,11 +15,11 @@ class JsonArchiveStore3;
 
     // void serialize(Archive& ar) をメンバ関数として持っているか
 template<typename T>
-class has_member_serialize3_function
+class has_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize3(*reinterpret_cast<Serializer3*>(0)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -24,11 +29,11 @@ public:
 
 // void serialize(Archive& ar) をメンバ関数として持っていないか
 template<typename T>
-class non_member_serialize3_function
+class non_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize3(*reinterpret_cast<Serializer3*>(0)), std::true_type());
+    static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -36,6 +41,15 @@ public:
 	static bool const value = !type::value;
 };
 } // namespace detail
+
+class SerializeException {
+public:
+    SerializeException(const String& message) : m_message(message) {}
+	const String& message() const { return m_message; }
+
+private:
+    String m_message;
+};
 
 /**
  *
@@ -58,7 +72,7 @@ public:
  * 
  * ポリモーフィズムは Ref を使う場合のみ有効です。URef では無効です。
  */
-class Serializer3 : public Object {
+class Archive : public Object {
 public:
     template<typename TBase>
     struct BaseClass {
@@ -68,15 +82,20 @@ public:
     };
 
     static const String ClassNameKey;
-    static const String ClassVersionKey;
     static const String ClassBaseKey;
 
-    Serializer3(ArchiveStore* store, ArchiveMode mode)
-        : Serializer3() {
+    /** LN_SERIALIZE_VERSION() によるバージョン番号を示すプロパティ名を設定します。 */
+    static void setDefaultVersionKey(const String& key) { s_defaultVersionKey = key; }
+	
+    /** LN_SERIALIZE_VERSION() によるバージョン番号を示すプロパティ名を取得します。 */
+    static const String& defaultVersionKey(const String& key) { return s_defaultVersionKey; }
+
+    Archive(ArchiveStore* store, ArchiveMode mode)
+        : Archive() {
         setup(store, mode);
     }
 
-    ~Serializer3() {
+    ~Archive() {
     }
 
     bool isSaving() const { return m_mode == ArchiveMode::Save; }
@@ -89,7 +108,7 @@ public:
     const String& basePath() const { return m_basePath; }
 
     template<typename T>
-    Serializer3& operator&(T&& value) {
+    Archive& operator&(T&& value) {
         process(std::forward<T>(value));
         return *this;
     }
@@ -120,6 +139,12 @@ public:
         }
     }
 
+    /*
+    Note: オブジェクトを単純な文字列としてシリアライズする場合に使用します。
+    この関数を呼び出した serialize() 内では他の値をシリアライズすることはできません。
+    */
+    void makePrimitiveValue();
+    void makeStringTag(String* str);
     void makeArrayTag(int* outSize);
     void makeMapTag(int* outSize);
 
@@ -169,27 +194,6 @@ public:
     //    }
     //}
 
-    /*
-    Note: オブジェクトを単純な文字列としてシリアライズする場合に使用します。
-    この関数を呼び出した serialize() 内では他の値をシリアライズすることはできません。
-    */
-    void makeStringTag(String* str) {
-        if (isSaving()) {
-            setParentNodeType(NodeType::PrimitiveValue);
-            process(*str);
-        }
-        else {
-
-            //  process は、いま open しているコンテナに対して行いたい。
-            // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
-            //m_store->closeContainer();
-            //m_nodeInfoStack.back().containerOpend = false;
-
-            // Value 確定。次の process で open container しない。
-            setParentNodeType(NodeType::PrimitiveValue);
-            process(*str);
-        }
-    }
 
     // 呼出し後、 save, load 共に、null の場合は process してはならない
     void makeSmartPtrTag(bool* outIsNull) {
@@ -261,11 +265,22 @@ public:
         writeValueNull();
     }
 
+	/** serialize() の実行中に問題が発生した場合、それを通知するために呼び出すことができます。例外がスローされ、シリアライズ処理は直ちに終了します。 */
+	//void fail(const char* message = nullptr);
+
+	/** シリアライズ中のエラーの有無を確認します。 */
+	bool hasError() const { return m_hasError; }
+
+    /** シリアライズ中に発生したエラーメッセージを取得します。 */
+	const String& errorMessage() const { return m_errorMessage; }
+
 protected:
-    Serializer3()
+    Archive()
         : m_store(nullptr)
         , m_mode(ArchiveMode::Save)
-        , m_archiveVersion(0) {
+        , m_archiveVersion(0)
+        , m_hasError(false)
+        , m_errorMessage() {
     }
 
     void setup(ArchiveStore* store, ArchiveMode mode) {
@@ -279,6 +294,13 @@ protected:
             //m_nodeInfoStack.push_back(NodeInfo{});
             m_current = NodeInfo{};
         }
+    }
+	
+    void onError(const String& message = String::Empty) {
+        m_hasError = true;
+		if (message) {
+			m_errorMessage = message;
+		}
     }
 
 private:
@@ -472,7 +494,7 @@ private:
                 currentNode()->typeInfo = typeName;
             }
 
-            value->serialize3(*this);
+            value->serialize(*this);
             popNodeWrite();
         }
         else {
@@ -496,21 +518,21 @@ private:
     // メンバ関数として serialize を持つ型の writeValue()
     template<
         typename TValue,
-        typename std::enable_if<detail::has_member_serialize3_function<TValue>::value, std::nullptr_t>::type = nullptr>
+        typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
     void writeValue(TValue& value) // メンバ serialize() が const 関数とは限らないのでここは非 const 参照
     {
         pushNodeWrite<TValue>();
-        value.serialize3(*this);
+        value.serialize(*this);
         popNodeWrite();
     }
 
     // メンバ関数として serialize を持たない型の writeValue()
     template<
         typename TValue,
-        typename std::enable_if<detail::non_member_serialize3_function<TValue>::value, std::nullptr_t>::type = nullptr>
+        typename std::enable_if<detail::non_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
     void writeValue(TValue& value) {
         pushNodeWrite<TValue>();
-        ::ln::serialize3(*this, value);
+        ::ln::serialize(*this, value);
         popNodeWrite();
     }
 
@@ -525,7 +547,7 @@ private:
 
     void writeClassVersion(NodeInfo* node) {
         if (node->classVersion > 0) {
-            m_store->setNextName(ClassVersionKey);
+            m_store->setNextName(s_defaultVersionKey);
             writeValue(node->classVersion);
         }
     }
@@ -715,7 +737,7 @@ private:
                 m_nodeInfoStack.push_back(m_current);
                 m_current = NodeInfo{};
 
-                outValue->serialize3(*this);
+                outValue->serialize(*this);
 
                 postLoadSerialize();
             }
@@ -753,7 +775,7 @@ private:
     // メンバ関数として serialize を持つ型の readValue()
     template<
         typename TValue,
-        typename std::enable_if<detail::has_member_serialize3_function<TValue>::value, std::nullptr_t>::type = nullptr>
+        typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
     void readValue(TValue& outValue) {
         preLoadSerialize();
 
@@ -764,7 +786,7 @@ private:
         m_nodeInfoStack.push_back(m_current);
         m_current = NodeInfo{}; // Ready で始める
 
-        outValue.serialize3(*this);
+        outValue.serialize(*this);
 
         postLoadSerialize();
     }
@@ -772,7 +794,7 @@ private:
     // メンバ関数として serialize を持たない型の readValue()
     template<
         typename TValue,
-        typename std::enable_if<detail::non_member_serialize3_function<TValue>::value, std::nullptr_t>::type = nullptr>
+        typename std::enable_if<detail::non_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
     void readValue(TValue& outValue) {
         preLoadSerialize();
 
@@ -783,7 +805,7 @@ private:
         m_nodeInfoStack.push_back(m_current);
         m_current = NodeInfo{};
 
-        ::ln::serialize3(*this, outValue);
+        ::ln::serialize(*this, outValue);
 
         postLoadSerialize();
     }
@@ -886,7 +908,8 @@ private:
     }
 
     void readClassVersion(NodeInfo* containerNode) {
-        if (m_store->moveToNamedMember(ClassVersionKey)) {
+        if (currentNode()->headState == NodeType::Object &&
+            m_store->moveToNamedMember(s_defaultVersionKey)) {
             int64_t version;
             m_store->readValue(&version);
             containerNode->classVersion = static_cast<int>(version);
@@ -895,9 +918,6 @@ private:
 
     const String& readTypeInfo();
 
-    void onError(const char* message = nullptr) {
-        LN_NOTIMPLEMENTED();
-    }
 
     NodeInfo* currentNode() { return &m_current; }
     const NodeInfo* currentNode() const { return &m_current; }
@@ -917,20 +937,30 @@ private:
     int64_t m_archiveVersion;
     detail::NameValuePairBase* m_nextReadValueDefault = nullptr;
     String m_basePath;
+
+	bool m_hasError;
+    String m_errorMessage;
+	
+    static String s_defaultVersionKey;
 };
 
 
-class JsonTextOutputSerializer3
-    : public Serializer3 {
+class JsonTextOutputSerializer
+    : public Archive {
 public:
-    JsonTextOutputSerializer3();
-    virtual ~JsonTextOutputSerializer3();
+    JsonTextOutputSerializer();
+    virtual ~JsonTextOutputSerializer();
 
     template<typename TValue>
     void save(TValue&& value) {
         if (LN_REQUIRE(!m_processing)) return;
         m_processing = true;
-        Serializer3::process(std::forward<TValue>(value));
+        try {
+            Archive::process(std::forward<TValue>(value));
+        }
+        catch (SerializeException& e) {
+            onError(e.message());
+        }
         m_processing = false;
     }
 
@@ -941,19 +971,28 @@ private:
     bool m_processing;
 };
 
-class JsonTextInputSerializer3
-    : public Serializer3 {
+class JsonTextInputSerializer
+    : public Archive {
 public:
-    JsonTextInputSerializer3();
-    virtual ~JsonTextInputSerializer3();
+    JsonTextInputSerializer();
+    virtual ~JsonTextInputSerializer();
 
     template<typename TValue>
-    void load(const String& jsonText, TValue&& value) {
-        if (LN_REQUIRE(!m_processing)) return;
-        if (!setup(jsonText)) return;
+    Result load(const String& jsonText, TValue&& value) {
+        if (LN_REQUIRE(!m_processing)) return err();
+        auto r = setup(jsonText);
+        if (!r) return r;
+		
         m_processing = true;
-        Serializer3::process(std::forward<TValue>(value));
+        try {
+            Archive::process(std::forward<TValue>(value));
+        }
+        catch (SerializeException& e) {
+            onError(e.message());
+        }
         m_processing = false;
+
+        return ok();
     }
 
 private:
@@ -963,10 +1002,13 @@ private:
     bool m_processing;
 };
 
+template<class T = void>
+using ArchiveResult = BasicResult<T, String>;
+
 /**
  * オブジェクトと JSON 文字列間のシリアライズ/デシリアライズ行うユーティリティです。
  */
-class JsonSerializer3 {
+class JsonSerializer {
 public:
     /**
      * オブジェクトを JSON 文字列へシリアライズします。
@@ -974,28 +1016,24 @@ public:
      * @param[in]     formatting    : JSON 文字列の整形方法
      * @return        JSON 文字列
      */
-    template<typename TObject>
-    static String serialize(Ref<TObject>& value, JsonFormatting formatting = JsonFormatting::Indented) {
-        if (LN_ASSERT(value)) return String::Empty;
-        JsonTextOutputSerializer3 ar;
+    template<class TObject>
+    static ArchiveResult<String> serialize(Ref<TObject>& value, JsonFormatting formatting = JsonFormatting::Indented) {
+        if (LN_ASSERT(value)) return err();
+        JsonTextOutputSerializer ar;
         ar.save(value);
-        return ar.toString(formatting);
+        String str = ar.toString(formatting);
+        if (ar.hasError()) return err(ar.errorMessage());
+        return ok(str);
     }
 
-    template<typename TObject>
-    static String serializeData(TObject& value, JsonFormatting formatting = JsonFormatting::Indented) {
-        JsonTextOutputSerializer3 ar;
+    template<class TValue>
+    static ArchiveResult<String> serialize(TValue& value, JsonFormatting formatting = JsonFormatting::Indented) {
+        JsonTextOutputSerializer ar;
         ar.save(value);
-        return ar.toString(formatting);
+        String str = ar.toString(formatting);
+        if (ar.hasError()) return err(ar.errorMessage());
+        return ok(str);
     }
-
-    //template<typename TValue>
-    //static String serialize(TValue&& value, const String& basePath, JsonFormatting formatting = JsonFormatting::Indented) {
-    //    JsonTextOutputArchive ar;
-    //    ar.setBasePath(basePath);
-    //    ar.save(std::forward<TValue>(value));
-    //    return ar.toString(formatting);
-    //}
 
     /**
      * JSON 文字列をオブジェクトへデシリアライズします。
@@ -1003,29 +1041,27 @@ public:
      * @param[in]     value         : データを格納するオブジェクトへの参照
      */
     template<typename TObject>
-    static Ref<TObject> deserialize(const StringView& jsonText) {
-        JsonTextInputSerializer3 ar;
+    static ArchiveResult<Ref<TObject>> deserialize(const StringView& jsonText) {
+        JsonTextInputSerializer ar;
         Ref<TObject> value;
-        ar.load(jsonText, value);
-        return value;
+        auto r = ar.load(jsonText, value);
+		if (!r) return r;
+        if (ar.hasError()) return err(ar.errorMessage());
+        return ok(value);
     }
 
     template<typename TObject>
-    static void deserializeData(TObject& value, const StringView& jsonText) {
-        JsonTextInputSerializer3 ar;
-        ar.load(jsonText, value);
+    static ArchiveResult<> deserialize(const StringView& jsonText, TObject* value) {
+        JsonTextInputSerializer ar;
+        auto r = ar.load(jsonText, *value);
+        if (!r) return r;
+        if (ar.hasError()) return err(ar.errorMessage());
+        return ok();
     }
-
-    //template<typename TValue>
-    //static void deserialize(const StringView& jsonText, const String& basePath, TValue& value) {
-    //    JsonTextInputArchive ar(jsonText);
-    //    ar.setBasePath(basePath);
-    //    ar.load(value);
-    //}
 };
 
 template<class TItem>
-inline void serialize3(Serializer3& ar, Array<TItem>& value) {
+inline void serialize(Archive& ar, Array<TItem>& value) {
     int size = 0;
     ar.makeArrayTag(&size);
 
@@ -1039,7 +1075,7 @@ inline void serialize3(Serializer3& ar, Array<TItem>& value) {
 }
 
 template<typename TValue>
-inline void serialize3(Serializer3& ar, Optional<TValue>& value) {
+inline void serialize(Archive& ar, Optional<TValue>& value) {
     bool hasValue = value.hasValue();
     ar.makeOptionalTag(&hasValue);
 
@@ -1061,7 +1097,7 @@ inline void serialize3(Serializer3& ar, Optional<TValue>& value) {
 }
 
 template<typename TKey, typename TValue>
-void serialize3(Serializer3& ar, std::unordered_map<TKey, TValue>& value) {
+void serialize(Archive& ar, std::unordered_map<TKey, TValue>& value) {
     int size = static_cast<int>(value.size());
     ar.makeMapTag(&size);
     if (ar.isSaving()) {
@@ -1081,18 +1117,42 @@ void serialize3(Serializer3& ar, std::unordered_map<TKey, TValue>& value) {
     }
 }
 
+inline void serialize(Archive& ar, Path& value) {
+    if (ar.isSaving()) {
+        String str = value.str();
+        ar.makeStringTag(&str);
+    }
+    else {
+        String str;
+        ar.makeStringTag(&str);
+        value = Path(str);
+    }
+}
+
+inline void serialize(Archive& ar, Uuid& value) {
+    if (ar.isSaving()) {
+        String str = value.toString();
+        ar.makeStringTag(&str);
+    }
+    else {
+        String str;
+        ar.makeStringTag(&str);
+        value = Uuid(str);
+    }
+}
+
 } // namespace ln
 
-#define LN_SERIALIZE_CLASS_VERSION3(version)                  \
+#define LN_SERIALIZE_VERSION(version)                         \
     template<typename T>                                      \
     friend class ::ln::detail::has_member_serialize_function; \
     template<typename T>                                      \
     friend class ::ln::detail::non_member_serialize_function; \
-    friend class ::ln::Serializer3;                               \
+    friend class ::ln::Archive;                               \
     static const int lumino_class_version = version;
 
 // non‐intrusive
-#define LN_SERIALIZE_CLASS_VERSION3_NI(type, version) \
+#define LN_SERIALIZE_VERSION_NI(type, version)       \
     namespace ln {                                   \
     namespace detail {                               \
     template<>                                       \

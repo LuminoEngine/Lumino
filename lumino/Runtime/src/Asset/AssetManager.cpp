@@ -127,7 +127,7 @@ void AssetManager::removeAllAssetDirectory()
 //    }
 //}
 
-Optional<AssetPath> AssetManager::findAssetPath(const StringView& filePath, const Char* const* exts, int extsCount) const
+Optional_deprecated<AssetPath> AssetManager::findAssetPath(const StringView& filePath, const Char* const* exts, int extsCount) const
 {
     List<Path> paths;
     paths.reserve(extsCount);
@@ -269,12 +269,12 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
 {
     auto stream = openStreamFromAssetPath(assetPath);
     auto text = FileSystem::readAllText(stream);
-    auto asset = Serializer2::deserialize(text.unwrap(), assetPath.getParentAssetPath());
+    auto asset = Serializer2_deprecated::deserialize(text.unwrap(), assetPath.getParentAssetPath());
     asset->target()->setAssetPath(assetPath);
     return asset;
 }
 
-Optional<AssetPath> AssetManager::findAssetPath(const StringView& filePath) const
+Optional_deprecated<AssetPath> AssetManager::findAssetPath(const StringView& filePath) const
 {
     const Char* ext = AssetModel::AssetFileExtension.c_str();
     return findAssetPath(filePath, &ext, 1);
@@ -288,7 +288,7 @@ bool AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const Asse
     auto text = FileSystem::readAllText(stream);
 
     auto asset = makeObject<AssetModel>(obj);
-    Serializer2::deserializeInstance(asset, text.unwrap(), assetPath.getParentAssetPath());
+    Serializer2_deprecated::deserializeInstance(asset, text.unwrap(), assetPath.getParentAssetPath());
 
     obj->setAssetPath(assetPath);
 
@@ -327,7 +327,7 @@ void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& fi
         localPath = localPath.replaceExtension(AssetModel::AssetFileExtension);
     }
 
-    String text = Serializer2::serialize(asset, assetPath.getParentAssetPath());
+    String text = Serializer2_deprecated::serialize(asset, assetPath.getParentAssetPath());
     FileSystem::writeAllText(localPath, text);
 
     ////auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);

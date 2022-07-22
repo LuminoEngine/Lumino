@@ -3,7 +3,7 @@
 
 namespace ln {
 
-void registerTypes_Engine(EngineContext2* context) {
+void registerTypes_Engine(RuntimeContext* context) {
 #include "RegisterTypes.inl"
 }
 

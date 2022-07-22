@@ -1,6 +1,6 @@
-﻿
-#pragma once
-#include <LuminoEngine/Reflection/Property.hpp>
+﻿#pragma once
+#include <LuminoCore/Runtime/Object.hpp>
+#include <LuminoCore/Runtime/Property.hpp>
 #include "Common.hpp"
 
 namespace ln {
@@ -74,7 +74,7 @@ public:
     bool m_externalObjectDeserialization = false;
 
 protected:
-    void onSerialize(Serializer2* sr) override;
+    void onSerialize_deprecated(Serializer2_deprecated* sr) override;
 
 LN_CONSTRUCT_ACCESS:
     AssetModel();
@@ -140,23 +140,4 @@ private:
 	PropertyRef m_property;
 };
 
-//class AssetSerializer
-//{
-//public:
-//    static ln::String serialize(AssetModel* asset);
-//    static Ref<AssetModel> deserialize(const String& str);
-//
-//private:
-//    AssetSerializer();
-//    void processAsset(AssetModel* asset);
-//
-//    struct Ploxy
-//    {
-//        AssetModel* asset;
-//
-//        LN_SERIALIZE_CLASS_VERSION(1);
-//        void serialize(Archive& ar);
-//    };
-//};
-//
 } // namespace ln

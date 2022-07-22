@@ -1,17 +1,14 @@
-﻿
-#pragma once
-
+﻿#pragma once
 #include <typeinfo>
 #include <type_traits>
+#include "../Geometries/GeometryStructs.hpp"
+#include "../Math/AttitudeTransform.hpp"
 #include "Common.hpp"
-#include "../Reflection/Object.hpp"
-#include "../Reflection/TypeInfo.hpp"
-#include <LuminoCore/Geometries/GeometryStructs.hpp>
+#include "Object.hpp"
+#include "TypeInfo.hpp"
 
 namespace ln {
 namespace detail { class VariantHelper; }
-class Variant;
-class Serializer3;
 
 enum class VariantType
 {
@@ -34,7 +31,7 @@ enum class VariantType
 
 	// object
     RefObject,
-	List,
+    Array,
 
 	Int8,	// obsolete
 	Int16,	// obsolete
@@ -46,7 +43,7 @@ enum class VariantType
 	Int32 = Int,
 };
 
-void serialize(Archive& ar, Variant& value);
+//void serialize(Archive_deprecated& ar, Variant& value);
 
 
 
@@ -70,8 +67,7 @@ public:
 
 /** Variant */
 LN_CLASS()
-class Variant
-	: public Object
+class Variant : public Object
 {
 public:
 	static const Variant Empty;
@@ -110,13 +106,12 @@ LN_CONSTRUCT_ACCESS:
     Variant(RefObject* value) : Variant() { assign(value); }
     template<class TValue>
     Variant(const Ref<TValue>& value) : Variant() { assign(value.get()); }
-	Variant(List<Ref<Variant>>* value) : Variant() { assign(value); }
-	Variant(const List<Ref<Variant>>& value);
-	Variant(const Ref<List<Ref<Variant>>>& value) : Variant() { assign(value); }
+	Variant(Array<Ref<Variant>>* value) : Variant() { assign(value); }
+    Variant(const Array<Ref<Variant>>& value) : Variant() { assign(value); }
 	virtual ~Variant();
 
 	template<class T>
-	Variant(const List<T>& list);
+	Variant(const Array<T>& list);
 	
 	/** init. */
 	LN_METHOD()
@@ -149,13 +144,13 @@ public:
 		return static_pointer_cast<TValue>(v_RefObject);
 	}
 
-	/** utility *get<Ref<List<Variantl>>>() */
-	List<Ref<Variant>>& list();
-	const List<Ref<Variant>>& list() const;
+	/** utility *get<Ref<Array<Variantl>>>() */
+	Array<Ref<Variant>>& list();
+	const Array<Ref<Variant>>& list() const;
 
 	Variant& operator=(const Variant& rhs);
 	
-	void serializeInternal3(Serializer3& ar, ArchiveNodeType loadType);
+	void serializeInternal3(Archive& ar, ArchiveNodeType loadType);
 
 
 	void assign(bool value);
@@ -179,7 +174,7 @@ public:
     void assign(const Ref<RefObject>& value);
 	void assign(RefObject* value) { assign(Ref<RefObject>(value)); }
 	template<class TValue> void assign(const Ref<TValue>& value) { assign(value.get()); }
-	void assign(const Ref<List<Ref<Variant>>>& value);
+	void assign(const Array<Ref<Variant>>& value);
 
 	//const void* getValueRawPtr() const { return reinterpret_cast<const void*>(&v_Bool); }
 	
@@ -218,23 +213,22 @@ private:
 		AttitudeTransform* v_Transform;
 		Rect v_Rect;
         Ref<RefObject> v_RefObject;
-		Ref<List<Ref<Variant>>> v_List;
+		Array<Ref<Variant>> v_List;
 	};
 
-	friend class Serializer3;
+	friend class Archive;
 	friend class detail::VariantHelper;
-	friend void serialize(Archive& ar, Variant& value);
 	template<class T, class... TArgs> friend Ref<T> makeRef(TArgs&&... args);
 	template<typename... TArgs> friend Ref<Variant> makeVariant(TArgs&&... args);
 };
 
 template<class T>
-Variant::Variant(const List<T>& list)
-	: Variant(makeRef<List<Ref<Variant>>>())
+Variant::Variant(const Array<T>& list)
+	: Variant(Array<Ref<Variant>>())
 {
 	auto& tl = Variant::list();
 	for (auto& item : list) {
-		tl.add(Ref<Variant>(LN_NEW Variant(item), false));
+		tl.push(Ref<Variant>(LN_NEW Variant(item), false));
 	}
 }
 

@@ -28,40 +28,40 @@ public:
     /** @{ */
 
     /** ShadingModel を設定します。(default: ShadingModel::Default) */
-    void setShadingModel(const Optional<ShadingModel>& value);
+    void setShadingModel(const Optional_deprecated<ShadingModel>& value);
 
     /** ShadingModel を取得します。*/
-    const Optional<ShadingModel>& shadingModel() const;
+    const Optional_deprecated<ShadingModel>& shadingModel() const;
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
     LN_METHOD(Property)
     void setBlendMode2(BlendMode value) { setBlendMode(value); }
-    // TODO: Optional の Binding は、clearBlendMode() みたいなメソッドの自動生成程度でいいかも。
+    // TODO: Optional_deprecated の Binding は、clearBlendMode() みたいなメソッドの自動生成程度でいいかも。
     // 正直凝ったことしても忘れるし、ほとんどのケースでは set だけ使って、get, clear はあまり使わないし。
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
-    void setBlendMode(const Optional<BlendMode>& mode);
+    void setBlendMode(const Optional_deprecated<BlendMode>& mode);
 
     /** 合成方法を取得します。*/
-    const Optional<BlendMode>& blendMode() const;
+    const Optional_deprecated<BlendMode>& blendMode() const;
 
     /** このノードを描画する際の深度テストの有無を設定します。(default: true) */
-    void setDepthTestEnabled(const Optional<bool>& enabled);
+    void setDepthTestEnabled(const Optional_deprecated<bool>& enabled);
 
     /** このノードを描画する際の深度テストの有無を取得します。*/
-    const Optional<bool>& isDepthTestEnabled() const;
+    const Optional_deprecated<bool>& isDepthTestEnabled() const;
 
     /** このノードを描画する際の深度書き込みの有無を設定します。(default: true) */
-    void setDepthWriteEnabled(const Optional<bool>& enabled);
+    void setDepthWriteEnabled(const Optional_deprecated<bool>& enabled);
 
     /** このノードを描画する際の深度書き込みの有無を取得します。*/
-    const Optional<bool>& isDepthWriteEnabled() const;
+    const Optional_deprecated<bool>& isDepthWriteEnabled() const;
 
     /** このノードを描画する際のカリング方法を設定します。(default: CullMode::Back) */
-    void setCullMode(const Optional<CullMode>& mode);
+    void setCullMode(const Optional_deprecated<CullMode>& mode);
 
     /** このノードを描画する際のカリング方法を取得します。*/
-    const Optional<CullMode>& cullMode() const;
+    const Optional_deprecated<CullMode>& cullMode() const;
 
     /** @} */
 
@@ -104,7 +104,7 @@ public:
     void setRenderPriority(int value);
 
 protected:
-    void serialize(Serializer2& ar) override;
+    void serialize_deprecated(Serializer2_deprecated& ar) override;
     void setMainVisualComponent(VisualComponent* component);
 
 LN_CONSTRUCT_ACCESS:
@@ -124,18 +124,18 @@ struct VisualObject::BuilderDetails : public WorldObject::BuilderDetails
 {
     LN_BUILDER_DETAILS(VisualObject);
 
-    Optional<bool> visible;
-    Optional<ShadingModel> shadingModel;
-    Optional<BlendMode> blendMode;
-    Optional<CullMode> cullMode;
+    Optional_deprecated<bool> visible;
+    Optional_deprecated<ShadingModel> shadingModel;
+    Optional_deprecated<BlendMode> blendMode;
+    Optional_deprecated<CullMode> cullMode;
 
-    Optional<bool> depthTest;
-    Optional<bool> depthWrite;
+    Optional_deprecated<bool> depthTest;
+    Optional_deprecated<bool> depthWrite;
 
-    Optional<float> opacity;
-    Optional<Color> colorScale;
-    Optional<Color> blendColor;
-    Optional<ColorTone> colorTone;
+    Optional_deprecated<float> opacity;
+    Optional_deprecated<Color> colorScale;
+    Optional_deprecated<Color> blendColor;
+    Optional_deprecated<ColorTone> colorTone;
 
     void apply(VisualObject* p) const;
 };

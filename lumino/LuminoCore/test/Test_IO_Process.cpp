@@ -141,6 +141,9 @@ TEST_F(Test_IO_Process, Detached) {
         processId2 = proc1->exitCode();
     }
 
+	// タイミングの問題のためか、OSのプロセスオブジェクトは同期的にすぐ消えないことがあるので少し待つ。
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
     // 子プロセスは消えているが、孫プロセスは残っている。
 #ifdef _WIN32
     // Child process

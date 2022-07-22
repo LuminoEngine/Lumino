@@ -1,7 +1,6 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "Common.hpp"
-#include <LuminoEngine/Reflection/Object.hpp>
+#include <LuminoCore/Runtime/Object.hpp>
 
 namespace ln {
 namespace detail { class AssetObjectInternal; }
@@ -141,7 +140,7 @@ public:
     void reload();
 
 protected:
-    void serialize(Serializer2& ar) override;
+    void serialize_deprecated(Serializer2_deprecated& ar) override;
 
     //const detail::AssetPath& assetPath() const { return m_assetFilePath; }
     //void setAssetPath(const detail::AssetPath& value);

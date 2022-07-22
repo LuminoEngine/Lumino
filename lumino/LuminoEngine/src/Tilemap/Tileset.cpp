@@ -262,16 +262,6 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 	}
 }
 
-//void Tileset::serialize(Archive& ar)
-//{
-//    Object::serialize(ar);
-//    ar & makeNVP(_TT("tilePixelWidth", m_tilePixelWidth);
-//    ar & makeNVP(_TT("tilePixelHeight", m_tilePixelHeight);
-//    ar & makeNVP(_TT("tileScale", m_tileScale);
-//    ar & makeNVP(_TT("material", m_material);
-//    ar & makeNVP(_TT("tiles", m_tiles);
-//}
-//
 void Tileset::resetInfo()
 {
     //if (!m_material) return;
@@ -281,13 +271,6 @@ void Tileset::resetInfo()
 
     //m_tileUVSize.width = static_cast<float>(m_tilePixelWidth) / m_material->mainTexture()->width();
     //m_tileUVSize.height = static_cast<float>(m_tilePixelHeight) / m_material->mainTexture()->height();
-}
-
-void Tileset::Tile::serialize(Archive& ar)
-{
-	LN_NOTIMPLEMENTED();
-	//ar & makeNVP(_TT("passageFlags"), passageFlags);
- //   ar & makeNVP(_TT("sourceRect"), sourceRect);
 }
 
 } // namespace ln

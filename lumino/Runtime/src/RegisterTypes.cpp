@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/Engine/EngineContext2.hpp>
+﻿#include <LuminoCore/Runtime/RuntimeContext.hpp>
 #include <LuminoEngine/Engine/CoreApplication.hpp>
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 #include <LuminoEngine/Base/Event.hpp>
@@ -9,7 +9,7 @@
 
 namespace ln {
 
-void registerModuleTypes_Runtime(EngineContext2* context) {
+void registerModuleTypes_Runtime(RuntimeContext* context) {
 #include "RegisterTypes.inl"
 }
 

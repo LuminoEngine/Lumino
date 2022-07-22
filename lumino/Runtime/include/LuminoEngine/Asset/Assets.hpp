@@ -76,28 +76,6 @@ public:
 
 
 
-    //static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
-    //static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
-
-    //static void serializeAssetObjectInternal(Archive& ar, const StringView& name, Ref<Object>& value);
-
-    // TODO: internal
-    // assetPath() をキャッシュキーのソースとして、扱うような AssetObject を serialize する。
-    // 
-    //template<typename TValue>
-    //static void serializeAssetObject(Serializer2& ar, const StringView& name, Ref<TValue>& value)
-    //{
-    //    if (ar.isSaving()) {
-    //        Ref<Object> local = value;
-    //        serializeAsAssetPathInternal(ar, name, local);
-    //    }
-    //    else {
-    //        Ref<Object> local;
-    //        serializeAsAssetPathInternal(ar, name, local);
-    //        value = dynamic_pointer_cast<TValue>(local);
-    //    }
-    //}
-
     static const String& engineAssetsDirectory();
 };
 

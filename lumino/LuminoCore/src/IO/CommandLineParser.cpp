@@ -490,7 +490,7 @@ bool CommandLineCommand::parse(
             for (; flag < nameEnd; flag++) {
                 // find Option
                 StringView nameRef(flag, 1);
-                Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->shortName() == nameRef; });
+                Optional_deprecated<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->shortName() == nameRef; });
                 if (!option) {
                     *outMessage = ln::format(_T("'{0}' is invalid flag option."), nameRef);
                     return false;
@@ -505,7 +505,7 @@ bool CommandLineCommand::parse(
         } else if (prefix == 2) {
             // find Option
             StringView nameRef(nameBegin, nameEnd);
-            Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->longName() == nameRef; });
+            Optional_deprecated<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->longName() == nameRef; });
             if (!option) {
                 *outMessage = ln::format(_T("'{0}' is invalid option."), nameRef);
                 return false;
@@ -522,7 +522,7 @@ bool CommandLineCommand::parse(
         } else {
             if (commands) {
                 StringView nameRef(nameBegin, nameEnd);
-                Optional<Ref<CommandLineCommand>> command = commands->findIf([nameRef](const Ref<CommandLineCommand>& cmd) { return cmd->name() == nameRef; });
+                Optional_deprecated<Ref<CommandLineCommand>> command = commands->findIf([nameRef](const Ref<CommandLineCommand>& cmd) { return cmd->name() == nameRef; });
                 if (command) {
                     // to analyze command
                     break;
@@ -638,7 +638,7 @@ void CommandLineParser::setApplicationDescription(const StringView& description)
     m_applicationDescription = description;
 }
 
-Optional<Ref<CommandLineCommand>> CommandLineParser::findCommand(const StringView& commandName) const
+Optional_deprecated<Ref<CommandLineCommand>> CommandLineParser::findCommand(const StringView& commandName) const
 {
     const auto& commands = getCommandsInternal();
     return commands.findIf([commandName](const Ref<CommandLineCommand>& cmd) { return cmd->name() == commandName; });
@@ -712,7 +712,7 @@ bool CommandLineParser::parse(const List<String>& args)
     if (nextIndex < args.size()) {
         // find <command> position
         auto& name = args[nextIndex];
-        Optional<Ref<CommandLineCommand>> command = findCommand(name);
+        Optional_deprecated<Ref<CommandLineCommand>> command = findCommand(name);
         if (!command) {
             m_message = ln::format(_T("'{0}' is invalid command name."), name);
             return false;
@@ -746,7 +746,7 @@ void CommandLineParser::printVersion() const
 void CommandLineParser::printHelp(const StringView& commandName) const
 {
     if (!commandName.isEmpty()) {
-        Optional<Ref<CommandLineCommand>> command = findCommand(commandName);
+        Optional_deprecated<Ref<CommandLineCommand>> command = findCommand(commandName);
         if (command) {
             std::cout << (*command)->buildHelpText() << std::endl;
             return;

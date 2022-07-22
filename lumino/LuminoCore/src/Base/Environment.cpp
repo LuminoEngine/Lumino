@@ -78,7 +78,7 @@ Path Environment::specialFolderPath(SpecialFolder specialFolder, const StringVie
     }
 }
 
-Optional<String> Environment::getEnvironmentVariable(const StringView& variableName) {
+Optional_deprecated<String> Environment::getEnvironmentVariable(const StringView& variableName) {
     const char* value = ::getenv(variableName.toStdString().c_str());
     if (value)
         return String::fromCString(value);

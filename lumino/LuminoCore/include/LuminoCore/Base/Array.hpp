@@ -236,20 +236,20 @@ public:
 
     /** 指定した条件と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
     template<typename TPred>
-    Optional2<const T&> findIf(TPred pred) const {
+    Optional<const T&> findIf(TPred pred) const {
         auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
         if (itr != end()) {
-            return Optional2<const T&>(*itr);
+            return Optional<const T&>(*itr);
         }
-        return Optional2<const T&>();
+        return Optional<const T&>();
     }
     template<typename TPred>
-    Optional2<T&> findIf(TPred pred) {
+    Optional<T&> findIf(TPred pred) {
         auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
         if (itr != end()) {
-            return Optional2<T&>(*itr);
+            return Optional<T&>(*itr);
         }
-        return Optional2<T&>();
+        return Optional<T&>();
     }
 
     /**

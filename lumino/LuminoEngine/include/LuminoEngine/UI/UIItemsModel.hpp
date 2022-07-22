@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <LuminoEngine/Base/Variant.hpp>
 #include "UIContainerElement.hpp"
 
 namespace ln {

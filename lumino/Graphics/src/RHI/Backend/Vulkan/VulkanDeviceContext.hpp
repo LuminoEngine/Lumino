@@ -4,15 +4,6 @@
 
 struct GLFWwindow;
 
-//struct QueueFamilyIndices {
-//	ln::Optional<uint32_t> graphicsFamily;
-//	//ln::Optional<uint32_t> presentFamily;
-//
-//	bool isComplete() {
-//        return graphicsFamily.hasValue();// && presentFamily.hasValue();
-//	}
-//};
-
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;

@@ -81,7 +81,7 @@ private:
     bool parseRenderState(HLSLPass* pass);
 
     template<typename TValue, typename TParser>
-    bool parseStateValue(const std::string& token, Optional<TValue>* outValue, TParser parser)
+    bool parseStateValue(const std::string& token, Optional_deprecated<TValue>* outValue, TParser parser)
     {
         TValue v;
         if (parser(token, &v)) {

@@ -146,18 +146,18 @@ public:
     // layout
     detail::UIStyleAttribute<float> width;
     detail::UIStyleAttribute<float> height;
-    Optional<float> marginTop;
-    Optional<float> marginRight;
-    Optional<float> marginBottom;
-    Optional<float> marginLeft;
-    Optional<float> borderTop;
-    Optional<float> borderRight;
-    Optional<float> borderBottom;
-    Optional<float> borderLeft;
-    Optional<float> paddingTop;
-    Optional<float> paddingRight;
-    Optional<float> paddingBottom;
-    Optional<float> paddingLeft;
+    Optional_deprecated<float> marginTop;
+    Optional_deprecated<float> marginRight;
+    Optional_deprecated<float> marginBottom;
+    Optional_deprecated<float> marginLeft;
+    Optional_deprecated<float> borderTop;
+    Optional_deprecated<float> borderRight;
+    Optional_deprecated<float> borderBottom;
+    Optional_deprecated<float> borderLeft;
+    Optional_deprecated<float> paddingTop;
+    Optional_deprecated<float> paddingRight;
+    Optional_deprecated<float> paddingBottom;
+    Optional_deprecated<float> paddingLeft;
     //detail::UIStyleAttribute<UIHAlignment> hAlignment;
     //detail::UIStyleAttribute<UIVAlignment> vAlignment;
     detail::UIStyleAttribute<UIHAlignment> horizontalContentAlignment; // UILayoutPanel2_Deprecated をどのように配置するか

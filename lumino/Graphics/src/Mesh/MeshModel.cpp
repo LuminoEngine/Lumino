@@ -90,8 +90,8 @@ void MeshModel::clear() {
     m_nodeGlobalTransforms = {};
 }
 
-void MeshModel::serialize(Serializer2& ar) {
-    Object::serialize(ar);
+void MeshModel::serialize_deprecated(Serializer2_deprecated& ar) {
+    Object::serialize_deprecated(ar);
     ar& makeNVP(_TT("filePath"), m_filePath);
 
     if (ar.isLoading()) {
@@ -477,7 +477,7 @@ void MeshImportSettings::setSkeletonImport(bool value) {
     m_skeletonImport = value;
 }
 
-void MeshImportSettings::setApplyBoneTransformationsEnabled(Optional<bool> value) {
+void MeshImportSettings::setApplyBoneTransformationsEnabled(Optional_deprecated<bool> value) {
     m_applyBoneTransformationsEnabled = value;
 }
 

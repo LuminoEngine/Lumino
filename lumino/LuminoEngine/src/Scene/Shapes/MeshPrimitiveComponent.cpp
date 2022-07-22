@@ -42,8 +42,8 @@ Material* ShapeComponent::material() const {
     return m_material;
 }
 
-void ShapeComponent::serialize(Serializer2& ar) {
-    VisualComponent::serialize(ar);
+void ShapeComponent::serialize_deprecated(Serializer2_deprecated& ar) {
+    VisualComponent::serialize_deprecated(ar);
     ar& makeNVP(_TT("material"), m_material);
 }
 
@@ -65,8 +65,8 @@ void PlaneMeshComponent::init() {
     VisualComponent::init();
 }
 
-void PlaneMeshComponent::serialize(Serializer2& ar) {
-    ShapeComponent::serialize(ar);
+void PlaneMeshComponent::serialize_deprecated(Serializer2_deprecated& ar) {
+    ShapeComponent::serialize_deprecated(ar);
     ar& makeNVP(_TT("size"), m_size);
     ar& makeNVP(_TT("uvParUnit"), m_uvParUnit);
 }

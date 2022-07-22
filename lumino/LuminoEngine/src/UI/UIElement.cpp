@@ -485,7 +485,7 @@ UIVisibility UIElement::visibility() const {
     return m_localStyle->mainStyle()->visible.getOrDefault(UIVisibility::Visible);
 }
 
-void UIElement::setBlendMode(const Optional<BlendMode>& value) {
+void UIElement::setBlendMode(const Optional_deprecated<BlendMode>& value) {
     if (value.hasValue()) {
         m_localStyle->mainStyle()->blendMode = value.value();
     }

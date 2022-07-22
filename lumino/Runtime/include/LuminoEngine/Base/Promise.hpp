@@ -63,7 +63,7 @@ public:
     ::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
     static ::ln::TypeInfo* _lnref_registerTypeInfo() {
-        auto* context = ::ln::EngineContext2::instance();
+        auto* context = ::ln::RuntimeContext::current();
         return context->registerType<Promise<TResult>>("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>(), {});
     }
 

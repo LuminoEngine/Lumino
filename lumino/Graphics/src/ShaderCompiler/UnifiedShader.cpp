@@ -9,7 +9,7 @@ namespace ln {
 namespace kokage {
 
 template<typename TValue>
-static void writeOptionalUInt8(BinaryWriter* w, const Optional<TValue>& value) {
+static void writeOptionalUInt8(BinaryWriter* w, const Optional_deprecated<TValue>& value) {
     w->writeUInt8(value.hasValue());
     if (value.hasValue())
         w->writeUInt8((uint8_t)value.value());
@@ -17,7 +17,7 @@ static void writeOptionalUInt8(BinaryWriter* w, const Optional<TValue>& value) {
         w->writeUInt8(0);
 }
 
-static void writeOptionalBool(BinaryWriter* w, const Optional<bool>& value) {
+static void writeOptionalBool(BinaryWriter* w, const Optional_deprecated<bool>& value) {
     w->writeUInt8(value.hasValue());
     if (value.hasValue())
         w->writeUInt8((value.value()) ? 1 : 0);
@@ -26,7 +26,7 @@ static void writeOptionalBool(BinaryWriter* w, const Optional<bool>& value) {
 }
 
 template<typename TValue>
-static void readOptionalUInt8(BinaryReader* r, Optional<TValue>* outValue) {
+static void readOptionalUInt8(BinaryReader* r, Optional_deprecated<TValue>* outValue) {
     uint8_t has = r->readUInt8();
     uint8_t value = r->readUInt8();
     if (has) {
@@ -34,7 +34,7 @@ static void readOptionalUInt8(BinaryReader* r, Optional<TValue>* outValue) {
     }
 }
 
-static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue) {
+static void readOptionalBool(BinaryReader* r, Optional_deprecated<bool>* outValue) {
     uint8_t has = r->readUInt8();
     uint8_t value = r->readUInt8();
     if (has) {

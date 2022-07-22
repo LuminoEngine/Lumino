@@ -263,7 +263,7 @@ public:
 
 private:
     CommandLineCommand* command() const { return m_activeCommand; }
-    Optional<Ref<CommandLineCommand>> findCommand(const StringView& commandName) const;
+    Optional_deprecated<Ref<CommandLineCommand>> findCommand(const StringView& commandName) const;
     bool parse(const List<String>& args);
 
     String m_message;

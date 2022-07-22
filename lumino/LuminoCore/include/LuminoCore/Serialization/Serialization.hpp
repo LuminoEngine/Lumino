@@ -26,7 +26,7 @@ namespace ln {
 #define LN_SERIALIZE_CLASS_VERSION(version) \
 	template<typename T> friend class ::ln::detail::has_member_serialize_function; \
 	template<typename T> friend class ::ln::detail::non_member_serialize_function; \
-	friend class ::ln::Archive; \
+	friend class ::ln::Archive_deprecated; \
 	static const int lumino_class_version = version;
 
 #define LN_SERIALIZE_CLASS_FORMAT(type, format)	\
@@ -41,7 +41,7 @@ namespace ln {
  * オブジェクトのシリアライズ/デシリアライズを実装するためのインターフェイスです。
  */
 
-class [[deprecated]] Archive {
+class [[deprecated]] Archive_deprecated {
 public:
 	template<typename TBase>
 	struct BaseClass
@@ -54,13 +54,13 @@ public:
 	static const String ClassVersionKey;
 	static const String ClassBaseKey;
 
-	Archive(ArchiveStore* store, ArchiveMode mode)
-		: Archive()
+	Archive_deprecated(ArchiveStore* store, ArchiveMode mode)
+		: Archive_deprecated()
 	{
 		setup(store, mode);
 	}
 
-	~Archive()
+	~Archive_deprecated()
 	{
 	}
 
@@ -74,7 +74,7 @@ public:
     const String& basePath() const { return m_basePath; }
 
 	template<typename T>
-	Archive& operator & (T && value)
+	Archive_deprecated& operator & (T && value)
 	{
 		process(std::forward<T>(value));
 		return *this;
@@ -261,7 +261,7 @@ public:
 
 protected:
 
-	Archive()
+	Archive_deprecated()
 		: m_store(nullptr)
 		, m_mode(ArchiveMode::Save)
 		, m_archiveVersion(0)
@@ -959,104 +959,6 @@ private:
 	int64_t	m_archiveVersion;
 	detail::NameValuePairBase*	m_nextReadValueDefault = nullptr;
     String m_basePath;
-};
-
-
-
-class JsonTextOutputArchive
-	: public Archive
-{
-public:
-	JsonTextOutputArchive();
-	virtual ~JsonTextOutputArchive();
-
-	template<typename TValue>
-	void save(TValue && value)
-	{
-		if (LN_REQUIRE(!m_processing)) return;
-		m_processing = true;
-		Archive::process(std::forward<TValue>(value));
-		m_processing = false;
-	}
-
-	String toString(JsonFormatting formatting = JsonFormatting::Indented);
-
-private:
-	JsonDocument	m_localDoc;
-	JsonArchiveStore	m_localStore;
-	bool				m_processing;
-};
-
-class JsonTextInputArchive
-	: public Archive
-{
-public:
-	JsonTextInputArchive(const String& jsonText);
-	virtual ~JsonTextInputArchive();
-
-	template<typename TValue>
-	void load(TValue && value)
-	{
-		if (LN_REQUIRE(!m_processing)) return;
-		m_processing = true;
-		Archive::process(std::forward<TValue>(value));
-		m_processing = false;
-	}
-
-private:
-	JsonDocument	m_localDoc;
-	JsonArchiveStore	m_localStore;
-	bool				m_processing;
-};
-
-/**
- * オブジェクトと JSON 文字列間のシリアライズ/デシリアライズ行うユーティリティです。
- */
-class JsonSerializer
-{
-public:
-	/**
-	 * オブジェクトを JSON 文字列へシリアライズします。
-	 * @param[in] 	value 		: データが格納されたオブジェクトへの参照
-	 * @param[in] 	formatting	: JSON 文字列の整形方法
-	 * @return		JSON 文字列
-	 */
-	template<typename TValue>
-	static String serialize(TValue&& value, JsonFormatting formatting = JsonFormatting::Indented)
-	{
-		JsonTextOutputArchive ar;
-		ar.save(std::forward<TValue>(value));
-		return ar.toString(formatting);
-	}
-
-    template<typename TValue>
-    static String serialize(TValue&& value, const String& basePath, JsonFormatting formatting = JsonFormatting::Indented)
-    {
-        JsonTextOutputArchive ar;
-        ar.setBasePath(basePath);
-        ar.save(std::forward<TValue>(value));
-        return ar.toString(formatting);
-    }
-
-	/**
-	 * JSON 文字列をオブジェクトへデシリアライズします。
-	 * @param[in] 	jsonText	: JSON 文字列
-	 * @param[in] 	value 		: データを格納するオブジェクトへの参照
-	 */
-	template<typename TValue>
-	static void deserialize(const StringView& jsonText, TValue& value)
-	{
-		JsonTextInputArchive ar(jsonText);
-		ar.load(value);
-	}
-
-    template<typename TValue>
-    static void deserialize(const StringView& jsonText, const String& basePath, TValue& value)
-    {
-        JsonTextInputArchive ar(jsonText);
-        ar.setBasePath(basePath);
-        ar.load(value);
-    }
 };
 
 } // namespace ln

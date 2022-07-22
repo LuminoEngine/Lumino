@@ -115,8 +115,8 @@ public:
 	//	class Details : public BuilderDetailsBase
 	//	{
 	//	public:
-	//		Optional<float> height;
-	//		Optional<Color> backgroundColor;
+	//		Optional_deprecated<float> height;
+	//		Optional_deprecated<Color> backgroundColor;
 	//		virtual Ref<Object> build() override;
 	//	};
 
@@ -352,7 +352,7 @@ public:
     UIVisibility visibility() const;
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
-    void setBlendMode(const Optional<BlendMode>& value);
+    void setBlendMode(const Optional_deprecated<BlendMode>& value);
 
     /** 合成方法を取得します。*/
     BlendMode blendMode() const;
@@ -643,11 +643,11 @@ struct UIElement::BuilderDetails : public AbstractBuilderDetails
 {
 	LN_BUILDER_DETAILS(UIElement);
 
-	Optional<float> width;
-	Optional<float> height;
-	Optional<Color> backgroundColor;
-	//Optional<UIHAlignment> hAlignment;
-	//Optional<UIVAlignment> vAlignment;
+	Optional_deprecated<float> width;
+	Optional_deprecated<float> height;
+	Optional_deprecated<Color> backgroundColor;
+	//Optional_deprecated<UIHAlignment> hAlignment;
+	//Optional_deprecated<UIVAlignment> vAlignment;
 
 	void apply(UIElement* p) const;
 };

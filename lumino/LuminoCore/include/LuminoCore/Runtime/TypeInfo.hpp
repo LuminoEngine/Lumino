@@ -1,18 +1,13 @@
 ﻿#pragma once
-#include "../Base/Delegate.hpp"
+#include "Common.hpp"
 
 namespace ln {
+class TypeInfo;
 class PropertyInfo;
-class ViewPropertyInfo;
+//class ViewPropertyInfo;
 namespace detail {
 struct TypeInfoInternal;
 }
-
-/**
- * ObjectCreationHandler
- */
-LN_DELEGATE()
-using ObjectCreationHandler = Delegate<Ref<Object>()>;
 
 template<class T>
 class TypeInfoTraits;
@@ -41,12 +36,6 @@ public:
 
     // template<class T>
     // static TypeInfo* getType() { return nullptr; }
-};
-
-enum class TypeInfoClass {
-    Primitive,
-    /*Struct,*/
-    Object,
 };
 
 template<class T>
@@ -142,9 +131,6 @@ public:
 class TypeInfo
     : public RefObject {
 public:
-    static TypeInfo* registerType(const String& typeName, TypeInfo* baseClass, Ref<ObjectCreationHandler> factoryCallback);
-
-public:
     TypeInfo(const String& className, TypeInfo* baseType, TypeInfoClass typeClass = TypeInfoClass::Object);
 
     TypeInfo(const String& className);
@@ -165,9 +151,9 @@ public:
     void registerProperty(PropertyInfo* prop);
     const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
 
-    void registerViewProperty(ViewPropertyInfo* prop);
-    const List<Ref<ViewPropertyInfo>>& viewProperties() const { return m_viewProperties; }
-    ViewPropertyInfo* findViewProperty(const StringView& name) const;
+    //void registerViewProperty(ViewPropertyInfo* prop);
+    //const List<Ref<ViewPropertyInfo>>& viewProperties() const { return m_viewProperties; }
+    //ViewPropertyInfo* findViewProperty(const StringView& name) const;
 
     Ref<Object> createInstance() const;
     static Ref<Object> createInstance(const String& typeName); // TODO: EngineContext へ
@@ -195,7 +181,7 @@ private:
     String m_name;
     TypeInfoClass m_typeClass;
     List<Ref<PropertyInfo>> m_properties; // obsolete
-    List<Ref<ViewPropertyInfo>> m_viewProperties;
+    //List<Ref<ViewPropertyInfo>> m_viewProperties;
     int64_t m_managedTypeInfoId;
 
     friend struct detail::TypeInfoInternal;
@@ -286,54 +272,4 @@ Ref<T> makeObjectHelper() {
 }
 
 } // namespace detail
-
-#if LN_USE_DEPRECATED_ARCHIVE
-
-template<
-    typename TValue,
-    typename std::enable_if<detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
-void serialize(Archive& ar, Ref<TValue>& value) {
-    bool isNull = (value == nullptr);
-    ar.makeSmartPtrTag(&isNull);
-
-    ln::String typeName;
-    if (ar.isSaving()) {
-        typeName = TypeInfo::getTypeInfo(value)->name();
-    }
-    ar.makeTypeInfo(&typeName);
-    // TODO: ここで makeTypeInfo すると、その中では setNextName しているため、現在の nextName をうわがいてしまう
-
-    if (ar.isSaving()) {
-        if (!isNull) {
-            ar.process(*value.get());
-        }
-    }
-    else {
-        if (!isNull) {
-            if (!typeName.isEmpty()) {
-                auto obj = TypeInfo::createInstance(typeName);
-                if (obj) {
-                    value = dynamic_pointer_cast<TValue>(obj);
-                }
-            }
-
-            // TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
-            // TODO: Abstract 対策のためいったん無効化。多分有効化する必要はない気がするけど…。
-            if (!value) {
-                value = detail::makeObjectHelper<TValue>();
-            }
-            if (value) {
-
-                printf("[Engine] start ar.process [%p]\n", value.get());
-                ar.process(*value.get());
-                printf("[Engine] end ar.process [%p]\n", value.get());
-            }
-        }
-        else {
-            value = nullptr;
-        }
-    }
-}
-#endif // LN_USE_DEPRECATED_ARCHIVE
-
 } // namespace ln

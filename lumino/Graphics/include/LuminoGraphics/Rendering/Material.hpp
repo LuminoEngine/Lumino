@@ -127,26 +127,26 @@ public:
 	/** @{ */
 
 private:
-	Optional<BlendMode>		blendMode;
-	Optional<CullMode>	cullingMode;
-	Optional<bool>			depthTestEnabled;
-	Optional<bool>			depthWriteEnabled;
+	Optional_deprecated<BlendMode>		blendMode;
+	Optional_deprecated<CullMode>	cullingMode;
+	Optional_deprecated<bool>			depthTestEnabled;
+	Optional_deprecated<bool>			depthWriteEnabled;
 
 public:
 	String m_name;
 	ShadingModel			m_shadingModel = ShadingModel::Default;
 
-	void setBlendMode(Optional<BlendMode> mode);
-	Optional<BlendMode> getBlendMode() const { return blendMode; }
+	void setBlendMode(Optional_deprecated<BlendMode> mode);
+	Optional_deprecated<BlendMode> getBlendMode() const { return blendMode; }
 
-	void setCullingMode(Optional<CullMode> mode);
-	Optional<CullMode> getCullingMode() const { return cullingMode; }
+	void setCullingMode(Optional_deprecated<CullMode> mode);
+	Optional_deprecated<CullMode> getCullingMode() const { return cullingMode; }
 
-	void setDepthTestEnabled(Optional<bool> enabled);
-	Optional<bool> isDepthTestEnabled() const { return depthTestEnabled; }
+	void setDepthTestEnabled(Optional_deprecated<bool> enabled);
+	Optional_deprecated<bool> isDepthTestEnabled() const { return depthTestEnabled; }
 
-	void setDepthWriteEnabled(Optional<bool> enabled);
-	Optional<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
+	void setDepthWriteEnabled(Optional_deprecated<bool> enabled);
+	Optional_deprecated<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
 
 
 LN_CONSTRUCT_ACCESS:
@@ -251,12 +251,7 @@ protected:  // TODO:
 	std::vector<UniformBufferEntiry> m_uniformBufferData;
 
 protected:
-
-	//LN_SERIALIZE_CLASS_VERSION(1);
-	//virtual void serialize(Archive& ar) override;
-
-
-	void serialize(Serializer2& ar) override;
+	void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 LN_INTERNAL_ACCESS:
 

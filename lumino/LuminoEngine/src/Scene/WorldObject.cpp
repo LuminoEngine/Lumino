@@ -1,7 +1,6 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Reflection/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Level.hpp>
@@ -326,9 +325,9 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
-void WorldObject::serialize(Serializer2& ar)
+void WorldObject::serialize_deprecated(Serializer2_deprecated& ar)
 {
-	Object::serialize(ar);
+    Object::serialize_deprecated(ar);
     ar& ln::makeNVP(_TT("name"), m_name);
 
     Vector3 eularAngles = m_transform->m_rotation.toEulerAngles();

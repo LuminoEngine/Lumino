@@ -126,17 +126,18 @@ private:
 	//std::stack<NodeInfo>	m_nodeStack;
 };
 
-class JsonArchiveStore
+#if LN_USE_DEPRECATED_ARCHIVE
+class JsonArchiveStore_deprecated
 	: public ArchiveStore
 {
 public:
-	//JsonArchiveStore()
+	//JsonArchiveStore_deprecated()
 	//	: m_localDoc(Ref<JsonDocument>::makeRef())
 	//{
 	//	
 	//}
 
-	JsonArchiveStore(JsonDocument* doc/*, ArchiveMode mode*/)
+	JsonArchiveStore_deprecated(JsonDocument* doc/*, ArchiveMode mode*/)
 		: m_localDoc(doc)
         , m_current(nullptr)
         , m_mode(ArchiveMode::Save)
@@ -149,7 +150,7 @@ public:
         //}
 	}
 
-	~JsonArchiveStore()
+	~JsonArchiveStore_deprecated()
 	{
 	}
 
@@ -556,5 +557,6 @@ private:
 	Ref<JsonDocument>			m_localDoc;
     ArchiveMode m_mode;
 };
+#endif
 
 } // namespace ln

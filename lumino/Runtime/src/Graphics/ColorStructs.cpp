@@ -291,7 +291,7 @@ Color Color::parse(const StringView& str)
     return Color(c);
 }
 
-void Color::serialize(Serializer2& ar)
+void Color::serialize_deprecated(Serializer2_deprecated& ar)
 {
     int size = 0;
     if (ar.isSaving())

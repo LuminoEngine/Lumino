@@ -41,14 +41,5 @@ TilemapComponent* Tilemap::tilemapComponent() const
 	return m_component;
 }
 
-//void Tilemap::serialize(Archive& ar)
-//{
-//    VisualObject::serialize(ar);
-//    if (ar.isLoading()) {
-//        m_component = static_cast<TilemapComponent*>(findComponentByType(TypeInfo::getTypeInfo<TilemapComponent>()));
-//        setMainVisualComponent(m_component);
-//    }
-//}
-
 } // namespace ln
 

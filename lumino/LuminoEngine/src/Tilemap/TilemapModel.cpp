@@ -229,24 +229,5 @@ bool TilemapModel::fetchTileset(int tileGlobalId, Tileset** outTileset, int* out
     return true;
 }
 
-//void TilemapModel::serialize(Archive& ar)
-//{
-//	Object::serialize(ar);
-//    LN_NOTIMPLEMENTED();
-//
-//  //  String tilesetPath;
-//  //  if (ar.isSaving()) {
-//		//tilesetPath = Path::makeRelative(ar.basePath(), m_tileset->m_assetFilePath);
-//  //  }
-//
-//	//ar & makeNVP(u"tileset", tilesetPath);
-// //   Assets::serializeAsAssetPath(ar, u"tileset", m_tileset);
-//	//ar & makeNVP(u"layers", m_layers);
-//
-//  //  if (ar.isLoading()) {
-//		//setTileset(dynamic_pointer_cast<Tileset>(Assets::loadAsset(Path(ar.basePath(), tilesetPath))));
-//  //  }
-//}
-
 } // namespace ln
 

@@ -2,7 +2,6 @@
 #include "Internal.hpp"
 #include "VisualManager.hpp"
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
-#include <LuminoEngine/Reflection/Property.hpp> // TODO:
 
 namespace ln {
 namespace detail {
@@ -22,7 +21,7 @@ void VisualManager::init(const Settings& settings) {
 
     m_graphicsManager = settings.graphicsManager;
 
-    auto* context = EngineContext2::instance();
+    auto* context = RuntimeContext::current();
     context->registerType<Component>();
     context->registerType<VisualComponent>();
     context->registerType<SpriteComponent>();

@@ -52,17 +52,17 @@ public:
 	void setScissorRect(const RectI& value);
 
 	void setObjectId(int value);
-	void setBlendMode(const Optional<BlendMode>& value);
-	void setCullingMode(const Optional<CullMode>& value);
-	void setDepthTestEnabled(const Optional<bool>& value);
-	void setDepthWriteEnabled(const Optional<bool>& value);
+	void setBlendMode(const Optional_deprecated<BlendMode>& value);
+	void setCullingMode(const Optional_deprecated<CullMode>& value);
+	void setDepthTestEnabled(const Optional_deprecated<bool>& value);
+	void setDepthWriteEnabled(const Optional_deprecated<bool>& value);
 	void setPrimitiveTopology(PrimitiveTopology value);
 
-	void setShadingModel(const Optional<ShadingModel>& value);
+	void setShadingModel(const Optional_deprecated<ShadingModel>& value);
 	void setMaterial(Material* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
     Material* material() const;
 	void setTransfrom(const Matrix& value);
-    void setBaseTransfrom(const Optional<Matrix>& value);
+    void setBaseTransfrom(const Optional_deprecated<Matrix>& value);
 	const Matrix& baseTransform() const;
     void setRenderPriority(int value);
     void setRenderPhase(RenderPart value);
@@ -74,7 +74,7 @@ public:
 	void setColorScale(const Color& value);
 	void setBlendColor(const Color& value);
 	void setTone(const ColorTone& value);
-    void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value);
+    void setBaseBuiltinEffectData(const Optional_deprecated<BuiltinEffectData>& value);
 
 	void setFont(Font* value);
 	const Ref<Font>& font() const { return primaryStateConst()->font; }
@@ -111,9 +111,9 @@ public:	// TODO: internal
 
         // Infomation for RenderDrawElement
         BuiltinEffectData builtinEffectData;
-        Optional<BuiltinEffectData> baseBuiltinEffectData;
+        Optional_deprecated<BuiltinEffectData> baseBuiltinEffectData;
         Matrix transform;
-        Optional<Matrix> baseTransform;
+        Optional_deprecated<Matrix> baseTransform;
         int renderPriority;
         RenderPart rendringPhase;
 		RenderDrawElementTypeFlags additionalElementFlags;

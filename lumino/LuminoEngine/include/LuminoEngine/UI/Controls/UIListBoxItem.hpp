@@ -77,7 +77,7 @@ public:
     // TODO: group
 
 
-	void bind(ObservablePropertyBase* prop);
+	//void bind(ObservablePropertyBase* prop);
 
 protected:
 	// base interface

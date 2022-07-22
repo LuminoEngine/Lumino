@@ -1,22 +1,20 @@
-﻿
-#pragma once
-#include <functional>
-#include "../Reflection/Object.hpp"
-#include "../Reflection/TypeInfo.hpp"
+﻿#pragma once
+#include <LuminoCore/Runtime/Object.hpp>
+#include <LuminoCore/Runtime/TypeInfo.hpp>
 
 namespace ln {
 class AssetModel;
-class Serializer2;
+class Serializer2_deprecated;
 
 namespace detail {
 
-// void serialize(Archive& ar) をメンバ関数として持っているか
+// void serialize_deprecated(Serializer2_deprecated& ar) をメンバ関数として持っているか
 template<typename T>
 class has_member_serialize2_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Serializer2*>(0)), std::true_type());
+    static auto check(U&& v) -> decltype(v.serialize_deprecated(*reinterpret_cast<Serializer2_deprecated*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -24,13 +22,13 @@ public:
 	static bool const value = type::value;
 };
 
-// void serialize(Archive& ar) をメンバ関数として持っていないか
+// void serialize_deprecated(Serializer2_deprecated& ar) をメンバ関数として持っていないか
 template<typename T>
 class non_member_serialize2_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Serializer2*>(0)), std::true_type());
+    static auto check(U&& v) -> decltype(v.serialize_deprecated(*reinterpret_cast<Serializer2_deprecated*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -40,17 +38,17 @@ public:
 
 } // namespace detail
 
-template<typename T> void serialize(Serializer2& ar, List<T>& value);
-template<typename T> void serialize(Serializer2& ar, Optional<T>& value);
-void serialize(Serializer2& ar, Path& value);
-void serialize(Serializer2& ar, detail::AssetPath& value);
-void serialize(Serializer2& ar, Vector2& value);
-void serialize(Serializer2& ar, Vector3& value);
-void serialize(Serializer2& ar, Size& value);
-void serialize(Serializer2& ar, Rect& value);
+template<typename T> void serialize_deprecated(Serializer2_deprecated& ar, List<T>& value);
+template<typename T> void serialize_deprecated(Serializer2_deprecated& ar, Optional_deprecated<T>& value);
+void serialize_deprecated(Serializer2_deprecated& ar, Path& value);
+void serialize_deprecated(Serializer2_deprecated& ar, detail::AssetPath& value);
+void serialize_deprecated(Serializer2_deprecated& ar, Vector2& value);
+void serialize_deprecated(Serializer2_deprecated& ar, Vector3& value);
+void serialize_deprecated(Serializer2_deprecated& ar, Size& value);
+void serialize_deprecated(Serializer2_deprecated& ar, Rect& value);
 
 namespace detail {
-class SerializerStore2;
+class SerializerStore2_deprecated;
 }
 
 
@@ -58,7 +56,7 @@ class SerializerStore2;
 /** */
 // Ref<List> はサポートしない。Ref<> は Object のみサポート。 Ref<Collection>　を使うこと。
 LN_CLASS()
-class Serializer2
+class Serializer2_deprecated
 	: public Object
 {
 	LN_OBJECT;
@@ -186,7 +184,7 @@ public:
 	// C++ utils
 
 	template<typename T>
-	Serializer2& operator&(T&& value)
+	Serializer2_deprecated& operator&(T&& value)
 	{
 		process(std::forward<T>(value));
 		return *this;
@@ -211,8 +209,8 @@ public:
 	}
 
 LN_CONSTRUCT_ACCESS:
-	Serializer2();
-	virtual ~Serializer2() = default;
+	Serializer2_deprecated();
+	virtual ~Serializer2_deprecated() = default;
 	void init();
 
 private:
@@ -247,9 +245,9 @@ private:
 	template<typename T, typename std::enable_if<std::is_enum<T>::value, std::nullptr_t>::type = nullptr>
 	void writeValue(T& value) { writeInt32((int)value); }
 	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void writeValue(T& value) { value.serialize(*this); }
+	void writeValue(T& value) { value.serialize_deprecated(*this); }
 	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void writeValue(T& value) { ln::serialize(*this, value); }
+	void writeValue(T& value) { ln::serialize_deprecated(*this, value); }
 
 	template<typename T>
 	void processLoad(NameValuePair<T>& nvp)
@@ -280,18 +278,18 @@ private:
 	template<typename T, typename std::enable_if<std::is_enum<T>::value, std::nullptr_t>::type = nullptr>
 	void readValue(T& value) { value = (T)readInt32(); }
 	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void readValue(T& outValue) { outValue.serialize(*this); }
+	void readValue(T& outValue) { outValue.serialize_deprecated(*this); }
 	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
-	void readValue(T& outValue) { ln::serialize(*this, outValue); }
+	void readValue(T& outValue) { ln::serialize_deprecated(*this, outValue); }
 
 	ArchiveMode m_mode;
 	detail::AssetPath m_basePath;
-	Ref<detail::SerializerStore2> m_store;
+	Ref<detail::SerializerStore2_deprecated> m_store;
 };
 #endif
 
 template<typename T>
-void serialize(Serializer2& ar, List<T>& value)
+void serialize_deprecated(Serializer2_deprecated& ar, List<T>& value)
 {
 	if (ar.isSaving()) {
 		ar.beginWriteList();
@@ -313,7 +311,7 @@ void serialize(Serializer2& ar, List<T>& value)
 }
 
 template<typename T>
-void serialize(Serializer2& ar, Optional<T>& value)
+void serialize_deprecated(Serializer2_deprecated& ar, Optional_deprecated<T>& value)
 {
 	if (ar.isSaving()) {
 		if (!value) {
@@ -337,7 +335,7 @@ void serialize(Serializer2& ar, Optional<T>& value)
 	}
 }
 
-inline void serialize(Serializer2& ar, Path& value)
+inline void serialize_deprecated(Serializer2_deprecated& ar, Path& value)
 {
 	if (ar.isSaving()) {
 		ar.writeString(value.str());
@@ -347,7 +345,7 @@ inline void serialize(Serializer2& ar, Path& value)
 	}
 }
 
-inline void serialize(Serializer2& ar, detail::AssetPath& value)
+inline void serialize_deprecated(Serializer2_deprecated& ar, detail::AssetPath& value)
 {
 	if (ar.isSaving()) {
 		ar.writeString(value.toString());
@@ -357,7 +355,7 @@ inline void serialize(Serializer2& ar, detail::AssetPath& value)
 	}
 }
 
-inline void serialize(Serializer2& ar, Vector2& value)
+inline void serialize_deprecated(Serializer2_deprecated& ar, Vector2& value)
 {
 	int size = 0;
 	ar.beginList(&size);
@@ -369,7 +367,7 @@ inline void serialize(Serializer2& ar, Vector2& value)
 	ar.endList();
 }
 
-inline void serialize(Serializer2& ar, Vector3& value)
+inline void serialize_deprecated(Serializer2_deprecated& ar, Vector3& value)
 {
 	int size = 0;
 	ar.beginList(&size);
@@ -382,7 +380,7 @@ inline void serialize(Serializer2& ar, Vector3& value)
 	ar.endList();
 }
 
-inline void serialize(Serializer2& ar, Size& value)
+inline void serialize_deprecated(Serializer2_deprecated& ar, Size& value)
 {
     int size = 0;
     if (ar.isSaving())
@@ -401,7 +399,7 @@ inline void serialize(Serializer2& ar, Size& value)
         ar.endReadList();
 }
 
-inline void serialize(Serializer2& ar, Rect& value)
+inline void serialize_deprecated(Serializer2_deprecated& ar, Rect& value)
 {
     int size = 0;
     if (ar.isSaving())

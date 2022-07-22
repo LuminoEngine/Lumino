@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license..
 #pragma once
 
-#define LN_USE_DEPRECATED_ARCHIVE 1
+//#define LN_USE_DEPRECATED_ARCHIVE 1
 
 namespace ln {
 
 #if LN_USE_DEPRECATED_ARCHIVE
-class Archive;
+class Archive_deprecated;
 #endif // LN_USE_DEPRECATED_ARCHIVE
 
 enum class ArchiveMode
@@ -66,13 +66,13 @@ namespace detail
 
 #if LN_USE_DEPRECATED_ARCHIVE
 
-// void serialize(Archive& ar) をメンバ関数として持っているか
+// void serialize(Archive_deprecated& ar) をメンバ関数として持っているか
 template<typename T>
 class has_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive*>(0)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive_deprecated*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -80,13 +80,13 @@ public:
 	static bool const value = type::value;
 };
 
-// void serialize(Archive& ar) をメンバ関数として持っていないか
+// void serialize(Archive_deprecated& ar) をメンバ関数として持っていないか
 template<typename T>
 class non_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive*>(0)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive_deprecated*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -94,19 +94,6 @@ public:
 	static bool const value = !type::value;
 };
 
-// lumino_class_version をメンバとして持っているか
-template<typename T>
-class has_static_member_class_version
-{
-private:
-	template<typename U>
-	static auto check(U&& v) -> decltype(U::lumino_class_version, std::true_type());
-	static auto check(...) -> decltype(std::false_type());
-
-public:
-	typedef decltype(check(std::declval<T>())) type;
-	static bool const value = type::value;
-};
 
 // ln::Object であるか
 template<typename T>
@@ -122,6 +109,19 @@ public:
 	static bool const value = type::value;
 };
 #endif // LN_USE_DEPRECATED_ARCHIVE
+
+// lumino_class_version をメンバとして持っているか
+template<typename T>
+class has_static_member_class_version {
+private:
+    template<typename U>
+    static auto check(U&& v) -> decltype(U::lumino_class_version, std::true_type());
+    static auto check(...) -> decltype(std::false_type());
+
+public:
+    typedef decltype(check(std::declval<T>())) type;
+    static bool const value = type::value;
+};
 
 template <class T> struct SerializeClassVersionInfo
 {

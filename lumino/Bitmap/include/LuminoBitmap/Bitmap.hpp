@@ -1,6 +1,4 @@
-﻿
-#pragma once
-#include <LuminoEngine/Reflection/Object.hpp>
+﻿#pragma once
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include "Common.hpp"
 

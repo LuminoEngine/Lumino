@@ -170,7 +170,7 @@ public:
     ParticleSortMode m_sortMode = ParticleSortMode::DistanceToView;
 
 protected:
-    void serialize(Serializer2& ar) override;
+    void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     ParticleEmitterModel();
@@ -206,7 +206,7 @@ public:
     const List<Ref<ParticleEmitterModel>>& emitters() const { return m_emitters; }
 
 protected:
-    void serialize(Serializer2& ar) override;
+    void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     ParticleModel();

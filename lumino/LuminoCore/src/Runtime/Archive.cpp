@@ -1,12 +1,11 @@
-﻿
-#include <rapidjson/encodings.h>
+﻿#include <rapidjson/encodings.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/error/en.h>
-#include "Internal.hpp"
-#include <LuminoEngine/Reflection/Object.hpp>
-#include <LuminoEngine/Reflection/Serializer3.hpp>
+#include <LuminoCore/Serialization/ArchiveStore.hpp>
+#include <LuminoCore/Runtime/Object.hpp>
+#include <LuminoCore/Runtime/Archive.hpp>
 
 namespace ln {
 
@@ -21,7 +20,7 @@ public:
     JsonArchiveStore3();
     ~JsonArchiveStore3();
     void setupSave();
-    Result setupLoad(const String& text);
+    ArchiveResult<> setupLoad(const String& text);
     String toString(JsonFormatting formatting) const;
 
 protected:
@@ -68,13 +67,36 @@ private:
 } // namespace detail
 
 //==============================================================================
-// Serializer3
+// Archive
 
-const String Serializer3::ClassNameKey = _TT("lumino_class_name");
-const String Serializer3::ClassVersionKey = _TT("lumino_class_version");
-const String Serializer3::ClassBaseKey = _TT("lumino_base_class");
+String Archive::s_defaultVersionKey = U"_ln_version_";
 
-void Serializer3::makeArrayTag(int* outSize) {
+const String Archive::ClassNameKey = _TT("lumino_class_name");
+const String Archive::ClassBaseKey = _TT("lumino_base_class");
+
+void Archive::makePrimitiveValue() {
+    setCurrentNodeType(NodeType::PrimitiveValue);
+}
+
+void Archive::makeStringTag(String* str) {
+    if (isSaving()) {
+        setCurrentNodeType(NodeType::PrimitiveValue);
+        process(*str);
+    }
+    else {
+
+        //  process は、いま open しているコンテナに対して行いたい。
+        // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
+        // m_store->closeContainer();
+        // m_nodeInfoStack.back().containerOpend = false;
+
+        // Value 確定。次の process で open container しない。
+        setCurrentNodeType(NodeType::PrimitiveValue);
+        process(*str);
+    }
+}
+
+void Archive::makeArrayTag(int* outSize) {
     //
     if (isSaving()) {
         setCurrentNodeType(NodeType::Array);
@@ -91,7 +113,7 @@ void Serializer3::makeArrayTag(int* outSize) {
     }
 }
 
-void Serializer3::makeMapTag(int* outSize) {
+void Archive::makeMapTag(int* outSize) {
     if (isSaving()) {
         setCurrentNodeType(NodeType::Object);
     }
@@ -102,8 +124,8 @@ void Serializer3::makeMapTag(int* outSize) {
     }
 }
 
-void Serializer3::makeVariantTag(ArchiveNodeType* type) {
-
+void Archive::makeVariantTag(ArchiveNodeType* type) {
+#if LN_EXPERIMENTAL_VARIANT_SERIALIZATION
     if (isSaving()) {
         //if (*type == ArchiveNodeType::Object || *type == ArchiveNodeType::Array) {
         //    setParentNodeType(NodeType::WrapperObject);
@@ -131,9 +153,13 @@ void Serializer3::makeVariantTag(ArchiveNodeType* type) {
     }
 
     //m_store->getContainerType()
+#else
+    // TODO: Type に応じて PrimitiveValue にしたり Object にしたり、細かにコントロールする必要がある。
+    LN_NOTIMPLEMENTED();
+#endif
 }
 
-void Serializer3::makeTypeInfo(String* value) {
+void Archive::makeTypeInfo(String* value) {
     if (isSaving()) {
         // この時点では Ref<> の serialize、つまり WrapperObject の serialize 中。
         // ここではまだ m_store に書き出すことはできない (コンテナの書き出しがまだ) ので、メタデータを Node に覚えておく。
@@ -157,7 +183,11 @@ void Serializer3::makeTypeInfo(String* value) {
     //}
 }
 
-const String& Serializer3::readTypeInfo() {
+//void Archive::fail(const char* message) {
+//    throw SerializeException(message ? message : "");
+//}
+
+const String& Archive::readTypeInfo() {
     m_store->moveToNamedMember(_TT("_type"));
     ln::String type;
     if (m_store->readValue(&type)) {
@@ -166,7 +196,7 @@ const String& Serializer3::readTypeInfo() {
     return m_nodeInfoStack.back().typeInfo;
 }
 
-void Serializer3::popNodeWrite() {
+void Archive::popNodeWrite() {
     NodeInfo* current = currentNode();
     NodeInfo* parent = parentNode();
 
@@ -231,11 +261,11 @@ void JsonArchiveStore3::setupSave() {
     m_current = nullptr;
 }
 
-Result JsonArchiveStore3::setupLoad(const String& text) {
-    rapidjson::ParseResult result = m_document.Parse(text.c_str(), text.size());
+ArchiveResult<> JsonArchiveStore3::setupLoad(const String& text) {
+    rapidjson::ParseResult result = m_document.Parse<rapidjson::kParseDefaultFlags | rapidjson::kParseNanAndInfFlag>(text.c_str(), text.size());
     if (!result) {
-        LN_ERROR("JSON parse error: {} ({})", GetParseError_En(result.Code()), result.Offset());
-        return err();
+        const auto message = fmt::format("JSON parse error: {} (offset:{})", GetParseError_En(result.Code()), result.Offset());
+        return err(ln::String::fromUtf8(message));
     }
     m_current = &m_document;
     return ok();
@@ -243,7 +273,7 @@ Result JsonArchiveStore3::setupLoad(const String& text) {
 
 String JsonArchiveStore3::toString(JsonFormatting formatting) const {
     RapidJsonStringBuffer buffer;
-    rapidjson::Writer<RapidJsonStringBuffer, rapidjson::UTF32LE<char32_t>, rapidjson::UTF32LE<char32_t>> writer(buffer);
+    rapidjson::Writer<RapidJsonStringBuffer, rapidjson::UTF32LE<char32_t>, rapidjson::UTF32LE<char32_t>, rapidjson::CrtAllocator, rapidjson::kWriteDefaultFlags | rapidjson::kWriteNanAndInfFlag> writer(buffer);
     if (!m_document.Accept(writer)) {
         LN_ERROR();
         return String::Empty;
@@ -293,24 +323,34 @@ void JsonArchiveStore3::onWriteObjectEnd() {
 }
 
 void JsonArchiveStore3::onWriteArray() {
-    const String& key = getNextName();
-    RapidJsonStringRef k(key.c_str(), key.length());
-    m_stack.push({ RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(rapidjson::kArrayType) });
+    if (m_document.IsNull()) { // Root element. (First time)
+        assert(m_stack.empty());
+        m_document.SetArray();
+    }
+    else {
+        const String& key = getNextName();
+        RapidJsonStringRef k(key.c_str(), key.length());
+        m_stack.push({ RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(rapidjson::kArrayType) });
+    }
 }
 
 void JsonArchiveStore3::onWriteArrayEnd() {
-    StackItem item = std::move(m_stack.top());
-    m_stack.pop();
-
-    RapidJsonValue* container = savingContainer();
-    if (container->IsObject()) {
-        container->AddMember(item.key, item.container, m_document.GetAllocator());
-    }
-    else if (container->IsArray()) {
-        container->PushBack(item.container, m_document.GetAllocator());
+    if (m_stack.empty()) { // Root element.
     }
     else {
-        LN_UNREACHABLE();
+        StackItem item = std::move(m_stack.top());
+        m_stack.pop();
+
+        RapidJsonValue* container = savingContainer();
+        if (container->IsObject()) {
+            container->AddMember(item.key, item.container, m_document.GetAllocator());
+        }
+        else if (container->IsArray()) {
+            container->PushBack(item.container, m_document.GetAllocator());
+        }
+        else {
+            LN_UNREACHABLE();
+        }
     }
 }
 
@@ -562,37 +602,37 @@ bool JsonArchiveStore3::onReadValueString(String* outValue) {
 } // namespace detail
 
 //==============================================================================
-// JsonTextOutputSerializer3
+// JsonTextOutputSerializer
 
-JsonTextOutputSerializer3::JsonTextOutputSerializer3()
+JsonTextOutputSerializer::JsonTextOutputSerializer()
     : m_store(std::make_unique<detail::JsonArchiveStore3>())
     , m_processing(false) {
     m_store->setupSave();
     setup(m_store.get(), ArchiveMode::Save);
 }
 
-JsonTextOutputSerializer3::~JsonTextOutputSerializer3() {
+JsonTextOutputSerializer::~JsonTextOutputSerializer() {
 }
 
-String JsonTextOutputSerializer3::toString(JsonFormatting formatting) {
+String JsonTextOutputSerializer::toString(JsonFormatting formatting) {
     return m_store->toString(formatting);
 }
 
 //==============================================================================
-// JsonTextInputSerializer3
+// JsonTextInputSerializer
 
-JsonTextInputSerializer3::JsonTextInputSerializer3()
+JsonTextInputSerializer::JsonTextInputSerializer()
     : m_store(std::make_unique<detail::JsonArchiveStore3>())
     , m_processing(false) {
 }
 
-JsonTextInputSerializer3::~JsonTextInputSerializer3() {
+JsonTextInputSerializer::~JsonTextInputSerializer() {
 }
 
-Result JsonTextInputSerializer3::setup(const String& jsonText) {
+Result JsonTextInputSerializer::setup(const String& jsonText) {
     auto result = m_store->setupLoad(jsonText);
     if (!result) return result;
-    Serializer3::setup(m_store.get(), ArchiveMode::Load);
+    Archive::setup(m_store.get(), ArchiveMode::Load);
     return ok();
 }
 

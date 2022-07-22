@@ -33,52 +33,52 @@ bool VisualObject::isVisible() const
     return mainVisualComponent()->isVisible();
 }
 
-void VisualObject::setShadingModel(const Optional<ShadingModel>& value)
+void VisualObject::setShadingModel(const Optional_deprecated<ShadingModel>& value)
 {
     mainVisualComponent()->setShadingModel(value);
 }
 
-const Optional<ShadingModel>& VisualObject::shadingModel() const
+const Optional_deprecated<ShadingModel>& VisualObject::shadingModel() const
 {
     return mainVisualComponent()->shadingModel();
 }
 
-void VisualObject::setBlendMode(const Optional<BlendMode>& mode)
+void VisualObject::setBlendMode(const Optional_deprecated<BlendMode>& mode)
 {
     mainVisualComponent()->setBlendMode(mode);
 }
 
-const Optional<BlendMode>& VisualObject::blendMode() const
+const Optional_deprecated<BlendMode>& VisualObject::blendMode() const
 {
     return mainVisualComponent()->blendMode();
 }
 
-void VisualObject::setDepthTestEnabled(const Optional<bool>& enabled)
+void VisualObject::setDepthTestEnabled(const Optional_deprecated<bool>& enabled)
 {
     mainVisualComponent()->setDepthTestEnabled(enabled);
 }
 
-const Optional<bool>& VisualObject::isDepthTestEnabled() const
+const Optional_deprecated<bool>& VisualObject::isDepthTestEnabled() const
 {
     return mainVisualComponent()->isDepthTestEnabled();
 }
 
-void VisualObject::setDepthWriteEnabled(const Optional<bool>& enabled)
+void VisualObject::setDepthWriteEnabled(const Optional_deprecated<bool>& enabled)
 {
     mainVisualComponent()->setDepthWriteEnabled(enabled);
 }
 
-const Optional<bool>& VisualObject::isDepthWriteEnabled() const
+const Optional_deprecated<bool>& VisualObject::isDepthWriteEnabled() const
 {
     return mainVisualComponent()->isDepthWriteEnabled();
 }
 
-void VisualObject::setCullMode(const Optional<CullMode>& mode)
+void VisualObject::setCullMode(const Optional_deprecated<CullMode>& mode)
 {
     mainVisualComponent()->setCullMode(mode);
 }
 
-const Optional<CullMode>& VisualObject::cullMode() const
+const Optional_deprecated<CullMode>& VisualObject::cullMode() const
 {
     return mainVisualComponent()->cullMode();
 }
@@ -128,9 +128,9 @@ void VisualObject::setRenderPriority(int value)
     mainVisualComponent()->setRenderPriority(value);
 }
 
-void VisualObject::serialize(Serializer2& ar)
+void VisualObject::serialize_deprecated(Serializer2_deprecated& ar)
 {
-    WorldObject::serialize(ar);
+    WorldObject::serialize_deprecated(ar);
 }
 
 void VisualObject::setMainVisualComponent(VisualComponent* component)

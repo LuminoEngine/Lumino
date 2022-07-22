@@ -258,11 +258,11 @@ public:
     int lastIndexOfIf(TPred pred) const;
 
     /** 指定した要素と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
-    Optional<T> find(const value_type& item) const;
+    Optional_deprecated<T> find(const value_type& item) const;
 
     /** 指定した条件と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
     template<typename TPred>
-    Optional<T> findIf(TPred pred) const;
+    Optional_deprecated<T> findIf(TPred pred) const;
 
     /** 指定したインデックスがこの配列の境界の範囲外かを確認します。*/
     bool isOutOfRange(int index) const;
@@ -553,7 +553,7 @@ int List<T>::indexOf(const value_type& item, int startIndex) const
 
     const_iterator itr = std::find(m_data.begin() + startIndex, m_data.end(), item);
     if (itr != m_data.end()) {
-        return itr - m_data.begin();
+        return static_cast<int>(itr - m_data.begin());
     }
     return -1;
 }
@@ -585,7 +585,7 @@ int List<T>::lastIndexOfIf(TPred pred) const
 }
 
 template<typename T>
-Optional<T> List<T>::find(const value_type& item) const
+Optional_deprecated<T> List<T>::find(const value_type& item) const
 {
     auto itr = std::find(m_data.begin(), m_data.end(), item);
     if (itr != end()) {
@@ -596,7 +596,7 @@ Optional<T> List<T>::find(const value_type& item) const
 
 template<typename T>
 template<typename TPred>
-Optional<T> List<T>::findIf(TPred pred) const
+Optional_deprecated<T> List<T>::findIf(TPred pred) const
 {
     auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
     if (itr != end()) {

@@ -1,7 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Reflection/TypeInfo.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+﻿#include <LuminoCore/Runtime/TypeInfo.hpp>
 
 namespace ln {
 
@@ -30,17 +27,6 @@ TypeInfo* PredefinedTypes::List;
 
 //==============================================================================
 // TypeInfo
-
-TypeInfo* TypeInfo::registerType(const String& typeName, TypeInfo* baseClass, Ref<ObjectCreationHandler> factoryCallback)
-{
-	EngineContext2* context = EngineContext2::instance();
-	TypeInfo* typeInfo = context->registerType(typeName, baseClass, TypeInfoClass::Object);
-
-	// 値としてキャプチャ
-	typeInfo->m_factory = [factoryCallback](const TypeInfo*) { return factoryCallback->call(); };
-
-	return typeInfo;
-}
 
 TypeInfo::TypeInfo(const String& className, TypeInfo* baseType, TypeInfoClass typeClass)
 	: m_name(className)

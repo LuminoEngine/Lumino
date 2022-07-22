@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common2.hpp"
-#include "../Reflection/Object.hpp"
+#include <LuminoCore/Runtime/Object.hpp>
 
 extern "C" void LuminoConfigureApplication();
 

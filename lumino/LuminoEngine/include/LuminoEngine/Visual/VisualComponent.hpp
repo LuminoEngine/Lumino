@@ -28,34 +28,34 @@ public:
     /** @{ */
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
-    void setBlendMode(const Optional<BlendMode>& mode);
+    void setBlendMode(const Optional_deprecated<BlendMode>& mode);
 
     /** 合成方法を取得します。*/
-    const Optional<BlendMode>& blendMode() const;
+    const Optional_deprecated<BlendMode>& blendMode() const;
 
     /** ShadingModel を設定します。(default: ShadingModel::Default) */
-    void setShadingModel(const Optional<ShadingModel>& value);
+    void setShadingModel(const Optional_deprecated<ShadingModel>& value);
 
     /** ShadingModel を取得します。*/
-    const Optional<ShadingModel>& shadingModel() const;
+    const Optional_deprecated<ShadingModel>& shadingModel() const;
 
     /** このノードを描画する際の深度テストの有無を設定します。(default: true) */
-    void setDepthTestEnabled(const Optional<bool>& enabled);
+    void setDepthTestEnabled(const Optional_deprecated<bool>& enabled);
 
     /** このノードを描画する際の深度テストの有無を取得します。*/
-    const Optional<bool>& isDepthTestEnabled() const;
+    const Optional_deprecated<bool>& isDepthTestEnabled() const;
 
     /** このノードを描画する際の深度書き込みの有無を設定します。(default: true) */
-    void setDepthWriteEnabled(const Optional<bool>& enabled);
+    void setDepthWriteEnabled(const Optional_deprecated<bool>& enabled);
 
     /** このノードを描画する際の深度書き込みの有無を取得します。*/
-    const Optional<bool>& isDepthWriteEnabled() const;
+    const Optional_deprecated<bool>& isDepthWriteEnabled() const;
 
     /** このノードを描画する際のカリング方法を設定します。(default: CullMode::Back) */
-    void setCullMode(const Optional<CullMode>& mode);
+    void setCullMode(const Optional_deprecated<CullMode>& mode);
 
     /** このノードを描画する際のカリング方法を取得します。*/
-    const Optional<CullMode>& cullMode() const;
+    const Optional_deprecated<CullMode>& cullMode() const;
 
     /** @} */
 

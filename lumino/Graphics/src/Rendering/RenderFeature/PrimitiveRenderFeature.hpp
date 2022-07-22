@@ -84,14 +84,10 @@ private:
 	void resetBatchData();
 	void prepareBuffers(int vertexCount, int indexCount);
 
-    //Optional<PrimitiveTopology> m_lastPrimitiveType;
 	RenderingManager* m_manager;
-    //Ref<InternalPrimitiveRenderer> m_internal;
 
 	Ref<LinearAllocator> m_linearAllocator;
 	List<MeshGenerater*> m_generators;
-	//PrimitiveTopology m_primitiveType;
-	//BatchData m_batchData;
 
 	// RHI
 	Ref<VertexLayout> m_vertexLayout;

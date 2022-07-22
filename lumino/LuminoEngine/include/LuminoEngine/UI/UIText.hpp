@@ -26,8 +26,8 @@ public:
 	const String& text() const { return m_text; }
 
 
-	ViewProperty* getViewProperty(StringView name);
-	std::vector<Ref<ViewProperty>> m_viewProperties;
+	//ViewProperty* getViewProperty(StringView name);
+	//std::vector<Ref<ViewProperty>> m_viewProperties;
 
 //LN_CONSTRUCT_ACCESS:
 public: // TODO:

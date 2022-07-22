@@ -83,7 +83,7 @@ public:
     static Path specialFolderPath(SpecialFolder specialFolder, const StringView& relativeDirPath, SpecialFolderOption option);
 
     /** 環境変数の値を取得します。 */
-    static Optional<String> getEnvironmentVariable(const StringView& variableName);
+    static Optional_deprecated<String> getEnvironmentVariable(const StringView& variableName);
 
     /** 現在のプロセスの環境変数を設定します。(システム環境変数や他のプロセスの環境変数へ影響を及ぼしません) */
     static void setEnvironmentVariable(const StringView& variableName, const StringView& value);

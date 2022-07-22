@@ -4,21 +4,21 @@
 namespace ln {
 
 template<class T>
-class Optional<T&>
+class Optional_deprecated<T&>
 {
 public:
-    constexpr Optional() noexcept;
-    constexpr Optional(std::nullopt_t) noexcept;
-	constexpr Optional(const Optional& other);
-    constexpr Optional(T& value);
+    constexpr Optional_deprecated() noexcept;
+    constexpr Optional_deprecated(std::nullopt_t) noexcept;
+	constexpr Optional_deprecated(const Optional_deprecated& other);
+    constexpr Optional_deprecated(T& value);
 	template <class U>
-    explicit Optional(Optional<U&>& rhs);
+    explicit Optional_deprecated(Optional_deprecated<U&>& rhs);
 
-    ~Optional() = default;
+    ~Optional_deprecated() = default;
 
-    Optional& operator=(const Optional& other);
-    Optional& operator=(std::nullopt_t) noexcept;
-    Optional& operator=(T& value);
+    Optional_deprecated& operator=(const Optional_deprecated& other);
+    Optional_deprecated& operator=(std::nullopt_t) noexcept;
+    Optional_deprecated& operator=(T& value);
 
     constexpr explicit operator bool() const noexcept { return m_value != nullptr; }
 
@@ -33,47 +33,47 @@ public:
     constexpr T valueOr(U&& defaultValue) const &;
 
     void reset() noexcept { m_value = nullptr; }
-    void swap(Optional& other) noexcept;
+    void swap(Optional_deprecated& other) noexcept;
 
     template<class U>
-    bool equals(const Optional<U>& right) const;
+    bool equals(const Optional_deprecated<U>& right) const;
 
 private:
     T* m_value;
 };
 
 template<class T>
-constexpr Optional<T&>::Optional() noexcept
+constexpr Optional_deprecated<T&>::Optional_deprecated() noexcept
     : m_value(nullptr)
 {
 }
 
 template<class T>
-constexpr Optional<T&>::Optional(std::nullopt_t) noexcept
+constexpr Optional_deprecated<T&>::Optional_deprecated(std::nullopt_t) noexcept
     : m_value(nullptr)
 {
 }
 
 template<class T>
-constexpr Optional<T&>::Optional(const Optional& other)
+constexpr Optional_deprecated<T&>::Optional_deprecated(const Optional_deprecated& other)
 	: m_value(other.m_value)
 {}
 
 
 template<class T>
-constexpr Optional<T&>::Optional(T& value)
+constexpr Optional_deprecated<T&>::Optional_deprecated(T& value)
     : m_value(&value)
 {
 }
 
 template<class T>
 template <class U>
-Optional<T&>::Optional(Optional<U&>& rhs)
+Optional_deprecated<T&>::Optional_deprecated(Optional_deprecated<U&>& rhs)
     : m_value(&rhs.value())
 {}
 
 template<class T>
-Optional<T&>& Optional<T&>::operator=(const Optional& other)
+Optional_deprecated<T&>& Optional_deprecated<T&>::operator=(const Optional_deprecated& other)
 {
     if (this != &other) {
         m_value = other.m_value;
@@ -82,56 +82,56 @@ Optional<T&>& Optional<T&>::operator=(const Optional& other)
 }
 
 template<class T>
-Optional<T&>& Optional<T&>::operator=(std::nullopt_t) noexcept
+Optional_deprecated<T&>& Optional_deprecated<T&>::operator=(std::nullopt_t) noexcept
 {
     reset();
     return *this;
 }
 
 template<class T>
-Optional<T&>& Optional<T&>::operator=(T& value)
+Optional_deprecated<T&>& Optional_deprecated<T&>::operator=(T& value)
 {
     m_value = &value;
     return *this;
 }
 
 template<class T>
-constexpr T& Optional<T&>::operator*() &
+constexpr T& Optional_deprecated<T&>::operator*() &
 {
     LN_CHECK(m_value);
     return *m_value;
 }
 
 template<class T>
-constexpr const T& Optional<T&>::operator*() const &
+constexpr const T& Optional_deprecated<T&>::operator*() const &
 {
     LN_CHECK(m_value);
     return *m_value;
 }
 
 template<class T>
-constexpr T* Optional<T&>::operator->()
+constexpr T* Optional_deprecated<T&>::operator->()
 {
     LN_CHECK(m_value);
     return &m_value;
 }
 
 template<class T>
-constexpr const T* Optional<T&>::operator->() const
+constexpr const T* Optional_deprecated<T&>::operator->() const
 {
     LN_CHECK(m_value);
     return &m_value;
 }
 
 template<class T>
-constexpr T& Optional<T&>::value() &
+constexpr T& Optional_deprecated<T&>::value() &
 {
     LN_CHECK(m_value);
     return *m_value;
 }
 
 template<class T>
-constexpr const T& Optional<T&>::value() const &
+constexpr const T& Optional_deprecated<T&>::value() const &
 {
     LN_CHECK(m_value);
     return *m_value;
@@ -139,14 +139,14 @@ constexpr const T& Optional<T&>::value() const &
 
 template<class T>
 template<class U>
-constexpr T Optional<T&>::valueOr(U&& defaultValue) const &
+constexpr T Optional_deprecated<T&>::valueOr(U&& defaultValue) const &
 {
     return hasValue() ? value() : static_cast<T>(std::forward<U>(defaultValue));
 }
 
 template<class T>
 template<class U>
-bool Optional<T&>::equals(const Optional<U>& right) const
+bool Optional_deprecated<T&>::equals(const Optional_deprecated<U>& right) const
 {
     if (hasValue() != right.hasValue())
         return false;
@@ -156,7 +156,7 @@ bool Optional<T&>::equals(const Optional<U>& right) const
 }
 
 template<class T>
-void Optional<T&>::swap(Optional& other) noexcept
+void Optional_deprecated<T&>::swap(Optional_deprecated& other) noexcept
 {
     std::swap(m_value, other.m_value);
 }

@@ -19,23 +19,23 @@ namespace ln {
 // UIText
 
 LN_OBJECT_IMPLEMENT(UIText, UIElement) {
-	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UIText, String, text, setText)));
+	 //typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UIText, String, text, setText)));
 }
 
-ViewProperty* UIText::getViewProperty(StringView name)
-{
-	ViewPropertyInfo* info = TypeInfo::getTypeInfo(this)->findViewProperty(name);
-	auto itr = std::find_if(m_viewProperties.begin(), m_viewProperties.end(), [&](auto& x) { return x->m_info == info; });
-	if (itr != m_viewProperties.end())
-		return (*itr);
-	else {
-		auto prop = makeRef<ViewProperty>();
-		prop->m_owner = this;
-		prop->m_info = info;
-		m_viewProperties.push_back(prop);
-		return prop;
-	}
-}
+//ViewProperty* UIText::getViewProperty(StringView name)
+//{
+//	ViewPropertyInfo* info = TypeInfo::getTypeInfo(this)->findViewProperty(name);
+//	auto itr = std::find_if(m_viewProperties.begin(), m_viewProperties.end(), [&](auto& x) { return x->m_info == info; });
+//	if (itr != m_viewProperties.end())
+//		return (*itr);
+//	else {
+//		auto prop = makeRef<ViewProperty>();
+//		prop->m_owner = this;
+//		prop->m_info = info;
+//		m_viewProperties.push_back(prop);
+//		return prop;
+//	}
+//}
 
 
 Ref<UIText> UIText::create()

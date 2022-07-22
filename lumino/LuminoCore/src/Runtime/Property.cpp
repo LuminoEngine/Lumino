@@ -19,9 +19,8 @@
 	プロパティバインディングはパフォーマンス的にちょっとオーバーヘッド乗るけど、解決策としてはベターかなと。
 */
 #include "Internal.hpp"
-#include <LuminoEngine/Reflection/Property.hpp>
-#include <LuminoEngine/Reflection/VMProperty.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoCore/Runtime/Property.hpp>
+#include <LuminoCore/Runtime/RuntimeContext.hpp>
 
 namespace ln {
 
@@ -35,23 +34,23 @@ void TypeInfo::registerProperty(PropertyInfo* prop)
     prop->m_registerd = true;
 }
 
-void TypeInfo::registerViewProperty(ViewPropertyInfo* prop)
-{
-	if (LN_REQUIRE(!prop->m_registerd)) return;
-	m_viewProperties.add(prop);
-	prop->m_registerd = true;
-}
+//void TypeInfo::registerViewProperty(ViewPropertyInfo* prop)
+//{
+//	if (LN_REQUIRE(!prop->m_registerd)) return;
+//	m_viewProperties.add(prop);
+//	prop->m_registerd = true;
+//}
 
-ViewPropertyInfo* TypeInfo::findViewProperty(const StringView& name) const
-{
-	auto info = m_viewProperties.findIf([&](auto& x) { return x->name() == name; });
-	if (info)
-		return *info;
-	else if (m_baseType)
-		return m_baseType->findViewProperty(name);
-	else
-		return nullptr;
-}
+//ViewPropertyInfo* TypeInfo::findViewProperty(const StringView& name) const
+//{
+//	auto info = m_viewProperties.findIf([&](auto& x) { return x->name() == name; });
+//	if (info)
+//		return *info;
+//	else if (m_baseType)
+//		return m_baseType->findViewProperty(name);
+//	else
+//		return nullptr;
+//}
 
 Ref<Object> TypeInfo::createInstance() const
 {
@@ -60,7 +59,7 @@ Ref<Object> TypeInfo::createInstance() const
 
 Ref<Object> TypeInfo::createInstance(const String& typeName)
 {
-	if (TypeInfo* info = EngineContext2::instance()->findTypeInfo(typeName)) {
+    if (TypeInfo* info = RuntimeContext::current()->findTypeInfo(typeName)) {
 		return info->createInstance();
 	}
 	else {

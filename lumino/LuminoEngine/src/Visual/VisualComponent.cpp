@@ -28,52 +28,52 @@ bool VisualComponent::init()
     return Component::init();
 }
 
-void VisualComponent::setBlendMode(const Optional<BlendMode>& mode)
+void VisualComponent::setBlendMode(const Optional_deprecated<BlendMode>& mode)
 {
     m_geometryStageParameters->m_blendMode = mode;
 }
 
-const Optional<BlendMode>& VisualComponent::blendMode() const
+const Optional_deprecated<BlendMode>& VisualComponent::blendMode() const
 {
     return m_geometryStageParameters->m_blendMode;
 }
 
-void VisualComponent::setShadingModel(const Optional<ShadingModel>& value)
+void VisualComponent::setShadingModel(const Optional_deprecated<ShadingModel>& value)
 {
     m_geometryStageParameters->shadingModel = value;
 }
 
-const Optional<ShadingModel>& VisualComponent::shadingModel() const
+const Optional_deprecated<ShadingModel>& VisualComponent::shadingModel() const
 {
     return m_geometryStageParameters->shadingModel;
 }
 
-void VisualComponent::setDepthTestEnabled(const Optional<bool>& enabled)
+void VisualComponent::setDepthTestEnabled(const Optional_deprecated<bool>& enabled)
 {
     m_geometryStageParameters->m_depthTestEnabled = enabled;
 }
 
-const Optional<bool>& VisualComponent::isDepthTestEnabled() const
+const Optional_deprecated<bool>& VisualComponent::isDepthTestEnabled() const
 {
     return m_geometryStageParameters->m_depthTestEnabled;
 }
 
-void VisualComponent::setDepthWriteEnabled(const Optional<bool>& enabled)
+void VisualComponent::setDepthWriteEnabled(const Optional_deprecated<bool>& enabled)
 {
     m_geometryStageParameters->m_depthWriteEnabled = enabled;
 }
 
-const Optional<bool>& VisualComponent::isDepthWriteEnabled() const
+const Optional_deprecated<bool>& VisualComponent::isDepthWriteEnabled() const
 {
     return m_geometryStageParameters->m_depthWriteEnabled;
 }
 
-void VisualComponent::setCullMode(const Optional<CullMode>& mode)
+void VisualComponent::setCullMode(const Optional_deprecated<CullMode>& mode)
 {
     m_geometryStageParameters->m_cullingMode = mode;
 }
 
-const Optional<CullMode>& VisualComponent::cullMode() const
+const Optional_deprecated<CullMode>& VisualComponent::cullMode() const
 {
     return m_geometryStageParameters->m_cullingMode;
 }

@@ -154,7 +154,7 @@ protected:
     void onDispose(bool explicitDisposing) override;
     void onChangeDevice(detail::IGraphicsDevice* device) override;
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified) override;
-    void serialize(Serializer2& ar) override;
+    void serialize_deprecated(Serializer2_deprecated& ar) override;
     const std::vector<const Char*>& resourceExtensions() const override;
     void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
 

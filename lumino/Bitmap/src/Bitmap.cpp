@@ -387,7 +387,7 @@ void Bitmap2D::flipVerticalFlow()
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
 	//if (LN_REQUIRE(m_format != PixelFormat::A1)) return;
 
-	int pixelSize = detail::BlitHelper::getPixelSize(m_format);
+	size_t pixelSize = detail::BlitHelper::getPixelSize(m_format);
 	if (pixelSize == 1)
 	{
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、

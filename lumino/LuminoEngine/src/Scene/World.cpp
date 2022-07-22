@@ -291,18 +291,6 @@ void World::onPostUpdate(float elapsedSeconds) {
     }
 }
 
-// void World::serialize(Archive& ar)
-//{
-//     Object::serialize(ar);
-//
-//     ar & ln::makeNVP(u"Children", *m_rootWorldObjectList);
-//
-//     if (ar.isLoading()) {
-//         for (auto& obj : m_rootWorldObjectList) {
-//             obj->attachWorld(this);
-//         }
-//     }
-// }
 
 //detail::WorldSceneGraphRenderingContext* World::prepareRender2(const RenderViewPoint* viewPoint) {
 //    m_renderingContext->resetForBeginRendering(viewPoint);
