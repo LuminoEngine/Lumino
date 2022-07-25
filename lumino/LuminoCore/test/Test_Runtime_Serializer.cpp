@@ -19,7 +19,7 @@ TEST_F(Test_Base_Serializer, ErrorHandling) {
     class TestClass : public Object {
     public:
         void serialize(Archive& ar) override {
-            throw SerializeException(U"message1");
+            throw SerializationException(U"message1");
         }
     };
 	
@@ -804,7 +804,7 @@ public:
     LN_SERIALIZE_VERSION(5)
     void serialize(Archive& ar) override {
         ar& LN_NVP(x);
-        _ver = ar.classVersion();
+        _ver = ar.version();
     }
 };
 
@@ -815,7 +815,7 @@ public:
     LN_SERIALIZE_VERSION(7)
     void serialize(Archive& ar) override {
         ar& LN_NVP(value);
-        _ver = ar.classVersion();
+        _ver = ar.version();
     }
 };
 
@@ -847,7 +847,7 @@ public:
             ar& ln::makeNVP(_T("flags"), oldFlag);
             if (!oldFlag) flags = 0xFF;
         }
-        _ver = ar.classVersion();
+        _ver = ar.version();
     }
 };
 LN_SERIALIZE_VERSION_NI(ClassVersionTestClass3, 2);

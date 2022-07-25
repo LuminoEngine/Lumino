@@ -74,6 +74,20 @@ String Archive::s_defaultVersionKey = U"_ln_version_";
 const String Archive::ClassNameKey = _TT("lumino_class_name");
 const String Archive::ClassBaseKey = _TT("lumino_base_class");
 
+Archive::Archive(ArchiveStore* store, ArchiveMode mode)
+    : Archive() {
+    setup(store, mode);
+}
+
+Archive::~Archive() {
+}
+
+void Archive::processNull() {
+    setCurrentNodeType(NodeType::PrimitiveValue);
+    preWriteValue();
+    writeValueNull();
+}
+
 void Archive::makePrimitiveValue() {
     setCurrentNodeType(NodeType::PrimitiveValue);
 }
@@ -121,6 +135,74 @@ void Archive::makeMapTag(int* outSize) {
         setCurrentNodeType(NodeType::Object);
         tryOpenContainer();
         if (outSize) *outSize = m_store->getContainerElementCount();
+    }
+}
+
+void Archive::makeObjectTag(int* outSize) {
+    if (isSaving()) {
+        setParentNodeType(NodeType::Object);
+    }
+    else if (isLoading()) {
+        setParentNodeType(NodeType::Object);
+        // store を Container まで移動して size を得る必要がある
+        preReadValue();
+        if (outSize) *outSize = m_store->getContainerElementCount();
+    }
+}
+
+void Archive::makeSmartPtrTag(bool* outIsNull) {
+    if (isSaving()) {
+        if ((*outIsNull)) {
+            processNull();
+        }
+        else {
+            setParentNodeType(NodeType::WrapperObject);
+        }
+    }
+    else if (isLoading()) {
+
+        // setParentNodeType(NodeType::Object);
+        tryOpenContainer();
+        *outIsNull = m_store->getOpendContainerType() == ArchiveContainerType::Null;
+        setParentNodeType(NodeType::WrapperObject);
+        // if ((*outIsNull)) {
+        //     setParentNodeType(NodeType::PrimitiveValue);
+        // }
+        // else {
+        //     setParentNodeType(NodeType::WrapperObject);
+        // }
+    }
+}
+
+void Archive::makeOptionalTag(bool* outHasValue) {
+    if (isSaving()) {
+        if (!(*outHasValue)) {
+            processNull();
+        }
+        else {
+            setCurrentNodeType(NodeType::WrapperObject);
+        }
+    }
+    else if (isLoading()) {
+        *outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
+
+        // tryOpenContainer();
+        //*outHasValue = m_store->getOpendContainerType() != ArchiveContainerType::Null;
+
+        // makeOptionalTag を抜けた後の process は、いま open しているコンテナに対して行いたい。
+        // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
+        // m_store->closeContainer();
+        // m_nodeInfoStack.back().containerOpend = false;
+
+        setCurrentNodeType(NodeType::WrapperObject);
+
+        //*outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
+        // if (!(*outHasValue)) {
+        //    setParentNodeType(NodeType::PrimitiveValue);
+        //}
+        // else {
+        //    setParentNodeType(NodeType::WrapperObject);
+        //}
     }
 }
 
@@ -183,17 +265,72 @@ void Archive::makeTypeInfo(String* value) {
     //}
 }
 
-//void Archive::fail(const char* message) {
-//    throw SerializeException(message ? message : "");
-//}
-
-const String& Archive::readTypeInfo() {
-    m_store->moveToNamedMember(_TT("_type"));
-    ln::String type;
-    if (m_store->readValue(&type)) {
-        m_nodeInfoStack.back().typeInfo = type;
+bool Archive::preWriteValue() {
+    if (m_nodeInfoStack.empty()) {
+        // ルートノードの場合は NVP や Tag が何もセットされていない。
+        // (これ用のダミーノードを作っても Ready にしか遷移しないので無駄)
+        return true;
     }
-    return m_nodeInfoStack.back().typeInfo;
+
+    NodeInfo* node = currentNode();
+
+    switch (node->headState) {
+        case NodeType::Ready:
+            onError(); // NVP も Tag も事前にセットされていない。
+            return false;
+
+        case NodeType::Object:
+            if (!node->containerOpend) {
+                m_store->writeObject();
+                node->containerOpend = true;
+                writeClassVersion(node);
+                writeTypeInfo();
+            }
+            return true;
+
+        case NodeType::Array:
+            if (!node->containerOpend) {
+                m_store->writeArray();
+                node->containerOpend = true;
+            }
+            return true;
+
+        case NodeType::PrimitiveValue:
+            return true;
+
+        case NodeType::WrapperObject:
+            // ここではまだコンテナを開けることはできない。
+            // Optional<List<>> の時、コンテナが List であるかは List の serialize に入らなければわからない。
+            // read ではこの時点で open しないと TypeInfo などのメタ情報が読み取れないので、write と read でちょっとタイミングが違う点に注意。
+            return true;
+
+        default:
+            LN_UNREACHABLE();
+            return false;
+    }
+}
+
+// 検証しつつ、current の NodeType を変更する
+void Archive::setParentNodeType(NodeType type) {
+    NodeInfo* parent = parentNode();
+    if (parent->headState == NodeType::Ready) {
+        LN_DCHECK(type != NodeType::Ready);
+        parent->headState = type;
+    }
+    else if (parent->headState != type) {
+        LN_UNREACHABLE();
+    }
+}
+
+void Archive::setCurrentNodeType(NodeType type) {
+    NodeInfo* current = currentNode();
+    if (current->headState == NodeType::Ready) {
+        LN_DCHECK(type != NodeType::Ready);
+        current->headState = type;
+    }
+    else if (current->headState != type) {
+        LN_UNREACHABLE();
+    }
 }
 
 void Archive::popNodeWrite() {
@@ -244,6 +381,99 @@ void Archive::popNodeWrite() {
             LN_UNREACHABLE();
         }
     }
+}
+
+void Archive::writeClassVersion(NodeInfo* node) {
+    if (node->classVersion > 0) {
+        m_store->setNextName(s_defaultVersionKey);
+        writeValue(node->classVersion);
+    }
+}
+
+void Archive::writeTypeInfo() {
+    NodeInfo* parentNode = (m_nodeInfoStack.size() >= 2) ? &m_nodeInfoStack[m_nodeInfoStack.size() - 2] : nullptr;
+    if (parentNode && !parentNode->typeInfo.isEmpty()) {
+        m_store->setNextName(_TT("_type"));
+        writeValue(parentNode->typeInfo);
+    }
+}
+
+bool Archive::preReadValue() {
+    NodeInfo* node = currentNode();
+    if (node->headState == NodeType::Array) {
+        m_store->moveToIndexedMember(node->arrayIndex);
+    }
+    return true;
+}
+
+// after pop value node. stack top refers to parent container.
+void Archive::postReadValue() {
+    NodeInfo* node = currentNode();
+    if (node->headState == NodeType::Array) {
+        node->arrayIndex++;
+    }
+}
+
+bool Archive::preLoadSerialize() {
+    tryOpenContainer();
+    return true;
+}
+
+void Archive::postLoadSerialize() {
+    // 空の serialize を呼び出した場合、state は変わっていない。
+    // 空の Object として扱いたいので、ここで Object 状態にしておく。
+    NodeInfo* node = currentNode();
+    if (node->headState == NodeType::Ready) {
+        setCurrentNodeType(NodeType::Object);
+    }
+
+    if (node->containerOpend) {
+        m_store->closeContainer();
+        node->containerOpend = false;
+    }
+
+    m_current = m_nodeInfoStack.back();
+    m_nodeInfoStack.pop_back();
+}
+
+bool Archive::tryOpenContainer() {
+    LN_DCHECK(m_mode == ArchiveMode::Load);
+
+    NodeInfo* node = currentNode();
+
+    if (node->headState == NodeType::PrimitiveValue ||
+        node->headState == NodeType::WrapperObject ||
+        node->parentIsOpendWrapper) {
+    }
+    else if (node->headState == NodeType::Array || node->headState == NodeType::Object) {
+        if (!node->containerOpend) {
+            if (!m_store->openContainer()) {
+                return false;
+            }
+            readClassVersion(node);
+            node->containerOpend = true;
+        }
+    }
+
+    return true;
+}
+
+void Archive::readClassVersion(NodeInfo* containerNode) {
+    if (currentNode()->headState == NodeType::Object &&
+        m_store->moveToNamedMember(s_defaultVersionKey)) {
+        int64_t version;
+        m_store->readValue(&version);
+        containerNode->classVersion = static_cast<int>(version);
+    }
+}
+
+const String& Archive::readTypeInfo() {
+    m_store->moveToNamedMember(_TT("_type"));
+    ln::String type;
+    if (m_store->readValue(&type)) {
+        m_nodeInfoStack.back().typeInfo = type;
+    }
+    return m_nodeInfoStack.back().typeInfo;
 }
 
 //==============================================================================
