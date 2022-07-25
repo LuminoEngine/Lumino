@@ -8,6 +8,7 @@
 
 namespace ln {
 class Archive;
+void serialize(Archive& ar, Path& value);
 
 namespace detail {
 class ArchiveStore3;
