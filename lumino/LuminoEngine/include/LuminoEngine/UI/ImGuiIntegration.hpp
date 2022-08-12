@@ -144,8 +144,9 @@ protected:
     virtual void onGui();
     virtual bool onUIEvent(UIEventArgs* e);
 
-    LN_CONSTRUCT_ACCESS : ImGuiDockPane();
-    bool init();
+LN_CONSTRUCT_ACCESS:
+    ImGuiDockPane();
+    Result init();
 
 private:
     void update();

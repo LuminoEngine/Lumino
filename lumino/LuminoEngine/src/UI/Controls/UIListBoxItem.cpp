@@ -13,148 +13,133 @@ namespace ln {
 //==============================================================================
 // UIListItem
 
-LN_OBJECT_IMPLEMENT(UIListItem, UIControl) {}
+LN_OBJECT_IMPLEMENT(UIListItem, UIControl) {
+}
 
 UIListItem::UIListItem()
-	: m_ownerListControl(nullptr)
-	, m_onSubmit()
-	, m_isSelected(false)
-{
-	m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
-	m_specialElementFlags.set(detail::UISpecialElementFlags::ListItem);
+    : m_ownerListControl(nullptr)
+    , m_onSubmit()
+    , m_isSelected(false) {
+    m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
+    m_specialElementFlags.set(detail::UISpecialElementFlags::ListItem);
 }
 
-bool UIListItem::init()
-{
-	if (!UIControl::init()) return false;
-	auto vsm = getVisualStateManager();
-	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
-	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
-	vsm->gotoState(UIVisualStates::Unselected);
-	return true;
+bool UIListItem::init() {
+    if (!UIControl::init()) return false;
+    auto vsm = getVisualStateManager();
+    vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
+    vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
+    vsm->gotoState(UIVisualStates::Unselected);
+    return true;
 }
 
-Ref<EventConnection> UIListItem::connectOnSubmit(Ref<UIGeneralEventHandler> handler)
-{
-	return m_onSubmit.connect(handler);
+Ref<EventConnection> UIListItem::connectOnSubmit(Ref<UIGeneralEventHandler> handler) {
+    return m_onSubmit.connect(handler);
 }
 
-void UIListItem::onSubmit()
-{
-	m_onSubmit.raise(UIEventArgs::create(this, UIEvents::Submitted));
+void UIListItem::onSubmit() {
+    m_onSubmit.raise(UIEventArgs::create(this, UIEvents::Submitted));
 }
 
-void UIListItem::onSelected(UIEventArgs* e)
-{
+void UIListItem::onSelected(UIEventArgs* e) {
 }
 
-void UIListItem::onUnselected(UIEventArgs* e)
-{
+void UIListItem::onUnselected(UIEventArgs* e) {
 }
 
-void UIListItem::onRoutedEvent(UIEventArgs* e)
-{
+void UIListItem::onRoutedEvent(UIEventArgs* e) {
 
-	if (e->type() == UIEvents::MouseDownEvent) {
-		const auto* me = static_cast<const UIMouseEventArgs*>(e);
-		m_ownerListControl->notifyItemClicked(this, me->getClickCount());
-		e->handled = true;
-		return;
-	}
-	else if (e->type() == UIEvents::MouseMoveEvent) {
-		if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
-			m_ownerListControl->selectItemExclusive(this);
-			e->handled = true;
-			return;
-		}
-	}
-	//if (e->type() == UIEvents::MouseEnterEvent) {
-	//	if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
-	//		return;
-	//	}
-	//}
-	//else if (e->type() == UIEvents::MouseLeaveEvent) {
-	//	if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
-	//		return;
-	//	}
-	//}
+    if (e->type() == UIEvents::MouseDownEvent) {
+        const auto* me = static_cast<const UIMouseEventArgs*>(e);
+        m_ownerListControl->notifyItemClicked(this, me->getClickCount());
+        e->handled = true;
+        return;
+    }
+    else if (e->type() == UIEvents::MouseMoveEvent) {
+        if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
+            m_ownerListControl->selectItemExclusive(this);
+            e->handled = true;
+            return;
+        }
+    }
+    // if (e->type() == UIEvents::MouseEnterEvent) {
+    //	if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
+    //		return;
+    //	}
+    // }
+    // else if (e->type() == UIEvents::MouseLeaveEvent) {
+    //	if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
+    //		return;
+    //	}
+    // }
 
-	UIControl::onRoutedEvent(e);
-
+    UIControl::onRoutedEvent(e);
 }
 
-void UIListItem::setSelectedInternal(bool selected)
-{
-	if (m_isSelected != selected) {
-		m_isSelected = selected;
+void UIListItem::setSelectedInternal(bool selected) {
+    if (m_isSelected != selected) {
+        m_isSelected = selected;
 
-		if (m_isSelected) {
-			onSelected(UIEventArgs::create(this, UIEvents::Selected));
-			getVisualStateManager()->gotoState(UIVisualStates::Selected);
-		}
-		else {
-			onUnselected(UIEventArgs::create(this, UIEvents::Selected));
-			getVisualStateManager()->gotoState(UIVisualStates::Unselected);
-		}
-	}
+        if (m_isSelected) {
+            onSelected(UIEventArgs::create(this, UIEvents::Selected));
+            getVisualStateManager()->gotoState(UIVisualStates::Selected);
+        }
+        else {
+            onUnselected(UIEventArgs::create(this, UIEvents::Selected));
+            getVisualStateManager()->gotoState(UIVisualStates::Unselected);
+        }
+    }
 }
 
 //==============================================================================
 // UIListBoxItem
 
-LN_OBJECT_IMPLEMENT(UIListBoxItem, UIListItem) {}
-
-Ref<UIListBoxItem> UIListBoxItem::create(StringView text)
-{
-	return makeObject_deprecated<UIListBoxItem>(text);
+LN_OBJECT_IMPLEMENT(UIListBoxItem, UIListItem) {
 }
 
-UIListBoxItem::UIListBoxItem()
-{
+Ref<UIListBoxItem> UIListBoxItem::create(StringView text) {
+    return makeObject_deprecated<UIListBoxItem>(text);
 }
 
-bool UIListBoxItem::init()
-{
-	if (!UIListItem::init()) return false;
-	return true;
+UIListBoxItem::UIListBoxItem() {
 }
 
-bool UIListBoxItem::init(StringView text)
-{
-	if (!init()) return false;
-	addChild(makeObject_deprecated<UIText>(text));
-	return true;
+bool UIListBoxItem::init() {
+    if (!UIListItem::init()) return false;
+    return true;
 }
 
-bool UIListBoxItem::init(UIElement* content)
-{
-	if (!init()) return false;
-	addChild(content);
-	return true;
+bool UIListBoxItem::init(StringView text) {
+    if (!init()) return false;
+    add(makeObject_deprecated<UIText>(text));
+    return true;
 }
 
-//void UIListBoxItem::bind(ObservablePropertyBase* prop)
+bool UIListBoxItem::init(UIElement* content) {
+    if (!init()) return false;
+    add(content);
+    return true;
+}
+
+// void UIListBoxItem::bind(ObservablePropertyBase* prop)
 //{
 //	auto textblock = makeObject_deprecated<UIText>();
 //	auto viewProp = textblock->getViewProperty(_TT("text"));
 //	viewProp->bind(prop);
 //	addChild(textblock);
-//}
+// }
 
 //==============================================================================
 // UIListBox::BuilderDetails
 
-void UIListBoxItem::BuilderDetails::apply(UIListBoxItem* p) const
-{
-	UIListItem::BuilderDetails::apply(p);
+void UIListBoxItem::BuilderDetails::apply(UIListBoxItem* p) const {
+    UIListItem::BuilderDetails::apply(p);
 
-	if (!text.isEmpty()) {
-		auto textblock = makeObject_deprecated<UIText>(text);
-		p->addChild(textblock);
-	}
-	if (onSubmit) p->connectOnSubmit(onSubmit);
+    if (!text.isEmpty()) {
+        auto textblock = makeObject_deprecated<UIText>(text);
+        p->add(textblock);
+    }
+    if (onSubmit) p->connectOnSubmit(onSubmit);
 }
 
-
 } // namespace ln
-

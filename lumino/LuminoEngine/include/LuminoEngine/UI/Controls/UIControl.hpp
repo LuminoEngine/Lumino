@@ -134,7 +134,7 @@ public:
 
     /** init */
     LN_METHOD()
-    bool init();
+    Result init();
     virtual void onDispose(bool explicitDisposing) override;
 
 

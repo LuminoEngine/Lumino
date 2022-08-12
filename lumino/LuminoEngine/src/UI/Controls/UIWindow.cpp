@@ -9,16 +9,15 @@ namespace ln {
 // UIWindow
 // https://material-ui.com/demos/cards/
 
-LN_OBJECT_IMPLEMENT(UIWindow, UIControl) {}
+LN_OBJECT_IMPLEMENT(UIWindow, UIControl) {
+}
 
-Ref<UIWindow> UIWindow::create()
-{
+Ref<UIWindow> UIWindow::create() {
     return makeObject_deprecated<UIWindow>();
 }
 
 UIWindow::UIWindow()
-    : m_opend(false)
-{
+    : m_opend(false) {
     specialElementFlags().set(detail::UISpecialElementFlags::FloatingSiblingOrder, true);
 
     auto vsm = getVisualStateManager();
@@ -27,13 +26,11 @@ UIWindow::UIWindow()
     open();
 }
 
-bool UIWindow::init()
-{
+Result UIWindow::init() {
     return UIControl::init();
 }
 
-void UIWindow::open()
-{
+void UIWindow::open() {
     if (!m_opend) {
         if (auto vsm = getVisualStateManager()) {
             vsm->gotoState(UIVisualStates::Opend);
@@ -42,8 +39,7 @@ void UIWindow::open()
     }
 }
 
-void UIWindow::close()
-{
+void UIWindow::close() {
     if (m_opend) {
         if (auto vsm = getVisualStateManager()) {
             vsm->gotoState(UIVisualStates::Closed);
@@ -53,4 +49,3 @@ void UIWindow::close()
 }
 
 } // namespace ln
-

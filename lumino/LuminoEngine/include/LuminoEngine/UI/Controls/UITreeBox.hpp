@@ -93,7 +93,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** init */
 	LN_METHOD()
-	bool init();
+	Result init();
 
 private:
 	void requireRefresh();

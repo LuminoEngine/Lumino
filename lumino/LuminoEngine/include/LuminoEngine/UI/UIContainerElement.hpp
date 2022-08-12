@@ -9,7 +9,7 @@ class UIContainerElement
 {
 public:
     UIContainerElement();
-    bool init();
+    Result init();
 
 private:
 };
@@ -19,7 +19,7 @@ class UIFrame
 {
 public:
     UIFrame();
-    void init();
+    Result init();
 
 private:
 };

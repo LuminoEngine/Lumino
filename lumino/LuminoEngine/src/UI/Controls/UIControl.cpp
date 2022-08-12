@@ -24,9 +24,9 @@ UIControl::UIControl()
     setFocusable(true);
 }
 
-bool UIControl::init()
-{
-    if (!UIElement::init()) return false;
+Result UIControl::init() {
+    LN_TRY(UIElement::init());
+
     auto vsm = getVisualStateManager();
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
@@ -40,7 +40,7 @@ bool UIControl::init()
     vsm->gotoState(UIVisualStates::Unfocused);
     vsm->gotoState(UIVisualStates::Visible);
 
-    return true;
+    return ok();
 }
 
 void UIControl::onDispose(bool explicitDisposing)

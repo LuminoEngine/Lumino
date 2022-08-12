@@ -289,7 +289,7 @@ bool UIColorField::init()
 	m_popup = makeObject_deprecated<UIPopup>();
 	m_popup->setBackgroundColor(Color::Red);
 	m_popup->setPlacementTarget(this);
-	m_popup->addChild(m_picker);
+	m_popup->add(m_picker);
 	//addChild(m_popup);
 
 

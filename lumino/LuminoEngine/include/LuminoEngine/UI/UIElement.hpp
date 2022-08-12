@@ -395,10 +395,16 @@ public:
     virtual void setContent(UIElement* content);
     virtual void setContent(const String& content);
 	/** Add element to container. 論理的な子要素として追加する。 */
-	LN_METHOD()
+
+    /**
+     * 指定した UIElement を、この UIElement の論理的な子要素として追加します。
+     */
+    LN_METHOD()
     void addChild(UIElement* child);
-    void addChild(const String& child);
-	void add(UIElement* child) { addChild(child); }
+    //void addChild(const String& child);
+
+	[[deprecated("use addChild")]]
+    void add(UIElement* child);
 
 
     void invalidateStyle() { invalidate(detail::UIElementDirtyFlags::Style, true); }
@@ -426,7 +432,7 @@ public:
 
     UIElement();
     virtual ~UIElement();
-	bool init();
+	Result init();
 
 public: // TODO: internal
     void setRenderPriority(int value);

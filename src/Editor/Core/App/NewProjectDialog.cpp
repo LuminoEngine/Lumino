@@ -15,7 +15,7 @@ NewProjectDialog::NewProjectDialog()
 	setBackgroundColor(ln::Color::White);
 
 	auto layout = ln::makeObject_deprecated<ln::UIBoxLayout>();
-	layout->addChild(ln::UIText::create(_TT("Project name:")));
+	layout->add(ln::UIText::create(_TT("Project name:")));
 
 	m_projectName = ln::makeObject_deprecated<ln::UITextField>();
 	m_projectName->setWidth(200);

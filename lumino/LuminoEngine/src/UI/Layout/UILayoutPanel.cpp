@@ -343,7 +343,7 @@ void UIStackLayout2_Obsolete::init()
 
 void UIStackLayout2_Obsolete::addChild(UIElement* element, UILayoutLengthType type)
 {
-    UILayoutPanel::addChild(element);
+    UILayoutPanel::add(element);
     CellDefinition cell;
     cell.type = type;
     m_cellDefinitions.add(cell);

@@ -85,7 +85,7 @@ bool ImGuiIntegration::init(UIFrameWindow* frameWindow) {
     m_shader = detail::RenderingManager::instance()->builtinShader(BuiltinShader::Sprite);
 #endif
     m_renderPass = makeObject_deprecated<RenderPass>();
-    m_renderPass->setClearFlags(ClearFlags::All);
+    m_renderPass->setClearFlags(ClearFlags::Depth);
 
     return true;
 }
@@ -476,8 +476,12 @@ void ImGuiDockManager::updateDocks() {
         m_dockSpaceWindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
         ImGui::Begin("##LN.FrameWindowPane", nullptr, m_dockSpaceWindowFlags);
-        ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_None;
+        ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_PassthruCentralNode;
+        if (dockFlags & ImGuiDockNodeFlags_PassthruCentralNode)
+            m_dockSpaceWindowFlags |= ImGuiWindowFlags_NoBackground;
+		
         ImGui::DockSpace(imguiWindowID, ImVec2(0.0f, 0.0f), dockFlags);
+        //ImGui::DockSpaceOverViewport(nullptr, dockFlags);
 
 		for (auto& m : m_menuBars) {
             m->onImGui();
@@ -602,10 +606,8 @@ ImGuiDockPane::ImGuiDockPane()
     , m_open(true) {
 }
 
-bool ImGuiDockPane::init() {
-    if (!Object::init()) return false;
-
-    return true;
+Result ImGuiDockPane::init() {
+    return Object::init();
 }
 
 UIFrameWindow* ImGuiDockPane::frameWindow() const {

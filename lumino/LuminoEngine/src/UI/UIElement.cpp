@@ -119,7 +119,7 @@ void UIElement::onDispose(bool explicitDisposing) {
     UILayoutElement::onDispose(explicitDisposing);
 }
 
-bool UIElement::init() {
+Result UIElement::init() {
     UILayoutElement::init(m_finalStyle);
     m_manager = detail::EngineDomain::uiManager();
     //if (LN_REQUIRE(m_manager->mainContext())) return false;
@@ -140,7 +140,7 @@ bool UIElement::init() {
 
     //onSetup();
 
-    return true;
+    return ok();
 }
 
 void UIElement::setWidth(float value) {
@@ -585,11 +585,15 @@ void UIElement::setContent(const String& content) {
 void UIElement::addChild(UIElement* child) {
     onAddChild(child);
 }
+//
+//void UIElement::addChild(const String& child) {
+//    auto textblock = makeObject_deprecated<UIText>();
+//    textblock->setText(child);
+//    addChild(textblock);
+//}
 
-void UIElement::addChild(const String& child) {
-    auto textblock = makeObject_deprecated<UIText>();
-    textblock->setText(child);
-    addChild(textblock);
+void UIElement::add(UIElement* child) {
+    onAddChild(child);
 }
 
 //void UIElement::activate()
@@ -602,7 +606,7 @@ void UIElement::addChild(const String& child) {
 
 void UIElement::addInto(UIElement* parent) {
     UIElement* primaryElement = (parent) ? parent : m_manager->primaryElement();
-    primaryElement->addChild(this);
+    primaryElement->add(this);
 }
 
 void UIElement::setRenderPriority(int value) {

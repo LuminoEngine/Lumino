@@ -48,10 +48,10 @@ class App_Example_Navigator : public Application
 		//m_listbox1->setVAlignment(UIVAlignment::Top);
 		auto item1 = UIListBoxItem::create(_TT("Item"));
 		m_listbox1->addChild(item1);
-		m_listbox1->addChild(_TT("Skill"));
-		m_listbox1->addChild(_TT("Status"));
-		m_listbox1->addChild(_TT("Save"));
-		m_listbox1->addChild(_TT("Load"));
+		m_listbox1->addChild(UIText::create(U"Skill"));
+        m_listbox1->addChild(UIText::create(U"Status"));
+        m_listbox1->addChild(UIText::create(U"Save"));
+        m_listbox1->addChild(UIText::create(U"Load"));
 		//m_listbox1->addChild(_TT("item4");
 		m_window1->addChild(m_listbox1);
 		//// m_navigator->addElement(m_listbox1);
@@ -78,8 +78,8 @@ class App_Example_Navigator : public Application
 		m_listbox2 = UIListBox::create();
 		auto item2_1 = UIListBoxItem::create(_TT("item1"));
 		m_listbox2->addChild(item2_1);
-		m_listbox2->addChild(_TT("item2"));
-		m_listbox2->addChild(_TT("item3"));
+		m_listbox2->addChild(UIText::create(U"item2"));
+		m_listbox2->addChild(UIText::create(U"item3"));
 		m_window2->addChild(m_listbox2);
 		//// m_navigator->addElement(m_listbox1);
 

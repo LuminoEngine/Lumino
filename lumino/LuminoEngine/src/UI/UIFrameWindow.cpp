@@ -406,6 +406,10 @@ void UIFrameWindow::renderContents(GraphicsCommandList* commandList, RenderTarge
     else {
         // for external graphics context.
     }
+	
+    if (m_renderView) {
+        m_renderView->render(commandList, renderTarget);
+    }
 
     if (m_ImGuiLayerEnabled) {
         // TODO: time
@@ -415,9 +419,6 @@ void UIFrameWindow::renderContents(GraphicsCommandList* commandList, RenderTarge
         m_imguiContext->render(commandList, renderTarget);
     }
     else {
-        if (m_renderView) {
-            m_renderView->render(commandList, renderTarget);
-        }
     }
 
     if (m_swapChain) {

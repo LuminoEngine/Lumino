@@ -466,7 +466,7 @@ void UITreeItem2::setContent(UIElement* value)
 {
     assert(!m_headerContent);    // TODO: 多重追加対策
     m_headerContent = value;
-    addChild(value);
+    add(value);
 }
 
 void UITreeItem2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)

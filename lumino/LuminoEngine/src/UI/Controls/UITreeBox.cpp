@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIText.hpp>
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/Controls/UITreeBox.hpp>
 #include "../UIStyleInstance.hpp"
@@ -19,201 +20,189 @@ namespace ln {
 // 特に Item の左側への装飾の追加に大きな制約が伴う。
 // また階層が非常に深くなりがちなので、イベントルーティングやレイアウトのオーバーヘッドも大きくなりやすい。
 
-LN_OBJECT_IMPLEMENT(UITreeBoxItem, UIControl) {}
+LN_OBJECT_IMPLEMENT(UITreeBoxItem, UIControl) {
+}
 
 UITreeBoxItem::UITreeBoxItem()
-	: m_ownerTreeBox(nullptr)
-	, m_parentItem(nullptr)
-	, m_layoutDepth(0)
-{}
-
-bool UITreeBoxItem::init()
-{
-	if (!UIControl::init()) return false;
-
-	// TODO: Style
-	setHorizontalContentAlignment(UIHAlignment::Left);
-
-	return true;
+    : m_ownerTreeBox(nullptr)
+    , m_parentItem(nullptr)
+    , m_layoutDepth(0) {
 }
 
-UITreeBoxItem* UITreeBoxItem::addItem(const ln::String& text)
-{
-	if (LN_REQUIRE(m_ownerTreeBox)) return nullptr;
+bool UITreeBoxItem::init() {
+    if (!UIControl::init()) return false;
 
-	auto item = makeObject_deprecated<UITreeBoxItem>();
-	item->addChild(text);
-	addItemInternal(item);
-	return item;
+    // TODO: Style
+    setHorizontalContentAlignment(UIHAlignment::Left);
+
+    return true;
 }
 
-Ref<EventConnection> UITreeBoxItem::connectOnSubmit(Ref<UIGeneralEventHandler> handler)
-{
-	return m_onSubmit.connect(handler);
+UITreeBoxItem* UITreeBoxItem::addItem(const ln::String& text) {
+    if (LN_REQUIRE(m_ownerTreeBox)) return nullptr;
+
+    auto textblock = makeObject_deprecated<UIText>();
+    textblock->setText(text);
+	
+    auto item = makeObject_deprecated<UITreeBoxItem>();
+    item->add(textblock);
+    addItemInternal(item);
+    return item;
 }
 
-Size UITreeBoxItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	Size desiredSize = UIControl::measureOverride(layoutContext, constraint);
-
-	// depth offset
-	const float depthOffset = desiredSize.height * (m_layoutDepth);	// TODO: 仮幅。margin 使っていいかも？
-	desiredSize.width += depthOffset;
-
-	return desiredSize;
+Ref<EventConnection> UITreeBoxItem::connectOnSubmit(Ref<UIGeneralEventHandler> handler) {
+    return m_onSubmit.connect(handler);
 }
 
-Size UITreeBoxItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
-	Rect contentRect = finalArea;
+Size UITreeBoxItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    Size desiredSize = UIControl::measureOverride(layoutContext, constraint);
 
-	const float depthOffset = contentRect.height * (m_layoutDepth);	// TODO: 仮幅。margin 使っていいかも？
-	contentRect.x += depthOffset;
-	contentRect.width -= depthOffset;
+    // depth offset
+    const float depthOffset = desiredSize.height * (m_layoutDepth); // TODO: 仮幅。margin 使っていいかも？
+    desiredSize.width += depthOffset;
 
-	return UIControl::arrangeOverride(layoutContext, contentRect);
+    return desiredSize;
 }
 
-void UITreeBoxItem::onRoutedEvent(UIEventArgs* e)
-{
-	if (e->type() == UIEvents::MouseDownEvent) {
-		const auto* me = static_cast<const UIMouseEventArgs*>(e);
-		m_ownerTreeBox->notifyItemClicked(this, me->getClickCount());
-		e->handled = true;
-		return;
-	}
-	else if (e->type() == UIEvents::MouseMoveEvent) {
-		//if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
-		//	m_ownerListControl->selectItemExclusive(this);
-		//	e->handled = true;
-		//	return;
-		//}
-	}
+Size UITreeBoxItem::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+    Rect contentRect = finalArea;
 
-	UIControl::onRoutedEvent(e);
+    const float depthOffset = contentRect.height * (m_layoutDepth); // TODO: 仮幅。margin 使っていいかも？
+    contentRect.x += depthOffset;
+    contentRect.width -= depthOffset;
 
+    return UIControl::arrangeOverride(layoutContext, contentRect);
 }
 
-void UITreeBoxItem::onSubmit()
-{
-	m_onSubmit.raise(UIEventArgs::create(this, UIEvents::Submitted));
+void UITreeBoxItem::onRoutedEvent(UIEventArgs* e) {
+    if (e->type() == UIEvents::MouseDownEvent) {
+        const auto* me = static_cast<const UIMouseEventArgs*>(e);
+        m_ownerTreeBox->notifyItemClicked(this, me->getClickCount());
+        e->handled = true;
+        return;
+    }
+    else if (e->type() == UIEvents::MouseMoveEvent) {
+        // if (m_ownerListControl->submitMode() == UIListSubmitMode::Single) {
+        //	m_ownerListControl->selectItemExclusive(this);
+        //	e->handled = true;
+        //	return;
+        // }
+    }
+
+    UIControl::onRoutedEvent(e);
 }
 
-void UITreeBoxItem::addItemInternal(UITreeBoxItem* item)
-{
-	if (LN_REQUIRE(!item->m_parentItem)) return;
-	if (LN_REQUIRE(m_ownerTreeBox)) return;
-	m_childItems.add(item);
-	item->m_parentItem = this;
-
-	// VisualChild としては直ちに追加しておく。
-	// そうしないと、Style が適用されないため、measure でフォントサイズを元に要素サイズを計算できなくなる。
-	m_ownerTreeBox->addVisualChild(item);
-
-	m_ownerTreeBox->requireRefresh();
+void UITreeBoxItem::onSubmit() {
+    m_onSubmit.raise(UIEventArgs::create(this, UIEvents::Submitted));
 }
 
-void UITreeBoxItem::traverse(int depth, const std::function<void(UITreeBoxItem*)> func)
-{
-	m_layoutDepth = depth;
-	func(this);
-	for (auto& item : m_childItems) {
-		item->traverse(depth + 1, func);
-	}
+void UITreeBoxItem::addItemInternal(UITreeBoxItem* item) {
+    if (LN_REQUIRE(!item->m_parentItem)) return;
+    if (LN_REQUIRE(m_ownerTreeBox)) return;
+    m_childItems.add(item);
+    item->m_parentItem = this;
+
+    // VisualChild としては直ちに追加しておく。
+    // そうしないと、Style が適用されないため、measure でフォントサイズを元に要素サイズを計算できなくなる。
+    m_ownerTreeBox->addVisualChild(item);
+
+    m_ownerTreeBox->requireRefresh();
+}
+
+void UITreeBoxItem::traverse(int depth, const std::function<void(UITreeBoxItem*)> func) {
+    m_layoutDepth = depth;
+    func(this);
+    for (auto& item : m_childItems) {
+        item->traverse(depth + 1, func);
+    }
 }
 
 //==============================================================================
 // UITreeBox
 
-LN_OBJECT_IMPLEMENT(UITreeBox, UIControl) {}
+LN_OBJECT_IMPLEMENT(UITreeBox, UIControl) {
+}
 
 UITreeBox::UITreeBox()
-	: m_needRefresh(false)
-{}
-
-bool UITreeBox::init()
-{
-	if (!UIControl::init()) return false;
-	return true;
+    : m_needRefresh(false) {
 }
 
-UITreeBoxItem* UITreeBox::addItem(const ln::String& text, Ref<Variant> data)
-{
-	auto item = makeObject_deprecated<UITreeBoxItem>();
-	item->addChild(text);
-	item->setData(data);
-	addItemInternal(item);
-	return item;
+Result UITreeBox::init() {
+    return UIControl::init();
 }
 
-void UITreeBox::addItemInternal(UITreeBoxItem* item)
-{
-	if (LN_REQUIRE(item)) return;
-	if (LN_REQUIRE(!item->logicalParent())) return;
-	if (LN_REQUIRE(!item->m_ownerTreeBox)) return;
-
-	m_rootItems.add(item);
-	item->m_ownerTreeBox = this;
-
-	addLogicalChild(item);
-	addVisualChild(item);
+UITreeBoxItem* UITreeBox::addItem(const ln::String& text, Ref<Variant> data) {
+    auto textblock = makeObject_deprecated<UIText>();
+    textblock->setText(text);
+	
+    auto item = makeObject_deprecated<UITreeBoxItem>();
+    item->add(textblock);
+    item->setData(data);
+    addItemInternal(item);
+    return item;
 }
 
-Size UITreeBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
-{
-	if (m_needRefresh) {
-		refresh();
-	}
+void UITreeBox::addItemInternal(UITreeBoxItem* item) {
+    if (LN_REQUIRE(item)) return;
+    if (LN_REQUIRE(!item->logicalParent())) return;
+    if (LN_REQUIRE(!item->m_ownerTreeBox)) return;
 
-	const Size contentSize = UIStackLayout::measureOverrideImpl(
-		layoutContext,
-		constraint,
-		m_logicalChildren->size(),
-		[this](int i) { return m_logicalChildren->at(i); },
-		UILayoutOrientation::Vertical);
-	return layoutContext->makeDesiredSize(this, contentSize);
+    m_rootItems.add(item);
+    item->m_ownerTreeBox = this;
+
+    addLogicalChild(item);
+    addVisualChild(item);
 }
 
-Size UITreeBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea)
-{
-	const Rect contentRect = layoutContext->makeContentRect(this, finalArea.getSize());
+Size UITreeBox::measureOverride(UILayoutContext* layoutContext, const Size& constraint) {
+    if (m_needRefresh) {
+        refresh();
+    }
 
-	return UIStackLayout::arrangeOverrideImpl(
-		layoutContext,
-		contentRect,
-		m_logicalChildren->size(),
-		[this](int i) { return m_logicalChildren->at(i); },
-		UILayoutOrientation::Vertical,
-		finalStyle(),
-		false,
-		Vector2(0, 0));
+    const Size contentSize = UIStackLayout::measureOverrideImpl(
+        layoutContext,
+        constraint,
+        m_logicalChildren->size(),
+        [this](int i) { return m_logicalChildren->at(i); },
+        UILayoutOrientation::Vertical);
+    return layoutContext->makeDesiredSize(this, contentSize);
 }
 
-void UITreeBox::requireRefresh()
-{
-	m_needRefresh = true;
+Size UITreeBox::arrangeOverride(UILayoutContext* layoutContext, const Rect& finalArea) {
+    const Rect contentRect = layoutContext->makeContentRect(this, finalArea.getSize());
+
+    return UIStackLayout::arrangeOverrideImpl(
+        layoutContext,
+        contentRect,
+        m_logicalChildren->size(),
+        [this](int i) { return m_logicalChildren->at(i); },
+        UILayoutOrientation::Vertical,
+        finalStyle(),
+        false,
+        Vector2(0, 0));
 }
 
-void UITreeBox::refresh()
-{
-	removeAllLogicalChildren();
-	const auto collect = [this](UITreeBoxItem* item) {
-		addLogicalChild(item);
-	};
-	for (auto& item : m_rootItems) {
-		item->traverse(0, collect);
-	}
-
-	// Layout の更新だけでよい。Style 更新は不要。
-	invalidate(detail::UIElementDirtyFlags::Layout, true);
-
-	m_needRefresh = false;
+void UITreeBox::requireRefresh() {
+    m_needRefresh = true;
 }
 
-void UITreeBox::notifyItemClicked(UITreeBoxItem* item, int clickCount)
-{
-	item->onSubmit();
+void UITreeBox::refresh() {
+    removeAllLogicalChildren();
+    const auto collect = [this](UITreeBoxItem* item) {
+        addLogicalChild(item);
+    };
+    for (auto& item : m_rootItems) {
+        item->traverse(0, collect);
+    }
+
+    // Layout の更新だけでよい。Style 更新は不要。
+    invalidate(detail::UIElementDirtyFlags::Layout, true);
+
+    m_needRefresh = false;
+}
+
+void UITreeBox::notifyItemClicked(UITreeBoxItem* item, int clickCount) {
+    item->onSubmit();
 }
 
 } // namespace ln
-

@@ -682,7 +682,7 @@ void EngineManager::quit() {
 int EngineManager::runApplication() {
     Application* app = application();
 	
-    while (isExitRequested()) {
+    while (!isExitRequested()) {
         updateFrame();
         presentFrame(nullptr, nullptr);
     }
@@ -819,11 +819,11 @@ void EngineManager::setupMainWindow(UIMainWindow* window, bool createBasicObject
 }
 
 void EngineManager::setupApplication(Application* app) {
-    // Reset Scene
-    {
-        m_mainWorld->removeAllObjects();
-        m_mainUIRoot->removeAllChildren();
-    }
+    //// Reset Scene
+    //{
+    //    m_mainWorld->removeAllObjects();
+    //    m_mainUIRoot->removeAllChildren();
+    //}
 
     m_uiManager->resetApp(app);
 }

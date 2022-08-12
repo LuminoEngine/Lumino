@@ -16,26 +16,21 @@ namespace ln {
 //	ユーザーがちょっとカスタムコントロール作ったり装飾したりする用途で、複数要素追加可能としておく。
 //	（あと、あまりクラスを増やし過ぎたくない）
 
-UIContainerElement::UIContainerElement()
-{
+UIContainerElement::UIContainerElement() {
 }
 
-bool UIContainerElement::init()
-{
+Result UIContainerElement::init() {
     return UIControl::init();
 }
 
 //==============================================================================
 // UIFrame
 
-UIFrame::UIFrame()
-{
+UIFrame::UIFrame() {
 }
 
-void UIFrame::init()
-{
-    UIContainerElement::init();
+Result UIFrame::init() {
+    return UIContainerElement::init();
 }
 
 } // namespace ln
-

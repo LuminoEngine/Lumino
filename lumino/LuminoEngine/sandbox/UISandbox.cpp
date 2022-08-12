@@ -99,15 +99,15 @@ public:
 			layout1->addChild(makeObject_deprecated<UIText>(_TT("CheckBox")));
 
 			auto checkbox1 = makeObject_deprecated<UICheckBox>();
-			checkbox1->addChild(_TT("CheckBox1"));
+			checkbox1->addChild(UIText::create(U"CheckBox1"));
 			layout1->addChild(checkbox1);
 
 			auto checkbox2 = makeObject_deprecated<UICheckBox>();
-			checkbox2->addChild(_TT("CheckBox2"));
+			checkbox2->addChild(UIText::create(U"CheckBox2"));
 			layout1->addChild(checkbox2);
 
 			auto checkbox3 = makeObject_deprecated<UICheckBox>();
-			checkbox3->addChild(_TT("CheckBox3"));
+			checkbox3->addChild(UIText::create(U"CheckBox3"));
 			layout1->addChild(checkbox3);
 		}
 		//// ComboBox
@@ -129,10 +129,10 @@ public:
 			layout1->addChild(makeObject_deprecated<UIText>(_TT("ListBox (Direct)")));
 
 			auto listbox1 = UIListBox::create();
-			listbox1->addChild(_TT("item1"));
-			listbox1->addChild(_TT("item2"));
-			listbox1->addChild(_TT("item3"));
-			listbox1->addChild(_TT("item4"));
+			listbox1->addChild(UIText::create(U"item1"));
+			listbox1->addChild(UIText::create(U"item2"));
+			listbox1->addChild(UIText::create(U"item3"));
+			listbox1->addChild(UIText::create(U"item4"));
 			//listbox1->addChild(_TT("item4");
 			//listbox1->addChild(_TT("item4");
 			//listbox1->addChild(_TT("item4");
@@ -256,11 +256,11 @@ public:
 			layout1->addChild(tabbar1);
 
 			auto tab1 = makeObject_deprecated<UITabBarItem2>();
-			tab1->addChild(_TT("Tab1"));
+			tab1->addChild(UIText::create(U"Tab1"));
 			tabbar1->addChild(tab1);
 
 			auto tab2 = makeObject_deprecated<UITabBarItem2>();
-			tab2->addChild(_TT("Tab2"));
+			tab2->addChild(UIText::create(U"Tab2"));
 			tabbar1->addChild(tab2);
 
 			auto switch1 = makeObject_deprecated<UISwitchLayout>();
@@ -311,8 +311,8 @@ public:
 
 			auto comboBox1 = makeObject_deprecated<UIComboBox>();
 			comboBox1->setAlignments(UIAlignment::Left);
-			comboBox1->addChild(_TT("CItem1"));
-			comboBox1->addChild(_TT("CItem2"));
+			comboBox1->addChild(UIText::create(U"CItem1"));
+			comboBox1->addChild(UIText::create(U"CItem2"));
 			layout1->addChild(comboBox1);
 		}
     }
