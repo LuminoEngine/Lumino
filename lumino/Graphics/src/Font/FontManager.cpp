@@ -1,16 +1,14 @@
-﻿
-#include "Internal.hpp"
-#include <ft2build.h>
+﻿#include <ft2build.h>
 #include FT_FREETYPE_H /* <freetype/freetype.h> */
 #include FT_CACHE_H /* <freetype/ftcache.h> */
 #include FT_TRUETYPE_TAGS_H /* <freetype/tttags.h> */
 #include FT_TRUETYPE_TABLES_H /* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include "FontCore.hpp"
+#include <LuminoGraphics/Font/detail/FontCore.hpp>
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "FreeTypeFont.hpp"
-#include "FontManager.hpp"
 
 #define LN_DEFAULTFONT_PROPORTIONAL 1
 

@@ -28,7 +28,7 @@
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include "../../Font/src/FontManager.hpp"
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "../../../Graphics/src/Mesh/MeshManager.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "../../Graphics/src/Rendering/RenderingProfiler.hpp"

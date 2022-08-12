@@ -1,6 +1,6 @@
 ﻿#include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoGraphics/Font/detail/FontCore.hpp>
 #include <LuminoGraphics/GPU/Texture.hpp>
-#include "../../Font/src/FontCore.hpp"
 #include "FontGlyphCache.hpp"
 
 namespace ln {

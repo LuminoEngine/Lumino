@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "LuminoGraphics/Font/Font.hpp"
+
 #include "LuminoGraphics/GPU/Shader.hpp"
 #include "LuminoGraphics/GPU/ShaderDescriptor.hpp"
 #include "LuminoGraphics/GPU/SamplerState.hpp"

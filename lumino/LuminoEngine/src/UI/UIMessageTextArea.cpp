@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <algorithm>
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 //#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
@@ -9,8 +9,8 @@
 #include "UIEditableTextArea.hpp"
 #include <LuminoEngine/UI/UIMessageTextArea.hpp>
 
-#include "../../Font/src/TextLayoutEngine.hpp"
-#include "../../Font/src/FontManager.hpp"
+#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "UIStyleInstance.hpp"
 
 // TODO: Test

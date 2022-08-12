@@ -71,12 +71,12 @@
     
 */
 #include "Internal.hpp"
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include "../../Font/src/FontManager.hpp"
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "UIStyleInstance.hpp"
 
 namespace ln {

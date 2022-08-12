@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../../Font/src/FontCore.hpp"
+#include <LuminoGraphics/Font/detail/FontCore.hpp>
 
 namespace ln {
 namespace detail {

@@ -4,7 +4,7 @@
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CanvasContext.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -13,7 +13,7 @@
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoGraphics/Mesh/MeshModeEntity.hpp>
-#include "../../Font/src/FontManager.hpp"
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "../Mesh/MeshGeneraters/MeshGenerater.hpp"
 #include "CommandListServer.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>

@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
+#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
 #include <LuminoGraphics/Rendering/RenderFeature.hpp>
 #include "../../TextRendering/FontGlyphCache.hpp"
-#include "../../Font/src/TextLayoutEngine.hpp"
 #include "../RenderElement.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "../RLIs/RLIBatchList.hpp"

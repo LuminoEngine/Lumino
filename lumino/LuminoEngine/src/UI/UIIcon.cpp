@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include "../../Font/src/FontCore.hpp"
-#include "../../Font/src/FontManager.hpp"
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/detail/FontCore.hpp>
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>

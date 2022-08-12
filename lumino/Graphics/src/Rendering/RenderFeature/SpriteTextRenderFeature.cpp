@@ -8,7 +8,7 @@
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
-#include "../../Font/src/FontCore.hpp"
+#include <LuminoGraphics/Font/detail/FontCore.hpp>
 #include "../../TextRendering/TextRenderingCache.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "SpriteTextRenderFeature.hpp"

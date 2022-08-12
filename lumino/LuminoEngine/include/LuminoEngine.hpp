@@ -5,7 +5,6 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoFont/Font.hpp>
 
 #include "LuminoEngine/Common.hpp"
 #include "LuminoEngine/EngineContext.hpp"

@@ -14,7 +14,7 @@
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include "../../Font/src/FontManager.hpp"
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "../../../Graphics/src/GPU/RHI/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 

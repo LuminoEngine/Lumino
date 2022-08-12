@@ -8,11 +8,10 @@
 #include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GPU/SwapChain.hpp>
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-//#include "../Asset/AssetManager.hpp"
-#include "../../Font/src/TextLayoutEngine.hpp"
-#include "../../Font/src/FontManager.hpp"
+#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "RenderTargetTextureCache.hpp"
 #include "GraphicsProfiler.hpp"
 

@@ -1,8 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoFont/Font.hpp>
-#include "FontManager.hpp"
-#include "TextLayoutEngine.hpp"
+﻿#include <LuminoGraphics/Font/Font.hpp>
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
+#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
 
 namespace ln {
 

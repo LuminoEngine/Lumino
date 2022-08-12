@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 #include "../../../../../../Font/src/TextLayoutEngine.hpp"
 #include "../../../../../src/TextRendering/FontGlyphCache.hpp"
 #include "../Common.hpp"

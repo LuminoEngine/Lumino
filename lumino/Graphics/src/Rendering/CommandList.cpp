@@ -15,7 +15,7 @@
 #include <LuminoGraphics/Rendering/Kanata/RenderFeature/KMeshRenderFeature.hpp>
 #include <LuminoGraphics/Rendering/Kanata/RenderFeature/KSpriteRenderFeature.hpp>
 #include <LuminoGraphics/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
-#include "../../Font/src/FontManager.hpp"
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "RenderElement.hpp"
 #include "DrawElementListBuilder.hpp"
 

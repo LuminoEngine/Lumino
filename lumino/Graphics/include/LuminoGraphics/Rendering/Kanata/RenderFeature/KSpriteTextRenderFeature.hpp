@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <LuminoFont/Font.hpp>
-#include "../../../../../../Font/src/TextLayoutEngine.hpp"
+#include "../../../Font/Common.hpp"
+#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
 #include "../../../../../src/TextRendering/FontGlyphCache.hpp"
 #include "../Common.hpp"
 

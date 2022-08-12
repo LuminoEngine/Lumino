@@ -6,6 +6,8 @@ include(cmake/LuminoConfig-LuminoGraphics.cmake)
 #-------------------------------------------------------------------------------
 file(GLOB LN_SOURCES "include/LuminoGraphics/*.hpp" "include/LuminoGraphics/detail/*.hpp" "include/*.hpp" "src/*.cpp" "src/*.hpp")
 
+file(GLOB LN_SOURCES_Font "include/Font/*.hpp" "include/Font/detail/*.hpp" "src/Font/*.cpp" "src/Font/*.hpp")
+
 file(GLOB LN_SOURCES_GPU "include/LuminoGraphics/GPU/*.hpp" "include/LuminoGraphics/GPU/detail/*.hpp" "src/GPU/*.cpp" "src/GPU/*.hpp")
 file(GLOB LN_SOURCES_GPU_RHI "src/GPU/RHI/*.cpp" "src/GPU/RHI/*.hpp")
 
@@ -51,6 +53,7 @@ if (WIN32)
 endif()
 
 source_group("" FILES ${LN_SOURCES})
+source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("GPU" FILES ${LN_SOURCES_GPU})
 source_group("GPU/RHI" FILES ${LN_SOURCES_GPU_RHI})
 source_group("GPU/RHI/OpenGL" FILES ${LN_SOURCES_GPU_RHI_OpenGL})
@@ -75,6 +78,7 @@ source_group("Rendering/Kanata/RenderFeature" FILES ${LN_SOURCES_Rendering_Kanat
 
 set(LN_SOURCES
     ${LN_SOURCES}
+	${LN_SOURCES_Font}
     ${LN_SOURCES_GPU}
     ${LN_SOURCES_GPU_RHI}
     ${LN_SOURCES_GPU_RHI_OpenGL}
@@ -121,7 +125,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     LuminoRuntime
     LuminoPlatform
     LuminoBitmap
-    LuminoFont
+	freetype
     tinyobjloader::tinyobjloader
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_DEFINITIONS})

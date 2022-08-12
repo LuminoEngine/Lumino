@@ -1,9 +1,7 @@
-﻿
-#include "Internal.hpp"
+﻿#include <LuminoCore/Base/UnicodeUtils.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoFont/Font.hpp>
-#include <LuminoCore/Base/UnicodeUtils.hpp>
-#include "TextLayoutEngine.hpp"
+#include <LuminoGraphics/Font/Font.hpp>
+#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
 
 namespace ln {
 namespace detail {

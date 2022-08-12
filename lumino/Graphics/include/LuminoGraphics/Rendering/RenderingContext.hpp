@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include "../Font/Common.hpp"
 #include "Common.hpp"
 #include "Kanata/Common.hpp"
-#include <LuminoFont/Common.hpp>
 
 namespace ln {
 class World; // TODO: 上位モジュールなので避けたい

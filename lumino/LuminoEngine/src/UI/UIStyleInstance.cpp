@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoFont/Font.hpp>
+#include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include "UIStyleInstance.hpp"
 

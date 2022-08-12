@@ -1,4 +1,5 @@
-﻿#include <LuminoGraphics/detail/GraphicsManager.hpp>
+﻿#include <LuminoGraphics/Font/Font.hpp>
+#include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatch.hpp>

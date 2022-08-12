@@ -13,8 +13,8 @@
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Animation/Animator.hpp>
 #include "../src/Mesh/MeshImporters/MqoImporter.hpp"
-#include "../../Font/src/FontManager.hpp"
-#include "../../Font/src/FontCore.hpp"
+#include <LuminoGraphics/Font/detail/FontManager.hpp>
+#include <LuminoGraphics/Font/detail/FontCore.hpp>
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/UI/Controls/UIButton.hpp>

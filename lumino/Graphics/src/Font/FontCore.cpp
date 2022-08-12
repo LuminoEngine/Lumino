@@ -1,7 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include "FontManager.hpp"
-#include "FontCore.hpp"
+﻿#include <LuminoGraphics/Font/detail/FontManager.hpp>
+#include <LuminoGraphics/Font/detail/FontCore.hpp>
 
 namespace ln {
 namespace detail {
