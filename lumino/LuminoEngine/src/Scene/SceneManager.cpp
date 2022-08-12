@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include "SceneManager.hpp"
-#include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>

@@ -1,4 +1,4 @@
-﻿#include <LuminoBitmap/Bitmap.hpp>
+﻿#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoPlatform/detail/OpenGLContext.hpp>

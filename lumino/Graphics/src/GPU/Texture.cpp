@@ -3,7 +3,7 @@
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "RHI/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>

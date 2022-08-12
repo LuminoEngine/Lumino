@@ -6,7 +6,7 @@
 #include FT_SFNT_NAMES_H
 #include FT_STROKER_H
 #include FT_SYNTHESIS_H
-#include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoGraphics/Font/detail/FontManager.hpp>
 #include "FreeTypeFont.hpp"

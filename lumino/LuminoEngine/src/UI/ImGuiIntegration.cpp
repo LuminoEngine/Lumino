@@ -8,7 +8,7 @@
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/GPU/RenderPass.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>

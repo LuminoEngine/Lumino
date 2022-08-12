@@ -1,11 +1,8 @@
-﻿
-#define TINYGLTF_IMPLEMENTATION
-//#define TINYGLTF_NO_FS
+﻿#define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
-//#include "D:\Tech\Graphics\tinygltf\tiny_gltf.h"
-#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>

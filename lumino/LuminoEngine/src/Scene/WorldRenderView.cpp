@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoBitmap/Bitmap.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoGraphics/GPU/RenderPass.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>

@@ -1,7 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoBitmap/Bitmap.hpp>
+﻿#include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include "BitmapEncoding.hpp"
 
 namespace ln {

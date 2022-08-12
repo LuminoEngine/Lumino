@@ -1,5 +1,4 @@
-﻿#include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/GPU/Texture.hpp>
+﻿#include <LuminoGraphics/GPU/Texture.hpp>
 #include "TextRenderingCache.hpp"
 #include "FontGlyphCache.hpp"
 

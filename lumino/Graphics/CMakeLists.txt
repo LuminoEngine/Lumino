@@ -6,6 +6,8 @@ include(cmake/LuminoConfig-LuminoGraphics.cmake)
 #-------------------------------------------------------------------------------
 file(GLOB LN_SOURCES "include/LuminoGraphics/*.hpp" "include/LuminoGraphics/detail/*.hpp" "include/*.hpp" "src/*.cpp" "src/*.hpp")
 
+file(GLOB LN_SOURCES_Bitmap "include/Bitmap/*.hpp" "include/Bitmap/detail/*.hpp" "src/Bitmap/*.cpp" "src/Bitmap/*.hpp")
+
 file(GLOB LN_SOURCES_Font "include/Font/*.hpp" "include/Font/detail/*.hpp" "src/Font/*.cpp" "src/Font/*.hpp")
 
 file(GLOB LN_SOURCES_GPU "include/LuminoGraphics/GPU/*.hpp" "include/LuminoGraphics/GPU/detail/*.hpp" "src/GPU/*.cpp" "src/GPU/*.hpp")
@@ -53,6 +55,7 @@ if (WIN32)
 endif()
 
 source_group("" FILES ${LN_SOURCES})
+source_group("Bitmap" FILES ${LN_SOURCES_Bitmap})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("GPU" FILES ${LN_SOURCES_GPU})
 source_group("GPU/RHI" FILES ${LN_SOURCES_GPU_RHI})
@@ -78,6 +81,7 @@ source_group("Rendering/Kanata/RenderFeature" FILES ${LN_SOURCES_Rendering_Kanat
 
 set(LN_SOURCES
     ${LN_SOURCES}
+    ${LN_SOURCES_Bitmap}
 	${LN_SOURCES_Font}
     ${LN_SOURCES_GPU}
     ${LN_SOURCES_GPU_RHI}
@@ -109,6 +113,23 @@ if (LN_USE_VULKAN)
     list(APPEND LN_DEFINITIONS LN_USE_VULKAN=1)
 endif()
 
+set(LOCAL_LIBRARIES 
+    LuminoCore
+    LuminoRuntime
+    LuminoPlatform
+    nanovg::nanovg
+    ZLIB::ZLIB
+    freetype
+    tinyobjloader::tinyobjloader
+)
+
+# libpng is named differently depending on configuration.
+if (LN_LINK_CMAKE_SHARED_LIB_PACKAGE)
+    list(APPEND LOCAL_LIBRARIES png)
+else()
+    list(APPEND LOCAL_LIBRARIES png_static)
+endif()
+
 #-------------------------------------------------------------------------------
 # Targets
 #-------------------------------------------------------------------------------
@@ -120,14 +141,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    LuminoCore
-    LuminoRuntime
-    LuminoPlatform
-    LuminoBitmap
-	freetype
-    tinyobjloader::tinyobjloader
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LOCAL_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_DEFINITIONS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

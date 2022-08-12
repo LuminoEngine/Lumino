@@ -1,5 +1,5 @@
 ﻿#include <LuminoCore/Base/UnicodeUtils.hpp>
-#include <LuminoBitmap/Bitmap.hpp>
+#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/Font/Font.hpp>
 #include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
 

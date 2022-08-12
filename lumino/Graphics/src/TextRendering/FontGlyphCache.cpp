@@ -1,4 +1,4 @@
-﻿#include <LuminoBitmap/Bitmap.hpp>
+﻿#include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/Font/detail/FontCore.hpp>
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include "FontGlyphCache.hpp"

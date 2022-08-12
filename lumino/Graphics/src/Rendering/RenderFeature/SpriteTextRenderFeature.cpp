@@ -1,12 +1,10 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>
 #include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Font/detail/FontCore.hpp>
 #include "../../TextRendering/TextRenderingCache.hpp"
