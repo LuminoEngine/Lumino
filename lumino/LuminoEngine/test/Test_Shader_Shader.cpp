@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 
 //==============================================================================
 //# Testing Shader
@@ -14,7 +14,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
     auto descriptorLayout1 = shader1->descriptorLayout();
     auto shaderPass1 = shader1->techniques()[0]->passes()[0];
 
-    auto vertexDecl1 = makeObject<VertexLayout>();
+    auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
     vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 
@@ -38,9 +38,9 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
         { { 0, 0, 0 }, { 1, 1 }, },
     };
 #endif
-    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto tex1 = makeObject<Texture2D>(2, 2, TextureFormat::RGBA8);
+    auto tex1 = makeObject_deprecated<Texture2D>(2, 2, TextureFormat::RGBA8);
     auto bmp1 = tex1->map(MapMode::Write);
     bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
     bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -49,7 +49,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 
     // TODO: まだ SamplerState 直接指定をサポートしていないので Texture に対してセットする方法でテストケースだけ用意しておく。
     // 後でサポートするとき、shader1->findParameter("mySamplerState")->setSamplerState(samplerState); とかに書き換える。
-    auto samplerState = makeObject<SamplerState>();
+    auto samplerState = makeObject_deprecated<SamplerState>();
     samplerState->setFilterMode(TextureFilterMode::Linear);
     tex1->setSamplerState(samplerState);
 
@@ -89,7 +89,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     auto descriptorLayout1 = shader1->descriptorLayout();
     auto shaderPass1 = shader1->techniques()[0]->passes()[0];
 
-    auto vertexDecl1 = makeObject<VertexLayout>();
+    auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 #ifdef LN_COORD_RH
     Vector3 v[] = {
@@ -104,7 +104,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
         { -0.5, -0.25, 0 },
     };
 #endif
-    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = TestEnv::beginFrame();
     auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -138,7 +138,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
     auto descriptorLayout1 = shader1->descriptorLayout();
     auto shaderPass1 = shader1->techniques()[0]->passes()[0];
 
-    auto vertexDecl1 = makeObject<VertexLayout>();
+    auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 #ifdef LN_COORD_RH
     Vector3 v[] = {
@@ -153,7 +153,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
         { -0.5, -0.25, 0 },
     };
 #endif
-    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     auto ctx = TestEnv::beginFrame();
     auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -195,7 +195,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
     auto shaderPass2 = shader1->techniques()[1]->passes()[0];
     auto shaderPass3 = shader1->techniques()[2]->passes()[0];
 
-    auto vertexDecl1 = makeObject<VertexLayout>();
+    auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 #ifdef LN_COORD_RH
     Vector3 v[] = {
@@ -210,7 +210,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
         { -0.5, -0.25, 0 },
     };
 #endif
-    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     auto t1 = Texture2D::create(2, 2, TextureFormat::RGBA8);
     t1->clear(Color::Red);
@@ -295,7 +295,7 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
     auto descriptorLayout1 = shader1->descriptorLayout();
     auto shaderPass1 = shader1->techniques()[0]->passes()[0];
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 #ifdef LN_COORD_RH
     Vector3 v[] = {
@@ -310,7 +310,7 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
         { -0.5, -0.25, 0 },
     };
 #endif
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = TestEnv::beginFrame();
     auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();

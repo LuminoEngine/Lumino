@@ -79,7 +79,7 @@ public:
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
-	bool init();
+	Result init();
 	bool init(TranslationClass translationClass);
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
 	//void setTargetName(const String& name) { m_targetName = name; }

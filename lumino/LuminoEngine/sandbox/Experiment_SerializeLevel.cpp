@@ -20,7 +20,7 @@ class App_Experiment_SerializeLevel : public Application
         {
             Engine::setActiveWorld(nullptr);
 
-            auto level1 = makeObject<Level>();
+            auto level1 = makeObject_deprecated<Level>();
 
             auto model1 = MeshModel::load(_TT("Models/Box1.gltf"));
             //Assets::saveAsset(model1, _TT("Models/Box1"));
@@ -36,7 +36,7 @@ class App_Experiment_SerializeLevel : public Application
         }
         else
         {
-            auto level1 = makeObject<TestLevel>();
+            auto level1 = makeObject_deprecated<TestLevel>();
             Assets::reloadAsset(_TT("Level1"), level1);
 
             Scene::gotoLevel(level1);

@@ -19,8 +19,7 @@ Component::~Component()
 {
 }
 
-bool Component::init()
-{
+Result Component::init() {
     return Object::init();
 }
 

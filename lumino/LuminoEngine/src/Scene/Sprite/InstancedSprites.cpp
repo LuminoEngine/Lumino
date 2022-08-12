@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
@@ -23,7 +23,7 @@ bool InstancedSpritesModel::init()
 {
     if (!Object::init()) return false;
 
-    m_mesh = makeObject<MeshPrimitive>(4, 6);
+    m_mesh = makeObject_deprecated<MeshPrimitive>(4, 6);
     m_mesh->setVertex(0, Vertex(Vector3(-0.5f, 0.5f, 0.0f), Vector3::UnitZ, Vector2(0.0f, 0.0f), Color::White));
     m_mesh->setVertex(1, Vertex(Vector3(-0.5f, -0.5f, 0.0f), Vector3::UnitZ, Vector2(0.0f, 1.0f), Color::White));
     m_mesh->setVertex(2, Vertex(Vector3(0.5f, 0.5f, 0.0f), Vector3::UnitZ, Vector2(1.0f, 0.0f), Color::White));
@@ -36,9 +36,9 @@ bool InstancedSpritesModel::init()
     m_mesh->setIndex(5, 3);
     m_mesh->addSection(0, 2, 0, PrimitiveTopology::TriangleList);
 
-    m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
+    m_meshList = makeObject_deprecated<InstancedMeshList>(m_mesh, 0);
 
-    //m_material = makeObject<Material>();
+    //m_material = makeObject_deprecated<Material>();
     //m_material->setMainTexture(Texture2D::load(u"C:/Proj/LN/Lumino/src/Engine/sandbox/Assets/Window1.png"));
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::Sprite));
     //m_material->setShadingModel(ShadingModel::Unlit);
@@ -187,7 +187,7 @@ bool InstancedSpritesComponent::init()
 {
     if (!VisualComponent::init()) return false;
 
-    m_model = makeObject<InstancedSpritesModel>();
+    m_model = makeObject_deprecated<InstancedSpritesModel>();
 
     return true;
 }
@@ -223,7 +223,7 @@ InstancedSprites::~InstancedSprites()
 bool InstancedSprites::init()
 {
     if (!VisualObject::init()) return false;
-    m_component = makeObject<InstancedSpritesComponent>();
+    m_component = makeObject_deprecated<InstancedSpritesComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
     return true;

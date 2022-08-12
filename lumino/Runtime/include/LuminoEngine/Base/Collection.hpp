@@ -143,7 +143,7 @@ class Variant;
 //template<class TItem>
 //inline Ref<ObjectCollection<TItem>> makeObjectCollection()
 //{
-//	return makeObject<ObjectCollection<TItem>>();//Ref<ObjectCollection<TItem>>(LN_NEW ObjectCollection<TItem>(), false);
+//	return makeObject_deprecated<ObjectCollection<TItem>>();//Ref<ObjectCollection<TItem>>(LN_NEW ObjectCollection<TItem>(), false);
 //}
 
 
@@ -448,7 +448,7 @@ private:
 template<class TItem>
 inline Ref<Collection<TItem>> makeCollection()
 {
-	return makeObject<Collection<TItem>>();
+	return makeObject_deprecated<Collection<TItem>>();
 }
 
 

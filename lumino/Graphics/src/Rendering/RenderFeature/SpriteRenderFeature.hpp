@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoCore/Base/EnumFlags.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Rendering/RenderFeature.hpp>
 #include "../RLIs/RLIBatchList.hpp"

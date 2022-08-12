@@ -2,10 +2,10 @@
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoFont/Font.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
@@ -48,13 +48,13 @@ void WorldRenderView::init() {
     RoutingRenderView::init(nullptr);
     setClearMode(SceneClearMode::ColorAndDepth);
 
-    //m_renderingContext = makeObject<detail::WorldSceneGraphRenderingContext>();
-    m_sceneRenderingPipeline = makeObject<SceneRenderingPipeline>();
+    //m_renderingContext = makeObject_deprecated<detail::WorldSceneGraphRenderingContext>();
+    m_sceneRenderingPipeline = makeObject_deprecated<SceneRenderingPipeline>();
     setRenderingPipeline(m_sceneRenderingPipeline);
 
-    // m_clearRenderPass = makeObject<RenderPass>();
+    // m_clearRenderPass = makeObject_deprecated<RenderPass>();
 
-    m_clearMaterial = makeObject<Material>();
+    m_clearMaterial = makeObject_deprecated<Material>();
     m_clearMaterial->setShader(detail::EngineDomain::sceneManager()->atmosphereShader());
 
     createGridPlane();
@@ -68,7 +68,7 @@ void WorldRenderView::init() {
 		gen.direction = detail::PlaneMeshDirection::ZMinus;
 
 
-		auto meshResource = makeObject<MeshResource>();
+		auto meshResource = makeObject_deprecated<MeshResource>();
 		meshResource->resizeVertexBuffer(gen.vertexCount());
 		meshResource->resizeIndexBuffer(gen.indexCount());
 		meshResource->addSection(0, gen.indexCount() / 3, 0);
@@ -81,10 +81,10 @@ void WorldRenderView::init() {
 		buffer.setBuffer((Vertex*)vb, ib, fmt, 0);
 		buffer.generate(&gen);
 
-		auto meshContainer = makeObject<MeshContainer>();
+		auto meshContainer = makeObject_deprecated<MeshContainer>();
 		meshContainer->setMeshResource(meshResource);
 
-		m_skyProjectionPlane = makeObject<MeshModel>();
+		m_skyProjectionPlane = makeObject_deprecated<MeshModel>();
 		m_skyProjectionPlane->addMeshContainer(meshContainer);
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
@@ -92,16 +92,16 @@ void WorldRenderView::init() {
 #endif
 
     // TODO: 遅延作成
-    m_internalSkyBox = makeObject<detail::InternalSkyBox>();
+    m_internalSkyBox = makeObject_deprecated<detail::InternalSkyBox>();
     m_internalSkyDome = makeRef<detail::InternalSkyDome>();
     if (!m_internalSkyDome->init()) {
         LN_ERROR();
         return;
     }
 
-    m_finishingProcess = makeObject<FilmicPostEffect>();
+    m_finishingProcess = makeObject_deprecated<FilmicPostEffect>();
 
-    m_transformControls = makeObject<TransformControls>();
+    m_transformControls = makeObject_deprecated<TransformControls>();
 }
 
 void WorldRenderView::setTargetWorld(World* world) {
@@ -423,7 +423,7 @@ detail::PostEffectRenderer* WorldRenderView::acquirePostEffectPresenter() {
 
 void WorldRenderView::createGridPlane() {
     // 適当な四角形メッシュ
-    m_gridPlaneMesh = makeObject<MeshResource>();
+    m_gridPlaneMesh = makeObject_deprecated<MeshResource>();
     m_gridPlaneMesh->resizeVertexBuffer(4);
     m_gridPlaneMesh->resizeIndexBuffer(6);
     m_gridPlaneMesh->setIndex(0, 0);
@@ -434,10 +434,10 @@ void WorldRenderView::createGridPlane() {
     m_gridPlaneMesh->setIndex(5, 3);
     m_gridPlaneMesh->addSection(0, 2, 0);
 
-    // auto meshContainer = makeObject<MeshContainer>();
+    // auto meshContainer = makeObject_deprecated<MeshContainer>();
     // meshContainer->setMeshResource(meshResource);
 
-    // m_gridPlane = makeObject<MeshModel>();
+    // m_gridPlane = makeObject_deprecated<MeshModel>();
     // m_gridPlane->addMeshContainer(meshContainer);
 
     //#if 0
@@ -447,19 +447,19 @@ void WorldRenderView::createGridPlane() {
     //	};
     //	static const size_t size = LN_ARRAY_SIZE_OF(data);
     //	MemoryStream stream(data, size);
-    //	auto shader = makeObject<Shader>(_TT("InfinitePlaneGrid", &stream);
+    //	auto shader = makeObject_deprecated<Shader>(_TT("InfinitePlaneGrid", &stream);
     //#else
     //    auto shader = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
     //#endif
     auto shader = detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::InfinitePlaneGrid);
 
-    m_gridPlaneMaterial = makeObject<Material>();
+    m_gridPlaneMaterial = makeObject_deprecated<Material>();
     m_gridPlaneMaterial->setShader(shader);
     // m_gridPlane->addMaterial(material);
 
     // 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
     SizeI gridTexSize(512, 512);
-    auto gridTex = makeObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
+    auto gridTex = makeObject_deprecated<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
     gridTex->setMipmapEnabled(true);
     gridTex->setResourceUsage(GraphicsResourceUsage::Dynamic);
     for (int x = 0; x < gridTexSize.width; ++x) {
@@ -475,7 +475,7 @@ void WorldRenderView::createGridPlane() {
     m_gridPlaneMaterial->setBlendMode(BlendMode::Alpha);
     m_gridPlaneMaterial->setDepthWriteEnabled(false);
 
-    auto samplerState = makeObject<SamplerState>();
+    auto samplerState = makeObject_deprecated<SamplerState>();
     samplerState->setFilterMode(TextureFilterMode::Linear);
     samplerState->setAnisotropyEnabled(true);
     gridTex->setSamplerState(samplerState);

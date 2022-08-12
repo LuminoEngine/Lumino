@@ -182,7 +182,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     UIMainWindow();
     virtual ~UIMainWindow();
-    void init(bool useExternalSwapChain = false); // for Editor
+    Result init(bool useExternalSwapChain = false); // for Editor
 
 private:
 };

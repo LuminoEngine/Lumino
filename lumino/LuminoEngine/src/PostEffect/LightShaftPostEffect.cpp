@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
@@ -14,7 +14,7 @@ namespace ln {
 
 //Ref<LightShaftPostEffect> LightShaftPostEffect::create()
 //{
-//    return makeObject<LightShaftPostEffect>();
+//    return makeObject_deprecated<LightShaftPostEffect>();
 //}
 //
 //LightShaftPostEffect::LightShaftPostEffect()
@@ -24,7 +24,7 @@ namespace ln {
 //void LightShaftPostEffect::init()
 //{
 //    PostEffect::init();
-//	m_radialBlur = makeObject<Material>();
+//	m_radialBlur = makeObject_deprecated<Material>();
 //	m_radialBlur->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::RadialBlur));
 //}
 //

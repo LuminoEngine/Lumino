@@ -33,8 +33,8 @@ TEST_F(Test_Scene_MeshPrimitive, Box)
 {
 	//* [ ] Box
 	{
-		auto obj1 = makeObject<WorldObject>();
-		auto cmp1 = makeObject<SphereMeshComponent>();
+		auto obj1 = makeObject_deprecated<WorldObject>();
+		auto cmp1 = makeObject_deprecated<SphereMeshComponent>();
 		auto mat1 = Material::create();
 		//mat1->setMetallic(1);
 		//mat1->setRoughness(1);

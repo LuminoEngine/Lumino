@@ -15,10 +15,10 @@ namespace detail {
 
 static void* LoadDLL(const Char* filePath) {
 #ifdef _WIN32
-    detail::GenericStaticallyLocalPath<TCHAR> localPath(filePath, StringHelper::strlen(filePath));
+    detail::GenericStaticallyLocalPath<TCHAR> localPath(filePath, static_cast<int>(StringHelper::strlen(filePath)));
     return ::LoadLibrary(localPath.c_str());
 #else
-    detail::GenericStaticallyLocalPath<char> localPath(filePath, StringHelper::strlen(filePath));
+    detail::GenericStaticallyLocalPath<char> localPath(filePath, static_cast<int>(StringHelper::strlen(filePath)));
     return dlopen(localPath.c_str(), RTLD_LAZY);
 #endif
 }

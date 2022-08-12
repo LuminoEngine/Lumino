@@ -2,8 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoGraphics/Animation/AnimationCurve.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/Mesh/MeshModel.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -26,7 +26,7 @@ void InternalSkyBox::init() {
     Object::init();
     auto shader = RenderingManager::instance()->builtinShader(BuiltinShader::SkyLowAltitudeOptimized);
 
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     m_material->setShader(shader);
     m_material->setShadingModel(ShadingModel::Unlit);
 
@@ -110,7 +110,7 @@ bool InternalSkyDome::init() {
     {
         const int vertexCount = LN_ARRAY_SIZE_OF(s_skyDomeVertices);
         const int indexCount = LN_ARRAY_SIZE_OF(s_skyDomeIndices);
-        auto mesh = makeObject<MeshPrimitive>(
+        auto mesh = makeObject_deprecated<MeshPrimitive>(
             vertexCount, indexCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
 
         auto* vertices = static_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
@@ -127,11 +127,11 @@ bool InternalSkyDome::init() {
 
         mesh->addSection(0, indexCount / 3, 0, PrimitiveTopology::TriangleList);
 
-        m_model = makeObject<MeshModel>();
+        m_model = makeObject_deprecated<MeshModel>();
         auto node = m_model->addMeshContainerNode(mesh);
         m_model->addRootNode(0);
 
-        m_material = makeObject<Material>();
+        m_material = makeObject_deprecated<Material>();
         m_model->addMaterial(m_material);
         m_model->updateNodeTransforms();
     }

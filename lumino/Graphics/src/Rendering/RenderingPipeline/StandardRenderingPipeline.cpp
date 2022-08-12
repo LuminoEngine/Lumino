@@ -1,5 +1,5 @@
-﻿#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
+﻿#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include <LuminoGraphics/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
@@ -41,13 +41,13 @@ void SceneRenderingPipeline::init()
     m_unlitRendererPass_PostEffect->init(manager, true);
 
 
-    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_samplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
-    m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false, false);
+    m_shadowMap = makeObject_deprecated<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false, false);
     m_shadowMap->setSamplerState(m_samplerState);
-    m_shadowMapDepthBuffer = makeObject<DepthBuffer>(1024, 1024);
+    m_shadowMapDepthBuffer = makeObject_deprecated<DepthBuffer>(1024, 1024);
 
-    m_renderPass = makeObject<RenderPass>();
+    m_renderPass = makeObject_deprecated<RenderPass>();
 }
 
 void SceneRenderingPipeline::onPrepare(RenderView* renderView, RenderTargetTexture* renderTarget) {

@@ -38,9 +38,10 @@ public:
     void setCounterValue(const ProfilingItem* key, int64_t value);
     void commitFrame();
 
-    LN_CONSTRUCT_ACCESS : DiagnosticsManager();
+LN_CONSTRUCT_ACCESS:
+    DiagnosticsManager();
     virtual ~DiagnosticsManager();
-    void init();
+    Result init();
 
 private:
     List<Ref<DiagnosticsItem>> m_items;

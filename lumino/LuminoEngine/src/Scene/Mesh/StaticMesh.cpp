@@ -16,17 +16,17 @@ LN_OBJECT_IMPLEMENT(StaticMesh, VisualObject) {}
 
 Ref<StaticMesh> StaticMesh::load(const StringView& filePath, MeshImportSettings* settings)
 {
-    return makeObject<StaticMesh>(filePath, settings);
+    return makeObject_deprecated<StaticMesh>(filePath, settings);
 }
 
 Ref<StaticMesh> StaticMesh::create()
 {
-    return makeObject<StaticMesh>();
+    return makeObject_deprecated<StaticMesh>();
 }
 
 Ref<StaticMesh> StaticMesh::create(MeshModel* model)
 {
-    return makeObject<StaticMesh>(model);
+    return makeObject_deprecated<StaticMesh>(model);
 }
 
 StaticMesh::StaticMesh()
@@ -40,7 +40,7 @@ StaticMesh::~StaticMesh()
 bool StaticMesh::init()
 {
     if (!VisualObject::init()) return false;
-    m_component = makeObject<MeshComponent>();
+    m_component = makeObject_deprecated<MeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
     return true;

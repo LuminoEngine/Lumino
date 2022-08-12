@@ -63,7 +63,7 @@ Ref<UIElement> UIElement::Builder::build()
 
 Ref<Object> UIElement::Builder::Details::build()
 {
-	auto ptr = makeObject<UIElement>();
+	auto ptr = makeObject_deprecated<UIElement>();
 	if (height) ptr->setHeight(*height);
 	if (backgroundColor) ptr->setBackgroundColor(*backgroundColor);
 	return ptr;
@@ -98,8 +98,8 @@ UIElement::UIElement()
     , m_focusable(false)
     , m_clipToBounds(false)
     , m_dirtyFlags(detail::UIElementDirtyFlags::None) {
-    m_localStyle = makeObject<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
-    m_localStyle->setMainStyle(makeObject<UIStyle>());
+    m_localStyle = makeObject_deprecated<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
+    m_localStyle->setMainStyle(makeObject_deprecated<UIStyle>());
     m_specialElementFlags.set(detail::UISpecialElementFlags::Enabled, true);
     m_specialElementFlags.set(detail::UISpecialElementFlags::InternalEnabled, true);
 }
@@ -127,7 +127,7 @@ bool UIElement::init() {
     m_dirtyFlags.set(detail::UIElementDirtyFlags::InitialLoading);
 
     // TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
-    m_finalStyle->backgroundMaterial = makeObject<Material>();
+    m_finalStyle->backgroundMaterial = makeObject_deprecated<Material>();
 
     //if (context->m_autoAddToPrimaryElement &&
     //       m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
@@ -572,12 +572,12 @@ void UIElement::setContent(UIElement* content) {
 
 void UIElement::setContent(const String& content) {
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
-    //m_expanderButton = makeObject<UIToggleButton>();
+    //m_expanderButton = makeObject_deprecated<UIToggleButton>();
     auto textblock = makeRef<UIText>();
     textblock->m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
     textblock->init();
 
-    //auto textblock = makeObject<UIText>();
+    //auto textblock = makeObject_deprecated<UIText>();
     textblock->setText(content);
     setContent(textblock);
 }
@@ -587,7 +587,7 @@ void UIElement::addChild(UIElement* child) {
 }
 
 void UIElement::addChild(const String& child) {
-    auto textblock = makeObject<UIText>();
+    auto textblock = makeObject_deprecated<UIText>();
     textblock->setText(child);
     addChild(textblock);
 }
@@ -870,7 +870,7 @@ void UIElement::onRender(UIRenderingContext* context) {
 
 void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle) {
     if (!m_combinedStyle) {
-        m_combinedStyle = makeObject<UIStyle>();
+        m_combinedStyle = makeObject_deprecated<UIStyle>();
     }
 
     m_combinedStyle->reset();
@@ -1101,7 +1101,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 
         if (m_finalStyle->backgroundColor.a > 0.0f) {
             context->drawSolidRectangle(rect, m_finalStyle->backgroundColor);
-            //auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+            //auto tex = makeObject_deprecated<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
             //auto mat = Material::create(tex);
             //context->drawBoxBackground(rect, m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
             //context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
@@ -1264,7 +1264,7 @@ UIElement* UIElement::findFocusedVisualChildLeaf() {
 
 UIVisualStateManager* UIElement::getVisualStateManager() {
     if (!m_visualStateManager) {
-        m_visualStateManager = makeObject<UIVisualStateManager>(this);
+        m_visualStateManager = makeObject_deprecated<UIVisualStateManager>(this);
     }
     return m_visualStateManager;
 }

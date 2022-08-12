@@ -45,7 +45,7 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material, Particle
     m_material = material;
     m_geometryDirection = geometryDirection;
 
-    auto mesh = makeObject<MeshPrimitive>(4, 6, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
+    auto mesh = makeObject_deprecated<MeshPrimitive>(4, 6, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
     auto vertices = reinterpret_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
     auto indices = reinterpret_cast<uint16_t*>(mesh->acquireMappedIndexBuffer());
 
@@ -91,7 +91,7 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material, Particle
 
     mesh->addSection(0, 2, 0, PrimitiveTopology::TriangleList);
 
-    m_batch = makeObject<InstancedMeshList>(mesh, 0);
+    m_batch = makeObject_deprecated<InstancedMeshList>(mesh, 0);
 
 
 
@@ -303,7 +303,7 @@ bool RibbonRenderer::init(int maxNodes)
     if (LN_REQUIRE(vertexCount < UINT16_MAX)) return false;
 
     m_maxNodes = maxNodes;
-    m_mesh = makeObject<MeshPrimitive>(vertexCount, squareCount * 6, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+    m_mesh = makeObject_deprecated<MeshPrimitive>(vertexCount, squareCount * 6, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
     auto vertices = reinterpret_cast<Vertex*>(m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
     auto indices = reinterpret_cast<uint16_t*>(m_mesh->acquireMappedIndexBuffer());
 

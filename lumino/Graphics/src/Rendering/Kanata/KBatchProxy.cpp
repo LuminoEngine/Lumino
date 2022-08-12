@@ -1,5 +1,5 @@
-﻿#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
+﻿#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatch.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatchProxy.hpp>
@@ -101,8 +101,8 @@ void BoxMeshBatchProxy::getBatch(BatchCollector* collector) {
 
         int vertexCount = factory.vertexCount();
         int indexCount = factory.indexCount();
-        m_vertexBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * vertexCount, GraphicsResourceUsage::Static);
-        m_indexBuffer = makeObject<IndexBuffer>(sizeof(uint16_t) * indexCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
+        m_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * vertexCount, GraphicsResourceUsage::Static);
+        m_indexBuffer = makeObject_deprecated<IndexBuffer>(sizeof(uint16_t) * indexCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
         
         Vertex* vertices = (Vertex*)m_vertexBuffer->writableData(0, vertexCount * sizeof(Vertex));
         uint16_t* indices = (uint16_t*)m_indexBuffer->map(MapMode::Write);

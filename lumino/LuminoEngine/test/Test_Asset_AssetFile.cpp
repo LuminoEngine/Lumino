@@ -10,7 +10,7 @@ TEST_F(Test_Asset_AssetFile, SerializeLevel)
     Engine::setActiveWorld(nullptr);
 
     {
-        auto level1 = makeObject<Level>();
+        auto level1 = makeObject_deprecated<Level>();
 
         auto texture = Texture2D::load("Assets/dir/Sprite1.png");
         auto sprite = Sprite::create(texture);
@@ -27,7 +27,7 @@ TEST_F(Test_Asset_AssetFile, SerializeLevel)
 
 
 
-    //auto level1 = makeObject<TestLevel>();
+    //auto level1 = makeObject_deprecated<TestLevel>();
     //Assets::reloadAsset(u"Level1", level1);
 
 

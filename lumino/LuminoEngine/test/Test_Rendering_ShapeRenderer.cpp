@@ -23,7 +23,7 @@ public:
 TEST_F(Test_Rendering_BoxElement, Basic)
 {
 
-    auto element1 = makeObject<TestElement>();
+    auto element1 = makeObject_deprecated<TestElement>();
     element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 
@@ -75,7 +75,7 @@ TEST_F(Test_Rendering_BoxElement, Basic)
 
 TEST_F(Test_Rendering_BoxElement, Background)
 {
-	auto element1 = makeObject<TestElement>();
+	auto element1 = makeObject_deprecated<TestElement>();
 	element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 
@@ -112,7 +112,7 @@ TEST_F(Test_Rendering_BoxElement, Background)
 
 TEST_F(Test_Rendering_BoxElement, Border)
 {
-	auto element1 = makeObject<TestElement>();
+	auto element1 = makeObject_deprecated<TestElement>();
 	element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 
@@ -328,7 +328,7 @@ TEST_F(Test_Rendering_BoxElement, Border)
 
 TEST_F(Test_Rendering_BoxElement, ShadowOutset)
 {
-    auto element1 = makeObject<TestElement>();
+    auto element1 = makeObject_deprecated<TestElement>();
     element1->setAlignments(UIAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
 
@@ -425,7 +425,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowOutset)
 
 TEST_F(Test_Rendering_BoxElement, OutsetShadowOffset)
 {
-    auto element1 = makeObject<TestElement>();
+    auto element1 = makeObject_deprecated<TestElement>();
     element1->setAlignments(UIAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
 
@@ -519,7 +519,7 @@ TEST_F(Test_Rendering_BoxElement, OutsetShadowOffset)
 
 TEST_F(Test_Rendering_BoxElement, ShadowInset)
 {
-    auto element1 = makeObject<TestElement>();
+    auto element1 = makeObject_deprecated<TestElement>();
     element1->setAlignments(UIAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
 
@@ -641,7 +641,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
 
 //TEST_F(Test_Rendering_BoxElement, ShadowIllegals)
 //{
-//    auto element1 = makeObject<TestElement>();
+//    auto element1 = makeObject_deprecated<TestElement>();
 //    element1->setHAlignment(UIHAlignment::Stretch);
 //    element1->setVAlignment(UIVAlignment::Stretch);
 //    Engine::mainUIView()->addChild(element1);
@@ -694,7 +694,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
 //
 //TEST_F(Test_Rendering_BoxElement, ShadowOffset)
 //{
-//    auto element1 = makeObject<TestElement>();
+//    auto element1 = makeObject_deprecated<TestElement>();
 //    element1->setHAlignment(UIHAlignment::Stretch);
 //    element1->setVAlignment(UIVAlignment::Stretch);
 //    Engine::mainUIView()->addChild(element1);
@@ -752,7 +752,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
 
 TEST_F(Test_Rendering_BoxElement, BorderIlls)
 {
-	auto element1 = makeObject<TestElement>();
+	auto element1 = makeObject_deprecated<TestElement>();
 	element1->setAlignments(UIAlignment::Stretch);
 	Engine::mainUIView()->addChild(element1);
 

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -13,7 +13,7 @@ namespace ln {
 
 Ref<TonePostEffect> TonePostEffect::create()
 {
-    return makeObject<TonePostEffect>();
+    return makeObject_deprecated<TonePostEffect>();
 }
 
 TonePostEffect::TonePostEffect()
@@ -41,7 +41,7 @@ void TonePostEffect::onUpdateFrame(float elapsedSeconds)
 
 Ref<PostEffectInstance> TonePostEffect::onCreateInstance()
 {
-    return makeObject<detail::TonePostEffectInstance>(this);
+    return makeObject_deprecated<detail::TonePostEffectInstance>(this);
 }
 
 //==============================================================================
@@ -59,8 +59,8 @@ bool TonePostEffectInstance::init(TonePostEffect* owner)
 
     m_owner = owner;
 
-    auto shader = makeObject<Shader>(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneEffect.fx"));
-    m_material = makeObject<Material>();
+    auto shader = makeObject_deprecated<Shader>(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneEffect.fx"));
+    m_material = makeObject_deprecated<Material>();
     m_material->setShader(shader);
 
     return true;

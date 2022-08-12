@@ -128,9 +128,8 @@ public:
     void initializeVisualManager();
     void initializeSceneManager();
     void initializeUIManager();
-    void initializeDefaultObjects();
-
-    void resetApp(Application* app);
+	
+    void craeteDefaultObjectsIfNeeded(UIMainWindow* userMainWindow);
 
     bool updateUnitily();
     void updateFrame();
@@ -138,6 +137,7 @@ public:
     void resetFrameDelay();
     bool isExitRequested() const { return m_exitRequested; }
     void quit();
+    int runApplication();
 
     const EngineSettings& settings() { return m_settings; }
     const Ref<InputManager>& inputManager() const { return m_inputManager; }
@@ -155,10 +155,11 @@ public:
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
     // void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
-    void setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects);
+    void setupMainWindow(UIMainWindow* window, bool createBasicObjects);
+    void setupApplication(Application* app);
 
     //void setApplication(Application* app);
-    //const Ref<Application>& application() const { return m_application; }
+    const Ref<Application>& application() const;
     const Ref<AppDataInternal>& appData() const { return m_appData; }
     // const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
     const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }

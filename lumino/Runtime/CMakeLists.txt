@@ -45,7 +45,6 @@ set(LN_SOURCES
 #-------------------------------------------------------------------------------
 set(LINK_LIBS
     LuminoCore
-    rapidjson
     yaml-cpp
 )
 

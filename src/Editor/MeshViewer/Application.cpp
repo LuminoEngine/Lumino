@@ -3,13 +3,16 @@
 #include "MainWindow.hpp"
 #include "Application.hpp"
 
-Application::Application()
-{
+void Application::configure() {
     ln::EngineSettings::setSceneIntegrationEnabled(false);
     ln::EngineSettings::setMainWindowSize(1280, 960);
-    //ln::EngineSettings::setMainWindowSize(0.75 * 640, 0.75 * 480);
+    // ln::EngineSettings::setMainWindowSize(0.75 * 640, 0.75 * 480);
     ln::EngineSettings::setDevelopmentToolsEnabled(true);
-    //ln::EngineSettings::setGraphicsDebugEnabled(true);
+    // ln::EngineSettings::setGraphicsDebugEnabled(true);
+}
+
+Application::Application()
+    : ln::Application() {
 }
 
     /*
@@ -34,10 +37,10 @@ bool Application::init()
 	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));
 
-    m_workspace = ln::makeObject<lna::Workspace>();
+    m_workspace = ln::makeObject_deprecated<lna::Workspace>();
     onInit();
 
-    m_editorContext = ln::makeObject<lna::EditorContext>();
+    m_editorContext = ln::makeObject_deprecated<lna::EditorContext>();
     m_editorContext->m_application = this;
     m_editorContext->m_mainWindow = mainWindow();
 
@@ -106,7 +109,6 @@ struct List
 
 void Application::onInit()
 {
-	setupMainWindow(ln::makeObject<MainWindow>(false), true);
     ln::Engine::renderView()->setGuideGridEnabled(true);
     ln::Engine::mainCamera()->addComponent(ln::CameraOrbitControlComponent::create());
     ln::Engine::renderView()->setBackgroundColor(ln::Color::Gray);

@@ -29,8 +29,8 @@ public:
      * この関数は、フレームワーク内部で作成される基本オブジェクトをオーバーライドするために実装できます。
      * 代表的なものでは、ユーザーが実装した UIMainWindow の派生クラスをアプリケーションに登録できます。
      */
-    LN_METHOD()
-    virtual void onSetup(ApplicationSetupSettings* settings);
+    //LN_METHOD()
+    //virtual void onSetup(ApplicationSetupSettings* settings);
 
     /** エンジンの初期化処理が完了した後に呼び出されます。 */
     LN_METHOD()
@@ -66,10 +66,10 @@ LN_CONSTRUCT_ACCESS:
 
     /**  */
     LN_METHOD(RuntimeInitializer)
-    void init();
+    Result init();
 
 protected:
-    void setupMainWindow(UIMainWindow* window, bool createBasicObjects); // onInit でのみ可
+    //void setupMainWindow(UIMainWindow* window, bool createBasicObjects); // onInit でのみ可
 
     virtual void onRoutedEvent(UIEventArgs* e);
 

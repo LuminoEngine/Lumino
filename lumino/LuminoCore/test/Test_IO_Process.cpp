@@ -147,12 +147,12 @@ TEST_F(Test_IO_Process, Detached) {
     // 子プロセスは消えているが、孫プロセスは残っている。
 #ifdef _WIN32
     // Child process
-    HANDLE process1 = ::OpenProcess(SYNCHRONIZE, FALSE, processId1);
+    HANDLE process1 = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(processId1));
     ::CloseHandle(process1);
     ASSERT_TRUE(process1 == 0);
 
     // Grandchild process
-    HANDLE process2 = ::OpenProcess(SYNCHRONIZE, FALSE, processId2);
+    HANDLE process2 = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(processId2));
     ::CloseHandle(process2);
     ASSERT_TRUE(process2 != 0);
 

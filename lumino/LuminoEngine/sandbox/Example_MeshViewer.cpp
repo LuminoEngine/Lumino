@@ -158,7 +158,7 @@ public:
 #endif
 
 #if 1
-        auto label = makeObject<UIControl>();
+        auto label = makeObject_deprecated<UIControl>();
         //label->setBackgroundColor(Color::Blue);
         label->setAlignments(UIAlignment::Center);
 

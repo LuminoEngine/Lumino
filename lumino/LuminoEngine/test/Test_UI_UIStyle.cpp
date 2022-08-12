@@ -18,7 +18,7 @@ protected:
 //## Background
 TEST_F(Test_UI_UIStyle, Background)
 {
-	auto element1 = makeObject<Test_UI_UIStyle_Element>();
+	auto element1 = makeObject_deprecated<Test_UI_UIStyle_Element>();
 	element1->setAlignments(UIAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
@@ -34,7 +34,7 @@ TEST_F(Test_UI_UIStyle, Background)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_UIStyle, BackgroundImage)
 {
-	auto element1 = makeObject<UIElement>();
+	auto element1 = makeObject_deprecated<UIElement>();
 	element1->setAlignments(UIAlignment::Center);
 	element1->setSize(80, 60);
 	Engine::ui()->addElement(element1);
@@ -82,7 +82,7 @@ TEST_F(Test_UI_UIStyle, BackgroundImage)
 //## Border
 TEST_F(Test_UI_UIStyle, Border)
 {
-	auto element1 = makeObject<Test_UI_UIStyle_Element>();
+	auto element1 = makeObject_deprecated<Test_UI_UIStyle_Element>();
 	element1->setAlignments(UIAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
@@ -134,7 +134,7 @@ TEST_F(Test_UI_UIStyle, BoxShadow)
 	Test t;
 	t = { 10 };
 
-	//auto element1 = makeObject<Test_UI_UIStyle_Element>();
+	//auto element1 = makeObject_deprecated<Test_UI_UIStyle_Element>();
 	//element1->setHAlignment(UIHAlignment::Center);
 	//element1->setVAlignment(UIVAlignment::Center);
 	//element1->setWidth(80);

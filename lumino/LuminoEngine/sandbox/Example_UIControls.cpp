@@ -10,7 +10,7 @@ class App_Example_UIControls : public Application
     {
         //Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
-        auto combobox1 = ln::makeObject<UIComboBox>();
+        auto combobox1 = ln::makeObject_deprecated<UIComboBox>();
         combobox1->setWidth(200);
         //combobox1->setBackgroundColor(Color::BurlyWood);
         Engine::mainUIView()->addElement(combobox1);

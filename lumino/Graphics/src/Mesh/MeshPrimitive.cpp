@@ -7,9 +7,9 @@
 */
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoGraphics/Mesh/MeshModel.hpp>
@@ -196,7 +196,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 {
 	// prepare vertex buffers
 	if (!m_vertexBuffers[group]) {
-		m_vertexBuffers[group] = ln::makeObject<VertexBuffer>(m_vertexCount * VertexStrideTable[group], m_usage);
+		m_vertexBuffers[group] = ln::makeObject_deprecated<VertexBuffer>(m_vertexCount * VertexStrideTable[group], m_usage);
 	}
 
 	// sync vertex buffers size
@@ -214,7 +214,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 	if (outIndexBuffer) {
         // prepare index buffer
         if (!m_indexBuffer) {
-            m_indexBuffer = ln::makeObject<IndexBuffer>(m_indexCount, GraphicsHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
+            m_indexBuffer = ln::makeObject_deprecated<IndexBuffer>(m_indexCount, GraphicsHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
         }
         else if (realIndexCount() != m_indexCount) {
             m_indexBuffer->resize(m_indexCount);
@@ -599,7 +599,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 	}
 	case InterleavedVertexGroup::Main:
 		if (!m_mainVertexBuffer.buffer) {
-			m_mainVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, m_resourceUsage);
+			m_mainVertexBuffer.buffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * m_vertexCount, m_resourceUsage);
 
 			// set default
 			auto* buf = static_cast<Vertex*>(m_mainVertexBuffer.buffer->writableData());
@@ -616,7 +616,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 
 	case InterleavedVertexGroup::Skinning:
 		if (!m_skinningVertexBuffer.buffer) {
-			m_skinningVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, m_resourceUsage);
+			m_skinningVertexBuffer.buffer = makeObject_deprecated<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, m_resourceUsage);
 		}
 
 		if (!m_skinningVertexBuffer.mappedBuffer) {
@@ -626,7 +626,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 
 	case InterleavedVertexGroup::AdditionalUV:
 		if (!m_additionalUVVertexBuffer.buffer) {
-			m_additionalUVVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexAdditionalUV) * m_vertexCount, m_resourceUsage);
+			m_additionalUVVertexBuffer.buffer = makeObject_deprecated<VertexBuffer>(sizeof(VertexAdditionalUV) * m_vertexCount, m_resourceUsage);
 		}
 
 		if (!m_additionalUVVertexBuffer.mappedBuffer) {
@@ -647,7 +647,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(VertexElementType type, VertexEle
 		VertexBuffer* vb = nullptr;
 		auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == usage && x.usageIndex == usageIndex; });
 		if (!r) {
-			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, m_resourceUsage);
+			auto vb = makeObject_deprecated<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, m_resourceUsage);
 			
 			VertexBufferEntry entry;
 			entry.buffer = vb;
@@ -678,7 +678,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(VertexElementType type, VertexEle
 void* MeshPrimitive::acquireMappedIndexBuffer()
 {
 	if (!m_indexBuffer.buffer) {
-		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, m_indexFormat, m_resourceUsage);
+		m_indexBuffer.buffer = makeObject_deprecated<IndexBuffer>(m_indexCount, m_indexFormat, m_resourceUsage);
 	}
 
 	//detail::GraphicsResourceInternal::selectIndexBufferFormat(indexCount)
@@ -905,7 +905,7 @@ void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex/*, Vert
 		
 	VertexBufferEntry* e = &m_morphVertexBuffers[morphTargetIndex];
 	if (!e->buffer) {
-		e->buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, m_resourceUsage);
+		e->buffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * m_vertexCount, m_resourceUsage);
 	}
 
 	if (!e->mappedBuffer) {
@@ -918,7 +918,7 @@ void* MeshPrimitive::acquireMappedMorphVertexBuffer(int morphTargetIndex/*, Vert
 void MeshPrimitive::attemptResetVertexLayout()
 {
 	if (!m_vertexLayout) {
-		m_vertexLayout = makeObject<VertexLayout>();
+		m_vertexLayout = makeObject_deprecated<VertexLayout>();
 
 		int streamIndex = 0;
 

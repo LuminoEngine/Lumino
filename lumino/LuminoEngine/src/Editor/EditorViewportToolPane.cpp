@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -24,10 +24,10 @@ bool EditorViewportToolPane::init(UIMainWindow* mainWindow)
 {
 	if (!Object::init()) return false;
 
-    m_camera = makeObject<Camera>();
+    m_camera = makeObject_deprecated<Camera>();
 
     m_mainWindow = mainWindow;
-	m_renderView = makeObject<WorldRenderView>();
+	m_renderView = makeObject_deprecated<WorldRenderView>();
 	m_renderView->setTargetWorld(detail::EngineDomain::engineManager()->mainWorld());
 	m_renderView->setCamera(m_camera);
 	m_renderView->setClearMode(SceneClearMode::ColorAndDepth);
@@ -36,7 +36,7 @@ bool EditorViewportToolPane::init(UIMainWindow* mainWindow)
     m_renderView->setGizmoEnabled(true);
     m_renderView->finishingProcess()->setAntialiasEnabled(false);
 
-    m_cameraOrbitControlComponent = makeObject<CameraOrbitControlComponent>();
+    m_cameraOrbitControlComponent = makeObject_deprecated<CameraOrbitControlComponent>();
     m_camera->addComponent(m_cameraOrbitControlComponent);
 	return true;
 }

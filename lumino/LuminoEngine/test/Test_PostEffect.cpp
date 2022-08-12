@@ -52,7 +52,7 @@ TEST_F(Test_PostEffect, SSR) {
                    .material(box1Material)
                    .buildInto();
 
-    auto ssrEffect = makeObject<SSRPostEffect>();
+    auto ssrEffect = makeObject_deprecated<SSRPostEffect>();
     Engine::renderView()->addPostEffect(ssrEffect);
 
     Engine::mainLight()->setEnabled(false);

@@ -97,7 +97,7 @@ inline Ref<T> AbstractBuilder<T, B, D>::build() const
             return p1; \
         } \
         else { \
-            auto p2 = makeObject<type>(); \
+            auto p2 = makeObject_deprecated<type>(); \
             apply(p2.get()); \
             return p2; \
         } \

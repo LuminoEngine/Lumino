@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
-#include <LuminoGraphics/RHI/ShaderInterfaceFramework.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
+#include <LuminoGraphics/GPU/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/RenderFeature.hpp>
 #include "../RenderStage.hpp"

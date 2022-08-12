@@ -24,13 +24,13 @@ bool ReflectorComponent::init()
 {
 	if (!VisualComponent::init()) return false;
 
-    m_renderTarget = makeObject<RenderTargetTexture>(512, 512, TextureFormat::RGBA8, false, false);
+    m_renderTarget = makeObject_deprecated<RenderTargetTexture>(512, 512, TextureFormat::RGBA8, false, false);
 
-    m_offscreenRenderView = makeObject<OffscreenWorldRenderView>();
+    m_offscreenRenderView = makeObject_deprecated<OffscreenWorldRenderView>();
     m_offscreenRenderView->setRenderTarget(m_renderTarget);
 
     auto shader = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Reflector.fx"));
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     m_material->setShader(shader);
     //m_material->setColor(Color::Red);
     m_material->setMainTexture(m_renderTarget);

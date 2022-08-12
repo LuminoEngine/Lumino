@@ -27,21 +27,20 @@ Application::Application()
 Application::~Application() {
 }
 
-void Application::init() {
-    CoreApplication::init();
+Result Application::init() {
+    return CoreApplication::init();
 }
 
-void Application::setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects) {
-    return ln::detail::EngineDomain::engineManager()->setupMainWindow(window, createBasicObjects);
-}
+//void Application::setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects) {
+//}
 
 // NOTE: なぜデフォルトでは UIMainWindow を内部で作るのか？
 // ----------
 // ゲームアプリやシングルページアプリを作るときはあまり縁が無いため。
 // UI を作る際も、UIMainWindow ではなく UIRenderView をよく使う。
 // UIMainWindow を使うのは、ImGui 等と一緒にエディタ系のアプリを作る場合がほとんどである。
-void Application::onSetup(ApplicationSetupSettings* settings) {
-}
+//void Application::onSetup(ApplicationSetupSettings* settings) {
+//}
 
 void Application::onInit() {
 }

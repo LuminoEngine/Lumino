@@ -30,14 +30,14 @@ void UIViewport::init() {
     setAlignments(UIAlignment::Stretch);
 
     // m_imageEffectRenderer = makeRef<detail::PostEffectRenderer>();
-    m_blitMaterial = makeObject<Material>();
+    m_blitMaterial = makeObject_deprecated<Material>();
     m_blitMaterial->setBlendMode(BlendMode::Alpha);
     m_blitMaterial->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::CopyScreen));
 
-    // auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonePostEffect.fx");
+    // auto shader = makeObject_deprecated<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonePostEffect.fx");
     // m_blitMaterial->setShader(shader);
 
-    // m_renderPass = makeObject<RenderPass>();
+    // m_renderPass = makeObject_deprecated<RenderPass>();
 }
 
 void UIViewport::onDispose(bool explicitDisposing) {
@@ -261,7 +261,7 @@ void UIViewport::preparePrimaryTarget() {
     const SizeI size = SizeI::fromFloatSize(m_actualViewboxSize);
 
     if (!m_primaryTarget || m_primaryTarget->width() != size.width || m_primaryTarget->height() != size.height) {
-        m_primaryTarget = makeObject<RenderTargetTexture>(size.width, size.height, TextureFormat::RGBA8, false, false);
+        m_primaryTarget = makeObject_deprecated<RenderTargetTexture>(size.width, size.height, TextureFormat::RGBA8, false, false);
         // m_primaryTarget->m_msaa = true;
     }
 }

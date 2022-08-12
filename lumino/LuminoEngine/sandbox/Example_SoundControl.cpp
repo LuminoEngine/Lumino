@@ -10,12 +10,12 @@ class App_Example_SoundControl : public Application
 
     virtual void onInit() override
     {
-		sound = makeObject<Sound>(_TT("D:/Music/momentum/02 - momentum.wav"));
+		sound = makeObject_deprecated<Sound>(_TT("D:/Music/momentum/02 - momentum.wav"));
 		//sound->setVolume(0.05);
 		sound->play();
 		//sound = nullptr;
 
-		se = makeObject<Sound>(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Audio/ln_cursor_1.wav"));
+		se = makeObject_deprecated<Sound>(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Audio/ln_cursor_1.wav"));
 		
 
 

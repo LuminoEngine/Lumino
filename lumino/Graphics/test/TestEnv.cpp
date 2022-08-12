@@ -37,7 +37,7 @@ void TestEnv::setup() {
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));
 
-    swapChain = makeObject<SwapChain>(Platform::mainWindow());
+    swapChain = makeObject_deprecated<SwapChain>(Platform::mainWindow());
 }
 
 void TestEnv::initializeRendering() {
@@ -48,8 +48,8 @@ void TestEnv::initializeRendering() {
     renderingManagerSettings.fontManager = nullptr;
     detail::RenderingManager::initialize(renderingManagerSettings);
 
-    flatRenderingPipeline = makeObject<FlatRenderingPipeline>();
-    renderView = makeObject<TestRenderVew>();
+    flatRenderingPipeline = makeObject_deprecated<FlatRenderingPipeline>();
+    renderView = makeObject_deprecated<TestRenderVew>();
     renderView->setRenderingPipeline(flatRenderingPipeline);
     renderView->setClearMode(SceneClearMode::ColorAndDepth);
     renderView->setBackgroundColor(Color::Gray);

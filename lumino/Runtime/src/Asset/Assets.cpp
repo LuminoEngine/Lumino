@@ -64,7 +64,7 @@ void Assets::reloadAsset(const StringView& filePath, Object* obj)
 
 void Assets::saveAsset(Object* obj, const StringView& filePath)
 {
-    auto model = makeObject<AssetModel>(obj);
+    auto model = makeObject_deprecated<AssetModel>(obj);
     detail::AssetManager::instance()->saveAssetModelToLocalFile(model, filePath);
 }
 
@@ -153,8 +153,8 @@ Ref<AssetModel> AssetImporter::import(const ln::Path& sourceFilePath)
 //
 //Ref<AssetModel> TextureImporter::onImport(const ln::Path& sourceFilePath)
 //{
-//    auto texture = makeObject<Texture2D>(sourceFilePath);
-//    auto asset = makeObject<AssetModel>(texture);
+//    auto texture = makeObject_deprecated<Texture2D>(sourceFilePath);
+//    auto asset = makeObject_deprecated<AssetModel>(texture);
 //    asset->saveInternal(sourceFilePath.str() + AssetModel::AssetFileExtension);
 //    return asset;
 //}

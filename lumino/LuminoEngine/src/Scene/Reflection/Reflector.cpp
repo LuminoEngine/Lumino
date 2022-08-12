@@ -12,7 +12,7 @@ LN_OBJECT_IMPLEMENT(Reflector, VisualObject) {}
 
 Ref<Reflector> Reflector::create()
 {
-	return makeObject<Reflector>();
+	return makeObject_deprecated<Reflector>();
 }
 
 Reflector::Reflector()
@@ -23,7 +23,7 @@ Reflector::Reflector()
 bool Reflector::init()
 {
 	if (!VisualObject::init()) return false;
-    m_component = makeObject<ReflectorComponent>();
+    m_component = makeObject_deprecated<ReflectorComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 	return true;

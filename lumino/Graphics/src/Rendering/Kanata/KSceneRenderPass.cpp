@@ -1,7 +1,7 @@
 ﻿#include <LuminoEngine/Base/MixHash.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatch.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatchList.hpp>

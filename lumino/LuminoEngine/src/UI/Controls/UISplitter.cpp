@@ -81,7 +81,7 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
     int thumbCount = logicalChildren()->size() - 1;
     int diff = thumbCount - m_thumbs.size();
     for (int i = 0; i < diff; i++) {
-        auto thumb = makeObject<UIThumb>();
+        auto thumb = makeObject_deprecated<UIThumb>();
 
 		// TODO: style (-H, -V とかで分ける。)
 		thumb->addClass(_TT("SplitterBar"));

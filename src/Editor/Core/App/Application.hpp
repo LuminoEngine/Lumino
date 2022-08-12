@@ -14,6 +14,7 @@ public:
 
 
     static EditorApplication* instance();
+    static void configure();
 
     EditorApplication();
     ~EditorApplication();

@@ -40,12 +40,12 @@ LN_OBJECT_IMPLEMENT(UIText, UIElement) {
 
 Ref<UIText> UIText::create()
 {
-    return makeObject<UIText>();
+    return makeObject_deprecated<UIText>();
 }
 
 Ref<UIText> UIText::create(const StringView& text)
 {
-    return makeObject<UIText>(text);
+    return makeObject_deprecated<UIText>(text);
 }
 
 UIText::UIText()
@@ -132,7 +132,7 @@ void UIText::onRender(UIRenderingContext* context)
     //auto a = m_finalStyle->horizontalContentAlignment;
 
     //{
-    //    auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+    //    auto tex = makeObject_deprecated<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
     //    auto mat = Material::create(tex);
     //    context->drawBoxBackground(Rect(10, 20, 100, 200), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, mat, Rect(64, 0, 64, 64));
     //}

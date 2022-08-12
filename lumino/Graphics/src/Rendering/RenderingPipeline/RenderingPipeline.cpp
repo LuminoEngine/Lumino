@@ -13,7 +13,7 @@ void RenderingPipeline::init()
     //RenderingManager* manager = detail::RenderingManager::instance();
     //m_frameBufferCache = makeRef<detail::FrameBufferCache>(
     //    manager->renderTargetTextureCacheManager(), manager->depthBufferCacheManager());
-    //m_clearRenderPass = makeObject<RenderPass>();
+    //m_clearRenderPass = makeObject_deprecated<RenderPass>();
 }
 
 //void RenderingPipeline::clear(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo)

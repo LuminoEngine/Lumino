@@ -12,7 +12,7 @@ LN_OBJECT_IMPLEMENT(Camera, WorldObject) {}
 
 Ref<Camera> Camera::create()
 {
-    return makeObject<Camera>();
+    return makeObject_deprecated<Camera>();
 }
 
 Camera::Camera()
@@ -29,7 +29,7 @@ Camera::~Camera()
 void Camera::init()
 {
 	WorldObject::init();
-    m_component = makeObject<CameraComponent>();
+    m_component = makeObject_deprecated<CameraComponent>();
     addComponent(m_component);
 
 	// Note: 以前のデフォルトだった -10.0f とかの方が数字的なキリはいいのだが、

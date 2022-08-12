@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoGraphics/Mesh/MeshProcessing.hpp>
@@ -138,7 +138,7 @@ Ref<MeshPrimitive> MeshGeometryBuilder::buildMesh()
 		}
 	}
 
-	auto mesh = makeObject<MeshPrimitive>(vertexCount, indexCount);
+	auto mesh = makeObject_deprecated<MeshPrimitive>(vertexCount, indexCount);
 
 	auto* mappedVB = mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main);
 	auto* mappedIB = mesh->acquireMappedIndexBuffer();

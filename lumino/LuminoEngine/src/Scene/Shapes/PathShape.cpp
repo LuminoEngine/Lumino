@@ -25,9 +25,9 @@ bool PathShapeComponent::init()
 {
     if (!VisualComponent::init()) return false;
 
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
 
-    //m_mesh = makeObject<MeshPrimitive>(4, 6);
+    //m_mesh = makeObject_deprecated<MeshPrimitive>(4, 6);
     //m_mesh->setVertex(0, Vertex(Vector3(-1, 1, 0), Vector3::UnitZ, Vector2(0, 0), Color::Red));
     //m_mesh->setVertex(1, Vertex(Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 0), Color::Red));
     //m_mesh->setVertex(2, Vertex(Vector3(1, 1, 0), Vector3::UnitZ, Vector2(0, 0), Color::Red));
@@ -161,7 +161,7 @@ PathShape::PathShape()
 bool PathShape::init()
 {
     if (!VisualObject::init()) return false;
-    m_component = makeObject<PathShapeComponent>();
+    m_component = makeObject_deprecated<PathShapeComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
     return true;

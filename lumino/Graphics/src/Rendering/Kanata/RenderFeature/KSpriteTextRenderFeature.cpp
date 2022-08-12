@@ -1,6 +1,6 @@
 ﻿#include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatch.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoGraphics/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>

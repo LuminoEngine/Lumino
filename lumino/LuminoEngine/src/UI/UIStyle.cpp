@@ -202,49 +202,49 @@ void UIStyle::init()
 void UIStyle::setWidthAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
 	auto* d = acquireAnimationData();
-	d->width = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->width = makeObject_deprecated<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_Width, true);
 }
 
 void UIStyle::setHeightAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
 	auto* d = acquireAnimationData();
-	d->height = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->height = makeObject_deprecated<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_Height, true);
 }
 
 void UIStyle::setPositionXAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
 	auto* d = acquireAnimationData();
-	d->positionX = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->positionX = makeObject_deprecated<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionX, true);
 }
 
 void UIStyle::setPositionYAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
 	auto* d = acquireAnimationData();
-	d->positionY = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->positionY = makeObject_deprecated<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionY, true);
 }
 
 void UIStyle::setPositionZAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
 	auto* d = acquireAnimationData();
-	d->positionZ = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->positionZ = makeObject_deprecated<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionZ, true);
 }
 
 void UIStyle::setBackgroundColorAnimation(const Color& startValue, const Color& targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
 	auto* d = acquireAnimationData();
-	d->backgroundColor = makeObject<UIVector4AnimationTrack>(startValue.toVector4(), targetValue.toVector4(), duration, timingFunction, delay, wrapMode);
+	d->backgroundColor = makeObject_deprecated<UIVector4AnimationTrack>(startValue.toVector4(), targetValue.toVector4(), duration, timingFunction, delay, wrapMode);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_BackgroundColor, true);
 }
 
 void UIStyle::setOpacityAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
 	auto* d = acquireAnimationData();
-	d->opacity = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->opacity = makeObject_deprecated<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_Opacity, true);
 }
 
@@ -252,49 +252,49 @@ void UIStyle::setOpacityAnimation(float startValue, float targetValue, float dur
 void UIStyle::setWidthTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
 	auto* d = acquireAnimationData();
-	d->width = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->width = makeObject_deprecated<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_Width, true);
 }
 
 void UIStyle::setHeightTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
 	auto* d = acquireAnimationData();
-	d->height = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->height = makeObject_deprecated<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_Height, true);
 }
 
 void UIStyle::setPositionXTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
 	auto* d = acquireAnimationData();
-	d->positionX = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->positionX = makeObject_deprecated<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionX, true);
 }
 
 void UIStyle::setPositionYTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
 	auto* d = acquireAnimationData();
-	d->positionY = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->positionY = makeObject_deprecated<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionY, true);
 }
 
 void UIStyle::setPositionZTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
 	auto* d = acquireAnimationData();
-	d->positionZ = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->positionZ = makeObject_deprecated<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionZ, true);
 }
 
 void UIStyle::setBackgroundColorTransition(const Color& target, float duration, EasingMode timingFunction, float delay)
 {
 	auto* d = acquireAnimationData();
-	d->backgroundColor = makeObject<UIVector4TransitionTrack>(target.toVector4(), duration, timingFunction, delay);
+	d->backgroundColor = makeObject_deprecated<UIVector4TransitionTrack>(target.toVector4(), duration, timingFunction, delay);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_BackgroundColor, true);
 }
 
 void UIStyle::setOpacityTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
 	auto* d = acquireAnimationData();
-	d->opacity = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->opacity = makeObject_deprecated<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
 	d->setLocalValueFlag(detail::UIStyleAnimationElement_Opacity, true);
 }
 
@@ -687,7 +687,7 @@ void UIStyleSet::init(const StringView& elementName)
 {
     Object::init();
 	m_elementName = elementName;
-	m_mainStyleClass = makeObject<UIStyleClass>(_TT(""));
+	m_mainStyleClass = makeObject_deprecated<UIStyleClass>(_TT(""));
 }
 
 void UIStyleSet::addStyleClass(UIStyleClass* styleClass)
@@ -699,7 +699,7 @@ void UIStyleSet::addStyleClass(UIStyleClass* styleClass)
 
 UIStyleClass* UIStyleSet::addStyleClass(const StringView& className)
 {
-	auto ptr = makeObject<UIStyleClass>(className);
+	auto ptr = makeObject_deprecated<UIStyleClass>(className);
 	addStyleClass(ptr);
 	return ptr;
 }
@@ -723,7 +723,7 @@ void UIStyleSet::copyFrom(const UIStyleSet* other)
 
 	m_styleClasses.clear();
 	for (auto& otherClass : other->m_styleClasses) {
-		auto newClass = makeObject<UIStyleClass>(otherClass->name());
+		auto newClass = makeObject_deprecated<UIStyleClass>(otherClass->name());
 		newClass->copyFrom(otherClass);
 		m_styleClasses.add(newClass);
 	}
@@ -740,7 +740,7 @@ void UIStyleSet::mergeFrom(const UIStyleSet* other)
         auto style = findStyleClass(styleClass->name());
         if (!style) {
 			// Create with same name
-			m_styleClasses.add(makeObject<UIStyleClass>(styleClass->name()));
+			m_styleClasses.add(makeObject_deprecated<UIStyleClass>(styleClass->name()));
             style = m_styleClasses.back();
         }
         style->mergeFrom(styleClass);
@@ -762,7 +762,7 @@ void UIStyleClass::init(const StringView& name)
 {
 	Object::init();
 	m_name = name;
-	m_mainStyle = makeObject<UIStyle>();
+	m_mainStyle = makeObject_deprecated<UIStyle>();
 }
 
 void UIStyleClass::addStateStyle(const StringView& stateName, UIStyle* style)
@@ -773,7 +773,7 @@ void UIStyleClass::addStateStyle(const StringView& stateName, UIStyle* style)
 
 UIStyle* UIStyleClass::addStateStyle(const StringView& stateName)
 {
-	auto ptr = makeObject<UIStyle>();
+	auto ptr = makeObject_deprecated<UIStyle>();
 	addStateStyle(stateName, ptr);
 	return ptr;
 }
@@ -795,7 +795,7 @@ void UIStyleClass::copyFrom(const UIStyleClass* other)
 
 	m_visualStateStyles.clear();
 	for (auto& otherSlot : other->m_visualStateStyles) {
-		auto newStyle = makeObject<UIStyle>();
+		auto newStyle = makeObject_deprecated<UIStyle>();
 		newStyle->copyFrom(otherSlot.style);
 		m_visualStateStyles.add({ otherSlot.name, newStyle });
 	}
@@ -812,7 +812,7 @@ void UIStyleClass::mergeFrom(const UIStyleClass* other)
 	for (auto& slot : other->m_visualStateStyles) {
 		auto style = findStateStyle(slot.name);
 		if (!style) {
-			m_visualStateStyles.add({ slot.name, makeObject<UIStyle>() });
+			m_visualStateStyles.add({ slot.name, makeObject_deprecated<UIStyle>() });
 			style = m_visualStateStyles.back().style;
 		}
 		style->mergeFrom(slot.style);
@@ -843,7 +843,7 @@ void UIStyleSheet::addStyleSet(const StringView& elementName, UIStyleSet* styleC
 
 Ref<UIStyleSet> UIStyleSheet::addStyleSet(const StringView& elementName)
 {
-    auto cls = makeObject<UIStyleSet>(elementName);
+    auto cls = makeObject_deprecated<UIStyleSet>(elementName);
     addStyleSet(elementName, cls);
     return cls;
 }
@@ -947,7 +947,7 @@ void UIStyleContext::addStyleSheet(UIStyleSheet* sheet)
 void UIStyleContext::build()
 {
     // first, merge globals
-    m_globalStyle = makeObject<UIStyleSet>(_TT(""));
+    m_globalStyle = makeObject_deprecated<UIStyleSet>(_TT(""));
 	m_globalStyle->mainStyleClass()->mainStyle()->setupDefault();
     for (auto& sheet : m_styleSheets) {
         auto globalStyle = sheet->findStyleSet(_TT(""));
@@ -963,7 +963,7 @@ void UIStyleContext::build()
         for (auto& pair : sheet->m_classes) {
             auto itr = m_elementStyles.find(pair.first);
             if (itr == m_elementStyles.end()) {
-                auto newSet = makeObject<UIStyleSet>(pair.first);
+                auto newSet = makeObject_deprecated<UIStyleSet>(pair.first);
 				newSet->copyFrom(m_globalStyle);
 				newSet->copyFrom(pair.second);
 				m_elementStyles.insert({ newSet->elementName(), newSet });
@@ -1033,7 +1033,7 @@ void UIStyleContext::combineStyle(UIStyle* style, const StringView& elementName,
 UIVisualStateManager::UIVisualStateManager()
     : m_ownerElement(nullptr)
     , m_groups()
-    , m_combinedStyle(makeObject<UIStyle>())
+    , m_combinedStyle(makeObject_deprecated<UIStyle>())
     , m_resolvedStyle(makeRef<detail::UIStyleInstance>())
     , m_dirty(true)
 {
@@ -1216,7 +1216,7 @@ void UITheme::init()
 // PC 用 Editor 向け Theme. Material-UI and Blender 2.8 based.
 void UITheme::buildLumitelier()
 {
-	m_defaultStyle = makeObject<UIStyle>();
+	m_defaultStyle = makeObject_deprecated<UIStyle>();
 	m_defaultStyle->setupDefault();
 	m_defaultStyle->textColor = Color::White;
 	m_defaultStyle->fontSize = 14;
@@ -1254,7 +1254,7 @@ void UITheme::buildLumitelier()
 	// Divider
 	setColor(UIThemeConstantPalette::DefaultDivider, Color::White.withAlpha(0.3));
 
-	auto sheet = makeObject<UIStyleSheet>();
+	auto sheet = makeObject_deprecated<UIStyleSheet>();
 
 	//--------------------------------
 	// UIButton
@@ -1282,7 +1282,7 @@ void UITheme::buildLumitelier()
 		//}
 		//// UIButton.test
 		//{
-		//	auto s = makeObject<UIStyle>();
+		//	auto s = makeObject_deprecated<UIStyle>();
 		//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
 		//	c->addClassStyle(_TT("test", s);
 		//}
@@ -1312,7 +1312,7 @@ void UITheme::buildLumitelier()
 			s->setMargin(4);
 		}
 		if (auto s = sheet->obtainStyle(_TT("UIElement.UICheckBox-CheckMark:Checked"))) {
-			auto icon = makeObject<UIStyleDecorator>();
+			auto icon = makeObject_deprecated<UIStyleDecorator>();
 			icon->setIconName(_TT("check"), 12);
 			icon->m_color = color(UIThemeConstantPalette::PrimaryMainColor);
 			s->decorators.add(icon);
@@ -1404,13 +1404,13 @@ void UITheme::buildLumitelier()
 		//if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Pressed")) {
 		//}
 		if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Checked"))) {
-			auto icon = makeObject<UIStyleDecorator>();
+			auto icon = makeObject_deprecated<UIStyleDecorator>();
 			icon->setIconName(_TT("angle-down"), 12);
 			icon->m_color = Color::White;
 			s->decorators.add(icon);
 		}
 		if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Unchecked"))) {
-			auto icon = makeObject<UIStyleDecorator>();
+			auto icon = makeObject_deprecated<UIStyleDecorator>();
 			icon->setIconName(_TT("angle-right"), 12);
 			icon->m_color = Color::White;
 			s->decorators.add(icon);
@@ -1433,7 +1433,7 @@ void UITheme::buildLumitelier()
 		//}
 		//// UIThumb.UITrack-Thumb
 		//{
-		//	auto s = makeObject<UIStyle>();
+		//	auto s = makeObject_deprecated<UIStyle>();
 
 		//	s->margin = Thickness(2);
 		//	s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);

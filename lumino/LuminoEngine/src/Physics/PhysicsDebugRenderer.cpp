@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
@@ -16,8 +16,8 @@ namespace detail {
 
 void PhysicsDebugRenderer::init()
 {
-	m_linesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
-	m_trianglesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+	m_linesBuffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+	m_trianglesBuffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
 	m_linesVertexCount = 0;
 	m_trianglesVertexCount = 0;
 }

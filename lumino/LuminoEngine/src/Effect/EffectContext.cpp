@@ -56,13 +56,13 @@ EffectEmitter* EffectContext::createEmitter(EffectResource* model)
     // TODO: ポリモーフィズムで作成
     if (auto* sr = dynamic_cast<SpriteFrameEffectResource*>(model))
     {
-        auto emitter = makeObject<SpriteFrameEffectEmitter>(sr);
+        auto emitter = makeObject_deprecated<SpriteFrameEffectEmitter>(sr);
         m_emitters.add(emitter);
         return emitter;
     }
     else if (auto* sr = dynamic_cast<SpriteParticleModel*>(model))
     {
-        auto emitter = makeObject<detail::ParticleEffectEmitter>(sr);
+        auto emitter = makeObject_deprecated<detail::ParticleEffectEmitter>(sr);
         m_emitters.add(emitter);
         return emitter;
     }
@@ -139,7 +139,7 @@ void EffectContext::render(RenderingContext* renderingContext)
 
 //Ref<Object> UIGridLayout::Builder::Details::build()
 //{
-//	auto ptr = makeObject<UIGridLayout>();
+//	auto ptr = makeObject_deprecated<UIGridLayout>();
 //	ptr->setColumnCount(columnCount);
 //	for (auto& b : children)
 //		ptr->addChild(b.build());
@@ -165,7 +165,7 @@ void SpriteFrameEffectResource::init(const Size& spriteSize, SpriteSheet* sprite
     m_startNumber = startNumber;
     m_lastNumber = lastNumber;
     m_frameTime = frameTime;
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     m_material->setMainTexture(m_spriteFrameSet->texture());
 }
 

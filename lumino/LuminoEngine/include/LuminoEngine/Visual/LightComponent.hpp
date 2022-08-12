@@ -68,7 +68,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	EnvironmentLightComponent();
 	virtual ~EnvironmentLightComponent();
-	bool init();
+	Result init();
 
 private:
 	Color m_color;

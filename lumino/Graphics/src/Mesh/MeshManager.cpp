@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Mesh/AnimationController.hpp>
 #include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
@@ -98,7 +98,7 @@ Result MeshManager::init(const Settings& settings) {
     //		{ 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
     //		{ 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
     //	};
-    //	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard] = makeObject<VertexLayout>(elements, 4);
+    //	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard] = makeObject_deprecated<VertexLayout>(elements, 4);
     //}
 
     //{
@@ -111,15 +111,15 @@ Result MeshManager::init(const Settings& settings) {
     //		{ 1, VertexElementType::Float4, VertexElementUsage::BlendWeight, 0 },
     //		{ 1, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0 },
     //	};
-    //	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard_BlendWeight] = makeObject<VertexLayout>(elements, 4);
+    //	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard_BlendWeight] = makeObject_deprecated<VertexLayout>(elements, 4);
     //}
 
 #define LN_CREATE_MMD_TOON_TEXTURE(index, toonData, toonDataLen)                           \
     {                                                                                      \
         MemoryStream data(toonData, toonDataLen);                                          \
-        auto bmp = makeObject<Bitmap2D>();                                                 \
+        auto bmp = makeObject_deprecated<Bitmap2D>();                                                 \
         bmp->load(&data);                                                                  \
-        m_mmdDefaultToonTexture[index] = makeObject<Texture2D>(bmp, TextureFormat::RGBA8); \
+        m_mmdDefaultToonTexture[index] = makeObject_deprecated<Texture2D>(bmp, TextureFormat::RGBA8); \
     }
     LN_CREATE_MMD_TOON_TEXTURE(0, toon01Data, toon01DataLen);
     LN_CREATE_MMD_TOON_TEXTURE(1, toon02Data, toon02DataLen);
@@ -157,7 +157,7 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
         return itr->second;
     }
     else {
-        auto vertexLayout = makeObject<VertexLayout>();
+        auto vertexLayout = makeObject_deprecated<VertexLayout>();
         int stream = 0;
 
         // BasicVertices
@@ -226,7 +226,7 @@ Ref<MeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, f
         return mesh;
     }
     else {
-        mesh = makeObject<MeshModel>();
+        mesh = makeObject_deprecated<MeshModel>();
         loadStaticMeshModel(mesh, assetPath, scale);
         m_meshModelCache.registerObject(key, mesh, 0);
         return mesh;
@@ -249,7 +249,7 @@ Ref<MeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, f
 void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale) {
     LN_NOTIMPLEMENTED();
     {
-        auto diag = makeObject<DiagnosticsManager>();
+        auto diag = makeObject_deprecated<DiagnosticsManager>();
         {
 
             GLTFImporter importer;
@@ -272,14 +272,14 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
     auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
     if (path) {
 
-        Ref<SkinnedMeshModel> mesh = makeObject<SkinnedMeshModel>();
+        Ref<SkinnedMeshModel> mesh = makeObject_deprecated<SkinnedMeshModel>();
         mesh->m_name = filePath.fileNameWithoutExtension();
-        auto diag = makeObject<DiagnosticsManager>();
+        auto diag = makeObject_deprecated<DiagnosticsManager>();
 
         if (path->path().hasExtension(_TT(".pmx"))) {
             PmxLoader importer(this, diag);
             bool result = importer.load(mesh, *path, false);
-            mesh->m_animationController = makeObject<AnimationController>(mesh);
+            mesh->m_animationController = makeObject_deprecated<AnimationController>(mesh);
         }
         else if (path->path().hasExtension(_TT(".fbx"))) {
 #ifdef LN_USE_FBX_IMPORTER
@@ -298,7 +298,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
             bool result = importer.onImportAsSkinnedMesh(mesh, *path);
 
             if (!mesh->skeletons().isEmpty()) {
-                mesh->m_animationController = makeObject<AnimationController>(mesh);
+                mesh->m_animationController = makeObject_deprecated<AnimationController>(mesh);
 
                 for (auto& clip : importer.animationClips()) {
                     mesh->m_animationController->addClip(clip);

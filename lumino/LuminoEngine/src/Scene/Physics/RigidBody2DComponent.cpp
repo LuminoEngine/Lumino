@@ -27,7 +27,7 @@ void Collision2D::init(WorldObject* worldObject/*, RigidBody2DComponent* compone
 
 Ref<RigidBody2DComponent> RigidBody2DComponent::create()
 {
-	return makeObject<RigidBody2DComponent>();
+	return makeObject_deprecated<RigidBody2DComponent>();
 }
 
 RigidBody2DComponent::RigidBody2DComponent()
@@ -37,7 +37,7 @@ RigidBody2DComponent::RigidBody2DComponent()
 void RigidBody2DComponent::init()
 {
 	Component::init();
-	m_body = makeObject<RigidBody2D>();
+	m_body = makeObject_deprecated<RigidBody2D>();
     m_body->setEventListener(this);
     m_body->setOwnerData(this);
     detail::EngineDomain::engineManager()->mainPhysicsWorld2D()->addPhysicsObject(m_body);
@@ -103,7 +103,7 @@ void RigidBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, Contac
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
 	// TODO: Cache
-	auto c = makeObject<Collision2D>(worldObject, otherObject);
+	auto c = makeObject_deprecated<Collision2D>(worldObject, otherObject);
 	m_onCollisionEnter.raise(c);
 }
 
@@ -113,7 +113,7 @@ void RigidBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, Contac
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
 	// TODO: Cache
-	auto c = makeObject<Collision2D>(worldObject, otherObject);
+	auto c = makeObject_deprecated<Collision2D>(worldObject, otherObject);
 	m_onCollisionLeave.raise(c);
 }
 
@@ -123,7 +123,7 @@ void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Contact
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision2D>(worldObject, otherObject);
+    auto c = makeObject_deprecated<Collision2D>(worldObject, otherObject);
     m_onCollisionStay.raise(c);
 }
 
@@ -135,7 +135,7 @@ void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Contact
 
 Ref<TriggerBody2DComponent> TriggerBody2DComponent::create()
 {
-    return makeObject<TriggerBody2DComponent>();
+    return makeObject_deprecated<TriggerBody2DComponent>();
 }
 
 TriggerBody2DComponent::TriggerBody2DComponent()
@@ -145,7 +145,7 @@ TriggerBody2DComponent::TriggerBody2DComponent()
 void TriggerBody2DComponent::init()
 {
     Component::init();
-    m_body = makeObject<TriggerBody2D>();
+    m_body = makeObject_deprecated<TriggerBody2D>();
     m_body->setEventListener(this);
     m_body->setOwnerData(this);
     detail::EngineDomain::engineManager()->mainPhysicsWorld2D()->addPhysicsObject(m_body);
@@ -197,7 +197,7 @@ void TriggerBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, Cont
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision2D>(worldObject, otherObject);
+    auto c = makeObject_deprecated<Collision2D>(worldObject, otherObject);
     m_onCollisionEnter.raise(c);
 }
 
@@ -207,7 +207,7 @@ void TriggerBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, Cont
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision2D>(worldObject, otherObject);
+    auto c = makeObject_deprecated<Collision2D>(worldObject, otherObject);
     m_onCollisionLeave.raise(c);
 }
 
@@ -217,7 +217,7 @@ void TriggerBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Conta
     auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
     // TODO: Cache
-    auto c = makeObject<Collision2D>(worldObject, otherObject);
+    auto c = makeObject_deprecated<Collision2D>(worldObject, otherObject);
     m_onCollisionStay.raise(c);
 }
 

@@ -15,7 +15,7 @@ Document::Document()
 ln::Result Document::init()
 {
     Object::init();
-    m_mainFrame = ln::makeObject<ln::UIContainerElement>();
+    m_mainFrame = ln::makeObject_deprecated<ln::UIContainerElement>();
 
     // SaveCommand などは m_mainFrame にアタッチしたい。
     // m_mainFrame が focus を持てるようにしておかないと、もし Document 内に Focusable な UIElement が１つも無いと、
@@ -47,12 +47,12 @@ DocumentManager::DocumentManager()
 ln::Result DocumentManager::init()
 {
     UIControl::init();
-    //setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
+    //setLayoutPanel(ln::makeObject_deprecated<ln::UIVBoxLayout>());
 
-    m_mainLayout = ln::makeObject<ln::UIBoxLayout>();
+    m_mainLayout = ln::makeObject_deprecated<ln::UIBoxLayout>();
     //addElement(m_mainLayout);
 
-    m_documentTabBar = ln::makeObject<ln::UITabBar>();
+    m_documentTabBar = ln::makeObject_deprecated<ln::UITabBar>();
     m_documentTabBar->setAlignments(ln::UIAlignment::Top);
     m_documentTabBar->connectOnSelectionChanged(ln::bind(this, &DocumentManager::documentTabBar_SelectionChanged));
     m_documentTabBar->setBackgroundColor(ln::Color::Azure);
@@ -61,19 +61,19 @@ ln::Result DocumentManager::init()
 	m_documentTabBar->getGridLayoutInfo()->layoutWeight = 0;	// 'auto'
     m_mainLayout->addChild(m_documentTabBar);
 
-    m_switchLayout = ln::makeObject<ln::UISwitchLayout>();
+    m_switchLayout = ln::makeObject_deprecated<ln::UISwitchLayout>();
     m_switchLayout->setActiveIndex(-1);
     m_switchLayout->getGridLayoutInfo()->layoutWeight = 1;  // fill in box layout
     m_mainLayout->addChild(m_switchLayout);
 
-    m_startupView = ln::makeObject<StartupView>();
+    m_startupView = ln::makeObject_deprecated<StartupView>();
     addElement(m_startupView);
     //m_startupView->setHeight(300);
     //m_mainLayout->addChild(m_startupView);
 
-    m_modePanesArea = ln::makeObject<ToolPanesArea>();
-    m_toolPanesArea = ln::makeObject<ToolPanesArea>();
-    m_inspectorPanesArea = ln::makeObject<ToolPanesArea>();
+    m_modePanesArea = ln::makeObject_deprecated<ToolPanesArea>();
+    m_toolPanesArea = ln::makeObject_deprecated<ToolPanesArea>();
+    m_inspectorPanesArea = ln::makeObject_deprecated<ToolPanesArea>();
 
     return ln::ok();
 }
@@ -193,8 +193,8 @@ ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditorMode
 DocumentTab::DocumentTab(Document* document)
 	: m_document(document)
 {
-	//auto tab = ln::makeObject<ln::UITabItem>();
-	auto text = ln::makeObject<ln::UIText>();
+	//auto tab = ln::makeObject_deprecated<ln::UITabItem>();
+	auto text = ln::makeObject_deprecated<ln::UIText>();
 	text->setText(_TT("Tab"));  // TODO: AssetEditor から、Document 経由で設定したい。プロパティ変更を scribe する必要があるかも。
 	/*tab->*/addElement(text);
 	/*tab->*/setData(ln::makeVariant(document));

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <float.h>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include "LightClusters.hpp"
 
 namespace ln {
@@ -34,11 +34,11 @@ void LightClusters::init()
 	m_lightInofs.reserve(MaxLights);
 	m_globalLightInofs.reserve(MaxLights);
 
-	m_clustersTexture = makeObject<Texture2D>(ClusterWidth * ClusterHeight, ClusterDepth, TextureFormat::RGBA8);
+	m_clustersTexture = makeObject_deprecated<Texture2D>(ClusterWidth * ClusterHeight, ClusterDepth, TextureFormat::RGBA8);
 	m_clustersTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
-	m_lightInfoTexture = makeObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::RGBA32F);
+	m_lightInfoTexture = makeObject_deprecated<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::RGBA32F);
 	m_lightInfoTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
-	m_globalLightInfoTexture = makeObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::RGBA32F);
+	m_globalLightInfoTexture = makeObject_deprecated<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::RGBA32F);
 	m_globalLightInfoTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 }
 

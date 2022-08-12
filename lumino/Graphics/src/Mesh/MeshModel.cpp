@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Mesh/MeshModel.hpp>
 #include <LuminoGraphics/Mesh/AnimationController.hpp>
@@ -42,7 +42,7 @@ MeshBone* MeshSkeleton::bone(int index) const {
 // }
 
 void MeshSkeleton::addBone(int linkNode, const Matrix& inverseInitialMatrix) {
-    auto bone = makeObject<MeshBone>();
+    auto bone = makeObject_deprecated<MeshBone>();
     bone->m_skeleton = this;
     bone->m_node = linkNode;
     bone->m_inverseInitialMatrix = inverseInitialMatrix;
@@ -64,7 +64,7 @@ Ref<MeshModel> MeshModel::load(const StringView& filePath, MeshImportSettings* s
     return detail::MeshManager::instance()->createSkinnedMeshModel(
         filePath, settings ? settings : MeshImportSettings::defaultSettings());
     // return detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, 1.0f);
-    // auto model = makeObject<MeshModel>();
+    // auto model = makeObject_deprecated<MeshModel>();
     //   detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
     // return model;
 }
@@ -117,7 +117,7 @@ int MeshModel::findNodeIndex(StringView name) const {
 }
 
 MeshContainer* MeshModel::addMeshContainer(MeshPrimitive* mesh) {
-    auto meshContainer = makeObject<MeshContainer>();
+    auto meshContainer = makeObject_deprecated<MeshContainer>();
     meshContainer->addMeshPrimitive(mesh);
     meshContainer->m_index = m_meshContainers.size();
     m_meshContainers.add(meshContainer);
@@ -125,7 +125,7 @@ MeshContainer* MeshModel::addMeshContainer(MeshPrimitive* mesh) {
 }
 
 MeshNode* MeshModel::addNode() {
-    auto node = makeObject<MeshNode>();
+    auto node = makeObject_deprecated<MeshNode>();
     node->m_model = this;
     node->m_index = m_nodes.size();
     m_nodes.add(node);
@@ -469,7 +469,7 @@ MeshImportSettings::MeshImportSettings()
     , m_applyBoneTransformationsEnabled(false) {
 }
 
-bool MeshImportSettings::init() {
+Result MeshImportSettings::init() {
     return Object::init();
 }
 

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -25,7 +25,7 @@ void TonemapPostEffect::init()
 
 Ref<PostEffectInstance> TonemapPostEffect::onCreateInstance()
 {
-    return makeObject<detail::TonemapPostEffectInstance>(this);
+    return makeObject_deprecated<detail::TonemapPostEffectInstance>(this);
 }
 
 //==============================================================================
@@ -67,7 +67,7 @@ bool TonemapPostEffectInstance::init(TonemapPostEffect* owner)
     if (!PostEffectInstance::init()) return false;
 
     auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonemapEffect.fx"));
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     m_material->setShader(shader1);
 
     return true;

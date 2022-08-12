@@ -27,7 +27,7 @@ class Sandbox_MeshTilemap_App : public Application
 		//auto tex = Texture2D::load(u"autotile1");
 		////auto sprite = Sprite::create(tex);
 
-		//auto mesh = makeObject<Mesh>(4, 6);
+		//auto mesh = makeObject_deprecated<Mesh>(4, 6);
 		//mesh->setVertex(0, Vertex{ Vector3(0, 0.5, 0), Vector3::UnitZ, Vector2(0, 0), Color::White });
 		//mesh->setVertex(1, Vertex{ Vector3(0.5, 0.5, 0), Vector3::UnitZ, Vector2(1, 0), Color::White });
 		//mesh->setVertex(2, Vertex{ Vector3(0, 0, 0), Vector3::UnitZ, Vector2(0, 1), Color::White });
@@ -40,15 +40,15 @@ class Sandbox_MeshTilemap_App : public Application
 		//mesh->setIndex(5, 3);
 		//mesh->addSection(0, 2, 0, PrimitiveTopology::TriangleList);
 
-		//auto meshContainer = makeObject<MeshContainer>();
+		//auto meshContainer = makeObject_deprecated<MeshContainer>();
 		//meshContainer->setMesh(mesh);
 
-		//auto node = makeObject<MeshNode>();
+		//auto node = makeObject_deprecated<MeshNode>();
 		//node->setMeshContainerIndex(0);
 
 		//auto material = Material::create(tex);
 
-		//auto meshModel = makeObject<MeshModel>();
+		//auto meshModel = makeObject_deprecated<MeshModel>();
 		//meshModel->addMeshContainer(meshContainer);
 		//meshModel->addNode(node);
 		//meshModel->addMaterial(material);
@@ -61,13 +61,13 @@ class Sandbox_MeshTilemap_App : public Application
 		//staticMesh->setShadingModel(ShadingModel::Unlit);
 		////auto mesh = Mesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
 
-		auto meshTilemapModel = makeObject<MeshVoxelmapModel>();
+		auto meshTilemapModel = makeObject_deprecated<MeshVoxelmapModel>();
 
-		auto meshTileset = makeObject<MeshVoxelset>();
+		auto meshTileset = makeObject_deprecated<MeshVoxelset>();
 		meshTilemapModel->setTileset(meshTileset);
 
 		// TODO: test
-		auto layer = makeObject<MeshVoxelmapLayer>();
+		auto layer = makeObject_deprecated<MeshVoxelmapLayer>();
 		layer->resize(20, 3, 20);
 
 		if (0) {
@@ -97,9 +97,9 @@ class Sandbox_MeshTilemap_App : public Application
 
 		meshTilemapModel->addLayer(layer);
 
-		auto meshTilemapComponent = makeObject<MeshVoxelmapComponent>();
+		auto meshTilemapComponent = makeObject_deprecated<MeshVoxelmapComponent>();
 		meshTilemapComponent->setModel(meshTilemapModel);
-		auto meshTilemap = makeObject<VisualObject>();
+		auto meshTilemap = makeObject_deprecated<VisualObject>();
 		meshTilemap->addComponent(meshTilemapComponent);
 		meshTilemapComponent->setShadingModel(ShadingModel::Unlit);
 

@@ -7,8 +7,8 @@ class Test_Effect_Particle : public ::testing::Test {};
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, Lifetime) {
-    auto particleModel = makeObject<ParticleModel>();
-    auto emitterModel = makeObject<ParticleEmitterModel>();
+    auto particleModel = makeObject_deprecated<ParticleModel>();
+    auto emitterModel = makeObject_deprecated<ParticleEmitterModel>();
     particleModel->addEmitter(emitterModel);
     emitterModel->m_lifeTime = { 1, 1 }; // 1s で消えるようにする
     emitterModel->m_maxParticles = 1;
@@ -17,7 +17,7 @@ TEST_F(Test_Effect_Particle, Lifetime) {
     {
         particleModel->m_loop = false;
 
-        auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+        auto particleInstance = makeObject_deprecated<detail::ParticleInstance2>(particleModel);
         auto emitterInstance = particleInstance->emitters()[0];
 
         // 1フレーム分進める。1つ Particle ができている。
@@ -36,7 +36,7 @@ TEST_F(Test_Effect_Particle, Lifetime) {
     {
         particleModel->m_loop = true;
 
-        auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+        auto particleInstance = makeObject_deprecated<detail::ParticleInstance2>(particleModel);
         auto emitterInstance = particleInstance->emitters()[0];
 
         // 1フレーム分進める。1つ Particle ができている。
@@ -70,8 +70,8 @@ TEST_F(Test_Effect_Particle, SingleSprite) {
     material->setShadingModel(ShadingModel::Unlit);
     material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
 
-    auto particleModel = makeObject<ParticleModel>();
-    auto emitter1 = makeObject<ParticleEmitterModel>();
+    auto particleModel = makeObject_deprecated<ParticleModel>();
+    auto emitter1 = makeObject_deprecated<ParticleEmitterModel>();
     particleModel->addEmitter(emitter1);
     emitter1->setupSpriteModule(material);
     emitter1->setLifeTime(1);
@@ -79,7 +79,7 @@ TEST_F(Test_Effect_Particle, SingleSprite) {
     emitter1->setSpawnRate(1);
 
     auto obj1 = WorldObject::Builder()
-                    .components(makeObject<ParticleEmitterComponent2>(particleModel))
+                    .components(makeObject_deprecated<ParticleEmitterComponent2>(particleModel))
                     .buildInto();
 
     // 1フレーム更新 -> 表示される
@@ -99,13 +99,13 @@ TEST_F(Test_Effect_Particle, SingleSprite) {
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SpawnRate)
 {
-	auto particleModel = makeObject<ParticleModel>();
+	auto particleModel = makeObject_deprecated<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(5);
 	emitterModel->setMaxParticles(50);
 	emitterModel->setSpawnRate(10);			// 1s 10個
 
-	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+	auto particleInstance = makeObject_deprecated<detail::ParticleInstance2>(particleModel);
 	auto emitterInstance = particleInstance->emitters()[0];
 
 	{
@@ -123,7 +123,7 @@ TEST_F(Test_Effect_Particle, SpawnRate)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, SphereShape)
 {
-	auto particleModel = makeObject<ParticleModel>();
+	auto particleModel = makeObject_deprecated<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(10);
 	emitterModel->setMaxParticles(10);
@@ -134,7 +134,7 @@ TEST_F(Test_Effect_Particle, SphereShape)
 	emitterModel->m_forwardPosition.set(1.0f);
 	emitterModel->m_forwardVelocity.set(0);
 
-	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+	auto particleInstance = makeObject_deprecated<detail::ParticleInstance2>(particleModel);
 	auto emitterInstance = particleInstance->emitters()[0];
 
 	{
@@ -150,7 +150,7 @@ TEST_F(Test_Effect_Particle, SphereShape)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, ConeShape)
 {
-	auto particleModel = makeObject<ParticleModel>();
+	auto particleModel = makeObject_deprecated<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(10);
 	emitterModel->setMaxParticles(10);
@@ -161,7 +161,7 @@ TEST_F(Test_Effect_Particle, ConeShape)
 	emitterModel->m_forwardPosition.set(1.0f);
 	emitterModel->m_forwardVelocity.set(0);
 
-	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+	auto particleInstance = makeObject_deprecated<detail::ParticleInstance2>(particleModel);
 	auto emitterInstance = particleInstance->emitters()[0];
 
 	{
@@ -179,7 +179,7 @@ TEST_F(Test_Effect_Particle, ConeShape)
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, BoxShape)
 {
-	auto particleModel = makeObject<ParticleModel>();
+	auto particleModel = makeObject_deprecated<ParticleModel>();
 	auto emitterModel = particleModel->emitters()[0];
 	emitterModel->setLifeTime(10);
 	emitterModel->setMaxParticles(10);
@@ -189,7 +189,7 @@ TEST_F(Test_Effect_Particle, BoxShape)
 	emitterModel->m_shapeParam.set(10, 10, 10);
 	emitterModel->m_forwardVelocity.set(0);
 
-	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+	auto particleInstance = makeObject_deprecated<detail::ParticleInstance2>(particleModel);
 	auto emitterInstance = particleInstance->emitters()[0];
 
 	{
@@ -207,7 +207,7 @@ TEST_F(Test_Effect_Particle, BoxShape)
 ////------------------------------------------------------------------------------
 //TEST_F(Test_Effect_Particle, ZSort)
 //{
-//	auto particleModel = makeObject<ParticleModel>();
+//	auto particleModel = makeObject_deprecated<ParticleModel>();
 //	auto emitterModel = particleModel->emitters()[0];
 //	emitterModel->setLifeTime(10);
 //	emitterModel->setMaxParticles(2);
@@ -215,7 +215,7 @@ TEST_F(Test_Effect_Particle, BoxShape)
 //	emitterModel->m_forwardVelocity.set(0);
 //	emitterModel->m_velocity.set(Vector3(0, 0, -1));
 //
-//	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+//	auto particleInstance = makeObject_deprecated<detail::ParticleInstance2>(particleModel);
 //	auto emitterInstance = particleInstance->emitters()[0];
 //
 //	{
@@ -250,9 +250,9 @@ TEST_F(Test_Effect_Particle, Trail)
 	material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::Sprite));
 
 
-	auto particleModel = makeObject<ParticleModel>();
+	auto particleModel = makeObject_deprecated<ParticleModel>();
 	particleModel->seed = 8888;
-    auto m1 = makeObject<ParticleEmitterModel>();
+    auto m1 = makeObject_deprecated<ParticleEmitterModel>();
     particleModel->addEmitter(m1);
 	m1->setupSpriteModule(material);
 	m1->setLifeTime(10);
@@ -262,11 +262,11 @@ TEST_F(Test_Effect_Particle, Trail)
 	m1->m_trailSeconds = 1.0f;
 	m1->m_geometryDirection = ParticleGeometryDirection::Top;
 
-	auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
+	auto cmp1 = makeObject_deprecated<ParticleEmitterComponent2>(particleModel);
 	cmp1->setCullMode(CullMode::None);
 	cmp1->setBlendMode(BlendMode::Alpha);
 
-	auto obj1 = makeObject<WorldObject>();
+	auto obj1 = makeObject_deprecated<WorldObject>();
 	obj1->addComponent(cmp1);
 
 	for (int i = 0; i < 60; i++) {

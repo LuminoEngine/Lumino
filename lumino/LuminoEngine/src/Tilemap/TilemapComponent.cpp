@@ -80,7 +80,7 @@ bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
 
 void TilemapComponent::onStart()
 {
-	m_rigidBody = makeObject<RigidBody2D>();
+	m_rigidBody = makeObject_deprecated<RigidBody2D>();
 	m_rigidBody->addCollisionShape(detail::TilemapPhysicsObject::createTilemapCollisionShape(m_tilemapModel));
 	
 

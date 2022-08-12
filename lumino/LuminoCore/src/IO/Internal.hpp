@@ -10,22 +10,22 @@ template<typename TChar>
 class GenericStaticallyLocalPath {
 public:
     GenericStaticallyLocalPath();
-    GenericStaticallyLocalPath(const char* path, size_t len);
-    GenericStaticallyLocalPath(const wchar_t* path, size_t len);
-    GenericStaticallyLocalPath(const char16_t* path, size_t len);
-    GenericStaticallyLocalPath(const char32_t* path, size_t len);
+    GenericStaticallyLocalPath(const char* path, int len);
+    GenericStaticallyLocalPath(const wchar_t* path, int len);
+    GenericStaticallyLocalPath(const char16_t* path, int len);
+    GenericStaticallyLocalPath(const char32_t* path, int len);
 
     const TChar* c_str() const { return m_path.empty() ? m_static : m_path.c_str(); }
     const std::basic_string<TChar>& getPath() const { return m_path; }
-    size_t getLength() const { return m_length; }
-    size_t length() const { return m_length; }
+    int getLength() const { return m_length; }
+    int length() const { return m_length; }
     bool isEmpty() const { return m_length == 0; }
 
     bool isStatic() const { return m_path.empty(); }
 
 private:
     TChar m_static[LocalPathBaseLength + 1];
-    size_t m_length;
+    int m_length;
     std::basic_string<TChar> m_path;
 };
 

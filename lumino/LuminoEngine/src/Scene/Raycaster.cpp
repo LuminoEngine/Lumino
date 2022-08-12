@@ -110,12 +110,11 @@ Raycaster* Raycaster::fromScreen(const Point& point)
 //}
 //
 Raycaster::Raycaster()
-	: m_result(makeObject<RaycastResult>())	// intersect の度に object 作って返すのが自然だと思うけど、Binding 作るときに pool が大変なのでこの仕様で行ってみる
+	: m_result(makeObject_deprecated<RaycastResult>())	// intersect の度に object 作って返すのが自然だと思うけど、Binding 作るときに pool が大変なのでこの仕様で行ってみる
 {
 }
 
-bool Raycaster::init()
-{
+Result Raycaster::init() {
 	return Object::init();
 }
 
@@ -150,8 +149,7 @@ RaycastResult::RaycastResult()
 {
 }
 
-bool RaycastResult::init()
-{
+Result RaycastResult::init() {
 	return Object::init();
 }
 

@@ -66,7 +66,7 @@ bool DebugInterface::init()
 {
 	if (!Object::init()) return false;
 
-	m_font = makeObject<Font>();
+	m_font = makeObject_deprecated<Font>();
 	m_lineHeight = 20;	// TODO: metrix から求める
 
 	return true;

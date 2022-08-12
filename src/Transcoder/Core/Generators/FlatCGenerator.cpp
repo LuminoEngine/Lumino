@@ -132,7 +132,7 @@ void FlatCHeaderGenerator::generate() {
 
     // save C API Header
     {
-        ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(U"LuminoC.template.h"));
+        ln::String src = *ln::FileSystem::readAllText(makeTemplateFilePath(U"LuminoC.template.h"));
         src = src.replace(U"%%Structs%%", structsText.toString());
         src = src.replace(U"%%Enums%%", makeEnumDecls());
         src = src.replace(U"%%Delegates%%", delegatesText.toString());
@@ -454,7 +454,7 @@ void FlatCSourceGenerator::generate() {
         //auto includeDirective = ln::format(U"#include \"{0}.FlatC.generated.h\"", config()->moduleName);
         auto includeDirective = ln::format(U"#include \"{0}\"", includeFile);
 
-        auto src = ln::FileSystem::readAllText(makeTemplateFilePath(U"Source.cpp.template"))
+        auto src = ln::FileSystem::readAllText(makeTemplateFilePath(U"Source.cpp.template")).unwrap()
                        .replace(U"%%IncludeDirective%%", includeDirective)
                        .replace(U"%%HeaderString%%", config()->flatCHeaderString)
                        .replace(U"%%WrapSubclassDecls%%", generateWrapSubclassDecls())

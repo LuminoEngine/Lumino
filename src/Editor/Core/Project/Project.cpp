@@ -279,7 +279,7 @@ void Project::setupPathes()
 		m_projectFilePath = *files.begin();
 	}
 
-    m_assetDatabase = ln::makeObject<AssetDatabase>();
+    m_assetDatabase = ln::makeObject_deprecated<AssetDatabase>();
 }
 
 #endif

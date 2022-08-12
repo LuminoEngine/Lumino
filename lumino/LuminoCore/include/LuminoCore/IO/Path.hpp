@@ -343,6 +343,7 @@ inline String toString<Path>(const Path& value) {
 
 } // namespace ln
 
+namespace ln {
 namespace fmt {
 
 template<>
@@ -360,3 +361,4 @@ struct formatter<::ln::Path, ln::Char> {
 };
 
 } // namespace fmt
+} // namespace ln

@@ -193,7 +193,7 @@ struct Element::BuilderDetails : public AbstractBuilderDetails
 
     Ref<Object> create() const override
     {
-        auto ptr = makeObject<Element>();
+        auto ptr = makeObject_deprecated<Element>();
         apply(ptr.get());
         return ptr;
     }
@@ -245,7 +245,7 @@ struct Shape::BuilderDetails : public Element::BuilderDetails
     void apply(Shape* i) const;
     Ref<Object> create() const override
     {
-        auto ptr = makeObject<Shape>();
+        auto ptr = makeObject_deprecated<Shape>();
         apply(ptr.get());
         return ptr;
     }
@@ -294,7 +294,7 @@ struct Container::BuilderDetails : public Element::BuilderDetails
     void apply(Container* i) const;
     Ref<Object> create() const override
     {
-        auto ptr = makeObject<Container>();
+        auto ptr = makeObject_deprecated<Container>();
         apply(ptr.get());
         return ptr;
     }

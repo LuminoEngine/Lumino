@@ -34,7 +34,7 @@ ConeMesh::BuilderDetails::BuilderDetails()
 
 Ref<Object> ConeMesh::BuilderDetails::create() const
 {
-	auto p = makeObject<ConeMesh>(radius, height, segments, material);
+	auto p = makeObject_deprecated<ConeMesh>(radius, height, segments, material);
 	apply(p);
 	return p;
 }

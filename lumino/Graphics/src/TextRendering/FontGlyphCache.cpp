@@ -1,5 +1,5 @@
 ﻿#include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include "../../Font/src/FontCore.hpp"
 #include "FontGlyphCache.hpp"
 
@@ -43,7 +43,7 @@ bool FontGlyphTextureCache::init(FontCore* font)
     int w = std::max(mw, mh);
     m_glyphMaxBitmapSize = SizeI(w, w);
     SizeI textureSize(m_glyphWidthCount * w, m_glyphWidthCount * w);
-	m_fillGlyphsTexture = makeObject<Texture2D>(textureSize.width, textureSize.height, TextureFormat::RGBA8);
+	m_fillGlyphsTexture = makeObject_deprecated<Texture2D>(textureSize.width, textureSize.height, TextureFormat::RGBA8);
 	m_fillGlyphsTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 	// TODO: 最大 DeviceSize チェック
 

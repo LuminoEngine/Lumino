@@ -14,8 +14,7 @@ MeshTilemapModel::MeshTilemapModel()
 {
 }
 
-bool MeshTilemapModel::init()
-{
+Result MeshTilemapModel::init() {
     return Object::init();
 }
 

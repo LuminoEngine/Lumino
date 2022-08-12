@@ -535,7 +535,7 @@ void PhysicsWorld::processContactCommands()
 
 Ref<SpringJoint> SpringJoint::create()
 {
-    return makeObject<SpringJoint>();
+    return makeObject_deprecated<SpringJoint>();
 }
 
 SpringJoint::SpringJoint()

@@ -38,7 +38,7 @@ Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
     //
     //if (LN_REQUIRE(ln::FileSystem::existsFile(assetFile))) return nullptr;
 
-    //auto asset = ln::makeObject<ln::AssetModel>();
+    //auto asset = ln::makeObject_deprecated<ln::AssetModel>();
     //if (!asset->loadInternal(assetFile)) {
     //    LN_NOTIMPLEMENTED();    // TODO: error
     //    return nullptr;
@@ -51,11 +51,11 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
 {
     LN_NOTIMPLEMENTED();
     //if (sourceFilePath.hasExtension("png")) {
-    //    auto texture = ln::makeObject<ln::Texture2D>(sourceFilePath);
+    //    auto texture = ln::makeObject_deprecated<ln::Texture2D>(sourceFilePath);
     //    //texture->setAssetId(ln::Uuid::generate());
     //    texture->setAssetSource(destinationFilePath);
 
-    //    auto asset = ln::makeObject<ln::AssetModel>(texture);
+    //    auto asset = ln::makeObject_deprecated<ln::AssetModel>(texture);
     //    asset->saveInternal(destinationFilePath.str() + ln::AssetModel::AssetFileExtension);
 
     //    if (ln::Path::compare(sourceFilePath, destinationFilePath) != 0)
@@ -68,7 +68,7 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
 
 ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePath)
 {
-    auto t = ln::makeObject<ln::AssetModel>(asset);//ln::AssetModel::create(asset);
+    auto t = ln::makeObject_deprecated<ln::AssetModel>(asset);//ln::AssetModel::create(asset);
     ln::detail::AssetManager::instance()->saveAssetModelToLocalFile(t, filePath);
     //asset->setAssetId(ln::Uuid::generate());
     //ln::String json = ln::JsonSerializer::serialize(*t, filePath.parent(), ln::JsonFormatting::Indented);

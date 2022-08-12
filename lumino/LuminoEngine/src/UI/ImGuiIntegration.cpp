@@ -2,20 +2,20 @@
 #include <LuminoPlatform/PlatformEvent.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "../../Font/src/FontManager.hpp"
-#include "../../../Graphics/src/RHI/Backend/GraphicsDeviceContext.hpp"
+#include "../../../Graphics/src/GPU/RHI/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
@@ -84,7 +84,7 @@ bool ImGuiIntegration::init(UIFrameWindow* frameWindow) {
 #else
     m_shader = detail::RenderingManager::instance()->builtinShader(BuiltinShader::Sprite);
 #endif
-    m_renderPass = makeObject<RenderPass>();
+    m_renderPass = makeObject_deprecated<RenderPass>();
     m_renderPass->setClearFlags(ClearFlags::All);
 
     return true;
@@ -147,11 +147,11 @@ void ImGuiIntegration::render(GraphicsCommandList* graphicsContext, RenderTarget
     // Create and grow buffers if needed
     if (!m_vertexBuffer || m_vertexBufferSize < draw_data->TotalVtxCount) {
         m_vertexBufferSize = draw_data->TotalVtxCount + 5000;
-        m_vertexBuffer = makeObject<VertexBuffer>(m_vertexBufferSize * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
+        m_vertexBuffer = makeObject_deprecated<VertexBuffer>(m_vertexBufferSize * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
     }
     if (!m_indexBuffer || m_indexBufferSize < draw_data->TotalIdxCount) {
         m_indexBufferSize = draw_data->TotalIdxCount + 10000;
-        m_indexBuffer = makeObject<IndexBuffer>(m_indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+        m_indexBuffer = makeObject_deprecated<IndexBuffer>(m_indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
     }
 
     Vertex* vtx_dst = static_cast<Vertex*>(m_vertexBuffer->writableData(0, draw_data->TotalVtxCount * sizeof(Vertex)));

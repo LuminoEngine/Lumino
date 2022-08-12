@@ -189,7 +189,7 @@ void AnimationLayer::init(AnimationMixerCore* owner) {
 AnimationState* AnimationLayer::addClipAndCreateState(AnimationClip* animationClip) {
     if (LN_REQUIRE(animationClip != nullptr)) return nullptr;
 
-    auto state = makeObject<AnimationState>(this, animationClip);
+    auto state = makeObject_deprecated<AnimationState>(this, animationClip);
     m_animationStatus.add(state);
     state->attachToTarget(m_owner);
     return state;
@@ -431,8 +431,8 @@ void AnimationController::init(IAnimationTargetObject* targetObject)
 
 	m_targetObject = targetObject;
 
-	m_core = makeObject<AnimationMixerCore>(this);
-	m_core->addLayer(makeObject<AnimationLayer>(m_core));
+	m_core = makeObject_deprecated<AnimationMixerCore>(this);
+	m_core->addLayer(makeObject_deprecated<AnimationLayer>(m_core));
 
 	int count = m_targetObject->getAnimationTargetElementCount();
 	for (int i = 0; i < count; i++)

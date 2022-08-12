@@ -22,10 +22,10 @@ bool LevelEditor::init()
 {
     AssetEditorModel::init();
 
-    m_hierarchyPane = ln::makeObject<LevelEditorHierarchyPane>(this);
-    m_propertyPane = ln::makeObject<LevelEditorPropertyPane>(this);
+    m_hierarchyPane = ln::makeObject_deprecated<LevelEditorHierarchyPane>(this);
+    m_propertyPane = ln::makeObject_deprecated<LevelEditorPropertyPane>(this);
 
-    //m_inspectorPane = ln::makeObject<ln::EditorPane>();
+    //m_inspectorPane = ln::makeObject_deprecated<ln::EditorPane>();
     //m_inspectorPane->setBackgroundColor(ln::Color::LightGray);
 
     m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_hierarchyPane) });
@@ -38,7 +38,7 @@ bool LevelEditor::init()
 void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
     m_assetModel = asset;
-    m_mainLayout = ln::makeObject<ln::UIVBoxLayout3>();
+    m_mainLayout = ln::makeObject_deprecated<ln::UIVBoxLayout3>();
     m_mainLayout->setName(_TT("---"));
     frame->addElement(m_mainLayout);
     {
@@ -49,7 +49,7 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
     }
 
 
-	m_mainViewport = ln::makeObject<ln::UIViewport>();
+	m_mainViewport = ln::makeObject_deprecated<ln::UIViewport>();
     //m_mainViewport->setVAlignment(ln::UIVAlignment::Stretch);
 	m_mainViewport->getGridLayoutInfo()->layoutWeight = 1;
     m_mainLayout->addChild(m_mainViewport);
@@ -57,15 +57,15 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
     //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
 
 
-    //auto m_mainWorld = dynamic_cast<ln::World*>(asset->target());//ln::makeObject<ln::World>(); //
+    //auto m_mainWorld = dynamic_cast<ln::World*>(asset->target());//ln::makeObject_deprecated<ln::World>(); //
     //if (LN_REQUIRE(m_mainWorld)) return;
     //auto m_mainWorldAsset = ln::AssetModel::create(m_mainWorld);
 
     // create world and view
     {
-        m_mainWorld = ln::makeObject<ln::World>();
-        m_mainCamera = ln::makeObject<ln::Camera>();
-        m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
+        m_mainWorld = ln::makeObject_deprecated<ln::World>();
+        m_mainCamera = ln::makeObject_deprecated<ln::Camera>();
+        m_mainWorldRenderView = ln::makeObject_deprecated<ln::WorldRenderView>();
         m_mainWorldRenderView->setTargetWorld(m_mainWorld);
         m_mainWorldRenderView->setCamera(m_mainCamera);
         m_mainWorldRenderView->setClearMode(ln::SceneClearMode::SkyDome);
@@ -76,19 +76,19 @@ void LevelEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
         m_mainWorldRenderView->setGizmoEnabled(true);
         m_mainViewport->addRenderView(m_mainWorldRenderView);
 
-        m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
+        m_mainCamera->addComponent(ln::makeObject_deprecated<ln::CameraOrbitControlComponent>());
     }
 
     // attach as main scene
     m_editingLevel = dynamic_cast<ln::Level*>(asset->target());
     m_mainWorld->addScene(m_editingLevel);
 
-	m_timer = ln::makeObject<ln::UIActiveTimer>();
+	m_timer = ln::makeObject_deprecated<ln::UIActiveTimer>();
 	m_timer->connectOnTick(ln::bind(this, &LevelEditor::handleTickEvent));
 	m_mainViewport->registerActiveTimer(m_timer);
 
 
-    frame->addAction(ln::makeObject<ln::UIAction>(EditorApplication::SaveCommand, [this](ln::UICommandEventArgs* x) {
+    frame->addAction(ln::makeObject_deprecated<ln::UIAction>(EditorApplication::SaveCommand, [this](ln::UICommandEventArgs* x) {
         printf("Save");
         //this->editorContext()->assetDatabase()->saveAsset(this->m_assetModel);
         ln::Assets::save(m_editingLevel);

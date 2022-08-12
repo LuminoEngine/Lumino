@@ -17,7 +17,7 @@
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoGraphics.hpp>
-#include <LuminoGraphics/RHI/GraphicsExtensionOpenGL.hpp>
+#include <LuminoGraphics/GPU/GraphicsExtensionOpenGL.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 using namespace ln;
 
@@ -165,7 +165,7 @@ void initLumino() {
 void initApp() {
     g_shader = Shader::load(U"simple");
 
-    g_vertexLayout = makeObject<VertexLayout>();
+    g_vertexLayout = makeObject_deprecated<VertexLayout>();
     g_vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
     // CCW
@@ -174,7 +174,7 @@ void initApp() {
         Vector4(-0.5, -0.25, 0, 1),
         Vector4(0.5, -0.25, 0, 1),
     };
-    g_vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 }
 
 void cleanupApp() {

@@ -36,7 +36,7 @@ static Vector2 toWorld(float x, float y, const Vector2& offset)
 
 Ref<EdgeListCollisionShape2D> TilemapPhysicsObject::createTilemapCollisionShape(const TilemapModel* tilemap)
 {
-	auto shape = makeObject<EdgeListCollisionShape2D>();
+	auto shape = makeObject_deprecated<EdgeListCollisionShape2D>();
 	auto tileSize = tilemap->tileSize();
 
 	uint32_t outerFlags = 0x00;	// Tilemap 範囲外の PassageFlags. 0x00 は侵入可。0xFF は侵入不可能。

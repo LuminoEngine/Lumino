@@ -12,16 +12,16 @@ namespace ln {
 
 Ref<Animator> Animator::create()
 {
-    return makeObject<Animator>();
+    return makeObject_deprecated<Animator>();
 }
 
 void Animator::init()
 {
 	Component::init();
-	m_core = makeObject<AnimationMixerCore>(this);
+	m_core = makeObject_deprecated<AnimationMixerCore>(this);
 
 	// TODO: とりあえずの 1 こ
-	m_core->addLayer(makeObject<AnimationLayer>(m_core));
+	m_core->addLayer(makeObject_deprecated<AnimationLayer>(m_core));
 }
 
 AnimationState* Animator::addClip(const StringRef& stateName, AnimationClip* animationClip)

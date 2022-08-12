@@ -100,14 +100,14 @@ LN_OBJECT_IMPLEMENT(Tileset, Object) {}
 
 Ref<Tileset> Tileset::create()
 {
-    return makeObject<Tileset>();
+    return makeObject_deprecated<Tileset>();
 }
 
 Ref<Tileset> Tileset::create(Texture* texture, int tilePixelWidth, int tilePixelHeight)
 {
-	auto material = makeObject<Material>();
+	auto material = makeObject_deprecated<Material>();
 	material->setMainTexture(texture);
-	auto tileset = makeObject<Tileset>();
+	auto tileset = makeObject_deprecated<Tileset>();
 	tileset->reset(material, tilePixelWidth, tilePixelHeight);
 	return tileset;
 }

@@ -27,18 +27,14 @@ void TestEnv::setup() {
     }
 
     EngineFeature feature = EngineFeature::Experimental; //EngineFeature::Public; //
-    //Logger::addStdErrAdapter();
     EngineSettings::setMainWindowSize(160, 120);
-    //EngineSettings::setMainBackBufferSize(160, 120);
     EngineSettings::setGraphicsAPI(graphicsAPI);
     EngineSettings::setPriorityGPUName(_TT("Microsoft Basic Render Driver"));
     EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setEngineFeatures(feature);
     EngineSettings::addAssetDirectory(LN_LOCALFILE(_TT("Assets")));
-    //EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
-    detail::EngineManager::s_settings.defaultObjectsCreation = true;
-    EngineContext::current()->initializeEngineManager();
-    detail::EngineDomain::engineManager()->initializeAllManagers();
+    Engine::initialize();
+    Engine::setupMainWindow(nullptr);
     detail::EngineDomain::engineManager()->sceneManager()->autoAddingToActiveWorld = true;
 
     if (feature == EngineFeature::Experimental) // Experimental

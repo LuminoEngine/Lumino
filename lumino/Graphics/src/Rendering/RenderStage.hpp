@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/DepthBuffer.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
-#include <LuminoGraphics/RHI/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/DepthBuffer.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
+#include <LuminoGraphics/GPU/ShaderInterfaceFramework.hpp>
 #include <LuminoGraphics/Rendering/Common.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
 

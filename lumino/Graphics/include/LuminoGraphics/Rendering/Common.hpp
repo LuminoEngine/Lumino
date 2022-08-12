@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "../RHI/Common.hpp"
+#include "../GPU/Common.hpp"
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoGraphics/Common.hpp>
-#include "../RHI/ShaderInterfaceFramework.hpp"
+#include "../GPU/ShaderInterfaceFramework.hpp"
 
 #define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
 #define LN_RLI_BATCH 1

@@ -29,7 +29,7 @@ bool UIButtonBase::init()
 void UIButtonBase::setText(const StringView& text)
 {
     if (!m_textContent) {
-        m_textContent = makeObject<UIText>();
+        m_textContent = makeObject_deprecated<UIText>();
         addElement(m_textContent);
     }
     m_textContent->setText(text);
@@ -95,12 +95,12 @@ LN_OBJECT_IMPLEMENT(UIButton, UIButtonBase) {}
 
 Ref<UIButton> UIButton::create()
 {
-    return makeObject<UIButton>();
+    return makeObject_deprecated<UIButton>();
 }
 
 Ref<UIButton> UIButton::create(const StringView& text)
 {
-    return makeObject<UIButton>(text);
+    return makeObject_deprecated<UIButton>(text);
 }
 
 UIButton::UIButton()

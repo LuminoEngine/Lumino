@@ -27,14 +27,14 @@ void MainWindow::onLoaded()
 	renderView()->setBackgroundColor(ln::Color::White);
 	renderView()->setClearMode(ln::SceneClearMode::ColorAndDepth);
 
-    m_documentManager = ln::makeObject<DocumentManager>();
+    m_documentManager = ln::makeObject_deprecated<DocumentManager>();
 
-	auto layout1 = ln::makeObject<ln::UIStackLayout2_Obsolete>();
+	auto layout1 = ln::makeObject_deprecated<ln::UIStackLayout2_Obsolete>();
 	layout1->setOrientation(ln::UILayoutOrientation::Horizontal);
     addElement(layout1);
 
 
-    m_mainHSplitter = ln::makeObject<ln::UISplitter>();
+    m_mainHSplitter = ln::makeObject_deprecated<ln::UISplitter>();
     m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Auto);
     m_mainHSplitter->setCellDefinition(1);
     m_mainHSplitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 300);
@@ -43,13 +43,13 @@ void MainWindow::onLoaded()
 
     {
 
-        m_navigatorManager = ln::makeObject<NavigatorManager>();
+        m_navigatorManager = ln::makeObject_deprecated<NavigatorManager>();
         m_navigatorManager->navigationViewOpen = ln::bind(this, &MainWindow::onNavigationViewOpen);
         m_navigatorManager->navigationViewClose = ln::bind(this, &MainWindow::onNavigationViewClose);
         m_mainHSplitter->addElement(m_navigatorManager);
 
 
-        m_mainVSplitter = ln::makeObject<ln::UISplitter>();
+        m_mainVSplitter = ln::makeObject_deprecated<ln::UISplitter>();
         m_mainVSplitter->setOrientation(ln::UILayoutOrientation::Vertical);
         m_mainVSplitter->setCellDefinition(0);
         m_mainVSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
@@ -57,7 +57,7 @@ void MainWindow::onLoaded()
 
         {
             {
-                auto documentHSplitter = ln::makeObject<ln::UISplitter>();
+                auto documentHSplitter = ln::makeObject_deprecated<ln::UISplitter>();
                 documentHSplitter->setName(_TT("documentHSplitter"));
                 documentHSplitter->setOrientation(ln::UILayoutOrientation::Horizontal);
                 documentHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 300);
@@ -73,7 +73,7 @@ void MainWindow::onLoaded()
 
             m_mainVSplitter->addElement(m_documentManager->toolPanesArea());
 
-            m_outputPane = ln::makeObject<OutputPane>();
+            m_outputPane = ln::makeObject_deprecated<OutputPane>();
             m_documentManager->toolPanesArea()->addPane(m_outputPane);
         }
 

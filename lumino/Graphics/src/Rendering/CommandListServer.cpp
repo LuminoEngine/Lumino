@@ -11,7 +11,7 @@ namespace detail {
 CommandList* CommandListServer::acquirePrimaryList(RenderPart index1, const RenderViewPoint* viewPoint) {
     Part& part = m_parts[static_cast<int>(index1)];
     if (!part.primaryList) {
-        part.primaryList = makeObject<CommandList>();
+        part.primaryList = makeObject_deprecated<CommandList>();
 
         // 作成済みの CommandList の clearCommandsAndState() は描画開始時に呼ばれるが、
         // 描画中に作られた CommandList のインスタンスに対しては個別に呼び出す必要がある。

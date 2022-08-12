@@ -54,9 +54,9 @@ void UIStyleInstance::setupDefault()
     blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
     tone = ColorTone(0.0f, 0.0f, 0.0f, 0.0f);
 
- //   auto tmp = makeObject<UIStyle>();
+ //   auto tmp = makeObject_deprecated<UIStyle>();
  //   tmp->setupDefault();
-	//backgroundMaterial = makeObject<Material>();
+	//backgroundMaterial = makeObject_deprecated<Material>();
  //   mergeFrom(tmp);
 }
 
@@ -399,7 +399,7 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 		}
 
 		if (modified) {
-			outStyleData->font = makeObject<Font>(desc);
+			outStyleData->font = makeObject_deprecated<Font>(desc);
 		}
 	}
 

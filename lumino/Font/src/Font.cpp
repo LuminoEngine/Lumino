@@ -13,12 +13,12 @@ const int Font::DefaultSize = 12.0f;
 
 Ref<Font> Font::create()
 {
-    return makeObject<Font>();
+    return makeObject_deprecated<Font>();
 }
 
 Ref<Font> Font::create(const String& family, float size)
 {
-    return makeObject<Font>(family, size);
+    return makeObject_deprecated<Font>(family, size);
 }
 
 void Font::setDefaultFont(Font* font)
@@ -125,7 +125,7 @@ bool Font::isAntiAlias() const
 
 Ref<Font> Font::clone() const
 {
-    auto ptr = makeObject<Font>();
+    auto ptr = makeObject_deprecated<Font>();
     ptr->m_manager = m_manager;
     ptr->m_desc = m_desc;
     ptr->m_rawFont = m_rawFont;

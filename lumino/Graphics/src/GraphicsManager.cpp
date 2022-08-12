@@ -1,28 +1,28 @@
-﻿#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/GraphicsResource.hpp>
-#include <LuminoGraphics/RHI/CommandQueue.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/GraphicsExtension.hpp>
+﻿#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/GraphicsResource.hpp>
+#include <LuminoGraphics/GPU/CommandQueue.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/GraphicsExtension.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include "RHI/RenderTargetTextureCache.hpp"
-#include "RHI/Backend/OpenGL/OpenGLDeviceContext.hpp"
+#include "GPU/RenderTargetTextureCache.hpp"
+#include "GPU/RHI/OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
-#include "RHI/Backend/Vulkan/VulkanDeviceContext.hpp"
+#include "GPU/RHI/Vulkan/VulkanDeviceContext.hpp"
 #endif
 #ifdef _WIN32
-#include "RHI/Backend/DirectX12/DX12DeviceContext.hpp"
+#include "GPU/RHI/DirectX12/DX12DeviceContext.hpp"
 #endif
-#include <LuminoGraphics/RHI/detail/RenderingCommandList.hpp>
+#include <LuminoGraphics/GPU/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
-#include "RHI/SingleFrameAllocator.hpp"
-#include "RHI/GraphicsProfiler.hpp"
+#include "GPU/SingleFrameAllocator.hpp"
+#include "GPU/GraphicsProfiler.hpp"
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
-#include "RHI/StreamingBufferAllocator.hpp"
-#include "RHI/RenderPassCache.hpp"
+#include "GPU/StreamingBufferAllocator.hpp"
+#include "GPU/RenderPassCache.hpp"
 //#include "Rendering/RenderingManager2.hpp"
 #include "Mesh/MeshManager.hpp"
 
@@ -250,25 +250,25 @@ bool GraphicsManager::init(const Settings& settings) {
 
     // default objects
     {
-        m_blackTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+        m_blackTexture = makeObject_deprecated<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_blackTexture->clear(Color::Black);
 
-        m_whiteTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+        m_whiteTexture = makeObject_deprecated<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_whiteTexture->clear(Color::White);
 
-        m_defaultNormalMap = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+        m_defaultNormalMap = makeObject_deprecated<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_defaultNormalMap->clear(Color(0.0f, 0.0f, 1.0f, 1.0f));
 
-        m_defaultSamplerState = makeObject<SamplerState>();
+        m_defaultSamplerState = makeObject_deprecated<SamplerState>();
         m_defaultSamplerState->setFrozen(true);
 
-        m_linearSamplerState = makeObject<SamplerState>(TextureFilterMode::Linear);
+        m_linearSamplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear);
         m_linearSamplerState->setFrozen(true);
 
-        m_pointClampSamplerState = makeObject<SamplerState>(TextureFilterMode::Point, TextureAddressMode::Clamp);
+        m_pointClampSamplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Point, TextureAddressMode::Clamp);
         m_pointClampSamplerState->setFrozen(true);
 
-        m_linearClampSamplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+        m_linearClampSamplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
         m_pointClampSamplerState->setFrozen(true);
     }
 
@@ -402,7 +402,7 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath) {
     // TODO: cache
     auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
     if (stream) {
-        return makeObject<Texture2D>(stream, TextureFormat::RGBA8); // TODO: format
+        return makeObject_deprecated<Texture2D>(stream, TextureFormat::RGBA8); // TODO: format
     }
     else {
         return nullptr;
@@ -432,7 +432,7 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringView& filePath) {
         return obj;
 	}
 
-	auto obj = makeObject<Texture2D>();
+	auto obj = makeObject_deprecated<Texture2D>();
 	obj->m_data = std::move(pathSet);
 	obj->reload();
 
@@ -449,7 +449,7 @@ Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::Asse
 
 GraphicsCommandList* GraphicsManager::getOpenGLIntegrationCommandList() {
     if (!m_openglIntegrationCommandList) {
-        m_openglIntegrationCommandList = makeObject<GraphicsCommandList>(this);
+        m_openglIntegrationCommandList = makeObject_deprecated<GraphicsCommandList>(this);
     }
     return m_openglIntegrationCommandList;
 }

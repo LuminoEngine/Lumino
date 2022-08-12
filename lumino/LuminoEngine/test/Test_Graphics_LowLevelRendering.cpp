@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 
 class Test_Graphics_LowLevelRendering : public ::testing::Test
 {
@@ -9,7 +9,7 @@ public:
 	{
 		m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("simple.psh"));
 
-		m_vertexDecl1 = makeObject<VertexLayout>();
+		m_vertexDecl1 = makeObject_deprecated<VertexLayout>();
 		m_vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	}
 
@@ -32,13 +32,13 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 #else
 		Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
 #endif
-		auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+		auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
         // RenderPass は Swap の数だけ作ってもいいし、1つを使いまわしても良い。
         // たくさんの RT に描画するときでも 1つだけ RenderPass を作れば良い。
         // ただし、その場合は RenderPass 切り替えのたびにキャッシュを検索する処理が入るのでパフォーマンスが悪くなる。
         // 常に RT,Depth,RenderPass をセットにして、RenderPass は生成後変更しないようにするとパフォーマンスがよくなる。
-        auto renderPass = makeObject<RenderPass>();
+        auto renderPass = makeObject_deprecated<RenderPass>();
 
 		// 何回か回して同期の問題が無いことを見る
         for (int i = 0; i < 10; i++)
@@ -73,7 +73,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 #else
 	Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
 #endif
-    auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	{
 		auto ctx = TestEnv::beginFrame();
@@ -117,9 +117,9 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 #if 0	// TODO: glDrawBuffers がなんかうまく動かなかったので一度保留。今のところ clear でまとめてクリアしてるところはない。RenderPass でやってる。
 	//* [ ] 複数 RT 設定時は index 0 だけクリアされること。
 	{
-		auto renderPass = makeObject<RenderPass>();
-		auto t1 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
-		auto t2 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
+		auto renderPass = makeObject_deprecated<RenderPass>();
+		auto t1 = makeObject_deprecated<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
+		auto t2 = makeObject_deprecated<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -196,8 +196,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 		auto usage = params[i].usage;
 		auto pool = params[i].pool;
 
-		auto vb1 = makeObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
-		auto vb2 = makeObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
+		auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(Vector4) * 3, usage);
+		auto vb2 = makeObject_deprecated<VertexBuffer>(sizeof(Vector4) * 3, usage);
 		vb1->setResourcePool(pool);
 		vb2->setResourcePool(pool);
 
@@ -388,10 +388,10 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	Vector3 uv1[3] = { { 0.5, 0, 0 }, { 0, 0, 0.5 }, { 0, -0.5, 0 }, };
 	Vector4 uv2[3] = { { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, };
 
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vb2 = makeObject<VertexBuffer>(sizeof(uv1), uv1, GraphicsResourceUsage::Static);
-	auto vb3 = makeObject<VertexBuffer>(sizeof(uv2), uv2, GraphicsResourceUsage::Static);
-	auto vd1 = makeObject<VertexLayout>();
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vb2 = makeObject_deprecated<VertexBuffer>(sizeof(uv1), uv1, GraphicsResourceUsage::Static);
+	auto vb3 = makeObject_deprecated<VertexBuffer>(sizeof(uv2), uv2, GraphicsResourceUsage::Static);
+	auto vd1 = makeObject_deprecated<VertexLayout>();
 	vd1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 	vd1->addElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
@@ -450,8 +450,8 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			Vector4(0, 0, 0, 1),
 			Vector4(-0.5, -0.25, 0, 1),
 		};
-		auto vb1 = makeObject<VertexBuffer>(sizeof(Vector4) * 5, vertices, usage);
-		auto ib1 = makeObject<IndexBuffer>(3, IndexBufferFormat::UInt16, usage);
+		auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(Vector4) * 5, vertices, usage);
+		auto ib1 = makeObject_deprecated<IndexBuffer>(3, IndexBufferFormat::UInt16, usage);
 		ib1->setResourcePool(pool);
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、更新できること
@@ -554,7 +554,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		Vector4(-0.5, -0.25, 0, 1),
 	};
 #endif
-	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	//* [ ] Viewport
 	{
@@ -659,7 +659,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		Vector4(-1, 0, 0, 1),
 	};
 #endif
-	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 
 	auto renderAndCapture = [&](std::function<void(detail::ShaderSecondaryDescriptor* shd)> setDescriptor) {
@@ -919,7 +919,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 	auto descriptorLayout = shader1->descriptorLayout();
 	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
@@ -943,9 +943,9 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		{ { 1, 1 }, { 0, 0, 0 }, },
 	};
 #endif
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto tex1 = makeObject<Texture2D>(2, 2);
+	auto tex1 = makeObject_deprecated<Texture2D>(2, 2);
 	auto bmp1 = tex1->map(MapMode::Write);
 	bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 	bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -983,7 +983,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("Texture3DTest-1.vsh"), LN_ASSETFILE("Texture3DTest-1.psh"));
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
 
@@ -998,9 +998,9 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 		{ { -1, 0, 0 }, { 0, 1, 0.5 }, },
 		{ { 0, 0, 0 }, { 1, 1, 0.5 }, },
 	};
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto tex1 = makeObject<Texture3D>(2, 2, 3);
+	auto tex1 = makeObject_deprecated<Texture3D>(2, 2, 3);
 	auto bmp1 = tex1->map(MapMode::Write);
 	bmp1->setPixel32(0, 0, 1, ColorI(255, 0, 0, 255));
 	bmp1->setPixel32(1, 0, 1, ColorI(255, 0, 255, 255));
@@ -1034,7 +1034,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	auto descriptorLayout = shader1->descriptorLayout();
 	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
@@ -1058,9 +1058,9 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		{ { 2, 2 },{ 0, 0, 0 }, },
 	};
 #endif
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto tex1 = makeObject<Texture2D>(2, 2);
+	auto tex1 = makeObject_deprecated<Texture2D>(2, 2);
 	auto bmp1 = tex1->map(MapMode::Write);
 	bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 	bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -1106,7 +1106,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		ctx->setShaderPass(shaderPass);
 		ctx->setShaderDescriptor_deprecated(shd);
 
-		auto sampler = makeObject<SamplerState>();
+		auto sampler = makeObject_deprecated<SamplerState>();
 		sampler->setFilterMode(TextureFilterMode::Linear);
 		sampler->setAddressMode(TextureAddressMode::Clamp);
 		tex1->setSamplerState(sampler);
@@ -1127,7 +1127,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	auto descriptorLayout = shader1->descriptorLayout();
 	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
@@ -1151,7 +1151,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		{ { 0, 0, 0.5 }, Color::Red },
 	};
 #endif
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
 #ifdef LN_COORD_RH
 	Vertex v2[] = {
@@ -1168,7 +1168,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		{ { 0.5, -0.5, 0 }, Color::Blue },
 	};
 #endif
-	auto vb2 = makeObject<VertexBuffer>(sizeof(v2), v2, GraphicsResourceUsage::Static);
+	auto vb2 = makeObject_deprecated<VertexBuffer>(sizeof(v2), v2, GraphicsResourceUsage::Static);
 
 #ifdef LN_COORD_RH
 	Vertex v3[] = {	// 裏面テスト用
@@ -1185,7 +1185,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		{ { 1, -1, 0 }, Color::Green },
 	};
 #endif
-	auto vb3 = makeObject<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
+	auto vb3 = makeObject_deprecated<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
 
 	// * [ ] check BlendState (RGB Add blend)
 	{
@@ -1450,7 +1450,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 			Vector4(-0.5, -0.25, 0, 1),
 		};
 #endif
-        auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+        auto vertexBuffer1 = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
         struct Vertex
         {
@@ -1472,16 +1472,16 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 			{ { 1, 1 }, { 1, -1, 0 }, },
 		};
 #endif
-        auto vertexBuffer2 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-        auto vertexDecl2 = makeObject<VertexLayout>();
+        auto vertexBuffer2 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+        auto vertexDecl2 = makeObject_deprecated<VertexLayout>();
         vertexDecl2->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
         vertexDecl2->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
-        auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
+        auto renderTarget1 = makeObject_deprecated<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
 
 		auto ctx = TestEnv::beginFrame();
         auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
-		auto renderPass = makeObject<RenderPass>();
+		auto renderPass = makeObject_deprecated<RenderPass>();
         renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
         // まず renderTarget1 へ緑色の三角形を描く
@@ -1534,15 +1534,15 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiRenderTarget)
 #else
 	Vector3 v[] = { { -1, 1, 0 },{ 1, 1, 0 },{ -1, -1, 0 },{ 1, -1, 0 } };
 #endif
-	auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexBuffer1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
-	auto renderTarget0 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
-	auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
+	auto renderTarget0 = makeObject_deprecated<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
+	auto renderTarget1 = makeObject_deprecated<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false, false);
 
 	auto ctx = TestEnv::beginFrame();
-	auto renderPass1 = makeObject<RenderPass>();
+	auto renderPass1 = makeObject_deprecated<RenderPass>();
 	renderPass1->setRenderTarget(0, renderTarget0);
 	renderPass1->setRenderTarget(1, renderTarget1);
 	renderPass1->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
@@ -1589,7 +1589,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Instancing)
 		Vector4(-1, 0, 0, 1),
 	};
 #endif
-	auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vertexBuffer1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	// オフセットとカラーをインスタンス分用意
 	InstanceData instanceData[] = {
@@ -1598,12 +1598,12 @@ TEST_F(Test_Graphics_LowLevelRendering, Instancing)
 		{ Vector4(0, -1, 0, 1), Vector4(0, 0, 1, 1) },
 		{ Vector4(1, -1, 0, 1), Vector4(1, 1, 0, 1) },
 	};
-	auto vertexBuffer2 = makeObject<VertexBuffer>(sizeof(instanceData), instanceData, GraphicsResourceUsage::Static);
+	auto vertexBuffer2 = makeObject_deprecated<VertexBuffer>(sizeof(instanceData), instanceData, GraphicsResourceUsage::Static);
 
 	uint16_t ib[] = { 0, 1, 2 };
-	auto indexBuffer1 = makeObject<IndexBuffer>(3, IndexBufferFormat::UInt16, ib, GraphicsResourceUsage::Static);
+	auto indexBuffer1 = makeObject_deprecated<IndexBuffer>(3, IndexBufferFormat::UInt16, ib, GraphicsResourceUsage::Static);
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(1, VertexElementType::Float4, VertexElementUsage::Position, 1, VertexInputRate::Instance);
 	vertexDecl1->addElement(1, VertexElementType::Float4, VertexElementUsage::Color, 0, VertexInputRate::Instance);
@@ -1633,7 +1633,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MipMap)
 	auto descriptorLayout = shader1->descriptorLayout();
 	auto shaderPass = shader1->techniques()[0]->passes()[0];
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 
@@ -1657,11 +1657,11 @@ TEST_F(Test_Graphics_LowLevelRendering, MipMap)
 		{ {  1, -1, 1 }, { 1, 1 }, },	// near
 	};
 #endif
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	// 四辺に黒線を引いたテクスチャ
 	SizeI gridTexSize(128, 128);
-	auto gridTex = makeObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
+	auto gridTex = makeObject_deprecated<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
 	gridTex->setMipmapEnabled(true);
 	gridTex->setResourceUsage(GraphicsResourceUsage::Static);
 	gridTex->clear(Color::White);

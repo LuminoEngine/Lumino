@@ -13,7 +13,7 @@ LN_OBJECT_IMPLEMENT(UIWindow, UIControl) {}
 
 Ref<UIWindow> UIWindow::create()
 {
-    return makeObject<UIWindow>();
+    return makeObject_deprecated<UIWindow>();
 }
 
 UIWindow::UIWindow()

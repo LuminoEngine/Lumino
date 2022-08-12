@@ -17,7 +17,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     MeshAutoTileset();
-	bool init();
+    Result init();
 
 private:
 };
@@ -30,7 +30,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     MeshTileset();
-	bool init();
+    Result init();
 
 private:
 };

@@ -50,7 +50,7 @@ void UIListView::init()
 {
     UIItemsControl::init();
 
-    auto layout = makeObject<UIStackLayout2_Obsolete>();
+    auto layout = makeObject_deprecated<UIStackLayout2_Obsolete>();
     layout->setOrientation(UILayoutOrientation::Vertical);
     setItemsLayoutPanel(layout);
 
@@ -73,10 +73,10 @@ void UIListView::refresh()
             auto childModel = m_model->getItem(i);
            // auto itemData = m_model->getData(childModel, u"");
 
-            //auto text = makeObject<UIText>();
+            //auto text = makeObject_deprecated<UIText>();
             //text->setText(itemData);
 
-            //auto child = makeObject<UITreeItem>();
+            //auto child = makeObject_deprecated<UITreeItem>();
             //child->setContent(text);
             //child->setViewModel(childModel);
             //child->setData(makeVariant(childModel));
@@ -89,7 +89,7 @@ void UIListView::refresh()
 
 Ref<UIListViewItem> UIListView::onGenerateItem(UICollectionItemViewModel* viewModel)
 {
-    auto item = makeObject<UIListViewItem>();
+    auto item = makeObject_deprecated<UIListViewItem>();
     item->setViewModel(viewModel);
     return item;
 }

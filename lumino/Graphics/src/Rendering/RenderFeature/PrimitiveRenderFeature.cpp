@@ -1,9 +1,9 @@
 ﻿#if 0
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "PrimitiveRenderFeature.hpp"
 
@@ -167,13 +167,13 @@ void MeshGeneraterRenderFeature::prepareBuffers(int vertexCount, int indexCount)
 
 	size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
 	if (!m_vertexBuffer || m_vertexBuffer->size() < vertexBufferSize) {
-		m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
+		m_vertexBuffer = makeObject_deprecated<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
 	}
 
 	size_t indexBufferSize = sizeof(uint16_t) * indexCount;
 	if (!m_indexBuffer || m_indexBuffer->bytesSize() < indexCount)
 	{
-		m_indexBuffer = makeObject<IndexBuffer>(vertexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+		m_indexBuffer = makeObject_deprecated<IndexBuffer>(vertexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 	}
 }
 

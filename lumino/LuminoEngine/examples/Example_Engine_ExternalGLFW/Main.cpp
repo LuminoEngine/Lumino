@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include <LuminoEngine.hpp>
-#include <LuminoGraphics/RHI/GraphicsExtensionOpenGL.hpp>
+#include <LuminoGraphics/GPU/GraphicsExtensionOpenGL.hpp>
 #include <LuminoPlatform/ExternalProxyPlatformWindow.hpp>
 #include <LuminoEngine/Engine/ApplicationRunner.hpp>
 using namespace ln;

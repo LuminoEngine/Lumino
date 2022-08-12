@@ -26,11 +26,11 @@ class App_Example_Navigator : public Application
 
   //      //auto windowSkin = Texture2D::load(_TT("Window1");
 
-  //      m_navigator = makeObject<UIFocusNavigator>();
+  //      m_navigator = makeObject_deprecated<UIFocusNavigator>();
   //      m_navigator->setBackgroundColor(Color(1., 1., 1., 0.5));    //Color::Green);
   //      Engine::mainUIView()->addElement(m_navigator);
 
-		//auto layout1 = makeObject<UIHBoxLayout3>();
+		//auto layout1 = makeObject_deprecated<UIHBoxLayout3>();
 		//m_navigator->addChild(layout1);
 
 

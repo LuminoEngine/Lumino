@@ -21,7 +21,7 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 	//setBackgroundColor(ln::Color::Red);
 
 
-	auto mainLauout = ln::makeObject<ln::UIGridLayout>();
+	auto mainLauout = ln::makeObject_deprecated<ln::UIGridLayout>();
 	mainLauout->setName(_TT("PropertyPane.mainLauout"));
 	mainLauout->setColumnCount(2);
 	mainLauout->setAlignments(ln::UIAlignment::Top);
@@ -32,7 +32,7 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 		auto text1 = ln::UIText::create(_TT("FogStartDistance"));
 		mainLauout->addChild(text1);
 
-		auto field1 = ln::makeObject<ln::UISliderField>();
+		auto field1 = ln::makeObject_deprecated<ln::UISliderField>();
 		field1->setMaximum(1000);
 		field1->setChanged([this](float v) { m_levelEditorModel->editingLevel()->acquireRenderParameters()->m_fogStartDistance = v; });
 		mainLauout->addChild(field1);
@@ -43,7 +43,7 @@ bool LevelEditorPropertyPane::init(LevelEditor* model)
 		auto text1 = ln::UIText::create(_TT("FogDensity"));
 		mainLauout->addChild(text1);
 
-		auto field1 = ln::makeObject<ln::UISliderField>();
+		auto field1 = ln::makeObject_deprecated<ln::UISliderField>();
 		field1->setChanged([this](float v) { m_levelEditorModel->editingLevel()->acquireRenderParameters()->m_fogDensity = v; });
 		mainLauout->addChild(field1);
 	}

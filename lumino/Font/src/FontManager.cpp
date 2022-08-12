@@ -163,7 +163,7 @@ bool FontManager::init(const Settings& settings)
 
     FontDesc desc;
     desc.Family = _TT("mplus-1c-regular-ascii-subset");
-    m_defaultFont = makeObject<Font>(desc);
+    m_defaultFont = makeObject_deprecated<Font>(desc);
 
     if (!settings.fontFile.isEmpty()) {
         registerFontFromFile(settings.fontFile, true);
@@ -183,7 +183,7 @@ bool FontManager::init(const Settings& settings)
 		registerFontFromFile(emojiFontPath, false);
 		FontDesc desc;
 		desc.Family = _TT("Noto Color Emoji");
-		m_emojiFont = makeObject<Font>(desc);
+		m_emojiFont = makeObject_deprecated<Font>(desc);
 	}
 
 
@@ -559,7 +559,7 @@ Font* GlyphIconFontManager::getFontAwesomeFont(const StringView& style, int size
 		font = itr->second;
 	}
 	else {
-		auto newFont = makeObject<Font>(familyName, size);
+		auto newFont = makeObject_deprecated<Font>(familyName, size);
 		fontMap->insert({size, newFont});
 		font = newFont;
 	}

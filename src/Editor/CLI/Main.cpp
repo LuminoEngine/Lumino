@@ -226,7 +226,7 @@ static int processCommands(int argc, char** argv) {
         //--------------------------------------------------------------------------------
         // new command
         if (parser.has(newCommand)) {
-            auto workspace = ln::makeObject<lna::Workspace>();
+            auto workspace = ln::makeObject_deprecated<lna::Workspace>();
             auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
 
             NewCommand cmd;
@@ -247,7 +247,7 @@ static int processCommands(int argc, char** argv) {
         //--------------------------------------------------------------------------------
         // build command
         else if (parser.has(buildCommand)) {
-            auto workspace = ln::makeObject<lna::Workspace>();
+            auto workspace = ln::makeObject_deprecated<lna::Workspace>();
             auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
 
             ln::String target = workspace->buildEnvironment()->defaultTargetName();
@@ -267,7 +267,7 @@ static int processCommands(int argc, char** argv) {
         //--------------------------------------------------------------------------------
         // run command
         else if (parser.has(runCommand)) {
-            auto workspace = ln::makeObject<lna::Workspace>();
+            auto workspace = ln::makeObject_deprecated<lna::Workspace>();
             auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
 
             ln::String target = workspace->buildEnvironment()->defaultTargetName();
@@ -293,7 +293,7 @@ static int processCommands(int argc, char** argv) {
         //--------------------------------------------------------------------------------
         // restore command
         else if (parser.has(restoreCommand)) {
-            auto workspace = ln::makeObject<lna::Workspace>();
+            auto workspace = ln::makeObject_deprecated<lna::Workspace>();
             auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
 
             if (!workspace->openMainProject(projectFile)) {
@@ -318,7 +318,7 @@ static int processCommands(int argc, char** argv) {
         //--------------------------------------------------------------------------------
         // new-asset command
         else if (parser.has(newAssetCommand)) {
-            auto workspace = ln::makeObject<lna::Workspace>();
+            auto workspace = ln::makeObject_deprecated<lna::Workspace>();
             auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
             if (!workspace->openMainProject(projectFile)) {
                 return 1;

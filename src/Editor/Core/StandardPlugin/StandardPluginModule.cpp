@@ -16,7 +16,7 @@ namespace lna {
 //int StandardTextureImporterExtension::matchFilePath(const ln::Path& filePath)
 //{
 //    // TODO: static メソッドにしたい
-//    auto importer = ln::makeObject<ln::TextureImporter>();
+//    auto importer = ln::makeObject_deprecated<ln::TextureImporter>();
 //    if (importer->testSupportedExtensions(filePath)) {
 //        return BasePriority;
 //    }
@@ -25,7 +25,7 @@ namespace lna {
 //
 //Ref<ln::AssetImporter> StandardTextureImporterExtension::createImporter(const ln::Char* assetSourceFilePath)
 //{
-//    auto importer = ln::makeObject<ln::TextureImporter>();
+//    auto importer = ln::makeObject_deprecated<ln::TextureImporter>();
 //    if (!importer->testSupportedExtensions(assetSourceFilePath)) {
 //        return nullptr;
 //    }
@@ -40,7 +40,7 @@ bool LevelEditorModelFactory::checkTargetType(const ln::TypeInfo* assetType)
 
 Ref<lna::AssetEditorModel> LevelEditorModelFactory::createAssetEditorModel()
 {
-    return ln::makeObject<lna::LevelEditor>();
+    return ln::makeObject_deprecated<lna::LevelEditor>();
 }
 
 //==============================================================================
@@ -49,22 +49,22 @@ Ref<lna::AssetEditorModel> LevelEditorModelFactory::createAssetEditorModel()
 StandardPluginModule::StandardPluginModule()
 {
     //{
-    //    auto ext = ln::makeObject<StandardTextureImporterExtension>();
+    //    auto ext = ln::makeObject_deprecated<StandardTextureImporterExtension>();
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
     //{
-    //    auto ext = ln::makeObject<AssetBrowserNavigatorExtension>();
+    //    auto ext = ln::makeObject_deprecated<AssetBrowserNavigatorExtension>();
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
     //{
-    //    auto ext = ln::makeObject<SceneNavigatorExtension>();
+    //    auto ext = ln::makeObject_deprecated<SceneNavigatorExtension>();
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
     //{
-    //    auto ext = ln::makeObject<TilemapSceneEditorExtension>();
+    //    auto ext = ln::makeObject_deprecated<TilemapSceneEditorExtension>();
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
@@ -72,10 +72,10 @@ StandardPluginModule::StandardPluginModule()
 
 void StandardPluginModule::onActivate(lna::EditorContext* context)
 {
-    m_navigator = ln::makeObject<AssetBrowserNavigator>(context);
+    m_navigator = ln::makeObject_deprecated<AssetBrowserNavigator>(context);
     context->navigatorManager()->addNavigator(m_navigator);
 
-    m_levelEditorModelFactory = ln::makeObject<LevelEditorModelFactory>();
+    m_levelEditorModelFactory = ln::makeObject_deprecated<LevelEditorModelFactory>();
     context->pluginManager()->registerAssetEditorFactory(m_levelEditorModelFactory);
 }
 

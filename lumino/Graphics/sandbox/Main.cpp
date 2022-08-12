@@ -39,7 +39,7 @@ void run() {
     auto shaderVariants2 = Array<std::string>{ "LN_USE_INSTANCING" };
     auto shaderPass2 = shader2->findTechniqueByVariantKey(kokage::VariantSet::calcHash(shaderVariants2), true)->passes()[0];
 
-    auto vertexLayout = makeObject<VertexLayout>();
+    auto vertexLayout = makeObject_deprecated<VertexLayout>();
     vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
     // CCW
@@ -48,9 +48,9 @@ void run() {
         Vector4(-0.5, -0.25, 0, 1),
         Vector4(0.5, -0.25, 0, 1),
     };
-    auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto swapChain = makeObject<SwapChain>(window);
+    auto swapChain = makeObject_deprecated<SwapChain>(window);
 
     //auto spriteRenderer = makeURef<detail::SpriteRenderer>();
     //spriteRenderer->init();

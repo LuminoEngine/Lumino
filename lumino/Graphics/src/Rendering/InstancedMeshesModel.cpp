@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoGraphics/Rendering/InstancedMeshesModel.hpp>
 
@@ -74,7 +74,7 @@ void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout*
 	if (m_dirty) {
 		if (m_sourceVertexLayout != *outDecl) {
 			m_sourceVertexLayout = *outDecl;
-			m_vertexLayout = makeObject<VertexLayout>();
+			m_vertexLayout = makeObject_deprecated<VertexLayout>();
 			for (auto& e : m_sourceVertexLayout->vertexElements()) {
 				m_vertexLayout->addElement(e);
 			}
@@ -89,7 +89,7 @@ void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout*
 		}
 
 		if (!m_instanceBuffer || (m_instanceBuffer->size() / sizeof(InstanceData)) < m_instanceCount) {
-			m_instanceBuffer = makeObject<VertexBuffer>(m_instanceCount * sizeof(InstanceData), GraphicsResourceUsage::Dynamic);
+			m_instanceBuffer = makeObject_deprecated<VertexBuffer>(m_instanceCount * sizeof(InstanceData), GraphicsResourceUsage::Dynamic);
 		}
 
 		void* data = m_instanceBuffer->writableData();

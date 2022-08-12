@@ -29,7 +29,7 @@ bool ParticleInstance2::init(ParticleModel* model)
     
 
     for (auto& emitterModel : m_model->emitters()) {
-        auto instance = makeObject<ParticleEmitterInstance2>(this, emitterModel);
+        auto instance = makeObject_deprecated<ParticleEmitterInstance2>(this, emitterModel);
         m_emitterInstances.add(instance);
     }
 
@@ -76,7 +76,7 @@ ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleEmitterModel* emit
 
     if (geometry->type() == ParticleGeometryType::Sprite) {
         auto* g = static_cast<SpriteParticleGeometry*>(geometry);
-        auto renderer = makeObject<SpriteParticleRenderer>(hashKey, g->material(), emitterModel->m_geometryDirection);
+        auto renderer = makeObject_deprecated<SpriteParticleRenderer>(hashKey, g->material(), emitterModel->m_geometryDirection);
         m_renderers.add(renderer);
         return renderer;
     }
@@ -113,7 +113,7 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
     m_particleStorage.resize(m_emitterModel->m_maxParticles);
 
     if (emitterModel->m_trailSeconds > 0.0f) {
-        m_moduleInsances = makeObject<TrailParticleModuleInstance>(this, emitterModel);
+        m_moduleInsances = makeObject_deprecated<TrailParticleModuleInstance>(this, emitterModel);
     }
 
 

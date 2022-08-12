@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/RenderPass.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/SwapChain.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/SwapChain.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -254,7 +254,7 @@ UIFrameWindow::UIFrameWindow()
     : m_updateMode(UIFrameWindowUpdateMode::EventDispatches)
     , m_ImGuiLayerEnabled(false)
     , m_realtimeRenderingEnabled(true)
-    , m_layoutContext(makeObject<UILayoutContext>()) {
+    , m_layoutContext(makeObject_deprecated<UILayoutContext>()) {
     m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
@@ -376,7 +376,7 @@ void UIFrameWindow::setupPlatformWindow(PlatformWindow* platformMainWindow, bool
 
     // TODO: このフラグは PlatformWindow に持たせていいかも
     if (!useExternalSwapChain) {
-        m_swapChain = makeObject<SwapChain>(platformMainWindow);
+        m_swapChain = makeObject_deprecated<SwapChain>(platformMainWindow);
     }
 
     m_platformWindow->attachEventListener(this);
@@ -682,20 +682,22 @@ UIMainWindow::UIMainWindow() {
 UIMainWindow::~UIMainWindow() {
 }
 
-void UIMainWindow::init(bool useExternalSwapChain) {
+Result UIMainWindow::init(bool useExternalSwapChain) {
 
     // サブクラスの init 等で、AllowDragDrop や WindowSize など PlatformWindow が実態をもつプロパティにアクセス試合ことがある。
     // そのためこの時点で PlatformWindow をアタッチしておきたい。
     InitInfo info;
     info.platformWindow = detail::PlatformManager::instance()->mainWindow();
     info.createSwapChain = !useExternalSwapChain;
-    UIFrameWindow::init(info);
+    LN_TRY(UIFrameWindow::init(info));
 
     m_updateMode = UIFrameWindowUpdateMode::Polling;
 
 
     // TODO: ここでいい？
     onLoaded();
+
+    return ok();
 }
 
 //void UIMainWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
@@ -720,7 +722,7 @@ void UINativeFrameWindow::attachRenderingThread(/*RenderingType renderingType*/)
     // TODO: GraphicsCommandList の持ち方を変えた。要検討
     assert(0);
     //if (LN_REQUIRE(!m_graphicsContext)) return;
-    //m_graphicsContext = makeObject<GraphicsCommandList>(renderingType);
+    //m_graphicsContext = makeObject_deprecated<GraphicsCommandList>(renderingType);
 }
 
 void UINativeFrameWindow::detachRenderingThread() {

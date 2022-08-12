@@ -1,19 +1,20 @@
-﻿#include <rapidjson/encodings.h>
-#include <rapidjson/document.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/error/en.h>
+﻿#define RAPIDJSON_NAMESPACE ln_rapidjson
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/encodings.h"
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/error/en.h"
 #include <LuminoCore/Serialization/ArchiveStore.hpp>
 #include <LuminoCore/Runtime/Object.hpp>
 #include <LuminoCore/Runtime/Archive.hpp>
 
 namespace ln {
-
 namespace detail {
-using RapidJsonStringRef = rapidjson::GenericStringRef<char32_t>;
-using RapidJsonValue = rapidjson::GenericValue<rapidjson::UTF32LE<char32_t>>;
-using RapidJsonDocument = rapidjson::GenericDocument<rapidjson::UTF32LE<char32_t>>;
-using RapidJsonStringBuffer = rapidjson::GenericStringBuffer<rapidjson::UTF32LE<char32_t>>;
+using RapidJsonStringRef = RAPIDJSON_NAMESPACE::GenericStringRef<char32_t>;
+using RapidJsonValue = RAPIDJSON_NAMESPACE::GenericValue<RAPIDJSON_NAMESPACE::UTF32LE<char32_t>>;
+using RapidJsonDocument = RAPIDJSON_NAMESPACE::GenericDocument<RAPIDJSON_NAMESPACE::UTF32LE<char32_t>>;
+using RapidJsonStringBuffer = RAPIDJSON_NAMESPACE::GenericStringBuffer<RAPIDJSON_NAMESPACE::UTF32LE<char32_t>>;
 
 class JsonArchiveStore3 : public ArchiveStore {
 public:
@@ -492,9 +493,9 @@ void JsonArchiveStore3::setupSave() {
 }
 
 ArchiveResult<> JsonArchiveStore3::setupLoad(const String& text) {
-    rapidjson::ParseResult result = m_document.Parse<rapidjson::kParseDefaultFlags | rapidjson::kParseNanAndInfFlag>(text.c_str(), text.size());
+    RAPIDJSON_NAMESPACE::ParseResult result = m_document.Parse<RAPIDJSON_NAMESPACE::kParseDefaultFlags | RAPIDJSON_NAMESPACE::kParseNanAndInfFlag>(text.c_str(), text.size());
     if (!result) {
-        const auto message = fmt::format("JSON parse error: {} (offset:{})", GetParseError_En(result.Code()), result.Offset());
+        const auto message = LN_FMT_NAMESPACE::format("JSON parse error: {} (offset:{})", GetParseError_En(result.Code()), result.Offset());
         return err(ln::String::fromUtf8(message));
     }
     m_current = &m_document;
@@ -503,7 +504,7 @@ ArchiveResult<> JsonArchiveStore3::setupLoad(const String& text) {
 
 String JsonArchiveStore3::toString(JsonFormatting formatting) const {
     RapidJsonStringBuffer buffer;
-    rapidjson::Writer<RapidJsonStringBuffer, rapidjson::UTF32LE<char32_t>, rapidjson::UTF32LE<char32_t>, rapidjson::CrtAllocator, rapidjson::kWriteDefaultFlags | rapidjson::kWriteNanAndInfFlag> writer(buffer);
+    RAPIDJSON_NAMESPACE::Writer<RapidJsonStringBuffer, RAPIDJSON_NAMESPACE::UTF32LE<char32_t>, RAPIDJSON_NAMESPACE::UTF32LE<char32_t>, RAPIDJSON_NAMESPACE::CrtAllocator, RAPIDJSON_NAMESPACE::kWriteDefaultFlags | RAPIDJSON_NAMESPACE::kWriteNanAndInfFlag> writer(buffer);
     if (!m_document.Accept(writer)) {
         LN_ERROR();
         return String::Empty;
@@ -528,7 +529,7 @@ void JsonArchiveStore3::onWriteObject() {
     else {
         const String& key = getNextName();
         RapidJsonStringRef k(key.c_str(), key.length());
-        m_stack.push({ RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(rapidjson::kObjectType) });
+        m_stack.push({ RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(RAPIDJSON_NAMESPACE::kObjectType) });
     }
 }
 
@@ -560,7 +561,7 @@ void JsonArchiveStore3::onWriteArray() {
     else {
         const String& key = getNextName();
         RapidJsonStringRef k(key.c_str(), key.length());
-        m_stack.push({ RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(rapidjson::kArrayType) });
+        m_stack.push({ RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(RAPIDJSON_NAMESPACE::kArrayType) });
     }
 }
 
@@ -588,10 +589,10 @@ void JsonArchiveStore3::onWriteValueNull() {
     RapidJsonValue* container = savingContainer();
     if (container->IsObject()) {
         RapidJsonStringRef k = toStringRef(getNextName());
-        container->AddMember(RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(rapidjson::kNullType), m_document.GetAllocator());
+        container->AddMember(RapidJsonValue(k, m_document.GetAllocator()), RapidJsonValue(RAPIDJSON_NAMESPACE::kNullType), m_document.GetAllocator());
     }
     else if (container->IsArray()) {
-        container->PushBack(RapidJsonValue(rapidjson::kNullType), m_document.GetAllocator());
+        container->PushBack(RapidJsonValue(RAPIDJSON_NAMESPACE::kNullType), m_document.GetAllocator());
     }
     else {
         LN_UNREACHABLE();
@@ -657,7 +658,7 @@ void JsonArchiveStore3::onWriteValueString(const String& value) {
 
 bool JsonArchiveStore3::onOpenContainer() {
     if (LN_REQUIRE(m_current)) return false;
-    if (LN_ASSERT(m_current->GetType() == rapidjson::kObjectType || m_current->GetType() == rapidjson::kArrayType)) return false;
+    if (LN_ASSERT(m_current->GetType() == RAPIDJSON_NAMESPACE::kObjectType || m_current->GetType() == RAPIDJSON_NAMESPACE::kArrayType)) return false;
     m_loadingStack.push(m_current);
     m_current = nullptr;
     return true;
@@ -734,19 +735,19 @@ StringView JsonArchiveStore3::onGetMemberKey(int index) const {
 
 ArchiveNodeType JsonArchiveStore3::onGetReadingValueType() {
     switch (m_current->GetType()) {
-        case rapidjson::kNullType:
+        case RAPIDJSON_NAMESPACE::kNullType:
             return ArchiveNodeType::Null;
-        case rapidjson::kFalseType:
+        case RAPIDJSON_NAMESPACE::kFalseType:
             return ArchiveNodeType::Bool;
-        case rapidjson::kTrueType:
+        case RAPIDJSON_NAMESPACE::kTrueType:
             return ArchiveNodeType::Bool;
-        case rapidjson::kObjectType:
+        case RAPIDJSON_NAMESPACE::kObjectType:
             return ArchiveNodeType::Object;
-        case rapidjson::kArrayType:
+        case RAPIDJSON_NAMESPACE::kArrayType:
             return ArchiveNodeType::Array;
-        case rapidjson::kStringType:
+        case RAPIDJSON_NAMESPACE::kStringType:
             return ArchiveNodeType::String;
-        case rapidjson::kNumberType:
+        case RAPIDJSON_NAMESPACE::kNumberType:
             if (m_current->IsFloat() || m_current->IsDouble() || m_current->IsLosslessFloat() || m_current->IsLosslessDouble()) {
                 return ArchiveNodeType::Double;
             }

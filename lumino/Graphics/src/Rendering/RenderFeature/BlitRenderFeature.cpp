@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "BlitRenderFeature.hpp"
@@ -44,7 +44,7 @@ void BlitRenderFeature::init(RenderingManager* manager)
 		{ Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White, Vector4(1, 0, 0, 1) },
 	};
 #endif
-	m_vertexBuffer = makeObject<VertexBuffer>(sizeof(vertices), vertices, GraphicsResourceUsage::Static);
+	m_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(vertices), vertices, GraphicsResourceUsage::Static);
 }
 
 RequestBatchResult BlitRenderFeature::blit(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)

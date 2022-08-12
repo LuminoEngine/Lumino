@@ -1,6 +1,6 @@
 ﻿#include <tiny_gltf.h>
 //#include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>

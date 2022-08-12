@@ -18,7 +18,7 @@ const String AssetModel::AssetFileExtension = _TT(".yml");//_TT(".lnasset";
 
 //Ref<AssetModel> AssetModel::create(Object* target)
 //{
-//	return makeObject<AssetModel>(target);
+//	return makeObject_deprecated<AssetModel>(target);
 //}
 
 const String AssetModel::EngineAssetsDirectory = _TT("Engine");
@@ -115,7 +115,7 @@ Ref<AssetProperty> AssetModel::findProperty(const String& path)
 		return nullptr;
 	}
 	else {
-		return makeObject<AssetProperty>(ref);
+		return makeObject_deprecated<AssetProperty>(ref);
 	}
 }
 

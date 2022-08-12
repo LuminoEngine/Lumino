@@ -6,8 +6,8 @@ include(cmake/LuminoConfig-LuminoGraphics.cmake)
 #-------------------------------------------------------------------------------
 file(GLOB LN_SOURCES "include/LuminoGraphics/*.hpp" "include/LuminoGraphics/detail/*.hpp" "include/*.hpp" "src/*.cpp" "src/*.hpp")
 
-file(GLOB LN_SOURCES_RHI "include/LuminoGraphics/RHI/*.hpp" "include/LuminoGraphics/RHI/detail/*.hpp" "src/RHI/*.cpp" "src/RHI/*.hpp")
-file(GLOB LN_SOURCES_RHI_Backend "src/RHI/Backend/*.cpp" "src/RHI/Backend/*.hpp")
+file(GLOB LN_SOURCES_GPU "include/LuminoGraphics/GPU/*.hpp" "include/LuminoGraphics/GPU/detail/*.hpp" "src/GPU/*.cpp" "src/GPU/*.hpp")
+file(GLOB LN_SOURCES_GPU_RHI "src/GPU/RHI/*.cpp" "src/GPU/RHI/*.hpp")
 
 file(GLOB LN_SOURCES_ShaderCompiler "include/LuminoGraphics/ShaderCompiler/*.hpp" "include/LuminoGraphics/ShaderCompiler/detail/*.hpp" "src/ShaderCompiler/*.cpp" "src/ShaderCompiler/*.hpp")
 file(GLOB LN_SOURCES_ShaderCompiler_Lexer "src/ShaderCompiler/Lexer/*.cpp" "src/ShaderCompiler/Lexer/*.hpp")
@@ -31,18 +31,18 @@ file(GLOB LN_SOURCES_Rendering_Kanata "include/LuminoGraphics/Rendering/Kanata/*
 file(GLOB LN_SOURCES_Rendering_Kanata_RenderFeature "include/LuminoGraphics/Rendering/Kanata/RenderFeature/*.hpp" "src/Rendering/Kanata/RenderFeature/*.cpp" "src/Rendering/Kanata/RenderFeature/*.hpp")
 
 if (LN_USE_OPENGL)
-    file(GLOB LN_SOURCES_RHI_Backend_OpenGL "src/RHI/Backend/OpenGL/*.cpp" "src/RHI/Backend/OpenGL/*.hpp")
+    file(GLOB LN_SOURCES_GPU_RHI_OpenGL "src/GPU/RHI/OpenGL/*.cpp" "src/GPU/RHI/OpenGL/*.hpp")
 endif()
 
 if (LN_USE_VULKAN)
     if (WIN32)
-        file(GLOB LN_SOURCES_RHI_Backend_Vulkan "src/RHI/Backend/Vulkan/*.cpp" "src/RHI/Backend/Vulkan/*.hpp")
+        file(GLOB LN_SOURCES_GPU_RHI_Vulkan "src/GPU/RHI/Vulkan/*.cpp" "src/GPU/RHI/Vulkan/*.hpp")
     endif()
 endif()
 
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
-    file(GLOB LN_SOURCES_RHI_Backend_DirectX12 "src/RHI/Backend/DirectX12/*.cpp" "src/RHI/Backend/DirectX12/*.hpp")
+    file(GLOB LN_SOURCES_GPU_RHI_DirectX12 "src/GPU/RHI/DirectX12/*.cpp" "src/GPU/RHI/DirectX12/*.hpp")
 elseif (APPLE)
 endif()
 
@@ -51,11 +51,11 @@ if (WIN32)
 endif()
 
 source_group("" FILES ${LN_SOURCES})
-source_group("RHI" FILES ${LN_SOURCES_RHI})
-source_group("RHI/Backend" FILES ${LN_SOURCES_RHI_Backend})
-source_group("RHI/Backend/OpenGL" FILES ${LN_SOURCES_RHI_Backend_OpenGL})
-source_group("RHI/Backend/Vulkan" FILES ${LN_SOURCES_RHI_Backend_Vulkan})
-source_group("RHI/Backend/DirectX12" FILES ${LN_SOURCES_RHI_Backend_DirectX12})
+source_group("GPU" FILES ${LN_SOURCES_GPU})
+source_group("GPU/RHI" FILES ${LN_SOURCES_GPU_RHI})
+source_group("GPU/RHI/OpenGL" FILES ${LN_SOURCES_GPU_RHI_OpenGL})
+source_group("GPU/RHI/Vulkan" FILES ${LN_SOURCES_GPU_RHI_Vulkan})
+source_group("GPU/RHI/DirectX12" FILES ${LN_SOURCES_GPU_RHI_DirectX12})
 source_group("ShaderCompiler" FILES ${LN_SOURCES_ShaderCompiler})
 source_group("ShaderCompiler/Lexer" FILES ${LN_SOURCES_ShaderCompiler_Lexer})
 source_group("ShaderCompiler/Windows" FILES ${LN_SOURCES_ShaderCompiler_Windows})
@@ -75,11 +75,11 @@ source_group("Rendering/Kanata/RenderFeature" FILES ${LN_SOURCES_Rendering_Kanat
 
 set(LN_SOURCES
     ${LN_SOURCES}
-    ${LN_SOURCES_RHI}
-    ${LN_SOURCES_RHI_Backend}
-    ${LN_SOURCES_RHI_Backend_OpenGL}
-    ${LN_SOURCES_RHI_Backend_Vulkan}
-    ${LN_SOURCES_RHI_Backend_DirectX12}
+    ${LN_SOURCES_GPU}
+    ${LN_SOURCES_GPU_RHI}
+    ${LN_SOURCES_GPU_RHI_OpenGL}
+    ${LN_SOURCES_GPU_RHI_Vulkan}
+    ${LN_SOURCES_GPU_RHI_DirectX12}
     ${LN_SOURCES_ShaderCompiler}
     ${LN_SOURCES_ShaderCompiler_Lexer}
     ${LN_SOURCES_ShaderCompiler_Windows}

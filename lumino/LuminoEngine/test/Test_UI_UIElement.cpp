@@ -13,7 +13,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
         auto tex1 = Texture2D::load(LN_ASSETFILE("Sprite1.png"));
 
         //* [ ] Visible
-        auto sprite1 = makeObject<UISprite>();
+        auto sprite1 = makeObject_deprecated<UISprite>();
 		sprite1->setAlignments(UIAlignment::TopLeft);
         sprite1->setTexture(tex1);
         sprite1->setPosition(0, 0, 0);
@@ -21,7 +21,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 		Engine::mainUIView()->addElement(sprite1);
 
         //* [ ] BlendMode
-        auto sprite2 = makeObject<UISprite>();
+        auto sprite2 = makeObject_deprecated<UISprite>();
 		sprite2->setAlignments(UIAlignment::TopLeft);
         sprite2->setTexture(tex1);
         sprite2->setBlendMode(BlendMode::Add);
@@ -29,7 +29,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 		Engine::mainUIView()->addElement(sprite2);
 
         //* [ ] Opacity
-        auto sprite3 = makeObject<UISprite>();
+        auto sprite3 = makeObject_deprecated<UISprite>();
 		sprite3->setAlignments(UIAlignment::TopLeft);
         sprite3->setTexture(tex1);
         sprite3->setPosition(64, 0, 0);
@@ -37,7 +37,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 		Engine::mainUIView()->addElement(sprite3);
 
         //* [ ] ColorScale
-        auto sprite4 = makeObject<UISprite>();
+        auto sprite4 = makeObject_deprecated<UISprite>();
 		sprite4->setAlignments(UIAlignment::TopLeft);
         sprite4->setTexture(tex1);
         sprite4->setPosition(96, 0, 0);
@@ -45,7 +45,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 		Engine::mainUIView()->addElement(sprite4);
 
         //* [ ] BlendColor
-        auto sprite5 = makeObject<UISprite>();
+        auto sprite5 = makeObject_deprecated<UISprite>();
 		sprite5->setAlignments(UIAlignment::TopLeft);
         sprite5->setTexture(tex1);
         sprite5->setPosition(0, 32, 0);
@@ -53,7 +53,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 		Engine::mainUIView()->addElement(sprite5);
 
         //* [ ] Tone
-        auto sprite6 = makeObject<UISprite>();
+        auto sprite6 = makeObject_deprecated<UISprite>();
 		sprite6->setAlignments(UIAlignment::TopLeft);
         sprite6->setTexture(tex1);
         sprite6->setPosition(32, 32, 0);
@@ -70,7 +70,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 //## Background
 TEST_F(Test_UI_UIElement, Background)
 {
-	//auto e1 = makeObject<UIElement>();
+	//auto e1 = makeObject_deprecated<UIElement>();
 
 	//e1->setBackgroundColor(Color::Red);
 

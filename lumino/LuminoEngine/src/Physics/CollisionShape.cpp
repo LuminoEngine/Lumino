@@ -9,8 +9,8 @@
 #include <bullet/BulletCollision/CollisionShapes/btTriangleIndexVertexArray.h>
 #include <bullet/BulletCollision/CollisionShapes/btCompoundShape.h>
 #include <LuminoEngine/Physics/CollisionShape.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include "BulletUtils.hpp"
 
@@ -39,8 +39,7 @@ CollisionShape::~CollisionShape()
 	LN_SAFE_DELETE(m_shape);
 }
 
-bool CollisionShape::init()
-{
+Result CollisionShape::init() {
 	return Object::init();
 }
 
@@ -72,7 +71,7 @@ LN_OBJECT_IMPLEMENT(PlaneCollisionShape, CollisionShape) {}
 //------------------------------------------------------------------------------
 Ref<PlaneCollisionShape> PlaneCollisionShape::create(const Vector3& direction)
 {
-    return makeObject<PlaneCollisionShape>(direction);
+    return makeObject_deprecated<PlaneCollisionShape>(direction);
 }
 
 //------------------------------------------------------------------------------
@@ -104,7 +103,7 @@ LN_OBJECT_IMPLEMENT(BoxCollisionShape, CollisionShape) {}
 //------------------------------------------------------------------------------
 Ref<BoxCollisionShape> BoxCollisionShape::create(const Vector3& size)
 {
-    return makeObject<BoxCollisionShape>(size);
+    return makeObject_deprecated<BoxCollisionShape>(size);
 }
 
 //------------------------------------------------------------------------------
@@ -123,8 +122,7 @@ BoxCollisionShape::~BoxCollisionShape()
 {
 }
 
-bool BoxCollisionShape::init()
-{
+Result BoxCollisionShape::init() {
 	return CollisionShape::init();
 }
 
@@ -148,7 +146,7 @@ LN_OBJECT_IMPLEMENT(SphereCollisionShape, CollisionShape) {}
 //------------------------------------------------------------------------------
 Ref<SphereCollisionShape> SphereCollisionShape::create(float radius)
 {
-    return makeObject<SphereCollisionShape>(radius);
+    return makeObject_deprecated<SphereCollisionShape>(radius);
 }
 	
 //------------------------------------------------------------------------------
@@ -161,8 +159,7 @@ SphereCollisionShape::~SphereCollisionShape()
 {
 }
 
-bool SphereCollisionShape::init()
-{
+Result SphereCollisionShape::init() {
 	return CollisionShape::init();
 }
 
@@ -180,7 +177,7 @@ LN_OBJECT_IMPLEMENT(CapsuleCollisionShape, CollisionShape) {}
 //------------------------------------------------------------------------------
 Ref<CapsuleCollisionShape> CapsuleCollisionShape::create(float radius, float height)
 {
-    return makeObject<CapsuleCollisionShape>(radius, height);
+    return makeObject_deprecated<CapsuleCollisionShape>(radius, height);
 }
 
 //------------------------------------------------------------------------------
@@ -193,8 +190,7 @@ CapsuleCollisionShape::~CapsuleCollisionShape()
 {
 }
 
-bool CapsuleCollisionShape::init()
-{
+Result CapsuleCollisionShape::init() {
 	return CollisionShape::init();
 }
 
@@ -213,7 +209,7 @@ LN_OBJECT_IMPLEMENT(MeshCollisionShape, CollisionShape) {}
 //------------------------------------------------------------------------------
 Ref<MeshCollisionShape> MeshCollisionShape::create(MeshPrimitive* mesh)
 {
-    return makeObject<MeshCollisionShape>(mesh);
+    return makeObject_deprecated<MeshCollisionShape>(mesh);
 }
 
 //------------------------------------------------------------------------------
@@ -228,8 +224,7 @@ MeshCollisionShape::~MeshCollisionShape()
 	LN_SAFE_DELETE(m_btMeshData);
 }
 
-bool MeshCollisionShape::init()
-{
+Result MeshCollisionShape::init() {
 	return CollisionShape::init();
 }
 

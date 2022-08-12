@@ -15,7 +15,7 @@ void ViewModel::load()
 {
 	ln::Scene::setAntialiasEnabled(true);
 
-	auto settings = ln::makeObject<ln::MeshImportSettings>();
+	auto settings = ln::makeObject_deprecated<ln::MeshImportSettings>();
 	//settings->setSkeletonImport(false);
 	//settings->setCharacterModelFormat(true);
 
@@ -31,11 +31,11 @@ void ViewModel::load()
 	//m_model = ln::MeshModel::load(_TT("D:/Materials/VRM/Vita.vrm");
 	
 	
-	m_meshComponent = ln::makeObject<VisualizedMeshComponent>();
+	m_meshComponent = ln::makeObject_deprecated<VisualizedMeshComponent>();
 	m_meshComponent->setModel(m_model);
 	//m_meshComponent->setShadingModel(ln::ShadingModel::Unlit);
 	m_meshComponent->setBlendMode(ln::BlendMode::Alpha);
-	m_meshObject = ln::makeObject<ln::WorldObject>();
+	m_meshObject = ln::makeObject_deprecated<ln::WorldObject>();
 	m_meshObject->addComponent(m_meshComponent);
 	m_meshObject->addInto();
 

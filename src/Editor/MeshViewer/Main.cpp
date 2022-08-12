@@ -1,5 +1,6 @@
 ﻿
 #include "Application.hpp"
+#include "MainWindow.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -7,7 +8,8 @@ int main(int argc, char *argv[])
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    auto app = ln::makeObject<Application>();
+    ln::Engine::setupMainWindow(ln::makeObject_deprecated<MainWindow>(false));
+    auto app = ln::makeObject_deprecated<Application>();
     ln::detail::ApplicationHelper::run(app);
     app->dispose();
     return 0;

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Rendering/InstancedMeshesModel.hpp>
@@ -46,7 +46,7 @@ void MeshAutoVoxelset::buildQubeFloorAndWall()
 		Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVWithWall);
 
 
-	m_mesh = makeObject<MeshPrimitive>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+	m_mesh = makeObject_deprecated<MeshPrimitive>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
 
 	// ZMinus を、指定方向に向けるための変換行列
 	const auto finalOffset = Vector3(0.5, 0.5, 0.5);
@@ -97,13 +97,13 @@ void MeshAutoVoxelset::buildQubeFloorAndWall()
 		}
 	}
 
-	//m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
+	//m_meshList = makeObject_deprecated<InstancedMeshList>(m_mesh, 0);
 	//m_meshList->setTransform(Matrix::makeTranslation(-5, 0, 0));
 	//m_meshList->drawMesh();
 	//m_meshList->setTransform(Matrix::makeTranslation(-1, 0, 0));
 	//m_meshList->drawMesh();
 	for (int i = 0; i < m_meshList.size(); i++) {
-		m_meshList[i] = makeObject<InstancedMeshList>(m_mesh, i);
+		m_meshList[i] = makeObject_deprecated<InstancedMeshList>(m_mesh, i);
 	}
 }
 
@@ -118,7 +118,7 @@ void MeshAutoVoxelset::buildFloor()
 	m_frameUVOffset.y = 0;
 	m_animationFrameCount = 3;
 
-	m_mesh = makeObject<MeshPrimitive>((4 * 4 * 48) * 1, (6 * 4 * 48) * 1);
+	m_mesh = makeObject_deprecated<MeshPrimitive>((4 * 4 * 48) * 1, (6 * 4 * 48) * 1);
 
 
 
@@ -151,7 +151,7 @@ void MeshAutoVoxelset::buildFloor()
 		}
 
 		m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
-		setInstancedMeshList((int)MeshTileFaceDirection::YPlus, i, false, makeObject<InstancedMeshList>(m_mesh, i));
+		setInstancedMeshList((int)MeshTileFaceDirection::YPlus, i, false, makeObject_deprecated<InstancedMeshList>(m_mesh, i));
 	}
 }
 
@@ -637,7 +637,7 @@ void MeshVoxelset::init()
 	m_material->setShadingModel(ShadingModel::Unlit);
 	m_material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
 
-	//m_autotileSet[0] = makeObject<MeshAutoVoxelset>();
+	//m_autotileSet[0] = makeObject_deprecated<MeshAutoVoxelset>();
 	//m_autotileSet[0]->setMaterial(m_material);
 	//m_autotileSet[0]->buildQubeFloorAndWall();
 
@@ -648,7 +648,7 @@ void MeshVoxelset::init()
 		material->setShadingModel(ShadingModel::Unlit);
 		material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
 
-		m_autotileSet[1] = makeObject<MeshAutoVoxelset>();
+		m_autotileSet[1] = makeObject_deprecated<MeshAutoVoxelset>();
 		m_autotileSet[1]->setMaterial(material);
 		m_autotileSet[1]->buildFloor();
 
@@ -662,13 +662,13 @@ void MeshVoxelset::init()
 	//	material->shadingModel = ShadingModel::Unlit;
 	//	material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
-	//	m_autotileSet[2] = makeObject<MeshAutoVoxelset>();
+	//	m_autotileSet[2] = makeObject_deprecated<MeshAutoVoxelset>();
 	//	m_autotileSet[2]->setMaterial(material);
 	//	m_autotileSet[2]->buildFloor();
 	//}
 	{
 
-		m_autotileSet[3] = makeObject<MeshAutoVoxelset>();
+		m_autotileSet[3] = makeObject_deprecated<MeshAutoVoxelset>();
 		m_autotileSet[3]->setMaterial(m_material);
 		m_autotileSet[3]->buildFloorAndSlopeWall();
 	}

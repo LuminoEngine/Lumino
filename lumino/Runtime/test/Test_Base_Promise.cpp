@@ -13,7 +13,7 @@ static Ref<TestPromise1> createObjectAsync(bool value) {
         LN_CHECK(g_mainThreadId != std::this_thread::get_id());
 
         if (value) {
-            p->resolve(makeObject<Object>());
+            p->resolve(makeObject_deprecated<Object>());
         }
         else {
             p->reject();

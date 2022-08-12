@@ -99,7 +99,7 @@ public:
             obj->m_data = std::move(pathSet);
         }
         else {
-            obj = makeObject<TObject>();
+            obj = makeObject_deprecated<TObject>();
             obj->m_data = std::move(pathSet);
             obj->reload();
         };
@@ -134,7 +134,7 @@ public:
             return task;
         }
 
-        auto obj = makeObject<TObject>();
+        auto obj = makeObject_deprecated<TObject>();
 
         // reload 前に先にインスタンスを登録して、
         // 同時に同じアセットがロードされようとしたときに別のインスタンスを作ってしまうケースに対応する。

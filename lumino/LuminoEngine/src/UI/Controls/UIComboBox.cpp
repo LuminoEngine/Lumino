@@ -110,7 +110,7 @@ void UIComboBox::init()
 	m_autoLayoutLogicalChildren = false;
 	//m_layoutItemsHostLayoutEnabled = false;
 
-	auto itemsHost = makeObject<UIStackLayout>();
+	auto itemsHost = makeObject_deprecated<UIStackLayout>();
 	itemsHost->setOrientation(UILayoutOrientation::Vertical);
 	m_itemsHost = itemsHost;
 	//setItemsLayoutPanel(m_itemsHost, false);
@@ -119,7 +119,7 @@ void UIComboBox::init()
 	//m_itemsHost->setBackgroundColor(Color::BlueViolet);
 	m_itemsHost->setMargin(5);
 
-    m_popup = ln::makeObject<ln::UIPopup>();
+    m_popup = ln::makeObject_deprecated<ln::UIPopup>();
     //m_popup->setWidth(200);
     //m_popup->setHeight(300);
     //m_popup->setBackgroundColor(Color::AliceBlue);
@@ -139,7 +139,7 @@ void UIComboBox::init()
 
 void UIComboBox::onAddChild(UIElement* child)
 {
-    auto item = ln::makeObject<UIComboBoxItem>();
+    auto item = ln::makeObject_deprecated<UIComboBoxItem>();
 	item->m_ownerComboBox = this;
     item->addElement(child);
 

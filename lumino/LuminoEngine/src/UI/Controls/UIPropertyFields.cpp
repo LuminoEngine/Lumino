@@ -174,7 +174,7 @@ bool UIColorPickerContent::init()
 	setBackgroundColor(Color::Gray);
 	setFocusable(true);
 
-	m_mesh = makeObject<MeshPrimitive>(1 + (ColorCircleSplits + 2) * 2, 0, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
+	m_mesh = makeObject_deprecated<MeshPrimitive>(1 + (ColorCircleSplits + 2) * 2, 0, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
 	auto* vb = static_cast<Vertex*>(m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
 
 	vb[0].setPosition(Vector3::Zero);
@@ -201,7 +201,7 @@ bool UIColorPickerContent::init()
 
 	m_mesh->addSection(0, ColorCircleSplits * 2 + 2, 0, PrimitiveTopology::TriangleFan);
 
-	m_material = makeObject<Material>();
+	m_material = makeObject_deprecated<Material>();
 
 	return true;
 }
@@ -282,18 +282,18 @@ bool UIColorField::init()
 	if (!UIPropertyField::init()) return false;
 
 	m_value = Color::White;
-	m_picker = makeObject<UIColorPickerContent>();
+	m_picker = makeObject_deprecated<UIColorPickerContent>();
 	m_picker->setChanged(makeDelegate(this, &UIColorField::handleColorChanged));
 
 	// TODO: PopUp なカラーピッカーは共通の単一インスタンスでいいかも
-	m_popup = makeObject<UIPopup>();
+	m_popup = makeObject_deprecated<UIPopup>();
 	m_popup->setBackgroundColor(Color::Red);
 	m_popup->setPlacementTarget(this);
 	m_popup->addChild(m_picker);
 	//addChild(m_popup);
 
 
-	//auto e = makeObject<UIElement>();
+	//auto e = makeObject_deprecated<UIElement>();
 	//e->setSize(100, 100);
 	//e->setBackgroundColor(Color::Green);
 	//m_popup->setPlacementTarget(e);

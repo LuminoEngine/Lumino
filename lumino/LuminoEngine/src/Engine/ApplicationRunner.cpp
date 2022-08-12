@@ -45,20 +45,16 @@ StandaloneApplicationRunner::StandaloneApplicationRunner() {
 Result StandaloneApplicationRunner::run(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance) {
     configureApp();
 
-    detail::EngineManager::s_settings.defaultObjectsCreation = false;
     LN_TRY(initEngine());
 
-    m_app = Ref<Application>(createAppInstance(), false);
 
-    auto settings = makeObject<ApplicationSetupSettings>();
-    m_app->onSetup(settings);
-    if (settings->m_mainWindow) {
-        m_app->setupMainWindow(settings->m_mainWindow, true);
-        settings->m_mainWindow->setImGuiLayerEnabled(true);
-    }
-    else {
-        m_app->setupMainWindow(makeObject<UIMainWindow>(detail::EngineManager::s_settings.useExternalSwapChain), true);
-    }
+	auto* manager = detail::EngineDomain::engineManager();
+
+    auto settings = makeObject_deprecated<ApplicationSetupSettings>();
+    m_app = Ref<Application>(createAppInstance(), false);
+    //m_app->onSetup(settings);
+    //manager->craeteDefaultObjectsIfNeeded(settings->m_mainWindow);
+	
 
     detail::EngineDomain::uiManager()->resetApp(m_app);
 

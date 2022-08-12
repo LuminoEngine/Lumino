@@ -4,6 +4,7 @@ class Application
     : public ln::Application
 {
 public:
+    static void configure();
     Application();
 
 protected:

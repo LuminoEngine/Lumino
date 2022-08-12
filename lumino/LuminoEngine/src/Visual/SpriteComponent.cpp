@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
@@ -66,7 +66,7 @@ Ref<SpriteSheet> SpriteSheet::load(StringView path)
 
 Ref<SpriteSheet> SpriteSheet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
-	return makeObject<SpriteSheet>(texture, frameWidth, frameHeight, anchorPoint);
+	return makeObject_deprecated<SpriteSheet>(texture, frameWidth, frameHeight, anchorPoint);
 }
 
 SpriteSheet::SpriteSheet()
@@ -128,7 +128,7 @@ void SpriteSheet::splitFrames()
         for (int x = 0; x < cols; x++)
         {
             // TODO: モノによっては大量の小オブジェクトができるので、できればまとめて alloc したりキャッシュしたい
-            auto frame = makeObject<SpriteFrame>();
+            auto frame = makeObject_deprecated<SpriteFrame>();
             frame->setSourceRect(Rect(x * m_frameWidth, y * m_frameHeight, m_frameWidth, m_frameHeight));
             frame->setAnchorPoint(m_anchorPoint);
             m_frames.add(frame);
@@ -199,7 +199,7 @@ bool SpriteComponent::init()
     m_sourceRect.set(0, 0, -1, -1);
     //setSize(Size(1, 1));
 
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     //m_material->setEmissive(Color(1,1,1,0.5));
     setBlendMode(BlendMode::Alpha);
     setCullMode(CullMode::None);

@@ -30,7 +30,7 @@
 #define LNI_BOOL_TO_LNBOOL(x)    (x) ? LN_TRUE : LN_FALSE
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
 
-#define LNI_CREATE_OBJECT(out, type, initFunc, ...)     { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); *out = ::ln::FFI::makeObjectWrap(ptr, true); }
+#define LNI_CREATE_OBJECT(out, type, initFunc, ...)     { auto ptr = ::ln::makeObject_deprecated<type>(__VA_ARGS__); *out = ::ln::FFI::makeObjectWrap(ptr, true); }
 #define LNI_HANDLE_TO_OBJECT(type, h)					static_cast<type*>((h) ? ::ln::FFI::getObject(h) : nullptr)
 #define LNI_OBJECT_TO_HANDLE(obj)						::ln::FFI::makeObjectWrap(obj, false)
 #define LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(obj)	::ln::FFI::makeObjectWrap(obj, true)

@@ -146,14 +146,14 @@ void RenderView::init(RenderingContext* renderingContext) {
         m_renderingContext = renderingContext;
     }
     else {
-        m_renderingContext = makeObject<RenderingContext>();
+        m_renderingContext = makeObject_deprecated<RenderingContext>();
     }
 
     for (auto i = 0; i < m_viewProjections.size(); i++) {
-        m_viewProjections[i] = makeObject<RenderViewPoint>();
+        m_viewProjections[i] = makeObject_deprecated<RenderViewPoint>();
     }
 
-    m_viewPoint = makeObject<RenderViewPoint>();
+    m_viewPoint = makeObject_deprecated<RenderViewPoint>();
 }
 
 void RenderView::makeViewProjections(const RenderViewPoint* base) {

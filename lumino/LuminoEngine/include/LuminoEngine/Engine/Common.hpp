@@ -3,6 +3,10 @@
 
 namespace ln {
 class World;
+class Application;
+
+typedef void (*ConfigureAppFunc)();
+typedef Application* (*CreateAppInstanceFunc)();
 
 enum class EngineFeature
 {

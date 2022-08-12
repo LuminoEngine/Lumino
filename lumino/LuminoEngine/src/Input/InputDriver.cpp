@@ -17,9 +17,9 @@ InputDriver::InputDriver()
 	, m_mouseButtonClickTimeout(0.3f)
 	, m_mousePoint()
 	, m_mouseWheel(0)
-	, m_pressedAnyKey(makeObject<KeyGesture>(Keys::Unknown, ModifierKeys::None))
-	, m_pressedAnyMouseButton(makeObject<MouseGesture>(MouseAction::None, ModifierKeys::None))
-	, m_pressedAnyGamepadElement(makeObject<GamepadGesture>(GamepadElement::None))
+	, m_pressedAnyKey(makeObject_deprecated<KeyGesture>(Keys::Unknown, ModifierKeys::None))
+	, m_pressedAnyMouseButton(makeObject_deprecated<MouseGesture>(MouseAction::None, ModifierKeys::None))
+	, m_pressedAnyGamepadElement(makeObject_deprecated<GamepadGesture>(GamepadElement::None))
 {
 	for (int i = 0; i < m_mouseClickTrackers.size(); i++) {
 		m_mouseClickTrackers[i].timer.start();

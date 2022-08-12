@@ -3,9 +3,6 @@
 
 namespace ln {
 
-typedef void (*ConfigureAppFunc)();
-typedef Application* (*CreateAppInstanceFunc)();
-
 class ApplicationRunnerBase {
 protected:
     ApplicationRunnerBase();

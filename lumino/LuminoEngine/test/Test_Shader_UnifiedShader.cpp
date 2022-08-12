@@ -9,7 +9,7 @@ class Test_Shader_UnifiedShader : public LuminoSceneTest {};
 TEST_F(Test_Shader_UnifiedShader, Basic)
 {
     {
-        auto diag = makeObject<DiagnosticsManager>();
+        auto diag = makeObject_deprecated<DiagnosticsManager>();
         detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
 
         ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-1.fx"));
@@ -75,7 +75,7 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
 TEST_F(Test_Shader_UnifiedShader, LayoutTest2)
 {
     {
-        auto diag = makeObject<DiagnosticsManager>();
+        auto diag = makeObject_deprecated<DiagnosticsManager>();
         detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
         ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-2.fx"));
 

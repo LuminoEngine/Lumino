@@ -20,8 +20,8 @@ class App_Experiment_CharacterController : public Application
 
 
 		// Character
-		auto box = ln::makeObject<ln::BoxMesh>();
-		auto controller = ln::makeObject<ln::CharacterController>();
+		auto box = ln::makeObject_deprecated<ln::BoxMesh>();
+		auto controller = ln::makeObject_deprecated<ln::CharacterController>();
 		box->addComponent(controller);
 
 
@@ -36,7 +36,7 @@ class App_Experiment_CharacterController : public Application
 
 
 		// Box
-		auto box2 = ln::makeObject<ln::BoxMesh>();
+		auto box2 = ln::makeObject_deprecated<ln::BoxMesh>();
 		auto shape2 = BoxCollisionShape::create(2, 1, 1);
 		auto body2 = TriggerBodyComponent::create();
 		body2->addCollisionShape(shape2);

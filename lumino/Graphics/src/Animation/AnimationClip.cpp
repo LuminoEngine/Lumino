@@ -15,11 +15,11 @@ namespace ln {
 // AnimationClip
 
 Ref<AnimationClip> AnimationClip::create(/*const StringView& name, */ const StringView& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes) {
-    return makeObject<AnimationClip>(/*name, */ targetPath, keyframes);
+    return makeObject_deprecated<AnimationClip>(/*name, */ targetPath, keyframes);
 }
 
 Ref<AnimationClip> AnimationClip::load(const StringView& filePath) {
-    // return makeObject<AnimationClip>(filePath);
+    // return makeObject_deprecated<AnimationClip>(filePath);
 
     return detail::AnimationManager::instance()->loadAnimationClip(filePath)->result();
 
@@ -44,7 +44,7 @@ AnimationClip::AnimationClip()
 AnimationClip::~AnimationClip() {
 }
 
-bool AnimationClip::init() {
+Result AnimationClip::init() {
     return AssetObject::init();
 }
 
@@ -71,7 +71,7 @@ void AnimationClip::init(/*const StringView& name, */ const StringView& targetPa
 
     // m_name = name;
 
-    auto curve = makeObject<KeyFrameAnimationCurve>();
+    auto curve = makeObject_deprecated<KeyFrameAnimationCurve>();
     for (auto& key : keyframes) {
         curve->addKeyFrame(key);
     }
@@ -100,7 +100,7 @@ const std::vector<const Char*>& AnimationClip::resourceExtensions() const {
 void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) {
     // TODO: ちゃんと stream から読みたい
     auto assetManager = detail::AssetManager::instance();
-    auto diag = makeObject<DiagnosticsManager>();
+    auto diag = makeObject_deprecated<DiagnosticsManager>();
     detail::BvhImporter importer(assetManager, diag);
     importer.import(this, assetPath, detail::AnimationManager::instance()->defaultAnimationClipImportSettings());
     diag->dumpToLog();
@@ -115,7 +115,7 @@ void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& 
 //	auto assetManager = detail::EngineDomain::assetManager();
 //
 //	if (m_assetSourcePath.path().hasExtension(_TT(".bvh"))) {
-//		auto diag = makeObject<DiagnosticsManager>();
+//		auto diag = makeObject_deprecated<DiagnosticsManager>();
 //		detail::BvhImporter importer(assetManager, diag);
 //		importer.import(this, m_assetSourcePath);
 //		diag->dumpToLog();
@@ -134,7 +134,7 @@ void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& 
 //
 // Ref<VmdAnimationClip> VmdAnimationClip::create(const Path& filePath)
 //{
-//	return makeObject<VmdAnimationClip>(filePath);
+//	return makeObject_deprecated<VmdAnimationClip>(filePath);
 //}
 //
 // VmdAnimationClip::VmdAnimationClip()
@@ -155,7 +155,7 @@ void AnimationClip::onLoadResourceFile(Stream* stream, const detail::AssetPath& 
 //	{
 //		for (auto& track : vmdData->MotionData)
 //		{
-//			m_tracks.add(makeObject<VMDBezierTransformAnimationTrack>(track));
+//			m_tracks.add(makeObject_deprecated<VMDBezierTransformAnimationTrack>(track));
 //		}
 //
 //		m_lastFrameTime = vmdData->lastFrameTime;

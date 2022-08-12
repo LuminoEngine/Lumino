@@ -67,7 +67,7 @@ bool BoxMesh::init(const Vector3& size)
 
 
 
-	//m_component = makeObject<BoxMeshComponent>(size);
+	//m_component = makeObject_deprecated<BoxMeshComponent>(size);
 	//addComponent(m_component);
 	//setMainVisualComponent(m_component);
 	return true;
@@ -89,7 +89,7 @@ void BoxMesh::setSize(const Vector3& size)
 
 Ref<SphereMesh> SphereMesh::create()
 {
-	return makeObject<SphereMesh>();
+	return makeObject_deprecated<SphereMesh>();
 }
 
 SphereMesh::SphereMesh()
@@ -99,7 +99,7 @@ SphereMesh::SphereMesh()
 bool SphereMesh::init()
 {
 	if (!ShapeObject::init()) return false;
-	m_component = makeObject<SphereMeshComponent>();
+	m_component = makeObject_deprecated<SphereMeshComponent>();
 	addComponent(m_component);
 	setMainVisualComponent(m_component);
 	return true;
@@ -117,12 +117,12 @@ LN_OBJECT_IMPLEMENT(PlaneMesh, VisualObject) {}
 
 Ref<PlaneMesh> PlaneMesh::create()
 {
-	return makeObject<PlaneMesh>();
+	return makeObject_deprecated<PlaneMesh>();
 }
 
 Ref<PlaneMesh> PlaneMesh::create(Material* material)
 {
-	return makeObject<PlaneMesh>(material);
+	return makeObject_deprecated<PlaneMesh>(material);
 }
 
 PlaneMesh::PlaneMesh()
@@ -132,7 +132,7 @@ PlaneMesh::PlaneMesh()
 bool PlaneMesh::init()
 {
 	if (!VisualObject::init()) return false;
-	m_component = makeObject<PlaneMeshComponent>();
+	m_component = makeObject_deprecated<PlaneMeshComponent>();
 	addComponent(m_component);
 	setMainVisualComponent(m_component);
 	return true;
@@ -191,7 +191,7 @@ BoxMesh::BuilderDetails::BuilderDetails()
 
 Ref<Object> BoxMesh::BuilderDetails::create() const
 {
-	auto p = makeObject<BoxMesh>(size, material);
+	auto p = makeObject_deprecated<BoxMesh>(size, material);
 	apply(p);
 	return p;
 }

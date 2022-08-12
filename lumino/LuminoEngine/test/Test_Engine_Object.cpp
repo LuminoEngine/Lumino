@@ -91,8 +91,8 @@ LN_PROPERTY_IMPLEMENT(TestObjectC, V4, m_V4, PropertyMetadata(onV4Changed));
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, TypeInfo)
 {
-    auto obj1 = makeObject<TestObjectA>();
-    auto obj2 = makeObject<TestObjectB>();
+    auto obj1 = makeObject_deprecated<TestObjectA>();
+    auto obj2 = makeObject_deprecated<TestObjectB>();
 
     //* [ ] can get by object pointer
     TypeInfo* type1 = TypeInfo::getTypeInfo(obj1);
@@ -133,7 +133,7 @@ LN_OBJECT_IMPLEMENT(CreateFromTypeInfo_ClassA, Object) {}
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Property)
 {
-    auto objA = makeObject<TestObjectA>();
+    auto objA = makeObject_deprecated<TestObjectA>();
     objA->setProp1(5);
     ASSERT_EQ(5, objA->prop1());
 
@@ -144,7 +144,7 @@ TEST_F(Test_Engine_Object, Property)
     ASSERT_EQ(true, TestObjectA::Prop1PropertyId != nullptr);
 
 
-    auto objC = makeObject<TestObjectC>();
+    auto objC = makeObject_deprecated<TestObjectC>();
 
     //* [ ] int type
     ASSERT_EQ(1, objC->m_V1);
@@ -171,7 +171,7 @@ TEST_F(Test_Engine_Object, Property)
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Notification)
 {
-    auto obj = makeObject<TestObjectC>();
+    auto obj = makeObject_deprecated<TestObjectC>();
 
     //* [ ] OwnerObject の確認
     {
@@ -334,7 +334,7 @@ TEST_F(Test_Engine_Object, GetSetHelper)
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, NonMetadataProperty)
 {
-    auto obj = makeObject<TestObjectC>();
+    auto obj = makeObject_deprecated<TestObjectC>();
 
     // get set
     ASSERT_EQ(5, obj->m_V5);
@@ -373,7 +373,7 @@ TEST_F(Test_Base_WeakRefPtr, Basic)
 {
     WeakRefPtr<WeakRefTest1> weak;
     {
-        auto ptr = makeObject<WeakRefTest1>();
+        auto ptr = makeObject_deprecated<WeakRefTest1>();
         weak = WeakRefPtr<WeakRefTest1>(ptr);
         ASSERT_EQ(true, weak.isAlive());
         ASSERT_EQ(100, weak.resolve()->m);

@@ -1,6 +1,6 @@
 ﻿#include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -15,7 +15,7 @@ namespace ln {
 
 Ref<TransitionPostEffect> TransitionPostEffect::create()
 {
-    return makeObject<TransitionPostEffect>();
+    return makeObject_deprecated<TransitionPostEffect>();
 }
 
 TransitionPostEffect::TransitionPostEffect()
@@ -70,7 +70,7 @@ void TransitionPostEffect::onUpdateFrame(float elapsedSeconds)
 
 Ref<PostEffectInstance> TransitionPostEffect::onCreateInstance()
 {
-    return makeObject<detail::TransitionPostEffectInstance>(this);
+    return makeObject_deprecated<detail::TransitionPostEffectInstance>(this);
 }
 
 //
@@ -93,13 +93,13 @@ bool TransitionPostEffectInstance::init(TransitionPostEffect* owner)
 
     m_owner = owner;
 
-    m_withoutMaskMaterial = makeObject<Material>();
+    m_withoutMaskMaterial = makeObject_deprecated<Material>();
     m_withoutMaskMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::TransitionEffectWithoutMask));
 
-    m_withMaskMaterial = makeObject<Material>();
+    m_withMaskMaterial = makeObject_deprecated<Material>();
     m_withMaskMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::TransitionEffectWithMask));
     
-    m_copyMaterial = makeObject<Material>();
+    m_copyMaterial = makeObject_deprecated<Material>();
     m_copyMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::CopyScreen));
     //m_copyMaterial->setShadingModel(ShadingModel::Unlit);
 
@@ -161,11 +161,11 @@ bool TransitionPostEffectInstance::preparePreviousFrameTarget(int width, int hei
         // こちらは初回だけ適当なサイズで作ればOK.
         // freeze のたびに m_previousFrameTarget と swap されるので、その際にサイズが足りなければ ↓ の
         // m_previousFrameTarget の再構築処理で再構築される。
-        m_overrayTarget = makeObject<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false, false);
+        m_overrayTarget = makeObject_deprecated<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false, false);
     }
 
     if (!m_previousFrameTarget || (m_previousFrameTarget->width() != width || m_previousFrameTarget->height() != height)) {
-        m_previousFrameTarget = makeObject<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false, false);
+        m_previousFrameTarget = makeObject_deprecated<RenderTargetTexture>(width, height, TextureFormat::RGBA8, false, false);
         return true;
     }
     else {

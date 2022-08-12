@@ -67,7 +67,7 @@ TEST_F(Test_Audio_Decorder, WaveDecoder) {
         -0.111423,
     };
 
-    auto diag = makeObject<DiagnosticsManager>();
+    auto diag = makeObject_deprecated<DiagnosticsManager>();
     auto decorder = makeRef<detail::WaveDecoder>();
     auto stream = FileStream::create(LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_2ch.wav"));
     decorder->init(stream, diag);

@@ -1,4 +1,4 @@
-﻿#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+﻿#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KDrawCommand.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 

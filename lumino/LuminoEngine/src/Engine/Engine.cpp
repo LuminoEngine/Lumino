@@ -7,7 +7,8 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/Engine/ApplicationRunner.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -140,6 +141,25 @@ void EngineSettings::setUseExternalSwapChain(bool value) {
 
 //==============================================================================
 // Engine
+/*
+なぜ Engine クラスで Application のメインループや run() を提供するのか？
+----------
+第一印象のため。
+エントリーポイントにはライブラリを使う一番最初に示されるものなので、
+そこで難しく長いクラス名を出すことで難しい印象を持ってほしくない。(StandaloneApplicationRunner など)
+シンプルで強力で、他のライブラリでも使われているパターンの名前の方が安心する。
+
+一方でそうすると、間違いを防ぎやすくすることはできなくなる。
+Engine::run() で起動したら、Engine::update() を呼ぶことはできなくなる、など。
+→ でもこれは StandaloneApplicationRunner と ExternalWindowApplicationRunner を間違えて使うな、ということと同じような意味かも。
+
+正直このトレードオフはかなり悩ましいところだけど、ヒアリングした結果、
+- 知っているクラスから探索的に ([定義へ移動] などで) 探すことは簡単
+- そもそも知らないクラスを探すことは困難
+であることもわかってきた。
+
+ということで、ドキュメント化とバリデーションをがんばる方向で行ってみる。
+*/
 
 static void beginFrame() {
     detail::EngineDomain::engineManager()->updateFrame();
@@ -199,6 +219,14 @@ void Engine::terminate() {
     }
 }
 
+void Engine::setupMainWindow(UIMainWindow* mainWindow) {
+    ln::detail::EngineDomain::engineManager()->setupMainWindow(mainWindow, true);
+}
+
+void Engine::setupApplication(Application* app) {
+    ln::detail::EngineDomain::engineManager()->setupApplication(app);
+}
+
 bool Engine::update() {
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
 
@@ -214,8 +242,8 @@ bool Engine::update() {
     return !manager->isExitRequested();
 }
 
-void Engine::run(Application* app) {
-    detail::ApplicationHelper::run(app);
+int Engine::run() {
+    return detail::EngineDomain::engineManager()->runApplication();
 }
 
 void Engine::quit() {

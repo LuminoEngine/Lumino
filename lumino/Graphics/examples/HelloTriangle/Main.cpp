@@ -8,12 +8,12 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/SwapChain.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/SwapChain.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/RHIModule.hpp>
 using namespace ln;
 
@@ -40,11 +40,11 @@ void init() {
 void initApp() {
     g_window = Platform::mainWindow();
 
-    g_swapChain = makeObject<SwapChain>(g_window);
+    g_swapChain = makeObject_deprecated<SwapChain>(g_window);
 
     g_shader = Shader::load(U"simple");
 
-    g_vertexLayout = makeObject<VertexLayout>();
+    g_vertexLayout = makeObject_deprecated<VertexLayout>();
     g_vertexLayout->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
     // CCW
@@ -53,7 +53,7 @@ void initApp() {
         Vector4(-0.5, -0.25, 0, 1),
         Vector4(0.5, -0.25, 0, 1),
     };
-    g_vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 }
 
 void cleanupApp() {

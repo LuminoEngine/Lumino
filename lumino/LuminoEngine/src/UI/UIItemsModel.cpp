@@ -70,9 +70,9 @@ void UIFileSystemCollectionModel::init()
 
 void UIFileSystemCollectionModel::setRootPath(const Path& path)
 {
-    m_rootNode = makeObject<FileSystemNode>(this, path);
+    m_rootNode = makeObject_deprecated<FileSystemNode>(this, path);
     m_rootNode->attemptConstructChildNodes(this, false);
-    //m_rootModel = makeObject<FileSystemNode>(this, 0, 0, nullptr, makeVariant(m_rootNode));
+    //m_rootModel = makeObject_deprecated<FileSystemNode>(this, 0, 0, nullptr, makeVariant(m_rootNode));
     notify(UINotifyPropertyChangedEventArgs::create(nullptr, UIEvents::NotifyPropertyChanged, UICollectionChangedAction::Reset, 0, 0));
     //return m_rootModel;
 }
@@ -157,13 +157,13 @@ void UIFileSystemCollectionModel::FileSystemNode::attemptConstructChildNodes(UIF
             auto dirs = FileSystem::getDirectories(m_path, StringView(), SearchOption::TopDirectoryOnly);
             for (auto& dir : dirs) {
                 if (owner->testFilter(dir)) {
-                    m_children.add(makeObject<FileSystemNode>(m_owner, dir));
+                    m_children.add(makeObject_deprecated<FileSystemNode>(m_owner, dir));
                 }
             }
             auto files = FileSystem::getFiles(m_path, StringView(), SearchOption::TopDirectoryOnly);
             for (auto& file : files) {
                 if (owner->testFilter(file)) {
-                    m_children.add(makeObject<FileSystemNode>(m_owner, file));
+                    m_children.add(makeObject_deprecated<FileSystemNode>(m_owner, file));
                 }
             }
         }

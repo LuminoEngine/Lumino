@@ -99,8 +99,7 @@ UIAnimationClip::UIAnimationClip()
 {
 }
 
-bool UIAnimationClip::init()
-{
+Result UIAnimationClip::init() {
     return Object::init();
 }
 
@@ -117,8 +116,7 @@ UITransitionClip::UITransitionClip()
 {
 }
 
-bool UITransitionClip::init()
-{
+Result UITransitionClip::init() {
     return Object::init();
 }
 

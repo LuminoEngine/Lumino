@@ -94,7 +94,7 @@ class App_Experiment_SSR : public Application
         m_sphere->addInto();
 
 
-        auto ssrPostEffect = makeObject<SSRPostEffect>();
+        auto ssrPostEffect = makeObject_deprecated<SSRPostEffect>();
         Engine::renderView()->addPostEffect(ssrPostEffect);
 
         //m_walls[0] = PlaneMesh::create(groundMaterial);
@@ -136,7 +136,7 @@ class App_Experiment_SSR : public Application
         //li->setPosition(0, 0.1, 0);
 
 #if 0	// 雨
-        auto particleModel = makeObject<ParticleModel>();
+        auto particleModel = makeObject_deprecated<ParticleModel>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
         m1->setSpawnRate(1000);
@@ -162,10 +162,10 @@ class App_Experiment_SSR : public Application
         material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         m1->setSpriteModule(material);
 
-        auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        auto particle1 = makeObject_deprecated<ParticleEmitterComponent2>(particleModel);
         //particle1->setBlendMode(BlendMode::Add);
         particle1->setBlendMode(BlendMode::Alpha);
-        auto obj1 = makeObject<WorldObject>();
+        auto obj1 = makeObject_deprecated<WorldObject>();
         obj1->addComponent(particle1);
         //obj1->setPosition(0, 5, 0);
         //particle1->setAngles(Math::PI, 0, 0);
@@ -189,9 +189,9 @@ class App_Experiment_SSR : public Application
 
         //auto particle2 = ParticleEmitter3D::create(m2);
         //particle2->SetBlendMode(BlendMode::Add);
-        auto particle2 = makeObject<ParticleEmitterComponent>(m2);
+        auto particle2 = makeObject_deprecated<ParticleEmitterComponent>(m2);
         particle2->setBlendMode(BlendMode::Add);
-        auto obj2 = makeObject<WorldObject>();
+        auto obj2 = makeObject_deprecated<WorldObject>();
         obj2->addComponent(particle2);
         //obj2->setPosition(0, 12, 0);
         */

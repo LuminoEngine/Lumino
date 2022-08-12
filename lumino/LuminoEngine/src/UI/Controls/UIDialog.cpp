@@ -31,7 +31,7 @@ void UIDialog::open()
     if (!m_opend)
     {
         if (!m_adorner) {
-            m_adorner = makeObject<UIDialogAdorner>(this);
+            m_adorner = makeObject_deprecated<UIDialogAdorner>(this);
         }
 
         UIFrameRenderView* renderView = getRenderView();
@@ -88,12 +88,12 @@ void UIDialog::setupDialogButtons(UIDialogButtons buttons)
 void UIDialog::addDialogButton(UIDialogButtonRole role, const String& text)
 {
 	if (!m_dialogButtonsLayout) {
-		m_dialogButtonsLayout = ln::makeObject<UIBoxLayout>();
+		m_dialogButtonsLayout = ln::makeObject_deprecated<UIBoxLayout>();
 		m_dialogButtonsLayout->setOrientation(UILayoutOrientation::Horizontal);
 		addVisualChild(m_dialogButtonsLayout);
 	}
 
-	auto button = ln::makeObject<ln::UIButton>();
+	auto button = ln::makeObject_deprecated<ln::UIButton>();
 	button->setText(text);
 	button->connectOnClicked(bind(this, &UIDialog::handleDialogButtonClicked));
 	m_dialogButtonsLayout->addChild(button);

@@ -66,7 +66,7 @@ TEST_F(Test_Physics, Compound)
 TEST_F(Test_Physics, TriggerBody)
 {
 	// box1
-	auto box1 = ln::makeObject<ln::BoxMesh>();
+	auto box1 = ln::makeObject_deprecated<ln::BoxMesh>();
 	box1->addTag(_TT("box1"));
 	auto shape1 = BoxCollisionShape::create(1, 1, 1);
 	auto body1 = TriggerBodyComponent::create();
@@ -74,7 +74,7 @@ TEST_F(Test_Physics, TriggerBody)
 	box1->addComponent(body1);
 
 	// box2
-	auto box2 = ln::makeObject<ln::BoxMesh>();
+	auto box2 = ln::makeObject_deprecated<ln::BoxMesh>();
 	box2->addTag(_TT("box2"));
 	auto shape2 = BoxCollisionShape::create(2, 2, 2);
 	auto body2 = TriggerBodyComponent::create();

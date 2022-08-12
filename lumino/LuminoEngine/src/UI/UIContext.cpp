@@ -25,14 +25,14 @@ void UIContext::init()
 
 	
 
-	m_styleContext = makeObject<UIStyleContext>();
-	//m_defaultStyle = makeObject<UIStyle>();
+	m_styleContext = makeObject_deprecated<UIStyleContext>();
+	//m_defaultStyle = makeObject_deprecated<UIStyle>();
 	//m_defaultStyle->setupDefault();
     //m_finalDefaultStyle->setupDefault();
 
 
 	if (String::compare(detail::EngineDomain::uiManager()->defaultThemeName(), u"Chocotelier", CaseSensitivity::CaseInsensitive) == 0) {
-		auto theme = makeObject<UITheme>();
+		auto theme = makeObject_deprecated<UITheme>();
 		theme->buildLumitelier();
 		m_styleContext->addStyleSheet(theme->styleSheet());
 		m_styleContext->mainTheme = theme;
@@ -42,7 +42,7 @@ void UIContext::init()
 	}
 
 
-	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
+	m_finalDefaultStyle->backgroundMaterial = makeObject_deprecated<Material>();
     detail::UIStyleInstance::updateStyleDataHelper(m_styleContext, nullptr, m_styleContext->mainTheme->defaultStyle(), m_finalDefaultStyle);
 }
 
@@ -76,11 +76,11 @@ void UIContext::updateStyleTree()
 
 void UIContext::setupDefaultStyle()
 {
-	auto defaultStyle = makeObject<UIStyle>();
+	auto defaultStyle = makeObject_deprecated<UIStyle>();
 	defaultStyle->setupDefault();
 	defaultStyle->fontSize = 15;
 
-    auto theme = makeObject<UITheme>();
+    auto theme = makeObject_deprecated<UITheme>();
 	theme->setDefaultStyle(defaultStyle);
 
     theme->setSpacing(8); // MUI default
@@ -111,7 +111,7 @@ void UIContext::setupDefaultStyle()
 	theme->setColor(UIThemeConstantPalette::SuccessMainColor, UIColors::get(UIColorHues::Green, 3));
 	theme->setColor(UIThemeConstantPalette::SuccessTextColor, Color::White);
 
-    auto sheet = makeObject<UIStyleSheet>();
+    auto sheet = makeObject_deprecated<UIStyleSheet>();
 
     {
 		//--------------------------------
@@ -137,13 +137,13 @@ void UIContext::setupDefaultStyle()
 			}
 			//// UIButton.test
 			//{
-			//	auto s = makeObject<UIStyle>();
+			//	auto s = makeObject_deprecated<UIStyle>();
 			//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
 			//	c->addClassStyle(u"test", s);
 			//}
 			// UIButton:MouseOver
 			{
-				auto s = makeObject<UIStyle>();
+				auto s = makeObject_deprecated<UIStyle>();
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
 				e->mainStyleClass()->addStateStyle(u"MouseOver", s);
 			}
@@ -180,7 +180,7 @@ void UIContext::setupDefaultStyle()
 			}
 			// UIThumb.UITrack-Thumb
 			{
-				auto s = makeObject<UIStyle>();
+				auto s = makeObject_deprecated<UIStyle>();
 
 				s->margin = Thickness(2);
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
@@ -276,7 +276,7 @@ void UIContext::setupDefaultStyle()
 				s->hAlignment = UIHAlignment::Center;
 				s->vAlignment = UIVAlignment::Center;
 
-				auto icon = makeObject<UIStyleDecorator>();
+				auto icon = makeObject_deprecated<UIStyleDecorator>();
 				icon->setIconName(u"angle-down", 15);
 				icon->m_hAlignment = UIHAlignment::Right;
 				icon->m_margin = Thickness(0, 0, theme->spacing(1), 0);
@@ -318,12 +318,12 @@ void UIContext::setupDefaultStyle()
             //if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
             //}
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
-				auto icon = makeObject<UIStyleDecorator>();
+				auto icon = makeObject_deprecated<UIStyleDecorator>();
 				icon->setIconName(u"angle-down", 15);
 				s->decorators.add(icon);
             }
 			if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Unchecked")) {
-				auto icon = makeObject<UIStyleDecorator>();
+				auto icon = makeObject_deprecated<UIStyleDecorator>();
 				icon->setIconName(u"angle-right", 15);
 				s->decorators.add(icon);
 			}

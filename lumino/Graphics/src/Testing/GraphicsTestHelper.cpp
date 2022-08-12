@@ -1,7 +1,7 @@
 ﻿
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Testing/GraphicsTestHelper.hpp>
 
 namespace ln {
@@ -117,7 +117,7 @@ static ColorI mixPixels(Bitmap2D* bmp, int x, int y) {
 }
 
 bool GraphicsTestHelper::equalsBitmapFile(Bitmap2D* bmp1, const Path& filePath, int passRate) {
-    auto bmp2 = makeObject<Bitmap2D>();
+    auto bmp2 = makeObject_deprecated<Bitmap2D>();
     bmp2->load(filePath);
 
     bool ignoreAlpha = true;

@@ -591,6 +591,9 @@ enum class ErrorCode {
 /** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
 using Result = BasicResult<void, ErrorCode>;
 
+template<class T>
+using GenericResult = BasicResult<T, ErrorCode>;
+
 template<>
 inline String toString<int>(const int& v) {
     return String::fromNumber(v);
@@ -614,7 +617,7 @@ inline String toString(const BasicResult<TResultValue, TResultError>& e) {
 } // namespace ln
 
 #define LN_DEFINE_RESULT_ALIAS \
-    using Result = ln::BasicResult<void, ln::ErrorCode2>; \
+    using Result = ln::BasicResult<void, ln::ErrorCode>; \
     template<typename... Args> \
     auto ok(Args&&... args)->decltype(ln::ok(std::forward<Args>(args)...)) { return ln::ok(std::forward<Args>(args)...); } \
     template<typename... Args> \

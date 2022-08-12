@@ -12,9 +12,9 @@ class Test_Graphics_DeviceContext : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_DeviceContext, Clear)
 {
-    auto shader1 = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.lcfx");
+    auto shader1 = makeObject_deprecated<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.lcfx");
 
-    auto texture1 = makeObject<Texture2D>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/texture.jpg");
+    auto texture1 = makeObject_deprecated<Texture2D>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/texture.jpg");
 
     struct Vertex {
         Vector3 pos;
@@ -39,15 +39,15 @@ TEST_F(Test_Graphics_DeviceContext, Clear)
         4, 5, 6, 6, 7, 4
     };
 
-    auto vertexBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * vertices.size(), vertices.data(), GraphicsResourceUsage::Static);
-    auto indexBuffer = makeObject<IndexBuffer>(indices.size(), IndexBufferFormat::UInt16, indices.data(), GraphicsResourceUsage::Static);
+    auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * vertices.size(), vertices.data(), GraphicsResourceUsage::Static);
+    auto indexBuffer = makeObject_deprecated<IndexBuffer>(indices.size(), IndexBufferFormat::UInt16, indices.data(), GraphicsResourceUsage::Static);
 
     VertexElement elements[] = {
         { 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
         { 0, VertexElementType::Float3, VertexElementUsage::Color, 0 },
         { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
     };
-    auto vertexDeclaration = makeObject<VertexLayout>();
+    auto vertexDeclaration = makeObject_deprecated<VertexLayout>();
     vertexDeclaration->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
     vertexDeclaration->addElement(0, VertexElementType::Float3, VertexElementUsage::Color, 0);
     vertexDeclaration->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
@@ -122,11 +122,11 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
         { {-0.5, -0.5, 0 }, { 0, 0, 1, 1 } },
     };
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
-    auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+    auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
 
     auto ctx = TestEnv::graphicsContext();
@@ -172,12 +172,12 @@ TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
 	};
 	uint16_t i1[] = { 0, 1, 2, 2, 1, 3 };
 
-	auto vertexDecl1 = makeObject<VertexLayout>();
+	auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
-	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto indexBuffer = makeObject<IndexBuffer>(LN_ARRAY_SIZE_OF(i1), IndexBufferFormat::UInt16, i1, GraphicsResourceUsage::Static);
+	auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto indexBuffer = makeObject_deprecated<IndexBuffer>(LN_ARRAY_SIZE_OF(i1), IndexBufferFormat::UInt16, i1, GraphicsResourceUsage::Static);
 
 	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
@@ -206,10 +206,10 @@ TEST_F(Test_Graphics_DeviceContext, ConstantBuffer)
         {-0.5, -0.5, 0 },
     };
 
-    auto vertexDecl1 = makeObject<VertexLayout>();
+    auto vertexDecl1 = makeObject_deprecated<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
-    auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+    auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
     auto ctx = TestEnv::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);

@@ -25,7 +25,7 @@ EnvironmentLight::~EnvironmentLight()
 void EnvironmentLight::init()
 {
 	WorldObject::init();
-	m_component = makeObject<EnvironmentLightComponent>();
+	m_component = makeObject_deprecated<EnvironmentLightComponent>();
 	addComponent(m_component);
 	setPosition(2.5, 10, 5);
 #ifdef LN_COORD_RH
@@ -49,12 +49,12 @@ LN_OBJECT_IMPLEMENT(DirectionalLight, WorldObject) {}
 
 Ref<DirectionalLight> DirectionalLight::create()
 {
-	return makeObject<DirectionalLight>();
+	return makeObject_deprecated<DirectionalLight>();
 }
 
 Ref<DirectionalLight> DirectionalLight::create(const Color& color)
 {
-	return makeObject<DirectionalLight>(color);
+	return makeObject_deprecated<DirectionalLight>(color);
 }
 
 DirectionalLight::DirectionalLight()
@@ -70,7 +70,7 @@ DirectionalLight::~DirectionalLight()
 void DirectionalLight::init()
 {
 	WorldObject::init();
-	m_component = makeObject<DirectionalLightComponent>();
+	m_component = makeObject_deprecated<DirectionalLightComponent>();
 	addComponent(m_component);
     setPosition(0, 0, 0);
 	setRotation(Math::degreesToRadians(50), Math::degreesToRadians(-30), 0);	// 右上手前から照らす
@@ -103,12 +103,12 @@ LN_OBJECT_IMPLEMENT(PointLight, WorldObject) {}
 
 Ref<PointLight> PointLight::create()
 {
-	return makeObject<PointLight>();
+	return makeObject_deprecated<PointLight>();
 }
 
 Ref<PointLight> PointLight::create(const Color& color, float range)
 {
-	return makeObject<PointLight>(color, range);
+	return makeObject_deprecated<PointLight>(color, range);
 }
 
 PointLight::PointLight()
@@ -124,7 +124,7 @@ PointLight::~PointLight()
 void PointLight::init()
 {
 	WorldObject::init();
-	m_component = makeObject<PointLightComponent>();
+	m_component = makeObject_deprecated<PointLightComponent>();
 	addComponent(m_component);
 }
 
@@ -147,12 +147,12 @@ LN_OBJECT_IMPLEMENT(SpotLight, WorldObject) {}
 
 Ref<SpotLight> SpotLight::create()
 {
-	return makeObject<SpotLight>();
+	return makeObject_deprecated<SpotLight>();
 }
 
 Ref<SpotLight> SpotLight::create(const Color& color, float range, float angle)
 {
-	return makeObject<SpotLight>(color, range, angle);
+	return makeObject_deprecated<SpotLight>(color, range, angle);
 }
 
 SpotLight::SpotLight()
@@ -168,7 +168,7 @@ SpotLight::~SpotLight()
 void SpotLight::init()
 {
 	WorldObject::init();
-	m_component = makeObject<SpotLightComponent>();
+	m_component = makeObject_deprecated<SpotLightComponent>();
 	addComponent(m_component);
 }
 

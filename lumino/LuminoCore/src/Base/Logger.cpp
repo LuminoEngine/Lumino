@@ -204,6 +204,8 @@ public:
                 localLevel = ANDROID_LOG_INFO;
             case LogLevel::Debug:
                 localLevel = ANDROID_LOG_DEBUG;
+            case LogLevel::Trace:
+                localLevel = ANDROID_LOG_DEBUG;
             case LogLevel::Verbose:
                 localLevel = ANDROID_LOG_VERBOSE;
         }
@@ -259,6 +261,8 @@ static const char* GetLogLevelString(LogLevel level) {
             return "I";
         case LogLevel::Debug:
             return "D";
+        case LogLevel::Trace:
+            return "T";
         case LogLevel::Verbose:
             return "V";
         default:
@@ -385,6 +389,8 @@ bool Logger::shouldLog(LogLevel level) {
          return "Info";
      case LogLevel::Debug:
          return "Debug";
+     case LogLevel::Trace:
+         return "Trace";
      case LogLevel::Verbose:
          return "Verbose";
      default:

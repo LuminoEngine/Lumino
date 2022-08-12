@@ -208,7 +208,7 @@ struct TypeInfoInternal {
 //	template<class T>
 //	static Ref<T> deserialize(const StringView& jsonText)
 //	{
-//		Ref<T> value = makeObject<T>();
+//		Ref<T> value = makeObject_deprecated<T>();
 //		JsonTextInputArchive ar(jsonText);
 //		ar.load(*value);
 //		return value;
@@ -244,7 +244,7 @@ struct TypeInfoInternal {
 //
 //			//// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
 //			//if (!value) {
-//			//	value = makeObject<TValue>();
+//			//	value = makeObject_deprecated<TValue>();
 //			//}
 //
 //			ar.process(*value.get());
@@ -268,7 +268,7 @@ template<
     typename T,
     typename std::enable_if<!std::is_abstract<T>::value, std::nullptr_t>::type = nullptr>
 Ref<T> makeObjectHelper() {
-    return makeObject<T>();
+    return makeObject_deprecated<T>();
 }
 
 } // namespace detail

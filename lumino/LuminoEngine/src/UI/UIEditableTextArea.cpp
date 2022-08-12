@@ -580,10 +580,10 @@ UITextArea::UITextArea()
 void UITextArea::init()
 {
 	UIElement::init();
-	m_textLayout = makeObject<detail::UITextLayout>();
+	m_textLayout = makeObject_deprecated<detail::UITextLayout>();
     focus();    // TODO: test
 
-	//m_cursorTimer = ln::makeObject<ln::UIActiveTimer>();
+	//m_cursorTimer = ln::makeObject_deprecated<ln::UIActiveTimer>();
 	//m_cursorTimer->connectOnTick(ln::bind(this, &UITextArea::handleCursorTimerTickEvent));
 	//registerActiveTimer(m_cursorTimer);
 }

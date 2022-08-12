@@ -13,14 +13,14 @@ class App_Sandbox_InstancedMesh : public Application
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
 
-        auto sprites = makeObject<InstancedSprites>();
+        auto sprites = makeObject_deprecated<InstancedSprites>();
         //sprites->addInto();
         sprites->clearSprites();
         sprites->addSprite(Vector3(0, 0, 0));
         sprites->addSprite(Vector3(1, 1, 0));
 
 
-        //auto mp = makeObject<MeshPrimitive>(4, 6);
+        //auto mp = makeObject_deprecated<MeshPrimitive>(4, 6);
         //mp->setVertex(0, Vertex(Vector3(-1, 1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White));
         //mp->setVertex(1, Vertex(Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White));
         //mp->setVertex(2, Vertex(Vector3(1, 1, 0), Vector3::UnitZ, Vector2(1, 0), Color::White));
@@ -33,11 +33,11 @@ class App_Sandbox_InstancedMesh : public Application
         //mp->setIndex(5, 3);
         //mp->addSection(0, 2, 0, PrimitiveTopology::TriangleList);
 
-        //auto mesh = makeObject<InstancedMeshes>();
+        //auto mesh = makeObject_deprecated<InstancedMeshes>();
         //auto c = mesh->instancedMeshesComponent();
         //mesh->addInto();
 
-        //auto model = makeObject<InstancedMeshList>(mp, 0);
+        //auto model = makeObject_deprecated<InstancedMeshList>(mp, 0);
         //model->drawMesh();
         //model->setTransform(Matrix::makeTranslation(2, 1, 0));
         //model->drawMesh();

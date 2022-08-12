@@ -12,12 +12,12 @@ LN_OBJECT_IMPLEMENT(Text, VisualObject) {}
 
 Ref<Text> Text::create()
 {
-	return makeObject<Text>();
+	return makeObject_deprecated<Text>();
 }
 
 Ref<Text> Text::create(StringView text)
 {
-	return makeObject<Text>(text);
+	return makeObject_deprecated<Text>(text);
 }
 
 Text::Text()
@@ -28,7 +28,7 @@ Text::Text()
 bool Text::init()
 {
 	if (!VisualObject::init()) return false;
-    m_component = makeObject<TextComponent>();
+    m_component = makeObject_deprecated<TextComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 	return true;

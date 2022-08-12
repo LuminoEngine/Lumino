@@ -21,7 +21,7 @@ UILayoutPanel::Builder& UILayoutPanel::Builder::children(std::initializer_list<U
 
 Ref<Object> UILayoutPanel::Builder::Details::build()
 {
-	auto ptr = makeObject<UILayoutPanel>();
+	auto ptr = makeObject_deprecated<UILayoutPanel>();
 	for (auto& b : children)
 		ptr->addChild(b.build());
 	return ptr;
@@ -328,7 +328,7 @@ Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Rect&
 
 Ref<UIStackLayout2_Obsolete> UIStackLayout2_Obsolete::create()
 {
-    return makeObject<UIStackLayout2_Obsolete>();
+    return makeObject_deprecated<UIStackLayout2_Obsolete>();
 }
 
 UIStackLayout2_Obsolete::UIStackLayout2_Obsolete()
@@ -874,7 +874,7 @@ float UILayoutPanel2_Deprecated::getVerticalOffset() const { return m_scrollOffs
 
 Ref<UIFrameLayout> UIFrameLayout::create()
 {
-    return makeObject<UIFrameLayout>();
+    return makeObject_deprecated<UIFrameLayout>();
 }
 
 UIFrameLayout::UIFrameLayout()
@@ -925,7 +925,7 @@ Size UIFrameLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIEle
 
 Ref<UIStackLayout_Obsolete> UIStackLayout_Obsolete::create()
 {
-    return makeObject<UIStackLayout_Obsolete>();
+    return makeObject_deprecated<UIStackLayout_Obsolete>();
 }
 
 UIStackLayout_Obsolete::UIStackLayout_Obsolete()
@@ -1043,12 +1043,12 @@ Size UIStackLayout_Obsolete::arrangeOverride(UILayoutContext* layoutContext, con
 
 Ref<UIStackLayout> UIStackLayout::create()
 {
-    return makeObject<UIStackLayout>();
+    return makeObject_deprecated<UIStackLayout>();
 }
 
 Ref<UIStackLayout> UIStackLayout::create(UILayoutOrientation orientation)
 {
-    return makeObject<UIStackLayout>(orientation);
+    return makeObject_deprecated<UIStackLayout>(orientation);
 }
 
 UIStackLayout::UIStackLayout()

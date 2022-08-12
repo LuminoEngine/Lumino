@@ -31,20 +31,35 @@ EditorApplication* EditorApplication::instance()
     return s_app;
 }
 
+void EditorApplication::configure() {
+#ifdef LN_DEBUG
+    lna::Workspace::developMode = true;
+    ln::EngineSettings::setGraphicsDebugEnabled(true);
+#endif
+    lna::AppData::current()->load();
+
+    ln::EngineSettings::setMainWindowSize(1600, 800);
+    ln::EngineSettings::setUITheme(_TT("Chocotelier"));
+    // ln::EngineSettings::setMainBackBufferSize(1600, 800);
+    // ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
+    ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
+    ln::detail::EngineManager::s_settings.defaultObjectsCreation = false;
+}
+
 EditorApplication::EditorApplication()
-{
+    : ln::Application() {
     assert(!s_app);
     s_app = this;
 
-    NewCommand = ln::makeObject<ln::UICommand>();
-    OpenCommand = ln::makeObject<ln::UICommand>();
+    NewCommand = ln::makeObject_deprecated<ln::UICommand>();
+    OpenCommand = ln::makeObject_deprecated<ln::UICommand>();
 
-    SaveCommand = ln::makeObject<ln::UICommand>();
+    SaveCommand = ln::makeObject_deprecated<ln::UICommand>();
     SaveCommand->addInputGesture(ln::KeyGesture::create(ln::Keys::S, ln::ModifierKeys::Control));
     addApplicationCommand(SaveCommand);
 
-    addAction(ln::makeObject<ln::UIAction>(NewCommand, [this](ln::UICommandEventArgs* x){ handleNewProject(x); }));
-    addAction(ln::makeObject<ln::UIAction>(OpenCommand, [this](ln::UICommandEventArgs* x) { handleOpenProject(x); }));
+    addAction(ln::makeObject_deprecated<ln::UIAction>(NewCommand, [this](ln::UICommandEventArgs* x){ handleNewProject(x); }));
+    addAction(ln::makeObject_deprecated<ln::UIAction>(OpenCommand, [this](ln::UICommandEventArgs* x) { handleOpenProject(x); }));
 }
 
 EditorApplication::~EditorApplication()
@@ -54,18 +69,6 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
-#ifdef LN_DEBUG
-    lna::Workspace::developMode = true;
-    ln::EngineSettings::setGraphicsDebugEnabled(true);
-#endif
-    lna::AppData::current()->load();
-
-	ln::EngineSettings::setMainWindowSize(1600, 800);
-    ln::EngineSettings::setUITheme(_TT("Chocotelier"));
-	//ln::EngineSettings::setMainBackBufferSize(1600, 800);
-    //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
-    ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
-    ln::detail::EngineManager::s_settings.defaultObjectsCreation = false;
 	ln::detail::EngineDomain::engineContext()->initializeEngineManager();
     ln::detail::EngineDomain::engineContext()->engineManager()->initializeAllManagers();
     ln::detail::EngineDomain::sceneManager()->m_editorMode = true;
@@ -73,10 +76,10 @@ ln::Result EditorApplication::init()
 	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, _TT("tools/mplus-font/mplus-1c-regular.ttf")));
 
-    m_workspace = ln::makeObject<lna::Workspace>();
+    m_workspace = ln::makeObject_deprecated<lna::Workspace>();
     onInit();
 
-    m_editorContext = ln::makeObject<lna::EditorContext>();
+    m_editorContext = ln::makeObject_deprecated<lna::EditorContext>();
     m_editorContext->m_application = this;
     m_editorContext->m_mainWindow = mainWindow();
 
@@ -150,15 +153,14 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
 
         auto editor = factories[0]->createAssetEditorModel();
         editor->m_editorContext = m_editorContext;
-        mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
+        mainWindow()->documentManager()->addDocument(ln::makeObject_deprecated<AssetEditorDocument>(asset, editor));
     }
 }
 
 void EditorApplication::onInit()
 {
-	setupMainWindow(ln::makeObject<MainWindow>(), false);
 
-    auto sheet = ln::makeObject<ln::UIStyleSheet>();
+    auto sheet = ln::makeObject_deprecated<ln::UIStyleSheet>();
 	if (auto s = sheet->obtainStyle(_TT("NavigationBarItem"))) {
 		s->borderThickness = ln::Thickness(4, 0, 0, 0);
 		s->borderInset = true;
@@ -242,15 +244,15 @@ void EditorApplication::postProjectLoaded()
 
 void EditorApplication::handleNewProject(ln::UICommandEventArgs* e)
 {
-	auto dlg = ln::makeObject<NewProjectDialog>();
+	auto dlg = ln::makeObject_deprecated<NewProjectDialog>();
 	mainWindow()->addElement(dlg);
 	dlg->open();
 
 #if 0
-	auto popupContent = ln::makeObject<ln::UIText>();
+	auto popupContent = ln::makeObject_deprecated<ln::UIText>();
 	popupContent->setText(_TT("POP");
 
-    m_dialog = ln::makeObject<ln::UIDialog>();
+    m_dialog = ln::makeObject_deprecated<ln::UIDialog>();
 	m_dialog->addElement(popupContent);
     m_dialog->setWidth(100);
     m_dialog->setHeight(200);

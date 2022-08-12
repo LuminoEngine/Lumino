@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/RenderFeature.hpp>

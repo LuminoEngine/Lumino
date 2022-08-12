@@ -35,7 +35,7 @@ CylinderMesh::BuilderDetails::BuilderDetails()
 
 Ref<Object> CylinderMesh::BuilderDetails::create() const
 {
-	auto p = makeObject<CylinderMesh>(radiusTop, radiusBottom, height, segments, material);
+	auto p = makeObject_deprecated<CylinderMesh>(radiusTop, radiusBottom, height, segments, material);
 	apply(p);
 	return p;
 }

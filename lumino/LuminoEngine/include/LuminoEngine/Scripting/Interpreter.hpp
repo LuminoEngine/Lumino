@@ -42,7 +42,7 @@ public:
     List<Ref<InterpreterCommand>> commands;
 
     void addCommand(const String& code, const List<String>& params) {
-        auto cmd = makeObject<InterpreterCommand>();
+        auto cmd = makeObject_deprecated<InterpreterCommand>();
         cmd->m_code = code;
         cmd->m_params = params;
         commands.add(cmd);
@@ -77,7 +77,7 @@ LN_CONSTRUCT_ACCESS:
 
     /** InterpreterCommandList を作成します。 */
     LN_METHOD()
-    bool init();
+    Result init();
 };
 
 /**
@@ -141,7 +141,7 @@ LN_CONSTRUCT_ACCESS:
 
     /** Interpreter を作成します。 */
     LN_METHOD()
-    bool init();
+    Result init();
 
 protected:
     /**  */

@@ -321,6 +321,7 @@ public:
         UTFConversionOptions options;
         options.ReplacementChar = '?';
         UnicodeUtils::convertUTF32toUTF8(reinterpret_cast<const UTF32*>(str), len, reinterpret_cast<UTF8*>(result.data()), result.length(), &options);
+        result.shrink_to_fit();
         return result;
     }
 
@@ -329,6 +330,7 @@ public:
         UTFConversionOptions options;
         options.ReplacementChar = '?';
         UnicodeUtils::convertUTF32toUTF16(reinterpret_cast<const UTF32*>(str), len, reinterpret_cast<UTF16*>(result.data()), result.length(), &options);
+        result.shrink_to_fit();
         return result;
     }
 
@@ -337,6 +339,7 @@ public:
         UTFConversionOptions options;
         options.ReplacementChar = '?';
         UnicodeUtils::convertUTF16toUTF32(reinterpret_cast<const UTF16*>(str), len, reinterpret_cast<UTF32*>(result.data()), result.length(), &options);
+        result.shrink_to_fit();
         return result;
     }
 
@@ -356,6 +359,7 @@ public:
         UTFConversionOptions options;
         options.ReplacementChar = '?';
         UnicodeUtils::convertUTF32toUTF16(reinterpret_cast<const UTF32*>(str), len, reinterpret_cast<UTF16*>(result.data()), result.length(), &options);
+        result.shrink_to_fit();
         return result;
 #endif
     }

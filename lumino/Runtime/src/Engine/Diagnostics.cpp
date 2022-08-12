@@ -22,8 +22,8 @@ DiagnosticsManager::DiagnosticsManager()
 DiagnosticsManager::~DiagnosticsManager() {
 }
 
-void DiagnosticsManager::init() {
-    Object::init();
+Result DiagnosticsManager::init() {
+    return Object::init();
 }
 
 void DiagnosticsManager::reportError(StringView message) {
@@ -39,7 +39,7 @@ void DiagnosticsManager::reportInfo(StringView message) {
 }
 
 void DiagnosticsManager::report(DiagnosticsLevel level, const String& message) {
-    auto item = makeObject<DiagnosticsItem>();
+    auto item = makeObject_deprecated<DiagnosticsItem>();
     item->setMessage(message);
     item->setLevel(level);
     m_items.add(item);

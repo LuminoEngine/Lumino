@@ -96,7 +96,7 @@ struct PathShape_NVGcontext : public GLNVGcontextBase {
             }
 
 
-            gl->m_mesh = makeObject<MeshPrimitive>(gl->nverts, indexCount);
+            gl->m_mesh = makeObject_deprecated<MeshPrimitive>(gl->nverts, indexCount);
             gl->m_vertices = static_cast<Vertex*>(gl->m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
 
             if (gl->m_space == PathPlacementSpace::XY) {

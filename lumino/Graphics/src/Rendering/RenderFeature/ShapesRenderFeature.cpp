@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "ShapesRenderFeature.hpp"
@@ -188,8 +188,8 @@ void ShapesRenderFeature::init(RenderingManager* manager)
 	m_vertexCache.clearAndReserve(4096);
 	m_indexCache.clearAndReserve(4096);
 	m_vertexLayout = m_manager->standardVertexDeclaration();
-	m_vertexBuffer = makeObject<VertexBuffer>(4096 * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
-	m_indexBuffer = makeObject<IndexBuffer>(4096, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+	m_vertexBuffer = makeObject_deprecated<VertexBuffer>(4096 * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
+	m_indexBuffer = makeObject_deprecated<IndexBuffer>(4096, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsCommandLi
 			// VertexBuffer
 			int vertexBufferRequestSize = (m_vertexUsedCount + m_vertexCache.getCount()) * sizeof(Vertex);
 			if (!m_vertexBuffer) {
-				m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
+				m_vertexBuffer = makeObject_deprecated<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
 			}
 			else if (m_vertexBuffer->size() < vertexBufferRequestSize) {
                 auto newSize = std::max(m_vertexBuffer->size() * 2, vertexBufferRequestSize);
@@ -255,7 +255,7 @@ RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsCommandLi
 			// IndexBuffer
 			int indexBufferRequestCount = (m_indexUsedCount + m_indexCache.getCount());
 			if (!m_indexBuffer) {
-				m_indexBuffer = makeObject<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+				m_indexBuffer = makeObject_deprecated<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 			}
 			else if (m_indexBuffer->size() < indexBufferRequestCount) {
                 auto newSize = std::max(m_indexBuffer->size() * 2, indexBufferRequestCount);
@@ -373,14 +373,14 @@ void ShapesRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatur
 //		// VertexBuffer
 //		size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
 //		if (!m_vertexBuffer)
-//			m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
+//			m_vertexBuffer = makeObject_deprecated<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
 //		else
 //			m_vertexBuffer->resize(vertexBufferSize);
 //
 //		// IndexBuffer
 //		size_t indexBufferSize = spriteCount * 3;
 //		if (!m_indexBuffer)
-//			m_indexBuffer = makeObject<IndexBuffer>(indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+//			m_indexBuffer = makeObject_deprecated<IndexBuffer>(indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 //		else
 //			m_indexBuffer->resize(indexBufferSize);
 //		auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));	// TODO: 部分 map
@@ -3368,8 +3368,8 @@ void ShapesRenderFeature2::init(RenderingManager* manager)
 	//m_batchData.indexCount = 0;
 
 	m_vertexLayout = m_manager->standardVertexDeclaration();
-	m_vertexBuffer = makeObject<VertexBuffer>(4096 * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
-	m_indexBuffer = makeObject<IndexBuffer>(4096, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+	m_vertexBuffer = makeObject_deprecated<VertexBuffer>(4096 * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
+	m_indexBuffer = makeObject_deprecated<IndexBuffer>(4096, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 }
 
 RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(
@@ -3463,7 +3463,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(
 				// VertexBuffer
 				int vertexBufferRequestSize = (m_vertexUsedCount + m_shapeBuilder.vertexCount()) * sizeof(Vertex);
 				if (!m_vertexBuffer) {
-					m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
+					m_vertexBuffer = makeObject_deprecated<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
 				}
 				else if (m_vertexBuffer->size() < vertexBufferRequestSize) {
 					auto newSize = std::max(m_vertexBuffer->size() * 2, vertexBufferRequestSize);
@@ -3473,7 +3473,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(
 				// IndexBuffer
 				int indexBufferRequestCount = m_indexUsedCount + m_shapeBuilder.indexCount();
 				if (!m_indexBuffer) {
-					m_indexBuffer = makeObject<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+					m_indexBuffer = makeObject_deprecated<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 				}
 				else if (m_indexBuffer->size() < indexBufferRequestCount) {
 					auto newSize = std::max(m_indexBuffer->size() * 2, indexBufferRequestCount);
@@ -3552,7 +3552,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(
                     // VertexBuffer
                     int vertexBufferRequestSize = (m_vertexUsedCount + m_shapeBuilder.vertexCount()) * sizeof(Vertex);
                     if (!m_vertexBuffer) {
-                        m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
+                        m_vertexBuffer = makeObject_deprecated<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
                     }
                     else if (m_vertexBuffer->size() < vertexBufferRequestSize) {
                         auto newSize = std::max(m_vertexBuffer->size() * 2, vertexBufferRequestSize);
@@ -3562,7 +3562,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(
                     // IndexBuffer
                     int indexBufferRequestCount = m_indexUsedCount + m_shapeBuilder.indexCount();
                     if (!m_indexBuffer) {
-                        m_indexBuffer = makeObject<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+                        m_indexBuffer = makeObject_deprecated<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
                     }
                     else if (m_indexBuffer->size() < indexBufferRequestCount) {
                         auto newSize = std::max(m_indexBuffer->size() * 2, indexBufferRequestCount);

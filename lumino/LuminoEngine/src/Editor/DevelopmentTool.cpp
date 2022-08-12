@@ -32,13 +32,13 @@ void RuntimeEditor::init(EngineManager* manager, UIMainWindow* window) {
 
     // m_window->m_onImGuiLayer.connect(ln::bind(this, &RuntimeEditor::handleImGuiDebugLayer));
 
-    // m_splitter = makeObject<UISplitter>();
+    // m_splitter = makeObject_deprecated<UISplitter>();
     // m_splitter->setOrientation(UILayoutOrientation::Horizontal);
 
-    // m_mainContentsPane = makeObject<UIControl>();
+    // m_mainContentsPane = makeObject_deprecated<UIControl>();
     // m_splitter->addChild(m_mainContentsPane);
 
-    // m_toolPane = makeObject<UIElement>();
+    // m_toolPane = makeObject_deprecated<UIElement>();
     // m_toolPane->setBackgroundColor(Color::White);
     // m_toolPane->setBorderColor(Color::LightGray);
     // m_toolPane->setBorderThickness(1);
@@ -110,37 +110,37 @@ void RuntimeEditor::attach() {
     ImGuiDockManager* dockManager = m_window->dockManager();
 
     {
-        m_mainViewportToolPane = makeObject<MainViewportToolPane>();
+        m_mainViewportToolPane = makeObject_deprecated<MainViewportToolPane>();
         m_mainViewportToolPane->setInitialPlacement(ImGuiDockPlacement::MainView);
         dockManager->addDockPane(m_mainViewportToolPane);
     }
     {
-        m_pane2 = makeObject<ImGuiDockPane>();
+        m_pane2 = makeObject_deprecated<ImGuiDockPane>();
         m_pane2->setInitialPlacement(ImGuiDockPlacement::Left);
         dockManager->addDockPane(m_pane2);
     }
     {
-        m_pane3 = makeObject<ImGuiDockPane>();
+        m_pane3 = makeObject_deprecated<ImGuiDockPane>();
         m_pane3->setInitialPlacement(ImGuiDockPlacement::Right);
         dockManager->addDockPane(m_pane3);
     }
     {
-        m_profilerToolPane = makeObject<ProfilerToolPane>();
+        m_profilerToolPane = makeObject_deprecated<ProfilerToolPane>();
         m_profilerToolPane->setInitialPlacement(ImGuiDockPlacement::Right);
         dockManager->addDockPane(m_profilerToolPane);
     }
     {
-        m_pane5 = makeObject<ImGuiDockPane>();
+        m_pane5 = makeObject_deprecated<ImGuiDockPane>();
         m_pane5->setInitialPlacement(ImGuiDockPlacement::Bottom);
         dockManager->addDockPane(m_pane5);
     }
     {
-        m_pane6 = makeObject<ImGuiDockPane>();
+        m_pane6 = makeObject_deprecated<ImGuiDockPane>();
         m_pane6->setInitialPlacement(ImGuiDockPlacement::InnerLeft);
         dockManager->addDockPane(m_pane6);
     }
     {
-        m_editorViewportToolPane = makeObject<EditorViewportToolPane>(m_window);
+        m_editorViewportToolPane = makeObject_deprecated<EditorViewportToolPane>(m_window);
         m_editorViewportToolPane->setInitialPlacement(ImGuiDockPlacement::DebugView);
         dockManager->addDockPane(m_editorViewportToolPane);
     }
@@ -301,7 +301,7 @@ void RuntimeEditor::handleImGuiDebugLayer(UIEventArgs* e) {
     //		level->reloadAsset();
     //	}
     //	if (ImGui::Button("Save")) {
-    //		m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
+    //		m_assetManager->saveAssetModelToLocalFile(makeObject_deprecated<AssetModel>(level));
     //	}
 
     //	//ImGui::EndChild();

@@ -271,7 +271,7 @@ public:
                 else {
                     info->kind = U"Class";
                 }
-                m_parser->getDB()->types.add(info);
+                m_parser->getDB()->types.push(info);
 
                 m_currentRecord = info;
                 EnumerateDecl(decl);
@@ -342,7 +342,7 @@ public:
                     m_parser->diag()->reportError(ln::format(U"Invalid declaration {0}", ln::String::fromStdString(getSourceText(decl->getSourceRange()))));
                 }
 
-                m_currentRecord->methods.add(info);
+                m_currentRecord->methods.push(info);
 
                 for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++) {
                     ParmVarDecl* paramDecl = decl->getParamDecl(iParam);
@@ -355,7 +355,7 @@ public:
                     paramInfo->typeRawName = getRawTypeFullName(type);
                     paramInfo->isConst = type.getQualifiers().hasConst();
                     paramInfo->isPointer = sp.Ty->isPointerType();
-                    info->parameters.add(paramInfo);
+                    info->parameters.push(paramInfo);
 
                     // check sema error
                     if (paramDecl->isInvalidDecl()) {
@@ -447,7 +447,7 @@ public:
                 info->name = ln::String::fromStdString(decl->getNameAsString());
                 info->document = parseDocument(decl);
                 info->typeRawName = getRawTypeFullName(decl->getType());
-                m_currentRecord->fields.add(info);
+                m_currentRecord->fields.push(info);
             }
         }
 
@@ -469,7 +469,7 @@ public:
                 // metadata
                 symbol->metadata = HeaderParser2::parseMetadata(attr->name, attr->args);
 
-                m_parser->getDB()->types.add(symbol);
+                m_parser->getDB()->types.push(symbol);
 
                 m_currentRecord = symbol;
                 EnumerateDecl(decl);
@@ -486,7 +486,7 @@ public:
             symbol->name = ln::String::fromStdString(decl->getNameAsString());
             symbol->value = ln::makeVariant(decl->getInitVal().getSExtValue());
             // symbol->type = m_currentRecord;
-            m_currentRecord->constants.add(symbol);
+            m_currentRecord->constants.push(symbol);
         }
 
         return true;
@@ -597,7 +597,7 @@ public:
                                     typeInfo->kind = U"DelegateObject";
                                     typeInfo->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
                                     typeInfo->document = parseDocument(decl);
-                                    m_parser->getDB()->types.add(typeInfo);
+                                    m_parser->getDB()->types.push(typeInfo);
 
                                     // for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
                                     //	QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
@@ -627,7 +627,7 @@ public:
                                             paramInfo->typeRawName = getRawTypeFullName(paramType);
                                             paramInfo->isConst = paramType.getQualifiers().hasConst();
                                             paramInfo->isPointer = paramTypeSplit.Ty->isPointerType();
-                                            methodInfo->parameters.add(paramInfo);
+                                            methodInfo->parameters.push(paramInfo);
                                         }
                                     }
                                 }
@@ -645,11 +645,11 @@ public:
                                 typeInfo->kind = U"Promise";
                                 typeInfo->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString()); // e.g) ln::ZVTestPromise1
                                 typeInfo->document = parseDocument(decl);
-                                m_parser->getDB()->types.add(typeInfo);
+                                m_parser->getDB()->types.push(typeInfo);
 
                                 auto templateArg = ln::makeRef<PITemplateArgument>();
                                 templateArg->typeRawName = getRawTypeFullName(argType);
-                                typeInfo->templateArguments.add(templateArg);
+                                typeInfo->templateArguments.push(templateArg);
                             }
                         }
                     }
@@ -698,7 +698,7 @@ public:
                     // ↓全体を解析したいときはこれを使う
                     // ln::String::fromStdString(getSourceText(block->getSourceRange()), ln::TextEncoding::utf8Encoding());
 
-                    doc->params.add(param);
+                    doc->params.push(param);
 
                     break;
                 }
@@ -1002,7 +1002,7 @@ Ref<PIDocument> HeaderParser2::parseDocument(const std::string& comment) {
                 ln::String con = line.substr(result.length());
                 if (ln::Regex::search(con, _T(R"(\[(\w+)\]\s+(\w+)\s*\:\s*)"), &result)) {
                     auto paramInfo = ln::makeRef<PIParamDocument>();
-                    info->params.add(paramInfo);
+                    info->params.push(paramInfo);
                     paramInfo->io = result.groupValue(1);
                     paramInfo->name = result.groupValue(2);
                     target = &paramInfo->description;

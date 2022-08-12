@@ -117,7 +117,7 @@ void SphereMeshComponent::onRender(RenderingContext* context) {
 //	//m_box = Box(Vector3::Zero, size);
 //
 //    m_model = detail::MeshModelFactory::createBox(size, detail::EngineDomain::sceneManager()->primitiveMeshDefaultMaterial());
-//    setMaterial(makeObject<Material>());
+//    setMaterial(makeObject_deprecated<Material>());
 //    return true;
 //}
 //

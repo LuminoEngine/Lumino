@@ -23,8 +23,8 @@ bool AnimationController::init(SkinnedMeshModel* model)
 	if (!Object::init()) return false;
 	m_model = model;
 
-	m_core = makeObject<AnimationMixerCore>(this);
-	m_core->addLayer(makeObject<AnimationLayer>(m_core));
+	m_core = makeObject_deprecated<AnimationMixerCore>(this);
+	m_core->addLayer(makeObject_deprecated<AnimationLayer>(m_core));
 	return true;
 }
 

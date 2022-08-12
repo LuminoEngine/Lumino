@@ -41,7 +41,7 @@ UITreeBoxItem* UITreeBoxItem::addItem(const ln::String& text)
 {
 	if (LN_REQUIRE(m_ownerTreeBox)) return nullptr;
 
-	auto item = makeObject<UITreeBoxItem>();
+	auto item = makeObject_deprecated<UITreeBoxItem>();
 	item->addChild(text);
 	addItemInternal(item);
 	return item;
@@ -139,7 +139,7 @@ bool UITreeBox::init()
 
 UITreeBoxItem* UITreeBox::addItem(const ln::String& text, Ref<Variant> data)
 {
-	auto item = makeObject<UITreeBoxItem>();
+	auto item = makeObject_deprecated<UITreeBoxItem>();
 	item->addChild(text);
 	item->setData(data);
 	addItemInternal(item);

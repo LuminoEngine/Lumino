@@ -71,7 +71,7 @@ public:
 
 Ref<TriggerBody> TriggerBody::create(CollisionShape* shape)
 {
-    return makeObject<TriggerBody>(shape);
+    return makeObject_deprecated<TriggerBody>(shape);
 }
 
 TriggerBody::TriggerBody()

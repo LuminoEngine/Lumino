@@ -127,7 +127,7 @@ void AudioManager::update(float elapsedSeconds)
 Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringView& filePath)
 {
 	// TODO: diag
-	auto diag = makeObject<DiagnosticsManager>();
+	auto diag = makeObject_deprecated<DiagnosticsManager>();
 
 	auto path = Path(filePath).unify();
 	Ref<AudioDecoder> decoder;

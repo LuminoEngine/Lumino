@@ -200,7 +200,7 @@ LN_OBJECT_IMPLEMENT(TilemapLayer, Object) {}
 
 Ref<TilemapLayer> TilemapLayer::create()
 {
-    return makeObject<TilemapLayer>();
+    return makeObject_deprecated<TilemapLayer>();
 }
 
 TilemapLayer::TilemapLayer()

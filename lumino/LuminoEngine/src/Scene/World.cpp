@@ -27,7 +27,7 @@ LN_OBJECT_IMPLEMENT(World, Object) {
 }
 
 World::World()
-    : m_masterScene(makeObject<Level>())
+    : m_masterScene(makeObject_deprecated<Level>())
     , m_sceneList(makeList<Ref<Level>>())
     , m_timeScale(1.0f) {
     m_masterScene->m_ownerWorld = this;
@@ -40,14 +40,14 @@ World::~World() {
 
 void World::init() {
     Object::init();
-    m_animationContext = makeObject<AnimationContext>();
-    m_physicsWorld = makeObject<PhysicsWorld>();
-    m_physicsWorld2D = makeObject<PhysicsWorld2D>();
-    m_effectContext = makeObject<EffectContext>();
+    m_animationContext = makeObject_deprecated<AnimationContext>();
+    m_physicsWorld = makeObject_deprecated<PhysicsWorld>();
+    m_physicsWorld2D = makeObject_deprecated<PhysicsWorld2D>();
+    m_effectContext = makeObject_deprecated<EffectContext>();
 
     m_sceneConductor = makeRef<detail::SceneConductor>();
 
-    m_mainLight = makeObject<EnvironmentLight>();
+    m_mainLight = makeObject_deprecated<EnvironmentLight>();
     m_mainLight->setSpecialObject(true);
     add(m_mainLight);
 }

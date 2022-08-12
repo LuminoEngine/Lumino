@@ -4,8 +4,8 @@
 #include <float.h>
 #include <LuminoCore/IO/BinaryReader.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
@@ -25,7 +25,7 @@ namespace detail {
 
 Ref<Material> PmxMaterialResource::MakeCommonMaterial() const
 {
-    auto m = makeObject<Material>();
+    auto m = makeObject_deprecated<Material>();
     m->setMainTexture(Texture);
     m->setColor(Diffuse);
     m->setEmissive(Emissive);
@@ -174,9 +174,9 @@ void PmxSkinnedMeshResource::refreshInitialValues()
 
 Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
 {
-    auto model = makeObject<SkinnedMeshModel>();
+    auto model = makeObject_deprecated<SkinnedMeshModel>();
 
-    auto meshContainer = makeObject<MeshContainer>();
+    auto meshContainer = makeObject_deprecated<MeshContainer>();
 #if 1
 	LN_NOTIMPLEMENTED();
 #else
@@ -233,7 +233,7 @@ Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
         }
 
         // animation
-		model->m_animationController = makeObject<AnimationController>(model);
+		model->m_animationController = makeObject_deprecated<AnimationController>(model);
     }
 
     // 後の計算回数を減らすため、IKボーンを BoneIndex の昇順、深さの昇順で並べ替える。
@@ -270,7 +270,7 @@ Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
 
 Ref<SkinnedMeshBone> PmxSkinnedMeshResource::createBoneModel(PmxBoneResource* boneData)
 {
-    auto bone = makeObject<SkinnedMeshBone>();
+    auto bone = makeObject_deprecated<SkinnedMeshBone>();
     bone->m_data = boneData;
     return bone;
 }
@@ -345,11 +345,11 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 		return false;
 	}
 
-	auto mesh = makeObject<MeshPrimitive>();
-	auto meshContainer = makeObject<MeshContainer>();
+	auto mesh = makeObject_deprecated<MeshPrimitive>();
+	auto meshContainer = makeObject_deprecated<MeshContainer>();
 	meshContainer->addMeshPrimitive(mesh);
 	m_model->addMeshContainer(meshContainer);
-	auto meshNode = makeObject<MeshNode>();
+	auto meshNode = makeObject_deprecated<MeshNode>();
 	meshNode->setMeshContainerIndex(0);
 	meshNode->skeletonIndex = 0;
 	m_model->addNode(meshNode);
@@ -1229,7 +1229,7 @@ void PmxLoader::adjustAngle(Vector3* angles) const
 
 Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 {
-	auto material = makeObject<Material>();
+	auto material = makeObject_deprecated<Material>();
 
 	material->setMainTexture(pmxMaterial->Texture);
 	material->setColor(pmxMaterial->Diffuse);
@@ -1258,14 +1258,14 @@ Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 
 void PmxLoader::buildSkeleton()
 {
-	auto skeleton = makeObject<MeshSkeleton>(m_model);
+	auto skeleton = makeObject_deprecated<MeshSkeleton>(m_model);
 	m_model->addSkeleton(skeleton);
 
 	int nodeIndexOffset = m_model->meshNodes().size();
 
 	for (int i = 0; i < m_pmxBones.size(); i++) {
 		const PmxBone& pmxBone = m_pmxBones[i];
-		auto node = makeObject<MeshNode>();
+		auto node = makeObject_deprecated<MeshNode>();
 		node->setName(pmxBone.Name);
 		m_model->addNode(node);
 	}
@@ -1281,7 +1281,7 @@ void PmxLoader::buildSkeleton()
 		//world *= inv2;
 
 		skeleton->addBone(nodeIndex, Matrix::makeTranslation(-pmxBone.OrgPosition));
-		//auto bone = makeObject<MeshBone>();
+		//auto bone = makeObject_deprecated<MeshBone>();
 		//skeleton->addBone(nodeIndex, );
 
 		Vector3 offsetFromParent = (pmxBone.ParentBoneIndex >= 0) ?
@@ -1303,7 +1303,7 @@ void PmxLoader::buildSkeleton()
 
 	// IK
 	for (const auto& pmxIK : m_iks) {
-		auto ik = makeObject<MeshBoneIK>();
+		auto ik = makeObject_deprecated<MeshBoneIK>();
 		m_model->m_iks.add(ik);
 		ik->IKBoneIndex = pmxIK.IKBoneIndex;
 		ik->IKTargetBoneIndex = pmxIK.IKTargetBoneIndex;
@@ -1311,7 +1311,7 @@ void PmxLoader::buildSkeleton()
 		ik->IKRotateLimit = pmxIK.IKRotateLimit;
 
 		for (const auto& pmxIKLink : pmxIK.IKLinks) {
-			auto ikChain = makeObject<MeshBoneIKChain>();
+			auto ikChain = makeObject_deprecated<MeshBoneIKChain>();
 			ik->IKLinks.add(ikChain);
 			ikChain->LinkBoneIndex = pmxIKLink.LinkBoneIndex;
 			ikChain->IsRotateLimit = pmxIKLink.IsRotateLimit;

@@ -22,7 +22,7 @@ class App_Sandbox_PathRendering : public Application
 
     void onInit() override
     {
-        auto e = makeObject<TestElement>();
+        auto e = makeObject_deprecated<TestElement>();
         UI::add(e);
     }
 

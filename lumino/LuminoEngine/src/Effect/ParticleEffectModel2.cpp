@@ -136,7 +136,7 @@ bool SpriteParticleGeometry::init()
 {
     if (!Object::init()) return false;
 
-    //m_material = makeObject<Material>();
+    //m_material = makeObject_deprecated<Material>();
     //m_material->setMainTexture(Texture2D::load(_TT("Sprite1"));
     //m_material->shadingModel = ShadingModel::Unlit;
     //m_material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
@@ -171,7 +171,7 @@ bool ParticleEmitterModel::init()
 {
     if (!Object::init()) return false;
 
-    //auto geom = makeObject<SpriteParticleGeometry>();
+    //auto geom = makeObject_deprecated<SpriteParticleGeometry>();
     //m_geometry = geom;
 
     m_geometry = detail::EngineDomain::effectManager()->defaultSpriteParticleGeometry();
@@ -189,7 +189,7 @@ void ParticleEmitterModel::serialize_deprecated(Serializer2_deprecated& ar)
 
 void ParticleEmitterModel::setupSpriteModule(Material* material)
 {
-    auto geom = makeObject<SpriteParticleGeometry>();
+    auto geom = makeObject_deprecated<SpriteParticleGeometry>();
     geom->setMaterial(material);
     m_geometry = geom;
 }
@@ -213,7 +213,7 @@ bool ParticleModel::init()
 {
     if (!Object::init()) return false;
 
-    //auto emitter = makeObject<ParticleEmitterModel>();
+    //auto emitter = makeObject_deprecated<ParticleEmitterModel>();
     //m_emitters.add(emitter);
 
     return true;

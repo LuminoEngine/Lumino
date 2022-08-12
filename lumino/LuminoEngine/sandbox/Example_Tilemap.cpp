@@ -8,27 +8,27 @@ class App_Example_Tilemap : public Application
 
     virtual void onInit() override
     {
-		Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
+		Engine::mainCamera()->addComponent(makeObject_deprecated<CameraOrbitControlComponent>());
 
 
 		auto tilesetTexture = ln::Texture2D::load(_TT("C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1.png"));
-		auto tilesetMaterial = ln::makeObject<ln::Material>();
+		auto tilesetMaterial = ln::makeObject_deprecated<ln::Material>();
 		tilesetMaterial->setMainTexture(tilesetTexture);
 
-		auto tileset = ln::makeObject<ln::Tileset>();
+		auto tileset = ln::makeObject_deprecated<ln::Tileset>();
 		tileset->reset(tilesetMaterial, 16, 16);
 
-		auto autotileset = ln::makeObject<ln::AutoTileset>();
+		auto autotileset = ln::makeObject_deprecated<ln::AutoTileset>();
 		auto autotilesetTexture = ln::Texture2D::load(_TT("C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/AutoTileTest-1.png"));
 		auto autotilesetMaterial = ln::Material::create(autotilesetTexture);
 		autotileset->material = autotilesetMaterial;
 		tileset->addAutoTileset(autotileset);
 
-		auto tilemap = ln::makeObject<ln::Tilemap>();
+		auto tilemap = ln::makeObject_deprecated<ln::Tilemap>();
 		tilemap->setShadingModel(ln::ShadingModel::Unlit);
 		tilemap->setBlendMode(ln::BlendMode::Alpha);	// TODO: AlphaTest でカバーしたい
 
-		auto layer = ln::makeObject<ln::TilemapLayer>();
+		auto layer = ln::makeObject_deprecated<ln::TilemapLayer>();
 		layer->resize(60, 30);
 		layer->setTileSize(ln::Size(1, 1));
 		//for (auto x = 0; x < layer->getWidth(); x++) {
@@ -50,7 +50,7 @@ class App_Example_Tilemap : public Application
 		layer->putAutoTileSlope(3, layer->getHeight() - 2, 0);
 		layer->putAutoTile(1, layer->getHeight() - 3, 0);
 
-		auto tilemapModel = ln::makeObject<ln::TilemapModel>();
+		auto tilemapModel = ln::makeObject_deprecated<ln::TilemapModel>();
 		tilemapModel->setTileset(tileset);
 		tilemapModel->addLayer(layer);
 		tilemap->setTilemapModel(tilemapModel);

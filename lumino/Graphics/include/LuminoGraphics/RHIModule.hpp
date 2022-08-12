@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoPlatform/Common.hpp>
-#include "RHI/Common.hpp"
+#include "GPU/Common.hpp"
 
 namespace ln {
 namespace detail {

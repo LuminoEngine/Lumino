@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoGraphics/RHI/Common.hpp>
+#include <LuminoGraphics/GPU/Common.hpp>
 
 namespace ln {
 namespace kanata {

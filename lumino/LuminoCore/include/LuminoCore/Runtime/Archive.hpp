@@ -518,7 +518,7 @@ private:
         if (type != ArchiveNodeType::Null) {
             // TODO: いまのところ Variant 用
             if (!outValue) {
-                outValue = makeObject<Variant>();
+                outValue = makeObject_deprecated<Variant>();
             }
             outValue->serializeInternal3(*this, type);
         }

@@ -14,27 +14,27 @@ NewProjectDialog::NewProjectDialog()
 	setHeight(200);
 	setBackgroundColor(ln::Color::White);
 
-	auto layout = ln::makeObject<ln::UIBoxLayout>();
+	auto layout = ln::makeObject_deprecated<ln::UIBoxLayout>();
 	layout->addChild(ln::UIText::create(_TT("Project name:")));
 
-	m_projectName = ln::makeObject<ln::UITextField>();
+	m_projectName = ln::makeObject_deprecated<ln::UITextField>();
 	m_projectName->setWidth(200);
 	m_projectName->setHeight(20);
 	layout->addChild(m_projectName);
 
 	layout->addChild(ln::UIText::create(_TT("Project folder:")));
 
-	m_projectFolder = ln::makeObject<ln::UITextField>();
+	m_projectFolder = ln::makeObject_deprecated<ln::UITextField>();
 	m_projectFolder->setWidth(200);
 	m_projectFolder->setHeight(20);
 	layout->addChild(m_projectFolder);
 
-	auto selectFolderButton = ln::makeObject<ln::UIButton>();
+	auto selectFolderButton = ln::makeObject_deprecated<ln::UIButton>();
 	selectFolderButton->setText(_TT("..."));
 	selectFolderButton->connectOnClicked(ln::bind(this, &NewProjectDialog::handleSelectFolder));
 	layout->addChild(selectFolderButton);
 
-	auto createButton = ln::makeObject<ln::UIButton>();
+	auto createButton = ln::makeObject_deprecated<ln::UIButton>();
 	createButton->setText(_TT("Create"));
 	createButton->connectOnClicked(ln::bind(this, &NewProjectDialog::handleCreate));
 	layout->addChild(createButton);

@@ -48,7 +48,7 @@ void UIPopup::open()
     if (!m_opend)
     {
         if (!m_adorner) {
-            m_adorner = makeObject<UIPopupAdorner>(m_placementTarget, this);
+            m_adorner = makeObject_deprecated<UIPopupAdorner>(m_placementTarget, this);
         }
 
         UIFrameRenderView* renderView = getRenderView();

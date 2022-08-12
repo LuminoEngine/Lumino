@@ -654,7 +654,7 @@ Ref<Object> Serializer2_deprecated::readObjectInteral(std::function<Ref<Object>(
 
 		// fallback
 		if (!obj) {
-			obj = makeObject<Object>();
+			obj = makeObject_deprecated<Object>();
 		}
 	}
 
@@ -679,7 +679,7 @@ Ref<Object> Serializer2_deprecated::readObjectInteral(std::function<Ref<Object>(
 
 	// fallback
 	if (!obj) {
-		obj = makeObject<Object>();
+		obj = makeObject_deprecated<Object>();
 	}
 
 	obj->onSerialize2(this);
@@ -708,7 +708,7 @@ String Serializer2_deprecated::serialize(AssetModel* value, const detail::AssetP
 	////auto b = a["aaa"];
 
 	if (LN_REQUIRE(value)) return String::Empty;
-	auto sr = makeObject<Serializer2_deprecated>();
+	auto sr = makeObject_deprecated<Serializer2_deprecated>();
 	sr->m_mode = ArchiveMode::Save;
 	sr->m_basePath = basePath;
 	sr->m_store->initWrite();
@@ -724,12 +724,12 @@ Ref<AssetModel> Serializer2_deprecated::deserialize(const String& str, const det
 	try {
 		ObjectInitializeContext::Default->autoAdd = false;
 
-		auto sr = makeObject<Serializer2_deprecated>();
+		auto sr = makeObject_deprecated<Serializer2_deprecated>();
 		sr->m_mode = ArchiveMode::Load;
 		sr->m_basePath = basePath;
 		sr->m_store->initRead(str_to_ns(str));
 		//sr->m_store->stack.push_back(detail::SerializerStore2_deprecated::StackItem{ detail::SerializerStore2_deprecated::ContainerType::Object, ljson::parse(str.toStdString()) });
-		auto asset = makeObject<AssetModel>();
+		auto asset = makeObject_deprecated<AssetModel>();
 		static_cast<Object*>(asset)->serialize_deprecated(*sr);
 
 		ObjectInitializeContext::Default->autoAdd = true;
@@ -748,7 +748,7 @@ void Serializer2_deprecated::deserializeInstance(AssetModel* asset, const String
 
 		asset->m_externalObjectDeserialization = true;
 
-		auto sr = makeObject<Serializer2_deprecated>();
+		auto sr = makeObject_deprecated<Serializer2_deprecated>();
 		sr->m_mode = ArchiveMode::Load;
 		sr->m_basePath = basePath;
 		sr->m_store->initRead(str_to_ns(str));

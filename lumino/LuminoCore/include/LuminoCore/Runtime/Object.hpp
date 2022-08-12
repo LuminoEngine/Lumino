@@ -134,17 +134,19 @@ enum class ObjectFlags {
 #define LN_ATTRIBUTE_UNUSED_
 #endif
 
-#define LN_OBJECT                                                       \
-    friend class ::ln::TypeInfo;                                        \
-    friend class ::ln::detail::EngineDomain;                            \
-    friend class ::ln::RuntimeContext;                                  \
-    template<class T>                                                   \
-    friend class TypeInfoTraits;                                        \
-    static ::ln::TypeInfo* _lnref_getTypeInfo();                        \
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;    \
-    static ::ln::TypeInfo* _lnref_typeInfo;                             \
-    static void _lnref_registerTypeInfo(::ln::RuntimeContext* context); \
-    static void _lnref_registerTypeInfoInitializer(::ln::RuntimeContext* context, ::ln::TypeInfo* typeInfo);
+#define LN_OBJECT                                                                                            \
+    friend class ::ln::TypeInfo;                                                                             \
+    friend class ::ln::detail::EngineDomain;                                                                 \
+    friend class ::ln::RuntimeContext;                                                                       \
+    template<class T>                                                                                        \
+    friend class TypeInfoTraits;                                                                             \
+    static ::ln::TypeInfo* _lnref_getTypeInfo();                                                             \
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;                                         \
+    static ::ln::TypeInfo* _lnref_typeInfo;                                                                  \
+    static void _lnref_registerTypeInfo(::ln::RuntimeContext* context);                                      \
+    static void _lnref_registerTypeInfoInitializer(::ln::RuntimeContext* context, ::ln::TypeInfo* typeInfo); \
+    template<class T_, typename... TArgs_>                                                                   \
+    friend ln::GenericResult<ln::Ref<T_>> ln::makeObject(TArgs_&&... args);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseClassType)                                                      \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() { return _lnref_typeInfo; }                            \
@@ -161,18 +163,20 @@ enum class ObjectFlags {
 
 #define LN_INTERNAL_NEW_OBJECT                         \
     template<class T, typename... TArgs>               \
-    friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
+    friend ln::Ref<T> ln::makeObject_deprecated(TArgs&&... args); \
     template<class T, typename... TArgs>               \
     friend void ln::placementNewObject(void* ptr, TArgs&&... args);
 
 #ifndef LN_CONSTRUCT_ACCESS
-#define LN_CONSTRUCT_ACCESS                                          \
-    template<class T_, typename... TArgs_>                           \
-    friend ln::Ref<T_> ln::makeObject(TArgs_&&... args);             \
-    template<class T_, typename... TArgs_>                           \
-    friend ln::Ref<T_> ln::makeObject2(TArgs_&&... args);            \
-    template<class T_, typename... TArgs_>                           \
-    friend void ln::placementNewObject(void* ptr, TArgs_&&... args); \
+#define LN_CONSTRUCT_ACCESS                                                 \
+    template<class T_, typename... TArgs_>                                  \
+    friend ln::GenericResult<ln::Ref<T_>> ln::makeObject(TArgs_&&... args); \
+    template<class T_, typename... TArgs_>                                  \
+    friend ln::Ref<T_> ln::makeObject_deprecated(TArgs_&&... args);         \
+    template<class T_, typename... TArgs_>                                  \
+    friend ln::Ref<T_> ln::makeObject2(TArgs_&&... args);                   \
+    template<class T_, typename... TArgs_>                                  \
+    friend void ln::placementNewObject(void* ptr, TArgs_&&... args);        \
 protected
 #endif
 
@@ -180,7 +184,15 @@ protected
 //	if (base::init(__VA_ARGS__)) return false;
 
 template<class T, typename... TArgs>
-Ref<T> makeObject(TArgs&&... args) {
+GenericResult<Ref<T>> makeObject(TArgs&&... args) {
+    auto ptr = Ref<T>(new T(), false);
+    auto result = ptr->init(std::forward<TArgs>(args)...);
+    if (!result) return result;
+    return ok(ptr);
+}
+
+template<class T, typename... TArgs>
+Ref<T> makeObject_deprecated(TArgs&&... args) {
     auto ptr = Ref<T>(new T(), false);
     ptr->init(std::forward<TArgs>(args)...);
     return ptr;
@@ -199,11 +211,20 @@ void placementNewObject(void* ptr, TArgs&&... args) {
     static_cast<T*>(ptr)->init(std::forward<TArgs>(args)...);
 }
 
+/**
+ * 公開クラスの型階層のルート要素です。
+ * 
+ * 派生クラスに対して以下の機能を提供します。
+ * - リフレクション (C++ のコア機能とは独立した RTTI)
+ * - 各プログラミング言語用のラッパーモジュールのための参照管理
+ * 
+ * 
+ */
 LN_CLASS()
 class Object : public RefObject {
 LN_CONSTRUCT_ACCESS:
     Object();
-    bool init();
+    Result init();
 
 protected:
     virtual ~Object();

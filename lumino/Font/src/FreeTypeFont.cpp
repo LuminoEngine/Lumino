@@ -184,7 +184,7 @@ void FreeTypeFontCached::init(FontManager* manager, const FontDesc& desc)
 	int height = std::ceil(FLValueToFloatPx(m_ftFace->bbox.yMax) - FLValueToFloatPx(m_ftFace->bbox.yMin));
 	width += 2;		// antialias などが入ると微妙に増える。mplus で 22 ポイントにすると発生した。
 	height += 2;
-	m_internalCacheBitmap = makeObject<Bitmap2D>(width, height, PixelFormat::A8);
+	m_internalCacheBitmap = makeObject_deprecated<Bitmap2D>(width, height, PixelFormat::A8);
 
 	// グリフ格納用ビットマップ (仮確保)
 	//m_glyphBitmap.attach(LN_NEW RawBitmap(SizeI(m_desc.Size, m_desc.Size), PixelFormat::A8));
@@ -575,7 +575,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 		//FontGlobalMetrics metrix;
 		//getGlobalMetrics(&metrix);
 
-		//m_internalCacheBitmap = makeObject<Bitmap2D>(metrix.lineSpace, metrix.lineSpace, PixelFormat::A8);
+		//m_internalCacheBitmap = makeObject_deprecated<Bitmap2D>(metrix.lineSpace, metrix.lineSpace, PixelFormat::A8);
 	}
 	
 	return ok();
@@ -788,7 +788,7 @@ Bitmap2D* FreeTypeFont::FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap)
 		ftBitmap->pixel_mode == FT_PIXEL_MODE_GRAY) {
 
 		if (!m_internalCacheBitmapGray) {
-			m_internalCacheBitmapGray = makeObject<Bitmap2D>(ftBitmap->width, ftBitmap->rows, PixelFormat::A8);
+			m_internalCacheBitmapGray = makeObject_deprecated<Bitmap2D>(ftBitmap->width, ftBitmap->rows, PixelFormat::A8);
 		}
 		else if (m_internalCacheBitmapGray->width() < ftBitmap->width || m_internalCacheBitmapGray->height() < ftBitmap->rows) {
 			m_internalCacheBitmapGray->resize(ftBitmap->width, ftBitmap->rows);
@@ -799,7 +799,7 @@ Bitmap2D* FreeTypeFont::FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap)
 	else if (ftBitmap->pixel_mode == FT_PIXEL_MODE_BGRA) {
 
 		if (!m_internalCacheBitmapRGBA) {
-			m_internalCacheBitmapRGBA = makeObject<Bitmap2D>(ftBitmap->width, ftBitmap->rows, PixelFormat::RGBA8);
+			m_internalCacheBitmapRGBA = makeObject_deprecated<Bitmap2D>(ftBitmap->width, ftBitmap->rows, PixelFormat::RGBA8);
 		}
 		else if (m_internalCacheBitmapRGBA->width() < ftBitmap->width || m_internalCacheBitmapRGBA->height() < ftBitmap->rows) {
 			m_internalCacheBitmapRGBA->resize(ftBitmap->width, ftBitmap->rows);

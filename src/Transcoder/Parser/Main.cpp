@@ -32,7 +32,7 @@ int main(int argc, const char** argv)
 
 	ln::RuntimeModule::initialize();
 	auto pidb = ln::makeRef<PIDatabase>();
-	auto diag = ln::makeObject<ln::DiagnosticsManager>();
+	auto diag = *ln::makeObject<ln::DiagnosticsManager>();
 	int result = parser.parse(cdb.inputFile, pidb, diag);
 	
 	std::cerr << "Internal exit code: " << result << std::endl;

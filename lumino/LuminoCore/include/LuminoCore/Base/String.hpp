@@ -999,6 +999,7 @@ struct hash<ln::String> {
 
 //#include "StringFormat.inl"
 
+namespace ln {
 namespace fmt {
 
 template<>
@@ -1032,6 +1033,7 @@ struct formatter<::ln::StringView, ln::Char> {
     }
 };
 } // namespace fmt
+} // namespace ln
 
 //==============================================================================
 // String

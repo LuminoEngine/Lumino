@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -14,7 +14,7 @@ namespace ln {
 
 Ref<ScreenBlurPostEffect> ScreenBlurPostEffect::create()
 {
-    return makeObject<ScreenBlurPostEffect>();
+    return makeObject_deprecated<ScreenBlurPostEffect>();
 }
 
 ScreenBlurPostEffect::ScreenBlurPostEffect()
@@ -54,7 +54,7 @@ void ScreenBlurPostEffect::onUpdateFrame(float elapsedSeconds)
 
 Ref<PostEffectInstance> ScreenBlurPostEffect::onCreateInstance()
 {
-    return makeObject<detail::ScreenBlurPostEffectInstance>(this);
+    return makeObject_deprecated<detail::ScreenBlurPostEffectInstance>(this);
 }
 
 
@@ -75,14 +75,14 @@ bool ScreenBlurPostEffectInstance::init(ScreenBlurPostEffect* owner)
 
     m_owner = owner;
 
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurPostEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
-    auto shader = makeObject<Shader>(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlur.fx"));
+    auto shader = makeObject_deprecated<Shader>(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlur.fx"));
     m_material->setShader(shader);
 
-    m_materialForCopySourceTo = makeObject<Material>();
-    m_materialForCopyAccumTo = makeObject<Material>();
+    m_materialForCopySourceTo = makeObject_deprecated<Material>();
+    m_materialForCopyAccumTo = makeObject_deprecated<Material>();
 
     return true;
 }
@@ -103,7 +103,7 @@ bool ScreenBlurPostEffectInstance::onRender(RenderView* renderView, CommandList*
         // m_accumTexture と source のサイズが異なる場合は作り直す
         if (m_accumTexture == nullptr || (m_accumTexture->width() != source->width() || m_accumTexture->height() != source->height()))
         {
-            m_accumTexture = makeObject<RenderTargetTexture>(source->width(), source->height(), source->format(), false, false);
+            m_accumTexture = makeObject_deprecated<RenderTargetTexture>(source->width(), source->height(), source->format(), false, false);
             context->blit(m_materialForCopySourceTo, m_accumTexture);
         }
 

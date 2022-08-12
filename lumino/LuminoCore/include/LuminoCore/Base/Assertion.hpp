@@ -4,11 +4,8 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include <fmt/format.h>
-#if FMT_VERSION > 80000
-#include <fmt/xchar.h>
-#endif
 #include "Common.hpp"
+#include "Format.hpp"
 #include "UnicodeUtils.hpp"
 
 namespace ln {
@@ -199,21 +196,21 @@ struct ExceptionHelper {
 
 template<class... TArgs>
 inline UStdString formatMessage(const char* format, TArgs&&... args) noexcept {
-    const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
+    const auto str = ::LN_FMT_NAMESPACE::format(format, std::forward<TArgs>(args)...);
     return UnicodeStringUtils::NarrowToUString(str.c_str(), str.length());
 }
 template<class... TArgs>
 inline UStdString formatMessage(const wchar_t* format, TArgs&&... args) noexcept {
-    const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
+    const auto str = ::LN_FMT_NAMESPACE::format(format, std::forward<TArgs>(args)...);
     return UnicodeStringUtils::WideToUString(str.c_str(), str.length());
 }
 template<class... TArgs>
 inline UStdString formatMessage(const Char* format, TArgs&&... args) noexcept {
-    return ::fmt::format(format, std::forward<TArgs>(args)...);
+    return ::LN_FMT_NAMESPACE::format(format, std::forward<TArgs>(args)...);
 }
 template<class T, class... TArgs>
 inline UStdString formatMessage(const T& format, TArgs&&... args) noexcept {
-    return ::fmt::format(format.c_str(), std::forward<TArgs>(args)...);
+    return ::LN_FMT_NAMESPACE::format(format.c_str(), std::forward<TArgs>(args)...);
 }
 inline UStdString formatMessage() noexcept {
     return {};

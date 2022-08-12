@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
@@ -17,7 +17,7 @@ namespace detail {
 
 PostEffectRenderer::PostEffectRenderer()
     : m_manager(detail::RenderingManager::instance())
-	, m_copyMaterial(makeObject<Material>()) {
+	, m_copyMaterial(makeObject_deprecated<Material>()) {
     m_copyMaterial->setShader(RenderingManager::instance()->builtinShader(BuiltinShader::CopyScreen));
 }
 

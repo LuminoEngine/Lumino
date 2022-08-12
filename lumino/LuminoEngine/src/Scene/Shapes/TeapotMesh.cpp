@@ -31,7 +31,7 @@ TeapotMesh::BuilderDetails::BuilderDetails()
 
 Ref<Object> TeapotMesh::BuilderDetails::create() const
 {
-	auto p = makeObject<TeapotMesh>(material);
+	auto p = makeObject_deprecated<TeapotMesh>(material);
 	apply(p);
 	return p;
 }

@@ -287,7 +287,7 @@ bool AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const Asse
     auto stream = openStreamFromAssetPath(assetPath);
     auto text = FileSystem::readAllText(stream);
 
-    auto asset = makeObject<AssetModel>(obj);
+    auto asset = makeObject_deprecated<AssetModel>(obj);
     Serializer2_deprecated::deserializeInstance(asset, text.unwrap(), assetPath.getParentAssetPath());
 
     obj->setAssetPath(assetPath);
@@ -331,7 +331,7 @@ void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& fi
     FileSystem::writeAllText(localPath, text);
 
     ////auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
-    //auto serializer = makeObject<Serializer>(); // TODO: Pool
+    //auto serializer = makeObject_deprecated<Serializer>(); // TODO: Pool
     //JsonTextOutputArchive ar;
     //ar.m_serializer = serializer;
     //ar.setBasePath(assetPath.getParentAssetPath().toString());

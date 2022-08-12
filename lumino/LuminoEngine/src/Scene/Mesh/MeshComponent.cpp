@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Mesh/MeshModel.hpp>
@@ -31,8 +31,7 @@ MeshComponent::~MeshComponent()
 {
 }
 
-bool MeshComponent::init()
-{
+Result MeshComponent::init() {
     return VisualComponent::init();
 }
 
@@ -76,7 +75,7 @@ void MeshComponent::makeCollisionBody(StringView meshContainerName)
         if (index >= 0) {
             auto meshContainer = m_model->meshContainers()[index];
             auto shape = MeshCollisionShape::create(meshContainer->meshPrimitives()[0]);
-            m_body = makeObject<RigidBody>(shape);
+            m_body = makeObject_deprecated<RigidBody>(shape);
 
             // TODO: onPreUpdate で UpdateContext からとりたいことろ
             detail::EngineDomain::engineManager()->mainPhysicsWorld()->addPhysicsObject(m_body);

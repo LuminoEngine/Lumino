@@ -17,17 +17,17 @@ LN_OBJECT_IMPLEMENT(UIIcon, UIElement) {}
 
 Ref<UIIcon> UIIcon::loadFontIcon(const StringView& iconName)
 {
-	return makeObject<UIIcon>(iconName);
+	return makeObject_deprecated<UIIcon>(iconName);
 }
 
 Ref<UIIcon> UIIcon::loadFontIcon(const StringView& iconName, int size)
 {
-	return makeObject<UIIcon>(iconName, size);
+	return makeObject_deprecated<UIIcon>(iconName, size);
 }
 
 Ref<UIIcon> UIIcon::loadFontIcon(const StringView& iconName, int size, const Color& color)
 {
-	return makeObject<UIIcon>(iconName, size, color);
+	return makeObject_deprecated<UIIcon>(iconName, size, color);
 }
 
 UIIcon::UIIcon()

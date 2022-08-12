@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 
 class Test_Graphics_HlslEffect : public ::testing::Test
 {
@@ -31,14 +31,14 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	};
 #endif
 	
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vd1 = makeObject<VertexLayout>();
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vd1 = makeObject_deprecated<VertexLayout>();
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	//* [ ] Basic rendering
 	{
-		auto shader1 = makeObject<Shader>(LN_ASSETFILE("Basic.fx"));
+		auto shader1 = makeObject_deprecated<Shader>(LN_ASSETFILE("Basic.fx"));
 		auto descriptorLayout1 = shader1->descriptorLayout();
 		auto shaderPass1 = shader1->techniques()[0]->passes()[0];
 
@@ -62,7 +62,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	
 	//* [ ] Nested struct
 	{
-		auto shader2 = makeObject<Shader>(LN_ASSETFILE("NestedStruct.fx"));
+		auto shader2 = makeObject_deprecated<Shader>(LN_ASSETFILE("NestedStruct.fx"));
 		auto descriptorLayout2 = shader2->descriptorLayout();
 		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
@@ -107,17 +107,17 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 	};
 #endif
 
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vd1 = makeObject<VertexLayout>();
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vd1 = makeObject_deprecated<VertexLayout>();
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 
 	//* [ ] #if
 	{
-		auto props = makeObject<ShaderCompilationProperties>();
+		auto props = makeObject_deprecated<ShaderCompilationProperties>();
 		props->addDefinition(_TT("GREEN=1"));
-		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
+		auto shader2 = makeObject_deprecated<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
 		auto ctx = TestEnv::beginFrame();
@@ -137,9 +137,9 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 
 	//* [ ] #ifdef
 	{
-		auto props = makeObject<ShaderCompilationProperties>();
+		auto props = makeObject_deprecated<ShaderCompilationProperties>();
 		props->addDefinition(_TT("BLUE"));
-		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
+		auto shader2 = makeObject_deprecated<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
 		auto ctx = TestEnv::beginFrame();
@@ -159,9 +159,9 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 
 	//* [ ] #include
 	{
-		auto props = makeObject<ShaderCompilationProperties>();
+		auto props = makeObject_deprecated<ShaderCompilationProperties>();
 		props->addIncludeDirectory(LN_ASSETFILE(""));
-		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest.fx"), props);
+		auto shader2 = makeObject_deprecated<Shader>(LN_ASSETFILE("PreprosessorTest.fx"), props);
 		auto descriptorLayout2 = shader2->descriptorLayout();
 		auto shaderPass2 = shader2->techniques()[0]->passes()[0];
 
@@ -187,7 +187,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_HlslEffect, ShaderPassRenderState)
 {
-    auto shader = makeObject<Shader>(LN_ASSETFILE("ShaderPassRenderStateTest1.fx"));
+    auto shader = makeObject_deprecated<Shader>(LN_ASSETFILE("ShaderPassRenderStateTest1.fx"));
     
     // pass0 は何もセットされていない
     // pass1 はすべてセットされている
@@ -234,8 +234,8 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 		{ { -1, 0, 0, 1 },{ 0, 0, 1, 1 } },
 	};
 
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vd1 = makeObject<VertexLayout>();
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vd1 = makeObject_deprecated<VertexLayout>();
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
@@ -244,7 +244,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 
 	//* [ ] Basic rendering
 	{
-		auto shader = makeObject<Shader>(LN_ASSETFILE("Shader/FxcTest1.v1.lcfx"));
+		auto shader = makeObject_deprecated<Shader>(LN_ASSETFILE("Shader/FxcTest1.v1.lcfx"));
 		shader->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
 
 		ctx->setVertexDeclaration(vd1);
@@ -263,8 +263,8 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 TEST_F(Test_Graphics_HlslEffect, Sample)
 {
 #if 0
-	auto shader1 = makeObject<Shader>(LN_ASSETFILE("Atmosphere.fx"));
-	auto shader2 = makeObject<Shader>(LN_ASSETFILE("Cloud.fx"));
+	auto shader1 = makeObject_deprecated<Shader>(LN_ASSETFILE("Atmosphere.fx"));
+	auto shader2 = makeObject_deprecated<Shader>(LN_ASSETFILE("Cloud.fx"));
 
 	Vector4 v1[] = {
 		{ -1, 1, 1, 1 },
@@ -272,9 +272,9 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 		{ -1, -1, 1, 1 },
 		{ 1, -1, 1, 1 },
 	};
-	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject_deprecated<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
-	auto vd1 = makeObject<VertexLayout>();
+	auto vd1 = makeObject_deprecated<VertexLayout>();
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
 	auto ctx = TestEnv::graphicsContext();

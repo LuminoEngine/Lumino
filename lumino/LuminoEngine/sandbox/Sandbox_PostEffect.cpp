@@ -23,7 +23,7 @@ class App_Sandbox_PostEffect : public Application
 
 		float size = 10.0f;
 		float hs = 10.0f / 2.0f;
-        auto builder = makeObject<MeshGeometryBuilder>();
+        auto builder = makeObject_deprecated<MeshGeometryBuilder>();
         builder->beginSection();
         builder->addPlane(Vector2(size, size), 1, 1);
 
@@ -58,33 +58,33 @@ class App_Sandbox_PostEffect : public Application
         builder->endSection();
         auto mesh = builder->buildMesh();
 
-        auto model = makeObject<MeshModel>();
+        auto model = makeObject_deprecated<MeshModel>();
         model->addMeshContainerNode(mesh);
         model->addMaterial(Material::create());
         model->updateNodeTransforms();
 
-        auto obj = makeObject<StaticMesh>(model);
+        auto obj = makeObject_deprecated<StaticMesh>(model);
 
 
-		//auto effect2 = makeObject<SSRPostEffect>();
+		//auto effect2 = makeObject_deprecated<SSRPostEffect>();
 		//Engine::renderView()->addPostEffect(effect2);
 
-		//auto effect1 = makeObject<SSAOPostEffect>();
+		//auto effect1 = makeObject_deprecated<SSAOPostEffect>();
 		//Engine::renderView()->addPostEffect(effect1);
 
-		//auto effect6 = makeObject<FXAAPostEffect>();
+		//auto effect6 = makeObject_deprecated<FXAAPostEffect>();
 		//Engine::renderView()->addPostEffect(effect6);
 
 
-		//auto effect5 = makeObject<DepthOfFieldPostEffect>();
+		//auto effect5 = makeObject_deprecated<DepthOfFieldPostEffect>();
 		//Engine::renderView()->addPostEffect(effect5);
 		
 
-		//auto effect4 = makeObject<BloomPostEffect>();
+		//auto effect4 = makeObject_deprecated<BloomPostEffect>();
 		//effect4->setStrength(0.1);
 		//Engine::renderView()->addPostEffect(effect4);
 
-  //      auto effect3 = makeObject<TonemapPostEffect>();
+  //      auto effect3 = makeObject_deprecated<TonemapPostEffect>();
   //      Engine::renderView()->addPostEffect(effect3);
 
 

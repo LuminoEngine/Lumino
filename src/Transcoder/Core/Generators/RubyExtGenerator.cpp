@@ -103,8 +103,8 @@ void RubyExtGenerator::generate() {
 
     OutputBuffer code;
 
-    m_RubyRequiredStructMethodsTemplate = ln::FileSystem::readAllText(makeTemplateFilePath(U"RubyRequiredStructMethods.template.cpp"));
-    m_RubyRequiredClassMethodsTemplate = ln::FileSystem::readAllText(makeTemplateFilePath(U"RubyRequiredClassMethods.template.cpp"));
+    m_RubyRequiredStructMethodsTemplate = *ln::FileSystem::readAllText(makeTemplateFilePath(U"RubyRequiredStructMethods.template.cpp"));
+    m_RubyRequiredClassMethodsTemplate = *ln::FileSystem::readAllText(makeTemplateFilePath(U"RubyRequiredClassMethods.template.cpp"));
 
     // structs
     for (auto& structSymbol : db()->structs()) {
@@ -228,7 +228,7 @@ void RubyExtGenerator::generate() {
 
     // save
     {
-        ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(U"RubyExt.template.cpp"))
+        ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(U"RubyExt.template.cpp")).unwrap()
                              .replace(U"%%Common%%", U"")
                              .replace(U"%%FlatCDecls%%", allFlatCApiDecls.toString())
                              .replace(U"%%EnumTypeVALUEDecls%%", makeEnumTypeVALUEVariableDecls())

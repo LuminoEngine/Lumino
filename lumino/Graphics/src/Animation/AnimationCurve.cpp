@@ -67,7 +67,7 @@ LN_OBJECT_IMPLEMENT(KeyFrameAnimationCurve, Object) {}
 
 Ref<KeyFrameAnimationCurve> KeyFrameAnimationCurve::create()
 {
-	return makeObject<KeyFrameAnimationCurve>();
+	return makeObject_deprecated<KeyFrameAnimationCurve>();
 }
 
 KeyFrameAnimationCurve::KeyFrameAnimationCurve()
@@ -80,8 +80,7 @@ KeyFrameAnimationCurve::~KeyFrameAnimationCurve()
 {
 }
 
-bool KeyFrameAnimationCurve::init()
-{
+Result KeyFrameAnimationCurve::init() {
 	return AnimationCurve::init();
 }
 
@@ -266,7 +265,7 @@ AnimationKeyFrame* KeyFrameAnimationCurve::findKeyFrame(float time)
 
 Ref<EasingAnimationCurve> EasingAnimationCurve::create(float startValue, float targetValue, float duration, EasingMode function)
 {
-	return makeObject<EasingAnimationCurve>(startValue, targetValue, duration, function);
+	return makeObject_deprecated<EasingAnimationCurve>(startValue, targetValue, duration, function);
 }
 
 EasingAnimationCurve::EasingAnimationCurve()

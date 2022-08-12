@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Mesh/MeshModeEntity.hpp>
 #include <LuminoGraphics/Mesh/AnimationController.hpp>
@@ -88,7 +88,7 @@ void SkeletonInstance::updateSkinningMatrices(GraphicsCommandList* dataTransferC
     const auto& boneModels = skeletonModel()->m_bones;
 
     if (!m_skinningMatricesTexture || m_skinningMatricesTexture->height() != boneModels.size()) {
-        m_skinningMatricesTexture = makeObject<Texture2D>(4, boneModels.size(), TextureFormat::RGBA32F);
+        m_skinningMatricesTexture = makeObject_deprecated<Texture2D>(4, boneModels.size(), TextureFormat::RGBA32F);
         m_skinningMatricesTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
     }
 
@@ -126,7 +126,7 @@ MorphInstance::MorphInstance(MeshModelInstance* owner, int meshContainerIndex)
     m_weights.resize(meshPrimitive->morphTargetCount(), 0.0f);
 
     VertexBuffer* baseBuffer = meshPrimitive->vertexBuffer(InterleavedVertexGroup::Main);
-    m_blendResult = makeObject<VertexBuffer>(
+    m_blendResult = makeObject_deprecated<VertexBuffer>(
         baseBuffer->size(),
         baseBuffer->data(),
         GraphicsResourceUsage::Static);

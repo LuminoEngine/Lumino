@@ -43,7 +43,7 @@ class GameScene : public Level
 	void onUpdate() override
 	{
 		if (!Scene::isTransitionEffectRunning() && Input::isTriggered(_TT("submit"))) {
-			Scene::gotoLevel(makeObject<TitleScene>());
+			Scene::gotoLevel(makeObject_deprecated<TitleScene>());
 		}
 	}
 };
@@ -51,7 +51,7 @@ class GameScene : public Level
 void TitleScene::onUpdate()
 {
 	if (!Scene::isTransitionEffectRunning() && Input::isTriggered(_TT("submit"))) {
-		Scene::gotoLevel(makeObject<GameScene>());
+		Scene::gotoLevel(makeObject_deprecated<GameScene>());
 	}
 	if (Input::isTriggered(_TT("left"))) {
 		Scene::startFadeOut();
@@ -73,7 +73,7 @@ class App_Sandbox_GameScene : public Application
 	 //   Engine::renderView()->addPostEffect(transitionPostEffect);
 		//g_TransitionPostEffect = transitionPostEffect;
 
-		Scene::gotoLevel(makeObject<TitleScene>());
+		Scene::gotoLevel(makeObject_deprecated<TitleScene>());
 	}
 
 	void onUpdate() override

@@ -20,7 +20,7 @@ LN_OBJECT_IMPLEMENT(TilemapModel, Object) {}
 
 Ref<TilemapModel> TilemapModel::create()
 {
-    return makeObject<TilemapModel>();
+    return makeObject_deprecated<TilemapModel>();
 }
 
 TilemapModel::TilemapModel()
@@ -87,7 +87,7 @@ void TilemapModel::init(const StringView& filePath)
             auto material = ln::Material::create();
             material->setMainTexture(ln::Assets::loadTexture(ln::String::fromStdString(tmxTileset.getImagePath())));
 
-            auto tileset = ln::makeObject<ln::Tileset>();
+            auto tileset = ln::makeObject_deprecated<ln::Tileset>();
             tileset->setMaterial(material);
             tileset->setTilePixelSize(tmxTileset.getTileSize().x, tmxTileset.getTileSize().y);
             addTileset(tileset);
@@ -105,7 +105,7 @@ void TilemapModel::init(const StringView& filePath)
         // Layers
         for (const auto& tmxLayer : tmxMap.getLayers())
         {
-            auto layer = ln::makeObject<ln::TilemapLayer>();
+            auto layer = ln::makeObject_deprecated<ln::TilemapLayer>();
             layer->resize(width, height);
             layer->setOrientation(ln::TilemapOrientation::DownFlow);
             addLayer(layer);
@@ -140,7 +140,7 @@ void TilemapModel::reset(int width, int height, int layers)
 {
 	m_layers.clear();
 	for (int i = 0; i < layers; i++) {
-		auto layer = makeObject<TilemapLayer>();
+		auto layer = makeObject_deprecated<TilemapLayer>();
 		layer->resize(width, height);
 		m_layers.add(layer);
 	}

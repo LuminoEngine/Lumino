@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -14,37 +14,37 @@ LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {}
 
 Ref<Sprite> Sprite::create()
 {
-    return makeObject<Sprite>();
+    return makeObject_deprecated<Sprite>();
 }
 
 Ref<Sprite> Sprite::create(Texture* texture)
 {
-	return makeObject<Sprite>(texture, -1, -1);
+	return makeObject_deprecated<Sprite>(texture, -1, -1);
 }
 
 Ref<Sprite> Sprite::create(Texture* texture, float width, float height)
 {
-    return makeObject<Sprite>(texture, width, height);
+    return makeObject_deprecated<Sprite>(texture, width, height);
 }
 
 Ref<Sprite> Sprite::create(SpriteSheet* frameSet)
 {
-	return makeObject<Sprite>(frameSet);
+	return makeObject_deprecated<Sprite>(frameSet);
 }
 
 Ref<Sprite> Sprite::load(StringView filePath)
 {
-	return makeObject<Sprite>(Texture2D::load(filePath));
+	return makeObject_deprecated<Sprite>(Texture2D::load(filePath));
 }
 
 Ref<Sprite> Sprite::loadEmoji(StringView code)
 {
-	return makeObject<Sprite>(Texture2D::loadEmoji(code));
+	return makeObject_deprecated<Sprite>(Texture2D::loadEmoji(code));
 }
 
 Ref<Sprite> Sprite::loadEmoji(uint32_t codePoint)
 {
-	return makeObject<Sprite>(Texture2D::loadEmoji(codePoint));
+	return makeObject_deprecated<Sprite>(Texture2D::loadEmoji(codePoint));
 }
 
 Sprite::Sprite()
@@ -58,7 +58,7 @@ Sprite::~Sprite()
 void Sprite::init()
 {
     VisualObject::init();
-    m_component = makeObject<SpriteComponent>();
+    m_component = makeObject_deprecated<SpriteComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }

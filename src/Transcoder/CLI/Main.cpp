@@ -14,7 +14,7 @@
 int main(int argc, char** argv) {
     ln::Logger::addStdErrAdapter();
     ln::RuntimeModule::initialize();
-    auto diag = ln::makeObject<ln::DiagnosticsManager>();
+    auto diag = *ln::makeObject<ln::DiagnosticsManager>();
     diag->setOutputToStdErr(true);
     auto pidb = ln::makeRef<PIDatabase>();
     const auto repoRoot = ln::String::fromCString(LUMINO_REPO_ROOT_DIR);

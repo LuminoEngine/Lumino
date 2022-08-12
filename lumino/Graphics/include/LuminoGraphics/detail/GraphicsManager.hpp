@@ -2,8 +2,8 @@
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
-#include "../RHI/Common.hpp"
-#include "../RHI/detail/RenderingCommandList.hpp"
+#include "../GPU/Common.hpp"
+#include "../GPU/detail/RenderingCommandList.hpp"
 #include "../RHIModule.hpp"
 
 namespace ln {

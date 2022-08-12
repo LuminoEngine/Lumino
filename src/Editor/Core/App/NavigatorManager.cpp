@@ -18,7 +18,7 @@ void NavigationBarItem::init(NavigatorManager* manager, Navigator* navigator)
 
 void NavigationBarItem::addIcon(const ln::StringView& iconName)
 {
-    auto icon = ln::makeObject<ln::UIIcon>();
+    auto icon = ln::makeObject_deprecated<ln::UIIcon>();
     icon->setIconName(iconName);
     icon->setAlignments(ln::UIAlignment::Center);
     icon->setFontSize(24);
@@ -41,10 +41,10 @@ void NavigationBar::init(NavigatorManager* manager)
 {
     UIItemsControl::init();
 	m_navigatorManager = manager;
-    //m_layout = ln::makeObject<ln::UIVBoxLayout2>();
+    //m_layout = ln::makeObject_deprecated<ln::UIVBoxLayout2>();
     //addElement(m_layout);
-    //setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
-    setItemsLayoutPanel(ln::makeObject<ln::UIVBoxLayout2>());
+    //setLayoutPanel(ln::makeObject_deprecated<ln::UIVBoxLayout>());
+    setItemsLayoutPanel(ln::makeObject_deprecated<ln::UIVBoxLayout2>());
     setWidth(ItemSize);
     setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 8));
     setAlignments(ln::UIAlignment::LeftStretch);
@@ -66,7 +66,7 @@ void NavigationBar::addNavigator(Navigator* navigator)
     element->setAlignments(ln::UIAlignment::Center);
     element->setFontSize(24);
     
-    auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, navigator);
+    auto item = ln::makeObject_deprecated<NavigationBarItem>(m_navigatorManager, navigator);
     item->addElement(element);
     item->setWidth(ItemSize);
     item->setHeight(ItemSize);
@@ -106,7 +106,7 @@ void NavigatorManager::init()
 {
     UIControl::init();
 
-    m_layout = ln::makeObject<ln::UIBoxLayout>();
+    m_layout = ln::makeObject_deprecated<ln::UIBoxLayout>();
     m_layout->setOrientation(ln::UILayoutOrientation::Horizontal);
     //m_layout->lastStretch = true;
     //setLayoutPanel(m_layout);
@@ -114,10 +114,10 @@ void NavigatorManager::init()
 
     //m_layout->setBackgroundColor(ln::Color::Red);
 
-    m_navigationBar = ln::makeObject<NavigationBar>(this);
+    m_navigationBar = ln::makeObject_deprecated<NavigationBar>(this);
     m_layout->addChild(m_navigationBar);
 
-	m_switchLayout = ln::makeObject<ln::UISwitchLayout>();
+	m_switchLayout = ln::makeObject_deprecated<ln::UISwitchLayout>();
     m_switchLayout->getGridLayoutInfo()->layoutWeight = 1;  // fill in box layout
 	m_switchLayout->setActiveIndex(-1);
 	m_layout->addChild(m_switchLayout);
@@ -129,7 +129,7 @@ void NavigatorManager::resetNavigators()
 		LN_NOTIMPLEMENTED();
 	}
 
-    //m_assetBrowserNavigator = ln::makeObject<AssetBrowserNavigator>();
+    //m_assetBrowserNavigator = ln::makeObject_deprecated<AssetBrowserNavigator>();
     //m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
     //m_layout->addChild(m_assetBrowserNavigator->createView());
 

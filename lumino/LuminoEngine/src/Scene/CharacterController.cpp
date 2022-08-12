@@ -343,7 +343,7 @@ void CharacterController::onCollisionEnter(PhysicsObject* otherObject, ContactPo
 	auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
 	// TODO: Cache
-	auto c = makeObject<Collision>(worldObject, otherObject);
+	auto c = makeObject_deprecated<Collision>(worldObject, otherObject);
 	m_onCollisionEnter.raise(c);
 }
 
@@ -353,7 +353,7 @@ void CharacterController::onCollisionLeave(PhysicsObject* otherObject, ContactPo
 	auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
 	// TODO: Cache
-	auto c = makeObject<Collision>(worldObject, otherObject);
+	auto c = makeObject_deprecated<Collision>(worldObject, otherObject);
 	m_onCollisionLeave.raise(c);
 }
 
@@ -363,7 +363,7 @@ void CharacterController::onCollisionStay(PhysicsObject* otherObject, ContactPoi
 	auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
 
 	// TODO: Cache
-	auto c = makeObject<Collision>(worldObject, otherObject);
+	auto c = makeObject_deprecated<Collision>(worldObject, otherObject);
 	m_onCollisionStay.raise(c);
 }
 
@@ -394,10 +394,10 @@ void CharacterController::prepareViewCamera()
 void CharacterController::prepareRigidBody()
 {
 	if (!m_rigidBody) {
-		auto shape = makeObject<CapsuleCollisionShape>(0.25, m_height);
+		auto shape = makeObject_deprecated<CapsuleCollisionShape>(0.25, m_height);
 		shape->setPosition(Vector3(0, m_height * 0.5f, 0));
 
-		m_rigidBody = makeObject<RigidBody>();
+		m_rigidBody = makeObject_deprecated<RigidBody>();
 		m_rigidBody->addCollisionShape(shape);
 		m_rigidBody->setMass(50.0f);
 		m_rigidBody->setAngularLimits(RigidBodyLimitFlags::LockedRotation);

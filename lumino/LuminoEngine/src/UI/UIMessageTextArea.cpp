@@ -97,7 +97,7 @@ private:
 void RTTextElement::updateFont(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale)
 {
 	if (!m_finalFont) {
-		m_finalFont = makeObject<Font>();
+		m_finalFont = makeObject_deprecated<Font>();
 	}
 
 	if (parentFinalFont) {
@@ -368,9 +368,9 @@ void RTDocumentBuilder::parse(Font* font, const ln::String& text)
     List<UITextRange> lines;
     UITextRange::splitLineRanges(text, &lines);
     for (auto& line : lines) {
-        auto p = makeObject<RTLineBlock>();
+        auto p = makeObject_deprecated<RTLineBlock>();
         m_document->addBlock(p);
-        auto r = makeObject<RTRun>();
+        auto r = makeObject_deprecated<RTRun>();
         r->setText(text.substr(line.beginIndex, line.length()));
         p->addInline(r);
     }
@@ -385,7 +385,7 @@ void RTDocumentBuilder::parse(Font* font, const ln::String& text)
 
 Ref<UIMessageTextArea> UIMessageTextArea::create()
 {
-	return makeObject<UIMessageTextArea>();
+	return makeObject_deprecated<UIMessageTextArea>();
 }
 
 UIMessageTextArea::UIMessageTextArea()
@@ -399,13 +399,13 @@ bool UIMessageTextArea::init()
 {
     if (!UIElement::init()) return false;
 
-	m_document = makeObject<detail::RTDocument>();
+	m_document = makeObject_deprecated<detail::RTDocument>();
 
 
-	//auto p = makeObject<RTParagraph>();
+	//auto p = makeObject_deprecated<RTParagraph>();
 	//m_document->addBlock(p);
 
-	//auto r = makeObject<RTRun>();
+	//auto r = makeObject_deprecated<RTRun>();
 	//r->setText(u"Run Test");
 	//p->addInline(r);
 
@@ -484,7 +484,7 @@ void UIMessageTextArea::onRender(UIRenderingContext* context)
 
 Ref<UIMessageTextWindow> UIMessageTextWindow::create()
 {
-    return makeObject<UIMessageTextWindow>();
+    return makeObject_deprecated<UIMessageTextWindow>();
 }
 
 UIMessageTextWindow::UIMessageTextWindow()
@@ -494,7 +494,7 @@ UIMessageTextWindow::UIMessageTextWindow()
 void UIMessageTextWindow::init()
 {
     UIElement::init();
-    m_document = makeObject<detail::RTDocument>();
+    m_document = makeObject_deprecated<detail::RTDocument>();
 }
 
 void UIMessageTextWindow::setText(const StringView& value)

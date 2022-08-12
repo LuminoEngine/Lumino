@@ -12,7 +12,7 @@ LN_OBJECT_IMPLEMENT(Tilemap, Object) {}
 
 Ref<Tilemap> Tilemap::create()
 {
-    return makeObject<Tilemap>();
+    return makeObject_deprecated<Tilemap>();
 }
 
 Tilemap::Tilemap()
@@ -26,7 +26,7 @@ Tilemap::~Tilemap()
 void Tilemap::init()
 {
     VisualObject::init();
-    m_component = makeObject<TilemapComponent>();
+    m_component = makeObject_deprecated<TilemapComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }

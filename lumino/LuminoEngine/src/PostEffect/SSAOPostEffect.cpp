@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Rendering/RenderView.hpp>
@@ -24,7 +24,7 @@ void SSAOPostEffect::init()
 
 Ref<PostEffectInstance> SSAOPostEffect::onCreateInstance()
 {
-    return makeObject<detail::SSAOPostEffectInstance>(this);
+    return makeObject_deprecated<detail::SSAOPostEffectInstance>(this);
 }
 
 //==============================================================================
@@ -43,17 +43,17 @@ bool SSAOPostEffectInstance::init(SSAOPostEffect* owner)
     if (!PostEffectInstance::init()) return false;
 
     auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx"));
-    m_occlusionMaterial = makeObject<Material>();
+    m_occlusionMaterial = makeObject_deprecated<Material>();
     m_occlusionMaterial->setShader(shader1);
 
     auto shader2 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOBlurAndComposite.fx"));
-    m_blurAndCompositeMaterial = makeObject<Material>();
+    m_blurAndCompositeMaterial = makeObject_deprecated<Material>();
     m_blurAndCompositeMaterial->setShader(shader2);
 
     //m_blurAndCompositeMaterial
 
     // TODO: 他と共有したいところ
-    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_samplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     return true;
 }

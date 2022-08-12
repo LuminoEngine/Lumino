@@ -230,9 +230,9 @@ void UITrack::init()
 	vsm->registerState(OrientationStates, HorizontalState);
 	vsm->registerState(OrientationStates, VerticalState);
 
-	//m_decreaseButton = makeObject<UIButton>();
-	m_thumb = makeObject<UIThumb>();
-	//m_increaseButton = makeObject<UIButton>();
+	//m_decreaseButton = makeObject_deprecated<UIButton>();
+	m_thumb = makeObject_deprecated<UIThumb>();
+	//m_increaseButton = makeObject_deprecated<UIButton>();
 
 	//m_decreaseButton->addClass(_TT("UITrack-DecreaseButton");
 	m_thumb->addClass(_TT("UITrack-Thumb"));
@@ -521,9 +521,9 @@ void UIScrollBar::init()
     vsm->registerState(OrientationStates, HorizontalState);
     vsm->registerState(OrientationStates, VerticalState);
 
-    m_track = makeObject<UITrack>();
-    //m_lineUpButton = makeObject<UIButton>();
-    //m_lineDownButton = makeObject<UIButton>();
+    m_track = makeObject_deprecated<UITrack>();
+    //m_lineUpButton = makeObject_deprecated<UIButton>();
+    //m_lineDownButton = makeObject_deprecated<UIButton>();
     addVisualChild(m_track);
     //addVisualChild(m_lineUpButton);
     //addVisualChild(m_lineDownButton);
@@ -722,7 +722,7 @@ void UIScrollViewHelper::setHScrollbarVisible(bool value)
 {
 	if (value) {
 		if (!m_horizontalScrollBar) {
-			m_horizontalScrollBar = makeObject<UIScrollBar>();
+			m_horizontalScrollBar = makeObject_deprecated<UIScrollBar>();
 			m_horizontalScrollBar->setOrientation(UILayoutOrientation::Horizontal);
 			//m_horizontalScrollBar->setWidth(16);	// TODO: style
 			m_horizontalScrollBar->setAlignments(UIAlignment::VerticalStretch);
@@ -741,7 +741,7 @@ void UIScrollViewHelper::setVScrollbarVisible(bool value)
 {
 	if (value) {
 		if (!m_verticalScrollBar) {
-			m_verticalScrollBar = makeObject<UIScrollBar>();
+			m_verticalScrollBar = makeObject_deprecated<UIScrollBar>();
 			//m_verticalScrollBar->setHeight(16);	// TODO: style
 			m_verticalScrollBar->setOrientation(UILayoutOrientation::Vertical);
 			m_verticalScrollBar->setAlignments(UIAlignment::HorizontalStretch);
@@ -890,7 +890,7 @@ void UIScrollViewer::setHScrollbarVisible(bool value)
 {
 	if (value) {
 		if (!m_horizontalScrollBar) {
-			m_horizontalScrollBar = makeObject<UIScrollBar>();
+			m_horizontalScrollBar = makeObject_deprecated<UIScrollBar>();
 			m_horizontalScrollBar->setOrientation(UILayoutOrientation::Horizontal);
 			m_horizontalScrollBar->setWidth(16);	// TODO: style
 			m_horizontalScrollBar->setAlignments(UIAlignment::VerticalStretch);
@@ -909,7 +909,7 @@ void UIScrollViewer::setVScrollbarVisible(bool value)
 {
 	if (value) {
 		if (!m_verticalScrollBar) {
-			m_verticalScrollBar = makeObject<UIScrollBar>();
+			m_verticalScrollBar = makeObject_deprecated<UIScrollBar>();
 			m_verticalScrollBar->setHeight(16);	// TODO: style
 			m_verticalScrollBar->setOrientation(UILayoutOrientation::Vertical);
 			m_verticalScrollBar->setAlignments(UIAlignment::HorizontalStretch);
@@ -929,9 +929,9 @@ void UIScrollViewer::init()
     UIControl::init();
 	setHScrollbarVisible(true);
 	setVScrollbarVisible(true);
-    //m_horizontalScrollBar = makeObject<UIScrollBar>();
+    //m_horizontalScrollBar = makeObject_deprecated<UIScrollBar>();
     //m_horizontalScrollBar->setOrientation(UILayoutOrientation::Horizontal);
-    //m_verticalScrollBar = makeObject<UIScrollBar>();
+    //m_verticalScrollBar = makeObject_deprecated<UIScrollBar>();
     //m_verticalScrollBar->setOrientation(UILayoutOrientation::Vertical);
     //addVisualChild(m_horizontalScrollBar);
     //addVisualChild(m_verticalScrollBar);

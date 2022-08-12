@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include "MainViewportToolPane.hpp"
 

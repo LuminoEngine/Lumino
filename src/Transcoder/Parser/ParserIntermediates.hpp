@@ -6,14 +6,14 @@ using Ref = ln::Ref<T>;
 class PITypeInfo;
 
 // Doxygen コメント (@param)
-class PIParamDocument : public ln::RefObject {
+class PIParamDocument : public ln::Object {
 public:
     ln::String name;
     ln::String io;
     ln::String description;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(name);
         ar& LN_NVP(io);
@@ -22,19 +22,19 @@ protected:
 };
 
 // Doxygen コメント
-class PIDocument : public ln::RefObject {
+class PIDocument : public ln::Object {
 public:
     ln::String summary;
-    ln::List<Ref<PIParamDocument>> params;
+    ln::Array<Ref<PIParamDocument>> params;
     ln::String returns;
     ln::String details;
-    ln::List<ln::String> copydocLocalSignature;
+    ln::Array<ln::String> copydocLocalSignature;
 
     static ln::String formatComment(const ln::String& comment);
     static bool equalsLocalSigneture(const PIDocument* lhs, const PIDocument* rhs);
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(summary);
         ar& LN_NVP(params);
@@ -45,13 +45,13 @@ protected:
 };
 
 // LN_METHOD() などの属性マクロの ( ) 内に記述されたパラメータ
-class PIMetadata : public ln::RefObject {
+class PIMetadata : public ln::Object {
 public:
     ln::String name;
     std::unordered_map<ln::String, ln::String> values;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(name);
         ar& LN_NVP(values);
@@ -59,7 +59,7 @@ protected:
 };
 
 // フィールド変数
-class PIField : public ln::RefObject {
+class PIField : public ln::Object {
 public:
     Ref<PIDocument> document;
     Ref<PIMetadata> metadata;
@@ -67,7 +67,7 @@ public:
     ln::String name;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(document);
         ar& LN_NVP(metadata);
@@ -77,7 +77,7 @@ protected:
 };
 
 // 定数 (enum メンバ)
-class PIConstant : public ln::RefObject {
+class PIConstant : public ln::Object {
 public:
     Ref<PIDocument> document;
     Ref<PIMetadata> metadata;
@@ -86,7 +86,7 @@ public:
     ln::Ref<ln::Variant> value;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(document);
         ar& LN_NVP(metadata);
@@ -97,7 +97,7 @@ protected:
 };
 
 // メソッドの引数情報
-class PIMethodParameter : public ln::RefObject {
+class PIMethodParameter : public ln::Object {
 public:
     ln::String typeRawName;
     ln::String name;
@@ -106,7 +106,7 @@ public:
     Ref<ln::Variant> defaultValue;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(typeRawName);
         ar& LN_NVP(name);
@@ -126,7 +126,7 @@ protected:
 };
 
 // メソッド情報
-class PIMethod : public ln::RefObject {
+class PIMethod : public ln::Object {
 public:
     Ref<PIDocument> document;
     Ref<PIMetadata> metadata;
@@ -137,10 +137,10 @@ public:
     bool isVirtual = false;
     bool isConstructor = false;
     ln::String returnTypeRawName;
-    ln::List<Ref<PIMethodParameter>> parameters;
+    ln::Array<Ref<PIMethodParameter>> parameters;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(document);
         ar& LN_NVP(metadata);
@@ -155,7 +155,7 @@ protected:
     }
 };
 
-class PITemplateArgument : public ln::RefObject {
+class PITemplateArgument : public ln::Object {
 public:
     ln::String paramName;
     ln::String typeRawName;
@@ -163,7 +163,7 @@ public:
     bool isPointer = false;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(paramName);
         ar& LN_NVP(typeRawName);
@@ -174,7 +174,7 @@ protected:
 
 // 型情報 (struct, class, enum)
 // template についてはインスタンス化されたもののみ扱う
-class PITypeInfo : public ln::RefObject {
+class PITypeInfo : public ln::Object {
 public:
     ln::String kind;
     ln::String rawFullName;
@@ -182,14 +182,14 @@ public:
     Ref<PIDocument> document;
     Ref<PIMetadata> metadata;
     Ref<PIMethod> delegateProtoType;
-    ln::List<Ref<PITemplateArgument>> templateArguments;
-    ln::List<Ref<PIField>> fields;
-    ln::List<Ref<PIConstant>> constants;
-    ln::List<Ref<PIMethod>> methods;
+    ln::Array<Ref<PITemplateArgument>> templateArguments;
+    ln::Array<Ref<PIField>> fields;
+    ln::Array<Ref<PIConstant>> constants;
+    ln::Array<Ref<PIMethod>> methods;
     ln::String moduleName;
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(kind);
         ar& LN_NVP(rawFullName);
@@ -206,24 +206,24 @@ protected:
 };
 
 // 型情報データベース
-class PIDatabase : public ln::RefObject {
+class PIDatabase : public ln::Object {
 public:
     ln::String moduleName;
-    ln::List<Ref<PITypeInfo>> types;
+    ln::Array<Ref<PITypeInfo>> types;
     ln::Array<Ref<PIDocument>> relativeDocuments; // マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
     // ln::List<Ref<PIRelativeDocument>> releativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
 
-    PIDocument* findRelativeDocument(const ln::List<ln::String>& localSignature);
+    PIDocument* findRelativeDocument(const ln::Array<ln::String>& localSignature);
 
     void clear();
     void save(const ln::Path& filePath);
     void load(const ln::Path& filePath);
     void mergeFrom(const PIDatabase* src);
 
-    static ln::List<ln::String> parseLocalSigneture(const ln::String& signeture, const ln::String& methodName = ln::String::Empty);
+    static ln::Array<ln::String> parseLocalSigneture(const ln::String& signeture, const ln::String& methodName = ln::String::Empty);
 
 protected:
-    LN_SERIALIZE_CLASS_VERSION(1);
+    LN_SERIALIZE_VERSION(1);
     void serialize(ln::Archive& ar) {
         ar& LN_NVP(types);
         // ar & LN_NVP(delegates);
@@ -246,14 +246,12 @@ struct CompilationDatabase {
     }
 
     void save(const ln::Path& cdbFilePath) {
-        ln::JsonTextOutputArchive ar;
-        ar.process(*this);
-        ln::FileSystem::writeAllText(cdbFilePath, ar.toString());
+        const auto json = *ln::JsonSerializer::serialize(*this);
+        ln::FileSystem::writeAllText(cdbFilePath, json);
     }
 
     void load(const ln::Path& cdbFilePath) {
-        auto json = ln::FileSystem::readAllText(cdbFilePath);
-        ln::JsonTextInputArchive ar(json);
-        ar.process(*this);
+        auto json = *ln::FileSystem::readAllText(cdbFilePath);
+        ln::JsonSerializer::deserialize(json, this);
     }
 };

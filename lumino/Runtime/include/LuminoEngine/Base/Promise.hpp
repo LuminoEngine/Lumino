@@ -18,7 +18,7 @@ public:
     // template<class TInput>
     // Ref<Promise> then(const std::function<void(Promise* p, TInput value)>& action)
     //{
-    //	auto p = makeObject<PromiseTask>(action);
+    //	auto p = makeObject_deprecated<PromiseTask>(action);
 
     //	return p;
     //}
@@ -95,7 +95,7 @@ public:
 
     Promise* then(std::function<void(TResult value)> action) {
         std::lock_guard<std::mutex> locl(m_mutex);
-        m_thenAction = makeObject<Delegate<void(TResult)>>(action);
+        m_thenAction = makeObject_deprecated<Delegate<void(TResult)>>(action);
         return this;
     }
 
@@ -107,7 +107,7 @@ public:
 
     Promise* catchWith(std::function<void()> action) {
         std::lock_guard<std::mutex> locl(m_mutex);
-        m_failAction = makeObject<Delegate<void()>>(action);
+        m_failAction = makeObject_deprecated<Delegate<void()>>(action);
         return this;
     }
 

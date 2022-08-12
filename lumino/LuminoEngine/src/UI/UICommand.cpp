@@ -26,16 +26,14 @@ UICommand::UICommand()
 {
 }
 
-bool UICommand::init()
-{
+Result UICommand::init() {
     return Object::init();
 }
 
-bool UICommand::init(const String& name)
-{
-    if (!init()) return false;
+Result UICommand::init(const String& name) {
+    LN_TRY(init());
     m_name = name;
-    return true;
+    return ok();
 }
 
 void UICommand::addInputGesture(InputGesture* value)

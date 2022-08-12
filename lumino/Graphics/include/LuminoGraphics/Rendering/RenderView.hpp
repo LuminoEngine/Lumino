@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <LuminoGraphics/Common.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/DepthBuffer.hpp>
-#include <LuminoGraphics/RHI/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/DepthBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderInterfaceFramework.hpp>
 #include "Common.hpp"
 
 namespace ln {

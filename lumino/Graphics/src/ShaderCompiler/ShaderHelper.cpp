@@ -122,7 +122,7 @@ bool ShaderHelper::resolveStd140Layout(const ShaderUniformInfo& info, size_t* ou
 
 bool ShaderHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir)
 {
-    auto diag = ln::makeObject<ln::DiagnosticsManager>();
+    auto diag = ln::makeObject_deprecated<ln::DiagnosticsManager>();
 
     auto result = ShaderHelper::generateShader(detail::ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
 

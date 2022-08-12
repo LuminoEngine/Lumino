@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
@@ -41,17 +41,17 @@ Material* Material::defaultMaterial()
 
 Ref<Material> Material::create()
 {
-    return makeObject<Material>();
+    return makeObject_deprecated<Material>();
 }
 
 Ref<Material> Material::create(Texture* mainTexture)
 {
-    return makeObject<Material>(mainTexture);
+    return makeObject_deprecated<Material>(mainTexture);
 }
 
 Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
 {
-    return makeObject<Material>(mainTexture, shadingModel);
+    return makeObject_deprecated<Material>(mainTexture, shadingModel);
 }
 
 Material::Material()
@@ -476,7 +476,7 @@ void Material::serialize_deprecated(Serializer2_deprecated& ar)
 //
 //Ref<PhongMaterial> PhongMaterial::create()
 //{
-//	return makeObject<PhongMaterial>();
+//	return makeObject_deprecated<PhongMaterial>();
 //}
 //
 //PhongMaterial::PhongMaterial()

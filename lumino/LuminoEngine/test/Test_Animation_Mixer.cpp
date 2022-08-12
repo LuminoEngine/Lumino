@@ -4,12 +4,12 @@ class Test_Animation_Mixer : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Animation_Mixer, Basic)
 {
-	auto clip1 = makeObject<AnimationClip>();
+	auto clip1 = makeObject_deprecated<AnimationClip>();
 	auto curve1 = EasingAnimationCurve::create(0, 10, 1, EasingMode::Linear);
-	auto track1 = makeObject<ScalarAnimationTrack>();
+	auto track1 = makeObject_deprecated<ScalarAnimationTrack>();
 	track1->setTargetName(_TT("Bone.1"));
 	track1->setCurve(curve1);
-	auto track2 = makeObject<ScalarAnimationTrack>();
+	auto track2 = makeObject_deprecated<ScalarAnimationTrack>();
 	track2->setTargetName(_TT("Bone.2"));
 	track2->setCurve(curve1);
 	clip1->addTrack(track1);
@@ -40,8 +40,8 @@ TEST_F(Test_Animation_Mixer, Basic)
 		}
 	} ctrl;
 
-	auto mixer1 = makeObject<AnimationMixerCore>(&ctrl);
-	mixer1->addLayer(makeObject<AnimationLayer>(mixer1));
+	auto mixer1 = makeObject_deprecated<AnimationMixerCore>(&ctrl);
+	mixer1->addLayer(makeObject_deprecated<AnimationLayer>(mixer1));
 	mixer1->addClip(_TT("Idle"), clip1);
 	mixer1->play(_TT("Idle"), 0.0f);
 

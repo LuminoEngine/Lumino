@@ -23,7 +23,7 @@ TEST_F(Test_Asset_AssetObject, Basic)
 {
     EngineContext::current()->registerType<Test_Asset_AssetObject_Test>();
 
-	auto model1 = makeObject<AssetModel>(makeObject<Test_Asset_AssetObject_Test>());
+	auto model1 = makeObject_deprecated<AssetModel>(makeObject_deprecated<Test_Asset_AssetObject_Test>());
 
     Assets::saveAssetToLocalFile(model1, u"test.json");
 
@@ -37,7 +37,7 @@ TEST_F(Test_Asset_AssetObject, Basic)
 
     //model1->saveInternal(LN_TEMPFILE("SpriteFrame.lnasset"));
 
-    //auto model2 = makeObject<AssetModel>();
+    //auto model2 = makeObject_deprecated<AssetModel>();
     //model2->loadInternal(LN_TEMPFILE("SpriteFrame.lnasset"));
 
     //ASSERT_EQ(true, dynamic_cast<SpriteFrame*>(model2->target()) != nullptr);

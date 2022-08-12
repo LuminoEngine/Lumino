@@ -29,7 +29,7 @@ void AssetBrowserTreeView::init(AssetBrowserNavigatorExtension* owner)
     m_owner = owner;
 
 
-    m_model = ln::makeObject<AssetBrowserTreeViewModel>();
+    m_model = ln::makeObject_deprecated<AssetBrowserTreeViewModel>();
     //m_model->setExcludeFilters(ln::makeList<ln::String>({_TT("*.lnasset"}));
     setViewModel(m_model);
 }
@@ -95,7 +95,7 @@ void AssetBrowserListView::init(AssetBrowserNavigatorExtension* owner)
 
     auto project = lna::Workspace::instance()->mainProject();
 
-    m_model = ln::makeObject<AssetBrowserListViewModel>();
+    m_model = ln::makeObject_deprecated<AssetBrowserListViewModel>();
     setViewModel(m_model);
 }
 
@@ -111,29 +111,29 @@ void AssetBrowserListView::setPath(const ln::Path& path)
 void AssetBrowserNavigatorExtension::init()
 {
     Object::init();
-    m_navbarItemContent = ln::makeObject<ln::NavigationMenuItem>();
+    m_navbarItemContent = ln::makeObject_deprecated<ln::NavigationMenuItem>();
     m_navbarItemContent->setIconName(_TT("file");
 
-    m_splitter = ln::makeObject<ln::UISplitter>();
+    m_splitter = ln::makeObject_deprecated<ln::UISplitter>();
     m_splitter->setOrientation(ln::UILayoutOrientation::Vertical);
     m_splitter->setCellDefinition(0, ln::UILayoutLengthType::Ratio, 1);
     m_splitter->setCellDefinition(1, ln::UILayoutLengthType::Ratio, 1);
 
-	m_treeView = ln::makeObject<AssetBrowserTreeView>(this);
+	m_treeView = ln::makeObject_deprecated<AssetBrowserTreeView>(this);
 	m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
 	m_treeView->getGridLayoutInfo()->layoutRow = 0;
     m_splitter->addElement(m_treeView);
 
-    m_layout2 = ln::makeObject<ln::UIVBoxLayout2>();
+    m_layout2 = ln::makeObject_deprecated<ln::UIVBoxLayout2>();
     m_layout2->getGridLayoutInfo()->layoutRow = 1;
     m_splitter->addElement(m_layout2);
 
-    m_importButton = ln::makeObject<ln::UIButton>();
+    m_importButton = ln::makeObject_deprecated<ln::UIButton>();
     m_importButton->setText(_TT("Import");
     m_importButton->connectOnClicked(ln::bind(this, &AssetBrowserNavigatorExtension::onImport));
     m_layout2->addChild(m_importButton);
 
-    m_listView = ln::makeObject<AssetBrowserListView>(this);
+    m_listView = ln::makeObject_deprecated<AssetBrowserListView>(this);
     m_listView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 3));
     m_treeView->getGridLayoutInfo()->layoutWeight = 1;
     m_layout2->addChild(m_listView);
@@ -184,7 +184,7 @@ void AssetBrowserNavigatorExtension::onImport()
 //
 //ln::UIElement* AssetBrowserNavigator::createNavigationBarItem()
 //{
-//    m_navbarItem = ln::makeObject<ln::UIIcon>();
+//    m_navbarItem = ln::makeObject_deprecated<ln::UIIcon>();
 //    m_navbarItem->setIconName(_TT("file");
 //    return m_navbarItem;
 //}
@@ -193,7 +193,7 @@ void AssetBrowserNavigatorExtension::onImport()
 //{
 //
 //
-//    m_treeView = ln::makeObject<AssetBrowserTreeView>();
+//    m_treeView = ln::makeObject_deprecated<AssetBrowserTreeView>();
 //    m_treeView->setWidth(200);
 //    m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
 //    m_treeView->getGridLayoutInfo()->layoutRow = 0;
@@ -213,14 +213,14 @@ bool AssetBrowserPane::init(lna::EditorContext* context)
     Project* project = context->mainProject();
     DocumentManager* documentManager = context->documentManager();
 
-    auto mainLauout = ln::makeObject<ln::UIGridLayout>();
+    auto mainLauout = ln::makeObject_deprecated<ln::UIGridLayout>();
     mainLauout->setColumnCount(4);
     addChild(mainLauout);
 
-    auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    auto model1 = ln::makeObject_deprecated<ln::UIFileSystemCollectionModel>();
     model1->setRootPath(project->assetsDir());
 
-    auto treeview1 = ln::makeObject<ln::UITreeView2>();
+    auto treeview1 = ln::makeObject_deprecated<ln::UITreeView2>();
     treeview1->connectOnChecked([model1](ln::UIEventArgs* e) {
         auto* item = static_cast<ln::UITreeItem2*>(e->sender());
         auto path = model1->filePath(ln::static_pointer_cast<ln::UICollectionItemViewModel>(item->m_viewModel));
@@ -255,12 +255,12 @@ bool AssetBrowserNavigator::init(lna::EditorContext* context)
 {
     if (!Navigator::init()) return false;
 
-    m_navigationItem = ln::makeObject<ln::UIIcon>();
+    m_navigationItem = ln::makeObject_deprecated<ln::UIIcon>();
     m_navigationItem->setIconName(_TT("file"));
     m_navigationItem->setAlignments(ln::UIAlignment::Center);
     m_navigationItem->setFontSize(24);
 
-    m_mainPane = ln::makeObject<AssetBrowserPane>(context);
+    m_mainPane = ln::makeObject_deprecated<AssetBrowserPane>(context);
     //m_mainPane->setBackgroundColor(ln::Color::Red);
 
     return true;

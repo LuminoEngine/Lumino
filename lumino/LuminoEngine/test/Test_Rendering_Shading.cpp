@@ -18,8 +18,8 @@ TEST_F(Test_Rendering_ClusteredShading, Basic)
 #endif
 		Engine::mainCamera()->lookAt(Vector3(0, 0, 0));
 
-		auto obj1 = makeObject<WorldObject>();
-		auto cmp1 = makeObject<PlaneMeshComponent>();
+		auto obj1 = makeObject_deprecated<WorldObject>();
+		auto cmp1 = makeObject_deprecated<PlaneMeshComponent>();
 		cmp1->setSize(10, 10);
 		auto mat1 = Material::create();
 		obj1->addComponent(cmp1);

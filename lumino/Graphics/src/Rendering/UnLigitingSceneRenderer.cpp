@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/RenderPass.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "UnLigitingSceneRenderer.hpp"
 
@@ -19,7 +19,7 @@ void UnLigitingSceneRendererPass::init(RenderingManager* manager, bool forPostEf
         m_defaultShader = manager->builtinShader(BuiltinShader::CopyScreen);
     else
         m_defaultShader = manager->builtinShader(BuiltinShader::Sprite);
-    m_renderPass = makeObject<RenderPass>();
+    m_renderPass = makeObject_deprecated<RenderPass>();
     m_internalSceneRenderPass = makeURef<kanata::UnlitRenderPass>(manager);
 }
 

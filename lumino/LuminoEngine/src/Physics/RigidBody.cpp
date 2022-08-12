@@ -50,7 +50,7 @@ public:
 
 Ref<RigidBody> RigidBody::create(CollisionShape* shape)
 {
-    return makeObject<RigidBody>(shape);
+    return makeObject_deprecated<RigidBody>(shape);
 }
 
 RigidBody::RigidBody()

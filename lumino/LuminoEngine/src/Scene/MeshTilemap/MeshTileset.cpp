@@ -11,8 +11,7 @@ MeshAutoTileset::MeshAutoTileset()
 {
 }
 
-bool MeshAutoTileset::init()
-{
+Result MeshAutoTileset::init() {
 	return Object::init();
 }
 
@@ -25,8 +24,7 @@ MeshTileset::MeshTileset()
 {
 }
 
-bool MeshTileset::init()
-{
+Result MeshTileset::init() {
 	return Object::init();
 }
 

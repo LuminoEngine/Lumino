@@ -64,8 +64,7 @@ AnimationTrack::~AnimationTrack()
 {
 }
 
-bool AnimationTrack::init()
-{
+Result AnimationTrack::init() {
     return Object::init();
 }
 
@@ -81,7 +80,7 @@ bool AnimationTrack::init(TranslationClass translationClass)
 
 Ref<ScalarAnimationTrack> ScalarAnimationTrack::create()
 {
-    return makeObject<ScalarAnimationTrack>();
+    return makeObject_deprecated<ScalarAnimationTrack>();
 }
 
 ScalarAnimationTrack::ScalarAnimationTrack()

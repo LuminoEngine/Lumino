@@ -128,7 +128,7 @@ void UIControl::addInlineVisual(UIElement* element, UIInlinePlacement layout)
     addVisualChild(element);
 
     if (!m_aligned3x3GridLayoutArea) {
-        m_aligned3x3GridLayoutArea = makeObject<detail::UIAligned3x3GridLayoutArea>();
+        m_aligned3x3GridLayoutArea = makeObject_deprecated<detail::UIAligned3x3GridLayoutArea>();
     }
 }
 

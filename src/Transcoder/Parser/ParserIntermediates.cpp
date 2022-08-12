@@ -45,7 +45,7 @@ bool PIDocument::equalsLocalSigneture(const PIDocument* lhs, const PIDocument* r
 //==============================================================================
 // PIDatabase
 
-ln::List<ln::String> PIDatabase::parseLocalSigneture(const ln::String& signeture, const ln::String& methodName) {
+ln::Array<ln::String> PIDatabase::parseLocalSigneture(const ln::String& signeture, const ln::String& methodName) {
     ln::String actual;
     if (!methodName.isEmpty()) {
         actual = signeture.substr(signeture.indexOf(methodName));
@@ -54,19 +54,19 @@ ln::List<ln::String> PIDatabase::parseLocalSigneture(const ln::String& signeture
         actual = signeture;
     }
 
-    ln::List<ln::String> output;
+    ln::Array<ln::String> output;
     ln::MatchResult result;
     if (ln::Regex::search(actual, _T(R"((\w+)(.*))"), &result)) {
-        output.add(result.groupValue(1));
+        output.push(result.groupValue(1));
         auto params = ln::String(result.groupValue(2)).remove(U"(").remove(U")").remove(U" ").remove(U"\t").split(U",", ln::StringSplitOptions::RemoveEmptyEntries);
         for (auto& p : params) {
-            output.add(p);
+            output.push(p);
         }
     }
     return output;
 }
 
-PIDocument* PIDatabase::findRelativeDocument(const ln::List<ln::String>& localSignature) {
+PIDocument* PIDatabase::findRelativeDocument(const ln::Array<ln::String>& localSignature) {
     // 関数名で絞る
     ln::Array<Ref<PIDocument>> docs = relativeDocuments.filter([&](auto& x) { return x->copydocLocalSignature[0] == localSignature[0]; });
     if (docs.size() == 1) {
@@ -103,20 +103,20 @@ void PIDatabase::clear() {
 }
 
 void PIDatabase::save(const ln::Path& filePath) {
-    auto json = ln::JsonSerializer::serialize(*this);
+    auto json = *ln::JsonSerializer::serialize(*this);
     ln::FileSystem::writeAllText(filePath, json);
 }
 
 void PIDatabase::load(const ln::Path& filePath) {
-    auto json = ln::FileSystem::readAllText(filePath);
-    ln::JsonSerializer::deserialize(json, *this);
+    auto json = *ln::FileSystem::readAllText(filePath);
+    ln::JsonSerializer::deserialize(json, this);
 }
 
 void PIDatabase::mergeFrom(const PIDatabase* src) {
     for (auto& t : src->types) {
         if (!types.containsIf([&](auto& x) { return x->rawFullName == t->rawFullName; })) {
             t->moduleName = src->moduleName;
-            types.add(t);
+            types.push(t);
         }
     }
 

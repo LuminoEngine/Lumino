@@ -106,7 +106,7 @@ LN_OBJECT_IMPLEMENT(UIListBoxItem, UIListItem) {}
 
 Ref<UIListBoxItem> UIListBoxItem::create(StringView text)
 {
-	return makeObject<UIListBoxItem>(text);
+	return makeObject_deprecated<UIListBoxItem>(text);
 }
 
 UIListBoxItem::UIListBoxItem()
@@ -122,7 +122,7 @@ bool UIListBoxItem::init()
 bool UIListBoxItem::init(StringView text)
 {
 	if (!init()) return false;
-	addChild(makeObject<UIText>(text));
+	addChild(makeObject_deprecated<UIText>(text));
 	return true;
 }
 
@@ -135,7 +135,7 @@ bool UIListBoxItem::init(UIElement* content)
 
 //void UIListBoxItem::bind(ObservablePropertyBase* prop)
 //{
-//	auto textblock = makeObject<UIText>();
+//	auto textblock = makeObject_deprecated<UIText>();
 //	auto viewProp = textblock->getViewProperty(_TT("text"));
 //	viewProp->bind(prop);
 //	addChild(textblock);
@@ -149,7 +149,7 @@ void UIListBoxItem::BuilderDetails::apply(UIListBoxItem* p) const
 	UIListItem::BuilderDetails::apply(p);
 
 	if (!text.isEmpty()) {
-		auto textblock = makeObject<UIText>(text);
+		auto textblock = makeObject_deprecated<UIText>(text);
 		p->addChild(textblock);
 	}
 	if (onSubmit) p->connectOnSubmit(onSubmit);

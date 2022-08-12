@@ -20,12 +20,12 @@ class App_Sandbox_Physics : public Application
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
-        auto plane = makeObject<RigidBody>();
-        plane->addCollisionShape(makeObject<PlaneCollisionShape>());
+        auto plane = makeObject_deprecated<RigidBody>();
+        plane->addCollisionShape(makeObject_deprecated<PlaneCollisionShape>());
 
 
-        m_rigidBody = makeObject<RigidBody>();
-        m_rigidBody->addCollisionShape(makeObject<CapsuleCollisionShape>(0.5f, 2.0f));
+        m_rigidBody = makeObject_deprecated<RigidBody>();
+        m_rigidBody->addCollisionShape(makeObject_deprecated<CapsuleCollisionShape>(0.5f, 2.0f));
         m_rigidBody->setMass(50.0f);
         m_rigidBody->setTransform(Matrix::makeTranslation(0, 3, 0));
 

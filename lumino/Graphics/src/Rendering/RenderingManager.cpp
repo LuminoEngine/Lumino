@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include "../../Graphics/src/RHI/Backend/GraphicsDeviceContext.hpp"
+#include "../../Graphics/src/GPU/RHI/GraphicsDeviceContext.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/SpriteRenderFeature.hpp"
@@ -82,7 +82,7 @@ Result RenderingManager::init(const Settings& settings) {
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
         { 0, VertexElementType::Float4, VertexElementUsage::Tangent, 0 },
     };
-    m_standardVertexDeclaration = makeObject<VertexLayout>(elements, LN_ARRAY_SIZE_OF(elements));
+    m_standardVertexDeclaration = makeObject_deprecated<VertexLayout>(elements, LN_ARRAY_SIZE_OF(elements));
     m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
     // m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
@@ -91,9 +91,9 @@ Result RenderingManager::init(const Settings& settings) {
 #include "Resource/Random.png.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
-        auto bmp = makeObject<Bitmap2D>();
+        auto bmp = makeObject_deprecated<Bitmap2D>();
         bmp->load(&stream);
-        m_randomTexture = makeObject<Texture2D>(bmp, TextureFormat::RGBA8);
+        m_randomTexture = makeObject_deprecated<Texture2D>(bmp, TextureFormat::RGBA8);
     }
 
     // CopyScreen
@@ -103,7 +103,7 @@ Result RenderingManager::init(const Settings& settings) {
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::CopyScreen] = makeObject<Shader>(_TT("CopyScreen"), &stream);
+        m_builtinShaders[(int)BuiltinShader::CopyScreen] = makeObject_deprecated<Shader>(_TT("CopyScreen"), &stream);
     }
     // Sprite
     {
@@ -112,7 +112,7 @@ Result RenderingManager::init(const Settings& settings) {
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(_TT("Sprite"), &stream);
+        m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject_deprecated<Shader>(_TT("Sprite"), &stream);
     }
     // ClusteredShadingDefault
     {
@@ -121,7 +121,7 @@ Result RenderingManager::init(const Settings& settings) {
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = makeObject<Shader>(_TT("ClusteredShadingDefault"), &stream);
+        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = makeObject_deprecated<Shader>(_TT("ClusteredShadingDefault"), &stream);
     }
     // ForwardGBufferPrepass
     {
@@ -130,7 +130,7 @@ Result RenderingManager::init(const Settings& settings) {
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = makeObject<Shader>(_TT("ForwardGBufferPrepass"), &stream);
+        m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = makeObject_deprecated<Shader>(_TT("ForwardGBufferPrepass"), &stream);
     }
     // ShadowCaster
     {
@@ -139,7 +139,7 @@ Result RenderingManager::init(const Settings& settings) {
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::ShadowCaster] = makeObject<Shader>(_TT("ShadowCaster"), &stream);
+        m_builtinShaders[(int)BuiltinShader::ShadowCaster] = makeObject_deprecated<Shader>(_TT("ShadowCaster"), &stream);
     }
     // BlackShader
     {
@@ -147,7 +147,7 @@ Result RenderingManager::init(const Settings& settings) {
 #include "Resource/BlackShader.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
-        m_builtinShaders[(int)BuiltinShader::BlackShader] = makeObject<Shader>(_TT("BlackShader"), &stream);
+        m_builtinShaders[(int)BuiltinShader::BlackShader] = makeObject_deprecated<Shader>(_TT("BlackShader"), &stream);
     }
     // InfinitePlaneGrid
     {
@@ -162,7 +162,7 @@ Result RenderingManager::init(const Settings& settings) {
 #include "../../../LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
-        m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = makeObject<Shader>(_TT("SkyLowAltitudeOptimized"), &stream);
+        m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = makeObject_deprecated<Shader>(_TT("SkyLowAltitudeOptimized"), &stream);
     }
     // SkyDome
     {
@@ -178,7 +178,7 @@ Result RenderingManager::init(const Settings& settings) {
 #include "../../../LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
-        m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = makeObject<Shader>(_TT("LuminosityHighPassShader"), &stream);
+        m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = makeObject_deprecated<Shader>(_TT("LuminosityHighPassShader"), &stream);
     }
     // SeperableBlur
     {
@@ -186,7 +186,7 @@ Result RenderingManager::init(const Settings& settings) {
 #include "../../../LuminoEngine/src/PostEffect/Resource/SeperableBlur.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
-        m_builtinShaders[(int)BuiltinShader::SeperableBlur] = makeObject<Shader>(_TT("SeperableBlur"), &stream);
+        m_builtinShaders[(int)BuiltinShader::SeperableBlur] = makeObject_deprecated<Shader>(_TT("SeperableBlur"), &stream);
     }
     // BloomComposite
     {
@@ -194,7 +194,7 @@ Result RenderingManager::init(const Settings& settings) {
 #include "../../../LuminoEngine/src/PostEffect/Resource/BloomComposite.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
-        m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject<Shader>(_TT("BloomComposite"), &stream);
+        m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject_deprecated<Shader>(_TT("BloomComposite"), &stream);
     }
 
     // SSRRayTracing
@@ -318,11 +318,11 @@ Result RenderingManager::init(const Settings& settings) {
     {
 #if 0
 		const auto code = FileSystem::readAllBytes(_TT("C:/Proj/LN/Lumino/src/Engine/src/Rendering/Resource/BlendShape.compute");
-		Ref<DiagnosticsManager> localDiag = makeObject<DiagnosticsManager>();
+		Ref<DiagnosticsManager> localDiag = makeObject_deprecated<DiagnosticsManager>();
 		UnifiedShaderCompiler compiler(EngineDomain::shaderManager(), localDiag);
 		compiler.compileCompute((const char*)code.data(), code.size(), "Main", {}, {});
 		UnifiedShader* ush = compiler.unifiedShader();
-		auto shader = makeObject<Shader>(ush, localDiag);
+		auto shader = makeObject_deprecated<Shader>(ush, localDiag);
 		m_builtinShaders[(int)BuiltinShader::BlendShape] = shader;
 		//shader->descriptorLayout()->
 		blendShapeShader.shader = shader;
@@ -339,41 +339,41 @@ Result RenderingManager::init(const Settings& settings) {
 #endif
     }
 
-//    m_clearRenderFeature = makeObject<ClearRenderFeature>();
+//    m_clearRenderFeature = makeObject_deprecated<ClearRenderFeature>();
 //    m_renderFeatures.add(m_clearRenderFeature);
 //
-//    m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
+//    m_blitRenderFeature = makeObject_deprecated<BlitRenderFeature>(this);
 //    m_renderFeatures.add(m_blitRenderFeature);
 //
-//    m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
+//    m_spriteRenderFeature2 = makeObject_deprecated<SpriteRenderFeature2>(this);
 //    m_renderFeatures.add(m_spriteRenderFeature2);
 //
-//    m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
+//    m_meshRenderFeature = makeObject_deprecated<MeshRenderFeature>(this);
 //    m_renderFeatures.add(m_meshRenderFeature);
 //
-//    m_meshGeneraterRenderFeature = makeObject<MeshGeneraterRenderFeature>(this);
+//    m_meshGeneraterRenderFeature = makeObject_deprecated<MeshGeneraterRenderFeature>(this);
 //    m_renderFeatures.add(m_meshGeneraterRenderFeature);
 //
-//    m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>();
+//    m_primitiveRenderFeature = makeObject_deprecated<PrimitiveRenderFeature>();
 //    m_renderFeatures.add(m_primitiveRenderFeature);
 //
-//    m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);
+//    m_spriteTextRenderFeature = makeObject_deprecated<SpriteTextRenderFeature>(this);
 //    m_renderFeatures.add(m_spriteTextRenderFeature);
 //
-//    m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
+//    m_frameRectRenderFeature = makeObject_deprecated<FrameRectRenderFeature>(this);
 //    m_renderFeatures.add(m_frameRectRenderFeature);
 //
 //#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
-//    m_shapesRenderFeature = makeObject<ShapesRenderFeature2>(this);
+//    m_shapesRenderFeature = makeObject_deprecated<ShapesRenderFeature2>(this);
 //#else
-//    m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
+//    m_shapesRenderFeature = makeObject_deprecated<ShapesRenderFeature>(this);
 //#endif
 //    m_renderFeatures.add(m_shapesRenderFeature);
 //
-//    m_pathRenderFeature = makeObject<PathRenderFeature>(this);
+//    m_pathRenderFeature = makeObject_deprecated<PathRenderFeature>(this);
 //    m_renderFeatures.add(m_pathRenderFeature);
 //
-//    m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);
+//    m_extensionRenderFeature = makeObject_deprecated<ExtensionRenderFeature>(this);
 //    m_renderFeatures.add(m_extensionRenderFeature);
 
     m_screenRectangleRenderFeature = makeURef<kanata::ScreenRectangleRenderFeature>(this);
@@ -395,7 +395,7 @@ Result RenderingManager::init(const Settings& settings) {
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
-    m_defaultMaterial = makeObject<Material>();
+    m_defaultMaterial = makeObject_deprecated<Material>();
 
     {
         m_builtinMaterials[(int)BuiltinMaterial::Default] = Material::create();
@@ -406,7 +406,7 @@ Result RenderingManager::init(const Settings& settings) {
         m_builtinMaterials[(int)BuiltinMaterial::Unlit] = material;
     }
 
-    m_primitiveMeshDefaultMaterial = makeObject<Material>();
+    m_primitiveMeshDefaultMaterial = makeObject_deprecated<Material>();
     m_primitiveMeshDefaultMaterial->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
     m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
@@ -438,7 +438,7 @@ void RenderingManager::dispose() {
 
 void RenderingManager::createBuiltinShader(BuiltinShader index, const Char* name, const void* data, int dataLen) {
     MemoryStream stream(data, dataLen);
-    m_builtinShaders[static_cast<int>(index)] = makeObject<Shader>(name, &stream);
+    m_builtinShaders[static_cast<int>(index)] = makeObject_deprecated<Shader>(name, &stream);
 }
 
 } // namespace detail

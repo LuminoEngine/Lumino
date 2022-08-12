@@ -2,8 +2,8 @@
 #include "Internal.hpp"
 #include <box2d/box2d.h>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
@@ -37,17 +37,17 @@ void CollisionShape2D::init()
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create()
 {
-	return makeObject<BoxCollisionShape2D>();
+	return makeObject_deprecated<BoxCollisionShape2D>();
 }
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(const Size& size)
 {
-    return makeObject<BoxCollisionShape2D>(size);
+    return makeObject_deprecated<BoxCollisionShape2D>(size);
 }
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(float width, float height)
 {
-    return makeObject<BoxCollisionShape2D>(width, height);
+    return makeObject_deprecated<BoxCollisionShape2D>(width, height);
 }
 
 BoxCollisionShape2D::BoxCollisionShape2D()
@@ -114,7 +114,7 @@ void BoxCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2FixtureD
 
 Ref<EdgeCollisionShape2D> EdgeCollisionShape2D::create()
 {
-    return makeObject<EdgeCollisionShape2D>();
+    return makeObject_deprecated<EdgeCollisionShape2D>();
 }
 
 EdgeCollisionShape2D::EdgeCollisionShape2D()
@@ -442,12 +442,12 @@ void TriggerBody2D::removeBodyFromBox2DWorld()
 
 Ref<RigidBody2D> RigidBody2D::create()
 {
-	return makeObject<RigidBody2D>();
+	return makeObject_deprecated<RigidBody2D>();
 }
 
 Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 {
-    return makeObject<RigidBody2D>(shape);
+    return makeObject_deprecated<RigidBody2D>(shape);
 }
 
 RigidBody2D::RigidBody2D()
@@ -759,12 +759,12 @@ void Joint2D::removeFormWorld()
 
 Ref<SpringJoint2D> SpringJoint2D::create()
 {
-	return ln::makeObject<ln::SpringJoint2D>();
+	return ln::makeObject_deprecated<ln::SpringJoint2D>();
 }
 
 Ref<SpringJoint2D> SpringJoint2D::create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB)
 {
-	auto ptr = ln::makeObject<ln::SpringJoint2D>();
+	auto ptr = ln::makeObject_deprecated<ln::SpringJoint2D>();
 	ptr->setBodyA(bodyA);
 	ptr->setBodyB(bodyB);
 	return ptr;
@@ -865,12 +865,12 @@ bool SpringJoint2D::createJoint()
 
 Ref<RopeJoint2D> RopeJoint2D::create()
 {
-	return ln::makeObject<ln::RopeJoint2D>();
+	return ln::makeObject_deprecated<ln::RopeJoint2D>();
 }
 
 Ref<RopeJoint2D> RopeJoint2D::create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB)
 {
-	return ln::makeObject<ln::RopeJoint2D>(bodyA, Vector2::Zero, bodyB, Vector2::Zero);
+	return ln::makeObject_deprecated<ln::RopeJoint2D>(bodyA, Vector2::Zero, bodyB, Vector2::Zero);
 }
 
 RopeJoint2D::RopeJoint2D()
@@ -927,8 +927,8 @@ public:
 
 	void init()
 	{
-		m_linesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
-		m_trianglesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+		m_linesBuffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+		m_trianglesBuffer = makeObject_deprecated<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
 		m_linesVertexCount = 0;
 		m_trianglesVertexCount = 0;
 	}

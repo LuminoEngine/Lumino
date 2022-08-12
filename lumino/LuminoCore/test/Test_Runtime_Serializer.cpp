@@ -37,7 +37,7 @@ TEST_F(Test_Base_Serializer, EmptyObject) {
     class TestClass : public Object {
     };
 
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     String text = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
     ASSERT_EQ(UR"({})", text); 
 
@@ -47,7 +47,7 @@ TEST_F(Test_Base_Serializer, EmptyObject) {
 }
 
 TEST_F(Test_Base_Serializer, Basic) {
-    auto obj1 = makeObject<TestObject1>();
+    auto obj1 = makeObject_deprecated<TestObject1>();
     obj1->m_value = 500;
     String text = JsonSerializer::serialize<TestObject1>(obj1, JsonFormatting::None).unwrap();
     ASSERT_EQ(UR"({"m_value":500})", text);	// 型登録していないので、型情報は保存されない
@@ -113,7 +113,7 @@ TEST_F(Test_Base_Serializer, PrimitiveValues) {
         }
     };
 
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->v_s8l = INT8_MIN;
     obj1->v_s16l = INT16_MIN;
     obj1->v_s32l = INT32_MIN;
@@ -162,8 +162,8 @@ TEST_F(Test_Base_Serializer, InnerObject) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
-    obj1->m_inner1 = makeObject<TestObject1>();
+    auto obj1 = makeObject_deprecated<TestClass>();
+    obj1->m_inner1 = makeObject_deprecated<TestObject1>();
     obj1->m_inner1->m_value = 123;
     String json = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
 
@@ -191,7 +191,7 @@ TEST_F(Test_Base_Serializer, Struct) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->m_value.m_value = 123;
     String json = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
 
@@ -209,7 +209,7 @@ TEST_F(Test_Base_Serializer, EmptyArray) {
         }
     };
 
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     String text = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
 
     auto obj2 = JsonSerializer::deserialize<TestClass>(text).unwrap();
@@ -226,7 +226,7 @@ TEST_F(Test_Base_Serializer, PrimitiveValueArray) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->m_array = { 1, 2, 3 };
     String json = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
 
@@ -257,7 +257,7 @@ TEST_F(Test_Base_Serializer, StructArray) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->m_values.resize(3);
     obj1->m_values[0].m_value = 1;
     obj1->m_values[1].m_value = 2;
@@ -290,11 +290,11 @@ TEST_F(Test_Base_Serializer, ObjectArray) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->m_values.resize(3);
-    obj1->m_values[0] = makeObject<TestClassB>();
-    obj1->m_values[1] = makeObject<TestClassB>();
-    obj1->m_values[2] = makeObject<TestClassB>();
+    obj1->m_values[0] = makeObject_deprecated<TestClassB>();
+    obj1->m_values[1] = makeObject_deprecated<TestClassB>();
+    obj1->m_values[2] = makeObject_deprecated<TestClassB>();
     obj1->m_values[0]->m_value = 1;
     obj1->m_values[1]->m_value = 2;
     obj1->m_values[2]->m_value = 3;
@@ -318,7 +318,7 @@ TEST_F(Test_Base_Serializer, ArrayArray) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->m_array = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
     String json = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
 
@@ -424,11 +424,11 @@ TEST_F(Test_Base_Serializer, LegacyUseCase_Array) {
     // Ref<> 型 List の Save
     {
         Array<Ref<ListTest1>> t;
-        t.push(makeObject<ListTest1>());
+        t.push(makeObject_deprecated<ListTest1>());
         t.back()->x = 10;
-        t.push(makeObject<ListTest1>());
+        t.push(makeObject_deprecated<ListTest1>());
         t.back()->x = 20;
-        t.push(makeObject<ListTest1>());
+        t.push(makeObject_deprecated<ListTest1>());
         t.back()->x = 30;
         json = JsonSerializer::serialize<Array<Ref<ListTest1>>>(t, JsonFormatting::None).unwrap();
         ASSERT_EQ(U"[{\"x\":10},{\"x\":20},{\"x\":30}]", json);
@@ -436,8 +436,8 @@ TEST_F(Test_Base_Serializer, LegacyUseCase_Array) {
 
     // Ref<> 型 List のLoad (Load 先のオブジェクトをあらかじめ作っておく場合)
     {
-        auto obj1 = makeObject<ListTest1>();
-        auto obj2 = makeObject<ListTest1>();
+        auto obj1 = makeObject_deprecated<ListTest1>();
+        auto obj2 = makeObject_deprecated<ListTest1>();
         Array<Ref<ListTest1>> t;
         t.push(obj1);
         t.push(obj2);
@@ -522,13 +522,13 @@ TEST_F(Test_Base_Serializer, MixedTypes) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->m_int = 8;
     obj1->m_string = _TT("test");
-    obj1->m_obj1 = makeObject<TestObject1>();
+    obj1->m_obj1 = makeObject_deprecated<TestObject1>();
     obj1->m_obj1->m_value = 256;
     obj1->m_list1 = { 1, 2, 3 };
-    obj1->m_list2 = { makeObject<TestObject1>(), makeObject<TestObject1>(), makeObject<TestObject1>() };
+    obj1->m_list2 = { makeObject_deprecated<TestObject1>(), makeObject_deprecated<TestObject1>(), makeObject_deprecated<TestObject1>() };
     obj1->m_list2[0]->m_value = 100;
     obj1->m_list2[1]->m_value = 200;
     obj1->m_list2[2]->m_value = 300;
@@ -562,7 +562,7 @@ TEST_F(Test_Base_Serializer, Optional) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->value2 = 100;
     String json = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
 
@@ -591,7 +591,7 @@ TEST_F(Test_Base_Serializer, OptionalStruct) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->value2 = TestStruct{ 100 };
     String json = JsonSerializer::serialize<TestClass>(obj1, JsonFormatting::None).unwrap();
 
@@ -615,7 +615,7 @@ TEST_F(Test_Base_Serializer, OptionalArray) {
     };
 
     // Save
-    auto obj1 = makeObject<TestClass>();
+    auto obj1 = makeObject_deprecated<TestClass>();
     obj1->value2 = { 1, 2, 3 };
     obj1->value3.push(std::nullopt);
     obj1->value3.push(10);
@@ -642,7 +642,7 @@ TEST_F(Test_Base_Serializer, OptionalSampleCode) {
 
     // has value
     {
-        auto data1 = makeObject<MyData>();
+        auto data1 = makeObject_deprecated<MyData>();
         data1->value1 = 10;
         String json = JsonSerializer::serialize<MyData>(data1, JsonFormatting::None).unwrap();
         ASSERT_EQ(_TT("{\"value1\":10}"), json);
@@ -653,7 +653,7 @@ TEST_F(Test_Base_Serializer, OptionalSampleCode) {
 
     // not has
     {
-        auto data1 = makeObject<MyData>();
+        auto data1 = makeObject_deprecated<MyData>();
         data1->value1 = std::nullopt;
         String json = JsonSerializer::serialize<MyData>(data1, JsonFormatting::None).unwrap();
         ASSERT_EQ(_TT("{\"value1\":null}"), json);
@@ -820,8 +820,8 @@ public:
 };
 
 TEST_F(Test_Base_Serializer, ClassVersion) {
-    auto obj1 = makeObject<ClassVersionTestClass2>();
-    obj1->value = makeObject<ClassVersionTestClass1>();
+    auto obj1 = makeObject_deprecated<ClassVersionTestClass2>();
+    obj1->value = makeObject_deprecated<ClassVersionTestClass1>();
     obj1->value->x = 10;
     String json = JsonSerializer::serialize<ClassVersionTestClass2>(obj1, JsonFormatting::None).unwrap();
 
@@ -854,7 +854,7 @@ LN_SERIALIZE_VERSION_NI(ClassVersionTestClass3, 2);
 
 TEST_F(Test_Base_Serializer, NonIntrusiveClassVersion) {
     // Save
-    auto obj1 = makeObject<ClassVersionTestClass3>();
+    auto obj1 = makeObject_deprecated<ClassVersionTestClass3>();
     String json = JsonSerializer::serialize<ClassVersionTestClass3>(obj1, JsonFormatting::None).unwrap();
     ASSERT_EQ(U"{\"_ln_version_\":2,\"x\":-1,\"flags\":0}", json);
 
@@ -901,7 +901,7 @@ TEST_F(Test_Base_Serializer, ListTypes) {
             }
         };
 
-        auto data1 = makeObject<MyData2>();
+        auto data1 = makeObject_deprecated<MyData2>();
         data1->list1 = { 1, 2, 3 };
         data1->list2 = { _T("a"), _T("b"), _T("c") };
         data1->list3 = { MyData1{ 1 }, MyData1{ 2 }, MyData1{ 3 } };
@@ -969,7 +969,7 @@ TEST_F(Test_Base_Serializer, Variant) {
     // Save
     String json;
     {
-        auto data = makeObject<Data>();
+        auto data = makeObject_deprecated<Data>();
         data->v_VarNull = nullptr;
         data->v_Bool = makeVariant(true);
         data->v_Int8 = makeVariant(1);
@@ -1042,15 +1042,15 @@ TEST_F(Test_Base_Variant, UseCase1)
 
 	//- [ ]  Save
 	{
-		auto script1 = makeObject<Script>();
+		auto script1 = makeObject_deprecated<Script>();
 		script1->name = _TT("script1");
 		script1->commandList = makeList<Ref<Command>>();
 
-		auto c1 = makeObject<Command>();
+		auto c1 = makeObject_deprecated<Command>();
 		c1->code = _TT("c1");
 		c1->params = makeList<Ref<Variant>>({ makeVariant(1), makeVariant(_TT("test1")) });
 		script1->commandList->add(c1);
-		auto c2 = makeObject<Command>();
+		auto c2 = makeObject_deprecated<Command>();
 		c2->code = _TT("c2");
 		c2->params = makeList<Ref<Variant>>({ makeVariant(2), makeVariant(_TT("test2")) });
 		script1->commandList->add(c2);
@@ -1062,7 +1062,7 @@ TEST_F(Test_Base_Variant, UseCase1)
 
 	//- [ ] Load
 	{
-		auto script2 = makeObject<Script>();
+		auto script2 = makeObject_deprecated<Script>();
 
 		JsonTextInputArchive ar(json);
 		ar.process(*script2);

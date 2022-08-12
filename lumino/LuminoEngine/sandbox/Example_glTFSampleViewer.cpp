@@ -109,12 +109,12 @@ public:
         //Scene::setAntialiasEnabled(false);
 
 
-        m_pane = makeObject<FileListPane>();
+        m_pane = makeObject_deprecated<FileListPane>();
         m_pane->selected = makeDelegate(this, &App_Example_glTFSampleViewer::handleListItemSubmit);
         Editor::addPane(m_pane);
         Editor::editorViewportToolPane()->close();
 
-        m_meshInfoPane = makeObject<MeshInfoPane>();
+        m_meshInfoPane = makeObject_deprecated<MeshInfoPane>();
         Editor::addPane(m_meshInfoPane);
 
         //m_listbox1 = UIListBox::Builder()
@@ -140,7 +140,7 @@ public:
         }
 
 
-        auto settings = makeObject<MeshImportSettings>();
+        auto settings = makeObject_deprecated<MeshImportSettings>();
         settings->setApplyBoneTransformationsEnabled(false);
         //m_mesh = StaticMesh::load(path, settings);
         m_mesh = SkinnedMesh::load(path);

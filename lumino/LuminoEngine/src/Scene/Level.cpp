@@ -48,8 +48,7 @@ System::System() = default;
 
 System::~System() = default;
 
-bool System::init()
-{
+Result System::init() {
     return Object::init();
 }
 
@@ -75,8 +74,7 @@ Level::~Level()
 {
 }
 
-bool Level::init()
-{
+Result Level::init() {
     return AssetObject::init();
 }
 
@@ -237,7 +235,7 @@ void Level::mergeToRenderParams(detail::SceneGlobalRenderParams* params) const
 LevelRenderParameters* Level::acquireRenderParameters()
 {
     if (!m_levelRenderParameters) {
-        m_levelRenderParameters = makeObject<LevelRenderParameters>();
+        m_levelRenderParameters = makeObject_deprecated<LevelRenderParameters>();
     }
     return m_levelRenderParameters;
 }

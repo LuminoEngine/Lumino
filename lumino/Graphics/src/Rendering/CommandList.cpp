@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoGraphics/Mesh/MeshModel.hpp>
 #include <LuminoGraphics/Mesh/MeshModeEntity.hpp>

@@ -35,10 +35,10 @@ public:
     void onInit() override {
         setImGuiLayerEnabled(true);
 
-        m_menuBar = makeObject<TestMenuBar>();
+        m_menuBar = makeObject_deprecated<TestMenuBar>();
         dockManager()->addMenuBar(m_menuBar);
 		
-        m_pane = makeObject<TestDockPane>();
+        m_pane = makeObject_deprecated<TestDockPane>();
         dockManager()->addDockPane(m_pane);
     }
 
@@ -73,9 +73,9 @@ private:
 
 class App : public Application {
 public:
-    void onSetup(ApplicationSetupSettings* settings) override {
-        settings->setMainWindow(makeObject<MainWindow>(false));
-    }
+    //void onSetup(ApplicationSetupSettings* settings) override {
+    //    settings->setMainWindow(makeObject_deprecated<MainWindow>(false));
+    //}
 
     void onInit() override {
     }

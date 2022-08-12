@@ -24,7 +24,7 @@ class UISandboxApp : public Application
 public:
 	void onInit() override
     {
-		//auto vm = makeObject<UIFileSystemCollectionModel>();
+		//auto vm = makeObject_deprecated<UIFileSystemCollectionModel>();
 		//auto root = vm->setRootPath(_TT("C:/Proj/LN/Lumino");
 		//int count = vm->getRowCount(root);
 		//for (int i = 0; i < count; i++) {
@@ -42,7 +42,7 @@ public:
 
 		Engine::renderView()->setBackgroundColor(UI::mainTheme()->color(UIThemeConstantPalette::DefaultBackgroundColor));
 
-		auto mainLauout = makeObject<UIGridLayout>();
+		auto mainLauout = makeObject_deprecated<UIGridLayout>();
 		mainLauout->setColumnCount(4);
 		Engine::ui()->addChild(mainLauout);
 
@@ -51,82 +51,82 @@ public:
 #if 1
 		// Button
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(_TT("Button")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("Button")));
 
-			auto button1 = makeObject<UIButton>();
+			auto button1 = makeObject_deprecated<UIButton>();
 			button1->setText(_TT("Button"));
 			layout1->addChild(button1);
 
 
-			auto button2 = makeObject<UIButton>();
+			auto button2 = makeObject_deprecated<UIButton>();
 			button2->setText(_TT("IconButton"));
 			layout1->addChild(button2);
-			auto icon2 = ln::makeObject<ln::UIIcon>();
+			auto icon2 = ln::makeObject_deprecated<ln::UIIcon>();
 			icon2->setIconName(_TT("file"));
 			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
 			button2->addInlineVisual(icon2, ln::UIInlinePlacement::Top);
 
 
-			auto button3 = makeObject<UIButton>();
+			auto button3 = makeObject_deprecated<UIButton>();
 			button3->setText(_TT("Disabled"));
 			button3->setEnabled(false);
 			layout1->addChild(button3);
-			auto icon3 = ln::makeObject<ln::UIIcon>();
+			auto icon3 = ln::makeObject_deprecated<ln::UIIcon>();
 			icon3->setIconName(_TT("file"));
 			//icon->setMargin(ln::Thickness(0, 0, 0, 4));
 			button3->addInlineVisual(icon3, ln::UIInlinePlacement::Top);
 		}
 		//// RadioButton
 		//{
-		//	auto layout1 = makeObject<UIStackLayout>();
+		//	auto layout1 = makeObject_deprecated<UIStackLayout>();
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UIText>(_TT("RadioButton"));
+		//	layout1->addChild(makeObject_deprecated<UIText>(_TT("RadioButton"));
 
-		//	layout1->addChild(makeObject<UIButton>(_TT("dummy"));
+		//	layout1->addChild(makeObject_deprecated<UIButton>(_TT("dummy"));
 		//}
 		// CheckBox
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(_TT("CheckBox")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("CheckBox")));
 
-			auto checkbox1 = makeObject<UICheckBox>();
+			auto checkbox1 = makeObject_deprecated<UICheckBox>();
 			checkbox1->addChild(_TT("CheckBox1"));
 			layout1->addChild(checkbox1);
 
-			auto checkbox2 = makeObject<UICheckBox>();
+			auto checkbox2 = makeObject_deprecated<UICheckBox>();
 			checkbox2->addChild(_TT("CheckBox2"));
 			layout1->addChild(checkbox2);
 
-			auto checkbox3 = makeObject<UICheckBox>();
+			auto checkbox3 = makeObject_deprecated<UICheckBox>();
 			checkbox3->addChild(_TT("CheckBox3"));
 			layout1->addChild(checkbox3);
 		}
 		//// ComboBox
 		//{
-		//	auto layout1 = makeObject<UIStackLayout>();
+		//	auto layout1 = makeObject_deprecated<UIStackLayout>();
 		//	layout1->setMargin(margin);
 		//	mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UIText>(_TT("ComboBox"));
+		//	layout1->addChild(makeObject_deprecated<UIText>(_TT("ComboBox"));
 
-		//	layout1->addChild(makeObject<UIButton>(_TT("dummy"));
+		//	layout1->addChild(makeObject_deprecated<UIButton>(_TT("dummy"));
 		//}
 		// ListBox (Direct)
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(_TT("ListBox (Direct)")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("ListBox (Direct)")));
 
 			auto listbox1 = UIListBox::create();
 			listbox1->addChild(_TT("item1"));
@@ -144,16 +144,16 @@ public:
 
 		// TreeView (Model)
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(_TT("TreeView (Model)")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("TreeView (Model)")));
 
-			auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
+			auto model1 = ln::makeObject_deprecated<ln::UIFileSystemCollectionModel>();
 			model1->setRootPath(LN_LOCALFILE("Assets"));
 
-			auto treeview1 = makeObject<UITreeView2>();
+			auto treeview1 = makeObject_deprecated<UITreeView2>();
 			treeview1->setHeight(200);
 			//treeview1->setBackgroundColor(Color::Red);
 			treeview1->setViewModel(model1);
@@ -167,26 +167,26 @@ public:
 
 		// Splitter
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(_TT("Splitter")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("Splitter")));
 
-			auto splitter1 = makeObject<UISplitter>();
+			auto splitter1 = makeObject_deprecated<UISplitter>();
 			splitter1->setOrientation(UILayoutOrientation::Horizontal);
 
-			auto e1 = makeObject<UIElement>();
+			auto e1 = makeObject_deprecated<UIElement>();
 			e1->setHeight(100);
 			e1->setBackgroundColor(UIColors::get(UIColorHues::Red, 3));
 			splitter1->addChild(e1);
 
-			auto e2 = makeObject<UIElement>();
+			auto e2 = makeObject_deprecated<UIElement>();
 			e2->setHeight(100);
 			e2->setBackgroundColor(UIColors::get(UIColorHues::Green, 3));
 			splitter1->addChild(e2);
 
-			auto e3 = makeObject<UIElement>();
+			auto e3 = makeObject_deprecated<UIElement>();
 			e3->setHeight(100);
 			e3->setBackgroundColor(UIColors::get(UIColorHues::Blue, 3));
 			splitter1->addChild(e3);
@@ -195,28 +195,28 @@ public:
 		}
 		// Icon
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UIText>(_TT("Font icon")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("Font icon")));
 
 			{
-				auto layout2 = makeObject<UIStackLayout>();
+				auto layout2 = makeObject_deprecated<UIStackLayout>();
 				layout2->setOrientation(UILayoutOrientation::Horizontal);
 				layout2->setAlignments(UIAlignment::HorizontalStretch);
 
-				auto icon1 = makeObject<UIIcon>();
+				auto icon1 = makeObject_deprecated<UIIcon>();
 				icon1->setIconName(_TT("file"));
 				icon1->setFontSize(30);
 				layout2->addChild(icon1);
 
-				auto icon2 = makeObject<UIIcon>();
+				auto icon2 = makeObject_deprecated<UIIcon>();
 				icon2->setIconName(_TT("file"));
 				icon2->setFontSize(20);
 				layout2->addChild(icon2);
 
-				auto icon3 = makeObject<UIIcon>();
+				auto icon3 = makeObject_deprecated<UIIcon>();
 				icon3->setIconName(_TT("file"));
 				icon3->setFontSize(10);
 				layout2->addChild(icon3);
@@ -229,7 +229,7 @@ public:
 			}
 
 			{
-				auto layout2 = makeObject<UIStackLayout>();
+				auto layout2 = makeObject_deprecated<UIStackLayout>();
 				layout2->setOrientation(UILayoutOrientation::Horizontal);
 				layout2->setAlignments(UIAlignment::HorizontalStretch);
 
@@ -246,32 +246,32 @@ public:
 
 		// TabBar
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UIText>(_TT("TabBar")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("TabBar")));
 
 
-			auto tabbar1 = makeObject<UITabBar2>();
+			auto tabbar1 = makeObject_deprecated<UITabBar2>();
 			layout1->addChild(tabbar1);
 
-			auto tab1 = makeObject<UITabBarItem2>();
+			auto tab1 = makeObject_deprecated<UITabBarItem2>();
 			tab1->addChild(_TT("Tab1"));
 			tabbar1->addChild(tab1);
 
-			auto tab2 = makeObject<UITabBarItem2>();
+			auto tab2 = makeObject_deprecated<UITabBarItem2>();
 			tab2->addChild(_TT("Tab2"));
 			tabbar1->addChild(tab2);
 
-			auto switch1 = makeObject<UISwitchLayout>();
+			auto switch1 = makeObject_deprecated<UISwitchLayout>();
 			layout1->addChild(switch1);
 
-			auto e1 = makeObject<UIElement>();
+			auto e1 = makeObject_deprecated<UIElement>();
 			e1->setHeight(100);
 			e1->setBackgroundColor(UIColors::get(UIColorHues::Red, 3));
 			switch1->addChild(e1);
 
-			auto e2 = makeObject<UIElement>();
+			auto e2 = makeObject_deprecated<UIElement>();
 			e2->setHeight(100);
 			e2->setBackgroundColor(UIColors::get(UIColorHues::Green, 3));
 			switch1->addChild(e2);
@@ -287,16 +287,16 @@ public:
 
 		// PropertyFields
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UIText>(_TT("PropertyFields")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("PropertyFields")));
 
-			auto field1 = makeObject<UISliderField>();
+			auto field1 = makeObject_deprecated<UISliderField>();
 			field1->setChanged([](float v) { ln::Debug::print(String::fromNumber(v)); });
 			layout1->addChild(field1);
 
-			auto field2 = makeObject<UIColorField>();
+			auto field2 = makeObject_deprecated<UIColorField>();
 			layout1->addChild(field2);
 			
 		}
@@ -304,12 +304,12 @@ public:
 
 		// ComboBox
 		{
-			auto layout1 = makeObject<UIStackLayout>();
+			auto layout1 = makeObject_deprecated<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
-			layout1->addChild(makeObject<UIText>(_TT("ComboBox")));
+			layout1->addChild(makeObject_deprecated<UIText>(_TT("ComboBox")));
 
-			auto comboBox1 = makeObject<UIComboBox>();
+			auto comboBox1 = makeObject_deprecated<UIComboBox>();
 			comboBox1->setAlignments(UIAlignment::Left);
 			comboBox1->addChild(_TT("CItem1"));
 			comboBox1->addChild(_TT("CItem2"));

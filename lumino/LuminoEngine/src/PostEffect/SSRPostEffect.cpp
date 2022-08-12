@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -25,7 +25,7 @@ void SSRPostEffect::init()
 
 Ref<PostEffectInstance> SSRPostEffect::onCreateInstance()
 {
-    return makeObject<detail::SSRPostEffectInstance>(this);
+    return makeObject_deprecated<detail::SSRPostEffectInstance>(this);
 }
 
 //==============================================================================
@@ -43,7 +43,7 @@ bool SSRPostEffectCore::init(Material* compositeMaterial)
 {
 
     auto shader1 = RenderingManager::instance()->builtinShader(BuiltinShader::SSRRayTracing);
-    m_ssrMaterial = makeObject<Material>();
+    m_ssrMaterial = makeObject_deprecated<Material>();
     m_ssrMaterial->setShader(shader1);
     m_ssrMaterial_ColorSampler = shader1->findParameter(_TT("_ColorSampler"));
     m_ssrMaterial_NormalAndDepthSampler = shader1->findParameter(_TT("_NormalAndDepthSampler"));
@@ -51,22 +51,22 @@ bool SSRPostEffectCore::init(Material* compositeMaterial)
     m_ssrMaterial_MetalRoughSampler = shader1->findParameter(_TT("_MetalRoughSampler"));
 
     auto shader2 = RenderingManager::instance()->builtinShader(BuiltinShader::SSRBlur);
-    m_ssrBlurMaterial1 = makeObject<Material>();
+    m_ssrBlurMaterial1 = makeObject_deprecated<Material>();
     m_ssrBlurMaterial1->setShader(shader2);
 
-    m_ssrBlurMaterial2 = makeObject<Material>();
+    m_ssrBlurMaterial2 = makeObject_deprecated<Material>();
     m_ssrBlurMaterial2->setShader(shader2);
 
     if (!compositeMaterial) {
         auto shader3 = RenderingManager::instance()->builtinShader(BuiltinShader::SSRComposite);
-        m_ssrCompositeMaterial = makeObject<Material>();
+        m_ssrCompositeMaterial = makeObject_deprecated<Material>();
         m_ssrCompositeMaterial->setShader(shader3);
         m_paramColorSampler = shader3->findParameter(_TT("_ColorSampler"));
         m_paramSSRSampler = shader3->findParameter(_TT("_SSRSampler"));
     }
 
     // TODO: 他と共有したいところ
-    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_samplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     return true;
 }
@@ -132,13 +132,13 @@ void SSRPostEffectCore::render(CommandList* context, RenderTargetTexture* source
 void SSRPostEffectCore::resetResources(int resx, int resy)
 {
     // TODO: tempolary からとっていいかも
-    m_ssrTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
+    m_ssrTarget = makeObject_deprecated<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_ssrTarget->setSamplerState(m_samplerState);
-    m_blurTarget1 = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
+    m_blurTarget1 = makeObject_deprecated<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_blurTarget1->setSamplerState(m_samplerState);
-    m_blurTarget2 = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
+    m_blurTarget2 = makeObject_deprecated<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_blurTarget2->setSamplerState(m_samplerState);
-    m_compositeTarget = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
+    m_compositeTarget = makeObject_deprecated<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_compositeTarget->setSamplerState(m_samplerState);
 
     m_viewWidth = resx;

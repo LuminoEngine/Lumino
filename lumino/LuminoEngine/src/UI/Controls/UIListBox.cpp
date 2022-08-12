@@ -27,7 +27,7 @@ bool UIListItemsControl::init()
 	if (!UIControl::init()) return false;
 
 	// TODO: 負荷軽減のため、デフォルトでは作成しない。その場合、StackLayout としてレイアウトする
-	auto layout = makeObject<UIStackLayout>();
+	auto layout = makeObject_deprecated<UIStackLayout>();
 	layout->setOrientation(UILayoutOrientation::Vertical);
 	setItemsLayoutPanel(layout);
 
@@ -288,7 +288,7 @@ LN_OBJECT_IMPLEMENT(UIListBox, UIListItemsControl) {}
 
 Ref<UIListBox> UIListBox::create()
 {
-    return makeObject<UIListBox>();
+    return makeObject_deprecated<UIListBox>();
 }
 
 UIListBox::UIListBox()
@@ -322,7 +322,7 @@ UIListBoxItem* UIListBox::addItem(UIElement* content)
 		return static_cast<UIListBoxItem*>(content);
 	}
 	else {
-		auto item = makeObject<UIListBoxItem>(content);
+		auto item = makeObject_deprecated<UIListBoxItem>(content);
 		addChild(item);
 		return item;
 	}
@@ -335,7 +335,7 @@ UIListBoxItem* UIListBox::addItem(UIElement* content)
 //		if (auto collection = dynamic_pointer_cast<CollectionObject>(obj)) {	// TODO: TypeInfo で Collection かどうか調べたいところ
 //			int count = collection->getItemCount();
 //			for (int i = 0; i < count; i++) {
-//				auto item = ln::makeObject<UIListBoxItem>();
+//				auto item = ln::makeObject_deprecated<UIListBoxItem>();
 //				auto data = collection->getItemAsVariant(i);
 //				if (auto dataObj = data->getAsObject<Object>()) {
 //					if (detail::ObjectHelper::isObservableProperty(dataObj)) {
@@ -362,7 +362,7 @@ void UIListBox::onAddChild(UIElement* child)
 		addListItem(item1);
 	}
 	else {
-		auto item = ln::makeObject<UIListBoxItem>();
+		auto item = ln::makeObject_deprecated<UIListBoxItem>();
 		item->addElement(child);
 		addListItem(item);
 	}

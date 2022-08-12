@@ -1,13 +1,13 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include "../../../../Graphics/src/RHI/Backend/GraphicsDeviceContext.hpp"
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include "../../../../Graphics/src/GPU/RHI/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "PathRenderFeature.hpp"
 
@@ -87,7 +87,7 @@ static int glnvg__renderCreate(void* uptr)
 	GLNVGcontext* gl = (GLNVGcontext*)uptr;
 	gl->shader = gl->renderFeature->manager()->builtinShader(ln::detail::BuiltinShader::NanoVG);
 
-	gl->vertexLayout = ln::makeObject<ln::VertexLayout>();
+	gl->vertexLayout = ln::makeObject_deprecated<ln::VertexLayout>();
 	gl->vertexLayout->addElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::Position, 0);
 	gl->vertexLayout->addElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::TexCoord, 0);
 
@@ -365,7 +365,7 @@ static void glnvg__renderFlush(void* uptr)
 		{
 			size_t size = gl->nverts * sizeof(NVGvertex);
 			if (!gl->vertexBuffer || gl->vertexBuffer->size() < size) {
-				gl->vertexBuffer = ln::makeObject<ln::VertexBuffer>(size, ln::GraphicsResourceUsage::Dynamic);
+				gl->vertexBuffer = ln::makeObject_deprecated<ln::VertexBuffer>(size, ln::GraphicsResourceUsage::Dynamic);
 			}
 			void* data = gl->vertexBuffer->writableData();
 			memcpy(data, gl->verts, gl->nverts * sizeof(NVGvertex));

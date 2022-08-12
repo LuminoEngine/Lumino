@@ -8,7 +8,7 @@ class Test_Shader_ShaderCompiler : public ::testing::Test {};
 
 TEST_F(Test_Shader_ShaderCompiler, Simple) {
     const auto file = LN_TEMPFILE("Test_Shader_ShaderCompiler.Simple");
-    auto diag = makeObject<DiagnosticsManager>();
+    auto diag = makeObject_deprecated<DiagnosticsManager>();
 
     {
         kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
@@ -35,7 +35,7 @@ TEST_F(Test_Shader_ShaderCompiler, Simple) {
 
 TEST_F(Test_Shader_ShaderCompiler, ShaderVariant) {
     const auto file = LN_TEMPFILE("Test_Shader_ShaderCompiler.ShaderVariant.lcfx");
-    auto diag = makeObject<DiagnosticsManager>();
+    auto diag = makeObject_deprecated<DiagnosticsManager>();
     diag->setOutputToStdErr(true);
 
     {

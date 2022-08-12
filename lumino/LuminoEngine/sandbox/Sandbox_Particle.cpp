@@ -18,7 +18,7 @@ class App_Sandbox_Particle : public Application
         material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
         
 
-        auto particleModel = makeObject<ParticleModel>();
+        auto particleModel = makeObject_deprecated<ParticleModel>();
         auto m1 = particleModel->emitters()[0];
         m1->setSpriteModule(material);
         m1->setLifeTime(10);
@@ -34,11 +34,11 @@ class App_Sandbox_Particle : public Application
         //m1->m_shapeType = ParticleEmitterShapeType::Cone;
         //m1->m_shapeParam.x = Math::PI * 0.1;
         //m1->m_shapeParam.y = 2;
-        auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        auto cmp1 = makeObject_deprecated<ParticleEmitterComponent2>(particleModel);
         cmp1->setCullMode(CullMode::None);
         cmp1->setBlendMode(BlendMode::Alpha);
 
-        auto obj1 = makeObject<WorldObject>();
+        auto obj1 = makeObject_deprecated<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
 
@@ -49,7 +49,7 @@ class App_Sandbox_Particle : public Application
         material->setShader(Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx")));
 
 
-        auto particleModel = makeObject<ParticleModel>();
+        auto particleModel = makeObject_deprecated<ParticleModel>();
         auto m1 = particleModel->emitters()[0];
         m1->setSpriteModule(material);
         m1->setLifeTime(10);
@@ -67,11 +67,11 @@ class App_Sandbox_Particle : public Application
         //m1->m_shapeType = ParticleEmitterShapeType::Cone;
         //m1->m_shapeParam.x = Math::PI * 0.1;
         //m1->m_shapeParam.y = 2;
-        auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        auto cmp1 = makeObject_deprecated<ParticleEmitterComponent2>(particleModel);
         cmp1->setCullMode(CullMode::None);
         cmp1->setBlendMode(BlendMode::Alpha);
 
-        auto obj1 = makeObject<WorldObject>();
+        auto obj1 = makeObject_deprecated<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
 #if 0
@@ -86,15 +86,15 @@ class App_Sandbox_Particle : public Application
         m1->m_shapeType = ParticleEmitterShapeType::Cone;
         m1->m_shapeParam.x = Math::PI * 0.1;
         m1->m_shapeParam.y = 2;
-        auto cmp1 = makeObject<ParticleEmitterComponent>(m1);
+        auto cmp1 = makeObject_deprecated<ParticleEmitterComponent>(m1);
         cmp1->setCullMode(CullMode::None);
         cmp1->setBlendMode(BlendMode::Alpha);
 
-        auto obj1 = makeObject<WorldObject>();
+        auto obj1 = makeObject_deprecated<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
 #if 0	// 雨
-        auto m1 = makeObject<ParticleEmitterModel>();
+        auto m1 = makeObject_deprecated<ParticleEmitterModel>();
         m1->m_maxParticles = 10000;
         m1->setSpawnRate(1000);
         //m1->setSpawnRate(10);
@@ -116,7 +116,7 @@ class App_Sandbox_Particle : public Application
         m1->m_sortMode = ParticleSortMode::DistanceToView;
 
 
-        auto particleModel = makeObject<ParticleModel>();
+        auto particleModel = makeObject_deprecated<ParticleModel>();
         particleModel->m_loop = true;
         particleModel->addEmitter(m1);
 
@@ -131,13 +131,13 @@ class App_Sandbox_Particle : public Application
         //detail::AssetObjectInternal::setAssetPath(particleModel, _TT("Particle.yml");
         //Assets::save(particleModel);
 
-        m_particleObj = makeObject<ParticleEmitter>(particleModel);
+        m_particleObj = makeObject_deprecated<ParticleEmitter>(particleModel);
         m_particleObj->setPosition(0, 10, 0);
 
-        //auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        //auto particle1 = makeObject_deprecated<ParticleEmitterComponent2>(particleModel);
         ////particle1->setBlendMode(BlendMode::Add);
         //particle1->setBlendMode(BlendMode::Alpha);
-        //m_particleObj = makeObject<WorldObject>();
+        //m_particleObj = makeObject_deprecated<WorldObject>();
         //m_particleObj->addComponent(particle1);
         //m_particleObj->setPosition(0, 10, 0);
         ////particle1->setAngles(Math::PI, 0, 0);
@@ -156,8 +156,8 @@ class App_Sandbox_Particle : public Application
 
 
         // 波紋
-        auto particleModel2 = makeObject<ParticleModel>();
-        auto m2 = makeObject<ParticleEmitterModel>();
+        auto particleModel2 = makeObject_deprecated<ParticleModel>();
+        auto m2 = makeObject_deprecated<ParticleEmitterModel>();
         m2->m_maxParticles = 1000;
         m2->setSpawnRate(200);
         m2->setLifeTime(0.2);
@@ -174,9 +174,9 @@ class App_Sandbox_Particle : public Application
 
         //auto particle2 = ParticleEmitter3D::create(m2);
         //particle2->SetBlendMode(BlendMode::Add);
-        auto particle2 = makeObject<ParticleEmitterComponent2>(particleModel2);
+        auto particle2 = makeObject_deprecated<ParticleEmitterComponent2>(particleModel2);
         particle2->setBlendMode(BlendMode::Add);
-        auto obj2 = makeObject<WorldObject>();
+        auto obj2 = makeObject_deprecated<WorldObject>();
         obj2->addComponent(particle2);
         //obj2->setPosition(0, 12, 0);
 #endif
@@ -197,9 +197,9 @@ class App_Sandbox_Particle : public Application
 
         //auto particle2 = ParticleEmitter3D::create(m2);
         //particle2->SetBlendMode(BlendMode::Add);
-        auto particle2 = makeObject<ParticleEmitterComponent>(m2);
+        auto particle2 = makeObject_deprecated<ParticleEmitterComponent>(m2);
         particle2->setBlendMode(BlendMode::Add);
-        auto obj2 = makeObject<WorldObject>();
+        auto obj2 = makeObject_deprecated<WorldObject>();
         obj2->addComponent(particle2);
         //obj2->setPosition(0, 12, 0);
 #endif
@@ -224,9 +224,9 @@ class App_Sandbox_Particle : public Application
         material->setMainTexture(Texture2D::load("D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
         m1->setMaterial(material);
 
-        auto particle1 = makeObject<ParticleEmitterComponent>(m1);
+        auto particle1 = makeObject_deprecated<ParticleEmitterComponent>(m1);
         particle1->setBlendMode(BlendMode::Add);
-        auto obj1 = makeObject<WorldObject>();
+        auto obj1 = makeObject_deprecated<WorldObject>();
         obj1->addComponent(particle1);
         obj1->setPosition(0, 5, 0);
         //particle1->setAngles(Math::PI, 0, 0);
@@ -248,9 +248,9 @@ class App_Sandbox_Particle : public Application
 
         //auto particle2 = ParticleEmitter3D::create(m2);
         //particle2->SetBlendMode(BlendMode::Add);
-        auto particle2 = makeObject<ParticleEmitterComponent>(m2);
+        auto particle2 = makeObject_deprecated<ParticleEmitterComponent>(m2);
         particle2->setBlendMode(BlendMode::Add);
-        auto obj2 = makeObject<WorldObject>();
+        auto obj2 = makeObject_deprecated<WorldObject>();
         obj2->addComponent(particle2);
         //obj2->setPosition(0, 12, 0);
         */

@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoFont/Font.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CanvasContext.hpp>
@@ -39,7 +39,7 @@ RenderView でリセットする。
 
 RenderingContext::RenderingContext()
     : m_manager(detail::RenderingManager::instance())
-    , m_pathContext(makeObject<CanvasContext>())
+    , m_pathContext(makeObject_deprecated<CanvasContext>())
     , m_pathBegan(false)
     , m_commandList(nullptr)
     , m_listServer(makeRef<detail::CommandListServer>()) {

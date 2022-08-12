@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
 	testing::InitGoogleTest(&argc, argv);
 
-	Logger::setLevel(LogLevel::Debug);
+	Logger::setLevel(LogLevel::Trace);
 	Logger::addStdErrAdapter();
 
 	auto tempPath = Path(Environment::specialFolderPath(SpecialFolder::Temporary), _TT("Lumino"));

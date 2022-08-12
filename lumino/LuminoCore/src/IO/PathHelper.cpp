@@ -231,7 +231,7 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath() {
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, size_t len) {
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, int len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {
@@ -242,7 +242,7 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, 
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* path, size_t len) {
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* path, int len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {
@@ -253,7 +253,7 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* pat
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* path, size_t len) {
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* path, int len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {
@@ -264,7 +264,7 @@ GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* pa
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char32_t* path, size_t len) {
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char32_t* path, int len) {
     m_static[0] = '\0';
     m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
     if (m_length < 0 || m_length >= LocalPathBaseLength) {

@@ -1,5 +1,5 @@
-﻿#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
+﻿#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include <LuminoGraphics/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>

@@ -436,7 +436,7 @@ void Bitmap2D::load(const StringView& filePath)
 
 void Bitmap2D::load(Stream* stream)
 {
-    auto diag = makeObject<DiagnosticsManager>();
+    auto diag = makeObject_deprecated<DiagnosticsManager>();
 
     auto decoder = detail::IBitmapDecoder::load(stream, diag);
 
@@ -458,12 +458,12 @@ void Bitmap2D::save(const StringView& filePath)
 
 Ref<Bitmap2D> Bitmap2D::clone() const
 {
-	return makeObject<Bitmap2D>(m_size.width, m_size.height, m_format, m_buffer->data());
+	return makeObject_deprecated<Bitmap2D>(m_size.width, m_size.height, m_format, m_buffer->data());
 }
 
 Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const ColorI& color) const
 {
-	auto dstBitmap = makeObject<Bitmap2D>(m_size.width, m_size.height, format);
+	auto dstBitmap = makeObject_deprecated<Bitmap2D>(m_size.width, m_size.height, format);
 
 	RectI rect(0, 0, m_size.width, m_size.height);
     detail::ClColor c{ color.r, color.g, color.b, color.a };

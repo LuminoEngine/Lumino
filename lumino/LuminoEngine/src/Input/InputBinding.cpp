@@ -152,7 +152,7 @@ static String getModifierKeysName(ModifierKeys modifierKeyss)
 //------------------------------------------------------------------------------
 Ref<KeyGesture> KeyGesture::create(Keys key, ModifierKeys modifierKeys)
 {
-	return makeObject<KeyGesture>(key, modifierKeys);
+	return makeObject_deprecated<KeyGesture>(key, modifierKeys);
 }
 
 KeyGesture::KeyGesture()
@@ -238,7 +238,7 @@ static const String& getMouseActionName(MouseAction mouseAction)
 //------------------------------------------------------------------------------
 Ref<MouseGesture> MouseGesture::create(MouseAction mouseAction, ModifierKeys modifierKeys)
 {
-	return makeObject<MouseGesture>(mouseAction, modifierKeys);
+	return makeObject_deprecated<MouseGesture>(mouseAction, modifierKeys);
 }
 
 //------------------------------------------------------------------------------
@@ -354,7 +354,7 @@ static const String& getGamepadElementName(GamepadElement element)
 //------------------------------------------------------------------------------
 Ref<GamepadGesture> GamepadGesture::create(GamepadElement element)
 {
-	return makeObject<GamepadGesture>(element);
+	return makeObject_deprecated<GamepadGesture>(element);
 }
 
 //------------------------------------------------------------------------------

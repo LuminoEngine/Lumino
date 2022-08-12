@@ -64,10 +64,10 @@ void Sound::init(const StringView& filePath)
 
 
 
-    ////m_sourceNode = makeObject<AudioSourceNode>(decoder);
+    ////m_sourceNode = makeObject_deprecated<AudioSourceNode>(decoder);
     ////m_manager->primaryContext()->addAudioNode(m_sourceNode);
 
-    ////m_gainNode = makeObject<AudioGainNode>();
+    ////m_gainNode = makeObject_deprecated<AudioGainNode>();
     ////m_manager->primaryContext()->addAudioNode(m_gainNode);
 
     //m_manager->postConnect(m_core->m_sourceNode, m_core->m_gainNode);
@@ -78,7 +78,7 @@ void Sound::init(const StringView& filePath)
     //AudioNode::connect(m_sourceNode, m_gainNode);
     //AudioNode::connect(m_gainNode, m_manager->primaryContext()->destination());
 
-    //auto panner = makeObject<AudioPannerNode>();
+    //auto panner = makeObject_deprecated<AudioPannerNode>();
     //AudioNode::connect(source, panner);
     //AudioNode::connect(panner, AudioContext::primary()->destination());
     //source->setPlaybackRate(1.2);
@@ -307,10 +307,10 @@ bool SoundCore::init(AudioManager* manager, AudioContext* context, detail::Audio
 
 
 
-    //m_sourceNode = makeObject<AudioSourceNode>(decoder);
+    //m_sourceNode = makeObject_deprecated<AudioSourceNode>(decoder);
     //m_manager->primaryContext()->addAudioNode(m_sourceNode);
 
-    //m_gainNode = makeObject<AudioGainNode>();
+    //m_gainNode = makeObject_deprecated<AudioGainNode>();
     //m_manager->primaryContext()->addAudioNode(m_gainNode);
 
     manager->postConnect(m_sourceNode, m_gainNode);

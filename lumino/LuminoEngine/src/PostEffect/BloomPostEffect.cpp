@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -19,7 +19,7 @@ static const Vector2 BlurDirectionY(0.0, 1.0);
 
 Ref<BloomPostEffect> BloomPostEffect::create()
 {
-    return makeObject<BloomPostEffect>();
+    return makeObject_deprecated<BloomPostEffect>();
 }
 
 BloomPostEffect::BloomPostEffect()
@@ -60,7 +60,7 @@ void BloomPostEffect::onUpdateFrame(float elapsedSeconds)
 
 Ref<PostEffectInstance> BloomPostEffect::onCreateInstance()
 {
-    return makeObject<detail::BloomPostEffectInstance>(this);
+    return makeObject_deprecated<detail::BloomPostEffectInstance>(this);
 }
 
 //==============================================================================
@@ -82,14 +82,14 @@ bool BloomPostEffectCore::init(Material* compositeMaterial)
     const auto* manager = detail::RenderingManager::instance();
 
     auto luminosityHighPassShader = manager->builtinShader(detail::BuiltinShader::LuminosityHighPassShader);
-    m_materialHighPassFilter = makeObject<Material>();
+    m_materialHighPassFilter = makeObject_deprecated<Material>();
     m_materialHighPassFilter->setShader(luminosityHighPassShader);
     m_materialHighPassFilter->setBlendMode(BlendMode::Normal);
 
     auto separableBlurShader = manager->builtinShader(detail::BuiltinShader::SeperableBlur);
     int kernelSizeArray[] = { 3, 5, 8, 13, 21 };
     for (int i = 0; i < MIPS; i++) {
-        auto materialH = makeObject<Material>();
+        auto materialH = makeObject_deprecated<Material>();
         materialH->setShader(separableBlurShader);
         materialH->setBlendMode(BlendMode::Normal);
         materialH->setInt(_TT("KERNEL_RADIUS"), kernelSizeArray[i]);
@@ -97,7 +97,7 @@ bool BloomPostEffectCore::init(Material* compositeMaterial)
         materialH->setVector(_TT("_Direction"), Vector4(BlurDirectionX, 0.0f, 0.0f));
         m_separableBlurMaterialsH.add(materialH);
 
-        auto materialV = makeObject<Material>();
+        auto materialV = makeObject_deprecated<Material>();
         materialV->setShader(separableBlurShader);
         materialV->setBlendMode(BlendMode::Normal);
         materialV->setInt(_TT("KERNEL_RADIUS"), kernelSizeArray[i]);
@@ -111,12 +111,12 @@ bool BloomPostEffectCore::init(Material* compositeMaterial)
     }
     else {
         auto bloomCompositeShader = manager->builtinShader(detail::BuiltinShader::BloomComposite);
-        m_compositeMaterial = makeObject<Material>();
+        m_compositeMaterial = makeObject_deprecated<Material>();
         m_compositeMaterial->setBlendMode(BlendMode::Normal);
         m_compositeMaterial->setShader(bloomCompositeShader);
     }
 
-    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_samplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     return true;
 }
@@ -175,18 +175,18 @@ void BloomPostEffectCore::resetResources(int resx, int resy)
     m_renderTargetsHorizontal.clear();
     m_renderTargetsVertical.clear();
 
-    m_renderTargetBright = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
+    m_renderTargetBright = makeObject_deprecated<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false, false);
     m_renderTargetBright->setSamplerState(m_samplerState);
 
     // Create render targets for down sampling.
     auto rx = std::round(resx / 2);
     auto ry = std::round(resy / 2);
     for (int i = 0; i < MIPS; i++) {
-        auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
+        auto renderTargetHorizonal = makeObject_deprecated<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
         renderTargetHorizonal->setSamplerState(m_samplerState);
         m_renderTargetsHorizontal.add(renderTargetHorizonal);
 
-        auto renderTargetVertical = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
+        auto renderTargetVertical = makeObject_deprecated<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
         renderTargetVertical->setSamplerState(m_samplerState);
         m_renderTargetsVertical.add(renderTargetVertical);
 

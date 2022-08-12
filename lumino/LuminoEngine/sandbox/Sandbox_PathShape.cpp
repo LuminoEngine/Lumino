@@ -19,7 +19,7 @@ public:
         Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
         //Scene::setAntialiasEnabled(false);
 
-        auto shape = makeObject<PathShape>();
+        auto shape = makeObject_deprecated<PathShape>();
         shape->addInto();
 
         shape->beginCanvas();

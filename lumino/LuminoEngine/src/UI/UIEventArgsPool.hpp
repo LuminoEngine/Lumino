@@ -48,7 +48,7 @@ public:
 		TEventArgs* e = static_cast<TEventArgs* >(find(typeId));
 		if (e == nullptr)
 		{
-            auto obj = makeObject<TEventArgs>(args...);
+            auto obj = makeObject_deprecated<TEventArgs>(args...);
             e = obj;
             RefObjectHelper::retain(e);
 			registerObject(typeId, obj);

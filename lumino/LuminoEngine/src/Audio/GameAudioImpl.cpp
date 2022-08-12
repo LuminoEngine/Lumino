@@ -501,7 +501,7 @@ void GameAudioImpl::pushReleaseAtPlayEndList(Sound* sound)
 
 Ref<Sound> GameAudioImpl::createSound(const StringView& filePath)
 {
-    return makeObject<Sound>(filePath);
+    return makeObject_deprecated<Sound>(filePath);
 }
 
 //==============================================================================

@@ -13,17 +13,17 @@ namespace ln {
 
 Ref<UISprite> UISprite::create()
 {
-    return makeObject<UISprite>();
+    return makeObject_deprecated<UISprite>();
 }
 
 Ref<UISprite> UISprite::create(Texture* texture)
 {
-    return makeObject<UISprite>(texture);
+    return makeObject_deprecated<UISprite>(texture);
 }
 
 Ref<UISprite> UISprite::load(StringView filePath)
 {
-	return makeObject<UISprite>(Texture2D::load(filePath));
+	return makeObject_deprecated<UISprite>(Texture2D::load(filePath));
 }
 
 UISprite::UISprite()
@@ -36,7 +36,7 @@ void UISprite::init()
     UIElement::init();
 
 	setAlignments(UIAlignment::Center);
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
     setBlendMode(BlendMode::Alpha);

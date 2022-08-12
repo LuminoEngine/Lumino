@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -39,7 +39,7 @@ void FilmicPostEffect::init()
 
 Ref<PostEffectInstance> FilmicPostEffect::onCreateInstance()
 {
-    return makeObject<detail::FilmicPostEffectInstance>(this);
+    return makeObject_deprecated<detail::FilmicPostEffectInstance>(this);
 }
 
 //==============================================================================
@@ -59,16 +59,16 @@ bool FilmicPostEffectInstance::init(FilmicPostEffect* owner)
     m_owner = owner;
 
     auto shader2 = RenderingManager::instance()->builtinShader(BuiltinShader::SSAOOcclusionMap);
-    m_ssaoMaterial = makeObject<Material>();
+    m_ssaoMaterial = makeObject_deprecated<Material>();
     m_ssaoMaterial->setShader(shader2);
 
     auto shader1 = RenderingManager::instance()->builtinShader(BuiltinShader::FilmicPostEffect);
     //auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.fx");
-    m_integrationMaterial = makeObject<Material>();
+    m_integrationMaterial = makeObject_deprecated<Material>();
     m_integrationMaterial->setShader(shader1);
 
     // TODO: 他と共有したいところ
-    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_samplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     if (!m_ssrEffect.init(m_integrationMaterial)) {
         return false;

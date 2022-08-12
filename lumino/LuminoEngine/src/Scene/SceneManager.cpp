@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include "SceneManager.hpp"
 #include <LuminoBitmap/Bitmap.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "Shapes/PathShapeContext.hpp"
@@ -12,7 +12,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Level.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
 #include <LuminoEngine/Tilemap/TilemapLayer.hpp>
@@ -32,7 +32,7 @@ namespace detail {
 
 SceneManager::SceneManager()
     : m_activeWorld(nullptr)
-    , m_raycasterCache(makeObject<Raycaster>()) {
+    , m_raycasterCache(makeObject_deprecated<Raycaster>()) {
 }
 
 SceneManager::~SceneManager() {
@@ -48,14 +48,14 @@ void SceneManager::init() {
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_atmosphereShader = makeObject<Shader>(_TT("SkyFromAtmosphere"), &stream);
+        m_atmosphereShader = makeObject_deprecated<Shader>(_TT("SkyFromAtmosphere"), &stream);
     }
 
     auto createTexture = [](const uint8_t* data, size_t len) {
         MemoryStream stream(data, len);
-        auto bmp = makeObject<Bitmap2D>();
+        auto bmp = makeObject_deprecated<Bitmap2D>();
         bmp->load(&stream);
-        return makeObject<Texture2D>(bmp, TextureFormat::RGBA8);
+        return makeObject_deprecated<Texture2D>(bmp, TextureFormat::RGBA8);
     };
 
     // SkydomeCloudA

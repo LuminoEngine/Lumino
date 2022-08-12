@@ -16,7 +16,7 @@ int NewAssetCommand::execute(lna::Workspace* workspace, ln::String name)
         filePath = name;
     }
 
-    auto model = ln::makeObject<ln::AssetModel>(obj);
+    auto model = ln::makeObject_deprecated<ln::AssetModel>(obj);
     ln::detail::AssetManager::instance()->saveAssetModelToLocalFile(model, filePath);
 
     return 0;

@@ -27,7 +27,7 @@ bool UILinkLabel::init()
 void UILinkLabel::setText(const StringView& value)
 {
     if (!m_textContent) {
-        m_textContent = makeObject<UIText>();
+        m_textContent = makeObject_deprecated<UIText>();
         addElement(m_textContent);
     }
     m_textContent->setText(value);

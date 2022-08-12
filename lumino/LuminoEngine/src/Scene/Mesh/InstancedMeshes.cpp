@@ -16,7 +16,7 @@ InstancedMeshesComponent::~InstancedMeshesComponent()
 bool InstancedMeshesComponent::init()
 {
     if (!VisualComponent::init()) return false;
-    m_material = makeObject<Material>();
+    m_material = makeObject_deprecated<Material>();
     m_material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
     m_material->setShadingModel(ShadingModel::Unlit);
     return true;
@@ -53,7 +53,7 @@ InstancedMeshes::~InstancedMeshes()
 bool InstancedMeshes::init()
 {
     if (!VisualObject::init()) return false;
-    m_component = makeObject<InstancedMeshesComponent>();
+    m_component = makeObject_deprecated<InstancedMeshesComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
     return true;

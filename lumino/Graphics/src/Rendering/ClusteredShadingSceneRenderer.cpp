@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/RenderPass.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/RenderView.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KDrawCommand.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
@@ -41,7 +41,7 @@ void ForwardGBufferPrepass::init() {
         //m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
         //m_materialMap->setSamplerState(m_samplerState);
     }
-    m_renderPass = makeObject<RenderPass>();
+    m_renderPass = makeObject_deprecated<RenderPass>();
 
     m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ForwardGBufferPrepass);
     m_internalSceneRenderPass->overrideCommand = [](kanata::DrawCommand* cmd) {
@@ -144,7 +144,7 @@ void LightOcclusionPass::init()
 	SceneRendererPass::init();
 	m_blackShader = detail::EngineDomain::renderingManager()->builtinShader(BuiltinShader::BlackShader);
 	m_blackShaderTechnique = m_blackShader->findTechnique(_TT("Default");
-	m_renderPass = makeObject<RenderPass>();
+	m_renderPass = makeObject_deprecated<RenderPass>();
 }
 
 void LightOcclusionPass::onBeginRender(SceneRenderer* sceneRenderer)
@@ -216,7 +216,7 @@ void LightOcclusionPass::acquireBuffers(int width, int height)
 	// ただ、SceneRenderer をまたいでポストエフェクトで使いたいので、get/releaseのスコープを Pipeline単位にしたりする必要がある。
 
 	if (!m_lensflareOcclusionMap || (m_lensflareOcclusionMap->width() != width || m_lensflareOcclusionMap->height() != height)) {
-		m_lensflareOcclusionMap = makeObject< RenderTargetTexture>(width, height, TextureFormat::RGBA8, false);
+		m_lensflareOcclusionMap = makeObject_deprecated< RenderTargetTexture>(width, height, TextureFormat::RGBA8, false);
 	}
 
 	//if (!m_depthBuffer || (m_depthBuffer->width() != width || m_depthBuffer->height() != height)) {
@@ -258,7 +258,7 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
     //	}
     //	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 
-    m_renderPass = makeObject<RenderPass>();
+    m_renderPass = makeObject_deprecated<RenderPass>();
     m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::Forward);
 }
 
@@ -386,7 +386,7 @@ void ShadowCasterPass::init() {
 
     m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
-    m_renderPass = makeObject<RenderPass>();
+    m_renderPass = makeObject_deprecated<RenderPass>();
 
     m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ShadowCaster);
 }
@@ -463,17 +463,17 @@ ClusteredShadingSceneRenderer::~ClusteredShadingSceneRenderer() {
 void ClusteredShadingSceneRenderer::init(RenderingManager* manager) {
     SceneRenderer::init();
 
-    m_shadowCasterPass = makeObject<ShadowCasterPass>();
+    m_shadowCasterPass = makeObject_deprecated<ShadowCasterPass>();
     //addPass(shadowPass);
 
-    m_depthPrepass = makeObject<ForwardGBufferPrepass>();
+    m_depthPrepass = makeObject_deprecated<ForwardGBufferPrepass>();
     //addPass(m_depthPrepass);
 
-    //m_lightOcclusionPass = makeObject<LightOcclusionPass>();
+    //m_lightOcclusionPass = makeObject_deprecated<LightOcclusionPass>();
     //addPass(m_lightOcclusionPass);
 
     // pass "Geometry"
-    m_geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
+    m_geometryPass = makeObject_deprecated<ClusteredShadingGeometryRenderingPass>(this);
     //addPass(m_geometryPass);
 
     m_lightClusters.init();

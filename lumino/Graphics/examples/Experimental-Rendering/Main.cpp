@@ -5,12 +5,12 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/SwapChain.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
+#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/SwapChain.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/RHIModule.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
@@ -42,7 +42,7 @@ Ref<SwapChain> g_swapChain;
 class MyRenderView : public RenderView {
 public:
     MyRenderView() {
-        m_sceneRenderingPipeline = makeObject<FlatRenderingPipeline>();
+        m_sceneRenderingPipeline = makeObject_deprecated<FlatRenderingPipeline>();
     }
 
     void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) override {
@@ -94,8 +94,8 @@ void init() {
 
 void initApp() {
     g_window = Platform::mainWindow();
-    g_swapChain = makeObject<SwapChain>(g_window);
-    g_renderView = makeObject<MyRenderView>();
+    g_swapChain = makeObject_deprecated<SwapChain>(g_window);
+    g_renderView = makeObject_deprecated<MyRenderView>();
 }
 
 void cleanupApp() {
@@ -166,7 +166,7 @@ void init() {
 
 void initApp() {
     g_window = Platform::mainWindow();
-    g_swapChain = makeObject<SwapChain>(g_window);
+    g_swapChain = makeObject_deprecated<SwapChain>(g_window);
 
     g_batchList = makeURef<kanata::BatchCollector>(g_renderingManager);
     g_drawCommandList = makeURef<kanata::DrawCommandList>(g_renderingManager);
@@ -179,7 +179,7 @@ void initApp() {
         Vertex(Vector3(-0.5, -0.25, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
         Vertex(Vector3(0.5, -0.25, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
     };
-    g_vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 }
 
 void cleanupApp() {

@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SwapChain.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SwapChain.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
 #include <LuminoGraphics/Rendering/RenderView.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
@@ -359,8 +359,8 @@ void EffectManager::init(const Settings& settings)
     //g_manager->SetSoundLoader(g_sound->CreateSoundLoader());
 #endif
 
-    m_defaultSpriteParticleGeometry = makeObject<SpriteParticleGeometry>();
-    auto material = makeObject<Material>();
+    m_defaultSpriteParticleGeometry = makeObject_deprecated<SpriteParticleGeometry>();
+    auto material = makeObject_deprecated<Material>();
     material->setMainTexture(settings.graphicsManager->whiteTexture());
     material->setShader(settings.renderingManager->builtinShader(BuiltinShader::Sprite));
     m_defaultSpriteParticleGeometry->setMaterial(material);
@@ -386,7 +386,7 @@ Ref<ParticleModel> EffectManager::loadParticleModel(const StringView& filePath)
 {
     // TODO: find cache
 
-    auto obj = makeObject<ParticleModel>();
+    auto obj = makeObject_deprecated<ParticleModel>();
     LN_NOTIMPLEMENTED();
     //detail::AssetObjectInternal::setAssetPath(obj, filePath);
     //detail::AssetObjectInternal::reload(obj);
@@ -433,7 +433,7 @@ Ref<EffectEmitter> EffectManager::createEmitterFromFile(const Path& filePath)
 {
 #if LN_EFFEKSEER_ENABLED
     auto efkEffect = getOrCreateEffekseerEffect(filePath);
-    auto emitter = ln::makeObject<EffekseerEffectEmitter>(this, efkEffect);
+    auto emitter = ln::makeObject_deprecated<EffekseerEffectEmitter>(this, efkEffect);
     return emitter;
 #endif
     return nullptr;

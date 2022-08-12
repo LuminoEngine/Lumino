@@ -214,7 +214,7 @@ Result AnimationManager::init(const Settings& settings) {
     m_assetManager = settings.assetManager;
     m_animationClipCache.init(64, 0);
 
-    m_defaultAnimationClipImportSettings = makeObject<AnimationClipImportSettings>();
+    m_defaultAnimationClipImportSettings = makeObject_deprecated<AnimationClipImportSettings>();
 
     LN_LOG_DEBUG("AnimationManager Initialization ended.");
     return ok();
@@ -254,7 +254,7 @@ Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const S
     // const Char* exts[] = { _TT(".bvh", _TT(".vmd" };
     // auto assetPath = detail::AssetPath::resolveAssetPath(filePath, exts);
 
-    // auto obj = makeObject<AnimationClip>(assetPath);
+    // auto obj = makeObject_deprecated<AnimationClip>(assetPath);
 
     // detail::AssetObjectInternal::setAssetPath(obj, filePath);
 
@@ -275,7 +275,7 @@ Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const S
 //         return obj;
 //     }
 //     else {
-//         obj = makeObject<AnimationClip>();
+//         obj = makeObject_deprecated<AnimationClip>();
 //         loadAnimationClip(obj, assetPath);
 //         m_animationClipCache.registerObject(key, obj, 0);
 //         return obj;
@@ -292,7 +292,7 @@ Ref<GenericTask<Ref<AnimationClip>>> AnimationManager::loadAnimationClip(const S
 //     {
 //         for (auto& track : vmdData->MotionData)
 //         {
-//             clip->m_tracks.add(makeObject<VMDBezierTransformAnimationTrack>(track));
+//             clip->m_tracks.add(makeObject_deprecated<VMDBezierTransformAnimationTrack>(track));
 //         }
 //
 //		clip->m_lastFrameTime = vmdData->lastFrameTime;

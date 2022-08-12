@@ -7,9 +7,9 @@
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
@@ -245,7 +245,7 @@ bool GLTFImporter::readCommon(MeshModel* meshModel)
 
 	// 先に MeshNode のインスタンスを作っておく。親子関係を結ぶときに参照したい。
 	for (auto& node : m_model->nodes) {
-		auto meshNode = makeObject<MeshNode>();
+		auto meshNode = makeObject_deprecated<MeshNode>();
 		meshModel->addNode(meshNode);
 	}
 
@@ -254,7 +254,7 @@ bool GLTFImporter::readCommon(MeshModel* meshModel)
 			return false;
 		}
 
-		//auto coreNode = makeObject<MeshNode>();
+		//auto coreNode = makeObject_deprecated<MeshNode>();
 		//auto meshNode = readNode(node);
 		//if (!meshNode) {
 		//	return false;
@@ -285,7 +285,7 @@ bool GLTFImporter::readCommon(MeshModel* meshModel)
 
 Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 {
-    auto coreMaterial = makeObject<Material>();
+    auto coreMaterial = makeObject_deprecated<Material>();
 	coreMaterial->m_name = String::fromStdString(material.name);
 
 	// glTF default
@@ -794,14 +794,14 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 	bool hasTangentAttribute = false;
 
-	auto meshContainer = makeObject<MeshContainer>();
+	auto meshContainer = makeObject_deprecated<MeshContainer>();
 
 	for (const MeshPrimitiveView& primitiveView : meshView.sectionViews) {
 		int vertexCount = primitiveView.vertexBufferViews[0].count;
 		int indexCount = primitiveView.indexCount;
 		IndexBufferFormat indexForamt = GraphicsHelper::selectIndexBufferFormat(vertexCount);
 
-		auto meshPrimitive = makeObject<MeshPrimitive>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
+		auto meshPrimitive = makeObject_deprecated<MeshPrimitive>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
 
 		for (auto& vbView : primitiveView.vertexBufferViews) {
 			auto reservedGroup = meshPrimitive->getStandardElement(vbView.usage, vbView.usageIndex);
@@ -1080,7 +1080,7 @@ Ref<MeshSkeleton> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	const tinygltf::Buffer& buffer = m_model->buffers[bufferView.buffer];
 
 	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
-	auto armature = makeObject<MeshSkeleton>(static_cast<SkinnedMeshModel*>(m_meshModel));
+	auto armature = makeObject_deprecated<MeshSkeleton>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 
 		if (m_clearBoneRotation) {
@@ -1139,15 +1139,15 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 
 	if (1) {
 		tex = m_meshManager->graphicsManager()->loadTexture2DFromOnMemoryData(&m_basedir, textureName, [&](const AssetRequiredPathSet* x) {
-			Ref<Bitmap2D> bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
-			return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+			Ref<Bitmap2D> bitmap = makeObject_deprecated<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+			return makeObject_deprecated<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
 		});
 	}
 	else {
 		Ref<Bitmap2D> bitmap;
-		bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+		bitmap = makeObject_deprecated<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
 
-		return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+		return makeObject_deprecated<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
 	}
 
 	int imageIndex = texture.source;
@@ -1161,7 +1161,7 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 
 Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animation) const
 {
-	auto clip = makeObject<AnimationClip>();
+	auto clip = makeObject_deprecated<AnimationClip>();
 	clip->setName(String::fromStdString(animation.name));
 
 	/*
@@ -1303,7 +1303,7 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 
 				}
 
-				//auto track = makeObject<WeightsAnimationTrack>();
+				//auto track = makeObject_deprecated<WeightsAnimationTrack>();
 				//track->setTargetName(String::fromStdString(node.name));
 			}
 
@@ -1328,7 +1328,7 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 
 	for (const auto& pair : transformTrackMap) {
 		const auto& node = m_model->nodes[pair.first];
-		auto track = makeObject<TransformAnimationTrack>();
+		auto track = makeObject_deprecated<TransformAnimationTrack>();
 		track->setTargetName(String::fromStdString(node.name));
 
 

@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoGraphics/RHI/RenderPass.hpp>
+#include <LuminoGraphics/GPU/RenderPass.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatch.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoGraphics/Rendering/Kanata/KDrawCommand.hpp>
@@ -37,7 +37,7 @@ TEST_F(Test_Rendering_LowLevels, Basic) {
         Vertex(Vector3(-0.5, -0.25, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
         Vertex(Vector3(0.5, -0.25, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
     };
-    g_vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     
     

@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include <LuminoGraphics/RHI/ShaderInterfaceFramework.hpp>
+#include <LuminoGraphics/GPU/ShaderInterfaceFramework.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "Common.hpp"
 #include "KBatch.hpp"
-#include "../../Graphics/src/RHI/StreamingBufferAllocator.hpp"
+#include "../../Graphics/src/GPU/StreamingBufferAllocator.hpp"
 
 namespace ln {
 namespace kanata {

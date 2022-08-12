@@ -16,7 +16,7 @@ UITextField::UITextField()
 void UITextField::init()
 {
 	UIElement::init();
-	m_textArea = makeObject<UIEditableTextArea>();
+	m_textArea = makeObject_deprecated<UIEditableTextArea>();
 	addVisualChild(m_textArea);
 }
 

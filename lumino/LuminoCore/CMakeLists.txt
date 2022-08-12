@@ -18,8 +18,9 @@ set(LN_SOURCES
     ${LN_SOURCES_LuminoCore}
     ${LN_LOCAL_SOURCES_Geometries}
     ${LN_LOCAL_SOURCES_Runtime}
-    src/LuminoCore.PCH.cpp
-    src/LuminoCore.PCH.h)
+    "src/LuminoCore.PCH.cpp"
+    "src/LuminoCore.PCH.h"
+)
 
 #-------------------------------------------------------------------------------
 # Configuration
@@ -48,9 +49,12 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_include_directories(${PROJECT_NAME} PRIVATE include src)
+target_include_directories(
+    ${PROJECT_NAME} PRIVATE
+    "include"
+    "src"
+)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

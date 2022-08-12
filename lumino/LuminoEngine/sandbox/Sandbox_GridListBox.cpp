@@ -14,7 +14,7 @@ class App_Sandbox_GridListBox : public Application
         Engine::renderView()->setBackgroundColor(Color::Gray);
 		Scene::setClearMode(SceneClearMode::SkyDome);
 
-		auto panel = makeObject<UIGridLayout>();
+		auto panel = makeObject_deprecated<UIGridLayout>();
 		panel->setColumnCount(3);
 
 		auto listbox1 = UIListBox::create();
@@ -24,15 +24,15 @@ class App_Sandbox_GridListBox : public Application
 		
 
 		{
-			auto icon = makeObject<UIIcon>();
+			auto icon = makeObject_deprecated<UIIcon>();
 			icon->setIconName(_TT("file"));
 			icon->setFontSize(40);
 			icon->setAlignments(UIAlignment::Top);
 
-			auto text = makeObject<UIText>(_TT("Item1"));
+			auto text = makeObject_deprecated<UIText>(_TT("Item1"));
 			text->setAlignments(UIAlignment::Bottom);
 
-			auto item = makeObject<UIListBoxItem>();
+			auto item = makeObject_deprecated<UIListBoxItem>();
 			item->addChild(icon);
 			item->addChild(text);
 			item->setPadding(20);
@@ -53,10 +53,10 @@ class App_Sandbox_GridListBox : public Application
 		auto item4 = listbox1->addItem(_TT("item4"));
 		UIGridLayout::setPlacement(item4, 1, 0);
 
-		auto text = makeObject<UIText>(_TT("Inventory"));
+		auto text = makeObject_deprecated<UIText>(_TT("Inventory"));
 		text->setAlignments(UIAlignment::TopLeft);
 
-		auto layout = makeObject<UIBoxLayout>();
+		auto layout = makeObject_deprecated<UIBoxLayout>();
 		layout->setOrientation(UILayoutOrientation::Vertical);
 		layout->addChild(text);
 		layout->addChild(listbox1);

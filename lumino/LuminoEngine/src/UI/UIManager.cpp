@@ -85,20 +85,20 @@ void UIManager::init(const Settings& settings) {
     m_graphicsManager = settings.graphicsManager;
     m_defaultThemeName = settings.defaultThemeName;
     m_eventArgsPool = makeRef<EventArgsPool>();
-    // m_mainContext = makeObject<UIContext>();
+    // m_mainContext = makeObject_deprecated<UIContext>();
 
-    // m_defaultLayout = makeObject<UIFrameLayout>();
+    // m_defaultLayout = makeObject_deprecated<UIFrameLayout>();
 
-    m_commonInputCommands.left = makeObject<UICommand>(_TT("left"));
-    m_commonInputCommands.right = makeObject<UICommand>(_TT("right"));
-    m_commonInputCommands.up = makeObject<UICommand>(_TT("up"));
-    m_commonInputCommands.down = makeObject<UICommand>(_TT("down"));
-    m_commonInputCommands.submit = makeObject<UICommand>(_TT("submit"));
-    m_commonInputCommands.cancel = makeObject<UICommand>(_TT("cancel"));
-    m_commonInputCommands.menu = makeObject<UICommand>(_TT("men_TT("));
-    m_commonInputCommands.shift = makeObject<UICommand>(_TT("shift"));
-    m_commonInputCommands.pageUp = makeObject<UICommand>(_TT("pageUp"));
-    m_commonInputCommands.pageDown = makeObject<UICommand>(_TT("pageDown"));
+    m_commonInputCommands.left = makeObject_deprecated<UICommand>(_TT("left"));
+    m_commonInputCommands.right = makeObject_deprecated<UICommand>(_TT("right"));
+    m_commonInputCommands.up = makeObject_deprecated<UICommand>(_TT("up"));
+    m_commonInputCommands.down = makeObject_deprecated<UICommand>(_TT("down"));
+    m_commonInputCommands.submit = makeObject_deprecated<UICommand>(_TT("submit"));
+    m_commonInputCommands.cancel = makeObject_deprecated<UICommand>(_TT("cancel"));
+    m_commonInputCommands.menu = makeObject_deprecated<UICommand>(_TT("men_TT("));
+    m_commonInputCommands.shift = makeObject_deprecated<UICommand>(_TT("shift"));
+    m_commonInputCommands.pageUp = makeObject_deprecated<UICommand>(_TT("pageUp"));
+    m_commonInputCommands.pageDown = makeObject_deprecated<UICommand>(_TT("pageDown"));
     m_inputCommands.add(m_commonInputCommands.left);
     m_inputCommands.add(m_commonInputCommands.right);
     m_inputCommands.add(m_commonInputCommands.up);
@@ -113,18 +113,18 @@ void UIManager::init(const Settings& settings) {
     // TODO: Input とリンクするか、どちらかで一元管理する
     // → もしかしたら別管理のほうがいいかもしれない。特に、マウスクリックで項目選択するとき、
     // 何もないところをクリックして submit 扱いされるのはあんまりよくない。
-    m_commonInputCommands.submit->addInputGesture(makeObject<KeyGesture>(Keys::Z, ModifierKeys::None));
-    m_commonInputCommands.cancel->addInputGesture(makeObject<KeyGesture>(Keys::X, ModifierKeys::None));
+    m_commonInputCommands.submit->addInputGesture(makeObject_deprecated<KeyGesture>(Keys::Z, ModifierKeys::None));
+    m_commonInputCommands.cancel->addInputGesture(makeObject_deprecated<KeyGesture>(Keys::X, ModifierKeys::None));
 
     {
         m_finalDefaultStyle = makeRef<detail::UIStyleInstance>();
-        m_styleContext = makeObject<UIStyleContext>();
-        // m_defaultStyle = makeObject<UIStyle>();
+        m_styleContext = makeObject_deprecated<UIStyleContext>();
+        // m_defaultStyle = makeObject_deprecated<UIStyle>();
         // m_defaultStyle->setupDefault();
         // m_finalDefaultStyle->setupDefault();
 
         if (String::compare(detail::EngineDomain::uiManager()->defaultThemeName(), _TT("Chocotelier"), CaseSensitivity::CaseInsensitive) == 0) {
-            auto theme = makeObject<UITheme>();
+            auto theme = makeObject_deprecated<UITheme>();
             theme->buildLumitelier();
             m_styleContext->addStyleSheet(theme->styleSheet());
             m_styleContext->mainTheme = theme;
@@ -133,7 +133,7 @@ void UIManager::init(const Settings& settings) {
             setupDefaultStyle();
         }
 
-        m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
+        m_finalDefaultStyle->backgroundMaterial = makeObject_deprecated<Material>();
         detail::UIStyleInstance::updateStyleDataHelper(m_styleContext, nullptr, m_styleContext->mainTheme->defaultStyle(), m_finalDefaultStyle);
     }
 
@@ -466,11 +466,11 @@ void UIManager::deactivateElement(UIElement* element) {
 }
 
 void UIManager::setupDefaultStyle() {
-    auto defaultStyle = makeObject<UIStyle>();
+    auto defaultStyle = makeObject_deprecated<UIStyle>();
     defaultStyle->setupDefault();
     defaultStyle->fontSize = 15;
 
-    auto theme = makeObject<UITheme>();
+    auto theme = makeObject_deprecated<UITheme>();
     theme->setDefaultStyle(defaultStyle);
 
     theme->setSpacing(8); // MUI default
@@ -501,7 +501,7 @@ void UIManager::setupDefaultStyle() {
     theme->setColor(UIThemeConstantPalette::SuccessMainColor, UIColors::get(UIColorHues::Green, 3));
     theme->setColor(UIThemeConstantPalette::SuccessTextColor, Color::White);
 
-    auto sheet = makeObject<UIStyleSheet>();
+    auto sheet = makeObject_deprecated<UIStyleSheet>();
 
     {
         //--------------------------------
@@ -527,13 +527,13 @@ void UIManager::setupDefaultStyle() {
             }
             //// UIButton.test
             //{
-            //	auto s = makeObject<UIStyle>();
+            //	auto s = makeObject_deprecated<UIStyle>();
             //	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
             //	c->addClassStyle(_TT("test", s);
             //}
             // UIButton:MouseOver
             {
-                auto s = makeObject<UIStyle>();
+                auto s = makeObject_deprecated<UIStyle>();
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
                 e->mainStyleClass()->addStateStyle(_TT("MouseOver"), s);
             }
@@ -570,7 +570,7 @@ void UIManager::setupDefaultStyle() {
             }
             // UIThumb.UITrack-Thumb
             {
-                auto s = makeObject<UIStyle>();
+                auto s = makeObject_deprecated<UIStyle>();
 
                 s->setMargin(Thickness(2));
                 s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
@@ -664,7 +664,7 @@ void UIManager::setupDefaultStyle() {
                 //s->hAlignment = UIHAlignment::Center;
                 //s->vAlignment = UIVAlignment::Center;
 
-                auto icon = makeObject<UIStyleDecorator>();
+                auto icon = makeObject_deprecated<UIStyleDecorator>();
                 icon->setIconName(_TT("angle-down"), 15);
                 icon->m_hAlignment = UIHAlignment::Right;
                 icon->m_margin = Thickness(0, 0, theme->spacing(1), 0);
@@ -706,12 +706,12 @@ void UIManager::setupDefaultStyle() {
             // if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Pressed")) {
             // }
             if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Checked"))) {
-                auto icon = makeObject<UIStyleDecorator>();
+                auto icon = makeObject_deprecated<UIStyleDecorator>();
                 icon->setIconName(_TT("angle-down"), 15);
                 s->decorators.add(icon);
             }
             if (auto s = sheet->obtainStyle(_TT("UIToggleButton.UITreeItem-Expander:Unchecked"))) {
-                auto icon = makeObject<UIStyleDecorator>();
+                auto icon = makeObject_deprecated<UIStyleDecorator>();
                 icon->setIconName(_TT("angle-right"), 15);
                 s->decorators.add(icon);
             }

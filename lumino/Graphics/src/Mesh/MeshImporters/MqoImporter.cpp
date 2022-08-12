@@ -5,7 +5,7 @@
 #include <iostream>
 #include <LuminoCore/Text/Encoding.hpp>
 #include <LuminoCore/IO/StreamReader.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Mesh/MeshModel.hpp>
 #include "../MeshManager.hpp"
@@ -170,7 +170,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 
         materialData.power = power;
 
-        auto material = makeObject<Material>(texture, materialData);
+        auto material = makeObject_deprecated<Material>(texture, materialData);
 		visitMaterial(material);
 	}
 }
@@ -337,7 +337,7 @@ MqoImporter::MqoImporter()
 
 Ref<MeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
 {
-	m_model = makeObject<MeshModel>();
+	m_model = makeObject_deprecated<MeshModel>();
 	parse(manager, filePath, diag);
 
 	// TODO: on end ほしい
@@ -362,8 +362,8 @@ void MqoImporter::visitMaterial(Material* material)
 
 void MqoImporter::visitObjectChunk(const StringView& name)
 {
-	//auto mesh = makeObject<MeshResource>();
-	auto container = makeObject<MeshContainer>();
+	//auto mesh = makeObject_deprecated<MeshResource>();
+	auto container = makeObject_deprecated<MeshContainer>();
 	container->setName(name);
 	m_model->addMeshContainer(container);
 	m_meshContainer = container;

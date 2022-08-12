@@ -1,5 +1,5 @@
-﻿#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>s
+﻿#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>s
 #include "KStreamingMeshBufferAllocator.hpp"
 
 namespace ln {
@@ -18,10 +18,10 @@ namespace kanata {
 //Result StreamingBufferPage::init(Type type, size_t elementSize, size_t count) {
 //    switch (type) {
 //        case ln::detail::StreamingBufferPage::Type::VertexBuffer:
-//            m_resource = makeObject<VertexBuffer>(elementSize * count, GraphicsResourceUsage::Dynamic);
+//            m_resource = makeObject_deprecated<VertexBuffer>(elementSize * count, GraphicsResourceUsage::Dynamic);
 //            break;
 //        case ln::detail::StreamingBufferPage::Type::IndexBuffer:
-//            m_resource = makeObject<IndexBuffer>(count, GraphicsHelper::getIndexBufferFormat(elementSize), GraphicsResourceUsage::Dynamic);
+//            m_resource = makeObject_deprecated<IndexBuffer>(count, GraphicsHelper::getIndexBufferFormat(elementSize), GraphicsResourceUsage::Dynamic);
 //            break;
 //        default:
 //            LN_UNREACHABLE();

@@ -39,24 +39,24 @@ void TransformControls::init()
 	//WorldObject::init();
     Object::init();
 
-    m_xColorMaterial = makeObject<Material>();
+    m_xColorMaterial = makeObject_deprecated<Material>();
     m_xColorMaterial->setColor(Color::Red);
     m_xColorMaterial->setShadingModel(ShadingModel::Unlit);
 
-    m_yColorMaterial = makeObject<Material>();
+    m_yColorMaterial = makeObject_deprecated<Material>();
     m_yColorMaterial->setColor(Color::Green);
     m_yColorMaterial->setShadingModel(ShadingModel::Unlit);
 
-    m_zColorMaterial = makeObject<Material>();
+    m_zColorMaterial = makeObject_deprecated<Material>();
     m_zColorMaterial->setColor(Color::Blue);
     m_zColorMaterial->setShadingModel(ShadingModel::Unlit);
 
-    m_activeColorMaterial = makeObject<Material>();
+    m_activeColorMaterial = makeObject_deprecated<Material>();
     m_activeColorMaterial->setColor(Color::Yellow);
     m_activeColorMaterial->setShadingModel(ShadingModel::Unlit);
 
     {
-        auto builder = makeObject<MeshGeometryBuilder>();
+        auto builder = makeObject_deprecated<MeshGeometryBuilder>();
 
 
         // Section:0 Translation-X

@@ -73,7 +73,7 @@ void ParticleEmitterComponent2::init(ParticleModel* model)
 	VisualComponent::init();
 	//m_model = model;
 	//m_model->commit();
-	m_instance = makeObject<detail::ParticleInstance2>(model);
+	m_instance = makeObject_deprecated<detail::ParticleInstance2>(model);
 
 	setBlendMode(BlendMode::Alpha);
 }

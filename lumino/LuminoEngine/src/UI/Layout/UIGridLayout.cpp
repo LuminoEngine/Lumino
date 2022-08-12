@@ -47,7 +47,7 @@ LN_OBJECT_IMPLEMENT(UIGridLayout, UILayoutPanel) {}
 
 //Ref<Object> UIGridLayout::Builder::Details::build()
 //{
-//	auto ptr = makeObject<UIGridLayout>();
+//	auto ptr = makeObject_deprecated<UIGridLayout>();
 //	ptr->setColumnCount(columnCount);
 //	for (auto& b : children)
 //		ptr->addChild(b.build());

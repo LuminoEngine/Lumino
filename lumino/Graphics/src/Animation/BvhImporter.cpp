@@ -239,7 +239,7 @@ bool BvhImporter::import(AnimationClip* clip, const AssetPath& assetPath, const 
 
 
     for (const auto& joint : m_joints) {
-        auto track = makeObject<TransformAnimationTrack>(TranslationClass::Ratio);
+        auto track = makeObject_deprecated<TransformAnimationTrack>(TranslationClass::Ratio);
         track->m_root = joint->isRoot;
 
         const auto name = String::fromStdString(joint->name);

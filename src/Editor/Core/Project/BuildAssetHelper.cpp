@@ -40,7 +40,7 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 	ln::detail::ShaderManager::Settings settings;
 	ln::detail::ShaderManager::initialize(settings);
 
-	auto diag = ln::makeObject<ln::DiagnosticsManager>();
+	auto diag = ln::makeObject_deprecated<ln::DiagnosticsManager>();
 
 	auto result = ln::kokage::ShaderHelper::generateShader(ln::detail::ShaderManager::instance(), inputFile, outputFile, exportDir, diag);
 

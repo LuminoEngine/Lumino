@@ -42,6 +42,7 @@
 
 #define LN_LOG_LOGGER_CALL(level, ...) ::ln::Logger::log(::ln::LogLocation{ __FILE__, __LINE__, LN_FUNC_MACRO }, level, __VA_ARGS__)
 #define LN_LOG_VERBOSE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Verbose, __VA_ARGS__)
+#define LN_LOG_TRACE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Trace, __VA_ARGS__)
 #define LN_LOG_DEBUG(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Debug, __VA_ARGS__)
 #define LN_LOG_INFO(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Info, __VA_ARGS__)
 #define LN_LOG_WARNING(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Warning, __VA_ARGS__)
@@ -58,6 +59,7 @@ enum class LogLevel {
 
     // Lumino の開発として集めたい情報
     Verbose,
+    Trace,
     Debug,
 
     // Lumino のユーザーに対して通知したい情報
@@ -179,7 +181,7 @@ public:
 
         try {
             std::basic_string_view<Char> view(format.data(), format.length());
-            const auto str = ::fmt::format(view, std::forward<TArgs>(args)...);
+            const auto str = ::LN_FMT_NAMESPACE::format(view, std::forward<TArgs>(args)...);
             log(location, level, UnicodeStringUtils::U32ToU8(str.c_str(), str.length()));
         }
         catch (const std::exception& ex) {
@@ -197,7 +199,7 @@ public:
         if (!shouldLog(level)) return;
 
         try {
-            const auto str = ::fmt::format(format, std::forward<TArgs>(args)...);
+            const auto str = ::LN_FMT_NAMESPACE::format(format, std::forward<TArgs>(args)...);
             log(location, level, str);
         }
         catch (const std::exception& ex) {
@@ -294,6 +296,8 @@ inline void useSpdlog() {
                 case LogLevel::Unknown:
                     return spdlog::level::level_enum::trace;
                 case LogLevel::Verbose:
+                    return spdlog::level::level_enum::trace;
+                case LogLevel::Trace:
                     return spdlog::level::level_enum::trace;
                 case LogLevel::Debug:
                     return spdlog::level::level_enum::debug;

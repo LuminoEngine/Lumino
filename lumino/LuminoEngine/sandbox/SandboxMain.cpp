@@ -583,7 +583,7 @@ int main(int argc, char** argv)
     //GameAudio::playBGM(_TT("D:/Music/momentum/02 - momentum.wav");
 
 	Camera* camera = Engine::mainCamera();
-	camera->addComponent(makeObject<CameraOrbitControlComponent>());
+	camera->addComponent(makeObject_deprecated<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
 	camera->setBackgroundColor(Color::Gray);
 	//Engine::mainCamera()->setPosition(0, 1, -5);
@@ -629,7 +629,7 @@ int main(int argc, char** argv)
 
 
 
-	//auto navi1 = makeObject<UIFocusNavigator>();
+	//auto navi1 = makeObject_deprecated<UIFocusNavigator>();
 	//Engine::mainUIView()->addElement(navi1);
 
 	//auto window1 = UIWindow::create();
@@ -676,7 +676,7 @@ int main(int argc, char** argv)
     //auto vvv2 = Vector3(0.000005804542996261093f, 0.000013562911419845635, 0.000030265902468824876);
 
 
-    //auto mainAmbientLight = makeObject<AmbientLight>();
+    //auto mainAmbientLight = makeObject_deprecated<AmbientLight>();
     //mainAmbientLight->setColor(Color::Purple);
     //Engine::world()->add(mainAmbientLight);
     //Engine::world()->mainAmbientLight()->setColor(Color::Purple);
@@ -684,22 +684,22 @@ int main(int argc, char** argv)
     //Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -0.25, -1));
     //Engine::world()->mainDirectionalLight()->setIntensity(5);
 
-    //auto mainDirectionalLight = makeObject<DirectionalLight>();
+    //auto mainDirectionalLight = makeObject_deprecated<DirectionalLight>();
     //Engine::world()->add(mainDirectionalLight);
     
     // MeshContainer 複数
     //auto mesh1 = Mesh::create(_TT("D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
 
-    //auto voxelmap1 = makeObject<VisualObject>();
-    //auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
+    //auto voxelmap1 = makeObject_deprecated<VisualObject>();
+    //auto voxelmapComponent1 = makeObject_deprecated<VoxelmapComponent>();
     //voxelmap1->addComponent(voxelmapComponent1);
 
-	//auto tc1 = makeObject<TransformControls>();
+	//auto tc1 = makeObject_deprecated<TransformControls>();
 
     //Engine::mainRenderView()->transformControls()->setTarget(mesh1);
 	//Engine::mainRenderView()->transformControls()->setTarget(Engine::world()->mainDirectionalLight());
 
-	auto field1 = makeObject<UISliderField>();
+	auto field1 = makeObject_deprecated<UISliderField>();
 	field1->setName(_TT("test_field"));
 	field1->setWidth(200);
 	field1->setHeight(30);
@@ -735,13 +735,13 @@ int main(int argc, char** argv)
 		//s->setShadingModel(ShadingModel::Unlit);
 		//Engine::world()->add(s);
 
-		//auto c = makeObject<EmojiComponent>();
-		//auto obj = makeObject<WorldObject>();
+		//auto c = makeObject_deprecated<EmojiComponent>();
+		//auto obj = makeObject_deprecated<WorldObject>();
 		//obj->addComponent(c);
 		//c->setShadingModel(ShadingModel::Unlit);
 		//Engine::world()->add(obj);
 
-		auto text1 = makeObject<Text>();
+		auto text1 = makeObject_deprecated<Text>();
 		text1->setText(_TT("Hello, Lumino!"));
 		text1->setColor(Color::Gray);
 		//text1->setPosition(0, -0.5, 0);
@@ -749,7 +749,7 @@ int main(int argc, char** argv)
 		text1->setFontSize(18);
 		Engine::world()->add(text1);
 
-		auto text2 = makeObject<UIText>();
+		auto text2 = makeObject_deprecated<UIText>();
 		
 		//field1->setWidth(200);
 		//field1->setHeight(30);
@@ -838,11 +838,11 @@ int main(int argc, char** argv)
 
     Effect::emit(m1, Vector3::Zero);
 
-    //auto cmp1 = makeObject<ParticleEmitterComponent>(m1);
+    //auto cmp1 = makeObject_deprecated<ParticleEmitterComponent>(m1);
     //cmp1->setCullMode(CullMode::None);
     //cmp1->setBlendMode(BlendMode::Add);
 
-    //auto obj1 = makeObject<WorldObject>();
+    //auto obj1 = makeObject_deprecated<WorldObject>();
     //obj1->addComponent(cmp1);
     //obj1->setPosition(5, 0, 0);
 
@@ -882,15 +882,15 @@ int main(int argc, char** argv)
 
 	//{
 
-	//	auto p2world = makeObject<PhysicsWorld2D>();
+	//	auto p2world = makeObject_deprecated<PhysicsWorld2D>();
     auto p2world = Engine::world()->physicsWorld2D();
-	auto shape1 = makeObject<BoxCollisionShape2D>(Size(10, 2));
-	auto body1 = makeObject<RigidBody2D>();
+	auto shape1 = makeObject_deprecated<BoxCollisionShape2D>(Size(10, 2));
+	auto body1 = makeObject_deprecated<RigidBody2D>();
 	body1->addCollisionShape(shape1);
 	p2world->addPhysicsObject(body1);
 
-	auto shape2 = makeObject<BoxCollisionShape2D>(Size(1, 1));
-	auto body2 = makeObject<RigidBody2D>();
+	auto shape2 = makeObject_deprecated<BoxCollisionShape2D>(Size(1, 1));
+	auto body2 = makeObject_deprecated<RigidBody2D>();
 	body2->addCollisionShape(shape2);
 	body2->setPosition(Vector2(0, 15));
 	body2->setMass(1);
@@ -904,7 +904,7 @@ int main(int argc, char** argv)
 	//}
 
 
-    auto ctl = makeObject<CameraOrbitControlComponent>();
+    auto ctl = makeObject_deprecated<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
     Engine::mainCamera()->setPosition(0, 5, -10);
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
@@ -921,7 +921,7 @@ int main(int argc, char** argv)
         { { -1, -1, 0, 1 }, { 1, 0 } },
         { { 1, -1, 0, 1 }, { 1, 1 } },
     };
-    auto m_vertexBuffer = ln::makeObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+    auto m_vertexBuffer = ln::makeObject_deprecated<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
     
 	//detail::EngineDomain::fontManager()->registerFontFromFile();
     Font::registerFontFromFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
@@ -936,7 +936,7 @@ int main(int argc, char** argv)
 	//font2->getGlobalMetrics(&gm);
 
 	//detail::BitmapGlyphInfo bmpInfo;
-	////auto bmp = makeObject<Bitmap2D>();
+	////auto bmp = makeObject_deprecated<Bitmap2D>();
 	////bmpInfo.glyphBitmap = bmp;
 	//bmpInfo.glyphBitmap = nullptr;
 	//font2->lookupGlyphBitmap('A', &bmpInfo);
@@ -953,27 +953,27 @@ int main(int argc, char** argv)
 	//auto light1 = AmbientLight::create();
  //   auto light2 = DirectionalLight::create();
 
-    //auto tex = makeObject<Texture2D>(_TT("D:/tmp/110220c_as019.png");
+    //auto tex = makeObject_deprecated<Texture2D>(_TT("D:/tmp/110220c_as019.png");
     //auto tex = Assets::loadTexture(_TT("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
     //tex->drawText(_TT("Hello!", Rect(0, 0, 100, 100), font, Color::White);
-    //auto tex = makeObject<Texture2D>(2, 2);
+    //auto tex = makeObject_deprecated<Texture2D>(2, 2);
     //auto bmp1 = tex->map(MapMode::Write);
     //bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
     //bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
     //bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
     //bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
-    //auto sprite = makeObject<UISprite>();
+    //auto sprite = makeObject_deprecated<UISprite>();
     //sprite->setTexture(tex);
     //sprite->setPosition(20, 10);
-    //auto imageEffect = makeObject<ScreenBlurPostEffect>();
+    //auto imageEffect = makeObject_deprecated<ScreenBlurPostEffect>();
     //imageEffect->setAmount(0.7);
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addPostEffect(imageEffect);
 
     //auto sprite = Sprite::create(3, 3, tex);
 
-    //auto tilemap = makeObject<Tilemap>();
+    //auto tilemap = makeObject_deprecated<Tilemap>();
     //tilemap->setShadingModel(ShadingModel::Unlit);
 
 
@@ -995,16 +995,16 @@ int main(int argc, char** argv)
     ////sprite2->setPosition(200, 100);
     //sprite2->setCenterPoint(50, 50);
 
-    //auto mesh1 = makeObject<Mesh>(_TT("D:/tmp/cube.obj");
-    //auto mesh1 = makeObject<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
-    //auto mesh1 = makeObject<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
+    //auto mesh1 = makeObject_deprecated<Mesh>(_TT("D:/tmp/cube.obj");
+    //auto mesh1 = makeObject_deprecated<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh1 = makeObject_deprecated<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
     //mesh1->setPosition(0, -1, 0);
     //
 
-    //auto mesh2 = makeObject<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh2 = makeObject_deprecated<Mesh>(_TT("D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    //auto mesh3 = makeObject<Mesh>(_TT("D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
+    //auto mesh3 = makeObject_deprecated<Mesh>(_TT("D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
     //auto clip1 = VmdAnimationClip::create(_TT("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
@@ -1023,10 +1023,10 @@ int main(int argc, char** argv)
     //Engine::update();
     //Engine::update();
     //{
-    //    auto camera = makeObject<Camera>();
+    //    auto camera = makeObject_deprecated<Camera>();
     //    camera->setPosition(0, 0, -20);
-    //    auto ofs = makeObject<OffscreenWorldRenderView>();
-    //    auto rt1 = makeObject<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
+    //    auto ofs = makeObject_deprecated<OffscreenWorldRenderView>();
+    //    auto rt1 = makeObject_deprecated<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
     //    ofs->setRenderTarget(rt1);
     //    ofs->setTargetWorld(Engine::mainWorld());
     //    ofs->setCamera(camera);
@@ -1040,21 +1040,21 @@ int main(int argc, char** argv)
 
 #if 0
     //auto shape1 = BoxCollisionShape::create(5, 1, 5);
-    //auto body1 = makeObject<RigidBody>();
+    //auto body1 = makeObject_deprecated<RigidBody>();
     //body1->addCollisionShape(shape1);
     //body1->setTransform(Matrix::makeTranslation(0, -3, 0));
     //Engine::mainPhysicsWorld()->addPhysicsObject(body1);
 
 
     //auto shape2 = CapsuleCollisionShape::create(0.5, 3);
-    //auto body2 = makeObject<RigidBody>();
+    //auto body2 = makeObject_deprecated<RigidBody>();
     //body2->addCollisionShape(shape2);
     //body2->setTransform(Matrix::makeTranslation(0, -2, 0));
     //body2->setMass(1.0f);
     //body2->setKinematic(true);
     //Engine::mainPhysicsWorld()->addPhysicsObject(body2);
 
-    //auto body3 = makeObject<SoftBody>();
+    //auto body3 = makeObject_deprecated<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
     auto tex2 = Assets::loadTexture(_TT("D:/Documents/Modeling/grid_uv_2.png");
@@ -1063,8 +1063,8 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < 5; i++)
         {
-            auto obj2 = makeObject<WorldObject>();
-            auto cmp2 = makeObject<SphereMeshComponent>();
+            auto obj2 = makeObject_deprecated<WorldObject>();
+            auto cmp2 = makeObject_deprecated<SphereMeshComponent>();
             auto mat2 = Material::create();
             mat2->setMetallic(static_cast<float>(i) / 5);
             mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
@@ -1076,8 +1076,8 @@ int main(int argc, char** argv)
         }
     }
 
-    auto plane1 = makeObject<WorldObject>();
-    auto planecmp2 = makeObject<PlaneMeshComponent>();
+    auto plane1 = makeObject_deprecated<WorldObject>();
+    auto planecmp2 = makeObject_deprecated<PlaneMeshComponent>();
     auto planemat2 = Material::create();
     //planemat2->setMetallic(0.1);
     //planemat2->setRoughness(0.1);
@@ -1095,7 +1095,7 @@ int main(int argc, char** argv)
     auto meshMaterial = Material::create();
     meshMaterial->setMainTexture(tex);
 
-    auto meshRes = makeObject<MeshResource>();
+    auto meshRes = makeObject_deprecated<MeshResource>();
     meshRes->resizeVertexBuffer(4);
     meshRes->resizeIndexBuffer(6);
     meshRes->resizeSections(1);
@@ -1111,37 +1111,37 @@ int main(int argc, char** argv)
     meshRes->setIndex(5, 3);
     meshRes->setSection(0, 0, 2, 0);
 
-    auto meshContainer = makeObject<MeshContainer>();
+    auto meshContainer = makeObject_deprecated<MeshContainer>();
     meshContainer->setMeshResource(meshRes);
 
-    auto meshModel = makeObject<MeshModel>();
+    auto meshModel = makeObject_deprecated<MeshModel>();
     meshModel->addMeshContainer(meshContainer);
     meshModel->addMaterial(meshMaterial);
 
-    auto mesh1 = makeObject<Mesh>();
+    auto mesh1 = makeObject_deprecated<Mesh>();
     mesh1->staticMeshComponent()->setModel(meshModel);
 #endif
 
 #if 0
-    //auto sound = makeObject<Sound>(_TT("D:\\tmp\\4_Battle_win.wav");
-    auto sound = makeObject<Sound>(_TT("D:/Music/momentum/02 - momentum.wav");
-    //auto sound = makeObject<Sound>(_TT("D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
+    //auto sound = makeObject_deprecated<Sound>(_TT("D:\\tmp\\4_Battle_win.wav");
+    auto sound = makeObject_deprecated<Sound>(_TT("D:/Music/momentum/02 - momentum.wav");
+    //auto sound = makeObject_deprecated<Sound>(_TT("D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
     sound->play();
     //sound->setPitch(1.2);
 
     //GameAudio::playBGM(_TT("D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
 #endif
 #if 0
-    //auto source = makeObject<AudioSourceNode>(_TT("D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
-    auto source = makeObject<AudioSourceNode>(_TT("D:/Music/momentum/02 - momentum.wav");
-    //auto source = makeObject<TestProcessorNode>();
+    //auto source = makeObject_deprecated<AudioSourceNode>(_TT("D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
+    auto source = makeObject_deprecated<AudioSourceNode>(_TT("D:/Music/momentum/02 - momentum.wav");
+    //auto source = makeObject_deprecated<TestProcessorNode>();
     //AudioNode::connect(source, AudioContext::primary()->destination());
     
-    //auto recoder = makeObject<TestRecoderNode>();
+    //auto recoder = makeObject_deprecated<TestRecoderNode>();
     //AudioNode::connect(source, recoder);
     //AudioNode::connect(recoder, AudioContext::primary()->destination());
 
-    auto gain = makeObject<AudioGainNode>();
+    auto gain = makeObject_deprecated<AudioGainNode>();
     AudioNode::connect(source, gain);
     AudioNode::connect(gain, AudioContext::primary()->destination());
 

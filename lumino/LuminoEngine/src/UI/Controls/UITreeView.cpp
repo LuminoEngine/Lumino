@@ -27,7 +27,7 @@ void UITreeItem::init()
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
 
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
-	m_expanderButton = makeObject<UIToggleButton>();
+	m_expanderButton = makeObject_deprecated<UIToggleButton>();
     //m_expanderButton = makeRef<UIToggleButton>();
     //m_expanderButton->m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
     //m_expanderButton->init();
@@ -40,8 +40,8 @@ void UITreeItem::init()
 
 	addVisualChild(m_expanderButton);
 
-    //auto layout = makeObject<UIStackLayout_Obsolete>();
-    auto layout = makeObject<UIStackLayout>();
+    //auto layout = makeObject_deprecated<UIStackLayout_Obsolete>();
+    auto layout = makeObject_deprecated<UIStackLayout>();
     layout->setOrientation(UILayoutOrientation::Vertical);
     m_itemsLayout = layout;
     addVisualChild(m_itemsLayout);
@@ -233,7 +233,7 @@ void UITreeView::init()
 {
     UIItemsControl::init();
 
-    auto layout = makeObject<UIStackLayout>();
+    auto layout = makeObject_deprecated<UIStackLayout>();
     layout->setOrientation(UILayoutOrientation::Vertical);
     setItemsLayoutPanel(layout);
 
@@ -249,10 +249,10 @@ void UITreeView::init()
 //    //    auto itemModel = m_model->getIndex(i, 0, nullptr);
 //    //    auto itemData = m_model->getData(itemModel, _TT("");
 //
-//    //    auto text = makeObject<UIText>();
+//    //    auto text = makeObject_deprecated<UIText>();
 //    //    text->setText(itemData);
 //
-//    //    auto item = makeObject<UITreeItem>();
+//    //    auto item = makeObject_deprecated<UITreeItem>();
 //    //    item->setContent(text);
 //    //    item->setData(makeVariant(itemModel));
 //
@@ -271,7 +271,7 @@ void UITreeView::onItemClick(UITreeItem* item, UIMouseEventArgs* e)
 
 Ref<UITreeItem> UITreeView::onRenderItem(UICollectionItemViewModel* viewModel)
 {
-    auto item = makeObject<UITreeItem>();
+    auto item = makeObject_deprecated<UITreeItem>();
     item->setViewModel(viewModel);
     return item;
 }
@@ -381,10 +381,10 @@ void UITreeView::makeChildItems(UITreeItem* item)
                 auto childModel = itemModel->getItem(i);
                 //auto itemData = m_model->getData(childModel, _TT("");
 
-                //auto text = makeObject<UIText>();
+                //auto text = makeObject_deprecated<UIText>();
                 //text->setText(itemData);
 
-                //auto child = makeObject<UITreeItem>();
+                //auto child = makeObject_deprecated<UITreeItem>();
                 //child->setContent(text);
                 //child->setViewModel(childModel);
                 //child->setData(makeVariant(childModel));
@@ -434,7 +434,7 @@ bool UITreeItem2::init()
     vsm->gotoState(UIVisualStates::Unselected);
 
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
-    m_expanderButton = makeObject<UIToggleButton>();
+    m_expanderButton = makeObject_deprecated<UIToggleButton>();
     m_expanderButton->addClass(_TT("UITreeItem-Expander"));
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem2::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem2::expander_Unchecked));
@@ -742,12 +742,12 @@ bool UITreeView2::init()
 {
     if (!UIControl::init()) return false;
 
-    auto layout = makeObject<UIStackLayout>();
+    auto layout = makeObject_deprecated<UIStackLayout>();
     layout->setOrientation(UILayoutOrientation::Vertical);
     addVisualChild(layout);
     m_itemsHostLayout = layout;
 
-    //m_scrollBarV = makeObject<UIScrollBar>();
+    //m_scrollBarV = makeObject_deprecated<UIScrollBar>();
     ////m_scrollBarV->setBackgroundColor(Color::Red);
     //m_scrollBarV->setWidth(10);
     //addVisualChild(m_scrollBarV);
@@ -941,7 +941,7 @@ void UITreeView2::notifyItemClicked(UITreeItem2* item)
 
 Ref<UITreeItem2> UITreeView2::generateTreeItem(UICollectionItemViewModel* viewModel)
 {
-    auto item = makeObject<UITreeItem2>();
+    auto item = makeObject_deprecated<UITreeItem2>();
     item->setViewModel(viewModel);
 
     if (m_onGenerateTreeItem) {

@@ -17,7 +17,7 @@ LN_OBJECT_IMPLEMENT(CameraOrbitControlComponent, Component) {}
 
 Ref<CameraOrbitControlComponent> CameraOrbitControlComponent::create()
 {
-	return makeObject<CameraOrbitControlComponent>();
+	return makeObject_deprecated<CameraOrbitControlComponent>();
 }
 
 CameraOrbitControlComponent::CameraOrbitControlComponent()

@@ -259,7 +259,7 @@ InputGesture* InputManager::getAnyActiveTriggered()
 		auto* g = m_inputDriver->getPressedAnyKey();
 		if (g != nullptr)
 		{
-			m_lasgAnyActiveTriggered = makeObject<KeyGesture>(g->getKey(), g->getModifierKeys());	// TODO: makeObject
+			m_lasgAnyActiveTriggered = makeObject_deprecated<KeyGesture>(g->getKey(), g->getModifierKeys());	// TODO: makeObject_deprecated
 			pressed = true;
 		}
 	}
@@ -268,7 +268,7 @@ InputGesture* InputManager::getAnyActiveTriggered()
 		auto* g = m_inputDriver->getPressedAnyMouseButton();
 		if (g != nullptr)
 		{
-			m_lasgAnyActiveTriggered = makeObject<MouseGesture>(g->getMouseAction(), g->getModifierKeys());	// TODO: makeObject
+			m_lasgAnyActiveTriggered = makeObject_deprecated<MouseGesture>(g->getMouseAction(), g->getModifierKeys());	// TODO: makeObject_deprecated
 			pressed = true;
 		}
 	}
@@ -277,7 +277,7 @@ InputGesture* InputManager::getAnyActiveTriggered()
 		auto* g = m_inputDriver->getPressedAnyGamepadElement();
 		if (g != nullptr)
 		{
-			m_lasgAnyActiveTriggered = makeObject<GamepadGesture>(g->getElement());	// TODO: makeObject
+			m_lasgAnyActiveTriggered = makeObject_deprecated<GamepadGesture>(g->getElement());	// TODO: makeObject_deprecated
 			pressed = true;
 		}
 	}

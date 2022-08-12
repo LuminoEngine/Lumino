@@ -2,8 +2,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/Texture.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoGraphics/Mesh/MeshModel.hpp>
@@ -157,7 +157,7 @@ Ref<MeshModel> ObjMeshImporter::import(const Path& filePath, float scale, Diagno
     }
 
     std::unordered_map<int, Vector3> smoothVertexNormals;
-    auto meshModel = makeObject<MeshModel>();
+    auto meshModel = makeObject_deprecated<MeshModel>();
 
     for (tinyobj::shape_t& shape : shapes)
     {
@@ -173,14 +173,14 @@ Ref<MeshModel> ObjMeshImporter::import(const Path& filePath, float scale, Diagno
             computeSmoothingNormals(attrib, shape, smoothVertexNormals);
         }
 
-        auto meshContainer = makeObject<MeshContainer>();
+        auto meshContainer = makeObject_deprecated<MeshContainer>();
         meshContainer->setName(String::fromStdString(shape.name));
 
         // TODO: 以下の実装では vertex index が index buffer の内容と同じなのでメモリ効率が悪い。
         // 全く同じ要素の頂点を共有するようにすれば効率よくなる。
         // その場合は index_t が一致するものを検索することになる。
 
-        auto meshResource = makeObject<MeshResource>();
+        auto meshResource = makeObject_deprecated<MeshResource>();
         meshResource->resizeVertexBuffer(shape.mesh.indices.size());
         meshResource->resizeIndexBuffer(shape.mesh.indices.size());
 
@@ -268,10 +268,10 @@ Ref<MeshModel> ObjMeshImporter::import(const Path& filePath, float scale, Diagno
         materialData.emissive.a = 1.0f;
         materialData.power = material.shininess;
 
-        Ref<Texture2D> texture = nullptr;//makeObject<Texture2D>(_TT("D:/tmp/110220c_as019.png");
+        Ref<Texture2D> texture = nullptr;//makeObject_deprecated<Texture2D>(_TT("D:/tmp/110220c_as019.png");
         if (!material.diffuse_texname.empty())
             texture = Texture2D::load(Path(parentDirPath, String::fromStdString(material.diffuse_texname)));
-        auto m = makeObject<Material>(texture, materialData);
+        auto m = makeObject_deprecated<Material>(texture, materialData);
         meshModel->addMaterial(m);
     }
 

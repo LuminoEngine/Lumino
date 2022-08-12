@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/IndexBuffer.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/VertexLayout.hpp>
+#include <LuminoGraphics/GPU/VertexBuffer.hpp>
+#include <LuminoGraphics/GPU/IndexBuffer.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoBitmap/Bitmap.hpp>
 #include <LuminoGraphics/Rendering/Vertex.hpp>
 #include "../../Font/src/FontCore.hpp"
@@ -224,14 +224,14 @@ void SpriteTextRenderFeature::prepareBuffers(GraphicsCommandList* context, int s
 		// VertexBuffer
 		size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
 		if (!m_vertexBuffer)
-			m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
+			m_vertexBuffer = makeObject_deprecated<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
 		else
 			m_vertexBuffer->resize(vertexBufferSize);
 
 		// IndexBuffer
 		size_t indexBufferSize = spriteCount * 6;
 		if (!m_indexBuffer)
-			m_indexBuffer = makeObject<IndexBuffer>(indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+			m_indexBuffer = makeObject_deprecated<IndexBuffer>(indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 		else
 			m_indexBuffer->resize(indexBufferSize);
 		auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));	// TODO: 部分 map

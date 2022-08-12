@@ -126,7 +126,7 @@ public:
     //template<class T>
     //static Ref<T> resolveAssetRequiredPathSet(const Path& requiredLoadPath, detail::AssetRequiredPathSet* outPathSet)
     //{
-    //    auto obj = makeObject<T>();
+    //    auto obj = makeObject_deprecated<T>();
     //    _resolveAssetRequiredPathSet(obj, requiredLoadPath)
     //    return obj;
     //}
@@ -153,7 +153,7 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
     AssetObject();
-    bool init();
+    Result init();
     //bool initLoad(const Path& requiredLoadPath);
 
 private:

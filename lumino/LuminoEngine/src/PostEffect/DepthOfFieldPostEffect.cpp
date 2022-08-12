@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/RHI/Texture.hpp>
-#include <LuminoGraphics/RHI/SamplerState.hpp>
+#include <LuminoGraphics/GPU/Texture.hpp>
+#include <LuminoGraphics/GPU/SamplerState.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoGraphics/Rendering/CommandList.hpp>
 #include <LuminoGraphics/Rendering/RenderingContext.hpp>
@@ -25,7 +25,7 @@ void DepthOfFieldPostEffect::init()
 
 Ref<PostEffectInstance> DepthOfFieldPostEffect::onCreateInstance()
 {
-    return makeObject<detail::DepthOfFieldPostEffectInstance>(this);
+    return makeObject_deprecated<detail::DepthOfFieldPostEffectInstance>(this);
 }
 
 //==============================================================================
@@ -44,11 +44,11 @@ bool DepthOfFieldPostEffectCore::init(Material* compositeMaterial)
     m_compositeMaterial = compositeMaterial;
 
     auto shader1 = RenderingManager::instance()->builtinShader(BuiltinShader::Copy);
-    m_copyMaterial = makeObject<Material>();
+    m_copyMaterial = makeObject_deprecated<Material>();
     m_copyMaterial->setShader(shader1);
 
     // TODO: 他と共有したいところ
-    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_samplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     return true;
 }
@@ -83,7 +83,7 @@ void DepthOfFieldPostEffectCore::resetResources(int resx, int resy)
     auto rx = std::round(resx / 2);
     auto ry = std::round(resy / 2);
     for (int i = 0; i < MaxMips; i++) {
-        auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
+        auto renderTargetHorizonal = makeObject_deprecated<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false, false);
         renderTargetHorizonal->setSamplerState(m_samplerState);
         m_mipTargets.add(renderTargetHorizonal);
 
@@ -110,15 +110,15 @@ bool DepthOfFieldPostEffectInstance::init(DepthOfFieldPostEffect* owner)
     if (!PostEffectInstance::init()) return false;
 
     auto shader1 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx"));
-    m_copyMaterial = makeObject<Material>();
+    m_copyMaterial = makeObject_deprecated<Material>();
     m_copyMaterial->setShader(shader1);
 
     auto shader2 = Shader::create(_TT("C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/DepthOfField.fx"));
-    m_dofMaterial = makeObject<Material>();
+    m_dofMaterial = makeObject_deprecated<Material>();
     m_dofMaterial->setShader(shader2);
 
     // TODO: 他と共有したいところ
-    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_samplerState = makeObject_deprecated<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     return true;
 }

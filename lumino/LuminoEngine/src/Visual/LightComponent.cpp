@@ -6,7 +6,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 
-#include <LuminoGraphics/RHI/Shader.hpp>
+#include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 //#include "../Rendering/RenderStage.hpp"
 
@@ -33,8 +33,7 @@ EnvironmentLightComponent::~EnvironmentLightComponent()
 {
 }
 
-bool EnvironmentLightComponent::init()
-{
+Result EnvironmentLightComponent::init() {
 	return VisualComponent::init();
 }
 
@@ -76,14 +75,14 @@ void DirectionalLightComponent::init()
 	VisualComponent::init();
 
 #if 0
-	auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/LightDisc.fx");
-	m_material = makeObject<Material>();
+	auto shader = makeObject_deprecated<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/LightDisc.fx");
+	m_material = makeObject_deprecated<Material>();
 	m_material->setShader(shader);
 
 
 	auto tex2 = Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Flare1.png");
-	auto shader2 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/FlareSprite.fx");
-	m_spriteMaterial = makeObject<Material>();
+	auto shader2 = makeObject_deprecated<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/FlareSprite.fx");
+	m_spriteMaterial = makeObject_deprecated<Material>();
 	m_spriteMaterial->setMainTexture(tex2);
 	m_spriteMaterial->setShader(shader2);
 #endif

@@ -47,8 +47,8 @@ bool EngineContext2::init(const RuntimeModuleSettings& settings) {
     //detail::FetchManager::initialize();
 
     {
-        m_activeDiagnostics = makeObject<DiagnosticsManager>();
-        ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, _TT("RenderPass count"));
+        m_activeDiagnostics = makeObject_deprecated<DiagnosticsManager>();
+        ProfilingItem::Graphics_RenderPassCount = makeObject_deprecated<ProfilingItem>(ProfilingItemType::Counter, _TT("RenderPass count"));
         m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
     }
 

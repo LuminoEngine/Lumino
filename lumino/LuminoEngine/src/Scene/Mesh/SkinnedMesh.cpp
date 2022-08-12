@@ -12,12 +12,12 @@ namespace ln {
 
 Ref<SkinnedMesh> SkinnedMesh::create()
 {
-    return makeObject<SkinnedMesh>();
+    return makeObject_deprecated<SkinnedMesh>();
 }
 
 Ref<SkinnedMesh> SkinnedMesh::load(const StringView& filePath, float scale)
 {
-    return makeObject<SkinnedMesh>(filePath, scale);
+    return makeObject_deprecated<SkinnedMesh>(filePath, scale);
 }
 
 SkinnedMesh::SkinnedMesh()
@@ -31,7 +31,7 @@ SkinnedMesh::~SkinnedMesh()
 void SkinnedMesh::init()
 {
     VisualObject::init();
-    m_component = makeObject<MeshComponent>();
+    m_component = makeObject_deprecated<MeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }

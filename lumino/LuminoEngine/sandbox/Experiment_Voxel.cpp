@@ -11,8 +11,8 @@ class App_Sandbox_Voxel : public Application
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::mainCamera()->addComponent(CameraOrbitControlComponent::create());
 
-		auto voxelmap1 = makeObject<VisualObject>();
-		auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
+		auto voxelmap1 = makeObject_deprecated<VisualObject>();
+		auto voxelmapComponent1 = makeObject_deprecated<VoxelmapComponent>();
 		voxelmap1->addComponent(voxelmapComponent1);
 
 

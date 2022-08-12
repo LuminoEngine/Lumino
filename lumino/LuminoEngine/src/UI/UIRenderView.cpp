@@ -23,15 +23,15 @@ UIFrameRenderView::UIFrameRenderView()
 
 void UIFrameRenderView::init()
 {
-    m_renderingContext = makeObject<UIRenderingContext>();
+    m_renderingContext = makeObject_deprecated<UIRenderingContext>();
 
     RoutingRenderView::init(m_renderingContext);
 
-    setRenderingPipeline(makeObject<FlatRenderingPipeline>());
+    setRenderingPipeline(makeObject_deprecated<FlatRenderingPipeline>());
 
-    //m_clearRenderPass = makeObject<RenderPass>();
+    //m_clearRenderPass = makeObject_deprecated<RenderPass>();
 
-    m_adornerLayer = makeObject<UIAdornerLayer>(this);
+    m_adornerLayer = makeObject_deprecated<UIAdornerLayer>(this);
 
     //setClearMode(SceneClearMode::ColorAndDepth);
 }
@@ -233,7 +233,7 @@ bool UIDomainProvidor::init()
 void UIDomainProvidor::setupNavigator()
 {
     if (!m_focusNavigator) {
-        m_focusNavigator = makeObject<UIFocusNavigator>();
+        m_focusNavigator = makeObject_deprecated<UIFocusNavigator>();
     }
 }
 

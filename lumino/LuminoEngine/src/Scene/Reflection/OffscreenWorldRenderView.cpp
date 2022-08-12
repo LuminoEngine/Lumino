@@ -32,9 +32,9 @@ void OffscreenWorldRenderView::init()
     // TODO: SceneRenderingPipeline は WorldRenderView が持っているものとほとんど同じなので、
     // こっちでインスタンスを new するのは無駄が多い。共有したいところ。
     // ただ、GBuffe のように Viewサイズや視点に依存するデータを独立させる必要がある。
-    setRenderingPipeline(makeObject<SceneRenderingPipeline>());
+    setRenderingPipeline(makeObject_deprecated<SceneRenderingPipeline>());
 
-    m_viewPoint = makeObject<RenderViewPoint>();
+    m_viewPoint = makeObject_deprecated<RenderViewPoint>();
 }
 
 void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)

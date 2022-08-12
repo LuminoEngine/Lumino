@@ -105,7 +105,7 @@ public: // TODO: private
 //template<class T>
 //Ref<Object> SpriteFrameEffectResource::Builder<T>::Details::build()
 //{
-//	auto ptr = makeObject<SpriteFrameEffectResource>(size, spriteSheet, startNumber, lastNumber, frameTime);
+//	auto ptr = makeObject_deprecated<SpriteFrameEffectResource>(size, spriteSheet, startNumber, lastNumber, frameTime);
 //	return ptr;
 //}
 //

@@ -49,7 +49,7 @@ Ref<MeshModel> MeshModelFactory::createTeapot(Material* material)
 
 Ref<MeshModel> MeshModelFactory::createMesh(MeshGenerater* factory, Material* material)
 {
-	Ref<MeshPrimitive> mesh = makeObject<MeshPrimitive>(factory->vertexCount(), factory->indexCount());
+    Ref<MeshPrimitive> mesh = makeObject_deprecated<MeshPrimitive>(factory->vertexCount(), factory->indexCount());
 
 	MeshGeneraterBuffer buffer(nullptr);
 	buffer.setBuffer(static_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main)), mesh->acquireMappedIndexBuffer(), mesh->indexBufferFormat(), 0);
@@ -57,7 +57,7 @@ Ref<MeshModel> MeshModelFactory::createMesh(MeshGenerater* factory, Material* ma
 
 	mesh->addSection(0, factory->indexCount() / 3, 0, factory->primitiveType());	// TODO: primitiveCount by toporogy
 
-	Ref<MeshModel> model = makeObject<MeshModel>();
+	Ref<MeshModel> model = makeObject_deprecated<MeshModel>();
 	MeshNode* node = model->addMeshContainerNode(mesh);
 	model->addMaterial(material ? material : RenderingManager::instance()->primitiveMeshDefaultMaterial().get());
 

@@ -5,7 +5,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
+#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
@@ -294,8 +294,6 @@ void EngineManager::initializeAllManagers() {
     initializeVisualManager();
     initializeSceneManager();
     initializeUIManager();
-
-    initializeDefaultObjects();
 }
 
 void EngineManager::initializeCommon() {
@@ -508,7 +506,7 @@ void EngineManager::initializeUIManager() {
         m_uiManager = makeRef<UIManager>();
         m_uiManager->init(settings);
 
-        // m_mainUIContext = makeObject<UIContext>();
+        // m_mainUIContext = makeObject_deprecated<UIContext>();
         // m_uiManager->setMainContext(m_mainUIContext);
 
         if (m_settings.debugToolEnabled) {
@@ -520,20 +518,15 @@ void EngineManager::initializeUIManager() {
     }
 }
 
-void EngineManager::initializeDefaultObjects() {
+void EngineManager::craeteDefaultObjectsIfNeeded(UIMainWindow* userMainWindow) {
     if (m_settings.defaultObjectsCreation) {
-        setupMainWindow(makeObject<UIMainWindow>(m_settings.useExternalSwapChain), true);
+        if (userMainWindow) {
+            setupMainWindow(userMainWindow, true);
+        }
+        else {
+            setupMainWindow(makeObject_deprecated<UIMainWindow>(m_settings.useExternalSwapChain), true);
+        }
     }
-}
-
-void EngineManager::resetApp(Application* app) {
-    // Reset Scene
-    {
-        m_mainWorld->removeAllObjects();
-        m_mainUIRoot->removeAllChildren();
-    }
-
-    m_uiManager->resetApp(app);
 }
 
 bool EngineManager::updateUnitily() {
@@ -686,6 +679,17 @@ void EngineManager::quit() {
     m_exitRequested = true;
 }
 
+int EngineManager::runApplication() {
+    Application* app = application();
+	
+    while (isExitRequested()) {
+        updateFrame();
+        presentFrame(nullptr, nullptr);
+    }
+
+    return 0;
+}
+
 ln::Path EngineManager::findRepositoryRootForTesting() {
     return findParentDirectoryContainingSpecifiedFile(_TT("build.csproj"));
 }
@@ -715,10 +719,16 @@ const Path& EngineManager::persistentDataPath() const {
     return m_persistentDataPath;
 }
 
-void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicObjects) {
-    if (LN_REQUIRE(window)) return;
+void EngineManager::setupMainWindow(UIMainWindow* window, bool createBasicObjects) {
     if (LN_REQUIRE(!m_mainWindow)) return;
-    m_mainWindow = window;
+
+	if (window) {
+        m_mainWindow = window;
+    }
+    else {
+        m_mainWindow = *makeObject<UIMainWindow>();
+    }
+
     // m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainWindowSize);
     // m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
@@ -729,17 +739,17 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 
     if (createBasicObjects) {
         if (m_uiManager) {
-            m_mainViewport = makeObject<UIViewport>();
+            m_mainViewport = makeObject_deprecated<UIViewport>();
             m_mainWindow->addElement(m_mainViewport);
         }
 
         if (m_sceneManager) {
-            m_mainWorld = makeObject<World>();
+            m_mainWorld = makeObject_deprecated<World>();
             m_sceneManager->setActiveWorld(m_mainWorld);
 
             m_mainScene = m_mainWorld->masterScene();
 
-            m_mainCamera = makeObject<Camera>();
+            m_mainCamera = makeObject_deprecated<Camera>();
             m_mainWorld->add(m_mainCamera);
             if (m_sceneManager) {
                 m_sceneManager->setDefaultCamera(m_mainCamera);
@@ -747,27 +757,27 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
 
             if (m_settings.createMainLights) {
 
-                // auto mainAmbientLight = makeObject<AmbientLight>();
+                // auto mainAmbientLight = makeObject_deprecated<AmbientLight>();
                 // m_mainWorld->add(mainAmbientLight);
                 // m_mainWorld->setMainAmbientLight(mainAmbientLight);
 
-                // auto mainDirectionalLight = makeObject<DirectionalLight>();
+                // auto mainDirectionalLight = makeObject_deprecated<DirectionalLight>();
                 // m_mainWorld->add(mainDirectionalLight);
                 // m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
             }
 
-            m_mainWorldRenderView = makeObject<WorldRenderView>();
+            m_mainWorldRenderView = makeObject_deprecated<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);
             m_mainWorldRenderView->setCamera(m_mainCamera);
             m_mainWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
             m_mainViewport->addRenderView(m_mainWorldRenderView);
 
-            m_mainUIRenderView = makeObject<UIRenderView>();
+            m_mainUIRenderView = makeObject_deprecated<UIRenderView>();
             m_mainViewport->addRenderView(m_mainUIRenderView);
             const SizeI& viewboxSize = (m_settings.mainWorldViewSize.isAnyZero()) ? m_settings.mainWindowSize : m_settings.mainWorldViewSize;
             m_mainViewport->setViewBoxSize(viewboxSize.toFloatSize());
 
-            m_mainUIRoot = makeObject<UIDomainProvidor>();
+            m_mainUIRoot = makeObject_deprecated<UIDomainProvidor>();
             m_mainUIRoot->setupNavigator();
             m_mainUIRoot->setAlignments(UIAlignment::Stretch);
             m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel; // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
@@ -780,17 +790,17 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
             m_physicsManager->setActivePhysicsWorld(m_mainPhysicsWorld);
             m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
 
-            m_debugInterface = makeObject<DebugInterface>();
+            m_debugInterface = makeObject_deprecated<DebugInterface>();
             m_mainWindow->m_debugInterface = m_debugInterface;
 
-            // m_debugCamera = makeObject<Camera>();
+            // m_debugCamera = makeObject_deprecated<Camera>();
             ////m_mainWorld->add(m_mainCamera);
             ////Ref<Camera> m_debugCamera;
-            // m_debugWorldRenderView = makeObject<WorldRenderView>();
+            // m_debugWorldRenderView = makeObject_deprecated<WorldRenderView>();
             // m_debugWorldRenderView->setTargetWorld(m_mainWorld);
             // m_debugWorldRenderView->setCamera(m_debugCamera);
             // m_debugWorldRenderView->setClearMode(SceneClearMode::ColorAndDepth);
-            // m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
+            // m_debugCamera->addComponent(makeObject_deprecated<CameraOrbitControlComponent>());
             // m_mainViewport->addRenderView(m_debugWorldRenderView);
             // m_debugCamera->setPosition(10, 10, -10);
             // m_debugCamera->lookAt(Vector3(0, 0, 0));
@@ -808,12 +818,19 @@ void EngineManager::setupMainWindow(ln::UIMainWindow* window, bool createBasicOb
     }
 }
 
-//void EngineManager::setApplication(Application* app) {
-//    m_application = app;
-//    if (m_uiManager) {
-//        m_uiManager->resetApp(m_application);
-//    }
-//}
+void EngineManager::setupApplication(Application* app) {
+    // Reset Scene
+    {
+        m_mainWorld->removeAllObjects();
+        m_mainUIRoot->removeAllChildren();
+    }
+
+    m_uiManager->resetApp(app);
+}
+
+const Ref<Application>& EngineManager::application() const {
+    return m_uiManager->application();
+}
 
 void EngineManager::resolveActiveGraphicsAPI() {
     m_activeGraphicsAPI = m_settings.graphicsAPI;
@@ -881,7 +898,7 @@ void EngineManager::handleImGuiDebugLayer(UIEventArgs* e) {
     //		level->reloadAsset();
     //	}
     //	if (ImGui::Button("Save")) {
-    //		m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
+    //		m_assetManager->saveAssetModelToLocalFile(makeObject_deprecated<AssetModel>(level));
     //	}
 
     //	//ImGui::EndChild();

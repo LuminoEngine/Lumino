@@ -20,7 +20,7 @@ void VoxelmapModel::init()
     Object::init();
     resizeMap(16, 16, 16);
     m_box = MeshModel::load(_TT("C:/Proj/LN/PrivateProjects/HC0/Assets/AutoVolume1.glb"));
-    m_mapBlocksMesh = makeObject<MeshModel>();
+    m_mapBlocksMesh = makeObject_deprecated<MeshModel>();
 }
 
 void VoxelmapModel::resizeMap(int width, int height, int depth)
@@ -71,7 +71,7 @@ VoxelmapComponent::VoxelmapComponent()
 void VoxelmapComponent::init()
 {
     VisualComponent::init();
-    m_model = makeObject<VoxelmapModel>();
+    m_model = makeObject_deprecated<VoxelmapModel>();
 }
 
 void VoxelmapComponent::onRender(RenderingContext* context)
