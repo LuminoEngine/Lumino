@@ -1,4 +1,5 @@
 find_package(freetype CONFIG REQUIRED)
+find_package(tinyobjloader CONFIG REQUIRED)
 
 if (LN_OS_DESKTOP)
     find_package(glslang CONFIG REQUIRED)

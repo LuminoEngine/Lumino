@@ -1,10 +1,11 @@
-project(Experimental-Graphics-ExternalOpenGLContext)
+project(Experimental_Graphics_ExternalOpenGLContext)
 
-find_package(glad CONFIG REQUIRED)
 
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
+set(LOCAL_LINK_LIBRARIES LuminoCore LuminoPlatform LuminoGraphics LuminoBitmap LuminoFont)
+
 if (LN_EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     string(APPEND LOCAL_LINK_FLAGS " --pre-js ${CMAKE_CURRENT_LIST_DIR}/pre.js")
@@ -25,6 +26,9 @@ if (LN_EMSCRIPTEN)
     #string(APPEND LOCAL_LINK_FLAGS " -gsource-map")
     string(APPEND LOCAL_LINK_FLAGS " -g3")
     string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
+else()
+    find_package(glad CONFIG REQUIRED)
+    list(APPEND LOCAL_LINK_LIBRARIES glad::glad)
 endif()
 
 #-------------------------------------------------------------------------------
@@ -32,7 +36,7 @@ endif()
 #-------------------------------------------------------------------------------
 add_executable(${PROJECT_NAME} Main.cpp)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_DIR=U"${ASSETS_DIR}")
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoPlatform LuminoGraphics LuminoBitmap glad::glad)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LOCAL_LINK_LIBRARIES})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "index")
 

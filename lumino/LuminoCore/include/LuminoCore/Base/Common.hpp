@@ -2,6 +2,7 @@
 #pragma once
 #include <assert.h>
 #include <errno.h>
+#include <float.h>
 #include <string>
 #include <vector>
 #include <atomic>
@@ -12,8 +13,8 @@
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <ostream>
 #include <filesystem>
-#include <functional>
 
 //------------------------------------------------------------------------------
 // Configuration

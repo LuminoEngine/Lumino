@@ -347,8 +347,9 @@ void Variant::serializeInternal3(Archive& ar, ArchiveNodeType loadType) {
                 break;
             }
             case VariantType::Array: {
-                Array<Ref<Variant>>& v = value.list();
-                ar.process(v);
+                LN_NOTIMPLEMENTED();
+                //Array<Ref<Variant>>& v = value.list();
+                //ar.process(v);
                 break;
             }
             default:
@@ -392,9 +393,10 @@ void Variant::serializeInternal3(Archive& ar, ArchiveNodeType loadType) {
                 break;
             }
             case ln::ArchiveNodeType::Array: {
-                auto v = Array<Ref<Variant>>();
-                ar.process(v);
-                value = std::move(v);
+                LN_NOTIMPLEMENTED();
+                //auto v = Array<Ref<Variant>>();
+                //ar.process(v);
+                //value = std::move(v);
                 break;
             }
             default:

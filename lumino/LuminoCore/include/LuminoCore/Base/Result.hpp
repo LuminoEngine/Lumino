@@ -213,7 +213,7 @@ public:
     //    return ok_v;
     //}
 
-    typename T& unwrap() & {
+    T& unwrap() & {
         if (isErr()) {
             LN_ERROR(toString());
         }
@@ -221,7 +221,7 @@ public:
         return ok_v;
     }
 
-    typename const T& unwrap() const & {
+    const T& unwrap() const & {
         if (isErr()) {
             LN_ERROR(toString());
         }

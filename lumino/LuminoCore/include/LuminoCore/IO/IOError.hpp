@@ -10,11 +10,11 @@ public:
         : m_errno(0)
         , m_dwError(0) {}
 
-    IOError(errno_t v)
+    IOError(int v)
         : m_errno(v)
         , m_dwError(0)
     {}
-    errno_t m_errno;
+    int m_errno;
     uint32_t m_dwError;
 };
 

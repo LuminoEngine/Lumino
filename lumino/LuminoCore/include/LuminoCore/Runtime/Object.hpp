@@ -419,6 +419,22 @@ private:
     detail::WeakRefInfo* m_weakRefInfo;
 };
 
+namespace detail {
+
+template<
+    typename T,
+    typename std::enable_if<std::is_abstract<T>::value, std::nullptr_t>::type = nullptr>
+Ref<T> makeObjectHelper() {
+    return nullptr;
+}
+
+template<
+    typename T,
+    typename std::enable_if<!std::is_abstract<T>::value, std::nullptr_t>::type = nullptr>
+Ref<T> makeObjectHelper() {
+    return makeObject_deprecated<T>();
+}
+
+} // namespace detail
 } // namespace ln
 
-//#include "TypeInfo.hpp"

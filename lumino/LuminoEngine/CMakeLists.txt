@@ -304,7 +304,6 @@ set(
     BulletSoftBody
     #tmxlite
     toml11::toml11
-    tinyobjloader::tinyobjloader
     imgui::imgui
     ${LN_PLATFORM_LIBS}
 )

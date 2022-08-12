@@ -115,13 +115,13 @@ public:
         }
 
         // http://ppp-lab.sakura.ne.jp/ProgrammingPlacePlus/c/044.html
-        FILE* fpSrc = fopen(sourceFileName, "rb");
+        FILE* fpSrc = fopen(sourceFileName, "rb").unwrap();
         if (fpSrc == NULL) {
             LN_ENSURE(0);
             return;
         }
 
-        FILE* fpDest = fopen(destFileName, "wb");
+        FILE* fpDest = fopen(destFileName, "wb").unwrap();
         if (fpDest == NULL) {
             LN_ENSURE(0);
             return;
@@ -198,10 +198,15 @@ public:
         return stbuf.st_size;
     }
 
-    static IOError<FILE*> fopen(const char* path, const char* mode)
+    static IOResult<FILE*> fopen(const char* path, const char* mode)
     {
         FILE* fp = ::fopen(path, mode);
-        
+        if (fp) {
+            return ok(fp);
+        }
+        else {
+            return err(errno);
+        }
     }
 };
 

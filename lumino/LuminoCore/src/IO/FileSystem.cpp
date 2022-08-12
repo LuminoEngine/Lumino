@@ -241,7 +241,7 @@ IOResult<> FileSystem::writeAllBytes(const StringView& filePath, const void* buf
 
     auto result = PlatformFileSystem::fopen(localPath.c_str(), mode);
     if (!result) return result;
-    FILE* fp = *result;
+    FILE* fp = result.unwrap();
 
     //FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
     //if (LN_ENSURE(fp != NULL, localPath.c_str())) return;

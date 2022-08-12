@@ -602,8 +602,8 @@ void JsonArchiveStore3::onWriteValueNull() {
 void JsonArchiveStore3::onWriteValueBool(bool value) {
     RapidJsonValue* container = savingContainer();
     if (container->IsObject()) {
-        RapidJsonStringRef k = toStringRef(getNextName());
-        container->AddMember(RapidJsonValue(k, m_document.GetAllocator()), value, m_document.GetAllocator());
+        RapidJsonValue k(toStringRef(getNextName()), m_document.GetAllocator());
+        container->AddMember(k, value, m_document.GetAllocator());
     }
     else if (container->IsArray()) {
         container->PushBack(value, m_document.GetAllocator());
@@ -616,8 +616,8 @@ void JsonArchiveStore3::onWriteValueBool(bool value) {
 void JsonArchiveStore3::onWriteValueInt64(int64_t value) {
     RapidJsonValue* container = savingContainer();
     if (container->IsObject()) {
-        RapidJsonStringRef k = toStringRef(getNextName());
-        container->AddMember(RapidJsonValue(k, m_document.GetAllocator()), value, m_document.GetAllocator());
+        RapidJsonValue k(toStringRef(getNextName()), m_document.GetAllocator());
+        container->AddMember(k, value, m_document.GetAllocator());
     }
     else if (container->IsArray()) {
         container->PushBack(value, m_document.GetAllocator());
@@ -630,8 +630,8 @@ void JsonArchiveStore3::onWriteValueInt64(int64_t value) {
 void JsonArchiveStore3::onWriteValueDouble(double value) {
     RapidJsonValue* container = savingContainer();
     if (container->IsObject()) {
-        RapidJsonStringRef k = toStringRef(getNextName());
-        container->AddMember(RapidJsonValue(k, m_document.GetAllocator()), value, m_document.GetAllocator());
+        RapidJsonValue k(toStringRef(getNextName()), m_document.GetAllocator());
+        container->AddMember(k, value, m_document.GetAllocator());
     }
     else if (container->IsArray()) {
         container->PushBack(value, m_document.GetAllocator());
@@ -645,8 +645,8 @@ void JsonArchiveStore3::onWriteValueString(const String& value) {
     RapidJsonValue v(value.c_str(), value.length(), m_document.GetAllocator());
     RapidJsonValue* container = savingContainer();
     if (container->IsObject()) {
-        RapidJsonStringRef k = toStringRef(getNextName());
-        container->AddMember(RapidJsonValue(k, m_document.GetAllocator()), v, m_document.GetAllocator());
+        RapidJsonValue k(toStringRef(getNextName()), m_document.GetAllocator());
+        container->AddMember(k, v, m_document.GetAllocator());
     }
     else if (container->IsArray()) {
         container->PushBack(v, m_document.GetAllocator());

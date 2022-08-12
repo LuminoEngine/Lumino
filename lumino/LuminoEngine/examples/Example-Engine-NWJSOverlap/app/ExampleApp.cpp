@@ -10,15 +10,9 @@
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
-#include <LuminoGraphics/RHI/Shader.hpp>
-#include <LuminoGraphics/RHI/ShaderDescriptor.hpp>
-#include <LuminoGraphics/RHI/VertexLayout.hpp>
-#include <LuminoGraphics/RHI/VertexBuffer.hpp>
-#include <LuminoGraphics/RHI/SwapChain.hpp>
-#include <LuminoGraphics/RHI/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHI/GraphicsExtensionOpenGL.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine.hpp>
+#include <LuminoGraphics/GPU/GraphicsExtensionOpenGL.hpp>
 #include <LuminoPlatform/ExternalProxyPlatformWindow.hpp>
 #include <LuminoEngine/Engine/ApplicationRunner.hpp>
 using namespace ln;

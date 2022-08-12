@@ -1,8 +1,5 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license..
 #pragma once
-
-#include <assert.h>
-#include <ostream>
 #include "../Base/Common.hpp"
 #include "../Base/String.hpp"
 
