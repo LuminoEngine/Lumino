@@ -11,6 +11,16 @@ private:
 class MainWindow : public ln::UIMainWindow {
 };
 
+class Level1 : public ln::Level {
+
+    void onStart() override {
+        printf("");
+    }
+    void onUpdate() override {
+        printf("");
+    }
+};
+
 class App : public ln::Application {
 public:
     App() {
@@ -31,6 +41,8 @@ public:
         m_worldViewPane = *makeObject<WorldViewPane>();
         //m_worldViewPane->setInitialPlacement(ImGuiDockPlacement::DebugView);
         dockManager->addDockPane(m_worldViewPane);
+		
+		Scene::gotoLevel(*makeObject<Level1>());
     }
 
     void onUpdate() override {
