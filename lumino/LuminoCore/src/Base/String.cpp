@@ -266,7 +266,7 @@ bool String::startsWith(const StringView& str, CaseSensitivity cs) const {
 }
 
 bool String::startsWith(Char ch, CaseSensitivity cs) const {
-    return StringHelper::endsWith(c_str(), length(), &ch, 1, cs);
+    return StringHelper::startsWith(c_str(), length(), &ch, 1, cs);
 }
 
 bool String::endsWith(const StringView& str, CaseSensitivity cs) const {

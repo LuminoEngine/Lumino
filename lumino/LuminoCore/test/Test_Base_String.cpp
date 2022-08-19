@@ -471,12 +471,16 @@ TEST_F(Test_Base_String, startsWith) {
     String s1(_TT("abc.txt"));
     ASSERT_EQ(true, s1.startsWith(_TT("abc")));
     ASSERT_EQ(false, s1.startsWith(_TT(".txt")));
+    ASSERT_EQ(true, s1.startsWith('a'));
+    ASSERT_EQ(false, s1.startsWith('b'));
 }
 
 TEST_F(Test_Base_String, endsWith) {
     String s1(_TT("abc.txt"));
     ASSERT_EQ(false, s1.endsWith(_TT("abc")));
     ASSERT_EQ(true, s1.endsWith(_TT(".txt")));
+    ASSERT_EQ(true, s1.endsWith('t'));
+    ASSERT_EQ(false, s1.endsWith('x'));
 }
 
 TEST_F(Test_Base_String, substring) {

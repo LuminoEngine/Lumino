@@ -104,8 +104,11 @@ bool StringHelper::endsWith(const TChar* str1, int len1, const TChar* str2, int 
     len1 = static_cast<int>((len1 < 0) ? strlen(str1) : len1);
     len2 = static_cast<int>((len2 < 0) ? strlen(str2) : len2);
 
-    const TChar* p1 = str1 + len1;
-    const TChar* p2 = str2 + len2;
+	if (len2 <= 0) return true;
+    if (len1 < len2) return false;
+
+    const TChar* p1 = str1 + len1 - 1;
+    const TChar* p2 = str2 + len2 - 1;
 
     // 大文字小文字を区別しない場合
     if (cs == CaseSensitivity::CaseInsensitive) {
