@@ -504,7 +504,15 @@ private:
     friend class String;
 };
 
-/** ある文字列に対する部分文字列の参照を保持します。 */
+/**
+ * ある文字列に対する部分文字列の参照を保持します。
+ * 
+ * StringView は文字列の所有権を保持せず、文字列のコピーではなく参照によって、
+ * 参照先文字列に対する読み取り専用の各種処理 (検索など) を行うための機能です。
+ * 
+ * StringView は参照先の文字列の開始位置のポインタと長さを保持しています。文字列のコピーをすることなく文字列を参照できるため、
+ * 動的なメモリ確保を必要とせず、余計なコピーも発生しないため、低いコストで文字列を扱うことができます。
+ */
 class StringView {
 public:
     /** 空の StringView を構築します。 */
@@ -552,7 +560,12 @@ public:
     /** 文字列が空かどうかを判定します。 */
     LN_CONSTEXPR bool isEmpty() const LN_NOEXCEPT { return (data() == nullptr || length() <= 0); }
 
-    /** 文字配列を取得します。 */
+    /**
+     * 文字配列表現を取得します。
+     * 
+     * @attention 取得したポインタは、参照先の文字列の生存期間を超えてはならないことに注意してください。
+     * @attention 取得したポインタは、参照先の文字列の開始位置を示すポインタであり、必ずしも文字列の先頭を示すわけではありません。同様に、必ずしも null 終端されているわけではありません。
+     */
     LN_CONSTEXPR const Char* data() const LN_NOEXCEPT { return m_str; }
 
     /** この文字列の末尾が、指定した文字列と一致するかを判断します。 */
@@ -958,12 +971,28 @@ inline std::wostream& operator<<(std::wostream& os, const String& str) {
 
 //==============================================================================
 // StringView
+//   NOTE: std::string と std::string_view に対する operator+ は実装されていない。（提案はされているみたい）
+//         https://groups.google.com/a/isocpp.org/g/std-proposals/c/kLWLlC81JLM
+//         https://groups.google.com/a/isocpp.org/g/std-proposals/c/1RcShRhrmRc
+//         Lumino のユーザーのコードをレビューした時、これが無いために StringView を誤って使ったり、
+//         冗長なコードを書くケースがいくつか見受けられた。 (view1.data()+str1 など)
+//         標準ライブラリではパフォーマンスを理由に実装されていないようだったが、
+//         Lumino のコンセプト的には、そういった勘違いが入り込む余地を無くしたいところ。
+//         ということで実装を追加している。
 
 inline String operator+(const Char* lhs, const StringView& rhs) {
     return String::concat(lhs, rhs);
 }
 
 inline String operator+(const StringView& lhs, const StringView& rhs) {
+    return String::concat(lhs, rhs);
+}
+
+inline String operator+(const StringView& lhs, const String& rhs) {
+    return String::concat(lhs, rhs);
+}
+
+inline String operator+(const String& lhs, const StringView& rhs) {
     return String::concat(lhs, rhs);
 }
 

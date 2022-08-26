@@ -77,14 +77,14 @@ PipeImpl::~PipeImpl() {
 
 int PipeImpl::writeBytes(const void* buffer, size_t length) {
     DWORD written = 0;
-    BOOL result = ::WriteFile(m_writeHandle, buffer, length, &written, NULL);
+    BOOL result = ::WriteFile(m_writeHandle, buffer, static_cast<DWORD>(length), &written, NULL);
     if (LN_ENSURE(result)) return 0;
     return written;
 }
 
 int PipeImpl::readBytes(void* buffer, size_t length) {
     DWORD bytesRead = 0;
-    BOOL result = ::ReadFile(m_readHandle, buffer, length, &bytesRead, NULL);
+    BOOL result = ::ReadFile(m_readHandle, buffer, static_cast<DWORD>(length), &bytesRead, NULL);
     if (result || ::GetLastError() == ERROR_BROKEN_PIPE) {
         return bytesRead;
     }

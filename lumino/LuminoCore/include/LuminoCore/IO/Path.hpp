@@ -313,8 +313,20 @@ inline Path Path::combine(TArgs&&... args) {
     return path;
 }
 
-inline Path operator+(const Char* lhs, const Path& rhs) {
+inline String operator+(const Char* lhs, const Path& rhs) {
     return String::concat(lhs, rhs.str());
+}
+
+inline Path operator+(const Path& lhs, const Char* rhs) {
+    return String::concat(lhs.str(), rhs);
+}
+
+inline String operator+(const String& lhs, const Path& rhs) {
+    return String::concat(lhs, rhs.str());
+}
+
+inline Path operator+(const Path& lhs, const String& rhs) {
+    return String::concat(lhs.str(), rhs);
 }
 
 inline bool operator==(const Path& lhs, const Path& rhs) {

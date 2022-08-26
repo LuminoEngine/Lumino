@@ -109,7 +109,7 @@ void TextWriter::write(double value)
         std::vector<Char> buf2;
         buf1.resize(512);
         buf2.resize(512);
-        int len = StringHelper::doubleToString(value, 'F', -1, buf1.data(), buf1.size());
+        int len = StringHelper::doubleToString(value, 'F', -1, buf1.data(), static_cast<int>(buf1.size()));
         StringHelper::copySimpleAsciiString(buf2.data(), len, buf1.data(), len);
         writeInternal(buf2.data(), len);
     } else {
