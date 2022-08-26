@@ -23,5 +23,7 @@ ln_add_pch(${PROJECT_NAME} "LuminoCLI.PCH.hpp" "LuminoCLI.PCH.cpp")
 #------------------------------------------------------------------------------
 # Install
 
-install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+if (LUMINO_INSTALL)
+    install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+endif()
 

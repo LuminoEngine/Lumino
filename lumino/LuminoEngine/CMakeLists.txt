@@ -392,30 +392,19 @@ endif()
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-install(
-    TARGETS     LuminoEngine
-    EXPORT      LuminoExport
-    ARCHIVE     DESTINATION ./lib
-    INCLUDES    DESTINATION ./include
-    RUNTIME     DESTINATION ./bin
-    FRAMEWORK   DESTINATION .
-    #COMPONENT LuminoC
-)
-install(DIRECTORY include DESTINATION .)
-install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
-
-# #-------------------------------------------------------------------------------
-# # Installation
-# #-------------------------------------------------------------------------------
-
-# # Shared library
-# if (LN_BUILD_SHARED_LIBRARY)
-#     install(TARGETS LuminoEngine
-#         EXPORT ${PROJECT_NAME}Targets
-#         RUNTIME     DESTINATION bin
-#         ARCHIVE     DESTINATION lib
-#         LIBRARY     DESTINATION lib)
-# endif()
+if (LUMINO_INSTALL)
+    install(
+        TARGETS     LuminoEngine
+        EXPORT      LuminoExport
+        ARCHIVE     DESTINATION ./lib
+        INCLUDES    DESTINATION ./include
+        RUNTIME     DESTINATION ./bin
+        FRAMEWORK   DESTINATION .
+        #COMPONENT LuminoC
+    )
+    install(DIRECTORY include DESTINATION .)
+    install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})
+endif()
 
 #-------------------------------------------------------------------------------
 # Tests

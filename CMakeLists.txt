@@ -9,6 +9,15 @@ if (ANDROID_ABI)
     set(LN_ANDROID ON)
 endif()
 
+# Determine if fmt is built as a subproject (using add_subdirectory) or if it is the master project.
+if (NOT DEFINED LUMINO_MASTER_PROJECT)
+    set(LUMINO_MASTER_PROJECT OFF)
+    if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(LUMINO_MASTER_PROJECT ON)
+        message(STATUS "CMake version: ${CMAKE_VERSION}")
+    endif()
+endif()
+
 #-------------------------------------------------------------------------------
 # Options
 #-------------------------------------------------------------------------------
@@ -35,7 +44,7 @@ option(LN_BUILD_SHARED_LIBRARY "build shared library." OFF)
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
 
 # build embedded shader transcompiler.
-option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." OFF)
+option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." ON)
 
 # MSVC Runtime library.
 option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
@@ -62,9 +71,13 @@ option(LN_EXTERNAL2 "" OFF)
 
 set(LN_VCPKG_INSTALLED_DIR "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 
+option(LUMINO_INSTALL "Generate the install target." ${LUMINO_MASTER_PROJECT})
+
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
+include(GNUInstallDirs)
+set(LN_EXPORT_DESTINATION_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/lumino")
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
@@ -210,33 +223,31 @@ endif()
 #-------------------------------------------------------------------------------
 # ちょっと複雑になってるので注意。
 # このようにした動機は、
-# - find_package(Lumino CONFIG REQUIRED) したときに、fmt など外部ライブラリもまとめて find_package したいため
-# である。
+# - find_package(Lumino CONFIG REQUIRED) したときに、fmt など外部ライブラリもまとめて find_package したいためである。
 # find_package(Lumino CONFIG REQUIRED) では、まず LuminoConfig.cmake を読みに行こうとする。
 # 当初はこのファイルは install(EXPORT) コマンドで cmake に自動生成させていたのだが、
 # この場合、生成コードをカスタマイズすることができない。
 # そのため install(EXPORT) では LuminoTargets.cmake(及び、LuminoTargets-debug.cmake など) を生成させて、
 # 自分で作った LuminoConfig.cmake からそれらを include することにしている。
+if (LUMINO_INSTALL)
+    # configure_package_config_file によって Configure 実行時に、
+    # LuminoConfig.cmake を ${CMAKE_CURRENT_BINARY_DIR} へ生成する。
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file( 
+        "cmake/LuminoConfig.cmake.in" 
+        "LuminoConfig.cmake"
+        INSTALL_DESTINATION ${LN_EXPORT_DESTINATION_DIR}
+    )
 
-# configure_package_config_file によって Configure 実行時に、
-# LuminoConfig.cmake を ${CMAKE_CURRENT_BINARY_DIR} へ生成する。
-include(CMakePackageConfigHelpers)
-configure_package_config_file( 
-    "cmake/LuminoConfig.cmake.in" 
-    "LuminoConfig.cmake"
-    INSTALL_DESTINATION cmake
-)
+    install(
+        EXPORT LuminoExport
+        DESTINATION ${LN_EXPORT_DESTINATION_DIR}
+        FILE LuminoTargets.cmake
+        EXPORT_LINK_INTERFACE_LIBRARIES
+    )
 
-#if (LN_BUILD_ENGINE)
-install(
-    EXPORT LuminoExport
-    FILE LuminoTargets.cmake
-    DESTINATION lib/cmake/Lumino
-    EXPORT_LINK_INTERFACE_LIBRARIES
-)
-
-install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/LuminoConfig.cmake"
-    DESTINATION lib/cmake/Lumino
-)
-#endif()
+    install(
+        FILES "${CMAKE_CURRENT_BINARY_DIR}/LuminoConfig.cmake"
+        DESTINATION ${LN_EXPORT_DESTINATION_DIR}
+    )
+endif()

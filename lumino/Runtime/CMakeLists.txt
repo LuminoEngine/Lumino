@@ -70,19 +70,21 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-install(
-    TARGETS     ${PROJECT_NAME}
-    EXPORT      LuminoExport
-    ARCHIVE     DESTINATION ./lib
-    INCLUDES    DESTINATION ./include
-)
+if (LUMINO_INSTALL)
+    install(
+        TARGETS     ${PROJECT_NAME}
+        EXPORT      LuminoExport
+        ARCHIVE     DESTINATION ./lib
+        INCLUDES    DESTINATION ./include
+    )
 
-install(DIRECTORY include DESTINATION .)
+    install(DIRECTORY include DESTINATION .)
 
-# find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
-# install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
-# LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
-install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
+    # find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
+    # install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
+    # LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
+    install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})
+endif()
 
 #-------------------------------------------------------------------------------
 # Sub-projects

@@ -96,34 +96,35 @@ endif()
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
+if (LUMINO_INSTALL)
+    set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
+    set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
 
-set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
-set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
-
-install(
-    TARGETS     ${PROJECT_NAME}
-    EXPORT      LuminoExport
-    ARCHIVE     DESTINATION ./lib
-    INCLUDES    DESTINATION ./include
-)
-
-install(DIRECTORY include/LuminoCore DESTINATION ./include)
-install(FILES include/LuminoCore.hpp DESTINATION include)
-
-# find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
-# install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
-# LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
-install(FILES cmake/LuminoConfig-Common.cmake DESTINATION lib/cmake/Lumino)
-install(FILES cmake/LuminoConfig-LuminoCore.cmake DESTINATION lib/cmake/Lumino)
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})
-    
-if (LN_ADD_NATVIS)
     install(
-        FILES ${LN_NATVIS_FILE}
-        DESTINATION .
+        TARGETS     ${PROJECT_NAME}
+        EXPORT      LuminoExport
+        ARCHIVE     DESTINATION ./lib
+        INCLUDES    DESTINATION ./include
     )
+
+    install(DIRECTORY include/LuminoCore DESTINATION ./include)
+    install(FILES include/LuminoCore.hpp DESTINATION include)
+
+    # find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
+    # install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
+    # LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
+    install(FILES cmake/LuminoConfig-Common.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})
+    install(FILES cmake/LuminoConfig-LuminoCore.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})
+        
+    if (LN_ADD_NATVIS)
+        install(
+            FILES ${LN_NATVIS_FILE}
+            DESTINATION .
+        )
+    endif()
 endif()
 
 #-------------------------------------------------------------------------------

@@ -40,19 +40,20 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
+if (LUMINO_INSTALL)
+    set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
+    set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
 
-set(LN_TARGETS_NAME "${PROJECT_NAME}Targets")
-set(LN_CONFIG_NAME "${PROJECT_NAME}Config")
+    install(
+        TARGETS ${PROJECT_NAME}
+        EXPORT LuminoExport
+        RUNTIME DESTINATION bin
+        ARCHIVE DESTINATION lib
+        INCLUDES DESTINATION include
+    )
 
-install(
-    TARGETS ${PROJECT_NAME}
-    EXPORT LuminoExport
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib
-    INCLUDES DESTINATION include
-)
-
-install(DIRECTORY include DESTINATION .)
+    install(DIRECTORY include DESTINATION .)
+endif()
 
 #-------------------------------------------------------------------------------
 # Sub-projects

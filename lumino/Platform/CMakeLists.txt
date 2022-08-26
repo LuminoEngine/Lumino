@@ -74,14 +74,16 @@ ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-install(
-    TARGETS     ${PROJECT_NAME}
-    EXPORT      LuminoExport
-    ARCHIVE     DESTINATION ./lib
-    INCLUDES    DESTINATION ./include
-)
-install(DIRECTORY include DESTINATION .)
-install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION lib/cmake/Lumino)
+if (LUMINO_INSTALL)
+    install(
+        TARGETS     ${PROJECT_NAME}
+        EXPORT      LuminoExport
+        ARCHIVE     DESTINATION ./lib
+        INCLUDES    DESTINATION ./include
+    )
+    install(DIRECTORY include DESTINATION .)
+    install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})
+endif()
 
 #-------------------------------------------------------------------------------
 # Sub-projects
