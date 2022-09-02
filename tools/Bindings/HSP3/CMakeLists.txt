@@ -15,9 +15,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
 
 # Install shared library
 if (LUMINO_INSTALL)
-    install(TARGETS ${PROJECT_NAME}
+    install(
+        TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}Targets
-        RUNTIME     DESTINATION bin
-        ARCHIVE     DESTINATION lib
-        LIBRARY     DESTINATION lib)
+    )
 endif()

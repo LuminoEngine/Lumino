@@ -96,8 +96,6 @@ namespace LuminoBuild.Tasks
 
                     if (b.IsDesktopSystem)
                     {
-                        Proc.Make("vcpkg", $"install gtest:{b.Triplet} {options}").WithSilent().Call();
-
                         // wasm ではそもそもビルドできない。
                         // …というより glslangValidator がビルドされないことで vcpkg の vcpkg_copy_tools タスクが失敗している。
                         Proc.Make("vcpkg", $"install glslang:{b.Triplet} {options}").WithSilent().Call();

@@ -209,7 +209,6 @@ set(LN_SOURCES
     ${LN_SOURCES_Scripting}
     ${LN_SOURCES_Runtime}
     ${LN_SOURCES_Editor}
-    ${LN_COMMON_META_FILES}
 )
 
 set(LN_SOURCES_SharedLib
@@ -312,6 +311,7 @@ if (LN_USE_Effekseer)
 endif()
 
 add_library(LuminoEngine STATIC ${LN_SOURCES})
+add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(LuminoEngine PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
 )
@@ -396,11 +396,6 @@ if (LUMINO_INSTALL)
     install(
         TARGETS     LuminoEngine
         EXPORT      LuminoExport
-        ARCHIVE     DESTINATION ./lib
-        INCLUDES    DESTINATION ./include
-        RUNTIME     DESTINATION ./bin
-        FRAMEWORK   DESTINATION .
-        #COMPONENT LuminoC
     )
     install(DIRECTORY include DESTINATION .)
     install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})

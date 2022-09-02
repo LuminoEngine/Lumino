@@ -44,6 +44,7 @@ endif()
 #-------------------------------------------------------------------------------
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -85,10 +86,12 @@ endif()
 if (MSVC)
     set(LN_ADD_NATVIS TRUE)
     set(LN_NATVIS_FILE "LuminoCore.natvis")
+    set(LN_NATVIS_INSTALL_DIR "share/lumino")
+    set(LN_NATVIS_INSTALL_PATH "share/lumino/LuminoCore.natvis")
     target_sources(
         ${PROJECT_NAME}
         INTERFACE
-            $<INSTALL_INTERFACE:${LN_NATVIS_FILE}>
+            $<INSTALL_INTERFACE:${LN_NATVIS_INSTALL_PATH}>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LN_NATVIS_FILE}>
     )
 endif()
@@ -103,8 +106,6 @@ if (LUMINO_INSTALL)
     install(
         TARGETS     ${PROJECT_NAME}
         EXPORT      LuminoExport
-        ARCHIVE     DESTINATION ./lib
-        INCLUDES    DESTINATION ./include
     )
 
     install(DIRECTORY include/LuminoCore DESTINATION ./include)
@@ -122,7 +123,7 @@ if (LUMINO_INSTALL)
     if (LN_ADD_NATVIS)
         install(
             FILES ${LN_NATVIS_FILE}
-            DESTINATION .
+            DESTINATION ${LN_NATVIS_INSTALL_DIR}
         )
     endif()
 endif()

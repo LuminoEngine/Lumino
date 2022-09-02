@@ -135,6 +135,7 @@ endif()
 #-------------------------------------------------------------------------------
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(
     ${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -170,8 +171,6 @@ if (LUMINO_INSTALL)
     install(
         TARGETS     ${PROJECT_NAME}
         EXPORT      LuminoExport
-        ARCHIVE     DESTINATION ./lib
-        INCLUDES    DESTINATION ./include
     )
     install(DIRECTORY include DESTINATION .)
     install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})

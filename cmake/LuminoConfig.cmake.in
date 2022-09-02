@@ -8,3 +8,10 @@ foreach(f ${CONFIG_FILES})
 endforeach()
 
 include("${CMAKE_CURRENT_LIST_DIR}/LuminoTargets.cmake")
+
+#-------------------------------------------------------------------------------
+# Combination target
+#-------------------------------------------------------------------------------
+add_library(lumino::Lumino INTERFACE IMPORTED)
+target_link_libraries(lumino::Lumino INTERFACE lumino::LuminoEngine lumino::LuminoCore)
+

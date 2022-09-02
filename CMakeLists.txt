@@ -151,8 +151,6 @@ if (MSVC)
 
     # TODO: lib 分割したい
     add_definitions("/bigobj")
-
-    set(LN_COMMON_META_FILES "${CMAKE_CURRENT_LIST_DIR}/tools/VisualStudio/Lumino.natvis")
 endif()
 
 set(LN_BUILD_ENGINE ON)
@@ -241,6 +239,7 @@ if (LUMINO_INSTALL)
 
     install(
         EXPORT LuminoExport
+        NAMESPACE lumino::
         DESTINATION ${LN_EXPORT_DESTINATION_DIR}
         FILE LuminoTargets.cmake
         EXPORT_LINK_INTERFACE_LIBRARIES

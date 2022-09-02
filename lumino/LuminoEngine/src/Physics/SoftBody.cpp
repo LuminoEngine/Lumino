@@ -2,7 +2,10 @@
 #include "Internal.hpp"
 #pragma warning(disable: 5033)	// disable warning in bullet headers
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
+#if 1 // 3.22 の btSoftBodyHelpers.h で #include "../../examples/CommonInterfaces/CommonFileIOInterface.h" がエラーになるのでいったん無効にする
+#else
 #include <bullet/BulletSoftBody/btSoftBodyHelpers.h>
+#endif
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
 #include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
@@ -165,10 +168,13 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
     }
 
 
-
+#if 1 // 3.22 の btSoftBodyHelpers.h で #include "../../examples/CommonInterfaces/CommonFileIOInterface.h" がエラーになるのでいったん無効にする
+    LN_NOTIMPLEMENTED();
+#else
     // create
     m_body.reset(btSoftBodyHelpers::CreateFromTriMesh(*world->softBodyWorldInfo(), btVertices.data(), btIndices.data(), (int)numIndices / 3));
-
+#endif
+	
     //const btScalar s = 6;
     //const btScalar h = 2;
     //const int r = 16;

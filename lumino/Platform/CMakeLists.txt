@@ -47,6 +47,7 @@ set(LN_SOURCES
 #-------------------------------------------------------------------------------
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 #target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${PUBLIC_HDR_DIR})
 #target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
@@ -78,8 +79,6 @@ if (LUMINO_INSTALL)
     install(
         TARGETS     ${PROJECT_NAME}
         EXPORT      LuminoExport
-        ARCHIVE     DESTINATION ./lib
-        INCLUDES    DESTINATION ./include
     )
     install(DIRECTORY include DESTINATION .)
     install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})

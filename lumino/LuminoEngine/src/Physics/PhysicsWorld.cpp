@@ -4,7 +4,6 @@
 #include <bullet/BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <bullet/BulletCollision/CollisionDispatch/btManifoldResult.h>
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
-#include <bullet/BulletSoftBody/btSoftBodyHelpers.h>
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
 #include <bullet/BulletCollision/CollisionDispatch/btSimulationIslandManager.h>
 #include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
