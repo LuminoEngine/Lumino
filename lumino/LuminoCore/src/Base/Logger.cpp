@@ -26,6 +26,9 @@ namespace ln {
 
 void writeNSLog(const char* str);
 
+ILoggerAdapter::~ILoggerAdapter() {
+}
+
 //==============================================================================
 // LogHelper
 
@@ -152,9 +155,6 @@ namespace detail {
 //	return *this;
 // }
 
-ILoggerAdapter::~ILoggerAdapter() {
-}
-
 //==============================================================================
 // FileLoggerAdapter
 
@@ -163,6 +163,7 @@ public:
     void write(LogLocation source, LogLevel level, const char* str, size_t len) override {
         g_logFile.write(str, len);
     }
+    void flush() override {}
 };
 
 //==============================================================================
@@ -173,6 +174,7 @@ public:
     void write(LogLocation source, LogLevel level, const char* str, size_t len) override {
         std::cout << "[" << Logger::getLevelStringNarrow(level) << "] " << std::string_view(str, len) << std::endl;
     }
+    void flush() override {}
 };
 
 //==============================================================================
@@ -183,6 +185,7 @@ public:
     void write(LogLocation source, LogLevel level, const char* str, size_t len) override {
         std::cerr << "[" << Logger::getLevelStringNarrow(level) << "] " << std::string_view(str, len) << std::endl;
     }
+    void flush() override {}
 };
 
 #ifdef LN_OS_ANDROID
@@ -369,6 +372,10 @@ void Logger::addNLogAdapter() {
 #endif
 }
 
+void Logger::addAdapter(std::shared_ptr<ILoggerAdapter> adapter) {
+    detail::LoggerInterface::getInstance()->m_adapters.push_back(adapter);
+}
+
 bool Logger::hasAnyAdapter() {
     return !detail::LoggerInterface::getInstance()->m_adapters.empty();
 }
@@ -416,6 +423,12 @@ void Logger::log(LogLocation location, LogLevel level, std::string_view message)
         for (auto& adapter : detail::LoggerInterface::getInstance()->m_adapters) {
             adapter->write(location, level, message.data(), message.length());
         }
+    }
+}
+
+void Logger::flush() {
+    for (auto& adapter : detail::LoggerInterface::getInstance()->m_adapters) {
+        adapter->flush();
     }
 }
 

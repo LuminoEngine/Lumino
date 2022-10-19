@@ -91,6 +91,13 @@ struct LogLocation {
     }
 };
 
+class ILoggerAdapter {
+public:
+    virtual ~ILoggerAdapter();
+    virtual void write(LogLocation source, LogLevel level, const char* str, size_t len) = 0;
+    virtual void flush() = 0;
+};
+
 /**
  * This class is for controlling the log function.
  *
@@ -135,6 +142,7 @@ public:
 
     static LogLevel level();
 
+    static void addAdapter(std::shared_ptr<ILoggerAdapter> adapter);
     static bool hasAnyAdapter();
 
     static bool shouldLog(LogLevel level);
@@ -213,6 +221,7 @@ public:
     }
 
     static void log(LogLocation location, LogLevel level, std::string_view message);
+    static void flush();
 };
 
 namespace detail {
@@ -225,45 +234,6 @@ struct LogTime {
     unsigned short millitm;
 };
 #endif
-
-// class LogRecord
-//{
-// public:
-//     LogRecord(LogLevel level, const char* tag, const char* file, const char* func, int line);
-//     const LogTime& getTime() const { return m_time; }
-//     LogLevel GetLevel() const { return m_level; }
-//     const char* tag() const { return m_tag; }
-//     const char* getMessage() const;
-//     const char* GetFile() const { return m_location.filename; }
-//     const char* GetFunc() const { return m_location.funcname; }
-//     const LogLocation& location() const { return m_location; }
-//     int GetLine() const { return m_location.line; }
-//     const std::thread::id& getThreadId() const { return m_threadId; }
-//
-//     //LogRecord& operator<<(const wchar_t* str);
-//
-//     template<typename T>
-//     LogRecord& operator<<(const T& data)
-//     {
-//         m_message << data;
-//         return *this;
-//     }
-//
-// private:
-//     LogTime m_time;
-//     LogLevel m_level;
-//     const char* m_tag;
-//     LogLocation m_location;
-//	std::thread::id m_threadId;
-//     std::stringstream m_message;
-//     mutable std::string m_messageStr;
-// };
-
-class ILoggerAdapter {
-public:
-    virtual ~ILoggerAdapter();
-    virtual void write(LogLocation source, LogLevel level, const char* str, size_t len) = 0;
-};
 
 class LoggerInterface {
 public:
@@ -285,9 +255,13 @@ public:
 #ifdef SPDLOG_H
 namespace integration {
 inline void useSpdlog() {
-    class Adapter : public detail::ILoggerAdapter {
+    class Adapter : public ILoggerAdapter {
         void write(LogLocation source, LogLevel level, const char* str, size_t len) override {
             ::spdlog::default_logger_raw()->log({ source.filename, source.line, source.funcname }, toSpdlogLevel(level), std::string_view(str, len));
+        }
+
+        void flush() override {
+            ::spdlog::default_logger_raw()->flush();
         }
 
         spdlog::level::level_enum toSpdlogLevel(LogLevel level) const {
@@ -313,7 +287,7 @@ inline void useSpdlog() {
         }
     };
 
-    detail::LoggerInterface::getInstance()->m_adapters.push_back(std::make_shared<Adapter>());
+    Logger::addAdapter(std::make_shared<Adapter>());
 }
 }
 #endif

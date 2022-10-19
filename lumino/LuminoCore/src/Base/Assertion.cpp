@@ -194,16 +194,33 @@ void printError(const Exception& e) {
         }
     }
 
-    //if (Logger::hasAnyAdapter()) {
-    //	LN_LOG_ERROR << buf;
-    //}
-    //else {
-    printf("%s\n", buf);
-    //}
+	auto logLevel = LogLevel::Error;
+    switch (e.level()) {
+		case ExceptionLevel::Fatal:
+		    logLevel = LogLevel::Fatal;
+		case ExceptionLevel::Error:
+		    logLevel = LogLevel::Error;
+		case ExceptionLevel::Warning:
+		    logLevel = LogLevel::Warning;
+		case ExceptionLevel::Info:
+		    logLevel = LogLevel::Info;
+            break;
+    }
+
+    LogLocation loc;
+    loc.filename = ExceptionHelper::getSourceFilePath(e);
+    loc.line = ExceptionHelper::getSourceFileLine(e);
+    Logger::log(loc, logLevel, buf);
+    //printf("%s\n", buf);
+    Logger::flush();
 }
 
 void notifyFatalError(const char* file, int line, const char* message) noexcept {
-    printf("%s(%d): Fatal: %s", file, line, message);
+    LogLocation loc;
+    loc.filename = file;
+	loc.line = line;
+    Logger::log(loc, LogLevel::Fatal, message);
+    Logger::flush();
     *reinterpret_cast<int*>(0) = 0; // crash
 }
 
