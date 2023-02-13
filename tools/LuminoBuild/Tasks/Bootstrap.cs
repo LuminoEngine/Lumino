@@ -13,9 +13,11 @@ namespace LuminoBuild.Tasks
 
         public override string[] GetDepends(Build b)
         {
-            var depends = new List<string>();
-            depends.Add("BuildExternals");
-            depends.Add("BuildEngine");
+            var depends = new List<string>
+            {
+                "BuildExternals",
+                "BuildEngine"
+            };
 
             return depends.ToArray();
         }

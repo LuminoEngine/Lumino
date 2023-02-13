@@ -65,11 +65,11 @@ namespace LuminoBuild.Tasks
                         additional += "-DLN_FBX_SDK_PATH:STRING=\"{BuildEnvironment.FbxSdkVS2017}\"";
 
                     if (b.Options.Components == "core")
-                        additional += "-DLN_BUILD_CORE_ONLY=ON";
+                        additional += "-DLUMINO_BUILD_ENGINE=OFF";
 
                     var args = new string[]
                     {
-                        $"-G\"{targetInfo.Generator}\"",
+                        //$"-G\"{targetInfo.Generator}\"",
                         $"-DCMAKE_TOOLCHAIN_FILE=\"{b.VcpkgDir}/scripts/buildsystems/vcpkg.cmake\"",
                         $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
                         $"-DCMAKE_DEBUG_POSTFIX=d",

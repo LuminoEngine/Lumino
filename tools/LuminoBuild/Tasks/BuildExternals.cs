@@ -48,10 +48,10 @@ namespace LuminoBuild.Tasks
 
             using (CurrentDir.Enter(b.BuildToolsDir))
             {
-                if (!Directory.Exists(b.VcpkgDir))
-                {
-                    Proc.Make("git", "clone -b 2022.02.23 https://github.com/microsoft/vcpkg.git").WithSilent().Call();
-                }
+                //if (!Directory.Exists(b.VcpkgDir))
+                //{
+                //    Proc.Make("git", "clone -b 2022.02.23 https://github.com/microsoft/vcpkg.git").WithSilent().Call();
+                //}
 
                 using (CurrentDir.Enter(b.VcpkgDir))
                 {

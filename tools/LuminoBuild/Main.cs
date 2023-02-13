@@ -38,6 +38,7 @@ namespace LuminoBuild
             if (args.Length == 0)
             {
                 args = new string[] { "Bootstrap" };
+                //args = new string[] { "BuildEngine" };
 
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildLocalPackage", "MSVC2019-x86-MT" };
@@ -94,8 +95,6 @@ namespace LuminoBuild
 
             try
             {
-
-                //builder.LuminoBuildCacheDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "BuildCache"));
                 b.LuminoBindingsDir = Path.GetFullPath(Path.Combine(b.RootDir, "bindings"));
                 b.LuminoLibDir = Path.GetFullPath(Path.Combine(b.RootDir, "lib"));
                 b.LuminoToolsDir = Path.GetFullPath(Path.Combine(b.RootDir, "tools"));
