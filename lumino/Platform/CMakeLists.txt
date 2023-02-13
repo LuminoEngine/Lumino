@@ -31,7 +31,6 @@ endif()
 source_group("Platform" FILES ${LN_SOURCES_Platform})
 
 set(LN_SOURCES
-    src/pch.cpp
     src/pch.hpp
     src/Internal.hpp
     ${LN_SOURCES_Platform}
@@ -70,7 +69,7 @@ if (LN_EMSCRIPTEN)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
 
 #-------------------------------------------------------------------------------
 # Installation

@@ -18,7 +18,7 @@ add_executable(${PROJECT_NAME} ${LN_SOURCES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 target_link_libraries(${PROJECT_NAME} LuminoEngine LuminoEditor)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Editor")
-ln_add_pch(${PROJECT_NAME} "LuminoCLI.PCH.hpp" "LuminoCLI.PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "LuminoCLI.PCH.hpp")
 
 #------------------------------------------------------------------------------
 # Install

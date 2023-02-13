@@ -8,7 +8,6 @@ include(cmake/LuminoConfig-LuminoRuntime.cmake)
 #-------------------------------------------------------------------------------
 set(LN_SOURCES_Common
     include/LuminoEngine/RuntimeModule.hpp
-    src/pch.cpp
     src/pch.hpp
     src/Internal.hpp
     src/RegisterTypes.cpp
@@ -66,7 +65,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE include src)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
 
 #-------------------------------------------------------------------------------
 # Installation
@@ -79,7 +78,6 @@ if (LUMINO_INSTALL)
 
     install(DIRECTORY include DESTINATION .)
 
-    # find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
     # install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
     # LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
     install(FILES cmake/LuminoConfig-${PROJECT_NAME}.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})

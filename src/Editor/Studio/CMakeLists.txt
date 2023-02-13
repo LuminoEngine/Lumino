@@ -51,7 +51,7 @@ add_executable(${PROJECT_NAME} ${LOCAL_SOURCES} ${LN_QT_RESOURCES} )
 target_include_directories(${PROJECT_NAME} PRIVATE ${LUMINO_INCLUDE_DIRECTORIES})
 target_link_libraries(${PROJECT_NAME} LuminoEngine EditorCore EditorCore Qt5::Widgets Qt5::OpenGL)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Editor")
-ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.h")
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${LN_QT_ROOT}/bin/Qt5Cored.dll" "Qt5Cored.dll"

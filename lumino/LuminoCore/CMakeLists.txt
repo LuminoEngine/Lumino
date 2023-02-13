@@ -18,7 +18,6 @@ set(LN_SOURCES
     ${LN_SOURCES_LuminoCore}
     ${LN_LOCAL_SOURCES_Geometries}
     ${LN_LOCAL_SOURCES_Runtime}
-    "src/LuminoCore.PCH.cpp"
     "src/LuminoCore.PCH.h"
 )
 
@@ -59,7 +58,10 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/LuminoCore.PCH.h")
+
+
+message("★ CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 
 if (LN_EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
@@ -111,7 +113,6 @@ if (LUMINO_INSTALL)
     install(DIRECTORY include/LuminoCore DESTINATION ./include)
     install(FILES include/LuminoCore.hpp DESTINATION include)
 
-    # find_package(LuminoCore CONFIG REQUIRED) で ln_add_pch を使えるようにする。
     # install(EXPORT) で出力される LuminoCoreConfig.cmake は、同一フォルダの
     # LuminoCoreConfig-*.cmake を include しようとするため、それにマッチするファイル名にする。
     install(FILES cmake/LuminoConfig-Common.cmake DESTINATION ${LN_EXPORT_DESTINATION_DIR})

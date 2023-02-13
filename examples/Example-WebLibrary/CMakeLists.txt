@@ -37,9 +37,9 @@ set(_LINK_FLAGS "${_LINK_FLAGS} --js-library ${CMAKE_CURRENT_LIST_DIR}/import_fu
 set(CMAKE_CXX_FLAGS_DEBUG "-g4")
 #set(CMAKE_CXX_FLAGS "-g4")
 
-add_executable(${PROJECT_NAME} ${APP_SOURCES} PCH.cpp PCH.h)
+add_executable(${PROJECT_NAME} ${APP_SOURCES} PCH.h)
 #set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "")
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${_LINK_FLAGS} -g")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "mylib")
 #target_link_libraries(${PROJECT_NAME} LuminoEngine LuminoCore)
-ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.h")

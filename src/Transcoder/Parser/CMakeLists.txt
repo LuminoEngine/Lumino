@@ -23,5 +23,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LLVM_DEFINITIONS})
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 target_link_libraries(${PROJECT_NAME} clangToolingCore clangAnalysis clangAST clangASTMatchers clangBasic clangCodeGen clangDriver clangDynamicASTMatchers clangEdit clangFormat clangFrontend clangFrontendTool clangIndex clangLex clangParse clangRewrite clangRewriteFrontend clangSema clangSerialization clangTooling LLVMSupport LLVMCore LLVMOption LLVMProfileData LLVMBitReader LLVMMC LLVMMCParser LLVMBinaryFormat Version)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
-ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.hpp")
 

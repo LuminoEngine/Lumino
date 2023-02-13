@@ -11,7 +11,6 @@ add_library(${PROJECT_NAME} SHARED ${LOCAL_SOURCES} ${LOCAL_SOURCES_hsp3plugin})
 target_include_directories(${PROJECT_NAME} PRIVATE . ${LN_ENGINE_INCLUDE_DIR} ${LUMINO_INCLUDE_DIRECTORIES})
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
-#ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
 
 # Install shared library
 if (LUMINO_INSTALL)

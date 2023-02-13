@@ -9,8 +9,8 @@ set(
 	${LOCAL_SOURCES}
 )
 
-add_library(${PROJECT_NAME} ${LOCAL_SOURCES} "PCH.h" "PCH.cpp")
+add_library(${PROJECT_NAME} ${LOCAL_SOURCES} "PCH.h")
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
-ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.h")
 

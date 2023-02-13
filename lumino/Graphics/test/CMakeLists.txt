@@ -21,7 +21,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     GTest::gtest_main
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "pch.hpp")
 
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
     target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)

@@ -8,7 +8,6 @@ find_package(CLANG REQUIRED CONFIG)
 find_package(LLVM REQUIRED CONFIG)
 
 set(LN_SOURCES
-    PCH.cpp
     PCH.hpp
     Common.hpp
     Main.cpp
@@ -48,5 +47,5 @@ add_executable(${PROJECT_NAME} ${LN_SOURCES} ${LN_SOURCES_Generator})
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 target_link_libraries(${PROJECT_NAME} clangToolingCore clangAnalysis clangARCMigrate clangAST clangASTMatchers clangBasic clangCodeGen clangDriver clangDynamicASTMatchers clangEdit clangFormat clangFrontend clangFrontendTool clangIndex clangLex clangParse clangRewrite clangRewriteFrontend clangSema clangSerialization clangTooling LLVMSupport LLVMCore LLVMOption LLVMProfileData LLVMBitReader LLVMMC LLVMMCParser LLVMBinaryFormat Version)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.hpp")
 

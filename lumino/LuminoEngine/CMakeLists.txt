@@ -171,7 +171,6 @@ source_group("Runtime" FILES ${LN_SOURCES_Runtime})
 source_group("Editor" FILES ${LN_SOURCES_Editor})
 
 set(LN_SOURCES
-    src/LuminoEngine.PCH.cpp
     src/LuminoEngine.PCH.h
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine.hpp
     ${LN_ENGINE_INCLUDE_DIR}/Lumino.hpp
@@ -336,7 +335,7 @@ endif()
 
 #target_link_libraries(LuminoEngine PRIVATE glslang)
 set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
-ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+target_precompile_headers(LuminoEngine PRIVATE "src/LuminoEngine.PCH.h")
 
 if (LN_EMSCRIPTEN)
     set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-pthread")

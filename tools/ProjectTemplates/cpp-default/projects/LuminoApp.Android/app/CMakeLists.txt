@@ -31,7 +31,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/PCH.cpp
              src/main/cpp/PCH.h
              )
-ln_add_pch(native-lib src/main/cpp/PCH.h src/main/cpp/PCH.cpp)
+target_precompile_headers(native-lib PRIVATE src/main/cpp/PCH.h)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

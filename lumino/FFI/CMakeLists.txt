@@ -9,7 +9,6 @@ file(GLOB LN_SOURCES_FFI include/LuminoFFI/*.h include/LuminoFFI/*.hpp src/*.cpp
 source_group("FFI" FILES ${LN_SOURCES_FFI})
 
 set(LN_SOURCES
-    src/pch.cpp
     src/pch.hpp
     src/Internal.hpp
     ${LN_SOURCES_FFI}
@@ -36,7 +35,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoEngine)
 target_link_libraries(${PROJECT_NAME} PUBLIC LuminoRuntime)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/pch.hpp" "src/pch.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
 
 #-------------------------------------------------------------------------------
 # Installation

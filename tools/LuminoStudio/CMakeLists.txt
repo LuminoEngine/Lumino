@@ -29,7 +29,7 @@ qt5_add_resources(LN_QT_RESOURCES
 add_executable(${PROJECT_NAME} ${LuminoStudio_SOURCES} ${LN_QT_RESOURCES})
 # Use the Widgets module from Qt 5
 target_link_libraries(${PROJECT_NAME} LuminoEngine Qt5::Widgets Qt5::OpenGL)
-ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.h")
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${LN_QT_ROOT}/bin/Qt5Cored.dll" "Qt5Cored.dll"

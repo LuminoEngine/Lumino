@@ -15,4 +15,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE . ${LN_ENGINE_INCLUDE_DIR} ${
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
 ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.hpp")
 

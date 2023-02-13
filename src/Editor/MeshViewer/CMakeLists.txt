@@ -16,4 +16,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${LUMINO_INCLUDE_DIRECTORIES}
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoEngine imgui::imgui)
 target_compile_definitions(${PROJECT_NAME} PRIVATE LN_GLTF_SAMPLE_MODELS_DIR="${LN_GLTF_SAMPLE_MODELS_DIR}")
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Editor")
-ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.hpp")

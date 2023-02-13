@@ -3,13 +3,13 @@ project(Runtime)
 
 set(
 	LOCAL_SOURCES
-	PCH.cpp
 	PCH.h
 	Main.Windows.cpp
 )
 source_group("src" FILES ${LOCAL_SOURCES})
 
-add_executable(${PROJECT_NAME} ${LOCAL_SOURCES} "PCH.h" "PCH.cpp")
+add_executable(${PROJECT_NAME} ${LOCAL_SOURCES} "PCH.h")
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_link_libraries(${PROJECT_NAME} Game)
-ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.h")
+
