@@ -60,9 +60,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/LuminoCore.PCH.h")
 
-
-message("★ CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
-
 if (LN_EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
 endif()
