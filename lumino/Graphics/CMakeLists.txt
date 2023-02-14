@@ -151,10 +151,15 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
     target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        HLSL
-        SPIRV
-        glslang
-        OGLCompiler
+        glslang::OSDependent
+        glslang::glslang
+        glslang::MachineIndependent
+        glslang::GenericCodeGen
+        glslang::OGLCompiler
+        glslang::glslang-default-resource-limits
+        glslang::SPVRemapper
+        glslang::SPIRV
+        glslang::HLSL
         spirv-cross-core
         spirv-cross-glsl
         spirv-cross-hlsl
