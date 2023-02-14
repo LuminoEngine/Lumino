@@ -141,7 +141,7 @@ namespace LuminoBuild.Tasks
 
                     if (BuildEnvironment.FromCI)
                     {
-                        args.Add($"-DLN_BUILD_EXAMPLES=OFF");
+                        args.Add($"-DLUMINO_BUILD_EXAMPLES=OFF");
                     }
 
                     Utils.CallProcess("cmake", string.Join(' ', args));

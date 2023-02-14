@@ -26,7 +26,7 @@ option(LN_TARGET_ARCH "arch." "Unknown")
 
 option(LN_BUILD_TESTS "build unit test projects." ON)
 
-option(LN_BUILD_EXAMPLES "build example projects." ON)
+option(LUMINO_BUILD_EXAMPLES "build example projects." ON)
 
 # build tool projects
 # option(LN_BUILD_TOOLS "build tool projects." ON)
@@ -118,7 +118,7 @@ if(DEFINED EMSCRIPTEN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
     # set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-pthread")
-    if(LN_BUILD_EXAMPLES)
+    if(LUMINO_BUILD_EXAMPLES)
         set(LN_LUMINO_CLI_TOOL "${CMAKE_CURRENT_LIST_DIR}/build/buildtrees/x64-windows-static/lumino/src/Editor/CLI/Debug/lumino.exe")
 
         if(NOT EXISTS ${LN_LUMINO_CLI_TOOL})
@@ -200,7 +200,7 @@ if(LUMINO_BUILD_ENGINE)
         add_subdirectory(lumino/FFI)
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoEngine-sandbox)
 
-        if(LN_BUILD_EXAMPLES)
+        if(LUMINO_BUILD_EXAMPLES)
             # add_subdirectory(examples)
         endif()
 

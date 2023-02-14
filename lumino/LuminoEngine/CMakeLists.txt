@@ -404,6 +404,6 @@ endif()
 # Tests
 #-------------------------------------------------------------------------------
 
-if (LN_BUILD_EXAMPLES)
+if (LUMINO_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
