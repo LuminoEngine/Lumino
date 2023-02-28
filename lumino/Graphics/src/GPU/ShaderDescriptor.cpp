@@ -6,7 +6,7 @@
 #include <LuminoGraphics/GPU/ConstantBuffer.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
-#include "RHI/GraphicsDeviceContext.hpp"
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
 
 namespace ln {
 

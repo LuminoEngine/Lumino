@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
+#include <LuminoGraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
@@ -146,7 +147,7 @@ Ref<MeshPrimitive> MeshGeometryBuilder::buildMesh()
 	int vertexOffset = 0;
 	int indexOffset = 0;
 	int sectionCount = 0;
-	int indexStride = GraphicsHelper::getIndexStride(mesh->indexBufferFormat());
+	int indexStride = RHIHelper::getIndexStride(mesh->indexBufferFormat());
 	for (const auto& section : m_currentMeshSections) {
 		int sectionIndexOffset = indexOffset;
 

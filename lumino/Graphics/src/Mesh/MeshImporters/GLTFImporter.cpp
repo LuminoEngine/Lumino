@@ -2,6 +2,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoGraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
@@ -796,7 +797,7 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 	for (const MeshPrimitiveView& primitiveView : meshView.sectionViews) {
 		int vertexCount = primitiveView.vertexBufferViews[0].count;
 		int indexCount = primitiveView.indexCount;
-		IndexBufferFormat indexForamt = GraphicsHelper::selectIndexBufferFormat(vertexCount);
+		IndexBufferFormat indexForamt = RHIHelper::selectIndexBufferFormat(vertexCount);
 
 		auto meshPrimitive = makeObject_deprecated<MeshPrimitive>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
 
@@ -834,7 +835,7 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 				}
 			}
 			else {
-				stride = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+				stride = RHIHelper::getVertexElementTypeSize(vbView.type);
 				//int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
 				//for (int i = 0; i < vertexCountInSection; i++) {
 				//	memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
@@ -871,7 +872,7 @@ Ref<MeshContainer> GLTFImporter::generateMesh(const MeshView& meshView) const
 			}
 			else {
 				// Note:  Blender で接線を Export できた時は Float4 to Float4 でここに来る。Tangent.w は 1.0 になっている。
-				int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+				int size = RHIHelper::getVertexElementTypeSize(vbView.type);
 				for (int i = 0; i < vertexCount; i++) {
 					memcpy(&rawbuf[(i * stride) + offset], src + (vbView.byteStride * i), size);
 				}

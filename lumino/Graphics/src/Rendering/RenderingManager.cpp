@@ -1,10 +1,10 @@
 ﻿#include "Internal.hpp"
 #include <LuminoGraphics/Bitmap/Bitmap.hpp>
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/Rendering/Material.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include "../../Graphics/src/GPU/RHI/GraphicsDeviceContext.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/SpriteRenderFeature.hpp"

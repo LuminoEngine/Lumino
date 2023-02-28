@@ -7,6 +7,7 @@
 */
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
+#include <LuminoGraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
@@ -214,7 +215,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 	if (outIndexBuffer) {
         // prepare index buffer
         if (!m_indexBuffer) {
-            m_indexBuffer = ln::makeObject_deprecated<IndexBuffer>(m_indexCount, GraphicsHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
+            m_indexBuffer = ln::makeObject_deprecated<IndexBuffer>(m_indexCount, RHIHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
         }
         else if (realIndexCount() != m_indexCount) {
             m_indexBuffer->resize(m_indexCount);
@@ -365,7 +366,7 @@ void MeshPrimitive::init(int vertexCount, int indexCount)
 	init();
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
-	m_indexFormat = GraphicsHelper::selectIndexBufferFormat(m_vertexCount);
+	m_indexFormat = RHIHelper::selectIndexBufferFormat(m_vertexCount);
 }
 
 void MeshPrimitive::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, GraphicsResourceUsage resourceUsage)
@@ -647,7 +648,7 @@ void* MeshPrimitive::acquireMappedVertexBuffer(VertexElementType type, VertexEle
 		VertexBuffer* vb = nullptr;
 		auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == usage && x.usageIndex == usageIndex; });
 		if (!r) {
-			auto vb = makeObject_deprecated<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, m_resourceUsage);
+			auto vb = makeObject_deprecated<VertexBuffer>(RHIHelper::getVertexElementTypeSize(type) * m_vertexCount, m_resourceUsage);
 			
 			VertexBufferEntry entry;
 			entry.buffer = vb;

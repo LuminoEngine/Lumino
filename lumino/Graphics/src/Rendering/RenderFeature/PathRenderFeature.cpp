@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
@@ -7,7 +8,6 @@
 #include <LuminoGraphics/GPU/RenderPass.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
-#include "../../../../Graphics/src/GPU/RHI/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 #include "PathRenderFeature.hpp"
 

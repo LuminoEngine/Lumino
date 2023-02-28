@@ -287,6 +287,7 @@ set(
     LuminoRuntime
     LuminoPlatform
     LuminoGraphics
+    LuminoGraphicsRHI
     #pcre
     pcre2_32
     Vorbis::vorbis

@@ -11,11 +11,11 @@
 #include <LuminoGraphics/GPU/ConstantBuffer.hpp>
 #include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
-#include "RHI/GraphicsDeviceContext.hpp"
-#include "ShaderCompiler/UnifiedShaderCompiler.hpp"
-#include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
-#include "ShaderCompiler/ShaderTranspiler.hpp"
-#include "ShaderCompiler/HLSLMetadataParser.hpp"
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+#include "../../GraphicsRHI/src/ShaderCompiler/UnifiedShaderCompiler.hpp"
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include "../../GraphicsRHI/src/ShaderCompiler/ShaderTranspiler.hpp"
+#include "../../GraphicsRHI/src/ShaderCompiler/HLSLMetadataParser.hpp"
 
 namespace ln {
 

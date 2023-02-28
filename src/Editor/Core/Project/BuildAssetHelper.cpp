@@ -2,7 +2,7 @@
 #define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include <LuminoCore/Base/CRCHash.hpp>
 #include "../../../lumino/Runtime/src/Asset/AssetArchive.hpp"
-#include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
 //#include "../../../lumino/ShaderCompiler/src/ShaderTranspiler.hpp"
 //#include "../../../lumino/ShaderCompiler/src/HLSLMetadataParser.hpp"
 //#include "../../../lumino/ShaderCompiler/src/UnifiedShader.hpp"

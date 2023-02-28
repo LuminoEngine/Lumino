@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoGraphics/GPU/GraphicsExtension.hpp>
+#include <LuminoGraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoGraphics/Rendering/RenderFeature.hpp>
 #include "../RLIs/RLIBatchList.hpp"
 

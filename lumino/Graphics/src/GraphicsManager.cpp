@@ -4,15 +4,15 @@
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/GPU/Shader.hpp>
 #include <LuminoGraphics/GPU/SamplerState.hpp>
-#include <LuminoGraphics/GPU/GraphicsExtension.hpp>
+#include <LuminoGraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "GPU/RenderTargetTextureCache.hpp"
-#include "GPU/RHI/OpenGL/OpenGLDeviceContext.hpp"
+#include "../../GraphicsRHI/src/OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
-#include "GPU/RHI/Vulkan/VulkanDeviceContext.hpp"
+#include "../../GraphicsRHI/src/Vulkan/VulkanDeviceContext.hpp"
 #endif
 #ifdef _WIN32
-#include "GPU/RHI/DirectX12/DX12DeviceContext.hpp"
+#include "../../GraphicsRHI/src/DirectX12/DX12DeviceContext.hpp"
 #endif
 #include <LuminoGraphics/GPU/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -20,7 +20,8 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include "GPU/SingleFrameAllocator.hpp"
 #include "GPU/GraphicsProfiler.hpp"
-#include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoGraphicsRHI/RHIHelper.hpp>
 #include "GPU/StreamingBufferAllocator.hpp"
 #include "GPU/RenderPassCache.hpp"
 //#include "Rendering/RenderingManager2.hpp"
@@ -47,41 +48,6 @@ void* ConstantBufferView::writableData() {
 // GraphicsHelper
 
 const Char* GraphicsHelper::CandidateExts_Texture2D[5] = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
-
-size_t GraphicsHelper::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex) {
-    int size = 0;
-    for (int i = 0; i < elementsCount; ++i) {
-        if (vertexElements[i].StreamIndex == streamIndex) {
-            size += getVertexElementTypeSize(vertexElements[i].Type);
-        }
-    }
-    return size;
-}
-
-size_t GraphicsHelper::getVertexElementTypeSize(VertexElementType type) {
-    switch (type) {
-        case VertexElementType::Float1:
-            return sizeof(float);
-        case VertexElementType::Float2:
-            return sizeof(float) * 2;
-        case VertexElementType::Float3:
-            return sizeof(float) * 3;
-        case VertexElementType::Float4:
-            return sizeof(float) * 4;
-        case VertexElementType::Ubyte4:
-            return sizeof(unsigned char) * 4;
-        case VertexElementType::Color4:
-            return sizeof(unsigned char) * 4;
-        case VertexElementType::Short2:
-            return sizeof(short) * 2;
-        case VertexElementType::Short4:
-            return sizeof(short) * 4;
-        default:
-            LN_UNREACHABLE();
-            break;
-    }
-    return 0;
-}
 
 PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format) {
     switch (format) {
@@ -120,30 +86,6 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format) {
             return TextureFormat::RGBA32F;
         default:
             return TextureFormat::Unknown;
-    }
-}
-
-size_t GraphicsHelper::getPixelSize(TextureFormat format) {
-    switch (format) {
-        case TextureFormat::Unknown:
-            return 0;
-        case TextureFormat::RGBA8:
-            return 4;
-        case TextureFormat::RGB8:
-            return 3;
-        case TextureFormat::RGBA16F:
-            return 8;
-        case TextureFormat::RGBA32F:
-            return 16;
-        case TextureFormat::R16F:
-            return 2;
-        case TextureFormat::R32F:
-            return 4;
-        case TextureFormat::R32S:
-            return 4;
-        default:
-            LN_UNREACHABLE();
-            return 0;
     }
 }
 
@@ -489,7 +431,7 @@ StreamingBufferAllocatorManager* GraphicsManager::obtainVertexBufferStreamingAll
 }
 
 StreamingBufferAllocatorManager* GraphicsManager::obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format) {
-    size_t elementSize = GraphicsHelper::getIndexStride(format);
+    size_t elementSize = RHIHelper::getIndexStride(format);
     auto r = m_indexBufferStreamingAllocatorManager.findIf([elementSize](auto& x) { return x->elementSize() == elementSize; });
     if (r) {
         return *r;

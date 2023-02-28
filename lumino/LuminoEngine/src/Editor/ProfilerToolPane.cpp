@@ -2,7 +2,7 @@
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
-#include "../../../Graphics/src/GPU/RHI/RHIProfiler.hpp"
+#include <LuminoGraphicsRHI/RHIProfiler.hpp>
 #include "../../../Graphics/src/GPU/GraphicsProfiler.hpp"
 #include "../../../Graphics/src/GPU/RenderTargetTextureCache.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>

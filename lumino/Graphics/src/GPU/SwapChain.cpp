@@ -9,7 +9,7 @@
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
 #include "RenderTargetTextureCache.hpp"
-#include "RHI/GraphicsDeviceContext.hpp"
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoGraphics/GPU/detail/RenderingCommandList.hpp>
 #include "RenderPassCache.hpp"
 #include "SingleFrameAllocator.hpp"

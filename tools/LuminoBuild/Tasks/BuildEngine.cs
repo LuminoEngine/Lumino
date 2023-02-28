@@ -18,10 +18,10 @@ namespace LuminoBuild.Tasks
 
         public static Dictionary<string, MSVCTargetInfo> TargetInfoMap = new Dictionary<string, MSVCTargetInfo>()
         {
-            { "x64-windows", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="x64", StaticRuntime = "OFF", LegacyTriplet = "MSVC2019-x64-MD" } },
-            { "x86-windows", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="Win32", StaticRuntime = "OFF", LegacyTriplet = "MSVC2019-x86-MD" } },
-            { "x64-windows-static", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="x64", StaticRuntime = "ON", LegacyTriplet = "MSVC2019-x64-MT" } },
-            { "x86-windows-static", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="Win32", StaticRuntime = "ON", LegacyTriplet = "MSVC2019-x86-MT" } },
+            { "x64-windows", new MSVCTargetInfo { Generator = "Visual Studio 17 2022", Arch="x64", StaticRuntime = "OFF", LegacyTriplet = "MSVC2022-x64-MD" } },
+            { "x86-windows", new MSVCTargetInfo { Generator = "Visual Studio 17 2022", Arch="Win32", StaticRuntime = "OFF", LegacyTriplet = "MSVC2022-x86-MD" } },
+            { "x64-windows-static", new MSVCTargetInfo { Generator = "Visual Studio 17 2022", Arch="x64", StaticRuntime = "ON", LegacyTriplet = "MSVC2022-x64-MT" } },
+            { "x86-windows-static", new MSVCTargetInfo { Generator = "Visual Studio 17 2022", Arch="Win32", StaticRuntime = "ON", LegacyTriplet = "MSVC2022-x86-MT" } },
         };
 
         public override string[] GetDepends(Build b)
@@ -69,7 +69,7 @@ namespace LuminoBuild.Tasks
 
                     var args = new string[]
                     {
-                        //$"-G\"{targetInfo.Generator}\"",
+                        $"-G\"{targetInfo.Generator}\"",
                         $"-DCMAKE_TOOLCHAIN_FILE=\"{b.VcpkgDir}/scripts/buildsystems/vcpkg.cmake\"",
                         $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
                         $"-DCMAKE_DEBUG_POSTFIX=d",

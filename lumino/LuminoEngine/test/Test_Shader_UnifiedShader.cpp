@@ -1,8 +1,8 @@
 ﻿#include "Common.hpp"
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#include "../src/UnifiedShader.hpp"
-#include "../src/UnifiedShaderCompiler.hpp"
-#include "../src/ShaderManager.hpp"
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
+#include "../../GraphicsRHI/src/ShaderCompiler/UnifiedShaderCompiler.hpp"
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
 
 class Test_Shader_UnifiedShader : public LuminoSceneTest {};
 
@@ -10,9 +10,9 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
 {
     {
         auto diag = makeObject_deprecated<DiagnosticsManager>();
-        detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
+        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
 
-        ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-1.fx"));
+        ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-1.fx")).unwrap();
 
         List<Path> includeDirs;
         List<String> definitions;
@@ -20,7 +20,7 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
 
         compiler.link();
 
-        detail::UnifiedShader* shader = compiler.unifiedShader();
+        kokage::UnifiedShader* shader = compiler.unifiedShader();
 
         shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
         //shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
@@ -41,15 +41,15 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
         ASSERT_EQ(1, passDL.m_buffers.size());
         ASSERT_EQ(0, passDL.m_buffers[0].dataIndex);
         ASSERT_EQ(0, passDL.m_buffers[0].bindingIndex);
-        ASSERT_EQ(detail::ShaderStageFlags_Pixel, passDL.m_buffers[0].stageFlags);
+        ASSERT_EQ(kokage::ShaderStageFlags_Pixel, passDL.m_buffers[0].stageFlags);
 
         ASSERT_EQ(2, passDL.m_textures.size());
         ASSERT_EQ(0, passDL.m_textures[0].bindingIndex);
         ASSERT_EQ(0, passDL.m_textures[0].dataIndex);
-        ASSERT_EQ(detail::ShaderStageFlags_Pixel, passDL.m_textures[0].stageFlags);
+        ASSERT_EQ(kokage::ShaderStageFlags_Pixel, passDL.m_textures[0].stageFlags);
         ASSERT_EQ(1, passDL.m_textures[1].bindingIndex);
         ASSERT_EQ(1, passDL.m_textures[1].dataIndex);
-        ASSERT_EQ(detail::ShaderStageFlags_Pixel, passDL.m_textures[1].stageFlags);
+        ASSERT_EQ(kokage::ShaderStageFlags_Pixel, passDL.m_textures[1].stageFlags);
 
         // sampler 型の uniform 変数がある場合、't' 's' register が追加される。
         ASSERT_EQ(2, passDL.m_samplers.size());
@@ -63,12 +63,12 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
         ASSERT_EQ(1, passDL.m_buffers.size());
         ASSERT_EQ(0, passDL.m_buffers[0].dataIndex);
         ASSERT_EQ(0, passDL.m_buffers[0].bindingIndex);
-        ASSERT_EQ(detail::ShaderStageFlags_Vertex | detail::ShaderStageFlags_Pixel, passDL.m_buffers[0].stageFlags);
+        ASSERT_EQ(kokage::ShaderStageFlags_Vertex | kokage::ShaderStageFlags_Pixel, passDL.m_buffers[0].stageFlags);
 
         ASSERT_EQ(1, passDL.m_textures.size());
         ASSERT_EQ(1, passDL.m_textures[0].dataIndex);    // _Texture1 は使わず、_Texture2 を使うので、globalLayout を示す dataIndex は 1
         ASSERT_EQ(0, passDL.m_textures[0].bindingIndex); // binding は 0
-        ASSERT_EQ(detail::ShaderStageFlags_Pixel, passDL.m_textures[0].stageFlags);
+        ASSERT_EQ(kokage::ShaderStageFlags_Pixel, passDL.m_textures[0].stageFlags);
     }
 }
 
@@ -76,15 +76,15 @@ TEST_F(Test_Shader_UnifiedShader, LayoutTest2)
 {
     {
         auto diag = makeObject_deprecated<DiagnosticsManager>();
-        detail::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
-        ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-2.fx"));
+        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), diag);
+        ByteBuffer buffer = FileSystem::readAllBytes(LN_ASSETFILE("Shader/LayoutTest-2.fx")).unwrap();
 
         List<Path> includeDirs;
         List<String> definitions;
         compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions);
         compiler.link();
 
-        detail::UnifiedShader* shader = compiler.unifiedShader();
+        kokage::UnifiedShader* shader = compiler.unifiedShader();
         shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
         //shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
     }

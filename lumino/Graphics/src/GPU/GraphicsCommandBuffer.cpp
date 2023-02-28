@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include "RHI/GraphicsDeviceContext.hpp"
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>

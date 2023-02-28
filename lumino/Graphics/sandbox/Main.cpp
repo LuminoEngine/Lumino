@@ -7,7 +7,7 @@
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics.hpp>
-#include <LuminoGraphics/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
 using namespace ln;
 
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)

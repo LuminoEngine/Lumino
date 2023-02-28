@@ -1,6 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include "RHI/GraphicsDeviceContext.hpp"
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoGraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>
 
@@ -169,7 +170,7 @@ void IndexBuffer::setFormat(IndexBufferFormat format)
 
 int IndexBuffer::stride() const
 {
-    return GraphicsHelper::getIndexStride(m_format);
+    return RHIHelper::getIndexStride(m_format);
 }
 
 void IndexBuffer::setIndex(int index, int vertexIndex)

@@ -1,4 +1,5 @@
 ﻿#include "Internal.hpp"
+#include <LuminoGraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>s
 #include "StreamingBufferAllocator.hpp"
@@ -22,7 +23,7 @@ Result StreamingBufferPage::init(Type type, size_t elementSize, size_t count) {
             m_resource = makeObject_deprecated<VertexBuffer>(elementSize * count, GraphicsResourceUsage::Dynamic);
             break;
         case ln::detail::StreamingBufferPage::Type::IndexBuffer:
-            m_resource = makeObject_deprecated<IndexBuffer>(count, GraphicsHelper::getIndexBufferFormat(elementSize), GraphicsResourceUsage::Dynamic);
+            m_resource = makeObject_deprecated<IndexBuffer>(count, RHIHelper::getIndexBufferFormat(elementSize), GraphicsResourceUsage::Dynamic);
             break;
         default:
             LN_UNREACHABLE();

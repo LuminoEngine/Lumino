@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#define NOMINMAX
 #include <Windows.h>
 #include <LuminoEngine/Engine/CoreApplication.hpp>
 //#include "../../LuminoEngine/include/LuminoEngine/Engine/Application.hpp"

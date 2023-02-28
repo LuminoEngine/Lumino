@@ -1,7 +1,7 @@
 ﻿
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#include <LuminoGraphics/ShaderCompiler/detail/UnifiedShader.hpp>
-#include <LuminoGraphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
 #include "../src/ShaderCompiler/UnifiedShaderCompiler.hpp"
 
 class Test_Shader_ShaderCompiler : public ::testing::Test {};

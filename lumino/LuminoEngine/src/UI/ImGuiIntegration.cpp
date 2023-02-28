@@ -1,6 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoPlatform/PlatformEvent.hpp>
 #include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
@@ -15,7 +16,6 @@
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoGraphics/Font/detail/FontManager.hpp>
-#include "../../../Graphics/src/GPU/RHI/GraphicsDeviceContext.hpp"
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

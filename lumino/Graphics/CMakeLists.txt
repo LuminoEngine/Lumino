@@ -11,10 +11,6 @@ file(GLOB LN_SOURCES_Bitmap "include/Bitmap/*.hpp" "include/Bitmap/detail/*.hpp"
 file(GLOB LN_SOURCES_Font "include/Font/*.hpp" "include/Font/detail/*.hpp" "src/Font/*.cpp" "src/Font/*.hpp")
 
 file(GLOB LN_SOURCES_GPU "include/LuminoGraphics/GPU/*.hpp" "include/LuminoGraphics/GPU/detail/*.hpp" "src/GPU/*.cpp" "src/GPU/*.hpp")
-file(GLOB LN_SOURCES_GPU_RHI "src/GPU/RHI/*.cpp" "src/GPU/RHI/*.hpp")
-
-file(GLOB LN_SOURCES_ShaderCompiler "include/LuminoGraphics/ShaderCompiler/*.hpp" "include/LuminoGraphics/ShaderCompiler/detail/*.hpp" "src/ShaderCompiler/*.cpp" "src/ShaderCompiler/*.hpp")
-file(GLOB LN_SOURCES_ShaderCompiler_Lexer "src/ShaderCompiler/Lexer/*.cpp" "src/ShaderCompiler/Lexer/*.hpp")
 
 file(GLOB LN_SOURCES_Animation "include/LuminoGraphics/Animation/*.hpp" "src/Animation/*.cpp" "src/Animation/*.hpp")
 
@@ -50,21 +46,10 @@ elseif (WIN32)
 elseif (APPLE)
 endif()
 
-if (WIN32)
-    file(GLOB LN_SOURCES_ShaderCompiler_Windows "src/ShaderCompiler/Windows/*.cpp" "src/ShaderCompiler/Windows/*.hpp")
-endif()
-
 source_group("" FILES ${LN_SOURCES})
 source_group("Bitmap" FILES ${LN_SOURCES_Bitmap})
 source_group("Font" FILES ${LN_SOURCES_Font})
 source_group("GPU" FILES ${LN_SOURCES_GPU})
-source_group("GPU/RHI" FILES ${LN_SOURCES_GPU_RHI})
-source_group("GPU/RHI/OpenGL" FILES ${LN_SOURCES_GPU_RHI_OpenGL})
-source_group("GPU/RHI/Vulkan" FILES ${LN_SOURCES_GPU_RHI_Vulkan})
-source_group("GPU/RHI/DirectX12" FILES ${LN_SOURCES_GPU_RHI_DirectX12})
-source_group("ShaderCompiler" FILES ${LN_SOURCES_ShaderCompiler})
-source_group("ShaderCompiler/Lexer" FILES ${LN_SOURCES_ShaderCompiler_Lexer})
-source_group("ShaderCompiler/Windows" FILES ${LN_SOURCES_ShaderCompiler_Windows})
 source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Mesh/MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
@@ -88,9 +73,6 @@ set(LN_SOURCES
     ${LN_SOURCES_GPU_RHI_OpenGL}
     ${LN_SOURCES_GPU_RHI_Vulkan}
     ${LN_SOURCES_GPU_RHI_DirectX12}
-    ${LN_SOURCES_ShaderCompiler}
-    ${LN_SOURCES_ShaderCompiler_Lexer}
-    ${LN_SOURCES_ShaderCompiler_Windows}
     ${LN_SOURCES_Animation}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Mesh_MeshImporters}
@@ -109,10 +91,6 @@ set(LN_SOURCES
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
-if (LN_USE_VULKAN)
-    list(APPEND LN_DEFINITIONS LN_USE_VULKAN=1)
-endif()
-
 set(LOCAL_LIBRARIES 
     LuminoCore
     LuminoRuntime
@@ -142,32 +120,17 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LOCAL_LIBRARIES})
+target_link_libraries(
+    ${PROJECT_NAME} 
+    PRIVATE
+        ${LOCAL_LIBRARIES}
+    PUBLIC
+        LuminoGraphicsRHI
+)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_DEFINITIONS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
-
-if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        glslang::OSDependent
-        glslang::glslang
-        glslang::MachineIndependent
-        glslang::GenericCodeGen
-        glslang::OGLCompiler
-        glslang::glslang-default-resource-limits
-        glslang::SPVRemapper
-        glslang::SPIRV
-        glslang::HLSL
-        spirv-cross-core
-        spirv-cross-glsl
-        spirv-cross-hlsl
-        spirv-cross-msl
-        spirv-cross-reflect
-        spirv-cross-util
-    )
-endif()
 
 #-------------------------------------------------------------------------------
 # Installation
