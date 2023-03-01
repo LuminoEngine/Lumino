@@ -36,8 +36,7 @@ void ShaderManager::terminate()
 }
 
 ShaderManager::ShaderManager()
-    : m_graphicsManager(nullptr)
-    , m_builtinShaderList()
+    : m_builtinShaderList()
 #ifdef _WIN32
     , m_hD3DCompilerDLL(nullptr)
 #endif
@@ -51,8 +50,6 @@ ShaderManager::~ShaderManager()
 bool ShaderManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG("ShaderManager Initialization started.");
-
-    m_graphicsManager = settings.graphicsManager;
 
     // Lumino.fxh.h
     {

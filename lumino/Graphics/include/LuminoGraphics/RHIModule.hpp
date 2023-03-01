@@ -9,18 +9,18 @@ class AssetManager;
 class PlatformManager;
 } // namespace detail
 
-struct RHIModuleSettings {
+struct GraphicsModuleSettings {
     GraphicsAPI graphicsAPI = GraphicsAPI::Default;
     String priorityGPUName;
     bool debugMode = false;
 };
 
-class RHIModule : public Module {
+class GraphicsModule : public Module {
 public:
     /**
      * Initialize Module.
      */
-    static RHIModule* initialize(const RHIModuleSettings& settings = {});
+    static GraphicsModule* initialize(const GraphicsModuleSettings& settings = {});
 
     /**
      * Terminate Module.

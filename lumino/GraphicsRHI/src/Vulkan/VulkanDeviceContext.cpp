@@ -295,7 +295,7 @@ Result VulkanDevice::createInstance() {
     if (m_enableValidationLayers) {
         m_availableValidationLayers = VulkanHelper::checkValidationLayerSupport();
         if (m_availableValidationLayers.empty()) {
-            LN_LOG_ERROR("validation layers requested, but not available!");
+            LN_LOG_ERROR("validation layers requested, but not available! Have you installed the Vulkan SDK?");
             return err();
         }
     }

@@ -69,7 +69,7 @@ namespace LuminoBuild.Tasks
 
                     var args = new string[]
                     {
-                        $"-G\"{targetInfo.Generator}\"",
+                        //$"-G\"{targetInfo.Generator}\"",
                         $"-DCMAKE_TOOLCHAIN_FILE=\"{b.VcpkgDir}/scripts/buildsystems/vcpkg.cmake\"",
                         $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
                         $"-DCMAKE_DEBUG_POSTFIX=d",

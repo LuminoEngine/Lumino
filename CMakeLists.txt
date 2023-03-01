@@ -58,6 +58,8 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 # Vulkan
 option(LN_USE_VULKAN "Vulkan" ON)
 
+option(LUMINO_USE_WEBGPU "WebGPU" OFF)
+
 # OpenGL
 option(LN_USE_OPENGL "OpenGL" ON)
 
@@ -186,6 +188,10 @@ set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/gl
 # ------------------------------------------------------------------------------
 if(LUMINO_BUILD_CORE)
     add_subdirectory(lumino/LuminoCore)
+endif()
+
+if(LUMINO_USE_WEBGPU)
+    add_subdirectory(external/wgpu-native-for-windows/webgpu)
 endif()
 
 if(LUMINO_BUILD_ENGINE)

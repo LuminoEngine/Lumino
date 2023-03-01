@@ -135,6 +135,9 @@ public:
     };
     static const String FileExt;
 
+
+
+
     UnifiedShader(DiagnosticsManager* diag);
     virtual ~UnifiedShader();
 

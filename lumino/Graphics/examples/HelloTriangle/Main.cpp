@@ -28,7 +28,7 @@ void init() {
 
     PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::GLFWWithOpenGL });
 
-    RHIModule::initialize({ GraphicsAPI::OpenGL });
+    GraphicsModule::initialize({ GraphicsAPI::OpenGL });
 
 #ifdef __EMSCRIPTEN__
     RuntimeModule::mountAssetArchive(U"Assets.lna", StringView());
@@ -65,7 +65,7 @@ void cleanupApp() {
 }
 
 void cleanup() {
-    RHIModule::terminate();
+    GraphicsModule::terminate();
     PlatformModule::terminate();
     RuntimeModule::terminate();
 }

@@ -38,13 +38,11 @@ class ShaderManager
 public:
     struct Settings
     {
-        GraphicsManager* graphicsManager = nullptr;
     };
     static ShaderManager* initialize(const Settings& settings);
     static void terminate();
     static inline ShaderManager* instance() { return static_cast<ShaderManager*>(EngineContext2::instance()->shaderManager); }
 
-    GraphicsManager* graphicsManager2() const { return m_graphicsManager; }
     const std::vector<std::pair<std::string, std::string>>& builtinShaderList() const { return m_builtinShaderList; }
 
 #ifdef _WIN32
@@ -58,7 +56,6 @@ private:
     bool init(const Settings& settings);
     void dispose();
 
-    GraphicsManager* m_graphicsManager;
     std::vector<std::pair<std::string, std::string>> m_builtinShaderList;
 
 #ifdef _WIN32

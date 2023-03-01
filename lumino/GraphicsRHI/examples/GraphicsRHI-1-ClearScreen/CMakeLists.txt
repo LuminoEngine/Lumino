@@ -1,4 +1,4 @@
-project(GraphicsRHI-HelloTriangle)
+project(GraphicsRHI-1-ClearScreen)
 
 #-------------------------------------------------------------------------------
 # Configuration

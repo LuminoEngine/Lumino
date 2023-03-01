@@ -15,13 +15,13 @@ using namespace ln;
 void init() {
     RuntimeModule::initialize();
     PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::GLFWWithoutOpenGL });
-    RHIModule::initialize({ GraphicsAPI::Vulkan });
+    GraphicsModule::initialize({ GraphicsAPI::Vulkan });
 
     RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 }
 
 void cleanup() {
-    RHIModule::terminate();
+    GraphicsModule::terminate();
     PlatformModule::terminate();
     RuntimeModule::terminate();
 }

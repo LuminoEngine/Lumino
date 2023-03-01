@@ -217,7 +217,6 @@ bool GraphicsManager::init(const Settings& settings) {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     {
         ShaderManager::Settings shaderManagerSettings;
-        shaderManagerSettings.graphicsManager = this;
         m_shaderManager = ShaderManager::initialize(shaderManagerSettings);
     }
 #endif

@@ -27,11 +27,11 @@ class StreamingBufferAllocatorManager;
 //class RenderingManager2;
 class MeshManager;
 
-class GraphicsManager : public RHIModule {
+class GraphicsManager : public GraphicsModule {
 public:
-    struct Settings : public RHIModuleSettings {
+    struct Settings : public GraphicsModuleSettings {
         Settings() {}
-        Settings(const RHIModuleSettings& base) : RHIModuleSettings(base) {}
+        Settings(const GraphicsModuleSettings& base) : GraphicsModuleSettings(base) {}
     };
 
     static GraphicsManager* initialize(const Settings& settings);

@@ -32,7 +32,7 @@ void TestEnv::setup() {
 
     RuntimeModule::initialize();
     PlatformModule::initialize({ { U"Test", 160, 120 }, windowSystem });
-    RHIModule::initialize({ graphicsAPI });
+    GraphicsModule::initialize({ graphicsAPI });
 
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));
@@ -62,7 +62,7 @@ void TestEnv::teardown() {
     swapChain = nullptr;
 
     detail::RenderingManager::terminate();
-    RHIModule::terminate();
+    GraphicsModule::terminate();
     PlatformModule::terminate();
     RuntimeModule::terminate();
 }

@@ -724,6 +724,14 @@ std::vector<const char*> VulkanHelper::checkValidationLayerSupport() {
     std::vector<VkLayerProperties> availableLayers(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
+
+    if (Logger::shouldLog(LogLevel::Verbose)) {
+        LN_LOG_VERBOSE("ValidationLayers:");
+        for (const auto& layerProperties : availableLayers) {
+            LN_LOG_VERBOSE("  {}", layerProperties.layerName);
+        }
+    }
+
     std::vector<const char*> result;
 
     for (const char* layerName : validationLayers) {

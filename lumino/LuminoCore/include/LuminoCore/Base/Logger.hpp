@@ -18,16 +18,7 @@
 #define LN_FUNC_MACRO __PRETTY_FUNCTION__
 #endif
 
-//#define LN_LOG(level, tag) !(::ln::detail::LoggerInterface::getInstance() && ::ln::detail::LoggerInterface::getInstance()->checkLevel(level)) ? (void)0 : (*::ln::detail::LoggerInterface::getInstance()) += ::ln::detail::LogRecord(level, tag, __FILE__, LN_FUNC_MACRO, __LINE__)
-//#define LN_LOG_FATAL LN_LOG(::ln::LogLevel::Fatal, nullptr)
-//#define LN_LOG_ERROR LN_LOG(::ln::LogLevel::Error, nullptr)
-//#define LN_LOG_WARNING LN_LOG(::ln::LogLevel::Warning, nullptr)
-//#define LN_LOG_INFO LN_LOG(::ln::LogLevel::Info, nullptr)
-//#define LN_LOG_DEBUG LN_LOG(::ln::LogLevel::Debug, nullptr)
-//#define LN_LOG_VERBOSE LN_LOG(::ln::LogLevel::Verbose, nullptr)
-
 /**
- *
  * Logger usage samples
  * ----------
  *
@@ -41,9 +32,9 @@
  */
 
 #define LN_LOG_LOGGER_CALL(level, ...) ::ln::Logger::log(::ln::LogLocation{ __FILE__, __LINE__, LN_FUNC_MACRO }, level, __VA_ARGS__)
-#define LN_LOG_VERBOSE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Verbose, __VA_ARGS__)
 #define LN_LOG_TRACE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Trace, __VA_ARGS__)
 #define LN_LOG_DEBUG(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Debug, __VA_ARGS__)
+#define LN_LOG_VERBOSE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Verbose, __VA_ARGS__)
 #define LN_LOG_INFO(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Info, __VA_ARGS__)
 #define LN_LOG_WARNING(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Warning, __VA_ARGS__)
 #define LN_LOG_ERROR(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Error, __VA_ARGS__)
@@ -52,23 +43,44 @@
 namespace ln {
 class StringView;
 
-/** ログの通知レベル */
+/**
+ * ログの通知レベル
+ * 
+ * レベルは大きく次のように分類されます。
+ * - Lumino 自体または Lumino を使用したアプリケーションを開発するプログラマが不具合調査などに活用できる情報。 (Trace, Debug)
+ * - Lumino を使用したアプリケーションのユーザーや、ライブラリユーザーにとって有用な情報。 (Verbose 以上)
+ */
 LN_ENUM()
 enum class LogLevel {
-    Unknown,
+    Unknown = 0,
 
-    // Lumino の開発として集めたい情報
-    Verbose,
-    Trace,
-    Debug,
+    // 開発者として集めたい情報
+	
+	/** 関数の入口や分岐をマークするために使用します。 */
+    Trace = 1,
 
-    // Lumino のユーザーに対して通知したい情報
-    Info,
-    Warning,
-    Error,
-    Fatal,
+    /** デバッグに有用な情報を出力するために使用します。 */
+    Debug = 2,
 
-    Disble,
+    // ユーザーに対して通知したい情報
+	
+    /** Infoレベルの情報に加えて、詳細な情報を記録します。デフォルトでは出力されません。 */
+    Verbose = 3,
+	
+	/** ユーザーが問題解決を行う際に有用な情報を記録します。 (Default) */
+    Info = 4,
+
+    /** 問題を引き起こす可能性のある異常な状況を記録します。または、問題をプログラムで解決して処理を続行しましたが、注意を要する状態を記録します。 */
+    Warning = 5,
+
+    /** 処理を正常に続行できない障害を記録します。 */
+    Error = 6,
+
+    /** プログラムの実行が不可能な状況を記録します。通常、プログラムは強制終了します。 */
+    Fatal = 7,
+
+    /** 全てのログ出力を無効化するためのキーワードです。 */
+    Disble = 8,
 };
 
 struct LogLocation {

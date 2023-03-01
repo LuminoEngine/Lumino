@@ -83,7 +83,7 @@ Ref<MyRenderView> g_renderView;
 void init() {
     RuntimeModule::initialize();
     PlatformModule::initialize({ { U"Example", 640, 480 } });
-    RHIModule::initialize({ GraphicsAPI::Vulkan, U"", true });
+    GraphicsModule::initialize({ GraphicsAPI::Vulkan, U"", true });
     RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 
     detail::RenderingManager::Settings renderingManagerSettings;
@@ -105,7 +105,7 @@ void cleanupApp() {
 }
 
 void cleanup() {
-    RHIModule::terminate();
+    GraphicsModule::terminate();
     PlatformModule::terminate();
     RuntimeModule::terminate();
 }
@@ -154,7 +154,7 @@ Ref<VertexBuffer> g_vertexBuffer;
 void init() {
     RuntimeModule::initialize();
     PlatformModule::initialize({ { U"Example", 640, 480 } });
-    RHIModule::initialize({ GraphicsAPI::Vulkan, U"", true });
+    GraphicsModule::initialize({ GraphicsAPI::Vulkan, U"", true });
     RuntimeModule::mountAssetDirectory(ASSETS_DIR);
 
     detail::RenderingManager::Settings renderingManagerSettings;
@@ -188,7 +188,7 @@ void cleanupApp() {
 }
 
 void cleanup() {
-    RHIModule::terminate();
+    GraphicsModule::terminate();
     PlatformModule::terminate();
     RuntimeModule::terminate();
 }

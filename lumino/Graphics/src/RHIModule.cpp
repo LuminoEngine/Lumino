@@ -3,12 +3,12 @@
 
 namespace ln {
 
-RHIModule* RHIModule::initialize(const RHIModuleSettings& settings) {
+GraphicsModule* GraphicsModule::initialize(const GraphicsModuleSettings& settings) {
     detail::GraphicsManager::Settings s = settings;
     return detail::GraphicsManager::initialize(s);
 }
 
-void RHIModule::terminate() {
+void GraphicsModule::terminate() {
     detail::GraphicsManager::terminate();
 }
 
