@@ -16,9 +16,6 @@ public:
 
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
 
-    void wait();
-    Result<> beginRecording();
-    Result<> endRecording();
     Result<> submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
     const Ref<VulkanSingleFrameAllocator>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
@@ -28,7 +25,7 @@ public:
     VulkanSingleFrameBufferInfo cmdCopyBuffer(size_t size, VulkanBuffer* destination);
     VulkanSingleFrameBufferInfo cmdCopyBufferToImage(size_t size, int width, int height, VulkanImage* destination);
 
-private:
+public:
     VulkanDevice* m_deviceContext;
     VkCommandBuffer m_commandBuffer;
     VkFence m_inFlightFence;
