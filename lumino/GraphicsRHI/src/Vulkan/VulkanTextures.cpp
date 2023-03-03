@@ -93,22 +93,11 @@ void VulkanTexture2D::setSubData(VulkanGraphicsContext* graphicsContext, int x, 
         return;
     }
 
-    VkBufferImageCopy region = {};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
-    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount = 1;
-    region.imageOffset = { 0, 0, 0 };
-    region.imageExtent = {
-        static_cast<uint32_t>(width),
-        static_cast<uint32_t>(height),
-        1
-    };
-    VulkanBuffer* buffer = graphicsContext->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
-    buffer->setData(0, data, dataSize);
+    VulkanSingleFrameBufferInfo stagingBuffer = graphicsContext->recodingCommandBuffer()->cmdCopyBufferToImage(
+        dataSize, width, height, &m_image);
+    //buffer->setData(0, data, dataSize);
+    stagingBuffer.buffer->setData(stagingBuffer.offset, data, dataSize);
+
 
     // レイアウトを元に戻す
     if (!m_deviceContext->transitionImageLayout(graphicsContext->recodingCommandBuffer()->vulkanCommandBuffer(), m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {

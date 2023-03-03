@@ -22,23 +22,22 @@ Result<> VulkanCommandBuffer::init(VulkanDevice* deviceContext) {
     if (LN_REQUIRE(deviceContext)) return err();
     m_deviceContext = deviceContext;
 
-    if (!m_vulkanAllocator.init()) {
-        return err();
-    }
-
+    //if (!m_vulkanAllocator.init()) {
+    //    return err();
+    //}
     // ひとまず 16MB (100万頂点くらいでの見積)
     // 1ページは、更新したいバッファ全体が乗るサイズになっていればよい。
     // もしあふれる場合は一度 LinearAllocator の LargePage 扱いにして、
     // 次のフレームに移る前にページサイズを大きくして LinearAllocator を作り直す。
     // ただ、普通動的なバッファ更新でこんなに大きなサイズを使うことはないような気もする。
     // なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
-    resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
+    //resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
 
     // m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->uniformBufferSingleFrameAllocator());
     m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->transferBufferSingleFrameAllocator());
 
-    m_stagingBufferPoolUsed = 0;
-    glowStagingBufferPool();
+    //m_stagingBufferPoolUsed = 0;
+    //glowStagingBufferPool();
 
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -66,10 +65,10 @@ void VulkanCommandBuffer::dispose() {
         m_commandBuffer = VK_NULL_HANDLE;
     }
 
-    cleanInFlightResources();
+    //cleanInFlightResources();
 
-    m_stagingBufferPool.clear();
-    m_stagingBufferPoolUsed = 0;
+    //m_stagingBufferPool.clear();
+    //m_stagingBufferPoolUsed = 0;
 
     if (m_inFlightFence) {
         vkDestroyFence(m_deviceContext->vulkanDevice(), m_inFlightFence, m_deviceContext->vulkanAllocator());
@@ -85,13 +84,13 @@ void VulkanCommandBuffer::wait() {
 
 Result<> VulkanCommandBuffer::beginRecording() {
 
-    m_linearAllocator->cleanup();
+    //m_linearAllocator->cleanup();
     // m_uniformBufferSingleFrameAllocator->cleanup();
     m_transferBufferSingleFrameAllocator->cleanup();
 
     // 前回の描画で使ったリソースを開放する。
     // end で解放しないのは、まだその後の実際のコマンド実行で使うリソースであるから。
-    cleanInFlightResources();
+    //cleanInFlightResources();
 
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -99,33 +98,12 @@ Result<> VulkanCommandBuffer::beginRecording() {
 
     LN_VK_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer(), &beginInfo));
 
-    m_lastFoundFramebuffer = nullptr;
-
     return ok();
 }
 
 Result<> VulkanCommandBuffer::endRecording() {
-    if (m_currentRenderPass) {
-        vkCmdEndRenderPass(vulkanCommandBuffer());
-        m_currentRenderPass = nullptr;
-    }
-
-    m_lastFoundFramebuffer = nullptr;
-
     LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
-
-    // for (auto& pass : m_usingShaderPasses) {
-    //     pass->recodingPool = nullptr;
-    // }
-
     return ok();
-}
-
-void VulkanCommandBuffer::endRenderPassInRecordingIfNeeded() {
-    if (m_currentRenderPass) {
-        vkCmdEndRenderPass(vulkanCommandBuffer());
-        m_currentRenderPass = false;
-    }
 }
 
 Result<> VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
@@ -182,28 +160,31 @@ Result<> VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore sign
 //     return m_usingDescriptorSetsPools[usingShaderPass]->allocateDescriptorSets(this, outSets);
 // }
 
-VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlags usage) {
-    if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
-        glowStagingBufferPool();
-    }
-
-    VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
-    m_stagingBufferPoolUsed++;
-
-    if (!buffer->init(m_deviceContext, size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator())) {
-        return nullptr;
-    }
-
-    //// できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
-    // if (buffer->size() < size) {
-    //     buffer->resetBuffer(size, usage);
-    // }
-
-    //// LinearAllocator からメモリ確保
-    // buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
-
-    return buffer;
-}
+//VulkanBuffer* VulkanCommandBuffer::allocateBuffer_deprecated(size_t size, VkBufferUsageFlags usage) {
+//    if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
+//        glowStagingBufferPool();
+//    }
+//
+//    VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
+//    m_stagingBufferPoolUsed++;
+//
+//    if (!buffer->init(
+//		m_deviceContext, size, usage,
+//		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+//		m_vulkanAllocator.vulkanAllocator())) {
+//        return nullptr;
+//    }
+//
+//    //// できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
+//    // if (buffer->size() < size) {
+//    //     buffer->resetBuffer(size, usage);
+//    // }
+//
+//    //// LinearAllocator からメモリ確保
+//    // buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+//
+//    return buffer;
+//}
 
 VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination) {
     // VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -253,42 +234,64 @@ VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, Vulk
     return bufferInfo;
 }
 
-VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination) {
-    VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, int width, int height, VulkanImage* destination) {
+    //VulkanBuffer* buffer = allocateBuffer_deprecated(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    VulkanSingleFrameBufferInfo bufferInfo = m_transferBufferSingleFrameAllocator->allocate(size);
+
+    VkBufferImageCopy region = {};
+    region.bufferOffset = bufferInfo.offset;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+    region.imageOffset = { 0, 0, 0 };
+    region.imageExtent = {
+        static_cast<uint32_t>(width),
+        static_cast<uint32_t>(height),
+        1
+    };
 
     // コマンドバッファに乗せる
-    vkCmdCopyBufferToImage(m_commandBuffer, buffer->nativeBuffer(), destination->vulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    vkCmdCopyBufferToImage(
+		m_commandBuffer,
+        bufferInfo.buffer->nativeBuffer(),
+		destination->vulkanImage(),
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		1,
+		&region);
 
     // 戻り先で書いてもらう
-    return buffer;
+    return bufferInfo;
 }
 
-void VulkanCommandBuffer::cleanInFlightResources() {
-    for (auto& buf : m_stagingBufferPool) {
-        buf.dispose();
-    }
-    m_stagingBufferPoolUsed = 0;
-}
+//void VulkanCommandBuffer::cleanInFlightResources() {
+//    //for (auto& buf : m_stagingBufferPool) {
+//    //    buf.dispose();
+//    //}
+//    //m_stagingBufferPoolUsed = 0;
+//}
 
-void VulkanCommandBuffer::resetAllocator(size_t pageSize) {
-    m_linearAllocatorManager = makeRef<LinearAllocatorPageManager>(pageSize);
-    m_linearAllocator = makeRef<LinearAllocator>(m_linearAllocatorManager);
-    m_vulkanAllocator.setLinearAllocator(m_linearAllocator);
-}
+//void VulkanCommandBuffer::resetAllocator(size_t pageSize) {
+//    m_linearAllocatorManager = makeRef<LinearAllocatorPageManager>(pageSize);
+//    m_linearAllocator = makeRef<LinearAllocator>(m_linearAllocatorManager);
+//    m_vulkanAllocator.setLinearAllocator(m_linearAllocator);
+//}
 
-Result<> VulkanCommandBuffer::glowStagingBufferPool() {
-    size_t oldSize = 0;
-    size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
-
-    m_stagingBufferPool.resize(newSize);
-    // for (size_t i = oldSize; i < newSize; i++) {
-    //	if (!m_stagingBufferPool[i].init(m_deviceContext)) {
-    //		return false;
-    //	}
-    // }
-
-    return ok();
-}
+//Result<> VulkanCommandBuffer::glowStagingBufferPool() {
+//    size_t oldSize = 0;
+//    size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
+//
+//    m_stagingBufferPool.resize(newSize);
+//    // for (size_t i = oldSize; i < newSize; i++) {
+//    //	if (!m_stagingBufferPool[i].init(m_deviceContext)) {
+//    //		return false;
+//    //	}
+//    // }
+//
+//    return ok();
+//}
 
 //==============================================================================
 // VulkanGraphicsContext
@@ -484,9 +487,6 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 
 void VulkanGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length)
 {
-    // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_commandBuffer->endRenderPassInRecordingIfNeeded();
-
 	VulkanBuffer* buffer = nullptr;
 	switch (resource->resourceType())
 	{
@@ -509,17 +509,11 @@ void VulkanGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, c
 
 void VulkanGraphicsContext::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
-	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_commandBuffer->endRenderPassInRecordingIfNeeded();
-
 	static_cast<VulkanTexture*>(resource)->setSubData(this, x, y, width, height, data, dataSize);
 }
 
 void VulkanGraphicsContext::onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
-	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_commandBuffer->endRenderPassInRecordingIfNeeded();
-
 	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
 }
 

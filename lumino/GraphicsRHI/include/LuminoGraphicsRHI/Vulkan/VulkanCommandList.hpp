@@ -20,13 +20,12 @@ public:
     void wait();
     Result<> beginRecording();
     Result<> endRecording();
-    void endRenderPassInRecordingIfNeeded();
     Result<> submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
     // Result<> allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
 
     // TODO: deprecated
-    VulkanBuffer* allocateBuffer(size_t size, VkBufferUsageFlags usage);
+    //VulkanBuffer* allocateBuffer_deprecated(size_t size, VkBufferUsageFlags usage);
 
     // const Ref<VulkanSingleFrameAllocator>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
     const Ref<VulkanSingleFrameAllocator>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
@@ -34,36 +33,33 @@ public:
     // データを destination へ送信するためのコマンドを push する。
     // 元データは戻り値のメモリ領域に書き込むこと。
     VulkanSingleFrameBufferInfo cmdCopyBuffer(size_t size, VulkanBuffer* destination);
-    VulkanBuffer* cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination);
+    VulkanSingleFrameBufferInfo cmdCopyBufferToImage(size_t size, int width, int height, VulkanImage* destination);
 
 public:
-    VulkanRenderPass* m_currentRenderPass = nullptr;
-    VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
-    // bool m_insideRendarPass = false;
 
 private:
-    void cleanInFlightResources();
+    //void cleanInFlightResources();
     // struct StagingBuffer
     //{
     //	VkBuffer buffer;
     //	VkDeviceMemory bufferMemory;
     // };
 
-    void resetAllocator(size_t pageSize);
-    Result<> glowStagingBufferPool();
+    //void resetAllocator(size_t pageSize);
+    //Result<> glowStagingBufferPool();
 
     VulkanDevice* m_deviceContext;
     VkCommandBuffer m_commandBuffer;
     VkFence m_inFlightFence;
 
-    Ref<LinearAllocatorPageManager> m_linearAllocatorManager;
-    Ref<LinearAllocator> m_linearAllocator;
-    VulkanLinearAllocator m_vulkanAllocator;
+    //Ref<LinearAllocatorPageManager> m_linearAllocatorManager;
+    //Ref<LinearAllocator> m_linearAllocator;
+    //VulkanLinearAllocator m_vulkanAllocator;
     // Ref<VulkanSingleFrameAllocator> m_uniformBufferSingleFrameAllocator;
     Ref<VulkanSingleFrameAllocator> m_transferBufferSingleFrameAllocator;
 
-    size_t m_stagingBufferPoolUsed;
-    std::vector<VulkanBuffer> m_stagingBufferPool;
+    //size_t m_stagingBufferPoolUsed;
+    //std::vector<VulkanBuffer> m_stagingBufferPool;
 };
 
 class VulkanGraphicsContext : public ICommandList
