@@ -384,117 +384,117 @@ void DX12Device::onGetCaps(GraphicsDeviceCaps* outCaps) {
     outCaps->uniformBufferOffsetAlignment = 256;
 }
 
-Ref<ISwapChain> DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    auto ptr = makeRef<DX12SwapChain>();
+URef<ISwapChain> DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+    auto ptr = makeURef<DX12SwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<ICommandList> DX12Device::onCreateCommandList() {
-    auto ptr = makeRef<DX12GraphicsContext>();
+URef<ICommandList> DX12Device::onCreateCommandList() {
+    auto ptr = makeURef<DX12GraphicsContext>();
     if (!ptr->init(this)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IRenderPass> DX12Device::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    auto ptr = makeRef<DX12RenderPass>();
+URef<IRenderPass> DX12Device::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+    auto ptr = makeURef<DX12RenderPass>();
     if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IPipeline> DX12Device::onCreatePipeline(const DevicePipelineStateDesc& state) {
-    auto ptr = makeRef<DX12Pipeline>();
+URef<IPipeline> DX12Device::onCreatePipeline(const DevicePipelineStateDesc& state) {
+    auto ptr = makeURef<DX12Pipeline>();
     if (!ptr->init(this, state)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IVertexDeclaration> DX12Device::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
-    auto ptr = makeRef<DX12VertexDeclaration>();
+URef<IVertexDeclaration> DX12Device::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
+    auto ptr = makeURef<DX12VertexDeclaration>();
     if (!ptr->init(elements, elementsCount)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
-    auto ptr = makeRef<DX12VertexBuffer>();
+URef<RHIResource> DX12Device::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
+    auto ptr = makeURef<DX12VertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
-    auto ptr = makeRef<DX12IndexBuffer>();
+URef<RHIResource> DX12Device::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+    auto ptr = makeURef<DX12IndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    auto ptr = makeRef<DX12Texture2D>();
+URef<RHIResource> DX12Device::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+    auto ptr = makeURef<DX12Texture2D>();
     if (!ptr->init(this, usage, width, height, requestFormat, mipmap, initialData)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+URef<RHIResource> DX12Device::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
-    auto ptr = makeRef<DX12RenderTarget>();
+URef<RHIResource> DX12Device::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
+    auto ptr = makeURef<DX12RenderTarget>();
     if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateDepthBuffer(uint32_t width, uint32_t height) {
-    auto ptr = makeRef<DX12DepthBuffer>();
+URef<RHIResource> DX12Device::onCreateDepthBuffer(uint32_t width, uint32_t height) {
+    auto ptr = makeURef<DX12DepthBuffer>();
     if (!ptr->init(this, width, height)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<ISamplerState> DX12Device::onCreateSamplerState(const SamplerStateData& desc) {
-    auto ptr = makeRef<DX12SamplerState>();
+URef<ISamplerState> DX12Device::onCreateSamplerState(const SamplerStateData& desc) {
+    auto ptr = makeURef<DX12SamplerState>();
     if (!ptr->init(this, desc)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
-    auto ptr = makeRef<DX12ShaderPass>();
+URef<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+    auto ptr = makeURef<DX12ShaderPass>();
     if (!ptr->init(this, createInfo, diag)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> DX12Device::onCreateUniformBuffer(uint32_t size) {
-    auto ptr = makeRef<DX12UniformBuffer>();
+URef<RHIResource> DX12Device::onCreateUniformBuffer(uint32_t size) {
+    auto ptr = makeURef<DX12UniformBuffer>();
     if (!ptr->init(this, size)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass) {
-    auto ptr = makeRef<DX12DescriptorPool>();
+URef<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass) {
+    auto ptr = makeURef<DX12DescriptorPool>();
     if (!ptr->init(this, static_cast<DX12ShaderPass*>(shaderPass))) {
         return nullptr;
     }

@@ -328,15 +328,6 @@ private:
 	LinearAllocator* m_linearAllocator;
 };
 
-// CommandBuffer から直接参照されるオブジェクト。コマンド実行終了までは解放してはならないもの。
-// 実装先で retain, release すること。
-class IVulkanInFlightResource
-{
-public:
-    virtual void onBind() = 0;
-    virtual void onUnBind() = 0;
-};
-
 // テクスチャ、レンダーターゲット、デプスバッファなどに使用される Image
 class VulkanImage
 {

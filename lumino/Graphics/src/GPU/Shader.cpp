@@ -416,12 +416,12 @@ ShaderPass::ShaderPass()
 ShaderPass::~ShaderPass() {
 }
 
-void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout) {
+void ShaderPass::init(const String& name, URef<detail::IShaderPass> rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout) {
     if (LN_REQUIRE(rhiPass)) return;
     Object::init();
 
     m_name = name;
-    m_rhiPass = rhiPass;
+    m_rhiPass = std::move(rhiPass);
     m_renderState = renderState;
 
     m_descriptorLayout.init(layout, globalLayout);
@@ -577,21 +577,21 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
     rhiCommandList->setDescriptor(descriptor);
 }
 
-Ref<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool() {
+URef<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool() {
     if (m_descriptorSetsPools.empty()) {
         return m_owner->m_owner->m_graphicsManager->deviceContext()->createDescriptorPool(m_rhiPass);
     }
     else {
-        auto ptr = m_descriptorSetsPools.back();
+        auto ptr = std::move(m_descriptorSetsPools.back());
         m_descriptorSetsPools.pop_back();
         return ptr;
     }
 }
 
-void ShaderPass::releaseDescriptorSetsPool(detail::IDescriptorPool* pool) {
+void ShaderPass::releaseDescriptorSetsPool(URef<detail::IDescriptorPool> pool) {
     LN_DCHECK(pool);
     pool->reset();
-    m_descriptorSetsPools.push_back(pool);
+    m_descriptorSetsPools.push_back(std::move(pool));
 }
 
 //==============================================================================

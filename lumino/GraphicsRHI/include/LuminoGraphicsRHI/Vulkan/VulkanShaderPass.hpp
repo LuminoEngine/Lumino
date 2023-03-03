@@ -8,14 +8,11 @@ namespace detail {
 
 class VulkanShaderPass
     : public IShaderPass
-    , public IVulkanInFlightResource
 {
 public:
     VulkanShaderPass();
     Result<> init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void onDestroy() override;
-    virtual void onBind() override { RefObjectHelper::retain(this); }
-    virtual void onUnBind() override { RefObjectHelper::release(this); }
 
     bool isComputeShader() const { return m_compShaderModule != VK_NULL_HANDLE; }
     VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }

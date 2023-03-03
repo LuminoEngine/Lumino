@@ -96,7 +96,7 @@ private:
     static bool shortLifeBuffer(GraphicsResourceUsage usage, GraphicsResourcePool pool) { return usage == GraphicsResourceUsage::Static && pool == GraphicsResourcePool::None; }
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::RHIResource> m_rhiObject;
+    URef<detail::RHIResource> m_rhiObject;
     IndexBufferFormat m_format;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;

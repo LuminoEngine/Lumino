@@ -17,10 +17,14 @@ GraphicsCommandList* OpenGLIntegration::getCommandListFromCurrentContext() {
 
 RenderPass* OpenGLIntegration::getRenderPass(GLuint fbo, int32_t width, int32_t height) {
 
+ #if 1
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+#else
     // TODO: これは dispose のタイミングが NG なので Manager とかに持たせないとダメ
     static Ref<RenderPass> cachedRenderPass;
     if (!cachedRenderPass) {
-        auto rhiRenderTarget = makeRef<detail::GLRenderTargetTexture>();
+        auto rhiRenderTarget = makeURef<detail::GLRenderTargetTexture>();
         if (!rhiRenderTarget->init(0, width, height)) {
             return nullptr;
         }
@@ -45,6 +49,7 @@ RenderPass* OpenGLIntegration::getRenderPass(GLuint fbo, int32_t width, int32_t 
     }
 
     return cachedRenderPass;
+#endif
 }
 
 

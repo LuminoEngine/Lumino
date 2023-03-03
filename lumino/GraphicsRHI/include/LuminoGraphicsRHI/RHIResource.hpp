@@ -36,9 +36,10 @@ public:
 
     bool mipmap() const { return m_mipmap; }
 
+    virtual ~RHIResource();
+	
 protected:
     RHIResource();
-    virtual ~RHIResource();
     Result<> initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
     Result<> initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount);
     Result<> initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize);

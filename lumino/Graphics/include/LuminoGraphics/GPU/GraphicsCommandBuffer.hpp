@@ -161,7 +161,7 @@ public:
 
     void init(detail::GraphicsManager* manager);
     void dispose();
-    const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
+    const URef<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
     void reset();
     detail::ConstantBufferView allocateUniformBuffer(size_t size);
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
@@ -200,7 +200,7 @@ private:
     };
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::ICommandList> m_rhiResource;
+    URef<detail::ICommandList> m_rhiResource;
     Ref<detail::LinearAllocator> m_allocator;
     URef<detail::ShaderDescriptorPool> m_descriptorPool;
     size_t m_uniformBufferOffsetAlignment;
@@ -258,7 +258,7 @@ private:
     State m_staging;
     uint32_t m_dirtyFlags;
     Ref<RenderPass> m_currentRenderPass;
-    Ref<detail::IRenderPass> m_currentRHIRenderPass;
+    detail::IRenderPass* m_currentRHIRenderPass;
 
     friend class detail::GraphicsCommandListInternal;
     friend class ShaderDescriptor;

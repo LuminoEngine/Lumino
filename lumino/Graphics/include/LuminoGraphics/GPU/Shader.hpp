@@ -571,8 +571,8 @@ public:
 
 
     // CommandBuffer に対するインターフェイス
-    Ref<detail::IDescriptorPool> getDescriptorSetsPool();
-    void releaseDescriptorSetsPool(detail::IDescriptorPool* pool);
+    URef<detail::IDescriptorPool> getDescriptorSetsPool();
+    void releaseDescriptorSetsPool(URef<detail::IDescriptorPool> pool);
 
     bool isComputeShader() const { return !m_descriptorLayout.m_storages.isEmpty(); }
 
@@ -583,7 +583,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderPass();
     virtual ~ShaderPass();
-    void init(const String& name, detail::IShaderPass* rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
+    void init(const String& name, URef<detail::IShaderPass> rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified);
@@ -591,7 +591,7 @@ private:
 
     ShaderTechnique* m_owner;
     String m_name;
-    Ref<detail::IShaderPass> m_rhiPass;
+    URef<detail::IShaderPass> m_rhiPass;
     ShaderPassDescriptorLayout m_descriptorLayout;  // deprecated
     Array<size_t> m_bufferSizes;
     URef<detail::ShaderPassSemanticsManager> m_semanticsManager;
@@ -601,7 +601,7 @@ private:
     const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;
     int m_lastShaderDescriptorRevision = 0;
 
-    std::vector<Ref<detail::IDescriptorPool>> m_descriptorSetsPools;
+    std::vector<URef<detail::IDescriptorPool>> m_descriptorSetsPools;
 
     friend class Shader;
     friend class ShaderTechnique;

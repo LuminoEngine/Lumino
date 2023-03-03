@@ -55,7 +55,7 @@ public:
 
     detail::DescriptorResourceType descriptorResourceType() const override { return detail::DescriptorResourceType_Buffer; }
 
-    Ref<detail::RHIResource> m_rhiObject;
+    URef<detail::RHIResource> m_rhiObject;
 protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }

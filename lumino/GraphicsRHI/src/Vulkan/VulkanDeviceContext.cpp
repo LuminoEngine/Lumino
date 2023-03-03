@@ -144,117 +144,117 @@ void VulkanDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
     outCaps->uniformBufferOffsetAlignment = m_physicalDeviceInfos[m_activePhysicalDeviceInfoIndex].deviceProperty.limits.minUniformBufferOffsetAlignment;
 }
 
-Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    auto ptr = makeRef<VulkanSwapChain>();
+URef<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+    auto ptr = makeURef<VulkanSwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<ICommandList> VulkanDevice::onCreateCommandList() {
-    auto ptr = makeRef<VulkanGraphicsContext>();
+URef<ICommandList> VulkanDevice::onCreateCommandList() {
+    auto ptr = makeURef<VulkanGraphicsContext>();
     if (!ptr->init(this)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IRenderPass> VulkanDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    auto ptr = makeRef<VulkanRenderPass2>();
+URef<IRenderPass> VulkanDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+    auto ptr = makeURef<VulkanRenderPass2>();
     if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IPipeline> VulkanDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
-    auto ptr = makeRef<VulkanPipeline2>();
+URef<IPipeline> VulkanDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
+    auto ptr = makeURef<VulkanPipeline2>();
     if (!ptr->init(this, state)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
-    auto ptr = makeRef<VulkanVertexDeclaration>();
+URef<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
+    auto ptr = makeURef<VulkanVertexDeclaration>();
     if (!ptr->init(elements, elementsCount)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
-    auto ptr = makeRef<VulkanVertexBuffer>();
+URef<RHIResource> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
+    auto ptr = makeURef<VulkanVertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
-    auto ptr = makeRef<VulkanIndexBuffer>();
+URef<RHIResource> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+    auto ptr = makeURef<VulkanIndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> VulkanDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    auto ptr = makeRef<VulkanTexture2D>();
+URef<RHIResource> VulkanDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+    auto ptr = makeURef<VulkanTexture2D>();
     if (!ptr->init(this, usage, width, height, requestFormat, mipmap, initialData)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> VulkanDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+URef<RHIResource> VulkanDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> VulkanDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
-    auto ptr = makeRef<VulkanRenderTarget>();
+URef<RHIResource> VulkanDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
+    auto ptr = makeURef<VulkanRenderTarget>();
     if (!ptr->init(this, width, height, requestFormat, mipmap, msaa)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> VulkanDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
-    auto ptr = makeRef<VulkanDepthBuffer>();
+URef<RHIResource> VulkanDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
+    auto ptr = makeURef<VulkanDepthBuffer>();
     if (!ptr->init(this, width, height)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<ISamplerState> VulkanDevice::onCreateSamplerState(const SamplerStateData& desc) {
-    auto ptr = makeRef<VulkanSamplerState>();
+URef<ISamplerState> VulkanDevice::onCreateSamplerState(const SamplerStateData& desc) {
+    auto ptr = makeURef<VulkanSamplerState>();
     if (!ptr->init(this, desc)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
-    auto ptr = makeRef<VulkanShaderPass>();
+URef<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+    auto ptr = makeURef<VulkanShaderPass>();
     if (!ptr->init(this, createInfo, diag)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> VulkanDevice::onCreateUniformBuffer(uint32_t size) {
-    auto ptr = makeRef<VulkanUniformBuffer>();
+URef<RHIResource> VulkanDevice::onCreateUniformBuffer(uint32_t size) {
+    auto ptr = makeURef<VulkanUniformBuffer>();
     if (!ptr->init(this, size)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
-    auto ptr = makeRef<VulkanDescriptorPool2>();
+URef<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
+    auto ptr = makeURef<VulkanDescriptorPool2>();
     if (!ptr->init(this, static_cast<VulkanShaderPass*>(shaderPass))) {
         return nullptr;
     }

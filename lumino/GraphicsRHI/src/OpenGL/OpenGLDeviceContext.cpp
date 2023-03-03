@@ -130,7 +130,7 @@ Result<> OpenGLDevice::init(const Settings& settings) {
         }
     }
 
-    m_graphicsQueue = makeRef<GLCommandQueue>();
+    m_graphicsQueue = makeURef<GLCommandQueue>();
     if (!m_graphicsQueue->init()) {
         return err();
     }
@@ -178,9 +178,9 @@ void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
     outCaps->uniformBufferOffsetAlignment = align;
 }
 
-Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+URef<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
 #ifdef LN_GLFW
-    auto ptr = makeRef<GLFWSwapChain>(this);
+    auto ptr = makeURef<GLFWSwapChain>(this);
     if (!ptr->init(window, backbufferSize)) {
         return nullptr;
     }
@@ -190,10 +190,10 @@ Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const Si
 #endif
 }
 
-Ref<ICommandList> OpenGLDevice::onCreateCommandList() {
+URef<ICommandList> OpenGLDevice::onCreateCommandList() {
     // if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
 
-    auto ptr = makeRef<GLGraphicsContext>();
+    auto ptr = makeURef<GLGraphicsContext>();
     if (!ptr->init(this)) {
         return nullptr;
     }
@@ -202,100 +202,100 @@ Ref<ICommandList> OpenGLDevice::onCreateCommandList() {
     return ptr;
 }
 
-Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    auto ptr = makeRef<GLRenderPass>();
+URef<IRenderPass> OpenGLDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+    auto ptr = makeURef<GLRenderPass>();
     if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IPipeline> OpenGLDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
-    auto ptr = makeRef<GLPipeline>();
+URef<IPipeline> OpenGLDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
+    auto ptr = makeURef<GLPipeline>();
     if (!ptr->init(this, state)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IVertexDeclaration> OpenGLDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
-    auto ptr = makeRef<GLVertexDeclaration>();
+URef<IVertexDeclaration> OpenGLDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
+    auto ptr = makeURef<GLVertexDeclaration>();
     ptr->init(elements, elementsCount);
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
-    auto ptr = makeRef<GLVertexBuffer>();
+URef<RHIResource> OpenGLDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
+    auto ptr = makeURef<GLVertexBuffer>();
     ptr->init(usage, bufferSize, initialData);
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
-    auto ptr = makeRef<GLIndexBuffer>();
+URef<RHIResource> OpenGLDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+    auto ptr = makeURef<GLIndexBuffer>();
     if (!ptr->init(usage, format, indexCount, initialData)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    auto ptr = makeRef<GLTexture2D>();
+URef<RHIResource> OpenGLDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+    auto ptr = makeURef<GLTexture2D>();
     ptr->init(usage, width, height, requestFormat, mipmap, initialData);
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    auto ptr = makeRef<GLTexture3D>();
+URef<RHIResource> OpenGLDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+    auto ptr = makeURef<GLTexture3D>();
     ptr->init(usage, width, height, depth, requestFormat, mipmap, initialData);
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
+URef<RHIResource> OpenGLDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
     if (msaa) {
         LN_NOTIMPLEMENTED();
         return nullptr;
     }
-    auto ptr = makeRef<GLRenderTargetTexture>();
+    auto ptr = makeURef<GLRenderTargetTexture>();
     ptr->init(width, height, requestFormat, mipmap);
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
-    auto ptr = makeRef<GLRenderTargetTexture>();
+URef<RHIResource> OpenGLDevice::onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
+    auto ptr = makeURef<GLRenderTargetTexture>();
     ptr->init(nativeObject, hintWidth, hintHeight);
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
-    auto ptr = makeRef<GLDepthBuffer>();
+URef<RHIResource> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
+    auto ptr = makeURef<GLDepthBuffer>();
     ptr->init(width, height);
     return ptr;
 }
 
-Ref<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& desc) {
-    auto ptr = makeRef<GLSamplerState>();
+URef<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& desc) {
+    auto ptr = makeURef<GLSamplerState>();
     ptr->init(this, desc);
     return ptr;
 }
 
-Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
-    auto ptr = makeRef<GLShaderPass>();
+URef<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+    auto ptr = makeURef<GLShaderPass>();
     if (!ptr->init(this, createInfo, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<RHIResource> OpenGLDevice::onCreateUniformBuffer(uint32_t size) {
-    auto ptr = makeRef<GLUniformBuffer>();
+URef<RHIResource> OpenGLDevice::onCreateUniformBuffer(uint32_t size) {
+    auto ptr = makeURef<GLUniformBuffer>();
     if (!ptr->init(size)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IDescriptorPool> OpenGLDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
-    auto ptr = makeRef<GLDescriptorPool>();
+URef<IDescriptorPool> OpenGLDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
+    auto ptr = makeURef<GLDescriptorPool>();
     if (!ptr->init(this, static_cast<GLShaderPass*>(shaderPass))) {
         return nullptr;
     }
@@ -357,7 +357,7 @@ void GLSwapChain::getBackendBufferSize(SizeI* outSize) {
 void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height) {
     releaseBuffers();
 
-    m_backbuffer = makeRef<GLRenderTargetTexture>();
+    m_backbuffer = makeURef<GLRenderTargetTexture>();
     m_backbuffer->init(width, height, TextureFormat::RGB8, false);
 
     GL_CHECK(glGenFramebuffers(1, &m_fbo));

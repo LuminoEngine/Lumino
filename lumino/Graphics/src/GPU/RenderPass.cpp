@@ -75,9 +75,9 @@ void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffe
     setDepthBuffer(depthBuffer);
 }
 
-void RenderPass::init(detail::IRenderPass* rhiRenderPass) {
+void RenderPass::init(URef<detail::IRenderPass> rhiRenderPass) {
     init();
-    m_rhiObject = rhiRenderPass;
+    m_rhiObject = std::move(rhiRenderPass);
     m_rhiObjectNoClear = rhiRenderPass;
     auto viewSize = rhiRenderPass->viewSize();
     m_viewSize = SizeI(viewSize.width, viewSize.height);

@@ -26,7 +26,7 @@ public:
 private:
     struct Entry {
         int referenceCount = 0;
-        Ref<IRenderPass> value;
+        URef<IRenderPass> value;
     };
 
     IGraphicsDevice* m_device;
@@ -49,7 +49,7 @@ public:
 
 private:
     IGraphicsDevice* m_device;
-    std::unordered_map<uint64_t, Ref<IPipeline>> m_hashMap;
+    std::unordered_map<uint64_t, URef<IPipeline>> m_hashMap;
 };
 
 class NativeCommandListPool {
@@ -59,7 +59,7 @@ public:
 
 private:
     IGraphicsDevice* m_device;
-    std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
+    std::unordered_map<uint64_t, URef<IRenderPass>> m_hashMap;
 
     /*
 	UseCases:

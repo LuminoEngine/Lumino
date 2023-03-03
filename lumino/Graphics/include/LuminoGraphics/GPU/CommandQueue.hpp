@@ -15,9 +15,9 @@ public:
 
 private:
 	CommandQueue();
-	void init(detail::ICommandQueue* rhiObject);
+    void init(URef<detail::ICommandQueue> rhiObject);
 
-    Ref<detail::ICommandQueue> m_rhiObject;
+    URef<detail::ICommandQueue> m_rhiObject;
 
 	friend class detail::GraphicsManager;
 };

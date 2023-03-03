@@ -84,7 +84,7 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create() */
     void init();
     void init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
-    void init(detail::IRenderPass* rhiRenderPass);
+    void init(URef<detail::IRenderPass> rhiRenderPass);
 
 private:
     detail::IRenderPass* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
@@ -92,8 +92,8 @@ private:
     void releaseRHI();
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::IRenderPass> m_rhiObject;
-    Ref<detail::IRenderPass> m_rhiObjectNoClear;
+    URef<detail::IRenderPass> m_rhiObject;
+    URef<detail::IRenderPass> m_rhiObjectNoClear;
     std::array<Ref<RenderTargetTexture>, GraphicsCommandList::MaxMultiRenderTargets> m_renderTargets;
     Ref<DepthBuffer> m_depthBuffer;
     SizeI m_viewSize;

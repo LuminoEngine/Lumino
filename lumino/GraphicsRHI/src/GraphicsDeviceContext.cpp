@@ -77,8 +77,8 @@ void IGraphicsDevice::refreshCaps() {
     onGetCaps(&m_caps);
 }
 
-Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
+URef<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+    URef<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -87,8 +87,8 @@ Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const S
     return ptr;
 }
 
-Ref<ICommandList> IGraphicsDevice::createCommandList() {
-    Ref<ICommandList> ptr = onCreateCommandList();
+URef<ICommandList> IGraphicsDevice::createCommandList() {
+    URef<ICommandList> ptr = onCreateCommandList();
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -97,8 +97,8 @@ Ref<ICommandList> IGraphicsDevice::createCommandList() {
     return ptr;
 }
 
-Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    Ref<IRenderPass> ptr = onCreateRenderPass(buffers, clearFlags, clearColor, clearDepth, clearStencil);
+URef<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+    URef<IRenderPass> ptr = onCreateRenderPass(buffers, clearFlags, clearColor, clearDepth, clearStencil);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -137,8 +137,8 @@ Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState&
     return ptr;
 }
 
-Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& state) {
-    Ref<IPipeline> ptr = onCreatePipeline(state);
+URef<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& state) {
+    URef<IPipeline> ptr = onCreatePipeline(state);
     if (ptr) {
         ptr->m_sourceVertexLayout = state.vertexDeclaration;
         ptr->m_sourceRenderPass = state.renderPass;
@@ -150,8 +150,8 @@ Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& st
     return ptr;
 }
 
-Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexElement* elements, int elementsCount) {
-    Ref<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
+URef<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexElement* elements, int elementsCount) {
+    URef<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -161,8 +161,8 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
     return ptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
-    Ref<RHIResource> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
+URef<RHIResource> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
+    URef<RHIResource> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -171,8 +171,8 @@ Ref<RHIResource> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage
     return ptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
-    Ref<RHIResource> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
+URef<RHIResource> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+    URef<RHIResource> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -181,8 +181,8 @@ Ref<RHIResource> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage,
     return ptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    Ref<RHIResource> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
+URef<RHIResource> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+    URef<RHIResource> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -191,13 +191,13 @@ Ref<RHIResource> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, u
     return ptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+URef<RHIResource> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
-    Ref<RHIResource> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
+URef<RHIResource> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
+    URef<RHIResource> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap, msaa);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -206,8 +206,8 @@ Ref<RHIResource> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t he
     return ptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
-    Ref<RHIResource> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
+URef<RHIResource> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
+    URef<RHIResource> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -216,8 +216,8 @@ Ref<RHIResource> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObjec
     return ptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t height) {
-    Ref<RHIResource> ptr = onCreateDepthBuffer(width, height);
+URef<RHIResource> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t height) {
+    URef<RHIResource> ptr = onCreateDepthBuffer(width, height);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -226,8 +226,8 @@ Ref<RHIResource> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t hei
     return ptr;
 }
 
-Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& desc) {
-    Ref<ISamplerState> ptr = onCreateSamplerState(desc);
+URef<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& desc) {
+    URef<ISamplerState> ptr = onCreateSamplerState(desc);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -236,7 +236,7 @@ Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& d
     return ptr;
 }
 
-Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+URef<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     // Verification
     {
         if (createInfo.csCode) {
@@ -254,7 +254,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
     diag->level = ShaderCompilationResultLevel::Success;
     diag->message.clear();
 
-    Ref<IShaderPass> ptr = onCreateShaderPass(createInfo, diag);
+    URef<IShaderPass> ptr = onCreateShaderPass(createInfo, diag);
 
     if (!diag->message.empty()) {
         LN_LOG_VERBOSE(diag->message);
@@ -269,8 +269,8 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
     return ptr;
 }
 
-Ref<RHIResource> IGraphicsDevice::createUniformBuffer(uint32_t size) {
-    Ref<RHIResource> ptr = onCreateUniformBuffer(size);
+URef<RHIResource> IGraphicsDevice::createUniformBuffer(uint32_t size) {
+    URef<RHIResource> ptr = onCreateUniformBuffer(size);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -279,8 +279,8 @@ Ref<RHIResource> IGraphicsDevice::createUniformBuffer(uint32_t size) {
     return ptr;
 }
 
-Ref<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPass) {
-    Ref<IDescriptorPool> ptr = onCreateDescriptorPool(shaderPass);
+URef<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPass) {
+    URef<IDescriptorPool> ptr = onCreateDescriptorPool(shaderPass);
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
@@ -298,7 +298,7 @@ void IGraphicsDevice::queuePresent(ISwapChain* swapChain) {
     onQueuePresent(swapChain);
 }
 
-Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag) {
+URef<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag) {
     LN_DCHECK(unifiedShader);
     LN_DCHECK(diag);
     auto& triple = caps().requestedShaderTriple;
@@ -346,7 +346,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const ko
     };
 
     ShaderCompilationDiag sdiag;
-    Ref<detail::IShaderPass> pass = createShaderPass(createInfo, &sdiag);
+    URef<detail::IShaderPass> pass = createShaderPass(createInfo, &sdiag);
 
     if (sdiag.level == ShaderCompilationResultLevel::Error) {
         diag->reportError(String::fromStdString(sdiag.message));
@@ -379,10 +379,7 @@ Result<> ICommandList::init(IGraphicsDevice* owner) {
 }
 
 void ICommandList::onDestroy() {
-    for (IRenderPass* renderPass : m_renderPasses) {
-        renderPass->releaseObjects();
-    }
-    m_renderPasses.clear();
+    //m_renderPasses.clear();
     RHIDeviceObject::onDestroy();
 }
 
@@ -395,11 +392,7 @@ void ICommandList::leaveRenderState() {
 }
 
 void ICommandList::begin() {
-    for (IRenderPass* renderPass : m_renderPasses) {
-        renderPass->releaseObjects();
-    }
-    m_renderPasses.clear();
-    m_inflightResources.clear();
+   // m_renderPasses.clear();
 
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
     onBeginCommandRecoding();
@@ -412,8 +405,7 @@ void ICommandList::end() {
 void ICommandList::beginRenderPass(IRenderPass* value) {
     if (LN_REQUIRE(!m_currentRenderPass)) return;
     m_currentRenderPass = value;
-    m_renderPasses.push_back(value);
-    value->retainObjects();
+    //m_renderPasses.push_back(value);
     onBeginRenderPass(value);
 }
 
@@ -570,14 +562,6 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource) {
         state.renderPass = m_currentRenderPass;
         IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
 
-        // CommandList 実行中のリソース削除を防ぐため、参照カウントを増やしておく
-        for (const auto& v : m_staging.primitive.vertexBuffers) {
-            m_inflightResources.push_back(v);
-        }
-        m_inflightResources.push_back(m_staging.primitive.indexBuffer);
-        m_inflightResources.push_back(m_staging.pipelineState.vertexDeclaration);
-        m_inflightResources.push_back(pipeline);
-
         onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
     }
     else {
@@ -641,28 +625,6 @@ void IRenderPass::onDestroy() {
     }
 
     RHIDeviceObject::onDestroy();
-}
-
-void IRenderPass::retainObjects() {
-    for (RHIResource* renderTarget : m_renderTargets) {
-        if (renderTarget) {
-            RefObjectHelper::retain(renderTarget);
-        }
-    }
-    if (m_depthBuffer) {
-        RefObjectHelper::retain(m_depthBuffer);
-    }
-}
-
-void IRenderPass::releaseObjects() {
-    for (RHIResource* renderTarget : m_renderTargets) {
-        if (renderTarget) {
-            RefObjectHelper::release(renderTarget);
-        }
-    }
-    if (m_depthBuffer) {
-        RefObjectHelper::release(m_depthBuffer);
-    }
 }
 
 //==============================================================================

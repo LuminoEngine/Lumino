@@ -7,8 +7,7 @@ class RHIProfiler;
 class RHIBitmap;
 
 	
-class RHIDeviceObject
-    : public RefObject
+class RHIDeviceObject : public URefObject
 {
 public:
     void destroy(); 

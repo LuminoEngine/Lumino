@@ -22,15 +22,15 @@ struct ConstantParams {
 SizeI g_viewSize;
 Ref<PlatformWindow> g_window;
 Ref<detail::IGraphicsDevice> g_device;
-Ref<detail::ISwapChain> g_swapChain;
-std::vector<Ref<detail::ICommandList>> g_commandLists;
-std::vector<Ref<detail::RHIResource>> g_depthBuffers;
-std::vector<Ref<detail::IRenderPass>> g_renderPasses;
-std::vector<Ref<detail::RHIResource>> g_uniformBuffers;
-std::vector<Ref<detail::IDescriptorPool>> g_descriptorPools;
-Ref<detail::IVertexDeclaration> g_vertexDeclaration;
-Ref<detail::RHIResource> g_vertexBuffer;
-Ref<detail::IShaderPass> g_shaderPass;
+URef<detail::ISwapChain> g_swapChain;
+std::vector<URef<detail::ICommandList>> g_commandLists;
+std::vector<URef<detail::RHIResource>> g_depthBuffers;
+std::vector<URef<detail::IRenderPass>> g_renderPasses;
+std::vector<URef<detail::RHIResource>> g_uniformBuffers;
+std::vector<URef<detail::IDescriptorPool>> g_descriptorPools;
+URef<detail::IVertexDeclaration> g_vertexDeclaration;
+URef<detail::RHIResource> g_vertexBuffer;
+URef<detail::IShaderPass> g_shaderPass;
 // Ref<detail::IPipeline> g_renderPipeline;
 int g_frameIndex;
 
@@ -83,7 +83,7 @@ void init() {
     assert(item.size == sizeof(ConstantParams));
 
     for (int i = 0; i < g_swapChain->getBackbufferCount(); i++) {
-        Ref<detail::RHIResource> depthBuffer = g_device->createDepthBuffer(g_viewSize.width, g_viewSize.height);
+        URef<detail::RHIResource> depthBuffer = g_device->createDepthBuffer(g_viewSize.width, g_viewSize.height);
         g_depthBuffers.push_back(depthBuffer);
 
         detail::DeviceFramebufferState info;

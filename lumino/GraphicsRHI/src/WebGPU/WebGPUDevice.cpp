@@ -119,91 +119,91 @@ void WebGPUDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
     LN_NOTIMPLEMENTED();
 }
 
-Ref<ISwapChain> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    auto ptr = makeRef<WebGPUSwapChain>();
+URef<ISwapChain> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+    auto ptr = makeURef<WebGPUSwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<ICommandList> WebGPUDevice::onCreateCommandList() {
-    auto ptr = makeRef<WebGPUCommandList>();
+URef<ICommandList> WebGPUDevice::onCreateCommandList() {
+    auto ptr = makeURef<WebGPUCommandList>();
     if (!ptr->init(this)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IRenderPass> WebGPUDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    auto ptr = makeRef<WebGPURenderPass>();
+URef<IRenderPass> WebGPUDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+    auto ptr = makeURef<WebGPURenderPass>();
     if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
         return nullptr;
     }
     return ptr;
 }
 
-Ref<IPipeline> WebGPUDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
+URef<IPipeline> WebGPUDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<IVertexDeclaration> WebGPUDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
+URef<IVertexDeclaration> WebGPUDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
+URef<RHIResource> WebGPUDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+URef<RHIResource> WebGPUDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+URef<RHIResource> WebGPUDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+URef<RHIResource> WebGPUDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
+URef<RHIResource> WebGPUDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
+URef<RHIResource> WebGPUDevice::onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
+URef<RHIResource> WebGPUDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<ISamplerState> WebGPUDevice::onCreateSamplerState(const SamplerStateData& desc) {
+URef<ISamplerState> WebGPUDevice::onCreateSamplerState(const SamplerStateData& desc) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<IShaderPass> WebGPUDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+URef<IShaderPass> WebGPUDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<RHIResource> WebGPUDevice::onCreateUniformBuffer(uint32_t size) {
+URef<RHIResource> WebGPUDevice::onCreateUniformBuffer(uint32_t size) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }
 
-Ref<IDescriptorPool> WebGPUDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
+URef<IDescriptorPool> WebGPUDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
     LN_NOTIMPLEMENTED();
     return nullptr;
 }

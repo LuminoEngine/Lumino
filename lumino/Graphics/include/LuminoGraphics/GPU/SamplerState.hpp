@@ -84,7 +84,7 @@ private:
     void setFrozen(bool value) { m_frozen = value; }
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::ISamplerState> m_rhiObject;
+    URef<detail::ISamplerState> m_rhiObject;
 	detail::SamplerStateData m_desc;
     bool m_modified;
     bool m_frozen;

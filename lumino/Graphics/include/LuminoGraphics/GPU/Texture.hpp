@@ -177,7 +177,7 @@ LN_CONSTRUCT_ACCESS:
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
 private:
-    Ref<detail::RHIResource> m_rhiObject;
+    URef<detail::RHIResource> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
@@ -252,7 +252,7 @@ private:
 	void resetRHIObject(detail::RHIResource* rhiObject);
     Ref<Bitmap2D> readData();
 
-    Ref<detail::RHIResource> m_rhiObject;
+    URef<detail::RHIResource> m_rhiObject;
     SwapChain* m_ownerSwapchain;
     intptr_t m_nativeObject;
     bool m_modified;
@@ -295,7 +295,7 @@ protected:
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified) override;
 
 private:
-    Ref<detail::RHIResource> m_rhiObject;
+    URef<detail::RHIResource> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
 

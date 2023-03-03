@@ -56,7 +56,7 @@ private:
     int imageIndex() const { return m_imageIndex; }
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::ISwapChain> m_rhiObject;
+    URef<detail::ISwapChain> m_rhiObject;
     std::vector<Ref<RenderTargetTexture>> m_backbuffers;
     std::vector<Ref<DepthBuffer>> m_depthBuffers;
     std::vector<Ref<RenderPass>> m_renderPasses;

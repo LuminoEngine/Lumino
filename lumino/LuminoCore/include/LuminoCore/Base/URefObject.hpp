@@ -102,14 +102,14 @@ public:
     /** オブジェクトのポインタへの変換をサポートします。 */
     operator T*() const { return static_cast<T*>(m_ptr); }
 
-    URefObject* basePointer() const { return m_ptr; }
+    //URefObject* basePointer() const { return m_ptr; }
 
 private:
     void safeDelete() {
         if (m_ptr) {
             // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
             static_assert(0 < sizeof(T), "can't delete an incomplete type");
-            delete basePointer();
+            delete m_ptr;
             m_ptr = nullptr;
         }
     }
@@ -218,42 +218,42 @@ T* URef<T>::operator->() const LN_NOEXCEPT {
 
 template<class T, class U>
 bool operator==(const URef<T>& lhs, const URef<U>& rhs) LN_NOEXCEPT {
-    return (lhs.basePointer() == rhs.basePointer());
+    return (lhs.get() == rhs.get());
 }
 
 template<class T>
 bool operator==(const URef<T>& lhs, std::nullptr_t) LN_NOEXCEPT {
-    return (lhs.basePointer() == nullptr);
+    return (lhs.get() == nullptr);
 }
 
 template<class T>
 bool operator==(std::nullptr_t, const URef<T>& rhs) LN_NOEXCEPT {
-    return (nullptr == rhs.basePointer());
+    return (nullptr == rhs.get());
 }
 
 template<class T, class U>
 bool operator!=(const URef<T>& lhs, const URef<U>& rhs) LN_NOEXCEPT {
-    return (lhs.basePointer() != rhs.basePointer());
+    return (lhs.get() != rhs.get());
 }
 
 template<class T>
 bool operator!=(const URef<T>& lhs, std::nullptr_t) LN_NOEXCEPT {
-    return (lhs.basePointer() != nullptr);
+    return (lhs.get() != nullptr);
 }
 
 template<class T>
 bool operator!=(std::nullptr_t, const URef<T>& rhs) LN_NOEXCEPT {
-    return (nullptr != rhs.basePointer());
+    return (nullptr != rhs.get());
 }
 
 template<class T, class U>
 bool operator<(const URef<T>& lhs, const URef<U>& rhs) LN_NOEXCEPT {
-    return (lhs.basePointer() < rhs.basePointer());
+    return (lhs.get() < rhs.get());
 }
 
 template<class T>
 bool operator<(const URef<T>& lhs, std::nullptr_t) LN_NOEXCEPT {
-    return std::less<URefObject*>()(lhs.basePointer(), nullptr);
+    return std::less<URefObject*>()(lhs.get(), nullptr);
 }
 
 template<class T>

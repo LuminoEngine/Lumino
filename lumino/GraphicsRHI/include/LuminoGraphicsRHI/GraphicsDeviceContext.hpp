@@ -169,22 +169,22 @@ public:
     const GraphicsDeviceCaps& caps() { return m_caps; }
     void refreshCaps();
 
-    Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
-    Ref<ICommandList> createCommandList();
-    Ref<IRenderPass> createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-    Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
-    Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
-    Ref<RHIResource> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
-    Ref<RHIResource> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
-    Ref<RHIResource> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
-    Ref<RHIResource> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
-    Ref<RHIResource> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
-    Ref<RHIResource> createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
-    Ref<RHIResource> createDepthBuffer(uint32_t width, uint32_t height);
-    Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
-    Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-    Ref<RHIResource> createUniformBuffer(uint32_t size);
-    Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
+    URef<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
+    URef<ICommandList> createCommandList();
+    URef<IRenderPass> createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+    URef<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
+    URef<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
+    URef<RHIResource> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
+    URef<RHIResource> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
+    URef<RHIResource> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
+    URef<RHIResource> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
+    URef<RHIResource> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
+    URef<RHIResource> createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
+    URef<RHIResource> createDepthBuffer(uint32_t width, uint32_t height);
+    URef<ISamplerState> createSamplerState(const SamplerStateData& desc);
+    URef<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+    URef<RHIResource> createUniformBuffer(uint32_t size);
+    URef<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(RHIDeviceObject* obj) {}
 
     void queueSubmit(ICommandList* context, RHIResource* affectRendreTarget); // 呼ぶ前に end しておくこと
@@ -195,7 +195,7 @@ public:
     virtual ICommandQueue* getComputeCommandQueue() = 0;
 
     // utility
-    Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag);
+    URef<IShaderPass> createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag);
 
     const std::unique_ptr<NativeRenderPassCache>& renderPassCache() const { return m_renderPassCache; }
     const std::unique_ptr<NativePipelineCache>& pipelineCache() const { return m_pipelineCache; }
@@ -203,22 +203,22 @@ public:
 
 protected:
     virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
-    virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
-    virtual Ref<ICommandList> onCreateCommandList() = 0;
-    virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
-    virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
-    virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
-    virtual Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
-    virtual Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
-    virtual Ref<RHIResource> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
-    virtual Ref<RHIResource> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
-    virtual Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
-    virtual Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) = 0;
-    virtual Ref<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
-    virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
-    virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
-    virtual Ref<RHIResource> onCreateUniformBuffer(uint32_t size) = 0;
-    virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
+    virtual URef<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
+    virtual URef<ICommandList> onCreateCommandList() = 0;
+    virtual URef<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
+    virtual URef<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
+    virtual URef<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
+    virtual URef<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
+    virtual URef<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
+    virtual URef<RHIResource> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
+    virtual URef<RHIResource> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
+    virtual URef<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
+    virtual URef<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) = 0;
+    virtual URef<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
+    virtual URef<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
+    virtual URef<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
+    virtual URef<RHIResource> onCreateUniformBuffer(uint32_t size) = 0;
+    virtual URef<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
     virtual void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) = 0;
     virtual void onQueuePresent(ISwapChain* swapChain) = 0;
 
@@ -311,14 +311,14 @@ private:
     GraphicsContextState m_staging;
     GraphicsContextState m_committed;
     IRenderPass* m_currentRenderPass;
-    std::vector<Ref<IRenderPass>> m_renderPasses; // 描画中の delete を防ぐため参照を持っておく
-    std::vector<Ref<RHIDeviceObject>> m_inflightResources;
+    //std::vector<IRenderPass*> m_renderPasses; // 描画中の delete を防ぐため参照を持っておく
 };
 
 class ISwapChain
     : public RHIDeviceObject {
 public:
     ISwapChain();
+    virtual ~ISwapChain();
 
     virtual uint32_t getBackbufferCount() = 0;
 
@@ -330,7 +330,6 @@ public:
     virtual Result<> resizeBackbuffer(uint32_t width, uint32_t height) = 0;
 
 protected:
-    virtual ~ISwapChain();
 };
 
 // OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
@@ -338,8 +337,6 @@ class ICommandQueue
     : public RHIDeviceObject {
 public:
     virtual Result<> submit(ICommandList* commandList) = 0;
-
-protected:
     virtual ~ICommandQueue() = default;
 };
 
@@ -378,9 +375,6 @@ public:
 
     void onDestroy() override;
 
-    void retainObjects();
-    void releaseObjects();
-
 protected:
     IRenderPass();
     virtual ~IRenderPass();
@@ -403,10 +397,10 @@ public:
     static uint64_t computeHash(const VertexElement* elements, int count);
 
     void onDestroy() override;
+    virtual ~IVertexDeclaration();
 
 protected:
     IVertexDeclaration();
-    virtual ~IVertexDeclaration();
     bool init(const VertexElement* elements, int count);
 
 private:
@@ -416,9 +410,10 @@ private:
 class ISamplerState
     : public RHIDeviceObject {
 public:
+    virtual ~ISamplerState();
+
 protected:
     ISamplerState();
-    virtual ~ISamplerState();
 };
 
 class IShaderPass
@@ -428,9 +423,10 @@ public:
     const kokage::VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
     void onDestroy() override;
 
+    virtual ~IShaderPass();
+
 protected:
     IShaderPass();
-    virtual ~IShaderPass();
     bool init(const ShaderPassCreateInfo& createInfo);
 
 private:
@@ -475,8 +471,6 @@ class IDescriptorPool
 public:
     virtual void reset() = 0;
     virtual Result<> allocate(IDescriptor** outDescriptor) = 0;
-
-protected:
     virtual ~IDescriptorPool();
 };
 
@@ -485,9 +479,9 @@ class IDescriptor
 public:
     // CombinedSampler の場合、resources() へ Texture と SamplerState を同時にセットすることで、ペアを示す。
     struct Reference {
-        Ref<RHIDeviceObject> object;
-        Ref<ISamplerState> samplerState;
-        size_t offset; // UniformBuffer offset;
+        RHIDeviceObject* object = nullptr;
+        ISamplerState* samplerState = nullptr;
+        size_t offset = 0; // UniformBuffer offset;
     };
     using ReferenceList = std::array<Reference, ShaderDescriptorTableUpdateInfo::MaxElements>;
 

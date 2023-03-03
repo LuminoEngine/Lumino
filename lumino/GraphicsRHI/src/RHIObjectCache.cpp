@@ -131,8 +131,9 @@ IPipeline* NativePipelineCache::findOrCreate(const FindKey& key) {
             return nullptr;
         }
 
-        m_hashMap.insert({ hash, pipeline });
-        return pipeline;
+		auto ptr = pipeline.get();
+        m_hashMap.insert({ hash, std::move(pipeline) });
+        return ptr;
     }
 }
 

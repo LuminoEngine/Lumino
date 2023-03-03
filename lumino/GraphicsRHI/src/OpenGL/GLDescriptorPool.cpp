@@ -110,7 +110,7 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
                 const auto& slot = bufferSlot(info.layoutSlotIndex);
                 if (LN_ASSERT(slot.object)) return;
 
-                GLUniformBuffer* buf = static_cast<GLUniformBuffer*>(slot.object.get());
+                GLUniformBuffer* buf = static_cast<GLUniformBuffer*>(slot.object);
                 GLuint ubo = buf->ubo();
 
                 // TODO: 超暫定対応。
@@ -150,8 +150,8 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
         const auto& slot = resourceSlot(info.layoutSlotIndex);
         if (LN_ASSERT(slot.object)) return;
 
-        GLTextureBase* texture = static_cast<GLTextureBase*>(slot.object.get());
-        GLSamplerState* samplerState = static_cast<GLSamplerState*>(slot.samplerState.get());
+        GLTextureBase* texture = static_cast<GLTextureBase*>(slot.object);
+        GLSamplerState* samplerState = static_cast<GLSamplerState*>(slot.samplerState);
 
         // TextureUnit は ResourceView のようなもの。
         // これに対して Texture を Bind してから、 この Index を glUniform() を使って uniform へセットする。

@@ -13,10 +13,10 @@ CommandQueue::CommandQueue()
 {
 }
 
-void CommandQueue::init(detail::ICommandQueue* rhiObject)
+void CommandQueue::init(URef<detail::ICommandQueue> rhiObject)
 {
     Object::init();
-	m_rhiObject = rhiObject;
+	m_rhiObject = std::move(rhiObject);
 }
 
 } // namespace ln
