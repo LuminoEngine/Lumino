@@ -4,9 +4,291 @@
 #include <LuminoGraphicsRHI/Vulkan/VulkanDescriptorPool.hpp>
 #include <LuminoGraphicsRHI/Vulkan/VulkanShaderPass.hpp>
 #include <LuminoGraphicsRHI/Vulkan/VulkanCommandList.hpp>
+#include "VulkanSingleFrameAllocator.hpp"
 
 namespace ln {
 namespace detail {
+
+//==============================================================================
+// VulkanCommandBuffer
+
+VulkanCommandBuffer::VulkanCommandBuffer() {
+}
+
+VulkanCommandBuffer::~VulkanCommandBuffer() {
+}
+
+Result<> VulkanCommandBuffer::init(VulkanDevice* deviceContext) {
+    if (LN_REQUIRE(deviceContext)) return err();
+    m_deviceContext = deviceContext;
+
+    if (!m_vulkanAllocator.init()) {
+        return err();
+    }
+
+    // ひとまず 16MB (100万頂点くらいでの見積)
+    // 1ページは、更新したいバッファ全体が乗るサイズになっていればよい。
+    // もしあふれる場合は一度 LinearAllocator の LargePage 扱いにして、
+    // 次のフレームに移る前にページサイズを大きくして LinearAllocator を作り直す。
+    // ただ、普通動的なバッファ更新でこんなに大きなサイズを使うことはないような気もする。
+    // なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
+    resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
+
+    // m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->uniformBufferSingleFrameAllocator());
+    m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_deviceContext->transferBufferSingleFrameAllocator());
+
+    m_stagingBufferPoolUsed = 0;
+    glowStagingBufferPool();
+
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = m_deviceContext->vulkanCommandPool();
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+
+    LN_VK_CHECK(vkAllocateCommandBuffers(m_deviceContext->vulkanDevice(), &allocInfo, &m_commandBuffer));
+
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    LN_VK_CHECK(vkCreateFence(m_deviceContext->vulkanDevice(), &fenceInfo, m_deviceContext->vulkanAllocator(), &m_inFlightFence));
+
+    return ok();
+}
+
+void VulkanCommandBuffer::dispose() {
+    // Wait for execution to complete as it may be pending.
+    vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+
+    // CommandBuffer must be released before vkResetDescriptorPool.
+    if (m_commandBuffer) {
+        vkFreeCommandBuffers(m_deviceContext->vulkanDevice(), m_deviceContext->vulkanCommandPool(), 1, &m_commandBuffer);
+        m_commandBuffer = VK_NULL_HANDLE;
+    }
+
+    cleanInFlightResources();
+
+    m_stagingBufferPool.clear();
+    m_stagingBufferPoolUsed = 0;
+
+    if (m_inFlightFence) {
+        vkDestroyFence(m_deviceContext->vulkanDevice(), m_inFlightFence, m_deviceContext->vulkanAllocator());
+        m_inFlightFence = VK_NULL_HANDLE;
+    }
+}
+
+void VulkanCommandBuffer::wait() {
+    // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
+    vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+    vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+}
+
+Result<> VulkanCommandBuffer::beginRecording() {
+
+    m_linearAllocator->cleanup();
+    // m_uniformBufferSingleFrameAllocator->cleanup();
+    m_transferBufferSingleFrameAllocator->cleanup();
+
+    // 前回の描画で使ったリソースを開放する。
+    // end で解放しないのは、まだその後の実際のコマンド実行で使うリソースであるから。
+    cleanInFlightResources();
+
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
+    LN_VK_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer(), &beginInfo));
+
+    m_lastFoundFramebuffer = nullptr;
+
+    return ok();
+}
+
+Result<> VulkanCommandBuffer::endRecording() {
+    if (m_currentRenderPass) {
+        vkCmdEndRenderPass(vulkanCommandBuffer());
+        m_currentRenderPass = nullptr;
+    }
+
+    m_lastFoundFramebuffer = nullptr;
+
+    LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
+
+    // for (auto& pass : m_usingShaderPasses) {
+    //     pass->recodingPool = nullptr;
+    // }
+
+    return ok();
+}
+
+void VulkanCommandBuffer::endRenderPassInRecordingIfNeeded() {
+    if (m_currentRenderPass) {
+        vkCmdEndRenderPass(vulkanCommandBuffer());
+        m_currentRenderPass = false;
+    }
+}
+
+Result<> VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    // 実行を開始する前に待機するセマフォ
+    VkSemaphore waitSemaphores[] = { waitSemaphore }; // imageAvailableSemaphores[currentFrame] };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = (waitSemaphore == VK_NULL_HANDLE) ? 0 : 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    // 実行するコマンド
+    VkCommandBuffer commandBuffer = vulkanCommandBuffer();
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    // 実行を完了したときに通知されるセマフォ
+    VkSemaphore signalSemaphores[] = { signalSemaphore }; // renderFinishedSemaphores[currentFrame]};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores; // validation layer: Queue 0xd51c110 is signaling semaphore 0x52 that was previously signaled by queue 0xd51c110 but has not since been waited on by any queue.
+
+    // unsignaled にしておく。vkQueueSubmit で発行した実行が完了したときに signaled になる。
+    LN_VK_CHECK(vkResetFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence));
+
+    LN_VK_CHECK(vkQueueSubmit(m_deviceContext->m_graphicsQueue, 1, &submitInfo, m_inFlightFence));
+
+    return ok();
+}
+
+// Result<> VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
+//{
+//     LN_DCHECK(shaderPass);
+//
+//     // このコマンド実行中に新たな ShaderPass が使われるたびに、新しく VulkanShaderPass から Pool を確保しようとする。
+//     // ただし、毎回やると重いので簡単なキャッシュを設ける。
+//     // 線形探索だけど、ShaderPass が1フレームに 100 も 200 も使われることはそうないだろう。
+//
+//     int usingShaderPass = -1;
+//     for (int i = 0; i < m_usingShaderPasses.size(); i++) {
+//         if (m_usingShaderPasses[i] == shaderPass) {
+//             usingShaderPass = i;
+//         }
+//     }
+//
+//     if (usingShaderPass == -1) {
+//         auto pool = shaderPass->getDescriptorSetsPool();
+//         m_usingDescriptorSetsPools.push_back(pool);
+//         m_usingShaderPasses.push_back(shaderPass);
+//         usingShaderPass = m_usingDescriptorSetsPools.size() - 1;
+//     }
+//
+//     return m_usingDescriptorSetsPools[usingShaderPass]->allocateDescriptorSets(this, outSets);
+// }
+
+VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlags usage) {
+    if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
+        glowStagingBufferPool();
+    }
+
+    VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
+    m_stagingBufferPoolUsed++;
+
+    if (!buffer->init(m_deviceContext, size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator())) {
+        return nullptr;
+    }
+
+    //// できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
+    // if (buffer->size() < size) {
+    //     buffer->resetBuffer(size, usage);
+    // }
+
+    //// LinearAllocator からメモリ確保
+    // buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+
+    return buffer;
+}
+
+VulkanSingleFrameBufferInfo VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination) {
+    // VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    VulkanSingleFrameBufferInfo bufferInfo = m_transferBufferSingleFrameAllocator->allocate(size);
+
+    // コマンドバッファに乗せる
+    VkBufferCopy copyRegion;
+    copyRegion.srcOffset = bufferInfo.offset;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = size;
+    // vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
+    vkCmdCopyBuffer(m_commandBuffer, bufferInfo.buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
+
+#if 1 // TODO: test
+    VkBufferMemoryBarrier barrier = {};
+    barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+
+    // barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+    // barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;  // TODO: ?
+    // barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    // barrier.dstAccessMask = VK_ACCESS_UNIFORM_READ_BIT;  // TODO: ?
+
+    barrier.srcQueueFamilyIndex = m_deviceContext->graphicsQueueFamilyIndex();
+    barrier.dstQueueFamilyIndex = m_deviceContext->graphicsQueueFamilyIndex();
+    barrier.buffer = destination->nativeBuffer();
+    // barrier.offset;
+    barrier.size = size;
+
+    vkCmdPipelineBarrier(
+        m_commandBuffer,
+        VK_PIPELINE_STAGE_TRANSFER_BIT,     // このパイプラインステージで、1セットのデータが完全に生成されたことを保証する
+        VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, // このパイプラインステージがそれを消費することを許可する
+        0,
+        0,
+        nullptr,
+        1,
+        &barrier, // どのデータをブロック/ブロック解除するかを定義します。
+        0,
+        nullptr);
+    // http://web.engr.oregonstate.edu/~mjb/vulkan/Handouts/PipelineBarriers.2pp.pdf
+    // https://stackoverflow.com/questions/48894573/how-to-synchronize-uniform-buffer-updates
+    // https://stackoverflow.com/questions/40577047/vulkan-vkcmdpipelinebarrier-for-data-coherence
+    // https://chromium.googlesource.com/chromium/src/+/master/gpu/vulkan/vulkan_command_buffer.cc
+#endif
+
+    // 戻り先で書いてもらう
+    return bufferInfo;
+}
+
+VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination) {
+    VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+
+    // コマンドバッファに乗せる
+    vkCmdCopyBufferToImage(m_commandBuffer, buffer->nativeBuffer(), destination->vulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    // 戻り先で書いてもらう
+    return buffer;
+}
+
+void VulkanCommandBuffer::cleanInFlightResources() {
+    for (auto& buf : m_stagingBufferPool) {
+        buf.dispose();
+    }
+    m_stagingBufferPoolUsed = 0;
+}
+
+void VulkanCommandBuffer::resetAllocator(size_t pageSize) {
+    m_linearAllocatorManager = makeRef<LinearAllocatorPageManager>(pageSize);
+    m_linearAllocator = makeRef<LinearAllocator>(m_linearAllocatorManager);
+    m_vulkanAllocator.setLinearAllocator(m_linearAllocator);
+}
+
+Result<> VulkanCommandBuffer::glowStagingBufferPool() {
+    size_t oldSize = 0;
+    size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
+
+    m_stagingBufferPool.resize(newSize);
+    // for (size_t i = oldSize; i < newSize; i++) {
+    //	if (!m_stagingBufferPool[i].init(m_deviceContext)) {
+    //		return false;
+    //	}
+    // }
+
+    return ok();
+}
 
 //==============================================================================
 // VulkanGraphicsContext
@@ -23,7 +305,7 @@ bool VulkanGraphicsContext::init(VulkanDevice* owner)
 	ICommandList::init(owner);
 	m_device = owner;
 
-    m_commandBuffer = makeRef<VulkanCommandBuffer>();
+    m_commandBuffer = makeURef<VulkanCommandBuffer>();
 	if (!m_commandBuffer->init(m_device)) {
 		return false;
 	}

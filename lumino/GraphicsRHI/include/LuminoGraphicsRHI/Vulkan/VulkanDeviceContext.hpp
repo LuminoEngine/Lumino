@@ -189,10 +189,7 @@ private:
     uint32_t m_imageIndex;
 
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    //std::vector<VkSemaphore> m_renderFinishedSemaphores;
     uint32_t m_currentFrame;
-
-    std::vector<Ref<VulkanCommandBuffer>> m_inFlightCommandBuffers;
 };
 
 class VulkanFramebuffer2;

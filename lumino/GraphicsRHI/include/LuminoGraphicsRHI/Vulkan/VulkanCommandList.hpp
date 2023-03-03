@@ -4,25 +4,76 @@
 
 namespace ln {
 namespace detail {
-//class VulkanGraphicsContext;
-//class VulkanSwapChain;
-//class VulkanTexture;
-//class VulkanRenderTarget;
-//class VulkanDepthBuffer;
-//class VulkanShaderDescriptorTable;
-//class VulkanSingleFrameAllocatorPageManager;
-//class VulkanNativeGraphicsInterface;
 
-class VulkanGraphicsContext
-	: public ICommandList
+// ひとつのコマンドバッファ。通常、記録中バッファと実行中バッファなどに分かれるため、インスタンスは複数作られる。
+// VkCommandBuffer のほか、動的な各種バッファの変更などで必要となるメモリプールの管理も行う。
+class VulkanCommandBuffer : public URefObject {
+public:
+    VulkanCommandBuffer();
+    ~VulkanCommandBuffer();
+    Result<> init(VulkanDevice* deviceContext);
+    void dispose();
+
+    VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
+    VkFence vulkanInFlightFence() const { return m_inFlightFence; }
+
+    void wait();
+    Result<> beginRecording();
+    Result<> endRecording();
+    void endRenderPassInRecordingIfNeeded();
+    Result<> submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
+
+    // Result<> allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
+
+    // TODO: deprecated
+    VulkanBuffer* allocateBuffer(size_t size, VkBufferUsageFlags usage);
+
+    // const Ref<VulkanSingleFrameAllocator>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
+    const Ref<VulkanSingleFrameAllocator>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
+
+    // データを destination へ送信するためのコマンドを push する。
+    // 元データは戻り値のメモリ領域に書き込むこと。
+    VulkanSingleFrameBufferInfo cmdCopyBuffer(size_t size, VulkanBuffer* destination);
+    VulkanBuffer* cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination);
+
+public:
+    VulkanRenderPass* m_currentRenderPass = nullptr;
+    VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
+    // bool m_insideRendarPass = false;
+
+private:
+    void cleanInFlightResources();
+    // struct StagingBuffer
+    //{
+    //	VkBuffer buffer;
+    //	VkDeviceMemory bufferMemory;
+    // };
+
+    void resetAllocator(size_t pageSize);
+    Result<> glowStagingBufferPool();
+
+    VulkanDevice* m_deviceContext;
+    VkCommandBuffer m_commandBuffer;
+    VkFence m_inFlightFence;
+
+    Ref<LinearAllocatorPageManager> m_linearAllocatorManager;
+    Ref<LinearAllocator> m_linearAllocator;
+    VulkanLinearAllocator m_vulkanAllocator;
+    // Ref<VulkanSingleFrameAllocator> m_uniformBufferSingleFrameAllocator;
+    Ref<VulkanSingleFrameAllocator> m_transferBufferSingleFrameAllocator;
+
+    size_t m_stagingBufferPoolUsed;
+    std::vector<VulkanBuffer> m_stagingBufferPool;
+};
+
+class VulkanGraphicsContext : public ICommandList
 {
 public:
 	VulkanGraphicsContext();
     bool init(VulkanDevice* owner);
 	void onDestroy() override;
 
-    const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_commandBuffer; }
-    //void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
+    VulkanCommandBuffer* recodingCommandBuffer() const { return m_commandBuffer; }
 
     void wait() override;
 
@@ -45,7 +96,7 @@ protected:
 
 private:
 	VulkanDevice* m_device;
-    Ref<VulkanCommandBuffer> m_commandBuffer;
+    URef<VulkanCommandBuffer> m_commandBuffer;
 };
 
 } // namespace detail
