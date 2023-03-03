@@ -97,7 +97,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     VisualComponent();
 	virtual ~VisualComponent();
-	Result init();
+	Result<> init();
 
 private:
     virtual void render(RenderingContext* context) override;

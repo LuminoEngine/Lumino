@@ -15,7 +15,7 @@ GLSLShader::~GLSLShader() {
     dispose();
 }
 
-Result GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag) {
+Result<> GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag) {
     m_type = type;
 
     m_shader = glCreateShader(m_type);
@@ -86,7 +86,7 @@ GLShaderPass::~GLShaderPass() {
     LN_CHECK(m_program == 0);
 }
 
-Result GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag) {
+Result<> GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag) {
     if (!IShaderPass::init(createInfo)) {
         return err();
     }
@@ -132,7 +132,7 @@ Result GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& cre
 	return ok();
 }
 
-void GLShaderPass::dispose() {
+void GLShaderPass::onDestroy() {
      if (m_descriptorTable) {
     	m_descriptorTable->dispose();
     	m_descriptorTable = nullptr;
@@ -144,7 +144,7 @@ void GLShaderPass::dispose() {
         m_program = 0;
     }
 
-    IShaderPass::dispose();
+    IShaderPass::onDestroy();
 }
 
 // IShaderDescriptorTable* GLShaderPass::descriptorTable() const

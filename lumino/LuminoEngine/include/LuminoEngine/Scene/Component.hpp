@@ -49,7 +49,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Component();
 	virtual ~Component();
-	Result init();
+	Result<> init();
 
 public:
     WorldObject* m_object;

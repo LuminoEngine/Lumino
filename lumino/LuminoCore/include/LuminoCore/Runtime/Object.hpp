@@ -224,7 +224,7 @@ LN_CLASS()
 class Object : public RefObject {
 LN_CONSTRUCT_ACCESS:
     Object();
-    Result init();
+    Result<> init();
 
 protected:
     virtual ~Object();

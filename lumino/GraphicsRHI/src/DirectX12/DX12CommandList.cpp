@@ -68,8 +68,7 @@ bool DX12GraphicsContext::init(DX12Device* device)
 	return true;
 }
 
-void DX12GraphicsContext::dispose()
-{
+void DX12GraphicsContext::onDestroy() {
     if (m_descriptorHeapAllocator_RTV) {
         m_descriptorHeapAllocator_RTV->dispose();
         m_descriptorHeapAllocator_RTV = nullptr;
@@ -85,7 +84,7 @@ void DX12GraphicsContext::dispose()
     m_fence.Reset();
     m_dxCommandList.Reset();
     m_dxCommandAllocator.Reset();
-    ICommandList::dispose();
+    ICommandList::onDestroy();
 }
 
 void DX12GraphicsContext::onSaveExternalRenderState()

@@ -19,8 +19,7 @@ PluginManager::PluginManager()
 {
 }
 
-ln::Result PluginManager::init(Project* owner)
-{
+ln::Result<> PluginManager::init(Project* owner) {
     m_ownerProject = owner;
     m_standartPluginModule = ln::makeObject_deprecated<StandardPluginModule>();
     //m_tilesetExtensionModule = ln::makeObject_deprecated<TilesetExtensionModule>();

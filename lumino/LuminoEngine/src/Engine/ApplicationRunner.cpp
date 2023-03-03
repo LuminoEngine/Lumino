@@ -17,7 +17,7 @@ ApplicationRunnerBase::ApplicationRunnerBase() {
 ApplicationRunnerBase::~ApplicationRunnerBase() {
 }
 
-Result ApplicationRunnerBase::initEngine() {
+Result<> ApplicationRunnerBase::initEngine() {
     EngineContext::current()->initializeEngineManager();
     EngineContext::current()->engineManager()->initializeAllManagers();
     return ok();
@@ -42,7 +42,7 @@ void ApplicationRunnerBase::terminateEngine() {
 StandaloneApplicationRunner::StandaloneApplicationRunner() {
 }
 
-Result StandaloneApplicationRunner::run(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance) {
+Result<> StandaloneApplicationRunner::run(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance) {
     configureApp();
 
     LN_TRY(initEngine());
@@ -72,7 +72,7 @@ Result StandaloneApplicationRunner::run(ConfigureAppFunc configureApp, CreateApp
 ExternalWindowApplicationRunner::ExternalWindowApplicationRunner() {
 }
 
-Result ExternalWindowApplicationRunner::init(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance) {
+Result<> ExternalWindowApplicationRunner::init(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance) {
     configureApp();
     LN_TRY(initEngine());
     m_app = Ref<Application>(createAppInstance(), false);

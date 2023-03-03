@@ -289,8 +289,13 @@ Ref<IDescriptorPool> IGraphicsDevice::createDescriptorPool(IShaderPass* shaderPa
     return ptr;
 }
 
-void IGraphicsDevice::submitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
-    onSubmitCommandBuffer(context, affectRendreTarget);
+void IGraphicsDevice::queueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
+    onQueueSubmit(context, affectRendreTarget);
+}
+
+void IGraphicsDevice::queuePresent(ISwapChain* swapChain) {
+    if (LN_ASSERT(swapChain)) return;
+    onQueuePresent(swapChain);
 }
 
 Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag) {
@@ -369,16 +374,16 @@ ICommandList::~ICommandList() {
     }
 }
 
-Result ICommandList::init(IGraphicsDevice* owner) {
+Result<> ICommandList::init(IGraphicsDevice* owner) {
     return ok();
 }
 
-void ICommandList::dispose() {
+void ICommandList::onDestroy() {
     for (IRenderPass* renderPass : m_renderPasses) {
         renderPass->releaseObjects();
     }
     m_renderPasses.clear();
-    RHIDeviceObject::dispose();
+    RHIDeviceObject::onDestroy();
 }
 
 void ICommandList::enterRenderState() {
@@ -630,12 +635,12 @@ RHIExtent2D IRenderPass::viewSize() const {
     }
 }
 
-void IRenderPass::dispose() {
+void IRenderPass::onDestroy() {
     if (IGraphicsDevice* d = device()) {
         d->pipelineCache()->invalidate(this);
     }
 
-    RHIDeviceObject::dispose();
+    RHIDeviceObject::onDestroy();
 }
 
 void IRenderPass::retainObjects() {
@@ -679,12 +684,12 @@ bool IVertexDeclaration::init(const VertexElement* elements, int count) {
     return true;
 }
 
-void IVertexDeclaration::dispose() {
+void IVertexDeclaration::onDestroy() {
     if (IGraphicsDevice* d = device()) {
         d->pipelineCache()->invalidate(this);
     }
 
-    RHIDeviceObject::dispose();
+    RHIDeviceObject::onDestroy();
 }
 
 uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int count) {
@@ -726,11 +731,11 @@ IShaderPass::~IShaderPass() {
     }
 }
 
-void IShaderPass::dispose() {
+void IShaderPass::onDestroy() {
     if (IGraphicsDevice* d = device()) {
         d->pipelineCache()->invalidate(this);
     }
-    RHIDeviceObject::dispose();
+    RHIDeviceObject::onDestroy();
 }
 
 bool IShaderPass::init(const ShaderPassCreateInfo& createInfo) {
@@ -783,8 +788,8 @@ IPipeline::~IPipeline() {
     }
 }
 
-void IPipeline::dispose() {
-    RHIDeviceObject::dispose();
+void IPipeline::onDestroy() {
+    RHIDeviceObject::onDestroy();
 }
 
 //==============================================================================

@@ -17,7 +17,7 @@ class Document
 {
 public:
 	Document();
-    ln::Result init();
+    ln::Result<> init();
 
     const Ref<ln::UIContainerElement>& mainFrame() const { return m_mainFrame; }
 
@@ -49,7 +49,7 @@ class DocumentManager
 {
 public:
 	DocumentManager();
-    ln::Result init();
+    ln::Result<> init();
 
     const Ref<ToolPanesArea>& modePanesArea() const { return m_modePanesArea; }
     const Ref<ToolPanesArea>& toolPanesArea() const { return m_toolPanesArea; }
@@ -91,7 +91,7 @@ class AssetEditorDocument
 {
 public:
     AssetEditorDocument();
-    ln::Result init(ln::AssetModel* asset, lna::AssetEditorModel* editorModel);
+    ln::Result<> init(ln::AssetModel* asset, lna::AssetEditorModel* editorModel);
 
     const Ref<ln::AssetModel>& asset() const { return m_asset; }
     const Ref<lna::AssetEditorModel>& editor() const { return m_editor; }

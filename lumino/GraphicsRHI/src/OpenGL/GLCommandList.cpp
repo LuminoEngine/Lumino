@@ -20,7 +20,7 @@ GLGraphicsContext::GLGraphicsContext()
     , m_activeShaderPass(nullptr) {
 }
 
-Result GLGraphicsContext::init(OpenGLDevice* owner) {
+Result<> GLGraphicsContext::init(OpenGLDevice* owner) {
     LN_CHECK(owner);
     ICommandList::init(owner);
     m_device = owner;
@@ -32,7 +32,7 @@ Result GLGraphicsContext::init(OpenGLDevice* owner) {
     return ok();
 }
 
-void GLGraphicsContext::dispose() {
+void GLGraphicsContext::onDestroy() {
     if (m_vao) {
         GL_CHECK(glBindVertexArray(0));
         GL_CHECK(glDeleteVertexArrays(1, &m_vao));
@@ -44,7 +44,7 @@ void GLGraphicsContext::dispose() {
         m_fbo = 0;
     }
 
-    ICommandList::dispose();
+    ICommandList::onDestroy();
 }
 
 void GLGraphicsContext::setActiveShaderPass(GLShaderPass* pass) {

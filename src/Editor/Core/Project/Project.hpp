@@ -19,10 +19,10 @@ public:
 	Project(Workspace* owner);
 	virtual ~Project();
 
-	ln::Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName);
-    ln::Result openProject2(const ln::Path& projectFile);
-    ln::Result saveProject();
-    ln::Result loadProject();
+	ln::Result<> newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName);
+    ln::Result<> openProject2(const ln::Path& projectFile);
+    ln::Result<> saveProject();
+    ln::Result<> loadProject();
     void close();
 	void restore();
 
@@ -52,7 +52,7 @@ public:
 
 private:
 	void setupPathes();
-    ln::Result postInitialize();
+    ln::Result<> postInitialize();
 
 	Workspace* m_workspace;
 	ln::Ref<ProjectProperties> m_properties;
@@ -102,8 +102,8 @@ class Project
 public:
 	static const ln::String ProjectFileExt;
 
-    ln::Result saveProject();
-    ln::Result loadProject();
+    ln::Result<> saveProject();
+    ln::Result<> loadProject();
 	void restore();
 
 	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }
@@ -131,8 +131,8 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     Project();
     virtual ~Project();
-    ln::Result initForNew(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName);
-    ln::Result initForOpen(const ln::Path& dir);
+    ln::Result<> initForNew(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName);
+    ln::Result<> initForOpen(const ln::Path& dir);
 
 	void setupPathes();
 

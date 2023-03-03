@@ -7,8 +7,11 @@ namespace detail {
 class WebGPURenderTarget : public RHIResource {
 public:
     WebGPURenderTarget();
-    Result resetFromSwapChain(WebGPUDevice* rhiDevice, WGPUTextureView view, int width, int height, TextureFormat format);
-    void dispose() override;
+    Result<> initForSwapChainWrapper(WebGPUDevice* rhiDevice, int width, int height, TextureFormat format);
+    void onDestroy() override;
+    void wrapTextureView(WGPUTextureView view);
+
+	WGPUTextureView wgpuTextureView() const { return m_wgpuTextureView; }
 	
 private:
     WebGPUDevice* m_rhiDevice;

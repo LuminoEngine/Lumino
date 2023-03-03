@@ -10,7 +10,7 @@ namespace ln {
 ExternalProxyPlatformWindow::ExternalProxyPlatformWindow() {
 }
 
-Result ExternalProxyPlatformWindow::init(const WindowCreationSettings& settings) {
+Result<> ExternalProxyPlatformWindow::init(const WindowCreationSettings& settings) {
     return ok();
 }
 
@@ -40,7 +40,7 @@ EmptyPlatformWindowManager::EmptyPlatformWindowManager(PlatformManager* manager)
 EmptyPlatformWindowManager::~EmptyPlatformWindowManager() {
 }
 
-Result EmptyPlatformWindowManager::init() {
+Result<> EmptyPlatformWindowManager::init() {
     return ok();
 }
 

@@ -16,7 +16,7 @@ NativeRenderPassCache::NativeRenderPassCache(IGraphicsDevice* device)
 
 void NativeRenderPassCache::clear() {
     for (auto& pair : m_hashMap) {
-        pair.second.value->dispose();
+        pair.second.value->destroy();
     }
     m_hashMap.clear();
     DiagnosticsManager::activeDiagnostics()->setCounterValue(ProfilingItem::Graphics_RenderPassCount, m_hashMap.size());
@@ -111,7 +111,7 @@ NativePipelineCache::NativePipelineCache(IGraphicsDevice* device)
 
 void NativePipelineCache::clear() {
     for (auto& pair : m_hashMap) {
-        pair.second->dispose();
+        pair.second->destroy();
     }
     m_hashMap.clear();
     m_device = nullptr;
@@ -139,7 +139,7 @@ IPipeline* NativePipelineCache::findOrCreate(const FindKey& key) {
 void NativePipelineCache::invalidate(IVertexDeclaration* value) {
     for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
         if (itr->second->m_sourceVertexLayout == value) {
-            itr->second->dispose();
+            itr->second->destroy();
             itr = m_hashMap.erase(itr);
         }
         else {
@@ -151,7 +151,7 @@ void NativePipelineCache::invalidate(IVertexDeclaration* value) {
 void NativePipelineCache::invalidate(IRenderPass* value) {
     for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
         if (itr->second->m_sourceRenderPass == value) {
-            itr->second->dispose();
+            itr->second->destroy();
             itr = m_hashMap.erase(itr);
         }
         else {
@@ -163,7 +163,7 @@ void NativePipelineCache::invalidate(IRenderPass* value) {
 void NativePipelineCache::invalidate(IShaderPass* value) {
     for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
         if (itr->second->m_sourceShaderPass == value) {
-            itr->second->dispose();
+            itr->second->destroy();
             itr = m_hashMap.erase(itr);
         }
         else {

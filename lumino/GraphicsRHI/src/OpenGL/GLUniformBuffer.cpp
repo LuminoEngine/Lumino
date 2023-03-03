@@ -13,7 +13,7 @@ GLUniformBuffer::GLUniformBuffer()
     , m_mapped(false) {
 }
 
-Result GLUniformBuffer::init(size_t size) {
+Result<> GLUniformBuffer::init(size_t size) {
     LN_TRY(RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size));
     m_size = size;
 
@@ -32,13 +32,13 @@ Result GLUniformBuffer::init(size_t size) {
     return ok();
 }
 
-void GLUniformBuffer::dispose() {
+void GLUniformBuffer::onDestroy() {
     if (m_ubo) {
         GL_CHECK(glDeleteBuffers(1, &m_ubo));
         m_ubo = 0;
     }
     LN_SAFE_DELETE_ARRAY(m_data);
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 // モバイル環境で glMapBuffer が使えないことがあるため、glBufferData() で対応する。

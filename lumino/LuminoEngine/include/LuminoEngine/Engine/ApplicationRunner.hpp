@@ -8,7 +8,7 @@ protected:
     ApplicationRunnerBase();
     virtual ~ApplicationRunnerBase();
 
-    static Result initEngine();
+    static Result<> initEngine();
     static bool updateEngine();
     static void renderEngine(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget);
     static void terminateEngine();
@@ -17,7 +17,7 @@ protected:
 class StandaloneApplicationRunner : public ApplicationRunnerBase {
 public:
     StandaloneApplicationRunner();
-    Result run(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance);
+    Result<> run(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance);
 
 private:
     Ref<Application> m_app;
@@ -27,7 +27,7 @@ private:
 class ExternalWindowApplicationRunner : public ApplicationRunnerBase {
 public:
     ExternalWindowApplicationRunner();
-    Result init(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance);
+    Result<> init(ConfigureAppFunc configureApp, CreateAppInstanceFunc createAppInstance);
     bool updateFrame(int width, int height);
     void renderFrame(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget);
     void terminate();

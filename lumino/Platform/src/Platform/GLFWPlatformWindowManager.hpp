@@ -13,7 +13,7 @@ public:
     GLFWPlatformWindowManager(PlatformManager* manager);
     virtual ~GLFWPlatformWindowManager();
 
-    Result init(bool withOpenGLAPI);
+    Result<> init(bool withOpenGLAPI);
     void dispose() override;
     Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
     void destroyWindow(PlatformWindow* window) override;

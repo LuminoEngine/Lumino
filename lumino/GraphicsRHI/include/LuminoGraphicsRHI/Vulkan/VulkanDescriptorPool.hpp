@@ -32,9 +32,9 @@ class VulkanDescriptorPool2
 public:
     VulkanDescriptorPool2();
     bool init(VulkanDevice* device, VulkanShaderPass* shaderPass);
-    void dispose() override;
+    void onDestroy() override;
     void reset() override;
-    Result allocate(IDescriptor** outDescriptor) override;
+    Result<> allocate(IDescriptor** outDescriptor) override;
 
     VulkanDevice* device() const { return m_device; }
     VulkanShaderPass* shaderPass() const { return m_shaderPass; }

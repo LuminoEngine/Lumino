@@ -28,10 +28,9 @@ bool DX12RenderPass::init(DX12Device* device, const DeviceFramebufferState& buff
 	return true;
 }
 
-void DX12RenderPass::dispose()
-{
+void DX12RenderPass::onDestroy() {
 	m_device = nullptr;
-	IRenderPass::dispose();
+    IRenderPass::onDestroy();
 }
 
 } // namespace detail

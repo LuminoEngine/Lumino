@@ -12,7 +12,7 @@ class DX12RenderPass
 public:
     DX12RenderPass();
 	bool init(DX12Device* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-	void dispose() override;
+    void onDestroy() override;
 
 	DX12RenderTarget* renderTarget(int index) const { return static_cast<DX12RenderTarget*>(m_renderTargets[index]); }
 	DX12DepthBuffer* depthBuffer() const { return static_cast<DX12DepthBuffer*>(m_depthBuffer); }

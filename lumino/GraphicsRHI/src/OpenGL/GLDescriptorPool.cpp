@@ -12,12 +12,12 @@ namespace detail {
 
 GLUniformBufferAllocatorPage::~GLUniformBufferAllocatorPage() {
     if (m_buffer) {
-        m_buffer->dispose();
+        m_buffer->onDestroy();
         m_buffer = nullptr;
     }
 }
 
-Result GLUniformBufferAllocatorPage::init(OpenGLDevice* device, size_t size) {
+Result<> GLUniformBufferAllocatorPage::init(OpenGLDevice* device, size_t size) {
     m_buffer = std::make_unique<GLUniformBuffer>();
     LN_TRY(m_buffer->init(size));
     return ok();
@@ -71,7 +71,7 @@ GLDescriptorObjectPoolManager::GLDescriptorObjectPoolManager(OpenGLDevice* devic
     , m_device(device) {
 }
 
-Result GLDescriptorObjectPoolManager::onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) {
+Result<> GLDescriptorObjectPoolManager::onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) {
     for (int32_t i = 0; i < count; i++) {
         auto obj = makeRef<GLDescriptor>();
         LN_TRY(obj->init(m_device));
@@ -87,7 +87,7 @@ GLDescriptor::GLDescriptor()
     : m_uniformBufferView() {
 }
 
-Result GLDescriptor::init(OpenGLDevice* owner/*, GLUniformBufferView view*/) {
+Result<> GLDescriptor::init(OpenGLDevice* owner/*, GLUniformBufferView view*/) {
     //m_uniformBufferView = view;
     return ok();
 }
@@ -256,25 +256,25 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
 GLDescriptorPool::GLDescriptorPool() {
 }
 
-Result GLDescriptorPool::init(OpenGLDevice* owner, GLShaderPass* shaderPass) {
+Result<> GLDescriptorPool::init(OpenGLDevice* owner, GLShaderPass* shaderPass) {
     m_uniformBufferAllocator = makeRef<GLUniformBufferAllocator>(owner->uniformBufferAllocatorPageManager());
     m_pool = makeRef<ObjectPool>(owner->descriptorObjectPoolManager());
     return ok();
 }
 
-void GLDescriptorPool::dispose() {
+void GLDescriptorPool::onDestroy() {
     if (m_uniformBufferAllocator) {
         m_uniformBufferAllocator->cleanup();
         m_uniformBufferAllocator = nullptr;
     }
-    IDescriptorPool::dispose();
+    IDescriptorPool::onDestroy();
 }
 
 void GLDescriptorPool::reset() {
     m_uniformBufferAllocator->cleanup();
 }
 
-Result GLDescriptorPool::allocate(IDescriptor** outDescriptor) {
+Result<> GLDescriptorPool::allocate(IDescriptor** outDescriptor) {
     *outDescriptor = static_cast<GLDescriptor*>(m_pool->allocate());
     return ok();
 }

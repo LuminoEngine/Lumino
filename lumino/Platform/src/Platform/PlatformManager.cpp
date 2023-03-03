@@ -37,7 +37,7 @@ PlatformManager::PlatformManager()
 PlatformManager::~PlatformManager() {
 }
 
-Result PlatformManager::init(const Settings& settings) {
+Result<> PlatformManager::init(const Settings& settings) {
 #ifdef LN_GLFW
     if (settings.windowSystem == WindowSystem::GLFWWithOpenGL || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) {
         if (!m_windowManager) {

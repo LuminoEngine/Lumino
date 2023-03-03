@@ -46,7 +46,7 @@ const ln::TypeInfo* AssetModel::assetType() const
     return TypeInfo::getTypeInfo(m_target);
 }
 
-//ln::Result AssetModel::loadInternal(const ln::Path& filePath)
+//ln::Result<> AssetModel::loadInternal(const ln::Path& filePath)
 //{
 //    String json = FileSystem::readAllText(filePath);
 //    JsonSerializer::deserialize(json, filePath.parent(), *this);
@@ -55,7 +55,7 @@ const ln::TypeInfo* AssetModel::assetType() const
 //    return true;
 //}
 //
-//ln::Result AssetModel::saveInternal(const ln::Path& filePath)
+//ln::Result<> AssetModel::saveInternal(const ln::Path& filePath)
 //{
 //    String json = JsonSerializer::serialize(*this, JsonFormatting::Indented);
 //    FileSystem::writeAllText(filePath, json);

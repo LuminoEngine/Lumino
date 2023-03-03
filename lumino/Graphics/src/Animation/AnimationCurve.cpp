@@ -80,7 +80,7 @@ KeyFrameAnimationCurve::~KeyFrameAnimationCurve()
 {
 }
 
-Result KeyFrameAnimationCurve::init() {
+Result<> KeyFrameAnimationCurve::init() {
 	return AnimationCurve::init();
 }
 

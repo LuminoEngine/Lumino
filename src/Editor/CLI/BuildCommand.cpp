@@ -69,7 +69,7 @@ ln::String BuildCommand::selectDefaultTarget() const
 #endif
 }
 
-ln::Result BuildCommand::buildWindowsTarget(lna::Workspace* workspace, bool debug)
+ln::Result<> BuildCommand::buildWindowsTarget(lna::Workspace* workspace, bool debug)
 {
 	auto file = ln::FileSystem::getFile(m_project->rootDirPath(), _TT("*.sln"));
 	if (file.isEmpty()) {
@@ -93,7 +93,7 @@ ln::Result BuildCommand::buildWindowsTarget(lna::Workspace* workspace, bool debu
 	return ln::ok();
 }
 
-ln::Result BuildCommand::buildWindowsPackage(lna::Project* project)
+ln::Result<> BuildCommand::buildWindowsPackage(lna::Project* project)
 {
 	auto dstDir = ln::Path::combine(project->releaseDir(), _TT("Windows"));
 	ln::FileSystem::createDirectory(dstDir);
@@ -111,7 +111,7 @@ ln::Result BuildCommand::buildWindowsPackage(lna::Project* project)
 
 
 
-ln::Result BuildCommand::buildAndroidTarget()
+ln::Result<> BuildCommand::buildAndroidTarget()
 {
 #if 0
 	// Android

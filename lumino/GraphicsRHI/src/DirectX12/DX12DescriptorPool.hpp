@@ -88,9 +88,9 @@ class DX12DescriptorPool
 public:
 	DX12DescriptorPool();
 	bool init(DX12Device* device, DX12ShaderPass* shaderPass);
-	void dispose() override;
+	void onDestroy() override;
 	void reset() override;
-    Result allocate(IDescriptor** outDescriptor) override;
+    Result<> allocate(IDescriptor** outDescriptor) override;
 	DX12Device* device() const { return m_device; }
 	DX12ShaderPass* shaderPass() const { return m_shaderPass; }
 	const Ref<DX12DescriptorHeapAllocator>& descriptorHeapAllocator_CBV_SRV_UAV() const { return m_descriptorHeapAllocator_CBV_SRV_UAV; }

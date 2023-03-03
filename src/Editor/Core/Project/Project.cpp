@@ -20,7 +20,7 @@ Project::~Project()
 {
 }
 
-ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName)
+ln::Result<> Project::newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName)
 {
 	m_rootDir = projectDir.canonicalize();
 	m_projectName = projectName;
@@ -60,7 +60,7 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
     //    return false;
     //}
 	
-    ln::Result result = saveProject();
+    ln::Result<> result = saveProject();
 	CLI::info(_TT("\nSuccess! Created ") + m_projectName + _TT(" at ") + m_rootDir + _TT("\n"));
 
     //if (!postInitialize()) {
@@ -95,7 +95,7 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
 	*/
 }
 
-ln::Result Project::openProject2(const ln::Path& projectFile)
+ln::Result<> Project::openProject2(const ln::Path& projectFile)
 {
     m_projectFilePath = projectFile.canonicalize();
 	m_rootDir = m_projectFilePath.parent();
@@ -125,7 +125,7 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
 	return ln::ok();
 }
 
-ln::Result Project::saveProject()
+ln::Result<> Project::saveProject()
 {
     LN_NOTIMPLEMENTED();
 	//auto json = ln::JsonSerializer::serialize(*m_properties);
@@ -133,7 +133,7 @@ ln::Result Project::saveProject()
 	return ln::ok();
 }
 
-ln::Result Project::loadProject() {
+ln::Result<> Project::loadProject() {
     LN_NOTIMPLEMENTED();
 	//ln::String json = ln::FileSystem::readAllText(m_projectFilePath).unwrap();
 	//ln::JsonSerializer::deserialize(json, *m_properties);
@@ -184,7 +184,7 @@ void Project::setupPathes()
 	//}
 }
 
-//ln::Result Project::postInitialize()
+//ln::Result<> Project::postInitialize()
 //{
 //}
 //
@@ -208,13 +208,13 @@ Project::~Project()
 {
 }
 
-ln::Result Project::initForNew(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName)
+ln::Result<> Project::initForNew(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName)
 {
     LN_NOTIMPLEMENTED();
     return false;
 }
 
-ln::Result Project::initForOpen(const ln::Path& dir)
+ln::Result<> Project::initForOpen(const ln::Path& dir)
 {
 	m_rootDir = dir.canonicalize();
 	m_properties = ln::makeRef<ProjectProperties>();
@@ -239,14 +239,14 @@ ln::Result Project::initForOpen(const ln::Path& dir)
 	return true;
 }
 
-ln::Result Project::saveProject()
+ln::Result<> Project::saveProject()
 {
 	auto json = ln::JsonSerializer::serialize(*m_properties);
 	ln::FileSystem::writeAllText(m_projectFilePath, json);
 	return true;
 }
 
-ln::Result Project::loadProject()
+ln::Result<> Project::loadProject()
 {
 	ln::String json = ln::FileSystem::readAllText(m_projectFilePath);
 	ln::JsonSerializer::deserialize(json, *m_properties);

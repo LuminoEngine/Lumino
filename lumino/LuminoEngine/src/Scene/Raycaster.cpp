@@ -114,7 +114,7 @@ Raycaster::Raycaster()
 {
 }
 
-Result Raycaster::init() {
+Result<> Raycaster::init() {
 	return Object::init();
 }
 
@@ -149,7 +149,7 @@ RaycastResult::RaycastResult()
 {
 }
 
-Result RaycastResult::init() {
+Result<> RaycastResult::init() {
 	return Object::init();
 }
 

@@ -9,7 +9,7 @@ public:
     RefObject* get(int32_t index) const { return m_objects[index].get(); }
 
 protected:
-    virtual Result onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) = 0;
+    virtual Result<> onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) = 0;
 
 private:
     Array<Ref<RefObject>> m_objects;
@@ -41,7 +41,7 @@ public:
     ObjectPoolManager(int32_t pageSize);
 
 protected:
-    virtual Result onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) = 0;
+    virtual Result<> onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) = 0;
 
     Ref<AbstractObjectPoolPage> onCreateNewPage() override;
 
@@ -49,7 +49,7 @@ private:
     class ObjectPoolPage : public AbstractObjectPoolPage {
     public:
         ObjectPoolPage(ObjectPoolManager* manager) : m_manager(manager) {}
-        Result onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) override {
+        Result<> onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) override {
             return m_manager->onCreateObjects(count, result);
         }
 

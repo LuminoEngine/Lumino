@@ -1,6 +1,5 @@
-﻿
-#pragma once
-#include "VulkanHelper.hpp"
+﻿#pragma once
+#include <LuminoGraphicsRHI/Vulkan/VulkanHelper.hpp>
 
 namespace ln {
 namespace detail {

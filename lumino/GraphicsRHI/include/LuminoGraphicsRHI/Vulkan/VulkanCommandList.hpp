@@ -19,7 +19,7 @@ class VulkanGraphicsContext
 public:
 	VulkanGraphicsContext();
     bool init(VulkanDevice* owner);
-	void dispose();
+	void onDestroy() override;
 
     const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_commandBuffer; }
     //void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }

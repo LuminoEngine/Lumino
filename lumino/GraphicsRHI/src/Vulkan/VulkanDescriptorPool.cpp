@@ -1,6 +1,6 @@
-﻿#include "VulkanDeviceContext.hpp"
-#include "VulkanShaderPass.hpp"
-#include "VulkanDescriptorPool.hpp"
+﻿#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanShaderPass.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanDescriptorPool.hpp>
 
 namespace ln {
 namespace detail {
@@ -58,15 +58,14 @@ bool VulkanDescriptorPool2::init(VulkanDevice* device, VulkanShaderPass* shaderP
 	return true;
 }
 
-void VulkanDescriptorPool2::dispose()
-{
+void VulkanDescriptorPool2::onDestroy() {
 	for (const auto& page : m_pages) {
 		vkDestroyDescriptorPool(m_device->vulkanDevice(), page->pool, m_device->vulkanAllocator());
 	}
 	m_pages.clear();
 	m_freePages.clear();
 	m_activePage = nullptr;
-    IDescriptorPool::dispose();
+    IDescriptorPool::onDestroy();
 }
 
 void VulkanDescriptorPool2::reset()
@@ -83,8 +82,7 @@ void VulkanDescriptorPool2::reset()
 	m_activePageUsedCount = 0;
 }
 
-Result VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
-{
+Result<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor) {
     if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_SET_COUNT)
     {
         // active pool を使い切ったので次の pool を確保

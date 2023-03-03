@@ -35,7 +35,7 @@ public:
 	GLFWPlatformWindow();
 	virtual ~GLFWPlatformWindow();
 
-    Result init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext);
+    Result<> init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext);
 	void dispose();
     void setWindowTitle(const String& title) override;
 	void getSize(SizeI* size) override;

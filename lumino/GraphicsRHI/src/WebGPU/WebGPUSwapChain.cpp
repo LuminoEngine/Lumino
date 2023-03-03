@@ -20,7 +20,7 @@ WebGPUSwapChain::WebGPUSwapChain()
     , m_currentRenderTargets{} {
 }
 
-Result WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, const SizeI& backbufferSize) {
+Result<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, const SizeI& backbufferSize) {
     m_device = device;
     m_wgpuSurface = m_device->getWGPUSurface(window);
     m_width = backbufferSize.width;
@@ -44,7 +44,11 @@ Result WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, const
 
 
     for (int i = 0; i < BackbufferCount; i++) {
-        m_currentRenderTargets[i] = makeRef<WebGPURenderTarget>();
+        auto renderTarget = makeRef<WebGPURenderTarget>();
+        if (!renderTarget->initForSwapChainWrapper(m_device, m_width, m_height, m_format)) {
+            return err();
+        }
+        m_currentRenderTargets[i] = renderTarget;
     }
 	
 	//
@@ -54,9 +58,9 @@ Result WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, const
     return ok();
 }
 
-void WebGPUSwapChain::dispose() {
+void WebGPUSwapChain::onDestroy() {
     for (auto& i : m_currentRenderTargets) {
-        i->dispose();
+        i->destroy();
     }
     m_currentRenderTargets = {};
     m_wgpuSwapChain = nullptr;
@@ -69,18 +73,16 @@ uint32_t WebGPUSwapChain::getBackbufferCount() {
 
 void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
     *outImageIndex = m_imageIndex;
+
+    WebGPURenderTarget* renderTarget = m_currentRenderTargets[m_imageIndex];
+    renderTarget->wrapTextureView(wgpuSwapChainGetCurrentTextureView(m_wgpuSwapChain));
 }
 
-// TODO: getCurrentRenderTarget とかにしないとダメかも。
 RHIResource* WebGPUSwapChain::getRenderTarget(int imageIndex) const {
-    WGPUTextureView nextTexture = wgpuSwapChainGetCurrentTextureView(m_wgpuSwapChain);
-    if (!m_currentRenderTargets[imageIndex]->resetFromSwapChain(m_device, nextTexture, m_width, m_height, m_format)) {
-        return nullptr;
-    }
     return m_currentRenderTargets[imageIndex];
 }
 
-Result WebGPUSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
+Result<> WebGPUSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     LN_NOTIMPLEMENTED();
     return ok();
 }

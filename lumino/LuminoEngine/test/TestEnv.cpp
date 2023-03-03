@@ -9,22 +9,27 @@ String TestEnv::LuminoCLI;
 Ref<DepthBuffer> TestEnv::depthBuffer;
 RenderTargetTexture* TestEnv::lastBackBuffer = nullptr;
 
-void TestEnv::setup() {
+
+void TestEnv::initialize() {
     if (Environment::getEnvironmentVariable(U"LN_BUILD_FROM_CI")) {
         isCI = true;
         printf("LN_BUILD_FROM_CI defined.\n");
     }
+}
 
-    auto graphicsAPI = GraphicsAPI::Default;
+void TestEnv::setup(GraphicsAPI graphicsAPI) {
+
     auto windowSystem = ln::WindowSystem::Native;
-    detail::GraphicsManager::selectDefaultSystem(&graphicsAPI, &windowSystem);
+	if (graphicsAPI == GraphicsAPI::Default) {
+        detail::GraphicsManager::selectDefaultSystem(&graphicsAPI, &windowSystem);
+    }
 
-    if (!isCI) {
-        graphicsAPI = GraphicsAPI::Vulkan; //GraphicsAPI::OpenGL;//GraphicsAPI::DirectX12;//
+    //if (!isCI) {
+    //    graphicsAPI = GraphicsAPI::Vulkan; //GraphicsAPI::OpenGL;//GraphicsAPI::DirectX12;//
         if (graphicsAPI == GraphicsAPI::OpenGL) {
             windowSystem = ln::WindowSystem::GLFWWithOpenGL;
         }
-    }
+    //}
 
     EngineFeature feature = EngineFeature::Experimental; //EngineFeature::Public; //
     EngineSettings::setMainWindowSize(160, 120);

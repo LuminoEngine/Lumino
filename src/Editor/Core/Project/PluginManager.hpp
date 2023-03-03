@@ -15,7 +15,7 @@ class PluginManager
 {
 public:
     PluginManager();
-    ln::Result init(Project* owner);
+    ln::Result<> init(Project* owner);
 
     void reloadPlugins();
     void activateAllExtensions(EditorContext* context);

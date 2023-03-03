@@ -187,7 +187,8 @@ public:
     Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(RHIDeviceObject* obj) {}
 
-    void submitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget); // 呼ぶ前に end しておくこと
+    void queueSubmit(ICommandList* context, RHIResource* affectRendreTarget); // 呼ぶ前に end しておくこと
+    void queuePresent(ISwapChain* swapChain);
 
     virtual INativeGraphicsInterface* getNativeInterface() const = 0;
     virtual ICommandQueue* getGraphicsCommandQueue() = 0;
@@ -218,7 +219,8 @@ protected:
     virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
     virtual Ref<RHIResource> onCreateUniformBuffer(uint32_t size) = 0;
     virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
-    virtual void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) = 0;
+    virtual void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) = 0;
+    virtual void onQueuePresent(ISwapChain* swapChain) = 0;
 
 public: // TODO:
     GraphicsDeviceCaps m_caps;
@@ -276,8 +278,8 @@ public:
 public: // TODO:
     ICommandList();
     virtual ~ICommandList();
-    Result init(IGraphicsDevice* owner);
-    void dispose() override;
+    Result<> init(IGraphicsDevice* owner);
+    void onDestroy() override;
 
     virtual void onSaveExternalRenderState() = 0;
     virtual void onRestoreExternalRenderState() = 0;
@@ -325,9 +327,7 @@ public:
 
     virtual RHIResource* getRenderTarget(int imageIndex) const = 0;
 
-    virtual Result resizeBackbuffer(uint32_t width, uint32_t height) = 0;
-
-    virtual void present() = 0;
+    virtual Result<> resizeBackbuffer(uint32_t width, uint32_t height) = 0;
 
 protected:
     virtual ~ISwapChain();
@@ -337,7 +337,7 @@ protected:
 class ICommandQueue
     : public RHIDeviceObject {
 public:
-    virtual Result submit(ICommandList* commandList) = 0;
+    virtual Result<> submit(ICommandList* commandList) = 0;
 
 protected:
     virtual ~ICommandQueue() = default;
@@ -376,7 +376,7 @@ public:
 
     virtual RHIExtent2D viewSize() const;
 
-    virtual void dispose();
+    void onDestroy() override;
 
     void retainObjects();
     void releaseObjects();
@@ -402,7 +402,7 @@ public:
     uint64_t hash() const { return m_hash; }
     static uint64_t computeHash(const VertexElement* elements, int count);
 
-    virtual void dispose();
+    void onDestroy() override;
 
 protected:
     IVertexDeclaration();
@@ -426,7 +426,7 @@ class IShaderPass
 public:
     const std::vector<kokage::VertexInputAttribute>& attributes() const { return m_attributes; }
     const kokage::VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
-    void dispose() override;
+    void onDestroy() override;
 
 protected:
     IShaderPass();
@@ -446,7 +446,7 @@ class IPipeline
 public:
     uint64_t cacheKeyHash = 0;
 
-    virtual void dispose();
+    void onDestroy() override;
     const IVertexDeclaration* vertexLayout() const { return m_sourceVertexLayout; }
     const IRenderPass* renderPass() const { return m_sourceRenderPass; }
     const IShaderPass* shaderPass() const { return m_sourceShaderPass; }
@@ -473,9 +473,8 @@ private:
 class IDescriptorPool
     : public RHIDeviceObject {
 public:
-    //virtual void dispose() = 0;
     virtual void reset() = 0;
-    virtual Result allocate(IDescriptor** outDescriptor) = 0;
+    virtual Result<> allocate(IDescriptor** outDescriptor) = 0;
 
 protected:
     virtual ~IDescriptorPool();

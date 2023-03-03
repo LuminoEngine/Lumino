@@ -261,7 +261,7 @@ UIFrameWindow::UIFrameWindow()
 UIFrameWindow::~UIFrameWindow() {
 }
 
-Result UIFrameWindow::init(const InitInfo& initInfo) {
+Result<> UIFrameWindow::init(const InitInfo& initInfo) {
     if (!UIDomainProvidor::init()) return err();
 
     m_manager = detail::EngineDomain::uiManager();
@@ -682,7 +682,7 @@ UIMainWindow::UIMainWindow() {
 UIMainWindow::~UIMainWindow() {
 }
 
-Result UIMainWindow::init(bool useExternalSwapChain) {
+Result<> UIMainWindow::init(bool useExternalSwapChain) {
 
     // サブクラスの init 等で、AllowDragDrop や WindowSize など PlatformWindow が実態をもつプロパティにアクセス試合ことがある。
     // そのためこの時点で PlatformWindow をアタッチしておきたい。

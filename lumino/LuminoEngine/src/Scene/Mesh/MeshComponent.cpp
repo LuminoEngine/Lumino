@@ -31,7 +31,7 @@ MeshComponent::~MeshComponent()
 {
 }
 
-Result MeshComponent::init() {
+Result<> MeshComponent::init() {
     return VisualComponent::init();
 }
 

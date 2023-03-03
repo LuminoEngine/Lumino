@@ -39,7 +39,8 @@ protected:
     Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
-    void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueuePresent(ISwapChain* swapChain) override;
     ICommandQueue* getGraphicsCommandQueue() override;
     ICommandQueue* getComputeCommandQueue() override;
 
@@ -49,7 +50,7 @@ private:
         WGPUAdapter adapter;
     };
 
-    Result requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor);
+    Result<> requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor);
 	
     WGPUInstance m_instance;
     WGPUSurface m_surface;

@@ -9,7 +9,7 @@ namespace ln {
 class ExternalProxyPlatformWindow : public PlatformWindow {
 public:
     ExternalProxyPlatformWindow();
-    Result init(const WindowCreationSettings& settings);
+    Result<> init(const WindowCreationSettings& settings);
     void setWindowTitle(const String& title) override {}
     void getSize(SizeI* size) override { *size = m_size; }
     void setSize(const SizeI& size) override { LN_NOTIMPLEMENTED(); }

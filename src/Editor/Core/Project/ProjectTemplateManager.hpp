@@ -22,7 +22,7 @@ public:
 	void search();
 	ProjectTemplate* findTemplate(const ln::String& primaryLang, const ln::String& templateName) const;
 
-	ln::Result applyTemplates(const Project* project, const ln::String& templateName) const;
+	ln::Result<> applyTemplates(const Project* project, const ln::String& templateName) const;
 
 private:
 	ln::List<Ref<ProjectTemplate>> m_templates;

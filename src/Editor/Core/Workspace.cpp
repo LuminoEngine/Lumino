@@ -14,7 +14,7 @@ bool Workspace::developMode = true;
 bool Workspace::developMode = false;
 #endif
 
-//ln::Result Workspace::init()
+//ln::Result<> Workspace::init()
 //{
 //    assert(!s_instance);
 //    s_instance = new Workspace();
@@ -53,7 +53,7 @@ Workspace::Workspace()
 Workspace ::~Workspace() {
 }
 
-ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::String& projectName)
+ln::Result<> Workspace::newMainProject(const ln::Path& projectDir, const ln::String& projectName)
 {
     if (LN_REQUIRE(!m_mainProject)) return ln::err();
     m_mainProject = ln::makeRef<Project>(this);
@@ -65,7 +65,7 @@ ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::Strin
     return ln::ok();
 }
 
-ln::Result Workspace::openMainProject(const ln::Path& filePath)
+ln::Result<> Workspace::openMainProject(const ln::Path& filePath)
 {
     if (LN_REQUIRE(!m_mainProject)) return ln::err();
     m_mainProject = ln::makeRef<Project>(this);
@@ -77,7 +77,7 @@ ln::Result Workspace::openMainProject(const ln::Path& filePath)
     return ln::ok();
 }
 
-ln::Result Workspace::closeMainProject()
+ln::Result<> Workspace::closeMainProject()
 {
     if (m_mainAssetDatabase) {
         m_mainAssetDatabase->close();
@@ -90,7 +90,7 @@ ln::Result Workspace::closeMainProject()
     return ln::ok();
 }
 
-ln::Result Workspace::runProject(const ln::String& target)
+ln::Result<> Workspace::runProject(const ln::String& target)
 {
 	// Windows
 	if (ln::String::compare(target, _TT("Windows"), ln::CaseSensitivity::CaseInsensitive) == 0)
@@ -161,13 +161,13 @@ httpd.serve_forever()
 	return ln::ok();
 }
 
-ln::Result Workspace::restoreProject()
+ln::Result<> Workspace::restoreProject()
 {
     m_mainProject->restore();
     return ln::ok();
 }
 
-ln::Result Workspace::dev_installTools() const
+ln::Result<> Workspace::dev_installTools() const
 {
 	m_buildEnvironment->prepareEmscriptenSdk();
     return ln::ok();

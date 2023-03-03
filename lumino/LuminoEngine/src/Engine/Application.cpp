@@ -27,7 +27,7 @@ Application::Application()
 Application::~Application() {
 }
 
-Result Application::init() {
+Result<> Application::init() {
     return CoreApplication::init();
 }
 
@@ -151,7 +151,7 @@ void ApplicationSetupSettings::setMainWindow(UIMainWindow* value) noexcept {
 
 Ref<Application> AppIntegration::s_app;
 
-Result AppIntegration::initialize(ConfigureApp configureApp, CreateAppInstance createAppInstance) {
+Result<> AppIntegration::initialize(ConfigureApp configureApp, CreateAppInstance createAppInstance) {
     configureApp();
 
     if (!initializeEngine()) {
@@ -194,7 +194,7 @@ void AppIntegration::preConfigure() {
     detail::EngineManager::s_settings.defaultObjectsCreation = true;
 }
 
-Result AppIntegration::initializeEngine() {
+Result<> AppIntegration::initializeEngine() {
     EngineContext::current()->initializeEngineManager();
     EngineContext::current()->engineManager()->initializeAllManagers();
     return ok();

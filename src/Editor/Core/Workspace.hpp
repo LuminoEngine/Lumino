@@ -15,11 +15,11 @@ public:
 	Workspace();
 	virtual ~Workspace();
 
-	ln::Result newMainProject(const ln::Path& projectDir, const ln::String& projectName);
-	ln::Result openMainProject(const ln::Path& filePath);
-	ln::Result closeMainProject();
-    ln::Result runProject(const ln::String& target);
-    ln::Result restoreProject();
+	ln::Result<> newMainProject(const ln::Path& projectDir, const ln::String& projectName);
+	ln::Result<> openMainProject(const ln::Path& filePath);
+	ln::Result<> closeMainProject();
+    ln::Result<> runProject(const ln::String& target);
+    ln::Result<> restoreProject();
 
 	const ln::String& primaryLang() const { return m_primaryLang; }
     const ln::Ref<Project>& mainProject() const { return m_mainProject; }
@@ -28,7 +28,7 @@ public:
 	const ln::Ref<ProjectTemplateManager>& projectTemplateManager() const { return m_projectTemplateManager; }
 	const ln::Ref<BuildEnvironment>& buildEnvironment() const { return m_buildEnvironment; }
 
-    ln::Result dev_installTools() const;
+    ln::Result<> dev_installTools() const;
 	void dev_openIde(const ln::String& target) const;
 
     static ln::Path findProejctFile(const ln::Path& dir);

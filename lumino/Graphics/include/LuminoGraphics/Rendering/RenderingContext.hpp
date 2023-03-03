@@ -211,7 +211,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     RenderingContext();
-    Result init();
+    Result<> init();
 
 public: // TODO: internal
     void resetForBeginRendering(const RenderViewPoint* viewPoint);

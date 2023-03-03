@@ -508,8 +508,7 @@ FreeTypeFont::FreeTypeFont()
 {
 }
 
-Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
-{
+Result<> FreeTypeFont::init(FontManager* manager, const FontDesc& desc) {
     // CSS (Web) のフォントポイントサイズに合わせる。
 	static const int resolution = 72;
 

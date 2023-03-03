@@ -438,7 +438,7 @@ void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, kokage::
 
 void ShaderPass::onDispose(bool explicitDisposing) {
     for (auto& pool : m_descriptorSetsPools) {
-        pool->dispose();
+        pool->destroy();
     }
     m_descriptorSetsPools.clear();
 

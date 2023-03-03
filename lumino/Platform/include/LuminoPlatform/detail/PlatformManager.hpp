@@ -36,7 +36,7 @@ public:
 
 private:
     PlatformManager();
-    Result init(const Settings& settings);
+    Result<> init(const Settings& settings);
     void dispose();
 
     Ref<PlatformWindowManager> m_windowManager;

@@ -12,7 +12,7 @@ Document::Document()
 {
 }
 
-ln::Result Document::init()
+ln::Result<> Document::init()
 {
     Object::init();
     m_mainFrame = ln::makeObject_deprecated<ln::UIContainerElement>();
@@ -44,7 +44,7 @@ DocumentManager::DocumentManager()
 {
 }
 
-ln::Result DocumentManager::init()
+ln::Result<> DocumentManager::init()
 {
     UIControl::init();
     //setLayoutPanel(ln::makeObject_deprecated<ln::UIVBoxLayout>());
@@ -177,7 +177,7 @@ AssetEditorDocument::AssetEditorDocument()
 {
 }
 
-ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditorModel* editorModel)
+ln::Result<> AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditorModel* editorModel)
 {
     if (!Document::init()) return ln::err();
     m_asset = asset;

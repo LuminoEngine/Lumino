@@ -9,8 +9,8 @@ class GLGraphicsContext
     : public ICommandList {
 public:
     GLGraphicsContext();
-    Result init(OpenGLDevice* owner);
-    void dispose();
+    Result<> init(OpenGLDevice* owner);
+    void onDestroy() override;
     void setActiveShaderPass(GLShaderPass* pass);
     GLuint fbo() const { return m_fbo; }
 

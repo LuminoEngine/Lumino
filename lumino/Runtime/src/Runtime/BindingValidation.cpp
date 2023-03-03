@@ -10,7 +10,7 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(ZVTestClass1, Object) {
 }
 
-Result ZVTestClass1::init() {
+Result<> ZVTestClass1::init() {
     return Object::init();
 }
 

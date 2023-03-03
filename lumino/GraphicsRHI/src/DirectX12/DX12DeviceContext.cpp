@@ -501,10 +501,14 @@ Ref<IDescriptorPool> DX12Device::onCreateDescriptorPool(IShaderPass* shaderPass)
     return ptr;
 }
 
-void DX12Device::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
+void DX12Device::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
     DX12GraphicsContext* commandList = static_cast<DX12GraphicsContext*>(context);
     commandList->submit(m_fenceValue);
     m_fenceValue++;
+}
+
+void DX12Device::onQueuePresent(ISwapChain* swapChain) {
+    static_cast<DX12SwapChain*>(swapChain)->present();
 }
 
 ICommandQueue* DX12Device::getGraphicsCommandQueue() {
@@ -697,9 +701,9 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
     return true;
 }
 
-void DX12Pipeline::dispose() {
+void DX12Pipeline::onDestroy() {
     m_pipelineState.Reset();
-    IPipeline::dispose();
+    IPipeline::onDestroy();
 }
 
 //==============================================================================
@@ -710,7 +714,7 @@ DX12VertexDeclaration::DX12VertexDeclaration()
 }
 
 // https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
-Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCount) {
+Result<> DX12VertexDeclaration::init(const VertexElement* elements, int elementsCount) {
     LN_DCHECK(elements);
 
     //std::array<UINT, 16> offsets;
@@ -742,8 +746,8 @@ Result DX12VertexDeclaration::init(const VertexElement* elements, int elementsCo
     return ok();
 }
 
-void DX12VertexDeclaration::dispose() {
-    IVertexDeclaration::dispose();
+void DX12VertexDeclaration::onDestroy() {
+    IVertexDeclaration::onDestroy();
 }
 
 //==============================================================================
@@ -753,7 +757,7 @@ DX12SamplerState::DX12SamplerState()
     : m_samplerDesc() {
 }
 
-Result DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData& desc) {
+Result<> DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData& desc) {
     LN_DCHECK(deviceContext);
 
     if (desc.filter == TextureFilterMode::Point) {
@@ -786,8 +790,8 @@ Result DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData&
     return ok();
 }
 
-void DX12SamplerState::dispose() {
-    ISamplerState::dispose();
+void DX12SamplerState::onDestroy() {
+    ISamplerState::onDestroy();
 }
 
 } // namespace detail

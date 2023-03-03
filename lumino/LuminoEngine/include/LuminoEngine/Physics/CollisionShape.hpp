@@ -41,7 +41,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	CollisionShape();
 	virtual ~CollisionShape();
-	Result init();
+	Result<> init();
 	bool init(btCollisionShape* shape);
 
 LN_INTERNAL_ACCESS:
@@ -102,7 +102,7 @@ LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape();
 	virtual ~BoxCollisionShape();
 
-	Result init();
+	Result<> init();
 
 	/** init */
 	LN_METHOD()
@@ -131,7 +131,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	SphereCollisionShape();
 	virtual ~SphereCollisionShape();
-	Result init();
+	Result<> init();
 	bool init(float radius);
 };
 
@@ -154,7 +154,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	CapsuleCollisionShape();
 	virtual ~CapsuleCollisionShape();
-	Result init();
+	Result<> init();
 	bool init(float radius, float height);
 };
 
@@ -177,7 +177,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	MeshCollisionShape();
 	virtual ~MeshCollisionShape();
-	Result init();
+	Result<> init();
 	bool init(MeshPrimitive* mesh);
 	bool init(MeshPrimitive* mesh, const Matrix& transform);
 

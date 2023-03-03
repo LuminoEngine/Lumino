@@ -36,7 +36,7 @@ LN_CONSTRUCT_ACCESS:
     Delegate()
         : m_function() {}
 
-    Result init() {
+    Result<> init() {
         return Object::init();
     }
 
@@ -71,7 +71,7 @@ LN_CONSTRUCT_ACCESS:
     Delegate()
         : m_function() {}
 
-    Result init() {
+    Result<> init() {
         return Object::init();
     }
 

@@ -44,7 +44,7 @@ public:
 
 private:
     PrimitiveMeshRenderer();
-    Result init();
+    Result<> init();
 
     CommandList* m_commandList;
     Material* m_material;

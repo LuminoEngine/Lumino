@@ -11,19 +11,20 @@ class RHIDeviceObject
     : public RefObject
 {
 public:
-	virtual void dispose();	// Prepare for multiple calls
+    void destroy(); 
 	IGraphicsDevice* device() const { return m_device; }
-	int32_t objectId() const { return m_objectId; }
 
 	IGraphicsDevice* m_device;
 	int32_t m_objectId;
+
 protected:
     RHIDeviceObject();
     virtual ~RHIDeviceObject();
     virtual void finalize();
+    virtual void onDestroy() {}
 
 private:
-    bool m_disposed;
+    bool m_destroyed;
 	bool m_profiling;
 
 	friend class RHIProfiler;

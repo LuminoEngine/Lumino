@@ -23,7 +23,7 @@ VisualComponent::~VisualComponent()
 {
 }
 
-Result VisualComponent::init() {
+Result<> VisualComponent::init() {
     return Component::init();
 }
 

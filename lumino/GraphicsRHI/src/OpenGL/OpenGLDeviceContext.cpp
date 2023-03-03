@@ -29,7 +29,7 @@ namespace ln {
 namespace detail {
 
 // 外部の OpenGL Context に統合するときに使う
-// Result IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
+// Result<> IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
 //{
 //	GLint type;
 //	GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type));
@@ -51,7 +51,7 @@ OpenGLDevice::OpenGLDevice()
     , m_uniformTempBufferWriter(&m_uniformTempBuffer) {
 }
 
-Result OpenGLDevice::init(const Settings& settings) {
+Result<> OpenGLDevice::init(const Settings& settings) {
     LN_LOG_DEBUG("OpenGLDeviceContext::init start");
 
     // Create main context
@@ -302,8 +302,12 @@ Ref<IDescriptorPool> OpenGLDevice::onCreateDescriptorPool(IShaderPass* shaderPas
     return ptr;
 }
 
-void OpenGLDevice::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
+void OpenGLDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
     // CommandList と名前は付いているが、今は各操作がコマンド化されずに即実行されているため、「CommandList の実行」という意味でやることはない。
+}
+
+void OpenGLDevice::onQueuePresent(ISwapChain* swapChain) {
+    static_cast<GLSwapChain*>(swapChain)->present();
 }
 
 ICommandQueue* OpenGLDevice::getGraphicsCommandQueue() {
@@ -327,9 +331,9 @@ GLSwapChain::GLSwapChain(OpenGLDevice* device)
     , m_backengBufferHeight(0) {
 }
 
-void GLSwapChain::dispose() {
+void GLSwapChain::onDestroy() {
     releaseBuffers();
-    ISwapChain::dispose();
+    ISwapChain::onDestroy();
 }
 
 void GLSwapChain::releaseBuffers() {
@@ -340,7 +344,7 @@ void GLSwapChain::releaseBuffers() {
     }
 
     if (m_backbuffer) {
-        m_backbuffer->dispose();
+        m_backbuffer->destroy();
         m_backbuffer = nullptr;
     }
 }
@@ -370,7 +374,7 @@ RHIResource* GLSwapChain::getRenderTarget(int imageIndex) const {
     return m_backbuffer;
 }
 
-Result GLSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
+Result<> GLSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     genBackbuffer(width, height);
     setBackendBufferSize(width, height);
     return ok();
@@ -456,13 +460,17 @@ void GLSwapChain::present() {
 GLCommandQueue::GLCommandQueue() {
 }
 
-Result GLCommandQueue::init() {
+Result<> GLCommandQueue::init() {
     return ok();
 }
 
-Result GLCommandQueue::submit(ICommandList* commandList) {
+Result<> GLCommandQueue::submit(ICommandList* commandList) {
     glFlush();
     return ok();
+}
+
+void GLCommandQueue::onDestroy() {
+    ICommandQueue::onDestroy();
 }
 
 //===============================================================================
@@ -483,8 +491,8 @@ void GLVertexDeclaration::init(const VertexElement* elements, int elementsCount)
     createGLVertexElements(elements, elementsCount, &m_vertexElements);
 }
 
-void GLVertexDeclaration::dispose() {
-    IVertexDeclaration::dispose();
+void GLVertexDeclaration::onDestroy() {
+    IVertexDeclaration::onDestroy();
 }
 
 const GLVertexElement* GLVertexDeclaration::findGLVertexElement(kokage::AttributeUsage usage, int usageIndex) const {
@@ -571,7 +579,7 @@ GLPipeline::GLPipeline()
     , m_primitiveTopology(0) {
 }
 
-Result GLPipeline::init(OpenGLDevice* device, const DevicePipelineStateDesc& state) {
+Result<> GLPipeline::init(OpenGLDevice* device, const DevicePipelineStateDesc& state) {
     m_device = device;
     m_blendState = state.blendState;
     m_rasterizerState = state.rasterizerState;
@@ -604,8 +612,8 @@ Result GLPipeline::init(OpenGLDevice* device, const DevicePipelineStateDesc& sta
     return ok();
 }
 
-void GLPipeline::dispose() {
-    IPipeline::dispose();
+void GLPipeline::onDestroy() {
+    IPipeline::onDestroy();
 }
 
 void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer, IDescriptor* descriptor) {

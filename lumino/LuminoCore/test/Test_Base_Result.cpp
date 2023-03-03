@@ -170,7 +170,7 @@ TestResultA testFunc7() {
     return err(U"abc");
 }
 
-Result testFunc8(int a) {
+Result<> testFunc8(int a) {
     if (a == 1) {
         // Value -> void
         auto r1 = FileSystem::readAllText(U"aaa");
@@ -182,7 +182,7 @@ Result testFunc8(int a) {
         if (!r2) return r2;
     }
 
-    //Result r3 = link(r2.unwrap());
+    //Result<> r3 = link(r2.unwrap());
     //if (!r3) return err("link error.", r3);
 
     return ok();

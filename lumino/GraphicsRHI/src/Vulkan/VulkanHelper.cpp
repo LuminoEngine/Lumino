@@ -1,9 +1,9 @@
 ﻿#include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/PlatformSupport.hpp>
-#include "VulkanHelper.hpp"
-#include "VulkanDeviceContext.hpp"
-#include "VulkanBuffers.hpp"
-#include "VulkanTextures.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanHelper.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanBuffers.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanTextures.hpp>
 #include "VulkanSingleFrameAllocator.hpp"
 #include <LuminoGraphicsRHI/GraphicsExtensionVulkan.hpp>
 
@@ -768,7 +768,7 @@ int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primi
     }
 }
 
-Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView) {
+Result<> VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView) {
     LN_CHECK(deviceContext);
     LN_CHECK(mipLevel >= 1);
 
@@ -822,7 +822,7 @@ AbstractVulkanAllocator::AbstractVulkanAllocator()
     : m_allocatorCallbacks() {
 }
 
-Result AbstractVulkanAllocator::init() {
+Result<> AbstractVulkanAllocator::init() {
     m_allocatorCallbacks.pfnAllocation = AllocCallback;
     m_allocatorCallbacks.pfnFree = FreeCallback;
     m_allocatorCallbacks.pfnReallocation = ReallocCallback;
@@ -840,7 +840,7 @@ VulkanAllocator::VulkanAllocator()
     , m_allocationSize{} {
 }
 
-Result VulkanAllocator::init() {
+Result<> VulkanAllocator::init() {
     return AbstractVulkanAllocator::init();
 }
 
@@ -880,7 +880,7 @@ VulkanLinearAllocator::VulkanLinearAllocator()
     : m_linearAllocator(nullptr) {
 }
 
-Result VulkanLinearAllocator::init() {
+Result<> VulkanLinearAllocator::init() {
     return AbstractVulkanAllocator::init();
 }
 
@@ -907,7 +907,7 @@ void VulkanLinearAllocator::free(void* ptr) noexcept {
 VulkanImage::VulkanImage() {
 }
 
-Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags) {
+Result<> VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags) {
     LN_DCHECK(deviceContext);
     LN_CHECK(mipLevel >= 1);
     m_deviceContext = deviceContext;
@@ -955,7 +955,7 @@ Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t h
     return ok();
 }
 
-Result VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
+Result<> VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
     LN_DCHECK(deviceContext);
     m_externalManagement = true;
     m_width = width;
@@ -993,7 +993,7 @@ VulkanCommandBuffer::VulkanCommandBuffer() {
 VulkanCommandBuffer::~VulkanCommandBuffer() {
 }
 
-Result VulkanCommandBuffer::init(VulkanDevice* deviceContext) {
+Result<> VulkanCommandBuffer::init(VulkanDevice* deviceContext) {
     if (LN_REQUIRE(deviceContext)) return err();
     m_deviceContext = deviceContext;
 
@@ -1058,7 +1058,7 @@ void VulkanCommandBuffer::wait() {
     vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 }
 
-Result VulkanCommandBuffer::beginRecording() {
+Result<> VulkanCommandBuffer::beginRecording() {
 
     m_linearAllocator->cleanup();
     //m_uniformBufferSingleFrameAllocator->cleanup();
@@ -1079,7 +1079,7 @@ Result VulkanCommandBuffer::beginRecording() {
     return ok();
 }
 
-Result VulkanCommandBuffer::endRecording() {
+Result<> VulkanCommandBuffer::endRecording() {
     if (m_currentRenderPass) {
         vkCmdEndRenderPass(vulkanCommandBuffer());
         m_currentRenderPass = nullptr;
@@ -1103,7 +1103,7 @@ void VulkanCommandBuffer::endRenderPassInRecordingIfNeeded() {
     }
 }
 
-Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
+Result<> VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -1132,7 +1132,7 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
     return ok();
 }
 
-//Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
+//Result<> VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
 //{
 //    LN_DCHECK(shaderPass);
 //
@@ -1251,7 +1251,7 @@ void VulkanCommandBuffer::resetAllocator(size_t pageSize) {
     m_vulkanAllocator.setLinearAllocator(m_linearAllocator);
 }
 
-Result VulkanCommandBuffer::glowStagingBufferPool() {
+Result<> VulkanCommandBuffer::glowStagingBufferPool() {
     size_t oldSize = 0;
     size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
 
@@ -1273,7 +1273,7 @@ VulkanRenderPass::VulkanRenderPass()
     , m_loadOpClear(false) {
 }
 
-Result VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear) {
+Result<> VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear) {
     LN_CHECK(deviceContext);
     m_deviceContext = deviceContext;
     m_loadOpClear = m_loadOpClear;
@@ -1478,7 +1478,7 @@ void VulkanRenderPass::dispose() {
 //{
 //}
 //
-//Result VulkanRenderPassCache::init(VulkanDevice* deviceContext)
+//Result<> VulkanRenderPassCache::init(VulkanDevice* deviceContext)
 //{
 //    LN_DCHECK(deviceContext);
 //    m_deviceContext = deviceContext;
@@ -1530,7 +1530,7 @@ void VulkanRenderPass::dispose() {
 VulkanFramebuffer::VulkanFramebuffer() {
 }
 
-Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state /*, bool loadOpClear*/, uint64_t hash) {
+Result<> VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state /*, bool loadOpClear*/, uint64_t hash) {
     LN_CHECK(deviceContext);
     LN_CHECK(ownerRenderPass);
     m_deviceContext = deviceContext;

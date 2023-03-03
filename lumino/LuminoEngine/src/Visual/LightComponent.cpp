@@ -33,7 +33,7 @@ EnvironmentLightComponent::~EnvironmentLightComponent()
 {
 }
 
-Result EnvironmentLightComponent::init() {
+Result<> EnvironmentLightComponent::init() {
 	return VisualComponent::init();
 }
 

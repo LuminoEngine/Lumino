@@ -7,7 +7,7 @@ namespace ln {
 //==============================================================================
 // Runtime
 
-Result RuntimeModule::initialize(const RuntimeModuleSettings& settings) {
+Result<> RuntimeModule::initialize(const RuntimeModuleSettings& settings) {
     if (EngineContext2::initialize(settings))
         return ok();
     else

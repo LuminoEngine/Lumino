@@ -8,8 +8,8 @@ class GLIndexBuffer : public RHIResource {
 public:
     GLIndexBuffer();
     virtual ~GLIndexBuffer();
-    Result init(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount, const void* initialData);
-    void dispose() override;
+    Result<> init(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount, const void* initialData);
+    void onDestroy() override;
 
     GLuint objectId() const { return m_objectId; }
     IndexBufferFormat format() const { return m_format; }

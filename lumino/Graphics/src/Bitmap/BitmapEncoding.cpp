@@ -277,7 +277,7 @@ class StbBitmapDecoder
     : public IBitmapDecoder
 {
 public:
-    Result load(Stream* stream)
+    Result<> load(Stream* stream)
     {
         ByteBuffer buffer(stream->length());
         stream->read(buffer.data(), buffer.size());

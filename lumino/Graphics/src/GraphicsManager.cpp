@@ -9,7 +9,7 @@
 #include "GPU/RenderTargetTextureCache.hpp"
 #include "../../GraphicsRHI/src/OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
-#include "../../GraphicsRHI/src/Vulkan/VulkanDeviceContext.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #endif
 #ifdef _WIN32
 #include "../../GraphicsRHI/src/DirectX12/DX12DeviceContext.hpp"
@@ -474,9 +474,10 @@ void GraphicsManager::createVulkanContext(const Settings& settings) {
     VulkanDevice::Settings dcSettings;
     dcSettings.mainWindow = m_platformManager->mainWindow();
     dcSettings.debugMode = settings.debugMode;
-    auto ctx = makeRef<VulkanDevice>();
+
     bool driverSupported = false;
-    if (!ctx->init(dcSettings, &driverSupported)) {
+    auto device = detail::VulkanDevice::create(dcSettings, &driverSupported);
+    if (!device) {
         if (!driverSupported) {
             // ドライバが Vulkan をサポートしていない。継続する。
         }
@@ -486,7 +487,7 @@ void GraphicsManager::createVulkanContext(const Settings& settings) {
         }
     }
     else {
-        m_deviceContext = ctx;
+        m_deviceContext = *device;
     }
 #endif
 }

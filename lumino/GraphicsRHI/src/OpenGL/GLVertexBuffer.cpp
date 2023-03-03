@@ -16,7 +16,7 @@ GLVertexBuffer::~GLVertexBuffer() {
     LN_CHECK(m_objectId == 0);
 }
 
-Result GLVertexBuffer::init(GraphicsResourceUsage usage, uint64_t bufferSize, const void* initialData) {
+Result<> GLVertexBuffer::init(GraphicsResourceUsage usage, uint64_t bufferSize, const void* initialData) {
     LN_TRY(RHIResource::initAsVertexBuffer(usage, bufferSize));
 
     m_usage = usage;
@@ -29,13 +29,13 @@ Result GLVertexBuffer::init(GraphicsResourceUsage usage, uint64_t bufferSize, co
     return ok();
 }
 
-void GLVertexBuffer::dispose() {
+void GLVertexBuffer::onDestroy() {
     if (m_objectId) {
         GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
         GL_CHECK(glDeleteBuffers(1, &m_objectId));
         m_objectId = 0;
     }
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 void GLVertexBuffer::setSubData(size_t offset, const void* data, size_t length) {

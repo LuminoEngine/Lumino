@@ -44,7 +44,7 @@ RenderingContext::RenderingContext()
     m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, nullptr);
 }
 
-Result RenderingContext::init() {
+Result<> RenderingContext::init() {
     if (!Object::init()) return err();
     return ok();
 }

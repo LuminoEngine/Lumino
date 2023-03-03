@@ -508,8 +508,7 @@ GlyphIconFontManager::~GlyphIconFontManager()
 }
 
 
-Result GlyphIconFontManager::init(FontManager* fontManager)
-{
+Result<> GlyphIconFontManager::init(FontManager* fontManager) {
 	m_fontManager = fontManager;
 
 //	{

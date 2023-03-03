@@ -128,7 +128,7 @@ LN_OBJECT_IMPLEMENT(InterpreterCommandList, Object) {}
 InterpreterCommandList::InterpreterCommandList() {
 }
 
-Result InterpreterCommandList::init() {
+Result<> InterpreterCommandList::init() {
     return Object::init();
 }
 
@@ -163,7 +163,7 @@ Interpreter::Interpreter()
     clear();
 }
 
-Result Interpreter::init() {
+Result<> Interpreter::init() {
     return Object::init();
 }
 

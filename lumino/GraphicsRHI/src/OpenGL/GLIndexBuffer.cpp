@@ -16,7 +16,7 @@ GLIndexBuffer::~GLIndexBuffer() {
     LN_CHECK(m_objectId == 0);
 }
 
-Result GLIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount, const void* initialData) {
+Result<> GLIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount, const void* initialData) {
     LN_TRY(RHIResource::initAsIndexBuffer(usage, format, indexCount));
 
     m_format = format;
@@ -30,13 +30,13 @@ Result GLIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat format
     return ok();
 }
 
-void GLIndexBuffer::dispose() {
+void GLIndexBuffer::onDestroy() {
     if (m_objectId) {
         GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
         GL_CHECK(glDeleteBuffers(1, &m_objectId));
         m_objectId = 0;
     }
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 void GLIndexBuffer::setSubData(size_t offset, const void* data, size_t length) {

@@ -31,7 +31,7 @@ SpriteRenderer::SpriteRenderer()
     m_sprites.reserve(MaxBatchSprites);
 }
 
-Result SpriteRenderer::init() {
+Result<> SpriteRenderer::init() {
     if (!Object::init()) return err();
     return ok();
 }

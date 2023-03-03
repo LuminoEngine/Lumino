@@ -124,7 +124,7 @@ class GlyphIconFontManager
 public:
 	GlyphIconFontManager();
 	virtual ~GlyphIconFontManager();
-	Result init(FontManager* fontManager);
+	Result<> init(FontManager* fontManager);
 	void dispose();
 
 	Font* getFontAwesomeFont(const StringView& style, int size);

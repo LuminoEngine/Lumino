@@ -22,8 +22,7 @@ StartupView::StartupView()
 {
 }
 
-ln::Result StartupView::init()
-{
+ln::Result<> StartupView::init() {
     UIControl::init();
     //setLayoutPanel(ln::makeObject_deprecated<ln::UIVBoxLayout>());
 

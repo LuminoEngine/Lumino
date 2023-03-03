@@ -11,7 +11,7 @@ GLDepthBuffer::GLDepthBuffer()
     : m_id(0) {
 }
 
-Result GLDepthBuffer::init(uint32_t width, uint32_t height) {
+Result<> GLDepthBuffer::init(uint32_t width, uint32_t height) {
     if (LN_REQUIRE(!m_id)) return err();
     LN_TRY(RHIResource::initAsDepthBuffer(width, height, false));
 
@@ -23,12 +23,12 @@ Result GLDepthBuffer::init(uint32_t width, uint32_t height) {
     return ok();
 }
 
-void GLDepthBuffer::dispose() {
+void GLDepthBuffer::onDestroy() {
     if (m_id != 0) {
         GL_CHECK(glDeleteRenderbuffers(1, &m_id));
         m_id = 0;
     }
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 } // namespace detail

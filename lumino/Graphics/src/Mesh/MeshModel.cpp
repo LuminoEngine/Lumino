@@ -469,7 +469,7 @@ MeshImportSettings::MeshImportSettings()
     , m_applyBoneTransformationsEnabled(false) {
 }
 
-Result MeshImportSettings::init() {
+Result<> MeshImportSettings::init() {
     return Object::init();
 }
 

@@ -8,33 +8,33 @@ file(GLOB LOCAL_SOURCES
     "include/LuminoGraphicsRHI/*.hpp"
     "include/LuminoGraphicsRHI/detail/*.hpp"
     "include/*.hpp"
-    "src/*.cpp"
-    "src/*.hpp")
-file(GLOB LOCAL_SOURCES_ShaderCompiler "include/LuminoGraphicsRHI/ShaderCompiler/detail/*.hpp" "src/ShaderCompiler/*.cpp" "src/ShaderCompiler/*.hpp")
-file(GLOB LOCAL_SOURCES_ShaderCompiler_Lexer "src/ShaderCompiler/Lexer/*.cpp" "src/ShaderCompiler/Lexer/*.hpp")
+    "src/*.hpp"
+    "src/*.cpp")
+file(GLOB LOCAL_SOURCES_ShaderCompiler "include/LuminoGraphicsRHI/ShaderCompiler/detail/*.hpp" "src/ShaderCompiler/*.hpp" "src/ShaderCompiler/*.cpp")
+file(GLOB LOCAL_SOURCES_ShaderCompiler_Lexer "src/ShaderCompiler/Lexer/*.hpp" "src/ShaderCompiler/Lexer/*.cpp")
 
 if(LN_USE_OPENGL)
-    file(GLOB LOCAL_SOURCES_OpenGL "src/OpenGL/*.cpp" "src/OpenGL/*.hpp")
+    file(GLOB LOCAL_SOURCES_OpenGL "src/OpenGL/*.hpp" "src/OpenGL/*.cpp")
 endif()
 
 if(LN_USE_VULKAN)
     if(WIN32)
-        file(GLOB LOCAL_SOURCES_Vulkan "src/Vulkan/*.cpp" "src/Vulkan/*.hpp")
+        file(GLOB LOCAL_SOURCES_Vulkan "include/LuminoGraphicsRHI/Vulkan/*.hpp" "src/Vulkan/*.hpp" "src/Vulkan/*.cpp")
     endif()
 endif()
 
 if(LN_EMSCRIPTEN)
 elseif(WIN32)
-    file(GLOB LOCAL_SOURCES_DirectX12 "src/DirectX12/*.cpp" "src/DirectX12/*.hpp")
+    file(GLOB LOCAL_SOURCES_DirectX12 "src/DirectX12/*.hpp" "src/DirectX12/*.cpp")
 elseif(APPLE)
 endif()
 
 if(LUMINO_USE_WEBGPU)
-    file(GLOB LOCAL_SOURCES_WebGPU "include/LuminoGraphicsRHI/WebGPU/*.hpp" "src/WebGPU/*.cpp" "src/WebGPU/*.hpp" "src/WebGPU/*.md")
+    file(GLOB LOCAL_SOURCES_WebGPU "include/LuminoGraphicsRHI/WebGPU/*.hpp" "src/WebGPU/*.hpp" "src/WebGPU/*.cpp" "src/WebGPU/*.md")
 endif()
 
 if(WIN32)
-    file(GLOB LOCAL_SOURCES_ShaderCompiler_Windows "src/ShaderCompiler/Windows/*.cpp" "src/ShaderCompiler/Windows/*.hpp")
+    file(GLOB LOCAL_SOURCES_ShaderCompiler_Windows "src/ShaderCompiler/Windows/*.hpp" "src/ShaderCompiler/Windows/*.cpp")
 endif()
 
 source_group("Source Files" FILES ${LOCAL_SOURCES})
@@ -112,6 +112,7 @@ endif()
 
 if(LUMINO_USE_WEBGPU)
     target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_USE_WEBGPU=1)
 endif()
 
 #-------------------------------------------------------------------------------

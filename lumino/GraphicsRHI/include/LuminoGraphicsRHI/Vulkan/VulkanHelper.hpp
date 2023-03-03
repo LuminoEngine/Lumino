@@ -274,7 +274,7 @@ public:
     static std::vector<const char*> checkValidationLayerSupport();
     static int getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount);
 
-    static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);
+    static Result<> createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);
 };
 
 // VkAllocationCallbacks の本体。
@@ -283,7 +283,7 @@ class AbstractVulkanAllocator
 {
 public:
 	AbstractVulkanAllocator();
-	Result init();
+    Result<> init();
 	const VkAllocationCallbacks* vulkanAllocator() const { return &m_allocatorCallbacks; }
 
 	virtual void* alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept = 0;
@@ -300,7 +300,7 @@ class VulkanAllocator
 {
 public:
 	VulkanAllocator();
-	Result init();
+    Result<> init();
 
 	virtual void* alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept override;
 	virtual void* realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept override;
@@ -317,7 +317,7 @@ class VulkanLinearAllocator
 {
 public:
 	VulkanLinearAllocator();
-	Result init();
+    Result<> init();
 	void setLinearAllocator(LinearAllocator* linearAllocator) { m_linearAllocator = linearAllocator; }
 
 	virtual void* alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept override;
@@ -342,8 +342,8 @@ class VulkanImage
 {
 public:
 	VulkanImage();
-	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    Result initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
+	Result<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
+    Result<> initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
     VkFormat vulkanFormat() const { return m_format; }
 	VkImage vulkanImage() const { return m_image; }
@@ -372,19 +372,19 @@ class VulkanCommandBuffer
 public:
 	VulkanCommandBuffer();
     ~VulkanCommandBuffer();
-	Result init(VulkanDevice* deviceContext);
+	Result<> init(VulkanDevice* deviceContext);
 	void dispose();
 
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
     VkFence vulkanInFlightFence() const { return m_inFlightFence; }
 
     void wait();
-    Result beginRecording();
-    Result endRecording();
+    Result<> beginRecording();
+    Result<> endRecording();
     void endRenderPassInRecordingIfNeeded();
-    Result submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
+    Result<> submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
-    //Result allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
+    //Result<> allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
 
     // TODO: deprecated
     VulkanBuffer* allocateBuffer(size_t size, VkBufferUsageFlags usage);
@@ -411,7 +411,7 @@ private:
 	//};
 
 	void resetAllocator(size_t pageSize);
-	Result glowStagingBufferPool();
+	Result<> glowStagingBufferPool();
 
 	VulkanDevice* m_deviceContext;
     VkCommandBuffer m_commandBuffer;
@@ -434,7 +434,7 @@ class VulkanRenderPass
 {
 public:
     VulkanRenderPass();
-    Result init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear);
+    Result<> init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear);
     void dispose();
 
     VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
@@ -454,7 +454,7 @@ class VulkanFramebuffer
 {
 public:
     VulkanFramebuffer();
-    Result init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
+    Result<> init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
     void dispose();
     bool containsRenderTarget(RHIResource* renderTarget) const;
     bool containsDepthBuffer(RHIResource* depthBuffer) const;

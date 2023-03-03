@@ -31,7 +31,7 @@ PrimitiveMeshRenderer::PrimitiveMeshRenderer()
     , m_generators() {
 }
 
-Result PrimitiveMeshRenderer::init() {
+Result<> PrimitiveMeshRenderer::init() {
     if (!Object::init()) return err();
     return ok();
 }

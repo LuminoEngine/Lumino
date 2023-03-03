@@ -23,8 +23,8 @@ class GLTexture2D : public GLTextureBase {
 public:
     GLTexture2D();
     virtual ~GLTexture2D();
-    Result init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
-    virtual void dispose() override;
+    Result<> init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+    void onDestroy() override;
 
     //virtual DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
     virtual RHIRef<RHIBitmap> readData() override;
@@ -50,8 +50,8 @@ class GLTexture3D : public GLTextureBase {
 public:
     GLTexture3D();
     virtual ~GLTexture3D();
-    Result init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
-    virtual void dispose() override;
+    Result<> init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
+    virtual void onDestroy() override;
 
     //virtual DeviceTextureType type() const override { return DeviceTextureType::Texture3D; }
     virtual RHIRef<RHIBitmap> readData() override;
@@ -76,9 +76,9 @@ class GLRenderTargetTexture : public GLTextureBase {
 public:
     GLRenderTargetTexture();
     virtual ~GLRenderTargetTexture();
-    Result init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
-    Result init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
-    virtual void dispose() override;
+    Result<> init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+    Result<> init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
+    void onDestroy() override;
 
     virtual RHIRef<RHIBitmap> readData() override;
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
@@ -100,7 +100,7 @@ public:
     GLSamplerState();
     virtual ~GLSamplerState();
     void init(OpenGLDevice* device, const SamplerStateData& desc);
-    virtual void dispose() override;
+    virtual void onDestroy() override;
 
     GLuint resolveId(bool mipmap) const { return (mipmap) ? m_idMip : m_id; }
 

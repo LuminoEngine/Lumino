@@ -39,7 +39,7 @@ class FreeTypeFont
 {
 public:
 	FreeTypeFont();
-	Result init(FontManager* manager, const FontDesc& desc);
+    Result<> init(FontManager* manager, const FontDesc& desc);
 	virtual void dispose() override;
 
 	virtual void getGlobalMetrics(FontGlobalMetrics* outMetrics) override;

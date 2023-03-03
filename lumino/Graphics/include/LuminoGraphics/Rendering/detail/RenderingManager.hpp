@@ -239,7 +239,7 @@ public:
 
 private:
     RenderingManager();
-    Result init(const Settings& settings);
+    Result<> init(const Settings& settings);
     void dispose();
 
     void createBuiltinShader(BuiltinShader index, const Char* name, const void* data, int dataLen);

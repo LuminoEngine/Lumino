@@ -9,9 +9,9 @@
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
-#include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
+//#include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include "../../src/Vulkan/VulkanDeviceContext.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #include "../../src/ShaderCompiler/UnifiedShaderCompiler.hpp"
 using namespace ln;
 
@@ -42,20 +42,19 @@ void init() {
 
     auto window = Platform::mainWindow();
 
-    if (1) {
-        detail::WebGPUDevice::Settings settings;
-        settings.debugMode = true;
-        auto device = makeRef<detail::WebGPUDevice>();
-        device->init(settings);
-        g_device = device;
+    if (0) {
+        //detail::WebGPUDevice::Settings settings;
+        //settings.debugMode = true;
+        //auto device = makeRef<detail::WebGPUDevice>();
+        //device->init(settings);
+        //g_device = device;
     }
     else {
         detail::VulkanDevice::Settings settings;
         settings.mainWindow = window;
         settings.debugMode = true;
         bool dummy = false;
-        auto device = makeRef<detail::VulkanDevice>();
-        device->init(settings, &dummy);
+        auto device = *detail::VulkanDevice::create(settings, &dummy);
         device->refreshCaps();
         g_device = device;
     }
@@ -152,41 +151,41 @@ void init() {
 // }
 
 void cleanup() {
-    g_vertexBuffer->dispose();
+    g_vertexBuffer->destroy();
     g_vertexBuffer = nullptr;
 
-    g_vertexDeclaration->dispose();
+    g_vertexDeclaration->destroy();
     g_vertexDeclaration = nullptr;
 
     for (const Ref<detail::IDescriptorPool>& i : g_descriptorPools) {
-        i->dispose();
+        i->destroy();
     }
     g_descriptorPools.clear();
 
     for (const Ref<detail::RHIResource>& i : g_uniformBuffers) {
-        i->dispose();
+        i->destroy();
     }
     g_uniformBuffers.clear();
 
     for (const Ref<detail::ICommandList>& i : g_commandLists) {
-        i->dispose();
+        i->destroy();
     }
     g_commandLists.clear();
 
     for (const Ref<detail::IRenderPass>& i : g_renderPasses) {
-        i->dispose();
+        i->destroy();
     }
     g_renderPasses.clear();
 
     for (const Ref<detail::RHIResource>& i : g_depthBuffers) {
-        i->dispose();
+        i->destroy();
     }
     g_depthBuffers.clear();
 
-    g_shaderPass->dispose();
+    g_shaderPass->destroy();
     g_shaderPass = nullptr;
 
-    g_swapChain->dispose();
+    g_swapChain->destroy();
     g_swapChain = nullptr;
 
     g_device->dispose();
@@ -247,8 +246,8 @@ void mainLoop() {
     commandList->endRenderPass(g_renderPasses[imageIndex]);
     commandList->end();
 
-    g_device->submitCommandBuffer(commandList, g_swapChain->getRenderTarget(imageIndex));
-    g_swapChain->present();
+    g_device->queueSubmit(commandList, g_swapChain->getRenderTarget(imageIndex));
+    g_device->queuePresent(g_swapChain);
 
     // auto descriptorLayout = g_shader->descriptorLayout();
     // auto shaderPass = g_shader->techniques()[0]->passes()[0];

@@ -383,8 +383,7 @@ bool DX12DescriptorPool::init(DX12Device* device, DX12ShaderPass* shaderPass)
     return true;
 }
 
-void DX12DescriptorPool::dispose()
-{
+void DX12DescriptorPool::onDestroy() {
     if (m_descriptorHeapAllocator_CBV_SRV_UAV) {
         m_descriptorHeapAllocator_CBV_SRV_UAV->dispose();
         m_descriptorHeapAllocator_CBV_SRV_UAV = nullptr;
@@ -393,7 +392,7 @@ void DX12DescriptorPool::dispose()
         m_descriptorHeapAllocator_SAMPLER->dispose();
         m_descriptorHeapAllocator_SAMPLER = nullptr;
     }
-    IDescriptorPool::dispose();
+    IDescriptorPool::onDestroy();
 }
 
 void DX12DescriptorPool::reset()
@@ -412,7 +411,7 @@ void DX12DescriptorPool::reset()
     m_usedDescriptorCount = 0;
 }
 
-Result DX12DescriptorPool::allocate(IDescriptor** outDescriptor) {
+Result<> DX12DescriptorPool::allocate(IDescriptor** outDescriptor) {
     // grow
     if (m_usedDescriptorCount >= m_descriptors.size()) {
         for (int i = 0; i < AllocatableCountPerPage; i++) {

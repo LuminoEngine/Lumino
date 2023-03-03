@@ -15,7 +15,7 @@ namespace kanata {
 //    : m_resource() {
 //}
 //
-//Result StreamingBufferPage::init(Type type, size_t elementSize, size_t count) {
+//Result<> StreamingBufferPage::init(Type type, size_t elementSize, size_t count) {
 //    switch (type) {
 //        case ln::detail::StreamingBufferPage::Type::VertexBuffer:
 //            m_resource = makeObject_deprecated<VertexBuffer>(elementSize * count, GraphicsResourceUsage::Dynamic);

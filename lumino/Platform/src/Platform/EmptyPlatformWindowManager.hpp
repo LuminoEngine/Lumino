@@ -11,7 +11,7 @@ public:
     EmptyPlatformWindowManager(PlatformManager* manager);
     virtual ~EmptyPlatformWindowManager();
 
-    Result init();
+    Result<> init();
     void dispose() override;
     Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
     void destroyWindow(PlatformWindow* window) override;

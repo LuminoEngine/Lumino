@@ -31,7 +31,7 @@ static D3D12_SHADER_VISIBILITY getShaderVisibility(const kokage::DescriptorLayou
         return D3D12_SHADER_VISIBILITY_PIXEL;
 }
 
-Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+Result<> DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     LN_DCHECK(deviceContext);
     if (!IShaderPass::init(createInfo)) {
         return err();
@@ -514,11 +514,11 @@ Result DX12ShaderPass::init(DX12Device* deviceContext, const ShaderPassCreateInf
     return ok();
 }
 
-void DX12ShaderPass::dispose() {
+void DX12ShaderPass::onDestroy() {
     m_rootSignature.Reset();
     m_vsCode.Reset();
     m_psCode.Reset();
-    IShaderPass::dispose();
+    IShaderPass::onDestroy();
 }
 
 D3D12_SHADER_BYTECODE DX12ShaderPass::dxVSByteCode() const {

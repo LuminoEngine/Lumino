@@ -14,7 +14,7 @@ AssetDatabase::AssetDatabase()
 {
 }
 
-ln::Result AssetDatabase::init(Project* owner)
+ln::Result<> AssetDatabase::init(Project* owner)
 {
     ln::detail::AssetManager::instance()->buildAssetIndexFromLocalFiles(owner->assetsDir());
     ln::detail::AssetManager::instance()->addAssetDirectory(owner->assetsDir());
@@ -47,7 +47,7 @@ Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
     //return asset;
 }
 
-ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::Path& destinationFilePath)
+ln::Result<> AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::Path& destinationFilePath)
 {
     LN_NOTIMPLEMENTED();
     //if (sourceFilePath.hasExtension("png")) {
@@ -66,7 +66,7 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
     return ln::err();
 }
 
-ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePath)
+ln::Result<> AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePath)
 {
     auto t = ln::makeObject_deprecated<ln::AssetModel>(asset);//ln::AssetModel::create(asset);
     ln::detail::AssetManager::instance()->saveAssetModelToLocalFile(t, filePath);
@@ -76,7 +76,7 @@ ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePat
     return ln::ok();
 }
 
-ln::Result AssetDatabase::saveAsset(ln::AssetModel* asset)
+ln::Result<> AssetDatabase::saveAsset(ln::AssetModel* asset)
 {
     //if (LN_REQUIRE(asset)) return false;
     //if (LN_REQUIRE(!asset->assetFilePath().isEmpty())) return false;

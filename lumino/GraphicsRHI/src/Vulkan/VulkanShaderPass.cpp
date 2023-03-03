@@ -1,7 +1,7 @@
-﻿#include "VulkanDeviceContext.hpp"
-#include "VulkanBuffers.hpp"
-#include "VulkanTextures.hpp"
-#include "VulkanShaderPass.hpp"
+﻿#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanBuffers.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanTextures.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanShaderPass.hpp>
 
 namespace ln {
 namespace detail {
@@ -16,8 +16,7 @@ VulkanShaderPass::VulkanShaderPass()
 {
 }
 
-Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
-{
+Result<> VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     LN_DCHECK(deviceContext);
 	if (!IShaderPass::init(createInfo)) {
 		return err();
@@ -269,8 +268,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
     return ok();
 }
 
-void VulkanShaderPass::dispose()
-{
+void VulkanShaderPass::onDestroy() {
     if (m_deviceContext) {
         VkDevice device = m_deviceContext->vulkanDevice();
 
@@ -305,7 +303,7 @@ void VulkanShaderPass::dispose()
         m_deviceContext = nullptr;
     }
 
-    IShaderPass::dispose();
+    IShaderPass::onDestroy();
 }
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(

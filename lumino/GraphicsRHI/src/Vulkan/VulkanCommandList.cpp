@@ -1,9 +1,9 @@
-﻿#include "VulkanDeviceContext.hpp"
-#include "VulkanBuffers.hpp"
-#include "VulkanTextures.hpp"
-#include "VulkanDescriptorPool.hpp"
-#include "VulkanShaderPass.hpp"
-#include "VulkanCommandList.hpp"
+﻿#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanBuffers.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanTextures.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanDescriptorPool.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanShaderPass.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanCommandList.hpp>
 
 namespace ln {
 namespace detail {
@@ -31,14 +31,13 @@ bool VulkanGraphicsContext::init(VulkanDevice* owner)
 	return true;
 }
 
-void VulkanGraphicsContext::dispose()
-{
+void VulkanGraphicsContext::onDestroy() {
 	if (m_commandBuffer) {
         m_commandBuffer->dispose();
         m_commandBuffer = nullptr;
 	}
 
-    ICommandList::dispose();
+    ICommandList::onDestroy();
 }
 
 void VulkanGraphicsContext::onSaveExternalRenderState()

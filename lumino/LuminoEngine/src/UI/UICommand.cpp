@@ -26,11 +26,11 @@ UICommand::UICommand()
 {
 }
 
-Result UICommand::init() {
+Result<> UICommand::init() {
     return Object::init();
 }
 
-Result UICommand::init(const String& name) {
+Result<> UICommand::init(const String& name) {
     LN_TRY(init());
     m_name = name;
     return ok();

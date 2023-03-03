@@ -31,7 +31,7 @@ class DX12VertexBuffer
 public:
 	DX12VertexBuffer();
 	bool init(DX12Device* device, GraphicsResourceUsage usage, size_t size, const void* initialData);
-	void dispose() override;
+	void onDestroy() override;
 	//size_t getBytesSize() override;
 	//GraphicsResourceUsage usage() const override;
 	//void* map() override;
@@ -55,8 +55,8 @@ class DX12IndexBuffer
 {
 public:
 	DX12IndexBuffer();
-	Result init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
-	void dispose() override;
+    Result<> init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
+	void onDestroy() override;
 	//size_t getBytesSize() override;
 	//GraphicsResourceUsage usage() const override;
 	//void* map() override;
@@ -81,7 +81,7 @@ class DX12UniformBuffer
 public:
 	DX12UniformBuffer();
 	bool init(DX12Device* deviceContext, uint32_t size);
-	void dispose() override;
+	void onDestroy() override;
 	void* map() override;
 	void unmap() override;
 	ID3D12Resource* dxResource() const { return m_constantBuffer.Get(); }

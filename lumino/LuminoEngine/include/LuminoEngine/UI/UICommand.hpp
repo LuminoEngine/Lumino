@@ -32,8 +32,8 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
     UICommand();
-    Result init();
-    Result init(const String& name);
+    Result<> init();
+    Result<> init(const String& name);
 
 private:
     String m_name;

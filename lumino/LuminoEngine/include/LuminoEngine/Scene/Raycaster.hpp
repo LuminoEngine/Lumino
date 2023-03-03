@@ -40,7 +40,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Raycaster();
 	virtual ~Raycaster() = default;
-	Result init();
+	Result<> init();
 
 private:
 	Ray m_ray;
@@ -63,7 +63,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	RaycastResult();
 	virtual ~RaycastResult() = default;
-	Result init();
+	Result<> init();
 
 private:
 	Vector3 m_point;

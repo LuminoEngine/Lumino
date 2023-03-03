@@ -17,7 +17,7 @@ namespace lna {
 //==============================================================================
 // BuildAssetHelper
 
-ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const ln::Path& intermediateDir, const ln::Path& inputFile, ln::Path* outputFile)
+ln::Result<> BuildAssetHelper::buildShaderFromAutoBuild(const ln::Path& intermediateDir, const ln::Path& inputFile, ln::Path* outputFile)
 {
     const auto fileName = inputFile.fileName();
     const auto crc = ln::String::fromNumber(ln::CRCHash::compute(fileName.c_str()));
@@ -35,7 +35,7 @@ ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const ln::Path& intermedia
 	return ln::ok();
 }
 
-ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir)
+ln::Result<> BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir)
 {
 	ln::detail::ShaderManager::Settings settings;
 	ln::detail::ShaderManager::initialize(settings);
@@ -53,7 +53,7 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 		CLI::info(_TT("Compilation succeeded; see ") + outputFile);
 	}
 
-	return ln::Result(result);
+	return ln::Result<>(result);
 }
 
 } // namespace lna

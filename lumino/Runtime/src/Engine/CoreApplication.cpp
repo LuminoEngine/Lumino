@@ -39,7 +39,7 @@ void CoreApplication::configure() {
 //void CoreApplication::terminateEngine() {
 //}
 //
-//Result CoreApplication::initializeInternal() {
+//Result<> CoreApplication::initializeInternal() {
 //    return ok();
 //}
 //
@@ -60,7 +60,7 @@ void CoreApplication::configure() {
 
 //Ref<CoreApplication> AppIntegration::s_app;
 
-//Result AppIntegration::initialize(CoreApplication* app) {
+//Result<> AppIntegration::initialize(CoreApplication* app) {
 //    return app->initializeInternal();
 //}
 //

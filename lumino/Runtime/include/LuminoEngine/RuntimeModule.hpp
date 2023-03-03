@@ -12,7 +12,7 @@ public:
     /**
 	 * Initialize Runtime.
 	 */
-    static Result initialize(const RuntimeModuleSettings& settings = RuntimeModuleSettings{});
+    static Result<> initialize(const RuntimeModuleSettings& settings = RuntimeModuleSettings{});
 
     /**
 	 * terminate Runtime.

@@ -118,7 +118,7 @@ public:
     /** 参照を持たない空の Ref を構築します。 */
     LN_CONSTEXPR Ref(std::nullptr_t) LN_NOEXCEPT;
 
-    /** 生ポインタの所有権を受け取ります。 */
+    /** 生ポインタの所有権を受け取ります。指定されたオブジェクトの参照カウントがインクリメントされます。 */
     Ref(T* ptr);
 
     /** 生ポインタの所有権を受け取ります。retain が false の場合、参照カウントをインクリメントせずに参照します。 */
@@ -501,6 +501,12 @@ template<class T, class... TArgs>
 inline Ref<T> makeRef(TArgs&&... args)
 {
     return Ref<T>(LN_NEW T(std::forward<TArgs>(args)...), false);
+}
+
+/** 所有権を設定したいオブジェクトを指定して、 Ref を構築します。オブジェクトの参照カウントはインクリメントされません。 */
+template<class T, class... TArgs>
+inline Ref<T> attachRef(T* ptr) {
+    return Ref<T>(ptr, false);
 }
 
 namespace detail {

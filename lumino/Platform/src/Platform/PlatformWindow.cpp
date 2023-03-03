@@ -15,7 +15,7 @@ PlatformWindow::PlatformWindow()
 {
 }
 
-Result PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
+Result<> PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
 	m_windowManager = windowManager;
 	return ok();
 }

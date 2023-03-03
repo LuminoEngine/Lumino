@@ -212,7 +212,7 @@ GLFWPlatformWindow::GLFWPlatformWindow()
 GLFWPlatformWindow::~GLFWPlatformWindow() {
 }
 
-Result GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext) {
+Result<> GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext) {
     LN_TRY(PlatformWindow::init(windowManager));
 
     initKeyTable();
@@ -525,7 +525,7 @@ GLFWPlatformWindowManager::GLFWPlatformWindowManager(PlatformManager* manager)
 GLFWPlatformWindowManager::~GLFWPlatformWindowManager() {
 }
 
-Result GLFWPlatformWindowManager::init(bool withOpenGLAPI) {
+Result<> GLFWPlatformWindowManager::init(bool withOpenGLAPI) {
     LN_LOG_INFO("GLFW window manager");
     m_withOpenGLAPI = withOpenGLAPI;
 

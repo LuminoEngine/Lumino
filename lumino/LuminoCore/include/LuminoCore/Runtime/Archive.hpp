@@ -635,7 +635,7 @@ public:
     virtual ~JsonTextInputSerializer();
 
     template<typename TValue>
-    Result load(const String& jsonText, TValue&& value) {
+    Result<> load(const String& jsonText, TValue&& value) {
         if (LN_REQUIRE(!m_processing)) return err();
         auto r = setup(jsonText);
         if (!r) return r;
@@ -653,7 +653,7 @@ public:
     }
 
 private:
-    Result setup(const String& jsonText);
+    Result<> setup(const String& jsonText);
 
     std::unique_ptr<detail::JsonArchiveStore3> m_store;
     bool m_processing;

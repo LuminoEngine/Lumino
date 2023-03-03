@@ -80,8 +80,7 @@ ProjectTemplate* ProjectTemplateManager::findTemplate(const ln::String& primaryL
 	return nullptr;
 }
 
-ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const ln::String& templateName) const
-{
+ln::Result<> ProjectTemplateManager::applyTemplates(const Project* project, const ln::String& templateName) const {
 	auto templateProject = findTemplate(project->workspace()->primaryLang(), templateName);
 	if (!templateProject) {
 		CLI::error(_TT("Invalid project template."));

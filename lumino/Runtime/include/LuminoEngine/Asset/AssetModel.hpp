@@ -88,8 +88,8 @@ LN_CONSTRUCT_ACCESS:
 	void init(Object* target);
 
 private:
-    //ln::Result loadInternal(const ln::Path& filePath);
-    //ln::Result saveInternal(const ln::Path& filePath);
+    //ln::Result<> loadInternal(const ln::Path& filePath);
+    //ln::Result<> saveInternal(const ln::Path& filePath);
 
     //LN_SERIALIZE_CLASS_VERSION(1);
     //void serialize(Archive& ar);

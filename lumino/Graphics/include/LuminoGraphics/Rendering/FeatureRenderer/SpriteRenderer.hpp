@@ -40,7 +40,7 @@ public:
 
 private:
     SpriteRenderer();
-    Result init();
+    Result<> init();
     void flush();
 
     static const size_t MaxBatchSprites = 16383;

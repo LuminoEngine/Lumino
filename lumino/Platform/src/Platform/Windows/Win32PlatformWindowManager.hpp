@@ -39,7 +39,7 @@ class Win32PlatformWindow : public AbstractWin32PlatformWindow {
 public:
     Win32PlatformWindow();
 
-    Result init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings);
+    Result<> init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings);
     void dispose() override;
 
 private:
@@ -49,7 +49,7 @@ private:
 class WrappedWin32PlatformWindow : public AbstractWin32PlatformWindow {
 public:
     WrappedWin32PlatformWindow();
-    Result init(Win32PlatformWindowManager* windowManager, intptr_t windowHandle);
+    Result<> init(Win32PlatformWindowManager* windowManager, intptr_t windowHandle);
     void dispose() override;
 
 private:
@@ -66,7 +66,7 @@ public:
 
     Win32PlatformWindowManager(PlatformManager* manager);
 
-    Result init();
+    Result<> init();
     void dispose() override;
     Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings, PlatformWindow* mainWindow) override;
     void destroyWindow(PlatformWindow* window) override;

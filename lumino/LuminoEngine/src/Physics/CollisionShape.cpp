@@ -39,7 +39,7 @@ CollisionShape::~CollisionShape()
 	LN_SAFE_DELETE(m_shape);
 }
 
-Result CollisionShape::init() {
+Result<> CollisionShape::init() {
 	return Object::init();
 }
 
@@ -122,7 +122,7 @@ BoxCollisionShape::~BoxCollisionShape()
 {
 }
 
-Result BoxCollisionShape::init() {
+Result<> BoxCollisionShape::init() {
 	return CollisionShape::init();
 }
 
@@ -159,7 +159,7 @@ SphereCollisionShape::~SphereCollisionShape()
 {
 }
 
-Result SphereCollisionShape::init() {
+Result<> SphereCollisionShape::init() {
 	return CollisionShape::init();
 }
 
@@ -190,7 +190,7 @@ CapsuleCollisionShape::~CapsuleCollisionShape()
 {
 }
 
-Result CapsuleCollisionShape::init() {
+Result<> CapsuleCollisionShape::init() {
 	return CollisionShape::init();
 }
 
@@ -224,7 +224,7 @@ MeshCollisionShape::~MeshCollisionShape()
 	LN_SAFE_DELETE(m_btMeshData);
 }
 
-Result MeshCollisionShape::init() {
+Result<> MeshCollisionShape::init() {
 	return CollisionShape::init();
 }
 

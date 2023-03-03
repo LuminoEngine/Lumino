@@ -359,7 +359,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	UIAnimationClip();
-	Result init();
+	Result<> init();
 
 private:
 	void addCurve(detail::UIStyleAnimationElement element, float startValue, float targetValue, float duration, EasingMode func, AnimationWrapMode wrapMode);
@@ -388,7 +388,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	UITransitionClip();
-    Result init();
+    Result<> init();
 
 private:
 	void addCurve(detail::UIStyleAnimationElement element, float targetValue, float duration, EasingMode func, float delay);

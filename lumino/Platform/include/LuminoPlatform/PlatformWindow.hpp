@@ -33,7 +33,7 @@ public:
 
 protected:
 	PlatformWindow();
-	Result init(detail::PlatformWindowManager* windowManager);
+    Result<> init(detail::PlatformWindowManager* windowManager);
 	void setDPIFactor(float value) { m_dpiFactor = value; }
 
 private:

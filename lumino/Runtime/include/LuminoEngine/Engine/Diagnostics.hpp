@@ -41,7 +41,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     DiagnosticsManager();
     virtual ~DiagnosticsManager();
-    Result init();
+    Result<> init();
 
 private:
     List<Ref<DiagnosticsItem>> m_items;

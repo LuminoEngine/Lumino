@@ -24,7 +24,7 @@ protected:
     //virtual void terminateEngine();
 
 private:
-    //Result initializeInternal();
+    //Result<> initializeInternal();
     //bool updateInertnal();
     //void renderInertnal();
     //void terminateInternal();
@@ -42,7 +42,7 @@ private:
 //    typedef CoreApplication* (*CreateAppInstance)();
 //
 //    // for external main loop (emscripten, android)
-//    //static Result initialize(CoreApplication* app);
+//    //static Result<> initialize(CoreApplication* app);
 //    //static bool update(CoreApplication* app);
 //    //static void render(CoreApplication* app);
 //    //static void terminate(CoreApplication* app);

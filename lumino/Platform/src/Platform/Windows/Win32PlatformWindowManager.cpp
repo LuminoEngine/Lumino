@@ -456,7 +456,7 @@ Win32PlatformWindow::Win32PlatformWindow()
     : m_accelerator(NULL) {
 }
 
-Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings) {
+Result<> Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings) {
     // ウィンドウモードのときのウィンドウスタイルの選択
     DWORD mWindowedStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
     if (settings.resizable) {
@@ -531,7 +531,7 @@ WrappedWin32PlatformWindow::WrappedWin32PlatformWindow()
     : m_originalWndProc(nullptr) {
 }
 
-Result WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManager, intptr_t windowHandle) {
+Result<> WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManager, intptr_t windowHandle) {
     m_hWnd = (HWND)windowHandle;
 
     BOOL r = ::SetProp(m_hWnd, Win32PlatformWindowManager::PropWinProc, this);
@@ -573,7 +573,7 @@ Win32PlatformWindowManager::Win32PlatformWindowManager(PlatformManager* manager)
     : PlatformWindowManager(manager) {
 }
 
-Result Win32PlatformWindowManager::init() {
+Result<> Win32PlatformWindowManager::init() {
     LN_LOG_INFO("Win32 native window manager");
 
     m_hInst = (HINSTANCE)::GetModuleHandle(NULL);

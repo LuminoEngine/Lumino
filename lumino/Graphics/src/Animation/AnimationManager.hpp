@@ -32,7 +32,7 @@ public:
 private:
     AnimationManager();
     virtual ~AnimationManager();
-    Result init(const Settings& settings);
+    Result<> init(const Settings& settings);
     void dispose();
 
     AssetManager* m_assetManager;

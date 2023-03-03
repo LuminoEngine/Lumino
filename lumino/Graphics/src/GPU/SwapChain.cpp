@@ -113,7 +113,7 @@ void SwapChain::present() {
     // Submit queue
     auto device = m_manager->deviceContext();
     detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, currentBackbuffer(), nullptr);
-    device->submitCommandBuffer(commandList->rhiResource(), rhiObject);
+    device->queueSubmit(commandList->rhiResource(), rhiObject);
     detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(commandList);
 
     presentInternal();
@@ -157,7 +157,7 @@ void SwapChain::presentInternal() {
     auto device = manager->deviceContext();
 
     detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);
-    rhi->present();
+    device->queuePresent(rhi);
 
     manager->frameBufferCache()->gcObjects();
     manager->renderPassCache()->collectGarbage();

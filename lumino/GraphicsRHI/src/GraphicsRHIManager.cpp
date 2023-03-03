@@ -26,7 +26,7 @@ void GraphicsRHIManager::terminate() {
 GraphicsRHIManager::GraphicsRHIManager() {
 }
 
-Result GraphicsRHIManager::init(const Settings& settings) {
+Result<> GraphicsRHIManager::init(const Settings& settings) {
     return ok();
 }
 

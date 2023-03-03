@@ -860,7 +860,7 @@ JsonTextInputSerializer::JsonTextInputSerializer()
 JsonTextInputSerializer::~JsonTextInputSerializer() {
 }
 
-Result JsonTextInputSerializer::setup(const String& jsonText) {
+Result<> JsonTextInputSerializer::setup(const String& jsonText) {
     auto result = m_store->setupLoad(jsonText);
     if (!result) return result;
     Archive::setup(m_store.get(), ArchiveMode::Load);

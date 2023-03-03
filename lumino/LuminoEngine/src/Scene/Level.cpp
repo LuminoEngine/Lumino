@@ -48,7 +48,7 @@ System::System() = default;
 
 System::~System() = default;
 
-Result System::init() {
+Result<> System::init() {
     return Object::init();
 }
 
@@ -74,7 +74,7 @@ Level::~Level()
 {
 }
 
-Result Level::init() {
+Result<> Level::init() {
     return AssetObject::init();
 }
 

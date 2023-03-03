@@ -1,5 +1,5 @@
-﻿#include "VulkanDeviceContext.hpp"
-#include "VulkanBuffers.hpp"
+﻿#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanBuffers.hpp>
 
 namespace ln {
 namespace detail {
@@ -15,7 +15,7 @@ VulkanBuffer::VulkanBuffer()
     , m_allocator(nullptr) {
 }
 
-Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator) {
+Result<> VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator) {
     if (LN_REQUIRE(deviceContext)) return err();
     dispose();
 
@@ -98,7 +98,7 @@ VulkanVertexBuffer::VulkanVertexBuffer()
 {
 }
 
-Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
+Result<> VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
     if (!RHIResource::initAsVertexBuffer(usage, bufferSize)) return err();
 
     LN_DCHECK(deviceContext);
@@ -154,9 +154,9 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
     return ok();
 }
 
-void VulkanVertexBuffer::dispose() {
+void VulkanVertexBuffer::onDestroy() {
     m_buffer.dispose();
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 //==============================================================================
@@ -167,7 +167,7 @@ VulkanIndexBuffer::VulkanIndexBuffer()
     , m_usage(GraphicsResourceUsage::Static) {
 }
 
-Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+Result<> VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
     if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -198,9 +198,9 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
     return ok();
 }
 
-void VulkanIndexBuffer::dispose() {
+void VulkanIndexBuffer::onDestroy() {
     m_buffer.dispose();
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 //==============================================================================
@@ -210,7 +210,7 @@ VulkanUniformBuffer::VulkanUniformBuffer()
     : m_buffer() {
 }
 
-Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size) {
+Result<> VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size) {
     LN_TRY(RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size));
     if (!m_buffer.init(deviceContext, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
         return err();
@@ -218,9 +218,9 @@ Result VulkanUniformBuffer::init(VulkanDevice* deviceContext, uint32_t size) {
     return ok();
 }
 
-void VulkanUniformBuffer::dispose() {
+void VulkanUniformBuffer::onDestroy() {
     m_buffer.dispose();
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 void* VulkanUniformBuffer::map() {

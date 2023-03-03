@@ -137,7 +137,7 @@ protected:
     };
 
     UIFrameWindow();
-    Result init(const InitInfo& initInfo);
+    Result<> init(const InitInfo& initInfo);
 
 public: // TODO: internal
     bool onPlatformEvent(const PlatformEventArgs& e) override;
@@ -182,7 +182,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     UIMainWindow();
     virtual ~UIMainWindow();
-    Result init(bool useExternalSwapChain = false); // for Editor
+    Result<> init(bool useExternalSwapChain = false); // for Editor
 
 private:
 };

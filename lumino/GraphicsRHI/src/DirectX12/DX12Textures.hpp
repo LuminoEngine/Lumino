@@ -53,8 +53,8 @@ class DX12Texture2D
     : public DX12Texture {
 public:
     DX12Texture2D();
-    Result init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
-    void dispose() override;
+    Result<> init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
+    void onDestroy() override;
     //DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
     RHIRef<RHIBitmap> readData() override {
         LN_UNREACHABLE();
@@ -82,7 +82,7 @@ public:
     DX12RenderTarget();
     bool init(DX12Device* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
     bool init(DX12Device* deviceContext, const ComPtr<ID3D12Resource>& dxRenderTarget);
-    void dispose() override;
+    void onDestroy() override;
     RHIRef<RHIBitmap> readData() override;
     void setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override {}
     void setSubData3D(DX12GraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override {}
@@ -103,8 +103,8 @@ protected:
 class DX12DepthBuffer : public RHIResource {
 public:
     DX12DepthBuffer();
-    Result init(DX12Device* device, uint32_t width, uint32_t height);
-    void dispose();
+    Result<> init(DX12Device* device, uint32_t width, uint32_t height);
+    void onDestroy();
 
     DX12Image* image() const { return m_image.get(); }
     DXGI_FORMAT dxFormat() const { return m_image->dxFormat(); }

@@ -66,7 +66,7 @@ LN_CONSTRUCT_ACCESS:
 
     /**  */
     LN_METHOD(RuntimeInitializer)
-    Result init();
+    Result<> init();
 
 protected:
     //void setupMainWindow(UIMainWindow* window, bool createBasicObjects); // onInit でのみ可
@@ -113,7 +113,7 @@ public:
     typedef Application* (*CreateAppInstance)();
 
     // for external main loop (emscripten, android)
-    static Result initialize(ConfigureApp configureApp, CreateAppInstance createAppInstance);
+    static Result<> initialize(ConfigureApp configureApp, CreateAppInstance createAppInstance);
     static bool update();
     static void render(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget);
     static void terminate();

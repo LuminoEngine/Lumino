@@ -21,7 +21,7 @@ class BuildEnvironment : public ln::RefObject {
 public:
     BuildEnvironment();
     void setupPathes(bool developMode);
-    ln::Result prepareEmscriptenSdk();
+    ln::Result<> prepareEmscriptenSdk();
 
     const ln::String& defaultTargetName() const { return m_defaultTargetName; }
 
@@ -66,7 +66,7 @@ public:
 private:
     //void setupPathesFromPackageRoot(const ln::Path& packageRoot);
     //void setupPathesFromRepositoryRoot(const ln::Path& repoRoot);
-    static ln::Result callProcess(const ln::String& program, const ln::Array<ln::String>& arguments, const ln::Path& workingDir);
+    static ln::Result<> callProcess(const ln::String& program, const ln::Array<ln::String>& arguments, const ln::Path& workingDir);
     ln::Path findNativePackageRootDir() const;
     static ln::Path findRepositoryRootDir();
 

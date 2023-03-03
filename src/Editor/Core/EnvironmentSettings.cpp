@@ -190,7 +190,7 @@ void BuildEnvironment::setupPathes(bool developMode) {
 #endif
 }
 
-ln::Result BuildEnvironment::prepareEmscriptenSdk() {
+ln::Result<> BuildEnvironment::prepareEmscriptenSdk() {
 
     if (engineDevelopmentMode()) {
         m_emsdkRootDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, _TT("build"), _TT("tools"), _TT("emsdk"));
@@ -363,7 +363,7 @@ ln::Path BuildEnvironment::findLocalPackageForTesting() {
 //	m_projectTemplatesDirPath = ln::Path::combine(repoRoot, _TT("Tools", _TT("ProjectTemplates");
 //}
 
-ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::Array<ln::String>& arguments, const ln::Path& workingDir) {
+ln::Result<> BuildEnvironment::callProcess(const ln::String& program, const ln::Array<ln::String>& arguments, const ln::Path& workingDir) {
     auto proc = ln::ProcessCommand2(program)
         .args(arguments)
         .workingDirectory(workingDir)

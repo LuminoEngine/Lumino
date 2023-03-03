@@ -15,7 +15,7 @@ EffectResource::~EffectResource()
 {
 }
 
-Result EffectResource::init() {
+Result<> EffectResource::init() {
     return Object::init();
 }
 

@@ -20,7 +20,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     EffectResource();
     virtual ~EffectResource();
-    Result init();
+    Result<> init();
 
 private:
 };

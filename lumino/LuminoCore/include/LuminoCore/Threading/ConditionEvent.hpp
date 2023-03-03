@@ -28,7 +28,7 @@ public:
 	/**  */
 	bool isLocked() const;
 
-	/** unlock 状態になるまで待機する */
+	/** unlock 状態になるまで待機する。既に unlock 状態の場合は続行する。 */
     void wait();
 
 private:

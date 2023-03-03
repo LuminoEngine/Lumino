@@ -67,8 +67,7 @@ EditorApplication::~EditorApplication()
     s_app = nullptr;
 }
 
-ln::Result EditorApplication::init()
-{
+ln::Result<> EditorApplication::init() {
 	ln::detail::EngineDomain::engineContext()->initializeEngineManager();
     ln::detail::EngineDomain::engineContext()->engineManager()->initializeAllManagers();
     ln::detail::EngineDomain::sceneManager()->m_editorMode = true;

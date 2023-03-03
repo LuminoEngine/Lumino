@@ -14,6 +14,7 @@ struct SwapChainSupportDetails {
 };
 
 namespace ln {
+
 namespace detail {
 class VulkanGraphicsContext;
 class VulkanSwapChain;
@@ -34,8 +35,10 @@ public:
         bool debugMode = false;
 	};
 
-	VulkanDevice();
-	bool init(const Settings& settings, bool* outIsDriverSupported);
+	static Result<Ref<VulkanDevice>> create(const Settings& settings, bool* outIsDriverSupported);
+
+
+public:
 	void dispose() override;
 
     VkInstance vulkanInstance() const { return m_instance; }
@@ -44,7 +47,7 @@ public:
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
     uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
-    Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
+    Result<> findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
     VkSampleCountFlagBits msaaSamples() const { return m_msaaSamples; }
     //const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
     const Ref<VulkanSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
@@ -69,10 +72,15 @@ protected:
 	Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
-	void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueuePresent(ISwapChain* swapChain) override;
 	ICommandQueue* getGraphicsCommandQueue() override;
 	ICommandQueue* getComputeCommandQueue() override;
-
+    
+private:
+	VulkanDevice();
+	bool init(const Settings& settings, bool* outIsDriverSupported);
+	
 public: // TODO:
     struct PhysicalDeviceInfo
     {
@@ -87,11 +95,11 @@ public: // TODO:
         VkFormatProperties props;
     };
 
-    Result createInstance();
-    Result setupDebugMessenger();
-    Result pickPhysicalDevice();
-	Result createLogicalDevice();
-    Result createCommandPool();
+    Result<> createInstance();
+    Result<> setupDebugMessenger();
+    Result<> pickPhysicalDevice();
+    Result<> createLogicalDevice();
+    Result<> createCommandPool();
 
 	//QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     bool findPresentQueueFamily(VkSurfaceKHR surface, uint32_t* outIndex);
@@ -99,11 +107,11 @@ public: // TODO:
     VkFormat findDepthFormat();
 
     VkCommandBuffer beginSingleTimeCommands();
-    Result endSingleTimeCommands(VkCommandBuffer commandBuffer);
+    Result<> endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-    Result transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
-    Result transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result<> transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result<> transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 
 	//GLFWwindow* m_mainWindow; // TODO:
@@ -143,13 +151,14 @@ class VulkanSwapChain
 {
 public:
 	VulkanSwapChain();
-	Result init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
-    void dispose() override;
+    Result<> init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
+    void onDestroy() override;
     uint32_t getBackbufferCount() override;
     void acquireNextImage(int* outImageIndex) override;
     RHIResource* getRenderTarget(int imageIndex) const override;
-    Result resizeBackbuffer(uint32_t width, uint32_t height) override;
-    void present() override;
+    Result<> resizeBackbuffer(uint32_t width, uint32_t height) override;
+	
+    void present();
 
     VkSwapchainKHR vulkanSwapchain() const { return m_swapchain; }
     VkFormat vulkanSwapchainImageFormat() const { return m_swapchainImageFormat; }
@@ -196,8 +205,8 @@ class VulkanRenderPass2
 {
 public:
 	VulkanRenderPass2();
-	Result init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-	void dispose() override;
+    Result<> init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+	void onDestroy() override;
 	VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
 	const Ref<VulkanFramebuffer2>& framebuffer() const { return m_framebuffer; }
 
@@ -227,7 +236,7 @@ class VulkanFramebuffer2
 {
 public:
 	VulkanFramebuffer2();
-	Result init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state);
+    Result<> init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state);
 	void dispose();
 	VulkanRenderPass2* ownerRenderPass() const { return m_ownerRenderPass; }
 	VkFramebuffer nativeFramebuffer() const { return m_framebuffer; }
@@ -245,7 +254,6 @@ private:
     VulkanRenderTarget* _sizeBase;
     const VulkanImage* _sizeBaseImg;
     VkImage _baseImg;
-    int32_t _baseId = 0; 
 };
 
 // Dynamic としてマークしている state は次の通り。
@@ -259,60 +267,27 @@ class VulkanPipeline2
 {
 public:
 	VulkanPipeline2();
-	Result init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state);
-	void dispose() override;
+    Result<> init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state);
+	void onDestroy() override;
 	VkPipeline nativePipeline() const { return m_pipeline; }
 
 private:
-    Result createGraphicsPipeline(const DevicePipelineStateDesc& state);
-    Result createComputePipeline(const DevicePipelineStateDesc& state);
+    Result<> createGraphicsPipeline(const DevicePipelineStateDesc& state);
+    Result<> createComputePipeline(const DevicePipelineStateDesc& state);
 
 	VulkanDevice* m_device;
 	VulkanRenderPass2* m_ownerRenderPass;
 	VkPipeline m_pipeline;
 };
 
-class VulkanVertexDeclaration
-    : public IVertexDeclaration
-{
-public:
-    // 実際の VkVertexInputAttributeDescription を作るための元情報。
-    // location は、Pipleline 作成時に m_elements が持っているセマンティクス情報と、ShaderPass が持っているセマンティクス情報とつなげて確定させる。
-    struct AttributeDescriptionSource
-    {
-        VertexElementUsage usage;
-        uint32_t usageIndex;
-
-        uint32_t binding;   // DirectX でいうところの StreamIndex。頂点バッファを複数分けるときに使う。
-        VkFormat format;
-        uint32_t offset;
-    };
-
-    VulkanVertexDeclaration();
-    Result init(const VertexElement* elements, int elementsCount);
-    void dispose() override;
-
-    const std::vector<VertexElement>& elements() const { return m_elements; }
-    uint32_t maxStreamCount() const { return m_maxStreamCount; }
-    const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
-    const std::vector<AttributeDescriptionSource>& vertexAttributeDescriptionSources() const { return m_attributeSources; }
-    const VulkanVertexDeclaration::AttributeDescriptionSource* findAttributeDescriptionSource(kokage::AttributeUsage usage, int usageIndex) const;
-
-private:
-
-    std::vector<VertexElement> m_elements;
-    uint32_t m_maxStreamCount;
-    std::vector<VkVertexInputBindingDescription> m_bindings;
-    std::vector<AttributeDescriptionSource> m_attributeSources;
-};
 
 class VulkanSamplerState
 	: public ISamplerState
 {
 public:
 	VulkanSamplerState();
-	Result init(VulkanDevice* deviceContext, const SamplerStateData& desc);
-	virtual void dispose() override;
+	Result<> init(VulkanDevice* deviceContext, const SamplerStateData& desc);
+	virtual void onDestroy() override;
 
     VkSampler vulkanSampler() const { return m_sampler; }
 

@@ -20,7 +20,7 @@ public:
 
 	DX12GraphicsContext();
 	bool init(DX12Device* device);
-	void dispose();
+	void onDestroy() override;
     void submit(UINT64 fenceValue);
     ID3D12GraphicsCommandList* dxCommandList() const { return m_dxCommandList.Get(); }
 

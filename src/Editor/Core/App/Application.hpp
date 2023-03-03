@@ -18,7 +18,7 @@ public:
 
     EditorApplication();
     ~EditorApplication();
-    ln::Result init();
+    ln::Result<> init();
     void dispose();
     void run();
 

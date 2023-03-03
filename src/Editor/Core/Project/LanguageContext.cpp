@@ -18,7 +18,7 @@ LanguageContext::LanguageContext(Project* project)
 LanguageContext::~LanguageContext() {
 }
 
-ln::Result LanguageContext::build(const ln::String& target) {
+ln::Result<> LanguageContext::build(const ln::String& target) {
     if (!buildAssets()) {
         return ln::err();
     }
@@ -26,7 +26,7 @@ ln::Result LanguageContext::build(const ln::String& target) {
     return ln::ok();
 }
 
-ln::Result LanguageContext::buildAssets(const ln::Path& intermediateDir, const ln::Path& inputDir, const ln::Path& outputFile) {
+ln::Result<> LanguageContext::buildAssets(const ln::Path& intermediateDir, const ln::Path& inputDir, const ln::Path& outputFile) {
     ln::FileSystem::createDirectory(intermediateDir);
 
     ln::detail::CryptedAssetArchiveWriter writer;
@@ -57,7 +57,7 @@ ln::Result LanguageContext::buildAssets(const ln::Path& intermediateDir, const l
     return ln::ok();
 }
 
-ln::Result LanguageContext::buildAssets() const {
+ln::Result<> LanguageContext::buildAssets() const {
     auto outputFilePath = ln::Path(m_project->acquireBuildDir(), _TT("Assets.lca"));
     LN_TRY(buildAssets(m_project->intermediateAssetsDir(), m_project->assetsDir(), outputFilePath));
 
@@ -126,7 +126,7 @@ CppLanguageContext::~CppLanguageContext() {
 void CppLanguageContext::restore() {
 }
 
-ln::Result CppLanguageContext::build(const ln::String& target) {
+ln::Result<> CppLanguageContext::build(const ln::String& target) {
     if (!LanguageContext::build(target)) {
         return ln::err();
     }
@@ -141,7 +141,7 @@ ln::Result CppLanguageContext::build(const ln::String& target) {
     return ln::ok();
 }
 
-ln::Result CppLanguageContext::build_NativeCMakeTarget() const {
+ln::Result<> CppLanguageContext::build_NativeCMakeTarget() const {
     ln::String arch = U"x64-windows-static";
 
     ln::List<ln::String> args = {
@@ -182,7 +182,7 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const {
     return ln::ok();
 }
 
-ln::Result CppLanguageContext::build_WebTarget() const {
+ln::Result<> CppLanguageContext::build_WebTarget() const {
     Workspace* workspace = project()->workspace();
 
     // emsdk がなければインストールする

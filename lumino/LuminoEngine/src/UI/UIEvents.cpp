@@ -90,7 +90,7 @@ UIEventArgs::~UIEventArgs()
 {
 }
 
-Result UIEventArgs::init() {
+Result<> UIEventArgs::init() {
 	return Object::init();
 }
 
@@ -236,7 +236,7 @@ UIMouseEventArgs::~UIMouseEventArgs()
 {
 }
 
-Result UIMouseEventArgs::init() {
+Result<> UIMouseEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -300,7 +300,7 @@ UIKeyEventArgs::~UIKeyEventArgs()
 {
 }
 
-Result UIKeyEventArgs::init() {
+Result<> UIKeyEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -346,7 +346,7 @@ UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 {
 }
 
-Result UIMouseWheelEventArgs::init() {
+Result<> UIMouseWheelEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -386,7 +386,7 @@ UIDragDeltaEventArgs::~UIDragDeltaEventArgs()
 {
 }
 
-Result UIDragDeltaEventArgs::init() {
+Result<> UIDragDeltaEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -427,7 +427,7 @@ UIScrollEventArgs::~UIScrollEventArgs()
 {
 }
 
-Result UIScrollEventArgs::init() {
+Result<> UIScrollEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -469,7 +469,7 @@ UIDragDropEventArgs::~UIDragDropEventArgs()
 {
 }
 
-Result UIDragDropEventArgs::init() {
+Result<> UIDragDropEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -511,7 +511,7 @@ UIClickEventArgs::~UIClickEventArgs()
 {
 }
 
-Result UIClickEventArgs::init() {
+Result<> UIClickEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -547,7 +547,7 @@ UISelectionChangedEventArgs::UISelectionChangedEventArgs()
 {
 }
 
-Result UISelectionChangedEventArgs::init() {
+Result<> UISelectionChangedEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -582,7 +582,7 @@ UICommandEventArgs::UICommandEventArgs()
 {
 }
 
-Result UICommandEventArgs::init() {
+Result<> UICommandEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -638,7 +638,7 @@ UINotifyPropertyChangedEventArgs::UINotifyPropertyChangedEventArgs()
 {
 }
 
-Result UINotifyPropertyChangedEventArgs::init() {
+Result<> UINotifyPropertyChangedEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -687,7 +687,7 @@ UITimerEventArgs::UITimerEventArgs()
 {
 }
 
-Result UITimerEventArgs::init() {
+Result<> UITimerEventArgs::init() {
 	return UIEventArgs::init();
 }
 
@@ -723,7 +723,7 @@ UIRequestNavigateEventArgs::UIRequestNavigateEventArgs()
 {
 }
 
-Result UIRequestNavigateEventArgs::init() {
+Result<> UIRequestNavigateEventArgs::init() {
     return UIEventArgs::init();
 }
 

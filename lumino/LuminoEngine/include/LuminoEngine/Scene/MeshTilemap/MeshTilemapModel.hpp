@@ -17,7 +17,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	MeshTilemapModel();
-	Result init();
+	Result<> init();
 
 private:
 	Ref<MeshTileset> m_tileset;

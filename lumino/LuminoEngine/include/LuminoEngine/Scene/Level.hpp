@@ -55,7 +55,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	System();
 	virtual ~System();
-	Result init();
+	Result<> init();
 
 	friend class Level;
 };
@@ -145,7 +145,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** Initialize */
 	LN_METHOD()
-	Result init();
+	Result<> init();
 
 public: // TODO: internal
 	class SubLevelManager

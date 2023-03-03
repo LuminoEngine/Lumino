@@ -23,7 +23,7 @@ AssetObject::AssetObject()
 {
 }
 
-Result AssetObject::init() {
+Result<> AssetObject::init() {
 	return Object::init();
 }
 

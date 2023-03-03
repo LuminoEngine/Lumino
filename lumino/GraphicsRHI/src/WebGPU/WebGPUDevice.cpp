@@ -1,6 +1,8 @@
 ﻿#include <Windows.h>
 #include <LuminoPlatform/PlatformSupport.hpp>
 #include <LuminoGraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
+#include <LuminoGraphicsRHI/WebGPU/WebGPUCommandList.hpp>
+#include <LuminoGraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
 namespace ln {
@@ -126,13 +128,19 @@ Ref<ISwapChain> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const Si
 }
 
 Ref<ICommandList> WebGPUDevice::onCreateCommandList() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUCommandList>();
+    if (!ptr->init(this)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IRenderPass> WebGPUDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPURenderPass>();
+    if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IPipeline> WebGPUDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
@@ -200,8 +208,27 @@ Ref<IDescriptorPool> WebGPUDevice::onCreateDescriptorPool(IShaderPass* shaderPas
     return nullptr;
 }
 
-void WebGPUDevice::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
-    LN_NOTIMPLEMENTED();
+void WebGPUDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
+    WebGPUCommandList* rhiCommandList = static_cast<WebGPUCommandList*>(context);
+
+    WGPUCommandBufferDescriptor cmdBufferDescriptor = {};
+    cmdBufferDescriptor.nextInChain = nullptr;
+    cmdBufferDescriptor.label = nullptr;
+    WGPUCommandBuffer command = wgpuCommandEncoderFinish(rhiCommandList->commandEncoder(), &cmdBufferDescriptor);
+    wgpuQueueSubmit(m_queue, 1, &command);
+
+#if 0    // 20230302 時点のバージョンではこ wgpuQueueOnSubmittedWorkDone は export されておらず使えなかった
+	rhiCommandList->onSubmitted();
+	auto callback = [](WGPUQueueWorkDoneStatus status, void* userdata) {
+        WebGPUCommandList* rhiCommandList = reinterpret_cast<WebGPUCommandList*>(userdata);
+        rhiCommandList->onSubmittedWorkDone();
+    };
+    wgpuQueueOnSubmittedWorkDone(m_queue, callback, rhiCommandList);
+#endif
+}
+
+void WebGPUDevice::onQueuePresent(ISwapChain* swapChain) {
+    static_cast<WebGPUSwapChain*>(swapChain)->present();
 }
 
 ICommandQueue* WebGPUDevice::getGraphicsCommandQueue() {
@@ -214,7 +241,7 @@ ICommandQueue* WebGPUDevice::getComputeCommandQueue() {
     return nullptr;
 }
 
-Result WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
+Result<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
 
     auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status, WGPUDevice device, char const* message, void* userdata) {
         WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata);

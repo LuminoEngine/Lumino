@@ -1,8 +1,8 @@
 ﻿#include <LuminoGraphicsRHI/RHIHelper.hpp>
-#include "VulkanDeviceContext.hpp"
-#include "VulkanBuffers.hpp"
-#include "VulkanCommandList.hpp"
-#include "VulkanTextures.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanBuffers.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanCommandList.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanTextures.hpp>
 
 namespace ln {
 namespace detail {
@@ -14,7 +14,7 @@ VulkanTexture2D::VulkanTexture2D()
     : m_mipLevels(1) {
 }
 
-Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+Result<> VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     if (!VulkanTexture::initAsTexture2D(usage, width, height, requestFormat, mipmap)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -73,9 +73,9 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
     return ok();
 }
 
-void VulkanTexture2D::dispose() {
+void VulkanTexture2D::onDestroy() {
     m_image.dispose();
-    VulkanTexture::dispose();
+    VulkanTexture::onDestroy();
 }
 
 void VulkanTexture2D::setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {
@@ -117,7 +117,7 @@ void VulkanTexture2D::setSubData(VulkanGraphicsContext* graphicsContext, int x, 
     }
 }
 
-Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
+Result<> VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
     VkPhysicalDevice physicalDevice = m_deviceContext->m_physicalDevice;
 
     // Check if image format supports linear blitting
@@ -203,7 +203,7 @@ VulkanRenderTarget::VulkanRenderTarget()
     , m_swapchainImageAvailableSemaphoreRef(nullptr) {
 }
 
-Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
+Result<> VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
     if (!VulkanTexture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -248,7 +248,7 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
     return ok();
 }
 
-Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
+Result<> VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
     // TODO: SwapChain は BGRA フォーマットであることが多い。
     // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
     // ここではダミーとして RGBA8 を与えて初期化してみる。
@@ -271,7 +271,7 @@ Result VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, u
     return ok();
 }
 
-void VulkanRenderTarget::dispose() {
+void VulkanRenderTarget::onDestroy() {
     if (m_multisampleColorBuffer) {
         m_multisampleColorBuffer->dispose();
         m_multisampleColorBuffer = nullptr;
@@ -297,7 +297,7 @@ void VulkanRenderTarget::dispose() {
 
         m_deviceContext = nullptr;
     }
-    VulkanTexture::dispose();
+    VulkanTexture::onDestroy();
 }
 
 RHIRef<RHIBitmap> VulkanRenderTarget::readData() {
@@ -466,7 +466,7 @@ Exit:
 //{
 //}
 //
-//Result VulkanSwapchainRenderTargetTexture::init(VulkanDevice* deviceContext)
+//Result<> VulkanSwapchainRenderTargetTexture::init(VulkanDevice* deviceContext)
 //{
 //    LN_DCHECK(deviceContext);
 //    m_deviceContext = deviceContext;
@@ -485,7 +485,7 @@ Exit:
 //    VulkanTexture::dispose();
 //}
 //
-//Result VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews)
+//Result<> VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews)
 //{
 //    LN_DCHECK(images.size() == imageViews.size());
 //    clear();
@@ -519,7 +519,7 @@ Exit:
 VulkanDepthBuffer::VulkanDepthBuffer() {
 }
 
-Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height) {
+Result<> VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height) {
     LN_DCHECK(deviceContext);
     LN_TRY(RHIResource::initAsDepthBuffer(width, height, false));
     m_deviceContext = deviceContext;
@@ -537,14 +537,14 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
     return ok();
 }
 
-void VulkanDepthBuffer::dispose() {
+void VulkanDepthBuffer::onDestroy() {
     if (m_deviceContext) {
         //m_deviceContext->framebufferCache()->invalidateDepthBuffer(this);
         m_deviceContext = nullptr;
     }
 
     m_image.dispose();
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 } // namespace detail

@@ -60,7 +60,8 @@ protected:
     Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
-    void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueuePresent(ISwapChain* swapChain) override;
     ICommandQueue* getGraphicsCommandQueue() override;
     ICommandQueue* getComputeCommandQueue() override;
 
@@ -93,7 +94,7 @@ class DX12Pipeline
 public:
 	DX12Pipeline();
     bool init(DX12Device* deviceContext, const DevicePipelineStateDesc& state);
-	void dispose() override;
+        void onDestroy() override;
     ID3D12PipelineState* dxPipelineState() const { return m_pipelineState.Get(); }
 
 private:
@@ -106,8 +107,8 @@ class DX12VertexDeclaration
 {
 public:
     DX12VertexDeclaration();
-    Result init(const VertexElement* elements, int elementsCount);
-    void dispose() override;
+    Result<> init(const VertexElement* elements, int elementsCount);
+    void onDestroy() override;
 
     const std::vector<D3D12_INPUT_ELEMENT_DESC>& elements() const { return m_elements; }
     int32_t stride(int streamIndex) const { return m_strides[streamIndex]; }
@@ -123,8 +124,8 @@ class DX12SamplerState
 {
 public:
 	DX12SamplerState();
-	Result init(DX12Device* deviceContext, const SamplerStateData& desc);
-	virtual void dispose() override;
+    Result<> init(DX12Device* deviceContext, const SamplerStateData& desc);
+    void onDestroy() override;
 
     const D3D12_SAMPLER_DESC& samplerDesc() const { return m_samplerDesc; }
 

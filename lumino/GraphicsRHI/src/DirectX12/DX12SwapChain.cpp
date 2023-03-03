@@ -17,8 +17,7 @@ DX12SwapChain::DX12SwapChain()
 {
 }
 
-Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, const SizeI& backbufferSize)
-{
+Result<> DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, const SizeI& backbufferSize) {
     LN_DCHECK(deviceContext);
     m_device = deviceContext;
     m_backbufferCount = DX12Device::BackBufferCount;
@@ -92,8 +91,7 @@ Result DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, co
 	return ok();
 }
 
-void DX12SwapChain::dispose()
-{
+void DX12SwapChain::onDestroy() {
     if (m_fenceEvent) {
         ::CloseHandle(m_fenceEvent);
         m_fenceEvent = nullptr;
@@ -104,7 +102,7 @@ void DX12SwapChain::dispose()
     }
     disposeSwapChainResources();
     m_dxgiSwapChain.Reset();
-    ISwapChain::dispose();
+    ISwapChain::onDestroy();
 }
 
 uint32_t DX12SwapChain::getBackbufferCount()
@@ -132,8 +130,7 @@ RHIResource* DX12SwapChain::getRenderTarget(int imageIndex) const
 	return m_renderTargets[imageIndex];
 }
 
-Result DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
-{
+Result<> DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     // 現在のフレーム、つまり、最後の Present が終了するまで待つ。
     // (このため、バックバッファのリサイズは present の後、acquireNextImage() の前に行う必要がある)
     if (!waitForCurrentFrameFence()) {
@@ -252,7 +249,7 @@ bool DX12SwapChain::createSwapChainResources()
 void DX12SwapChain::disposeSwapChainResources()
 {
     for (auto& i : m_renderTargets) {
-        i->dispose();
+        i->destroy();
     }
     m_renderTargets.clear();
 }

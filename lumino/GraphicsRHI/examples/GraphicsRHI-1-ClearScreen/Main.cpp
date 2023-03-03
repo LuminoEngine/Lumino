@@ -9,9 +9,12 @@
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
+#ifdef LUMINO_USE_WEBGPU
 #include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
+#endif
+
 #include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include "../../src/Vulkan/VulkanDeviceContext.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #include "../../src/ShaderCompiler/UnifiedShaderCompiler.hpp"
 using namespace ln;
 
@@ -26,25 +29,24 @@ std::vector<Ref<detail::IRenderPass>> g_renderPasses;
 void init() {
     RuntimeModule::initialize();
     PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::Native });
-    RuntimeModule::mountAssetDirectory(ASSETS_DIR);
-    detail::ShaderManager::initialize({});
 
     auto window = Platform::mainWindow();
 
-    if (1) {
+    if (0) {
+#ifdef LUMINO_USE_WEBGPU
         detail::WebGPUDevice::Settings settings;
         settings.debugMode = true;
         auto device = makeRef<detail::WebGPUDevice>();
         device->init(settings);
         g_device = device;
+#endif
     }
     else {
         detail::VulkanDevice::Settings settings;
         settings.mainWindow = window;
         settings.debugMode = true;
         bool dummy = false;
-        auto device = makeRef<detail::VulkanDevice>();
-        device->init(settings, &dummy);
+        auto device = *detail::VulkanDevice::create(settings, &dummy);
         device->refreshCaps();
         g_device = device;
     }
@@ -65,22 +67,21 @@ void init() {
 
 void cleanup() {
     for (const Ref<detail::ICommandList>& i : g_commandLists) {
-        i->dispose();
+        i->destroy();
     }
     g_commandLists.clear();
 
     for (const Ref<detail::IRenderPass>& i : g_renderPasses) {
-        i->dispose();
+        i->destroy();
     }
     g_renderPasses.clear();
 
-    g_swapChain->dispose();
+    g_swapChain->destroy();
     g_swapChain = nullptr;
 
     g_device->dispose();
     g_device = nullptr;
 
-    detail::ShaderManager::terminate();
     PlatformModule::terminate();
     RuntimeModule::terminate();
 }
@@ -99,8 +100,8 @@ void mainLoop() {
     commandList->endRenderPass(g_renderPasses[imageIndex]);
     commandList->end();
 
-    g_device->submitCommandBuffer(commandList, g_swapChain->getRenderTarget(imageIndex));
-    g_swapChain->present();
+    g_device->queueSubmit(commandList, g_swapChain->getRenderTarget(imageIndex));
+    g_device->queuePresent(g_swapChain);
 }
 
 int main() {

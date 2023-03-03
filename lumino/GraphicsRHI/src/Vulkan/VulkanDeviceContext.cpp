@@ -3,14 +3,15 @@
 #include <LuminoGraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
 #include <LuminoGraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoGraphicsRHI/RHIProfiler.hpp>
-#include "VulkanDeviceContext.hpp"
-#include "VulkanBuffers.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanBuffers.hpp>
 #include <LuminoGraphicsRHI/RHIHelper.hpp>
-#include "VulkanTextures.hpp"
-#include "VulkanDescriptorPool.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanTextures.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanDescriptorPool.hpp>
 #include "VulkanSingleFrameAllocator.hpp"
-#include "VulkanCommandList.hpp"
-#include "VulkanShaderPass.hpp"
+#include <LuminoGraphicsRHI/Vulkan/VulkanCommandList.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanVertexLayout.hpp>
+#include <LuminoGraphicsRHI/Vulkan/VulkanShaderPass.hpp>
 
 namespace ln {
 namespace detail {
@@ -38,6 +39,14 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 //==============================================================================
 // VulkanDevice
+
+Result<Ref<VulkanDevice>> VulkanDevice::create(const Settings& settings, bool* outIsDriverSupported) {
+    auto ptr = attachRef<VulkanDevice>(LN_NEW VulkanDevice());
+    if (!ptr->init(settings, outIsDriverSupported)) {
+        return err();
+    }
+    return ptr;
+}
 
 VulkanDevice::VulkanDevice()
     : m_instance(VK_NULL_HANDLE)
@@ -254,7 +263,7 @@ Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
 // CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
-void VulkanDevice::onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) {
+void VulkanDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
     auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
     auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
     vulkanContext->recodingCommandBuffer()->submit(
@@ -269,6 +278,10 @@ void VulkanDevice::onSubmitCommandBuffer(ICommandList* context, RHIResource* aff
     t->setSwapchainImageAvailableSemaphoreRef(nullptr);
 }
 
+void VulkanDevice::onQueuePresent(ISwapChain* swapChain) {
+    static_cast<VulkanSwapChain*>(swapChain)->present();
+}
+
 ICommandQueue* VulkanDevice::getGraphicsCommandQueue() {
     LN_NOTIMPLEMENTED();
     return nullptr;
@@ -279,7 +292,7 @@ ICommandQueue* VulkanDevice::getComputeCommandQueue() {
     return nullptr;
 }
 
-Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType) {
+Result<> VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType) {
     for (uint32_t i = 0; i < m_deviceMemoryProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) && (m_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
             *outType = i;
@@ -291,7 +304,7 @@ Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
     return err();
 }
 
-Result VulkanDevice::createInstance() {
+Result<> VulkanDevice::createInstance() {
     if (m_enableValidationLayers) {
         m_availableValidationLayers = VulkanHelper::checkValidationLayerSupport();
         if (m_availableValidationLayers.empty()) {
@@ -356,7 +369,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
-Result VulkanDevice::setupDebugMessenger() {
+Result<> VulkanDevice::setupDebugMessenger() {
     if (m_enableValidationLayers) {
         VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -370,7 +383,7 @@ Result VulkanDevice::setupDebugMessenger() {
     return ok();
 }
 
-Result VulkanDevice::pickPhysicalDevice() {
+Result<> VulkanDevice::pickPhysicalDevice() {
     // Get physical devices
     {
         uint32_t count = 0;
@@ -621,7 +634,7 @@ Result VulkanDevice::pickPhysicalDevice() {
     return ok();
 }
 
-Result VulkanDevice::createLogicalDevice() {
+Result<> VulkanDevice::createLogicalDevice() {
     //QueueFamilyIndices indices = findQueueFamilies(vulkanPhysicalDevice());
 
     auto graphicsFamilyIndex = UINT32_MAX;
@@ -747,7 +760,7 @@ Result VulkanDevice::createLogicalDevice() {
     return ok();
 }
 
-Result VulkanDevice::createCommandPool() {
+Result<> VulkanDevice::createCommandPool() {
     //QueueFamilyIndices queueFamilyIndices = findQueueFamilies(vulkanPhysicalDevice());
 
     VkCommandPoolCreateInfo poolInfo = {};
@@ -853,7 +866,7 @@ VkCommandBuffer VulkanDevice::beginSingleTimeCommands() {
     return commandBuffer;
 }
 
-Result VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+Result<> VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkEndCommandBuffer(commandBuffer);
 
     VkSubmitInfo submitInfo = {};
@@ -902,7 +915,7 @@ void VulkanDevice::copyBufferToImageImmediately(VkBuffer buffer, VkImage image, 
     endSingleTimeCommands(commandBuffer);
 }
 
-Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
+Result<> VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     barrier.oldLayout = oldLayout;
@@ -985,9 +998,9 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     return ok();
 }
 
-Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
+Result<> VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    Result result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
+    Result<> result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
     endSingleTimeCommands(commandBuffer);
     return result;
 }
@@ -999,7 +1012,7 @@ VulkanSwapChain::VulkanSwapChain()
     : m_swapchain(VK_NULL_HANDLE) {
 }
 
-Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize) {
+Result<> VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize) {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
     VkDevice device = m_deviceContext->vulkanDevice();
@@ -1039,7 +1052,7 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
     return ok();
 }
 
-void VulkanSwapChain::dispose() {
+void VulkanSwapChain::onDestroy() {
     VkDevice device = m_deviceContext->vulkanDevice();
 
     for (auto& x : m_imageAvailableSemaphores) {
@@ -1054,7 +1067,7 @@ void VulkanSwapChain::dispose() {
         m_surface = VK_NULL_HANDLE;
     }
 
-    ISwapChain::dispose();
+    ISwapChain::onDestroy();
 }
 
 uint32_t VulkanSwapChain::getBackbufferCount() {
@@ -1172,7 +1185,7 @@ void VulkanSwapChain::cleanupNativeSwapchain() {
     m_swapChainImageViews.clear();
 
     for (auto& x : m_swapchainRenderTargets) {
-        x->dispose();
+        x->destroy();
     }
     m_swapchainRenderTargets.clear();
 
@@ -1204,7 +1217,7 @@ RHIResource* VulkanSwapChain::getRenderTarget(int imageIndex) const {
     return m_swapchainRenderTargets[imageIndex];
 }
 
-Result VulkanSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
+Result<> VulkanSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
 
     cleanupNativeSwapchain();
@@ -1361,7 +1374,7 @@ VulkanRenderPass2::VulkanRenderPass2()
     , m_containsMultisampleTarget(false) {
 }
 
-Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+Result<> VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
     LN_CHECK(device);
     m_device = device;
     m_clearFlags = clearFlags;
@@ -1568,7 +1581,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
     return ok();
 }
 
-void VulkanRenderPass2::dispose() {
+void VulkanRenderPass2::onDestroy() {
     if (m_framebuffer) {
         m_framebuffer->dispose();
         m_framebuffer = nullptr;
@@ -1581,7 +1594,7 @@ void VulkanRenderPass2::dispose() {
 
     m_device = nullptr;
 
-    IRenderPass::dispose();
+    IRenderPass::onDestroy();
 }
 
 //==============================================================================
@@ -1595,7 +1608,7 @@ VulkanFramebuffer2::VulkanFramebuffer2()
     , m_depthBuffer(nullptr) {
 }
 
-Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state) {
+Result<> VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state) {
     LN_CHECK(device);
     LN_CHECK(ownerRenderPass);
     m_device = device;
@@ -1636,7 +1649,6 @@ Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRe
     _sizeBase = m_renderTargets[0];
     _sizeBaseImg = _sizeBase->image();
     _baseImg = _sizeBaseImg->vulkanImage();
-    _baseId = _sizeBase->objectId();
     const auto imageSize = m_renderTargets[0]->extentSize();
     VkFramebufferCreateInfo framebufferInfo = {};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -1675,7 +1687,7 @@ VulkanPipeline2::VulkanPipeline2()
     , m_pipeline(VK_NULL_HANDLE) {
 }
 
-Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state) {
+Result<> VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state) {
     LN_DCHECK(deviceContext);
     m_device = deviceContext;
 
@@ -1687,7 +1699,7 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
     }
 }
 
-void VulkanPipeline2::dispose() {
+void VulkanPipeline2::onDestroy() {
     if (m_pipeline) {
         vkDestroyPipeline(m_device->vulkanDevice(), m_pipeline, m_device->vulkanAllocator());
         m_pipeline = VK_NULL_HANDLE;
@@ -1695,10 +1707,10 @@ void VulkanPipeline2::dispose() {
 
     m_ownerRenderPass = nullptr;
     m_device = nullptr;
-    IPipeline::dispose();
+    IPipeline::onDestroy();
 }
 
-Result VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& state) {
+Result<> VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& state) {
     LN_DCHECK(state.renderPass);
     m_ownerRenderPass = static_cast<VulkanRenderPass2*>(state.renderPass);
 
@@ -1952,7 +1964,7 @@ Result VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& st
     return ok();
 }
 
-Result VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& state) {
+Result<> VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& state) {
     auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 
     VkPipelineShaderStageCreateInfo shaderStage = {};
@@ -1998,71 +2010,6 @@ Result VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& sta
 }
 
 //==============================================================================
-// VulkanVertexDeclaration
-
-VulkanVertexDeclaration::VulkanVertexDeclaration() {
-}
-
-// https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
-Result VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount) {
-    LN_DCHECK(elements);
-
-    // 事前に binding がどれだけあるのか調べる
-    m_maxStreamCount = 0;
-    for (int i = 0; i < elementsCount; i++) {
-        m_maxStreamCount = std::max(m_maxStreamCount, elements[i].StreamIndex);
-        m_elements.push_back(elements[i]);
-    }
-    m_maxStreamCount++;
-    m_bindings.resize(m_maxStreamCount);
-
-    for (int i = 0; i < m_maxStreamCount; i++) {
-        m_bindings[i].binding = i; // VkVertexInputAttributeDescription が参照する binding 番号。ひとまず連番
-
-        for (int j = 0; j < elementsCount; j++) {
-            if (elements[j].StreamIndex == i) {
-                m_bindings[i].inputRate = (elements[j].rate == VertexInputRate::Vertex) ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
-            }
-        }
-
-        //m_bindings[i].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    }
-
-    // 実際に値を計算する
-    for (int i = 0; i < elementsCount; i++) {
-        auto& element = m_elements[i];
-
-        AttributeDescriptionSource attr;
-        attr.usage = element.Usage;
-        attr.usageIndex = element.UsageIndex;
-        attr.binding = element.StreamIndex;
-        attr.format = VulkanHelper::LNVertexElementTypeToVkFormat(elements[i].Type);
-        attr.offset = m_bindings[attr.binding].stride;
-        m_attributeSources.push_back(attr);
-
-        m_bindings[element.StreamIndex].stride += RHIHelper::getVertexElementTypeSize(elements[i].Type);
-    }
-
-    return ok();
-}
-
-void VulkanVertexDeclaration::dispose() {
-    IVertexDeclaration::dispose();
-}
-
-const VulkanVertexDeclaration::AttributeDescriptionSource* VulkanVertexDeclaration::findAttributeDescriptionSource(kokage::AttributeUsage usage, int usageIndex) const {
-    // TODO: これ線形探索じゃなくて、map 作った方がいいかも。
-    // usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
-    auto u = IGraphicsHelper::AttributeUsageToElementUsage(usage);
-    for (auto& e : m_attributeSources) {
-        if (e.usage == u && e.usageIndex == usageIndex) {
-            return &e;
-        }
-    }
-    return nullptr;
-}
-
-//==============================================================================
 // VulkanSamplerState
 
 VulkanSamplerState::VulkanSamplerState()
@@ -2070,7 +2017,7 @@ VulkanSamplerState::VulkanSamplerState()
     , m_sampler(VK_NULL_HANDLE) {
 }
 
-Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateData& desc) {
+Result<> VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateData& desc) {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
 
@@ -2104,14 +2051,14 @@ Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateD
     return ok();
 }
 
-void VulkanSamplerState::dispose() {
+void VulkanSamplerState::onDestroy() {
     if (m_sampler) {
         vkDestroySampler(m_deviceContext->vulkanDevice(), m_sampler, m_deviceContext->vulkanAllocator());
         m_sampler = VK_NULL_HANDLE;
     }
 
     m_deviceContext = nullptr;
-    ISamplerState::dispose();
+    ISamplerState::onDestroy();
 }
 
 //==============================================================================

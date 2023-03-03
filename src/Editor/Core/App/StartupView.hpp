@@ -14,7 +14,7 @@ class StartupView
 {
 public:
     StartupView();
-    ln::Result init();
+    ln::Result<> init();
 
 protected:
 

@@ -28,7 +28,7 @@ GLTexture2D::GLTexture2D()
 GLTexture2D::~GLTexture2D() {
 }
 
-Result GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+Result<> GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_TRY(GLTextureBase::initAsTexture2D(usage, width, height, requestFormat, mipmap));
 
     m_usage = usage;
@@ -84,13 +84,13 @@ Result GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t h
     return ok();
 }
 
-void GLTexture2D::dispose() {
+void GLTexture2D::onDestroy() {
     if (m_id != 0) {
         GL_CHECK(glDeleteTextures(1, &m_id));
         m_id = 0;
     }
 
-    GLTextureBase::dispose();
+    GLTextureBase::onDestroy();
 }
 
 RHIRef<RHIBitmap> GLTexture2D::readData() {
@@ -149,7 +149,7 @@ GLTexture3D::GLTexture3D()
 GLTexture3D::~GLTexture3D() {
 }
 
-Result GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+Result<> GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_TRY(GLTextureBase::initAsTexture3D(usage, width, height, depth, requestFormat));
     m_usage = usage;
     m_textureFormat = requestFormat;
@@ -179,13 +179,13 @@ Result GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t h
     GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 }
 
-void GLTexture3D::dispose() {
+void GLTexture3D::onDestroy() {
     if (m_id != 0) {
         GL_CHECK(glDeleteTextures(1, &m_id));
         m_id = 0;
     }
 
-    GLTextureBase::dispose();
+    GLTextureBase::onDestroy();
 }
 
 RHIRef<RHIBitmap> GLTexture3D::readData() {
@@ -231,7 +231,7 @@ GLRenderTargetTexture::GLRenderTargetTexture() {
 GLRenderTargetTexture::~GLRenderTargetTexture() {
 }
 
-Result GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) {
+Result<> GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) {
     LN_TRY(GLTextureBase::initAsRenderTarget(width, height, requestFormat, mipmap, false));
     if (mipmap) {
         LN_NOTIMPLEMENTED();
@@ -272,19 +272,19 @@ Result GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureForma
     return ok();
 }
 
-Result GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
+Result<> GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
     LN_TRY(GLTextureBase::initAsRenderTarget(hintWidth, hintHeight, TextureFormat::Unknown, false, false));
     m_id = nativeObject;
     return ok();
 }
 
-void GLRenderTargetTexture::dispose() {
+void GLRenderTargetTexture::onDestroy() {
     if (m_id != 0) {
         GL_CHECK(glDeleteTextures(1, &m_id));
         m_id = 0;
     }
 
-    GLTextureBase::dispose();
+    GLTextureBase::onDestroy();
 }
 
 RHIRef<RHIBitmap> GLRenderTargetTexture::readData() {
@@ -394,7 +394,7 @@ void GLSamplerState::init(OpenGLDevice* device, const SamplerStateData& desc) {
     }
 }
 
-void GLSamplerState::dispose() {
+void GLSamplerState::onDestroy() {
     if (m_id) {
         GL_CHECK(glDeleteSamplers(1, &m_id));
         m_id = 0;
@@ -403,7 +403,7 @@ void GLSamplerState::dispose() {
         GL_CHECK(glDeleteSamplers(1, &m_idMip));
         m_idMip = 0;
     }
-    ISamplerState::dispose();
+    ISamplerState::onDestroy();
 }
 
 } // namespace detail

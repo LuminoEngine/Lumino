@@ -77,7 +77,7 @@ public:
     OpenGLDevice();
     virtual ~OpenGLDevice() = default;
 
-    Result init(const Settings& settings);
+    Result<> init(const Settings& settings);
     virtual void dispose() override;
     PlatformWindow* mainWindow() const { return m_mainWindow; }
     //OpenGLContext* mainGLContext() const { return m_mainGLContext; }
@@ -112,7 +112,8 @@ protected:
     Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
     Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
-    void onSubmitCommandBuffer(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) override;
+    void onQueuePresent(ISwapChain* swapChain) override;
 
 
 private:
@@ -135,12 +136,13 @@ class GLSwapChain
 public:
     GLSwapChain(OpenGLDevice* device);
     virtual ~GLSwapChain() = default;
-    virtual void dispose() override;
+    virtual void onDestroy() override;
     virtual uint32_t getBackbufferCount() override { return 1; }
     virtual void acquireNextImage(int* outImageIndex) override { *outImageIndex = 0; }
     virtual RHIResource* getRenderTarget(int imageIndex) const override;
-    virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;
-    virtual void present() override;
+    virtual Result<> resizeBackbuffer(uint32_t width, uint32_t height) override;
+    
+    void present();
 
     virtual void getBackendBufferSize(SizeI* outSize);
 
@@ -180,8 +182,9 @@ class GLCommandQueue
     : public ICommandQueue {
 public:
     GLCommandQueue();
-    Result init();
-    virtual Result submit(ICommandList* commandList) override;
+    Result<> init();
+    virtual Result<> submit(ICommandList* commandList) override;
+    void onDestroy() override;
 };
 
 struct GLVertexElement {
@@ -207,7 +210,7 @@ public:
     GLVertexDeclaration();
     virtual ~GLVertexDeclaration();
     void init(const VertexElement* elements, int elementsCount);
-    virtual void dispose() override;
+    virtual void onDestroy() override;
 
     const List<GLVertexElement>& vertexElements() const { return m_vertexElements; }
 
@@ -227,8 +230,8 @@ class GLPipeline
     : public IPipeline {
 public:
     GLPipeline();
-    Result init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
-    virtual void dispose() override;
+    Result<> init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
+    virtual void onDestroy() override;
     void bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer, IDescriptor* descriptor);
     GLenum primitiveTopology() const { return m_primitiveTopology; }
 

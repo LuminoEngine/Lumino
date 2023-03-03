@@ -77,7 +77,7 @@ LN_CONSTRUCT_ACCESS:
 
     /** InterpreterCommandList を作成します。 */
     LN_METHOD()
-    Result init();
+    Result<> init();
 };
 
 /**
@@ -141,7 +141,7 @@ LN_CONSTRUCT_ACCESS:
 
     /** Interpreter を作成します。 */
     LN_METHOD()
-    Result init();
+    Result<> init();
 
 protected:
     /**  */

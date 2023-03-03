@@ -22,7 +22,7 @@ DiagnosticsManager::DiagnosticsManager()
 DiagnosticsManager::~DiagnosticsManager() {
 }
 
-Result DiagnosticsManager::init() {
+Result<> DiagnosticsManager::init() {
     return Object::init();
 }
 

@@ -13,15 +13,18 @@ WebGPURenderTarget::WebGPURenderTarget()
     , m_wgpuTextureView(nullptr) {
 }
 
-Result WebGPURenderTarget::resetFromSwapChain(WebGPUDevice* rhiDevice, WGPUTextureView view, int width, int height, TextureFormat format) {
+Result<> WebGPURenderTarget::initForSwapChainWrapper(WebGPUDevice* rhiDevice, int width, int height, TextureFormat format) {
     if (!RHIResource::initAsRenderTarget(width, height, format, false, false)) return err();
     m_rhiDevice = rhiDevice;
-    m_wgpuTextureView = view;
     return ok();
 }
 
-void WebGPURenderTarget::dispose() {
+void WebGPURenderTarget::onDestroy() {
     m_wgpuTextureView = nullptr;
+}
+
+void WebGPURenderTarget::wrapTextureView(WGPUTextureView view) {
+    m_wgpuTextureView = view;
 }
 
 } // namespace detail

@@ -10,9 +10,9 @@ namespace detail {
 class GLRenderPass : public IRenderPass {
 public:
     GLRenderPass();
-    Result init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-    Result initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget);
-    void dispose() override;
+    Result<> init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+    Result<> initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget);
+    void onDestroy() override;
     RHIExtent2D viewSize() const override;
 
     //GLRenderTargetTexture* renderTargetx(int index) const { return static_cast<GLRenderTargetTexture*>(m_renderTargets[index]); }

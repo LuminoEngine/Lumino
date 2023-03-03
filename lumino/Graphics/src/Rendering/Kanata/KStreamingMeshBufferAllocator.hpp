@@ -12,7 +12,7 @@ namespace kanata {
 //    };
 //
 //    StreamingBufferPage();
-//    Result init(Type type, size_t elementSize, size_t count);
+//    Result<> init(Type type, size_t elementSize, size_t count);
 //    const Ref<Object>& resource() const { return m_resource; }
 //
 //private:

@@ -115,7 +115,7 @@ LN_CONSTRUCT_ACCESS:
 	
 	/** init. */
 	LN_METHOD()
-    Result init() { return Object::init(); }
+    Result<> init() { return Object::init(); }
 
 public:
 	void clear() LN_NOEXCEPT;

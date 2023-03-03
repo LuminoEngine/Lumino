@@ -113,7 +113,7 @@ public:
 
 /** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
 template<typename T = void, typename E = bool>
-class BasicResult : public ResultBase {
+class [[nodiscard]] BasicResult : public ResultBase {
 public:
     BasicResult(T&& ok)
         : ResultBase(toStringInternal)
@@ -589,7 +589,52 @@ enum class ErrorCode {
 };
 
 /** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
-using Result = BasicResult<void, ErrorCode>;
+using ResultV = BasicResult<void, ErrorCode>;
+
+/** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling
+ *
+ * Lumino の Result 型は、関数が少なくとも何らかの復帰可能なエラーを返すことがあるのを示すためのものです。
+ * これはいくつかの言語で取り入れられている Resut<T, E> と同様のものです。
+ * 
+ * Lumino の API は次のようなケースで Result を積極的に使います。
+ * - 成否を示す bool 戻り値の代替。
+ * - nullable な結果をマークする。
+ * 
+ * 例えば次のコードは、関数が失敗し、戻り値となる Bitmap のインスタンスが生成されないことを示しています。
+ * 
+ * ```
+ * Result<Bitmap*> createBitmap(String filePath);
+ * ```
+ * 
+ * 一方、次のコードは、有効な Bitmap のインスタンスを返すものと考えて差し支えありません。(ドキュメントコメントで触れられていなければ)
+ * 
+ * ```
+ * Bitmap* getBuiltinBitmap();
+ * ```
+ * 
+ * コンセプト
+ * ----------
+ * 
+ * この Result 型は Lumino のエラーハンドリングのコンセプトに近づくような設計と、ユースケースを想定しています。
+ * Lumino の内部では積極的にエラーチェックを行いますが、エラーを検出した場合は
+ * 「ログを出力」しつつ、「なにもしない」あるいは「デフォルトと想定される動作を行う」のが基本です。
+ * このとき Result に格納されるエラーメッセージは、既に Logger に流れていることがほとんどであり、
+ * そのようなケースでは、 Result にエラーメッセージを格納しないこともあります。
+ * 
+ * Lumino は、ロギングにおいて多少ライブラリが出過ぎるとしても、リリースしたアプリの不具合調査に役立つサポートを行うべきと考えています。
+ * Logger を一切使用せず、Result のみでエラーメッセージを持ちまわることもできますが、それはロギングの責任をライブラリユーザーに持たせるということです。
+ * しかし C++ では関数の呼び出し側に対して Result のチェックを強制するような仕組みは無い (nodiscard 属性などで警告はできますが) ため、
+ * ライブラリユーザーは警告に目を光らせ、注意深くコードレビューを行う必要が出てきます。このような厳格な UX は Lumino の目指すところではありません。
+ * 
+ * より一般的な Result 型が必要な場合、
+ * [std::expected](https://cpprefjp.github.io/reference/expected/expected.html) や
+ * [outcome](https://github.com/ned14/outcome) が役に立ちます。
+ * 
+ * 将来的にこれらのライブラリに置き換えることは考えていません。
+ * 型の機能以上に、 Lumino の Result を返す関数は上記のようなコンセプトでエラー処理を行っていることを示したいからです。
+ */
+template<class T = void>
+using Result = BasicResult<T, ErrorCode>;
 
 template<class T>
 using GenericResult = BasicResult<T, ErrorCode>;

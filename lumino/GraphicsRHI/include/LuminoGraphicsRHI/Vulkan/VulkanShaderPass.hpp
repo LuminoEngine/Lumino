@@ -12,8 +12,8 @@ class VulkanShaderPass
 {
 public:
     VulkanShaderPass();
-    Result init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-    void dispose();
+    Result<> init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+    void onDestroy() override;
     virtual void onBind() override { RefObjectHelper::retain(this); }
     virtual void onUnBind() override { RefObjectHelper::release(this); }
 

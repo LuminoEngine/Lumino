@@ -5,7 +5,8 @@
 
 class TestEnv {
 public:
-    static void setup();
+    static void initialize();
+    static void setup(GraphicsAPI graphicsAPI);
     static void teardown();
     static void updateFrame();
     static void resetScene();

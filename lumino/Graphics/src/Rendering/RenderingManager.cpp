@@ -66,7 +66,7 @@ RenderingManager::RenderingManager()
     assert(s_instance == nullptr);
 }
 
-Result RenderingManager::init(const Settings& settings) {
+Result<> RenderingManager::init(const Settings& settings) {
     LN_LOG_DEBUG("RenderingManager Initialization started.");
     auto* context = RuntimeContext::current();
     context->registerType<Material>();

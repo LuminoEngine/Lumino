@@ -125,7 +125,7 @@ DX12Texture::DX12Texture() {
 DX12Texture2D::DX12Texture2D() {
 }
 
-Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData) {
+Result<> DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData) {
     if (!DX12Texture::initAsTexture2D(usage, width, height, format, mipmap)) return err();
     m_device = device;
     //m_usage = usage;
@@ -184,12 +184,12 @@ Result DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint
     return ok();
 }
 
-void DX12Texture2D::dispose() {
+void DX12Texture2D::onDestroy() {
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
     }
-    DX12Texture::dispose();
+    DX12Texture::onDestroy();
 }
 
 void DX12Texture2D::setSubData(DX12GraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {
@@ -442,7 +442,7 @@ bool DX12RenderTarget::init(DX12Device* device, const ComPtr<ID3D12Resource>& dx
     return true;
 }
 
-void DX12RenderTarget::dispose() {
+void DX12RenderTarget::onDestroy() {
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
@@ -451,7 +451,7 @@ void DX12RenderTarget::dispose() {
         m_multisampleBuffer->dispose();
         m_multisampleBuffer = nullptr;
     }
-    DX12Texture::dispose();
+    DX12Texture::onDestroy();
 }
 
 RHIRef<RHIBitmap> DX12RenderTarget::readData() {
@@ -530,7 +530,7 @@ DX12DepthBuffer::DX12DepthBuffer()
     : m_deviceContext(nullptr) {
 }
 
-Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height) {
+Result<> DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height) {
     LN_DCHECK(device);
     LN_TRY(RHIResource::initAsDepthBuffer(width, height, true));
     m_deviceContext = device;
@@ -550,7 +550,7 @@ Result DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height
     return ok();
 }
 
-void DX12DepthBuffer::dispose() {
+void DX12DepthBuffer::onDestroy() {
     if (m_image) {
         m_image->dispose();
         m_image = nullptr;
@@ -559,7 +559,7 @@ void DX12DepthBuffer::dispose() {
         m_multisampleBuffer->dispose();
         m_multisampleBuffer = nullptr;
     }
-    RHIResource::dispose();
+    RHIResource::onDestroy();
 }
 
 } // namespace detail
