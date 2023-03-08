@@ -269,7 +269,7 @@ Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 void VulkanDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
     auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
     auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
-    vulkanContext->recodingCommandBuffer()->submit(
+    vulkanContext->submit(
         t->swapchainImageAvailableSemaphore(),
         t->renderFinishedSemaphore());
 
@@ -2101,7 +2101,7 @@ uint32_t VulkanNativeGraphicsInterface::getGraphicsQueueFamilyIndex() const {
 }
 
 VkCommandBuffer VulkanNativeGraphicsInterface::getRecordingCommandBuffer() const {
-    return m_context->recodingCommandBuffer()->vulkanCommandBuffer();
+    return m_context->vulkanCommandBuffer();
 }
 
 } // namespace detail

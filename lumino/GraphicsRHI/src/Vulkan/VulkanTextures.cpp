@@ -88,19 +88,19 @@ void VulkanTexture2D::setSubData(VulkanGraphicsContext* graphicsContext, int x, 
     // vkCmdCopyBufferToImage() の dstImageLayout は VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR の
     // いずれかでなければならない。https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCmdCopyBufferToImage.html
     // 転送前にレイアウトを変更しておく。
-    if (!m_deviceContext->transitionImageLayout(graphicsContext->recodingCommandBuffer()->vulkanCommandBuffer(), m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayout(graphicsContext->vulkanCommandBuffer(), m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
         LN_ERROR();
         return;
     }
 
-    VulkanSingleFrameBufferInfo stagingBuffer = graphicsContext->recodingCommandBuffer()->cmdCopyBufferToImage(
+    VulkanSingleFrameBufferInfo stagingBuffer = graphicsContext->cmdCopyBufferToImage(
         dataSize, width, height, &m_image);
     //buffer->setData(0, data, dataSize);
     stagingBuffer.buffer->setData(stagingBuffer.offset, data, dataSize);
 
 
     // レイアウトを元に戻す
-    if (!m_deviceContext->transitionImageLayout(graphicsContext->recodingCommandBuffer()->vulkanCommandBuffer(), m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayout(graphicsContext->vulkanCommandBuffer(), m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
         LN_ERROR();
         return;
     }
