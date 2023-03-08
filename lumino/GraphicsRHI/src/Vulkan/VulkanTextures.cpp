@@ -78,7 +78,7 @@ void VulkanTexture2D::onDestroy() {
     VulkanTexture::onDestroy();
 }
 
-void VulkanTexture2D::setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {
+void VulkanTexture2D::setSubData(VulkanCommandList* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {
     // TODO:
     assert(x == 0);
     assert(y == 0);

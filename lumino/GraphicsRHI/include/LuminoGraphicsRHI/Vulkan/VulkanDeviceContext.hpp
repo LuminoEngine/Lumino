@@ -16,7 +16,7 @@ struct SwapChainSupportDetails {
 namespace ln {
 
 namespace detail {
-class VulkanGraphicsContext;
+class VulkanCommandList;
 class VulkanSwapChain;
 class VulkanTexture;
 class VulkanRenderTarget;
@@ -132,7 +132,7 @@ public: // TODO:
     //VulkanFramebufferCache m_framebufferCache;
     //VulkanPipelineCache m_pipelineCache;
 
-	//Ref<VulkanGraphicsContext> m_graphicsContext;
+	//Ref<VulkanCommandList> m_graphicsContext;
 	std::unique_ptr<VulkanNativeGraphicsInterface> m_nativeInterface;
 
     std::vector<VkQueueFamilyProperties> m_queueFamilyProps;
@@ -304,7 +304,7 @@ class VulkanNativeGraphicsInterface : public IVulkanNativeGraphicsInterface
 {
 public:
     VulkanNativeGraphicsInterface(VulkanDevice* device);
-    void setContext(VulkanGraphicsContext* context);
+    void setContext(VulkanCommandList* context);
 
     virtual GraphicsAPI getGraphicsAPI() const override;
     virtual VkInstance getInstance() const override;
@@ -316,7 +316,7 @@ public:
 
 private:
 	VulkanDevice* m_device;
-    VulkanGraphicsContext* m_context;
+    VulkanCommandList* m_context;
 };
 
 } // namespace detail

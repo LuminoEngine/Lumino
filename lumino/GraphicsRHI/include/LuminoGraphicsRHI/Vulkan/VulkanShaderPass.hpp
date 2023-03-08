@@ -28,7 +28,7 @@ public:
     const std::array<VkDescriptorSetLayout, kokage::DescriptorType_Count>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
 
     const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(
-        VulkanGraphicsContext* commandBuffer, 
+        VulkanCommandList* commandBuffer, 
         const std::array<VkDescriptorSet, kokage::DescriptorType_Count>& descriptorSets,
         const ShaderDescriptorTableUpdateInfo& data);
 

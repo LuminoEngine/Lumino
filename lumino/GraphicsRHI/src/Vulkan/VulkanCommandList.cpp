@@ -10,16 +10,16 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// VulkanGraphicsContext
+// VulkanCommandList
 
-VulkanGraphicsContext::VulkanGraphicsContext()
+VulkanCommandList::VulkanCommandList()
     : m_device(nullptr)
     , m_commandBuffer(VK_NULL_HANDLE)
     , m_inFlightFence(VK_NULL_HANDLE)
     , m_transferBufferSingleFrameAllocator(nullptr) {
 }
 
-Result<> VulkanGraphicsContext::init(VulkanDevice* owner) {
+Result<> VulkanCommandList::init(VulkanDevice* owner) {
     LN_CHECK(owner);
     ICommandList::init(owner);
     m_device = owner;
@@ -42,7 +42,7 @@ Result<> VulkanGraphicsContext::init(VulkanDevice* owner) {
     return ok();
 }
 
-void VulkanGraphicsContext::onDestroy() {
+void VulkanCommandList::onDestroy() {
     // Wait for execution to complete as it may be pending.
     vkWaitForFences(m_device->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
 
@@ -60,7 +60,7 @@ void VulkanGraphicsContext::onDestroy() {
     ICommandList::onDestroy();
 }
 
-Result<> VulkanGraphicsContext::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
+Result<> VulkanCommandList::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -89,7 +89,7 @@ Result<> VulkanGraphicsContext::submit(VkSemaphore waitSemaphore, VkSemaphore si
     return ok();
 }
 
-VulkanSingleFrameBufferInfo VulkanGraphicsContext::cmdCopyBuffer(size_t size, VulkanBuffer* destination) {
+VulkanSingleFrameBufferInfo VulkanCommandList::cmdCopyBuffer(size_t size, VulkanBuffer* destination) {
     VulkanSingleFrameBufferInfo bufferInfo = m_transferBufferSingleFrameAllocator->allocate(size);
 
     // コマンドバッファに乗せる
@@ -133,7 +133,7 @@ VulkanSingleFrameBufferInfo VulkanGraphicsContext::cmdCopyBuffer(size_t size, Vu
     return bufferInfo;
 }
 
-VulkanSingleFrameBufferInfo VulkanGraphicsContext::cmdCopyBufferToImage(size_t size, int width, int height, VulkanImage* destination) {
+VulkanSingleFrameBufferInfo VulkanCommandList::cmdCopyBufferToImage(size_t size, int width, int height, VulkanImage* destination) {
     VulkanSingleFrameBufferInfo bufferInfo = m_transferBufferSingleFrameAllocator->allocate(size);
 
     VkBufferImageCopy region = {};
@@ -163,13 +163,13 @@ VulkanSingleFrameBufferInfo VulkanGraphicsContext::cmdCopyBufferToImage(size_t s
     return bufferInfo;
 }
 
-void VulkanGraphicsContext::onSaveExternalRenderState() {
+void VulkanCommandList::onSaveExternalRenderState() {
 }
 
-void VulkanGraphicsContext::onRestoreExternalRenderState() {
+void VulkanCommandList::onRestoreExternalRenderState() {
 }
 
-void VulkanGraphicsContext::onBeginCommandRecoding() {
+void VulkanCommandList::onBeginCommandRecoding() {
     m_transferBufferSingleFrameAllocator->cleanup();
 
     VkCommandBufferBeginInfo beginInfo = {};
@@ -181,14 +181,14 @@ void VulkanGraphicsContext::onBeginCommandRecoding() {
     }
 }
 
-void VulkanGraphicsContext::onEndCommandRecoding() {
+void VulkanCommandList::onEndCommandRecoding() {
     VkResult r = vkEndCommandBuffer(m_commandBuffer);
     if (r != VK_SUCCESS) {
         LN_LOG_ERROR("vkBeginCommandBuffer failed.");
     }
 }
 
-void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_) {
+void VulkanCommandList::onBeginRenderPass(IRenderPass* renderPass_) {
     auto* renderPass = static_cast<VulkanRenderPass2*>(renderPass_);
     auto& framebuffer = renderPass->framebuffer();
     const auto viewSize = renderPass->framebuffer()->renderTargets()[0]->extentSize();
@@ -227,11 +227,11 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_) {
     vkCmdBeginRenderPass(m_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void VulkanGraphicsContext::onEndRenderPass(IRenderPass* renderPass) {
+void VulkanCommandList::onEndRenderPass(IRenderPass* renderPass) {
     vkCmdEndRenderPass(m_commandBuffer);
 }
 
-void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) {
+void VulkanCommandList::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) {
     if (stateDirtyFlags & GraphicsContextStateDirtyFlags_RegionRects) {
         VkViewport viewport;
         viewport.x = state.regionRects.viewportRect.x;
@@ -329,7 +329,7 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
     }
 }
 
-void VulkanGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) {
+void VulkanCommandList::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) {
     VulkanBuffer* buffer = nullptr;
     switch (resource->resourceType()) {
         case RHIResourceType::VertexBuffer:
@@ -349,15 +349,15 @@ void VulkanGraphicsContext::onSetSubData(RHIResource* resource, size_t offset, c
     stagingBuffer.buffer->setData(stagingBuffer.offset + offset, data, length);
 }
 
-void VulkanGraphicsContext::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) {
+void VulkanCommandList::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) {
     static_cast<VulkanTexture*>(resource)->setSubData(this, x, y, width, height, data, dataSize);
 }
 
-void VulkanGraphicsContext::onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {
+void VulkanCommandList::onSetSubData3D(RHIResource* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {
     static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
 }
 
-void VulkanGraphicsContext::onDispatch(const GraphicsContextState& state, IPipeline* basePipeline, int groupCountX, int groupCountY, int groupCountZ) {
+void VulkanCommandList::onDispatch(const GraphicsContextState& state, IPipeline* basePipeline, int groupCountX, int groupCountY, int groupCountZ) {
     auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
     auto* descriptor = static_cast<VulkanDescriptor2*>(state.descriptor);
 
@@ -434,7 +434,7 @@ void VulkanGraphicsContext::onDispatch(const GraphicsContextState& state, IPipel
     //}
 }
 
-void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) {
+void VulkanCommandList::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) {
     auto* renderPass = static_cast<VulkanRenderPass2*>(currentRenderPass());
     auto& framebuffer = renderPass->framebuffer();
     const auto viewSize = framebuffer->renderTargets()[0]->extentSize();
@@ -494,7 +494,7 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
     }
 }
 
-void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount, int instanceCount) {
+void VulkanCommandList::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount, int instanceCount) {
     vkCmdDraw(
         m_commandBuffer,
         VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
@@ -503,7 +503,7 @@ void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int sta
         0);
 }
 
-void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {
+void VulkanCommandList::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {
     int ic = (instanceCount == 0) ? 1 : instanceCount;
     vkCmdDrawIndexed(
         m_commandBuffer,
@@ -514,14 +514,14 @@ void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, 
         0);
 }
 
-void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension) {
+void VulkanCommandList::onDrawExtension(INativeGraphicsExtension* extension) {
     auto i = m_device->vulkanNativeGraphicsInterface();
     i->setContext(this);
     extension->onRender(i);
     i->setContext(nullptr);
 }
 
-void VulkanGraphicsContext::wait() {
+void VulkanCommandList::wait() {
     // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
     vkWaitForFences(
         m_device->vulkanDevice(),

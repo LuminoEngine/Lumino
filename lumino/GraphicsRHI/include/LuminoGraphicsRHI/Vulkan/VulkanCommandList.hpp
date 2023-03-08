@@ -1,13 +1,12 @@
-﻿
-#pragma once
-#include "VulkanHelper.hpp"
+﻿#pragma once
+#include "Common.hpp"
 
 namespace ln {
 namespace detail {
 
-class VulkanGraphicsContext : public ICommandList {
+class VulkanCommandList : public ICommandList {
 public:
-    VulkanGraphicsContext();
+    VulkanCommandList();
     Result<> init(VulkanDevice* owner);
     void onDestroy() override;
 

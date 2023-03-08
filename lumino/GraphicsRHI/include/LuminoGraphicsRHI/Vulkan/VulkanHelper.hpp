@@ -1,21 +1,7 @@
-﻿
-#pragma once
-
-#if defined(LN_OS_WIN32)
-#define VK_USE_PLATFORM_WIN32_KHR
-#define NOMINMAX
-#endif
-
-#define VK_NO_PROTOTYPES 1
-#include <vulkan/vulkan.h>
-
-//#if defined(LN_OS_WIN32)
-//#include <vulkan/vulkan_win32.h>
-//#endif
-
-#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Base/MixHash.hpp>
+#include "Common.hpp"
 
 // vcpkg からインストールした VulkanHeaders だとこれが定義されていなかった
 static const int VK_SYSTEM_ALLOCATION_SCOPE_RANGE_SIZE = 5;

@@ -156,7 +156,7 @@ Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const Si
 }
 
 Ref<ICommandList> VulkanDevice::onCreateCommandList() {
-    auto ptr = makeRef<VulkanGraphicsContext>();
+    auto ptr = makeRef<VulkanCommandList>();
     if (!ptr->init(this)) {
         return nullptr;
     }
@@ -267,7 +267,7 @@ Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
 // CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
 void VulkanDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
-    auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
+    auto vulkanContext = static_cast<VulkanCommandList*>(context);
     auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
     vulkanContext->submit(
         t->swapchainImageAvailableSemaphore(),
@@ -2062,7 +2062,7 @@ VulkanNativeGraphicsInterface::VulkanNativeGraphicsInterface(VulkanDevice* devic
     , m_context(nullptr) {
 }
 
-void VulkanNativeGraphicsInterface::setContext(VulkanGraphicsContext* context) {
+void VulkanNativeGraphicsInterface::setContext(VulkanCommandList* context) {
     m_context = context;
 }
 
