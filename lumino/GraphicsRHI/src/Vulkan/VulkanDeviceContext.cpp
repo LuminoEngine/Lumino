@@ -139,7 +139,7 @@ INativeGraphicsInterface* VulkanDevice::getNativeInterface() const {
     return m_nativeInterface.get();
 }
 
-void VulkanDevice::onGetCaps(GraphicsDeviceProperty* outCaps) {
+void VulkanDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->graphicsAPI = GraphicsAPI::Vulkan;
     outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 110;

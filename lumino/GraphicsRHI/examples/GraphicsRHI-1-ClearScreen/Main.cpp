@@ -43,9 +43,7 @@ void init() {
         settings.mainWindow = window;
         settings.debugMode = true;
         bool dummy = false;
-        auto device = *detail::VulkanDevice::create(settings, &dummy);
-        device->refreshCaps();
-        g_device = device;
+        g_device = *detail::VulkanDevice::create(settings, &dummy);
     }
 
     // Create SwapChain.

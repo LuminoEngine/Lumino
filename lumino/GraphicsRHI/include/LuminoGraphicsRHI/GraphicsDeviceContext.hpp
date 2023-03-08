@@ -34,7 +34,7 @@ class RHIBitmap;
 class RHIResource;
 class RHIProfiler;
 
-struct GraphicsDeviceProperty {
+struct GraphicsDeviceProperties {
     GraphicsAPI graphicsAPI;
     kokage::UnifiedShaderTriple requestedShaderTriple;
     bool imageLayoytVFlip = false;
@@ -170,7 +170,7 @@ public:
 
     void init();
     virtual void dispose();
-    const GraphicsDeviceProperty& caps() { return m_caps; }
+    const GraphicsDeviceProperties& caps() { return m_caps; }
     void refreshCaps();
 
     Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
@@ -206,7 +206,7 @@ public:
     const std::unique_ptr<RHIProfiler>& profiler() const { return m_profiler; }
 
 protected:
-    virtual void onGetCaps(GraphicsDeviceProperty* outCaps) = 0;
+    virtual void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) = 0;
     virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
     virtual Ref<ICommandList> onCreateCommandList() = 0;
     virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
@@ -227,7 +227,7 @@ protected:
     virtual void onQueuePresent(ISwapChain* swapChain) = 0;
 
 public: // TODO:
-    GraphicsDeviceProperty m_caps;
+    GraphicsDeviceProperties m_caps;
     std::unique_ptr<NativeRenderPassCache> m_renderPassCache;
     std::unique_ptr<NativePipelineCache> m_pipelineCache;
 

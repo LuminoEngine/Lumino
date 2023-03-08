@@ -377,7 +377,7 @@ INativeGraphicsInterface* DX12Device::getNativeInterface() const {
     return nullptr;
 }
 
-void DX12Device::onGetCaps(GraphicsDeviceProperty* outCaps) {
+void DX12Device::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->requestedShaderTriple.target = "hlsl";
     outCaps->requestedShaderTriple.version = 5;
     outCaps->requestedShaderTriple.option = "";

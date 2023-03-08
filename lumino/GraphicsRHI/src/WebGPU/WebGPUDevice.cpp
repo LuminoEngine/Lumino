@@ -115,7 +115,7 @@ INativeGraphicsInterface* WebGPUDevice::getNativeInterface() const {
     return nullptr;
 }
 
-void WebGPUDevice::onGetCaps(GraphicsDeviceProperty* outCaps) {
+void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     LN_NOTIMPLEMENTED();
 }
 
