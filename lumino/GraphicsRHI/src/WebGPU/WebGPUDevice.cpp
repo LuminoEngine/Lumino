@@ -231,16 +231,6 @@ void WebGPUDevice::onQueuePresent(ISwapChain* swapChain) {
     static_cast<WebGPUSwapChain*>(swapChain)->present();
 }
 
-ICommandQueue* WebGPUDevice::getGraphicsCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-ICommandQueue* WebGPUDevice::getComputeCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
 Result<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
 
     auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status, WGPUDevice device, char const* message, void* userdata) {

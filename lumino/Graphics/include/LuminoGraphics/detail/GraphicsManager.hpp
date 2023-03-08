@@ -55,8 +55,8 @@ public:
     // 必要な時に GraphicsManager または GraphicsCommandList から取得すること。
     // TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDevice をリソース関係と描画関係で分離するのもアリかもしれない。
     const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
-    const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
-    const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
+    //const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
+    //const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 
     const std::unique_ptr<GraphicsProfiler>& profiler() const { return m_profiler; }
     const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }

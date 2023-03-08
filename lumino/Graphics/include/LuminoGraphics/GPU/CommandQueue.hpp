@@ -4,22 +4,21 @@
 namespace ln {
 namespace detail {
 class GraphicsManager;
-class ICommandQueue;
 }
 
 /**  */
-class CommandQueue
-    : public Object
-{
-public:
-
-private:
-	CommandQueue();
-	void init(detail::ICommandQueue* rhiObject);
-
-    Ref<detail::ICommandQueue> m_rhiObject;
-
-	friend class detail::GraphicsManager;
-};
+//class CommandQueue
+//    : public Object
+//{
+//public:
+//
+//private:
+//	CommandQueue();
+//	void init(detail::ICommandQueue* rhiObject);
+//
+//    Ref<detail::ICommandQueue> m_rhiObject;
+//
+//	friend class detail::GraphicsManager;
+//};
 
 } // namespace ln

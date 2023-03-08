@@ -92,8 +92,6 @@ public:
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override { return nullptr; }
-    ICommandQueue* getGraphicsCommandQueue() override;
-    ICommandQueue* getComputeCommandQueue() override;
 
     void onGetCaps(GraphicsDeviceCaps* outCaps) override;
     Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
@@ -118,14 +116,9 @@ protected:
 
 private:
     PlatformWindow* m_mainWindow;
-    //OpenGLContext* m_mainGLContext;
     MemoryStream m_uniformTempBuffer;
     BinaryWriter m_uniformTempBufferWriter;
-    //int m_lastUsedAttribIndex;
-    Ref<GLCommandQueue> m_graphicsQueue; // dummy
-    //Ref<GLGraphicsContext> m_graphicsContext;
     Caps m_caps;
-    //bool m_commandListCreated;
 
     Ref<GLUniformBufferAllocatorPageManager> m_uniformBufferAllocatorPageManager;
     Ref<GLDescriptorObjectPoolManager> m_descriptorObjectPoolManager;
@@ -175,16 +168,6 @@ private:
     GLuint m_defaultFBO;
     int m_backengBufferWidth;
     int m_backengBufferHeight;
-};
-
-// 他の Graphics API との処理を抽象化するためのダミー。
-class GLCommandQueue
-    : public ICommandQueue {
-public:
-    GLCommandQueue();
-    Result<> init();
-    virtual Result<> submit(ICommandList* commandList) override;
-    void onDestroy() override;
 };
 
 struct GLVertexElement {

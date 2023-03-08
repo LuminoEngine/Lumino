@@ -74,8 +74,6 @@ protected:
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
     void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) override;
     void onQueuePresent(ISwapChain* swapChain) override;
-	ICommandQueue* getGraphicsCommandQueue() override;
-	ICommandQueue* getComputeCommandQueue() override;
     
 private:
 	VulkanDevice();

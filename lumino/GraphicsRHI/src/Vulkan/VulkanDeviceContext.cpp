@@ -285,16 +285,6 @@ void VulkanDevice::onQueuePresent(ISwapChain* swapChain) {
     static_cast<VulkanSwapChain*>(swapChain)->present();
 }
 
-ICommandQueue* VulkanDevice::getGraphicsCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-ICommandQueue* VulkanDevice::getComputeCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
 Result<> VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType) {
     for (uint32_t i = 0; i < m_deviceMemoryProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) && (m_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {

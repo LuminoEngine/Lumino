@@ -511,16 +511,6 @@ void DX12Device::onQueuePresent(ISwapChain* swapChain) {
     static_cast<DX12SwapChain*>(swapChain)->present();
 }
 
-ICommandQueue* DX12Device::getGraphicsCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-ICommandQueue* DX12Device::getComputeCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
 void DX12Device::enableDebugLayer() const {
     ID3D12Debug* debugLayer = nullptr;
     if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugLayer)))) {

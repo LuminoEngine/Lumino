@@ -20,7 +20,7 @@ class RHIDeviceObject;
 class IGraphicsDevice;
 class ISwapChain;
 class ICommandList;
-class ICommandQueue;
+//class ICommandQueue;
 class IRenderPass;
 class IVertexDeclaration;
 class ISamplerState;
@@ -158,6 +158,10 @@ public:
     static VertexElementUsage AttributeUsageToElementUsage(kokage::AttributeUsage value);
 };
 
+/**
+ *
+ * @note 複数の CommandQueue (非同期・並列コンピュートシェーダなど) は未対応。WebGPU が 2023/3/8 時点ではシングルキューしか仕様策定されていない。
+ */
 class IGraphicsDevice
     : public RefObject {
 public:
@@ -191,8 +195,8 @@ public:
     void queuePresent(ISwapChain* swapChain);
 
     virtual INativeGraphicsInterface* getNativeInterface() const = 0;
-    virtual ICommandQueue* getGraphicsCommandQueue() = 0;
-    virtual ICommandQueue* getComputeCommandQueue() = 0;
+    //virtual ICommandQueue* getGraphicsCommandQueue() = 0;
+    //virtual ICommandQueue* getComputeCommandQueue() = 0;
 
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag);
@@ -333,15 +337,15 @@ protected:
     virtual ~ISwapChain();
 };
 
-// OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
-class ICommandQueue
-    : public RHIDeviceObject {
-public:
-    virtual Result<> submit(ICommandList* commandList) = 0;
-
-protected:
-    virtual ~ICommandQueue() = default;
-};
+//// OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
+//class ICommandQueue
+//    : public RHIDeviceObject {
+//public:
+//    virtual Result<> submit(ICommandList* commandList) = 0;
+//
+//protected:
+//    virtual ~ICommandQueue() = default;
+//};
 
 // Note: Framebuffer も兼ねる。Vulkan では分けることで subpass を実現するが、Metal や DX12 では無いし、そこまで最適化する必要も今はない。
 // 性質上 RenderTarget と DepthBuffer を持つことになるが、派生では参照カウントをインクリメントしないように注意すること。
