@@ -150,7 +150,7 @@ void OpenGLDevice::dispose() {
 //	return m_graphicsContext;
 // }
 
-void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
+void OpenGLDevice::onGetCaps(GraphicsDeviceProperty* outCaps) {
     outCaps->graphicsAPI = GraphicsAPI::OpenGL;
 #ifdef LN_GRAPHICS_OPENGLES
     outCaps->requestedShaderTriple.target = "glsl";

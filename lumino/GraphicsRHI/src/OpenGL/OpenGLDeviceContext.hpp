@@ -93,7 +93,7 @@ public:
 protected:
     INativeGraphicsInterface* getNativeInterface() const override { return nullptr; }
 
-    void onGetCaps(GraphicsDeviceCaps* outCaps) override;
+    void onGetCaps(GraphicsDeviceProperty* outCaps) override;
     Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
     Ref<ICommandList> onCreateCommandList() override;
     Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;

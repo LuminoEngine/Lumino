@@ -8,16 +8,13 @@
 #include <LuminoPlatform/PlatformWindow.hpp>
 #include <LuminoPlatform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-
 #ifdef LUMINO_USE_WEBGPU
 #include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #endif
-
 #include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoGraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #include "../../src/ShaderCompiler/UnifiedShaderCompiler.hpp"
 using namespace ln;
-
 
 SizeI g_viewSize;
 Ref<PlatformWindow> g_window;
@@ -32,16 +29,16 @@ void init() {
 
     auto window = Platform::mainWindow();
 
-    if (0) {
 #ifdef LUMINO_USE_WEBGPU
+    {
         detail::WebGPUDevice::Settings settings;
         settings.debugMode = true;
         auto device = makeRef<detail::WebGPUDevice>();
         device->init(settings);
         g_device = device;
-#endif
     }
-    else {
+#endif
+    if (!g_device) {
         detail::VulkanDevice::Settings settings;
         settings.mainWindow = window;
         settings.debugMode = true;
@@ -51,9 +48,11 @@ void init() {
         g_device = device;
     }
 
+    // Create SwapChain.
     window->getSize(&g_viewSize);
     g_swapChain = g_device->createSwapChain(window, g_viewSize);
 
+    // Create frame resources.
     for (int i = 0; i < g_swapChain->getBackbufferCount(); i++) {
         detail::DeviceFramebufferState info;
         info.renderTargets[0] = g_swapChain->getRenderTarget(i);

@@ -20,8 +20,7 @@ VulkanCommandList::VulkanCommandList()
 }
 
 Result<> VulkanCommandList::init(VulkanDevice* owner) {
-    LN_CHECK(owner);
-    ICommandList::init(owner);
+    LN_TRY(ICommandList::init(owner));
     m_device = owner;
 
     m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocator>(m_device->transferBufferSingleFrameAllocator());
