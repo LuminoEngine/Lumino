@@ -11,12 +11,11 @@ GEM
     rake-compiler (1.1.9)
       rake
     thor (1.2.1)
-    webrick (1.7.0)
-    yard (0.9.27)
-      webrick (~> 1.7.0)
+    yard (0.9.35)
 
 PLATFORMS
   x64-mingw-ucrt
+  x86_64-linux
 
 DEPENDENCIES
   lumino!
