@@ -12,6 +12,12 @@ Build and Unit Tests
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
+### Web
+
+```
+dotnet run -- BuildEngine wasm32-emscripten
+```
+
 Quick-start
 ----------
 
