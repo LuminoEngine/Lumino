@@ -209,7 +209,6 @@ if(LUMINO_BUILD_ENGINE)
         add_subdirectory(lumino/GraphicsRHI)
         add_subdirectory(lumino/Graphics)
         add_subdirectory(lumino/LuminoEngine)
-        add_subdirectory(lumino/FFI)
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoEngine-sandbox)
 
         if(LUMINO_BUILD_EXAMPLES)

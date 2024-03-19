@@ -13,7 +13,7 @@ source_group("Sources" FILES ${LOCAL_SOURCES})
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE .)
-target_link_libraries(${PROJECT_NAME} LuminoEngine LuminoFFI GTest::gtest GTest::gtest_main)
+target_link_libraries(${PROJECT_NAME} LuminoEngine GTest::gtest GTest::gtest_main)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "PCH.hpp")
 
