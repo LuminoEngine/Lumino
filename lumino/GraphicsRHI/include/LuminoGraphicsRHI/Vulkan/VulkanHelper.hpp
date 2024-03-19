@@ -1,21 +1,7 @@
-﻿
-#pragma once
-
-#if defined(LN_OS_WIN32)
-#define VK_USE_PLATFORM_WIN32_KHR
-#define NOMINMAX
-#endif
-
-#define VK_NO_PROTOTYPES 1
-#include <vulkan/vulkan.h>
-
-//#if defined(LN_OS_WIN32)
-//#include <vulkan/vulkan_win32.h>
-//#endif
-
-#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Base/MixHash.hpp>
+#include "Common.hpp"
 
 // vcpkg からインストールした VulkanHeaders だとこれが定義されていなかった
 static const int VK_SYSTEM_ALLOCATION_SCOPE_RANGE_SIZE = 5;
@@ -362,69 +348,6 @@ private:
 	VkDeviceMemory m_imageMemory;
     VkImageView m_imageView;
     bool m_externalManagement;
-};
-
-// ひとつのコマンドバッファ。通常、記録中バッファと実行中バッファなどに分かれるため、インスタンスは複数作られる。
-// VkCommandBuffer のほか、動的な各種バッファの変更などで必要となるメモリプールの管理も行う。
-class VulkanCommandBuffer
-	: public RefObject
-{
-public:
-	VulkanCommandBuffer();
-    ~VulkanCommandBuffer();
-	Result<> init(VulkanDevice* deviceContext);
-	void dispose();
-
-    VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
-    VkFence vulkanInFlightFence() const { return m_inFlightFence; }
-
-    void wait();
-    Result<> beginRecording();
-    Result<> endRecording();
-    void endRenderPassInRecordingIfNeeded();
-    Result<> submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
-
-    //Result<> allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
-
-    // TODO: deprecated
-    VulkanBuffer* allocateBuffer(size_t size, VkBufferUsageFlags usage);
-
-    //const Ref<VulkanSingleFrameAllocator>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
-    const Ref<VulkanSingleFrameAllocator>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
-
-	// データを destination へ送信するためのコマンドを push する。
-	// 元データは戻り値のメモリ領域に書き込むこと。
-    VulkanSingleFrameBufferInfo cmdCopyBuffer(size_t size, VulkanBuffer* destination);
-    VulkanBuffer* cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination);
-
-public:
-    VulkanRenderPass* m_currentRenderPass = nullptr;
-    VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
-    //bool m_insideRendarPass = false;
-
-private:
-    void cleanInFlightResources();
-	//struct StagingBuffer
-	//{
-	//	VkBuffer buffer;
-	//	VkDeviceMemory bufferMemory;
-	//};
-
-	void resetAllocator(size_t pageSize);
-	Result<> glowStagingBufferPool();
-
-	VulkanDevice* m_deviceContext;
-    VkCommandBuffer m_commandBuffer;
-    VkFence m_inFlightFence;
-
-	Ref<LinearAllocatorPageManager> m_linearAllocatorManager;
-	Ref<LinearAllocator> m_linearAllocator;
-	VulkanLinearAllocator m_vulkanAllocator;
-    //Ref<VulkanSingleFrameAllocator> m_uniformBufferSingleFrameAllocator;
-    Ref<VulkanSingleFrameAllocator> m_transferBufferSingleFrameAllocator;
-
-	size_t m_stagingBufferPoolUsed;
-	std::vector<VulkanBuffer> m_stagingBufferPool;    
 };
 
 

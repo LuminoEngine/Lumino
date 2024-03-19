@@ -94,7 +94,10 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported) {
 
     const size_t PageSize = 0x200000; // 2MB
     //m_uniformBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(this, PageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    m_transferBufferSingleFrameAllocator = makeRef<VulkanSingleFrameAllocatorPageManager>(
+        this, PageSize,
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     m_nativeInterface = std::make_unique<VulkanNativeGraphicsInterface>(this);
 
     //{
@@ -136,7 +139,7 @@ INativeGraphicsInterface* VulkanDevice::getNativeInterface() const {
     return m_nativeInterface.get();
 }
 
-void VulkanDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
+void VulkanDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->graphicsAPI = GraphicsAPI::Vulkan;
     outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 110;
@@ -153,7 +156,7 @@ Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const Si
 }
 
 Ref<ICommandList> VulkanDevice::onCreateCommandList() {
-    auto ptr = makeRef<VulkanGraphicsContext>();
+    auto ptr = makeRef<VulkanCommandList>();
     if (!ptr->init(this)) {
         return nullptr;
     }
@@ -264,9 +267,9 @@ Ref<IDescriptorPool> VulkanDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
 // CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
 void VulkanDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
-    auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
+    auto vulkanContext = static_cast<VulkanCommandList*>(context);
     auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
-    vulkanContext->recodingCommandBuffer()->submit(
+    vulkanContext->submit(
         t->swapchainImageAvailableSemaphore(),
         t->renderFinishedSemaphore());
 
@@ -280,16 +283,6 @@ void VulkanDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendr
 
 void VulkanDevice::onQueuePresent(ISwapChain* swapChain) {
     static_cast<VulkanSwapChain*>(swapChain)->present();
-}
-
-ICommandQueue* VulkanDevice::getGraphicsCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-ICommandQueue* VulkanDevice::getComputeCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
 }
 
 Result<> VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType) {
@@ -2069,7 +2062,7 @@ VulkanNativeGraphicsInterface::VulkanNativeGraphicsInterface(VulkanDevice* devic
     , m_context(nullptr) {
 }
 
-void VulkanNativeGraphicsInterface::setContext(VulkanGraphicsContext* context) {
+void VulkanNativeGraphicsInterface::setContext(VulkanCommandList* context) {
     m_context = context;
 }
 
@@ -2098,7 +2091,7 @@ uint32_t VulkanNativeGraphicsInterface::getGraphicsQueueFamilyIndex() const {
 }
 
 VkCommandBuffer VulkanNativeGraphicsInterface::getRecordingCommandBuffer() const {
-    return m_context->recodingCommandBuffer()->vulkanCommandBuffer();
+    return m_context->vulkanCommandBuffer();
 }
 
 } // namespace detail

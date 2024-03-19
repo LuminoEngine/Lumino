@@ -13,16 +13,16 @@ GraphicsAPI Graphics::activeGraphicsAPI()
 {
 	return detail::GraphicsManager::instance()->deviceContext()->caps().graphicsAPI;
 }
-
-CommandQueue* Graphics::graphicsQueue()
-{
-	return detail::GraphicsManager::instance()->graphicsQueue();
-}
-
-CommandQueue* Graphics::computeQueue()
-{
-	return detail::GraphicsManager::instance()->computeQueue();
-}
+//
+//CommandQueue* Graphics::graphicsQueue()
+//{
+//	return detail::GraphicsManager::instance()->graphicsQueue();
+//}
+//
+//CommandQueue* Graphics::computeQueue()
+//{
+//	return detail::GraphicsManager::instance()->computeQueue();
+//}
 
 int Graphics::registerExtension(INativeGraphicsExtension* extension)
 {

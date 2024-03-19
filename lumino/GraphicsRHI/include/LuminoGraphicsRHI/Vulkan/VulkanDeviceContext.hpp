@@ -16,7 +16,7 @@ struct SwapChainSupportDetails {
 namespace ln {
 
 namespace detail {
-class VulkanGraphicsContext;
+class VulkanCommandList;
 class VulkanSwapChain;
 class VulkanTexture;
 class VulkanRenderTarget;
@@ -55,7 +55,7 @@ public:
 
 protected:
 	INativeGraphicsInterface* getNativeInterface() const override;
-	void onGetCaps(GraphicsDeviceCaps* outCaps) override;
+    void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) override;
 	Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	Ref<ICommandList> onCreateCommandList() override;
 	Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
@@ -74,8 +74,6 @@ protected:
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
     void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) override;
     void onQueuePresent(ISwapChain* swapChain) override;
-	ICommandQueue* getGraphicsCommandQueue() override;
-	ICommandQueue* getComputeCommandQueue() override;
     
 private:
 	VulkanDevice();
@@ -134,7 +132,7 @@ public: // TODO:
     //VulkanFramebufferCache m_framebufferCache;
     //VulkanPipelineCache m_pipelineCache;
 
-	//Ref<VulkanGraphicsContext> m_graphicsContext;
+	//Ref<VulkanCommandList> m_graphicsContext;
 	std::unique_ptr<VulkanNativeGraphicsInterface> m_nativeInterface;
 
     std::vector<VkQueueFamilyProperties> m_queueFamilyProps;
@@ -189,10 +187,7 @@ private:
     uint32_t m_imageIndex;
 
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    //std::vector<VkSemaphore> m_renderFinishedSemaphores;
     uint32_t m_currentFrame;
-
-    std::vector<Ref<VulkanCommandBuffer>> m_inFlightCommandBuffers;
 };
 
 class VulkanFramebuffer2;
@@ -309,7 +304,7 @@ class VulkanNativeGraphicsInterface : public IVulkanNativeGraphicsInterface
 {
 public:
     VulkanNativeGraphicsInterface(VulkanDevice* device);
-    void setContext(VulkanGraphicsContext* context);
+    void setContext(VulkanCommandList* context);
 
     virtual GraphicsAPI getGraphicsAPI() const override;
     virtual VkInstance getInstance() const override;
@@ -321,7 +316,7 @@ public:
 
 private:
 	VulkanDevice* m_device;
-    VulkanGraphicsContext* m_context;
+    VulkanCommandList* m_context;
 };
 
 } // namespace detail

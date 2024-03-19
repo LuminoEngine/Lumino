@@ -307,7 +307,7 @@ void VulkanShaderPass::onDestroy() {
 }
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(
-    VulkanCommandBuffer* commandBuffer,
+    VulkanCommandList* commandBuffer,
     const std::array<VkDescriptorSet, kokage::DescriptorType_Count>& descriptorSets,
     const ShaderDescriptorTableUpdateInfo& data)
 {

@@ -20,7 +20,7 @@ class RHIDeviceObject;
 class IGraphicsDevice;
 class ISwapChain;
 class ICommandList;
-class ICommandQueue;
+//class ICommandQueue;
 class IRenderPass;
 class IVertexDeclaration;
 class ISamplerState;
@@ -34,7 +34,7 @@ class RHIBitmap;
 class RHIResource;
 class RHIProfiler;
 
-struct GraphicsDeviceCaps {
+struct GraphicsDeviceProperties {
     GraphicsAPI graphicsAPI;
     kokage::UnifiedShaderTriple requestedShaderTriple;
     bool imageLayoytVFlip = false;
@@ -158,6 +158,10 @@ public:
     static VertexElementUsage AttributeUsageToElementUsage(kokage::AttributeUsage value);
 };
 
+/**
+ *
+ * @note 複数の CommandQueue (非同期・並列コンピュートシェーダなど) は未対応。WebGPU が 2023/3/8 時点ではシングルキューしか仕様策定されていない。
+ */
 class IGraphicsDevice
     : public RefObject {
 public:
@@ -166,7 +170,7 @@ public:
 
     void init();
     virtual void dispose();
-    const GraphicsDeviceCaps& caps() { return m_caps; }
+    const GraphicsDeviceProperties& caps() { return m_caps; }
     void refreshCaps();
 
     Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
@@ -191,8 +195,8 @@ public:
     void queuePresent(ISwapChain* swapChain);
 
     virtual INativeGraphicsInterface* getNativeInterface() const = 0;
-    virtual ICommandQueue* getGraphicsCommandQueue() = 0;
-    virtual ICommandQueue* getComputeCommandQueue() = 0;
+    //virtual ICommandQueue* getGraphicsCommandQueue() = 0;
+    //virtual ICommandQueue* getComputeCommandQueue() = 0;
 
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const kokage::UnifiedShader* unifiedShader, kokage::UnifiedShader::PassId passId, const std::string& name, DiagnosticsManager* diag);
@@ -202,7 +206,7 @@ public:
     const std::unique_ptr<RHIProfiler>& profiler() const { return m_profiler; }
 
 protected:
-    virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
+    virtual void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) = 0;
     virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
     virtual Ref<ICommandList> onCreateCommandList() = 0;
     virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
@@ -223,7 +227,7 @@ protected:
     virtual void onQueuePresent(ISwapChain* swapChain) = 0;
 
 public: // TODO:
-    GraphicsDeviceCaps m_caps;
+    GraphicsDeviceProperties m_caps;
     std::unique_ptr<NativeRenderPassCache> m_renderPassCache;
     std::unique_ptr<NativePipelineCache> m_pipelineCache;
 
@@ -333,15 +337,15 @@ protected:
     virtual ~ISwapChain();
 };
 
-// OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
-class ICommandQueue
-    : public RHIDeviceObject {
-public:
-    virtual Result<> submit(ICommandList* commandList) = 0;
-
-protected:
-    virtual ~ICommandQueue() = default;
-};
+//// OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
+//class ICommandQueue
+//    : public RHIDeviceObject {
+//public:
+//    virtual Result<> submit(ICommandList* commandList) = 0;
+//
+//protected:
+//    virtual ~ICommandQueue() = default;
+//};
 
 // Note: Framebuffer も兼ねる。Vulkan では分けることで subpass を実現するが、Metal や DX12 では無いし、そこまで最適化する必要も今はない。
 // 性質上 RenderTarget と DepthBuffer を持つことになるが、派生では参照カウントをインクリメントしないように注意すること。

@@ -130,11 +130,6 @@ Result<> OpenGLDevice::init(const Settings& settings) {
         }
     }
 
-    m_graphicsQueue = makeRef<GLCommandQueue>();
-    if (!m_graphicsQueue->init()) {
-        return err();
-    }
-
     const size_t PageSize = 0x200000; // 2MB
     m_uniformBufferAllocatorPageManager = makeRef<GLUniformBufferAllocatorPageManager>(this, PageSize);
     m_descriptorObjectPoolManager = makeRef<GLDescriptorObjectPoolManager>(this);
@@ -147,11 +142,6 @@ Result<> OpenGLDevice::init(const Settings& settings) {
 }
 
 void OpenGLDevice::dispose() {
-    if (m_graphicsQueue) {
-        releaseObject(m_graphicsQueue);
-        m_graphicsQueue = nullptr;
-    }
-
     IGraphicsDevice::dispose();
 }
 
@@ -160,7 +150,7 @@ void OpenGLDevice::dispose() {
 //	return m_graphicsContext;
 // }
 
-void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
+void OpenGLDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->graphicsAPI = GraphicsAPI::OpenGL;
 #ifdef LN_GRAPHICS_OPENGLES
     outCaps->requestedShaderTriple.target = "glsl";
@@ -310,15 +300,6 @@ void OpenGLDevice::onQueuePresent(ISwapChain* swapChain) {
     static_cast<GLSwapChain*>(swapChain)->present();
 }
 
-ICommandQueue* OpenGLDevice::getGraphicsCommandQueue() {
-    return m_graphicsQueue;
-}
-
-ICommandQueue* OpenGLDevice::getComputeCommandQueue() {
-    // Not supported.
-    return nullptr;
-}
-
 //==============================================================================
 // GLSwapChain
 
@@ -454,24 +435,6 @@ void GLSwapChain::present() {
 //{
 //}
 
-//===============================================================================
-// GLCommandQueue
-
-GLCommandQueue::GLCommandQueue() {
-}
-
-Result<> GLCommandQueue::init() {
-    return ok();
-}
-
-Result<> GLCommandQueue::submit(ICommandList* commandList) {
-    glFlush();
-    return ok();
-}
-
-void GLCommandQueue::onDestroy() {
-    ICommandQueue::onDestroy();
-}
 
 //===============================================================================
 // GLVertexDeclaration

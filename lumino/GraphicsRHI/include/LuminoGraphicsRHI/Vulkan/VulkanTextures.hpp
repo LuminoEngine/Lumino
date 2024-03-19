@@ -4,14 +4,14 @@
 
 namespace ln {
 namespace detail {
-class VulkanGraphicsContext;
+class VulkanCommandList;
 
 class VulkanTexture
     : public RHIResource {
 public:
     virtual const VulkanImage* image() const = 0;
-    virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
-    virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+    virtual void setSubData(VulkanCommandList* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+    virtual void setSubData3D(VulkanCommandList* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 private:
 };
@@ -27,8 +27,8 @@ public:
         LN_UNREACHABLE();
         return nullptr;
     }
-    void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-    void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
+    void setSubData(VulkanCommandList* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
+    void setSubData3D(VulkanCommandList* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override { LN_UNREACHABLE(); }
 
     virtual const VulkanImage* image() const override { return &m_image; }
 
@@ -53,8 +53,8 @@ public:
     void onDestroy() override;
     //virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
     RHIRef<RHIBitmap> readData() override;
-    void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override {}
-    void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override {}
+    void setSubData(VulkanCommandList* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override {}
+    void setSubData3D(VulkanCommandList* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override {}
 
     virtual const VulkanImage* image() const override { return m_image.get(); }
     const VulkanImage* multisampleColorBuffer() const { return m_multisampleColorBuffer.get(); }

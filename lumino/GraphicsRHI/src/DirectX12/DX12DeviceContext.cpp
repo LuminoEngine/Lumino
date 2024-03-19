@@ -377,7 +377,7 @@ INativeGraphicsInterface* DX12Device::getNativeInterface() const {
     return nullptr;
 }
 
-void DX12Device::onGetCaps(GraphicsDeviceCaps* outCaps) {
+void DX12Device::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->requestedShaderTriple.target = "hlsl";
     outCaps->requestedShaderTriple.version = 5;
     outCaps->requestedShaderTriple.option = "";
@@ -509,16 +509,6 @@ void DX12Device::onQueueSubmit(ICommandList* context, RHIResource* affectRendreT
 
 void DX12Device::onQueuePresent(ISwapChain* swapChain) {
     static_cast<DX12SwapChain*>(swapChain)->present();
-}
-
-ICommandQueue* DX12Device::getGraphicsCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-ICommandQueue* DX12Device::getComputeCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
 }
 
 void DX12Device::enableDebugLayer() const {

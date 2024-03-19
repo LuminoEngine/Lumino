@@ -74,7 +74,7 @@ void IGraphicsDevice::dispose() {
 }
 
 void IGraphicsDevice::refreshCaps() {
-    onGetCaps(&m_caps);
+    onGetDeviceProperties(&m_caps);
 }
 
 Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {

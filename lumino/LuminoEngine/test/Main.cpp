@@ -27,7 +27,7 @@ public:
             TestEnv::setup(GraphicsAPI::Default);
         }
         else {
-            TestEnv::setup(GraphicsAPI::DirectX12);//GraphicsAPI::Vulkan);
+            TestEnv::setup(GraphicsAPI::Vulkan);//GraphicsAPI::DirectX12);//
         }
     }
 

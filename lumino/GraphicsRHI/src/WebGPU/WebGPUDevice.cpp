@@ -115,7 +115,7 @@ INativeGraphicsInterface* WebGPUDevice::getNativeInterface() const {
     return nullptr;
 }
 
-void WebGPUDevice::onGetCaps(GraphicsDeviceCaps* outCaps) {
+void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     LN_NOTIMPLEMENTED();
 }
 
@@ -229,16 +229,6 @@ void WebGPUDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendr
 
 void WebGPUDevice::onQueuePresent(ISwapChain* swapChain) {
     static_cast<WebGPUSwapChain*>(swapChain)->present();
-}
-
-ICommandQueue* WebGPUDevice::getGraphicsCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-ICommandQueue* WebGPUDevice::getComputeCommandQueue() {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
 }
 
 Result<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
