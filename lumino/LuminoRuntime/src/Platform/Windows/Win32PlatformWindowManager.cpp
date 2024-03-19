@@ -4,7 +4,7 @@
 #include "Internal.hpp"
 #include <Windowsx.h>
 #include <shellscalingapi.h>
-#include <LuminoPlatform/PlatformSupport.hpp>
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "Win32PlatformWindowManager.hpp"
 #pragma comment(lib, "Shcore.lib")
 

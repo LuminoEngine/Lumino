@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <LuminoPlatform//ExternalProxyPlatformWindow.hpp>
-#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
+#include <LuminoEngine/Platform//ExternalProxyPlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 
 namespace ln {
 namespace detail {

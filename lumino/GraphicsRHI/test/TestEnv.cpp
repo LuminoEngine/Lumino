@@ -1,6 +1,6 @@
 ﻿#include <LuminoEngine/RuntimeModule.hpp>
-#include <LuminoPlatform/PlatformModule.hpp>
-#include <LuminoPlatform/Platform.hpp>
+#include <LuminoEngine/Platform/PlatformModule.hpp>
+#include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoGraphicsRHI/detail/GraphicsRHIManager.hpp>
 #include "TestEnv.hpp"
 

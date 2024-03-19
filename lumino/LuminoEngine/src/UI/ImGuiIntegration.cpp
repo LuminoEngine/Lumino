@@ -1,6 +1,6 @@
 ﻿#include "Internal.hpp"
-#include <LuminoPlatform/PlatformEvent.hpp>
-#include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>

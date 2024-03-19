@@ -1,8 +1,8 @@
 ﻿#pragma once
 #ifdef LN_GLFW
-#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
-#include <LuminoPlatform/detail/GLFWPlatformWindow.hpp>
-#include <LuminoPlatform/detail/OpenGLContext.hpp>
+#include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
+#include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/OpenGLContext.hpp>
 
 namespace ln {
 namespace detail {

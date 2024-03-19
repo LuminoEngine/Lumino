@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoPlatform/detail/OpenGLContext.hpp>
+#include <LuminoEngine/Platform/detail/OpenGLContext.hpp>
 
 namespace ln {
 namespace detail {

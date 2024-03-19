@@ -1,6 +1,6 @@
 ﻿#pragma once
 #ifdef LN_GLFW
-#include <LuminoPlatform/detail/GLFWPlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
 #include "OpenGLDeviceContext.hpp"
 
 namespace ln {

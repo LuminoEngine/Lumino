@@ -1,7 +1,7 @@
 ﻿
 #ifdef LN_GLFW
 #include "GLFWSwapChain.hpp"
-#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
+#include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 

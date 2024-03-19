@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <functional>
 #include "Common.hpp"
-#include <LuminoPlatform/PlatformEvent.hpp>
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
 
 namespace ln {
 class InputGesture;

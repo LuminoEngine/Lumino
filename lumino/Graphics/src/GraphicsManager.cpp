@@ -16,8 +16,8 @@
 #endif
 #include <LuminoGraphics/GPU/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoPlatform/detail/PlatformManager.hpp>
-#include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include "GPU/SingleFrameAllocator.hpp"
 #include "GPU/GraphicsProfiler.hpp"
 #include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>

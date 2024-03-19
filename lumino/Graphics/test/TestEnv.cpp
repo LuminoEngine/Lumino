@@ -1,6 +1,6 @@
 ﻿#include <LuminoEngine/RuntimeModule.hpp>
-#include <LuminoPlatform/PlatformModule.hpp>
-#include <LuminoPlatform/Platform.hpp>
+#include <LuminoEngine/Platform/PlatformModule.hpp>
+#include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoGraphics/RHIModule.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>

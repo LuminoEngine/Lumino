@@ -1,6 +1,6 @@
-﻿#include <LuminoPlatform/PlatformWindow.hpp>
-#include <LuminoPlatform/detail/PlatformManager.hpp>
-#include <LuminoPlatform/detail/OpenGLContext.hpp>
+﻿#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
+#include <LuminoEngine/Platform/detail/OpenGLContext.hpp>
 #include "OpenGLDeviceContext.hpp"
 
 #include "GLFWSwapChain.hpp"

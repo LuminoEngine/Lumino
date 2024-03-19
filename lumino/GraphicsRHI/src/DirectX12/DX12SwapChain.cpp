@@ -1,5 +1,5 @@
-﻿#include <LuminoPlatform/PlatformWindow.hpp>
-#include <LuminoPlatform/PlatformSupport.hpp>
+﻿#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "DX12DeviceContext.hpp"
 #include "DX12Textures.hpp"
 #include "DX12SwapChain.hpp"

@@ -19,6 +19,24 @@ file(GLOB LN_SOURCES_Reflection include/LuminoEngine/Reflection/*.hpp src/Reflec
 file(GLOB LN_SOURCES_Engine include/LuminoEngine/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
 file(GLOB LN_SOURCES_Asset include/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp)
 file(GLOB LN_SOURCES_Graphics include/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
+file(GLOB LN_SOURCES_Platform include/LuminoEngine/*.hpp include/LuminoEngine/detail/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
+if (LN_EMSCRIPTEN)
+elseif (WIN32)
+    set(LN_SOURCES_Platform
+        ${LN_SOURCES_Platform}
+        include/LuminoEngine/Platform/Win32PlatformInterface.hpp
+        src/Platform/Windows/Win32PlatformInterface.cpp
+        src/Platform/Windows/Win32PlatformWindowManager.hpp
+        src/Platform/Windows/Win32PlatformWindowManager.cpp
+    )
+elseif (APPLE)
+    set(LN_SOURCES_Platform
+        ${LN_SOURCES_Platform}
+        src/Platform/iOS/iOSPlatformInterface.mm
+        src/Platform/macOS/CocoaPlatformInterface.mm
+        src/Platform/macOS/PlatformSupport.mm
+    )
+endif()
 
 # Grouping.
 source_group("" FILES ${LN_SOURCES_Common})
@@ -28,6 +46,7 @@ source_group("Reflection" FILES ${LN_SOURCES_Reflection})
 source_group("Engine" FILES ${LN_SOURCES_Engine})
 source_group("Asset" FILES ${LN_SOURCES_Asset})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
+source_group("Platform" FILES ${LN_SOURCES_Platform})
 
 set(LN_SOURCES
     ${LN_SOURCES_Common}
@@ -37,6 +56,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Asset}
     ${LN_SOURCES_Graphics}
+    ${LN_SOURCES_Platform}
 )
 
 #-------------------------------------------------------------------------------
@@ -63,6 +83,13 @@ target_include_directories(
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
+
+if (LN_OS_DESKTOP)
+    target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)
+endif()
+if (LN_EMSCRIPTEN)
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")

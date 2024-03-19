@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/EngineContext2.hpp>
-#include <LuminoPlatform/PlatformModule.hpp>
+#include <LuminoEngine/Platform/PlatformModule.hpp>
 #include "../Common.hpp"
 
 namespace ln {

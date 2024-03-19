@@ -278,7 +278,6 @@ set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
     LuminoRuntime
-    LuminoPlatform
     LuminoGraphics
     LuminoGraphicsRHI
     #pcre
@@ -313,7 +312,7 @@ target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMI
 target_compile_definitions(LuminoEngine PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(LuminoEngine INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine INTERFACE LuminoPlatform LuminoRuntime LuminoGraphics)
+target_link_libraries(LuminoEngine INTERFACE LuminoRuntime LuminoGraphics)
 
 if (LN_OS_DESKTOP)
     target_include_directories(LuminoEngine PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})

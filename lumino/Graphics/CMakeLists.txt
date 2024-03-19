@@ -94,7 +94,6 @@ set(LN_SOURCES
 set(LOCAL_LIBRARIES 
     LuminoCore
     LuminoRuntime
-    LuminoPlatform
     nanovg::nanovg
     ZLIB::ZLIB
     freetype

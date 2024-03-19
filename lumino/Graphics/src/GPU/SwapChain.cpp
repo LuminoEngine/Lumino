@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/GPU/DepthBuffer.hpp>

@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <LuminoPlatform/PlatformEvent.hpp>
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include <LuminoEngine/Input/Common.hpp>
 #include <LuminoEngine/Input/InputBinding.hpp>
 

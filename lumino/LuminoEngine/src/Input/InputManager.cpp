@@ -22,8 +22,8 @@
 	#include "Win32InputDriver.hpp"
 #endif
 #include "GLFWInputDriver.hpp"
-#include <LuminoPlatform/PlatformSupport.hpp>
-#include <LuminoPlatform/Win32PlatformInterface.hpp>
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 #include <LuminoEngine/Input/Input.hpp>
 #include <LuminoEngine/Input/InputBinding.hpp>
 #include <LuminoEngine/Input/InputController.hpp>

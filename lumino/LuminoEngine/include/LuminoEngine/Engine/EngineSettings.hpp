@@ -3,7 +3,7 @@
 #include "Common.hpp"
 #include <LuminoEngine/Asset/Common.hpp>
 #include "../Input/Common.hpp"
-#include <LuminoPlatform/Common.hpp>
+#include <LuminoEngine/Platform/Common.hpp>
 #include <LuminoGraphics/Common.hpp>
 
 namespace ln {

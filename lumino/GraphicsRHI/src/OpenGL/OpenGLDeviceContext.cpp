@@ -1,5 +1,5 @@
-﻿#include <LuminoPlatform/detail/OpenGLContext.hpp>
-#include <LuminoPlatform/detail/PlatformManager.hpp>
+﻿#include <LuminoEngine/Platform/detail/OpenGLContext.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoGraphicsRHI/RHIHelper.hpp>
 #include "OpenGLDeviceContext.hpp"
 #include "GLVertexBuffer.hpp"

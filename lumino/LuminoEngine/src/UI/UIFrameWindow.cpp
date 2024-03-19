@@ -14,8 +14,8 @@
 #include <LuminoEngine/Engine/Debug.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
-#include <LuminoPlatform/detail/PlatformManager.hpp>
-#include <LuminoPlatform/detail/PlatformWindowManager.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
+#include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"

@@ -63,7 +63,6 @@ set(LOCAL_SOURCES
 set(LOCAL_LIBRARIES 
     LuminoCore
     LuminoRuntime
-    LuminoPlatform
     Vulkan::Headers
 )
 

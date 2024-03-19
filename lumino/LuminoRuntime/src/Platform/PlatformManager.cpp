@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoPlatform/detail/PlatformManager.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include "EmptyPlatformWindowManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 #include "Windows/Win32PlatformWindowManager.hpp"

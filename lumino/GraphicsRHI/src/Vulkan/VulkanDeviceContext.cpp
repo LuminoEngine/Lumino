@@ -1,5 +1,5 @@
-﻿#include <LuminoPlatform/PlatformWindow.hpp>
-#include <LuminoPlatform/PlatformSupport.hpp>
+﻿#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoGraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
 #include <LuminoGraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoGraphicsRHI/RHIProfiler.hpp>

@@ -22,8 +22,8 @@
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
-#include <LuminoPlatform/detail/PlatformManager.hpp>
-#include <LuminoPlatform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include "../../Graphics/src/Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"

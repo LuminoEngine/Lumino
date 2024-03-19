@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <LuminoEngine/Engine/CoreApplication.hpp>
 //#include "../../LuminoEngine/include/LuminoEngine/Engine/Application.hpp"
-#include <LuminoPlatform/Win32PlatformInterface.hpp>
+#include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 #include "../GLFWPlatformWindowManager.hpp"
 
 //#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
