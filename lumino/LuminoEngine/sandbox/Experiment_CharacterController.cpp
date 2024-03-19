@@ -1,6 +1,5 @@
 ﻿
 #include <LuminoEngine.hpp>
-#include <LuminoEngine/Scripting/Interpreter.hpp>
 using namespace ln;
 
 class App_Experiment_CharacterController : public Application
@@ -46,11 +45,6 @@ class App_Experiment_CharacterController : public Application
     void onUpdate() override
     {
     }
-
-	bool onMessage(InterpreterCommandList* cmd)
-	{
-
-	}
 };
 
 void Experiment_CharacterController()

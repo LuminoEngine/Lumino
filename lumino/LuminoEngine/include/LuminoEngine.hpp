@@ -125,9 +125,6 @@
 
 #include "LuminoEngine/Effect/EffectContext.hpp"
 
-#include "LuminoEngine/Scripting/Interpreter.hpp"
-
-
 
 #ifdef _DEBUG
 #define LN_MSVC_AUTO_LINK_POSTFIX    "d"

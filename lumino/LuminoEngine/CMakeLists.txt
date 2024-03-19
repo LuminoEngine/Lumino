@@ -115,8 +115,6 @@ file(GLOB LN_SOURCES_UI_Layout ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Layout/*
 set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui)
 file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
-file(GLOB LN_SOURCES_Scripting ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scripting/*.hpp src/Scripting/*.cpp src/Scripting/*.hpp src/Scripting/*.md)
-
 file(GLOB LN_SOURCES_Runtime
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
@@ -165,7 +163,6 @@ source_group("UI/Controls" FILES ${LN_SOURCES_UI_Controls})
 source_group("UI/Layout" FILES ${LN_SOURCES_UI_Layout})
 # source_group("UI/imgui" FILES ${LN_SOURCES_UI_imgui})
 source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
-source_group("Scripting" FILES ${LN_SOURCES_Scripting})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
 
 set(LN_SOURCES
@@ -203,7 +200,6 @@ set(LN_SOURCES
     ${LN_SOURCES_UI_Layout}
     # ${LN_SOURCES_UI_imgui}
     ${LN_SOURCES_Tilemap}
-    ${LN_SOURCES_Scripting}
     ${LN_SOURCES_Runtime}
 )
 
