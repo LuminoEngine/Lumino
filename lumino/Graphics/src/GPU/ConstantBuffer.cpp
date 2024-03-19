@@ -3,7 +3,7 @@
 #include <LuminoGraphics/GPU/ConstantBuffer.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include "GraphicsProfiler.hpp"
-#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 
 namespace ln {
 

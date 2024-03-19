@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/GPU/Texture.hpp>

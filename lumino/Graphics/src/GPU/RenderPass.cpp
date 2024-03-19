@@ -12,7 +12,7 @@
 #include <LuminoGraphics/GPU/RenderPass.hpp>
 #include "RenderPassCache.hpp"
 #include "GraphicsProfiler.hpp"
-#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 
 namespace ln {
 

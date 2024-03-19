@@ -38,6 +38,43 @@ elseif (APPLE)
     )
 endif()
 
+
+
+file(GLOB LOCAL_SOURCES
+    "include/LuminoEngine/GraphicsRHI/*.hpp"
+    "include/LuminoEngine/GraphicsRHI/detail/*.hpp"
+    "src/GraphicsRHI/*.hpp"
+    "src/GraphicsRHI/*.cpp")
+file(GLOB LOCAL_SOURCES_ShaderCompiler "include/LuminoEngine/GraphicsRHI/ShaderCompiler/detail/*.hpp" "src/GraphicsRHI/ShaderCompiler/*.hpp" "src/GraphicsRHI/ShaderCompiler/*.cpp")
+file(GLOB LOCAL_SOURCES_ShaderCompiler_Lexer "src/GraphicsRHI/ShaderCompiler/Lexer/*.hpp" "src/GraphicsRHI/ShaderCompiler/Lexer/*.cpp")
+
+if(LN_USE_OPENGL)
+    file(GLOB LOCAL_SOURCES_OpenGL "src/GraphicsRHI/OpenGL/*.hpp" "src/GraphicsRHI/OpenGL/*.cpp")
+endif()
+
+if(LN_USE_VULKAN)
+    if(WIN32)
+        file(GLOB LOCAL_SOURCES_Vulkan "include/LuminoEngine/GraphicsRHI/Vulkan/*.hpp" "src/GraphicsRHI/Vulkan/*.hpp" "src/GraphicsRHI/Vulkan/*.cpp")
+    endif()
+endif()
+
+if(LN_EMSCRIPTEN)
+elseif(WIN32)
+    file(GLOB LOCAL_SOURCES_DirectX12 "src/GraphicsRHI/DirectX12/*.hpp" "src/GraphicsRHI/DirectX12/*.cpp")
+elseif(APPLE)
+endif()
+
+if(LUMINO_USE_WEBGPU)
+    file(GLOB LOCAL_SOURCES_WebGPU "include/LuminoEngine/GraphicsRHI/WebGPU/*.hpp" "src/GraphicsRHI/WebGPU/*.hpp" "src/GraphicsRHI/WebGPU/*.cpp" "src/GraphicsRHI/WebGPU/*.md")
+endif()
+
+if(WIN32)
+    file(GLOB LOCAL_SOURCES_ShaderCompiler_Windows "src/GraphicsRHI/ShaderCompiler/Windows/*.hpp" "src/GraphicsRHI/ShaderCompiler/Windows/*.cpp")
+endif()
+
+
+
+
 # Grouping.
 source_group("" FILES ${LN_SOURCES_Common})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
@@ -48,6 +85,16 @@ source_group("Asset" FILES ${LN_SOURCES_Asset})
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Platform" FILES ${LN_SOURCES_Platform})
 
+
+source_group("GraphicsRHI" FILES ${LOCAL_SOURCES})
+source_group("GraphicsRHI/OpenGL" FILES ${LOCAL_SOURCES_OpenGL})
+source_group("GraphicsRHI/Vulkan" FILES ${LOCAL_SOURCES_Vulkan})
+source_group("GraphicsRHI/DirectX12" FILES ${LOCAL_SOURCES_DirectX12})
+source_group("GraphicsRHI/WebGPU" FILES ${LOCAL_SOURCES_WebGPU})
+source_group("GraphicsRHI/ShaderCompiler" FILES ${LOCAL_SOURCES_ShaderCompiler})
+source_group("GraphicsRHI/ShaderCompiler/Lexer" FILES ${LOCAL_SOURCES_ShaderCompiler_Lexer})
+source_group("GraphicsRHI/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCompiler_Windows})
+
 set(LN_SOURCES
     ${LN_SOURCES_Common}
     ${LN_SOURCES_Runtime}
@@ -57,6 +104,14 @@ set(LN_SOURCES
     ${LN_SOURCES_Asset}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Platform}
+    ${LOCAL_SOURCES}
+    ${LOCAL_SOURCES_OpenGL}
+    ${LOCAL_SOURCES_Vulkan}
+    ${LOCAL_SOURCES_DirectX12}
+    ${LOCAL_SOURCES_WebGPU}
+    ${LOCAL_SOURCES_ShaderCompiler}
+    ${LOCAL_SOURCES_ShaderCompiler_Lexer}
+    ${LOCAL_SOURCES_ShaderCompiler_Windows}
 )
 
 #-------------------------------------------------------------------------------
@@ -83,6 +138,8 @@ target_include_directories(
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
 
 if (LN_OS_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)
@@ -91,8 +148,36 @@ if (LN_EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
+
+if(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        glslang::OSDependent
+        glslang::glslang
+        glslang::MachineIndependent
+        glslang::GenericCodeGen
+        glslang::OGLCompiler
+        glslang::glslang-default-resource-limits
+        glslang::SPVRemapper
+        glslang::SPIRV
+        glslang::HLSL
+        spirv-cross-core
+        spirv-cross-glsl
+        spirv-cross-hlsl
+        spirv-cross-msl
+        spirv-cross-reflect
+        spirv-cross-util
+    )
+endif()
+
+if(LN_USE_VULKAN)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC LN_USE_VULKAN=1)
+endif()
+
+if(LUMINO_USE_WEBGPU)
+    target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_USE_WEBGPU=1)
+endif()
 
 #-------------------------------------------------------------------------------
 # Installation
@@ -113,7 +198,13 @@ endif()
 #-------------------------------------------------------------------------------
 # Sub-projects
 #-------------------------------------------------------------------------------
+
 if (LN_BUILD_TESTS)
     add_subdirectory(test)
+endif()
+
+if(LUMINO_BUILD_EXAMPLES)
+    add_subdirectory(examples/GraphicsRHI-1-ClearScreen)
+    add_subdirectory(examples/GraphicsRHI-HelloTriangle)
 endif()
 

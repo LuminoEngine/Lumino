@@ -2,7 +2,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoGraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/GraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/Bitmap/Bitmap.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>

@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
-#include <LuminoGraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/GraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>
 

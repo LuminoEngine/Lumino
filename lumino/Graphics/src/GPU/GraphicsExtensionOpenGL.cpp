@@ -1,8 +1,8 @@
 ﻿
-#include "../../GraphicsRHI/src/OpenGL/GLHelper.hpp"
-#include "../../GraphicsRHI/src/OpenGL/OpenGLDeviceContext.hpp"
-#include "../../GraphicsRHI/src/OpenGL/GLTextures.hpp"
-#include "../../GraphicsRHI/src/OpenGL/GLRenderPass.hpp"
+#include "../../LuminoRuntime/src/GraphicsRHI/OpenGL/GLHelper.hpp"
+#include "../../LuminoRuntime/src/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
+#include "../../LuminoRuntime/src/GraphicsRHI/OpenGL/GLTextures.hpp"
+#include "../../LuminoRuntime/src/GraphicsRHI/OpenGL/GLRenderPass.hpp"
 #include <LuminoGraphics/GPU/Texture.hpp>
 #include <LuminoGraphics/GPU/RenderPass.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>

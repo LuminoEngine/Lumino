@@ -279,7 +279,6 @@ set(
     LuminoCore
     LuminoRuntime
     LuminoGraphics
-    LuminoGraphicsRHI
     #pcre
     pcre2_32
     Vorbis::vorbis

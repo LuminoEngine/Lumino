@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include <LuminoGraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>

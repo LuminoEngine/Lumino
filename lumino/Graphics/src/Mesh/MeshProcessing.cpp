@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include <LuminoGraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/GraphicsRHI/RHIHelper.hpp>
 #include <LuminoGraphics/GPU/VertexBuffer.hpp>
 #include <LuminoGraphics/GPU/IndexBuffer.hpp>
 #include <LuminoGraphics/GPU/VertexLayout.hpp>

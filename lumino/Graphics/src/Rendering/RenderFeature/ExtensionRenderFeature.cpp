@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphicsRHI/GraphicsExtension.hpp>
+#include <LuminoEngine/GraphicsRHI/GraphicsExtension.hpp>
 #include "ExtensionRenderFeature.hpp"
 
 namespace ln {

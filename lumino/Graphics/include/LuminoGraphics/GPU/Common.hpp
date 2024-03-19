@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 #include <LuminoEngine/Base/Promise.hpp>
-#include <LuminoGraphicsRHI/Common.hpp>
+#include <LuminoEngine/GraphicsRHI/Common.hpp>
 #include "../Bitmap/Common.hpp"
 
 namespace ln {

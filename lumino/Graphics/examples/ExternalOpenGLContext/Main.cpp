@@ -15,7 +15,7 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoGraphics.hpp>
 #include <LuminoGraphics/GPU/GraphicsExtensionOpenGL.hpp>
 #include <LuminoGraphics/detail/GraphicsManager.hpp>
