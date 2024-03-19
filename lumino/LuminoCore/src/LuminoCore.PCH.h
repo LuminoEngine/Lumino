@@ -6,6 +6,8 @@
 #include <LuminoCore/Base/Common.hpp>
 
 #if defined(LN_OS_WIN32)
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 #endif
