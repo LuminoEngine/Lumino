@@ -34,9 +34,6 @@ option(LUMINO_BUILD_EXAMPLES "build example projects." ON)
 # build language bindings projects
 option(LN_BUILD_BINDINGS "build language bindings." OFF)
 
-# build editor projects
-option(LN_BUILD_EDITOR "build editor projects." OFF)
-
 # build shared library
 option(LN_BUILD_SHARED_LIBRARY "build shared library." OFF)
 
@@ -201,6 +198,7 @@ if(LUMINO_BUILD_ENGINE)
         add_subdirectory(lumino/Graphics)
         add_subdirectory(lumino/LuminoEngine)
         add_subdirectory(examples/Example-WebLibrary)
+        add_subdirectory(packages/lumino-js)
     else()
         set(LN_EXTERNAL_FIND_PATH_MODE "build")
         include(external/ImportExternalLibraries.cmake)
@@ -217,10 +215,6 @@ if(LUMINO_BUILD_ENGINE)
 
         if(LN_BUILD_BINDINGS)
             add_subdirectory(src/Transcoder)
-        endif()
-
-        if(LN_BUILD_EDITOR)
-            add_subdirectory(src/Editor)
         endif()
 
         if(${LN_TARGET_ARCH} STREQUAL "MSVC2019-x86-MT")
