@@ -41,7 +41,6 @@ class VisualManager;
 class SceneManager;
 class UIManager;
 class DebugInterface;
-class RuntimeEditor;
 class AppDataInternal;
 class EngineProfiler;
 
@@ -80,7 +79,6 @@ struct EngineSettings {
     bool createMainLights = false;
     int frameRate = 60;
     bool debugToolEnabled = false;
-    bool developmentToolsEnabled = false;
 
     String defaultUITheme;
     Path fontFile;
@@ -173,7 +171,6 @@ public:
 
     const Ref<DebugInterface>& debugInterface() const { return m_debugInterface; }
     const std::unique_ptr<EngineProfiler>& engineProfiler() const { return m_engineProfiler; }
-    const Ref<detail::RuntimeEditor>& runtimeEditor() const { return m_runtimeEditor; }
 
     std::function<void(void)> preUpdateCallback;
 
@@ -230,7 +227,6 @@ private:
     //   bool m_showDebugFpsEnabled;
     // bool m_debugToolEnabled;
     DebugToolMode m_debugToolMode;
-    Ref<detail::RuntimeEditor> m_runtimeEditor;
 
 #if defined(LN_OS_WIN32)
     bool m_comInitialized;

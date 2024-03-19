@@ -126,12 +126,6 @@ public:
 	LN_METHOD()
 	static void setPriorityGPUName(const String& filePath);
 
-	/**
-	 * setDeveloperToolEnabled
-	 */
-	LN_METHOD()
-	static void setDevelopmentToolsEnabled(bool enabled);
-
 	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
 	LN_METHOD()
 	static void setUserMainWindow(intptr_t value);

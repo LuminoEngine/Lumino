@@ -38,7 +38,6 @@
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
-#include "../Editor/DevelopmentTool.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 #include "EngineProfiler.hpp"
@@ -181,11 +180,6 @@ void EngineManager::dispose() {
         m_debugWorldRenderView = nullptr;
     }
     m_debugCamera = nullptr;
-
-    if (m_runtimeEditor) {
-        m_runtimeEditor->dispose();
-        m_runtimeEditor = nullptr;
-    }
 
     if (m_uiManager) {
         m_uiManager->setPrimaryElement(nullptr);
@@ -619,10 +613,6 @@ void EngineManager::presentFrame(GraphicsCommandList* commandList, RenderTargetT
         if (m_engineProfiler) m_engineProfiler->lapEndUIUpdate();
     }
 
-    if (m_runtimeEditor) {
-        m_runtimeEditor->updateFrame();
-    }
-
     // m_effectManager->testDraw();
 
     if (m_engineProfiler) {
@@ -811,11 +801,6 @@ void EngineManager::setupMainWindow(UIMainWindow* window, bool createBasicObject
     if (m_mainWindow) {
         m_mainWindow->updateLayoutIfNeeded();
     }
-
-    if (m_settings.developmentToolsEnabled && m_mainWindow) {
-        m_runtimeEditor = makeRef<detail::RuntimeEditor>();
-        m_runtimeEditor->init(this, m_mainWindow);
-    }
 }
 
 void EngineManager::setupApplication(Application* app) {
@@ -849,14 +834,6 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e) {
     switch (e.type) {
         case PlatformEventType::close:
             quit();
-            break;
-        case PlatformEventType::KeyDown:
-            if (e.key.keyCode == Keys::F8) {
-                // toggleDebugToolMode();
-                if (m_runtimeEditor) {
-                    m_runtimeEditor->toggleMode();
-                }
-            }
             break;
         default:
             break;

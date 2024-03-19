@@ -12,7 +12,6 @@ public:
 
 	App_Experiment_Editor()
 	{
-		EngineSettings::setDevelopmentToolsEnabled(true);
 	}
 
     virtual void onInit() override
