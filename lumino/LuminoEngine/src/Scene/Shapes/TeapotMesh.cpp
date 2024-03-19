@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Mesh/MeshModel.hpp>
-#include <LuminoGraphics/Mesh/MeshModelFactory.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModelFactory.hpp>
 #include <LuminoEngine/Scene/Shapes/TeapotMesh.hpp>
 
 namespace ln {

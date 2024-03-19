@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>  // TODO:
-#include <LuminoGraphics/Rendering/Material.hpp>  // TODO:
-#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
-#include "../../Graphics/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include <LuminoEngine/Rendering/Material.hpp>  // TODO:
+#include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 #include "../Engine/EngineManager.hpp"  // TODO:
 #include <LuminoEngine/Scene/World.hpp>  // TODO:
 #include <LuminoEngine/Effect/ParticleEffectModel.hpp>  // TODO:

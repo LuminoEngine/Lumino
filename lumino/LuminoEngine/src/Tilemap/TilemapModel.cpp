@@ -8,7 +8,7 @@
 #include <LuminoEngine/Tilemap/TilemapModel.hpp>
 
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 
 namespace ln {
 

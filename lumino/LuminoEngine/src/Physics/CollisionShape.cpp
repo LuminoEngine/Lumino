@@ -9,9 +9,9 @@
 #include <bullet/BulletCollision/CollisionShapes/btTriangleIndexVertexArray.h>
 #include <bullet/BulletCollision/CollisionShapes/btCompoundShape.h>
 #include <LuminoEngine/Physics/CollisionShape.hpp>
-#include <LuminoGraphics/GPU/VertexBuffer.hpp>
-#include <LuminoGraphics/GPU/IndexBuffer.hpp>
-#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/GPU/IndexBuffer.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include "BulletUtils.hpp"
 
 namespace ln {

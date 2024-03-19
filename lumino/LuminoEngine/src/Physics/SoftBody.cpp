@@ -7,7 +7,7 @@
 #include <bullet/BulletSoftBody/btSoftBodyHelpers.h>
 #endif
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
-#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/SoftBody.hpp>
 #include "BulletUtils.hpp"

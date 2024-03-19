@@ -1,5 +1,4 @@
 ﻿#pragma once
-
 #include "TestEnv.hpp"
 
 // テストフィクスチャ終了時に World をクリーンアップする

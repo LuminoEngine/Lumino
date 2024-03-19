@@ -4,7 +4,7 @@
 #include <LuminoEngine/Asset/Common.hpp>
 #include "../Input/Common.hpp"
 #include <LuminoEngine/Platform/Common.hpp>
-#include <LuminoGraphics/Common.hpp>
+#include <LuminoEngine/GPU/Common.hpp>
 
 namespace ln {
 

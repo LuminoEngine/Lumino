@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoGraphics/Testing/GraphicsTestHelper.hpp>
+#include <LuminoEngine/Testing/GraphicsTestHelper.hpp>
 
 //#define LN_UNIT_TEST_EXPERIMENTAL
 

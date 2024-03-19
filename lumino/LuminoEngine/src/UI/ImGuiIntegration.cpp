@@ -2,21 +2,21 @@
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
-#include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/GPU/VertexLayout.hpp>
-#include <LuminoGraphics/GPU/VertexBuffer.hpp>
-#include <LuminoGraphics/GPU/IndexBuffer.hpp>
-#include <LuminoGraphics/GPU/Texture.hpp>
-#include <LuminoGraphics/GPU/RenderPass.hpp>
-#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/Bitmap/Bitmap.hpp>
-#include <LuminoGraphics/GPU/Shader.hpp>
-#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
-#include <LuminoGraphics/Rendering/Vertex.hpp>
+#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/GPU/VertexLayout.hpp>
+#include <LuminoEngine/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/GPU/IndexBuffer.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/GPU/RenderPass.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/Bitmap/Bitmap.hpp>
+#include <LuminoEngine/GPU/Shader.hpp>
+#include <LuminoEngine/GPU/ShaderDescriptor.hpp>
+#include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include <LuminoGraphics/Font/detail/FontManager.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 namespace detail {

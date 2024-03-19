@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIPopup.hpp>

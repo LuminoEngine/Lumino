@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
-#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/GPU/ShaderDescriptor.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 
 class Test_Graphics_HlslEffect : public ::testing::Test
 {

@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GPU/Texture.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/CommandList.hpp>
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/PostEffect/ScreenBlurPostEffect.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 

@@ -1,13 +1,13 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Visual/LightComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 
-#include <LuminoGraphics/GPU/Shader.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoEngine/GPU/Shader.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 //#include "../Rendering/RenderStage.hpp"
 
 namespace ln {

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIColors.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>

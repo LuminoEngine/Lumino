@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
-#include <LuminoGraphics/Rendering/Drawing.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/Drawing.hpp>
 
 namespace ln {
 class UIElement;

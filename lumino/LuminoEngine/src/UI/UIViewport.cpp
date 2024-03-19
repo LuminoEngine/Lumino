@@ -1,14 +1,14 @@
 ﻿#include "Internal.hpp"
-#include <LuminoGraphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/detail/GraphicsManager.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/RoutingRenderView.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/RenderView.hpp>
-#include <LuminoGraphics/Rendering/CommandList.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "UIManager.hpp"
 

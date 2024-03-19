@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/SkinnedMesh.hpp>
-#include "../../Graphics/src/Mesh/MeshManager.hpp"
+#include "../../../../LuminoRuntime/src/Mesh/MeshManager.hpp"
 
 namespace ln {
 

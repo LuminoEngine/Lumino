@@ -3,7 +3,7 @@
 #include "Common.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
-#include <LuminoGraphics/Rendering/Common.hpp>
+#include <LuminoEngine/Rendering/Common.hpp>
 
 template <class T>
 void staticFactory2();

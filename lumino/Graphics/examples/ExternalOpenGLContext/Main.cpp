@@ -16,9 +16,9 @@
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include <LuminoGraphics.hpp>
-#include <LuminoGraphics/GPU/GraphicsExtensionOpenGL.hpp>
-#include <LuminoGraphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/LuminoGraphics.hpp>
+#include <LuminoEngine/GPU/GraphicsExtensionOpenGL.hpp>
+#include <LuminoEngine/detail/GraphicsManager.hpp>
 using namespace ln;
 
 GLFWwindow* g_glfwWindow;

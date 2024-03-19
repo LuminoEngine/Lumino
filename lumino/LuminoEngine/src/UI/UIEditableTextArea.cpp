@@ -2,13 +2,13 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
-#include <LuminoGraphics/Font/Font.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "../../../LuminoRuntime/src/Platform/TextInputMethodSystem.hpp"
 #include <LuminoCore/Base/UnicodeUtils.hpp>
-#include <LuminoGraphics/Font/detail/FontCore.hpp>
+#include <LuminoEngine/Font/detail/FontCore.hpp>
 #include "UIStyleInstance.hpp"
 #include "UIEditableTextArea.hpp"
 #include "UIManager.hpp"

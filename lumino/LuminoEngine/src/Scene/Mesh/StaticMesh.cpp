@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/Mesh/MeshModel.hpp>
-#include <LuminoGraphics/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
-#include "../../Graphics/src/Mesh/MeshManager.hpp"
+#include "../../../../LuminoRuntime/src/Mesh/MeshManager.hpp"
 
 namespace ln {
 

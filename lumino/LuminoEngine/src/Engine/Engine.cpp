@@ -8,7 +8,7 @@
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Engine/ApplicationRunner.hpp>
-#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>

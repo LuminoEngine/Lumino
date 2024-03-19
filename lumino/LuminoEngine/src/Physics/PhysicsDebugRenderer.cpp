@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoGraphics/GPU/VertexLayout.hpp>
-#include <LuminoGraphics/GPU/VertexBuffer.hpp>
-#include <LuminoGraphics/Rendering/Vertex.hpp>
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/GPU/VertexLayout.hpp>
+#include <LuminoEngine/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "PhysicsDebugRenderer.hpp"
 
 namespace ln {

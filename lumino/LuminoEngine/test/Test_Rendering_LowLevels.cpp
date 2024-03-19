@@ -1,14 +1,14 @@
 ﻿#include "Common.hpp"
-#include <LuminoGraphics/GPU/RenderPass.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KBatch.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KBatchList.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KDrawCommand.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KPipelineState.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KUnlitRenderPass.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KBatchProxy.hpp>
-#include <LuminoGraphics/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
+#include <LuminoEngine/GPU/RenderPass.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawCommand.hpp>
+#include <LuminoEngine/Rendering/Kanata/KPipelineState.hpp>
+#include <LuminoEngine/Rendering/Kanata/KUnlitRenderPass.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
+#include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include "../src/Engine/EngineDomain.hpp"
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 #if 0
 //==============================================================================

@@ -6,12 +6,12 @@
 */
 
 #include "Internal.hpp"
-#include <LuminoGraphics/Font/Font.hpp> // for UILayoutContext
+#include <LuminoEngine/Font/Font.hpp> // for UILayoutContext
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutElement.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
-#include <LuminoGraphics/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
+#include <LuminoEngine/Font/detail/FontManager.hpp>
 #include "UIStyleInstance.hpp"
 
 namespace ln {

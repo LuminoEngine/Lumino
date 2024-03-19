@@ -8,13 +8,13 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoGraphics/GPU/Shader.hpp>
-#include <LuminoGraphics/GPU/ShaderDescriptor.hpp>
-#include <LuminoGraphics/GPU/VertexLayout.hpp>
-#include <LuminoGraphics/GPU/VertexBuffer.hpp>
-#include <LuminoGraphics/GPU/SwapChain.hpp>
-#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/RHIModule.hpp>
+#include <LuminoEngine/GPU/Shader.hpp>
+#include <LuminoEngine/GPU/ShaderDescriptor.hpp>
+#include <LuminoEngine/GPU/VertexLayout.hpp>
+#include <LuminoEngine/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/RHIModule.hpp>
 using namespace ln;
 
 Ref<PlatformWindow> g_window;

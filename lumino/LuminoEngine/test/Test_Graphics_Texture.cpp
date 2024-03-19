@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include "../../Graphics/src/GPU/RenderTargetTextureCache.hpp"
+#include "../../LuminoRuntime/src/GPU/RenderTargetTextureCache.hpp"
 
 //==============================================================================
 class Test_Graphics_Texture : public ::testing::Test {};

@@ -60,7 +60,7 @@ string(APPEND LOCAL_LINK_FLAGS " -g3")
 string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
 
 add_executable(${PROJECT_NAME} renderer_lib/renderer_lib.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntime LuminoGraphics)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntime)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
 
 # Build assets

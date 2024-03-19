@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapLayer.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>

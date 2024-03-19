@@ -1,13 +1,13 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
-#include <LuminoGraphics/Mesh/MeshModel.hpp>
-#include <LuminoGraphics/Mesh/MeshModelFactory.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/MeshModelFactory.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
-#include "../../Graphics/src/Mesh/MeshManager.hpp"
+#include "../../../../LuminoRuntime/src/Mesh/MeshManager.hpp"
 #include "../SceneManager.hpp"
 
 namespace ln {

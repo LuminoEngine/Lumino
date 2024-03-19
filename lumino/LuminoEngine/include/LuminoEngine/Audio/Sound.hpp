@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <mutex>
 #include "Common.hpp"
-#include <LuminoGraphics/Animation/EasingFunctions.hpp>
+#include <LuminoEngine/Animation/EasingFunctions.hpp>
 
 namespace ln {
 class AudioContext;

@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Scene/Shapes/PathShape.hpp>
-#include "../../Graphics/src/Rendering/RenderFeature/NanoVGHelper.hpp"
+#include "../../../../LuminoRuntime/src/Rendering/RenderFeature/NanoVGHelper.hpp"
 
 namespace ln {
 namespace detail {

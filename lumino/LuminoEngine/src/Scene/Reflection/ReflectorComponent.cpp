@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.hpp"
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>

@@ -1,13 +1,13 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/GPU/Texture.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include "../../Graphics/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 

@@ -1,13 +1,13 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GPU/Texture.hpp>
-#include <LuminoGraphics/GPU/SamplerState.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/CommandList.hpp>
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
-#include <LuminoGraphics/Rendering/RenderView.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/GPU/SamplerState.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/PostEffect/TonemapPostEffect.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 

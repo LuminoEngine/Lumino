@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoGraphics/Animation/EasingFunctions.hpp>
+#include <LuminoEngine/Animation/EasingFunctions.hpp>
 
 namespace ln {
 class Font;

@@ -2,15 +2,15 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Reflection/VMProperty.hpp>
 
-#include <LuminoGraphics/Font/Font.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIText.hpp>
 
-#include <LuminoGraphics/Font/detail/TextLayoutEngine.hpp>
-#include <LuminoGraphics/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
+#include <LuminoEngine/Font/detail/FontManager.hpp>
 #include "UIStyleInstance.hpp"
 
 namespace ln {

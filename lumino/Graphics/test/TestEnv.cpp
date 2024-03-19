@@ -1,10 +1,10 @@
 ﻿#include <LuminoEngine/RuntimeModule.hpp>
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
-#include <LuminoGraphics/RHIModule.hpp>
-#include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
-#include <LuminoGraphics/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
+#include <LuminoEngine/RHIModule.hpp>
+#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 #include "TestEnv.hpp"
 
 

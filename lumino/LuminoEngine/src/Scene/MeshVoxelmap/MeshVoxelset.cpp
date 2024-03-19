@@ -1,14 +1,14 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GPU/Texture.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
-#include <LuminoGraphics/Rendering/InstancedMeshesModel.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
 
-#include <LuminoGraphics/Mesh/MeshModel.hpp>
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 
 //#include <simpleboolean/meshoperator.h>
 #include "VoxelmapMesh.hpp"

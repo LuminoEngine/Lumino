@@ -8,10 +8,10 @@
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/Controls/UIDialog.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
-#include "../../Graphics/src/Rendering/CommandListServer.hpp"
-#include "../../Graphics/src/Rendering/RenderStage.hpp"
-#include "../../Graphics/src/Rendering/RenderElement.hpp"
-#include <LuminoGraphics/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
+#include "../../../LuminoRuntime/src/Rendering/CommandListServer.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderStage.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderElement.hpp"
+#include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 
 namespace ln {
 

@@ -1,20 +1,20 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KBatchList.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KBatchProxy.hpp>
-#include <LuminoGraphics/Rendering/Kanata/KBatchProxyCollector.hpp>
-#include <LuminoGraphics/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
-#include <LuminoGraphics/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
-#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
+#include <LuminoEngine/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
+#include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include "../../Graphics/src/Rendering/CommandListServer.hpp"
-#include "../../Graphics/src/Rendering/RenderStage.hpp"
-#include "../../Graphics/src/Rendering/DrawElementListBuilder.hpp"
-#include "../../Graphics/src/Rendering/RenderFeature/FrameRectRenderFeature.hpp"
-#include "../../Graphics/src/Rendering/RenderFeature/ShapesRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/CommandListServer.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderStage.hpp"
+#include "../../../LuminoRuntime/src/Rendering/DrawElementListBuilder.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/FrameRectRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/ShapesRenderFeature.hpp"
 
 namespace ln {
 

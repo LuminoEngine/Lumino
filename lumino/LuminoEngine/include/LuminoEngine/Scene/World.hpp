@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "Common.hpp"
 
 namespace ln {

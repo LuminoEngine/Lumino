@@ -1,14 +1,14 @@
 ﻿
 #include "../Internal.hpp"
-#include <LuminoGraphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
-#include "../../Graphics/src/Rendering//CommandListServer.hpp"
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
-#include <LuminoGraphics/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
+#include "../../../../LuminoRuntime/src/Rendering//CommandListServer.hpp"
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include "../SceneManager.hpp"
-#include "../../Graphics/src/Rendering//RenderElement.hpp"
+#include "../../../../LuminoRuntime/src/Rendering//RenderElement.hpp"
 
 namespace ln {
 

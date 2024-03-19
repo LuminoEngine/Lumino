@@ -1,17 +1,17 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoGraphics/GPU/Texture.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/CommandList.hpp>
-#include <LuminoGraphics/Mesh/MeshModel.hpp>
-#include <LuminoGraphics/Mesh/AnimationController.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Physics/CollisionShape.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
-#include <LuminoGraphics/Mesh/MeshModeEntity.hpp>
+#include <LuminoEngine/Mesh/MeshModeEntity.hpp>
 #include "Engine/EngineManager.hpp"
 
 namespace ln {

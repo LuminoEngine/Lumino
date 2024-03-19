@@ -1,15 +1,15 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoGraphics/Animation/AnimationCurve.hpp>
-#include <LuminoGraphics/GPU/SamplerState.hpp>
-#include <LuminoGraphics/GPU/Shader.hpp>
-#include <LuminoGraphics/Mesh/MeshModel.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
-#include <LuminoGraphics/Rendering/RenderView.hpp>
-#include <LuminoGraphics/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Animation/AnimationCurve.hpp>
+#include <LuminoEngine/GPU/SamplerState.hpp>
+#include <LuminoEngine/GPU/Shader.hpp>
+#include <LuminoEngine/Mesh/MeshModel.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "SceneManager.hpp"
 #include "InternalSkyBox.hpp"
 

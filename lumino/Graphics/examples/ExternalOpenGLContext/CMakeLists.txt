@@ -4,7 +4,7 @@ project(Experimental_Graphics_ExternalOpenGLContext)
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
-set(LOCAL_LINK_LIBRARIES LuminoCore LuminoRuntime LuminoGraphics)
+set(LOCAL_LINK_LIBRARIES LuminoCore LuminoRuntime)
 
 if (LN_EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")

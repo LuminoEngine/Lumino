@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GPU/Texture.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/InstancedMeshesModel.hpp>
-#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Scene/Sprite/InstancedSprites.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 

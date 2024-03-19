@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoGraphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/detail/GraphicsManager.hpp>
 #include "../src/Engine/EngineManager.hpp"
 #include "../src/Scene/SceneManager.hpp"
 #include "TestEnv.hpp"

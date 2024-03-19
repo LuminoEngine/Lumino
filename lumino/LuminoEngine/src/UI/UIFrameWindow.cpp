@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/GPU/RenderPass.hpp>
-#include <LuminoGraphics/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoGraphics/GPU/SwapChain.hpp>
-#include <LuminoGraphics/GPU/SamplerState.hpp>
+#include <LuminoEngine/GPU/RenderPass.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
+#include <LuminoEngine/GPU/SamplerState.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -13,7 +13,7 @@
 #include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
 #include <LuminoEngine/Engine/Debug.hpp>
 #include <LuminoEngine/Scene/World.hpp>
-#include <LuminoGraphics/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #include "../Engine/EngineManager.hpp"

@@ -5,9 +5,9 @@
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
-#include <LuminoGraphics/detail/GraphicsManager.hpp>
-#include <LuminoGraphics.hpp>
+#include <LuminoEngine/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoEngine/LuminoGraphics.hpp>
 using namespace ln;
 
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)

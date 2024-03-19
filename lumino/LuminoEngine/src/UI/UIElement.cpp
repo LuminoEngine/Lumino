@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Font/Font.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
@@ -11,7 +11,7 @@
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/Controls/UIControl.hpp>
 #include <LuminoEngine/UI/UIText.hpp>
-#include "../../Graphics/src/Rendering/RenderStage.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderStage.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
 

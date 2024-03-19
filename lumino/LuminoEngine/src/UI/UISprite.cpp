@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UISprite.hpp>
-#include "../../Graphics/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 

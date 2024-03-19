@@ -7,7 +7,7 @@
 #include "TilemapPhysicsObject.hpp"
 
 #include <LuminoEngine/Scene/WorldObject.hpp>   // for WorldObjectTransform
-#include <LuminoGraphics/Rendering/RenderView.hpp>    // for RenderViewPoint
+#include <LuminoEngine/Rendering/RenderView.hpp>    // for RenderViewPoint
 
 // Test
 #include <LuminoEngine/Tilemap/Tileset.hpp>

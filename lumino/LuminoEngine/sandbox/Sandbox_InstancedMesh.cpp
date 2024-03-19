@@ -1,6 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
-#include <LuminoGraphics/Rendering/InstancedMeshesModel.hpp>
+#include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoEngine/Scene/Mesh/InstancedMeshes.hpp>
 #include <LuminoEngine/Scene/Sprite/InstancedSprites.hpp>
 using namespace ln;

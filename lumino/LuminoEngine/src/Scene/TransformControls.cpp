@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIEvents.hpp>
-#include <LuminoGraphics/Mesh/MeshPrimitive.hpp>
-#include <LuminoGraphics/Mesh/MeshProcessing.hpp>
-#include <LuminoGraphics/Rendering/Material.hpp>
-#include <LuminoGraphics/Rendering/CommandList.hpp>
-#include <LuminoGraphics/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Mesh/MeshPrimitive.hpp>
+#include <LuminoEngine/Mesh/MeshProcessing.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
 
