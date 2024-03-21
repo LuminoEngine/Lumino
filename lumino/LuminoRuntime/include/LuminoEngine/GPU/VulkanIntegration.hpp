@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
+#ifdef LN_USE_VULKAN
 
 namespace ln {
 
@@ -11,3 +12,5 @@ public:
 };
 
 } // namespace ln
+
+#endif // LN_USE_VULKAN

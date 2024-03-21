@@ -228,8 +228,6 @@ target_link_libraries(
         ${LOCAL_LIBRARIES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)
-
 if (LN_OS_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)
 endif()
@@ -294,9 +292,7 @@ if (LN_BUILD_TESTS)
 endif()
 
 if(LUMINO_BUILD_EXAMPLES)
-    add_subdirectory(examples/GraphicsRHI-1-ClearScreen)
-    add_subdirectory(examples/GraphicsRHI-HelloTriangle)
-    #add_subdirectory(examples)
+    add_subdirectory(examples)
 endif()
 
 

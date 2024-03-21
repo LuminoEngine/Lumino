@@ -102,37 +102,37 @@ namespace LuminoBuild.Tasks
             }
         }
 
-        private void BuildProjectEm(Build builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
-        {
-            var projectName = Path.GetFileName(projectDirName);
-            var buildDir = builder.GetExternalProjectBuildDir(buildArchDir, projectName);
-            var installDir = builder.GetExternalProjectInstallDir(buildArchDir, projectName);
-            //var installDir = Utils.ToUnixPath(Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, projectName));
-            var cmakeSourceDir = Utils.ToUnixPath(Path.Combine(externalSourceDir, projectDirName));
-            var ov = Path.Combine(builder.RootDir, "src", "CFlagOverrides.cmake");
+        //private void BuildProjectEm(Build builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
+        //{
+        //    var projectName = Path.GetFileName(projectDirName);
+        //    var buildDir = builder.GetExternalProjectBuildDir(buildArchDir, projectName);
+        //    var installDir = builder.GetExternalProjectInstallDir(buildArchDir, projectName);
+        //    //var installDir = Utils.ToUnixPath(Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, projectName));
+        //    var cmakeSourceDir = Utils.ToUnixPath(Path.Combine(externalSourceDir, projectDirName));
+        //    var ov = Path.Combine(builder.RootDir, "src", "CFlagOverrides.cmake");
 
-            Logger.WriteLine($"BuildProjectEm ({projectDirName}) buildDir:{buildDir}");
+        //    Logger.WriteLine($"BuildProjectEm ({projectDirName}) buildDir:{buildDir}");
 
-            Directory.CreateDirectory(buildDir);
+        //    Directory.CreateDirectory(buildDir);
 
-            var script = Path.Combine(buildDir, "build.bat");
-            using (var f = new StreamWriter(script))
-            {
-                f.WriteLine($"cd /d \"{EmscriptenBuildEnv.EmsdkDir}\"");
-                f.WriteLine($"call emsdk activate {EmscriptenBuildEnv.emsdkVer}");
-                f.WriteLine($"call emsdk_env.bat");
-                f.WriteLine($"cd /d \"{Utils.ToWin32Path(buildDir)}\"");
-                f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov} {additionalOptions} -G \"MinGW Makefiles\" {cmakeSourceDir}");
-                f.WriteLine($"call cmake --build . -j8");
-                f.WriteLine($"call cmake --build . --target install");
-            }
+        //    var script = Path.Combine(buildDir, "build.bat");
+        //    using (var f = new StreamWriter(script))
+        //    {
+        //        f.WriteLine($"cd /d \"{EmscriptenEnv.EmsdkDir}\"");
+        //        f.WriteLine($"call emsdk activate {EmscriptenEnv.emsdkVer}");
+        //        f.WriteLine($"call emsdk_env.bat");
+        //        f.WriteLine($"cd /d \"{Utils.ToWin32Path(buildDir)}\"");
+        //        f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov} {additionalOptions} -G \"MinGW Makefiles\" {cmakeSourceDir}");
+        //        f.WriteLine($"call cmake --build . -j8");
+        //        f.WriteLine($"call cmake --build . --target install");
+        //    }
 
-            Utils.CallProcess(script); // bat の中でエラーが発生すれば、例外に乗って出てくる
+        //    Utils.CallProcess(script); // bat の中でエラーが発生すれば、例外に乗って出てくる
 
-            // emcmake で find_library などを行う場合、Emscripten のシステムフォルダ以外は検索しないようにツールチェインファイルで封印されている。
-            // Lumino 本体のビルド時にライブラリを探すことができるようにするため、システムフォルダに一式コピーしておく。
-            Utils.CopyDirectory(installDir, Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall", projectName));
-        }
+        //    // emcmake で find_library などを行う場合、Emscripten のシステムフォルダ以外は検索しないようにツールチェインファイルで封印されている。
+        //    // Lumino 本体のビルド時にライブラリを探すことができるようにするため、システムフォルダに一式コピーしておく。
+        //    Utils.CopyDirectory(installDir, Path.Combine(EmscriptenEnv.EmscriptenSysRootLocal, "ExternalInstall", projectName));
+        //}
 
         private void BuildProjectAndroid(Build builder, string projectDirName, string externalSourceDir, string targetName, string additionalOptions = "")
         {
@@ -308,14 +308,14 @@ namespace LuminoBuild.Tasks
                 }
 
                 // Emscripten
-                if (BuildEnvironment.IsWebTarget)
-                {
-                    var externalInstallDir = Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall");
-                    var oggInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "ogg"));
+                //if (BuildEnvironment.IsWebTarget)
+                //{
+                //    var externalInstallDir = Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall");
+                //    var oggInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "ogg"));
 
-                    BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
-                    BuildProjectEm(builder, "nanovg", reposDir, "Emscripten");
-                }
+                //    BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
+                //    BuildProjectEm(builder, "nanovg", reposDir, "Emscripten");
+                //}
 
             }
             else

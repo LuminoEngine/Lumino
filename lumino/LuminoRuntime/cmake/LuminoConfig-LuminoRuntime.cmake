@@ -1,6 +1,5 @@
 
 find_package(yaml-cpp CONFIG REQUIRED)
-find_package(VulkanHeaders CONFIG REQUIRED)
 
 #if (NOT DEFINED EMSCRIPTEN)
 #    find_package(CURL CONFIG REQUIRED)
@@ -12,6 +11,7 @@ if (LN_OS_DESKTOP)
 endif()
 
 if (LN_OS_DESKTOP)
+    find_package(VulkanHeaders CONFIG REQUIRED)
     find_package(glslang CONFIG REQUIRED)
     #find_package(spirv_cross_c CONFIG REQUIRED)
     find_package(spirv_cross_core CONFIG REQUIRED)

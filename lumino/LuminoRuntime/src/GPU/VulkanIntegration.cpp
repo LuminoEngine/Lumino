@@ -1,4 +1,5 @@
-﻿#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanHelper.hpp>
+﻿#ifdef LN_USE_VULKAN
+#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanHelper.hpp>
 #include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #include <LuminoEngine/GraphicsRHI/Vulkan/VulkanTextures.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
@@ -28,3 +29,5 @@ void VulkanIntegration::getImageInfo(GraphicsCommandList* graphicsContext, Depth
 }
 
 } // namespace ln
+
+#endif

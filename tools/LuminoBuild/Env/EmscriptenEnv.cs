@@ -13,8 +13,8 @@ namespace LuminoBuild
      */
     static class EmscriptenEnv
     {
-        public const string emsdkVer = "3.1.9";
-        public const string emVer = "3.1.9";
+        public const string emsdkVer = "3.1.56";
+        public const string emVer = "3.1.56";
         public static string EmsdkDir;
         public static string Ninja;
 
@@ -26,7 +26,7 @@ namespace LuminoBuild
             {
                 using (CurrentDir.Enter(b.BuildToolsDir))
                 {
-                    Proc.Make("git", "clone https://github.com/juj/emsdk.git").WithSilent().Call();
+                    Proc.Make("git", "clone https://github.com/emscripten-core/emsdk.git").WithSilent().Call();
 
                     using (CurrentDir.Enter(EmsdkDir))
                     {

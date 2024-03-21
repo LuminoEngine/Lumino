@@ -56,7 +56,6 @@ namespace LuminoBuild
 
             InstallTools(builder);
             FindFbxSdk();
-            EmscriptenBuildEnv.Initialize(builder);
 
             Console.WriteLine("BuildEnv initialization succeeded");
             Console.WriteLine("  FromCI: {0}", FromCI);
