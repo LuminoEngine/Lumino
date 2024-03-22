@@ -62,7 +62,7 @@ namespace LuminoBuild.Tasks
 
                     // Toolchain ファイルのテストするときは --editable 付けると良い
                     //var options = $"--editable --overlay-triplets={b.RootDir}/external/custom-triplets";
-                    var options = $"--overlay-triplets={b.RootDir}/external/custom-triplets";
+                    var options = "";//$"--overlay-triplets={b.RootDir}/external/custom-triplets";
 
                     if (BuildEnvironment.FromCI)
                     {

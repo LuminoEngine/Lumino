@@ -1,4 +1,4 @@
-﻿project(lumino)
+﻿project(LuminoFFI)
 
 #-------------------------------------------------------------------------------
 # Files
@@ -31,6 +31,7 @@ if(LN_EMSCRIPTEN)
     # デフォルトのモジュール名は Module であるが、これは EXPORT_NAME を指定することで変更できる。
     string(APPEND LOCAL_LINK_FLAGS " -s MODULARIZE=1")
     string(APPEND LOCAL_LINK_FLAGS " -s EXPORT_NAME=\"${PROJECT_NAME}\"")
+    string(APPEND LOCAL_LINK_FLAGS " -s EXPORT_ES6=1") # 終端に default export を追加して、 import できるようにする。
 
     # nw.js 上では、ENVIRONMENT_IS_WEB と ENVIRONMENT_IS_NODE が同時に true になるが、node が優先的に処理される。
     # その結果、<scripts> によってロードした .js では __dirname など使えない機能にアクセスしようとする。
