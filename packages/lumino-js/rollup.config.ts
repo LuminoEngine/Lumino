@@ -1,4 +1,5 @@
 import { RollupOptions, Plugin, RenderedChunk, NormalizedOutputOptions } from "rollup";
+import typescript from "@rollup/plugin-typescript";
 import esbuild from "rollup-plugin-esbuild";
 
 
@@ -26,7 +27,11 @@ const configs: RollupOptions[] = [
             file: "dist/lumino.mjs",
         },
         plugins: [
-            esbuild(esbuildConfig),
+            typescript({
+                declaration: true,
+                declarationDir: "dist",
+            }),
+            //esbuild(esbuildConfig),
         ],
     },
 ];

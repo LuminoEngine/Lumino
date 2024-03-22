@@ -11,6 +11,7 @@ LUMINO_API LNResult LNRuntime_Initialize() {
 }
 
 LUMINO_API void LNRuntime_Terminate() {
+	printf("LNRuntime_Terminate\n");
 }
 
 #ifdef __cplusplus
