@@ -65,7 +65,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_Emscripten", "wasm32-emscripten" };
 
                 //args = new string[] { "BuildExternals", "x64-windows" };
-                //args = new string[] { "BuildEngine", "wasm32-emscripten" };
+                args = new string[] { "BuildEngine", "wasm32-emscripten" };
 
                 //args = new string[] { "MakePackage_Ruby" };
             }

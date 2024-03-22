@@ -27,7 +27,7 @@ void RHIDeviceObject::finalize() {
         LN_CHECK(m_destroyed);
     }
 #else
-    dispose();
+    destroy();
 #endif
     m_objectId = 0;
 }

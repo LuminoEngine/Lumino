@@ -330,7 +330,7 @@ target_precompile_headers(LuminoEngine PRIVATE "src/LuminoEngine.PCH.h")
 
 if (LN_EMSCRIPTEN)
     set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-pthread")
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS "-s USE_SDL=2")
+    set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-sUSE_SDL=2")
 endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)
