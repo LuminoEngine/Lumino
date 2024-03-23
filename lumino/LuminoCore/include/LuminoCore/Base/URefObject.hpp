@@ -20,8 +20,8 @@ protected:
     URefObject() = default;
     virtual ~URefObject() LN_NOEXCEPT = default;
 
-    /** 参照がなくなり、オブジェクトが削除されようとしているときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
-    virtual void finalize();
+    /** URef からの参照がなくなり、オブジェクトが削除されようとしているときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
+    virtual void onFinalize();
 
 private:
     URefObject(const URefObject&) = delete;
@@ -109,7 +109,9 @@ private:
         if (m_ptr) {
             // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
             static_assert(0 < sizeof(T), "can't delete an incomplete type");
-            delete basePointer();
+            URefObject* ptr = basePointer();
+            ptr->onFinalize();
+            delete ptr;
             m_ptr = nullptr;
         }
     }

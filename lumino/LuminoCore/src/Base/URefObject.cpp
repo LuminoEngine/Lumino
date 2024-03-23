@@ -3,7 +3,7 @@
 
 namespace ln {
 
-void URefObject::finalize() {
+void URefObject::onFinalize() {
 }
 
 } // namespace ln

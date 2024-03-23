@@ -30,6 +30,13 @@ class TestObjC : public URefObject {
 public:
 };
 
+class TestObjD : public URefObject {
+public:
+    static int s_finalizeCounter;
+    void onFinalize() override { s_finalizeCounter++; }
+};
+int TestObjD::s_finalizeCounter = 0;
+
 TEST_F(Test_Base_URefObject, Construct) {
     URef<UTestObjA> ref1;
     URef<UTestObjA> ref2(nullptr);
@@ -192,3 +199,11 @@ TEST_F(Test_Base_URefObject, makeURef) {
     ASSERT_EQ(100, ref1->a);
     ASSERT_EQ(200, ref2->a);
 }
+
+TEST_F(Test_Base_URefObject, finalize) {
+    TestObjD::s_finalizeCounter = 0;
+    auto ref1 = makeURef<TestObjD>();
+    ref1 = nullptr;
+    ASSERT_EQ(1, TestObjD::s_finalizeCounter);
+}
+

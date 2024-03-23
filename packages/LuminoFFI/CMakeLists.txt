@@ -58,9 +58,12 @@ endif()
 # Targets
 #-------------------------------------------------------------------------------
 
-add_executable(${PROJECT_NAME} ${LN_SOURCES})
-#add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
-#add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+if(LN_EMSCRIPTEN)
+    add_executable(${PROJECT_NAME} ${LN_SOURCES})
+else()
+    add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
+    add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
 target_include_directories(
@@ -70,8 +73,9 @@ target_include_directories(
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntime)
-set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
-
+if(LN_EMSCRIPTEN)
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
+endif()
 
 #-------------------------------------------------------------------------------
 # Installation
