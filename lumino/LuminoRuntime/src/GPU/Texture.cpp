@@ -487,7 +487,7 @@ bool RenderTargetTexture::init(int width, int height, TextureFormat format, bool
     return true;
 }
 
-bool RenderTargetTexture::init(SwapChain* owner)
+bool RenderTargetTexture::init(GraphicsContext* owner)
 {
     if (!init()) return false;
     m_ownerSwapchain = owner;

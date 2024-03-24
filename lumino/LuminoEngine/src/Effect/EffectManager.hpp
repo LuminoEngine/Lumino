@@ -10,7 +10,6 @@ class Effect;
 
 namespace ln {
 class EffectEmitter;
-class GraphicsContext;
 class RenderingContext;
 class ParticleModel;
 

@@ -262,7 +262,7 @@ private:
 
     friend class detail::GraphicsCommandListInternal;
     friend class ShaderDescriptor;
-    friend class SwapChain;
+    friend class GraphicsContext;
 };
 
 namespace detail {

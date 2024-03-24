@@ -14,7 +14,7 @@ class MainViewportToolPane;
 }
 class PlatformWindow;
 class RenderPass;
-class SwapChain;
+class GraphicsContext;
 class RenderTargetTexture;
 class DepthBuffer;
 class UIRenderView;
@@ -96,7 +96,7 @@ public:
     void present();
     void updateLayoutIfNeeded();
 
-    SwapChain* swapChain() const;
+    GraphicsContext* swapChain() const;
     const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
     const Ref<PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
@@ -148,7 +148,7 @@ public: // TODO: internal
     Ref<detail::UIInputInjector> m_inputInjector;
     Ref<UILayoutContext> m_layoutContext;
     GraphicsCommandList* m_renderingGraphicsContext;
-    Ref<SwapChain> m_swapChain;
+    Ref<GraphicsContext> m_swapChain;
     Ref<DepthBuffer> m_depthBuffer;
     Ref<UIRenderView> m_renderView;
     Size m_clientSize;

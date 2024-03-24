@@ -1,4 +1,5 @@
-﻿#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+﻿#include <LuminoEngine/GPU/detail/GraphicsResourceRegistry.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/GraphicsResource.hpp>
 #include <LuminoEngine/GPU/CommandQueue.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
@@ -116,6 +117,13 @@ void GraphicsManager::terminate() {
 GraphicsManager::GraphicsManager()
     : m_assetManager(nullptr)
     , m_platformManager(nullptr)
+    , m_resourceRegistry(makeURef<GraphicsResourceRegistry>())
+    //, m_vertexBufferRegistry(makeURef<GraphicsResourceRegistry>())
+    //, m_indexBufferRegistry(makeURef<GraphicsResourceRegistry>())
+    //, m_constantBufferRegistry(makeURef<GraphicsResourceRegistry>())
+    //, m_shaderPassRegistry(makeURef<GraphicsResourceRegistry>())
+    //, m_textureRegistry(makeURef<GraphicsResourceRegistry>())
+    //, m_depthBufferRegistry(makeURef<GraphicsResourceRegistry>())
     , m_linearAllocatorPageManager() {
 }
 

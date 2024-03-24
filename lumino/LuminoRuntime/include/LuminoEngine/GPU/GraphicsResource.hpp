@@ -21,6 +21,9 @@ class IGraphicsResource
 public:
     virtual detail::DescriptorResourceType descriptorResourceType() const { return detail::DescriptorResourceType_None; }
 
+public: // TODO: internal
+    GraphicsResourceId m_id;
+
 protected:
     virtual void onManagerFinalizing() = 0;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;

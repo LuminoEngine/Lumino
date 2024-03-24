@@ -31,7 +31,7 @@ public:
     static void initializeRendering();
 
     static bool isCI;
-    static Ref<SwapChain> swapChain;
+    static Ref<GraphicsContext> swapChain;
     static Ref<FlatRenderingPipeline> flatRenderingPipeline;
     static Ref<TestRenderVew> renderView;
 };

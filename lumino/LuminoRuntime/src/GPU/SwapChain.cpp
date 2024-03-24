@@ -1,5 +1,5 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
+#include <LuminoEngine/GPU/detail/GraphicsResourceRegistry.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
@@ -19,20 +19,23 @@ namespace ln {
 //==============================================================================
 // SwapChain
 
-SwapChain::SwapChain()
+GraphicsContext::GraphicsContext()
     : m_manager(nullptr)
     , m_rhiObject(nullptr)
+    , m_rhiResourceRegistry()
     , m_backbuffers()
     , m_imageIndex(-1) {
 }
 
-SwapChain::~SwapChain() {
+GraphicsContext::~GraphicsContext() {
 }
 
-void SwapChain::init(PlatformWindow* window) {
+void GraphicsContext::init(PlatformWindow* window) {
     // TODO: onChangeDevice でバックバッファをアタッチ
     Object::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+
+    m_rhiResourceRegistry = makeURef<detail::RHIGraphicsResourceRegistry>(m_manager->resourceRegistry());
 
     SizeI backbufferSize;
     window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
@@ -53,7 +56,7 @@ void SwapChain::init(PlatformWindow* window) {
     nextFrame();
 }
 
-void SwapChain::onDispose(bool explicitDisposing) {
+void GraphicsContext::onDispose(bool explicitDisposing) {
     //if (!m_commandLists.empty()) {
     //    // End command list
     //    detail::GraphicsCommandListInternal::endCommandRecoding(currentCommandList2());
@@ -70,15 +73,15 @@ void SwapChain::onDispose(bool explicitDisposing) {
     Object::onDispose(explicitDisposing);
 }
 
-void SwapChain::onChangeDevice(detail::IGraphicsDevice* device) {
+void GraphicsContext::onChangeDevice(detail::IGraphicsDevice* device) {
 }
 
-Size SwapChain::backbufferSize() const {
+Size GraphicsContext::backbufferSize() const {
     const RenderTargetTexture* backbuffers = m_backbuffers[0];
     return Size(backbuffers->width(), backbuffers->height());
 }
 
-void SwapChain::resizeBackbuffer(int width, int height) {
+void GraphicsContext::resizeBackbuffer(int width, int height) {
     GraphicsCommandList* commandList = currentCommandList2();
     if (commandList) {
         LN_ASSERT(commandList->m_scopeState == GraphicsCommandList::ScopeState::Idle);
@@ -89,22 +92,22 @@ void SwapChain::resizeBackbuffer(int width, int height) {
     nextFrame();
 }
 
-RenderTargetTexture* SwapChain::currentBackbuffer() const {
+RenderTargetTexture* GraphicsContext::currentBackbuffer() const {
     if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_backbuffers[m_imageIndex];
 }
 
-GraphicsCommandList* SwapChain::currentCommandList2() const {
+GraphicsCommandList* GraphicsContext::currentCommandList2() const {
     if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_commandLists[m_imageIndex];
 }
 
-RenderPass* SwapChain::currentRenderPass() const {
+RenderPass* GraphicsContext::currentRenderPass() const {
     if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_renderPasses[m_imageIndex];
 }
 
-void SwapChain::present() {
+void GraphicsContext::present() {
     GraphicsCommandList* commandList = currentCommandList2();
 
     //// End command list
@@ -121,7 +124,7 @@ void SwapChain::present() {
     nextFrame();
 }
 
-void SwapChain::resetRHIBackbuffers() {
+void GraphicsContext::resetRHIBackbuffers() {
     uint32_t count = m_rhiObject->getBackbufferCount();
     m_backbuffers.resize(count);
     m_depthBuffers.resize(count);
@@ -144,7 +147,7 @@ void SwapChain::resetRHIBackbuffers() {
     m_imageIndex = -1;
 }
 
-void SwapChain::nextFrame() {
+void GraphicsContext::nextFrame() {
     m_rhiObject->acquireNextImage(&m_imageIndex);
 
     GraphicsCommandList* commandList = currentCommandList2();
@@ -152,7 +155,7 @@ void SwapChain::nextFrame() {
     //detail::GraphicsCommandListInternal::beginCommandRecoding(commandList);
 }
 
-void SwapChain::presentInternal() {
+void GraphicsContext::presentInternal() {
     detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
     auto device = manager->deviceContext();
 
@@ -163,7 +166,7 @@ void SwapChain::presentInternal() {
     manager->renderPassCache()->collectGarbage();
 }
 
-detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsCommandList* context, bool* outModified) const {
+detail::ISwapChain* GraphicsContext::resolveRHIObject(GraphicsCommandList* context, bool* outModified) const {
     *outModified = false;
     return m_rhiObject;
 }
@@ -173,11 +176,11 @@ detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsCommandList* context, bo
 
 namespace detail {
 
-void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, int height) {
+void SwapChainInternal::setBackendBufferSize(GraphicsContext* swapChain, int width, int height) {
     LN_NOTIMPLEMENTED();
 }
 
-void SwapChainInternal::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id) {
+void SwapChainInternal::setOpenGLBackendFBO(GraphicsContext* swapChain, uint32_t id) {
     LN_NOTIMPLEMENTED();
 }
 

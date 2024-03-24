@@ -376,7 +376,7 @@ void UIFrameWindow::setupPlatformWindow(PlatformWindow* platformMainWindow, bool
 
     // TODO: このフラグは PlatformWindow に持たせていいかも
     if (!useExternalSwapChain) {
-        m_swapChain = makeObject_deprecated<SwapChain>(platformMainWindow);
+        m_swapChain = makeObject_deprecated<GraphicsContext>(platformMainWindow);
     }
 
     m_platformWindow->attachEventListener(this);
@@ -435,7 +435,7 @@ void UIFrameWindow::updateLayoutIfNeeded() {
     updateLayoutTree();
 }
 
-SwapChain* UIFrameWindow::swapChain() const {
+GraphicsContext* UIFrameWindow::swapChain() const {
     return m_swapChain;
 }
 

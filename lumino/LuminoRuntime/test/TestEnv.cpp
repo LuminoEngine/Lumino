@@ -9,7 +9,7 @@
 
 
 bool TestEnv::isCI = false;
-Ref<SwapChain> TestEnv::swapChain;
+Ref<GraphicsContext> TestEnv::swapChain;
 Ref<FlatRenderingPipeline> TestEnv::flatRenderingPipeline;
 Ref<TestRenderVew> TestEnv::renderView;
 
@@ -37,7 +37,7 @@ void TestEnv::setup() {
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));
 
-    swapChain = makeObject_deprecated<SwapChain>(Platform::mainWindow());
+    swapChain = makeObject_deprecated<GraphicsContext>(Platform::mainWindow());
 }
 
 void TestEnv::initializeRendering() {

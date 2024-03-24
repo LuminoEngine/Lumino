@@ -116,6 +116,9 @@ public:
     /** Change size. */
     void resize(size_type count, const value_type& value);
 
+    /** Resize it to have at least count elements. */
+    void ensureResize(size_type count);
+
     /** Request a change in capacity. */
     void reserve(size_type new_capacity);
 

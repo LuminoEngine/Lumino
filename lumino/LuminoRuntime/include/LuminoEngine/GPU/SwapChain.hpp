@@ -22,9 +22,38 @@ class SingleFrameUniformBufferAllocator;
 }
 
 /** スワップチェーンのクラスです。 */
-class LN_API SwapChain
+class LN_API GraphicsContext
     : public Object
     , public IGraphicsResource {
+    /*
+    NOTE: 移行作業中。
+    SwapChain と、それをターゲットとする CommandList の管理を行う。
+    将来的には、 RHI リソースの管理も行いたい。
+
+    Backend ごとに派生クラスを作って、様々な使い方に対応できるようにしておくのがいいだろう。
+    Skia のような API でも良いかと思ったが、 Unity への組み込みなどで
+    ゲーム側から VulkanCommandList をもらってラップして使うようなケースでは、
+    Skia のような API だと使いにくいかもしれない。
+
+    
+    ## Vulkan の External-CommandList を使う場合のイメージ
+
+    ```
+    auto context = GraphicsContext::createFromExternalVulkan();
+    auto renderer = RenderingContext::create(context);
+
+    context.setCommandList(vulkanCommandList[frame]);
+    renderer.drawRectangle(...);
+}
+    // vulkanCommandList[frame] を Queue に送るのはユーザーコードで。
+    ```
+
+
+    ## API 変更の動機
+    Lyric プロジェクトのエディタで、複数の canvas への描画を行うためです。
+
+    */
+
 public:
     Size backbufferSize() const;
 
@@ -37,14 +66,17 @@ public:
 
     void present();
 
+public: // TODO: internal
+    detail::RHIGraphicsResourceRegistry* rhiResourceRegistry() const { return m_rhiResourceRegistry; }
+
 protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
     void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
-    SwapChain();
-    virtual ~SwapChain();
+    GraphicsContext();
+    virtual ~GraphicsContext();
     void init(PlatformWindow* window);
 
 private:
@@ -57,6 +89,7 @@ private:
 
     detail::GraphicsManager* m_manager;
     Ref<detail::ISwapChain> m_rhiObject;
+    URef<detail::RHIGraphicsResourceRegistry> m_rhiResourceRegistry;
     std::vector<Ref<RenderTargetTexture>> m_backbuffers;
     std::vector<Ref<DepthBuffer>> m_depthBuffers;
     std::vector<Ref<RenderPass>> m_renderPasses;
@@ -71,11 +104,11 @@ namespace detail {
 
 class SwapChainInternal {
 public:
-    static void setBackendBufferSize(SwapChain* swapChain, int width, int height);
-    static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
-    static void resizeBackbuffer(SwapChain* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
-    static int imageIndex(SwapChain* swapChain) { return swapChain->imageIndex(); }
-    static int swapBufferCount(SwapChain* swapChain) { return static_cast<int>(swapChain->m_backbuffers.size()); }
+    static void setBackendBufferSize(GraphicsContext* swapChain, int width, int height);
+    static void setOpenGLBackendFBO(GraphicsContext* swapChain, uint32_t id);
+    static void resizeBackbuffer(GraphicsContext* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
+    static int imageIndex(GraphicsContext* swapChain) { return swapChain->imageIndex(); }
+    static int swapBufferCount(GraphicsContext* swapChain) { return static_cast<int>(swapChain->m_backbuffers.size()); }
 };
 
 } // namespace detail

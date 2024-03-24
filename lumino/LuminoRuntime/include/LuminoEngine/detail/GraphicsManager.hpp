@@ -58,6 +58,16 @@ public:
     //const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
     //const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 
+    
+    GraphicsResourceRegistry* resourceRegistry() const { return m_resourceRegistry; }
+    //GraphicsResourceRegistry* vertexLayoutRegistry() const { return m_vertexLayoutRegistry; }
+    //GraphicsResourceRegistry* vertexBufferRegistry() const { return m_vertexBufferRegistry; }
+    //GraphicsResourceRegistry* indexBufferRegistry() const { return m_indexBufferRegistry; }
+    //GraphicsResourceRegistry* constantBufferRegistry() const { return m_constantBufferRegistry; }
+    //GraphicsResourceRegistry* shaderPassRegistry() const { return m_shaderPassRegistry; }
+    //GraphicsResourceRegistry* textureRegistry() const { return m_textureRegistry; }
+    //GraphicsResourceRegistry* depthBufferRegistry() const { return m_depthBufferRegistry; }
+
     const std::unique_ptr<GraphicsProfiler>& profiler() const { return m_profiler; }
     const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
     const Ref<RenderingQueue>& renderingQueue() const { return m_renderingQueue; }
@@ -112,6 +122,15 @@ private:
     Ref<IGraphicsDevice> m_deviceContext;
     Ref<CommandQueue> m_graphicsQueue;
     Ref<CommandQueue> m_computeQueue;
+
+    URef<GraphicsResourceRegistry> m_resourceRegistry;
+    //URef<GraphicsResourceRegistry> m_vertexLayoutRegistry;
+    //URef<GraphicsResourceRegistry> m_vertexBufferRegistry;
+    //URef<GraphicsResourceRegistry> m_indexBufferRegistry;
+    //URef<GraphicsResourceRegistry> m_constantBufferRegistry;
+    //URef<GraphicsResourceRegistry> m_shaderPassRegistry;
+    //URef<GraphicsResourceRegistry> m_textureRegistry;
+    //URef<GraphicsResourceRegistry> m_depthBufferRegistry;
 
     std::unique_ptr<GraphicsProfiler> m_profiler;
     Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;

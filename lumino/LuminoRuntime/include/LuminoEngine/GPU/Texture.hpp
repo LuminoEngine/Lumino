@@ -242,7 +242,7 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height, TextureFormat format);
 
     bool init(int width, int height, TextureFormat format, bool mipmap, bool msaa);
-    bool init(SwapChain* owner);
+    bool init(GraphicsContext* owner);
     bool init(intptr_t nativeObject, TextureFormat format);
     void resetNativeObject(intptr_t nativeObject);
     void resetSize(int width, int height);
@@ -253,7 +253,7 @@ private:
     Ref<Bitmap2D> readData();
 
     Ref<detail::RHIResource> m_rhiObject;
-    SwapChain* m_ownerSwapchain;
+    GraphicsContext* m_ownerSwapchain;
     intptr_t m_nativeObject;
     bool m_modified;
     bool m_hasNativeObject;

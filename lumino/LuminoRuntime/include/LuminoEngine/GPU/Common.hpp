@@ -8,7 +8,7 @@ namespace ln {
 class IGraphicsResource;
 class GraphicsCommandList;
 class SamplerState;
-class SwapChain;
+class GraphicsContext;
 class RenderPass;
 class Bitmap2D;
 class Bitmap3D;
@@ -21,6 +21,9 @@ class VertexBuffer;
 class IndexBuffer;
 class INativeGraphicsExtension;
 class ShaderDescriptor;
+
+using GraphicsResourceId = int32_t;
+//using RHIGraphicsResourceId = int32_t;
 
 /**
  * Texture2DDelegate
@@ -65,6 +68,8 @@ class GraphicsProfiler;
 class RHIResource;
 class RenderPassCache;
 
+class GraphicsResourceRegistry;
+class RHIGraphicsResourceRegistry;
 
 } // namespace detail
 } // namespace ln

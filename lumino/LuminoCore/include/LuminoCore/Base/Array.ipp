@@ -104,6 +104,13 @@ inline void Array<T>::resize(size_type count) {
 }
 
 template<class T>
+inline void Array<T>::ensureResize(size_type count) {
+    if (m_data.size() < count) {
+		m_data.resize(count);
+	}
+}
+
+template<class T>
 inline void Array<T>::resize(size_type count, const value_type& value) {
     m_data.resize(count, value);
 }

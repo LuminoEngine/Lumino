@@ -98,7 +98,7 @@ GraphicsCommandList* TestEnv::graphicsContext() {
     return Engine::graphicsContext();
 }
 
-SwapChain* TestEnv::mainWindowSwapChain() {
+GraphicsContext* TestEnv::mainWindowSwapChain() {
     return Engine::mainWindow()->swapChain();
 }
 

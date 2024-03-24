@@ -12,7 +12,7 @@ public:
     static void resetScene();
 
     static GraphicsCommandList* graphicsContext();
-    static SwapChain* mainWindowSwapChain();
+    static GraphicsContext* mainWindowSwapChain();
     static void resetGraphicsContext(GraphicsCommandList* context);
     static GraphicsCommandList* beginFrame();
     static void endFrame();
