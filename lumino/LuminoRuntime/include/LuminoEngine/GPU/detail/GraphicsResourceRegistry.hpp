@@ -51,7 +51,7 @@ public:
     RHIGraphicsResourceRegistry(GraphicsResourceRegistry* ownerRegistry);
     ~RHIGraphicsResourceRegistry();
     void registerResource(IGraphicsResource* resource, RHIResource* rhiResource);
-    void unregisterResource(RHIResource* rhiResource);
+    void unregisterResource(GraphicsResourceId id);
 
 private:
     GraphicsResourceRegistry* m_ownerRegistry;

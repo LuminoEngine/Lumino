@@ -18,20 +18,30 @@ GraphicsResourceRegistry::~GraphicsResourceRegistry() {
 void GraphicsResourceRegistry::registerResource(IGraphicsResource* resource) {
     if (LN_ASSERT(resource->m_id == 0)) return;
     if (m_idStack.empty()) {
-		GraphicsResourceId id = m_resourceList.size();
+        GraphicsResourceId id = m_resourceList.size();
         resource->m_id = id;
-		m_resourceList.push(resource);
-	}
+        m_resourceList.push(resource);
+    }
     else {
         GraphicsResourceId id = m_idStack.top();
         resource->m_id = id;
-		m_idStack.pop();
-		m_resourceList[id] = resource;
-	}
+        m_idStack.pop();
+        m_resourceList[id] = resource;
+    }
 }
 
 void GraphicsResourceRegistry::unregisterResource(GraphicsResourceId id) {
+    if (LN_ASSERT(id < m_resourceList.size())) return;
+    IGraphicsResource* resource = m_resourceList[id];
+    if (LN_ASSERT(resource)) return;
 
+    for (RHIGraphicsResourceRegistry* rhiRegistry : m_rhiRegistries) {
+        rhiRegistry->unregisterResource(id);
+    }
+
+    m_resourceList[id] = nullptr;
+    m_idStack.push(id);
+    resource->m_id = 0;
 }
 
 void GraphicsResourceRegistry::subscribe(RHIGraphicsResourceRegistry* rhiRegistry) {
@@ -61,10 +71,13 @@ void RHIGraphicsResourceRegistry::registerResource(IGraphicsResource* resource, 
     rhiResource->m_objectId = resource->m_id;
 }
 
-void RHIGraphicsResourceRegistry::unregisterResource(RHIResource* rhiResource) {
-    if (LN_ASSERT(rhiResource->m_ownerId > 0)) return;
+void RHIGraphicsResourceRegistry::unregisterResource(GraphicsResourceId id) {
+    if (LN_ASSERT(id < m_rhiResourceList.size())) return;
+    RHIResource* rhiResource = m_rhiResourceList[id];
+    if (LN_ASSERT(rhiResource)) return;
+    if (LN_ASSERT(rhiResource->m_ownerId == id)) return;
+    m_rhiResourceList[id] = nullptr;
     rhiResource->m_ownerId = 0;
-    m_rhiResourceList[rhiResource->m_ownerId] = nullptr;
 }
 
 } // namespace detail
