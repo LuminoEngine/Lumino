@@ -69,6 +69,9 @@ option(LN_USE_Effekseer "Effekseer" OFF)
 # HSP
 option(LN_BUILD_BINDING_HSP "HSP Binding" "")
 
+
+option(LN_BUILD_EXPERIMENTAL_FRAMEWORK "Experimental" OFF)
+
 option(LN_EXTERNAL2 "" OFF)
 
 set(LN_VCPKG_INSTALLED_DIR "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
@@ -200,7 +203,6 @@ endif()
 if(LUMINO_BUILD_ENGINE)
     if(LN_EMSCRIPTEN)
         add_subdirectory(packages/LuminoRuntime)
-        add_subdirectory(packages/LuminoFramework)
         add_subdirectory(examples/Example-WebLibrary)
         add_subdirectory(packages/LuminoFFI)
         #add_subdirectory(packages/lumino-js)
@@ -208,9 +210,7 @@ if(LUMINO_BUILD_ENGINE)
         set(LN_EXTERNAL_FIND_PATH_MODE "build")
         include(external/ImportExternalLibraries.cmake)
         add_subdirectory(packages/LuminoRuntime)
-        add_subdirectory(packages/LuminoFramework)
         add_subdirectory(packages/LuminoFFI)
-        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoFramework-sandbox)
 
         if(LUMINO_BUILD_EXAMPLES)
             # add_subdirectory(examples)
@@ -224,6 +224,11 @@ if(LUMINO_BUILD_ENGINE)
             add_subdirectory(tools/Bindings/HSP3)
         endif()
     endif()
+endif()
+
+if(LN_BUILD_EXPERIMENTAL_FRAMEWORK)
+    add_subdirectory(packages/LuminoFramework)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoFramework-sandbox)
 endif()
 
 # -------------------------------------------------------------------------------
