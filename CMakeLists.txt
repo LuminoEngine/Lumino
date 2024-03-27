@@ -163,6 +163,12 @@ if(LUMINO_BUILD_ENGINE)
     set(LUMINO_BUILD_CORE ON)
 endif()
 
+message("!!!!!!!!!!EMSCRIPTEN: ${EMSCRIPTEN}")
+message("!!!!!!!!!!LN_OS_DESKTOP: ${LN_OS_DESKTOP}")
+message("!!!!!!!!!!LN_USE_VULKAN: ${LN_USE_VULKAN}")
+
+
+
 # -------------------------------------------------------------------------------
 # Externals
 # -------------------------------------------------------------------------------
@@ -194,7 +200,7 @@ endif()
 if(LUMINO_BUILD_ENGINE)
     if(LN_EMSCRIPTEN)
         add_subdirectory(lumino/LuminoRuntime)
-        add_subdirectory(lumino/LuminoEngine)
+        add_subdirectory(packages/LuminoFramework)
         add_subdirectory(examples/Example-WebLibrary)
         add_subdirectory(packages/LuminoFFI)
         #add_subdirectory(packages/lumino-js)
@@ -202,7 +208,7 @@ if(LUMINO_BUILD_ENGINE)
         set(LN_EXTERNAL_FIND_PATH_MODE "build")
         include(external/ImportExternalLibraries.cmake)
         add_subdirectory(lumino/LuminoRuntime)
-        add_subdirectory(lumino/LuminoEngine)
+        add_subdirectory(packages/LuminoFramework)
         add_subdirectory(packages/LuminoFFI)
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoEngine-sandbox)
 

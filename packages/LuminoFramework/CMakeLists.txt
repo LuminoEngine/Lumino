@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.0)
-project(LuminoEngine)
-include(cmake/LuminoConfig-LuminoEngine.cmake)
+project(LuminoFramework)
+include(cmake/LuminoConfig-LuminoFramework.cmake)
 
 # デフォルトでは不足している include path を追加しておく
 set_target_properties(Bullet3Common PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LN_VCPKG_INSTALLED_DIR}/include/bullet")
@@ -300,42 +300,42 @@ if (LN_USE_Effekseer)
     list(APPEND _LN_ENGINE_LINK_LIBS ${Vulkan_LIBRARIES} Effekseer EffekseerRendererVulkan LLGI)   # for LLGI
 endif()
 
-add_library(LuminoEngine STATIC ${LN_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-target_include_directories(LuminoEngine PUBLIC  
+target_include_directories(${PROJECT_NAME} PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
 )
-target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-#target_compile_definitions(LuminoEngine PUBLIC LUMINO_BUILD_DLL=1)
-target_compile_definitions(LuminoEngine PRIVATE ${LN_PLATFORM_DEFINITIONS})
-target_link_libraries(LuminoEngine INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(LuminoEngine INTERFACE LuminoRuntime)
+target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+#target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
+target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${_LN_ENGINE_LINK_LIBS})
+target_link_libraries(${PROJECT_NAME} INTERFACE LuminoRuntime)
 
 if (LN_OS_DESKTOP)
-    target_include_directories(LuminoEngine PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})
-    target_include_directories(LuminoEngine PRIVATE ${STB_INCLUDE_DIRS})
-    target_include_directories(LuminoEngine PRIVATE ${TINYGLTF_INCLUDE_DIRS})
-    target_link_libraries(LuminoEngine PRIVATE glfw glad::glad)
-    target_link_libraries(LuminoEngine PRIVATE OpenAL::OpenAL)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${STB_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${TINYGLTF_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)
+    target_link_libraries(${PROJECT_NAME} PRIVATE OpenAL::OpenAL)
 endif()
 
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 endif()
 
-#target_link_libraries(LuminoEngine PRIVATE glslang)
-set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
-target_precompile_headers(LuminoEngine PRIVATE "src/LuminoEngine.PCH.h")
+#target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/LuminoEngine.PCH.h")
 
 if (LN_EMSCRIPTEN)
-    set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-pthread")
-    set_target_properties(LuminoEngine PROPERTIES COMPILE_FLAGS "-sUSE_SDL=2")
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-sUSE_SDL=2")
 endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.
-    set_target_properties(LuminoEngine PROPERTIES
+    set_target_properties(${PROJECT_NAME} PROPERTIES
         FRAMEWORK TRUE
         #VERSION 1.0.0
         #SOVERSION 1.0.0
@@ -358,23 +358,22 @@ endif()
 
 # Shared library
 if (LN_BUILD_SHARED_LIBRARY)
-    add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib})
-    target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-    target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1)
-    target_link_libraries(LuminoEngine PRIVATE LuminoEngine)
-    set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
+    add_library(${PROJECT_NAME} SHARED ${LN_SOURCES_SharedLib})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LUMINO_BUILD_DLL=1)
+    set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
     # Export symbols defined in another static library.
     if (MSVC)
-        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngined")
-        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine")
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngined")
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine")
     else()
-        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "--no-whole-archive")
-        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "--no-whole-archive")
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "--no-whole-archive")
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "--no-whole-archive")
     endif()
     
     if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-        target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
     endif()
 endif()
 
@@ -384,7 +383,7 @@ endif()
 #-------------------------------------------------------------------------------
 if (LUMINO_INSTALL)
     install(
-        TARGETS     LuminoEngine
+        TARGETS     ${PROJECT_NAME}
         EXPORT      LuminoExport
     )
     install(DIRECTORY include DESTINATION .)
