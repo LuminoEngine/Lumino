@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "GMesh.hpp"
 

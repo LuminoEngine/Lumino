@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/GPU/ConstantBuffer.hpp>
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include "GraphicsProfiler.hpp"
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 

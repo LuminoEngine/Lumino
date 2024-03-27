@@ -11,7 +11,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Animation/AnimationMixer.hpp>	// TODO: これは Importer の中で利用する必要はないはず
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "PmxImporter.hpp"
 

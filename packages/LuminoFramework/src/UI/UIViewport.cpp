@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoFramework/UI/UIRenderingContext.hpp>
 #include <LuminoFramework/UI/UIEvents.hpp>
 #include <LuminoFramework/UI/UIViewport.hpp>

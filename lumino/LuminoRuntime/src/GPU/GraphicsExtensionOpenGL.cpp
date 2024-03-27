@@ -5,7 +5,7 @@
 #include "../../LuminoRuntime/src/GraphicsRHI/OpenGL/GLRenderPass.hpp"
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/GraphicsExtensionOpenGL.hpp>
 
 namespace ln {

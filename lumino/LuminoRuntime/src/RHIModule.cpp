@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/RHIModule.hpp>
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 
 namespace ln {
 

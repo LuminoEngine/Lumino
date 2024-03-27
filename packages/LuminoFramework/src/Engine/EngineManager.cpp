@@ -27,7 +27,7 @@
 #include <LuminoEngine/Animation/detail/AnimationManager.hpp>
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>

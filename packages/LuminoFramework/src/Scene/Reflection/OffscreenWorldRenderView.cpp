@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.hpp"
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoFramework/Scene/World.hpp>
 #include <LuminoFramework/Scene/Scene.hpp>
 #include <LuminoFramework/Scene/Reflection/OffscreenWorldRenderView.hpp>

@@ -2,7 +2,7 @@
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/RHIModule.hpp>
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 #include "TestEnv.hpp"

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/MixHash.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
