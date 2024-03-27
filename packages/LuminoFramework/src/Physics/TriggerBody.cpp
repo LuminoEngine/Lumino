@@ -3,8 +3,8 @@
 #pragma warning(disable: 5033)	// disable warning in bullet headers
 #include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
-#include <LuminoEngine/Physics/PhysicsWorld.hpp>
-#include <LuminoEngine/Physics/TriggerBody.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld.hpp>
+#include <LuminoFramework/Physics/TriggerBody.hpp>
 #include "PhysicsManager.hpp"
 #include "BulletUtils.hpp"
 

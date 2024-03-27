@@ -6,7 +6,7 @@
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
+#include <LuminoFramework/PostEffect/FilmicPostEffect.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

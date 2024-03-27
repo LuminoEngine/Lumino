@@ -1,8 +1,7 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
-#include <LuminoEngine/Scene/Level.hpp>
-#include <LuminoEngine/Scene/SceneConductor.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/PostEffect/TransitionPostEffect.hpp>
+#include <LuminoFramework/Scene/Level.hpp>
+#include <LuminoFramework/Scene/SceneConductor.hpp>
 #include "SceneManager.hpp"
 
 namespace ln {

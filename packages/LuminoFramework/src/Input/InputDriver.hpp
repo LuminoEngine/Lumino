@@ -1,8 +1,7 @@
-﻿
-#pragma once
+﻿#pragma once
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
-#include <LuminoEngine/Input/Common.hpp>
-#include <LuminoEngine/Input/InputBinding.hpp>
+#include <LuminoFramework/Input/Common.hpp>
+#include <LuminoFramework/Input/InputBinding.hpp>
 
 namespace ln {
 

@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Reflection/VMProperty.hpp>
-#include <LuminoEngine/UI/UICommand.hpp>
-//#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
-//#include <LuminoEngine/UI/UIText.hpp>
-#include <LuminoEngine/UI/Controls/UIListBox.hpp>
+#include <LuminoFramework/UI/UICommand.hpp>
+//#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/Layout/UILayoutPanel.hpp>
+//#include <LuminoFramework/UI/UIText.hpp>
+#include <LuminoFramework/UI/Controls/UIListBox.hpp>
 
 namespace ln {
 

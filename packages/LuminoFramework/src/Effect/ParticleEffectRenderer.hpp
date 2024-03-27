@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
+#include <LuminoFramework/Effect/ParticleEffectModel2.hpp>
 #include "ParticleEffectInstance.hpp"
 
 namespace ln {

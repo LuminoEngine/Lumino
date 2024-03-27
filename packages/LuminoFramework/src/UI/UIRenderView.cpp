@@ -1,13 +1,12 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UICommand.hpp>
-#include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoEngine/UI/UIRenderView.hpp>
-#include <LuminoEngine/UI/UIViewport.hpp>
-#include <LuminoEngine/UI/UIAdorner.hpp>
-#include <LuminoEngine/UI/Controls/UIDialog.hpp>
-#include <LuminoEngine/UI/UIFocusNavigator.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UICommand.hpp>
+#include <LuminoFramework/UI/UIElement.hpp>
+#include <LuminoFramework/UI/UIRenderView.hpp>
+#include <LuminoFramework/UI/UIViewport.hpp>
+#include <LuminoFramework/UI/UIAdorner.hpp>
+#include <LuminoFramework/UI/Controls/UIDialog.hpp>
+#include <LuminoFramework/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 
 namespace ln {

@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/PostEffect/ScreenBlurPostEffect.hpp>
+#include <LuminoFramework/PostEffect/ScreenBlurPostEffect.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

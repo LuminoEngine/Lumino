@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include <LuminoEngine/Scene/Camera.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Scene/WorldRenderView.hpp>
+#include <LuminoFramework/Scene/Camera.hpp>
 
 namespace ln {
     

@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
-#include <LuminoEngine/Tilemap/TilemapModel.hpp>
-#include <LuminoEngine/Tilemap/Tileset.hpp>
+#include <LuminoFramework/Tilemap/TilemapLayer.hpp>
+#include <LuminoFramework/Tilemap/TilemapModel.hpp>
+#include <LuminoFramework/Tilemap/Tileset.hpp>
 
 /*
 

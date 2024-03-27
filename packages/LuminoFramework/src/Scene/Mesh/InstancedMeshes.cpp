@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
-#include <LuminoEngine/Scene/Mesh/InstancedMeshes.hpp>
+#include <LuminoFramework/Scene/Mesh/InstancedMeshes.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

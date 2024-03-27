@@ -2,7 +2,7 @@
 #pragma once
 #include <array>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
-#include <LuminoEngine/Input/Common.hpp>
+#include <LuminoFramework/Input/Common.hpp>
 
 namespace ln {
 class InputDriver;

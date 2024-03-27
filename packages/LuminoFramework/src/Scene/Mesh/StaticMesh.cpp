@@ -3,8 +3,8 @@
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
-#include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
+#include <LuminoFramework/Scene/Mesh/MeshComponent.hpp>
+#include <LuminoFramework/Scene/Mesh/StaticMesh.hpp>
 #include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 
 namespace ln {

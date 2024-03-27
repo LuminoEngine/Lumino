@@ -3,9 +3,9 @@
 //#include <tmxlite/Map.hpp>
 //#include <tmxlite/Layer.hpp>
 //#include <tmxlite/TileLayer.hpp>
-#include <LuminoEngine/Tilemap/Tileset.hpp>
-#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
-#include <LuminoEngine/Tilemap/TilemapModel.hpp>
+#include <LuminoFramework/Tilemap/Tileset.hpp>
+#include <LuminoFramework/Tilemap/TilemapLayer.hpp>
+#include <LuminoFramework/Tilemap/TilemapModel.hpp>
 
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

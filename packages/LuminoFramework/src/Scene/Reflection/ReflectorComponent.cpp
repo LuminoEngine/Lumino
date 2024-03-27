@@ -2,10 +2,10 @@
 #include "../Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
-#include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
-#include <LuminoEngine/Scene/Reflection/ReflectorComponent.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
+#include <LuminoFramework/Scene/Reflection/OffscreenWorldRenderView.hpp>
+#include <LuminoFramework/Scene/Reflection/ReflectorComponent.hpp>
 
 namespace ln {
 

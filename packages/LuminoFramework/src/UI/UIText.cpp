@@ -4,10 +4,10 @@
 
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include <LuminoEngine/UI/UIText.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIFrameWindow.hpp>
+#include <LuminoFramework/UI/UIText.hpp>
 
 #include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>

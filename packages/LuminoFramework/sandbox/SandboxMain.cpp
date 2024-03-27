@@ -1,9 +1,9 @@
 ﻿
 #define LN_MSVC_DISABLE_LIBRARY_LINK
-#include <LuminoEngine.hpp>
+#include <LuminoFramework.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include "Common.hpp"
-#include <LuminoEngine/Engine/detail/EngineDomain.hpp>
+#include <LuminoFramework/Engine/detail/EngineDomain.hpp>
 #include "../src/Engine/EngineManager.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../src/Rendering/DrawElementListBuilder.hpp"
@@ -16,14 +16,14 @@
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Font/detail/FontCore.hpp>
 #include "../src/Asset/AssetArchive.hpp"
-#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
-#include <LuminoEngine/UI/Controls/UIButton.hpp>
-#include <LuminoEngine/UI/UIFocusNavigator.hpp>
-#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
-#include <LuminoEngine/Tilemap/Voxel.hpp>
-#include <LuminoEngine/Scene/TransformControls.hpp>
-#include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
-#include <LuminoEngine/Visual/EmojiComponent.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld2D.hpp>
+#include <LuminoFramework/UI/Controls/UIButton.hpp>
+#include <LuminoFramework/UI/UIFocusNavigator.hpp>
+#include <LuminoFramework/UI/Controls/UIPropertyFields.hpp>
+#include <LuminoFramework/Tilemap/Voxel.hpp>
+#include <LuminoFramework/Scene/TransformControls.hpp>
+#include <LuminoFramework/PostEffect/LightShaftPostEffect.hpp>
+#include <LuminoFramework/Visual/EmojiComponent.hpp>
 using namespace ln;
 
 //#include <fbxsdk.h>

@@ -1,17 +1,17 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Level.hpp>
-#include <LuminoEngine/Tilemap/TilemapModel.hpp>
-#include <LuminoEngine/Tilemap/TilemapComponent.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/Level.hpp>
+#include <LuminoFramework/Tilemap/TilemapModel.hpp>
+#include <LuminoFramework/Tilemap/TilemapComponent.hpp>
 #include "TilemapPhysicsObject.hpp"
 
-#include <LuminoEngine/Scene/WorldObject.hpp>   // for WorldObjectTransform
+#include <LuminoFramework/Scene/WorldObject.hpp>   // for WorldObjectTransform
 #include <LuminoEngine/Rendering/RenderView.hpp>    // for RenderViewPoint
 
 // Test
-#include <LuminoEngine/Tilemap/Tileset.hpp>
-#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
+#include <LuminoFramework/Tilemap/Tileset.hpp>
+#include <LuminoFramework/Tilemap/TilemapLayer.hpp>
 
 
 

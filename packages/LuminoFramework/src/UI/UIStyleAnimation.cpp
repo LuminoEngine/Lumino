@@ -87,8 +87,8 @@
 */
 #include "Internal.hpp"
 #include <LuminoEngine/Animation/AnimationCurve.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIStyleAnimation.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIStyleAnimation.hpp>
 
 namespace ln {
 

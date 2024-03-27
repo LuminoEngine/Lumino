@@ -6,7 +6,7 @@
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/PostEffect/FXAAPostEffect.hpp>
+#include <LuminoFramework/PostEffect/FXAAPostEffect.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

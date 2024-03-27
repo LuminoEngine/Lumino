@@ -8,7 +8,7 @@
 #include <bullet/BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btTriangleIndexVertexArray.h>
 #include <bullet/BulletCollision/CollisionShapes/btCompoundShape.h>
-#include <LuminoEngine/Physics/CollisionShape.hpp>
+#include <LuminoFramework/Physics/CollisionShape.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/IndexBuffer.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
@@ -297,7 +297,7 @@ bool MeshCollisionShape::initInternal(MeshPrimitive* mesh, const Matrix* transfo
 	// TODO: scoped
 	indexBuffer->unmap();
 	//vertexBuffer->unmap();
-
+        return true;
 }
 
 //==============================================================================

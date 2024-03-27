@@ -73,9 +73,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UIColors.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIColors.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include "UIStyleInstance.hpp"
 

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
+#include <LuminoFramework/Scene/MeshVoxelmap/MeshVoxelset.hpp>
 
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>

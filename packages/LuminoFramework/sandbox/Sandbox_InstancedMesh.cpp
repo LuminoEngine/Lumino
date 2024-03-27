@@ -1,8 +1,8 @@
 ﻿
-#include <LuminoEngine.hpp>
+#include <LuminoFramework.hpp>
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
-#include <LuminoEngine/Scene/Mesh/InstancedMeshes.hpp>
-#include <LuminoEngine/Scene/Sprite/InstancedSprites.hpp>
+#include <LuminoFramework/Scene/Mesh/InstancedMeshes.hpp>
+#include <LuminoFramework/Scene/Sprite/InstancedSprites.hpp>
 using namespace ln;
 
 class App_Sandbox_InstancedMesh : public Application

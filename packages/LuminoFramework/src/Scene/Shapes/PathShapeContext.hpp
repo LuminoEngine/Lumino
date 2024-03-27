@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
-#include <LuminoEngine/Scene/Shapes/PathShape.hpp>
+#include <LuminoFramework/Scene/Shapes/PathShape.hpp>
 #include <LuminoEngine/Rendering/detail/NanoVGHelper.hpp>
 
 namespace ln {

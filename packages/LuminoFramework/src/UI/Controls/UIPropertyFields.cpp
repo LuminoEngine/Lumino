@@ -2,10 +2,10 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UIPopup.hpp>
-#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIPopup.hpp>
+#include <LuminoFramework/UI/Controls/UIPropertyFields.hpp>
 
 namespace ln {
 	

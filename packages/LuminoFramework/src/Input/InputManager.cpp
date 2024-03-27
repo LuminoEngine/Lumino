@@ -24,10 +24,10 @@
 #include "GLFWInputDriver.hpp"
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
-#include <LuminoEngine/Input/Input.hpp>
-#include <LuminoEngine/Input/InputBinding.hpp>
-#include <LuminoEngine/Input/InputController.hpp>
-#include <LuminoEngine/Input/Mouse.hpp>
+#include <LuminoFramework/Input/Input.hpp>
+#include <LuminoFramework/Input/InputBinding.hpp>
+#include <LuminoFramework/Input/InputController.hpp>
+#include <LuminoFramework/Input/Mouse.hpp>
 
 namespace ln {
 namespace detail

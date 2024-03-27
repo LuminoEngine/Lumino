@@ -7,7 +7,7 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
+#include <LuminoFramework/Effect/ParticleEffectModel2.hpp>
 //#include "../../../Engine/src/Asset/AssetManager.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "EffekseerEffect.hpp"

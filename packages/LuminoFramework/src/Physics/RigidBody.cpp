@@ -9,8 +9,8 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
 #include <bullet/LinearMath/btMotionState.h>
-#include <LuminoEngine/Physics/PhysicsWorld.hpp>
-#include <LuminoEngine/Physics/RigidBody.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld.hpp>
+#include <LuminoFramework/Physics/RigidBody.hpp>
 #include "PhysicsManager.hpp"
 #include "BulletUtils.hpp"
 

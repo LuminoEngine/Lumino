@@ -1,7 +1,7 @@
 ﻿
-#include <LuminoEngine.hpp>
-#include <LuminoEngine/Scene/Reflection/Reflector.hpp>
-#include <LuminoEngine/Scene/Reflection/ReflectorComponent.hpp>
+#include <LuminoFramework.hpp>
+#include <LuminoFramework/Scene/Reflection/Reflector.hpp>
+#include <LuminoFramework/Scene/Reflection/ReflectorComponent.hpp>
 using namespace ln;
 
 class App_Experiment_Reflector : public Application

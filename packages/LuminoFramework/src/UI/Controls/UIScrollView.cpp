@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
-#include <LuminoEngine/UI/Controls/UIButton.hpp>
-#include <LuminoEngine/UI/Controls/UIScrollView.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/Layout/UILayoutPanel.hpp>
+#include <LuminoFramework/UI/Controls/UIButton.hpp>
+#include <LuminoFramework/UI/Controls/UIScrollView.hpp>
 
 namespace ln {
 

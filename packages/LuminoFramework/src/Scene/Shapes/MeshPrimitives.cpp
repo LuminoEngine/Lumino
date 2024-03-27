@@ -5,8 +5,8 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModelFactory.hpp>
-#include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
-#include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
+#include <LuminoFramework/Scene/Shapes/MeshPrimitiveComponent.hpp>
+#include <LuminoFramework/Scene/Shapes/MeshPrimitives.hpp>
 #include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "../SceneManager.hpp"
 

@@ -3,9 +3,9 @@
 #include <LuminoEngine/Font/detail/FontCore.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Font/Font.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UIIcon.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIIcon.hpp>
 #include "UIStyleInstance.hpp"
 
 namespace ln {

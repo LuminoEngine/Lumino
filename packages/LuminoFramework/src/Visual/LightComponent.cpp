@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/Visual/LightComponent.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Light.hpp>
+#include <LuminoFramework/Visual/LightComponent.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/Light.hpp>
 
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

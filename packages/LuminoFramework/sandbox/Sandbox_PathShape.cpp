@@ -1,6 +1,6 @@
 ﻿
 #include <Lumino.hpp>
-#include <LuminoEngine/Scene/Shapes/PathShape.hpp>
+#include <LuminoFramework/Scene/Shapes/PathShape.hpp>
 
 class App_Sandbox_PathShape : public Application
 {

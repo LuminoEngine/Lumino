@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include <LuminoEngine/Engine/Common.hpp>
+#include <LuminoFramework/Engine/Common.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
-#include <LuminoEngine/Input/Common.hpp>
+#include <LuminoFramework/Input/Common.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include <LuminoEngine/GPU/Common.hpp>

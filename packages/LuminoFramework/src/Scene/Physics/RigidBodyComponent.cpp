@@ -1,8 +1,8 @@
 ﻿#include "../Internal.hpp"
-#include <LuminoEngine/Physics/PhysicsWorld.hpp>
-#include <LuminoEngine/Scene/Physics/Collision.hpp>
-#include <LuminoEngine/Scene/Physics/RigidBodyComponent.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld.hpp>
+#include <LuminoFramework/Scene/Physics/Collision.hpp>
+#include <LuminoFramework/Scene/Physics/RigidBodyComponent.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
 #include "Engine/EngineManager.hpp"
 
 namespace ln {

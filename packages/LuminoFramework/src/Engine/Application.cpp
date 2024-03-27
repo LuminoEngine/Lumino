@@ -3,11 +3,11 @@
 #include <yaml-cpp/yaml.h>
 #include <optional>
 #include "EngineManager.hpp"
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/UI/UICommand.hpp>
-#include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/UI/UICommand.hpp>
+#include <LuminoFramework/UI/UIElement.hpp>
+#include <LuminoFramework/UI/UIFrameWindow.hpp>
+#include <LuminoFramework/Engine/Application.hpp>
 #include "UI/UIManager.hpp"
 
 namespace ln {

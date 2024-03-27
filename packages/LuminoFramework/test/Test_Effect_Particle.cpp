@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
+#include <LuminoFramework/Effect/ParticleEffectModel2.hpp>
 #include "../src/Effect/ParticleEffectInstance.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 

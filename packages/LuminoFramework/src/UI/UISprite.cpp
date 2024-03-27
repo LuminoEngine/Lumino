@@ -2,8 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UISprite.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UISprite.hpp>
 #include "../../../../lumino/LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {

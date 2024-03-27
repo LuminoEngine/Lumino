@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/Controls/UIWindow.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/Controls/UIWindow.hpp>
 
 namespace ln {
 

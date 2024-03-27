@@ -1,9 +1,8 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIContext.hpp>
-#include <LuminoEngine/UI/UI.hpp>
-#include <LuminoEngine/UI/UIRenderView.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIContext.hpp>
+#include <LuminoFramework/UI/UI.hpp>
+#include <LuminoFramework/UI/UIRenderView.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "UIManager.hpp"
 

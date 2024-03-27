@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/GPU/Texture.hpp>
-#include <LuminoEngine/Visual/SpriteComponent.hpp>
-#include <LuminoEngine/Scene/Sprite.hpp>
-#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoFramework/Visual/SpriteComponent.hpp>
+#include <LuminoFramework/Scene/Sprite.hpp>
+#include <LuminoFramework/Scene/World.hpp>
 
 namespace ln {
 

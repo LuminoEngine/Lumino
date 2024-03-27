@@ -3,8 +3,8 @@
 #include "gtest/gtest.h"
 
 #define LN_MSVC_DISABLE_LIBRARY_LINK
-#include <LuminoEngine.hpp>
+#include <LuminoFramework.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 using namespace ln;
 
-#include <LuminoEngine/Engine/detail/EngineDomain.hpp>
+#include <LuminoFramework/Engine/detail/EngineDomain.hpp>

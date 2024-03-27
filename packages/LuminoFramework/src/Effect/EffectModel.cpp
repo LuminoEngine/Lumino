@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Effect/EffectModel.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Effect/EffectModel.hpp>
 
 namespace ln {
 

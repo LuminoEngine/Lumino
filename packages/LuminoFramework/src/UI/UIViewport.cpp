@@ -1,10 +1,10 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/detail/GraphicsManager.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UIEvents.hpp>
-#include <LuminoEngine/UI/UIViewport.hpp>
-#include <LuminoEngine/UI/UIRenderView.hpp>
-#include <LuminoEngine/UI/RoutingRenderView.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIEvents.hpp>
+#include <LuminoFramework/UI/UIViewport.hpp>
+#include <LuminoFramework/UI/UIRenderView.hpp>
+#include <LuminoFramework/UI/RoutingRenderView.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>

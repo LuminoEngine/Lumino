@@ -4,7 +4,7 @@
 #include <LuminoEngine/GPU/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/PostEffect/LightShaftPostEffect.hpp>
+#include <LuminoFramework/PostEffect/LightShaftPostEffect.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

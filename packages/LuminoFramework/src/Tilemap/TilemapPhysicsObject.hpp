@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
-#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
-#include <LuminoEngine/Tilemap/TilemapModel.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld2D.hpp>
+#include <LuminoFramework/Tilemap/TilemapLayer.hpp>
+#include <LuminoFramework/Tilemap/TilemapModel.hpp>
 
 namespace ln {
 namespace detail {

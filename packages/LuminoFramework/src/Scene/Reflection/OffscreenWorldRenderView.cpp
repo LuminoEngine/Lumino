@@ -1,9 +1,9 @@
 ﻿
 #include "../Internal.hpp"
 #include <LuminoEngine/detail/GraphicsManager.hpp>
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Scene.hpp>
-#include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/Scene.hpp>
+#include <LuminoFramework/Scene/Reflection/OffscreenWorldRenderView.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include "../SceneManager.hpp"

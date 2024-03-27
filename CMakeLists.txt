@@ -210,7 +210,7 @@ if(LUMINO_BUILD_ENGINE)
         add_subdirectory(lumino/LuminoRuntime)
         add_subdirectory(packages/LuminoFramework)
         add_subdirectory(packages/LuminoFFI)
-        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoEngine-sandbox)
+        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LuminoFramework-sandbox)
 
         if(LUMINO_BUILD_EXAMPLES)
             # add_subdirectory(examples)

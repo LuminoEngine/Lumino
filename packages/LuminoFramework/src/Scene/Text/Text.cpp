@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Scene/Text/TextComponent.hpp>
-#include <LuminoEngine/Scene/Text/Text.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Scene/Text/TextComponent.hpp>
+#include <LuminoFramework/Scene/Text/Text.hpp>
 
 namespace ln {
 

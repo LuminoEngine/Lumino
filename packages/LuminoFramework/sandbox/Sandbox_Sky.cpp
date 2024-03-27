@@ -1,11 +1,11 @@
 ﻿
-#include <LuminoEngine.hpp>
+#include <LuminoFramework.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
-#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
-#include <LuminoEngine/PostEffect/SSAOPostEffect.hpp>
-#include <LuminoEngine/PostEffect/TonemapPostEffect.hpp>
-#include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
-#include <LuminoEngine/PostEffect/FXAAPostEffect.hpp>
+#include <LuminoFramework/PostEffect/SSRPostEffect.hpp>
+#include <LuminoFramework/PostEffect/SSAOPostEffect.hpp>
+#include <LuminoFramework/PostEffect/TonemapPostEffect.hpp>
+#include <LuminoFramework/PostEffect/DepthOfFieldPostEffect.hpp>
+#include <LuminoFramework/PostEffect/FXAAPostEffect.hpp>
 using namespace ln;
 
 class App_Sandbox_Sky : public Application

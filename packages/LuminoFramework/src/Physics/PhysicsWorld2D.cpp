@@ -6,9 +6,9 @@
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
-#include <LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld2D.hpp>
+#include <LuminoFramework/Scene/Physics/RigidBody2DComponent.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "PhysicsManager.hpp"
 

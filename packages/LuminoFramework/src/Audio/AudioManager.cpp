@@ -3,9 +3,9 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Audio/AudioContext.hpp>
-#include <LuminoEngine/Audio/AudioNode.hpp>
-#include <LuminoEngine/Audio/Sound.hpp>
+#include <LuminoFramework/Audio/AudioContext.hpp>
+#include <LuminoFramework/Audio/AudioNode.hpp>
+#include <LuminoFramework/Audio/Sound.hpp>
 #include "Decoder/WaveAudioDecoder.hpp"
 #include "Decoder/OggAudioDecoder.hpp"
 #include "ARIs/ARINode.hpp"

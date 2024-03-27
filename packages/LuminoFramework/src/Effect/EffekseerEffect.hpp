@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Effect/Common.hpp>
+#include <LuminoFramework/Effect/Common.hpp>
 
 #if LN_EFFEKSEER_ENABLED
 #include <LuminoEngine/Effect/EffectModel.hpp>

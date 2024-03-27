@@ -7,9 +7,9 @@
 
 #include "Internal.hpp"
 #include <LuminoEngine/Font/Font.hpp> // for UILayoutContext
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UILayoutElement.hpp>
-#include <LuminoEngine/UI/UIElement.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UILayoutElement.hpp>
+#include <LuminoFramework/UI/UIElement.hpp>
 #include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include "UIStyleInstance.hpp"

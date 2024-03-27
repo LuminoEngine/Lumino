@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Audio/AudioContext.hpp>
-#include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoFramework/Audio/AudioContext.hpp>
+#include <LuminoFramework/Audio/AudioNode.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "AudioManager.hpp"
 #include "ARIs/ARINode.hpp"

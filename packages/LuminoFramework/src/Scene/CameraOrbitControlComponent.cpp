@@ -1,11 +1,10 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Visual/CameraComponent.hpp>
-#include <LuminoEngine/Scene/Camera.hpp>
-#include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
-#include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoEngine/UI/UIEvents.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Visual/CameraComponent.hpp>
+#include <LuminoFramework/Scene/Camera.hpp>
+#include <LuminoFramework/Scene/CameraOrbitControlComponent.hpp>
+#include <LuminoFramework/Scene/WorldRenderView.hpp>
+#include <LuminoFramework/UI/UIElement.hpp>
+#include <LuminoFramework/UI/UIEvents.hpp>
 
 namespace ln {
 

@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Tilemap/TilemapComponent.hpp>
-#include <LuminoEngine/Tilemap/Tilemap.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Tilemap/TilemapComponent.hpp>
+#include <LuminoFramework/Tilemap/Tilemap.hpp>
 
 namespace ln {
 

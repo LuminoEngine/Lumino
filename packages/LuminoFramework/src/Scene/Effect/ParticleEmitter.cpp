@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Scene/Effect/ParticleEmitterComponent.hpp>
-#include <LuminoEngine/Scene/Effect/ParticleEmitter.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Scene/Effect/ParticleEmitterComponent.hpp>
+#include <LuminoFramework/Scene/Effect/ParticleEmitter.hpp>
 
 namespace ln {
 

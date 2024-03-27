@@ -1,6 +1,6 @@
 ﻿
-#include <LuminoEngine.hpp>
-#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
+#include <LuminoFramework.hpp>
+#include <LuminoFramework/PostEffect/SSRPostEffect.hpp>
 using namespace ln;
 
 class App_Experiment_SSR : public Application

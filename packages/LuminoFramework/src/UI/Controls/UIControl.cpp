@@ -1,10 +1,9 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
-#include <LuminoEngine/UI/Controls/UIControl.hpp>
-#include <LuminoEngine/UI/UIActiveTimer.hpp>
-#include <LuminoEngine/UI/UICommand.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/Layout/UILayoutPanel.hpp>
+#include <LuminoFramework/UI/Controls/UIControl.hpp>
+#include <LuminoFramework/UI/UIActiveTimer.hpp>
+#include <LuminoFramework/UI/UICommand.hpp>
 #include "../UIStyleInstance.hpp"
 #include "../UIManager.hpp"
 

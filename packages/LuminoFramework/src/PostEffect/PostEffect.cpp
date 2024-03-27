@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/PostEffect/PostEffect.hpp>
+#include <LuminoFramework/PostEffect/PostEffect.hpp>
 
 namespace ln {
 

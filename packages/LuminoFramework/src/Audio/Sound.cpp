@@ -1,11 +1,10 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Audio/AudioContext.hpp>
-#include <LuminoEngine/Audio/AudioNode.hpp>
-#include <LuminoEngine/Audio/AudioSourceNode.hpp>
-#include <LuminoEngine/Audio/AudioGainNode.hpp>
-#include <LuminoEngine/Audio/AudioDestinationNode.hpp>
-#include <LuminoEngine/Audio/Sound.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Audio/AudioContext.hpp>
+#include <LuminoFramework/Audio/AudioNode.hpp>
+#include <LuminoFramework/Audio/AudioSourceNode.hpp>
+#include <LuminoFramework/Audio/AudioGainNode.hpp>
+#include <LuminoFramework/Audio/AudioDestinationNode.hpp>
+#include <LuminoFramework/Audio/Sound.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "ARIs/ARISourceNode.hpp"
 #include "ARIs/ARIGainNode.hpp"

@@ -6,7 +6,7 @@
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/PostEffect/DepthOfFieldPostEffect.hpp>
+#include <LuminoFramework/PostEffect/DepthOfFieldPostEffect.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

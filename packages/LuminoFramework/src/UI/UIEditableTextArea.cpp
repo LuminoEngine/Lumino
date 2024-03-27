@@ -3,9 +3,9 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoEngine/Font/Font.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Platform/detail/TextInputMethodSystem.hpp>
 #include <LuminoCore/Base/UnicodeUtils.hpp>
 #include <LuminoEngine/Font/detail/FontCore.hpp>

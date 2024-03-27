@@ -1,7 +1,6 @@
-﻿
-#include "../Internal.hpp"
-#include <LuminoEngine/Scene/Reflection/ReflectorComponent.hpp>
-#include <LuminoEngine/Scene/Reflection/Reflector.hpp>
+﻿#include "../Internal.hpp"
+#include <LuminoFramework/Scene/Reflection/ReflectorComponent.hpp>
+#include <LuminoFramework/Scene/Reflection/Reflector.hpp>
 
 namespace ln {
 

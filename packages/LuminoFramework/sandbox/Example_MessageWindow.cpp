@@ -1,12 +1,12 @@
 ﻿
-#include <LuminoEngine.hpp>
+#include <LuminoFramework.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/UI/Controls/UIButton.hpp>
-#include <LuminoEngine/UI/Controls/UIScrollView.hpp>
-#include <LuminoEngine/UI/UIItemsModel.hpp>
-#include <LuminoEngine/UI/UIItemsElement.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIMessageTextArea.hpp>
+#include <LuminoFramework/UI/Controls/UIButton.hpp>
+#include <LuminoFramework/UI/Controls/UIScrollView.hpp>
+#include <LuminoFramework/UI/UIItemsModel.hpp>
+#include <LuminoFramework/UI/UIItemsElement.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIMessageTextArea.hpp>
 using namespace ln;
 
 class App_Example_MessageWindow : public Application

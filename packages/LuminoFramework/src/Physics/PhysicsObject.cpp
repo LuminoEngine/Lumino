@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Physics/PhysicsWorld.hpp>
-#include <LuminoEngine/Physics/PhysicsObject.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld.hpp>
+#include <LuminoFramework/Physics/PhysicsObject.hpp>
 
 namespace ln {
 

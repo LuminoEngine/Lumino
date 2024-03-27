@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/PostEffect/PostEffect.hpp>
+#include <LuminoFramework/PostEffect/PostEffect.hpp>
 #include "PostEffectRenderer.hpp"
 //#include "../../../Graphics/src/RenderTargetTextureCache.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>

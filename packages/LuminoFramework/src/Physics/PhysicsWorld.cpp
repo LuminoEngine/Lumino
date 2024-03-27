@@ -19,10 +19,10 @@
 #include <bullet/LinearMath/btDefaultMotionState.h>
 
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Physics/PhysicsObject.hpp>
-#include <LuminoEngine/Physics/RigidBody.hpp>
-#include <LuminoEngine/Physics/Joint.hpp>
-#include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoFramework/Physics/PhysicsObject.hpp>
+#include <LuminoFramework/Physics/RigidBody.hpp>
+#include <LuminoFramework/Physics/Joint.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld.hpp>
 #include "PhysicsDebugRenderer.hpp"
 #include "BulletUtils.hpp"
 

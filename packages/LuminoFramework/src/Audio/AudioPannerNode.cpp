@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Audio/AudioContext.hpp>
-#include <LuminoEngine/Audio/AudioPannerNode.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Audio/AudioContext.hpp>
+#include <LuminoFramework/Audio/AudioPannerNode.hpp>
 #include "ARIs/ARIPannerNode.hpp"
 #include "AudioManager.hpp"
 

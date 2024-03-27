@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/ExternalProxyPlatformWindow.hpp>
-#include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include <LuminoEngine/Engine/ApplicationRunner.hpp>
+#include <LuminoFramework/UI/UIFrameWindow.hpp>
+#include <LuminoFramework/Engine/ApplicationRunner.hpp>
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
 

@@ -18,23 +18,23 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 # Files
 #-------------------------------------------------------------------------------
 
-file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
+file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 
-file(GLOB LN_SOURCES_Engine ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
+file(GLOB LN_SOURCES_Engine ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
 set(LN_SOURCES_Engine
 	${LN_SOURCES_Engine}
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/EngineContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/EngineContext.hpp
     src/EngineContext.cpp
     src/RegisterTypes.cpp
 )
 
 
 set(LN_SOURCES_Input
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Input.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/InputBinding.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/InputController.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Mouse.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Input/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Input/Input.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Input/InputBinding.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Input/InputController.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Input/Mouse.hpp
     src/Input/GLFWInputDriver.cpp
     src/Input/GLFWInputDriver.hpp
     src/Input/Input.cpp
@@ -52,30 +52,30 @@ set(LN_SOURCES_Input
     src/Input/Win32JoystickDriver.hpp
 )
 
-file(GLOB LN_SOURCES_Audio ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/*.hpp src/Audio/*.cpp src/Audio/*.hpp src/Audio/*.md)
+file(GLOB LN_SOURCES_Audio ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Audio/*.hpp src/Audio/*.cpp src/Audio/*.hpp src/Audio/*.md)
 file(GLOB LN_SOURCES_Audio_Decoder src/Audio/Decoder/*.cpp src/Audio/Decoder/*.hpp)
 file(GLOB LN_SOURCES_Audio_ARIs src/Audio/ARIs/*.cpp src/Audio/ARIs/*.hpp src/Audio/ARIs/*.h)
 file(GLOB LN_SOURCES_Audio_Backend src/Audio/Backend/*.cpp src/Audio/Backend/*.hpp)
 
-file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
-file(GLOB LN_SOURCES_Shader_Lexer ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Lexer/*.hpp src/Shader/Lexer/*.cpp src/Shader/Lexer/*.hpp src/Shader/Lexer/*.md)
+file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
+file(GLOB LN_SOURCES_Shader_Lexer ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Shader/Lexer/*.hpp src/Shader/Lexer/*.cpp src/Shader/Lexer/*.hpp src/Shader/Lexer/*.md)
 
 
 
-file(GLOB LN_SOURCES_PostEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/PostEffect/*.hpp src/PostEffect/*.cpp src/PostEffect/*.hpp)
+file(GLOB LN_SOURCES_PostEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/PostEffect/*.hpp src/PostEffect/*.cpp src/PostEffect/*.hpp)
 
-file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp src/Effect/*.md)
+file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp src/Effect/*.md)
 
-file(GLOB LN_SOURCES_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/*.hpp src/Physics/*.cpp src/Physics/*.hpp  src/Physics/*.md)
+file(GLOB LN_SOURCES_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Physics/*.hpp src/Physics/*.cpp src/Physics/*.hpp  src/Physics/*.md)
 
-file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp src/Asset/*.md)
+file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp src/Asset/*.md)
 
 set(LN_SOURCES_Visual
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Visual/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Visual/CameraComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Visual/LightComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Visual/SpriteComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Visual/VisualComponent.hpp
     src/Visual/Internal.hpp
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
@@ -85,20 +85,20 @@ set(LN_SOURCES_Visual
     src/Visual/VisualManager.hpp
 )
 
-file(GLOB LN_SOURCES_Scene ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/*.hpp src/Scene/*.cpp src/Scene/*.hpp)
-file(GLOB LN_SOURCES_Scene_Text ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Text/*.hpp src/Scene/Text/*.cpp src/Scene/Text/*.hpp)
-file(GLOB LN_SOURCES_Scene_Shapes ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Shapes/*.hpp src/Scene/Shapes/*.cpp src/Scene/Shapes/*.hpp)
-file(GLOB LN_SOURCES_Scene_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Mesh/*.hpp src/Scene/Mesh/*.cpp src/Scene/Mesh/*.hpp)
-file(GLOB LN_SOURCES_Scene_MeshTilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshTilemap/*.hpp src/Scene/MeshTilemap/*.cpp src/Scene/MeshTilemap/*.hpp)
-file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshVoxelmap/*.hpp src/Scene/MeshVoxelmap/*.cpp src/Scene/MeshVoxelmap/*.hpp)
-file(GLOB LN_SOURCES_Scene_Reflection ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Reflection/*.hpp src/Scene/Reflection/*.cpp src/Scene/Reflection/*.hpp)
-file(GLOB LN_SOURCES_Scene_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Physics/*.hpp src/Scene/Physics/*.cpp src/Scene/Physics/*.hpp)
-file(GLOB LN_SOURCES_Scene_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Effect/*.hpp src/Scene/Effect/*.cpp src/Scene/Effect/*.hpp)
-file(GLOB LN_SOURCES_Scene_Sprite ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Sprite/*.hpp src/Scene/Sprite/*.cpp src/Scene/Sprite/*.hpp)
+file(GLOB LN_SOURCES_Scene ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/*.hpp src/Scene/*.cpp src/Scene/*.hpp)
+file(GLOB LN_SOURCES_Scene_Text ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/Text/*.hpp src/Scene/Text/*.cpp src/Scene/Text/*.hpp)
+file(GLOB LN_SOURCES_Scene_Shapes ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/Shapes/*.hpp src/Scene/Shapes/*.cpp src/Scene/Shapes/*.hpp)
+file(GLOB LN_SOURCES_Scene_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/Mesh/*.hpp src/Scene/Mesh/*.cpp src/Scene/Mesh/*.hpp)
+file(GLOB LN_SOURCES_Scene_MeshTilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/MeshTilemap/*.hpp src/Scene/MeshTilemap/*.cpp src/Scene/MeshTilemap/*.hpp)
+file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/MeshVoxelmap/*.hpp src/Scene/MeshVoxelmap/*.cpp src/Scene/MeshVoxelmap/*.hpp)
+file(GLOB LN_SOURCES_Scene_Reflection ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/Reflection/*.hpp src/Scene/Reflection/*.cpp src/Scene/Reflection/*.hpp)
+file(GLOB LN_SOURCES_Scene_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/Physics/*.hpp src/Scene/Physics/*.cpp src/Scene/Physics/*.hpp)
+file(GLOB LN_SOURCES_Scene_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/Effect/*.hpp src/Scene/Effect/*.cpp src/Scene/Effect/*.hpp)
+file(GLOB LN_SOURCES_Scene_Sprite ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Scene/Sprite/*.hpp src/Scene/Sprite/*.cpp src/Scene/Sprite/*.hpp)
 
-file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
-file(GLOB LN_SOURCES_UI_Controls ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Controls/*.hpp src/UI/Controls/*.cpp src/UI/Controls/*.hpp)
-file(GLOB LN_SOURCES_UI_Layout ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Layout/*.hpp src/UI/Layout/*.cpp src/UI/Layout/*.hpp)
+file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
+file(GLOB LN_SOURCES_UI_Controls ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/UI/Controls/*.hpp src/UI/Controls/*.cpp src/UI/Controls/*.hpp)
+file(GLOB LN_SOURCES_UI_Layout ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/UI/Layout/*.hpp src/UI/Layout/*.cpp src/UI/Layout/*.hpp)
 
 # set(LN_SOURCES_UI_imgui
 #     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imconfig.h
@@ -113,11 +113,11 @@ file(GLOB LN_SOURCES_UI_Layout ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Layout/*
 #     ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui/imstb_truetype.h
 # )
 set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_REPO_ROOT_DIR}/build/BuildCache/imgui)
-file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
+file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
 file(GLOB LN_SOURCES_Runtime
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Runtime/*.h
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework/Runtime/*.hpp
     src/Runtime/*.cpp
     src/Runtime/*.hpp
     src/Runtime/*.h
@@ -166,8 +166,8 @@ source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
 source_group("Runtime" FILES ${LN_SOURCES_Runtime})
 
 set(LN_SOURCES
-    src/LuminoEngine.PCH.h
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine.hpp
+    src/PCH.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoFramework.hpp
     ${LN_ENGINE_INCLUDE_DIR}/Lumino.hpp
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Engine}
@@ -326,7 +326,7 @@ endif()
 
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-target_precompile_headers(${PROJECT_NAME} PRIVATE "src/LuminoEngine.PCH.h")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/PCH.hpp")
 
 if (LN_EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")

@@ -1,19 +1,19 @@
 ﻿
-#include <LuminoEngine.hpp>
+#include <LuminoFramework.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/UI/Controls/UIButton.hpp>
-#include <LuminoEngine/UI/Controls/UICheckBox.hpp>
-#include <LuminoEngine/UI/Controls/UIScrollView.hpp>
-#include <LuminoEngine/UI/UIItemsModel.hpp>
-#include <LuminoEngine/UI/UIItemsElement.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/Controls/UIListBox.hpp>
-#include <LuminoEngine/UI/Controls/UITreeView.hpp>
-#include <LuminoEngine/UI/Controls/UISplitter.hpp>
-#include <LuminoEngine/UI/UIIcon.hpp>
-#include <LuminoEngine/UI/UITabBar.hpp>
-#include <LuminoEngine/UI/Controls/UIPropertyFields.hpp>
-#include <LuminoEngine/UI/Controls/UIComboBox.hpp>
+#include <LuminoFramework/UI/Controls/UIButton.hpp>
+#include <LuminoFramework/UI/Controls/UICheckBox.hpp>
+#include <LuminoFramework/UI/Controls/UIScrollView.hpp>
+#include <LuminoFramework/UI/UIItemsModel.hpp>
+#include <LuminoFramework/UI/UIItemsElement.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/Controls/UIListBox.hpp>
+#include <LuminoFramework/UI/Controls/UITreeView.hpp>
+#include <LuminoFramework/UI/Controls/UISplitter.hpp>
+#include <LuminoFramework/UI/UIIcon.hpp>
+#include <LuminoFramework/UI/UITabBar.hpp>
+#include <LuminoFramework/UI/Controls/UIPropertyFields.hpp>
+#include <LuminoFramework/UI/Controls/UIComboBox.hpp>
 using namespace ln;
 
 

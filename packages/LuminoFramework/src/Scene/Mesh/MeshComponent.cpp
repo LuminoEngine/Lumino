@@ -6,11 +6,11 @@
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
-#include <LuminoEngine/Physics/CollisionShape.hpp>
-#include <LuminoEngine/Physics/RigidBody.hpp>
-#include <LuminoEngine/Physics/PhysicsWorld.hpp>
-#include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
+#include <LuminoFramework/Physics/CollisionShape.hpp>
+#include <LuminoFramework/Physics/RigidBody.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld.hpp>
+#include <LuminoFramework/Scene/Mesh/MeshComponent.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
 #include "Engine/EngineManager.hpp"
 

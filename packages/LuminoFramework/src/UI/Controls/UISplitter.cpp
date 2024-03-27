@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI/Controls/UIScrollView.hpp> // for Thumb
-#include <LuminoEngine/UI/Controls/UISplitter.hpp>
+#include <LuminoFramework/UI/Controls/UIScrollView.hpp> // for Thumb
+#include <LuminoFramework/UI/Controls/UISplitter.hpp>
 
 namespace ln {
 

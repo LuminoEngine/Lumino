@@ -1,7 +1,7 @@
 ﻿
-#include <LuminoEngine.hpp>
-#include <LuminoEngine/Tilemap/Voxel.hpp>
-#include <LuminoEngine/Engine/detail/EngineDomain.hpp>
+#include <LuminoFramework.hpp>
+#include <LuminoFramework/Tilemap/Voxel.hpp>
+#include <LuminoFramework/Engine/detail/EngineDomain.hpp>
 using namespace ln;
 
 class App_Experiment_Editor : public Application

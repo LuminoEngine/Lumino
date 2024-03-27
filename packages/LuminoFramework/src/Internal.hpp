@@ -1,3 +1,3 @@
 #pragma once
-#include <LuminoEngine/EngineContext.hpp>
-#include <LuminoEngine/Engine/detail/EngineDomain.hpp>
+#include <LuminoFramework/EngineContext.hpp>
+#include <LuminoFramework/Engine/detail/EngineDomain.hpp>

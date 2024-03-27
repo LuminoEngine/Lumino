@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <stack>
-#include <LuminoEngine/Scene/Scene.hpp>
+#include <LuminoFramework/Scene/Scene.hpp>
 
 namespace ln {
 class Shader;

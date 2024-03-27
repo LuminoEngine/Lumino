@@ -1,6 +1,6 @@
 
 #pragma once
 
-#include <LuminoEngine.hpp>
+#include <LuminoFramework.hpp>
 
 using namespace ln;

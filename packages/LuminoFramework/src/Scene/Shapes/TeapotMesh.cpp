@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModelFactory.hpp>
-#include <LuminoEngine/Scene/Shapes/TeapotMesh.hpp>
+#include <LuminoFramework/Scene/Shapes/TeapotMesh.hpp>
 
 namespace ln {
 

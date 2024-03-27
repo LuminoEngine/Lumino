@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModelFactory.hpp>
-#include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
+#include <LuminoFramework/Scene/Shapes/MeshPrimitiveComponent.hpp>
 //#include "../SceneManager.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 

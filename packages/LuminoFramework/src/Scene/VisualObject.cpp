@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Visual/VisualComponent.hpp>
-#include <LuminoEngine/Scene/VisualObject.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Visual/VisualComponent.hpp>
+#include <LuminoFramework/Scene/VisualObject.hpp>
 
 namespace ln {
 

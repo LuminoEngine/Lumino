@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
-#include <LuminoEngine/Scene/Sprite/InstancedSprites.hpp>
+#include <LuminoFramework/Scene/Sprite/InstancedSprites.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {

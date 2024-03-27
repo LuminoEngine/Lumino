@@ -7,7 +7,7 @@
 #include <LuminoEngine/Rendering/Kanata/KUnlitRenderPass.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
-#include <LuminoEngine/Engine/detail/EngineDomain.hpp>
+#include <LuminoFramework/Engine/detail/EngineDomain.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 #if 0

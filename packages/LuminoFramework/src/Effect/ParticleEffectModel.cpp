@@ -34,7 +34,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Effect/ParticleEffectModel.hpp>
+#include <LuminoFramework/Effect/ParticleEffectModel.hpp>
 
 namespace ln {
     

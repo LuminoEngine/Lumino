@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Scene/Component.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
-#include <LuminoEngine/Scene/Level.hpp>
-#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoFramework/Scene/Component.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
+#include <LuminoFramework/Scene/Level.hpp>
+#include <LuminoFramework/Scene/World.hpp>
 
 namespace ln {
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "ARINode.hpp"
-#include <LuminoEngine/Audio/InternalSharedMutex.inc>
+#include <LuminoFramework/Audio/InternalSharedMutex.inc>
 
 namespace ln {
 namespace detail {

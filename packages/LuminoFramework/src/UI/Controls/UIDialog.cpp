@@ -1,10 +1,9 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/UI/UIRenderView.hpp>
-#include <LuminoEngine/UI/Controls/UIButton.hpp>
-#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
-#include <LuminoEngine/UI/UIAdorner.hpp>
-#include <LuminoEngine/UI/Controls/UIDialog.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/UI/UIRenderView.hpp>
+#include <LuminoFramework/UI/Controls/UIButton.hpp>
+#include <LuminoFramework/UI/Layout/UILayoutPanel.hpp>
+#include <LuminoFramework/UI/UIAdorner.hpp>
+#include <LuminoFramework/UI/Controls/UIDialog.hpp>
 
 namespace ln {
     

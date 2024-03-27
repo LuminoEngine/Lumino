@@ -8,8 +8,8 @@
 #endif
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
-#include <LuminoEngine/Physics/PhysicsWorld.hpp>
-#include <LuminoEngine/Physics/SoftBody.hpp>
+#include <LuminoFramework/Physics/PhysicsWorld.hpp>
+#include <LuminoFramework/Physics/SoftBody.hpp>
 #include "BulletUtils.hpp"
 
 namespace ln {

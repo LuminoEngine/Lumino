@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Engine/Debug.hpp>
+#include <LuminoFramework/Engine/Debug.hpp>
 #include <LuminoEngine/Font/Font.hpp>
-#include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/Scene/WorldRenderView.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
 #include "EngineManager.hpp"
 
 namespace ln {

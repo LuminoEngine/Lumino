@@ -1,10 +1,10 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI/UIEvents.hpp>
-#include <LuminoEngine/UI/UICommand.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIText.hpp>
-#include <LuminoEngine/UI/Controls/UILinkLabel.hpp>
+#include <LuminoFramework/UI/UIEvents.hpp>
+#include <LuminoFramework/UI/UICommand.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIText.hpp>
+#include <LuminoFramework/UI/Controls/UILinkLabel.hpp>
 
 namespace ln {
 

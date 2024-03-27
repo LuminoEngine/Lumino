@@ -1,13 +1,12 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Effect/EffectContext.hpp>
-#include <LuminoEngine/Visual/SpriteComponent.hpp>  // TODO:
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Effect/EffectContext.hpp>
+#include <LuminoFramework/Visual/SpriteComponent.hpp>  // TODO:
 #include <LuminoEngine/Rendering/Material.hpp>  // TODO:
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include "../../../../lumino/LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 #include "../Engine/EngineManager.hpp"  // TODO:
-#include <LuminoEngine/Scene/World.hpp>  // TODO:
-#include <LuminoEngine/Effect/ParticleEffectModel.hpp>  // TODO:
+#include <LuminoFramework/Scene/World.hpp>  // TODO:
+#include <LuminoFramework/Effect/ParticleEffectModel.hpp>  // TODO:
 #include "EffectManager.hpp"
 
 namespace ln {

@@ -4,7 +4,7 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
-#include <LuminoEngine/Visual/SpriteComponent.hpp>
+#include <LuminoFramework/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include "../../../../lumino/LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"

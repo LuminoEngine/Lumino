@@ -2,26 +2,26 @@
 #include "SceneManager.hpp"
 #include <LuminoEngine/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
-#include <LuminoEngine/Scene/Raycaster.hpp>
+#include <LuminoFramework/Scene/Raycaster.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "Shapes/PathShapeContext.hpp"
 
 // for registerType
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Level.hpp>
-#include <LuminoEngine/Scene/Sprite.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/Level.hpp>
+#include <LuminoFramework/Scene/Sprite.hpp>
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Tilemap/Tileset.hpp>
-#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
-#include <LuminoEngine/Tilemap/TilemapModel.hpp>
-#include <LuminoEngine/Tilemap/TilemapComponent.hpp>
-#include <LuminoEngine/Tilemap/Tilemap.hpp>
+#include <LuminoFramework/Tilemap/Tileset.hpp>
+#include <LuminoFramework/Tilemap/TilemapLayer.hpp>
+#include <LuminoFramework/Tilemap/TilemapModel.hpp>
+#include <LuminoFramework/Tilemap/TilemapComponent.hpp>
+#include <LuminoFramework/Tilemap/Tilemap.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
-#include <LuminoEngine/Scene/Mesh/StaticMesh.hpp>
-#include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
-#include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
+#include <LuminoFramework/Scene/Mesh/StaticMesh.hpp>
+#include <LuminoFramework/Scene/Shapes/MeshPrimitiveComponent.hpp>
+#include <LuminoFramework/Scene/Shapes/MeshPrimitives.hpp>
 
 namespace ln {
 namespace detail {

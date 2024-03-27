@@ -1,9 +1,8 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Scene.hpp>
-#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
-#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapComponent.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/Scene.hpp>
+#include <LuminoFramework/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
+#include <LuminoFramework/Scene/MeshVoxelmap/MeshVoxelmapComponent.hpp>
 
 namespace ln {
 

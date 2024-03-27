@@ -1,6 +1,5 @@
-﻿
-#pragma once
-#include <LuminoEngine/Visual/CameraComponent.hpp>
+﻿#pragma once
+#include <LuminoFramework/Visual/CameraComponent.hpp>
 #include "WorldObject.hpp"
 
 namespace ln {

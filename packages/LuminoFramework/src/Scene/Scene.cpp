@@ -14,15 +14,15 @@
 */
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Scene/Component.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
-#include <LuminoEngine/Scene/Level.hpp>
-#include <LuminoEngine/Scene/Scene.hpp>
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/SceneConductor.hpp>
-#include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include <LuminoEngine/PostEffect/TransitionPostEffect.hpp>
-#include <LuminoEngine/PostEffect/FilmicPostEffect.hpp>
+#include <LuminoFramework/Scene/Component.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
+#include <LuminoFramework/Scene/Level.hpp>
+#include <LuminoFramework/Scene/Scene.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/SceneConductor.hpp>
+#include <LuminoFramework/Scene/WorldRenderView.hpp>
+#include <LuminoFramework/PostEffect/TransitionPostEffect.hpp>
+#include <LuminoFramework/PostEffect/FilmicPostEffect.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "SceneManager.hpp"
 

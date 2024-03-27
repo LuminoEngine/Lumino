@@ -4,7 +4,7 @@
 		入力ソースとの対応付けを行うために必要。
 */
 #include "../Internal.hpp"
-#include <LuminoEngine/Input/InputController.hpp>
+#include <LuminoFramework/Input/InputController.hpp>
 #include "InputManager.hpp"
 
 namespace ln {

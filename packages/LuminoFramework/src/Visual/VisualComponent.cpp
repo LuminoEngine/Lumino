@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Scene/WorldObject.hpp>
-#include <LuminoEngine/Visual/VisualComponent.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
+#include <LuminoFramework/Visual/VisualComponent.hpp>
 #include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 
 namespace ln {

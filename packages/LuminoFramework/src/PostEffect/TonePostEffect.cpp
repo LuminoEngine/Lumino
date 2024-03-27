@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/PostEffect/TonePostEffect.hpp>
+#include <LuminoFramework/PostEffect/TonePostEffect.hpp>
 
 namespace ln {
 

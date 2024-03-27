@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Tilemap/Voxel.hpp>
+#include <LuminoFramework/Tilemap/Voxel.hpp>
 
 namespace ln {
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Effect/Common.hpp>
+#include <LuminoFramework/Effect/Common.hpp>
 #include <LuminoEngine/Base/Promise.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 

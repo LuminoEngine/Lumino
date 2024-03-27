@@ -1,10 +1,10 @@
 ﻿
-#include <LuminoEngine.hpp>
-#include <LuminoEngine/UI/Controls/UIComboBox.hpp>
-#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
-#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapLayer.hpp>
-#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
-#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapComponent.hpp>
+#include <LuminoFramework.hpp>
+#include <LuminoFramework/UI/Controls/UIComboBox.hpp>
+#include <LuminoFramework/Scene/MeshVoxelmap/MeshVoxelset.hpp>
+#include <LuminoFramework/Scene/MeshVoxelmap/MeshVoxelmapLayer.hpp>
+#include <LuminoFramework/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
+#include <LuminoFramework/Scene/MeshVoxelmap/MeshVoxelmapComponent.hpp>
 using namespace ln;
 
 #include <Lumino.hpp>

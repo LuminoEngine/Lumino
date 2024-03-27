@@ -13,8 +13,8 @@
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/GPU/ShaderDescriptor.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include <LuminoEngine/UI/ImGuiIntegration.hpp>
-#include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoFramework/UI/ImGuiIntegration.hpp>
+#include <LuminoFramework/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 

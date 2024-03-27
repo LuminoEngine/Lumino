@@ -1,6 +1,6 @@
 ﻿
-#include <LuminoEngine.hpp>
-#include <LuminoEngine/Tilemap/Voxel.hpp>
+#include <LuminoFramework.hpp>
+#include <LuminoFramework/Tilemap/Voxel.hpp>
 using namespace ln;
 
 class App_Sandbox_Voxel : public Application

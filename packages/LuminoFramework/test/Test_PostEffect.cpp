@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/PostEffect/SSRPostEffect.hpp>
+#include <LuminoFramework/PostEffect/SSRPostEffect.hpp>
 
 //==============================================================================
 class Test_PostEffect : public LuminoSceneTest {

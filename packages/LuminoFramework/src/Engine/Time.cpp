@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "EngineManager.hpp"
-#include <LuminoEngine/Engine/Time.hpp>
+#include <LuminoFramework/Engine/Time.hpp>
 
 namespace ln {
 

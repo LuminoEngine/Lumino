@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
+#include <LuminoFramework/Effect/ParticleEffectModel2.hpp>
 
 namespace ln {
 

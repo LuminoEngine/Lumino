@@ -1,7 +1,6 @@
-﻿
-#include "../Internal.hpp"
-#include <LuminoEngine/Scene/Physics/RigidBody2DComponent.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>
+﻿#include "../Internal.hpp"
+#include <LuminoFramework/Scene/Physics/RigidBody2DComponent.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>
 #include "Engine/EngineManager.hpp"
 
 namespace ln {

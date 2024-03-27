@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
 
 //==============================================================================
 class Test_Rendering_RenderingContext : public LuminoSceneTest

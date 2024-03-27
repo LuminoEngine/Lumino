@@ -1,8 +1,7 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Visual/LightComponent.hpp>
-#include <LuminoEngine/Scene/World.hpp>
-#include <LuminoEngine/Scene/Light.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoFramework/Visual/LightComponent.hpp>
+#include <LuminoFramework/Scene/World.hpp>
+#include <LuminoFramework/Scene/Light.hpp>
 #include "SceneManager.hpp"
 
 namespace ln {

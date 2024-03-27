@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Input/Mouse.hpp>
+#include <LuminoFramework/Input/Mouse.hpp>
 #include "InputManager.hpp"
 #include "InputDriver.hpp"
 

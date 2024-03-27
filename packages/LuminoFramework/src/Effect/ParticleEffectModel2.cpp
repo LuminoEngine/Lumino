@@ -104,7 +104,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
+#include <LuminoFramework/Effect/ParticleEffectModel2.hpp>
 #include "EffectManager.hpp"
 #include "ParticleEffectRenderer.hpp"
 

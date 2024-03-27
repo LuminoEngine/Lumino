@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Audio/AudioNode.hpp>
-#include <LuminoEngine/Audio/AudioDestinationNode.hpp>
-#include <LuminoEngine/Audio/AudioContext.hpp>
-#include <LuminoEngine/Audio/Sound.hpp>
+#include <LuminoFramework/Audio/AudioNode.hpp>
+#include <LuminoFramework/Audio/AudioDestinationNode.hpp>
+#include <LuminoFramework/Audio/AudioContext.hpp>
+#include <LuminoFramework/Audio/Sound.hpp>
 #include "ARIs/ARIDestinationNode.hpp"
 #include "AudioManager.hpp"
 #include "Backend/DSoundAudioDevice.hpp"

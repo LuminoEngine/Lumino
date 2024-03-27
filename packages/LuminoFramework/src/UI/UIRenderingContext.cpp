@@ -7,9 +7,9 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/UIElement.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
 #include "../../../../lumino/LuminoRuntime/src/Rendering/CommandListServer.hpp"
 #include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include "../../../../lumino/LuminoRuntime/src/Rendering/DrawElementListBuilder.hpp"

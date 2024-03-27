@@ -4,23 +4,23 @@
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIContext.hpp>
-#include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include <LuminoEngine/UI/UIRenderView.hpp>
-#include <LuminoEngine/UI/UIViewport.hpp>
-#include <LuminoEngine/UI/UIAdorner.hpp>
-#include <LuminoEngine/UI/Layout/UILayoutPanel.hpp>
-#include <LuminoEngine/Engine/Debug.hpp>
-#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIContext.hpp>
+#include <LuminoFramework/UI/UIFrameWindow.hpp>
+#include <LuminoFramework/UI/UIRenderView.hpp>
+#include <LuminoFramework/UI/UIViewport.hpp>
+#include <LuminoFramework/UI/UIAdorner.hpp>
+#include <LuminoFramework/UI/Layout/UILayoutPanel.hpp>
+#include <LuminoFramework/Engine/Debug.hpp>
+#include <LuminoFramework/Scene/World.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "UIStyleInstance.hpp"
 #include "UIManager.hpp"
-#include <LuminoEngine/UI/UIRenderingContext.hpp>
-#include <LuminoEngine/UI/ImGuiIntegration.hpp>
+#include <LuminoFramework/UI/UIRenderingContext.hpp>
+#include <LuminoFramework/UI/ImGuiIntegration.hpp>
 
 #include "../Effect/EffectManager.hpp" // TODO: tests
 

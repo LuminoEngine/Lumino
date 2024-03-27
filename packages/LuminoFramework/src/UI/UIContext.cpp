@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIElement.hpp>
-#include <LuminoEngine/UI/UIContext.hpp>
-#include <LuminoEngine/UI/UIEvents.hpp>
-#include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoFramework/UI/UIStyle.hpp>
+#include <LuminoFramework/UI/UIElement.hpp>
+#include <LuminoFramework/UI/UIContext.hpp>
+#include <LuminoFramework/UI/UIEvents.hpp>
+#include <LuminoFramework/UI/UIFrameWindow.hpp>
 #include "UIManager.hpp"
 
 namespace ln {

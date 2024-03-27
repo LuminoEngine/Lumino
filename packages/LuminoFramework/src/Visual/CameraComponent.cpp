@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include <LuminoEngine/Scene/WorldObject.hpp>   // TODO: WorldObjectTransform の定義を Component.hpp にもってくればいらなくなる
-#include <LuminoEngine/Visual/CameraComponent.hpp>
+#include <LuminoFramework/Scene/WorldRenderView.hpp>
+#include <LuminoFramework/Scene/WorldObject.hpp>   // TODO: WorldObjectTransform の定義を Component.hpp にもってくればいらなくなる
+#include <LuminoFramework/Visual/CameraComponent.hpp>
 
 namespace ln {
 

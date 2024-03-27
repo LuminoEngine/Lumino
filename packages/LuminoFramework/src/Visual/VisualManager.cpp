@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "VisualManager.hpp"
-#include <LuminoEngine/Visual/SpriteComponent.hpp>
+#include <LuminoFramework/Visual/SpriteComponent.hpp>
 
 namespace ln {
 namespace detail {
