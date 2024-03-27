@@ -15,9 +15,9 @@
 #include <LuminoFramework/Scene/Camera.hpp>
 #include <LuminoFramework/Scene/Light.hpp>
 #include <LuminoFramework/Scene/Reflection/OffscreenWorldRenderView.hpp>
-#include "../../../../lumino/LuminoRuntime/src/Rendering/CommandListServer.hpp"
+#include "../../../LuminoRuntime/src/Rendering/CommandListServer.hpp"
 #include <LuminoEngine/Rendering/detail/RenderStage.hpp>
-#include "../../../../lumino/LuminoRuntime/src/Rendering/RenderElement.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderElement.hpp"
 #include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>

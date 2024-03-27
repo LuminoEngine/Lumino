@@ -10,11 +10,11 @@
 #include <LuminoFramework/UI/UIRenderingContext.hpp>
 #include <LuminoFramework/UI/UIElement.hpp>
 #include <LuminoFramework/UI/UIStyle.hpp>
-#include "../../../../lumino/LuminoRuntime/src/Rendering/CommandListServer.hpp"
+#include "../../../LuminoRuntime/src/Rendering/CommandListServer.hpp"
 #include <LuminoEngine/Rendering/detail/RenderStage.hpp>
-#include "../../../../lumino/LuminoRuntime/src/Rendering/DrawElementListBuilder.hpp"
-#include "../../../../lumino/LuminoRuntime/src/Rendering/RenderFeature/FrameRectRenderFeature.hpp"
-#include "../../../../lumino/LuminoRuntime/src/Rendering/RenderFeature/ShapesRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/DrawElementListBuilder.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/FrameRectRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/ShapesRenderFeature.hpp"
 
 namespace ln {
 

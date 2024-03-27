@@ -3,7 +3,7 @@
 #include <LuminoFramework/Visual/SpriteComponent.hpp>  // TODO:
 #include <LuminoEngine/Rendering/Material.hpp>  // TODO:
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
-#include "../../../../lumino/LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 #include "../Engine/EngineManager.hpp"  // TODO:
 #include <LuminoFramework/Scene/World.hpp>  // TODO:
 #include <LuminoFramework/Effect/ParticleEffectModel.hpp>  // TODO:

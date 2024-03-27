@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoFramework/UI/UIRenderingContext.hpp>
 #include <LuminoFramework/UI/UISprite.hpp>
-#include "../../../../lumino/LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
+#include "../../../LuminoRuntime/src/Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 
