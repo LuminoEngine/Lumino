@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Scene/Shapes/PathShape.hpp>
-#include "../../../../LuminoRuntime/src/Rendering/RenderFeature/NanoVGHelper.hpp"
+#include <LuminoEngine/Rendering/detail/NanoVGHelper.hpp>
 #include "../SceneManager.hpp"
 #include "PathShapeContext.hpp"
 

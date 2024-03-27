@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/Kanata/Common.hpp>
-#include "../RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 
 namespace ln {
 namespace detail {

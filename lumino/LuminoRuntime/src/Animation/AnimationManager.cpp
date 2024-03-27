@@ -7,7 +7,7 @@
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 //#include "../Scene/SceneManager.hpp"
 #include "VmdLoader.hpp"
-#include "AnimationManager.hpp"
+#include <LuminoEngine/Animation/detail/AnimationManager.hpp>
 
 namespace ln {
 namespace detail {

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/ClearRenderFeature.hpp"
 #include "RenderFeature/SpriteRenderFeature.hpp"

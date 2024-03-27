@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/Mesh/MeshModel.hpp>
-#include "../MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "MeshImporter.hpp"
 
 namespace ln {

@@ -1,4 +1,4 @@
-﻿#include "MeshGenerater.hpp"
+﻿#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 
 namespace ln {
 namespace detail {

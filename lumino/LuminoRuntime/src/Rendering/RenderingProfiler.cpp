@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include "RenderingProfiler.hpp"
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 
 namespace ln {
 namespace detail {

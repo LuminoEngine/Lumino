@@ -4,7 +4,7 @@
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModelFactory.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "MeshGeneraters/MeshGenerater.hpp"
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "MeshGeneraters/CylinderMeshGenerater.hpp"
 #include "MeshGeneraters/TeapotMeshGenerater.hpp"
 

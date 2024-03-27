@@ -9,7 +9,6 @@
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include "ClusteredShadingSceneRenderer.hpp"
-#include "RenderStage.hpp"
 #include "RenderElement.hpp"
 #include "RLIs/RLIMaterial.hpp"
 

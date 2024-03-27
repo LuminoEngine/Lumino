@@ -24,7 +24,7 @@ GLRenderPass を bind するとき、RT[0] がバックバッファを示す Ren
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include "SceneRenderer.hpp"
 
 namespace ln {

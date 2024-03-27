@@ -12,7 +12,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
-#include "../Mesh/MeshGeneraters/MeshGenerater.hpp"
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "CommandListServer.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "DrawElementListBuilder.hpp"

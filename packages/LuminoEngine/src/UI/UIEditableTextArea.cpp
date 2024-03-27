@@ -6,7 +6,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
-#include "../../../LuminoRuntime/src/Platform/TextInputMethodSystem.hpp"
+#include <LuminoEngine/Platform/detail/TextInputMethodSystem.hpp>
 #include <LuminoCore/Base/UnicodeUtils.hpp>
 #include <LuminoEngine/Font/detail/FontCore.hpp>
 #include "UIStyleInstance.hpp"

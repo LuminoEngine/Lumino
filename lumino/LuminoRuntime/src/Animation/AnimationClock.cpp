@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Animation/AnimationClock.hpp>
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
-#include "AnimationManager.hpp"
+#include <LuminoEngine/Animation/detail/AnimationManager.hpp>
 
 namespace ln {
 

@@ -11,7 +11,7 @@
 #include "RenderFeature/MeshRenderFeature.hpp"
 #include "RenderFeature/PathRenderFeature.hpp"
 #include "RenderFeature/ExtensionRenderFeature.hpp"
-#include "RenderingProfiler.hpp"
+#include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
@@ -158,7 +158,7 @@ Result<> RenderingManager::init(const Settings& settings) {
     // SkyLowAltitudeOptimized
     {
         static const unsigned char data[] = {
-#include "../../../LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
         m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = makeObject_deprecated<Shader>(_TT("SkyLowAltitudeOptimized"), &stream);
@@ -166,7 +166,7 @@ Result<> RenderingManager::init(const Settings& settings) {
     // SkyDome
     {
         static const unsigned char data[] = {
-#include "../../../LuminoEngine/src/Scene/Resource/SkyDome.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/Scene/Resource/SkyDome.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::SkyDome, _TT("SkyDome"), data, LN_ARRAY_SIZE_OF(data));
     }
@@ -174,7 +174,7 @@ Result<> RenderingManager::init(const Settings& settings) {
     // LuminosityHighPassShader
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
         m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = makeObject_deprecated<Shader>(_TT("LuminosityHighPassShader"), &stream);
@@ -182,7 +182,7 @@ Result<> RenderingManager::init(const Settings& settings) {
     // SeperableBlur
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/SeperableBlur.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/SeperableBlur.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
         m_builtinShaders[(int)BuiltinShader::SeperableBlur] = makeObject_deprecated<Shader>(_TT("SeperableBlur"), &stream);
@@ -190,7 +190,7 @@ Result<> RenderingManager::init(const Settings& settings) {
     // BloomComposite
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/BloomComposite.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/BloomComposite.lcfx.inl"
         };
         MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
         m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject_deprecated<Shader>(_TT("BloomComposite"), &stream);
@@ -199,21 +199,21 @@ Result<> RenderingManager::init(const Settings& settings) {
     // SSRRayTracing
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/SSRRayTracing.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/SSRRayTracing.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::SSRRayTracing, _TT("SSRRayTracing"), data, LN_ARRAY_SIZE_OF(data));
     }
     // SSRBlur
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/SSRBlur.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/SSRBlur.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::SSRBlur, _TT("SSRBlur"), data, LN_ARRAY_SIZE_OF(data));
     }
     // SSRComposite
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/SSRComposite.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/SSRComposite.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::SSRComposite, _TT("SSRComposite"), data, LN_ARRAY_SIZE_OF(data));
     }
@@ -221,7 +221,7 @@ Result<> RenderingManager::init(const Settings& settings) {
     // RadialBlur
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/RadialBlur.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/RadialBlur.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::RadialBlur, _TT("RadialBlur"), data, LN_ARRAY_SIZE_OF(data));
     }
@@ -229,35 +229,35 @@ Result<> RenderingManager::init(const Settings& settings) {
     // SSAOOcclusionMap
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::SSAOOcclusionMap, _TT("SSAOOcclusionMap"), data, LN_ARRAY_SIZE_OF(data));
     }
     // FilmicPostEffect
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/FilmicPostEffect.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::FilmicPostEffect, _TT("FilmicPostEffect"), data, LN_ARRAY_SIZE_OF(data));
     }
     // Copy
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/Copy.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/Copy.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::Copy, _TT("Copy"), data, LN_ARRAY_SIZE_OF(data));
     }
     // TransitionEffectWithoutMask
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/TransitionEffectWithoutMask.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/TransitionEffectWithoutMask.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::TransitionEffectWithoutMask, _TT("TransitionEffectWithoutMask"), data, LN_ARRAY_SIZE_OF(data));
     }
     // TransitionEffectWithMask
     {
         const unsigned char data[] = {
-#include "../../../LuminoEngine/src/PostEffect/Resource/TransitionEffectWithMask.lcfx.inl"
+#include "../../../../packages/LuminoEngine/src/PostEffect/Resource/TransitionEffectWithMask.lcfx.inl"
         };
         createBuiltinShader(BuiltinShader::TransitionEffectWithMask, _TT("TransitionEffectWithMask"), data, LN_ARRAY_SIZE_OF(data));
     }

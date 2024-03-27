@@ -8,7 +8,7 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
-#include "../MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "../GMesh.hpp"
 #include "MqoImporter.hpp"
 

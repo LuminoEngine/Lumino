@@ -8,7 +8,7 @@
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/AnimationController.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
-#include "MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "CCDIKSolver.hpp"
 
 namespace ln {

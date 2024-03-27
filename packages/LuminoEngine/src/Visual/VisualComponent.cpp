@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Visual/VisualComponent.hpp>
-#include "../../../LuminoRuntime/src/Rendering/RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 
 namespace ln {
 

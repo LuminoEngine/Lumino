@@ -14,9 +14,9 @@
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include "../../../LuminoRuntime/src/Rendering/CommandListServer.hpp"
-#include "../../../LuminoRuntime/src/Rendering/RenderStage.hpp"
-#include "../../../LuminoRuntime/src/Rendering/RenderElement.hpp"
+#include "../../../../lumino/LuminoRuntime/src/Rendering/CommandListServer.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
+#include "../../../../lumino/LuminoRuntime/src/Rendering/RenderElement.hpp"
 
 namespace ln {
 

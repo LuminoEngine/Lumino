@@ -3,10 +3,10 @@
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
-#include "../RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include "../RenderElement.hpp"
 #include "../UnLigitingSceneRenderer.hpp"
-#include "../RenderingProfiler.hpp"
+#include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 
 namespace ln {
 

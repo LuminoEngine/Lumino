@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "../MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "VRMImporter.hpp"
 
 namespace ln {

@@ -4,11 +4,9 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
-#include "../../../../LuminoRuntime/src/Rendering//CommandListServer.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include "../SceneManager.hpp"
-#include "../../../../LuminoRuntime/src/Rendering//RenderElement.hpp"
 
 namespace ln {
 

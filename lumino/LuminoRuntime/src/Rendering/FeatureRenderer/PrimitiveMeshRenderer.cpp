@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "../../Mesh/MeshGeneraters/MeshGenerater.hpp"
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 
 namespace ln {
 namespace detail {

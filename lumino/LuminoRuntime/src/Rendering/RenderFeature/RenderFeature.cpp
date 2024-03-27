@@ -6,7 +6,7 @@
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../SceneRenderer.hpp"
 

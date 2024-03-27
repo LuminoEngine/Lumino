@@ -13,7 +13,7 @@
 #include <LuminoEngine/Rendering/Kanata/KSceneRenderPass.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
 #include "CommandListServer.hpp"
-#include "RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include "RenderElement.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "SceneRenderer.hpp"

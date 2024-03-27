@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "Common.hpp"
-#include "../../../../src/Mesh/MeshGeneraters/MeshGenerater.hpp"
 
 namespace ln {
 namespace kanata {

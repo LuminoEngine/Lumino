@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include "TextInputMethodSystem.hpp"
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Platform/detail/TextInputMethodSystem.hpp>
 
 namespace ln {
 namespace detail {

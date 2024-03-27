@@ -15,7 +15,7 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
-#include "MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 
 namespace ln {
 

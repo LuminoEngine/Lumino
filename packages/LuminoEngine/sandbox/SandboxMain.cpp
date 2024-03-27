@@ -3,7 +3,7 @@
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include "Common.hpp"
-#include "../src/Engine/EngineDomain.hpp"
+#include <LuminoEngine/Engine/detail/EngineDomain.hpp>
 #include "../src/Engine/EngineManager.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../src/Rendering/DrawElementListBuilder.hpp"

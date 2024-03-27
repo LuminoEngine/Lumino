@@ -5,8 +5,8 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include "RenderElement.hpp"
-#include "RenderStage.hpp"
 
 namespace ln {
 namespace detail {

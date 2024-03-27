@@ -26,7 +26,7 @@
 #include "GPU/StreamingBufferAllocator.hpp"
 #include "GPU/RenderPassCache.hpp"
 //#include "Rendering/RenderingManager2.hpp"
-#include "Mesh/MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 
 namespace ln {
 namespace detail {

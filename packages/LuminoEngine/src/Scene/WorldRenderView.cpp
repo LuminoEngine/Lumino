@@ -15,12 +15,12 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
-#include "../../../LuminoRuntime/src/Rendering/CommandListServer.hpp"
-#include "../../../LuminoRuntime/src/Rendering/RenderStage.hpp"
-#include "../../../LuminoRuntime/src/Rendering/RenderElement.hpp"
+#include "../../../../lumino/LuminoRuntime/src/Rendering/CommandListServer.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
+#include "../../../../lumino/LuminoRuntime/src/Rendering/RenderElement.hpp"
 #include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "../../../LuminoRuntime/src/Mesh/MeshGeneraters/MeshGenerater.hpp"
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "../PostEffect/PostEffectRenderer.hpp"
 #include "SceneManager.hpp"
 #include "InternalSkyBox.hpp"

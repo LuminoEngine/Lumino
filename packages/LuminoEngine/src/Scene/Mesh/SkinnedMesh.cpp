@@ -3,7 +3,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Scene/Mesh/MeshComponent.hpp>
 #include <LuminoEngine/Scene/Mesh/SkinnedMesh.hpp>
-#include "../../../../LuminoRuntime/src/Mesh/MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 
 namespace ln {
 

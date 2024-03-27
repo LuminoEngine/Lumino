@@ -24,14 +24,14 @@
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include "../../../LuminoRuntime/src/Animation/AnimationManager.hpp"
+#include <LuminoEngine/Animation/detail/AnimationManager.hpp>
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
 #include <LuminoEngine/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
-#include "../../../LuminoRuntime/src/Mesh/MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "../../../LuminoRuntime/src/Rendering/RenderingProfiler.hpp"
+#include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 #include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -39,7 +39,7 @@
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
-#include "EngineDomain.hpp"
+#include <LuminoEngine/Engine/detail/EngineDomain.hpp>
 #include "EngineProfiler.hpp"
 
 #include <LuminoEngine/Scene/SceneConductor.hpp>

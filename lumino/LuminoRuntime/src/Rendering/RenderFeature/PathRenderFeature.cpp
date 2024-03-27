@@ -14,7 +14,7 @@
 // [2020/11/17] Shader を使うことになるので、Descripter の対応 (Material ごとに UniformBuffer を持てるようにする) が済んでからにする。
 #if 1
 
-#include "NanoVGHelper.hpp"
+#include <LuminoEngine/Rendering/detail/NanoVGHelper.hpp>
 
 /**
 

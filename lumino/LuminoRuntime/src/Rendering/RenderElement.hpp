@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "RenderStage.hpp"
+#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 
 namespace ln {
 namespace detail {

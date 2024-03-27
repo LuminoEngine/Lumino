@@ -1,6 +1,5 @@
 ﻿#include <LuminoCore/Runtime/Object.hpp>
 #include <LuminoCore/Runtime/TypeInfo.hpp>
-#include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 
 namespace ln {

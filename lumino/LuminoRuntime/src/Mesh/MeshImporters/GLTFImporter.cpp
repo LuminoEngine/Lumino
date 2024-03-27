@@ -12,7 +12,7 @@
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include "../MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "GLTFImporter.hpp"
 
 namespace ln {

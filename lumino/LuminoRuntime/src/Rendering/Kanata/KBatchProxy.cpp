@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "../../Mesh/MeshGeneraters/MeshGenerater.hpp"
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 

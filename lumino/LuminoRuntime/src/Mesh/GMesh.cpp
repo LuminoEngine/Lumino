@@ -3,7 +3,7 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/detail/GraphicsManager.hpp>
-#include "MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "GMesh.hpp"
 
 namespace ln {

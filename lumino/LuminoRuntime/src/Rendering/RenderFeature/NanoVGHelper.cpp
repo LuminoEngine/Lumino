@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include "NanoVGHelper.hpp"
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Rendering/detail/NanoVGHelper.hpp>
 
 static int glnvg__maxi(int a, int b) { return a > b ? a : b; }
 

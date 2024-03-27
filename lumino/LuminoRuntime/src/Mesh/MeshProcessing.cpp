@@ -8,8 +8,8 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
-#include "MeshManager.hpp"
-#include "MeshGeneraters/MeshGenerater.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
+#include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "MeshGeneraters/CylinderMeshGenerater.hpp"
 
 namespace ln {

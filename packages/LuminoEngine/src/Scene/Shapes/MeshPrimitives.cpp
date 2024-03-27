@@ -7,7 +7,7 @@
 #include <LuminoEngine/Mesh/MeshModelFactory.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Scene/Shapes/MeshPrimitives.hpp>
-#include "../../../../LuminoRuntime/src/Mesh/MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 #include "../SceneManager.hpp"
 
 namespace ln {

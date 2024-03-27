@@ -15,7 +15,7 @@
 #include "MeshImporters/ObjMeshImporter.hpp"
 #include "MeshImporters/PmxImporter.hpp"
 #include "MeshBoneMapper.hpp"
-#include "MeshManager.hpp"
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 
 namespace ln {
 namespace detail {
