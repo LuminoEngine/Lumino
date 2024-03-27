@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoCore/Base/Environment.hpp>
 #include <LuminoCore/IO/FileSystem.hpp>
-#include "../IO/PathHelper.hpp"
+#include <LuminoCore/IO/detail/PathHelper.hpp>
 
 #if defined(LN_OS_WIN32)
 #include <Shlobj.h>

@@ -5,7 +5,7 @@
 #include "Internal.hpp"
 #include <Windows.h>
 #include <LuminoCore/Text/Encoding.hpp>
-#include "PathHelper.hpp"
+#include <LuminoCore/IO/detail/PathHelper.hpp>
 #include <LuminoCore/Base/Platform.hpp>
 
 namespace ln {

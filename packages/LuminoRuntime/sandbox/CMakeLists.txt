@@ -1,4 +1,4 @@
-project(LuminoGraphics-sandbox)
+project(LuminoRuntime-sandbox)
 
 #-------------------------------------------------------------------------------
 # Targets

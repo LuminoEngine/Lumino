@@ -1,5 +1,4 @@
-﻿
-#include <sys/types.h>
+﻿#include <sys/types.h>
 #include <sys/stat.h>
 #include <list>
 #include "Internal.hpp"
@@ -12,7 +11,7 @@
 #else
 #include "FileSystem_Unix.hpp"
 #endif
-#include "PathHelper.hpp"
+#include <LuminoCore/IO/detail/PathHelper.hpp>
 
 namespace ln {
 

@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include "../../../../lumino/LuminoCore/src/IO/PathHelper.hpp"
+﻿#include "Internal.hpp"
+#include <LuminoCore/IO/detail/PathHelper.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>

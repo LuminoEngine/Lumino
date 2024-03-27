@@ -11,7 +11,7 @@
 
 #include <time.h>
 #include "Internal.hpp"
-#include "PathHelper.hpp"
+#include <LuminoCore/IO/detail/PathHelper.hpp>
 #include <LuminoCore/Base/Environment.hpp>
 #include <LuminoCore/IO/FileSystem.hpp>
 #include <LuminoCore/IO/Path.hpp>

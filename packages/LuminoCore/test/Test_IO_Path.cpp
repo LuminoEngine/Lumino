@@ -1,7 +1,7 @@
 #include "Common.hpp"
 #include <LuminoCore/Base/Environment.hpp>
 #include <LuminoCore/IO/Path.hpp>
-#include "../src/IO/PathHelper.hpp"
+#include <LuminoCore/IO/detail/PathHelper.hpp>
 
 //==============================================================================
 //# Path

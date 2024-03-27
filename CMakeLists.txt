@@ -84,7 +84,7 @@ set(LN_EXPORT_DESTINATION_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/lumino")
 set(CMAKE_DEBUG_POSTFIX "d")
 
 # ビルド時にリポジトリ全体に共通設定を伝播させるため、ここで、 include が必要。
-include(lumino/LuminoCore/cmake/LuminoConfig-Common.cmake)
+include(packages/LuminoCore/cmake/LuminoConfig-Common.cmake)
 
 if(LN_MSVC_STATIC_RUNTIME)
     ln_use_msvc_static_runtime_library()
@@ -190,7 +190,7 @@ set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/gl
 
 # ------------------------------------------------------------------------------
 if(LUMINO_BUILD_CORE)
-    add_subdirectory(lumino/LuminoCore)
+    add_subdirectory(packages/LuminoCore)
 endif()
 
 if(LUMINO_USE_WEBGPU)
