@@ -16,7 +16,7 @@ enum DescriptorResourceType
 
 class IGraphicsObject {
 public: // TODO: internal
-    GraphicsObjectId m_id;
+    GraphicsObjectId m_id = 0;
 };
 
 /** Graphics 機能に関係するリソースのベースクラスです。*/

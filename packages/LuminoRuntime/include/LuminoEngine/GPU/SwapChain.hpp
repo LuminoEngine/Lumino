@@ -66,7 +66,7 @@ public:
     RenderPass* currentRenderPass() const;
 
     // resolve せず直接取得する。
-    detail::RHIDeviceObject* getRHIObject(IGraphicsResource* resource) const;
+    detail::RHIDeviceObject* getRHIObject(IGraphicsObject* object) const;
 
     void present();
 

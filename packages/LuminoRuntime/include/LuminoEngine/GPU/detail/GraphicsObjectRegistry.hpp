@@ -34,8 +34,8 @@ class GraphicsObjectRegistry : public URefObject {
 public:
     GraphicsObjectRegistry();
     ~GraphicsObjectRegistry();
-    void registerObject(IGraphicsObject* resource);
-    void unregisterObject(GraphicsObjectId id);
+    void registerObject(IGraphicsObject* object);
+    void unregisterObject(IGraphicsObject* object);
 
     void subscribe(RHIGraphicsObjectRegistry* rhiRegistry);
     void unsubscribe(RHIGraphicsObjectRegistry* rhiRegistry);
@@ -52,8 +52,7 @@ public:
     ~RHIGraphicsObjectRegistry();
     void registerObject(IGraphicsObject* resource, RHIDeviceObject* rhiObject);
     void unregisterObject(GraphicsObjectId id);
-    const Ref<RHIDeviceObject>& get(GraphicsObjectId id) const { return m_rhiObjectList[id]; }
-
+    const Ref<RHIDeviceObject>& get(IGraphicsObject* object) const;
 
 private:
     GraphicsObjectRegistry* m_ownerRegistry;

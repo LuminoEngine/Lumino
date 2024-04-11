@@ -107,9 +107,9 @@ RenderPass* GraphicsContext::currentRenderPass() const {
     return m_renderPasses[m_imageIndex];
 }
 
-//detail::RHIDeviceObject* GraphicsContext::getRHIResource(IGraphicsResource* resource) const {
-//    	return m_rhiResourceRegistry->getRHIResource(resource);
-//}
+detail::RHIDeviceObject* GraphicsContext::getRHIObject(IGraphicsObject* object) const {
+    return m_rhiResourceRegistry->get(object);
+}
 
 void GraphicsContext::present() {
     GraphicsCommandList* commandList = currentCommandList2();

@@ -7,7 +7,7 @@ namespace ln {
 namespace detail {
 
 GraphicsObjectRegistry::GraphicsObjectRegistry()
-    : m_resourceList()
+    : m_resourceList{nullptr} // [0] is dummy.
     , m_idStack()
     , m_rhiRegistries() {
 }
@@ -15,22 +15,23 @@ GraphicsObjectRegistry::GraphicsObjectRegistry()
 GraphicsObjectRegistry::~GraphicsObjectRegistry() {
 }
 
-void GraphicsObjectRegistry::registerObject(IGraphicsObject* resource) {
-    if (LN_ASSERT(resource->m_id == 0)) return;
+void GraphicsObjectRegistry::registerObject(IGraphicsObject* object) {
+    if (LN_ASSERT(object->m_id == 0)) return;
     if (m_idStack.empty()) {
         GraphicsObjectId id = m_resourceList.size();
-        resource->m_id = id;
-        m_resourceList.push(resource);
+        object->m_id = id;
+        m_resourceList.push(object);
     }
     else {
         GraphicsObjectId id = m_idStack.top();
-        resource->m_id = id;
+        object->m_id = id;
         m_idStack.pop();
-        m_resourceList[id] = resource;
+        m_resourceList[id] = object;
     }
 }
 
-void GraphicsObjectRegistry::unregisterObject(GraphicsObjectId id) {
+void GraphicsObjectRegistry::unregisterObject(IGraphicsObject* object) {
+    GraphicsObjectId id = object->m_id;
     if (LN_ASSERT(id < m_resourceList.size())) return;
     IGraphicsObject* resource = m_resourceList[id];
     if (LN_ASSERT(resource)) return;
@@ -72,12 +73,16 @@ void RHIGraphicsObjectRegistry::registerObject(IGraphicsObject* resource, RHIDev
 }
 
 void RHIGraphicsObjectRegistry::unregisterObject(GraphicsObjectId id) {
-    if (LN_ASSERT(id < m_rhiObjectList.size())) return;
+    if (id >= m_rhiObjectList.size()) return;
     RHIDeviceObject* rhiObject = m_rhiObjectList[id];
-    if (LN_ASSERT(rhiObject)) return;
+    if (!rhiObject) return;
     if (LN_ASSERT(rhiObject->m_ownerId == id)) return;
     m_rhiObjectList[id] = nullptr;
     rhiObject->m_ownerId = 0;
+}
+
+const Ref<RHIDeviceObject>& RHIGraphicsObjectRegistry::get(IGraphicsObject* object) const {
+    return m_rhiObjectList[object->m_id];
 }
 
 } // namespace detail

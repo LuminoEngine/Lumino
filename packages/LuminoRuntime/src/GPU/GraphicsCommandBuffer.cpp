@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/IndexBuffer.hpp>
@@ -37,6 +38,7 @@ GraphicsCommandList::GraphicsCommandList()
 
 void GraphicsCommandList::init(detail::GraphicsManager* manager) {
     m_manager = detail::GraphicsManager::instance();
+    m_manager->resourceRegistry()->registerObject(this);
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<detail::LinearAllocator>(manager->linearAllocatorPageManager());
     m_descriptorPool = makeURef<detail::ShaderDescriptorPool>();
@@ -58,6 +60,11 @@ void GraphicsCommandList::dispose() {
     //     pair.descriptorPool->dispose();
     // }
     m_usingDescriptorPools.clear();
+
+    if (m_manager) {
+        m_manager->resourceRegistry()->unregisterObject(this);
+        m_manager = nullptr;
+    }
 }
 
 void GraphicsCommandList::onDispose(bool explicitDisposing) {

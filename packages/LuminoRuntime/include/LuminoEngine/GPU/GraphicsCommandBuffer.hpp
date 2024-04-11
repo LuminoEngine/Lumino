@@ -13,14 +13,13 @@ class SingleFrameUniformBufferAllocator;
 class GraphicsCommandListInternal;
 } // namespace detail
 
-class GraphicsCommandList : public Object {
+class GraphicsCommandList : public Object
+    , public IGraphicsObject {
 public:
     static Ref<GraphicsCommandList> create();
 
-
     GraphicsCommandList();
 
-    
 public:
     /** 同時に設定できる RenderTarget の最大数です。 */
     static const int MaxMultiRenderTargets = detail::MaxMultiRenderTargets;
@@ -107,7 +106,7 @@ public:
 
     /** デフォルト設定を復元します。 */
     void resetState();
-    
+
     /** @} */
     /** @defgroup RenderPass */
     /** @{ */
@@ -189,7 +188,7 @@ public:
     void endCommandRecoding();
 
 protected:
-     void onDispose(bool explicitDisposing) override;
+    void onDispose(bool explicitDisposing) override;
 
 private:
     detail::ICommandList* commitState();
@@ -207,11 +206,6 @@ private:
 
     std::vector<ShaderPassDescriptorPair> m_usingDescriptorPools;
 
-
-
-
-
-    
     enum DirtyFlags {
         DirtyFlags_None = 0,
         DirtyFlags_BlendState = 1 << 1,
