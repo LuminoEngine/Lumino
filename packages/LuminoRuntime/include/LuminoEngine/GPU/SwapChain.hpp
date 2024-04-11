@@ -80,7 +80,7 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
     GraphicsContext();
-    virtual ~GraphicsContext();
+    ~GraphicsContext() override;
     void init(PlatformWindow* window);
 
 private:
