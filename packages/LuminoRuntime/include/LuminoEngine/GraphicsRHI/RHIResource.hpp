@@ -19,7 +19,6 @@ enum class RHIResourceType : uint8_t {
 class RHIResource
     : public RHIDeviceObject {
 public:
-    int32_t m_ownerId = 0; // GraphicsResourceId
 
     RHIResourceType resourceType() const { return m_type; }
     GraphicsResourceUsage usage() const { return m_usage; }

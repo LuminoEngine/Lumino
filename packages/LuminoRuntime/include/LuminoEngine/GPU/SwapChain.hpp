@@ -19,6 +19,7 @@ class GraphicsManager;
 class ISwapChain;
 class SwapChainInternal;
 class SingleFrameUniformBufferAllocator;
+class RHIDeviceObject;
 }
 
 /** スワップチェーンのクラスです。 */
@@ -64,10 +65,13 @@ public:
 
     RenderPass* currentRenderPass() const;
 
+    // resolve せず直接取得する。
+    detail::RHIDeviceObject* getRHIObject(IGraphicsResource* resource) const;
+
     void present();
 
 public: // TODO: internal
-    detail::RHIGraphicsResourceRegistry* rhiResourceRegistry() const { return m_rhiResourceRegistry; }
+    detail::RHIGraphicsObjectRegistry* rhiResourceRegistry() const { return m_rhiResourceRegistry; }
 
 protected:
     void onDispose(bool explicitDisposing) override;
@@ -89,7 +93,7 @@ private:
 
     detail::GraphicsManager* m_manager;
     Ref<detail::ISwapChain> m_rhiObject;
-    URef<detail::RHIGraphicsResourceRegistry> m_rhiResourceRegistry;
+    URef<detail::RHIGraphicsObjectRegistry> m_rhiResourceRegistry;
     std::vector<Ref<RenderTargetTexture>> m_backbuffers;
     std::vector<Ref<DepthBuffer>> m_depthBuffers;
     std::vector<Ref<RenderPass>> m_renderPasses;

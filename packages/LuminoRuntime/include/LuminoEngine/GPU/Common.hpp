@@ -5,6 +5,7 @@
 #include <LuminoEngine/Bitmap/Common.hpp>
 
 namespace ln {
+class IGraphicsObject;
 class IGraphicsResource;
 class GraphicsCommandList;
 class SamplerState;
@@ -22,7 +23,7 @@ class IndexBuffer;
 class INativeGraphicsExtension;
 class ShaderDescriptor;
 
-using GraphicsResourceId = int32_t;
+using GraphicsObjectId = int32_t;
 //using RHIGraphicsResourceId = int32_t;
 
 /**
@@ -65,11 +66,12 @@ class ISamplerState;
 class IRenderPass;
 class ShaderSecondaryDescriptor;
 class GraphicsProfiler;
+class RHIDeviceObject;
 class RHIResource;
 class RenderPassCache;
 
-class GraphicsResourceRegistry;
-class RHIGraphicsResourceRegistry;
+class GraphicsObjectRegistry;
+class RHIGraphicsObjectRegistry;
 
 } // namespace detail
 } // namespace ln

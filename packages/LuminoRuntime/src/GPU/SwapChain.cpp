@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/GPU/detail/GraphicsResourceRegistry.hpp>
+#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
@@ -35,7 +35,7 @@ void GraphicsContext::init(PlatformWindow* window) {
     Object::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
-    m_rhiResourceRegistry = makeURef<detail::RHIGraphicsResourceRegistry>(m_manager->resourceRegistry());
+    m_rhiResourceRegistry = makeURef<detail::RHIGraphicsObjectRegistry>(m_manager->resourceRegistry());
 
     SizeI backbufferSize;
     window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
@@ -106,6 +106,10 @@ RenderPass* GraphicsContext::currentRenderPass() const {
     if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_renderPasses[m_imageIndex];
 }
+
+//detail::RHIDeviceObject* GraphicsContext::getRHIResource(IGraphicsResource* resource) const {
+//    	return m_rhiResourceRegistry->getRHIResource(resource);
+//}
 
 void GraphicsContext::present() {
     GraphicsCommandList* commandList = currentCommandList2();

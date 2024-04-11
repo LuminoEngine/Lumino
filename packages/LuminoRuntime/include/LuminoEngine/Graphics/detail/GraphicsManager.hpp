@@ -59,7 +59,7 @@ public:
     //const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 
     
-    GraphicsResourceRegistry* resourceRegistry() const { return m_resourceRegistry; }
+    GraphicsObjectRegistry* resourceRegistry() const { return m_resourceRegistry; }
     //GraphicsResourceRegistry* vertexLayoutRegistry() const { return m_vertexLayoutRegistry; }
     //GraphicsResourceRegistry* vertexBufferRegistry() const { return m_vertexBufferRegistry; }
     //GraphicsResourceRegistry* indexBufferRegistry() const { return m_indexBufferRegistry; }
@@ -123,7 +123,7 @@ private:
     Ref<CommandQueue> m_graphicsQueue;
     Ref<CommandQueue> m_computeQueue;
 
-    URef<GraphicsResourceRegistry> m_resourceRegistry;
+    URef<GraphicsObjectRegistry> m_resourceRegistry;
     //URef<GraphicsResourceRegistry> m_vertexLayoutRegistry;
     //URef<GraphicsResourceRegistry> m_vertexBufferRegistry;
     //URef<GraphicsResourceRegistry> m_indexBufferRegistry;

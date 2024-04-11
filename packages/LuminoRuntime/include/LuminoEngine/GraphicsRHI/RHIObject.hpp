@@ -16,6 +16,7 @@ public:
 
 	IGraphicsDevice* m_device;
 	int32_t m_objectId;
+    int32_t m_ownerId = 0; // GraphicsResourceId
 
 protected:
     RHIDeviceObject();
