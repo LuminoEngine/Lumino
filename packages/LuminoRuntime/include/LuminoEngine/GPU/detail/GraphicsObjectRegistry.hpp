@@ -52,7 +52,8 @@ public:
     ~RHIGraphicsObjectRegistry();
     void registerObject(IGraphicsObject* resource, RHIDeviceObject* rhiObject);
     void unregisterObject(GraphicsObjectId id);
-    const Ref<RHIDeviceObject>& get(IGraphicsObject* object) const;
+    void unregisterAllObjects();
+    RHIDeviceObject* get(IGraphicsObject* object) const;
 
 private:
     GraphicsObjectRegistry* m_ownerRegistry;

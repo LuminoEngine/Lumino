@@ -8,6 +8,7 @@ namespace ln {
 /** 頂点バッファのクラスです。 */
 class VertexBuffer
     : public Object
+    , public IGraphicsObject
     , public IGraphicsResource
 {
 public:
@@ -55,7 +56,6 @@ public:
 
     detail::DescriptorResourceType descriptorResourceType() const override { return detail::DescriptorResourceType_Buffer; }
 
-    Ref<detail::RHIResource> m_rhiObject;
 protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
@@ -73,7 +73,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
-    bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
+    //bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     detail::GraphicsManager* m_manager;
     GraphicsResourceUsage m_usage;

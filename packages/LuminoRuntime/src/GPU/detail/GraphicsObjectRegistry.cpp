@@ -60,6 +60,15 @@ RHIGraphicsObjectRegistry::RHIGraphicsObjectRegistry(GraphicsObjectRegistry* own
 }
 
 RHIGraphicsObjectRegistry::~RHIGraphicsObjectRegistry() {
+
+    //#if LN_DEBUG
+    for (const auto& x : m_rhiObjectList) {
+        if (x) {
+            LN_ERROR();
+        }
+    }
+    //#endif
+
     if (m_ownerRegistry) {
         m_ownerRegistry->unsubscribe(this);
         m_ownerRegistry = nullptr;
@@ -69,7 +78,7 @@ RHIGraphicsObjectRegistry::~RHIGraphicsObjectRegistry() {
 void RHIGraphicsObjectRegistry::registerObject(IGraphicsObject* resource, RHIDeviceObject* rhiObject) {
     m_rhiObjectList.ensureResize(resource->m_id + 1);
     m_rhiObjectList[resource->m_id] = rhiObject;
-    rhiObject->m_objectId = resource->m_id;
+    rhiObject->m_ownerId = resource->m_id;
 }
 
 void RHIGraphicsObjectRegistry::unregisterObject(GraphicsObjectId id) {
@@ -81,7 +90,17 @@ void RHIGraphicsObjectRegistry::unregisterObject(GraphicsObjectId id) {
     rhiObject->m_ownerId = 0;
 }
 
-const Ref<RHIDeviceObject>& RHIGraphicsObjectRegistry::get(IGraphicsObject* object) const {
+void RHIGraphicsObjectRegistry::unregisterAllObjects() {
+    for (const Ref<RHIDeviceObject>& rhiObject : m_rhiObjectList) {
+        if (rhiObject) {
+            rhiObject->m_ownerId = 0;
+		}
+	}
+	m_rhiObjectList.clear();
+}
+
+RHIDeviceObject* RHIGraphicsObjectRegistry::get(IGraphicsObject* object) const {
+    if (object->m_id >= m_rhiObjectList.size()) return nullptr;
     return m_rhiObjectList[object->m_id];
 }
 

@@ -20,6 +20,8 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 
@@ -28,19 +30,16 @@ namespace ln {
 //==============================================================================
 // VertexBuffer
 
-Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, GraphicsResourceUsage usage)
-{
+Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, GraphicsResourceUsage usage) {
     return makeObject_deprecated<VertexBuffer>(bufferSize, usage);
 }
 
-Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
-{
+Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage) {
     return makeObject_deprecated<VertexBuffer>(bufferSize, initialData, usage);
 }
 
 VertexBuffer::VertexBuffer()
     : m_manager(nullptr)
-    , m_rhiObject(nullptr)
     , m_usage(GraphicsResourceUsage::Static)
     , m_pool(GraphicsResourcePool::Managed)
     , m_primarySize(0)
@@ -50,53 +49,50 @@ VertexBuffer::VertexBuffer()
     , m_initialUpdate(true)
     , m_modified(false)
     , m_dirtyOffset(0)
-    , m_dirtySize(0)
-{
+    , m_dirtySize(0) {
 }
 
-VertexBuffer::~VertexBuffer()
-{
+VertexBuffer::~VertexBuffer() {
 }
 
-void VertexBuffer::init(size_t bufferSize, GraphicsResourceUsage usage)
-{
+void VertexBuffer::init(size_t bufferSize, GraphicsResourceUsage usage) {
     Object::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+
+    m_manager->resourceRegistry()->registerObject(this);
 
     m_usage = usage;
     m_modified = true;
     resize(bufferSize);
 }
 
-void VertexBuffer::init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
-{
+void VertexBuffer::init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage) {
     VertexBuffer::init(bufferSize, usage);
     if (initialData) {
-        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexBuffer(GraphicsResourceUsage::Static, bufferSize, initialData);
-        m_modified = false;
+        m_buffer.assign((const uint8_t*)initialData, (const uint8_t*)initialData + bufferSize);
+        m_modified = true;
     }
 }
 
-void VertexBuffer::onDispose(bool explicitDisposing)
-{
-    m_rhiObject.reset();
+void VertexBuffer::onDispose(bool explicitDisposing) {
+    if (m_manager) {
+        m_manager->resourceRegistry()->unregisterObject(this);
+    }
 
     detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+
     Object::onDispose(explicitDisposing);
 }
 
-int VertexBuffer::size() const
-{
+int VertexBuffer::size() const {
     return m_primarySize;
 }
 
-void VertexBuffer::reserve(int size)
-{
+void VertexBuffer::reserve(int size) {
     m_buffer.reserve(static_cast<size_t>(size));
 }
 
-void VertexBuffer::resize(int size)
-{
+void VertexBuffer::resize(int size) {
     m_primarySize = size;
     m_buffer.resize(size);
 
@@ -107,14 +103,12 @@ void VertexBuffer::resize(int size)
     }
 }
 
-const void* VertexBuffer::data() const
-{
+const void* VertexBuffer::data() const {
     return m_buffer.data();
 }
 
-//void* VertexBuffer::map(MapMode mode)
-void* VertexBuffer::writableData(uint64_t offset, uint64_t size)
-{
+// void* VertexBuffer::map(MapMode mode)
+void* VertexBuffer::writableData(uint64_t offset, uint64_t size) {
     if (offset == 0 && size == 0) {
         size = this->size();
     }
@@ -144,7 +138,8 @@ void* VertexBuffer::writableData(uint64_t offset, uint64_t size)
         m_modified = true;
         m_mappedBuffer = m_rhiMappedBuffer;
 #endif
-    } else {
+    }
+    else {
         // prepare for GraphicsResourcePool::None
         if (m_buffer.size() < m_primarySize) {
             m_buffer.resize(m_primarySize);
@@ -157,47 +152,51 @@ void* VertexBuffer::writableData(uint64_t offset, uint64_t size)
     return m_mappedBuffer;
 }
 
-void VertexBuffer::clear()
-{
+void VertexBuffer::clear() {
     if (LN_REQUIRE(m_usage == GraphicsResourceUsage::Dynamic)) return;
     m_buffer.clear();
     m_primarySize = 0;
     m_modified = true;
 }
 
-void VertexBuffer::setResourceUsage(GraphicsResourceUsage usage)
-{
+void VertexBuffer::setResourceUsage(GraphicsResourceUsage usage) {
     // Prohibit while direct locking.
-    //if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
+    // if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
     if (m_usage != usage) {
         m_usage = usage;
         m_modified = true;
     }
 }
 
-void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
-{
+void VertexBuffer::setResourcePool(GraphicsResourcePool pool) {
     m_pool = pool;
 }
 
 detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
-	*outModified = m_modified;
+    GraphicsContext* graphicsContext = context->graphicsContext();
+    detail::RHIResource* rhiObject = static_cast<detail::RHIResource*>(graphicsContext->rhiResourceRegistry()->get(this));
+    *outModified = m_modified;
     m_mappedBuffer = nullptr;
 
     if (m_modified) {
-		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-   //     if (m_rhiMappedBuffer) {
-			//m_rhiObject->unmap();
-   //         m_rhiMappedBuffer = nullptr;
-   //     } else
+
+        auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+        //     if (m_rhiMappedBuffer) {
+        // m_rhiObject->unmap();
+        //         m_rhiMappedBuffer = nullptr;
+        //     } else
         {
             detail::ICommandList* commandList = context->rhiResource();
             size_t requiredSize = size();
-            if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
-                m_rhiObject = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
-            } else {
+            if (!rhiObject || rhiObject->memorySize() != requiredSize /* || m_rhiObject->usage() != m_usage*/) {
+                // New RHI Resource.
+                auto ref = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
+                graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
+                rhiObject = ref;
+            }
+            else {
+                // Update RHI Resource.
                 context->interruptCurrentRenderPassFromResolveRHI();
-                detail::RHIResource* rhiObject = m_rhiObject;
                 uint64_t offset = m_dirtyOffset;
                 commandList->setSubData(rhiObject, 0, m_buffer.data() + m_dirtyOffset, m_dirtySize);
                 context->m_vertexBufferDataTransferredSize += m_dirtySize;
@@ -205,7 +204,7 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsCommandList* context
         }
     }
 
-    if (LN_ENSURE(m_rhiObject)) return nullptr;
+    if (LN_ENSURE(rhiObject)) return nullptr;
 
     if (m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
         m_buffer.clear();
@@ -214,18 +213,18 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsCommandList* context
 
     m_initialUpdate = false;
     m_modified = false;
-    return m_rhiObject;
+    return rhiObject;
 }
 
-void VertexBuffer::onChangeDevice(detail::IGraphicsDevice* device)
-{
+void VertexBuffer::onChangeDevice(detail::IGraphicsDevice* device) {
     if (device) {
         if (m_pool == GraphicsResourcePool::Managed) {
             // data is transferred by the next resolveRHIObject()
             m_modified = true;
         }
-    } else {
-        m_rhiObject.reset();
+    }
+    else {
+        // m_rhiObject.reset();
     }
 }
 

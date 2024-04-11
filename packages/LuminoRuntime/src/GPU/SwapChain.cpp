@@ -48,7 +48,7 @@ void GraphicsContext::init(PlatformWindow* window) {
     uint32_t count = m_rhiObject->getBackbufferCount();
     m_commandLists.resize(count);
     for (uint32_t i = 0; i < count; i++) {
-        auto commandList = Ref<GraphicsCommandList>(LN_NEW GraphicsCommandList(this));
+        auto commandList = Ref<GraphicsCommandList>(LN_NEW GraphicsCommandList(this), false);
         commandList->init(detail::GraphicsResourceInternal::manager(this));
         m_commandLists[i] = commandList;
     }
@@ -68,6 +68,11 @@ void GraphicsContext::onDispose(bool explicitDisposing) {
     m_commandLists.clear();
     m_depthBuffers.clear();
     m_backbuffers.clear();
+
+    if (m_rhiResourceRegistry) {
+        m_rhiResourceRegistry->unregisterAllObjects();
+        m_rhiResourceRegistry = nullptr;
+    }
 
     detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
     Object::onDispose(explicitDisposing);
