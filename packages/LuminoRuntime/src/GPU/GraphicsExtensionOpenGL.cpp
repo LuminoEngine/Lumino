@@ -10,10 +10,10 @@
 
 namespace ln {
 
-GraphicsCommandList* OpenGLIntegration::getCommandListFromCurrentContext() {
-    auto* manager = detail::GraphicsManager::instance();
-    return manager->getOpenGLIntegrationCommandList();
-}
+//GraphicsCommandList* OpenGLIntegration::getCommandListFromCurrentContext() {
+//    auto* manager = detail::GraphicsManager::instance();
+//    return manager->getOpenGLIntegrationCommandList();
+//}
 
 RenderPass* OpenGLIntegration::getRenderPass(GLuint fbo, int32_t width, int32_t height) {
 

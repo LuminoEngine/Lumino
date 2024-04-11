@@ -98,7 +98,7 @@ public:
     const Ref<SamplerState>& pointClampSamplerState() const { return m_pointClampSamplerState; }
     const Ref<SamplerState>& linearClampSamplerState() const { return m_linearClampSamplerState; }
 
-    GraphicsCommandList* getOpenGLIntegrationCommandList();
+    //GraphicsCommandList* getOpenGLIntegrationCommandList();
 
     StreamingBufferAllocatorManager* obtainVertexBufferStreamingAllocatorManager(size_t elementSize);
     StreamingBufferAllocatorManager* obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format);

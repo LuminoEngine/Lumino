@@ -14,11 +14,11 @@ class GraphicsCommandListInternal;
 } // namespace detail
 
 class GraphicsCommandList : public Object
-    , public IGraphicsObject {
+    /*, public IGraphicsObject*/ {
 public:
-    static Ref<GraphicsCommandList> create();
+    //static Ref<GraphicsCommandList> create();
 
-    GraphicsCommandList();
+    GraphicsCommandList(GraphicsContext* context);
 
 public:
     /** 同時に設定できる RenderTarget の最大数です。 */
@@ -162,7 +162,10 @@ public:
     void dispose();
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
     void reset();
+    GraphicsContext* graphicsContext() const { return m_graphicsContext; }
+
     detail::ConstantBufferView allocateUniformBuffer(size_t size);
+
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
     detail::ShaderSecondaryDescriptor* acquireShaderDescriptor(Shader* shader);
@@ -199,6 +202,7 @@ private:
     };
 
     detail::GraphicsManager* m_manager;
+    GraphicsContext* m_graphicsContext;
     Ref<detail::ICommandList> m_rhiResource;
     Ref<detail::LinearAllocator> m_allocator;
     URef<detail::ShaderDescriptorPool> m_descriptorPool;

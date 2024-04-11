@@ -19,14 +19,15 @@ namespace ln {
 //==============================================================================
 // GraphicsCommandList
 
-Ref<GraphicsCommandList> GraphicsCommandList::create() {
-    auto commandList = makeRef<GraphicsCommandList>();
-    commandList->init(detail::GraphicsManager::instance());
-    return commandList;
-}
+//Ref<GraphicsCommandList> GraphicsCommandList::create() {
+//    auto commandList = makeRef<GraphicsCommandList>();
+//    commandList->init(detail::GraphicsManager::instance());
+//    return commandList;
+//}
 
-GraphicsCommandList::GraphicsCommandList()
+GraphicsCommandList::GraphicsCommandList(GraphicsContext* context)
     : m_manager(nullptr) 
+    , m_graphicsContext(context)
     , m_drawCall(0) 
     , m_rhiResource(nullptr)
     , m_scopeState(ScopeState::Idle)
@@ -38,7 +39,7 @@ GraphicsCommandList::GraphicsCommandList()
 
 void GraphicsCommandList::init(detail::GraphicsManager* manager) {
     m_manager = detail::GraphicsManager::instance();
-    m_manager->resourceRegistry()->registerObject(this);
+    //m_manager->resourceRegistry()->registerObject(this);
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<detail::LinearAllocator>(manager->linearAllocatorPageManager());
     m_descriptorPool = makeURef<detail::ShaderDescriptorPool>();
@@ -61,10 +62,10 @@ void GraphicsCommandList::dispose() {
     // }
     m_usingDescriptorPools.clear();
 
-    if (m_manager) {
-        m_manager->resourceRegistry()->unregisterObject(this);
-        m_manager = nullptr;
-    }
+    //if (m_manager) {
+    //    m_manager->resourceRegistry()->unregisterObject(this);
+    //    m_manager = nullptr;
+    //}
 }
 
 void GraphicsCommandList::onDispose(bool explicitDisposing) {

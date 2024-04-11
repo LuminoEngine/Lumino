@@ -7,7 +7,7 @@ class RenderPass;
 
 class OpenGLIntegration {
 public:
-    static GraphicsCommandList* getCommandListFromCurrentContext();
+    //static GraphicsCommandList* getCommandListFromCurrentContext();
     static RenderPass* getRenderPass(GLuint fbo, int32_t width, int32_t height);
 };
 

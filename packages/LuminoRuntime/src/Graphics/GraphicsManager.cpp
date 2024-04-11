@@ -396,12 +396,12 @@ Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::Asse
     return AssetManager::loadObjectWithCacheHelper<Texture2D>(texture2DCache(), baseDir, exts, filePath, factory);
 }
 
-GraphicsCommandList* GraphicsManager::getOpenGLIntegrationCommandList() {
-    if (!m_openglIntegrationCommandList) {
-        m_openglIntegrationCommandList = makeObject_deprecated<GraphicsCommandList>(this);
-    }
-    return m_openglIntegrationCommandList;
-}
+//GraphicsCommandList* GraphicsManager::getOpenGLIntegrationCommandList() {
+//    if (!m_openglIntegrationCommandList) {
+//        m_openglIntegrationCommandList = makeObject_deprecated<GraphicsCommandList>(this);
+//    }
+//    return m_openglIntegrationCommandList;
+//}
 
 bool GraphicsManager::checkVulkanSupported() {
 #ifdef LN_USE_VULKAN

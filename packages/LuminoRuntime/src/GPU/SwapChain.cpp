@@ -48,7 +48,7 @@ void GraphicsContext::init(PlatformWindow* window) {
     uint32_t count = m_rhiObject->getBackbufferCount();
     m_commandLists.resize(count);
     for (uint32_t i = 0; i < count; i++) {
-        auto commandList = makeRef<GraphicsCommandList>();
+        auto commandList = Ref<GraphicsCommandList>(LN_NEW GraphicsCommandList(this));
         commandList->init(detail::GraphicsResourceInternal::manager(this));
         m_commandLists[i] = commandList;
     }
