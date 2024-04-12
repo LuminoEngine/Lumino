@@ -177,6 +177,7 @@ Result<> GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t
     //glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, black);
 
     GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+    return ok();
 }
 
 void GLTexture3D::onDestroy() {

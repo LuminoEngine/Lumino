@@ -40,6 +40,8 @@ public:
 
     virtual ~GraphicsManager() = default;
 
+    Ref<GraphicsContext> createGraphicsContext(PlatformWindow* window, const GraphicsModuleSettings& settings);
+
     //void enterRendering();
     //void leaveRendering();
 

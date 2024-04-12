@@ -73,5 +73,9 @@ class RenderPassCache;
 class GraphicsObjectRegistry;
 class RHIGraphicsObjectRegistry;
 
+class VulkanDevice;
+class OpenGLDevice;
+class DX12Device;
+
 } // namespace detail
 } // namespace ln

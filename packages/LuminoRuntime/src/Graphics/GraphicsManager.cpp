@@ -8,13 +8,16 @@
 #include <LuminoEngine/GraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include "GPU/RenderTargetTextureCache.hpp"
-#include "../../LuminoRuntime/src/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
 #include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/GPU/VulkanGraphicsContext.hpp>
 #endif
 #ifdef _WIN32
 #include "../../LuminoRuntime/src/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
+#include <LuminoEngine/GPU/DirectX12GraphicsContext.hpp>
 #endif
+#include "../../LuminoRuntime/src/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
+#include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/GPU/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
@@ -325,6 +328,59 @@ void GraphicsManager::dispose() {
 //        }
 //    }
 //}
+
+
+Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* window, const GraphicsModuleSettings& settings) {
+    Ref<GraphicsContext> result;
+
+    // Create device context
+    {
+        if (settings.graphicsAPI == GraphicsAPI::OpenGL) {
+            OpenGLGraphicsContext::Settings s;
+            s.window = window;
+            s.defaultFramebuffer = 0;
+            result = OpenGLGraphicsContext::create(s);
+        }
+        else if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
+#ifdef LN_USE_VULKAN
+            VulkanGraphicsContext::Settings s;
+            s.mainWindow = window;
+            s.debugMode = settings.debugMode;
+            result = VulkanGraphicsContext::create(s);
+#endif
+        }
+        else if (settings.graphicsAPI == GraphicsAPI::DirectX12) {
+#ifdef _WIN32
+            DirectX12GraphicsContext::Settings s;
+            s.mainWindow = window;
+            s.debugMode = settings.debugMode;
+            s.priorityAdapterName = settings.priorityGPUName;
+            result = DirectX12GraphicsContext::create(s);
+#endif
+        }
+
+        // Fallback
+        if (!result) {
+#ifdef _WIN32
+            DirectX12GraphicsContext::Settings s;
+            s.mainWindow = window;
+            s.debugMode = settings.debugMode;
+            s.priorityAdapterName = settings.priorityGPUName;
+            result = DirectX12GraphicsContext::create(s);
+#else
+            VulkanGraphicsContext::Settings s;
+            s.mainWindow = window;
+            s.debugMode = settings.debugMode;
+            result = VulkanGraphicsContext::create(s);
+#endif
+        }
+    }
+
+    if (!result) {
+        auto& triple = result->rhiDevice()->caps().requestedShaderTriple;
+        LN_LOG_INFO("requestedShaderTriple: {}-{}-{}", triple.target, triple.version, triple.option);
+    }
+}
 
 void GraphicsManager::addGraphicsResource(IGraphicsResource* resource) {
     m_graphicsResources.add(resource);

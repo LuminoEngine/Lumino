@@ -31,6 +31,8 @@ public:
 	void detachEventListener(IPlatforEventListener* listener);
 	bool sendEventToAllListener(const PlatformEventArgs& e);	// return : isHandled
 
+	// TODO: intenral
+	detail::PlatformWindowManager* windowManager() const { return m_windowManager; }
 protected:
 	PlatformWindow();
     Result<> init(detail::PlatformWindowManager* windowManager);
