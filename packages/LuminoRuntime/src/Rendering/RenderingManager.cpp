@@ -82,7 +82,7 @@ Result<> RenderingManager::init(const Settings& settings) {
         { 0, VertexElementType::Float4, VertexElementUsage::Tangent, 0 },
     };
     m_standardVertexDeclaration = makeObject_deprecated<VertexLayout>(elements, LN_ARRAY_SIZE_OF(elements));
-    m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
+    //m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
     // m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
     {
@@ -428,7 +428,7 @@ void RenderingManager::dispose() {
     //m_meshRenderFeature = nullptr;
     //m_spriteRenderFeature2 = nullptr;
     //m_blitRenderFeature = nullptr;
-    m_standardVertexDeclarationRHI = nullptr;
+    //m_standardVertexDeclarationRHI = nullptr;
     m_standardVertexDeclaration = nullptr;
     //m_renderFeatures.clear();
 

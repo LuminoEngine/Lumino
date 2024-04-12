@@ -11,6 +11,7 @@ class IVertexDeclaration;
 /** 頂点バッファのレイアウトを記述するためのクラスです。 */
 class VertexLayout
     : public Object
+    , public IGraphicsObject
     , public IGraphicsResource
 {
 public:
@@ -48,7 +49,7 @@ private:
     detail::IVertexDeclaration* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::IVertexDeclaration> m_deviceObj;
+    //Ref<detail::IVertexDeclaration> m_deviceObj;
     List<VertexElement> m_vertexElements;
     bool m_modified;
 
