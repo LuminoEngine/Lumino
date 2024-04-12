@@ -303,6 +303,7 @@ detail::ShaderSecondaryDescriptor* GraphicsCommandList::allocateShaderDescriptor
 // GraphicsCommandList としては RenderPass Outside でも setSubData できるようにしておきたい。
 void GraphicsCommandList::interruptCurrentRenderPassFromResolveRHI() {
     if (m_scopeState == ScopeState::Active && m_currentRHIRenderPass) {
+        LN_WARNING("interruptCurrentRenderPassFromResolveRHI. this method is deprecated.");
         m_rhiResource->endRenderPass(m_currentRHIRenderPass);
         m_currentRHIRenderPass = nullptr;
         m_scopeState = ScopeState::RenderPassInterrupted;

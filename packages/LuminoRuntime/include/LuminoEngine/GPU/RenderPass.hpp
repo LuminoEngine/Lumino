@@ -17,6 +17,7 @@ class IRenderPass;
 // 動的に変化させる必要が無ければ事前作成して、set～ はしないようにしておくとパフォーマンスが良くなる。
 class RenderPass
     : public Object
+    , public IGraphicsObject
     , public IGraphicsResource {
 public:
     static RenderPass* get(RenderTargetTexture* renderTarget);
@@ -84,7 +85,7 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create() */
     void init();
     void init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
-    void init(detail::IRenderPass* rhiRenderPass);
+    //void init2(detail::IRenderPass* rhiRenderPass);
 
 private:
     detail::IRenderPass* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
@@ -92,8 +93,8 @@ private:
     void releaseRHI();
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::IRenderPass> m_rhiObject;
-    Ref<detail::IRenderPass> m_rhiObjectNoClear;
+    //Ref<detail::IRenderPass> m_rhiObject;
+    //Ref<detail::IRenderPass> m_rhiObjectNoClear;
     std::array<Ref<RenderTargetTexture>, GraphicsCommandList::MaxMultiRenderTargets> m_renderTargets;
     Ref<DepthBuffer> m_depthBuffer;
     SizeI m_viewSize;
@@ -103,7 +104,7 @@ private:
     ClearFlags m_clearFlags;
     bool m_dirty : 1;
     bool m_active : 1;
-    bool m_externalRHIRenderPass : 1;
+    //bool m_externalRHIRenderPass : 1;
     bool m_freezed : 1;
 
     friend class GraphicsCommandList;

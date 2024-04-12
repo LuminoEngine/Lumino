@@ -76,6 +76,8 @@ RHIGraphicsObjectRegistry::~RHIGraphicsObjectRegistry() {
 }
 
 void RHIGraphicsObjectRegistry::registerObject(IGraphicsObject* resource, RHIDeviceObject* rhiObject) {
+    if (LN_ASSERT(resource)) return;
+    if (LN_ASSERT(resource->m_id > 0)) return;
     m_rhiObjectList.ensureResize(resource->m_id + 1);
     m_rhiObjectList[resource->m_id] = rhiObject;
     rhiObject->m_ownerId = resource->m_id;

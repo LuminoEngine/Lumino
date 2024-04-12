@@ -10,6 +10,9 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/DepthBuffer.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
+#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include "RenderPassCache.hpp"
 #include "GraphicsProfiler.hpp"
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
@@ -44,7 +47,7 @@ RenderPass* RenderPass::get(
 
 RenderPass::RenderPass()
     : m_manager(nullptr)
-    , m_rhiObject()
+    //, m_rhiObject()
     , m_renderTargets{}
     , m_depthBuffer()
     , m_clearFlags(ClearFlags::None)
@@ -53,19 +56,18 @@ RenderPass::RenderPass()
     , m_clearStencil(0x00)
     , m_dirty(true)
     , m_active(false)
-    , m_externalRHIRenderPass(false)
+    //, m_externalRHIRenderPass(false)
     , m_freezed(false) {
-    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
-    detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderPass(this);
 }
 
 RenderPass::~RenderPass() {
-    detail::GraphicsResourceInternal::manager(this)->profiler()->removeRenderPass(this);
-    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
 }
 
 void RenderPass::init() {
     Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+    detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderPass(this);
+    m_manager->resourceRegistry()->registerObject(this);
 }
 
 void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
@@ -75,31 +77,36 @@ void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffe
     setDepthBuffer(depthBuffer);
 }
 
-void RenderPass::init(detail::IRenderPass* rhiRenderPass) {
-    init();
-    m_rhiObject = rhiRenderPass;
-    m_rhiObjectNoClear = rhiRenderPass;
-    auto viewSize = rhiRenderPass->viewSize();
-    m_viewSize = SizeI(viewSize.width, viewSize.height);
-    
-    auto* rhiRenderTarget = rhiRenderPass->m_renderTargets[0];
-    LN_CHECK(rhiRenderTarget);
-    auto renderTarget = makeObject_deprecated<RenderTargetTexture>();
-    detail::TextureInternal::resetRHIObject(renderTarget, rhiRenderTarget);
-    setRenderTarget(0, renderTarget);
-
-    m_externalRHIRenderPass = true;
-}
+//void RenderPass::init2(detail::IRenderPass* rhiRenderPass) {
+//    init();
+//    m_rhiObject = rhiRenderPass;
+//    m_rhiObjectNoClear = rhiRenderPass;
+//    auto viewSize = rhiRenderPass->viewSize();
+//    m_viewSize = SizeI(viewSize.width, viewSize.height);
+//    
+//    auto* rhiRenderTarget = rhiRenderPass->m_renderTargets[0];
+//    LN_CHECK(rhiRenderTarget);
+//    auto renderTarget = makeObject_deprecated<RenderTargetTexture>();
+//    detail::TextureInternal::resetRHIObject(renderTarget, rhiRenderTarget);
+//    setRenderTarget(0, renderTarget);
+//
+//    m_externalRHIRenderPass = true;
+//}
 
 void RenderPass::onDispose(bool explicitDisposing) {
     releaseRHI();
 
+    if (m_manager) {
+        m_manager->resourceRegistry()->unregisterObject(this);
+        detail::GraphicsResourceInternal::manager(this)->profiler()->removeRenderPass(this);
+        detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    }
     Object::onDispose(explicitDisposing);
 }
 
 void RenderPass::setRenderTarget(int index, RenderTargetTexture* value) {
     if (LN_ASSERT(!m_freezed)) return;
-    if (LN_ASSERT(!m_externalRHIRenderPass)) return;
+    //if (LN_ASSERT(!m_externalRHIRenderPass)) return;
     if (LN_ASSERT(!m_active)) return;
     if (LN_REQUIRE_RANGE(index, 0, GraphicsCommandList::MaxMultiRenderTargets)) return;
 
@@ -121,7 +128,7 @@ RenderTargetTexture* RenderPass::renderTarget(int index) const {
 
 void RenderPass::setDepthBuffer(DepthBuffer* value) {
     if (LN_ASSERT(!m_freezed)) return;
-    if (LN_ASSERT(!m_externalRHIRenderPass)) return;
+    //if (LN_ASSERT(!m_externalRHIRenderPass)) return;
     if (LN_ASSERT(!m_active)) return;
     if (m_depthBuffer != value) {
         m_depthBuffer = value;
@@ -197,13 +204,17 @@ void RenderPass::onChangeDevice(detail::IGraphicsDevice* device) {
 }
 
 detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
-    if (m_externalRHIRenderPass) {
-        return m_rhiObject;
-    }
+    //if (m_externalRHIRenderPass) {
+    //    return m_rhiObject;
+    //}
+    GraphicsContext* graphicsContext = context->graphicsContext();
+    detail::IRenderPass* rhiObject = static_cast<detail::IRenderPass*>(graphicsContext->rhiResourceRegistry()->get(this));
+    *outModified = m_dirty;
 
     if (m_dirty) {
         releaseRHI();
         m_dirty = false;
+
 
         const RenderTargetTexture* primaryTarget = m_renderTargets[0];
         if (LN_ASSERT(primaryTarget, "RenderPass: [0] Invalid render target.")) return nullptr;
@@ -241,16 +252,32 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, 
             m_depthBuffer->m_cleared = true;
         }
 
-        auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-        m_rhiObject = device->renderPassCache()->findOrCreate(key);
+        detail::IGraphicsDevice* device = graphicsContext->rhiDevice();
+        //rhiObject = device->renderPassCache()->findOrCreate(key);
 
-        key.clearFlags = ClearFlags::None;
-        key.clearColor = Color(0, 0, 0, 0);
-        key.clearDepth = 1.0f;
-        key.clearStencil = 0x00;
-        m_rhiObjectNoClear = device->renderPassCache()->findOrCreate(key);
+        
+        detail::DeviceFramebufferState buffers;
+        size_t i = 0;
+        for (; i < key.renderTargets.size(); i++) {
+            if (!key.renderTargets[i]) break;
+            buffers.renderTargets[i] = key.renderTargets[i];
+        }
+        buffers.depthBuffer = key.depthBuffer;
+        Ref<detail::IRenderPass> ref = device->createRenderPass(buffers, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
+
+
+        graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
+        rhiObject = ref;
+
+        //key.clearFlags = ClearFlags::None;
+        //key.clearColor = Color(0, 0, 0, 0);
+        //key.clearDepth = 1.0f;
+        //key.clearStencil = 0x00;
+        //m_rhiObjectNoClear = device->renderPassCache()->findOrCreate(key);
     }
-    return m_rhiObject;
+
+    if (LN_ENSURE(rhiObject)) return nullptr;
+    return rhiObject;
 }
 
 // [2019/10/5]
@@ -263,20 +290,25 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, 
 //
 // もうひとつ、泥臭いけど今のところあまり時間掛けないで回避できるのが、この方法。
 detail::IRenderPass* RenderPass::resolveRHIObjectNoClear(GraphicsCommandList* context, bool* outModified) {
-    if (m_externalRHIRenderPass) {
-        return m_rhiObjectNoClear;
-    }
+    //if (m_externalRHIRenderPass) {
+    //    return m_rhiObjectNoClear;
+    //}
+
+    // 新方式に伴い、 RenderPass と RHI の RenderPass は 1:1 じゃないとダメになった。
+    // 現状ユニットテストではここに来ることは無いので、廃止予定としてマークしておく。
+    LN_NOTIMPLEMENTED();
 
     resolveRHIObject(context, outModified);
-    return m_rhiObjectNoClear;
+    //return m_rhiObjectNoClear;
+    return nullptr;
 }
 
 void RenderPass::releaseRHI() {
-    if (m_rhiObject) {
-        //auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-        //device->renderPassCache()->release(m_rhiObject);
-        m_rhiObject = nullptr;
-    }
+    //if (m_rhiObject) {
+    //    //auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+    //    //device->renderPassCache()->release(m_rhiObject);
+    //    m_rhiObject = nullptr;
+    //}
 }
 
 ////==============================================================================

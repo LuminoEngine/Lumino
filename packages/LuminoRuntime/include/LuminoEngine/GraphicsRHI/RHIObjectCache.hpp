@@ -4,6 +4,7 @@ namespace ln {
 namespace detail {
 
 // IRenderPass のライフサイクル (createとdispose) はこの中で管理する
+// TOOD: いらないかも
 class NativeRenderPassCache {
 public:
     struct FindKey {
