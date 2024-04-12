@@ -1,13 +1,15 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
+#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 
 namespace ln {
 
-const detail::SamplerStateData detail::SamplerStateData::defaultState =
-{
+const detail::SamplerStateData detail::SamplerStateData::defaultState = {
     TextureFilterMode::Point,
     TextureAddressMode::Repeat,
     false,
@@ -16,86 +18,76 @@ const detail::SamplerStateData detail::SamplerStateData::defaultState =
 //==============================================================================
 // SamplerState
 
-Ref<SamplerState> SamplerState::create()
-{
+Ref<SamplerState> SamplerState::create() {
     return makeObject_deprecated<SamplerState>();
 }
 
-Ref<SamplerState> SamplerState::create(TextureFilterMode filter)
-{
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter) {
     return makeObject_deprecated<SamplerState>(filter);
 }
 
-Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address)
-{
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address) {
     return makeObject_deprecated<SamplerState>(filter, address);
 }
 
-Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
-{
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled) {
     return makeObject_deprecated<SamplerState>(filter, address, anisotropyEnabled);
 }
 
-SamplerState* SamplerState::pointClamp()
-{
+SamplerState* SamplerState::pointClamp() {
     return detail::GraphicsManager::instance()->pointClampSamplerState();
 }
 
-SamplerState* SamplerState::linearClamp()
-{
+SamplerState* SamplerState::linearClamp() {
     return detail::GraphicsManager::instance()->linearClampSamplerState();
 }
 
 SamplerState::SamplerState()
     : m_manager(nullptr)
-    , m_rhiObject(nullptr)
+    //, m_rhiObject(nullptr)
     , m_desc(detail::SamplerStateData::defaultState)
     , m_modified(true)
-    , m_frozen(false)
-{
+    , m_frozen(false) {
 }
 
-SamplerState::~SamplerState()
-{
+SamplerState::~SamplerState() {
 }
 
-void SamplerState::init()
-{
+void SamplerState::init() {
     Object::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+    m_manager->resourceRegistry()->registerObject(this);
 }
 
-void SamplerState::init(TextureFilterMode filter)
-{
+void SamplerState::init(TextureFilterMode filter) {
     init();
     setFilterMode(filter);
 }
 
-void SamplerState::init(TextureFilterMode filter, TextureAddressMode address)
-{
+void SamplerState::init(TextureFilterMode filter, TextureAddressMode address) {
     init();
     setFilterMode(filter);
     setAddressMode(address);
 }
 
-void SamplerState::init(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
-{
+void SamplerState::init(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled) {
     init();
     setFilterMode(filter);
     setAddressMode(address);
     setAnisotropyEnabled(anisotropyEnabled);
 }
 
-void SamplerState::onDispose(bool explicitDisposing)
-{
-    m_rhiObject.reset();
+void SamplerState::onDispose(bool explicitDisposing) {
+    //m_rhiObject.reset();
 
+    if (m_manager) {
+        m_manager->resourceRegistry()->unregisterObject(this);
+    }
     detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
     Object::onDispose(explicitDisposing);
 }
 
-void SamplerState::setFilterMode(TextureFilterMode value)
-{
+void SamplerState::setFilterMode(TextureFilterMode value) {
     if (LN_REQUIRE(!m_frozen)) return;
     if (m_desc.filter != value) {
         m_desc.filter = value;
@@ -103,8 +95,7 @@ void SamplerState::setFilterMode(TextureFilterMode value)
     }
 }
 
-void SamplerState::setAddressMode(TextureAddressMode value)
-{
+void SamplerState::setAddressMode(TextureAddressMode value) {
     if (LN_REQUIRE(!m_frozen)) return;
     if (m_desc.address != value) {
         m_desc.address = value;
@@ -112,8 +103,7 @@ void SamplerState::setAddressMode(TextureAddressMode value)
     }
 }
 
-void SamplerState::setAnisotropyEnabled(bool value)
-{
+void SamplerState::setAnisotropyEnabled(bool value) {
     if (LN_REQUIRE(!m_frozen)) return;
     if (m_desc.anisotropy != value) {
         m_desc.anisotropy = value;
@@ -122,22 +112,28 @@ void SamplerState::setAnisotropyEnabled(bool value)
 }
 
 detail::ISamplerState* SamplerState::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
+    GraphicsContext* graphicsContext = context->graphicsContext();
+    detail::ISamplerState* rhiObject = static_cast<detail::ISamplerState*>(graphicsContext->rhiResourceRegistry()->get(this));
     *outModified = m_modified;
 
     if (m_modified) {
-        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSamplerState(m_desc);
-        m_modified = false;
+        detail::IGraphicsDevice* device = graphicsContext->rhiDevice();
+        Ref<detail::ISamplerState> ref = device->createSamplerState(m_desc);
+        graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
+        rhiObject = ref;
     }
 
-    return m_rhiObject;
+    if (LN_ENSURE(rhiObject)) return nullptr;
+    m_modified = false;
+    return rhiObject;
 }
 
-void SamplerState::onChangeDevice(detail::IGraphicsDevice* device)
-{
+void SamplerState::onChangeDevice(detail::IGraphicsDevice* device) {
     if (device) {
         m_modified = true;
-    } else {
-        m_rhiObject.reset();
+    }
+    else {
+        //m_rhiObject.reset();
     }
 }
 

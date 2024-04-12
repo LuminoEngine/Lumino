@@ -76,6 +76,8 @@ detail::RHIResource* DepthBuffer::resolveRHIObject(GraphicsCommandList* context,
         rhiObject = ref;
         *outModified = true;
     }
+
+    if (LN_ENSURE(rhiObject)) return nullptr;
     return rhiObject;
 }
 

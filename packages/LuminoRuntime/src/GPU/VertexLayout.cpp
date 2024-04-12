@@ -81,7 +81,6 @@ detail::IVertexDeclaration* VertexLayout::resolveRHIObject(GraphicsCommandList* 
     }
 
     if (LN_ENSURE(rhiObject)) return nullptr;
-
     m_modified = false;
     return rhiObject;
 }

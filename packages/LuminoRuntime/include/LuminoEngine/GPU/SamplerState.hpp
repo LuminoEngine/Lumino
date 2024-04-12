@@ -8,6 +8,7 @@ namespace ln {
 /** サンプラーステートのクラスです。 */
 class SamplerState
     : public Object
+    , public IGraphicsObject
     , public IGraphicsResource
 {
 public:
@@ -84,7 +85,7 @@ private:
     void setFrozen(bool value) { m_frozen = value; }
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::ISamplerState> m_rhiObject;
+    //Ref<detail::ISamplerState> m_rhiObject;
 	detail::SamplerStateData m_desc;
     bool m_modified;
     bool m_frozen;
