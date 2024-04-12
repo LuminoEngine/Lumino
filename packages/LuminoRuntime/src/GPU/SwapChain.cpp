@@ -146,7 +146,7 @@ void GraphicsContext::resetRHIBackbuffers() {
     for (uint32_t i = 0; i < count; i++) {
         // backbuffer
         auto buffer = makeObject_deprecated<RenderTargetTexture>(this);
-        detail::TextureInternal::resetRHIObject(buffer, m_rhiObject->getRenderTarget(i));
+        buffer->resetRHIObject(this, m_rhiObject->getRenderTarget(i));
         m_backbuffers[i] = buffer;
 
         // DepthBuffer

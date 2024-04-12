@@ -58,7 +58,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"), target);
+			ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"), TestEnv::mainWindowSwapChain(), target);
         }
 	}
 }
@@ -90,7 +90,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);  // clear
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 
 	//* [ ] Viewport や Scissor の影響を受けず、全体をクリアできること。
@@ -111,7 +111,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		ctx->clear(ClearFlags::All, Color::Green, 1.0f, 0);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-2.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 
 #if 0	// TODO: glDrawBuffers がなんかうまく動かなかったので一度保留。今のところ clear でまとめてクリアしてるところはない。RenderPass でやってる。
@@ -167,7 +167,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
         ctx->beginRenderPass(crp);
         ctx->endRenderPass();
         TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"), TestEnv::mainWindowSwapChain(), cbb);
     }
 }
 
@@ -235,7 +235,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-2.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
@@ -270,7 +270,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、拡張できること
@@ -312,7 +312,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-4.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-4.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、拡張できること
@@ -358,9 +358,9 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->endRenderPass();
 			TestEnv::endFrame();
 #ifdef LN_COORD_RH
-			ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5-RH.png"), cbb);
+			ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5-RH.png"), TestEnv::mainWindowSwapChain(), cbb);
 #else
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5.png"), TestEnv::mainWindowSwapChain(), cbb);
 #endif
 		}
 	}
@@ -413,7 +413,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 
 	ctx->endRenderPass();
 	TestEnv::endFrame();
-    ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"), cbb);
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 }
 
 //------------------------------------------------------------------------------
@@ -476,7 +476,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->drawPrimitiveIndexed(0, 1);
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
@@ -501,7 +501,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->drawPrimitiveIndexed(0, 1);
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		// * [ ] フォーマット変更 16 -> 32
@@ -529,7 +529,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				ctx->drawPrimitiveIndexed(0, 1);
 				ctx->endRenderPass();
 				TestEnv::endFrame();
-                ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"), cbb);	// ↑と同じ結果
+                ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"), TestEnv::mainWindowSwapChain(), cbb);	// ↑と同じ結果
 			}
 		}
 	}
@@ -580,7 +580,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 
 		ctx->setViewportRect(Rect::Empty);		// reset
 	}
@@ -609,7 +609,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 
 		ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
 	}
@@ -635,7 +635,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 }
 
@@ -678,7 +678,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		return GraphicsTestHelper::capture(cbb)->getPixel32(0, 0);
+		return GraphicsTestHelper::capture(TestEnv::mainWindowSwapChain(), cbb)->getPixel32(0, 0);
 	};
 
 	// * [ ] float
@@ -973,7 +973,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 }
 
@@ -1088,7 +1088,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 
 	// * [ ] Linear, Clamp
@@ -1115,7 +1115,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 }
 
@@ -1215,7 +1215,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 
 		//ctx->setBlendState(BlendStateDesc());	// 戻しておく
 	}
@@ -1250,7 +1250,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 緑は描かれる
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		{
@@ -1270,7 +1270,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 緑は描かれない
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		{
@@ -1290,7 +1290,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 緑は描かれる
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		{
@@ -1307,7 +1307,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		//ctx->setRasterizerState(RasterizerStateDesc());	// 戻しておく
@@ -1331,7 +1331,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		{
@@ -1354,7 +1354,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		{
@@ -1377,7 +1377,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		//ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
@@ -1415,7 +1415,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"), cbb);
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 		}
 
 		//ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
@@ -1517,7 +1517,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         }
 
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderTarget-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderTarget-1.png"), TestEnv::mainWindowSwapChain(), cbb);
     }
 }
 
@@ -1558,8 +1558,8 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiRenderTarget)
 	}
 
 	TestEnv::endFrame();
-	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Expects/Test_Graphics_LowLevelRendering-MultiRenderTarget-0.png"), renderTarget0);
-	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Expects/Test_Graphics_LowLevelRendering-MultiRenderTarget-1.png"), renderTarget1);
+	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Expects/Test_Graphics_LowLevelRendering-MultiRenderTarget-0.png"), TestEnv::mainWindowSwapChain(), renderTarget0);
+	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Expects/Test_Graphics_LowLevelRendering-MultiRenderTarget-1.png"), TestEnv::mainWindowSwapChain(), renderTarget1);
 }
 
 //------------------------------------------------------------------------------
@@ -1622,7 +1622,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Instancing)
 	ctx->drawPrimitiveIndexed(0, 1, 4);
 	ctx->endRenderPass();
 	TestEnv::endFrame();
-	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/LowLevelRendering-Instancing-1.png"), cbb);
+	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/LowLevelRendering-Instancing-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 	
 }
 
@@ -1709,7 +1709,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MipMap)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MipMap-1.png"), cbb);
+		ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MipMap-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 		// MipMap が正しく生成されていれば、内側の境界がぼかされるのでグレーになっているはず
 	}
 }

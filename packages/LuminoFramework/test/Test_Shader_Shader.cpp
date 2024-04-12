@@ -76,7 +76,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-IndependentSamplerState-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-IndependentSamplerState-1.png"), TestEnv::mainWindowSwapChain(), cbb);
     }
 }
 
@@ -126,7 +126,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     ctx->drawPrimitive(0, 1);
 	ctx->endRenderPass();
 	TestEnv::endFrame();
-    ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer-1.png"), cbb);
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 }
 
 
@@ -182,7 +182,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer_WorldMatrix)
     ctx->drawPrimitive(0, 1);
     ctx->endRenderPass();
     TestEnv::endFrame();
-    ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer_WorldMatrix-1.png"), cbb);
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer_WorldMatrix-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 }
 
 //------------------------------------------------------------------------------
@@ -237,7 +237,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-1.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 
 	// _Texture2 のみ (緑)
@@ -259,7 +259,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-2.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-2.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 
 	// _Texture1 + _Texture2 (黄)
@@ -281,7 +281,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-3.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-3.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 }
 

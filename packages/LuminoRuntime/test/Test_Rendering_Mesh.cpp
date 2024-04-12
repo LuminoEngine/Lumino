@@ -48,7 +48,7 @@ TEST_F(Test_Rendering_Mesh, Basic) {
     commandList->endCommandRecoding();
     TestEnv::swapChain->present();
 
-    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.Basic.png"), target);
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.Basic.png"), TestEnv::swapChain, target);
 }
 
 TEST_F(Test_Rendering_Mesh, SkinnedMesh1) {
@@ -99,7 +99,7 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh1) {
     commandList->endCommandRecoding();
     TestEnv::swapChain->present();
 
-    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.SkinnedMesh1.png"), target);
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.SkinnedMesh1.png"), TestEnv::swapChain, target);
 }
 
 // 共通の MeshModel を、異なる手動ボーン操作で 2 つ描画してみる
@@ -144,7 +144,7 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh2) {
     commandList->endCommandRecoding();
     TestEnv::swapChain->present();
 
-    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.SkinnedMesh2.png"), target);
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.SkinnedMesh2.png"), TestEnv::swapChain, target);
 }
 
 TEST_F(Test_Rendering_Mesh, RuntimeMaterial) {
@@ -181,5 +181,5 @@ TEST_F(Test_Rendering_Mesh, RuntimeMaterial) {
     commandList->endCommandRecoding();
     TestEnv::swapChain->present();
 
-    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.RuntimeMaterial.png"), target);
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.RuntimeMaterial.png"), TestEnv::swapChain, target);
 }

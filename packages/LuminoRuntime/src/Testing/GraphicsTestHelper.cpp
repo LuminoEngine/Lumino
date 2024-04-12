@@ -5,32 +5,32 @@
 
 namespace ln {
 
-bool GraphicsTestHelper::checkScreenShot(const Path& filePath, RenderTargetTexture* renderTarget, int passRate, bool save) {
+bool GraphicsTestHelper::checkScreenShot(const Path& filePath, GraphicsContext* context, RenderTargetTexture* renderTarget, int passRate, bool save) {
     if (save) {
-        saveScreenShot(filePath, renderTarget);
+        saveScreenShot(filePath, context, renderTarget);
         return true;
     }
     else {
-        bool result = equalsScreenShot(filePath, renderTarget, passRate);
+        bool result = equalsScreenShot(filePath, context, renderTarget, passRate);
         if (!result) {
-            saveScreenShot(LN_ASSETFILE("Result/0-latest-failer.png"), renderTarget);
+            saveScreenShot(LN_ASSETFILE("Result/0-latest-failer.png"), context, renderTarget);
         }
         return result;
     }
 }
 
-void GraphicsTestHelper::saveScreenShot(const Path& filePath, RenderTargetTexture* renderTarget) {
-    capture(renderTarget)->save(filePath);
+void GraphicsTestHelper::saveScreenShot(const Path& filePath, GraphicsContext* context, RenderTargetTexture* renderTarget) {
+    capture(context, renderTarget)->save(filePath);
 }
 
-bool GraphicsTestHelper::equalsScreenShot(const Path& filePath, RenderTargetTexture* renderTarget, int passRate) {
-    bool r = equalsBitmapFile(capture(renderTarget), filePath, passRate);
+bool GraphicsTestHelper::equalsScreenShot(const Path& filePath, GraphicsContext* context, RenderTargetTexture* renderTarget, int passRate) {
+    bool r = equalsBitmapFile(capture(context, renderTarget), filePath, passRate);
     return r;
 }
 
-Ref<Bitmap2D> GraphicsTestHelper::capture(RenderTargetTexture* renderTarget) {
+Ref<Bitmap2D> GraphicsTestHelper::capture(GraphicsContext* context, RenderTargetTexture* renderTarget) {
     assert(renderTarget);
-    return detail::TextureInternal::readData(renderTarget);
+    return detail::TextureInternal::readData(context, renderTarget);
 }
 
 static ColorI mixPixels(Bitmap2D* bmp, int x, int y) {

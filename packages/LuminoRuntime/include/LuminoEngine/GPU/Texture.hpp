@@ -14,6 +14,7 @@ class TextureInternal;
 LN_CLASS()
 class Texture
     : public AssetObject
+    , public IGraphicsObject
     , public IGraphicsResource
 {
     LN_OBJECT;
@@ -177,7 +178,7 @@ LN_CONSTRUCT_ACCESS:
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
 private:
-    Ref<detail::RHIResource> m_rhiObject;
+    //Ref<detail::RHIResource> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
@@ -225,13 +226,17 @@ public:
 
 
     static Ref<RenderTargetTexture> realloc(RenderTargetTexture* renderTarget, int width, int height, TextureFormat format, bool mipmap, SamplerState* samplerState);
+    
+    // TODO: internal
+    void resetRHIObject(GraphicsContext* context, detail::RHIResource* rhiObject);
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified) override;
+    detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified) override;
+    detail::RHIResource* resolveRHIObject2(GraphicsContext* context, bool* outModified);
 
-LN_CONSTRUCT_ACCESS:
+    LN_CONSTRUCT_ACCESS:
     RenderTargetTexture();
     virtual ~RenderTargetTexture();
 
@@ -247,12 +252,12 @@ LN_CONSTRUCT_ACCESS:
     void resetNativeObject(intptr_t nativeObject);
     void resetSize(int width, int height);
 
+
 private:
     bool init();
-	void resetRHIObject(detail::RHIResource* rhiObject);
-    Ref<Bitmap2D> readData();
+    Ref<Bitmap2D> readData(GraphicsContext* context);
 
-    Ref<detail::RHIResource> m_rhiObject;
+    //Ref<detail::RHIResource> m_rhiObject;
     GraphicsContext* m_ownerSwapchain;
     intptr_t m_nativeObject;
     bool m_modified;
@@ -270,8 +275,7 @@ public:
     static void setMappedData(Texture2D* texture, const void* data);
     static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
     static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
-    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
-	static void resetRHIObject(RenderTargetTexture* renderTarget, detail::RHIResource* rhiObject) { renderTarget->resetRHIObject(rhiObject); }
+    static Ref<Bitmap2D> readData(GraphicsContext* context, RenderTargetTexture* renderTarget) { return renderTarget->readData(context); }
     static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
     static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
 };
@@ -295,7 +299,7 @@ protected:
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified) override;
 
 private:
-    Ref<detail::RHIResource> m_rhiObject;
+    //Ref<detail::RHIResource> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
 

@@ -399,6 +399,10 @@ void WorldRenderView::onRender(GraphicsCommandList* graphicsContext, RenderingCo
 }
 
 WorldObject* WorldRenderView::findObjectInPoint(int x, int y) {
+#if 1
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+#else
     RenderTargetTexture* texture = builtinRenderTexture(BuiltinRenderTextureType::ObjectId);
     if (!texture) return nullptr;
 
@@ -411,6 +415,7 @@ WorldObject* WorldRenderView::findObjectInPoint(int x, int y) {
     else {
         return nullptr;
     }
+    #endif
 }
 
 detail::PostEffectRenderer* WorldRenderView::acquirePostEffectPresenter() {

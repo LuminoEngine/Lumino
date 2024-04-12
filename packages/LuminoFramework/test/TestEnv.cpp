@@ -126,5 +126,5 @@ RenderPass* TestEnv::renderPass() {
 }
 
 bool TestEnv::checkCurrentBackbufferScreenShot(const Path& filePath, int passRate, bool save) {
-    return GraphicsTestHelper::checkScreenShot(filePath, lastBackBuffer, passRate, save);
+    return GraphicsTestHelper::checkScreenShot(filePath, mainWindowSwapChain(), lastBackBuffer, passRate, save);
 }

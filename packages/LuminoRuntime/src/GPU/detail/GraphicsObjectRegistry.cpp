@@ -61,13 +61,12 @@ RHIGraphicsObjectRegistry::RHIGraphicsObjectRegistry(GraphicsObjectRegistry* own
 
 RHIGraphicsObjectRegistry::~RHIGraphicsObjectRegistry() {
 
-    //#if LN_DEBUG
+    // Check: all have been released.
     for (const auto& x : m_rhiObjectList) {
         if (x) {
             LN_ERROR();
         }
     }
-    //#endif
 
     if (m_ownerRegistry) {
         m_ownerRegistry->unsubscribe(this);
@@ -79,6 +78,10 @@ void RHIGraphicsObjectRegistry::registerObject(IGraphicsObject* resource, RHIDev
     if (LN_ASSERT(resource)) return;
     if (LN_ASSERT(resource->m_id > 0)) return;
     m_rhiObjectList.ensureResize(resource->m_id + 1);
+    RHIDeviceObject* oldRHIObject = m_rhiObjectList[resource->m_id];
+    if (oldRHIObject != nullptr) {
+        //oldRHIObject->destroy();
+    }
     m_rhiObjectList[resource->m_id] = rhiObject;
     rhiObject->m_ownerId = resource->m_id;
 }
@@ -95,6 +98,7 @@ void RHIGraphicsObjectRegistry::unregisterObject(GraphicsObjectId id) {
 void RHIGraphicsObjectRegistry::unregisterAllObjects() {
     for (const Ref<RHIDeviceObject>& rhiObject : m_rhiObjectList) {
         if (rhiObject) {
+            //rhiObject->destroy();
             rhiObject->m_ownerId = 0;
 		}
 	}

@@ -57,7 +57,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"), cbb);
+		ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 	
 	//* [ ] Nested struct
@@ -81,7 +81,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-3.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-3.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 }
 
@@ -132,7 +132,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-4.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-4.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 
 	//* [ ] #ifdef
@@ -154,7 +154,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-5.png"), cbb);
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-5.png"), TestEnv::mainWindowSwapChain(), cbb);
 	}
 
 	//* [ ] #include
@@ -180,7 +180,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"), cbb);	// 1 と同じ結果でよい
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"), TestEnv::mainWindowSwapChain(), cbb);	// 1 と同じ結果でよい
 	}
 }
 
