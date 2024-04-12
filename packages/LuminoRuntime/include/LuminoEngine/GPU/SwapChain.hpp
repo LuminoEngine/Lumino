@@ -72,7 +72,7 @@ public:
 
 public: // TODO: internal
     detail::RHIGraphicsObjectRegistry* rhiResourceRegistry() const { return m_rhiResourceRegistry; }
-    virtual detail::IGraphicsDevice* rhiDevice() const { return nullptr; }
+    virtual detail::IGraphicsDevice* rhiDevice() const;
 
 protected:
     void onDispose(bool explicitDisposing) override;

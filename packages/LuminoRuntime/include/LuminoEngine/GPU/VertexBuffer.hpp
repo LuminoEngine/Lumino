@@ -9,8 +9,7 @@ namespace ln {
 class VertexBuffer
     : public Object
     , public IGraphicsObject
-    , public IGraphicsResource
-{
+    , public IGraphicsResource {
 public:
     /**
      * 頂点バッファを作成します。
@@ -38,10 +37,10 @@ public:
 
     const void* data() const;
 
- //   /** 頂点バッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。  */
- //   void* map(MapMode mode);
+    //   /** 頂点バッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。  */
+    //   void* map(MapMode mode);
 
-	//void unmap() {}	// TODO: 直接転送
+    // void unmap() {}	// TODO: 直接転送
 
     void* writableData(uint64_t lockOffset = 0, uint64_t lockSize = 0);
 
@@ -73,7 +72,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
-    //bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
+    // bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     detail::GraphicsManager* m_manager;
     GraphicsResourceUsage m_usage;
@@ -81,7 +80,7 @@ private:
     size_t m_primarySize;
 
     std::vector<byte_t> m_buffer;
-    //void* m_rhiMappedBuffer;
+    // void* m_rhiMappedBuffer;
     void* m_mappedBuffer;
     bool m_initialUpdate;
     bool m_modified;

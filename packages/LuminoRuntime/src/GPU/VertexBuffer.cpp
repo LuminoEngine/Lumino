@@ -58,7 +58,6 @@ VertexBuffer::~VertexBuffer() {
 void VertexBuffer::init(size_t bufferSize, GraphicsResourceUsage usage) {
     Object::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
-
     m_manager->resourceRegistry()->registerObject(this);
 
     m_usage = usage;
@@ -78,7 +77,6 @@ void VertexBuffer::onDispose(bool explicitDisposing) {
     if (m_manager) {
         m_manager->resourceRegistry()->unregisterObject(this);
     }
-
     detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
 
     Object::onDispose(explicitDisposing);
@@ -179,8 +177,7 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsCommandList* context
     m_mappedBuffer = nullptr;
 
     if (m_modified) {
-
-        auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+        detail::IGraphicsDevice* device = graphicsContext->rhiDevice();
         //     if (m_rhiMappedBuffer) {
         // m_rhiObject->unmap();
         //         m_rhiMappedBuffer = nullptr;
@@ -190,7 +187,7 @@ detail::RHIResource* VertexBuffer::resolveRHIObject(GraphicsCommandList* context
             size_t requiredSize = size();
             if (!rhiObject || rhiObject->memorySize() != requiredSize /* || m_rhiObject->usage() != m_usage*/) {
                 // New RHI Resource.
-                auto ref = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
+                Ref<detail::RHIResource> ref = device->createVertexBuffer(GraphicsResourceUsage::Static, m_buffer.size(), m_buffer.data());
                 graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
                 rhiObject = ref;
             }

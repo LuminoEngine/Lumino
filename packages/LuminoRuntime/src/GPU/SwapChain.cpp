@@ -56,6 +56,11 @@ void GraphicsContext::init(PlatformWindow* window) {
     nextFrame();
 }
 
+// TODO: 統合時に純粋仮想関数にする
+detail::IGraphicsDevice* GraphicsContext::rhiDevice() const {
+    return m_manager->deviceContext();
+}
+
 void GraphicsContext::onDispose(bool explicitDisposing) {
     //if (!m_commandLists.empty()) {
     //    // End command list

@@ -380,6 +380,7 @@ Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* wind
         auto& triple = result->rhiDevice()->caps().requestedShaderTriple;
         LN_LOG_INFO("requestedShaderTriple: {}-{}-{}", triple.target, triple.version, triple.option);
     }
+    return result;
 }
 
 void GraphicsManager::addGraphicsResource(IGraphicsResource* resource) {

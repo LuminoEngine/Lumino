@@ -2,6 +2,8 @@
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/GraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/IndexBuffer.hpp>
 
@@ -10,19 +12,18 @@ namespace ln {
 //==============================================================================
 // IndexBuffer
 
-Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
-{
+Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage) {
     return makeObject_deprecated<IndexBuffer>(indexCount, format, usage);
 }
 
-Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
-{
+Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage) {
     return makeObject_deprecated<IndexBuffer>(indexCount, format, initialData, usage);
 }
 
 IndexBuffer::IndexBuffer()
-    : m_rhiObject(nullptr)
-    , m_format(IndexBufferFormat::UInt16)
+    : /*m_rhiObject(nullptr)
+    , */
+    m_format(IndexBufferFormat::UInt16)
     , m_usage(GraphicsResourceUsage::Static)
     , m_pool(GraphicsResourcePool::Managed)
     , m_primaryIndexCount(0)
@@ -30,18 +31,16 @@ IndexBuffer::IndexBuffer()
     //, m_rhiMappedBuffer(nullptr)
     , m_mappedBuffer(nullptr)
     , m_initialUpdate(true)
-    , m_modified(false)
-{
+    , m_modified(false) {
 }
 
-IndexBuffer::~IndexBuffer()
-{
+IndexBuffer::~IndexBuffer() {
 }
 
-void IndexBuffer::init(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
-{
+void IndexBuffer::init(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage) {
     Object::init();
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+    m_manager->resourceRegistry()->registerObject(this);
 
     m_format = format;
     m_usage = usage;
@@ -49,45 +48,42 @@ void IndexBuffer::init(int indexCount, IndexBufferFormat format, GraphicsResourc
     resize(indexCount);
 }
 
-void IndexBuffer::init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
-{
+void IndexBuffer::init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage) {
     IndexBuffer::init(indexCount, format, usage);
     if (initialData) {
-        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createIndexBuffer(GraphicsResourceUsage::Static, m_format, indexCount, initialData);
-        m_modified = false;
+        m_buffer.assign((const uint8_t*)initialData, (const uint8_t*)initialData + (bytesSize()));
+        m_modified = true;
     }
 }
 
-//void IndexBuffer::init(int indexCount, GraphicsResourceUsage usage)
+// void IndexBuffer::init(int indexCount, GraphicsResourceUsage usage)
 //{
 //	init(indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(indexCount), usage);
-//}
+// }
 
-void IndexBuffer::onDispose(bool explicitDisposing)
-{
-    m_rhiObject.reset();
+void IndexBuffer::onDispose(bool explicitDisposing) {
+    //m_rhiObject.reset();
 
+    if (m_manager) {
+        m_manager->resourceRegistry()->unregisterObject(this);
+    }
     detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
     Object::onDispose(explicitDisposing);
 }
 
-int IndexBuffer::size() const
-{
+int IndexBuffer::size() const {
     return m_primaryIndexCount;
 }
 
-int IndexBuffer::bytesSize() const
-{
+int IndexBuffer::bytesSize() const {
     return m_primaryIndexCount * getIndexStride();
 }
 
-void IndexBuffer::reserve(int indexCount)
-{
+void IndexBuffer::reserve(int indexCount) {
     m_buffer.reserve(static_cast<size_t>(indexCount * getIndexStride()));
 }
 
-void IndexBuffer::resize(int indexCount)
-{
+void IndexBuffer::resize(int indexCount) {
     m_primaryIndexCount = indexCount;
     m_buffer.resize(static_cast<size_t>(indexCount * getIndexStride()));
 
@@ -98,8 +94,7 @@ void IndexBuffer::resize(int indexCount)
     }
 }
 
-void* IndexBuffer::map(MapMode mode)
-{
+void* IndexBuffer::map(MapMode mode) {
     if (m_mappedBuffer) {
         return m_mappedBuffer;
     }
@@ -116,13 +111,14 @@ void* IndexBuffer::map(MapMode mode)
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-			m_rhiMappedBuffer = m_rhiObject->map();
+            m_rhiMappedBuffer = m_rhiObject->map();
         }
 
         m_modified = true;
         m_mappedBuffer = m_rhiMappedBuffer;
 #endif
-    } else {
+    }
+    else {
         // prepare for GraphicsResourcePool::None
         size_t primarySize = bytesSize();
         if (m_buffer.size() < primarySize) {
@@ -136,16 +132,14 @@ void* IndexBuffer::map(MapMode mode)
     return m_mappedBuffer;
 }
 
-void IndexBuffer::clear()
-{
+void IndexBuffer::clear() {
     if (LN_REQUIRE(m_usage == GraphicsResourceUsage::Dynamic)) return;
     m_buffer.clear();
     m_primaryIndexCount = 0;
     m_modified = true;
 }
 
-void IndexBuffer::setFormat(IndexBufferFormat format)
-{
+void IndexBuffer::setFormat(IndexBufferFormat format) {
     size_t indexCount = size();
     IndexBufferFormat oldFormat = m_format;
     m_format = format;
@@ -162,88 +156,94 @@ void IndexBuffer::setFormat(IndexBufferFormat format)
                 uint16_t t = *rpos16;
                 *rpos32 = t;
             }
-        } else if (oldFormat == IndexBufferFormat::UInt32 && m_format == IndexBufferFormat::UInt16) {
+        }
+        else if (oldFormat == IndexBufferFormat::UInt32 && m_format == IndexBufferFormat::UInt16) {
             LN_NOTIMPLEMENTED();
         }
     }
 }
 
-int IndexBuffer::stride() const
-{
+int IndexBuffer::stride() const {
     return RHIHelper::getIndexStride(m_format);
 }
 
-void IndexBuffer::setIndex(int index, int vertexIndex)
-{
+void IndexBuffer::setIndex(int index, int vertexIndex) {
     void* indexBuffer = map(MapMode::Write);
 
     if (m_format == IndexBufferFormat::UInt16) {
         uint16_t* i = (uint16_t*)indexBuffer;
         i[index] = vertexIndex;
-    } else if (m_format == IndexBufferFormat::UInt32) {
+    }
+    else if (m_format == IndexBufferFormat::UInt32) {
         uint32_t* i = (uint32_t*)indexBuffer;
         i[index] = vertexIndex;
-    } else {
+    }
+    else {
         LN_NOTIMPLEMENTED();
     }
 }
 
-int IndexBuffer::index(int index)
-{
+int IndexBuffer::index(int index) {
     void* indexBuffer = map(MapMode::Read);
 
     if (m_format == IndexBufferFormat::UInt16) {
         uint16_t* i = (uint16_t*)indexBuffer;
         return i[index];
-    } else if (m_format == IndexBufferFormat::UInt32) {
+    }
+    else if (m_format == IndexBufferFormat::UInt32) {
         uint32_t* i = (uint32_t*)indexBuffer;
         return i[index];
-    } else {
+    }
+    else {
         LN_NOTIMPLEMENTED();
         return 0;
     }
 }
 
-void IndexBuffer::setResourceUsage(GraphicsResourceUsage usage)
-{
+void IndexBuffer::setResourceUsage(GraphicsResourceUsage usage) {
     // Prohibit while direct locking.
-    //if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
+    // if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
     if (m_usage != usage) {
         m_usage = usage;
         m_modified = true;
     }
 }
 
-void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
-{
+void IndexBuffer::setResourcePool(GraphicsResourcePool pool) {
     m_pool = pool;
 }
 
 detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
-	*outModified = m_modified;
+    GraphicsContext* graphicsContext = context->graphicsContext();
+    detail::RHIResource* rhiObject = static_cast<detail::RHIResource*>(graphicsContext->rhiResourceRegistry()->get(this));
+    *outModified = m_modified;
     m_mappedBuffer = nullptr;
 
     if (m_modified) {
-        detail::IGraphicsDevice* device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-   //     if (m_rhiMappedBuffer) {
-			//m_rhiObject->unmap();
-   //         m_rhiMappedBuffer = nullptr;
-   //     } else 
+        detail::IGraphicsDevice* device = graphicsContext->rhiDevice();
+        //     if (m_rhiMappedBuffer) {
+        // m_rhiObject->unmap();
+        //         m_rhiMappedBuffer = nullptr;
+        //     } else
         {
             detail::ICommandList* commandList = context->rhiResource();
             size_t requiredSize = bytesSize();
-            if (!m_rhiObject || m_rhiObject->memorySize() != requiredSize/* || m_rhiObject->usage() != m_usage*/) {
-                m_rhiObject = device->createIndexBuffer(GraphicsResourceUsage::Static, m_format, size(), m_buffer.data());
-            } else {
+            if (!rhiObject || rhiObject->memorySize() != requiredSize /* || m_rhiObject->usage() != m_usage*/) {
+                // New RHI Resource.
+                Ref<detail::RHIResource> ref = device->createIndexBuffer(GraphicsResourceUsage::Static, m_format, size(), m_buffer.data());
+                graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
+                rhiObject = ref;
+            }
+            else {
+                // Update RHI Resource.
                 context->interruptCurrentRenderPassFromResolveRHI();
-                detail::RHIResource* rhiObject = m_rhiObject;
                 commandList->setSubData(rhiObject, 0, m_buffer.data(), m_buffer.size());
                 context->m_vertexBufferDataTransferredSize += m_buffer.size();
             }
         }
     }
 
-    if (LN_ENSURE(m_rhiObject)) return nullptr;
+    if (LN_ENSURE(rhiObject)) return nullptr;
 
     if (m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
         m_buffer.clear();
@@ -252,23 +252,22 @@ detail::RHIResource* IndexBuffer::resolveRHIObject(GraphicsCommandList* context,
 
     m_initialUpdate = false;
     m_modified = false;
-    return m_rhiObject;
+    return rhiObject;
 }
 
-int IndexBuffer::getIndexStride() const
-{
+int IndexBuffer::getIndexStride() const {
     return getIndexStride(m_format);
 }
 
-void IndexBuffer::onChangeDevice(detail::IGraphicsDevice* device)
-{
+void IndexBuffer::onChangeDevice(detail::IGraphicsDevice* device) {
     if (device) {
         if (m_pool == GraphicsResourcePool::Managed) {
             // data is transferred by the next resolveRHIObject()
             m_modified = true;
         }
-    } else {
-        m_rhiObject.reset();
+    }
+    else {
+        //m_rhiObject.reset();
     }
 }
 

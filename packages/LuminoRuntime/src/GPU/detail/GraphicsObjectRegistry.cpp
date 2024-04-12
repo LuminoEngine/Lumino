@@ -34,7 +34,7 @@ void GraphicsObjectRegistry::unregisterObject(IGraphicsObject* object) {
     GraphicsObjectId id = object->m_id;
     if (LN_ASSERT(id < m_resourceList.size())) return;
     IGraphicsObject* resource = m_resourceList[id];
-    if (LN_ASSERT(resource)) return;
+    if (LN_ASSERT(resource == object)) return;
 
     for (RHIGraphicsObjectRegistry* rhiRegistry : m_rhiRegistries) {
         rhiRegistry->unregisterObject(id);
@@ -86,8 +86,8 @@ void RHIGraphicsObjectRegistry::unregisterObject(GraphicsObjectId id) {
     RHIDeviceObject* rhiObject = m_rhiObjectList[id];
     if (!rhiObject) return;
     if (LN_ASSERT(rhiObject->m_ownerId == id)) return;
-    m_rhiObjectList[id] = nullptr;
     rhiObject->m_ownerId = 0;
+    m_rhiObjectList[id] = nullptr;
 }
 
 void RHIGraphicsObjectRegistry::unregisterAllObjects() {

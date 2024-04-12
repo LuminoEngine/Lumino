@@ -8,8 +8,8 @@ namespace ln {
 /** インデックスバッファのクラスです。 */
 class IndexBuffer
     : public Object
-    , public IGraphicsResource
-{
+    , public IGraphicsObject
+    , public IGraphicsResource {
 public:
     /**
      * インデックスバッファを作成します。
@@ -43,7 +43,7 @@ public:
     /** インデックスバッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。 */
     void* map(MapMode mode);
 
-	void unmap() {}	// TODO: 直接転送
+    void unmap() {} // TODO: 直接転送
 
     /** インデックスバッファをクリアします。 */
     void clear();
@@ -84,25 +84,25 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create(int, IndexBufferFormat, const void*, GraphicsResourceUsage) */
     void init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage);
 
-	//void init(int indexCount, GraphicsResourceUsage usage);
+    // void init(int indexCount, GraphicsResourceUsage usage);
 
 private:
     int getIndexStride() const;
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
-    bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
+    // bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     static int getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
     static int getIndexBufferSize(IndexBufferFormat format, int indexCount) { return getIndexStride(format) * indexCount; }
     static bool shortLifeBuffer(GraphicsResourceUsage usage, GraphicsResourcePool pool) { return usage == GraphicsResourceUsage::Static && pool == GraphicsResourcePool::None; }
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::RHIResource> m_rhiObject;
+    // Ref<detail::RHIResource> m_rhiObject;
     IndexBufferFormat m_format;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     int m_primaryIndexCount;
     std::vector<byte_t> m_buffer;
-    //void* m_rhiMappedBuffer;
+    // void* m_rhiMappedBuffer;
     void* m_mappedBuffer;
     bool m_initialUpdate;
     bool m_modified;
