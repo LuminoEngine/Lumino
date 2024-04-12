@@ -7,6 +7,7 @@ namespace ln {
 /** 深度バッファのクラスです。 */
 class DepthBuffer
     : public Object
+    , public IGraphicsObject
     , public IGraphicsResource
 {
 public:
@@ -47,7 +48,7 @@ private:
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::RHIResource> m_rhiObject;
+    //Ref<detail::RHIResource> m_rhiObject;
     SizeI m_size;
 
     friend class detail::GraphicsResourceInternal;
