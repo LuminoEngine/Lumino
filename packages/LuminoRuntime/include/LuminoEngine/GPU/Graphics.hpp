@@ -13,7 +13,7 @@ class Graphics
 public:
 	/** activeGraphicsAPI */
 	LN_METHOD(Property)
-	static GraphicsAPI activeGraphicsAPI();
+	//static GraphicsAPI activeGraphicsAPI();
 
 
 	static CommandQueue* graphicsQueue();

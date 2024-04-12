@@ -40,7 +40,7 @@ void GraphicsContext::init(PlatformWindow* window) {
     SizeI backbufferSize;
     window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
 
-    m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
+    m_rhiObject = rhiDevice()->createSwapChain(window, backbufferSize);
 
     resetRHIBackbuffers();
 
@@ -128,7 +128,7 @@ void GraphicsContext::present() {
     //detail::GraphicsCommandListInternal::endCommandRecoding(commandList);
 
     // Submit queue
-    auto device = m_manager->deviceContext();
+    detail::IGraphicsDevice* device = rhiDevice();
     detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, currentBackbuffer(), nullptr);
     device->queueSubmit(commandList->rhiResource(), rhiObject);
     detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(commandList);
@@ -171,7 +171,7 @@ void GraphicsContext::nextFrame() {
 
 void GraphicsContext::presentInternal() {
     detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
-    auto device = manager->deviceContext();
+    detail::IGraphicsDevice* device = rhiDevice();
 
     detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);
     device->queuePresent(rhi);

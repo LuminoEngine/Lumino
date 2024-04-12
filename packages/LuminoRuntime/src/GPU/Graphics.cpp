@@ -9,10 +9,10 @@ namespace ln {
 //==============================================================================
 // Graphics
 
-GraphicsAPI Graphics::activeGraphicsAPI()
-{
-	return detail::GraphicsManager::instance()->deviceContext()->caps().graphicsAPI;
-}
+//GraphicsAPI Graphics::activeGraphicsAPI()
+//{
+//	return detail::GraphicsManager::instance()->deviceContext()->caps().graphicsAPI;
+//}
 //
 //CommandQueue* Graphics::graphicsQueue()
 //{
