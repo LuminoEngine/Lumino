@@ -59,7 +59,7 @@ void run() {
         auto commandList = swapChain->currentCommandList2();
         commandList->beginCommandRecoding();
 
-        auto descriptor = commandList->allocateShaderDescriptor_deprecated(shaderPass);
+        auto descriptor = commandList->allocateDescriptor(shaderPass, true);
         descriptor->setVector(descriptorLayout->findUniformMemberIndex(U"_Color"), Vector4(1, 0, 0, 1));
 
         auto renderPass = swapChain->currentRenderPass();
@@ -67,7 +67,7 @@ void run() {
         commandList->setVertexLayout(vertexLayout);
         commandList->setVertexBuffer(0, vertexBuffer);
         commandList->setShaderPass(shaderPass);
-        commandList->setShaderDescriptor_deprecated(descriptor);
+        commandList->setShaderDescriptor(descriptor);
         commandList->setPrimitiveTopology(PrimitiveTopology::TriangleList);
         commandList->drawPrimitive(0, 1);
 

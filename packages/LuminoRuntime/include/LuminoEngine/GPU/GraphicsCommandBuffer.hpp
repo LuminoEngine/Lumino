@@ -150,6 +150,13 @@ public:
     /** @defgroup Streaming support */
     /** @{ */
 
+    /**
+     * shaderPass に対応する ShaderDescriptor を作成します。
+     *
+     * allocateBuffers が true の場合、 ShaderDescriptor の ConstantBuffer スロットには、
+     * shaderPass のレイアウトを元にした ConstantBuffer が割り当てられます。
+     * 呼び出し側で、この ConstantBuffer にデータを書き込んでください。
+     */
     ln::ShaderDescriptor* allocateDescriptor(ShaderPass* shaderPass, bool allocateBuffers);
 
     ln::detail::ShaderSecondaryDescriptor* allocateShaderDescriptor_deprecated(ShaderPass* shaderPass);
