@@ -120,7 +120,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 			mesh->commitMorphTargets(morph, &targets);
 
 			const auto& shader = detail::RenderingManager::instance()->blendShapeShader;
-			ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(shader.shader);
+			ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor_deprecated(shader.shader);
 			descriptor->setStorageData(shader.dstVerticesGID, morph->m_blendResult);
 			descriptor->setTexture(shader.srcVerticesGID, vb[0]);
 			if (targetCount >= 1) descriptor->setTexture(shader.target0GID, targets[0]); else descriptor->setTexture(shader.target0GID, nullptr);

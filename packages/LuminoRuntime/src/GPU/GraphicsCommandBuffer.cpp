@@ -95,9 +95,6 @@ void GraphicsCommandList::reset() {
     resetState();
 }
 
-
-
-
 void GraphicsCommandList::setShaderDescriptor_deprecated(detail::ShaderSecondaryDescriptor* value) {
     m_staging.shaderDescriptor_deprecated = value;
 }
@@ -289,14 +286,6 @@ ln::ShaderDescriptor* GraphicsCommandList::allocateDescriptor(ShaderPass* shader
     }
     return d;
 }
-
-detail::ShaderSecondaryDescriptor* GraphicsCommandList::allocateShaderDescriptor_deprecated(ShaderPass* shaderPass) {
-    detail::ShaderSecondaryDescriptor* d = acquireShaderDescriptor(shaderPass->shader());
-    d->reset(this);
-    return d;
-}
-
-
 
 // Vulkan の vkCmdCopyBuffer は、RenderPass の Outside でしか使用することができない。
 // 今ところ Rendering モジュールがそのような仕組みに対応していないので、
@@ -508,7 +497,7 @@ detail::ConstantBufferView GraphicsCommandList::allocateUniformBuffer(size_t siz
     return m_singleFrameUniformBufferAllocator->allocate(size, m_uniformBufferOffsetAlignment);
 }
 
-detail::ShaderSecondaryDescriptor* GraphicsCommandList::acquireShaderDescriptor(Shader* shader) {
+detail::ShaderSecondaryDescriptor* GraphicsCommandList::acquireShaderDescriptor_deprecated(Shader* shader) {
     return shader->acquireDescriptor();
 }
 

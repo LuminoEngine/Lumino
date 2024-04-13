@@ -137,7 +137,7 @@ static int glnvg__renderGetTextureSize(void* uptr, int image, int* w, int* h)
 static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 {
 	ln::GraphicsCommandList* commandList = gl->commandList();
-	ln::detail::ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor(gl->shader);
+	ln::detail::ShaderSecondaryDescriptor* descriptor = commandList->acquireShaderDescriptor_deprecated(gl->shader);
 
 	// ConstantBuffer
 	ln::detail::ConstantBufferView view = commandList->allocateUniformBuffer(sizeof(GLNVGfragUniforms));

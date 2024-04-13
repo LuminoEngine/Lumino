@@ -101,9 +101,6 @@ public:
     ///** ShaderPass を設定します。 */
     void setShaderDescriptor_deprecated(detail::ShaderSecondaryDescriptor* value);
 
-    ///** ShaderPass を取得します。 */
-    // ShaderDefaultDescriptor* shaderDescriptor() const;
-
     /** デフォルト設定を復元します。 */
     void resetState();
 
@@ -159,8 +156,6 @@ public:
      */
     ln::ShaderDescriptor* allocateDescriptor(ShaderPass* shaderPass, bool allocateBuffers);
 
-    ln::detail::ShaderSecondaryDescriptor* allocateShaderDescriptor_deprecated(ShaderPass* shaderPass);
-
     /** @} */
     /** @defgroup TODO: Internal */
     /** @{ */
@@ -175,7 +170,7 @@ public:
 
     Ref<detail::SingleFrameUniformBufferAllocator> m_singleFrameUniformBufferAllocator;
 
-    detail::ShaderSecondaryDescriptor* acquireShaderDescriptor(Shader* shader);
+    detail::ShaderSecondaryDescriptor* acquireShaderDescriptor_deprecated(Shader* shader);
 
     detail::IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
 
