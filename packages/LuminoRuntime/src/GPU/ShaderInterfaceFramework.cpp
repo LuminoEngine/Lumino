@@ -105,11 +105,11 @@ void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
 
         // UniformBuffers
         for (const auto& localInfo : localLayout.m_buffers) {
-            const auto& globalInfo = globalLayout->m_buffers[localInfo.dataIndex];
+            const auto& globalInfo = globalLayout->m_buffers[localInfo.globalIndex];
 
             auto itr = s_BuiltinShaderUniformBuffersMap.find(globalInfo.name);
             if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
-                m_builtinUniformBuffers[itr->second] = localInfo.dataIndex;
+                m_builtinUniformBuffers[itr->second] = localInfo.globalIndex;
             }
         }
         for (const auto& memberInfo : globalLayout->m_members) {
@@ -121,11 +121,11 @@ void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
 
         // Textues
         for (const auto& localInfo : localLayout.m_textures) {
-            const auto& globalInfo = globalLayout->m_textures[localInfo.dataIndex];
+            const auto& globalInfo = globalLayout->m_textures[localInfo.globalIndex];
 
             auto itr = s_BuiltinShaderTexturesMap.find(globalInfo.name);
             if (itr != s_BuiltinShaderTexturesMap.end()) {
-                m_builtinShaderTextures[itr->second] = localInfo.dataIndex;
+                m_builtinShaderTextures[itr->second] = localInfo.globalIndex;
             }
         }
 

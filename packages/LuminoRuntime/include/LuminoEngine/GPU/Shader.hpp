@@ -335,30 +335,32 @@ public: // TODO:
 class ShaderPassDescriptorLayout
 {
 public:
+    // NOTE: globalIndex は、個々の ShaderPass から Shader の
+
     struct UniformBufferRegisterInfo
     {
-        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_buffers
+        int8_t globalIndex; // Index of ShaderDescriptorLayout.m_buffers
         int8_t bindingIndex;
         uint8_t stageFlags; // ShaderStageFlags
     };
 
     struct TextureRegisterInfo
     {
-        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_textures
+        int8_t globalIndex; // Index of ShaderDescriptorLayout.m_textures
         int8_t bindingIndex;
         uint8_t stageFlags; // ShaderStageFlags
     };
 
     struct SamplerRegisterInfo
     {
-        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_samplers
+        int8_t globalIndex; // Index of ShaderDescriptorLayout.m_samplers
         int8_t bindingIndex;
         uint8_t stageFlags; // ShaderStageFlags
     };
 
     struct StorageRegisterInfo
     {
-        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_storages
+        int8_t globalIndex; // Index of ShaderDescriptorLayout.m_storages
         int8_t bindingIndex;
         uint8_t stageFlags; // ShaderStageFlags
     };

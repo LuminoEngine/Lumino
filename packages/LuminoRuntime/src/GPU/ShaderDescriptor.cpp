@@ -123,7 +123,7 @@ void ShaderDescriptor::submit(GraphicsCommandList* commandList) {
     // Uniforms
     for (int iSlot = 0; iSlot < layout.m_buffers.size(); iSlot++) {
         const auto& info = layout.m_buffers[iSlot];
-        const auto& view = uniformBuffer(info.dataIndex);
+        const auto& view = uniformBuffer(info.globalIndex);
         updateInfo.uniforms[iSlot].object = view.buffer->rhiObject();
         updateInfo.uniforms[iSlot].offset = view.offset;
         if (LN_ENSURE(updateInfo.uniforms[iSlot].object)) return;
@@ -132,7 +132,7 @@ void ShaderDescriptor::submit(GraphicsCommandList* commandList) {
     // Textures
     for (int iSlot = 0; iSlot < layout.m_textures.size(); iSlot++) {
         const auto& info = layout.m_textures[iSlot];
-        IGraphicsResource* resource = texture(info.dataIndex);
+        IGraphicsResource* resource = texture(info.globalIndex);
         if (m_shaderPass->isComputeShader() && resource == nullptr) {
         }
         else if (resource == nullptr || resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
@@ -165,7 +165,7 @@ void ShaderDescriptor::submit(GraphicsCommandList* commandList) {
     // Samplers
     for (int iSlot = 0; iSlot < layout.m_samplers.size(); iSlot++) {
         const auto& info = layout.m_samplers[iSlot];
-        SamplerState* sampler = samplerState(info.dataIndex);
+        SamplerState* sampler = samplerState(info.globalIndex);
         if (!sampler) {
             IGraphicsResource* resource = texture(iSlot);
             if (resource && resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
@@ -184,7 +184,7 @@ void ShaderDescriptor::submit(GraphicsCommandList* commandList) {
     // Storages
     for (int iSlot = 0; iSlot < layout.m_storages.size(); iSlot++) {
         const auto& info = layout.m_storages[iSlot];
-        IGraphicsResource* resource = storage(info.dataIndex);
+        IGraphicsResource* resource = storage(info.globalIndex);
         VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
         bool modified = false;
         updateInfo.storages[iSlot].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, buffer, &modified);

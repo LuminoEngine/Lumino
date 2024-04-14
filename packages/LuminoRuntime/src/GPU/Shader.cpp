@@ -465,7 +465,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
 
     // Uniforms
     for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
-        int dataIndex = m_descriptorLayout.m_buffers[i].dataIndex;
+        int dataIndex = m_descriptorLayout.m_buffers[i].globalIndex;
         const auto& view = descripter->uniformBuffer(dataIndex);
         updateInfo.uniforms[i].object = view.buffer->rhiObject();
         updateInfo.uniforms[i].offset = view.offset;
@@ -481,7 +481,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
 
 #if 1
         const auto& info = m_descriptorLayout.m_textures[i];
-        IGraphicsResource* resource = descripter->texture(info.dataIndex);
+        IGraphicsResource* resource = descripter->texture(info.globalIndex);
         if (isComputeShader() && resource == nullptr) {
         }
         else if (resource == nullptr || resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
@@ -540,10 +540,10 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
             break;
         }
         const auto& info = m_descriptorLayout.m_samplers[i];
-        SamplerState* sampler = descripter->samplerState(info.dataIndex);
+        SamplerState* sampler = descripter->samplerState(info.globalIndex);
         if (!sampler) {
             //if (Texture* texture = descripter->texture(info.dataIndex)) {
-            IGraphicsResource* texture = descripter->texture(info.dataIndex);
+            IGraphicsResource* texture = descripter->texture(info.globalIndex);
             if (texture && texture->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
                 sampler = static_cast<Texture*>(texture)->samplerState();
             }
@@ -560,7 +560,7 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
 
     // Storages
     for (int i = 0; i < m_descriptorLayout.m_storages.size(); i++) {
-        int dataIndex = m_descriptorLayout.m_storages[i].dataIndex;
+        int dataIndex = m_descriptorLayout.m_storages[i].globalIndex;
         IGraphicsResource* resource = descripter->storage(dataIndex);
         VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
         bool modified = false;
@@ -952,11 +952,11 @@ void ShaderPassDescriptorLayout::init(const kokage::DescriptorLayout& layout, co
     m_buffers.resize(layout.uniformBufferRegister.size());
     for (int i = 0; i < layout.uniformBufferRegister.size(); i++) {
         const auto& item = layout.uniformBufferRegister[i];
-        m_buffers[i].dataIndex = globalLayout->findUniformBufferRegisterIndex(String::fromStdString(item.name));
+        m_buffers[i].globalIndex = globalLayout->findUniformBufferRegisterIndex(String::fromStdString(item.name));
         m_buffers[i].bindingIndex = item.binding;
         m_buffers[i].stageFlags = item.stageFlags;
 
-        if (LN_ENSURE(m_buffers[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_buffers[i].globalIndex >= 0)) return;
         if (LN_ENSURE(m_buffers[i].bindingIndex >= 0)) return;
         if (LN_ENSURE(m_buffers[i].stageFlags != 0)) return;
     }
@@ -964,11 +964,11 @@ void ShaderPassDescriptorLayout::init(const kokage::DescriptorLayout& layout, co
     m_textures.resize(layout.textureRegister.size());
     for (int i = 0; i < layout.textureRegister.size(); i++) {
         const auto& item = layout.textureRegister[i];
-        m_textures[i].dataIndex = globalLayout->findTextureRegisterIndex(String::fromStdString(item.name));
+        m_textures[i].globalIndex = globalLayout->findTextureRegisterIndex(String::fromStdString(item.name));
         m_textures[i].bindingIndex = item.binding;
         m_textures[i].stageFlags = item.stageFlags;
 
-        if (LN_ENSURE(m_textures[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_textures[i].globalIndex >= 0)) return;
         if (LN_ENSURE(m_textures[i].bindingIndex >= 0)) return;
         if (LN_ENSURE(m_textures[i].stageFlags != 0)) return;
     }
@@ -976,11 +976,11 @@ void ShaderPassDescriptorLayout::init(const kokage::DescriptorLayout& layout, co
     m_samplers.resize(layout.samplerRegister.size());
     for (int i = 0; i < layout.samplerRegister.size(); i++) {
         const auto& item = layout.samplerRegister[i];
-        m_samplers[i].dataIndex = globalLayout->findSamplerRegisterIndex(String::fromStdString(item.name));
+        m_samplers[i].globalIndex = globalLayout->findSamplerRegisterIndex(String::fromStdString(item.name));
         m_samplers[i].bindingIndex = item.binding;
         m_samplers[i].stageFlags = item.stageFlags;
 
-        if (LN_ENSURE(m_samplers[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_samplers[i].globalIndex >= 0)) return;
         if (LN_ENSURE(m_samplers[i].bindingIndex >= 0)) return;
         if (LN_ENSURE(m_samplers[i].stageFlags != 0)) return;
     }
@@ -988,11 +988,11 @@ void ShaderPassDescriptorLayout::init(const kokage::DescriptorLayout& layout, co
     m_storages.resize(layout.unorderdRegister.size());
     for (int i = 0; i < layout.unorderdRegister.size(); i++) {
         const auto& item = layout.unorderdRegister[i];
-        m_storages[i].dataIndex = globalLayout->findStorageRegisterIndex(String::fromStdString(item.name));
+        m_storages[i].globalIndex = globalLayout->findStorageRegisterIndex(String::fromStdString(item.name));
         m_storages[i].bindingIndex = item.binding;
         m_storages[i].stageFlags = item.stageFlags;
 
-        if (LN_ENSURE(m_storages[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_storages[i].globalIndex >= 0)) return;
         if (LN_ENSURE(m_storages[i].bindingIndex >= 0)) return;
         if (LN_ENSURE(m_storages[i].stageFlags != 0)) return;
     }
