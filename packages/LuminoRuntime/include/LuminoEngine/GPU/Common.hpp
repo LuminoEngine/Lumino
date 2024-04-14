@@ -63,6 +63,7 @@ class GraphicsContextInternal;
 class IGraphicsDevice;
 class ICommandList;
 class ISamplerState;
+class IShaderPass;
 class IRenderPass;
 class ShaderSecondaryDescriptor;
 class GraphicsProfiler;

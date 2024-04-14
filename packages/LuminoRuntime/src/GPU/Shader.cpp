@@ -11,6 +11,8 @@
 #include <LuminoEngine/GPU/ConstantBuffer.hpp>
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/GPU/ShaderDescriptor.hpp>
+#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include "../../LuminoRuntime/src/GraphicsRHI/ShaderCompiler/UnifiedShaderCompiler.hpp"
 #include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
@@ -406,7 +408,7 @@ Ref<ReadOnlyList<Ref<ShaderPass>>> ShaderTechnique::passes() const {
 ShaderPass::ShaderPass()
     : m_owner(nullptr)
     , m_name()
-    , m_rhiPass(nullptr)
+    //, m_rhiPass(nullptr)
     , m_renderState(nullptr) {
 }
 
@@ -424,17 +426,15 @@ void ShaderPass::init(
     m_kokageShader = kokageShader;
     m_kokagePassId = kokagePassId;
 
+    detail::GraphicsManager* manager = m_owner->m_owner->m_graphicsManager;
+    manager->resourceRegistry()->registerObject(this);
+
     kokage::UnifiedShaderPass* kokagePass = kokageShader->pass(kokagePassId);
     m_name = String::fromStdString(kokagePass->name);
     m_renderState = kokagePass->renderState;
 
     
-    auto rhiPass = m_owner->m_owner->m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(
-        m_kokageShader,
-        kokagePassId,
-        kokagePass->name,
-        diag);
-    m_rhiPass = rhiPass;
+    //m_rhiPass = rhiPass;
 
 
     const kokage::DescriptorLayout& passLayout = kokagePass->descriptorLayout;
@@ -450,12 +450,13 @@ void ShaderPass::init(
 }
 
 void ShaderPass::onDispose(bool explicitDisposing) {
-    for (auto& pool : m_descriptorSetsPools) {
-        pool->destroy();
-    }
-    m_descriptorSetsPools.clear();
 
-    m_rhiPass = nullptr;
+    //m_rhiPass = nullptr;
+
+    if (m_owner->m_owner && m_id > 0) {
+        detail::GraphicsManager* manager = m_owner->m_owner->m_graphicsManager;
+        manager->resourceRegistry()->unregisterObject(this);
+    }
 
     Object::onDispose(explicitDisposing);
 }
@@ -464,12 +465,40 @@ Shader* ShaderPass::shader() const {
     return m_owner->shader();
 }
 
-detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified) {
+detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsCommandList* context, bool* outModified) {
+    GraphicsContext* graphicsContext = context->graphicsContext();
+    detail::IShaderPass* rhiObject = static_cast<detail::IShaderPass*>(graphicsContext->rhiResourceRegistry()->get(this));
+    *outModified = false;
+
+    if (!rhiObject) {
+        DiagnosticsManager diag;
+        detail::IGraphicsDevice* device = graphicsContext->rhiDevice();
+        Ref<detail::IShaderPass> ref = device->createShaderPassFromUnifiedShaderPass(
+            m_kokageShader,
+            m_kokagePassId,
+            m_name.toStdString(),
+            &diag);
+        graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
+        rhiObject = ref;
+
+        if (diag.hasError()) {
+            LN_ERROR(diag.toString());
+        }
+        else if (diag.hasWarning()) {
+            LN_LOG_WARNING(diag.toString());
+        }
+    }
+
+    if (LN_ENSURE(rhiObject)) return nullptr;
     // TODO: submitShaderDescriptor はここでやったほうがいいかも
-    return m_rhiPass;
+    return rhiObject;
 }
 
-void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified) {
+void ShaderPass::submitShaderDescriptor2(
+    GraphicsCommandList* graphicsContext,
+    const detail::ShaderSecondaryDescriptor* descripter,
+    detail::IShaderPass* rhiShaderPass,
+    bool* outModified) {
     auto* manager = m_owner->shader()->m_graphicsManager;
     GraphicsCommandList* commandList = graphicsContext;
     detail::ICommandList* rhiCommandList = commandList->rhiResource();
@@ -584,27 +613,10 @@ void ShaderPass::submitShaderDescriptor2(GraphicsCommandList* graphicsContext, c
     }
 
     detail::IDescriptor* descriptor = nullptr;
-    commandList->getDescriptorPool(this)->allocate(&descriptor);
+    commandList->getDescriptorPool(this, rhiShaderPass)->allocate(&descriptor);
     assert(descriptor);
     descriptor->setData(updateInfo);
     rhiCommandList->setDescriptor(descriptor);
-}
-
-Ref<detail::IDescriptorPool> ShaderPass::getDescriptorSetsPool() {
-    if (m_descriptorSetsPools.empty()) {
-        return m_owner->m_owner->m_graphicsManager->deviceContext()->createDescriptorPool(m_rhiPass);
-    }
-    else {
-        auto ptr = m_descriptorSetsPools.back();
-        m_descriptorSetsPools.pop_back();
-        return ptr;
-    }
-}
-
-void ShaderPass::releaseDescriptorSetsPool(detail::IDescriptorPool* pool) {
-    LN_DCHECK(pool);
-    pool->reset();
-    m_descriptorSetsPools.push_back(pool);
 }
 
 //==============================================================================

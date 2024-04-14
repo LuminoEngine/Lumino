@@ -113,7 +113,9 @@ void ShaderDescriptor::reset(ShaderPass* shaderPass) {
     m_storages = {};
 }
 
-void ShaderDescriptor::submit(GraphicsCommandList* commandList) {
+void ShaderDescriptor::submit(
+    GraphicsCommandList* commandList,
+    detail::IShaderPass* rhiShaderPass) {
     detail::GraphicsManager* manager = commandList->m_manager;
     detail::ICommandList* rhiCommandList = commandList->rhiResource();
     const ShaderPassDescriptorLayout& layout = m_shaderPass->descriptorLayout();
@@ -193,7 +195,7 @@ void ShaderDescriptor::submit(GraphicsCommandList* commandList) {
     }
 
     detail::IDescriptor* descriptor = nullptr;
-    commandList->getDescriptorPool(m_shaderPass)->allocate(&descriptor);
+    commandList->getDescriptorPool(m_shaderPass, rhiShaderPass)->allocate(&descriptor);
     assert(descriptor);
     descriptor->setData(updateInfo);
     rhiCommandList->setDescriptor(descriptor);

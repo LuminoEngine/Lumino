@@ -172,7 +172,7 @@ public:
 
     detail::ShaderSecondaryDescriptor* acquireShaderDescriptor_deprecated(Shader* shader);
 
-    detail::IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass);
+    detail::IDescriptorPool* getDescriptorPool(ShaderPass* shaderPass, detail::IShaderPass* rhiShaderPass);
 
     void* allocateBulkData(size_t size);
 
@@ -200,6 +200,7 @@ private:
 
     struct ShaderPassDescriptorPair {
         Ref<ShaderPass> shaderPass; // m_usingDescriptorSetsPools で持っている DescriptorSetsPool は ShaderPass への強い参照を持たないので、これでカバーする
+        Ref<detail::IShaderPass> rhiShaderPass;
         Ref<detail::IDescriptorPool> descriptorPool;
     };
 

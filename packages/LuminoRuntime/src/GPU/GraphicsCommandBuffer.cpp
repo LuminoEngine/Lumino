@@ -81,7 +81,7 @@ void GraphicsCommandList::reset() {
     // m_singleFrameUniformBufferAllocator->cleanup();
 
     for (const auto& pair : m_usingDescriptorPools) {
-        pair.shaderPass->releaseDescriptorSetsPool(pair.descriptorPool);
+        pair.rhiShaderPass->releaseDescriptorSetsPool(pair.descriptorPool);
     }
     m_usingDescriptorPools.clear();
 
@@ -333,14 +333,14 @@ detail::ICommandList* GraphicsCommandList::commitState() {
     if (m_staging.shaderDescriptor_deprecated) {
         if (m_staging.shaderPass && m_staging.shaderDescriptor_deprecated) {
             assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor_deprecated->shader());
-            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor_deprecated, &resourceModified);
+            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor_deprecated, shaderPassRHI, & resourceModified);
         }
         else {
             m_rhiResource->setDescriptor(nullptr);
         }
     }
     else if (m_staging.shaderDescriptor) {
-        m_staging.shaderDescriptor->submit(this);
+        m_staging.shaderDescriptor->submit(this, shaderPassRHI);
     }
     else {
         m_rhiResource->setDescriptor(nullptr);
@@ -501,7 +501,9 @@ detail::ShaderSecondaryDescriptor* GraphicsCommandList::acquireShaderDescriptor_
     return shader->acquireDescriptor();
 }
 
-detail::IDescriptorPool* GraphicsCommandList::getDescriptorPool(ShaderPass* shaderPass) {
+detail::IDescriptorPool* GraphicsCommandList::getDescriptorPool(
+    ShaderPass* shaderPass,
+    detail::IShaderPass* rhiShaderPass) {
     // このコマンド実行中に新たな ShaderPass が使われるたびに、新しく VulkanShaderPass から Pool を確保しようとする。
     // ただし、毎回やると重いので簡単なキャッシュを設ける。
     // 線形探索だけど、ShaderPass が1フレームに 100 も 200 も使われることはそうないだろう。
@@ -514,10 +516,11 @@ detail::IDescriptorPool* GraphicsCommandList::getDescriptorPool(ShaderPass* shad
     }
 
     if (usingShaderPass == -1) {
-        auto pool = shaderPass->getDescriptorSetsPool();
+        auto pool = rhiShaderPass->getDescriptorSetsPool();
 
         ShaderPassDescriptorPair pair;
         pair.shaderPass = shaderPass;
+        pair.rhiShaderPass = rhiShaderPass;
         pair.descriptorPool = pool;
         m_usingDescriptorPools.push_back(pair);
 

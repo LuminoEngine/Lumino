@@ -557,7 +557,7 @@ LN_INTERNAL_NEW_OBJECT;
  */
 class LN_API ShaderPass final
     : public Object
-{
+    , public IGraphicsObject {
 public:
     /** この ShaderPass が含まれている Shader を取得します。 */
     Shader* shader() const;
@@ -573,9 +573,6 @@ public:
     const ShaderDescriptorLayout* shaderPassDescriptorLayout() const { return m_shaderPassDescriptorLayout; }
 
 
-    // CommandBuffer に対するインターフェイス
-    Ref<detail::IDescriptorPool> getDescriptorSetsPool();
-    void releaseDescriptorSetsPool(detail::IDescriptorPool* pool);
 
     bool isComputeShader() const { return !m_descriptorLayout.m_storages.isEmpty(); }
 
@@ -593,14 +590,18 @@ private:
         DiagnosticsManager* diag);
 
     detail::IShaderPass* resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified);
-    void submitShaderDescriptor2(GraphicsCommandList* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified);
+    void submitShaderDescriptor2(
+        GraphicsCommandList* graphicsContext,
+        const detail::ShaderSecondaryDescriptor* descripter,
+        detail::IShaderPass* rhiShaderPass,
+        bool* outModified);
 
     ShaderTechnique* m_owner;
     Ref<kokage::UnifiedShader> m_kokageShader;
     kokage::UnifiedShadePassId m_kokagePassId;
 
     String m_name; // Pass の名前。検索や識別用のもの。
-    Ref<detail::IShaderPass> m_rhiPass;
+    //Ref<detail::IShaderPass> m_rhiPass;
     ShaderPassDescriptorLayout m_descriptorLayout;  // deprecated
     Array<size_t> m_bufferSizes;
     URef<detail::ShaderPassSemanticsManager> m_semanticsManager;
@@ -610,7 +611,6 @@ private:
     const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;
     int m_lastShaderDescriptorRevision = 0;
 
-    std::vector<Ref<detail::IDescriptorPool>> m_descriptorSetsPools;
 
     friend class Shader;
     friend class ShaderTechnique;

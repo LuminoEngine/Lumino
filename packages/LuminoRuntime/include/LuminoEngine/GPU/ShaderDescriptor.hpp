@@ -48,7 +48,7 @@ private:
     ShaderDescriptor();
     virtual ~ShaderDescriptor();
     void reset(ShaderPass* shaderPass);
-    void submit(GraphicsCommandList* commandList);
+    void submit(GraphicsCommandList* commandList, detail::IShaderPass* rhiShaderPass);
 
     const ShaderDescriptorLayout* descriptorLayout() const { return m_shaderPass->shaderPassDescriptorLayout(); }
 

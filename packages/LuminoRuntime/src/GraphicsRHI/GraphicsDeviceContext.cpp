@@ -732,6 +732,11 @@ IShaderPass::~IShaderPass() {
 }
 
 void IShaderPass::onDestroy() {
+    for (auto& pool : m_descriptorSetsPools) {
+        pool->destroy();
+    }
+    m_descriptorSetsPools.clear();
+
     if (IGraphicsDevice* d = device()) {
         d->pipelineCache()->invalidate(this);
     }
@@ -753,6 +758,23 @@ const kokage::VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsag
         }
     }
     return nullptr;
+}
+
+Ref<detail::IDescriptorPool> IShaderPass::getDescriptorSetsPool() {
+    if (m_descriptorSetsPools.empty()) {
+        return m_device->createDescriptorPool(this);
+    }
+    else {
+        auto ptr = m_descriptorSetsPools.back();
+        m_descriptorSetsPools.pop_back();
+        return ptr;
+    }
+}
+
+void IShaderPass::releaseDescriptorSetsPool(detail::IDescriptorPool* pool) {
+    LN_DCHECK(pool);
+    pool->reset();
+    m_descriptorSetsPools.push_back(pool);
 }
 
 ////==============================================================================

@@ -432,6 +432,12 @@ public:
     const kokage::VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
     void onDestroy() override;
 
+    
+    // CommandBuffer に対するインターフェイス
+    Ref<IDescriptorPool> getDescriptorSetsPool();
+    void releaseDescriptorSetsPool(IDescriptorPool* pool);
+
+
 protected:
     IShaderPass();
     virtual ~IShaderPass();
@@ -441,6 +447,7 @@ private:
     //IGraphicsDevice* m_device = nullptr;
     std::string m_name;
     std::vector<kokage::VertexInputAttribute> m_attributes;
+    std::vector<Ref<IDescriptorPool>> m_descriptorSetsPools;
 
     friend class IGraphicsDevice;
 };
