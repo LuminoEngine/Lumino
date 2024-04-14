@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include <LuminoEngine/Asset/AssetObject.hpp>
 #include <LuminoEngine/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
+#include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
 #include "GraphicsResource.hpp"
 #include "ShaderInterfaceFramework.hpp"
 
@@ -533,7 +534,7 @@ LN_INTERNAL_NEW_OBJECT;
     virtual ~ShaderTechnique();
     void init(Shader* owner, const kokage::UnifiedShaderTechnique* kokageTech);
     void setupSemanticsManager();
-    void addShaderPass(ShaderPass* pass);
+    //void addShaderPass(ShaderPass* pass);
 
     Shader* m_owner;
     String m_name;
@@ -582,17 +583,23 @@ protected:
     virtual void onDispose(bool explicitDisposing) override;
 
 private:
-    LN_INTERNAL_NEW_OBJECT;
     ShaderPass();
     virtual ~ShaderPass();
-    void init(const String& name, detail::IShaderPass* rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
+    void init(
+        ShaderTechnique* owner,
+        kokage::UnifiedShader* kokageShader,
+        kokage::UnifiedShadePassId kokagePassId,
+        const ShaderDescriptorLayout* globalLayout,
+        DiagnosticsManager* diag);
 
-    void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     detail::IShaderPass* resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified);
     void submitShaderDescriptor2(GraphicsCommandList* graphicsContext, const detail::ShaderSecondaryDescriptor* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;
-    String m_name;
+    Ref<kokage::UnifiedShader> m_kokageShader;
+    kokage::UnifiedShadePassId m_kokagePassId;
+
+    String m_name; // Pass の名前。検索や識別用のもの。
     Ref<detail::IShaderPass> m_rhiPass;
     ShaderPassDescriptorLayout m_descriptorLayout;  // deprecated
     Array<size_t> m_bufferSizes;

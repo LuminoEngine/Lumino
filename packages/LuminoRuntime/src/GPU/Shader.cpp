@@ -212,9 +212,9 @@ bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, Shade
 }
 
 void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag) {
-    kokage::UnifiedShader unifiedShader(diag);
-    if (unifiedShader.load(stream)) {
-        createFromUnifiedShader(&unifiedShader, diag);
+    Ref<kokage::UnifiedShader> unifiedShader(LN_NEW kokage::UnifiedShader(diag), false);
+    if (unifiedShader->load(stream)) {
+        createFromUnifiedShader(unifiedShader, diag);
     }
 }
 
@@ -228,17 +228,14 @@ void Shader::createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, Diagn
         m_techniques->add(tech);
 
         for (const auto& kokagePassId : kokageTech->passes) {
-            const auto* kokagePass = unifiedShader->pass(kokagePassId);
-            auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, kokagePassId, asciiName, diag);
-            if (rhiPass) {
-                auto pass = makeObject_deprecated<ShaderPass>(
-                    String::fromStdString(kokagePass->name),
-                    rhiPass,
-                    kokagePass->renderState,
-                    kokagePass->descriptorLayout,
-                    m_descriptorLayout);
-                tech->addShaderPass(pass);
-            }
+            Ref<ShaderPass> pass(LN_NEW ShaderPass, false);
+            pass->init(
+                tech,
+                unifiedShader,
+                kokagePassId,
+                m_descriptorLayout,
+                diag);
+            tech->m_passes->add(pass);
         }
 
         tech->setupSemanticsManager();
@@ -398,10 +395,10 @@ Ref<ReadOnlyList<Ref<ShaderPass>>> ShaderTechnique::passes() const {
     return m_passes;
 }
 
-void ShaderTechnique::addShaderPass(ShaderPass* pass) {
-    m_passes->add(pass);
-    pass->setOwner(this);
-}
+//void ShaderTechnique::addShaderPass(ShaderPass* pass) {
+//    m_passes->add(pass);
+//    pass->setOwner(this);
+//}
 
 //==============================================================================
 // ShaderPass
@@ -416,24 +413,40 @@ ShaderPass::ShaderPass()
 ShaderPass::~ShaderPass() {
 }
 
-void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, kokage::ShaderRenderState* renderState, const kokage::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout) {
-    if (LN_REQUIRE(rhiPass)) return;
+void ShaderPass::init(
+    ShaderTechnique* owner,
+    kokage::UnifiedShader* kokageShader,
+    kokage::UnifiedShadePassId kokagePassId,
+    const ShaderDescriptorLayout* globalLayout,
+    DiagnosticsManager* diag) {
     Object::init();
+    m_owner = owner;
+    m_kokageShader = kokageShader;
+    m_kokagePassId = kokagePassId;
 
-    m_name = name;
+    kokage::UnifiedShaderPass* kokagePass = kokageShader->pass(kokagePassId);
+    m_name = String::fromStdString(kokagePass->name);
+    m_renderState = kokagePass->renderState;
+
+    
+    auto rhiPass = m_owner->m_owner->m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(
+        m_kokageShader,
+        kokagePassId,
+        kokagePass->name,
+        diag);
     m_rhiPass = rhiPass;
-    m_renderState = renderState;
 
-    m_descriptorLayout.init(layout, globalLayout);
 
-    for (const auto& slot : layout.bufferSlots()) {
+    const kokage::DescriptorLayout& passLayout = kokagePass->descriptorLayout;
+    m_descriptorLayout.init(passLayout, globalLayout);
+    for (const auto& slot : passLayout.bufferSlots()) {
         m_bufferSizes.push(slot.size);
     }
 
     m_semanticsManager = makeURef<detail::ShaderPassSemanticsManager>();
-    m_semanticsManager->init(this, layout);
+    m_semanticsManager->init(this, passLayout);
 
-    m_shaderPassDescriptorLayout = makeObject_deprecated<ShaderDescriptorLayout>(layout);
+    m_shaderPassDescriptorLayout = makeObject_deprecated<ShaderDescriptorLayout>(passLayout);
 }
 
 void ShaderPass::onDispose(bool explicitDisposing) {
