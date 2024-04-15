@@ -178,11 +178,16 @@ public:
         log(location, level, std::string_view(format), std::forward<TArgs>(args)...);
     }
 
+    //template<typename T>
+    //static inline void log(LogLocation location, LogLevel level, const T& value) {
+    //    const auto str = ::ln::toString(value);
+    //    log(location, level, std::u32string_view(str.c_str(), str.length()));
+    //}
     template<typename T>
-    static inline void log(LogLocation location, LogLevel level, const T& value) {
-        const auto str = ::ln::toString(value);
-        log(location, level, std::u32string_view(str.c_str(), str.length()));
+    static inline void log(LogLocation location, LogLevel level, const ln::String& value) {
+        log(location, level, std::u32string_view(value.c_str(), value.length()));
     }
+
 
     template<typename TFormatString, typename... TArgs>
     static inline void log(LogLocation location, LogLevel level, const TFormatString& format, TArgs&&... args) {

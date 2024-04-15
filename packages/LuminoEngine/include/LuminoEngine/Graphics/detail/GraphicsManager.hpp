@@ -116,7 +116,7 @@ private:
     //void createDirectX12Context(const Settings& settings);
 
     AssetManager* m_assetManager;
-    PlatformManager* m_platformManager;
+    //PlatformManager* m_platformManager;
     ShaderManager* m_shaderManager;
     URef<MeshManager> m_meshManager;
     //Ref<IGraphicsDevice> m_deviceContext;

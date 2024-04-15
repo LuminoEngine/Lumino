@@ -1,5 +1,4 @@
-﻿
-#include <assert.h>
+﻿#include <assert.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <algorithm>
@@ -210,7 +209,7 @@ void printError(const Exception& e) {
     LogLocation loc;
     loc.filename = ExceptionHelper::getSourceFilePath(e);
     loc.line = ExceptionHelper::getSourceFileLine(e);
-    Logger::log(loc, logLevel, buf);
+    Logger::log(loc, logLevel, static_cast<const char*>(buf));
     //printf("%s\n", buf);
     Logger::flush();
 }

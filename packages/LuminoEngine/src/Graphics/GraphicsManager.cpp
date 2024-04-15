@@ -119,7 +119,7 @@ void GraphicsManager::terminate() {
 
 GraphicsManager::GraphicsManager()
     : m_assetManager(nullptr)
-    , m_platformManager(nullptr)
+    //, m_platformManager(nullptr)
     , m_resourceRegistry(makeURef<GraphicsObjectRegistry>())
     //, m_vertexBufferRegistry(makeURef<GraphicsResourceRegistry>())
     //, m_indexBufferRegistry(makeURef<GraphicsResourceRegistry>())
@@ -139,8 +139,8 @@ bool GraphicsManager::init(const Settings& settings) {
     m_assetManager = AssetManager::instance();
     if (LN_ASSERT(m_assetManager)) return false;
     
-    m_platformManager = PlatformManager::instance();
-    if (LN_ASSERT(m_platformManager)) return false;
+    //m_platformManager = PlatformManager::instance();
+    //if (LN_ASSERT(m_platformManager)) return false;
 
     m_profiler = std::make_unique<GraphicsProfiler>();
 
