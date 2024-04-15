@@ -21,12 +21,11 @@ protected:
     void onManagerFinalizing() override;
     void onChangeDevice(detail::IGraphicsDevice* device) override;
 
-LN_CONSTRUCT_ACCESS:
+private:
     ConstantBuffer();
     virtual ~ConstantBuffer();
-    bool init(size_t size);
+    bool init(GraphicsContext* context, size_t size);
 
-private:
     detail::GraphicsManager* m_manager;
     bool m_profiling;
     Ref<detail::RHIResource> m_rhiObject;
@@ -34,6 +33,7 @@ private:
 
     friend class detail::GraphicsResourceInternal;
     friend class detail::GraphicsProfiler;
+    friend class detail::SingleFrameUniformBufferAllocatorPage;
 };
 
 } // namespace ln

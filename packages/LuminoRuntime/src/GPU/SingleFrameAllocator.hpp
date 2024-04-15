@@ -6,38 +6,36 @@
 
 namespace ln {
 namespace detail {
-    
+
 class SingleFrameUniformBufferAllocatorPage
-	: public AbstractLinearAllocatorPage
-{
+    : public AbstractLinearAllocatorPage {
 public:
-	virtual ~SingleFrameUniformBufferAllocatorPage();
-	bool init(uint32_t size);
-	ConstantBuffer* buffer() const { return m_buffer.get(); }
+    virtual ~SingleFrameUniformBufferAllocatorPage();
+    bool init(GraphicsContext* context, uint32_t size);
+    ConstantBuffer* buffer() const { return m_buffer.get(); }
 
 private:
-	Ref<ConstantBuffer> m_buffer;
+    Ref<ConstantBuffer> m_buffer;
 };
 
 class SingleFrameUniformBufferAllocatorPageManager
-	: public LinearAllocatorPageManager
-{
+    : public LinearAllocatorPageManager {
 public:
-	SingleFrameUniformBufferAllocatorPageManager(size_t pageSize);
+    SingleFrameUniformBufferAllocatorPageManager(GraphicsContext* context, size_t pageSize);
 
 protected:
-	Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) override;
+    Ref<AbstractLinearAllocatorPage> onCreateNewPage(size_t size) override;
 
 private:
+    GraphicsContext* m_context;
 };
 
 class SingleFrameUniformBufferAllocator
-	: public AbstractLinearAllocator
-{
+    : public AbstractLinearAllocator {
 public:
-	SingleFrameUniformBufferAllocator(SingleFrameUniformBufferAllocatorPageManager* manager);
-	ConstantBufferView allocate(size_t size, size_t alignment);
-	void unmap();
+    SingleFrameUniformBufferAllocator(SingleFrameUniformBufferAllocatorPageManager* manager);
+    ConstantBufferView allocate(size_t size, size_t alignment);
+    void unmap();
 
 protected:
 };

@@ -73,6 +73,7 @@ public:
 public: // TODO: internal
     detail::RHIGraphicsObjectRegistry* rhiResourceRegistry() const { return m_rhiResourceRegistry; }
     virtual detail::IGraphicsDevice* rhiDevice() const;
+    const Ref<detail::SingleFrameUniformBufferAllocatorPageManager>& singleFrameConstantBufferAllocatorPageManager() const { return m_singleFrameConstantBufferAllocatorPageManager; }
 
 protected:
     void onDispose(bool explicitDisposing) override;
@@ -94,6 +95,7 @@ private:
 
     detail::GraphicsManager* m_manager;
     Ref<detail::ISwapChain> m_rhiObject;
+    Ref<detail::SingleFrameUniformBufferAllocatorPageManager> m_singleFrameConstantBufferAllocatorPageManager;
     URef<detail::RHIGraphicsObjectRegistry> m_rhiResourceRegistry;
     std::vector<Ref<RenderTargetTexture>> m_backbuffers;
     std::vector<Ref<DepthBuffer>> m_depthBuffers;

@@ -42,6 +42,10 @@ void GraphicsContext::init(PlatformWindow* window) {
 
     m_rhiObject = rhiDevice()->createSwapChain(window, backbufferSize);
 
+    m_singleFrameConstantBufferAllocatorPageManager = makeRef<detail::SingleFrameUniformBufferAllocatorPageManager>(
+        this,
+        0x200000); // 2MB
+
     resetRHIBackbuffers();
 
     // CommandList
@@ -66,6 +70,11 @@ void GraphicsContext::onDispose(bool explicitDisposing) {
     //    // End command list
     //    detail::GraphicsCommandListInternal::endCommandRecoding(currentCommandList2());
     //}
+
+    if (m_singleFrameConstantBufferAllocatorPageManager) {
+        m_singleFrameConstantBufferAllocatorPageManager->clear();
+        m_singleFrameConstantBufferAllocatorPageManager = nullptr;
+    }
 
     m_rhiObject = nullptr;
     for (auto& x : m_commandLists)

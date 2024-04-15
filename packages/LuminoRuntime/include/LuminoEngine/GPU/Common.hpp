@@ -71,6 +71,8 @@ class RHIDeviceObject;
 class RHIResource;
 class RenderPassCache;
 
+class SingleFrameUniformBufferAllocatorPage;
+class SingleFrameUniformBufferAllocatorPageManager;
 class GraphicsObjectRegistry;
 class RHIGraphicsObjectRegistry;
 

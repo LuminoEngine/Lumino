@@ -1,5 +1,4 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
@@ -11,6 +10,7 @@
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/GPU/ShaderDescriptor.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include "SingleFrameAllocator.hpp"
 
@@ -43,7 +43,8 @@ void GraphicsCommandList::init(detail::GraphicsManager* manager) {
     m_rhiResource = manager->deviceContext()->createCommandList();
     m_allocator = makeRef<detail::LinearAllocator>(manager->linearAllocatorPageManager());
     m_descriptorPool = makeURef<detail::ShaderDescriptorPool>();
-    m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(manager->singleFrameUniformBufferAllocatorPageManager());
+    m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(
+        m_graphicsContext->singleFrameConstantBufferAllocatorPageManager());
     m_uniformBufferOffsetAlignment = manager->deviceContext()->caps().uniformBufferOffsetAlignment;
     resetState();
 }

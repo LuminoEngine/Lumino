@@ -19,7 +19,6 @@ class DepthBufferCacheManager;
 class FrameBufferCache;
 class RenderingQueue;
 struct AssetRequiredPathSet;
-class SingleFrameUniformBufferAllocatorPageManager;
 class AssetManager;
 class PlatformManager;
 class ShaderManager;
@@ -80,7 +79,6 @@ public:
     const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
     const URef<RenderPassCache>& renderPassCache() const { return m_renderPassCache; }
     ObjectCache<String, Texture2D>* texture2DCache() { return &m_texture2DCache; }
-    const Ref<SingleFrameUniformBufferAllocatorPageManager>& singleFrameUniformBufferAllocatorPageManager() const { return m_singleFrameUniformBufferAllocatorPageManager; }
 
     const List<IGraphicsResource*>& graphicsResources() const { return m_graphicsResources; }
 
@@ -143,7 +141,6 @@ private:
     URef<RenderPassCache> m_renderPassCache;
     ObjectCache<String, Texture2D> m_texture2DCache;
     ObjectCache<String, Shader> m_shaderCache;
-    Ref<SingleFrameUniformBufferAllocatorPageManager> m_singleFrameUniformBufferAllocatorPageManager;
     List<IGraphicsResource*> m_graphicsResources;
     List<INativeGraphicsExtension*> m_extensions;
 

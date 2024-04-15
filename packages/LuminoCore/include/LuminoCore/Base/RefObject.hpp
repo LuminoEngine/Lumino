@@ -503,6 +503,11 @@ inline Ref<T> makeRef(TArgs&&... args)
     return Ref<T>(LN_NEW T(std::forward<TArgs>(args)...), false);
 }
 
+template<class T>
+inline Ref<T> wrapRef(T* ptr) {
+    return Ref<T>(ptr, false);
+}
+
 /** 所有権を設定したいオブジェクトを指定して、 Ref を構築します。オブジェクトの参照カウントはインクリメントされません。 */
 template<class T, class... TArgs>
 inline Ref<T> attachRef(T* ptr) {

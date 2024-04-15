@@ -197,7 +197,6 @@ bool GraphicsManager::init(const Settings& settings) {
     m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
     m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
     m_renderPassCache = makeURef<detail::RenderPassCache>();
-    m_singleFrameUniformBufferAllocatorPageManager = makeRef<SingleFrameUniformBufferAllocatorPageManager>(0x200000); // 2MB
 
     m_extensions.add(nullptr); // [0] is dummy
 
@@ -284,11 +283,6 @@ void GraphicsManager::dispose() {
     m_graphicsResources.clear();
     for (IGraphicsResource* resource : removeList) {
         resource->onManagerFinalizing();
-    }
-
-    if (m_singleFrameUniformBufferAllocatorPageManager) {
-        m_singleFrameUniformBufferAllocatorPageManager->clear();
-        m_singleFrameUniformBufferAllocatorPageManager = nullptr;
     }
 
     m_frameBufferCache = nullptr;
