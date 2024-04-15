@@ -1,8 +1,6 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
@@ -46,21 +44,6 @@ Result<> AssetObject::init() {
 //	//}
 //}
 //
-
-void AssetObject::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    Object::serialize_deprecated(ar);
-
-	String file = (m_data) ? m_data->resourceFilePath.str() : String::Empty;
-
-	ar & makeNVP(_TT("file"), file);
-
-	if (ar.isLoading()) {
-		LN_NOTIMPLEMENTED();
-		// TODO: .yml から読み込んだということなので、他のフィールドも設定できる
-		m_data->resourceFilePath = file;
-	}
-}
 
 bool AssetObject::_resolveAssetRequiredPathSet(const detail::AssetPath* baseDir, const Path& requiredLoadPath, const std::vector<const Char*> candidateExts, detail::AssetRequiredPathSet* outPathSet)
 {

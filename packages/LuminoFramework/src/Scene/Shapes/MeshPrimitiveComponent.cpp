@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
@@ -42,11 +40,6 @@ Material* ShapeComponent::material() const {
     return m_material;
 }
 
-void ShapeComponent::serialize_deprecated(Serializer2_deprecated& ar) {
-    VisualComponent::serialize_deprecated(ar);
-    ar& makeNVP(_TT("material"), m_material);
-}
-
 //==============================================================================
 // PlaneMeshComponent
 
@@ -63,12 +56,6 @@ PlaneMeshComponent::~PlaneMeshComponent() {
 
 void PlaneMeshComponent::init() {
     VisualComponent::init();
-}
-
-void PlaneMeshComponent::serialize_deprecated(Serializer2_deprecated& ar) {
-    ShapeComponent::serialize_deprecated(ar);
-    ar& makeNVP(_TT("size"), m_size);
-    ar& makeNVP(_TT("uvParUnit"), m_uvParUnit);
 }
 
 void PlaneMeshComponent::onRender(RenderingContext* context) {

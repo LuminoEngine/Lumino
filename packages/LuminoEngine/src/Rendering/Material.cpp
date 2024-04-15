@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/ShaderDescriptor.hpp>
@@ -420,41 +418,6 @@ void Material::updateShaderVariables2(GraphicsCommandList* commandList, ShaderDe
         }
         descriptor->setUniformBufferData(e.descriptorIndex, e.data->data(), e.data->size());
     }
-}
-
-void Material::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    Object::serialize_deprecated(ar);
-    LN_NOTIMPLEMENTED();
-
-    //// TODO: ↓Assets辺りに関数化
-    //if (ar.isSaving()) {
-    //    Path path = Assets::getAssetPath(m_mainTexture);
-    //    if (path.isEmpty()) {
-    //        // assetPath が空であればインスタンスを serialize する
-    //        ar & makeNVP(u"mainTexture", m_mainTexture);
-    //    }
-    //    else {
-    //        // assetPath を持っているときは assetPath を serialize する
-    //        ar & makeNVP(u"mainTexture", path);
-    //    }
-    //}
-    //else {
-    //    if (ar.readName(u"mainTexture")) {
-    //        if (ar.readingValueIsObject()) {
-    //            Path path = ar.readString();
-    //            LN_NOTIMPLEMENTED();
-    //        }
-    //        else {
-    //            Path path = ar.readString();
-    //            m_mainTexture = Texture2D::load(path);
-    //        }
-    //    }
-    //    else {
-    //        m_mainTexture = nullptr;
-    //    }
-    //}
-
 }
 
 ////==============================================================================

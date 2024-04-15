@@ -26,9 +26,6 @@ public:
 	/** フレームにアンカーポイントが定義されているかどうかを確認します。 */
 	bool hasAnchorPoint() const { return Math::isNaN(m_anchorPoint.x) || Math::isNaN(m_anchorPoint.y); }
 
-protected:
-	void serialize_deprecated(Serializer2_deprecated& ar) override;
-
 LN_CONSTRUCT_ACCESS:
 	SpriteFrame();
 	virtual ~SpriteFrame() = default;
@@ -60,9 +57,6 @@ public:
 public: // TODO: internal
 	int frameCount() const { return m_frames.size(); }
 	SpriteFrame* frame(int index) const;
-
-protected:
-	void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteSheet();
@@ -143,8 +137,6 @@ public:
 
 protected:
     void onRender(RenderingContext* context) override;
-
-	void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     SpriteComponent();

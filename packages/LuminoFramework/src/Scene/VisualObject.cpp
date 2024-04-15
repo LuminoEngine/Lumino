@@ -127,11 +127,6 @@ void VisualObject::setRenderPriority(int value)
     mainVisualComponent()->setRenderPriority(value);
 }
 
-void VisualObject::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    WorldObject::serialize_deprecated(ar);
-}
-
 void VisualObject::setMainVisualComponent(VisualComponent* component)
 {
     m_component = component;

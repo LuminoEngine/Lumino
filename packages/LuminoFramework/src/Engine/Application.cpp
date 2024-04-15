@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <yaml-cpp/yaml.h>
 #include <optional>
 #include "EngineManager.hpp"
 #include <LuminoFramework/Scene/World.hpp>
@@ -130,13 +129,13 @@ void Application::run() {
 //==============================================================================
 // AppData
 
-void AppData::setValue(const StringView& key, Ref<Variant> value) {
-    detail::EngineDomain::engineManager()->appData()->setValue(key, value);
-}
-
-Ref<Variant> AppData::getValue(const StringView& key) {
-    return detail::EngineDomain::engineManager()->appData()->getValue(key);
-}
+//void AppData::setValue(const StringView& key, Ref<Variant> value) {
+//    detail::EngineDomain::engineManager()->appData()->setValue(key, value);
+//}
+//
+//Ref<Variant> AppData::getValue(const StringView& key) {
+//    return detail::EngineDomain::engineManager()->appData()->getValue(key);
+//}
 
 //==============================================================================
 // ApplicationSetupSettings
@@ -248,96 +247,98 @@ void ApplicationHelper::run(Application* app) {
 //==============================================================================
 // AppDataInternal
 
-void AppDataInternal::setValue(const StringView& key, Ref<Variant> value) {
-    m_values[key] = value;
-}
-
-Ref<Variant> AppDataInternal::getValue(const StringView& key) const {
-    auto itr = m_values.find(key);
-    if (itr != m_values.end())
-        return itr->second;
-    else
-        return nullptr;
-}
-
-void AppDataInternal::attemptSave() {
-    if (!m_values.empty()) {
-        save(makeFilePath());
-    }
-}
-
-void AppDataInternal::attemptLoad() {
-    const auto path = makeFilePath();
-    if (FileSystem::existsFile(path)) {
-        load(path);
-    }
-}
-
-Path AppDataInternal::makeFilePath() const {
-    return Path::combine(Environment::specialFolderPath(SpecialFolder::ApplicationData), _TT("Lumino"), _TT("CommonAppData.yml"));
-}
-
-void AppDataInternal::save(const Path& filePath) {
-    YAML::Emitter out;
-    out << YAML::BeginMap;
-    for (const auto& pair : m_values) {
-        out << YAML::Key;
-        out << pair.first.toStdString();
-
-        if (pair.second->type() == VariantType::Int) {
-            out << pair.second->get<int>();
-        }
-        else if (pair.second->type() == VariantType::Float) {
-            out << pair.second->get<float>();
-        }
-        else if (pair.second->type() == VariantType::String) {
-            out << pair.second->get<String>().toStdString();
-        }
-    }
-    out << YAML::EndMap;
-
-    FileSystem::writeAllBytes(filePath, out.c_str(), strlen(out.c_str()));
-}
-
-// TODO: cpp-yaml は値の型を読み取ることができない。
-// try で頑張る必要があるが、これも暗黙の型変換が働いたりするため float, int, string 以上に増やすと対応できなくなる可能性が高い。
-// JSON にしたほうがよさそう。
-void AppDataInternal::load(const Path& filePath) {
-    const auto buffer = FileSystem::readAllBytes(filePath);
-    const auto text = std::string(reinterpret_cast<const char*>(buffer.unwrap().data()), buffer.unwrap().size());
-    YAML::Node doc = YAML::Load(text);
-
-    for (auto itr = doc.begin(); itr != doc.end(); ++itr) {
-        std::string key;
-        key = itr->first.as<std::string>();
-
-        const YAML::Node node = itr->second;
-        Ref<Variant> value;
-        {
-            try {
-                value = makeVariant(node.as<float>());
-            }
-            catch (const YAML::BadConversion& e) {
-            }
-        }
-        if (!value) {
-            try {
-                value = makeVariant(node.as<int>());
-            }
-            catch (const YAML::BadConversion& e) {
-            }
-        }
-        if (!value) {
-            try {
-                value = makeVariant(String::fromStdString(node.as<std::string>()));
-            }
-            catch (const YAML::BadConversion& e) {
-            }
-        }
-
-        m_values[String::fromStdString(key)] = value;
-    }
-}
+//void AppDataInternal::setValue(const StringView& key, Ref<Variant> value) {
+//    m_values[key] = value;
+//}
+//
+//Ref<Variant> AppDataInternal::getValue(const StringView& key) const {
+//    auto itr = m_values.find(key);
+//    if (itr != m_values.end())
+//        return itr->second;
+//    else
+//        return nullptr;
+//}
+//
+//void AppDataInternal::attemptSave() {
+//    if (!m_values.empty()) {
+//        save(makeFilePath());
+//    }
+//}
+//
+//void AppDataInternal::attemptLoad() {
+//    const auto path = makeFilePath();
+//    if (FileSystem::existsFile(path)) {
+//        load(path);
+//    }
+//}
+//
+//Path AppDataInternal::makeFilePath() const {
+//    return Path::combine(Environment::specialFolderPath(SpecialFolder::ApplicationData), _TT("Lumino"), _TT("CommonAppData.yml"));
+//}
+//
+//void AppDataInternal::save(const Path& filePath) {
+//    LN_NOTIMPLEMENTED();    // yaml-cpp を使わないようにした
+//    //YAML::Emitter out;
+//    //out << YAML::BeginMap;
+//    //for (const auto& pair : m_values) {
+//    //    out << YAML::Key;
+//    //    out << pair.first.toStdString();
+//
+//    //    if (pair.second->type() == VariantType::Int) {
+//    //        out << pair.second->get<int>();
+//    //    }
+//    //    else if (pair.second->type() == VariantType::Float) {
+//    //        out << pair.second->get<float>();
+//    //    }
+//    //    else if (pair.second->type() == VariantType::String) {
+//    //        out << pair.second->get<String>().toStdString();
+//    //    }
+//    //}
+//    //out << YAML::EndMap;
+//
+//    //FileSystem::writeAllBytes(filePath, out.c_str(), strlen(out.c_str()));
+//}
+//
+//// TODO: cpp-yaml は値の型を読み取ることができない。
+//// try で頑張る必要があるが、これも暗黙の型変換が働いたりするため float, int, string 以上に増やすと対応できなくなる可能性が高い。
+//// JSON にしたほうがよさそう。
+//void AppDataInternal::load(const Path& filePath) {
+//    LN_NOTIMPLEMENTED(); // yaml-cpp を使わないようにした
+//    //const auto buffer = FileSystem::readAllBytes(filePath);
+//    //const auto text = std::string(reinterpret_cast<const char*>(buffer.unwrap().data()), buffer.unwrap().size());
+//    //YAML::Node doc = YAML::Load(text);
+//
+//    //for (auto itr = doc.begin(); itr != doc.end(); ++itr) {
+//    //    std::string key;
+//    //    key = itr->first.as<std::string>();
+//
+//    //    const YAML::Node node = itr->second;
+//    //    Ref<Variant> value;
+//    //    {
+//    //        try {
+//    //            value = makeVariant(node.as<float>());
+//    //        }
+//    //        catch (const YAML::BadConversion& e) {
+//    //        }
+//    //    }
+//    //    if (!value) {
+//    //        try {
+//    //            value = makeVariant(node.as<int>());
+//    //        }
+//    //        catch (const YAML::BadConversion& e) {
+//    //        }
+//    //    }
+//    //    if (!value) {
+//    //        try {
+//    //            value = makeVariant(String::fromStdString(node.as<std::string>()));
+//    //        }
+//    //        catch (const YAML::BadConversion& e) {
+//    //        }
+//    //    }
+//
+//    //    m_values[String::fromStdString(key)] = value;
+//    //}
+//}
 
 } // namespace detail
 } // namespace ln

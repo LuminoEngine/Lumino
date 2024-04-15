@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoFramework/Scene/Mesh/MeshComponent.hpp>
@@ -74,20 +72,6 @@ MeshModel* StaticMesh::model() const
 void StaticMesh::makeCollisionBody(StringView meshContainerName)
 {
     m_component->makeCollisionBody(meshContainerName);
-}
-
-void StaticMesh::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    VisualObject::serialize_deprecated(ar);
-
-    
-
-    if (ar.isLoading()) {
-        if (auto* c = findComponent<MeshComponent>()) {
-            m_component = c;
-            setMainVisualComponent(m_component);
-        }
-    }
 }
 
 //==============================================================================

@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoFramework/Scene/Component.hpp>
 #include <LuminoFramework/Scene/WorldObject.hpp>
 #include <LuminoFramework/Scene/Level.hpp>
@@ -10,21 +8,6 @@ namespace ln {
 
 //==============================================================================
 // LevelRenderParameters
-
-void LevelRenderParameters::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    ar & ln::makeNVP(_TT("fogStartDistance"), m_fogStartDistance);
-    ar & ln::makeNVP(_TT("fogColor"), m_fogColor);
-    ar & ln::makeNVP(_TT("fogDensity"), m_fogDensity);
-    ar & ln::makeNVP(_TT("fogHeightDensity"), m_fogHeightDensity);
-    ar & ln::makeNVP(_TT("fogLowerHeight"), m_fogLowerHeight);
-    ar & ln::makeNVP(_TT("fogUpperHeight"), m_fogUpperHeight);
-    
-    ar & ln::makeNVP(_TT("skydomeSkyColor"), m_skydomeSkyColor);
-    ar & ln::makeNVP(_TT("skydomeHorizonColor"), m_skydomeHorizonColor);
-    ar & ln::makeNVP(_TT("skydomeCloudColor"), m_skydomeCloudColor);
-    ar & ln::makeNVP(_TT("skydomeOverlayColor"), m_skydomeOverlayColor);
-}
 
 void LevelRenderParameters::mergeToRenderParams(detail::SceneGlobalRenderParams* params) const
 {
@@ -349,25 +332,6 @@ bool Level::traverse(detail::IWorldObjectVisitor* visitor) const
         }
     }
     return true;
-}
-
-void Level::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    AssetObject::serialize_deprecated(ar);
-
-    if (ar.isLoading()) {
-        removeAllObjects();
-    }
-
-    ar & ln::makeNVP(_TT("renderParams"), m_levelRenderParameters);
-
-    ar & ln::makeNVP(_TT("children"), *m_rootWorldObjectList);
-
-    //if (ar.isLoading()) {
-    //    for (auto& obj : m_rootWorldObjectList) {
-    //        obj->attachScene(this);
-    //    }
-    //}
 }
 
 //==============================================================================

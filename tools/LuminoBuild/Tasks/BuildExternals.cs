@@ -77,7 +77,6 @@ namespace LuminoBuild.Tasks
 
                     Proc.Make("vcpkg", $"install nanovg:{b.Triplet} {options}").WithSilent().Call();
 
-                    Proc.Make("vcpkg", $"install yaml-cpp:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install toml11:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install zlib:{b.Triplet} {options}").WithSilent().Call();
                     Proc.Make("vcpkg", $"install libpng:{b.Triplet} {options}").WithSilent().Call();

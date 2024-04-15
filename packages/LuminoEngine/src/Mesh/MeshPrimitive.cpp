@@ -6,7 +6,6 @@
 	それ以外でこれらのデータにアクセスしたい場合は必ず requestXXXX 系の関数でインスタンスを取得すること。
 */
 #include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/GraphicsRHI/RHIHelper.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/IndexBuffer.hpp>

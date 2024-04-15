@@ -73,9 +73,6 @@ public:
     // TODO: internal
     bool m_externalObjectDeserialization = false;
 
-protected:
-    void onSerialize_deprecated(Serializer2_deprecated* sr) override;
-
 LN_CONSTRUCT_ACCESS:
     AssetModel();
 

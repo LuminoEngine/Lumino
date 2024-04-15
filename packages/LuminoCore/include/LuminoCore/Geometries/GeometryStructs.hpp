@@ -142,8 +142,6 @@ public:
             (size1.height > size2.height) ? size1.height : size2.height);
     }
 
-    //void serialize_deprecated(Serializer2_deprecated& ar);
-
 public:
     Size& operator+=(const Size& v) noexcept { width += v.width; height += v.height; return *this; }
     bool operator==(const Size& obj) const { return (width == obj.width && height == obj.height); }
@@ -318,9 +316,6 @@ public:
             x + width * uv.x,
             y + height * uv.y);
     }
-
-    //void serialize(Archive_deprecated& ar);
-    //void serialize_deprecated(Serializer2_deprecated& ar);
 
 public:
     bool operator==(const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }

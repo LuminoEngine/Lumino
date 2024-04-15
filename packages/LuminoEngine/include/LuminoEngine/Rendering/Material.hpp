@@ -250,9 +250,6 @@ protected:  // TODO:
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 	std::vector<UniformBufferEntiry> m_uniformBufferData;
 
-protected:
-	void serialize_deprecated(Serializer2_deprecated& ar) override;
-
 public: // TODO: internal
 
 	bool equalStatus(const Material* other) const

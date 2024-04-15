@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
@@ -32,13 +31,6 @@ void SpriteFrame::init()
 {
 	Object::init();
 	m_anchorPoint = Vector2(Math::NaN, Math::NaN);
-}
-
-void SpriteFrame::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    Object::serialize_deprecated(ar);
-    ar & makeNVP(_TT("SourceRect"), m_sourceRect);
-    ar & makeNVP(_TT("AnchorPoint"), m_anchorPoint);
 }
 
 //==============================================================================
@@ -132,35 +124,6 @@ void SpriteSheet::splitFrames()
             frame->setSourceRect(Rect(x * m_frameWidth, y * m_frameHeight, m_frameWidth, m_frameHeight));
             frame->setAnchorPoint(m_anchorPoint);
             m_frames.add(frame);
-        }
-    }
-}
-
-void SpriteSheet::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    Object::serialize_deprecated(ar);
-    if (ar.isSaving()) {
-        ar & makeNVP(_TT("texture"), m_texture);
-        if (m_frameWidth != 0 && m_frameHeight != 0) {
-            ar & makeNVP(_TT("frameWidth"), m_frameWidth);
-            ar & makeNVP(_TT("frameHeight"), m_frameHeight);
-            ar & makeNVP(_TT("anchorPoint"), m_anchorPoint);
-        }
-        else {
-            ar & makeNVP(_TT("frames"), m_frames);
-        }
-    }
-    else {
-        clear();
-        ar & makeNVP(_TT("texture"), m_texture);
-        ar & makeNVP(_TT("frameWidth"), m_frameWidth);
-        ar & makeNVP(_TT("frameHeight"), m_frameHeight);
-        ar & makeNVP(_TT("anchorPoint"), m_anchorPoint);
-        if (m_frameWidth != 0 && m_frameHeight != 0) {
-            splitFrames();
-        }
-        else {
-            ar & makeNVP(_TT("frames"), m_frames);
         }
     }
 }
@@ -356,12 +319,6 @@ void SpriteComponent::onRender(RenderingContext* context)
         Matrix(), renderSize, anchorPoint, renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
 #endif
-}
-
-void SpriteComponent::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    VisualComponent::serialize_deprecated(ar);
-    ar & makeNVP(_TT("material"), m_material);
 }
 
 } // namespace ln

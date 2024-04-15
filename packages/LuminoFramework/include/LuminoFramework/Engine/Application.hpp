@@ -88,11 +88,11 @@ protected:
     friend class StandaloneApplicationRunner;
 };
 
-class AppData {
-public:
-    static void setValue(const StringView& key, Ref<Variant> value);
-    static Ref<Variant> getValue(const StringView& key); // null = NotFound.
-};
+//class AppData {
+//public:
+//    static void setValue(const StringView& key, Ref<Variant> value);
+//    static Ref<Variant> getValue(const StringView& key); // null = NotFound.
+//};
 
 /**  */
 LN_CLASS()
@@ -147,20 +147,20 @@ public:
     static void callOnRoutedEvent(Application* app, UIEventArgs* e) { app->onRoutedEvent(e); }
 };
 
-class AppDataInternal : public RefObject {
-public:
-    void setValue(const StringView& key, Ref<Variant> value);
-    Ref<Variant> getValue(const StringView& key) const; // null = NotFound.
-    void attemptSave();
-    void attemptLoad();
-
-private:
-    Path makeFilePath() const;
-    void save(const Path& filePath);
-    void load(const Path& filePath);
-
-    std::unordered_map<String, Ref<Variant>> m_values;
-};
+//class AppDataInternal : public RefObject {
+//public:
+//    void setValue(const StringView& key, Ref<Variant> value);
+//    Ref<Variant> getValue(const StringView& key) const; // null = NotFound.
+//    void attemptSave();
+//    void attemptLoad();
+//
+//private:
+//    Path makeFilePath() const;
+//    void save(const Path& filePath);
+//    void load(const Path& filePath);
+//
+//    std::unordered_map<String, Ref<Variant>> m_values;
+//};
 
 } // namespace detail
 } // namespace ln

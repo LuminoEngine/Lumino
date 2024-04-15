@@ -1,9 +1,7 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
-#include <LuminoEngine/Base/Serializer.hpp>
 
 namespace ln {
 
@@ -79,21 +77,6 @@ const ln::TypeInfo* AssetModel::assetType() const
 //    //}
 //}
 //
-void AssetModel::onSerialize_deprecated(Serializer2_deprecated* sr) {
-    if (sr->isSaving()) {
-        sr->writeName(_TT("object"));
-        sr->writeObject(m_target);
-    }
-    else {
-        if (m_externalObjectDeserialization) {
-            if (LN_REQUIRE(m_target)) return;
-            if (sr->readName(_TT("object"))) sr->readObject(m_target);
-        }
-        else {
-            if (sr->readName(_TT("object"))) m_target = sr->readObject();
-        }
-    }
-}
 
 ln::Uuid AssetModel::readAssetId(const ln::Path& filePath)
 {

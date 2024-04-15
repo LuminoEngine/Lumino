@@ -170,9 +170,6 @@ public:
     //bool isStaticMeshModel() const { return m_animationController == nullptr; }
     void calculateBoundingBox();
 
-protected:
-    void serialize_deprecated(Serializer2_deprecated& ar) override;
-
 LN_CONSTRUCT_ACCESS:
     MeshModel();
     MeshModel(detail::InternalMeshModelType type);

@@ -19,7 +19,6 @@ LN_CLASS()
 class ComponentList : public Collection<Ref<Component>>
 {
 public:
-    void serialize_deprecated(Serializer2_deprecated& ar) override { Collection<Ref<Component>>::serialize_deprecated(ar); }
 
 };
 
@@ -254,9 +253,6 @@ protected:
     virtual void onRender(RenderingContext* context);
 
 	bool traverseRefrection(ReflectionObjectVisitor* visitor) override;
-
-
-	void serialize_deprecated(Serializer2_deprecated& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	WorldObject();

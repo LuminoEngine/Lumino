@@ -158,7 +158,7 @@ public:
 
     //void setApplication(Application* app);
     const Ref<Application>& application() const;
-    const Ref<AppDataInternal>& appData() const { return m_appData; }
+    //const Ref<AppDataInternal>& appData() const { return m_appData; }
     // const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
     const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
@@ -190,7 +190,7 @@ private:
     void setDebugToolMode(DebugToolMode mode);
 
     EngineSettings m_settings;
-    Ref<AppDataInternal> m_appData;
+    //Ref<AppDataInternal> m_appData;
     GraphicsAPI m_activeGraphicsAPI;
 
     bool m_commonInitialized = false;

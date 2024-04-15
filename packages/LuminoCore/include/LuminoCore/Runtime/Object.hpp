@@ -10,7 +10,6 @@ class RuntimeContext;
 class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
-class Serializer2_deprecated;
 class Archive;
 class ViewProperty;
 //class ViewPropertyInfo;
@@ -231,12 +230,6 @@ protected:
     virtual void finalize() override;
     virtual void onDispose(bool explicitDisposing);
 
-    virtual void serialize_deprecated(Serializer2_deprecated& ar);
-
-    /** onSerialize */
-    LN_METHOD()
-    virtual void onSerialize_deprecated(Serializer2_deprecated* ar);
-
     virtual void serialize(Archive& ar);
 
 public:
@@ -292,7 +285,6 @@ private:
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
-    friend class Serializer2_deprecated;
     friend class Archive;
     template<class U>
     friend class Ref;

@@ -101,6 +101,7 @@ private:
     bool m_isLuminoShader;
 };
 
+#if 0
 /**
   @module ~ @end
  */
@@ -122,6 +123,7 @@ private:
 
     DiagnosticsManager* m_diag;
 };
+#endif
 
 } // namespace kokage
 } // namespace ln

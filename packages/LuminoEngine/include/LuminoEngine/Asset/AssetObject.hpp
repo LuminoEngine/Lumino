@@ -140,7 +140,6 @@ public:
     void reload();
 
 protected:
-    void serialize_deprecated(Serializer2_deprecated& ar) override;
 
     //const detail::AssetPath& assetPath() const { return m_assetFilePath; }
     //void setAssetPath(const detail::AssetPath& value);

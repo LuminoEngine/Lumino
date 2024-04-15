@@ -184,7 +184,6 @@ set(LN_SOURCES
 #-------------------------------------------------------------------------------
 set(LINK_LIBS
     LuminoCore
-    yaml-cpp
 )
 
 #if (NOT DEFINED EMSCRIPTEN)

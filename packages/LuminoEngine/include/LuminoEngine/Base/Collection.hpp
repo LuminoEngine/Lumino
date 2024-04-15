@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <LuminoCore/Runtime/Variant.hpp>
-#include <LuminoEngine/Base/Serializer.hpp>
 
 namespace ln {
 class Variant;
@@ -410,27 +409,6 @@ protected:
 	{
 		m_newItemCache->assign(m_data[index]);
 		return m_newItemCache;
-	}
-
-	void serialize_deprecated(Serializer2_deprecated& ar) override
-	{
-		if (ar.isSaving()) {
-			ar.beginWriteList();
-			for (auto& v : m_data) {
-				ar & v;
-			}
-			ar.endWriteList();
-		}
-		else {
-			int size = 0;
-			if (ar.beginReadList(&size)) {
-				m_data.resize(size);
-				for (auto& v : m_data) {
-					ar & v;
-				}
-				ar.endReadList();
-			}
-		}
 	}
 
 	friend class Serializer2;

@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/IndexBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
@@ -88,16 +86,6 @@ void MeshModel::clear() {
     m_materials = {};
     m_rootNodes = {};
     m_nodeGlobalTransforms = {};
-}
-
-void MeshModel::serialize_deprecated(Serializer2_deprecated& ar) {
-    Object::serialize_deprecated(ar);
-    ar& makeNVP(_TT("filePath"), m_filePath);
-
-    if (ar.isLoading()) {
-        clear();
-        detail::MeshManager::instance()->loadStaticMeshModel(this, m_filePath, m_scale);
-    }
 }
 
 MeshNode* MeshModel::findNode(StringView name) const {

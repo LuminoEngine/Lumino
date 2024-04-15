@@ -1,8 +1,6 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
@@ -321,29 +319,6 @@ detail::RHIResource* Texture2D::resolveRHIObject(GraphicsCommandList* context, b
     m_initialUpdate = false;
     m_modified = false;
     return rhiObject;
-}
-
-void Texture2D::serialize_deprecated(Serializer2_deprecated& ar) {
-    Texture::serialize_deprecated(ar);
-
-    //// TODO: Object::assetPath 使いたい
-    // String path;// =// m_assetSourcePath;
-    // if (ar.isSaving() && !m_sourceFilePath.isNull()) {
-    //     // save to relative path.
-    //     // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-    //     path = detail::AssetPath::makeRelativePath(ar.basePath(), m_sourceFilePath);
-    // }
-
-    // ar & makeNVP(_TT("file", path);
-
-    // if (ar.isLoading()) {
-    //     if (!path.isEmpty()) {
-    //         // convert relative path to full path.
-    //         m_sourceFilePath = detail::AssetPath::resolveAssetPath(
-    //             detail::AssetPath::combineAssetPath(ar.basePath(), path),
-    //             GraphicsHelper::CandidateExts_Texture2D);
-    //     }
-    // }
 }
 
 const std::vector<const Char*>& Texture2D::resourceExtensions() const {

@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoFramework/Scene/Component.hpp>
 #include <LuminoFramework/Scene/World.hpp>
 #include <LuminoFramework/Scene/Level.hpp>
@@ -323,31 +321,6 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 		}
 	}
 	return false;
-}
-
-void WorldObject::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    Object::serialize_deprecated(ar);
-    ar& ln::makeNVP(_TT("name"), m_name);
-
-    Vector3 eularAngles = m_transform->m_rotation.toEulerAngles();
-	ar & ln::makeNVP(_TT("position"), m_transform->m_position);
-	ar & ln::makeNVP(_TT("angles"), eularAngles);   // Unity は Quaternion だけど、こっちは手打ち想定なので人が見やすい表現にする
-	ar & ln::makeNVP(_TT("scale"), m_transform->m_scale);
-
-	ar & ln::makeNVP(_TT("components"), *m_components);
-	ar & ln::makeNVP(_TT("children"), *m_children);
-
-    if (ar.isLoading()) {
-        m_transform->m_rotation = Quaternion::makeFromEulerAngles(eularAngles);
-
-        for (auto& c : *m_components) {
-            c->m_object = this;
-            c->onAttached(this);
-        }
-
-        notifyTransformChanged();
-    }
 }
 
 void WorldObject::start()

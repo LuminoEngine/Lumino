@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoFramework/Engine/Application.hpp>
@@ -264,10 +263,10 @@ void EngineManager::dispose() {
     }
 #endif
 
-    if (m_appData) {
-        m_appData->attemptSave();
-        m_appData = nullptr;
-    }
+    //if (m_appData) {
+    //    m_appData->attemptSave();
+    //    m_appData = nullptr;
+    //}
 
     RuntimeManager::terminate();
     EngineContext2::terminate();
@@ -308,8 +307,8 @@ void EngineManager::initializeCommon() {
                 }
             }
 
-            m_appData = makeRef<AppDataInternal>();
-            m_appData->attemptLoad();
+            //m_appData = makeRef<AppDataInternal>();
+            //m_appData->attemptLoad();
         }
 #endif
 

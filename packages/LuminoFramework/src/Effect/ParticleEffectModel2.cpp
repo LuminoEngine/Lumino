@@ -99,7 +99,6 @@
 
 */
 #include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
@@ -179,14 +178,6 @@ bool ParticleEmitterModel::init()
     return true;
 }
 
-void ParticleEmitterModel::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    Object::serialize_deprecated(ar);
-    ar & makeNVP(_TT("maxParticles"), m_spawnRate);
-    ar & makeNVP(_TT("spawnRate"), m_maxParticles);
-    ar & makeNVP(_TT("burstCount"), m_burstCount);
-}
-
 void ParticleEmitterModel::setupSpriteModule(Material* material)
 {
     auto geom = makeObject_deprecated<SpriteParticleGeometry>();
@@ -222,13 +213,6 @@ bool ParticleModel::init()
 void ParticleModel::addEmitter(ParticleEmitterModel* emitter)
 {
     m_emitters.add(emitter);
-}
-
-void ParticleModel::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    EffectResource::serialize_deprecated(ar);
-    ar & makeNVP(_TT("emitters"), m_emitters);
-
 }
 
 } // namespace ln

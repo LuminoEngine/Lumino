@@ -49,13 +49,6 @@ void Object::dispose() {
 void Object::onDispose(bool explicitDisposing) {
 }
 
-void Object::serialize_deprecated(Serializer2_deprecated& ar) {
-    onSerialize_deprecated(&ar);
-}
-
-void Object::onSerialize_deprecated(Serializer2_deprecated* ar) {
-}
-
 void Object::serialize(Archive& ar) {
 }
 

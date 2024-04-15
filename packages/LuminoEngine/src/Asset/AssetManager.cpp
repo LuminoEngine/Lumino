@@ -1,7 +1,6 @@
 ﻿#include "Internal.hpp"
 #include <LuminoCore/IO/detail/PathHelper.hpp>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include "AssetArchive.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -266,11 +265,13 @@ Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath
 
 Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& assetPath) const
 {
-    auto stream = openStreamFromAssetPath(assetPath);
-    auto text = FileSystem::readAllText(stream);
-    auto asset = Serializer2_deprecated::deserialize(text.unwrap(), assetPath.getParentAssetPath());
-    asset->target()->setAssetPath(assetPath);
-    return asset;
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+    //auto stream = openStreamFromAssetPath(assetPath);
+    //auto text = FileSystem::readAllText(stream);
+    //auto asset = Serializer2_deprecated::deserialize(text.unwrap(), assetPath.getParentAssetPath());
+    //asset->target()->setAssetPath(assetPath);
+    //return asset;
 }
 
 Optional_deprecated<AssetPath> AssetManager::findAssetPath(const StringView& filePath) const
@@ -283,13 +284,14 @@ bool AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const Asse
 {
     // TODO: ネットワークからのダウンロードとか。失敗したら return false
 
-    auto stream = openStreamFromAssetPath(assetPath);
-    auto text = FileSystem::readAllText(stream);
+    LN_NOTIMPLEMENTED();
+    //auto stream = openStreamFromAssetPath(assetPath);
+    //auto text = FileSystem::readAllText(stream);
 
-    auto asset = makeObject_deprecated<AssetModel>(obj);
-    Serializer2_deprecated::deserializeInstance(asset, text.unwrap(), assetPath.getParentAssetPath());
+    //auto asset = makeObject_deprecated<AssetModel>(obj);
+    //Serializer2_deprecated::deserializeInstance(asset, text.unwrap(), assetPath.getParentAssetPath());
 
-    obj->setAssetPath(assetPath);
+    //obj->setAssetPath(assetPath);
 
     return true;
 }
@@ -326,8 +328,9 @@ void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& fi
         localPath = localPath.replaceExtension(AssetModel::AssetFileExtension);
     }
 
-    String text = Serializer2_deprecated::serialize(asset, assetPath.getParentAssetPath());
-    FileSystem::writeAllText(localPath, text);
+    LN_NOTIMPLEMENTED();
+    //String text = Serializer2_deprecated::serialize(asset, assetPath.getParentAssetPath());
+    //FileSystem::writeAllText(localPath, text);
 
     ////auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
     //auto serializer = makeObject_deprecated<Serializer>(); // TODO: Pool

@@ -19,25 +19,6 @@ const Size Size::Zero(0, 0);
 const Size Size::MinValue(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
 const Size Size::MaxValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
-//void Size::serialize_deprecated(Serializer2_deprecated& ar)
-//{
-//    int size = 0;
-//    if (ar.isSaving())
-//        ar.beginWriteList();
-//    else {
-//        ar.beginReadList(&size);
-//        assert(size == 2);	// TODO: error handling
-//    }
-//
-//    ar.process(width);
-//    ar.process(height);
-//
-//    if (ar.isSaving())
-//        ar.endWriteList();
-//    else
-//        ar.endReadList();
-//}
-
 //==============================================================================
 // PointI
 
@@ -82,40 +63,6 @@ Rect Rect::makeDeflate(const Thickness& thickness) const
         std::max(width - thickness.width(), 0.0f),
         std::max(height - thickness.height(), 0.0f));
 }
-
-//void Rect::serialize(Archive& ar)
-//{
-//    int size = 0;
-//    ar.makeArrayTag(&size);
-//    if (ar.isLoading()) {
-//        assert(size == 4);	// TODO: error handling
-//    }
-//    ar.process(x);
-//    ar.process(y);
-//    ar.process(width);
-//    ar.process(height);
-//}
-//
-//void Rect::serialize_deprecated(Serializer2_deprecated& ar)
-//{
-//    int size = 0;
-//    if (ar.isSaving())
-//        ar.beginWriteList();
-//    else {
-//        ar.beginReadList(&size);
-//        assert(size == 4);	// TODO: error handling
-//    }
-//
-//    ar.process(x);
-//    ar.process(y);
-//    ar.process(width);
-//    ar.process(height);
-//
-//    if (ar.isSaving())
-//        ar.endWriteList();
-//    else
-//        ar.endReadList();
-//}
 
 //==============================================================================
 // BoxI

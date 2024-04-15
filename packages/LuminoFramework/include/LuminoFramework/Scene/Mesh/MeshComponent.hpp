@@ -27,7 +27,6 @@ public:
 
 protected:
     void onDispose(bool explicitDisposing) override;
-    void serialize_deprecated(Serializer2_deprecated& ar) override;
     void onUpdate(float elapsedSeconds) override;
     void onRender(RenderingContext* context) override;
     void onRenderGizmo(RenderingContext* context) override;

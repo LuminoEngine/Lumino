@@ -2,7 +2,6 @@
 
 #include <LuminoCore.hpp>
 #include <LuminoEngine/Base/Regex.hpp>
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Base/Task.hpp>
 
 #include "LuminoEngine/Common.hpp"
@@ -162,7 +161,6 @@
 #pragma comment(lib, "BulletDynamics" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "BulletSoftBody" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "Box2D" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
-#pragma comment(lib, "yaml-cpp" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "tmxlite-s-d.lib")

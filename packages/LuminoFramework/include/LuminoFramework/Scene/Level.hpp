@@ -22,7 +22,6 @@ class LevelRenderParameters
 	: public Object
 {
 public:
-	void serialize_deprecated(Serializer2_deprecated& ar) override;
 	void mergeToRenderParams(detail::SceneGlobalRenderParams* params) const;
 
 	Optional_deprecated<float> m_fogStartDistance;
@@ -134,10 +133,6 @@ public:	// TODO: Editor integration
     void renderGizmos(RenderingContext* context);
 	bool traverse(detail::IWorldObjectVisitor* visitor) const;
 	//void updateObjectsWorldMatrix() const;
-
-protected:
-	void serialize_deprecated(Serializer2_deprecated& ar) override;
-
 
 LN_CONSTRUCT_ACCESS:
 	Level();

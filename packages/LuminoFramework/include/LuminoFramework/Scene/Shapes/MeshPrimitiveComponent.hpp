@@ -12,9 +12,6 @@ public:
     void setMaterial(Material* material);
     Material* material() const;
 
-protected:
-    void serialize_deprecated(Serializer2_deprecated& ar) override;
-
 LN_CONSTRUCT_ACCESS:
     ShapeComponent();
     bool init();
@@ -34,7 +31,6 @@ public:
     void setUVParUnit(const Vector2& value) { m_uvParUnit = value; }
 
 protected:
-    void serialize_deprecated(Serializer2_deprecated& ar) override;
     void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:

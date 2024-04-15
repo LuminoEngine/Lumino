@@ -1,7 +1,6 @@
 ﻿
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "Internal.hpp"
-#include <yaml-cpp/yaml.h>
 #include "Lexer/CppLexer.hpp"
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
@@ -659,6 +658,7 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass) {
 //==============================================================================
 // ShaderModuleParser
 
+#if 0
 bool ShaderModuleParser::checkHasModuleBlock(const char* code, size_t length) {
     return StringHelper::indexOf(code, length, "@module", 7) >= 0;
 }
@@ -779,6 +779,7 @@ bool ShaderModuleParser::readPass(const std::string& techName, int passIndex, co
 
     return true;
 }
+#endif
 
 } // namespace kokage
 } // namespace ln

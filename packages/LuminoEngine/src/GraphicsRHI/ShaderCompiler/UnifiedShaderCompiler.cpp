@@ -27,6 +27,7 @@ bool UnifiedShaderCompiler::compile(
     size_t inputCodeLength,
     const List<Path>& includeDirectories,
     const List<String>& definitions) {
+    #if 0
     if (ShaderModuleParser::checkHasModuleBlock(inputCode, inputCodeLength)) {
         ShaderModuleParser parser;
         if (!parser.parse(inputCode, inputCodeLength, m_diag)) {
@@ -37,7 +38,9 @@ bool UnifiedShaderCompiler::compile(
         // @module ~ @end を空白で潰しておく
         memset((inputCode + parser.moduleBegin), ' ', parser.moduleEnd - parser.moduleBegin);
     }
-    else {
+    else
+    #endif
+    {
         HLSLMetadataParser parser;
         parser.parse(inputCode, inputCodeLength, m_diag);
         if (m_diag->hasError()) {
@@ -326,6 +329,8 @@ UnifiedShaderPass* UnifiedShaderCompiler::createVSPSPass(
 
     // ShaderRenderState
     pass->renderState = metaPass.renderState;
+
+    return pass;
 }
 
 bool UnifiedShaderCompiler::link() {

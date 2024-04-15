@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
@@ -83,12 +81,6 @@ void MeshComponent::makeCollisionBody(StringView meshContainerName)
             meshContainer->setVisible(false);
         }
     }
-}
-
-void MeshComponent::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    VisualComponent::serialize_deprecated(ar);
-    ar & makeNVP(_TT("model"), m_model);
 }
 
 void MeshComponent::onUpdate(float elapsedSeconds)

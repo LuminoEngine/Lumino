@@ -13,7 +13,6 @@
     2 については、バトル画面のサブとしてメニュー画面を出したりする仕組み。
 */
 #include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoFramework/Scene/Component.hpp>
 #include <LuminoFramework/Scene/WorldObject.hpp>
 #include <LuminoFramework/Scene/Level.hpp>

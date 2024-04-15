@@ -104,7 +104,6 @@ public:
     void setRenderPriority(int value);
 
 protected:
-    void serialize_deprecated(Serializer2_deprecated& ar) override;
     void setMainVisualComponent(VisualComponent* component);
 
 LN_CONSTRUCT_ACCESS:

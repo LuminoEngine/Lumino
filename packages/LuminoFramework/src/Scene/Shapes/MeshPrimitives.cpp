@@ -1,6 +1,4 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Base/Serializer.hpp>
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
@@ -148,19 +146,6 @@ bool PlaneMesh::init(Material* material)
 PlaneMeshComponent* PlaneMesh::planeMeshComponent() const
 {
 	return m_component;
-}
-
-void PlaneMesh::serialize_deprecated(Serializer2_deprecated& ar)
-{
-    VisualObject::serialize_deprecated(ar);
-	//ar & makeNVP(u"component", m_component);
-
-	if (ar.isLoading()) {
-		if (auto* c = findComponent<PlaneMeshComponent>()) {
-			m_component = c;
-			setMainVisualComponent(m_component);
-		}
-	}
 }
 
 //==============================================================================
