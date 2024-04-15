@@ -91,7 +91,8 @@ static int glnvg__renderCreate(void* uptr)
 	gl->vertexLayout->addElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::Position, 0);
 	gl->vertexLayout->addElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::TexCoord, 0);
 
-	size_t align = gl->renderFeature->manager()->graphicsManager()->deviceContext()->caps().uniformBufferOffsetAlignment;
+	LN_NOTIMPLEMENTED(); // IGraphicsDevice を移動した合わせこみがまだ。
+	size_t align = 4;//gl->renderFeature->manager()->graphicsManager()->deviceContext()->caps().uniformBufferOffsetAlignment;
 	gl->fragSize = sizeof(GLNVGfragUniforms) + align - sizeof(GLNVGfragUniforms) % align;
 
 	static_assert(192 == sizeof(GLNVGfragUniforms), "Invalid sizeof(GLNVGfragUniforms)");

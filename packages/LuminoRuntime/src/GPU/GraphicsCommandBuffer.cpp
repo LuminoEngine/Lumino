@@ -38,14 +38,15 @@ GraphicsCommandList::GraphicsCommandList(GraphicsContext* context)
 }
 
 void GraphicsCommandList::init(detail::GraphicsManager* manager) {
+    detail::IGraphicsDevice* device = m_graphicsContext->rhiDevice();
     m_manager = detail::GraphicsManager::instance();
     //m_manager->resourceRegistry()->registerObject(this);
-    m_rhiResource = manager->deviceContext()->createCommandList();
+    m_rhiResource = device->createCommandList();
     m_allocator = makeRef<detail::LinearAllocator>(manager->linearAllocatorPageManager());
     m_descriptorPool = makeURef<detail::ShaderDescriptorPool>();
     m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(
         m_graphicsContext->singleFrameConstantBufferAllocatorPageManager());
-    m_uniformBufferOffsetAlignment = manager->deviceContext()->caps().uniformBufferOffsetAlignment;
+    m_uniformBufferOffsetAlignment = device->caps().uniformBufferOffsetAlignment;
     resetState();
 }
 

@@ -9,6 +9,7 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/GPU/ShaderDescriptor.hpp>
@@ -36,7 +37,9 @@ bool ImGuiIntegration::init(UIFrameWindow* frameWindow) {
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
-    if (GraphicsManager::instance()->deviceContext()->caps().graphicsAPI == GraphicsAPI::Vulkan) {
+
+    detail::IGraphicsDevice* rhiDevice = frameWindow->swapChain()->rhiDevice();
+    if (rhiDevice->caps().graphicsAPI == GraphicsAPI::Vulkan) {
         io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
     }
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
