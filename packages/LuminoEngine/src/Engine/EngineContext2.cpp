@@ -41,9 +41,11 @@ EngineContext2::~EngineContext2() {
 
 bool EngineContext2::init(const RuntimeModuleSettings& settings) {
 
+#ifdef LN_EMSCRIPTEN
+#else
     TaskScheduler::init();
     m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
-
+#endif
     //detail::FetchManager::initialize();
 
     {
@@ -77,11 +79,14 @@ void EngineContext2::dispose() {
 
     //detail::FetchManager::terminate();
 
+#ifdef LN_EMSCRIPTEN
+#else
     if (m_mainThreadTaskDispatcher) {
         m_mainThreadTaskDispatcher->dispose();
         m_mainThreadTaskDispatcher = nullptr;
     }
     TaskScheduler::finalizeInternal();
+#endif
 }
 
 void EngineContext2::registerModule(Module* mod) {

@@ -39,6 +39,14 @@ if(LN_EMSCRIPTEN)
     # 次のように指定することで、node に関する処理を削ることができる。
     string(APPEND LOCAL_LINK_FLAGS " -s ENVIRONMENT=web,worker")
 
+    # Lumino 0.11 時点では glBindBufferRange 等を使用しているため、
+    # OpenGL ES 3.0 有効化が必要。 (2.0 ではなく)
+    string(APPEND LOCAL_LINK_FLAGS " -s FULL_ES3=1")
+
+    # Lumino 0.11 時点では GLFWPlatformWindowManager.cpp もコンパイル対象になっているため、
+    # GLFW 3 を使用するように指定する。
+    string(APPEND LOCAL_LINK_FLAGS " -s USE_GLFW=3")
+
     # EXPORTED_RUNTIME_METHODS は、ライブラリの関数を呼び出すための機能として、
     # ccall / cwrap を使えるようにするかどうか、という設定。
     # それぞれ Module.call(), Module.cwrap() を使えるようにするかというだけだが、EXPORTED_RUNTIME_METHODS 未指定の場合、これらが使えなくなる。

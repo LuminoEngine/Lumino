@@ -2,12 +2,25 @@ import * as Lumino from "./../dist/lumino.mjs";
 
 
 Lumino.Runtime.initialize().then(() => {
-    console.log("Lumino initialized");
 
-    Lumino.API.LNRuntime_Terminate();
+    console.log("Lumino initialized2");
+    Lumino.API.LNRuntime_Initialize();
 
     const canvas = document.getElementById("maincanvas");
     var gl = canvas.getContext("webgl");
+
+    const graphcisContext = new Lumino.WebGLGraphicsContext(gl);
+
+
+
+    Lumino.API.LNRuntime_Terminate();
+
+
+
+
+
+
+
 
     console.log("canvas", canvas);
     console.log("Lumino.Runtime.module.GL", Lumino.Runtime.module.GL);

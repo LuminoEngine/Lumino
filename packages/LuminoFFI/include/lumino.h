@@ -37,9 +37,22 @@ typedef enum LNResult {
 
 } LNResult;
 
+/** Lumino のオブジェクトを識別するための値です。0 (LN_NULL_HANDLE) は無効値です。 */
+typedef int32_t LNHandle;
+
+#define LN_NULL_HANDLE 0
+
 extern LUMINO_API LNResult LNRuntime_Initialize();
 extern LUMINO_API void LNRuntime_Terminate();
+
+extern LUMINO_API LNResult LNGraphicsContext_CreateFromOpenGL(LNHandle* outHandle);
+//extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
     
+
+extern LUMINO_API LNResult LNObject_Release(LNHandle obj);
+extern LUMINO_API LNResult LNObject_Retain(LNHandle obj);
+extern LUMINO_API LNResult LNObject_GetReferenceCount(LNHandle obj, int32_t* outReturn);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus
