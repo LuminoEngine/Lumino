@@ -1,7 +1,7 @@
 require 'mkmf'
 have_library('stdc++')
 have_library("OPENGL32")
-have_library("LuminoRuntime")
+have_library("LuminoEngine")
 
 $CXXFLAGS += " -I../FlatC/include -I../../../include"
 create_makefile("Lumino", ".")

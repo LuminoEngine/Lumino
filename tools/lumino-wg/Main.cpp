@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 
 	ln::String moduleFullName = "Lumino";
 	ln::String moduleShortName = "LN";
-	ln::Path outputDir = TEST_ROOT"src/LuminoRuntime/src";
+	ln::Path outputDir = TEST_ROOT"src/LuminoEngine/src";
 
 	{
 		WrapperIFClassesGenerator gen;

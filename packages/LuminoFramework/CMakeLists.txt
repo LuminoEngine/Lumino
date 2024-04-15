@@ -277,7 +277,7 @@ endif()
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
-    LuminoRuntime
+    LuminoEngine
     #pcre
     pcre2_32
     Vorbis::vorbis
@@ -310,7 +310,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${L
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${_LN_ENGINE_LINK_LIBS})
-target_link_libraries(${PROJECT_NAME} INTERFACE LuminoRuntime)
+target_link_libraries(${PROJECT_NAME} INTERFACE LuminoEngine)
 
 if (LN_OS_DESKTOP)
     target_include_directories(${PROJECT_NAME} PRIVATE ${VULKAN_HEADERS_INCLUDE_DIRS})

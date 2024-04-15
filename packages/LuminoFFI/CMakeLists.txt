@@ -72,7 +72,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoRuntime)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoEngine)
 if(LN_EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
 endif()

@@ -226,7 +226,7 @@ gmake: *** No rule to make target '/C/Ruby26/include/ruby-2.6.0/ruby.h', needed 
 
 Important
 ----------
-LuminoRuntime.dll は Release ビルドでなければ、ロードに失敗する。
+LuminoEngine.dll は Release ビルドでなければ、ロードに失敗する。
 Debug 版でリンクされているライブラリが、Ruby からは参照できていない。
 ※/MT でビルドすれば大丈夫かも。
 
@@ -333,7 +333,7 @@ C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional>dumpbin /HEADER
              14C machine (x86)
                    32 bit word machine
 
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional>dumpbin /HEADERS C:\Proj\LN\Lumino\src\Bindings\Ruby\LuminoRuntime.dll  | findstr machine
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional>dumpbin /HEADERS C:\Proj\LN\Lumino\src\Bindings\Ruby\LuminoEngine.dll  | findstr machine
              14C machine (x86)
                    32 bit word machine
 

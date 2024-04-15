@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
     // Runtime
     {
-        auto module = ln::makeURef<Module>(U"LuminoRuntime", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Runtime");
+        auto module = ln::makeURef<Module>(U"LuminoEngine", ln::String::fromCString(LUMINO_REPO_ROOT_DIR) + U"/lumino/Runtime");
         module->addIncludeDirectory(U"include");
         module->addIncludeDirectory(include_vcpkg);
         module->addIncludeDirectory(include_LuminoCore);
