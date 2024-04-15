@@ -82,8 +82,8 @@ public:
 
     const List<IGraphicsResource*>& graphicsResources() const { return m_graphicsResources; }
 
-    int registerExtension(INativeGraphicsExtension* extension);
-    void unregisterExtension(INativeGraphicsExtension* extension);
+    //int registerExtension(INativeGraphicsExtension* extension);
+    //void unregisterExtension(INativeGraphicsExtension* extension);
     Ref<Texture> requestTexture(const AssetPath& assetPath);
 
     Ref<Texture2D> loadTexture2D(const StringView& filePath);

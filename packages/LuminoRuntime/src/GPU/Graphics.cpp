@@ -24,14 +24,14 @@ namespace ln {
 //	return detail::GraphicsManager::instance()->computeQueue();
 //}
 
-int Graphics::registerExtension(INativeGraphicsExtension* extension)
-{
-	return detail::GraphicsManager::instance()->registerExtension(extension);
-}
-
-void Graphics::unregisterExtension(INativeGraphicsExtension* extension)
-{
-	return detail::GraphicsManager::instance()->unregisterExtension(extension);
-}
+//int Graphics::registerExtension(INativeGraphicsExtension* extension)
+//{
+//	return detail::GraphicsManager::instance()->registerExtension(extension);
+//}
+//
+//void Graphics::unregisterExtension(INativeGraphicsExtension* extension)
+//{
+//	return detail::GraphicsManager::instance()->unregisterExtension(extension);
+//}
 
 } // namespace ln

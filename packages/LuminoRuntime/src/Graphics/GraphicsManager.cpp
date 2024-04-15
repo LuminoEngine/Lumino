@@ -385,18 +385,18 @@ void GraphicsManager::removeGraphicsResource(IGraphicsResource* resource) {
     m_graphicsResources.remove(resource);
 }
 
-int GraphicsManager::registerExtension(INativeGraphicsExtension* extension) {
-    if (LN_REQUIRE(extension)) return 0;
-    m_extensions.add(extension);
-    extension->onLoaded(m_deviceContext->getNativeInterface());
-    return m_extensions.size() - 1;
-}
-
-void GraphicsManager::unregisterExtension(INativeGraphicsExtension* extension) {
-    if (LN_REQUIRE(extension)) return;
-    m_extensions.remove(extension);
-    extension->onUnloaded(m_deviceContext->getNativeInterface());
-}
+//int GraphicsManager::registerExtension(INativeGraphicsExtension* extension) {
+//    if (LN_REQUIRE(extension)) return 0;
+//    m_extensions.add(extension);
+//    extension->onLoaded(m_deviceContext->getNativeInterface());
+//    return m_extensions.size() - 1;
+//}
+//
+//void GraphicsManager::unregisterExtension(INativeGraphicsExtension* extension) {
+//    if (LN_REQUIRE(extension)) return;
+//    m_extensions.remove(extension);
+//    extension->onUnloaded(m_deviceContext->getNativeInterface());
+//}
 
 Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath) {
     // TODO: cache
