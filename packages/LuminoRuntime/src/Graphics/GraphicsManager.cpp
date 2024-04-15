@@ -363,10 +363,10 @@ Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* wind
             s.priorityAdapterName = m_settings.priorityGPUName;
             result = DirectX12GraphicsContext::create(s);
 #else
-            VulkanGraphicsContext::Settings s;
-            s.mainWindow = window;
-            s.debugMode = settings.debugMode;
-            result = VulkanGraphicsContext::create(s);
+            OpenGLGraphicsContext::Settings s;
+            s.window = window;
+            s.defaultFramebuffer = 0;
+            result = OpenGLGraphicsContext::create(s);
 #endif
         }
     }

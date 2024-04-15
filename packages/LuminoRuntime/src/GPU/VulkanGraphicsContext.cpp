@@ -1,4 +1,5 @@
-﻿#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+﻿#ifdef LN_USE_VULKAN
+#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #include <LuminoEngine/GPU/VulkanGraphicsContext.hpp>
 
 namespace ln {
@@ -55,4 +56,4 @@ detail::IGraphicsDevice* VulkanGraphicsContext::rhiDevice() const {
 }
 
 } // namespace ln
-
+#endif

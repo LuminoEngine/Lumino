@@ -1,4 +1,5 @@
-﻿#include "../../LuminoRuntime/src/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
+﻿#ifdef _WIN32
+#include "../../LuminoRuntime/src/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
 #include <LuminoEngine/GPU/DirectX12GraphicsContext.hpp>
 
 namespace ln {
@@ -56,3 +57,4 @@ detail::IGraphicsDevice* DirectX12GraphicsContext::rhiDevice() const {
 
 } // namespace ln
 
+#endif

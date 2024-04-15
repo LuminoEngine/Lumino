@@ -89,6 +89,14 @@ if (LUMINO_INSTALL)
         EXPORT LuminoExport
     )
 
+    # The .wasm file is not included in RUNTIME, ARCHIVE, or LIBRARY, so copy it explicitly.
+    if(EMSCRIPTEN)
+        install(
+            FILES
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/LuminoFFI.wasm"
+            DESTINATION bin)
+    endif()
+
     install(DIRECTORY include DESTINATION .)
 endif()
 

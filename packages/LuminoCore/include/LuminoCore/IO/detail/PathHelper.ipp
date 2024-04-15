@@ -232,9 +232,13 @@ inline int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TCh
             // .. のネストが 0 か、ルート要素を示すトークンであれば出力する
             if (depth == 0 || isFullPath) {
                 writePos -= tokenLen;
+#ifdef _WIN32
                 if (memcpy_s(writePos, (writeEnd - writePos) * sizeof(TChar), tokenBegin, tokenLen * sizeof(TChar)) != 0) {
                     return -1; // FailSafe.
                 }
+#else
+                memcpy(writePos, tokenBegin, tokenLen * sizeof(TChar));
+#endif
             }
             else if (depth > 0) {
                 // .. がある場合、このフォルダ名は捨てて、.. のカウントを下げる

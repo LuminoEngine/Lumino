@@ -7,8 +7,7 @@ It provides a simple API that runs on multiple platforms and is available for mu
 Lumino はゲームやデジタルアートなどのインタラクティブアプリケーションを構築するためのオープンソースライブラリです。
 マルチプラットフォームで動作し複数のプログラミング言語から利用できる、シンプルな API を提供します。
 
-Build and Unit Tests
-----------
+## Build and Unit Tests
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
@@ -17,6 +16,9 @@ Build and Unit Tests
 ```
 dotnet run -- BuildEngine wasm32-emscripten
 ```
+
+CMake の成果物 (.wasm 等) は `📁build/installed/wasm32-emscripten` に出力されます。
+
 
 Quick-start
 ----------

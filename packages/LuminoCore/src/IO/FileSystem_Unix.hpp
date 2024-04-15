@@ -8,7 +8,7 @@
 #include <LuminoCore/Base/EnumFlags.hpp>
 #include <LuminoCore/Text/Encoding.hpp>
 #include <LuminoCore/IO/Common.hpp>
-#include "PathHelper.hpp"
+#include <LuminoCore/IO/detail/PathHelper.hpp>
 
 namespace ln {
 
