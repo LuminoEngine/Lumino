@@ -49,7 +49,8 @@ bool OpenGLGraphicsContext::init(const Settings& settings) {
         m_device = device;
     }
     m_device->refreshCaps();
-    return true;
+
+    return GraphicsContext::init(settings.window);
 }
 
 void OpenGLGraphicsContext::onDispose(bool explicitDisposing) {

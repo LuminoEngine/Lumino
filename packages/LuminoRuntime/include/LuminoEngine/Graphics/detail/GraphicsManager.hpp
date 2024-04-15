@@ -39,7 +39,7 @@ public:
 
     virtual ~GraphicsManager() = default;
 
-    Ref<GraphicsContext> createGraphicsContext(PlatformWindow* window, const GraphicsModuleSettings& settings);
+    Ref<GraphicsContext> createGraphicsContext(PlatformWindow* window);
 
     //void enterRendering();
     //void leaveRendering();
@@ -55,7 +55,7 @@ public:
     // またこれらの予防として、IGraphicsDevice のポインタは持ち出してメンバに保持したりせず、
     // 必要な時に GraphicsManager または GraphicsCommandList から取得すること。
     // TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDevice をリソース関係と描画関係で分離するのもアリかもしれない。
-    const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
+    //const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
     //const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
     //const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 
@@ -111,17 +111,18 @@ private:
     bool init(const Settings& settings);
     void dispose();
 
-    void createOpenGLContext(const Settings& settings);
-    void createVulkanContext(const Settings& settings);
-    void createDirectX12Context(const Settings& settings);
+    //void createOpenGLContext(const Settings& settings);
+    //void createVulkanContext(const Settings& settings);
+    //void createDirectX12Context(const Settings& settings);
 
     AssetManager* m_assetManager;
     PlatformManager* m_platformManager;
     ShaderManager* m_shaderManager;
     URef<MeshManager> m_meshManager;
-    Ref<IGraphicsDevice> m_deviceContext;
+    //Ref<IGraphicsDevice> m_deviceContext;
     Ref<CommandQueue> m_graphicsQueue;
     Ref<CommandQueue> m_computeQueue;
+    Settings m_settings;
 
     URef<GraphicsObjectRegistry> m_resourceRegistry;
     //URef<GraphicsResourceRegistry> m_vertexLayoutRegistry;

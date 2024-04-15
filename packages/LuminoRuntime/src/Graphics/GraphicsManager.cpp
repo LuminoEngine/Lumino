@@ -132,6 +132,7 @@ GraphicsManager::GraphicsManager()
 
 bool GraphicsManager::init(const Settings& settings) {
     LN_LOG_DEBUG("GraphicsManager Initialization started.");
+    m_settings = settings;
 
     if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return false;
 
@@ -146,38 +147,38 @@ bool GraphicsManager::init(const Settings& settings) {
     m_texture2DCache.init(64);
     m_shaderCache.init(64);
 
-    // Create device context
-    {
-        if (settings.graphicsAPI == GraphicsAPI::OpenGL) {
-            createOpenGLContext(settings);
-        }
-        else if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
-            createVulkanContext(settings);
-        }
-        else if (settings.graphicsAPI == GraphicsAPI::DirectX12) {
-            createDirectX12Context(settings);
-        }
+//    // Create device context
+//    {
+//        if (settings.graphicsAPI == GraphicsAPI::OpenGL) {
+//            createOpenGLContext(settings);
+//        }
+//        else if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
+//            createVulkanContext(settings);
+//        }
+//        else if (settings.graphicsAPI == GraphicsAPI::DirectX12) {
+//            createDirectX12Context(settings);
+//        }
+//
+//        // Fallback
+//        {
+//#ifdef _WIN32
+//            if (!m_deviceContext) {
+//                createDirectX12Context(settings);
+//            }
+//#else
+//            if (!m_deviceContext) {
+//                createVulkanContext(settings);
+//            }
+//#endif
+//        }
+//    }
 
-        // Fallback
-        {
-#ifdef _WIN32
-            if (!m_deviceContext) {
-                createDirectX12Context(settings);
-            }
-#else
-            if (!m_deviceContext) {
-                createVulkanContext(settings);
-            }
-#endif
-        }
-    }
+    //m_deviceContext->refreshCaps();
 
-    m_deviceContext->refreshCaps();
-
-    {
-        auto& triple = m_deviceContext->caps().requestedShaderTriple;
-        LN_LOG_INFO("requestedShaderTriple: {}-{}-{}", triple.target, triple.version, triple.option);
-    }
+    //{
+    //    auto& triple = m_deviceContext->caps().requestedShaderTriple;
+    //    LN_LOG_INFO("requestedShaderTriple: {}-{}-{}", triple.target, triple.version, triple.option);
+    //}
 
     m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
@@ -289,7 +290,7 @@ void GraphicsManager::dispose() {
     m_depthBufferCacheManager = nullptr;
     m_renderTargetTextureCacheManager = nullptr;
 
-    m_deviceContext->dispose();
+    //m_deviceContext->dispose();
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     if (m_shaderManager) {
@@ -324,31 +325,31 @@ void GraphicsManager::dispose() {
 //}
 
 
-Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* window, const GraphicsModuleSettings& settings) {
+Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* window) {
     Ref<GraphicsContext> result;
 
     // Create device context
     {
-        if (settings.graphicsAPI == GraphicsAPI::OpenGL) {
+        if (m_settings.graphicsAPI == GraphicsAPI::OpenGL) {
             OpenGLGraphicsContext::Settings s;
             s.window = window;
             s.defaultFramebuffer = 0;
             result = OpenGLGraphicsContext::create(s);
         }
-        else if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
+        else if (m_settings.graphicsAPI == GraphicsAPI::Vulkan) {
 #ifdef LN_USE_VULKAN
             VulkanGraphicsContext::Settings s;
             s.mainWindow = window;
-            s.debugMode = settings.debugMode;
+            s.debugMode = m_settings.debugMode;
             result = VulkanGraphicsContext::create(s);
 #endif
         }
-        else if (settings.graphicsAPI == GraphicsAPI::DirectX12) {
+        else if (m_settings.graphicsAPI == GraphicsAPI::DirectX12) {
 #ifdef _WIN32
             DirectX12GraphicsContext::Settings s;
             s.mainWindow = window;
-            s.debugMode = settings.debugMode;
-            s.priorityAdapterName = settings.priorityGPUName;
+            s.debugMode = m_settings.debugMode;
+            s.priorityAdapterName = m_settings.priorityGPUName;
             result = DirectX12GraphicsContext::create(s);
 #endif
         }
@@ -358,8 +359,8 @@ Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* wind
 #ifdef _WIN32
             DirectX12GraphicsContext::Settings s;
             s.mainWindow = window;
-            s.debugMode = settings.debugMode;
-            s.priorityAdapterName = settings.priorityGPUName;
+            s.debugMode = m_settings.debugMode;
+            s.priorityAdapterName = m_settings.priorityGPUName;
             result = DirectX12GraphicsContext::create(s);
 #else
             VulkanGraphicsContext::Settings s;
@@ -512,67 +513,67 @@ Ref<Shader> GraphicsManager::loadShader(const StringView& filePath) {
     return AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
 }
 
-void GraphicsManager::createOpenGLContext(const Settings& settings) {
-    OpenGLDevice::Settings dcSettings;
-    dcSettings.platformManager = m_platformManager;
-    dcSettings.mainWindow = m_platformManager->mainWindow();
-    dcSettings.defaultFramebuffer = 0;
-    auto device = makeRef<OpenGLDevice>();
-    bool driverSupported = false;
-    if (!device->init(dcSettings)) {
-        LN_ERROR("OpenGL driver initialization failed.");
-        return;
-    }
-    else {
-        m_deviceContext = device;
-    }
-}
-
-void GraphicsManager::createVulkanContext(const Settings& settings) {
-#ifdef LN_USE_VULKAN
-    VulkanDevice::Settings dcSettings;
-    dcSettings.mainWindow = m_platformManager->mainWindow();
-    dcSettings.debugMode = settings.debugMode;
-
-    bool driverSupported = false;
-    auto device = detail::VulkanDevice::create(dcSettings, &driverSupported);
-    if (!device) {
-        if (!driverSupported) {
-            // ドライバが Vulkan をサポートしていない。継続する。
-        }
-        else {
-            LN_ERROR("Vulkan driver initialization failed.");
-            return;
-        }
-    }
-    else {
-        m_deviceContext = *device;
-    }
-#endif
-}
-
-void GraphicsManager::createDirectX12Context(const Settings& settings) {
-#if _WIN32
-    DX12Device::Settings dcSettings;
-    dcSettings.mainWindow = m_platformManager->mainWindow();
-    dcSettings.debugMode = settings.debugMode;
-    dcSettings.priorityAdapterName = settings.priorityGPUName.toStdWString();
-    auto ctx = makeRef<DX12Device>();
-    bool driverSupported = false;
-    if (!ctx->init(dcSettings, &driverSupported)) {
-        if (!driverSupported) {
-            // ドライバが Vulkan をサポートしていない。継続する。
-        }
-        else {
-            LN_ERROR("Vulkan driver initialization failed.");
-            return;
-        }
-    }
-    else {
-        m_deviceContext = ctx;
-    }
-#endif
-}
+//void GraphicsManager::createOpenGLContext(const Settings& settings) {
+//    OpenGLDevice::Settings dcSettings;
+//    dcSettings.platformManager = m_platformManager;
+//    dcSettings.mainWindow = m_platformManager->mainWindow();
+//    dcSettings.defaultFramebuffer = 0;
+//    auto device = makeRef<OpenGLDevice>();
+//    bool driverSupported = false;
+//    if (!device->init(dcSettings)) {
+//        LN_ERROR("OpenGL driver initialization failed.");
+//        return;
+//    }
+//    else {
+//        m_deviceContext = device;
+//    }
+//}
+//
+//void GraphicsManager::createVulkanContext(const Settings& settings) {
+//#ifdef LN_USE_VULKAN
+//    VulkanDevice::Settings dcSettings;
+//    dcSettings.mainWindow = m_platformManager->mainWindow();
+//    dcSettings.debugMode = settings.debugMode;
+//
+//    bool driverSupported = false;
+//    auto device = detail::VulkanDevice::create(dcSettings, &driverSupported);
+//    if (!device) {
+//        if (!driverSupported) {
+//            // ドライバが Vulkan をサポートしていない。継続する。
+//        }
+//        else {
+//            LN_ERROR("Vulkan driver initialization failed.");
+//            return;
+//        }
+//    }
+//    else {
+//        m_deviceContext = *device;
+//    }
+//#endif
+//}
+//
+//void GraphicsManager::createDirectX12Context(const Settings& settings) {
+//#if _WIN32
+//    DX12Device::Settings dcSettings;
+//    dcSettings.mainWindow = m_platformManager->mainWindow();
+//    dcSettings.debugMode = settings.debugMode;
+//    dcSettings.priorityAdapterName = settings.priorityGPUName.toStdWString();
+//    auto ctx = makeRef<DX12Device>();
+//    bool driverSupported = false;
+//    if (!ctx->init(dcSettings, &driverSupported)) {
+//        if (!driverSupported) {
+//            // ドライバが Vulkan をサポートしていない。継続する。
+//        }
+//        else {
+//            LN_ERROR("Vulkan driver initialization failed.");
+//            return;
+//        }
+//    }
+//    else {
+//        m_deviceContext = ctx;
+//    }
+//#endif
+//}
 
 //Ref<RenderingCommandList> GraphicsManager::submitCommandList(RenderingCommandList* commandList)
 //{

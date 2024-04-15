@@ -19,6 +19,10 @@ namespace ln {
 //==============================================================================
 // SwapChain
 
+Ref<GraphicsContext> GraphicsContext::create(PlatformWindow* window) {
+    return detail::GraphicsManager::instance()->createGraphicsContext(window);
+}
+
 GraphicsContext::GraphicsContext()
     : m_manager(nullptr)
     , m_rhiObject(nullptr)
@@ -30,9 +34,11 @@ GraphicsContext::GraphicsContext()
 GraphicsContext::~GraphicsContext() {
 }
 
-void GraphicsContext::init(PlatformWindow* window) {
+bool GraphicsContext::init(PlatformWindow* window) {
     // TODO: onChangeDevice でバックバッファをアタッチ
-    Object::init();
+    if (!Object::init()) {
+        return false;
+    }
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
     m_rhiResourceRegistry = makeURef<detail::RHIGraphicsObjectRegistry>(m_manager->resourceRegistry());
@@ -58,12 +64,13 @@ void GraphicsContext::init(PlatformWindow* window) {
     }
 
     nextFrame();
+    return true;
 }
 
-// TODO: 統合時に純粋仮想関数にする
-detail::IGraphicsDevice* GraphicsContext::rhiDevice() const {
-    return m_manager->deviceContext();
-}
+//// TODO: 統合時に純粋仮想関数にする
+//detail::IGraphicsDevice* GraphicsContext::rhiDevice() const {
+//    return m_manager->deviceContext();
+//}
 
 void GraphicsContext::onDispose(bool explicitDisposing) {
     //if (!m_commandLists.empty()) {

@@ -50,7 +50,7 @@ void run() {
     };
     auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto swapChain = makeObject_deprecated<GraphicsContext>(window);
+    auto swapChain = GraphicsContext::create(window);
 
     //auto spriteRenderer = makeURef<detail::SpriteRenderer>();
     //spriteRenderer->init();

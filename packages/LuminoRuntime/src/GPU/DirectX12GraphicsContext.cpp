@@ -38,7 +38,8 @@ bool DirectX12GraphicsContext::init(const Settings& settings) {
         m_device = device;
     }
     m_device->refreshCaps();
-    return true;
+
+    return GraphicsContext::init(settings.mainWindow);
 }
 
 void DirectX12GraphicsContext::onDispose(bool explicitDisposing) {

@@ -45,7 +45,7 @@ class LN_API GraphicsContext
 
     context.setCommandList(vulkanCommandList[frame]);
     renderer.drawRectangle(...);
-}
+
     // vulkanCommandList[frame] を Queue に送るのはユーザーコードで。
     ```
 
@@ -56,6 +56,9 @@ class LN_API GraphicsContext
     */
 
 public:
+    // 今のところ内部用。EngineSettings に基づいて作成する。
+    static Ref<GraphicsContext> create(PlatformWindow* window);
+
     Size backbufferSize() const;
 
     GraphicsCommandList* currentCommandList2() const;
@@ -72,7 +75,7 @@ public:
 
 public: // TODO: internal
     detail::RHIGraphicsObjectRegistry* rhiResourceRegistry() const { return m_rhiResourceRegistry; }
-    virtual detail::IGraphicsDevice* rhiDevice() const;
+    virtual detail::IGraphicsDevice* rhiDevice() const = 0;
     const Ref<detail::SingleFrameUniformBufferAllocatorPageManager>& singleFrameConstantBufferAllocatorPageManager() const { return m_singleFrameConstantBufferAllocatorPageManager; }
 
 protected:
@@ -80,10 +83,10 @@ protected:
     void onManagerFinalizing() override { dispose(); }
     void onChangeDevice(detail::IGraphicsDevice* device) override;
 
-LN_CONSTRUCT_ACCESS:
+protected:
     GraphicsContext();
     ~GraphicsContext() override;
-    void init(PlatformWindow* window);
+    bool init(PlatformWindow* window);
 
 private:
     void resizeBackbuffer(int width, int height);

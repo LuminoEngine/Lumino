@@ -37,7 +37,7 @@ void TestEnv::setup() {
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));
 
-    swapChain = makeObject_deprecated<GraphicsContext>(Platform::mainWindow());
+    swapChain = GraphicsContext::create(Platform::mainWindow());
 }
 
 void TestEnv::initializeRendering() {
