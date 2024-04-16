@@ -73,6 +73,30 @@ bool GraphicsContext::init(PlatformWindow* window) {
     return true;
 }
 
+void GraphicsContext::onCreateRHIObjects() {
+    if (m_rhiObject) {
+        const int count = getBackbufferCount();
+        m_backbuffers.resize(count);
+        m_depthBuffers.resize(count);
+        m_renderPasses.resize(count);
+        for (int i = 0; i < count; i++) {
+            // backbuffer
+            auto buffer = makeObject_deprecated<RenderTargetTexture>(this);
+            buffer->resetRHIObject(this, m_rhiObject->getRenderTarget(i));
+            m_backbuffers[i] = buffer;
+
+            // DepthBuffer
+            auto depthBuffer = makeObject_deprecated<DepthBuffer>(buffer->width(), buffer->height());
+            m_depthBuffers[i] = depthBuffer;
+
+            // RenderPass
+            auto renderPass = makeObject_deprecated<RenderPass>(buffer, depthBuffer);
+            renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0x00);
+            m_renderPasses[i] = renderPass;
+        }
+    }
+}
+
 //// TODO: 統合時に純粋仮想関数にする
 //detail::IGraphicsDevice* GraphicsContext::rhiDevice() const {
 //    return m_manager->deviceContext();
@@ -170,27 +194,7 @@ void GraphicsContext::present() {
 }
 
 void GraphicsContext::resetRHIBackbuffers() {
-    if (m_rhiObject) {
-        const int count = getBackbufferCount();
-        m_backbuffers.resize(count);
-        m_depthBuffers.resize(count);
-        m_renderPasses.resize(count);
-        for (int i = 0; i < count; i++) {
-            // backbuffer
-            auto buffer = makeObject_deprecated<RenderTargetTexture>(this);
-            buffer->resetRHIObject(this, m_rhiObject->getRenderTarget(i));
-            m_backbuffers[i] = buffer;
-
-            // DepthBuffer
-            auto depthBuffer = makeObject_deprecated<DepthBuffer>(buffer->width(), buffer->height());
-            m_depthBuffers[i] = depthBuffer;
-
-            // RenderPass
-            auto renderPass = makeObject_deprecated<RenderPass>(buffer, depthBuffer);
-            renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0x00);
-            m_renderPasses[i] = renderPass;
-        }
-    }
+    onCreateRHIObjects();
     m_imageIndex = -1;
 }
 

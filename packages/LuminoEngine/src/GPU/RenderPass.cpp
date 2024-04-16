@@ -63,19 +63,29 @@ RenderPass::RenderPass()
 RenderPass::~RenderPass() {
 }
 
-void RenderPass::init() {
-    Object::init();
+bool RenderPass::init() {
+    if (!Object::init()) {
+        return false;
+    }
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
     detail::GraphicsResourceInternal::manager(this)->profiler()->addRenderPass(this);
     m_manager->resourceRegistry()->registerObject(this);
+    return true;
 }
 
-void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
-    init();
-
+bool RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
+    if (!init()) {
+        return false;
+    }
     setRenderTarget(0, renderTarget);
     setDepthBuffer(depthBuffer);
+    return true;
 }
+
+//bool RenderPass::initFromExternal(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
+//    init(renderTarget, depthBuffer);
+//    m_externalRHIRenderPass = true;
+//}
 
 //void RenderPass::init2(detail::IRenderPass* rhiRenderPass) {
 //    init();

@@ -262,6 +262,7 @@ private:
     bool m_modified;
     bool m_hasNativeObject;
 
+    friend class OpenGLGraphicsContext;
     friend class detail::TextureInternal;
     friend class detail::GraphicsResourceInternal;
 };

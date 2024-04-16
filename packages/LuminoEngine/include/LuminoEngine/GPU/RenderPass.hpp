@@ -83,8 +83,9 @@ LN_CONSTRUCT_ACCESS:
     virtual ~RenderPass();
 
     /** @copydoc create() */
-    void init();
-    void init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+    bool init();
+    bool init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+    //bool initFromExternal(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
     //void init2(detail::IRenderPass* rhiRenderPass);
 
 private:
@@ -108,6 +109,7 @@ private:
     bool m_freezed : 1;
 
     friend class GraphicsCommandList;
+    friend class OpenGLGraphicsContext;
     friend class detail::GraphicsResourceInternal;
     friend class detail::RenderPassCache;
 };

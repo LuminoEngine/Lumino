@@ -132,12 +132,14 @@ Result<> OpenGLDevice::init(const Settings& settings) {
         for (int i = 0; i < extensions; i++) {
             LN_LOG_INFO("  {}", reinterpret_cast<const char*> (glGetStringi(GL_EXTENSIONS, i)));
         }
-        while (glGetError() != 0)
-            ; // ignore error.
+        while (glGetError() != 0) {
+            // GL_EXTENSIONS が無い場合は GL_INVALID_ENUM が発生するため、エラー情報が残らないように消費する。
+        }
 
         const char* extensionsString = (const char*)glGetString(GL_EXTENSIONS);
-        while (glGetError() != 0)
-            ; // ignore error.
+        while (glGetError() != 0) {
+            // GL_EXTENSIONS が無い場合は GL_INVALID_ENUM が発生するため、エラー情報が残らないように消費する。
+        }
         if (extensionsString) {
             std::string str = extensionsString;
 
@@ -184,9 +186,17 @@ void OpenGLDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
 //#endif
     outCaps->imageLayoytVFlip = true;
 
-    GLint align = 0;
-    glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &align);
-    outCaps->uniformBufferOffsetAlignment = align;
+    if (m_es) {
+        // canvas.getContext("webgl2") で取得したコンテキストでないと、
+        // gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT) は使えない。
+        // ひとまず、 "OpenGL ES 2.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))" 上での値が 256 だったのでこれを使う。
+        outCaps->uniformBufferOffsetAlignment = 256;
+    }
+    else {
+        GLint align = 0;
+        GL_CHECK(glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &align));
+        outCaps->uniformBufferOffsetAlignment = align;
+    }
 }
 
 Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {

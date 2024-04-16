@@ -77,7 +77,11 @@ class GraphicsObjectRegistry;
 class RHIGraphicsObjectRegistry;
 
 class VulkanDevice;
+
 class OpenGLDevice;
+class GLRenderTargetTexture;
+class GLRenderPass;
+
 class DX12Device;
 
 } // namespace detail

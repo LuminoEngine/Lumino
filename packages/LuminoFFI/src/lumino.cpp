@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <LuminoEngine/RuntimeModule.hpp>
 #include <LuminoEngine/RHIModule.hpp>
+#include <LuminoEngine/GPU/RenderPass.hpp>
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <lumino.h>
@@ -88,8 +89,20 @@ extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, L
     printf("LNRenderingContext_Create1 %d\n", graphicsContext);
     ln::GraphicsContext* context = LNI_HANDLE_TO_OBJECT(ln::GraphicsContext, graphicsContext);
 
-    printf("LNRenderingContext_Create %p\n", context);
+    ln::RenderPass* renderPass = context->currentRenderPass();
+    ln::GraphicsCommandList* commandList = context->currentCommandList2();
+
+    printf("LNRenderingContext_Create %p %p %p\n", context, renderPass, commandList);
     ;
+
+    renderPass->setClearFlags(ln::ClearFlags::Color);
+    renderPass->setClearColor(ln::Color::Red);
+
+    commandList->beginCommandRecoding();
+    commandList->beginRenderPass(renderPass);
+    commandList->clear(ln::ClearFlags::Color, ln::Color::Red);
+    commandList->endRenderPass();
+    commandList->endCommandRecoding();
 
     LN_FFI_TRY_END_RETURN;
 }

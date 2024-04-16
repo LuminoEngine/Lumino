@@ -71,8 +71,9 @@ Result<> GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& 
             GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
             GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0));
         }
-
-        LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER), "glCheckFramebufferStatus failed 0x%08x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        GL_CHECK2("glCheckFramebufferStatus");
+        LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == status, "glCheckFramebufferStatus failed 0x%08x", status);
 
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     }
@@ -126,8 +127,8 @@ Result<> GLRenderPass::initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* rend
 
 void GLRenderPass::onDestroy() {
     if (m_fbo) {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDeleteFramebuffers(1, &m_fbo);
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
         m_fbo = 0;
     }
     IRenderPass::onDestroy();
@@ -184,6 +185,9 @@ void GLRenderPass::bind(GLGraphicsContext* context) {
 
     //std::cout << "glBindFramebuffer: " << m_fbo << std::endl;
     //std::cout << "  m_clearFlags: " << (int)m_clearFlags << std::endl;
+    //;
+    //std::cout << "  glGetError: " << glGetError() << std::endl;
+    //std::cout << "  glGetError: " << glGetError() << std::endl;
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
     //if (m_fbo != 0) {
     //    GL_CHECK(glDrawBuffers(m_aliveAttachments.size(), m_aliveAttachments.data()));

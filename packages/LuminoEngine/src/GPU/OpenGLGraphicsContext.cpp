@@ -2,8 +2,12 @@
 #include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #include <LuminoEngine/Platform/detail/OpenGLContext.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/GPU/RenderPass.hpp>
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include "../../LuminoEngine/src/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
+#include "../../LuminoEngine/src/GraphicsRHI/OpenGL/GLTextures.hpp"
+#include "../../LuminoEngine/src/GraphicsRHI/OpenGL/GLRenderPass.hpp"
 
 namespace ln {
 
@@ -16,7 +20,12 @@ Ref<OpenGLGraphicsContext> OpenGLGraphicsContext::create(const Settings& setting
 }
 
 OpenGLGraphicsContext::OpenGLGraphicsContext()
-    : m_device(nullptr) {
+    : m_device(nullptr)
+    , m_window(nullptr)
+    , m_wrapedRenderTarget(nullptr)
+    , m_externalDefaultFBO(0)
+    , m_externalWidth(0)
+    , m_externalHeight(0) {
 }
 
 OpenGLGraphicsContext::~OpenGLGraphicsContext() {
@@ -33,7 +42,11 @@ bool OpenGLGraphicsContext::init(const Settings& settings) {
         // if (mainGLContext) {
         //    mainGLContext->makeCurrentMain();
         //}
+        m_window = settings.window;
     }
+    m_externalDefaultFBO = settings.defaultFramebuffer;
+    m_externalWidth = settings.width;
+    m_externalHeight = settings.height;
 
     detail::OpenGLDevice::Settings dcSettings;
     dcSettings.platformManager = platformManager;
@@ -48,6 +61,7 @@ bool OpenGLGraphicsContext::init(const Settings& settings) {
     else {
         m_device = device;
     }
+
     m_device->refreshCaps();
 
     return GraphicsContext::init(settings.window);
@@ -61,8 +75,51 @@ void OpenGLGraphicsContext::onDispose(bool explicitDisposing) {
     }
 }
 
+void OpenGLGraphicsContext::onCreateRHIObjects() {
+    if (isUseExternalGLContext()) {
+        const int count = 1;
+        m_backbuffers.resize(count);
+        m_depthBuffers.resize(count);
+        m_renderPasses.resize(count);
+
+        // Dummy RenderTarget representing the back buffer.
+        //m_wrapedRHIRenderTarget = wrapRef(LN_NEW detail::GLRenderTargetTexture());
+        //if (!m_wrapedRHIRenderTarget->init(0, m_externalWidth, m_externalHeight)) {
+        //    LN_ERROR("GLRenderTargetTexture failed.");
+        //    return;
+        //}
+        m_wrapedRenderTarget = wrapRef(LN_NEW RenderTargetTexture());
+        if (!m_wrapedRenderTarget->init(this)) {
+            LN_ERROR("RenderTargetTexture failed.");
+            return;
+        }
+        m_wrapedRenderTarget->resetNativeObject(0);
+        m_backbuffers[0] = m_wrapedRenderTarget;
+
+        // Dummy RenderPass representing the back buffer.
+        //m_wrapedRHIRenderPass = wrapRef(LN_NEW detail::GLRenderPass());
+        //if (!m_wrapedRHIRenderPass->initFromNativeFBO(m_externalDefaultFBO, m_wrapedRHIRenderTarget)) {
+        //    LN_ERROR("GLRenderPass failed.");
+        //    return;
+        //}
+        m_wrapedRenderPass = wrapRef(LN_NEW RenderPass());
+        if (!m_wrapedRenderPass->init(m_wrapedRenderTarget, nullptr)) {
+            LN_ERROR("RenderPass failed.");
+            return;
+        }
+        m_renderPasses[0] = m_wrapedRenderPass;
+    }
+    else {
+        GraphicsContext::onCreateRHIObjects();
+    }
+}
+
 detail::IGraphicsDevice* OpenGLGraphicsContext::rhiDevice() const {
     return m_device;
+}
+
+bool OpenGLGraphicsContext::isUseExternalGLContext() const {
+    return m_window == nullptr;
 }
 
 } // namespace ln

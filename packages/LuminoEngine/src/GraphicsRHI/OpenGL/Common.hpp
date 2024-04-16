@@ -61,3 +61,12 @@
         } \
         break; \
     }
+
+#define GL_CHECK2(name)                                                                                      \
+    for (;;) {                                                                                              \
+        GLenum gl_err = glGetError();                                                                       \
+        if (gl_err != 0) {                                                                                  \
+            LN_ERROR("{}; GL error {:#x}: {}", name, gl_err, ::ln::detail::OpenGLHelper::glEnumName(gl_err)); \
+        }                                                                                                   \
+        break;                                                                                              \
+    }

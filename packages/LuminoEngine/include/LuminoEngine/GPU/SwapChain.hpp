@@ -87,8 +87,9 @@ protected:
     GraphicsContext();
     ~GraphicsContext() override;
     bool init(PlatformWindow* window);
+    virtual void onCreateRHIObjects();
 
-private:
+protected:
     int getBackbufferCount() const;
     void resizeBackbuffer(int width, int height);
     void resetRHIBackbuffers();
