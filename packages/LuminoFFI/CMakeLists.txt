@@ -56,8 +56,11 @@ if(LN_EMSCRIPTEN)
     string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','GL']\"")
 
     # for Debug
+    # https://emscripten.org/docs/tools_reference/emcc.html#emcc-og
     string(APPEND LOCAL_LINK_FLAGS " --minify 0")
+    string(APPEND LOCAL_LINK_FLAGS " -O0")
     string(APPEND LOCAL_LINK_FLAGS " -g3")
+    string(APPEND LOCAL_LINK_FLAGS " -sINLINING_LIMIT")
     string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
     set(VERBOSE 1)
 endif()

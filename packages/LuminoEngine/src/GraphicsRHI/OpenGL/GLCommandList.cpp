@@ -14,8 +14,6 @@ namespace detail {
 
 GLGraphicsContext::GLGraphicsContext()
     : m_device(nullptr)
-    //, m_vao(0)
-    , m_fbo(0)
     , m_currentIndexBuffer(nullptr)
     , m_activeShaderPass(nullptr) {
 }
@@ -25,25 +23,11 @@ Result<> GLGraphicsContext::init(OpenGLDevice* owner) {
     ICommandList::init(owner);
     m_device = owner;
 
-    //GL_CHECK(glGenVertexArrays(1, &m_vao));
-    GL_CHECK(glGenFramebuffers(1, &m_fbo));
-
     memset(&m_savedState, sizeof(m_savedState), 0);
     return ok();
 }
 
 void GLGraphicsContext::onDestroy() {
-    //if (m_vao) {
-    //    GL_CHECK(glBindVertexArray(0));
-    //    GL_CHECK(glDeleteVertexArrays(1, &m_vao));
-    //    m_vao = 0;
-    //}
-    if (m_fbo != 0) {
-        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-        GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
-        m_fbo = 0;
-    }
-
     ICommandList::onDestroy();
 }
 

@@ -195,11 +195,15 @@ void GraphicsContext::resetRHIBackbuffers() {
 }
 
 void GraphicsContext::nextFrame() {
-    m_rhiObject->acquireNextImage(&m_imageIndex);
+    if (m_rhiObject) {
+        m_rhiObject->acquireNextImage(&m_imageIndex);
+    }
+    else {
+        m_imageIndex = 0;
+    }
 
     GraphicsCommandList* commandList = currentCommandList2();
     commandList->reset();
-    //detail::GraphicsCommandListInternal::beginCommandRecoding(commandList);
 }
 
 void GraphicsContext::presentInternal() {
