@@ -38,6 +38,7 @@
 #else
 #include <glad/glad.h>
 #endif
+#include <GLFW/glfw3.h> // include after glad.h
 
 #ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE

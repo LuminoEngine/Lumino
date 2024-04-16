@@ -122,6 +122,7 @@ private:
 
     Ref<GLUniformBufferAllocatorPageManager> m_uniformBufferAllocatorPageManager;
     Ref<GLDescriptorObjectPoolManager> m_descriptorObjectPoolManager;
+    bool m_es;
 };
 
 class GLSwapChain

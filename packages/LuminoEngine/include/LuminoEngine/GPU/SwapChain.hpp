@@ -89,6 +89,7 @@ protected:
     bool init(PlatformWindow* window);
 
 private:
+    int getBackbufferCount() const;
     void resizeBackbuffer(int width, int height);
     void resetRHIBackbuffers();
     void nextFrame();

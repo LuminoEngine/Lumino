@@ -39,14 +39,20 @@ bool GraphicsContext::init(PlatformWindow* window) {
     if (!Object::init()) {
         return false;
     }
+
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
     m_rhiResourceRegistry = makeURef<detail::RHIGraphicsObjectRegistry>(m_manager->resourceRegistry());
 
-    SizeI backbufferSize;
-    window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
-
-    m_rhiObject = rhiDevice()->createSwapChain(window, backbufferSize);
+    // Create SwapChain
+    if (window) {
+        SizeI backbufferSize;
+        window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
+        m_rhiObject = rhiDevice()->createSwapChain(window, backbufferSize);
+    }
+    else {
+        LN_LOG_INFO("Create a GraphicsContext with no SwapChain.");
+    }
 
     m_singleFrameConstantBufferAllocatorPageManager = makeRef<detail::SingleFrameUniformBufferAllocatorPageManager>(
         this,
@@ -55,9 +61,9 @@ bool GraphicsContext::init(PlatformWindow* window) {
     resetRHIBackbuffers();
 
     // CommandList
-    uint32_t count = m_rhiObject->getBackbufferCount();
+    const int count = getBackbufferCount();
     m_commandLists.resize(count);
-    for (uint32_t i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
         auto commandList = Ref<GraphicsCommandList>(LN_NEW GraphicsCommandList(this), false);
         commandList->init(detail::GraphicsResourceInternal::manager(this));
         m_commandLists[i] = commandList;
@@ -105,6 +111,15 @@ void GraphicsContext::onChangeDevice(detail::IGraphicsDevice* device) {
 Size GraphicsContext::backbufferSize() const {
     const RenderTargetTexture* backbuffers = m_backbuffers[0];
     return Size(backbuffers->width(), backbuffers->height());
+}
+
+int GraphicsContext::getBackbufferCount() const {
+    if (m_rhiObject) {
+        return m_rhiObject->getBackbufferCount();
+    }
+    else {
+        return 1;
+    }
 }
 
 void GraphicsContext::resizeBackbuffer(int width, int height) {
@@ -155,24 +170,26 @@ void GraphicsContext::present() {
 }
 
 void GraphicsContext::resetRHIBackbuffers() {
-    uint32_t count = m_rhiObject->getBackbufferCount();
-    m_backbuffers.resize(count);
-    m_depthBuffers.resize(count);
-    m_renderPasses.resize(count);
-    for (uint32_t i = 0; i < count; i++) {
-        // backbuffer
-        auto buffer = makeObject_deprecated<RenderTargetTexture>(this);
-        buffer->resetRHIObject(this, m_rhiObject->getRenderTarget(i));
-        m_backbuffers[i] = buffer;
+    if (m_rhiObject) {
+        const int count = getBackbufferCount();
+        m_backbuffers.resize(count);
+        m_depthBuffers.resize(count);
+        m_renderPasses.resize(count);
+        for (int i = 0; i < count; i++) {
+            // backbuffer
+            auto buffer = makeObject_deprecated<RenderTargetTexture>(this);
+            buffer->resetRHIObject(this, m_rhiObject->getRenderTarget(i));
+            m_backbuffers[i] = buffer;
 
-        // DepthBuffer
-        auto depthBuffer = makeObject_deprecated<DepthBuffer>(buffer->width(), buffer->height());
-        m_depthBuffers[i] = depthBuffer;
+            // DepthBuffer
+            auto depthBuffer = makeObject_deprecated<DepthBuffer>(buffer->width(), buffer->height());
+            m_depthBuffers[i] = depthBuffer;
 
-        // RenderPass
-        auto renderPass = makeObject_deprecated<RenderPass>(buffer, depthBuffer);
-        renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0x00);
-        m_renderPasses[i] = renderPass;
+            // RenderPass
+            auto renderPass = makeObject_deprecated<RenderPass>(buffer, depthBuffer);
+            renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0x00);
+            m_renderPasses[i] = renderPass;
+        }
     }
     m_imageIndex = -1;
 }

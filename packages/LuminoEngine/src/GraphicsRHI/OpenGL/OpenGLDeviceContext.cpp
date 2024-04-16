@@ -48,7 +48,8 @@ OpenGLDevice::OpenGLDevice()
     : m_mainWindow(nullptr)
     //, m_mainGLContext(nullptr)
     , m_uniformTempBuffer()
-    , m_uniformTempBufferWriter(&m_uniformTempBuffer) {
+    , m_uniformTempBufferWriter(&m_uniformTempBuffer)
+    , m_es(false) {
 }
 
 Result<> OpenGLDevice::init(const Settings& settings) {
@@ -81,16 +82,36 @@ Result<> OpenGLDevice::init(const Settings& settings) {
         //		}
     }
 
+
 #if defined(LN_GRAPHICS_OPENGLES)
     LN_LOG_INFO("OpenGL ES enabled.");
 #endif
 
 #if defined(LN_GRAPHICS_OPENGLES)
+    m_es = true;
 #else
     int result = gladLoadGL();
     if (LN_ENSURE(result, "Failed gladLoadGL()")) {
         // OpenGL Context がアクティブになっていないと失敗する。
         return err();
+    }
+
+    // GRAD は ES の検出を行っているが、例えば ES 3.2 をそのまま GL 3.2 とみなしてしまう。
+    // glClearDepthf は ES 3.0 と GL 4.1 で使うことができるが、ランタイムは GL 4.1 とみなされ
+    // GRAD は glClearDepthf をロードしなくなってしまう。
+    // そのため、ここで明示的にロードする。
+    m_es = OpenGLHelper::checkOpenGLES();
+    if (m_es) {
+        GLADloadproc load = reinterpret_cast<GLADloadproc>(&glfwGetProcAddress);
+        // load_GL_VERSION_3_3
+        glad_glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)load("glVertexAttribDivisor");
+        glad_glGenSamplers = (PFNGLGENSAMPLERSPROC)load("glGenSamplers");
+        glad_glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)load("glDeleteSamplers");
+        glad_glBindSampler = (PFNGLBINDSAMPLERPROC)load("glBindSampler");
+        glad_glSamplerParameteri = (PFNGLSAMPLERPARAMETERIPROC)load("glSamplerParameteri");
+        glad_glSamplerParameterf = (PFNGLSAMPLERPARAMETERFPROC)load("glSamplerParameterf");
+        // load_GL_VERSION_4_1
+        glad_glClearDepthf = (PFNGLCLEARDEPTHFPROC)load("glClearDepthf");
     }
 
     LN_LOG_INFO("OpenGL {}.{}", GLVersion.major, GLVersion.minor);
@@ -152,15 +173,15 @@ void OpenGLDevice::dispose() {
 
 void OpenGLDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->graphicsAPI = GraphicsAPI::OpenGL;
-#ifdef LN_GRAPHICS_OPENGLES
+//#ifdef LN_GRAPHICS_OPENGLES
     outCaps->requestedShaderTriple.target = "glsl";
     outCaps->requestedShaderTriple.version = 300;
     outCaps->requestedShaderTriple.option = "es";
-#else
-    outCaps->requestedShaderTriple.target = "glsl";
-    outCaps->requestedShaderTriple.version = 400;
-    outCaps->requestedShaderTriple.option = "";
-#endif
+//#else
+//    outCaps->requestedShaderTriple.target = "glsl";
+//    outCaps->requestedShaderTriple.version = 400;
+//    outCaps->requestedShaderTriple.option = "";
+//#endif
     outCaps->imageLayoytVFlip = true;
 
     GLint align = 0;

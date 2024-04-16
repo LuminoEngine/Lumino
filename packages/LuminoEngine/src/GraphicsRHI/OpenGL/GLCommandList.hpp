@@ -37,7 +37,7 @@ private:
     static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
     OpenGLDevice* m_device;
-    GLuint m_vao; // https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
+    //GLuint m_vao; // https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
     GLuint m_fbo;
     GLIndexBuffer* m_currentIndexBuffer;
     GLRenderPass* m_currentRenderPass = nullptr;

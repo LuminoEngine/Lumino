@@ -228,7 +228,8 @@ public:
 
         if (testFlag(flags, ClearFlags::Depth)) {
             GL_CHECK(glDepthMask(GL_TRUE));
-            GL_CHECK(glClearDepth(z));
+            //GL_CHECK(glClearDepth(z));
+            GL_CHECK(glClearDepthf(z));
             glflags |= GL_DEPTH_BUFFER_BIT;
         }
 
@@ -252,6 +253,8 @@ public:
             //GL_CHECK(glClearBufferuiv(GL_COLOR, GL_DRAW_BUFFER0, c));
         }
     }
+
+    static bool checkOpenGLES();
 };
 
 } // namespace detail
