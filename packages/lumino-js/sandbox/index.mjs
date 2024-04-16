@@ -10,6 +10,7 @@ Lumino.Runtime.initialize().then(() => {
     var gl = canvas.getContext("webgl");
 
     const graphcisContext = new Lumino.WebGLGraphicsContext(gl);
+    const renderer = new Lumino.RenderingContext(graphcisContext);
 
 
 

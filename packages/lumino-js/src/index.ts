@@ -26,6 +26,7 @@ export class Runtime {
             API.LNRuntime_Initialize = module.cwrap("LNRuntime_Initialize", "number", []);
             API.LNRuntime_Terminate = module.cwrap("LNRuntime_Terminate", "void", []);
             API.LNGraphicsContext_CreateFromOpenGL = module.cwrap("LNGraphicsContext_CreateFromOpenGL", "number", ["number"]);
+            API.LNRenderingContext_Create = module.cwrap("LNRenderingContext_Create", "number", ["number", "number"]);
             API.LNObject_Release = module.cwrap("LNObject_Release", "number", ["number"]);
             API.LNObject_Retain = module.cwrap("LNObject_Retain", "number", ["number"]);
 
@@ -42,19 +43,29 @@ export enum Result {
     LN_ERROR_UNKNOWN = -1,
 }
 
+type Handle = number;
+
 export class API {
-    public static LNRuntime_Initialize: () => Result = null;
-    public static LNRuntime_Terminate: () => void = null;
-    public static LNGraphicsContext_CreateFromOpenGL: (outHandle: number) => Result = null;
-    public static LNObject_Release: (obj: number) => Result = null;
-    public static LNObject_Retain: (obj: number) => Result = null;
+    public static LNRuntime_Initialize: () => Result;
+    public static LNRuntime_Terminate: () => void;
+    public static LNGraphicsContext_CreateFromOpenGL: (outReturn: number) => Result;
+    public static LNRenderingContext_Create: (graphicsContext: Handle, outReturn: number) => Result;
+    public static LNObject_Release: (obj: Handle) => Result;
+    public static LNObject_Retain: (obj: Handle) => Result;
 }
 
 // const canvas = document.getElementById("maincanvas") as HTMLCanvasElement;
 // var gl = canvas.getContext("webgl");
 
-export class WebGLGraphicsContext {
+
+export class GraphicsContext {
+    public _handle: Handle;
+}
+
+export class WebGLGraphicsContext extends GraphicsContext {
+
     public constructor(webglContext: WebGLRenderingContext) {
+        super();
 
         Runtime.webglContextHandle = Runtime.module.GL.registerContext(webglContext, {
             majorVersion: 1,
@@ -72,6 +83,17 @@ export class WebGLGraphicsContext {
 
         // console.log("dataHeap", dataHeap);
         // const handle = new Uint32Array(dataHeap.buffer, dataHeap.byteOffset, 1)[0];
-        console.log("handle3", Runtime.returnPointerView[0], Runtime.returnPointerView.byteOffset);
+        this._handle = Runtime.returnPointerView[0];
+        console.log("handle3", this._handle, Runtime.returnPointerView.byteOffset);
+    }
+}
+
+export class RenderingContext {
+    public constructor(graphicsContext: GraphicsContext) {
+
+        API.LNRenderingContext_Create(graphicsContext._handle, Runtime.returnPointerView.byteOffset);
+        console.log("handle4", Runtime.returnPointerView[0], Runtime.returnPointerView.byteOffset);
+        
+        
     }
 }

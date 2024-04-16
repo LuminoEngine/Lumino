@@ -4,9 +4,10 @@
   "description": "",
   "type": "module",
   "scripts": {
+    "build:ffi": "cd ../.. && dotnet run -- BuildEngine wasm32-emscripten",
     "build:copy_ffi": "copyfiles -f ../../build/buildtrees/wasm32-emscripten/lumino/packages/LuminoFFI/LuminoFFI.js ../../build/buildtrees/wasm32-emscripten/lumino/packages/LuminoFFI/LuminoFFI.wasm dist",
     "build:rollup": "rollup --configPlugin typescript --config ./rollup.config.ts",
-    "build": "run-s build:copy_ffi build:rollup",
+    "build": "run-s build:ffi build:copy_ffi build:rollup",
     "start": "http-server -p 8080 .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

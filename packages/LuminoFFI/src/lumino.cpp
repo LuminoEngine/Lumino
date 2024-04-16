@@ -59,20 +59,22 @@ extern "C" {
 
 LUMINO_API LNResult LNRuntime_Initialize() {
     ln::RuntimeModule::initialize();
+    ln::detail::RuntimeManager::initialize(ln::detail::RuntimeManager::Settings());
     ln::GraphicsModule::initialize({ ln::GraphicsAPI::OpenGL });
     return LN_OK;
 }
 
 LUMINO_API void LNRuntime_Terminate() {
     ln::GraphicsModule::terminate();
+    ln::detail::RuntimeManager::terminate();
     ln::RuntimeModule::terminate();
 }
 
-LUMINO_API LNResult LNGraphicsContext_CreateFromOpenGL(LNHandle* outHandle) {
+LUMINO_API LNResult LNGraphicsContext_CreateFromOpenGL(LNHandle* outReturn) {
     LN_FFI_TRY_BEGIN;
     ln::OpenGLGraphicsContext::Settings s;
     s.window = nullptr;
-    *outHandle = ::ln::FFI::wrapObject(ln::OpenGLGraphicsContext::create(s), true);
+    *outReturn = ::ln::FFI::wrapObject(ln::OpenGLGraphicsContext::create(s), true);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -81,7 +83,16 @@ LUMINO_API LNResult LNGraphicsContext_CreateFromOpenGL(LNHandle* outHandle) {
 //
 //}
 
+extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, LNHandle* outReturn) {
+    LN_FFI_TRY_BEGIN;
+    printf("LNRenderingContext_Create1 %d\n", graphicsContext);
+    ln::GraphicsContext* context = LNI_HANDLE_TO_OBJECT(ln::GraphicsContext, graphicsContext);
 
+    printf("LNRenderingContext_Create %p\n", context);
+    ;
+
+    LN_FFI_TRY_END_RETURN;
+}
 
 
 //==============================================================================
