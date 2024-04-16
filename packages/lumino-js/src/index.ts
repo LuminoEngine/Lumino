@@ -25,7 +25,7 @@ export class Runtime {
             this.module = module;
             API.LNRuntime_Initialize = module.cwrap("LNRuntime_Initialize", "number", []);
             API.LNRuntime_Terminate = module.cwrap("LNRuntime_Terminate", "void", []);
-            API.LNGraphicsContext_CreateFromOpenGL = module.cwrap("LNGraphicsContext_CreateFromOpenGL", "number", ["number"]);
+            API.LNGraphicsContext_CreateFromOpenGL = module.cwrap("LNGraphicsContext_CreateFromOpenGL", "number", ["number", "number", "number"]);
             API.LNRenderingContext_Create = module.cwrap("LNRenderingContext_Create", "number", ["number", "number"]);
             API.LNObject_Release = module.cwrap("LNObject_Release", "number", ["number"]);
             API.LNObject_Retain = module.cwrap("LNObject_Retain", "number", ["number"]);
@@ -48,7 +48,7 @@ type Handle = number;
 export class API {
     public static LNRuntime_Initialize: () => Result;
     public static LNRuntime_Terminate: () => void;
-    public static LNGraphicsContext_CreateFromOpenGL: (outReturn: number) => Result;
+    public static LNGraphicsContext_CreateFromOpenGL: (width: number, height: number, outReturn: number) => Result;
     public static LNRenderingContext_Create: (graphicsContext: Handle, outReturn: number) => Result;
     public static LNObject_Release: (obj: Handle) => Result;
     public static LNObject_Retain: (obj: Handle) => Result;
@@ -79,7 +79,7 @@ export class WebGLGraphicsContext extends GraphicsContext {
 
         // console.log("module.HEAPU8.buffer", module.HEAPU8.buffer);
         // const dataHeap = new Uint8Array(module.HEAPU8.buffer, 0, 4);
-        API.LNGraphicsContext_CreateFromOpenGL(Runtime.returnPointerView.byteOffset);
+        API.LNGraphicsContext_CreateFromOpenGL(800, 600, Runtime.returnPointerView.byteOffset);
 
         // console.log("dataHeap", dataHeap);
         // const handle = new Uint32Array(dataHeap.buffer, dataHeap.byteOffset, 1)[0];

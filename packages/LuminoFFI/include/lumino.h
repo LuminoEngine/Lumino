@@ -45,7 +45,7 @@ typedef int32_t LNHandle;
 extern LUMINO_API LNResult LNRuntime_Initialize();
 extern LUMINO_API void LNRuntime_Terminate();
 
-extern LUMINO_API LNResult LNGraphicsContext_CreateFromOpenGL(LNHandle* outReturn);
+extern LUMINO_API LNResult LNGraphicsContext_CreateFromOpenGL(int32_t width, int32_t height, LNHandle* outReturn);
 //extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
 
 extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, LNHandle* outReturn);

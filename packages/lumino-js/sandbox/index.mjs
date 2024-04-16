@@ -16,7 +16,7 @@ Lumino.Runtime.initialize().then(() => {
 
 
 
-    Lumino.API.LNRuntime_Terminate();
+    //Lumino.API.LNRuntime_Terminate();
 
 
 

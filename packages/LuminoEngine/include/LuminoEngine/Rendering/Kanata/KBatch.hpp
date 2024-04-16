@@ -38,7 +38,10 @@ struct BatchMaterial {
 struct Batch {
 public:
     BatchElement* elemets2;
+
+    /** Number of elements in elemets2. The number specified by newBatch(). */
     uint8_t elementsCount;
+
     VertexLayout* vertexLayout;
     PrimitiveTopology primitiveTopology;
     //Material* material = nullptr;

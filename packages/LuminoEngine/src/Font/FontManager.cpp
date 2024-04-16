@@ -170,7 +170,8 @@ bool FontManager::init(const Settings& settings)
 
 
 
-
+#ifdef LN_EMSCRIPTEN
+#else
 	m_glyphIconFontManager = makeRef<GlyphIconFontManager>();
 	if (!m_glyphIconFontManager->init(this)) {
 		return false;
@@ -183,7 +184,7 @@ bool FontManager::init(const Settings& settings)
 		desc.Family = _TT("Noto Color Emoji");
 		m_emojiFont = makeObject_deprecated<Font>(desc);
 	}
-
+#endif
 
     LN_LOG_DEBUG("FontManager Initialization ended.");
     return true;

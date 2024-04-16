@@ -94,6 +94,7 @@ void OpenGLGraphicsContext::onCreateRHIObjects() {
             return;
         }
         m_wrapedRenderTarget->resetNativeObject(0);
+        m_wrapedRenderTarget->resetSize(m_externalWidth, m_externalHeight);
         m_backbuffers[0] = m_wrapedRenderTarget;
 
         // Dummy RenderPass representing the back buffer.

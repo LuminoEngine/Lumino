@@ -203,7 +203,9 @@ void SceneRenderPass::buildDrawCommands(
                     material->updateShaderVariables2(descriptorAllocator, descriptor);
 
                     // TODO: これが実質 ClusteredShadingSceneRenderer 専用なので、なんとかしたいところ。
-                    sceneRenderer->onSetAdditionalShaderPassVariables2(descriptor, shaderPass);
+                    if (sceneRenderer) {
+                        sceneRenderer->onSetAdditionalShaderPassVariables2(descriptor, shaderPass);
+                    }
                 }
 
                 if (overrideCommand) {

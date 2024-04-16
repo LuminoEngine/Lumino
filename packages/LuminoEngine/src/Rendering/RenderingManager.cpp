@@ -113,6 +113,9 @@ Result<> RenderingManager::init(const Settings& settings) {
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject_deprecated<Shader>(_TT("Sprite"), &stream);
     }
+
+#ifdef LN_EMSCRIPTEN
+#else
     // ClusteredShadingDefault
     {
         static const unsigned char data[] = {
@@ -282,7 +285,8 @@ Result<> RenderingManager::init(const Settings& settings) {
         };
         createBuiltinShader(BuiltinShader::ImGui, _TT("ImGui"), data, LN_ARRAY_SIZE_OF(data));
     }
-    
+#endif // LN_EMSCRIPTEN
+
 #if 0 // テスト用
     const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
     m_builtinShaders[(int)BuiltinShader::ImGui] = Shader::create(dir / _TT("ImGui.fx"));
@@ -385,10 +389,13 @@ Result<> RenderingManager::init(const Settings& settings) {
     m_frameRectRenderFeature = makeURef<kanata::FrameRectRenderFeature>(this);
 
     m_spriteRenderer = Ref<SpriteRenderer>(LN_NEW SpriteRenderer(), false);
-    LN_TRY(m_spriteRenderer->init());
+    if (!m_spriteRenderer->init()) {
+        return false;
+    }
     m_primitiveMeshRenderer = Ref<PrimitiveMeshRenderer>(LN_NEW PrimitiveMeshRenderer(), false);
-    LN_TRY(m_primitiveMeshRenderer->init());
-
+    if (!m_primitiveMeshRenderer->init()) {
+        return false;
+    }
 
     m_profiler = std::make_unique<RenderingProfiler>();
 
@@ -411,7 +418,7 @@ Result<> RenderingManager::init(const Settings& settings) {
     m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 
     LN_LOG_DEBUG("RenderingManager Initialization finished.");
-    return ok();
+    return true;
 }
 
 void RenderingManager::dispose() {

@@ -63,6 +63,11 @@ if(LN_EMSCRIPTEN)
     string(APPEND LOCAL_LINK_FLAGS " -sINLINING_LIMIT")
     string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
     set(VERBOSE 1)
+
+
+    
+    #string(APPEND LOCAL_COMPILE_FLAGS " -fsanitize=address")
+    #string(APPEND LOCAL_LINK_FLAGS " -fsanitize=address")
 endif()
 
 #-------------------------------------------------------------------------------
@@ -85,6 +90,7 @@ target_include_directories(
 target_include_directories(${PROJECT_NAME} PRIVATE include src) # for PCH
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoEngine)
 if(LN_EMSCRIPTEN)
+    #set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${LOCAL_COMPILE_FLAGS}")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
 endif()
 
