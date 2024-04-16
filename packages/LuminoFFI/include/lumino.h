@@ -1,5 +1,6 @@
 ﻿#ifndef LUMINO_API_H_
 #define LUMINO_API_H_
+#include <stdint.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>

@@ -79,6 +79,7 @@ if(LN_EMSCRIPTEN)
 else()
     add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
     add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LUMINO_BUILD_DLL=1)
 endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
@@ -120,4 +121,7 @@ endif()
 #-------------------------------------------------------------------------------
 # Sub-projects
 #-------------------------------------------------------------------------------
+if(LUMINO_BUILD_EXAMPLES)
+    add_subdirectory(examples/LuminoFFI-OpenGLApp)
+endif()
 
