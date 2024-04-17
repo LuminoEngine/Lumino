@@ -122,6 +122,8 @@ endif()
 # Sub-projects
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_EXAMPLES)
-    add_subdirectory(examples/LuminoFFI-OpenGLApp)
+    if(LN_DESKTOP)
+        add_subdirectory(examples/LuminoFFI-OpenGLApp)
+    endif()
 endif()
 

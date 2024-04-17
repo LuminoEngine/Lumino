@@ -155,13 +155,15 @@ extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, L
 
         Vertex v[] = {
             Vertex(Vector3(0, 5.5, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
-            Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
             Vertex(Vector3(-5.5, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
+            Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
 
         };
         g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-        Material* material = Material::defaultMaterial();
+        Ref<Material> material = Material::create();
+        //Ref<Texture2D> texture = Texture2D::load(U"C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
+        //material->setMainTexture(texture);
 
         //auto* target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         //auto* renderPass = TestEnv::renderPass();
@@ -176,11 +178,17 @@ extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, L
         viewPoint.resetPerspective(Vector3(10, 10, 10), Vector3::normalize(-1, -1, -1), 0.3, Size(renderPass->width(), renderPass->height()), 0.1, 1000.0);
         viewPoint.makeCameraInfo(&renderViewInfo.cameraInfo);
 
+        kanata::BatchProxyState batchState;
+        batchState.reset();
+        batchState.m_depthTestEnabled = false;
+        batchState.m_cullingMode = CullMode::None;
+
         // Build batch
         {
             g_batchList->clear(&viewPoint);
 
             // 手動で頑張るパターン
+            g_batchList->batchProxyState = &batchState;
             auto* batch = g_batchList->newBatch<kanata::Batch>(1, material);
             batch->elemets2[0].vertexBuffers = {};
             batch->elemets2[0].vertexBuffers[0] = g_vertexBuffer;
