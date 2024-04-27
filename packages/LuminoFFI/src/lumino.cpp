@@ -21,7 +21,9 @@
 #include <LuminoEngine/Rendering/Kanata/KPipelineState.hpp>
 #include <LuminoEngine/Rendering/Kanata/KUnlitRenderPass.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 
 namespace ln {
 
@@ -149,10 +151,12 @@ extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, L
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, LNHandle renderingViewPoint, LNHandle graphicsContext_) {
+extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext_, LNHandle renderingViewPoint_, LNHandle graphicsContext_) {
     LN_FFI_TRY_BEGIN;
-    ln::RenderViewPoint* renderingViewPoint_ = LNI_HANDLE_TO_OBJECT(ln::RenderViewPoint, renderingViewPoint);
+    ln::CommandList* renderingContext = LNI_HANDLE_TO_OBJECT(ln::CommandList, renderingContext_);
+    ln::RenderViewPoint* renderingViewPoint = LNI_HANDLE_TO_OBJECT(ln::RenderViewPoint, renderingViewPoint_);
 
+    renderingContext->clearCommandsAndState(renderingViewPoint);
 
     if (1) {
 
@@ -175,14 +179,15 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, L
 #if 1
         {
             using namespace ln;
-            URef<kanata::BatchCollector> g_batchList;
+            //URef<kanata::BatchCollector> g_batchList;
             URef<kanata::DrawCommandList> g_drawCommandList;
             Ref<kanata::UnlitRenderPass> g_renderPass;
             URef<kanata::BoxMeshBatchProxy> g_boxMeshBatchProxy;
             Ref<VertexBuffer> g_vertexBuffer;
 
             auto* renderingManager = ln::detail::RenderingManager::instance();
-            g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
+            //g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
+            kanata::BatchCollector* g_batchList = renderingContext->batchCollector();
             g_drawCommandList = makeURef<kanata::DrawCommandList>(renderingManager);
             g_renderPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
             g_boxMeshBatchProxy = makeURef<kanata::BoxMeshBatchProxy>();
@@ -199,8 +204,8 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, L
             g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
             Ref<Material> material = Material::create();
-            // Ref<Texture2D> texture = Texture2D::load(U"C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
-            // material->setMainTexture(texture);
+             //Ref<Texture2D> texture = Texture2D::load(U"C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
+             //material->setMainTexture(texture);
 
             // auto* target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
             // auto* renderPass = TestEnv::renderPass();
@@ -213,7 +218,7 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, L
 
             //RenderViewPoint viewPoint;
             //viewPoint.resetPerspective(Vector3(10, 10, 10), Vector3::normalize(-1, -1, -1), 0.3, Size(renderPass->width(), renderPass->height()), 0.1, 1000.0);
-            renderingViewPoint_->makeCameraInfo(&renderViewInfo.cameraInfo);
+            renderingViewPoint->makeCameraInfo(&renderViewInfo.cameraInfo);
 
             kanata::BatchProxyState batchState;
             batchState.reset();
@@ -222,7 +227,7 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, L
 
             // Build batch
             {
-                g_batchList->clear(renderingViewPoint_);
+                g_batchList->clear(renderingViewPoint);
 
                 // 手動で頑張るパターン
                 g_batchList->batchProxyState = &batchState;
@@ -246,6 +251,25 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, L
                 // r->drawBox(Box(0.5), Color::Red, Matrix::makeTranslation(2, 0, 0));
                 // r->drawBox(Box(2), Color::Red, Matrix::makeTranslation(-2, 0, 0));
                 // r->end();
+                
+                auto& r = ln::detail::RenderingManager::instance()->spriteRenderer();
+                r->begin(renderingContext, material);
+                r->drawSprite(
+                    Matrix::makeTranslation(0, 0, 0),
+                    Size(100, 200),
+                    Vector2(0, 0),
+                    Rect(0, 0, 1, 1),
+                    Color::Red,
+                    SpriteBaseDirection::Basic2D,
+                    BillboardType::None,
+                    SpriteFlipFlags::None);
+                r->end();
+                
+                
+             auto& batchProxyCollector = renderingContext->batchProxyCollector();
+                auto& batchCollector = renderingContext->batchCollector();
+
+                batchProxyCollector->resolveSingleFrameBatchProxies(batchCollector);
             }
 
             commandList->beginCommandRecoding();
