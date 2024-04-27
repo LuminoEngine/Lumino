@@ -42,7 +42,7 @@ void ForwardGBufferPrepass::init() {
     }
     m_renderPass = makeObject_deprecated<RenderPass>();
 
-    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ForwardGBufferPrepass);
+    m_internalSceneRenderPass = makeRef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ForwardGBufferPrepass);
     m_internalSceneRenderPass->overrideCommand = [](kanata::DrawCommand* cmd) {
         // このパスではブレンドを禁止する。
         // 例えば法線の向きをブレンドしてしまうと描画がおかしくなる。
@@ -258,7 +258,7 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
     //	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 
     m_renderPass = makeObject_deprecated<RenderPass>();
-    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::Forward);
+    m_internalSceneRenderPass = makeRef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::Forward);
 }
 
 void ClusteredShadingGeometryRenderingPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {
@@ -387,7 +387,7 @@ void ShadowCasterPass::init() {
 
     m_renderPass = makeObject_deprecated<RenderPass>();
 
-    m_internalSceneRenderPass = makeURef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ShadowCaster);
+    m_internalSceneRenderPass = makeRef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ShadowCaster);
 }
 
 //Shader* ShadowCasterPass::getDefaultShader() const

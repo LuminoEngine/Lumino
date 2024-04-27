@@ -70,6 +70,25 @@ void RenderViewPoint::resetPerspective(const Vector3& viewPos, const Vector3& vi
     dpiScale = 1.0f;
 }
 
+void RenderViewPoint::resetPerspective2D(const Vector3& viewPos, const Size& size, float n, float f) {
+    worldMatrix = Matrix::Identity; // TODO: Lookat
+    viewPixelSize = size;
+    viewPosition = viewPos;
+    viewDirection = Vector3(0, 0, -1);
+
+    viewMatrix = Matrix::makeTranslation(viewPos);
+    projMatrix = Matrix::makePerspective2DLH(size.width, size.height, n, f);
+    // LH なのは godot 参考。(godot は ZIndex だが)
+    // なお godot は 3D 空間は RH.
+
+    viewProjMatrix = viewMatrix * projMatrix;
+    viewFrustum = ViewFrustum(viewProjMatrix);
+    this->fovY = 0.5f; // dummy
+    nearClip = n;
+    farClip = f;
+    dpiScale = 1.0f;
+}
+
 void RenderViewPoint::copyFrom(const RenderViewPoint* other) {
     LN_DCHECK(other);
     worldMatrix = other->worldMatrix;

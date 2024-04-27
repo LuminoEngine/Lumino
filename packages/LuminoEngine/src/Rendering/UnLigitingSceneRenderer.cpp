@@ -20,7 +20,7 @@ void UnLigitingSceneRendererPass::init(RenderingManager* manager, bool forPostEf
     else
         m_defaultShader = manager->builtinShader(BuiltinShader::Sprite);
     m_renderPass = makeObject_deprecated<RenderPass>();
-    m_internalSceneRenderPass = makeURef<kanata::UnlitRenderPass>(manager);
+    m_internalSceneRenderPass = makeRef<kanata::UnlitRenderPass>(manager);
 }
 
 void UnLigitingSceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) {

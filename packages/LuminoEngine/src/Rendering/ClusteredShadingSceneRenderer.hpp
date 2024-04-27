@@ -47,7 +47,7 @@ public: // TODO:
     //Ref<RenderTargetTexture> m_materialMap;	// x, y, z:roughness,
     Ref<DepthBuffer> m_depthBuffer;
     Ref<RenderPass> m_renderPass;
-    URef<kanata::SceneRenderPass> m_internalSceneRenderPass;
+    Ref<kanata::SceneRenderPass> m_internalSceneRenderPass;
 };
 
 #if 0
@@ -113,7 +113,7 @@ private:
     //Ref<Shader>					m_unLightingShader;
     //ShaderTechnique*			m_unLightingShaderTechnique;
     Ref<RenderPass> m_renderPass;
-    URef<kanata::SceneRenderPass> m_internalSceneRenderPass;
+    Ref<kanata::SceneRenderPass> m_internalSceneRenderPass;
 };
 
 class ShadowCasterPass
@@ -146,7 +146,7 @@ protected:
 public: // TODO:
     Ref<Shader> m_defaultShader;
     Ref<RenderPass> m_renderPass;
-    URef<kanata::SceneRenderPass> m_internalSceneRenderPass;
+    Ref<kanata::SceneRenderPass> m_internalSceneRenderPass;
 };
 
 class ClusteredShadingSceneRenderer

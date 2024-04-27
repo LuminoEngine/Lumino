@@ -6,7 +6,7 @@
 namespace ln {
 namespace kanata {
 
-class SceneRenderPass : public URefObject {
+class SceneRenderPass : public Object {
 public:
     SceneRenderPass(
         detail::RenderingManager* manager,

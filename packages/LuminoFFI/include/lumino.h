@@ -46,10 +46,49 @@ typedef int32_t LNHandle;
 extern LUMINO_API LNResult LNRuntime_Initialize();
 extern LUMINO_API void LNRuntime_Terminate();
 
-extern LUMINO_API LNResult LNGraphicsContext_CreateFromOpenGL(int32_t width, int32_t height, LNHandle* outReturn);
+extern LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t width, int32_t height, LNHandle* outReturn);
+
+/**
+ * 描画フレームを開始します。
+ *
+ * @param[in] graphicsContext : 対象 LNGraphicsContext のハンドル。
+ * @param[in] width  : 描画先のバックバッファのテクセル幅。
+ * @param[in] height : 描画先のバックバッファのテクセル高さ。
+ * 
+ * 描画フレームは 1 フレーム分の一連の描画コマンドの構築処理です。
+ * LNGraphicsContext_BeginFrame でネイティブのコマンドリストへの記録を開始し、
+ * LNGraphicsContext_EndFrame で記録を終了します。
+ * そして LNGraphicsContext_Present でコマンドリストを GPU へ送信します。
+ */
+extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height);
+
+/**
+ * 描画フレームを終了します。
+ *
+ * 内部的には ネイティブのコマンドリストへの記録を終了します。
+ * 外部コンテキストを使っている場合、それぞれの方法で GPU への送信を行う必要があります。
+ */
+extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
+
+/**
+ * バックバッファをフロントバッファに転送します。
+ *
+ * 外部コンテキストを使っている場合、この関数は使えません。
+ *
+ * BeginFrame, EndFrame, Present の流れは LNGraphicsContext_BeginFrame のコメントを参照してください。
+ */
+extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
+
 //extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
 
 extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, LNHandle* outReturn);
+extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, LNHandle renderingViewPoint, LNHandle graphicsContext_);
+
+// いわゆるカメラ情報
+extern LUMINO_API LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderingViewPoint);
+extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
+
+extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 
 extern LUMINO_API LNResult LNObject_Release(LNHandle obj);
 extern LUMINO_API LNResult LNObject_Retain(LNHandle obj);

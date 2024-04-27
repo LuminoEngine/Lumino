@@ -37,7 +37,7 @@ struct BatchMaterial {
 
 struct Batch {
 public:
-    BatchElement* elemets2;
+    BatchElement* elemets2; // いわゆる MeshSubset
 
     /** Number of elements in elemets2. The number specified by newBatch(). */
     uint8_t elementsCount;

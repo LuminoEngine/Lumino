@@ -41,7 +41,7 @@ int main() {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     LNHandle graphicsContext = LN_NULL_HANDLE;
-    if (LNGraphicsContext_CreateFromOpenGL(width, height, &graphicsContext) != LN_OK) {
+    if (LNGraphicsContext_CreateFromCurrentOpenGLContext(width, height, &graphicsContext) != LN_OK) {
         return 1;
     }
 
@@ -50,14 +50,38 @@ int main() {
         return 1;
     }
 
+    LNHandle sceneRenderingViewPoint = LN_NULL_HANDLE;
+    if (LNSceneRenderingViewPoint_Create(&sceneRenderingViewPoint) != LN_OK) {
+        return 1;
+    }
+
+    LNHandle unlitSceneRenderingPass = LN_NULL_HANDLE;
+    if (LNUnlitSceneRenderingPass_Create(&unlitSceneRenderingPass) != LN_OK) {
+        return 1;
+    }
 
     while (!glfwWindowShouldClose(window)) {
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
 
+        if (LNSceneRenderingViewPoint_SetupPerspective2D(sceneRenderingViewPoint, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+            return 1;
+        }
+
+
+
+        if (LNRenderingContext_Reset(renderingContext, sceneRenderingViewPoint, graphicsContext) != LN_OK) {
+            return 1;
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    LNObject_Release(unlitSceneRenderingPass);
+    LNObject_Release(sceneRenderingViewPoint);
+    LNObject_Release(renderingContext);
+    LNObject_Release(graphicsContext);
     LNRuntime_Terminate();
     glfwDestroyWindow(window);
     glfwTerminate();

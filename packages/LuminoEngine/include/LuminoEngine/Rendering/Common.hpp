@@ -255,6 +255,7 @@ public:
 
     void resetUnproject(const Size& viewPixelSize);
     void resetPerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
+    void resetPerspective2D(const Vector3& viewPos, const Size& size, float n, float f);
     void copyFrom(const RenderViewPoint* other);
     void makeCameraInfo(detail::CameraInfo* cameraInfo) const;
 };

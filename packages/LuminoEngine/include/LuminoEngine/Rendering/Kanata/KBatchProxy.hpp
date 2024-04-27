@@ -113,7 +113,7 @@ public:
     void copyFrom(const BatchProxyStateStackItem* other);
 };
 
-// インスタンスを SceneNode で保持する用
+// インスタンスを SceneNode で保持する用。
 class BatchProxy : public URefObject {
 public:
     const BatchProxyState* state;

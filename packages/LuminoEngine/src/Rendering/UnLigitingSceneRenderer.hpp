@@ -25,7 +25,7 @@ public:
 private:
     Ref<Shader> m_defaultShader;
     Ref<RenderPass> m_renderPass;
-    URef<kanata::UnlitRenderPass> m_internalSceneRenderPass;
+    Ref<kanata::UnlitRenderPass> m_internalSceneRenderPass;
 };
 
 } // namespace detail
