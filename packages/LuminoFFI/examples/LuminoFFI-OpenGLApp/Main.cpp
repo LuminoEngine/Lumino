@@ -45,8 +45,8 @@ int main() {
         return 1;
     }
 
-    LNHandle renderingContext = LN_NULL_HANDLE;
-    if (LNRenderingContext_Create(graphicsContext, &renderingContext) != LN_OK) {
+    LNHandle renderingCommandList = LN_NULL_HANDLE;
+    if (LNRenderingCommandList_Create(graphicsContext, &renderingCommandList) != LN_OK) {
         return 1;
     }
 
@@ -60,6 +60,16 @@ int main() {
         return 1;
     }
 
+    LNHandle material = LN_NULL_HANDLE;
+    if (LNMaterial_Create(&material) != LN_OK) {
+		return 1;
+	}
+
+    LNHandle spriteRenderer = LN_NULL_HANDLE;
+        if (LNSpriteRenderer_Get(&spriteRenderer) != LN_OK) {
+            return 1;
+    }
+
     while (!glfwWindowShouldClose(window)) {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
@@ -68,9 +78,23 @@ int main() {
             return 1;
         }
 
+        if (LNRenderingCommandList_Reset(renderingCommandList, sceneRenderingViewPoint, graphicsContext) != LN_OK) {
+            return 1;
+        }
 
+        LNMatrix transform;
+        LNMatrix_SetIdentity(&transform);
+        LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material, &transform);
+        LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+            200, 100,
+            0, 0,
+            0, 0, 1, 1,
+            0, 0, 1, 1,
+            LN_SPRITE_BASE_DIRECTION_BASIC2D,
+            LN_BILLBOARD_TYPE_NONE);
+        LNSpriteRenderer_EndBatch(spriteRenderer);
 
-        if (LNRenderingContext_Reset(renderingContext, sceneRenderingViewPoint, graphicsContext) != LN_OK) {
+        if (LNRenderingCommandList_Submit(renderingCommandList, LN_NULL_HANDLE, graphicsContext) != LN_OK) {
             return 1;
         }
 
@@ -78,9 +102,10 @@ int main() {
         glfwPollEvents();
     }
 
+    LNObject_Release(material);
     LNObject_Release(unlitSceneRenderingPass);
     LNObject_Release(sceneRenderingViewPoint);
-    LNObject_Release(renderingContext);
+    LNObject_Release(renderingCommandList);
     LNObject_Release(graphicsContext);
     LNRuntime_Terminate();
     glfwDestroyWindow(window);

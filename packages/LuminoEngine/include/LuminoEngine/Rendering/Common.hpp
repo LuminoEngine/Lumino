@@ -73,21 +73,21 @@ enum class BlendMode : uint8_t {
 
 /** 3D 空間での基準方向を表す値 */
 enum class SpriteBaseDirection {
-    XPlus,   /**< X+ 方向 (右向き) */
-    YPlus,   /**< Y+ 方向 (上向き) */
-    ZPlus,   /**< Z+ 方向 (奥向き) */
-    XMinus,  /**< X- 方向 (左向き) */
-    YMinus,  /**< Y- 方向 (下向き) */
-    ZMinus,  /**< Z- 方向 (手前向き) */
-    Basic2D, /**< Z+ 方向、左上原点 */
+    XPlus = 0,   /**< X+ 方向 (右向き) */
+    YPlus = 1,   /**< Y+ 方向 (上向き) */
+    ZPlus = 2,   /**< Z+ 方向 (奥向き) */
+    XMinus = 3,  /**< X- 方向 (左向き) */
+    YMinus = 4,  /**< Y- 方向 (下向き) */
+    ZMinus = 5,  /**< Z- 方向 (手前向き) */
+    Basic2D = 6, /**< Z+ 方向、左上原点 */
 };
 
 /** ビルボードの計算方法 */
 enum class BillboardType {
-    None,          /**< ビルボードの計算を行わない */
-    ToCameraPoint, /**< カメラ (ビュー行列) に対して正面を向く */
-    ToScreen,      /**< スクリーン (ビュー平面) に対して正面を向く */
-    RotY,          /**< Y 軸回転のみ行う */
+    None = 0,          /**< ビルボードの計算を行わない */
+    ToCameraPoint = 1, /**< カメラ (ビュー行列) に対して正面を向く */
+    ToScreen = 2,      /**< スクリーン (ビュー平面) に対して正面を向く */
+    RotY = 3,          /**< Y 軸回転のみ行う */
 };
 
 /** ライトの種類 */

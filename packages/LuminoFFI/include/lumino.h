@@ -43,6 +43,31 @@ typedef int32_t LNHandle;
 
 #define LN_NULL_HANDLE 0
 
+
+//==============================================================================
+//
+//==============================================================================
+typedef struct LNMatrix {
+    union {
+        struct
+        {
+            float m11, m12, m13, m14;
+            float m21, m22, m23, m24;
+            float m31, m32, m33, m34;
+            float m41, m42, m43, m44;
+        };
+        float m[4][4];
+    };
+} LNMatrix;
+
+extern LUMINO_API LNResult LNMatrix_SetIdentity(LNMatrix* pMatrix);
+// extern LUMINO_API LNResult LNSpriteRenderer_Translate(LNMatrix* matrix, float x, float y, float z);
+// extern LUMINO_API LNResult LNSpriteRenderer_Translate(LNMatrix* matrix, float x, float y, float z);
+
+//==============================================================================
+//
+//==============================================================================
+
 extern LUMINO_API LNResult LNRuntime_Initialize();
 extern LUMINO_API void LNRuntime_Terminate();
 
@@ -81,14 +106,85 @@ extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
 
 //extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
 
-extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, LNHandle* outReturn);
-extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext, LNHandle renderingViewPoint, LNHandle graphicsContext_);
+extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContext, LNHandle* outRenderingCommandList);
+extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList, LNHandle renderingViewPoint, LNHandle graphicsContext_);
+
+/**
+ * RenderingCommandList に記録されているコマンドリストを GPUCommandList に変換します。
+ * 
+ * @param[in] renderingCommandList : 対象の RenderingCommandList のハンドル。
+ * @param[in] sceneRenderingPass : 対象の RenderingCommandList のハンドル。
+ * @param[in] graphicsContext : 対象の RenderingCommandList のハンドル。
+ */
+extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingCommandList, LNHandle sceneRenderingPass, LNHandle graphicsContext);
 
 // いわゆるカメラ情報
 extern LUMINO_API LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderingViewPoint);
 extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
+
+//==============================================================================
+// LNMaterial
+//==============================================================================
+extern LUMINO_API LNResult LNMaterial_Create(LNHandle* outMaterial);
+
+//==============================================================================
+// 
+//==============================================================================
+/** 3D 空間での基準方向を表す値 */
+typedef enum LNSpriteBaseDirection {
+    /** X + 方向(右向き) */
+    LN_SPRITE_BASE_DIRECTION_XPLUS = 0,
+
+    /**  Y+ 向 (上向き) */
+    LN_SPRITE_BASE_DIRECTION_YPLUS = 1,
+
+    /**  Z+ 向 (奥向き) */
+    LN_SPRITE_BASE_DIRECTION_ZPLUS = 2,
+
+    /**  X- 向 (左向き) */
+    LN_SPRITE_BASE_DIRECTION_XMINUS = 3,
+
+    /**  Y- 向 (下向き) */
+    LN_SPRITE_BASE_DIRECTION_YMINUS = 4,
+
+    /**  Z- 向 (手前向き) */
+    LN_SPRITE_BASE_DIRECTION_ZMINUS = 5,
+
+    /**  2D 基本方向 (Z+ 向、左上原点) */
+    LN_SPRITE_BASE_DIRECTION_BASIC2D = 6,
+
+    LN_SPRITE_BASE_DIRECTION_MAX_ENUM = 0x7FFFFFFF,
+} LNSpriteBaseDirection;
+
+/** ビルボードの計算方法 */
+typedef enum LNBillboardType {
+    /** ビルボードの計算を行わない */
+    LN_BILLBOARD_TYPE_NONE = 0,
+
+    /** カメラ (ビュー行列) に対して正面を向く */
+    LN_BILLBOARD_TYPE_TO_CAMERA_POINT = 1,
+
+    /** スクリーン (ビュー平面) に対して正面を向く */
+    LN_BILLBOARD_TYPE_TO_SCREEN = 2,
+
+    /** Y 軸回転のみ行う */
+    LN_BILLBOARD_TYPE_ROT_Y = 3,
+
+    LN_BILLBOARD_TYPE_MAX_ENUM = 0x7FFFFFFF,
+} LNBillboardType;
+
+extern LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer);
+extern LUMINO_API LNResult LNSpriteRenderer_BeginBatch(LNHandle spriteRenderer, LNHandle renderingCommandList, LNHandle material, const LNMatrix* transform);
+extern LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer);
+extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const LNMatrix* localTransformOrNull, float width, float height, float anchorRatioX, float anchorRatioY, float uvRectX, float uvRectY, float uvRectW, float uvRectH, float r, float g, float b, float a, LNSpriteBaseDirection baseDirection, LNBillboardType billboardType);
+
+
+
+//==============================================================================
+// LNObject
+//==============================================================================
 
 extern LUMINO_API LNResult LNObject_Release(LNHandle obj);
 extern LUMINO_API LNResult LNObject_Retain(LNHandle obj);

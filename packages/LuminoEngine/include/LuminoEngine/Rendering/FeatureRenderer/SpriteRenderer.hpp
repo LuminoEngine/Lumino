@@ -9,15 +9,6 @@ namespace ln {
 
 /**
  * SpriteRenderer
- * 
- * なぜ 3DSprite の原点は左下で、2DSprite の原点は左上なのか？
- * ----------
- * テクスチャ座標に合わせる、というより、ワールド上に配置される Square-Primitive の原点を指定したい、という考えでデザインしたため。
- * 
- * また、ワールド座標系と合わせているゲームエンジンが多いため。
- * - Unity, UE4, Cocos2d-x は左下が原点 (Cocos2d-x は 2D 用であるが、Y-Up)
- * - PixiJS は左上が原点 (座標系は一般的な 2DCanvas 同様、Y-Down)
- * 
  */
 class SpriteRenderer : public Object {
 public:

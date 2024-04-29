@@ -58,7 +58,7 @@ Object* FFI::getObject(LNHandle handle) {
 
 
 
-
+using namespace ln;
 
 
 
@@ -70,64 +70,77 @@ extern "C" {
 
 #define LN_FFI_TRY_END_RETURN               \
     }                                         \
-    catch (ln::Exception & e) {               \
-        return ln::FFI::processException(&e); \
+    catch (Exception & e) {               \
+        return FFI::processException(&e); \
     }                                         \
     return LN_OK;
 
-#define LNI_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::ln::FFI::getObject(h) : nullptr)
+#define LNI_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::FFI::getObject(h) : nullptr)
 
+//==============================================================================
+//
+//==============================================================================
+LNResult LNMatrix_SetIdentity(LNMatrix* outResult) {
+    LN_FFI_TRY_BEGIN;
+    Matrix* m = reinterpret_cast<Matrix*>(outResult);
+    *m = Matrix::Identity;
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+//
+//==============================================================================
 LUMINO_API LNResult LNRuntime_Initialize() {
-    ln::RuntimeModule::initialize();
-    ln::detail::RuntimeManager::initialize(ln::detail::RuntimeManager::Settings());
-    ln::GraphicsModule::initialize({ ln::GraphicsAPI::OpenGL });
+    RuntimeModule::initialize();
+    detail::RuntimeManager::initialize(detail::RuntimeManager::Settings());
+    GraphicsModule::initialize({ GraphicsAPI::OpenGL });
 
     {
-        ln::detail::FontManager::Settings settings;
-        settings.assetManager = ln::detail::AssetManager::instance();
-        ln::detail::FontManager::initialize(settings);
+        detail::FontManager::Settings settings;
+        settings.assetManager = detail::AssetManager::instance();
+        detail::FontManager::initialize(settings);
     }
 
     {
-        ln::detail::RenderingManager::Settings settings;
-        settings.graphicsManager = ln::detail::GraphicsManager::instance();
-        settings.fontManager = ln::detail::FontManager::instance();
+        detail::RenderingManager::Settings settings;
+        settings.graphicsManager = detail::GraphicsManager::instance();
+        settings.fontManager = detail::FontManager::instance();
         printf("RenderingManager 111 %p %p\n", settings.graphicsManager, settings.fontManager);
-        ln::detail::RenderingManager::initialize(settings);
+        detail::RenderingManager::initialize(settings);
     }
     return LN_OK;
 }
 
 LUMINO_API void LNRuntime_Terminate() {
-    ln::detail::RenderingManager::terminate();
-    ln::detail::FontManager::terminate();
-    ln::GraphicsModule::terminate();
-    ln::detail::RuntimeManager::terminate();
-    ln::RuntimeModule::terminate();
+    detail::RenderingManager::terminate();
+    detail::FontManager::terminate();
+    GraphicsModule::terminate();
+    detail::RuntimeManager::terminate();
+    RuntimeModule::terminate();
 }
 
 LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t width, int32_t height, LNHandle* outReturn) {
     LN_FFI_TRY_BEGIN;
-    ln::OpenGLGraphicsContext::Settings s;
+    OpenGLGraphicsContext::Settings s;
     s.window = nullptr;
     s.width = width;
     s.height = height;
-    *outReturn = ::ln::FFI::wrapObject(ln::OpenGLGraphicsContext::create(s), true);
+    *outReturn = ::FFI::wrapObject(OpenGLGraphicsContext::create(s), true);
     LN_FFI_TRY_END_RETURN;
 }
 
 LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height) {
     LN_FFI_TRY_BEGIN;
-    ln::GraphicsContext* context = LNI_HANDLE_TO_OBJECT(ln::GraphicsContext, graphicsContext);
-    ln::GraphicsCommandList* commandList = context->currentCommandList2();
+    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    GraphicsCommandList* commandList = context->currentCommandList2();
     commandList->beginCommandRecoding();
     LN_FFI_TRY_END_RETURN;
 }
 
 LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     LN_FFI_TRY_BEGIN;
-    ln::GraphicsContext* context = LNI_HANDLE_TO_OBJECT(ln::GraphicsContext, graphicsContext);
-    ln::GraphicsCommandList* commandList = context->currentCommandList2();
+    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    GraphicsCommandList* commandList = context->currentCommandList2();
     commandList->endCommandRecoding();
     LN_FFI_TRY_END_RETURN;
 }
@@ -143,59 +156,68 @@ LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
 //
 //}
 
-extern LUMINO_API LNResult LNRenderingContext_Create(LNHandle graphicsContext, LNHandle* outReturn) {
+extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContext, LNHandle* outRenderingCommandList) {
     LN_FFI_TRY_BEGIN;
-    ln::GraphicsContext* context = LNI_HANDLE_TO_OBJECT(ln::GraphicsContext, graphicsContext);
-    ln::Ref<ln::CommandList> renderingContext = ln::makeObject_deprecated<ln::CommandList>();
-    *outReturn = ::ln::FFI::wrapObject(renderingContext, true);
+    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    Ref<CommandList> renderingContext = makeObject_deprecated<CommandList>();
+    *outRenderingCommandList = ::FFI::wrapObject(renderingContext, true);
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext_, LNHandle renderingViewPoint_, LNHandle graphicsContext_) {
+extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList_, LNHandle renderingViewPoint_, LNHandle graphicsContext_) {
     LN_FFI_TRY_BEGIN;
-    ln::CommandList* renderingContext = LNI_HANDLE_TO_OBJECT(ln::CommandList, renderingContext_);
-    ln::RenderViewPoint* renderingViewPoint = LNI_HANDLE_TO_OBJECT(ln::RenderViewPoint, renderingViewPoint_);
+    CommandList* renderingContext = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    RenderViewPoint* renderingViewPoint = LNI_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
 
     renderingContext->clearCommandsAndState(renderingViewPoint);
 
+    LN_FFI_TRY_END_RETURN;
+}
+
+extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingCommandList_, LNHandle sceneRenderingPass_, LNHandle graphicsContext_) {
+    LN_FFI_TRY_BEGIN;
+    CommandList* renderingContext = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext_);
+    
+    
     if (1) {
 
-        ln::GraphicsContext* context = LNI_HANDLE_TO_OBJECT(ln::GraphicsContext, graphicsContext_);
+        RenderPass* renderPass = context->currentRenderPass();
+        GraphicsCommandList* commandList = context->currentCommandList2();
 
-        ln::RenderPass* renderPass = context->currentRenderPass();
-        ln::GraphicsCommandList* commandList = context->currentCommandList2();
-
+        const RenderViewPoint* renderingViewPoint = renderingContext->viewPoint();
+        
         ;
 
-        renderPass->setClearFlags(ln::ClearFlags::Color);
-        renderPass->setClearColor(ln::Color::Red);
+        renderPass->setClearFlags(ClearFlags::Color);
+        renderPass->setClearColor(Color::Red);
 
         // commandList->beginCommandRecoding();
         // commandList->beginRenderPass(renderPass);
-        // commandList->clear(ln::ClearFlags::Color, ln::Color::Red);
+        // commandList->clear(ClearFlags::Color, Color::Red);
         // commandList->endRenderPass();
         // commandList->endCommandRecoding();
 
 #if 1
         {
             using namespace ln;
-            //URef<kanata::BatchCollector> g_batchList;
+            // URef<kanata::BatchCollector> g_batchList;
             URef<kanata::DrawCommandList> g_drawCommandList;
             Ref<kanata::UnlitRenderPass> g_renderPass;
             URef<kanata::BoxMeshBatchProxy> g_boxMeshBatchProxy;
             Ref<VertexBuffer> g_vertexBuffer;
 
-            auto* renderingManager = ln::detail::RenderingManager::instance();
-            //g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
+            auto* renderingManager = detail::RenderingManager::instance();
+            // g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
             kanata::BatchCollector* g_batchList = renderingContext->batchCollector();
             g_drawCommandList = makeURef<kanata::DrawCommandList>(renderingManager);
             g_renderPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
             g_boxMeshBatchProxy = makeURef<kanata::BoxMeshBatchProxy>();
 
             Vertex v[] = {
-                //Vertex(Vector3(0, 5.5, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
-                //Vertex(Vector3(-5.5, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
-                //Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
+                // Vertex(Vector3(0, 5.5, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
+                // Vertex(Vector3(-5.5, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
+                // Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
 
                 Vertex(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
                 Vertex(Vector3(0, 10, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Green),
@@ -204,8 +226,8 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext_, 
             g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
             Ref<Material> material = Material::create();
-             //Ref<Texture2D> texture = Texture2D::load(U"C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
-             //material->setMainTexture(texture);
+            // Ref<Texture2D> texture = Texture2D::load(U"C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
+            // material->setMainTexture(texture);
 
             // auto* target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
             // auto* renderPass = TestEnv::renderPass();
@@ -216,8 +238,8 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext_, 
 
             printf("size: %d %d\n", renderPass->width(), renderPass->height());
 
-            //RenderViewPoint viewPoint;
-            //viewPoint.resetPerspective(Vector3(10, 10, 10), Vector3::normalize(-1, -1, -1), 0.3, Size(renderPass->width(), renderPass->height()), 0.1, 1000.0);
+            // RenderViewPoint viewPoint;
+            // viewPoint.resetPerspective(Vector3(10, 10, 10), Vector3::normalize(-1, -1, -1), 0.3, Size(renderPass->width(), renderPass->height()), 0.1, 1000.0);
             renderingViewPoint->makeCameraInfo(&renderViewInfo.cameraInfo);
 
             kanata::BatchProxyState batchState;
@@ -251,8 +273,8 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext_, 
                 // r->drawBox(Box(0.5), Color::Red, Matrix::makeTranslation(2, 0, 0));
                 // r->drawBox(Box(2), Color::Red, Matrix::makeTranslation(-2, 0, 0));
                 // r->end();
-                
-                auto& r = ln::detail::RenderingManager::instance()->spriteRenderer();
+
+                auto& r = detail::RenderingManager::instance()->spriteRenderer();
                 r->begin(renderingContext, material);
                 r->drawSprite(
                     Matrix::makeTranslation(0, 0, 0),
@@ -264,9 +286,8 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext_, 
                     BillboardType::None,
                     SpriteFlipFlags::None);
                 r->end();
-                
-                
-             auto& batchProxyCollector = renderingContext->batchProxyCollector();
+
+                auto& batchProxyCollector = renderingContext->batchProxyCollector();
                 auto& batchCollector = renderingContext->batchCollector();
 
                 batchProxyCollector->resolveSingleFrameBatchProxies(batchCollector);
@@ -331,28 +352,88 @@ extern LUMINO_API LNResult LNRenderingContext_Reset(LNHandle renderingContext_, 
         }
 #endif
     }
+
     LN_FFI_TRY_END_RETURN;
 }
 
 extern LUMINO_API LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderingViewPoint) {
     LN_FFI_TRY_BEGIN;
-    ln::Ref<ln::RenderViewPoint> viewPoint = ln::makeRef<ln::RenderViewPoint>();
-    *outRenderingViewPoint = ::ln::FFI::wrapObject(viewPoint, true);
+    Ref<RenderViewPoint> viewPoint = makeRef<RenderViewPoint>();
+    *outRenderingViewPoint = ::FFI::wrapObject(viewPoint, true);
     LN_FFI_TRY_END_RETURN;
 }
 
 extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ) {
     LN_FFI_TRY_BEGIN;
-    ln::RenderViewPoint* viewPoint = LNI_HANDLE_TO_OBJECT(ln::RenderViewPoint, renderingViewPoint);
-    viewPoint->resetPerspective2D(ln::Vector3(x,y, z), ln::Size(width, height), nearZ, farZ);
+    RenderViewPoint* viewPoint = LNI_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint);
+    viewPoint->resetPerspective2D(Vector3(x,y, z), Size(width, height), nearZ, farZ);
     LN_FFI_TRY_END_RETURN;
 }
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass) {
     LN_FFI_TRY_BEGIN;
-    ln::detail::RenderingManager* renderingManager = ln::detail::RenderingManager::instance();
-    ln::Ref<ln::kanata::UnlitRenderPass> renderingPass = ln::makeRef<ln::kanata::UnlitRenderPass>(renderingManager);
-    *outUnlitSceneRenderingPass = ::ln::FFI::wrapObject(renderingPass, true);
+    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    Ref<kanata::UnlitRenderPass> renderingPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
+    *outUnlitSceneRenderingPass = ::FFI::wrapObject(renderingPass, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LNMaterial
+//==============================================================================
+LNResult LNMaterial_Create(LNHandle* outMaterial) {
+    LN_FFI_TRY_BEGIN;
+    Ref<Material> material = Material::create();
+	*outMaterial = ::FFI::wrapObject(material, true);
+	LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+//
+//==============================================================================
+LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
+    LN_FFI_TRY_BEGIN;
+	detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    SpriteRenderer* spriteRenderer = renderingManager->spriteRenderer();
+	*outSpriteRenderer = ::FFI::wrapObject(spriteRenderer, false);
+	LN_FFI_TRY_END_RETURN;
+}
+
+LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
+    LNHandle spriteRenderer_,
+    LNHandle renderingCommandList_,
+    LNHandle material_,
+    const LNMatrix* transform_) {
+    LN_FFI_TRY_BEGIN;
+    SpriteRenderer* spriteRenderer = LNI_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
+    CommandList* commandList = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    Material* material = LNI_HANDLE_TO_OBJECT(Material, material_);
+    const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
+    commandList->setTransfrom(*transform);
+    spriteRenderer->begin(commandList, material);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer_) {
+    LN_FFI_TRY_BEGIN;
+	SpriteRenderer* spriteRenderer = LNI_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
+	spriteRenderer->end();
+	LN_FFI_TRY_END_RETURN;
+}
+
+LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const LNMatrix* localTransformOrNull, float width, float height, float anchorRatioX, float anchorRatioY, float uvRectX, float uvRectY, float uvRectW, float uvRectH, float r, float g, float b, float a, LNSpriteBaseDirection baseDirection, LNBillboardType billboardType) {
+    LN_FFI_TRY_BEGIN;
+	const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
+	SpriteRenderer* renderer = LNI_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
+	renderer->drawSprite(
+        (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
+        Size(width, height),
+        Vector2(anchorRatioX, anchorRatioY),
+        Rect(uvRectX, uvRectY, uvRectW, uvRectH),
+        Color(r, g, b, a),
+        static_cast<SpriteBaseDirection>(baseDirection),
+        static_cast<BillboardType>(billboardType),
+            SpriteFlipFlags::None);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -360,7 +441,7 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 // LNObject
 
 LUMINO_API LNResult LNObject_Release(LNHandle obj) {
-    if (auto m = ln::detail::RuntimeManager::instance()) {
+    if (auto m = detail::RuntimeManager::instance()) {
         m->releaseObjectExplicitly(obj);
         return LN_OK;
     }
@@ -370,7 +451,7 @@ LUMINO_API LNResult LNObject_Release(LNHandle obj) {
 }
 
 LUMINO_API LNResult LNObject_Retain(LNHandle obj) {
-    if (auto m = ln::detail::RuntimeManager::instance()) {
+    if (auto m = detail::RuntimeManager::instance()) {
         m->retainObjectExplicitly(obj);
         return LN_OK;
     }
@@ -382,8 +463,8 @@ LUMINO_API LNResult LNObject_Retain(LNHandle obj) {
 LUMINO_API LNResult LNObject_GetReferenceCount(LNHandle obj, int32_t* outReturn) {
     if (!outReturn) return LN_ERROR_INVALID_ARGUMENT;
 
-    if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj)) {
-        *outReturn = ln::RefObjectHelper::getReferenceCount(t);
+    if (auto t = LNI_HANDLE_TO_OBJECT(Object, obj)) {
+        *outReturn = RefObjectHelper::getReferenceCount(t);
         return LN_OK;
     }
     else {
