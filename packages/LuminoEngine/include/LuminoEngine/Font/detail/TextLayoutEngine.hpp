@@ -16,10 +16,8 @@ public:
 };
 
 // 簡易的な paragraph のイメージ。
-class FormattedText
-	: public RefObject
+struct FormattedText
 {
-public:
 	String text;
 	Ref<Font> font;	// TODO: obsolete
 	Color color;

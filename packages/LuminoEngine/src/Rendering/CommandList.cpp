@@ -789,6 +789,43 @@ void CommandList::drawMeshInstanced(Material* material, InstancedMeshList* list)
 void CommandList::drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font) {
     if (text.isEmpty()) return;
 
+
+#ifdef LN_USE_KANATA
+    class DrawTextElementSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        detail::FormattedText formattedText;
+        // detail::FlexGlyphRun* glyphRun = nullptr; // TODO: RefObj
+        Vector2 anchor;
+        SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
+        Ref<SamplerState> samplerState;
+
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::SpriteTextRenderFeature* r = detail::RenderingManager::instance()->spriteTextRenderFeature();
+            r->beginBatch(collector, material);
+            r->drawText(&formattedText, anchor, baseDirection, samplerState, Matrix::Identity);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawTextElementSFBatchProxy>();
+    proxy->material = m_builder->material();
+    proxy->formattedText.text = text;
+    proxy->formattedText.font = m_builder->font();
+    proxy->formattedText.color = color; // TODO: m_builder->textColor(); の方がいいか？
+    proxy->formattedText.area = Rect();
+    proxy->formattedText.textAlignment = TextAlignment::Forward;
+    proxy->formattedText.fontRequester = font;
+    if (!proxy->formattedText.font) {
+        proxy->formattedText.font = m_manager->fontManager()->defaultFont();
+    }
+    proxy->anchor = anchor;
+    proxy->baseDirection = baseDirection;
+
+    if (baseDirection != SpriteBaseDirection::Basic2D) {
+        // is 3D.
+        proxy->samplerState = detail::GraphicsManager::instance()->linearSamplerState();
+    }
+#else
     // TODO: cache
     auto formattedText = makeRef<detail::FormattedText>();
     formattedText->text = text;
@@ -801,35 +838,6 @@ void CommandList::drawTextSprite(const StringView& text, const Color& color, con
     if (!formattedText->font) {
         formattedText->font = m_manager->fontManager()->defaultFont();
     }
-
-#ifdef LN_USE_KANATA
-    class DrawTextElementSFBatchProxy : public kanata::SingleFrameBatchProxy {
-    public:
-        Material* material;
-        Ref<detail::FormattedText> formattedText;
-        // detail::FlexGlyphRun* glyphRun = nullptr; // TODO: RefObj
-        Vector2 anchor;
-        SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
-        Ref<SamplerState> samplerState;
-
-        void getBatch(kanata::BatchCollector* collector) override {
-            kanata::SpriteTextRenderFeature* r = detail::RenderingManager::instance()->spriteTextRenderFeature();
-            r->beginBatch(collector, material);
-            r->drawText(formattedText, anchor, baseDirection, samplerState, Matrix::Identity);
-            r->endBatch(collector);
-        }
-    };
-    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawTextElementSFBatchProxy>();
-    proxy->material = m_builder->material();
-    proxy->formattedText = formattedText;
-    proxy->anchor = anchor;
-    proxy->baseDirection = baseDirection;
-
-    if (baseDirection != SpriteBaseDirection::Basic2D) {
-        // is 3D.
-        proxy->samplerState = detail::GraphicsManager::instance()->linearSamplerState();
-    }
-#else
 
     m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
@@ -845,6 +853,36 @@ void CommandList::drawTextSprite(const StringView& text, const Color& color, con
 }
 
 void CommandList::drawText(const StringView& text, const Rect& area, TextAlignment alignment /*, TextCrossAlignment crossAlignment*/ /*, const Color& color, Font* font*/) {
+    
+#ifdef LN_USE_KANATA
+
+    class DrawTextElementSFBatchProxy : public kanata::SingleFrameBatchProxy {
+    public:
+        Material* material;
+        detail::FormattedText formattedText;
+        // detail::FlexGlyphRun* glyphRun = nullptr; // TODO: RefObj
+        Vector2 anchor;
+        SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
+        Ref<SamplerState> samplerState;
+
+        void getBatch(kanata::BatchCollector* collector) override {
+            kanata::SpriteTextRenderFeature* r = detail::RenderingManager::instance()->spriteTextRenderFeature();
+            r->beginBatch(collector, material);
+            r->drawText(&formattedText, anchor, baseDirection, samplerState, Matrix::Identity);
+            r->endBatch(collector);
+        }
+    };
+    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawTextElementSFBatchProxy>();
+    proxy->material = m_builder->material();
+    proxy->formattedText.text = text;
+    proxy->formattedText.font = m_builder->font();
+    proxy->formattedText.color = m_builder->textColor();
+    proxy->formattedText.area = area;
+    proxy->formattedText.textAlignment = alignment;
+    if (!proxy->formattedText.font) {
+        proxy->formattedText.font = m_manager->fontManager()->defaultFont();
+    }
+#else
     // TODO: cache
     auto formattedText = makeRef<detail::FormattedText>();
     formattedText->text = text;
@@ -856,28 +894,6 @@ void CommandList::drawText(const StringView& text, const Rect& area, TextAlignme
     if (!formattedText->font) {
         formattedText->font = m_manager->fontManager()->defaultFont();
     }
-#ifdef LN_USE_KANATA
-
-    class DrawTextElementSFBatchProxy : public kanata::SingleFrameBatchProxy {
-    public:
-        Material* material;
-        Ref<detail::FormattedText> formattedText;
-        // detail::FlexGlyphRun* glyphRun = nullptr; // TODO: RefObj
-        Vector2 anchor;
-        SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
-        Ref<SamplerState> samplerState;
-
-        void getBatch(kanata::BatchCollector* collector) override {
-            kanata::SpriteTextRenderFeature* r = detail::RenderingManager::instance()->spriteTextRenderFeature();
-            r->beginBatch(collector, material);
-            r->drawText(formattedText, anchor, baseDirection, samplerState, Matrix::Identity);
-            r->endBatch(collector);
-        }
-    };
-    auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawTextElementSFBatchProxy>();
-    proxy->material = m_builder->material();
-    proxy->formattedText = formattedText;
-#else
 
     m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());

@@ -110,7 +110,7 @@ public:
 class DrawTextElement : public AbstractSpriteTextDrawElement
 {
 public:
-    Ref<detail::FormattedText> formattedText;
+    detail::FormattedText formattedText;
 	detail::FlexGlyphRun* glyphRun = nullptr;	// TODO: RefObj
 	Vector2 anchor;
 	SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
@@ -122,7 +122,7 @@ public:
 			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, *state, context, glyphRun->font, glyphRun, anchor, baseDirection, combinedWorldMatrix());
 		}
 		else {
-			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, *state, context, formattedText, anchor, baseDirection, samplerState, combinedWorldMatrix());
+			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, *state, context, &formattedText, anchor, baseDirection, samplerState, combinedWorldMatrix());
 		}
     }
 };
