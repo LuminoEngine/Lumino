@@ -227,6 +227,7 @@ public:
     
     const Ref<SpriteRenderer>& spriteRenderer() const { return m_spriteRenderer; }
     const Ref<PrimitiveMeshRenderer>& primitiveMeshRenderer() const { return m_primitiveMeshRenderer; }
+    const Ref<SpriteTextRenderer>& spriteTextRenderer() const { return m_spriteTextRenderer; }
 
     const std::unique_ptr<RenderingProfiler>& profiler() const { return m_profiler; }
 
@@ -239,6 +240,7 @@ public:
 
 private:
     RenderingManager();
+    ~RenderingManager() override;
     bool init(const Settings& settings);
     void dispose();
 
@@ -296,6 +298,7 @@ private:
 
     Ref<SpriteRenderer> m_spriteRenderer;
     Ref<PrimitiveMeshRenderer> m_primitiveMeshRenderer;
+    Ref<SpriteTextRenderer> m_spriteTextRenderer;
 
     std::unique_ptr<RenderingProfiler> m_profiler;
 

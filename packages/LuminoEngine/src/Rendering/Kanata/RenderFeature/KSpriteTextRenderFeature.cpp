@@ -12,7 +12,11 @@ namespace kanata {
 
 SpriteTextRenderFeature::SpriteTextRenderFeature(detail::RenderingManager* manager)
     : m_currentCollector(nullptr)
-    , m_material(nullptr) {
+    , m_material(nullptr)
+    , m_drawingAnchor(nullptr)
+    , m_drawingColor(nullptr)
+    , m_drawingBaseDirection(SpriteBaseDirection::Basic2D)
+    , m_drawingSamplerState(nullptr) {
 }
 
 void SpriteTextRenderFeature::beginBatch(BatchCollector* collector, Material* material) {
@@ -74,22 +78,38 @@ void SpriteTextRenderFeature::endBatch(BatchCollector* collector) {
 
 void SpriteTextRenderFeature::drawText(const detail::FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform) {
     LN_DCHECK(text);
+    drawText(transform, anchor, baseDirection, samplerState, text->text, text->font, text->color, text->area, text->textAlignment, text->fontRequester);
+}
 
-    m_drawingFormattedText = text;
+void SpriteTextRenderFeature::drawText(
+    const Matrix& transform,
+    const Vector2& anchorRatio,
+    SpriteBaseDirection baseDirection,
+    SamplerState* samplerState,
+    // FormattedText
+    const StringView& text,
+    Font* font, // TODO: obsolete
+    const Color& color,
+    const Rect& area,
+    TextAlignment textAlignment,
+    detail::FontRequester* fontRequester)
+{
+    //m_drawingFormattedText = text;
     m_drawingTransform = transform;
-    m_drawingAnchor = anchor;
+    m_drawingAnchor = &anchorRatio;
+    m_drawingColor = &color;
     m_drawingBaseDirection = baseDirection;
     m_drawingSamplerState = samplerState;
 
-    detail::FontCore* fontCore = resolveFontCore(text->font, text->fontRequester, m_currentCollector->viewPoint(), transform);
+    detail::FontCore* fontCore = resolveFontCore(font, fontRequester, m_currentCollector->viewPoint(), transform);
 
     // 3D 空間に書く場合
-    if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D && text->fontRequester) {
+    if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D && fontRequester) {
         detail::FontGlobalMetrics metrix;
         fontCore->getGlobalMetrics(&metrix);
         // float h = std::abs(metrix.descender - metrix.ascender);
 
-        float s = metrix.virutalSpaceFactor * (static_cast<float>(text->fontRequester->size) / Font::DefaultSize);
+        float s = metrix.virutalSpaceFactor * (static_cast<float>(fontRequester->size) / Font::DefaultSize);
 
         m_drawingTransform = transform.getRotationMatrix();
         m_drawingTransform.scale(s);
@@ -97,13 +117,14 @@ void SpriteTextRenderFeature::drawText(const detail::FormattedText* text, const 
     }
 
     beginLayout();
-    TextLayoutEngine::layout(fontCore, text->text.c_str(), text->text.length(), text->area, 0, text->textAlignment);
+    TextLayoutEngine::layout(fontCore, text.data(), text.length(), area, 0, textAlignment);
     endLayout(fontCore, transform);
     buildSpriteList();
 }
 
 void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) {
-    addLayoutedGlyphItem(ch, pos, m_drawingFormattedText->color, m_drawingTransform);
+    LN_DCHECK(m_drawingColor != nullptr);
+    addLayoutedGlyphItem(ch, pos, *m_drawingColor, m_drawingTransform);
 }
 
 detail::FontCore* SpriteTextRenderFeature::resolveFontCore(Font* font, detail::FontRequester* fontRequester, const RenderViewPoint* viewInfo, const Matrix& transform) const {
@@ -173,6 +194,8 @@ void SpriteTextRenderFeature::addLayoutedGlyphItem(uint32_t codePoint, const Vec
 }
 
 void SpriteTextRenderFeature::buildSpriteList() {
+    LN_DCHECK(m_drawingAnchor != nullptr);
+
     int32_t spriteCount = m_glyphLayoutDataList.size();
     int32_t vertexCount = spriteCount * 4;
     int32_t indexCount = spriteCount * 6;
@@ -200,7 +223,7 @@ void SpriteTextRenderFeature::buildSpriteList() {
         Vector2 posOffset;
         if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
             auto area = renderAreaSize();
-            posOffset = Vector2(-area.width * (m_drawingAnchor.x), -area.height * (1.0f - m_drawingAnchor.y));
+            posOffset = Vector2(-area.width * (m_drawingAnchor->x), -area.height * (1.0f - m_drawingAnchor->y));
             // posOffset = Vector2(-area.width * 0.5f, -area.height * 0.5f);
             // posOffset += Vector2(area.width * (m_drawingAnchor.x - 0.5f), area.height * (m_drawingAnchor.y - 0.5f));
             // posOffset.x -= area.width * 0.5f;

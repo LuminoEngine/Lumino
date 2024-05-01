@@ -23,6 +23,7 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
 
 namespace ln {
 
@@ -64,6 +65,9 @@ RenderingManager::RenderingManager()
     //, m_meshGeneraterRenderFeature(nullptr)
     , m_stageDataPageManager(nullptr) {
     assert(s_instance == nullptr);
+}
+
+RenderingManager::~RenderingManager() {
 }
 
 bool RenderingManager::init(const Settings& settings) {
@@ -396,6 +400,10 @@ bool RenderingManager::init(const Settings& settings) {
     if (!m_primitiveMeshRenderer->init()) {
         return false;
     }
+    m_spriteTextRenderer = Ref<SpriteTextRenderer>(LN_NEW SpriteTextRenderer(), false);
+    if (!m_spriteTextRenderer->init()) {
+		return false;
+	}
 
     m_profiler = std::make_unique<RenderingProfiler>();
 

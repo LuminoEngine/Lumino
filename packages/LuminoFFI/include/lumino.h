@@ -180,6 +180,13 @@ extern LUMINO_API LNResult LNSpriteRenderer_BeginBatch(LNHandle spriteRenderer, 
 extern LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer);
 extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const LNMatrix* localTransformOrNull, float width, float height, float anchorRatioX, float anchorRatioY, float uvRectX, float uvRectY, float uvRectW, float uvRectH, float r, float g, float b, float a, LNSpriteBaseDirection baseDirection, LNBillboardType billboardType);
 
+//==============================================================================
+// LNSpriteTextRenderer
+//==============================================================================
+extern LUMINO_API LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer);
+extern LUMINO_API LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer, LNHandle renderingCommandList, LNHandle material, const LNMatrix* transform);
+extern LUMINO_API LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRenderer);
+extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer, const LNMatrix* localTransformOrNull, const char* text);
 
 
 //==============================================================================

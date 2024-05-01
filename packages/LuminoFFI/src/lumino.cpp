@@ -24,6 +24,8 @@
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 
 namespace ln {
 
@@ -435,6 +437,57 @@ LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const L
         static_cast<BillboardType>(billboardType),
             SpriteFlipFlags::None);
     LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LNSpriteTextRenderer
+//==============================================================================
+LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer) {
+    LN_FFI_TRY_BEGIN;
+    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    SpriteTextRenderer* spriteTextRenderer = renderingManager->spriteTextRenderer();
+    *outSpriteTextRenderer = ::FFI::wrapObject(spriteTextRenderer, false);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer_, LNHandle renderingCommandList_, LNHandle material_, const LNMatrix* transform_) {
+    LN_FFI_TRY_BEGIN;
+    SpriteTextRenderer* spriteTextRenderer = LNI_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
+    CommandList* commandList = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    Material* material = LNI_HANDLE_TO_OBJECT(Material, material_);
+    const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
+    commandList->setTransfrom(*transform);
+    spriteTextRenderer->begin(commandList, material);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRenderer_) {
+    LN_FFI_TRY_BEGIN;
+    SpriteTextRenderer* spriteTextRenderer = LNI_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
+    spriteTextRenderer->end();
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const LNMatrix* localTransformOrNull_, const char* text_) {
+LN_FFI_TRY_BEGIN;
+	SpriteTextRenderer* renderer = LNI_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
+
+
+    Ref<detail::FontRequester> font = makeRef<detail::FontRequester>();
+    String text = String::fromUtf8(text_);
+    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    renderer->drawFillText(
+        (localTransformOrNull_) ? *reinterpret_cast<const Matrix*>(localTransformOrNull_) : Matrix::Identity,
+        Vector2::Zero,
+        SpriteBaseDirection::Basic2D,
+        nullptr,
+		text,
+        renderingManager->fontManager()->defaultFont(),
+        Color::Green,
+        Rect(0, 0, 300, 300),
+        TextAlignment::Forward,
+        font.get());
+	LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================

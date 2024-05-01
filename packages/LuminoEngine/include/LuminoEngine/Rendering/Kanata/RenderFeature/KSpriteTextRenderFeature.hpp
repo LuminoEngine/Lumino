@@ -15,7 +15,24 @@ public:
 
     void beginBatch(BatchCollector* collector, Material* material);
     void endBatch(BatchCollector* collector);
-    void drawText(const detail::FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform);
+    void drawText(
+        const detail::FormattedText* text,
+        const Vector2& anchor,
+        SpriteBaseDirection baseDirection,
+        const Ref<SamplerState>& samplerState,
+        const Matrix& transform);
+    void drawText(
+        const Matrix& transform,
+        const Vector2& anchorRatio,
+        SpriteBaseDirection baseDirection,
+        SamplerState* samplerState,
+        // FormattedText
+        const StringView& text,
+        Font* font, // TODO: obsolete
+        const Color& color,
+        const Rect& area,
+        TextAlignment textAlignment,
+        detail::FontRequester* fontRequester);
 
 protected:
     // TextLayoutEngine interface
@@ -44,11 +61,12 @@ private:
     Texture2D* m_cacheTexture;
 
     // for onPlacementGlyph
-    const detail::FormattedText* m_drawingFormattedText;
+    //const detail::FormattedText* m_drawingFormattedText;
     Matrix m_drawingTransform;
-    Vector2 m_drawingAnchor;
-    SpriteBaseDirection m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
-    SamplerState* m_drawingSamplerState = nullptr;
+    const Vector2* m_drawingAnchor;
+    const Color* m_drawingColor;
+    SpriteBaseDirection m_drawingBaseDirection;
+    SamplerState* m_drawingSamplerState;
 };
 
 } // namespace kanata

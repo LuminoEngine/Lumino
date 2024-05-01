@@ -66,8 +66,13 @@ int main() {
 	}
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
-        if (LNSpriteRenderer_Get(&spriteRenderer) != LN_OK) {
-            return 1;
+    if (LNSpriteRenderer_Get(&spriteRenderer) != LN_OK) {
+        return 1;
+    }
+
+    LNHandle spriteTextRenderer = LN_NULL_HANDLE;
+    if (LNSpriteTextRenderer_Get(&spriteTextRenderer) != LN_OK) {
+        return 1;
     }
 
     while (!glfwWindowShouldClose(window)) {
@@ -93,6 +98,13 @@ int main() {
             LN_SPRITE_BASE_DIRECTION_BASIC2D,
             LN_BILLBOARD_TYPE_NONE);
         LNSpriteRenderer_EndBatch(spriteRenderer);
+
+
+
+
+        LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);
+        LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
+        LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
         if (LNRenderingCommandList_Submit(renderingCommandList, LN_NULL_HANDLE, graphicsContext) != LN_OK) {
             return 1;

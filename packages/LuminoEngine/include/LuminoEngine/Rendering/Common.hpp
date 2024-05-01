@@ -31,6 +31,7 @@ class CanvasContext;
 
 class SpriteRenderer;
 class PrimitiveMeshRenderer;
+class SpriteTextRenderer;
 
 class RenderingPipeline;
 class SceneRenderingPipeline;
@@ -294,6 +295,7 @@ class MorphInstance;
 class CommandListServer;
 class RLIMaterial;
 class RLIBatchState;
+class FormattedText;
 
 enum class RenderDrawElementTypeFlags : uint8_t {
     None = 0,

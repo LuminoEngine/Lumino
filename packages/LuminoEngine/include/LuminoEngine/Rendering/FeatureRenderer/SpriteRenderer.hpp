@@ -34,7 +34,7 @@ private:
 
     CommandList* m_commandList;
     Material* m_material;
-    std::vector<SpriteData> m_sprites;
+    std::vector<SpriteData> m_entries;
 
     friend class detail::RenderingManager;
 };
