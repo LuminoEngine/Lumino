@@ -639,6 +639,8 @@ using Result = BasicResult<T, ErrorCode>;
 template<class T>
 using GenericResult = BasicResult<T, ErrorCode>;
 
+using MaybeResult = BasicResult<void, ErrorCode>;
+
 template<>
 inline String toString<int>(const int& v) {
     return String::fromNumber(v);

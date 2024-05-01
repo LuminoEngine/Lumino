@@ -233,10 +233,6 @@ void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* fo
     m_commandList->drawChar(codePoint, color, font, transform);
 }
 
-void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun) {
-    m_commandList->drawFlexGlyphRun(glyphRun);
-}
-
 void RenderingContext::invokeExtensionRendering(INativeGraphicsExtension* extension) {
     m_commandList->invokeExtensionRendering(extension);
 }

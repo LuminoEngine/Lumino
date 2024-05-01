@@ -1,4 +1,5 @@
-﻿#include "Internal.hpp"
+﻿#if 0
+#include "Internal.hpp"
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
@@ -459,3 +460,5 @@ void SpriteTextRenderFeature::addSprite(Batch* batch, Vertex* buffer, const Matr
 } // namespace detail
 } // namespace ln
 
+
+#endif

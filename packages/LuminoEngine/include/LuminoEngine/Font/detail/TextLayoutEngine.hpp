@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "FontCore.hpp"
+#include "../Font.hpp"
 
 namespace ln {
 class Font;
@@ -16,6 +17,7 @@ public:
 };
 
 // 簡易的な paragraph のイメージ。
+/** @deprecated see SpriteTextRenderer */
 struct FormattedText
 {
 	String text;

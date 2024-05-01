@@ -1,4 +1,5 @@
 ﻿#pragma once
+#if 0
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
@@ -6,6 +7,7 @@
 #include "../RenderElement.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../RLIs/RLIBatchList.hpp"
+
 
 namespace ln {
 namespace detail {
@@ -161,3 +163,4 @@ public:
 } // namespace detail
 } // namespace ln
 
+#endif

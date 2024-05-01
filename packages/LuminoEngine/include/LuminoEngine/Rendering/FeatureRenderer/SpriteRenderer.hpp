@@ -1,11 +1,7 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "../Common.hpp"
 
 namespace ln {
-//namespace detail {
-//class DrawSpriteSFBatchProxy;
-//}
 
 /**
  * SpriteRenderer

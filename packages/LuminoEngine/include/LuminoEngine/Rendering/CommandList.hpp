@@ -142,8 +142,6 @@ public:
     void drawText(const StringView& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward /*, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward*/ /*, const Color& color, Font* font = nullptr*/);
     void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr, const Matrix& transform = Matrix::Identity);
 
-    void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
-
     void drawPath(CanvasContext* context);
 
     //CanvasContext* beginPath();

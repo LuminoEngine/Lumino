@@ -284,7 +284,6 @@ class SceneRenderer;
 class DrawElementList;
 class DrawElementListBuilder;
 class FontRequester;
-class FlexGlyphRun;
 class RenderingManager;
 class DrawElementList;
 class DrawElementListBuilder;

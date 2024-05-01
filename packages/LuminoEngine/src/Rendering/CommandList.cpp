@@ -932,22 +932,6 @@ void CommandList::drawChar(uint32_t codePoint, const Color& color, Font* font, c
 #endif
 }
 
-void CommandList::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun) {
-#ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
-#else
-    m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
-    element->glyphRun = glyphRun;
-    //element->flexText = makeRef<detail::FlexText>();	// TODO: cache
-    //element->flexText->copyFrom(text);
-
-    // TODO
-    //detail::Sphere sphere;
-    //detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
-    //ptr->setLocalBoundingSphere(sphere);
-#endif
-}
 
 void CommandList::drawPath(CanvasContext* context) {
 #ifdef LN_USE_KANATA
