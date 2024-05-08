@@ -1,8 +1,10 @@
-﻿
-#pragma once
+﻿#pragma once
+#include "../Font/Common.hpp"
 
 namespace ln {
+class Texture2D;
 class Bitmap2D;
+class BitmapRenderingContext;
 
 /** ピクセルフォーマット */
 LN_ENUM()

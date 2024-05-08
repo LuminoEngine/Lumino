@@ -43,7 +43,7 @@ BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: BeforeComma
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
-ColumnLimit:     0
+ColumnLimit: 120  # GitHub preview width.
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -88,7 +88,7 @@ PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Left
-ReflowComments:  true
+ReflowComments:  false  # Leave the arrangement of comments to the programmer.
 SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false

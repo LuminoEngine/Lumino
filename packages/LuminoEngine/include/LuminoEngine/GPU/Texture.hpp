@@ -146,7 +146,8 @@ public:
     /** 別のテクスチャからこのテクスチャへ、ビットマップ転送を行います。 */
     void blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw, int sh);
 
-    void drawText(const StringView& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Forward);
+    /** このテクスチャに対して描画を粉うための BitmapRenderingContext を取得します。 */
+    BitmapRenderingContext* getContext();
 
     // TODO: internal
     //void setAssetSource(const Path& path) { m_assetSourcePath = path; }
@@ -177,12 +178,10 @@ LN_CONSTRUCT_ACCESS:
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
 private:
-    //Ref<detail::RHIResource> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
-    //Path m_assetSourcePath;
-    //detail::AssetPath m_sourceFilePath; // see Assets/README.md
+    Ref<BitmapRenderingContext> m_bitmapRenderingContext;
     void* m_rhiLockedBuffer;
     bool m_initialUpdate;
     bool m_modified;

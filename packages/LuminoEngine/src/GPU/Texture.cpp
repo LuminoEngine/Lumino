@@ -2,6 +2,7 @@
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/Bitmap/Bitmap.hpp>
+#include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
 #include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
@@ -136,11 +137,10 @@ Texture2D* Texture2D::whiteTexture() {
 }
 
 Texture2D::Texture2D()
-    : /*m_rhiObject(nullptr)
-    , */
-    m_usage(GraphicsResourceUsage::Static)
+    : m_usage(GraphicsResourceUsage::Static)
     , m_pool(GraphicsResourcePool::Managed)
     , m_bitmap(nullptr)
+    , m_bitmapRenderingContext(nullptr)
     , m_rhiLockedBuffer(nullptr)
     , m_initialUpdate(false)
     , m_modified(true) {
@@ -254,10 +254,14 @@ void Texture2D::blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw
     dst->blit(RectI(x, y, srcRect.getSize()), src, srcRect, ColorI::White, BitmapBlitOptions::AlphaBlend);
 }
 
-void Texture2D::drawText(const StringView& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment) {
-    Bitmap2D* bitmap = map(MapMode::Write);
-    detail::BitmapTextRenderer renderer;
-    renderer.render(bitmap, text, rect, font, color, alignment);
+BitmapRenderingContext* Texture2D::getContext() {
+    if (!m_bitmapRenderingContext) {
+        m_bitmapRenderingContext = wrapRef(LN_NEW BitmapRenderingContext());
+        if (!m_bitmapRenderingContext->init(this)) {
+            return nullptr;
+        }
+    }
+    return m_bitmapRenderingContext;
 }
 
 void Texture2D::onChangeDevice(detail::IGraphicsDevice* device) {

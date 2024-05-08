@@ -503,6 +503,7 @@ inline Ref<T> makeRef(TArgs&&... args)
     return Ref<T>(LN_NEW T(std::forward<TArgs>(args)...), false);
 }
 
+/** 参照カウントをインクリメントせずに、既存のインスタンスを参照する Ref を構築します。 */
 template<class T>
 inline Ref<T> wrapRef(T* ptr) {
     return Ref<T>(ptr, false);
