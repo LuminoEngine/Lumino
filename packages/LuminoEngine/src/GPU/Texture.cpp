@@ -128,6 +128,13 @@ Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint) {
     }
 }
 
+Ref<Texture2D> Texture2D::createFromImageFileData(const uint8_t* data, int32_t length) {
+    MemoryStream stream(data, length);
+    Ref<Texture2D> ref = wrapRef(LN_NEW Texture2D);
+    ref->init(&stream);
+    return ref;
+}
+
 Texture2D* Texture2D::blackTexture() {
     return detail::GraphicsManager::instance()->blackTexture();
 }

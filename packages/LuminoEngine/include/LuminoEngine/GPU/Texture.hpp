@@ -119,6 +119,8 @@ public:
 
 	static Ref<Texture2D> loadEmoji(uint32_t codePoint);
 
+    static Ref<Texture2D> createFromImageFileData(const uint8_t* data, int32_t length);
+
 	static Texture2D* blackTexture();
 
 	static Texture2D* whiteTexture();

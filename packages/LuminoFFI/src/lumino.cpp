@@ -4,6 +4,7 @@
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
+#include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -78,9 +79,15 @@ extern "C" {
     return LN_OK;
 
 #define LN_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::FFI::getObject(h) : nullptr)
-#define LN_HANDLE_TO_OBJECT2(type, h) static_cast<type*>((h) ? ::FFI::getObject(reinterpret_cast<LNHandle>(h)) : nullptr)
-#define LN_WRAP_OBJECT(type, obj, fromCreate) reinterpret_cast<type>(::FFI::wrapObject(obj, false))
+//#define LN_HANDLE_TO_OBJECT2(type, h) static_cast<type*>((h) ? ::FFI::getObject(reinterpret_cast<LNHandle>(h)) : nullptr)
+//#define LN_WRAP_OBJECT(type, obj, fromCreate) reinterpret_cast<type>(::FFI::wrapObject(obj, false))
 #define LN_RELEASE_OBJECT(h) LNObject_Release(reinterpret_cast<LNHandle>(h))
+
+// #define LN_DEFINE_HANDLE(object) typedef struct object##_T* object
+// NOTE: ↑こういうタイプセーフなハンドル定義は行わない。
+//   - 継承されたクラスを使いづらくなるため。
+//     例えば LNTexture2D を LNTextre として LNMaterial にセットしたいときなど。
+//     キャストして使ってもよいが、そうすると LNHandle のまま使うのと大差なくなるかも。
 
 //==============================================================================
 //
@@ -384,17 +391,31 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 }
 
 //==============================================================================
+// LNTexture2D
+//==============================================================================
+LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture) {
+    LN_FFI_TRY_BEGIN;
+    Ref<Texture2D> texture = Texture2D::createFromImageFileData(data, length);
+    *outTexture = ::FFI::wrapObject(texture, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
 // LNMaterial
 //==============================================================================
-LNResult LNMaterial_Create(LNMaterial* outMaterial) {
+LNResult LNMaterial_Create(LNHandle* outMaterial) {
     LN_FFI_TRY_BEGIN;
     Ref<Material> material = Material::create();
-    *outMaterial = LN_WRAP_OBJECT(LNMaterial, material, true);
+    *outMaterial = ::FFI::wrapObject(material, true);
 	LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNMaterial_Release(LNMaterial material) {
-    return LN_RELEASE_OBJECT(material);
+LNResult LNMaterial_SetMainTexture(LNHandle material_, LNHandle texture_) {
+    LN_FFI_TRY_BEGIN;
+    Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
+    Texture* texture = LN_HANDLE_TO_OBJECT(Texture, texture_);
+    material->setMainTexture(texture);
+    LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================
@@ -411,12 +432,12 @@ LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
 LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
     LNHandle spriteRenderer_,
     LNHandle renderingCommandList_,
-    LNMaterial material_,
+    LNHandle material_,
     const LNMatrix* transform_) {
     LN_FFI_TRY_BEGIN;
     SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
     CommandList* commandList = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
-    Material* material = LN_HANDLE_TO_OBJECT2(Material, material_);
+    Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
     commandList->setTransfrom(*transform);
     spriteRenderer->begin(commandList, material);

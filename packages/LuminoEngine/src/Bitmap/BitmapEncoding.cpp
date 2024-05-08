@@ -286,6 +286,9 @@ public:
         int height;
         int bpp;
         unsigned char* pixels = stbi_load_from_memory(buffer.data(), buffer.size(), &width, &height, &bpp, 4);
+        if (!pixels) {
+			return err();
+        }
 
         m_frame.size.width = width;
         m_frame.size.height = height;

@@ -1,6 +1,28 @@
 ﻿#include <stdio.h>
+#include <vector>
 #include <GLFW/glfw3.h>
 #include <lumino.h>
+
+static size_t GetFileSize(FILE* stream) {
+    struct stat stbuf;
+    int handle = fileno(stream);
+    if (handle == 0) return 0;
+    if (fstat(handle, &stbuf) == -1) return 0;
+    return stbuf.st_size;
+}
+
+std::vector<uint8_t> ReadAllBytes(const char* filePath) {
+    FILE* file = fopen(filePath, "rb");
+    if (!file) {
+        printf("Error: %s\n", filePath);
+        return {};
+    }
+    size_t size = GetFileSize(file);
+    std::vector<uint8_t> buffer(size);
+    fread(buffer.data(), 1, size, file);
+    fclose(file);
+    return buffer;
+}
 
 int main() {
     printf("1\n");
@@ -60,15 +82,25 @@ int main() {
         return 1;
     }
 
-    LNMaterial material = LN_NULL_HANDLE;
+    std::vector<uint8_t> imageData = ReadAllBytes("C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
+    LNHandle texture;
+    if (LNTexture2D_CreateFromImageFileData(imageData.data(), imageData.size(), &texture) != LN_OK) {
+        return 1;
+    }
+
+    LNHandle material = LN_NULL_HANDLE;
     if (LNMaterial_Create(&material) != LN_OK) {
 		return 1;
-	}
+    }
+    if (LNMaterial_SetMainTexture(material, texture) != LN_OK) {
+        return 1;
+    }
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     if (LNSpriteRenderer_Get(&spriteRenderer) != LN_OK) {
         return 1;
     }
+
 
     //LNHandle spriteTextRenderer = LN_NULL_HANDLE;
     //if (LNSpriteTextRenderer_Get(&spriteTextRenderer) != LN_OK) {
@@ -114,7 +146,8 @@ int main() {
         glfwPollEvents();
     }
 
-    LNMaterial_Release(material);
+    LNObject_Release(material);
+    LNObject_Release(texture);
     LNObject_Release(unlitSceneRenderingPass);
     LNObject_Release(sceneRenderingViewPoint);
     LNObject_Release(renderingCommandList);

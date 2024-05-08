@@ -42,7 +42,6 @@ typedef enum LNResult {
 typedef int32_t LNHandle;
 
 #define LN_NULL_HANDLE 0
-#define LN_DEFINE_HANDLE(object) typedef struct object##_T* object
 
 //==============================================================================
 //
@@ -125,11 +124,18 @@ extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 
 //==============================================================================
+// LNTexture
+//==============================================================================
+/**
+ * 画像ファイルデータからテクスチャを作成します。
+ */
+extern LUMINO_API LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture);
+
+//==============================================================================
 // LNMaterial
 //==============================================================================
-LN_DEFINE_HANDLE(LNMaterial);
-extern LUMINO_API LNResult LNMaterial_Create(LNMaterial* outMaterial);
-extern LUMINO_API LNResult LNMaterial_Release(LNMaterial material);
+extern LUMINO_API LNResult LNMaterial_Create(LNHandle* outMaterial);
+extern LUMINO_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture);
 
 //==============================================================================
 // 
@@ -178,7 +184,11 @@ typedef enum LNBillboardType {
 } LNBillboardType;
 
 extern LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer);
-extern LUMINO_API LNResult LNSpriteRenderer_BeginBatch(LNHandle spriteRenderer, LNHandle renderingCommandList, LNMaterial material, const LNMatrix* transform);
+extern LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
+    LNHandle spriteRenderer,
+    LNHandle renderingCommandList,
+    LNHandle material,
+    const LNMatrix* transform);
 extern LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer);
 extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const LNMatrix* localTransformOrNull, float width, float height, float anchorRatioX, float anchorRatioY, float uvRectX, float uvRectY, float uvRectW, float uvRectH, float r, float g, float b, float a, LNSpriteBaseDirection baseDirection, LNBillboardType billboardType);
 
