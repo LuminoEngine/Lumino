@@ -60,7 +60,7 @@ int main() {
         return 1;
     }
 
-    LNHandle material = LN_NULL_HANDLE;
+    LNMaterial material = LN_NULL_HANDLE;
     if (LNMaterial_Create(&material) != LN_OK) {
 		return 1;
 	}
@@ -70,10 +70,10 @@ int main() {
         return 1;
     }
 
-    LNHandle spriteTextRenderer = LN_NULL_HANDLE;
-    if (LNSpriteTextRenderer_Get(&spriteTextRenderer) != LN_OK) {
-        return 1;
-    }
+    //LNHandle spriteTextRenderer = LN_NULL_HANDLE;
+    //if (LNSpriteTextRenderer_Get(&spriteTextRenderer) != LN_OK) {
+    //    return 1;
+    //}
 
     while (!glfwWindowShouldClose(window)) {
         int width, height;
@@ -102,9 +102,9 @@ int main() {
 
 
 
-        LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);
-        LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
-        LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
+        //LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);
+        //LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
+        //LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
         if (LNRenderingCommandList_Submit(renderingCommandList, LN_NULL_HANDLE, graphicsContext) != LN_OK) {
             return 1;
@@ -114,7 +114,7 @@ int main() {
         glfwPollEvents();
     }
 
-    LNObject_Release(material);
+    LNMaterial_Release(material);
     LNObject_Release(unlitSceneRenderingPass);
     LNObject_Release(sceneRenderingViewPoint);
     LNObject_Release(renderingCommandList);

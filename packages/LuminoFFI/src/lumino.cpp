@@ -77,7 +77,10 @@ extern "C" {
     }                                         \
     return LN_OK;
 
-#define LNI_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::FFI::getObject(h) : nullptr)
+#define LN_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::FFI::getObject(h) : nullptr)
+#define LN_HANDLE_TO_OBJECT2(type, h) static_cast<type*>((h) ? ::FFI::getObject(reinterpret_cast<LNHandle>(h)) : nullptr)
+#define LN_WRAP_OBJECT(type, obj, fromCreate) reinterpret_cast<type>(::FFI::wrapObject(obj, false))
+#define LN_RELEASE_OBJECT(h) LNObject_Release(reinterpret_cast<LNHandle>(h))
 
 //==============================================================================
 //
@@ -133,7 +136,7 @@ LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t wid
 
 LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height) {
     LN_FFI_TRY_BEGIN;
-    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
     GraphicsCommandList* commandList = context->currentCommandList2();
     commandList->beginCommandRecoding();
     LN_FFI_TRY_END_RETURN;
@@ -141,7 +144,7 @@ LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32
 
 LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     LN_FFI_TRY_BEGIN;
-    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
     GraphicsCommandList* commandList = context->currentCommandList2();
     commandList->endCommandRecoding();
     LN_FFI_TRY_END_RETURN;
@@ -160,7 +163,7 @@ LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
 
 extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContext, LNHandle* outRenderingCommandList) {
     LN_FFI_TRY_BEGIN;
-    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
     Ref<CommandList> renderingContext = makeObject_deprecated<CommandList>();
     *outRenderingCommandList = ::FFI::wrapObject(renderingContext, true);
     LN_FFI_TRY_END_RETURN;
@@ -168,8 +171,8 @@ extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContex
 
 extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList_, LNHandle renderingViewPoint_, LNHandle graphicsContext_) {
     LN_FFI_TRY_BEGIN;
-    CommandList* renderingContext = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
-    RenderViewPoint* renderingViewPoint = LNI_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
+    CommandList* renderingContext = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
 
     renderingContext->clearCommandsAndState(renderingViewPoint);
 
@@ -178,8 +181,8 @@ extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingComman
 
 extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingCommandList_, LNHandle sceneRenderingPass_, LNHandle graphicsContext_) {
     LN_FFI_TRY_BEGIN;
-    CommandList* renderingContext = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
-    GraphicsContext* context = LNI_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext_);
+    CommandList* renderingContext = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext_);
     
     
     if (1) {
@@ -367,7 +370,7 @@ extern LUMINO_API LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderi
 
 extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ) {
     LN_FFI_TRY_BEGIN;
-    RenderViewPoint* viewPoint = LNI_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint);
+    RenderViewPoint* viewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint);
     viewPoint->resetPerspective2D(Vector3(x,y, z), Size(width, height), nearZ, farZ);
     LN_FFI_TRY_END_RETURN;
 }
@@ -383,11 +386,15 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 //==============================================================================
 // LNMaterial
 //==============================================================================
-LNResult LNMaterial_Create(LNHandle* outMaterial) {
+LNResult LNMaterial_Create(LNMaterial* outMaterial) {
     LN_FFI_TRY_BEGIN;
     Ref<Material> material = Material::create();
-	*outMaterial = ::FFI::wrapObject(material, true);
+    *outMaterial = LN_WRAP_OBJECT(LNMaterial, material, true);
 	LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNMaterial_Release(LNMaterial material) {
+    return LN_RELEASE_OBJECT(material);
 }
 
 //==============================================================================
@@ -404,12 +411,12 @@ LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
 LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
     LNHandle spriteRenderer_,
     LNHandle renderingCommandList_,
-    LNHandle material_,
+    LNMaterial material_,
     const LNMatrix* transform_) {
     LN_FFI_TRY_BEGIN;
-    SpriteRenderer* spriteRenderer = LNI_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
-    CommandList* commandList = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
-    Material* material = LNI_HANDLE_TO_OBJECT(Material, material_);
+    SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
+    CommandList* commandList = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    Material* material = LN_HANDLE_TO_OBJECT2(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
     commandList->setTransfrom(*transform);
     spriteRenderer->begin(commandList, material);
@@ -418,7 +425,7 @@ LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
 
 LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer_) {
     LN_FFI_TRY_BEGIN;
-	SpriteRenderer* spriteRenderer = LNI_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
+	SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
 	spriteRenderer->end();
 	LN_FFI_TRY_END_RETURN;
 }
@@ -426,7 +433,7 @@ LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer_) {
 LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const LNMatrix* localTransformOrNull, float width, float height, float anchorRatioX, float anchorRatioY, float uvRectX, float uvRectY, float uvRectW, float uvRectH, float r, float g, float b, float a, LNSpriteBaseDirection baseDirection, LNBillboardType billboardType) {
     LN_FFI_TRY_BEGIN;
 	const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
-	SpriteRenderer* renderer = LNI_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
+	SpriteRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
 	renderer->drawSprite(
         (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
         Size(width, height),
@@ -442,6 +449,7 @@ LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const L
 //==============================================================================
 // LNSpriteTextRenderer
 //==============================================================================
+#if 0
 LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
@@ -452,9 +460,9 @@ LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer) {
 
 LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer_, LNHandle renderingCommandList_, LNHandle material_, const LNMatrix* transform_) {
     LN_FFI_TRY_BEGIN;
-    SpriteTextRenderer* spriteTextRenderer = LNI_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
-    CommandList* commandList = LNI_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
-    Material* material = LNI_HANDLE_TO_OBJECT(Material, material_);
+    SpriteTextRenderer* spriteTextRenderer = LN_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
+    CommandList* commandList = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
     commandList->setTransfrom(*transform);
     spriteTextRenderer->begin(commandList, material);
@@ -463,14 +471,14 @@ LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer_, LNHandle 
 
 LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRenderer_) {
     LN_FFI_TRY_BEGIN;
-    SpriteTextRenderer* spriteTextRenderer = LNI_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
+    SpriteTextRenderer* spriteTextRenderer = LN_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
     spriteTextRenderer->end();
     LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const LNMatrix* localTransformOrNull_, const char* text_) {
 LN_FFI_TRY_BEGIN;
-	SpriteTextRenderer* renderer = LNI_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
+	SpriteTextRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
 
 
     Ref<detail::FontRequester> font = makeRef<detail::FontRequester>();
@@ -489,6 +497,7 @@ LN_FFI_TRY_BEGIN;
         font.get());
 	LN_FFI_TRY_END_RETURN;
 }
+#endif
 
 //==============================================================================
 // LNObject
@@ -516,7 +525,7 @@ LUMINO_API LNResult LNObject_Retain(LNHandle obj) {
 LUMINO_API LNResult LNObject_GetReferenceCount(LNHandle obj, int32_t* outReturn) {
     if (!outReturn) return LN_ERROR_INVALID_ARGUMENT;
 
-    if (auto t = LNI_HANDLE_TO_OBJECT(Object, obj)) {
+    if (auto t = LN_HANDLE_TO_OBJECT(Object, obj)) {
         *outReturn = RefObjectHelper::getReferenceCount(t);
         return LN_OK;
     }
