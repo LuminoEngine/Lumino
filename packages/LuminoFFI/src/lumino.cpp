@@ -203,6 +203,7 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingComma
 
         renderPass->setClearFlags(ClearFlags::Color);
         renderPass->setClearColor(Color::Red);
+        renderingContext->setTransfrom(Matrix::Identity);
 
         // commandList->beginCommandRecoding();
         // commandList->beginRenderPass(renderPass);
@@ -470,7 +471,6 @@ LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const L
 //==============================================================================
 // LNSpriteTextRenderer
 //==============================================================================
-#if 0
 LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
@@ -518,6 +518,7 @@ LN_FFI_TRY_BEGIN;
         font.get());
 	LN_FFI_TRY_END_RETURN;
 }
+#if 0
 #endif
 
 //==============================================================================

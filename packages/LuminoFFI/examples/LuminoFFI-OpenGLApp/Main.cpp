@@ -101,11 +101,10 @@ int main() {
         return 1;
     }
 
-
-    //LNHandle spriteTextRenderer = LN_NULL_HANDLE;
-    //if (LNSpriteTextRenderer_Get(&spriteTextRenderer) != LN_OK) {
-    //    return 1;
-    //}
+    LNHandle spriteTextRenderer = LN_NULL_HANDLE;
+    if (LNSpriteTextRenderer_Get(&spriteTextRenderer) != LN_OK) {
+        return 1;
+    }
 
     while (!glfwWindowShouldClose(window)) {
         int width, height;
@@ -121,6 +120,7 @@ int main() {
 
         LNMatrix transform;
         LNMatrix_SetIdentity(&transform);
+        transform.m41 = 200;
         LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material, &transform);
         LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
             200, 100,
@@ -133,10 +133,9 @@ int main() {
 
 
 
-
-        //LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);
-        //LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
-        //LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
+        LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);
+        LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
+        LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
         if (LNRenderingCommandList_Submit(renderingCommandList, LN_NULL_HANDLE, graphicsContext) != LN_OK) {
             return 1;

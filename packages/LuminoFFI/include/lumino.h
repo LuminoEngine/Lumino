@@ -195,12 +195,12 @@ extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, 
 //==============================================================================
 // LNSpriteTextRenderer
 //==============================================================================
-#if 0
+
 extern LUMINO_API LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer);
 extern LUMINO_API LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer, LNHandle renderingCommandList, LNHandle material, const LNMatrix* transform);
 extern LUMINO_API LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRenderer);
 extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer, const LNMatrix* localTransformOrNull, const char* text);
-#endif
+
 
 //==============================================================================
 // LNObject
