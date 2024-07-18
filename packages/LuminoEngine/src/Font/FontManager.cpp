@@ -4,6 +4,7 @@
 #include FT_TRUETYPE_TAGS_H   /* <freetype/tttags.h> */
 #include FT_TRUETYPE_TABLES_H /* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
+#include FT_STROKER_H
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Font/detail/FontCore.hpp>
@@ -71,15 +72,16 @@ FontManager* FontManager::s_instance = nullptr;
 
 FontManager* FontManager::initialize(const Settings& settings) {
     if (s_instance) return s_instance;
-    auto m = Ref<FontManager>(LN_NEW detail::FontManager(), false);
-    if (!m->init(settings)) return nullptr;
+    auto m = LN_NEW detail::FontManager();
     s_instance = m;
+    if (!m->init(settings)) return nullptr;
     return m;
 }
 
 void FontManager::terminate() {
     if (s_instance) {
         s_instance->dispose();
+        delete s_instance;
         s_instance = nullptr;
     }
 }
