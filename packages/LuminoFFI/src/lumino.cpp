@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <LuminoEngine/RuntimeModule.hpp>
 #include <LuminoEngine/RHIModule.hpp>
+#include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
@@ -394,10 +395,25 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 //==============================================================================
 // LNTexture2D
 //==============================================================================
-LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture) {
+
+LNResult LNTexture2D_Create(int32_t width, int32_t height, LNHandle* outTexture2D) {
+    LN_FFI_TRY_BEGIN;
+    Ref<Texture2D> texture = Texture2D::create(width, height);
+    *outTexture2D = ::FFI::wrapObject(texture, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D) {
     LN_FFI_TRY_BEGIN;
     Ref<Texture2D> texture = Texture2D::createFromImageFileData(data, length);
-    *outTexture = ::FFI::wrapObject(texture, true);
+    *outTexture2D = ::FFI::wrapObject(texture, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNTexture2D_GetContext(LNHandle texture2D_, LNHandle* outTextureRenderingContext_) {
+    LN_FFI_TRY_BEGIN;
+    Texture2D* texture2D = LN_HANDLE_TO_OBJECT(Texture2D, texture2D_);
+    *outTextureRenderingContext_ = ::FFI::wrapObject(texture2D->getContext(), false);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -417,6 +433,20 @@ LNResult LNMaterial_SetMainTexture(LNHandle material_, LNHandle texture_) {
     Texture* texture = LN_HANDLE_TO_OBJECT(Texture, texture_);
     material->setMainTexture(texture);
     LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LNTextureRenderingContext
+//==============================================================================
+LNResult LNTextureRenderingContext_DrawFillText(LNHandle textureRenderingContext) {
+    LN_FFI_TRY_BEGIN;
+	BitmapRenderingContext* context = LN_HANDLE_TO_OBJECT(BitmapRenderingContext, textureRenderingContext);
+
+    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+        context->drawText(
+        U"Hello, Lumino!", Rect(0, 0, 200, 100), renderingManager->fontManager()->defaultFont(), Color::Black);
+
+	LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================
@@ -497,10 +527,10 @@ LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRenderer_) {
     LN_FFI_TRY_END_RETURN;
 }
 
+#if 0
 LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const LNMatrix* localTransformOrNull_, const char* text_) {
-LN_FFI_TRY_BEGIN;
+    LN_FFI_TRY_BEGIN;
 	SpriteTextRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
-
 
     Ref<detail::FontRequester> font = makeRef<detail::FontRequester>();
     String text = String::fromUtf8(text_);
@@ -518,7 +548,6 @@ LN_FFI_TRY_BEGIN;
         font.get());
 	LN_FFI_TRY_END_RETURN;
 }
-#if 0
 #endif
 
 //==============================================================================

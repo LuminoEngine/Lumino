@@ -26,6 +26,7 @@ public:
         const Vector2& anchorRatio,
         SpriteBaseDirection baseDirection,
         SamplerState* samplerState,
+        float strokeWidth,
         // FormattedText
         const StringView& text,
         Font* font, // TODO: obsolete
@@ -67,6 +68,7 @@ private:
     const Color* m_drawingColor;
     SpriteBaseDirection m_drawingBaseDirection;
     SamplerState* m_drawingSamplerState;
+    float m_drawingStrokeWidth;
 };
 
 } // namespace kanata

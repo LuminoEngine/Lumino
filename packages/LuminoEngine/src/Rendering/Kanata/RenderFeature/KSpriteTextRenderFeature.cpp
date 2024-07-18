@@ -16,7 +16,8 @@ SpriteTextRenderFeature::SpriteTextRenderFeature(detail::RenderingManager* manag
     , m_drawingAnchor(nullptr)
     , m_drawingColor(nullptr)
     , m_drawingBaseDirection(SpriteBaseDirection::Basic2D)
-    , m_drawingSamplerState(nullptr) {
+    , m_drawingSamplerState(nullptr)
+    , m_drawingStrokeWidth(0.0f) {
 }
 
 void SpriteTextRenderFeature::beginBatch(BatchCollector* collector, Material* material) {
@@ -78,7 +79,7 @@ void SpriteTextRenderFeature::endBatch(BatchCollector* collector) {
 
 void SpriteTextRenderFeature::drawText(const detail::FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform) {
     LN_DCHECK(text);
-    drawText(transform, anchor, baseDirection, samplerState, text->text, text->font, text->color, text->area, text->textAlignment, text->fontRequester);
+    drawText(transform, anchor, baseDirection, samplerState, 0.0f, text->text, text->font, text->color, text->area, text->textAlignment, text->fontRequester);
 }
 
 void SpriteTextRenderFeature::drawText(
@@ -86,6 +87,7 @@ void SpriteTextRenderFeature::drawText(
     const Vector2& anchorRatio,
     SpriteBaseDirection baseDirection,
     SamplerState* samplerState,
+    float strokeWidth,
     // FormattedText
     const StringView& text,
     Font* font, // TODO: obsolete
@@ -100,6 +102,7 @@ void SpriteTextRenderFeature::drawText(
     m_drawingColor = &color;
     m_drawingBaseDirection = baseDirection;
     m_drawingSamplerState = samplerState;
+    m_drawingStrokeWidth = strokeWidth;
 
     detail::FontCore* fontCore = resolveFontCore(font, fontRequester, m_currentCollector->viewPoint(), transform);
 
@@ -174,16 +177,10 @@ void SpriteTextRenderFeature::endLayout(detail::FontCore* newFontCore, const Mat
         cache->getFontGlyphTextureCache(&m_cacheRequest);
     }
 
-    //if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
-    //    newBatch = true;
-    //}
-
     m_cacheTexture = m_cacheRequest.texture;
 }
 
 void SpriteTextRenderFeature::addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform) {
-    // TODO: Outline
-
     m_cacheRequest.glyphs.push_back({ codePoint });
 
     GlyphData data;

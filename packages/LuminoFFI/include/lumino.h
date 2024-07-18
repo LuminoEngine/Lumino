@@ -1,4 +1,5 @@
-﻿#ifndef LUMINO_API_H_
+﻿// clang-format off
+#ifndef LUMINO_API_H_
 #define LUMINO_API_H_
 #include <stdint.h>
 
@@ -126,16 +127,30 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 //==============================================================================
 // LNTexture
 //==============================================================================
+
+/**
+ * Create a texture with the specified size.
+ */
+extern LUMINO_API LNResult LNTexture2D_Create(int32_t width, int32_t height, LNHandle* outTexture2D);
+
 /**
  * 画像ファイルデータからテクスチャを作成します。
  */
-extern LUMINO_API LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture);
+extern LUMINO_API LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D);
+
+extern LUMINO_API LNResult LNTexture2D_GetContext(LNHandle texture2D, LNHandle* outTextureRenderingContext);
 
 //==============================================================================
 // LNMaterial
 //==============================================================================
 extern LUMINO_API LNResult LNMaterial_Create(LNHandle* outMaterial);
 extern LUMINO_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture);
+
+//==============================================================================
+// LNTextureRenderingContext
+//==============================================================================
+
+extern LUMINO_API LNResult LNTextureRenderingContext_DrawFillText(LNHandle textureRenderingContext);
 
 //==============================================================================
 // 
@@ -195,12 +210,12 @@ extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, 
 //==============================================================================
 // LNSpriteTextRenderer
 //==============================================================================
-
 extern LUMINO_API LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer);
 extern LUMINO_API LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer, LNHandle renderingCommandList, LNHandle material, const LNMatrix* transform);
 extern LUMINO_API LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRenderer);
+#if 0
 extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer, const LNMatrix* localTransformOrNull, const char* text);
-
+#endif
 
 //==============================================================================
 // LNObject

@@ -22,6 +22,7 @@ public:
                 entry.anchorRatio,
                 entry.baseDirection,
                 entry.samplerState,
+                entry.strokeWidth,
                 entry.text,
                 entry.font,
                 entry.color,
@@ -103,6 +104,42 @@ void SpriteTextRenderer::drawFillText(
     }
 
     DrawTextEntry entry;
+    entry.strokeWidth = 0;
+    entry.transform = transform;
+    entry.anchorRatio = anchorRatio;
+    entry.baseDirection = baseDirection;
+    entry.samplerState = samplerState;
+
+    entry.text = text;
+    entry.font = font;
+    entry.color = color;
+    entry.area = area;
+    entry.textAlignment = textAlignment;
+    entry.fontRequester = fontRequester;
+
+    m_entries.push_back(entry);
+}
+
+void SpriteTextRenderer::drawStrokeText(
+    float strokeWidth,
+    const Matrix& transform,
+    const Vector2& anchorRatio,
+    SpriteBaseDirection baseDirection,
+    SamplerState* samplerState,
+    // FormattedText
+    const StringView& text,
+    Font* font, // TODO: obsolete
+    const Color& color,
+    const Rect& area,
+    TextAlignment textAlignment,
+    detail::FontRequester* fontRequester) {
+
+    if (m_entries.size() >= MaxBatchSprites) {
+        flush();
+    }
+
+    DrawTextEntry entry;
+    entry.strokeWidth = strokeWidth;
     entry.transform = transform;
     entry.anchorRatio = anchorRatio;
     entry.baseDirection = baseDirection;

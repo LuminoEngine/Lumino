@@ -83,16 +83,36 @@ int main() {
     }
 
     std::vector<uint8_t> imageData = ReadAllBytes("C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
-    LNHandle texture;
-    if (LNTexture2D_CreateFromImageFileData(imageData.data(), imageData.size(), &texture) != LN_OK) {
+    LNHandle texture1 = LN_NULL_HANDLE;
+    if (LNTexture2D_CreateFromImageFileData(imageData.data(), imageData.size(), &texture1) != LN_OK) {
         return 1;
     }
 
-    LNHandle material = LN_NULL_HANDLE;
-    if (LNMaterial_Create(&material) != LN_OK) {
+    LNHandle material1 = LN_NULL_HANDLE;
+    if (LNMaterial_Create(&material1) != LN_OK) {
 		return 1;
     }
-    if (LNMaterial_SetMainTexture(material, texture) != LN_OK) {
+
+    if (LNMaterial_SetMainTexture(material1, texture1) != LN_OK) {
+        return 1;
+    }
+
+    LNHandle texture2 = LN_NULL_HANDLE;
+    if (LNTexture2D_Create(300, 200, &texture2) != LN_OK) {
+        return 1;
+    }
+
+    LNHandle texture2Context = LN_NULL_HANDLE;
+    LNTexture2D_GetContext(texture2, &texture2Context);
+
+    LNTextureRenderingContext_DrawFillText(texture2Context);
+
+    LNHandle material2 = LN_NULL_HANDLE;
+    if (LNMaterial_Create(&material2) != LN_OK) {
+        return 1;
+    }
+
+    if (LNMaterial_SetMainTexture(material2, texture2) != LN_OK) {
         return 1;
     }
 
@@ -121,7 +141,7 @@ int main() {
         LNMatrix transform;
         LNMatrix_SetIdentity(&transform);
         transform.m41 = 200;
-        LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material, &transform);
+        LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
         LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
             200, 100,
             0, 0,
@@ -130,12 +150,22 @@ int main() {
             LN_SPRITE_BASE_DIRECTION_BASIC2D,
             LN_BILLBOARD_TYPE_NONE);
         LNSpriteRenderer_EndBatch(spriteRenderer);
+        
+        transform.m41 = 400;
+        LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material2, &transform);
+        LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+            300, 200,
+            0, 0,
+            0, 0, 1, 1,
+            0, 0, 1, 1,
+            LN_SPRITE_BASE_DIRECTION_BASIC2D,
+            LN_BILLBOARD_TYPE_NONE);
+        LNSpriteRenderer_EndBatch(spriteRenderer);
 
 
-
-        LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);
-        LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
-        LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
+        //LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);
+        //LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
+        //LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
         if (LNRenderingCommandList_Submit(renderingCommandList, LN_NULL_HANDLE, graphicsContext) != LN_OK) {
             return 1;
@@ -145,8 +175,10 @@ int main() {
         glfwPollEvents();
     }
 
-    LNObject_Release(material);
-    LNObject_Release(texture);
+    LNObject_Release(material2);
+    LNObject_Release(texture2);
+    LNObject_Release(material1);
+    LNObject_Release(texture1);
     LNObject_Release(unlitSceneRenderingPass);
     LNObject_Release(sceneRenderingViewPoint);
     LNObject_Release(renderingCommandList);

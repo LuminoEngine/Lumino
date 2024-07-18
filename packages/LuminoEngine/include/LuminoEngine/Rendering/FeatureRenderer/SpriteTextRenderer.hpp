@@ -29,6 +29,19 @@ public:
         const Rect& area,
         TextAlignment textAlignment,
         detail::FontRequester* fontRequester);
+    void drawStrokeText(
+        float strokeWidth,
+        const Matrix& transform,
+        const Vector2& anchorRatio,
+        SpriteBaseDirection baseDirection,
+        SamplerState* samplerState,
+        // FormattedText
+        const StringView& text,
+        Font* font, // TODO: obsolete
+        const Color& color,
+        const Rect& area,
+        TextAlignment textAlignment,
+        detail::FontRequester* fontRequester);
 
 private:
     struct DrawTextEntry {
@@ -36,6 +49,7 @@ private:
         Vector2 anchorRatio;
         SpriteBaseDirection baseDirection;
         Ref<SamplerState> samplerState;
+        float strokeWidth;
 
         // FormattedText
 	    String text;

@@ -85,10 +85,10 @@ FontManager* FontManager::initialize(const Settings& settings)
     if (instance()) return instance();
 
     auto m = Ref<FontManager>(LN_NEW detail::FontManager(), false);
-    if (!m->init(settings)) return nullptr;
-
     EngineContext2::instance()->registerModule(m);
     EngineContext2::instance()->fontManager = m;
+    if (!m->init(settings)) return nullptr;
+
     return m;
 }
 
