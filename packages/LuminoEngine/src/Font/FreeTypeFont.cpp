@@ -84,7 +84,7 @@ void FreeTypeFontCached::init(FontManager* manager, const FontDesc& desc)
 	if (name.isEmpty()) name = manager->defaultFontDesc().Family;
 	if (LN_REQUIRE(!name.isEmpty())) return;
 
-	m_ftFaceId = (FTC_FaceID)CRCHash::compute(name.c_str());
+	m_ftFaceId = reinterpret_cast<FTC_FaceID>(CRCHash::compute(name.c_str()));
 	FTC_Manager ftc_manager = manager->ftCacheManager();
 	//m_manager->m_requesterFaceName = name->c_str();
 
@@ -637,10 +637,6 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
         outMetrics->advance.x *= scale;
         outMetrics->advance.y *= scale;
     }
-
-    
-
-
 }
 
 Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
@@ -696,28 +692,71 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 
 
 	FT_Render_Mode renderMode = (m_desc.isAntiAlias) ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
-	FT_GlyphSlot glyph = m_face->glyph;
+	FT_GlyphSlot glyphSlot = m_face->glyph;
 
-	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
-		// FT_LOAD_NO_BITMAP が OFF だとここに入ってくる
-		outInfo->glyphBitmap = FTBitmapToInternalCacheBitmap(&glyph->bitmap);
-		outInfo->size.width = glyph->bitmap.width;
-		outInfo->size.height = glyph->bitmap.rows;
+	if (glyphSlot->format == FT_GLYPH_FORMAT_BITMAP) {
+		// Glyph がビットマップを持っている場合。 (FT_LOAD_NO_BITMAP が OFF だとここに入ってくる)
+        outInfo->glyphBitmap = FTBitmapToInternalCacheBitmap(&glyphSlot->bitmap);
+        outInfo->size.width = glyphSlot->bitmap.width;
+        outInfo->size.height = glyphSlot->bitmap.rows;
 	}
 	else
 	{
-		err = ::FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL);
+        err = ::FT_Render_Glyph(glyphSlot, FT_RENDER_MODE_NORMAL);
 		if (LN_ENSURE(err == 0)) return;
 
-		//FT_Bitmap* bitmap = &((FT_BitmapGlyph)glyph)->bitmap;
-		outInfo->glyphBitmap = FTBitmapToInternalCacheBitmap(&glyph->bitmap);
-		outInfo->size.width = glyph->bitmap.width;
-		outInfo->size.height = glyph->bitmap.rows;
-
-		//LN_NOTIMPLEMENTED();
+		outInfo->glyphBitmap = FTBitmapToInternalCacheBitmap(&glyphSlot->bitmap);
+		outInfo->size.width = glyphSlot->bitmap.width;
+		outInfo->size.height = glyphSlot->bitmap.rows;
 	}
+
+        FT_Glyph glyph;
+        FT_Get_Glyph(glyphSlot, &glyph);
+        FT_Done_Glyph(glyph);
+	// 枠線
+ //   if (outInfo->outlineWidth > 0.0f) {
+ //       FT_Glyph tempGlyph;
+ //       FT_Get_Glyph(glyph, &tempGlyph);
+ //       err = FT_Glyph_Copy(glyph, &tempGlyph);
+ //       if (LN_ENSURE(err == 0, "failed FT_Glyph_Copy : %d\n", err)) return nullptr;
+
+ //       // エッジの描画情報
+ //       FT_Stroker_Set(
+ //           m_ftStroker,
+ //           (int)(m_edgeSize * 64),
+ //           FT_STROKER_LINECAP_ROUND,  // 線分の両端は半円でレンダリングする
+ //           FT_STROKER_LINEJOIN_ROUND, // 線分の接合点は半円でレンダリングする
+ //           0);
+
+ //       err = FT_Glyph_StrokeBorder(&m_fontGlyphBitmap.CopyOutlineGlyph, m_ftStroker, 0, 1);
+ //       if (LN_ENSURE(err == 0, "failed FT_Glyph_StrokeBorder : %d\n", err)) return nullptr;
+
+ //       err = FT_Glyph_To_Bitmap(&m_fontGlyphBitmap.CopyOutlineGlyph, renderMode, NULL, 1);
+ //       if (LN_ENSURE(err == 0, "failed FT_Glyph_To_Bitmap : %d\n", err)) return nullptr;
+
+ //       glyph_bitmap = (FT_BitmapGlyph)m_fontGlyphBitmap.CopyOutlineGlyph;
+
+ //       FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
+ //       refreshBitmap(m_outlineBitmap, ft_bitmap);
+ //       m_fontGlyphBitmap.OutlineBitmap = m_outlineBitmap;
+ //       m_fontGlyphBitmap.OutlineOffset = m_edgeSize;
+
+	//	FT_Done_Glyph.
+	//}
+	//else {
+ //       outInfo->outlineBitmap = NULL;
+ //       outInfo->outlineOffset = 0;
+ //   }
 }
 
+/*
+	返す頂点は、ベースラインを 0 として、Y+ 方向を上とする座標系で表される。
+	例えば 'A' の下辺は 0、'g' の下辺は 0 より小さい。
+	https://www.freetype.org/freetype2/docs/tutorial/step2.html
+	http://w3.kcua.ac.jp/~fujiwara/infosci/font.html
+	https://wiki.bit-hive.com/tomizoo/pg/FreeType%E3%81%A7%E3%83%95%E3%82%A9%E3%83%B3%E3%83%88%E3%81%AE%E3%82%A2%E3%82%A6%E3%83%88%E3%83%A9%E3%82%A4%E3%83%B3%E3%82%92%E5%8F%96%E3%82%8B
+	https://github.com/LuminoEngine/Lumino/blob/v0.4.0/Source/LuminoEngine/Source/Graphics/Text/FreeTypeFont.cpp
+*/
 void FreeTypeFont::decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo)
 {
 	LN_NOTIMPLEMENTED();

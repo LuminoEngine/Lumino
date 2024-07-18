@@ -423,6 +423,7 @@ LNResult LNTexture2D_GetContext(LNHandle texture2D_, LNHandle* outTextureRenderi
 LNResult LNMaterial_Create(LNHandle* outMaterial) {
     LN_FFI_TRY_BEGIN;
     Ref<Material> material = Material::create();
+    material->setBlendMode(BlendMode::Alpha);
     *outMaterial = ::FFI::wrapObject(material, true);
 	LN_FFI_TRY_END_RETURN;
 }

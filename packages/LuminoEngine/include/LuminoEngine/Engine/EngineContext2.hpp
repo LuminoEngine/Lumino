@@ -48,7 +48,6 @@ public:
     RefObject* platformManager = nullptr;
     RefObject* runtimeManager = nullptr;
     RefObject* shaderManager = nullptr;
-    RefObject* fontManager = nullptr;
     RefObject* graphicsManager = nullptr;
 
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
