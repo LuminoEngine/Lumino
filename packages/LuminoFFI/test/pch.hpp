@@ -6,3 +6,4 @@
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/LuminoGraphics.hpp>
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/Testing/GraphicsTestHelper.hpp>

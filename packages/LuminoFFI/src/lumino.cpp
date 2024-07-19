@@ -1,5 +1,5 @@
 ﻿#include <stdio.h>
-#include <LuminoEngine/Engine/Engine.hpp>
+#include <LuminoEngine.hpp>
 
 
 #include <LuminoEngine/RuntimeModule.hpp>
@@ -37,28 +37,12 @@ namespace ln {
 class FFI {
 public:
     static LNResult processException(Exception* e);
-    static LNHandle wrapObject(Object* obj, bool fromCreate);
-    static Object* getObject(LNHandle handle);
-    //static void setManagedObjectId(LNHandle handle, int64_t id);
-    //static int64_t getManagedObjectId(LNHandle handle);
-    //static const Char* getUTF16StringPtr(const String& str);
-    //static const char* getAStringPtr(const String& str);
-    //static void setAStringEncoding(TextEncoding* value);
-    //static TextEncoding* getAStringEncoding();
 
 private:
 };
 
 LNResult FFI::processException(Exception* e) {
     return LN_ERROR_UNKNOWN;
-}
-
-LNHandle FFI::wrapObject(Object* obj, bool fromCreate) {
-    return detail::RuntimeManager::instance()->makeObjectWrap(obj, fromCreate);
-}
-
-Object* FFI::getObject(LNHandle handle) {
-    return detail::RuntimeManager::instance()->getObjectEntry(handle)->object;
 }
 
 } // namespace ln
@@ -88,7 +72,7 @@ extern "C" {
         FFI::processException(&e);                                                                              \
     }             
 
-#define LN_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::FFI::getObject(h) : nullptr)
+#define LN_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::Runtime::getObject(h) : nullptr)
 //#define LN_HANDLE_TO_OBJECT2(type, h) static_cast<type*>((h) ? ::FFI::getObject(reinterpret_cast<LNHandle>(h)) : nullptr)
 //#define LN_WRAP_OBJECT(type, obj, fromCreate) reinterpret_cast<type>(::FFI::wrapObject(obj, false))
 #define LN_RELEASE_OBJECT(h) LNObject_Release(reinterpret_cast<LNHandle>(h))
@@ -133,7 +117,7 @@ LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t wid
     s.window = nullptr;
     s.width = width;
     s.height = height;
-    *outReturn = ::FFI::wrapObject(OpenGLGraphicsContext::create(s), true);
+    *outReturn = ::Runtime::wrapObject(OpenGLGraphicsContext::create(s), true);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -168,7 +152,7 @@ extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContex
     LN_FFI_TRY_BEGIN;
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
     Ref<CommandList> renderingContext = makeObject_deprecated<CommandList>();
-    *outRenderingCommandList = ::FFI::wrapObject(renderingContext, true);
+    *outRenderingCommandList = ::Runtime::wrapObject(renderingContext, true);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -259,9 +243,10 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(
             batchState.m_depthTestEnabled = false;
             batchState.m_cullingMode = CullMode::None;
 
+            batchList->clear(renderingViewPoint);
+
             // Build batch
-            {
-                batchList->clear(renderingViewPoint);
+            if (0){
 
                 // 手動で頑張るパターン
                 batchList->batchProxyState = &batchState;
@@ -371,7 +356,7 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(
 extern LUMINO_API LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderingViewPoint) {
     LN_FFI_TRY_BEGIN;
     Ref<RenderViewPoint> viewPoint = makeRef<RenderViewPoint>();
-    *outRenderingViewPoint = ::FFI::wrapObject(viewPoint, true);
+    *outRenderingViewPoint = ::Runtime::wrapObject(viewPoint, true);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -386,7 +371,7 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
     Ref<kanata::UnlitRenderPass> renderingPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
-    *outUnlitSceneRenderingPass = ::FFI::wrapObject(renderingPass, true);
+    *outUnlitSceneRenderingPass = ::Runtime::wrapObject(renderingPass, true);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -397,21 +382,21 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 LNResult LNTexture2D_Create(int32_t width, int32_t height, LNHandle* outTexture2D) {
     LN_FFI_TRY_BEGIN;
     Ref<Texture2D> texture = Texture2D::create(width, height);
-    *outTexture2D = ::FFI::wrapObject(texture, true);
+    *outTexture2D = ::Runtime::wrapObject(texture, true);
     LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D) {
     LN_FFI_TRY_BEGIN;
     Ref<Texture2D> texture = Texture2D::createFromImageFileData(data, length);
-    *outTexture2D = ::FFI::wrapObject(texture, true);
+    *outTexture2D = ::Runtime::wrapObject(texture, true);
     LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNTexture2D_GetContext(LNHandle texture2D_, LNHandle* outTextureRenderingContext_) {
     LN_FFI_TRY_BEGIN;
     Texture2D* texture2D = LN_HANDLE_TO_OBJECT(Texture2D, texture2D_);
-    *outTextureRenderingContext_ = ::FFI::wrapObject(texture2D->getContext(), false);
+    *outTextureRenderingContext_ = ::Runtime::wrapObject(texture2D->getContext(), false);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -423,7 +408,7 @@ LNResult LNMaterial_Create(LNHandle* outMaterial) {
     Ref<Material> material = Material::create();
     material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
     material->setBlendMode(BlendMode::Alpha);
-    *outMaterial = ::FFI::wrapObject(material, true);
+    *outMaterial = ::Runtime::wrapObject(material, true);
 	LN_FFI_TRY_END_RETURN;
 }
 
@@ -473,7 +458,7 @@ LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
     LN_FFI_TRY_BEGIN;
 	detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
     SpriteRenderer* spriteRenderer = renderingManager->spriteRenderer();
-	*outSpriteRenderer = ::FFI::wrapObject(spriteRenderer, false);
+        *outSpriteRenderer = ::Runtime::wrapObject(spriteRenderer, false);
 	LN_FFI_TRY_END_RETURN;
 }
 
@@ -522,7 +507,7 @@ LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
     SpriteTextRenderer* spriteTextRenderer = renderingManager->spriteTextRenderer();
-    *outSpriteTextRenderer = ::FFI::wrapObject(spriteTextRenderer, false);
+    *outSpriteTextRenderer = ::Runtime::wrapObject(spriteTextRenderer, false);
     LN_FFI_TRY_END_RETURN;
 }
 

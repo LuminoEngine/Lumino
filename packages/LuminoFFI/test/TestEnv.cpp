@@ -23,7 +23,9 @@ void TestEnv::initialize() {
 }
 
 void TestEnv::terminate() {
+    LNObject_Release(viewPoint);
     LNObject_Release(graphicsContext);
+    ln::PlatformModule::terminate();
     ln::Engine::terminate();
 }
 
@@ -34,4 +36,8 @@ void TestEnv::present() {
     GLFWwindow* glfwWindow = window2->glfwWindow();
     glfwSwapBuffers(glfwWindow);
     glfwPollEvents();
+}
+
+ln::Path TestEnv::getTestDataPath(ln::Path localPath) {
+    return ln::Path(TEST_DATA_DIR, localPath);
 }

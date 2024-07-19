@@ -274,7 +274,7 @@ Result<> GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFor
 }
 
 Result<> GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
-    LN_TRY(GLTextureBase::initAsRenderTarget(hintWidth, hintHeight, TextureFormat::Unknown, false, false));
+    LN_TRY(GLTextureBase::initAsRenderTarget(hintWidth, hintHeight, TextureFormat::RGB8, false, false));
     m_id = nativeObject;
     return ok();
 }
@@ -300,10 +300,21 @@ RHIRef<RHIBitmap> GLRenderTargetTexture::readData() {
     // OpenGL ES is glGetTexImage unsupported
     // http://oppyen.hatenablog.com/entry/2016/10/21/071612
 #else
-    GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
-    GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, buf->writableData()));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+    if (m_id == 0) {
+        // Backbuffer
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        GL_CHECK(glReadBuffer(GL_BACK));
+        //
+        GL_CHECK(glReadPixels(0, 0, 320, 240, GL_RGB, GL_UNSIGNED_BYTE, buf->writableData()));
+            //GL_CHECK(glReadPixels(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, buf->writableData()));
+    }
+    else {
+        // RenderTarget
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
+        GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, buf->writableData()));
+        GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+    }
 #endif
 
     // Note: RenderTarget 書き込み時に上下反転するには、gl_Position.y を反転するしかない。
