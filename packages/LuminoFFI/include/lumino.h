@@ -150,7 +150,9 @@ extern LUMINO_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle
 // LNTextureRenderingContext
 //==============================================================================
 
-extern LUMINO_API LNResult LNTextureRenderingContext_DrawFillText(LNHandle textureRenderingContext);
+extern LUMINO_API LNResult LNTextureRenderingContext_FillText(LNHandle textureRenderingContext);
+
+extern LUMINO_API LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext);
 
 //==============================================================================
 // 

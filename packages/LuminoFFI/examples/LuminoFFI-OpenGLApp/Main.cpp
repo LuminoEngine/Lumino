@@ -59,6 +59,7 @@ int main() {
 
 
 
+
     
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -102,10 +103,16 @@ int main() {
         return 1;
     }
 
+
+
+
+
+
     LNHandle texture2Context = LN_NULL_HANDLE;
     LNTexture2D_GetContext(texture2, &texture2Context);
 
-    LNTextureRenderingContext_DrawFillText(texture2Context);
+    LNTextureRenderingContext_StrokeText(texture2Context);
+    LNTextureRenderingContext_FillText(texture2Context);
 
     LNHandle material2 = LN_NULL_HANDLE;
     if (LNMaterial_Create(&material2) != LN_OK) {
@@ -157,7 +164,7 @@ int main() {
             300, 200,
             0, 0,
             0, 0, 1, 1,
-            0, 0, 1, 1,
+            1, 1, 1, 1,
             LN_SPRITE_BASE_DIRECTION_BASIC2D,
             LN_BILLBOARD_TYPE_NONE);
         LNSpriteRenderer_EndBatch(spriteRenderer);

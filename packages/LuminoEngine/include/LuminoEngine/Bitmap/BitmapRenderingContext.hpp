@@ -23,7 +23,10 @@ public:
         const Rect& rect,
         Font* font,
         const Color& color,
-        TextAlignment alignment = TextAlignment::Forward);
+        TextAlignment alignment = TextAlignment::Forward,
+        TextDrawMode drawing = TextDrawMode::Fill,
+        float strokeWidth = 0.0f
+    );
 
 private:
     BitmapRenderingContext();

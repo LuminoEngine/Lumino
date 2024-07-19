@@ -423,6 +423,7 @@ LNResult LNTexture2D_GetContext(LNHandle texture2D_, LNHandle* outTextureRenderi
 LNResult LNMaterial_Create(LNHandle* outMaterial) {
     LN_FFI_TRY_BEGIN;
     Ref<Material> material = Material::create();
+    material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
     material->setBlendMode(BlendMode::Alpha);
     *outMaterial = ::FFI::wrapObject(material, true);
 	LN_FFI_TRY_END_RETURN;
@@ -439,15 +440,32 @@ LNResult LNMaterial_SetMainTexture(LNHandle material_, LNHandle texture_) {
 //==============================================================================
 // LNTextureRenderingContext
 //==============================================================================
-LNResult LNTextureRenderingContext_DrawFillText(LNHandle textureRenderingContext) {
+LNResult LNTextureRenderingContext_FillText(LNHandle textureRenderingContext) {
     LN_FFI_TRY_BEGIN;
 	BitmapRenderingContext* context = LN_HANDLE_TO_OBJECT(BitmapRenderingContext, textureRenderingContext);
 
     detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
-        context->drawText(
-        U"Hello, Lumino!", Rect(0, 0, 200, 100), renderingManager->fontManager()->defaultFont(), Color::Black);
+        context->drawText(U"Hello, Lumino!",
+            Rect(0, 0, 200, 100), renderingManager->fontManager()->defaultFont(), Color::White);
 
 	LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) {
+    LN_FFI_TRY_BEGIN;
+    BitmapRenderingContext* context = LN_HANDLE_TO_OBJECT(BitmapRenderingContext, textureRenderingContext);
+
+    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    context->drawText(
+        U"Hello, Lumino!",
+        Rect(0, 0, 200, 100),
+        renderingManager->fontManager()->defaultFont(),
+        Color::Black,
+        TextAlignment::Forward,
+        TextDrawMode::Stroke,
+        1.0);
+
+    LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================

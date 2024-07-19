@@ -18,12 +18,14 @@ void BitmapRenderingContext::drawText(
     const Rect& rect,
     Font* font,
     const Color& color,
-    TextAlignment alignment) {
+    TextAlignment alignment,
+    TextDrawMode drawing,
+    float strokeWidth) {
     if (LN_ASSERT(font)) return;
     Bitmap2D* bitmap = getBitmap();
     if (!bitmap) return;
     detail::BitmapTextRenderer renderer;
-    renderer.render(bitmap, text, rect, font, color, alignment);
+    renderer.render(bitmap, text, rect, font, color, alignment, drawing, strokeWidth);
 }
 
 MaybeResult BitmapRenderingContext::init(Texture2D* texture) {

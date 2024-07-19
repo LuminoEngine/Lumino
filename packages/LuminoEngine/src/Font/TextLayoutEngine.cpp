@@ -8,7 +8,7 @@ namespace detail {
 
 //==============================================================================
 // TextLayoutEngine
-	
+
 TextLayoutEngine::TextLayoutEngine()
     : m_font(nullptr)
     , m_text(nullptr)
@@ -16,12 +16,16 @@ TextLayoutEngine::TextLayoutEngine()
     , m_pos(0)
     , m_targetArea()
     , m_alignment(TextAlignment::Forward)
-    , m_globalMetrics()
-{
+    , m_globalMetrics() {
 }
 
-void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, const Rect& targetArea, float strokeSize, TextAlignment alignment)
-{
+void TextLayoutEngine::layout(
+    FontCore* font,
+    const Char* text,
+    size_t length,
+    const Rect& targetArea,
+    float strokeSize,
+    TextAlignment alignment) {
     if (LN_REQUIRE(font)) return;
     if (LN_REQUIRE(text)) return;
     if (length == 0) return;
@@ -30,24 +34,22 @@ void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, c
     m_length = length;
     m_pos = 0;
     m_targetArea = targetArea;
-	m_strokeSize = strokeSize;
+    m_strokeSize = strokeSize;
     m_alignment = alignment;
     m_layoutLines.clear();
     m_font->getGlobalMetrics(&m_globalMetrics);
-	m_renderAreaSize = Size::Zero;
+    m_renderAreaSize = Size::Zero;
 
-	resetStream();
+    resetStream();
     layoutTextHorizontal(LayoutMode::Measure);
 
-
-	placementTextHorizontal();
+    placementTextHorizontal();
 }
 
 // "\r\n" => '\n'
-UTF32 TextLayoutEngine::readChar()
-{
+UTF32 TextLayoutEngine::readChar() {
     if (m_pos >= m_length) {
-        return 0;   // EOF
+        return 0; // EOF
     }
 
 #if LN_USTRING32
@@ -59,7 +61,7 @@ UTF32 TextLayoutEngine::readChar()
         m_pos += 2;
         return '\n';
     }
-    
+
     m_pos++;
     return *begin;
 #else
@@ -82,39 +84,33 @@ UTF32 TextLayoutEngine::readChar()
 #endif
 }
 
-void TextLayoutEngine::resetStream()
-{
-	m_pos = 0;
+void TextLayoutEngine::resetStream() {
+    m_pos = 0;
 }
 
 //void TextLayoutEngine::onMeasureGlyph(UTF32 ch, const Vector2& pos, const FontGlyphMetrics& metrix, Size* outSizeOffset)
 //{
 //}
 
-void TextLayoutEngine::layoutTextHorizontal(LayoutMode mode)
-{
+void TextLayoutEngine::layoutTextHorizontal(LayoutMode mode) {
     float baselineY = m_globalMetrics.ascender;
 
-    while (layoutLineHorizontal(baselineY, mode))
-    {
+    while (layoutLineHorizontal(baselineY, mode)) {
         baselineY += m_globalMetrics.lineSpace;
     }
 }
 
-bool TextLayoutEngine::layoutLineHorizontal(float baselineY, LayoutMode mode)
-{
-	LayoutLine layoutLine;
+bool TextLayoutEngine::layoutLineHorizontal(float baselineY, LayoutMode mode) {
+    LayoutLine layoutLine;
     UTF32 prev = 0;
-    Vector2 pos;// (0, baselineY - m_globalMetrics.ascender);
-	//pos.x = m_renderAreaOffset.x;
-    while (UTF32 ch = readChar())
-    {
+    Vector2 pos; // (0, baselineY - m_globalMetrics.ascender);
+                 //pos.x = m_renderAreaOffset.x;
+    while (UTF32 ch = readChar()) {
         if (ch == '\r' || ch == '\n') {
-            return true;    // end with newline
+            return true; // end with newline
         }
 
-        if (prev)
-        {
+        if (prev) {
             Vector2 delta = m_font->getKerning(prev, ch);
             pos.x += delta.x;
         }
@@ -122,107 +118,106 @@ bool TextLayoutEngine::layoutLineHorizontal(float baselineY, LayoutMode mode)
         FontGlyphMetrics metrics;
         m_font->getGlyphMetrics(ch, &metrics);
 
-        pos.y = /*m_renderAreaOffset.y + */(baselineY - metrics.bearingY);
+        pos.y = /*m_renderAreaOffset.y + */ (baselineY - metrics.bearingY);
 
         pos.x += metrics.bearingX;
 
-		//if (mode == LayoutMode::Measure) {
-			m_renderAreaSize.width = std::max(m_renderAreaSize.width, (pos.x + m_strokeSize * 2) + metrics.size.width);
-			m_renderAreaSize.height = std::max(m_renderAreaSize.height, (pos.y + m_strokeSize * 2) + metrics.size.height);
-			layoutLine.glyphs.add({ ch, pos, metrics.size });
-		//}
-		//else {
-		//	onPlacementGlyph(ch, pos, metrics);
-		//}
+        //if (mode == LayoutMode::Measure) {
+        m_renderAreaSize.width = std::max(m_renderAreaSize.width, (pos.x + m_strokeSize * 2) + metrics.size.width);
+        m_renderAreaSize.height = std::max(m_renderAreaSize.height, (pos.y + m_strokeSize * 2) + metrics.size.height);
+        layoutLine.glyphs.add({ ch, pos, metrics.size });
+        //}
+        //else {
+        //	onPlacementGlyph(ch, pos, metrics);
+        //}
 
         pos.x += metrics.advance.x + (m_strokeSize * 2);
 
         prev = ch;
     }
 
-	//if (mode == LayoutMode::Measure) {
-		m_layoutLines.add(std::move(layoutLine));
-	//}
+    //if (mode == LayoutMode::Measure) {
+    m_layoutLines.add(std::move(layoutLine));
+    //}
 
-    return false;   // end with EOF or Error
+    return false; // end with EOF or Error
 }
 
-void TextLayoutEngine::placementTextHorizontal()
-{
-	for (auto& layoutLine : m_layoutLines) {
-		calculateRenderAreaHorizontalOffset(&layoutLine);
-		placementLineHorizontal(layoutLine);
-	}
+void TextLayoutEngine::placementTextHorizontal() {
+    for (auto& layoutLine : m_layoutLines) {
+        calculateRenderAreaHorizontalOffset(&layoutLine);
+        placementLineHorizontal(layoutLine);
+    }
 }
 
-void TextLayoutEngine::placementLineHorizontal(const LayoutLine& layoutLine)
-{
-	for (auto& glyph : layoutLine.glyphs) {
-		onPlacementGlyph(glyph.ch, glyph.pos + m_renderAreaOffset, glyph.size);
-	}
+void TextLayoutEngine::placementLineHorizontal(const LayoutLine& layoutLine) {
+    for (auto& glyph : layoutLine.glyphs) {
+        onPlacementGlyph(glyph.ch, glyph.pos + m_renderAreaOffset, glyph.size);
+    }
 }
 
-void TextLayoutEngine::calculateRenderAreaHorizontalOffset(LayoutLine* layoutLine)
-{
-	TextAlignment alignment = m_alignment;
-	if (alignment == TextAlignment::Justify) {
-		if (layoutLine->glyphs.size() == 0) {
-			alignment = TextAlignment::Forward;
-		}
-		else if (layoutLine->glyphs.size() == 1) {
-			alignment = TextAlignment::Center;
-		}
-	}
+void TextLayoutEngine::calculateRenderAreaHorizontalOffset(LayoutLine* layoutLine) {
+    TextAlignment alignment = m_alignment;
+    if (alignment == TextAlignment::Justify) {
+        if (layoutLine->glyphs.size() == 0) {
+            alignment = TextAlignment::Forward;
+        }
+        else if (layoutLine->glyphs.size() == 1) {
+            alignment = TextAlignment::Center;
+        }
+    }
 
-	switch (alignment)
-	{
-	case TextAlignment::Forward:
-			m_renderAreaOffset.x = 0;
-			break;
-		case TextAlignment::Center:
-			m_renderAreaOffset.x = (m_targetArea.width - m_renderAreaSize.width) / 2;
-			break;
-		case TextAlignment::Backward:
-			m_renderAreaOffset.x = m_targetArea.width - m_renderAreaSize.width;
-			break;
-		case TextAlignment::Justify:
-		{
-			// "A B C" などの時の空白数
-			int blank = layoutLine->glyphs.size() - 1;
+    switch (alignment) {
+        case TextAlignment::Forward:
+            m_renderAreaOffset.x = 0;
+            break;
+        case TextAlignment::Center:
+            m_renderAreaOffset.x = (m_targetArea.width - m_renderAreaSize.width) / 2;
+            break;
+        case TextAlignment::Backward:
+            m_renderAreaOffset.x = m_targetArea.width - m_renderAreaSize.width;
+            break;
+        case TextAlignment::Justify: {
+            // "A B C" などの時の空白数
+            int blank = layoutLine->glyphs.size() - 1;
 
-			// 余りの空白量
-			float remain = m_targetArea.width - m_renderAreaSize.width;
+            // 余りの空白量
+            float remain = m_targetArea.width - m_renderAreaSize.width;
 
-			float sw = remain / blank;
+            float sw = remain / blank;
 
-			for (int i = 1; i < layoutLine->glyphs.size() - 1; i++) {
-				layoutLine->glyphs[i].pos.x += sw * i;
-			}
+            for (int i = 1; i < layoutLine->glyphs.size() - 1; i++) {
+                layoutLine->glyphs[i].pos.x += sw * i;
+            }
 
-			// 最後の一つは右詰 (加算誤差で微妙に見切れないようにする)
-			layoutLine->glyphs.back().pos.x = m_targetArea.width - layoutLine->glyphs.back().size.width;
+            // 最後の一つは右詰 (加算誤差で微妙に見切れないようにする)
+            layoutLine->glyphs.back().pos.x = m_targetArea.width - layoutLine->glyphs.back().size.width;
 
-			break;
-		}
-	}
-
+            break;
+        }
+    }
 }
 
 //==============================================================================
 // MeasureTextLayoutEngine
 
-void MeasureTextLayoutEngine::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
-{
+void MeasureTextLayoutEngine::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) {
     areaSize.width = std::max(areaSize.width, pos.x + size.width);
     areaSize.height = std::max(areaSize.height, pos.y + size.height);
 }
 
-
 //==============================================================================
 // BitmapTextRenderer
 
-void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringView& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment)
-{
+void BitmapTextRenderer::render(
+    Bitmap2D* bitmap,
+    const StringView& text,
+    const Rect& rect,
+    Font* font,
+    const Color& color,
+    TextAlignment alignment,
+    TextDrawMode drawing,
+    float strokeWidth) {
     m_bitmap = bitmap;
     m_rect = rect;
     m_color = color;
@@ -230,20 +225,29 @@ void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringView& text, const 
     layout(m_font, text.data(), text.length(), rect, 0, alignment);
 }
 
-void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
-{
+void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) {
     BitmapGlyphInfo info;
     info.glyphBitmap = nullptr; // 内部ビットマップをもらう
+    info.outlineBitmap = nullptr;
+    info.outlineWidth = m_drawing == TextDrawMode::Stroke ? m_strokeWidth : 0;
     m_font->lookupGlyphBitmap(ch, &info);
 
+    if (info.outlineBitmap) {
+        m_bitmap->blit(
+            RectI(m_rect.x + pos.x + info.outlineOffset, m_rect.y + pos.y + info.outlineOffset, info.size),
+            info.outlineBitmap,
+            RectI(0, 0, info.size),
+            ColorI::fromLinearColor(m_color),
+            BitmapBlitOptions::AlphaBlend);
+    }
 
     m_bitmap->blit(
         RectI(m_rect.x + pos.x, m_rect.y + pos.y, info.size),
         info.glyphBitmap,
         RectI(0, 0, info.size),
-        ColorI::fromLinearColor(m_color), BitmapBlitOptions::AlphaBlend);
+        ColorI::fromLinearColor(m_color),
+        BitmapBlitOptions::AlphaBlend);
 }
 
 } // namespace detail
 } // namespace ln
-

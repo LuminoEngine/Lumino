@@ -570,7 +570,8 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
         // load glyph info to GlyphSlot(m_face->glyph), for access to metrix.
         FT_Error err = FT_Load_Glyph(m_face, glyphIndex, loadFlags);
         if (LN_ENSURE(err == 0)) return;
-
+        //FT_GlyphSlot_Embolden(m_face->glyph);
+        FT_Outline_Embolden(&m_face->glyph->outline, 1);
         if (m_desc.isBold) {
             FT_GlyphSlot_Embolden(m_face->glyph);
         }
@@ -675,10 +676,21 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo) 
     //if (outInfo->outlineWidth > 0.0f) {
     float outlineWidth = 1.0f; //outInfo->outlineWidth;
     if (outlineWidth > 0.0f) {
+        // ストロークの描画速度はサイズの他、文字の複雑さにも依るようだ。
+        // - H は約 20[us].
+        // - e は約 33[us].
+        // - l は約 5[us].
+        // - o は約 22[us].
+        // キャッシュは効かないので、毎回これだけの時間がかかる。漢字だともっとかかりそう。
+        // 
+
         //FT_Glyph tempGlyph;
         //FT_Get_Glyph(glyph, &tempGlyph);
         //err = FT_Glyph_Copy(glyph, &tempGlyph);
         //if (LN_ENSURE(err == 0, "failed FT_Glyph_Copy : %d\n", err)) return nullptr;
+
+        ElapsedTimer t;
+        t.start();
 
         FT_Glyph glyph;
         result = FT_Get_Glyph(glyphSlot, &glyph);
@@ -716,6 +728,8 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo) 
         //m_fontGlyphBitmap.OutlineOffset = m_edgeSize;
 
         FT_Done_Glyph(glyph);
+
+        std::cout << t.elapsedMicroseconds() << std::endl;
     }
     else {
         outInfo->outlineBitmap = NULL;
