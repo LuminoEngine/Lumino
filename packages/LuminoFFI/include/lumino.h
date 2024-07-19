@@ -105,11 +105,23 @@ extern LUMINO_API LNResult LNMatrix_SetIdentity(LNMatrix* pMatrix);
 extern LUMINO_API LNResult LNRuntime_Initialize();
 extern LUMINO_API void LNRuntime_Terminate();
 
-extern LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t width, int32_t height, LNHandle* outReturn);
+/**
+ * Get the current color buffer.
+ *
+ * @param[out] outRenderTarget: LNRenderTargetTexture wrapped around the backbuffer.
+ * 
+ * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an LNRenderPass.
+ */
+extern LUMINO_API LNResult LNGLGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTarget);
 
 /**
+ * Get the current depth buffer.
+ *
+ * @param[out] outDepthBuffer: LNDepthBuffer wrapped around the backbuffer.
+ * 
+ * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an LNRenderPass.
  */
-extern LUMINO_API LNResult LNGraphicsContext_GetCurrentBackbuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture);
+extern LUMINO_API LNResult LNGLGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer);
 
 /**
  * 描画フレームを開始します。
@@ -164,6 +176,17 @@ extern LUMINO_API LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderi
 extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
+
+
+//==============================================================================
+// LNGLGraphicsContext
+//==============================================================================
+
+/**
+ * Creates a LNGLGraphicsContext from the current OpenGL Context.
+ */
+extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outReturn);
+
 
 //==============================================================================
 // LNRenderPass

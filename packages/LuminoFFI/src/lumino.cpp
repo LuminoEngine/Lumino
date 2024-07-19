@@ -127,22 +127,19 @@ void LNRuntime_Terminate() {
     LN_FFI_TRY_END;
 }
 
-LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t width, int32_t height, LNHandle* outReturn) {
-    LN_FFI_TRY_BEGIN;
-    OpenGLGraphicsContext::Settings s;
-    s.window = nullptr;
-    s.width = width;
-    s.height = height;
-    *outReturn = ::Runtime::wrapObject(OpenGLGraphicsContext::create(s), true);
-    LN_FFI_TRY_END_RETURN;
-}
-
-LNResult LNGraphicsContext_GetCurrentBackbuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
+LNResult LNGLGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
 	LN_FFI_TRY_BEGIN;
 	GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
     *outRenderTargetTexture = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
 	LN_FFI_TRY_END_RETURN;
 }
+
+LNResult LNGLGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer) {
+    LN_FFI_TRY_BEGIN;
+	GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    *outDepthBuffer = LN_NULL_HANDLE;
+	LN_FFI_TRY_END_RETURN;
+}        
 
 LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height) {
     LN_FFI_TRY_BEGIN;
@@ -170,6 +167,18 @@ LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
 //    LN_SAFE_RELEASE(handle)
 //
 //}
+
+//==============================================================================
+
+LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outReturn) {
+    LN_FFI_TRY_BEGIN;
+    OpenGLGraphicsContext::Settings s;
+    s.window = nullptr;
+    s.width = width;
+    s.height = height;
+    *outReturn = ::Runtime::wrapObject(OpenGLGraphicsContext::create(s), true);
+    LN_FFI_TRY_END_RETURN;
+}
 
 //==============================================================================
 //
@@ -429,6 +438,8 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
 #endif
     }
 
+    // TODO: まだキャッシュとかできていなのでこれが必要
+    LNObject_Release(renderPass_);
     LN_FFI_TRY_END_RETURN;
 }
 

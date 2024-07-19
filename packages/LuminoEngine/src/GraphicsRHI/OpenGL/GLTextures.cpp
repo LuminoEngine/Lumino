@@ -303,7 +303,7 @@ RHIRef<RHIBitmap> GLRenderTargetTexture::readData() {
     if (m_id == 0) {
         // Backbuffer
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-        GL_CHECK(glReadBuffer(GL_BACK));
+        GL_CHECK(glReadBuffer(GL_FRONT));
         //
         GL_CHECK(glReadPixels(0, 0, 320, 240, GL_RGB, GL_UNSIGNED_BYTE, buf->writableData()));
             //GL_CHECK(glReadPixels(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, buf->writableData()));

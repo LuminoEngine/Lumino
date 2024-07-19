@@ -64,7 +64,7 @@ int main() {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     LNHandle graphicsContext = LN_NULL_HANDLE;
-    if (LNGraphicsContext_CreateFromCurrentOpenGLContext(width, height, &graphicsContext) != LN_OK) {
+    if (LNGLGraphicsContext_CreateFromCurrentGL(width, height, &graphicsContext) != LN_OK) {
         return 1;
     }
 
@@ -142,7 +142,11 @@ int main() {
         }
 
         LNHandle backbuffer = LN_NULL_HANDLE;
-        if (LNGraphicsContext_GetCurrentBackbuffer(graphicsContext, & backbuffer) != LN_OK) {
+        if (LNGLGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer) != LN_OK) {
+            return 1;
+        }
+        LNHandle depthBuffer = LN_NULL_HANDLE;
+        if (LNGLGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer) != LN_OK) {
             return 1;
         }
 
@@ -158,7 +162,7 @@ int main() {
         descriptor.renderTargets[0].clearColor[2] = 0.0f;
         descriptor.renderTargets[0].clearColor[3] = 1.0f;
         descriptor.renderTargets[0].clearEnable = LN_TRUE;
-        descriptor.depthBuffer.depthBuffer = LN_NULL_HANDLE;
+        descriptor.depthBuffer.depthBuffer = depthBuffer;
         descriptor.depthBuffer.clearDepth = 1.0f;
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;

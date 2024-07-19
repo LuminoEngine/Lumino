@@ -17,9 +17,11 @@ void TestEnv::initialize() {
     ln::Engine::initialize();
     ln::PlatformModule::initialize({ { U"Test", 320, 240 }, ln::WindowSystem::GLFWWithOpenGL });
 
-    LNGraphicsContext_CreateFromCurrentOpenGLContext(320, 240, &graphicsContext);
+    LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &graphicsContext);
     LNSceneRenderingViewPoint_Create(&viewPoint);
     LNSceneRenderingViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
+
+    TestEnv::present();
 }
 
 void TestEnv::terminate() {
@@ -40,4 +42,10 @@ void TestEnv::present() {
 
 ln::Path TestEnv::getTestDataPath(ln::Path localPath) {
     return ln::Path(TEST_DATA_DIR, localPath);
+}
+
+bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save) {
+    auto context = static_cast<ln::GraphicsContext*>(ln::Runtime::getObject(graphicsContext));
+    return ln::GraphicsTestHelper::checkScreenShot(
+        TestEnv::getTestDataPath(filePath), context, context->currentBackbuffer(), passRate, save);
 }
