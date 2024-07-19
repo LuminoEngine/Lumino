@@ -244,19 +244,24 @@ Result<> GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, cons
         //    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
         //}
         //else
+
+        /* - 4.0 だと glClearDepth で GL_INVALID_OPERATION になる。
+         * - GLFW_OPENGL_CORE_PROFILE だと? glVertexAttribPointer で GL_INVALID_OPERATION になる。
         {
+
 #if defined(LN_OS_MAC) // macOS だとバージョン指定が効かない.
 //		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 //		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 #else
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 #endif
             glfwWindowHint(GLFW_RESIZABLE, (settings.resizable) ? GL_TRUE : GL_FALSE);
             glfwWindowHint(GLFW_DECORATED, GL_TRUE);
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // for NSGL(macOS)
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // for NSGL(macOS)
         }
+        */
 
         GLFWwindow* sharedWindow = (sharedContext) ? sharedContext->mainWindow()->glfwWindow() : nullptr;
         if (!windowManager->withOpenGLAPI()) {
@@ -299,7 +304,7 @@ Result<> GLFWPlatformWindow::init(GLFWPlatformWindowManager* windowManager, cons
     //  96dpi, 600ppi
     //  1インチ (= 25.4 mm)
 
-    //glfwMakeContextCurrent(m_glfwWindow);
+    glfwMakeContextCurrent(m_glfwWindow);
     //auto aa = glfwGetProcAddress("glClearDepthf");
     return ok();
 }

@@ -13,7 +13,7 @@ source_group("Sources" FILES ${LOCAL_SOURCES})
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_DIR=U"${CMAKE_CURRENT_LIST_DIR}")
 target_include_directories(${PROJECT_NAME} PRIVATE .)
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoFFI LuminoCore LuminoEngine glfw GTest::gtest GTest::gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoFFI-static LuminoCore LuminoEngine glfw GTest::gtest GTest::gtest_main)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "pch.hpp")
 

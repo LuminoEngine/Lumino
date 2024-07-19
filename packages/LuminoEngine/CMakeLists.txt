@@ -7,6 +7,7 @@ include(cmake/LuminoConfig-LuminoEngine.cmake)
 # Files
 #-------------------------------------------------------------------------------
 set(LN_SOURCES_Common
+    include/LuminoEngine.hpp
     include/LuminoEngine/RuntimeModule.hpp
     src/pch.hpp
     src/Internal.hpp

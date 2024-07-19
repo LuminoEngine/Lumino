@@ -1,4 +1,7 @@
 ﻿#include <stdio.h>
+#include <LuminoEngine/Engine/Engine.hpp>
+
+
 #include <LuminoEngine/RuntimeModule.hpp>
 #include <LuminoEngine/RHIModule.hpp>
 #include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
@@ -79,6 +82,12 @@ extern "C" {
     }                                         \
     return LN_OK;
 
+#define LN_FFI_TRY_END                                                                                        \
+    }                                                                                                                  \
+    catch (Exception & e) {                                                                                            \
+        FFI::processException(&e);                                                                              \
+    }             
+
 #define LN_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::FFI::getObject(h) : nullptr)
 //#define LN_HANDLE_TO_OBJECT2(type, h) static_cast<type*>((h) ? ::FFI::getObject(reinterpret_cast<LNHandle>(h)) : nullptr)
 //#define LN_WRAP_OBJECT(type, obj, fromCreate) reinterpret_cast<type>(::FFI::wrapObject(obj, false))
@@ -104,32 +113,18 @@ LNResult LNMatrix_SetIdentity(LNMatrix* outResult) {
 //
 //==============================================================================
 LUMINO_API LNResult LNRuntime_Initialize() {
-    RuntimeModule::initialize();
-    detail::RuntimeManager::initialize(detail::RuntimeManager::Settings());
-    GraphicsModule::initialize({ GraphicsAPI::OpenGL });
-
-    {
-        detail::FontManager::Settings settings;
-        settings.assetManager = detail::AssetManager::instance();
-        detail::FontManager::initialize(settings);
+    LN_FFI_TRY_BEGIN;
+    const auto result = ln::Engine::initialize();
+    if (!result) {
+        return LN_ERROR_UNKNOWN;
     }
-
-    {
-        detail::RenderingManager::Settings settings;
-        settings.graphicsManager = detail::GraphicsManager::instance();
-        settings.fontManager = detail::FontManager::instance();
-        printf("RenderingManager 111 %p %p\n", settings.graphicsManager, settings.fontManager);
-        detail::RenderingManager::initialize(settings);
-    }
-    return LN_OK;
+    LN_FFI_TRY_END_RETURN;
 }
 
 LUMINO_API void LNRuntime_Terminate() {
-    detail::RenderingManager::terminate();
-    detail::FontManager::terminate();
-    GraphicsModule::terminate();
-    detail::RuntimeManager::terminate();
-    RuntimeModule::terminate();
+    LN_FFI_TRY_BEGIN;
+    ln::Engine::terminate();
+    LN_FFI_TRY_END;
 }
 
 LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t width, int32_t height, LNHandle* outReturn) {
@@ -187,7 +182,10 @@ extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingComman
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingCommandList_, LNHandle sceneRenderingPass_, LNHandle graphicsContext_) {
+extern LUMINO_API LNResult LNRenderingCommandList_Submit(
+    LNHandle renderingCommandList_,
+    LNHandle sceneRenderingPass_,
+    LNHandle graphicsContext_) {
     LN_FFI_TRY_BEGIN;
     CommandList* renderingContext = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext_);
@@ -223,7 +221,7 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingComma
 
             auto* renderingManager = detail::RenderingManager::instance();
             // g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
-            kanata::BatchCollector* g_batchList = renderingContext->batchCollector();
+            kanata::BatchCollector* batchList = renderingContext->batchCollector();
             g_drawCommandList = makeURef<kanata::DrawCommandList>(renderingManager);
             g_renderPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
             g_boxMeshBatchProxy = makeURef<kanata::BoxMeshBatchProxy>();
@@ -263,11 +261,11 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingComma
 
             // Build batch
             {
-                g_batchList->clear(renderingViewPoint);
+                batchList->clear(renderingViewPoint);
 
                 // 手動で頑張るパターン
-                g_batchList->batchProxyState = &batchState;
-                auto* batch = g_batchList->newBatch<kanata::Batch>(1, material);
+                batchList->batchProxyState = &batchState;
+                auto* batch = batchList->newBatch<kanata::Batch>(1, material);
                 batch->elemets2[0].vertexBuffers = {};
                 batch->elemets2[0].vertexBuffers[0] = g_vertexBuffer;
                 batch->elemets2[0].indexBuffer = nullptr;
@@ -300,13 +298,13 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingComma
                     BillboardType::None,
                     SpriteFlipFlags::None);
                 r->end();
-
-                auto& batchProxyCollector = renderingContext->batchProxyCollector();
-                auto& batchCollector = renderingContext->batchCollector();
-
-                batchProxyCollector->resolveSingleFrameBatchProxies(batchCollector);
             }
 
+
+            auto& batchProxyCollector = renderingContext->batchProxyCollector();
+            batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
+
+            // 背景クリアテスト
             commandList->beginCommandRecoding();
             commandList->beginRenderPass(renderPass);
             commandList->clear(ClearFlags::All, Color::Aqua);
@@ -317,7 +315,7 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingComma
                 g_drawCommandList->clear();
                 g_renderPass->buildDrawCommands(
                     nullptr,
-                    g_batchList,
+                    batchList,
                     commandList,
                     renderPass,
                     renderViewInfo,

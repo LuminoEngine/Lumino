@@ -71,9 +71,9 @@ if(LN_EMSCRIPTEN)
 endif()
 
 #-------------------------------------------------------------------------------
-# Targets
+# Targets (SHARED)
 #-------------------------------------------------------------------------------
-
+# Add project.
 if(LN_EMSCRIPTEN)
     add_executable(${PROJECT_NAME} ${LN_SOURCES})
 else()
@@ -81,6 +81,7 @@ else()
     add_library(lumino::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
     target_compile_definitions(${PROJECT_NAME} PRIVATE LUMINO_BUILD_DLL=1)
 endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")
 target_include_directories(
@@ -93,6 +94,23 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoEngine)
 if(LN_EMSCRIPTEN)
     #set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${LOCAL_COMPILE_FLAGS}")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
+endif()
+
+#-------------------------------------------------------------------------------
+# Targets (STATIC)
+#-------------------------------------------------------------------------------
+# Add project.
+if(NOT LN_EMSCRIPTEN)
+    add_library(${PROJECT_NAME}-static STATIC ${LN_SOURCES})
+    set_target_properties(${PROJECT_NAME}-static PROPERTIES FOLDER "Lumino")
+    target_precompile_headers(${PROJECT_NAME}-static PRIVATE "src/pch.hpp")
+    target_include_directories(
+        ${PROJECT_NAME}-static INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+    target_include_directories(${PROJECT_NAME}-static PRIVATE include src) # for PCH
+    target_link_libraries(${PROJECT_NAME}-static PRIVATE LuminoCore LuminoEngine)
 endif()
 
 #-------------------------------------------------------------------------------
