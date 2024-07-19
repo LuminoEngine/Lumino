@@ -571,7 +571,6 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
         FT_Error err = FT_Load_Glyph(m_face, glyphIndex, loadFlags);
         if (LN_ENSURE(err == 0)) return;
         //FT_GlyphSlot_Embolden(m_face->glyph);
-        FT_Outline_Embolden(&m_face->glyph->outline, 1);
         if (m_desc.isBold) {
             FT_GlyphSlot_Embolden(m_face->glyph);
         }
