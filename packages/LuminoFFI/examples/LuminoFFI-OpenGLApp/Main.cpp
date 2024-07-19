@@ -69,12 +69,12 @@ int main() {
     }
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    if (LNRenderingCommandList_Create(graphicsContext, &renderingCommandList) != LN_OK) {
+    if (LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList) != LN_OK) {
         return 1;
     }
 
     LNHandle sceneRenderingViewPoint = LN_NULL_HANDLE;
-    if (LNSceneRenderingViewPoint_Create(&sceneRenderingViewPoint) != LN_OK) {
+    if (LNGraphicsViewPoint_Create(&sceneRenderingViewPoint) != LN_OK) {
         return 1;
     }
 
@@ -137,7 +137,7 @@ int main() {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
-        if (LNSceneRenderingViewPoint_SetupPerspective2D(sceneRenderingViewPoint, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+        if (LNGraphicsViewPoint_SetupPerspective2D(sceneRenderingViewPoint, 0, 0, 0, width, height, -500, 500) != LN_OK) {
             return 1;
         }
 
@@ -150,7 +150,7 @@ int main() {
             return 1;
         }
 
-        if (LNRenderingCommandList_Reset(renderingCommandList, sceneRenderingViewPoint, graphicsContext) != LN_OK) {
+        if (LNGraphicsCommandList_Reset(renderingCommandList, sceneRenderingViewPoint) != LN_OK) {
             return 1;
         }
 
@@ -167,7 +167,7 @@ int main() {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        if (LNRenderingCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass) != LN_OK) {
+        if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass) != LN_OK) {
             return 1;
         }
 
@@ -204,7 +204,7 @@ int main() {
         //LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
         //LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
-        if (LNRenderingCommandList_Submit(renderingCommandList, LN_NULL_HANDLE, graphicsContext) != LN_OK) {
+        if (LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList) != LN_OK) {
             return 1;
         }
 

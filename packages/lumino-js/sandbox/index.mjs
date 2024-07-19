@@ -12,10 +12,24 @@ Lumino.Runtime.initialize().then(() => {
     console.log("UNIFORM_BUFFER_OFFSET_ALIGNMENT", gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT));
 
     const graphcisContext = new Lumino.WebGLGraphicsContext(gl);
+    const commandList = graphcisContext.createCommandList();
     //const renderer = new Lumino.RenderingContext(graphcisContext);
 
-    console.log("currentColorBuffer", graphcisContext.currentColorBuffer);
-    console.log("currentDepthBuffer", graphcisContext.currentDepthBuffer);
+    const viewPoint = new Lumino.GraphicsViewPoint();
+
+    {
+        viewPoint.setupPerspective2D(800, 600);
+    
+        console.log("currentColorBuffer", graphcisContext.currentColorBuffer);
+        console.log("currentDepthBuffer", graphcisContext.currentDepthBuffer);
+    
+        commandList.reset(viewPoint);
+        const renderPass = commandList.beginRenderPass();
+        renderPass.end();
+    
+        graphcisContext.submitCommandList(commandList);
+    }
+    
 
 
     //Lumino.API.LNRuntime_Terminate();

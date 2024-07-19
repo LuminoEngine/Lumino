@@ -100,7 +100,53 @@ public:
 };
 
 //==============================================================================
-//
+LNStructHandle LNRenderPassDescriptor_Get() {
+    static LNRenderPassDescriptor s;
+    memset(&s, 0, sizeof(s));
+    return reinterpret_cast<LNStructHandle>(&s);
+}
+
+void LNRenderPassDescriptor_SetRenderTarget(
+    LNStructHandle handle,
+    int32_t index,
+    LNHandle renderTarget,
+    float clearR,
+    float clearG,
+    float clearB,
+    float clearA,
+    LNBool clearEnable) {
+    //std::cout << "handle: " << handle << std::endl;
+    //std::cout << "index: " << index << std::endl;
+    //std::cout << "renderTarget: " << renderTarget << std::endl;
+    //std::cout << "clearR: " << clearR << std::endl;
+    //std::cout << "clearG: " << clearG << std::endl;
+    //std::cout << "clearB: " << clearB << std::endl;
+    //std::cout << "clearA: " << clearA << std::endl;
+    //std::cout << "clearEnable: " << clearEnable << std::endl;
+    LNRenderPassDescriptor* d = reinterpret_cast<LNRenderPassDescriptor*>(handle);
+    d->renderTargets[index].renderTarget = renderTarget;
+    d->renderTargets[index].clearColor[0] = clearR;
+    d->renderTargets[index].clearColor[1] = clearG;
+    d->renderTargets[index].clearColor[2] = clearB;
+    d->renderTargets[index].clearColor[3] = clearA;
+    d->renderTargets[index].clearEnable = clearEnable;
+}
+
+void LNRenderPassDescriptor_SetDepthBuffer(
+    LNStructHandle handle,
+    LNHandle depthBuffer,
+    float clearDepth,
+    int32_t clearStencil,
+    LNBool clearDepthEnable,
+    LNBool clearStencilEnable) {
+    LNRenderPassDescriptor* d = reinterpret_cast<LNRenderPassDescriptor*>(handle);
+    d->depthBuffer.depthBuffer = depthBuffer;
+    d->depthBuffer.clearDepth = clearDepth;
+    d->depthBuffer.clearStencil = clearStencil;
+    d->depthBuffer.clearDepthEnable = clearDepthEnable;
+    d->depthBuffer.clearStencilEnable = clearStencilEnable;
+}
+
 //==============================================================================
 LNResult LNMatrix_SetIdentity(LNMatrix* outResult) {
     LN_FFI_TRY_BEGIN;
@@ -183,18 +229,18 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
 //==============================================================================
 //
 //==============================================================================
-extern LNResult LNRenderingCommandList_Create(LNHandle graphicsContext, LNHandle* outRenderingCommandList) {
+extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle* outGraphicsCommandList) {
     LN_FFI_TRY_BEGIN;
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
     Ref<FFIRenderingCommandList> commandList = makeObject_deprecated<FFIRenderingCommandList>();
     commandList->context = context;
     commandList->commandList = context->currentCommandList2();
     commandList->renderingContext = makeObject_deprecated<CommandList>();
-    *outRenderingCommandList = ::Runtime::wrapObject(commandList, true);
+    *outGraphicsCommandList = ::Runtime::wrapObject(commandList, true);
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList_, LNHandle renderingViewPoint_, LNHandle graphicsContext_) {
+extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_, LNHandle renderingViewPoint_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
     RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
@@ -203,7 +249,7 @@ extern LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList_, LNH
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNRenderingCommandList_BeginRenderPass(
+extern LNResult LNGraphicsCommandList_BeginRenderPass(
     LNHandle renderingCommandList_,
     LNRenderPassDescriptor descriptor_,
     LNHandle* outRenderPass_) {
@@ -225,7 +271,8 @@ extern LNResult LNRenderingCommandList_BeginRenderPass(
 		clearFlags = clearFlags | ln::ClearFlags::Stencil;
 	}
 
-   renderPass-> renderPass = RenderPass::get(
+    std::cout << "cccc: " << descriptor_.renderTargets[0].renderTarget << std::endl;
+    renderPass-> renderPass = RenderPass::get(
         LN_HANDLE_TO_OBJECT(RenderTargetTexture, descriptor_.renderTargets[0].renderTarget), 
         LN_HANDLE_TO_OBJECT(DepthBuffer, descriptor_.depthBuffer.depthBuffer),
         static_cast<ln::ClearFlags>(clearFlags),
@@ -252,10 +299,9 @@ extern LNResult LNRenderingCommandList_BeginRenderPass(
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNRenderingCommandList_Submit(
-    LNHandle renderingCommandList_,
-    LNHandle sceneRenderingPass_,
-    LNHandle graphicsContext_) {
+LNResult LNGraphicsContext_SubmitCommandList(
+    LNHandle graphicsContext_,
+    LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderingCommandList* renderingContext2 = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
     CommandList* renderingContext = renderingContext2->renderingContext;
@@ -444,14 +490,14 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
 }
 
 
-extern LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderingViewPoint) {
+extern LNResult LNGraphicsViewPoint_Create(LNHandle* outRenderingViewPoint) {
     LN_FFI_TRY_BEGIN;
     Ref<RenderViewPoint> viewPoint = makeRef<RenderViewPoint>();
     *outRenderingViewPoint = ::Runtime::wrapObject(viewPoint, true);
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ) {
+extern LNResult LNGraphicsViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ) {
     LN_FFI_TRY_BEGIN;
     RenderViewPoint* viewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint);
     viewPoint->resetPerspective2D(Vector3(x,y, z), Size(width, height), nearZ, farZ);

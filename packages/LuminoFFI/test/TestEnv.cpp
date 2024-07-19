@@ -18,8 +18,8 @@ void TestEnv::initialize() {
     ln::PlatformModule::initialize({ { U"Test", 320, 240 }, ln::WindowSystem::GLFWWithOpenGL });
 
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &graphicsContext);
-    LNSceneRenderingViewPoint_Create(&viewPoint);
-    LNSceneRenderingViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
+    LNGraphicsViewPoint_Create(&viewPoint);
+    LNGraphicsViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
 
     TestEnv::present();
 }

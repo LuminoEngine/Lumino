@@ -7,7 +7,7 @@ TEST_F(Test_BasicRendering, Clear1) {
     LNHandle graphicsContext = TestEnv::graphicsContext;
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNRenderingCommandList_Create(graphicsContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
 
     // Rendering loop.
     {
@@ -16,7 +16,7 @@ TEST_F(Test_BasicRendering, Clear1) {
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer));
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer));
 
-        ASSERT_EQ(LN_OK, LNRenderingCommandList_Reset(renderingCommandList, TestEnv::viewPoint, graphicsContext));
+        ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList, TestEnv::viewPoint));
 
         LNHandle renderingPass = LN_NULL_HANDLE;
         LNRenderPassDescriptor descriptor;
@@ -31,11 +31,11 @@ TEST_F(Test_BasicRendering, Clear1) {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        ASSERT_EQ(LN_OK, LNRenderingCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass));
+        ASSERT_EQ(LN_OK, LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass));
 
         ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
 
-        ASSERT_EQ(LN_OK, LNRenderingCommandList_Submit(renderingCommandList, LN_NULL_HANDLE, graphicsContext));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList));
 
         TestEnv::present();
     }

@@ -43,6 +43,8 @@ typedef enum LNResult {
 typedef int32_t LNHandle;
 #define LN_NULL_HANDLE 0
 
+typedef intptr_t LNStructHandle;
+
 typedef int8_t LNBool;
 #define LN_TRUE 1
 #define LN_FALSE 0
@@ -77,6 +79,11 @@ typedef struct LNRenderPassDescriptor {
     LNRenderPassRenderTargetDescriptor renderTargets[8];
     LNRenderPassDepthBufferDescriptor depthBuffer;
 } LNRenderPassDescriptor;
+
+extern LUMINO_API LNStructHandle LNRenderPassDescriptor_Get();
+extern LUMINO_API void LNRenderPassDescriptor_SetRenderTarget(LNStructHandle handle, int32_t index, LNHandle renderTarget, float clearR, float clearG, float clearB, float clearA, LNBool clearEnable);
+extern LUMINO_API void LNRenderPassDescriptor_SetDepthBuffer(LNStructHandle handle, LNHandle depthBuffer, float clearDepth, int32_t clearStencil, LNBool clearDepthEnable, LNBool clearStencilEnable);
+
  
 //==============================================================================
 //
@@ -146,6 +153,11 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext
 extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 
 /**
+ * Sends the command list recorded in GraphicsCommandList to the GPU.
+ */
+extern LUMINO_API LNResult LNGraphicsContext_SubmitCommandList(LNHandle graphicsContext, LNHandle graphicsCommandList);
+
+/**
  * バックバッファをフロントバッファに転送します。
  *
  * 外部コンテキストを使っている場合、この関数は使えません。
@@ -156,24 +168,18 @@ extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
 
 //extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
 
-extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContext, LNHandle* outRenderingCommandList);
-extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList, LNHandle renderingViewPoint, LNHandle graphicsContext_);
-
-
-extern LUMINO_API LNResult LNRenderingCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle* outRenderPass);
-
 /**
- * RenderingCommandList に記録されているコマンドリストを GPUCommandList に変換します。
- * 
- * @param[in] renderingCommandList : 対象の RenderingCommandList のハンドル。
- * @param[in] sceneRenderingPass : 対象の RenderingCommandList のハンドル。
- * @param[in] graphicsContext : 対象の RenderingCommandList のハンドル。
- */
-extern LUMINO_API LNResult LNRenderingCommandList_Submit(LNHandle renderingCommandList, LNHandle sceneRenderingPass, LNHandle graphicsContext);
+　* Creates a new GraphicsCommandList.
+　*/
+extern LUMINO_API LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle* outGraphicsCommandList);
+extern LUMINO_API LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList, LNHandle renderingViewPoint);
+
+
+extern LUMINO_API LNResult LNGraphicsCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle* outRenderPass);
 
 // いわゆるカメラ情報
-extern LUMINO_API LNResult LNSceneRenderingViewPoint_Create(LNHandle* outRenderingViewPoint);
-extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
+extern LUMINO_API LNResult LNGraphicsViewPoint_Create(LNHandle* outGraphicsViewPoint);
+extern LUMINO_API LNResult LNGraphicsViewPoint_SetupPerspective2D(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 

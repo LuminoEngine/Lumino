@@ -4,6 +4,10 @@ export class LuminoObject {
     private _handle: Handle;
     private _autoRelease: boolean;
 
+    public get handle(): Handle {
+        return this._handle;
+    }
+
     public constructor() {
         this._handle = 0;
         this._autoRelease = false;

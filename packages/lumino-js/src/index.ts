@@ -3,6 +3,7 @@
 import LuminoFFIModule from "../dist/LuminoFFI.js";
 import { DepthBuffer } from "./DepthBuffer";
 import { GraphicsContext } from "./GraphicsContext";
+export * from "./GraphicsViewPoint";
 import { RenderTargetTexture } from "./RenderTargetTexture";
 
 import { Runtime, Handle, API } from "./Runtime";
