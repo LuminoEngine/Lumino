@@ -9,6 +9,7 @@
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/GPU/DepthBuffer.hpp>
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -83,6 +84,15 @@ extern "C" {
 //     例えば LNTexture2D を LNTextre として LNMaterial にセットしたいときなど。
 //     キャストして使ってもよいが、そうすると LNHandle のまま使うのと大差なくなるかも。
 
+    
+class FFIRenderingCommandList : public ln::Object {
+public:
+    GraphicsContext* context;
+    GraphicsCommandList* commandList;
+    Ref<CommandList> renderingContext;
+};
+class FFIRenderPass : public ln::Object {};
+
 //==============================================================================
 //
 //==============================================================================
@@ -151,18 +161,42 @@ LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
 extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContext, LNHandle* outRenderingCommandList) {
     LN_FFI_TRY_BEGIN;
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
-    Ref<CommandList> renderingContext = makeObject_deprecated<CommandList>();
-    *outRenderingCommandList = ::Runtime::wrapObject(renderingContext, true);
+    Ref<FFIRenderingCommandList> commandList = makeObject_deprecated<FFIRenderingCommandList>();
+    commandList->context = context;
+    commandList->commandList = context->currentCommandList2();
+    commandList->renderingContext = makeObject_deprecated<CommandList>();
+    *outRenderingCommandList = ::Runtime::wrapObject(commandList, true);
     LN_FFI_TRY_END_RETURN;
 }
 
 extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList_, LNHandle renderingViewPoint_, LNHandle graphicsContext_) {
     LN_FFI_TRY_BEGIN;
-    CommandList* renderingContext = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
     RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
+    commandList->renderingContext->clearCommandsAndState(renderingViewPoint);
+    commandList->commandList->beginCommandRecoding();
+    LN_FFI_TRY_END_RETURN;
+}
 
-    renderingContext->clearCommandsAndState(renderingViewPoint);
-
+extern LUMINO_API LNResult LNRenderingCommandList_BeginRenderPass(
+    LNHandle renderingCommandList_,
+    LNRenderPassDescriptor descriptor_,
+    LNHandle* outRenderPass_) {
+    LN_FFI_TRY_BEGIN;
+    FFIRenderingCommandList* renderingContext = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    RenderPass* renderPass = RenderPass::get(
+        LN_HANDLE_TO_OBJECT(RenderTargetTexture, descriptor_.renderTargets[0].renderTarget), 
+        LN_HANDLE_TO_OBJECT(DepthBuffer, descriptor_.depthBuffer.depthBuffer),
+        static_cast<ln::ClearFlags>(descriptor_.clearFlags),
+        Color(
+            descriptor_.renderTargets[0].clearColor[0],
+            descriptor_.renderTargets[0].clearColor[1],
+            descriptor_.renderTargets[0].clearColor[2],
+            descriptor_.renderTargets[0].clearColor[3]),
+        descriptor_.depthBuffer.clearDepth,
+        descriptor_.depthBuffer.clearStencil
+    );
+    *outRenderPass_ = ::Runtime::wrapObject(renderPass, false);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -171,7 +205,8 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(
     LNHandle sceneRenderingPass_,
     LNHandle graphicsContext_) {
     LN_FFI_TRY_BEGIN;
-    CommandList* renderingContext = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    FFIRenderingCommandList* renderingContext2 = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    CommandList* renderingContext = renderingContext2->renderingContext;
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext_);
     
     
@@ -290,7 +325,6 @@ extern LUMINO_API LNResult LNRenderingCommandList_Submit(
             batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
 
             // 背景クリアテスト
-            commandList->beginCommandRecoding();
             commandList->beginRenderPass(renderPass);
             commandList->clear(ClearFlags::All, Color::Aqua);
             commandList->endRenderPass();
@@ -469,11 +503,11 @@ LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
     const LNMatrix* transform_) {
     LN_FFI_TRY_BEGIN;
     SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
-    CommandList* commandList = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
-    commandList->setTransfrom(*transform);
-    spriteRenderer->begin(commandList, material);
+    commandList->renderingContext->setTransfrom(*transform);
+    spriteRenderer->begin(commandList->renderingContext, material);
     LN_FFI_TRY_END_RETURN;
 }
 

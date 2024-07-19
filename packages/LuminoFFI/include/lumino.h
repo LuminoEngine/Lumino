@@ -47,6 +47,35 @@ typedef int32_t LNHandle;
 //==============================================================================
 //
 //==============================================================================
+typedef enum LNClearFlags {
+    LN_CLEAR_FLAGS_NONE  = 0x0000,
+    LN_CLEAR_FLAGS_COLOR = 0x0001,
+    LN_CLEAR_FLAGS_DEPTH = 0x0002,
+    LN_CLEAR_FLAGS_STENCIL = 0x0004,
+    LN_CLEAR_FLAGS_ALL = LN_CLEAR_FLAGS_COLOR | LN_CLEAR_FLAGS_DEPTH | LN_CLEAR_FLAGS_STENCIL,
+    LN_CLEAR_FLAGS__FORCE32 = 0x7FFFFFFF,
+} LNClearFlags;
+
+typedef struct LNRenderPassRenderTargetDescriptor {
+    LNHandle renderTarget;
+	float clearColor[4]; // [R, G, B, A]
+} LNRenderPassRenderTargetDescriptor;
+
+typedef struct LNRenderPassDepthBufferDescriptor {
+    LNHandle depthBuffer;
+	float clearDepth;
+	float clearStencil;
+} LNRenderPassDepthBufferDescriptor;
+
+typedef struct LNRenderPassDescriptor {
+    LNClearFlags clearFlags;
+    LNRenderPassRenderTargetDescriptor renderTargets[8];
+    LNRenderPassDepthBufferDescriptor depthBuffer;
+} LNRenderPassDescriptor;
+ 
+//==============================================================================
+//
+//==============================================================================
 typedef struct LNMatrix {
     union {
         struct
@@ -109,6 +138,9 @@ extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
 extern LUMINO_API LNResult LNRenderingCommandList_Create(LNHandle graphicsContext, LNHandle* outRenderingCommandList);
 extern LUMINO_API LNResult LNRenderingCommandList_Reset(LNHandle renderingCommandList, LNHandle renderingViewPoint, LNHandle graphicsContext_);
 
+
+extern LUMINO_API LNResult LNRenderingCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle* outRenderPass);
+
 /**
  * RenderingCommandList に記録されているコマンドリストを GPUCommandList に変換します。
  * 
@@ -124,6 +156,12 @@ extern LUMINO_API LNResult LNSceneRenderingViewPoint_SetupPerspective2D(LNHandle
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 
+//==============================================================================
+// LNRenderPass
+//==============================================================================
+
+extern LUMINO_API LNResult LNRenderPass_End(LNHandle renderPass);
+ 
 //==============================================================================
 // LNTexture
 //==============================================================================
