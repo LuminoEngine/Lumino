@@ -12,8 +12,10 @@ Lumino.Runtime.initialize().then(() => {
     console.log("UNIFORM_BUFFER_OFFSET_ALIGNMENT", gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT));
 
     const graphcisContext = new Lumino.WebGLGraphicsContext(gl);
-    const renderer = new Lumino.RenderingContext(graphcisContext);
+    //const renderer = new Lumino.RenderingContext(graphcisContext);
 
+    console.log("currentColorBuffer", graphcisContext.currentColorBuffer);
+    console.log("currentDepthBuffer", graphcisContext.currentDepthBuffer);
 
 
     //Lumino.API.LNRuntime_Terminate();

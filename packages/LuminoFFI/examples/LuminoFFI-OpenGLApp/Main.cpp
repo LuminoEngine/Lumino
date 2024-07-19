@@ -142,11 +142,11 @@ int main() {
         }
 
         LNHandle backbuffer = LN_NULL_HANDLE;
-        if (LNGLGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer) != LN_OK) {
+        if (LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer) != LN_OK) {
             return 1;
         }
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        if (LNGLGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer) != LN_OK) {
+        if (LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer) != LN_OK) {
             return 1;
         }
 

@@ -112,7 +112,7 @@ extern LUMINO_API void LNRuntime_Terminate();
  * 
  * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an LNRenderPass.
  */
-extern LUMINO_API LNResult LNGLGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTarget);
+extern LUMINO_API LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTarget);
 
 /**
  * Get the current depth buffer.
@@ -121,7 +121,7 @@ extern LUMINO_API LNResult LNGLGraphicsContext_GetCurrentColorBuffer(LNHandle gr
  * 
  * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an LNRenderPass.
  */
-extern LUMINO_API LNResult LNGLGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer);
+extern LUMINO_API LNResult LNGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer);
 
 /**
  * 描画フレームを開始します。
@@ -185,7 +185,7 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 /**
  * Creates a LNGLGraphicsContext from the current OpenGL Context.
  */
-extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outReturn);
+extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext);
 
 
 //==============================================================================

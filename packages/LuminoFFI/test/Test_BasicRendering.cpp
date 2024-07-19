@@ -13,8 +13,8 @@ TEST_F(Test_BasicRendering, Clear1) {
     {
         LNHandle backbuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        ASSERT_EQ(LN_OK, LNGLGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer));
-        ASSERT_EQ(LN_OK, LNGLGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer));
 
         ASSERT_EQ(LN_OK, LNRenderingCommandList_Reset(renderingCommandList, TestEnv::viewPoint, graphicsContext));
 

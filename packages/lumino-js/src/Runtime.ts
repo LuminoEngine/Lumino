@@ -24,8 +24,12 @@ export class Runtime {
             this.module = module;
             API.LNRuntime_Initialize = module.cwrap("LNRuntime_Initialize", "number", []);
             API.LNRuntime_Terminate = module.cwrap("LNRuntime_Terminate", "void", []);
-            API.LNGraphicsContext_CreateFromOpenGL = module.cwrap("LNGraphicsContext_CreateFromOpenGL", "number", ["number", "number", "number"]);
-            API.LNRenderingContext_Create = module.cwrap("LNRenderingContext_Create", "number", ["number", "number"]);
+            API.LNGLGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGLGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
+
+            API.LNGraphicsContext_GetCurrentColorBuffer = module.cwrap("LNGraphicsContext_GetCurrentColorBuffer", "number", ["number", "number"]);
+            API.LNGraphicsContext_GetCurrentDepthBuffer = module.cwrap("LNGraphicsContext_GetCurrentDepthBuffer", "number", ["number", "number"]);
+
+            //API.LNRenderingContext_Create = module.cwrap("LNRenderingContext_Create", "number", ["number", "number"]);
             API.LNObject_Release = module.cwrap("LNObject_Release", "number", ["number"]);
             API.LNObject_Retain = module.cwrap("LNObject_Retain", "number", ["number"]);
 
@@ -48,8 +52,10 @@ export enum Result {
 export class API {
     public static LNRuntime_Initialize: () => Result;
     public static LNRuntime_Terminate: () => void;
-    public static LNGraphicsContext_CreateFromOpenGL: (width: number, height: number, outReturn: number) => Result;
-    public static LNRenderingContext_Create: (graphicsContext: Handle, outReturn: number) => Result;
+    public static LNGLGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
+    public static LNGraphicsContext_GetCurrentColorBuffer: (graphicsContext: Handle, outRenderTarget: number) => Result;
+    public static LNGraphicsContext_GetCurrentDepthBuffer: (graphicsContext: Handle, outDepthBuffer: number) => Result;
+    //public static LNRenderingContext_Create: (graphicsContext: Handle, outReturn: number) => Result;
     public static LNObject_Release: (obj: Handle) => Result;
     public static LNObject_Retain: (obj: Handle) => Result;
 }
