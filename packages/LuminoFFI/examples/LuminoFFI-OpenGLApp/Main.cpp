@@ -141,7 +141,27 @@ int main() {
             return 1;
         }
 
+        LNHandle backbuffer = LN_NULL_HANDLE;
+        if (LNGraphicsContext_GetCurrentBackbuffer(graphicsContext, & backbuffer) != LN_OK) {
+            return 1;
+        }
+
         if (LNRenderingCommandList_Reset(renderingCommandList, sceneRenderingViewPoint, graphicsContext) != LN_OK) {
+            return 1;
+        }
+
+        LNHandle renderingPass = LN_NULL_HANDLE;
+        LNRenderPassDescriptor descriptor;
+        descriptor.renderTargets[0].renderTarget = backbuffer;
+        descriptor.renderTargets[0].clearColor[0] = 0.0f;
+        descriptor.renderTargets[0].clearColor[1] = 0.0f;
+        descriptor.renderTargets[0].clearColor[2] = 0.0f;
+        descriptor.renderTargets[0].clearColor[3] = 1.0f;
+        descriptor.renderTargets[0].clearEnable = LN_TRUE;
+        descriptor.depthBuffer.depthBuffer = NULL;
+        descriptor.depthBuffer.clearDepthEnable = LN_FALSE;
+        descriptor.depthBuffer.clearStencilEnable = LN_FALSE;
+        if (LNRenderingCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass) != LN_OK) {
             return 1;
         }
 
@@ -168,6 +188,10 @@ int main() {
             LN_SPRITE_BASE_DIRECTION_BASIC2D,
             LN_BILLBOARD_TYPE_NONE);
         LNSpriteRenderer_EndBatch(spriteRenderer);
+
+        if (LNRenderPass_End(renderingPass) != LN_OK) {
+            return 1;
+        }
 
 
         //LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);

@@ -41,34 +41,39 @@ typedef enum LNResult {
 
 /** Lumino のオブジェクトを識別するための値です。0 (LN_NULL_HANDLE) は無効値です。 */
 typedef int32_t LNHandle;
-
 #define LN_NULL_HANDLE 0
+
+typedef int8_t LNBool;
+#define LN_TRUE 1
+#define LN_FALSE 0
 
 //==============================================================================
 //
 //==============================================================================
-typedef enum LNClearFlags {
-    LN_CLEAR_FLAGS_NONE  = 0x0000,
-    LN_CLEAR_FLAGS_COLOR = 0x0001,
-    LN_CLEAR_FLAGS_DEPTH = 0x0002,
-    LN_CLEAR_FLAGS_STENCIL = 0x0004,
-    LN_CLEAR_FLAGS_ALL = LN_CLEAR_FLAGS_COLOR | LN_CLEAR_FLAGS_DEPTH | LN_CLEAR_FLAGS_STENCIL,
-    LN_CLEAR_FLAGS__FORCE32 = 0x7FFFFFFF,
-} LNClearFlags;
+//typedef enum LNClearFlags {
+//    LN_CLEAR_FLAGS_NONE  = 0x0000,
+//    LN_CLEAR_FLAGS_COLOR = 0x0001,
+//    LN_CLEAR_FLAGS_DEPTH = 0x0002,
+//    LN_CLEAR_FLAGS_STENCIL = 0x0004,
+//    LN_CLEAR_FLAGS_ALL = LN_CLEAR_FLAGS_COLOR | LN_CLEAR_FLAGS_DEPTH | LN_CLEAR_FLAGS_STENCIL,
+//    LN_CLEAR_FLAGS__FORCE32 = 0x7FFFFFFF,
+//} LNClearFlags;
 
 typedef struct LNRenderPassRenderTargetDescriptor {
     LNHandle renderTarget;
 	float clearColor[4]; // [R, G, B, A]
+    LNBool clearEnable;
 } LNRenderPassRenderTargetDescriptor;
 
 typedef struct LNRenderPassDepthBufferDescriptor {
     LNHandle depthBuffer;
 	float clearDepth;
 	float clearStencil;
+    LNBool clearDepthEnable;
+    LNBool clearStencilEnable;
 } LNRenderPassDepthBufferDescriptor;
 
 typedef struct LNRenderPassDescriptor {
-    LNClearFlags clearFlags;
     LNRenderPassRenderTargetDescriptor renderTargets[8];
     LNRenderPassDepthBufferDescriptor depthBuffer;
 } LNRenderPassDescriptor;
@@ -101,6 +106,10 @@ extern LUMINO_API LNResult LNRuntime_Initialize();
 extern LUMINO_API void LNRuntime_Terminate();
 
 extern LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t width, int32_t height, LNHandle* outReturn);
+
+/**
+ */
+extern LUMINO_API LNResult LNGraphicsContext_GetCurrentBackbuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture);
 
 /**
  * 描画フレームを開始します。
