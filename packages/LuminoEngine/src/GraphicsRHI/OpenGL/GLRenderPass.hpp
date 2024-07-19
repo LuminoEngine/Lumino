@@ -11,7 +11,7 @@ class GLRenderPass : public IRenderPass {
 public:
     GLRenderPass();
     Result<> init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
-    Result<> initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget);
+    
     void onDestroy() override;
     RHIExtent2D viewSize() const override;
 
@@ -22,6 +22,8 @@ public:
     void bind(GLGraphicsContext* context);
 
 private:
+    Result<> initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget);
+
     OpenGLDevice* m_device;
     //std::array<Ref<GLTextureBase>, MaxMultiRenderTargets> m_renderTargets;
     //Ref<GLDepthBuffer> m_depthBuffer;

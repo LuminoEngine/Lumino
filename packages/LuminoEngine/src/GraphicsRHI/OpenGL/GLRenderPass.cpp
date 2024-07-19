@@ -116,7 +116,7 @@ Result<> GLRenderPass::initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* rend
     GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, oldRenderBufferName));
 #endif
     m_fbo = fbo;
-    m_clearFlags = ClearFlags::None;
+    //m_clearFlags = ClearFlags::None;
     m_viewSize.width = renderTarget->extentSize().width;
     m_viewSize.height = renderTarget->extentSize().height;
     m_renderTargets[0] = renderTarget;

@@ -140,7 +140,7 @@ LNResult LNGraphicsContext_CreateFromCurrentOpenGLContext(int32_t width, int32_t
 LNResult LNGraphicsContext_GetCurrentBackbuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
 	LN_FFI_TRY_BEGIN;
 	GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
-        *outRenderTargetTexture = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
+    *outRenderTargetTexture = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
 	LN_FFI_TRY_END_RETURN;
 }
 
@@ -237,7 +237,7 @@ extern LNResult LNRenderingCommandList_BeginRenderPass(
     
     // 背景クリアテスト
     renderingContext->commandList->beginRenderPass(renderPass->renderPass);
-    renderingContext->commandList->clear(ClearFlags::All, Color::Aqua);
+    //renderingContext->commandList->clear(ClearFlags::All, Color::Aqua);
     renderingContext->commandList->endRenderPass();
 
     LN_FFI_TRY_END_RETURN;

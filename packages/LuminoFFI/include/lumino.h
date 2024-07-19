@@ -68,7 +68,7 @@ typedef struct LNRenderPassRenderTargetDescriptor {
 typedef struct LNRenderPassDepthBufferDescriptor {
     LNHandle depthBuffer;
 	float clearDepth;
-	float clearStencil;
+	int32_t clearStencil;
     LNBool clearDepthEnable;
     LNBool clearStencilEnable;
 } LNRenderPassDepthBufferDescriptor;

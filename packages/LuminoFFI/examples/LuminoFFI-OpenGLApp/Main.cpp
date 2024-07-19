@@ -154,13 +154,15 @@ int main() {
         LNRenderPassDescriptor descriptor;
         descriptor.renderTargets[0].renderTarget = backbuffer;
         descriptor.renderTargets[0].clearColor[0] = 0.0f;
-        descriptor.renderTargets[0].clearColor[1] = 0.0f;
+        descriptor.renderTargets[0].clearColor[1] = 1.0f;
         descriptor.renderTargets[0].clearColor[2] = 0.0f;
         descriptor.renderTargets[0].clearColor[3] = 1.0f;
         descriptor.renderTargets[0].clearEnable = LN_TRUE;
-        descriptor.depthBuffer.depthBuffer = NULL;
-        descriptor.depthBuffer.clearDepthEnable = LN_FALSE;
-        descriptor.depthBuffer.clearStencilEnable = LN_FALSE;
+        descriptor.depthBuffer.depthBuffer = LN_NULL_HANDLE;
+        descriptor.depthBuffer.clearDepth = 1.0f;
+        descriptor.depthBuffer.clearStencil = 0;
+        descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
+        descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         if (LNRenderingCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass) != LN_OK) {
             return 1;
         }
