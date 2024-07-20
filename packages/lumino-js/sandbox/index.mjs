@@ -64,7 +64,7 @@ function render() {
             spriteRenderer.beginBatch(commandList, material, new Lumino.Matrix());
             spriteRenderer.drawSprite(
                 null,
-                { width: 100, height: 200 },
+                { width: 256, height: 256 },
                 { x: 0, y: 0 },
                 {x: 0, y: 0, width: 1, height: 1},
                 {r: 1, g: 1, b: 1, a: 1},

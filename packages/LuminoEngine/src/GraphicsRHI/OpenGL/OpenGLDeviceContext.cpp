@@ -184,18 +184,21 @@ void OpenGLDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
 //    outCaps->requestedShaderTriple.version = 400;
 //    outCaps->requestedShaderTriple.option = "";
 //#endif
-    outCaps->imageLayoytVFlip = true;
 
     if (m_es) {
         // canvas.getContext("webgl2") で取得したコンテキストでないと、
         // gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT) は使えない。
         // ひとまず、 "OpenGL ES 2.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))" 上での値が 256 だったのでこれを使う。
         outCaps->uniformBufferOffsetAlignment = 256;
+
+        // WebGL 2.0 で動かしたら、同じシェーダコードのはずだが上下反転していたので。
+        outCaps->imageLayoytVFlip = false;
     }
     else {
         GLint align = 0;
         GL_CHECK(glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &align));
         outCaps->uniformBufferOffsetAlignment = align;
+        outCaps->imageLayoytVFlip = true;
     }
 }
 

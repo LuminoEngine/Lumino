@@ -535,10 +535,10 @@ LNResult LNTexture2D_Create(int32_t width, int32_t height, LNHandle* outTexture2
 
 LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D) {
     LN_FFI_TRY_BEGIN;
-    std::cout << "data: " << reinterpret_cast<int64_t>(data) << std::endl;
-    std::cout << "length: " << length << std::endl;
-    std::cout << "data[0]: " << static_cast<int>(data[0]) << std::endl;
-    std::cout << "data[1]: " << static_cast<int>(data[1]) << std::endl;
+    //std::cout << "data: " << reinterpret_cast<int64_t>(data) << std::endl;
+    //std::cout << "length: " << length << std::endl;
+    //std::cout << "data[0]: " << static_cast<int>(data[0]) << std::endl;
+    //std::cout << "data[1]: " << static_cast<int>(data[1]) << std::endl;
     Ref<Texture2D> texture = Texture2D::createFromImageFileData(data, length);
     *outTexture2D = ::Runtime::wrapObject(texture, true);
     LN_FFI_TRY_END_RETURN;
@@ -603,8 +603,7 @@ LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) 
 }
 
 //==============================================================================
-//
-//==============================================================================
+
 LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
     LN_FFI_TRY_BEGIN;
 	detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
@@ -619,6 +618,12 @@ LNResult LNSpriteRenderer_BeginBatch(
     LNHandle material_,
     const LNMatrix* transform_) {
     LN_FFI_TRY_BEGIN;
+    //std::cout << "spriteRenderer: " << spriteRenderer_ << std::endl;
+    //std::cout << "graphicsCommandList: " << graphicsCommandList_ << std::endl;
+    //std::cout << "material: " << material_ << std::endl;
+    //std::cout << "transform: " << transform_ << std::endl;
+    //std::cout << "transform m11: " << transform_->m11 << std::endl;
+    //std::cout << "transform m12: " << transform_->m12 << std::endl;
     SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
     FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
@@ -652,19 +657,26 @@ LNResult LNSpriteRenderer_DrawSprite(
     float a,
     LNSpriteBaseDirection baseDirection,
     LNBillboardType billboardType) {
-        LN_FFI_TRY_BEGIN;
-        const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
-        SpriteRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
-        renderer->drawSprite(
-            (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
-            Size(width, height),
-            Vector2(anchorRatioX, anchorRatioY),
-            Rect(uvRectX, uvRectY, uvRectW, uvRectH),
-            Color(r, g, b, a),
-            static_cast<SpriteBaseDirection>(baseDirection),
-            static_cast<BillboardType>(billboardType),
-            SpriteFlipFlags::None);
-        LN_FFI_TRY_END_RETURN;
+        //std::cout << "anchorRatioX: " << anchorRatioX << std::endl;
+        //std::cout << "anchorRatioY: " << anchorRatioY << std::endl;
+        //std::cout << "uvRectX: " << uvRectX << std::endl;
+        //std::cout << "uvRectY: " << uvRectY << std::endl;
+        //std::cout << "uvRectW: " << uvRectW << std::endl;
+        //std::cout << "uvRectH: " << uvRectH << std::endl;
+
+    LN_FFI_TRY_BEGIN;
+    const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
+    SpriteRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
+    renderer->drawSprite(
+        (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
+        Size(width, height),
+        Vector2(anchorRatioX, anchorRatioY),
+        Rect(uvRectX, uvRectY, uvRectW, uvRectH),
+        Color(r, g, b, a),
+        static_cast<SpriteBaseDirection>(baseDirection),
+        static_cast<BillboardType>(billboardType),
+        SpriteFlipFlags::None);
+    LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================

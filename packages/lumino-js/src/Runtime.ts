@@ -92,7 +92,7 @@ export class Runtime {
     }
 
     public static setMatrix(matrix: Float32Array): number {
-        this.module.HEAPF32.set(matrix, this.matrixMemoryCachePtr);
+        this.module.HEAPF32.set(matrix, this.matrixMemoryCachePtr >> 2);
         return this.matrixMemoryCachePtr;
     }
 
