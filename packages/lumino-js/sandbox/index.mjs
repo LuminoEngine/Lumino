@@ -1,5 +1,14 @@
 import * as Lumino from "./../dist/lumino.mjs";
 
+//const image = new Image();
+const imagePath = "./icon256.png";
+
+
+let graphcisContext = undefined;
+let commandList = undefined;
+let viewPoint = undefined;
+let texture = undefined;
+let material = undefined;
 
 Lumino.Runtime.initialize().then(() => {
 
@@ -11,15 +20,42 @@ Lumino.Runtime.initialize().then(() => {
 
     console.log("UNIFORM_BUFFER_OFFSET_ALIGNMENT", gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT));
 
-    const graphcisContext = new Lumino.WebGLGraphicsContext(gl);
-    const commandList = graphcisContext.createCommandList();
-    //const renderer = new Lumino.RenderingContext(graphcisContext);
+    graphcisContext = new Lumino.WebGLGraphicsContext(gl);
+    commandList = graphcisContext.createCommandList();
+    viewPoint = new Lumino.GraphicsViewPoint();
 
-    const viewPoint = new Lumino.GraphicsViewPoint();
+    console.log("=== initialized ===");
 
     {
-        viewPoint.setupPerspective2D(800, 600);
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", imagePath);
+        xhr.responseType = "arraybuffer";
+        xhr.onload = () => {
+            console.log("xhr.onload", xhr.response);
+            texture = new Lumino.Texture2D(xhr.response);
+            material = new Lumino.Material();
+            material.setMainTexture(texture);
+        }
+        xhr.onerror = (e) => {
+            console.error(`HttpRequestError: ${xhr.statusText ?? "No error infomatino."} (${imagePath})`);
+        };
+        xhr.send();
+        
+    }
     
+
+
+    //Lumino.API.LNRuntime_Terminate();
+
+function isReady() {
+    return texture !== undefined;
+}
+
+function render() {
+
+    if (isReady()) {
+        viewPoint.setupPerspective2D(800, 600);
+        
         console.log("currentColorBuffer", graphcisContext.currentColorBuffer);
         console.log("currentDepthBuffer", graphcisContext.currentDepthBuffer);
     
@@ -29,15 +65,11 @@ Lumino.Runtime.initialize().then(() => {
     
         graphcisContext.submitCommandList(commandList);
     }
-    
 
+    window.requestAnimationFrame(render);
+}
 
-    //Lumino.API.LNRuntime_Terminate();
-
-
-
-
-
+render();
 
 
 

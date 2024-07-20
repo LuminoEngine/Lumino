@@ -49,6 +49,27 @@ typedef int8_t LNBool;
 #define LN_TRUE 1
 #define LN_FALSE 0
 
+ 
+//==============================================================================
+//
+//==============================================================================
+typedef struct LNMatrix {
+    union {
+        struct
+        {
+            float m11, m12, m13, m14;
+            float m21, m22, m23, m24;
+            float m31, m32, m33, m34;
+            float m41, m42, m43, m44;
+        };
+        float m[4][4];
+    };
+} LNMatrix;
+
+//extern LUMINO_API LNStructHandle LNMatrix_New();
+//extern LUMINO_API void LNMatrix_Delete(LNStructHandle matrix);
+extern LUMINO_API void LNMatrix_SetIdentity(LNMatrix* pMatrix);
+
 //==============================================================================
 //
 //==============================================================================
@@ -84,26 +105,6 @@ extern LUMINO_API LNStructHandle LNRenderPassDescriptor_Get();
 extern LUMINO_API void LNRenderPassDescriptor_SetRenderTarget(LNStructHandle handle, int32_t index, LNHandle renderTarget, float clearR, float clearG, float clearB, float clearA, LNBool clearEnable);
 extern LUMINO_API void LNRenderPassDescriptor_SetDepthBuffer(LNStructHandle handle, LNHandle depthBuffer, float clearDepth, int32_t clearStencil, LNBool clearDepthEnable, LNBool clearStencilEnable);
 
- 
-//==============================================================================
-//
-//==============================================================================
-typedef struct LNMatrix {
-    union {
-        struct
-        {
-            float m11, m12, m13, m14;
-            float m21, m22, m23, m24;
-            float m31, m32, m33, m34;
-            float m41, m42, m43, m44;
-        };
-        float m[4][4];
-    };
-} LNMatrix;
-
-extern LUMINO_API LNResult LNMatrix_SetIdentity(LNMatrix* pMatrix);
-// extern LUMINO_API LNResult LNSpriteRenderer_Translate(LNMatrix* matrix, float x, float y, float z);
-// extern LUMINO_API LNResult LNSpriteRenderer_Translate(LNMatrix* matrix, float x, float y, float z);
 
 //==============================================================================
 //

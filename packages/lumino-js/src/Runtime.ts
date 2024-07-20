@@ -8,6 +8,9 @@ export class Runtime {
     //public static returnDataHeap: Uint8Array;
     public static returnPointerView: Uint32Array;
 
+    public static matrixMemoryCachePtr: number;
+    public static matrixMemoryCacheView: Float32Array;
+
     public static webglContextHandle: number = 0;
 
     public static initialize(): Promise<void> {
@@ -20,7 +23,16 @@ export class Runtime {
             //this.returnPointerArray = new Uint32Array(this.returnDataHeap.buffer, this.returnDataHeap.byteOffset, 1);
             this.returnPointerView = new Uint32Array(module.HEAPU8.buffer, 0, 1);
 
+            
+
             this.module = module;
+            console.log("module", module);
+
+            this.matrixMemoryCachePtr = this.module._malloc(4 * 16);
+            
+            //Runtime.module.HEAP8.set(new Uint8Array(buffer), ptr);
+
+            API.LNMatrix_SetIdentity = module.cwrap("LNMatrix_SetIdentity", "void", ["number"]);
             
             API.LNRenderPassDescriptor_Get = module.cwrap("LNRenderPassDescriptor_Get", "number", []);
             API.LNRenderPassDescriptor_SetRenderTarget = module.cwrap("LNRenderPassDescriptor_SetRenderTarget", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
@@ -43,6 +55,11 @@ export class Runtime {
 
             API.LNRenderPass_End = module.cwrap("LNRenderPass_End", "number", ["number"]);
 
+            API.LNTexture2D_CreateFromImageFileData = module.cwrap("LNTexture2D_CreateFromImageFileData", "number", ["number", "number", "number"]);
+
+            API.LNMaterial_Create = module.cwrap("LNMaterial_Create", "number", ["number"]);
+            API.LNMaterial_SetMainTexture = module.cwrap("LNMaterial_SetMainTexture", "number", ["number", "number"]);
+
             //API.LNRenderingContext_Create = module.cwrap("LNRenderingContext_Create", "number", ["number", "number"]);
             API.LNObject_Release = module.cwrap("LNObject_Release", "number", ["number"]);
             API.LNObject_Retain = module.cwrap("LNObject_Retain", "number", ["number"]);
@@ -53,10 +70,37 @@ export class Runtime {
             // NOTE: cwrap でポインタを渡す方法のひとつに "array" があるが、これは JS->C の方向にしか使えない。 const uint8_t* みたいな感じ。
         });
     }
+
+    public static setMatrix(matrix: Float32Array): number {
+        this.module.HEAPF32.set(matrix, this.matrixMemoryCachePtr);
+        return this.matrixMemoryCachePtr;
+    }
+
+    /**
+     * A helper for calling API functions.
+     */
+    public static safeCall(func: () => Result): void {
+        const result = func();
+        if (result != Result.LN_OK) {
+            throw new Error(`Failed to call function. Result: ${result}`);
+        }
+    }
+
+    /**
+     * A helper for calling API functions that return a Handle with output arguments.
+     */
+    public static safeCallWithReturnHandle(func: (retptr: number) => Result): Handle {
+        const result = func(this.returnPointerView.byteOffset);
+        if (result != Result.LN_OK) {
+            throw new Error(`Failed to call function. Result: ${result}`);
+        }
+        return this.returnPointerView[0];
+    }
 }
 
 
 export type Handle = number;
+export type StructHandle = number;
 
 export enum Result {
     LN_OK = 0,
@@ -69,9 +113,11 @@ export class API {
     // int32_t, float, double は、 number が自動的に変換される。
     // int64_t はされない。int32_t 扱いされ、アドレスがずれる。
 
-    public static LNRenderPassDescriptor_Get: () => Handle;
-    public static LNRenderPassDescriptor_SetRenderTarget: (descriptor: Handle, index: number, renderTarget: Handle, clearR: number, clearG: number, clearB: number, clearA: number, clearEnable: number) => Result;
-    public static LNRenderPassDescriptor_SetDepthBuffer: (descriptor: Handle, depthBuffer: Handle, clearDepth: number, clearStencil: number, clearDepthEnable: number, clearStencilEnable: number) => Result;
+    public static LNMatrix_SetIdentity: (matrix: StructHandle) => void;
+
+    public static LNRenderPassDescriptor_Get: () => StructHandle;
+    public static LNRenderPassDescriptor_SetRenderTarget: (descriptor: StructHandle, index: number, renderTarget: Handle, clearR: number, clearG: number, clearB: number, clearA: number, clearEnable: number) => Result;
+    public static LNRenderPassDescriptor_SetDepthBuffer: (descriptor: StructHandle, depthBuffer: Handle, clearDepth: number, clearStencil: number, clearDepthEnable: number, clearStencilEnable: number) => Result;
 
 
     public static LNRuntime_Initialize: () => Result;
@@ -91,6 +137,12 @@ export class API {
     public static LNGraphicsViewPoint_SetupPerspective2D: (graphicsViewPoint: Handle, x: number, y: number, z: number, width: number, height: number, nearZ: number, farZ: number) => Result;
 
     public static LNRenderPass_End: (renderPass: Handle) => Result;
+
+    public static LNTexture2D_CreateFromImageFileData: (data: number, length: number, outTexture2D: number) => Result;
+
+    public static LNMaterial_Create: (outMaterial: number) => Result;
+    public static LNMaterial_SetMainTexture: (material: Handle, texture: Handle) => Result;
+
     
     //public static LNRenderingContext_Create: (graphicsContext: Handle, outReturn: number) => Result;
     public static LNObject_Release: (obj: Handle) => Result;

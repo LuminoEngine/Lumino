@@ -10,6 +10,7 @@ source_group("lumino" FILES ${LN_SOURCES_FFI})
 
 set(LN_SOURCES
     src/pch.hpp
+    README.md
     ${LN_SOURCES_FFI}
 )
 
@@ -47,13 +48,16 @@ if(LN_EMSCRIPTEN)
     # GLFW 3 を使用するように指定する。
     string(APPEND LOCAL_LINK_FLAGS " -s USE_GLFW=3")
 
-    # EXPORTED_RUNTIME_METHODS は、ライブラリの関数を呼び出すための機能として、
-    # ccall / cwrap を使えるようにするかどうか、という設定。
-    # それぞれ Module.call(), Module.cwrap() を使えるようにするかというだけだが、EXPORTED_RUNTIME_METHODS 未指定の場合、これらが使えなくなる。
-    # (ちなみに、cwrap は ccall を function() でラップするだけ)
-    # ccall を使わない場合は Moudle["_myFunction"].apply(...) のようにすることで C 関数を呼び出すことができる。
-    # ただし、ccall には string や array の変換ユーティリティがついている。特に理由が無ければ、 ccall または cwrap を利用するのが無難。
-    string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','GL']\"")
+    # Emscripten が内部的に定義する色々なユーティリティ関数があるが、デフォルトでは export されない。
+    # EXPORTED_RUNTIME_METHODS は、そのような関数を export するための設定。
+    # - ccall/cwrap: ライブラリの関数を呼び出すための機能を使えるようにする。
+    #   それぞれ Module.call(), Module.cwrap() を使えるようにするかというだけだが、EXPORTED_RUNTIME_METHODS 未指定の場合、これらが使えなくなる。
+    #   (ちなみに、cwrap は ccall を function() でラップするだけ)
+    #   ccall を使わない場合は Moudle["_myFunction"].apply(...) のようにすることで C 関数を呼び出すことができる。
+    #   ただし、ccall には string や array の変換ユーティリティがついている。特に理由が無ければ、 ccall または cwrap を利用するのが無難。
+    # - _malloc/_free: C++側に ArrayBuffer など大きなデータを渡すときは、C++ がアクセスできるメモリ領域に一度コピーする必要がある。
+    string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','GL']\" ")
+    string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" ")
 
     # for Debug
     # https://emscripten.org/docs/tools_reference/emcc.html#emcc-og

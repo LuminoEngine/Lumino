@@ -100,6 +100,24 @@ public:
 };
 
 //==============================================================================
+
+//LNStructHandle LNMatrix_New() {
+//    Matrix* m = new Matrix();
+//    return reinterpret_cast<LNStructHandle>(m);
+//}
+//
+//void LNMatrix_Delete(LNStructHandle matrix) {
+//    delete reinterpret_cast<Matrix*>(matrix);
+//}
+
+void LNMatrix_SetIdentity(LNMatrix* outResult) {
+    LN_FFI_TRY_BEGIN;
+    Matrix* m = reinterpret_cast<Matrix*>(outResult);
+    *m = Matrix::Identity;
+    LN_FFI_TRY_END;
+}
+
+//==============================================================================
 LNStructHandle LNRenderPassDescriptor_Get() {
     static LNRenderPassDescriptor s;
     memset(&s, 0, sizeof(s));
@@ -145,14 +163,6 @@ void LNRenderPassDescriptor_SetDepthBuffer(
     d->depthBuffer.clearStencil = clearStencil;
     d->depthBuffer.clearDepthEnable = clearDepthEnable;
     d->depthBuffer.clearStencilEnable = clearStencilEnable;
-}
-
-//==============================================================================
-LNResult LNMatrix_SetIdentity(LNMatrix* outResult) {
-    LN_FFI_TRY_BEGIN;
-    Matrix* m = reinterpret_cast<Matrix*>(outResult);
-    *m = Matrix::Identity;
-    LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================
@@ -525,6 +535,10 @@ LNResult LNTexture2D_Create(int32_t width, int32_t height, LNHandle* outTexture2
 
 LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D) {
     LN_FFI_TRY_BEGIN;
+    std::cout << "data: " << reinterpret_cast<int64_t>(data) << std::endl;
+    std::cout << "length: " << length << std::endl;
+    std::cout << "data[0]: " << static_cast<int>(data[0]) << std::endl;
+    std::cout << "data[1]: " << static_cast<int>(data[1]) << std::endl;
     Ref<Texture2D> texture = Texture2D::createFromImageFileData(data, length);
     *outTexture2D = ::Runtime::wrapObject(texture, true);
     LN_FFI_TRY_END_RETURN;
