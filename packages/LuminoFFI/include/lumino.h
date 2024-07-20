@@ -234,33 +234,33 @@ extern LUMINO_API LNResult LNTextureRenderingContext_StrokeText(LNHandle texture
 //==============================================================================
 // 
 //==============================================================================
-/** 3D 空間での基準方向を表す値 */
+/** A value that represents a reference direction in 3D space. */
 typedef enum LNSpriteBaseDirection {
-    /** X + 方向(右向き) */
+    /** X+ (右向き) */
     LN_SPRITE_BASE_DIRECTION_XPLUS = 0,
 
-    /**  Y+ 向 (上向き) */
+    /** Y+ (上向き) */
     LN_SPRITE_BASE_DIRECTION_YPLUS = 1,
 
-    /**  Z+ 向 (奥向き) */
+    /** Z+ (奥向き) */
     LN_SPRITE_BASE_DIRECTION_ZPLUS = 2,
 
-    /**  X- 向 (左向き) */
+    /** X- (左向き) */
     LN_SPRITE_BASE_DIRECTION_XMINUS = 3,
 
-    /**  Y- 向 (下向き) */
+    /** Y- (下向き) */
     LN_SPRITE_BASE_DIRECTION_YMINUS = 4,
 
-    /**  Z- 向 (手前向き) */
+    /** Z- (手前向き) */
     LN_SPRITE_BASE_DIRECTION_ZMINUS = 5,
 
-    /**  2D 基本方向 (Z+ 向、左上原点) */
+    /** 2D 基本方向 (Z+ 向、左上原点) */
     LN_SPRITE_BASE_DIRECTION_BASIC2D = 6,
 
     LN_SPRITE_BASE_DIRECTION_MAX_ENUM = 0x7FFFFFFF,
 } LNSpriteBaseDirection;
 
-/** ビルボードの計算方法 */
+/** How to calculate billboards.*/
 typedef enum LNBillboardType {
     /** ビルボードの計算を行わない */
     LN_BILLBOARD_TYPE_NONE = 0,
@@ -280,7 +280,7 @@ typedef enum LNBillboardType {
 extern LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer);
 extern LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
     LNHandle spriteRenderer,
-    LNHandle renderingCommandList,
+    LNHandle graphicsCommandList,
     LNHandle material,
     const LNMatrix* transform);
 extern LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer);
@@ -290,7 +290,7 @@ extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, 
 // LNSpriteTextRenderer
 //==============================================================================
 extern LUMINO_API LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer);
-extern LUMINO_API LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer, LNHandle renderingCommandList, LNHandle material, const LNMatrix* transform);
+extern LUMINO_API LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer, LNHandle graphicsCommandList, LNHandle material, const LNMatrix* transform);
 extern LUMINO_API LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRenderer);
 #if 0
 extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer, const LNMatrix* localTransformOrNull, const char* text);

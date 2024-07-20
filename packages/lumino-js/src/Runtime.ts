@@ -6,10 +6,12 @@ export class Runtime {
     public static module: any;
     
     //public static returnDataHeap: Uint8Array;
-    public static returnPointerView: Uint32Array;
+    public static returnPointerPtr: number;
+    public static returnPointerHEAPU8: Uint8Array;
+    public static returnPointerView: Uint32Array | undefined;
 
     public static matrixMemoryCachePtr: number;
-    public static matrixMemoryCacheView: Float32Array;
+    //public static matrixMemoryCacheView: Float32Array;
 
     public static webglContextHandle: number = 0;
 
@@ -21,13 +23,15 @@ export class Runtime {
             //console.log("module.HEAPU8.buffer", module.HEAPU8.buffer);
             //this.returnDataHeap = new Uint8Array(module.HEAPU8.buffer, 0, 4);
             //this.returnPointerArray = new Uint32Array(this.returnDataHeap.buffer, this.returnDataHeap.byteOffset, 1);
-            this.returnPointerView = new Uint32Array(module.HEAPU8.buffer, 0, 1);
 
             
 
             this.module = module;
             console.log("module", module);
 
+            this.returnPointerPtr = this.module._malloc(4);
+            this.returnPointerHEAPU8 = module.HEAPU8.buffer;
+            console.log("module.HEAPU8.buffer", module.HEAPU8.buffer);
             this.matrixMemoryCachePtr = this.module._malloc(4 * 16);
             
             //Runtime.module.HEAP8.set(new Uint8Array(buffer), ptr);
@@ -60,6 +64,11 @@ export class Runtime {
             API.LNMaterial_Create = module.cwrap("LNMaterial_Create", "number", ["number"]);
             API.LNMaterial_SetMainTexture = module.cwrap("LNMaterial_SetMainTexture", "number", ["number", "number"]);
 
+            API.LNSpriteRenderer_Get = module.cwrap("LNSpriteRenderer_Get", "number", ["number"]);
+            API.LNSpriteRenderer_BeginBatch = module.cwrap("LNSpriteRenderer_BeginBatch", "number", ["number", "number", "number", "number"]);
+            API.LNSpriteRenderer_EndBatch = module.cwrap("LNSpriteRenderer_EndBatch", "number", ["number"]);
+            API.LNSpriteRenderer_DrawSprite = module.cwrap("LNSpriteRenderer_DrawSprite", "number", ["number","number","number","number","number","number","number","number","number","number","number","number","number","number","number","number"]);
+
             //API.LNRenderingContext_Create = module.cwrap("LNRenderingContext_Create", "number", ["number", "number"]);
             API.LNObject_Release = module.cwrap("LNObject_Release", "number", ["number"]);
             API.LNObject_Retain = module.cwrap("LNObject_Retain", "number", ["number"]);
@@ -69,6 +78,17 @@ export class Runtime {
 
             // NOTE: cwrap でポインタを渡す方法のひとつに "array" があるが、これは JS->C の方向にしか使えない。 const uint8_t* みたいな感じ。
         });
+    }
+
+    public static getRenterPointerInfo(): [number, Uint32Array] {
+        // メモリが足りなくなると wasmMemory.buffer が grow され、それに伴い module.HEAPU8 などの View も再作成される。
+        // 古いものを使っていると C++ 側に情報を渡せなくなるので、変化があるならつくりなおす。
+        // なお grow が発生すると次のようなログが出てくる。
+        // Warning: Enlarging memory arrays, this is not fast! 391905280,47028633
+        if (this.returnPointerView === undefined || this.returnPointerHEAPU8 != this.module.HEAPU8.buffer) {
+            this.returnPointerView = new Uint32Array(this.module.HEAPU8.buffer, this.returnPointerPtr, 1);
+        }
+        return [this.returnPointerPtr, this.returnPointerView];
     }
 
     public static setMatrix(matrix: Float32Array): number {
@@ -90,11 +110,12 @@ export class Runtime {
      * A helper for calling API functions that return a Handle with output arguments.
      */
     public static safeCallWithReturnHandle(func: (retptr: number) => Result): Handle {
-        const result = func(this.returnPointerView.byteOffset);
+        const [ptr, buffer] = this.getRenterPointerInfo();
+        const result = func(ptr);
         if (result != Result.LN_OK) {
             throw new Error(`Failed to call function. Result: ${result}`);
         }
-        return this.returnPointerView[0];
+        return buffer[0];
     }
 }
 
@@ -142,6 +163,11 @@ export class API {
 
     public static LNMaterial_Create: (outMaterial: number) => Result;
     public static LNMaterial_SetMainTexture: (material: Handle, texture: Handle) => Result;
+
+    public static LNSpriteRenderer_Get: (outSpriteRenderer: number) => Result;
+    public static LNSpriteRenderer_BeginBatch: (spriteRenderer: Handle, graphicsCommandList: Handle, material: Handle, transform: number) => Result;
+    public static LNSpriteRenderer_EndBatch: (spriteRenderer: Handle) => Result;
+    public static LNSpriteRenderer_DrawSprite: (spriteRenderer: Handle, localTransformOrNull: number, width: number, height: number, anchorRatioX: number, anchorRatioY: number, uvRectX: number, uvRectY: number, uvRectW: number, uvRectH: number, r: number, g: number, b: number, a: number, baseDirection: number, billboardType: number) => Result;
 
     
     //public static LNRenderingContext_Create: (graphicsContext: Handle, outReturn: number) => Result;

@@ -54,16 +54,28 @@ function isReady() {
 function render() {
 
     if (isReady()) {
+        console.log("=== Begin Frame ===");
         viewPoint.setupPerspective2D(800, 600);
-        
-        console.log("currentColorBuffer", graphcisContext.currentColorBuffer);
-        console.log("currentDepthBuffer", graphcisContext.currentDepthBuffer);
     
         commandList.reset(viewPoint);
-        const renderPass = commandList.beginRenderPass();
-        renderPass.end();
+        {
+            const renderPass = commandList.beginRenderPass();
+            const spriteRenderer = Lumino.SpriteRenderer.get();
+            spriteRenderer.beginBatch(commandList, material, new Lumino.Matrix());
+            spriteRenderer.drawSprite(
+                null,
+                { width: 100, height: 200 },
+                { x: 0, y: 0 },
+                {x: 0, y: 0, width: 1, height: 1},
+                {r: 1, g: 1, b: 1, a: 1},
+                Lumino.SpriteBaseDirection.Basic2D,
+                Lumino.BillboardType.None);
+            spriteRenderer.endBatch();
+            renderPass.end();
+        }
     
         graphcisContext.submitCommandList(commandList);
+        console.log("=== End Frame ===");
     }
 
     window.requestAnimationFrame(render);

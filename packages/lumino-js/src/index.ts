@@ -3,8 +3,10 @@
 import LuminoFFIModule from "../dist/LuminoFFI.js";
 import { DepthBuffer } from "./DepthBuffer";
 import { GraphicsContext } from "./GraphicsContext";
+export * from "./math/Types";
 export * from "./math/Matrix";
 export * from "./graphics/Material";
+export * from "./graphics/SpriteRenderer.js";
 export * from "./GraphicsViewPoint";
 export * from "./Texture2D";
 import { RenderTargetTexture } from "./RenderTargetTexture";
@@ -23,14 +25,15 @@ export class WebGLGraphicsContext extends GraphicsContext {
     private _currentDepthBuffer: DepthBuffer;
 
     public override get currentColorBuffer(): RenderTargetTexture {
-        API.LNGraphicsContext_GetCurrentColorBuffer(this._handle, Runtime.returnPointerView.byteOffset);
-        this._currentColorBuffer._setHandle(Runtime.returnPointerView[0], false);
+        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsContext_GetCurrentColorBuffer(this._handle, r));
+        console.log("currentColorBuffer", handle);
+        this._currentColorBuffer._setHandle(handle, false);
         return this._currentColorBuffer;
     }
 
     public override get currentDepthBuffer(): DepthBuffer {
-        API.LNGraphicsContext_GetCurrentDepthBuffer(this._handle, Runtime.returnPointerView.byteOffset);
-        this._currentDepthBuffer._setHandle(Runtime.returnPointerView[0], false);
+        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsContext_GetCurrentDepthBuffer(this._handle, r));
+        this._currentDepthBuffer._setHandle(handle, false);
         return this._currentDepthBuffer
     }
 
@@ -48,12 +51,8 @@ export class WebGLGraphicsContext extends GraphicsContext {
         Runtime.module.GL.makeContextCurrent(Runtime.webglContextHandle);
 
 
-        // console.log("module.HEAPU8.buffer", module.HEAPU8.buffer);
-        // const dataHeap = new Uint8Array(module.HEAPU8.buffer, 0, 4);
-        API.LNGLGraphicsContext_CreateFromCurrentGL(800, 600, Runtime.returnPointerView.byteOffset);
+        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNGLGraphicsContext_CreateFromCurrentGL(800, 600, r));
 
-        // console.log("dataHeap", dataHeap);
-        // const handle = new Uint32Array(dataHeap.buffer, dataHeap.byteOffset, 1)[0];
         this._handle = Runtime.returnPointerView[0];
         console.log("handle3", this._handle, Runtime.returnPointerView.byteOffset);
     }

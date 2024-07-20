@@ -615,12 +615,12 @@ LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
 
 LNResult LNSpriteRenderer_BeginBatch(
     LNHandle spriteRenderer_,
-    LNHandle renderingCommandList_,
+    LNHandle graphicsCommandList_,
     LNHandle material_,
     const LNMatrix* transform_) {
     LN_FFI_TRY_BEGIN;
     SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
-    FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
     commandList->renderingContext->setTransfrom(*transform);
@@ -635,20 +635,36 @@ LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer_) {
 	LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const LNMatrix* localTransformOrNull, float width, float height, float anchorRatioX, float anchorRatioY, float uvRectX, float uvRectY, float uvRectW, float uvRectH, float r, float g, float b, float a, LNSpriteBaseDirection baseDirection, LNBillboardType billboardType) {
-    LN_FFI_TRY_BEGIN;
-	const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
-	SpriteRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
-	renderer->drawSprite(
-        (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
-        Size(width, height),
-        Vector2(anchorRatioX, anchorRatioY),
-        Rect(uvRectX, uvRectY, uvRectW, uvRectH),
-        Color(r, g, b, a),
-        static_cast<SpriteBaseDirection>(baseDirection),
-        static_cast<BillboardType>(billboardType),
+LNResult LNSpriteRenderer_DrawSprite(
+    LNHandle spriteRenderer,
+    const LNMatrix* localTransformOrNull,
+    float width,
+    float height,
+    float anchorRatioX,
+    float anchorRatioY,
+    float uvRectX,
+    float uvRectY,
+    float uvRectW,
+    float uvRectH,
+    float r,
+    float g,
+    float b,
+    float a,
+    LNSpriteBaseDirection baseDirection,
+    LNBillboardType billboardType) {
+        LN_FFI_TRY_BEGIN;
+        const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
+        SpriteRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
+        renderer->drawSprite(
+            (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
+            Size(width, height),
+            Vector2(anchorRatioX, anchorRatioY),
+            Rect(uvRectX, uvRectY, uvRectW, uvRectH),
+            Color(r, g, b, a),
+            static_cast<SpriteBaseDirection>(baseDirection),
+            static_cast<BillboardType>(billboardType),
             SpriteFlipFlags::None);
-    LN_FFI_TRY_END_RETURN;
+        LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================
@@ -662,10 +678,14 @@ LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer) {
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNSpriteTextRenderer_BeginBatch(LNHandle spriteTextRenderer_, LNHandle renderingCommandList_, LNHandle material_, const LNMatrix* transform_) {
+LNResult LNSpriteTextRenderer_BeginBatch(
+    LNHandle spriteTextRenderer_,
+    LNHandle graphicsCommandList_,
+    LNHandle material_,
+    const LNMatrix* transform_) {
     LN_FFI_TRY_BEGIN;
     SpriteTextRenderer* spriteTextRenderer = LN_HANDLE_TO_OBJECT(SpriteTextRenderer, spriteTextRenderer_);
-    CommandList* commandList = LN_HANDLE_TO_OBJECT(CommandList, renderingCommandList_);
+    CommandList* commandList = LN_HANDLE_TO_OBJECT(CommandList, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
     commandList->setTransfrom(*transform);
