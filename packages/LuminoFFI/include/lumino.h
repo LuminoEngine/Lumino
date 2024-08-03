@@ -180,6 +180,7 @@ extern LUMINO_API LNResult LNGraphicsCommandList_BeginRenderPass(LNHandle render
 
 // いわゆるカメラ情報
 extern LUMINO_API LNResult LNGraphicsViewPoint_Create(LNHandle* outGraphicsViewPoint);
+extern LUMINO_API LNResult LNGraphicsViewPoint_SetupPerspectiveOrthoLH(LNHandle graphicsViewPoint, float x, float y, float z, float lookAtX, float lookAtY, float lookAtZ, float width, float height, float nearZ, float farZ);
 extern LUMINO_API LNResult LNGraphicsViewPoint_SetupPerspective2D(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
@@ -222,6 +223,11 @@ extern LUMINO_API LNResult LNTexture2D_GetContext(LNHandle texture2D, LNHandle* 
 //==============================================================================
 extern LUMINO_API LNResult LNMaterial_Create(LNHandle* outMaterial);
 extern LUMINO_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture);
+
+/**
+ * 2 つの Material が、同じ Batch で描画できるかを調べます。
+ */
+extern LUMINO_API LNResult LNMaterial_CanCombined(LNHandle material1, LNHandle material2, LNBool* outResult);
 
 //==============================================================================
 // LNTextureRenderingContext

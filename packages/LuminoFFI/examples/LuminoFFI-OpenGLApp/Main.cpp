@@ -150,53 +150,57 @@ int main() {
             return 1;
         }
 
-        if (LNGraphicsCommandList_Reset(renderingCommandList, sceneRenderingViewPoint) != LN_OK) {
-            return 1;
-        }
+        {
+            
+            if (LNGraphicsCommandList_Reset(renderingCommandList, sceneRenderingViewPoint) != LN_OK) {
+                return 1;
+            }
 
-        LNHandle renderingPass = LN_NULL_HANDLE;
-        LNRenderPassDescriptor descriptor;
-        descriptor.renderTargets[0].renderTarget = backbuffer;
-        descriptor.renderTargets[0].clearColor[0] = 0.0f;
-        descriptor.renderTargets[0].clearColor[1] = 1.0f;
-        descriptor.renderTargets[0].clearColor[2] = 0.0f;
-        descriptor.renderTargets[0].clearColor[3] = 1.0f;
-        descriptor.renderTargets[0].clearEnable = LN_TRUE;
-        descriptor.depthBuffer.depthBuffer = depthBuffer;
-        descriptor.depthBuffer.clearDepth = 1.0f;
-        descriptor.depthBuffer.clearStencil = 0;
-        descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
-        descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass) != LN_OK) {
-            return 1;
-        }
+            LNHandle renderingPass = LN_NULL_HANDLE;
+            LNRenderPassDescriptor descriptor;
+            descriptor.renderTargets[0].renderTarget = backbuffer;
+            descriptor.renderTargets[0].clearColor[0] = 0.0f;
+            descriptor.renderTargets[0].clearColor[1] = 1.0f;
+            descriptor.renderTargets[0].clearColor[2] = 0.0f;
+            descriptor.renderTargets[0].clearColor[3] = 1.0f;
+            descriptor.renderTargets[0].clearEnable = LN_TRUE;
+            descriptor.depthBuffer.depthBuffer = depthBuffer;
+            descriptor.depthBuffer.clearDepth = 1.0f;
+            descriptor.depthBuffer.clearStencil = 0;
+            descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
+            descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
+            if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass) != LN_OK) {
+                return 1;
+            }
 
-        LNMatrix transform;
-        LNMatrix_SetIdentity(&transform);
-        transform.m41 = 200;
-        LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
-        LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
-            200, 100,
-            0, 0,
-            0, 0, 1, 1,
-            0, 0, 1, 1,
-            LN_SPRITE_BASE_DIRECTION_BASIC2D,
-            LN_BILLBOARD_TYPE_NONE);
-        LNSpriteRenderer_EndBatch(spriteRenderer);
+            LNMatrix transform;
+            LNMatrix_SetIdentity(&transform);
+            transform.m41 = 200;
+            LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+            LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+                200, 100,
+                0, 0,
+                0, 0, 1, 1,
+                0, 0, 1, 1,
+                LN_SPRITE_BASE_DIRECTION_BASIC2D,
+                LN_BILLBOARD_TYPE_NONE);
+            LNSpriteRenderer_EndBatch(spriteRenderer);
         
-        transform.m41 = 400;
-        LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material2, &transform);
-        LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
-            300, 200,
-            0, 0,
-            0, 0, 1, 1,
-            1, 1, 1, 1,
-            LN_SPRITE_BASE_DIRECTION_BASIC2D,
-            LN_BILLBOARD_TYPE_NONE);
-        LNSpriteRenderer_EndBatch(spriteRenderer);
+            transform.m41 = 400;
+            LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material2, &transform);
+            LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+                300, 200,
+                0, 0,
+                0, 0, 1, 1,
+                1, 1, 1, 1,
+                LN_SPRITE_BASE_DIRECTION_BASIC2D,
+                LN_BILLBOARD_TYPE_NONE);
+            LNSpriteRenderer_EndBatch(spriteRenderer);
 
-        if (LNRenderPass_End(renderingPass) != LN_OK) {
-            return 1;
+            if (LNRenderPass_End(renderingPass) != LN_OK) {
+                return 1;
+            }
+
         }
 
 

@@ -90,6 +90,7 @@ public:
     GraphicsContext* context;
     GraphicsCommandList* commandList;
     Ref<CommandList> renderingContext;
+    URef<kanata::DrawCommandList> drawCommandList;
 };
 
 class FFIRenderPass : public ln::Object {
@@ -243,9 +244,11 @@ extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle*
     LN_FFI_TRY_BEGIN;
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
     Ref<FFIRenderingCommandList> commandList = makeObject_deprecated<FFIRenderingCommandList>();
+    auto* renderingManager = detail::RenderingManager::instance();
     commandList->context = context;
     commandList->commandList = context->currentCommandList2();
     commandList->renderingContext = makeObject_deprecated<CommandList>();
+    commandList->drawCommandList = makeURef<kanata::DrawCommandList>(renderingManager);
     *outGraphicsCommandList = ::Runtime::wrapObject(commandList, true);
     LN_FFI_TRY_END_RETURN;
 }
@@ -331,7 +334,8 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderPass* renderPass = LN_HANDLE_TO_OBJECT(FFIRenderPass, renderPass_);
     GraphicsContext* context = renderPass->owner->context;
-    CommandList*renderingContext = renderPass->owner->renderingContext;
+    CommandList* renderingContext = renderPass->owner->renderingContext;
+    kanata::DrawCommandList* g_drawCommandList = renderPass->owner->drawCommandList;
     
     if (1) {
 
@@ -354,33 +358,14 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
         {
             using namespace ln;
             // URef<kanata::BatchCollector> g_batchList;
-            URef<kanata::DrawCommandList> g_drawCommandList;
-            URef<kanata::BoxMeshBatchProxy> g_boxMeshBatchProxy;
-            Ref<VertexBuffer> g_vertexBuffer;
+            //URef<kanata::BoxMeshBatchProxy> g_boxMeshBatchProxy;
 
             auto* renderingManager = detail::RenderingManager::instance();
             // g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
             kanata::BatchCollector* batchList = renderingContext->batchCollector();
-            g_drawCommandList = makeURef<kanata::DrawCommandList>(renderingManager);
-            g_boxMeshBatchProxy = makeURef<kanata::BoxMeshBatchProxy>();
+            //g_drawCommandList = 
+            //g_boxMeshBatchProxy = makeURef<kanata::BoxMeshBatchProxy>();
 
-            Vertex v[] = {
-                // Vertex(Vector3(0, 5.5, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
-                // Vertex(Vector3(-5.5, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
-                // Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
-
-                Vertex(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
-                Vertex(Vector3(0, 10, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Green),
-                Vertex(Vector3(10, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Blue),
-            };
-            g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-
-            Ref<Material> material = Material::create();
-            // Ref<Texture2D> texture = Texture2D::load(U"C:/Proj/LN/Lumino/assets/Distributable/assets/icon256.png");
-            // material->setMainTexture(texture);
-
-            // auto* target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
-            // auto* renderPass = TestEnv::renderPass();
 
             detail::RenderViewInfo renderViewInfo;
             // renderViewInfo.cameraInfo.makePerspective(Vector3(10, 10, 10), Vector3::normalize(-1, -1, -1), 0.3, Size(renderPass->width(), renderPass->height()), 0.1, 1000.0);
@@ -397,8 +382,22 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
 
             batchList->clear(renderingViewPoint);
 
-            // Build batch
+            // Build batch test.
+            Ref<VertexBuffer> g_vertexBuffer;
+            Ref<Material> material;
             if (0) {
+                Vertex v[] = {
+                    // Vertex(Vector3(0, 5.5, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
+                    // Vertex(Vector3(-5.5, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
+                    // Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
+
+                    Vertex(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
+                    Vertex(Vector3(0, 10, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Green),
+                    Vertex(Vector3(10, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Blue),
+                };
+                g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+                Ref<Material> material = Material::create();
 
                 // 手動で頑張るパターン
                 batchList->batchProxyState = &batchState;
@@ -483,7 +482,7 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
             ただ、 draw 時点でカリングできるので効率は良い。
             一方でシャドウマップを作る場合などでは、全く同じ RenderingContext::begin()->draw()->end() を
             呼び出してもらう必要がある。特に RenderingContext を公開する場合。
-            Three.js のように SceneGrap が一級市民なフレームワークでは、 RenderingContext が隠れるので良いだろう。
+            Three.js のように SceneGraph が一級市民なフレームワークでは、 RenderingContext が隠れるので良いだろう。
             でも Lumino は SceneGraph が Engine から独立しているので、RenderingContext は公開される。
 
             この Proxy の収取を担当しているのは BatchProxyCollector.
@@ -500,21 +499,48 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
 }
 
 
-extern LNResult LNGraphicsViewPoint_Create(LNHandle* outRenderingViewPoint) {
+LNResult LNGraphicsViewPoint_Create(LNHandle* outRenderingViewPoint) {
     LN_FFI_TRY_BEGIN;
     Ref<RenderViewPoint> viewPoint = makeRef<RenderViewPoint>();
     *outRenderingViewPoint = ::Runtime::wrapObject(viewPoint, true);
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNGraphicsViewPoint_SetupPerspective2D(LNHandle renderingViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ) {
+LNResult LNGraphicsViewPoint_SetupPerspectiveOrthoLH(
+    LNHandle graphicsViewPoint,
+    float x,
+    float y,
+    float z,
+    float lookAtX,
+    float lookAtY,
+    float lookAtZ,
+    float width,
+    float height,
+    float nearZ,
+    float farZ) {
     LN_FFI_TRY_BEGIN;
-    RenderViewPoint* viewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint);
+    RenderViewPoint* viewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, graphicsViewPoint);
+    viewPoint->resetPerspectiveOrthoLH(
+        Vector3(x, y, z), Vector3(lookAtX, lookAtY, lookAtZ), Size(width, height), nearZ, farZ);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNGraphicsViewPoint_SetupPerspective2D(
+    LNHandle graphicsViewPoint,
+    float x,
+    float y,
+    float z,
+    float width,
+    float height,
+    float nearZ,
+    float farZ) {
+    LN_FFI_TRY_BEGIN;
+    RenderViewPoint* viewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, graphicsViewPoint);
     viewPoint->resetPerspective2D(Vector3(x,y, z), Size(width, height), nearZ, farZ);
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass) {
+LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
     Ref<kanata::UnlitRenderPass> renderingPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
@@ -568,6 +594,12 @@ LNResult LNMaterial_SetMainTexture(LNHandle material_, LNHandle texture_) {
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     Texture* texture = LN_HANDLE_TO_OBJECT(Texture, texture_);
     material->setMainTexture(texture);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNMaterial_CanCombined(LNHandle material_, LNHandle texture_, LNBool* outResult_) {
+    LN_FFI_TRY_BEGIN;
+    *outResult_ = LN_FALSE; // TODO:
     LN_FFI_TRY_END_RETURN;
 }
 

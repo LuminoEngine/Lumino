@@ -180,7 +180,7 @@ struct FrameBuffer {
 enum class RequestBatchResult {
     Staging,   // request はステージされ、まだ Batch 化されていない
     Submitted, // 直前までの request は submit され、List に新しい Batch が追加された。最新の request はステージされ、まだ Batch 化されていない。
-               // なお、State が変わったため新しい Batch を作りたいとき、Batch の中身が 0 であるときは作ってはならない。
+    // なお、State が変わったため新しい Batch を作りたいとき、Batch の中身が 0 であるときは作ってはならない。
 };
 
 struct ClearInfo {
@@ -256,6 +256,12 @@ public:
 
     void resetUnproject(const Size& viewPixelSize);
     void resetPerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
+    void resetPerspectiveOrthoLH(
+        const Vector3& viewPos,
+        const Vector3& lookPos,
+        const Size& size,
+        float n,
+        float f);
     void resetPerspective2D(const Vector3& viewPos, const Size& size, float n, float f);
     void copyFrom(const RenderViewPoint* other);
     void makeCameraInfo(detail::CameraInfo* cameraInfo) const;
@@ -301,12 +307,14 @@ enum class RenderDrawElementTypeFlags : uint8_t {
     None = 0,
 
     // 内部で自動決定
-    Clear = 1 << 1,       // clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
-    Opaque = 1 << 2,      // 不透明
+    Clear = 1 << 1,  // clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+    Opaque = 1 << 2, // 不透明
     Transparent = 1 << 3, // 半透明
 
     // 外部指定
-    LightDisc = 1 << 4, // 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
+    LightDisc =
+        1
+        << 4, // 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
     BackgroundSky = 1 << 5,
 };
 LN_FLAGS_OPERATORS(RenderDrawElementTypeFlags);
@@ -391,7 +399,16 @@ struct DynamicLightInfo {
         return info;
     }
 
-    static DynamicLightInfo makeEnvironmentLightInfo(const Color& color, const Color& ambientColor, const Color& skyColor, const Color& groundColor, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar) {
+    static DynamicLightInfo makeEnvironmentLightInfo(
+        const Color& color,
+        const Color& ambientColor,
+        const Color& skyColor,
+        const Color& groundColor,
+        float intensity,
+        const Vector3& direction,
+        bool mainLight,
+        float shadowCameraZFar,
+        float shadowLightZFar) {
         DynamicLightInfo info;
         info.m_type = LightType::Directional;
         info.m_color = color;
@@ -406,7 +423,13 @@ struct DynamicLightInfo {
         return info;
     }
 
-    static DynamicLightInfo makeDirectionalLightInfo(const Color& color, float intensity, const Vector3& direction, bool mainLight, float shadowCameraZFar, float shadowLightZFar) {
+    static DynamicLightInfo makeDirectionalLightInfo(
+        const Color& color,
+        float intensity,
+        const Vector3& direction,
+        bool mainLight,
+        float shadowCameraZFar,
+        float shadowLightZFar) {
         DynamicLightInfo info;
         info.m_type = LightType::Directional;
         info.m_color = color;
@@ -418,7 +441,8 @@ struct DynamicLightInfo {
         return info;
     }
 
-    static DynamicLightInfo makePointLightInfo(const Color& color, float intensity, const Vector3& position, float range, float attenuation) {
+    static DynamicLightInfo
+    makePointLightInfo(const Color& color, float intensity, const Vector3& position, float range, float attenuation) {
         DynamicLightInfo info;
         info.m_type = LightType::Point;
         info.m_color = color;
@@ -429,7 +453,15 @@ struct DynamicLightInfo {
         return info;
     }
 
-    static DynamicLightInfo makeSpotLightInfo(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra) {
+    static DynamicLightInfo makeSpotLightInfo(
+        const Color& color,
+        float intensity,
+        const Vector3& position,
+        const Vector3& direction,
+        float range,
+        float attenuation,
+        float spotAngle,
+        float spotPenumbra) {
         DynamicLightInfo info;
         info.m_type = LightType::Spot;
         info.m_color = color;
@@ -497,8 +529,7 @@ private:
     friend class DrawElementList;
 };
 
-class BuiltinEffectData
-    : public IDrawElementListFrameData {
+class BuiltinEffectData : public IDrawElementListFrameData {
 public:
     static const BuiltinEffectData DefaultValue;
 
@@ -507,16 +538,13 @@ public:
     Color blendColor;
     ColorTone tone;
 
-    BuiltinEffectData() {
-        reset();
-    }
+    BuiltinEffectData() { reset(); }
 
     BuiltinEffectData(const BuiltinEffectData& other)
         : opacity(other.opacity)
         , colorScale(other.colorScale)
         , blendColor(other.blendColor)
-        , tone(other.tone) {
-    }
+        , tone(other.tone) {}
 
     void reset() {
         // m_transfrom = Matrix();
@@ -530,9 +558,7 @@ public:
         // TODO: hash
         return
             // m_transfrom == other->m_transfrom &&
-            opacity == other->opacity &&
-            colorScale == other->colorScale &&
-            blendColor == other->blendColor &&
+            opacity == other->opacity && colorScale == other->colorScale && blendColor == other->blendColor &&
             tone == other->tone;
     }
 
