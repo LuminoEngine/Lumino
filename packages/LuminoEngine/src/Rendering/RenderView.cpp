@@ -98,7 +98,7 @@ void RenderViewPoint::resetPerspectiveOrthoLH(
     worldMatrix = Matrix::Identity;
     viewPixelSize = size;
     viewPosition = viewPos;
-    viewDirection = lookPos - viewPos;
+    viewDirection = Vector3::normalize(lookPos - viewPos);
     viewMatrix = Matrix::makeLookAtLH(viewPos, lookPos, Vector3::UnitY);
     projMatrix = Matrix::makeOrthoLH(size.width, size.height, n, f);
     viewProjMatrix = viewMatrix * projMatrix;

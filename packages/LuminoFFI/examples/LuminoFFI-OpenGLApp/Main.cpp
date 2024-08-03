@@ -25,11 +25,14 @@ std::vector<uint8_t> ReadAllBytes(const char* filePath) {
 }
 
 int main() {
-    printf("1\n");
+#ifdef _WIN32
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+    printf("glfwInit...");
     if (!glfwInit()) {
         return 1;
     }
-    printf("2\n");
+    printf(" Done.\n");
 
     // NOTE: 2024/4/17 時点の Windows11 デフォルトは GL 4.6 だった。
     // GLFW_OPENGL_PROFILE は GLFW_OPENGL_ANY_PROFILE でないと glfwCreateWindow() が失敗する。
@@ -73,8 +76,13 @@ int main() {
         return 1;
     }
 
-    LNHandle sceneRenderingViewPoint = LN_NULL_HANDLE;
-    if (LNGraphicsViewPoint_Create(&sceneRenderingViewPoint) != LN_OK) {
+    LNHandle viewPoint1 = LN_NULL_HANDLE;
+    if (LNGraphicsViewPoint_Create(&viewPoint1) != LN_OK) {
+        return 1;
+    }
+
+    LNHandle viewPoint2 = LN_NULL_HANDLE;
+    if (LNGraphicsViewPoint_Create(&viewPoint2) != LN_OK) {
         return 1;
     }
 
@@ -137,9 +145,6 @@ int main() {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
-        if (LNGraphicsViewPoint_SetupPerspective2D(sceneRenderingViewPoint, 0, 0, 0, width, height, -500, 500) != LN_OK) {
-            return 1;
-        }
 
         LNHandle backbuffer = LN_NULL_HANDLE;
         if (LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer) != LN_OK) {
@@ -150,9 +155,16 @@ int main() {
             return 1;
         }
 
-        {
-            
-            if (LNGraphicsCommandList_Reset(renderingCommandList, sceneRenderingViewPoint) != LN_OK) {
+        if (LNGraphicsCommandList_Reset(renderingCommandList) != LN_OK) {
+            return 1;
+        }
+
+        // RenderPass
+        //   Lumino では RenderPass=視点を起点とした描画シーケンスと考えてみる。
+        //   これはシャドウバッファの描画を考えるとイメージしやすいかもしれない。
+        //   Three.js でもシャドウバッファへの描画は、その数ごとに専用のカメラを起点として Scene 全体の render() を行っている。
+        if (1) {
+            if (LNGraphicsViewPoint_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500) != LN_OK) {
                 return 1;
             }
 
@@ -169,7 +181,7 @@ int main() {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, &renderingPass) != LN_OK) {
+            if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
                 return 1;
             }
 
@@ -200,7 +212,41 @@ int main() {
             if (LNRenderPass_End(renderingPass) != LN_OK) {
                 return 1;
             }
+        }
 
+        // RenderPass
+        {
+            if (LNGraphicsViewPoint_SetupPerspectiveOrthoLH(viewPoint2, 0, 0, -100, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+                return 1;
+            }
+
+            LNHandle renderingPass = LN_NULL_HANDLE;
+            LNRenderPassDescriptor descriptor;
+            descriptor.renderTargets[0].renderTarget = backbuffer;
+            descriptor.renderTargets[0].clearEnable = LN_FALSE;
+            descriptor.depthBuffer.depthBuffer = depthBuffer;
+            descriptor.depthBuffer.clearDepthEnable = LN_FALSE;
+            descriptor.depthBuffer.clearStencilEnable = LN_FALSE;
+            if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
+                return 1;
+            }
+
+            LNMatrix transform;
+            LNMatrix_SetIdentity(&transform);
+            transform.m41 = 0;
+            LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+            LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+                100, 100,
+                0, 0,
+                0, 0, 1, 1,
+                0, 0, 1, 1,
+                LN_SPRITE_BASE_DIRECTION_ZPLUS,
+                LN_BILLBOARD_TYPE_NONE);
+            LNSpriteRenderer_EndBatch(spriteRenderer);
+
+            if (LNRenderPass_End(renderingPass) != LN_OK) {
+                return 1;
+            }
         }
 
 
@@ -221,7 +267,8 @@ int main() {
     LNObject_Release(material1);
     LNObject_Release(texture1);
     LNObject_Release(unlitSceneRenderingPass);
-    LNObject_Release(sceneRenderingViewPoint);
+    LNObject_Release(viewPoint2);
+    LNObject_Release(viewPoint1);
     LNObject_Release(renderingCommandList);
     LNObject_Release(graphicsContext);
     LNRuntime_Terminate();

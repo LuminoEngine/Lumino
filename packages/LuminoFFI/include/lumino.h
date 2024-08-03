@@ -173,10 +173,10 @@ extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
 　* Creates a new GraphicsCommandList.
 　*/
 extern LUMINO_API LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle* outGraphicsCommandList);
-extern LUMINO_API LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList, LNHandle renderingViewPoint);
+extern LUMINO_API LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList);
 
 
-extern LUMINO_API LNResult LNGraphicsCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle* outRenderPass);
+extern LUMINO_API LNResult LNGraphicsCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
 
 // いわゆるカメラ情報
 extern LUMINO_API LNResult LNGraphicsViewPoint_Create(LNHandle* outGraphicsViewPoint);
@@ -248,7 +248,7 @@ typedef enum LNSpriteBaseDirection {
     /** Y+ (上向き) */
     LN_SPRITE_BASE_DIRECTION_YPLUS = 1,
 
-    /** Z+ (奥向き) */
+    /** Z+ */
     LN_SPRITE_BASE_DIRECTION_ZPLUS = 2,
 
     /** X- (左向き) */
@@ -257,7 +257,7 @@ typedef enum LNSpriteBaseDirection {
     /** Y- (下向き) */
     LN_SPRITE_BASE_DIRECTION_YMINUS = 4,
 
-    /** Z- (手前向き) */
+    /** Z- */
     LN_SPRITE_BASE_DIRECTION_ZMINUS = 5,
 
     /** 2D 基本方向 (Z+ 向、左上原点) */

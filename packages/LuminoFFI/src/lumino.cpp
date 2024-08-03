@@ -253,11 +253,9 @@ extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle*
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_, LNHandle renderingViewPoint_) {
+extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
-    RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
-    commandList->renderingContext->clearCommandsAndState(renderingViewPoint);
     commandList->commandList->beginCommandRecoding();
     LN_FFI_TRY_END_RETURN;
 }
@@ -265,9 +263,12 @@ extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_, LNHa
 extern LNResult LNGraphicsCommandList_BeginRenderPass(
     LNHandle renderingCommandList_,
     LNRenderPassDescriptor descriptor_,
+    LNHandle renderingViewPoint_,
     LNHandle* outRenderPass_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderingCommandList* renderingContext = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
+    renderingContext->renderingContext->clearCommandsAndState(renderingViewPoint);
 
     
     Ref<FFIRenderPass> renderPass = makeObject_deprecated<FFIRenderPass>();
