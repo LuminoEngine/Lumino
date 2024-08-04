@@ -26,7 +26,7 @@ Result<> GLIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat form
     GL_CHECK(glGenBuffers(1, &m_objectId));
     GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_objectId));
     GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, initialData, (usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW));
-    GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    //GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
     return ok();
 }
 
@@ -42,7 +42,7 @@ void GLIndexBuffer::onDestroy() {
 void GLIndexBuffer::setSubData(size_t offset, const void* data, size_t length) {
     GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_objectId));
     GL_CHECK_DEBUG(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, length, data));
-    GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    //GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 void* GLIndexBuffer::map(uint64_t offset, uint64_t size) {

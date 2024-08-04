@@ -21,6 +21,7 @@ if(LN_EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
     string(APPEND LOCAL_LINK_FLAGS " -s WASM=2")
     string(APPEND LOCAL_LINK_FLAGS " -s NO_FILESYSTEM=1")
+    string(APPEND LOCAL_LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=1")
     string(APPEND LOCAL_LINK_FLAGS " -s NO_EXIT_RUNTIME=1")
     string(APPEND LOCAL_LINK_FLAGS " -s ALLOW_MEMORY_GROWTH=1")
 
@@ -72,6 +73,7 @@ if(LN_EMSCRIPTEN)
     # string(APPEND LOCAL_LINK_FLAGS " -O3")
 
 
+    string(APPEND LOCAL_LINK_FLAGS " --js-library ${CMAKE_CURRENT_LIST_DIR}/src/library.js")
     
     #string(APPEND LOCAL_COMPILE_FLAGS " -fsanitize=address")
     #string(APPEND LOCAL_LINK_FLAGS " -fsanitize=address")

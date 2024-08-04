@@ -7,6 +7,12 @@
 #include "GLCommandList.hpp"
 #include "GLStateCache.hpp"
 
+extern "C" {
+extern void LuminoGLSubmitCommandList(void* ptr);
+}
+std::vector<int32_t> g_ff; 
+
+
 namespace ln {
 namespace detail {
 
@@ -18,6 +24,9 @@ GLGraphicsContext::GLGraphicsContext()
     , m_state(std::make_unique<GLStateCache>())
     , m_currentIndexBuffer(nullptr)
     , m_activeShaderPass(nullptr) {
+    g_ff.push_back(63);
+    g_ff.push_back(742);
+    LuminoGLSubmitCommandList(g_ff.data());
 }
 
 Result<> GLGraphicsContext::init(OpenGLDevice* owner) {
@@ -127,9 +136,11 @@ void GLGraphicsContext::onRestoreExternalRenderState() {
 
 void GLGraphicsContext::onBeginCommandRecoding() {
     m_state->clear();
+    m_time1US = 0;
 }
 
 void GLGraphicsContext::onEndCommandRecoding() {
+    //std::cout << m_time1US << "[ms] bind" << std::endl;
 }
 
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {
@@ -172,9 +183,11 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
     }
 
     if (pipeline) {
+        //ln::ElapsedTimer t2;
         auto* glPipeline = static_cast<GLPipeline*>(pipeline);
         glPipeline->bind(this, state.primitive.vertexBuffers, state.primitive.indexBuffer, state.descriptor);
         m_pipeline = glPipeline;
+        //m_time1US += t2.elapsedMicroseconds();
     }
 
 }

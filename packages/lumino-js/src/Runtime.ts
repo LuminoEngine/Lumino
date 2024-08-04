@@ -2,6 +2,8 @@
 // @ts-ignore
 import LuminoFFIModule from "../lib/LuminoFFI.js";
 
+console.log("LuminoFFIModule", LuminoFFIModule);
+
 export interface RuntimeOptions {
     locateFile?: (path: string) => string;
 }
@@ -23,6 +25,13 @@ export class Runtime {
 
         var moduleArg = {
             locateFile: options?.locateFile,
+            LuminoGLSubmitCommandList2: (ptr: number) => {
+                console.log("LuminoGLSubmitCommandList22", ptr);
+                const size = 4 * 2;
+                const p = ptr >> 2;
+                const view = this.module.HEAP32.subarray(p, p+size);
+                console.log("  buf", view, view[0], view[1]);
+            },
         };
 
         //console.log("initialize...");

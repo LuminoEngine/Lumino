@@ -296,7 +296,7 @@ void GLStateCache::setIndexBuffer(const GLIndexBuffer* indexBufferOrNull) {
         GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferOrNull->objectId()));
     }
     else {
-        GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+        //GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
     }
 
     m_indexBufferOrNull = indexBufferOrNull;

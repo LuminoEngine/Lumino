@@ -46,7 +46,7 @@ export class WebGLGraphicsContext extends GraphicsContext {
         
 
         Runtime.webglContextHandle = Runtime.module.GL.registerContext(webglContext, {
-            majorVersion: 1,
+            majorVersion: 2,
             minorVersion: 0,
         });
     

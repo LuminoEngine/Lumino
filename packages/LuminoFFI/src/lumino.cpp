@@ -435,6 +435,7 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
             // Render commands
             {
                 g_drawCommandList->clear();
+                //ln::ElapsedTimer t1;
                 renderPass->sceneRenderPass->buildDrawCommands(
                     nullptr,
                     batchList,
@@ -443,7 +444,10 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
                     renderViewInfo,
                     sceneInfo,
                     g_drawCommandList);
+                //std::cout << t1.elapsedMilliseconds() << "[ms] buildDrawCommands" << std::endl;
+                ln::ElapsedTimer t2;
                 g_drawCommandList->submitMeshDrawCommands(commandList);
+                std::cout << t2.elapsedMilliseconds() << "[ms] xx" << std::endl;
             }
 
             /*

@@ -143,17 +143,17 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
                 GL_CHECK_DEBUG(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
             }
             else {
-                GL_CHECK_DEBUG(glBindBufferRange(
-                    GL_UNIFORM_BUFFER,
-                    info.bindingPoint,
-                    info.deactiveUBO,
-                    0,
-                    info.blockSize));
-                GL_CHECK_DEBUG(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+                //GL_CHECK_DEBUG(glBindBufferRange(
+                //    GL_UNIFORM_BUFFER,
+                //    info.bindingPoint,
+                //    info.deactiveUBO,
+                //    0,
+                //    info.blockSize));
+                //GL_CHECK_DEBUG(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
             }
         }
     }
-
+	
     // Resource (texture)
     for (auto i = 0; i < layout->resourceInfos().size(); i++) {
         const auto& info = layout->resourceInfos()[i];
@@ -190,9 +190,9 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
             }
         }
         else {
-            GL_CHECK_DEBUG(glBindTexture(GL_TEXTURE_2D, 0));
-            GL_CHECK_DEBUG(glBindTexture(GL_TEXTURE_3D, 0));
-            GL_CHECK_DEBUG(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+            //GL_CHECK_DEBUG(glBindTexture(GL_TEXTURE_2D, 0));
+            //GL_CHECK_DEBUG(glBindTexture(GL_TEXTURE_3D, 0));
+            //GL_CHECK_DEBUG(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
         }
 
         // Bind sampler state.

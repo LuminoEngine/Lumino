@@ -62,6 +62,8 @@ private:
         GLint m_drawFBO;
         GLfloat m_clearColor[4];
     } m_savedState;
+
+    int64_t m_time1US;
 };
 
 } // namespace detail

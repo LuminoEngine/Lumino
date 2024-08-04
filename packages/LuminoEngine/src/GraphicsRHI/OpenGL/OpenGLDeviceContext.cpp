@@ -664,7 +664,7 @@ void GLPipeline::rebindAttr(int vertexOffset) {
             if (attr.usage == kokage::AttributeUsage_InstanceID) continue;
 
             if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
-                GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->stride * vertexOffset + element->byteOffset)));
+                GL_CHECK_DEBUG(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->stride * vertexOffset + element->byteOffset)));
             }
         }
     }
