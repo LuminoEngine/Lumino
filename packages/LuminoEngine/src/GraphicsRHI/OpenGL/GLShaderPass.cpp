@@ -149,16 +149,6 @@ void GLShaderPass::onDestroy() {
     IShaderPass::onDestroy();
 }
 
-// IShaderDescriptorTable* GLShaderPass::descriptorTable() const
-//{
-//	return m_descriptorTable;
-// }
-
-void GLShaderPass::apply() const {
-    GL_CHECK(glUseProgram(m_program));
-    // m_descriptorTable->bind(m_program);
-}
-
 //==============================================================================
 // GLShaderDescriptorTable
 

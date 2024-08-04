@@ -33,7 +33,6 @@ public:
 
     GLuint program() const { return m_program; }
     const GLShaderDescriptorTable* layout() const { return m_descriptorTable.get(); }
-    void apply() const;
 
 private:
     OpenGLDevice* m_context;

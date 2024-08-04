@@ -160,17 +160,17 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
         const RectI& scissorRect = state.regionRects.scissorRect;
         const RHIExtent2D targetSize = m_currentRenderPass->viewSize();
 
-        GL_CHECK_DEBUG(glViewport(
-            viewportRect.x,
-            targetSize.height - (viewportRect.y + viewportRect.height),
-            viewportRect.width,
-            viewportRect.height));
-        GL_CHECK_DEBUG(glEnable(GL_SCISSOR_TEST));
-        GL_CHECK_DEBUG(glScissor(
-            scissorRect.x,
-            targetSize.height - (scissorRect.y + scissorRect.height),
-            scissorRect.width,
-            scissorRect.height));
+        //GL_CHECK_DEBUG(glViewport(
+        //    viewportRect.x,
+        //    targetSize.height - (viewportRect.y + viewportRect.height),
+        //    viewportRect.width,
+        //    viewportRect.height));
+        //GL_CHECK_DEBUG(glEnable(GL_SCISSOR_TEST));
+        //GL_CHECK_DEBUG(glScissor(
+        //    scissorRect.x,
+        //    targetSize.height - (scissorRect.y + scissorRect.height),
+        //    scissorRect.width,
+        //    scissorRect.height));
     }
 
     // Update primitive data

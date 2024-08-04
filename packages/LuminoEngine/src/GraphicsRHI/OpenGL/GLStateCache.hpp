@@ -12,7 +12,7 @@ namespace detail {
     // submitMeshDrawCommands全体で 70ms くらい。
     // onDrawPrimitiveIndexed を消すと submitMeshDrawCommands が: 17ms
     // onSubmitStatusも消すと: 1ms以下。
-    // 
+    // なぜか glUseProgram が滅茶苦茶時間かかってた。0.1msくらい。
     // 
 class GLStateCache {
 public:
@@ -28,7 +28,7 @@ public:
         const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers
     );
     void setIndexBuffer(const GLIndexBuffer* indexBufferOrNull);
-
+    void useProgram(GLuint program);
 
 private:
     bool equalsPrimitiveData(
@@ -43,6 +43,7 @@ private:
     const GLShaderPass* m_shaderPass;
     std::array<RHIResource*, MaxVertexStreams> m_vertexBuffers;
     std::optional<const GLIndexBuffer*> m_indexBufferOrNull;
+    std::optional<GLuint> m_program;
 };
 
 } // namespace detail

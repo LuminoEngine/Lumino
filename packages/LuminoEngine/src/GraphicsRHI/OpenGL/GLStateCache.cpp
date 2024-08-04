@@ -15,7 +15,8 @@ GLStateCache::GLStateCache()
     , m_vertexLayout(nullptr)
     , m_shaderPass(nullptr)
     , m_vertexBuffers{}
-    , m_indexBufferOrNull() {
+    , m_indexBufferOrNull()
+    , m_program() {
 }
 
 void GLStateCache::clear() {
@@ -26,6 +27,7 @@ void GLStateCache::clear() {
     m_shaderPass = nullptr;
     m_vertexBuffers.fill(nullptr);
     m_indexBufferOrNull = std::nullopt;
+    m_program = std::nullopt;
 }
 
 void GLStateCache::setBlendState(const BlendStateDesc& state) {
@@ -300,6 +302,16 @@ void GLStateCache::setIndexBuffer(const GLIndexBuffer* indexBufferOrNull) {
     }
 
     m_indexBufferOrNull = indexBufferOrNull;
+}
+
+void GLStateCache::useProgram(GLuint program) {
+    if (m_program.has_value() && *m_program == program) {
+        return;
+    }
+
+    GL_CHECK_DEBUG(glUseProgram(program));
+
+    m_program = program;
 }
 
 bool GLStateCache::equalsPrimitiveData(

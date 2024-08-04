@@ -643,7 +643,7 @@ void GLPipeline::bind(
 
     // shaderPass
     if (auto* pass = static_cast<const GLShaderPass*>(shaderPass())) {
-        pass->apply();
+        commandList->state()->useProgram(pass->program());
         if (auto* d = static_cast<GLDescriptor*>(descriptor)) {
             d->bind(pass);
         }
