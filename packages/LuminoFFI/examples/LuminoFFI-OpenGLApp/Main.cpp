@@ -2,6 +2,7 @@
 #include <vector>
 #include <GLFW/glfw3.h>
 #include <lumino.h>
+#include <LuminoCore.hpp>
 
 static size_t GetFileSize(FILE* stream) {
     struct stat stbuf;
@@ -145,6 +146,7 @@ int main() {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
+        ln::ElapsedTimer t;
 
         LNHandle backbuffer = LN_NULL_HANDLE;
         if (LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer) != LN_OK) {
@@ -187,16 +189,18 @@ int main() {
 
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
-            transform.m41 = 200;
-            LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
-            LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
-                200, 100,
-                0, 0,
-                0, 0, 1, 1,
-                0, 0, 1, 1,
-                LN_SPRITE_BASE_DIRECTION_BASIC2D,
-                LN_BILLBOARD_TYPE_NONE);
-            LNSpriteRenderer_EndBatch(spriteRenderer);
+            for (int i = 0; i < 200; i++) {
+                transform.m41 = 10 + i*3;
+                LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+                LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+                    200, 100,
+                    0, 0,
+                    0, 0, 1, 1,
+                    0, 0, 1, 1,
+                    LN_SPRITE_BASE_DIRECTION_BASIC2D,
+                    LN_BILLBOARD_TYPE_NONE);
+                LNSpriteRenderer_EndBatch(spriteRenderer);
+            }
         
             transform.m41 = 400;
             LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material2, &transform);
@@ -212,6 +216,8 @@ int main() {
             if (LNRenderPass_End(renderingPass) != LN_OK) {
                 return 1;
             }
+            //ln::ElapsedTimer t;
+            //std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
         }
 
         // RenderPass
@@ -257,6 +263,8 @@ int main() {
         if (LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList) != LN_OK) {
             return 1;
         }
+        std::cout << t.elapsedMilliseconds() << "[ms] " << std::endl;
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();

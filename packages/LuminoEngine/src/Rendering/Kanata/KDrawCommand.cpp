@@ -69,10 +69,17 @@ void DrawCommandList::submitMeshDrawCommand(GraphicsCommandList* commandList, co
             }
 
             if (cmd->indexBuffer) {
-                commandList->drawPrimitiveIndexed(cmd->firstIndex, cmd->primitiveCount, cmd->instanceCount, cmd->firstVertex);
+                commandList->drawPrimitiveIndexed(
+                    cmd->firstIndex,
+                    cmd->primitiveCount,
+                    cmd->instanceCount,
+                    cmd->firstVertex);
             }
             else {
-                commandList->drawPrimitive(cmd->firstVertex, cmd->primitiveCount, cmd->instanceCount);
+                commandList->drawPrimitive(
+                    cmd->firstVertex,
+                    cmd->primitiveCount,
+                    cmd->instanceCount);
             }
             break;
         }

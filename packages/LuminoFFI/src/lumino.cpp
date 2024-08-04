@@ -277,7 +277,6 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
 		clearFlags = clearFlags | ln::ClearFlags::Stencil;
 	}
 
-    std::cout << "cccc: " << descriptor_.renderTargets[0].renderTarget << std::endl;
     renderPass-> renderPass = RenderPass::get(
         LN_HANDLE_TO_OBJECT(RenderTargetTexture, descriptor_.renderTargets[0].renderTarget), 
         LN_HANDLE_TO_OBJECT(DepthBuffer, descriptor_.depthBuffer.depthBuffer),
@@ -429,6 +428,7 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
                 r->end();
             }
 
+            
             auto& batchProxyCollector = renderingContext->batchProxyCollector();
             batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
 
@@ -647,8 +647,12 @@ LNResult LNSpriteRenderer_BeginBatch(
     //std::cout << "graphicsCommandList: " << graphicsCommandList_ << std::endl;
     //std::cout << "material: " << material_ << std::endl;
     //std::cout << "transform: " << transform_ << std::endl;
-    //std::cout << "transform m11: " << transform_->m11 << std::endl;
-    //std::cout << "transform m12: " << transform_->m12 << std::endl;
+    //std::cout << "  transform m11: " << transform_->m11 << std::endl;
+    //std::cout << "  transform m12: " << transform_->m12 << std::endl;
+    //std::cout << "  transform m41: " << transform_->m41 << std::endl;
+    //std::cout << "  transform m42: " << transform_->m42 << std::endl;
+    //std::cout << "  transform m43: " << transform_->m43 << std::endl;
+    //std::cout << "  transform m44: " << transform_->m44 << std::endl;
     SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
     FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);

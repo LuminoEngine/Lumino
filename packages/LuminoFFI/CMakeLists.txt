@@ -62,11 +62,14 @@ if(LN_EMSCRIPTEN)
     # for Debug
     # https://emscripten.org/docs/tools_reference/emcc.html#emcc-og
     string(APPEND LOCAL_LINK_FLAGS " --minify 0")
-    string(APPEND LOCAL_LINK_FLAGS " -O0")
-    string(APPEND LOCAL_LINK_FLAGS " -g3")
+    string(APPEND LOCAL_LINK_FLAGS " -O0") # 最適化 OFF
+    string(APPEND LOCAL_LINK_FLAGS " -g3") # デバッグ情報付き
     string(APPEND LOCAL_LINK_FLAGS " -sINLINING_LIMIT")
     string(APPEND LOCAL_LINK_FLAGS " --emit-symbol-map")
     set(VERBOSE 1)
+
+    # for Release
+    # string(APPEND LOCAL_LINK_FLAGS " -O3")
 
 
     

@@ -555,7 +555,7 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource) {
 
     //}
     //else
-    if (m_staging.shaderPass && m_staging.pipelineState.vertexDeclaration && m_currentRenderPass // extention 描画時
+    if (m_staging.shaderPass && m_staging.pipelineState.vertexDeclaration && m_currentRenderPass
     ) {
 
         // TODO: modified check
