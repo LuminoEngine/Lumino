@@ -42,8 +42,6 @@ export class GraphicsCommandList extends LuminoObject {
             throw new Error("Invalid render target count.");
         }
 
-        console.log("beginRenderPass", descriptor);
-
         // RenderTargets.
         for (let i = 0; i < count; i++) {
             const attachment = descriptor.renderTargets[i];

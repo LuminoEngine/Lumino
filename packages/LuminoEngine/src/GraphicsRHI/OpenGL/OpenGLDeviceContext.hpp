@@ -216,7 +216,12 @@ public:
     GLPipeline();
     Result<> init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
     virtual void onDestroy() override;
-    void bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBuffers, const RHIResource* indexBuffer, IDescriptor* descriptor);
+    void bind(
+        GLGraphicsContext* commandList,
+        const std::array<RHIResource*,
+        MaxVertexStreams>& vertexBuffers,
+        const RHIResource* indexBuffer,
+        IDescriptor* descriptor);
     GLenum primitiveTopology() const { return m_primitiveTopology; }
 
     void rebindAttr(int vertexOffset);

@@ -12,12 +12,13 @@ public:
     Result<> init(OpenGLDevice* owner);
     void onDestroy() override;
     void setActiveShaderPass(GLShaderPass* pass);
+    GLStateCache* state() const { return m_state.get(); }
 
 protected:
     void onSaveExternalRenderState() override;
     void onRestoreExternalRenderState() override;
-    void onBeginCommandRecoding() override {}
-    void onEndCommandRecoding() override {}
+    void onBeginCommandRecoding() override;
+    void onEndCommandRecoding() override;
     void onBeginRenderPass(IRenderPass* renderPass) override;
     void onEndRenderPass(IRenderPass* renderPass) override;
     void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
@@ -36,6 +37,7 @@ private:
     static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
     OpenGLDevice* m_device;
+    std::unique_ptr<GLStateCache> m_state;
     GLIndexBuffer* m_currentIndexBuffer;
     GLRenderPass* m_currentRenderPass = nullptr;
     GLShaderPass* m_activeShaderPass;

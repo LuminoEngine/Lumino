@@ -9,6 +9,7 @@ class GLGraphicsContext;
 class GLSwapChain;
 class GLRenderPass;
 class GLCommandQueue;
+class GLVertexDeclaration;
 class GLVertexBuffer;
 class GLIndexBuffer;
 class GLUniformBuffer;
@@ -17,6 +18,7 @@ class GLRenderTargetTexture;
 class GLDepthBuffer;
 class GLShaderPass;
 class GLShaderDescriptorTable;
+class GLStateCache;
 
 struct GLUniformBufferView {
     GLUniformBuffer* buffer;

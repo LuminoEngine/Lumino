@@ -5,6 +5,7 @@
 #include "GLShaderPass.hpp"
 #include "GLRenderPass.hpp"
 #include "GLCommandList.hpp"
+#include "GLStateCache.hpp"
 
 namespace ln {
 namespace detail {
@@ -14,6 +15,7 @@ namespace detail {
 
 GLGraphicsContext::GLGraphicsContext()
     : m_device(nullptr)
+    , m_state(std::make_unique<GLStateCache>())
     , m_currentIndexBuffer(nullptr)
     , m_activeShaderPass(nullptr) {
 }
@@ -123,6 +125,13 @@ void GLGraphicsContext::onRestoreExternalRenderState() {
     GL_CHECK(glClearColor(m_savedState.m_clearColor[0], m_savedState.m_clearColor[1], m_savedState.m_clearColor[2], m_savedState.m_clearColor[3]));
 }
 
+void GLGraphicsContext::onBeginCommandRecoding() {
+    m_state->clear();
+}
+
+void GLGraphicsContext::onEndCommandRecoding() {
+}
+
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {
     m_currentRenderPass = static_cast<GLRenderPass*>(renderPass);
     m_currentRenderPass->bind(this);
@@ -130,6 +139,7 @@ void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {
 
 void GLGraphicsContext::onEndRenderPass(IRenderPass* renderPass) {
     m_currentRenderPass = nullptr;
+    m_pipeline = nullptr;
 }
 
 void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) {
@@ -155,7 +165,7 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 
     if (pipeline) {
         auto* glPipeline = static_cast<GLPipeline*>(pipeline);
-        glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer, state.descriptor);
+        glPipeline->bind(this, state.primitive.vertexBuffers, state.primitive.indexBuffer, state.descriptor);
         m_pipeline = glPipeline;
     }
 

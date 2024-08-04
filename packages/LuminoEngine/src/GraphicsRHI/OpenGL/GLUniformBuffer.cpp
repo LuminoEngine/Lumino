@@ -49,17 +49,17 @@ void* GLUniformBuffer::map() {
 }
 
 void GLUniformBuffer::unmap() {
-    if (LN_REQUIRE(m_mapped)) return;
-    GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
-    GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, m_size, m_data, GL_STREAM_DRAW));
-    GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-    m_mapped = false;
+    if (m_mapped) {
+        GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
+        GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, m_size, m_data, GL_STREAM_DRAW));
+        GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+        m_mapped = false;
+    }
 }
 
 void GLUniformBuffer::flush() {
     if (m_mapped) {
         unmap();
-        map();
     }
 }
 
