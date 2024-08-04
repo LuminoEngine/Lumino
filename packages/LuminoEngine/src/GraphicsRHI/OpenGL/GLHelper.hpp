@@ -223,31 +223,31 @@ public:
         GLuint glflags = 0;
 
         if (testFlag(flags, ClearFlags::Color)) {
-            GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
-            GL_CHECK(glClearColor(color.r, color.g, color.b, color.a));
+            GL_CHECK_DEBUG(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+            GL_CHECK_DEBUG(glClearColor(color.r, color.g, color.b, color.a));
             glflags |= GL_COLOR_BUFFER_BIT;
         }
 
         if (testFlag(flags, ClearFlags::Depth)) {
-            GL_CHECK(glDepthMask(GL_TRUE));
+            GL_CHECK_DEBUG(glDepthMask(GL_TRUE));
             //GL_CHECK(glClearDepth(z));
-            GL_CHECK(glClearDepthf(z));
+            GL_CHECK_DEBUG(glClearDepthf(z));
             glflags |= GL_DEPTH_BUFFER_BIT;
         }
 
         if (testFlag(flags, ClearFlags::Stencil)) {
-            GL_CHECK(glClearStencil(stencil));
+            GL_CHECK_DEBUG(glClearStencil(stencil));
             glflags |= GL_STENCIL_BUFFER_BIT;
         }
 
         if (glflags != 0) {
             // Lumino の仕様としては、Viewport や Scissor の影響を受けないようにクリアしたい。
             // しかし glClear は Scissor の影響を受けるので GL_SCISSOR_TEST を切っておく。
-            GL_CHECK(glDisable(GL_SCISSOR_TEST));
+            GL_CHECK_DEBUG(glDisable(GL_SCISSOR_TEST));
 
             // アタッチされているすべてのカラーバッファ・デプスバッファをクリアする。
             // 個別クリアしたいときは glClearBufferiv
-            GL_CHECK(glClear(glflags));
+            GL_CHECK_DEBUG(glClear(glflags));
 
             //GLint c[] = { 255, 0, 0, 255 };
             //GL_CHECK(glClearBufferiv(GL_COLOR, GL_DRAW_BUFFER0, c));

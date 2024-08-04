@@ -189,8 +189,8 @@ int main() {
 
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
-            for (int i = 0; i < 200; i++) {
-                transform.m41 = 10 + i*3;
+            for (int i = 0; i < 500; i++) {
+                transform.m41 = 10 + i;
                 LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
                 LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
                     200, 100,
@@ -216,12 +216,10 @@ int main() {
             if (LNRenderPass_End(renderingPass) != LN_OK) {
                 return 1;
             }
-            //ln::ElapsedTimer t;
-            //std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
         }
 
         // RenderPass
-        {
+        if (0) {
             if (LNGraphicsViewPoint_SetupPerspectiveOrthoLH(viewPoint2, 0, 0, -100, 0, 0, 0, width, height, -500, 500) != LN_OK) {
                 return 1;
             }
@@ -263,7 +261,7 @@ int main() {
         if (LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList) != LN_OK) {
             return 1;
         }
-        std::cout << t.elapsedMilliseconds() << "[ms] " << std::endl;
+        std::cout << t.elapsedMilliseconds() << "[ms] Total" << std::endl;
 
 
         glfwSwapBuffers(window);

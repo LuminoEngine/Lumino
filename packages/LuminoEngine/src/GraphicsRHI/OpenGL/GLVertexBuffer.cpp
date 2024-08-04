@@ -39,25 +39,25 @@ void GLVertexBuffer::onDestroy() {
 }
 
 void GLVertexBuffer::setSubData(size_t offset, const void* data, size_t length) {
-    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_objectId));
-    GL_CHECK(glBufferSubData(GL_ARRAY_BUFFER, offset, length, data));
-    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GL_CHECK_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, m_objectId));
+    GL_CHECK_DEBUG(glBufferSubData(GL_ARRAY_BUFFER, offset, length, data));
+    GL_CHECK_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 void* GLVertexBuffer::map(uint64_t offset, uint64_t size) {
-    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_objectId));
+    GL_CHECK_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, m_objectId));
     void* buffer;
 
     // https://developer.apple.com/jp/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html
 
-    GL_CHECK(buffer = glMapBufferRange(GL_ARRAY_BUFFER, offset, size, GL_MAP_WRITE_BIT));
+    GL_CHECK_DEBUG(buffer = glMapBufferRange(GL_ARRAY_BUFFER, offset, size, GL_MAP_WRITE_BIT));
 
     return buffer;
 }
 
 void GLVertexBuffer::unmap() {
-    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_objectId));
-    GL_CHECK(glUnmapBuffer(GL_ARRAY_BUFFER));
+    GL_CHECK_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, m_objectId));
+    GL_CHECK_DEBUG(glUnmapBuffer(GL_ARRAY_BUFFER));
 }
 
 } // namespace detail

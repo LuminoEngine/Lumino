@@ -149,9 +149,17 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
         const RectI& scissorRect = state.regionRects.scissorRect;
         const RHIExtent2D targetSize = m_currentRenderPass->viewSize();
 
-        GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
-        GL_CHECK(glEnable(GL_SCISSOR_TEST));
-        GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
+        GL_CHECK_DEBUG(glViewport(
+            viewportRect.x,
+            targetSize.height - (viewportRect.y + viewportRect.height),
+            viewportRect.width,
+            viewportRect.height));
+        GL_CHECK_DEBUG(glEnable(GL_SCISSOR_TEST));
+        GL_CHECK_DEBUG(glScissor(
+            scissorRect.x,
+            targetSize.height - (scissorRect.y + scissorRect.height),
+            scissorRect.width,
+            scissorRect.height));
     }
 
     // Update primitive data
@@ -247,10 +255,10 @@ void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVe
     getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
 
     if (instanceCount > 0) {
-        GL_CHECK(glDrawArraysInstanced(gl_prim, startVertex, vertexCount, instanceCount));
+        GL_CHECK_DEBUG(glDrawArraysInstanced(gl_prim, startVertex, vertexCount, instanceCount));
     }
     else {
-        GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
+        GL_CHECK_DEBUG(glDrawArrays(gl_prim, startVertex, vertexCount));
     }
 }
 
@@ -286,20 +294,10 @@ void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int 
     // TODO: ↑Radeon で稀に吹っ飛ぶ
 
     if (instanceCount > 0) {
-        GL_CHECK(glDrawElementsInstanced(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount));
-        //#ifdef LN_EMSCRIPTEN
-//        GL_CHECK(glDrawElementsInstanced(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount));
-//#else
-//        GL_CHECK(glDrawElementsInstancedBaseVertex(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount, vertexOffset));
-//#endif
+        GL_CHECK_DEBUG(glDrawElementsInstanced(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount));
     }
     else {
-        GL_CHECK(glDrawElements(gl_prim, vertexCount, indexFormat, startIndexPtr));
-        //#ifdef LN_EMSCRIPTEN
-//        GL_CHECK(glDrawElements(gl_prim, vertexCount, indexFormat, startIndexPtr));
-//#else
-//        GL_CHECK(glDrawElementsBaseVertex(gl_prim, vertexCount, indexFormat, startIndexPtr, vertexOffset));
-//#endif
+        GL_CHECK_DEBUG(glDrawElements(gl_prim, vertexCount, indexFormat, startIndexPtr));
     }
 }
 

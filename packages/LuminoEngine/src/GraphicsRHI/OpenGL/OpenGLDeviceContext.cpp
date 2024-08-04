@@ -641,7 +641,6 @@ void GLPipeline::bind(
     // IndexBuffer
     commandList->state()->setIndexBuffer(static_cast<const GLIndexBuffer*>(indexBuffer));
 
-    ln::ElapsedTimer t2;
     // shaderPass
     if (auto* pass = static_cast<const GLShaderPass*>(shaderPass())) {
         pass->apply();
@@ -649,7 +648,6 @@ void GLPipeline::bind(
             d->bind(pass);
         }
     }
-    std::cout << t2.elapsedMilliseconds() << "[ms] GLShaderPass" << std::endl;
 }
 
 // WebGL や OpenGLES で glDrawElementsBaseVertex() が使えないので、glVertexAttribPointer() の pointer にオフセットを加える対策 

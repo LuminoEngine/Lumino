@@ -54,15 +54,15 @@ void GLStateCache::setBlendState(const BlendStateDesc& state) {
 
             // blendEnable
             if (desc.blendEnable) {
-                GL_CHECK(glEnablei(GL_BLEND, i));
+                GL_CHECK_DEBUG(glEnablei(GL_BLEND, i));
             }
             else {
-                GL_CHECK(glEnablei(GL_BLEND, i));
+                GL_CHECK_DEBUG(glEnablei(GL_BLEND, i));
             }
 
             // sourceBlend
             // destinationBlend
-            GL_CHECK(glBlendFuncSeparatei(
+            GL_CHECK_DEBUG(glBlendFuncSeparatei(
                 i,
                 blendFactorTable[(int)desc.sourceBlend],
                 blendFactorTable[(int)desc.destinationBlend],
@@ -70,7 +70,7 @@ void GLStateCache::setBlendState(const BlendStateDesc& state) {
                 blendFactorTable[(int)desc.destinationBlendAlpha]));
 
             // blendOp
-            GL_CHECK(
+            GL_CHECK_DEBUG(
                 glBlendEquationSeparatei(i, blendOpTable[(int)desc.blendOp], blendOpTable[(int)desc.blendOpAlpha]));
         }
     }
@@ -81,22 +81,22 @@ void GLStateCache::setBlendState(const BlendStateDesc& state) {
 
         // blendEnable
         if (desc.blendEnable) {
-            GL_CHECK(glEnable(GL_BLEND));
+            GL_CHECK_DEBUG(glEnable(GL_BLEND));
         }
         else {
-            GL_CHECK(glDisable(GL_BLEND));
+            GL_CHECK_DEBUG(glDisable(GL_BLEND));
         }
 
         // blendOp
         {
-            GL_CHECK(
+            GL_CHECK_DEBUG(
                 glBlendEquationSeparate(blendOpTable[(int)desc.blendOp], blendOpTable[(int)desc.blendOpAlpha]));
         }
 
         // sourceBlend
         // destinationBlend
         {
-            GL_CHECK(glBlendFuncSeparate(
+            GL_CHECK_DEBUG(glBlendFuncSeparate(
                 blendFactorTable[(int)desc.sourceBlend],
                 blendFactorTable[(int)desc.destinationBlend],
                 blendFactorTable[(int)desc.sourceBlendAlpha],
@@ -117,27 +117,26 @@ void GLStateCache::setRasterizerState(const RasterizerStateDesc& state) {
     // OpenGL ES is glPolygonMode unsupported
 #else
     const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
-    GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)state.fillMode]));
+    GL_CHECK_DEBUG(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)state.fillMode]));
 #endif
     // cullingMode
-    GL_CHECK(glFrontFace(GL_CCW));
+    GL_CHECK_DEBUG(glFrontFace(GL_CCW));
     switch (state.cullMode) {
         case CullMode::None:
-            GL_CHECK(glDisable(GL_CULL_FACE));
+            GL_CHECK_DEBUG(glDisable(GL_CULL_FACE));
             break;
         case CullMode::Front:
-            GL_CHECK(glEnable(GL_CULL_FACE));
-            GL_CHECK(glCullFace(GL_FRONT));
+            GL_CHECK_DEBUG(glEnable(GL_CULL_FACE));
+            GL_CHECK_DEBUG(glCullFace(GL_FRONT));
             break;
         case CullMode::Back:
-            GL_CHECK(glEnable(GL_CULL_FACE));
-            GL_CHECK(glCullFace(GL_BACK));
+            GL_CHECK_DEBUG(glEnable(GL_CULL_FACE));
+            GL_CHECK_DEBUG(glCullFace(GL_BACK));
             break;
         default:
             LN_UNREACHABLE();
             break;
     }
-    std::cout << "setRasterizerState" << std::endl;
 
     m_rasterizerState = state;
 }
@@ -159,29 +158,29 @@ void GLStateCache::setDepthStencilState(const DepthStencilStateDesc& state) {
 
     //// depthTestEnabled
     // if (depthStencilState.depthTestEnabled) {
-    //	GL_CHECK(glEnable(GL_DEPTH_TEST));
+    //	GL_CHECK_DEBUG(glEnable(GL_DEPTH_TEST));
     // }
     // else {
-    //	GL_CHECK(glDisable(GL_DEPTH_TEST));
+    //	GL_CHECK_DEBUG(glDisable(GL_DEPTH_TEST));
     // }
 
     if (state.depthTestFunc == ComparisonFunc::Always) {
-        GL_CHECK(glDisable(GL_DEPTH_TEST));
+        GL_CHECK_DEBUG(glDisable(GL_DEPTH_TEST));
     }
     else {
-        GL_CHECK(glEnable(GL_DEPTH_TEST));
-        GL_CHECK(glDepthFunc(cmpFuncTable[(int)state.depthTestFunc]));
+        GL_CHECK_DEBUG(glEnable(GL_DEPTH_TEST));
+        GL_CHECK_DEBUG(glDepthFunc(cmpFuncTable[(int)state.depthTestFunc]));
     }
 
     // depthWriteEnabled
-    GL_CHECK(glDepthMask(state.depthWriteEnabled ? GL_TRUE : GL_FALSE));
+    GL_CHECK_DEBUG(glDepthMask(state.depthWriteEnabled ? GL_TRUE : GL_FALSE));
 
     // stencilEnabled
     if (state.stencilEnabled) {
-        GL_CHECK(glEnable(GL_STENCIL_TEST));
+        GL_CHECK_DEBUG(glEnable(GL_STENCIL_TEST));
     }
     else {
-        GL_CHECK(glDisable(GL_STENCIL_TEST));
+        GL_CHECK_DEBUG(glDisable(GL_STENCIL_TEST));
     }
 
     // stencilFunc
@@ -191,54 +190,51 @@ void GLStateCache::setDepthStencilState(const DepthStencilStateDesc& state) {
     // stencilPassOp
     GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
 #if LN_FACE_FRONT_CCW
-    GL_CHECK(glStencilFuncSeparate(
+    GL_CHECK_DEBUG(glStencilFuncSeparate(
         GL_FRONT,
         cmpFuncTable[(int)state.frontFace.stencilFunc],
         state.stencilReferenceValue,
         0xFFFFFFFF));
-    GL_CHECK(glStencilFuncSeparate(
+    GL_CHECK_DEBUG(glStencilFuncSeparate(
         GL_BACK,
         cmpFuncTable[(int)state.backFace.stencilFunc],
         state.stencilReferenceValue,
         0xFFFFFFFF));
-    GL_CHECK(glStencilOpSeparate(
+    GL_CHECK_DEBUG(glStencilOpSeparate(
         GL_FRONT,
         stencilOpTable[(int)state.frontFace.stencilFailOp],
         stencilOpTable[(int)state.frontFace.stencilDepthFailOp],
         stencilOpTable[(int)state.frontFace.stencilPassOp]));
-    GL_CHECK(glStencilOpSeparate(
+    GL_CHECK_DEBUG(glStencilOpSeparate(
         GL_BACK,
         stencilOpTable[(int)state.backFace.stencilFailOp],
         stencilOpTable[(int)state.backFace.stencilDepthFailOp],
         stencilOpTable[(int)state.backFace.stencilPassOp]));
 #else
-    GL_CHECK(glStencilFuncSeparate(
+    GL_CHECK_DEBUG(glStencilFuncSeparate(
         GL_BACK,
         cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc],
         m_depthStencilState.stencilReferenceValue,
         0xFFFFFFFF));
-    GL_CHECK(glStencilFuncSeparate(
+    GL_CHECK_DEBUG(glStencilFuncSeparate(
         GL_FRONT,
         cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc],
         m_depthStencilState.stencilReferenceValue,
         0xFFFFFFFF));
-    GL_CHECK(glStencilOpSeparate(
+    GL_CHECK_DEBUG(glStencilOpSeparate(
         GL_BACK,
         stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp],
         stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp],
         stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
-    GL_CHECK(glStencilOpSeparate(
+    GL_CHECK_DEBUG(glStencilOpSeparate(
         GL_FRONT,
         stencilOpTable[(int)m_depthStencilState.backFace.stencilFailOp],
         stencilOpTable[(int)m_depthStencilState.backFace.stencilDepthFailOp],
         stencilOpTable[(int)m_depthStencilState.backFace.stencilPassOp]));
 #endif
 
-    //GL_CHECK(glStencilOp(stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
+    //GL_CHECK_DEBUG(glStencilOp(stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
     
-
-    std::cout << "setDepthStencilState" << std::endl;
-
     m_depthStencilState = state;
 }
 
@@ -261,11 +257,11 @@ void GLStateCache::setPrimitiveData(
         if (attr.usage == kokage::AttributeUsage_InstanceID) continue;
 
         if (const auto* element = vertexLayout->findGLVertexElement(attr.usage, attr.index)) {
-            GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));
-            GL_CHECK(glBindBuffer(
+            GL_CHECK_DEBUG(glEnableVertexAttribArray(attr.layoutLocation));
+            GL_CHECK_DEBUG(glBindBuffer(
                 GL_ARRAY_BUFFER,
                 static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->objectId()));
-            GL_CHECK(glVertexAttribPointer(
+            GL_CHECK_DEBUG(glVertexAttribPointer(
                 attr.layoutLocation,
                 element->size,
                 element->type,
@@ -274,15 +270,15 @@ void GLStateCache::setPrimitiveData(
                 (void*)(element->byteOffset)));
 
             if (element->instance) {
-                GL_CHECK(glVertexAttribDivisor(attr.layoutLocation, 1));
+                GL_CHECK_DEBUG(glVertexAttribDivisor(attr.layoutLocation, 1));
             }
             else {
-                GL_CHECK(glVertexAttribDivisor(attr.layoutLocation, 0));
+                GL_CHECK_DEBUG(glVertexAttribDivisor(attr.layoutLocation, 0));
             }
         }
         else {
-            GL_CHECK(glDisableVertexAttribArray(attr.layoutLocation));
-            GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+            GL_CHECK_DEBUG(glDisableVertexAttribArray(attr.layoutLocation));
+            GL_CHECK_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, 0));
         }
     }
 
@@ -297,13 +293,12 @@ void GLStateCache::setIndexBuffer(const GLIndexBuffer* indexBufferOrNull) {
     }
 
     if (indexBufferOrNull) {
-        GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferOrNull->objectId()));
+        GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferOrNull->objectId()));
     }
     else {
-        GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+        GL_CHECK_DEBUG(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
     }
 
-    std::cout << "setIndexBuffer" << std::endl;
     m_indexBufferOrNull = indexBufferOrNull;
 }
 

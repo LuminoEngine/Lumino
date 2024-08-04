@@ -62,6 +62,9 @@
         break; \
     }
 
+// https://emscripten.org/docs/optimizing/Optimizing-WebGL.html#avoid-gpu-cpu-sync-points
+#define GL_CHECK_DEBUG(call) call;
+
 #define GL_CHECK2(name)                                                                                      \
     for (;;) {                                                                                              \
         GLenum gl_err = glGetError();                                                                       \

@@ -50,9 +50,9 @@ void* GLUniformBuffer::map() {
 
 void GLUniformBuffer::unmap() {
     if (m_mapped) {
-        GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
-        GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, m_size, m_data, GL_STREAM_DRAW));
-        GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+        GL_CHECK_DEBUG(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
+        GL_CHECK_DEBUG(glBufferData(GL_UNIFORM_BUFFER, m_size, m_data, GL_STREAM_DRAW));
+        GL_CHECK_DEBUG(glBindBuffer(GL_UNIFORM_BUFFER, 0));
         m_mapped = false;
     }
 }
