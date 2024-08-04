@@ -1,18 +1,20 @@
 
 // @ts-ignore
-import LuminoFFIModule from "../dist/LuminoFFI.js";
+//import LuminoFFIModule from "../dist/LuminoFFI.js";
 import { DepthBuffer } from "./DepthBuffer";
 import { GraphicsContext } from "./GraphicsContext";
 export * from "./math/Types";
 export * from "./math/Matrix";
-export * from "./graphics/Material";
-export * from "./graphics/SpriteRenderer.js";
+export * from ".//GraphicsContext";
+export * from "./GraphicsCommandList";
 export * from "./GraphicsViewPoint";
+export * from "./graphics/Material";
 export * from "./Texture2D";
-import { RenderTargetTexture } from "./RenderTargetTexture";
+export * from "./graphics/SpriteRenderer.js";
+import { RenderTexture } from "./RenderTargetTexture";
 
-import { Runtime, Handle, API } from "./Runtime";
-console.log("aaa", LuminoFFIModule());
+import { Runtime, API } from "./Runtime";
+//console.log("aaa", LuminoFFIModule());
 
 export * from "./Runtime";
 
@@ -21,12 +23,11 @@ export * from "./Runtime";
 
 
 export class WebGLGraphicsContext extends GraphicsContext {
-    private _currentColorBuffer: RenderTargetTexture;
+    private _currentColorBuffer: RenderTexture;
     private _currentDepthBuffer: DepthBuffer;
 
-    public override get currentColorBuffer(): RenderTargetTexture {
+    public override get currentColorBuffer(): RenderTexture {
         const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsContext_GetCurrentColorBuffer(this._handle, r));
-        console.log("currentColorBuffer", handle);
         this._currentColorBuffer._setHandle(handle, false);
         return this._currentColorBuffer;
     }
@@ -39,8 +40,10 @@ export class WebGLGraphicsContext extends GraphicsContext {
 
     public constructor(webglContext: WebGLRenderingContext) {
         super();
-        this._currentColorBuffer = new RenderTargetTexture(this);
+        this._currentColorBuffer = new RenderTexture(this);
         this._currentDepthBuffer = new DepthBuffer(this);
+
+        
 
         Runtime.webglContextHandle = Runtime.module.GL.registerContext(webglContext, {
             majorVersion: 1,
@@ -51,10 +54,15 @@ export class WebGLGraphicsContext extends GraphicsContext {
         Runtime.module.GL.makeContextCurrent(Runtime.webglContextHandle);
 
 
-        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNGLGraphicsContext_CreateFromCurrentGL(800, 600, r));
+        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNGLGraphicsContext_CreateFromCurrentGL(webglContext.canvas.width, webglContext.canvas.height, r));
 
-        this._handle = Runtime.returnPointerView[0];
-        console.log("handle3", this._handle, Runtime.returnPointerView.byteOffset);
+        console.log("LNGLGraphicsContext_CreateFromCurrentGL", webglContext.canvas.width, webglContext.canvas.height);
+        // this._handle = Runtime.returnPointerView[0];
+        // console.log("handle3", this._handle, Runtime.returnPointerView.byteOffset);
+    }
+
+    public makeCurrentContext(): void {
+        Runtime.module.GL.makeContextCurrent(Runtime.webglContextHandle);
     }
 }
 

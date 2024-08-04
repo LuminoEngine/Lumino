@@ -1,4 +1,3 @@
-import { API, StructHandle } from "../Runtime";
 
 export class Matrix {
     private readonly _m: Float32Array;

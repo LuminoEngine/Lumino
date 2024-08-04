@@ -19,6 +19,7 @@ Result<> GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderC
     m_type = type;
 
     m_shader = glCreateShader(m_type);
+    GL_CHECK2("glCreateShader");
     if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return err();
 
 //	static const std::string_view predefined = R"(
@@ -99,6 +100,7 @@ Result<> GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& c
     LN_TRY(fragmentShader.create(fsCode, fsCodeLen, GL_FRAGMENT_SHADER, diag));
 
     m_program = glCreateProgram();
+    GL_CHECK2("glCreateProgram");
     LN_LOG_VERBOSE("Program create:{} vs:{} fs:{}", m_program, vertexShader.shader(), fragmentShader.shader());
 
     GL_CHECK(glAttachShader(m_program, vertexShader.shader()));
@@ -182,6 +184,7 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const kokage::
         GLsizei blockNameLen;
         GL_CHECK(glGetActiveUniformBlockName(program, i, 128, &blockNameLen, blockName));
         GLuint blockIndex = glGetUniformBlockIndex(program, blockName);
+        GL_CHECK2("glGetUniformBlockIndex");
 
 		// OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
 		// 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
@@ -219,6 +222,7 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const kokage::
             GLchar name[256] = { 0 };
             GL_CHECK(glGetActiveUniform(program, i, 256, &nameLen, &varSize, &varType, name));
             GLint loc = glGetUniformLocation(program, name);
+            GL_CHECK2("glGetUniformLocation");
 
             ShaderUniformTypeDesc desc;
             OpenGLHelper::convertVariableTypeGLToLN(

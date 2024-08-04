@@ -1,8 +1,23 @@
+import { DepthBuffer } from "./DepthBuffer";
 import { GraphicsContext } from "./GraphicsContext";
 import { GraphicsViewPoint } from "./GraphicsViewPoint";
 import { LuminoObject } from "./LuminoObject";
 import { RenderPass } from "./RenderPass";
+import { RenderTexture } from "./RenderTargetTexture";
 import { API, Runtime } from "./Runtime";
+import { IColor, MAX_RENDER_TARGETS } from "./types";
+
+export interface BeginRederPassDescriptor {
+    renderTargets: {
+        renderTarget: RenderTexture;
+        clearColor?: IColor; // default: { r: 0, g: 0, b: 0, a: 0 }
+    }[];
+    depthBuffer?: {
+        depthBuffer: DepthBuffer;
+        clearDepth?: number;   // 0.0-1.0, default:1.0
+        clearStencil?: number; // 0x00-0xFF (0-255), default:0
+    }
+}
 
 export class GraphicsCommandList extends LuminoObject {
     private _owner: GraphicsContext;
@@ -13,31 +28,62 @@ export class GraphicsCommandList extends LuminoObject {
     public constructor(owner: GraphicsContext) {
         super();
         this._owner = owner;
-        API.LNGraphicsCommandList_Create(owner.handle, Runtime.returnPointerView.byteOffset);
-        this._setHandle(Runtime.returnPointerView[0], true);
+        this._setHandle(Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsCommandList_Create(owner.handle, r)), true);
     }
 
-    public reset(viewPoint: GraphicsViewPoint): void {
-        API.LNGraphicsCommandList_Reset(this.handle, viewPoint.handle);
+    public reset(): void {
+        API.LNGraphicsCommandList_Reset(this.handle);
     }
 
-    public beginRenderPass(): RenderPass {
+    public beginRenderPass(descriptor: BeginRederPassDescriptor, viewPoint: GraphicsViewPoint): RenderPass {
+        const desc = API.LNRenderPassDescriptor_Get();
+        const count = descriptor.renderTargets.length;
+        if (count <= 0 || count > MAX_RENDER_TARGETS) {
+            throw new Error("Invalid render target count.");
+        }
 
-        const s = API.LNRenderPassDescriptor_Get();
-        API.LNRenderPassDescriptor_SetRenderTarget(
-            s, 0, this._owner.currentColorBuffer.handle,
-            1, 0, 0, 1,
-            1
-        );
-        API.LNRenderPassDescriptor_SetDepthBuffer(
-            s, this._owner.currentDepthBuffer.handle,
-            1, 0, 1, 1
-        );
+        console.log("beginRenderPass", descriptor);
+
+        // RenderTargets.
+        for (let i = 0; i < count; i++) {
+            const attachment = descriptor.renderTargets[i];
+            let r, g, b, a;
+            if (attachment.clearColor) {
+                const c = attachment.clearColor;
+                r = c.r;
+                g = c.g;
+                b = c.b;
+                a = c.a;
+            } else {
+                r = 0;
+                g = 0;
+                b = 0;
+                a = 0;
+            }
+            API.LNRenderPassDescriptor_SetRenderTarget(
+                desc, i, attachment.renderTarget.handle,
+                r, g, b, a,
+                attachment.clearColor !== undefined ? 1 : 0
+            );
+        }
+
+        // DepthBuffer.
+        if (descriptor.depthBuffer) {
+            const attachment = descriptor.depthBuffer;
+            const clearDepth = attachment.clearDepth !== undefined ? attachment.clearDepth: 1;
+            const clearStencil = attachment.clearStencil !== undefined ? attachment.clearStencil : 0;
+            API.LNRenderPassDescriptor_SetDepthBuffer(
+                desc, attachment.depthBuffer.handle,
+                clearDepth,
+                clearStencil,
+                attachment.clearDepth !== undefined ? 1 : 0,
+                attachment.clearStencil !== undefined ? 1 : 0,
+            );
+        }
         
-        API.LNGraphicsCommandList_BeginRenderPass(this.handle, s, Runtime.returnPointerView.byteOffset);
-
+        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsCommandList_BeginRenderPass(this.handle, desc, viewPoint.handle, r));
         const renderPass = new RenderPass(this);
-        renderPass._setHandle(Runtime.returnPointerView[0], false);
+        renderPass._setHandle(handle, false);
         return renderPass;
     }
 }

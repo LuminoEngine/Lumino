@@ -353,8 +353,8 @@ void GLSwapChain::onDestroy() {
 
 void GLSwapChain::releaseBuffers() {
     if (m_fbo) {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDeleteFramebuffers(1, &m_fbo);
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
         m_fbo = 0;
     }
 
@@ -380,7 +380,9 @@ void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height) {
 
     GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_backbuffer->id(), 0));
 
-    LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER), "glCheckFramebufferStatus failed 0x%08x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    GL_CHECK2("glCheckFramebufferStatus");
+    LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == result, "glCheckFramebufferStatus failed 0x%08x", result);
 
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
@@ -803,10 +805,10 @@ void GLPipeline::bind(const std::array<RHIResource*, MaxVertexStreams>& vertexBu
                     GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->byteOffset)));
 
                     if (element->instance) {
-                        glVertexAttribDivisor(attr.layoutLocation, 1);
+                        GL_CHECK(glVertexAttribDivisor(attr.layoutLocation, 1));
                     }
                     else {
-                        glVertexAttribDivisor(attr.layoutLocation, 0);
+                        GL_CHECK(glVertexAttribDivisor(attr.layoutLocation, 0));
                     }
                 }
                 else {

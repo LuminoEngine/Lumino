@@ -1,4 +1,4 @@
-import { GraphicsCommandList } from "src/GraphicsCommandList";
+import { GraphicsCommandList } from "../GraphicsCommandList";
 import { API, Runtime } from "../Runtime";
 import { Material } from "./Material";
 import { Matrix } from "../math/Matrix";
@@ -41,7 +41,7 @@ export class SpriteRenderer {
      * Creates a new SpriteRenderer.
      */
     private constructor() {
-        Runtime.safeCallWithReturnHandle((r) => API.LNSpriteRenderer_Get(r));
+        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNSpriteRenderer_Get(r));
     }
 
     /**

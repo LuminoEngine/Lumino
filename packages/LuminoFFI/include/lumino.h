@@ -131,27 +131,7 @@ extern LUMINO_API LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle grap
  */
 extern LUMINO_API LNResult LNGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer);
 
-/**
- * 描画フレームを開始します。
- *
- * @param[in] graphicsContext : 対象 LNGraphicsContext のハンドル。
- * @param[in] width  : 描画先のバックバッファのテクセル幅。
- * @param[in] height : 描画先のバックバッファのテクセル高さ。
- * 
- * 描画フレームは 1 フレーム分の一連の描画コマンドの構築処理です。
- * LNGraphicsContext_BeginFrame でネイティブのコマンドリストへの記録を開始し、
- * LNGraphicsContext_EndFrame で記録を終了します。
- * そして LNGraphicsContext_Present でコマンドリストを GPU へ送信します。
- */
-extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height);
 
-/**
- * 描画フレームを終了します。
- *
- * 内部的には ネイティブのコマンドリストへの記録を終了します。
- * 外部コンテキストを使っている場合、それぞれの方法で GPU への送信を行う必要があります。
- */
-extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 
 /**
  * Sends the command list recorded in GraphicsCommandList to the GPU.
@@ -169,6 +149,9 @@ extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
 
 //extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
 
+//==============================================================================
+//
+//==============================================================================
 /**
 　* Creates a new GraphicsCommandList.
 　*/
@@ -195,6 +178,7 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
  */
 extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext);
 
+extern LUMINO_API LNResult LNGLGraphicsContext_AcquireFrame(LNHandle graphicsContext, int32_t width, int32_t height);
 
 //==============================================================================
 // LNRenderPass

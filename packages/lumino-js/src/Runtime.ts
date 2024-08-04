@@ -1,6 +1,10 @@
 
 // @ts-ignore
-import LuminoFFIModule from "../dist/LuminoFFI.js";
+import LuminoFFIModule from "../lib/LuminoFFI.js";
+
+export interface RuntimeOptions {
+    locateFile?: (path: string) => string;
+}
 
 export class Runtime {
     public static module: any;
@@ -15,11 +19,14 @@ export class Runtime {
 
     public static webglContextHandle: number = 0;
 
-    public static initialize(): Promise<void> {
+    public static initialize(options?: RuntimeOptions): Promise<void> {
 
+        var moduleArg = {
+            locateFile: options?.locateFile,
+        };
 
         //console.log("initialize...");
-        return LuminoFFIModule().then((module: any) => {
+        return LuminoFFIModule(moduleArg).then((module: any) => {
             //console.log("module.HEAPU8.buffer", module.HEAPU8.buffer);
             //this.returnDataHeap = new Uint8Array(module.HEAPU8.buffer, 0, 4);
             //this.returnPointerArray = new Uint32Array(this.returnDataHeap.buffer, this.returnDataHeap.byteOffset, 1);
@@ -52,7 +59,7 @@ export class Runtime {
             
             API.LNGraphicsCommandList_Create = module.cwrap("LNGraphicsCommandList_Create", "number", ["number", "number"]);
             API.LNGraphicsCommandList_Reset = module.cwrap("LNGraphicsCommandList_Reset", "number", ["number"]);
-            API.LNGraphicsCommandList_BeginRenderPass = module.cwrap("LNGraphicsCommandList_BeginRenderPass", "number", ["number", "number", "number"]);
+            API.LNGraphicsCommandList_BeginRenderPass = module.cwrap("LNGraphicsCommandList_BeginRenderPass", "number", ["number", "number", "number", "number"]);
             
             API.LNGraphicsViewPoint_Create = module.cwrap("LNGraphicsViewPoint_Create", "number", ["number"]);
             API.LNGraphicsViewPoint_SetupPerspective2D = module.cwrap("LNGraphicsViewPoint_SetupPerspective2D", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
@@ -150,8 +157,8 @@ export class API {
     public static LNGraphicsContext_SubmitCommandList: (graphicsContext: Handle, graphicsCommandList: number) => Result;
 
     public static LNGraphicsCommandList_Create: (graphicsContext: Handle, outGraphicsCommandList: number) => Result;
-    public static LNGraphicsCommandList_Reset: (graphicsCommandList: Handle, viewPoint: number) => Result;
-    public static LNGraphicsCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, ouRenderPass: number) => Result;
+    public static LNGraphicsCommandList_Reset: (graphicsCommandList: Handle) => Result;
+    public static LNGraphicsCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
 
 
     public static LNGraphicsViewPoint_Create: (outGraphicsViewPoint: number) => Result;

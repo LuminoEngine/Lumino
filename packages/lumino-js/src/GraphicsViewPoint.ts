@@ -5,8 +5,8 @@ export class GraphicsViewPoint extends LuminoObject {
     
     public constructor() {
         super();
-        API.LNGraphicsViewPoint_Create(Runtime.returnPointerView.byteOffset);
-        this._setHandle(Runtime.returnPointerView[0], true);
+        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsViewPoint_Create(r));
+        this._setHandle(handle, true);
     }
 
     public setupPerspective2D(width: number, height: number): void {

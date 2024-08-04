@@ -237,7 +237,7 @@ void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVe
     getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
 
     if (instanceCount > 0) {
-        glDrawArraysInstanced(gl_prim, startVertex, vertexCount, instanceCount);
+        GL_CHECK(glDrawArraysInstanced(gl_prim, startVertex, vertexCount, instanceCount));
     }
     else {
         GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));

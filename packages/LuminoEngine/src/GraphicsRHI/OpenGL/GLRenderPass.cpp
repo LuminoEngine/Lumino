@@ -139,62 +139,11 @@ RHIExtent2D GLRenderPass::viewSize() const {
 }
 
 void GLRenderPass::bind(GLGraphicsContext* context) {
-#if 0
-    auto fbo = context->fbo();
-    if (fbo) {
-        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
-    }
-
-    auto backbuffer = renderTarget(0);
-    auto baseSize = backbuffer->extentSize();
-
-    // color buffers
-    std::array<GLenum, MaxMultiRenderTargets> buffers;
-    int renderTargetsCount = m_renderTargets.size();
-    int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
-    // int actualCount = 0;
-    for (int i = 0; i < renderTargetsCount; ++i) {
-        if (m_renderTargets[i]) {
-            LN_CHECK(m_renderTargets[i]->extentSize() == baseSize);
-            GLuint id = static_cast<GLTextureBase*>(m_renderTargets[i])->id();
-            GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
-            buffers[i] = GL_COLOR_ATTACHMENT0 + i;
-        }
-        else {
-            GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0));
-            buffers[i] = GL_NONE;
-        }
-    }
-
-    // depth buffer
-    if (m_depthBuffer) {
-        LN_CHECK(m_depthBuffer->extentSize() == baseSize);
-        GLuint id = static_cast<GLDepthBuffer*>(m_depthBuffer)->id();
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id));
-    }
-    else {
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0));
-    }
-
-    LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER), "glCheckFramebufferStatus failed 0x%08x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
-
-    GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
-#endif
-
-    //std::cout << "glBindFramebuffer: " << m_fbo << std::endl;
-    //std::cout << "  m_clearFlags: " << (int)m_clearFlags << std::endl;
-    //;
-    //std::cout << "  glGetError: " << glGetError() << std::endl;
-    //std::cout << "  glGetError: " << glGetError() << std::endl;
+    // NOTE: ここで GL_INVALID_OPERATION する場合、描画先バッファに関する何かしらの設定が間違っている。
+    //       Lumino を別のエンジンと併用している場合、 OpenGL State の save/restore が正しく行われていない可能性がある。
+    //       その場合は glBindFramebuffer() の前に `std::cout << "  glGetError: " << glGetError() << std::endl;` してみると、
+    //       事前の未処理のエラーがあるかどうかがわかる。
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
-    //if (m_fbo != 0) {
-    //    GL_CHECK(glDrawBuffers(m_aliveAttachments.size(), m_aliveAttachments.data()));
-    //}
-    //else {
-    //    // Default FBO に対して glDrawBuffers は使用不可能
-    //}
 
     OpenGLHelper::clearBuffers(m_clearFlags, m_clearColor, m_clearDepth, m_clearStencil);
 }

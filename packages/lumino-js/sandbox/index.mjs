@@ -1,4 +1,4 @@
-import * as Lumino from "./../dist/lumino.mjs";
+import * as Lumino from "./../lib/lumino.mjs";
 
 //const image = new Image();
 const imagePath = "./icon256.png";
@@ -57,9 +57,23 @@ function render() {
         console.log("=== Begin Frame ===");
         viewPoint.setupPerspective2D(800, 600);
     
-        commandList.reset(viewPoint);
+        commandList.reset();
         {
-            const renderPass = commandList.beginRenderPass();
+            const desc = {
+                renderTargets: [
+                    {
+                        renderTarget: graphcisContext.currentColorBuffer,
+                        clearColor: { r: 0, g: 1, b: 1, a: 1 }
+                    }
+                ],
+                depthBuffer: {
+                    depthBuffer: graphcisContext.currentDepthBuffer,
+                    clearDepth: 1.0,
+                    clearStencil: 0,
+                }
+            };
+
+            const renderPass = commandList.beginRenderPass(desc, viewPoint);
             const spriteRenderer = Lumino.SpriteRenderer.get();
             spriteRenderer.beginBatch(commandList, material, new Lumino.Matrix());
             spriteRenderer.drawSprite(

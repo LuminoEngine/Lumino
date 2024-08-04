@@ -1,4 +1,4 @@
-import { RollupOptions, Plugin, RenderedChunk, NormalizedOutputOptions } from "rollup";
+//import { RollupOptions } from "rollup";
 import typescript from "@rollup/plugin-typescript";
 import esbuild from "rollup-plugin-esbuild";
 
@@ -16,7 +16,8 @@ const esbuildConfig = {
     //tsconfigRaw: '{"compilerOptions":{"useDefineForClassFields":false}}',
 };
 
-const configs: RollupOptions[] = [
+/** @type RollupOptions[] */
+const configs = [
     {
         input: "src/index.ts",
         output: {
@@ -24,13 +25,12 @@ const configs: RollupOptions[] = [
             // dir: "packages/game/game/scripts/engine",
             format: "es",
             sourcemap: true,
-            file: "dist/lumino.mjs",
+            // 出力ファイル名は index.mjs ではなく lumino.mjs にする。
+            // こうしておかないと単体で配布するときに、他ライブラリと名前が衝突する可能性がある。
+            file: "lib/lumino.mjs",
         },
         plugins: [
-            typescript({
-                declaration: true,
-                declarationDir: "dist",
-            }),
+            typescript(),
             //esbuild(esbuildConfig),
         ],
     },

@@ -1,6 +1,6 @@
 import { DepthBuffer } from "./DepthBuffer";
 import { GraphicsCommandList } from "./GraphicsCommandList";
-import { RenderTargetTexture } from "./RenderTargetTexture";
+import { RenderTexture } from "./RenderTargetTexture";
 import { API, Handle } from "./Runtime";
 
 export abstract class GraphicsContext {
@@ -15,7 +15,7 @@ export abstract class GraphicsContext {
      * 
      * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an RenderPass.
      */
-    public abstract get currentColorBuffer(): RenderTargetTexture;
+    public abstract get currentColorBuffer(): RenderTexture;
 
     /**
      * Get the current depth buffer.
@@ -23,6 +23,10 @@ export abstract class GraphicsContext {
      * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an RenderPass.
      */
     public abstract get currentDepthBuffer(): DepthBuffer;
+
+    protected constructor() {
+        this._handle = 0;
+    }
 
     /**
      * Creates a new GraphicsCommandList.

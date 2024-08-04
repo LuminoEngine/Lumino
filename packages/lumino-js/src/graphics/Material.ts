@@ -1,4 +1,4 @@
-import { Texture2D } from "dist/src";
+import { Texture2D } from "../Texture2D";
 import { LuminoObject } from "../LuminoObject";
 import { API, Runtime } from "../Runtime";
 

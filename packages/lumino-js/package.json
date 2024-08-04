@@ -3,11 +3,14 @@
   "version": "0.11.0",
   "description": "",
   "type": "module",
+  "main": "dist/lumino.mjs",
+  "types": "dist/lumino.d.ts",
   "scripts": {
     "build:ffi": "cd ../.. && dotnet run -- BuildEngine wasm32-emscripten",
-    "build:copy_ffi": "copyfiles -f ../../build/buildtrees/wasm32-emscripten/lumino/packages/LuminoFFI/LuminoFFI.js ../../build/buildtrees/wasm32-emscripten/lumino/packages/LuminoFFI/LuminoFFI.wasm dist",
-    "build:rollup": "rollup --configPlugin typescript --config ./rollup.config.ts",
-    "build": "run-s build:ffi build:copy_ffi build:rollup",
+    "build:copy_ffi": "copyfiles -f ../../build/buildtrees/wasm32-emscripten/lumino/packages/LuminoFFI/LuminoFFI.js ../../build/buildtrees/wasm32-emscripten/lumino/packages/LuminoFFI/LuminoFFI.wasm lib",
+    "build:rollup": "rollup --config ./rollup.config.mjs",
+    "build:typecheck": "tsc -P ./tsconfig.json --noEmit",
+    "build": "run-s build:ffi build:copy_ffi build:typecheck build:rollup",
     "start": "http-server -p 8080 .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

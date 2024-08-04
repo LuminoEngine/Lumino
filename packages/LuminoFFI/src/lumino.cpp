@@ -206,14 +206,6 @@ LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, i
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
-    LN_FFI_TRY_BEGIN;
-    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
-    GraphicsCommandList* commandList = context->currentCommandList2();
-    commandList->endCommandRecoding();
-    LN_FFI_TRY_END_RETURN;
-}
-
 LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
     LN_FFI_TRY_BEGIN;
     LN_NOTIMPLEMENTED();

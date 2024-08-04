@@ -13,10 +13,11 @@ export class Texture2D extends LuminoObject {
 
 
         console.log("--- s", typeof ptr);
-        API.LNTexture2D_CreateFromImageFileData(ptr, buffer.byteLength, Runtime.returnPointerView.byteOffset);
+        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNTexture2D_CreateFromImageFileData(ptr, buffer.byteLength, r));
+        ;
         Runtime.module._free(ptr);
         console.log("--- e");
-        this._setHandle(Runtime.returnPointerView[0], true);
+        this._setHandle(handle, true);
     }
 }
 
