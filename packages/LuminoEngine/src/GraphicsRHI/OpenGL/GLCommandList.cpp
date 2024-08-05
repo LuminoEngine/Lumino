@@ -10,7 +10,7 @@
 extern "C" {
 extern void LuminoGLSubmitCommandList(void* ptr);
 }
-std::vector<int32_t> g_ff; 
+//std::vector<int32_t> g_ff; 
 
 
 namespace ln {
@@ -24,9 +24,9 @@ GLGraphicsContext::GLGraphicsContext()
     , m_state(std::make_unique<GLStateCache>())
     , m_currentIndexBuffer(nullptr)
     , m_activeShaderPass(nullptr) {
-    g_ff.push_back(63);
-    g_ff.push_back(742);
-    LuminoGLSubmitCommandList(g_ff.data());
+    //g_ff.push_back(63);
+    //g_ff.push_back(742);
+    //LuminoGLSubmitCommandList(g_ff.data());
 }
 
 Result<> GLGraphicsContext::init(OpenGLDevice* owner) {

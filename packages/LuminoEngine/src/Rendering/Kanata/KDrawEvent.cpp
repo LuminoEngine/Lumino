@@ -1,47 +1,47 @@
 ﻿#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/Rendering/Kanata/KDrawCommand.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 namespace kanata {
 
-DrawCommandList::DrawCommandList(detail::RenderingManager* manager)
+DrawEventList::DrawEventList(detail::RenderingManager* manager)
     : m_dataAllocator(makeRef<detail::LinearAllocator>(manager->stageDataPageManager())) {
 }
 
-void DrawCommandList::clear() {
+void DrawEventList::clear() {
     m_dataAllocator->cleanup();
-    m_commandList.clear();
+    m_drawEventList.clear();
 }
 
-void DrawCommandList::addCommand(IDrawCommand* command) {
-    m_commandList.push(command);
+void DrawEventList::addDrawEvent(IDrawEvent* drawEvent) {
+    m_drawEventList.push(drawEvent);
 }
 
-void DrawCommandList::submitMeshDrawCommands(GraphicsCommandList* commandList) {
-    int count = m_commandList.length();
+void DrawEventList::submitDrawEvents(GraphicsCommandList* commandList) {
+    int count = m_drawEventList.length();
     for (int i = 0; i < count; i++) {
-        submitMeshDrawCommand(commandList, m_commandList[i]);
+        submitDrawEvent(commandList, m_drawEventList[i]);
     }
 }
 
-void DrawCommandList::submitMeshDrawCommand(GraphicsCommandList* commandList, const IDrawCommand* command) {
+void DrawEventList::submitDrawEvent(GraphicsCommandList* commandList, const IDrawEvent* drawEvent) {
 
     commandList->setShaderDescriptor_deprecated(nullptr);
 
-    switch (command->type) {
-        case DrawCommandType::BeginRenderPass: {
-            auto* cmd = static_cast<const BeginRenderPassCommand*>(command);
+    switch (drawEvent->type) {
+        case DrawEventType::BeginRenderPass: {
+            auto* cmd = static_cast<const BeginRenderPassDrawEvent*>(drawEvent);
             commandList->beginRenderPass(cmd->renderPass);
             break;
         }
-        case DrawCommandType::EndRenderPass: {
-            auto* cmd = static_cast<const EndRenderPassCommand*>(command);
+        case DrawEventType::EndRenderPass: {
+            auto* cmd = static_cast<const EndRenderPassDrawEvent*>(drawEvent);
             commandList->endRenderPass();
             break;
         }
-        case DrawCommandType::DrawPrimitive: {
-            auto* cmd = static_cast<const DrawCommand*>(command);
+        case DrawEventType::DrawPrimitive: {
+            auto* cmd = static_cast<const DrawEvent*>(drawEvent);
 
             assert(cmd->shaderPass);
             if (cmd->stencilRef != 0) {

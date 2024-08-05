@@ -87,7 +87,7 @@ bool SceneRendererPass::filterElement(RenderDrawElement* element) const {
 SceneRenderer::SceneRenderer()
     : m_manager(detail::RenderingManager::instance())
     , m_renderingPipeline(nullptr)
-    , m_drawCommandList(makeURef<kanata::DrawCommandList>(detail::RenderingManager::instance())) {
+    , m_drawCommandList(makeURef<kanata::DrawEventList>(detail::RenderingManager::instance())) {
 }
 
 void SceneRenderer::init() {
@@ -169,7 +169,7 @@ void SceneRenderer::buildBatchList_Kanata(
     {
         auto* batchCollector = culling->batchCollector(m_currentPart);
         auto* internalRenderPass = pass->internalSceneRenderPass();
-        internalRenderPass->buildDrawCommands(
+        internalRenderPass->buildDrawEvents(
             this,
             batchCollector,
             descriptorAllocator,
@@ -183,7 +183,7 @@ void SceneRenderer::buildBatchList_Kanata(
 }
 
 void SceneRenderer::render_Kanata(GraphicsCommandList* commandList) {
-    m_drawCommandList->submitMeshDrawCommands(commandList);
+    m_drawCommandList->submitDrawEvents(commandList);
 }
 
 } // namespace detail

@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/Rendering/Kanata/KDrawCommand.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include "RLIs/Common.hpp"
 #include "RLIs/RLIBatchList.hpp"
 
@@ -134,7 +134,7 @@ private:
     SceneInfo m_mainSceneInfo;
     const DynamicLightInfo* m_mainLightInfo = nullptr;
 
-    URef<kanata::DrawCommandList> m_drawCommandList;
+    URef<kanata::DrawEventList> m_drawCommandList;
 };
 
 } // namespace detail

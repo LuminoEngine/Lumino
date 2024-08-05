@@ -4,7 +4,7 @@
 #include <LuminoEngine/GPU/RenderPass.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/Rendering/Kanata/KDrawCommand.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/StandardRenderingPipeline.hpp>
@@ -43,7 +43,7 @@ void ForwardGBufferPrepass::init() {
     m_renderPass = makeObject_deprecated<RenderPass>();
 
     m_internalSceneRenderPass = makeRef<kanata::SceneRenderPass>(manager(), m_defaultShader, kokage::ShaderTechniqueClass_Phase::ForwardGBufferPrepass);
-    m_internalSceneRenderPass->overrideCommand = [](kanata::DrawCommand* cmd) {
+    m_internalSceneRenderPass->overrideCommand = [](kanata::DrawEvent* cmd) {
         // このパスではブレンドを禁止する。
         // 例えば法線の向きをブレンドしてしまうと描画がおかしくなる。
         // また G-Buffer で R32S を使っているものがあるが、これはそもそも Blend が禁止されている。 (Vulkan の Validation にひっかかる)

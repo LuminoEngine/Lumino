@@ -23,7 +23,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
-#include <LuminoEngine/Rendering/Kanata/KDrawCommand.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include <LuminoEngine/Rendering/Kanata/KPipelineState.hpp>
 #include <LuminoEngine/Rendering/Kanata/KUnlitRenderPass.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
@@ -90,7 +90,7 @@ public:
     GraphicsContext* context;
     GraphicsCommandList* commandList;
     Ref<CommandList> renderingContext;
-    URef<kanata::DrawCommandList> drawCommandList;
+    URef<kanata::DrawEventList> drawEventList;
 };
 
 class FFIRenderPass : public ln::Object {
@@ -240,7 +240,7 @@ extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle*
     commandList->context = context;
     commandList->commandList = context->currentCommandList2();
     commandList->renderingContext = makeObject_deprecated<CommandList>();
-    commandList->drawCommandList = makeURef<kanata::DrawCommandList>(renderingManager);
+    commandList->drawEventList = makeURef<kanata::DrawEventList>(renderingManager);
     *outGraphicsCommandList = ::Runtime::wrapObject(commandList, true);
     LN_FFI_TRY_END_RETURN;
 }
@@ -327,7 +327,7 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
     FFIRenderPass* renderPass = LN_HANDLE_TO_OBJECT(FFIRenderPass, renderPass_);
     GraphicsContext* context = renderPass->owner->context;
     CommandList* renderingContext = renderPass->owner->renderingContext;
-    kanata::DrawCommandList* g_drawCommandList = renderPass->owner->drawCommandList;
+    kanata::DrawEventList* drawEventList = renderPass->owner->drawEventList;
     
     if (1) {
 
@@ -434,19 +434,19 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
 
             // Render commands
             {
-                g_drawCommandList->clear();
+                drawEventList->clear();
                 //ln::ElapsedTimer t1;
-                renderPass->sceneRenderPass->buildDrawCommands(
+                renderPass->sceneRenderPass->buildDrawEvents(
                     nullptr,
                     batchList,
                     commandList,
                     renderPass->renderPass,
                     renderViewInfo,
                     sceneInfo,
-                    g_drawCommandList);
+                    drawEventList);
                 //std::cout << t1.elapsedMilliseconds() << "[ms] buildDrawCommands" << std::endl;
                 ln::ElapsedTimer t2;
-                g_drawCommandList->submitMeshDrawCommands(commandList);
+                drawEventList->submitDrawEvents(commandList);
                 std::cout << t2.elapsedMilliseconds() << "[ms] xx" << std::endl;
             }
 

@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
-#include <LuminoEngine/Rendering/Kanata/KDrawCommand.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include <LuminoEngine/Rendering/Kanata/KSceneRenderPass.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
@@ -24,14 +24,14 @@ SceneRenderPass::SceneRenderPass(
     , m_phase(phase) {
 }
 
-void SceneRenderPass::buildDrawCommands(
+void SceneRenderPass::buildDrawEvents(
     detail::SceneRenderer* sceneRenderer,
     const BatchCollector* batchList,
     GraphicsCommandList* descriptorAllocator,
     RenderPass* renderPass,
     const detail::RenderViewInfo& renderViewInfo,
     const detail::SceneInfo& sceneInfo,
-    DrawCommandList* drawCommandList) {
+    DrawEventList* drawEventList) {
     Shader* fallbackShader = this->fallbackShader();
     RenderPass* currentRenderPass = nullptr;
 
@@ -45,9 +45,9 @@ void SceneRenderPass::buildDrawCommands(
                 if (batchRenderPass != currentRenderPass) {
                     // End render pass.
                     if (currentRenderPass) {
-                        auto* command = drawCommandList->newCommand<EndRenderPassCommand>();
-                        command->type = DrawCommandType::EndRenderPass;
-                        command->renderPass = currentRenderPass;
+                        auto* ev = drawEventList->newDrawEvent<EndRenderPassDrawEvent>();
+                        ev->type = DrawEventType::EndRenderPass;
+                        ev->renderPass = currentRenderPass;
                     }
 
                     LN_DCHECK(batchRenderPass);
@@ -55,9 +55,9 @@ void SceneRenderPass::buildDrawCommands(
 
                     // Begin render pass.
                     {
-                        auto* command = drawCommandList->newCommand<BeginRenderPassCommand>();
-                        command->type = DrawCommandType::BeginRenderPass;
-                        command->renderPass = currentRenderPass;
+                        auto* ev = drawEventList->newDrawEvent<BeginRenderPassDrawEvent>();
+                        ev->type = DrawEventType::BeginRenderPass;
+                        ev->renderPass = currentRenderPass;
                     }
                 }
             }
@@ -84,33 +84,33 @@ void SceneRenderPass::buildDrawCommands(
             for (int32_t iBatchElement = 0; iBatchElement < batch->elementsCount; iBatchElement++) {
                 const BatchElement& batchElement = batch->elemets2[iBatchElement];
 
-                DrawCommand* command = drawCommandList->newCommand<DrawCommand>();
-                command->type = DrawCommandType::DrawPrimitive;
-                command->vertexBuffers = batchElement.vertexBuffers;
-                command->indexBuffer = batchElement.indexBuffer;
-                command->pipelineState.vertexLayout = batch->vertexLayout;
-                command->pipelineState.primitiveTopology = batch->primitiveTopology;
-                command->firstIndex = batchElement.firstIndex;
-                command->firstVertex = batchElement.firstVertex;
-                command->primitiveCount = batchElement.primitiveCount;
-                command->instanceCount = batchElement.instanceCount;
+                DrawEvent* drawEvent = drawEventList->newDrawEvent<DrawEvent>();
+                drawEvent->type = DrawEventType::DrawPrimitive;
+                drawEvent->vertexBuffers = batchElement.vertexBuffers;
+                drawEvent->indexBuffer = batchElement.indexBuffer;
+                drawEvent->pipelineState.vertexLayout = batch->vertexLayout;
+                drawEvent->pipelineState.primitiveTopology = batch->primitiveTopology;
+                drawEvent->firstIndex = batchElement.firstIndex;
+                drawEvent->firstVertex = batchElement.firstVertex;
+                drawEvent->primitiveCount = batchElement.primitiveCount;
+                drawEvent->instanceCount = batchElement.instanceCount;
 
                 // RenderState
                 {
                     // BlendState
                     {
-                        command->pipelineState.blendState.independentBlendEnable = false;
-                        detail::RLIMaterial::makeBlendMode(batchMaterial.blendMode, &command->pipelineState.blendState.renderTargets[0]);
+                        drawEvent->pipelineState.blendState.independentBlendEnable = false;
+                        detail::RLIMaterial::makeBlendMode(batchMaterial.blendMode, &drawEvent->pipelineState.blendState.renderTargets[0]);
                     }
                     // RasterizerState
                     {
-                        command->pipelineState.rasterizerState.fillMode = FillMode::Solid;
-                        command->pipelineState.rasterizerState.cullMode = batchMaterial.cullingMode;
+                        drawEvent->pipelineState.rasterizerState.fillMode = FillMode::Solid;
+                        drawEvent->pipelineState.rasterizerState.cullMode = batchMaterial.cullingMode;
                     }
                     // DepthStencilState
                     {
-                        command->pipelineState.depthStencilState.depthTestFunc = (batchMaterial.depthTestEnabled) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
-                        command->pipelineState.depthStencilState.depthWriteEnabled = batchMaterial.depthWriteEnabled;
+                        drawEvent->pipelineState.depthStencilState.depthTestFunc = (batchMaterial.depthTestEnabled) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
+                        drawEvent->pipelineState.depthStencilState.depthWriteEnabled = batchMaterial.depthWriteEnabled;
                     }
                 }
 
@@ -188,8 +188,8 @@ void SceneRenderPass::buildDrawCommands(
 
                 // Allocate descriptor
                 ShaderDescriptor* descriptor = descriptorAllocator->allocateDescriptor(shaderPass, true);
-                command->shaderDescriptor = descriptor;
-                command->shaderPass = shaderPass;
+                drawEvent->shaderDescriptor = descriptor;
+                drawEvent->shaderPass = shaderPass;
 
                 // Setup descriptor
                 semanticsManager->updateRenderViewVariables(descriptor, renderViewInfo, sceneInfo); // TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
@@ -209,24 +209,24 @@ void SceneRenderPass::buildDrawCommands(
                 }
 
                 if (overrideCommand) {
-                    overrideCommand(command);
+                    overrideCommand(drawEvent);
                 }
             }
         }
     }
     else {
         // Batch がひとつも無い場合は 引数で受け取った renderPass を開始しておかないと、クリア自体がされなくなる。
-        auto* command = drawCommandList->newCommand<BeginRenderPassCommand>();
-        command->type = DrawCommandType::BeginRenderPass;
-        command->renderPass = renderPass;
+        auto* ev = drawEventList->newDrawEvent<BeginRenderPassDrawEvent>();
+        ev->type = DrawEventType::BeginRenderPass;
+        ev->renderPass = renderPass;
         currentRenderPass = renderPass;
     }
   
     // End render pass.
     if (currentRenderPass) {
-        auto* command = drawCommandList->newCommand<EndRenderPassCommand>();
-        command->type = DrawCommandType::EndRenderPass;
-        command->renderPass = currentRenderPass;
+        auto* ev = drawEventList->newDrawEvent<EndRenderPassDrawEvent>();
+        ev->type = DrawEventType::EndRenderPass;
+        ev->renderPass = currentRenderPass;
     }
 }
 

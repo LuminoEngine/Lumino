@@ -13,16 +13,16 @@ public:
         Shader* fallbackShader,
         kokage::ShaderTechniqueClass_Phase phase);
 
-    std::function<void(DrawCommand*)> overrideCommand;
+    std::function<void(DrawEvent*)> overrideCommand;
 
-    void buildDrawCommands(
+    void buildDrawEvents(
         detail::SceneRenderer* sceneRenderer,   // TODO: いらなくしたい
         const BatchCollector* batchList,
         GraphicsCommandList* descriptorAllocator,
         RenderPass* renderPass,
         const detail::RenderViewInfo& renderViewInfo,
         const detail::SceneInfo& sceneInfo,
-        DrawCommandList* drawCommandList);
+        DrawEventList* drawEventList);
 
     Shader* fallbackShader() const { return m_fallbackShader; }
 

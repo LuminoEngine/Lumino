@@ -6,27 +6,27 @@
 namespace ln {
 namespace kanata {
 
-enum class DrawCommandType {
+enum class DrawEventType {
     BeginRenderPass,
     EndRenderPass,
     DrawPrimitive,
 };
 
-struct IDrawCommand {
-    DrawCommandType type;
+struct IDrawEvent {
+    DrawEventType type;
 };
 
-struct BeginRenderPassCommand final : public IDrawCommand {
+struct BeginRenderPassDrawEvent final : public IDrawEvent {
     RenderPass* renderPass;
 };
 
-struct EndRenderPassCommand final : public IDrawCommand {
+struct EndRenderPassDrawEvent final : public IDrawEvent {
     RenderPass* renderPass;
 };
 
 // RenderPass 間での使いまわしは無し。
 // GeometryPath と ShaderPass では別々の DrawCommand を使う。
-struct DrawCommand final : public IDrawCommand {
+struct DrawEvent final : public IDrawEvent {
     std::array<VertexBuffer*, detail::MaxVertexStreams> vertexBuffers;
     IndexBuffer* indexBuffer;
 
@@ -46,27 +46,27 @@ struct DrawCommand final : public IDrawCommand {
     uint8_t stencilRef;
 };
 
-class DrawCommandList final : public URefObject {
+class DrawEventList final : public URefObject {
 public:
-    DrawCommandList(detail::RenderingManager* manager);
+    DrawEventList(detail::RenderingManager* manager);
     void clear();
 
     template<class TBatch, class... TArgs>
-    TBatch* newCommand(TArgs&&... args) {
+    TBatch* newDrawEvent(TArgs&&... args) {
         void* buffer = m_dataAllocator->allocate(sizeof(TBatch));
         TBatch* data = new (buffer) TBatch(std::forward<TArgs>(args)...);
-        addCommand(data);
+        addDrawEvent(data);
         return data;
     }
 
-    void submitMeshDrawCommands(GraphicsCommandList* commandList);
+    void submitDrawEvents(GraphicsCommandList* commandList);
 
 private:
-    void addCommand(IDrawCommand* command);
-    void submitMeshDrawCommand(GraphicsCommandList* commandList, const IDrawCommand* command);
+    void addDrawEvent(IDrawEvent* drawEvent);
+    void submitDrawEvent(GraphicsCommandList* commandList, const IDrawEvent* drawEvent);
 
     Ref<detail::LinearAllocator> m_dataAllocator;
-    Array<IDrawCommand*> m_commandList; // TODO: LinkedList のほうがいいか？
+    Array<IDrawEvent*> m_drawEventList;
 };
 
 } // namespace kanata
