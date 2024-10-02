@@ -464,6 +464,44 @@ TEST_F(Test_Base_Serializer, RawPointer) {
     }
 }
 
+TEST_F(Test_Base_Serializer, RawPointerArray) {
+    class ManagerClass {
+    public:
+        ln::Array<RawPointer_TestClass*> m_ary1;
+
+        ManagerClass() {}
+        ~ManagerClass() {
+            for (RawPointer_TestClass* obj : m_ary1) {
+                delete obj;
+            }
+        }
+        void init() {
+            m_ary1.push(new RawPointer_TestClass());
+            m_ary1.push(new RawPointer_TestClass());
+        }
+        void serialize(Archive& ar) { ar& ln::makeNVP(U"ary1", m_ary1); }
+    };
+
+    String json;
+
+    // Save
+    {
+        ManagerClass manager;
+        manager.init();
+        manager.m_ary1[0]->m_value = 123;
+        manager.m_ary1[1]->m_value = 456;
+        json = JsonSerializer::serialize<ManagerClass>(manager, JsonFormatting::None).unwrap();
+        ASSERT_EQ(_T("{\"ary1\":[{\"m_value\":123},{\"m_value\":456}]}"), json);
+    }
+
+    // Load
+    {
+        ManagerClass manager;
+        JsonSerializer::deserialize(json, &manager);
+        ASSERT_EQ(123, manager.m_ary1[0]->m_value);
+        ASSERT_EQ(456, manager.m_ary1[1]->m_value);
+    }
+}
 
 TEST_F(Test_Base_Serializer, make) {
     struct TestId {

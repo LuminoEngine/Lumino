@@ -31,7 +31,7 @@ static BasicResult<std::string, TestErr1> testFunc1(int len) {
 
 static BasicResult<void, int> testFunc2(int len) {
     if (len > 10) return err(1);
-    return ok();
+    return {};
 }
 
 static BasicResult<void> testFunc3(int len) {

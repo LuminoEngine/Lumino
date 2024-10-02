@@ -108,6 +108,9 @@ public:
     Serializer m_serializer;
 };
 
+#define LN_MAKE_SUCCESS() {}
+#define LN_MAKE_ERROR(...) ::ln::err(ln::ErrorCode::Unknown)
+
 //==============================================================================
 // BasicResult
 
@@ -456,6 +459,11 @@ private:
 template<typename E>
 class BasicResult<void, E> : public ResultBase {
 public:
+    BasicResult()
+		: ResultBase(toStringInternal)
+		, ok_(true) {
+	}
+
     BasicResult(OkType<void> ok)
         : ResultBase(toStringInternal)
         , ok_(true) {

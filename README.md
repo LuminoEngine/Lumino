@@ -7,6 +7,40 @@ It provides a simple API that runs on multiple platforms and is available for mu
 Lumino はゲームやデジタルアートなどのインタラクティブアプリケーションを構築するためのオープンソースライブラリです。
 マルチプラットフォームで動作し複数のプログラミング言語から利用できる、シンプルな API を提供します。
 
+## 💡 Project Status
+
+Lumino is currently being developed with the following two use cases in mind.
+
+- A. Use basic modules (String, Array, FileSystem, etc.) in IoT platforms and testing tools.
+
+- B. Use interaction modules (Graphics, Audio, Input, etc.) in other game engines and applications.
+
+Until v0.10.1, Lumino was developed as a standalone game engine, and the main motivation was technical exploration.
+
+In recent years, developers have been busy and maintenance has become difficult. However, there are opportunities to obtain investments, albeit on a small scale, and we would like to focus on them in the future.
+
+The future development concept is as follows.
+
+- We aim to create an easy API for users who are not familiar with C++. For example, we will make it easy to predict and difficult to make mistakes for programmers who usually use C# or JavaScript but write C++ out of necessity.
+
+- We will abolish all framework-like functions. For example, game UI and scene graphs. (We realized that it is more convenient overall to write these functions in client-side programming languages.)
+
+Lumino は現在、次の2つのユースケースを想定して開発を続けています。
+
+- A. 基礎的なモジュール (String, Array, FileSystem, 等) を IoTプラットフォームやテスティングツール で利用する。
+- B. インタラクションモジュール (Graphics, Audio, Input 等) を 他のゲームエンジンやアプリケーションで利用する。
+
+v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして開発を続けていましたが、その主な動機は技術的探求でした。
+
+ここ数年は開発者が忙しく、メンテナンスが難しくなっていました。しかし、小規模ながら投資を得られる機会があり、今後はそれらにフォーカスしたいと考えています。
+
+今後の開発コンセプトは次の通りです。
+
+- C++ に詳しくないユーザーにとって簡単な API を目指します。例えば普段は C# や JavaScript を使っていますが、必要に迫られて C++ を書くようなプログラマが、予想しやすく間違い辛いようにします。
+- フレームワークのような機能をすべて廃止します。例えばゲームUIやシーングラフです。（これらの機能はクライアント側のプログラム言語で書いた方が、トータルで都合が良いことに気づきました）
+
+-----
+
 ## Build and Unit Tests
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
