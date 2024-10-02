@@ -58,6 +58,37 @@ TEST_F(Test_Base_Serializer, Basic) {
     ASSERT_EQ(500, obj2->m_value);
 }
 
+
+class MyString {
+public:
+    String value;
+};
+class NonIntrusiveTest1 : public Object {
+public:
+    MyString m_myStr1;
+    void serialize(Archive& ar) override { ar& LN_NVP(m_myStr1); }
+};
+
+namespace ln {
+inline void serialize(Archive& ar, MyString& value) {
+    if (ar.isSaving()) {
+        ar.makeStringTag(&value.value);
+    }
+    else {
+        String str;
+        ar.makeStringTag(&str);
+        value.value = str;
+    }
+}
+} // namespace ln
+
+TEST_F(Test_Base_Serializer, NonIntrusive) {
+    NonIntrusiveTest1 obj1;
+    obj1.m_myStr1.value = U"abc";
+    String text = JsonSerializer::serialize<NonIntrusiveTest1>(obj1, JsonFormatting::None).unwrap();
+    ASSERT_EQ(UR"({"m_myStr1":"abc"})", text);
+}
+
 TEST_F(Test_Base_Serializer, DefaultValue) {
     class TestClass : public Object {
     public:
@@ -371,6 +402,68 @@ TEST_F(Test_Base_Serializer, EmptyContainers) {
         ASSERT_EQ(200, t.t3.x);
     }
 }
+
+class RawPointer_TestClass {
+public:
+    int m_value = 0;
+    void serialize(Archive& ar) { ar& LN_NVP(m_value); }
+};
+
+void serialize(Archive& ar, RawPointer_TestClass*& ptr) {
+    if (ar.isSaving()) {
+        ptr->serialize(ar);
+    }
+    else {
+        ptr = new RawPointer_TestClass();
+        ptr->serialize(ar);
+    }
+}
+
+TEST_F(Test_Base_Serializer, RawPointer) {
+    class ManagerClass {
+    public:
+        RawPointer_TestClass* m_obj1;
+        RawPointer_TestClass* m_obj2;
+
+        ManagerClass() {
+            m_obj1 = nullptr;
+            m_obj2 = nullptr;
+        }
+        ~ManagerClass() {
+            delete m_obj1;
+            delete m_obj2;
+        }
+        void init() {
+            m_obj1 = new RawPointer_TestClass();
+            m_obj2 = new RawPointer_TestClass();
+        }
+        void serialize(Archive& ar) {
+            ar& ln::makeNVP(U"obj1", m_obj1);
+            ar& ln::makeNVP(U"obj2", m_obj2);
+        }
+    };
+
+    String json;
+
+    // Save
+    {
+        ManagerClass manager;
+        manager.init();
+        manager.m_obj1->m_value = 123;
+        manager.m_obj2->m_value = 456;
+        json = JsonSerializer::serialize<ManagerClass>(manager, JsonFormatting::None).unwrap();
+        ASSERT_EQ(_T("{\"obj1\":{\"m_value\":123},\"obj2\":{\"m_value\":456}}"), json);
+    }
+
+    // Load
+    {
+        ManagerClass manager;
+        JsonSerializer::deserialize(json, &manager);
+        ASSERT_EQ(123, manager.m_obj1->m_value);
+        ASSERT_EQ(456, manager.m_obj2->m_value);
+    }
+}
+
 
 TEST_F(Test_Base_Serializer, make) {
     struct TestId {

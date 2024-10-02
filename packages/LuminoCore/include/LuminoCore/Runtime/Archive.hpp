@@ -3,7 +3,6 @@
 #include "../Base/Uuid.hpp"
 #include "../Serialization/Serialization.hpp"
 #include "Common.hpp"
-#include "Object.hpp"
 #include "Variant.hpp"
 
 namespace ln {
@@ -57,7 +56,20 @@ private:
  * 
  * @see https://github.com/LuminoEngine/Lumino/wiki/Core-Serialize
  */
-class Archive : public Object {
+class Archive {
+    // NOTE: vs cereal
+    //   実際のところ、 cereal の方が汎用的です。
+    //   ln::Archive を使う動機は、C++ 初心者にはハードルの高いテンプレートを回避するためです。
+    //   これは Lumino のベースライブラリが、様々なスキルセットを持つチーム開発で使われることをコンセプトとしていることと関係があります。
+    //
+    //   - ln::Archive はシリアライズ API の選択肢を単一化します。例えば cereal は & や << など、様々な方法でシリアライズできますが、ln::Archive は & だけです。
+    //     アドホック的な使いやすさではなく、長期的にメンテするコードのため、一貫性を重視します。
+    //
+    //   - ln::Archive はクラスに対して、シリアライズ関係の処理を出来るだけ1か所にまとめることを目指しています。
+    //     cereal の load() や save() はありません。処理を分ける必要があれば、 serialize() 関数内で ln::Archive::isSaving() 等で分岐します。 
+    //
+    //   - ln::Archive はブランドを尊重します。cereal メタ情報を書き込む際に cereal_ から始まるキー名を使いますが、ln::Archive はキー名を自由に設定できます。
+    //   
 public:
     template<typename TBase>
     struct BaseClass {
@@ -329,7 +341,11 @@ private:
         typename std::enable_if<detail::non_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
     void writeValue(TValue& value) {
         pushNodeWrite<TValue>();
-        ::ln::serialize(*this, value);
+
+        // NOTE: Previously, I wrote it as ::ln::serialize(), but when I incorporated it into an MFC app, I got an error saying that an overload of serialize could not be found.
+        // This could not be detected by unit tests, so please be careful when refactoring.
+        serialize(*this, value);
+
         popNodeWrite();
     }
 
@@ -560,7 +576,9 @@ private:
         m_nodeInfoStack.push_back(m_current);
         m_current = NodeInfo{};
 
-        ::ln::serialize(*this, outValue);
+        // NOTE: Previously, I wrote it as ::ln::serialize(), but when I incorporated it into an MFC app, I got an error saying that an overload of serialize could not be found.
+        // This could not be detected by unit tests, so please be careful when refactoring.
+        serialize(*this, outValue);
 
         postLoadSerialize();
     }

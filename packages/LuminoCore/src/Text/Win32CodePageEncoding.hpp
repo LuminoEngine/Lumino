@@ -1,5 +1,6 @@
-﻿
+﻿#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 #include <LuminoCore/Text/Encoding.hpp>
 #include <LuminoCore/Base/String.hpp>
