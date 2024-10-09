@@ -495,7 +495,7 @@ void JsonArchiveStore3::setupSave() {
 ArchiveResult<> JsonArchiveStore3::setupLoad(const String& text) {
     RAPIDJSON_NAMESPACE::ParseResult result = m_document.Parse<RAPIDJSON_NAMESPACE::kParseDefaultFlags | RAPIDJSON_NAMESPACE::kParseNanAndInfFlag>(text.c_str(), text.size());
     if (!result) {
-        const auto message = LN_FMT_NAMESPACE::format("JSON parse error: {} (offset:{})", GetParseError_En(result.Code()), result.Offset());
+        const auto message = ::LN_FMT_NAMESPACE::format("JSON parse error: {} (offset:{})", GetParseError_En(result.Code()), result.Offset());
         return err(ln::String::fromUtf8(message));
     }
     m_current = &m_document;

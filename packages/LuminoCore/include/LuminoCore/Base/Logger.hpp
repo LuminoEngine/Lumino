@@ -198,17 +198,17 @@ public:
 
     template<typename... TArgs>
     static inline void log(LogLocation location, LogLevel level, const char* format, TArgs&&... args) {
-        log(location, level, std::string_view(format), std::forward<TArgs>(args)...);
+        logStdString(location, level, std::string_view(format), std::forward<TArgs>(args)...);
     }
 
     template<typename... TArgs>
     static inline void log(LogLocation location, LogLevel level, const Char* format, TArgs&&... args) {
-        log(location, level, std::basic_string_view<Char>(format), std::forward<TArgs>(args)...);
+        logLnString(location, level, std::basic_string_view<Char>(format), std::forward<TArgs>(args)...);
     }
 
     template<typename... TArgs>
     static inline void log(LogLocation location, LogLevel level, const std::string& format, TArgs&&... args) {
-        log(location, level, std::string_view(format), std::forward<TArgs>(args)...);
+        logStdString(location, level, std::string_view(format), std::forward<TArgs>(args)...);
     }
 
     //template<typename T>
@@ -218,13 +218,13 @@ public:
     //}
     template<typename T>
     static inline void log(LogLocation location, LogLevel level, const ln::String& value) {
-        log(location, level, std::u32string_view(value.c_str(), value.length()));
+        logLnString(location, level, std::u32string_view(value.c_str(), value.length()));
     }
 
 
     template<typename TFormatString, typename... TArgs>
     static inline void log(LogLocation location, LogLevel level, const TFormatString& format, TArgs&&... args) {
-        log(location, level, ::ln::toStdStringView(format), std::forward<TArgs>(args)...);
+        logLnString(location, level, ::ln::toStdStringView(format), std::forward<TArgs>(args)...);
     }
 
     template<typename TValue>
@@ -234,13 +234,13 @@ public:
     }
 	
     template<typename... TArgs>
-    static inline void log(LogLocation location, LogLevel level, const std::basic_string_view<Char>& format, TArgs&&... args) {
+    static inline void logLnString(LogLocation location, LogLevel level, const std::basic_string_view<Char>& format, TArgs&&... args) {
         if (!shouldLog(level)) return;
 
         try {
             std::basic_string_view<Char> view(format.data(), format.length());
             const auto str = ::LN_FMT_NAMESPACE::format(view, std::forward<TArgs>(args)...);
-            log(location, level, UnicodeStringUtils::U32ToU8(str.c_str(), str.length()));
+            writeLogCore(location, level, UnicodeStringUtils::U32ToU8(str.c_str(), str.length()));
         }
         catch (const std::exception& ex) {
             // TODO: fatal error handler
@@ -253,12 +253,12 @@ public:
     }
 
     template<typename... TArgs>
-    static inline void log(LogLocation location, LogLevel level, const std::string_view& format, TArgs&&... args) {
+    static inline void logStdString(LogLocation location, LogLevel level, const std::string_view& format, TArgs&&... args) {
         if (!shouldLog(level)) return;
 
         try {
             const auto str = ::LN_FMT_NAMESPACE::format(format, std::forward<TArgs>(args)...);
-            log(location, level, str);
+            writeLogCore(location, level, str);
         }
         catch (const std::exception& ex) {
             // TODO: fatal error handler

@@ -353,24 +353,8 @@ inline String toString<Path>(const Path& value) {
     return value.str();
 }
 
-} // namespace ln
+inline auto format_as(const ln::Path& v) -> LN_FMT_NAMESPACE::basic_string_view<Char> {
+    return LN_FMT_NAMESPACE::basic_string_view<Char>(v.c_str(), v.length());
+}
 
-namespace ln {
-namespace fmt {
-
-template<>
-struct formatter<::ln::Path, ln::Char> {
-    template<typename ParseContext>
-    auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
-        return ctx.begin();
-    }
-    template<typename FormatContext>
-    auto format(const ln::Path& v, FormatContext& ctx) -> decltype(ctx.out()) {
-        std::basic_string_view<ln::Char> view(v.c_str(), v.length());
-        formatter<std::basic_string_view<ln::Char>, ln::Char> f;
-        return f.format(view, ctx);
-    }
-};
-
-} // namespace fmt
 } // namespace ln

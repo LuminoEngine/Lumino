@@ -30,6 +30,7 @@ public:
             return m_function(std::forward<TArgs>(args)...);
         else if (m_alternative)
             m_alternative();
+        return TReturn();
     }
 
 LN_CONSTRUCT_ACCESS:

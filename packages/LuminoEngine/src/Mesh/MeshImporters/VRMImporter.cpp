@@ -355,7 +355,7 @@ Ref<VRM_Material> VRMImporter::parseMaterial(const tinygltf::Value& value)
 		else if (key == "floatProperties") {
 			for (const auto& pair : value.Get<tinygltf::Value::Object>()) {
 				if (pair.second.IsInt())
-					result->floatProperties.insert({ STR(pair.first), pair.second.Get<int>() });
+					result->floatProperties.insert({ STR(pair.first), static_cast<float>(pair.second.Get<int>()) });
 				else if (pair.second.IsNumber())
 					result->floatProperties.insert({ STR(pair.first), static_cast<float>(pair.second.Get<double>()) });
 				else {

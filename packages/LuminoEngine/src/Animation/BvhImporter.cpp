@@ -85,7 +85,7 @@ bool AsciiLineReader::readLineRaw()
         const char* buf = m_buffer.data();
         std::copy(buf + m_bufferPos, buf + m_bufferLength, std::back_inserter(m_lineCache));
 
-    } while (readBuffer() > 0);
+    } while (readBuffer());
 
     return true;
 }

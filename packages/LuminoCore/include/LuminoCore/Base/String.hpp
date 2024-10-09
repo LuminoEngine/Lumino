@@ -1016,6 +1016,14 @@ inline bool operator!=(const Char* lhs, const StringView& rhs) {
     return !operator==(lhs, rhs);
 }
 
+inline auto format_as(const ::ln::String& v) -> LN_FMT_NAMESPACE::basic_string_view<Char> {
+    return LN_FMT_NAMESPACE::basic_string_view<Char>(v.c_str(), v.length());
+}
+
+inline auto format_as(const ::ln::StringView& v) -> LN_FMT_NAMESPACE::basic_string_view<Char> {
+    return LN_FMT_NAMESPACE::basic_string_view<Char>(v.data(), v.length());
+}
+
 } // namespace ln
 
 // for unordered_map key
@@ -1025,44 +1033,6 @@ struct hash<ln::String> {
     std::size_t operator()(const ln::String& key) const;
 };
 } // namespace std
-
-//#include "StringFormat.inl"
-
-namespace ln {
-namespace fmt {
-
-template<>
-struct formatter<::ln::String, ln::Char> {
-
-    template<typename ParseContext>
-    auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
-        return ctx.begin();
-    }
-
-    template<typename FormatContext>
-    auto format(const ln::String& v, FormatContext& ctx) -> decltype(ctx.out()) {
-        std::basic_string_view<ln::Char> view(v.c_str(), v.length());
-        formatter<std::basic_string_view<ln::Char>, ln::Char> f;
-        return f.format(view, ctx);
-    }
-};
-
-template<>
-struct formatter<::ln::StringView, ln::Char> {
-    template<typename ParseContext>
-    auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
-        return ctx.begin();
-    }
-
-    template<typename FormatContext>
-    auto format(const ln::StringView& v, FormatContext& ctx) -> decltype(ctx.out()) {
-        std::basic_string_view<ln::Char> view(v.data(), v.length());
-        formatter<std::basic_string_view<ln::Char>, ln::Char> f;
-        return f.format(view, ctx);
-    }
-};
-} // namespace fmt
-} // namespace ln
 
 //==============================================================================
 // String
