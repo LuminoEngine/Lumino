@@ -71,11 +71,12 @@
 
 #include "LuminoCore/Serialization/Common.hpp"
 #include "LuminoCore/Serialization/ArchiveStore.hpp"
+#include "LuminoCore/Serialization/JsonArchiveStore.hpp"
+#include "LuminoCore/Serialization/Archive.hpp"
 
 #include "LuminoCore/Runtime/Object.hpp"
 #include "LuminoCore/Runtime/TypeInfo.hpp"
 #include "LuminoCore/Runtime/Property.hpp"
-#include "LuminoCore/Runtime/Archive.hpp"
 #include "LuminoCore/Runtime/RuntimeContext.hpp"
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES

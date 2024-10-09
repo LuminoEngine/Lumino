@@ -82,7 +82,7 @@ void FreeTypeFontCached::init(FontManager* manager, const FontDesc& desc) {
     if (name.isEmpty()) name = manager->defaultFontDesc().Family;
     if (LN_REQUIRE(!name.isEmpty())) return;
 
-    m_ftFaceId = reinterpret_cast<FTC_FaceID>(CRCHash::compute(name.c_str()));
+    m_ftFaceId = reinterpret_cast<FTC_FaceID>(static_cast<intptr_t>(CRCHash::compute(name.c_str())));
     FTC_Manager ftc_manager = manager->ftCacheManager();
     //m_manager->m_requesterFaceName = name->c_str();
 

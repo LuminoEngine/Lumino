@@ -1,5 +1,5 @@
 ﻿#include "Test_Math_Common.hpp"
-#include <LuminoCore/Runtime/Archive.hpp>
+#include <LuminoCore/Serialization/Archive.hpp>
 #include <LuminoCore/Math/MathSerialization.hpp>
 
 class Test_Math : public ::testing::Test

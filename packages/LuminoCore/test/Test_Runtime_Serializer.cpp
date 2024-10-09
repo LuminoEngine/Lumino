@@ -1,5 +1,6 @@
 ﻿#include "Common.hpp"
-#include <LuminoCore/Runtime/Archive.hpp>
+#include <LuminoCore/Serialization/Archive.hpp>
+#include <LuminoCore/Serialization/JsonArchiveStore.hpp>
 #include <LuminoCore/Runtime/RuntimeContext.hpp>
 
 class Test_Base_Serializer : public ::testing::Test {};

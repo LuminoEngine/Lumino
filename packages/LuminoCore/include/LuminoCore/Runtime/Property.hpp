@@ -41,7 +41,7 @@ void ObjectA::onProp1Changed()
 
 */
 
-#include "Archive.hpp"
+#include "../Serialization/Archive.hpp"
 #include "Variant.hpp"
 #include "TypeInfo.hpp"
 
