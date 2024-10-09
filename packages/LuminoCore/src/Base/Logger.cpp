@@ -413,7 +413,7 @@ LogLevel Logger::level() {
     return detail::g_maxLevel;
 }
 
-void Logger::log(LogLocation location, LogLevel level, std::string_view message) {
+void Logger::writeLogCore(LogLocation location, LogLevel level, std::string_view message) {
     if (!shouldLog(level)) return;
 
     if (detail::LoggerInterface::getInstance()->m_adapters.empty()) {

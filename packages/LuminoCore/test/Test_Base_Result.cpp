@@ -63,6 +63,11 @@ static BasicResult<int, TestErr1> testFunc6(int len) {
 void func1() {
     BasicResult a(ok());
 }
+
+ln::MaybeResult func_MaybeResult1() {
+    return {};
+}
+
 //
 //static auto testFunc7(int len) -> BasicResult  {
 //    if (len > 10) return err();
@@ -227,4 +232,9 @@ TEST_F(Test_Base_Result, MoveReference) {
     };
 	auto str = *Test::func();
 	ASSERT_EQ(U"abc", str);
+}
+
+TEST_F(Test_Base_Result, Logger) {
+    const auto r1 = func_MaybeResult1();
+    LN_LOG_WARNING(r1);
 }

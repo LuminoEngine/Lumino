@@ -18,26 +18,23 @@
 #define LN_FUNC_MACRO __PRETTY_FUNCTION__
 #endif
 
-/**
- * Logger usage samples
- * ----------
- *
- * ```
- * LN_LOG_INFO("Hello!");
- * LN_LOG_ERROR("Error message.");
- * LN_LOG_ERROR("With arg: {}", 1); // by std::fmt format
- * LN_LOG_INFO(U"UTF-32 string.");
- * LN_LOG_INFO(U"UTF-32 with arg: {}", 1);
- * ```
- */
+// NOTE: 以下マクロの使い方は、後述の Logger クラスの説明を参照してください。
 
+/** @see Logger */
 #define LN_LOG_LOGGER_CALL(level, ...) ::ln::Logger::log(::ln::LogLocation{ __FILE__, __LINE__, LN_FUNC_MACRO }, level, __VA_ARGS__)
+/** @see Logger */
 #define LN_LOG_TRACE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Trace, __VA_ARGS__)
+/** @see Logger */
 #define LN_LOG_DEBUG(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Debug, __VA_ARGS__)
+/** @see Logger */
 #define LN_LOG_VERBOSE(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Verbose, __VA_ARGS__)
+/** @see Logger */
 #define LN_LOG_INFO(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Info, __VA_ARGS__)
+/** @see Logger */
 #define LN_LOG_WARNING(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Warning, __VA_ARGS__)
+/** @see Logger */
 #define LN_LOG_ERROR(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Error, __VA_ARGS__)
+/** @see Logger */
 #define LN_LOG_FATAL(...) LN_LOG_LOGGER_CALL(::ln::LogLevel::Fatal __VA_ARGS__)
 
 namespace ln {
@@ -111,6 +108,31 @@ public:
 };
 
 /**
+ * ログ出力を制御するクラスです。 ログの出力は通常、 LN_LOG_ERROR などのマクロを使用してください。
+ * 
+ * ## 使用例
+ * 
+ * ```
+ * LN_LOG_INFO("Hello!");
+ * LN_LOG_ERROR("Error message.");
+ * LN_LOG_ERROR("With arg: {}", 1); // by std::fmt format
+ * LN_LOG_INFO(U"UTF-32 string.");
+ * LN_LOG_INFO(U"UTF-32 with arg: {}", 1);
+ * ```
+ * 
+ * ## 文字列型の注意点
+ * 
+ * Logger は std::string(char) 型と ln::String(char_32_t) をサポートしています。
+ * std::fmt 書式で出力する場合、書式文字列と引数の型が一致している必要があります。
+ * 
+ * ```
+ * ln::String name = U"You";
+ * LN_LOG_ERROR("Name: {}", name);   // Error!
+ * LN_LOG_ERROR(U"Name: {}", name);  // OK.
+ * ```
+ * 
+ * 
+ * @en 
  * This class is for controlling the log function.
  *
  * The default adapter depends on the runtime environment.
@@ -120,6 +142,8 @@ public:
  * The default log level changes depending on the build configuration.
  * - DEBUG: LogLevel::Debug
  * - RELEASE: LogLevel::Info
+ * 
+ *
  */
 class Logger {
 public:
@@ -152,13 +176,22 @@ public:
      */
     static void setLevel(LogLevel level);
 
+    /**
+     * 現在のログレベルを取得します。
+     */
     static LogLevel level();
+
+    /**
+     * 指定したログレベルのログを出力するかを判定します。
+     */
+    static bool shouldLog(LogLevel level);
 
     static void addAdapter(std::shared_ptr<ILoggerAdapter> adapter);
     static bool hasAnyAdapter();
 
-    static bool shouldLog(LogLevel level);
-
+    /**
+     * ログレベルの文字列表現を取得します。
+     */
     static const char* getLevelStringNarrow(LogLevel level);
 
     /** ログ出力 */
@@ -194,11 +227,11 @@ public:
         log(location, level, ::ln::toStdStringView(format), std::forward<TArgs>(args)...);
     }
 
-    //template<typename TFormatString, typename... TArgs>
-    //static inline void log(LogLocation location, LogLevel level, const TFormatString& format, TArgs&&... args) {
-    //    const auto str = ::ln::toString(format);
-    //    log(location, level, std::u32string_view(str.c_str(), str.length()), std::forward<TArgs>(args)...);
-    //}
+    template<typename TValue>
+    static inline void log(LogLocation location, LogLevel level, const TValue& value) {
+        const auto str = toString(value);
+        writeLogCore(location, level, UnicodeStringUtils::U32ToU8(str.c_str(), str.length()));
+    }
 	
     template<typename... TArgs>
     static inline void log(LogLocation location, LogLevel level, const std::basic_string_view<Char>& format, TArgs&&... args) {
@@ -237,8 +270,10 @@ public:
         }
     }
 
-    static void log(LogLocation location, LogLevel level, std::string_view message);
     static void flush();
+
+private:
+    static void writeLogCore(LogLocation location, LogLevel level, std::string_view message);
 };
 
 namespace detail {
