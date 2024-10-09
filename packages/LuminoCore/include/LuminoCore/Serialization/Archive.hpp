@@ -53,6 +53,11 @@ private:
  * シリアライズ可能なオブジェクトの読み書きを行うためのインターフェイスです。
  * 
  * @see https://github.com/LuminoEngine/Lumino/wiki/Core-Serialize
+ * 
+ * Archive クラスを用いた保存・読み込みは、中間データを全てメモリ上に展開します。
+ * ちょうど、バイナリデータとして保存する際のファイル全体が一時的にメモリ上に読み込まれる様子をイメージしてください。
+ * このためサイズが数GBを超えるような大きなデータを扱う場合は注意が必要です。
+ * その場合、 BinaryWriter, BinaryReader を使った直接のバイナリデータの読み書きを検討してください。
  */
 class Archive {
     // NOTE: vs cereal
