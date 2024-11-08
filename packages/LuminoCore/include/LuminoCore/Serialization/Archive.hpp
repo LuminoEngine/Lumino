@@ -705,6 +705,28 @@ inline void serialize(Archive& ar, Uuid& value) {
     }
 }
 
+template<class T>
+inline void serialize(Archive& ar, std::unique_ptr<T>& value) {
+    bool isNull = (value == nullptr);
+    ar.makeSmartPtrTag(&isNull);
+    if (ar.isSaving()) {
+        if (!isNull) {
+            ar.process(*value.get());
+        }
+    }
+    else {
+        if (!isNull) {
+   //         if (!value) {
+			//	value = std::make_unique<T>();
+			//}
+			ar.process(*value.get());
+		}
+        else {
+			value = nullptr;
+		}
+    }
+}
+
 } // namespace ln
 
 #define LN_SERIALIZE_VERSION(version)                         \

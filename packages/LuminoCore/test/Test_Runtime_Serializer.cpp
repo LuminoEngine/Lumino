@@ -504,6 +504,34 @@ TEST_F(Test_Base_Serializer, RawPointerArray) {
     }
 }
 
+TEST_F(Test_Base_Serializer, UniquePointer1) {
+    class UniquePointer_TestClassA {
+    public:
+        int m_value;
+        void serialize(Archive& ar) { ar& LN_NVP(m_value); }
+    };
+
+    class UniquePointer_TestClassB {
+    public:
+        std::unique_ptr<UniquePointer_TestClassA> m_ptr;
+        void serialize(Archive& ar) { ar& LN_NVP(m_ptr); }
+    };
+
+    UniquePointer_TestClassB data1;
+    data1.m_ptr = std::make_unique<UniquePointer_TestClassA>();
+    data1.m_ptr->m_value = 123;
+    String json = JsonSerializer::serialize(data1, JsonFormatting::None).unwrap();
+
+    ASSERT_EQ(_T("{\"m_ptr\":{\"m_value\":123}}"), json);
+
+    UniquePointer_TestClassB data2;
+    data2.m_ptr = std::make_unique<UniquePointer_TestClassA>(); // 先に作っておく必要がある
+    auto ptr2 = data2.m_ptr.get();
+    JsonSerializer::deserialize(json, &data2);
+    ASSERT_EQ(123, data2.m_ptr->m_value);
+    ASSERT_EQ(ptr2, data2.m_ptr.get()); // deserialize しても同じインスタンスを指している
+}
+
 TEST_F(Test_Base_Serializer, make) {
     struct TestId {
         int i;

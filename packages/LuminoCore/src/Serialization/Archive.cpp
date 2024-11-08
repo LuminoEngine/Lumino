@@ -94,21 +94,12 @@ void Archive::makeSmartPtrTag(bool* outIsNull) {
             processNull();
         }
         else {
-            setParentNodeType(NodeType::WrapperObject);
+            setCurrentNodeType(NodeType::WrapperObject);
         }
     }
     else if (isLoading()) {
-
-        // setParentNodeType(NodeType::Object);
-        tryOpenContainer();
-        *outIsNull = m_store->getOpendContainerType() == ArchiveContainerType::Null;
-        setParentNodeType(NodeType::WrapperObject);
-        // if ((*outIsNull)) {
-        //     setParentNodeType(NodeType::PrimitiveValue);
-        // }
-        // else {
-        //     setParentNodeType(NodeType::WrapperObject);
-        // }
+        *outIsNull = m_store->getReadingValueType() == ArchiveNodeType::Null;
+        setCurrentNodeType(NodeType::WrapperObject);
     }
 }
 
@@ -123,24 +114,7 @@ void Archive::makeOptionalTag(bool* outHasValue) {
     }
     else if (isLoading()) {
         *outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
-
-        // tryOpenContainer();
-        //*outHasValue = m_store->getOpendContainerType() != ArchiveContainerType::Null;
-
-        // makeOptionalTag を抜けた後の process は、いま open しているコンテナに対して行いたい。
-        // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
-        // m_store->closeContainer();
-        // m_nodeInfoStack.back().containerOpend = false;
-
         setCurrentNodeType(NodeType::WrapperObject);
-
-        //*outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
-        // if (!(*outHasValue)) {
-        //    setParentNodeType(NodeType::PrimitiveValue);
-        //}
-        // else {
-        //    setParentNodeType(NodeType::WrapperObject);
-        //}
     }
 }
 
