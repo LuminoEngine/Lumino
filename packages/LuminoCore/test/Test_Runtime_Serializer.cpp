@@ -1254,6 +1254,49 @@ TEST_F(Test_Base_Variant, Value_Rect)
 
 #endif
 
+TEST_F(Test_Base_Serializer, Enum1) {
+    enum MyEnum1 {
+        VALUE0 = 0,
+        VALUE1,
+    };
+    enum class MyEnum2 {
+        VALUE0 = 0,
+        VALUE1,
+    };
+    enum class MyEnum3 : uint8_t {
+        VALUE0 = 0,
+        VALUE1,
+    };
+
+    struct Test {
+        MyEnum1 e1;
+        MyEnum2 e2;
+        MyEnum3 e3;
+
+        void serialize(Archive& ar) {
+            ar& LN_NVP(e1);
+            ar& LN_NVP(e2);
+            ar& LN_NVP(e3);
+        }
+    };
+
+    Test t1;
+    t1.e1 = VALUE1;
+    t1.e2 = MyEnum2::VALUE1;
+    t1.e3 = MyEnum3::VALUE1;
+    String json = JsonSerializer::serialize(t1, JsonFormatting::None).unwrap();
+    ASSERT_EQ(_TT("{\"e1\":1,\"e2\":1,\"e3\":1}"), json);
+
+    Test t2;
+    t1.e1 = VALUE0;
+    t1.e2 = MyEnum2::VALUE0;
+    t1.e3 = MyEnum3::VALUE0;
+    JsonSerializer::deserialize(json, &t2);
+    ASSERT_EQ(VALUE1, t2.e1);
+    ASSERT_EQ(MyEnum2::VALUE1, t2.e2);
+    ASSERT_EQ(MyEnum3::VALUE1, t2.e3);
+}
+
 TEST_F(Test_Base_Serializer, unordered_map) {
     struct Test {
         ln::String name;

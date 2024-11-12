@@ -38,6 +38,38 @@ public:
 	typedef decltype(check(std::declval<T>())) type;
 	static bool const value = !type::value;
 };
+
+struct NoConvertBase {};
+
+template<class T, bool IsCerealMinimalTrait = std::is_base_of<detail::NoConvertBase, T>::value>
+struct strip_minimal {
+    using type = T;
+};
+
+namespace {
+/** @internal Gets the underlying type of an enum */
+template<class T, bool IsEnum>
+struct enum_underlying_type : std::false_type {};
+
+/** @internal Gets the underlying type of an enum (Specialization for when we actually have an enum) */
+template<class T>
+struct enum_underlying_type<T, true> {
+    using type = typename std::underlying_type<T>::type;
+};
+} // namespace
+
+template<class T>
+class is_enum {
+private:
+    using DecayedT = typename std::decay<T>::type;
+    using StrippedT = typename ::ln::detail::strip_minimal<DecayedT>::type;
+
+public:
+    static const bool value = std::is_enum<StrippedT>::value;
+    using type = StrippedT;
+    using base_type = typename enum_underlying_type<StrippedT, value>::type;
+};
+
 } // namespace detail
 
 class SerializationException {
@@ -58,6 +90,16 @@ private:
  * ちょうど、バイナリデータとして保存する際のファイル全体が一時的にメモリ上に読み込まれる様子をイメージしてください。
  * このためサイズが数GBを超えるような大きなデータを扱う場合は注意が必要です。
  * その場合、 BinaryWriter, BinaryReader を使った直接のバイナリデータの読み書きを検討してください。
+ * 
+ * ## ポインタのシリアライズについて
+ * - unique_ptr のシリアライズはサポートしますが、Load 時にインスタンスは作成しません。
+ * - 生ポインタのシリアライズはサポートしません。 Archive は所有権のあるオブジェクトに対してシリアライズをサポートします。
+ *   どうしても生ポインタをシリアライズしたい場合は次のような関数を定義してください。
+ *   ```
+ *   void serialize(ln::Archive& ar, MyData*& ptr) {
+ *       ptr->serialize(ar);
+ *   }
+ *   ```
  */
 class Archive {
     // NOTE: vs cereal
@@ -623,6 +665,16 @@ private:
 };
 
 
+
+template<class TValue>
+inline void serialize(Archive& ar, TValue& v) {
+    ar.makePrimitiveValue();
+    auto value = static_cast<typename detail::is_enum<TValue>::base_type>(v);
+    ar.process(value);
+    if (ar.isLoading()) {
+        v = static_cast<TValue>(value);
+    }
+}
 
 template<class TItem>
 inline void serialize(Archive& ar, Array<TItem>& value) {
