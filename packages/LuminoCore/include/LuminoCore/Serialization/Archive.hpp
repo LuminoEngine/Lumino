@@ -388,7 +388,9 @@ private:
         pushNodeWrite<TValue>();
 
         // NOTE: Previously, I wrote it as ::ln::serialize(), but when I incorporated it into an MFC app, I got an error saying that an overload of serialize could not be found.
-        // This could not be detected by unit tests, so please be careful when refactoring.
+        //   This could not be detected by unit tests, so please be careful when refactoring.
+
+        // NOTE: この辺りでコンパイルエラーになる場合、その型に対して serialize() 関数が定義されていない可能性があります。
         serialize(*this, value);
 
         popNodeWrite();
@@ -665,8 +667,8 @@ private:
 };
 
 
-
-template<class TValue>
+// enum
+template<class TValue, typename std::enable_if<detail::is_enum<TValue>::value, bool>::type = true>
 inline void serialize(Archive& ar, TValue& v) {
     ar.makePrimitiveValue();
     auto value = static_cast<typename detail::is_enum<TValue>::base_type>(v);
@@ -682,6 +684,7 @@ inline void serialize(Archive& ar, Array<TItem>& value) {
     ar.makeArrayTag(&size);
 
     if (ar.isLoading()) {
+        value.clear();
         value.resize(size);
     }
 
@@ -709,6 +712,15 @@ inline void serialize(Archive& ar, Optional<TValue>& value) {
         else {
             value.reset();
         }
+    }
+}
+
+template<class TItem, size_t N>
+inline void serialize(Archive& ar, std::array<TItem, N>& value) {
+    int size = 0;
+    ar.makeArrayTag(&size);
+    for (TItem& v : value) {
+        ar.process(v);
     }
 }
 

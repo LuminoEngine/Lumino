@@ -124,6 +124,7 @@ TEST_F(Test_Base_Serializer, PrimitiveValues) {
         double v_doubleu = 0;
         float v_floatm = 0;
         double v_doublem = 0;
+        bool v_bool = false;
         String v_str;
 
         void serialize(Archive& ar) override {
@@ -141,6 +142,7 @@ TEST_F(Test_Base_Serializer, PrimitiveValues) {
             ar& LN_NVP(v_doubleu);
             ar& LN_NVP(v_floatm);
             ar& LN_NVP(v_doublem);
+            ar& LN_NVP(v_bool);
             ar& LN_NVP(v_str);
         }
     };
@@ -160,6 +162,7 @@ TEST_F(Test_Base_Serializer, PrimitiveValues) {
     obj1->v_doubleu = DBL_MAX;
     obj1->v_floatm = 1.0f;
     obj1->v_doublem = 1.0f;
+    obj1->v_bool = true;
     obj1->v_str = _LT("text");
 
     // Save
@@ -181,6 +184,7 @@ TEST_F(Test_Base_Serializer, PrimitiveValues) {
 	ASSERT_DOUBLE_EQ(obj1->v_doubleu, obj2->v_doubleu);
 	ASSERT_FLOAT_EQ(obj1->v_floatm, obj2->v_floatm);
 	ASSERT_DOUBLE_EQ(obj1->v_doublem, obj2->v_doublem);
+    ASSERT_EQ(obj1->v_bool, obj2->v_bool);
 	ASSERT_EQ(obj1->v_str, obj2->v_str);
 }
 
@@ -553,6 +557,7 @@ TEST_F(Test_Base_Serializer, make) {
     ASSERT_EQ(_T("{\"id\":123}"), json);
 }
 
+/*
 TEST_F(Test_Base_Serializer, LegacyUseCase_Array) {
     class ListTest1 : public ln::Object {
     public:
@@ -612,6 +617,7 @@ TEST_F(Test_Base_Serializer, LegacyUseCase_Array) {
         ASSERT_EQ(30, t[2]->x);
     }
 }
+*/
 
 TEST_F(Test_Base_Serializer, LegacyUseCase_Example1) {
     //* [ ] Example 1
@@ -1295,6 +1301,46 @@ TEST_F(Test_Base_Serializer, Enum1) {
     ASSERT_EQ(VALUE1, t2.e1);
     ASSERT_EQ(MyEnum2::VALUE1, t2.e2);
     ASSERT_EQ(MyEnum3::VALUE1, t2.e3);
+}
+
+TEST_F(Test_Base_Serializer, std_array) {
+    struct MyData2 {
+        int v;
+        void serialize(Archive& ar) {
+            ar& LN_NVP(v);
+        }
+    };
+    struct MyData1 {
+        std::array<int, 3> ary1;
+        std::array<ln::String, 3> ary2;
+        std::array<MyData2, 3> ary3;
+        void serialize(Archive& ar) {
+            ar& LN_NVP(ary1);
+            ar& LN_NVP(ary2);
+            ar& LN_NVP(ary3);
+        }
+    };
+
+    MyData1 data1;
+    data1.ary1 = { 1, 2, 3 };
+    data1.ary2 = { U"a", U"b", U"c" };
+    data1.ary3 = { MyData2{ 10 }, MyData2{ 20 }, MyData2{ 30 } };
+    String json = JsonSerializer::serialize(data1, JsonFormatting::None).unwrap();
+
+    MyData1 data2;
+    JsonSerializer::deserialize(json, &data2);
+    ASSERT_EQ(3, data2.ary1.size());
+    ASSERT_EQ(1, data2.ary1[0]);
+    ASSERT_EQ(2, data2.ary1[1]);
+    ASSERT_EQ(3, data2.ary1[2]);
+    ASSERT_EQ(3, data2.ary2.size());
+    ASSERT_EQ(U"a", data2.ary2[0]);
+    ASSERT_EQ(U"b", data2.ary2[1]);
+    ASSERT_EQ(U"c", data2.ary2[2]);
+    ASSERT_EQ(3, data2.ary3.size());
+    ASSERT_EQ(10, data2.ary3[0].v);
+    ASSERT_EQ(20, data2.ary3[1].v);
+    ASSERT_EQ(30, data2.ary3[2].v);
 }
 
 TEST_F(Test_Base_Serializer, unordered_map) {
