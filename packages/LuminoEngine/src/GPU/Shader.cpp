@@ -48,6 +48,14 @@ void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag) {
 //==============================================================================
 // Shader
 
+Ref<Shader> Shader::create(const void* data, int32_t length) {
+    Ref<Shader> ptr(LN_NEW Shader(), false);
+    MemoryStream stream(data, length);
+    ptr->init();
+    ptr->createFromStream(&stream, nullptr);
+    return ptr;
+}
+
 Ref<Shader> Shader::create(const StringView& filePath, ShaderCompilationProperties* properties) {
     return ln::makeObject_deprecated<Shader>(filePath, properties);
 }

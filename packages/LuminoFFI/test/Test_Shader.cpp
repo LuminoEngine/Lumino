@@ -4,19 +4,20 @@ class Test_Shader : public ::testing::Test {};
 
 TEST_F(Test_Shader, Basic1) {
 
-#if 0
     LNHandle graphicsContext = TestEnv::graphicsContext;
+
+    // Create Shader.
+    const auto code = TestEnv::compileShader(TestEnv::getTestDataPath(U"Test_Shader.Basic1/Test_Shader.Basic1.fx"));
+    LNHandle shader1 = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNShader_Create(code.data(), code.size(), &shader1));
+
+    // Create Material.
+    LNHandle material1 = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_Create(&material1));
+    ASSERT_EQ(LN_OK, LNMaterial_SetShader(material1, shader1));
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
-
-    // Load texture and create material.
-    auto imageData = ln::FileSystem::readAllBytes(TestEnv::getTestDataPath(U"Rendering/Sprite.png")).unwrap();
-    LNHandle texture1 = LN_NULL_HANDLE;
-    LNHandle material1 = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromImageFileData(imageData.data(), imageData.size(), &texture1));
-    ASSERT_EQ(LN_OK, LNMaterial_Create(&material1));
-    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNSpriteRenderer_Get(&spriteRenderer));
@@ -72,10 +73,9 @@ TEST_F(Test_Shader, Basic1) {
         TestEnv::present();
     }
 
-    ASSERT_SCREENSHOT(U"Rendering/Expects/Test_SpriteRenderer.Basic1.png");
+    ASSERT_SCREENSHOT(U"Test_Shader.Basic1/Expects.png");
 
-    LNObject_Release(material1);
-    LNObject_Release(texture1);
     LNObject_Release(renderingCommandList);
-#endif
+    LNObject_Release(material1);
+    LNObject_Release(shader1);
 }

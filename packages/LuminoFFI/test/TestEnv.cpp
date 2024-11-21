@@ -14,6 +14,8 @@ LNHandle TestEnv::graphicsContext = LN_NULL_HANDLE;
 LNHandle TestEnv::viewPoint = LN_NULL_HANDLE;
 
 void TestEnv::initialize() {
+    ln::FileSystem::createDirectory(TestEnv::getTempPath(U""));
+
     ln::Engine::initialize();
     ln::PlatformModule::initialize({ { U"Test", 320, 240 }, ln::WindowSystem::GLFWWithOpenGL });
 
@@ -40,12 +42,31 @@ void TestEnv::present() {
     glfwPollEvents();
 }
 
-ln::Path TestEnv::getTestDataPath(ln::Path localPath) {
+ln::Path TestEnv::getTestDataPath(const ln::Path& localPath) {
     return ln::Path(ASSETS_DIR, localPath);
+}
+
+ln::Path TestEnv::getTempPath(const ln::Path& localPath) {
+    return ln::Path(LN_LOCALFILE("tmp"), localPath);
 }
 
 bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save) {
     auto context = static_cast<ln::GraphicsContext*>(ln::Runtime::getObject(graphicsContext));
     return ln::GraphicsTestHelper::checkScreenShot(
         TestEnv::getTestDataPath(filePath), context, context->currentBackbuffer(), passRate, save);
+}
+
+ln::ByteBuffer TestEnv::compileShader(const ln::Path& filePath) {
+#ifdef _WIN32
+#ifdef _DEBUG
+    ln::Path tool = ln::Path(CMAKE_BINARY_DIR, U"packages/lumino-cli/Debug/lumino.exe");
+#else
+    ln::Path tool = ln::Path(CMAKE_BINARY_DIR, U"packages/lumino-cli/Release/lumino.exe");
+#endif
+#else
+#error "Not implemented"
+#endif
+    auto outputFilePath = TestEnv::getTempPath(filePath.fileName().replaceExtension(U".lcfx"));
+    ln::Process2::exec(ln::format(U"{} fxc \"{}\" \"{}\"", tool, filePath, outputFilePath));
+    return ln::FileSystem::readAllBytes(outputFilePath).unwrap();
 }

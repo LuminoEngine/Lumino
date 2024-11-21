@@ -59,7 +59,8 @@ int main(int argc, char** argv) {
 
         const char* debugArgv[] = {
             "<program>",
-            "fxc", "E:/Proj/Lumino/packages/LuminoFFI/test/Assets/Test_Shader.Basic1.fx",
+            "fxc",
+            "E:/Proj/Lumino/packages/LuminoFFI/test/Assets/Test_Shader.Basic1/Test_Shader.Basic1.fx",
 
         };
         argc = sizeof(debugArgv) / sizeof(char*);

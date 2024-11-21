@@ -6,8 +6,6 @@ TEST_F(Test_SpriteRenderer, Basic1) {
 
     LNHandle graphicsContext = TestEnv::graphicsContext;
 
-    LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
 
     // Load texture and create material.
     auto imageData = ln::FileSystem::readAllBytes(TestEnv::getTestDataPath(U"Rendering/Sprite.png")).unwrap();
@@ -16,6 +14,9 @@ TEST_F(Test_SpriteRenderer, Basic1) {
     ASSERT_EQ(LN_OK, LNTexture2D_CreateFromImageFileData(imageData.data(), imageData.size(), &texture1));
     ASSERT_EQ(LN_OK, LNMaterial_Create(&material1));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
+
+    LNHandle renderingCommandList = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNSpriteRenderer_Get(&spriteRenderer));
@@ -73,7 +74,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
 
     ASSERT_SCREENSHOT(U"Rendering/Expects/Test_SpriteRenderer.Basic1.png");
 
+    LNObject_Release(renderingCommandList);
     LNObject_Release(material1);
     LNObject_Release(texture1);
-    LNObject_Release(renderingCommandList);
 }

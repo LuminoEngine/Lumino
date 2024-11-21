@@ -5,7 +5,9 @@ public:
     static void initialize();
     static void terminate();
     static void present();
-    static ln::Path getTestDataPath(ln::Path localPath);
+    static ln::ByteBuffer compileShader(const ln::Path& filePath);
+    static ln::Path getTestDataPath(const ln::Path& localPath);
+    static ln::Path getTempPath(const ln::Path& localPath);
     static bool checkScreenShot(const ln::Path& filePath, int passRate = 95, bool save = false);
 
     static LNHandle graphicsContext;

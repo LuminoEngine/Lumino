@@ -398,6 +398,8 @@ class LN_API Shader
     , public IGraphicsResource
 {
 public:
+    static Ref<Shader> create(const void* data, int32_t length);
+
     /**
      * 事前コンパイル済みシェーダファイルまたはシェーダプログラムファイルから Shader オブジェクトを作成します。
      *
@@ -407,6 +409,8 @@ public:
      *
      * シェーダプログラムファイルを読み込むことができるのは、デスクトップターゲットのみです。
      * モバイルターゲット、Web ターゲットでは事前コンパイル済みシェーダファイルのみを読み込むことができます。
+     * 
+     * @deprecated
      */
     static Ref<Shader> create(const StringView& filePath, ShaderCompilationProperties* properties = nullptr);
 

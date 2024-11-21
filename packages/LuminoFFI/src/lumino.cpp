@@ -575,6 +575,16 @@ LNResult LNTexture2D_GetContext(LNHandle texture2D_, LNHandle* outTextureRenderi
 }
 
 //==============================================================================
+// LNShader
+//==============================================================================
+LNResult LNShader_Create(const void* data, int32_t length, LNHandle* outShader) {
+    LN_FFI_TRY_BEGIN;
+    Ref<Shader> shader = Shader::create(data, length);
+    *outShader = ::Runtime::wrapObject(shader, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
 // LNMaterial
 //==============================================================================
 LNResult LNMaterial_Create(LNHandle* outMaterial) {
@@ -591,6 +601,14 @@ LNResult LNMaterial_SetMainTexture(LNHandle material_, LNHandle texture_) {
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     Texture* texture = LN_HANDLE_TO_OBJECT(Texture, texture_);
     material->setMainTexture(texture);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNMaterial_SetShader(LNHandle material_, LNHandle shader_) {
+    LN_FFI_TRY_BEGIN;
+    Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
+    Shader* shader = LN_HANDLE_TO_OBJECT(Shader, shader_);
+    material->setShader(shader);
     LN_FFI_TRY_END_RETURN;
 }
 

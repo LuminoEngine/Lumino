@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     if (argc == 1) {
         char* testArgs[] = {
             argv[0], "--gtest_break_on_failure",
-            //"--gtest_filter=Test_SpriteRenderer.*"
+            //"--gtest_filter=Test_Shader.*"
         };
         argc = sizeof(testArgs) / sizeof(char*);
         argv = testArgs;

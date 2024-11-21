@@ -11,7 +11,7 @@ source_group("Sources" FILES ${LOCAL_SOURCES})
 # Targets
 #-------------------------------------------------------------------------------
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_DIR=U"${CMAKE_CURRENT_LIST_DIR}/Assets")
+target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_DIR=U"${CMAKE_CURRENT_LIST_DIR}/Assets" CMAKE_BINARY_DIR=U"${CMAKE_BINARY_DIR}")
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoFFI-static LuminoCore LuminoEngine glfw GTest::gtest GTest::gtest_main)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

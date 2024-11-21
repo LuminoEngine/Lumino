@@ -203,10 +203,16 @@ extern LUMINO_API LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* da
 extern LUMINO_API LNResult LNTexture2D_GetContext(LNHandle texture2D, LNHandle* outTextureRenderingContext);
 
 //==============================================================================
+// LNShader
+//==============================================================================
+extern LUMINO_API LNResult LNShader_Create(const void* data, int32_t length, LNHandle* outShader);
+
+//==============================================================================
 // LNMaterial
 //==============================================================================
 extern LUMINO_API LNResult LNMaterial_Create(LNHandle* outMaterial);
 extern LUMINO_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture);
+extern LUMINO_API LNResult LNMaterial_SetShader(LNHandle material, LNHandle shader);
 
 /**
  * 2 つの Material が、同じ Batch で描画できるかを調べます。
