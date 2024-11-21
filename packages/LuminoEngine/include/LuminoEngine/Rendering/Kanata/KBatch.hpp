@@ -25,6 +25,8 @@ struct BatchElement final {
 
 struct BatchMaterial {
     Material* material;
+    // NOTE: TextRendering のように１つの Material をベースに、Renderer の内側で異なるテクスチャを用いることもある。
+    // その場合に備えて、以下のようなステートと同じように、Texture も持てるようにする必要があるかもしれない。
 
     // 以下、Material の継承を解決した、Batch 生成時点で確定しているステート。
     // SceneRenderPass で必要に応じてオーバーライドされたあと、最終的に確定する。 

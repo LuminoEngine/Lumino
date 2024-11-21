@@ -651,7 +651,7 @@ LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) 
 
 //==============================================================================
 
-LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
+LNResult LNBatchRenderer_Get(LNHandle* outSpriteRenderer) {
     LN_FFI_TRY_BEGIN;
 	detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
     SpriteRenderer* spriteRenderer = renderingManager->spriteRenderer();
@@ -659,11 +659,49 @@ LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer) {
 	LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNSpriteRenderer_BeginBatch(
+LNResult LNBatchRenderer_BeginBatch(
     LNHandle spriteRenderer_,
     LNHandle graphicsCommandList_,
     LNHandle material_,
     const LNMatrix* transform_) {
+    // NOTE: なぜ BeginBatch, EndBatch を用意しているのか？
+    //  Zソートを行う以上、現実的には BeginBatch～EndBatch の間までに、ひとつの Sprite しか描画するべきではない。
+    //  それなのになぜ？
+    //  ※注意点(覚書): 複数の BatchProxy をひとつのドローコールにマージするかどうかは Encoder の仕事なので、ここで考えることではない
+    //
+    //  BeginBatch, EndBatch を提供することで可能となるのは、複数の Sprite や Mesh をひとつの BatchProxy にできること。
+    //  提供しない場合、自動的に Batch をマージすることは一切できない。これはZソートができなくなる方が問題が大きいから。
+    //  → マージできるようなフラグを与えても良いが、それなら BeginBatch, EndBatch でも同じだしこちらの方が（冗長ではあるけどその分）わかりやすい。
+    //  これが役に立つのは、カリング、Zソートなどをせずに、プログラマの意図でまとめて大量のメッシュを描きたいとき。
+    //  例えば、
+    //  - 木や小石などの不透明な背景オブジェクト（主に3D）
+    //  - ユーザープログラム側でソート済みの大量のパーティクル
+    //  直近で使う機能ではないが、かといって無いのは今後困ることがあるかもしれない。
+    //
+    // NOTE: [2024/11/21] なぜ SpriteRenderer を BatchRenderer としたのか？
+    //  従来の PrimitiveMeshRenderer や FrameRectRenderer もそうだけど、これらの役割は要するに BatchProxy を作ること。
+    //  現時点ではまだ BatchMaterial が Material と 1:1 でテクスチャを扱うようになっているからダメだけど、
+    //  それができれば SpriteTextRenderer, VectorTextRenderer も同じようにできる。
+    // 
+    //  今の PrimitiveMeshRenderer がそんな感じだけど、
+    //  同じクラスの BatchProxy を使っていて、メッシュの生成は MeshGenerater に任せている。
+    // 
+    //  ただ、 TextRenderer の仕組みは MeshGenerater ではカバーできない。
+    //  BatchRenderer に全部統一するなら、 SpriteEncoder や TextSpriteEncoder に仕事を振る人が必要。
+    //  BatchEncoderDispatcher とかにしようか。
+    // 
+    // NOTE: とはいえ、ここまでやる必要があるのか？
+    //  汎用性の麺でもメリットはある。例えば☆を描くのに、次のようにできるかもしれない。
+    //  ```
+    //  encoderRegistry->register(new StarBatchEncoder());
+    //  batchRenderer->drawInstruction(label: "Star", data: newFrameData<StarInstruction>(pos: ..., size: ...));
+    //  ```
+    //  従来だと Encoder(Feature) と Renderer のペアが必要だったが、不要になる。
+    // 
+    // NOTE: Effekseer など他のレンダリングライブラリを組み込むうえで問題はあるか？
+    //  Effekseer の場合は歪みを使う場合それ自体が RenderPass を複数使うように動くことがある（かも。未調査だけど、普通はそうしないとできないはず）
+    //  その場合は RenderPass の外側になるので、 CommandList に queueCustomRendering() みたなの作っておけばよいと思う。
+
     LN_FFI_TRY_BEGIN;
     //std::cout << "spriteRenderer: " << spriteRenderer_ << std::endl;
     //std::cout << "graphicsCommandList: " << graphicsCommandList_ << std::endl;
@@ -684,14 +722,14 @@ LNResult LNSpriteRenderer_BeginBatch(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer_) {
+LNResult LNBatchRenderer_EndBatch(LNHandle spriteRenderer_) {
     LN_FFI_TRY_BEGIN;
 	SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
 	spriteRenderer->end();
 	LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNSpriteRenderer_DrawSprite(
+LNResult LNBatchRenderer_DrawSprite(
     LNHandle spriteRenderer,
     const LNMatrix* localTransformOrNull,
     float width,

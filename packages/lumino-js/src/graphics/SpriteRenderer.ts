@@ -41,14 +41,14 @@ export class SpriteRenderer {
      * Creates a new SpriteRenderer.
      */
     private constructor() {
-        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNSpriteRenderer_Get(r));
+        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNBatchRenderer_Get(r));
     }
 
     /**
      * Begins a batch.
      */
     public beginBatch(graphicsCommandList: GraphicsCommandList, material: Material, transform: Matrix): void {
-        Runtime.safeCall(() => API.LNSpriteRenderer_BeginBatch(
+        Runtime.safeCall(() => API.LNBatchRenderer_BeginBatch(
             this._handle,
             graphicsCommandList.handle,
             material.handle,
@@ -59,7 +59,7 @@ export class SpriteRenderer {
      * Ends a batch.
      */
     public endBatch(): void {
-        Runtime.safeCall(() => API.LNSpriteRenderer_EndBatch(this._handle));
+        Runtime.safeCall(() => API.LNBatchRenderer_EndBatch(this._handle));
     }
 
     /**
@@ -73,7 +73,7 @@ export class SpriteRenderer {
         color: IColor,
         baseDirection: SpriteBaseDirection,
         billboardType: BillboardType): void {
-        Runtime.safeCall(() => API.LNSpriteRenderer_DrawSprite(
+        Runtime.safeCall(() => API.LNBatchRenderer_DrawSprite(
             this._handle,
             localTransform ? Runtime.setMatrix(localTransform.m) : 0,
             size.width, size.height,

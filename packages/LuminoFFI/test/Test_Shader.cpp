@@ -20,7 +20,7 @@ TEST_F(Test_Shader, Basic1) {
     ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNSpriteRenderer_Get(&spriteRenderer));
+    ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
 
     // Rendering loop.
     {
@@ -54,8 +54,8 @@ TEST_F(Test_Shader, Basic1) {
                 LNMatrix_SetIdentity(&transform);
                 transform.m41 = 10;
                 transform.m42 = 20;
-                LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
-                LNSpriteRenderer_DrawSprite(
+                LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+                LNBatchRenderer_DrawSprite(
                     spriteRenderer, NULL,
                     32, 32,
                     0, 0,
@@ -63,7 +63,7 @@ TEST_F(Test_Shader, Basic1) {
                     1, 1, 1, 1,
                     LN_SPRITE_BASE_DIRECTION_BASIC2D,
                     LN_BILLBOARD_TYPE_NONE);
-                LNSpriteRenderer_EndBatch(spriteRenderer);
+                LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));

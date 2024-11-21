@@ -133,7 +133,7 @@ int main() {
     }
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
-    if (LNSpriteRenderer_Get(&spriteRenderer) != LN_OK) {
+    if (LNBatchRenderer_Get(&spriteRenderer) != LN_OK) {
         return 1;
     }
 
@@ -191,27 +191,27 @@ int main() {
             LNMatrix_SetIdentity(&transform);
             for (int i = 0; i < 500; i++) {
                 transform.m41 = 10 + i;
-                LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
-                LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+                LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+                LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
                     200, 100,
                     0, 0,
                     0, 0, 1, 1,
                     0, 0, 1, 1,
                     LN_SPRITE_BASE_DIRECTION_BASIC2D,
                     LN_BILLBOARD_TYPE_NONE);
-                LNSpriteRenderer_EndBatch(spriteRenderer);
+                LNBatchRenderer_EndBatch(spriteRenderer);
             }
         
             transform.m41 = 400;
-            LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material2, &transform);
-            LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+            LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material2, &transform);
+            LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
                 300, 200,
                 0, 0,
                 0, 0, 1, 1,
                 1, 1, 1, 1,
                 LN_SPRITE_BASE_DIRECTION_BASIC2D,
                 LN_BILLBOARD_TYPE_NONE);
-            LNSpriteRenderer_EndBatch(spriteRenderer);
+            LNBatchRenderer_EndBatch(spriteRenderer);
 
             if (LNRenderPass_End(renderingPass) != LN_OK) {
                 return 1;
@@ -238,15 +238,15 @@ int main() {
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
             transform.m41 = 0;
-            LNSpriteRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
-            LNSpriteRenderer_DrawSprite(spriteRenderer, NULL,
+            LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+            LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
                 100, 100,
                 0, 0,
                 0, 0, 1, 1,
                 0, 0, 1, 1,
                 LN_SPRITE_BASE_DIRECTION_ZPLUS,
                 LN_BILLBOARD_TYPE_NONE);
-            LNSpriteRenderer_EndBatch(spriteRenderer);
+            LNBatchRenderer_EndBatch(spriteRenderer);
 
             if (LNRenderPass_End(renderingPass) != LN_OK) {
                 return 1;

@@ -114,6 +114,10 @@ public:
 };
 
 // インスタンスを SceneNode で保持する用。
+// 描画ごとに生成される SceneNode のようなもの。
+// FrustumCulling の単位。
+// Zソートの単位。
+// BatchProxy の内側は Z ソートの対象外。一般的なスプライト１つにつき１つ作られる。
 class BatchProxy : public URefObject {
 public:
     const BatchProxyState* state;

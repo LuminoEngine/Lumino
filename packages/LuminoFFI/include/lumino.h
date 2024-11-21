@@ -273,13 +273,13 @@ typedef enum LNBillboardType {
     LN_BILLBOARD_TYPE_MAX_ENUM = 0x7FFFFFFF,
 } LNBillboardType;
 
-extern LUMINO_API LNResult LNSpriteRenderer_Get(LNHandle* outSpriteRenderer);
-extern LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
+extern LUMINO_API LNResult LNBatchRenderer_Get(LNHandle* outSpriteRenderer);
+extern LUMINO_API LNResult LNBatchRenderer_BeginBatch(
     LNHandle spriteRenderer,
     LNHandle graphicsCommandList,
     LNHandle material,
     const LNMatrix* transform);
-extern LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer);
+extern LUMINO_API LNResult LNBatchRenderer_EndBatch(LNHandle spriteRenderer);
 
 /**
  * Draw a sprite.
@@ -287,7 +287,7 @@ extern LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer);
  * [r, g, b] is the vertex color, which is usually a multiplication color.
  * Specifying 0 will make the sprite black. Normally, specify 1.
  */
-extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(
+extern LUMINO_API LNResult LNBatchRenderer_DrawSprite(
     LNHandle spriteRenderer,
     const LNMatrix* localTransformOrNull,
     float width, float height, float anchorRatioX, float anchorRatioY,
