@@ -211,6 +211,7 @@ if(LUMINO_BUILD_ENGINE)
         include(external/ImportExternalLibraries.cmake)
         add_subdirectory(packages/LuminoEngine)
         add_subdirectory(packages/LuminoFFI)
+        add_subdirectory(packages/lumino-cli)
 
         if(LUMINO_BUILD_EXAMPLES)
             # add_subdirectory(examples)
