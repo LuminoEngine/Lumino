@@ -274,7 +274,21 @@ extern LUMINO_API LNResult LNSpriteRenderer_BeginBatch(
     LNHandle material,
     const LNMatrix* transform);
 extern LUMINO_API LNResult LNSpriteRenderer_EndBatch(LNHandle spriteRenderer);
-extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(LNHandle spriteRenderer, const LNMatrix* localTransformOrNull, float width, float height, float anchorRatioX, float anchorRatioY, float uvRectX, float uvRectY, float uvRectW, float uvRectH, float r, float g, float b, float a, LNSpriteBaseDirection baseDirection, LNBillboardType billboardType);
+
+/**
+ * Draw a sprite.
+ * 
+ * [r, g, b] is the vertex color, which is usually a multiplication color.
+ * Specifying 0 will make the sprite black. Normally, specify 1.
+ */
+extern LUMINO_API LNResult LNSpriteRenderer_DrawSprite(
+    LNHandle spriteRenderer,
+    const LNMatrix* localTransformOrNull,
+    float width, float height, float anchorRatioX, float anchorRatioY,
+    float uvRectX, float uvRectY, float uvRectW, float uvRectH,
+    float r, float g, float b, float a,
+    LNSpriteBaseDirection baseDirection,
+    LNBillboardType billboardType);
 
 //==============================================================================
 // LNSpriteTextRenderer

@@ -41,7 +41,7 @@ void TestEnv::present() {
 }
 
 ln::Path TestEnv::getTestDataPath(ln::Path localPath) {
-    return ln::Path(TEST_DATA_DIR, localPath);
+    return ln::Path(ASSETS_DIR, localPath);
 }
 
 bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save) {
