@@ -22,7 +22,6 @@ class SceneRenderPass;
 class ScreenRectangleRenderFeature;
 class PrimitiveMeshRenderer;
 class MeshRenderFeature;
-class SpriteRenderFeature;
 class ShapesRenderFeature;
 class SpriteTextRenderFeature;
 class FrameRectRenderFeature;

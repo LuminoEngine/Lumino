@@ -16,7 +16,6 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KScreenRectangleRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KMeshRenderFeature.hpp>
-#include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
@@ -385,7 +384,6 @@ bool RenderingManager::init(const Settings& settings) {
     m_screenRectangleRenderFeature->init();
     m_primitiveRenderer = makeURef<kanata::PrimitiveMeshRenderer>(this);
     m_meshRenderFeature = makeURef<kanata::MeshRenderFeature>(this);
-    m_spriteRenderFeature = makeURef<kanata::SpriteRenderFeature>(this);
     m_shapesRenderFeature = makeURef<kanata::ShapesRenderFeature>(this);
     m_spriteTextRenderFeature = makeURef<kanata::SpriteTextRenderFeature>(this);
     m_frameRectRenderFeature = makeURef<kanata::FrameRectRenderFeature>(this);

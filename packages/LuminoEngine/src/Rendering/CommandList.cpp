@@ -13,7 +13,6 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KScreenRectangleRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KMeshRenderFeature.hpp>
-#include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include "RenderElement.hpp"

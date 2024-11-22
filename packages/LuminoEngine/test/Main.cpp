@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 		char* testArgs[] = {
 			argv[0],
 			"--gtest_break_on_failure",
-			"--gtest_filter=Test_Base_Promise.*"
+			//"--gtest_filter=Test_Base_Promise.*"
 		};
 		argc = sizeof(testArgs) / sizeof(char*);
 		argv = testArgs;

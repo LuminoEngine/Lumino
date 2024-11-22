@@ -218,7 +218,6 @@ public:
     const URef<kanata::ScreenRectangleRenderFeature>& screenRectangleRenderFeature() const { return m_screenRectangleRenderFeature; }
     const URef<kanata::PrimitiveMeshRenderer>& primitiveRenderer() const { return m_primitiveRenderer; }
     const URef<kanata::MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
-    const URef<kanata::SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
     const URef<kanata::ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
     const URef<kanata::SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
     const URef<kanata::FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
@@ -270,7 +269,6 @@ private:
     名前どうしようか問題
     ----------
     候補:
-    SpriteRenderFeature
     SpriteRenderer
     SpriteDrawInterface
     SpriteMeshProcessor
@@ -289,7 +287,6 @@ private:
     URef<kanata::ScreenRectangleRenderFeature> m_screenRectangleRenderFeature;
     URef<kanata::PrimitiveMeshRenderer> m_primitiveRenderer;
     URef<kanata::MeshRenderFeature> m_meshRenderFeature;
-    URef<kanata::SpriteRenderFeature> m_spriteRenderFeature;
     URef<kanata::ShapesRenderFeature> m_shapesRenderFeature;
     URef<kanata::SpriteTextRenderFeature> m_spriteTextRenderFeature;
     URef<kanata::FrameRectRenderFeature> m_frameRectRenderFeature;

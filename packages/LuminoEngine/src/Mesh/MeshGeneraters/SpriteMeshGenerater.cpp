@@ -1,90 +1,12 @@
-﻿#include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
-#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
-#include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteRenderFeature.hpp>
+﻿#include <LuminoEngine/Mesh/detail/SpriteMeshGenerater.hpp>
 
 namespace ln {
-namespace kanata {
+namespace detail {
 
-SpriteRenderFeature::SpriteRenderFeature(detail::RenderingManager* manager)
-    : m_currentCollector(nullptr)
-    , m_material(nullptr)
-    , m_sprites() {
-}
-
-void SpriteRenderFeature::beginBatch(BatchCollector* collector, Material* material) {
-    LN_DCHECK(!m_currentCollector);
-    LN_DCHECK(collector);
-    LN_DCHECK(material);
-    m_currentCollector = collector;
-    m_material = material;
-    m_sprites.clear();
-}
-
-void SpriteRenderFeature::endBatch(BatchCollector* collector) {
-    LN_DCHECK(m_currentCollector);
-    LN_DCHECK(m_currentCollector == collector);
-    flush(m_sprites.data(), m_sprites.length());
-    m_currentCollector = nullptr;
-    m_material = nullptr;
-}
-
-void SpriteRenderFeature::flush(const SpriteData* sprites, int32_t spriteCount) {
-    int32_t vertexCount = spriteCount * 4;
-    int32_t indexCount = spriteCount * 6;
-    auto view = m_currentCollector->allocateMeshBuffer(vertexCount, indexCount);
-
-    // Write indices
-    {
-        auto* ib = view.indexData;
-        int32_t idx = 0;
-        int32_t i2 = 0;
-        for (int32_t i = 0; i < spriteCount; ++i) {
-            i2 = i * 6;
-            idx = i * 4;
-            ib[i2 + 0] = idx + 0;
-            ib[i2 + 1] = idx + 1;
-            ib[i2 + 2] = idx + 2;
-            ib[i2 + 3] = idx + 2;
-            ib[i2 + 4] = idx + 1;
-            ib[i2 + 5] = idx + 3;
-        }
-    }
-
-    // Write vertices
-    for (int32_t i = 0; i < spriteCount; ++i) {
-        putVertices(sprites[i], view.vertexData + (i * 4));
-    }
-
-    // Create batch
-    {
-        Batch* batch = m_currentCollector->newBatch<Batch>(1, m_material);
-        batch->elemets2[0].vertexBuffers[0] = view.vertexBuffer;
-        batch->elemets2[0].indexBuffer = view.indexBuffer;
-        batch->elemets2[0].firstIndex = view.firstIndex;
-        batch->elemets2[0].firstVertex = view.vertexOffset;
-        batch->elemets2[0].primitiveCount = indexCount / 3;
-        batch->vertexLayout = m_currentCollector->standardVertexDeclaration();
-        batch->primitiveTopology = PrimitiveTopology::TriangleList;
-    }
-}
-
-// srcRect は UV 座標系上の値を設定する。 (通常0～1)
-// 以前は 2D メインな Sprite なのでピクセル単位で指定していたが、
-// 考え方として他の RenderFeature と同様に「最終的な描画に使うメッシュを作る」方針で統一したい。
-void SpriteRenderFeature::drawSprite(const SpriteData& sprite) {
-    m_sprites.push(sprite);
-}
-
-void SpriteRenderFeature::drawSpritesDirect(BatchCollector* collector, Material* material, const SpriteData* sprite, int32_t count) {
-    beginBatch(collector, material);
-    flush(sprite, count);
-    m_currentCollector = nullptr;
-    m_material = nullptr;
-}
-
-void SpriteRenderFeature::putVertices(const SpriteData& sprite, Vertex* vertices) const {
+void SpriteMeshGenerater::onGenerate(MeshGeneraterBuffer* buf) {
     Vector2 center(sprite.size.x * sprite.anchorRatio.x, sprite.size.y * sprite.anchorRatio.y);
     Vector3 normal = Vector3::UnitZ;
+    Vertex vertices[4];
 
     // 3D の場合の頂点座標
     if (sprite.baseDirection != SpriteBaseDirection::Basic2D) {
@@ -210,6 +132,7 @@ void SpriteRenderFeature::putVertices(const SpriteData& sprite, Vertex* vertices
     }
     // 2D の場合の頂点座標
     else {
+        normal = Vector3(0, 0, -1);
 #ifdef LN_COORD_RH
         Vector2 origin(-center);
         vertices[0].setPosition(origin.x, origin.y, 0);
@@ -223,81 +146,84 @@ void SpriteRenderFeature::putVertices(const SpriteData& sprite, Vertex* vertices
         vertices[2].setPosition(origin.x, origin.y + size.y, 0);
         vertices[3].setPosition(origin.x + size.x, origin.y + size.y, 0);
 #endif
-        normal = Vector3(0, 0, -1);
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) {
         vertices[i].setNormal(normal);
-
-    const Vector3& worldPoint = sprite.transform.position();
-
-    Matrix actualTransform;
-    {
-        // ビルボード
-        if (sprite.billboardType == BillboardType::ToCameraPoint) {
-            Vector3 f = Vector3::normalize(m_currentCollector->viewPoint()->viewPosition - worldPoint);
-            Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
-            Vector3 u = Vector3::cross(f, r);
-            actualTransform = Matrix(
-                r.x, r.y, r.z, 0.0f, u.x, u.y, u.z, 0.0f, f.x, f.y, f.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-        }
-        else if (sprite.billboardType == BillboardType::ToScreen) {
-            // ↑がカメラ位置を基準にするのに対し、こちらはビュー平面に垂直に交差する点を基準とする。
-
-            // ビュー平面との距離
-            float d = Vector3::dot(worldPoint - m_currentCollector->viewPoint()->viewPosition, m_currentCollector->viewPoint()->viewDirection);
-
-            // left-hand coord
-            Vector3 f = Vector3::normalize(m_currentCollector->viewPoint()->viewDirection * d);
-            Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
-            Vector3 u = Vector3::cross(f, r);
-            actualTransform = Matrix(
-                r.x, r.y, r.z, 0.0f, u.x, u.y, u.z, 0.0f, f.x, f.y, f.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-        }
-        // ビルボード・Y 軸のみに適用
-        else if (sprite.billboardType == BillboardType::RotY) {
-            auto posDiff = Vector3(worldPoint - m_currentCollector->viewPoint()->viewPosition);
-            auto dir = m_currentCollector->viewPoint()->viewDirection;
-            posDiff.y = 0.0f;
-            dir.y = 0.0f;
-
-            // ビュー平面との距離
-            float d = Vector3::dot(posDiff, dir);
-
-            // left-hand coord
-            Vector3 f = Vector3::normalize(dir * d);
-            Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
-            Vector3 u = Vector3::cross(f, r);
-            actualTransform = Matrix(
-                r.x, r.y, r.z, 0.0f, u.x, u.y, u.z, 0.0f, f.x, f.y, f.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-            // LN_NOTIMPLEMENTED();
-
-            // if (m_viewDirection.x > 0.0f)
-            //{
-            //	actualTransform.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
-            // }
-            // else if (m_viewDirection.x == 0.0f)
-            //{
-            //	//D3DXMatrixIdentity(&matWorld); // 0除算を防ぐため
-            // }
-            // else
-            //{
-            //	actualTransform.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
-            // }
-        }
-        // ビルボードではない
-        else {
-            actualTransform = sprite.transform.getRotationMatrix();
-        }
-
-        actualTransform.translate(worldPoint);
     }
+
+    //const Vector3& worldPoint = sprite.transform.position();
+
+    //Matrix actualTransform;
+    //{
+    //    // ビルボード
+    //    if (sprite.billboardType == BillboardType::ToCameraPoint) {
+    //        Vector3 f = Vector3::normalize(m_currentCollector->viewPoint()->viewPosition - worldPoint);
+    //        Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+    //        Vector3 u = Vector3::cross(f, r);
+    //        actualTransform =
+    //            Matrix(r.x, r.y, r.z, 0.0f, u.x, u.y, u.z, 0.0f, f.x, f.y, f.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    //    }
+    //    else if (sprite.billboardType == BillboardType::ToScreen) {
+    //        // ↑がカメラ位置を基準にするのに対し、こちらはビュー平面に垂直に交差する点を基準とする。
+
+    //        // ビュー平面との距離
+    //        float d = Vector3::dot(
+    //            worldPoint - m_currentCollector->viewPoint()->viewPosition,
+    //            m_currentCollector->viewPoint()->viewDirection);
+
+    //        // left-hand coord
+    //        Vector3 f = Vector3::normalize(m_currentCollector->viewPoint()->viewDirection * d);
+    //        Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+    //        Vector3 u = Vector3::cross(f, r);
+    //        actualTransform =
+    //            Matrix(r.x, r.y, r.z, 0.0f, u.x, u.y, u.z, 0.0f, f.x, f.y, f.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    //    }
+    //    // ビルボード・Y 軸のみに適用
+    //    else if (sprite.billboardType == BillboardType::RotY) {
+    //        auto posDiff = Vector3(worldPoint - m_currentCollector->viewPoint()->viewPosition);
+    //        auto dir = m_currentCollector->viewPoint()->viewDirection;
+    //        posDiff.y = 0.0f;
+    //        dir.y = 0.0f;
+
+    //        // ビュー平面との距離
+    //        float d = Vector3::dot(posDiff, dir);
+
+    //        // left-hand coord
+    //        Vector3 f = Vector3::normalize(dir * d);
+    //        Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+    //        Vector3 u = Vector3::cross(f, r);
+    //        actualTransform =
+    //            Matrix(r.x, r.y, r.z, 0.0f, u.x, u.y, u.z, 0.0f, f.x, f.y, f.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    //        // LN_NOTIMPLEMENTED();
+
+    //        // if (m_viewDirection.x > 0.0f)
+    //        //{
+    //        //	actualTransform.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
+    //        // }
+    //        // else if (m_viewDirection.x == 0.0f)
+    //        //{
+    //        //	//D3DXMatrixIdentity(&matWorld); // 0除算を防ぐため
+    //        // }
+    //        // else
+    //        //{
+    //        //	actualTransform.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
+    //        // }
+    //    }
+    //    // ビルボードではない
+    //    else {
+    //        actualTransform = sprite.transform.getRotationMatrix();
+    //    }
+
+    //    actualTransform.translate(worldPoint);
+    //}
 
     // 座標変換
-    vertices[0].transformPosition(actualTransform);
-    vertices[1].transformPosition(actualTransform);
-    vertices[2].transformPosition(actualTransform);
-    vertices[3].transformPosition(actualTransform);
+    //const Matrix& transform = sprite.transform;
+    //vertices[0].transformPosition(transform);
+    //vertices[1].transformPosition(transform);
+    //vertices[2].transformPosition(transform);
+    //vertices[3].transformPosition(transform);
 
     // 色
     vertices[0].color = sprite.color;
@@ -339,8 +265,24 @@ void SpriteRenderFeature::putVertices(const SpriteData& sprite, Vertex* vertices
         vertices[3].uv.y = b;
 #endif
     }
+
+    buf->setV(0, vertices[0]);
+    buf->setV(1, vertices[1]);
+    buf->setV(2, vertices[2]);
+    buf->setV(3, vertices[3]);
+    buf->setI(0, 0);
+    buf->setI(1, 1);
+    buf->setI(2, 2);
+    buf->setI(3, 2);
+    buf->setI(4, 1);
+    buf->setI(5, 3);
 }
 
-} // namespace kanata
+void SpriteMeshGenerater::copyFrom(const SpriteMeshGenerater* other) {
+    MeshGenerater::copyFrom(other);
+    sprite = other->sprite;
+}
+
+} // namespace detail
 } // namespace ln
 

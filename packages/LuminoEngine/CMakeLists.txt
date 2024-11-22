@@ -80,7 +80,7 @@ file(GLOB LN_SOURCES_Font "include/LuminoEngine/Font/*.hpp" "include/LuminoEngin
 file(GLOB LN_SOURCES_GPU "include/LuminoEngine/GPU/*.hpp" "include/LuminoEngine/GPU/detail/*.hpp" "src/GPU/*.cpp" "src/GPU/*.hpp" "src/GPU/detail/*.cpp")
 file(GLOB LN_SOURCES_Mesh "include/LuminoEngine/Mesh/*.hpp" "src/Mesh/*.cpp" "src/Mesh/*.hpp")
 file(GLOB LN_SOURCES_Mesh_MeshImporters "include/LuminoEngine/Mesh/MeshGeneraters/*.hpp" "src/Mesh/MeshImporters/*.cpp" "src/Mesh/MeshImporters/*.hpp")
-file(GLOB LN_SOURCES_Mesh_MeshGeneraters "include/LuminoEngine/Mesh/MeshGeneraters/*.hpp" "src/Mesh/MeshGeneraters/*.cpp" "src/Mesh/MeshGeneraters/*.hpp")
+file(GLOB LN_SOURCES_Mesh_MeshGeneraters "include/LuminoEngine/Mesh/detail/*.hpp" "src/Mesh/MeshGeneraters/*.cpp" "src/Mesh/MeshGeneraters/*.hpp")
 file(GLOB LN_SOURCES_Rendering "include/LuminoEngine/Rendering/*.hpp" "include/LuminoEngine/Rendering/detail/*.hpp" "src/Rendering/*.cpp" "src/Rendering/*.hpp")
 file(GLOB LN_SOURCES_Rendering_RLIs "src/Rendering/RLIs/*.cpp" "src/Rendering/RLIs/*.hpp")
 file(GLOB LN_SOURCES_Rendering_RenderFeature "include/LuminoEngine/Rendering/RenderFeature/*.hpp" "src/Rendering/RenderFeature/*.cpp" "src/Rendering/RenderFeature/*.hpp")
