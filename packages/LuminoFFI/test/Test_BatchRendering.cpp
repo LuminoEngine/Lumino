@@ -1,19 +1,31 @@
 ﻿#include "TestEnv.hpp"
 
-class Test_Shader : public ::testing::Test {};
+class Test_BatchRendering : public ::testing::Test {};
 
-TEST_F(Test_Shader, Basic1) {
+// 測定環境:
+// - Processor: 11th Gen Intel(R) Core(TM) i9-11900 @ 2.50GHz (16 CPUs), ~2.5GHz
+// - Memory: 32768MB RAM
+// - Card name: NVIDIA GeForce RTX 3070
+// 測定方法:
+// A. 1回描画 (ドローコール 1)
+// B. Batch 使わないで 1000 回描画 (ドローコール 1000)
+// C. Batch 使って 1000 回描画 (ドローコール 1)
+// 結果:
+// A. 12.7[ms]
+// B. 13.9[ms]
+// C. 12.7[ms]
+// 考察:
+// 2024/11/21 時点ではそもそもの描画が重いが、1000回を1回にまとめることで描画速度が向上している。
+TEST_F(Test_BatchRendering, Basic1) {
     LNHandle graphicsContext = TestEnv::graphicsContext;
 
-    // Create Shader.
-    const auto code = TestEnv::compileShader(TestEnv::getTestDataPath(U"Test_Shader.Basic1/Test_Shader.Basic1.fx"));
-    LNHandle shader1 = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNShader_Create(code.data(), code.size(), &shader1));
-
-    // Create Material.
+    // Load texture and create material.
+    auto imageData = ln::FileSystem::readAllBytes(TestEnv::getTestDataPath(U"Rendering/Sprite.png")).unwrap();
+    LNHandle texture1 = LN_NULL_HANDLE;
     LNHandle material1 = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromImageFileData(imageData.data(), imageData.size(), &texture1));
     ASSERT_EQ(LN_OK, LNMaterial_Create(&material1));
-    ASSERT_EQ(LN_OK, LNMaterial_SetShader(material1, shader1));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
@@ -51,17 +63,23 @@ TEST_F(Test_Shader, Basic1) {
             {
                 LNMatrix transform;
                 LNMatrix_SetIdentity(&transform);
-                transform.m41 = 10;
-                transform.m42 = 20;
                 LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
-                LNBatchRenderer_DrawSprite(
-                    spriteRenderer, NULL,
-                    32, 32,
-                    0, 0,
-                    0, 0, 1, 1,
-                    1, 1, 1, 1,
-                    LN_SPRITE_BASE_DIRECTION_BASIC2D,
-                    LN_BILLBOARD_TYPE_NONE);
+
+                // 5回描いてみる。
+                for (int i = 0; i < 5; i++) {
+                    LNMatrix localTransform;
+                    LNMatrix_SetIdentity(&localTransform);
+                    transform.m41 = i * 32;
+                    LNBatchRenderer_DrawSprite(
+                        spriteRenderer,
+                        &transform,
+                        32, 32,
+                        0, 0,
+                        0, 0, 1, 1,
+                        1, 1, 1, 1,
+                        LN_SPRITE_BASE_DIRECTION_BASIC2D,
+                        LN_BILLBOARD_TYPE_NONE);
+                }
                 LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
@@ -70,11 +88,16 @@ TEST_F(Test_Shader, Basic1) {
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList));
         TestEnv::present();
+
+        // ドローコールは1回だけ。
+        LNGraphicsCommandListProfilerng profilerng;
+        ASSERT_EQ(LN_OK, LNGraphicsCommandList_GetProfilerng(renderingCommandList, &profilerng));
+        ASSERT_EQ(1, profilerng.drawCallCount);
     }
 
-    ASSERT_SCREENSHOT(U"Test_Shader.Basic1/Expects.png");
+    ASSERT_SCREENSHOT(U"Test_BatchRendering.Basic1/Expects.png");
 
     LNObject_Release(renderingCommandList);
     LNObject_Release(material1);
-    LNObject_Release(shader1);
+    LNObject_Release(texture1);
 }

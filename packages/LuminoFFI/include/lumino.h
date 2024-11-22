@@ -150,8 +150,12 @@ extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
 //extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
 
 //==============================================================================
-//
+// LNGraphicsCommandList
 //==============================================================================
+typedef struct LNGraphicsCommandListProfilerng {
+    int32_t drawCallCount;
+} LNGraphicsCommandListProfilerng;
+
 /**
 　* Creates a new GraphicsCommandList.
 　*/
@@ -161,6 +165,11 @@ extern LUMINO_API LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommand
 
 extern LUMINO_API LNResult LNGraphicsCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
 
+extern LUMINO_API LNResult LNGraphicsCommandList_GetProfilerng(LNHandle renderingCommandList,LNGraphicsCommandListProfilerng* outProfilerng);
+
+//==============================================================================
+//
+//==============================================================================
 // いわゆるカメラ情報
 extern LUMINO_API LNResult LNGraphicsViewPoint_Create(LNHandle* outGraphicsViewPoint);
 extern LUMINO_API LNResult LNGraphicsViewPoint_SetupPerspectiveOrthoLH(LNHandle graphicsViewPoint, float x, float y, float z, float lookAtX, float lookAtY, float lookAtZ, float width, float height, float nearZ, float farZ);

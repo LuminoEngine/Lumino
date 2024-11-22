@@ -248,6 +248,7 @@ extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle*
 extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    commandList->commandList->reset();
     commandList->commandList->beginCommandRecoding();
     LN_FFI_TRY_END_RETURN;
 }
@@ -304,6 +305,14 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
     LN_FFI_TRY_END_RETURN;
 }
 
+LNResult LNGraphicsCommandList_GetProfilerng(LNHandle renderingCommandList_, LNGraphicsCommandListProfilerng* outProfilerng) {
+    LN_FFI_TRY_BEGIN;
+    FFIRenderingCommandList* renderingContext = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    outProfilerng->drawCallCount = renderingContext->commandList->m_drawCall;
+    LN_FFI_TRY_END_RETURN;
+
+}
+
 LNResult LNGraphicsContext_SubmitCommandList(
     LNHandle graphicsContext_,
     LNHandle renderingCommandList_) {
@@ -318,6 +327,7 @@ LNResult LNGraphicsContext_SubmitCommandList(
 
     LN_FFI_TRY_END_RETURN;
 }
+
 //==============================================================================
 // LNRenderPass
 //==============================================================================
@@ -709,10 +719,14 @@ LNResult LNBatchRenderer_BeginBatch(
     //      それに対して新しい BatchRenderer は Command(BatchProxy) を追加するだけにする。
     //      Q. でもそうすると BeginBatch, EndBatch は必要なのか？
     //      → 目的は Z ソートの抑制となる。
-    //
+    // 
     // NOTE: Zソート抑制に傾倒して、通常使用時のオーバーヘッドが増えたりしないか？
     //      以前の SpriteRenderer は SpriteData の配列を Encoder に送っていたが、通常使用時は [0] しか使わない。
     //      なのでそんなに以前とはかわらないはず。
+    //
+    // NOTE: 名称について
+    //	    BeginBatch,EndBatch だとやっぱりちょっと混乱するかもしれない。
+    //      厳密には Batch ではなくて、Node とか Object とかの方が正しいか？
     //
 
     LN_FFI_TRY_BEGIN;

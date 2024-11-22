@@ -257,11 +257,11 @@ public:
         //}
 
         // 座標変換
-        const Matrix& transform = sprite.transform;
-        vertices[0].transformPosition(transform);
-        vertices[1].transformPosition(transform);
-        vertices[2].transformPosition(transform);
-        vertices[3].transformPosition(transform);
+        //const Matrix& transform = sprite.transform;
+        //vertices[0].transformPosition(transform);
+        //vertices[1].transformPosition(transform);
+        //vertices[2].transformPosition(transform);
+        //vertices[3].transformPosition(transform);
 
         // 色
         vertices[0].color = sprite.color;
@@ -376,6 +376,7 @@ void BatchRenderer::drawSprite(const SpriteData& sprite) {
     auto& collector = m_commandList->batchProxyCollector();
     detail::SpriteMeshGenerater* instruction = collector->newFrameRawData<detail::SpriteMeshGenerater>();
     instruction->type = detail::BatchInstructionType::StandardMesh;
+    instruction->setTransform(sprite.transform);
     instruction->sprite = sprite;
     instruction->next = nullptr;
     if (!m_currentProxy->first) {

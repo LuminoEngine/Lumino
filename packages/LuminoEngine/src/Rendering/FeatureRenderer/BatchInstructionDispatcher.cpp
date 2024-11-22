@@ -50,7 +50,7 @@ void BatchInstructionDispatcher::flush(
                 collector,
                 material,
                 static_cast<MeshGenerater*>(currentFirst),
-                static_cast<MeshGenerater*>(currentFirst));
+                static_cast<MeshGenerater*>(currentLast));
             break;
         }
         default:
@@ -91,8 +91,9 @@ void BatchInstructionDispatcher::dispatchStandardMesh(
             buffer.generate(current);
             vertexOffset += current->vertexCount();
             indexOffset += current->indexCount();
-            vertexOffset += current->vertexCount();
-            indexOffset += current->indexCount();
+            //vertexOffset += current->vertexCount();
+            //indexOffset += current->indexCount();
+            if (current == currentLast) break;
             current = static_cast<MeshGenerater*>(current->next);
         }
     }
