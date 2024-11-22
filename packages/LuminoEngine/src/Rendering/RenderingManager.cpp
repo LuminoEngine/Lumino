@@ -21,7 +21,8 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
-#include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionDispatcher.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
 
@@ -392,7 +393,8 @@ bool RenderingManager::init(const Settings& settings) {
     m_spriteTextRenderFeature = makeURef<kanata::SpriteTextRenderFeature>(this);
     m_frameRectRenderFeature = makeURef<kanata::FrameRectRenderFeature>(this);
 
-    m_spriteRenderer = Ref<SpriteRenderer>(LN_NEW SpriteRenderer(), false);
+    m_batchInstructionDispatcher = makeURef<BatchInstructionDispatcher>(this);
+    m_spriteRenderer = Ref<BatchRenderer>(LN_NEW BatchRenderer(), false);
     if (!m_spriteRenderer->init()) {
         return false;
     }

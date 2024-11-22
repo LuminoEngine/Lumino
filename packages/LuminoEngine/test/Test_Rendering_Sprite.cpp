@@ -1,4 +1,5 @@
 ﻿#include "TestEnv.hpp"
+#include <LuminoEngine/Rendering/CommandList.hpp>
 
 class Test_Rendering_Sprite : public ::testing::Test {
 public:
@@ -20,8 +21,8 @@ TEST_F(Test_Rendering_Sprite, Basic) {
 
     // 3D (SpriteBaseDirection::ZPlus) では anchor の原点が左下になる
     {
-        auto* spriteRenderer = SpriteRenderer::get();
-        spriteRenderer->begin(ctx, material1);
+        auto* spriteRenderer = BatchRenderer::get();
+        spriteRenderer->begin(ctx->commandList(), material1);
         spriteRenderer->drawSprite(Matrix::Identity, Size(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::White, SpriteBaseDirection::ZPlus, BillboardType::None, SpriteFlipFlags::None); 
         spriteRenderer->end();
     }

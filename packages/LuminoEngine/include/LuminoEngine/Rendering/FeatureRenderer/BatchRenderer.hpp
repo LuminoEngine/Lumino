@@ -1,16 +1,26 @@
 ﻿#pragma once
 #include "../Common.hpp"
 
+
 namespace ln {
+namespace detail {
+class InstructionBatchProxy;
+
+
+}
+
+//struct SpriteInstruction final : public BatchInstruction {
+//    SpriteData sprite;
+//};
+
+
 
 /**
- * SpriteRenderer
  */
-class SpriteRenderer : public Object {
+class BatchRenderer : public Object {
 public:
-    static SpriteRenderer* get();
+    static BatchRenderer* get();
 
-    void begin(RenderingContext* renderingContext, Material* material);
     void begin(CommandList* commandList, Material* material);
     void end();
 
@@ -26,7 +36,7 @@ public:
         const Flags<SpriteFlipFlags>& flipFlags);
 
 private:
-    SpriteRenderer();
+    BatchRenderer();
     Result<> init();
     void flush();
 
@@ -35,6 +45,7 @@ private:
     CommandList* m_commandList;
     Material* m_material;
     std::vector<SpriteData> m_entries;
+    detail::InstructionBatchProxy* m_currentProxy;
 
     friend class detail::RenderingManager;
 };

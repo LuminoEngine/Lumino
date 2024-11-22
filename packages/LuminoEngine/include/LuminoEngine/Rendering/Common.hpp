@@ -29,7 +29,7 @@ class InstancedMeshList;
 class CommandList;
 class CanvasContext;
 
-class SpriteRenderer;
+class BatchRenderer;
 class PrimitiveMeshRenderer;
 class SpriteTextRenderer;
 
@@ -302,6 +302,7 @@ class CommandListServer;
 class RLIMaterial;
 class RLIBatchState;
 class FormattedText;
+class BatchInstructionDispatcher;
 
 enum class RenderDrawElementTypeFlags : uint8_t {
     None = 0,
@@ -579,6 +580,24 @@ struct ShaderTechniqueRequestClasses {
     kokage::ShaderTechniqueClass_DrawMode drawMode;
     kokage::ShaderTechniqueClass_Normal normal;
     kokage::ShaderTechniqueClass_Roughness roughness;
+};
+
+
+enum class BatchInstructionType {
+    None, // 処理用
+    StandardMesh,
+    DynamicMaterial, // SpriteText など、内部で Material や Texture が変わるもの
+    UserCall, // TODO:
+};
+
+struct BatchInstruction {
+    BatchInstructionType type;
+    BatchInstruction* next;
+};
+
+struct UserCallInstruction final : public BatchInstruction {
+    const char* key;
+    const void* data;
 };
 
 } // namespace detail

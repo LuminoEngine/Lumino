@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Common.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
+#include <LuminoEngine/Rendering/Common.hpp>
 
 namespace ln {
 namespace detail {
@@ -42,8 +43,7 @@ public:
     }
 
 // 描画コマンドのバッファに詰め込まれるのであまり大きいデータは持たせないように。
-class MeshGenerater
-{
+class MeshGenerater : public BatchInstruction {
 public:
     MeshGenerater();
     virtual ~MeshGenerater();

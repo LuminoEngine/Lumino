@@ -61,6 +61,7 @@ public:
     void dispose();
     void clear(const RenderViewPoint* viewPoint);
 
+    detail::RenderingManager* manager() const { return m_manager; }
     VertexLayout* standardVertexDeclaration() const;
     detail::LinearAllocator* dataAllocator() const { return m_dataAllocator; }
     const Array<Batch*>& batches() const { return m_batchList; }

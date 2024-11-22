@@ -224,8 +224,9 @@ public:
     const URef<kanata::ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
     const URef<kanata::SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
     const URef<kanata::FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
-    
-    const Ref<SpriteRenderer>& spriteRenderer() const { return m_spriteRenderer; }
+
+    const URef<BatchInstructionDispatcher>& batchInstructionDispatcher() const { return m_batchInstructionDispatcher; }
+    const Ref<BatchRenderer>& spriteRenderer() const { return m_spriteRenderer; }
     const Ref<PrimitiveMeshRenderer>& primitiveMeshRenderer() const { return m_primitiveMeshRenderer; }
     const Ref<SpriteTextRenderer>& spriteTextRenderer() const { return m_spriteTextRenderer; }
 
@@ -296,7 +297,8 @@ private:
     URef<kanata::SpriteTextRenderFeature> m_spriteTextRenderFeature;
     URef<kanata::FrameRectRenderFeature> m_frameRectRenderFeature;
 
-    Ref<SpriteRenderer> m_spriteRenderer;
+    URef<BatchInstructionDispatcher> m_batchInstructionDispatcher;
+    Ref<BatchRenderer> m_spriteRenderer;
     Ref<PrimitiveMeshRenderer> m_primitiveMeshRenderer;
     Ref<SpriteTextRenderer> m_spriteTextRenderer;
 

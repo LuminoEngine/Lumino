@@ -29,7 +29,7 @@
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
-#include <LuminoEngine/Rendering/FeatureRenderer/SpriteRenderer.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 
@@ -654,7 +654,7 @@ LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) 
 LNResult LNBatchRenderer_Get(LNHandle* outSpriteRenderer) {
     LN_FFI_TRY_BEGIN;
 	detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
-    SpriteRenderer* spriteRenderer = renderingManager->spriteRenderer();
+    BatchRenderer* spriteRenderer = renderingManager->spriteRenderer();
         *outSpriteRenderer = ::Runtime::wrapObject(spriteRenderer, false);
 	LN_FFI_TRY_END_RETURN;
 }
@@ -665,42 +665,55 @@ LNResult LNBatchRenderer_BeginBatch(
     LNHandle material_,
     const LNMatrix* transform_) {
     // NOTE: なぜ BeginBatch, EndBatch を用意しているのか？
-    //  Zソートを行う以上、現実的には BeginBatch～EndBatch の間までに、ひとつの Sprite しか描画するべきではない。
-    //  それなのになぜ？
-    //  ※注意点(覚書): 複数の BatchProxy をひとつのドローコールにマージするかどうかは Encoder の仕事なので、ここで考えることではない
+    //      Zソートを行う以上、現実的には BeginBatch～EndBatch の間までに、ひとつの Sprite しか描画するべきではない。
+    //      それなのになぜ？
+    //      ※注意点(覚書): 複数の BatchProxy をひとつのドローコールにマージするかどうかは Encoder の仕事なので、ここで考えることではない
     //
-    //  BeginBatch, EndBatch を提供することで可能となるのは、複数の Sprite や Mesh をひとつの BatchProxy にできること。
-    //  提供しない場合、自動的に Batch をマージすることは一切できない。これはZソートができなくなる方が問題が大きいから。
-    //  → マージできるようなフラグを与えても良いが、それなら BeginBatch, EndBatch でも同じだしこちらの方が（冗長ではあるけどその分）わかりやすい。
-    //  これが役に立つのは、カリング、Zソートなどをせずに、プログラマの意図でまとめて大量のメッシュを描きたいとき。
-    //  例えば、
-    //  - 木や小石などの不透明な背景オブジェクト（主に3D）
-    //  - ユーザープログラム側でソート済みの大量のパーティクル
-    //  直近で使う機能ではないが、かといって無いのは今後困ることがあるかもしれない。
+    //      BeginBatch, EndBatch を提供することで可能となるのは、複数の Sprite や Mesh をひとつの BatchProxy にできること。
+    //      提供しない場合、自動的に Batch をマージすることは一切できない。これはZソートができなくなる方が問題が大きいから。
+    //      → マージできるようなフラグを与えても良いが、それなら BeginBatch, EndBatch でも同じだしこちらの方が（冗長ではあるけどその分）わかりやすい。
+    //      これが役に立つのは、カリング、Zソートなどをせずに、プログラマの意図でまとめて大量のメッシュを描きたいとき。
+    //      例えば、
+    //      - 木や小石などの不透明な背景オブジェクト（主に3D）
+    //      - ユーザープログラム側でソート済みの大量のパーティクル
+    //      直近で使う機能ではないが、かといって無いのは今後困ることがあるかもしれない。
     //
     // NOTE: [2024/11/21] なぜ SpriteRenderer を BatchRenderer としたのか？
-    //  従来の PrimitiveMeshRenderer や FrameRectRenderer もそうだけど、これらの役割は要するに BatchProxy を作ること。
-    //  現時点ではまだ BatchMaterial が Material と 1:1 でテクスチャを扱うようになっているからダメだけど、
-    //  それができれば SpriteTextRenderer, VectorTextRenderer も同じようにできる。
+    //      従来の PrimitiveMeshRenderer や FrameRectRenderer もそうだけど、これらの役割は要するに BatchProxy を作ること。
+    //      現時点ではまだ BatchMaterial が Material と 1:1 でテクスチャを扱うようになっているからダメだけど、
+    //      それができれば SpriteTextRenderer, VectorTextRenderer も同じようにできる。
     // 
-    //  今の PrimitiveMeshRenderer がそんな感じだけど、
-    //  同じクラスの BatchProxy を使っていて、メッシュの生成は MeshGenerater に任せている。
+    //      今の PrimitiveMeshRenderer がそんな感じだけど、
+    //      同じクラスの BatchProxy を使っていて、メッシュの生成は MeshGenerater に任せている。
     // 
-    //  ただ、 TextRenderer の仕組みは MeshGenerater ではカバーできない。
-    //  BatchRenderer に全部統一するなら、 SpriteEncoder や TextSpriteEncoder に仕事を振る人が必要。
-    //  BatchEncoderDispatcher とかにしようか。
+    //      ただ、 TextRenderer の仕組みは MeshGenerater ではカバーできない。
+    //      BatchRenderer に全部統一するなら、 SpriteEncoder や TextSpriteEncoder に仕事を振る人が必要。
+    //      BatchEncoderDispatcher とかにしようか。
     // 
     // NOTE: とはいえ、ここまでやる必要があるのか？
-    //  汎用性の麺でもメリットはある。例えば☆を描くのに、次のようにできるかもしれない。
-    //  ```
-    //  encoderRegistry->register(new StarBatchEncoder());
-    //  batchRenderer->drawInstruction(label: "Star", data: newFrameData<StarInstruction>(pos: ..., size: ...));
-    //  ```
-    //  従来だと Encoder(Feature) と Renderer のペアが必要だったが、不要になる。
+    //      汎用性の麺でもメリットはある。例えば☆を描くのに、次のようにできるかもしれない。
+    //      ```
+    //      encoderRegistry->register(new StarBatchEncoder());
+    //      batchRenderer->drawInstruction(label: "Star", data: newFrameData<StarInstruction>(pos: ..., size: ...));
+    //      ```
+    //      従来だと Encoder(Feature) と Renderer のペアが必要だったが、不要になる。
     // 
     // NOTE: Effekseer など他のレンダリングライブラリを組み込むうえで問題はあるか？
-    //  Effekseer の場合は歪みを使う場合それ自体が RenderPass を複数使うように動くことがある（かも。未調査だけど、普通はそうしないとできないはず）
-    //  その場合は RenderPass の外側になるので、 CommandList に queueCustomRendering() みたなの作っておけばよいと思う。
+    //      Effekseer の場合は歪みを使う場合それ自体が RenderPass を複数使うように動くことがある（かも。未調査だけど、普通はそうしないとできないはず）
+    //      その場合は RenderPass の外側になるので、 CommandList に queueCustomRendering() みたなの作っておけばよいと思う。
+    //
+    // NOTE: 旧 RenderingContext(CommandList) との違いは？
+    //      RenderingContext 自体が Command のマージを行うかどうか。
+    //      RenderingContext はステートを確認しマージしていたため、個々の Command の詳細を理解しなければならず、複雑化していた。
+    //      また、何か機能を追加するたびにここに変更を入れなければならず、状態遷移の条件が増えることになるためメンテコストも大きかった。
+    //      それに対して新しい BatchRenderer は Command(BatchProxy) を追加するだけにする。
+    //      Q. でもそうすると BeginBatch, EndBatch は必要なのか？
+    //      → 目的は Z ソートの抑制となる。
+    //
+    // NOTE: Zソート抑制に傾倒して、通常使用時のオーバーヘッドが増えたりしないか？
+    //      以前の SpriteRenderer は SpriteData の配列を Encoder に送っていたが、通常使用時は [0] しか使わない。
+    //      なのでそんなに以前とはかわらないはず。
+    //
 
     LN_FFI_TRY_BEGIN;
     //std::cout << "spriteRenderer: " << spriteRenderer_ << std::endl;
@@ -713,7 +726,7 @@ LNResult LNBatchRenderer_BeginBatch(
     //std::cout << "  transform m42: " << transform_->m42 << std::endl;
     //std::cout << "  transform m43: " << transform_->m43 << std::endl;
     //std::cout << "  transform m44: " << transform_->m44 << std::endl;
-    SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
+    BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
     FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
@@ -724,7 +737,7 @@ LNResult LNBatchRenderer_BeginBatch(
 
 LNResult LNBatchRenderer_EndBatch(LNHandle spriteRenderer_) {
     LN_FFI_TRY_BEGIN;
-	SpriteRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer_);
+	BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
 	spriteRenderer->end();
 	LN_FFI_TRY_END_RETURN;
 }
@@ -755,7 +768,7 @@ LNResult LNBatchRenderer_DrawSprite(
 
     LN_FFI_TRY_BEGIN;
     const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
-    SpriteRenderer* renderer = LN_HANDLE_TO_OBJECT(SpriteRenderer, spriteRenderer);
+    BatchRenderer* renderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer);
     renderer->drawSprite(
         (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
         Size(width, height),
