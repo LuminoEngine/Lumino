@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Drawing.hpp>

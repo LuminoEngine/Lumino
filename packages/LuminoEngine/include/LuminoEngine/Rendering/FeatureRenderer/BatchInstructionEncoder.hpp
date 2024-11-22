@@ -3,11 +3,15 @@
 
 namespace ln {
 namespace detail {
-//class SpriteBatchEncoder;
 
-class BatchInstructionDispatcher : public URefObject {
+/**
+ * BatchInstruction のリストを受け取り、それを実際の描画コマンドに変換します。
+ * 必要に応じて、ドローコールが少なくなるように頂点バッファをマージします。
+ */
+class BatchInstructionEncoder : public URefObject {
 public:
-    BatchInstructionDispatcher(RenderingManager* manager);
+    BatchInstructionEncoder(RenderingManager* manager);
+
     void dispatchList(
         kanata::BatchCollector* collector,
         Material* material,
@@ -26,20 +30,7 @@ private:
         MeshGenerater* typeLast);
 
     RenderingManager* m_manager;
-    //URef<SpriteBatchEncoder> m_spriteBatchEncoder;
-    //BatchInstructionType m_currentType;
-    //BatchInstruction* m_currentFirst;
 };
-
-//class SpriteBatchEncoder : public URefObject {
-//public:
-//    SpriteBatchEncoder(BatchInstructionDispatcher* dispatcher);
-//    void addInstruction(kanata::BatchCollector* collector, const SpriteInstruction* instruction);
-//    void flush(kanata::BatchCollector* collector);
-//
-//private:
-//    BatchInstructionDispatcher* m_dispatcher;
-//};
 
 } // namespace detail
 } // namespace ln

@@ -6,6 +6,7 @@ class Test_BatchRendering : public ::testing::Test {};
 // - Processor: 11th Gen Intel(R) Core(TM) i9-11900 @ 2.50GHz (16 CPUs), ~2.5GHz
 // - Memory: 32768MB RAM
 // - Card name: NVIDIA GeForce RTX 3070
+// - OpenGL
 // 測定方法:
 // A. 1回描画 (ドローコール 1)
 // B. Batch 使わないで 1000 回描画 (ドローコール 1000)

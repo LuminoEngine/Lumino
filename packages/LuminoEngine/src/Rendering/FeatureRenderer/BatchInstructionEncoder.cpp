@@ -1,18 +1,17 @@
 ﻿#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
-#include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionDispatcher.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionEncoder.hpp>
 #include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 
 namespace ln {
 namespace detail {
 
-BatchInstructionDispatcher::BatchInstructionDispatcher(RenderingManager* manager)
+BatchInstructionEncoder::BatchInstructionEncoder(RenderingManager* manager)
     : m_manager(manager)
-    //, m_spriteBatchEncoder(makeURef<SpriteBatchEncoder>(this))
 {
 }
 
-void BatchInstructionDispatcher::dispatchList(
+void BatchInstructionEncoder::dispatchList(
     kanata::BatchCollector* collector,
     Material* material,
     BatchInstruction* first) {
@@ -39,7 +38,7 @@ void BatchInstructionDispatcher::dispatchList(
     }
 }
 
-void BatchInstructionDispatcher::flush(
+void BatchInstructionEncoder::flush(
     kanata::BatchCollector* collector,
     Material* material,
     BatchInstruction* currentFirst,
@@ -58,7 +57,7 @@ void BatchInstructionDispatcher::flush(
     }
 }
 
-void BatchInstructionDispatcher::dispatchStandardMesh(
+void BatchInstructionEncoder::dispatchStandardMesh(
     kanata::BatchCollector* collector,
     Material* material,
     MeshGenerater* currentFirst,
@@ -91,8 +90,6 @@ void BatchInstructionDispatcher::dispatchStandardMesh(
             buffer.generate(current);
             vertexOffset += current->vertexCount();
             indexOffset += current->indexCount();
-            //vertexOffset += current->vertexCount();
-            //indexOffset += current->indexCount();
             if (current == currentLast) break;
             current = static_cast<MeshGenerater*>(current->next);
         }
@@ -108,19 +105,6 @@ void BatchInstructionDispatcher::dispatchStandardMesh(
     batch->vertexLayout = collector->standardVertexDeclaration();
     batch->primitiveTopology = PrimitiveTopology::TriangleList;
 }
-
-
-//SpriteBatchEncoder::SpriteBatchEncoder(BatchInstructionDispatcher* dispatcher)
-//    : m_dispatcher(dispatcher) {
-//}
-//
-//void SpriteBatchEncoder::addInstruction(kanata::BatchCollector* collector, const SpriteInstruction* instruction) {
-//    auto view = collector->allocateMeshBuffer(vertexCount, indexCount);
-//}
-//
-//void SpriteBatchEncoder::flush(kanata::BatchCollector* collector) {
-//
-//}
 
 } // namespace detail
 } // namespace ln

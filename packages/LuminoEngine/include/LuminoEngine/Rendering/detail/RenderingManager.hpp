@@ -14,7 +14,6 @@ class LinearAllocatorPageManager;
 class DrawElementListBuilder;
 class ClearRenderFeature;
 class BlitRenderFeature;
-class SpriteRenderFeature2;
 class MeshRenderFeature;
 class MeshGeneraterRenderFeature;
 class PrimitiveRenderFeature;
@@ -203,7 +202,6 @@ public:
 
     //const Ref<ClearRenderFeature>& clearRenderFeature() const { return m_clearRenderFeature; }
     //const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
-    //const Ref<SpriteRenderFeature2>& spriteRenderFeature2() const { return m_spriteRenderFeature2; }
     //const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
     //const Ref<MeshGeneraterRenderFeature>& meshGeneraterRenderFeature() const { return m_meshGeneraterRenderFeature; }
     //const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
@@ -225,7 +223,7 @@ public:
     const URef<kanata::SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
     const URef<kanata::FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
 
-    const URef<BatchInstructionDispatcher>& batchInstructionDispatcher() const { return m_batchInstructionDispatcher; }
+    const URef<BatchInstructionEncoder>& batchInstructionDispatcher() const { return m_batchInstructionDispatcher; }
     const Ref<BatchRenderer>& spriteRenderer() const { return m_spriteRenderer; }
     const Ref<PrimitiveMeshRenderer>& primitiveMeshRenderer() const { return m_primitiveMeshRenderer; }
     const Ref<SpriteTextRenderer>& spriteTextRenderer() const { return m_spriteTextRenderer; }
@@ -254,7 +252,6 @@ private:
     // Ref<DrawElementListBuilder> m_renderStageListBuilder;
 //    Ref<ClearRenderFeature> m_clearRenderFeature;
 //    Ref<BlitRenderFeature> m_blitRenderFeature;
-//    Ref<SpriteRenderFeature2> m_spriteRenderFeature2;
 //    Ref<MeshRenderFeature> m_meshRenderFeature;
 //    Ref<MeshGeneraterRenderFeature> m_meshGeneraterRenderFeature;
 //    Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
@@ -297,7 +294,7 @@ private:
     URef<kanata::SpriteTextRenderFeature> m_spriteTextRenderFeature;
     URef<kanata::FrameRectRenderFeature> m_frameRectRenderFeature;
 
-    URef<BatchInstructionDispatcher> m_batchInstructionDispatcher;
+    URef<BatchInstructionEncoder> m_batchInstructionDispatcher;
     Ref<BatchRenderer> m_spriteRenderer;
     Ref<PrimitiveMeshRenderer> m_primitiveMeshRenderer;
     Ref<SpriteTextRenderer> m_spriteTextRenderer;

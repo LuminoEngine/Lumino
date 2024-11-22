@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteRenderFeature.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
-#include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionDispatcher.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionEncoder.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
@@ -28,7 +28,7 @@ public:
     BatchInstruction* first;
     BatchInstruction* last;
     void getBatch(kanata::BatchCollector* collector) override {
-        BatchInstructionDispatcher* dispatcher = collector->manager()->batchInstructionDispatcher();
+        BatchInstructionEncoder* dispatcher = collector->manager()->batchInstructionDispatcher();
         dispatcher->dispatchList(collector, material, first);
     }
 };

@@ -302,7 +302,7 @@ class CommandListServer;
 class RLIMaterial;
 class RLIBatchState;
 class FormattedText;
-class BatchInstructionDispatcher;
+class BatchInstructionEncoder;
 
 enum class RenderDrawElementTypeFlags : uint8_t {
     None = 0,

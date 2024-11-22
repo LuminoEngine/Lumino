@@ -7,7 +7,6 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"
-#include "RenderFeature/SpriteRenderFeature.hpp"
 #include "RenderFeature/MeshRenderFeature.hpp"
 #include "RenderFeature/PathRenderFeature.hpp"
 #include "RenderFeature/ExtensionRenderFeature.hpp"
@@ -21,7 +20,7 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KShapesRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KFrameRectRenderFeature.hpp>
-#include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionDispatcher.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionEncoder.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
@@ -353,8 +352,6 @@ bool RenderingManager::init(const Settings& settings) {
 //    m_blitRenderFeature = makeObject_deprecated<BlitRenderFeature>(this);
 //    m_renderFeatures.add(m_blitRenderFeature);
 //
-//    m_spriteRenderFeature2 = makeObject_deprecated<SpriteRenderFeature2>(this);
-//    m_renderFeatures.add(m_spriteRenderFeature2);
 //
 //    m_meshRenderFeature = makeObject_deprecated<MeshRenderFeature>(this);
 //    m_renderFeatures.add(m_meshRenderFeature);
@@ -393,7 +390,7 @@ bool RenderingManager::init(const Settings& settings) {
     m_spriteTextRenderFeature = makeURef<kanata::SpriteTextRenderFeature>(this);
     m_frameRectRenderFeature = makeURef<kanata::FrameRectRenderFeature>(this);
 
-    m_batchInstructionDispatcher = makeURef<BatchInstructionDispatcher>(this);
+    m_batchInstructionDispatcher = makeURef<BatchInstructionEncoder>(this);
     m_spriteRenderer = Ref<BatchRenderer>(LN_NEW BatchRenderer(), false);
     if (!m_spriteRenderer->init()) {
         return false;
