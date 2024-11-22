@@ -67,8 +67,8 @@ void BatchCollector::addBatch(Batch* batch) {
 }
 
 MeshBufferView BatchCollector::allocateMeshBuffer(int32_t vertexCount, int32_t indexCount) {
-    const auto view1 = m_vertexBufferAllocator->allocate(vertexCount);
-    const auto view2 = m_indexBufferAllocator->allocate(indexCount);
+    const detail::StreamingBufferAllocator::View view1 = m_vertexBufferAllocator->allocate(vertexCount);
+    const detail::StreamingBufferAllocator::View view2 = m_indexBufferAllocator->allocate(indexCount);
     if (view1.elementCount != vertexCount) {
         LN_NOTIMPLEMENTED();    // TODO: 本来は呼び出し側で気を付けるべき
     }
@@ -86,6 +86,11 @@ MeshBufferView BatchCollector::allocateMeshBuffer(int32_t vertexCount, int32_t i
     view.vertexCount = view1.elementCount;
     view.indexCount = view2.elementCount;
     return view;
+}
+
+void BatchCollector::forceNextPageMeshBuffer() {
+    m_vertexBufferAllocator->forceNextPage();
+    m_indexBufferAllocator->forceNextPage();
 }
 
 void BatchCollector::addFrameData(IBatchFrameData* data) {

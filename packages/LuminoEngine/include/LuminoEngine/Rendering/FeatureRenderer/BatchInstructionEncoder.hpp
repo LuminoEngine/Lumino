@@ -26,8 +26,13 @@ private:
     void dispatchStandardMesh(
         kanata::BatchCollector* collector,
         Material* material,
-        MeshGenerater* typeFirst,
-        MeshGenerater* typeLast);
+        MeshGenerater* first,
+        MeshGenerater* last);
+    void dispatchStandardMeshCore(
+        kanata::BatchCollector* collector,
+        Material* material,
+        MeshGenerater* first,
+        MeshGenerater* last);
 
     RenderingManager* m_manager;
 };

@@ -126,5 +126,21 @@ StreamingBufferAllocator::View StreamingBufferAllocator::allocate(size_t element
     return view;
 }
 
+void StreamingBufferAllocator::forceNextPage() {
+    if (m_currentPage) {
+        m_retiredPages.push(m_currentPage);
+        m_currentPage = nullptr;
+    }
+    if (!m_currentPage) {
+        m_currentPage = m_manager->requestPage();
+        m_usedCount = 0;
+    }
+}
+
+int32_t StreamingBufferAllocator::getRemainingElementCount() const {
+    size_t elementCount = m_manager->pageElementCount();
+    return elementCount - m_usedCount;
+}
+
 } // namespace detail
 } // namespace ln

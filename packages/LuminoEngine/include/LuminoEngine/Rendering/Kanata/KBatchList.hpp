@@ -114,6 +114,14 @@ public:
 
     MeshBufferView allocateMeshBuffer(int32_t vertexCount, int32_t indexCount);
 
+    void forceNextPageMeshBuffer();
+
+    /** allocateMeshBuffer() で使用する現在のページで使用できる残りの頂点数を取得します。 */
+    int32_t getRemainingVertexCount() const { return m_vertexBufferAllocator->getRemainingElementCount(); }
+
+    /** allocateMeshBuffer() で使用する現在のページで使用できる残りのインデックス数を取得します。 */
+    int32_t getRemainingIndexCount() const { return m_indexBufferAllocator->getRemainingElementCount(); }
+
 private:
     void addFrameData(IBatchFrameData* data);
     void resolveBatchMaterial(Batch* batch, Material* material);

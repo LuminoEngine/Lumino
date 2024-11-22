@@ -54,6 +54,13 @@ public:
     // 返されたバッファのサイズが足りないときは、呼び出し側で繰り返し allocate() を呼ぶ必要がある。
 	View allocate(size_t elementCount);
 
+    void forceNextPage();
+
+    /**
+     * 現在のページで使用できる残りの要素数を取得します。
+     */
+    int32_t getRemainingElementCount() const;
+
 private:
     StreamingBufferAllocatorManager* m_manager;
     size_t m_usedCount;

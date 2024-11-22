@@ -60,19 +60,52 @@ void BatchInstructionEncoder::flush(
 void BatchInstructionEncoder::dispatchStandardMesh(
     kanata::BatchCollector* collector,
     Material* material,
-    MeshGenerater* currentFirst,
-    MeshGenerater* currentLast) {
+    MeshGenerater* first,
+    MeshGenerater* last)
+{
+    int32_t vertexCount = 0;
+    int32_t indexCount = 0;
+    MeshGenerater* rangeFirst = first;
+    MeshGenerater* rangeLast = first;
+    MeshGenerater* current = first;
+    while (current) {
+        int32_t v = current->vertexCount();
+        int32_t i = current->indexCount();
+        if ((vertexCount + v) > collector->getRemainingVertexCount() ||
+            (indexCount + i) > collector->getRemainingIndexCount()) {
+            dispatchStandardMeshCore(collector, material, rangeFirst, rangeLast);
+            collector->forceNextPageMeshBuffer();
+            rangeFirst = current;
+            vertexCount = 0;
+            indexCount = 0;
+        }
+        vertexCount += v;
+        indexCount += i;
+        rangeLast = current;
+        if (current == last) break;
+        current = static_cast<MeshGenerater*>(current->next);
+    }
+    if (rangeFirst != nullptr && rangeLast != nullptr) {
+        dispatchStandardMeshCore(collector, material, rangeFirst, rangeLast);
+    }
+}
+
+void BatchInstructionEncoder::dispatchStandardMeshCore(
+    kanata::BatchCollector* collector,
+    Material* material,
+    MeshGenerater* first,
+    MeshGenerater* last) {
 
     // Prepare buffers.
     int32_t vertexCount = 0;
     int32_t indexCount = 0;
     {
-        MeshGenerater* current = currentFirst;
+        MeshGenerater* current = first;
         while (current) {
             assert(current->primitiveType() == PrimitiveTopology::TriangleList); // TODO: 今のところこれだけ対応
             vertexCount += current->vertexCount();
             indexCount += current->indexCount();
-            if (current == currentLast) break;
+            if (current == last) break;
             current = static_cast<MeshGenerater*>(current->next);
         }
     }
@@ -83,14 +116,14 @@ void BatchInstructionEncoder::dispatchStandardMesh(
         detail::MeshGeneraterBuffer buffer(collector->dataAllocator());
         int32_t vertexOffset = 0;
         int32_t indexOffset = 0;
-        MeshGenerater* current = currentFirst;
+        MeshGenerater* current = first;
         while (current) {
             buffer.setBuffer(
                 view.vertexData + vertexOffset, view.indexData + indexOffset, IndexBufferFormat::UInt32, vertexOffset);
             buffer.generate(current);
             vertexOffset += current->vertexCount();
             indexOffset += current->indexCount();
-            if (current == currentLast) break;
+            if (current == last) break;
             current = static_cast<MeshGenerater*>(current->next);
         }
     }
