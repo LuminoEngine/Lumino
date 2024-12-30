@@ -69,7 +69,7 @@ MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
     registerModuleTypes_Runtime(RuntimeContext::current());
 
     
-    m_runtimeManager = makeRef<detail::RuntimeManager>();
+    m_runtimeManager = makeURef<detail::RuntimeManager>();
     m_runtimeManager->init(detail::RuntimeManager::Settings());
 
     return LN_MAKE_SUCCESS();

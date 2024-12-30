@@ -33,30 +33,6 @@ const char* RuntimeStringBuffer::getAscii() {
 //==============================================================================
 // RuntimeManager
 
-RuntimeManager::Settings RuntimeManager::s_globalSettings;
-
-//RuntimeManager* RuntimeManager::initialize(const Settings& settings) {
-//    if (instance()) return instance();
-//
-//    auto m = Ref<RuntimeManager>(LN_NEW detail::RuntimeManager(), false);
-//    if (!m->init(settings)) return nullptr;
-//
-//    EngineContext2::instance()->registerModule(m);
-//    EngineContext2::instance()->runtimeManager = m;
-//    return m;
-//}
-//
-//void RuntimeManager::terminate() {
-//    if (instance()) {
-//        instance()->dispose();
-//        EngineContext2::instance()->unregisterModule(instance());
-//        EngineContext2::instance()->runtimeManager = nullptr;
-//    }
-//}
-
-// LNReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
-// LNRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
-
 RuntimeManager::RuntimeManager()
     : m_systemAliving(false) {
     //    // 特に Binding-module にて、Engine 初期化以前にいろいろ処理を行うが、

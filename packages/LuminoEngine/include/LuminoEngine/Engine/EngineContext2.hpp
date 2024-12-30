@@ -33,7 +33,7 @@ public:
 
     const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
-    const Ref<detail::RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
+    detail::RuntimeManager* runtimeManager() const { return m_runtimeManager.get(); }
 
 
     // TODO:
@@ -55,7 +55,7 @@ private:
     List<Ref<Module>> m_modules;
     Ref<Dispatcher> m_mainThreadTaskDispatcher;
     Ref<DiagnosticsManager> m_activeDiagnostics;
-    Ref<detail::RuntimeManager> m_runtimeManager;
+    URef<detail::RuntimeManager> m_runtimeManager;
     URef<detail::AssetManager> m_assetManager;
 };
 

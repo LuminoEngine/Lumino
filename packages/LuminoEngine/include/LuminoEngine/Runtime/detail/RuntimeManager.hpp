@@ -52,7 +52,7 @@ private:
 };
 
 class RuntimeManager
-	: public Module
+    : public URefObject
 	, public IObjectEventListener
 {
 public:
@@ -62,17 +62,11 @@ public:
         LNReferenceCountTrackerCallback referenceCountTrackerCallback = nullptr;
         LNRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
 	};
-	static Settings s_globalSettings;
 
     RuntimeManager();
     virtual ~RuntimeManager();
     MaybeResult init(const Settings& settings);
     void dispose();
-
-	//static RuntimeManager* initialize(const Settings& settings);
-	//static void terminate();
-	//static inline RuntimeManager* instance() { return static_cast<RuntimeManager*>(EngineContext2::instance()->runtimeManager); }
-
 
 	// create の時は想定通りの動作。externalRefCount=1 の状態で作られる。
 	// get の場合も同様に作られる。基本方針は COM と同じく、Get したものは Release で解放するべきだが、
@@ -114,7 +108,6 @@ private:
 	std::mutex m_mutex;
     RuntimeStringBuffer m_commonStringBuffer;
 };
-
 
 } // namespace detail
 } // namespace ln

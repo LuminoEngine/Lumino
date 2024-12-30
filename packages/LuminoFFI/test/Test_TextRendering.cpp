@@ -16,7 +16,7 @@ TEST_F(Test_TextRendering, Basic) {
     TestEnv::present();
     TestEnv::present();
 
-    auto& m = ln::Engine::getEngineContext_()->runtimeManager();
+    auto* m = ln::Engine::getEngineContext_()->runtimeManager();
     auto context = static_cast<ln::GraphicsContext*>(m->getObjectEntry(graphicsContext)->object);
     ln::GraphicsTestHelper::saveScreenShot(TestEnv::getTestDataPath(U"Test_TextRendering_Basic.png"), context, context->currentBackbuffer());
 
