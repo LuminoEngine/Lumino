@@ -8,6 +8,8 @@
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
+#include "../Audio/AudioManager.hpp"
+#include <LuminoEngine/Audio/GameAudio.hpp>
 
 namespace ln {
 
@@ -71,6 +73,21 @@ MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
     
     m_runtimeManager = makeURef<detail::RuntimeManager>();
     m_runtimeManager->init(detail::RuntimeManager::Settings());
+
+#if 0 // test
+    { 
+        detail::AudioManager::Settings opt;
+        opt.assetManager = m_assetManager.get();
+        auto result = detail::AudioManager::initialize(opt);
+        if (!result) {
+            return result;
+        }
+
+        GameAudio::playBGM(U"D:\\Music\\momentum\\02 - momentum.wav");
+        // detail::AudioManager::instance()->gameAudio2()->playBGM(U"Assets/SE/SE_001.wav");
+    }
+#endif
+
 
     return LN_MAKE_SUCCESS();
 }

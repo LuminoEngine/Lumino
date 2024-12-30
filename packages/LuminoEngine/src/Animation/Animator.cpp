@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-//#include <LuminoFramework/Scene/WorldObject.hpp>
 #include <LuminoEngine/Animation/Animator.hpp>
 
 

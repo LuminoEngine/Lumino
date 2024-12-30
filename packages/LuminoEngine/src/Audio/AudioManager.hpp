@@ -3,7 +3,7 @@
 #include <thread>
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
-#include <LuminoFramework/Audio/InternalSharedMutex.inc>
+#include <LuminoEngine/Audio/InternalSharedMutex.inc>
 #include <LuminoEngine/GPU/detail/RenderingCommandList.hpp>
 
 namespace ln {
@@ -43,7 +43,13 @@ public:
 
 	AudioManager();
 	virtual ~AudioManager();
-	void init(const Settings& settings);
+
+    static MaybeResult initialize(const Settings& settings);
+    static void terminate();
+    static inline AudioManager* instance() { return s_instance.get(); }
+
+
+	MaybeResult init(const Settings& settings);
 	void dispose();
 	void update(float elapsedSeconds);
 
@@ -120,6 +126,8 @@ private:
 	std::vector<ConnectionCommand> m_commands;
 	std::mutex m_commandsMutex;
 	List<Ref<SoundCore>> m_soundCoreList;
+
+	static Ref<AudioManager> s_instance;
 };
 
 } // namespace detail

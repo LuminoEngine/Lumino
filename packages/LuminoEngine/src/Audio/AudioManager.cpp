@@ -3,9 +3,9 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoFramework/Audio/AudioContext.hpp>
-#include <LuminoFramework/Audio/AudioNode.hpp>
-#include <LuminoFramework/Audio/Sound.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/Sound.hpp>
 #include "Decoder/WaveAudioDecoder.hpp"
 #include "Decoder/OggAudioDecoder.hpp"
 #include "ARIs/ARINode.hpp"
@@ -15,8 +15,32 @@
 namespace ln {
 namespace detail {
 
+Ref<AudioManager> AudioManager::s_instance;
+
 //==============================================================================
 // AudioManager
+
+MaybeResult AudioManager::initialize(const Settings& settings) {
+    if (s_instance) {
+        return LN_MAKE_SUCCESS();
+    }
+
+    auto m = Ref<AudioManager>(LN_NEW AudioManager(), false);
+    s_instance = m; // init の中でアクセスするので先に set
+    auto result = s_instance->init(settings);
+    if (!result) {
+        return result;
+	}
+
+    return LN_MAKE_SUCCESS();
+}
+
+void AudioManager::terminate() {
+    if (s_instance) {
+        s_instance->dispose();
+        s_instance = nullptr;
+    }
+}
 
 AudioManager::AudioManager()
 	: m_primaryContext()
@@ -27,8 +51,7 @@ AudioManager::~AudioManager()
 {
 }
 
-void AudioManager::init(const Settings& settings)
-{
+MaybeResult AudioManager::init(const Settings& settings) {
     LN_LOG_DEBUG("AudioManager Initialization started.");
 
     m_assetManager = settings.assetManager;
@@ -53,6 +76,7 @@ void AudioManager::init(const Settings& settings)
 	m_gameAudio2 = makeRef<GameAudioImpl2>(this);
 
     LN_LOG_DEBUG("AudioManager Initialization ended.");
+        return LN_MAKE_SUCCESS();
 }
 
 void AudioManager::dispose()

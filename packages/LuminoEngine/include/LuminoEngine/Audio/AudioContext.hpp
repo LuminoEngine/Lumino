@@ -44,7 +44,7 @@ public:
 
     //void addSound(Sound* sound);
 
-LN_INTERNAL_ACCESS:
+public:
 	detail::AudioRWMutex m_commitMutex;
 	detail::AudioRWMutex& commitMutex() { return m_commitMutex; }
 

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoFramework/Audio/AudioContext.hpp>
-#include <LuminoFramework/Audio/AudioSourceNode.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioSourceNode.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "ARIs/ARISourceNode.hpp"
 #include "AudioManager.hpp"
@@ -17,7 +17,7 @@ AudioSourceNode::AudioSourceNode()
 
 void AudioSourceNode::init(detail::AudioDecoder* decoder)
 {
-	m_coreObject = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
+    m_coreObject = makeRef<detail::ARISourceNode>(detail::AudioManager::instance()->primaryContext()->coreObject(), this);
 	m_coreObject->init(decoder);
 
 

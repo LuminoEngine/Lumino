@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include <LuminoFramework/Audio/AudioBus.hpp>
+#include <LuminoEngine/Audio/AudioBus.hpp>
 
 #include <float.h>	// for FLT_EPSILON
 

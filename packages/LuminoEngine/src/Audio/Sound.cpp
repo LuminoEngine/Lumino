@@ -1,10 +1,10 @@
 ﻿#include "Internal.hpp"
-#include <LuminoFramework/Audio/AudioContext.hpp>
-#include <LuminoFramework/Audio/AudioNode.hpp>
-#include <LuminoFramework/Audio/AudioSourceNode.hpp>
-#include <LuminoFramework/Audio/AudioGainNode.hpp>
-#include <LuminoFramework/Audio/AudioDestinationNode.hpp>
-#include <LuminoFramework/Audio/Sound.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/AudioSourceNode.hpp>
+#include <LuminoEngine/Audio/AudioGainNode.hpp>
+#include <LuminoEngine/Audio/AudioDestinationNode.hpp>
+#include <LuminoEngine/Audio/Sound.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "ARIs/ARISourceNode.hpp"
 #include "ARIs/ARIGainNode.hpp"
@@ -37,12 +37,12 @@ void Sound::init(const StringView& filePath)
 {
     Object::init();
 
-	m_manager = detail::EngineDomain::audioManager();
+	m_manager = detail::AudioManager::instance();
 	m_manager->addSoundManagement(this);
 
     AudioContext* context = m_manager->primaryContext();
 
-    Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
+    Ref<detail::AudioDecoder> decoder = m_manager->createAudioDecoder(filePath);
    
     m_core = makeRef<detail::SoundCore>();
     if (!m_core->init(m_manager, context, decoder)) {
@@ -296,11 +296,11 @@ SoundCore::SoundCore()
 
 bool SoundCore::init(AudioManager* manager, AudioContext* context, detail::AudioDecoder* decoder)
 {
-    m_sourceNode = makeRef<detail::ARISourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
+    m_sourceNode = makeRef<detail::ARISourceNode>(manager->primaryContext()->coreObject(), nullptr);
     m_sourceNode->init(decoder);
     manager->postAddAudioNode(context, m_sourceNode);
 
-    m_gainNode = makeRef<detail::ARIGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), nullptr);
+    m_gainNode = makeRef<detail::ARIGainNode>(manager->primaryContext()->coreObject(), nullptr);
     m_gainNode->init();
     manager->postAddAudioNode(context, m_gainNode);
 

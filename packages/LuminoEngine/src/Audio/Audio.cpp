@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoFramework/Audio/Audio.hpp>
+#include <LuminoEngine/Audio/Audio.hpp>
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 
@@ -10,7 +10,7 @@ namespace ln {
 
 static detail::GameAudioImpl2* coreInstance()
 {
-    return detail::EngineDomain::audioManager()->gameAudio2();
+    return detail::AudioManager::instance()->gameAudio2();
 }
 
 void Audio::playBGM(const StringView& filePath, float volume, float pitch, double fadeTime)

@@ -71,6 +71,10 @@ if(WIN32)
     file(GLOB LOCAL_SOURCES_ShaderCompiler_Windows "src/GraphicsRHI/ShaderCompiler/Windows/*.hpp" "src/GraphicsRHI/ShaderCompiler/Windows/*.cpp")
 endif()
 
+file(GLOB LN_SOURCES_Audio "include/LuminoEngine/Audio/*.hpp" "src/Audio/*.cpp" "src/Audio/*.hpp" "src/Audio/*.md")
+file(GLOB LN_SOURCES_Audio_Decoder "src/Audio/Decoder/*.cpp" "src/Audio/Decoder/*.hpp")
+file(GLOB LN_SOURCES_Audio_ARIs "src/Audio/ARIs/*.cpp" "src/Audio/ARIs/*.hpp" "src/Audio/ARIs/*.h")
+file(GLOB LN_SOURCES_Audio_Backend "src/Audio/Backend/*.cpp" "src/Audio/Backend/*.hpp")
 file(GLOB LN_SOURCES_Animation "include/LuminoEngine/Animation/*.hpp" "src/Animation/*.cpp" "src/Animation/*.hpp")
 file(GLOB LN_SOURCES_Graphics_Bitmap "include/LuminoEngine/Graphics/Bitmap/*.hpp" "include/LuminoEngine/Graphics/Bitmap/detail/*.hpp" "src/Graphics/Bitmap/*.cpp" "src/Graphics/Bitmap/*.hpp")
 file(GLOB LN_SOURCES_Graphics_Font "include/LuminoEngine/Graphics/Font/*.hpp" "include/LuminoEngine/Graphics/Font/detail/*.hpp" "src/Graphics/Font/*.cpp" "src/Graphics/Font/*.hpp")
@@ -107,6 +111,11 @@ source_group("Runtime" FILES ${LN_SOURCES_Runtime})
 source_group("Base" FILES ${LN_SOURCES_Base})
 source_group("Engine" FILES ${LN_SOURCES_Engine})
 source_group("Asset" FILES ${LN_SOURCES_Asset})
+source_group("Audio" FILES ${LN_SOURCES_Audio})
+source_group("Audio/Decoder" FILES ${LN_SOURCES_Audio_Decoder})
+source_group("Audio/Backend" FILES ${LN_SOURCES_Audio_Backend})
+source_group("Audio/ARIs" FILES ${LN_SOURCES_Audio_ARIs})
+
 source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Platform" FILES ${LN_SOURCES_Platform})
 
@@ -143,6 +152,10 @@ set(LN_SOURCES
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Asset}
+    ${LN_SOURCES_Audio}
+    ${LN_SOURCES_Audio_Decoder}
+    ${LN_SOURCES_Audio_Backend}
+    ${LN_SOURCES_Audio_ARIs}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Platform}
     ${LOCAL_SOURCES}
@@ -188,6 +201,9 @@ set(LINK_LIBS
 
 set(LOCAL_LIBRARIES 
     LuminoCore
+    Vorbis::vorbis
+    Vorbis::vorbisenc
+    Vorbis::vorbisfile
     nanovg::nanovg
     ZLIB::ZLIB
     freetype

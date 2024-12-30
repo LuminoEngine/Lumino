@@ -1,6 +1,6 @@
 ﻿#include "Internal.hpp"
-#include <LuminoFramework/Audio/AudioContext.hpp>
-#include <LuminoFramework/Audio/AudioProcessorNode.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioProcessorNode.hpp>
 #include "ARIs/ARIProcessorNode.hpp"
 #include "AudioManager.hpp"
 
@@ -21,7 +21,7 @@ void AudioProcessorNode::init(int numberOfInputChannels, int numberOfOutputChann
 {
     // TODO: AudioNode::init() の後にしたい。
     // detail::EngineDomain::audioManager()->primaryContext() じゃなくて context() にしたい
-    m_coreObject = makeRef<detail::ARIProcessorNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
+    m_coreObject = makeRef<detail::ARIProcessorNode>(detail::AudioManager::instance()->primaryContext()->coreObject(), this);
     m_coreObject->init(numberOfInputChannels, numberOfOutputChannels);
 
 	AudioNode::init();

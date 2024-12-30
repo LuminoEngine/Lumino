@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <mutex>
 #include <list>
-#include <LuminoFramework/Audio/Common.hpp>
+#include <LuminoEngine/Audio/Common.hpp>
 
 namespace ln {
 class Sound;

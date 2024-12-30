@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoFramework/Audio/AudioNode.hpp>
-#include <LuminoFramework/Audio/AudioDestinationNode.hpp>
-#include <LuminoFramework/Audio/AudioContext.hpp>
-#include <LuminoFramework/Audio/Sound.hpp>
+#include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/AudioDestinationNode.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/Sound.hpp>
 #include "ARIs/ARIDestinationNode.hpp"
 #include "AudioManager.hpp"
 #include "Backend/DSoundAudioDevice.hpp"
@@ -17,7 +17,7 @@ namespace ln {
 
 AudioContext* AudioContext::primary()
 {
-	return detail::EngineDomain::audioManager()->primaryContext();
+    return detail::AudioManager::instance()->primaryContext();
 }
 
 AudioContext::AudioContext()
@@ -32,7 +32,7 @@ void AudioContext::init()
 {
     LN_LOG_DEBUG("AudioContext Initialization started.");
 
-	m_manager = detail::EngineDomain::audioManager();
+	m_manager = detail::AudioManager::instance();
 
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
 	auto device = makeRef<detail::ALAudioDevice>();

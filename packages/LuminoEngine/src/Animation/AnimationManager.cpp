@@ -1,11 +1,9 @@
 ﻿
 #include "Internal.hpp"
-//#include <LuminoFramework/Scene/World.hpp>
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
 #include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-//#include "../Scene/SceneManager.hpp"
 #include "VmdLoader.hpp"
 #include <LuminoEngine/Animation/detail/AnimationManager.hpp>
 

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoFramework/Audio/AudioContext.hpp>
-#include <LuminoFramework/Audio/AudioGainNode.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioGainNode.hpp>
 #include "ARIs/ARIGainNode.hpp"
 #include "AudioManager.hpp"
 
@@ -23,7 +23,7 @@ void AudioGainNode::init()
 {
     // TODO: AudioNode::init() の後にしたい。
     // detail::EngineDomain::audioManager()->primaryContext() じゃなくて context() にしたい
-    m_coreObject = makeRef<detail::ARIGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
+    m_coreObject = makeRef<detail::ARIGainNode>(detail::AudioManager::instance()->primaryContext()->coreObject(), this);
     m_coreObject->init();
 
 	AudioNode::init();
