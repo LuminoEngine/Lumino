@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include "../Font/Common.hpp"
+#include "../Graphics/Font/Common.hpp"
 #include "Common.hpp"
 #include "Kanata/Common.hpp"
 

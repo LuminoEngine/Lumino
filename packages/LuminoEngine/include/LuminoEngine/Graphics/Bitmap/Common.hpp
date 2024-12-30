@@ -1,5 +1,4 @@
 ﻿#pragma once
-//#include "../../Font/Common.hpp"
 
 namespace ln {
 class Font;

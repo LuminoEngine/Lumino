@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Font/Common.hpp>
+#include <LuminoEngine/Graphics/Font/Common.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
 #include "../Common.hpp"
 

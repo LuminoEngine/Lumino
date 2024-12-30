@@ -14,7 +14,7 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KMeshRenderFeature.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
-#include <LuminoEngine/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include "RenderElement.hpp"
 #include "DrawElementListBuilder.hpp"
 

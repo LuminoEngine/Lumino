@@ -2,7 +2,7 @@
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Graphics/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/CanvasContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
@@ -11,7 +11,7 @@
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
-#include <LuminoEngine/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "CommandListServer.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>

@@ -5,10 +5,10 @@
 #include FT_TRUETYPE_TABLES_H /* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
 #include FT_STROKER_H
-#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Graphics/Font/Font.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoEngine/Font/detail/FontCore.hpp>
-#include <LuminoEngine/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontCore.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include "FreeTypeFont.hpp"
 
 #define LN_DEFAULTFONT_PROPORTIONAL 1

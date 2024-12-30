@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
-#include <LuminoEngine/Font/detail/FontCore.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontCore.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include "FontGlyphCache.hpp"
 

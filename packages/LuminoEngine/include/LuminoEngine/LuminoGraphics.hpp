@@ -2,7 +2,7 @@
 #include "LuminoEngine/Graphics/Bitmap/Bitmap.hpp"
 #include "LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp"
 
-#include "LuminoEngine/Font/Font.hpp"
+#include "LuminoEngine/Graphics/Font/Font.hpp"
 
 #include "LuminoEngine/GPU/Shader.hpp"
 #include "LuminoEngine/GPU/ShaderDescriptor.hpp"

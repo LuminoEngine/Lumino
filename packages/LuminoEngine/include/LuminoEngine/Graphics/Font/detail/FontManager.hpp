@@ -2,7 +2,7 @@
 #include <list>
 #include <LuminoEngine/Engine/EngineContext2.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
-#include <LuminoEngine/Font/Common.hpp>
+#include <LuminoEngine/Graphics/Font/Common.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 
 typedef int FT_Error;

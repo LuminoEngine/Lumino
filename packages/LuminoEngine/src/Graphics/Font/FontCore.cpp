@@ -1,5 +1,5 @@
-﻿#include <LuminoEngine/Font/detail/FontManager.hpp>
-#include <LuminoEngine/Font/detail/FontCore.hpp>
+﻿#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontCore.hpp>
 
 namespace ln {
 namespace detail {

@@ -73,7 +73,7 @@ endif()
 
 file(GLOB LN_SOURCES_Animation "include/LuminoEngine/Animation/*.hpp" "src/Animation/*.cpp" "src/Animation/*.hpp")
 file(GLOB LN_SOURCES_Graphics_Bitmap "include/LuminoEngine/Graphics/Bitmap/*.hpp" "include/LuminoEngine/Graphics/Bitmap/detail/*.hpp" "src/Graphics/Bitmap/*.cpp" "src/Graphics/Bitmap/*.hpp")
-file(GLOB LN_SOURCES_Font "include/LuminoEngine/Font/*.hpp" "include/LuminoEngine/Font/detail/*.hpp" "src/Font/*.cpp" "src/Font/*.hpp")
+file(GLOB LN_SOURCES_Graphics_Font "include/LuminoEngine/Graphics/Font/*.hpp" "include/LuminoEngine/Graphics/Font/detail/*.hpp" "src/Graphics/Font/*.cpp" "src/Graphics/Font/*.hpp")
 file(GLOB LN_SOURCES_GPU "include/LuminoEngine/GPU/*.hpp" "include/LuminoEngine/GPU/detail/*.hpp" "src/GPU/*.cpp" "src/GPU/*.hpp" "src/GPU/detail/*.cpp")
 file(GLOB LN_SOURCES_Mesh "include/LuminoEngine/Mesh/*.hpp" "src/Mesh/*.cpp" "src/Mesh/*.hpp")
 file(GLOB LN_SOURCES_Mesh_MeshImporters "include/LuminoEngine/Mesh/MeshGeneraters/*.hpp" "src/Mesh/MeshImporters/*.cpp" "src/Mesh/MeshImporters/*.hpp")
@@ -122,7 +122,7 @@ source_group("GraphicsRHI/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCo
 
 source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Graphics/Bitmap" FILES ${LN_SOURCES_Graphics_Bitmap})
-source_group("Font" FILES ${LN_SOURCES_Font})
+source_group("Graphics/Font" FILES ${LN_SOURCES_Graphics_Font})
 source_group("GPU" FILES ${LN_SOURCES_GPU})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Mesh/MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
@@ -155,7 +155,7 @@ set(LN_SOURCES
     ${LOCAL_SOURCES_ShaderCompiler_Windows}
     ${LN_SOURCES_Graphics_Bitmap}
     ${LN_SOURCES_Animation}
-	${LN_SOURCES_Font}
+	${LN_SOURCES_Graphics_Font}
     ${LN_SOURCES_GPU}
     ${LN_SOURCES_GPU_RHI}
     ${LN_SOURCES_GPU_RHI_OpenGL}

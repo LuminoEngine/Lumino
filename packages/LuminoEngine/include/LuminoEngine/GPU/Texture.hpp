@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Asset/AssetObject.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include "../Font/Common.hpp"
+#include "../Graphics/Font/Common.hpp"
 #include "Common.hpp"
 #include "GraphicsResource.hpp"
 

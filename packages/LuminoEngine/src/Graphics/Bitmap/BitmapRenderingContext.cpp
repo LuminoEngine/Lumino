@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/GPU/Texture.hpp>
-#include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
+#include <LuminoEngine/Graphics/Font/detail/TextLayoutEngine.hpp>
 #include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
 #include "BitmapEncoding.hpp"

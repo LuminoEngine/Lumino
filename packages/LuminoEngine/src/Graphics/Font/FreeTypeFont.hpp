@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Font/detail/FontCore.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontCore.hpp>
 
 namespace ln {
 class Bitmap2D;

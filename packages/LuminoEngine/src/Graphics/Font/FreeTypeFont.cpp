@@ -7,8 +7,8 @@
 #include FT_STROKER_H
 #include FT_SYNTHESIS_H
 #include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
-#include <LuminoEngine/Font/Font.hpp>
-#include <LuminoEngine/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Graphics/Font/Font.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include "FreeTypeFont.hpp"
 
 #define FLValueToFloatPx(x) (0.015625f * static_cast<float>(x)) // x >> 6

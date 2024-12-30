@@ -9,10 +9,10 @@
 #include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/SwapChain.hpp>
-#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
-#include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
-#include <LuminoEngine/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Graphics/Font/detail/TextLayoutEngine.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Graphics/Font/Font.hpp>
 #include "RenderTargetTextureCache.hpp"
 #include "GraphicsProfiler.hpp"
 

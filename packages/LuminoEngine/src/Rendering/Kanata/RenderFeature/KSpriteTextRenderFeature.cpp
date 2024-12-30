@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/Font/Font.hpp>
+﻿#include <LuminoEngine/Graphics/Font/Font.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
