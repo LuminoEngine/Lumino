@@ -1,6 +1,6 @@
 ﻿#include <LuminoCore.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
@@ -13,17 +13,19 @@ using namespace ln;
 #define ASSETFILE(x) ln::Path(ASSETS_DIR, U##x)
 
 void init() {
-    RuntimeModule::initialize();
-    PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::GLFWWithoutOpenGL });
-    GraphicsModule::initialize({ GraphicsAPI::Vulkan });
-
-    RuntimeModule::mountAssetDirectory(ASSETS_DIR);
+    EngineOptions options;
+    options.platform.title = U"Example";
+    options.platform.width = 640;
+    options.platform.height = 480;
+    options.platform.windowSystem = WindowSystem::GLFWWithoutOpenGL;
+    options.graphics.graphicsAPI = GraphicsAPI::Vulkan;
+    Engine::initialize(options);
+    Engine::mountAssetDirectory(ASSETS_DIR);
 }
 
 void cleanup() {
-    GraphicsModule::terminate();
     PlatformModule::terminate();
-    RuntimeModule::terminate();
+    Engine::terminate();
 }
 
 void run() {

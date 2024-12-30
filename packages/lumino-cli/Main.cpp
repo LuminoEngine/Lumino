@@ -72,7 +72,9 @@ int main(int argc, char** argv) {
     try {
         setlocale(LC_ALL, "");
         ln::Logger::addStdErrAdapter();
-        ln::RuntimeModule::initialize();
+        ln::EngineOptions options;
+        options.graphics.enabled = false;
+        ln::Engine::initialize(options);
         exitCode = processCommands(argc, argv);
     }
     catch (ln::Exception& e) {
@@ -80,6 +82,6 @@ int main(int argc, char** argv) {
         std::cout << m << std::endl;
         exitCode = 1;
     }
-    ln::RuntimeModule::terminate();
+    ln::Engine::terminate();
     return exitCode;
 }

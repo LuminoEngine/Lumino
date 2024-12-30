@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/RuntimeModule.hpp>
+﻿#include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/RHIModule.hpp>
@@ -30,8 +30,12 @@ void TestEnv::setup() {
         //}
     }
 
-    RuntimeModule::initialize();
-    PlatformModule::initialize({ { U"Test", 160, 120 }, windowSystem });
+    EngineOptions options;
+    options.platform.title = U"Test";
+    options.platform.width = 160;
+    options.platform.height = 120;
+    options.platform.windowSystem = windowSystem;
+    Engine::initialize(options);
     GraphicsModule::initialize({ graphicsAPI });
 
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
@@ -64,7 +68,7 @@ void TestEnv::teardown() {
     detail::RenderingManager::terminate();
     GraphicsModule::terminate();
     PlatformModule::terminate();
-    RuntimeModule::terminate();
+    Engine::terminate();
 }
 
 void TestRenderVew::resetView(const Vector3& pos, const Vector3& lookAt) {

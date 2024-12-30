@@ -2,7 +2,6 @@
 #include <LuminoEngine.hpp>
 
 
-#include <LuminoEngine/RuntimeModule.hpp>
 #include <LuminoEngine/RHIModule.hpp>
 #include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
@@ -169,9 +168,11 @@ void LNRenderPassDescriptor_SetDepthBuffer(
 //==============================================================================
 //
 //==============================================================================
+static EngineOptions s_engineOptions;
+
 LNResult LNRuntime_Initialize() {
     LN_FFI_TRY_BEGIN;
-    const auto result = ln::Engine::initialize();
+    const auto result = ln::Engine::initialize(s_engineOptions);
     if (!result) {
         return LN_ERROR_UNKNOWN;
     }

@@ -2,9 +2,12 @@
 #include <LuminoCore/Runtime/TypeInfo.hpp>
 #include <LuminoCore/Runtime/Property.hpp>
 #include "Common2.hpp"
-#include "../RuntimeModule.hpp"
+#include "../Asset/Common.hpp"
 
 namespace ln {
+struct RuntimeModuleSettings {
+    AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
+};
 namespace detail {
 class RuntimeManager;
 class AssetManager;

@@ -8,6 +8,7 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
+#include <LuminoEngine/Engine/Engine.hpp>
 
 //#include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
@@ -35,9 +36,13 @@ Ref<detail::IShaderPass> g_shaderPass;
 int g_frameIndex;
 
 void init() {
-    RuntimeModule::initialize();
-    PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::Native });
-    RuntimeModule::mountAssetDirectory(ASSETS_DIR);
+    EngineOptions options;
+    options.platform.title = U"Example";
+    options.platform.width = 640;
+    options.platform.height = 480;
+    options.platform.windowSystem = WindowSystem::Native;
+    Engine::initialize(options);
+    Engine::mountAssetDirectory(ASSETS_DIR);
     detail::ShaderManager::initialize({});
 
     auto window = Platform::mainWindow();
@@ -192,8 +197,7 @@ void cleanup() {
     g_device = nullptr;
 
     detail::ShaderManager::terminate();
-    PlatformModule::terminate();
-    RuntimeModule::terminate();
+    Engine::terminate();
 }
 
 void mainLoop() {

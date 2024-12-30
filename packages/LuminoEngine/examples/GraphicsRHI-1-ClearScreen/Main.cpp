@@ -2,7 +2,7 @@
 #include <emscripten.h>
 #endif
 #include <LuminoCore.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
@@ -24,8 +24,9 @@ std::vector<Ref<detail::ICommandList>> g_commandLists;
 std::vector<Ref<detail::IRenderPass>> g_renderPasses;
 
 void init() {
-    RuntimeModule::initialize();
-    PlatformModule::initialize({ { U"Example", 640, 480 }, WindowSystem::Native });
+    EngineOptions options;
+    options.graphics.enabled = false;
+    Engine::initialize(options);
 
     auto window = Platform::mainWindow();
 
@@ -79,8 +80,7 @@ void cleanup() {
     g_device->dispose();
     g_device = nullptr;
 
-    PlatformModule::terminate();
-    RuntimeModule::terminate();
+    Engine::terminate();
 }
 
 void mainLoop() {

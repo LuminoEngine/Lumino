@@ -1,5 +1,4 @@
-﻿#include <LuminoEngine/RuntimeModule.hpp>
-#include <LuminoEngine/Platform/PlatformModule.hpp>
+﻿#include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
@@ -16,8 +15,12 @@ LNHandle TestEnv::viewPoint = LN_NULL_HANDLE;
 void TestEnv::initialize() {
     ln::FileSystem::createDirectory(TestEnv::getTempPath(U""));
 
-    ln::Engine::initialize();
-    ln::PlatformModule::initialize({ { U"Test", 320, 240 }, ln::WindowSystem::GLFWWithOpenGL });
+    ln::EngineOptions options;
+    options.platform.title = U"Test";
+    options.platform.width = 320;
+    options.platform.height = 240;
+    options.platform.windowSystem = ln::WindowSystem::GLFWWithOpenGL;
+    ln::Engine::initialize(options);
 
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &graphicsContext);
     LNGraphicsViewPoint_Create(&viewPoint);

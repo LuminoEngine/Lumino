@@ -1,5 +1,4 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/RuntimeModule.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/RHIModule.hpp>
 //#include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
@@ -9,6 +8,7 @@
 //#include <LuminoEngine/GPU/Texture.hpp>
 //#include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
+#include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
@@ -28,30 +28,42 @@ namespace ln {
 //    とりあえず filament が engine という名前を使っているので、それに倣うことにする。
 //
 
-MaybeResult Engine::initialize() {
-    if (!RuntimeModule::initialize()) {
-        return err();
+MaybeResult Engine::initialize(const EngineOptions& options) {
+    if (!EngineContext2::initialize(RuntimeModuleSettings{})) {
+        return LN_MAKE_ERROR();
     }
     
     detail::RuntimeManager::initialize(detail::RuntimeManager::Settings());
-    if (!GraphicsModule::initialize({ GraphicsAPI::OpenGL })) {
-        return err();
+
+    if (options.platform.enabled) {
+        PlatformModuleSettings opt;
+        opt.mainWindowSettings.title = options.platform.title;
+        opt.mainWindowSettings.clientWidth = options.platform.width;
+        opt.mainWindowSettings.clientHeight = options.platform.height;
+        opt.windowSystem = options.platform.windowSystem;
+        PlatformModule::initialize(opt);
     }
 
-    {
-        detail::FontManager::Settings settings;
-        settings.assetManager = detail::AssetManager::instance();
-        if (!detail::FontManager::initialize(settings)) {
+    if (options.graphics.enabled) {
+        if (!GraphicsModule::initialize({ options.graphics.graphicsAPI })) {
             return err();
         }
-    }
 
-    {
-        detail::RenderingManager::Settings settings;
-        settings.graphicsManager = detail::GraphicsManager::instance();
-        settings.fontManager = detail::FontManager::instance();
-        if (!detail::RenderingManager::initialize(settings)) {
-            return err();
+        {
+            detail::FontManager::Settings settings;
+            settings.assetManager = detail::AssetManager::instance();
+            if (!detail::FontManager::initialize(settings)) {
+                return err();
+            }
+        }
+
+        {
+            detail::RenderingManager::Settings settings;
+            settings.graphicsManager = detail::GraphicsManager::instance();
+            settings.fontManager = detail::FontManager::instance();
+            if (!detail::RenderingManager::initialize(settings)) {
+                return err();
+            }
         }
     }
     return ok();
@@ -61,8 +73,17 @@ void Engine::terminate() {
     detail::RenderingManager::terminate();
     detail::FontManager::terminate();
     GraphicsModule::terminate();
+    PlatformModule::terminate();
     detail::RuntimeManager::terminate();
-    RuntimeModule::terminate();
+    EngineContext2::terminate();
+}
+
+void Engine::mountAssetDirectory(const StringView& path) {
+    EngineContext2::instance()->assetManager()->addAssetDirectory(path);
+}
+
+void Engine::mountAssetArchive(const StringView& filePath, const StringView& password) {
+    EngineContext2::instance()->assetManager()->mountAssetArchive(filePath, password);
 }
 
 } // namespace ln
