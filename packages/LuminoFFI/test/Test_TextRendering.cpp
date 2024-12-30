@@ -1,4 +1,6 @@
-﻿#include "TestEnv.hpp"
+﻿#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
+
+#include "TestEnv.hpp"
 
 class Test_TextRendering : public ::testing::Test {};
 
@@ -14,7 +16,8 @@ TEST_F(Test_TextRendering, Basic) {
     TestEnv::present();
     TestEnv::present();
 
-    auto context = static_cast<ln::GraphicsContext*>(ln::Runtime::getObject(graphicsContext));
+    auto& m = ln::Engine::getEngineContext_()->runtimeManager();
+    auto context = static_cast<ln::GraphicsContext*>(m->getObjectEntry(graphicsContext)->object);
     ln::GraphicsTestHelper::saveScreenShot(TestEnv::getTestDataPath(U"Test_TextRendering_Basic.png"), context, context->currentBackbuffer());
 
     //ln::GraphicsContext* context = LN_HANDLE_TO_OBJECT(ln::GraphicsContext, graphicsContext);

@@ -64,9 +64,14 @@ public:
 	};
 	static Settings s_globalSettings;
 
-	static RuntimeManager* initialize(const Settings& settings);
-	static void terminate();
-	static inline RuntimeManager* instance() { return static_cast<RuntimeManager*>(EngineContext2::instance()->runtimeManager); }
+    RuntimeManager();
+    virtual ~RuntimeManager();
+    MaybeResult init(const Settings& settings);
+    void dispose();
+
+	//static RuntimeManager* initialize(const Settings& settings);
+	//static void terminate();
+	//static inline RuntimeManager* instance() { return static_cast<RuntimeManager*>(EngineContext2::instance()->runtimeManager); }
 
 
 	// create の時は想定通りの動作。externalRefCount=1 の状態で作られる。
@@ -102,11 +107,6 @@ public:
 	TextEncoding* getAStringEncoding() const;
 
 private:
-	RuntimeManager();
-	virtual ~RuntimeManager();
-	bool init(const Settings& settings);
-	void dispose();
-
     Settings m_settings;
 	List<ObjectEntry> m_objectEntryList;
 	std::stack<int> m_objectIndexStack;

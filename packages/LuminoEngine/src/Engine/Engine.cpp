@@ -32,8 +32,6 @@ MaybeResult Engine::initialize(const EngineOptions& options) {
     if (!EngineContext2::initialize(RuntimeModuleSettings{})) {
         return LN_MAKE_ERROR();
     }
-    
-    detail::RuntimeManager::initialize(detail::RuntimeManager::Settings());
 
     if (options.platform.enabled) {
         PlatformModuleSettings opt;
@@ -74,7 +72,6 @@ void Engine::terminate() {
     detail::FontManager::terminate();
     GraphicsModule::terminate();
     PlatformModule::terminate();
-    detail::RuntimeManager::terminate();
     EngineContext2::terminate();
 }
 
@@ -84,6 +81,10 @@ void Engine::mountAssetDirectory(const StringView& path) {
 
 void Engine::mountAssetArchive(const StringView& filePath, const StringView& password) {
     EngineContext2::instance()->assetManager()->mountAssetArchive(filePath, password);
+}
+
+EngineContext2* Engine::getEngineContext_() {
+    return EngineContext2::instance();
 }
 
 } // namespace ln

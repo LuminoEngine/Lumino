@@ -45,6 +45,28 @@ LNResult FFI::processException(Exception* e) {
     return LN_ERROR_UNKNOWN;
 }
 
+/**
+ * Provides operations and utilities for the entire Runtime module.
+ */
+class Runtime {
+public:
+    static LNHandle wrapObject(Object* obj, bool fromCreate);
+    static Object* getObject(LNHandle handle);
+    //static void setManagedObjectId(LNHandle handle, int64_t id);
+    //static int64_t getManagedObjectId(LNHandle handle);
+    //static const Char* getUTF16StringPtr(const String& str);
+    //static const char* getAStringPtr(const String& str);
+    //static void setAStringEncoding(TextEncoding* value);
+    //static TextEncoding* getAStringEncoding();
+};
+
+LNHandle Runtime::wrapObject(Object* obj, bool fromCreate) {
+    return ln::EngineContext2::instance()->runtimeManager()->makeObjectWrap(obj, fromCreate);
+}
+
+Object* Runtime::getObject(LNHandle handle) {
+    return ln::EngineContext2::instance()->runtimeManager()->getObjectEntry(handle)->object;
+}
 } // namespace ln
 
 
@@ -856,8 +878,8 @@ LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const L
 // LNObject
 
 LNResult LNObject_Release(LNHandle obj) {
-    if (auto m = detail::RuntimeManager::instance()) {
-        m->releaseObjectExplicitly(obj);
+    if (EngineContext2* context = EngineContext2::instance()) {
+        context->runtimeManager()->releaseObjectExplicitly(obj);
         return LN_OK;
     }
     else {
@@ -866,8 +888,8 @@ LNResult LNObject_Release(LNHandle obj) {
 }
 
 LNResult LNObject_Retain(LNHandle obj) {
-    if (auto m = detail::RuntimeManager::instance()) {
-        m->retainObjectExplicitly(obj);
+    if (EngineContext2* context = EngineContext2::instance()) {
+        context->runtimeManager()->retainObjectExplicitly(obj);
         return LN_OK;
     }
     else {

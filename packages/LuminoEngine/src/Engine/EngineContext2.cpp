@@ -15,13 +15,13 @@ void registerModuleTypes_Runtime(RuntimeContext* context);
 
 std::unique_ptr<EngineContext2> EngineContext2::s_instance;
 
-bool EngineContext2::initialize(const RuntimeModuleSettings& settings, EngineContext2* sharedContext) {
+MaybeResult EngineContext2::initialize(const RuntimeModuleSettings& settings, EngineContext2* sharedContext) {
     if (sharedContext) {
         LN_NOTIMPLEMENTED();
-        return false;
+        return LN_MAKE_ERROR();
     }
 
-    if (s_instance) return true;
+    if (s_instance) return LN_MAKE_SUCCESS();
     s_instance = std::unique_ptr<EngineContext2>(LN_NEW EngineContext2());
     return s_instance->init(settings);
 }
@@ -39,7 +39,7 @@ EngineContext2::EngineContext2() {
 EngineContext2::~EngineContext2() {
 }
 
-bool EngineContext2::init(const RuntimeModuleSettings& settings) {
+MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
 
 #ifdef LN_EMSCRIPTEN
 #else
@@ -59,19 +59,28 @@ bool EngineContext2::init(const RuntimeModuleSettings& settings) {
         settings2.assetStorageAccessPriority = settings.assetStorageAccessPriority;
         m_assetManager = makeURef<detail::AssetManager>();
         if (!m_assetManager->init(settings2)) {
-            return false;
+            return LN_MAKE_ERROR();
         }
     }
+
 
 
     // Register types
     registerModuleTypes_Runtime(RuntimeContext::current());
 
+    
+    m_runtimeManager = makeRef<detail::RuntimeManager>();
+    m_runtimeManager->init(detail::RuntimeManager::Settings());
 
-    return true;
+    return LN_MAKE_SUCCESS();
 }
 
 void EngineContext2::dispose() {
+    if (m_runtimeManager) {
+        m_runtimeManager->dispose();
+        m_runtimeManager = nullptr;
+    }
+
     if (m_assetManager) {
         m_assetManager->dispose();
         m_assetManager = nullptr;

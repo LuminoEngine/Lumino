@@ -1,4 +1,5 @@
-﻿#include <LuminoEngine/Platform/PlatformModule.hpp>
+﻿#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
+#include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
@@ -54,7 +55,8 @@ ln::Path TestEnv::getTempPath(const ln::Path& localPath) {
 }
 
 bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save) {
-    auto context = static_cast<ln::GraphicsContext*>(ln::Runtime::getObject(graphicsContext));
+    auto& m = ln::Engine::getEngineContext_()->runtimeManager();
+    auto context = static_cast<ln::GraphicsContext*>(m->getObjectEntry(graphicsContext)->object);
     return ln::GraphicsTestHelper::checkScreenShot(
         TestEnv::getTestDataPath(filePath), context, context->currentBackbuffer(), passRate, save);
 }

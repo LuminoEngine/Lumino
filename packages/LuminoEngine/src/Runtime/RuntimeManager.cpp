@@ -35,24 +35,24 @@ const char* RuntimeStringBuffer::getAscii() {
 
 RuntimeManager::Settings RuntimeManager::s_globalSettings;
 
-RuntimeManager* RuntimeManager::initialize(const Settings& settings) {
-    if (instance()) return instance();
-
-    auto m = Ref<RuntimeManager>(LN_NEW detail::RuntimeManager(), false);
-    if (!m->init(settings)) return nullptr;
-
-    EngineContext2::instance()->registerModule(m);
-    EngineContext2::instance()->runtimeManager = m;
-    return m;
-}
-
-void RuntimeManager::terminate() {
-    if (instance()) {
-        instance()->dispose();
-        EngineContext2::instance()->unregisterModule(instance());
-        EngineContext2::instance()->runtimeManager = nullptr;
-    }
-}
+//RuntimeManager* RuntimeManager::initialize(const Settings& settings) {
+//    if (instance()) return instance();
+//
+//    auto m = Ref<RuntimeManager>(LN_NEW detail::RuntimeManager(), false);
+//    if (!m->init(settings)) return nullptr;
+//
+//    EngineContext2::instance()->registerModule(m);
+//    EngineContext2::instance()->runtimeManager = m;
+//    return m;
+//}
+//
+//void RuntimeManager::terminate() {
+//    if (instance()) {
+//        instance()->dispose();
+//        EngineContext2::instance()->unregisterModule(instance());
+//        EngineContext2::instance()->runtimeManager = nullptr;
+//    }
+//}
 
 // LNReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
 // LNRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
@@ -73,7 +73,7 @@ RuntimeManager::RuntimeManager()
 RuntimeManager::~RuntimeManager() {
 }
 
-bool RuntimeManager::init(const Settings& settings) {
+MaybeResult RuntimeManager::init(const Settings& settings) {
     LN_LOG_DEBUG("RuntimeManager Initialization started.");
 
     m_settings = settings;
@@ -106,7 +106,7 @@ bool RuntimeManager::init(const Settings& settings) {
 
 
     LN_LOG_DEBUG("RuntimeManager Initialization finished.");
-    return true;
+    return LN_MAKE_SUCCESS();
 }
 
 void RuntimeManager::dispose() {

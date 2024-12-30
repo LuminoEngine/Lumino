@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../Platform/Common.hpp"
 #include "../GraphicsRHI/Common.hpp"
+#include "Common2.hpp"
 
 namespace ln {
 
@@ -28,6 +29,7 @@ public:
     static void terminate();
     static void mountAssetDirectory(const StringView& path);
     static void mountAssetArchive(const StringView& filePath, const StringView& password = StringView());
+    static EngineContext2* getEngineContext_();
 };
 
 } // namespace ln

@@ -1,5 +1,4 @@
-﻿#include <LuminoEngine/RuntimeModule.hpp>
-#include "FxcCommand.hpp"
+﻿#include "FxcCommand.hpp"
 
 static int processCommands(int argc, char** argv) {
 
