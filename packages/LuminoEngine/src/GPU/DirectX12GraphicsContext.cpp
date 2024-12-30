@@ -1,5 +1,5 @@
 ﻿#ifdef _WIN32
-#include "../../LuminoEngine/src/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
+#include "../../LuminoEngine/src/Graphics/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
 #include <LuminoEngine/GPU/DirectX12GraphicsContext.hpp>
 
 namespace ln {

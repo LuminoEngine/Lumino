@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/GPU/CommandQueue.hpp>
 
 namespace ln {

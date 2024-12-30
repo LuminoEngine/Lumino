@@ -1,5 +1,5 @@
 ﻿#ifdef LN_USE_VULKAN
-#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #include <LuminoEngine/GPU/VulkanGraphicsContext.hpp>
 
 namespace ln {

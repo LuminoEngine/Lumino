@@ -5,18 +5,18 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
-#include <LuminoEngine/GraphicsRHI/GraphicsExtension.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include "GPU/RenderTargetTextureCache.hpp"
 #ifdef LN_USE_VULKAN
-#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #include <LuminoEngine/GPU/VulkanGraphicsContext.hpp>
 #endif
 #ifdef _WIN32
-#include "../../LuminoEngine/src/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
+#include "../../LuminoEngine/src/Graphics/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
 #include <LuminoEngine/GPU/DirectX12GraphicsContext.hpp>
 #endif
-#include "../../LuminoEngine/src/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
+#include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/GPU/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -24,8 +24,8 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include "GPU/SingleFrameAllocator.hpp"
 #include "GPU/GraphicsProfiler.hpp"
-#include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include <LuminoEngine/GraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
 #include "GPU/StreamingBufferAllocator.hpp"
 #include "GPU/RenderPassCache.hpp"
 //#include "Rendering/RenderingManager2.hpp"

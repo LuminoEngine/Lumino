@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "../Platform/Common.hpp"
-#include "../GraphicsRHI/Common.hpp"
+#include "../Graphics/GraphicsRHI/Common.hpp"
 #include "Common2.hpp"
 
 namespace ln {

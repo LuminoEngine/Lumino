@@ -40,35 +40,61 @@ endif()
 
 
 file(GLOB LOCAL_SOURCES
-    "include/LuminoEngine/GraphicsRHI/*.hpp"
-    "include/LuminoEngine/GraphicsRHI/detail/*.hpp"
-    "src/GraphicsRHI/*.hpp"
-    "src/GraphicsRHI/*.cpp")
-file(GLOB LOCAL_SOURCES_ShaderCompiler "include/LuminoEngine/GraphicsRHI/ShaderCompiler/detail/*.hpp" "src/GraphicsRHI/ShaderCompiler/*.hpp" "src/GraphicsRHI/ShaderCompiler/*.cpp")
-file(GLOB LOCAL_SOURCES_ShaderCompiler_Lexer "src/GraphicsRHI/ShaderCompiler/Lexer/*.hpp" "src/GraphicsRHI/ShaderCompiler/Lexer/*.cpp")
+    "include/LuminoEngine/Graphics/GraphicsRHI/*.hpp"
+    "include/LuminoEngine/Graphics/GraphicsRHI/detail/*.hpp"
+    "src/Graphics/GraphicsRHI/*.hpp"
+    "src/Graphics/GraphicsRHI/*.cpp"
+)
+file(GLOB LOCAL_SOURCES_ShaderCompiler
+    "include/LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/*.hpp"
+    "src/Graphics/GraphicsRHI/ShaderCompiler/*.hpp"
+    "src/Graphics/GraphicsRHI/ShaderCompiler/*.cpp"
+)
+file(GLOB LOCAL_SOURCES_ShaderCompiler_Lexer
+    "src/Graphics/GraphicsRHI/ShaderCompiler/Lexer/*.hpp"
+    "src/Graphics/GraphicsRHI/ShaderCompiler/Lexer/*.cpp"
+)
 
 if(LN_USE_OPENGL)
-    file(GLOB LOCAL_SOURCES_OpenGL "src/GraphicsRHI/OpenGL/*.hpp" "src/GraphicsRHI/OpenGL/*.cpp")
+    file(GLOB LOCAL_SOURCES_OpenGL
+        "src/Graphics/GraphicsRHI/OpenGL/*.hpp"
+        "src/Graphics/GraphicsRHI/OpenGL/*.cpp"
+    )
 endif()
 
 if(LN_USE_VULKAN)
     if(WIN32)
-        file(GLOB LOCAL_SOURCES_Vulkan "include/LuminoEngine/GraphicsRHI/Vulkan/*.hpp" "src/GraphicsRHI/Vulkan/*.hpp" "src/GraphicsRHI/Vulkan/*.cpp")
+        file(GLOB LOCAL_SOURCES_Vulkan
+            "include/LuminoEngine/Graphics/GraphicsRHI/Vulkan/*.hpp"
+            "src/Graphics/GraphicsRHI/Vulkan/*.hpp"
+            "src/Graphics/GraphicsRHI/Vulkan/*.cpp"
+        )
     endif()
 endif()
 
 if(LN_EMSCRIPTEN)
 elseif(WIN32)
-    file(GLOB LOCAL_SOURCES_DirectX12 "src/GraphicsRHI/DirectX12/*.hpp" "src/GraphicsRHI/DirectX12/*.cpp")
+    file(GLOB LOCAL_SOURCES_DirectX12
+        "src/Graphics/GraphicsRHI/DirectX12/*.hpp"
+        "src/Graphics/GraphicsRHI/DirectX12/*.cpp"
+    )
 elseif(APPLE)
 endif()
 
 if(LUMINO_USE_WEBGPU)
-    file(GLOB LOCAL_SOURCES_WebGPU "include/LuminoEngine/GraphicsRHI/WebGPU/*.hpp" "src/GraphicsRHI/WebGPU/*.hpp" "src/GraphicsRHI/WebGPU/*.cpp" "src/GraphicsRHI/WebGPU/*.md")
+    file(GLOB LOCAL_SOURCES_WebGPU
+        "include/LuminoEngine/Graphics/GraphicsRHI/WebGPU/*.hpp"
+        "src/Graphics/GraphicsRHI/WebGPU/*.hpp"
+        "src/Graphics/GraphicsRHI/WebGPU/*.cpp"
+        "src/Graphics/GraphicsRHI/WebGPU/*.md"
+    )
 endif()
 
 if(WIN32)
-    file(GLOB LOCAL_SOURCES_ShaderCompiler_Windows "src/GraphicsRHI/ShaderCompiler/Windows/*.hpp" "src/GraphicsRHI/ShaderCompiler/Windows/*.cpp")
+    file(GLOB LOCAL_SOURCES_ShaderCompiler_Windows
+        "src/Graphics/GraphicsRHI/ShaderCompiler/Windows/*.hpp"
+        "src/Graphics/GraphicsRHI/ShaderCompiler/Windows/*.cpp"
+    )
 endif()
 
 file(GLOB LN_SOURCES_Audio "include/LuminoEngine/Audio/*.hpp" "src/Audio/*.cpp" "src/Audio/*.hpp" "src/Audio/*.md")
@@ -116,22 +142,21 @@ source_group("Audio/Decoder" FILES ${LN_SOURCES_Audio_Decoder})
 source_group("Audio/Backend" FILES ${LN_SOURCES_Audio_Backend})
 source_group("Audio/ARIs" FILES ${LN_SOURCES_Audio_ARIs})
 
-source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Platform" FILES ${LN_SOURCES_Platform})
 
-
-source_group("GraphicsRHI" FILES ${LOCAL_SOURCES})
-source_group("GraphicsRHI/OpenGL" FILES ${LOCAL_SOURCES_OpenGL})
-source_group("GraphicsRHI/Vulkan" FILES ${LOCAL_SOURCES_Vulkan})
-source_group("GraphicsRHI/DirectX12" FILES ${LOCAL_SOURCES_DirectX12})
-source_group("GraphicsRHI/WebGPU" FILES ${LOCAL_SOURCES_WebGPU})
-source_group("GraphicsRHI/ShaderCompiler" FILES ${LOCAL_SOURCES_ShaderCompiler})
-source_group("GraphicsRHI/ShaderCompiler/Lexer" FILES ${LOCAL_SOURCES_ShaderCompiler_Lexer})
-source_group("GraphicsRHI/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCompiler_Windows})
-
-source_group("Animation" FILES ${LN_SOURCES_Animation})
+source_group("Graphics" FILES ${LN_SOURCES_Graphics})
 source_group("Graphics/Bitmap" FILES ${LN_SOURCES_Graphics_Bitmap})
 source_group("Graphics/Font" FILES ${LN_SOURCES_Graphics_Font})
+source_group("Graphics/GraphicsRHI" FILES ${LOCAL_SOURCES})
+source_group("Graphics/GraphicsRHI/OpenGL" FILES ${LOCAL_SOURCES_OpenGL})
+source_group("Graphics/GraphicsRHI/Vulkan" FILES ${LOCAL_SOURCES_Vulkan})
+source_group("Graphics/GraphicsRHI/DirectX12" FILES ${LOCAL_SOURCES_DirectX12})
+source_group("Graphics/GraphicsRHI/WebGPU" FILES ${LOCAL_SOURCES_WebGPU})
+source_group("Graphics/GraphicsRHI/ShaderCompiler" FILES ${LOCAL_SOURCES_ShaderCompiler})
+source_group("Graphics/GraphicsRHI/ShaderCompiler/Lexer" FILES ${LOCAL_SOURCES_ShaderCompiler_Lexer})
+source_group("Graphics/GraphicsRHI/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCompiler_Windows})
+
+source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("GPU" FILES ${LN_SOURCES_GPU})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Mesh/MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})

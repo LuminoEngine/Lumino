@@ -5,9 +5,9 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
-#include "../../LuminoEngine/src/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
-#include "../../LuminoEngine/src/GraphicsRHI/OpenGL/GLTextures.hpp"
-#include "../../LuminoEngine/src/GraphicsRHI/OpenGL/GLRenderPass.hpp"
+#include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
+#include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/GLTextures.hpp"
+#include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/GLRenderPass.hpp"
 
 namespace ln {
 

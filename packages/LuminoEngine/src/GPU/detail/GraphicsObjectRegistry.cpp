@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/GraphicsRHI/RHIObject.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/RHIObject.hpp>
 #include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
 #include <LuminoEngine/GPU/GraphicsResource.hpp>
 

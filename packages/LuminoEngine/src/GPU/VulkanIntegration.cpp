@@ -1,7 +1,7 @@
 ﻿#ifdef LN_USE_VULKAN
-#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanHelper.hpp>
-#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
-#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanTextures.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/DepthBuffer.hpp>
 #include <LuminoEngine/GPU/VulkanIntegration.hpp>

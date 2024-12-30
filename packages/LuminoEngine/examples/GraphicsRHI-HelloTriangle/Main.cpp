@@ -11,9 +11,9 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 
 //#include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
-#include <LuminoEngine/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include <LuminoEngine/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
-#include "../../LuminoEngine/src/GraphicsRHI/ShaderCompiler/UnifiedShaderCompiler.hpp"
+#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include "../../LuminoEngine/src/Graphics/GraphicsRHI/ShaderCompiler/UnifiedShaderCompiler.hpp"
 using namespace ln;
 
 struct ConstantParams {

@@ -15,7 +15,7 @@
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include "RenderPassCache.hpp"
 #include "GraphicsProfiler.hpp"
-#include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 
 namespace ln {
 
