@@ -1,5 +1,5 @@
 ﻿#include <LuminoCore/Testing/TestHelper.hpp>
-#include <LuminoEngine/Bitmap/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/Testing/GraphicsTestHelper.hpp>
 

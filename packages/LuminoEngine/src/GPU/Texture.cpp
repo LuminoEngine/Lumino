@@ -1,8 +1,8 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GraphicsRHI/GraphicsDeviceContext.hpp>
-#include <LuminoEngine/Bitmap/Bitmap.hpp>
-#include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
+#include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
 #include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>

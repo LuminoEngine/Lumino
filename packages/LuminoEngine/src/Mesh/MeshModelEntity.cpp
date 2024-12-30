@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/Bitmap/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

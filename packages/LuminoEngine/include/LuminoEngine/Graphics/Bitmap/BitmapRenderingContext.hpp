@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Font/Common.hpp>
 #include "Common.hpp"
 
 namespace ln {

@@ -2,7 +2,7 @@
 #pragma once
 #include <LuminoEngine/Base/Promise.hpp>
 #include <LuminoEngine/GraphicsRHI/Common.hpp>
-#include <LuminoEngine/Bitmap/Common.hpp>
+#include <LuminoEngine/Graphics/Bitmap/Common.hpp>
 
 namespace ln {
 class IGraphicsObject;

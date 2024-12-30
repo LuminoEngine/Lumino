@@ -1,7 +1,8 @@
 ﻿#pragma once
-#include "../Font/Common.hpp"
+//#include "../../Font/Common.hpp"
 
 namespace ln {
+class Font;
 class Texture2D;
 class Bitmap2D;
 class BitmapRenderingContext;

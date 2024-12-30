@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "LuminoEngine/Bitmap/Bitmap.hpp"
-#include "LuminoEngine/Bitmap/BitmapRenderingContext.hpp"
+#include "LuminoEngine/Graphics/Bitmap/Bitmap.hpp"
+#include "LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp"
 
 #include "LuminoEngine/Font/Font.hpp"
 

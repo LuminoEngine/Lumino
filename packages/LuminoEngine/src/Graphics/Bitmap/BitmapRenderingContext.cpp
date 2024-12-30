@@ -1,7 +1,7 @@
 ﻿#include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/Font/detail/TextLayoutEngine.hpp>
-#include <LuminoEngine/Bitmap/Bitmap.hpp>
-#include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
+#include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
 #include "BitmapEncoding.hpp"
 
 namespace ln {

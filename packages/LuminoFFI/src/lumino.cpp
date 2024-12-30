@@ -3,7 +3,7 @@
 
 
 #include <LuminoEngine/RHIModule.hpp>
-#include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
+#include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>

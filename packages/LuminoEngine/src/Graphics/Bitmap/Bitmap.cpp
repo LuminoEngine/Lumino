@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Bitmap/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
 #include "BitmapEncoding.hpp"
 
 namespace ln {
