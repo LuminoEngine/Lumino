@@ -33,17 +33,30 @@ const char* RuntimeStringBuffer::getAscii() {
 //==============================================================================
 // RuntimeManager
 
+URef<RuntimeManager> RuntimeManager::s_instance;
+
+MaybeResult RuntimeManager::initialize(const Settings& settings) {
+    if (s_instance) {
+        return LN_MAKE_SUCCESS();
+    }
+
+    s_instance = URef<RuntimeManager>(LN_NEW RuntimeManager());
+    auto result = s_instance->init(settings);
+    if (!result) {
+        return result;
+    }
+    return LN_MAKE_SUCCESS();
+}
+
+void RuntimeManager::terminate() {
+    if (s_instance) {
+        s_instance->dispose();
+        s_instance = nullptr;
+    }
+}
+
 RuntimeManager::RuntimeManager()
     : m_systemAliving(false) {
-    //    // 特に Binding-module にて、Engine 初期化以前にいろいろ処理を行うが、
-    //    // そこのログを出力したいので他の設定より先に有効化しておく。
-    //    ln::Logger::addStdErrAdapter();
-    //#ifdef LN_OS_ANDROID
-    //    ln::Logger::addLogcatAdapter();
-    //#endif
-    //#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
-    //    ln::Logger::addNLogAdapter();
-    //#endif
 }
 
 RuntimeManager::~RuntimeManager() {

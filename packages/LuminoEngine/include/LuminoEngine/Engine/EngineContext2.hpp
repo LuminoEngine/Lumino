@@ -33,9 +33,6 @@ public:
 
     const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
-    detail::RuntimeManager* runtimeManager() const { return m_runtimeManager.get(); }
-
-
     // TODO:
     RefObject* platformManager = nullptr;
     RefObject* shaderManager = nullptr;
@@ -55,7 +52,6 @@ private:
     List<Ref<Module>> m_modules;
     Ref<Dispatcher> m_mainThreadTaskDispatcher;
     Ref<DiagnosticsManager> m_activeDiagnostics;
-    URef<detail::RuntimeManager> m_runtimeManager;
     URef<detail::AssetManager> m_assetManager;
 };
 

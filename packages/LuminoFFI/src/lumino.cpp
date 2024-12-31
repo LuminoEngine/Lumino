@@ -61,11 +61,11 @@ public:
 };
 
 LNHandle Runtime::wrapObject(Object* obj, bool fromCreate) {
-    return ln::EngineContext2::instance()->runtimeManager()->makeObjectWrap(obj, fromCreate);
+    return detail::RuntimeManager::instance()->makeObjectWrap(obj, fromCreate);
 }
 
 Object* Runtime::getObject(LNHandle handle) {
-    return ln::EngineContext2::instance()->runtimeManager()->getObjectEntry(handle)->object;
+    return detail::RuntimeManager::instance()->getObjectEntry(handle)->object;
 }
 } // namespace ln
 
@@ -878,8 +878,8 @@ LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const L
 // LNObject
 
 LNResult LNObject_Release(LNHandle obj) {
-    if (EngineContext2* context = EngineContext2::instance()) {
-        context->runtimeManager()->releaseObjectExplicitly(obj);
+    if (detail::RuntimeManager* manager = detail::RuntimeManager::instance()) {
+        manager->releaseObjectExplicitly(obj);
         return LN_OK;
     }
     else {
@@ -888,8 +888,8 @@ LNResult LNObject_Release(LNHandle obj) {
 }
 
 LNResult LNObject_Retain(LNHandle obj) {
-    if (EngineContext2* context = EngineContext2::instance()) {
-        context->runtimeManager()->retainObjectExplicitly(obj);
+    if (detail::RuntimeManager* manager = detail::RuntimeManager::instance()) {
+        manager->retainObjectExplicitly(obj);
         return LN_OK;
     }
     else {

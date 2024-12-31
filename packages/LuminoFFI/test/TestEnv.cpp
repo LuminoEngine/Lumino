@@ -55,7 +55,7 @@ ln::Path TestEnv::getTempPath(const ln::Path& localPath) {
 }
 
 bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save) {
-    auto* m = ln::Engine::getEngineContext_()->runtimeManager();
+    auto* m = ln::detail::RuntimeManager::instance();
     auto context = static_cast<ln::GraphicsContext*>(m->getObjectEntry(graphicsContext)->object);
     return ln::GraphicsTestHelper::checkScreenShot(
         TestEnv::getTestDataPath(filePath), context, context->currentBackbuffer(), passRate, save);

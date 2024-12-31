@@ -57,6 +57,13 @@ MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
     }
 
     {
+        detail::RuntimeManager::Settings opt;
+        auto result = detail::RuntimeManager::initialize(opt);
+        if (!result) {
+            return result;
+        }
+    }
+    {
         detail::AssetManager::Settings settings2;
         settings2.assetStorageAccessPriority = settings.assetStorageAccessPriority;
         m_assetManager = makeURef<detail::AssetManager>();
@@ -70,9 +77,6 @@ MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
     // Register types
     registerModuleTypes_Runtime(RuntimeContext::current());
 
-    
-    m_runtimeManager = makeURef<detail::RuntimeManager>();
-    m_runtimeManager->init(detail::RuntimeManager::Settings());
 
 #if 0 // test
     { 
@@ -93,15 +97,12 @@ MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
 }
 
 void EngineContext2::dispose() {
-    if (m_runtimeManager) {
-        m_runtimeManager->dispose();
-        m_runtimeManager = nullptr;
-    }
-
     if (m_assetManager) {
         m_assetManager->dispose();
         m_assetManager = nullptr;
     }
+
+    detail::RuntimeManager::terminate();
 
     //detail::FetchManager::terminate();
 
