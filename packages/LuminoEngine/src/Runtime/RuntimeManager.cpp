@@ -12,11 +12,6 @@ RuntimeStringBuffer::RuntimeStringBuffer()
     : m_translated(false) {
 }
 
-// void RuntimeStringBuffer::init(const String& str)
-//{
-//     Object::init();
-//     m_str = str;
-
 void RuntimeStringBuffer::reset(const String& str) {
     m_str = str;
     m_translated = false;
