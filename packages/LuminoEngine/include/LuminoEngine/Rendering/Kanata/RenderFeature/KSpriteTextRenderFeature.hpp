@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../../../Graphics/Font/Common.hpp"
 #include <LuminoEngine/Graphics/Font/detail/TextLayoutEngine.hpp>
-#include "../../../../../src/TextRendering/FontGlyphCache.hpp"
+#include "../../../../../src/Graphics/TextRendering/FontGlyphCache.hpp"
 #include "../Common.hpp"
 
 namespace ln {

@@ -116,7 +116,11 @@ file(GLOB LN_SOURCES_Rendering_RenderingPipeline "include/LuminoEngine/Rendering
 file(GLOB LN_SOURCES_Rendering_Kanata "include/LuminoEngine/Rendering/Kanata/*.hpp" "src/Rendering/Kanata/*.cpp" "src/Rendering/Kanata/*.hpp")
 file(GLOB LN_SOURCES_Rendering_Kanata_RenderFeature "include/LuminoEngine/Rendering/Kanata/RenderFeature/*.hpp" "src/Rendering/Kanata/RenderFeature/*.cpp" "src/Rendering/Kanata/RenderFeature/*.hpp")
 file(GLOB LN_SOURCES_Testing "include/LuminoEngine/Testing/*.hpp" "src/Testing/*.cpp" "src/Testing/*.hpp")
-file(GLOB LN_SOURCES_TextRendering "include/LuminoEngine/TextRendering/*.hpp" "src/TextRendering/*.cpp" "src/TextRendering/*.hpp")
+file(GLOB LN_SOURCES_Graphics_TextRendering
+    "include/LuminoEngine/Graphics/TextRendering/*.hpp"
+    "src/Graphics/TextRendering/*.cpp"
+    "src/Graphics/TextRendering/*.hpp"
+)
 if (LN_USE_OPENGL)
     file(GLOB LN_SOURCES_GPU_RHI_OpenGL "src/GPU/RHI/OpenGL/*.cpp" "src/GPU/RHI/OpenGL/*.hpp")
 endif()
@@ -155,6 +159,7 @@ source_group("Graphics/GraphicsRHI/WebGPU" FILES ${LOCAL_SOURCES_WebGPU})
 source_group("Graphics/GraphicsRHI/ShaderCompiler" FILES ${LOCAL_SOURCES_ShaderCompiler})
 source_group("Graphics/GraphicsRHI/ShaderCompiler/Lexer" FILES ${LOCAL_SOURCES_ShaderCompiler_Lexer})
 source_group("Graphics/GraphicsRHI/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCompiler_Windows})
+source_group("Graphics/TextRendering" FILES ${LN_SOURCES_Graphics_TextRendering})
 
 source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("GPU" FILES ${LN_SOURCES_GPU})
@@ -169,7 +174,6 @@ source_group("Rendering/RenderingPipeline" FILES ${LN_SOURCES_Rendering_Renderin
 source_group("Rendering/Kanata" FILES ${LN_SOURCES_Rendering_Kanata})
 source_group("Rendering/Kanata/RenderFeature" FILES ${LN_SOURCES_Rendering_Kanata_RenderFeature})
 source_group("Testing" FILES ${LN_SOURCES_Testing})
-source_group("TextRendering" FILES ${LN_SOURCES_TextRendering})
 
 set(LN_SOURCES
     ${LN_SOURCES_Common}
@@ -210,7 +214,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Rendering_Kanata}
     ${LN_SOURCES_Rendering_Kanata_RenderFeature}
     ${LN_SOURCES_Testing}
-    ${LN_SOURCES_TextRendering}
+    ${LN_SOURCES_Graphics_TextRendering}
 )
 
 #-------------------------------------------------------------------------------

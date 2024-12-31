@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
-#include "../../../TextRendering/TextRenderingCache.hpp"
+#include "../../../Graphics/TextRendering/TextRenderingCache.hpp"
 
 namespace ln {
 namespace kanata {
