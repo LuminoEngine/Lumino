@@ -18,9 +18,14 @@ struct GraphicsOptions {
     GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
 };
 
+struct AudioOptions {
+    bool enabled = false;
+};
+
 struct EngineOptions {
     PlatformOptions platform;
     GraphicsOptions graphics;
+    AudioOptions audio;
 };
 
 class Engine {

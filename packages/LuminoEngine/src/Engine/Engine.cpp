@@ -12,6 +12,7 @@
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include "../Audio/AudioManager.hpp"
 //#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Engine/Engine.hpp>
 
@@ -64,10 +65,21 @@ MaybeResult Engine::initialize(const EngineOptions& options) {
             }
         }
     }
-    return ok();
+
+    
+    if (options.audio.enabled) {
+        detail::AudioManager2::Settings settings;
+        settings.assetManager = detail::AssetManager::instance();
+        auto result = detail::AudioManager2::initialize(settings);
+        if (!result) {
+            return result;
+        }
+    }
+    return LN_MAKE_SUCCESS();
 }
 
 void Engine::terminate() {
+    detail::AudioManager2::terminate();
     detail::RenderingManager::terminate();
     detail::FontManager::terminate();
     GraphicsModule::terminate();

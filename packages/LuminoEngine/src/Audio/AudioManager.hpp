@@ -8,12 +8,42 @@
 
 namespace ln {
 class AudioContext;
+class AudioContext2;
 namespace detail {
 class AudioDecoder;
 class AssetManager;
 class GameAudioImpl;
 class GameAudioImpl2;
 class SoundCore;
+
+
+class AudioManager2 : public RefObject {
+public:
+    struct Settings {
+        AssetManager* assetManager;
+    };
+
+    static MaybeResult initialize(const Settings& settings);
+    static void terminate();
+    static inline AudioManager2* instance() { return s_instance.get(); }
+
+    const Ref<AudioContext2>& audioContext() const { return m_audioContext; }
+
+private:
+    AudioManager2();
+    virtual ~AudioManager2();
+    MaybeResult init(const Settings& settings);
+    void dispose();
+
+    AssetManager* m_assetManager;
+    Ref<AudioContext2> m_audioContext;
+
+    static Ref<AudioManager2> s_instance;
+};
+
+
+
+
 
 //enum class OperationCode
 //{

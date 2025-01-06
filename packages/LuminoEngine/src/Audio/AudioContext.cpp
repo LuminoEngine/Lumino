@@ -12,6 +12,67 @@
 
 namespace ln {
 
+AudioContext2::AudioContext2() {
+
+}
+
+AudioContext2::~AudioContext2() {
+}
+
+MaybeResult AudioContext2::init() {
+
+#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+    auto device = makeRef<detail::ALAudioDevice>();
+    device->init(detail::ARINode::ProcessingSizeInFrames);
+    m_audioDevice = device;
+
+#elif defined(LN_EMSCRIPTEN)
+    {
+        auto device = makeRef<detail::ALAudioDevice>();
+        device->init(detail::ARINode::ProcessingSizeInFrames);
+        m_audioDevice = device;
+    }
+#elif defined(LN_USE_SDL)
+    auto device = makeRef<detail::SDLAudioDevice>();
+    device->init();
+    m_audioDevice = device;
+#elif defined(LN_OS_WIN32)
+    //auto device = makeRef<detail::DSoundAudioDevice>();
+
+    //{
+    //	auto device = makeRef<detail::ALAudioDevice>();
+    //	device->init(detail::ARINode::ProcessingSizeInFrames);
+    //	m_audioDevice = device;
+    //}
+
+    if (!m_audioDevice) {
+        bool noDevice = false;
+        auto device = makeRef<detail::DSoundAudioDevice>();
+        device->init(detail::ARINode::ProcessingSizeInFrames, &noDevice);
+        if (noDevice) {
+            device->dispose();
+        }
+        else {
+            m_audioDevice = device;
+        }
+    }
+#endif
+    if (!m_audioDevice) {
+        auto device = makeRef<detail::NullAudioDevice>();
+        m_audioDevice = device;
+        LN_LOG_INFO("Use NullAudioDevice");
+    }
+
+    return LN_MAKE_SUCCESS();
+}
+
+void AudioContext2::dispose() {
+    if (m_audioDevice) {
+        m_audioDevice->dispose();
+        m_audioDevice = nullptr;
+    }
+}
+
 //==============================================================================
 // AudioContext
 

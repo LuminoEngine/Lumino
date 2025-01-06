@@ -13,6 +13,21 @@ class AudioNode;
 class AudioDestinationNode;
 class Sound;
 
+class AudioContext2 : public RefObject {
+public:
+    AudioContext2();
+    ~AudioContext2() override;
+    MaybeResult init();
+    void dispose();
+
+private:
+    Ref<detail::AudioDevice> m_audioDevice;
+};
+
+
+
+
+
 class AudioContext
 	: public RefObject
 {

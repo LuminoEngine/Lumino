@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Audio/AudioBus.hpp>
+#include <LuminoEngine/Audio/AudioFrame.hpp>
 #include "ARIs/ChromiumWebCore.hpp"
 #include "ARIs/VectorMath.h"
 

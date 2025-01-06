@@ -15,10 +15,82 @@
 namespace ln {
 namespace detail {
 
-Ref<AudioManager> AudioManager::s_instance;
+//==============================================================================
+// AudioManager2
+
+// NOTE: 再設計
+//	0.10.0 あたりの Audio は、次のような構造だった。
+//	- コマンドによって Audio Thread と通信していた。
+//	- 音声データのロード処理も Audio モジュール側で対応していた。
+//	- WebAudio にかなり近い構造。
+//  - Node の動的な差し替えにウェイトを置いていた。
+//	このため複雑で、ポータビリティが失われていた。
+// 
+//	新しい Audio モジュールは、次のような構造にする。
+// 	- ポータビリティ重視。 wasm などの環境でも動くようにする。
+// 	- スレッドが無くても動かす手段を提供する。
+// 	- レイアウトは事前構築を前提とし、スレッドとの通信は単純な共有ロックで行う。
+// 	  (後からレイアウト変更もできなくはないけど、オーバーヘッドが大きい)
+//   
+
+Ref<AudioManager2> AudioManager2::s_instance;
+
+MaybeResult AudioManager2::initialize(const Settings& settings) {
+    if (s_instance) {
+        return LN_MAKE_SUCCESS();
+    }
+
+    auto m = Ref<AudioManager2>(LN_NEW AudioManager2(), false);
+    s_instance = m; // init の中でアクセスするので先に set
+    auto result = s_instance->init(settings);
+    if (!result) {
+        return result;
+    }
+
+    return LN_MAKE_SUCCESS();
+}
+
+void AudioManager2::terminate() {
+    if (s_instance) {
+        s_instance->dispose();
+        s_instance = nullptr;
+    }
+}
+
+AudioManager2::AudioManager2()
+    : m_audioContext() {
+}
+
+AudioManager2::~AudioManager2() {
+}
+
+MaybeResult AudioManager2::init(const Settings& settings) {
+    LN_LOG_DEBUG("AudioManager Initialization started.");
+
+    m_assetManager = settings.assetManager;
+
+    m_audioContext = makeRef<AudioContext2>();
+    auto result = m_audioContext->init();
+    if (!result) {
+        return result;
+    }
+
+    LN_LOG_DEBUG("AudioManager Initialization ended.");
+    return LN_MAKE_SUCCESS();
+}
+
+void AudioManager2::dispose() {
+    if (m_audioContext) {
+        m_audioContext->dispose();
+		m_audioContext = nullptr;
+    }
+}
+
 
 //==============================================================================
 // AudioManager
+
+Ref<AudioManager> AudioManager::s_instance;
 
 MaybeResult AudioManager::initialize(const Settings& settings) {
     if (s_instance) {

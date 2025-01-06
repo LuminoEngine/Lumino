@@ -1,5 +1,26 @@
 ﻿#pragma once
 
+namespace ln {
+
+// TODO: AudioBuffer
+class AudioFrame : public RefObject {
+	// NOTE: v0.10.0 までの ARIAudioBus に相当するクラス。
+	//	通常、 1秒分の音声データを保持するバッファ。
+	//	chome(blink) の Bus に相当する。
+	//	godot だと AudioFrame は L-R の１サンプリング分の構造体なので、godot を参考にする際は注意。
+
+	// NOTE: インターリーブ配列とするかどうか
+	//  インターリーブ配列は、例えば 2ch の場合、LRLRLRLR... というようにデータが並ぶ。
+	//  これは Master からサウンドドライバに流す音声データの形式。
+    //  godot はこの形式だが、 chome(blink) や WebAudio、 LoSound は非インターリーブ配列を使っている。
+	//  godot は常に 2ch を前提としているため、音声フィルタは全てそれを前提に作られている。
+    //  インターリーブ配列の方がドライバに送る際に変換が不要であるため、効率が良い。
+    //  一般的なのは非インターリーブ配列の方だと思う。
+};
+
+} // namespace ln
+
+
 #if 0
 namespace ln {
 
