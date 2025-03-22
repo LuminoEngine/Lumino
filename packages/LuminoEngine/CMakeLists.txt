@@ -305,6 +305,10 @@ if(LUMINO_USE_WEBGPU)
     target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_USE_WEBGPU=1)
 endif()
 
+if (LN_USE_OPENAL)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC LN_USE_OPENAL=1)
+endif()
+
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------

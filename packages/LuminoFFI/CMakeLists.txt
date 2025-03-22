@@ -39,7 +39,7 @@ if(LN_EMSCRIPTEN)
     # その結果、<scripts> によってロードした .js では __dirname など使えない機能にアクセスしようとする。
     # (emscripten 1.30 台の頃は大丈夫だったようだが…)
     # 次のように指定することで、node に関する処理を削ることができる。
-    string(APPEND LOCAL_LINK_FLAGS " -s ENVIRONMENT=web,worker")
+    string(APPEND LOCAL_LINK_FLAGS " -s ENVIRONMENT=web")
 
     # Lumino 0.11 時点では glBindBufferRange 等を使用しているため、
     # OpenGL ES 3.0 有効化が必要。 (2.0 ではなく)

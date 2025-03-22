@@ -1,8 +1,12 @@
 
 // @ts-ignore
-import LuminoFFIModule from "../lib/LuminoFFI.js";
+import LuminoFFIModule from "../lib/LuminoFFI.mjs";
 
-console.log("LuminoFFIModule", LuminoFFIModule);
+//import * as LuminoFFIModule from "../lib/LuminoFFI.js";
+// const LuminoFFIModule1 = require("../lib/LuminoFFI.js");
+// const LuminoFFIModule = LuminoFFIModule1();
+// console.log("LuminoFFIModule1", LuminoFFIModule);
+//console.log("LuminoFFIModule2", LuminoFFIModule());
 
 export interface RuntimeOptions {
     locateFile?: (path: string) => string;

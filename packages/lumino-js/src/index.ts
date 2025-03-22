@@ -10,7 +10,7 @@ export * from "./GraphicsCommandList";
 export * from "./GraphicsViewPoint";
 export * from "./graphics/Material";
 export * from "./Texture2D";
-export * from "./graphics/SpriteRenderer.js";
+export * from "./graphics/SpriteRenderer";
 import { RenderTexture } from "./RenderTargetTexture";
 
 import { Runtime, API } from "./Runtime";
