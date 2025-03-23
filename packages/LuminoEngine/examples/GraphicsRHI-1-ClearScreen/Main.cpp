@@ -3,7 +3,6 @@
 #endif
 #include <LuminoCore.hpp>
 #include <LuminoEngine/Engine/Engine.hpp>
-#include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>

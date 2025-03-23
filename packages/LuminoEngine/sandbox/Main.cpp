@@ -1,7 +1,6 @@
 ﻿#include <LuminoCore.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/Engine/Engine.hpp>
-#include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
