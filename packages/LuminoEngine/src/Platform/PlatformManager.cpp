@@ -14,16 +14,16 @@ PlatformManager* PlatformManager::initialize(const Settings& settings) {
     auto m = Ref<PlatformManager>(LN_NEW detail::PlatformManager(), false);
     if (!m->init(settings)) return nullptr;
 
-    EngineContext2::instance()->registerModule(m);
-    EngineContext2::instance()->platformManager = m;
+    EngineManager::instance()->registerModule(m);
+    EngineManager::instance()->platformManager = m;
     return m;
 }
 
 void PlatformManager::terminate() {
     if (instance()) {
         instance()->dispose();
-        EngineContext2::instance()->unregisterModule(instance());
-        EngineContext2::instance()->platformManager = nullptr;
+        EngineManager::instance()->unregisterModule(instance());
+        EngineManager::instance()->platformManager = nullptr;
     }
 }
 
@@ -73,9 +73,9 @@ Result<> PlatformManager::init(const Settings& settings) {
         m_windowManager = windowManager;
     }
 
-    if (settings.mainWindowSettings.clientWidth != 0 || settings.mainWindowSettings.clientHeight != 0) {
-        m_mainWindow = createWindow(settings.mainWindowSettings);
-    }
+    //if (settings.mainWindowSettings.clientWidth != 0 || settings.mainWindowSettings.clientHeight != 0) {
+    //    m_mainWindow = createWindow(settings.mainWindowSettings);
+    //}
 
     return ok();
 }

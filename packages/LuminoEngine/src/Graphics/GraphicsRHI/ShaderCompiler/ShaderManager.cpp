@@ -21,8 +21,8 @@ ShaderManager* ShaderManager::initialize(const Settings& settings)
     auto m = Ref<ShaderManager>(LN_NEW detail::ShaderManager(), false);
     if (!m->init(settings)) return nullptr;
 
-    EngineContext2::instance()->registerModule(m);
-    EngineContext2::instance()->shaderManager = m;
+    EngineManager::instance()->registerModule(m);
+    EngineManager::instance()->shaderManager = m;
     return m;
 }
 
@@ -30,8 +30,8 @@ void ShaderManager::terminate()
 {
     if (instance()) {
         instance()->dispose();
-        EngineContext2::instance()->unregisterModule(instance());
-        EngineContext2::instance()->shaderManager = nullptr;
+        EngineManager::instance()->unregisterModule(instance());
+        EngineManager::instance()->shaderManager = nullptr;
     }
 }
 

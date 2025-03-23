@@ -7,9 +7,13 @@ namespace ln {
 
 struct PlatformOptions {
     bool enabled = true;
+    [[dprecated]]
     String title = U"Lumino";
+    [[dprecated]]
     int width = 640;
+    [[dprecated]]
     int height = 480;
+    [[dprecated]]
     WindowSystem windowSystem = WindowSystem::Native;
 };
 
@@ -34,7 +38,7 @@ public:
     static void terminate();
     static void mountAssetDirectory(const StringView& path);
     static void mountAssetArchive(const StringView& filePath, const StringView& password = StringView());
-    static EngineContext2* getEngineContext_();
+    static EngineManager* getEngineContext_();
 };
 
 } // namespace ln

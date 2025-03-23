@@ -5,7 +5,9 @@
 namespace ln {
 
 struct PlatformModuleSettings {
+    [[deprecated]]
     WindowCreationSettings mainWindowSettings;
+    [[deprecated]]
     WindowSystem windowSystem = WindowSystem::Native;
 };
 

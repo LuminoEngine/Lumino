@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/EngineManager.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 #include "../../GPU/Common.hpp"
@@ -35,7 +35,9 @@ public:
 
     static GraphicsManager* initialize(const Settings& settings);
     static void terminate();
-    static inline GraphicsManager* instance() { return static_cast<GraphicsManager*>(EngineContext2::instance()->graphicsManager); }
+    static inline GraphicsManager* instance() {
+        return static_cast<GraphicsManager*>(EngineManager::instance()->graphicsManager);
+    }
 
     virtual ~GraphicsManager() = default;
 

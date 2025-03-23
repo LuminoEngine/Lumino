@@ -4,7 +4,7 @@
 #include <LuminoEngine/Base/Fetch.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/EngineManager.hpp>
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -15,33 +15,33 @@ namespace ln {
 
 void registerModuleTypes_Runtime(RuntimeContext* context);
 
-std::unique_ptr<EngineContext2> EngineContext2::s_instance;
+std::unique_ptr<EngineManager> EngineManager::s_instance;
 
-MaybeResult EngineContext2::initialize(const RuntimeModuleSettings& settings, EngineContext2* sharedContext) {
+MaybeResult EngineManager::initialize(const RuntimeModuleSettings& settings, EngineManager* sharedContext) {
     if (sharedContext) {
         LN_NOTIMPLEMENTED();
         return LN_MAKE_ERROR();
     }
 
     if (s_instance) return LN_MAKE_SUCCESS();
-    s_instance = std::unique_ptr<EngineContext2>(LN_NEW EngineContext2());
+    s_instance = std::unique_ptr<EngineManager>(LN_NEW EngineManager());
     return s_instance->init(settings);
 }
 
-void EngineContext2::terminate() {
+void EngineManager::terminate() {
     if (s_instance) {
         s_instance->dispose();
         s_instance = nullptr;
     }
 }
 
-EngineContext2::EngineContext2() {
+EngineManager::EngineManager() {
 }
 
-EngineContext2::~EngineContext2() {
+EngineManager::~EngineManager() {
 }
 
-MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
+MaybeResult EngineManager::init(const RuntimeModuleSettings& settings) {
 
 #ifdef LN_EMSCRIPTEN
 #else
@@ -96,7 +96,7 @@ MaybeResult EngineContext2::init(const RuntimeModuleSettings& settings) {
     return LN_MAKE_SUCCESS();
 }
 
-void EngineContext2::dispose() {
+void EngineManager::dispose() {
     if (m_assetManager) {
         m_assetManager->dispose();
         m_assetManager = nullptr;
@@ -116,14 +116,14 @@ void EngineContext2::dispose() {
 #endif
 }
 
-void EngineContext2::registerModule(Module* mod) {
+void EngineManager::registerModule(Module* mod) {
     if (LN_REQUIRE(!mod->m_context)) return;
     mod->m_context = this;
     mod->onRegisterTypes(this);
     m_modules.add(mod);
 }
 
-void EngineContext2::unregisterModule(Module* mod) {
+void EngineManager::unregisterModule(Module* mod) {
     m_modules.removeIf([&](const auto& x) { return x == mod; });
 }
 

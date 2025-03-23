@@ -9,7 +9,8 @@ import LuminoFFIModule from "../lib/LuminoFFI.mjs";
 //console.log("LuminoFFIModule2", LuminoFFIModule());
 
 export interface RuntimeOptions {
-    locateFile?: (path: string) => string;
+    /** LuminoFFI.wasm URL */
+    wasmPath: string;
 }
 
 export class Runtime {
@@ -26,9 +27,29 @@ export class Runtime {
     public static webglContextHandle: number = 0;
 
     public static initialize(options?: RuntimeOptions): Promise<void> {
+        let wasmPath = options?.wasmPath;
+
+        // If the .wasm file path is not specified, the default value will be used.
+        if (!wasmPath) {
+            // @ts-ignore
+            if (typeof __dirname !== 'undefined') {
+                // If Node.js, the same folder path.
+                // @ts-ignore
+                wasmPath = __dirname + "/LuminoFFI.wasm";
+            }
+            else {
+                // Home URL based.
+                wasmPath = "LuminoFFI.wasm";
+            }
+        }
 
         var moduleArg = {
-            locateFile: options?.locateFile,
+            locateFile: (path: string) => {
+                if (wasmPath && path === "LuminoFFI.wasm") {
+                    return wasmPath;
+                }
+                return path;
+            },
             LuminoGLSubmitCommandList2: (ptr: number) => {
                 console.log("LuminoGLSubmitCommandList22", ptr);
                 const size = 4 * 2;

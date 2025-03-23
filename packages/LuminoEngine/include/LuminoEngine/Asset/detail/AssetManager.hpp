@@ -2,7 +2,7 @@
 #pragma once
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/EngineManager.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
@@ -26,7 +26,7 @@ public:
     };
     // static AssetManager* initialize(const Settings& settings);
     // static void terminate();
-     static inline AssetManager* instance() { return EngineContext2::instance()->assetManager(); }
+    static inline AssetManager* instance() { return EngineManager::instance()->assetManager(); }
 
     AssetManager();
     virtual ~AssetManager();

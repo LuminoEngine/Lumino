@@ -102,18 +102,18 @@ GraphicsManager* GraphicsManager::initialize(const Settings& settings) {
     if (instance()) return instance();
 
     auto m = Ref<GraphicsManager>(LN_NEW detail::GraphicsManager(), false);
-    EngineContext2::instance()->graphicsManager = m; // init の中でアクセスするので先に set
+    EngineManager::instance()->graphicsManager = m; // init の中でアクセスするので先に set
     if (!m->init(settings)) return nullptr;
 
-    EngineContext2::instance()->registerModule(m);
+    EngineManager::instance()->registerModule(m);
     return m;
 }
 
 void GraphicsManager::terminate() {
     if (instance()) {
         instance()->dispose();
-        EngineContext2::instance()->unregisterModule(instance());
-        EngineContext2::instance()->graphicsManager = nullptr;
+        EngineManager::instance()->unregisterModule(instance());
+        EngineManager::instance()->graphicsManager = nullptr;
     }
 }
 

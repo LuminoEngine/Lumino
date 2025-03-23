@@ -1,4 +1,4 @@
-import * as Lumino from "./../lib/lumino.mjs";
+import * as Lumino from "../lib/lumino.mjs";
 
 //const image = new Image();
 const imagePath = "./icon256.png";

@@ -1,6 +1,6 @@
 ﻿#include "Internal.hpp"
 #include <LuminoCore/IO/detail/PathHelper.hpp>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/EngineManager.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include "AssetArchive.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -21,8 +21,8 @@ const String AssetManager::LocalhostPrefix = _TT("local");
 //    auto m = Ref<AssetManager>(LN_NEW detail::AssetManager(), false);
 //    if (!m->init(settings)) return nullptr;
 //
-//    EngineContext2::instance()->registerModule(m);
-//    EngineContext2::instance()->assetManager = m;
+//    EngineManager::instance()->registerModule(m);
+//    EngineManager::instance()->assetManager = m;
 //    return m;
 //}
 //
@@ -30,8 +30,8 @@ const String AssetManager::LocalhostPrefix = _TT("local");
 //{
 //    if (instance()) {
 //        instance()->dispose();
-//        EngineContext2::instance()->unregisterModule(instance());
-//        EngineContext2::instance()->assetManager = nullptr;
+//        EngineManager::instance()->unregisterModule(instance());
+//        EngineManager::instance()->assetManager = nullptr;
 //    }
 //}
 

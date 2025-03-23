@@ -13,12 +13,12 @@ class RuntimeManager;
 class AssetManager;
 } // namespace detail
 
-class EngineContext2 {
+class EngineManager {
 public:
-    static EngineContext2* instance() { return s_instance.get(); };
+    static EngineManager* instance() { return s_instance.get(); };
 
     /** Initialize context. */
-    static MaybeResult initialize(const RuntimeModuleSettings& settings, EngineContext2* sharedContext = nullptr);
+    static MaybeResult initialize(const RuntimeModuleSettings& settings, EngineManager* sharedContext = nullptr);
 
     /** Terminate context. */
     static void terminate();
@@ -40,14 +40,14 @@ public:
 
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
 
-    ~EngineContext2();
+    ~EngineManager();
 
 private:
-    EngineContext2();
+    EngineManager();
     MaybeResult init(const RuntimeModuleSettings& settings);
     void dispose();
 
-    static std::unique_ptr<EngineContext2> s_instance;
+    static std::unique_ptr<EngineManager> s_instance;
 
     List<Ref<Module>> m_modules;
     Ref<Dispatcher> m_mainThreadTaskDispatcher;

@@ -10,7 +10,7 @@ Module::Module()
 Module::~Module() {
 }
 
-void Module::onRegisterTypes(EngineContext2* context) {
+void Module::onRegisterTypes(EngineManager* context) {
 }
 
 } // namespace ln

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
-class EngineContext2;
+class EngineManager;
 class Module;
 class Dispatcher;
 class DiagnosticsManager;

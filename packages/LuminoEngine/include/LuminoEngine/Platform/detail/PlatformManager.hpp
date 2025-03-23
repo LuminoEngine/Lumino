@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/EngineManager.hpp>
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include "../Common.hpp"
 
@@ -18,7 +18,9 @@ public:
 
     static PlatformManager* initialize(const Settings& settings);
     static void terminate();
-    static inline PlatformManager* instance() { return static_cast<PlatformManager*>(EngineContext2::instance()->platformManager); }
+    static inline PlatformManager* instance() {
+        return static_cast<PlatformManager*>(EngineManager::instance()->platformManager);
+    }
 
     const Ref<PlatformWindowManager>& windowManager() const { return m_windowManager; }
 

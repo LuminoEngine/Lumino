@@ -875,6 +875,16 @@ LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const L
 #endif
 
 //==============================================================================
+// LNWindow
+//==============================================================================
+LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNHandle* outWindow) {
+    LN_FFI_TRY_BEGIN;
+    //Ref<Window> window = Window::create(width, height);
+    //*outWindow = ::Runtime::wrapObject(window, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
 // LNObject
 
 LNResult LNObject_Release(LNHandle obj) {

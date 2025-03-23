@@ -30,7 +30,7 @@ namespace ln {
 //
 
 MaybeResult Engine::initialize(const EngineOptions& options) {
-    if (!EngineContext2::initialize(RuntimeModuleSettings{})) {
+    if (!EngineManager::initialize(RuntimeModuleSettings{})) {
         return LN_MAKE_ERROR();
     }
 
@@ -84,19 +84,19 @@ void Engine::terminate() {
     detail::FontManager::terminate();
     GraphicsModule::terminate();
     PlatformModule::terminate();
-    EngineContext2::terminate();
+    EngineManager::terminate();
 }
 
 void Engine::mountAssetDirectory(const StringView& path) {
-    EngineContext2::instance()->assetManager()->addAssetDirectory(path);
+    EngineManager::instance()->assetManager()->addAssetDirectory(path);
 }
 
 void Engine::mountAssetArchive(const StringView& filePath, const StringView& password) {
-    EngineContext2::instance()->assetManager()->mountAssetArchive(filePath, password);
+    EngineManager::instance()->assetManager()->mountAssetArchive(filePath, password);
 }
 
-EngineContext2* Engine::getEngineContext_() {
-    return EngineContext2::instance();
+EngineManager* Engine::getEngineContext_() {
+    return EngineManager::instance();
 }
 
 } // namespace ln

@@ -9,7 +9,8 @@
 
 npm link
 npm link luminoengine
-
+npm unlink luminoengine
+npm unlink
 
 ### esbuild は使わないの？
 

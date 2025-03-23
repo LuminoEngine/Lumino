@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/Engine/EngineContext2.hpp>
+﻿#include <LuminoEngine/Engine/EngineManager.hpp>
 #include <LuminoEngine/Base/Fetch.hpp>
 
 class Test_Base_Fetch : public ::testing::Test {};

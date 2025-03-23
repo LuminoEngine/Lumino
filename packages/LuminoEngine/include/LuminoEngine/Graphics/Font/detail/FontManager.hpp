@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <list>
-#include <LuminoEngine/Engine/EngineContext2.hpp>
+#include <LuminoEngine/Engine/EngineManager.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Graphics/Font/Common.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>

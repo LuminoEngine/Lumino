@@ -45,6 +45,9 @@ typedef int32_t LNHandle;
 
 typedef intptr_t LNStructHandle;
 
+/** UTF-8 char. */
+typedef char LNChar;
+
 typedef int8_t LNBool;
 #define LN_TRUE 1
 #define LN_FALSE 0
@@ -314,6 +317,11 @@ extern LUMINO_API LNResult LNSpriteTextRenderer_EndBatch(LNHandle spriteTextRend
 #if 0
 extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer, const LNMatrix* localTransformOrNull, const char* text);
 #endif
+
+//==============================================================================
+// LNWindow
+//==============================================================================
+extern LUMINO_API LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNHandle* outWindow);
 
 //==============================================================================
 // LNObject
