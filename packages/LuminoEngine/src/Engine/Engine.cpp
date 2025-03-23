@@ -32,14 +32,12 @@ namespace ln {
 MaybeResult Engine::initialize(const EngineOptions& options) {
     RuntimeModuleSettings engineOptions;
     engineOptions.windowSystem = options.platform.windowSystem;
+    engineOptions.graphicsAPI = options.graphics.graphicsAPI;
     if (!EngineManager::initialize(engineOptions)) {
         return LN_MAKE_ERROR();
     }
 
     if (options.graphics.enabled) {
-        if (!GraphicsModule::initialize({ options.graphics.graphicsAPI })) {
-            return err();
-        }
 
         {
             detail::FontManager::Settings settings;
@@ -51,7 +49,7 @@ MaybeResult Engine::initialize(const EngineOptions& options) {
 
         {
             detail::RenderingManager::Settings settings;
-            settings.graphicsManager = detail::GraphicsManager::instance();
+            settings.graphicsManager = EngineManager::instance()->graphicsManager();
             settings.fontManager = detail::FontManager::instance();
             if (!detail::RenderingManager::initialize(settings)) {
                 return err();
@@ -75,7 +73,6 @@ void Engine::terminate() {
     detail::AudioManager2::terminate();
     detail::RenderingManager::terminate();
     detail::FontManager::terminate();
-    GraphicsModule::terminate();
     EngineManager::terminate();
 }
 

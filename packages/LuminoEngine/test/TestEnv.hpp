@@ -29,6 +29,7 @@ public:
     static void setup();
     static void teardown();
     static void initializeRendering();
+    static void resetView() { renderView->resetView(); }
 
     static bool isCI;
     static Ref<PlatformWindow> mainWindow;
@@ -37,4 +38,3 @@ public:
     static Ref<TestRenderVew> renderView;
 };
 
-#define RESET_VIEW() TestEnv::renderView->resetView()

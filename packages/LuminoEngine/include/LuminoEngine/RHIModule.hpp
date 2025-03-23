@@ -9,25 +9,5 @@ class AssetManager;
 class PlatformManager;
 } // namespace detail
 
-struct GraphicsModuleSettings {
-    GraphicsAPI graphicsAPI = GraphicsAPI::Default;
-    String priorityGPUName;
-    bool debugMode = false;
-};
-
-class GraphicsModule : public Module {
-public:
-    /**
-     * Initialize Module.
-     */
-    static GraphicsModule* initialize(const GraphicsModuleSettings& settings = {});
-
-    /**
-     * Terminate Module.
-     */
-    static void terminate();
-
-private:
-};
 
 } // namespace ln

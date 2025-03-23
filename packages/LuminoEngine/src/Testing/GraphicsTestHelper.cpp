@@ -13,7 +13,7 @@ bool GraphicsTestHelper::checkScreenShot(const Path& filePath, GraphicsContext* 
     else {
         bool result = equalsScreenShot(filePath, context, renderTarget, passRate);
         if (!result) {
-            saveScreenShot(LN_ASSETFILE("Result/0-latest-failer.png"), context, renderTarget);
+            saveScreenShot(LN_ASSETFILE("0-latest-failer.png"), context, renderTarget);
         }
         return result;
     }

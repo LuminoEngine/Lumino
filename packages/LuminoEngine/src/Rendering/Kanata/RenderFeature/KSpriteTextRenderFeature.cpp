@@ -2,6 +2,7 @@
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
@@ -11,7 +12,8 @@ namespace ln {
 namespace kanata {
 
 SpriteTextRenderFeature::SpriteTextRenderFeature(detail::RenderingManager* manager)
-    : m_currentCollector(nullptr)
+    : m_manager(manager)
+    , m_currentCollector(nullptr)
     , m_material(nullptr)
     , m_drawingAnchor(nullptr)
     , m_drawingColor(nullptr)
@@ -256,11 +258,12 @@ void SpriteTextRenderFeature::buildSpriteList() {
         batch->vertexLayout = m_currentCollector->standardVertexDeclaration();
         batch->primitiveTopology = PrimitiveTopology::TriangleList;
         batch->overrideTexture = m_cacheTexture;
-        if (m_drawingSamplerState)
+        if (m_drawingSamplerState) {
             batch->overrideSamplerState = m_drawingSamplerState;
-        else
-            batch->overrideSamplerState = detail::GraphicsManager::instance()->defaultSamplerState();
-
+        }
+        else {
+            batch->overrideSamplerState = m_manager->graphicsManager()->defaultSamplerState();
+        }
     }
 }
 

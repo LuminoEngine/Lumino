@@ -38,8 +38,9 @@ void TestEnv::setup() {
     options.platform.width = 160;
     options.platform.height = 120;
     options.platform.windowSystem = windowSystem;
+    options.graphics.enabled = true;
+    options.graphics.graphicsAPI = graphicsAPI;
     Engine::initialize(options);
-    GraphicsModule::initialize({ graphicsAPI });
 
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));
@@ -54,12 +55,12 @@ void TestEnv::setup() {
 }
 
 void TestEnv::initializeRendering() {
-    if (detail::RenderingManager::instance()) return;
+    if (renderView) return;
 
-    detail::RenderingManager::Settings renderingManagerSettings;
-    renderingManagerSettings.graphicsManager = detail::GraphicsManager::instance();
-    renderingManagerSettings.fontManager = nullptr;
-    detail::RenderingManager::initialize(renderingManagerSettings);
+    //detail::RenderingManager::Settings renderingManagerSettings;
+    //renderingManagerSettings.graphicsManager = detail::GraphicsManager::instance();
+    //renderingManagerSettings.fontManager = nullptr;
+    //detail::RenderingManager::initialize(renderingManagerSettings);
 
     flatRenderingPipeline = makeObject_deprecated<FlatRenderingPipeline>();
     renderView = makeObject_deprecated<TestRenderVew>();
@@ -75,7 +76,6 @@ void TestEnv::teardown() {
     swapChain = nullptr;
 
     detail::RenderingManager::terminate();
-    GraphicsModule::terminate();
     Engine::terminate();
 }
 

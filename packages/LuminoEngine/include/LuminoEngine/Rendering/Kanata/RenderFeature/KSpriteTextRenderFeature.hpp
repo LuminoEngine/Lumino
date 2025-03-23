@@ -54,6 +54,7 @@ private:
     void buildSpriteList();
     void addSprite(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
 
+    detail::RenderingManager* m_manager;
     BatchCollector* m_currentCollector;
     Material* m_material;
 

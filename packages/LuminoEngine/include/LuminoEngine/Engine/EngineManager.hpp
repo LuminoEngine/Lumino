@@ -4,16 +4,19 @@
 #include "Common2.hpp"
 #include "../Asset/Common.hpp"
 #include "../Platform/Common.hpp"
+#include "../Graphics/GraphicsRHI/Common.hpp"
 
 namespace ln {
 struct RuntimeModuleSettings {
     WindowSystem windowSystem = WindowSystem::Native;
     AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
+    GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
 };
 namespace detail {
 class RuntimeManager;
 class PlatformManager;
 class AssetManager;
+class GraphicsManager;
 } // namespace detail
 
 class EngineManager {
@@ -38,10 +41,10 @@ public:
 
     // TODO:
     RefObject* shaderManager = nullptr;
-    RefObject* graphicsManager = nullptr;
 
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
+    const Ref<detail::GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 
     ~EngineManager();
 
@@ -50,6 +53,7 @@ private:
     MaybeResult init(const RuntimeModuleSettings& settings);
     void dispose();
     MaybeResult initializePlatformManager();
+    MaybeResult initializeGraphicsManager();
 
 
     static std::unique_ptr<EngineManager> s_instance;
@@ -60,6 +64,7 @@ private:
     Ref<DiagnosticsManager> m_activeDiagnostics;
     URef<detail::AssetManager> m_assetManager;
     Ref<detail::PlatformManager> m_platformManager;
+    Ref<detail::GraphicsManager> m_graphicsManager;
 };
 
 } // namespace ln

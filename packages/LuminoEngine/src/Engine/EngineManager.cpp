@@ -4,10 +4,11 @@
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/EngineManager.hpp>
-#include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
-#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
+#include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
+#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
+#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include "../Audio/AudioManager.hpp"
 #include <LuminoEngine/Audio/GameAudio.hpp>
 
@@ -99,20 +100,29 @@ MaybeResult EngineManager::init(const RuntimeModuleSettings& settings) {
             return result;
         }
     }
+    {
+        MaybeResult result = initializeGraphicsManager();
+        if (!result) {
+            return result;
+        }
+    }
 
 
     return LN_MAKE_SUCCESS();
 }
 
 void EngineManager::dispose() {
-    if (m_assetManager) {
-        m_assetManager->dispose();
-        m_assetManager = nullptr;
+    if (m_graphicsManager) {
+        m_graphicsManager->dispose();
+        m_graphicsManager = nullptr;
     }
-
     if (m_platformManager) {
         m_platformManager->dispose();
         m_platformManager = nullptr;
+    }
+    if (m_assetManager) {
+        m_assetManager->dispose();
+        m_assetManager = nullptr;
     }
 
 
@@ -145,6 +155,21 @@ MaybeResult EngineManager::initializePlatformManager() {
     return LN_MAKE_SUCCESS();
 }
 
+MaybeResult EngineManager::initializeGraphicsManager() {
+    if (m_graphicsManager) return LN_MAKE_SUCCESS();
+
+    detail::GraphicsManager::Settings options;
+    options.graphicsAPI = m_options.graphicsAPI;
+    Ref<detail::GraphicsManager> manager(LN_NEW detail::GraphicsManager(), false);
+    auto result = manager->init(options);
+    if (!result) {
+        return LN_MAKE_ERROR();
+    }
+
+    m_graphicsManager = manager;
+    return LN_MAKE_SUCCESS();
+
+}
 
 void EngineManager::registerModule(Module* mod) {
     if (LN_REQUIRE(!mod->m_context)) return;

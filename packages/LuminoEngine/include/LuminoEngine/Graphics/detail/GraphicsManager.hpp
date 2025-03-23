@@ -26,18 +26,19 @@ class StreamingBufferAllocatorManager;
 //class RenderingManager2;
 class MeshManager;
 
-class GraphicsManager : public GraphicsModule {
+class GraphicsManager : public RefObject {
 public:
-    struct Settings : public GraphicsModuleSettings {
-        Settings() {}
-        Settings(const GraphicsModuleSettings& base) : GraphicsModuleSettings(base) {}
+    struct Settings {
+        GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+        String priorityGPUName;
+        bool debugMode = false;
     };
 
-    static GraphicsManager* initialize(const Settings& settings);
-    static void terminate();
-    static inline GraphicsManager* instance() {
-        return static_cast<GraphicsManager*>(EngineManager::instance()->graphicsManager);
-    }
+    static GraphicsManager* instance();
+
+    GraphicsManager();
+    bool init(const Settings& settings);
+    void dispose();
 
     virtual ~GraphicsManager() = default;
 
@@ -109,9 +110,6 @@ public:
     static void selectDefaultSystem(GraphicsAPI* api, WindowSystem* ws);
 
 private:
-    GraphicsManager();
-    bool init(const Settings& settings);
-    void dispose();
 
     //void createOpenGLContext(const Settings& settings);
     //void createVulkanContext(const Settings& settings);

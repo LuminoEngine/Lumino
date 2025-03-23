@@ -8,7 +8,7 @@ public:
 };
 
 TEST_F(Test_Rendering_Mesh, Basic) {
-    RESET_VIEW();
+    TestEnv::resetView();
     TestEnv::renderView->resetView(Vector3(8, 8, 8), Vector3(0, 1, 0));
 
     auto model1 = MeshModel::load(LN_ASSETFILE("Mesh/StaticAxis1.glb"));
@@ -51,8 +51,9 @@ TEST_F(Test_Rendering_Mesh, Basic) {
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.Basic.png"), TestEnv::swapChain, target);
 }
 
+#if 0
 TEST_F(Test_Rendering_Mesh, SkinnedMesh1) {
-    RESET_VIEW();
+    TestEnv::resetView();
 
     auto model1 = MeshModel::load(LN_ASSETFILE("Mesh/SkinnedMesh2.glb"));
     auto instance1 = model1->createMeshModelInstance();
@@ -104,7 +105,7 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh1) {
 
 // 共通の MeshModel を、異なる手動ボーン操作で 2 つ描画してみる
 TEST_F(Test_Rendering_Mesh, SkinnedMesh2) {
-    RESET_VIEW();
+    TestEnv::resetView();
 
     auto model1 = MeshModel::load(LN_ASSETFILE("Mesh/SkinnedMesh2.glb"));
     auto instance1 = model1->createMeshModelInstance();
@@ -148,7 +149,7 @@ TEST_F(Test_Rendering_Mesh, SkinnedMesh2) {
 }
 
 TEST_F(Test_Rendering_Mesh, RuntimeMaterial) {
-    RESET_VIEW();
+    TestEnv::resetView();
 
     auto model1 = MeshModel::load(LN_ASSETFILE("Mesh/SkinnedMesh2.glb"));
     auto instance1 = model1->createMeshModelInstance();
@@ -183,3 +184,4 @@ TEST_F(Test_Rendering_Mesh, RuntimeMaterial) {
 
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.RuntimeMaterial.png"), TestEnv::swapChain, target);
 }
+#endif

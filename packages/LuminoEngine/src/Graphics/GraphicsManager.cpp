@@ -98,23 +98,10 @@ namespace detail {
 //==============================================================================
 // GraphicsManager
 
-GraphicsManager* GraphicsManager::initialize(const Settings& settings) {
-    if (instance()) return instance();
-
-    auto m = Ref<GraphicsManager>(LN_NEW detail::GraphicsManager(), false);
-    EngineManager::instance()->graphicsManager = m; // init の中でアクセスするので先に set
-    if (!m->init(settings)) return nullptr;
-
-    EngineManager::instance()->registerModule(m);
-    return m;
-}
-
-void GraphicsManager::terminate() {
-    if (instance()) {
-        instance()->dispose();
-        EngineManager::instance()->unregisterModule(instance());
-        EngineManager::instance()->graphicsManager = nullptr;
-    }
+   // TODO: 移行期間の暫定処置
+GraphicsManager* s_GraphicsManager = nullptr;
+GraphicsManager* GraphicsManager::instance() {
+    return s_GraphicsManager;
 }
 
 GraphicsManager::GraphicsManager()
@@ -132,6 +119,7 @@ GraphicsManager::GraphicsManager()
 
 bool GraphicsManager::init(const Settings& settings) {
     LN_LOG_DEBUG("GraphicsManager Initialization started.");
+    s_GraphicsManager = this;
     m_settings = settings;
 
     if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return false;

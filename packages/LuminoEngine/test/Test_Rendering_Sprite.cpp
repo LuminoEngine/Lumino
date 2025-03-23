@@ -10,7 +10,7 @@ public:
 
 
 TEST_F(Test_Rendering_Sprite, Basic) {
-    RESET_VIEW();
+    TestEnv::resetView();
     auto texture1 = Texture2D::load(LN_ASSETFILE("Rendering/Sprite3.png"));
     auto material1 = Material::create(texture1);
 
