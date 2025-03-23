@@ -45,6 +45,12 @@ EngineInstance::~EngineInstance() {
 MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
     m_options = settings;
 
+#ifdef LN_DEBUG
+#ifdef _WIN32
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+#endif
+
 #ifdef LN_EMSCRIPTEN
 #else
     TaskScheduler::init();

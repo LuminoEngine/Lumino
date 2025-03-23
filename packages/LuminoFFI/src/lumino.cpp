@@ -912,6 +912,13 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
     LN_FFI_TRY_END_RETURN;
 }
 
+extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext) {
+    LN_FFI_TRY_BEGIN;
+    //PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
+    //*outGraphicsContext = ::Runtime::wrapObject(window2->graphicsContext(), false);
+    LN_FFI_TRY_END_RETURN;
+}
+
 //==============================================================================
 // LNObject
 

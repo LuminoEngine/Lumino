@@ -36,6 +36,11 @@ class LN_API GraphicsContext
     ゲーム側から VulkanCommandList をもらってラップして使うようなケースでは、
     Skia のような API だと使いにくいかもしれない。
 
+    基本的には WebGPU の API を参考にしているが、
+    https://webgpu.github.io/webgpu-samples/?sample=helloTriangle
+    GraphicsCommandList が Context に属している点に注意。
+    これはバックバッファの数だけ CommandList の作成とフリップ処理が必要なため。
+
     
     ## Vulkan の External-CommandList を使う場合のイメージ
 

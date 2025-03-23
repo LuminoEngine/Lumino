@@ -339,6 +339,7 @@ extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteText
 // LNWindow
 //==============================================================================
 extern LUMINO_API LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNHandle* outWindow);
+extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext);
 
 //==============================================================================
 // LNObject

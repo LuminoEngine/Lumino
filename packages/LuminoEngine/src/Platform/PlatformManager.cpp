@@ -82,14 +82,16 @@ void PlatformManager::setMainWindow(PlatformWindow* window) {
 }
 
 Ref<PlatformWindow> PlatformManager::createWindow(const WindowCreationSettings& settings) {
+    Ref<PlatformWindow> window;
     if (!m_mainWindow) {
-        auto window = m_windowManager->createWindow(settings, nullptr);
+        window = m_windowManager->createWindow(settings, nullptr);
         m_mainWindow = window;
-        return window;
     }
     else {
-        return m_windowManager->createWindow(settings, m_mainWindow);
+        window = m_windowManager->createWindow(settings, m_mainWindow);
     }
+
+    return window;
 }
 
 OpenGLContext* PlatformManager::openGLContext() const {
