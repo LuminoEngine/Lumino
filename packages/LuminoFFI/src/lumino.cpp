@@ -251,7 +251,8 @@ LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, i
 
 LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
     LN_FFI_TRY_BEGIN;
-    LN_NOTIMPLEMENTED();
+    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    context->present();
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -913,8 +914,8 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
 
 extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext) {
     LN_FFI_TRY_BEGIN;
-    //PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
-    //*outGraphicsContext = ::Runtime::wrapObject(window2->graphicsContext(), false);
+    PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
+    *outGraphicsContext = ::Runtime::wrapObject(platformWindow->graphicsContext(), false);
     LN_FFI_TRY_END_RETURN;
 }
 
