@@ -38,7 +38,7 @@ static Ref<ln::CoreApplication> g_app = nullptr;
 
 //ln::Path Win32PlatformInterface::findParentDirectoryContainingSpecifiedFile(StringView file)
 //{
-//	return detail::EngineManager::findParentDirectoryContainingSpecifiedFile(file);
+//	return detail::EngineInstance::findParentDirectoryContainingSpecifiedFile(file);
 //}
 
 } // namespace ln

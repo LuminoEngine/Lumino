@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Base/Promise.hpp>
-#include <LuminoEngine/Engine/EngineManager.hpp>
+#include <LuminoEngine/Engine/EngineInstance.hpp>
 
 namespace ln {
 
@@ -33,7 +33,7 @@ void PromiseBase::enqueueThen(const Ref<PromiseBase>& p)
 		pb->callNext();
 	});
 
-	EngineManager::instance()->mainThreadTaskDispatcher()->post(t);
+	EngineInstance::instance()->mainThreadTaskDispatcher()->post(t);
 }
 
 } // namespace ln

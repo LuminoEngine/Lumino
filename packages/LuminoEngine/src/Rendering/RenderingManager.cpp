@@ -43,14 +43,14 @@ RenderingManager* RenderingManager::initialize(const Settings& settings) {
     s_instance = m;
     if (!m->init(settings)) return nullptr;
 
-    EngineManager::instance()->registerModule(m);
+    EngineInstance::instance()->registerModule(m);
     return m;
 }
 
 void RenderingManager::terminate() {
     if (s_instance) {
         s_instance->dispose();
-        EngineManager::instance()->unregisterModule(s_instance);
+        EngineInstance::instance()->unregisterModule(s_instance);
         s_instance = nullptr;
     }
 }

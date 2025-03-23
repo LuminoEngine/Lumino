@@ -24,7 +24,7 @@ MaybeResult Engine::initialize(const EngineOptions& options) {
     RuntimeModuleSettings engineOptions;
     engineOptions.windowSystem = options.platform.windowSystem;
     engineOptions.graphicsAPI = options.graphics.graphicsAPI;
-    if (!EngineManager::initialize(engineOptions)) {
+    if (!EngineInstance::initialize(engineOptions)) {
         return LN_MAKE_ERROR();
     }
 
@@ -40,7 +40,7 @@ MaybeResult Engine::initialize(const EngineOptions& options) {
 
         {
             detail::RenderingManager::Settings settings;
-            settings.graphicsManager = EngineManager::instance()->graphicsManager();
+            settings.graphicsManager = EngineInstance::instance()->graphicsManager();
             settings.fontManager = detail::FontManager::instance();
             if (!detail::RenderingManager::initialize(settings)) {
                 return err();
@@ -64,19 +64,19 @@ void Engine::terminate() {
     detail::AudioManager2::terminate();
     detail::RenderingManager::terminate();
     detail::FontManager::terminate();
-    EngineManager::terminate();
+    EngineInstance::terminate();
 }
 
 void Engine::mountAssetDirectory(const StringView& path) {
-    EngineManager::instance()->assetManager()->addAssetDirectory(path);
+    EngineInstance::instance()->assetManager()->addAssetDirectory(path);
 }
 
 void Engine::mountAssetArchive(const StringView& filePath, const StringView& password) {
-    EngineManager::instance()->assetManager()->mountAssetArchive(filePath, password);
+    EngineInstance::instance()->assetManager()->mountAssetArchive(filePath, password);
 }
 
-EngineManager* Engine::getEngineContext_() {
-    return EngineManager::instance();
+EngineInstance* Engine::getEngineContext_() {
+    return EngineInstance::instance();
 }
 
 } // namespace ln

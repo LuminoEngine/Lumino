@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Engine/EngineManager.hpp>
+#include <LuminoEngine/Engine/EngineInstance.hpp>
 #include "../Common.hpp"
 
 namespace ln {

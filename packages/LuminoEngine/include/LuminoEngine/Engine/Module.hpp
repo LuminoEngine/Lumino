@@ -8,12 +8,12 @@ public:
 protected:
     Module();
     virtual ~Module();
-    virtual void onRegisterTypes(EngineManager* context);
+    virtual void onRegisterTypes(EngineInstance* context);
 
 private:
-    EngineManager* m_context;
+    EngineInstance* m_context;
 
-    friend class EngineManager;
+    friend class EngineInstance;
 };
 
 } // namespace ln

@@ -184,7 +184,7 @@ AnimationManager* AnimationManager::initialize(const Settings& settings) {
     if (!m->init(settings)) return nullptr;
 
     // FIXME: Animation を Module にするなら
-    //EngineManager::instance()->registerModule(m);
+    //EngineInstance::instance()->registerModule(m);
     return m;
 }
 
@@ -192,7 +192,7 @@ void AnimationManager::terminate() {
     if (s_instance) {
         s_instance->dispose();
         // FIXME: Animation を Module にするなら
-        //EngineManager::instance()->unregisterModule(s_instance);
+        //EngineInstance::instance()->unregisterModule(s_instance);
         s_instance = nullptr;
     }
 }

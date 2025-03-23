@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/Engine/EngineManager.hpp>
+﻿#include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/Shader.hpp>
 

@@ -6,7 +6,7 @@
 #include <emscripten.h>
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
-#include "../Engine/EngineManager.hpp"
+#include "../Engine/EngineInstance.hpp"
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 
     //ln::detail::EngineDomain::engineManager()->settings2().assetArchives.add({ u"Assets.lca", ln::StringView() });
 
-    ln::detail::EngineSettings& settings = ln::detail::EngineManager::s_settings;
+    ln::detail::EngineSettings& settings = ln::detail::EngineInstance::s_settings;
     settings.standaloneFpsControl = false;
     settings.assetArchives.add({ u"Assets.lca", ln::StringRef() });
 

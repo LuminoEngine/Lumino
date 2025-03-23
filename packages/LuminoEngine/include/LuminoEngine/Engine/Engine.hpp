@@ -40,7 +40,7 @@ public:
     static void terminate();
     static void mountAssetDirectory(const StringView& path);
     static void mountAssetArchive(const StringView& filePath, const StringView& password = StringView());
-    static EngineManager* getEngineContext_();
+    static EngineInstance* getEngineContext_();
 };
 
 } // namespace ln

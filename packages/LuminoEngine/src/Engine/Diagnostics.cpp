@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Engine/EngineManager.hpp>
+#include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 
 namespace ln {
@@ -9,7 +9,7 @@ namespace ln {
 // DiagnosticsManager
 
 DiagnosticsManager* DiagnosticsManager::activeDiagnostics() {
-    return EngineManager::instance()->activeDiagnostics();
+    return EngineInstance::instance()->activeDiagnostics();
 }
 
 DiagnosticsManager::DiagnosticsManager()

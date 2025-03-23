@@ -1,6 +1,6 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoEngine/Engine/EngineManager.hpp>
+#include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 
 namespace ln {

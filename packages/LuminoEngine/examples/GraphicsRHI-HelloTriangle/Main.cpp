@@ -2,7 +2,7 @@
 #include <emscripten.h>
 #endif
 #include <LuminoCore.hpp>
-#include <LuminoEngine/Engine/EngineManager.hpp>
+#include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
@@ -34,13 +34,13 @@ Ref<detail::IShaderPass> g_shaderPass;
 int g_frameIndex;
 
 bool utils_processEvents() {
-    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    ln::detail::PlatformManager* manager = ln::EngineInstance::instance()->platformManager();
     manager->processSystemEventQueue();
     return !manager->shouldQuit();
 }
 
 bool utils_shouldQuit() {
-    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    ln::detail::PlatformManager* manager = ln::EngineInstance::instance()->platformManager();
     return manager->shouldQuit();
 }
 
@@ -58,7 +58,7 @@ void init() {
     windowOptions.title = U"Test";
     windowOptions.clientHeight = 160;
     windowOptions.clientWidth = 120;
-    auto mainWindow = ln::EngineManager::instance()->platformManager()->createWindow(windowOptions);
+    auto mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions);
 
     if (0) {
         //detail::WebGPUDevice::Settings settings;

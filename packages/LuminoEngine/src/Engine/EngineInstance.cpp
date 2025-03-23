@@ -3,7 +3,7 @@
 #include <LuminoEngine/Base/Fetch.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/Engine/EngineManager.hpp>
+#include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
@@ -16,33 +16,33 @@ namespace ln {
 
 void registerModuleTypes_Runtime(RuntimeContext* context);
 
-std::unique_ptr<EngineManager> EngineManager::s_instance;
+std::unique_ptr<EngineInstance> EngineInstance::s_instance;
 
-MaybeResult EngineManager::initialize(const RuntimeModuleSettings& settings, EngineManager* sharedContext) {
+MaybeResult EngineInstance::initialize(const RuntimeModuleSettings& settings, EngineInstance* sharedContext) {
     if (sharedContext) {
         LN_NOTIMPLEMENTED();
         return LN_MAKE_ERROR();
     }
 
     if (s_instance) return LN_MAKE_SUCCESS();
-    s_instance = std::unique_ptr<EngineManager>(LN_NEW EngineManager());
+    s_instance = std::unique_ptr<EngineInstance>(LN_NEW EngineInstance());
     return s_instance->init(settings);
 }
 
-void EngineManager::terminate() {
+void EngineInstance::terminate() {
     if (s_instance) {
         s_instance->dispose();
         s_instance = nullptr;
     }
 }
 
-EngineManager::EngineManager() {
+EngineInstance::EngineInstance() {
 }
 
-EngineManager::~EngineManager() {
+EngineInstance::~EngineInstance() {
 }
 
-MaybeResult EngineManager::init(const RuntimeModuleSettings& settings) {
+MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
     m_options = settings;
 
 #ifdef LN_EMSCRIPTEN
@@ -111,7 +111,7 @@ MaybeResult EngineManager::init(const RuntimeModuleSettings& settings) {
     return LN_MAKE_SUCCESS();
 }
 
-void EngineManager::dispose() {
+void EngineInstance::dispose() {
     if (m_graphicsManager) {
         m_graphicsManager->dispose();
         m_graphicsManager = nullptr;
@@ -140,7 +140,7 @@ void EngineManager::dispose() {
 #endif
 }
 
-MaybeResult EngineManager::initializePlatformManager() {
+MaybeResult EngineInstance::initializePlatformManager() {
     if (m_platformManager) return LN_MAKE_SUCCESS();
 
     detail::PlatformManager::Settings options;
@@ -155,7 +155,7 @@ MaybeResult EngineManager::initializePlatformManager() {
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult EngineManager::initializeGraphicsManager() {
+MaybeResult EngineInstance::initializeGraphicsManager() {
     if (m_graphicsManager) return LN_MAKE_SUCCESS();
 
     detail::GraphicsManager::Settings options;
@@ -171,14 +171,14 @@ MaybeResult EngineManager::initializeGraphicsManager() {
 
 }
 
-void EngineManager::registerModule(Module* mod) {
+void EngineInstance::registerModule(Module* mod) {
     if (LN_REQUIRE(!mod->m_context)) return;
     mod->m_context = this;
     mod->onRegisterTypes(this);
     m_modules.add(mod);
 }
 
-void EngineManager::unregisterModule(Module* mod) {
+void EngineInstance::unregisterModule(Module* mod) {
     m_modules.removeIf([&](const auto& x) { return x == mod; });
 }
 

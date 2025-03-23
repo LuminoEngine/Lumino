@@ -19,12 +19,12 @@ class AssetManager;
 class GraphicsManager;
 } // namespace detail
 
-class EngineManager {
+class EngineInstance {
 public:
-    static EngineManager* instance() { return s_instance.get(); };
+    static EngineInstance* instance() { return s_instance.get(); };
 
     /** Initialize context. */
-    static MaybeResult initialize(const RuntimeModuleSettings& settings, EngineManager* sharedContext = nullptr);
+    static MaybeResult initialize(const RuntimeModuleSettings& settings, EngineInstance* sharedContext = nullptr);
 
     /** Terminate context. */
     static void terminate();
@@ -46,17 +46,17 @@ public:
     const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<detail::GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 
-    ~EngineManager();
+    ~EngineInstance();
 
 private:
-    EngineManager();
+    EngineInstance();
     MaybeResult init(const RuntimeModuleSettings& settings);
     void dispose();
     MaybeResult initializePlatformManager();
     MaybeResult initializeGraphicsManager();
 
 
-    static std::unique_ptr<EngineManager> s_instance;
+    static std::unique_ptr<EngineInstance> s_instance;
 
     RuntimeModuleSettings m_options;
     List<Ref<Module>> m_modules;

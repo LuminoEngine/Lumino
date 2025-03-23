@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Engine/EngineManager.hpp"
+#include "../Engine/EngineInstance.hpp"
 #include "Delegate.hpp"
 #include "Task.hpp"
 
@@ -54,7 +54,7 @@ public:
     // LN_OBJECT;
     friend class ::ln::TypeInfo;
     friend class ::ln::detail::EngineDomain;
-    friend class ::ln::EngineManager;
+    friend class ::ln::EngineInstance;
     static ::ln::TypeInfo* _lnref_getTypeInfo() {
         static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
         return _lnref_typeInfo;

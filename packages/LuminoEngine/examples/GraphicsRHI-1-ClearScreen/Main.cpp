@@ -30,7 +30,7 @@ void init() {
     windowOptions.title = U"Test";
     windowOptions.clientHeight = 160;
     windowOptions.clientWidth = 120;
-    auto mainWindow = ln::EngineManager::instance()->platformManager()->createWindow(windowOptions);
+    auto mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions);
 
 #ifdef LUMINO_USE_WEBGPU
     {
@@ -66,13 +66,13 @@ void init() {
 }
 
 bool utils_processEvents() {
-    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    ln::detail::PlatformManager* manager = ln::EngineInstance::instance()->platformManager();
     manager->processSystemEventQueue();
     return !manager->shouldQuit();
 }
 
 bool utils_shouldQuit() {
-    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    ln::detail::PlatformManager* manager = ln::EngineInstance::instance()->platformManager();
     return manager->shouldQuit();
 }
 

@@ -6,7 +6,7 @@
 #endif
 #include <d3dcompiler.h>
 #endif
-#include <LuminoEngine/Engine/EngineManager.hpp>
+#include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/Common.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
@@ -44,7 +44,7 @@ public:
     static ShaderManager* initialize(const Settings& settings);
     static void terminate();
     static inline ShaderManager* instance() {
-        return static_cast<ShaderManager*>(EngineManager::instance()->shaderManager);
+        return static_cast<ShaderManager*>(EngineInstance::instance()->shaderManager);
     }
 
     const std::vector<std::pair<std::string, std::string>>& builtinShaderList() const { return m_builtinShaderList; }

@@ -78,13 +78,13 @@ MaybeResult RuntimeManager::init(const Settings& settings) {
 
     m_systemAliving = true;
 
-    // EngineManager::instance()->m_onRetainedObject = [](EngineManager* context, Object* obj) {
+    // EngineInstance::instance()->m_onRetainedObject = [](EngineInstance* context, Object* obj) {
     //	static_cast<RuntimeManager*>(context->runtimeManager)->onRetainedObject(obj);
     // };
-    // EngineManager::instance()->m_onReleasedObject = [](EngineManager* context, Object* obj) {
+    // EngineInstance::instance()->m_onReleasedObject = [](EngineInstance* context, Object* obj) {
     //	static_cast<RuntimeManager*>(context->runtimeManager)->onReleasedObject(obj);
     // };
-    //EngineManager::initialize();
+    //EngineInstance::initialize();
     assert(!RuntimeContext::current()->objectEventListener);
     RuntimeContext::current()->objectEventListener = this;
 
