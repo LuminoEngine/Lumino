@@ -1,6 +1,9 @@
 ﻿#include <stdio.h>
 #include <LuminoEngine.hpp>
 
+#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
@@ -8,7 +11,6 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/DepthBuffer.hpp>
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
-#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
@@ -204,7 +206,27 @@ void LNRuntime_Terminate() {
     ln::Engine::terminate();
     LN_FFI_TRY_END;
 }
+//==============================================================================
+// LNInstance
+//==============================================================================
 
+LNResult LNInstance_ProcessEvents() {
+    LN_FFI_TRY_BEGIN;
+    ln::detail::PlatformManager* manager = ln::EngineInstance::instance()->platformManager();
+    manager->processSystemEventQueue();
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNInstance_ShouldQuit(LNBool* outQuit) {
+    LN_FFI_TRY_BEGIN;
+    ln::detail::PlatformManager* manager = ln::EngineInstance::instance()->platformManager();
+    *outQuit = manager->shouldQuit();
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+//
+//==============================================================================
 LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
 	LN_FFI_TRY_BEGIN;
 	GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
@@ -878,8 +900,15 @@ LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const L
 //==============================================================================
 LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNHandle* outWindow) {
     LN_FFI_TRY_BEGIN;
+    EngineInstance* instance = EngineInstance::instance();
+    detail::PlatformManager* platformManager = instance->platformManager();
+    WindowCreationSettings options;
+    options.clientWidth = width;
+    options.clientHeight = height;
+    options.title = String::fromUtf8(title);
+    Ref<PlatformWindow> window = platformManager->createWindow(options);
     //Ref<Window> window = Window::create(width, height);
-    //*outWindow = ::Runtime::wrapObject(window, true);
+    *outWindow = ::Runtime::wrapObject(window, true);
     LN_FFI_TRY_END_RETURN;
 }
 

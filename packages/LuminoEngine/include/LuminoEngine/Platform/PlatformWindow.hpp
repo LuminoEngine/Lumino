@@ -1,12 +1,11 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "PlatformEvent.hpp"
 #include <LuminoCore/Geometries/GeometryStructs.hpp>
 
 namespace ln {
 
 class PlatformWindow
-	: public RefObject
+	: public Object
 {
 public:
 	virtual ~PlatformWindow() = default;

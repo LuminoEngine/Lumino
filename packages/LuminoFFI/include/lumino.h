@@ -112,10 +112,27 @@ extern LUMINO_API void LNRenderPassDescriptor_SetDepthBuffer(LNStructHandle hand
 //==============================================================================
 //
 //==============================================================================
-
+// TODO; LNInstance へ移動予定
 extern LUMINO_API LNResult LNRuntime_Initialize();
 extern LUMINO_API void LNRuntime_Terminate();
 
+//==============================================================================
+// LNInstance
+//==============================================================================
+
+/**
+ * Processes events that are present in the event queue.
+ */
+extern LUMINO_API LNResult LNInstance_ProcessEvents();
+
+/**
+ * Returns whether the application should quit.
+ */
+extern LUMINO_API LNResult LNInstance_ShouldQuit(LNBool* outQuit);
+ 
+//==============================================================================
+//
+//==============================================================================
 /**
  * Get the current color buffer.
  *
