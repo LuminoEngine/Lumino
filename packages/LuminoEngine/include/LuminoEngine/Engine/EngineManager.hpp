@@ -3,13 +3,16 @@
 #include <LuminoCore/Runtime/Property.hpp>
 #include "Common2.hpp"
 #include "../Asset/Common.hpp"
+#include "../Platform/Common.hpp"
 
 namespace ln {
 struct RuntimeModuleSettings {
+    WindowSystem windowSystem = WindowSystem::Native;
     AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
 };
 namespace detail {
 class RuntimeManager;
+class PlatformManager;
 class AssetManager;
 } // namespace detail
 
@@ -34,11 +37,11 @@ public:
     const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
     // TODO:
-    RefObject* platformManager = nullptr;
     RefObject* shaderManager = nullptr;
     RefObject* graphicsManager = nullptr;
 
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
+    const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
 
     ~EngineManager();
 
@@ -46,13 +49,17 @@ private:
     EngineManager();
     MaybeResult init(const RuntimeModuleSettings& settings);
     void dispose();
+    MaybeResult initializePlatformManager();
+
 
     static std::unique_ptr<EngineManager> s_instance;
 
+    RuntimeModuleSettings m_options;
     List<Ref<Module>> m_modules;
     Ref<Dispatcher> m_mainThreadTaskDispatcher;
     Ref<DiagnosticsManager> m_activeDiagnostics;
     URef<detail::AssetManager> m_assetManager;
+    Ref<detail::PlatformManager> m_platformManager;
 };
 
 } // namespace ln

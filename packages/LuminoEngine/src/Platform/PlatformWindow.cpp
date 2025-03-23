@@ -1,6 +1,6 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 
 namespace ln {
@@ -9,47 +9,42 @@ namespace ln {
 // PlatformWindow
 
 PlatformWindow::PlatformWindow()
-	: m_windowManager(nullptr)
-	, m_eventListeners()
-	, m_dpiFactor(1.0f)
-{
+    : m_windowManager(nullptr)
+    , m_eventListeners()
+    , m_dpiFactor(1.0f) {
 }
 
 Result<> PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
-	m_windowManager = windowManager;
-	return ok();
+    m_windowManager = windowManager;
+    return ok();
 }
 
-void PlatformWindow::attachEventListener(IPlatforEventListener* listener)
-{
-	m_eventListeners.add(listener);
+void PlatformWindow::attachEventListener(IPlatforEventListener* listener) {
+    m_eventListeners.add(listener);
 }
 
-void PlatformWindow::detachEventListener(IPlatforEventListener* listener)
-{
-	m_eventListeners.remove(listener);
+void PlatformWindow::detachEventListener(IPlatforEventListener* listener) {
+    m_eventListeners.remove(listener);
 }
 
-bool PlatformWindow::sendEventToAllListener(const PlatformEventArgs& e)
-{
-	for (IPlatforEventListener* listener : m_eventListeners) {
-		if (listener->onPlatformEvent(e)) {
-			return true;
-		}
-	}
+bool PlatformWindow::sendEventToAllListener(const PlatformEventArgs& e) {
+    for (IPlatforEventListener* listener : m_eventListeners) {
+        if (listener->onPlatformEvent(e)) {
+            return true;
+        }
+    }
 
-	// Default event process
-	{
-		if (e.type == PlatformEventType::close) {
-			auto* manager = detail::PlatformManager::instance();
-			if (manager->mainWindow() == this) {
-				manager->requestQuit();
-			}
-		}
-	}
+    // Default event process
+    {
+        if (e.type == PlatformEventType::close) {
+            auto* manager = m_windowManager->manager();
+            if (manager->mainWindow() == this) {
+                manager->requestQuit();
+            }
+        }
+    }
 
-	return false;
+    return false;
 }
 
 } // namespace ln
-

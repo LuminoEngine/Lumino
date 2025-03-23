@@ -24,12 +24,26 @@ void init() {
 }
 
 void cleanup() {
-    PlatformModule::terminate();
     Engine::terminate();
 }
 
+bool utils_processEvents() {
+    ln:detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    manager->processSystemEventQueue();
+    return !manager->shouldQuit();
+}
+
+bool utils_shouldQuit() {
+    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    return manager->shouldQuit();
+}
+
 void run() {
-    auto window = Platform::mainWindow();
+    ln::WindowCreationSettings windowOptions;
+    windowOptions.title = U"Test";
+    windowOptions.clientHeight = 160;
+    windowOptions.clientWidth = 120;
+    auto mainWindow = ln::EngineManager::instance()->platformManager()->createWindow(windowOptions);
 
     //auto shader = Shader::create(ASSETFILE("simple.hlsl"));
     auto shader = Shader::load(U"simple");
@@ -52,12 +66,12 @@ void run() {
     };
     auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto swapChain = GraphicsContext::create(window);
+    auto swapChain = GraphicsContext::create(mainWindow);
 
     //auto spriteRenderer = makeURef<detail::SpriteRenderer>();
     //spriteRenderer->init();
 
-    while (Platform::processEvents()) {
+    while (utils_processEvents()) {
         auto commandList = swapChain->currentCommandList2();
         commandList->beginCommandRecoding();
 

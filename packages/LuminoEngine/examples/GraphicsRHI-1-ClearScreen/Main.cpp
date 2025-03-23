@@ -28,7 +28,11 @@ void init() {
     options.graphics.enabled = false;
     Engine::initialize(options);
 
-    auto window = Platform::mainWindow();
+    ln::WindowCreationSettings windowOptions;
+    windowOptions.title = U"Test";
+    windowOptions.clientHeight = 160;
+    windowOptions.clientWidth = 120;
+    auto mainWindow = ln::EngineManager::instance()->platformManager()->createWindow(windowOptions);
 
 #ifdef LUMINO_USE_WEBGPU
     {
@@ -41,15 +45,15 @@ void init() {
 #endif
     if (!g_device) {
         detail::VulkanDevice::Settings settings;
-        settings.mainWindow = window;
+        settings.mainWindow = mainWindow;
         settings.debugMode = true;
         bool dummy = false;
         g_device = *detail::VulkanDevice::create(settings, &dummy);
     }
 
     // Create SwapChain.
-    window->getSize(&g_viewSize);
-    g_swapChain = g_device->createSwapChain(window, g_viewSize);
+    mainWindow->getSize(&g_viewSize);
+    g_swapChain = g_device->createSwapChain(mainWindow, g_viewSize);
 
     // Create frame resources.
     for (int i = 0; i < g_swapChain->getBackbufferCount(); i++) {
@@ -61,6 +65,17 @@ void init() {
         Ref<detail::ICommandList> commandList = g_device->createCommandList();
         g_commandLists.push_back(commandList);
     }
+}
+
+bool utils_processEvents() {
+    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    manager->processSystemEventQueue();
+    return !manager->shouldQuit();
+}
+
+bool utils_shouldQuit() {
+    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    return manager->shouldQuit();
 }
 
 void cleanup() {
@@ -84,7 +99,7 @@ void cleanup() {
 }
 
 void mainLoop() {
-    Platform::processEvents();
+    utils_processEvents();
 
     int imageIndex = 0;
     g_swapChain->acquireNextImage(&imageIndex);
@@ -106,7 +121,7 @@ int main() {
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(mainLoop, 60, true);
 #else
-    while (!Platform::shouldQuit()) {
+    while (!utils_shouldQuit()) {
         mainLoop();
         Thread::sleep(16);
     }

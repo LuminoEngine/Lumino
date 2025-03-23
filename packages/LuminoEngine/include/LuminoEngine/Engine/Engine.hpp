@@ -6,6 +6,7 @@
 namespace ln {
 
 struct PlatformOptions {
+    [[dprecated]]
     bool enabled = true;
     [[dprecated]]
     String title = U"Lumino";
@@ -27,6 +28,7 @@ struct AudioOptions {
 };
 
 struct EngineOptions {
+    [[dprecated]]
     PlatformOptions platform;
     GraphicsOptions graphics;
     AudioOptions audio;

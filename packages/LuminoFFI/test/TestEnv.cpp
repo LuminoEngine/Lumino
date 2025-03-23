@@ -1,6 +1,7 @@
 ﻿#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
 #include <LuminoEngine/RHIModule.hpp>
@@ -10,6 +11,7 @@
 #include "../../LuminoEngine/src/Platform/GLFWPlatformWindowManager.hpp"
 #include "TestEnv.hpp"
 
+ln::Ref<ln::PlatformWindow> TestEnv::mainWindow;
 LNHandle TestEnv::graphicsContext = LN_NULL_HANDLE;
 LNHandle TestEnv::viewPoint = LN_NULL_HANDLE;
 
@@ -23,6 +25,12 @@ void TestEnv::initialize() {
     options.platform.windowSystem = ln::WindowSystem::GLFWWithOpenGL;
     ln::Engine::initialize(options);
 
+    ln::WindowCreationSettings windowOptions;
+    windowOptions.title = U"Test";
+    windowOptions.clientWidth = 320;
+    windowOptions.clientHeight = 240;
+    mainWindow = ln::EngineManager::instance()->platformManager()->createWindow(windowOptions);
+
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &graphicsContext);
     LNGraphicsViewPoint_Create(&viewPoint);
     LNGraphicsViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
@@ -33,12 +41,11 @@ void TestEnv::initialize() {
 void TestEnv::terminate() {
     LNObject_Release(viewPoint);
     LNObject_Release(graphicsContext);
-    ln::PlatformModule::terminate();
     ln::Engine::terminate();
 }
 
 void TestEnv::present() {
-    ln::PlatformWindow* window1 = ln::detail::PlatformManager::instance()->mainWindow();
+    ln::PlatformWindow* window1 = mainWindow;
     ln::detail::GLFWPlatformWindow* window2 = static_cast<ln::detail::GLFWPlatformWindow*>(window1);
 
     GLFWwindow* glfwWindow = window2->glfwWindow();

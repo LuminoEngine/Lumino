@@ -248,7 +248,8 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
     s.window = nullptr;
     s.width = width;
     s.height = height;
-    *outGraphicsContext = ::Runtime::wrapObject(OpenGLGraphicsContext::create(s), true);
+    Ref<OpenGLGraphicsContext> ref = OpenGLGraphicsContext::create(s);
+    *outGraphicsContext = ::Runtime::wrapObject(ref, true);
     LN_FFI_TRY_END_RETURN;
 }
 

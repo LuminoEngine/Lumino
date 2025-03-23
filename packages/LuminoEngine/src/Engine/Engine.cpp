@@ -30,17 +30,10 @@ namespace ln {
 //
 
 MaybeResult Engine::initialize(const EngineOptions& options) {
-    if (!EngineManager::initialize(RuntimeModuleSettings{})) {
+    RuntimeModuleSettings engineOptions;
+    engineOptions.windowSystem = options.platform.windowSystem;
+    if (!EngineManager::initialize(engineOptions)) {
         return LN_MAKE_ERROR();
-    }
-
-    if (options.platform.enabled) {
-        PlatformModuleSettings opt;
-        opt.mainWindowSettings.title = options.platform.title;
-        opt.mainWindowSettings.clientWidth = options.platform.width;
-        opt.mainWindowSettings.clientHeight = options.platform.height;
-        opt.windowSystem = options.platform.windowSystem;
-        PlatformModule::initialize(opt);
     }
 
     if (options.graphics.enabled) {
@@ -83,7 +76,6 @@ void Engine::terminate() {
     detail::RenderingManager::terminate();
     detail::FontManager::terminate();
     GraphicsModule::terminate();
-    PlatformModule::terminate();
     EngineManager::terminate();
 }
 

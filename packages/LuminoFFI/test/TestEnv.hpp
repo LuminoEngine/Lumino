@@ -10,6 +10,7 @@ public:
     static ln::Path getTempPath(const ln::Path& localPath);
     static bool checkScreenShot(const ln::Path& filePath, int passRate = 95, bool save = false);
 
+    static ln::Ref<ln::PlatformWindow> mainWindow;
     static LNHandle graphicsContext;
     static LNHandle viewPoint;
 };

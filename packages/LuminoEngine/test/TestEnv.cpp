@@ -1,6 +1,8 @@
 ﻿#include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/RHIModule.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
@@ -9,6 +11,7 @@
 
 
 bool TestEnv::isCI = false;
+Ref<PlatformWindow> TestEnv::mainWindow;
 Ref<GraphicsContext> TestEnv::swapChain;
 Ref<FlatRenderingPipeline> TestEnv::flatRenderingPipeline;
 Ref<TestRenderVew> TestEnv::renderView;
@@ -41,7 +44,13 @@ void TestEnv::setup() {
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));
 
-    swapChain = GraphicsContext::create(Platform::mainWindow());
+    WindowCreationSettings windowOptions;
+    windowOptions.title = U"Test";
+    windowOptions.clientWidth = 160;
+    windowOptions.clientHeight = 120;
+    mainWindow = EngineManager::instance()->platformManager()->createWindow(windowOptions);
+
+    swapChain = GraphicsContext::create(mainWindow);
 }
 
 void TestEnv::initializeRendering() {
@@ -67,7 +76,6 @@ void TestEnv::teardown() {
 
     detail::RenderingManager::terminate();
     GraphicsModule::terminate();
-    PlatformModule::terminate();
     Engine::terminate();
 }
 

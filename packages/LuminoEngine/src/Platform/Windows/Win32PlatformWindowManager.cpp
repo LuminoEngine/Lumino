@@ -457,6 +457,8 @@ Win32PlatformWindow::Win32PlatformWindow()
 }
 
 Result<> Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings) {
+    PlatformWindow::init(windowManager);
+    
     // ウィンドウモードのときのウィンドウスタイルの選択
     DWORD mWindowedStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
     if (settings.resizable) {

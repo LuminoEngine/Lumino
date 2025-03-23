@@ -8,24 +8,6 @@
 namespace ln {
 namespace detail {
 
-PlatformManager* PlatformManager::initialize(const Settings& settings) {
-    if (instance()) return instance();
-
-    auto m = Ref<PlatformManager>(LN_NEW detail::PlatformManager(), false);
-    if (!m->init(settings)) return nullptr;
-
-    EngineManager::instance()->registerModule(m);
-    EngineManager::instance()->platformManager = m;
-    return m;
-}
-
-void PlatformManager::terminate() {
-    if (instance()) {
-        instance()->dispose();
-        EngineManager::instance()->unregisterModule(instance());
-        EngineManager::instance()->platformManager = nullptr;
-    }
-}
 
 PlatformManager::PlatformManager()
     : m_windowManager()

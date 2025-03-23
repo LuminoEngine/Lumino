@@ -1,5 +1,4 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Base/Fetch.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
@@ -8,6 +7,7 @@
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
+#include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include "../Audio/AudioManager.hpp"
 #include <LuminoEngine/Audio/GameAudio.hpp>
 
@@ -42,6 +42,7 @@ EngineManager::~EngineManager() {
 }
 
 MaybeResult EngineManager::init(const RuntimeModuleSettings& settings) {
+    m_options = settings;
 
 #ifdef LN_EMSCRIPTEN
 #else
@@ -92,6 +93,13 @@ MaybeResult EngineManager::init(const RuntimeModuleSettings& settings) {
     }
 #endif
 
+    {
+        MaybeResult result = initializePlatformManager();
+        if (!result) {
+            return result;
+        }
+    }
+
 
     return LN_MAKE_SUCCESS();
 }
@@ -101,6 +109,12 @@ void EngineManager::dispose() {
         m_assetManager->dispose();
         m_assetManager = nullptr;
     }
+
+    if (m_platformManager) {
+        m_platformManager->dispose();
+        m_platformManager = nullptr;
+    }
+
 
     detail::RuntimeManager::terminate();
 
@@ -115,6 +129,22 @@ void EngineManager::dispose() {
     TaskScheduler::finalizeInternal();
 #endif
 }
+
+MaybeResult EngineManager::initializePlatformManager() {
+    if (m_platformManager) return LN_MAKE_SUCCESS();
+
+    detail::PlatformManager::Settings options;
+    options.windowSystem = m_options.windowSystem;
+    Ref<detail::PlatformManager> manager(LN_NEW detail::PlatformManager(), false);
+    auto result = manager->init(options);
+    if (!result) {
+        return result;
+    }
+
+    m_platformManager = manager;
+    return LN_MAKE_SUCCESS();
+}
+
 
 void EngineManager::registerModule(Module* mod) {
     if (LN_REQUIRE(!mod->m_context)) return;

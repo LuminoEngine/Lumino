@@ -35,6 +35,17 @@ Ref<detail::IShaderPass> g_shaderPass;
 // Ref<detail::IPipeline> g_renderPipeline;
 int g_frameIndex;
 
+bool utils_processEvents() {
+    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    manager->processSystemEventQueue();
+    return !manager->shouldQuit();
+}
+
+bool utils_shouldQuit() {
+    ln::detail::PlatformManager* manager = ln::EngineManager::instance()->platformManager();
+    return manager->shouldQuit();
+}
+
 void init() {
     EngineOptions options;
     options.platform.title = U"Example";
@@ -45,7 +56,11 @@ void init() {
     Engine::mountAssetDirectory(ASSETS_DIR);
     detail::ShaderManager::initialize({});
 
-    auto window = Platform::mainWindow();
+    ln::WindowCreationSettings windowOptions;
+    windowOptions.title = U"Test";
+    windowOptions.clientHeight = 160;
+    windowOptions.clientWidth = 120;
+    auto mainWindow = ln::EngineManager::instance()->platformManager()->createWindow(windowOptions);
 
     if (0) {
         //detail::WebGPUDevice::Settings settings;
@@ -56,7 +71,7 @@ void init() {
     }
     else {
         detail::VulkanDevice::Settings settings;
-        settings.mainWindow = window;
+        settings.mainWindow = mainWindow;
         settings.debugMode = true;
         bool dummy = false;
         auto device = *detail::VulkanDevice::create(settings, &dummy);
@@ -64,8 +79,8 @@ void init() {
         g_device = device;
     }
 
-    window->getSize(&g_viewSize);
-    g_swapChain = g_device->createSwapChain(window, g_viewSize);
+    mainWindow->getSize(&g_viewSize);
+    g_swapChain = g_device->createSwapChain(mainWindow, g_viewSize);
 
     ByteBuffer buffer = FileSystem::readAllBytes(Path(ASSETS_DIR, U"simple.hlsl")).unwrap();
 
@@ -201,7 +216,7 @@ void cleanup() {
 }
 
 void mainLoop() {
-    Platform::processEvents();
+    utils_processEvents();
 
     int imageIndex = 0;
     g_swapChain->acquireNextImage(&imageIndex);
@@ -282,7 +297,7 @@ int main() {
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(mainLoop, 60, true);
 #else
-    while (!Platform::shouldQuit()) {
+    while (!utils_shouldQuit()) {
         mainLoop();
         Thread::sleep(16);
     }

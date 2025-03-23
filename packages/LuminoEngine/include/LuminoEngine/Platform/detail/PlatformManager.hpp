@@ -7,7 +7,7 @@ namespace ln {
 namespace detail {
 class PlatformWindowManager;
 
-class PlatformManager : public PlatformModule {
+class PlatformManager : public RefObject {
 public:
     struct Settings : public PlatformModuleSettings {
         //WindowCreationSettings mainWindowSettings;
@@ -16,11 +16,8 @@ public:
         Settings(const PlatformModuleSettings& base) : PlatformModuleSettings(base) {} 
     };
 
-    static PlatformManager* initialize(const Settings& settings);
-    static void terminate();
-    static inline PlatformManager* instance() {
-        return static_cast<PlatformManager*>(EngineManager::instance()->platformManager);
-    }
+    //static PlatformManager* initialize(const Settings& settings);
+    //static void terminate();
 
     const Ref<PlatformWindowManager>& windowManager() const { return m_windowManager; }
 
@@ -36,10 +33,11 @@ public:
 
     virtual ~PlatformManager();
 
-private:
     PlatformManager();
     Result<> init(const Settings& settings);
     void dispose();
+
+private:
 
     Ref<PlatformWindowManager> m_windowManager;
     Ref<PlatformWindow> m_mainWindow; // v0.5.0 で持たないことを検討したが、Graphics, UI との初期化順の関係や、Android, Emscripten など既に出来上がっている View にアタッチしたいときなどに欲しい
