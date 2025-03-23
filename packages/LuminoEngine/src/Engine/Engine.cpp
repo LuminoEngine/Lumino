@@ -1,18 +1,10 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
-#include <LuminoEngine/RHIModule.hpp>
-//#include <LuminoEngine/Bitmap/BitmapRenderingContext.hpp>
-//#include <LuminoEngine/GPU/VertexBuffer.hpp>
-//#include <LuminoEngine/GPU/VertexLayout.hpp>
-//#include <LuminoEngine/GPU/RenderPass.hpp>
-//#include <LuminoEngine/GPU/Texture.hpp>
-//#include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../Audio/AudioManager.hpp"
-//#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Engine/Engine.hpp>
 
 namespace ln {

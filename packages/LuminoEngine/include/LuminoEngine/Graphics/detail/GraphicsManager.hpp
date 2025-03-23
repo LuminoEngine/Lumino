@@ -4,7 +4,6 @@
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 #include "../../GPU/Common.hpp"
 #include "../../GPU/detail/RenderingCommandList.hpp"
-#include "../../RHIModule.hpp"
 
 namespace ln {
 class CommandQueue;

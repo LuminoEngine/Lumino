@@ -1,8 +1,6 @@
 ﻿#include <stdio.h>
 #include <LuminoEngine.hpp>
 
-
-#include <LuminoEngine/RHIModule.hpp>
 #include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>

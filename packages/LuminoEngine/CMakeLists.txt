@@ -11,7 +11,6 @@ set(LN_SOURCES_Common
     src/pch.hpp
     src/Internal.hpp
     src/RegisterTypes.cpp
-    src/RHIModule.cpp
 )
 file(GLOB LN_SOURCES_Runtime include/LuminoEngine/Runtime/*.hpp include/LuminoEngine/Runtime/detail/*.hpp src/Runtime/*.cpp src/Runtime/*.hpp)
 file(GLOB LN_SOURCES_Base include/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
