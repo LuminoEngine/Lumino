@@ -37,11 +37,13 @@ bool utils_shouldQuit() {
 }
 
 void run() {
+    ln::EngineInstance* instance = ln::EngineInstance::instance();
+
     ln::WindowCreationSettings windowOptions;
     windowOptions.title = U"Test";
     windowOptions.clientHeight = 160;
     windowOptions.clientWidth = 120;
-    auto mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions);
+    auto mainWindow = instance->platformManager()->createWindow(windowOptions);
 
     //auto shader = Shader::create(ASSETFILE("simple.hlsl"));
     auto shader = Shader::load(U"simple");
@@ -64,7 +66,7 @@ void run() {
     };
     auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto swapChain = GraphicsContext::create(mainWindow);
+    auto swapChain = instance->graphicsManager()->createGraphicsContext(mainWindow);
 
     //auto spriteRenderer = makeURef<detail::SpriteRenderer>();
     //spriteRenderer->init();

@@ -19,10 +19,6 @@ namespace ln {
 //==============================================================================
 // SwapChain
 
-Ref<GraphicsContext> GraphicsContext::create(PlatformWindow* window) {
-    return GraphicsManager::instance()->createGraphicsContext(window);
-}
-
 GraphicsContext::GraphicsContext()
     : m_manager(nullptr)
     , m_rhiObject(nullptr)

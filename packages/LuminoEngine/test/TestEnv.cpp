@@ -42,13 +42,14 @@ void TestEnv::setup() {
     TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
     TestHelper::setTempDirPath(LN_LOCALFILE("tmp"));
 
+    ln::EngineInstance* instance = ln::EngineInstance::instance();
     WindowCreationSettings windowOptions;
     windowOptions.title = U"Test";
     windowOptions.clientWidth = 160;
     windowOptions.clientHeight = 120;
     mainWindow = EngineInstance::instance()->platformManager()->createWindow(windowOptions);
 
-    swapChain = GraphicsContext::create(mainWindow);
+    swapChain = instance->graphicsManager()->createGraphicsContext(mainWindow);
 }
 
 void TestEnv::initializeRendering() {

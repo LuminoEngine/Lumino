@@ -60,9 +60,6 @@ class LN_API GraphicsContext
     */
 
 public:
-    // 今のところ内部用。EngineSettings に基づいて作成する。
-    static Ref<GraphicsContext> create(PlatformWindow* window);
-
     Size backbufferSize() const;
 
     GraphicsCommandList* currentCommandList2() const;
