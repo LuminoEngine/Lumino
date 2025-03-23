@@ -11,7 +11,7 @@
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 
 namespace ln {

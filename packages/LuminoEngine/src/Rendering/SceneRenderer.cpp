@@ -1,11 +1,9 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/ShaderDescriptor.hpp>
 #include <LuminoEngine/GPU/RenderPass.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
-#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>

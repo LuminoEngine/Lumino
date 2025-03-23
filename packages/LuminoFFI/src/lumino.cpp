@@ -13,7 +13,7 @@
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <lumino.h>

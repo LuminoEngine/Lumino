@@ -3,7 +3,7 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
 #include <LuminoEngine/LuminoGraphics.hpp>
 using namespace ln;

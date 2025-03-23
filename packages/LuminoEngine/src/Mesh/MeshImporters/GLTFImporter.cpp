@@ -4,7 +4,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
 #include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/IndexBuffer.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>

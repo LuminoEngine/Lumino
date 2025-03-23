@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/Base/MixHash.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/ShaderDescriptor.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

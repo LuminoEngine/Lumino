@@ -8,7 +8,7 @@
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include "../Audio/AudioManager.hpp"
 #include <LuminoEngine/Audio/GameAudio.hpp>
 

@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include "GraphicsProfiler.hpp"
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/GPU/SwapChain.hpp>

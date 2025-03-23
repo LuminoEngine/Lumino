@@ -6,7 +6,7 @@
 #include <LuminoEngine/GPU/Shader.hpp>
 #include <LuminoEngine/GPU/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsExtension.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include "GPU/RenderTargetTextureCache.hpp"
 #ifdef LN_USE_VULKAN
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>

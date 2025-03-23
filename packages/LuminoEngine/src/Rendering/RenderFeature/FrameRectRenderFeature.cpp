@@ -1,7 +1,6 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/VertexLayout.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/GPU/IndexBuffer.hpp>

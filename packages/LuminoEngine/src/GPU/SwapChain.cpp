@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/Texture.hpp>
 #include <LuminoEngine/GPU/DepthBuffer.hpp>
 #include <LuminoEngine/GPU/SwapChain.hpp>

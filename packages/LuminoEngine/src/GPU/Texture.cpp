@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
@@ -8,7 +8,6 @@
 #include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
 #include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Graphics/Font/detail/TextLayoutEngine.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>

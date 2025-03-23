@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
 #include <LuminoEngine/GPU/SwapChain.hpp>
 #include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>

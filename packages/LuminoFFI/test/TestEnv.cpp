@@ -2,7 +2,7 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 #include "../../LuminoEngine/src/Platform/GLFWPlatformWindowManager.hpp"

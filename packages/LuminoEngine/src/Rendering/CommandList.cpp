@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
