@@ -1,5 +1,4 @@
 ﻿#include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
-#include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Platform/Platform.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>

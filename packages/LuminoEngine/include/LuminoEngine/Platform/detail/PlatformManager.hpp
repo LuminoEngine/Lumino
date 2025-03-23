@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/EngineManager.hpp>
-#include <LuminoEngine/Platform/PlatformModule.hpp>
 #include "../Common.hpp"
 
 namespace ln {
@@ -9,11 +8,11 @@ class PlatformWindowManager;
 
 class PlatformManager : public RefObject {
 public:
-    struct Settings : public PlatformModuleSettings {
-        //WindowCreationSettings mainWindowSettings;
-
-        Settings() {}
-        Settings(const PlatformModuleSettings& base) : PlatformModuleSettings(base) {} 
+    struct Settings {
+        [[deprecated]]
+        WindowCreationSettings mainWindowSettings;
+        [[deprecated]]
+        WindowSystem windowSystem = WindowSystem::Native;
     };
 
     //static PlatformManager* initialize(const Settings& settings);

@@ -8,7 +8,6 @@
 //#include <LuminoEngine/GPU/Texture.hpp>
 //#include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoEngine/Platform/PlatformModule.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/detail/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
