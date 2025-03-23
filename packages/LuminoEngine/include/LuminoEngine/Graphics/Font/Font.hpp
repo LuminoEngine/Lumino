@@ -74,7 +74,7 @@ LN_CONSTRUCT_ACCESS:
     void init();
     void init(const String& family, float size);
 	void init(const detail::FontDesc& desc);
-    //void init(detail::GraphicsManager* manager, FontCore* builtinRawFont);
+    //void init(GraphicsManager* manager, FontCore* builtinRawFont);
 
 private:
     detail::FontCore* resolveFontCore(float dpiScale);

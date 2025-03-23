@@ -93,7 +93,6 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format) {
     }
 }
 
-namespace detail {
 
 //==============================================================================
 // GraphicsManager
@@ -107,7 +106,7 @@ GraphicsManager* GraphicsManager::instance() {
 GraphicsManager::GraphicsManager()
     : m_assetManager(nullptr)
     //, m_platformManager(nullptr)
-    , m_resourceRegistry(makeURef<GraphicsObjectRegistry>())
+    , m_resourceRegistry(makeURef<detail::GraphicsObjectRegistry>())
     //, m_vertexBufferRegistry(makeURef<GraphicsResourceRegistry>())
     //, m_indexBufferRegistry(makeURef<GraphicsResourceRegistry>())
     //, m_constantBufferRegistry(makeURef<GraphicsResourceRegistry>())
@@ -124,13 +123,13 @@ bool GraphicsManager::init(const Settings& settings) {
 
     if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return false;
 
-    m_assetManager = AssetManager::instance();
+    m_assetManager = detail::AssetManager::instance();
     if (LN_ASSERT(m_assetManager)) return false;
     
     //m_platformManager = PlatformManager::instance();
     //if (LN_ASSERT(m_platformManager)) return false;
 
-    m_profiler = std::make_unique<GraphicsProfiler>();
+    m_profiler = std::make_unique<detail::GraphicsProfiler>();
 
     m_texture2DCache.init(64);
     m_shaderCache.init(64);
@@ -168,7 +167,7 @@ bool GraphicsManager::init(const Settings& settings) {
     //    LN_LOG_INFO("requestedShaderTriple: {}-{}-{}", triple.target, triple.version, triple.option);
     //}
 
-    m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
+    m_linearAllocatorPageManager = makeRef<detail::LinearAllocatorPageManager>();
 
 
     //if (auto queue = m_deviceContext->getGraphicsCommandQueue()) {
@@ -180,10 +179,10 @@ bool GraphicsManager::init(const Settings& settings) {
     //	m_computeQueue->init(queue);
     //}
 
-    m_renderingQueue = makeRef<RenderingQueue>();
+    m_renderingQueue = makeRef<detail::RenderingQueue>();
 
-    m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
-    m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
+    m_renderTargetTextureCacheManager = makeRef<detail::RenderTargetTextureCacheManager>();
+    m_depthBufferCacheManager = makeRef<detail::DepthBufferCacheManager>();
     m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
     m_renderPassCache = makeURef<detail::RenderPassCache>();
 
@@ -215,16 +214,16 @@ bool GraphicsManager::init(const Settings& settings) {
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     {
-        ShaderManager::Settings shaderManagerSettings;
-        m_shaderManager = ShaderManager::initialize(shaderManagerSettings);
+        detail::ShaderManager::Settings shaderManagerSettings;
+        m_shaderManager = detail::ShaderManager::initialize(shaderManagerSettings);
     }
 #endif
 
     {
-        MeshManager::Settings settings;
+        detail::MeshManager::Settings settings;
         settings.graphicsManager = this;
         settings.assetManager = m_assetManager;
-        m_meshManager = makeURef<MeshManager>();
+        m_meshManager = makeURef<detail::MeshManager>();
         if (!m_meshManager->init(settings)) {
             return false;
         }
@@ -282,7 +281,7 @@ void GraphicsManager::dispose() {
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     if (m_shaderManager) {
-        ShaderManager::terminate();
+        detail::ShaderManager::terminate();
         m_shaderManager = nullptr;
     }
  #endif
@@ -387,7 +386,7 @@ void GraphicsManager::removeGraphicsResource(IGraphicsResource* resource) {
 //    extension->onUnloaded(m_deviceContext->getNativeInterface());
 //}
 
-Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath) {
+Ref<Texture> GraphicsManager::requestTexture(const detail::AssetPath& assetPath) {
     // TODO: cache
     auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
     if (stream) {
@@ -404,7 +403,8 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringView& filePath) {
     static const std::vector<const Char*> exts = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
 
 #if 1
-    return AssetManager::loadObjectWithCacheHelper<Texture2D>(&m_texture2DCache, nullptr, exts, filePath, nullptr);
+    return detail::AssetManager::loadObjectWithCacheHelper<Texture2D>(
+        &m_texture2DCache, nullptr, exts, filePath, nullptr);
 #else
     auto pathSet = std::make_unique<AssetRequiredPathSet>();
     if (!AssetObject::_resolveAssetRequiredPathSet(filePath, exts, pathSet.get())) {
@@ -431,9 +431,13 @@ Ref<Texture2D> GraphicsManager::loadTexture2D(const StringView& filePath) {
 #endif
 }
 
-Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringView& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory) {
+Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(
+    const detail::AssetPath* baseDir,
+    const StringView& filePath,
+    std::function<Ref<Texture2D>(const detail::AssetRequiredPathSet*)> factory) {
     static const std::vector<const Char*> exts = { _TT(".png"), _TT(".jpg"), _TT(".tga"), _TT(".bmp"), _TT(".gif") };
-    return AssetManager::loadObjectWithCacheHelper<Texture2D>(texture2DCache(), baseDir, exts, filePath, factory);
+    return detail::AssetManager::loadObjectWithCacheHelper<Texture2D>(
+        texture2DCache(), baseDir, exts, filePath, factory);
 }
 
 //GraphicsCommandList* GraphicsManager::getOpenGLIntegrationCommandList() {
@@ -445,7 +449,7 @@ Ref<Texture2D> GraphicsManager::loadTexture2DFromOnMemoryData(const detail::Asse
 
 bool GraphicsManager::checkVulkanSupported() {
 #ifdef LN_USE_VULKAN
-    return VulkanHelper::checkVulkanSupported();
+    return detail::VulkanHelper::checkVulkanSupported();
 #else
     return false;
 #endif
@@ -465,26 +469,30 @@ void GraphicsManager::selectDefaultSystem(GraphicsAPI* api, WindowSystem* ws) {
     }
 }
 
-StreamingBufferAllocatorManager* GraphicsManager::obtainVertexBufferStreamingAllocatorManager(size_t elementSize) {
+detail::StreamingBufferAllocatorManager* GraphicsManager::obtainVertexBufferStreamingAllocatorManager(
+    size_t elementSize) {
     auto r = m_vertexBufferStreamingAllocatorManager.findIf([elementSize](auto& x) { return x->elementSize() == elementSize; });
     if (r) {
         return *r;
     }
     else {
-        auto manager = makeURef<StreamingBufferAllocatorManager>(StreamingBufferPage::Type::VertexBuffer, elementSize);
+        auto manager = makeURef<detail::StreamingBufferAllocatorManager>(
+            detail::StreamingBufferPage::Type::VertexBuffer, elementSize);
         m_vertexBufferStreamingAllocatorManager.push(std::move(manager));
         return m_vertexBufferStreamingAllocatorManager.back();
     }
 }
 
-StreamingBufferAllocatorManager* GraphicsManager::obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format) {
+detail::StreamingBufferAllocatorManager* GraphicsManager::obtainIndexBufferStreamingAllocatorManager(
+    IndexBufferFormat format) {
     size_t elementSize = RHIHelper::getIndexStride(format);
     auto r = m_indexBufferStreamingAllocatorManager.findIf([elementSize](auto& x) { return x->elementSize() == elementSize; });
     if (r) {
         return *r;
     }
     else {
-        auto manager = makeURef<StreamingBufferAllocatorManager>(StreamingBufferPage::Type::VertexBuffer, elementSize);
+        auto manager = makeURef<detail::StreamingBufferAllocatorManager>(
+            detail::StreamingBufferPage::Type::VertexBuffer, elementSize);
         m_indexBufferStreamingAllocatorManager.push(std::move(manager));
         return m_indexBufferStreamingAllocatorManager.back();
     }
@@ -498,7 +506,7 @@ Ref<Shader> GraphicsManager::loadShader(const StringView& filePath) {
 #else
     static const std::vector<const Char*> exts = { _TT(".lcfx") };
 #endif
-    return AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
+    return detail::AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
 }
 
 //void GraphicsManager::createOpenGLContext(const Settings& settings) {
@@ -571,5 +579,4 @@ Ref<Shader> GraphicsManager::loadShader(const StringView& filePath) {
 //	return m_inFlightRenderingCommandList;
 //}
 
-} // namespace detail
 } // namespace ln

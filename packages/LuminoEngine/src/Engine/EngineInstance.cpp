@@ -164,9 +164,9 @@ MaybeResult EngineInstance::initializePlatformManager() {
 MaybeResult EngineInstance::initializeGraphicsManager() {
     if (m_graphicsManager) return LN_MAKE_SUCCESS();
 
-    detail::GraphicsManager::Settings options;
+    GraphicsManager::Settings options;
     options.graphicsAPI = m_options.graphicsAPI;
-    Ref<detail::GraphicsManager> manager(LN_NEW detail::GraphicsManager(), false);
+    Ref<GraphicsManager> manager(LN_NEW GraphicsManager(), false);
     auto result = manager->init(options);
     if (!result) {
         return LN_MAKE_ERROR();

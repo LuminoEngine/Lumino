@@ -11,7 +11,7 @@
 namespace ln {
 
 //GraphicsCommandList* OpenGLIntegration::getCommandListFromCurrentContext() {
-//    auto* manager = detail::GraphicsManager::instance();
+//    auto* manager = GraphicsManager::instance();
 //    return manager->getOpenGLIntegrationCommandList();
 //}
 

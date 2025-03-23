@@ -58,7 +58,6 @@ public:
 namespace detail {
 class AssetManager;
 class RenderingCommandList;
-class GraphicsManager;
 class GraphicsContextInternal;
 class IGraphicsDevice;
 class ICommandList;

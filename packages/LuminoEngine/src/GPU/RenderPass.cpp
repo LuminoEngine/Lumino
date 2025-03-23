@@ -25,7 +25,7 @@ namespace ln {
 RenderPass* RenderPass::get(RenderTargetTexture* renderTarget) {
     detail::RenderPassCache::FindKey key;
     key.renderTargets[0] = renderTarget;
-    return detail::GraphicsManager::instance()->renderPassCache()->getOrCreate(key);
+    return GraphicsManager::instance()->renderPassCache()->getOrCreate(key);
 }
 
 RenderPass* RenderPass::get(
@@ -42,7 +42,7 @@ RenderPass* RenderPass::get(
     key.clearColor = clearColor;
     key.clearDepth = clearDepth;
     key.clearStencil = clearStencil;
-    return detail::GraphicsManager::instance()->renderPassCache()->getOrCreate(key);
+    return GraphicsManager::instance()->renderPassCache()->getOrCreate(key);
 }
 
 RenderPass::RenderPass()

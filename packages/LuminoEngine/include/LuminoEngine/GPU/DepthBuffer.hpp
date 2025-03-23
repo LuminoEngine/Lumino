@@ -47,7 +47,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     //Ref<detail::RHIResource> m_rhiObject;
     SizeI m_size;
 

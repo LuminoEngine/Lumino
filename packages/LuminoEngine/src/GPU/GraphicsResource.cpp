@@ -39,7 +39,7 @@ namespace ln {
      
 void GraphicsResourceInternal::initializeHelper_GraphicsResource(IGraphicsResource* obj, GraphicsManager** manager)
 {
-    *manager = detail::GraphicsManager::instance();
+    *manager = GraphicsManager::instance();
     (*manager)->addGraphicsResource(obj);
 }
 

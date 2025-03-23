@@ -84,7 +84,7 @@ Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format) {
 // }
 
 Ref<Texture2D> Texture2D::load(const StringView& filePath) {
-    return detail::GraphicsManager::instance()->loadTexture2D(filePath);
+    return GraphicsManager::instance()->loadTexture2D(filePath);
 }
 
 Ref<Texture2DPromise> Texture2D::loadAsync(const StringView& filePath) {
@@ -118,7 +118,7 @@ Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint) {
         core->lookupGlyphBitmap(codePoint, &info);
 
         auto texture = makeObject_deprecated<Texture2D>(info.glyphBitmap->clone(), GraphicsHelper::translateToTextureFormat(info.glyphBitmap->format()));
-        texture->setSamplerState(detail::GraphicsManager::instance()->linearSamplerState());
+        texture->setSamplerState(GraphicsManager::instance()->linearSamplerState());
         return texture;
     }
     else {
@@ -135,11 +135,11 @@ Ref<Texture2D> Texture2D::createFromImageFileData(const uint8_t* data, int32_t l
 }
 
 Texture2D* Texture2D::blackTexture() {
-    return detail::GraphicsManager::instance()->blackTexture();
+    return GraphicsManager::instance()->blackTexture();
 }
 
 Texture2D* Texture2D::whiteTexture() {
-    return detail::GraphicsManager::instance()->whiteTexture();
+    return GraphicsManager::instance()->whiteTexture();
 }
 
 Texture2D::Texture2D()
@@ -386,11 +386,11 @@ Ref<RenderTargetTexture> RenderTargetTexture::create(int width, int height, Text
 }
 
 Ref<RenderTargetTexture> RenderTargetTexture::getTemporary(int width, int height, TextureFormat format, bool mipmap) {
-    return detail::GraphicsManager::instance()->frameBufferCache()->requestRenderTargetTexture2(SizeI(width, height), format, mipmap);
+    return GraphicsManager::instance()->frameBufferCache()->requestRenderTargetTexture2(SizeI(width, height), format, mipmap);
 }
 
 void RenderTargetTexture::releaseTemporary(RenderTargetTexture* renderTarget) {
-    detail::GraphicsManager::instance()->frameBufferCache()->release(renderTarget);
+    GraphicsManager::instance()->frameBufferCache()->release(renderTarget);
 }
 
 Ref<RenderTargetTexture> RenderTargetTexture::realloc(RenderTargetTexture* renderTarget, int width, int height, TextureFormat format, bool mipmap, SamplerState* samplerState) {
@@ -480,7 +480,7 @@ void RenderTargetTexture::resetRHIObject(GraphicsContext* context, detail::RHIRe
 
 void RenderTargetTexture::onDispose(bool explicitDisposing) {
     // m_rhiObject.reset();
-    if (detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this)) {
+    if (GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this)) {
         manager->profiler()->removeRenderTarget(this);
     }
     Texture::onDispose(explicitDisposing);

@@ -34,11 +34,11 @@ Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressM
 }
 
 SamplerState* SamplerState::pointClamp() {
-    return detail::GraphicsManager::instance()->pointClampSamplerState();
+    return GraphicsManager::instance()->pointClampSamplerState();
 }
 
 SamplerState* SamplerState::linearClamp() {
-    return detail::GraphicsManager::instance()->linearClampSamplerState();
+    return GraphicsManager::instance()->linearClampSamplerState();
 }
 
 SamplerState::SamplerState()

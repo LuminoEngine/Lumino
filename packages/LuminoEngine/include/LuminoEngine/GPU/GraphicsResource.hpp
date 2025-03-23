@@ -33,7 +33,7 @@ protected:
 private:
     bool m_profiling = false;
 
-    friend class detail::GraphicsManager;
+    friend class GraphicsManager;
     friend class detail::GraphicsResourceInternal;
     friend class detail::GraphicsProfiler;
 };
@@ -45,7 +45,7 @@ class GraphicsResourceInternal
 public:
 
     template<class T>
-    static detail::GraphicsManager* manager(T* obj) { return obj->m_manager; }
+    static GraphicsManager* manager(T* obj) { return obj->m_manager; }
 
     template<class TReturn, class TObject>
     static TReturn* resolveRHIObject(GraphicsCommandList* context, const TObject& obj, bool* outModified)

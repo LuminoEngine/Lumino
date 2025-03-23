@@ -15,7 +15,6 @@ class ShaderPass;
 class PlatformWindow;
 
 namespace detail {
-class GraphicsManager;
 class ISwapChain;
 class SwapChainInternal;
 class SingleFrameUniformBufferAllocator;
@@ -103,7 +102,7 @@ protected:
     detail::ISwapChain* resolveRHIObject(GraphicsCommandList* context, bool* outModified) const;
     int imageIndex() const { return m_imageIndex; }
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     Ref<detail::ISwapChain> m_rhiObject;
     Ref<detail::SingleFrameUniformBufferAllocatorPageManager> m_singleFrameConstantBufferAllocatorPageManager;
     URef<detail::RHIGraphicsObjectRegistry> m_rhiResourceRegistry;

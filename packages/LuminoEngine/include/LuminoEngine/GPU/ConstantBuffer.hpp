@@ -26,7 +26,7 @@ private:
     virtual ~ConstantBuffer();
     bool init(GraphicsContext* context, size_t size);
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     bool m_profiling;
     Ref<detail::RHIResource> m_rhiObject;
     void* m_mappedData;

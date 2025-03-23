@@ -95,7 +95,7 @@ private:
     static int getIndexBufferSize(IndexBufferFormat format, int indexCount) { return getIndexStride(format) * indexCount; }
     static bool shortLifeBuffer(GraphicsResourceUsage usage, GraphicsResourcePool pool) { return usage == GraphicsResourceUsage::Static && pool == GraphicsResourcePool::None; }
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     // Ref<detail::RHIResource> m_rhiObject;
     IndexBufferFormat m_format;
     GraphicsResourceUsage m_usage;

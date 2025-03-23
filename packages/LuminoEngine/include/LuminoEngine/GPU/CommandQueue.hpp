@@ -3,7 +3,6 @@
 
 namespace ln {
 namespace detail {
-class GraphicsManager;
 }
 
 /**  */
@@ -18,7 +17,7 @@ class GraphicsManager;
 //
 //    Ref<detail::ICommandQueue> m_rhiObject;
 //
-//	friend class detail::GraphicsManager;
+//	friend class GraphicsManager;
 //};
 
 } // namespace ln

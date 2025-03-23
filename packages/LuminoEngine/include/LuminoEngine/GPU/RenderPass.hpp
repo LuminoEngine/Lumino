@@ -93,7 +93,7 @@ private:
     detail::IRenderPass* resolveRHIObjectNoClear(GraphicsCommandList* context, bool* outModified);
     void releaseRHI();
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     //Ref<detail::IRenderPass> m_rhiObject;
     //Ref<detail::IRenderPass> m_rhiObjectNoClear;
     std::array<Ref<RenderTargetTexture>, GraphicsCommandList::MaxMultiRenderTargets> m_renderTargets;
@@ -114,36 +114,4 @@ private:
     friend class detail::RenderPassCache;
 };
 
-// namespace detail {
-// class GraphicsManager;
-//
-// class RenderPassPool
-//{
-// public:
-//	struct FindKey
-//	{
-//		std::array<RenderTargetTexture*, MaxMultiRenderTargets> renderTargets = {};
-//		DepthBuffer* depthBuffer = nullptr;
-//		ClearFlags clearFlags = ClearFlags::All;
-//		Color clearColor = Color(0, 0, 0, 0);
-//		float clearDepth = 1.0f;
-//		uint8_t clearStencil = 0x00;
-//	};
-//
-//	RenderPassPool(GraphicsManager* manager);
-//	RenderPass* findOrCreate(const FindKey& key);
-//	static uint64_t computeHash(const FindKey& key);
-//
-// private:
-//	struct Entry
-//	{
-//		int referenceCount = 0;
-//		Ref<IRenderPass> value;
-//	};
-//
-//	GraphicsManager* m_manager;
-//	std::unordered_map<uint64_t, Ref<RenderPass>> m_hashMap;
-// };
-//
-// } // namespace detail
 } // namespace ln

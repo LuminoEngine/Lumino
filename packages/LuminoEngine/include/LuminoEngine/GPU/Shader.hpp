@@ -500,7 +500,7 @@ private:
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
     void createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
-    detail::GraphicsManager* m_graphicsManager;
+    GraphicsManager* m_graphicsManager;
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
     Ref<ShaderDefaultDescriptor> m_descriptor;

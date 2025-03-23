@@ -50,7 +50,7 @@ protected:
 private:
     void setDesc(int width, int height, TextureFormat format);
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     int m_width;
     int m_height;
     TextureFormat m_format;

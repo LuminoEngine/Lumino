@@ -753,7 +753,7 @@ void CommandList::drawTextSprite(const StringView& text, const Color& color, con
 
     if (baseDirection != SpriteBaseDirection::Basic2D) {
         // is 3D.
-        proxy->samplerState = detail::GraphicsManager::instance()->linearSamplerState();
+        proxy->samplerState = GraphicsManager::instance()->linearSamplerState();
     }
 #else
     // TODO: cache
@@ -777,7 +777,7 @@ void CommandList::drawTextSprite(const StringView& text, const Color& color, con
 
     if (baseDirection != SpriteBaseDirection::Basic2D) {
         // is 3D.
-        element->samplerState = detail::GraphicsManager::instance()->linearSamplerState();
+        element->samplerState = GraphicsManager::instance()->linearSamplerState();
     }
 #endif
 }

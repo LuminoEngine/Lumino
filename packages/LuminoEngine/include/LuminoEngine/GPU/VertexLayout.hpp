@@ -48,7 +48,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::IVertexDeclaration* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     //Ref<detail::IVertexDeclaration> m_deviceObj;
     List<VertexElement> m_vertexElements;
     bool m_modified;

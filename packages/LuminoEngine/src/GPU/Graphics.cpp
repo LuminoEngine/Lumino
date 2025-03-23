@@ -11,27 +11,27 @@ namespace ln {
 
 //GraphicsAPI Graphics::activeGraphicsAPI()
 //{
-//	return detail::GraphicsManager::instance()->deviceContext()->caps().graphicsAPI;
+//	return GraphicsManager::instance()->deviceContext()->caps().graphicsAPI;
 //}
 //
 //CommandQueue* Graphics::graphicsQueue()
 //{
-//	return detail::GraphicsManager::instance()->graphicsQueue();
+//	return GraphicsManager::instance()->graphicsQueue();
 //}
 //
 //CommandQueue* Graphics::computeQueue()
 //{
-//	return detail::GraphicsManager::instance()->computeQueue();
+//	return GraphicsManager::instance()->computeQueue();
 //}
 
 //int Graphics::registerExtension(INativeGraphicsExtension* extension)
 //{
-//	return detail::GraphicsManager::instance()->registerExtension(extension);
+//	return GraphicsManager::instance()->registerExtension(extension);
 //}
 //
 //void Graphics::unregisterExtension(INativeGraphicsExtension* extension)
 //{
-//	return detail::GraphicsManager::instance()->unregisterExtension(extension);
+//	return GraphicsManager::instance()->unregisterExtension(extension);
 //}
 
 } // namespace ln

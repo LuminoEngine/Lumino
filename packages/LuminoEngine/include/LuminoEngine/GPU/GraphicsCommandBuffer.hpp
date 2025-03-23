@@ -160,7 +160,7 @@ public:
     /** @defgroup TODO: Internal */
     /** @{ */
 
-    void init(detail::GraphicsManager* manager);
+    void init(GraphicsManager* manager);
     void dispose();
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
     void reset();
@@ -204,7 +204,7 @@ private:
         Ref<detail::IDescriptorPool> descriptorPool;
     };
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     GraphicsContext* m_graphicsContext;
     Ref<detail::ICommandList> m_rhiResource;
     Ref<detail::LinearAllocator> m_allocator;

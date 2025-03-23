@@ -19,7 +19,6 @@ class ShaderRenderState;
 
 namespace detail {
 class ShaderManager;
-class GraphicsManager;
 class ShaderSecondaryDescriptor;
 class ShaderDescriptorPool;
     //

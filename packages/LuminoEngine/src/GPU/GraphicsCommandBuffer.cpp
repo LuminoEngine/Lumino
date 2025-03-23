@@ -21,7 +21,7 @@ namespace ln {
 
 //Ref<GraphicsCommandList> GraphicsCommandList::create() {
 //    auto commandList = makeRef<GraphicsCommandList>();
-//    commandList->init(detail::GraphicsManager::instance());
+//    commandList->init(GraphicsManager::instance());
 //    return commandList;
 //}
 
@@ -37,9 +37,9 @@ GraphicsCommandList::GraphicsCommandList(GraphicsContext* context)
     , m_currentRHIRenderPass(nullptr) {
 }
 
-void GraphicsCommandList::init(detail::GraphicsManager* manager) {
+void GraphicsCommandList::init(GraphicsManager* manager) {
     detail::IGraphicsDevice* device = m_graphicsContext->rhiDevice();
-    m_manager = detail::GraphicsManager::instance();
+    m_manager = GraphicsManager::instance();
     //m_manager->resourceRegistry()->registerObject(this);
     m_rhiResource = device->createCommandList();
     m_allocator = makeRef<detail::LinearAllocator>(manager->linearAllocatorPageManager());

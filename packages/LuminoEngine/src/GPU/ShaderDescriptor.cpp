@@ -116,7 +116,7 @@ void ShaderDescriptor::reset(ShaderPass* shaderPass) {
 void ShaderDescriptor::submit(
     GraphicsCommandList* commandList,
     detail::IShaderPass* rhiShaderPass) {
-    detail::GraphicsManager* manager = commandList->m_manager;
+    GraphicsManager* manager = commandList->m_manager;
     detail::ICommandList* rhiCommandList = commandList->rhiResource();
     const ShaderPassDescriptorLayout& layout = m_shaderPass->descriptorLayout();
 

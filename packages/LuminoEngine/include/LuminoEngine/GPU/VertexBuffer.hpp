@@ -74,7 +74,7 @@ private:
     detail::RHIResource* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
     // bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     size_t m_primarySize;

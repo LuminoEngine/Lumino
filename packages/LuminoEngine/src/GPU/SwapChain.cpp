@@ -20,7 +20,7 @@ namespace ln {
 // SwapChain
 
 Ref<GraphicsContext> GraphicsContext::create(PlatformWindow* window) {
-    return detail::GraphicsManager::instance()->createGraphicsContext(window);
+    return GraphicsManager::instance()->createGraphicsContext(window);
 }
 
 GraphicsContext::GraphicsContext()
@@ -211,7 +211,7 @@ void GraphicsContext::nextFrame() {
 }
 
 void GraphicsContext::presentInternal() {
-    detail::GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
+    GraphicsManager* manager = detail::GraphicsResourceInternal::manager(this);
     detail::IGraphicsDevice* device = rhiDevice();
 
     detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);

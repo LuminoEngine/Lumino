@@ -18,11 +18,11 @@ Ref<DepthBuffer> DepthBuffer::create(int width, int height) {
 }
 
 Ref<DepthBuffer> DepthBuffer::getTemporary(int width, int height) {
-    return detail::GraphicsManager::instance()->frameBufferCache()->requestDepthBuffer2(SizeI(width, height));
+    return GraphicsManager::instance()->frameBufferCache()->requestDepthBuffer2(SizeI(width, height));
 }
 
 void DepthBuffer::releaseTemporary(DepthBuffer* depthBuffer) {
-    detail::GraphicsManager::instance()->frameBufferCache()->release(depthBuffer);
+    GraphicsManager::instance()->frameBufferCache()->release(depthBuffer);
 }
 
 DepthBuffer::DepthBuffer()

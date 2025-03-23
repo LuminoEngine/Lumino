@@ -359,7 +359,7 @@ SpriteTextRenderFeature::Batch* SpriteTextRenderFeature::endLayoutAndAcquireBatc
 		if (m_drawingSamplerState)
 			batch->overrideSamplerState = m_drawingSamplerState;
 		else
-			batch->overrideSamplerState = detail::GraphicsManager::instance()->defaultSamplerState();
+			batch->overrideSamplerState = GraphicsManager::instance()->defaultSamplerState();
 
 		m_renderingFonts.push_back(newFontCore);
 	}

@@ -84,14 +84,14 @@ private:
     detail::ISamplerState* resolveRHIObject(GraphicsCommandList* context, bool* outModified);
     void setFrozen(bool value) { m_frozen = value; }
 
-    detail::GraphicsManager* m_manager;
+    GraphicsManager* m_manager;
     //Ref<detail::ISamplerState> m_rhiObject;
 	detail::SamplerStateData m_desc;
     bool m_modified;
     bool m_frozen;
 
     friend class detail::GraphicsResourceInternal;
-    friend class detail::GraphicsManager;
+    friend class GraphicsManager;
 };
 
 } // namespace ln

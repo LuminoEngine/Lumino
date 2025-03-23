@@ -61,7 +61,7 @@ Ref<Shader> Shader::create(const StringView& filePath, ShaderCompilationProperti
 }
 
 Ref<Shader> Shader::load(const StringView& filePath, AssetImportSettings* settings) {
-    return detail::GraphicsManager::instance()->loadShader(filePath);
+    return GraphicsManager::instance()->loadShader(filePath);
 }
 
 Ref<Shader> Shader::create(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties) {
@@ -434,7 +434,7 @@ void ShaderPass::init(
     m_kokageShader = kokageShader;
     m_kokagePassId = kokagePassId;
 
-    detail::GraphicsManager* manager = m_owner->m_owner->m_graphicsManager;
+    GraphicsManager* manager = m_owner->m_owner->m_graphicsManager;
     manager->resourceRegistry()->registerObject(this);
 
     kokage::UnifiedShaderPass* kokagePass = kokageShader->pass(kokagePassId);
@@ -462,7 +462,7 @@ void ShaderPass::onDispose(bool explicitDisposing) {
     //m_rhiPass = nullptr;
 
     if (m_owner->m_owner && m_id > 0) {
-        detail::GraphicsManager* manager = m_owner->m_owner->m_graphicsManager;
+        GraphicsManager* manager = m_owner->m_owner->m_graphicsManager;
         manager->resourceRegistry()->unregisterObject(this);
     }
 

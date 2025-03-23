@@ -24,6 +24,7 @@ class ShaderManager;
 class StreamingBufferAllocatorManager;
 //class RenderingManager2;
 class MeshManager;
+} // namespace detail
 
 class GraphicsManager : public RefObject {
 public:
@@ -49,8 +50,8 @@ public:
     void addGraphicsResource(IGraphicsResource* resource);
     void removeGraphicsResource(IGraphicsResource* resource);
 
-    AssetManager* assetManager() const { return m_assetManager; }
-    MeshManager* meshManager() const { return m_meshManager; }
+    detail::AssetManager* assetManager() const { return m_assetManager; }
+    detail::MeshManager* meshManager() const { return m_meshManager; }
 
     // deviceContext() は、リソースの CRUD のみを目的として IGraphicsDevice にアクセスしたいときに使うこと。
     // 描画を目的としたステートの変更や、clear、draw 系は GraphicsCommandList::commitState() の戻り値を使うこと。
@@ -62,7 +63,7 @@ public:
     //const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 
     
-    GraphicsObjectRegistry* resourceRegistry() const { return m_resourceRegistry; }
+    detail::GraphicsObjectRegistry* resourceRegistry() const { return m_resourceRegistry; }
     //GraphicsResourceRegistry* vertexLayoutRegistry() const { return m_vertexLayoutRegistry; }
     //GraphicsResourceRegistry* vertexBufferRegistry() const { return m_vertexBufferRegistry; }
     //GraphicsResourceRegistry* indexBufferRegistry() const { return m_indexBufferRegistry; }
@@ -71,25 +72,25 @@ public:
     //GraphicsResourceRegistry* textureRegistry() const { return m_textureRegistry; }
     //GraphicsResourceRegistry* depthBufferRegistry() const { return m_depthBufferRegistry; }
 
-    const std::unique_ptr<GraphicsProfiler>& profiler() const { return m_profiler; }
-    const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
-    const Ref<RenderingQueue>& renderingQueue() const { return m_renderingQueue; }
+    const std::unique_ptr<detail::GraphicsProfiler>& profiler() const { return m_profiler; }
+    const Ref<detail::LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
+    const Ref<detail::RenderingQueue>& renderingQueue() const { return m_renderingQueue; }
     //RenderingType renderingType() const { return RenderingType::Immediate; }
     //const Ref<RenderingCommandList>& primaryRenderingCommandList2() const { return m_primaryRenderingCommandList; }
-    const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
-    const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
-    const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
-    const URef<RenderPassCache>& renderPassCache() const { return m_renderPassCache; }
-    ObjectCache<String, Texture2D>* texture2DCache() { return &m_texture2DCache; }
+    const Ref<detail::RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
+    const Ref<detail::DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
+    const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
+    const URef<detail::RenderPassCache>& renderPassCache() const { return m_renderPassCache; }
+    detail::ObjectCache<String, Texture2D>* texture2DCache() { return &m_texture2DCache; }
 
     const List<IGraphicsResource*>& graphicsResources() const { return m_graphicsResources; }
 
     //int registerExtension(INativeGraphicsExtension* extension);
     //void unregisterExtension(INativeGraphicsExtension* extension);
-    Ref<Texture> requestTexture(const AssetPath& assetPath);
+    Ref<Texture> requestTexture(const detail::AssetPath& assetPath);
 
     Ref<Texture2D> loadTexture2D(const StringView& filePath);
-    Ref<Texture2D> loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringView& filePath, std::function<Ref<Texture2D>(const AssetRequiredPathSet*)> factory);
+    Ref<Texture2D> loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringView& filePath, std::function<Ref<Texture2D>(const detail::AssetRequiredPathSet*)> factory);
     Ref<Shader> loadShader(const StringView& filePath);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
@@ -102,8 +103,8 @@ public:
 
     //GraphicsCommandList* getOpenGLIntegrationCommandList();
 
-    StreamingBufferAllocatorManager* obtainVertexBufferStreamingAllocatorManager(size_t elementSize);
-    StreamingBufferAllocatorManager* obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format);
+    detail::StreamingBufferAllocatorManager* obtainVertexBufferStreamingAllocatorManager(size_t elementSize);
+    detail::StreamingBufferAllocatorManager* obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format);
 
     static bool checkVulkanSupported();
     static void selectDefaultSystem(GraphicsAPI* api, WindowSystem* ws);
@@ -114,16 +115,16 @@ private:
     //void createVulkanContext(const Settings& settings);
     //void createDirectX12Context(const Settings& settings);
 
-    AssetManager* m_assetManager;
+    detail::AssetManager* m_assetManager;
     //PlatformManager* m_platformManager;
-    ShaderManager* m_shaderManager;
-    URef<MeshManager> m_meshManager;
+    detail::ShaderManager* m_shaderManager;
+    URef<detail::MeshManager> m_meshManager;
     //Ref<IGraphicsDevice> m_deviceContext;
     Ref<CommandQueue> m_graphicsQueue;
     Ref<CommandQueue> m_computeQueue;
     Settings m_settings;
 
-    URef<GraphicsObjectRegistry> m_resourceRegistry;
+    URef<detail::GraphicsObjectRegistry> m_resourceRegistry;
     //URef<GraphicsResourceRegistry> m_vertexLayoutRegistry;
     //URef<GraphicsResourceRegistry> m_vertexBufferRegistry;
     //URef<GraphicsResourceRegistry> m_indexBufferRegistry;
@@ -132,15 +133,15 @@ private:
     //URef<GraphicsResourceRegistry> m_textureRegistry;
     //URef<GraphicsResourceRegistry> m_depthBufferRegistry;
 
-    std::unique_ptr<GraphicsProfiler> m_profiler;
-    Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
-    Ref<RenderingQueue> m_renderingQueue;
-    Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
-    Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
-    Ref<FrameBufferCache> m_frameBufferCache;// TODO: いらないかも
-    URef<RenderPassCache> m_renderPassCache;
-    ObjectCache<String, Texture2D> m_texture2DCache;
-    ObjectCache<String, Shader> m_shaderCache;
+    std::unique_ptr<detail::GraphicsProfiler> m_profiler;
+    Ref<detail::LinearAllocatorPageManager> m_linearAllocatorPageManager;
+    Ref<detail::RenderingQueue> m_renderingQueue;
+    Ref<detail::RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
+    Ref<detail::DepthBufferCacheManager> m_depthBufferCacheManager;
+    Ref<detail::FrameBufferCache> m_frameBufferCache; // TODO: いらないかも
+    URef<detail::RenderPassCache> m_renderPassCache;
+    detail::ObjectCache<String, Texture2D> m_texture2DCache;
+    detail::ObjectCache<String, Shader> m_shaderCache;
     List<IGraphicsResource*> m_graphicsResources;
     List<INativeGraphicsExtension*> m_extensions;
 
@@ -154,9 +155,8 @@ private:
 
     Ref<GraphicsCommandList> m_openglIntegrationCommandList;
 
-    Array<URef<StreamingBufferAllocatorManager>> m_vertexBufferStreamingAllocatorManager;
-    Array<URef<StreamingBufferAllocatorManager>> m_indexBufferStreamingAllocatorManager;
+    Array<URef<detail::StreamingBufferAllocatorManager>> m_vertexBufferStreamingAllocatorManager;
+    Array<URef<detail::StreamingBufferAllocatorManager>> m_indexBufferStreamingAllocatorManager;
 };
 
-} // namespace detail
 } // namespace ln

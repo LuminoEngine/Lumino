@@ -13,7 +13,6 @@
 
 namespace ln {
 namespace detail {
-class GraphicsManager;
 
 #ifdef _WIN32
 typedef HRESULT(WINAPI* PFN_D3DCompile2)(

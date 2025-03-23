@@ -21,7 +21,7 @@ void TestEnv::setup() {
 
     auto graphicsAPI = GraphicsAPI::Vulkan;
     auto windowSystem = ln::WindowSystem::Native;
-    detail::GraphicsManager::selectDefaultSystem(&graphicsAPI, &windowSystem);
+    GraphicsManager::selectDefaultSystem(&graphicsAPI, &windowSystem);
 
     if (!isCI) {
         //graphicsAPI = GraphicsAPI::Vulkan;
@@ -55,7 +55,7 @@ void TestEnv::initializeRendering() {
     if (renderView) return;
 
     //detail::RenderingManager::Settings renderingManagerSettings;
-    //renderingManagerSettings.graphicsManager = detail::GraphicsManager::instance();
+    //renderingManagerSettings.graphicsManager = GraphicsManager::instance();
     //renderingManagerSettings.fontManager = nullptr;
     //detail::RenderingManager::initialize(renderingManagerSettings);
 

@@ -4,7 +4,7 @@
 #include "Common2.hpp"
 #include "../Asset/Common.hpp"
 #include "../Platform/Common.hpp"
-#include "../Graphics/GraphicsRHI/Common.hpp"
+#include "../Graphics/Common.hpp"
 
 namespace ln {
 struct RuntimeModuleSettings {
@@ -16,7 +16,6 @@ namespace detail {
 class RuntimeManager;
 class PlatformManager;
 class AssetManager;
-class GraphicsManager;
 } // namespace detail
 
 class EngineInstance {
@@ -44,7 +43,7 @@ public:
 
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
-    const Ref<detail::GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
+    const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 
     ~EngineInstance();
 
@@ -64,7 +63,7 @@ private:
     Ref<DiagnosticsManager> m_activeDiagnostics;
     URef<detail::AssetManager> m_assetManager;
     Ref<detail::PlatformManager> m_platformManager;
-    Ref<detail::GraphicsManager> m_graphicsManager;
+    Ref<GraphicsManager> m_graphicsManager;
 };
 
 } // namespace ln
