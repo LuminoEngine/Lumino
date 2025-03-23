@@ -121,7 +121,7 @@ bool GraphicsManager::init(const Settings& settings) {
     s_GraphicsManager = this;
     m_settings = settings;
 
-    if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return false;
+    //if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return false;
 
     m_assetManager = detail::AssetManager::instance();
     if (LN_ASSERT(m_assetManager)) return false;

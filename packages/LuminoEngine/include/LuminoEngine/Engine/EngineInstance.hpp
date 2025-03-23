@@ -51,9 +51,8 @@ private:
     EngineInstance();
     MaybeResult init(const RuntimeModuleSettings& settings);
     void dispose();
-    MaybeResult initializePlatformManager();
     MaybeResult initializeGraphicsManager();
-
+    MaybeResult initializePlatformManager();
 
     static std::unique_ptr<EngineInstance> s_instance;
 

@@ -1,6 +1,7 @@
 ﻿#pragma once
-#include "PlatformEvent.hpp"
 #include <LuminoCore/Geometries/GeometryStructs.hpp>
+#include "PlatformEvent.hpp"
+#include "../GPU/SwapChain.hpp"
 
 namespace ln {
 
@@ -41,6 +42,9 @@ private:
 	detail::PlatformWindowManager* m_windowManager;
 	List<IPlatforEventListener*> m_eventListeners;
 	float m_dpiFactor;
+    Ref<GraphicsContext> m_graphicsContext;
+
+	friend class detail::PlatformManager;
 };
 
 } // namespace ln

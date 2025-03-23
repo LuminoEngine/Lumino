@@ -907,7 +907,6 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
     options.clientHeight = height;
     options.title = String::fromUtf8(title);
     Ref<PlatformWindow> window = platformManager->createWindow(options);
-    //Ref<Window> window = Window::create(width, height);
     *outWindow = ::Runtime::wrapObject(window, true);
     LN_FFI_TRY_END_RETURN;
 }

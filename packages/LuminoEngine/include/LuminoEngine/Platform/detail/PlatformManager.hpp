@@ -30,14 +30,14 @@ public:
     void requestQuit() { m_quitRequested = true; }
     bool shouldQuit() const { return m_quitRequested; }
 
-    virtual ~PlatformManager();
 
-    PlatformManager();
+    PlatformManager(GraphicsManager* graphicsManager);
+    virtual ~PlatformManager();
     Result<> init(const Settings& settings);
     void dispose();
 
 private:
-
+    GraphicsManager* m_graphicsManager;
     Ref<PlatformWindowManager> m_windowManager;
     Ref<PlatformWindow> m_mainWindow; // v0.5.0 で持たないことを検討したが、Graphics, UI との初期化順の関係や、Android, Emscripten など既に出来上がっている View にアタッチしたいときなどに欲しい
     // bool m_glfwWithOpenGLAPI;

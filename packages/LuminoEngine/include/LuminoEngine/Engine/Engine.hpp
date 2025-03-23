@@ -20,7 +20,7 @@ struct PlatformOptions {
 
 struct GraphicsOptions {
     bool enabled = true;
-    GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
+    GraphicsAPI graphicsAPI = GraphicsAPI::Default;
 };
 
 struct AudioOptions {

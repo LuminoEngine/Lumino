@@ -101,13 +101,13 @@ MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
 #endif
 
     {
-        MaybeResult result = initializePlatformManager();
+        MaybeResult result = initializeGraphicsManager();
         if (!result) {
             return result;
         }
     }
     {
-        MaybeResult result = initializeGraphicsManager();
+        MaybeResult result = initializePlatformManager();
         if (!result) {
             return result;
         }
@@ -146,26 +146,15 @@ void EngineInstance::dispose() {
 #endif
 }
 
-MaybeResult EngineInstance::initializePlatformManager() {
-    if (m_platformManager) return LN_MAKE_SUCCESS();
-
-    detail::PlatformManager::Settings options;
-    options.windowSystem = m_options.windowSystem;
-    Ref<detail::PlatformManager> manager(LN_NEW detail::PlatformManager(), false);
-    auto result = manager->init(options);
-    if (!result) {
-        return result;
-    }
-
-    m_platformManager = manager;
-    return LN_MAKE_SUCCESS();
-}
-
 MaybeResult EngineInstance::initializeGraphicsManager() {
     if (m_graphicsManager) return LN_MAKE_SUCCESS();
 
+    GraphicsAPI graphicsAPI = m_options.graphicsAPI;
+    WindowSystem windowSystem = m_options.windowSystem;
+    GraphicsManager::selectDefaultSystem(&graphicsAPI, &windowSystem);
+
     GraphicsManager::Settings options;
-    options.graphicsAPI = m_options.graphicsAPI;
+    options.graphicsAPI = graphicsAPI;
     Ref<GraphicsManager> manager(LN_NEW GraphicsManager(), false);
     auto result = manager->init(options);
     if (!result) {
@@ -174,7 +163,21 @@ MaybeResult EngineInstance::initializeGraphicsManager() {
 
     m_graphicsManager = manager;
     return LN_MAKE_SUCCESS();
+}
 
+MaybeResult EngineInstance::initializePlatformManager() {
+    if (m_platformManager) return LN_MAKE_SUCCESS();
+
+    detail::PlatformManager::Settings options;
+    options.windowSystem = m_options.windowSystem;
+    Ref<detail::PlatformManager> manager(LN_NEW detail::PlatformManager(m_graphicsManager), false);
+    auto result = manager->init(options);
+    if (!result) {
+        return result;
+    }
+
+    m_platformManager = manager;
+    return LN_MAKE_SUCCESS();
 }
 
 void EngineInstance::registerModule(Module* mod) {

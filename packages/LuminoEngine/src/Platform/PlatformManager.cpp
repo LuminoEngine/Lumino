@@ -1,5 +1,5 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include "EmptyPlatformWindowManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
@@ -8,9 +8,9 @@
 namespace ln {
 namespace detail {
 
-
-PlatformManager::PlatformManager()
-    : m_windowManager()
+PlatformManager::PlatformManager(GraphicsManager* graphicsManager)
+    : m_graphicsManager(graphicsManager)
+    , m_windowManager()
     //, m_glfwWithOpenGLAPI(true)
     , m_messageLoopProcessing(true)
     , m_quitRequested(false) {
@@ -90,6 +90,8 @@ Ref<PlatformWindow> PlatformManager::createWindow(const WindowCreationSettings& 
     else {
         window = m_windowManager->createWindow(settings, m_mainWindow);
     }
+
+    window->m_graphicsContext = m_graphicsManager->createGraphicsContext(window);
 
     return window;
 }
