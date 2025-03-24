@@ -42,8 +42,8 @@ public:
     RefObject* shaderManager = nullptr;
 
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
-    const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
+    const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
 
     ~EngineInstance();
 
@@ -61,8 +61,8 @@ private:
     Ref<Dispatcher> m_mainThreadTaskDispatcher;
     Ref<DiagnosticsManager> m_activeDiagnostics;
     URef<detail::AssetManager> m_assetManager;
-    Ref<detail::PlatformManager> m_platformManager;
     Ref<GraphicsManager> m_graphicsManager;
+    Ref<detail::PlatformManager> m_platformManager;
 };
 
 } // namespace ln

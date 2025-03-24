@@ -9,6 +9,8 @@
 #include <LuminoEngine/Runtime/detail/BindingValidation.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
+#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
+#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../Audio/AudioManager.hpp"
 #include <LuminoEngine/Audio/GameAudio.hpp>
 
@@ -118,13 +120,15 @@ MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
 }
 
 void EngineInstance::dispose() {
-    if (m_graphicsManager) {
-        m_graphicsManager->dispose();
-        m_graphicsManager = nullptr;
-    }
     if (m_platformManager) {
         m_platformManager->dispose();
         m_platformManager = nullptr;
+    }
+    detail::RenderingManager::terminate();
+    detail::FontManager::terminate();
+    if (m_graphicsManager) {
+        m_graphicsManager->dispose();
+        m_graphicsManager = nullptr;
     }
     if (m_assetManager) {
         m_assetManager->dispose();
@@ -160,8 +164,26 @@ MaybeResult EngineInstance::initializeGraphicsManager() {
     if (!result) {
         return LN_MAKE_ERROR();
     }
-
     m_graphicsManager = manager;
+
+
+    // TODO: 後で移動する
+    {
+        detail::FontManager::Settings settings;
+        settings.assetManager = detail::AssetManager::instance();
+        if (!detail::FontManager::initialize(settings)) {
+            return LN_MAKE_ERROR();
+        }
+    }
+    {
+        detail::RenderingManager::Settings settings;
+        settings.graphicsManager = m_graphicsManager;
+        settings.fontManager = detail::FontManager::instance();
+        if (!detail::RenderingManager::initialize(settings)) {
+            return LN_MAKE_ERROR();
+        }
+    }
+
     return LN_MAKE_SUCCESS();
 }
 
@@ -170,7 +192,8 @@ MaybeResult EngineInstance::initializePlatformManager() {
 
     detail::PlatformManager::Settings options;
     options.windowSystem = m_options.windowSystem;
-    Ref<detail::PlatformManager> manager(LN_NEW detail::PlatformManager(m_graphicsManager), false);
+    Ref<detail::PlatformManager> manager(
+        LN_NEW detail::PlatformManager(m_graphicsManager, detail::RenderingManager::instance()), false);
     auto result = manager->init(options);
     if (!result) {
         return result;

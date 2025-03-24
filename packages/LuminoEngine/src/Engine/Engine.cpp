@@ -1,9 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../Audio/AudioManager.hpp"
 #include <LuminoEngine/Engine/Engine.hpp>
 
@@ -28,26 +26,6 @@ MaybeResult Engine::initialize(const EngineOptions& options) {
         return LN_MAKE_ERROR();
     }
 
-    if (options.graphics.enabled) {
-
-        {
-            detail::FontManager::Settings settings;
-            settings.assetManager = detail::AssetManager::instance();
-            if (!detail::FontManager::initialize(settings)) {
-                return err();
-            }
-        }
-
-        {
-            detail::RenderingManager::Settings settings;
-            settings.graphicsManager = EngineInstance::instance()->graphicsManager();
-            settings.fontManager = detail::FontManager::instance();
-            if (!detail::RenderingManager::initialize(settings)) {
-                return err();
-            }
-        }
-    }
-
     
     if (options.audio.enabled) {
         detail::AudioManager2::Settings settings;
@@ -62,8 +40,6 @@ MaybeResult Engine::initialize(const EngineOptions& options) {
 
 void Engine::terminate() {
     detail::AudioManager2::terminate();
-    detail::RenderingManager::terminate();
-    detail::FontManager::terminate();
     EngineInstance::terminate();
 }
 

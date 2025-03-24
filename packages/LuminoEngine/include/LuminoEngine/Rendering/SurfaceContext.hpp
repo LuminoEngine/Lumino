@@ -25,15 +25,24 @@ class SurfaceContext : public Object {
     //   Window インスタンスを作っていないときは Lumino 側から Present はできない、という事にできるので。
     
 public:
+    static Ref<SurfaceContext> createFromWindow(detail::RenderingManager* renderingManager, PlatformWindow* window);
+    static Ref<SurfaceContext> createFromExternal(
+        detail::RenderingManager* renderingManager,
+        GraphicsContext* externalContext);
+
     SurfaceContext();
     ~SurfaceContext() override;
 
-    Ref<GraphicsContext> context;
-    GraphicsCommandList* commandList;
-    Ref<CommandList> renderingContext;
-    URef<kanata::DrawEventList> drawEventList;
+    const Ref<GraphicsContext>& context() const { return m_context; }
+    GraphicsCommandList* commandList() const { return m_commandList; }
+    const Ref<CommandList>& renderingContext() const { return m_renderingContext; }
+    const URef<kanata::DrawEventList>& drawEventList() const { return m_drawEventList; }
 
 private:
+    Ref<GraphicsContext> m_context;
+    GraphicsCommandList* m_commandList;
+    Ref<CommandList> m_renderingContext;
+    URef<kanata::DrawEventList> m_drawEventList;
 };
 
 } // namespace ln

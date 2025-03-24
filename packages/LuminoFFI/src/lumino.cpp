@@ -222,7 +222,7 @@ LNResult LNInstance_ShouldQuit(LNBool* outQuit) {
 LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
 	LN_FFI_TRY_BEGIN;
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
-    GraphicsContext* context = surfaceContext->context;
+    GraphicsContext* context = surfaceContext->context();
     *outRenderTargetTexture = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
 	LN_FFI_TRY_END_RETURN;
 }
@@ -230,7 +230,7 @@ LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHan
 LNResult LNGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
-    GraphicsContext* context = surfaceContext->context;
+    GraphicsContext* context = surfaceContext->context();
     *outDepthBuffer = LN_NULL_HANDLE;
 	LN_FFI_TRY_END_RETURN;
 }        
@@ -265,14 +265,8 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
     s.width = width;
     s.height = height;
     Ref<OpenGLGraphicsContext> context = OpenGLGraphicsContext::create(s);
-
-    Ref<SurfaceContext> surfaceContext = makeObject_deprecated<SurfaceContext>();
-    auto* renderingManager = detail::RenderingManager::instance();
-    surfaceContext->context = context;
-    surfaceContext->commandList = context->currentCommandList2();
-    surfaceContext->renderingContext = makeObject_deprecated<CommandList>();
-    surfaceContext->drawEventList = makeURef<kanata::DrawEventList>(renderingManager);
-
+    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    Ref<SurfaceContext> surfaceContext = SurfaceContext::createFromExternal(renderingManager, context);
     *outGraphicsContext = ::Runtime::wrapObject(surfaceContext, true);
     LN_FFI_TRY_END_RETURN;
 }
@@ -291,8 +285,8 @@ extern LNResult LNGraphicsCommandList_Get(LNHandle graphicsContext, LNHandle* ou
 extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
-    commandList->commandList->reset();
-    commandList->commandList->beginCommandRecoding();
+    commandList->commandList()->reset();
+    commandList->commandList()->beginCommandRecoding();
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -304,7 +298,7 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
     LN_FFI_TRY_BEGIN;
     SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
-    renderingContext->renderingContext->clearCommandsAndState(renderingViewPoint);
+    renderingContext->renderingContext()->clearCommandsAndState(renderingViewPoint);
 
     
     Ref<FFIRenderPass> renderPass = makeObject_deprecated<FFIRenderPass>();
@@ -341,9 +335,9 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
 
     
     // 背景クリアテスト
-    renderingContext->commandList->beginRenderPass(renderPass->renderPass);
+    renderingContext->commandList()->beginRenderPass(renderPass->renderPass);
     //renderingContext->commandList->clear(ClearFlags::All, Color::Aqua);
-    renderingContext->commandList->endRenderPass();
+    renderingContext->commandList()->endRenderPass();
 
     LN_FFI_TRY_END_RETURN;
 }
@@ -351,7 +345,7 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
 LNResult LNGraphicsCommandList_GetProfilerng(LNHandle renderingCommandList_, LNGraphicsCommandListProfilerng* outProfilerng) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
-    outProfilerng->drawCallCount = renderingContext->commandList->m_drawCall;
+    outProfilerng->drawCallCount = renderingContext->commandList()->m_drawCall;
     LN_FFI_TRY_END_RETURN;
 
 }
@@ -361,11 +355,11 @@ LNResult LNGraphicsContext_SubmitCommandList(
     LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* renderingContext2 = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
-    CommandList* renderingContext = renderingContext2->renderingContext;
+    CommandList* renderingContext = renderingContext2->renderingContext();
     SurfaceContext* context = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext_);
     
     
-    GraphicsCommandList* commandList = context->commandList;
+    GraphicsCommandList* commandList = context->commandList();
     commandList->endCommandRecoding();
 
     LN_FFI_TRY_END_RETURN;
@@ -378,9 +372,9 @@ LNResult LNGraphicsContext_SubmitCommandList(
 LNResult LNRenderPass_End(LNHandle renderPass_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderPass* renderPass = LN_HANDLE_TO_OBJECT(FFIRenderPass, renderPass_);
-    GraphicsContext* context = renderPass->owner->context;
-    CommandList* renderingContext = renderPass->owner->renderingContext;
-    kanata::DrawEventList* drawEventList = renderPass->owner->drawEventList;
+    GraphicsContext* context = renderPass->owner->context();
+    CommandList* renderingContext = renderPass->owner->renderingContext();
+    kanata::DrawEventList* drawEventList = renderPass->owner->drawEventList();
     
     if (1) {
 
@@ -787,8 +781,8 @@ LNResult LNBatchRenderer_BeginBatch(
     SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
-    commandList->renderingContext->setTransfrom(*transform);
-    spriteRenderer->begin(commandList->renderingContext, material);
+    commandList->renderingContext()->setTransfrom(*transform);
+    spriteRenderer->begin(commandList->renderingContext(), material);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -911,6 +905,9 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
 }
 
 extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext) {
+    // NOTE: Window から Context を得るのは Get. (Create ではなく)
+    //   これは、Window に Present を担当させるため。
+    //   Create は、主に外部の Context を使うときに使う。
     LN_FFI_TRY_BEGIN;
     PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
     *outGraphicsContext = ::Runtime::wrapObject(platformWindow->graphicsContext(), false);

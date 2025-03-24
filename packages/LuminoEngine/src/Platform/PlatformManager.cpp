@@ -8,8 +8,9 @@
 namespace ln {
 namespace detail {
 
-PlatformManager::PlatformManager(GraphicsManager* graphicsManager)
+PlatformManager::PlatformManager(GraphicsManager* graphicsManager, RenderingManager* renderingManager)
     : m_graphicsManager(graphicsManager)
+    , m_renderingManager(renderingManager)
     , m_windowManager()
     //, m_glfwWithOpenGLAPI(true)
     , m_messageLoopProcessing(true)
