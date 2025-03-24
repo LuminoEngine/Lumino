@@ -170,6 +170,17 @@ extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
 //extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
 
 //==============================================================================
+// LNGLGraphicsContext
+//==============================================================================
+
+/**
+ * Creates a LNGLGraphicsContext from the current OpenGL Context.
+ */
+extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext);
+
+extern LUMINO_API LNResult LNGLGraphicsContext_AcquireFrame(LNHandle graphicsContext, int32_t width, int32_t height);
+
+//==============================================================================
 // LNGraphicsCommandList
 //==============================================================================
 typedef struct LNGraphicsCommandListProfilerng {
@@ -198,16 +209,6 @@ extern LUMINO_API LNResult LNGraphicsViewPoint_SetupPerspective2D(LNHandle graph
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 
 
-//==============================================================================
-// LNGLGraphicsContext
-//==============================================================================
-
-/**
- * Creates a LNGLGraphicsContext from the current OpenGL Context.
- */
-extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext);
-
-extern LUMINO_API LNResult LNGLGraphicsContext_AcquireFrame(LNHandle graphicsContext, int32_t width, int32_t height);
 
 //==============================================================================
 // LNRenderPass

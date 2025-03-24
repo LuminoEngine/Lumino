@@ -146,15 +146,6 @@ public:
     /** @} */
 
     //--------------------------------------------------------------------------
-    /** @name commands */
-    /** @{ */
-
-    CanvasContext* beginPath();
-    void endPath();
-
-    /** @} */
-
-    //--------------------------------------------------------------------------
     /** @name light */
     /** @{ */
 
@@ -221,7 +212,6 @@ protected: // TODO:
 private:
     Ref<detail::CommandListServer> m_listServer;
     Ref<CommandList> m_commandList;
-    Ref<CanvasContext> m_pathContext;
     bool m_pathBegan;
     List<detail::DynamicLightInfo> m_dynamicLightInfoList;
 };

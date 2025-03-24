@@ -4,7 +4,6 @@
 #include <LuminoEngine/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/CanvasContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
@@ -37,7 +36,6 @@ RenderView でリセットする。
 
 RenderingContext_deprecated::RenderingContext_deprecated()
     : m_manager(detail::RenderingManager::instance())
-    , m_pathContext(makeObject_deprecated<CanvasContext>())
     , m_pathBegan(false)
     , m_commandList(nullptr)
     , m_listServer(makeRef<detail::CommandListServer>()) {
@@ -235,18 +233,6 @@ void RenderingContext_deprecated::drawChar(uint32_t codePoint, const Color& colo
 
 void RenderingContext_deprecated::invokeExtensionRendering(INativeGraphicsExtension* extension) {
     m_commandList->invokeExtensionRendering(extension);
-}
-
-CanvasContext* RenderingContext_deprecated::beginPath() {
-    if (LN_REQUIRE(!m_pathBegan)) return nullptr;
-    m_pathBegan = true;
-    return m_pathContext;
-}
-
-void RenderingContext_deprecated::endPath() {
-    if (LN_REQUIRE(m_pathBegan)) return;
-    m_pathBegan = false;
-    m_commandList->drawPath(m_pathContext);
 }
 
 void RenderingContext_deprecated::addAmbientLight(const Color& color, float intensity) {

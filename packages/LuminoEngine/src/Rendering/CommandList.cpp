@@ -862,36 +862,6 @@ void CommandList::drawChar(uint32_t codePoint, const Color& color, Font* font, c
 #endif
 }
 
-
-void CommandList::drawPath(CanvasContext* context) {
-#ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
-#else
-    class DrawMeshInstanced : public detail::RenderDrawElement {
-    public:
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-            return static_cast<detail::PathRenderFeature*>(renderFeature)->draw(batchList, *state, context);
-        }
-    };
-
-    auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(m_manager->pathRenderFeature());
-#endif
-}
-
-//CanvasContext* CommandList::beginPath()
-//{
-//	if (LN_REQUIRE(!m_pathBegan)) return nullptr;
-//	m_pathBegan = true;
-//	return m_pathContext;
-//}
-//
-//void CommandList::endPath()
-//{
-//	if (LN_REQUIRE(m_pathBegan)) return;
-//	m_pathBegan = false;
-//	m_commandList->drawPath(m_pathContext);
-//}
-
 void CommandList::invokeExtensionRendering(INativeGraphicsExtension* extension) {
 #ifdef LN_USE_KANATA
     LN_NOTIMPLEMENTED();

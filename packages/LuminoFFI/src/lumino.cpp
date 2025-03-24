@@ -15,6 +15,7 @@
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <lumino.h>
 
@@ -105,18 +106,9 @@ extern "C" {
 //     例えば LNTexture2D を LNTextre として LNMaterial にセットしたいときなど。
 //     キャストして使ってもよいが、そうすると LNHandle のまま使うのと大差なくなるかも。
 
-    
-class FFIRenderingCommandList : public ln::Object {
-public:
-    GraphicsContext* context;
-    GraphicsCommandList* commandList;
-    Ref<CommandList> renderingContext;
-    URef<kanata::DrawEventList> drawEventList;
-};
-
 class FFIRenderPass : public ln::Object {
 public:
-    FFIRenderingCommandList* owner;
+    SurfaceContext* owner;
     Ref<kanata::UnlitRenderPass> sceneRenderPass;
     RenderPass* renderPass;
 };
@@ -280,7 +272,7 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
 extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle* outGraphicsCommandList) {
     LN_FFI_TRY_BEGIN;
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
-    Ref<FFIRenderingCommandList> commandList = makeObject_deprecated<FFIRenderingCommandList>();
+    Ref<SurfaceContext> commandList = makeObject_deprecated<SurfaceContext>();
     auto* renderingManager = detail::RenderingManager::instance();
     commandList->context = context;
     commandList->commandList = context->currentCommandList2();
@@ -292,7 +284,7 @@ extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle*
 
 extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
-    FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     commandList->commandList->reset();
     commandList->commandList->beginCommandRecoding();
     LN_FFI_TRY_END_RETURN;
@@ -304,7 +296,7 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
     LNHandle renderingViewPoint_,
     LNHandle* outRenderPass_) {
     LN_FFI_TRY_BEGIN;
-    FFIRenderingCommandList* renderingContext = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
     renderingContext->renderingContext->clearCommandsAndState(renderingViewPoint);
 
@@ -352,7 +344,7 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
 
 LNResult LNGraphicsCommandList_GetProfilerng(LNHandle renderingCommandList_, LNGraphicsCommandListProfilerng* outProfilerng) {
     LN_FFI_TRY_BEGIN;
-    FFIRenderingCommandList* renderingContext = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     outProfilerng->drawCallCount = renderingContext->commandList->m_drawCall;
     LN_FFI_TRY_END_RETURN;
 
@@ -362,7 +354,7 @@ LNResult LNGraphicsContext_SubmitCommandList(
     LNHandle graphicsContext_,
     LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
-    FFIRenderingCommandList* renderingContext2 = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, renderingCommandList_);
+    SurfaceContext* renderingContext2 = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     CommandList* renderingContext = renderingContext2->renderingContext;
     GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext_);
     
@@ -786,7 +778,7 @@ LNResult LNBatchRenderer_BeginBatch(
     //std::cout << "  transform m43: " << transform_->m43 << std::endl;
     //std::cout << "  transform m44: " << transform_->m44 << std::endl;
     BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
-    FFIRenderingCommandList* commandList = LN_HANDLE_TO_OBJECT(FFIRenderingCommandList, graphicsCommandList_);
+    SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
     const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
     commandList->renderingContext->setTransfrom(*transform);
