@@ -91,5 +91,5 @@ void TestRenderVew::onUpdateViewPoint(RenderViewPoint* viewPoint, RenderTargetTe
         Size(renderTarget->width(), renderTarget->height()), 1.0f, 1000.0f);
 }
 
-void TestRenderVew::onRender(GraphicsCommandList* graphicsContext, RenderingContext* renderingContext, RenderTargetTexture* renderTarget) {
+void TestRenderVew::onRender(GraphicsCommandList* graphicsContext, RenderingContext_deprecated* renderingContext, RenderTargetTexture* renderTarget) {
 }

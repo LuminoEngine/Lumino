@@ -83,7 +83,7 @@ void SceneRenderingPipeline::onPrepare(RenderView* renderView, RenderTargetTextu
 
 void SceneRenderingPipeline::onRender(
     GraphicsCommandList* graphicsContext,
-    RenderingContext* renderingContext,
+    RenderingContext_deprecated* renderingContext,
 	RenderTargetTexture* renderTarget,
     const ClearInfo& mainPassClearInfo,
     const RenderView* renderView,

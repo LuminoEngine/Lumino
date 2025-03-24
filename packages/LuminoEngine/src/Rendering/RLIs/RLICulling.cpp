@@ -19,7 +19,7 @@ RLICulling::RLICulling()
 
 void RLICulling::cull(
     const RenderView* renderView,
-    RenderingContext* renderingContext,
+    RenderingContext_deprecated* renderingContext,
     CommandListServer* commandListServer) {
     m_mainLight = nullptr;
     m_visibleLights.clear();

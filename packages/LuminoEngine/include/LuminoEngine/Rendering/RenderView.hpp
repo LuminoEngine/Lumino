@@ -16,7 +16,7 @@ class RenderView : public Object {
 public:
     RenderView();
     virtual ~RenderView();
-    void init(RenderingContext* renderingContext = nullptr);
+    void init(RenderingContext_deprecated* renderingContext = nullptr);
 
 
     // TODO: internal
@@ -42,7 +42,7 @@ public:
     void setBuiltinRenderTexture(BuiltinRenderTextureType type, RenderTargetTexture* value) { m_builtinRenderTextures[(size_t)type] = value; } // TODO: internal
     void clearBuiltinRenderTextures(); // TODO: internal
 
-    RenderingContext* getContext() const;
+    RenderingContext_deprecated* getContext() const;
 
     virtual void render(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) { LN_UNREACHABLE(); } //= 0;
     void renderPipeline(GraphicsCommandList* graphicsContext, /*RenderingContext* renderingContext, */RenderTargetTexture* renderTarget);
@@ -50,7 +50,7 @@ public:
 
 public: // TODO: intenral
     void updateFrame(float elapsedSeconds);
-    RenderingContext* beginRenderPipeline(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget);
+    RenderingContext_deprecated* beginRenderPipeline(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget);
     void endRenderPipeline();
 
 protected:
@@ -63,7 +63,7 @@ protected:
     // そのため ViewPoint のインスタンスは RenderView からは公開しない。
     virtual void onUpdateViewPoint(RenderViewPoint* viewPoint, RenderTargetTexture* renderTarget) = 0;
     
-    virtual void onRender(GraphicsCommandList* graphicsContext, RenderingContext* renderingContext, RenderTargetTexture* renderTarget) = 0;
+    virtual void onRender(GraphicsCommandList* graphicsContext, RenderingContext_deprecated* renderingContext, RenderTargetTexture* renderTarget) = 0;
 
 public: // TODO: internal
     // void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
@@ -78,7 +78,7 @@ private:
     Point m_actualScreenOffset;
     Size m_actualSize;
     Ref<RenderViewPoint> m_viewPoint;
-    Ref<RenderingContext> m_renderingContext;
+    Ref<RenderingContext_deprecated> m_renderingContext;
     Ref<RenderingPipeline> m_renderingPipeline;
 
     GraphicsCommandList* m_currentCommandList;

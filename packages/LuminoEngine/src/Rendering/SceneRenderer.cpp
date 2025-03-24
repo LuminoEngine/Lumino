@@ -94,7 +94,7 @@ void SceneRenderer::init() {
 void SceneRenderer::prepare(
     GraphicsCommandList* graphicsContext,
     RenderingPipeline* renderingPipeline,
-    RenderingContext* renderingContext,
+    RenderingContext_deprecated* renderingContext,
     // detail::CommandListServer* commandListServer,
     const detail::RenderViewInfo& mainRenderViewInfo,
     RenderPart targetPhase,

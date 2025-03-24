@@ -35,7 +35,7 @@ void RenderingPipeline::onPrepare(RenderView* renderView, RenderTargetTexture* r
 
 void RenderingPipeline::render(
     GraphicsCommandList* graphicsContext,
-    RenderingContext* renderingContext,
+    RenderingContext_deprecated* renderingContext,
     RenderTargetTexture* renderTarget,
     const RenderView* renderView,
     const detail::SceneGlobalRenderParams* sceneGlobalParams) {

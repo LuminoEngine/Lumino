@@ -24,7 +24,7 @@ protected:
     virtual void onPrepare(RenderView* renderView, RenderTargetTexture* renderTarget);
     virtual void onRender(
         GraphicsCommandList* graphicsContext,
-        RenderingContext* renderingContext,
+        RenderingContext_deprecated* renderingContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
         const RenderView* renderView,
@@ -40,7 +40,7 @@ private:
 
     void render(
         GraphicsCommandList* graphicsContext,
-        RenderingContext* renderingContext,
+        RenderingContext_deprecated* renderingContext,
         RenderTargetTexture* renderTarget,
         const RenderView* renderView,
         const detail::SceneGlobalRenderParams* sceneGlobalParams);

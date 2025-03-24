@@ -177,7 +177,7 @@ RenderView::RenderView()
 RenderView::~RenderView() {
 }
 
-void RenderView::init(RenderingContext* renderingContext) {
+void RenderView::init(RenderingContext_deprecated* renderingContext) {
     Object::init();
     m_manager = detail::RenderingManager::instance();
 
@@ -185,7 +185,7 @@ void RenderView::init(RenderingContext* renderingContext) {
         m_renderingContext = renderingContext;
     }
     else {
-        m_renderingContext = makeObject_deprecated<RenderingContext>();
+        m_renderingContext = makeObject_deprecated<RenderingContext_deprecated>();
     }
 
     for (auto i = 0; i < m_viewProjections.size(); i++) {
@@ -259,7 +259,7 @@ void RenderView::clearBuiltinRenderTextures() {
     m_builtinRenderTextures = {};
 }
 
-RenderingContext* RenderView::getContext() const {
+RenderingContext_deprecated* RenderView::getContext() const {
     return m_renderingContext;
 }
 
@@ -272,7 +272,7 @@ void RenderView::renderPipeline(GraphicsCommandList* graphicsContext, /*Renderin
     endRenderPipeline();
 }
 
-RenderingContext* RenderView::beginRenderPipeline(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) {
+RenderingContext_deprecated* RenderView::beginRenderPipeline(GraphicsCommandList* graphicsContext, RenderTargetTexture* renderTarget) {
     if (LN_ASSERT(m_renderingPipeline)) return nullptr;
     if (LN_ASSERT(!m_currentCommandList)) return nullptr;
     m_currentCommandList = graphicsContext;

@@ -17,7 +17,7 @@ class Texture;
 class RenderTargetTexture;
 class DepthBuffer;
 class Material;
-class RenderingContext;
+class RenderingContext_deprecated;
 class MeshResource;
 class MeshPrimitive;
 class MeshContainer;

@@ -77,7 +77,7 @@ public:
     void prepare(
         GraphicsCommandList* graphicsContext,
         RenderingPipeline* renderingPipeline,
-        RenderingContext* renderingContext,
+        RenderingContext_deprecated* renderingContext,
         // detail::CommandListServer* commandListServer,
         const detail::RenderViewInfo& mainRenderViewInfo,
         RenderPart targetPhase,
@@ -124,7 +124,7 @@ private:
     detail::RenderingManager* m_manager;
 
     RenderingPipeline* m_renderingPipeline;
-    RenderingContext* m_renderingContext;
+    RenderingContext_deprecated* m_renderingContext;
     const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
     RenderPart m_currentPart;
 

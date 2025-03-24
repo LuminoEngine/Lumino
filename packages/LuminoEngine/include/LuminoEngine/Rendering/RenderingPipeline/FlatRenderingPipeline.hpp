@@ -12,7 +12,7 @@ public:
 protected:
     void onRender(
         GraphicsCommandList* graphicsContext,
-        RenderingContext* renderingContext,
+        RenderingContext_deprecated* renderingContext,
         RenderTargetTexture* renderTarget,
         const ClearInfo& mainPassClearInfo,
         const RenderView* renderView,

@@ -12,12 +12,12 @@
 class TestRenderVew : public RenderView {
 public:
     void resetView(const Vector3& pos = Vector3(0, 0, 5), const Vector3& lookAt = Vector3::Zero);
-    RenderingContext* begin(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget) { return RenderView::beginRenderPipeline(commandList, renderTarget); }
+    RenderingContext_deprecated* begin(GraphicsCommandList* commandList, RenderTargetTexture* renderTarget) { return RenderView::beginRenderPipeline(commandList, renderTarget); }
     void end() { RenderView::endRenderPipeline(); }
 
 protected:
     void onUpdateViewPoint(RenderViewPoint* viewPoint, RenderTargetTexture* renderTarget) override;
-    void onRender(GraphicsCommandList* graphicsContext, RenderingContext* renderingContext, RenderTargetTexture* renderTarget) override;
+    void onRender(GraphicsCommandList* graphicsContext, RenderingContext_deprecated* renderingContext, RenderTargetTexture* renderTarget) override;
 
 private:
     Vector3 m_pos;

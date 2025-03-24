@@ -21,10 +21,6 @@ public:
 };
 } // namespace detail
 
-PrimitiveMeshRenderer* PrimitiveMeshRenderer::get() {
-    return detail::RenderingManager::instance()->primitiveMeshRenderer();
-}
-
 PrimitiveMeshRenderer::PrimitiveMeshRenderer()
     : m_commandList(nullptr)
     , m_material(nullptr)
@@ -36,7 +32,7 @@ Result<> PrimitiveMeshRenderer::init() {
     return ok();
 }
 
-void PrimitiveMeshRenderer::begin(RenderingContext* renderingContext, Material* material) {
+void PrimitiveMeshRenderer::begin(RenderingContext_deprecated* renderingContext, Material* material) {
     begin(renderingContext->commandList(), material);
 }
 

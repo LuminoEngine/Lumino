@@ -12,7 +12,7 @@ public:
     RLICulling();
     void cull(
         const RenderView* renderView,
-        RenderingContext* renderingContext,
+        RenderingContext_deprecated* renderingContext,
         CommandListServer* commandListServer);
 
     const DynamicLightInfo* mainLight() const { return m_mainLight; }

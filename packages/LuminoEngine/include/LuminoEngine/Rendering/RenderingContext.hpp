@@ -8,7 +8,7 @@
 namespace ln {
 class World; // TODO: 上位モジュールなので避けたい
 
-class RenderingContext : public Object {
+class RenderingContext_deprecated : public Object {
 public:
     //--------------------------------------------------------------------------
     /** @name render targets */
@@ -208,7 +208,7 @@ public:
     const List<detail::DynamicLightInfo>& dynamicLightInfoList() const { return m_dynamicLightInfoList; }
 
 LN_CONSTRUCT_ACCESS:
-    RenderingContext();
+    RenderingContext_deprecated();
     Result<> init();
 
 public: // TODO: internal
