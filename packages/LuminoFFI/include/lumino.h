@@ -190,7 +190,7 @@ typedef struct LNGraphicsCommandListProfilerng {
 /**
 　* Creates a new GraphicsCommandList.
 　*/
-extern LUMINO_API LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle* outGraphicsCommandList);
+extern LUMINO_API LNResult LNGraphicsCommandList_Get(LNHandle graphicsContext, LNHandle* outGraphicsCommandList);
 extern LUMINO_API LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList);
 
 

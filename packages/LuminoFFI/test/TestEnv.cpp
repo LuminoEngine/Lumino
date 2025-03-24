@@ -4,12 +4,13 @@
 #include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 #include "../../LuminoEngine/src/Platform/GLFWPlatformWindowManager.hpp"
 #include "TestEnv.hpp"
 
 ln::Ref<ln::PlatformWindow> TestEnv::mainWindow;
-LNHandle TestEnv::graphicsContext = LN_NULL_HANDLE;
+LNHandle TestEnv::surfaceContext = LN_NULL_HANDLE;
 LNHandle TestEnv::viewPoint = LN_NULL_HANDLE;
 
 void TestEnv::initialize() {
@@ -28,7 +29,7 @@ void TestEnv::initialize() {
     windowOptions.clientHeight = 240;
     mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions);
 
-    LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &graphicsContext);
+    LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
     LNGraphicsViewPoint_Create(&viewPoint);
     LNGraphicsViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
 
@@ -37,7 +38,7 @@ void TestEnv::initialize() {
 
 void TestEnv::terminate() {
     LNObject_Release(viewPoint);
-    LNObject_Release(graphicsContext);
+    LNObject_Release(surfaceContext);
     ln::Engine::terminate();
 }
 
@@ -60,7 +61,8 @@ ln::Path TestEnv::getTempPath(const ln::Path& localPath) {
 
 bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save) {
     auto* m = ln::detail::RuntimeManager::instance();
-    auto context = static_cast<ln::GraphicsContext*>(m->getObjectEntry(graphicsContext)->object);
+    ln::SurfaceContext* sc = static_cast<ln::SurfaceContext*>(m->getObjectEntry(surfaceContext)->object);
+    ln::GraphicsContext* context = sc->context;
     return ln::GraphicsTestHelper::checkScreenShot(
         TestEnv::getTestDataPath(filePath), context, context->currentBackbuffer(), passRate, save);
 }

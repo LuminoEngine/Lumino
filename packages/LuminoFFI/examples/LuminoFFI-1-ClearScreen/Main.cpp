@@ -15,7 +15,7 @@ int main() {
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
     LNHandle commandList = LN_NULL_HANDLE;
-    LNGraphicsCommandList_Create(graphicsContext, &commandList);
+    LNGraphicsCommandList_Get(graphicsContext, &commandList);
 
     LNHandle viewPoint1 = LN_NULL_HANDLE;
     LNGraphicsViewPoint_Create(&viewPoint1);
@@ -59,10 +59,9 @@ int main() {
 
         LNRenderPass_End(renderingPass);
         LNGraphicsContext_SubmitCommandList(graphicsContext, commandList);
-        LNGraphicsContext_Present(graphicsContext);
+        //LNGraphicsContext_Present(graphicsContext);
     };
 
-    LNObject_Release(commandList);
     LNObject_Release(window);
     LNRuntime_Terminate();
     return 0;

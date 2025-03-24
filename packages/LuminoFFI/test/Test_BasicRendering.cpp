@@ -4,17 +4,17 @@ class Test_BasicRendering : public ::testing::Test {};
 
 TEST_F(Test_BasicRendering, Clear1) {
 
-    LNHandle graphicsContext = TestEnv::graphicsContext;
+    LNHandle surfaceContext = TestEnv::surfaceContext;
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Get(surfaceContext, &renderingCommandList));
 
     // Rendering loop.
     {
         LNHandle backbuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
 
         ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList));
 
@@ -35,12 +35,10 @@ TEST_F(Test_BasicRendering, Clear1) {
 
         ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, renderingCommandList));
 
         TestEnv::present();
     }
 
     ASSERT_SCREENSHOT(U"Test_BasicRendering.Clear1.png");
-
-    LNObject_Release(renderingCommandList);
 }

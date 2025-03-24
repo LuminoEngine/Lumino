@@ -3,9 +3,7 @@
 class Test_SpriteRenderer : public ::testing::Test {};
 
 TEST_F(Test_SpriteRenderer, Basic1) {
-
-    LNHandle graphicsContext = TestEnv::graphicsContext;
-
+    LNHandle surfaceContext = TestEnv::surfaceContext;
 
     // Load texture and create material.
     auto imageData = ln::FileSystem::readAllBytes(TestEnv::getTestDataPath(U"Rendering/Sprite.png")).unwrap();
@@ -16,7 +14,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Get(surfaceContext, &renderingCommandList));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
@@ -26,8 +24,8 @@ TEST_F(Test_SpriteRenderer, Basic1) {
         // Begin frame.
         LNHandle backbuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
         ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList));
 
         // Rendering pass.
@@ -68,13 +66,12 @@ TEST_F(Test_SpriteRenderer, Basic1) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, renderingCommandList));
         TestEnv::present();
     }
 
     ASSERT_SCREENSHOT(U"Rendering/Expects/Test_SpriteRenderer.Basic1.png");
 
-    LNObject_Release(renderingCommandList);
     LNObject_Release(material1);
     LNObject_Release(texture1);
 }

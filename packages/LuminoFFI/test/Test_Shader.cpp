@@ -3,7 +3,7 @@
 class Test_Shader : public ::testing::Test {};
 
 TEST_F(Test_Shader, Basic1) {
-    LNHandle graphicsContext = TestEnv::graphicsContext;
+    LNHandle surfaceContext = TestEnv::surfaceContext;
 
     // Create Shader.
     const auto code = TestEnv::compileShader(TestEnv::getTestDataPath(U"Test_Shader.Basic1/Test_Shader.Basic1.fx"));
@@ -16,7 +16,7 @@ TEST_F(Test_Shader, Basic1) {
     ASSERT_EQ(LN_OK, LNMaterial_SetShader(material1, shader1));
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Get(surfaceContext, &renderingCommandList));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
@@ -26,8 +26,8 @@ TEST_F(Test_Shader, Basic1) {
         // Begin frame.
         LNHandle backbuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
         ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList));
 
         // Rendering pass.
@@ -68,13 +68,12 @@ TEST_F(Test_Shader, Basic1) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, renderingCommandList));
         TestEnv::present();
     }
 
     ASSERT_SCREENSHOT(U"Test_Shader.Basic1/Expects.png");
 
-    LNObject_Release(renderingCommandList);
     LNObject_Release(material1);
     LNObject_Release(shader1);
 }

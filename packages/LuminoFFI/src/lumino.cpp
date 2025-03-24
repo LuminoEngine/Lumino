@@ -221,32 +221,35 @@ LNResult LNInstance_ShouldQuit(LNBool* outQuit) {
 //==============================================================================
 LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
 	LN_FFI_TRY_BEGIN;
-	GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+    GraphicsContext* context = surfaceContext->context;
     *outRenderTargetTexture = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
 	LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer) {
     LN_FFI_TRY_BEGIN;
-	GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
+    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+    GraphicsContext* context = surfaceContext->context;
     *outDepthBuffer = LN_NULL_HANDLE;
 	LN_FFI_TRY_END_RETURN;
 }        
 
-LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height) {
-    LN_FFI_TRY_BEGIN;
-    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
-    GraphicsCommandList* commandList = context->currentCommandList2();
-    commandList->beginCommandRecoding();
-    LN_FFI_TRY_END_RETURN;
-}
-
-LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
-    LN_FFI_TRY_BEGIN;
-    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
-    context->present();
-    LN_FFI_TRY_END_RETURN;
-}
+//LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height) {
+//    LN_FFI_TRY_BEGIN;
+//    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+//    GraphicsContext* context = surfaceContext->context;
+//    GraphicsCommandList* commandList = context->currentCommandList2();
+//    commandList->beginCommandRecoding();
+//    LN_FFI_TRY_END_RETURN;
+//}
+//
+//LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
+//    LN_FFI_TRY_BEGIN;
+//    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+//    context->present();
+//    LN_FFI_TRY_END_RETURN;
+//}
 
 //LNResult LNGraphicsContext_Release(LNHandle handle) {
 //    LN_SAFE_RELEASE(handle)
@@ -261,24 +264,27 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
     s.window = nullptr;
     s.width = width;
     s.height = height;
-    Ref<OpenGLGraphicsContext> ref = OpenGLGraphicsContext::create(s);
-    *outGraphicsContext = ::Runtime::wrapObject(ref, true);
+    Ref<OpenGLGraphicsContext> context = OpenGLGraphicsContext::create(s);
+
+    Ref<SurfaceContext> surfaceContext = makeObject_deprecated<SurfaceContext>();
+    auto* renderingManager = detail::RenderingManager::instance();
+    surfaceContext->context = context;
+    surfaceContext->commandList = context->currentCommandList2();
+    surfaceContext->renderingContext = makeObject_deprecated<CommandList>();
+    surfaceContext->drawEventList = makeURef<kanata::DrawEventList>(renderingManager);
+
+    *outGraphicsContext = ::Runtime::wrapObject(surfaceContext, true);
     LN_FFI_TRY_END_RETURN;
 }
 
 //==============================================================================
 //
 //==============================================================================
-extern LNResult LNGraphicsCommandList_Create(LNHandle graphicsContext, LNHandle* outGraphicsCommandList) {
+extern LNResult LNGraphicsCommandList_Get(LNHandle graphicsContext, LNHandle* outGraphicsCommandList) {
     LN_FFI_TRY_BEGIN;
-    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext);
-    Ref<SurfaceContext> commandList = makeObject_deprecated<SurfaceContext>();
-    auto* renderingManager = detail::RenderingManager::instance();
-    commandList->context = context;
-    commandList->commandList = context->currentCommandList2();
-    commandList->renderingContext = makeObject_deprecated<CommandList>();
-    commandList->drawEventList = makeURef<kanata::DrawEventList>(renderingManager);
-    *outGraphicsCommandList = ::Runtime::wrapObject(commandList, true);
+    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+
+    *outGraphicsCommandList = ::Runtime::wrapObject(surfaceContext, false);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -356,10 +362,10 @@ LNResult LNGraphicsContext_SubmitCommandList(
     LN_FFI_TRY_BEGIN;
     SurfaceContext* renderingContext2 = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     CommandList* renderingContext = renderingContext2->renderingContext;
-    GraphicsContext* context = LN_HANDLE_TO_OBJECT(GraphicsContext, graphicsContext_);
+    SurfaceContext* context = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext_);
     
     
-    GraphicsCommandList* commandList = context->currentCommandList2();
+    GraphicsCommandList* commandList = context->commandList;
     commandList->endCommandRecoding();
 
     LN_FFI_TRY_END_RETURN;

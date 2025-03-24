@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
+#include "Kanata/KDrawEvent.hpp"
 
 namespace ln {
 
@@ -27,7 +28,7 @@ public:
     SurfaceContext();
     ~SurfaceContext() override;
 
-    GraphicsContext* context;
+    Ref<GraphicsContext> context;
     GraphicsCommandList* commandList;
     Ref<CommandList> renderingContext;
     URef<kanata::DrawEventList> drawEventList;

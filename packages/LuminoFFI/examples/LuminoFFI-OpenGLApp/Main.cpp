@@ -73,7 +73,7 @@ int main() {
     }
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    if (LNGraphicsCommandList_Create(graphicsContext, &renderingCommandList) != LN_OK) {
+    if (LNGraphicsCommandList_Get(graphicsContext, &renderingCommandList) != LN_OK) {
         return 1;
     }
 
@@ -275,7 +275,6 @@ int main() {
     LNObject_Release(unlitSceneRenderingPass);
     LNObject_Release(viewPoint2);
     LNObject_Release(viewPoint1);
-    LNObject_Release(renderingCommandList);
     LNObject_Release(graphicsContext);
     LNRuntime_Terminate();
     glfwDestroyWindow(window);
