@@ -18,7 +18,7 @@ set(LN_SOURCES
 # Configuration
 #-------------------------------------------------------------------------------
 if(LN_EMSCRIPTEN)
-    set(CMAKE_EXECUTABLE_SUFFIX ".js")
+    set(CMAKE_EXECUTABLE_SUFFIX ".mjs")
     string(APPEND LOCAL_LINK_FLAGS " -s WASM=2")
     string(APPEND LOCAL_LINK_FLAGS " -s NO_FILESYSTEM=1")
     string(APPEND LOCAL_LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=1")

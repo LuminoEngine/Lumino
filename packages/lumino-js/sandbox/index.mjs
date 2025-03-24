@@ -10,7 +10,11 @@ let viewPoint = undefined;
 let texture = undefined;
 let material = undefined;
 
-Lumino.Runtime.initialize().then(() => {
+const options = {
+    wasmPath: "../lib/LuminoFFI.wasm",
+}
+
+Lumino.Runtime.initialize(options).then(() => {
 
     console.log("Lumino initialized2");
     Lumino.API.LNInstance_Initialize();

@@ -91,7 +91,7 @@ export class Runtime {
             API.LNGraphicsContext_GetCurrentDepthBuffer = module.cwrap("LNGraphicsContext_GetCurrentDepthBuffer", "number", ["number", "number"]);
             API.LNGraphicsContext_SubmitCommandList = module.cwrap("LNGraphicsContext_SubmitCommandList", "number", ["number", "number"]);
             
-            API.LNCommandList_Create = module.cwrap("LNCommandList_Create", "number", ["number", "number"]);
+            API.LNCommandList_Get = module.cwrap("LNCommandList_Create", "number", ["number", "number"]);
             API.LNCommandList_Reset = module.cwrap("LNCommandList_Reset", "number", ["number"]);
             API.LNCommandList_BeginRenderPass = module.cwrap("LNCommandList_BeginRenderPass", "number", ["number", "number", "number", "number"]);
             
@@ -190,7 +190,7 @@ export class API {
     public static LNGraphicsContext_GetCurrentDepthBuffer: (graphicsContext: Handle, outDepthBuffer: number) => Result;
     public static LNGraphicsContext_SubmitCommandList: (graphicsContext: Handle, graphicsCommandList: number) => Result;
 
-    public static LNCommandList_Create: (graphicsContext: Handle, outGraphicsCommandList: number) => Result;
+    public static LNCommandList_Get: (graphicsContext: Handle, outGraphicsCommandList: number) => Result;
     public static LNCommandList_Reset: (graphicsCommandList: Handle) => Result;
     public static LNCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
 

@@ -28,7 +28,7 @@ export class GraphicsCommandList extends LuminoObject {
     public constructor(owner: GraphicsContext) {
         super();
         this._owner = owner;
-        this._setHandle(Runtime.safeCallWithReturnHandle((r) => API.LNCommandList_Create(owner.handle, r)), true);
+        this._setHandle(Runtime.safeCallWithReturnHandle((r) => API.LNCommandList_Create(owner.handle, r)), false);
     }
 
     public reset(): void {
