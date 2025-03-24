@@ -27,6 +27,7 @@ class RenderView;
 class PostEffect;
 class InstancedMeshList;
 class CommandList;
+class SurfaceContext;
 
 class BatchRenderer;
 class PrimitiveMeshRenderer;

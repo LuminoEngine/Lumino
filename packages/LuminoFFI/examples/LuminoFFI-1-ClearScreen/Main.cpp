@@ -45,9 +45,9 @@ int main() {
         LNHandle renderingPass = LN_NULL_HANDLE;
         LNRenderPassDescriptor descriptor;
         descriptor.renderTargets[0].renderTarget = backbuffer;
-        descriptor.renderTargets[0].clearColor[0] = 0.0f;
-        descriptor.renderTargets[0].clearColor[1] = 1.0f;
-        descriptor.renderTargets[0].clearColor[2] = 0.0f;
+        descriptor.renderTargets[0].clearColor[0] = 0.60f;
+        descriptor.renderTargets[0].clearColor[1] = 0.85f;
+        descriptor.renderTargets[0].clearColor[2] = 0.60f;
         descriptor.renderTargets[0].clearColor[3] = 1.0f;
         descriptor.renderTargets[0].clearEnable = LN_TRUE;
         descriptor.depthBuffer.depthBuffer = depthBuffer;
@@ -56,10 +56,10 @@ int main() {
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNGraphicsCommandList_BeginRenderPass(commandList, descriptor, viewPoint1, &renderingPass);
-
         LNRenderPass_End(renderingPass);
+
         LNGraphicsContext_SubmitCommandList(graphicsContext, commandList);
-        //LNGraphicsContext_Present(graphicsContext);
+        LNWindow_Present(window);
     };
 
     LNObject_Release(window);

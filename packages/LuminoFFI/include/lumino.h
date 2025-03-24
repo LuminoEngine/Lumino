@@ -158,17 +158,6 @@ extern LUMINO_API LNResult LNGraphicsContext_GetCurrentDepthBuffer(LNHandle grap
  */
 extern LUMINO_API LNResult LNGraphicsContext_SubmitCommandList(LNHandle graphicsContext, LNHandle graphicsCommandList);
 
-/**
- * バックバッファをフロントバッファに転送します。
- *
- * 外部コンテキストを使っている場合、この関数は使えません。
- *
- * BeginFrame, EndFrame, Present の流れは LNGraphicsContext_BeginFrame のコメントを参照してください。
- */
-extern LUMINO_API LNResult LNGraphicsContext_Present(LNHandle graphicsContext);
-
-//extern LUMINO_API LNResult LNGraphicsContext_Release(LNHandle* handle);
-
 //==============================================================================
 // LNGLGraphicsContext
 //==============================================================================
@@ -341,6 +330,13 @@ extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteText
 //==============================================================================
 extern LUMINO_API LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNHandle* outWindow);
 extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext);
+
+/**
+ * バックバッファをフロントバッファに転送します。
+ *
+ * 外部コンテキストを使っている場合、この関数は使えません。
+ */
+extern LUMINO_API LNResult LNWindow_Present(LNHandle window);
 
 //==============================================================================
 // LNObject

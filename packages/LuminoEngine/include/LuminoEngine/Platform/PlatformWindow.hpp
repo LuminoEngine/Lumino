@@ -2,6 +2,7 @@
 #include <LuminoCore/Geometries/GeometryStructs.hpp>
 #include "PlatformEvent.hpp"
 #include "../GPU/SwapChain.hpp"
+#include "../Rendering/Common.hpp"
 
 namespace ln {
 
@@ -11,7 +12,7 @@ public:
     //virtual void dispose() = 0;
 
     float dpiFactor() const { return m_dpiFactor; }
-    GraphicsContext* graphicsContext() const { return m_graphicsContext; }
+    SurfaceContext* surfaceContext() const;
 
     virtual void setWindowTitle(const String& title) = 0;
     virtual void getSize(SizeI* size) = 0;
@@ -44,7 +45,7 @@ private:
     detail::PlatformWindowManager* m_windowManager;
     List<IPlatforEventListener*> m_eventListeners;
     float m_dpiFactor;
-    Ref<GraphicsContext> m_graphicsContext;
+    Ref<SurfaceContext> m_surfaceContext;
 
     friend class detail::PlatformManager;
 };

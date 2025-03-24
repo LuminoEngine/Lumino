@@ -1,5 +1,6 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
+#include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include "EmptyPlatformWindowManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
@@ -92,7 +93,7 @@ Ref<PlatformWindow> PlatformManager::createWindow(const WindowCreationSettings& 
         window = m_windowManager->createWindow(settings, m_mainWindow);
     }
 
-    window->m_graphicsContext = m_graphicsManager->createGraphicsContext(window);
+    window->m_surfaceContext = SurfaceContext::createFromWindow(m_renderingManager, window);
 
     return window;
 }

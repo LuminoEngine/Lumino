@@ -904,13 +904,21 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext) {
+LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext) {
     // NOTE: Window から Context を得るのは Get. (Create ではなく)
     //   これは、Window に Present を担当させるため。
     //   Create は、主に外部の Context を使うときに使う。
     LN_FFI_TRY_BEGIN;
     PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
-    *outGraphicsContext = ::Runtime::wrapObject(platformWindow->graphicsContext(), false);
+    *outGraphicsContext = ::Runtime::wrapObject(platformWindow->surfaceContext(), false);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNWindow_Present(LNHandle window) {
+    LN_FFI_TRY_BEGIN;
+    PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
+    SurfaceContext* context = platformWindow->surfaceContext();
+    context->context()->present();
     LN_FFI_TRY_END_RETURN;
 }
 

@@ -1,4 +1,5 @@
 ﻿#include "Internal.hpp"
+#include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
@@ -17,6 +18,10 @@ PlatformWindow::PlatformWindow()
 Result<> PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
     m_windowManager = windowManager;
     return ok();
+}
+
+SurfaceContext* PlatformWindow::surfaceContext() const {
+    return m_surfaceContext;
 }
 
 void PlatformWindow::attachEventListener(IPlatforEventListener* listener) {
