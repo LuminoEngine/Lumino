@@ -73,17 +73,17 @@ int main() {
     }
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    if (LNGraphicsCommandList_Get(graphicsContext, &renderingCommandList) != LN_OK) {
+    if (LNCommandList_Get(graphicsContext, &renderingCommandList) != LN_OK) {
         return 1;
     }
 
     LNHandle viewPoint1 = LN_NULL_HANDLE;
-    if (LNGraphicsViewPoint_Create(&viewPoint1) != LN_OK) {
+    if (LNCamera_Create(&viewPoint1) != LN_OK) {
         return 1;
     }
 
     LNHandle viewPoint2 = LN_NULL_HANDLE;
-    if (LNGraphicsViewPoint_Create(&viewPoint2) != LN_OK) {
+    if (LNCamera_Create(&viewPoint2) != LN_OK) {
         return 1;
     }
 
@@ -157,7 +157,7 @@ int main() {
             return 1;
         }
 
-        if (LNGraphicsCommandList_Reset(renderingCommandList) != LN_OK) {
+        if (LNCommandList_Reset(renderingCommandList) != LN_OK) {
             return 1;
         }
 
@@ -166,7 +166,7 @@ int main() {
         //   これはシャドウバッファの描画を考えるとイメージしやすいかもしれない。
         //   Three.js でもシャドウバッファへの描画は、その数ごとに専用のカメラを起点として Scene 全体の render() を行っている。
         if (1) {
-            if (LNGraphicsViewPoint_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+            if (LNCamera_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500) != LN_OK) {
                 return 1;
             }
 
@@ -183,7 +183,7 @@ int main() {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
+            if (LNCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
                 return 1;
             }
 
@@ -220,7 +220,7 @@ int main() {
 
         // RenderPass
         if (0) {
-            if (LNGraphicsViewPoint_SetupPerspectiveOrthoLH(viewPoint2, 0, 0, -100, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+            if (LNCamera_SetupPerspectiveOrthoLH(viewPoint2, 0, 0, -100, 0, 0, 0, width, height, -500, 500) != LN_OK) {
                 return 1;
             }
 
@@ -231,7 +231,7 @@ int main() {
             descriptor.depthBuffer.depthBuffer = depthBuffer;
             descriptor.depthBuffer.clearDepthEnable = LN_FALSE;
             descriptor.depthBuffer.clearStencilEnable = LN_FALSE;
-            if (LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
+            if (LNCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
                 return 1;
             }
 

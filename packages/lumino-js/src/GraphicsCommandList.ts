@@ -28,11 +28,11 @@ export class GraphicsCommandList extends LuminoObject {
     public constructor(owner: GraphicsContext) {
         super();
         this._owner = owner;
-        this._setHandle(Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsCommandList_Create(owner.handle, r)), true);
+        this._setHandle(Runtime.safeCallWithReturnHandle((r) => API.LNCommandList_Create(owner.handle, r)), true);
     }
 
     public reset(): void {
-        API.LNGraphicsCommandList_Reset(this.handle);
+        API.LNCommandList_Reset(this.handle);
     }
 
     public beginRenderPass(descriptor: BeginRederPassDescriptor, viewPoint: GraphicsViewPoint): RenderPass {
@@ -79,7 +79,7 @@ export class GraphicsCommandList extends LuminoObject {
             );
         }
         
-        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsCommandList_BeginRenderPass(this.handle, desc, viewPoint.handle, r));
+        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNCommandList_BeginRenderPass(this.handle, desc, viewPoint.handle, r));
         const renderPass = new RenderPass(this);
         renderPass._setHandle(handle, false);
         return renderPass;

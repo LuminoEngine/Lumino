@@ -15,10 +15,10 @@ int main() {
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
     LNHandle commandList = LN_NULL_HANDLE;
-    LNGraphicsCommandList_Get(graphicsContext, &commandList);
+    LNCommandList_Get(graphicsContext, &commandList);
 
     LNHandle viewPoint1 = LN_NULL_HANDLE;
-    LNGraphicsViewPoint_Create(&viewPoint1);
+    LNCamera_Create(&viewPoint1);
 
     while (true) {
         LNBool quit = LN_FALSE;
@@ -31,14 +31,14 @@ int main() {
         // TODO: get backbuffer size
         int width = 640;
         int height = 480;
-        LNGraphicsViewPoint_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500);
+        LNCamera_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500);
 
         LNHandle backbuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
         LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer);
         LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer);
 
-        LNGraphicsCommandList_Reset(commandList);
+        LNCommandList_Reset(commandList);
 
         // x. レンダーターゲットをクリアするための RenderPass を開始します。
         //    なお WebGPU などと同様、 RenderPass を開始することなくクリアする方法はありません。
@@ -55,7 +55,7 @@ int main() {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNGraphicsCommandList_BeginRenderPass(commandList, descriptor, viewPoint1, &renderingPass);
+        LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint1, &renderingPass);
         LNRenderPass_End(renderingPass);
 
         LNGraphicsContext_SubmitCommandList(graphicsContext, commandList);

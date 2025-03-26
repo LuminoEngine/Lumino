@@ -14,7 +14,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Get(surfaceContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNCommandList_Get(surfaceContext, &renderingCommandList));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
@@ -26,7 +26,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
         LNHandle depthBuffer = LN_NULL_HANDLE;
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList));
+        ASSERT_EQ(LN_OK, LNCommandList_Reset(renderingCommandList));
 
         // Rendering pass.
         {
@@ -43,7 +43,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            ASSERT_EQ(LN_OK, LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
+            ASSERT_EQ(LN_OK, LNCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {

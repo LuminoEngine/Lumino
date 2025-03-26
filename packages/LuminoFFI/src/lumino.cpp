@@ -272,9 +272,13 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
 }
 
 //==============================================================================
-//
+// LNCommandList
+//   NOTE: 名前について
+//     - LNGraphicsCommandList: 冗長なので LNCommandList に変更した。
+//       元々 Audio など他のモジュールでも CommandList というものを公開するかも知れないと考えていたが、
+//       FFI のコンセプト変更により、GraphicsCommandList Graphics 以外で CommandList 的なものを公開することはないと考えられるため。
 //==============================================================================
-extern LNResult LNGraphicsCommandList_Get(LNHandle graphicsContext, LNHandle* outGraphicsCommandList) {
+extern LNResult LNCommandList_Get(LNHandle graphicsContext, LNHandle* outGraphicsCommandList) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
 
@@ -282,7 +286,7 @@ extern LNResult LNGraphicsCommandList_Get(LNHandle graphicsContext, LNHandle* ou
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_) {
+extern LNResult LNCommandList_Reset(LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     commandList->commandList()->reset();
@@ -290,7 +294,7 @@ extern LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList_) {
     LN_FFI_TRY_END_RETURN;
 }
 
-extern LNResult LNGraphicsCommandList_BeginRenderPass(
+extern LNResult LNCommandList_BeginRenderPass(
     LNHandle renderingCommandList_,
     LNRenderPassDescriptor descriptor_,
     LNHandle renderingViewPoint_,
@@ -342,7 +346,7 @@ extern LNResult LNGraphicsCommandList_BeginRenderPass(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNGraphicsCommandList_GetProfilerng(LNHandle renderingCommandList_, LNGraphicsCommandListProfilerng* outProfilerng) {
+LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList_, LNCommandListProfilerng* outProfilerng) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     outProfilerng->drawCallCount = renderingContext->commandList()->m_drawCall;
@@ -543,14 +547,21 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
 }
 
 
-LNResult LNGraphicsViewPoint_Create(LNHandle* outRenderingViewPoint) {
+//==============================================================================
+// LNCamera
+//   NOTE: 名前について
+//   以前は ViewPoint という名前だったが Camera に直した。
+//   Scene をサポートしていたころは SceneNode としての Camera と競合していたので避ける必要があったが、その必要はなくなったため、
+//   また別プロジェクトのメンバーも 2DCamera という概念には違和感はなく使えていたため。
+//==============================================================================
+LNResult LNCamera_Create(LNHandle* outRenderingViewPoint) {
     LN_FFI_TRY_BEGIN;
     Ref<RenderViewPoint> viewPoint = makeRef<RenderViewPoint>();
     *outRenderingViewPoint = ::Runtime::wrapObject(viewPoint, true);
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNGraphicsViewPoint_SetupPerspectiveOrthoLH(
+LNResult LNCamera_SetupPerspectiveOrthoLH(
     LNHandle graphicsViewPoint,
     float x,
     float y,
@@ -569,7 +580,7 @@ LNResult LNGraphicsViewPoint_SetupPerspectiveOrthoLH(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNGraphicsViewPoint_SetupPerspective2D(
+LNResult LNCamera_SetupPerspective2D(
     LNHandle graphicsViewPoint,
     float x,
     float y,

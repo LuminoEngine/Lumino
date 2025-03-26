@@ -30,8 +30,8 @@ void TestEnv::initialize() {
     mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions);
 
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
-    LNGraphicsViewPoint_Create(&viewPoint);
-    LNGraphicsViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
+    LNCamera_Create(&viewPoint);
+    LNCamera_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
 
     TestEnv::present();
 }

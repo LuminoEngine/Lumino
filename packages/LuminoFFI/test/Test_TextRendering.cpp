@@ -8,9 +8,9 @@ TEST_F(Test_TextRendering, Basic) {
 
     LNHandle surfaceContext = TestEnv::surfaceContext;
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Get(surfaceContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNCommandList_Get(surfaceContext, &renderingCommandList));
 
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList));
+    ASSERT_EQ(LN_OK, LNCommandList_Reset(renderingCommandList));
 
     ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, renderingCommandList));
     TestEnv::present();

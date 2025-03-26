@@ -169,30 +169,30 @@ extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width
 extern LUMINO_API LNResult LNGLGraphicsContext_AcquireFrame(LNHandle graphicsContext, int32_t width, int32_t height);
 
 //==============================================================================
-// LNGraphicsCommandList
+// LNCommandList
 //==============================================================================
-typedef struct LNGraphicsCommandListProfilerng {
+typedef struct LNCommandListProfilerng {
     int32_t drawCallCount;
-} LNGraphicsCommandListProfilerng;
+} LNCommandListProfilerng;
 
 /**
 　* Creates a new GraphicsCommandList.
 　*/
-extern LUMINO_API LNResult LNGraphicsCommandList_Get(LNHandle graphicsContext, LNHandle* outGraphicsCommandList);
-extern LUMINO_API LNResult LNGraphicsCommandList_Reset(LNHandle renderingCommandList);
+extern LUMINO_API LNResult LNCommandList_Get(LNHandle graphicsContext, LNHandle* outGraphicsCommandList);
+extern LUMINO_API LNResult LNCommandList_Reset(LNHandle renderingCommandList);
 
 
-extern LUMINO_API LNResult LNGraphicsCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
+extern LUMINO_API LNResult LNCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
 
-extern LUMINO_API LNResult LNGraphicsCommandList_GetProfilerng(LNHandle renderingCommandList,LNGraphicsCommandListProfilerng* outProfilerng);
+extern LUMINO_API LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList,LNCommandListProfilerng* outProfilerng);
 
 //==============================================================================
 //
 //==============================================================================
 // いわゆるカメラ情報
-extern LUMINO_API LNResult LNGraphicsViewPoint_Create(LNHandle* outGraphicsViewPoint);
-extern LUMINO_API LNResult LNGraphicsViewPoint_SetupPerspectiveOrthoLH(LNHandle graphicsViewPoint, float x, float y, float z, float lookAtX, float lookAtY, float lookAtZ, float width, float height, float nearZ, float farZ);
-extern LUMINO_API LNResult LNGraphicsViewPoint_SetupPerspective2D(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
+extern LUMINO_API LNResult LNCamera_Create(LNHandle* outGraphicsViewPoint);
+extern LUMINO_API LNResult LNCamera_SetupPerspectiveOrthoLH(LNHandle graphicsViewPoint, float x, float y, float z, float lookAtX, float lookAtY, float lookAtZ, float width, float height, float nearZ, float farZ);
+extern LUMINO_API LNResult LNCamera_SetupPerspective2D(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 

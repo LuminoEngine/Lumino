@@ -29,7 +29,7 @@ TEST_F(Test_BatchRendering, Basic1) {
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Get(surfaceContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNCommandList_Get(surfaceContext, &renderingCommandList));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
@@ -41,7 +41,7 @@ TEST_F(Test_BatchRendering, Basic1) {
         LNHandle depthBuffer = LN_NULL_HANDLE;
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList));
+        ASSERT_EQ(LN_OK, LNCommandList_Reset(renderingCommandList));
 
         // Rendering pass.
         {
@@ -58,7 +58,7 @@ TEST_F(Test_BatchRendering, Basic1) {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            ASSERT_EQ(LN_OK, LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
+            ASSERT_EQ(LN_OK, LNCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -91,8 +91,8 @@ TEST_F(Test_BatchRendering, Basic1) {
         TestEnv::present();
 
         // ドローコールは1回だけ。
-        LNGraphicsCommandListProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNGraphicsCommandList_GetProfilerng(renderingCommandList, &profilerng));
+        LNCommandListProfilerng profilerng;
+        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(renderingCommandList, &profilerng));
         ASSERT_EQ(1, profilerng.drawCallCount);
     }
 
@@ -114,7 +114,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
     LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNGraphicsCommandList_Get(surfaceContext, &renderingCommandList));
+    ASSERT_EQ(LN_OK, LNCommandList_Get(surfaceContext, &renderingCommandList));
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
@@ -126,7 +126,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
         LNHandle depthBuffer = LN_NULL_HANDLE;
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
         ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsCommandList_Reset(renderingCommandList));
+        ASSERT_EQ(LN_OK, LNCommandList_Reset(renderingCommandList));
 
         // Rendering pass.
         {
@@ -143,7 +143,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            ASSERT_EQ(LN_OK, LNGraphicsCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
+            ASSERT_EQ(LN_OK, LNCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -176,8 +176,8 @@ TEST_F(Test_BatchRendering, TooMany10000) {
         TestEnv::present();
 
         // ドローコールは1回だけ。
-        LNGraphicsCommandListProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNGraphicsCommandList_GetProfilerng(renderingCommandList, &profilerng));
+        LNCommandListProfilerng profilerng;
+        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(renderingCommandList, &profilerng));
         ASSERT_EQ(2, profilerng.drawCallCount);
         // NOTE: 現在インデックスの総数 50000 個くらいになっていて、10000個描画すると 60000 使うことになる。
         // なので 50000+10000 の2回に分けられる。
