@@ -48,9 +48,9 @@ class RuntimeManager
     , public IObjectEventListener {
 public:
     struct Settings {
-        LNRuntimeFinalizedCallback runtimeFinalizedCallback = nullptr;
+        LNInstanceFinalizedCallback runtimeFinalizedCallback = nullptr;
         LNReferenceCountTrackerCallback referenceCountTrackerCallback = nullptr;
-        LNRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
+        LNInstanceGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
     };
 
     static MaybeResult initialize(const Settings& settings);
@@ -78,9 +78,9 @@ public:
     void onRetainedObject(Object* obj) override;
     void onReleasedObject(Object* obj) override;
 
-    //static void setRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback);
-    //static void setRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback);
-    //static void setRuntimeGetTypeInfoIdCallback(LNRuntimeGetTypeInfoIdCallback callback);
+    //static void setRuntimeFinalizedCallback(LNInstanceFinalizedCallback callback);
+    //static void setRuntimeCreateInstanceCallback(LNInstanceCreateInstanceCallback callback);
+    //static void setRuntimeGetTypeInfoIdCallback(LNInstanceGetTypeInfoIdCallback callback);
 
     void dumpInfo() const;
 

@@ -83,8 +83,8 @@ export class Runtime {
             API.LNRenderPassDescriptor_SetRenderTarget = module.cwrap("LNRenderPassDescriptor_SetRenderTarget", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
             API.LNRenderPassDescriptor_SetDepthBuffer = module.cwrap("LNRenderPassDescriptor_SetDepthBuffer", "number", ["number", "number", "number", "number", "number", "number"]);
 
-            API.LNRuntime_Initialize = module.cwrap("LNRuntime_Initialize", "number", []);
-            API.LNRuntime_Terminate = module.cwrap("LNRuntime_Terminate", "void", []);
+            API.LNInstance_Initialize = module.cwrap("LNInstance_Initialize", "number", []);
+            API.LNInstance_Terminate = module.cwrap("LNInstance_Terminate", "void", []);
             API.LNGLGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGLGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
 
             API.LNGraphicsContext_GetCurrentColorBuffer = module.cwrap("LNGraphicsContext_GetCurrentColorBuffer", "number", ["number", "number"]);
@@ -182,8 +182,8 @@ export class API {
     public static LNRenderPassDescriptor_SetDepthBuffer: (descriptor: StructHandle, depthBuffer: Handle, clearDepth: number, clearStencil: number, clearDepthEnable: number, clearStencilEnable: number) => Result;
 
 
-    public static LNRuntime_Initialize: () => Result;
-    public static LNRuntime_Terminate: () => void;
+    public static LNInstance_Initialize: () => Result;
+    public static LNInstance_Terminate: () => void;
 
     public static LNGLGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
     public static LNGraphicsContext_GetCurrentColorBuffer: (graphicsContext: Handle, outRenderTarget: number) => Result;

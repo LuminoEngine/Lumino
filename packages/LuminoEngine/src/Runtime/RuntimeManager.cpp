@@ -256,17 +256,17 @@ int64_t RuntimeManager::getManagedTypeInfoId(LNHandle handle) {
 //	m_referenceCountTracker = callback;
 // }
 //
-// void RuntimeManager::setRuntimeFinalizedCallback(LNRuntimeFinalizedCallback callback)
+// void RuntimeManager::setRuntimeFinalizedCallback(LNInstanceFinalizedCallback callback)
 //{
 //     m_runtimeFinalizedCallback = callback;
 // }
 
-// void RuntimeManager::setRuntimeCreateInstanceCallback(LNRuntimeCreateInstanceCallback callback)
+// void RuntimeManager::setRuntimeCreateInstanceCallback(LNInstanceCreateInstanceCallback callback)
 //{
 //     LN_NOTIMPLEMENTED();
 // }
 //
-// void RuntimeManager::setRuntimeGetTypeInfoIdCallback(LNRuntimeGetTypeInfoIdCallback callback)
+// void RuntimeManager::setRuntimeGetTypeInfoIdCallback(LNInstanceGetTypeInfoIdCallback callback)
 //{
 //     LN_NOTIMPLEMENTED();
 // }

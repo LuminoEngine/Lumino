@@ -110,11 +110,10 @@ extern LUMINO_API void LNRenderPassDescriptor_SetDepthBuffer(LNStructHandle hand
 
 
 //==============================================================================
-//
+// LNInstance
 //==============================================================================
-// TODO; LNInstance へ移動予定
-extern LUMINO_API LNResult LNRuntime_Initialize();
-extern LUMINO_API void LNRuntime_Terminate();
+extern LUMINO_API LNResult LNInstance_Initialize();
+extern LUMINO_API void LNInstance_Terminate();
 
 //==============================================================================
 // LNInstance

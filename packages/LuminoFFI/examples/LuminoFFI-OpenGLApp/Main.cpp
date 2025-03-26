@@ -57,7 +57,7 @@ int main() {
     }
     glfwMakeContextCurrent(window);
 
-    if (LNRuntime_Initialize() != LN_OK) {
+    if (LNInstance_Initialize() != LN_OK) {
         return 1;
     }
 
@@ -276,7 +276,7 @@ int main() {
     LNObject_Release(viewPoint2);
     LNObject_Release(viewPoint1);
     LNObject_Release(graphicsContext);
-    LNRuntime_Terminate();
+    LNInstance_Terminate();
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;

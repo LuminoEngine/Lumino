@@ -551,7 +551,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 
     code.AppendLine(callerArgDecls.toString().trim());
     code.AppendLine(U"LNResult errorCode = {0}({1});", funcName, callerArgList.toString());
-    code.AppendLine(U"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LNRuntime_GetLastErrorMessage());");
+    code.AppendLine(U"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LNInstance_GetLastErrorMessage());");
     if (!callerPostStmt.isEmpty()) {
         code.AppendLine(callerPostStmt.toString());
     }
@@ -622,7 +622,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectConstructor(con
         code.AppendLine(U"if (proc != Qnil) selfObj->m_proc = proc;");
         code.AppendLine(U"if (block != Qnil) selfObj->m_proc = block;");
         code.AppendLine(U"LNResult result = {0}({1}, &selfObj->handle);", makeFlatFullFuncName(method, FlatCharset::Ascii), makeWrapFuncName_ProcCaller(classSymbol, classSymbol->delegateProtoType()));
-        code.AppendLine(U"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNRuntime_GetLastErrorMessage());");
+        code.AppendLine(U"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNInstance_GetLastErrorMessage());");
         code.AppendLine(U"LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
         code.AppendLine(U"return Qnil;");
     }
@@ -649,14 +649,14 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectSetter(const Ty
                 code.AppendLine(U"LNHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
                 code.AppendLine(U"LNHandle _outReturn;");
                 code.AppendLine(U"LNResult result = {0}(selfObj->handle, _value, &_outReturn);", makeFlatFullFuncName(method, FlatCharset::Ascii));
-                code.AppendLine(U"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNRuntime_GetLastErrorMessage());");
+                code.AppendLine(U"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNInstance_GetLastErrorMessage());");
                 code.AppendLine(U"return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);");
             }
             else {
                 code.AppendLine(U"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
                 code.AppendLine(U"LNHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
                 code.AppendLine(U"LNResult result = {0}(selfObj->handle, _value);", makeFlatFullFuncName(method, FlatCharset::Ascii));
-                code.AppendLine(U"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNRuntime_GetLastErrorMessage());");
+                code.AppendLine(U"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LNInstance_GetLastErrorMessage());");
                 code.AppendLine(U"return Qnil;");
             }
         }

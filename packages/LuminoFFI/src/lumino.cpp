@@ -184,7 +184,7 @@ void LNRenderPassDescriptor_SetDepthBuffer(
 //==============================================================================
 static EngineOptions s_engineOptions;
 
-LNResult LNRuntime_Initialize() {
+LNResult LNInstance_Initialize() {
     LN_FFI_TRY_BEGIN;
     const auto result = ln::Engine::initialize(s_engineOptions);
     if (!result) {
@@ -193,7 +193,7 @@ LNResult LNRuntime_Initialize() {
     LN_FFI_TRY_END_RETURN;
 }
 
-void LNRuntime_Terminate() {
+void LNInstance_Terminate() {
     LN_FFI_TRY_BEGIN;
     ln::Engine::terminate();
     LN_FFI_TRY_END;

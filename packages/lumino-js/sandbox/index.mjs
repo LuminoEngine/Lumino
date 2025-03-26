@@ -13,7 +13,7 @@ let material = undefined;
 Lumino.Runtime.initialize().then(() => {
 
     console.log("Lumino initialized2");
-    Lumino.API.LNRuntime_Initialize();
+    Lumino.API.LNInstance_Initialize();
 
     const canvas = document.getElementById("maincanvas");
     var gl = canvas.getContext("webgl2");
@@ -45,7 +45,7 @@ Lumino.Runtime.initialize().then(() => {
     
 
 
-    //Lumino.API.LNRuntime_Terminate();
+    //Lumino.API.LNInstance_Terminate();
 
 function isReady() {
     return texture !== undefined;
@@ -141,11 +141,11 @@ render();
 
 
 //     Lumino.API = {
-//         LNRuntime_Initialize: module.cwrap("LNRuntime_Initialize", "number", []),
+//         LNInstance_Initialize: module.cwrap("LNInstance_Initialize", "number", []),
 //     };
 
 
-//     const result = Lumino.API.LNRuntime_Initialize();
+//     const result = Lumino.API.LNInstance_Initialize();
 //     console.log("Lumino initialized", result);
 // });
 

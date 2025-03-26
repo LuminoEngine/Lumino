@@ -3,7 +3,7 @@
 #include <lumino.h>
 
 int main() {
-    LNResult result = LNRuntime_Initialize();
+    LNResult result = LNInstance_Initialize();
     if (result != LN_OK) {
         return 1;
     }
@@ -63,6 +63,6 @@ int main() {
     };
 
     LNObject_Release(window);
-    LNRuntime_Terminate();
+    LNInstance_Terminate();
     return 0;
 }

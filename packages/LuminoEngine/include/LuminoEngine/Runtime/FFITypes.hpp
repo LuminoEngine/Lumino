@@ -4,7 +4,7 @@
 #define LNI_REFERENCE_RELEASED (2)
 #define LN_NULL_HANDLE 0
 typedef int32_t LNHandle;
-typedef void (*LNRuntimeFinalizedCallback)();
+typedef void (*LNInstanceFinalizedCallback)();
 typedef void (*LNReferenceCountTrackerCallback)(LNHandle handle, int method, int count);
-typedef void (*LNRuntimeGetTypeInfoIdCallback)(LNHandle handle, int* outTypeInfoId);
+typedef void (*LNInstanceGetTypeInfoIdCallback)(LNHandle handle, int* outTypeInfoId);
 
