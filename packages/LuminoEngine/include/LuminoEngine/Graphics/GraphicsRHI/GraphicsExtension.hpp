@@ -14,7 +14,7 @@ enum class NativeGraphicsExtensionRenderPassPreCondition
 class INativeGraphicsInterface
 {
 public:
-	virtual GraphicsAPI getGraphicsAPI() const = 0;
+    virtual LNGraphicsBackend getGraphicsAPI() const = 0;
 	//virtual NativeGraphicsExtensionRenderPassPreCondition getRenderPassPreCondition() const = 0;
 
 	//virtual void configureExtension(NativeGraphicsExtensionRenderPassPreCondition renderPassPreCondition) = 0;	// onLoaded で実行する

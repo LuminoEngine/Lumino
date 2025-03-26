@@ -16,6 +16,9 @@
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
 #include <LuminoEngine/GPU/DirectX12GraphicsContext.hpp>
 #endif
+#ifdef LUMINO_USE_WEBGPU
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+#endif
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
 #include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/GPU/detail/RenderingCommandList.hpp>
@@ -317,13 +320,13 @@ Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* wind
 
     // Create device context
     {
-        if (m_settings.graphicsAPI == GraphicsAPI::OpenGL) {
+        if (m_settings.graphicsAPI == LN_GRAPHICS_BACKEND_OPENGL) {
             OpenGLGraphicsContext::Settings s;
             s.window = window;
             s.defaultFramebuffer = 0;
             result = OpenGLGraphicsContext::create(s);
         }
-        else if (m_settings.graphicsAPI == GraphicsAPI::Vulkan) {
+        else if (m_settings.graphicsAPI == LN_GRAPHICS_BACKEND_VULKAN) {
 #ifdef LN_USE_VULKAN
             VulkanGraphicsContext::Settings s;
             s.mainWindow = window;
@@ -331,13 +334,22 @@ Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* wind
             result = VulkanGraphicsContext::create(s);
 #endif
         }
-        else if (m_settings.graphicsAPI == GraphicsAPI::DirectX12) {
+        else if (m_settings.graphicsAPI == LN_GRAPHICS_BACKEND_DIRECTX12) {
 #ifdef _WIN32
             DirectX12GraphicsContext::Settings s;
             s.mainWindow = window;
             s.debugMode = m_settings.debugMode;
             s.priorityAdapterName = m_settings.priorityGPUName;
             result = DirectX12GraphicsContext::create(s);
+#endif
+        }
+        else if (m_settings.graphicsAPI == LN_GRAPHICS_BACKEND_WEBGPU) {
+#ifdef LUMINO_USE_WEBGPU
+            //detail::WebGPUDevice::Settings settings;
+            //settings.debugMode = true;
+            //auto device = makeRef<detail::WebGPUDevice>();
+            //device->init(settings);
+            //result = device;
 #endif
         }
 
@@ -455,13 +467,13 @@ bool GraphicsManager::checkVulkanSupported() {
 #endif
 }
 
-void GraphicsManager::selectDefaultSystem(GraphicsAPI* api, WindowSystem* ws) {
+void GraphicsManager::selectDefaultSystem(LNGraphicsBackend* api, WindowSystem* ws) {
     if (Environment::isRuntimePlatform(RuntimePlatform::Windows)) {
-        *api = GraphicsAPI::DirectX12;
+        *api = LN_GRAPHICS_BACKEND_DIRECTX12;
         *ws = WindowSystem::Native;
     }
     else if (Environment::isRuntimePlatform(RuntimePlatform::Web)) {
-        *api = GraphicsAPI::OpenGL;
+        *api = LN_GRAPHICS_BACKEND_OPENGL;
         *ws = WindowSystem::GLFWWithOpenGL;
     }
     else {

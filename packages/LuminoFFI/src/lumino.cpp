@@ -180,9 +180,24 @@ void LNRenderPassDescriptor_SetDepthBuffer(
 }
 
 //==============================================================================
-//
+// LNConfig
+//   NOTE: 設定は個別モジュールではなく、全体で取りまとめる Config クラスにすることとした。
+//     一度分けて運用してみたところ、次のような問題を感じたため。
+//     - 適用範囲がわかりやすくなるが探しづらくなる
+//     - C_API で構造体をネストするような仕組みにすると言語バインディングが作り辛くなる
+//     - Scene などをコアから除外したことで、ほとんどの場合はコアを一括で初期化することになるため分ける意味があまりない。
 //==============================================================================
 static EngineOptions s_engineOptions;
+
+LNResult LNConfig_SetGraphicsBackend(LNGraphicsBackend value) {
+    LN_FFI_TRY_BEGIN;
+    s_engineOptions.graphics.graphicsAPI = value;
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+//
+//==============================================================================
 
 LNResult LNInstance_Initialize() {
     LN_FFI_TRY_BEGIN;

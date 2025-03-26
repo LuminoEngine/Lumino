@@ -1,6 +1,6 @@
-﻿#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
 
 namespace ln {
 namespace detail {
@@ -45,9 +45,9 @@ void WebGPUCommandList::onRestoreExternalRenderState() {
 void WebGPUCommandList::onBeginCommandRecoding() {
     //if (LN_ASSERT(!m_isRecording)) return;
 	
-    WGPUCommandEncoderDescriptor encoderDesc = {};
+    WGPUCommandEncoderDescriptor encoderDesc = WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;
     encoderDesc.nextInChain = nullptr;
-    encoderDesc.label = nullptr;
+    encoderDesc.label = WGPU_STRING_VIEW_INIT;
     m_commandEncoder = wgpuDeviceCreateCommandEncoder(m_rhiDevice->wgpuDevice(), &encoderDesc);
     //m_isRecording = true;
 }

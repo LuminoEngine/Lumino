@@ -153,7 +153,7 @@ void EngineInstance::dispose() {
 MaybeResult EngineInstance::initializeGraphicsManager() {
     if (m_graphicsManager) return LN_MAKE_SUCCESS();
 
-    GraphicsAPI graphicsAPI = m_options.graphicsAPI;
+    LNGraphicsBackend graphicsAPI = m_options.graphicsAPI;
     WindowSystem windowSystem = m_options.windowSystem;
     GraphicsManager::selectDefaultSystem(&graphicsAPI, &windowSystem);
 

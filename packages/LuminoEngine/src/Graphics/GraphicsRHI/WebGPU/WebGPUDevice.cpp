@@ -1,9 +1,9 @@
 ﻿#include <Windows.h>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
 namespace ln {
 namespace detail {
@@ -26,8 +26,12 @@ bool WebGPUDevice::init(const Settings& settings) {
 
     // Select adapter
     {
-        auto onAdapterRequestEnded = [](WGPURequestAdapterStatus status, WGPUAdapter adapter, char const* message, void* pUserData) {
-            WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(pUserData);
+        auto onAdapterRequestEnded = [](WGPURequestAdapterStatus status,
+                                        WGPUAdapter adapter,
+                                        WGPUStringView message,
+                                        void* userdata1,
+                                        void* userdata2) {
+            WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata1);
             self->m_adapters.push_back({ status, adapter });
         };
         WGPURequestAdapterOptions adapterOptions = {};
@@ -35,17 +39,28 @@ bool WebGPUDevice::init(const Settings& settings) {
         adapterOptions.compatibleSurface = nullptr;
         adapterOptions.powerPreference = WGPUPowerPreference_Undefined;
         adapterOptions.forceFallbackAdapter = false;
+        WGPURequestAdapterCallbackInfo callbackInfo = {};
+        callbackInfo.nextInChain = nullptr;
+        callbackInfo.mode = WGPUCallbackMode_WaitAnyOnly;
+        callbackInfo.callback = onAdapterRequestEnded;
+        callbackInfo.userdata1 = this;
         wgpuInstanceRequestAdapter(
             m_instance,
-            &adapterOptions,
-            onAdapterRequestEnded,
-            this);
+            &adapterOptions, 
+            callbackInfo);
+
+#ifdef __EMSCRIPTEN__
+        while (!userData.requestEnded) {
+            emscripten_sleep(100);
+        }
+#endif // __EMSCRIPTEN__
 
 		if (m_adapters.empty()) {
             LN_LOG_ERROR("Adapter not found.");
             return false;
         }
 
+#if 0 // アダプタ情報の取得は wgpuAdapterGetPropertiesVk などバックエンド固有の関数になったようなので、対応するまでコメントアウト
 		if (Logger::shouldLog(LogLevel::Verbose)) {
             for (const auto& i : m_adapters) {
                 WGPUAdapterProperties properties = {};
@@ -69,33 +84,43 @@ bool WebGPUDevice::init(const Settings& settings) {
                 }
             }
         }
+#endif
     }
 
     // Request device.
-    WGPUDeviceDescriptor deviceDesc = {};
-    deviceDesc.nextInChain = nullptr;
-    deviceDesc.label = "Lumino device";
-    deviceDesc.requiredFeaturesCount = 0;
-    deviceDesc.requiredFeatures = nullptr;
-    deviceDesc.requiredLimits = nullptr;
-    deviceDesc.defaultQueue.nextInChain = nullptr;
-    deviceDesc.defaultQueue.label = "Lumino default queue";
-    if (!requestDevice(m_adapters[0].adapter, deviceDesc)) {
-        return false;
+    {
+        WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
+        deviceDesc.nextInChain = nullptr;
+        deviceDesc.label = { "Lumino device", 13 };
+        deviceDesc.requiredFeatureCount = 0;
+        deviceDesc.requiredFeatures = nullptr;
+        deviceDesc.requiredLimits = nullptr;
+        deviceDesc.defaultQueue.nextInChain = nullptr;
+        deviceDesc.defaultQueue.label = { "Lumino default queue", 20 };
+        deviceDesc.deviceLostCallbackInfo = WGPU_DEVICE_LOST_CALLBACK_INFO_INIT;
+        deviceDesc.uncapturedErrorCallbackInfo = WGPU_UNCAPTURED_ERROR_CALLBACK_INFO_INIT;
+
+        // Setup debug log.
+        if (settings.debugMode) {
+            auto onDeviceError = [](WGPUDevice const* device, WGPUErrorType type, WGPUStringView message, void*, void*) {
+                LN_LOG_ERROR("WebGPU({}): {}", static_cast<int>(type), std::string_view(message.data, message.length));
+            };
+            WGPUUncapturedErrorCallbackInfo callbackInfo = WGPU_UNCAPTURED_ERROR_CALLBACK_INFO_INIT;
+            callbackInfo.nextInChain = nullptr;
+            callbackInfo.callback = onDeviceError;
+            callbackInfo.userdata1 = nullptr;
+            callbackInfo.userdata2 = nullptr;
+            deviceDesc.uncapturedErrorCallbackInfo = callbackInfo;
+        }
+
+        if (!requestDevice(m_adapters[0].adapter, deviceDesc)) {
+            return false;
+        }
     }
 	
-    // Setup debug log.
-	if (settings.debugMode) {
-        auto onDeviceError = [](WGPUErrorType type, char const* message, void*) {
-            LN_LOG_ERROR("WebGPU({}): {}", type, message);
-        };
-        wgpuDeviceSetUncapturedErrorCallback(m_device, onDeviceError, nullptr);
-    }
-
     // Prepare Queue.
     m_queue = wgpuDeviceGetQueue(m_device);
-
-	
+    	
     return true;
 }
 
@@ -211,9 +236,9 @@ Ref<IDescriptorPool> WebGPUDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 void WebGPUDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
     WebGPUCommandList* rhiCommandList = static_cast<WebGPUCommandList*>(context);
 
-    WGPUCommandBufferDescriptor cmdBufferDescriptor = {};
+    WGPUCommandBufferDescriptor cmdBufferDescriptor = WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;
     cmdBufferDescriptor.nextInChain = nullptr;
-    cmdBufferDescriptor.label = nullptr;
+    cmdBufferDescriptor.label = WGPU_STRING_VIEW_INIT;
     WGPUCommandBuffer command = wgpuCommandEncoderFinish(rhiCommandList->commandEncoder(), &cmdBufferDescriptor);
     wgpuQueueSubmit(m_queue, 1, &command);
 
@@ -233,18 +258,30 @@ void WebGPUDevice::onQueuePresent(ISwapChain* swapChain) {
 
 Result<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
 
-    auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status, WGPUDevice device, char const* message, void* userdata) {
-        WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata);
+    auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status,
+                                   WGPUDevice device,
+                                   WGPUStringView message,
+                                   void* userdata1,
+                                   void* userdata2) {
+        WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata1);
         if (status == WGPURequestDeviceStatus_Success) {
             self->m_device = device;
         }
     };
 
-    wgpuAdapterRequestDevice(
-        adapter,
-        &descriptor,
-        onDeviceRequestEnded,
-        this);
+    WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
+    callbackInfo.nextInChain = nullptr;
+    callbackInfo.mode = WGPUCallbackMode_WaitAnyOnly;
+    callbackInfo.callback = onDeviceRequestEnded;
+    callbackInfo.userdata1 = this;
+    callbackInfo.userdata2 = nullptr;
+    wgpuAdapterRequestDevice(adapter, &descriptor, callbackInfo);
+
+#ifdef __EMSCRIPTEN__
+    while (!userData.requestEnded) {
+        emscripten_sleep(100);
+    }
+#endif // __EMSCRIPTEN__
 
 	if (!m_device) {
         LN_LOG_ERROR("Device not found.");
@@ -259,18 +296,22 @@ WGPUSurface WebGPUDevice::getWGPUSurface(PlatformWindow* window) const {
     HWND hWnd = reinterpret_cast<HWND>(PlatformSupport::getWin32WindowHandle(window));
     HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
-	WGPUChainedStruct chainedStruct1 = {};
+    WGPUChainedStruct chainedStruct1 = {};
     chainedStruct1.next = nullptr;
+#ifdef WEBGPU_BACKEND_DAWN
+    chainedStruct1.sType = WGPUSType_SurfaceSourceWindowsHWND;
+#else
     chainedStruct1.sType = WGPUSType_SurfaceDescriptorFromWindowsHWND;
+#endif
 
-    WGPUSurfaceDescriptorFromWindowsHWND hwndDesc;
+    WGPUSurfaceDescriptorFromWindowsHWND hwndDesc = {};
     hwndDesc.chain = chainedStruct1;
     hwndDesc.hinstance = hInstance;
     hwndDesc.hwnd = hWnd;
 
-    WGPUSurfaceDescriptor desc = {};
-    desc.label = nullptr;
-    desc.nextInChain = reinterpret_cast<const WGPUChainedStruct*>(&hwndDesc);
+    WGPUSurfaceDescriptor desc = WGPU_SURFACE_DESCRIPTOR_INIT;
+    desc.label = WGPU_STRING_VIEW_INIT;
+    desc.nextInChain = &hwndDesc.chain;
 
     return wgpuInstanceCreateSurface(m_instance, &desc);
 }

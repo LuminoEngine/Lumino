@@ -29,7 +29,7 @@ class MeshManager;
 class GraphicsManager : public RefObject {
 public:
     struct Settings {
-        GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+        LNGraphicsBackend graphicsAPI = LN_GRAPHICS_BACKEND_DEFAULT;
         String priorityGPUName;
         bool debugMode = false;
     };
@@ -107,7 +107,7 @@ public:
     detail::StreamingBufferAllocatorManager* obtainIndexBufferStreamingAllocatorManager(IndexBufferFormat format);
 
     static bool checkVulkanSupported();
-    static void selectDefaultSystem(GraphicsAPI* api, WindowSystem* ws);
+    static void selectDefaultSystem(LNGraphicsBackend* api, WindowSystem* ws);
 
 private:
 

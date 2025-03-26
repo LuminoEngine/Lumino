@@ -1,5 +1,5 @@
-﻿#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 
 namespace ln {
 namespace detail {
@@ -9,13 +9,19 @@ namespace detail {
 
 WebGPURenderPass::WebGPURenderPass()
     : m_rhiDevice(nullptr)
-    , m_renderPassDesc({})
+    , m_renderPassDesc(WGPU_RENDER_PASS_DESCRIPTOR_INIT)
     , m_colorAttachments({}) {
 }
 
-Result<> WebGPURenderPass::init(WebGPUDevice* rhiDevice, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+Result<> WebGPURenderPass::init(
+    WebGPUDevice* rhiDevice,
+    const DeviceFramebufferState& buffers,
+    ClearFlags clearFlags,
+    const Color& clearColor,
+    float clearDepth,
+    uint8_t clearStencil) {
     m_rhiDevice = rhiDevice;
-	
+
     for (int i = 0; i < MaxMultiRenderTargets; i++) {
         m_renderTargets[i] = buffers.renderTargets[i];
 
@@ -27,15 +33,14 @@ Result<> WebGPURenderPass::init(WebGPUDevice* rhiDevice, const DeviceFramebuffer
         attachment->clearValue = WGPUColor{ clearColor.r, clearColor.g, clearColor.b, clearColor.a };
     }
 
-	m_depthBuffer = buffers.depthBuffer;
+    m_depthBuffer = buffers.depthBuffer;
 
     m_renderPassDesc.nextInChain = nullptr;
-    m_renderPassDesc.label = nullptr;
+    m_renderPassDesc.label = WGPU_STRING_VIEW_INIT;
     m_renderPassDesc.colorAttachmentCount = m_colorAttachments.size();
     m_renderPassDesc.colorAttachments = m_colorAttachments.data();
     m_renderPassDesc.depthStencilAttachment = nullptr;
     m_renderPassDesc.occlusionQuerySet = nullptr;
-    m_renderPassDesc.timestampWriteCount = 0;
     m_renderPassDesc.timestampWrites = nullptr;
 
     return ok();

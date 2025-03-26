@@ -28,10 +28,10 @@ bool DirectX12GraphicsContext::init(const Settings& settings) {
     bool driverSupported = false;
     if (!device->init(dcSettings, &driverSupported)) {
         if (!driverSupported) {
-            // ドライバが Vulkan をサポートしていない。継続する。
+            // ドライバが DirectX12 をサポートしていない。継続する。
         }
         else {
-            LN_LOG_ERROR("Vulkan driver initialization failed.");
+            LN_LOG_ERROR("DirectX12 driver initialization failed.");
             return false;
         }
     }

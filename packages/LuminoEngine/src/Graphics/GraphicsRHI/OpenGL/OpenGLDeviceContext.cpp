@@ -175,8 +175,8 @@ void OpenGLDevice::dispose() {
 // }
 
 void OpenGLDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
-    outCaps->graphicsAPI = GraphicsAPI::OpenGL;
-//#ifdef LN_GRAPHICS_OPENGLES
+    outCaps->graphicsAPI = LN_GRAPHICS_BACKEND_OPENGL;
+    //#ifdef LN_GRAPHICS_OPENGLES
     outCaps->requestedShaderTriple.target = "glsl";
     outCaps->requestedShaderTriple.version = 300;
     outCaps->requestedShaderTriple.option = "es";

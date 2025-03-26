@@ -306,7 +306,7 @@ public:
     VulkanNativeGraphicsInterface(VulkanDevice* device);
     void setContext(VulkanCommandList* context);
 
-    virtual GraphicsAPI getGraphicsAPI() const override;
+    virtual LNGraphicsBackend getGraphicsAPI() const override;
     virtual VkInstance getInstance() const override;
     virtual VkPhysicalDevice getPhysicalDevice() const override;
     virtual VkDevice getDevice() const override;

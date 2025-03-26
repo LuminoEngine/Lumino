@@ -16,7 +16,7 @@ void init() {
     options.platform.width = 640;
     options.platform.height = 480;
     options.platform.windowSystem = WindowSystem::GLFWWithoutOpenGL;
-    options.graphics.graphicsAPI = GraphicsAPI::Vulkan;
+    options.graphics.graphicsAPI = LN_GRAPHICS_BACKEND_VULKAN;
     Engine::initialize(options);
     Engine::mountAssetDirectory(ASSETS_DIR);
 }

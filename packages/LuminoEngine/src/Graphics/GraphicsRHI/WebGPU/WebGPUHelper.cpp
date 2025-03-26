@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUHelper.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUHelper.hpp>
 
 namespace ln {
 namespace detail {

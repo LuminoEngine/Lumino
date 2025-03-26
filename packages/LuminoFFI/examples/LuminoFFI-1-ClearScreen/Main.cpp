@@ -3,6 +3,8 @@
 #include <lumino.h>
 
 int main() {
+    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+
     // 1. 最初に LNInstance_Initialize で Lumino を初期化します。
     //    なお全ての API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
     //    以降のサンプルではエラーチェックを省略しています。
@@ -31,7 +33,8 @@ int main() {
         }
 
         // x. 現在のウィンドウサイズにマッチするようにフレームバッファ (バックバッファ) を準備します。
-        //    LNGraphicsContext_PrepareFrame により取得できる colorBuffer と depthBuffer に対して、これから描画を行っていきます。
+        //    また LNGraphicsContext_PrepareFrame からは 1 フレーム分の描画を行うために必要なリソース取得できます。
+        //    colorBuffer と depthBuffer は描画先バッファです。これからここに描画を行います。
         int width = 0;
         int height = 0;
         LNHandle colorBuffer = LN_NULL_HANDLE;

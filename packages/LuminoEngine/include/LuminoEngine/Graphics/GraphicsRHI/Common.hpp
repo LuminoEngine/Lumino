@@ -8,21 +8,6 @@ class DepthBuffer;
 class ConstantBuffer;
 
 class INativeGraphicsExtension;
-	
-/** バックエンドグラフィックス API の種類 */
-LN_ENUM()
-enum class GraphicsAPI {
-    /** 自動選択 */
-    Default,
-
-    /** OpenGL */
-    OpenGL,
-
-    /** Vulkan */
-    Vulkan,
-
-    DirectX12,
-};
 
 /** レンダーターゲットのクリア方法 */
 enum class ClearFlags : uint8_t {

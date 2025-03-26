@@ -29,7 +29,6 @@ public:
 private:
     WebGPUDevice* m_device;
     WGPUSurface m_wgpuSurface;
-    WGPUSwapChain m_wgpuSwapChain;
     TextureFormat m_format;
     int m_width;
     int m_height;

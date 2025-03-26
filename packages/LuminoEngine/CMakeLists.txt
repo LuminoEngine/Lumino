@@ -255,7 +255,12 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_include_directories(${PROJECT_NAME} PRIVATE include src)
+target_include_directories(
+    ${PROJECT_NAME} PRIVATE
+    include
+    src
+    "../LuminoFFI/include"
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")

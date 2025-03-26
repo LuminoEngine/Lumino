@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <lumino.h>
 #include <LuminoCore/Base/Result.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
@@ -35,7 +36,7 @@ class RHIResource;
 class RHIProfiler;
 
 struct GraphicsDeviceProperties {
-    GraphicsAPI graphicsAPI;
+    LNGraphicsBackend graphicsAPI;
     kokage::UnifiedShaderTriple requestedShaderTriple;
     bool imageLayoytVFlip = false;
     size_t uniformBufferOffsetAlignment;

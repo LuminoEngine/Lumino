@@ -1,7 +1,7 @@
-﻿#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUHelper.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
 
 namespace ln {
 namespace detail {
@@ -12,7 +12,6 @@ namespace detail {
 WebGPUSwapChain::WebGPUSwapChain()
     : m_device(nullptr)
     , m_wgpuSurface(nullptr)
-    , m_wgpuSwapChain(nullptr)
     , m_format(TextureFormat::Unknown)
     , m_width(0)
     , m_height(0)
@@ -26,21 +25,21 @@ Result<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, con
     m_width = backbufferSize.width;
     m_height = backbufferSize.height;
 
-    WGPUSwapChainDescriptor swapChainDesc = {};
-    swapChainDesc.width = backbufferSize.width;
-    swapChainDesc.height = backbufferSize.height;
-    swapChainDesc.usage = WGPUTextureUsage_RenderAttachment;
+    //WGPUSwapChainDescriptor swapChainDesc = {};
+    //swapChainDesc.width = backbufferSize.width;
+    //swapChainDesc.height = backbufferSize.height;
+    //swapChainDesc.usage = WGPUTextureUsage_RenderAttachment;
 
-    WGPUTextureFormat swapChainFormat = wgpuSurfaceGetPreferredFormat(m_wgpuSurface, m_device->wgpuAdapter());
-    swapChainDesc.format = swapChainFormat;
-    m_format = WebGPUHelper::WGPUTextureFormatToTextureFormat(swapChainFormat);
+    //WGPUTextureFormat swapChainFormat = wgpuSurfaceGetPreferredFormat(m_wgpuSurface, m_device->wgpuAdapter());
+    //swapChainDesc.format = swapChainFormat;
+    //m_format = WebGPUHelper::WGPUTextureFormatToTextureFormat(swapChainFormat);
 	
-    swapChainDesc.presentMode = WGPUPresentMode_Fifo;
-    m_wgpuSwapChain = wgpuDeviceCreateSwapChain(m_device->wgpuDevice(), m_wgpuSurface, &swapChainDesc);
-    if (!m_wgpuSwapChain) {
-        LN_LOG_ERROR("wgpuDeviceCreateSwapChain failed.");
-        return err();
-    }
+    //swapChainDesc.presentMode = WGPUPresentMode_Fifo;
+    //m_wgpuSwapChain = wgpuDeviceCreateSwapChain(m_device->wgpuDevice(), m_wgpuSurface, &swapChainDesc);
+    //if (!m_wgpuSwapChain) {
+    //    LN_LOG_ERROR("wgpuDeviceCreateSwapChain failed.");
+    //    return err();
+    //}
 
 
     for (int i = 0; i < BackbufferCount; i++) {
@@ -63,7 +62,6 @@ void WebGPUSwapChain::onDestroy() {
         i->destroy();
     }
     m_currentRenderTargets = {};
-    m_wgpuSwapChain = nullptr;
     m_wgpuSurface = nullptr;
 }
 
@@ -74,8 +72,37 @@ uint32_t WebGPUSwapChain::getBackbufferCount() {
 void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
     *outImageIndex = m_imageIndex;
 
+    
+	// Get the surface texture
+    WGPUSurfaceTexture surfaceTexture;
+    wgpuSurfaceGetCurrentTexture(m_wgpuSurface, &surfaceTexture);
+    if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal) {
+        LN_LOG_ERROR("wgpuSurfaceGetCurrentTexture failed.");
+        return;
+    }
+    
+	// Create a view for this surface texture
+    WGPUTextureViewDescriptor viewDescriptor;
+    viewDescriptor.nextInChain = nullptr;
+    viewDescriptor.label = { "Surface texture view", 20 };
+    viewDescriptor.format = wgpuTextureGetFormat(surfaceTexture.texture);
+    viewDescriptor.dimension = WGPUTextureViewDimension_2D;
+    viewDescriptor.baseMipLevel = 0;
+    viewDescriptor.mipLevelCount = 1;
+    viewDescriptor.baseArrayLayer = 0;
+    viewDescriptor.arrayLayerCount = 1;
+    viewDescriptor.aspect = WGPUTextureAspect_All;
+    WGPUTextureView targetView = wgpuTextureCreateView(surfaceTexture.texture, &viewDescriptor);
+
+    // https://github.com/eliemichel/LearnWebGPU-Code/blob/step025/main.cpp
+#ifndef WEBGPU_BACKEND_WGPU
+    // We no longer need the texture, only its view
+    // (NB: with wgpu-native, surface textures must not be manually released)
+    wgpuTextureRelease(surfaceTexture.texture);
+#endif // WEBGPU_BACKEND_WGPU
+
     WebGPURenderTarget* renderTarget = m_currentRenderTargets[m_imageIndex];
-    renderTarget->wrapTextureView(wgpuSwapChainGetCurrentTextureView(m_wgpuSwapChain));
+    renderTarget->wrapTextureView(targetView);
 }
 
 RHIResource* WebGPUSwapChain::getRenderTarget(int imageIndex) const {
@@ -88,7 +115,7 @@ Result<> WebGPUSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
 }
 
 void WebGPUSwapChain::present() {
-    wgpuSwapChainPresent(m_wgpuSwapChain);
+    wgpuSurfacePresent(m_wgpuSurface);
     m_imageIndex = (m_imageIndex + 1) % BackbufferCount;
 }
 

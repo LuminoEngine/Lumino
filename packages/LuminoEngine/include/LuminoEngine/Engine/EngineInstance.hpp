@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <lumino.h>
 #include <LuminoCore/Runtime/TypeInfo.hpp>
 #include <LuminoCore/Runtime/Property.hpp>
 #include "Common2.hpp"
@@ -10,7 +11,7 @@ namespace ln {
 struct RuntimeModuleSettings {
     WindowSystem windowSystem = WindowSystem::Native;
     AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
-    GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
+    LNGraphicsBackend graphicsAPI = LN_GRAPHICS_BACKEND_OPENGL;
 };
 namespace detail {
 class RuntimeManager;

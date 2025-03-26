@@ -14,6 +14,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoFFI-static)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
 add_dependencies(${PROJECT_NAME} LuminoFFI)
 
+if(LN_DESKTOP_WEBGPU)
+    target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
+endif()
+
 # Copy LuminoFFI.dll to output directory
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD

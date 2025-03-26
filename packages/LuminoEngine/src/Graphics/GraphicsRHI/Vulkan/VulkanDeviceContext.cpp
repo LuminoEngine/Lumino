@@ -140,7 +140,7 @@ INativeGraphicsInterface* VulkanDevice::getNativeInterface() const {
 }
 
 void VulkanDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
-    outCaps->graphicsAPI = GraphicsAPI::Vulkan;
+    outCaps->graphicsAPI = LN_GRAPHICS_BACKEND_VULKAN;
     outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 110;
     outCaps->requestedShaderTriple.option = "";
@@ -2066,8 +2066,8 @@ void VulkanNativeGraphicsInterface::setContext(VulkanCommandList* context) {
     m_context = context;
 }
 
-GraphicsAPI VulkanNativeGraphicsInterface::getGraphicsAPI() const {
-    return GraphicsAPI::Vulkan;
+LNGraphicsBackend VulkanNativeGraphicsInterface::getGraphicsAPI() const {
+    return LN_GRAPHICS_BACKEND_VULKAN;
 }
 
 VkInstance VulkanNativeGraphicsInterface::getInstance() const {

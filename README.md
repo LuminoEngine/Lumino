@@ -48,6 +48,8 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 ### Web
 
 ```
+dotnet tool install dotnet-script
+dotnet script scripts/BuildDawn
 dotnet run -- BuildEngine wasm32-emscripten
 ```
 

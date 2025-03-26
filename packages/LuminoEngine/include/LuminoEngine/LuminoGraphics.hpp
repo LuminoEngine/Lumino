@@ -14,4 +14,3 @@
 #include "LuminoEngine/GPU/RenderPass.hpp"
 #include "LuminoEngine/GPU/SwapChain.hpp"
 #include "LuminoEngine/GPU/GraphicsCommandBuffer.hpp"
-#include "LuminoEngine/GPU/Graphics.hpp"

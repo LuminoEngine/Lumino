@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <lumino.h>
 #include "../Platform/Common.hpp"
 #include "../Graphics/GraphicsRHI/Common.hpp"
 #include "Common2.hpp"
@@ -20,7 +21,7 @@ struct PlatformOptions {
 
 struct GraphicsOptions {
     bool enabled = true;
-    GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+    LNGraphicsBackend graphicsAPI = LN_GRAPHICS_BACKEND_DEFAULT;
 };
 
 struct AudioOptions {

@@ -110,14 +110,40 @@ extern LUMINO_API void LNRenderPassDescriptor_SetDepthBuffer(LNStructHandle hand
 
 
 //==============================================================================
-// LNInstance
+// LNConfig
 //==============================================================================
-extern LUMINO_API LNResult LNInstance_Initialize();
-extern LUMINO_API void LNInstance_Terminate();
+
+/** Graphics Backend. */
+typedef enum LNGraphicsBackend {
+    /** Default. */
+    LN_GRAPHICS_BACKEND_DEFAULT = 0,
+    
+    LN_GRAPHICS_BACKEND_DIRECTX12 = 1,
+    LN_GRAPHICS_BACKEND_VULKAN = 2,
+    //N_GRAPHICS_BACKEND_METAL = 3,
+    
+    /** OpenGL. */
+    LN_GRAPHICS_BACKEND_OPENGL = 4,
+
+    /** WebGPU. */
+    LN_GRAPHICS_BACKEND_WEBGPU = 5,
+} LNGraphicsBackend;
+
+extern LUMINO_API LNResult LNConfig_SetGraphicsBackend(LNGraphicsBackend value);
 
 //==============================================================================
 // LNInstance
 //==============================================================================
+
+/**
+ * Initializes the Lumino instance.
+ */
+extern LUMINO_API LNResult LNInstance_Initialize();
+
+/**
+ * Terminates the Lumino instance.
+ */
+extern LUMINO_API void LNInstance_Terminate();
 
 /**
  * Processes events that are present in the event queue.

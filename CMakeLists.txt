@@ -55,6 +55,7 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 # Vulkan
 option(LN_USE_VULKAN "Vulkan" ON)
 
+# 
 option(LUMINO_USE_WEBGPU "WebGPU" OFF)
 
 # OpenGL
@@ -198,7 +199,11 @@ if(LUMINO_BUILD_CORE)
 endif()
 
 if(LUMINO_USE_WEBGPU)
-    add_subdirectory(external/wgpu-native-for-windows/webgpu)
+    if(LN_OS_DESKTOP)
+        set(LN_DESKTOP_WEBGPU ON)
+        set(WEBGPU_BACKEND "DAWN")
+        add_subdirectory(build/tools/WebGPU-distribution)
+    endif()
 endif()
 
 if(LUMINO_BUILD_ENGINE)

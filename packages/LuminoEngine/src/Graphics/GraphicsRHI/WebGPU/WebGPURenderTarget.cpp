@@ -1,6 +1,6 @@
-﻿#include <LuminoEngine/GraphicsRHI/WebGPU//WebGPUHelper.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
-#include <LuminoEngine/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU//WebGPUHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
 
 namespace ln {
 namespace detail {
