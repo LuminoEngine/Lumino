@@ -1,3 +1,0 @@
-Lumino for Ruby
-==========
-

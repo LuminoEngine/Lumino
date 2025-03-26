@@ -1,6 +1,0 @@
-_package/
-hsptmp
-obj
-*.dll
-samples/*.as
-test/*.as

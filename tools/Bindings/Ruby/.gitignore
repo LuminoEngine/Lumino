@@ -1,8 +1,0 @@
-*.def
-*.log
-*.o
-*.so
-*.dll
-Makefile
-doc/
-.yardoc/
