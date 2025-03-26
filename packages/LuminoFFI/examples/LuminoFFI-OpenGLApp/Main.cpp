@@ -78,12 +78,12 @@ int main() {
     }
 
     LNHandle viewPoint1 = LN_NULL_HANDLE;
-    if (LNCamera_Create(&viewPoint1) != LN_OK) {
+    if (LNViewPoint_Create(&viewPoint1) != LN_OK) {
         return 1;
     }
 
     LNHandle viewPoint2 = LN_NULL_HANDLE;
-    if (LNCamera_Create(&viewPoint2) != LN_OK) {
+    if (LNViewPoint_Create(&viewPoint2) != LN_OK) {
         return 1;
     }
 
@@ -166,7 +166,7 @@ int main() {
         //   これはシャドウバッファの描画を考えるとイメージしやすいかもしれない。
         //   Three.js でもシャドウバッファへの描画は、その数ごとに専用のカメラを起点として Scene 全体の render() を行っている。
         if (1) {
-            if (LNCamera_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+            if (LNViewPoint_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500) != LN_OK) {
                 return 1;
             }
 
@@ -220,7 +220,7 @@ int main() {
 
         // RenderPass
         if (0) {
-            if (LNCamera_SetupPerspectiveOrthoLH(viewPoint2, 0, 0, -100, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+            if (LNViewPoint_SetupPerspectiveOrthoLH(viewPoint2, 0, 0, -100, 0, 0, 0, width, height, -500, 500) != LN_OK) {
                 return 1;
             }
 

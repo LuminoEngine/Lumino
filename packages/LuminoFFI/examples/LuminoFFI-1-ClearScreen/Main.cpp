@@ -14,11 +14,8 @@ int main() {
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    LNHandle commandList = LN_NULL_HANDLE;
-    LNCommandList_Get(graphicsContext, &commandList);
-
-    LNHandle viewPoint1 = LN_NULL_HANDLE;
-    LNCamera_Create(&viewPoint1);
+    LNHandle viewPoint = LN_NULL_HANDLE;
+    LNViewPoint_Create(&viewPoint);
 
     while (true) {
         LNBool quit = LN_FALSE;
@@ -31,13 +28,14 @@ int main() {
         // TODO: get backbuffer size
         int width = 640;
         int height = 480;
-        LNCamera_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500);
+        LNViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, width, height, -1000, 1000);
 
         LNHandle backbuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer);
-        LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer);
+        LNGraphicsContext_PrepareFrame(graphicsContext, width, height, &backbuffer, &depthBuffer);
 
+        LNHandle commandList = LN_NULL_HANDLE;
+        LNCommandList_Get(graphicsContext, &commandList);
         LNCommandList_Reset(commandList);
 
         // x. レンダーターゲットをクリアするための RenderPass を開始します。
@@ -55,13 +53,14 @@ int main() {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint1, &renderingPass);
+        LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint, &renderingPass);
         LNRenderPass_End(renderingPass);
 
         LNGraphicsContext_SubmitCommandList(graphicsContext, commandList);
         LNWindow_Present(window);
     };
 
+    LNObject_Release(viewPoint);
     LNObject_Release(window);
     LNInstance_Terminate();
     return 0;

@@ -219,6 +219,20 @@ LNResult LNInstance_ShouldQuit(LNBool* outQuit) {
 //==============================================================================
 //
 //==============================================================================
+extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
+    LNHandle graphicsContext,
+    int32_t width,
+    int32_t height,
+    LNHandle* outRenderTarget,
+    LNHandle* outDepthBuffer) {
+    LN_FFI_TRY_BEGIN;
+    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+    GraphicsContext* context = surfaceContext->context();
+    *outRenderTarget = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
+    *outDepthBuffer = LN_NULL_HANDLE; // TODO:
+    LN_FFI_TRY_END_RETURN;
+}
+
 LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
 	LN_FFI_TRY_BEGIN;
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
@@ -548,20 +562,29 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
 
 
 //==============================================================================
-// LNCamera
+// LNViewPoint
 //   NOTE: 名前について
-//   以前は ViewPoint という名前だったが Camera に直した。
-//   Scene をサポートしていたころは SceneNode としての Camera と競合していたので避ける必要があったが、その必要はなくなったため、
-//   また別プロジェクトのメンバーも 2DCamera という概念には違和感はなく使えていたため。
+//     多くの 3Dライブラリでは、 Camera は次のような機能を持っている。
+//     - ビュー行列・プロジェクション行列の生成
+//     - SceneNode のひとつ。
+//     - 必要に応じて、描画先の RenderTarget を持つ。
+//     - 動的 CubeMap など、より高度な描画のエントリポイントを提供する。
+//     - ポストプロセスのアタッチ先となる。
+//     Lumino のコアモジュールとしては、行列生成以外は提供しないこととしたい。
+//     ポストプロセスのカスタマイズなど、C_API として提供するのが面倒なものもあるが、
+//     そういった高度な描画は Lumino を利用するフレームワークに任せたい。 Scene と同じ。
+//     そのためあまり大きな機能を連想させないように、ViewPoint という名前にした。
+//   NOTE: 低レイヤー志向なら行列の生成もユーザープログラムに任せて良いのでは？
+//     各種化リングやZソートは Lumino 内部で行いたい。それには行列が必要。
 //==============================================================================
-LNResult LNCamera_Create(LNHandle* outRenderingViewPoint) {
+LNResult LNViewPoint_Create(LNHandle* outRenderingViewPoint) {
     LN_FFI_TRY_BEGIN;
     Ref<RenderViewPoint> viewPoint = makeRef<RenderViewPoint>();
     *outRenderingViewPoint = ::Runtime::wrapObject(viewPoint, true);
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNCamera_SetupPerspectiveOrthoLH(
+LNResult LNViewPoint_SetupPerspectiveOrthoLH(
     LNHandle graphicsViewPoint,
     float x,
     float y,
@@ -580,7 +603,7 @@ LNResult LNCamera_SetupPerspectiveOrthoLH(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNCamera_SetupPerspective2D(
+LNResult LNViewPoint_SetupPerspective2D(
     LNHandle graphicsViewPoint,
     float x,
     float y,

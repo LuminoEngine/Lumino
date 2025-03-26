@@ -132,6 +132,30 @@ extern LUMINO_API LNResult LNInstance_ShouldQuit(LNBool* outQuit);
 //==============================================================================
 //
 //==============================================================================
+
+/**
+ * Begin rendering a frame.
+ * 
+ * @param[int] graphicsContext : LNGraphicsContext handle.
+ * @param[int] width : Backbuffer width.
+ * @param[int] height : Backbuffer height.
+ * @param[out] outRenderTarget : RenderTarget color buffer.
+ * @param[out] outDepthBuffer : RenderTarget depth buffer.
+ * 
+ * The back buffer will be resized if necessary.
+ * but if you are using an external context, the back buffer will not be resized.
+ *
+ * outRenderTarget and outDepthBuffer is a special buffer that represents
+ * the default Framebuffer and can only be used to attach to an LNRenderPass.
+ */
+extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
+    LNHandle graphicsContext,
+    int32_t width,
+    int32_t height,
+    LNHandle* outRenderTarget,
+    LNHandle* outDepthBuffer
+);
+
 /**
  * Get the current color buffer.
  *
@@ -190,9 +214,9 @@ extern LUMINO_API LNResult LNCommandList_GetProfilerng(LNHandle renderingCommand
 //
 //==============================================================================
 // いわゆるカメラ情報
-extern LUMINO_API LNResult LNCamera_Create(LNHandle* outGraphicsViewPoint);
-extern LUMINO_API LNResult LNCamera_SetupPerspectiveOrthoLH(LNHandle graphicsViewPoint, float x, float y, float z, float lookAtX, float lookAtY, float lookAtZ, float width, float height, float nearZ, float farZ);
-extern LUMINO_API LNResult LNCamera_SetupPerspective2D(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
+extern LUMINO_API LNResult LNViewPoint_Create(LNHandle* outGraphicsViewPoint);
+extern LUMINO_API LNResult LNViewPoint_SetupPerspectiveOrthoLH(LNHandle graphicsViewPoint, float x, float y, float z, float lookAtX, float lookAtY, float lookAtZ, float width, float height, float nearZ, float farZ);
+extern LUMINO_API LNResult LNViewPoint_SetupPerspective2D(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 
