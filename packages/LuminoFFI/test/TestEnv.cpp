@@ -31,7 +31,7 @@ void TestEnv::initialize() {
 
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
     LNViewPoint_Create(&viewPoint);
-    LNViewPoint_SetupPerspective2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
+    LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, 320, 240, -500, 500);
 
     TestEnv::present();
 }

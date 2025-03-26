@@ -96,7 +96,7 @@ export class Runtime {
             API.LNCommandList_BeginRenderPass = module.cwrap("LNCommandList_BeginRenderPass", "number", ["number", "number", "number", "number"]);
             
             API.LNViewPoint_Create = module.cwrap("LNViewPoint_Create", "number", ["number"]);
-            API.LNViewPoint_SetupPerspective2D = module.cwrap("LNViewPoint_SetupPerspective2D", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
+            API.LNViewPoint_SetupPerspective2DLH = module.cwrap("LNViewPoint_SetupPerspective2DLH", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
 
             API.LNRenderPass_End = module.cwrap("LNRenderPass_End", "number", ["number"]);
 
@@ -196,7 +196,7 @@ export class API {
 
 
     public static LNViewPoint_Create: (outGraphicsViewPoint: number) => Result;
-    public static LNViewPoint_SetupPerspective2D: (graphicsViewPoint: Handle, x: number, y: number, z: number, width: number, height: number, nearZ: number, farZ: number) => Result;
+    public static LNViewPoint_SetupPerspective2DLH: (graphicsViewPoint: Handle, x: number, y: number, z: number, width: number, height: number, nearZ: number, farZ: number) => Result;
 
     public static LNRenderPass_End: (renderPass: Handle) => Result;
 

@@ -166,7 +166,7 @@ int main() {
         //   これはシャドウバッファの描画を考えるとイメージしやすいかもしれない。
         //   Three.js でもシャドウバッファへの描画は、その数ごとに専用のカメラを起点として Scene 全体の render() を行っている。
         if (1) {
-            if (LNViewPoint_SetupPerspective2D(viewPoint1, 0, 0, 0, width, height, -500, 500) != LN_OK) {
+            if (LNViewPoint_SetupPerspective2DLH(viewPoint1, 0, 0, 0, width, height, -500, 500) != LN_OK) {
                 return 1;
             }
 

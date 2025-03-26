@@ -10,7 +10,7 @@ export class GraphicsViewPoint extends LuminoObject {
     }
 
     public setupPerspective2D(width: number, height: number): void {
-        API.LNViewPoint_SetupPerspective2D(this.handle, 0, 0, 0, width, height, -500, 500);
+        API.LNViewPoint_SetupPerspective2DLH(this.handle, 0, 0, 0, width, height, -500, 500);
     }
 }
 

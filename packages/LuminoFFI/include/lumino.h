@@ -152,7 +152,7 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
     LNHandle graphicsContext,
     int32_t width,
     int32_t height,
-    LNHandle* outRenderTarget,
+    LNHandle* outColorBuffer,
     LNHandle* outDepthBuffer
 );
 
@@ -216,7 +216,7 @@ extern LUMINO_API LNResult LNCommandList_GetProfilerng(LNHandle renderingCommand
 // いわゆるカメラ情報
 extern LUMINO_API LNResult LNViewPoint_Create(LNHandle* outGraphicsViewPoint);
 extern LUMINO_API LNResult LNViewPoint_SetupPerspectiveOrthoLH(LNHandle graphicsViewPoint, float x, float y, float z, float lookAtX, float lookAtY, float lookAtZ, float width, float height, float nearZ, float farZ);
-extern LUMINO_API LNResult LNViewPoint_SetupPerspective2D(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
+extern LUMINO_API LNResult LNViewPoint_SetupPerspective2DLH(LNHandle graphicsViewPoint, float x, float y, float z, float width, float height, float nearZ, float farZ);
 
 extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass);
 
@@ -352,6 +352,7 @@ extern LUMINO_API LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteText
 // LNWindow
 //==============================================================================
 extern LUMINO_API LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNHandle* outWindow);
+extern LUMINO_API LNResult LNWindow_GetFramebufferSize(LNHandle window, int32_t* outWidth, int32_t* outHeight);
 extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext);
 
 /**

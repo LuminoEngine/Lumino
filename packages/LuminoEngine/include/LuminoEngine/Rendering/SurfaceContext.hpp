@@ -34,13 +34,12 @@ public:
     ~SurfaceContext() override;
 
     const Ref<GraphicsContext>& context() const { return m_context; }
-    GraphicsCommandList* commandList() const { return m_commandList; }
+    GraphicsCommandList* commandList() const;
     const Ref<CommandList>& renderingContext() const { return m_renderingContext; }
     const URef<kanata::DrawEventList>& drawEventList() const { return m_drawEventList; }
 
 private:
     Ref<GraphicsContext> m_context;
-    GraphicsCommandList* m_commandList;
     Ref<CommandList> m_renderingContext;
     URef<kanata::DrawEventList> m_drawEventList;
 };

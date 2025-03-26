@@ -13,7 +13,6 @@ Ref<SurfaceContext> SurfaceContext::createFromWindow(detail::RenderingManager* r
     GraphicsManager* graphicsManager = renderingManager->graphicsManager();
     Ref<SurfaceContext> context = makeObject_deprecated<SurfaceContext>();
     context->m_context = graphicsManager->createGraphicsContext(window);
-    context->m_commandList = context->m_context->currentCommandList2();
     context->m_renderingContext = makeObject_deprecated<CommandList>();
     context->m_drawEventList = makeURef<kanata::DrawEventList>(renderingManager);
     return context;
@@ -24,7 +23,6 @@ Ref<SurfaceContext> SurfaceContext::createFromExternal(
     GraphicsContext* externalContext) {
     Ref<SurfaceContext> context = makeObject_deprecated<SurfaceContext>();
     context->m_context = externalContext;
-    context->m_commandList = context->m_context->currentCommandList2();
     context->m_renderingContext = makeObject_deprecated<CommandList>();
     context->m_drawEventList = makeURef<kanata::DrawEventList>(renderingManager);
     return context;
@@ -32,12 +30,15 @@ Ref<SurfaceContext> SurfaceContext::createFromExternal(
 
 SurfaceContext::SurfaceContext()
     : m_context(nullptr) 
-    , m_commandList(nullptr)
     , m_renderingContext()
     , m_drawEventList() {
 }
 
 SurfaceContext::~SurfaceContext() {
+}
+
+GraphicsCommandList* SurfaceContext::commandList() const {
+    return m_context->currentCommandList2();
 }
 
 } // namespace ln

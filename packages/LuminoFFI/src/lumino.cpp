@@ -223,12 +223,12 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
     LNHandle graphicsContext,
     int32_t width,
     int32_t height,
-    LNHandle* outRenderTarget,
+    LNHandle* outColorBuffer,
     LNHandle* outDepthBuffer) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     GraphicsContext* context = surfaceContext->context();
-    *outRenderTarget = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
+    *outColorBuffer = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
     *outDepthBuffer = LN_NULL_HANDLE; // TODO:
     LN_FFI_TRY_END_RETURN;
 }
@@ -603,7 +603,7 @@ LNResult LNViewPoint_SetupPerspectiveOrthoLH(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNViewPoint_SetupPerspective2D(
+LNResult LNViewPoint_SetupPerspective2DLH(
     LNHandle graphicsViewPoint,
     float x,
     float y,
@@ -614,7 +614,7 @@ LNResult LNViewPoint_SetupPerspective2D(
     float farZ) {
     LN_FFI_TRY_BEGIN;
     RenderViewPoint* viewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, graphicsViewPoint);
-    viewPoint->resetPerspective2D(Vector3(x,y, z), Size(width, height), nearZ, farZ);
+    viewPoint->resetPerspective2DLH(Vector3(x,y, z), Size(width, height), nearZ, farZ);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -935,6 +935,18 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
     options.title = String::fromUtf8(title);
     Ref<PlatformWindow> window = platformManager->createWindow(options);
     *outWindow = ::Runtime::wrapObject(window, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNWindow_GetFramebufferSize(LNHandle window, int32_t* outWidth, int32_t* outHeight) {
+    // NOTE: 名前について
+    //   - ViewportSize: 画面内のサブセクションを指定する機能としての Viewport　と衝突するので使わない。
+    //   - BackbufferSize vs FramebufferSize: Framebuffer の方が、
+    //     低レイヤーグラフィックスにおけるサイズである (DPI とは関係ない) ことを強調できると考えたため、 FramebufferSize とする。
+    //     OpenGL と Vulkan の用語ではあるけど、 DX12 関連の記事でもたまに見かける。
+    LN_FFI_TRY_BEGIN;
+    PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
+    platformWindow->getFramebufferSize(outWidth, outHeight);
     LN_FFI_TRY_END_RETURN;
 }
 

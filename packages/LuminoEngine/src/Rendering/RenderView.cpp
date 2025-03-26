@@ -70,7 +70,7 @@ void RenderViewPoint::resetPerspective(const Vector3& viewPos, const Vector3& vi
     dpiScale = 1.0f;
 }
 
-void RenderViewPoint::resetPerspective2D(const Vector3& viewPos, const Size& size, float n, float f) {
+void RenderViewPoint::resetPerspective2DLH(const Vector3& viewPos, const Size& size, float n, float f) {
     worldMatrix = Matrix::Identity; // TODO: Lookat
     viewPixelSize = size;
     viewPosition = viewPos;
