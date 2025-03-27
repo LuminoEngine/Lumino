@@ -9,10 +9,15 @@
 
 namespace ln {
 
-Ref<SurfaceContext> SurfaceContext::createFromWindow(detail::RenderingManager* renderingManager, PlatformWindow* window) {
+Result<Ref<SurfaceContext>> SurfaceContext::createFromWindow(detail::RenderingManager* renderingManager, PlatformWindow* window) {
     GraphicsManager* graphicsManager = renderingManager->graphicsManager();
     Ref<SurfaceContext> context = makeObject_deprecated<SurfaceContext>();
-    context->m_context = graphicsManager->createGraphicsContext(window);
+
+    auto result = graphicsManager->createGraphicsContext(window);
+    if (!result) {
+        return result;
+    }
+    context->m_context = result.unwrap();
     context->m_renderingContext = makeObject_deprecated<CommandList>();
     context->m_drawEventList = makeURef<kanata::DrawEventList>(renderingManager);
     return context;

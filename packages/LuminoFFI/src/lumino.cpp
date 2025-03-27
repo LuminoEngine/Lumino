@@ -100,6 +100,8 @@ extern "C" {
 //#define LN_WRAP_OBJECT(type, obj, fromCreate) reinterpret_cast<type>(::FFI::wrapObject(obj, false))
 #define LN_RELEASE_OBJECT(h) LNObject_Release(reinterpret_cast<LNHandle>(h))
 
+#define TO_FFI_ERROR(result) LN_ERROR_UNKNOWN // TODO:
+
 // #define LN_DEFINE_HANDLE(object) typedef struct object##_T* object
 // NOTE: ↑こういうタイプセーフなハンドル定義は行わない。
 //   - 継承されたクラスを使いづらくなるため。
@@ -928,8 +930,9 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
     options.clientWidth = width;
     options.clientHeight = height;
     options.title = String::fromUtf8(title);
-    Ref<PlatformWindow> window = platformManager->createWindow(options);
-    *outWindow = ::Runtime::wrapObject(window, true);
+    Result<Ref<PlatformWindow>> window = platformManager->createWindow(options);
+    if (!window) return TO_FFI_ERROR(window);
+    *outWindow = ::Runtime::wrapObject(window.unwrap(), true);
     LN_FFI_TRY_END_RETURN;
 }
 

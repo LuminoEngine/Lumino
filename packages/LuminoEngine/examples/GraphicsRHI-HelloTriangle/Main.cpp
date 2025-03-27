@@ -58,7 +58,7 @@ void init() {
     windowOptions.title = U"Test";
     windowOptions.clientHeight = 160;
     windowOptions.clientWidth = 120;
-    auto mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions);
+    auto mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions).unwrap();
 
     if (0) {
         //detail::WebGPUDevice::Settings settings;

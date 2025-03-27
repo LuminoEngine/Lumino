@@ -83,7 +83,7 @@ void PlatformManager::setMainWindow(PlatformWindow* window) {
     m_mainWindow = window;
 }
 
-Ref<PlatformWindow> PlatformManager::createWindow(const WindowCreationSettings& settings) {
+Result<Ref<PlatformWindow>> PlatformManager::createWindow(const WindowCreationSettings& settings) {
     Ref<PlatformWindow> window;
     if (!m_mainWindow) {
         window = m_windowManager->createWindow(settings, nullptr);
@@ -93,7 +93,9 @@ Ref<PlatformWindow> PlatformManager::createWindow(const WindowCreationSettings& 
         window = m_windowManager->createWindow(settings, m_mainWindow);
     }
 
-    window->m_surfaceContext = SurfaceContext::createFromWindow(m_renderingManager, window);
+    auto result = SurfaceContext::createFromWindow(m_renderingManager, window);
+    if (!result) return result;
+    window->m_surfaceContext = result.unwrap();
 
     return window;
 }

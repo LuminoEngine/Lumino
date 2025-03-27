@@ -27,7 +27,7 @@ void TestEnv::initialize() {
     windowOptions.title = U"Test";
     windowOptions.clientWidth = 320;
     windowOptions.clientHeight = 240;
-    mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions);
+    mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions).unwrap();
 
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
     LNViewPoint_Create(&viewPoint);

@@ -42,7 +42,7 @@ public:
 
     virtual ~GraphicsManager() = default;
 
-    Ref<GraphicsContext> createGraphicsContext(PlatformWindow* window);
+    Result<Ref<GraphicsContext>> createGraphicsContext(PlatformWindow* window);
 
     //void enterRendering();
     //void leaveRendering();

@@ -313,7 +313,7 @@ void GraphicsManager::dispose() {
 //}
 
 
-Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* window) {
+Result<Ref<GraphicsContext>> GraphicsManager::createGraphicsContext(PlatformWindow* window) {
     Ref<GraphicsContext> result;
 
     // Create device context
@@ -343,6 +343,7 @@ Ref<GraphicsContext> GraphicsManager::createGraphicsContext(PlatformWindow* wind
         }
         else if (m_settings.graphicsAPI == LN_GRAPHICS_BACKEND_WEBGPU) {
 #ifdef LUMINO_USE_WEBGPU
+            return LN_MAKE_ERROR("not implemented %d", 1);
             //detail::WebGPUDevice::Settings settings;
             //settings.debugMode = true;
             //auto device = makeRef<detail::WebGPUDevice>();
@@ -466,16 +467,25 @@ bool GraphicsManager::checkVulkanSupported() {
 }
 
 void GraphicsManager::selectDefaultSystem(LNGraphicsBackend* api, WindowSystem* ws) {
+    LNGraphicsBackend defaultBackend;
+    WindowSystem defaultSystem;
     if (Environment::isRuntimePlatform(RuntimePlatform::Windows)) {
-        *api = LN_GRAPHICS_BACKEND_DIRECTX12;
-        *ws = WindowSystem::Native;
+        defaultBackend = LN_GRAPHICS_BACKEND_DIRECTX12;
+        defaultSystem = WindowSystem::Native;
     }
     else if (Environment::isRuntimePlatform(RuntimePlatform::Web)) {
-        *api = LN_GRAPHICS_BACKEND_OPENGL;
-        *ws = WindowSystem::GLFWWithOpenGL;
+        defaultBackend = LN_GRAPHICS_BACKEND_OPENGL;
+        defaultSystem = WindowSystem::GLFWWithOpenGL;
     }
     else {
         LN_NOTIMPLEMENTED();
+    }
+
+    if (*api == LN_GRAPHICS_BACKEND_DEFAULT) {
+        *api = defaultBackend;
+    }
+    if (*ws == WindowSystem::Native) {
+        *ws = defaultSystem;
     }
 }
 

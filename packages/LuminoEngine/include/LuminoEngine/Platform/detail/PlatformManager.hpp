@@ -25,7 +25,7 @@ public:
     const Ref<PlatformWindow>& mainWindow() const { return m_mainWindow; }
     // bool glfwWithOpenGLAPI() const { return m_glfwWithOpenGLAPI; }
 
-    Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings);
+    Result<Ref<PlatformWindow>> createWindow(const WindowCreationSettings& settings);
     OpenGLContext* openGLContext() const;
     void processSystemEventQueue();
     void requestQuit() { m_quitRequested = true; }

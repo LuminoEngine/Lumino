@@ -47,9 +47,9 @@ void TestEnv::setup() {
     windowOptions.title = U"Test";
     windowOptions.clientWidth = 160;
     windowOptions.clientHeight = 120;
-    mainWindow = EngineInstance::instance()->platformManager()->createWindow(windowOptions);
+    mainWindow = EngineInstance::instance()->platformManager()->createWindow(windowOptions).unwrap();
 
-    swapChain = instance->graphicsManager()->createGraphicsContext(mainWindow);
+    swapChain = instance->graphicsManager()->createGraphicsContext(mainWindow).unwrap();
 }
 
 void TestEnv::initializeRendering() {

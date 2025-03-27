@@ -25,7 +25,7 @@ class SurfaceContext : public Object {
     //   Window インスタンスを作っていないときは Lumino 側から Present はできない、という事にできるので。
     
 public:
-    static Ref<SurfaceContext> createFromWindow(detail::RenderingManager* renderingManager, PlatformWindow* window);
+    static Result<Ref<SurfaceContext>> createFromWindow(detail::RenderingManager* renderingManager, PlatformWindow* window);
     static Ref<SurfaceContext> createFromExternal(
         detail::RenderingManager* renderingManager,
         GraphicsContext* externalContext);

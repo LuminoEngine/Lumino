@@ -43,7 +43,7 @@ void run() {
     windowOptions.title = U"Test";
     windowOptions.clientHeight = 160;
     windowOptions.clientWidth = 120;
-    auto mainWindow = instance->platformManager()->createWindow(windowOptions);
+    auto mainWindow = instance->platformManager()->createWindow(windowOptions).unwrap();
 
     //auto shader = Shader::create(ASSETFILE("simple.hlsl"));
     auto shader = Shader::load(U"simple");
@@ -66,7 +66,7 @@ void run() {
     };
     auto vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto swapChain = instance->graphicsManager()->createGraphicsContext(mainWindow);
+    auto swapChain = instance->graphicsManager()->createGraphicsContext(mainWindow).unwrap();
 
     //auto spriteRenderer = makeURef<detail::SpriteRenderer>();
     //spriteRenderer->init();
