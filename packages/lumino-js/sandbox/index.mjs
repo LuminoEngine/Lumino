@@ -25,7 +25,6 @@ Lumino.Runtime.initialize(options).then(() => {
     console.log("UNIFORM_BUFFER_OFFSET_ALIGNMENT", gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT));
 
     graphcisContext = new Lumino.WebGLGraphicsContext(gl);
-    commandList = graphcisContext.createCommandList();
     viewPoint = new Lumino.GraphicsViewPoint();
 
     console.log("=== initialized ===");
@@ -60,6 +59,10 @@ function render() {
     if (isReady()) {
         console.log("=== Begin Frame ===");
         viewPoint.setupPerspective2D(800, 600);
+
+        graphcisContext.prepareFrame(800, 600);
+
+        const commandList = graphcisContext.commandList();
     
         commandList.reset();
         {

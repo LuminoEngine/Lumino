@@ -185,26 +185,6 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
 );
 
 /**
- * Get the current color buffer.
- *
- * @param[out] outRenderTarget: LNRenderTargetTexture wrapped around the backbuffer.
- * 
- * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an LNRenderPass.
- */
-extern LUMINO_API LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTarget);
-
-/**
- * Get the current depth buffer.
- *
- * @param[out] outDepthBuffer: LNDepthBuffer wrapped around the backbuffer.
- * 
- * This buffer is a special buffer that represents the default Framebuffer and can only be used to attach to an LNRenderPass.
- */
-extern LUMINO_API LNResult LNGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer);
-
-
-
-/**
  * Sends the command list recorded in GraphicsCommandList to the GPU.
  */
 extern LUMINO_API LNResult LNGraphicsContext_SubmitCommandList(LNHandle graphicsContext, LNHandle graphicsCommandList);

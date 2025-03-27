@@ -250,21 +250,6 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNGraphicsContext_GetCurrentColorBuffer(LNHandle graphicsContext, LNHandle* outRenderTargetTexture) {
-	LN_FFI_TRY_BEGIN;
-    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
-    GraphicsContext* context = surfaceContext->context();
-    *outRenderTargetTexture = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
-	LN_FFI_TRY_END_RETURN;
-}
-
-LNResult LNGraphicsContext_GetCurrentDepthBuffer(LNHandle graphicsContext, LNHandle* outDepthBuffer) {
-    LN_FFI_TRY_BEGIN;
-    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
-    GraphicsContext* context = surfaceContext->context();
-    *outDepthBuffer = LN_NULL_HANDLE;
-	LN_FFI_TRY_END_RETURN;
-}        
 
 //LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height) {
 //    LN_FFI_TRY_BEGIN;

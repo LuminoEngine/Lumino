@@ -87,11 +87,9 @@ export class Runtime {
             API.LNInstance_Terminate = module.cwrap("LNInstance_Terminate", "void", []);
             API.LNGLGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGLGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
 
-            API.LNGraphicsContext_GetCurrentColorBuffer = module.cwrap("LNGraphicsContext_GetCurrentColorBuffer", "number", ["number", "number"]);
-            API.LNGraphicsContext_GetCurrentDepthBuffer = module.cwrap("LNGraphicsContext_GetCurrentDepthBuffer", "number", ["number", "number"]);
+            API.LNGraphicsContext_PrepareFrame = module.cwrap("LNGraphicsContext_PrepareFrame", "number", ["number", "number", "number", "number", "number", "number"]);
             API.LNGraphicsContext_SubmitCommandList = module.cwrap("LNGraphicsContext_SubmitCommandList", "number", ["number", "number"]);
             
-            API.LNCommandList_Get = module.cwrap("LNCommandList_Create", "number", ["number", "number"]);
             API.LNCommandList_Reset = module.cwrap("LNCommandList_Reset", "number", ["number"]);
             API.LNCommandList_BeginRenderPass = module.cwrap("LNCommandList_BeginRenderPass", "number", ["number", "number", "number", "number"]);
             
@@ -186,11 +184,9 @@ export class API {
     public static LNInstance_Terminate: () => void;
 
     public static LNGLGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
-    public static LNGraphicsContext_GetCurrentColorBuffer: (graphicsContext: Handle, outRenderTarget: number) => Result;
-    public static LNGraphicsContext_GetCurrentDepthBuffer: (graphicsContext: Handle, outDepthBuffer: number) => Result;
+    public static LNGraphicsContext_PrepareFrame: (graphicsContext: Handle,width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
     public static LNGraphicsContext_SubmitCommandList: (graphicsContext: Handle, graphicsCommandList: number) => Result;
 
-    public static LNCommandList_Get: (graphicsContext: Handle, outGraphicsCommandList: number) => Result;
     public static LNCommandList_Reset: (graphicsCommandList: Handle) => Result;
     public static LNCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
 

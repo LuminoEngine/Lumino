@@ -58,7 +58,7 @@ if(LN_EMSCRIPTEN)
     #   ただし、ccall には string や array の変換ユーティリティがついている。特に理由が無ければ、 ccall または cwrap を利用するのが無難。
     # - _malloc/_free: C++側に ArrayBuffer など大きなデータを渡すときは、C++ がアクセスできるメモリ領域に一度コピーする必要がある。
     string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','GL']\" ")
-    string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" ")
+    string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free', 'getValue']\" ")
 
     # for Debug
     # https://emscripten.org/docs/tools_reference/emcc.html#emcc-og

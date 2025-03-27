@@ -23,25 +23,10 @@ export * from "./Runtime";
 
 
 export class WebGLGraphicsContext extends GraphicsContext {
-    private _currentColorBuffer: RenderTexture;
-    private _currentDepthBuffer: DepthBuffer;
 
-    public override get currentColorBuffer(): RenderTexture {
-        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsContext_GetCurrentColorBuffer(this._handle, r));
-        this._currentColorBuffer._setHandle(handle, false);
-        return this._currentColorBuffer;
-    }
-
-    public override get currentDepthBuffer(): DepthBuffer {
-        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsContext_GetCurrentDepthBuffer(this._handle, r));
-        this._currentDepthBuffer._setHandle(handle, false);
-        return this._currentDepthBuffer
-    }
 
     public constructor(webglContext: WebGLRenderingContext) {
         super();
-        this._currentColorBuffer = new RenderTexture(this);
-        this._currentDepthBuffer = new DepthBuffer(this);
 
         
 
