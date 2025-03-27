@@ -370,7 +370,14 @@ extern LUMINO_API LNResult LNWindow_Present(LNHandle window);
 // LNObject
 //==============================================================================
 
+/**
+ * Releases the reference to the object.
+ */
 extern LUMINO_API LNResult LNObject_Release(LNHandle obj);
+
+/**
+ * Retains the reference to the object.
+ */
 extern LUMINO_API LNResult LNObject_Retain(LNHandle obj);
 extern LUMINO_API LNResult LNObject_GetReferenceCount(LNHandle obj, int32_t* outReturn);
 

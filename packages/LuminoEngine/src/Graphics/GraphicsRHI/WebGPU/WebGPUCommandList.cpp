@@ -64,6 +64,7 @@ void WebGPUCommandList::onBeginRenderPass(IRenderPass* renderPass) {
 
 void WebGPUCommandList::onEndRenderPass(IRenderPass* renderPass) {
     wgpuRenderPassEncoderEnd(m_renderPassEncoder);
+    wgpuRenderPassEncoderRelease(m_renderPassEncoder);
     m_renderPassEncoder = nullptr;
 }
 

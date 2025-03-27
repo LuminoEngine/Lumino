@@ -3,7 +3,7 @@
 #include <lumino.h>
 
 int main() {
-    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
 
     // 1. 最初に LNInstance_Initialize で Lumino を初期化します。
     //    なお全ての API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
@@ -13,9 +13,11 @@ int main() {
         return 1;
     }
 
+    // 2. ウィンドウを作成して表示します。
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create(640, 480, "Example", &window);
 
+    // 3. ウィンドウに関連づいた GraphicsContext を取得します。
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
@@ -44,7 +46,7 @@ int main() {
         LNGraphicsContext_PrepareFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
 
         // x. 2D シーンを描画するための視点情報を構築します。
-        //    このサンプルは画面をクリアするだけであるため、視点情報は 2D で十分です。
+        //    このサンプルは画面をクリアするだけであるため、この情報はダミーです。
         LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, width, height, -1000, 1000);
 
         LNCommandList_Reset(commandList);
@@ -74,8 +76,15 @@ int main() {
         //    GraphicsContext を再作成する必要はありません。
     };
 
+    // x. リソースを開放します。
+    //    ~Create で作成したハンドルは ~Release で解放する必要があります。
+    //    ~Get など、 ~Craete 以外で取得したハンドルは解放の必要はありません。
+    //    なお Lumino のオブジェクトは参照カウント方式で管理されています。
+    //    ~Create に対して必ず 1 回呼び出してください。
     LNObject_Release(viewPoint);
     LNObject_Release(window);
+
+    // x. LNInstance_Terminate で Lumino を終了します。
     LNInstance_Terminate();
     return 0;
 }
