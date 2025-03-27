@@ -161,18 +161,13 @@ endif()
 
 if(WIN32)
     add_definitions(-DNOMINMAX)
+    set(LN_USE_DIRECTX12 ON)
 endif()
 
 
 if(LUMINO_BUILD_ENGINE)
     set(LUMINO_BUILD_CORE ON)
 endif()
-
-message("!!!!!!!!!!EMSCRIPTEN: ${EMSCRIPTEN}")
-message("!!!!!!!!!!LN_OS_DESKTOP: ${LN_OS_DESKTOP}")
-message("!!!!!!!!!!LN_USE_VULKAN: ${LN_USE_VULKAN}")
-
-
 
 # -------------------------------------------------------------------------------
 # Externals

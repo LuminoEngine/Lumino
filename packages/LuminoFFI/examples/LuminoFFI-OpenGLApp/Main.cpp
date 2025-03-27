@@ -266,6 +266,8 @@ int main() {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        // TODO: x. デバイスロスト発生時は、GraphicsContext を再作成する必要があります。
     }
 
     LNObject_Release(material2);

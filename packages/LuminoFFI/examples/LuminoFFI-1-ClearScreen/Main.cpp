@@ -3,7 +3,7 @@
 #include <lumino.h>
 
 int main() {
-    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
 
     // 1. 最初に LNInstance_Initialize で Lumino を初期化します。
     //    なお全ての API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
@@ -70,6 +70,9 @@ int main() {
 
         LNGraphicsContext_SubmitCommandList(graphicsContext, commandList);
         LNWindow_Present(window);
+
+        // x. このサンプルのように LNWindow を使っている場合、発生したデバイスロストは自動的に復旧されます。 
+        //    GraphicsContext を再作成する必要はありません。
     };
 
     LNObject_Release(viewPoint);
