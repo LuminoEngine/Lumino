@@ -167,6 +167,7 @@ extern LUMINO_API LNResult LNInstance_ShouldQuit(LNBool* outQuit);
  * @param[int] height : Backbuffer height.
  * @param[out] outRenderTarget : RenderTarget color buffer.
  * @param[out] outDepthBuffer : RenderTarget depth buffer.
+ * @param[out] outCommandList : Graphics CommandList.
  * 
  * The back buffer will be resized if necessary.
  * but if you are using an external context, the back buffer will not be resized.
@@ -179,7 +180,8 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
     int32_t width,
     int32_t height,
     LNHandle* outColorBuffer,
-    LNHandle* outDepthBuffer
+    LNHandle* outDepthBuffer,
+    LNHandle* outCommandList
 );
 
 /**
@@ -225,10 +227,6 @@ typedef struct LNCommandListProfilerng {
     int32_t drawCallCount;
 } LNCommandListProfilerng;
 
-/**
-　* Creates a new GraphicsCommandList.
-　*/
-extern LUMINO_API LNResult LNCommandList_Get(LNHandle graphicsContext, LNHandle* outGraphicsCommandList);
 extern LUMINO_API LNResult LNCommandList_Reset(LNHandle renderingCommandList);
 
 

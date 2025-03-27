@@ -72,11 +72,6 @@ int main() {
         return 1;
     }
 
-    LNHandle renderingCommandList = LN_NULL_HANDLE;
-    if (LNCommandList_Get(graphicsContext, &renderingCommandList) != LN_OK) {
-        return 1;
-    }
-
     LNHandle viewPoint1 = LN_NULL_HANDLE;
     if (LNViewPoint_Create(&viewPoint1) != LN_OK) {
         return 1;
@@ -148,16 +143,12 @@ int main() {
 
         ln::ElapsedTimer t;
 
-        LNHandle backbuffer = LN_NULL_HANDLE;
-        if (LNGraphicsContext_GetCurrentColorBuffer(graphicsContext, &backbuffer) != LN_OK) {
-            return 1;
-        }
+        LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        if (LNGraphicsContext_GetCurrentDepthBuffer(graphicsContext, &depthBuffer) != LN_OK) {
-            return 1;
-        }
+        LNHandle commandList = LN_NULL_HANDLE;
+        LNGraphicsContext_PrepareFrame(graphicsContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
 
-        if (LNCommandList_Reset(renderingCommandList) != LN_OK) {
+        if (LNCommandList_Reset(commandList) != LN_OK) {
             return 1;
         }
 
@@ -172,7 +163,7 @@ int main() {
 
             LNHandle renderingPass = LN_NULL_HANDLE;
             LNRenderPassDescriptor descriptor;
-            descriptor.renderTargets[0].renderTarget = backbuffer;
+            descriptor.renderTargets[0].renderTarget = colorBuffer;
             descriptor.renderTargets[0].clearColor[0] = 0.0f;
             descriptor.renderTargets[0].clearColor[1] = 1.0f;
             descriptor.renderTargets[0].clearColor[2] = 0.0f;
@@ -183,7 +174,7 @@ int main() {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            if (LNCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
+            if (LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
                 return 1;
             }
 
@@ -191,7 +182,7 @@ int main() {
             LNMatrix_SetIdentity(&transform);
             for (int i = 0; i < 500; i++) {
                 transform.m41 = 10 + i;
-                LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+                LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
                 LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
                     200, 100,
                     0, 0,
@@ -203,7 +194,7 @@ int main() {
             }
         
             transform.m41 = 400;
-            LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material2, &transform);
+            LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material2, &transform);
             LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
                 300, 200,
                 0, 0,
@@ -226,19 +217,19 @@ int main() {
 
             LNHandle renderingPass = LN_NULL_HANDLE;
             LNRenderPassDescriptor descriptor;
-            descriptor.renderTargets[0].renderTarget = backbuffer;
+            descriptor.renderTargets[0].renderTarget = colorBuffer;
             descriptor.renderTargets[0].clearEnable = LN_FALSE;
             descriptor.depthBuffer.depthBuffer = depthBuffer;
             descriptor.depthBuffer.clearDepthEnable = LN_FALSE;
             descriptor.depthBuffer.clearStencilEnable = LN_FALSE;
-            if (LNCommandList_BeginRenderPass(renderingCommandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
+            if (LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
                 return 1;
             }
 
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
             transform.m41 = 0;
-            LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+            LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
             LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
                 100, 100,
                 0, 0,
@@ -258,7 +249,7 @@ int main() {
         //LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
         //LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
-        if (LNGraphicsContext_SubmitCommandList(graphicsContext, renderingCommandList) != LN_OK) {
+        if (LNGraphicsContext_SubmitCommandList(graphicsContext, commandList) != LN_OK) {
             return 1;
         }
         std::cout << t.elapsedMilliseconds() << "[ms] Total" << std::endl;

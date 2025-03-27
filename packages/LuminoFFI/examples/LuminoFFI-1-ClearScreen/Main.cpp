@@ -39,15 +39,14 @@ int main() {
         int height = 0;
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
+        LNHandle commandList = LN_NULL_HANDLE;
         LNWindow_GetFramebufferSize(window, &width, &height);
-        LNGraphicsContext_PrepareFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer);
+        LNGraphicsContext_PrepareFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
 
         // x. 2D シーンを描画するための視点情報を構築します。
         //    このサンプルは画面をクリアするだけであるため、視点情報は 2D で十分です。
         LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, width, height, -1000, 1000);
 
-        LNHandle commandList = LN_NULL_HANDLE;
-        LNCommandList_Get(graphicsContext, &commandList);
         LNCommandList_Reset(commandList);
 
         // x. レンダーターゲットをクリアするための RenderPass を開始します。

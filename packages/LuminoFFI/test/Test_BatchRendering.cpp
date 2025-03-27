@@ -28,26 +28,25 @@ TEST_F(Test_BatchRendering, Basic1) {
     ASSERT_EQ(LN_OK, LNMaterial_Create(&material1));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
-    LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNCommandList_Get(surfaceContext, &renderingCommandList));
-
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
 
     // Rendering loop.
     {
         // Begin frame.
-        LNHandle backbuffer = LN_NULL_HANDLE;
+        LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
-        ASSERT_EQ(LN_OK, LNCommandList_Reset(renderingCommandList));
+        LNHandle commandList = LN_NULL_HANDLE;
+        ASSERT_EQ(
+            LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+
+        ASSERT_EQ(LN_OK, LNCommandList_Reset(commandList));
 
         // Rendering pass.
         {
             LNHandle renderingPass = LN_NULL_HANDLE;
             LNRenderPassDescriptor descriptor;
-            descriptor.renderTargets[0].renderTarget = backbuffer;
+            descriptor.renderTargets[0].renderTarget = colorBuffer;
             descriptor.renderTargets[0].clearColor[0] = 0.0f;
             descriptor.renderTargets[0].clearColor[1] = 0.0f;
             descriptor.renderTargets[0].clearColor[2] = 1.0f;
@@ -58,13 +57,14 @@ TEST_F(Test_BatchRendering, Basic1) {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            ASSERT_EQ(LN_OK, LNCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
+            ASSERT_EQ(
+                LN_OK, LNCommandList_BeginRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
                 LNMatrix transform;
                 LNMatrix_SetIdentity(&transform);
-                LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+                LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
 
                 // 5回描いてみる。
                 for (int i = 0; i < 5; i++) {
@@ -87,12 +87,12 @@ TEST_F(Test_BatchRendering, Basic1) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, renderingCommandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
         TestEnv::present();
 
         // ドローコールは1回だけ。
         LNCommandListProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(renderingCommandList, &profilerng));
+        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(commandList, &profilerng));
         ASSERT_EQ(1, profilerng.drawCallCount);
     }
 
@@ -113,26 +113,25 @@ TEST_F(Test_BatchRendering, TooMany10000) {
     ASSERT_EQ(LN_OK, LNMaterial_Create(&material1));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
-    LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNCommandList_Get(surfaceContext, &renderingCommandList));
-
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
 
     // Rendering loop.
     {
         // Begin frame.
-        LNHandle backbuffer = LN_NULL_HANDLE;
+        LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
-        ASSERT_EQ(LN_OK, LNCommandList_Reset(renderingCommandList));
+        LNHandle commandList = LN_NULL_HANDLE;
+        ASSERT_EQ(
+            LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+
+        ASSERT_EQ(LN_OK, LNCommandList_Reset(commandList));
 
         // Rendering pass.
         {
             LNHandle renderingPass = LN_NULL_HANDLE;
             LNRenderPassDescriptor descriptor;
-            descriptor.renderTargets[0].renderTarget = backbuffer;
+            descriptor.renderTargets[0].renderTarget = colorBuffer;
             descriptor.renderTargets[0].clearColor[0] = 0.0f;
             descriptor.renderTargets[0].clearColor[1] = 0.0f;
             descriptor.renderTargets[0].clearColor[2] = 1.0f;
@@ -143,13 +142,14 @@ TEST_F(Test_BatchRendering, TooMany10000) {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            ASSERT_EQ(LN_OK, LNCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
+            ASSERT_EQ(
+                LN_OK, LNCommandList_BeginRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
                 LNMatrix transform;
                 LNMatrix_SetIdentity(&transform);
-                LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+                LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
 
                 // 5回描いてみる。
                 for (int i = 0; i < 10000; i++) {
@@ -172,12 +172,12 @@ TEST_F(Test_BatchRendering, TooMany10000) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, renderingCommandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
         TestEnv::present();
 
         // ドローコールは1回だけ。
         LNCommandListProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(renderingCommandList, &profilerng));
+        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(commandList, &profilerng));
         ASSERT_EQ(2, profilerng.drawCallCount);
         // NOTE: 現在インデックスの総数 50000 個くらいになっていて、10000個描画すると 60000 使うことになる。
         // なので 50000+10000 の2回に分けられる。

@@ -13,26 +13,25 @@ TEST_F(Test_SpriteRenderer, Basic1) {
     ASSERT_EQ(LN_OK, LNMaterial_Create(&material1));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material1, texture1));
 
-    LNHandle renderingCommandList = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNCommandList_Get(surfaceContext, &renderingCommandList));
-
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNBatchRenderer_Get(&spriteRenderer));
 
     // Rendering loop.
     {
         // Begin frame.
-        LNHandle backbuffer = LN_NULL_HANDLE;
+        LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentColorBuffer(surfaceContext, &backbuffer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_GetCurrentDepthBuffer(surfaceContext, &depthBuffer));
-        ASSERT_EQ(LN_OK, LNCommandList_Reset(renderingCommandList));
+        LNHandle commandList = LN_NULL_HANDLE;
+        ASSERT_EQ(
+            LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+
+        ASSERT_EQ(LN_OK, LNCommandList_Reset(commandList));
 
         // Rendering pass.
         {
             LNHandle renderingPass = LN_NULL_HANDLE;
             LNRenderPassDescriptor descriptor;
-            descriptor.renderTargets[0].renderTarget = backbuffer;
+            descriptor.renderTargets[0].renderTarget = colorBuffer;
             descriptor.renderTargets[0].clearColor[0] = 0.0f;
             descriptor.renderTargets[0].clearColor[1] = 0.0f;
             descriptor.renderTargets[0].clearColor[2] = 1.0f;
@@ -43,7 +42,8 @@ TEST_F(Test_SpriteRenderer, Basic1) {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            ASSERT_EQ(LN_OK, LNCommandList_BeginRenderPass(renderingCommandList, descriptor, TestEnv::viewPoint, &renderingPass));
+            ASSERT_EQ(
+                LN_OK, LNCommandList_BeginRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -51,7 +51,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
                 LNMatrix_SetIdentity(&transform);
                 transform.m41 = 10;
                 transform.m42 = 20;
-                LNBatchRenderer_BeginBatch(spriteRenderer, renderingCommandList, material1, &transform);
+                LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
                 LNBatchRenderer_DrawSprite(
                     spriteRenderer, NULL,
                     32, 32,
@@ -66,7 +66,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, renderingCommandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
         TestEnv::present();
     }
 
