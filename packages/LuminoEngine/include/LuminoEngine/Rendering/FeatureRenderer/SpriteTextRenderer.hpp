@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/Font/Common.hpp>
-#include <LuminoEngine/GPU/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GPU/SamplerState.hpp>
 #include "../Common.hpp"
 
 namespace ln {

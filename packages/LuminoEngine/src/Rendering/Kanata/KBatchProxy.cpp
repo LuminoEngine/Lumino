@@ -1,5 +1,5 @@
-﻿#include <LuminoEngine/GPU/VertexBuffer.hpp>
-#include <LuminoEngine/GPU/IndexBuffer.hpp>
+﻿#include <LuminoEngine/Graphics/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/IndexBuffer.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>

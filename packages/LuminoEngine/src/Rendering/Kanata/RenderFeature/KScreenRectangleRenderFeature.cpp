@@ -1,5 +1,5 @@
-﻿#include <LuminoEngine/GPU/VertexLayout.hpp>
-#include <LuminoEngine/GPU/VertexBuffer.hpp>
+﻿#include <LuminoEngine/Graphics/GPU/VertexLayout.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KScreenRectangleRenderFeature.hpp>

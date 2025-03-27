@@ -1,11 +1,10 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioNode.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "AudioManager.hpp"
 #include "ARIs/ARINode.hpp"
-#include <LuminoEngine/GPU/detail/RenderingCommandList.hpp>
+#include <LuminoEngine/Graphics/GPU/detail/RenderingCommandList.hpp>
 
 namespace ln {
 

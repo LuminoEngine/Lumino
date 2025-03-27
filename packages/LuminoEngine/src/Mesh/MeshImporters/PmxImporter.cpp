@@ -4,8 +4,8 @@
 #include <float.h>
 #include <LuminoCore/IO/BinaryReader.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
-#include <LuminoEngine/GPU/IndexBuffer.hpp>
-#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Graphics/GPU/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>

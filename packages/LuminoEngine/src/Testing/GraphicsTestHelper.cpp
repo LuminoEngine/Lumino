@@ -1,6 +1,6 @@
 ﻿#include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
-#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Testing/GraphicsTestHelper.hpp>
 
 namespace ln {

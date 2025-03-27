@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include <LuminoEngine/GPU/ShaderInterfaceFramework.hpp>
+#include <LuminoEngine/Graphics/GPU/ShaderInterfaceFramework.hpp>
 #include "Common.hpp"
 
 namespace ln {

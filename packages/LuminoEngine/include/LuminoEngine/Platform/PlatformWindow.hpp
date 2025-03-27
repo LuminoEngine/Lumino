@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoCore/Geometries/GeometryStructs.hpp>
 #include "PlatformEvent.hpp"
-#include "../GPU/SwapChain.hpp"
+#include "../Graphics/GPU/SwapChain.hpp"
 #include "../Rendering/Common.hpp"
 
 namespace ln {

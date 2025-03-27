@@ -1,8 +1,8 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
-#include <LuminoEngine/GPU/Shader.hpp>
-#include <LuminoEngine/GPU/ShaderInterfaceFramework.hpp>
-#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/Shader.hpp>
+#include <LuminoEngine/Graphics/GPU/ShaderInterfaceFramework.hpp>
+#include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/detail/RenderStage.hpp>

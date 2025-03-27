@@ -1,8 +1,8 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
-#include <LuminoEngine/GPU/VertexLayout.hpp>
-#include <LuminoEngine/GPU/Shader.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexLayout.hpp>
+#include <LuminoEngine/Graphics/GPU/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include "DrawElementListBuilder.hpp"

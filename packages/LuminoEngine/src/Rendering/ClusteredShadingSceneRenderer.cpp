@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/GPU/SamplerState.hpp>
-#include <LuminoEngine/GPU/RenderPass.hpp>
-#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
+#include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"

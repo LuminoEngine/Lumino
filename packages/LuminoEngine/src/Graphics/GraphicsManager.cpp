@@ -1,27 +1,27 @@
-﻿#include <LuminoEngine/GPU/detail/GraphicsObjectRegistry.hpp>
-#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/GPU/GraphicsResource.hpp>
-#include <LuminoEngine/GPU/CommandQueue.hpp>
-#include <LuminoEngine/GPU/Texture.hpp>
-#include <LuminoEngine/GPU/Shader.hpp>
-#include <LuminoEngine/GPU/SamplerState.hpp>
+﻿#include <LuminoEngine/Graphics/GPU/detail/GraphicsObjectRegistry.hpp>
+#include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/GraphicsResource.hpp>
+#include <LuminoEngine/Graphics/GPU/CommandQueue.hpp>
+#include <LuminoEngine/Graphics/GPU/Texture.hpp>
+#include <LuminoEngine/Graphics/GPU/Shader.hpp>
+#include <LuminoEngine/Graphics/GPU/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include "GPU/RenderTargetTextureCache.hpp"
 #ifdef LN_USE_VULKAN
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
-#include <LuminoEngine/GPU/VulkanGraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GPU/VulkanGraphicsContext.hpp>
 #endif
 #ifdef _WIN32
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
-#include <LuminoEngine/GPU/DirectX12GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GPU/DirectX12GraphicsContext.hpp>
 #endif
 #ifdef LUMINO_USE_WEBGPU
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #endif
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
-#include <LuminoEngine/GPU/OpenGLGraphicsContext.hpp>
-#include <LuminoEngine/GPU/detail/RenderingCommandList.hpp>
+#include <LuminoEngine/Graphics/GPU/OpenGLGraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GPU/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>

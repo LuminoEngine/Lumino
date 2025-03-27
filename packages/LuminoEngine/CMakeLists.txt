@@ -103,7 +103,7 @@ file(GLOB LN_SOURCES_Audio_Backend "src/Audio/Backend/*.cpp" "src/Audio/Backend/
 file(GLOB LN_SOURCES_Animation "include/LuminoEngine/Animation/*.hpp" "src/Animation/*.cpp" "src/Animation/*.hpp")
 file(GLOB LN_SOURCES_Graphics_Bitmap "include/LuminoEngine/Graphics/Bitmap/*.hpp" "include/LuminoEngine/Graphics/Bitmap/detail/*.hpp" "src/Graphics/Bitmap/*.cpp" "src/Graphics/Bitmap/*.hpp")
 file(GLOB LN_SOURCES_Graphics_Font "include/LuminoEngine/Graphics/Font/*.hpp" "include/LuminoEngine/Graphics/Font/detail/*.hpp" "src/Graphics/Font/*.cpp" "src/Graphics/Font/*.hpp")
-file(GLOB LN_SOURCES_GPU "include/LuminoEngine/GPU/*.hpp" "include/LuminoEngine/GPU/detail/*.hpp" "src/GPU/*.cpp" "src/GPU/*.hpp" "src/GPU/detail/*.cpp")
+file(GLOB LN_SOURCES_Graphics_GPU "include/LuminoEngine/Graphics/GPU/*.hpp" "include/LuminoEngine/Graphics/GPU/detail/*.hpp" "src/Graphics/GPU/*.cpp" "src/Graphics/GPU/*.hpp" "src/Graphics/GPU/detail/*.cpp")
 file(GLOB LN_SOURCES_Mesh "include/LuminoEngine/Mesh/*.hpp" "src/Mesh/*.cpp" "src/Mesh/*.hpp")
 file(GLOB LN_SOURCES_Mesh_MeshImporters "include/LuminoEngine/Mesh/MeshGeneraters/*.hpp" "src/Mesh/MeshImporters/*.cpp" "src/Mesh/MeshImporters/*.hpp")
 file(GLOB LN_SOURCES_Mesh_MeshGeneraters "include/LuminoEngine/Mesh/detail/*.hpp" "src/Mesh/MeshGeneraters/*.cpp" "src/Mesh/MeshGeneraters/*.hpp")
@@ -158,10 +158,10 @@ source_group("Graphics/GraphicsRHI/WebGPU" FILES ${LOCAL_SOURCES_WebGPU})
 source_group("Graphics/GraphicsRHI/ShaderCompiler" FILES ${LOCAL_SOURCES_ShaderCompiler})
 source_group("Graphics/GraphicsRHI/ShaderCompiler/Lexer" FILES ${LOCAL_SOURCES_ShaderCompiler_Lexer})
 source_group("Graphics/GraphicsRHI/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCompiler_Windows})
+source_group("Graphics/GPU" FILES ${LN_SOURCES_Graphics_GPU})
 source_group("Graphics/TextRendering" FILES ${LN_SOURCES_Graphics_TextRendering})
 
 source_group("Animation" FILES ${LN_SOURCES_Animation})
-source_group("GPU" FILES ${LN_SOURCES_GPU})
 source_group("Mesh" FILES ${LN_SOURCES_Mesh})
 source_group("Mesh/MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
 source_group("Mesh/MeshGeneraters" FILES ${LN_SOURCES_Mesh_MeshGeneraters})
@@ -197,7 +197,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Graphics_Bitmap}
     ${LN_SOURCES_Animation}
 	${LN_SOURCES_Graphics_Font}
-    ${LN_SOURCES_GPU}
+    ${LN_SOURCES_Graphics_GPU}
     ${LN_SOURCES_GPU_RHI}
     ${LN_SOURCES_GPU_RHI_OpenGL}
     ${LN_SOURCES_GPU_RHI_Vulkan}

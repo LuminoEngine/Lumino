@@ -1,5 +1,5 @@
-﻿#include <LuminoEngine/GPU/SamplerState.hpp>
-#include <LuminoEngine/GPU/RenderPass.hpp>
+﻿#include <LuminoEngine/Graphics/GPU/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
 //#include "../Graphics/RenderTargetTextureCache.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>

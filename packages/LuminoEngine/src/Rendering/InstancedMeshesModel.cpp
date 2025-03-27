@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/GPU/VertexLayout.hpp>
-#include <LuminoEngine/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexLayout.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/Mesh/MeshPrimitive.hpp>
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 

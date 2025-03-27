@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "RLIBatchList.hpp"

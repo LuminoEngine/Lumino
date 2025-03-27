@@ -2,8 +2,8 @@
 #include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
-#include "../GPU/Common.hpp"
-#include "../GPU/detail/RenderingCommandList.hpp"
+#include "../Graphics/GPU/Common.hpp"
+#include "../Graphics/GPU/detail/RenderingCommandList.hpp"
 
 namespace ln {
 class CommandQueue;

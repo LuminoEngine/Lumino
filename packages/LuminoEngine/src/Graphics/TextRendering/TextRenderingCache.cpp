@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/GPU/Texture.hpp>
+﻿#include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include "TextRenderingCache.hpp"
 #include "FontGlyphCache.hpp"
 

@@ -1,4 +1,4 @@
-﻿#include <LuminoEngine/GPU/Shader.hpp>
+﻿#include <LuminoEngine/Graphics/GPU/Shader.hpp>
 #include <LuminoEngine/Rendering/Kanata/KUnlitRenderPass.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 

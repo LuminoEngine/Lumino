@@ -1,12 +1,12 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
-#include <LuminoEngine/GPU/VertexLayout.hpp>
-#include <LuminoEngine/GPU/VertexBuffer.hpp>
-#include <LuminoEngine/GPU/IndexBuffer.hpp>
-#include <LuminoEngine/GPU/RenderPass.hpp>
-#include <LuminoEngine/GPU/GraphicsCommandBuffer.hpp>
-#include <LuminoEngine/GPU/ShaderDescriptor.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexLayout.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
+#include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/ShaderDescriptor.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "PathRenderFeature.hpp"
 

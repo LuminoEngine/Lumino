@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <float.h>
 #include <LuminoEngine/Graphics/Bitmap/Bitmap.hpp>
-#include <LuminoEngine/GPU/Texture.hpp>
+#include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include "LightClusters.hpp"
 
 namespace ln {

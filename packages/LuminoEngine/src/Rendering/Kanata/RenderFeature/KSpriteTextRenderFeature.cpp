@@ -1,7 +1,7 @@
 ﻿#include <LuminoEngine/Graphics/Font/Font.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
-#include <LuminoEngine/GPU/Texture.hpp>
-#include <LuminoEngine/GPU/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GPU/Texture.hpp>
+#include <LuminoEngine/Graphics/GPU/SamplerState.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
