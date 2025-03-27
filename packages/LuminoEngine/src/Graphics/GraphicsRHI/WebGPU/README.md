@@ -2,7 +2,7 @@ WebGPU
 ==========
 
 Tutorial
-https://eliemichel.github.io/LearnWebGPU/index.html
+https://eliemichel.github.io/LearnWebGPU/
 
 Examples
 https://github.com/eliemichel/LearnWebGPU-Code

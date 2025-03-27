@@ -8,6 +8,10 @@ namespace ln {
 template<class T>
 String toString(const T& value);
 
+enum class ErrorCode {
+    Unknown = 0,
+};
+
 //==============================================================================
 // OkType
 
@@ -108,8 +112,16 @@ public:
     Serializer m_serializer;
 };
 
+namespace detail {
+
+inline std::string formatString() { return {}; }
+std::string formatString(const char* format, ...);
+ErrType<ErrorCode> makeInternalError(const std::string& message, const char* file, const char* function, int line);
+
+} // namespace detail
+
 #define LN_MAKE_SUCCESS() {}
-#define LN_MAKE_ERROR(...) ::ln::err(ln::ErrorCode::Unknown)
+#define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
 
 //==============================================================================
 // BasicResult
@@ -592,9 +604,6 @@ private:
 //==============================================================================
 // In library common resut
 
-enum class ErrorCode {
-	Unknown = 0,
-};
 
 /** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
 using ResultV = BasicResult<void, ErrorCode>;
@@ -683,3 +692,4 @@ inline String toString(const BasicResult<TResultValue, TResultError>& e) {
     auto result = x; \
     if (!result) return result; \
 }
+

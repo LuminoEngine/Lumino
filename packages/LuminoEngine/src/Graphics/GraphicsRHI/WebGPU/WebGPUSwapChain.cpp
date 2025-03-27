@@ -71,7 +71,6 @@ uint32_t WebGPUSwapChain::getBackbufferCount() {
 
 void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
     *outImageIndex = m_imageIndex;
-
     
 	// Get the surface texture
     WGPUSurfaceTexture surfaceTexture;

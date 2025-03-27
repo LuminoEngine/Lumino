@@ -162,7 +162,7 @@ MaybeResult EngineInstance::initializeGraphicsManager() {
     Ref<GraphicsManager> manager(LN_NEW GraphicsManager(), false);
     auto result = manager->init(options);
     if (!result) {
-        return LN_MAKE_ERROR();
+        return result;
     }
     m_graphicsManager = manager;
 

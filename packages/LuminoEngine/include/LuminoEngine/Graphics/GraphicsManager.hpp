@@ -37,7 +37,7 @@ public:
     static GraphicsManager* instance();
 
     GraphicsManager();
-    bool init(const Settings& settings);
+    MaybeResult init(const Settings& settings);
     void dispose();
 
     virtual ~GraphicsManager() = default;
