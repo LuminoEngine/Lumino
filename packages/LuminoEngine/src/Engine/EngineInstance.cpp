@@ -159,6 +159,9 @@ MaybeResult EngineInstance::initializeGraphicsManager() {
 
     GraphicsManager::Settings options;
     options.graphicsAPI = graphicsAPI;
+#ifdef LN_DEBUG
+    options.debugMode = true;
+#endif
     Ref<GraphicsManager> manager(LN_NEW GraphicsManager(), false);
     auto result = manager->init(options);
     if (!result) {

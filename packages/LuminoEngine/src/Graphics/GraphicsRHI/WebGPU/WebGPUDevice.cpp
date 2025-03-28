@@ -141,7 +141,12 @@ INativeGraphicsInterface* WebGPUDevice::getNativeInterface() const {
 }
 
 void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
-    LN_NOTIMPLEMENTED();
+    outCaps->graphicsAPI = LN_GRAPHICS_BACKEND_WEBGPU;
+    outCaps->requestedShaderTriple.target = "wgsl";
+    outCaps->requestedShaderTriple.version = 1;
+    outCaps->requestedShaderTriple.option = "";
+    outCaps->imageLayoytVFlip = false;
+    outCaps->uniformBufferOffsetAlignment = 256;
 }
 
 Ref<ISwapChain> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {

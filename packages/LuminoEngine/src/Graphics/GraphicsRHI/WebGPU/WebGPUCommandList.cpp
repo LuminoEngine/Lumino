@@ -50,6 +50,8 @@ void WebGPUCommandList::onBeginCommandRecoding() {
     encoderDesc.label = WGPU_STRING_VIEW_INIT;
     m_commandEncoder = wgpuDeviceCreateCommandEncoder(m_rhiDevice->wgpuDevice(), &encoderDesc);
     //m_isRecording = true;
+    
+    //wgpuCommandEncoderRelease(encoder);
 }
 
 void WebGPUCommandList::onEndCommandRecoding() {

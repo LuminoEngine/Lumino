@@ -31,6 +31,9 @@ Result<> WebGPURenderPass::init(
         attachment->loadOp = WGPULoadOp_Clear;
         attachment->storeOp = WGPUStoreOp_Store;
         attachment->clearValue = WGPUColor{ clearColor.r, clearColor.g, clearColor.b, clearColor.a };
+#ifndef WEBGPU_BACKEND_WGPU
+        attachment->depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+#endif // NOT WEBGPU_BACKEND_WGPU
     }
 
     m_depthBuffer = buffers.depthBuffer;

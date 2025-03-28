@@ -25,6 +25,41 @@ Result<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, con
     m_width = backbufferSize.width;
     m_height = backbufferSize.height;
 
+    WGPUDevice wgpuDevice = m_device->wgpuDevice();
+    WGPUAdapter wgpuAdapter = m_device->wgpuAdapter();
+
+    // Querying Surface Capabilities
+    // https://webgpu-native.github.io/webgpu-headers/Surfaces.html#Surface-Capabilities
+    WGPUTextureFormat preferredFormat = WGPUTextureFormat_Undefined;
+    bool supportsMailbox = false;
+    {
+        WGPUSurfaceCapabilities capabilities = WGPU_SURFACE_CAPABILITIES_INIT;
+        WGPUStatus result = wgpuSurfaceGetCapabilities(m_wgpuSurface, wgpuAdapter, &capabilities);
+        if (result != WGPUStatus_Success) {
+            return LN_MAKE_ERROR("wgpuSurfaceGetCapabilities failed. %d", result);
+        }
+        preferredFormat = capabilities.formats[0];
+        bool supportsMailbox = false;
+        for (size_t i = 0; i < capabilities.presentModeCount; i++) {
+            if (capabilities.presentModes[i] == WGPUPresentMode_Mailbox) supportsMailbox = true;
+        }
+        wgpuSurfaceCapabilitiesFreeMembers(capabilities);
+    }
+
+    // Configure the surface
+    WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
+    config.nextInChain = nullptr;
+    config.width = m_width;
+    config.height = m_height;
+    config.usage = WGPUTextureUsage_RenderAttachment;
+    config.format = preferredFormat;
+    config.viewFormatCount = 0;
+    config.viewFormats = nullptr;
+    config.device = wgpuDevice;
+    config.presentMode = supportsMailbox ? WGPUPresentMode_Mailbox : WGPUPresentMode_Fifo,
+    config.alphaMode = WGPUCompositeAlphaMode_Auto;
+    wgpuSurfaceConfigure(m_wgpuSurface, &config);
+
     //WGPUSwapChainDescriptor swapChainDesc = {};
     //swapChainDesc.width = backbufferSize.width;
     //swapChainDesc.height = backbufferSize.height;
@@ -115,6 +150,13 @@ Result<> WebGPUSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
 
 void WebGPUSwapChain::present() {
     wgpuSurfacePresent(m_wgpuSurface);
+
+#if defined(WEBGPU_BACKEND_DAWN)
+    wgpuDeviceTick(m_device->wgpuDevice());
+#elif defined(WEBGPU_BACKEND_WGPU)
+    wgpuDevicePoll(m_device->wgpuDevice(), false, nullptr);
+#endif
+
     m_imageIndex = (m_imageIndex + 1) % BackbufferCount;
 }
 
