@@ -10,7 +10,7 @@
 #include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Graphics/GPU/DepthBuffer.hpp>
-#include <LuminoEngine/Graphics/GPU/OpenGLGraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GPU/RHIIntegrations.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>

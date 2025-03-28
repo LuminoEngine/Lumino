@@ -10,17 +10,12 @@
 #include "GPU/RenderTargetTextureCache.hpp"
 #ifdef LN_USE_VULKAN
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
-#include <LuminoEngine/Graphics/GPU/VulkanGraphicsContext.hpp>
 #endif
-#ifdef _WIN32
-#include "../../LuminoEngine/src/Graphics/GraphicsRHI/DirectX12/DX12DeviceContext.hpp"
-#include <LuminoEngine/Graphics/GPU/DirectX12GraphicsContext.hpp>
-#endif
+#include <LuminoEngine/Graphics/GPU/RHIIntegrations.hpp>
 #ifdef LUMINO_USE_WEBGPU
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #endif
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
-#include <LuminoEngine/Graphics/GPU/OpenGLGraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GPU/detail/RenderingCommandList.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
