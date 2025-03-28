@@ -48,12 +48,14 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 ### Web
 
 ```
-dotnet tool install dotnet-script
-dotnet script scripts/PrepareWebGPU
+dotnet tool install dotnet-script -g
+dotnet script scripts/PrepareWebGPU.csx
 dotnet run -- BuildEngine wasm32-emscripten
 ```
 
 CMake の成果物 (.wasm 等) は `📁build/installed/wasm32-emscripten` に出力されます。
+
+ローカルで Dawn を用いた動作確認をするには `LUMINO_USE_WEBGPU` を ON にして cmake を実行してください。
 
 
 Quick-start

@@ -41,10 +41,10 @@ bool WebGPUDevice::init(const Settings& settings) {
         adapterOptions.forceFallbackAdapter = false;
         WGPURequestAdapterCallbackInfo callbackInfo = {};
         callbackInfo.nextInChain = nullptr;
-        callbackInfo.mode = WGPUCallbackMode_WaitAnyOnly;
+        callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
         callbackInfo.callback = onAdapterRequestEnded;
         callbackInfo.userdata1 = this;
-        wgpuInstanceRequestAdapter(
+        WGPUFuture future = wgpuInstanceRequestAdapter(
             m_instance,
             &adapterOptions, 
             callbackInfo);
@@ -271,7 +271,7 @@ Result<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescri
 
     WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
     callbackInfo.nextInChain = nullptr;
-    callbackInfo.mode = WGPUCallbackMode_WaitAnyOnly;
+    callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
     callbackInfo.callback = onDeviceRequestEnded;
     callbackInfo.userdata1 = this;
     callbackInfo.userdata2 = nullptr;

@@ -6,7 +6,7 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
-#ifdef LUMINO_USE_WEBGPU
+#ifdef LN_USE_WEBGPU
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #endif
 #include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
@@ -32,7 +32,7 @@ void init() {
     windowOptions.clientWidth = 120;
     auto mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions).unwrap();
 
-#ifdef LUMINO_USE_WEBGPU
+#ifdef LN_USE_WEBGPU
     {
         detail::WebGPUDevice::Settings settings;
         settings.debugMode = true;

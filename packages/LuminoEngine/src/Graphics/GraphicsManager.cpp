@@ -12,7 +12,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
 #endif
 #include <LuminoEngine/Graphics/GPU/RHIIntegrations.hpp>
-#ifdef LUMINO_USE_WEBGPU
+#ifdef LN_USE_WEBGPU
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #endif
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
@@ -337,13 +337,11 @@ Result<Ref<GraphicsContext>> GraphicsManager::createGraphicsContext(PlatformWind
 #endif
         }
         else if (m_settings.graphicsAPI == LN_GRAPHICS_BACKEND_WEBGPU) {
-#ifdef LUMINO_USE_WEBGPU
-            return LN_MAKE_ERROR("not implemented %d", 1);
-            //detail::WebGPUDevice::Settings settings;
-            //settings.debugMode = true;
-            //auto device = makeRef<detail::WebGPUDevice>();
-            //device->init(settings);
-            //result = device;
+#ifdef LN_USE_WEBGPU
+            WebGPUGraphicsContext::Settings s;
+            s.mainWindow = window;
+            s.debugMode = m_settings.debugMode;
+            result = WebGPUGraphicsContext::create(s);
 #endif
         }
 

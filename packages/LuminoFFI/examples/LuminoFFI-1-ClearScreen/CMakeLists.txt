@@ -16,6 +16,7 @@ add_dependencies(${PROJECT_NAME} LuminoFFI)
 
 if(LN_DESKTOP_WEBGPU)
     target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
+    target_copy_webgpu_binaries(${PROJECT_NAME})
 endif()
 
 # Copy LuminoFFI.dll to output directory
@@ -25,3 +26,4 @@ add_custom_command(
     $<TARGET_FILE:LuminoFFI>
     $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
+

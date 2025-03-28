@@ -1,5 +1,4 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "DX12Helper.hpp"
 #include "DX12SingleFrameAllocator.hpp"
 

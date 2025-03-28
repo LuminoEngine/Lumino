@@ -8,6 +8,10 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>
 #endif // LN_USE_VULKAN
 
+#ifdef LN_USE_WEBGPU
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+#endif // LN_USE_WEBGPU
+
 #ifdef LN_USE_OPENGL
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/OpenGLDeviceContext.hpp"
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/OpenGL/GLTextures.hpp"
@@ -169,6 +173,55 @@ void VulkanIntegration::getImageInfo(
 }
 
 #endif // LN_USE_VULKAN
+
+
+#ifdef LN_USE_WEBGPU
+Ref<WebGPUGraphicsContext> WebGPUGraphicsContext::create(const Settings& settings) {
+    auto ptr = Ref<WebGPUGraphicsContext>(LN_NEW WebGPUGraphicsContext(), false);
+    if (!ptr->init(settings)) {
+        return nullptr;
+    }
+    return ptr;
+}
+
+WebGPUGraphicsContext::WebGPUGraphicsContext() {
+}
+
+WebGPUGraphicsContext::~WebGPUGraphicsContext() {
+}
+
+bool WebGPUGraphicsContext::init(const Settings& settings) {
+
+    detail::WebGPUDevice::Settings dcSettings;
+    dcSettings.mainWindow = settings.mainWindow;
+    dcSettings.debugMode = settings.debugMode;
+    auto device = makeRef<detail::WebGPUDevice>();
+    bool driverSupported = false;
+    if (!device->init(dcSettings)) {
+        LN_LOG_ERROR("WebGPUDevice initialization failed.");
+        return false;
+    }
+    else {
+        m_device = device;
+    }
+    m_device->refreshCaps();
+
+    return GraphicsContext::init(settings.mainWindow);
+}
+
+void WebGPUGraphicsContext::onDispose(bool explicitDisposing) {
+    GraphicsContext::onDispose(explicitDisposing);
+    if (m_device) {
+        m_device->dispose();
+        m_device = nullptr;
+    }
+}
+
+detail::IGraphicsDevice* WebGPUGraphicsContext::rhiDevice() const {
+    return m_device;
+}
+
+#endif // LN_USE_WEBGPU
 
 #ifdef LN_USE_OPENGL
 

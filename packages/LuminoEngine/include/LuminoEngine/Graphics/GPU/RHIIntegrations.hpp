@@ -75,6 +75,28 @@ public:
 #endif
 #endif // LN_USE_VULKAN
 
+#ifdef LN_USE_WEBGPU
+class WebGPUGraphicsContext : public GraphicsContext {
+public:
+    struct Settings {
+        PlatformWindow* mainWindow = nullptr;
+        bool debugMode = false;
+    };
+
+    static Ref<WebGPUGraphicsContext> create(const Settings& settings);
+
+    detail::IGraphicsDevice* rhiDevice() const override;
+
+private:
+    WebGPUGraphicsContext();
+    ~WebGPUGraphicsContext() override;
+    bool init(const Settings& settings);
+    void onDispose(bool explicitDisposing) override;
+
+    Ref<detail::IGraphicsDevice> m_device;
+};
+#endif // LN_USE_WEBGPU
+
 #ifdef LN_USE_OPENGL
 /**
  */
