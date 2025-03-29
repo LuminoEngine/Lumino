@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/RHIProfiler.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanBuffers.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>

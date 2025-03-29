@@ -116,7 +116,7 @@ void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
     }
     
 	// Create a view for this surface texture
-    WGPUTextureViewDescriptor viewDescriptor;
+    WGPUTextureViewDescriptor viewDescriptor = WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;
     viewDescriptor.nextInChain = nullptr;
     viewDescriptor.label = { "Surface texture view", 20 };
     viewDescriptor.format = wgpuTextureGetFormat(surfaceTexture.texture);

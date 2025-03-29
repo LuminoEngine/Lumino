@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanBuffers.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanCommandList.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>

@@ -1,7 +1,7 @@
 ﻿#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanHelper.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanBuffers.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>
 #include "VulkanSingleFrameAllocator.hpp"

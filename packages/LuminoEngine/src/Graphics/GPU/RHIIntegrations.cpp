@@ -3,7 +3,7 @@
 #endif // LN_USE_DIRECTX12
 
 #ifdef LN_USE_VULKAN
-#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>
 #endif // LN_USE_VULKAN
@@ -84,7 +84,7 @@ detail::IGraphicsDevice* DirectX12GraphicsContext::rhiDevice() const {
 
 #ifdef LN_USE_VULKAN
 
-#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 Ref<VulkanGraphicsContext> VulkanGraphicsContext::create(const Settings& settings) {
     auto ptr = Ref<VulkanGraphicsContext>(LN_NEW VulkanGraphicsContext(), false);
     if (!ptr->init(settings)) {

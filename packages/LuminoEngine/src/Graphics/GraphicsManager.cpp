@@ -9,7 +9,7 @@
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include "GPU/RenderTargetTextureCache.hpp"
 #ifdef LN_USE_VULKAN
-#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #endif
 #include <LuminoEngine/Graphics/GPU/RHIIntegrations.hpp>
 #ifdef LN_USE_WEBGPU

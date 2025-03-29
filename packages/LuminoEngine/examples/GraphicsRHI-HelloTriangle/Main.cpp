@@ -10,7 +10,7 @@
 
 //#include <LuminoGraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDeviceContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/ShaderCompiler/UnifiedShaderCompiler.hpp"
 using namespace ln;
 
