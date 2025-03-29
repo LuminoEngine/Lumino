@@ -61,7 +61,7 @@ public:
 
     bool isSwapchainBackbuffer() const { return m_image->IsExternalManagement(); }
     //bool isMultisample() const override { return m_multisampleColorBuffer != nullptr; }
-    VkSampleCountFlagBits msaaSamples() const { return (isMultisample()) ? m_deviceContext->msaaSamples() : VK_SAMPLE_COUNT_1_BIT; }
+    VkSampleCountFlagBits msaaSamples() const;
     void setSwapchainImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_swapchainImageAvailableSemaphoreRef = semaphore; }
     VkSemaphore swapchainImageAvailableSemaphore() const { return (m_swapchainImageAvailableSemaphoreRef) ? *m_swapchainImageAvailableSemaphoreRef : VK_NULL_HANDLE; }
     VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
@@ -130,7 +130,7 @@ public:
     Result<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height);
     void onDestroy() override;
     const VulkanImage* image() const { return &m_image; }
-    VkFormat nativeFormat() const { return m_deviceContext->findDepthFormat(); }
+    VkFormat nativeFormat() const;
 
 private:
     VulkanDevice* m_deviceContext;

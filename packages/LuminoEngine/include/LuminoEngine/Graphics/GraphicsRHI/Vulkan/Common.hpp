@@ -15,6 +15,7 @@
 namespace ln {
 namespace detail {
 
+class VulkanSwapChain;
 
 } // namespace detail
 } // namespace ln

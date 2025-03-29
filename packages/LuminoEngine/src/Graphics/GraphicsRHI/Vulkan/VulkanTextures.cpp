@@ -289,6 +289,10 @@ void VulkanRenderTarget::onDestroy() {
     VulkanTexture::onDestroy();
 }
 
+VkSampleCountFlagBits VulkanRenderTarget::msaaSamples() const {
+    return (isMultisample()) ? m_deviceContext->msaaSamples() : VK_SAMPLE_COUNT_1_BIT;
+}
+
 RHIRef<RHIBitmap> VulkanRenderTarget::readData() {
     RHIRef<RHIBitmap> bitmap;
 
@@ -534,6 +538,10 @@ void VulkanDepthBuffer::onDestroy() {
 
     m_image.dispose();
     RHIResource::onDestroy();
+}
+
+VkFormat VulkanDepthBuffer::nativeFormat() const {
+    return m_deviceContext->findDepthFormat();
 }
 
 } // namespace detail
