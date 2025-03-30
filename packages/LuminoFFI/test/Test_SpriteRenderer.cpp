@@ -25,8 +25,6 @@ TEST_F(Test_SpriteRenderer, Basic1) {
         ASSERT_EQ(
             LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
 
-        ASSERT_EQ(LN_OK, LNCommandList_Reset(commandList));
-
         // Rendering pass.
         {
             LNHandle renderingPass = LN_NULL_HANDLE;

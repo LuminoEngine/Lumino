@@ -6,15 +6,13 @@ TEST_F(Test_BasicRendering, Clear1) {
 
     LNHandle surfaceContext = TestEnv::surfaceContext;
 
-    LNHandle colorBuffer = LN_NULL_HANDLE;
-    LNHandle depthBuffer = LN_NULL_HANDLE;
-    LNHandle commandList = LN_NULL_HANDLE;
-    ASSERT_EQ(
-        LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
-
     // Rendering loop.
     {
-        ASSERT_EQ(LN_OK, LNCommandList_Reset(commandList));
+        LNHandle colorBuffer = LN_NULL_HANDLE;
+        LNHandle depthBuffer = LN_NULL_HANDLE;
+        LNHandle commandList = LN_NULL_HANDLE;
+        ASSERT_EQ(
+            LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
 
         LNHandle renderingPass = LN_NULL_HANDLE;
         LNRenderPassDescriptor descriptor;

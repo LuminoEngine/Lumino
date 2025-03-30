@@ -47,8 +47,6 @@ int main() {
         //    このサンプルは画面をクリアするだけであるため、この情報はダミーです。
         LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, width, height, -1000, 1000);
 
-        LNCommandList_Reset(commandList);
-
         // x. レンダーターゲットをクリアするための RenderPass を開始します。
         //    なお WebGPU などと同様、 RenderPass を開始することなくクリアする方法はありません。
         LNHandle renderingPass = LN_NULL_HANDLE;

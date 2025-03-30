@@ -90,7 +90,6 @@ export class Runtime {
             API.LNGraphicsContext_PrepareFrame = module.cwrap("LNGraphicsContext_PrepareFrame", "number", ["number", "number", "number", "number", "number", "number"]);
             API.LNGraphicsContext_SubmitCommandList = module.cwrap("LNGraphicsContext_SubmitCommandList", "number", ["number", "number"]);
             
-            API.LNCommandList_Reset = module.cwrap("LNCommandList_Reset", "number", ["number"]);
             API.LNCommandList_BeginRenderPass = module.cwrap("LNCommandList_BeginRenderPass", "number", ["number", "number", "number", "number"]);
             
             API.LNViewPoint_Create = module.cwrap("LNViewPoint_Create", "number", ["number"]);
@@ -187,7 +186,6 @@ export class API {
     public static LNGraphicsContext_PrepareFrame: (graphicsContext: Handle,width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
     public static LNGraphicsContext_SubmitCommandList: (graphicsContext: Handle, graphicsCommandList: number) => Result;
 
-    public static LNCommandList_Reset: (graphicsCommandList: Handle) => Result;
     public static LNCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
 
 

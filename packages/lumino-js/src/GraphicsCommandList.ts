@@ -30,10 +30,6 @@ export class GraphicsCommandList extends LuminoObject {
         this._owner = owner;
     }
 
-    public reset(): void {
-        API.LNCommandList_Reset(this.handle);
-    }
-
     public beginRenderPass(descriptor: BeginRederPassDescriptor, viewPoint: GraphicsViewPoint): RenderPass {
         const desc = API.LNRenderPassDescriptor_Get();
         const count = descriptor.renderTargets.length;

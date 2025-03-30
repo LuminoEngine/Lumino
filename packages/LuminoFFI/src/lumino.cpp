@@ -249,6 +249,8 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
     *outColorBuffer = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
     *outDepthBuffer = LN_NULL_HANDLE; // TODO:
     *outCommandList = ::Runtime::wrapObject(surfaceContext, false);
+    surfaceContext->commandList()->reset();
+    surfaceContext->commandList()->beginCommandRecoding();
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -296,14 +298,6 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
 //       元々 Audio など他のモジュールでも CommandList というものを公開するかも知れないと考えていたが、
 //       FFI のコンセプト変更により、GraphicsCommandList Graphics 以外で CommandList 的なものを公開することはないと考えられるため。
 //==============================================================================
-
-extern LNResult LNCommandList_Reset(LNHandle renderingCommandList_) {
-    LN_FFI_TRY_BEGIN;
-    SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
-    commandList->commandList()->reset();
-    commandList->commandList()->beginCommandRecoding();
-    LN_FFI_TRY_END_RETURN;
-}
 
 extern LNResult LNCommandList_BeginRenderPass(
     LNHandle renderingCommandList_,

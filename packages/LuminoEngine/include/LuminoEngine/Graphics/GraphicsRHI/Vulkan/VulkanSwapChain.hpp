@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "VulkanHelper.hpp"
-#include "VulkanTextures.hpp"
 
 namespace ln {
 namespace detail {

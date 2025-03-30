@@ -26,7 +26,6 @@ TEST_F(Test_Shader, Basic1) {
         LNHandle commandList = LN_NULL_HANDLE;
         ASSERT_EQ(
             LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
-        ASSERT_EQ(LN_OK, LNCommandList_Reset(commandList));
 
         // Rendering pass.
         {

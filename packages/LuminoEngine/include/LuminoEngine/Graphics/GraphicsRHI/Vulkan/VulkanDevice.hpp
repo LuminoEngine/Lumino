@@ -8,7 +8,6 @@ namespace ln {
 namespace detail {
 class VulkanCommandList;
 class VulkanTexture;
-class VulkanRenderTarget;
 class VulkanDepthBuffer;
 //class VulkanShaderDescriptorTable;
 class VulkanSingleFrameAllocatorPageManager;

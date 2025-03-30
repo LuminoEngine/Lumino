@@ -16,6 +16,7 @@ namespace ln {
 namespace detail {
 
 class VulkanSwapChain;
+class VulkanRenderTarget;
 
 } // namespace detail
 } // namespace ln

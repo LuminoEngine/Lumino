@@ -207,9 +207,6 @@ typedef struct LNCommandListProfilerng {
     int32_t drawCallCount;
 } LNCommandListProfilerng;
 
-extern LUMINO_API LNResult LNCommandList_Reset(LNHandle renderingCommandList);
-
-
 extern LUMINO_API LNResult LNCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
 
 extern LUMINO_API LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList,LNCommandListProfilerng* outProfilerng);

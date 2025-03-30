@@ -148,10 +148,6 @@ int main() {
         LNHandle commandList = LN_NULL_HANDLE;
         LNGraphicsContext_PrepareFrame(graphicsContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
 
-        if (LNCommandList_Reset(commandList) != LN_OK) {
-            return 1;
-        }
-
         // RenderPass
         //   Lumino では RenderPass=視点を起点とした描画シーケンスと考えてみる。
         //   これはシャドウバッファの描画を考えるとイメージしやすいかもしれない。
