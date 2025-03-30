@@ -11,24 +11,23 @@ Lumino はゲームやデジタルアートなどのインタラクティブア�
 
 Lumino is currently being developed with the following two use cases in mind.
 
-- A. Use basic modules (String, Array, FileSystem, etc.) in IoT platforms and testing tools.
+- A. Use the core game engine modules (Graphics, Audio, Input, etc.) in other game engines or applications.
+- B. Use the basic modules (String, Array, FileSystem, etc.) in IoT platforms and testing tools. (auxiliary)
 
-- B. Use interaction modules (Graphics, Audio, Input, etc.) in other game engines and applications.
-
-Until v0.10.1, Lumino was developed as a standalone game engine, and the main motivation was technical exploration.
+Until v0.10.1, Lumino was developed as a standalone game engine, but the main motivation was technical exploration.
 
 In recent years, developers have been busy and maintenance has become difficult. However, there are opportunities to obtain investments, albeit on a small scale, and we would like to focus on them in the future.
 
-The future development concept is as follows.
+The future development concept is as follows:
 
-- We aim to create an easy API for users who are not familiar with C++. For example, we will make it easy to predict and difficult to make mistakes for programmers who usually use C# or JavaScript but write C++ out of necessity.
-
-- We will abolish all framework-like functions. For example, game UI and scene graphs. (We realized that it is more convenient overall to write these functions in client-side programming languages.)
+- We will eliminate all framework-like functions. For example, game UI and scene graphs. We have realized that these functions are more convenient to write in client-side programming languages.
+- We will provide the core game engine modules as FFIs (Foreign function interfaces). We do not expect to develop games using Lumino directly. We envision low-layer components for developing other game engines.
+- We will strive to stabilize FFI. In other words, we will provide it as a pure C language API. You will probably not be able to write fluent game programs using Lumino. However, in order to utilize Lumino in the future, we thought that a foundation that is not influenced by trends in idioms and coding styles was necessary.
 
 Lumino は現在、次の2つのユースケースを想定して開発を続けています。
 
-- A. 基礎的なモジュール (String, Array, FileSystem, 等) を IoTプラットフォームやテスティングツール で利用する。
-- B. インタラクションモジュール (Graphics, Audio, Input 等) を 他のゲームエンジンやアプリケーションで利用する。
+- A. ゲームエンジンのコアモジュール (Graphics, Audio, Input 等) を 他のゲームエンジンやアプリケーションで利用する。
+- B. 基礎的なモジュール (String, Array, FileSystem, 等) を IoTプラットフォームやテスティングツール で利用する。（補助的）
 
 v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして開発を続けていましたが、その主な動機は技術的探求でした。
 
@@ -36,8 +35,9 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 
 今後の開発コンセプトは次の通りです。
 
-- C++ に詳しくないユーザーにとって簡単な API を目指します。例えば普段は C# や JavaScript を使っていますが、必要に迫られて C++ を書くようなプログラマが、予想しやすく間違い辛いようにします。
-- フレームワークのような機能をすべて廃止します。例えばゲームUIやシーングラフです。（これらの機能はクライアント側のプログラム言語で書いた方が、トータルで都合が良いことに気づきました）
+- フレームワークのような機能をすべて廃止します。例えばゲームUIやシーングラフです。これらの機能はクライアント側のプログラム言語で書いた方が都合が良いことに気づきました。
+- ゲームエンジンのコアモジュールを、 FFI (Foreign function interface) として提供します。 Lumino を直接利用してゲームを開発することは想定しません。他のゲームエンジンを開発する際の低レイヤーコンポーネントを想定します。
+- FFI の安定化に努めます。つまり、純粋な C 言語の API として提供することになります。おそらく Lumino を使って流暢なゲームプログラムを書くことはできなくなります。しかし今後の Lumino の活用のために、イディオムやコーディングスタイルのトレンドに左右されない基盤が必要と考えました。
 
 -----
 
@@ -45,31 +45,11 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
-### Build
+## Documents
 
-```
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
-.\bootstrap-vcpkg.bat
+- [How to Build](./docs/how-to-build.md)
 
-./vcpkg/vcpkg.exe
-./vcpkg/vcpkg.exe install --triplet x64-windows-static
-```
-
-### Web
-
-```
-dotnet tool install dotnet-script -g
-dotnet script scripts/PrepareWebGPU.csx
-dotnet run -- BuildEngine wasm32-emscripten
-```
-
-CMake の成果物 (.wasm 等) は `📁build/installed/wasm32-emscripten` に出力されます。
-
-ローカルで Dawn を用いた動作確認をするには `LUMINO_USE_WEBGPU` を ON にして cmake を実行してください。
-
-
-Quick-start
+Quick-start (⚠️少し情報が古いです)
 ----------
 
 とりあえず使ってみたい方へ。(CMake)
