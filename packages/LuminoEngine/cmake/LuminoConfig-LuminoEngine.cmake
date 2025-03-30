@@ -23,7 +23,7 @@ endif()
 
 find_package(ZLIB REQUIRED)
 find_package(Vorbis CONFIG REQUIRED)
-find_package(libpng CONFIG REQUIRED)
+find_package(PNG CONFIG REQUIRED)
 find_package(nanovg CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(tinyobjloader CONFIG REQUIRED)

@@ -563,6 +563,16 @@ class LN_API ShaderPass final
     : public Object
     , public IGraphicsObject {
 public:
+    // NOTE: なぜ VS, PS, CS 個別にしていないのか？
+    //  CS は個別にしても良いと思うのだけど、 VS,PS は同時に指定しなければ
+    //  ほとんど意味もないし Vulkan とかではそもそも動かなかった気がする。
+    //  また分けてしまう場合、 UniformBuffer のレイアウトの責任を、
+    //  (FFIを使う)ユーザープログラム 側に押し付けることになる。
+    //    - 例えば VS PS 両方で使う視点情報について、 VS と PS で同じ
+    //      UniformBuffer を使いたい場合、どうやって一致判定するのか？
+    //  他に、Material から見た時は、 Material と ShaderPass が n:1 で、
+    //  リソースとレイアウト情報を共有することが出来たりする。
+
     /** この ShaderPass が含まれている Shader を取得します。 */
     Shader* shader() const;
 

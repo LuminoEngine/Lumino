@@ -1,5 +1,5 @@
 ﻿
-//#define LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+
 #include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
 #include "../../LuminoEngine/src/Graphics/GraphicsRHI/ShaderCompiler/UnifiedShaderCompiler.hpp"
@@ -17,7 +17,9 @@
 
 namespace ln {
 
-ln::MaybeResult BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir) {
+ln::MaybeResult
+BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir) {
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     ln::detail::ShaderManager::Settings settings;
     ln::detail::ShaderManager::initialize(settings);
 
@@ -50,6 +52,10 @@ ln::MaybeResult BuildAssetHelper::buildShader(const ln::Path& inputFile, const l
 	//}
 
 	return LN_MAKE_SUCCESS();
+#else
+    LN_NOTIMPLEMENTED();
+    return LN_MAKE_SUCCESS();
+#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 }
 
 } // namespace lna

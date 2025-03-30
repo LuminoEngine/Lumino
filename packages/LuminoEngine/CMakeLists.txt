@@ -232,18 +232,12 @@ set(LOCAL_LIBRARIES
     Vorbis::vorbis
     Vorbis::vorbisenc
     Vorbis::vorbisfile
-    nanovg::nanovg
+    #nanovg::nanovg
     ZLIB::ZLIB
+    PNG::PNG
     freetype
     tinyobjloader::tinyobjloader
 )
-
-# libpng is named differently depending on configuration.
-if (LN_LINK_CMAKE_SHARED_LIB_PACKAGE)
-    list(APPEND LOCAL_LIBRARIES png)
-else()
-    list(APPEND LOCAL_LIBRARIES png_static)
-endif()
 
 #-------------------------------------------------------------------------------
 # Targets
@@ -282,15 +276,11 @@ endif()
 if(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
     target_compile_definitions(${PROJECT_NAME} PUBLIC LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        glslang::OSDependent
         glslang::glslang
-        glslang::MachineIndependent
-        glslang::GenericCodeGen
-        glslang::OGLCompiler
         glslang::glslang-default-resource-limits
         glslang::SPVRemapper
         glslang::SPIRV
-        glslang::HLSL
+        #glslang::HLSL
         spirv-cross-core
         spirv-cross-glsl
         spirv-cross-hlsl

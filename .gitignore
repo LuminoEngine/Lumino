@@ -9,6 +9,7 @@ ReleasePackage-*/
 tmp/
 lumino.exe
 vcpkg/
+vcpkg_installed/
 
 
 ## Ignore Visual Studio temporary files, build results, and

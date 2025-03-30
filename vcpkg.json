@@ -1,0 +1,42 @@
+{
+    "dependencies": [
+        "libogg",
+        "libpng",
+        "zlib",
+        "libvorbis",
+        "stb",
+        "pcre2",
+        "tinyobjloader",
+        "tinygltf",
+        "nanovg",
+        "vulkan-headers",
+        {
+            "name": "freetype",
+            "features": ["png", "zlib"]
+        },
+        {
+            "name": "gtest",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "glfw3",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "glad",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "glslang",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "spirv-cross",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "openal-soft",
+            "platform": "windows | linux | osx"
+        }
+    ]
+}

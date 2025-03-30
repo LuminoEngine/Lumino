@@ -12,14 +12,14 @@ class IRenderPass;
 }
 
 /**  */
-// Note: GraphicsCommandList に set 済みの RenderPass に対して後から setRenderTarget() しても描画結果は正しくなる。
-// ただし変更が発生するたびに IRenderPass の共有のためキャッシュを検索しに行くので、若干のオーバーヘッドが発生する。
-// 動的に変化させる必要が無ければ事前作成して、set～ はしないようにしておくとパフォーマンスが良くなる。
 class RenderPass
     : public Object
     , public IGraphicsObject
     , public IGraphicsResource {
 public:
+    // Note: GraphicsCommandList に set 済みの RenderPass に対して後から setRenderTarget() しても描画結果は正しくなる。
+    // ただし変更が発生するたびに IRenderPass の共有のためキャッシュを検索しに行くので、若干のオーバーヘッドが発生する。
+    // 動的に変化させる必要が無ければ事前作成して、set～ はしないようにしておくとパフォーマンスが良くなる。
     static RenderPass* get(RenderTargetTexture* renderTarget);
     static RenderPass* get(
         RenderTargetTexture* renderTarget,

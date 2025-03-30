@@ -114,6 +114,7 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 	m_model = std::make_shared<tinygltf::Model>();
 	//tinygltf::Model model;
 	tinygltf::TinyGLTF loader;
+	#if 0 // TODO: ビルドエラーにつき一時無効
 	tinygltf::FsCallbacks fs = {
 		&FileExists,
 		&ExpandFilePath,
@@ -122,6 +123,7 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 		this,
 	};
 	loader.SetFsCallbacks(fs);
+	#endif
 
 	std::string err;
 	std::string warn;

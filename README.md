@@ -45,6 +45,17 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
+### Build
+
+```
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+.\bootstrap-vcpkg.bat
+
+./vcpkg/vcpkg.exe
+./vcpkg/vcpkg.exe install --triplet x64-windows-static
+```
+
 ### Web
 
 ```
