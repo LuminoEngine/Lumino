@@ -45,6 +45,7 @@ option(LUMINO_BUILD_ENGINE "build LuminoEngine." ON)
 
 # build embedded shader transcompiler.
 option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." OFF)
+option(LUMINO_USE_SLANG "build tool projects.build embedded shader transcompiler." OFF)
 
 # MSVC Runtime library.
 option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)

@@ -10,6 +10,7 @@
         "tinygltf",
         "nanovg",
         "vulkan-headers",
+        "shader-slang",
         {
             "name": "freetype",
             "features": ["png", "zlib"]

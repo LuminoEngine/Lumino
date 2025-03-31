@@ -289,6 +289,10 @@ if(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
         spirv-cross-util
     )
 endif()
+if (LUMINO_USE_SLANG)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC LN_USE_SLANG=1)
+    #target_link_libraries(${PROJECT_NAME} PRIVATE slang::slang)
+endif()
 
 if(LN_USE_OPENGL)
     target_compile_definitions(${PROJECT_NAME} PUBLIC LN_USE_OPENGL=1)

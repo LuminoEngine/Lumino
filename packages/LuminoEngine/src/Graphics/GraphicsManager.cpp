@@ -208,12 +208,12 @@ MaybeResult GraphicsManager::init(const Settings& settings) {
         m_pointClampSamplerState->setFrozen(true);
     }
 
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+//#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     {
         detail::ShaderManager::Settings shaderManagerSettings;
         m_shaderManager = detail::ShaderManager::initialize(shaderManagerSettings);
     }
-#endif
+//#endif
 
     {
         detail::MeshManager::Settings settings;
