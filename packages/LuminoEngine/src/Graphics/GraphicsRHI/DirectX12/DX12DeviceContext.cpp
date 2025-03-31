@@ -1,5 +1,5 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/D3DCompilerAPI.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/D3DCompilerAPI.hpp>
 #include "DX12Helper.hpp"
 #include "DX12Textures.hpp"
 #include "DX12ShaderPass.hpp"

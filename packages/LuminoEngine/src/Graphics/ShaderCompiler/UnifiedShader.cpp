@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderHelper.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/UnifiedShader.hpp>
 #include "HLSLMetadataParser.hpp"
 #include "ShaderTranspiler.hpp"
 

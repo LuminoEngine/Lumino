@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderHelper.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "UnifiedShaderCompiler.hpp"
 
 namespace ln {

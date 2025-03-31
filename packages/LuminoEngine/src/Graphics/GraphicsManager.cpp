@@ -22,7 +22,7 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include "GPU/SingleFrameAllocator.hpp"
 #include "GPU/GraphicsProfiler.hpp"
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
 #include "GPU/StreamingBufferAllocator.hpp"
 #include "GPU/RenderPassCache.hpp"

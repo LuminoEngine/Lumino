@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "ShaderCompiler/Common.hpp"
+#include "../ShaderCompiler/Common.hpp"
 
 namespace ln {
 class GraphicsCommandList;

@@ -1,6 +1,6 @@
 ﻿#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsExtension.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/RHIProfiler.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanSwapChain.hpp>

@@ -45,13 +45,13 @@ file(GLOB LOCAL_SOURCES
     "src/Graphics/GraphicsRHI/*.cpp"
 )
 file(GLOB LOCAL_SOURCES_ShaderCompiler
-    "include/LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/*.hpp"
-    "src/Graphics/GraphicsRHI/ShaderCompiler/*.hpp"
-    "src/Graphics/GraphicsRHI/ShaderCompiler/*.cpp"
+    "include/LuminoEngine/Graphics/ShaderCompiler/detail/*.hpp"
+    "src/Graphics/ShaderCompiler/*.hpp"
+    "src/Graphics/ShaderCompiler/*.cpp"
 )
 file(GLOB LOCAL_SOURCES_ShaderCompiler_Lexer
-    "src/Graphics/GraphicsRHI/ShaderCompiler/Lexer/*.hpp"
-    "src/Graphics/GraphicsRHI/ShaderCompiler/Lexer/*.cpp"
+    "src/Graphics/ShaderCompiler/Lexer/*.hpp"
+    "src/Graphics/ShaderCompiler/Lexer/*.cpp"
 )
 
 if(LN_USE_OPENGL)
@@ -91,8 +91,8 @@ endif()
 
 if(WIN32)
     file(GLOB LOCAL_SOURCES_ShaderCompiler_Windows
-        "src/Graphics/GraphicsRHI/ShaderCompiler/Windows/*.hpp"
-        "src/Graphics/GraphicsRHI/ShaderCompiler/Windows/*.cpp"
+        "src/Graphics/ShaderCompiler/Windows/*.hpp"
+        "src/Graphics/ShaderCompiler/Windows/*.cpp"
     )
 endif()
 
@@ -155,9 +155,9 @@ source_group("Graphics/GraphicsRHI/OpenGL" FILES ${LOCAL_SOURCES_OpenGL})
 source_group("Graphics/GraphicsRHI/Vulkan" FILES ${LOCAL_SOURCES_Vulkan})
 source_group("Graphics/GraphicsRHI/DirectX12" FILES ${LOCAL_SOURCES_DirectX12})
 source_group("Graphics/GraphicsRHI/WebGPU" FILES ${LOCAL_SOURCES_WebGPU})
-source_group("Graphics/GraphicsRHI/ShaderCompiler" FILES ${LOCAL_SOURCES_ShaderCompiler})
-source_group("Graphics/GraphicsRHI/ShaderCompiler/Lexer" FILES ${LOCAL_SOURCES_ShaderCompiler_Lexer})
-source_group("Graphics/GraphicsRHI/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCompiler_Windows})
+source_group("Graphics/ShaderCompiler" FILES ${LOCAL_SOURCES_ShaderCompiler})
+source_group("Graphics/ShaderCompiler/Lexer" FILES ${LOCAL_SOURCES_ShaderCompiler_Lexer})
+source_group("Graphics/ShaderCompiler/Windows" FILES ${LOCAL_SOURCES_ShaderCompiler_Windows})
 source_group("Graphics/GPU" FILES ${LN_SOURCES_Graphics_GPU})
 source_group("Graphics/TextRendering" FILES ${LN_SOURCES_Graphics_TextRendering})
 

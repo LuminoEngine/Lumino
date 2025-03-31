@@ -1,8 +1,8 @@
 ﻿
 
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include "../../LuminoEngine/src/Graphics/GraphicsRHI/ShaderCompiler/UnifiedShaderCompiler.hpp"
+#include <LuminoEngine/Graphics//ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include "../../LuminoEngine/src/Graphics/ShaderCompiler/UnifiedShaderCompiler.hpp"
 //#include <LuminoCore/Base/CRCHash.hpp>
 //#include "../../../lumino/Runtime/src/Asset/AssetArchive.hpp"
 //#include <LuminoGraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>

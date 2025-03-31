@@ -1,11 +1,10 @@
-
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "ShaderTranspiler.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 
 #ifdef _WIN32
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/D3DCompilerAPI.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/D3DCompilerAPI.hpp>
 #endif
 
 namespace ln {

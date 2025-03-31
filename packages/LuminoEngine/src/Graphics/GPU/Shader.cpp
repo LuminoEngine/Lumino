@@ -13,10 +13,10 @@
 #include <LuminoEngine/Graphics/GPU/detail/GraphicsObjectRegistry.hpp>
 #include <LuminoEngine/Graphics/GPU/SwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
-#include "../../LuminoEngine/src/Graphics/GraphicsRHI/ShaderCompiler/UnifiedShaderCompiler.hpp"
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/ShaderManager.hpp>
-#include "../../LuminoEngine/src/Graphics/GraphicsRHI/ShaderCompiler/ShaderTranspiler.hpp"
-#include "../../LuminoEngine/src/Graphics/GraphicsRHI/ShaderCompiler/HLSLMetadataParser.hpp"
+#include "../../LuminoEngine/src/Graphics/ShaderCompiler/UnifiedShaderCompiler.hpp"
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include "../../LuminoEngine/src/Graphics/ShaderCompiler/ShaderTranspiler.hpp"
+#include "../../LuminoEngine/src/Graphics/ShaderCompiler/HLSLMetadataParser.hpp"
 
 namespace ln {
 

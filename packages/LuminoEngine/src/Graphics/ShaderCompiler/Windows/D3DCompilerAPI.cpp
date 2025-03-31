@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2019 lriki. Distributed under the MIT license.
 #pragma once
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/D3DCompilerAPI.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/D3DCompilerAPI.hpp>
 
 namespace ln {
 namespace detail {

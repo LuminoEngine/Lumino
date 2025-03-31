@@ -2,8 +2,8 @@
 #pragma once
 #include "Common.hpp"
 #include <LuminoEngine/Asset/AssetObject.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderHelper.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/UnifiedShader.hpp>
 #include "GraphicsResource.hpp"
 #include "ShaderInterfaceFramework.hpp"
 

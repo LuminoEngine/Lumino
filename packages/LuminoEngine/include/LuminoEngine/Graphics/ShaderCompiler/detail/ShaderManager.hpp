@@ -8,7 +8,7 @@
 #endif
 #include <LuminoEngine/Engine/EngineInstance.hpp>
 #include <LuminoEngine/Engine/Module.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/Common.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/Common.hpp>
 #include <LuminoEngine/Base/detail/RefObjectCache.hpp>
 
 namespace ln {

@@ -30,8 +30,18 @@ public:
     // 今は UniformBuffer が Usage にかかわらずそのような実装になっているのみ。
     virtual void* map();
     virtual void unmap();
-    // NOTE: map/unmap は必要なの？
-    //   
+    // NOTE: map/unmap は必要なの？（0.10 では UniformBuffer のみ map/unmap 可能としている）
+    //   バッファの置き場所に依る最適化の話。
+    //   まず、バッファは基本的に DEVICE_LOCAL(GPU側) とするのがよい。GPU が一番高速にアクセスできるのはここである。
+    //   また制約として、
+    //   - DEVICE_LOCAL なバッファは CPU から直接アクセスできない。(Map できない)
+    //   - HOST_VISIBLE なバッファを DEVICE_LOCAL に変更することはできない。
+    //   このため、 DEVICE_LOCAL にデータを転送する StagingBuffer という仕掛けが必要になる。
+    //   当然ながら、 StagingBuffer の分だけリソースを消費することになる。
+    //   簡単にまとめると次のようになる。
+    //   - Static(一度しか変更されないようなバッファ) : DEVICE_LOCAL
+    //   - Dynamic(毎フレーム変更されるバッファ) : HOST_VISIBLE
+
 
     // RenderTarget のみサポート
     virtual RHIRef<RHIBitmap> readData();

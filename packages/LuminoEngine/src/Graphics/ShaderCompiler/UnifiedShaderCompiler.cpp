@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsRHI/ShaderCompiler/ShaderHelper.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderHelper.hpp>
 #include "ShaderTranspiler.hpp"
 #include "MultiCompileCombination.hpp"
 #include "UnifiedShaderCompiler.hpp"
