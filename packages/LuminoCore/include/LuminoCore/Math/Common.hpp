@@ -29,20 +29,4 @@ enum class FrustumPlane
     Far = 5,
 };
 
-namespace detail {
-
-class MathHelper
-{
-public:
-	static std::ostream& outputStream(std::ostream& s, const float* elements, int count)
-	{
-		s << elements[0];
-		for (int i = 1; i < count; i++) {
-			s << ' ' << elements[i];
-		}
-		return s;
-	}
-};
-
-} // namespace detail
 } // namespace ln

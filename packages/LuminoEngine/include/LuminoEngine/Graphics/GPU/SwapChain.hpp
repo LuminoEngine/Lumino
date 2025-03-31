@@ -66,6 +66,7 @@ public:
 
     /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
     RenderTargetTexture* currentBackbuffer() const;
+    DepthBuffer* currentDepthBuffer() const;
 
     RenderPass* currentRenderPass() const;
 

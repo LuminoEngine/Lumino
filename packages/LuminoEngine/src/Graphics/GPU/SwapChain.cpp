@@ -158,6 +158,11 @@ RenderTargetTexture* GraphicsContext::currentBackbuffer() const {
     return m_backbuffers[m_imageIndex];
 }
 
+DepthBuffer* GraphicsContext::currentDepthBuffer() const {
+    if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
+    return m_depthBuffers[m_imageIndex];
+}
+
 GraphicsCommandList* GraphicsContext::currentCommandList2() const {
     if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_commandLists[m_imageIndex];

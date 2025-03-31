@@ -432,20 +432,19 @@ void Bitmap2D::load(const StringView& filePath)
     load(file);
 }
 
-void Bitmap2D::load(Stream* stream)
-{
+MaybeResult Bitmap2D::load(Stream* stream) {
     auto diag = makeObject_deprecated<DiagnosticsManager>();
 
     auto decoder = detail::IBitmapDecoder::load(stream, diag);
 
     diag->dumpToLog();
-    if (diag->succeeded())
-    {
-        detail::BitmapFrame* frame = decoder->getBitmapFrame();
-        m_buffer = frame->data;
-        m_size = frame->size;
-        m_format = frame->format;
-    }
+    if (!diag->succeeded()) return LN_MAKE_ERROR();
+
+    detail::BitmapFrame* frame = decoder->getBitmapFrame();
+    m_buffer = frame->data;
+    m_size = frame->size;
+    m_format = frame->format;
+    return LN_MAKE_SUCCESS();
 }
 
 void Bitmap2D::save(const StringView& filePath)

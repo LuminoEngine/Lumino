@@ -543,11 +543,6 @@ inline const Vector4& Matrix::row(int index) const
 {
     return (Vector4&)m[index][0];
 }
-
-inline std::ostream& operator<<(std::ostream& s, const Matrix& v)
-{
-	return detail::MathHelper::outputStream(s, v.data(), 16);
-}
 #endif
 
 } // namespace ln

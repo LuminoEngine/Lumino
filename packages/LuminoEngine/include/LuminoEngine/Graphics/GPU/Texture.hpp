@@ -119,7 +119,7 @@ public:
 
 	static Ref<Texture2D> loadEmoji(uint32_t codePoint);
 
-    static Ref<Texture2D> createFromImageFileData(const uint8_t* data, int32_t length);
+    static Result<Ref<Texture2D>> createFromImageFileData(const uint8_t* data, int32_t length);
 
 	static Texture2D* blackTexture();
 
@@ -176,7 +176,7 @@ LN_CONSTRUCT_ACCESS:
 
     //bool init(const Path& assetPath);
 
-    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
+    MaybeResult init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
 private:

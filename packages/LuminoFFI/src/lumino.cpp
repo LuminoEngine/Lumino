@@ -247,7 +247,7 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     GraphicsContext* context = surfaceContext->context();
     *outColorBuffer = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
-    *outDepthBuffer = LN_NULL_HANDLE; // TODO:
+    *outDepthBuffer = ln::Runtime::wrapObject(context->currentDepthBuffer(), false);
     *outCommandList = ::Runtime::wrapObject(surfaceContext, false);
     surfaceContext->commandList()->reset();
     surfaceContext->commandList()->beginCommandRecoding();
@@ -324,7 +324,7 @@ extern LNResult LNCommandList_BeginRenderPass(
 		clearFlags = clearFlags | ln::ClearFlags::Stencil;
 	}
 
-    renderPass-> renderPass = RenderPass::get(
+    renderPass->renderPass = RenderPass::get(
         LN_HANDLE_TO_OBJECT(RenderTargetTexture, descriptor_.renderTargets[0].renderTarget), 
         LN_HANDLE_TO_OBJECT(DepthBuffer, descriptor_.depthBuffer.depthBuffer),
         static_cast<ln::ClearFlags>(clearFlags),
@@ -634,8 +634,11 @@ LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length
     //std::cout << "length: " << length << std::endl;
     //std::cout << "data[0]: " << static_cast<int>(data[0]) << std::endl;
     //std::cout << "data[1]: " << static_cast<int>(data[1]) << std::endl;
-    Ref<Texture2D> texture = Texture2D::createFromImageFileData(data, length);
-    *outTexture2D = ::Runtime::wrapObject(texture, true);
+    Result<Ref<Texture2D>> texture = Texture2D::createFromImageFileData(data, length);
+    if (!texture) {
+        return TO_FFI_ERROR(texture.error());
+    }
+    *outTexture2D = ::Runtime::wrapObject(texture.unwrap(), true);
     LN_FFI_TRY_END_RETURN;
 }
 

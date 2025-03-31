@@ -118,16 +118,16 @@ void RuntimeManager::dispose() {
     LN_LOG_DEBUG("RuntimeManager finalization finished.");
 }
 
-LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate) {
+LNHandle RuntimeManager::makeObjectWrap(Object* objOrNull, bool fromCreate) {
     if (!m_systemAliving) return LN_NULL_HANDLE;
-    if (obj == nullptr) return LN_NULL_HANDLE;
+    if (objOrNull == nullptr) return LN_NULL_HANDLE;
 
     if (fromCreate) {
-        RefObjectHelper::retain(obj);
+        RefObjectHelper::retain(objOrNull);
     }
 
     // 登録済みならハンドル (管理配列上のインデックス) を返す
-    auto runtimeData = detail::ObjectHelper::getRuntimeData(obj);
+    auto runtimeData = detail::ObjectHelper::getRuntimeData(objOrNull);
     if (runtimeData) {
         return runtimeData->index;
     }
@@ -136,7 +136,7 @@ LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate) {
     if (m_objectIndexStack.empty()) {
         // 末尾に追加する
         ObjectEntry e;
-        e.object = obj;
+        e.object = objOrNull;
         e.index = m_objectEntryList.size();
         e.refCount = (fromCreate) ? 1 : 0;
         m_objectEntryList.add(e);
@@ -145,7 +145,7 @@ LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate) {
         auto data = LN_NEW ObjectRuntimeData();
         data->index = e.index;
         data->fromCreate = fromCreate;
-        detail::ObjectHelper::setRuntimeData(obj, data);
+        detail::ObjectHelper::setRuntimeData(objOrNull, data);
 
         LN_LOG_DEBUG("nid registerd: {}", e.index);
         return e.index;
@@ -157,7 +157,7 @@ LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate) {
 
         // 格納
         ObjectEntry& e = m_objectEntryList[newPos];
-        e.object = obj;
+        e.object = objOrNull;
         e.index = newPos;
         e.refCount = (fromCreate) ? 1 : 0;
 
@@ -165,7 +165,7 @@ LNHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate) {
         auto data = LN_NEW ObjectRuntimeData();
         data->index = e.index;
         data->fromCreate = fromCreate;
-        detail::ObjectHelper::setRuntimeData(obj, data);
+        detail::ObjectHelper::setRuntimeData(objOrNull, data);
 
         LN_LOG_DEBUG("nid registerd: {}", e.index);
         return e.index;

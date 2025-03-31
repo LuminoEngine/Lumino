@@ -60,7 +60,7 @@ public:
     // create の時は想定通りの動作。externalRefCount=1 の状態で作られる。
     // get の場合も同様に作られる。基本方針は COM と同じく、Get したものは Release で解放するべきだが、
     // ObjectEntry は Native 側の Release を受けて強制的に解放されるため、FlatC API を直接使っているときは Get の Release は不要。
-    LNHandle makeObjectWrap(Object* obj, bool fromCreate);
+    LNHandle makeObjectWrap(Object* objOrNull, bool fromCreate);
 
     void retainObjectExplicitly(LNHandle handle);
     void releaseObjectExplicitly(LNHandle handle);
