@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
 namespace ln {
@@ -233,8 +234,11 @@ Ref<IShaderPass> WebGPUDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateUniformBuffer(uint32_t size) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUUniformBuffer>();
+    if (!ptr->init(this, size)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IDescriptorPool> WebGPUDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {

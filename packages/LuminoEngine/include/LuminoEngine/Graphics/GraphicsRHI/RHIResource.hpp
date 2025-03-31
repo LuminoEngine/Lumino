@@ -30,6 +30,8 @@ public:
     // 今は UniformBuffer が Usage にかかわらずそのような実装になっているのみ。
     virtual void* map();
     virtual void unmap();
+    // NOTE: map/unmap は必要なの？
+    //   
 
     // RenderTarget のみサポート
     virtual RHIRef<RHIBitmap> readData();
