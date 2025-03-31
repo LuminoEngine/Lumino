@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
 namespace ln {
@@ -214,8 +215,11 @@ Ref<RHIResource> WebGPUDevice::onCreateWrappedRenderTarget(intptr_t nativeObject
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateDepthBuffer(uint32_t width, uint32_t height) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUDepthBuffer>();
+    if (!ptr->init(this, width, height)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<ISamplerState> WebGPUDevice::onCreateSamplerState(const SamplerStateData& desc) {
