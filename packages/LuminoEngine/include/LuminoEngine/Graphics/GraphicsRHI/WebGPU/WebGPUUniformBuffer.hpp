@@ -9,8 +9,8 @@ public:
     WebGPUUniformBuffer();
     MaybeResult init(WebGPUDevice* device, uint32_t size);
     void onDestroy() override;
-    void* map() override;
-    void unmap() override;
+    //void* map() override;
+    //void unmap() override;
 
 private:
     WebGPUDevice* m_device;

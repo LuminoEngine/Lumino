@@ -10,9 +10,17 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-#include "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/include/slang.h"
-#include "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/include/slang-com-ptr.h"
-#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#include "../../../../../vcpkg/packages/shader-slang_x64-windows/include/slang.h"
+#include "../../../../../vcpkg/packages/shader-slang_x64-windows/include/slang-com-ptr.h"
+//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
+    slang::CompilerOptionValue value;
+    value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
+    value.intValue1 = v2;
+    value.kind = slang::CompilerOptionValueKind::Int;
+    return value;
+}
 #endif
 
 namespace ln {
@@ -20,6 +28,7 @@ namespace detail {
 
 //==============================================================================
 // ShaderManager
+
 
 ShaderManager* ShaderManager::initialize(const Settings& settings)
 {
@@ -37,11 +46,14 @@ ShaderManager* ShaderManager::initialize(const Settings& settings)
     SlangResult result = slang::createGlobalSession(&desc, globalSession.writeRef());
     // SLANG_SUCCEEDED
 
+    slang::CompilerOptionEntry options[] = { { slang::CompilerOptionName::VulkanBindShift, fromInt3(2, 2, 3) } };
     slang::TargetDesc targetDesc = {};
-    targetDesc.format = SLANG_SPIRV;
+    //targetDesc.format = SLANG_SPIRV;
     //targetDesc.format = SLANG_GLSL;
-   // targetDesc.format = SLANG_WGSL;
+    targetDesc.format = SLANG_WGSL;
     //targetDesc.format = SLANG_METAL;
+    targetDesc.compilerOptionEntries = options;
+    targetDesc.compilerOptionEntryCount = 0;
     targetDesc.profile = globalSession->findProfile("glsl_450");
 
     slang::SessionDesc sessionDesc = {};
@@ -63,9 +75,10 @@ ShaderManager* ShaderManager::initialize(const Settings& settings)
     Slang::ComPtr<slang::IBlob> diagnostics;
     //slang::IModule* module =
     //    session->loadModule("C:/Proj/LN/Lumino/packages/LuminoEngine/MyShaders.slang", diagnostics.writeRef());
+    //slang::IModule* module =
+    //    session->loadModule("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
     slang::IModule* module =
-        session->loadModule("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
-    
+        session->loadModule("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
 
     if (diagnostics) {
         fprintf(stderr, "%s\n", (const char*)diagnostics->getBufferPointer());
@@ -85,16 +98,23 @@ ShaderManager* ShaderManager::initialize(const Settings& settings)
     Slang::ComPtr<ISlangBlob> diagnosticBlob;
     result = program->link(linkedProgram.writeRef(), diagnosticBlob.writeRef());
 
+    slang::ProgramLayout* layout2 = linkedProgram->getLayout();
+
     int entryPointIndex = 0; // only one entry point
     int targetIndex = 0;     // only one target
     Slang::ComPtr<slang::IBlob> kernelBlob;
-    result = linkedProgram->getEntryPointCode(entryPointIndex, targetIndex, kernelBlob.writeRef(), diagnostics.writeRef());
+    result =
+        linkedProgram->getEntryPointCode(entryPointIndex, targetIndex, kernelBlob.writeRef(), diagnostics.writeRef());
+    if (diagnostics) {
+        fprintf(stderr, "%s\n", (const char*)diagnostics->getBufferPointer());
+    }
 
-    ln::FileSystem::writeAllBytes(
-        U"C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.spv",
-        (const void*)kernelBlob->getBufferPointer(),
-        kernelBlob->getBufferSize());
-    //std::string code((const char*)kernelBlob->getBufferPointer(), kernelBlob->getBufferSize());
+    //ln::FileSystem::writeAllBytes(
+    //    //U"C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.spv",
+    //    U"E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.spv",
+    //    (const void*)kernelBlob->getBufferPointer(),
+    //    kernelBlob->getBufferSize());
+    std::string code((const char*)kernelBlob->getBufferPointer(), kernelBlob->getBufferSize());
 
 #endif
 
