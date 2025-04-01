@@ -214,6 +214,7 @@ if(LUMINO_BUILD_ENGINE)
         add_subdirectory(packages/LuminoEngine)
         add_subdirectory(packages/LuminoFFI)
         add_subdirectory(packages/lumino-cli)
+        add_subdirectory(packages/luminosh)
 
         if(LUMINO_BUILD_EXAMPLES)
             # add_subdirectory(examples)

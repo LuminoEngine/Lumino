@@ -12,8 +12,8 @@
 // https://github.com/shader-slang/slang/pull/6679
 #include "../../../../../vcpkg/packages/shader-slang_x64-windows/include/slang.h"
 #include "../../../../../vcpkg/packages/shader-slang_x64-windows/include/slang-com-ptr.h"
-//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -40,7 +40,7 @@ ShaderManager* ShaderManager::initialize(const Settings& settings)
     EngineInstance::instance()->registerModule(m);
     EngineInstance::instance()->shaderManager = m;
 
-#ifdef LN_USE_SLANG
+#if defined(LN_USE_SLANG) && 0
     Slang::ComPtr<slang::IGlobalSession> globalSession;
     SlangGlobalSessionDesc desc = {};
     SlangResult result = slang::createGlobalSession(&desc, globalSession.writeRef());
@@ -75,10 +75,10 @@ ShaderManager* ShaderManager::initialize(const Settings& settings)
     Slang::ComPtr<slang::IBlob> diagnostics;
     //slang::IModule* module =
     //    session->loadModule("C:/Proj/LN/Lumino/packages/LuminoEngine/MyShaders.slang", diagnostics.writeRef());
-    //slang::IModule* module =
-    //    session->loadModule("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
     slang::IModule* module =
-        session->loadModule("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
+        session->loadModule("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
+    //slang::IModule* module =
+    //    session->loadModule("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
 
     if (diagnostics) {
         fprintf(stderr, "%s\n", (const char*)diagnostics->getBufferPointer());

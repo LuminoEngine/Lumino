@@ -45,6 +45,7 @@ file(GLOB LOCAL_SOURCES
     "src/Graphics/GraphicsRHI/*.cpp"
 )
 file(GLOB LOCAL_SOURCES_ShaderCompiler
+    "include/LuminoEngine/Graphics/ShaderCompiler/*.hpp"
     "include/LuminoEngine/Graphics/ShaderCompiler/detail/*.hpp"
     "src/Graphics/ShaderCompiler/*.hpp"
     "src/Graphics/ShaderCompiler/*.cpp"
