@@ -7,7 +7,7 @@ set(LOCAL_ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/Assets")
 function(target_set_sample_configurations Target)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_DIR="${LOCAL_ASSETS_DIR}")
     target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoFFI-static glfw)
-    set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "samples")
+    set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "examples")
 
     if(LN_DESKTOP_WEBGPU)
         target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
