@@ -7,22 +7,6 @@
 #include <LuminoEngine/Graphics/ShaderCompiler/detail/D3DCompilerAPI.hpp>
 #endif
 
-#ifdef LN_USE_SLANG
-// https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
-// https://github.com/shader-slang/slang/pull/6679
-#include "../../../../../vcpkg/packages/shader-slang_x64-windows/include/slang.h"
-#include "../../../../../vcpkg/packages/shader-slang_x64-windows/include/slang-com-ptr.h"
-#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
-    slang::CompilerOptionValue value;
-    value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
-    value.intValue1 = v2;
-    value.kind = slang::CompilerOptionValueKind::Int;
-    return value;
-}
-#endif
-
 namespace ln {
 namespace detail {
 

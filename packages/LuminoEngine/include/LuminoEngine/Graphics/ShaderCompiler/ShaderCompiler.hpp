@@ -9,18 +9,8 @@
 namespace ln {
 namespace kokage {
 namespace fs = std::filesystem;
-
-struct Parameter {};
-
-
-struct Reflection {
-
-};
-
-struct Component {
-    std::vector<uint8_t> code;
-
-};
+class UnifiedShader2;
+class ModuleInfo;
 
 class ShaderCompiler : public URefObject {
 public:
@@ -32,16 +22,18 @@ private:
     ShaderCompiler();
     ~ShaderCompiler() override;
     MaybeResult init();
-    MaybeResult buildTarget(const std::string& inputFilePath, SlangCompileTarget target);
-    MaybeResult buildSingle(
-        slang::IComponentType* linkedProgram,
-        int entryPointIndex,
-        std::vector<uint8_t>* code);
-    
+    MaybeResult buildModule();
+    MaybeResult buildTarget(slang::IComponentType* program, ShaderTarget target, int targetIndex);
+    MaybeResult buildEntryPoint(slang::IComponentType* program, int targetIndex, int entryPointIndex);
+    MaybeResult buildTargetInfoSPIRV(slang::ProgramLayout* layout, ModuleInfo* moduleInfo);
+
     Slang::ComPtr<slang::IGlobalSession> m_globalSession;
+    slang::IModule* m_module;
+    fs::path m_inputFilePath;
     fs::path m_inputDirPath;
     fs::path m_dumpDirPath;
     bool m_dump;
+    URef<UnifiedShader2> m_shader;
 };
 
 } // namespace kokage

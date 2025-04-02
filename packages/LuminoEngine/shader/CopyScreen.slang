@@ -42,11 +42,12 @@ struct LN_VSInput
 
 //[[vk::binding(1,2)]]
 Sampler2D ln_BoneTexture;
-Sampler2D ln_MaterialTexture;
+//Sampler2D ln_MaterialTexture;
+Sampler2D ln_ConbinedSampler;
 //[[vk::binding(1,2)]]
-//Texture2D ln_MaterialTexture;
+Texture2D ln_MaterialTexture;
 //[[vk::binding(1,3)]]
-//SamplerState ln_MaterialTextureSampler;
+SamplerState ln_MaterialTextureSampler;
 //sampler2D ln_MaterialTexture;
 
 //==============================================================================
@@ -64,7 +65,7 @@ VS_Output VS_Main(LN_VSInput input)
     VS_Output output;
     output.Pos = float4(input.Pos, 1.0);
     output.UV = input.UV;
-    //float4 p = ln_BoneTexture.SampleLevel(input.UV, 0);
+    float4 p = ln_BoneTexture.SampleLevel(input.UV, 0);
     //output.Pos.xyz += p.xyz;
     output.Pos.x += ln_Value1;
     //output.Pos.x += skyColor.x;
@@ -84,8 +85,8 @@ struct PS_Input
 [shader("pixel")]
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    return ln_MaterialTexture.Sample(input.UV);
-    //return ln_MaterialTexture.Sample(ln_MaterialTextureSampler, input.UV);
+    //return ln_MaterialTexture.Sample(input.UV);
+    return ln_MaterialTexture.Sample(ln_MaterialTextureSampler, input.UV) + ln_ConbinedSampler.Sample(input.UV);
     //
     //return tex2D(ln_MaterialTexture, input.UV);
 }
@@ -102,3 +103,15 @@ float4 PS_Main(PS_Input input) : SV_TARGET
 //         PixelShader = PS_Main;
 //     }
 // }
+
+#define DEF(...)
+
+DEF({
+    "a": "100"
+})
+
+#ifdef DEAF
+{
+    "a": "100"
+}
+#endif

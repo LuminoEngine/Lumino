@@ -43,6 +43,13 @@ class ShaderDescriptorPool;
 
 namespace kokage {
 
+enum ShaderTarget {
+    ShaderTarget_SPIRV = 0,
+    ShaderTarget_DXBC = 1,
+    ShaderTarget_WGSL = 2,
+    ShaderTarget_METAL = 3,
+};
+
 enum ShaderUniformType {
     ShaderUniformType_Unknown = 0,
     ShaderUniformType_Bool = 1,
