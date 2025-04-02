@@ -6,8 +6,8 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -22,19 +22,40 @@ static const struct {
     ShaderTarget target;
     const char* profile;
 } kTargets[] = {
-    { ShaderTarget_SPIRV, "sm_6_0" },
-    { ShaderTarget_DXBC, "sm_6_0" },
-    { ShaderTarget_WGSL, "sm_6_0" },
-    { ShaderTarget_METAL, "sm_6_0" },
+    // Check tool: dpirv-dis <file>
+    { ShaderTarget_SPIRV, "glsl_450" },
+
+    // DXIL は glsl_450 ではダメだったので sm_6_0 としている。 (error X3506: unrecognized compiler target ...)
+    // Check tool: dxc -dumpbin <file>
+    { ShaderTarget_DXIL, "sm_6_0" },
+    { ShaderTarget_WGSL, "glsl_450" },
+    { ShaderTarget_METAL, "glsl_450" },
 };
 static const int kTargetCount = SLANG_COUNT_OF(kTargets);
+
+struct BindingDumpInfo {
+    std::string name;
+    SlangParameterCategory category;
+    int offset; // for global variable. ($Global)
+    int size;   // for global variable. ($Global)
+    int space;
+    int index;
+    int count;
+    int used;
+};
+
+struct VaryingDumpInfo {
+    std::string name;
+    std::string semanticName;
+    int semanticIndex;
+};
 
 static SlangCompileTarget toSlangTarget(ShaderTarget target) {
     switch (target) {
         case ShaderTarget::ShaderTarget_SPIRV:
             return SLANG_SPIRV;
-        case ShaderTarget::ShaderTarget_DXBC:
-            return SLANG_DXBC;
+        case ShaderTarget::ShaderTarget_DXIL:
+            return SLANG_DXIL;
         case ShaderTarget::ShaderTarget_WGSL:
             return SLANG_WGSL;
         case ShaderTarget::ShaderTarget_METAL:
@@ -49,8 +70,8 @@ static const char* getTargetName(ShaderTarget target) {
     switch (target) {
         case ShaderTarget::ShaderTarget_SPIRV:
             return "SPIRV";
-        case ShaderTarget::ShaderTarget_DXBC:
-            return "DXBC";
+        case ShaderTarget::ShaderTarget_DXIL:
+            return "DXIL";
         case ShaderTarget::ShaderTarget_WGSL:
             return "WGSL";
         case ShaderTarget::ShaderTarget_METAL:
@@ -58,6 +79,79 @@ static const char* getTargetName(ShaderTarget target) {
         default:
             LN_UNREACHABLE();
             return "?";
+    }
+}
+
+static const char* getExt(ShaderTarget target) {
+    switch (target) {
+        case ShaderTarget::ShaderTarget_SPIRV:
+            return ".spv";
+        case ShaderTarget::ShaderTarget_DXIL:
+            return ".dxil";
+        case ShaderTarget::ShaderTarget_WGSL:
+            return ".wgsl";
+        case ShaderTarget::ShaderTarget_METAL:
+            return ".msl";
+        default:
+            LN_UNREACHABLE();
+            return "?";
+    }
+}
+
+static const char* getSlangCategoryName(SlangParameterCategory category) {
+    switch (category) {
+        case SLANG_PARAMETER_CATEGORY_NONE:
+            return "None";
+        case SLANG_PARAMETER_CATEGORY_MIXED:
+            return "Mixed";
+        case SLANG_PARAMETER_CATEGORY_CONSTANT_BUFFER:
+            return "ConstantBuffer";
+        case SLANG_PARAMETER_CATEGORY_SHADER_RESOURCE:
+            return "ShaderResource";
+        case SLANG_PARAMETER_CATEGORY_UNORDERED_ACCESS:
+            return "UnorderedAccess";
+        case SLANG_PARAMETER_CATEGORY_VARYING_INPUT:
+            return "VaryingInput";
+        case SLANG_PARAMETER_CATEGORY_VARYING_OUTPUT:
+            return "VaryingOutput";
+        case SLANG_PARAMETER_CATEGORY_SAMPLER_STATE:
+            return "SamplerState";
+        case SLANG_PARAMETER_CATEGORY_UNIFORM:
+            return "Uniform";
+        case SLANG_PARAMETER_CATEGORY_DESCRIPTOR_TABLE_SLOT:
+            return "DescriptorTableSlot";
+        case SLANG_PARAMETER_CATEGORY_SPECIALIZATION_CONSTANT:
+            return "SpecializationConstant";
+        case SLANG_PARAMETER_CATEGORY_PUSH_CONSTANT_BUFFER:
+            return "PushConstantBuffer";
+        case SLANG_PARAMETER_CATEGORY_REGISTER_SPACE:
+            return "RegisterSpace";
+        case SLANG_PARAMETER_CATEGORY_GENERIC:
+            return "Generic";
+        case SLANG_PARAMETER_CATEGORY_RAY_PAYLOAD:
+            return "RayPayload";
+        case SLANG_PARAMETER_CATEGORY_HIT_ATTRIBUTES:
+            return "HitAttributes";
+        case SLANG_PARAMETER_CATEGORY_CALLABLE_PAYLOAD:
+            return "CallablePayload";
+        case SLANG_PARAMETER_CATEGORY_SHADER_RECORD:
+            return "ShaderRecord";
+        case SLANG_PARAMETER_CATEGORY_EXISTENTIAL_TYPE_PARAM:
+            return "ExistentialTypeParam";
+        case SLANG_PARAMETER_CATEGORY_EXISTENTIAL_OBJECT_PARAM:
+            return "ExistentialObjectParam";
+        case SLANG_PARAMETER_CATEGORY_SUB_ELEMENT_REGISTER_SPACE:
+            return "SubElementRegisterSpace";
+        case SLANG_PARAMETER_CATEGORY_SUBPASS:
+            return "Subpass";
+        case SLANG_PARAMETER_CATEGORY_METAL_ARGUMENT_BUFFER_ELEMENT:
+            return "MetalArgumentBufferElement";
+        case SLANG_PARAMETER_CATEGORY_METAL_ATTRIBUTE:
+            return "MetalAttribute";
+        case SLANG_PARAMETER_CATEGORY_METAL_PAYLOAD:
+            return "MetalPayload";
+        default:
+            return "Unknown";
     }
 }
 
@@ -118,11 +212,6 @@ MaybeResult ShaderCompiler::buildModule() {
         targetDesc.format = toSlangTarget(target.target);
         targetDesc.profile = profile;
         targetDescs.push_back(targetDesc);
-
-        //auto result = buildTarget(inputFilePath.string(), target.target, target.profile);
-        //if (!result) {
-        //    return result;
-        //}
     }
     
     slang::SessionDesc sessionDesc = {};
@@ -170,9 +259,8 @@ MaybeResult ShaderCompiler::buildModule() {
     }
 
     // Link
-    Slang::ComPtr<slang::IComponentType> program;
     Slang::ComPtr<slang::IBlob> linkDiag;
-    result = composed->link(program.writeRef(), linkDiag.writeRef());
+    result = composed->link(m_program.writeRef(), linkDiag.writeRef());
     if (linkDiag) {
         std::string message(static_cast<const char*>(linkDiag->getBufferPointer()), linkDiag->getBufferSize());
         LN_LOG_INFO(message);
@@ -183,7 +271,7 @@ MaybeResult ShaderCompiler::buildModule() {
 
     for (int i = 0; i < kTargetCount; i++) {
         auto& target = kTargets[i];
-        auto result = buildTarget(program, target.target, i);
+        auto result = buildTarget(target.target, i);
         if (!result) {
             return result;
         }
@@ -192,15 +280,15 @@ MaybeResult ShaderCompiler::buildModule() {
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::buildTarget(slang::IComponentType* program, ShaderTarget target, int targetIndex) {
-    slang::ProgramLayout* layout = program->getLayout();
+MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
+    slang::ProgramLayout* layout = m_program->getLayout(targetIndex);
 
     
     // Dump module reflection
     // NOTE: この Dump は moduel 全部 Composite した状態で行った方が良いだろう。
     //       そうしないと、EntryPoint の情報が出力されない。
     if (m_dump) {
-        fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + ".reflection.json");
+        fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + ".module-reflection.json");
         Slang::ComPtr<slang::IBlob> text;
         SlangResult result = layout->toJson(text.writeRef());
         if (SLANG_FAILED(result)) {
@@ -221,7 +309,7 @@ MaybeResult ShaderCompiler::buildTarget(slang::IComponentType* program, ShaderTa
             if (!r) return r;
             break;
         }
-        case ShaderTarget_DXBC:
+        case ShaderTarget_DXIL:
             break;
         default:
             break;
@@ -269,7 +357,7 @@ MaybeResult ShaderCompiler::buildTarget(slang::IComponentType* program, ShaderTa
     
     int entryPointCount = m_module->getDefinedEntryPointCount();
     for (int iEntryPoint = 0; iEntryPoint < entryPointCount; iEntryPoint++) {
-        auto r = buildEntryPoint(program, targetIndex, iEntryPoint);
+        auto r = buildEntryPoint(target, targetIndex, iEntryPoint);
         if (!r) return r;
 
 
@@ -318,56 +406,167 @@ MaybeResult ShaderCompiler::buildTarget(slang::IComponentType* program, ShaderTa
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::buildEntryPoint(slang::IComponentType* program, int targetIndex, int entryPointIndex) {
-    slang::ProgramLayout* layout = program->getLayout();
+MaybeResult ShaderCompiler::buildEntryPoint(
+    ShaderTarget target,
+    int targetIndex,
+    int entryPointIndex) {
+    slang::ProgramLayout* layout = m_program->getLayout(targetIndex);
+    slang::EntryPointReflection* entryPointReflection = layout->getEntryPointByIndex(entryPointIndex);
 
+    // Get EntryPointMetadata.
     Slang::ComPtr<slang::IMetadata> entryPointMetadata;
-    SlangResult result = program->getEntryPointMetadata(
+    Slang::ComPtr<slang::IBlob> diag;
+    SlangResult result = m_program->getEntryPointMetadata(
         entryPointIndex,
         targetIndex, // target index
-        entryPointMetadata.writeRef());
+        entryPointMetadata.writeRef(),
+        diag.writeRef());
     if (SLANG_FAILED(result)) {
-        return LN_MAKE_ERROR("getEntryPointMetadata failed. (%d)", result);
+        std::string message(static_cast<const char*>(diag->getBufferPointer()), diag->getBufferSize());
+        return LN_MAKE_ERROR("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
     }
 
     // NOTE: slangc -reflection-json では EntryPoint ごとに used な Parameter が出力されるが、
     //   それはレガシーな API を使っているようで、 公開 API からは取得することができなかった。
     //   (toJson() 内部の spReflection_ToJson() の第２引数に Request を指定する必要があるが、それだけだとクラッシュした)
     //   なので同様の JSON は出力できない点に注意。
+    std::vector<BindingDumpInfo> bindingDumpInfos;
     {
-        slang::EntryPointReflection* entryPoint = layout->getEntryPointByIndex(entryPointIndex);
-        printf("%s\n", entryPoint->getName());
         int programParameterCount = layout->getParameterCount();
         for (int i = 0; i < programParameterCount; i++) {
             slang::VariableLayoutReflection* parameter = layout->getParameterByIndex(i);
+            slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
             int categoryCount = parameter->getCategoryCount();
             for (int iCategory = 0; iCategory < categoryCount; iCategory++) {
                 SlangParameterCategory category =
                     static_cast<SlangParameterCategory>(parameter->getCategoryByIndex(iCategory));
+                auto indexOrOffset = parameter->getOffset(category);
                 auto space = parameter->getBindingSpace(category);
-                auto index = parameter->getOffset(category);
+                auto sizeOrCount = typeLayout->getSize(category);
+
+                // see: slang emitReflectionVarBindingInfoJSON()
+                BindingDumpInfo dumpInfo;
+                dumpInfo.name = parameter->getName();
+                dumpInfo.category = category;
+                if (category == SLANG_PARAMETER_CATEGORY_UNIFORM) {
+                    dumpInfo.name = parameter->getName();
+                    dumpInfo.offset = indexOrOffset;
+                    dumpInfo.size = sizeOrCount;
+                    dumpInfo.index = -1;
+                    dumpInfo.space = -1;
+                    dumpInfo.count = -1;
+                }
+                else {
+                    dumpInfo.index = indexOrOffset;
+                    dumpInfo.offset = -1;
+                    dumpInfo.space = space;
+                    dumpInfo.index = indexOrOffset;
+                    dumpInfo.count = sizeOrCount;
+                }
 
                 // NOTE: uniform ($global) だと常に false になる。
                 bool used = false;
-                bool usedAvailable =
-                    entryPointMetadata->isParameterLocationUsed(category, space, index, used) == SLANG_OK;
-
-                //slang::ShaderBindingRange::isUsageTracked(
-                printf("  %s: %d %d\n", parameter->getName(), index, space, used, usedAvailable);
+                bool usedAvailable = entryPointMetadata->isParameterLocationUsed(category, space, indexOrOffset, used) == SLANG_OK;
+                if (usedAvailable) {
+                    dumpInfo.used = used ? 1 : 0;
+                }
+                else {
+                    dumpInfo.used = -1;
+                }
+                bindingDumpInfos.push_back(dumpInfo);
             }
         }
+        
+    }
+
+    // Analyze Varyings.
+    // see: slang emitReflectionEntryPointJSON()
+    std::vector<VaryingDumpInfo> varyingDumpInfos;
+    {
+        auto callback = [&varyingDumpInfos](slang::VariableLayoutReflection* var) {
+            VaryingDumpInfo info;
+            info.name = var->getName();
+            info.semanticName = var->getSemanticName();
+            info.semanticIndex = var->getSemanticIndex();
+            varyingDumpInfos.push_back(info);
+        };
+        int entryPointParameterCount = entryPointReflection->getParameterCount();
+        for (int i = 0; i < entryPointParameterCount; i++) {
+            auto parameter = entryPointReflection->getParameterByIndex(i);
+            traverseVariableSemaintic(parameter, callback);
+        }
+    }
+
+    // Dump bindings to JSON.
+    if (m_dump) {
+        const char* name = entryPointReflection->getName();
+        fs::path filePath =
+            m_dumpDirPath / (std::string(getTargetName(target)) + ".entry-reflection." + name + ".reflection.json");
+        std::ofstream stream(filePath);
+        if (stream.fail()) {
+            return LN_MAKE_ERROR("ofstream failed. (%d)", result);
+        }
+
+        stream << "{\n";
+        stream << "    \"bindings\": [\n";
+        for (int i = 0; i < bindingDumpInfos.size(); i++) {
+            const BindingDumpInfo& info = bindingDumpInfos[i];
+            stream << "        { ";
+            stream << "\"name\": \"" << info.name << "\", ";
+            stream << "\"category\": \"" << getSlangCategoryName(info.category) << "\", ";
+            if (info.offset > -1) stream << "\"offset\": " << info.offset << ", ";
+            if (info.size > -1) stream << "\"size\": " << info.size << ", ";
+            if (info.space > -1) stream << "\"space\": " << info.space << ", ";
+            if (info.index > -1) stream << "\"index\": " << info.index << ", ";
+            if (info.count > -1) stream << "\"count\": " << info.count << ", ";
+            stream << "\"used\": " << info.used << " ";
+            if (i < bindingDumpInfos.size() - 1) {
+                stream << "},\n";
+            }
+            else {
+                stream << "}\n";
+            }
+        }
+        stream << "    ],\n";
+        stream << "    \"varyings\": [\n";
+        for (int i = 0; i < varyingDumpInfos.size(); i++) {
+            const VaryingDumpInfo& info = varyingDumpInfos[i];
+            stream << "        { ";
+            stream << "\"name\": \"" << info.name << "\", ";
+            stream << "\"semanticName\": \"" << info.semanticName << "\", ";
+            stream << "\"semanticIndex\": " << info.semanticIndex << " ";
+            if (i < varyingDumpInfos.size() - 1) {
+                stream << "},\n";
+            }
+            else {
+                stream << "}\n";
+            }
+        }
+        stream << "    ]\n";
+        stream << "}\n";
     }
 
     // Generate code.
     Slang::ComPtr<slang::IBlob> kernelBlob;
     Slang::ComPtr<slang::IBlob> generateDiag;
-    result = program->getEntryPointCode(entryPointIndex, targetIndex, kernelBlob.writeRef(), generateDiag.writeRef());
+    result = m_program->getEntryPointCode(entryPointIndex, targetIndex, kernelBlob.writeRef(), generateDiag.writeRef());
     if (generateDiag) {
         std::string message(static_cast<const char*>(generateDiag->getBufferPointer()), generateDiag->getBufferSize());
         LN_LOG_INFO(message);
     }
     if (SLANG_FAILED(result)) {
         return LN_MAKE_ERROR("link failed. (%d)", result);
+    }
+
+    // Dump code.
+    if (m_dump) {
+        const char* name = entryPointReflection->getName();
+        fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + "." + name + getExt(target));
+        std::ofstream stream(filePath, std::ios::binary);
+        if (stream.fail()) {
+            return LN_MAKE_ERROR("ofstream failed. (%d)", result);
+        }
+        stream.write(reinterpret_cast<const char*>(kernelBlob->getBufferPointer()), kernelBlob->getBufferSize());
     }
 
     //ln::FileSystem::writeAllBytes(
@@ -421,6 +620,49 @@ MaybeResult ShaderCompiler::buildTargetInfoSPIRV(slang::ProgramLayout* layout, M
     int c = layout->getTypeParameterCount();
 
     return LN_MAKE_SUCCESS();
+
+}
+
+// see: Slang::emitReflectionTypeLayoutJSON()
+// see: Slang::emitReflectionVarLayoutJSON()
+void ShaderCompiler::traverseVariableSemaintic(
+    slang::VariableLayoutReflection* var,
+    const std::function<void(slang::VariableLayoutReflection* var)>& callback) {
+    if (var->getSemanticName()) {
+        callback(var);
+    }
+
+    slang::TypeLayoutReflection* typeLayout = var->getTypeLayout();
+    if (typeLayout) {
+        // see Slang::emitReflectionTypeLayoutInfoJSON()
+        switch (typeLayout->getKind()) {
+            default:
+                //emitReflectionTypeInfoJSON(writer, typeLayout->getType());
+                break;
+            case slang::TypeReflection::Kind::Struct: {
+                auto structTypeLayout = typeLayout;
+
+                //writer.maybeComma();
+                //writer << "\"kind\": \"struct\"";
+                //if (auto name = structTypeLayout->getName()) {
+                //    writer.maybeComma();
+                //    emitReflectionNameInfoJSON(writer, name);
+                //}
+                //writer.maybeComma();
+                //writer << "\"fields\": [\n";
+                //writer.indent();
+
+                auto fieldCount = structTypeLayout->getFieldCount();
+                for (uint32_t ff = 0; ff < fieldCount; ++ff) {
+                    traverseVariableSemaintic(structTypeLayout->getFieldByIndex(ff), callback);
+                }
+                //writer.dedent();
+                //writer << "\n]";
+                //emitUserAttributes(writer, structTypeLayout->getType());
+            } break;
+        }
+
+    }
 
 }
 

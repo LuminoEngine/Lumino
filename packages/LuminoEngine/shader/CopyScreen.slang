@@ -36,6 +36,7 @@ struct LN_VSInput
     float3 Normal : NORMAL0;
     float2 UV : TEXCOORD0;
     float4 Color : COLOR0;
+    float2 Data : TEXCOORD1;
     float4 tangent: TANGENT0;
 };
 
@@ -68,7 +69,7 @@ VS_Output VS_Main(LN_VSInput input)
     float4 p = ln_BoneTexture.SampleLevel(input.UV, 0);
     //output.Pos.xyz += p.xyz;
     output.Pos.x += ln_Value1;
-    //output.Pos.x += skyColor.x;
+    output.Pos.x += skyColor.x;
     return output;
 }
 

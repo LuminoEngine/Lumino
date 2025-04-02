@@ -36,6 +36,21 @@ struct Component {
     std::vector<uint8_t> code;
 };
 
+class ShaderPass : public URefObject {
+public:
+    std::string name;
+    int vertBlobIndex;
+    int fragBlobIndex;
+    int compBlobIndex;
+};
+
+// 任意データ
+class Blob : public URefObject {
+public:
+    int index;
+    std::vector<uint8_t> data;
+};
+
 // ひとつの Shader 全体のインスタンス。
 class ModuleInfo : public URefObject {
 public:
@@ -49,8 +64,13 @@ public:
 
     ModuleInfo* addModuleInfo();
 
+    std::pair<int, ShaderPass*> createShaderPass();
+    std::pair<int, Blob*> createBlob();
+
 private:
     std::vector<URef<ModuleInfo>> m_moduleInfos;
+    std::vector<URef<ShaderPass>> m_shaderPasses;
+    std::vector<URef<Blob>> m_blobs;
 };
 
 } // namespace kokage
