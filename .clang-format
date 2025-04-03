@@ -1,25 +1,56 @@
 ---
 Language:        Cpp
 # BasedOnStyle:  Mozilla
+ColumnLimit: 100  # GitHub preview width.
 AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
+AllowAllArgumentsOnNextLine: false
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: Right
-AlignOperands:   true
+AlignOperands: Align
 AlignTrailingComments: true
-AllowAllParametersOfDeclarationOnNextLine: false
+#----------
+# Type LongLongFunction(
+#   int a, int b, int c)
+# NOTE: できれば Params も改行したいけど、今はできないみたい。
+AllowAllParametersOfDeclarationOnNextLine: true
+BinPackParameters: false
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+BreakBeforeBraces: Custom
+BreakConstructorInitializers: BeforeComma
+PenaltyBreakBeforeFirstCallParameter: 0
+BinPackArguments: false
+#----------
+
+#----------
+# ```
+# auto a =
+#   func(a, b);
+# ```
+# ↓
+# ```
+# auto a = func(
+#     a,
+#     b);
+PenaltyBreakAssignment: 1000
+#----------
+
+
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakComment: 300
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 1000000
+
+
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: None
-AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
-BinPackArguments: false
-BinPackParameters: false
 BraceWrapping:   
   AfterClass:      false
   AfterControlStatement: false
@@ -36,14 +67,11 @@ BraceWrapping:
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
-BreakConstructorInitializers: BeforeComma
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
-ColumnLimit: 120  # GitHub preview width.
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -80,12 +108,6 @@ NamespaceIndentation: None
 ObjCBlockIndentWidth: 4
 ObjCSpaceAfterProperty: true
 ObjCSpaceBeforeProtocolList: false
-PenaltyBreakAssignment: 4
-PenaltyBreakBeforeFirstCallParameter: 19
-PenaltyBreakComment: 300
-PenaltyBreakFirstLessLess: 120
-PenaltyBreakString: 1000
-PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Left
 ReflowComments:  false  # Leave the arrangement of comments to the programmer.

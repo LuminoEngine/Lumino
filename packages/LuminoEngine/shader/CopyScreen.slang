@@ -14,7 +14,9 @@ C:\VulkanSDK\1.4.309.0\Bin\slangc.exe E:\Proj\Lumino\packages\LuminoEngine\shade
 
 */
 uniform float ln_Value1;
-// uniform int ln_Value2;
+uniform float3 ln_Value2;
+uniform float4x4 ln_Value3;
+uniform float4 ln_Value4[3];
 cbuffer PerFrameData
 {
     float4x4 mvp;
@@ -51,6 +53,7 @@ Texture2D ln_MaterialTexture;
 SamplerState ln_MaterialTextureSampler;
 //sampler2D ln_MaterialTexture;
 
+//Texture2D TextureArray[3];
 //==============================================================================
 // Vertex shader
 
@@ -70,6 +73,7 @@ VS_Output VS_Main(LN_VSInput input)
     //output.Pos.xyz += p.xyz;
     output.Pos.x += ln_Value1;
     output.Pos.x += skyColor.x;
+    output.Pos.x += ln_Value4[1].x;
     return output;
 }
 

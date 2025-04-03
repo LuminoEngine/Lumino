@@ -106,5 +106,15 @@ private:
     BinaryReader m_reader;
 };
 
+// ConstantBuffer, Textrue, SamplerState, Buffer の割り当てスロット
+class ShaderGroupEntry : public URefObject {
+public:
+    ConstantBuffer* constantBuffer = nullptr;
+    Texture* texture = nullptr;
+    SamplerState* samplerState = nullptr;
+
+private:
+};
+
 } // namespace detail
 } // namespace ln

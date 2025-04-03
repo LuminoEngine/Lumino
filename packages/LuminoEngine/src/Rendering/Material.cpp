@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 
 namespace ln {
 
@@ -69,6 +70,15 @@ Material::~Material()
 void Material::init()
 {
 	Object::init();
+
+    
+    auto result = ln::kokage::ShaderCompiler::create();
+
+   //URef<kokage::ShaderCompiler> compiler = std::move(result);
+
+    //auto result2 = compiler->build("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
+    auto result2 = result->get()->build("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
+    //if (!result2) return 1;
 }
 
 void Material::init(Texture* mainTexture)

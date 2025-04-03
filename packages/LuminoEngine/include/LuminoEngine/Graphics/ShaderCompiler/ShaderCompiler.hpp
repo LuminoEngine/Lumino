@@ -17,12 +17,14 @@ public:
     static Result<URef<ShaderCompiler>> create();
 
     MaybeResult build(const fs::path& inputFilePath);
+    const URef<UnifiedShader2>& shader() const { return m_shader; }
 
 private:
     ShaderCompiler();
     ~ShaderCompiler() override;
     MaybeResult init();
     MaybeResult buildModule();
+    MaybeResult buildInputResources(int targetIndex);
     MaybeResult buildTarget(ShaderTarget target, int targetIndex);
     MaybeResult buildEntryPoint(ShaderTarget target, int targetIndex, int entryPointIndex);
     MaybeResult buildTargetInfoSPIRV(slang::ProgramLayout* layout, ModuleInfo* moduleInfo);

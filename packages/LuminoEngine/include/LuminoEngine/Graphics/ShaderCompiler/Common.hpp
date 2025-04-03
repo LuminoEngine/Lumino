@@ -42,6 +42,7 @@ class ShaderDescriptorPool;
 } // namespace detail
 
 namespace kokage {
+static const char* kGlobalConstantBufferName = "$Global";
 
 enum ShaderTarget {
     ShaderTarget_UNKNOWN = 0,
@@ -59,6 +60,21 @@ enum RegisterCategory {
     RegisterCategory_UnorderdAccess = 4,
 
     LN_LAST_ELEMENT_MARKER(RegisterCategory_Count) = 5,
+};
+
+enum ShaderGlobalMemberType {
+    ShaderGlobalMemberType_Unknown = 0,
+    ShaderGlobalMemberType_Bool = 1,
+    ShaderGlobalMemberType_Int = 2,
+    ShaderGlobalMemberType_Float = 3,
+};
+
+enum ShaderGlobalMemberKind {
+    ShaderGlobalMemberKind_Unknown = 0,
+    ShaderGlobalMemberKind_Scalar = 1,
+    ShaderGlobalMemberKind_Vector = 2,
+    ShaderGlobalMemberKind_Matrix = 3,
+    ShaderGlobalMemberKind_Array = 4,
 };
 
 enum ShaderUniformType {
