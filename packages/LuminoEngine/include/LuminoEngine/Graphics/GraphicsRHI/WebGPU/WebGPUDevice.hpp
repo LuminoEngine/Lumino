@@ -16,6 +16,7 @@ public:
     void dispose() override;
 
 	WGPUDevice wgpuDevice() const { return m_device; }
+    WGPUQueue wgpuQueue() const { return m_queue; }
     WGPUAdapter wgpuAdapter() const { return m_adapters[0].adapter; }
 	
 	WGPUSurface getWGPUSurface(PlatformWindow* window) const;
