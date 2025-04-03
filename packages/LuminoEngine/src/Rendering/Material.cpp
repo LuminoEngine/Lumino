@@ -494,22 +494,6 @@ void Material::updateShaderVariables2(GraphicsCommandList* commandList, ShaderDe
 //	//outData->specular = Material_DefaultSpecular;
 //}
 
-//==============================================================================
-// Material::BuilderDetails
-
-Material::BuilderDetails::BuilderDetails()
-    : color(Material_DefaultColor)
-    , roughness(Material_DefaultRoughness)
-    , metallic(Material_DefaultMetallic)
-{
-}
-
-void Material::BuilderDetails::apply(Material* p) const
-{
-    p->setColor(color);
-    p->setRoughness(roughness);
-    p->setMetallic(metallic);
-}
 
 } // namespace ln
 
