@@ -6,8 +6,8 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -63,6 +63,22 @@ static SlangCompileTarget toSlangTarget(ShaderTarget target) {
         default:
             LN_UNREACHABLE();
             return SLANG_SPIRV;
+    }
+}
+
+static RegisterCategory toLuminoCategory(SlangParameterCategory category) {
+    switch (category) {
+        case SLANG_PARAMETER_CATEGORY_CONSTANT_BUFFER:
+            return RegisterCategory_UniformBuffer;
+        case SLANG_PARAMETER_CATEGORY_SHADER_RESOURCE:
+            return RegisterCategory_Texture;
+        case SLANG_PARAMETER_CATEGORY_UNORDERED_ACCESS:
+            return RegisterCategory_UnorderdAccess;
+        case SLANG_PARAMETER_CATEGORY_SAMPLER_STATE:
+            return RegisterCategory_SamplerState;
+        default:
+            LN_UNREACHABLE();
+            return RegisterCategory_Unknown;
     }
 }
 
@@ -410,8 +426,8 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     ShaderTarget target,
     int targetIndex,
     int entryPointIndex) {
-    slang::ProgramLayout* layout = m_program->getLayout(targetIndex);
-    slang::EntryPointReflection* entryPointReflection = layout->getEntryPointByIndex(entryPointIndex);
+    slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
+    slang::EntryPointReflection* entryPointReflection = programLayout->getEntryPointByIndex(entryPointIndex);
 
     // Get EntryPointMetadata.
     Slang::ComPtr<slang::IMetadata> entryPointMetadata;
@@ -432,9 +448,9 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     //   なので同様の JSON は出力できない点に注意。
     std::vector<BindingDumpInfo> bindingDumpInfos;
     {
-        int programParameterCount = layout->getParameterCount();
+        int programParameterCount = programLayout->getParameterCount();
         for (int i = 0; i < programParameterCount; i++) {
-            slang::VariableLayoutReflection* parameter = layout->getParameterByIndex(i);
+            slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
             slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
             int categoryCount = parameter->getCategoryCount();
             for (int iCategory = 0; iCategory < categoryCount; iCategory++) {
@@ -547,35 +563,73 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     }
 
     // Generate code.
-    Slang::ComPtr<slang::IBlob> kernelBlob;
-    Slang::ComPtr<slang::IBlob> generateDiag;
-    result = m_program->getEntryPointCode(entryPointIndex, targetIndex, kernelBlob.writeRef(), generateDiag.writeRef());
-    if (generateDiag) {
-        std::string message(static_cast<const char*>(generateDiag->getBufferPointer()), generateDiag->getBufferSize());
-        LN_LOG_INFO(message);
-    }
-    if (SLANG_FAILED(result)) {
-        return LN_MAKE_ERROR("link failed. (%d)", result);
-    }
-
-    // Dump code.
-    if (m_dump) {
-        const char* name = entryPointReflection->getName();
-        fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + "." + name + getExt(target));
-        std::ofstream stream(filePath, std::ios::binary);
-        if (stream.fail()) {
-            return LN_MAKE_ERROR("ofstream failed. (%d)", result);
+    Blob* codeBlob = nullptr; 
+    {
+        Slang::ComPtr<slang::IBlob> kernelBlob;
+        Slang::ComPtr<slang::IBlob> generateDiag;
+        result =
+            m_program->getEntryPointCode(entryPointIndex, targetIndex, kernelBlob.writeRef(), generateDiag.writeRef());
+        if (generateDiag) {
+            std::string message(
+                static_cast<const char*>(generateDiag->getBufferPointer()), generateDiag->getBufferSize());
+            LN_LOG_INFO(message);
         }
-        stream.write(reinterpret_cast<const char*>(kernelBlob->getBufferPointer()), kernelBlob->getBufferSize());
+        if (SLANG_FAILED(result)) {
+            return LN_MAKE_ERROR("link failed. (%d)", result);
+        }
+
+        // Dump code.
+        if (m_dump) {
+            const char* name = entryPointReflection->getName();
+            fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + "." + name + getExt(target));
+            std::ofstream stream(filePath, std::ios::binary);
+            if (stream.fail()) {
+                return LN_MAKE_ERROR("ofstream failed. (%d)", result);
+            }
+            stream.write(reinterpret_cast<const char*>(kernelBlob->getBufferPointer()), kernelBlob->getBufferSize());
+        }
+
+        codeBlob = m_shader->createBlob();
+        codeBlob->data.resize(kernelBlob->getBufferSize());
+        memcpy(codeBlob->data.data(), kernelBlob->getBufferPointer(), kernelBlob->getBufferSize());
     }
 
-    //ln::FileSystem::writeAllBytes(
-    //    //U"C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.spv",
-    //    U"E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.spv",
-    //    (const void*)kernelBlob->getBufferPointer(),
-    //    kernelBlob->getBufferSize());
-    //std::string code((const char*)kernelBlob->getBufferPointer(), kernelBlob->getBufferSize());
 
+    EntryPoint* entryPoint = m_shader->createEntryPoint();
+    entryPoint->name = entryPointReflection->getName();
+    entryPoint->codeBlobIndex = codeBlob->index;
+
+    // $Global 相当の ConstantBuffer が生成されていれば、 binding 情報として取り出す。
+    // ※ $Global がある場合、 size が 0 より大きい値になる。そのとき、他の ContantBuffer は index が 1 から始まる。（$Global がなければ 0 から始まる）
+    int globalConstantBufferSize = programLayout->getGlobalConstantBufferSize();
+    if (globalConstantBufferSize > 0) {
+        EntryPointBindingInfo binding;
+        binding.name = "$Global";
+        binding.category = RegisterCategory_UniformBuffer;
+        binding.offset = 0;
+        binding.size = globalConstantBufferSize;
+        binding.space = 0;
+        binding.index = programLayout->getGlobalConstantBufferBinding();
+        binding.count = 0;
+        binding.used = true;
+        entryPoint->bindings.push_back(binding);
+    }
+
+    for (const BindingDumpInfo& info : bindingDumpInfos) {
+        if (info.category == SLANG_PARAMETER_CATEGORY_UNIFORM) {
+            continue; // Containd $Global
+        }
+        EntryPointBindingInfo binding;
+        binding.name = info.name;
+        binding.category = toLuminoCategory(info.category);
+        binding.offset = info.offset;
+        binding.size = info.size;
+        binding.space = info.space;
+        binding.index = info.index;
+        binding.count = info.count;
+        binding.used = info.used;
+        entryPoint->bindings.push_back(binding);
+    }
 
     return LN_MAKE_SUCCESS();
 }
@@ -596,16 +650,16 @@ MaybeResult ShaderCompiler::buildTargetInfoSPIRV(slang::ProgramLayout* layout, M
         slang::ParameterCategory category = parameter->getCategory();
         switch (category) {
             case slang::ParameterCategory::DescriptorTableSlot:
-                info.category = DescriptorType_UniformBuffer;
+                info.category = RegisterCategory_UniformBuffer;
                 break;
             case slang::ParameterCategory::ShaderResource:
-                info.category = DescriptorType_Texture;
+                info.category = RegisterCategory_Texture;
                 break;
             case slang::ParameterCategory::SamplerState:
-                info.category = DescriptorType_SamplerState;
+                info.category = RegisterCategory_SamplerState;
                 break;
             case slang::ParameterCategory::UnorderedAccess:
-                info.category = DescriptorType_UnorderdAccess;
+                info.category = RegisterCategory_UnorderdAccess;
                 break;
             case slang::ParameterCategory::Uniform: // GlobalUniform
                 continue;
@@ -615,9 +669,6 @@ MaybeResult ShaderCompiler::buildTargetInfoSPIRV(slang::ProgramLayout* layout, M
 
         moduleInfo->parameters.push_back(info);
     }
-
-    int b = layout->getGlobalConstantBufferSize();
-    int c = layout->getTypeParameterCount();
 
     return LN_MAKE_SUCCESS();
 

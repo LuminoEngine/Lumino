@@ -17,6 +17,17 @@ struct VariableInfo {
     int32_t matrixColumns;
 };
 
+struct EntryPointBindingInfo {
+    std::string name;
+    RegisterCategory category;
+    int offset;
+    int size;
+    int space;
+    int index;
+    int count;
+    bool used;
+};
+
 // Pipeline にバインドできる単位の Parameter。
 // ConstantBuffer, Texture, SamplerState, StorageBuffer。
 //
@@ -24,7 +35,7 @@ struct VariableInfo {
 // https://shader-slang.org/slang/user-guide/reflection.html#programs-and-scopes
 // こちらように $Global のような ConstantBuffer に含まれる。
 struct ModuleParameterInfo {
-    DescriptorType category; // b, t, s, u...
+    RegisterCategory category; // b, t, s, u...
     std::string name;
     std::vector<VariableInfo> constantBufferMembers; // ConstantBuffer members
     int32_t constantBufferSize;
@@ -36,8 +47,17 @@ struct Component {
     std::vector<uint8_t> code;
 };
 
+class EntryPoint : public URefObject {
+public:
+    int index;
+    std::string name;
+    std::vector<EntryPointBindingInfo> bindings;
+    int codeBlobIndex;
+};
+
 class ShaderPass : public URefObject {
 public:
+    int index;
     std::string name;
     int vertBlobIndex;
     int fragBlobIndex;
@@ -64,11 +84,13 @@ public:
 
     ModuleInfo* addModuleInfo();
 
+    EntryPoint* createEntryPoint();
     std::pair<int, ShaderPass*> createShaderPass();
-    std::pair<int, Blob*> createBlob();
+    Blob* createBlob();
 
 private:
     std::vector<URef<ModuleInfo>> m_moduleInfos;
+    std::vector<URef<EntryPoint>> m_entryPoints;
     std::vector<URef<ShaderPass>> m_shaderPasses;
     std::vector<URef<Blob>> m_blobs;
 };

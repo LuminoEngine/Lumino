@@ -51,6 +51,16 @@ enum ShaderTarget {
     ShaderTarget_METAL = 4,
 };
 
+enum RegisterCategory {
+    RegisterCategory_Unknown = 0,
+    RegisterCategory_UniformBuffer = 1,
+    RegisterCategory_Texture = 2,
+    RegisterCategory_SamplerState = 3,
+    RegisterCategory_UnorderdAccess = 4,
+
+    LN_LAST_ELEMENT_MARKER(RegisterCategory_Count) = 5,
+};
+
 enum ShaderUniformType {
     ShaderUniformType_Unknown = 0,
     ShaderUniformType_Bool = 1,
