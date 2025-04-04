@@ -1,0 +1,20 @@
+﻿#pragma once
+#include "Common.hpp"
+
+namespace ln {
+namespace detail {
+
+class WebGPUPipeline : public IPipeline {
+public:
+    WebGPUPipeline();
+    ~WebGPUPipeline() override;
+    MaybeResult init(WebGPUDevice* m_wgpuDevice, const DevicePipelineStateDesc& state);
+    void onDestroy() override;
+
+private:
+    WebGPUDevice* m_wgpuDevice;
+    WGPURenderPipeline m_nativePipeline;
+};
+
+} // namespace detail
+} // namespace ln

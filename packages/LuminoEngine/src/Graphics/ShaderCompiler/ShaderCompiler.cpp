@@ -598,6 +598,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     int entryPointIndex) {
     slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
     slang::EntryPointReflection* entryPointReflection = programLayout->getEntryPointByIndex(entryPointIndex);
+    SlangStage stage = entryPointReflection->getStage();
 
     // Get EntryPointMetadata.
     Slang::ComPtr<slang::IMetadata> entryPointMetadata;
@@ -632,16 +633,19 @@ MaybeResult ShaderCompiler::buildEntryPoint(
             traverseVariableSemaintic(parameter, callback);
         }
 
-        for (const auto& info : varyingDumpInfos) {
-            auto result = makeVertexInputAttribute(
-                info.name,
-                info.semanticName,
-                info.semanticIndex,
-                info.locationIndex);
-            if (!result) {
-                return result;
+        // fragment でも有効にしてしまうと SV_POSITION とか拾ってしまうので、vertex のみ。
+        if (stage == SLANG_STAGE_VERTEX) {
+            for (const auto& info : varyingDumpInfos) {
+                auto result = makeVertexInputAttribute(
+                    info.name,
+                    info.semanticName,
+                    info.semanticIndex,
+                    info.locationIndex);
+                if (!result) {
+                    return result;
+                }
+                inputAttributes.push_back(result.unwrap());
             }
-            inputAttributes.push_back(result.unwrap());
         }
     }
 
@@ -791,7 +795,6 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     entryPoint->inputAttributes = inputAttributes;
 
     ShaderStageFlags stageFlags = ShaderStageFlags_None;
-    SlangStage stage = entryPointReflection->getStage();
     if (stage == SLANG_STAGE_VERTEX) {
         stageFlags = ShaderStageFlags_Vertex;
     }

@@ -7,15 +7,22 @@ namespace detail {
 class WebGPURenderTarget : public RHIResource {
 public:
     WebGPURenderTarget();
-    Result<> initForSwapChainWrapper(WebGPUDevice* rhiDevice, int width, int height, TextureFormat format);
+    Result<> initForSwapChainWrapper(
+        WebGPUDevice* rhiDevice,
+        int width,
+        int height,
+        TextureFormat format,
+        WGPUTextureFormat nativeFormat);
     void onDestroy() override;
     void wrapTextureView(WGPUTextureView view);
 
-	WGPUTextureView wgpuTextureView() const { return m_wgpuTextureView; }
-	
+    WGPUTextureView wgpuTextureView() const { return m_wgpuTextureView; }
+    WGPUTextureFormat nativeFormat() const { return m_nativeFormat; }
+
 private:
     WebGPUDevice* m_rhiDevice;
     WGPUTextureView m_wgpuTextureView;
+    WGPUTextureFormat m_nativeFormat;
 };
 
 } // namespace detail

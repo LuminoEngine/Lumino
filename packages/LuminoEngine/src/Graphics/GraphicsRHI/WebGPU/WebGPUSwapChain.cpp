@@ -79,7 +79,7 @@ Result<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, con
 
     for (int i = 0; i < BackbufferCount; i++) {
         auto renderTarget = makeRef<WebGPURenderTarget>();
-        if (!renderTarget->initForSwapChainWrapper(m_device, m_width, m_height, m_format)) {
+        if (!renderTarget->initForSwapChainWrapper(m_device, m_width, m_height, m_format, preferredFormat)) {
             return err();
         }
         m_currentRenderTargets[i] = renderTarget;

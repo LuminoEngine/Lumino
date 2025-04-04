@@ -151,7 +151,10 @@ struct BlendStateDesc
 {
     static const int MaxRenderTargets = 4;
 
-    /** レンダーターゲットで独立したブレンディングを有効にするには、true に設定します。(default:false) */
+    /**
+     * レンダーターゲットで独立したブレンディングを有効にするには、true に設定します。(default:false)
+     * false の場合、 renderTargets[0] の
+     */
     bool independentBlendEnable;
 
     /** レンダーターゲットごとのブレンドステートの配列です。 */

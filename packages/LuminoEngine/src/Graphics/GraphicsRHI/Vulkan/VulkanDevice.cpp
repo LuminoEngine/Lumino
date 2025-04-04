@@ -241,7 +241,10 @@ Ref<ISamplerState> VulkanDevice::onCreateSamplerState(const SamplerStateData& de
     return ptr;
 }
 
-Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+Ref<IShaderPass> VulkanDevice::onCreateShaderPass(
+    const ShaderPassCreateInfo& createInfo,
+    const ShaderPassCreateInfo2* createInfo2OrNull,
+    ShaderCompilationDiag* diag) {
     auto ptr = makeRef<VulkanShaderPass>();
     if (!ptr->init(this, createInfo, diag)) {
         return nullptr;

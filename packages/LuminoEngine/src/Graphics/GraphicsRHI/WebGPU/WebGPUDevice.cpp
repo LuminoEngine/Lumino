@@ -5,6 +5,8 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
 namespace ln {
@@ -228,8 +230,15 @@ Ref<ISamplerState> WebGPUDevice::onCreateSamplerState(const SamplerStateData& de
     return nullptr;
 }
 
-Ref<IShaderPass> WebGPUDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
-    LN_NOTIMPLEMENTED();
+Ref<IShaderPass> WebGPUDevice::onCreateShaderPass(
+    const ShaderPassCreateInfo& createInfo,
+    const ShaderPassCreateInfo2* createInfo2OrNull,
+    ShaderCompilationDiag* diag) {
+    assert(createInfo2OrNull);
+    auto ptr = makeRef<WebGPUShaderPass>();
+    if (!ptr->init(this, *createInfo2OrNull)) {
+        return nullptr;
+    }
     return nullptr;
 }
 

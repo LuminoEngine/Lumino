@@ -236,7 +236,10 @@ Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& d
     return ptr;
 }
 
-Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+Ref<IShaderPass> IGraphicsDevice::createShaderPass(
+    const ShaderPassCreateInfo& createInfo,
+    const ShaderPassCreateInfo2* createInfo2OrNull,
+    ShaderCompilationDiag* diag) {
     // Verification
     {
         if (createInfo.csCode) {
@@ -244,17 +247,25 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
             if (LN_REQUIRE(createInfo.csCodeLen > 0)) return nullptr;
         }
         else {
-            if (LN_REQUIRE(createInfo.vsCode)) return nullptr;
-            if (LN_REQUIRE(createInfo.vsCodeLen > 0)) return nullptr;
-            if (LN_REQUIRE(createInfo.psCode)) return nullptr;
-            if (LN_REQUIRE(createInfo.psCodeLen > 0)) return nullptr;
+            if (LN_REQUIRE(createInfo.vsCode)) {
+                return nullptr;
+            }
+            if (LN_REQUIRE(createInfo.vsCodeLen > 0)) {
+                return nullptr;
+            }
+            if (LN_REQUIRE(createInfo.psCode)) {
+                return nullptr;
+            }
+            if (LN_REQUIRE(createInfo.psCodeLen > 0)) {
+                return nullptr;
+            }
         }
     }
 
     diag->level = ShaderCompilationResultLevel::Success;
     diag->message.clear();
 
-    Ref<IShaderPass> ptr = onCreateShaderPass(createInfo, diag);
+    Ref<IShaderPass> ptr = onCreateShaderPass(createInfo, createInfo2OrNull, diag);
 
     if (!diag->message.empty()) {
         LN_LOG_VERBOSE(diag->message);
@@ -346,7 +357,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const ko
     };
 
     ShaderCompilationDiag sdiag;
-    Ref<detail::IShaderPass> pass = createShaderPass(createInfo, &sdiag);
+    Ref<detail::IShaderPass> pass = createShaderPass(createInfo, nullptr, &sdiag);
 
     if (sdiag.level == ShaderCompilationResultLevel::Error) {
         diag->reportError(String::fromStdString(sdiag.message));

@@ -8,7 +8,7 @@ AllowAllArgumentsOnNextLine: false
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: Right
-AlignOperands: Align
+
 AlignTrailingComments: true
 #----------
 # Type LongLongFunction(
@@ -36,8 +36,19 @@ BinPackArguments: false
 #     b);
 PenaltyBreakAssignment: 1000
 #----------
-
-
+# ```
+# depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled
+#                                           ? WGPUOptionalBool_True
+#                                           : WGPUOptionalBool_False;
+# ```
+# ↓
+# ```
+# depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled
+#     ? WGPUOptionalBool_True
+#     : WGPUOptionalBool_False;
+# ```
+AlignOperands: false
+#----------
 PenaltyBreakFirstLessLess: 120
 PenaltyBreakComment: 300
 PenaltyBreakString: 1000

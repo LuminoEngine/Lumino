@@ -7,7 +7,8 @@ namespace detail {
 WebGPUDepthBuffer::WebGPUDepthBuffer()
     : m_device(nullptr)
     , m_nativeDepthTexture(nullptr)
-    , m_nativeTextureView(nullptr) {
+    , m_nativeTextureView(nullptr)
+    , m_nativeFormat(WGPUTextureFormat_Undefined) {
 }
 
 MaybeResult WebGPUDepthBuffer::init(WebGPUDevice* device, uint32_t width, uint32_t height) {
@@ -15,17 +16,17 @@ MaybeResult WebGPUDepthBuffer::init(WebGPUDevice* device, uint32_t width, uint32
     if (!result) return result;
 
     m_device = device;
-    WGPUTextureFormat depthTextureFormat = WGPUTextureFormat_Depth24Plus;
+    m_nativeFormat = WGPUTextureFormat_Depth24Plus;
 
     // Create Texture.
     WGPUTextureDescriptor depthTextureDesc = WGPU_TEXTURE_DESCRIPTOR_INIT;
-    depthTextureDesc.format = depthTextureFormat;
+    depthTextureDesc.format = m_nativeFormat;
     depthTextureDesc.mipLevelCount = 1;
     depthTextureDesc.sampleCount = 1;
     depthTextureDesc.size = { width, height, 1 };
     depthTextureDesc.usage = WGPUTextureUsage_RenderAttachment;
     depthTextureDesc.viewFormatCount = 1;
-    depthTextureDesc.viewFormats = &depthTextureFormat;
+    depthTextureDesc.viewFormats = &m_nativeFormat;
     m_nativeDepthTexture = wgpuDeviceCreateTexture(device->wgpuDevice(), &depthTextureDesc);
     if (!m_nativeDepthTexture) {
         return LN_MAKE_ERROR("wgpuDeviceCreateTexture() failed.");
@@ -39,7 +40,7 @@ MaybeResult WebGPUDepthBuffer::init(WebGPUDevice* device, uint32_t width, uint32
     depthTextureViewDesc.baseMipLevel = 0;
     depthTextureViewDesc.mipLevelCount = 1;
     depthTextureViewDesc.dimension = WGPUTextureViewDimension_2D;
-    depthTextureViewDesc.format = depthTextureFormat;
+    depthTextureViewDesc.format = m_nativeFormat;
     m_nativeTextureView = wgpuTextureCreateView(m_nativeDepthTexture, &depthTextureViewDesc);
     if (!m_nativeTextureView) {
         return LN_MAKE_ERROR("wgpuTextureCreateView() failed.");

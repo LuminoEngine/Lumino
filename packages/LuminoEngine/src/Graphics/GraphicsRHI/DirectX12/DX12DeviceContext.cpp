@@ -477,7 +477,10 @@ Ref<ISamplerState> DX12Device::onCreateSamplerState(const SamplerStateData& desc
     return ptr;
 }
 
-Ref<IShaderPass> DX12Device::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+Ref<IShaderPass> DX12Device::onCreateShaderPass(
+    const ShaderPassCreateInfo& createInfo,
+    const ShaderPassCreateInfo2* createInfo2OrNull,
+    ShaderCompilationDiag* diag) {
     auto ptr = makeRef<DX12ShaderPass>();
     if (!ptr->init(this, createInfo, diag)) {
         return nullptr;

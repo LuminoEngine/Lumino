@@ -303,7 +303,10 @@ Ref<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& de
     return ptr;
 }
 
-Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(
+    const ShaderPassCreateInfo& createInfo,
+    const ShaderPassCreateInfo2* createInfo2OrNull,
+    ShaderCompilationDiag* diag) {
     auto ptr = makeRef<GLShaderPass>();
     if (!ptr->init(this, createInfo, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag)) {
         return nullptr;

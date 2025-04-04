@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/Common.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/UnifiedShader2.hpp>
 #include "Common.hpp"
 #include "RHIObject.hpp"
 #include "RHIResource.hpp"
@@ -26,7 +27,6 @@ class IRenderPass;
 class IVertexDeclaration;
 class ISamplerState;
 class IShaderPass;
-class IShaderPass2;
 class IPipeline;
 class IDescriptorPool;
 class IDescriptor;
@@ -154,20 +154,20 @@ struct ShaderPassCreateInfo {
     const std::vector<kokage::VertexInputAttribute>* attributes;
 };
 
-//struct ShaderPassCreateInfo2 {
-//    const char* name;
-//    const byte_t* vsCode;
-//    size_t vsCodeLen;
-//    const byte_t* psCode;
-//    size_t psCodeLen;
-//    const byte_t* csCode;
-//    size_t csCodeLen;
-//    const char* vsEntryPointName;
-//    const char* psEntryPointName;
-//    const char* csEntryPointName;
-//    const kokage::DescriptorLayout* descriptorLayout;
-//    const std::vector<kokage::VertexInputAttribute>* attributes;
-//};
+struct ShaderPassCreateInfo2 {
+    const char* name;
+    const byte_t* vsCode;
+    size_t vsCodeLen;
+    const byte_t* psCode;
+    size_t psCodeLen;
+    const byte_t* csCode;
+    size_t csCodeLen;
+    const char* vsEntryPointName;
+    const char* psEntryPointName;
+    const char* csEntryPointName;
+    const kokage::TargetBindingLayoutInfo* descriptorLayout;
+    const std::vector<kokage::VertexInputAttribute>* attributes;
+};
 
 class IGraphicsHelper {
 public:
@@ -203,7 +203,10 @@ public:
     Ref<RHIResource> createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
     Ref<RHIResource> createDepthBuffer(uint32_t width, uint32_t height);
     Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
-    Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+    Ref<IShaderPass> createShaderPass(
+        const ShaderPassCreateInfo& createInfo,
+        const ShaderPassCreateInfo2* createInfo2OrNull,
+        ShaderCompilationDiag* diag);
     Ref<RHIResource> createUniformBuffer(uint32_t size);
     Ref<IDescriptorPool> createDescriptorPool(IShaderPass* shaderPass);
     void releaseObject(RHIDeviceObject* obj) {}
@@ -237,7 +240,10 @@ protected:
     virtual Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) = 0;
     virtual Ref<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
     virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
-    virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
+    virtual Ref<IShaderPass> onCreateShaderPass(
+        const ShaderPassCreateInfo& createInfo,
+        const ShaderPassCreateInfo2* createInfo2OrNull,
+        ShaderCompilationDiag* diag) = 0;
     virtual Ref<RHIResource> onCreateUniformBuffer(uint32_t size) = 0;
     virtual Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) = 0;
     virtual void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) = 0;

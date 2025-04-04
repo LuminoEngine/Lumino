@@ -56,7 +56,10 @@ protected:
     Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
     Ref<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
     Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
-    Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+    Ref<IShaderPass> onCreateShaderPass(
+        const ShaderPassCreateInfo& createInfo,
+        const ShaderPassCreateInfo2* createInfo2OrNull,
+        ShaderCompilationDiag* diag) override;
     Ref<RHIResource> onCreateUniformBuffer(uint32_t size) override;
     Ref<IDescriptorPool> onCreateDescriptorPool(IShaderPass* shaderPass) override;
     void onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) override;
