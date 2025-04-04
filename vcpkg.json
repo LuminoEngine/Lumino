@@ -11,6 +11,7 @@
         "nanovg",
         "vulkan-headers",
         "shader-slang",
+        "nlohmann-json",
         {
             "name": "freetype",
             "features": ["png", "zlib"]

@@ -262,25 +262,6 @@ public: // TODO: internal
 			depthWriteEnabled == other->depthWriteEnabled;
 	}
 
-	//int									m_revisionCount;
-	//uint32_t							m_hashCode;
-
-
-	//const std::unordered_map<uint32_t, ShaderValue>& getUserValueMap() const { return m_userValueMap; }
-	//ShaderValue* findAndCreateUserShaderValue(uint32_t hashKey);
-	//const ShaderValue* findUserShaderValueConst(uint32_t hashKey) const;
-	////const Color& getColor(uint32_t hashKey, const Color& defaultValue) const { auto* v = findUserShaderValueConst(hashKey); return (v) ? static_cast<const Color&>(v->getVector()) : defaultValue; }
-	////float GetFloat(uint32_t hashKey, float defaultValue) const { auto* v = findUserShaderValueConst(hashKey); return (v) ? v->GetFloat() : defaultValue; }
-	////Texture* getTexture(uint32_t hashKey, Texture* defaultValue) const { auto* v = findUserShaderValueConst(hashKey); return (v) ? v->getManagedTexture() : defaultValue; }
-
-	//const Color& getBuiltinColor(uint32_t hashKey, const Color& defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? static_cast<const Color&>(itr->second.getVector()) : defaultValue; }
-	//float getBuiltinFloat(uint32_t hashKey, float defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getFloat() : defaultValue; }
-	//Texture* getBuiltinTexture(uint32_t hashKey, Texture* defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getManagedTexture() : defaultValue; }
-
-	//void applyUserShaderValeues(Shader* targetShader);
-
-	//uint32_t getHashCode();
-
 	const detail::PbrMaterialData& getPbrMaterialData() const { return m_data; }
 private:
 

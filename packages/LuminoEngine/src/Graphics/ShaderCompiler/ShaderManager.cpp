@@ -1,4 +1,4 @@
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include "ShaderTranspiler.hpp"
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>

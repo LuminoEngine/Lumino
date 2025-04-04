@@ -53,6 +53,25 @@ Texture2D ln_MaterialTexture;
 SamplerState ln_MaterialTextureSampler;
 //sampler2D ln_MaterialTexture;
 
+// META({
+//     "a": "100"
+// });
+
+#ifdef LUMINO_METADATA
+{
+    "passes": [
+        {
+            "vertex": "vs_main1",
+            "fragment": "fs_main1"
+        },
+        {
+            "vertex": "vs_main2",
+            "fragment": "fs_main2"
+        }
+    ]
+}
+#endif
+
 //Texture2D TextureArray[3];
 //==============================================================================
 // Vertex shader

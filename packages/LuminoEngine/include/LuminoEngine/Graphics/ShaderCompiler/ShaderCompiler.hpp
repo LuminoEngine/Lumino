@@ -12,7 +12,7 @@ namespace fs = std::filesystem;
 class UnifiedShader2;
 class ModuleInfo;
 
-class ShaderCompiler : public URefObject {
+class ShaderCompiler final : public URefObject {
 public:
     static Result<URef<ShaderCompiler>> create();
 

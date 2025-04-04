@@ -2,12 +2,13 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/ShaderCompiler/UnifiedShader2.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
+#include "ShaderMetadataParser.hpp"
 
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -222,6 +223,32 @@ MaybeResult ShaderCompiler::build(const fs::path& inputFilePath) {
         m_dumpDirPath = inputFilePath;
         m_dumpDirPath += ".dump";
         fs::create_directories(m_dumpDirPath);
+    }
+
+    // Read all text.
+    std::string code;
+    {
+        try {
+            size_t fileSize = std::filesystem::file_size(inputFilePath);
+            code = std::string(fileSize, '\0');
+            std::ifstream stream(inputFilePath);
+            if (stream.fail()) {
+                return LN_MAKE_ERROR("ifstream failed.");
+            }
+            stream.read(&code[0], fileSize);
+        }
+        catch (fs::filesystem_error& e) {
+            return LN_MAKE_ERROR("ifstream failed. (%s)", e.what());
+        }
+    }
+
+    // Parse metadata.
+    {
+        ShaderMetadataParser parser;
+        auto result = parser.parse(code);
+        if (!result) {
+            return result;
+        }
     }
 
     auto result = buildModule();

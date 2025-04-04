@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(LuminoEngine)
 include(cmake/LuminoConfig-LuminoEngine.cmake)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 #-------------------------------------------------------------------------------
 # Files
@@ -238,6 +239,7 @@ set(LOCAL_LIBRARIES
     PNG::PNG
     freetype
     tinyobjloader::tinyobjloader
+    nlohmann_json::nlohmann_json
 )
 
 #-------------------------------------------------------------------------------
