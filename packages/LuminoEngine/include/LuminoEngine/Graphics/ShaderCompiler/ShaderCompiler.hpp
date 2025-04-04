@@ -17,7 +17,7 @@ public:
     static Result<URef<ShaderCompiler>> create();
 
     MaybeResult build(const fs::path& inputFilePath);
-    const URef<UnifiedShader2>& shader() const { return m_shader; }
+    const Ref<UnifiedShader2>& shader() const { return m_shader; }
 
 private:
     ShaderCompiler();
@@ -46,6 +46,13 @@ private:
         slang::VariableLayoutReflection* var,
         const std::function<void(slang::VariableLayoutReflection* var)>& callback);
 
+    MaybeResult mergeTargetInputResources();
+
+    Result<VertexInputAttribute> makeVertexInputAttribute(
+        const std::string& varName,
+        const std::string& semanticName,
+        int semanticIndex,
+        int locationIndex);
 
     Slang::ComPtr<slang::IGlobalSession> m_globalSession;
     slang::IModule* m_module;
@@ -54,7 +61,7 @@ private:
     fs::path m_inputDirPath;
     fs::path m_dumpDirPath;
     bool m_dump;
-    URef<UnifiedShader2> m_shader;
+    Ref<UnifiedShader2> m_shader;
 };
 
 } // namespace kokage

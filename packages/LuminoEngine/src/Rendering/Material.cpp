@@ -77,8 +77,15 @@ void Material::init()
    //URef<kokage::ShaderCompiler> compiler = std::move(result);
 
     //auto result2 = compiler->build("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
-    //auto result2 = result->get()->build("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
-    //if (!result2) return 1;
+    //
+    // 
+#ifdef LN_USE_SLANG
+    auto result2 = result->get()->build("C:/Proj/LN/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
+    if (!result2) return;
+
+    m_shader2 = result->get()->shader();
+#endif
+
 }
 
 void Material::init(Texture* mainTexture)

@@ -7,8 +7,8 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -49,6 +49,7 @@ struct VaryingDumpInfo {
     std::string name;
     std::string semanticName;
     int semanticIndex;
+    int locationIndex;
 };
 
 static SlangCompileTarget toSlangTarget(ShaderTarget target) {
@@ -217,7 +218,7 @@ MaybeResult ShaderCompiler::init() {
 MaybeResult ShaderCompiler::build(const fs::path& inputFilePath) {
     m_inputFilePath = inputFilePath;
     m_inputDirPath = inputFilePath.parent_path();
-    m_shader = makeURef<UnifiedShader2>();
+    m_shader = makeRef<UnifiedShader2>();
 
     if (m_dump) {
         m_dumpDirPath = inputFilePath;
@@ -336,13 +337,14 @@ MaybeResult ShaderCompiler::buildModule() {
     for (int i = 0; i < kTargetCount; i++) {
         auto& target = kTargets[i];
         auto result1 = buildInputResources(i);
-        if (!result1) {
-            return result1;
-        }
+        if (!result1) return result1;
         auto result = buildTarget(target.target, i);
-        if (!result) {
-            return result;
-        }
+        if (!result) return result;
+    }
+
+    {
+        auto r1 = mergeTargetInputResources();
+        if (!r1) return r1;
     }
 
     return LN_MAKE_SUCCESS();
@@ -610,6 +612,39 @@ MaybeResult ShaderCompiler::buildEntryPoint(
         return LN_MAKE_ERROR("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
     }
 
+    // Analyze Varyings.
+    // see: slang emitReflectionEntryPointJSON()
+    std::vector<VaryingDumpInfo> varyingDumpInfos;
+    std::vector<VertexInputAttribute> inputAttributes;
+    {
+        auto callback = [&varyingDumpInfos](slang::VariableLayoutReflection* var) {
+            VaryingDumpInfo info;
+            info.name = var->getName();
+            info.semanticName = var->getSemanticName();
+            info.semanticIndex = var->getSemanticIndex();
+            auto category = var->getCategory();
+            info.locationIndex = var->getOffset(category);
+            varyingDumpInfos.push_back(info);
+        };
+        int entryPointParameterCount = entryPointReflection->getParameterCount();
+        for (int i = 0; i < entryPointParameterCount; i++) {
+            auto parameter = entryPointReflection->getParameterByIndex(i);
+            traverseVariableSemaintic(parameter, callback);
+        }
+
+        for (const auto& info : varyingDumpInfos) {
+            auto result = makeVertexInputAttribute(
+                info.name,
+                info.semanticName,
+                info.semanticIndex,
+                info.locationIndex);
+            if (!result) {
+                return result;
+            }
+            inputAttributes.push_back(result.unwrap());
+        }
+    }
+
     // Dump bindings to JSON.
     if (m_dump) {
         // NOTE: slangc -reflection-json では EntryPoint ごとに used な Parameter が出力されるが、
@@ -668,23 +703,6 @@ MaybeResult ShaderCompiler::buildEntryPoint(
             }
         }
 
-        // Analyze Varyings.
-        // see: slang emitReflectionEntryPointJSON()
-        std::vector<VaryingDumpInfo> varyingDumpInfos;
-        {
-            auto callback = [&varyingDumpInfos](slang::VariableLayoutReflection* var) {
-                VaryingDumpInfo info;
-                info.name = var->getName();
-                info.semanticName = var->getSemanticName();
-                info.semanticIndex = var->getSemanticIndex();
-                varyingDumpInfos.push_back(info);
-            };
-            int entryPointParameterCount = entryPointReflection->getParameterCount();
-            for (int i = 0; i < entryPointParameterCount; i++) {
-                auto parameter = entryPointReflection->getParameterByIndex(i);
-                traverseVariableSemaintic(parameter, callback);
-            }
-        }
 
         const char* name = entryPointReflection->getName();
         fs::path filePath =
@@ -770,6 +788,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     entryPoint->target = target;
     entryPoint->name = entryPointReflection->getName();
     entryPoint->codeBlobIndex = codeBlob->index;
+    entryPoint->inputAttributes = inputAttributes;
 
     ShaderStageFlags stageFlags = ShaderStageFlags_None;
     SlangStage stage = entryPointReflection->getStage();
@@ -1165,7 +1184,141 @@ void ShaderCompiler::traverseVariableSemaintic(
         }
 
     }
+}
 
+MaybeResult ShaderCompiler::mergeTargetInputResources() {
+    const auto& entryPoints = m_shader->entryPoints();
+    for (auto& targetShaderPass : m_shader->targetShaderPasses()) {
+        bool reset = true;
+
+        if (targetShaderPass->vertEntryPointIndex >= 0) {
+            const auto& entryPoint = entryPoints[targetShaderPass->vertEntryPointIndex];
+            auto result = UnifiedShader2::mergeTargetBindingLayoutInfo(
+                targetShaderPass->bindingLayout,
+                entryPoint->bindingLayout,
+                reset);
+            if (!result) return result;
+            reset = false;
+        }
+
+        if (targetShaderPass->fragEntryPointIndex >= 0) {
+            const auto& entryPoint = entryPoints[targetShaderPass->fragEntryPointIndex];
+            auto result = UnifiedShader2::mergeTargetBindingLayoutInfo(
+                targetShaderPass->bindingLayout,
+                entryPoint->bindingLayout,
+                reset);
+            if (!result) return result;
+            reset = false;
+        }
+
+        if (targetShaderPass->compEntryPointIndex >= 0) {
+            const auto& entryPoint = entryPoints[targetShaderPass->compEntryPointIndex];
+            auto result = UnifiedShader2::mergeTargetBindingLayoutInfo(
+                targetShaderPass->bindingLayout,
+                entryPoint->bindingLayout,
+                reset);
+            if (!result) return result;
+            reset = false;
+        }
+    }
+
+    return LN_MAKE_SUCCESS();
+}
+
+Result<VertexInputAttribute> ShaderCompiler::makeVertexInputAttribute(
+    const std::string& varName,
+    const std::string& semanticName,
+    int semanticIndex,
+    int locationIndex) {
+    VertexInputAttribute attr;
+    int keywordLen = 0;
+    if (StringHelper::compare(
+            semanticName.c_str(),
+            "POSITION",
+            8,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_Position;
+        keywordLen = 8;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "BLENDWEIGHT",
+            11,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_BlendWeight;
+        keywordLen = 11;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "BLENDINDICES",
+            12,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_BlendIndices;
+        keywordLen = 12;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "NORMAL",
+            6,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_Normal;
+        keywordLen = 6;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "TEXCOORD",
+            8,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_TexCoord;
+        keywordLen = 8;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "TANGENT",
+            7,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_Tangent;
+        keywordLen = 7;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "BINORMAL",
+            8,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_Binormal;
+        keywordLen = 8;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "COLOR",
+            5,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_Color;
+        keywordLen = 5;
+    }
+    else if (
+        StringHelper::compare(
+            semanticName.c_str(),
+            "SV_INSTANCEID",
+            10,
+            ln::CaseSensitivity::CaseInsensitive) == 0) {
+        attr.usage = AttributeUsage_InstanceID;
+        keywordLen = 10;
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+    }
+
+    attr.index = semanticIndex;
+    attr.layoutLocation = locationIndex;
+    return attr;
 }
 
 } // namespace kokage

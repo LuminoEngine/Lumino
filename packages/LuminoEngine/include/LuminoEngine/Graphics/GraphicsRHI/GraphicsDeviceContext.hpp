@@ -26,6 +26,7 @@ class IRenderPass;
 class IVertexDeclaration;
 class ISamplerState;
 class IShaderPass;
+class IShaderPass2;
 class IPipeline;
 class IDescriptorPool;
 class IDescriptor;
@@ -152,6 +153,21 @@ struct ShaderPassCreateInfo {
     const kokage::DescriptorLayout* descriptorLayout;
     const std::vector<kokage::VertexInputAttribute>* attributes;
 };
+
+//struct ShaderPassCreateInfo2 {
+//    const char* name;
+//    const byte_t* vsCode;
+//    size_t vsCodeLen;
+//    const byte_t* psCode;
+//    size_t psCodeLen;
+//    const byte_t* csCode;
+//    size_t csCodeLen;
+//    const char* vsEntryPointName;
+//    const char* psEntryPointName;
+//    const char* csEntryPointName;
+//    const kokage::DescriptorLayout* descriptorLayout;
+//    const std::vector<kokage::VertexInputAttribute>* attributes;
+//};
 
 class IGraphicsHelper {
 public:

@@ -63,6 +63,7 @@ class IGraphicsDevice;
 class ICommandList;
 class ISamplerState;
 class IShaderPass;
+class IShaderPass2;
 class IRenderPass;
 class ShaderSecondaryDescriptor;
 class GraphicsProfiler;

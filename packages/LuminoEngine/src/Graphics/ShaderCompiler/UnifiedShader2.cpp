@@ -170,5 +170,92 @@ Result<EntryPoint*> UnifiedShader2::getEntryPoint(
     return (*itr).get();
 }
 
+MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
+    TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset)
+{
+    if (reset) {
+        target.bindings.clear();
+    }
+    for (const TargetBindingInfo& otherBinding : other.bindings) {
+        auto itr = std::find_if(
+            target.bindings.begin(),
+            target.bindings.end(),
+            [&otherBinding](const TargetBindingInfo& b) {
+                return b.name == otherBinding.name && b.category == otherBinding.category;
+            });
+        if (itr != target.bindings.end()) {
+            TargetBindingInfo& existingBinding = *itr;
+
+            // 同じ名前のバインディングが存在する場合、各プロパティを比較して整合性を確認する
+            {
+                //if (otherBinding.category != existingBinding.category) {
+                //    return LN_MAKE_ERROR(
+                //        "TargetBindingInfo already exists with different category (%s)",
+                //        otherBinding.name.c_str());
+                //}
+                if (otherBinding.size != existingBinding.size) {
+                    return LN_MAKE_ERROR(
+                        "TargetBindingInfo already exists with different size (%s)",
+                        otherBinding.name.c_str());
+                }
+                if (otherBinding.space != existingBinding.space) {
+                    return LN_MAKE_ERROR(
+                        "TargetBindingInfo already exists with different space (%s)",
+                        otherBinding.name.c_str());
+                }
+                if (otherBinding.index != existingBinding.index) {
+                    return LN_MAKE_ERROR(
+                        "TargetBindingInfo already exists with different index (%s)",
+                        otherBinding.name.c_str());
+                }
+                if (otherBinding.count != existingBinding.count) {
+                    return LN_MAKE_ERROR(
+                        "TargetBindingInfo already exists with different count (%s)",
+                        otherBinding.name.c_str());
+                }
+
+                const auto& otherMembers = otherBinding.members;
+                const auto& existingMembers = existingBinding.members;
+                if (otherMembers.size() != existingMembers.size()) {
+                    return LN_MAKE_ERROR(
+                        "TargetBindingInfo already exists with different members size (%s)",
+                        otherBinding.name.c_str());
+                }
+
+                for (size_t i = 0; i < otherMembers.size(); ++i) {
+                    const auto& otherMember = otherMembers[i];
+                    const auto& existingMember = existingMembers[i];
+                    if (otherMember.name != existingMember.name) {
+                        return LN_MAKE_ERROR(
+                            "TargetBindingInfo already exists with different member name (%s)",
+                            otherBinding.name.c_str());
+                    }
+                    if (otherMember.offset != existingMember.offset) {
+                        return LN_MAKE_ERROR(
+                            "TargetBindingInfo already exists with different member offset (%s)",
+                            otherBinding.name.c_str());
+                    }
+                    if (otherMember.size != existingMember.size) {
+                        return LN_MAKE_ERROR(
+                            "TargetBindingInfo already exists with different member size (%s)",
+                            otherBinding.name.c_str());
+                    }
+                }
+            }
+
+            // 既存のバインディングに対して、使用されるシェーダーステージをマージする
+            existingBinding.used = static_cast<ShaderStageFlags>(
+                existingBinding.used | otherBinding.used);
+        }
+        else {
+            // 存在しない場合、新しいバインディングを追加する
+            target.bindings.push_back(otherBinding);
+        }
+    }
+
+    return LN_MAKE_SUCCESS();
+
+}
+
 } // namespace kokage
 } // namespace ln

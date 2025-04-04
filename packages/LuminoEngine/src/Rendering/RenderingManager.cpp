@@ -290,6 +290,9 @@ bool RenderingManager::init(const Settings& settings) {
     }
 #endif // LN_EMSCRIPTEN
 
+//#if 1 // テスト用
+//    const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
+//#endif
 #if 0 // テスト用
     const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
     m_builtinShaders[(int)BuiltinShader::ImGui] = Shader::create(dir / _TT("ImGui.fx"));

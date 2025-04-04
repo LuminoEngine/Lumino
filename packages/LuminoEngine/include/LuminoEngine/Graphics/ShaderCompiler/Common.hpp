@@ -15,6 +15,7 @@ namespace kokage {
 class UnifiedShader;
 class ShaderCodeTranspiler;
 class ShaderRenderState;
+class UnifiedShader2;
 } // namespace kokage
 
 namespace detail {

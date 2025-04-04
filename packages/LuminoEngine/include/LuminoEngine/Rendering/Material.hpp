@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/GPU/Shader.hpp>
 #include <LuminoEngine/Graphics/GPU/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Graphics/GPU/ShaderParameterValue.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/Common.hpp>
 
 namespace ln {
 
@@ -21,7 +22,7 @@ namespace ln {
 LN_CLASS()
 class Material
 	: public Object
-{
+    , public IGraphicsObject {
 	LN_OBJECT;
 public:
 	static Material* defaultMaterial();
@@ -248,7 +249,9 @@ protected:  // TODO:
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 	std::vector<UniformBufferEntiry> m_uniformBufferData;
 
+
 public: // TODO: internal
+    Ref<kokage::UnifiedShader2> m_shader2;
 
 	bool equalStatus(const Material* other) const
 	{

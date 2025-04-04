@@ -52,7 +52,6 @@ struct TargetBindingInfo {
 struct TargetBindingLayoutInfo {
     std::vector<TargetBindingInfo> bindings;
 
-    // merge()
 };
 
 // Pipeline にバインドできる単位の Parameter。
@@ -82,6 +81,7 @@ public:
     //std::vector<EntryPointBindingInfo> bindings;
     int codeBlobIndex;
     TargetBindingLayoutInfo bindingLayout; // Leaf. これをもとに ShaderPass へマージしてく。
+    std::vector<VertexInputAttribute> inputAttributes;
 };
 
 class GlobalShaderPass : public URefObject {
@@ -215,7 +215,7 @@ public:
     // NOTE: size は持てない。例えば WGSL と DX12 では float3 のサイズがそれぞれ 12byte, 16byte になる。Target ごとで管理する必要がある。
 };
 
-class UnifiedShader2 : public URefObject {
+class UnifiedShader2 : public RefObject {
 public:
     UnifiedShader2();
 
@@ -223,6 +223,9 @@ public:
         return m_globalShaderPasses;
     }
     const std::vector<URef<EntryPoint>>& entryPoints() const { return m_entryPoints; }
+    const std::vector<URef<TargetShaderPass>>& targetShaderPasses() const {
+        return m_targetShaderPasses;
+    }
 
     GlobalInputResourceInfo* createGlobalInputResourceInfo();
     GlobalShaderPass* createGlobalShaderPass();
@@ -248,6 +251,9 @@ public:
         int arrayElementCount);
 
     Result<EntryPoint*> getEntryPoint(ShaderTarget target, const std::string& name) const;
+
+    static MaybeResult mergeTargetBindingLayoutInfo(
+        TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset);
 
 private:
     std::vector<URef<GlobalMemberInfo>> m_globalMembers;
