@@ -6,6 +6,7 @@ namespace kokage {
 class ShaderMetadataParser final {
 public:
     struct ShaderPass {
+        std::string name;
         std::string vertexEntryPoint;
         std::string fragmentEntryPoint;
         std::string computeEntryPoint;

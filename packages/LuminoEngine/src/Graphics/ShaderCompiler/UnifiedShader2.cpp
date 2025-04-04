@@ -30,12 +30,12 @@ EntryPoint* UnifiedShader2::createEntryPoint() {
     return m_entryPoints.back().get();
 }
 
-std::pair<int, ShaderPass*> UnifiedShader2::createShaderPass() {
-    int index = m_shaderPasses.size();
-    auto pass = makeURef<ShaderPass>();
+GlobalShaderPass* UnifiedShader2::createGlobalShaderPass() {
+    int index = m_globalShaderPasses.size();
+    auto pass = makeURef<GlobalShaderPass>();
     pass->index = index;
-    m_shaderPasses.push_back(std::move(pass));
-    return std::make_pair(index, m_shaderPasses.back().get());
+    m_globalShaderPasses.push_back(std::move(pass));
+    return m_globalShaderPasses.back().get();
 }
 
 Blob* UnifiedShader2::createBlob() {

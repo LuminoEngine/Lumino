@@ -40,8 +40,11 @@ MaybeResult ShaderMetadataParser::parse(const std::string& code) {
     // Parse the metadata JSON.
     try {
         json j = json::parse(metadataCode, nullptr, true, true);
-        for (const auto& pass : j["passes"]) {
+        size_t count = j["passes"].size();
+        for (size_t i = 0; i < count; i++) {
+            json pass = j["passes"][i];
             ShaderPass shaderPass;
+            shaderPass.name = pass.value("name", "Pass." + std::to_string(i));
             shaderPass.vertexEntryPoint = pass.value("vertex", "");
             shaderPass.fragmentEntryPoint = pass.value("fragment", "");
             m_passes.push_back(shaderPass);

@@ -249,6 +249,13 @@ MaybeResult ShaderCompiler::build(const fs::path& inputFilePath) {
         if (!result) {
             return result;
         }
+        for (const auto& pass : parser.passes()) {
+            auto shaderPass = m_shader->createGlobalShaderPass();
+            shaderPass->name = pass.name;
+            shaderPass->vertexEntryPoint = pass.vertexEntryPoint;
+            shaderPass->fragmentEntryPoint = pass.fragmentEntryPoint;
+            shaderPass->computeEntryPoint = pass.computeEntryPoint;
+        }
     }
 
     auto result = buildModule();
