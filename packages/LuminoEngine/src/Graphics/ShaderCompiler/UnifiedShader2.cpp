@@ -30,6 +30,14 @@ EntryPoint* UnifiedShader2::createEntryPoint() {
     return m_entryPoints.back().get();
 }
 
+TargetShaderPass* UnifiedShader2::createTargetShaderPass() {
+    int index = m_targetShaderPasses.size();
+    auto pass = makeURef<TargetShaderPass>();
+    pass->index = index;
+    m_targetShaderPasses.push_back(std::move(pass));
+    return m_targetShaderPasses.back().get();
+}
+
 GlobalShaderPass* UnifiedShader2::createGlobalShaderPass() {
     int index = m_globalShaderPasses.size();
     auto pass = makeURef<GlobalShaderPass>();
@@ -138,6 +146,20 @@ Result<InputResourceInfo*> UnifiedShader2::getOrCreateInputResourceWithVerify(
     info->index = m_inputResourceInfos.size();
     m_inputResourceInfos.push_back(std::move(info));
     return m_inputResourceInfos.back().get();
+}
+
+Result<EntryPoint*> UnifiedShader2::getEntryPoint(
+    ShaderTarget target, const std::string& name) const {
+    auto itr = std::find_if(
+        m_entryPoints.begin(),
+        m_entryPoints.end(),
+        [&target, &name](const URef<EntryPoint>& entryPoint) {
+            return entryPoint->target == target && entryPoint->name == name;
+        });
+    if (itr == m_entryPoints.end()) {
+        return LN_MAKE_ERROR("EntryPoint not found. (%d:%s)", target, name.c_str());
+    }
+    return (*itr).get();
 }
 
 } // namespace kokage

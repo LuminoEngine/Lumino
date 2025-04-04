@@ -51,18 +51,44 @@ struct Component {
 class EntryPoint : public URefObject {
 public:
     int index;
+    ShaderTarget target;
     std::string name;
     std::vector<EntryPointBindingInfo> bindings;
     int codeBlobIndex;
 };
 
-class ShaderPass : public URefObject {
+class GlobalShaderPass : public URefObject {
 public:
     int index;
     std::string name;
-    int vertBlobIndex;
-    int fragBlobIndex;
-    int compBlobIndex;
+    std::string vertexEntryPoint;
+    std::string fragmentEntryPoint;
+    std::string computeEntryPoint;
+    std::array<int, 4> targetShaderPassIndices; // index is ShaderTarget.
+
+    GlobalShaderPass()
+        : index(-1)
+        , name()
+        , vertexEntryPoint()
+        , fragmentEntryPoint()
+        , computeEntryPoint()
+        , targetShaderPassIndices{ -1, -1, -1, -1 } {}
+};
+
+class TargetShaderPass : public URefObject {
+public:
+    int index;
+    int globalShaderPassIndex;
+    int vertEntryPointIndex;
+    int fragEntryPointIndex;
+    int compEntryPointIndex;
+
+    TargetShaderPass()
+        : index(-1)
+        , globalShaderPassIndex(-1)
+        , vertEntryPointIndex(-1)
+        , fragEntryPointIndex(-1)
+        , compEntryPointIndex(-1) {}
 };
 
 // 任意データ
@@ -155,10 +181,16 @@ class UnifiedShader2 : public URefObject {
 public:
     UnifiedShader2();
 
+    const std::vector<URef<GlobalShaderPass>>& globalShaderPasses() const {
+        return m_globalShaderPasses;
+    }
+    const std::vector<URef<EntryPoint>>& entryPoints() const { return m_entryPoints; }
+
     InputResourceInfo* createInputResourceInfo();
+    GlobalShaderPass* createGlobalShaderPass();
     ModuleInfo* addModuleInfo();
     EntryPoint* createEntryPoint();
-    std::pair<int, ShaderPass*> createShaderPass();
+    TargetShaderPass* createTargetShaderPass();
     Blob* createBlob();
 
     Result<GlobalMemberInfo*> getOrCreateGlobalMemberWithVerify(
@@ -176,12 +208,15 @@ public:
         int constantBufferSize,
         int arrayElementCount);
 
+    Result<EntryPoint*> getEntryPoint(ShaderTarget target, const std::string& name) const;
+
 private:
     std::vector<URef<GlobalMemberInfo>> m_globalMembers;
     std::vector<URef<InputResourceInfo>> m_inputResourceInfos;
+    std::vector<URef<GlobalShaderPass>> m_globalShaderPasses;
     std::vector<URef<ModuleInfo>> m_moduleInfos;
     std::vector<URef<EntryPoint>> m_entryPoints;
-    std::vector<URef<ShaderPass>> m_shaderPasses;
+    std::vector<URef<TargetShaderPass>> m_targetShaderPasses;
     std::vector<URef<Blob>> m_blobs;
 };
 

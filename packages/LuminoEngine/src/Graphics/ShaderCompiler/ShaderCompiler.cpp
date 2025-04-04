@@ -508,12 +508,6 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
             }
         }
 
-
-
-
-
-        
-
         auto result = m_shader->getOrCreateInputResourceWithVerify(
             name,
             registerCategory,
@@ -522,31 +516,8 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
         if (!result) {
             return result;
         }
-
-        //ModuleParameterInfo info;
-        //info.name = parameter->getName();
-        //
-        //switch (category) {
-        //    case slang::ParameterCategory::DescriptorTableSlot:
-        //        //info.category = RegisterCategory_UniformBuffer;
-        //        break;
-        //    case slang::ParameterCategory::ShaderResource:
-        //        //info.category = RegisterCategory_Texture;
-        //        break;
-        //    case slang::ParameterCategory::SamplerState:
-        //        //info.category = RegisterCategory_SamplerState;
-        //        break;
-        //    case slang::ParameterCategory::UnorderedAccess:
-        //        //info.category = RegisterCategory_UnorderdAccess;
-        //        break;
-        //    case slang::ParameterCategory::Uniform: // GlobalUniform
-        //        continue;
-        //    default:
-        //        return LN_MAKE_ERROR("Invalid category. (%d)", category);
-        //}
-
-        //moduleInfo->parameters.push_back(info);
     }
+
     return LN_MAKE_SUCCESS();
 }
 
@@ -554,11 +525,11 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     slang::ProgramLayout* layout = m_program->getLayout(targetIndex);
 
     
-    // Dump module reflection
+    // Dump target reflection
     // NOTE: この Dump は moduel 全部 Composite した状態で行った方が良いだろう。
     //       そうしないと、EntryPoint の情報が出力されない。
     if (m_dump) {
-        fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + ".module-reflection.json");
+        fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + ".target-reflection.json");
         Slang::ComPtr<slang::IBlob> text;
         SlangResult result = layout->toJson(text.writeRef());
         if (SLANG_FAILED(result)) {
@@ -573,17 +544,7 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
 
     // Build module reflection
     ModuleInfo* moduleInfo = m_shader->addModuleInfo();
-    switch (target) {
-        case ShaderTarget_SPIRV: {
-            auto r = buildTargetInfoSPIRV(layout, moduleInfo);
-            if (!r) return r;
-            break;
-        }
-        case ShaderTarget_DXIL:
-            break;
-        default:
-            break;
-    }
+    moduleInfo->target = target;
 
     //{
     //    auto r = buildModuleInfoSPIRV(module->getLayout(), moduleInfo);
@@ -624,15 +585,48 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     
 
 
-    
+    // Build entry points
     int entryPointCount = m_module->getDefinedEntryPointCount();
     for (int iEntryPoint = 0; iEntryPoint < entryPointCount; iEntryPoint++) {
         auto r = buildEntryPoint(target, targetIndex, iEntryPoint);
         if (!r) return r;
-
-
-    
     }
+    
+    // Link shader passes.
+    const auto& entryPoints = m_shader->entryPoints();
+    for (auto& globalShaderPass : m_shader->globalShaderPasses()) {
+        TargetShaderPass* targetShaderPass = m_shader->createTargetShaderPass();
+        targetShaderPass->globalShaderPassIndex = globalShaderPass->index;
+        globalShaderPass->targetShaderPassIndices[target] = targetShaderPass->index;
+
+        // VertexShader
+        if (!globalShaderPass->vertexEntryPoint.empty()) {
+            auto result = m_shader->getEntryPoint(target, globalShaderPass->vertexEntryPoint);
+            if (!result) {
+                return result;
+            }
+            targetShaderPass->vertEntryPointIndex = result.unwrap()->index;
+        }
+        
+        // FragmentShader
+        if (!globalShaderPass->fragmentEntryPoint.empty()) {
+            auto result = m_shader->getEntryPoint(target, globalShaderPass->fragmentEntryPoint);
+            if (!result) {
+                return result;
+            }
+            targetShaderPass->fragEntryPointIndex = result.unwrap()->index;
+        }
+
+        // ComputeShader
+        if (!globalShaderPass->computeEntryPoint.empty()) {
+            auto result = m_shader->getEntryPoint(target, globalShaderPass->computeEntryPoint);
+            if (!result) {
+                return result;
+            }
+            targetShaderPass->compEntryPointIndex = result.unwrap()->index;
+        }
+    }
+
 
 
     //slang::ProgramLayout* layout = linkedProgram->getLayout();
@@ -850,6 +844,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
 
 
     EntryPoint* entryPoint = m_shader->createEntryPoint();
+    entryPoint->target = target;
     entryPoint->name = entryPointReflection->getName();
     entryPoint->codeBlobIndex = codeBlob->index;
 
@@ -888,14 +883,6 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     #endif
 
     return LN_MAKE_SUCCESS();
-}
-
-MaybeResult ShaderCompiler::buildTargetInfoSPIRV(slang::ProgramLayout* layout, ModuleInfo* moduleInfo) {
-    moduleInfo->target = ShaderTarget_SPIRV;
-
-
-    return LN_MAKE_SUCCESS();
-
 }
 
 // see: Slang::emitReflectionTypeLayoutJSON()
