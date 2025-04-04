@@ -61,12 +61,8 @@ SamplerState ln_MaterialTextureSampler;
 {
     "passes": [
         {
-            "vertex": "vs_main1",
-            "fragment": "fs_main1"
-        },
-        {
-            "vertex": "vs_main2",
-            "fragment": "fs_main2"
+            "vertex": "VS_Main",
+            "fragment": "PS_Main"
         }
     ]
 }

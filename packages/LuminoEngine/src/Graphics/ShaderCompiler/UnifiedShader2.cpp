@@ -8,9 +8,9 @@ namespace kokage {
 UnifiedShader2::UnifiedShader2() {
 }
 
-InputResourceInfo* UnifiedShader2::createInputResourceInfo() {
+GlobalInputResourceInfo* UnifiedShader2::createGlobalInputResourceInfo() {
     int index = m_inputResourceInfos.size();
-    auto info = makeURef<InputResourceInfo>();
+    auto info = makeURef<GlobalInputResourceInfo>();
     info->index = index;
     m_inputResourceInfos.push_back(std::move(info));
     return m_inputResourceInfos.back().get();
@@ -36,6 +36,14 @@ TargetShaderPass* UnifiedShader2::createTargetShaderPass() {
     pass->index = index;
     m_targetShaderPasses.push_back(std::move(pass));
     return m_targetShaderPasses.back().get();
+}
+
+TargetInputResourceInfo* UnifiedShader2::createTargetInputResourceInfo() {
+    int index = m_TargetInputResourceInfos.size();
+    auto info = makeURef<TargetInputResourceInfo>();
+    info->index = index;
+    m_TargetInputResourceInfos.push_back(std::move(info));
+    return m_TargetInputResourceInfos.back().get();
 }
 
 GlobalShaderPass* UnifiedShader2::createGlobalShaderPass() {
@@ -116,7 +124,7 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     return m_globalMembers.back().get();
 }
 
-Result<InputResourceInfo*> UnifiedShader2::getOrCreateInputResourceWithVerify(
+Result<GlobalInputResourceInfo*> UnifiedShader2::getOrCreateInputResourceWithVerify(
     const std::string& name,
     RegisterCategory category,
     int constantBufferSize,
@@ -126,7 +134,7 @@ Result<InputResourceInfo*> UnifiedShader2::getOrCreateInputResourceWithVerify(
     auto itr = std::find_if(
         m_inputResourceInfos.begin(),
         m_inputResourceInfos.end(),
-        [&name](const URef<InputResourceInfo>& info) { return info->name == name; });
+        [&name](const URef<GlobalInputResourceInfo>& info) { return info->name == name; });
     if (itr != m_inputResourceInfos.end()) {
         // すでに存在する場合、同じ RegisterCategory かつ count が一致するか確認する
         if ((*itr)->category == category) {
@@ -134,13 +142,13 @@ Result<InputResourceInfo*> UnifiedShader2::getOrCreateInputResourceWithVerify(
         }
         else {
             return LN_MAKE_ERROR(
-                "InputResourceInfo already exists with different typeinfo (%s)",
+                "GlobalInputResourceInfo already exists with different typeinfo (%s)",
                 name.c_str());
         }
     }
 
     // 存在しない場合、新しい InputResourceInfo を作成する
-    auto info = makeURef<InputResourceInfo>();
+    auto info = makeURef<GlobalInputResourceInfo>();
     info->name = name;
     info->category = category;
     info->index = m_inputResourceInfos.size();

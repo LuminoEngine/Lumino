@@ -3,6 +3,7 @@
 
 namespace ln {
 namespace kokage {
+class TargetBindingLayout;
 
 // 変数ひとつ分の情報。
 // 今のところ、 ConstantBuffer のメンバーとしてのみ使用しています。。
@@ -18,15 +19,40 @@ struct VariableInfo {
 };
 
 
-struct EntryPointBindingInfo {
+//struct EntryPointBindingInfo {
+//    std::string name;
+//    RegisterCategory category;
+//    int offset;
+//    int size;
+//    int space;
+//    int index;
+//    int count;
+//    bool used;
+//};
+
+
+
+struct TargetBindingConstantBufferMemberInfo {
     std::string name;
-    RegisterCategory category;
     int offset;
+    int size;
+};
+
+struct TargetBindingInfo {
+    std::string name;
+    BindingResourceCategory category;
     int size;
     int space;
     int index;
     int count;
-    bool used;
+    ShaderStageFlags used;
+    std::vector<TargetBindingConstantBufferMemberInfo> members; // ConstantBuffer のメンバー情報
+};
+
+struct TargetBindingLayoutInfo {
+    std::vector<TargetBindingInfo> bindings;
+
+    // merge()
 };
 
 // Pipeline にバインドできる単位の Parameter。
@@ -53,8 +79,9 @@ public:
     int index;
     ShaderTarget target;
     std::string name;
-    std::vector<EntryPointBindingInfo> bindings;
+    //std::vector<EntryPointBindingInfo> bindings;
     int codeBlobIndex;
+    TargetBindingLayoutInfo bindingLayout; // Leaf. これをもとに ShaderPass へマージしてく。
 };
 
 class GlobalShaderPass : public URefObject {
@@ -64,7 +91,7 @@ public:
     std::string vertexEntryPoint;
     std::string fragmentEntryPoint;
     std::string computeEntryPoint;
-    std::array<int, 4> targetShaderPassIndices; // index is ShaderTarget.
+    std::array<int, 4> targetShaderPassIndices; // index is (ShaderTarget - 1).
 
     GlobalShaderPass()
         : index(-1)
@@ -75,6 +102,16 @@ public:
         , targetShaderPassIndices{ -1, -1, -1, -1 } {}
 };
 
+using TargetInputResourceInfoId = int32_t;
+
+class TargetInputResourceInfo : public URefObject {
+public:
+    TargetInputResourceInfoId index;
+    std::string name;
+    RegisterCategory category;
+};
+
+
 class TargetShaderPass : public URefObject {
 public:
     int index;
@@ -82,6 +119,7 @@ public:
     int vertEntryPointIndex;
     int fragEntryPointIndex;
     int compEntryPointIndex;
+    TargetBindingLayoutInfo bindingLayout; // 各 EntryPoint からマージされたもの。
 
     TargetShaderPass()
         : index(-1)
@@ -124,7 +162,7 @@ public:
 // グローバルスコープで定義されている、b, t, s, u... などのリソース。
 // これは、 Material クラスにセットできる値を示す。
 //
-class InputResourceInfo : public URefObject {
+class GlobalInputResourceInfo : public URefObject {
 public:
     int index;
     std::string name;
@@ -186,11 +224,12 @@ public:
     }
     const std::vector<URef<EntryPoint>>& entryPoints() const { return m_entryPoints; }
 
-    InputResourceInfo* createInputResourceInfo();
+    GlobalInputResourceInfo* createGlobalInputResourceInfo();
     GlobalShaderPass* createGlobalShaderPass();
     ModuleInfo* addModuleInfo();
     EntryPoint* createEntryPoint();
     TargetShaderPass* createTargetShaderPass();
+    TargetInputResourceInfo* createTargetInputResourceInfo();
     Blob* createBlob();
 
     Result<GlobalMemberInfo*> getOrCreateGlobalMemberWithVerify(
@@ -202,7 +241,7 @@ public:
         int32_t matrixRows,
         int32_t matrixColumns);
 
-    Result<InputResourceInfo*> getOrCreateInputResourceWithVerify(
+    Result<GlobalInputResourceInfo*> getOrCreateInputResourceWithVerify(
         const std::string& name,
         RegisterCategory category,
         int constantBufferSize,
@@ -212,11 +251,12 @@ public:
 
 private:
     std::vector<URef<GlobalMemberInfo>> m_globalMembers;
-    std::vector<URef<InputResourceInfo>> m_inputResourceInfos;
+    std::vector<URef<GlobalInputResourceInfo>> m_inputResourceInfos; // Includes $Global
     std::vector<URef<GlobalShaderPass>> m_globalShaderPasses;
     std::vector<URef<ModuleInfo>> m_moduleInfos;
     std::vector<URef<EntryPoint>> m_entryPoints;
     std::vector<URef<TargetShaderPass>> m_targetShaderPasses;
+    std::vector<URef<TargetInputResourceInfo>> m_TargetInputResourceInfos;
     std::vector<URef<Blob>> m_blobs;
 };
 

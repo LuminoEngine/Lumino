@@ -1,5 +1,33 @@
-﻿Shader
-==========
+﻿# Shader
+
+## ShaderCompiler 仕様メモ
+
+### シェーダ側の ConstantBuffer レイアウトは、全てのターゲットで Alignment が一致するように定義する必要があります。
+
+例えば次のような定義は禁止です。
+
+```hlsl
+cbuffer Buffer1 {
+    float value1;
+    float3 value2;
+};
+```
+
+このような定義では、 value2 の offset は次のようになります。
+- DXIL: 4
+- SPIRV, WGSL, METAL: 16
+
+Lumino の ShaderCompiler はこのような Alignment の差を調整することはできません。
+
+次のようにパディング用のダミー変数を追加したり、 float4 で統一するなど、修正してください。
+
+```hlsl
+cbuffer Buffer1 {
+    float value1;
+    float dummy[3];
+    float3 value2;
+};
+```
 
 
 命名規則 (2020/6/15 時点)

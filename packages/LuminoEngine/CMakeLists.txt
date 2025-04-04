@@ -50,6 +50,7 @@ file(GLOB LOCAL_SOURCES_ShaderCompiler
     "include/LuminoEngine/Graphics/ShaderCompiler/detail/*.hpp"
     "src/Graphics/ShaderCompiler/*.hpp"
     "src/Graphics/ShaderCompiler/*.cpp"
+    "src/Graphics/ShaderCompiler/*.md"
 )
 file(GLOB LOCAL_SOURCES_ShaderCompiler_Lexer
     "src/Graphics/ShaderCompiler/Lexer/*.hpp"

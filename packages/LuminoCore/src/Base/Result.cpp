@@ -8,12 +8,12 @@ namespace detail {
 
 std::string formatString(const char* format, ...) {
     const int BUFFER_SIZE = 512;
-    char buf[BUFFER_SIZE + 1] = {};
+    char buf[BUFFER_SIZE] = {};
     va_list list;
     va_start(list, format);
     int r = StringHelper::vsprintf(buf, BUFFER_SIZE, format, list);
     va_end(list);
-    buf[std::min(r, BUFFER_SIZE)] = '\0';
+    buf[BUFFER_SIZE - 1] = '\0';
     return buf;
 }
 

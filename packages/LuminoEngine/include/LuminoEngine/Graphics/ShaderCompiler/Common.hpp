@@ -62,6 +62,15 @@ enum RegisterCategory {
     LN_LAST_ELEMENT_MARKER(RegisterCategory_Count) = 5,
 };
 
+// RegisterCategory は slot の種類だが、こちらはそこに割り当てる値の型。
+enum BindingResourceCategory {
+    BindingResourceCategory_Unknown = 0,
+    BindingResourceCategory_UniformBuffer = 1,
+    BindingResourceCategory_Texture = 2,
+    BindingResourceCategory_SamplerState = 3,
+    BindingResourceCategory_UnorderdAccess = 4,
+};
+
 enum ShaderGlobalMemberType {
     ShaderGlobalMemberType_Unknown = 0,
     ShaderGlobalMemberType_Bool = 1,
@@ -140,6 +149,7 @@ enum class ShaderTechniqueClass_Roughness : uint8_t {
 
 // TODO: name: DescriptorRegisterType の方がいいと思う。
 // TextureRegister の中には Texture または StorageBuffer が入る。
+// TODO: deprecated
 enum DescriptorType {
     DescriptorType_UniformBuffer = 0,
     DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
