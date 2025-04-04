@@ -144,11 +144,11 @@ public:
     std::string name;
     ShaderGlobalMemberType type;
     ShaderGlobalMemberKind kind;
-    int32_t size;           // Total bytes.
     int32_t arrayElements;  // Array only.
     int32_t vectorElements; // Vector only.
     int32_t matrixRows;     // Matrix only.
     int32_t matrixColumns;  // Matrix only.
+    // NOTE: size は持てない。例えば WGSL と DX12 では float3 のサイズがそれぞれ 12byte, 16byte になる。Target ごとで管理する必要がある。
 };
 
 class UnifiedShader2 : public URefObject {
@@ -165,7 +165,6 @@ public:
         std::string name,
         ShaderGlobalMemberType type,
         ShaderGlobalMemberKind kind,
-        int32_t size,
         int32_t arrayElements,
         int32_t vectorElements,
         int32_t matrixRows,

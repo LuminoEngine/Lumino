@@ -72,7 +72,7 @@ static RegisterCategory toLuminoCategory(SlangParameterCategory category) {
         case SLANG_PARAMETER_CATEGORY_CONSTANT_BUFFER:
             return RegisterCategory_UniformBuffer;
         case SLANG_PARAMETER_CATEGORY_SHADER_RESOURCE:
-            return RegisterCategory_Texture;
+            return RegisterCategory_TextureOrCombinedSampler;
         case SLANG_PARAMETER_CATEGORY_UNORDERED_ACCESS:
             return RegisterCategory_UnorderdAccess;
         case SLANG_PARAMETER_CATEGORY_SAMPLER_STATE:
@@ -237,7 +237,7 @@ MaybeResult ShaderCompiler::build(const fs::path& inputFilePath) {
             }
             stream.read(&code[0], fileSize);
         }
-        catch (fs::filesystem_error& e) {
+        catch (const fs::filesystem_error& e) {
             return LN_MAKE_ERROR("ifstream failed. (%s)", e.what());
         }
     }
@@ -348,50 +348,15 @@ MaybeResult ShaderCompiler::buildModule() {
 MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
     slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
 
-    /*
-    // $Global 相当の ConstantBuffer が生成されていれば、 binding 情報として取り出す。
-    // ※ $Global がある場合、 getGlobalConstantBufferSize() が 0 より大きい値になる。
-    //   そのとき、他の ContantBuffer は index が 1 から始まる。（$Global がなければ 0 から始まる）
-    //   ただし、 getGlobalConstantBufferSize() は Target に応じて
-    //   count だったり size だったり意味が違っているので注意。そのままでは使えない。
-    if (programLayout->getGlobalConstantBufferSize() > 0) {
-        //programLayout->getGlobalParamsTypeLayout();
-
-
-        // https://shader-slang.org/slang/user-guide/reflection.html#calculating-cumulative-offsets
-        // こちらを見る限り、 getGlobalParamsTypeLayout() よりも getGlobalParamsVarLayout() の方が良いかもしれない。
-        slang::VariableLayoutReflection* varLayout2 = programLayout->getGlobalParamsVarLayout();
-        slang::TypeReflection* typeReflection = varLayout2->getType(); // null
-        slang::TypeLayoutReflection* typeLayoutReflection = varLayout2->getTypeLayout();
-        slang::VariableLayoutReflection* elementLayout = typeLayoutReflection->getElementVarLayout();
-        const char* nn = varLayout2->getName();
-        //slang::TypeLayoutReflection* typeLayout2 = programLayout->getGlobalParamsTypeLayout();
-        //const char* nn2 = typeLayout2->getName();
-
-        //slang::VariableLayoutReflection*
-        //    elementLayout = varLayout2; //typeLayout2->getElementVarLayout();
-        int categoryCount2 = elementLayout->getCategoryCount();
-        if (categoryCount2 > 1) {
-            return LN_MAKE_ERROR("Multiple category unsupported. 2 (%d)", categoryCount2);
-        }
-        slang::ParameterCategory category = elementLayout->getCategoryByIndex(0);
-        int constantBufferSize = elementLayout->getTypeLayout()->getSize(category);
-
-        auto result = m_shader->getOrCreateInputResourceWithVerify(
-            kGlobalConstantBufferName,
-            RegisterCategory_UniformBuffer,
-            constantBufferSize,
-            0);
-        if (!result) {
-            return result;
-        }
-    }
-    //programLayout->glo
-    */
-
     int parameterCount = programLayout->getParameterCount();
 
-    // $Global 集計
+    // Collect $Global ConstantBuffer members.
+    // NOTE: getGlobalConstantBufferSize() や getGlobalParamsVarLayout() を使わないのか？
+    //   https://shader-slang.org/slang/user-guide/reflection.html#calculating-cumulative-offsets
+    //   こちらを見る限り、 getGlobalParamsTypeLayout() よりも getGlobalParamsVarLayout() の方が良いかもしれない。
+    //   実際、 getGlobalConstantBufferSize() は Target に応じて count だったり size だったり意味が違っていたので、そのままでは使えない。
+    //   また原因不明だが、 getGlobalParamsVarLayout() 経由で取得した 変数情報ではサイズが正しく取得できなかった。これも Target によって異なっていて意味不明。
+    //   なので getParameterCount() から uniform である変数を列挙する方法で取得することにした。
     std::vector<VariableInfo> globalConstantBufferMembers;
     for (int i = 0; i < parameterCount; i++) {
         slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
@@ -413,8 +378,6 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
 
             slang::ParameterCategory typeCategory = typeLayout->getCategoryByIndex(0);
 
-
-            int32_t size = typeLayout->getSize(typeCategory);
             int32_t arrayElements = 0;
             int32_t vectorElements = 0;
             int32_t matrixRows = 0;
@@ -422,7 +385,6 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
             ShaderGlobalMemberKind memberKind = ShaderGlobalMemberKind_Unknown;
 
             slang::TypeReflection::Kind kind = type->getKind();
-
             switch (kind) {
                 case slang::TypeReflection::Kind::Array:
                     memberKind = ShaderGlobalMemberKind_Array;
@@ -458,45 +420,10 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
                 return LN_MAKE_ERROR("Invalid type. (%s:%d)", name.c_str(), scalarType);
             }
 
-            //if (kind == slang::TypeReflection::Kind::Array) {
-            //    arrayElements = typeLayout->getElementCount();
-            //}
-            //else {
-            //    vectorElements = typeLayout->getElementCount();
-            //    matrixRows = typeLayout->getRowCount();
-            //    matrixColumns = typeLayout->getColumnCount();
-            //}
-            //
-
-            //int32_t size = typeLayout->getSize(slang::ParameterCategory::Uniform);
-            //int32_t arrayElements = typeLayout->getElementCount();
-            //int32_t vectorElements = 0;
-            ////typeLayout->getVectorSize();
-            //int32_t matrixRows = typeLayout->getRowCount();
-            //int32_t matrixColumns = typeLayout->getColumnCount();
-
-
-            
-            //const char* n1 = type->getName();
-            //const char* n2 = typeLayout->getName();
-            //int s = typeLayout->getStride(slang::ParameterCategory::Uniform);
-            //info.size = 
-            //info.offset = parameter->getOffset();
-            //info.type = parameter->getType();
-            //info.typeLayout = parameter->getTypeLayout();
-            //info.category = parameter->getCategory();
-            //info.arrayElementCount = parameter->getArrayElementCount();
-            //info.arrayStride = parameter->getArrayStride();
-            //info.elementVarLayout = parameter->getElementVarLayout();
-            //info.elementTypeLayout = parameter->getElementTypeLayout();
-            //info.elementType = parameter->getElementType();
-            //globalConstantBufferMembers.push_back(info);
-
             auto result = m_shader->getOrCreateGlobalMemberWithVerify(
                 name,
                 memberType,
                 memberKind,
-                size,
                 arrayElements,
                 vectorElements,
                 matrixRows,
@@ -505,53 +432,80 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
         }
     }
 
+    // Collect non-$Global parameters.
     for (int i = 0; i < parameterCount; i++) {
         slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
         int categoryCount = parameter->getCategoryCount();
-        if (categoryCount > 1) {
-            return LN_MAKE_ERROR("Multiple category unsupported. (%d)", categoryCount);
-        }
+
+        // getCategory() は category が 1 つしかない場合は getCategoryByIndex(0) の値を返し、複数の場合は Mixed を返す。
         slang::ParameterCategory category = parameter->getCategory();
-
-        std::string name = parameter->getName();
-        slang::TypeReflection* type = parameter->getType();
-        slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
-        slang::TypeReflection::Kind kind = type->getKind();
-
         if (category == slang::ParameterCategory::Uniform) {
             continue; // GlobalUniform. Containd in $Global.
         }
 
-
+        std::string name = parameter->getName();
         RegisterCategory registerCategory = RegisterCategory_Unknown;
         int constantBufferSize = 0;
         int arrayElementCount = 0;
-        switch (kind) {
-            case slang::TypeReflection::Kind::ConstantBuffer: {
-                registerCategory = RegisterCategory_UniformBuffer;
-                slang::VariableLayoutReflection* elementLayout = typeLayout->getElementVarLayout();
-                slang::TypeLayoutReflection* typeLayout2 = elementLayout->getTypeLayout();
-                int categoryCount2 = elementLayout->getCategoryCount();
-                if (categoryCount2 > 1) {
-                    return LN_MAKE_ERROR("Multiple category unsupported. 2 (%d)", categoryCount2);
-                }
-                slang::ParameterCategory category = elementLayout->getCategoryByIndex(0);
-                constantBufferSize = typeLayout2->getSize(category);
-                break;
+       
+        if (category == slang::ParameterCategory::Mixed) {
+            // CombinedSampler の場合は Mixed になっているので、内容を確認して確定する。
+            int categoryCount = parameter->getCategoryCount();
+            if (categoryCount != 2) {
+                return LN_MAKE_ERROR("Multiple category unsupported. (%d)", categoryCount);
             }
-            case slang::TypeReflection::Kind::Resource: {
-                registerCategory = RegisterCategory_Texture;
-                break;
+            slang::ParameterCategory c0 = parameter->getCategoryByIndex(0);
+            slang::ParameterCategory c1 = parameter->getCategoryByIndex(1);
+            if ((c0 == slang::ParameterCategory::ShaderResource ||
+                 c0 == slang::ParameterCategory::SamplerState) &&
+                (c1 == slang::ParameterCategory::ShaderResource ||
+                 c1 == slang::ParameterCategory::SamplerState)) {
+                registerCategory = RegisterCategory_TextureOrCombinedSampler;
             }
-            case slang::TypeReflection::Kind::SamplerState:
-                registerCategory = RegisterCategory_SamplerState;
-                break;
-            case slang::TypeReflection::Kind::Array:
-                arrayElementCount = 0; // TODO:
-                return LN_MAKE_ERROR("Array types are not supported.", name.c_str(), kind);
-            default:
-                return LN_MAKE_ERROR("Invalid type. (%s:%d)", name.c_str(), kind);
+            else {
+                return LN_MAKE_ERROR("Invalid mixed category. (%d:%d)", c0, c1);
+            }
         }
+        else {
+            slang::TypeReflection* type = parameter->getType();
+            slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
+            slang::TypeReflection::Kind kind = type->getKind();
+            switch (kind) {
+                case slang::TypeReflection::Kind::ConstantBuffer: {
+                    registerCategory = RegisterCategory_UniformBuffer;
+                    slang::VariableLayoutReflection* elementLayout = typeLayout
+                                                                         ->getElementVarLayout();
+                    slang::TypeLayoutReflection* typeLayout2 = elementLayout->getTypeLayout();
+                    int categoryCount2 = elementLayout->getCategoryCount();
+                    if (categoryCount2 > 1) {
+                        return LN_MAKE_ERROR(
+                            "Multiple category unsupported. 2 (%d)",
+                            categoryCount2);
+                    }
+                    slang::ParameterCategory category = elementLayout->getCategoryByIndex(0);
+                    constantBufferSize = typeLayout2->getSize(category);
+                    break;
+                }
+                case slang::TypeReflection::Kind::Resource: {
+                    registerCategory = RegisterCategory_TextureOrCombinedSampler;
+                    break;
+                }
+                case slang::TypeReflection::Kind::SamplerState:
+                    registerCategory = RegisterCategory_SamplerState;
+                    break;
+                case slang::TypeReflection::Kind::Array:
+                    arrayElementCount = 0; // TODO:
+                    return LN_MAKE_ERROR("Array types are not supported.", name.c_str(), kind);
+                default:
+                    return LN_MAKE_ERROR("Invalid type. (%s:%d)", name.c_str(), kind);
+            }
+        }
+
+
+
+
+
+        
 
         auto result = m_shader->getOrCreateInputResourceWithVerify(
             name,

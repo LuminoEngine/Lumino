@@ -50,7 +50,6 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     std::string name,
     ShaderGlobalMemberType type,
     ShaderGlobalMemberKind kind,
-    int32_t size,
     int32_t arrayElements,
     int32_t vectorElements,
     int32_t matrixRows,
@@ -70,11 +69,6 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
         if (info->kind != kind) {
             return LN_MAKE_ERROR(
                 "GlobalMemberInfo already exists with different kind (%s)",
-                name.c_str());
-        }
-        if (info->size != size) {
-            return LN_MAKE_ERROR(
-                "GlobalMemberInfo already exists with different size (%s)",
                 name.c_str());
         }
         if (info->arrayElements != arrayElements) {
@@ -106,7 +100,6 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     info->name = name;
     info->type = type;
     info->kind = kind;
-    info->size = size;
     info->arrayElements = arrayElements;
     info->vectorElements = vectorElements;
     info->matrixRows = matrixRows;

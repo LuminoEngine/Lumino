@@ -55,7 +55,7 @@ enum ShaderTarget {
 enum RegisterCategory {
     RegisterCategory_Unknown = 0,
     RegisterCategory_UniformBuffer = 1,
-    RegisterCategory_Texture = 2,
+    RegisterCategory_TextureOrCombinedSampler = 2,
     RegisterCategory_SamplerState = 3,
     RegisterCategory_UnorderdAccess = 4,
 
@@ -75,6 +75,7 @@ enum ShaderGlobalMemberKind {
     ShaderGlobalMemberKind_Vector = 2,
     ShaderGlobalMemberKind_Matrix = 3,
     ShaderGlobalMemberKind_Array = 4,
+    // are no Structs (-> ConstantBuffer)
 };
 
 enum ShaderUniformType {
