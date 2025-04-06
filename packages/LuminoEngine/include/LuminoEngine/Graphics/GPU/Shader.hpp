@@ -4,6 +4,7 @@
 #include <LuminoEngine/Asset/AssetObject.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/detail/UnifiedShader.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/UnifiedShader2.hpp>
 #include "GraphicsResource.hpp"
 #include "ShaderInterfaceFramework.hpp"
 
@@ -479,6 +480,8 @@ public:
     void addAffectVariantKey(uint32_t crc32key);
     bool hasAffectVariantKey(uint32_t crc32key) const { return m_affectVariantKeys.contains(crc32key); }
 
+    MaybeResult setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2);
+
 protected:
     void onDispose(bool explicitDisposing) override;
     void onManagerFinalizing() override { dispose(); }
@@ -507,6 +510,7 @@ private:
     Ref<detail::ShaderSecondaryDescriptor> m_descriptor2;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
     Array<uint32_t> m_affectVariantKeys;
+    Ref<kokage::UnifiedShader2> m_unifiedShader2; 
 
     friend class ShaderPass;
     friend class detail::ShaderInternal;
@@ -590,6 +594,9 @@ public:
 
     bool isComputeShader() const { return !m_descriptorLayout.m_storages.isEmpty(); }
 
+    MaybeResult setupShader2(
+        kokage::UnifiedShader2* unifiedShader2, kokage::GlobalShaderPass* globalShaderPass);
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
 
@@ -604,7 +611,7 @@ private:
         DiagnosticsManager* diag);
 
     detail::IShaderPass* resolveRHIObject(GraphicsCommandList* graphicsContext, bool* outModified);
-    void submitShaderDescriptor2(
+    void submitShaderDescriptor2_deprecated(
         GraphicsCommandList* graphicsContext,
         const detail::ShaderSecondaryDescriptor* descripter,
         detail::IShaderPass* rhiShaderPass,
@@ -625,6 +632,8 @@ private:
     const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;
     int m_lastShaderDescriptorRevision = 0;
 
+    kokage::UnifiedShader2* m_unifiedShader2 = nullptr;
+    kokage::GlobalShaderPass* m_globalShaderPass = nullptr; 
 
     friend class Shader;
     friend class ShaderTechnique;

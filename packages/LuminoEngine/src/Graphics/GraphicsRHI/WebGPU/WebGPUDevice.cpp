@@ -239,7 +239,7 @@ Ref<IShaderPass> WebGPUDevice::onCreateShaderPass(
     if (!ptr->init(this, *createInfo2OrNull)) {
         return nullptr;
     }
-    return nullptr;
+    return ptr;
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateUniformBuffer(uint32_t size) {

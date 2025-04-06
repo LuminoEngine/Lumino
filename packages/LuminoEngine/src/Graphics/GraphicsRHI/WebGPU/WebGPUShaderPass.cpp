@@ -11,7 +11,12 @@ WebGPUShaderPass::WebGPUShaderPass()
     : m_wgpuDevice(nullptr)
     , m_nativeVertShaderModule(nullptr)
     , m_nativeFragShaderModule(nullptr)
-    , m_nativeCompShaderModule(nullptr) {
+    , m_nativeCompShaderModule(nullptr)
+    , m_vertEntryPointName()
+    , m_fragEntryPointName()
+    , m_compEntryPointName()
+    , m_pipelineLayout(nullptr)
+    , m_bindGroupLayout(nullptr) {
 }
 
 WebGPUShaderPass::~WebGPUShaderPass() {
@@ -54,6 +59,9 @@ MaybeResult WebGPUShaderPass::init(
         m_compEntryPointName = createInfo.csEntryPointName;
     }
 
+    auto result = createPipelineLayout(createInfo);
+    if (!result) return result;
+    
     return LN_MAKE_SUCCESS();
 }
 
@@ -69,6 +77,14 @@ void WebGPUShaderPass::onDestroy() {
     if (m_nativeCompShaderModule) {
         wgpuShaderModuleRelease(m_nativeCompShaderModule);
         m_nativeCompShaderModule = nullptr;
+    }
+    if (m_pipelineLayout) {
+        wgpuPipelineLayoutRelease(m_pipelineLayout);
+        m_pipelineLayout = nullptr;
+    }
+    if (m_bindGroupLayout) {
+        wgpuBindGroupLayoutRelease(m_bindGroupLayout);
+        m_bindGroupLayout = nullptr;
     }
     IShaderPass::onDestroy();
 }
@@ -92,10 +108,97 @@ WGPUShaderModule WebGPUShaderPass::createShaderModule(
     shaderCodeDesc.code.length = sourceSize;
     WGPUShaderModule shaderModule = wgpuDeviceCreateShaderModule(nativeDevice, &shaderDesc);
     if (!shaderModule) {
-        LN_LOG_ERROR("Failed wgpuDeviceCreateShaderModule");
+        LN_MAKE_ERROR("Failed wgpuDeviceCreateShaderModule");
         return nullptr;
     }
     return shaderModule;
+}
+
+MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& createInfo) {
+    WGPUDevice nativeDevice = m_wgpuDevice->wgpuDevice();
+
+
+    std::vector<WGPUBindGroupLayoutEntry> entries;
+    for (int i = 0; i < createInfo.descriptorLayout->bindings.size(); i++) {
+        const kokage::TargetBindingInfo& binding = createInfo.descriptorLayout->bindings[i];
+        WGPUBindGroupLayoutEntry entry = WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT;
+        if (binding.space != 0) {
+            return LN_MAKE_ERROR("(Not Implemented) Binding space must be 0");
+        }
+
+        setupLayoutEntryDefault(&entry);
+        entry.binding = binding.index;
+        entry.visibility = WGPUShaderStage_None;
+        if (binding.used & kokage::ShaderStageFlags_Vertex) {
+            entry.visibility |= WGPUShaderStage_Vertex;
+        }
+        if (binding.used & kokage::ShaderStageFlags_Pixel) {
+            entry.visibility |= WGPUShaderStage_Fragment;
+        }
+        if (binding.used & kokage::ShaderStageFlags_Compute) {
+            entry.visibility |= WGPUShaderStage_Compute;
+        }
+
+        switch (binding.category) {
+            case kokage::BindingResourceCategory_UniformBuffer:
+                entry.buffer.type = WGPUBufferBindingType_Uniform;
+                entry.buffer.minBindingSize = binding.size;
+                break;
+            case kokage::BindingResourceCategory_Texture:
+                entry.texture.sampleType = WGPUTextureSampleType_Float;
+                entry.texture.viewDimension = WGPUTextureViewDimension_2D;
+                entry.texture.multisampled = false;
+                break;
+            case kokage::BindingResourceCategory_SamplerState:
+                entry.sampler.type = WGPUSamplerBindingType_Filtering;
+                break;
+            case kokage::BindingResourceCategory_UnorderdAccess:
+                return LN_MAKE_ERROR_NOT_IMPLEMENTED();
+             default:
+                return LN_MAKE_ERROR_UNREACHABLE();
+        }
+
+        entries.push_back(entry);
+    }
+
+    // Create a bind group layout
+    WGPUBindGroupLayoutDescriptor bindGroupLayoutDesc{};
+    bindGroupLayoutDesc.nextInChain = nullptr;
+    bindGroupLayoutDesc.entryCount = entries.size();
+    bindGroupLayoutDesc.entries = entries.data();
+    m_bindGroupLayout = wgpuDeviceCreateBindGroupLayout(nativeDevice, &bindGroupLayoutDesc);
+    if (!m_bindGroupLayout) {
+        return LN_MAKE_ERROR("Failed wgpuDeviceCreateBindGroupLayout");
+    }
+
+    // Create the pipeline layout
+    WGPUPipelineLayoutDescriptor layoutDesc{};
+    layoutDesc.nextInChain = nullptr;
+    layoutDesc.bindGroupLayoutCount = 1;
+    layoutDesc.bindGroupLayouts = &m_bindGroupLayout;
+    m_pipelineLayout = wgpuDeviceCreatePipelineLayout(nativeDevice, &layoutDesc);
+    if (!m_pipelineLayout) {
+        return LN_MAKE_ERROR("Failed wgpuDeviceCreatePipelineLayout");
+    }
+    return LN_MAKE_SUCCESS();
+}
+
+void WebGPUShaderPass::setupLayoutEntryDefault(WGPUBindGroupLayoutEntry* entry) {
+    entry->buffer.nextInChain = nullptr;
+    entry->buffer.type = WGPUBufferBindingType_BindingNotUsed;
+    entry->buffer.hasDynamicOffset = false;
+
+    entry->sampler.nextInChain = nullptr;
+    entry->sampler.type = WGPUSamplerBindingType_BindingNotUsed;
+
+    entry->storageTexture.nextInChain = nullptr;
+    entry->storageTexture.access = WGPUStorageTextureAccess_BindingNotUsed;
+    entry->storageTexture.format = WGPUTextureFormat_Undefined;
+    entry->storageTexture.viewDimension = WGPUTextureViewDimension_Undefined;
+
+    entry->texture.nextInChain = nullptr;
+    entry->texture.multisampled = false;
+    entry->texture.sampleType = WGPUTextureSampleType_BindingNotUsed;
 }
 
 } // namespace detail

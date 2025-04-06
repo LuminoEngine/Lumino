@@ -335,7 +335,7 @@ detail::ICommandList* GraphicsCommandList::commitState() {
     if (m_staging.shaderDescriptor_deprecated) {
         if (m_staging.shaderPass && m_staging.shaderDescriptor_deprecated) {
             assert(m_staging.shaderPass->shader() == m_staging.shaderDescriptor_deprecated->shader());
-            m_staging.shaderPass->submitShaderDescriptor2(this, m_staging.shaderDescriptor_deprecated, shaderPassRHI, & resourceModified);
+            m_staging.shaderPass->submitShaderDescriptor2_deprecated(this, m_staging.shaderDescriptor_deprecated, shaderPassRHI, & resourceModified);
         }
         else {
             m_rhiResource->setDescriptor(nullptr);

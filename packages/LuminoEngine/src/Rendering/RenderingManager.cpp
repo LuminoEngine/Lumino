@@ -12,6 +12,7 @@
 #include "RenderFeature/ExtensionRenderFeature.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KScreenRectangleRenderFeature.hpp>
@@ -290,9 +291,14 @@ bool RenderingManager::init(const Settings& settings) {
     }
 #endif // LN_EMSCRIPTEN
 
-//#if 1 // テスト用
-//    const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
-//#endif
+#ifdef LN_USE_SLANG // テスト用
+    const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
+    auto result = ln::kokage::ShaderCompiler::create();
+    auto result2 = result->get()->build(
+        "C:/Proj/LN/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
+    //if (!result2) return;
+    m_builtinShaders[(int)BuiltinShader::Sprite]->setupShader2(result->get()->shader());
+#endif
 #if 0 // テスト用
     const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
     m_builtinShaders[(int)BuiltinShader::ImGui] = Shader::create(dir / _TT("ImGui.fx"));

@@ -240,6 +240,9 @@ MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineS
     pipelineDesc.multisample.mask = ~0u; // Default value for the mask, meaning "all bits on"
     pipelineDesc.multisample.alphaToCoverageEnabled = false; // Default value as well (irrelevant for count = 1 anyways)
 
+    // WGPUPipelineLayout
+    pipelineDesc.layout = shaderPass->pipelineLayout();
+
     m_nativePipeline = wgpuDeviceCreateRenderPipeline(nativeDevice, &pipelineDesc);
     if (!m_nativePipeline) {
         return LN_MAKE_ERROR("Failed wgpuDeviceCreateRenderPipeline");

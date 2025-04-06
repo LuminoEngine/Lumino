@@ -4,6 +4,10 @@
 namespace ln {
 namespace kokage {
 class TargetBindingLayout;
+using TargetInputResourceInfoId = int32_t;
+using TargetShaderPassId = int32_t;
+using EntryPointId = int32_t;
+using BlobId = int32_t;
 
 // 変数ひとつ分の情報。
 // 今のところ、 ConstantBuffer のメンバーとしてのみ使用しています。。
@@ -75,7 +79,7 @@ struct Component {
 
 class EntryPoint : public URefObject {
 public:
-    int index;
+    EntryPointId index;
     ShaderTarget target;
     std::string name;
     //std::vector<EntryPointBindingInfo> bindings;
@@ -91,7 +95,7 @@ public:
     std::string vertexEntryPoint;
     std::string fragmentEntryPoint;
     std::string computeEntryPoint;
-    std::array<int, 4> targetShaderPassIndices; // index is (ShaderTarget - 1).
+    std::array<TargetShaderPassId, 4> targetShaderPassIndices; // index is (ShaderTarget - 1).
 
     GlobalShaderPass()
         : index(-1)
@@ -100,9 +104,12 @@ public:
         , fragmentEntryPoint()
         , computeEntryPoint()
         , targetShaderPassIndices{ -1, -1, -1, -1 } {}
-};
 
-using TargetInputResourceInfoId = int32_t;
+    TargetShaderPassId getTargetShaderPassId(kokage::ShaderTarget target) const {
+        return targetShaderPassIndices[target - 1];
+    }
+
+};
 
 class TargetInputResourceInfo : public URefObject {
 public:
@@ -114,11 +121,11 @@ public:
 
 class TargetShaderPass : public URefObject {
 public:
-    int index;
+    TargetShaderPassId index;
     int globalShaderPassIndex;
-    int vertEntryPointIndex;
-    int fragEntryPointIndex;
-    int compEntryPointIndex;
+    EntryPointId vertEntryPointIndex;
+    EntryPointId fragEntryPointIndex;
+    EntryPointId compEntryPointIndex;
     TargetBindingLayoutInfo bindingLayout; // 各 EntryPoint からマージされたもの。
 
     TargetShaderPass()
@@ -132,7 +139,7 @@ public:
 // 任意データ
 class Blob : public URefObject {
 public:
-    int index;
+    BlobId index;
     std::vector<uint8_t> data;
 };
 
@@ -226,6 +233,13 @@ public:
     const std::vector<URef<TargetShaderPass>>& targetShaderPasses() const {
         return m_targetShaderPasses;
     }
+
+    EntryPoint* entryPoint(EntryPointId id) const { return m_entryPoints[id].get(); }
+
+    TargetShaderPass* targetShaderPass(TargetShaderPassId id) const {
+        return m_targetShaderPasses[id].get();
+    }
+    Blob* blob(BlobId id) const { return m_blobs[id].get(); }
 
     GlobalInputResourceInfo* createGlobalInputResourceInfo();
     GlobalShaderPass* createGlobalShaderPass();

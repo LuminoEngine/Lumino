@@ -241,7 +241,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(
     const ShaderPassCreateInfo2* createInfo2OrNull,
     ShaderCompilationDiag* diag) {
     // Verification
-    {
+    if (!createInfo2OrNull) {
         if (createInfo.csCode) {
             if (LN_REQUIRE(createInfo.csCode)) return nullptr;
             if (LN_REQUIRE(createInfo.csCodeLen > 0)) return nullptr;
@@ -272,7 +272,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(
     }
 
     if (ptr) {
-        ptr->m_name = createInfo.name;
+        ptr->m_name = createInfo2OrNull ? createInfo2OrNull->name : createInfo.name;
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
         m_profiler->addShaderPass(ptr);

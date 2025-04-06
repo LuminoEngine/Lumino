@@ -122,6 +122,8 @@ ErrType<ErrorCode> makeInternalError(const std::string& message, const char* fil
 
 #define LN_MAKE_SUCCESS() {}
 #define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
+#define LN_MAKE_ERROR_UNREACHABLE() LN_MAKE_ERROR("Unreachable code reached.")
+#define LN_MAKE_ERROR_NOT_IMPLEMENTED() LN_MAKE_ERROR("Not implemented.")
 
 //==============================================================================
 // BasicResult

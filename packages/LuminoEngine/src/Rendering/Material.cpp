@@ -5,7 +5,6 @@
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 
 namespace ln {
 
@@ -72,19 +71,12 @@ void Material::init()
 	Object::init();
 
     
-    auto result = ln::kokage::ShaderCompiler::create();
 
    //URef<kokage::ShaderCompiler> compiler = std::move(result);
 
     //auto result2 = compiler->build("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
     //
     // 
-#ifdef LN_USE_SLANG
-    auto result2 = result->get()->build("C:/Proj/LN/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
-    if (!result2) return;
-
-    m_shader2 = result->get()->shader();
-#endif
 
 }
 

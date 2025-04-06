@@ -17,12 +17,15 @@ public:
     const std::string& vertEntryPointName() const { return m_vertEntryPointName; }
     const std::string& fragEntryPointName() const { return m_fragEntryPointName; }
     const std::string& compEntryPointName() const { return m_compEntryPointName; }
+    WGPUPipelineLayout pipelineLayout() const { return m_pipelineLayout; }
 
 private:
     WGPUShaderModule createShaderModule(
         const byte_t* source,
         size_t sourceSize,
         const char* entryPointName);
+    MaybeResult createPipelineLayout(const ShaderPassCreateInfo2& createInfo);
+    static void setupLayoutEntryDefault(WGPUBindGroupLayoutEntry* entry);
 
     WebGPUDevice* m_wgpuDevice;
     WGPUShaderModule m_nativeVertShaderModule;
@@ -31,6 +34,8 @@ private:
     std::string m_vertEntryPointName;
     std::string m_fragEntryPointName;
     std::string m_compEntryPointName;
+    WGPUPipelineLayout m_pipelineLayout;
+    WGPUBindGroupLayout m_bindGroupLayout;
 };
 
 } // namespace detail

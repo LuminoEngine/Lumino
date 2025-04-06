@@ -162,6 +162,13 @@ void Shader::init(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag
     createFromUnifiedShader(unifiedShader, diag);
 }
 
+MaybeResult Shader::setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2) {
+    m_unifiedShader2 = unifiedShader2;
+    kokage::GlobalShaderPass* globalShaderPass = m_unifiedShader2->globalShaderPasses()[0].get();
+    m_techniques[0]->m_passes[0]->setupShader2(unifiedShader2, globalShaderPass);
+    return LN_MAKE_SUCCESS();
+}
+
 bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties) {
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
@@ -468,6 +475,14 @@ void ShaderPass::onDispose(bool explicitDisposing) {
     Object::onDispose(explicitDisposing);
 }
 
+MaybeResult ShaderPass::setupShader2(
+    kokage::UnifiedShader2* unifiedShader2,
+    kokage::GlobalShaderPass* globalShaderPass) {
+    m_unifiedShader2 = unifiedShader2;
+    m_globalShaderPass = globalShaderPass;
+    return LN_MAKE_SUCCESS();
+}
+
 Shader* ShaderPass::shader() const {
     return m_owner->shader();
 }
@@ -480,11 +495,55 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsCommandList* context, 
     if (!rhiObject) {
         DiagnosticsManager diag;
         detail::IGraphicsDevice* device = graphicsContext->rhiDevice();
-        Ref<detail::IShaderPass> ref = device->createShaderPassFromUnifiedShaderPass(
-            m_kokageShader,
-            m_kokagePassId,
-            m_name.toStdString(),
-            &diag);
+        Ref<detail::IShaderPass> ref;
+
+        if (m_globalShaderPass) {
+            kokage::ShaderTarget target = kokage::ShaderTarget_WGSL;
+            kokage::TargetShaderPassId id = m_globalShaderPass->getTargetShaderPassId(target);
+            kokage::TargetShaderPass* targetShaderPass = m_unifiedShader2->targetShaderPass(id);
+
+            detail::ShaderPassCreateInfo2 createInfo = {};
+            createInfo.name = m_globalShaderPass->name.c_str();
+            createInfo.descriptorLayout = &targetShaderPass->bindingLayout;
+            // VertexShader
+            if (targetShaderPass->vertEntryPointIndex >= 0) {
+                auto* entryPoint = m_unifiedShader2->entryPoint(
+                    targetShaderPass->vertEntryPointIndex);
+                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobIndex);
+                createInfo.vsCode = code->data.data();
+                createInfo.vsCodeLen = code->data.size();
+                createInfo.vsEntryPointName = entryPoint->name.c_str();
+                createInfo.attributes = &entryPoint->inputAttributes;
+            }
+            // PixelShader
+            if (targetShaderPass->fragEntryPointIndex >= 0) {
+                auto* entryPoint = m_unifiedShader2->entryPoint(
+                    targetShaderPass->fragEntryPointIndex);
+                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobIndex);
+                createInfo.psCode = code->data.data();
+                createInfo.psCodeLen = code->data.size();
+                createInfo.psEntryPointName = entryPoint->name.c_str();
+            }
+            // ComputeShader
+            if (targetShaderPass->compEntryPointIndex >= 0) {
+                auto* entryPoint = m_unifiedShader2->entryPoint(
+                    targetShaderPass->compEntryPointIndex);
+                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobIndex);
+                createInfo.csCode = code->data.data();
+                createInfo.csCodeLen = code->data.size();
+                createInfo.csEntryPointName = entryPoint->name.c_str();
+            }
+
+            ShaderCompilationDiag sdiag;
+            ref = device->createShaderPass({}, &createInfo, &sdiag);
+        }
+        else {
+            ref = device->createShaderPassFromUnifiedShaderPass(
+                m_kokageShader,
+                m_kokagePassId,
+                m_name.toStdString(),
+                &diag);
+        }
         graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
         rhiObject = ref;
 
@@ -501,7 +560,7 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsCommandList* context, 
     return rhiObject;
 }
 
-void ShaderPass::submitShaderDescriptor2(
+void ShaderPass::submitShaderDescriptor2_deprecated(
     GraphicsCommandList* graphicsContext,
     const detail::ShaderSecondaryDescriptor* descripter,
     detail::IShaderPass* rhiShaderPass,
