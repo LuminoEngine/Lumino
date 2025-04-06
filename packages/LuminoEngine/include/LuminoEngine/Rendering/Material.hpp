@@ -23,6 +23,47 @@ LN_CLASS()
 class Material
 	: public Object
     , public IGraphicsObject {
+    // NOTE: パラメータは Category(Register) ごとに分けるか？ Variant な１つの配列にするか？
+    //   A. 分ける場合はこんな感じ
+    //       m_constantBuffers[];
+    //       m_textures[];
+    //       m_samplers[];
+    //		 m_storages[];
+    //   B. Variant な場合はこんな感じ
+    //	     m_parameters[];
+    //   内部的にはどちらでも大変さは変わらないかもしれない。
+    //   A は UnifiedShader2 ベースの方式とは異なるためマッピングが必要。
+    //   B は Lumino 初期のちょっと複雑な ShaderParameter の実装を踏襲することになる。
+	// 
+	//   0.11 時点の Material は A と B のハイブリッド。
+	//   A は ShaderSemanticManager が担当し、 B は Material が担当している。
+	//   ただし ShaderSemanticManager は $Global な ConstantBuffer のメンバ には対応していない。
+	//   また Material は Shader が変更された時でも前回値を保持したかったため Shader の Layout とは独立管理であり
+	//   毎フレーム、設定先のスロットを名前検索していた。
+    //   0.12 では、 set only にしてこの辺りを整理してもよい。 (Bに固執しなくてよい)
+	// 
+	//   最初期は B 方式だったけど、 Vulkan や DX12 をサポートし始めたあたりで、
+    //   複雑さをなんとか緩和しようと b, t, s, u... といった Register を意識した A 方式を導入した。
+	//   Slang はバックエンドによって異なる BindingLayout を生成するので、
+	//   Variant ではなく型情報を固定的にしたコードの見やすさや、バックエンドに引きずられない仕様を決めてのデバッグのやり易さを重視し、
+	//   差は RHI レイヤーで対応することにしてみる。
+	//   
+    //   なお Material に値をセットする API は次のようにする予定。
+    //   ```
+	//   // 名前指定
+    //   material->setIntByName("value1", 123);
+	//   // ID 指定
+    //   int id = material->findParameter("value1");
+    //   material->setIntById(id, 123);
+    //   ```
+	//   検索できるものは次の通り。
+    //   - ConstantBuffer
+    //   - Texture
+	//   - SamplerState
+    //   - StorageBuffer
+	//   - $Global な ConstantBuffer のメンバ
+	//   
+    //
 	LN_OBJECT;
 public:
 	static Material* defaultMaterial();

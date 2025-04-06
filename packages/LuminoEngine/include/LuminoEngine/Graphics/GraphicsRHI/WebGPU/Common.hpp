@@ -6,6 +6,7 @@ namespace ln {
 namespace detail {
 	
 class WebGPUDevice;
+class WebGPUShaderPass;
 class WebGPURenderTarget;
 	
 } // namespace detail

@@ -1,6 +1,7 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexLayout.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
@@ -121,18 +122,23 @@ MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineS
     WGPUDevice nativeDevice = wgpuDevice->wgpuDevice();
     WebGPUShaderPass* shaderPass = static_cast<WebGPUShaderPass*>(state.shaderPass);
     WebGPURenderPass* renderPass = static_cast<WebGPURenderPass*>(state.renderPass);
+    WebGPUVertexLayout* vertexLayout = static_cast<WebGPUVertexLayout*>(state.vertexDeclaration);
 
+    WebGPUPipelineVertexLayout pipelineVertexLayout;
+    auto result1 = vertexLayout->createPipelineVertexLayout(shaderPass, &pipelineVertexLayout);
+    if (!result1) return result1;
+    
     WGPURenderPipelineDescriptor pipelineDesc = WGPU_RENDER_PIPELINE_DESCRIPTOR_INIT;
     pipelineDesc.nextInChain = nullptr;
-    
+
     // WGPUVertexState
     pipelineDesc.vertex.module = shaderPass->nativeVertShaderModule();
     pipelineDesc.vertex.entryPoint.data = shaderPass->vertEntryPointName().c_str();
     pipelineDesc.vertex.entryPoint.length = shaderPass->vertEntryPointName().length();
     pipelineDesc.vertex.constantCount = 0;
     pipelineDesc.vertex.constants = nullptr;
-    pipelineDesc.vertex.bufferCount = 0;
-    pipelineDesc.vertex.buffers = nullptr;
+    pipelineDesc.vertex.bufferCount = pipelineVertexLayout.bufferLayouts.size();
+    pipelineDesc.vertex.buffers = pipelineVertexLayout.bufferLayouts.data();
 
     // WGPUPrimitiveState
     switch (state.topology) {
@@ -187,8 +193,8 @@ MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineS
             WebGPURenderTarget* renderTarget = static_cast<WebGPURenderTarget*>(
                 renderPass->m_renderTargets[i]);
             const RenderTargetBlendDesc& desc = state.blendState.independentBlendEnable
-                                                    ? state.blendState.renderTargets[0]
-                                                    : state.blendState.renderTargets[i];
+                ? state.blendState.renderTargets[0]
+                : state.blendState.renderTargets[i];
             WGPUBlendState& blendState = blendStates[i];
             blendState = WGPU_BLEND_STATE_INIT;
             blendState.color.srcFactor = toWGPUBlendFactor(desc.sourceBlend);

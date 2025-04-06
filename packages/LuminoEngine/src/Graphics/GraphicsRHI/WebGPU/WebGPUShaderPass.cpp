@@ -25,6 +25,7 @@ WebGPUShaderPass::~WebGPUShaderPass() {
 MaybeResult WebGPUShaderPass::init(
     WebGPUDevice* wgpuDevice, const ShaderPassCreateInfo2& createInfo) {
     m_wgpuDevice = wgpuDevice;
+    m_attributes = *createInfo.attributes;
 
     if (createInfo.vsCode) {
         m_nativeVertShaderModule = createShaderModule(
@@ -117,7 +118,7 @@ WGPUShaderModule WebGPUShaderPass::createShaderModule(
 MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& createInfo) {
     WGPUDevice nativeDevice = m_wgpuDevice->wgpuDevice();
 
-
+    // Build WGPUBindGroupLayoutEntry (b, t, s, u の各値をセットするスロットの定義)
     std::vector<WGPUBindGroupLayoutEntry> entries;
     for (int i = 0; i < createInfo.descriptorLayout->bindings.size(); i++) {
         const kokage::TargetBindingInfo& binding = createInfo.descriptorLayout->bindings[i];

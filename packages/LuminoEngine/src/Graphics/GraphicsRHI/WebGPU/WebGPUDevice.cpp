@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexLayout.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
@@ -91,6 +92,8 @@ bool WebGPUDevice::init(const Settings& settings) {
 #endif
     }
 
+    WGPUAdapter adapter = m_adapters[0].adapter;
+
     // Request device.
     {
         WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
@@ -117,10 +120,23 @@ bool WebGPUDevice::init(const Settings& settings) {
             deviceDesc.uncapturedErrorCallbackInfo = callbackInfo;
         }
 
-        if (!requestDevice(m_adapters[0].adapter, deviceDesc)) {
+        if (!requestDevice(adapter, deviceDesc)) {
             return false;
         }
     }
+
+    // Diag
+    {
+        WGPULimits adapterLimits = {};
+        WGPULimits deviceLimits = {};
+        wgpuAdapterGetLimits(adapter, &adapterLimits);
+        LN_LOG_INFO("Adapter Supported limits:");
+        LN_LOG_INFO("  maxVertexAttributes: {}", adapterLimits.maxVertexAttributes);
+        wgpuDeviceGetLimits(m_device, &deviceLimits);
+        LN_LOG_INFO("Device Supported limits:");
+        LN_LOG_INFO("  maxVertexAttributes: {}", deviceLimits.maxVertexAttributes);
+    }
+
 	
     // Prepare Queue.
     m_queue = wgpuDeviceGetQueue(m_device);
@@ -183,8 +199,11 @@ Ref<IPipeline> WebGPUDevice::onCreatePipeline(const DevicePipelineStateDesc& sta
 }
 
 Ref<IVertexDeclaration> WebGPUDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUVertexLayout>();
+    if (!ptr->init(this, elements, elementsCount)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {

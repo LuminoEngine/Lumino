@@ -12,10 +12,11 @@ AlignEscapedNewlines: Right
 AlignTrailingComments: true
 #----------
 # Type LongLongFunction(
-#   int a, int b, int c)
-# NOTE: できれば Params も改行したいけど、今はできないみたい。
+#   int a,
+#   int b,
+#   int c)
 AllowAllParametersOfDeclarationOnNextLine: true
-BinPackParameters: false
+BinPackParameters: AlwaysOnePerLine
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 BreakBeforeBraces: Custom

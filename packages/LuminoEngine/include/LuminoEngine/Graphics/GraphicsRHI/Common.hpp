@@ -88,34 +88,34 @@ enum class VertexElementType : uint8_t {
 /** 頂点宣言の要素の用途 */
 enum class VertexElementUsage {
     /** Unknown (指定なし) */
-    Unknown,
+    Unknown = kokage::AttributeUsage_Unknown,
 
     /** 頂点位置 */
-    Position,
+    Position = kokage::AttributeUsage_Position,
+
+    /** ブレンディング (スキニング) のインデックス */
+    BlendIndices = kokage::AttributeUsage_BlendIndices,
+
+    /** ブレンディング (スキニング) のウェイト */
+    BlendWeight = kokage::AttributeUsage_BlendWeight,
 
     /** 法線 */
-    Normal,
-
-    /** 頂点カラー */
-    Color,
+    Normal = kokage::AttributeUsage_Normal,
 
     /** テクスチャ座標 */
-    TexCoord,
+    TexCoord = kokage::AttributeUsage_TexCoord,
+
+    Tangent = kokage::AttributeUsage_Tangent,
+
+    Binormal = kokage::AttributeUsage_Binormal,
+
+    /** 頂点カラー */
+    Color = kokage::AttributeUsage_Color,
+
+    InstanceID = kokage::AttributeUsage_InstanceID,
 
     /** (obsolete) ポイントスプライトサイズ */
     PointSize,
-
-    Tangent,
-
-    Binormal,
-
-    /** ブレンディング (スキニング) のインデックス */
-    BlendIndices,
-
-    /** ブレンディング (スキニング) のウェイト */
-    BlendWeight,
-
-    InstanceID,
 };
 
 /** 頂点バッファのレート */

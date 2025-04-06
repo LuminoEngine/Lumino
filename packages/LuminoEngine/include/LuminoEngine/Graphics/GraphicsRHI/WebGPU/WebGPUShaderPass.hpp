@@ -8,9 +8,12 @@ class WebGPUShaderPass : public IShaderPass {
 public:
     WebGPUShaderPass();
     ~WebGPUShaderPass() override;
-    MaybeResult init(WebGPUDevice* m_wgpuDevice, const ShaderPassCreateInfo2& createInfo);
+    MaybeResult init(
+        WebGPUDevice* m_wgpuDevice,
+        const ShaderPassCreateInfo2& createInfo);
     void onDestroy() override;
 
+    const std::vector<kokage::VertexInputAttribute>& attributes() const { return m_attributes; }
     WGPUShaderModule nativeVertShaderModule() const { return m_nativeVertShaderModule; }
     WGPUShaderModule nativeFragShaderModule() const { return m_nativeFragShaderModule; }
     WGPUShaderModule nativeCompShaderModule() const { return m_nativeCompShaderModule; }
@@ -28,6 +31,7 @@ private:
     static void setupLayoutEntryDefault(WGPUBindGroupLayoutEntry* entry);
 
     WebGPUDevice* m_wgpuDevice;
+    std::vector<kokage::VertexInputAttribute> m_attributes;
     WGPUShaderModule m_nativeVertShaderModule;
     WGPUShaderModule m_nativeFragShaderModule;
     WGPUShaderModule m_nativeCompShaderModule;
