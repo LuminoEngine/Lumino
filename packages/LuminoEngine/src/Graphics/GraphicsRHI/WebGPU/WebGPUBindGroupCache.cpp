@@ -70,6 +70,7 @@ MaybeResult WebGPUBindGroupCache::getOrCreate(
             case kokage::RegisterCategory_UniformBuffer: {
                 const auto& item = updateInfo.uniforms[info.descriptorEntryIndex];
                 const WebGPUUniformBuffer* buffer = static_cast<WebGPUUniformBuffer*>(item.object);
+                entry.buffer = buffer->nativeBuffer();
                 entry.offset = item.offset;
                 entry.size = buffer->memorySize();
                 break;

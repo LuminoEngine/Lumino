@@ -1,5 +1,10 @@
-﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUIndexBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDescriptor.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
 
 namespace ln {
@@ -61,7 +66,7 @@ void WebGPUCommandList::onEndCommandRecoding() {
 
 void WebGPUCommandList::onBeginRenderPass(IRenderPass* renderPass) {
     auto rhiRenderPass = static_cast<WebGPURenderPass*>(renderPass);
-    m_renderPassEncoder = wgpuCommandEncoderBeginRenderPass(m_commandEncoder, rhiRenderPass->resolve());
+    m_renderPassEncoder = wgpuCommandEncoderBeginRenderPass(m_commandEncoderm_commandEncoder, rhiRenderPass->resolve());
 }
 
 void WebGPUCommandList::onEndRenderPass(IRenderPass* renderPass) {
@@ -71,7 +76,59 @@ void WebGPUCommandList::onEndRenderPass(IRenderPass* renderPass) {
 }
 
 void WebGPUCommandList::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) {
-    LN_NOTIMPLEMENTED();
+    if (!m_renderPassEncoder) {
+        LN_UNREACHABLE();
+        return;
+    }
+
+    if (stateDirtyFlags & GraphicsContextStateDirtyFlags_RegionRects) {
+        // TODO:
+        //wgpuRenderPassEncoderSetViewport
+
+    }
+
+    
+    if (submitSource == GraphicsContextSubmitSource_Draw) {
+        // Pipeline
+        auto* wgpuPipeline = static_cast<WebGPUPipeline*>(pipeline);
+        wgpuRenderPassEncoderSetPipeline(m_renderPassEncoder, wgpuPipeline->nativePipeline());
+    
+        // VertexBuffer
+        int vbCount = 0;
+        for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
+            if (state.primitive.vertexBuffers[i]) {
+                auto* vertexBuffer = static_cast<WebGPUVertexBuffer*>(state.primitive.vertexBuffers[i]);
+                wgpuRenderPassEncoderSetVertexBuffer(
+                    m_renderPassEncoder,
+                    i,
+                    vertexBuffer->nativeBuffer(),
+                    0,
+                    vertexBuffer->memorySize());
+            }
+        }
+
+        // IndexBuffer
+        if (state.primitive.indexBuffer) {
+            auto* indexBuffer = static_cast<WebGPUIndexBuffer*>(state.primitive.indexBuffer);
+            wgpuRenderPassEncoderSetIndexBuffer(
+                m_renderPassEncoder,
+                indexBuffer->nativeBuffer(),
+                indexBuffer->indexFormat(),
+                0,
+                indexBuffer->memorySize());
+        }
+
+        // BindGroup
+        if (state.descriptor) {
+            auto* descriptor = static_cast<WebGPUDescriptor*>(state.descriptor);
+            wgpuRenderPassEncoderSetBindGroup(
+                m_renderPassEncoder,
+                0,
+                descriptor->nativeBindGroup(),
+                0,
+                nullptr);
+        }
+    }
 }
 
 void WebGPUCommandList::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) {
@@ -99,8 +156,15 @@ void WebGPUCommandList::onDrawPrimitive(PrimitiveTopology primitive, int startVe
 }
 
 void WebGPUCommandList::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount, int vertexOffset) {
-    LN_NOTIMPLEMENTED();
+    wgpuRenderPassEncoderDrawIndexed(
+        m_renderPassEncoder,
+        RHIHelper::getPrimitiveVertexCount(primitive, primitiveCount),
+        instanceCount,
+        startIndex,
+        vertexOffset,
+        0);
 }
+
 
 void WebGPUCommandList::onDrawExtension(INativeGraphicsExtension* extension) {
     LN_NOTIMPLEMENTED();

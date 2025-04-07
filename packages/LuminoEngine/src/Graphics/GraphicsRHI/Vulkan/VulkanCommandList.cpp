@@ -1,4 +1,5 @@
-﻿#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanBuffers.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDescriptorPool.hpp>
@@ -496,7 +497,7 @@ void VulkanCommandList::onClearBuffers(ClearFlags flags, const Color& color, flo
 void VulkanCommandList::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount, int instanceCount) {
     vkCmdDraw(
         m_commandBuffer,
-        VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
+        RHIHelper::getPrimitiveVertexCount(primitive, primitiveCount),
         std::max(instanceCount, 1),
         startVertex,
         0);
@@ -506,7 +507,7 @@ void VulkanCommandList::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int 
     int ic = (instanceCount == 0) ? 1 : instanceCount;
     vkCmdDrawIndexed(
         m_commandBuffer,
-        VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount),
+        RHIHelper::getPrimitiveVertexCount(primitive, primitiveCount),
         ic,
         startIndex,
         vertexOffset,

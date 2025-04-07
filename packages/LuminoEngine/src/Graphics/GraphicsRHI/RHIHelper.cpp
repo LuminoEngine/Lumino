@@ -64,4 +64,25 @@ size_t RHIHelper::getPixelSize(TextureFormat format) {
     }
 }
 
+uint32_t RHIHelper::getPrimitiveVertexCount(
+    PrimitiveTopology primitive, uint32_t primitiveCount) {
+    switch (primitive) {
+        case PrimitiveTopology::TriangleList:
+            return primitiveCount * 3;
+        case PrimitiveTopology::TriangleStrip:
+            return 2 + primitiveCount;
+        case PrimitiveTopology::TriangleFan:
+            return 2 + primitiveCount;
+        case PrimitiveTopology::LineList:
+            return primitiveCount * 2;
+        case PrimitiveTopology::LineStrip:
+            return 1 + primitiveCount;
+        case PrimitiveTopology::PointList:
+            return primitiveCount;
+        default:
+            LN_UNREACHABLE();
+            return 0;
+    }
+}
+
 } // namespace ln

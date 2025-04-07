@@ -182,9 +182,9 @@ MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineS
     std::array<WGPUBlendState, MaxMultiRenderTargets> blendStates;
     WGPUFragmentState fragmentState = WGPU_FRAGMENT_STATE_INIT;
     {
-        fragmentState.module = shaderPass->nativeVertShaderModule();
-        fragmentState.entryPoint.data = shaderPass->vertEntryPointName().c_str();
-        fragmentState.entryPoint.length = shaderPass->vertEntryPointName().length();
+        fragmentState.module = shaderPass->nativeFragShaderModule();
+        fragmentState.entryPoint.data = shaderPass->fragEntryPointName().c_str();
+        fragmentState.entryPoint.length = shaderPass->fragEntryPointName().length();
         fragmentState.constantCount = 0;
         fragmentState.constants = nullptr;
 

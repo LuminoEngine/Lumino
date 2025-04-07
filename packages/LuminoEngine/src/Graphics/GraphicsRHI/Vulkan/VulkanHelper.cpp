@@ -748,26 +748,6 @@ std::vector<const char*> VulkanHelper::checkValidationLayerSupport() {
     return result;
 }
 
-int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount) {
-    switch (primitive) {
-        case PrimitiveTopology::TriangleList:
-            return primitiveCount * 3;
-        case PrimitiveTopology::TriangleStrip:
-            return 2 + primitiveCount;
-        case PrimitiveTopology::TriangleFan:
-            return 2 + primitiveCount;
-        case PrimitiveTopology::LineList:
-            return primitiveCount * 2;
-        case PrimitiveTopology::LineStrip:
-            return 1 + primitiveCount;
-        case PrimitiveTopology::PointList:
-            return primitiveCount;
-        default:
-            LN_UNREACHABLE();
-            return 0;
-    }
-}
-
 Result<> VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView) {
     LN_CHECK(deviceContext);
     LN_CHECK(mipLevel >= 1);

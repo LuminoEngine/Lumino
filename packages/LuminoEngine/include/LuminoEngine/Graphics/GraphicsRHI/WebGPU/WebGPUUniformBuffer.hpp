@@ -11,6 +11,7 @@ public:
     void onDestroy() override;
     void* map() override;
     void unmap() override;
+    WGPUBuffer nativeBuffer() const { return m_nativeBuffer; }
 
 private:
     WebGPUDevice* m_device;

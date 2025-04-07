@@ -70,7 +70,7 @@ MaybeResult WebGPUVertexLayout::createPipelineVertexLayout(
     // (std::vector の allocate 時にポインタが変わらないように)
     for (const VertexElement& attr : m_elements) {
         DerivedWGPUVertexBufferLayout* bufferLayout = nullptr;
-        if (outLayout->bufferLayouts.size() < attr.StreamIndex) {
+        if (outLayout->bufferLayouts.size() <= attr.StreamIndex) {
             outLayout->bufferLayouts.resize(attr.StreamIndex + 1);
             bufferLayout = &outLayout->bufferLayouts.back();
             bufferLayout->rate = attr.rate;
@@ -95,17 +95,19 @@ MaybeResult WebGPUVertexLayout::createPipelineVertexLayout(
                 return x.usage == static_cast<kokage::AttributeUsage>(attr.Usage) &&
                     x.index == attr.UsageIndex;
             });
-        if (itr == inputAttributes.end()) {
-            return LN_MAKE_ERROR("Attribute not found in shader pass");
+        if (itr != inputAttributes.end()) {
+            WGPUVertexAttribute attribute = WGPU_VERTEX_ATTRIBUTE_INIT;
+            attribute.format = toWGPUVertexFormat(attr.Type);
+            attribute.offset = bufferLayout->nextOffset;
+            attribute.shaderLocation = itr->layoutLocation;
+            bufferLayout->attributeInstances.push_back(attribute);
+
+            bufferLayout->nextOffset += RHIHelper::getVertexElementTypeSize(attr.Type);
         }
-
-        WGPUVertexAttribute attribute = WGPU_VERTEX_ATTRIBUTE_INIT;
-        attribute.format = toWGPUVertexFormat(attr.Type);
-        attribute.offset = bufferLayout->nextOffset;
-        attribute.shaderLocation = itr->layoutLocation;
-        bufferLayout->attributeInstances.push_back(attribute);
-
-        bufferLayout->nextOffset += RHIHelper::getVertexElementTypeSize(attr.Type);
+        else {
+            // VertexLayout の指定にはあるけど、 Shader 側で使われていない場合は無視してOK.
+            continue;
+        }
     }
 
     // Build WGPUVertexBufferLayout

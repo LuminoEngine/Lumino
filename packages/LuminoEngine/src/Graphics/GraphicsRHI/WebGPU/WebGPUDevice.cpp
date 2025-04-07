@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUIndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUTexture2D.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSamplerState.hpp>
@@ -200,8 +201,11 @@ Ref<IRenderPass> WebGPUDevice::onCreateRenderPass(const DeviceFramebufferState& 
 }
 
 Ref<IPipeline> WebGPUDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUPipeline>();
+    if (!ptr->init(this, state)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IVertexDeclaration> WebGPUDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) {
@@ -221,17 +225,16 @@ Ref<RHIResource> WebGPUDevice::onCreateVertexBuffer(GraphicsResourceUsage usage,
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
-    //auto ptr = makeRef<WebGPUVertexBuffer>();
-    //if (!ptr->init(
-    //        this,
-    //        usage,
-    //        format,
-    //        indexCount,
-    //        initialData)) {
-    //    return nullptr;
-    //}
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUIndexBuffer>();
+    if (!ptr->init(
+            this,
+            usage,
+            format,
+            indexCount,
+            initialData)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {

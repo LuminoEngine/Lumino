@@ -10,6 +10,8 @@ public:
     ~WebGPUDescriptor() override;
     void onUpdateData(const ShaderDescriptorTableUpdateInfo& data) override;
 
+    WGPUBindGroup nativeBindGroup() const { return m_nativeBindGroup; }
+
 private:
     WebGPUDescriptorPool* m_owner;
     WGPUBindGroup m_nativeBindGroup;

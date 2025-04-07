@@ -4,21 +4,23 @@
 namespace ln {
 namespace detail {
 
-class WebGPUVertexBuffer : public RHIResource {
+class WebGPUIndexBuffer : public RHIResource {
 public:
-    WebGPUVertexBuffer();
+    WebGPUIndexBuffer();
     MaybeResult init(
-        WebGPUDevice* device, GraphicsResourceUsage usage, size_t bufferSize,
+        WebGPUDevice* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount,
         const void* initialData);
     void onDestroy() override;
     void* map() override;
     void unmap() override;
 
     WGPUBuffer nativeBuffer() const { return m_nativeBuffer; }
+    WGPUIndexFormat indexFormat() const { return m_indexFormat; }
 
 private:
     WebGPUDevice* m_device;
     WGPUBuffer m_nativeBuffer;
+    WGPUIndexFormat m_indexFormat;
 };
 
 } // namespace detail
