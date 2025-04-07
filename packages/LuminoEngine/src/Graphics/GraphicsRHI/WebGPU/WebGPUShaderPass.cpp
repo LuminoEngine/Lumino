@@ -26,6 +26,7 @@ MaybeResult WebGPUShaderPass::init(
     WebGPUDevice* wgpuDevice, const ShaderPassCreateInfo2& createInfo) {
     m_wgpuDevice = wgpuDevice;
     m_attributes = *createInfo.attributes;
+    m_targetBindingLayoutInfo = *createInfo.descriptorLayout;
 
     if (createInfo.vsCode) {
         m_nativeVertShaderModule = createShaderModule(

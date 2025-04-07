@@ -18,6 +18,7 @@ public:
 	WGPUDevice wgpuDevice() const { return m_device; }
     WGPUQueue wgpuQueue() const { return m_queue; }
     WGPUAdapter wgpuAdapter() const { return m_adapters[0].adapter; }
+    WebGPUBindGroupCache* bindGroupCache() const { return m_bindGroupCache.get(); }
 	
 	WGPUSurface getWGPUSurface(PlatformWindow* window) const;
 
@@ -59,6 +60,7 @@ private:
     std::vector<WebGPUAdapterEntry> m_adapters;
     WGPUDevice m_device;
     WGPUQueue m_queue;
+    std::unique_ptr<WebGPUBindGroupCache> m_bindGroupCache;
 };
 
 } // namespace detail

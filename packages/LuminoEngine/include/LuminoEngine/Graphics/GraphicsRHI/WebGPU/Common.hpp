@@ -8,6 +8,9 @@ namespace detail {
 class WebGPUDevice;
 class WebGPUShaderPass;
 class WebGPURenderTarget;
+class WebGPUBindGroupCache;
+class WebGPUDescriptorPool;
+class WebGPUDescriptor;
 	
 } // namespace detail
 } // namespace ln

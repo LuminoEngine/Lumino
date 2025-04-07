@@ -1,5 +1,6 @@
 ﻿#include <Windows.h>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBindGroupCache.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
@@ -8,6 +9,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexLayout.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDescriptorPool.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
 namespace ln {
@@ -17,7 +19,8 @@ namespace detail {
 // DX12Device
 
 WebGPUDevice::WebGPUDevice()
-    : m_device(nullptr) {
+    : m_device(nullptr)
+    , m_bindGroupCache(std::make_unique<WebGPUBindGroupCache>(this)) {
 }
 
 bool WebGPUDevice::init(const Settings& settings) {
@@ -270,8 +273,11 @@ Ref<RHIResource> WebGPUDevice::onCreateUniformBuffer(uint32_t size) {
 }
 
 Ref<IDescriptorPool> WebGPUDevice::onCreateDescriptorPool(IShaderPass* shaderPass) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUDescriptorPool>();
+    if (!ptr->init(this, static_cast<WebGPUShaderPass*>(shaderPass))) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 void WebGPUDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {

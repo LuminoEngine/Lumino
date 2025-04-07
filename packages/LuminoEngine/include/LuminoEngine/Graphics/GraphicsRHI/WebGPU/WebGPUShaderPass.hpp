@@ -14,6 +14,7 @@ public:
     void onDestroy() override;
 
     const std::vector<kokage::VertexInputAttribute>& attributes() const { return m_attributes; }
+    const kokage::TargetBindingLayoutInfo& targetBindingLayoutInfo() const { return m_targetBindingLayoutInfo; }
     WGPUShaderModule nativeVertShaderModule() const { return m_nativeVertShaderModule; }
     WGPUShaderModule nativeFragShaderModule() const { return m_nativeFragShaderModule; }
     WGPUShaderModule nativeCompShaderModule() const { return m_nativeCompShaderModule; }
@@ -21,6 +22,7 @@ public:
     const std::string& fragEntryPointName() const { return m_fragEntryPointName; }
     const std::string& compEntryPointName() const { return m_compEntryPointName; }
     WGPUPipelineLayout pipelineLayout() const { return m_pipelineLayout; }
+    WGPUBindGroupLayout bindGroupLayout() const { return m_bindGroupLayout; }
 
 private:
     WGPUShaderModule createShaderModule(
@@ -31,7 +33,8 @@ private:
     static void setupLayoutEntryDefault(WGPUBindGroupLayoutEntry* entry);
 
     WebGPUDevice* m_wgpuDevice;
-    std::vector<kokage::VertexInputAttribute> m_attributes;
+    std::vector<kokage::VertexInputAttribute> m_attributes;   // TODO: コピーで保持すると無駄が多いかも。
+    kokage::TargetBindingLayoutInfo m_targetBindingLayoutInfo; // TODO: コピーで保持すると無駄が多いかも。
     WGPUShaderModule m_nativeVertShaderModule;
     WGPUShaderModule m_nativeFragShaderModule;
     WGPUShaderModule m_nativeCompShaderModule;
