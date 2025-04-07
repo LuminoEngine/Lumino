@@ -7,8 +7,8 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -347,6 +347,10 @@ MaybeResult ShaderCompiler::buildModule() {
         if (!r1) return r1;
     }
 
+    {
+        auto r1 = m_shader->buildDescriptorLayout();
+        if (!r1) return r1;
+    }
     return LN_MAKE_SUCCESS();
 }
 
@@ -365,6 +369,7 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
     //   実際、 getGlobalConstantBufferSize() は Target に応じて count だったり size だったり意味が違っていたので、そのままでは使えない。
     //   また原因不明だが、 getGlobalParamsVarLayout() 経由で取得した 変数情報ではサイズが正しく取得できなかった。これも Target によって異なっていて意味不明。
     //   なので getParameterCount() から uniform である変数を列挙する方法で取得することにした。
+    bool hasGlobalConstantBuffer = false;
     for (int i = 0; i < parameterCount; i++) {
         slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
         slang::ParameterCategory category = parameter->getCategory();
@@ -430,6 +435,16 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
             vectorElements,
             matrixRows,
             matrixColumns);
+        if (!result) return result;
+        hasGlobalConstantBuffer = true;
+    }
+
+    if (hasGlobalConstantBuffer) {
+        auto result = m_shader->getOrCreateInputResourceWithVerify(
+            kGlobalConstantBufferName,
+            RegisterCategory_UniformBuffer,
+            -1, // ConstantBuffer は $Global に限り、サイズ無効値としておく（UnifiedShader2 の alignment に関するコメント参照）
+            0);
         if (!result) return result;
     }
 
@@ -896,7 +911,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
                             // これを検知した場合は SamplerState を追加する。
                             withSampler = true;
                         }
-                        bindingInfo.category = BindingResourceCategory_Texture;
+                        bindingInfo.category = BindingResourceCategory_TextureOrCombinedSampler;
                         break;
                     }
                     case slang::TypeReflection::Kind::SamplerState:
@@ -926,8 +941,8 @@ MaybeResult ShaderCompiler::buildEntryPoint(
                     bindingInfo2.index = bindingInfo.index + 1;
                     bindingInfo2.count = 1;
                     bindingInfo2.used = stageFlags;
+                    bindingInfo2.combinedSamplerName = bindingInfo.name;
                     entryPoint->bindingLayout.bindings.push_back(bindingInfo2);
-                
                 }
             }
         }

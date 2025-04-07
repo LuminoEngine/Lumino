@@ -514,5 +514,52 @@ void ShaderPassSemanticsManager::updateClusteredShadingVariables(ShaderDescripto
     }
 }
 
+#if 0
+StandardShaderDescriptorMapper::StandardShaderDescriptorMapper() {
+}
+StandardShaderDescriptorMapper::~StandardShaderDescriptorMapper() {
+}
+void StandardShaderDescriptorMapper::setup(kokage::TargetShaderPass* shaderPass) {
+    //const kokage::GlobalResourceLayout* globalResourceLayout = shader->globalResourceLayout();
+
+
+    #if 0
+    m_descriptor = technique->shader()->descriptor();
+    const auto& globalLayout = technique->shader()->descriptorLayout();
+
+    for (const auto& pass : technique->m_passes) {
+
+        const auto& localLayout = pass->descriptorLayout();
+
+        // UniformBuffers
+        for (const auto& localInfo : localLayout.m_buffers) {
+            const auto& globalInfo = globalLayout->m_buffers[localInfo.globalIndex];
+
+            auto itr = s_BuiltinShaderUniformBuffersMap.find(globalInfo.name);
+            if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
+                m_builtinUniformBuffers[itr->second] = localInfo.globalIndex;
+            }
+        }
+        for (const auto& memberInfo : globalLayout->m_members) {
+            auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
+            if (itr != s_BuiltinShaderParametersMap.end()) {
+                m_hasBuiltinShaderParameters |= (1 << itr->second);
+            }
+        }
+
+        // Textues
+        for (const auto& localInfo : localLayout.m_textures) {
+            const auto& globalInfo = globalLayout->m_textures[localInfo.globalIndex];
+
+            auto itr = s_BuiltinShaderTexturesMap.find(globalInfo.name);
+            if (itr != s_BuiltinShaderTexturesMap.end()) {
+                m_builtinShaderTextures[itr->second] = localInfo.globalIndex;
+            }
+        }
+    }
+    #endif
+}
+#endif
+
 } // namespace detail
 } // namespace ln

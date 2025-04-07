@@ -54,20 +54,20 @@ enum ShaderTarget {
 };
 
 enum RegisterCategory {
-    RegisterCategory_Unknown = 0,
-    RegisterCategory_UniformBuffer = 1,
-    RegisterCategory_TextureOrCombinedSampler = 2,
-    RegisterCategory_SamplerState = 3,
-    RegisterCategory_UnorderdAccess = 4,
+    RegisterCategory_Unknown = -1,
+    RegisterCategory_UniformBuffer = 0,
+    RegisterCategory_TextureOrCombinedSampler = 1,
+    RegisterCategory_SamplerState = 2,
+    RegisterCategory_UnorderdAccess = 3,
 
-    LN_LAST_ELEMENT_MARKER(RegisterCategory_Count) = 5,
+    LN_LAST_ELEMENT_MARKER(RegisterCategory_Count) = 4,
 };
 
 // RegisterCategory は slot の種類だが、こちらはそこに割り当てる値の型。
 enum BindingResourceCategory {
     BindingResourceCategory_Unknown = 0,
     BindingResourceCategory_UniformBuffer = 1,
-    BindingResourceCategory_Texture = 2,
+    BindingResourceCategory_TextureOrCombinedSampler = 2, // slang の vulkan では、 texture と sampler を区別できない
     BindingResourceCategory_SamplerState = 3,
     BindingResourceCategory_UnorderdAccess = 4,
 };
@@ -150,7 +150,7 @@ enum class ShaderTechniqueClass_Roughness : uint8_t {
 
 // TODO: name: DescriptorRegisterType の方がいいと思う。
 // TextureRegister の中には Texture または StorageBuffer が入る。
-// TODO: deprecated
+// TODO: deprecated RegisterCategory
 enum DescriptorType {
     DescriptorType_UniformBuffer = 0,
     DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler

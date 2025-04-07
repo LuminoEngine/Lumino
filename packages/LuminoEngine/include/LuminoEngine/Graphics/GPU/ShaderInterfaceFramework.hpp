@@ -346,6 +346,5 @@ private:
     std::array<int, BuiltinShaderTextures__Count> m_builtinShaderTextures;
 };
 
-
 } // namespace detail
 } // namespace ln

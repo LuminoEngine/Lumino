@@ -16,7 +16,8 @@ AlignTrailingComments: true
 #   int b,
 #   int c)
 AllowAllParametersOfDeclarationOnNextLine: true
-BinPackParameters: AlwaysOnePerLine
+#BinPackParameters: AlwaysOnePerLine
+BinPackParameters: true # 本当は AlwaysOnePerLine で format したいのだけど、 VS2022 17.13 の clang-format でエラーになったので戻しておく
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 BreakBeforeBraces: Custom

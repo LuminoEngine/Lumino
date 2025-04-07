@@ -22,6 +22,7 @@ class VertexBuffer;
 class IndexBuffer;
 class INativeGraphicsExtension;
 class ShaderDescriptor;
+class RHIBindingToDescriptorMapper;
 
 using GraphicsObjectId = int32_t;
 //using RHIGraphicsResourceId = int32_t;

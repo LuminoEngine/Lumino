@@ -5,15 +5,135 @@
 namespace ln {
 namespace kokage {
 
-UnifiedShader2::UnifiedShader2() {
+RegisterCategory GlobalResourceLayout::getRegisterCategoryByName(const std::string& name) const {
+    for (const auto& slot : buffers) {
+        if (slot.name == name) return RegisterCategory_UniformBuffer;
+    }
+    for (const auto& slot : textures) {
+        if (slot.name == name) return RegisterCategory_TextureOrCombinedSampler;
+    }
+    for (const auto& slot : samplers) {
+        if (slot.name == name) return RegisterCategory_SamplerState;
+    }
+    for (const auto& slot : storages) {
+        if (slot.name == name) return RegisterCategory_UnorderdAccess;
+    }
+    return RegisterCategory_Unknown;
 }
 
-GlobalInputResourceInfo* UnifiedShader2::createGlobalInputResourceInfo() {
-    int index = m_inputResourceInfos.size();
-    auto info = makeURef<GlobalInputResourceInfo>();
-    info->index = index;
-    m_inputResourceInfos.push_back(std::move(info));
-    return m_inputResourceInfos.back().get();
+void GlobalShaderPass::getOrCreateDescriptorLayoutEntry(
+    const TargetBindingInfo& bindingInfo, kokage::RegisterCategory* outCategory, int* outIndex) {
+    const std::string& name = bindingInfo.name;
+    GlobalResourceLayout* globalResourceLayout = m_owner->globalResourceLayout();
+    const std::vector<GlobalResourceSlotInfo>& globalBuffers = globalResourceLayout->buffers;
+    const std::vector<GlobalResourceSlotInfo>& globalTextures = globalResourceLayout->textures;
+    const std::vector<GlobalResourceSlotInfo>& globalSamplers = globalResourceLayout->samplers;
+    const std::vector<GlobalResourceSlotInfo>& globalStorages = globalResourceLayout->storages;
+    std::vector<int>& buffers = descriptorLayout.buffers;
+    std::vector<int>& textures = descriptorLayout.textures;
+    std::vector<int>& samplers = descriptorLayout.samplers;
+    std::vector<int>& storages = descriptorLayout.storages;
+
+    // Buffers
+    if (bindingInfo.category == BindingResourceCategory_UniformBuffer) {
+        *outCategory = RegisterCategory_UniformBuffer;
+        for (int i = 0; i < globalBuffers.size(); i++) {
+            const GlobalResourceSlotInfo& slotInfo = globalBuffers[i];
+            if (slotInfo.name == name) {
+                auto itr = std::find(buffers.begin(), buffers.end(), i);
+                if (itr == buffers.end()) {
+                    buffers.push_back(i);
+                    *outIndex = buffers.size() - 1;
+                }
+                else {
+                    *outIndex = itr - buffers.begin();
+                }
+                return;
+            }
+        }
+    }
+    // Textures
+    if (bindingInfo.category == BindingResourceCategory_TextureOrCombinedSampler) {
+        *outCategory = RegisterCategory_TextureOrCombinedSampler;
+        for (int i = 0; i < globalTextures.size(); i++) {
+            const GlobalResourceSlotInfo& slotInfo = globalTextures[i];
+            if (slotInfo.name == name) {
+                auto itr = std::find(textures.begin(), textures.end(), i);
+                if (itr == textures.end()) {
+                    textures.push_back(i);
+                    *outIndex = textures.size() - 1;
+                }
+                else {
+                    *outIndex = itr - textures.begin();
+                }
+                return;
+            }
+        }
+    }
+    // Textures (CombinedSampler)
+    if (bindingInfo.category == BindingResourceCategory_SamplerState &&
+        !bindingInfo.combinedSamplerName.empty()) {
+        *outCategory = RegisterCategory_TextureOrCombinedSampler;
+        for (int i = 0; i < globalTextures.size(); i++) {
+            const GlobalResourceSlotInfo& slotInfo = globalTextures[i];
+            if (slotInfo.name == bindingInfo.combinedSamplerName) {
+                auto itr = std::find(textures.begin(), textures.end(), i);
+                if (itr == textures.end()) {
+                    textures.push_back(i);
+                    *outIndex = textures.size() - 1;
+                }
+                else {
+                    *outIndex = itr - textures.begin();
+                }
+                return;
+            }
+        }
+    }
+    // Samplers
+    if (bindingInfo.category == BindingResourceCategory_SamplerState) {
+        *outCategory = RegisterCategory_SamplerState;
+        for (int i = 0; i < globalSamplers.size(); i++) {
+            const GlobalResourceSlotInfo& slotInfo = globalSamplers[i];
+            if (slotInfo.name == name) {
+                auto itr = std::find(samplers.begin(), samplers.end(), i);
+                if (itr == samplers.end()) {
+                    samplers.push_back(i);
+                    *outIndex = samplers.size() - 1;
+                }
+                else {
+                    *outIndex = itr - samplers.begin();
+                }
+                return;
+            }
+        }
+    }
+    // Storages
+    if (bindingInfo.category == BindingResourceCategory_UnorderdAccess) {
+        *outCategory = RegisterCategory_UnorderdAccess;
+        for (int i = 0; i < globalStorages.size(); i++) {
+            const GlobalResourceSlotInfo& slotInfo = globalStorages[i];
+            if (slotInfo.name == name) {
+                auto itr = std::find(storages.begin(), storages.end(), i);
+                if (itr == storages.end()) {
+                    storages.push_back(i);
+                    *outIndex = storages.size() - 1;
+                }
+                else {
+                    *outIndex = itr - storages.begin();
+                }
+                return;
+            }
+        }
+    }
+    LN_UNREACHABLE();
+}
+
+UnifiedShader2::UnifiedShader2()
+    : m_globalResourceLayout(makeURef<GlobalResourceLayout>()) {
+}
+
+GlobalResourceLayout* UnifiedShader2::globalResourceLayout() const {
+    return m_globalResourceLayout;
 }
 
 ModuleInfo* UnifiedShader2::addModuleInfo() {
@@ -48,7 +168,7 @@ TargetInputResourceInfo* UnifiedShader2::createTargetInputResourceInfo() {
 
 GlobalShaderPass* UnifiedShader2::createGlobalShaderPass() {
     int index = m_globalShaderPasses.size();
-    auto pass = makeURef<GlobalShaderPass>();
+    auto pass = makeURef<GlobalShaderPass>(this);
     pass->index = index;
     m_globalShaderPasses.push_back(std::move(pass));
     return m_globalShaderPasses.back().get();
@@ -124,36 +244,67 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     return m_globalMembers.back().get();
 }
 
-Result<GlobalInputResourceInfo*> UnifiedShader2::getOrCreateInputResourceWithVerify(
+MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
     const std::string& name,
     RegisterCategory category,
     int constantBufferSize,
     int arrayElementCount) {
 
+    struct {
+        RegisterCategory category;
+        const std::vector<GlobalResourceSlotInfo>& slots;
+    } categories[] = {
+        { RegisterCategory_UniformBuffer, m_globalResourceLayout->buffers },
+        { RegisterCategory_TextureOrCombinedSampler, m_globalResourceLayout->textures },
+        { RegisterCategory_SamplerState, m_globalResourceLayout->samplers },
+        { RegisterCategory_UnorderdAccess, m_globalResourceLayout->storages },
+    };
+
+    
     // まずは名前で検索する
-    auto itr = std::find_if(
-        m_inputResourceInfos.begin(),
-        m_inputResourceInfos.end(),
-        [&name](const URef<GlobalInputResourceInfo>& info) { return info->name == name; });
-    if (itr != m_inputResourceInfos.end()) {
-        // すでに存在する場合、同じ RegisterCategory かつ count が一致するか確認する
-        if ((*itr)->category == category) {
-            return (*itr).get();
-        }
-        else {
-            return LN_MAKE_ERROR(
-                "GlobalInputResourceInfo already exists with different typeinfo (%s)",
-                name.c_str());
+    for (const auto& c : categories) {
+        if (c.category == category) {
+            auto itr = std::find_if(
+                c.slots.begin(),
+                c.slots.end(),
+                [&name](const GlobalResourceSlotInfo& info) { return info.name == name; });
+            if (itr != c.slots.end()) {
+                // すでに存在する場合、同じ RegisterCategory かつ count が一致するか確認する
+                if ((*itr).constantBufferSize == constantBufferSize) {
+                    return LN_MAKE_SUCCESS();
+                }
+                else {
+                    return LN_MAKE_ERROR(
+                        "GlobalInputResourceInfo already exists with different typeinfo (%s)",
+                        name.c_str());
+                }
+            }
         }
     }
 
     // 存在しない場合、新しい InputResourceInfo を作成する
-    auto info = makeURef<GlobalInputResourceInfo>();
-    info->name = name;
-    info->category = category;
-    info->index = m_inputResourceInfos.size();
-    m_inputResourceInfos.push_back(std::move(info));
-    return m_inputResourceInfos.back().get();
+    GlobalResourceSlotInfo slot = {};
+    slot.name = name;
+    slot.constantBufferSize = constantBufferSize;
+    slot.arrayElementCount = arrayElementCount;
+    switch (category) {
+        case RegisterCategory_UniformBuffer:
+            m_globalResourceLayout->buffers.push_back(slot);
+            break;
+        case RegisterCategory_TextureOrCombinedSampler:
+            m_globalResourceLayout->textures.push_back(slot);
+            break;
+        case RegisterCategory_SamplerState:
+            m_globalResourceLayout->samplers.push_back(slot);
+            break;
+        case RegisterCategory_UnorderdAccess:
+            m_globalResourceLayout->storages.push_back(slot);
+            break;
+        default:
+            return LN_MAKE_ERROR("Invalid category (%d)", category);
+    }
+
+    return LN_MAKE_SUCCESS();
 }
 
 Result<EntryPoint*> UnifiedShader2::getEntryPoint(
@@ -171,8 +322,7 @@ Result<EntryPoint*> UnifiedShader2::getEntryPoint(
 }
 
 MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
-    TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset)
-{
+    TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset) {
     if (reset) {
         target.bindings.clear();
     }
@@ -255,6 +405,25 @@ MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
 
     return LN_MAKE_SUCCESS();
 
+}
+
+MaybeResult UnifiedShader2::buildDescriptorLayout() {
+
+    // GlobalShaderPass の DescriptorLayout を作成する。
+    // 全ての子 TargetShaderPass を調べて、必要な情報を GlobalShaderPass に吸い出していく感じ。
+    for (const auto& globalShaderPass : m_globalShaderPasses) {
+        for (TargetShaderPassId targetShaderPassId : globalShaderPass->targetShaderPassIndices) {
+            TargetShaderPass* targetShaderPass = m_targetShaderPasses[targetShaderPassId].get();
+            for (TargetBindingInfo& info : targetShaderPass->bindingLayout.bindings) {
+                globalShaderPass->getOrCreateDescriptorLayoutEntry(
+                    info,
+                    &info.descriptorEntryCategory,
+                    &info.descriptorEntryIndex);
+            }
+        }
+    }
+
+    return LN_MAKE_SUCCESS();
 }
 
 } // namespace kokage

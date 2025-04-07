@@ -145,7 +145,7 @@ MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
                 entry.buffer.type = WGPUBufferBindingType_Uniform;
                 entry.buffer.minBindingSize = binding.size;
                 break;
-            case kokage::BindingResourceCategory_Texture:
+            case kokage::BindingResourceCategory_TextureOrCombinedSampler:
                 entry.texture.sampleType = WGPUTextureSampleType_Float;
                 entry.texture.viewDimension = WGPUTextureViewDimension_2D;
                 entry.texture.multisampled = false;

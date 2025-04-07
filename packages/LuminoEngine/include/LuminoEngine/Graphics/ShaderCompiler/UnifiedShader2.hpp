@@ -34,6 +34,28 @@ struct VariableInfo {
 //    bool used;
 //};
 
+using GlobalResourceSlotInfoId = int32_t;
+
+struct GlobalResourceSlotInfo {
+    //GlobalResourceSlotInfoId id;
+    std::string name;
+    //RegisterCategory category;
+    int constantBufferSize;
+    int arrayElementCount;
+};
+
+// Slang のリフレクション情報を、 Lumino の標準的な分類にマッピングするためのもの。
+// 単純に、ひとつの Shader ファイルがどんなリソースを要求するのかを示す。
+// Material クラスでセットできる値を示す。
+class GlobalResourceLayout : public URefObject {
+public:
+    std::vector<GlobalResourceSlotInfo> buffers; // $Global 相当の ConstantBuffer が存在する場合、[0] はそれになる。
+    std::vector<GlobalResourceSlotInfo> textures;
+    std::vector<GlobalResourceSlotInfo> samplers;
+    std::vector<GlobalResourceSlotInfo> storages;
+
+    RegisterCategory getRegisterCategoryByName(const std::string& name) const;
+};
 
 
 struct TargetBindingConstantBufferMemberInfo {
@@ -51,12 +73,29 @@ struct TargetBindingInfo {
     int count;
     ShaderStageFlags used;
     std::vector<TargetBindingConstantBufferMemberInfo> members; // ConstantBuffer のメンバー情報
+    
+    // 一時情報。
+    // この binding が、 CombinedSampler の SamplerState 側である場合、
+    // その対応する Texture の name を示す。
+    //int combinedSamplerIndex = -1;
+    std::string combinedSamplerName;
+
+    // 後処理で設定される。
+    kokage::RegisterCategory descriptorEntryCategory; // GlobalShaderPass::DescriptorLayout 内のどの register に対応するか
+    int descriptorEntryIndex;    // その register の何番目の要素と対応するか
 };
 
 struct TargetBindingLayoutInfo {
     std::vector<TargetBindingInfo> bindings;
-
 };
+
+//struct TargetBindingDescripterMapper {
+//
+//    //std::vector<GlobalResourceSlotInfo> buffers;
+//    //std::vector<GlobalResourceSlotInfo> textures;
+//    //std::vector<GlobalResourceSlotInfo> samplers;
+//    //std::vector<GlobalResourceSlotInfo> storages;
+//};
 
 // Pipeline にバインドできる単位の Parameter。
 // ConstantBuffer, Texture, SamplerState, StorageBuffer。
@@ -90,15 +129,30 @@ public:
 
 class GlobalShaderPass : public URefObject {
 public:
+    struct DescriptorLayoutEntry {
+        int index;                         // その register の何番目の要素から値を取得するか
+    };
+
+    // Lumino 用 ShaderDescriptor のレイアウト情報。
+    struct DescriptorLayout {
+        std::vector<int> buffers; // Index of GlobalResourceLayout::buffers
+        std::vector<int> textures;
+        std::vector<int> samplers;
+        std::vector<int> storages;
+    };
+
+    UnifiedShader2* m_owner;
     int index;
     std::string name;
     std::string vertexEntryPoint;
     std::string fragmentEntryPoint;
     std::string computeEntryPoint;
     std::array<TargetShaderPassId, 4> targetShaderPassIndices; // index is (ShaderTarget - 1).
+    DescriptorLayout descriptorLayout;
 
-    GlobalShaderPass()
-        : index(-1)
+    GlobalShaderPass(UnifiedShader2* owner)
+        : m_owner(owner)
+        , index(-1)
         , name()
         , vertexEntryPoint()
         , fragmentEntryPoint()
@@ -108,6 +162,10 @@ public:
     TargetShaderPassId getTargetShaderPassId(kokage::ShaderTarget target) const {
         return targetShaderPassIndices[target - 1];
     }
+
+    void getOrCreateDescriptorLayoutEntry(
+        const TargetBindingInfo& bindingInfo, kokage::RegisterCategory* outCategory,
+        int* outIndex);
 
 };
 
@@ -169,24 +227,37 @@ public:
 // グローバルスコープで定義されている、b, t, s, u... などのリソース。
 // これは、 Material クラスにセットできる値を示す。
 //
-class GlobalInputResourceInfo : public URefObject {
-public:
-    int index;
-    std::string name;
-    RegisterCategory category;
-    //int constantBufferSize;
-    //int spaceIndex;
-    //int bindingIndex;
-    //int arrayElementCount;
-
-
-
-
-private:
-};
+//class GlobalInputResourceInfo : public URefObject {
+//public:
+//    int index;
+//    std::string name;
+//    RegisterCategory category;
+//    //int constantBufferSize;
+//    //int spaceIndex;
+//    //int bindingIndex;
+//    //int arrayElementCount;
+//
+//
+//
+//
+//private:
+//};
 
 // $Global ConstantBuffer のメンバー情報。
 class GlobalMemberInfo : public URefObject {
+public:
+    int index;
+    std::string name;
+    ShaderGlobalMemberType type;
+    ShaderGlobalMemberKind kind;
+    int32_t arrayElements;  // Array only.
+    int32_t vectorElements; // Vector only.
+    int32_t matrixRows;     // Matrix only.
+    int32_t matrixColumns;  // Matrix only.
+    // NOTE: size は持てない。例えば WGSL と DX12 では float3 のサイズがそれぞれ 12byte, 16byte になる。Target ごとで管理する必要がある。
+};
+
+class UnifiedShader2 : public RefObject {
     // NOTE: alignment は Target ごとに異なるため、
     //   Shader 全体で ConstantBuffer のサイズを確定することはできない。
     //   例えば
@@ -201,9 +272,8 @@ class GlobalMemberInfo : public URefObject {
     //   https://shader-slang.org/slang/user-guide/reflection.html#calculating-cumulative-offsets
     //   ↑こちらでも説明されているように、使用は推奨されないように見える。
     //
-    //   シェーダコードの制約として常に 16byte alignment になるように
-    //   uniform の定義を調整してもらう案も考えたが、
-    //   cbuffer ならともかく普通のグローバル変数でそれを意識するのは大変だと思うので、
+    //   シェーダコードの制約として常に 16byte alignment になるように uniform の定義を調整してもらう案も考えたが、
+    //   しかし cbuffer ならともかく普通のグローバル変数でそれを意識するのは大変だと思うので、
     //   $Global に限り、Lumino が内部で調整することにする。
     //
     // NOTE: トップレベルの変数しか扱わない。
@@ -211,21 +281,9 @@ class GlobalMemberInfo : public URefObject {
     //   セットするデータのサイズはユーザープログラムで守るものとする。
     //   というか、複雑になりすぎるのと、そこまで細かくできるようにする必要は無いと思うので。
 public:
-    int index;
-    std::string name;
-    ShaderGlobalMemberType type;
-    ShaderGlobalMemberKind kind;
-    int32_t arrayElements;  // Array only.
-    int32_t vectorElements; // Vector only.
-    int32_t matrixRows;     // Matrix only.
-    int32_t matrixColumns;  // Matrix only.
-    // NOTE: size は持てない。例えば WGSL と DX12 では float3 のサイズがそれぞれ 12byte, 16byte になる。Target ごとで管理する必要がある。
-};
-
-class UnifiedShader2 : public RefObject {
-public:
     UnifiedShader2();
 
+    GlobalResourceLayout* globalResourceLayout() const;
     const std::vector<URef<GlobalShaderPass>>& globalShaderPasses() const {
         return m_globalShaderPasses;
     }
@@ -241,7 +299,6 @@ public:
     }
     Blob* blob(BlobId id) const { return m_blobs[id].get(); }
 
-    GlobalInputResourceInfo* createGlobalInputResourceInfo();
     GlobalShaderPass* createGlobalShaderPass();
     ModuleInfo* addModuleInfo();
     EntryPoint* createEntryPoint();
@@ -258,7 +315,7 @@ public:
         int32_t matrixRows,
         int32_t matrixColumns);
 
-    Result<GlobalInputResourceInfo*> getOrCreateInputResourceWithVerify(
+    MaybeResult getOrCreateInputResourceWithVerify(
         const std::string& name,
         RegisterCategory category,
         int constantBufferSize,
@@ -269,9 +326,11 @@ public:
     static MaybeResult mergeTargetBindingLayoutInfo(
         TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset);
 
+    MaybeResult buildDescriptorLayout();
+
 private:
+    URef<GlobalResourceLayout> m_globalResourceLayout;
     std::vector<URef<GlobalMemberInfo>> m_globalMembers;
-    std::vector<URef<GlobalInputResourceInfo>> m_inputResourceInfos; // Includes $Global
     std::vector<URef<GlobalShaderPass>> m_globalShaderPasses;
     std::vector<URef<ModuleInfo>> m_moduleInfos;
     std::vector<URef<EntryPoint>> m_entryPoints;

@@ -30,7 +30,7 @@ private:
     MaybeResult buildTargetShaderPass(
         ShaderTarget target, int targetIndex, GlobalShaderPass* globalShaderPass);
 
-    MaybeResult getBindingResourceInfo(
+    static MaybeResult getBindingResourceInfo(
         slang::VariableLayoutReflection* parameter,
         std::string* outName,
         RegisterCategory* outRegisterCategory,

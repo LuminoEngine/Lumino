@@ -77,7 +77,8 @@ void Material::init()
     //auto result2 = compiler->build("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
     //
     // 
-
+    setShader(
+            detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
 }
 
 void Material::init(Texture* mainTexture)

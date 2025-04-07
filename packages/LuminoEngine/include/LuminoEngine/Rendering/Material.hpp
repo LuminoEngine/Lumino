@@ -280,7 +280,7 @@ protected:  // TODO:
 
 	//static void onRenderStateChanged(Object* obj);
 
-	detail::ShaderParameterValue* getValue(const ln::StringView& name);
+    detail::ShaderParameterValue* getValue(const ln::StringView& name);
 
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;

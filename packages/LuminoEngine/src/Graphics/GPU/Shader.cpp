@@ -480,6 +480,7 @@ MaybeResult ShaderPass::setupShader2(
     kokage::GlobalShaderPass* globalShaderPass) {
     m_unifiedShader2 = unifiedShader2;
     m_globalShaderPass = globalShaderPass;
+    //m_rhiBindingToDescriptorMapper = std::make_unique<RHIBindingToDescriptorMapper>(); 
     return LN_MAKE_SUCCESS();
 }
 

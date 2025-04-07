@@ -634,6 +634,7 @@ private:
 
     kokage::UnifiedShader2* m_unifiedShader2 = nullptr;
     kokage::GlobalShaderPass* m_globalShaderPass = nullptr; 
+    //std::unique_ptr<RHIBindingToDescriptorMapper> m_rhiBindingToDescriptorMapper;
 
     friend class Shader;
     friend class ShaderTechnique;
