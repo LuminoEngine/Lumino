@@ -1,5 +1,6 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUTextureBase.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBindGroupCache.hpp>
@@ -66,29 +67,32 @@ MaybeResult WebGPUBindGroupCache::getOrCreate(
         WGPUBindGroupEntry entry = WGPU_BIND_GROUP_ENTRY_INIT;
         entry.binding = info.index;
         switch (info.descriptorEntryCategory) {
-            case kokage::BindingResourceCategory_UniformBuffer: {
+            case kokage::RegisterCategory_UniformBuffer: {
                 const auto& item = updateInfo.uniforms[info.descriptorEntryIndex];
                 const WebGPUUniformBuffer* buffer = static_cast<WebGPUUniformBuffer*>(item.object);
                 entry.offset = item.offset;
                 entry.size = buffer->memorySize();
                 break;
             }
-            case kokage::BindingResourceCategory_TextureOrCombinedSampler: {
+            case kokage::RegisterCategory_TextureOrCombinedSampler: {
                 // WebGPU は CombinedSampler しかサポートしていないので、 Texture だけで OK.
                 const auto& item = updateInfo.resources[info.descriptorEntryIndex];
                 const WebGPUTextureBase* texture = static_cast<WebGPUTextureBase*>(item.object);
                 entry.textureView = texture->nativeTextureView();
                 break;
             }
-            case kokage::BindingResourceCategory_SamplerState: {
-                LN_NOTIMPLEMENTED();
+            case kokage::RegisterCategory_SamplerState: {
+                const auto& item = updateInfo.samplers[info.descriptorEntryIndex];
+                const WebGPUSamplerState* sampler = static_cast<WebGPUSamplerState*>(item.object);
+                entry.sampler = sampler->nativeSampler();
                 break;
             }
-            case kokage::BindingResourceCategory_UnorderdAccess: {
+            case kokage::RegisterCategory_UnorderdAccess: {
                 LN_NOTIMPLEMENTED();
                 break;
             }
             default:
+                LN_UNREACHABLE();
                 break;
         }
 

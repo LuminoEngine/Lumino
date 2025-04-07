@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUTexture2D.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexLayout.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
@@ -259,8 +260,11 @@ Ref<RHIResource> WebGPUDevice::onCreateDepthBuffer(uint32_t width, uint32_t heig
 }
 
 Ref<ISamplerState> WebGPUDevice::onCreateSamplerState(const SamplerStateData& desc) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUSamplerState>();
+    if (!ptr->init(this, desc)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IShaderPass> WebGPUDevice::onCreateShaderPass(

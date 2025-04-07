@@ -19,8 +19,7 @@ private:
     WebGPUDevice* m_device;
     WebGPUShaderPass* m_shaderPass;
     std::vector<Ref<WebGPUDescriptor>> m_descriptors;
-    int32_t m_nextDescriptorIndex = 0;
-    int32_t m_maxDescriptorCount = 0;
+    int m_descriptorsUsed = 0;
 };
 
 } // namespace detail

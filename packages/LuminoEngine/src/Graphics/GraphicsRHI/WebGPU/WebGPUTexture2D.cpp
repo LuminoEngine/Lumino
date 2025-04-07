@@ -19,8 +19,6 @@ MaybeResult WebGPUTexture2D::init(
         return err();
     m_device = device;
 
-
-
     WGPUTextureFormat nativeFormat = WebGPUHelper::TextureFormatToWGPUTextureFormat(requestFormat);
     WGPUTextureDescriptor textureDesc = WGPU_TEXTURE_DESCRIPTOR_INIT;
     textureDesc.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst;
