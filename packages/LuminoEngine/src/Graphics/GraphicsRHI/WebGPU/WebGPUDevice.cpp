@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUTexture2D.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexLayout.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
@@ -220,8 +221,18 @@ Ref<RHIResource> WebGPUDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, 
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUTexture2D>();
+    if (!ptr->init(
+            this,
+            usage,
+            width,
+            height,
+            requestFormat,
+            mipmap,
+            initialData)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {

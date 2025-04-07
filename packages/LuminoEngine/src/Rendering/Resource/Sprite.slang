@@ -8,8 +8,8 @@ cbuffer LNRenderElementBuffer
     /* [256] */ float4x4 ln_WorldViewIT;
     /* [320] */ float4 ln_BoneTextureReciprocalSize;
     /* [336] */ float4 ln_MorphWeights;
-    /* [352] */ int ln_objectId;
-};  /* [368(alignd:16)] */
+    /* [352] */// int ln_objectId;
+};  /* [368(alignd:16)] */// int dummy[3];
 
 struct VSInput {
     float3 Pos: POSITION;

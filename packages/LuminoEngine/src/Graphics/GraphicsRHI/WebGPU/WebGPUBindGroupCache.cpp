@@ -1,4 +1,5 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUTextureBase.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUShaderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBindGroupCache.hpp>
@@ -73,7 +74,10 @@ MaybeResult WebGPUBindGroupCache::getOrCreate(
                 break;
             }
             case kokage::BindingResourceCategory_TextureOrCombinedSampler: {
-                LN_NOTIMPLEMENTED();
+                // WebGPU は CombinedSampler しかサポートしていないので、 Texture だけで OK.
+                const auto& item = updateInfo.resources[info.descriptorEntryIndex];
+                const WebGPUTextureBase* texture = static_cast<WebGPUTextureBase*>(item.object);
+                entry.textureView = texture->nativeTextureView();
                 break;
             }
             case kokage::BindingResourceCategory_SamplerState: {

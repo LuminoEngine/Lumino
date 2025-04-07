@@ -275,8 +275,10 @@ MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
                 }
                 else {
                     return LN_MAKE_ERROR(
-                        "GlobalInputResourceInfo already exists with different typeinfo (%s)",
-                        name.c_str());
+                        "GlobalInputResourceInfo already exists with different typeinfo (%s, a:%d, b:%d)",
+                        name.c_str(),
+                        (*itr).constantBufferSize,
+                        constantBufferSize);
                 }
             }
         }

@@ -8,7 +8,7 @@ namespace detail {
 	
 static const std::pair<TextureFormat, WGPUTextureFormat> s_textureFormatConversionTable[] = {
     { TextureFormat::Unknown, WGPUTextureFormat_Undefined },
-    { TextureFormat::RGBA8, WGPUTextureFormat_RGBA32Uint },
+    { TextureFormat::RGBA8, WGPUTextureFormat_RGBA8Unorm } ,//WGPUTextureFormat_RGBA32Uint },
     { TextureFormat::RGB8, WGPUTextureFormat_RGBA8Unorm }, // TODO: remove
     { TextureFormat::RGBA16F, WGPUTextureFormat_RGBA16Float },
     { TextureFormat::RGBA32F, WGPUTextureFormat_RGBA32Float },
@@ -26,6 +26,14 @@ TextureFormat WebGPUHelper::WGPUTextureFormatToTextureFormat(WGPUTextureFormat v
     return TextureFormat::Unknown;
 }
 
+WGPUTextureFormat WebGPUHelper::TextureFormatToWGPUTextureFormat(TextureFormat value) {
+    for (auto& i : s_textureFormatConversionTable) {
+        if (i.first == value) {
+            return i.second;
+        }
+    }
+    return WGPUTextureFormat_Undefined;
+}
 
 } // namespace detail
 } // namespace ln
