@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUVertexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUUniformBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUTexture2D.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSamplerState.hpp>
@@ -212,11 +213,23 @@ Ref<IVertexDeclaration> WebGPUDevice::onCreateVertexDeclaration(const VertexElem
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<WebGPUVertexBuffer>();
+    if (!ptr->init(this, usage, bufferSize, initialData)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<RHIResource> WebGPUDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+    //auto ptr = makeRef<WebGPUVertexBuffer>();
+    //if (!ptr->init(
+    //        this,
+    //        usage,
+    //        format,
+    //        indexCount,
+    //        initialData)) {
+    //    return nullptr;
+    //}
     LN_NOTIMPLEMENTED();
     return nullptr;
 }

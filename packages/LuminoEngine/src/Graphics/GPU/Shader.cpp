@@ -480,6 +480,16 @@ MaybeResult ShaderPass::setupShader2(
     kokage::GlobalShaderPass* globalShaderPass) {
     m_unifiedShader2 = unifiedShader2;
     m_globalShaderPass = globalShaderPass;
+
+    m_bufferSizes.clear();
+    for (int iSlot = 0; iSlot < m_globalShaderPass->descriptorLayout.buffers.size(); iSlot++) {
+        int globalIndex = m_globalShaderPass->descriptorLayout.buffers[iSlot];
+        const auto& slotInfo = m_unifiedShader2->globalResourceLayout()->buffers[globalIndex];
+        m_bufferSizes.push(slotInfo.constantBufferSize);
+    }
+
+    m_semanticsManager = makeURef<detail::ShaderPassSemanticsManager>();
+    m_semanticsManager->init(this, {});
     //m_rhiBindingToDescriptorMapper = std::make_unique<RHIBindingToDescriptorMapper>(); 
     return LN_MAKE_SUCCESS();
 }

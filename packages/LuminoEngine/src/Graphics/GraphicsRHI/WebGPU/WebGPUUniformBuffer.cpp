@@ -6,7 +6,7 @@ namespace detail {
 
 WebGPUUniformBuffer::WebGPUUniformBuffer()
     : m_device(nullptr)
-    , m_nativeUniformBuffer(nullptr) {
+    , m_nativeBuffer(nullptr) {
 }
 
 MaybeResult WebGPUUniformBuffer::init(WebGPUDevice* device, uint32_t size) {
@@ -19,8 +19,8 @@ MaybeResult WebGPUUniformBuffer::init(WebGPUDevice* device, uint32_t size) {
     bufferDesc.usage = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
     bufferDesc.size = size;
     bufferDesc.mappedAtCreation = 0;
-    m_nativeUniformBuffer = wgpuDeviceCreateBuffer(device->wgpuDevice(), &bufferDesc);
-    if (!m_nativeUniformBuffer) {
+    m_nativeBuffer = wgpuDeviceCreateBuffer(device->wgpuDevice(), &bufferDesc);
+    if (!m_nativeBuffer) {
         return LN_MAKE_ERROR("wgpuDeviceCreateBuffer() failed.");
     }
 
@@ -31,9 +31,9 @@ MaybeResult WebGPUUniformBuffer::init(WebGPUDevice* device, uint32_t size) {
 }
 
 void WebGPUUniformBuffer::onDestroy() {
-    if (m_nativeUniformBuffer) {
-        wgpuBufferRelease(m_nativeUniformBuffer);
-        m_nativeUniformBuffer = nullptr;
+    if (m_nativeBuffer) {
+        wgpuBufferRelease(m_nativeBuffer);
+        m_nativeBuffer = nullptr;
     }
     RHIResource::onDestroy();
 }
@@ -54,7 +54,7 @@ void* WebGPUUniformBuffer::map() {
     callbackInfo.callback = onBuffer2Mapped;
     callbackInfo.userdata1 = this;
     callbackInfo.userdata2 = nullptr;
-    wgpuBufferMapAsync(m_nativeUniformBuffer, WGPUMapMode_Write, 0, memorySize(), callbackInfo);
+    wgpuBufferMapAsync(m_nativeBuffer, WGPUMapMode_Write, 0, memorySize(), callbackInfo);
 
     printf("");
     return nullptr;
@@ -62,8 +62,8 @@ void* WebGPUUniformBuffer::map() {
 }
 
 void WebGPUUniformBuffer::unmap() {
-    //wgpuBufferUnmap(m_nativeUniformBuffer);
-    wgpuQueueWriteBuffer(m_device->wgpuQueue(), m_nativeUniformBuffer, 0, m_mappedData.data(), m_mappedData.size());
+    //wgpuBufferUnmap(m_nativeBuffer);
+    wgpuQueueWriteBuffer(m_device->wgpuQueue(), m_nativeBuffer, 0, m_mappedData.data(), m_mappedData.size());
 }
 
 } // namespace detail

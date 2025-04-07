@@ -4,10 +4,12 @@
 namespace ln {
 namespace detail {
 
-class WebGPUUniformBuffer : public RHIResource {
+class WebGPUVertexBuffer : public RHIResource {
 public:
-    WebGPUUniformBuffer();
-    MaybeResult init(WebGPUDevice* device, uint32_t size);
+    WebGPUVertexBuffer();
+    MaybeResult init(
+        WebGPUDevice* device, GraphicsResourceUsage usage, size_t bufferSize,
+        const void* initialData);
     void onDestroy() override;
     void* map() override;
     void unmap() override;

@@ -597,6 +597,9 @@ public:
     MaybeResult setupShader2(
         kokage::UnifiedShader2* unifiedShader2, kokage::GlobalShaderPass* globalShaderPass);
 
+    kokage::UnifiedShader2* m_unifiedShader2 = nullptr;
+    kokage::GlobalShaderPass* m_globalShaderPass = nullptr;
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
 
@@ -632,8 +635,6 @@ private:
     const ShaderDefaultDescriptor* m_lastShaderDescriptor = nullptr;
     int m_lastShaderDescriptorRevision = 0;
 
-    kokage::UnifiedShader2* m_unifiedShader2 = nullptr;
-    kokage::GlobalShaderPass* m_globalShaderPass = nullptr; 
     //std::unique_ptr<RHIBindingToDescriptorMapper> m_rhiBindingToDescriptorMapper;
 
     friend class Shader;

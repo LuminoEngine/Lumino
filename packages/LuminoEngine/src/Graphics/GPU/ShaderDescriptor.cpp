@@ -118,81 +118,174 @@ void ShaderDescriptor::submit(
     detail::IShaderPass* rhiShaderPass) {
     GraphicsManager* manager = commandList->m_manager;
     detail::ICommandList* rhiCommandList = commandList->rhiResource();
-    const ShaderPassDescriptorLayout& layout = m_shaderPass->descriptorLayout();
-
     detail::ShaderDescriptorTableUpdateInfo updateInfo;
 
-    // Uniforms
-    for (int iSlot = 0; iSlot < layout.m_buffers.size(); iSlot++) {
-        const auto& info = layout.m_buffers[iSlot];
-        const auto& view = uniformBuffer(info.globalIndex);
-        updateInfo.uniforms[iSlot].object = view.buffer->rhiObject();
-        updateInfo.uniforms[iSlot].offset = view.offset;
-        if (LN_ENSURE(updateInfo.uniforms[iSlot].object)) return;
-    }
+    if (m_shaderPass->m_unifiedShader2) {
+        const kokage::GlobalResourceLayout* globalResourceLayout =
+            m_shaderPass->m_unifiedShader2->globalResourceLayout();
+        const kokage::GlobalShaderPass::DescriptorLayout& descriptorLayout =
+            m_shaderPass->m_globalShaderPass->descriptorLayout;
 
-    // Textures
-    for (int iSlot = 0; iSlot < layout.m_textures.size(); iSlot++) {
-        const auto& info = layout.m_textures[iSlot];
-        IGraphicsResource* resource = texture(info.globalIndex);
-        if (m_shaderPass->isComputeShader() && resource == nullptr) {
+        // Buffers
+        for (int iSlot = 0; iSlot < descriptorLayout.buffers.size(); iSlot++) {
+            const auto& view = uniformBuffer(iSlot);
+            updateInfo.uniforms[iSlot].object = view.buffer->rhiObject();
+            updateInfo.uniforms[iSlot].offset = view.offset;
+            if (LN_ENSURE(updateInfo.uniforms[iSlot].object)) return;
         }
-        else if (resource == nullptr || resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
-            Texture* texture = static_cast<Texture*>(resource);
-            if (!texture) {
-                texture = manager->whiteTexture();
+        // Textures
+        for (int iSlot = 0; iSlot < descriptorLayout.textures.size(); iSlot++) {
+            IGraphicsResource* resource = texture(iSlot);
+            if (m_shaderPass->isComputeShader() && resource == nullptr) {
             }
-
-            SamplerState* sampler = nullptr;
-            if (texture->samplerState())
-                sampler = texture->samplerState();
-            else
-                sampler = manager->defaultSamplerState();
-
-            bool modified = false;
-            updateInfo.resources[iSlot].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, texture, &modified);
-            updateInfo.resources[iSlot].stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(commandList, sampler, &modified);
+            else if (
+                resource == nullptr ||
+                resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
+                Texture* texture = static_cast<Texture*>(resource);
+                if (!texture) {
+                    texture = manager->whiteTexture();
+                }
+                SamplerState* sampler = nullptr;
+                if (texture->samplerState())
+                    sampler = texture->samplerState();
+                else
+                    sampler = manager->defaultSamplerState();
+                bool modified = false;
+                updateInfo.resources[iSlot].object = detail::GraphicsResourceInternal::
+                    resolveRHIObject<detail::RHIResource>(commandList, texture, &modified);
+                updateInfo.resources[iSlot].stamplerState = detail::GraphicsResourceInternal::
+                    resolveRHIObject<detail::ISamplerState>(commandList, sampler, &modified);
+            }
+            else if (resource->descriptorResourceType() == detail::DescriptorResourceType_Buffer) {
+                VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
+                bool modified = false;
+                updateInfo.resources[iSlot].object = detail::GraphicsResourceInternal::
+                    resolveRHIObject<detail::RHIResource>(commandList, buffer, &modified);
+                if (LN_ENSURE(updateInfo.resources[iSlot].object)) return;
+            }
+            else {
+                LN_UNREACHABLE();
+            }
         }
-        else if (resource->descriptorResourceType() == detail::DescriptorResourceType_Buffer) {
+        // Samplers
+        for (int iSlot = 0; iSlot < descriptorLayout.samplers.size(); iSlot++) {
+            SamplerState* sampler = samplerState(iSlot);
+            if (!sampler) {
+                IGraphicsResource* resource = texture(iSlot);
+                if (resource &&
+                    resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
+                    sampler = static_cast<Texture*>(resource)->samplerState();
+                }
+            }
+            if (!sampler) {
+                sampler = manager->defaultSamplerState();
+            }
+            bool modified = false;
+            updateInfo.samplers[iSlot].object = nullptr;
+            updateInfo.samplers[iSlot].stamplerState = detail::GraphicsResourceInternal::
+                resolveRHIObject<detail::ISamplerState>(commandList, sampler, &modified);
+        }
+        // Storages
+        for (int iSlot = 0; iSlot < descriptorLayout.storages.size(); iSlot++) {
+            IGraphicsResource* resource = storage(iSlot);
             VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
             bool modified = false;
-            updateInfo.resources[iSlot].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, buffer, &modified);
-            if (LN_ENSURE(updateInfo.resources[iSlot].object)) return;
-        }
-        else {
-            LN_UNREACHABLE();
+            updateInfo.storages[iSlot]
+                .object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(
+                commandList,
+                buffer,
+                &modified);
+            updateInfo.storages[iSlot].offset = 0;
+            if (LN_ENSURE(updateInfo.storages[iSlot].object)) return;
         }
     }
+    else {
+        const ShaderPassDescriptorLayout& layout = m_shaderPass->descriptorLayout();
 
-    // Samplers
-    for (int iSlot = 0; iSlot < layout.m_samplers.size(); iSlot++) {
-        const auto& info = layout.m_samplers[iSlot];
-        SamplerState* sampler = samplerState(info.globalIndex);
-        if (!sampler) {
-            IGraphicsResource* resource = texture(iSlot);
-            if (resource && resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
-                sampler = static_cast<Texture*>(resource)->samplerState();
+        // Uniforms
+        for (int iSlot = 0; iSlot < layout.m_buffers.size(); iSlot++) {
+            const auto& info = layout.m_buffers[iSlot];
+            const auto& view = uniformBuffer(info.globalIndex);
+            updateInfo.uniforms[iSlot].object = view.buffer->rhiObject();
+            updateInfo.uniforms[iSlot].offset = view.offset;
+            if (LN_ENSURE(updateInfo.uniforms[iSlot].object)) return;
+        }
+
+        // Textures
+        for (int iSlot = 0; iSlot < layout.m_textures.size(); iSlot++) {
+            const auto& info = layout.m_textures[iSlot];
+            IGraphicsResource* resource = texture(info.globalIndex);
+            if (m_shaderPass->isComputeShader() && resource == nullptr) {
+            }
+            else if (
+                resource == nullptr ||
+                resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
+                Texture* texture = static_cast<Texture*>(resource);
+                if (!texture) {
+                    texture = manager->whiteTexture();
+                }
+
+                SamplerState* sampler = nullptr;
+                if (texture->samplerState())
+                    sampler = texture->samplerState();
+                else
+                    sampler = manager->defaultSamplerState();
+
+                bool modified = false;
+                updateInfo.resources[iSlot].object = detail::GraphicsResourceInternal::
+                    resolveRHIObject<detail::RHIResource>(commandList, texture, &modified);
+                updateInfo.resources[iSlot].stamplerState = detail::GraphicsResourceInternal::
+                    resolveRHIObject<detail::ISamplerState>(commandList, sampler, &modified);
+            }
+            else if (resource->descriptorResourceType() == detail::DescriptorResourceType_Buffer) {
+                VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
+                bool modified = false;
+                updateInfo.resources[iSlot].object = detail::GraphicsResourceInternal::
+                    resolveRHIObject<detail::RHIResource>(commandList, buffer, &modified);
+                if (LN_ENSURE(updateInfo.resources[iSlot].object)) return;
+            }
+            else {
+                LN_UNREACHABLE();
             }
         }
-        if (!sampler) {
-            sampler = manager->defaultSamplerState();
+
+        // Samplers
+        for (int iSlot = 0; iSlot < layout.m_samplers.size(); iSlot++) {
+            const auto& info = layout.m_samplers[iSlot];
+            SamplerState* sampler = samplerState(info.globalIndex);
+            if (!sampler) {
+                IGraphicsResource* resource = texture(iSlot);
+                if (resource &&
+                    resource->descriptorResourceType() == detail::DescriptorResourceType_Texture) {
+                    sampler = static_cast<Texture*>(resource)->samplerState();
+                }
+            }
+            if (!sampler) {
+                sampler = manager->defaultSamplerState();
+            }
+
+            bool modified = false;
+            updateInfo.samplers[iSlot].object = nullptr;
+            updateInfo.samplers[iSlot].stamplerState = detail::GraphicsResourceInternal::
+                resolveRHIObject<detail::ISamplerState>(commandList, sampler, &modified);
         }
 
-        bool modified = false;
-        updateInfo.samplers[iSlot].object = nullptr;
-        updateInfo.samplers[iSlot].stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(commandList, sampler, &modified);
+        // Storages
+        for (int iSlot = 0; iSlot < layout.m_storages.size(); iSlot++) {
+            const auto& info = layout.m_storages[iSlot];
+            IGraphicsResource* resource = storage(info.globalIndex);
+            VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
+            bool modified = false;
+            updateInfo.storages[iSlot]
+                .object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(
+                commandList,
+                buffer,
+                &modified);
+            updateInfo.storages[iSlot].offset = 0;
+            if (LN_ENSURE(updateInfo.storages[iSlot].object)) return;
+        }
     }
 
-    // Storages
-    for (int iSlot = 0; iSlot < layout.m_storages.size(); iSlot++) {
-        const auto& info = layout.m_storages[iSlot];
-        IGraphicsResource* resource = storage(info.globalIndex);
-        VertexBuffer* buffer = dynamic_cast<VertexBuffer*>(resource);
-        bool modified = false;
-        updateInfo.storages[iSlot].object = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, buffer, &modified);
-        updateInfo.storages[iSlot].offset = 0;
-        if (LN_ENSURE(updateInfo.storages[iSlot].object)) return;
-    }
 
     detail::IDescriptor* descriptor = nullptr;
     commandList->getDescriptorPool(m_shaderPass, rhiShaderPass)->allocate(&descriptor);

@@ -86,7 +86,7 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
     static_assert(272 == offsetof(LNRenderViewBuffer, ln_CameraPosition), "Invalid offsetof(LNRenderViewBuffer, ln_CameraPosition)");
     static_assert(288 == offsetof(LNRenderViewBuffer, ln_CameraDirection), "Invalid offsetof(LNRenderViewBuffer, ln_CameraDirection)");
     static_assert(400 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
-    static_assert(368 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(352 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
 
@@ -207,7 +207,7 @@ void ShaderTechniqueSemanticsManager::updateElementVariables(ShaderSecondaryDesc
         if (hasParameter(BuiltinShaderParameters_ln_MorphWeights))
             data.ln_MorphWeights.set(info.morphWeights[0], info.morphWeights[1], info.morphWeights[2], info.morphWeights[3]);
 
-        data.ln_objectId = info.objectId;
+        //data.ln_objectId = info.objectId;
         descriptor->setUniformBufferData(index, &data, sizeof(data));
     }
 
@@ -319,7 +319,7 @@ ShaderPassSemanticsManager::ShaderPassSemanticsManager()
     static_assert(272 == offsetof(LNRenderViewBuffer, ln_CameraPosition), "Invalid offsetof(LNRenderViewBuffer, ln_CameraPosition)");
     static_assert(288 == offsetof(LNRenderViewBuffer, ln_CameraDirection), "Invalid offsetof(LNRenderViewBuffer, ln_CameraDirection)");
     static_assert(400 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
-    static_assert(368 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(352 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
 
@@ -328,30 +328,64 @@ ShaderPassSemanticsManager::ShaderPassSemanticsManager()
 
 void ShaderPassSemanticsManager::init(const ShaderPass* shaderPass, const kokage::DescriptorLayout& layout) {
 
-    // Buffers
-    for (int iSlot = 0; iSlot < layout.bufferSlots().size(); iSlot++) {
-        const auto& slot = layout.bufferSlots()[iSlot];
-        auto itr = s_BuiltinShaderUniformBuffersMap.find(ln::String::fromUtf8(slot.name)); // TODO: 文字コード変換がオーバーヘッドになるかも
-        if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
-            m_builtinUniformBuffers[itr->second] = iSlot;
+    if (shaderPass->m_unifiedShader2) {
+        const kokage::GlobalResourceLayout* globalResourceLayout = shaderPass->m_unifiedShader2->globalResourceLayout();
+        const kokage::GlobalShaderPass::DescriptorLayout&
+            descriptorLayout = shaderPass->m_globalShaderPass->descriptorLayout;
+
+        // Buffers
+        for (int iSlot = 0; iSlot < descriptorLayout.buffers.size(); iSlot++) {
+            int globalIndex = descriptorLayout.buffers[iSlot];
+            const std::string& name = globalResourceLayout->buffers[globalIndex].name;
+            auto itr = s_BuiltinShaderUniformBuffersMap.find(ln::String::fromUtf8(name));// TODO: 文字コード変換がオーバーヘッドになるかも
+            if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
+                m_builtinUniformBuffers[itr->second] = iSlot;
+            }
+            // TODO: メンバごとに used が取れると嬉しい
+            m_hasBuiltinShaderParameters = 0xFFFFFFFF;
+        }
+        // Textures
+        for (int iSlot = 0; iSlot < descriptorLayout.textures.size(); iSlot++) {
+            int globalIndex = descriptorLayout.textures[iSlot];
+            const std::string& name = globalResourceLayout->textures[globalIndex].name;
+            auto itr = s_BuiltinShaderTexturesMap.find(
+                ln::String::fromUtf8(name)); // TODO: 文字コード変換がオーバーヘッドになるかも
+            if (itr != s_BuiltinShaderTexturesMap.end()) {
+                m_builtinShaderTextures[itr->second] = iSlot;
+            }
+        }
+    }
+    else {
+        // Buffers
+        for (int iSlot = 0; iSlot < layout.bufferSlots().size(); iSlot++) {
+            const auto& slot = layout.bufferSlots()[iSlot];
+            auto itr = s_BuiltinShaderUniformBuffersMap.find(
+                ln::String::fromUtf8(slot.name)); // TODO: 文字コード変換がオーバーヘッドになるかも
+            if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
+                m_builtinUniformBuffers[itr->second] = iSlot;
+            }
+
+            for (const auto& member : slot.members) {
+                auto itr = s_BuiltinShaderParametersMap.find(
+                    ln::String::fromUtf8(
+                        member.name)); // TODO: 文字コード変換がオーバーヘッドになるかも
+                if (itr != s_BuiltinShaderParametersMap.end()) {
+                    m_hasBuiltinShaderParameters |= (1 << itr->second);
+                }
+            }
         }
 
-        for (const auto& member : slot.members) {
-            auto itr = s_BuiltinShaderParametersMap.find(ln::String::fromUtf8(member.name));    // TODO: 文字コード変換がオーバーヘッドになるかも
-            if (itr != s_BuiltinShaderParametersMap.end()) {
-                m_hasBuiltinShaderParameters |= (1 << itr->second);
+        // Resources
+        for (int iSlot = 0; iSlot < layout.resourceSlots().size(); iSlot++) {
+            const auto& slot = layout.resourceSlots()[iSlot];
+            auto itr = s_BuiltinShaderTexturesMap.find(
+                ln::String::fromUtf8(slot.name)); // TODO: 文字コード変換がオーバーヘッドになるかも
+            if (itr != s_BuiltinShaderTexturesMap.end()) {
+                m_builtinShaderTextures[itr->second] = iSlot;
             }
         }
     }
 
-    // Resources
-    for (int iSlot = 0; iSlot < layout.resourceSlots().size(); iSlot++) {
-        const auto& slot = layout.resourceSlots()[iSlot];
-        auto itr = s_BuiltinShaderTexturesMap.find(ln::String::fromUtf8(slot.name)); // TODO: 文字コード変換がオーバーヘッドになるかも
-        if (itr != s_BuiltinShaderTexturesMap.end()) {
-            m_builtinShaderTextures[itr->second] = iSlot;
-        }
-    }
 }
 
 void ShaderPassSemanticsManager::reset() {
@@ -418,7 +452,7 @@ void ShaderPassSemanticsManager::updateElementVariables(ShaderDescriptor* descri
         if (hasParameter(BuiltinShaderParameters_ln_MorphWeights))
             data.ln_MorphWeights.set(info.morphWeights[0], info.morphWeights[1], info.morphWeights[2], info.morphWeights[3]);
 
-        data.ln_objectId = info.objectId;
+        //data.ln_objectId = info.objectId;
         descriptor->setUniformBufferData(slotIndex, &data, sizeof(data));
     }
 
