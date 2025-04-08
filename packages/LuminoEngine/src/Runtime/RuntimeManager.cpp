@@ -30,7 +30,7 @@ const char* RuntimeStringBuffer::getAscii() {
 
 URef<RuntimeManager> RuntimeManager::s_instance;
 
-MaybeResult_deprecated RuntimeManager::initialize(const Settings& settings) {
+MaybeResult RuntimeManager::initialize(const Settings& settings) {
     if (s_instance) {
         return LN_MAKE_SUCCESS();
     }
@@ -57,7 +57,7 @@ RuntimeManager::RuntimeManager()
 RuntimeManager::~RuntimeManager() {
 }
 
-MaybeResult_deprecated RuntimeManager::init(const Settings& settings) {
+MaybeResult RuntimeManager::init(const Settings& settings) {
     LN_LOG_DEBUG("RuntimeManager Initialization started.");
 
     m_settings = settings;

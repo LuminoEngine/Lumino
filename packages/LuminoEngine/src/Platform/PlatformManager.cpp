@@ -21,12 +21,13 @@ PlatformManager::PlatformManager(GraphicsManager* graphicsManager, RenderingMana
 PlatformManager::~PlatformManager() {
 }
 
-Result_deprecated<> PlatformManager::init(const Settings& settings) {
+MaybeResult PlatformManager::init(const Settings& settings) {
 #ifdef LN_GLFW
     if (settings.windowSystem == WindowSystem::GLFWWithOpenGL || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) {
         if (!m_windowManager) {
             auto windowManager = ln::makeRef<GLFWPlatformWindowManager>(this);
-            LN_TRY(windowManager->init(settings.windowSystem == WindowSystem::GLFWWithOpenGL));
+            auto result = windowManager->init(settings.windowSystem == WindowSystem::GLFWWithOpenGL);
+            if (!result) return LN_MAKE_ERROR();
             m_windowManager = windowManager;
         }
     }
@@ -34,9 +35,8 @@ Result_deprecated<> PlatformManager::init(const Settings& settings) {
 #ifdef LN_OS_WIN32
     if (!m_windowManager && settings.windowSystem != WindowSystem::External) {
         auto windowManager = ln::makeRef<Win32PlatformWindowManager>(this);
-        if (!windowManager->init()) {
-            return err();
-        }
+        auto result = windowManager->init();
+        if (!result) return LN_MAKE_ERROR();
         m_windowManager = windowManager;
     }
 #endif
@@ -51,9 +51,8 @@ Result_deprecated<> PlatformManager::init(const Settings& settings) {
 
     if (!m_windowManager) {
         auto windowManager = ln::makeRef<EmptyPlatformWindowManager>(this);
-        if (!windowManager->init()) {
-            return err();
-        }
+        auto result = windowManager->init();
+        if (!result) return LN_MAKE_ERROR();
         m_windowManager = windowManager;
     }
 
@@ -61,7 +60,7 @@ Result_deprecated<> PlatformManager::init(const Settings& settings) {
     //    m_mainWindow = createWindow(settings.mainWindowSettings);
     //}
 
-    return ok();
+    return LN_MAKE_SUCCESS();
 }
 
 void PlatformManager::dispose() {

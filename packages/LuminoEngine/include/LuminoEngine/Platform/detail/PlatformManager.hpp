@@ -34,7 +34,7 @@ public:
 
     PlatformManager(GraphicsManager* graphicsManager, RenderingManager* renderingManager);
     virtual ~PlatformManager();
-    Result_deprecated<> init(const Settings& settings);
+    MaybeResult init(const Settings& settings);
     void dispose();
 
 private:

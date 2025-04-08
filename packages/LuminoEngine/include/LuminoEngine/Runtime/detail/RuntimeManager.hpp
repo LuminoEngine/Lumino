@@ -53,7 +53,7 @@ public:
         LNInstanceGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
     };
 
-    static MaybeResult_deprecated initialize(const Settings& settings);
+    static MaybeResult initialize(const Settings& settings);
     static void terminate();
     static inline RuntimeManager* instance() { return s_instance.get(); }
 
@@ -91,7 +91,7 @@ public:
 private:
     RuntimeManager();
     virtual ~RuntimeManager();
-    MaybeResult_deprecated init(const Settings& settings);
+    MaybeResult init(const Settings& settings);
     void dispose();
 
     Settings m_settings;

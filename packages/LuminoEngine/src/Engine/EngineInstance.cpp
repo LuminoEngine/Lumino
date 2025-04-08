@@ -20,10 +20,10 @@ void registerModuleTypes_Runtime(RuntimeContext* context);
 
 std::unique_ptr<EngineInstance> EngineInstance::s_instance;
 
-MaybeResult_deprecated EngineInstance::initialize(const RuntimeModuleSettings& settings, EngineInstance* sharedContext) {
+MaybeResult EngineInstance::initialize(const RuntimeModuleSettings& settings, EngineInstance* sharedContext) {
     if (sharedContext) {
         LN_NOTIMPLEMENTED();
-        return LN_MAKE_ERROR_deprecated();
+        return LN_MAKE_ERROR();
     }
 
     if (s_instance) return LN_MAKE_SUCCESS();
@@ -44,7 +44,7 @@ EngineInstance::EngineInstance() {
 EngineInstance::~EngineInstance() {
 }
 
-MaybeResult_deprecated EngineInstance::init(const RuntimeModuleSettings& settings) {
+MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
     m_options = settings;
 
 #ifdef LN_DEBUG
@@ -67,7 +67,7 @@ MaybeResult_deprecated EngineInstance::init(const RuntimeModuleSettings& setting
     }
 
     {
-        MaybeResult_deprecated result = initializeRuntimeManager();
+        auto result = initializeRuntimeManager();
         if (!result) return result;
     }
     {
@@ -75,7 +75,7 @@ MaybeResult_deprecated EngineInstance::init(const RuntimeModuleSettings& setting
         settings2.assetStorageAccessPriority = settings.assetStorageAccessPriority;
         m_assetManager = makeURef<detail::AssetManager>();
         if (!m_assetManager->init(settings2)) {
-            return LN_MAKE_ERROR_deprecated();
+            return LN_MAKE_ERROR();
         }
     }
 
@@ -100,11 +100,11 @@ MaybeResult_deprecated EngineInstance::init(const RuntimeModuleSettings& setting
 #endif
 
     {
-        MaybeResult_deprecated result = initializeGraphicsManager();
+        auto result = initializeGraphicsManager();
         if (!result) return result;
     }
     {
-        MaybeResult_deprecated result = initializePlatformManager();
+        auto result = initializePlatformManager();
         if (!result) return result;
     }
 
@@ -143,7 +143,7 @@ void EngineInstance::dispose() {
 #endif
 }
 
-MaybeResult_deprecated EngineInstance::initializeRuntimeManager() {
+MaybeResult EngineInstance::initializeRuntimeManager() {
     detail::RuntimeManager::Settings opt;
     auto result = detail::RuntimeManager::initialize(opt);
     if (!result) {
@@ -152,7 +152,7 @@ MaybeResult_deprecated EngineInstance::initializeRuntimeManager() {
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult_deprecated EngineInstance::initializeGraphicsManager() {
+MaybeResult EngineInstance::initializeGraphicsManager() {
     if (m_graphicsManager) return LN_MAKE_SUCCESS();
 
     LNGraphicsBackend graphicsAPI = m_options.graphicsAPI;
@@ -177,7 +177,7 @@ MaybeResult_deprecated EngineInstance::initializeGraphicsManager() {
         detail::FontManager::Settings settings;
         settings.assetManager = detail::AssetManager::instance();
         if (!detail::FontManager::initialize(settings)) {
-            return LN_MAKE_ERROR_deprecated();
+            return LN_MAKE_ERROR();
         }
     }
     {
@@ -185,14 +185,14 @@ MaybeResult_deprecated EngineInstance::initializeGraphicsManager() {
         settings.graphicsManager = m_graphicsManager;
         settings.fontManager = detail::FontManager::instance();
         if (!detail::RenderingManager::initialize(settings)) {
-            return LN_MAKE_ERROR_deprecated();
+            return LN_MAKE_ERROR();
         }
     }
 
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult_deprecated EngineInstance::initializePlatformManager() {
+MaybeResult EngineInstance::initializePlatformManager() {
     if (m_platformManager) return LN_MAKE_SUCCESS();
 
     detail::PlatformManager::Settings options;

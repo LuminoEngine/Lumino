@@ -24,7 +24,8 @@ public:
     static EngineInstance* instance() { return s_instance.get(); };
 
     /** Initialize context. */
-    static MaybeResult_deprecated initialize(const RuntimeModuleSettings& settings, EngineInstance* sharedContext = nullptr);
+    static MaybeResult initialize(
+        const RuntimeModuleSettings& settings, EngineInstance* sharedContext = nullptr);
 
     /** Terminate context. */
     static void terminate();
@@ -50,11 +51,11 @@ public:
 
 private:
     EngineInstance();
-    MaybeResult_deprecated init(const RuntimeModuleSettings& settings);
+    MaybeResult init(const RuntimeModuleSettings& settings);
     void dispose();
-    MaybeResult_deprecated initializeRuntimeManager();
-    MaybeResult_deprecated initializeGraphicsManager();
-    MaybeResult_deprecated initializePlatformManager();
+    MaybeResult initializeRuntimeManager();
+    MaybeResult initializeGraphicsManager();
+    MaybeResult initializePlatformManager();
 
     static std::unique_ptr<EngineInstance> s_instance;
 
