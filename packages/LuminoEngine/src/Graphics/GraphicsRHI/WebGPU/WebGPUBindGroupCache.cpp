@@ -66,29 +66,36 @@ MaybeResult WebGPUBindGroupCache::getOrCreate(
 
         WGPUBindGroupEntry entry = WGPU_BIND_GROUP_ENTRY_INIT;
         entry.binding = info.index;
-        switch (info.descriptorEntryCategory) {
-            case kokage::RegisterCategory_UniformBuffer: {
+        switch (info.category) {
+            case kokage::BindingResourceCategory_UniformBuffer: {
                 const auto& item = updateInfo.uniforms[info.descriptorEntryIndex];
                 const WebGPUUniformBuffer* buffer = static_cast<WebGPUUniformBuffer*>(item.object);
                 entry.buffer = buffer->nativeBuffer();
                 entry.offset = item.offset;
-                entry.size = buffer->memorySize();
+                entry.size = info.size;
                 break;
             }
-            case kokage::RegisterCategory_TextureOrCombinedSampler: {
+            case kokage::BindingResourceCategory_TextureOrCombinedSampler: {
                 // WebGPU は CombinedSampler しかサポートしていないので、 Texture だけで OK.
                 const auto& item = updateInfo.resources[info.descriptorEntryIndex];
                 const WebGPUTextureBase* texture = static_cast<WebGPUTextureBase*>(item.object);
                 entry.textureView = texture->nativeTextureView();
                 break;
             }
-            case kokage::RegisterCategory_SamplerState: {
-                const auto& item = updateInfo.samplers[info.descriptorEntryIndex];
-                const WebGPUSamplerState* sampler = static_cast<WebGPUSamplerState*>(item.object);
+            case kokage::BindingResourceCategory_SamplerState: {
+                const ShaderDescriptorTableUpdateItem* item = nullptr;
+                if (info.descriptorEntryCategory == kokage::RegisterCategory_TextureOrCombinedSampler) {
+                    // 入力シェーダコード上、 CombinedSampler が使われている場合は Texture に付いている SamplerState を使う。
+                    item = &updateInfo.resources[info.descriptorEntryIndex];
+                }
+                else {
+                    item = &updateInfo.samplers[info.descriptorEntryIndex];
+                }
+                const auto* sampler = static_cast<WebGPUSamplerState*>(item->stamplerState);
                 entry.sampler = sampler->nativeSampler();
                 break;
             }
-            case kokage::RegisterCategory_UnorderdAccess: {
+            case kokage::BindingResourceCategory_UnorderdAccess: {
                 LN_NOTIMPLEMENTED();
                 break;
             }

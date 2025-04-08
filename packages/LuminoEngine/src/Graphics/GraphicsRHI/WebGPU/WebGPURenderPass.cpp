@@ -1,4 +1,5 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 
 namespace ln {
@@ -45,6 +46,25 @@ Result<> WebGPURenderPass::init(
     m_renderPassDesc.depthStencilAttachment = nullptr;
     m_renderPassDesc.occlusionQuerySet = nullptr;
     m_renderPassDesc.timestampWrites = nullptr;
+
+    m_depthStencilAttachment = WGPU_RENDER_PASS_DEPTH_STENCIL_ATTACHMENT_INIT;
+    if (m_depthBuffer) {
+        auto* wgpuDepthBuffer = static_cast<WebGPUDepthBuffer*>(m_depthBuffer);
+        m_depthStencilAttachment.view = wgpuDepthBuffer->nativeTextureView();
+        if (clearFlags & ClearFlags::Depth || clearFlags & ClearFlags::Stencil) {
+            m_depthStencilAttachment.depthLoadOp = WGPULoadOp_Clear;
+            m_depthStencilAttachment.stencilLoadOp = WGPULoadOp_Clear;
+        }
+        else {
+            m_depthStencilAttachment.depthLoadOp = WGPULoadOp_Load;
+            m_depthStencilAttachment.stencilLoadOp = WGPULoadOp_Load;
+        }
+        m_depthStencilAttachment.depthStoreOp = WGPUStoreOp_Store;
+        m_depthStencilAttachment.stencilStoreOp = WGPUStoreOp_Store;
+        m_depthStencilAttachment.depthClearValue = clearDepth;
+        m_depthStencilAttachment.stencilClearValue = clearStencil;
+        m_renderPassDesc.depthStencilAttachment = &m_depthStencilAttachment;
+    }
 
     return ok();
 }

@@ -101,13 +101,12 @@ MaybeResult WebGPUVertexLayout::createPipelineVertexLayout(
             attribute.offset = bufferLayout->nextOffset;
             attribute.shaderLocation = itr->layoutLocation;
             bufferLayout->attributeInstances.push_back(attribute);
-
-            bufferLayout->nextOffset += RHIHelper::getVertexElementTypeSize(attr.Type);
         }
         else {
             // VertexLayout の指定にはあるけど、 Shader 側で使われていない場合は無視してOK.
-            continue;
         }
+
+        bufferLayout->nextOffset += RHIHelper::getVertexElementTypeSize(attr.Type);
     }
 
     // Build WGPUVertexBufferLayout

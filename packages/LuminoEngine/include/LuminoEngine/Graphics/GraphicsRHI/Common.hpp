@@ -23,6 +23,8 @@ enum class ClearFlags : uint8_t {
     /** ステンシルバッファをクリアします。 */
     Stencil = 0x0004,
 
+    // TODO: Depth と Stencil のクリアは同時にしたほうが、LoadOp の設定が楽・安全にできる。
+
     /** 全てのバッファをクリアします。 */
     All = Color | Depth | Stencil,
 };

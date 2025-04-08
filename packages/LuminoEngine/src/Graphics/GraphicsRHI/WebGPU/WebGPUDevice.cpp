@@ -1,6 +1,7 @@
 ﻿#include <Windows.h>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBindGroupCache.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBufferSingleFrameAllocator.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
@@ -103,12 +104,15 @@ bool WebGPUDevice::init(const Settings& settings) {
 
     // Request device.
     {
+        WGPULimits limits = WGPU_LIMITS_INIT;
+        //limits.maxBufferSize = 2097152;
+
         WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
         deviceDesc.nextInChain = nullptr;
         deviceDesc.label = { "Lumino device", 13 };
         deviceDesc.requiredFeatureCount = 0;
         deviceDesc.requiredFeatures = nullptr;
-        deviceDesc.requiredLimits = nullptr;
+        deviceDesc.requiredLimits = &limits;
         deviceDesc.defaultQueue.nextInChain = nullptr;
         deviceDesc.defaultQueue.label = { "Lumino default queue", 20 };
         deviceDesc.deviceLostCallbackInfo = WGPU_DEVICE_LOST_CALLBACK_INFO_INIT;
@@ -147,12 +151,19 @@ bool WebGPUDevice::init(const Settings& settings) {
 	
     // Prepare Queue.
     m_queue = wgpuDeviceGetQueue(m_device);
+
+    const size_t PageSize = 0x200000; // 2MB
+    m_transferBufferSingleFrameAllocator = makeRef<WebGPUSingleFrameAllocatorPageManager>(
+        this,
+        PageSize);
     	
     return true;
 }
 
 void WebGPUDevice::dispose() {
-
+    if (m_transferBufferSingleFrameAllocator) {
+        m_transferBufferSingleFrameAllocator = nullptr;
+    }
 	if (m_device) {
         wgpuDeviceDestroy(m_device);
         m_device = nullptr;

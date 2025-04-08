@@ -39,6 +39,7 @@ private:
     WGPUCommandEncoder m_commandEncoder;
     WGPURenderPassEncoder m_renderPassEncoder;
     ConditionEvent m_working;
+    Ref<WebGPUSingleFrameAllocator> m_transferBufferSingleFrameAllocator;
 };
 
 } // namespace detail

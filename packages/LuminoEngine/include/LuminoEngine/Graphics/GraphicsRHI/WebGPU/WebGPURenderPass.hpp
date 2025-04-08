@@ -20,6 +20,7 @@ public:
 private:
     WebGPUDevice* m_rhiDevice;
     WGPURenderPassDescriptor m_renderPassDesc;
+    WGPURenderPassDepthStencilAttachment m_depthStencilAttachment;
     std::array<WGPURenderPassColorAttachment, MaxMultiRenderTargets> m_colorAttachments;
 	
     ClearFlags m_clearFlags;

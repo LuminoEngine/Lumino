@@ -19,6 +19,9 @@ public:
     WGPUQueue wgpuQueue() const { return m_queue; }
     WGPUAdapter wgpuAdapter() const { return m_adapters[0].adapter; }
     WebGPUBindGroupCache* bindGroupCache() const { return m_bindGroupCache.get(); }
+    const Ref<WebGPUSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const {
+        return m_transferBufferSingleFrameAllocator;
+    }
 	
 	WGPUSurface getWGPUSurface(PlatformWindow* window) const;
 
@@ -61,6 +64,7 @@ private:
     WGPUDevice m_device;
     WGPUQueue m_queue;
     std::unique_ptr<WebGPUBindGroupCache> m_bindGroupCache;
+    Ref<WebGPUSingleFrameAllocatorPageManager> m_transferBufferSingleFrameAllocator;
 };
 
 } // namespace detail

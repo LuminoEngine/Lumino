@@ -1,4 +1,5 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBufferSingleFrameAllocator.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
@@ -24,6 +25,8 @@ WebGPUCommandList::WebGPUCommandList()
 
 Result<> WebGPUCommandList::init(WebGPUDevice* rhiDevice) {
     m_rhiDevice = rhiDevice;
+    m_transferBufferSingleFrameAllocator = makeRef<WebGPUSingleFrameAllocator>(
+        m_rhiDevice->transferBufferSingleFrameAllocator());
     return ok();
 }
 
@@ -49,6 +52,7 @@ void WebGPUCommandList::onRestoreExternalRenderState() {
 
 void WebGPUCommandList::onBeginCommandRecoding() {
     //if (LN_ASSERT(!m_isRecording)) return;
+    m_transferBufferSingleFrameAllocator->cleanup();
 	
     WGPUCommandEncoderDescriptor encoderDesc = WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;
     encoderDesc.nextInChain = nullptr;
@@ -66,7 +70,7 @@ void WebGPUCommandList::onEndCommandRecoding() {
 
 void WebGPUCommandList::onBeginRenderPass(IRenderPass* renderPass) {
     auto rhiRenderPass = static_cast<WebGPURenderPass*>(renderPass);
-    m_renderPassEncoder = wgpuCommandEncoderBeginRenderPass(m_commandEncoderm_commandEncoder, rhiRenderPass->resolve());
+    m_renderPassEncoder = wgpuCommandEncoderBeginRenderPass(m_commandEncoder, rhiRenderPass->resolve());
 }
 
 void WebGPUCommandList::onEndRenderPass(IRenderPass* renderPass) {
@@ -132,7 +136,36 @@ void WebGPUCommandList::onSubmitStatus(const GraphicsContextState& state, uint32
 }
 
 void WebGPUCommandList::onSetSubData(RHIResource* resource, size_t offset, const void* data, size_t length) {
-    LN_NOTIMPLEMENTED();
+    WGPUBuffer nativeBuffer = nullptr;
+    switch (resource->resourceType()) {
+        case RHIResourceType::VertexBuffer:
+            nativeBuffer = static_cast<WebGPUVertexBuffer*>(resource)->nativeBuffer();
+            break;
+        case RHIResourceType::IndexBuffer:
+            nativeBuffer = static_cast<WebGPUIndexBuffer*>(resource)->nativeBuffer();
+            break;
+        default:
+            LN_NOTIMPLEMENTED();
+            break;
+    }
+
+    // Copy to Staging Buffer.
+    WebGPUSingleFrameBufferInfo info = m_transferBufferSingleFrameAllocator->allocate(length);
+	wgpuQueueWriteBuffer(
+        m_rhiDevice->wgpuQueue(),
+        info.nativeBuffer,
+        info.offset,
+        data,
+        length);
+
+    // Copy to GPU Buffer.
+    wgpuCommandEncoderCopyBufferToBuffer(
+        m_commandEncoder,
+        info.nativeBuffer,
+        info.offset,
+        nativeBuffer,
+        offset,
+        length);
 }
 
 void WebGPUCommandList::onSetSubData2D(RHIResource* resource, int x, int y, int width, int height, const void* data, size_t dataSize) {
@@ -159,7 +192,7 @@ void WebGPUCommandList::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int 
     wgpuRenderPassEncoderDrawIndexed(
         m_renderPassEncoder,
         RHIHelper::getPrimitiveVertexCount(primitive, primitiveCount),
-        instanceCount,
+        instanceCount <= 0 ? 1 : instanceCount,
         startIndex,
         vertexOffset,
         0);
