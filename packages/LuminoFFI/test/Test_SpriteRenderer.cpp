@@ -65,10 +65,9 @@ TEST_F(Test_SpriteRenderer, Basic1) {
         }
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
+        ASSERT_SCREENSHOT(U"Rendering/Expects/Test_SpriteRenderer.Basic1.png");
         TestEnv::present();
     }
-
-    ASSERT_SCREENSHOT(U"Rendering/Expects/Test_SpriteRenderer.Basic1.png");
 
     LNObject_Release(material1);
     LNObject_Release(texture1);

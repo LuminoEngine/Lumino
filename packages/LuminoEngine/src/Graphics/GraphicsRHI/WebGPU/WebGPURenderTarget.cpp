@@ -58,6 +58,28 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
     uint32_t width = extentSize().width;
     uint32_t height = extentSize().height;
     uint32_t size = width * height * pixelSize;
+    const uint64_t timeoutNS = 5 * 1000 * 1000 * 1000; // 5s
+
+    // Wait queue idle.
+    {
+        auto onDone = [](WGPUQueueWorkDoneStatus status, void* userdata1, void* userdata) {};
+        WGPUQueueWorkDoneCallbackInfo callbackInfo = WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;
+        callbackInfo.mode = WGPUCallbackMode_WaitAnyOnly;
+        callbackInfo.callback = onDone; // Dummy でも指定しないとクラッシュする。
+        WGPUFuture future = wgpuQueueOnSubmittedWorkDone(nativeQueue, callbackInfo);
+        WGPUFutureWaitInfo waitInfo = WGPU_FUTURE_WAIT_INFO_INIT;
+        waitInfo.future = future;
+        waitInfo.completed = 0;
+        WGPUWaitStatus result1 = wgpuInstanceWaitAny(
+            m_rhiDevice->nativeInstance(),
+            1,
+            &waitInfo,
+            timeoutNS);
+        if (result1 != WGPUWaitStatus_Success) {
+            LN_MAKE_ERROR("wgpuInstanceWaitAny failed. (%d)", result1); // TODO:
+            return nullptr;
+        }
+    }
 
     RHIRef<RHIBitmap> bitmap = makeRHIRef<RHIBitmap>();
     if (!bitmap->init(pixelSize, width, height)) {
@@ -163,7 +185,15 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
     WGPUFutureWaitInfo waitInfo = WGPU_FUTURE_WAIT_INFO_INIT;
     waitInfo.future = f;
     waitInfo.completed = 0;
-    auto r1 = wgpuInstanceWaitAny(m_rhiDevice->nativeInstance(), 1, &waitInfo, 2 * 1000 * 1000); //
+    WGPUWaitStatus result1 = wgpuInstanceWaitAny(
+        m_rhiDevice->nativeInstance(),
+        1,
+        &waitInfo,
+        timeoutNS);
+    if (result1 != WGPUWaitStatus_Success) {
+        LN_MAKE_ERROR("wgpuInstanceWaitAny failed. (%d)", result1); // TODO:
+        return nullptr;
+    }
 
     ////wgpuQueueOnSubmittedWorkDone
     //while (!context.ready) {
