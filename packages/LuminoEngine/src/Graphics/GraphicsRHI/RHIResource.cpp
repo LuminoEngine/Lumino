@@ -50,14 +50,14 @@ RHIResource::~RHIResource() {
     }
 }
 
-Result<> RHIResource::initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize) {
+Result_deprecated<> RHIResource::initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize) {
     m_type = RHIResourceType::VertexBuffer;
     m_usage = usage;
     m_memorySize = memorySize;
     return ok();
 }
 
-Result<> RHIResource::initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount) {
+Result_deprecated<> RHIResource::initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount) {
     m_type = RHIResourceType::IndexBuffer;
     m_usage = usage;
 
@@ -77,7 +77,7 @@ Result<> RHIResource::initAsIndexBuffer(GraphicsResourceUsage usage, IndexBuffer
     return ok();
 }
 
-Result<> RHIResource::initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize) {
+Result_deprecated<> RHIResource::initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize) {
     // 今のところ UniformBuffer は Dynamic (複数 DrawCall で共有しない) 前提
     // TODO: OpenGL の Streaming みたいにもうひとつ用意して区別したほうがいいかも
     if (LN_REQUIRE(usage == GraphicsResourceUsage::Dynamic)) return err();
@@ -87,7 +87,7 @@ Result<> RHIResource::initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t 
     return ok();
 }
 
-Result<> RHIResource::initAsTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap) {
+Result_deprecated<> RHIResource::initAsTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap) {
     //if (LN_REQUIRE(format == TextureFormat::Unknown)) return err();
     m_type = RHIResourceType::Texture2D;
     m_usage = usage;
@@ -100,7 +100,7 @@ Result<> RHIResource::initAsTexture2D(GraphicsResourceUsage usage, uint32_t widt
     return ok();
 }
 
-Result<> RHIResource::initAsTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, int32_t depth, TextureFormat format) {
+Result_deprecated<> RHIResource::initAsTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, int32_t depth, TextureFormat format) {
     m_type = RHIResourceType::Texture3D;
     m_usage = usage;
     m_extentSize.width = width;
@@ -111,7 +111,7 @@ Result<> RHIResource::initAsTexture3D(GraphicsResourceUsage usage, uint32_t widt
     return ok();
 }
 
-Result<> RHIResource::initAsRenderTarget(uint32_t width, uint32_t height, TextureFormat format, bool mipmap, bool multisample) {
+Result_deprecated<> RHIResource::initAsRenderTarget(uint32_t width, uint32_t height, TextureFormat format, bool mipmap, bool multisample) {
     //if (LN_REQUIRE(format == TextureFormat::Unknown)) return err();
     m_type = RHIResourceType::RenderTarget;
     m_usage = GraphicsResourceUsage::Static;
@@ -125,7 +125,7 @@ Result<> RHIResource::initAsRenderTarget(uint32_t width, uint32_t height, Textur
     return ok();
 }
 
-Result<> RHIResource::initAsDepthBuffer(uint32_t width, uint32_t height, bool multisample) {
+Result_deprecated<> RHIResource::initAsDepthBuffer(uint32_t width, uint32_t height, bool multisample) {
     if (LN_REQUIRE(m_type == RHIResourceType::Unknown)) return err();
     if (LN_REQUIRE(width > 0)) return err();
     if (LN_REQUIRE(height > 0)) return err();

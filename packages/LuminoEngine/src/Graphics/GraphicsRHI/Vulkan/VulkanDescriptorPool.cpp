@@ -82,7 +82,7 @@ void VulkanDescriptorPool2::reset()
 	m_activePageUsedCount = 0;
 }
 
-Result<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor) {
+Result_deprecated<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor) {
     if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_SET_COUNT)
     {
         // active pool を使い切ったので次の pool を確保

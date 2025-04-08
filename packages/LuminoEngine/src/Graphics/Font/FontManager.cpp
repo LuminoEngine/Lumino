@@ -101,7 +101,7 @@ FontManager::FontManager()
     , m_famlyNameToFontFaceSourceMap() {
 }
 
-MaybeResult FontManager::init(const Settings& settings) {
+MaybeResult_deprecated FontManager::init(const Settings& settings) {
     LN_LOG_TRACE("FontManager Initialization started.");
 
     m_assetManager = settings.assetManager;
@@ -449,7 +449,7 @@ GlyphIconFontManager::GlyphIconFontManager()
 GlyphIconFontManager::~GlyphIconFontManager() {
 }
 
-Result<> GlyphIconFontManager::init(FontManager* fontManager) {
+Result_deprecated<> GlyphIconFontManager::init(FontManager* fontManager) {
     m_fontManager = fontManager;
 
     //	{

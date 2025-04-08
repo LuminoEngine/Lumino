@@ -411,7 +411,7 @@ void DX12DescriptorPool::reset()
     m_usedDescriptorCount = 0;
 }
 
-Result<> DX12DescriptorPool::allocate(IDescriptor** outDescriptor) {
+Result_deprecated<> DX12DescriptorPool::allocate(IDescriptor** outDescriptor) {
     // grow
     if (m_usedDescriptorCount >= m_descriptors.size()) {
         for (int i = 0; i < AllocatableCountPerPage; i++) {

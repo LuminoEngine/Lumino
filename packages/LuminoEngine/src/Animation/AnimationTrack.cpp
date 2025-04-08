@@ -64,7 +64,7 @@ AnimationTrack::~AnimationTrack()
 {
 }
 
-Result<> AnimationTrack::init() {
+Result_deprecated<> AnimationTrack::init() {
     return Object::init();
 }
 

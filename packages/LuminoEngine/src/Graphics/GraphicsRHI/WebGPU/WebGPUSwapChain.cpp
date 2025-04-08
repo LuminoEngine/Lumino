@@ -19,7 +19,7 @@ WebGPUSwapChain::WebGPUSwapChain()
     , m_currentRenderTargets{} {
 }
 
-Result<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, const SizeI& backbufferSize) {
+Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, const SizeI& backbufferSize) {
     m_device = device;
     m_wgpuSurface = m_device->getWGPUSurface(window);
     m_width = backbufferSize.width;
@@ -36,7 +36,7 @@ Result<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, con
         WGPUSurfaceCapabilities capabilities = WGPU_SURFACE_CAPABILITIES_INIT;
         WGPUStatus result = wgpuSurfaceGetCapabilities(m_wgpuSurface, wgpuAdapter, &capabilities);
         if (result != WGPUStatus_Success) {
-            return LN_MAKE_ERROR("wgpuSurfaceGetCapabilities failed. %d", result);
+            return LN_MAKE_ERROR_deprecated("wgpuSurfaceGetCapabilities failed. %d", result);
         }
         preferredFormat = capabilities.formats[0];
         bool supportsMailbox = false;
@@ -143,7 +143,7 @@ RHIResource* WebGPUSwapChain::getRenderTarget(int imageIndex) const {
     return m_currentRenderTargets[imageIndex];
 }
 
-Result<> WebGPUSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
+Result_deprecated<> WebGPUSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     LN_NOTIMPLEMENTED();
     return ok();
 }

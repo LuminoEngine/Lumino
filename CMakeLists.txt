@@ -158,6 +158,10 @@ if(MSVC)
 
     # TODO: lib 分割したい
     add_definitions("/bigobj")
+
+    # https://cmake.org/pipermail/cmake/2017-July/065862.html
+    # https://github.com/microsoft/verona/issues/49
+    set(CMAKE_CXX_FLAGS "/EHsc")
 endif()
 
 if(WIN32)
@@ -173,6 +177,7 @@ endif()
 # -------------------------------------------------------------------------------
 # Externals
 # -------------------------------------------------------------------------------
+find_package(tl-expected CONFIG REQUIRED)
 if(LN_OS_DESKTOP)
     find_package(GTest CONFIG REQUIRED)
 endif()

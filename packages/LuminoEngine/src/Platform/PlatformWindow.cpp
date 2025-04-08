@@ -15,7 +15,7 @@ PlatformWindow::PlatformWindow()
     , m_dpiFactor(1.0f) {
 }
 
-Result<> PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
+Result_deprecated<> PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
     m_windowManager = windowManager;
     return ok();
 }

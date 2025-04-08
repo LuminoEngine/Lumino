@@ -17,7 +17,7 @@ GLUniformBufferAllocatorPage::~GLUniformBufferAllocatorPage() {
     }
 }
 
-Result<> GLUniformBufferAllocatorPage::init(OpenGLDevice* device, size_t size) {
+Result_deprecated<> GLUniformBufferAllocatorPage::init(OpenGLDevice* device, size_t size) {
     m_buffer = std::make_unique<GLUniformBuffer>();
     LN_TRY(m_buffer->init(size));
     return ok();
@@ -71,7 +71,7 @@ GLDescriptorObjectPoolManager::GLDescriptorObjectPoolManager(OpenGLDevice* devic
     , m_device(device) {
 }
 
-Result<> GLDescriptorObjectPoolManager::onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) {
+Result_deprecated<> GLDescriptorObjectPoolManager::onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) {
     for (int32_t i = 0; i < count; i++) {
         auto obj = makeRef<GLDescriptor>();
         LN_TRY(obj->init(m_device));
@@ -87,7 +87,7 @@ GLDescriptor::GLDescriptor()
     : m_uniformBufferView() {
 }
 
-Result<> GLDescriptor::init(OpenGLDevice* owner/*, GLUniformBufferView view*/) {
+Result_deprecated<> GLDescriptor::init(OpenGLDevice* owner/*, GLUniformBufferView view*/) {
     //m_uniformBufferView = view;
     return ok();
 }
@@ -266,7 +266,7 @@ void GLDescriptor::bind(const GLShaderPass* shaderPass) {
 GLDescriptorPool::GLDescriptorPool() {
 }
 
-Result<> GLDescriptorPool::init(OpenGLDevice* owner, GLShaderPass* shaderPass) {
+Result_deprecated<> GLDescriptorPool::init(OpenGLDevice* owner, GLShaderPass* shaderPass) {
     m_uniformBufferAllocator = makeRef<GLUniformBufferAllocator>(owner->uniformBufferAllocatorPageManager());
     m_pool = makeRef<ObjectPool>(owner->descriptorObjectPoolManager());
     return ok();
@@ -284,7 +284,7 @@ void GLDescriptorPool::reset() {
     m_uniformBufferAllocator->cleanup();
 }
 
-Result<> GLDescriptorPool::allocate(IDescriptor** outDescriptor) {
+Result_deprecated<> GLDescriptorPool::allocate(IDescriptor** outDescriptor) {
     *outDescriptor = static_cast<GLDescriptor*>(m_pool->allocate());
     return ok();
 }

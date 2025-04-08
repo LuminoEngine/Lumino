@@ -345,7 +345,7 @@ void WebGPUDevice::onQueuePresent(ISwapChain* swapChain) {
     static_cast<WebGPUSwapChain*>(swapChain)->present();
 }
 
-Result<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
+Result_deprecated<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
 
     auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status,
                                    WGPUDevice device,

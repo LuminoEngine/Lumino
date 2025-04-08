@@ -11,7 +11,7 @@ VulkanVertexDeclaration::VulkanVertexDeclaration() {
 }
 
 // https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
-Result<> VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount) {
+Result_deprecated<> VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount) {
     LN_DCHECK(elements);
 
     // 事前に binding がどれだけあるのか調べる

@@ -35,7 +35,7 @@ private:
 class FreeTypeFont : public FontCore {
 public:
     FreeTypeFont();
-    Result<> init(FontManager* manager, const FontDesc& desc);
+    Result_deprecated<> init(FontManager* manager, const FontDesc& desc);
     virtual void dispose() override;
 
     virtual void getGlobalMetrics(FontGlobalMetrics* outMetrics) override;

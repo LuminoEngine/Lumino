@@ -10,7 +10,7 @@ class VulkanBuffer
 {
 public:
     VulkanBuffer();
-    Result<> init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
+    Result_deprecated<> init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
     void dispose();
     VulkanDevice* deviceContext() const { return m_deviceContext; }
     VkBuffer nativeBuffer() const { return m_nativeBuffer; }
@@ -33,7 +33,7 @@ class VulkanVertexBuffer
 {
 public:
     VulkanVertexBuffer();
-    Result<> init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
+    Result_deprecated<> init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
     void onDestroy() override;
     //size_t getBytesSize() override;
     //GraphicsResourceUsage usage() const override;
@@ -55,7 +55,7 @@ class VulkanIndexBuffer
 {
 public:
     VulkanIndexBuffer();
-    Result<> init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
+    Result_deprecated<> init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
     void onDestroy() override;
     //size_t getBytesSize() override;
     //GraphicsResourceUsage usage() const override;
@@ -79,7 +79,7 @@ class VulkanUniformBuffer
 {
 public:
     VulkanUniformBuffer();
-    Result<> init(VulkanDevice* deviceContext, uint32_t size);
+    Result_deprecated<> init(VulkanDevice* deviceContext, uint32_t size);
     void onDestroy() override;
     void* map() override;
     void unmap() override;

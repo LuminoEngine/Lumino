@@ -39,7 +39,7 @@ public:
     virtual ~JsonTextInputSerializer();
 
     template<typename TValue>
-    Result<> load(const String& jsonText, TValue&& value) {
+    Result_deprecated<> load(const String& jsonText, TValue&& value) {
         if (LN_REQUIRE(!m_processing)) return err();
         auto r = setup(jsonText);
         if (!r) return r;
@@ -57,14 +57,14 @@ public:
     }
 
 private:
-    Result<> setup(const String& jsonText);
+    Result_deprecated<> setup(const String& jsonText);
 
     std::unique_ptr<detail::JsonArchiveStore3> m_store;
     bool m_processing;
 };
 
 template<class T = void>
-using ArchiveResult = BasicResult<T, String>;
+using ArchiveResult = BasicResult_deprecated<T, String>;
 
 /**
  * オブジェクトと JSON 文字列間のシリアライズ/デシリアライズ行うユーティリティです。

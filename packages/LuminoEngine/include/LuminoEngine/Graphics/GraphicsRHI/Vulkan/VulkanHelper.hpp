@@ -259,7 +259,7 @@ public:
     static bool hasStencilComponent(VkFormat format) { return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT; }
     static std::vector<const char*> checkValidationLayerSupport();
 
-    static Result<> createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);
+    static Result_deprecated<> createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);
 };
 
 // VkAllocationCallbacks の本体。
@@ -268,7 +268,7 @@ class AbstractVulkanAllocator
 {
 public:
 	AbstractVulkanAllocator();
-    Result<> init();
+    Result_deprecated<> init();
 	const VkAllocationCallbacks* vulkanAllocator() const { return &m_allocatorCallbacks; }
 
 	virtual void* alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept = 0;
@@ -285,7 +285,7 @@ class VulkanAllocator
 {
 public:
 	VulkanAllocator();
-    Result<> init();
+    Result_deprecated<> init();
 
 	virtual void* alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept override;
 	virtual void* realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept override;
@@ -302,7 +302,7 @@ class VulkanLinearAllocator
 {
 public:
 	VulkanLinearAllocator();
-    Result<> init();
+    Result_deprecated<> init();
 	void setLinearAllocator(LinearAllocator* linearAllocator) { m_linearAllocator = linearAllocator; }
 
 	virtual void* alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept override;
@@ -327,8 +327,8 @@ class VulkanImage
 {
 public:
 	VulkanImage();
-	Result<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    Result<> initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
+	Result_deprecated<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
+    Result_deprecated<> initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
     VkFormat vulkanFormat() const { return m_format; }
 	VkImage vulkanImage() const { return m_image; }
@@ -356,7 +356,7 @@ class VulkanRenderPass
 {
 public:
     VulkanRenderPass();
-    Result<> init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear);
+    Result_deprecated<> init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear);
     void dispose();
 
     VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
@@ -376,7 +376,7 @@ class VulkanFramebuffer
 {
 public:
     VulkanFramebuffer();
-    Result<> init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
+    Result_deprecated<> init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
     void dispose();
     bool containsRenderTarget(RHIResource* renderTarget) const;
     bool containsDepthBuffer(RHIResource* depthBuffer) const;

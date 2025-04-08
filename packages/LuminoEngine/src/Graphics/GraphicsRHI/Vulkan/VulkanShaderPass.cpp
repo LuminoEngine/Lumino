@@ -16,7 +16,7 @@ VulkanShaderPass::VulkanShaderPass()
 {
 }
 
-Result<> VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
+Result_deprecated<> VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) {
     LN_DCHECK(deviceContext);
 	if (!IShaderPass::init(createInfo)) {
 		return err();

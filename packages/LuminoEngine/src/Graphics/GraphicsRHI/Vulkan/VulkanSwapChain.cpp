@@ -11,7 +11,7 @@ VulkanSwapChain::VulkanSwapChain()
     : m_swapchain(VK_NULL_HANDLE) {
 }
 
-Result<> VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize) {
+Result_deprecated<> VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize) {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
     VkDevice device = m_deviceContext->vulkanDevice();
@@ -216,7 +216,7 @@ RHIResource* VulkanSwapChain::getRenderTarget(int imageIndex) const {
     return m_swapchainRenderTargets[imageIndex];
 }
 
-Result<> VulkanSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
+Result_deprecated<> VulkanSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
 
     cleanupNativeSwapchain();

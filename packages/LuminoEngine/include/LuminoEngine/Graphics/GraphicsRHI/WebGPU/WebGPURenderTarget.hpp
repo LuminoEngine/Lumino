@@ -7,7 +7,7 @@ namespace detail {
 class WebGPURenderTarget : public RHIResource {
 public:
     WebGPURenderTarget();
-    Result<> initForSwapChainWrapper(
+    Result_deprecated<> initForSwapChainWrapper(
         WebGPUDevice* rhiDevice,
         int width,
         int height,

@@ -25,7 +25,7 @@ public:
     const Ref<PlatformWindow>& mainWindow() const { return m_mainWindow; }
     // bool glfwWithOpenGLAPI() const { return m_glfwWithOpenGLAPI; }
 
-    Result<Ref<PlatformWindow>> createWindow(const WindowCreationSettings& settings);
+    Result_deprecated<Ref<PlatformWindow>> createWindow(const WindowCreationSettings& settings);
     OpenGLContext* openGLContext() const;
     void processSystemEventQueue();
     void requestQuit() { m_quitRequested = true; }
@@ -34,7 +34,7 @@ public:
 
     PlatformManager(GraphicsManager* graphicsManager, RenderingManager* renderingManager);
     virtual ~PlatformManager();
-    Result<> init(const Settings& settings);
+    Result_deprecated<> init(const Settings& settings);
     void dispose();
 
 private:

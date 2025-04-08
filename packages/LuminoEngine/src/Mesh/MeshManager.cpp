@@ -83,7 +83,7 @@ MeshManager::MeshManager()
 {
 }
 
-Result<> MeshManager::init(const Settings& settings) {
+Result_deprecated<> MeshManager::init(const Settings& settings) {
     LN_LOG_DEBUG("MeshManager Initialization started.");
 
     m_graphicsManager = settings.graphicsManager;

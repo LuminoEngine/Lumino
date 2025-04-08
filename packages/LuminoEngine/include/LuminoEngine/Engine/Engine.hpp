@@ -37,7 +37,7 @@ struct EngineOptions {
 
 class Engine {
 public:
-    static MaybeResult initialize(const EngineOptions& options);
+    static MaybeResult_deprecated initialize(const EngineOptions& options);
     static void terminate();
     static void mountAssetDirectory(const StringView& path);
     static void mountAssetArchive(const StringView& filePath, const StringView& password = StringView());

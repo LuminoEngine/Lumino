@@ -9,7 +9,7 @@
 
 namespace ln {
 
-Result<Ref<SurfaceContext>> SurfaceContext::createFromWindow(detail::RenderingManager* renderingManager, PlatformWindow* window) {
+Result_deprecated<Ref<SurfaceContext>> SurfaceContext::createFromWindow(detail::RenderingManager* renderingManager, PlatformWindow* window) {
     GraphicsManager* graphicsManager = renderingManager->graphicsManager();
     Ref<SurfaceContext> context = makeObject_deprecated<SurfaceContext>();
 

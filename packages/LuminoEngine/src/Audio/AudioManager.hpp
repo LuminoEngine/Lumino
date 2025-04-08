@@ -23,7 +23,7 @@ public:
         AssetManager* assetManager;
     };
 
-    static MaybeResult initialize(const Settings& settings);
+    static MaybeResult_deprecated initialize(const Settings& settings);
     static void terminate();
     static inline AudioManager2* instance() { return s_instance.get(); }
 
@@ -32,7 +32,7 @@ public:
 private:
     AudioManager2();
     virtual ~AudioManager2();
-    MaybeResult init(const Settings& settings);
+    MaybeResult_deprecated init(const Settings& settings);
     void dispose();
 
     AssetManager* m_assetManager;
@@ -74,12 +74,12 @@ public:
 	AudioManager();
 	virtual ~AudioManager();
 
-    static MaybeResult initialize(const Settings& settings);
+    static MaybeResult_deprecated initialize(const Settings& settings);
     static void terminate();
     static inline AudioManager* instance() { return s_instance.get(); }
 
 
-	MaybeResult init(const Settings& settings);
+	MaybeResult_deprecated init(const Settings& settings);
 	void dispose();
 	void update(float elapsedSeconds);
 

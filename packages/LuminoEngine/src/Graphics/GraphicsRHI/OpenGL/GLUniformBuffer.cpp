@@ -13,7 +13,7 @@ GLUniformBuffer::GLUniformBuffer()
     , m_mapped(false) {
 }
 
-Result<> GLUniformBuffer::init(size_t size) {
+Result_deprecated<> GLUniformBuffer::init(size_t size) {
     LN_TRY(RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size));
     m_size = size;
 

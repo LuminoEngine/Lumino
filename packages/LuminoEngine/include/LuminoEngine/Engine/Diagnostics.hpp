@@ -41,7 +41,7 @@ public:
 public:
     DiagnosticsManager();
     virtual ~DiagnosticsManager();
-    Result<> init();
+    Result_deprecated<> init();
 
 private:
     List<Ref<DiagnosticsItem>> m_items;

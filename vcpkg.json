@@ -12,6 +12,7 @@
         "vulkan-headers",
         "shader-slang",
         "nlohmann-json",
+        "tl-expected",
         {
             "name": "freetype",
             "features": ["png", "zlib"]

@@ -7,7 +7,7 @@ namespace detail {
 class WebGPUVertexBuffer : public RHIResource {
 public:
     WebGPUVertexBuffer();
-    MaybeResult init(
+    MaybeResult_deprecated init(
         WebGPUDevice* device, GraphicsResourceUsage usage, size_t bufferSize,
         const void* initialData);
     void onDestroy() override;

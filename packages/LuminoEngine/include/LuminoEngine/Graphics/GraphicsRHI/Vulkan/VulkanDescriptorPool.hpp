@@ -34,7 +34,7 @@ public:
     bool init(VulkanDevice* device, VulkanShaderPass* shaderPass);
     void onDestroy() override;
     void reset() override;
-    Result<> allocate(IDescriptor** outDescriptor) override;
+    Result_deprecated<> allocate(IDescriptor** outDescriptor) override;
 
     VulkanDevice* device() const { return m_device; }
     VulkanShaderPass* shaderPass() const { return m_shaderPass; }

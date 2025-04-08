@@ -19,7 +19,7 @@ public:
     };
 
     VulkanVertexDeclaration();
-    Result<> init(const VertexElement* elements, int elementsCount);
+    Result_deprecated<> init(const VertexElement* elements, int elementsCount);
     void onDestroy() override;
 
     const std::vector<VertexElement>& elements() const { return m_elements; }

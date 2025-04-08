@@ -296,7 +296,7 @@ bool RenderingManager::init(const Settings& settings) {
     auto result = ln::kokage::ShaderCompiler::create();
     auto result2 = result->get()->build(
         //"C:/Proj/LN/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
-        "E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
+        "E:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
     //if (!result2) return;
     m_builtinShaders[(int)BuiltinShader::Sprite]->setupShader2(result->get()->shader());
 #endif

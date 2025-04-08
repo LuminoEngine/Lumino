@@ -26,7 +26,7 @@ void WebGPUBindGroupCache::dispose() {
     m_cache.clear();
 }
 
-MaybeResult WebGPUBindGroupCache::getOrCreate(
+MaybeResult_deprecated WebGPUBindGroupCache::getOrCreate(
     WebGPUShaderPass* shaderPass,
     const detail::ShaderDescriptorTableUpdateInfo& updateInfo,
     WGPUBindGroup* outBindGroup) {
@@ -61,7 +61,7 @@ MaybeResult WebGPUBindGroupCache::getOrCreate(
     for (const auto& info : targetBindingLayoutInfo.bindings) {
         if (info.space != 0) {
             LN_NOTIMPLEMENTED();
-            return LN_MAKE_ERROR_NOT_IMPLEMENTED();
+            return LN_MAKE_ERROR_NOT_IMPLEMENTED_deprecated();
         }
 
         WGPUBindGroupEntry entry = WGPU_BIND_GROUP_ENTRY_INIT;
@@ -115,7 +115,7 @@ MaybeResult WebGPUBindGroupCache::getOrCreate(
     bindGroupDesc.entries = entries.data();
     WGPUBindGroup bindGroup = wgpuDeviceCreateBindGroup(m_device->wgpuDevice(), &bindGroupDesc);
     if (!bindGroup) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateBindGroup Failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuDeviceCreateBindGroup Failed.");
     }
 
     auto cacheEntry = std::make_unique<CacheEntry>();

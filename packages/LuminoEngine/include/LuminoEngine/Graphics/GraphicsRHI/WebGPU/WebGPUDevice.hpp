@@ -56,7 +56,7 @@ private:
         WGPUAdapter adapter;
     };
 
-    Result<> requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor);
+    Result_deprecated<> requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor);
 	
     WGPUInstance m_instance;
     WGPUSurface m_surface;

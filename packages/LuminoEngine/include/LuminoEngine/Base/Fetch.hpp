@@ -51,7 +51,7 @@ public:
 
 class FetchManager {
 public:
-    static Result<> initialize();
+    static Result_deprecated<> initialize();
     static void terminate();
     static FetchResponse getSync(StringView url);
 };

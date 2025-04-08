@@ -9,7 +9,7 @@ class GLGraphicsContext
     : public ICommandList {
 public:
     GLGraphicsContext();
-    Result<> init(OpenGLDevice* owner);
+    Result_deprecated<> init(OpenGLDevice* owner);
     void onDestroy() override;
     void setActiveShaderPass(GLShaderPass* pass);
     GLStateCache* state() const { return m_state.get(); }

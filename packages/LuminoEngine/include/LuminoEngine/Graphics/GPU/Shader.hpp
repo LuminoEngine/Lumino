@@ -480,7 +480,7 @@ public:
     void addAffectVariantKey(uint32_t crc32key);
     bool hasAffectVariantKey(uint32_t crc32key) const { return m_affectVariantKeys.contains(crc32key); }
 
-    MaybeResult setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2);
+    MaybeResult_deprecated setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2);
 
 protected:
     void onDispose(bool explicitDisposing) override;
@@ -594,7 +594,7 @@ public:
 
     bool isComputeShader() const { return !m_descriptorLayout.m_storages.isEmpty(); }
 
-    MaybeResult setupShader2(
+    MaybeResult_deprecated setupShader2(
         kokage::UnifiedShader2* unifiedShader2, kokage::GlobalShaderPass* globalShaderPass);
 
     kokage::UnifiedShader2* m_unifiedShader2 = nullptr;

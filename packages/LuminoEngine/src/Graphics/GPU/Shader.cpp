@@ -162,7 +162,7 @@ void Shader::init(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag
     createFromUnifiedShader(unifiedShader, diag);
 }
 
-MaybeResult Shader::setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2) {
+MaybeResult_deprecated Shader::setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2) {
     m_unifiedShader2 = unifiedShader2;
     kokage::GlobalShaderPass* globalShaderPass = m_unifiedShader2->globalShaderPasses()[0].get();
     m_techniques[0]->m_passes[0]->setupShader2(unifiedShader2, globalShaderPass);
@@ -475,7 +475,7 @@ void ShaderPass::onDispose(bool explicitDisposing) {
     Object::onDispose(explicitDisposing);
 }
 
-MaybeResult ShaderPass::setupShader2(
+MaybeResult_deprecated ShaderPass::setupShader2(
     kokage::UnifiedShader2* unifiedShader2,
     kokage::GlobalShaderPass* globalShaderPass) {
     m_unifiedShader2 = unifiedShader2;

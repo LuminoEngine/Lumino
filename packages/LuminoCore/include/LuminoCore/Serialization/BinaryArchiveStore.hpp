@@ -60,7 +60,7 @@ private:
 };
 
 template<class T = void>
-using ArchiveResult = BasicResult<T, String>;
+using ArchiveResult = BasicResult_deprecated<T, String>;
 
 /**
  * オブジェクトとバイナリデータ間のシリアライズ/デシリアライズ行うユーティリティです。
@@ -68,10 +68,10 @@ using ArchiveResult = BasicResult<T, String>;
 class BinarySerializer {
 public:
     template<class TValue>
-    static MaybeResult serialize(TValue& value, Stream* outputStream) {
+    static MaybeResult_deprecated serialize(TValue& value, Stream* outputStream) {
         BinaryTextOutputSerializer ar(outputStream);
         ar.save(value);
-        if (ar.hasError()) return LN_MAKE_ERROR(ar.errorMessage());
+        if (ar.hasError()) return LN_MAKE_ERROR_deprecated(ar.errorMessage());
         return LN_MAKE_SUCCESS();
     }
 
@@ -89,10 +89,10 @@ public:
     //}
 
     template<typename TObject>
-    static MaybeResult deserialize(Stream* inputStream, TObject* value) {
+    static MaybeResult_deprecated deserialize(Stream* inputStream, TObject* value) {
         BinaryTextInputSerializer ar(inputStream);
         ar.load(*value);
-        if (ar.hasError()) return LN_MAKE_ERROR(ar.errorMessage());
+        if (ar.hasError()) return LN_MAKE_ERROR_deprecated(ar.errorMessage());
         return LN_MAKE_SUCCESS();
     }
 };

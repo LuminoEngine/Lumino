@@ -18,7 +18,7 @@ public:
 
 private:
     PrimitiveMeshRenderer();
-    Result<> init();
+    Result_deprecated<> init();
 
     CommandList* m_commandList;
     Material* m_material;

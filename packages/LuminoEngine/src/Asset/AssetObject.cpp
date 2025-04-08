@@ -21,7 +21,7 @@ AssetObject::AssetObject()
 {
 }
 
-Result<> AssetObject::init() {
+Result_deprecated<> AssetObject::init() {
 	return Object::init();
 }
 

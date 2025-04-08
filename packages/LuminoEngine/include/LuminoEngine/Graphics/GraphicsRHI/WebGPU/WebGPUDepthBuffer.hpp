@@ -7,7 +7,7 @@ namespace detail {
 class WebGPUDepthBuffer : public RHIResource {
 public:
     WebGPUDepthBuffer();
-    MaybeResult init(WebGPUDevice* device, uint32_t width, uint32_t height);
+    MaybeResult_deprecated init(WebGPUDevice* device, uint32_t width, uint32_t height);
     void onDestroy();
     WGPUTextureView nativeTextureView() const { return m_nativeTextureView; }
     WGPUTextureFormat nativeFormat() const { return m_nativeFormat; }

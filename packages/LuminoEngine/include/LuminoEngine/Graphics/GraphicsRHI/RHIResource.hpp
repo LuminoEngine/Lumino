@@ -52,13 +52,13 @@ public:
 protected:
     RHIResource();
     virtual ~RHIResource();
-    Result<> initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
-    Result<> initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount);
-    Result<> initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
-    Result<> initAsTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap);
-    Result<> initAsTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, int32_t depth, TextureFormat format);
-    Result<> initAsRenderTarget(uint32_t width, uint32_t height, TextureFormat format, bool mipmap, bool multisample);
-    Result<> initAsDepthBuffer(uint32_t width, uint32_t height, bool multisample);
+    Result_deprecated<> initAsVertexBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
+    Result_deprecated<> initAsIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount);
+    Result_deprecated<> initAsUniformBuffer(GraphicsResourceUsage usage, uint64_t memorySize);
+    Result_deprecated<> initAsTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap);
+    Result_deprecated<> initAsTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, int32_t depth, TextureFormat format);
+    Result_deprecated<> initAsRenderTarget(uint32_t width, uint32_t height, TextureFormat format, bool mipmap, bool multisample);
+    Result_deprecated<> initAsDepthBuffer(uint32_t width, uint32_t height, bool multisample);
 
 private:
     RHIResourceType m_type;

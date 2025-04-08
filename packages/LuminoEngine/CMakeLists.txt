@@ -1,5 +1,3 @@
-
-cmake_minimum_required(VERSION 3.0)
 project(LuminoEngine)
 include(cmake/LuminoConfig-LuminoEngine.cmake)
 find_package(nlohmann_json CONFIG REQUIRED)
@@ -259,6 +257,8 @@ target_include_directories(
     src
     "../LuminoFFI/include"
 )
+
+target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.hpp")

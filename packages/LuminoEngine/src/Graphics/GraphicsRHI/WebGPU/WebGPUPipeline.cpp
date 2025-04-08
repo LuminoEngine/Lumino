@@ -117,7 +117,7 @@ WebGPUPipeline::WebGPUPipeline()
 WebGPUPipeline::~WebGPUPipeline() {
 }
 
-MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineStateDesc& state) {
+MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineStateDesc& state) {
     m_wgpuDevice = wgpuDevice;
     WGPUDevice nativeDevice = wgpuDevice->wgpuDevice();
     WebGPUShaderPass* shaderPass = static_cast<WebGPUShaderPass*>(state.shaderPass);
@@ -158,7 +158,7 @@ MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineS
             pipelineDesc.primitive.topology = WGPUPrimitiveTopology_PointList;
             break;
         default:
-            return LN_MAKE_ERROR("Unsupported topology %d", state.topology);
+            return LN_MAKE_ERROR_deprecated("Unsupported topology %d", state.topology);
     }
     pipelineDesc.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pipelineDesc.primitive.frontFace = WGPUFrontFace_CCW;
@@ -173,7 +173,7 @@ MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineS
             pipelineDesc.primitive.cullMode = WGPUCullMode_Back;
             break;
         default:
-            return LN_MAKE_ERROR("Unsupported cull mode %d", state.rasterizerState.cullMode);
+            return LN_MAKE_ERROR_deprecated("Unsupported cull mode %d", state.rasterizerState.cullMode);
     }
     pipelineDesc.primitive.unclippedDepth = 0;
 
@@ -251,7 +251,7 @@ MaybeResult WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineS
 
     m_nativePipeline = wgpuDeviceCreateRenderPipeline(nativeDevice, &pipelineDesc);
     if (!m_nativePipeline) {
-        return LN_MAKE_ERROR("Failed wgpuDeviceCreateRenderPipeline");
+        return LN_MAKE_ERROR_deprecated("Failed wgpuDeviceCreateRenderPipeline");
     }
     return LN_MAKE_SUCCESS();
 }

@@ -385,7 +385,7 @@ ICommandList::~ICommandList() {
     }
 }
 
-Result<> ICommandList::init(IGraphicsDevice* owner) {
+Result_deprecated<> ICommandList::init(IGraphicsDevice* owner) {
     return ok();
 }
 

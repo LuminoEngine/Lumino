@@ -37,12 +37,12 @@ public:
     static GraphicsManager* instance();
 
     GraphicsManager();
-    MaybeResult init(const Settings& settings);
+    MaybeResult_deprecated init(const Settings& settings);
     void dispose();
 
     virtual ~GraphicsManager() = default;
 
-    Result<Ref<GraphicsContext>> createGraphicsContext(PlatformWindow* window);
+    Result_deprecated<Ref<GraphicsContext>> createGraphicsContext(PlatformWindow* window);
 
     //void enterRendering();
     //void leaveRendering();

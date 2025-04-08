@@ -44,7 +44,7 @@ AnimationClip::AnimationClip()
 AnimationClip::~AnimationClip() {
 }
 
-Result<> AnimationClip::init() {
+Result_deprecated<> AnimationClip::init() {
     return AssetObject::init();
 }
 

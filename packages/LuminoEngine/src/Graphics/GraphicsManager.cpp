@@ -114,13 +114,13 @@ GraphicsManager::GraphicsManager()
     , m_linearAllocatorPageManager() {
 }
 
-MaybeResult GraphicsManager::init(const Settings& settings) {
+MaybeResult_deprecated GraphicsManager::init(const Settings& settings) {
     LN_LOG_DEBUG("GraphicsManager Initialization started.");
     s_GraphicsManager = this;
     m_settings = settings;
 
     m_assetManager = detail::AssetManager::instance();
-    if (LN_ASSERT(m_assetManager)) return LN_MAKE_ERROR();
+    if (LN_ASSERT(m_assetManager)) return LN_MAKE_ERROR_deprecated();
     
     //m_platformManager = PlatformManager::instance();
     //if (LN_ASSERT(m_platformManager)) return false;
@@ -221,7 +221,7 @@ MaybeResult GraphicsManager::init(const Settings& settings) {
         settings.assetManager = m_assetManager;
         m_meshManager = makeURef<detail::MeshManager>();
         if (!m_meshManager->init(settings)) {
-            return LN_MAKE_ERROR();
+            return LN_MAKE_ERROR_deprecated();
         }
     }
 
@@ -308,7 +308,7 @@ void GraphicsManager::dispose() {
 //}
 
 
-Result<Ref<GraphicsContext>> GraphicsManager::createGraphicsContext(PlatformWindow* window) {
+Result_deprecated<Ref<GraphicsContext>> GraphicsManager::createGraphicsContext(PlatformWindow* window) {
     Ref<GraphicsContext> result;
 
     // Create device context

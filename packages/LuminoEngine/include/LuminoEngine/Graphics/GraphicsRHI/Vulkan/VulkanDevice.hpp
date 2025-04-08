@@ -23,7 +23,7 @@ public:
         bool debugMode = false;
 	};
 
-	static Result<Ref<VulkanDevice>> create(const Settings& settings, bool* outIsDriverSupported);
+	static Result_deprecated<Ref<VulkanDevice>> create(const Settings& settings, bool* outIsDriverSupported);
 
 
 public:
@@ -35,7 +35,7 @@ public:
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
     uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
-    Result<> findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
+    Result_deprecated<> findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
     VkSampleCountFlagBits msaaSamples() const { return m_msaaSamples; }
     //const Ref<VulkanSingleFrameAllocatorPageManager>& uniformBufferSingleFrameAllocator() const { return m_uniformBufferSingleFrameAllocator; }
     const Ref<VulkanSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const { return m_transferBufferSingleFrameAllocator; }
@@ -84,11 +84,11 @@ public: // TODO:
         VkFormatProperties props;
     };
 
-    Result<> createInstance();
-    Result<> setupDebugMessenger();
-    Result<> pickPhysicalDevice();
-    Result<> createLogicalDevice();
-    Result<> createCommandPool();
+    Result_deprecated<> createInstance();
+    Result_deprecated<> setupDebugMessenger();
+    Result_deprecated<> pickPhysicalDevice();
+    Result_deprecated<> createLogicalDevice();
+    Result_deprecated<> createCommandPool();
 
 	//QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     bool findPresentQueueFamily(VkSurfaceKHR surface, uint32_t* outIndex);
@@ -96,11 +96,11 @@ public: // TODO:
     VkFormat findDepthFormat();
 
     VkCommandBuffer beginSingleTimeCommands();
-    Result<> endSingleTimeCommands(VkCommandBuffer commandBuffer);
+    Result_deprecated<> endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-    Result<> transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
-    Result<> transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result_deprecated<> transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result_deprecated<> transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 
 	//GLFWwindow* m_mainWindow; // TODO:
@@ -146,7 +146,7 @@ class VulkanRenderPass2
 {
 public:
 	VulkanRenderPass2();
-    Result<> init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+    Result_deprecated<> init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
 	void onDestroy() override;
 	VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
 	const Ref<VulkanFramebuffer2>& framebuffer() const { return m_framebuffer; }
@@ -177,7 +177,7 @@ class VulkanFramebuffer2
 {
 public:
 	VulkanFramebuffer2();
-    Result<> init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state);
+    Result_deprecated<> init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state);
 	void dispose();
 	VulkanRenderPass2* ownerRenderPass() const { return m_ownerRenderPass; }
 	VkFramebuffer nativeFramebuffer() const { return m_framebuffer; }
@@ -208,13 +208,13 @@ class VulkanPipeline2
 {
 public:
 	VulkanPipeline2();
-    Result<> init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state);
+    Result_deprecated<> init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state);
 	void onDestroy() override;
 	VkPipeline nativePipeline() const { return m_pipeline; }
 
 private:
-    Result<> createGraphicsPipeline(const DevicePipelineStateDesc& state);
-    Result<> createComputePipeline(const DevicePipelineStateDesc& state);
+    Result_deprecated<> createGraphicsPipeline(const DevicePipelineStateDesc& state);
+    Result_deprecated<> createComputePipeline(const DevicePipelineStateDesc& state);
 
 	VulkanDevice* m_device;
 	VulkanRenderPass2* m_ownerRenderPass;
@@ -227,7 +227,7 @@ class VulkanSamplerState
 {
 public:
 	VulkanSamplerState();
-	Result<> init(VulkanDevice* deviceContext, const SamplerStateData& desc);
+	Result_deprecated<> init(VulkanDevice* deviceContext, const SamplerStateData& desc);
 	virtual void onDestroy() override;
 
     VkSampler vulkanSampler() const { return m_sampler; }

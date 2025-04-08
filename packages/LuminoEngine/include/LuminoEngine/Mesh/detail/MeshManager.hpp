@@ -36,7 +36,7 @@ public:
 	static MeshManager* instance();
 
 	MeshManager();
-	Result<> init(const Settings& settings);
+	Result_deprecated<> init(const Settings& settings);
 	void dispose();
 	VertexLayout* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 

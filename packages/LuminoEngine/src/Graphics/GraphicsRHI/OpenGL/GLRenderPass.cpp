@@ -18,7 +18,7 @@ GLRenderPass::GLRenderPass()
     , m_aliveAttachments{} {
 }
 
-Result<> GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& createInfo, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+Result_deprecated<> GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& createInfo, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
     m_device = device;
     m_clearFlags = clearFlags;
     m_clearColor = clearColor;
@@ -81,7 +81,7 @@ Result<> GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& 
     return ok();
 }
 
-Result<> GLRenderPass::initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget) {
+Result_deprecated<> GLRenderPass::initFromNativeFBO(GLuint fbo, GLRenderTargetTexture* renderTarget) {
     // ユーザーが作成した FBO ならば次のコードでサイズが取れるのだが、
     // OpenGL デフォルトの FBO は glGetFramebufferAttachmentParameteriv で失敗する。
     // 一応、デフォルトの FBO がバインドされている場合、glGetIntegerv(GL_FRAMEBUFFER_BINDING) は 0 をを返す。

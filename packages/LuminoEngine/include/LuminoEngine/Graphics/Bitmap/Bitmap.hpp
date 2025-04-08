@@ -206,7 +206,7 @@ public:
 	void flipVerticalFlow();
 
 	void load(const StringView& filePath);  // TODO: 種類の指定
-    MaybeResult load(Stream* stream);   // TODO: 種類の指定
+    MaybeResult_deprecated load(Stream* stream);   // TODO: 種類の指定
 	void save(const StringView& filePath);
 
 	Ref<Bitmap2D> clone() const;

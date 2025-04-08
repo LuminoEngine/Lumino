@@ -306,7 +306,7 @@ public:
     TargetInputResourceInfo* createTargetInputResourceInfo();
     Blob* createBlob();
 
-    Result<GlobalMemberInfo*> getOrCreateGlobalMemberWithVerify(
+    Result_deprecated<GlobalMemberInfo*> getOrCreateGlobalMemberWithVerify(
         std::string name,
         ShaderGlobalMemberType type,
         ShaderGlobalMemberKind kind,
@@ -315,18 +315,18 @@ public:
         int32_t matrixRows,
         int32_t matrixColumns);
 
-    MaybeResult getOrCreateInputResourceWithVerify(
+    MaybeResult_deprecated getOrCreateInputResourceWithVerify(
         const std::string& name,
         RegisterCategory category,
         int constantBufferSize,
         int arrayElementCount);
 
-    Result<EntryPoint*> getEntryPoint(ShaderTarget target, const std::string& name) const;
+    Result_deprecated<EntryPoint*> getEntryPoint(ShaderTarget target, const std::string& name) const;
 
-    static MaybeResult mergeTargetBindingLayoutInfo(
+    static MaybeResult_deprecated mergeTargetBindingLayoutInfo(
         TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset);
 
-    MaybeResult buildDescriptorLayout();
+    MaybeResult_deprecated buildDescriptorLayout();
 
 private:
     URef<GlobalResourceLayout> m_globalResourceLayout;

@@ -707,7 +707,7 @@ DX12VertexDeclaration::DX12VertexDeclaration()
 }
 
 // https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
-Result<> DX12VertexDeclaration::init(const VertexElement* elements, int elementsCount) {
+Result_deprecated<> DX12VertexDeclaration::init(const VertexElement* elements, int elementsCount) {
     LN_DCHECK(elements);
 
     //std::array<UINT, 16> offsets;
@@ -750,7 +750,7 @@ DX12SamplerState::DX12SamplerState()
     : m_samplerDesc() {
 }
 
-Result<> DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData& desc) {
+Result_deprecated<> DX12SamplerState::init(DX12Device* deviceContext, const SamplerStateData& desc) {
     LN_DCHECK(deviceContext);
 
     if (desc.filter == TextureFilterMode::Point) {

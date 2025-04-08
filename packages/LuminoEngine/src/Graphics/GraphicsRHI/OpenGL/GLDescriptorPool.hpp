@@ -11,7 +11,7 @@ namespace detail {
 class GLUniformBufferAllocatorPage : public AbstractLinearAllocatorPage {
 public:
     virtual ~GLUniformBufferAllocatorPage();
-    Result<> init(OpenGLDevice* device, size_t size);
+    Result_deprecated<> init(OpenGLDevice* device, size_t size);
     GLUniformBuffer* buffer() const { return m_buffer.get(); }
 
 private:
@@ -42,7 +42,7 @@ public:
     GLDescriptorObjectPoolManager(OpenGLDevice* device);
 
 protected:
-    Result<> onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) override;
+    Result_deprecated<> onCreateObjects(int32_t count, Array<Ref<RefObject>>* result) override;
 
 private:
     OpenGLDevice* m_device;
@@ -53,7 +53,7 @@ private:
 class GLDescriptor : public IDescriptor {
 public:
     GLDescriptor();
-    Result<> init(OpenGLDevice* owner/*, GLUniformBufferView view*/);
+    Result_deprecated<> init(OpenGLDevice* owner/*, GLUniformBufferView view*/);
     //void dispose();
     void bind(const GLShaderPass* shaderPass);
 
@@ -67,10 +67,10 @@ private:
 class GLDescriptorPool : public IDescriptorPool {
 public:
     GLDescriptorPool();
-    Result<> init(OpenGLDevice* owner, GLShaderPass* shaderPass);
+    Result_deprecated<> init(OpenGLDevice* owner, GLShaderPass* shaderPass);
     void onDestroy() override;
     void reset() override;
-    Result<> allocate(IDescriptor** outDescriptor) override;
+    Result_deprecated<> allocate(IDescriptor** outDescriptor) override;
 
 private:
     Ref<GLUniformBufferAllocator> m_uniformBufferAllocator;

@@ -12,7 +12,7 @@ WebGPUTexture2D::WebGPUTexture2D()
     , m_nativeTextureView(nullptr) {
 }
 
-MaybeResult WebGPUTexture2D::init(
+MaybeResult_deprecated WebGPUTexture2D::init(
     WebGPUDevice* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height,
     TextureFormat requestFormat, bool mipmap, const void* initialData) {
     if (!RHIResource::initAsTexture2D(usage, width, height, requestFormat, mipmap))
@@ -33,7 +33,7 @@ MaybeResult WebGPUTexture2D::init(
     textureDesc.viewFormats = &nativeFormat;
     m_nativeTexture = wgpuDeviceCreateTexture(m_device->wgpuDevice(), &textureDesc);
     if (!m_nativeTexture) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateTexture Failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuDeviceCreateTexture Failed.");
     }
 
     WGPUTextureViewDescriptor textureViewDesc = WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;
@@ -47,7 +47,7 @@ MaybeResult WebGPUTexture2D::init(
     textureViewDesc.usage = WGPUTextureUsage_None;
     m_nativeTextureView = wgpuTextureCreateView(m_nativeTexture, &textureViewDesc);
     if (!m_nativeTextureView) {
-        return LN_MAKE_ERROR("wgpuTextureCreateView Failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuTextureCreateView Failed.");
     }
     
     // Upload texture data

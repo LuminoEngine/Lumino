@@ -9,8 +9,8 @@ WebGPUUniformBuffer::WebGPUUniformBuffer()
     , m_nativeBuffer(nullptr) {
 }
 
-MaybeResult WebGPUUniformBuffer::init(WebGPUDevice* device, uint32_t size) {
-    if (!RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size)) return LN_MAKE_ERROR();
+MaybeResult_deprecated WebGPUUniformBuffer::init(WebGPUDevice* device, uint32_t size) {
+    if (!RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size)) return LN_MAKE_ERROR_deprecated();
     m_device = device;
 
     WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
@@ -21,7 +21,7 @@ MaybeResult WebGPUUniformBuffer::init(WebGPUDevice* device, uint32_t size) {
     bufferDesc.mappedAtCreation = 0;
     m_nativeBuffer = wgpuDeviceCreateBuffer(device->wgpuDevice(), &bufferDesc);
     if (!m_nativeBuffer) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateBuffer() failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuDeviceCreateBuffer() failed.");
     }
 
     //float currentTime = 1.0f;

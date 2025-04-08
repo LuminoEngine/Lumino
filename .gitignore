@@ -10,6 +10,7 @@ tmp/
 lumino.exe
 vcpkg/
 vcpkg_installed/
+*.dump/
 
 
 ## Ignore Visual Studio temporary files, build results, and

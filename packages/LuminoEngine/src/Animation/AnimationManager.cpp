@@ -206,7 +206,7 @@ AnimationManager::AnimationManager()
 AnimationManager::~AnimationManager() {
 }
 
-Result<> AnimationManager::init(const Settings& settings) {
+Result_deprecated<> AnimationManager::init(const Settings& settings) {
     LN_LOG_DEBUG("AnimationManager Initialization started.");
 
     m_assetManager = settings.assetManager;

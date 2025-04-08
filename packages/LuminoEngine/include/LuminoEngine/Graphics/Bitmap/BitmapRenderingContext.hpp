@@ -32,7 +32,7 @@ public:
 private:
     BitmapRenderingContext();
     ~BitmapRenderingContext() override;
-    MaybeResult init(Texture2D* texture);
+    MaybeResult_deprecated init(Texture2D* texture);
     Bitmap2D* getBitmap();
 
     Texture2D* m_texture;

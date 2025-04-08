@@ -107,7 +107,7 @@ class DX12VertexDeclaration
 {
 public:
     DX12VertexDeclaration();
-    Result<> init(const VertexElement* elements, int elementsCount);
+    Result_deprecated<> init(const VertexElement* elements, int elementsCount);
     void onDestroy() override;
 
     const std::vector<D3D12_INPUT_ELEMENT_DESC>& elements() const { return m_elements; }
@@ -124,7 +124,7 @@ class DX12SamplerState
 {
 public:
 	DX12SamplerState();
-    Result<> init(DX12Device* deviceContext, const SamplerStateData& desc);
+    Result_deprecated<> init(DX12Device* deviceContext, const SamplerStateData& desc);
     void onDestroy() override;
 
     const D3D12_SAMPLER_DESC& samplerDesc() const { return m_samplerDesc; }

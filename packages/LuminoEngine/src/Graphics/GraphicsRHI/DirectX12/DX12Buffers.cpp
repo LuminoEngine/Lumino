@@ -272,7 +272,7 @@ DX12IndexBuffer::DX12IndexBuffer()
     , m_indexFormat(DXGI_FORMAT_R16_UINT) {
 }
 
-Result<> DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
+Result_deprecated<> DX12IndexBuffer::init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) {
     if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return err();
     m_device = device;
     m_usage = usage;

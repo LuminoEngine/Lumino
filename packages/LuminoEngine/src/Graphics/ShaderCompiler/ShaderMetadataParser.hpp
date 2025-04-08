@@ -13,7 +13,7 @@ public:
     };
 
     ShaderMetadataParser();
-    MaybeResult parse(const std::string& code);
+    MaybeResult_deprecated parse(const std::string& code);
 
     const std::vector<ShaderPass>& passes() const { return m_passes; }
 

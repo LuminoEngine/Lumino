@@ -18,12 +18,12 @@ namespace ln {
 //    とりあえず filament が engine という名前を使っているので、それに倣うことにする。
 //
 
-MaybeResult Engine::initialize(const EngineOptions& options) {
+MaybeResult_deprecated Engine::initialize(const EngineOptions& options) {
     RuntimeModuleSettings engineOptions;
     engineOptions.windowSystem = options.platform.windowSystem;
     engineOptions.graphicsAPI = options.graphics.graphicsAPI;
     if (!EngineInstance::initialize(engineOptions)) {
-        return LN_MAKE_ERROR();
+        return LN_MAKE_ERROR_deprecated();
     }
 
     

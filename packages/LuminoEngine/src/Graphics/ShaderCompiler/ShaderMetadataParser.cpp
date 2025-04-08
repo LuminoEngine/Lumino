@@ -10,7 +10,7 @@ ShaderMetadataParser::ShaderMetadataParser() {
 
 }
 
-MaybeResult ShaderMetadataParser::parse(const std::string& code) {
+MaybeResult_deprecated ShaderMetadataParser::parse(const std::string& code) {
     // Find `#ifdef LUMINO_METADATA`
     size_t start = code.find("#ifdef");
     size_t metadataPos = std::string::npos;
@@ -22,13 +22,13 @@ MaybeResult ShaderMetadataParser::parse(const std::string& code) {
         start = code.find("#ifdef", start + 1);
     }
     if (metadataPos == std::string::npos) {
-        return LN_MAKE_ERROR("#ifdef LUMINO_METADATA not found.");
+        return LN_MAKE_ERROR_deprecated("#ifdef LUMINO_METADATA not found.");
     }
 
     // Find `#endif`
     size_t end = code.find("#endif", metadataPos);
     if (metadataPos == std::string::npos) {
-        return LN_MAKE_ERROR("Missing #endif after LUMINO_METADATA.");
+        return LN_MAKE_ERROR_deprecated("Missing #endif after LUMINO_METADATA.");
     }
 
     // Extract the code from `#ifdef LUMINO_METADATA` to `#endif`
@@ -51,7 +51,7 @@ MaybeResult ShaderMetadataParser::parse(const std::string& code) {
         }
     }
     catch (const std::exception& e) {
-        return LN_MAKE_ERROR(e.what());
+        return LN_MAKE_ERROR_deprecated(e.what());
     }
 	return LN_MAKE_SUCCESS();
 }

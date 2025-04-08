@@ -8,7 +8,7 @@ namespace detail {
 class WebGPUCommandList : public ICommandList {
 public:
     WebGPUCommandList();
-    Result<> init(WebGPUDevice* rhiDevice);
+    Result_deprecated<> init(WebGPUDevice* rhiDevice);
     void onDestroy() override;
 
 	WGPUCommandEncoder commandEncoder() const { return m_commandEncoder; }

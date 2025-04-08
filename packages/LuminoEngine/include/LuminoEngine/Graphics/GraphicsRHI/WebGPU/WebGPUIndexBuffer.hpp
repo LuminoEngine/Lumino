@@ -7,7 +7,7 @@ namespace detail {
 class WebGPUIndexBuffer : public RHIResource {
 public:
     WebGPUIndexBuffer();
-    MaybeResult init(
+    MaybeResult_deprecated init(
         WebGPUDevice* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount,
         const void* initialData);
     void onDestroy() override;

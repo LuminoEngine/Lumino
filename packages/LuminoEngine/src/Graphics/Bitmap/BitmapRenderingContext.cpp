@@ -28,7 +28,7 @@ void BitmapRenderingContext::drawText(
     renderer.render(bitmap, text, rect, font, color, alignment, drawing, strokeWidth);
 }
 
-MaybeResult BitmapRenderingContext::init(Texture2D* texture) {
+MaybeResult_deprecated BitmapRenderingContext::init(Texture2D* texture) {
     if (LN_ASSERT(texture)) return err();
     m_texture = texture;
     return ok();

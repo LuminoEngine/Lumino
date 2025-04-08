@@ -15,7 +15,7 @@ GLSLShader::~GLSLShader() {
     dispose();
 }
 
-Result<> GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag) {
+Result_deprecated<> GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag) {
     m_type = type;
 
     m_shader = glCreateShader(m_type);
@@ -87,7 +87,7 @@ GLShaderPass::~GLShaderPass() {
     LN_CHECK(m_program == 0);
 }
 
-Result<> GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag) {
+Result_deprecated<> GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag) {
     if (!IShaderPass::init(createInfo)) {
         return err();
     }

@@ -298,7 +298,7 @@ BinaryTextInputSerializer::BinaryTextInputSerializer(Stream* stream)
 BinaryTextInputSerializer::~BinaryTextInputSerializer() {
 }
 
-//Result<> BinaryTextInputSerializer::setup(const String& jsonText) {
+//Result_deprecated<> BinaryTextInputSerializer::setup(const String& jsonText) {
 //    auto result = m_store->setupLoad(jsonText);
 //    if (!result) return result;
 //    Archive::setup(m_store.get(), ArchiveMode::Load);

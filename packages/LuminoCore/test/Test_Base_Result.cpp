@@ -23,25 +23,25 @@ static String toString<TestErr1>(const TestErr1& e) {
 }
 } // namespace ln 
 
-static BasicResult<std::string, TestErr1> testFunc1(int len) {
+static BasicResult_deprecated<std::string, TestErr1> testFunc1(int len) {
     if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return "aaa"; 
     return ok(std::string("123"));
 }
 
-static BasicResult<void, int> testFunc2(int len) {
+static BasicResult_deprecated<void, int> testFunc2(int len) {
     if (len > 10) return err(1);
     return {};
 }
 
-static BasicResult<void> testFunc3(int len) {
+static BasicResult_deprecated<void> testFunc3(int len) {
     if (len > 10) return err();
     return ok();
 }
 
 static std::string g_str1 = "v1";
 static std::string g_str12 = "aaa";
-static BasicResult<std::string&, TestErr1> testFunc4(int len) {
+static BasicResult_deprecated<std::string&, TestErr1> testFunc4(int len) {
     if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return g_str12; 
     return ok<std::string&>(g_str1);
@@ -49,27 +49,27 @@ static BasicResult<std::string&, TestErr1> testFunc4(int len) {
 
 static std::string g_str2 = "v1";
 static std::string g_str22 = "aaa";
-static BasicResult<const std::string&, TestErr1> testFunc5(int len) {
+static BasicResult_deprecated<const std::string&, TestErr1> testFunc5(int len) {
     if (len > 10) return err(TestErr1{TestErr1::Kind::TooLong, "error."});
     if (len == 2) return g_str22; 
     return ok<const std::string&>(g_str2);
 }
 
-static BasicResult<int, TestErr1> testFunc6(int len) {
+static BasicResult_deprecated<int, TestErr1> testFunc6(int len) {
     if (len > 10) return err();
     return 1;
 }
 
 void func1() {
-    BasicResult a(ok());
+    BasicResult_deprecated a(ok());
 }
 
-ln::MaybeResult func_MaybeResult1() {
+ln::MaybeResult_deprecated func_MaybeResult1() {
     return {};
 }
 
 //
-//static auto testFunc7(int len) -> BasicResult  {
+//static auto testFunc7(int len) -> BasicResult_deprecated  {
 //    if (len > 10) return err();
 //    return ok();
 //}
@@ -170,12 +170,12 @@ TEST_F(Test_Base_Result, DefaultError) {
     ASSERT_EQ(true, r2.isErr());
 }
 
-using TestResultA = BasicResult<void, String>;
+using TestResultA = BasicResult_deprecated<void, String>;
 TestResultA testFunc7() {
     return err(U"abc");
 }
 
-Result<> testFunc8(int a) {
+Result_deprecated<> testFunc8(int a) {
     if (a == 1) {
         // Value -> void
         auto r1 = FileSystem::readAllText(U"aaa");
@@ -187,7 +187,7 @@ Result<> testFunc8(int a) {
         if (!r2) return r2;
     }
 
-    //Result<> r3 = link(r2.unwrap());
+    //Result_deprecated<> r3 = link(r2.unwrap());
     //if (!r3) return err("link error.", r3);
 
     return ok();
@@ -219,7 +219,7 @@ TEST_F(Test_Base_Result, BoxRefObject) {
         static IOResult<Ref<TestObject1>> open1() {
             return ok(makeRef<TestObject1>());
         }
-        static BasicResult<Ref<TestObject1>> open2() {
+        static BasicResult_deprecated<Ref<TestObject1>> open2() {
             return open1();
         }
     };

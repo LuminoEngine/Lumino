@@ -466,7 +466,7 @@ FreeTypeFont::FreeTypeFont()
     , m_internalCacheBitmapGray() {
 }
 
-Result<> FreeTypeFont::init(FontManager* manager, const FontDesc& desc) {
+Result_deprecated<> FreeTypeFont::init(FontManager* manager, const FontDesc& desc) {
     // CSS (Web) のフォントポイントサイズに合わせる。
     static const int resolution = 72;
 

@@ -17,7 +17,7 @@ DX12SwapChain::DX12SwapChain()
 {
 }
 
-Result<> DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, const SizeI& backbufferSize) {
+Result_deprecated<> DX12SwapChain::init(DX12Device* deviceContext, PlatformWindow* window, const SizeI& backbufferSize) {
     LN_DCHECK(deviceContext);
     m_device = deviceContext;
     m_backbufferCount = DX12Device::BackBufferCount;
@@ -130,7 +130,7 @@ RHIResource* DX12SwapChain::getRenderTarget(int imageIndex) const
 	return m_renderTargets[imageIndex];
 }
 
-Result<> DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
+Result_deprecated<> DX12SwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     // 現在のフレーム、つまり、最後の Present が終了するまで待つ。
     // (このため、バックバッファのリサイズは present の後、acquireNextImage() の前に行う必要がある)
     if (!waitForCurrentFrameFence()) {

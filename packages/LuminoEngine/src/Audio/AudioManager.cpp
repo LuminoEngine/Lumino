@@ -35,7 +35,7 @@ namespace detail {
 
 Ref<AudioManager2> AudioManager2::s_instance;
 
-MaybeResult AudioManager2::initialize(const Settings& settings) {
+MaybeResult_deprecated AudioManager2::initialize(const Settings& settings) {
     if (s_instance) {
         return LN_MAKE_SUCCESS();
     }
@@ -64,7 +64,7 @@ AudioManager2::AudioManager2()
 AudioManager2::~AudioManager2() {
 }
 
-MaybeResult AudioManager2::init(const Settings& settings) {
+MaybeResult_deprecated AudioManager2::init(const Settings& settings) {
     LN_LOG_DEBUG("AudioManager Initialization started.");
 
     m_assetManager = settings.assetManager;
@@ -92,7 +92,7 @@ void AudioManager2::dispose() {
 
 Ref<AudioManager> AudioManager::s_instance;
 
-MaybeResult AudioManager::initialize(const Settings& settings) {
+MaybeResult_deprecated AudioManager::initialize(const Settings& settings) {
     if (s_instance) {
         return LN_MAKE_SUCCESS();
     }
@@ -123,7 +123,7 @@ AudioManager::~AudioManager()
 {
 }
 
-MaybeResult AudioManager::init(const Settings& settings) {
+MaybeResult_deprecated AudioManager::init(const Settings& settings) {
     LN_LOG_DEBUG("AudioManager Initialization started.");
 
     m_assetManager = settings.assetManager;

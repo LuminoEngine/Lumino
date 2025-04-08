@@ -14,7 +14,7 @@ VulkanTexture2D::VulkanTexture2D()
     : m_mipLevels(1) {
 }
 
-Result<> VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+Result_deprecated<> VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     if (!VulkanTexture::initAsTexture2D(usage, width, height, requestFormat, mipmap)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -106,7 +106,7 @@ void VulkanTexture2D::setSubData(VulkanCommandList* graphicsContext, int x, int 
     }
 }
 
-Result<> VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
+Result_deprecated<> VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
     VkPhysicalDevice physicalDevice = m_deviceContext->m_physicalDevice;
 
     // Check if image format supports linear blitting
@@ -192,7 +192,7 @@ VulkanRenderTarget::VulkanRenderTarget()
     , m_swapchainImageAvailableSemaphoreRef(nullptr) {
 }
 
-Result<> VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
+Result_deprecated<> VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) {
     if (!VulkanTexture::initAsRenderTarget(width, height, requestFormat, mipmap, msaa)) return err();
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -237,7 +237,7 @@ Result<> VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, u
     return ok();
 }
 
-Result<> VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
+Result_deprecated<> VulkanRenderTarget::initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
     // TODO: SwapChain は BGRA フォーマットであることが多い。
     // ただ TextureFormat はそれに対応していないが、readData() で Bitmap をとるときにピクセルサイズが知りたい。
     // ここではダミーとして RGBA8 を与えて初期化してみる。
@@ -459,7 +459,7 @@ Exit:
 //{
 //}
 //
-//Result<> VulkanSwapchainRenderTargetTexture::init(VulkanDevice* deviceContext)
+//Result_deprecated<> VulkanSwapchainRenderTargetTexture::init(VulkanDevice* deviceContext)
 //{
 //    LN_DCHECK(deviceContext);
 //    m_deviceContext = deviceContext;
@@ -478,7 +478,7 @@ Exit:
 //    VulkanTexture::dispose();
 //}
 //
-//Result<> VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews)
+//Result_deprecated<> VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews)
 //{
 //    LN_DCHECK(images.size() == imageViews.size());
 //    clear();
@@ -512,7 +512,7 @@ Exit:
 VulkanDepthBuffer::VulkanDepthBuffer() {
 }
 
-Result<> VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height) {
+Result_deprecated<> VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height) {
     LN_DCHECK(deviceContext);
     LN_TRY(RHIResource::initAsDepthBuffer(width, height, false));
     m_deviceContext = deviceContext;

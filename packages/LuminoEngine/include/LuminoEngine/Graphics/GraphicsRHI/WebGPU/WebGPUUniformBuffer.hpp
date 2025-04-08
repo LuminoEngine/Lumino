@@ -7,7 +7,7 @@ namespace detail {
 class WebGPUUniformBuffer : public RHIResource {
 public:
     WebGPUUniformBuffer();
-    MaybeResult init(WebGPUDevice* device, uint32_t size);
+    MaybeResult_deprecated init(WebGPUDevice* device, uint32_t size);
     void onDestroy() override;
     void* map() override;
     void unmap() override;

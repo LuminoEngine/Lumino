@@ -28,7 +28,7 @@ public:
 
 private:
     BatchRenderer();
-    Result<> init();
+    Result_deprecated<> init();
 
     CommandList* m_commandList;
     detail::InstructionBatchProxy* m_currentProxy;

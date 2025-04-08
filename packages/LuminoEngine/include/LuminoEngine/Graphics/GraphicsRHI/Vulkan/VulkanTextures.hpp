@@ -20,7 +20,7 @@ class VulkanTexture2D
     : public VulkanTexture {
 public:
     VulkanTexture2D();
-    Result<> init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+    Result_deprecated<> init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
     void onDestroy() override;
     //virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
     RHIRef<RHIBitmap> readData() override {
@@ -33,7 +33,7 @@ public:
     virtual const VulkanImage* image() const override { return &m_image; }
 
 private:
-    Result<> generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+    Result_deprecated<> generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
     VulkanDevice* m_deviceContext;
     VulkanImage m_image;
@@ -48,8 +48,8 @@ class VulkanRenderTarget
     : public VulkanTexture {
 public:
     VulkanRenderTarget();
-    Result<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
-    Result<> initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
+    Result_deprecated<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
+    Result_deprecated<> initFromSwapchainImage(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     void onDestroy() override;
     //virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
     RHIRef<RHIBitmap> readData() override;
@@ -90,7 +90,7 @@ private:
 //{
 //public:
 //    VulkanSwapchainRenderTargetTexture();
-//    Result<> init(VulkanDevice* deviceContext);
+//    Result_deprecated<> init(VulkanDevice* deviceContext);
 //    virtual void dispose();
 //    virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
 //    virtual SizeI realSize() { return m_size; }
@@ -100,7 +100,7 @@ private:
 //    virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
 //    virtual const VulkanImage* image() const override { return m_images[m_currentBufferIndex].get(); }
 //
-//    Result<> reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews);
+//    Result_deprecated<> reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews);
 //    void setCurrentBufferIndex(int index) { m_currentBufferIndex = index; }
 //    uint32_t imageCount() const { return m_images.size(); }
 //    VulkanImage* image(uint32_t index) const { return m_images[index].get(); }
@@ -127,7 +127,7 @@ private:
 class VulkanDepthBuffer : public RHIResource {
 public:
     VulkanDepthBuffer();
-    Result<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height);
+    Result_deprecated<> init(VulkanDevice* deviceContext, uint32_t width, uint32_t height);
     void onDestroy() override;
     const VulkanImage* image() const { return &m_image; }
     VkFormat nativeFormat() const;

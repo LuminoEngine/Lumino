@@ -34,6 +34,6 @@ inline String toString<IOError>(const IOError& e) {
 
 
 template<class T = void>
-using IOResult = BasicResult<T, IOError>;
+using IOResult = BasicResult_deprecated<T, IOError>;
 
 } // namespace ln

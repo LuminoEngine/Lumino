@@ -7,13 +7,13 @@ namespace detail {
 class VulkanCommandList : public ICommandList {
 public:
     VulkanCommandList();
-    Result<> init(VulkanDevice* owner);
+    Result_deprecated<> init(VulkanDevice* owner);
     void onDestroy() override;
 
     void wait() override;
 
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
-    Result<> submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
+    Result_deprecated<> submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
     // データを destination へ送信するためのコマンドを push する。
     // 元データは戻り値のメモリ領域に書き込むこと。

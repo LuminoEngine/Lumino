@@ -128,7 +128,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     /** init method. */
     LN_METHOD()
-    Result<> init();
+    Result_deprecated<> init();
 
 private:
     Ref<ZVTestDelegate1> m_testDelegate1;

@@ -17,7 +17,7 @@ class AudioContext2 : public RefObject {
 public:
     AudioContext2();
     ~AudioContext2() override;
-    MaybeResult init();
+    MaybeResult_deprecated init();
     void dispose();
 
 private:

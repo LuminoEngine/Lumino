@@ -187,7 +187,7 @@ static const char* getSlangCategoryName(SlangParameterCategory category) {
     }
 }
 
-Result<URef<ShaderCompiler>> ShaderCompiler::create() {
+Result_deprecated<URef<ShaderCompiler>> ShaderCompiler::create() {
     URef<ShaderCompiler> ref(LN_NEW ShaderCompiler());
     auto result = ref->init();
     if (!result) {
@@ -206,16 +206,16 @@ ShaderCompiler::ShaderCompiler()
 ShaderCompiler::~ShaderCompiler() {
 }
 
-MaybeResult ShaderCompiler::init() {
+MaybeResult_deprecated ShaderCompiler::init() {
     SlangGlobalSessionDesc desc = {};
     SlangResult result = slang::createGlobalSession(&desc, m_globalSession.writeRef());
     if (SLANG_FAILED(result)) {
-        return LN_MAKE_ERROR("slang::createGlobalSession failed. (%d)", result);
+        return LN_MAKE_ERROR_deprecated("slang::createGlobalSession failed. (%d)", result);
     }
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::build(const fs::path& inputFilePath) {
+MaybeResult_deprecated ShaderCompiler::build(const fs::path& inputFilePath) {
     m_inputFilePath = inputFilePath;
     m_inputDirPath = inputFilePath.parent_path();
     m_shader = makeRef<UnifiedShader2>();
@@ -234,12 +234,12 @@ MaybeResult ShaderCompiler::build(const fs::path& inputFilePath) {
             code = std::string(fileSize, '\0');
             std::ifstream stream(inputFilePath);
             if (stream.fail()) {
-                return LN_MAKE_ERROR("ifstream failed.");
+                return LN_MAKE_ERROR_deprecated("ifstream failed.");
             }
             stream.read(&code[0], fileSize);
         }
         catch (const fs::filesystem_error& e) {
-            return LN_MAKE_ERROR("ifstream failed. (%s)", e.what());
+            return LN_MAKE_ERROR_deprecated("ifstream failed. (%s)", e.what());
         }
     }
 
@@ -266,7 +266,7 @@ MaybeResult ShaderCompiler::build(const fs::path& inputFilePath) {
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::buildModule() {
+MaybeResult_deprecated ShaderCompiler::buildModule() {
     // NOTE: slang の Component をまとめて結合する方法は
     // slang リポジトリの examples\reflection-api\main.cpp が参考になりそう。
 
@@ -294,7 +294,7 @@ MaybeResult ShaderCompiler::buildModule() {
     Slang::ComPtr<slang::ISession> session;
     SlangResult result = m_globalSession->createSession(sessionDesc, session.writeRef());
     if (SLANG_FAILED(result)) {
-        return LN_MAKE_ERROR("createSession failed. (%d)", result);
+        return LN_MAKE_ERROR_deprecated("createSession failed. (%d)", result);
     }
 
     // Load shader file
@@ -305,7 +305,7 @@ MaybeResult ShaderCompiler::buildModule() {
         LN_LOG_INFO(reinterpret_cast<const char*>(diagnostics->getBufferPointer()));
     }
     if (!m_module) {
-        return LN_MAKE_ERROR("ISession::loadModule failed.");
+        return LN_MAKE_ERROR_deprecated("ISession::loadModule failed.");
     }
 
     // [shader("vertex")] などで指定されたエントリポイントを取得するために、一度すべてのエントリポイントを含めてリンクする必要がある。
@@ -320,7 +320,7 @@ MaybeResult ShaderCompiler::buildModule() {
     Slang::ComPtr<slang::IComponentType> composed;
     result = session->createCompositeComponentType(components.data(), components.size(), composed.writeRef());
     if (SLANG_FAILED(result)) {
-        return LN_MAKE_ERROR("createCompositeComponentType failed. (%d)", result);
+        return LN_MAKE_ERROR_deprecated("createCompositeComponentType failed. (%d)", result);
     }
 
     // Link
@@ -331,7 +331,7 @@ MaybeResult ShaderCompiler::buildModule() {
         LN_LOG_INFO(message);
     }
     if (SLANG_FAILED(result)) {
-        return LN_MAKE_ERROR("link failed. (%d)", result);
+        return LN_MAKE_ERROR_deprecated("link failed. (%d)", result);
     }
 
     for (int i = 0; i < kTargetCount; i++) {
@@ -358,7 +358,7 @@ MaybeResult ShaderCompiler::buildModule() {
 // 一応全ての Target を調べる。
 // なお EntryPoint 側からボトムアップで求めることも出来そうだが、
 // EntryPoint からは binding index しか主に取得できず型情報や配列要素数が無い。
-MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
+MaybeResult_deprecated ShaderCompiler::buildInputResources(int targetIndex) {
     slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
     int parameterCount = programLayout->getParameterCount();
 
@@ -410,7 +410,7 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
                 memberKind = ShaderGlobalMemberKind_Scalar;
                 break;
             default:
-                return LN_MAKE_ERROR(
+                return LN_MAKE_ERROR_deprecated(
                     "Invalid kind. (%s:%d)",
                     name.c_str(), kind);
         }
@@ -424,7 +424,7 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
             memberType = toLuminoShaderGlobalMemberType(type->getScalarType());
         }
         if (memberType == ShaderGlobalMemberType_Unknown) {
-            return LN_MAKE_ERROR("Invalid type. (%s:%d)", name.c_str(), scalarType);
+            return LN_MAKE_ERROR_deprecated("Invalid type. (%s:%d)", name.c_str(), scalarType);
         }
 
         auto result = m_shader->getOrCreateGlobalMemberWithVerify(
@@ -484,7 +484,7 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
+MaybeResult_deprecated ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     slang::ProgramLayout* layout = m_program->getLayout(targetIndex);
 
     
@@ -496,11 +496,11 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
         Slang::ComPtr<slang::IBlob> text;
         SlangResult result = layout->toJson(text.writeRef());
         if (SLANG_FAILED(result)) {
-            return LN_MAKE_ERROR("toJson failed. (%d)", result);
+            return LN_MAKE_ERROR_deprecated("toJson failed. (%d)", result);
         }
         std::ofstream stream(filePath);
         if (stream.fail()) {
-            return LN_MAKE_ERROR("ofstream failed. (%d)", result);
+            return LN_MAKE_ERROR_deprecated("ofstream failed. (%d)", result);
         }
         stream.write(reinterpret_cast<const char*>(text->getBufferPointer()), text->getBufferSize());
     }
@@ -525,7 +525,7 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     //Slang::ComPtr<SlangCompileRequest> compileRequest;
     //result = session->createCompileRequest(compileRequest.writeRef());
     //if (SLANG_FAILED(result)) {
-    //    return LN_MAKE_ERROR("createCompileRequest failed. (%d)", result);
+    //    return LN_MAKE_ERROR_deprecated("createCompileRequest failed. (%d)", result);
     //}
     
 
@@ -607,7 +607,7 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::buildEntryPoint(
+MaybeResult_deprecated ShaderCompiler::buildEntryPoint(
     ShaderTarget target,
     int targetIndex,
     int entryPointIndex) {
@@ -625,7 +625,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
         diag.writeRef());
     if (SLANG_FAILED(result)) {
         std::string message(static_cast<const char*>(diag->getBufferPointer()), diag->getBufferSize());
-        return LN_MAKE_ERROR("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
+        return LN_MAKE_ERROR_deprecated("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
     }
 
     // Analyze Varyings.
@@ -728,7 +728,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
             m_dumpDirPath / (std::string(getTargetName(target)) + ".entry-reflection." + name + ".reflection.json");
         std::ofstream stream(filePath);
         if (stream.fail()) {
-            return LN_MAKE_ERROR("ofstream failed. (%d)", result);
+            return LN_MAKE_ERROR_deprecated("ofstream failed. (%d)", result);
         }
 
         stream << "{\n";
@@ -783,7 +783,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
             LN_LOG_INFO(message);
         }
         if (SLANG_FAILED(result)) {
-            return LN_MAKE_ERROR("link failed. (%d)", result);
+            return LN_MAKE_ERROR_deprecated("link failed. (%d)", result);
         }
 
         // Dump code.
@@ -792,7 +792,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
             fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + "." + name + getExt(target));
             std::ofstream stream(filePath, std::ios::binary);
             if (stream.fail()) {
-                return LN_MAKE_ERROR("ofstream failed. (%d)", result);
+                return LN_MAKE_ERROR_deprecated("ofstream failed. (%d)", result);
             }
             stream.write(reinterpret_cast<const char*>(kernelBlob->getBufferPointer()), kernelBlob->getBufferSize());
         }
@@ -820,7 +820,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
         stageFlags = ShaderStageFlags_Compute;
     }
     else {
-        return LN_MAKE_ERROR("Invalid stage. (%d)", stage);
+        return LN_MAKE_ERROR_deprecated("Invalid stage. (%d)", stage);
     }
 
     // $Global 相当の ConstantBuffer が生成されていれば、 binding 情報として取り出す。
@@ -893,7 +893,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
                         auto* typeLayout2 = elementLayout->getTypeLayout();
                         int categoryCount2 = elementLayout->getCategoryCount();
                         if (categoryCount2 > 1) {
-                            return LN_MAKE_ERROR(
+                            return LN_MAKE_ERROR_deprecated(
                                 "Multiple category unsupported. (%d)",
                                 categoryCount2);
                         }
@@ -919,12 +919,12 @@ MaybeResult ShaderCompiler::buildEntryPoint(
                         break;
                     case slang::TypeReflection::Kind::Array:
                         // TODO:
-                        return LN_MAKE_ERROR(
+                        return LN_MAKE_ERROR_deprecated(
                             "Array types are not supported.",
                             bindingInfo.name.c_str(),
                             kind);
                     default:
-                        return LN_MAKE_ERROR(
+                        return LN_MAKE_ERROR_deprecated(
                             "Invalid type. (%s:%d)",
                             bindingInfo.name.c_str(),
                             kind);
@@ -1000,7 +1000,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::buildTargetShaderPass(
+MaybeResult_deprecated ShaderCompiler::buildTargetShaderPass(
     ShaderTarget target, int targetIndex, GlobalShaderPass* globalShaderPass) {
 
     TargetShaderPass* targetShaderPass = m_shader->createTargetShaderPass();
@@ -1039,7 +1039,7 @@ MaybeResult ShaderCompiler::buildTargetShaderPass(
     return LN_MAKE_SUCCESS();
 }
 
-MaybeResult ShaderCompiler::getBindingResourceInfo(
+MaybeResult_deprecated ShaderCompiler::getBindingResourceInfo(
     slang::VariableLayoutReflection* parameter,
     std::string* outName,
     RegisterCategory* outRegisterCategory,
@@ -1055,7 +1055,7 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
         // CombinedSampler の場合は Mixed になっているので、内容を確認して確定する。
         int categoryCount = parameter->getCategoryCount();
         if (categoryCount != 2) {
-            return LN_MAKE_ERROR("Multiple category unsupported. (%d)", categoryCount);
+            return LN_MAKE_ERROR_deprecated("Multiple category unsupported. (%d)", categoryCount);
         }
         slang::ParameterCategory c0 = parameter->getCategoryByIndex(0);
         slang::ParameterCategory c1 = parameter->getCategoryByIndex(1);
@@ -1066,7 +1066,7 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
             registerCategory = RegisterCategory_TextureOrCombinedSampler;
         }
         else {
-            return LN_MAKE_ERROR("Invalid mixed category. (%d:%d)", c0, c1);
+            return LN_MAKE_ERROR_deprecated("Invalid mixed category. (%d:%d)", c0, c1);
         }
     }
     else {
@@ -1080,7 +1080,7 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
                 slang::TypeLayoutReflection* typeLayout2 = elementLayout->getTypeLayout();
                 int categoryCount2 = elementLayout->getCategoryCount();
                 if (categoryCount2 > 1) {
-                    return LN_MAKE_ERROR("Multiple category unsupported. 2 (%d)", categoryCount2);
+                    return LN_MAKE_ERROR_deprecated("Multiple category unsupported. 2 (%d)", categoryCount2);
                 }
                 slang::ParameterCategory category = elementLayout->getCategoryByIndex(0);
                 constantBufferSize = typeLayout2->getSize(category);
@@ -1095,9 +1095,9 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
                 break;
             case slang::TypeReflection::Kind::Array:
                 arrayElementCount = 0; // TODO:
-                return LN_MAKE_ERROR("Array types are not supported.", name.c_str(), kind);
+                return LN_MAKE_ERROR_deprecated("Array types are not supported.", name.c_str(), kind);
             default:
-                return LN_MAKE_ERROR("Invalid type. (%s:%d)", name.c_str(), kind);
+                return LN_MAKE_ERROR_deprecated("Invalid type. (%s:%d)", name.c_str(), kind);
         }
     }
 
@@ -1108,7 +1108,7 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
     return LN_MAKE_SUCCESS();
 }
 
-//MaybeResult ShaderCompiler::buildTargetInputResources(
+//MaybeResult_deprecated ShaderCompiler::buildTargetInputResources(
 //    ShaderTarget target, int targetIndex, TargetShaderPass* ownerShaderPass, ShaderStage2 stage) {
 //    slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
 //    int parameterCount = programLayout->getParameterCount();
@@ -1125,7 +1125,7 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
 //        std::string message(
 //            static_cast<const char*>(diag->getBufferPointer()),
 //            diag->getBufferSize());
-//        return LN_MAKE_ERROR("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
+//        return LN_MAKE_ERROR_deprecated("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
 //    }
 //
 //    // Collect $Global ConstantBuffer members.
@@ -1204,7 +1204,7 @@ void ShaderCompiler::traverseVariableSemaintic(
     }
 }
 
-MaybeResult ShaderCompiler::mergeTargetInputResources() {
+MaybeResult_deprecated ShaderCompiler::mergeTargetInputResources() {
     const auto& entryPoints = m_shader->entryPoints();
     for (auto& targetShaderPass : m_shader->targetShaderPasses()) {
         bool reset = true;
@@ -1243,7 +1243,7 @@ MaybeResult ShaderCompiler::mergeTargetInputResources() {
     return LN_MAKE_SUCCESS();
 }
 
-Result<VertexInputAttribute> ShaderCompiler::makeVertexInputAttribute(
+Result_deprecated<VertexInputAttribute> ShaderCompiler::makeVertexInputAttribute(
     const std::string& varName,
     const std::string& semanticName,
     int semanticIndex,

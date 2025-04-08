@@ -17,7 +17,7 @@
 
 namespace ln {
 
-ln::MaybeResult
+ln::MaybeResult_deprecated
 BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir) {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     ln::detail::ShaderManager::Settings settings;

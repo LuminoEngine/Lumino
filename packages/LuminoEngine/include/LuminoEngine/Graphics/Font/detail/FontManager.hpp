@@ -66,7 +66,7 @@ public:
 
 private:
     FontManager();
-    MaybeResult init(const Settings& settings);
+    MaybeResult_deprecated init(const Settings& settings);
     void dispose();
 
     static FT_Error
@@ -115,7 +115,7 @@ class GlyphIconFontManager : public RefObject {
 public:
     GlyphIconFontManager();
     virtual ~GlyphIconFontManager();
-    Result<> init(FontManager* fontManager);
+    Result_deprecated<> init(FontManager* fontManager);
     void dispose();
 
     Font* getFontAwesomeFont(const StringView& style, int size);

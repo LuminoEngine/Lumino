@@ -9,9 +9,9 @@ WebGPUVertexBuffer::WebGPUVertexBuffer()
     , m_nativeBuffer(nullptr) {
 }
 
-MaybeResult WebGPUVertexBuffer::init(
+MaybeResult_deprecated WebGPUVertexBuffer::init(
     WebGPUDevice* device, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) {
-    if (!RHIResource::initAsVertexBuffer(usage, bufferSize)) return LN_MAKE_ERROR();
+    if (!RHIResource::initAsVertexBuffer(usage, bufferSize)) return LN_MAKE_ERROR_deprecated();
     m_device = device;
 
     WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
@@ -20,7 +20,7 @@ MaybeResult WebGPUVertexBuffer::init(
     bufferDesc.mappedAtCreation = 0;
     m_nativeBuffer = wgpuDeviceCreateBuffer(device->wgpuDevice(), &bufferDesc);
     if (!m_nativeBuffer) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateBuffer() failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuDeviceCreateBuffer() failed.");
     }
 
     if (initialData) {

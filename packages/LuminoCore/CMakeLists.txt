@@ -1,5 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.0.0)
-project (LuminoCore)
+﻿project(LuminoCore)
 include(cmake/LuminoConfig-LuminoCore.cmake)
 
 #-------------------------------------------------------------------------------
@@ -55,7 +54,7 @@ target_include_directories(
     "src"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE tl::expected ${LN_LINK_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/LuminoCore.PCH.h")

@@ -23,7 +23,7 @@ class GLTexture2D : public GLTextureBase {
 public:
     GLTexture2D();
     virtual ~GLTexture2D();
-    Result<> init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+    Result_deprecated<> init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
     void onDestroy() override;
 
     //virtual DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
@@ -50,7 +50,7 @@ class GLTexture3D : public GLTextureBase {
 public:
     GLTexture3D();
     virtual ~GLTexture3D();
-    Result<> init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
+    Result_deprecated<> init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
     virtual void onDestroy() override;
 
     //virtual DeviceTextureType type() const override { return DeviceTextureType::Texture3D; }
@@ -76,8 +76,8 @@ class GLRenderTargetTexture : public GLTextureBase {
 public:
     GLRenderTargetTexture();
     virtual ~GLRenderTargetTexture();
-    Result<> init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
-    Result<> init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
+    Result_deprecated<> init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+    Result_deprecated<> init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
     void onDestroy() override;
 
     virtual RHIRef<RHIBitmap> readData() override;

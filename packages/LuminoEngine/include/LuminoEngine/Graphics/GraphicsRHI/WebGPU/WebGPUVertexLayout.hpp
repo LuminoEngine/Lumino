@@ -11,12 +11,12 @@ class WebGPUVertexLayout : public IVertexDeclaration {
 public:
     WebGPUVertexLayout();
     ~WebGPUVertexLayout() override;
-    MaybeResult init(
+    MaybeResult_deprecated init(
         WebGPUDevice* device,
         const VertexElement* elements,
         int elementsCount);
     void onDestroy() override;
-    MaybeResult createPipelineVertexLayout(
+    MaybeResult_deprecated createPipelineVertexLayout(
         const WebGPUShaderPass* shaderPass,
         WebGPUPipelineVertexLayout* outLayout);
 

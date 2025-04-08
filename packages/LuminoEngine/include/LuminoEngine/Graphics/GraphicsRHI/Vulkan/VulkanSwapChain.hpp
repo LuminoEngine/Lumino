@@ -18,12 +18,12 @@ class VulkanSwapChain
 {
 public:
 	VulkanSwapChain();
-    Result<> init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
+    Result_deprecated<> init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
     void onDestroy() override;
     uint32_t getBackbufferCount() override;
     void acquireNextImage(int* outImageIndex) override;
     RHIResource* getRenderTarget(int imageIndex) const override;
-    Result<> resizeBackbuffer(uint32_t width, uint32_t height) override;
+    Result_deprecated<> resizeBackbuffer(uint32_t width, uint32_t height) override;
 	
     void present();
 

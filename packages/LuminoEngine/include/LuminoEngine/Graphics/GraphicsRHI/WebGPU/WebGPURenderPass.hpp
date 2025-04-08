@@ -7,7 +7,7 @@ namespace detail {
 class WebGPURenderPass : public IRenderPass {
 public:
     WebGPURenderPass();
-    Result<> init(WebGPUDevice* rhiDevice, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+    Result_deprecated<> init(WebGPUDevice* rhiDevice, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
     void onDestroy() override;
 
     ClearFlags clearFlags() const { return m_clearFlags; }

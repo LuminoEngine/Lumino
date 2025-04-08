@@ -16,7 +16,7 @@ GLVertexBuffer::~GLVertexBuffer() {
     LN_CHECK(m_objectId == 0);
 }
 
-Result<> GLVertexBuffer::init(GraphicsResourceUsage usage, uint64_t bufferSize, const void* initialData) {
+Result_deprecated<> GLVertexBuffer::init(GraphicsResourceUsage usage, uint64_t bufferSize, const void* initialData) {
     LN_TRY(RHIResource::initAsVertexBuffer(usage, bufferSize));
 
     m_usage = usage;

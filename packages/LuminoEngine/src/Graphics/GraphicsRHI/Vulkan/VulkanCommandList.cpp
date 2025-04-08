@@ -20,7 +20,7 @@ VulkanCommandList::VulkanCommandList()
     , m_transferBufferSingleFrameAllocator(nullptr) {
 }
 
-Result<> VulkanCommandList::init(VulkanDevice* owner) {
+Result_deprecated<> VulkanCommandList::init(VulkanDevice* owner) {
     LN_TRY(ICommandList::init(owner));
     m_device = owner;
 
@@ -60,7 +60,7 @@ void VulkanCommandList::onDestroy() {
     ICommandList::onDestroy();
 }
 
-Result<> VulkanCommandList::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
+Result_deprecated<> VulkanCommandList::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore) {
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 

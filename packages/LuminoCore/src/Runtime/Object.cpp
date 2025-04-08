@@ -33,7 +33,7 @@ Object::~Object() {
     }
 }
 
-Result<> Object::init() {
+Result_deprecated<> Object::init() {
     TypeInfo::initializeObjectProperties(this);
     return ok();
 }

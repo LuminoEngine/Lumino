@@ -7,7 +7,7 @@ namespace detail {
 class GLUniformBuffer : public RHIResource {
 public:
     GLUniformBuffer();
-    Result<> init(size_t size);
+    Result_deprecated<> init(size_t size);
     void onDestroy() override;
     void* map() override;
     void unmap() override;

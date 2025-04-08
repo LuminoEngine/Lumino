@@ -23,7 +23,7 @@ WebGPUCommandList::WebGPUCommandList()
 {
 }
 
-Result<> WebGPUCommandList::init(WebGPUDevice* rhiDevice) {
+Result_deprecated<> WebGPUCommandList::init(WebGPUDevice* rhiDevice) {
     m_rhiDevice = rhiDevice;
     m_transferBufferSingleFrameAllocator = makeRef<WebGPUSingleFrameAllocator>(
         m_rhiDevice->transferBufferSingleFrameAllocator());

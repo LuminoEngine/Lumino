@@ -275,7 +275,7 @@ LN_CONSTRUCT_ACCESS:
 
     /** init */
     LN_METHOD()
-    Result<> init();
+    Result_deprecated<> init();
 
 private:
     bool m_skeletonImport;

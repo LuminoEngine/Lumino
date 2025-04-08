@@ -62,7 +62,7 @@ private:
 
     SpriteTextRenderer();
     ~SpriteTextRenderer() override;
-    Result<> init();
+    Result_deprecated<> init();
     void flush();
 
     static const size_t MaxBatchSprites = 16383;

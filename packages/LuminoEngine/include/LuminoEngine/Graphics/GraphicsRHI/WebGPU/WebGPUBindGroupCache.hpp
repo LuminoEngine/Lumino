@@ -11,7 +11,7 @@ public:
     WebGPUBindGroupCache(WebGPUDevice* device);
     ~WebGPUBindGroupCache();
     void dispose();
-    MaybeResult getOrCreate(
+    MaybeResult_deprecated getOrCreate(
         WebGPUShaderPass* shaderPass,
         const detail::ShaderDescriptorTableUpdateInfo& updateInfo,
         WGPUBindGroup* outBindGroup); 

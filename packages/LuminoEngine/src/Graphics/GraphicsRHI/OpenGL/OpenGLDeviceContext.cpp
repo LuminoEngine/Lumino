@@ -30,7 +30,7 @@ namespace ln {
 namespace detail {
 
 // 外部の OpenGL Context に統合するときに使う
-// Result<> IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
+// Result_deprecated<> IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
 //{
 //	GLint type;
 //	GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type));
@@ -53,7 +53,7 @@ OpenGLDevice::OpenGLDevice()
     , m_es(false) {
 }
 
-Result<> OpenGLDevice::init(const Settings& settings) {
+Result_deprecated<> OpenGLDevice::init(const Settings& settings) {
     LN_LOG_DEBUG("OpenGLDeviceContext::init start");
 
     // Create main context
@@ -395,7 +395,7 @@ RHIResource* GLSwapChain::getRenderTarget(int imageIndex) const {
     return m_backbuffer;
 }
 
-Result<> GLSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
+Result_deprecated<> GLSwapChain::resizeBackbuffer(uint32_t width, uint32_t height) {
     genBackbuffer(width, height);
     setBackendBufferSize(width, height);
     return ok();
@@ -582,7 +582,7 @@ GLPipeline::GLPipeline()
     , m_primitiveTopology(0) {
 }
 
-Result<> GLPipeline::init(OpenGLDevice* device, const DevicePipelineStateDesc& state) {
+Result_deprecated<> GLPipeline::init(OpenGLDevice* device, const DevicePipelineStateDesc& state) {
     m_device = device;
     m_blendState = state.blendState;
     m_rasterizerState = state.rasterizerState;

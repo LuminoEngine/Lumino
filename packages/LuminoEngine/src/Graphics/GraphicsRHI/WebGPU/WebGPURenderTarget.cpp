@@ -14,7 +14,7 @@ WebGPURenderTarget::WebGPURenderTarget()
     , m_nativeFormat(WGPUTextureFormat_Undefined) {
 }
 
-Result<> WebGPURenderTarget::initForSwapChainWrapper(
+Result_deprecated<> WebGPURenderTarget::initForSwapChainWrapper(
     WebGPUDevice* rhiDevice,
     int width,
     int height,

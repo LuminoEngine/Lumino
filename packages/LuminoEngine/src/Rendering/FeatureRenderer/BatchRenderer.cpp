@@ -39,7 +39,7 @@ BatchRenderer::BatchRenderer()
     , m_currentProxy(nullptr) {
 }
 
-Result<> BatchRenderer::init() {
+Result_deprecated<> BatchRenderer::init() {
     if (!Object::init()) return err();
     return ok();
 }

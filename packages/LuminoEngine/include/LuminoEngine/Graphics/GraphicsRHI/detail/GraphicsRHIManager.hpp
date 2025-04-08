@@ -16,7 +16,7 @@ public:
 private:
     GraphicsRHIManager();
     virtual ~GraphicsRHIManager() = default;
-    Result<> init(const Settings& settings);
+    Result_deprecated<> init(const Settings& settings);
     void dispose();
 
     static GraphicsRHIManager* s_instance;

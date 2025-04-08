@@ -53,7 +53,7 @@ class DX12Texture2D
     : public DX12Texture {
 public:
     DX12Texture2D();
-    Result<> init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
+    Result_deprecated<> init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData);
     void onDestroy() override;
     //DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
     RHIRef<RHIBitmap> readData() override {
@@ -103,7 +103,7 @@ protected:
 class DX12DepthBuffer : public RHIResource {
 public:
     DX12DepthBuffer();
-    Result<> init(DX12Device* device, uint32_t width, uint32_t height);
+    Result_deprecated<> init(DX12Device* device, uint32_t width, uint32_t height);
     void onDestroy();
 
     DX12Image* image() const { return m_image.get(); }

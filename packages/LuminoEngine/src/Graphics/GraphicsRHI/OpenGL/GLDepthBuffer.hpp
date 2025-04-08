@@ -8,7 +8,7 @@ class OpenGLDevice;
 class GLDepthBuffer : public RHIResource {
 public:
     GLDepthBuffer();
-    Result<> init(uint32_t width, uint32_t height);
+    Result_deprecated<> init(uint32_t width, uint32_t height);
     void onDestroy() override;
     GLuint id() const { return m_id; }
 

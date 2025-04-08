@@ -8,7 +8,7 @@ class WebGPUShaderPass : public IShaderPass {
 public:
     WebGPUShaderPass();
     ~WebGPUShaderPass() override;
-    MaybeResult init(
+    MaybeResult_deprecated init(
         WebGPUDevice* m_wgpuDevice,
         const ShaderPassCreateInfo2& createInfo);
     void onDestroy() override;
@@ -29,7 +29,7 @@ private:
         const byte_t* source,
         size_t sourceSize,
         const char* entryPointName);
-    MaybeResult createPipelineLayout(const ShaderPassCreateInfo2& createInfo);
+    MaybeResult_deprecated createPipelineLayout(const ShaderPassCreateInfo2& createInfo);
     static void setupLayoutEntryDefault(WGPUBindGroupLayoutEntry* entry);
 
     WebGPUDevice* m_wgpuDevice;

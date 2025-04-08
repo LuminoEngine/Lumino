@@ -39,7 +39,7 @@ WebGPUSamplerState::WebGPUSamplerState()
 WebGPUSamplerState::~WebGPUSamplerState() {
 }
 
-MaybeResult WebGPUSamplerState::init(WebGPUDevice* device, const SamplerStateData& desc) {
+MaybeResult_deprecated WebGPUSamplerState::init(WebGPUDevice* device, const SamplerStateData& desc) {
     m_device = device;
 
     WGPUFilterMode filter = toWGPUFilterMode(desc.filter);
@@ -58,7 +58,7 @@ MaybeResult WebGPUSamplerState::init(WebGPUDevice* device, const SamplerStateDat
     samplerDesc.maxAnisotropy = desc.anisotropy ? 8 : 1; // TODO: てきとう
     m_nativeSampler = wgpuDeviceCreateSampler(m_device->wgpuDevice(), &samplerDesc);
     if (!m_nativeSampler) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateSampler Failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuDeviceCreateSampler Failed.");
     }
 
     return LN_MAKE_SUCCESS();

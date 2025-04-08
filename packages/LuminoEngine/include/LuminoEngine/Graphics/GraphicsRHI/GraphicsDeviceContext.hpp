@@ -305,7 +305,7 @@ public:
 public: // TODO:
     ICommandList();
     virtual ~ICommandList();
-    Result<> init(IGraphicsDevice* owner);
+    Result_deprecated<> init(IGraphicsDevice* owner);
     void onDestroy() override;
 
     virtual void onSaveExternalRenderState() = 0;
@@ -354,7 +354,7 @@ public:
 
     virtual RHIResource* getRenderTarget(int imageIndex) const = 0;
 
-    virtual Result<> resizeBackbuffer(uint32_t width, uint32_t height) = 0;
+    virtual Result_deprecated<> resizeBackbuffer(uint32_t width, uint32_t height) = 0;
 
 protected:
     virtual ~ISwapChain();
@@ -364,7 +364,7 @@ protected:
 //class ICommandQueue
 //    : public RHIDeviceObject {
 //public:
-//    virtual Result<> submit(ICommandList* commandList) = 0;
+//    virtual Result_deprecated<> submit(ICommandList* commandList) = 0;
 //
 //protected:
 //    virtual ~ICommandQueue() = default;
@@ -516,7 +516,7 @@ public:
      * この Pool から割り当てられたすべての IDescriptor を、 Pool にリサイクルします。
      */
     virtual void reset() = 0;
-    virtual Result<> allocate(IDescriptor** outDescriptor) = 0;
+    virtual Result_deprecated<> allocate(IDescriptor** outDescriptor) = 0;
 
 protected:
     virtual ~IDescriptorPool();

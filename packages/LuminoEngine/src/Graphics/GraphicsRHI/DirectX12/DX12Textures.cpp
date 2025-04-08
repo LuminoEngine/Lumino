@@ -125,7 +125,7 @@ DX12Texture::DX12Texture() {
 DX12Texture2D::DX12Texture2D() {
 }
 
-Result<> DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData) {
+Result_deprecated<> DX12Texture2D::init(DX12Device* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat format, bool mipmap, const void* initialData) {
     if (!DX12Texture::initAsTexture2D(usage, width, height, format, mipmap)) return err();
     m_device = device;
     //m_usage = usage;
@@ -530,7 +530,7 @@ DX12DepthBuffer::DX12DepthBuffer()
     : m_deviceContext(nullptr) {
 }
 
-Result<> DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height) {
+Result_deprecated<> DX12DepthBuffer::init(DX12Device* device, uint32_t width, uint32_t height) {
     LN_DCHECK(device);
     LN_TRY(RHIResource::initAsDepthBuffer(width, height, true));
     m_deviceContext = device;

@@ -77,7 +77,7 @@ public:
     OpenGLDevice();
     virtual ~OpenGLDevice() = default;
 
-    Result<> init(const Settings& settings);
+    Result_deprecated<> init(const Settings& settings);
     virtual void dispose() override;
     PlatformWindow* mainWindow() const { return m_mainWindow; }
     //OpenGLContext* mainGLContext() const { return m_mainGLContext; }
@@ -137,7 +137,7 @@ public:
     virtual uint32_t getBackbufferCount() override { return 1; }
     virtual void acquireNextImage(int* outImageIndex) override { *outImageIndex = 0; }
     virtual RHIResource* getRenderTarget(int imageIndex) const override;
-    virtual Result<> resizeBackbuffer(uint32_t width, uint32_t height) override;
+    virtual Result_deprecated<> resizeBackbuffer(uint32_t width, uint32_t height) override;
     
     void present();
 
@@ -217,7 +217,7 @@ class GLPipeline
     : public IPipeline {
 public:
     GLPipeline();
-    Result<> init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
+    Result_deprecated<> init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
     virtual void onDestroy() override;
     void bind(
         GLGraphicsContext* commandList,

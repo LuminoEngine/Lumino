@@ -21,7 +21,7 @@ PlatformManager::PlatformManager(GraphicsManager* graphicsManager, RenderingMana
 PlatformManager::~PlatformManager() {
 }
 
-Result<> PlatformManager::init(const Settings& settings) {
+Result_deprecated<> PlatformManager::init(const Settings& settings) {
 #ifdef LN_GLFW
     if (settings.windowSystem == WindowSystem::GLFWWithOpenGL || settings.windowSystem == WindowSystem::GLFWWithoutOpenGL) {
         if (!m_windowManager) {
@@ -83,7 +83,7 @@ void PlatformManager::setMainWindow(PlatformWindow* window) {
     m_mainWindow = window;
 }
 
-Result<Ref<PlatformWindow>> PlatformManager::createWindow(const WindowCreationSettings& settings) {
+Result_deprecated<Ref<PlatformWindow>> PlatformManager::createWindow(const WindowCreationSettings& settings) {
     Ref<PlatformWindow> window;
     if (!m_mainWindow) {
         window = m_windowManager->createWindow(settings, nullptr);

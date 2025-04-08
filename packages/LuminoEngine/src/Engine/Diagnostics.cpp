@@ -22,7 +22,7 @@ DiagnosticsManager::DiagnosticsManager()
 DiagnosticsManager::~DiagnosticsManager() {
 }
 
-Result<> DiagnosticsManager::init() {
+Result_deprecated<> DiagnosticsManager::init() {
     return Object::init();
 }
 

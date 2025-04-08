@@ -41,7 +41,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 //==============================================================================
 // VulkanDevice
 
-Result<Ref<VulkanDevice>> VulkanDevice::create(const Settings& settings, bool* outIsDriverSupported) {
+Result_deprecated<Ref<VulkanDevice>> VulkanDevice::create(const Settings& settings, bool* outIsDriverSupported) {
     auto ptr = attachRef<VulkanDevice>(LN_NEW VulkanDevice());
     if (!ptr->init(settings, outIsDriverSupported)) {
         return err();
@@ -289,7 +289,7 @@ void VulkanDevice::onQueuePresent(ISwapChain* swapChain) {
     static_cast<VulkanSwapChain*>(swapChain)->present();
 }
 
-Result<> VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType) {
+Result_deprecated<> VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType) {
     for (uint32_t i = 0; i < m_deviceMemoryProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) && (m_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
             *outType = i;
@@ -301,7 +301,7 @@ Result<> VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags
     return err();
 }
 
-Result<> VulkanDevice::createInstance() {
+Result_deprecated<> VulkanDevice::createInstance() {
     if (m_enableValidationLayers) {
         m_availableValidationLayers = VulkanHelper::checkValidationLayerSupport();
         if (m_availableValidationLayers.empty()) {
@@ -366,7 +366,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
-Result<> VulkanDevice::setupDebugMessenger() {
+Result_deprecated<> VulkanDevice::setupDebugMessenger() {
     if (m_enableValidationLayers) {
         VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -380,7 +380,7 @@ Result<> VulkanDevice::setupDebugMessenger() {
     return ok();
 }
 
-Result<> VulkanDevice::pickPhysicalDevice() {
+Result_deprecated<> VulkanDevice::pickPhysicalDevice() {
     // Get physical devices
     {
         uint32_t count = 0;
@@ -631,7 +631,7 @@ Result<> VulkanDevice::pickPhysicalDevice() {
     return ok();
 }
 
-Result<> VulkanDevice::createLogicalDevice() {
+Result_deprecated<> VulkanDevice::createLogicalDevice() {
     //QueueFamilyIndices indices = findQueueFamilies(vulkanPhysicalDevice());
 
     auto graphicsFamilyIndex = UINT32_MAX;
@@ -757,7 +757,7 @@ Result<> VulkanDevice::createLogicalDevice() {
     return ok();
 }
 
-Result<> VulkanDevice::createCommandPool() {
+Result_deprecated<> VulkanDevice::createCommandPool() {
     //QueueFamilyIndices queueFamilyIndices = findQueueFamilies(vulkanPhysicalDevice());
 
     VkCommandPoolCreateInfo poolInfo = {};
@@ -863,7 +863,7 @@ VkCommandBuffer VulkanDevice::beginSingleTimeCommands() {
     return commandBuffer;
 }
 
-Result<> VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+Result_deprecated<> VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkEndCommandBuffer(commandBuffer);
 
     VkSubmitInfo submitInfo = {};
@@ -912,7 +912,7 @@ void VulkanDevice::copyBufferToImageImmediately(VkBuffer buffer, VkImage image, 
     endSingleTimeCommands(commandBuffer);
 }
 
-Result<> VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
+Result_deprecated<> VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     barrier.oldLayout = oldLayout;
@@ -995,9 +995,9 @@ Result<> VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkIm
     return ok();
 }
 
-Result<> VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
+Result_deprecated<> VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    Result<> result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
+    Result_deprecated<> result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
     endSingleTimeCommands(commandBuffer);
     return result;
 }
@@ -1016,7 +1016,7 @@ VulkanRenderPass2::VulkanRenderPass2()
     , m_containsMultisampleTarget(false) {
 }
 
-Result<> VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+Result_deprecated<> VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
     LN_CHECK(device);
     m_device = device;
     m_clearFlags = clearFlags;
@@ -1250,7 +1250,7 @@ VulkanFramebuffer2::VulkanFramebuffer2()
     , m_depthBuffer(nullptr) {
 }
 
-Result<> VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state) {
+Result_deprecated<> VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state) {
     LN_CHECK(device);
     LN_CHECK(ownerRenderPass);
     m_device = device;
@@ -1329,7 +1329,7 @@ VulkanPipeline2::VulkanPipeline2()
     , m_pipeline(VK_NULL_HANDLE) {
 }
 
-Result<> VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state) {
+Result_deprecated<> VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state) {
     LN_DCHECK(deviceContext);
     m_device = deviceContext;
 
@@ -1352,7 +1352,7 @@ void VulkanPipeline2::onDestroy() {
     IPipeline::onDestroy();
 }
 
-Result<> VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& state) {
+Result_deprecated<> VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& state) {
     LN_DCHECK(state.renderPass);
     m_ownerRenderPass = static_cast<VulkanRenderPass2*>(state.renderPass);
 
@@ -1606,7 +1606,7 @@ Result<> VulkanPipeline2::createGraphicsPipeline(const DevicePipelineStateDesc& 
     return ok();
 }
 
-Result<> VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& state) {
+Result_deprecated<> VulkanPipeline2::createComputePipeline(const DevicePipelineStateDesc& state) {
     auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 
     VkPipelineShaderStageCreateInfo shaderStage = {};
@@ -1659,7 +1659,7 @@ VulkanSamplerState::VulkanSamplerState()
     , m_sampler(VK_NULL_HANDLE) {
 }
 
-Result<> VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateData& desc) {
+Result_deprecated<> VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateData& desc) {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
 

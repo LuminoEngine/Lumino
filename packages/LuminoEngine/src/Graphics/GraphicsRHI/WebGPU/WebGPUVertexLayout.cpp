@@ -45,7 +45,7 @@ WebGPUVertexLayout::WebGPUVertexLayout() {
 WebGPUVertexLayout::~WebGPUVertexLayout() {
 }
 
-MaybeResult WebGPUVertexLayout::init(
+MaybeResult_deprecated WebGPUVertexLayout::init(
     WebGPUDevice* device,
     const VertexElement* elements,
     int elementsCount) {
@@ -61,7 +61,7 @@ void WebGPUVertexLayout::onDestroy() {
     IVertexDeclaration::onDestroy();
 }
 
-MaybeResult WebGPUVertexLayout::createPipelineVertexLayout(
+MaybeResult_deprecated WebGPUVertexLayout::createPipelineVertexLayout(
     const WebGPUShaderPass* shaderPass,
     WebGPUPipelineVertexLayout* outLayout) {
     const std::vector<kokage::VertexInputAttribute>& inputAttributes = shaderPass->attributes();
@@ -79,7 +79,7 @@ MaybeResult WebGPUVertexLayout::createPipelineVertexLayout(
             bufferLayout = &outLayout->bufferLayouts[attr.StreamIndex];
             if (bufferLayout->rate != attr.rate) {
                 // Rate は Stream で一致させなければならない。
-                return LN_MAKE_ERROR("VertexInputRate mismatch");
+                return LN_MAKE_ERROR_deprecated("VertexInputRate mismatch");
             }
         }
     }

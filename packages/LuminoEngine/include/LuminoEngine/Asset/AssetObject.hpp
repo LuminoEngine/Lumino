@@ -152,7 +152,7 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
     AssetObject();
-    Result<> init();
+    Result_deprecated<> init();
     //bool initLoad(const Path& requiredLoadPath);
 
 private:

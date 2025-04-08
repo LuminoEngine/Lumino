@@ -8,7 +8,7 @@ namespace detail {
 class WebGPUTexture2D : public WebGPUTextureBase {
 public:
     WebGPUTexture2D();
-    MaybeResult init(
+    MaybeResult_deprecated init(
         WebGPUDevice* device, GraphicsResourceUsage usage, uint32_t width, uint32_t height,
         TextureFormat requestFormat, bool mipmap, const void* initialData);
     void onDestroy() override;

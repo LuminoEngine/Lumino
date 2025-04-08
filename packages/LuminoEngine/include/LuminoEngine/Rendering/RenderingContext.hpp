@@ -200,7 +200,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     RenderingContext_deprecated();
-    Result<> init();
+    Result_deprecated<> init();
 
 public: // TODO: internal
     void resetForBeginRendering(const RenderViewPoint* viewPoint);

@@ -19,7 +19,7 @@ AudioContext2::AudioContext2() {
 AudioContext2::~AudioContext2() {
 }
 
-MaybeResult AudioContext2::init() {
+MaybeResult_deprecated AudioContext2::init() {
 
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
     auto device = makeRef<detail::ALAudioDevice>();

@@ -55,7 +55,7 @@ class DX12IndexBuffer
 {
 public:
 	DX12IndexBuffer();
-    Result<> init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
+    Result_deprecated<> init(DX12Device* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
 	void onDestroy() override;
 	//size_t getBytesSize() override;
 	//GraphicsResourceUsage usage() const override;

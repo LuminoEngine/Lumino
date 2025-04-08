@@ -42,7 +42,7 @@ RenderingContext_deprecated::RenderingContext_deprecated()
     m_commandList = m_listServer->acquirePrimaryList(RenderPart::Geometry, nullptr);
 }
 
-Result<> RenderingContext_deprecated::init() {
+Result_deprecated<> RenderingContext_deprecated::init() {
     if (!Object::init()) return err();
     return ok();
 }

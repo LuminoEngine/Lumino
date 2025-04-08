@@ -15,7 +15,7 @@ ScreenRectangleRenderFeature::ScreenRectangleRenderFeature(detail::RenderingMana
     , m_vertexBuffer(nullptr) {
 }
 
-Result<> ScreenRectangleRenderFeature::init() {
+Result_deprecated<> ScreenRectangleRenderFeature::init() {
     m_vertexLayout = m_manager->standardVertexDeclaration();
 
 #ifdef LN_COORD_RH

@@ -29,7 +29,7 @@ GLGraphicsContext::GLGraphicsContext()
     //LuminoGLSubmitCommandList(g_ff.data());
 }
 
-Result<> GLGraphicsContext::init(OpenGLDevice* owner) {
+Result_deprecated<> GLGraphicsContext::init(OpenGLDevice* owner) {
     LN_CHECK(owner);
     ICommandList::init(owner);
     m_device = owner;

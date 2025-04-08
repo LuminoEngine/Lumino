@@ -8,12 +8,12 @@ class WebGPUDescriptorPool : public IDescriptorPool {
 public:
     WebGPUDescriptorPool();
     ~WebGPUDescriptorPool() override;
-    MaybeResult init(WebGPUDevice* device, WebGPUShaderPass* shaderPass);
+    MaybeResult_deprecated init(WebGPUDevice* device, WebGPUShaderPass* shaderPass);
     WebGPUDevice* device() const { return m_device; }
     WebGPUShaderPass* shaderPass() const { return m_shaderPass; }
 
     void reset() override;
-    Result<> allocate(IDescriptor** outDescriptor) override;
+    Result_deprecated<> allocate(IDescriptor** outDescriptor) override;
 
 private:
     WebGPUDevice* m_device;

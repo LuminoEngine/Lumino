@@ -8,7 +8,7 @@ class GLVertexBuffer : public RHIResource {
 public:
     GLVertexBuffer();
     virtual ~GLVertexBuffer();
-    Result<> init(GraphicsResourceUsage usage, uint64_t bufferSize, const void* initialData);
+    Result_deprecated<> init(GraphicsResourceUsage usage, uint64_t bufferSize, const void* initialData);
     void onDestroy() override;
 
     GLuint objectId() const { return m_objectId; }

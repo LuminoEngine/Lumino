@@ -37,7 +37,7 @@ LN_CONSTRUCT_ACCESS:
     Delegate()
         : m_function() {}
 
-    Result<> init() {
+    Result_deprecated<> init() {
         return Object::init();
     }
 
@@ -72,7 +72,7 @@ LN_CONSTRUCT_ACCESS:
     Delegate()
         : m_function() {}
 
-    Result<> init() {
+    Result_deprecated<> init() {
         return Object::init();
     }
 

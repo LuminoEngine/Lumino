@@ -11,7 +11,7 @@ WebGPUDepthBuffer::WebGPUDepthBuffer()
     , m_nativeFormat(WGPUTextureFormat_Undefined) {
 }
 
-MaybeResult WebGPUDepthBuffer::init(WebGPUDevice* device, uint32_t width, uint32_t height) {
+MaybeResult_deprecated WebGPUDepthBuffer::init(WebGPUDevice* device, uint32_t width, uint32_t height) {
     auto result = RHIResource::initAsDepthBuffer(width, height, true);
     if (!result) return result;
 
@@ -29,7 +29,7 @@ MaybeResult WebGPUDepthBuffer::init(WebGPUDevice* device, uint32_t width, uint32
     depthTextureDesc.viewFormats = &m_nativeFormat;
     m_nativeDepthTexture = wgpuDeviceCreateTexture(device->wgpuDevice(), &depthTextureDesc);
     if (!m_nativeDepthTexture) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateTexture() failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuDeviceCreateTexture() failed.");
     }
 
     // Create TextureView.
@@ -43,7 +43,7 @@ MaybeResult WebGPUDepthBuffer::init(WebGPUDevice* device, uint32_t width, uint32
     depthTextureViewDesc.format = m_nativeFormat;
     m_nativeTextureView = wgpuTextureCreateView(m_nativeDepthTexture, &depthTextureViewDesc);
     if (!m_nativeTextureView) {
-        return LN_MAKE_ERROR("wgpuTextureCreateView() failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuTextureCreateView() failed.");
     }
 
     return LN_MAKE_SUCCESS();

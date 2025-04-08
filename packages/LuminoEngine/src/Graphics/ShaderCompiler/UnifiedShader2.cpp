@@ -182,7 +182,7 @@ Blob* UnifiedShader2::createBlob() {
     return m_blobs.back().get();
 }
 
-Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
+Result_deprecated<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     std::string name,
     ShaderGlobalMemberType type,
     ShaderGlobalMemberKind kind,
@@ -198,32 +198,32 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     if (itr != m_globalMembers.end()) {
         GlobalMemberInfo* info = (*itr).get();
         if (info->type != type) {
-            return LN_MAKE_ERROR(
+            return LN_MAKE_ERROR_deprecated(
                 "GlobalMemberInfo already exists with different type (%s)",
                 name.c_str());
         }
         if (info->kind != kind) {
-            return LN_MAKE_ERROR(
+            return LN_MAKE_ERROR_deprecated(
                 "GlobalMemberInfo already exists with different kind (%s)",
                 name.c_str());
         }
         if (info->arrayElements != arrayElements) {
-            return LN_MAKE_ERROR(
+            return LN_MAKE_ERROR_deprecated(
                 "GlobalMemberInfo already exists with different arrayElements (%s)",
                 name.c_str());
         }
         if (info->vectorElements != vectorElements) {
-            return LN_MAKE_ERROR(
+            return LN_MAKE_ERROR_deprecated(
                 "GlobalMemberInfo already exists with different vectorElements (%s)",
                 name.c_str());
         }
         if (info->matrixRows != matrixRows) {
-            return LN_MAKE_ERROR(
+            return LN_MAKE_ERROR_deprecated(
                 "GlobalMemberInfo already exists with different matrixRows (%s)",
                 name.c_str());
         }
         if (info->matrixColumns != matrixColumns) {
-            return LN_MAKE_ERROR(
+            return LN_MAKE_ERROR_deprecated(
                 "GlobalMemberInfo already exists with different matrixColumns (%s)",
                 name.c_str());
         }
@@ -244,7 +244,7 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     return m_globalMembers.back().get();
 }
 
-MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
+MaybeResult_deprecated UnifiedShader2::getOrCreateInputResourceWithVerify(
     const std::string& name,
     RegisterCategory category,
     int constantBufferSize,
@@ -274,7 +274,7 @@ MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
                     return LN_MAKE_SUCCESS();
                 }
                 else {
-                    return LN_MAKE_ERROR(
+                    return LN_MAKE_ERROR_deprecated(
                         "GlobalInputResourceInfo already exists with different typeinfo (%s, a:%d, b:%d)",
                         name.c_str(),
                         (*itr).constantBufferSize,
@@ -303,13 +303,13 @@ MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
             m_globalResourceLayout->storages.push_back(slot);
             break;
         default:
-            return LN_MAKE_ERROR("Invalid category (%d)", category);
+            return LN_MAKE_ERROR_deprecated("Invalid category (%d)", category);
     }
 
     return LN_MAKE_SUCCESS();
 }
 
-Result<EntryPoint*> UnifiedShader2::getEntryPoint(
+Result_deprecated<EntryPoint*> UnifiedShader2::getEntryPoint(
     ShaderTarget target, const std::string& name) const {
     auto itr = std::find_if(
         m_entryPoints.begin(),
@@ -318,12 +318,12 @@ Result<EntryPoint*> UnifiedShader2::getEntryPoint(
             return entryPoint->target == target && entryPoint->name == name;
         });
     if (itr == m_entryPoints.end()) {
-        return LN_MAKE_ERROR("EntryPoint not found. (%d:%s)", target, name.c_str());
+        return LN_MAKE_ERROR_deprecated("EntryPoint not found. (%d:%s)", target, name.c_str());
     }
     return (*itr).get();
 }
 
-MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
+MaybeResult_deprecated UnifiedShader2::mergeTargetBindingLayoutInfo(
     TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset) {
     if (reset) {
         target.bindings.clear();
@@ -341,27 +341,27 @@ MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
             // 同じ名前のバインディングが存在する場合、各プロパティを比較して整合性を確認する
             {
                 //if (otherBinding.category != existingBinding.category) {
-                //    return LN_MAKE_ERROR(
+                //    return LN_MAKE_ERROR_deprecated(
                 //        "TargetBindingInfo already exists with different category (%s)",
                 //        otherBinding.name.c_str());
                 //}
                 if (otherBinding.size != existingBinding.size) {
-                    return LN_MAKE_ERROR(
+                    return LN_MAKE_ERROR_deprecated(
                         "TargetBindingInfo already exists with different size (%s)",
                         otherBinding.name.c_str());
                 }
                 if (otherBinding.space != existingBinding.space) {
-                    return LN_MAKE_ERROR(
+                    return LN_MAKE_ERROR_deprecated(
                         "TargetBindingInfo already exists with different space (%s)",
                         otherBinding.name.c_str());
                 }
                 if (otherBinding.index != existingBinding.index) {
-                    return LN_MAKE_ERROR(
+                    return LN_MAKE_ERROR_deprecated(
                         "TargetBindingInfo already exists with different index (%s)",
                         otherBinding.name.c_str());
                 }
                 if (otherBinding.count != existingBinding.count) {
-                    return LN_MAKE_ERROR(
+                    return LN_MAKE_ERROR_deprecated(
                         "TargetBindingInfo already exists with different count (%s)",
                         otherBinding.name.c_str());
                 }
@@ -369,7 +369,7 @@ MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
                 const auto& otherMembers = otherBinding.members;
                 const auto& existingMembers = existingBinding.members;
                 if (otherMembers.size() != existingMembers.size()) {
-                    return LN_MAKE_ERROR(
+                    return LN_MAKE_ERROR_deprecated(
                         "TargetBindingInfo already exists with different members size (%s)",
                         otherBinding.name.c_str());
                 }
@@ -378,17 +378,17 @@ MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
                     const auto& otherMember = otherMembers[i];
                     const auto& existingMember = existingMembers[i];
                     if (otherMember.name != existingMember.name) {
-                        return LN_MAKE_ERROR(
+                        return LN_MAKE_ERROR_deprecated(
                             "TargetBindingInfo already exists with different member name (%s)",
                             otherBinding.name.c_str());
                     }
                     if (otherMember.offset != existingMember.offset) {
-                        return LN_MAKE_ERROR(
+                        return LN_MAKE_ERROR_deprecated(
                             "TargetBindingInfo already exists with different member offset (%s)",
                             otherBinding.name.c_str());
                     }
                     if (otherMember.size != existingMember.size) {
-                        return LN_MAKE_ERROR(
+                        return LN_MAKE_ERROR_deprecated(
                             "TargetBindingInfo already exists with different member size (%s)",
                             otherBinding.name.c_str());
                     }
@@ -409,7 +409,7 @@ MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
 
 }
 
-MaybeResult UnifiedShader2::buildDescriptorLayout() {
+MaybeResult_deprecated UnifiedShader2::buildDescriptorLayout() {
 
     // GlobalShaderPass の DescriptorLayout を作成する。
     // 全ての子 TargetShaderPass を調べて、必要な情報を GlobalShaderPass に吸い出していく感じ。

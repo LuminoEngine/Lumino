@@ -457,7 +457,7 @@ MeshImportSettings::MeshImportSettings()
     , m_applyBoneTransformationsEnabled(false) {
 }
 
-Result<> MeshImportSettings::init() {
+Result_deprecated<> MeshImportSettings::init() {
     return Object::init();
 }
 

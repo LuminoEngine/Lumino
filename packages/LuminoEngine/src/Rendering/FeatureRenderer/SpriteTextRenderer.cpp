@@ -45,7 +45,7 @@ SpriteTextRenderer::SpriteTextRenderer()
 SpriteTextRenderer::~SpriteTextRenderer() {
 }
 
-Result<> SpriteTextRenderer::init() {
+Result_deprecated<> SpriteTextRenderer::init() {
     if (!Object::init()) return err();
     return ok();
 }

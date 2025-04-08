@@ -61,7 +61,7 @@ class DX12ShaderPass
 {
 public:
     DX12ShaderPass();
-    Result<> init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+    Result_deprecated<> init(DX12Device* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void onDestroy() override;
     const DX12ShaderPassLayoutInfo& layoutInfo() const { return m_layoutInfo; }
     ID3D12RootSignature* rootSignature() const { return m_rootSignature.Get(); }

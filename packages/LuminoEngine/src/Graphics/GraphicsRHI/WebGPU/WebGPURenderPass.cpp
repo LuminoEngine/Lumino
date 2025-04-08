@@ -14,7 +14,7 @@ WebGPURenderPass::WebGPURenderPass()
     , m_colorAttachments({}) {
 }
 
-Result<> WebGPURenderPass::init(
+Result_deprecated<> WebGPURenderPass::init(
     WebGPUDevice* rhiDevice,
     const DeviceFramebufferState& buffers,
     ClearFlags clearFlags,

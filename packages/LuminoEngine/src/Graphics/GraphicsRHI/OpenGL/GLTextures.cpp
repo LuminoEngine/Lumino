@@ -28,7 +28,7 @@ GLTexture2D::GLTexture2D()
 GLTexture2D::~GLTexture2D() {
 }
 
-Result<> GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+Result_deprecated<> GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_TRY(GLTextureBase::initAsTexture2D(usage, width, height, requestFormat, mipmap));
 
     m_usage = usage;
@@ -149,7 +149,7 @@ GLTexture3D::GLTexture3D()
 GLTexture3D::~GLTexture3D() {
 }
 
-Result<> GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
+Result_deprecated<> GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) {
     LN_TRY(GLTextureBase::initAsTexture3D(usage, width, height, depth, requestFormat));
     m_usage = usage;
     m_textureFormat = requestFormat;
@@ -232,7 +232,7 @@ GLRenderTargetTexture::GLRenderTargetTexture() {
 GLRenderTargetTexture::~GLRenderTargetTexture() {
 }
 
-Result<> GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) {
+Result_deprecated<> GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) {
     LN_TRY(GLTextureBase::initAsRenderTarget(width, height, requestFormat, mipmap, false));
     if (mipmap) {
         LN_NOTIMPLEMENTED();
@@ -273,7 +273,7 @@ Result<> GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFor
     return ok();
 }
 
-Result<> GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
+Result_deprecated<> GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) {
     LN_TRY(GLTextureBase::initAsRenderTarget(hintWidth, hintHeight, TextureFormat::RGB8, false, false));
     m_id = nativeObject;
     return ok();

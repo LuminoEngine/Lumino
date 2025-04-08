@@ -16,7 +16,7 @@ GLIndexBuffer::~GLIndexBuffer() {
     LN_CHECK(m_objectId == 0);
 }
 
-Result<> GLIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount, const void* initialData) {
+Result_deprecated<> GLIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat format, uint32_t indexCount, const void* initialData) {
     LN_TRY(RHIResource::initAsIndexBuffer(usage, format, indexCount));
 
     m_format = format;

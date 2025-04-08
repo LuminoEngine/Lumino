@@ -22,7 +22,7 @@ WebGPUShaderPass::WebGPUShaderPass()
 WebGPUShaderPass::~WebGPUShaderPass() {
 }
 
-MaybeResult WebGPUShaderPass::init(
+MaybeResult_deprecated WebGPUShaderPass::init(
     WebGPUDevice* wgpuDevice, const ShaderPassCreateInfo2& createInfo) {
     m_wgpuDevice = wgpuDevice;
     m_attributes = *createInfo.attributes;
@@ -34,7 +34,7 @@ MaybeResult WebGPUShaderPass::init(
             createInfo.vsCodeLen,
             createInfo.vsEntryPointName);
         if (!m_nativeVertShaderModule) {
-            return LN_MAKE_ERROR("Failed to create vertex shader module");
+            return LN_MAKE_ERROR_deprecated("Failed to create vertex shader module");
         }
         m_vertEntryPointName = createInfo.vsEntryPointName;
     }
@@ -45,7 +45,7 @@ MaybeResult WebGPUShaderPass::init(
             createInfo.psCodeLen,
             createInfo.psEntryPointName);
         if (!m_nativeFragShaderModule) {
-            return LN_MAKE_ERROR("Failed to create fragment shader module");
+            return LN_MAKE_ERROR_deprecated("Failed to create fragment shader module");
         }
         m_fragEntryPointName = createInfo.psEntryPointName;
     }
@@ -56,7 +56,7 @@ MaybeResult WebGPUShaderPass::init(
             createInfo.csCodeLen,
             createInfo.csEntryPointName);
         if (!m_nativeCompShaderModule) {
-            return LN_MAKE_ERROR("Failed to create compute shader module");
+            return LN_MAKE_ERROR_deprecated("Failed to create compute shader module");
         }
         m_compEntryPointName = createInfo.csEntryPointName;
     }
@@ -110,13 +110,13 @@ WGPUShaderModule WebGPUShaderPass::createShaderModule(
     shaderCodeDesc.code.length = sourceSize;
     WGPUShaderModule shaderModule = wgpuDeviceCreateShaderModule(nativeDevice, &shaderDesc);
     if (!shaderModule) {
-        LN_MAKE_ERROR("Failed wgpuDeviceCreateShaderModule");
+        LN_MAKE_ERROR_deprecated("Failed wgpuDeviceCreateShaderModule");
         return nullptr;
     }
     return shaderModule;
 }
 
-MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& createInfo) {
+MaybeResult_deprecated WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& createInfo) {
     WGPUDevice nativeDevice = m_wgpuDevice->wgpuDevice();
 
     // Build WGPUBindGroupLayoutEntry (b, t, s, u の各値をセットするスロットの定義)
@@ -125,7 +125,7 @@ MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
         const kokage::TargetBindingInfo& binding = createInfo.descriptorLayout->bindings[i];
         WGPUBindGroupLayoutEntry entry = WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT;
         if (binding.space != 0) {
-            return LN_MAKE_ERROR("(Not Implemented) Binding space must be 0");
+            return LN_MAKE_ERROR_deprecated("(Not Implemented) Binding space must be 0");
         }
 
         setupLayoutEntryDefault(&entry);
@@ -155,9 +155,9 @@ MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
                 entry.sampler.type = WGPUSamplerBindingType_Filtering;
                 break;
             case kokage::BindingResourceCategory_UnorderdAccess:
-                return LN_MAKE_ERROR_NOT_IMPLEMENTED();
+                return LN_MAKE_ERROR_NOT_IMPLEMENTED_deprecated();
              default:
-                return LN_MAKE_ERROR_UNREACHABLE();
+                return LN_MAKE_ERROR_UNREACHABLE_deprecated();
         }
 
         entries.push_back(entry);
@@ -170,7 +170,7 @@ MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
     bindGroupLayoutDesc.entries = entries.data();
     m_bindGroupLayout = wgpuDeviceCreateBindGroupLayout(nativeDevice, &bindGroupLayoutDesc);
     if (!m_bindGroupLayout) {
-        return LN_MAKE_ERROR("Failed wgpuDeviceCreateBindGroupLayout");
+        return LN_MAKE_ERROR_deprecated("Failed wgpuDeviceCreateBindGroupLayout");
     }
 
     // Create the pipeline layout
@@ -180,7 +180,7 @@ MaybeResult WebGPUShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
     layoutDesc.bindGroupLayouts = &m_bindGroupLayout;
     m_pipelineLayout = wgpuDeviceCreatePipelineLayout(nativeDevice, &layoutDesc);
     if (!m_pipelineLayout) {
-        return LN_MAKE_ERROR("Failed wgpuDeviceCreatePipelineLayout");
+        return LN_MAKE_ERROR_deprecated("Failed wgpuDeviceCreatePipelineLayout");
     }
     return LN_MAKE_SUCCESS();
 }

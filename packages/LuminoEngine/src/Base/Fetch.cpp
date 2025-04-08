@@ -21,7 +21,7 @@ public:
     FetchResponse response;
     std::string headers;
 
-    Result<> getSync(StringView url) {
+    Result_deprecated<> getSync(StringView url) {
         const std::string actualURL = url.toUtf8();
 
         CURL* curl;
@@ -82,7 +82,7 @@ public:
 };
 #endif
 
-Result<> FetchManager::initialize() {
+Result_deprecated<> FetchManager::initialize() {
 #ifdef LN_EMSCRIPTEN
 #else
     if (curl_global_init(CURL_GLOBAL_ALL) != 0) {

@@ -7,7 +7,7 @@ namespace kanata {
 class ScreenRectangleRenderFeature : public URefObject {
 public:
     ScreenRectangleRenderFeature(detail::RenderingManager* manager);
-    Result<> init();
+    Result_deprecated<> init();
 
     void drawScreenRectangle(BatchCollector* collector, Material* material) const;
 

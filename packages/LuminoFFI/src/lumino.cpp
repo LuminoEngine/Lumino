@@ -634,7 +634,7 @@ LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length
     //std::cout << "length: " << length << std::endl;
     //std::cout << "data[0]: " << static_cast<int>(data[0]) << std::endl;
     //std::cout << "data[1]: " << static_cast<int>(data[1]) << std::endl;
-    Result<Ref<Texture2D>> texture = Texture2D::createFromImageFileData(data, length);
+    Result_deprecated<Ref<Texture2D>> texture = Texture2D::createFromImageFileData(data, length);
     if (!texture) {
         return TO_FFI_ERROR(texture.error());
     }
@@ -927,7 +927,7 @@ LNResult LNWindow_Create(int32_t width, int32_t height, const LNChar* title, LNH
     options.clientWidth = width;
     options.clientHeight = height;
     options.title = String::fromUtf8(title);
-    Result<Ref<PlatformWindow>> window = platformManager->createWindow(options);
+    Result_deprecated<Ref<PlatformWindow>> window = platformManager->createWindow(options);
     if (!window) return TO_FFI_ERROR(window);
     *outWindow = ::Runtime::wrapObject(window.unwrap(), true);
     LN_FFI_TRY_END_RETURN;

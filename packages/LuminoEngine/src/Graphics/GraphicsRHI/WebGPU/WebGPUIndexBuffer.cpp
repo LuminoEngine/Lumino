@@ -10,10 +10,10 @@ WebGPUIndexBuffer::WebGPUIndexBuffer()
     , m_nativeBuffer(nullptr) {
 }
 
-MaybeResult WebGPUIndexBuffer::init(
+MaybeResult_deprecated WebGPUIndexBuffer::init(
     WebGPUDevice* device, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount,
     const void* initialData) {
-    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return LN_MAKE_ERROR();
+    if (!RHIResource::initAsIndexBuffer(usage, format, indexCount)) return LN_MAKE_ERROR_deprecated();
     m_device = device;
 
     if (format == IndexBufferFormat::UInt32) {
@@ -23,7 +23,7 @@ MaybeResult WebGPUIndexBuffer::init(
         m_indexFormat = WGPUIndexFormat_Uint16;
     }
     else {
-        return LN_MAKE_ERROR("Invalid index buffer format.");
+        return LN_MAKE_ERROR_deprecated("Invalid index buffer format.");
     }
 
     uint64_t memorySize = RHIHelper::getIndexStride(format) * indexCount;
@@ -34,7 +34,7 @@ MaybeResult WebGPUIndexBuffer::init(
     bufferDesc.mappedAtCreation = 0;
     m_nativeBuffer = wgpuDeviceCreateBuffer(device->wgpuDevice(), &bufferDesc);
     if (!m_nativeBuffer) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateBuffer() failed.");
+        return LN_MAKE_ERROR_deprecated("wgpuDeviceCreateBuffer() failed.");
     }
 
     if (initialData) {

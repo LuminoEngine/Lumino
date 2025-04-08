@@ -432,13 +432,13 @@ void Bitmap2D::load(const StringView& filePath)
     load(file);
 }
 
-MaybeResult Bitmap2D::load(Stream* stream) {
+MaybeResult_deprecated Bitmap2D::load(Stream* stream) {
     auto diag = makeObject_deprecated<DiagnosticsManager>();
 
     auto decoder = detail::IBitmapDecoder::load(stream, diag);
 
     diag->dumpToLog();
-    if (!diag->succeeded()) return LN_MAKE_ERROR();
+    if (!diag->succeeded()) return LN_MAKE_ERROR_deprecated();
 
     detail::BitmapFrame* frame = decoder->getBitmapFrame();
     m_buffer = frame->data;

@@ -748,7 +748,7 @@ std::vector<const char*> VulkanHelper::checkValidationLayerSupport() {
     return result;
 }
 
-Result<> VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView) {
+Result_deprecated<> VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView) {
     LN_CHECK(deviceContext);
     LN_CHECK(mipLevel >= 1);
 
@@ -802,7 +802,7 @@ AbstractVulkanAllocator::AbstractVulkanAllocator()
     : m_allocatorCallbacks() {
 }
 
-Result<> AbstractVulkanAllocator::init() {
+Result_deprecated<> AbstractVulkanAllocator::init() {
     m_allocatorCallbacks.pfnAllocation = AllocCallback;
     m_allocatorCallbacks.pfnFree = FreeCallback;
     m_allocatorCallbacks.pfnReallocation = ReallocCallback;
@@ -820,7 +820,7 @@ VulkanAllocator::VulkanAllocator()
     , m_allocationSize{} {
 }
 
-Result<> VulkanAllocator::init() {
+Result_deprecated<> VulkanAllocator::init() {
     return AbstractVulkanAllocator::init();
 }
 
@@ -860,7 +860,7 @@ VulkanLinearAllocator::VulkanLinearAllocator()
     : m_linearAllocator(nullptr) {
 }
 
-Result<> VulkanLinearAllocator::init() {
+Result_deprecated<> VulkanLinearAllocator::init() {
     return AbstractVulkanAllocator::init();
 }
 
@@ -887,7 +887,7 @@ void VulkanLinearAllocator::free(void* ptr) noexcept {
 VulkanImage::VulkanImage() {
 }
 
-Result<> VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags) {
+Result_deprecated<> VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkSampleCountFlagBits numSamples, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags) {
     LN_DCHECK(deviceContext);
     LN_CHECK(mipLevel >= 1);
     m_deviceContext = deviceContext;
@@ -935,7 +935,7 @@ Result<> VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t
     return ok();
 }
 
-Result<> VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
+Result_deprecated<> VulkanImage::initWrap(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView) {
     LN_DCHECK(deviceContext);
     m_externalManagement = true;
     m_width = width;
@@ -972,7 +972,7 @@ VulkanRenderPass::VulkanRenderPass()
     , m_loadOpClear(false) {
 }
 
-Result<> VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear) {
+Result_deprecated<> VulkanRenderPass::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear) {
     LN_CHECK(deviceContext);
     m_deviceContext = deviceContext;
     m_loadOpClear = m_loadOpClear;
@@ -1177,7 +1177,7 @@ void VulkanRenderPass::dispose() {
 //{
 //}
 //
-//Result<> VulkanRenderPassCache::init(VulkanDevice* deviceContext)
+//Result_deprecated<> VulkanRenderPassCache::init(VulkanDevice* deviceContext)
 //{
 //    LN_DCHECK(deviceContext);
 //    m_deviceContext = deviceContext;
@@ -1229,7 +1229,7 @@ void VulkanRenderPass::dispose() {
 VulkanFramebuffer::VulkanFramebuffer() {
 }
 
-Result<> VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state /*, bool loadOpClear*/, uint64_t hash) {
+Result_deprecated<> VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state /*, bool loadOpClear*/, uint64_t hash) {
     LN_CHECK(deviceContext);
     LN_CHECK(ownerRenderPass);
     m_deviceContext = deviceContext;

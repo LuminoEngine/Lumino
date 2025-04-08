@@ -1,5 +1,43 @@
 ﻿#pragma once
+#include <tl/expected.hpp>
 #include "String.hpp"
+
+namespace ln {
+
+/**
+ * Dummy Value. It is provided for std::expected or tl::expected use. 
+ * Lumino communicates details by logging errors, so there are no plans to make error codes more specific. (yet)
+ */
+enum class ErrorCode {
+    Unknown = 0,
+};
+
+template<class T>
+using Result = tl::expected<T, ErrorCode>;
+
+using MaybeResult = tl::expected<void, ErrorCode>;
+
+#define LN_MAKE_SUCCESS() {}
+#define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
+#define LN_MAKE_ERROR_UNREACHABLE() LN_MAKE_ERROR("Unreachable code reached.")
+#define LN_MAKE_ERROR_NOT_IMPLEMENTED() LN_MAKE_ERROR("Not implemented.")
+
+/** A macro to use during the migration period, which throws an exception if it fails. */
+#define LN_ASSERT_RESULT(result) LN_ASSERT(!result)
+
+namespace detail {
+
+inline std::string formatString() { return {}; }
+std::string formatString(const char* format, ...);
+tl::unexpected<ErrorCode> makeInternalError(const std::string& message, const char* file, const char* function, int line);
+
+} // namespace detail
+} // namespace ln
+
+//==============================================================================
+// !!! DEPRECATED following !!!
+// std::expected 標準化への対応を見据えて、独自の Result 型は廃止します。
+//==============================================================================
 
 #define LN_RESULT_BOOL_CONVERSION 1
 
@@ -8,20 +46,17 @@ namespace ln {
 template<class T>
 String toString(const T& value);
 
-enum class ErrorCode {
-    Unknown = 0,
-};
 
 //==============================================================================
-// OkType
+// OkType_deprecated
 
 template<typename T>
-struct OkType {
-    OkType(const T& val)
+struct OkType_deprecated {
+    OkType_deprecated(const T& val)
         : val(val)
     {}
 
-    OkType(T&& val)
+    OkType_deprecated(T&& val)
         : val(std::move(val))
     {}
 
@@ -30,8 +65,8 @@ struct OkType {
 
 
 template<typename T>
-struct OkType<T&> {
-    OkType(T& val)
+struct OkType_deprecated<T&> {
+    OkType_deprecated(T& val)
         : val(val)
     {}
 
@@ -39,31 +74,31 @@ struct OkType<T&> {
 };
 
 template<>
-struct OkType<void> {};
+struct OkType_deprecated<void> {};
 
 //==============================================================================
-// ErrType
+// ErrType_deprecated
 
 //struct DefaultTag {};
 
 template<typename E>
-struct ErrType {
-    ErrType(const E& val)
+struct ErrType_deprecated {
+    ErrType_deprecated(const E& val)
         : val(val)
     {}
 
-    ErrType(E&& val)
+    ErrType_deprecated(E&& val)
         : val(std::move(val))
     {}
 
     E val;
 };
 
-struct DefaultErrType {};
+struct DefaultErrType_deprecated {};
 
 //template<>
-//struct ErrType<DefaultTag> {
-//    ErrType() {}
+//struct ErrType_deprecated<DefaultTag> {
+//    ErrType_deprecated() {}
 //};
 
 
@@ -71,41 +106,41 @@ struct DefaultErrType {};
 // ok /err
 
 //template<typename T, typename CleanT = typename std::decay<T>::type>
-//OkType<CleanT> ok(T&& val) {
-//    return OkType<CleanT>(std::forward<T>(val));
+//OkType_deprecated<CleanT> ok(T&& val) {
+//    return OkType_deprecated<CleanT>(std::forward<T>(val));
 //}
 template<typename T>
-OkType<T> ok(T&& val) {
-    return OkType<T>(std::forward<T>(val));
+OkType_deprecated<T> ok(T&& val) {
+    return OkType_deprecated<T>(std::forward<T>(val));
 }
-//OkType<void> ok() {
-//    return OkType<void>();
+//OkType_deprecated<void> ok() {
+//    return OkType_deprecated<void>();
 //}
 
-inline OkType<void> ok() {
-    return OkType<void>();
+inline OkType_deprecated<void> ok() {
+    return OkType_deprecated<void>();
 }
 
 template<typename E, typename CleanE = typename std::decay<E>::type>
-ErrType<CleanE> err(E&& val) {
-    return ErrType<CleanE>(std::forward<E>(val));
+ErrType_deprecated<CleanE> err(E&& val) {
+    return ErrType_deprecated<CleanE>(std::forward<E>(val));
 }
 
-//inline ErrType<DefaultTag> err() {
-//    return ErrType<DefaultTag>();
+//inline ErrType_deprecated<DefaultTag> err() {
+//    return ErrType_deprecated<DefaultTag>();
 //}
-inline DefaultErrType err() {
-    return DefaultErrType();
+inline DefaultErrType_deprecated err() {
+    return DefaultErrType_deprecated();
 }
 
-class ResultBase {
+class ResultBase_deprecated {
 public:
-    typedef String (*Serializer)(const ResultBase* self);
+    typedef String (*Serializer)(const ResultBase_deprecated* self);
 
-    ResultBase(Serializer serializer)
+    ResultBase_deprecated(Serializer serializer)
         : m_serializer(serializer) {}
-    virtual ~ResultBase() = default;
-    virtual std::unique_ptr<ResultBase> moveBoxing() = 0;
+    virtual ~ResultBase_deprecated() = default;
+    virtual std::unique_ptr<ResultBase_deprecated> moveBoxing() = 0;
     //String toString() const { return m_serializer(this); }
     virtual String toString() const = 0;
 
@@ -114,89 +149,89 @@ public:
 
 namespace detail {
 
-inline std::string formatString() { return {}; }
-std::string formatString(const char* format, ...);
-ErrType<ErrorCode> makeInternalError(const std::string& message, const char* file, const char* function, int line);
+inline std::string formatString_deprecated() { return {}; }
+std::string formatString_deprecated(const char* format, ...);
+ErrType_deprecated<ErrorCode> makeInternalError_deprecated(const std::string& message, const char* file, const char* function, int line);
 
 } // namespace detail
 
 #define LN_MAKE_SUCCESS() {}
-#define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
-#define LN_MAKE_ERROR_UNREACHABLE() LN_MAKE_ERROR("Unreachable code reached.")
-#define LN_MAKE_ERROR_NOT_IMPLEMENTED() LN_MAKE_ERROR("Not implemented.")
+#define LN_MAKE_ERROR_deprecated(...) ::ln::detail::makeInternalError_deprecated(::ln::detail::formatString_deprecated(__VA_ARGS__), __FILE__, __func__, __LINE__);
+#define LN_MAKE_ERROR_UNREACHABLE_deprecated() LN_MAKE_ERROR_deprecated("Unreachable code reached.")
+#define LN_MAKE_ERROR_NOT_IMPLEMENTED_deprecated() LN_MAKE_ERROR_deprecated("Not implemented.")
 
 //==============================================================================
-// BasicResult
+// BasicResult_deprecated
 
 /** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
 template<typename T = void, typename E = bool>
-class [[nodiscard]] BasicResult : public ResultBase {
+class [[nodiscard]] BasicResult_deprecated : public ResultBase_deprecated {
 public:
-    BasicResult(T&& ok)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(T&& ok)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(true)
         , ok_v(std::forward<T>(ok))
     {
     }
 
-    BasicResult(OkType<T> ok)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(OkType_deprecated<T> ok)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(true)
         , ok_v(std::move(ok.val)) {
     }
 
-    BasicResult(ErrType<E> err)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(ErrType_deprecated<E> err)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
-    BasicResult(DefaultErrType)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(DefaultErrType_deprecated)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v{}
     {
     }
 
     template<class U>
-    BasicResult(OkType<U> ok)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(OkType_deprecated<U> ok)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(true)
         , ok_v(std::move(ok.val)) {
     }
 
     /** Converting copy constructor. */
     template<class U>
-    BasicResult(ErrType<U> err)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(ErrType_deprecated<U> err)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
     /** Boxing copy(move) constructor. */
     template<class UT, class UE>
-    BasicResult(BasicResult<UT, UE>& other)
-        : ResultBase(toStringInternal) 
+    BasicResult_deprecated(BasicResult_deprecated<UT, UE>& other)
+        : ResultBase_deprecated(toStringInternal) 
         , ok_(other.isOk())
         , err_v{}
         , internalResult_(other.moveBoxing()) {
     }
 
 #if defined(LN_RESULT_BOOL_CONVERSION)
-    explicit BasicResult(bool result)
-        : ResultBase(toStringInternal)
+    explicit BasicResult_deprecated(bool result)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(result)
         , ok_v{} {
     }
 #endif
 
-    //BasicResult(BasicResult&& other) {
+    //BasicResult_deprecated(BasicResult_deprecated&& other) {
     //}
 
-    //BasicResult(const BasicResult& other) {
+    //BasicResult_deprecated(const BasicResult_deprecated& other) {
     //}
 
-    ~BasicResult() {
+    ~BasicResult_deprecated() {
         if (ok_) {
             ok_v.~T();
         }
@@ -293,8 +328,8 @@ public:
         return ok_;
     }
 
-    std::unique_ptr<ResultBase> moveBoxing() override {
-        return std::unique_ptr<ResultBase>(new BasicResult<T, E>(std::move(*this)));
+    std::unique_ptr<ResultBase_deprecated> moveBoxing() override {
+        return std::unique_ptr<ResultBase_deprecated>(new BasicResult_deprecated<T, E>(std::move(*this)));
     }
     
     String toString() const override {
@@ -303,20 +338,20 @@ public:
         return ln::toString(err_v);
     }
 
-    static String toStringInternal(const ResultBase* s) {
-        const auto* self = static_cast<const BasicResult*>(s);
+    static String toStringInternal(const ResultBase_deprecated* s) {
+        const auto* self = static_cast<const BasicResult_deprecated*>(s);
         if (self->isOk()) return {};
         if (self->internalResult_) return ln::toString(self->err_v) + U"\n" + self->internalResult_->toString();
         return ln::toString(self->err_v);
     }
 
 private:
-    //BasicResult() 
-    //    : ResultBase(toStringInternal)
+    //BasicResult_deprecated() 
+    //    : ResultBase_deprecated(toStringInternal)
     //{}
 
-    BasicResult(BasicResult&& other)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(BasicResult_deprecated&& other)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(other.ok_)
         , err_v(std::move(other.err_v))
         , internalResult_(std::move(other.internalResult_)) {
@@ -327,46 +362,46 @@ private:
         T ok_v;
         E err_v;
     };
-    std::unique_ptr<ResultBase> internalResult_;
+    std::unique_ptr<ResultBase_deprecated> internalResult_;
 };
 
 // for reference
 template<typename T, typename E>
-class BasicResult<T&, E> : public ResultBase {
+class BasicResult_deprecated<T&, E> : public ResultBase_deprecated {
 public:
-    BasicResult(OkType<T&> ok)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(OkType_deprecated<T&> ok)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(true)
         , ok_v(&ok.val) {
     }
 
-    BasicResult(ErrType<E> err)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(ErrType_deprecated<E> err)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
-    BasicResult(DefaultErrType)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(DefaultErrType_deprecated)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v{} {
     }
 
 #if defined(LN_RESULT_BOOL_CONVERSION)
-    explicit BasicResult(bool result)
-        : ResultBase(toStringInternal)
+    explicit BasicResult_deprecated(bool result)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(result)
         , ok_v{} {
     }
 #endif
 
-    //BasicResult(BasicResult&& other) {
+    //BasicResult_deprecated(BasicResult_deprecated&& other) {
     //}
 
-    //BasicResult(const BasicResult& other) {
+    //BasicResult_deprecated(const BasicResult_deprecated& other) {
     //}
 
-    ~BasicResult() {
+    ~BasicResult_deprecated() {
         if (!ok_) {
             err_v.~E();
         }
@@ -439,8 +474,8 @@ public:
         return ok_;
     }
 
-    std::unique_ptr<ResultBase> moveBoxing() override {
-        return std::unique_ptr<ResultBase>(new BasicResult<T&, E>(std::move(*this)));
+    std::unique_ptr<ResultBase_deprecated> moveBoxing() override {
+        return std::unique_ptr<ResultBase_deprecated>(new BasicResult_deprecated<T&, E>(std::move(*this)));
     }
 
     String toString() const override {
@@ -448,14 +483,14 @@ public:
         return U"";
     }
 
-    static String toStringInternal(const ResultBase* s) {
+    static String toStringInternal(const ResultBase_deprecated* s) {
         LN_NOTIMPLEMENTED();
         return U"";
     }
 
 private:
-    BasicResult(BasicResult&& other)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(BasicResult_deprecated&& other)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(other.ok_)
         , err_v(std::move(other.err_v))
         , internalResult_(std::move(other.internalResult_)) {
@@ -466,61 +501,61 @@ private:
         T* ok_v;
         E err_v;
     };
-    std::unique_ptr<ResultBase> internalResult_;
+    std::unique_ptr<ResultBase_deprecated> internalResult_;
 };
 
 // void type
 template<typename E>
-class BasicResult<void, E> : public ResultBase {
+class BasicResult_deprecated<void, E> : public ResultBase_deprecated {
 public:
-    BasicResult()
-		: ResultBase(toStringInternal)
+    BasicResult_deprecated()
+		: ResultBase_deprecated(toStringInternal)
 		, ok_(true) {
 	}
 
-    BasicResult(OkType<void> ok)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(OkType_deprecated<void> ok)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(true) {
     }
 
-    BasicResult(ErrType<E> err)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(ErrType_deprecated<E> err)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
-    BasicResult(DefaultErrType)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(DefaultErrType_deprecated)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v{} {
     }
 
     /** Converting copy constructor. */
     template<class U>
-    BasicResult(ErrType<U> err)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(ErrType_deprecated<U> err)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v(std::move(err.val)) {
     }
 
     /** Boxing copy(move) constructor. */
     template<class UT, class UE>
-    BasicResult(BasicResult<UT, UE>& other)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(BasicResult_deprecated<UT, UE>& other)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(false)
         , err_v{}
         , internalResult_(other.moveBoxing()) {
     }
 
     /** Boxing copy(move) constructor. */
-    BasicResult(BasicResult& other)
-        : ResultBase(toStringInternal)
+    BasicResult_deprecated(BasicResult_deprecated& other)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(other.ok_)
         , err_v{}
         , internalResult_(other.moveBoxing()) {
     }
 
-    //BasicResult(ResultBase&& other)
+    //BasicResult_deprecated(ResultBase_deprecated&& other)
     //    : ok_(false)
     //    , err_v{}
     //    , internalResult_(other.moveBoxing()) {
@@ -528,20 +563,20 @@ public:
 
 
 #if defined(LN_RESULT_BOOL_CONVERSION)
-    explicit BasicResult(bool result)
-        : ResultBase(toStringInternal)
+    explicit BasicResult_deprecated(bool result)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(result)
         , err_v{} {
     }
 #endif
 
-    //BasicResult(BasicResult&& other) {
+    //BasicResult_deprecated(BasicResult_deprecated&& other) {
     //}
 
-    //BasicResult(const BasicResult& other) {
+    //BasicResult_deprecated(const BasicResult_deprecated& other) {
     //}
 
-    ~BasicResult() {
+    ~BasicResult_deprecated() {
         if (!ok_) {
             err_v.~E();
         }
@@ -569,8 +604,8 @@ public:
 
     constexpr explicit operator bool() const noexcept { return ok_; }
 
-    std::unique_ptr<ResultBase> moveBoxing() override {
-        return std::unique_ptr<ResultBase>(new BasicResult<void, E>(std::move(*this), true));
+    std::unique_ptr<ResultBase_deprecated> moveBoxing() override {
+        return std::unique_ptr<ResultBase_deprecated>(new BasicResult_deprecated<void, E>(std::move(*this), true));
     }
     
     String toString() const override {
@@ -579,19 +614,19 @@ public:
         return ln::toString(err_v);
     }
 
-    static String toStringInternal(const ResultBase* s) {
-        const auto* self = static_cast<const BasicResult*>(s);
+    static String toStringInternal(const ResultBase_deprecated* s) {
+        const auto* self = static_cast<const BasicResult_deprecated*>(s);
         if (self->isOk()) return {};
         if (self->internalResult_) return ln::toString(self->err_v) + U"\n" + self->internalResult_->toString();
         return ln::toString(self->err_v);
     }
 
 private:
-    //BasicResult()
-    //    : ResultBase(toStringInternal) {}
+    //BasicResult_deprecated()
+    //    : ResultBase_deprecated(toStringInternal) {}
 
-    explicit BasicResult(BasicResult&& other, bool)
-        : ResultBase(toStringInternal)
+    explicit BasicResult_deprecated(BasicResult_deprecated&& other, bool)
+        : ResultBase_deprecated(toStringInternal)
         , ok_(other.ok_)
         , err_v(std::move(other.err_v))
         , internalResult_(std::move(other.internalResult_)) {
@@ -599,7 +634,7 @@ private:
 
     bool ok_;
     E err_v;
-    std::unique_ptr<ResultBase> internalResult_;
+    std::unique_ptr<ResultBase_deprecated> internalResult_;
 };
 
 
@@ -608,7 +643,7 @@ private:
 
 
 /** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling */
-using ResultV = BasicResult<void, ErrorCode>;
+using ResultV_deprecated = BasicResult_deprecated<void, ErrorCode>;
 
 /** @see https://github.com/LuminoEngine/Lumino/wiki/ErrorHandling
  *
@@ -653,12 +688,12 @@ using ResultV = BasicResult<void, ErrorCode>;
  * 型の機能以上に、 Lumino の Result を返す関数は上記のようなコンセプトでエラー処理を行っていることを示したいからです。
  */
 template<class T = void>
-using Result = BasicResult<T, ErrorCode>;
+using Result_deprecated = BasicResult_deprecated<T, ErrorCode>;
 
 template<class T>
-using GenericResult = BasicResult<T, ErrorCode>;
+using GenericResult_deprecated = BasicResult_deprecated<T, ErrorCode>;
 
-using MaybeResult = BasicResult<void, ErrorCode>;
+using MaybeResult_deprecated = BasicResult_deprecated<void, ErrorCode>;
 
 template<>
 inline String toString<int>(const int& v) {
@@ -676,14 +711,14 @@ inline String toString<ErrorCode>(const ErrorCode& e) {
 }
 
 template<class TResultValue, class TResultError>
-inline String toString(const BasicResult<TResultValue, TResultError>& e) {
+inline String toString(const BasicResult_deprecated<TResultValue, TResultError>& e) {
     return e.toString();
 }
 
 } // namespace ln
 
 #define LN_DEFINE_RESULT_ALIAS \
-    using Result = ln::BasicResult<void, ln::ErrorCode>; \
+    using Result = ln::BasicResult_deprecated<void, ln::ErrorCode>; \
     template<typename... Args> \
     auto ok(Args&&... args)->decltype(ln::ok(std::forward<Args>(args)...)) { return ln::ok(std::forward<Args>(args)...); } \
     template<typename... Args> \

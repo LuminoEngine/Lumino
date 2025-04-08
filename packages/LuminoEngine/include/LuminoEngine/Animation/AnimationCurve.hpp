@@ -101,7 +101,7 @@ LN_CONSTRUCT_ACCESS:
 
     /** init */
     LN_METHOD()
-    Result<> init();
+    Result_deprecated<> init();
 
 protected:
     // AnimationCurve interface
