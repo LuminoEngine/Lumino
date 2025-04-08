@@ -28,28 +28,6 @@ const char* RuntimeStringBuffer::getAscii() {
 //==============================================================================
 // RuntimeManager
 
-URef<RuntimeManager> RuntimeManager::s_instance;
-
-MaybeResult RuntimeManager::initialize(const Settings& settings) {
-    if (s_instance) {
-        return LN_MAKE_SUCCESS();
-    }
-
-    s_instance = URef<RuntimeManager>(LN_NEW RuntimeManager());
-    auto result = s_instance->init(settings);
-    if (!result) {
-        return result;
-    }
-    return LN_MAKE_SUCCESS();
-}
-
-void RuntimeManager::terminate() {
-    if (s_instance) {
-        s_instance->dispose();
-        s_instance = nullptr;
-    }
-}
-
 RuntimeManager::RuntimeManager()
     : m_systemAliving(false) {
 }
@@ -57,10 +35,10 @@ RuntimeManager::RuntimeManager()
 RuntimeManager::~RuntimeManager() {
 }
 
-MaybeResult RuntimeManager::init(const Settings& settings) {
+MaybeResult RuntimeManager::init(const Options& options) {
     LN_LOG_DEBUG("RuntimeManager Initialization started.");
 
-    m_settings = settings;
+    m_options = options;
 
     setAStringEncoding(TextEncoding::utf8Encoding());
 
@@ -108,11 +86,11 @@ void RuntimeManager::dispose() {
     }
 
     m_systemAliving = false;
-    m_settings.referenceCountTrackerCallback = nullptr;
+    m_options.referenceCountTrackerCallback = nullptr;
 
-    if (m_settings.runtimeFinalizedCallback) {
-        m_settings.runtimeFinalizedCallback();
-        m_settings.runtimeFinalizedCallback = nullptr;
+    if (m_options.runtimeFinalizedCallback) {
+        m_options.runtimeFinalizedCallback();
+        m_options.runtimeFinalizedCallback = nullptr;
     }
 
     LN_LOG_DEBUG("RuntimeManager finalization finished.");
@@ -276,17 +254,17 @@ void RuntimeManager::setReferenceTrackEnabled(LNHandle handle) {
 }
 
 void RuntimeManager::onRetainedObject(Object* obj) {
-    if (m_settings.referenceCountTrackerCallback) {
+    if (m_options.referenceCountTrackerCallback) {
         if (auto runtimeData = detail::ObjectHelper::getRuntimeData(obj)) {
-            m_settings.referenceCountTrackerCallback(runtimeData->index, LNI_REFERENCE_RETAINED, RefObjectHelper::getReferenceCount(obj));
+            m_options.referenceCountTrackerCallback(runtimeData->index, LNI_REFERENCE_RETAINED, RefObjectHelper::getReferenceCount(obj));
         }
     }
 }
 
 void RuntimeManager::onReleasedObject(Object* obj) {
-    if (m_settings.referenceCountTrackerCallback) {
+    if (m_options.referenceCountTrackerCallback) {
         if (auto runtimeData = detail::ObjectHelper::getRuntimeData(obj)) {
-            m_settings.referenceCountTrackerCallback(runtimeData->index, LNI_REFERENCE_RELEASED, RefObjectHelper::getReferenceCount(obj));
+            m_options.referenceCountTrackerCallback(runtimeData->index, LNI_REFERENCE_RELEASED, RefObjectHelper::getReferenceCount(obj));
         }
     }
 }

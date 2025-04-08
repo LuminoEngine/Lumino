@@ -62,11 +62,13 @@ public:
 };
 
 LNHandle Runtime::wrapObject(Object* obj, bool fromCreate) {
-    return detail::RuntimeManager::instance()->makeObjectWrap(obj, fromCreate);
+    auto* manager = ln::EngineInstance::instance()->runtimeManager().get();
+    return manager->makeObjectWrap(obj, fromCreate);
 }
 
 Object* Runtime::getObject(LNHandle handle) {
-    return detail::RuntimeManager::instance()->getObjectEntry(handle)->object;
+    auto* manager = ln::EngineInstance::instance()->runtimeManager().get();
+    return manager->getObjectEntry(handle)->object;
 }
 } // namespace ln
 
@@ -972,23 +974,23 @@ LNResult LNWindow_Present(LNHandle window) {
 // LNObject
 
 LNResult LNObject_Release(LNHandle obj) {
-    if (detail::RuntimeManager* manager = detail::RuntimeManager::instance()) {
-        manager->releaseObjectExplicitly(obj);
-        return LN_OK;
-    }
-    else {
-        return LN_RUNTIME_UNINITIALIZED;
-    }
+    LN_FFI_TRY_BEGIN;
+    auto* instance = ln::EngineInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED; 
+    auto* manager = instance->runtimeManager().get();
+    if (!manager) return LN_RUNTIME_UNINITIALIZED;
+    manager->releaseObjectExplicitly(obj);
+    LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNObject_Retain(LNHandle obj) {
-    if (detail::RuntimeManager* manager = detail::RuntimeManager::instance()) {
-        manager->retainObjectExplicitly(obj);
-        return LN_OK;
-    }
-    else {
-        return LN_RUNTIME_UNINITIALIZED;
-    }
+    LN_FFI_TRY_BEGIN;
+    auto* instance = ln::EngineInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    auto* manager = instance->runtimeManager().get();
+    if (!manager) return LN_RUNTIME_UNINITIALIZED;
+    manager->retainObjectExplicitly(obj);
+    LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNObject_GetReferenceCount(LNHandle obj, int32_t* outReturn) {

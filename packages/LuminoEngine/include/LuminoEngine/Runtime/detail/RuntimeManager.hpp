@@ -47,15 +47,16 @@ class RuntimeManager
     : public URefObject
     , public IObjectEventListener {
 public:
-    struct Settings {
+    struct Options {
         LNInstanceFinalizedCallback runtimeFinalizedCallback = nullptr;
         LNReferenceCountTrackerCallback referenceCountTrackerCallback = nullptr;
         LNInstanceGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
     };
 
-    static MaybeResult initialize(const Settings& settings);
-    static void terminate();
-    static inline RuntimeManager* instance() { return s_instance.get(); }
+    RuntimeManager();
+    virtual ~RuntimeManager();
+    MaybeResult init(const Options& options);
+    void dispose();
 
     // create の時は想定通りの動作。externalRefCount=1 の状態で作られる。
     // get の場合も同様に作られる。基本方針は COM と同じく、Get したものは Release で解放するべきだが、
@@ -89,12 +90,7 @@ public:
     TextEncoding* getAStringEncoding() const;
 
 private:
-    RuntimeManager();
-    virtual ~RuntimeManager();
-    MaybeResult init(const Settings& settings);
-    void dispose();
-
-    Settings m_settings;
+    Options m_options;
     List<ObjectEntry> m_objectEntryList;
     std::stack<int> m_objectIndexStack;
     bool m_systemAliving;

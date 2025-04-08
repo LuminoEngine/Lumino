@@ -43,6 +43,7 @@ public:
     // TODO:
     RefObject* shaderManager = nullptr;
 
+    const URef<detail::RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
     const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
@@ -63,6 +64,7 @@ private:
     List<Ref<Module>> m_modules;
     Ref<Dispatcher> m_mainThreadTaskDispatcher;
     Ref<DiagnosticsManager> m_activeDiagnostics;
+    URef<detail::RuntimeManager> m_runtimeManager;
     URef<detail::AssetManager> m_assetManager;
     Ref<GraphicsManager> m_graphicsManager;
     Ref<detail::PlatformManager> m_platformManager;

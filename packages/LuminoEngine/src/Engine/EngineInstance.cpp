@@ -58,7 +58,6 @@ MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
     TaskScheduler::init();
     m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 #endif
-    //detail::FetchManager::initialize();
 
     {
         m_activeDiagnostics = makeObject_deprecated<DiagnosticsManager>();
@@ -127,11 +126,10 @@ void EngineInstance::dispose() {
         m_assetManager->dispose();
         m_assetManager = nullptr;
     }
-
-
-    detail::RuntimeManager::terminate();
-
-    //detail::FetchManager::terminate();
+    if (m_runtimeManager) {
+        m_runtimeManager->dispose();
+        m_runtimeManager = nullptr;
+    }
 
 #ifdef LN_EMSCRIPTEN
 #else
@@ -144,11 +142,12 @@ void EngineInstance::dispose() {
 }
 
 MaybeResult EngineInstance::initializeRuntimeManager() {
-    detail::RuntimeManager::Settings opt;
-    auto result = detail::RuntimeManager::initialize(opt);
-    if (!result) {
-        return result;
-    }
+    if (m_runtimeManager) return LN_MAKE_SUCCESS();
+    detail::RuntimeManager::Options options = {};
+    URef<detail::RuntimeManager> manager(LN_NEW detail::RuntimeManager());
+    auto result = manager->init(options);
+    if (!result) return result;
+    m_runtimeManager = std::move(manager);
     return LN_MAKE_SUCCESS();
 }
 
