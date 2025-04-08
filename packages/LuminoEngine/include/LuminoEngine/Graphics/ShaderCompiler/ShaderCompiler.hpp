@@ -14,30 +14,30 @@ class GlobalShaderPass;
 
 class ShaderCompiler final : public URefObject {
 public:
-    static Result_deprecated<URef<ShaderCompiler>> create();
+    static Result<URef<ShaderCompiler>> create();
 
-    MaybeResult_deprecated build(const fs::path& inputFilePath);
+    MaybeResult build(const fs::path& inputFilePath);
     const Ref<UnifiedShader2>& shader() const { return m_shader; }
 
 private:
     ShaderCompiler();
     ~ShaderCompiler() override;
-    MaybeResult_deprecated init();
-    MaybeResult_deprecated buildModule();
-    MaybeResult_deprecated buildInputResources(int targetIndex);
-    MaybeResult_deprecated buildTarget(ShaderTarget target, int targetIndex);
-    MaybeResult_deprecated buildEntryPoint(ShaderTarget target, int targetIndex, int entryPointIndex);
-    MaybeResult_deprecated buildTargetShaderPass(
+    MaybeResult init();
+    MaybeResult buildModule();
+    MaybeResult buildInputResources(int targetIndex);
+    MaybeResult buildTarget(ShaderTarget target, int targetIndex);
+    MaybeResult buildEntryPoint(ShaderTarget target, int targetIndex, int entryPointIndex);
+    MaybeResult buildTargetShaderPass(
         ShaderTarget target, int targetIndex, GlobalShaderPass* globalShaderPass);
 
-    static MaybeResult_deprecated getBindingResourceInfo(
+    static MaybeResult getBindingResourceInfo(
         slang::VariableLayoutReflection* parameter,
         std::string* outName,
         RegisterCategory* outRegisterCategory,
         int* outConstantBufferSize,
         int* outArrayElementCount);
 
-    //MaybeResult_deprecated buildTargetInputResources(
+    //MaybeResult buildTargetInputResources(
     //    ShaderTarget target,
     //    int targetIndex,
     //    TargetShaderPass* ownerShaderPass,
@@ -46,9 +46,9 @@ private:
         slang::VariableLayoutReflection* var,
         const std::function<void(slang::VariableLayoutReflection* var)>& callback);
 
-    MaybeResult_deprecated mergeTargetInputResources();
+    MaybeResult mergeTargetInputResources();
 
-    Result_deprecated<VertexInputAttribute> makeVertexInputAttribute(
+    Result<VertexInputAttribute> makeVertexInputAttribute(
         const std::string& varName,
         const std::string& semanticName,
         int semanticIndex,

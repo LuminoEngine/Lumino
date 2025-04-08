@@ -24,6 +24,7 @@ using MaybeResult = tl::expected<void, ErrorCode>;
 
 /** A macro to use during the migration period, which throws an exception if it fails. */
 #define LN_ASSERT_RESULT(result) LN_ASSERT(!!result)
+#define LN_TO_ERROR(result) ::ln::detail::toError(result)
 
 namespace detail {
 
@@ -714,6 +715,19 @@ template<class TResultValue, class TResultError>
 inline String toString(const BasicResult_deprecated<TResultValue, TResultError>& e) {
     return e.toString();
 }
+
+namespace detail {
+
+template<class T>
+inline tl::unexpected<ErrorCode> toError(const tl::expected<T, ErrorCode>& result) {
+    return tl::make_unexpected(result.error());
+}
+template<class T>
+inline tl::unexpected<ErrorCode> toError(const BasicResult_deprecated<T, ErrorCode>& result) {
+    return tl::make_unexpected(result.unwrapErr());
+}
+
+} // namespace detail
 
 } // namespace ln
 
