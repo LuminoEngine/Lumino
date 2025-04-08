@@ -50,8 +50,14 @@ void TestEnv::initialize() {
 
 void TestEnv::terminate() {
     LNObject_Release(viewPoint);
+
+#if LN_TEST_EXTERNAL_OPENGL_CONTEXT
     LNObject_Release(surfaceContext);
     ln::Engine::terminate();
+#else
+    LNObject_Release(mainWindow);
+    LNInstance_Terminate();
+#endif
 }
 
 void TestEnv::present() {

@@ -52,6 +52,7 @@ private:
     EngineInstance();
     MaybeResult_deprecated init(const RuntimeModuleSettings& settings);
     void dispose();
+    MaybeResult_deprecated initializeRuntimeManager();
     MaybeResult_deprecated initializeGraphicsManager();
     MaybeResult_deprecated initializePlatformManager();
 

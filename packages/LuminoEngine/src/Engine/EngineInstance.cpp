@@ -67,11 +67,8 @@ MaybeResult_deprecated EngineInstance::init(const RuntimeModuleSettings& setting
     }
 
     {
-        detail::RuntimeManager::Settings opt;
-        auto result = detail::RuntimeManager::initialize(opt);
-        if (!result) {
-            return result;
-        }
+        MaybeResult_deprecated result = initializeRuntimeManager();
+        if (!result) return result;
     }
     {
         detail::AssetManager::Settings settings2;
@@ -104,15 +101,11 @@ MaybeResult_deprecated EngineInstance::init(const RuntimeModuleSettings& setting
 
     {
         MaybeResult_deprecated result = initializeGraphicsManager();
-        if (!result) {
-            return result;
-        }
+        if (!result) return result;
     }
     {
         MaybeResult_deprecated result = initializePlatformManager();
-        if (!result) {
-            return result;
-        }
+        if (!result) return result;
     }
 
 
@@ -148,6 +141,15 @@ void EngineInstance::dispose() {
     }
     TaskScheduler::finalizeInternal();
 #endif
+}
+
+MaybeResult_deprecated EngineInstance::initializeRuntimeManager() {
+    detail::RuntimeManager::Settings opt;
+    auto result = detail::RuntimeManager::initialize(opt);
+    if (!result) {
+        return result;
+    }
+    return LN_MAKE_SUCCESS();
 }
 
 MaybeResult_deprecated EngineInstance::initializeGraphicsManager() {
