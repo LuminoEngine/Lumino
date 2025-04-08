@@ -23,7 +23,7 @@ using MaybeResult = tl::expected<void, ErrorCode>;
 #define LN_MAKE_ERROR_NOT_IMPLEMENTED() LN_MAKE_ERROR("Not implemented.")
 
 /** A macro to use during the migration period, which throws an exception if it fails. */
-#define LN_ASSERT_RESULT(result) LN_ASSERT(!result)
+#define LN_ASSERT_RESULT(result) LN_ASSERT(!!result)
 
 namespace detail {
 

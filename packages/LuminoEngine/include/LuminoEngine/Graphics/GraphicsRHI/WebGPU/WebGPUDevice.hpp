@@ -15,6 +15,7 @@ public:
     bool init(const Settings& settings);
     void dispose() override;
 
+    WGPUInstance nativeInstance() const { return m_instance; }
 	WGPUDevice wgpuDevice() const { return m_device; }
     WGPUQueue wgpuQueue() const { return m_queue; }
     WGPUAdapter wgpuAdapter() const { return m_adapters[0].adapter; }
@@ -28,7 +29,7 @@ public:
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
     void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) override;
-    Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+    Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
     Ref<ICommandList> onCreateCommandList() override;
     Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
     Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;

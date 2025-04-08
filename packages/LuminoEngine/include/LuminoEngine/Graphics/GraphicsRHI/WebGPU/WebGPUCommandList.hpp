@@ -12,6 +12,7 @@ public:
     void onDestroy() override;
 
 	WGPUCommandEncoder commandEncoder() const { return m_commandEncoder; }
+    WGPUCommandBuffer lastFinishedCommandBuffer() const { return m_lastFinishedCommandBuffer; }
 
 	void onSubmitted();
 	void onSubmittedWorkDone();
@@ -37,6 +38,7 @@ protected:
 private:
     WebGPUDevice* m_rhiDevice;
     WGPUCommandEncoder m_commandEncoder;
+    WGPUCommandBuffer m_lastFinishedCommandBuffer;
     WGPURenderPassEncoder m_renderPassEncoder;
     ConditionEvent m_working;
     Ref<WebGPUSingleFrameAllocator> m_transferBufferSingleFrameAllocator;

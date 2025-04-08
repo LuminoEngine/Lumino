@@ -29,8 +29,14 @@ WebGPUDevice::WebGPUDevice()
 }
 
 bool WebGPUDevice::init(const Settings& settings) {
+    // https://developer.chrome.com/blog/new-in-webgpu-128?hl=ja#dawn_updates
+    //WGPUInstanceCapabilities capabilities = WGPU_INSTANCE_CAPABILITIES_INIT;
+    //capabilities.timedWaitAnyEnable = 1;
+    //capabilities.timedWaitAnyMaxCount = 0;
     WGPUInstanceDescriptor desc = {};
     desc.nextInChain = nullptr;
+    desc.capabilities.timedWaitAnyEnable = 1;
+    desc.capabilities.timedWaitAnyMaxCount = 8;
     m_instance = wgpuCreateInstance(&desc);
     if (!m_instance) {
         LN_LOG_ERROR("wgpuCreateInstance failed.");
@@ -187,10 +193,10 @@ void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->uniformBufferOffsetAlignment = 256;
 }
 
-Ref<ISwapChain> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+Result<Ref<ISwapChain>> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
     auto ptr = makeRef<WebGPUSwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }
@@ -324,14 +330,13 @@ Ref<IDescriptorPool> WebGPUDevice::onCreateDescriptorPool(IShaderPass* shaderPas
 
 void WebGPUDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendreTarget) {
     WebGPUCommandList* rhiCommandList = static_cast<WebGPUCommandList*>(context);
-
-    WGPUCommandBufferDescriptor cmdBufferDescriptor = WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;
-    cmdBufferDescriptor.nextInChain = nullptr;
-    cmdBufferDescriptor.label = WGPU_STRING_VIEW_INIT;
-    WGPUCommandBuffer command = wgpuCommandEncoderFinish(rhiCommandList->commandEncoder(), &cmdBufferDescriptor);
-    wgpuQueueSubmit(m_queue, 1, &command);
-
-#if 0    // 20230302 時点のバージョンではこ wgpuQueueOnSubmittedWorkDone は export されておらず使えなかった
+    WGPUCommandBuffer commandBuffer = rhiCommandList->lastFinishedCommandBuffer();
+    if (!commandBuffer) {
+        // 一度も begin していない場合
+    }
+    else {
+        wgpuQueueSubmit(m_queue, 1, &commandBuffer);
+#if 0 // 20230302 時点のバージョンではこ wgpuQueueOnSubmittedWorkDone は export されておらず使えなかった
 	rhiCommandList->onSubmitted();
 	auto callback = [](WGPUQueueWorkDoneStatus status, void* userdata) {
         WebGPUCommandList* rhiCommandList = reinterpret_cast<WebGPUCommandList*>(userdata);
@@ -339,6 +344,8 @@ void WebGPUDevice::onQueueSubmit(ICommandList* context, RHIResource* affectRendr
     };
     wgpuQueueOnSubmittedWorkDone(m_queue, callback, rhiCommandList);
 #endif
+    }
+
 }
 
 void WebGPUDevice::onQueuePresent(ISwapChain* swapChain) {

@@ -384,10 +384,10 @@ void DX12Device::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->uniformBufferOffsetAlignment = 256;
 }
 
-Ref<ISwapChain> DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+Result<Ref<ISwapChain>>DX12Device::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
     auto ptr = makeRef<DX12SwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }

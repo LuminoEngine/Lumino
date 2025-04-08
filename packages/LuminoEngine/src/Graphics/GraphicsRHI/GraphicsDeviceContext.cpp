@@ -77,13 +77,13 @@ void IGraphicsDevice::refreshCaps() {
     onGetDeviceProperties(&m_caps);
 }
 
-Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
-    if (ptr) {
-        ptr->m_device = this;
-        ptr->m_objectId = m_objectNextId++;
-        m_profiler->addSwapChain(ptr);
-    }
+Result<Ref<ISwapChain>> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+    auto result = onCreateSwapChain(window, backbufferSize);
+    if (!result) return result;
+    Ref<ISwapChain> ptr = std::move(result).value();
+    ptr->m_device = this;
+    ptr->m_objectId = m_objectNextId++;
+    m_profiler->addSwapChain(ptr);
     return ptr;
 }
 

@@ -17,4 +17,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LuminoFFI-static LuminoCore Lumino
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "pch.hpp")
 
+if(LN_DESKTOP_WEBGPU)
+    target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
+    target_copy_webgpu_binaries(${PROJECT_NAME})
+endif()
+
 add_test(NAME ${PROJECT_NAME}-runtest COMMAND ${PROJECT_NAME})

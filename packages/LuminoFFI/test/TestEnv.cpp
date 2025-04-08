@@ -9,13 +9,17 @@
 #include "../../LuminoEngine/src/Platform/GLFWPlatformWindowManager.hpp"
 #include "TestEnv.hpp"
 
+#if LN_TEST_EXTERNAL_OPENGL_CONTEXT
 ln::Ref<ln::PlatformWindow> TestEnv::mainWindow;
+#endif
+LNHandle TestEnv::mainWindow = LN_NULL_HANDLE;
 LNHandle TestEnv::surfaceContext = LN_NULL_HANDLE;
 LNHandle TestEnv::viewPoint = LN_NULL_HANDLE;
 
 void TestEnv::initialize() {
     ln::FileSystem::createDirectory(TestEnv::getTempPath(U""));
 
+#if LN_TEST_EXTERNAL_OPENGL_CONTEXT
     ln::EngineOptions options;
     options.platform.title = U"Test";
     options.platform.width = 320;
@@ -30,6 +34,14 @@ void TestEnv::initialize() {
     mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions).unwrap();
 
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
+#else
+    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+    LNInstance_Initialize();
+    LNWindow_Create(320, 240, "Example", &mainWindow);
+    LNWindow_GetGraphicsContext(mainWindow, &surfaceContext);
+#endif
+
+
     LNViewPoint_Create(&viewPoint);
     LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, 320, 240, -500, 500);
 
@@ -42,13 +54,26 @@ void TestEnv::terminate() {
     ln::Engine::terminate();
 }
 
+ln::RenderTargetTexture* lastRenderTarget = 0;
+
 void TestEnv::present() {
+#if LN_TEST_EXTERNAL_OPENGL_CONTEXT
     ln::PlatformWindow* window1 = mainWindow;
     ln::detail::GLFWPlatformWindow* window2 = static_cast<ln::detail::GLFWPlatformWindow*>(window1);
 
     GLFWwindow* glfwWindow = window2->glfwWindow();
     glfwSwapBuffers(glfwWindow);
     glfwPollEvents();
+#else
+    auto* m = ln::detail::RuntimeManager::instance();
+    ln::SurfaceContext* sc = static_cast<ln::SurfaceContext*>(
+        m->getObjectEntry(surfaceContext)->object);
+    ln::GraphicsContext* context = sc->context();
+    lastRenderTarget = context->currentBackbuffer();
+
+    LNWindow_Present(mainWindow);
+    LNInstance_ProcessEvents();
+#endif
 }
 
 ln::Path TestEnv::getTestDataPath(const ln::Path& localPath) {
@@ -64,7 +89,11 @@ bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save)
     ln::SurfaceContext* sc = static_cast<ln::SurfaceContext*>(m->getObjectEntry(surfaceContext)->object);
     ln::GraphicsContext* context = sc->context();
     return ln::GraphicsTestHelper::checkScreenShot(
-        TestEnv::getTestDataPath(filePath), context, context->currentBackbuffer(), passRate, save);
+        TestEnv::getTestDataPath(filePath),
+        context,
+        lastRenderTarget,
+        passRate,
+        save);
 }
 
 ln::ByteBuffer TestEnv::compileShader(const ln::Path& filePath) {

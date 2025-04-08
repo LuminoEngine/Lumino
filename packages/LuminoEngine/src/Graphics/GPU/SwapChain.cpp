@@ -44,7 +44,9 @@ bool GraphicsContext::init(PlatformWindow* window) {
     if (window) {
         SizeI backbufferSize;
         window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
-        m_rhiObject = rhiDevice()->createSwapChain(window, backbufferSize);
+        auto result = rhiDevice()->createSwapChain(window, backbufferSize);
+        LN_ASSERT_RESULT(result);
+        m_rhiObject = std::move(result).value();
     }
     else {
         LN_LOG_INFO("Create a GraphicsContext with no SwapChain.");

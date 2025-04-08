@@ -148,10 +148,10 @@ void VulkanDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->uniformBufferOffsetAlignment = m_physicalDeviceInfos[m_activePhysicalDeviceInfoIndex].deviceProperty.limits.minUniformBufferOffsetAlignment;
 }
 
-Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+Result<Ref<ISwapChain>> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
     auto ptr = makeRef<VulkanSwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }

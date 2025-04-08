@@ -17,6 +17,7 @@ namespace detail {
 WebGPUCommandList::WebGPUCommandList()
     : m_rhiDevice(nullptr)
     , m_commandEncoder(nullptr)
+    , m_lastFinishedCommandBuffer(nullptr)
     , m_renderPassEncoder(nullptr)
     , m_working()
     //, m_isRecording(false)
@@ -59,13 +60,24 @@ void WebGPUCommandList::onBeginCommandRecoding() {
     encoderDesc.label = WGPU_STRING_VIEW_INIT;
     m_commandEncoder = wgpuDeviceCreateCommandEncoder(m_rhiDevice->wgpuDevice(), &encoderDesc);
     //m_isRecording = true;
-    
+
+    //wgpuCommandEncoderInsertDebugMarker(m_commandEncoder, { "!Do one thing", 10 });
     //wgpuCommandEncoderRelease(encoder);
 }
 
 void WebGPUCommandList::onEndCommandRecoding() {
     //if (LN_ASSERT(m_isRecording)) return;
     //m_isRecording = false;
+
+    
+    WGPUCommandBufferDescriptor cmdBufferDescriptor = WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;
+    cmdBufferDescriptor.nextInChain = nullptr;
+    cmdBufferDescriptor.label = WGPU_STRING_VIEW_INIT;
+    m_lastFinishedCommandBuffer = wgpuCommandEncoderFinish(m_commandEncoder, &cmdBufferDescriptor);
+    // TODO: Release 必要？
+    
+    wgpuCommandEncoderRelease(m_commandEncoder);
+    m_commandEncoder = nullptr;
 }
 
 void WebGPUCommandList::onBeginRenderPass(IRenderPass* renderPass) {

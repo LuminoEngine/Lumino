@@ -203,11 +203,11 @@ void OpenGLDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     }
 }
 
-Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+Result<Ref<ISwapChain>> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
 #ifdef LN_GLFW
     auto ptr = makeRef<GLFWSwapChain>(this);
     if (!ptr->init(window, backbufferSize)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
     return ptr;
 #else

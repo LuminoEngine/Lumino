@@ -14,14 +14,18 @@ public:
         TextureFormat format,
         WGPUTextureFormat nativeFormat);
     void onDestroy() override;
-    void wrapTextureView(WGPUTextureView view);
+    RHIRef<RHIBitmap> readData() override;
 
-    WGPUTextureView wgpuTextureView() const { return m_wgpuTextureView; }
+    void wrapTextureView(WGPUTexture nativeTexture, WGPUTextureView nativeTextureView);
+
+    WGPUTexture nativeTexture() const { return m_nativeTexture; }
+    WGPUTextureView wgpuTextureView() const { return m_nativeTextureView; }
     WGPUTextureFormat nativeFormat() const { return m_nativeFormat; }
 
 private:
     WebGPUDevice* m_rhiDevice;
-    WGPUTextureView m_wgpuTextureView;
+    WGPUTexture m_nativeTexture;
+    WGPUTextureView m_nativeTextureView;
     WGPUTextureFormat m_nativeFormat;
 };
 
