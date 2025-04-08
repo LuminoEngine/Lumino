@@ -185,9 +185,8 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
 );
 
 /**
- * Sends the command list recorded in GraphicsCommandList to the GPU.
  */
-extern LUMINO_API LNResult LNGraphicsContext_SubmitCommandList(LNHandle graphicsContext, LNHandle graphicsCommandList);
+extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext, LNHandle graphicsCommandList);
 
 //==============================================================================
 // LNGLGraphicsContext

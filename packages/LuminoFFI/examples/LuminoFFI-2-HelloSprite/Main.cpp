@@ -25,7 +25,7 @@ std::vector<uint8_t> ReadAllBytes(const std::string& filePath) {
 }
 
 int main() {
-    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
     //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_VULKAN);
 
     LNResult result = LNInstance_Initialize();
@@ -106,7 +106,7 @@ int main() {
 
         LNRenderPass_End(renderingPass);
 
-        LNGraphicsContext_SubmitCommandList(graphicsContext, commandList);
+        LNGraphicsContext_EndFrame(graphicsContext, commandList);
         LNWindow_Present(window);
     };
 

@@ -46,6 +46,7 @@ TEST_F(Test_Rendering_Mesh, Basic) {
     }
     TestEnv::renderView->end();
     commandList->endCommandRecoding();
+    TestEnv::swapChain->submitCurrentCommandList();
     TestEnv::swapChain->present();
 
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Mesh.Basic.png"), TestEnv::swapChain, target);

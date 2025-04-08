@@ -498,7 +498,10 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context) {
     auto rhiBitmap = rhiObject->readData();
 
     auto bitmap = makeObject_deprecated<Bitmap2D>(
-        size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->textureFormat()), rhiBitmap->data());
+        size.width,
+        size.height,
+        PixelFormat::RGBA8,//GraphicsHelper::translateToPixelFormat(rhiObject->textureFormat()),
+        rhiBitmap->data());
 
     detail::IGraphicsDevice* device = context->rhiDevice();
     if (device->caps().imageLayoytVFlip) {

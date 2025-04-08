@@ -65,7 +65,7 @@ int main() {
         LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint, &renderingPass);
         LNRenderPass_End(renderingPass);
 
-        LNGraphicsContext_SubmitCommandList(graphicsContext, commandList);
+        LNGraphicsContext_EndFrame(graphicsContext, commandList);
         LNWindow_Present(window);
 
         // x. このサンプルのように LNWindow を使っている場合、発生したデバイスロストは自動的に復旧されます。 

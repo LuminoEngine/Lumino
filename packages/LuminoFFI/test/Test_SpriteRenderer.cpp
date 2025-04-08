@@ -64,7 +64,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
         TestEnv::present();
     }
 

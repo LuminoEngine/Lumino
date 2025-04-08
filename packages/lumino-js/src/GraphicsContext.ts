@@ -73,7 +73,7 @@ export abstract class GraphicsContext {
      * Sends the command list recorded in GraphicsCommandList to the GPU.
      */
     public submitCommandList(commandList: GraphicsCommandList): void {
-        API.LNGraphicsContext_SubmitCommandList(this.handle, commandList.handle);
+        API.LNGraphicsContext_EndFrame(this.handle, commandList.handle);
     }
 }
 

@@ -64,8 +64,6 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
         return nullptr;
     }
 
-    ::_sleep(1000); // TODO: remove
-
     // Transfer Buffer
     WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
     bufferDesc.usage = WGPUBufferUsage_MapRead | WGPUBufferUsage_CopyDst;
@@ -89,7 +87,6 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
     destInfo.layout.rowsPerImage = height;
     WGPUExtent3D copySize = { width, height, 1 };
     WGPUCommandEncoder commandEncoder = wgpuDeviceCreateCommandEncoder(nativeDevice, nullptr);
-    wgpuCommandEncoderInsertDebugMarker(commandEncoder, { "Do one thing",10 });
     wgpuCommandEncoderCopyTextureToBuffer(
         commandEncoder,
         &sourceInfo,
@@ -100,13 +97,17 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
     wgpuQueueSubmit(nativeQueue, 1, &commandBuffer);
     wgpuCommandBufferRelease(commandBuffer);
 
-    ::_sleep(1000); // TODO: remove
     struct Context {
         bool ready;
         WGPUBuffer buffer;
         size_t size;
+        RHIBitmap* bitmap;
     };
-    Context context = { false, nativeBuffer, static_cast<size_t>(size) };
+    Context context = {};
+    context.ready = false;
+    context.buffer = nativeBuffer;
+    context.size = static_cast<size_t>(size);
+    context.bitmap = bitmap.get();
 	auto onBuffer2Mapped = [](WGPUMapAsyncStatus status,
                               struct WGPUStringView message,
                               void* userdata1,
@@ -114,14 +115,44 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
         Context* context = reinterpret_cast<Context*>(userdata1);
         context->ready = true;
         if (status != WGPUMapAsyncStatus_Success) return;
-        uint8_t const* mapping = (uint8_t*)wgpuBufferGetConstMappedRange(
+        void* outData = context->bitmap->writableData();
+        uint32_t width = context->bitmap->width();
+        uint32_t height = context->bitmap->height();
+        const void* rawData = wgpuBufferGetConstMappedRange(
             context->buffer,
             0, context->size);
-        LN_ASSERT(mapping);
+        
+        // Blit
+        {
+            //if (m_image->vulkanFormat() == VK_FORMAT_B8G8R8A8_UNORM) {
+            unsigned char* data = (unsigned char*)rawData;
+            for (uint32_t y = 0; y < height; y++) {
+                unsigned char* row = data;
+                for (uint32_t x = 0; x < width; x++) {
+                    std::swap(row[0], row[2]);
+                    row += 4;
+                }
+                data += width * 4; //subResourceLayout.rowPitch;
+            }
+           // }
+
+            // V flip
+            if (0) {
+                for (uint32_t y = 0; y < height; y++) {
+                    const uint8_t* sr = static_cast<const uint8_t*>(rawData) + ((y)*width) * 4;
+                    uint8_t* dr = static_cast<uint8_t*>(outData) +
+                        ((height - y - 1) * width * 4);
+                    memcpy(dr, sr, width * 4);
+                }
+            }
+            else {
+                memcpy(outData, rawData, height * width * 4);
+            }
+        }
 
         wgpuBufferUnmap(context->buffer);
     
-        };
+    };
     WGPUBufferMapCallbackInfo callbackInfo = WGPU_BUFFER_MAP_CALLBACK_INFO_INIT;
         callbackInfo.mode = WGPUCallbackMode_WaitAnyOnly;
     callbackInfo.callback = onBuffer2Mapped;
@@ -132,22 +163,24 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
     WGPUFutureWaitInfo waitInfo = WGPU_FUTURE_WAIT_INFO_INIT;
     waitInfo.future = f;
     waitInfo.completed = 0;
-    auto r1 = wgpuInstanceWaitAny(m_rhiDevice->nativeInstance(), 1, &waitInfo, 2000); //
+    auto r1 = wgpuInstanceWaitAny(m_rhiDevice->nativeInstance(), 1, &waitInfo, 2 * 1000 * 1000); //
 
-    //wgpuQueueOnSubmittedWorkDone
-    while (!context.ready) {
-        //  ^^^^^^^^^^^^^ Use context.ready here instead of ready
-        wgpuPollEvents(nativeDevice, true /* yieldToBrowser */);
-    }
+    ////wgpuQueueOnSubmittedWorkDone
+    //while (!context.ready) {
+    //    //  ^^^^^^^^^^^^^ Use context.ready here instead of ready
+    //    wgpuPollEvents(nativeDevice, true /* yieldToBrowser */);
+    //}
 
     /*
     [Error] WebGPU(2): Destroyed texture [Texture "of [Surface]"] used in a submit.
  - While calling [Queue "Lumino default queue"].Submit([[CommandBuffer]])*/
 
+    
+    
 
     wgpuBufferDestroy(nativeBuffer);
     wgpuBufferRelease(nativeBuffer);
-    return nullptr;
+    return bitmap;
 }
 
 /*

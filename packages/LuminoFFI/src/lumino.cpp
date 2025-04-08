@@ -359,7 +359,7 @@ LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList_, LNCommandLi
 
 }
 
-LNResult LNGraphicsContext_SubmitCommandList(
+LNResult LNGraphicsContext_EndFrame(
     LNHandle graphicsContext_,
     LNHandle renderingCommandList_) {
     LN_FFI_TRY_BEGIN;
@@ -370,6 +370,11 @@ LNResult LNGraphicsContext_SubmitCommandList(
     
     GraphicsCommandList* commandList = context->commandList();
     commandList->endCommandRecoding();
+
+    // この後 Present までの間で、描画結果などを VRAM から RAM に転送することがある。ユニットテストとか。
+    // 別案として CaptureRequest だけ投げておいてコールバックを呼んでもらう方法も考えたが、
+    // バックバッファのキャプチャ以外でも使うかもしれないので、コールバックはやめておく。
+    context->context()->submitCurrentCommandList();
 
     LN_FFI_TRY_END_RETURN;
 }

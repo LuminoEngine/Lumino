@@ -179,7 +179,7 @@ detail::RHIDeviceObject* GraphicsContext::getRHIObject(IGraphicsObject* object) 
     return m_rhiResourceRegistry->get(object);
 }
 
-void GraphicsContext::present() {
+void GraphicsContext::submitCurrentCommandList() {
     GraphicsCommandList* commandList = currentCommandList2();
 
     //// End command list
@@ -187,10 +187,13 @@ void GraphicsContext::present() {
 
     // Submit queue
     detail::IGraphicsDevice* device = rhiDevice();
-    detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::RHIResource>(commandList, currentBackbuffer(), nullptr);
+    detail::RHIResource* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<
+        detail::RHIResource>(commandList, currentBackbuffer(), nullptr);
     device->queueSubmit(commandList->rhiResource(), rhiObject);
     detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(commandList);
+}
 
+void GraphicsContext::present() {
     presentInternal();
 
     nextFrame();

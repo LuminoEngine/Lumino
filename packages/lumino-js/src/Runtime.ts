@@ -88,7 +88,7 @@ export class Runtime {
             API.LNGLGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGLGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
 
             API.LNGraphicsContext_PrepareFrame = module.cwrap("LNGraphicsContext_PrepareFrame", "number", ["number", "number", "number", "number", "number", "number"]);
-            API.LNGraphicsContext_SubmitCommandList = module.cwrap("LNGraphicsContext_SubmitCommandList", "number", ["number", "number"]);
+            API.LNGraphicsContext_EndFrame = module.cwrap("LNGraphicsContext_EndFrame", "number", ["number", "number"]);
             
             API.LNCommandList_BeginRenderPass = module.cwrap("LNCommandList_BeginRenderPass", "number", ["number", "number", "number", "number"]);
             
@@ -184,7 +184,7 @@ export class API {
 
     public static LNGLGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
     public static LNGraphicsContext_PrepareFrame: (graphicsContext: Handle,width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
-    public static LNGraphicsContext_SubmitCommandList: (graphicsContext: Handle, graphicsCommandList: number) => Result;
+    public static LNGraphicsContext_EndFrame: (graphicsContext: Handle, graphicsCommandList: number) => Result;
 
     public static LNCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
 

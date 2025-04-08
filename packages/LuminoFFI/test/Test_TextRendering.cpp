@@ -13,7 +13,7 @@ TEST_F(Test_TextRendering, Basic) {
     ASSERT_EQ(
         LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
 
-    ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
     TestEnv::present();
     TestEnv::present();
 

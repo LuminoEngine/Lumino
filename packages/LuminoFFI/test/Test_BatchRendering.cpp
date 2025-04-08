@@ -85,7 +85,7 @@ TEST_F(Test_BatchRendering, Basic1) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
         TestEnv::present();
 
         // ドローコールは1回だけ。
@@ -168,7 +168,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
             ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
         TestEnv::present();
 
         // ドローコールは1回だけ。

@@ -73,6 +73,7 @@ public:
     // resolve せず直接取得する。
     detail::RHIDeviceObject* getRHIObject(IGraphicsObject* object) const;
 
+    void submitCurrentCommandList();
     void present();
 
 public: // TODO: internal

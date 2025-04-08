@@ -54,8 +54,6 @@ void TestEnv::terminate() {
     ln::Engine::terminate();
 }
 
-ln::RenderTargetTexture* lastRenderTarget = 0;
-
 void TestEnv::present() {
 #if LN_TEST_EXTERNAL_OPENGL_CONTEXT
     ln::PlatformWindow* window1 = mainWindow;
@@ -65,12 +63,6 @@ void TestEnv::present() {
     glfwSwapBuffers(glfwWindow);
     glfwPollEvents();
 #else
-    auto* m = ln::detail::RuntimeManager::instance();
-    ln::SurfaceContext* sc = static_cast<ln::SurfaceContext*>(
-        m->getObjectEntry(surfaceContext)->object);
-    ln::GraphicsContext* context = sc->context();
-    lastRenderTarget = context->currentBackbuffer();
-
     LNWindow_Present(mainWindow);
     LNInstance_ProcessEvents();
 #endif
@@ -91,7 +83,7 @@ bool TestEnv::checkScreenShot(const ln::Path& filePath, int passRate, bool save)
     return ln::GraphicsTestHelper::checkScreenShot(
         TestEnv::getTestDataPath(filePath),
         context,
-        lastRenderTarget,
+        context->currentBackbuffer(),
         passRate,
         save);
 }

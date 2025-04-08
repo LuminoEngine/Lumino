@@ -245,7 +245,7 @@ int main() {
         //LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
         //LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
-        if (LNGraphicsContext_SubmitCommandList(graphicsContext, commandList) != LN_OK) {
+        if (LNGraphicsContext_EndFrame(graphicsContext, commandList) != LN_OK) {
             return 1;
         }
         std::cout << t.elapsedMilliseconds() << "[ms] Total" << std::endl;

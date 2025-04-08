@@ -31,10 +31,11 @@ TEST_F(Test_BasicRendering, Clear1) {
 
         ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_SubmitCommandList(surfaceContext, commandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
+
+        ASSERT_SCREENSHOT(U"Test_BasicRendering.Clear1.png");
 
         TestEnv::present();
     }
 
-    ASSERT_SCREENSHOT(U"Test_BasicRendering.Clear1.png");
 }

@@ -118,6 +118,7 @@ void run() {
         // https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-present
         // 
         //ElapsedTimer t;
+        swapChain->submitCurrentCommandList();
         swapChain->present();
         //std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
         //::Sleep(16);

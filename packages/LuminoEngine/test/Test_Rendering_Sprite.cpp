@@ -29,6 +29,7 @@ TEST_F(Test_Rendering_Sprite, Basic) {
     
     TestEnv::renderView->end();
     commandList->endCommandRecoding();
+    TestEnv::swapChain->submitCurrentCommandList();
     TestEnv::swapChain->present();
     ASSERT_RENDERTARGET(LN_ASSETFILE("Rendering/Expects/Test_Rendering_Sprite.Basic.png"), TestEnv::swapChain, target);
 }
