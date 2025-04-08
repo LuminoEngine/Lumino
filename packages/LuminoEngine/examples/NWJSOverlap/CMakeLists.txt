@@ -66,5 +66,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LOCAL_LINK_FLAGS})
 # Build assets
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:${PROJECT_NAME}> ${CMAKE_CURRENT_LIST_DIR}/dist
-    COMMAND ${LN_LUMINO_CLI_TOOL} build-assets -i ${ASSETS_DIR} -o ${CMAKE_CURRENT_LIST_DIR}/dist
 )

@@ -10,7 +10,17 @@ The project files will be generated in `📁build/buildtrees`.
 
 ## Web
 
+```sh
+cd ./packages/lumino-js
+npm install
+npm run build
+
 ```
+
+
+## WebGPU (Dawn)
+
+```sh
 dotnet tool install dotnet-script -g
 dotnet script scripts/PrepareWebGPU.csx
 dotnet run -- BuildEngine wasm32-emscripten

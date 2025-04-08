@@ -39,7 +39,6 @@ if (LN_EMSCRIPTEN)
 
     # Build assets and copy test server.
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${LN_LUMINO_CLI_TOOL} build-assets -i ${ASSETS_DIR} -o $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/serve.py $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif()
