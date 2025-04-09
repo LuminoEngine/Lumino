@@ -37,7 +37,7 @@ MaybeResult DescriptorLayoutBuilder::getOrCreateDescriptorLayoutEntry(
     GlobalShaderPass* globalShaderPass,
     const TargetBindingInfo& bindingInfo,
     kokage::RegisterCategory* outCategory,
-    int* outIndex) {
+    int16_t* outIndex) {
 
     const std::string& name = bindingInfo.name;
     GlobalResourceLayout* globalResourceLayout = shader->globalResourceLayout();
@@ -45,10 +45,10 @@ MaybeResult DescriptorLayoutBuilder::getOrCreateDescriptorLayoutEntry(
     const std::vector<GlobalResourceSlotInfo>& globalTextures = globalResourceLayout->textures;
     const std::vector<GlobalResourceSlotInfo>& globalSamplers = globalResourceLayout->samplers;
     const std::vector<GlobalResourceSlotInfo>& globalStorages = globalResourceLayout->storages;
-    std::vector<int>& buffers = globalShaderPass->descriptorLayout.buffers;
-    std::vector<int>& textures = globalShaderPass->descriptorLayout.textures;
-    std::vector<int>& samplers = globalShaderPass->descriptorLayout.samplers;
-    std::vector<int>& storages = globalShaderPass->descriptorLayout.storages;
+    std::vector<int16_t>& buffers = globalShaderPass->descriptorLayout.buffers;
+    std::vector<int16_t>& textures = globalShaderPass->descriptorLayout.textures;
+    std::vector<int16_t>& samplers = globalShaderPass->descriptorLayout.samplers;
+    std::vector<int16_t>& storages = globalShaderPass->descriptorLayout.storages;
 
     // Buffers
     if (bindingInfo.category == BindingResourceCategory_UniformBuffer) {

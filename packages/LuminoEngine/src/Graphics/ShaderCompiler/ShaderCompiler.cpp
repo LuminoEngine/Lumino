@@ -360,6 +360,18 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
     slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
     int parameterCount = programLayout->getParameterCount();
 
+    //Slang::ComPtr<slang::IMetadata> entryPointMetadata;
+    //Slang::ComPtr<slang::IBlob> diag;
+    //SlangResult result = m_program->getEntryPointMetadata(
+    //    0,
+    //    targetIndex,
+    //    entryPointMetadata.writeRef(),
+    //    diag.writeRef());
+    //if (SLANG_FAILED(result)) {
+    //    std::string message(static_cast<const char*>(diag->getBufferPointer()), diag->getBufferSize());
+    //    return LN_MAKE_ERROR("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
+    //}
+
     // Collect $Global ConstantBuffer members.
     // NOTE: getGlobalConstantBufferSize() や getGlobalParamsVarLayout() を使わないのか？
     //   https://shader-slang.org/slang/user-guide/reflection.html#calculating-cumulative-offsets
@@ -425,6 +437,14 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
             return LN_MAKE_ERROR("Invalid type. (%s:%d)", name.c_str(), scalarType);
         }
 
+        //bool used = false;
+        //bool usedAvailable = entryPointMetadata->isParameterLocationUsed(
+        //                         SLANG_PARAMETER_CATEGORY_DESCRIPTOR_TABLE_SLOT,
+        //                         0,
+        //                         i,
+        //                         used) ==
+        //    SLANG_OK;
+
         auto result = m_shader->getOrCreateGlobalMemberWithVerify(
             name,
             memberType,
@@ -485,7 +505,6 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
 MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     slang::ProgramLayout* layout = m_program->getLayout(targetIndex);
 
-    
     // Dump target reflection
     // NOTE: この Dump は moduel 全部 Composite した状態で行った方が良いだろう。
     //       そうしないと、EntryPoint の情報が出力されない。
@@ -503,45 +522,6 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
         stream.write(reinterpret_cast<const char*>(text->getBufferPointer()), text->getBufferSize());
     }
 
-    //{
-    //    auto r = buildModuleInfoSPIRV(module->getLayout(), moduleInfo);
-    //    if (!r) return r;
-    //}
-
-    //slang::IModule* module =
-    //    session->loadModule("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
-    //slang::IModule* module =
-    //    session->loadModule("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang", diagnostics.writeRef());
-    //slang::ProgramLayout* layout3 = module->getLayout();
-    //int pc = layout3->getEntryPointCount();
-    //slang::EntryPointReflection* pp = layout3->getEntryPointByIndex(0);
-
-    //Slang::ComPtr<SlangCompileRequest> compileRequest;
-    //result = session->createCompileRequest(compileRequest.writeRef());
-    //if (SLANG_FAILED(result)) {
-    //    return LN_MAKE_ERROR("createCompileRequest failed. (%d)", result);
-    //}
-    
-
-    //Slang::ComPtr<slang::IEntryPoint> targetEntryPoint;
-    //result = module->findAndCheckEntryPoint(
-    //    "PS_Main", SlangStage::SLANG_STAGE_VERTEX, targetEntryPoint.writeRef(), diagnostics.writeRef());
-
-    //LN_LOG_INFO("  Name: {}", pp->getName());
-    //LN_LOG_INFO("  Stage: {}", (int)pp->getStage());
-
-    
-    //Slang::ComPtr<slang::IComponentType> linkedProgram2;
-    //Slang::ComPtr<ISlangBlob> diagnosticBlob2;
-    //result = program->link(linkedProgram2.writeRef(), diagnosticBlob2.writeRef());
-
-    //slang::ProgramLayout* layout3 = linkedProgram2->getLayout();
-    //int ec = layout3->getEntryPointCount();
-    //layout3->toJson(diagnosticBlob2.writeRef());
-    //std::string code2((const char*)diagnosticBlob2->getBufferPointer(), diagnosticBlob2->getBufferSize());
-    
-
-
     // Build entry points
     int entryPointCount = m_module->getDefinedEntryPointCount();
     for (int iEntryPoint = 0; iEntryPoint < entryPointCount; iEntryPoint++) {
@@ -557,46 +537,6 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
             return result;
         }
     }
-
-
-
-    //slang::ProgramLayout* layout = linkedProgram->getLayout();
-
-    //int entryPointCount = m_module->getDefinedEntryPointCount();
-    //for (int i = 0; i < entryPointCount; i++) {
-    //    slang::EntryPointLayout* entryPointLayout = layout->getEntryPointByIndex(i);
-    //    //slang::EntryPointReflection* entryPointReflection = entryPointLayout->getTargetEntryPoint();
-    //    //slang::FunctionReflection* functionReflection = entryPointReflection->getFunctionReflection();
-    //    //LN_LOG_INFO("  Name: {}", functionReflection->getName());
-    //    //int att = functionReflection->getUserAttributeCount();
-    //    //for (int j = 0; j < att; j++) {
-    //    //    slang::UserAttribute* ua = functionReflection->getUserAttributeByIndex(j);
-    //    //    LN_LOG_INFO("    UserAttribute: {}", ua->getName());
-    //    //}
-    //}
-
-
-
-    //layout->toJson(diagnosticBlob2.writeRef());
-    ////SlangReflection* reflection = spGetReflection(compileRequest);
-    ////spReflection_ToJson((SlangReflection*)layout, nullptr, diagnosticBlob2.writeRef());
-    //std::string code2((const char*)diagnosticBlob2->getBufferPointer(), diagnosticBlob2->getBufferSize());
-        
-
-    //Slang::ComPtr<slang::IEntryPoint> computeEntryPoint;
-    //result = module->findEntryPointByName("computeMain", computeEntryPoint.writeRef());
-    //result = module->findEntryPointByName("PS_Main", computeEntryPoint.writeRef());
-
-    //slang::IComponentType* components[] = { module, computeEntryPoint };
-    //Slang::ComPtr<slang::IComponentType> program;
-    //result = session->createCompositeComponentType(components, 1, program.writeRef());
-
-
-    //slang::ProgramLayout* layout2 = linkedProgram->getLayout();
-    //layout->toJson(diagnosticBlob2.writeRef());
-    //std::string code3((const char*)diagnosticBlob2->getBufferPointer(), diagnosticBlob2->getBufferSize());
-
-
 
     return LN_MAKE_SUCCESS();
 }
@@ -614,7 +554,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     Slang::ComPtr<slang::IBlob> diag;
     SlangResult result = m_program->getEntryPointMetadata(
         entryPointIndex,
-        targetIndex, // target index
+        targetIndex,
         entryPointMetadata.writeRef(),
         diag.writeRef());
     if (SLANG_FAILED(result)) {
@@ -947,7 +887,7 @@ MaybeResult ShaderCompiler::buildTargetShaderPass(
     ShaderTarget target, int targetIndex, GlobalShaderPass* globalShaderPass) {
 
     TargetShaderPass* targetShaderPass = m_shader->createTargetShaderPass();
-    targetShaderPass->globalShaderPassId = globalShaderPass->id;
+    //targetShaderPass->globalShaderPassId = globalShaderPass->id;
     globalShaderPass->targetShaderPassIds[target - 1] = targetShaderPass->id;
 
     // VertexShader

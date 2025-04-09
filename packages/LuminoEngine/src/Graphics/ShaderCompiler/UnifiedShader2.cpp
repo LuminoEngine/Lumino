@@ -52,6 +52,14 @@ Blob* UnifiedShader2::blob(BlobId id) const {
     return m_blobs[id].get();
 }
 
+GlobalConstantBufferMember* UnifiedShader2::createGlobalConstantBufferMember() {
+    int id = m_globalMembers.size();
+    auto member = makeURef<GlobalConstantBufferMember>();
+    member->id = id;
+    m_globalMembers.push_back(std::move(member));
+    return m_globalMembers.back().get();
+}
+
 GlobalShaderPass* UnifiedShader2::createGlobalShaderPass() {
     int id = m_globalShaderPasses.size();
     auto pass = makeURef<GlobalShaderPass>(this);
@@ -84,7 +92,7 @@ Blob* UnifiedShader2::createBlob() {
     return m_blobs.back().get();
 }
 
-Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
+Result<GlobalConstantBufferMember*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     std::string name,
     ShaderGlobalMemberType type,
     ShaderGlobalMemberKind kind,
@@ -96,45 +104,44 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     auto itr = std::find_if(
         m_globalMembers.begin(),
         m_globalMembers.end(),
-        [&name](const URef<GlobalMemberInfo>& info) { return info->name == name; });
+        [&name](const URef<GlobalConstantBufferMember>& info) { return info->name == name; });
     if (itr != m_globalMembers.end()) {
-        GlobalMemberInfo* info = (*itr).get();
+        GlobalConstantBufferMember* info = (*itr).get();
         if (info->type != type) {
             return LN_MAKE_ERROR(
-                "GlobalMemberInfo already exists with different type (%s)",
+                "GlobalConstantBufferMember already exists with different type (%s)",
                 name.c_str());
         }
         if (info->kind != kind) {
             return LN_MAKE_ERROR(
-                "GlobalMemberInfo already exists with different kind (%s)",
+                "GlobalConstantBufferMember already exists with different kind (%s)",
                 name.c_str());
         }
         if (info->arrayElements != arrayElements) {
             return LN_MAKE_ERROR(
-                "GlobalMemberInfo already exists with different arrayElements (%s)",
+                "GlobalConstantBufferMember already exists with different arrayElements (%s)",
                 name.c_str());
         }
         if (info->vectorElements != vectorElements) {
             return LN_MAKE_ERROR(
-                "GlobalMemberInfo already exists with different vectorElements (%s)",
+                "GlobalConstantBufferMember already exists with different vectorElements (%s)",
                 name.c_str());
         }
         if (info->matrixRows != matrixRows) {
             return LN_MAKE_ERROR(
-                "GlobalMemberInfo already exists with different matrixRows (%s)",
+                "GlobalConstantBufferMember already exists with different matrixRows (%s)",
                 name.c_str());
         }
         if (info->matrixColumns != matrixColumns) {
             return LN_MAKE_ERROR(
-                "GlobalMemberInfo already exists with different matrixColumns (%s)",
+                "GlobalConstantBufferMember already exists with different matrixColumns (%s)",
                 name.c_str());
         }
         return info;
     }
 
-    // 存在しない場合、新しい GlobalMemberInfo を作成する
-    auto info = makeURef<GlobalMemberInfo>();
-    info->id = m_globalMembers.size();
+    // 存在しない場合、新しい GlobalConstantBufferMember を作成する
+    GlobalConstantBufferMember* info = createGlobalConstantBufferMember();
     info->name = name;
     info->type = type;
     info->kind = kind;
@@ -142,7 +149,6 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
     info->vectorElements = vectorElements;
     info->matrixRows = matrixRows;
     info->matrixColumns = matrixColumns;
-    m_globalMembers.push_back(std::move(info));
     return m_globalMembers.back().get();
 }
 

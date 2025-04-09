@@ -18,7 +18,7 @@ private:
         GlobalShaderPass* globalShaderPass,
         const TargetBindingInfo& bindingInfo,
         kokage::RegisterCategory* outCategory,
-        int* outIndex);
+        int16_t* outIndex);
 };
 
 } // namespace kokage

@@ -4,17 +4,16 @@
 namespace ln {
 namespace kokage {
 class TargetBindingLayout;
-using GlobalMemberInfoId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
-//using GlobalResourceSlotInfoId = int32_t;
-using GlobalShaderPassId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
-using TargetShaderPassId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
-using TargetEntryPointId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
-using BlobId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
+using GlobalConstantBufferMemberId = int16_t; /**< ID (-1: Invalid, 0~:Valid) */
+using GlobalShaderPassId = int16_t; /**< ID (-1: Invalid, 0~:Valid) */
+using TargetShaderPassId = int16_t; /**< ID (-1: Invalid, 0~:Valid) */
+using TargetEntryPointId = int16_t; /**< ID (-1: Invalid, 0~:Valid) */
+using BlobId = int16_t; /**< ID (-1: Invalid, 0~:Valid) */
 
 struct GlobalResourceSlotInfo {
     std::string name;
-    int constantBufferSize;
-    int arrayElementCount;
+    int16_t constantBufferSize;
+    int16_t arrayElementCount;
 };
 
 // Slang のリフレクション情報を、 Lumino の標準的な分類にマッピングするためのもの。
@@ -33,29 +32,29 @@ public:
 
 struct TargetBindingConstantBufferMemberInfo {
     std::string name;
-    int offset;
-    int size;
+    int16_t offset;
+    int16_t size;
 };
 
 struct TargetBindingInfo {
     std::string name;
     BindingResourceCategory category;
-    int size;
-    int space;
-    int index;
-    int count;
+    int16_t size;
+    int16_t space;
+    int16_t index;
+    int16_t count;
     ShaderStageFlags used;
     std::vector<TargetBindingConstantBufferMemberInfo> members; // ConstantBuffer のメンバー情報
     
-    // 一時情報。
+    // 一時情報。保存はしない。
     // この binding が、 CombinedSampler の SamplerState 側である場合、
     // その対応する Texture の name を示す。
     //int combinedSamplerIndex = -1;
     std::string combinedSamplerName;
 
-    // 後処理で設定される。
-    kokage::RegisterCategory descriptorEntryCategory; // GlobalShaderPass::DescriptorLayout 内のどの register に対応するか
-    int descriptorEntryIndex;    // その register の何番目の要素と対応するか
+    // この TargetBindingInfo が TargetShaderPass のものであれば、後処理で設定される。
+    kokage::RegisterCategory descriptorEntryCategory = RegisterCategory_UniformBuffer; // GlobalShaderPass::DescriptorLayout 内のどの register に対応するか
+    int16_t descriptorEntryIndex = -1; // その register の何番目の要素と対応するか
 };
 
 struct TargetBindingLayoutInfo {
@@ -86,10 +85,10 @@ public:
 
     // Lumino 用 ShaderDescriptor のレイアウト情報。
     struct DescriptorLayout {
-        std::vector<int> buffers; // Index of GlobalResourceLayout::buffers
-        std::vector<int> textures;
-        std::vector<int> samplers;
-        std::vector<int> storages;
+        std::vector<int16_t> buffers; // Index of GlobalResourceLayout::buffers
+        std::vector<int16_t> textures;
+        std::vector<int16_t> samplers;
+        std::vector<int16_t> storages;
     };
 
     UnifiedShader2* m_owner;
@@ -98,7 +97,7 @@ public:
     std::string vertexEntryPoint;
     std::string fragmentEntryPoint;
     std::string computeEntryPoint;
-    std::array<TargetShaderPassId, 4> targetShaderPassIds; // index is (ShaderTarget - 1).
+    std::vector<TargetShaderPassId> targetShaderPassIds; // index is (ShaderTarget - 1).
     DescriptorLayout descriptorLayout;
 
     GlobalShaderPass(UnifiedShader2* owner)
@@ -118,7 +117,7 @@ public:
 class TargetShaderPass : public URefObject {
 public:
     TargetShaderPassId id;
-    GlobalShaderPassId globalShaderPassId;
+    //GlobalShaderPassId globalShaderPassId;
     TargetEntryPointId vertEntryPointId;
     TargetEntryPointId fragEntryPointId;
     TargetEntryPointId compEntryPointId;
@@ -126,7 +125,7 @@ public:
 
     TargetShaderPass()
         : id(-1)
-        , globalShaderPassId(-1)
+        //, globalShaderPassId(-1)
         , vertEntryPointId(-1)
         , fragEntryPointId(-1)
         , compEntryPointId(-1) {}
@@ -140,9 +139,9 @@ public:
 };
 
 // $Global ConstantBuffer のメンバー情報。
-class GlobalMemberInfo : public URefObject {
+class GlobalConstantBufferMember : public URefObject {
 public:
-    GlobalMemberInfoId id;
+    GlobalConstantBufferMemberId id;
     std::string name;
     ShaderGlobalMemberType type;
     ShaderGlobalMemberKind kind;
@@ -151,6 +150,7 @@ public:
     int32_t matrixRows;     // Matrix only.
     int32_t matrixColumns;  // Matrix only.
     // NOTE: size は持てない。例えば WGSL と DX12 では float3 のサイズがそれぞれ 12byte, 16byte になる。Target ごとで管理する必要がある。
+    // NOTE: Slang ではメンバごとの used を求めることはできない。
 };
 
 class UnifiedShader2 : public RefObject {
@@ -188,12 +188,13 @@ public:
     TargetEntryPoint* targetEntryPoint(TargetEntryPointId id) const;
     Blob* blob(BlobId id) const;
 
+    GlobalConstantBufferMember* createGlobalConstantBufferMember();
     GlobalShaderPass* createGlobalShaderPass();
     TargetShaderPass* createTargetShaderPass();
     TargetEntryPoint* createEntryPoint();
     Blob* createBlob();
 
-    Result<GlobalMemberInfo*> getOrCreateGlobalMemberWithVerify(
+    Result<GlobalConstantBufferMember*> getOrCreateGlobalMemberWithVerify(
         std::string name,
         ShaderGlobalMemberType type,
         ShaderGlobalMemberKind kind,
@@ -215,7 +216,7 @@ public:
 
 private:
     URef<GlobalResourceLayout> m_globalResourceLayout;
-    std::vector<URef<GlobalMemberInfo>> m_globalMembers;
+    std::vector<URef<GlobalConstantBufferMember>> m_globalMembers;
     std::vector<URef<GlobalShaderPass>> m_globalShaderPasses;
     std::vector<URef<TargetShaderPass>> m_targetShaderPasses;
     std::vector<URef<TargetEntryPoint>> m_targetEntryPoints;

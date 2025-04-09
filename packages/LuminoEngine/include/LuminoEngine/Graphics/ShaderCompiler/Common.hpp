@@ -192,8 +192,8 @@ enum AttributeUsage {
 
 struct VertexInputAttribute {
     AttributeUsage usage;
-    uint32_t index;
-    uint32_t layoutLocation; // GLSL "layout(location=...)"
+    int32_t index;
+    int32_t layoutLocation; // GLSL "layout(location=...)"
 };
 
 using VertexInputAttributeTable = std::vector<VertexInputAttribute>;

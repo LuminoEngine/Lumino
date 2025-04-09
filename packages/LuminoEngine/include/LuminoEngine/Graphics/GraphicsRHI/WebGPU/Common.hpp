@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <webgpu/webgpu.hpp>
+#include <webgpu/webgpu.h>
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 
 namespace ln {
