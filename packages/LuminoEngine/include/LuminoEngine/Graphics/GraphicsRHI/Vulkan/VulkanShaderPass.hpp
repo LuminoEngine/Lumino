@@ -12,7 +12,13 @@ class VulkanShaderPass
 {
 public:
     VulkanShaderPass();
-    Result_deprecated<> init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+    MaybeResult init2(
+        VulkanDevice* deviceContext,
+        const ShaderPassCreateInfo2& createInfo);
+    Result_deprecated<> init(
+        VulkanDevice* deviceContext,
+        const ShaderPassCreateInfo& createInfo,
+        ShaderCompilationDiag* diag);
     void onDestroy() override;
     virtual void onBind() override { RefObjectHelper::retain(this); }
     virtual void onUnBind() override { RefObjectHelper::release(this); }
@@ -36,6 +42,9 @@ public:
     const VkWriteDescriptorSet& witeInfo(int index) const { return m_descriptorWriteInfo[index]; }
 
 private:
+    MaybeResult createPipelineLayout(const ShaderPassCreateInfo2& createInfo);
+    VkDescriptorSetLayout m_nativeDescriptorSetLayout;
+
     struct DescriptorInfo2
     {
         VkDescriptorBufferInfo bufferInfo;

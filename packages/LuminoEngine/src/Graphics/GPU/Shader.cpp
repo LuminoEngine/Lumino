@@ -509,7 +509,7 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsCommandList* context, 
         Ref<detail::IShaderPass> ref;
 
         if (m_globalShaderPass) {
-            kokage::ShaderTarget target = kokage::ShaderTarget_WGSL;
+            kokage::ShaderTarget target = device->caps().shaderTarget;
             kokage::TargetShaderPassId id = m_globalShaderPass->getTargetShaderPassId(target);
             kokage::TargetShaderPass* targetShaderPass = m_unifiedShader2->targetShaderPass(id);
 

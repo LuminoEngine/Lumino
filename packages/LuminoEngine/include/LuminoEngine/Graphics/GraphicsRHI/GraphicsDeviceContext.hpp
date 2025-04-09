@@ -41,6 +41,7 @@ struct GraphicsDeviceProperties {
     kokage::UnifiedShaderTriple requestedShaderTriple;
     bool imageLayoytVFlip = false;
     size_t uniformBufferOffsetAlignment;
+    kokage::ShaderTarget shaderTarget = kokage::ShaderTarget::ShaderTarget_UNKNOWN;
 };
 
 // obsolete

@@ -191,6 +191,7 @@ void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->requestedShaderTriple.option = "";
     outCaps->imageLayoytVFlip = false;
     outCaps->uniformBufferOffsetAlignment = 256;
+    outCaps->shaderTarget = kokage::ShaderTarget_SPIRV;
 }
 
 Result<Ref<ISwapChain>> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {

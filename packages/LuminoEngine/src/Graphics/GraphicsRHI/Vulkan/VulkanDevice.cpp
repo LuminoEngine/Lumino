@@ -146,6 +146,7 @@ void VulkanDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->requestedShaderTriple.version = 110;
     outCaps->requestedShaderTriple.option = "";
     outCaps->uniformBufferOffsetAlignment = m_physicalDeviceInfos[m_activePhysicalDeviceInfoIndex].deviceProperty.limits.minUniformBufferOffsetAlignment;
+    outCaps->shaderTarget = kokage::ShaderTarget_SPIRV;
 }
 
 Result<Ref<ISwapChain>> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
@@ -246,8 +247,15 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(
     const ShaderPassCreateInfo2* createInfo2OrNull,
     ShaderCompilationDiag* diag) {
     auto ptr = makeRef<VulkanShaderPass>();
-    if (!ptr->init(this, createInfo, diag)) {
-        return nullptr;
+    if (createInfo2OrNull) {
+        if (!ptr->init2(this, *createInfo2OrNull)) {
+            return nullptr;
+        }
+    }
+    else {
+        if (!ptr->init(this, createInfo, diag)) {
+            return nullptr;
+        }
     }
     return ptr;
 }

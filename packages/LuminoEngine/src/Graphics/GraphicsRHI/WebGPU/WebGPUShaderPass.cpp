@@ -29,6 +29,7 @@ MaybeResult_deprecated WebGPUShaderPass::init(
     m_targetBindingLayoutInfo = *createInfo.descriptorLayout;
 
     if (createInfo.vsCode) {
+        m_vertEntryPointName = createInfo.vsEntryPointName;
         m_nativeVertShaderModule = createShaderModule(
             createInfo.vsCode,
             createInfo.vsCodeLen,
@@ -36,10 +37,10 @@ MaybeResult_deprecated WebGPUShaderPass::init(
         if (!m_nativeVertShaderModule) {
             return LN_MAKE_ERROR_deprecated("Failed to create vertex shader module");
         }
-        m_vertEntryPointName = createInfo.vsEntryPointName;
     }
 
     if (createInfo.psCode) {
+        m_fragEntryPointName = createInfo.psEntryPointName;
         m_nativeFragShaderModule = createShaderModule(
             createInfo.psCode,
             createInfo.psCodeLen,
@@ -47,10 +48,10 @@ MaybeResult_deprecated WebGPUShaderPass::init(
         if (!m_nativeFragShaderModule) {
             return LN_MAKE_ERROR_deprecated("Failed to create fragment shader module");
         }
-        m_fragEntryPointName = createInfo.psEntryPointName;
     }
 
     if (createInfo.csCode) {
+        m_compEntryPointName = createInfo.csEntryPointName;
         m_nativeCompShaderModule = createShaderModule(
             createInfo.csCode,
             createInfo.csCodeLen,
@@ -58,7 +59,6 @@ MaybeResult_deprecated WebGPUShaderPass::init(
         if (!m_nativeCompShaderModule) {
             return LN_MAKE_ERROR_deprecated("Failed to create compute shader module");
         }
-        m_compEntryPointName = createInfo.csEntryPointName;
     }
 
     auto result = createPipelineLayout(createInfo);
@@ -123,11 +123,11 @@ MaybeResult_deprecated WebGPUShaderPass::createPipelineLayout(const ShaderPassCr
     std::vector<WGPUBindGroupLayoutEntry> entries;
     for (int i = 0; i < createInfo.descriptorLayout->bindings.size(); i++) {
         const kokage::TargetBindingInfo& binding = createInfo.descriptorLayout->bindings[i];
-        WGPUBindGroupLayoutEntry entry = WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT;
         if (binding.space != 0) {
             return LN_MAKE_ERROR_deprecated("(Not Implemented) Binding space must be 0");
         }
 
+        WGPUBindGroupLayoutEntry entry = WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT;
         setupLayoutEntryDefault(&entry);
         entry.binding = binding.index;
         entry.visibility = WGPUShaderStage_None;
