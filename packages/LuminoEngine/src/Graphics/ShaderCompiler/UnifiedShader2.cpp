@@ -21,113 +21,6 @@ RegisterCategory GlobalResourceLayout::getRegisterCategoryByName(const std::stri
     return RegisterCategory_Unknown;
 }
 
-void GlobalShaderPass::getOrCreateDescriptorLayoutEntry(
-    const TargetBindingInfo& bindingInfo, kokage::RegisterCategory* outCategory, int* outIndex) {
-    const std::string& name = bindingInfo.name;
-    GlobalResourceLayout* globalResourceLayout = m_owner->globalResourceLayout();
-    const std::vector<GlobalResourceSlotInfo>& globalBuffers = globalResourceLayout->buffers;
-    const std::vector<GlobalResourceSlotInfo>& globalTextures = globalResourceLayout->textures;
-    const std::vector<GlobalResourceSlotInfo>& globalSamplers = globalResourceLayout->samplers;
-    const std::vector<GlobalResourceSlotInfo>& globalStorages = globalResourceLayout->storages;
-    std::vector<int>& buffers = descriptorLayout.buffers;
-    std::vector<int>& textures = descriptorLayout.textures;
-    std::vector<int>& samplers = descriptorLayout.samplers;
-    std::vector<int>& storages = descriptorLayout.storages;
-
-    // Buffers
-    if (bindingInfo.category == BindingResourceCategory_UniformBuffer) {
-        *outCategory = RegisterCategory_UniformBuffer;
-        for (int i = 0; i < globalBuffers.size(); i++) {
-            const GlobalResourceSlotInfo& slotInfo = globalBuffers[i];
-            if (slotInfo.name == name) {
-                auto itr = std::find(buffers.begin(), buffers.end(), i);
-                if (itr == buffers.end()) {
-                    buffers.push_back(i);
-                    *outIndex = buffers.size() - 1;
-                }
-                else {
-                    *outIndex = itr - buffers.begin();
-                }
-                return;
-            }
-        }
-    }
-    // Textures
-    if (bindingInfo.category == BindingResourceCategory_TextureOrCombinedSampler) {
-        *outCategory = RegisterCategory_TextureOrCombinedSampler;
-        for (int i = 0; i < globalTextures.size(); i++) {
-            const GlobalResourceSlotInfo& slotInfo = globalTextures[i];
-            if (slotInfo.name == name) {
-                auto itr = std::find(textures.begin(), textures.end(), i);
-                if (itr == textures.end()) {
-                    textures.push_back(i);
-                    *outIndex = textures.size() - 1;
-                }
-                else {
-                    *outIndex = itr - textures.begin();
-                }
-                return;
-            }
-        }
-    }
-    // Textures (CombinedSampler)
-    if (bindingInfo.category == BindingResourceCategory_SamplerState &&
-        !bindingInfo.combinedSamplerName.empty()) {
-        *outCategory = RegisterCategory_TextureOrCombinedSampler;
-        for (int i = 0; i < globalTextures.size(); i++) {
-            const GlobalResourceSlotInfo& slotInfo = globalTextures[i];
-            if (slotInfo.name == bindingInfo.combinedSamplerName) {
-                auto itr = std::find(textures.begin(), textures.end(), i);
-                if (itr == textures.end()) {
-                    textures.push_back(i);
-                    *outIndex = textures.size() - 1;
-                }
-                else {
-                    *outIndex = itr - textures.begin();
-                }
-                return;
-            }
-        }
-    }
-    // Samplers
-    if (bindingInfo.category == BindingResourceCategory_SamplerState) {
-        *outCategory = RegisterCategory_SamplerState;
-        for (int i = 0; i < globalSamplers.size(); i++) {
-            const GlobalResourceSlotInfo& slotInfo = globalSamplers[i];
-            if (slotInfo.name == name) {
-                auto itr = std::find(samplers.begin(), samplers.end(), i);
-                if (itr == samplers.end()) {
-                    samplers.push_back(i);
-                    *outIndex = samplers.size() - 1;
-                }
-                else {
-                    *outIndex = itr - samplers.begin();
-                }
-                return;
-            }
-        }
-    }
-    // Storages
-    if (bindingInfo.category == BindingResourceCategory_UnorderdAccess) {
-        *outCategory = RegisterCategory_UnorderdAccess;
-        for (int i = 0; i < globalStorages.size(); i++) {
-            const GlobalResourceSlotInfo& slotInfo = globalStorages[i];
-            if (slotInfo.name == name) {
-                auto itr = std::find(storages.begin(), storages.end(), i);
-                if (itr == storages.end()) {
-                    storages.push_back(i);
-                    *outIndex = storages.size() - 1;
-                }
-                else {
-                    *outIndex = itr - storages.begin();
-                }
-                return;
-            }
-        }
-    }
-    LN_UNREACHABLE();
-}
-
 UnifiedShader2::UnifiedShader2()
     : m_globalResourceLayout(makeURef<GlobalResourceLayout>()) {
 }
@@ -136,48 +29,57 @@ GlobalResourceLayout* UnifiedShader2::globalResourceLayout() const {
     return m_globalResourceLayout;
 }
 
-ModuleInfo* UnifiedShader2::addModuleInfo() {
-    auto info = makeURef<ModuleInfo>();
-    m_moduleInfos.push_back(std::move(info));
-    return m_moduleInfos.back().get();
+const std::vector<URef<TargetEntryPoint>>& UnifiedShader2::targetEntryPoints() const {
+    return m_targetEntryPoints;
 }
 
-EntryPoint* UnifiedShader2::createEntryPoint() {
-    int index = m_entryPoints.size();
-    auto entryPoint = makeURef<EntryPoint>();
-    entryPoint->index = index;
-    m_entryPoints.push_back(std::move(entryPoint));
-    return m_entryPoints.back().get();
+const std::vector<URef<GlobalShaderPass>>& UnifiedShader2::globalShaderPasses() const {
+    return m_globalShaderPasses;
 }
 
-TargetShaderPass* UnifiedShader2::createTargetShaderPass() {
-    int index = m_targetShaderPasses.size();
-    auto pass = makeURef<TargetShaderPass>();
-    pass->index = index;
-    m_targetShaderPasses.push_back(std::move(pass));
-    return m_targetShaderPasses.back().get();
+const std::vector<URef<TargetShaderPass>>& UnifiedShader2::targetShaderPasses() const {
+    return m_targetShaderPasses;
 }
 
-TargetInputResourceInfo* UnifiedShader2::createTargetInputResourceInfo() {
-    int index = m_TargetInputResourceInfos.size();
-    auto info = makeURef<TargetInputResourceInfo>();
-    info->index = index;
-    m_TargetInputResourceInfos.push_back(std::move(info));
-    return m_TargetInputResourceInfos.back().get();
+TargetEntryPoint* UnifiedShader2::targetEntryPoint(TargetEntryPointId id) const {
+    return m_targetEntryPoints[id].get();
+}
+
+TargetShaderPass* UnifiedShader2::targetShaderPass(TargetShaderPassId id) const {
+    return m_targetShaderPasses[id].get();
+}
+Blob* UnifiedShader2::blob(BlobId id) const {
+    return m_blobs[id].get();
 }
 
 GlobalShaderPass* UnifiedShader2::createGlobalShaderPass() {
-    int index = m_globalShaderPasses.size();
+    int id = m_globalShaderPasses.size();
     auto pass = makeURef<GlobalShaderPass>(this);
-    pass->index = index;
+    pass->id = id;
     m_globalShaderPasses.push_back(std::move(pass));
     return m_globalShaderPasses.back().get();
 }
 
+TargetShaderPass* UnifiedShader2::createTargetShaderPass() {
+    int id = m_targetShaderPasses.size();
+    auto pass = makeURef<TargetShaderPass>();
+    pass->id = id;
+    m_targetShaderPasses.push_back(std::move(pass));
+    return m_targetShaderPasses.back().get();
+}
+
+TargetEntryPoint* UnifiedShader2::createEntryPoint() {
+    int id = m_targetEntryPoints.size();
+    auto entryPoint = makeURef<TargetEntryPoint>();
+    entryPoint->id = id;
+    m_targetEntryPoints.push_back(std::move(entryPoint));
+    return m_targetEntryPoints.back().get();
+}
+
 Blob* UnifiedShader2::createBlob() {
-    int index = m_blobs.size();
+    int id = m_blobs.size();
     auto blob = makeURef<Blob>();
-    blob->index = index;
+    blob->id = id;
     m_blobs.push_back(std::move(blob));
     return m_blobs.back().get();
 }
@@ -232,7 +134,7 @@ Result<GlobalMemberInfo*> UnifiedShader2::getOrCreateGlobalMemberWithVerify(
 
     // 存在しない場合、新しい GlobalMemberInfo を作成する
     auto info = makeURef<GlobalMemberInfo>();
-    info->index = m_globalMembers.size();
+    info->id = m_globalMembers.size();
     info->name = name;
     info->type = type;
     info->kind = kind;
@@ -309,16 +211,16 @@ MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
     return LN_MAKE_SUCCESS();
 }
 
-Result<EntryPoint*> UnifiedShader2::getEntryPoint(
+Result<TargetEntryPoint*> UnifiedShader2::getTargetEntryPoint(
     ShaderTarget target, const std::string& name) const {
     auto itr = std::find_if(
-        m_entryPoints.begin(),
-        m_entryPoints.end(),
-        [&target, &name](const URef<EntryPoint>& entryPoint) {
+        m_targetEntryPoints.begin(),
+        m_targetEntryPoints.end(),
+        [&target, &name](const URef<TargetEntryPoint>& entryPoint) {
             return entryPoint->target == target && entryPoint->name == name;
         });
-    if (itr == m_entryPoints.end()) {
-        return LN_MAKE_ERROR("EntryPoint not found. (%d:%s)", target, name.c_str());
+    if (itr == m_targetEntryPoints.end()) {
+        return LN_MAKE_ERROR("TargetEntryPoint not found. (%d:%s)", target, name.c_str());
     }
     return (*itr).get();
 }
@@ -402,26 +304,6 @@ MaybeResult UnifiedShader2::mergeTargetBindingLayoutInfo(
         else {
             // 存在しない場合、新しいバインディングを追加する
             target.bindings.push_back(otherBinding);
-        }
-    }
-
-    return LN_MAKE_SUCCESS();
-
-}
-
-MaybeResult UnifiedShader2::buildDescriptorLayout() {
-
-    // GlobalShaderPass の DescriptorLayout を作成する。
-    // 全ての子 TargetShaderPass を調べて、必要な情報を GlobalShaderPass に吸い出していく感じ。
-    for (const auto& globalShaderPass : m_globalShaderPasses) {
-        for (TargetShaderPassId targetShaderPassId : globalShaderPass->targetShaderPassIndices) {
-            TargetShaderPass* targetShaderPass = m_targetShaderPasses[targetShaderPassId].get();
-            for (TargetBindingInfo& info : targetShaderPass->bindingLayout.bindings) {
-                globalShaderPass->getOrCreateDescriptorLayoutEntry(
-                    info,
-                    &info.descriptorEntryCategory,
-                    &info.descriptorEntryIndex);
-            }
         }
     }
 

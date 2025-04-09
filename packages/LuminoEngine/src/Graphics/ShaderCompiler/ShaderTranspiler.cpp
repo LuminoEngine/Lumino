@@ -207,14 +207,14 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     ShaderStage2 stage,
     const char* code,
     size_t length,
-    const std::string& entryPoint,
+    const std::string& targetEntryPoint,
     const List<Path>& includeDir,
     const List<String>* definitions,
     DiagnosticsManager* diag) {
     m_diag = diag;
     m_code = std::string(code, length);
     m_stage = stage;
-    m_entryPoint = entryPoint;
+    m_entryPoint = targetEntryPoint;
     m_includeDirectories = includeDir;
 
     LocalIncluder includer;
@@ -245,7 +245,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 
     m_shader->setEnvInput(sourceType, LNStageToEShLanguage(m_stage), glslang::EShClientOpenGL, ClientInputSemanticsVersion);
     m_shader->setEnvClient(glslang::EShClientOpenGL, OpenGLClientVersion);
-    m_shader->setEntryPoint(entryPoint.c_str());
+    m_shader->setEntryPoint(targetEntryPoint.c_str());
 
     // 実際に使われている UBO, Txture, SamplerState などに、自動的に binding 番号を振る。
     // false の場合は、すべて未指定 (-1) となる。

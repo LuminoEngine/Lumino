@@ -1,7 +1,7 @@
 ﻿#pragma once
 #define LN_TEST_EXTERNAL_OPENGL_CONTEXT 0
 
-class TestEnv {
+class TestEnv : public ::testing::Environment {
 public:
     static void initialize();
     static void terminate();
@@ -17,6 +17,9 @@ public:
     static LNHandle mainWindow;
     static LNHandle surfaceContext;
     static LNHandle viewPoint;
+
+    void SetUp() override { initialize(); }
+    void TearDown() override { terminate(); }
 };
 
 #define ASSERT_SCREENSHOT(...) ASSERT_TRUE(TestEnv::checkScreenShot(__VA_ARGS__))

@@ -1,9 +1,8 @@
 ---
 Language:        Cpp
 # BasedOnStyle:  Mozilla
-ColumnLimit: 100  # GitHub preview width.
+ColumnLimit: 120  # GitHub preview width.
 AccessModifierOffset: -4
-AlignAfterOpenBracket: AlwaysBreak
 AllowAllArgumentsOnNextLine: false
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
@@ -15,15 +14,16 @@ AlignTrailingComments: true
 #   int a,
 #   int b,
 #   int c)
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
 #BinPackParameters: AlwaysOnePerLine
-BinPackParameters: true # 本当は AlwaysOnePerLine で format したいのだけど、 VS2022 17.13 の clang-format でエラーになったので戻しておく
+BinPackParameters: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 BreakBeforeBraces: Custom
 BreakConstructorInitializers: BeforeComma
 PenaltyBreakBeforeFirstCallParameter: 0
 BinPackArguments: false
+AlignAfterOpenBracket: AlwaysBreak
 #----------
 
 #----------

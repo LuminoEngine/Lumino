@@ -8,7 +8,7 @@ int processCommands(int argc, char** argv) {
     auto result = kokage::ShaderCompiler::create();
     if (!result) return 1;
 
-    URef<kokage::ShaderCompiler> compiler = std::move(result.unwrap());
+    URef<kokage::ShaderCompiler> compiler = std::move(result).value();
 
     auto result2 = compiler->build("E:/Proj/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
     //auto result2 = compiler->build("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");

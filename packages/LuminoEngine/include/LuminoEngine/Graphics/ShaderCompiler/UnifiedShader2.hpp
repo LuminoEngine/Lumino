@@ -4,42 +4,15 @@
 namespace ln {
 namespace kokage {
 class TargetBindingLayout;
-using TargetInputResourceInfoId = int32_t;
-using TargetShaderPassId = int32_t;
-using EntryPointId = int32_t;
-using BlobId = int32_t;
-
-// 変数ひとつ分の情報。
-// 今のところ、 ConstantBuffer のメンバーとしてのみ使用しています。。
-struct VariableInfo {
-    std::string name;
-    ShaderUniformType type;
-    int32_t offset;
-    int32_t size;
-    int32_t arrayElements;
-    int32_t vectorElements;
-    int32_t matrixRows;
-    int32_t matrixColumns;
-};
-
-
-//struct EntryPointBindingInfo {
-//    std::string name;
-//    RegisterCategory category;
-//    int offset;
-//    int size;
-//    int space;
-//    int index;
-//    int count;
-//    bool used;
-//};
-
-using GlobalResourceSlotInfoId = int32_t;
+using GlobalMemberInfoId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
+//using GlobalResourceSlotInfoId = int32_t;
+using GlobalShaderPassId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
+using TargetShaderPassId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
+using TargetEntryPointId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
+using BlobId = int32_t; /**< ID (-1: Invalid, 0~:Valid) */
 
 struct GlobalResourceSlotInfo {
-    //GlobalResourceSlotInfoId id;
     std::string name;
-    //RegisterCategory category;
     int constantBufferSize;
     int arrayElementCount;
 };
@@ -89,40 +62,18 @@ struct TargetBindingLayoutInfo {
     std::vector<TargetBindingInfo> bindings;
 };
 
-//struct TargetBindingDescripterMapper {
-//
-//    //std::vector<GlobalResourceSlotInfo> buffers;
-//    //std::vector<GlobalResourceSlotInfo> textures;
-//    //std::vector<GlobalResourceSlotInfo> samplers;
-//    //std::vector<GlobalResourceSlotInfo> storages;
-//};
-
-// Pipeline にバインドできる単位の Parameter。
-// ConstantBuffer, Texture, SamplerState, StorageBuffer。
-//
-// なおグローバルスコープに定義された uniform 変数は、
-// https://shader-slang.org/slang/user-guide/reflection.html#programs-and-scopes
-// こちらように $Global のような ConstantBuffer に含まれる。
-//struct ModuleParameterInfo {
-//    RegisterCategory category; // b, t, s, u...
-//    std::string name;
-//    std::vector<VariableInfo> constantBufferMembers; // ConstantBuffer members
-//    int32_t constantBufferSize;
-//};
-
-struct Reflection {};
-
-struct Component {
-    std::vector<uint8_t> code;
-};
-
-class EntryPoint : public URefObject {
+/**
+ * The entry point for the target.
+ * 
+ * For example, if your shader file has vs_main and fs_main, and you are building with
+ * 4 targets (SPIRV, DXIL, METAL, WGSL), a total of eight EntryPoints will be created.
+ */
+class TargetEntryPoint : public URefObject {
 public:
-    EntryPointId index;
+    TargetEntryPointId id;
     ShaderTarget target;
     std::string name;
-    //std::vector<EntryPointBindingInfo> bindings;
-    int codeBlobIndex;
+    BlobId codeBlobId;
     TargetBindingLayoutInfo bindingLayout; // Leaf. これをもとに ShaderPass へマージしてく。
     std::vector<VertexInputAttribute> inputAttributes;
 };
@@ -142,111 +93,56 @@ public:
     };
 
     UnifiedShader2* m_owner;
-    int index;
+    GlobalShaderPassId id;
     std::string name;
     std::string vertexEntryPoint;
     std::string fragmentEntryPoint;
     std::string computeEntryPoint;
-    std::array<TargetShaderPassId, 4> targetShaderPassIndices; // index is (ShaderTarget - 1).
+    std::array<TargetShaderPassId, 4> targetShaderPassIds; // index is (ShaderTarget - 1).
     DescriptorLayout descriptorLayout;
 
     GlobalShaderPass(UnifiedShader2* owner)
         : m_owner(owner)
-        , index(-1)
+        , id(-1)
         , name()
         , vertexEntryPoint()
         , fragmentEntryPoint()
         , computeEntryPoint()
-        , targetShaderPassIndices{ -1, -1, -1, -1 } {}
+        , targetShaderPassIds{ -1, -1, -1, -1 } {}
 
     TargetShaderPassId getTargetShaderPassId(kokage::ShaderTarget target) const {
-        return targetShaderPassIndices[target - 1];
+        return targetShaderPassIds[target - 1];
     }
-
-    void getOrCreateDescriptorLayoutEntry(
-        const TargetBindingInfo& bindingInfo, kokage::RegisterCategory* outCategory,
-        int* outIndex);
-
 };
-
-class TargetInputResourceInfo : public URefObject {
-public:
-    TargetInputResourceInfoId index;
-    std::string name;
-    RegisterCategory category;
-};
-
 
 class TargetShaderPass : public URefObject {
 public:
-    TargetShaderPassId index;
-    int globalShaderPassIndex;
-    EntryPointId vertEntryPointIndex;
-    EntryPointId fragEntryPointIndex;
-    EntryPointId compEntryPointIndex;
-    TargetBindingLayoutInfo bindingLayout; // 各 EntryPoint からマージされたもの。
+    TargetShaderPassId id;
+    GlobalShaderPassId globalShaderPassId;
+    TargetEntryPointId vertEntryPointId;
+    TargetEntryPointId fragEntryPointId;
+    TargetEntryPointId compEntryPointId;
+    TargetBindingLayoutInfo bindingLayout; // 各 TargetEntryPoint からマージされたもの。
 
     TargetShaderPass()
-        : index(-1)
-        , globalShaderPassIndex(-1)
-        , vertEntryPointIndex(-1)
-        , fragEntryPointIndex(-1)
-        , compEntryPointIndex(-1) {}
+        : id(-1)
+        , globalShaderPassId(-1)
+        , vertEntryPointId(-1)
+        , fragEntryPointId(-1)
+        , compEntryPointId(-1) {}
 };
 
 // 任意データ
 class Blob : public URefObject {
 public:
-    BlobId index;
+    BlobId id;
     std::vector<uint8_t> data;
 };
-
-// ひとつの Shader 全体のインスタンス。
-class ModuleInfo : public URefObject {
-public:
-    ShaderTarget target;
-    //std::vector<ModuleParameterInfo> parameters;
-};
-
-//class ConstantBufferMember : public URefObject {
-//public:
-//    std::string name;
-//    ShaderUniformType type;
-//    // uint16_t ownerBufferIndex;
-//
-//    uint16_t offset; // UniformBuffer 先頭からのオフセットバイト数
-//    // uint16_t size;		// Uniform 1つ分の全体サイズ (配列、行列の分も含む)
-//
-//    uint16_t vectorElements;
-//    uint16_t arrayElements; // 配列要素数。配列で廃場合は 0
-//    uint16_t matrixRows;
-//    uint16_t matrixColumns;
-//};
-
-// シェーダファイルひとつ分の、Input Resource.
-// グローバルスコープで定義されている、b, t, s, u... などのリソース。
-// これは、 Material クラスにセットできる値を示す。
-//
-//class GlobalInputResourceInfo : public URefObject {
-//public:
-//    int index;
-//    std::string name;
-//    RegisterCategory category;
-//    //int constantBufferSize;
-//    //int spaceIndex;
-//    //int bindingIndex;
-//    //int arrayElementCount;
-//
-//
-//
-//
-//private:
-//};
 
 // $Global ConstantBuffer のメンバー情報。
 class GlobalMemberInfo : public URefObject {
 public:
-    int index;
+    GlobalMemberInfoId id;
     std::string name;
     ShaderGlobalMemberType type;
     ShaderGlobalMemberKind kind;
@@ -284,26 +180,17 @@ public:
     UnifiedShader2();
 
     GlobalResourceLayout* globalResourceLayout() const;
-    const std::vector<URef<GlobalShaderPass>>& globalShaderPasses() const {
-        return m_globalShaderPasses;
-    }
-    const std::vector<URef<EntryPoint>>& entryPoints() const { return m_entryPoints; }
-    const std::vector<URef<TargetShaderPass>>& targetShaderPasses() const {
-        return m_targetShaderPasses;
-    }
+    const std::vector<URef<GlobalShaderPass>>& globalShaderPasses() const;
+    const std::vector<URef<TargetShaderPass>>& targetShaderPasses() const;
+    const std::vector<URef<TargetEntryPoint>>& targetEntryPoints() const;
 
-    EntryPoint* entryPoint(EntryPointId id) const { return m_entryPoints[id].get(); }
-
-    TargetShaderPass* targetShaderPass(TargetShaderPassId id) const {
-        return m_targetShaderPasses[id].get();
-    }
-    Blob* blob(BlobId id) const { return m_blobs[id].get(); }
+    TargetShaderPass* targetShaderPass(TargetShaderPassId id) const;
+    TargetEntryPoint* targetEntryPoint(TargetEntryPointId id) const;
+    Blob* blob(BlobId id) const;
 
     GlobalShaderPass* createGlobalShaderPass();
-    ModuleInfo* addModuleInfo();
-    EntryPoint* createEntryPoint();
     TargetShaderPass* createTargetShaderPass();
-    TargetInputResourceInfo* createTargetInputResourceInfo();
+    TargetEntryPoint* createEntryPoint();
     Blob* createBlob();
 
     Result<GlobalMemberInfo*> getOrCreateGlobalMemberWithVerify(
@@ -321,21 +208,17 @@ public:
         int constantBufferSize,
         int arrayElementCount);
 
-    Result<EntryPoint*> getEntryPoint(ShaderTarget target, const std::string& name) const;
+    Result<TargetEntryPoint*> getTargetEntryPoint(ShaderTarget target, const std::string& name) const;
 
     static MaybeResult mergeTargetBindingLayoutInfo(
         TargetBindingLayoutInfo& target, const TargetBindingLayoutInfo& other, bool reset);
-
-    MaybeResult buildDescriptorLayout();
 
 private:
     URef<GlobalResourceLayout> m_globalResourceLayout;
     std::vector<URef<GlobalMemberInfo>> m_globalMembers;
     std::vector<URef<GlobalShaderPass>> m_globalShaderPasses;
-    std::vector<URef<ModuleInfo>> m_moduleInfos;
-    std::vector<URef<EntryPoint>> m_entryPoints;
     std::vector<URef<TargetShaderPass>> m_targetShaderPasses;
-    std::vector<URef<TargetInputResourceInfo>> m_TargetInputResourceInfos;
+    std::vector<URef<TargetEntryPoint>> m_targetEntryPoints;
     std::vector<URef<Blob>> m_blobs;
 };
 

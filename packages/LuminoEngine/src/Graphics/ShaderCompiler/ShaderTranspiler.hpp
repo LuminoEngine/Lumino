@@ -34,7 +34,7 @@ public:
 		ShaderStage2 stage,
         const char* code,
         size_t length,
-        const std::string& entryPoint,
+        const std::string& targetEntryPoint,
         const List<Path>& includeDir,
         const List<String>* definitions,
         DiagnosticsManager* diag);
@@ -42,7 +42,7 @@ public:
     bool mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout, DiagnosticsManager* diag);
 
 	ShaderStage2 stage() const { return m_stage; }
-	const std::string& entryPoint() const { return m_entryPoint; }
+	const std::string& targetEntryPoint() const { return m_entryPoint; }
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	std::vector<byte_t> spirvCode() const;
     std::vector<byte_t> generateHlslByteCode() const;

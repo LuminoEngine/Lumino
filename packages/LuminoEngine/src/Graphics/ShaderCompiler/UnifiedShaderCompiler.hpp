@@ -22,7 +22,7 @@ public:
     bool compileCompute(
         const char* code,
         size_t len,
-        const std::string& entryPoint,
+        const std::string& targetEntryPoint,
         const List<Path>& includeDirectories,
         const List<String>& definitions);
 

@@ -5,19 +5,7 @@ int main(int argc, char** argv) {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
     setlocale(LC_ALL, "");
-
-    if (argc == 1) {
-        char* testArgs[] = {
-            argv[0], "--gtest_break_on_failure",
-            //"--gtest_filter=Test_Shader.*"
-        };
-        argc = sizeof(testArgs) / sizeof(char*);
-        argv = testArgs;
-    }
-
     testing::InitGoogleTest(&argc, argv);
-    TestEnv::initialize();
-    int result = RUN_ALL_TESTS();
-    TestEnv::terminate();
-    return result;
+    ::testing::AddGlobalTestEnvironment(new TestEnv);
+    return RUN_ALL_TESTS();
 }

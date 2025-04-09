@@ -517,29 +517,29 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsCommandList* context, 
             createInfo.name = m_globalShaderPass->name.c_str();
             createInfo.descriptorLayout = &targetShaderPass->bindingLayout;
             // VertexShader
-            if (targetShaderPass->vertEntryPointIndex >= 0) {
-                auto* entryPoint = m_unifiedShader2->entryPoint(
-                    targetShaderPass->vertEntryPointIndex);
-                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobIndex);
+            if (targetShaderPass->vertEntryPointId >= 0) {
+                auto* entryPoint = m_unifiedShader2->targetEntryPoint(
+                    targetShaderPass->vertEntryPointId);
+                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobId);
                 createInfo.vsCode = code->data.data();
                 createInfo.vsCodeLen = code->data.size();
                 createInfo.vsEntryPointName = entryPoint->name.c_str();
                 createInfo.attributes = &entryPoint->inputAttributes;
             }
             // PixelShader
-            if (targetShaderPass->fragEntryPointIndex >= 0) {
-                auto* entryPoint = m_unifiedShader2->entryPoint(
-                    targetShaderPass->fragEntryPointIndex);
-                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobIndex);
+            if (targetShaderPass->fragEntryPointId >= 0) {
+                auto* entryPoint = m_unifiedShader2->targetEntryPoint(
+                    targetShaderPass->fragEntryPointId);
+                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobId);
                 createInfo.psCode = code->data.data();
                 createInfo.psCodeLen = code->data.size();
                 createInfo.psEntryPointName = entryPoint->name.c_str();
             }
             // ComputeShader
-            if (targetShaderPass->compEntryPointIndex >= 0) {
-                auto* entryPoint = m_unifiedShader2->entryPoint(
-                    targetShaderPass->compEntryPointIndex);
-                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobIndex);
+            if (targetShaderPass->compEntryPointId >= 0) {
+                auto* entryPoint = m_unifiedShader2->targetEntryPoint(
+                    targetShaderPass->compEntryPointId);
+                auto* code = m_unifiedShader2->blob(entryPoint->codeBlobId);
                 createInfo.csCode = code->data.data();
                 createInfo.csCodeLen = code->data.size();
                 createInfo.csEntryPointName = entryPoint->name.c_str();

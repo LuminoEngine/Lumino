@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/ShaderCompiler/UnifiedShader2.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 #include "ShaderMetadataParser.hpp"
+#include "DescriptorLayoutBuilder.hpp"
 
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
@@ -344,7 +345,8 @@ MaybeResult ShaderCompiler::buildModule() {
     }
 
     {
-        auto r1 = m_shader->buildDescriptorLayout();
+        DescriptorLayoutBuilder builder;
+        auto r1 = builder.buildDescriptorLayout(m_shader);
         if (!r1) return r1;
     }
     return LN_MAKE_SUCCESS();
@@ -352,8 +354,8 @@ MaybeResult ShaderCompiler::buildModule() {
 
 // targetIndex=0 でのみ取得すれば良さそうな気がするけど、
 // 一応全ての Target を調べる。
-// なお EntryPoint 側からボトムアップで求めることも出来そうだが、
-// EntryPoint からは binding index しか主に取得できず型情報や配列要素数が無い。
+// なお TargetEntryPoint 側からボトムアップで求めることも出来そうだが、
+// TargetEntryPoint からは binding index しか主に取得できず型情報や配列要素数が無い。
 MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
     slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
     int parameterCount = programLayout->getParameterCount();
@@ -501,10 +503,6 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
         stream.write(reinterpret_cast<const char*>(text->getBufferPointer()), text->getBufferSize());
     }
 
-    // Build module reflection
-    ModuleInfo* moduleInfo = m_shader->addModuleInfo();
-    moduleInfo->target = target;
-
     //{
     //    auto r = buildModuleInfoSPIRV(module->getLayout(), moduleInfo);
     //    if (!r) return r;
@@ -525,9 +523,9 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     //}
     
 
-    //Slang::ComPtr<slang::IEntryPoint> entryPoint;
+    //Slang::ComPtr<slang::IEntryPoint> targetEntryPoint;
     //result = module->findAndCheckEntryPoint(
-    //    "PS_Main", SlangStage::SLANG_STAGE_VERTEX, entryPoint.writeRef(), diagnostics.writeRef());
+    //    "PS_Main", SlangStage::SLANG_STAGE_VERTEX, targetEntryPoint.writeRef(), diagnostics.writeRef());
 
     //LN_LOG_INFO("  Name: {}", pp->getName());
     //LN_LOG_INFO("  Stage: {}", (int)pp->getStage());
@@ -552,7 +550,7 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     }
     
     // Link shader passes.
-    const auto& entryPoints = m_shader->entryPoints();
+    //const auto& entryPoints = m_shader->targetEntryPoints();
     for (auto& globalShaderPass : m_shader->globalShaderPasses()) {
         auto result = buildTargetShaderPass(target, targetIndex, globalShaderPass.get());
         if (!result) {
@@ -567,7 +565,7 @@ MaybeResult ShaderCompiler::buildTarget(ShaderTarget target, int targetIndex) {
     //int entryPointCount = m_module->getDefinedEntryPointCount();
     //for (int i = 0; i < entryPointCount; i++) {
     //    slang::EntryPointLayout* entryPointLayout = layout->getEntryPointByIndex(i);
-    //    //slang::EntryPointReflection* entryPointReflection = entryPointLayout->getEntryPoint();
+    //    //slang::EntryPointReflection* entryPointReflection = entryPointLayout->getTargetEntryPoint();
     //    //slang::FunctionReflection* functionReflection = entryPointReflection->getFunctionReflection();
     //    //LN_LOG_INFO("  Name: {}", functionReflection->getName());
     //    //int att = functionReflection->getUserAttributeCount();
@@ -660,7 +658,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
 
     // Dump bindings to JSON.
     if (m_dump) {
-        // NOTE: slangc -reflection-json では EntryPoint ごとに used な Parameter が出力されるが、
+        // NOTE: slangc -reflection-json では TargetEntryPoint ごとに used な Parameter が出力されるが、
         //   それはレガシーな API を使っているようで、 公開 API からは取得することができなかった。
         //   (toJson() 内部の spReflection_ToJson() の第２引数に Request を指定する必要があるが、それだけだとクラッシュした)
         //   なので同様の JSON は出力できない点に注意。
@@ -797,10 +795,10 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     }
 
 
-    EntryPoint* entryPoint = m_shader->createEntryPoint();
+    TargetEntryPoint* entryPoint = m_shader->createEntryPoint();
     entryPoint->target = target;
     entryPoint->name = entryPointReflection->getName();
-    entryPoint->codeBlobIndex = codeBlob->index;
+    entryPoint->codeBlobId = codeBlob->id;
     entryPoint->inputAttributes = inputAttributes;
 
     ShaderStageFlags stageFlags = ShaderStageFlags_None;
@@ -942,55 +940,6 @@ MaybeResult ShaderCompiler::buildEntryPoint(
         }
     }
     
-    // Collect Non-$Global members.
-    #if 0
-    int parameterCount = programLayout->getParameterCount();
-    for (int i = 0; i < parameterCount; i++) {
-        slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
-        slang::ParameterCategory category = parameter->getCategory();
-        if (category == slang::ParameterCategory::Uniform) {
-            continue;
-        }
-
-        std::string name;
-        RegisterCategory registerCategory = RegisterCategory_Unknown;
-        int constantBufferSize = 0;
-        int arrayElementCount = 0;
-        auto result1 = getBindingResourceInfo(
-            parameter,
-            &name,
-            &registerCategory,
-            &constantBufferSize,
-            &arrayElementCount);
-        if (!result1) return result1;
-
-        //if (!globalConstantBuffer) {
-        //    globalConstantBuffer = m_shader->createTargetInputResourceInfo();
-        //    globalConstantBuffer->name = kGlobalConstantBufferName;
-        //    globalConstantBuffer->category = RegisterCategory_UniformBuffer;
-        //}
-    }
-    #endif
-    
-
-    #if 0
-    for (const BindingDumpInfo& info : bindingDumpInfos) {
-        if (info.category == SLANG_PARAMETER_CATEGORY_UNIFORM) {
-            continue; // Containd $Global
-        }
-        EntryPointBindingInfo binding;
-        binding.name = info.name;
-        binding.category = toLuminoCategory(info.category);
-        binding.offset = info.offset;
-        binding.size = info.size;
-        binding.space = info.space;
-        binding.index = info.index;
-        binding.count = info.count;
-        binding.used = info.used;
-        entryPoint->bindings.push_back(binding);
-    }
-    #endif
-
     return LN_MAKE_SUCCESS();
 }
 
@@ -998,31 +947,29 @@ MaybeResult ShaderCompiler::buildTargetShaderPass(
     ShaderTarget target, int targetIndex, GlobalShaderPass* globalShaderPass) {
 
     TargetShaderPass* targetShaderPass = m_shader->createTargetShaderPass();
-    targetShaderPass->globalShaderPassIndex = globalShaderPass->index;
-    globalShaderPass->targetShaderPassIndices[target - 1] = targetShaderPass->index;
+    targetShaderPass->globalShaderPassId = globalShaderPass->id;
+    globalShaderPass->targetShaderPassIds[target - 1] = targetShaderPass->id;
 
     // VertexShader
     if (!globalShaderPass->vertexEntryPoint.empty()) {
-        auto result = m_shader->getEntryPoint(target, globalShaderPass->vertexEntryPoint);
+        auto result = m_shader->getTargetEntryPoint(target, globalShaderPass->vertexEntryPoint);
         if (!result) LN_TO_ERROR(result);
-        targetShaderPass->vertEntryPointIndex = result.value()->index;
+        targetShaderPass->vertEntryPointId = result.value()->id;
     }
 
     // FragmentShader
     if (!globalShaderPass->fragmentEntryPoint.empty()) {
-        auto result = m_shader->getEntryPoint(target, globalShaderPass->fragmentEntryPoint);
+        auto result = m_shader->getTargetEntryPoint(target, globalShaderPass->fragmentEntryPoint);
         if (!result) LN_TO_ERROR(result);
-        targetShaderPass->fragEntryPointIndex = result.value()->index;
+        targetShaderPass->fragEntryPointId = result.value()->id;
     }
 
     // ComputeShader
     if (!globalShaderPass->computeEntryPoint.empty()) {
-        auto result = m_shader->getEntryPoint(target, globalShaderPass->computeEntryPoint);
+        auto result = m_shader->getTargetEntryPoint(target, globalShaderPass->computeEntryPoint);
         if (!result) LN_TO_ERROR(result);
-        targetShaderPass->compEntryPointIndex = result.value()->index;
+        targetShaderPass->compEntryPointId = result.value()->id;
     }
-
-    
 
     return LN_MAKE_SUCCESS();
 }
@@ -1096,59 +1043,6 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
     return LN_MAKE_SUCCESS();
 }
 
-//MaybeResult ShaderCompiler::buildTargetInputResources(
-//    ShaderTarget target, int targetIndex, TargetShaderPass* ownerShaderPass, ShaderStage2 stage) {
-//    slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
-//    int parameterCount = programLayout->getParameterCount();
-//
-//    // Get EntryPointMetadata.
-//    Slang::ComPtr<slang::IMetadata> entryPointMetadata;
-//    Slang::ComPtr<slang::IBlob> diag;
-//    SlangResult result = m_program->getEntryPointMetadata(
-//        entryPointIndex,
-//        targetIndex, // target index
-//        entryPointMetadata.writeRef(),
-//        diag.writeRef());
-//    if (SLANG_FAILED(result)) {
-//        std::string message(
-//            static_cast<const char*>(diag->getBufferPointer()),
-//            diag->getBufferSize());
-//        return LN_MAKE_ERROR("getEntryPointMetadata failed. (%d): %s", result, message.c_str());
-//    }
-//
-//    // Collect $Global ConstantBuffer members.
-//    TargetInputResourceInfo* globalConstantBuffer = nullptr;
-//    for (int i = 0; i < parameterCount; i++) {
-//        slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
-//        slang::ParameterCategory category = parameter->getCategory();
-//        if (category != slang::ParameterCategory::Uniform) {
-//            continue;
-//        }
-//
-//        if (!globalConstantBuffer) {
-//            globalConstantBuffer = m_shader->createTargetInputResourceInfo();
-//            globalConstantBuffer->name = kGlobalConstantBufferName;
-//            globalConstantBuffer->category = RegisterCategory_UniformBuffer;
-//        }
-//    }
-//
-//    // Collect Non-$Global members.
-//    for (int i = 0; i < parameterCount; i++) {
-//        slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
-//        slang::ParameterCategory category = parameter->getCategory();
-//        if (category == slang::ParameterCategory::Uniform) {
-//            continue;
-//        }
-//
-//        if (!globalConstantBuffer) {
-//            globalConstantBuffer = m_shader->createTargetInputResourceInfo();
-//            globalConstantBuffer->name = kGlobalConstantBufferName;
-//            globalConstantBuffer->category = RegisterCategory_UniformBuffer;
-//        }
-//    }
-//
-//    return LN_MAKE_SUCCESS();
-//}
 
 // see: Slang::emitReflectionTypeLayoutJSON()
 // see: Slang::emitReflectionVarLayoutJSON()
@@ -1193,12 +1087,12 @@ void ShaderCompiler::traverseVariableSemaintic(
 }
 
 MaybeResult ShaderCompiler::mergeTargetInputResources() {
-    const auto& entryPoints = m_shader->entryPoints();
+    const auto& targetEntryPoints = m_shader->targetEntryPoints();
     for (auto& targetShaderPass : m_shader->targetShaderPasses()) {
         bool reset = true;
 
-        if (targetShaderPass->vertEntryPointIndex >= 0) {
-            const auto& entryPoint = entryPoints[targetShaderPass->vertEntryPointIndex];
+        if (targetShaderPass->vertEntryPointId >= 0) {
+            const auto& entryPoint = targetEntryPoints[targetShaderPass->vertEntryPointId];
             auto result = UnifiedShader2::mergeTargetBindingLayoutInfo(
                 targetShaderPass->bindingLayout,
                 entryPoint->bindingLayout,
@@ -1207,8 +1101,8 @@ MaybeResult ShaderCompiler::mergeTargetInputResources() {
             reset = false;
         }
 
-        if (targetShaderPass->fragEntryPointIndex >= 0) {
-            const auto& entryPoint = entryPoints[targetShaderPass->fragEntryPointIndex];
+        if (targetShaderPass->fragEntryPointId >= 0) {
+            const auto& entryPoint = targetEntryPoints[targetShaderPass->fragEntryPointId];
             auto result = UnifiedShader2::mergeTargetBindingLayoutInfo(
                 targetShaderPass->bindingLayout,
                 entryPoint->bindingLayout,
@@ -1217,8 +1111,8 @@ MaybeResult ShaderCompiler::mergeTargetInputResources() {
             reset = false;
         }
 
-        if (targetShaderPass->compEntryPointIndex >= 0) {
-            const auto& entryPoint = entryPoints[targetShaderPass->compEntryPointIndex];
+        if (targetShaderPass->compEntryPointId >= 0) {
+            const auto& entryPoint = targetEntryPoints[targetShaderPass->compEntryPointId];
             auto result = UnifiedShader2::mergeTargetBindingLayoutInfo(
                 targetShaderPass->bindingLayout,
                 entryPoint->bindingLayout,

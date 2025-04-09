@@ -151,7 +151,7 @@ bool UnifiedShaderCompiler::compile(
 bool UnifiedShaderCompiler::compileCompute(
     const char* code,
     size_t len,
-    const std::string& entryPoint,
+    const std::string& targetEntryPoint,
     const List<Path>& includeDirectories,
     const List<String>& definitions) {
     ShaderTechniqueClass techClass;
@@ -159,7 +159,7 @@ bool UnifiedShaderCompiler::compileCompute(
     auto* pass = m_unifiedShader->addPass(tech->id(), "Compute");
 
     auto transpiler = makeURef<ShaderCodeTranspiler>(m_manager);
-    transpiler->compileAndLinkFromHlsl(ShaderStage2_Compute, code, len, entryPoint, includeDirectories, &definitions, m_diag);
+    transpiler->compileAndLinkFromHlsl(ShaderStage2_Compute, code, len, targetEntryPoint, includeDirectories, &definitions, m_diag);
     if (m_diag->hasError()) {
         return false;
     }
@@ -170,7 +170,7 @@ bool UnifiedShaderCompiler::compileCompute(
         return false;
     }
 
-    auto* container = m_unifiedShader->addCodeContainer(ShaderStage2_Compute, entryPoint);
+    auto* container = m_unifiedShader->addCodeContainer(ShaderStage2_Compute, targetEntryPoint);
 
     UnifiedShaderTriple triple1 = { "spv", 110, "" };
     container->setCode(triple1, transpiler->spirvCode());
