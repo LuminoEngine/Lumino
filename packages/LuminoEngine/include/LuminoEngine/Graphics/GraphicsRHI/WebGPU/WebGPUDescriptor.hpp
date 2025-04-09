@@ -7,7 +7,6 @@ namespace detail {
 class WebGPUDescriptor : public IDescriptor {
 public:
     WebGPUDescriptor(WebGPUDescriptorPool* owner);
-    ~WebGPUDescriptor() override;
     void onUpdateData(const ShaderDescriptorTableUpdateInfo& data) override;
 
     WGPUBindGroup nativeBindGroup() const { return m_nativeBindGroup; }

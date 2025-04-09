@@ -10,9 +10,6 @@ WebGPUDescriptor::WebGPUDescriptor(WebGPUDescriptorPool* owner)
     : m_owner(owner) {
 }
 
-WebGPUDescriptor::~WebGPUDescriptor() {
-}
-
 void WebGPUDescriptor::onUpdateData(const ShaderDescriptorTableUpdateInfo& data) {
     WebGPUBindGroupCache* cache = m_owner->device()->bindGroupCache();
     auto result = cache->getOrCreate(m_owner->shaderPass(), data, &m_nativeBindGroup);

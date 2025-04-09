@@ -93,21 +93,19 @@ MaybeResult VulkanShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
                 entry.descriptorCount = 1;
                 break;
             case kokage::BindingResourceCategory_TextureOrCombinedSampler:
-                return LN_MAKE_ERROR_NOT_IMPLEMENTED();
-                // TODO: ShaderPass 側から見た時に CombinedSampler であるかどうかを調べる方法が kokage にない。
                 if (m_compShaderModule) {
                     // コンピュートシェーダの場合は StorageBuffer として扱う
                     entry.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
                     entry.descriptorCount = 1;
                 }
-                else if (1 /* binding.descriptorEntryCategory == kokage::RegisterCategory_TextureOrCombinedSampler*/) {
+                else {
                     entry.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                     entry.descriptorCount = 1;
                 }
-                else {
-                    entry.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-                    entry.descriptorCount = 1;
-                }
+                // TODO: ShaderPass 側から見た時に CombinedSampler であるかどうかを調べる方法が kokage にない。
+                // texture と samplerstate を分ける場合、次のようにする必要があるかもしれない。
+                //entry.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+                //entry.descriptorCount = 1;
                 break;
             case kokage::BindingResourceCategory_SamplerState:
                 entry.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
