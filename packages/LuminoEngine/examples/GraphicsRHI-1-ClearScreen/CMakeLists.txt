@@ -13,6 +13,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ASSETS_DIR=U"${CMAKE_CURRENT_
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoEngine Vulkan::Headers)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
 
-if(LUMINO_USE_WEBGPU)
+if(LN_DESKTOP_WEBGPU)
     target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
 endif()

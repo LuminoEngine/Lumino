@@ -1,5 +1,4 @@
 ﻿
-find_package(glfw3 CONFIG REQUIRED)
 
 set(LOCAL_ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/Assets")
 
@@ -25,6 +24,7 @@ function(target_set_sample_configurations Target)
 endfunction()
 
 if(LN_OS_DESKTOP)
+    find_package(glfw3 CONFIG REQUIRED)
     add_subdirectory(LuminoFFI-OpenGLApp)
     add_subdirectory(LuminoFFI-1-ClearScreen)
     add_subdirectory(LuminoFFI-2-HelloSprite)

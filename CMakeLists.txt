@@ -19,6 +19,12 @@ if(NOT DEFINED LUMINO_MASTER_PROJECT)
     endif()
 endif()
 
+# Debug
+# https://learn.microsoft.com/ja-jp/vcpkg/reference/vcpkg-json#platform-expression
+message("VCPKG_TARGET_ARCHITECTURE: ${VCPKG_TARGET_ARCHITECTURE}")
+message("VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
+message("VCPKG_CMAKE_SYSTEM_NAME: ${VCPKG_CMAKE_SYSTEM_NAME}")
+
 # -------------------------------------------------------------------------------
 # Options
 # -------------------------------------------------------------------------------
@@ -111,6 +117,7 @@ if(DEFINED EMSCRIPTEN)
     include_directories("${EMSCRIPTEN_ROOT_PATH}/system/lib/libcxxabi/include")
     set(CMAKE_EXECUTABLE_SUFFIX .html)
     set(LN_EMSCRIPTEN ON)
+    set(LN_USE_WEBGPU ON)
     set(LN_USE_OPENAL ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
     add_definitions(-DLN_GLFW)
@@ -189,6 +196,7 @@ if(LUMINO_BUILD_CORE)
 endif()
 
 if(LUMINO_USE_WEBGPU)
+    set(LN_USE_WEBGPU ON)
     if(LN_OS_DESKTOP)
         set(LN_DESKTOP_WEBGPU ON)
         set(WEBGPU_BACKEND "DAWN")

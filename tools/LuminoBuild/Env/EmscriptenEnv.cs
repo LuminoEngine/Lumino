@@ -13,8 +13,8 @@ namespace LuminoBuild
      */
     static class EmscriptenEnv
     {
-        public const string emsdkVer = "3.1.56";
-        public const string emVer = "3.1.56";
+        public const string emsdkVer = "4.0.6";
+        public const string emVer = "4.0.6";
         public static string EmsdkDir;
         public static string Ninja;
 

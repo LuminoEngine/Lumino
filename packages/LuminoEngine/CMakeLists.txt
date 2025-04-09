@@ -81,7 +81,7 @@ elseif(WIN32)
 elseif(APPLE)
 endif()
 
-if(LUMINO_USE_WEBGPU)
+if(LN_USE_WEBGPU)
     file(GLOB LOCAL_SOURCES_WebGPU
         "include/LuminoEngine/Graphics/GraphicsRHI/WebGPU/*.hpp"
         "src/Graphics/GraphicsRHI/WebGPU/*.hpp"
@@ -307,8 +307,10 @@ endif()
 if(LN_USE_DIRECTX12)
     target_compile_definitions(${PROJECT_NAME} PUBLIC LN_USE_DIRECTX12=1)
 endif()
-if(LUMINO_USE_WEBGPU)
+if(LN_DESKTOP_WEBGPU)
     target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
+endif()
+if(LN_USE_WEBGPU)
     target_compile_definitions(${PROJECT_NAME} PUBLIC LN_USE_WEBGPU=1)
 endif()
 if (LN_USE_OPENAL)
