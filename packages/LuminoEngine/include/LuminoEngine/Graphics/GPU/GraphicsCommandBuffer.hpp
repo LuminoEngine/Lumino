@@ -160,7 +160,7 @@ public:
     /** @defgroup TODO: Internal */
     /** @{ */
 
-    void init(GraphicsManager* manager);
+    MaybeResult init(GraphicsManager* manager);
     void dispose();
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
     void reset();

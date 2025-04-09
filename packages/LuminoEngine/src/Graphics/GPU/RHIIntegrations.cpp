@@ -65,7 +65,9 @@ bool DirectX12GraphicsContext::init(const Settings& settings) {
     }
     m_device->refreshCaps();
 
-    return GraphicsContext::init(settings.mainWindow);
+    auto r = GraphicsContext::init(settings.mainWindow);
+    LN_ASSERT_RESULT(r);
+    return true;
 }
 
 void DirectX12GraphicsContext::onDispose(bool explicitDisposing) {
@@ -121,7 +123,9 @@ bool VulkanGraphicsContext::init(const Settings& settings) {
     }
     m_device->refreshCaps();
 
-    return GraphicsContext::init(settings.mainWindow);
+    auto r = GraphicsContext::init(settings.mainWindow);
+    LN_ASSERT_RESULT(r);
+    return true;
 }
 
 void VulkanGraphicsContext::onDispose(bool explicitDisposing) {
@@ -206,7 +210,9 @@ bool WebGPUGraphicsContext::init(const Settings& settings) {
     }
     m_device->refreshCaps();
 
-    return GraphicsContext::init(settings.mainWindow);
+    auto r = GraphicsContext::init(settings.mainWindow);
+    LN_ASSERT_RESULT(r);
+    return true;
 }
 
 void WebGPUGraphicsContext::onDispose(bool explicitDisposing) {
@@ -277,8 +283,10 @@ bool OpenGLGraphicsContext::init(const Settings& settings) {
     }
 
     m_device->refreshCaps();
-
-    return GraphicsContext::init(settings.window);
+    
+    auto r = GraphicsContext::init(settings.window);
+    LN_ASSERT_RESULT(r);
+    return true;
 }
 
 void OpenGLGraphicsContext::onDispose(bool explicitDisposing) {

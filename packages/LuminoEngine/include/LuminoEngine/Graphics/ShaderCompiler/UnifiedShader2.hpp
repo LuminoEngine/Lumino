@@ -117,7 +117,6 @@ public:
 class TargetShaderPass : public URefObject {
 public:
     TargetShaderPassId id;
-    //GlobalShaderPassId globalShaderPassId;
     TargetEntryPointId vertEntryPointId;
     TargetEntryPointId fragEntryPointId;
     TargetEntryPointId compEntryPointId;
@@ -125,7 +124,6 @@ public:
 
     TargetShaderPass()
         : id(-1)
-        //, globalShaderPassId(-1)
         , vertEntryPointId(-1)
         , fragEntryPointId(-1)
         , compEntryPointId(-1) {}

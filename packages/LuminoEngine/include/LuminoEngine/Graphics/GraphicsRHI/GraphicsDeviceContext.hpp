@@ -192,7 +192,7 @@ public:
     void refreshCaps();
 
     Result<Ref<ISwapChain>> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
-    Ref<ICommandList> createCommandList();
+    Result<Ref<ICommandList>> createCommandList();
     Ref<IRenderPass> createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
     Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
     Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
@@ -229,7 +229,7 @@ public:
 protected:
     virtual void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) = 0;
     virtual Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
-    virtual Ref<ICommandList> onCreateCommandList() = 0;
+    virtual Result<Ref<ICommandList>> onCreateCommandList() = 0;
     virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
     virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
     virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;

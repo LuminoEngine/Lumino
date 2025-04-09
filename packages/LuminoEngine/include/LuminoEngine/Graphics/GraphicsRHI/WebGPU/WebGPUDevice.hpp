@@ -30,7 +30,7 @@ protected:
     INativeGraphicsInterface* getNativeInterface() const override;
     void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) override;
     Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
-    Ref<ICommandList> onCreateCommandList() override;
+    Result<Ref<ICommandList>> onCreateCommandList() override;
     Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
     Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
     Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;

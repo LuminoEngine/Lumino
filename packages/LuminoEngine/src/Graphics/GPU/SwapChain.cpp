@@ -30,11 +30,8 @@ GraphicsContext::GraphicsContext()
 GraphicsContext::~GraphicsContext() {
 }
 
-bool GraphicsContext::init(PlatformWindow* window) {
-    // TODO: onChangeDevice でバックバッファをアタッチ
-    if (!Object::init()) {
-        return false;
-    }
+MaybeResult GraphicsContext::init(PlatformWindow* window) {
+    Object::init();
 
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
@@ -45,7 +42,7 @@ bool GraphicsContext::init(PlatformWindow* window) {
         SizeI backbufferSize;
         window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
         auto result = rhiDevice()->createSwapChain(window, backbufferSize);
-        LN_ASSERT_RESULT(result);
+        if (!result) return LN_TO_ERROR(result);
         m_rhiObject = std::move(result).value();
     }
     else {
@@ -63,12 +60,13 @@ bool GraphicsContext::init(PlatformWindow* window) {
     m_commandLists.resize(count);
     for (int i = 0; i < count; i++) {
         auto commandList = Ref<GraphicsCommandList>(LN_NEW GraphicsCommandList(this), false);
-        commandList->init(detail::GraphicsResourceInternal::manager(this));
+        auto r = commandList->init(detail::GraphicsResourceInternal::manager(this));
+        if (!r) return r;
         m_commandLists[i] = commandList;
     }
 
     nextFrame();
-    return true;
+    return LN_MAKE_SUCCESS();
 }
 
 void GraphicsContext::onCreateRHIObjects() {

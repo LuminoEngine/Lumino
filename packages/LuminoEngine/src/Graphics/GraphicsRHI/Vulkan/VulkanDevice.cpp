@@ -157,10 +157,10 @@ Result<Ref<ISwapChain>> VulkanDevice::onCreateSwapChain(PlatformWindow* window, 
     return ptr;
 }
 
-Ref<ICommandList> VulkanDevice::onCreateCommandList() {
+Result<Ref<ICommandList>> VulkanDevice::onCreateCommandList() {
     auto ptr = makeRef<VulkanCommandList>();
     if (!ptr->init(this)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }

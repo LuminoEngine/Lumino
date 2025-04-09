@@ -392,10 +392,10 @@ Result<Ref<ISwapChain>>DX12Device::onCreateSwapChain(PlatformWindow* window, con
     return ptr;
 }
 
-Ref<ICommandList> DX12Device::onCreateCommandList() {
+Result<Ref<ICommandList>> DX12Device::onCreateCommandList() {
     auto ptr = makeRef<DX12GraphicsContext>();
     if (!ptr->init(this)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }

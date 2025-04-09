@@ -215,12 +215,12 @@ Result<Ref<ISwapChain>> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, 
 #endif
 }
 
-Ref<ICommandList> OpenGLDevice::onCreateCommandList() {
+Result<Ref<ICommandList>> OpenGLDevice::onCreateCommandList() {
     // if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
 
     auto ptr = makeRef<GLGraphicsContext>();
     if (!ptr->init(this)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
 
     // m_commandListCreated = true;

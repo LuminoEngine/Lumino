@@ -37,11 +37,13 @@ GraphicsCommandList::GraphicsCommandList(GraphicsContext* context)
     , m_currentRHIRenderPass(nullptr) {
 }
 
-void GraphicsCommandList::init(GraphicsManager* manager) {
+MaybeResult GraphicsCommandList::init(GraphicsManager* manager) {
     detail::IGraphicsDevice* device = m_graphicsContext->rhiDevice();
     m_manager = GraphicsManager::instance();
     //m_manager->resourceRegistry()->registerObject(this);
-    m_rhiResource = device->createCommandList();
+    auto r = device->createCommandList();
+    if (!r) return LN_TO_ERROR(r);
+    m_rhiResource = r.value();
     m_allocator = makeRef<detail::LinearAllocator>(manager->linearAllocatorPageManager());
     m_descriptorPool = makeURef<detail::ShaderDescriptorPool>();
     m_singleFrameUniformBufferAllocator = makeRef<detail::SingleFrameUniformBufferAllocator>(

@@ -191,7 +191,7 @@ void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->requestedShaderTriple.option = "";
     outCaps->imageLayoytVFlip = false;
     outCaps->uniformBufferOffsetAlignment = 256;
-    outCaps->shaderTarget = kokage::ShaderTarget_SPIRV;
+    outCaps->shaderTarget = kokage::ShaderTarget_WGSL;
 }
 
 Result<Ref<ISwapChain>> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
@@ -202,10 +202,10 @@ Result<Ref<ISwapChain>> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, 
     return ptr;
 }
 
-Ref<ICommandList> WebGPUDevice::onCreateCommandList() {
+Result<Ref<ICommandList>> WebGPUDevice::onCreateCommandList() {
     auto ptr = makeRef<WebGPUCommandList>();
     if (!ptr->init(this)) {
-        return nullptr;
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }

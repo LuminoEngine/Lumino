@@ -87,13 +87,13 @@ Result<Ref<ISwapChain>> IGraphicsDevice::createSwapChain(PlatformWindow* window,
     return ptr;
 }
 
-Ref<ICommandList> IGraphicsDevice::createCommandList() {
-    Ref<ICommandList> ptr = onCreateCommandList();
-    if (ptr) {
-        ptr->m_device = this;
-        ptr->m_objectId = m_objectNextId++;
-        m_profiler->addCommandList(ptr);
-    }
+Result<Ref<ICommandList>> IGraphicsDevice::createCommandList() {
+    auto result = onCreateCommandList();
+    if (!result) return result;
+    Ref<ICommandList> ptr = std::move(result).value();
+    ptr->m_device = this;
+    ptr->m_objectId = m_objectNextId++;
+    m_profiler->addCommandList(ptr);
     return ptr;
 }
 

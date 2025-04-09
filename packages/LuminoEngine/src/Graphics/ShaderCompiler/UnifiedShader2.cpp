@@ -22,7 +22,12 @@ RegisterCategory GlobalResourceLayout::getRegisterCategoryByName(const std::stri
 }
 
 UnifiedShader2::UnifiedShader2()
-    : m_globalResourceLayout(makeURef<GlobalResourceLayout>()) {
+    : m_globalResourceLayout(makeURef<GlobalResourceLayout>())
+    , m_globalMembers()
+    , m_globalShaderPasses()
+    , m_targetShaderPasses()
+    , m_targetEntryPoints()
+    , m_blobs() {
 }
 
 GlobalResourceLayout* UnifiedShader2::globalResourceLayout() const {
