@@ -220,6 +220,8 @@ private:
     std::vector<URef<TargetShaderPass>> m_targetShaderPasses;
     std::vector<URef<TargetEntryPoint>> m_targetEntryPoints;
     std::vector<URef<Blob>> m_blobs;
+
+    friend class UnifiedShaderSerializer;
 };
 
 } // namespace kokage

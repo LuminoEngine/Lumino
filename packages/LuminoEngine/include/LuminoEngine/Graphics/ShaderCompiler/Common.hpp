@@ -16,6 +16,7 @@ class UnifiedShader;
 class ShaderCodeTranspiler;
 class ShaderRenderState;
 class UnifiedShader2;
+class UnifiedShaderSerializer;
 } // namespace kokage
 
 namespace detail {
