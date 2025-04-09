@@ -11,7 +11,7 @@ public:
         FileVersion_Last,
         FileVersion_Current = FileVersion_Last - 1,
     };
-    static const String FileExt;
+    static constexpr std::string_view FileExt = "lcus"; // Lumino Compiled UnifiedShader
 
     static MaybeResult saveToFile(const UnifiedShader2* shader, const std::filesystem::path& filePath);
     static Result<Ref<UnifiedShader2>> loadFromFile(const std::filesystem::path& filePath);

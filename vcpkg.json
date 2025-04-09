@@ -43,6 +43,10 @@
         {
             "name": "openal-soft",
             "platform": "windows | linux | osx"
+        },
+        {
+            "name": "cli11",
+            "platform": "windows | linux | osx"
         }
     ]
 }

@@ -47,13 +47,13 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // File header
     {
-        writer->write("lufx", 4); // Magic number
+        writer->write("lcus", 4); // Magic number
         writer->writeInt16(FileVersion_Current);
     }
 
     // Blob
     {
-        writer->write("lufx.bl.", 8); // Chunk signature
+        writer->write("lcus.bl.", 8); // Chunk signature
 
         const auto& blobs = shader->m_blobs;
         writer->writeInt16(blobs.size());
@@ -65,7 +65,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // TargetEntryPoint
     {
-        writer->write("lufx.te.", 8); // Chunk signature
+        writer->write("lcus.te.", 8); // Chunk signature
 
         const auto& entryPoints = shader->m_targetEntryPoints;
         writer->writeInt16(entryPoints.size());
@@ -118,7 +118,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // TargetShaderPass
     {
-        writer->write("lufx.tp.", 8); // Chunk signature
+        writer->write("lcus.tp.", 8); // Chunk signature
 
         const auto& targetShaderPasses = shader->m_targetShaderPasses;
         writer->writeInt16(targetShaderPasses.size());
@@ -158,7 +158,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // GlobalShaderPass
     {
-        writer->write("lufx.gp.", 8); // Chunk signature
+        writer->write("lcus.gp.", 8); // Chunk signature
 
         const auto& globalShaderPasses = shader->m_globalShaderPasses;
         writer->writeInt16(globalShaderPasses.size());
@@ -204,7 +204,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // GlobalConstantBufferMember
     {
-        writer->write("lufx.gm.", 8); // Chunk signature
+        writer->write("lcus.gm.", 8); // Chunk signature
 
         const auto& globalMembers = shader->m_globalMembers;
         writer->writeInt16(globalMembers.size());
@@ -222,7 +222,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // GlobalResourceLayout
     {
-        writer->write("lufx.gl.", 8); // Chunk signature
+        writer->write("lcus.gl.", 8); // Chunk signature
 
         const auto& globalResourceLayout = shader->m_globalResourceLayout;
         writer->writeInt16(globalResourceLayout->buffers.size());
@@ -264,7 +264,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // File header
     {
-        auto r1 = checkSignature(reader, "lufx", 4);
+        auto r1 = checkSignature(reader, "lcus", 4);
         if (!r1) return LN_TO_ERROR(r1);
 
         int fileVersion = reader->readUInt32();
@@ -275,7 +275,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // Blob
     {
-        auto r1 = checkSignature(reader, "lufx.bl.", 8);
+        auto r1 = checkSignature(reader, "lcus.bl.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -287,7 +287,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // TargetEntryPoint
     {
-        auto r1 = checkSignature(reader, "lufx.te.", 8);
+        auto r1 = checkSignature(reader, "lcus.te.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -340,7 +340,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // TargetShaderPass
     {
-        auto r1 = checkSignature(reader, "lufx.tp.", 8);
+        auto r1 = checkSignature(reader, "lcus.tp.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -380,7 +380,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
     
     // GlobalShaderPass
     {
-        auto r1 = checkSignature(reader, "lufx.gp.", 8);
+        auto r1 = checkSignature(reader, "lcus.gp.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -421,7 +421,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // GlobalConstantBufferMember
     {
-        auto r1 = checkSignature(reader, "lufx.gm.", 8);
+        auto r1 = checkSignature(reader, "lcus.gm.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -439,7 +439,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // GlobalResourceLayout
     {
-        auto r1 = checkSignature(reader, "lufx.gl.", 8);
+        auto r1 = checkSignature(reader, "lcus.gl.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         GlobalResourceLayout* globalResourceLayout = shader->globalResourceLayout();
