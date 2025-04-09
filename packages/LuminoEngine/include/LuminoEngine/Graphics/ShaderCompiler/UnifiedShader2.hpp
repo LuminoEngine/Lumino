@@ -53,7 +53,7 @@ struct TargetBindingInfo {
     std::string combinedSamplerName;
 
     // この TargetBindingInfo が TargetShaderPass のものであれば、後処理で設定される。
-    kokage::RegisterCategory descriptorEntryCategory = RegisterCategory_UniformBuffer; // GlobalShaderPass::DescriptorLayout 内のどの register に対応するか
+    kokage::RegisterCategory descriptorEntryCategory = RegisterCategory_ConstantBuffer; // GlobalShaderPass::DescriptorLayout 内のどの register に対応するか
     int16_t descriptorEntryIndex = -1; // その register の何番目の要素と対応するか
 };
 

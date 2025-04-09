@@ -67,7 +67,7 @@ MaybeResult_deprecated WebGPUBindGroupCache::getOrCreate(
         WGPUBindGroupEntry entry = WGPU_BIND_GROUP_ENTRY_INIT;
         entry.binding = info.index;
         switch (info.category) {
-            case kokage::BindingResourceCategory_UniformBuffer: {
+            case kokage::BindingResourceCategory_ConstantBuffer: {
                 const auto& item = updateInfo.uniforms[info.descriptorEntryIndex];
                 const WebGPUUniformBuffer* buffer = static_cast<WebGPUUniformBuffer*>(item.object);
                 entry.buffer = buffer->nativeBuffer();

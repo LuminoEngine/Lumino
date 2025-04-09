@@ -8,8 +8,8 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -72,7 +72,7 @@ static SlangCompileTarget toSlangTarget(ShaderTarget target) {
 static RegisterCategory toLuminoCategory(SlangParameterCategory category) {
     switch (category) {
         case SLANG_PARAMETER_CATEGORY_CONSTANT_BUFFER:
-            return RegisterCategory_UniformBuffer;
+            return RegisterCategory_ConstantBuffer;
         case SLANG_PARAMETER_CATEGORY_SHADER_RESOURCE:
             return RegisterCategory_TextureOrCombinedSampler;
         case SLANG_PARAMETER_CATEGORY_UNORDERED_ACCESS:
@@ -460,7 +460,7 @@ MaybeResult ShaderCompiler::buildInputResources(int targetIndex) {
     if (hasGlobalConstantBuffer) {
         auto result = m_shader->getOrCreateInputResourceWithVerify(
             kGlobalConstantBufferName,
-            RegisterCategory_UniformBuffer,
+            RegisterCategory_ConstantBuffer,
             -1, // ConstantBuffer は $Global に限り、サイズ無効値としておく（UnifiedShader2 の alignment に関するコメント参照）
             0);
         if (!result) return result;
@@ -761,7 +761,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     if (globalConstantBufferSize > 0) {
         TargetBindingInfo binding;
         binding.name = kGlobalConstantBufferName;
-        binding.category = BindingResourceCategory_UniformBuffer;
+        binding.category = BindingResourceCategory_ConstantBuffer;
         binding.size = globalConstantBufferSize;
         binding.space = 0;
         binding.index = programLayout->getGlobalConstantBufferBinding();
@@ -820,7 +820,7 @@ MaybeResult ShaderCompiler::buildEntryPoint(
                 slang::TypeReflection::Kind kind = type->getKind();
                 switch (kind) {
                     case slang::TypeReflection::Kind::ConstantBuffer: {
-                        bindingInfo.category = BindingResourceCategory_UniformBuffer;
+                        bindingInfo.category = BindingResourceCategory_ConstantBuffer;
                         auto* elementLayout = typeLayout->getElementVarLayout();
                         auto* typeLayout2 = elementLayout->getTypeLayout();
                         int categoryCount2 = elementLayout->getCategoryCount();
@@ -950,7 +950,7 @@ MaybeResult ShaderCompiler::getBindingResourceInfo(
         slang::TypeReflection::Kind kind = type->getKind();
         switch (kind) {
             case slang::TypeReflection::Kind::ConstantBuffer: {
-                registerCategory = RegisterCategory_UniformBuffer;
+                registerCategory = RegisterCategory_ConstantBuffer;
                 slang::VariableLayoutReflection* elementLayout = typeLayout->getElementVarLayout();
                 slang::TypeLayoutReflection* typeLayout2 = elementLayout->getTypeLayout();
                 int categoryCount2 = elementLayout->getCategoryCount();

@@ -51,8 +51,8 @@ MaybeResult DescriptorLayoutBuilder::getOrCreateDescriptorLayoutEntry(
     std::vector<int16_t>& storages = globalShaderPass->descriptorLayout.storages;
 
     // Buffers
-    if (bindingInfo.category == BindingResourceCategory_UniformBuffer) {
-        *outCategory = RegisterCategory_UniformBuffer;
+    if (bindingInfo.category == BindingResourceCategory_ConstantBuffer) {
+        *outCategory = RegisterCategory_ConstantBuffer;
         for (int i = 0; i < globalBuffers.size(); i++) {
             const GlobalResourceSlotInfo& slotInfo = globalBuffers[i];
             if (slotInfo.name == name) {

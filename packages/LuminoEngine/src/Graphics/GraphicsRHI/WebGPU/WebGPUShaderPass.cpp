@@ -142,7 +142,7 @@ MaybeResult_deprecated WebGPUShaderPass::createPipelineLayout(const ShaderPassCr
         }
 
         switch (binding.category) {
-            case kokage::BindingResourceCategory_UniformBuffer:
+            case kokage::BindingResourceCategory_ConstantBuffer:
                 entry.buffer.type = WGPUBufferBindingType_Uniform;
                 entry.buffer.minBindingSize = binding.size;
                 break;

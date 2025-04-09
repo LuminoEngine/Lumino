@@ -7,7 +7,7 @@ namespace kokage {
 
 RegisterCategory GlobalResourceLayout::getRegisterCategoryByName(const std::string& name) const {
     for (const auto& slot : buffers) {
-        if (slot.name == name) return RegisterCategory_UniformBuffer;
+        if (slot.name == name) return RegisterCategory_ConstantBuffer;
     }
     for (const auto& slot : textures) {
         if (slot.name == name) return RegisterCategory_TextureOrCombinedSampler;
@@ -162,7 +162,7 @@ MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
         RegisterCategory category;
         const std::vector<GlobalResourceSlotInfo>& slots;
     } categories[] = {
-        { RegisterCategory_UniformBuffer, m_globalResourceLayout->buffers },
+        { RegisterCategory_ConstantBuffer, m_globalResourceLayout->buffers },
         { RegisterCategory_TextureOrCombinedSampler, m_globalResourceLayout->textures },
         { RegisterCategory_SamplerState, m_globalResourceLayout->samplers },
         { RegisterCategory_UnorderdAccess, m_globalResourceLayout->storages },
@@ -198,7 +198,7 @@ MaybeResult UnifiedShader2::getOrCreateInputResourceWithVerify(
     slot.constantBufferSize = constantBufferSize;
     slot.arrayElementCount = arrayElementCount;
     switch (category) {
-        case RegisterCategory_UniformBuffer:
+        case RegisterCategory_ConstantBuffer:
             m_globalResourceLayout->buffers.push_back(slot);
             break;
         case RegisterCategory_TextureOrCombinedSampler:

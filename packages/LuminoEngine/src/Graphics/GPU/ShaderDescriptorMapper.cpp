@@ -19,8 +19,8 @@ void RHIBindingToDescriptorMapper::setup(kokage::TargetShaderPass* shaderPass) {
 
         //MapperEntry entry;
         //switch (binding.category) {
-        //    case kokage::BindingResourceCategory_UniformBuffer:
-        //        entry.category = kokage::RegisterCategory_UniformBuffer;
+        //    case kokage::BindingResourceCategory_ConstantBuffer:
+        //        entry.category = kokage::RegisterCategory_ConstantBuffer;
         //        break;
         //    case kokage::BindingResourceCategory_Texture:
         //        entry.category = kokage::RegisterCategory_TextureOrCombinedSampler;

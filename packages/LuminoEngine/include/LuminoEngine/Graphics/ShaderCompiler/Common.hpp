@@ -56,7 +56,7 @@ enum ShaderTarget {
 
 enum RegisterCategory {
     RegisterCategory_Unknown = -1,
-    RegisterCategory_UniformBuffer = 0,
+    RegisterCategory_ConstantBuffer = 0,
     RegisterCategory_TextureOrCombinedSampler = 1,
     RegisterCategory_SamplerState = 2,
     RegisterCategory_UnorderdAccess = 3,
@@ -67,7 +67,7 @@ enum RegisterCategory {
 // RegisterCategory は slot の種類だが、こちらはそこに割り当てる値の型。
 enum BindingResourceCategory {
     BindingResourceCategory_Unknown = 0,
-    BindingResourceCategory_UniformBuffer = 1,
+    BindingResourceCategory_ConstantBuffer = 1,
     BindingResourceCategory_TextureOrCombinedSampler = 2, // slang の vulkan では、 texture と sampler を区別できない
     BindingResourceCategory_SamplerState = 3,
     BindingResourceCategory_UnorderdAccess = 4,
