@@ -264,6 +264,8 @@ extern LUMINO_API LNResult LNTexture2D_CreateFromSourceFile(const char* filePath
 
 extern LUMINO_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture);
 extern LUMINO_API LNResult LNMaterial_SetShader(LNHandle material, LNHandle shader);
+extern LUMINO_API LNResult LNMaterial_FindParameterIndex(LNHandle material, const char* name, int32_t* outIndex);
+extern LUMINO_API LNResult LNMaterial_SetFloat(LNHandle material, int32_t parameterIndex, float value);
 
 /**
  * 2 つの Material が、同じ Batch で描画できるかを調べます。

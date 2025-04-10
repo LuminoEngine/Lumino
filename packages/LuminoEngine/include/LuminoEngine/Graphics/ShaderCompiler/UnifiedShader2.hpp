@@ -12,7 +12,16 @@ using BlobId = int16_t; /**< ID (-1: Invalid, 0~:Valid) */
 
 struct GlobalResourceSlotInfo {
     std::string name;
+
+    // $Global の場合サイズはありません。 (-1)
+    //
+    // https://shader-slang.org/slang/user-guide/convenience-features.html
+    // こちらで `Slang doesn’t support custom alignment specification.` と説明されていることと関連するかもしれませんが、
+    // Slang に alignment を調整する機能はなさそうです。
+    // それにより、例えば DX12 と SPIRV では alignment が異なる場合があるので、
+    // Target ごとに対応する必要があります。
     int16_t constantBufferSize;
+
     int16_t arrayElementCount;
 };
 
@@ -179,6 +188,7 @@ public:
     UnifiedShader2();
 
     GlobalResourceLayout* globalResourceLayout() const;
+    const std::vector<URef<GlobalConstantBufferMember>>& globalConstantBufferMembers() const;
     const std::vector<URef<GlobalShaderPass>>& globalShaderPasses() const;
     const std::vector<URef<TargetShaderPass>>& targetShaderPasses() const;
     const std::vector<URef<TargetEntryPoint>>& targetEntryPoints() const;

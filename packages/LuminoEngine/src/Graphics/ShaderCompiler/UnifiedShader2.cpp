@@ -30,6 +30,10 @@ UnifiedShader2::UnifiedShader2()
     , m_blobs() {
 }
 
+const std::vector<URef<GlobalConstantBufferMember>>& UnifiedShader2::globalConstantBufferMembers() const {
+    return m_globalMembers;
+}
+
 GlobalResourceLayout* UnifiedShader2::globalResourceLayout() const {
     return m_globalResourceLayout;
 }

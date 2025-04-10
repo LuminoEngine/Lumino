@@ -22,7 +22,7 @@ int main() {
     
 
     LNHandle material1 = LN_NULL_HANDLE;
-    LNTexture2D_CreateFromSourceFile("C:/Proj/LN/Lumino/packages/LuminoFFI/examples/Assets/Sample1.slang", &material1);
+    LNTexture2D_CreateFromSourceFile("C:/Proj/LN/Lumino/packages/LuminoFFI/examples/Assets/Sample2.slang", &material1);
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     LNBatchRenderer_Get(&spriteRenderer);
@@ -46,6 +46,10 @@ int main() {
         LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, width, height, -500, 500);
         //LNViewPoint_SetupPerspectiveOrthoLH(viewPoint, 0, 0, 100, 0, 0, 0, width, height, -1000, 1000);
 
+        int index = -1;
+        LNMaterial_FindParameterIndex(material1, "u_Time", &index);
+        LNMaterial_SetFloat(material1, index, (float)frameCount / 300.0f);
+
         LNHandle renderingPass = LN_NULL_HANDLE;
         LNRenderPassDescriptor descriptor;
         descriptor.renderTargets[0].renderTarget = colorBuffer;
@@ -65,11 +69,12 @@ int main() {
         {
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
-            transform.m41 = 320;
-            transform.m42 = 240;
+            transform.m41 = width / 2;
+            transform.m42 = height / 2;
             LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
             LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
-                320, 240,
+                width - 20,
+                height - 20,
                 0.5f, 0.5f,
                 0, 0, 1, 1,
                 1, 1, 1, 1,

@@ -500,7 +500,7 @@ LN_CONSTRUCT_ACCESS:
     void init(const String& name, Stream* stream);
     void init(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
-private:
+public:
     ShaderTechnique* findTechniqueByClass(const kokage::ShaderTechniqueClass& techniqueClass) const;
     bool loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties);
     void createFromStream(Stream* stream, DiagnosticsManager* diag);

@@ -1245,7 +1245,7 @@ Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 	material->setTexture(_TT("_mmdSphereTexture"), pmxMaterial->SphereTexture);
 	material->setColor(_TT("_mmdToonColor"), pmxMaterial->ToonColor);
 	material->setColor(_TT("_mmdEdgeColor"), pmxMaterial->EdgeColor);
-	material->setFloat(_TT("_mmdEdgeSize"), pmxMaterial->EdgeSize);
+	//material->setFloat(_TT("_mmdEdgeSize"), pmxMaterial->EdgeSize);
 	material->setColor(_TT("_mmdTextureCoe"), pmxMaterial->TextureCoe);
 	material->setColor(_TT("_mmdSphereTextureCoe"), pmxMaterial->SphereTextureCoe);
 	material->setColor(_TT("_mmdToonTextureCoe"), pmxMaterial->ToonTextureCoe);

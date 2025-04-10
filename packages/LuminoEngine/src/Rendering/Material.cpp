@@ -164,11 +164,38 @@ void Material::setShader(Shader* shader)
 {
     m_shader = shader;
     m_needRefreshShaderBinding = true;
+    
+    m_unifiedShader2 = shader->m_unifiedShader2;
+    kokage::UnifiedShader2* unifiedShader = shader->m_unifiedShader2;
+    m_globalConstantBufferMember.clear();
+    if (unifiedShader) {
+        for (const auto& member : unifiedShader->globalConstantBufferMembers()) {
+            GlobalConstantBufferMember m;
+            m.value = Vector4(0, 0, 0, 0);
+            m_globalConstantBufferMember.push_back(m);
+        }
+    }
 }
 
 Shader* Material::shader() const
 {
 	return m_shader;
+}
+
+int Material::findParameterIndex(const std::string_view& name) const {
+    if (m_unifiedShader2) {
+        const auto& memberInfos = m_unifiedShader2->globalConstantBufferMembers();
+        auto itr = std::find_if(memberInfos.begin(), memberInfos.end(), [&](const auto& e) { return e->name == name; });
+        if (itr != memberInfos.end()) {
+            return static_cast<int>(itr - memberInfos.begin());
+        }
+    }
+    else {
+        //detail::ShaderParameterValue* param = getValue(name);
+        //param->setFloat(value);
+    }
+    return -1;
+
 }
 
 void Material::setInt(const StringView& name, int value)
@@ -177,10 +204,14 @@ void Material::setInt(const StringView& name, int value)
 	param->setInt(value);
 }
 
-void Material::setFloat(const StringView& name, float value)
-{
-	detail::ShaderParameterValue* param = getValue(name);
-	param->setFloat(value);
+void Material::setFloat(int parameterIndex, float value) {
+    if (m_unifiedShader2) {
+        m_globalConstantBufferMember[parameterIndex].value = Vector4(value, 0, 0, 0);
+    }
+    else {
+        //detail::ShaderParameterValue* param = getValue(name);
+        //param->setFloat(value);
+    }
 }
 
 void Material::setFloatArray(const StringView& name, const float* values, int length)
@@ -346,6 +377,10 @@ void Material::updateShaderVariables(GraphicsCommandList* commandList, detail::S
 }
 
 void Material::updateShaderVariables2(GraphicsCommandList* commandList, ShaderDescriptor* descriptor) {
+    
+    
+    
+    
     const ShaderPass* target = descriptor->shaderPass();
     const ShaderDescriptorLayout* layout = target->shaderPassDescriptorLayout();
 
@@ -427,6 +462,26 @@ void Material::updateShaderVariables2(GraphicsCommandList* commandList, ShaderDe
             descriptor->setUniformBuffer(e.descriptorIndex, commandList->allocateUniformBuffer(layout->m_buffers[e.descriptorIndex].size));
         }
         descriptor->setUniformBufferData(e.descriptorIndex, e.data->data(), e.data->size());
+    }
+
+    if (!m_globalConstantBufferMember.empty()) {
+        const auto& members = m_unifiedShader2->globalConstantBufferMembers();
+        for (int i = 0; i < m_globalConstantBufferMember.size(); i++) {
+            const auto& memberInfo = members[i];
+            const auto& memberData = m_globalConstantBufferMember[i];
+            const auto& bufferView = descriptor->uniformBuffer(0); // TODO: 念のため $Global 見たほうがいいかも
+            switch (memberInfo->kind) {
+                case kokage::ShaderGlobalMemberKind::ShaderGlobalMemberKind_Scalar:
+                    bufferView.setData(&memberData.value.x, sizeof(float));
+                    break;
+                //case kokage::ShaderGlobalMemberKind::ShaderGlobalMemberKind_Scalar:
+                //    bufferView.setData(&memberData.value.x, sizeof(float));
+                //    break;
+                default:
+                    LN_NOTIMPLEMENTED();
+                    break;
+            }
+        }
     }
 }
 

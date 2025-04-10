@@ -7,15 +7,12 @@ namespace fs = std::filesystem;
 class CompileShaderCommand final {
 public:
     MaybeResult execute(const fs::path& inputFiles) {
-        //ln::EngineInstance* instance = ln::EngineInstance::instance();
-
         auto result = kokage::ShaderCompiler::create();
         if (!result) return LN_TO_ERROR(result);
 
         URef<kokage::ShaderCompiler> compiler = std::move(result).value();
 
         auto result2 = compiler->build(inputFiles);
-        //auto result2 = compiler->build("C:/Proj/LN/Lumino/packages/LuminoEngine/shader/CopyScreen.slang");
         if (!result2) return LN_TO_ERROR(result2);
 
         kokage::UnifiedShader2* shader = compiler->shader();

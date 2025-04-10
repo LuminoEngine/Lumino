@@ -32,7 +32,7 @@
 namespace ln {
 namespace detail {
 
-void ConstantBufferView::setData(const void* data, size_t size) {
+void ConstantBufferView::setData(const void* data, size_t size) const {
     //byte_t* d = static_cast<byte_t*>(buffer->map()) + offset;	// TODO: map しないほうが効率いい？SingleFrameのデータなので、フレーム締めるときに unmap でよい
     //memcpy(d, data, size);
     //buffer->unmap();
@@ -40,7 +40,7 @@ void ConstantBufferView::setData(const void* data, size_t size) {
     memcpy(d, data, size);
 }
 
-void* ConstantBufferView::writableData() {
+void* ConstantBufferView::writableData() const {
     return static_cast<byte_t*>(buffer->writableData()) + offset;
 }
 

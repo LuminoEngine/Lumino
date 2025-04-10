@@ -141,7 +141,7 @@ public:
 	LN_METHOD(Property)
 	Shader* shader() const;
 
-
+	int findParameterIndex(const std::string_view& name) const;
 
 	/** 整数値を設定します。 */
 	void setInt(const StringView& name, int value);
@@ -150,7 +150,7 @@ public:
 	void setIntArray(const StringView& name, const int* value, int count);
 
 	/** 浮動小数点値を設定します。 */
-	void setFloat(const StringView& name, float value);
+	void setFloat(int parameterIndex, float value);
 
 	/** 浮動小数点値の配列を設定します。 */
 	void setFloatArray(const StringView& name, const float* values, int length);
@@ -292,7 +292,12 @@ protected:  // TODO:
 
 
 public: // TODO: internal
-    Ref<kokage::UnifiedShader2> m_shader2;
+    struct GlobalConstantBufferMember {
+        Vector4 value; // TODO: Valiant
+	};
+    Ref<kokage::UnifiedShader2> m_unifiedShader2;
+    std::vector<GlobalConstantBufferMember> m_globalConstantBufferMember; // Index は m_unifiedShader2::globalConstantBufferMembers と等しい
+
 
 	bool equalStatus(const Material* other) const
 	{

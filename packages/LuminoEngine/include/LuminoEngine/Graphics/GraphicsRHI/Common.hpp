@@ -323,8 +323,8 @@ struct ShaderUniformTypeDesc {
 struct ConstantBufferView {
     ConstantBuffer* buffer;
     size_t offset;
-    void setData(const void* data, size_t size);
-    void* writableData();
+    void setData(const void* data, size_t size) const;
+    void* writableData() const;
     void clear() {
         buffer = nullptr;
         offset = 0;

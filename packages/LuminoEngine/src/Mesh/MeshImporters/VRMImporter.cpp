@@ -179,7 +179,8 @@ bool VRMImporter::onImportAsSkinnedMesh(SkinnedMeshModel* model, const AssetPath
 				material->setDepthWriteEnabled(pair.second != 0.0f);
 			}
 			else {
-				material->setFloat(pair.first, pair.second);
+                            LN_NOTIMPLEMENTED();
+				//material->setFloat(pair.first, pair.second);
 			}
 		}
 

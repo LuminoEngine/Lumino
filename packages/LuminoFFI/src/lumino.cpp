@@ -710,6 +710,20 @@ LNResult LNMaterial_SetShader(LNHandle material_, LNHandle shader_) {
     LN_FFI_TRY_END_RETURN;
 }
 
+LNResult LNMaterial_FindParameterIndex(LNHandle material, const char* name, int32_t* outIndex) {
+    LN_FFI_TRY_BEGIN;
+    Material* m = LN_HANDLE_TO_OBJECT(Material, material);
+    *outIndex = m->findParameterIndex(name);
+    LN_FFI_TRY_END_RETURN;
+
+}
+LNResult LNMaterial_SetFloat(LNHandle material, int32_t parameterIndex, float value) {
+    LN_FFI_TRY_BEGIN;
+    Material* m = LN_HANDLE_TO_OBJECT(Material, material);
+    m->setFloat(parameterIndex, value);
+    LN_FFI_TRY_END_RETURN;
+}   
+
 LNResult LNMaterial_CanCombined(LNHandle material_, LNHandle texture_, LNBool* outResult_) {
     LN_FFI_TRY_BEGIN;
     *outResult_ = LN_FALSE; // TODO:
