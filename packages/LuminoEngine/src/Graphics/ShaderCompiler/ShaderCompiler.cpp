@@ -288,11 +288,14 @@ MaybeResult ShaderCompiler::buildModule() {
     sessionDesc.compilerOptionEntries = options.data();
     sessionDesc.compilerOptionEntryCount = options.size();
 
-    //SlangFileSystem customFileSystem;
-    const char* searchPaths[] = { "E:/Proj/Lumino/packages/LuminoEngine/shader" };
-    sessionDesc.searchPaths = searchPaths;
-    sessionDesc.searchPathCount = 1;
-    //sessionDesc.fileSystem = &customFileSystem;
+    // Include/Module Path
+    std::vector<const char*> searchPaths;
+#ifdef LN_DEBUG
+    std::string debugDir = std::string(LUMINO_ENGINE_REPO_DIR) + "/shader";
+    searchPaths.push_back(debugDir.c_str());
+#endif
+    sessionDesc.searchPaths = searchPaths.data();
+    sessionDesc.searchPathCount = searchPaths.size();    
 
     slang::PreprocessorMacroDesc fancyFlag = { "ENABLE_FANCY_FEATURE", "1" };
     sessionDesc.preprocessorMacros = &fancyFlag;

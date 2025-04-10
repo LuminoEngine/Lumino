@@ -637,10 +637,6 @@ LNResult LNTexture2D_Create(int32_t width, int32_t height, LNHandle* outTexture2
 
 LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D) {
     LN_FFI_TRY_BEGIN;
-    //std::cout << "data: " << reinterpret_cast<int64_t>(data) << std::endl;
-    //std::cout << "length: " << length << std::endl;
-    //std::cout << "data[0]: " << static_cast<int>(data[0]) << std::endl;
-    //std::cout << "data[1]: " << static_cast<int>(data[1]) << std::endl;
     Result_deprecated<Ref<Texture2D>> texture = Texture2D::createFromImageFileData(data, length);
     if (!texture) {
         return TO_FFI_ERROR(texture.error());
@@ -676,6 +672,26 @@ LNResult LNMaterial_Create(LNHandle* outMaterial) {
     material->setBlendMode(BlendMode::Alpha);
     *outMaterial = ::Runtime::wrapObject(material, true);
 	LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNTexture2D_CreateFromShaderData(const uint8_t* data, int32_t length, LNHandle* outMaterial) {
+    LN_FFI_TRY_BEGIN;
+    Ref<Shader> shader = Shader::create(data, length);
+    Ref<Material> material = Material::create();
+    material->setShader(shader);
+    material->setBlendMode(BlendMode::Alpha);
+    *outMaterial = ::Runtime::wrapObject(material, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNTexture2D_CreateFromSourceFile(const char* filePathUTF8, LNHandle* outMaterial) {
+    LN_FFI_TRY_BEGIN;
+    Ref<Shader> shader = Shader::createFromSourceFile(std::filesystem::u8path(filePathUTF8));
+    Ref<Material> material = Material::create();
+    material->setShader(shader);
+    material->setBlendMode(BlendMode::Alpha);
+    *outMaterial = ::Runtime::wrapObject(material, true);
+    LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNMaterial_SetMainTexture(LNHandle material_, LNHandle texture_) {

@@ -22,7 +22,7 @@ int main() {
     
 
     LNHandle material1 = LN_NULL_HANDLE;
-    LNMaterial_Create(&material1);
+    LNTexture2D_CreateFromSourceFile("C:/Proj/LN/Lumino/packages/LuminoFFI/examples/Assets/Sample1.slang", &material1);
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     LNBatchRenderer_Get(&spriteRenderer);
@@ -65,11 +65,11 @@ int main() {
         {
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
-            transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
-            transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
+            transform.m41 = 320;
+            transform.m42 = 240;
             LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
             LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
-                100, 100,
+                320, 240,
                 0.5f, 0.5f,
                 0, 0, 1, 1,
                 1, 1, 1, 1,

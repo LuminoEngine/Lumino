@@ -399,6 +399,8 @@ class LN_API Shader
     , public IGraphicsResource
 {
 public:
+    static Ref<Shader> createFromSourceFile(const std::filesystem::path& filePath);
+
     static Ref<Shader> create(const void* data, int32_t length);
 
     /**
@@ -481,6 +483,7 @@ public:
     bool hasAffectVariantKey(uint32_t crc32key) const { return m_affectVariantKeys.contains(crc32key); }
 
     MaybeResult_deprecated setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2);
+    MaybeResult setupShader3(kokage::UnifiedShader2* unifiedShader2);
 
 protected:
     void onDispose(bool explicitDisposing) override;
@@ -537,7 +540,7 @@ public:
     detail::ShaderTechniqueSemanticsManager* semanticsManager2() { return m_semanticsManager.get(); }
 
 private:
-LN_INTERNAL_NEW_OBJECT;
+public:
     ShaderTechnique();
     virtual ~ShaderTechnique();
     void init(Shader* owner, const kokage::UnifiedShaderTechnique* kokageTech);
@@ -606,6 +609,7 @@ protected:
 private:
     ShaderPass();
     virtual ~ShaderPass();
+    void init(ShaderTechnique* owner);
     void init(
         ShaderTechnique* owner,
         kokage::UnifiedShader* kokageShader,

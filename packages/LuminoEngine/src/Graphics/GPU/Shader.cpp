@@ -15,6 +15,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 #include "../../LuminoEngine/src/Graphics/ShaderCompiler/UnifiedShaderCompiler.hpp"
 #include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 #include "../../LuminoEngine/src/Graphics/ShaderCompiler/ShaderTranspiler.hpp"
 #include "../../LuminoEngine/src/Graphics/ShaderCompiler/HLSLMetadataParser.hpp"
 
@@ -46,6 +47,16 @@ void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag) {
 
 //==============================================================================
 // Shader
+
+Ref<Shader> Shader::createFromSourceFile(const std::filesystem::path& filePath) {
+    auto r1 = ln::kokage::ShaderCompiler::create();
+    if (!r1) return nullptr;
+    auto r2 = r1->get()->build(filePath);
+    if (!r2) return nullptr;
+    Ref<Shader> ref(LN_NEW Shader(), false);
+    ref->setupShader3(r1->get()->shader());
+    return ref;
+}
 
 Ref<Shader> Shader::create(const void* data, int32_t length) {
     Ref<Shader> ptr(LN_NEW Shader(), false);
@@ -166,6 +177,33 @@ MaybeResult_deprecated Shader::setupShader2(Ref<kokage::UnifiedShader2> unifiedS
     m_unifiedShader2 = unifiedShader2;
     kokage::GlobalShaderPass* globalShaderPass = m_unifiedShader2->globalShaderPasses()[0].get();
     m_techniques[0]->m_passes[0]->setupShader2(unifiedShader2, globalShaderPass);
+    return LN_MAKE_SUCCESS();
+}
+
+MaybeResult Shader::setupShader3(kokage::UnifiedShader2* unifiedShader2) {
+    this->init();
+    m_unifiedShader2 = unifiedShader2;
+    
+    Ref<ShaderTechnique> tech(LN_NEW ShaderTechnique(), false);
+    tech->m_owner = this;
+    m_techniques->add(tech);
+
+    for (const auto& globalShaderPass : m_unifiedShader2->globalShaderPasses()) {
+        Ref<ShaderPass> pass(LN_NEW ShaderPass(), false);
+        pass->init(tech);
+        pass->setupShader2(unifiedShader2, globalShaderPass);
+        tech->m_passes->add(pass);
+    }
+
+    //kokage::GlobalShaderPass* globalShaderPass = [0].get();
+    //for (const auto& kokagePassId : kokageTech->passes) {
+    //    Ref<ShaderPass> pass(LN_NEW ShaderPass, false);
+    //    pass->init(tech, unifiedShader, kokagePassId, m_descriptorLayout, diag);
+    //    tech->m_passes->add(pass);
+    //}
+
+    //tech->setupSemanticsManager();
+    //m_descriptor2 = makeObject_deprecated<detail::ShaderSecondaryDescriptor>(this);
     return LN_MAKE_SUCCESS();
 }
 
@@ -427,6 +465,13 @@ ShaderPass::ShaderPass()
 }
 
 ShaderPass::~ShaderPass() {
+}
+
+void ShaderPass::init(ShaderTechnique* owner) {
+    m_owner = owner;
+    GraphicsManager* manager = m_owner->m_owner->m_graphicsManager;
+    manager->resourceRegistry()->registerObject(this);
+
 }
 
 void ShaderPass::init(
