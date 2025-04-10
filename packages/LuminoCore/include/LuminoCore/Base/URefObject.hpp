@@ -10,10 +10,11 @@ template<class T>
 class URef;
 
 /**
- * ユニークな参照で所有されることを示すオブジェクト。 URef<> とセットで使う。
+ * An object that indicates it is owned by a unique reference. Used in conjunction with URef<>.
  *
- * 一般的なユニーク参照を利用したいときは、 std::unique_ptr が使えます。
- * このクラスを継承する動機は、クラスの定義を見た時にそのインスタンスが ユニークな参照で所有されること を明確に示すことです。
+ * If you want a generic unique reference, you can use std::unique_ptr.
+ * The motivation for inheriting from this class is to make it clear when looking
+ * at the class definition that its instances are owned by a unique reference.
  */
 class URefObject {
 protected:

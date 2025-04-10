@@ -10,8 +10,8 @@ namespace detail {
 
 WebGPURenderPass::WebGPURenderPass()
     : m_rhiDevice(nullptr)
-    , m_renderPassDesc(WGPU_RENDER_PASS_DESCRIPTOR_INIT)
-    , m_colorAttachments({}) {
+    , m_renderPassDesc{}
+    , m_colorAttachments{} {
 }
 
 Result_deprecated<> WebGPURenderPass::init(
@@ -40,7 +40,6 @@ Result_deprecated<> WebGPURenderPass::init(
     m_depthBuffer = buffers.depthBuffer;
 
     m_renderPassDesc.nextInChain = nullptr;
-    m_renderPassDesc.label = WGPU_STRING_VIEW_INIT;
     m_renderPassDesc.colorAttachmentCount = m_colorAttachments.size();
     m_renderPassDesc.colorAttachments = m_colorAttachments.data();
     m_renderPassDesc.depthStencilAttachment = nullptr;

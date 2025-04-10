@@ -1,5 +1,4 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "VulkanHelper.hpp"
 
 namespace ln {
@@ -38,12 +37,20 @@ public:
         const std::array<VkDescriptorSet, kokage::DescriptorType_Count>& descriptorSets,
         const ShaderDescriptorTableUpdateInfo& data);
 
-
+    const std::vector<kokage::VertexInputAttribute>& attributes() const { return m_attributes; }
+    const kokage::TargetBindingLayoutInfo& targetBindingLayoutInfo() const { return m_targetBindingLayoutInfo; }
+    VkDescriptorSetLayout nativeDescriptorSetLayout() const { return m_nativeDescriptorSetLayout; }
+    VulkanDescriptorUpdateCache* descriptorUpdateCache() const { return m_descriptorUpdateCache.get(); }
     const VkWriteDescriptorSet& witeInfo(int index) const { return m_descriptorWriteInfo[index]; }
+
+    bool m_isVer2 = false;
 
 private:
     MaybeResult createPipelineLayout(const ShaderPassCreateInfo2& createInfo);
-    VkDescriptorSetLayout m_nativeDescriptorSetLayout;
+    std::vector<kokage::VertexInputAttribute> m_attributes;    // TODO: コピーで保持すると無駄が多いかも。
+    kokage::TargetBindingLayoutInfo m_targetBindingLayoutInfo; // TODO: コピーで保持すると無駄が多いかも。
+    VkDescriptorSetLayout m_nativeDescriptorSetLayout; // NOTE: 複数の set を対応したいときはその分だけ必要。配列になる。
+    URef<VulkanDescriptorUpdateCache> m_descriptorUpdateCache;
 
     struct DescriptorInfo2
     {

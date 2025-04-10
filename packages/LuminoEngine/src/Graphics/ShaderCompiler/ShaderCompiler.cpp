@@ -8,8 +8,8 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
-//#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "C:/Proj/LN/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;
     value.intValue0 = (v0 << 24) + (v1 & 0xFFFFFF);
@@ -276,9 +276,16 @@ MaybeResult ShaderCompiler::buildModule() {
         targetDescs.push_back(targetDesc);
     }
     
+    // SPIRV では、エントリポイント名を main ではなくコード上の名前にする。
+    std::vector<slang::CompilerOptionEntry> options;
+    options.push_back(
+        { slang::CompilerOptionName::VulkanUseEntryPointName, { slang::CompilerOptionValueKind::Int, 1 } });
+
     slang::SessionDesc sessionDesc = {};
     sessionDesc.targets = targetDescs.data();
     sessionDesc.targetCount = targetDescs.size();
+    sessionDesc.compilerOptionEntries = options.data();
+    sessionDesc.compilerOptionEntryCount = options.size();
 
     const char* searchPaths[] = { "myapp/shaders/" };
     sessionDesc.searchPaths = searchPaths;
@@ -738,6 +745,13 @@ MaybeResult ShaderCompiler::buildEntryPoint(
     TargetEntryPoint* entryPoint = m_shader->createEntryPoint();
     entryPoint->target = target;
     entryPoint->name = entryPointReflection->getName();
+    //if (target == ShaderTarget_SPIRV) {
+    //    // -fvk-use-entrypoint-name 
+    //    entryPoint->nativeName = "main";
+    //}
+    //else {
+    //    entryPoint->nativeName = entryPoint->name;
+    //}
     entryPoint->codeBlobId = codeBlob->id;
     entryPoint->inputAttributes = inputAttributes;
 

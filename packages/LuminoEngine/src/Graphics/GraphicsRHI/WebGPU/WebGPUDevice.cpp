@@ -406,8 +406,7 @@ WGPUSurface WebGPUDevice::getWGPUSurface(PlatformWindow* window) const {
     hwndDesc.hinstance = hInstance;
     hwndDesc.hwnd = hWnd;
 
-    WGPUSurfaceDescriptor desc = WGPU_SURFACE_DESCRIPTOR_INIT;
-    desc.label = WGPU_STRING_VIEW_INIT;
+    WGPUSurfaceDescriptor desc = {};
     desc.nextInChain = &hwndDesc.chain;
 
     return wgpuInstanceCreateSurface(m_instance, &desc);

@@ -58,38 +58,39 @@ MaybeResult_deprecated WebGPUBindGroupCache::getOrCreate(
 
     
     std::vector<WGPUBindGroupEntry> entries;
-    for (const auto& info : targetBindingLayoutInfo.bindings) {
-        if (info.space != 0) {
+    for (int iBindingInfo = 0; iBindingInfo < targetBindingLayoutInfo.bindings.size(); iBindingInfo++) {
+        const auto& bindingInfo = targetBindingLayoutInfo.bindings[iBindingInfo];
+        if (bindingInfo.space != 0) {
             LN_NOTIMPLEMENTED();
             return LN_MAKE_ERROR_NOT_IMPLEMENTED_deprecated();
         }
 
         WGPUBindGroupEntry entry = WGPU_BIND_GROUP_ENTRY_INIT;
-        entry.binding = info.index;
-        switch (info.category) {
+        entry.binding = bindingInfo.index;
+        switch (bindingInfo.category) {
             case kokage::BindingResourceCategory_ConstantBuffer: {
-                const auto& item = updateInfo.uniforms[info.descriptorEntryIndex];
-                const WebGPUUniformBuffer* buffer = static_cast<WebGPUUniformBuffer*>(item.object);
+                const auto& item = updateInfo.uniforms[bindingInfo.descriptorEntryIndex];
+                const auto* buffer = static_cast<WebGPUUniformBuffer*>(item.object);
                 entry.buffer = buffer->nativeBuffer();
                 entry.offset = item.offset;
-                entry.size = info.size;
+                entry.size = bindingInfo.size;
                 break;
             }
             case kokage::BindingResourceCategory_TextureOrCombinedSampler: {
                 // WebGPU は CombinedSampler しかサポートしていないので、 Texture だけで OK.
-                const auto& item = updateInfo.resources[info.descriptorEntryIndex];
-                const WebGPUTextureBase* texture = static_cast<WebGPUTextureBase*>(item.object);
+                const auto& item = updateInfo.resources[bindingInfo.descriptorEntryIndex];
+                const auto* texture = static_cast<WebGPUTextureBase*>(item.object);
                 entry.textureView = texture->nativeTextureView();
                 break;
             }
             case kokage::BindingResourceCategory_SamplerState: {
                 const ShaderDescriptorTableUpdateItem* item = nullptr;
-                if (info.descriptorEntryCategory == kokage::RegisterCategory_TextureOrCombinedSampler) {
+                if (bindingInfo.descriptorEntryCategory == kokage::RegisterCategory_TextureOrCombinedSampler) {
                     // 入力シェーダコード上、 CombinedSampler が使われている場合は Texture に付いている SamplerState を使う。
-                    item = &updateInfo.resources[info.descriptorEntryIndex];
+                    item = &updateInfo.resources[bindingInfo.descriptorEntryIndex];
                 }
                 else {
-                    item = &updateInfo.samplers[info.descriptorEntryIndex];
+                    item = &updateInfo.samplers[bindingInfo.descriptorEntryIndex];
                 }
                 const auto* sampler = static_cast<WebGPUSamplerState*>(item->stamplerState);
                 entry.sampler = sampler->nativeSampler();

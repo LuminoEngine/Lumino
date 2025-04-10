@@ -84,6 +84,7 @@ public:
     void* map() override;
     void unmap() override;
     VulkanBuffer* buffer() { return &m_buffer; }
+    const VulkanBuffer* buffer() const { return &m_buffer; }
 
 protected:
     VulkanBuffer m_buffer;

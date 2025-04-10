@@ -87,7 +87,7 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
     }
 
     // Transfer Buffer
-    WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
+    WGPUBufferDescriptor bufferDesc = {};
     bufferDesc.usage = WGPUBufferUsage_MapRead | WGPUBufferUsage_CopyDst;
     bufferDesc.size = size;
     bufferDesc.mappedAtCreation = 0;

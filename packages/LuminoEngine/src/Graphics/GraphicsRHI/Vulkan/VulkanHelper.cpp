@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanBuffers.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanTextures.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanShaderPass.hpp>
 #include "VulkanSingleFrameAllocator.hpp"
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsExtensionVulkan.hpp>
 
@@ -1295,6 +1296,146 @@ bool VulkanFramebuffer::containsRenderTarget(RHIResource* renderTarget) const {
 
 bool VulkanFramebuffer::containsDepthBuffer(RHIResource* depthBuffer) const {
     return m_depthBuffer == depthBuffer;
+}
+
+VulkanDescriptorUpdateCache::VulkanDescriptorUpdateCache(const VulkanShaderPass* owner)
+    : m_owner(owner)
+    , writeInfos{} {
+}
+
+void VulkanDescriptorUpdateCache::init(const kokage::TargetBindingLayoutInfo& descriptorLayout) {
+    for (int i = 0; i < descriptorLayout.bindings.size(); i++) {
+        const kokage::TargetBindingInfo& binding = descriptorLayout.bindings[i];
+        VkWriteDescriptorSet writeInfo = {};
+        writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeInfo.pNext = nullptr;
+        writeInfo.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+        writeInfo.dstBinding = binding.index;
+        writeInfo.dstArrayElement = 0;
+        writeInfo.descriptorCount = 1;
+        writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        writeInfo.pImageInfo = nullptr;
+        writeInfo.pBufferInfo = nullptr;
+        writeInfo.pTexelBufferView = nullptr;
+        WriteDescriptorSetIndexInfo indexInfo = {};
+        indexInfo.bufferInfoIndex = -1;
+        indexInfo.imageInfoIndex = -1;
+        switch (binding.category) {
+            case kokage::BindingResourceCategory_ConstantBuffer: {
+                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                indexInfo.bufferInfoIndex = bufferInfo.size();
+                VkDescriptorBufferInfo info = {};
+                info.buffer = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+                info.offset = 0;
+                info.range = binding.size;
+                bufferInfo.push_back(info);
+                break;
+            }
+            case kokage::BindingResourceCategory_TextureOrCombinedSampler: {
+                //writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // Texture only.
+                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                indexInfo.imageInfoIndex = imageInfo.size();
+                VkDescriptorImageInfo info = {};
+                info.sampler = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+                info.imageView = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+                info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.push_back(info);
+                break;
+            }
+            case kokage::BindingResourceCategory_SamplerState: {
+                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+                indexInfo.imageInfoIndex = imageInfo.size();
+                VkDescriptorImageInfo info = {};
+                info.sampler = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+                info.imageView = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+                info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.push_back(info);
+                break;
+            }
+            case kokage::BindingResourceCategory_UnorderdAccess: {
+                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+                indexInfo.bufferInfoIndex = bufferInfo.size();
+                VkDescriptorBufferInfo info = {};
+                info.buffer = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+                info.offset = 0;
+                info.range = binding.size;
+                bufferInfo.push_back(info);
+                break;
+            }
+            default:
+                LN_UNREACHABLE();
+                break;
+        }
+        writeInfos.push_back(writeInfo);
+        writeInfoIndices.push_back(indexInfo);
+    }
+    
+    // bufferInfoIndex/imageInfoIndex をもとにポインタをセットする
+    //for (VkWriteDescriptorSet& writeInfo : writeInfos) {
+    //    if (writeInfo.bufferInfoIndex >= 0) {
+    //        writeInfo.pBufferInfo = &bufferInfo[writeInfo.bufferInfoIndex];
+    //    }
+    //    if (writeInfo.imageInfoIndex >= 0) {
+    //        writeInfo.pImageInfo = &imageInfo[writeInfo.imageInfoIndex];
+    //    }
+    //}
+}
+
+void VulkanDescriptorUpdateCache::set(
+    VkDescriptorSet descriptorSet,
+    const ShaderDescriptorTableUpdateInfo& updateInfo) {
+    const kokage::TargetBindingLayoutInfo& targetBindingLayoutInfo = m_owner->targetBindingLayoutInfo();
+    
+    for (int iBindingInfo = 0; iBindingInfo < targetBindingLayoutInfo.bindings.size(); iBindingInfo++) {
+        const auto& bindingInfo = targetBindingLayoutInfo.bindings[iBindingInfo];
+        if (bindingInfo.space != 0) {
+            LN_NOTIMPLEMENTED();
+            return;
+        }
+        VkWriteDescriptorSet& entry = writeInfos[bindingInfo.index];
+        const WriteDescriptorSetIndexInfo& indexInfo = writeInfoIndices[bindingInfo.index];
+        entry.dstSet = descriptorSet;
+
+        switch (bindingInfo.category) {
+            case kokage::BindingResourceCategory_ConstantBuffer: {
+                const auto& item = updateInfo.uniforms[bindingInfo.descriptorEntryIndex];
+                const auto* buffer = static_cast<VulkanUniformBuffer*>(item.object);
+                VkDescriptorBufferInfo& info = bufferInfo[indexInfo.bufferInfoIndex];
+                info.buffer = buffer->buffer()->nativeBuffer();
+                info.offset = item.offset;
+                info.range = bindingInfo.size;
+                entry.pBufferInfo = &info;
+                break;
+            }
+            case kokage::BindingResourceCategory_TextureOrCombinedSampler: {
+                // WebGPU は CombinedSampler しかサポートしていないので、 Texture だけで OK.
+                const auto& item = updateInfo.resources[bindingInfo.descriptorEntryIndex];
+                const auto* texture = static_cast<VulkanTexture*>(item.object);
+                const auto* samplerState = static_cast<VulkanSamplerState*>(item.stamplerState);
+                VkDescriptorImageInfo& info = imageInfo[indexInfo.imageInfoIndex];
+                info.imageView = texture->image()->vulkanImageView();
+                info.sampler = samplerState->vulkanSampler();
+                entry.pImageInfo = &info;
+                break;
+            }
+            case kokage::BindingResourceCategory_SamplerState: {
+                const auto& item = updateInfo.samplers[bindingInfo.descriptorEntryIndex];
+                const auto* sampler = static_cast<VulkanSamplerState*>(item.stamplerState);
+                VkDescriptorImageInfo& info = imageInfo[indexInfo.imageInfoIndex];
+                info.sampler = sampler->vulkanSampler();
+                info.imageView = VK_NULL_HANDLE;
+                entry.pImageInfo = &info;
+                break;
+            }
+            case kokage::BindingResourceCategory_UnorderdAccess: {
+                LN_NOTIMPLEMENTED();
+                break;
+            }
+            default:
+                LN_UNREACHABLE();
+                break;
+        }
+    }
 }
 
 } // namespace detail

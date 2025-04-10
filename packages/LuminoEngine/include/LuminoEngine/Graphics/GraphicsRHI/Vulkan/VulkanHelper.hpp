@@ -397,5 +397,27 @@ private:
     RHIResource* m_depthBuffer = nullptr;
 };
 
+
+
+// vkUpdateDescriptorSets を呼び出す時の VkWriteDescriptorSet は Layout に応じて構築する必要がありますが、
+// 更新のたびに構築するコストを避けるために、あらかじめ構築しておくためのものです。
+class VulkanDescriptorUpdateCache final : public URefObject {
+public:
+    struct WriteDescriptorSetIndexInfo {
+        int bufferInfoIndex;
+        int imageInfoIndex;
+    };
+
+    const VulkanShaderPass* m_owner;
+    std::vector<VkWriteDescriptorSet> writeInfos;
+    std::vector<WriteDescriptorSetIndexInfo> writeInfoIndices;
+    std::vector<VkDescriptorBufferInfo> bufferInfo;
+    std::vector<VkDescriptorImageInfo> imageInfo;    
+
+    VulkanDescriptorUpdateCache(const VulkanShaderPass* owner);
+    void init(const kokage::TargetBindingLayoutInfo& descriptorLayout);
+    void set(VkDescriptorSet descriptorSet, const ShaderDescriptorTableUpdateInfo& data);
+};
+
 } // namespace detail
 } // namespace ln

@@ -54,6 +54,8 @@ namespace LuminoBuild
                 proc.Call();
                 var logs = proc.StdErrorString.ToString();
 
+                Console.WriteLine(logs);
+
                 using (var reader = new StringReader(logs))
                 {
                     string line;

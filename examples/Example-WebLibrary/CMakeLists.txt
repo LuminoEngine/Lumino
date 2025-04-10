@@ -27,11 +27,9 @@ set(_LINK_FLAGS "${_LINK_FLAGS} --shell-file ${CMAKE_CURRENT_LIST_DIR}/shell_min
 set(_LINK_FLAGS "${_LINK_FLAGS} --minify 0")
 set(_LINK_FLAGS "${_LINK_FLAGS} -s MODULARIZE=1")
 set(_LINK_FLAGS "${_LINK_FLAGS} -s EXPORT_NAME=\"mylib\"")
-set(_LINK_FLAGS "${_LINK_FLAGS} -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['ccall']\"")
+set(_LINK_FLAGS "${_LINK_FLAGS} -s EXTRA_EXPORTED_RUNTIME_METHODS=ccall")
 #set(_LINK_FLAGS "${_LINK_FLAGS} -s \"EXPORTED_FUNCTIONS=['_gogo_test']\"")
 set(_LINK_FLAGS "${_LINK_FLAGS} --js-library ${CMAKE_CURRENT_LIST_DIR}/import_funcs.js")
-
-
 
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g4")

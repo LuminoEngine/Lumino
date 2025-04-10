@@ -28,7 +28,7 @@ MaybeResult_deprecated WebGPUIndexBuffer::init(
 
     uint64_t memorySize = RHIHelper::getIndexStride(format) * indexCount;
 
-    WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
+    WGPUBufferDescriptor bufferDesc = {};
     bufferDesc.usage = WGPUBufferUsage_Index | WGPUBufferUsage_CopyDst;
     bufferDesc.size = memorySize;
     bufferDesc.mappedAtCreation = 0;

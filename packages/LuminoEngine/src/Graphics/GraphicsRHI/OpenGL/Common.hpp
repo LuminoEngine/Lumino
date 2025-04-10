@@ -2,7 +2,7 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 #ifdef LN_EMSCRIPTEN
-#define LN_GRAPHICS_OPENGLES
+#define LN_GRAPHICS_OPENGLES 1
 #endif
 
 #if defined(LN_EMSCRIPTEN)

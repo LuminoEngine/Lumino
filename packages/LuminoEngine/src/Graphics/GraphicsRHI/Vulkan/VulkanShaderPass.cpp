@@ -13,11 +13,14 @@ VulkanShaderPass::VulkanShaderPass()
     : m_vertShaderModule(VK_NULL_HANDLE)
     , m_fragShaderModule(VK_NULL_HANDLE)
     , m_compShaderModule(VK_NULL_HANDLE)
-{
+    , m_descriptorUpdateCache(makeURef<VulkanDescriptorUpdateCache>(this)) {
 }
 
 MaybeResult VulkanShaderPass::init2(VulkanDevice* deviceContext, const ShaderPassCreateInfo2& createInfo) {
     m_deviceContext = deviceContext;
+    m_attributes = *createInfo.attributes;
+    m_targetBindingLayoutInfo = *createInfo.descriptorLayout;
+    m_isVer2 = true;
     VkDevice nativeDevice = m_deviceContext->vulkanDevice();
     const VkAllocationCallbacks* allocator = m_deviceContext->vulkanAllocator();
 
@@ -59,6 +62,8 @@ MaybeResult VulkanShaderPass::init2(VulkanDevice* deviceContext, const ShaderPas
 
     auto result = createPipelineLayout(createInfo);
     if (!result) return result;
+
+    m_descriptorUpdateCache->init(*createInfo.descriptorLayout);
 
     return LN_MAKE_SUCCESS();
 }
@@ -138,7 +143,7 @@ MaybeResult VulkanShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
     // Create the pipeline layout
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;
+    pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &m_nativeDescriptorSetLayout;
     r = vkCreatePipelineLayout(
         nativeDevice,

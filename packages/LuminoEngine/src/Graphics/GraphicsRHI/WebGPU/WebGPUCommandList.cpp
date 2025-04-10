@@ -55,9 +55,7 @@ void WebGPUCommandList::onBeginCommandRecoding() {
     //if (LN_ASSERT(!m_isRecording)) return;
     m_transferBufferSingleFrameAllocator->cleanup();
 	
-    WGPUCommandEncoderDescriptor encoderDesc = WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;
-    encoderDesc.nextInChain = nullptr;
-    encoderDesc.label = WGPU_STRING_VIEW_INIT;
+    WGPUCommandEncoderDescriptor encoderDesc = {};
     m_commandEncoder = wgpuDeviceCreateCommandEncoder(m_rhiDevice->wgpuDevice(), &encoderDesc);
     //m_isRecording = true;
 
@@ -70,9 +68,7 @@ void WebGPUCommandList::onEndCommandRecoding() {
     //m_isRecording = false;
 
     
-    WGPUCommandBufferDescriptor cmdBufferDescriptor = WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;
-    cmdBufferDescriptor.nextInChain = nullptr;
-    cmdBufferDescriptor.label = WGPU_STRING_VIEW_INIT;
+    WGPUCommandBufferDescriptor cmdBufferDescriptor = {};
     m_lastFinishedCommandBuffer = wgpuCommandEncoderFinish(m_commandEncoder, &cmdBufferDescriptor);
     // TODO: Release 必要？
     

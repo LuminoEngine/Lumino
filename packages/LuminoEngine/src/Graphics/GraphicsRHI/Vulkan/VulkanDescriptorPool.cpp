@@ -17,7 +17,29 @@ void VulkanDescriptor2::onUpdateData(const ShaderDescriptorTableUpdateInfo& data
 {
     VulkanDevice* device = m_pool->device();
     VulkanShaderPass* shaderPass = m_pool->shaderPass();
-    const std::vector<VkWriteDescriptorSet>& writeInfos = shaderPass->submitDescriptorWriteInfo(nullptr, m_descriptorSets, data);
+
+    if (shaderPass->m_isVer2) {
+        auto* updateInfo = shaderPass->descriptorUpdateCache();
+        updateInfo->set(m_descriptorSet2, data);
+        vkUpdateDescriptorSets(
+            device->vulkanDevice(),
+            static_cast<uint32_t>(updateInfo->writeInfos.size()),
+            updateInfo->writeInfos.data(),
+            0,
+            nullptr);
+    }
+    else {
+        const std::vector<VkWriteDescriptorSet>& writeInfos = shaderPass->submitDescriptorWriteInfo(
+            nullptr,
+            m_descriptorSets,
+            data);
+        vkUpdateDescriptorSets(
+            device->vulkanDevice(),
+            static_cast<uint32_t>(writeInfos.size()),
+            writeInfos.data(),
+            0,
+            nullptr);
+    }
 
     m_refarencedResourceCount = 0;
     for (const auto& i : data.resources) {
@@ -32,8 +54,6 @@ void VulkanDescriptor2::onUpdateData(const ShaderDescriptorTableUpdateInfo& data
             m_refarencedResourceCount++;
         }
     }
-
-    vkUpdateDescriptorSets(device->vulkanDevice(), static_cast<uint32_t>(writeInfos.size()), writeInfos.data(), 0, nullptr);
 }
 
 //==============================================================================
@@ -94,24 +114,36 @@ Result_deprecated<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
         }
 
         if (!m_activePage) {
+
+
             std::array<VkDescriptorPoolSize, kokage::DescriptorType_Count> poolSizes;
             poolSizes[kokage::DescriptorType_UniformBuffer].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[kokage::DescriptorType_UniformBuffer].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[kokage::DescriptorType_UniformBuffer].descriptorCount = MAX_DESCRIPTOR_SET_COUNT *
+                MAX_DESCRIPTOR_COUNT2;
             poolSizes[kokage::DescriptorType_Texture].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[kokage::DescriptorType_Texture].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[kokage::DescriptorType_Texture].descriptorCount = MAX_DESCRIPTOR_SET_COUNT *
+                MAX_DESCRIPTOR_COUNT2;
             poolSizes[kokage::DescriptorType_SamplerState].type = VK_DESCRIPTOR_TYPE_SAMPLER;
-            poolSizes[kokage::DescriptorType_SamplerState].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[kokage::DescriptorType_SamplerState].descriptorCount = MAX_DESCRIPTOR_SET_COUNT *
+                MAX_DESCRIPTOR_COUNT2;
             poolSizes[kokage::DescriptorType_UnorderdAccess].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-            poolSizes[kokage::DescriptorType_UnorderdAccess].descriptorCount = MAX_DESCRIPTOR_SET_COUNT * MAX_DESCRIPTOR_COUNT2;
+            poolSizes[kokage::DescriptorType_UnorderdAccess].descriptorCount = MAX_DESCRIPTOR_SET_COUNT *
+                MAX_DESCRIPTOR_COUNT2;
 
             VkDescriptorPoolCreateInfo poolInfo = {};
             poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT * kokage::DescriptorType_Count; // 基本4セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+            poolInfo.maxSets = MAX_DESCRIPTOR_SET_COUNT *
+                kokage::
+                    DescriptorType_Count; // 基本4セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
             poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
             poolInfo.pPoolSizes = poolSizes.data();
 
             auto page = std::make_unique<PageInfo>();
-            LN_VK_CHECK(vkCreateDescriptorPool(m_device->vulkanDevice(), &poolInfo, m_device->vulkanAllocator(), &page->pool));
+            LN_VK_CHECK(vkCreateDescriptorPool(
+                m_device->vulkanDevice(),
+                &poolInfo,
+                m_device->vulkanAllocator(),
+                &page->pool));
 
             for (int i = 0; i < MAX_DESCRIPTOR_SET_COUNT; i++) {
                 page->descriptors[i] = makeRef<VulkanDescriptor2>(this);
@@ -119,7 +151,7 @@ Result_deprecated<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
             m_activePage = page.get();
             m_pages.push_back(std::move(page));
 
-            // NOTE: 
+            // NOTE:
             // - VkDescriptorPoolSize::descriptorCount は、この Pool 全体としてみて、作り出せる Descriptor の最大数。
             // - poolInfo.maxSets は、この Pool から作り出せる VkDescriptorSet の最大数。
             // この2つに直接的な関連性は無い。
@@ -135,13 +167,14 @@ Result_deprecated<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
             // もし Descriptor が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
             // - validation layer : Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER from pool 0x29. This pool only has 0 descriptors of this type remaining.The Vulkan spec states : descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
             // - validation layer: Unable to allocate 1 descriptors of type VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER from pool 0x29. This pool only has 0 descriptors of this type remaining. The Vulkan spec states: descriptorPool must have enough free descriptor capacity remaining to allocate the descriptor sets of the specified layouts (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorPool-00307)
-            // 
+            //
             // DescriptorSet が枯渇した場合、vkAllocateDescriptorSets() で次のようにレポートされる。
             // - validation layer : Unable to allocate 1 descriptorSets from pool 0x29. This pool only has 0 descriptorSets remaining.The Vulkan spec states : descriptorSetCount must not be greater than the number of sets that are currently available for allocation in descriptorPool(https ://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkDescriptorSetAllocateInfo-descriptorSetCount-00306)
             //
             // [2020/11/25] 対応方針：
             // VkDescriptorPoolSize は固定長ではなく、ShaderPass が持っているレイアウト情報から作る。
             // maxSets は固定長でも構わない。今のように、不足したら Pool 自体を追加していく。
+
 
 
 
@@ -167,17 +200,33 @@ Result_deprecated<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
 
     VulkanDescriptor2* descriptor = m_activePage->descriptors[m_activePageUsedCount];
 
-    const auto& layout = m_shaderPass->descriptorSetLayouts();
+    if (m_shaderPass->m_isVer2) {
+        VkDescriptorSetLayout layout = m_shaderPass->nativeDescriptorSetLayout();
 
-    VkDescriptorSetAllocateInfo allocInfo;
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.pNext = nullptr;
-    allocInfo.descriptorPool = m_activePage->pool;
-    allocInfo.descriptorSetCount = layout.size();
-    allocInfo.pSetLayouts = layout.data();
-    LN_VK_CHECK(vkAllocateDescriptorSets(m_device->vulkanDevice(), &allocInfo, descriptor->descriptorSets().data()));
+        VkDescriptorSetAllocateInfo allocInfo;
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.pNext = nullptr;
+        allocInfo.descriptorPool = m_activePage->pool;
+        allocInfo.descriptorSetCount = 1;
+        allocInfo.pSetLayouts = &layout;
+        LN_VK_CHECK(
+            vkAllocateDescriptorSets(m_device->vulkanDevice(), &allocInfo, &descriptor->m_descriptorSet2));
+
+    }
+    else {
+        const auto& layout = m_shaderPass->descriptorSetLayouts();
+
+        VkDescriptorSetAllocateInfo allocInfo;
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.pNext = nullptr;
+        allocInfo.descriptorPool = m_activePage->pool;
+        allocInfo.descriptorSetCount = layout.size();
+        allocInfo.pSetLayouts = layout.data();
+        LN_VK_CHECK(
+            vkAllocateDescriptorSets(m_device->vulkanDevice(), &allocInfo, descriptor->descriptorSets().data()));
+    }
+
     m_activePageUsedCount++;
-
     *outDescriptor = descriptor;
     return ok();
 }

@@ -307,16 +307,31 @@ void VulkanCommandList::onSubmitStatus(const GraphicsContextState& state, uint32
             auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
             auto* descriptor = static_cast<VulkanDescriptor2*>(state.descriptor);
             if (descriptor) {
-                auto& sets = descriptor->descriptorSets();
-                vkCmdBindDescriptorSets(
-                    m_commandBuffer,
-                    VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    shaderPass->vulkanPipelineLayout(),
-                    0,
-                    sets.size(),
-                    sets.data(),
-                    0,
-                    nullptr);
+                if (shaderPass->m_isVer2) {
+                    VkDescriptorSet set = descriptor->descriptorSet2();
+                    vkCmdBindDescriptorSets(
+                        m_commandBuffer,
+                        VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        shaderPass->vulkanPipelineLayout(),
+                        0,
+                        1,
+                        &set,
+                        0,
+                        nullptr);
+                }
+                else {
+                    auto& sets = descriptor->descriptorSets();
+                    vkCmdBindDescriptorSets(
+                        m_commandBuffer,
+                        VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        shaderPass->vulkanPipelineLayout(),
+                        0,
+                        sets.size(),
+                        sets.data(),
+                        0,
+                        nullptr);
+                }
+
             }
 #else
             auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);

@@ -15,7 +15,7 @@ WebGPUSingleFrameAllocatorPage::~WebGPUSingleFrameAllocatorPage() {
 }
 
 bool WebGPUSingleFrameAllocatorPage::init(WebGPUDevice* device, uint64_t size) {
-    WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
+    WGPUBufferDescriptor bufferDesc = {};
     bufferDesc.usage = WGPUBufferUsage_CopySrc | WGPUBufferUsage_CopyDst;
     bufferDesc.size = size;
     bufferDesc.mappedAtCreation = 0;
@@ -31,8 +31,7 @@ bool WebGPUSingleFrameAllocatorPage::init(WebGPUDevice* device, uint64_t size) {
 //==============================================================================
 // WebGPUSingleFrameAllocatorPageManager
 
-WebGPUSingleFrameAllocatorPageManager::WebGPUSingleFrameAllocatorPageManager(
-    WebGPUDevice* device, size_t pageSize)
+WebGPUSingleFrameAllocatorPageManager::WebGPUSingleFrameAllocatorPageManager(WebGPUDevice* device, uint64_t pageSize)
     : LinearAllocatorPageManager(pageSize)
     , m_device(device) {
 }

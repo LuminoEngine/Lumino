@@ -72,6 +72,7 @@ public:
     TargetEntryPointId id;
     ShaderTarget target;
     std::string name;
+    //std::string nativeName; // 実際に出力されたコードのエントリポイント関数名 (通常は name と同一。SPIRV なら main)
     BlobId codeBlobId;
     TargetBindingLayoutInfo bindingLayout; // Leaf. これをもとに ShaderPass へマージしてく。
     std::vector<VertexInputAttribute> inputAttributes;

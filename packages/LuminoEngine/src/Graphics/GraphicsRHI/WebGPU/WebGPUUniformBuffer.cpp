@@ -13,9 +13,7 @@ MaybeResult_deprecated WebGPUUniformBuffer::init(WebGPUDevice* device, uint32_t 
     if (!RHIResource::initAsUniformBuffer(GraphicsResourceUsage::Dynamic, size)) return LN_MAKE_ERROR_deprecated();
     m_device = device;
 
-    WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
-    //bufferDesc.usage = WGPUBufferUsage_Uniform | /* WGPUBufferUsage_CopyDst |*/ WGPUBufferUsage_MapWrite;
-    //bufferDesc.usage = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
+    WGPUBufferDescriptor bufferDesc = {};
     bufferDesc.usage = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
     bufferDesc.size = size;
     bufferDesc.mappedAtCreation = 0;
