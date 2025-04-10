@@ -39,9 +39,11 @@ Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* 
             return LN_MAKE_ERROR_deprecated("wgpuSurfaceGetCapabilities failed. %d", result);
         }
         preferredFormat = capabilities.formats[0];
-        bool supportsMailbox = false;
         for (size_t i = 0; i < capabilities.presentModeCount; i++) {
-            if (capabilities.presentModes[i] == WGPUPresentMode_Mailbox) supportsMailbox = true;
+            WGPUPresentMode mode = capabilities.presentModes[i];
+            if (mode == WGPUPresentMode_Mailbox) {
+                supportsMailbox = true;
+            }
         }
         wgpuSurfaceCapabilitiesFreeMembers(capabilities);
     }
@@ -59,6 +61,13 @@ Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* 
     config.presentMode = supportsMailbox ? WGPUPresentMode_Mailbox : WGPUPresentMode_Fifo,
     config.alphaMode = WGPUCompositeAlphaMode_Auto;
     wgpuSurfaceConfigure(m_wgpuSurface, &config);
+
+    // NOTE: VSync 
+    // https://groups.google.com/g/dawn-graphics/c/_KMbPd98kUE
+    // NoWait でレンダリングしているとき、
+    // - WGPUPresentMode_Mailbox だとすごく早くフレームが進む
+    // - WGPUPresentMode_Fifo だと、フレームが進むのが遅くなる。
+
 
     //WGPUSwapChainDescriptor swapChainDesc = {};
     //swapChainDesc.width = backbufferSize.width;
@@ -151,11 +160,11 @@ Result_deprecated<> WebGPUSwapChain::resizeBackbuffer(uint32_t width, uint32_t h
 void WebGPUSwapChain::present() {
     wgpuSurfacePresent(m_wgpuSurface);
 
-#if defined(WEBGPU_BACKEND_DAWN)
-    wgpuDeviceTick(m_device->wgpuDevice());
-#elif defined(WEBGPU_BACKEND_WGPU)
-    wgpuDevicePoll(m_device->wgpuDevice(), false, nullptr);
-#endif
+//#if defined(WEBGPU_BACKEND_DAWN)
+//    wgpuDeviceTick(m_device->wgpuDevice());
+//#elif defined(WEBGPU_BACKEND_WGPU)
+//    wgpuDevicePoll(m_device->wgpuDevice(), false, nullptr);
+//#endif
 
     m_imageIndex = (m_imageIndex + 1) % BackbufferCount;
 }

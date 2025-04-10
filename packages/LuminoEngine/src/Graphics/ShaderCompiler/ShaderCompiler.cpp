@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 #include "ShaderMetadataParser.hpp"
 #include "DescriptorLayoutBuilder.hpp"
+#include "SlangFileSystem.hpp"
 
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
@@ -287,9 +288,11 @@ MaybeResult ShaderCompiler::buildModule() {
     sessionDesc.compilerOptionEntries = options.data();
     sessionDesc.compilerOptionEntryCount = options.size();
 
-    const char* searchPaths[] = { "myapp/shaders/" };
+    //SlangFileSystem customFileSystem;
+    const char* searchPaths[] = { "E:/Proj/Lumino/packages/LuminoEngine/shader" };
     sessionDesc.searchPaths = searchPaths;
     sessionDesc.searchPathCount = 1;
+    //sessionDesc.fileSystem = &customFileSystem;
 
     slang::PreprocessorMacroDesc fancyFlag = { "ENABLE_FANCY_FEATURE", "1" };
     sessionDesc.preprocessorMacros = &fancyFlag;
@@ -301,11 +304,26 @@ MaybeResult ShaderCompiler::buildModule() {
         return LN_MAKE_ERROR("createSession failed. (%d)", result);
     }
 
+    //
+    //const char* path = "E:/Proj/Lumino/packages/LuminoEngine/src/Graphics/ShaderCompiler/lumino.slang";
+    //auto buf = ln::FileSystem::readAllText(
+    //    U"E:/Proj/Lumino/packages/LuminoEngine/src/Graphics/ShaderCompiler/lumino.slang");
+    //auto str = buf.unwrap().toUtf8();
+
+    //Slang::ComPtr<slang::IBlob> diagnostics2;
+    //slang::IModule* mod = session->loadModuleFromSourceString("lumino", path, str.c_str(), diagnostics2.writeRef());
+    //if (diagnostics2) {
+    //    LN_LOG_INFO(reinterpret_cast<const char*>(diagnostics2->getBufferPointer()));
+    //}
+
     // Load shader file
     std::string inputFilePath = m_inputFilePath.string();
     Slang::ComPtr<slang::IBlob> diagnostics;
     m_module = session->loadModule(inputFilePath.c_str(), diagnostics.writeRef());
     if (diagnostics) {
+        // NOTE: 次のようなケースで、 "Invalid String Format" といったよくわからないエラーになるので注意。
+        // - import したモジュール側にエラーがある。
+        // - import しようとしたファイルが無い。
         LN_LOG_INFO(reinterpret_cast<const char*>(diagnostics->getBufferPointer()));
     }
     if (!m_module) {

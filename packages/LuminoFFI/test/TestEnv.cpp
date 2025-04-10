@@ -36,6 +36,7 @@ void TestEnv::initialize() {
     LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
 #else
     LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_VULKAN);
     LNInstance_Initialize();
     LNWindow_Create(320, 240, "Example", &mainWindow);
     LNWindow_GetGraphicsContext(mainWindow, &surfaceContext);
@@ -44,8 +45,6 @@ void TestEnv::initialize() {
 
     LNViewPoint_Create(&viewPoint);
     LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, 320, 240, -500, 500);
-
-    TestEnv::present();
 }
 
 void TestEnv::terminate() {
