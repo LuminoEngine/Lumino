@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <LuminoEngine/Engine/Module.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
 #include <LuminoEngine/Rendering/Kanata/Common.hpp>
 
@@ -138,7 +137,7 @@ enum class BuiltinMaterial {
  * --------
  *
  */
-class RenderingManager : public Module {
+class RenderingManager : public RefObject {
 public:
     struct Options {
         GraphicsManager* graphicsManager;

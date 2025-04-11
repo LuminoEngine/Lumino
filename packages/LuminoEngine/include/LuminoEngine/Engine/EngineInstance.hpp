@@ -58,8 +58,8 @@ private:
     void dispose();
     MaybeResult initializeRuntimeManager();
     MaybeResult initializeGraphicsManager();
-    MaybeResult initializePlatformManager();
     MaybeResult initializeRenderingManager();
+    MaybeResult initializePlatformManager();
 
     static std::unique_ptr<EngineInstance> s_instance;
 

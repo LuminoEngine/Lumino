@@ -287,7 +287,7 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
     s.width = width;
     s.height = height;
     Ref<OpenGLGraphicsContext> context = OpenGLGraphicsContext::create(s);
-    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     Ref<SurfaceContext> surfaceContext = SurfaceContext::createFromExternal(renderingManager, context);
     *outGraphicsContext = ::Runtime::wrapObject(surfaceContext, true);
     LN_FFI_TRY_END_RETURN;
@@ -339,7 +339,7 @@ extern LNResult LNCommandList_BeginRenderPass(
         descriptor_.depthBuffer.clearStencil
     );
 
-    auto* renderingManager = detail::RenderingManager::instance();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     renderPass->sceneRenderPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
 
     *outRenderPass_ = ::Runtime::wrapObject(renderPass, true);
@@ -415,7 +415,7 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
             // URef<kanata::BatchCollector> g_batchList;
             //URef<kanata::BoxMeshBatchProxy> g_boxMeshBatchProxy;
 
-            auto* renderingManager = detail::RenderingManager::instance();
+            detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
             // g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
             kanata::BatchCollector* batchList = renderingContext->batchCollector();
             //g_drawCommandList = 
@@ -477,7 +477,7 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
                 // r->drawBox(Box(2), Color::Red, Matrix::makeTranslation(-2, 0, 0));
                 // r->end();
 
-                auto& r = detail::RenderingManager::instance()->spriteRenderer();
+                auto& r = EngineInstance::instance()->renderingManager()->spriteRenderer();
                 r->begin(renderingContext, material);
                 r->drawSprite(
                     Matrix::makeTranslation(0, 0, 0),
@@ -618,7 +618,7 @@ LNResult LNViewPoint_SetupPerspective2DLH(
 
 LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass) {
     LN_FFI_TRY_BEGIN;
-    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     Ref<kanata::UnlitRenderPass> renderingPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
     *outUnlitSceneRenderingPass = ::Runtime::wrapObject(renderingPass, true);
     LN_FFI_TRY_END_RETURN;
@@ -668,7 +668,7 @@ LNResult LNShader_Create(const void* data, int32_t length, LNHandle* outShader) 
 LNResult LNMaterial_Create(LNHandle* outMaterial) {
     LN_FFI_TRY_BEGIN;
     Ref<Material> material = Material::create();
-    material->setShader(detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
+    material->setShader(EngineInstance::instance()->renderingManager()->builtinShader(detail::BuiltinShader::Sprite));
     material->setBlendMode(BlendMode::Alpha);
     *outMaterial = ::Runtime::wrapObject(material, true);
 	LN_FFI_TRY_END_RETURN;
@@ -737,7 +737,7 @@ LNResult LNTextureRenderingContext_FillText(LNHandle textureRenderingContext) {
     LN_FFI_TRY_BEGIN;
 	BitmapRenderingContext* context = LN_HANDLE_TO_OBJECT(BitmapRenderingContext, textureRenderingContext);
 
-    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
         context->drawText(U"Hello, Lumino!",
             Rect(0, 0, 200, 100), renderingManager->fontManager()->defaultFont(), Color::White);
 
@@ -748,7 +748,7 @@ LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) 
     LN_FFI_TRY_BEGIN;
     BitmapRenderingContext* context = LN_HANDLE_TO_OBJECT(BitmapRenderingContext, textureRenderingContext);
 
-    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     context->drawText(
         U"Hello, Lumino!",
         Rect(0, 0, 200, 100),
@@ -765,7 +765,7 @@ LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) 
 
 LNResult LNBatchRenderer_Get(LNHandle* outSpriteRenderer) {
     LN_FFI_TRY_BEGIN;
-	detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+	detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     BatchRenderer* spriteRenderer = renderingManager->spriteRenderer();
         *outSpriteRenderer = ::Runtime::wrapObject(spriteRenderer, false);
 	LN_FFI_TRY_END_RETURN;
@@ -902,7 +902,7 @@ LNResult LNBatchRenderer_DrawSprite(
 //==============================================================================
 LNResult LNSpriteTextRenderer_Get(LNHandle* outSpriteTextRenderer) {
     LN_FFI_TRY_BEGIN;
-    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     SpriteTextRenderer* spriteTextRenderer = renderingManager->spriteTextRenderer();
     *outSpriteTextRenderer = ::Runtime::wrapObject(spriteTextRenderer, false);
     LN_FFI_TRY_END_RETURN;
@@ -937,7 +937,7 @@ LNResult LNSpriteTextRenderer_DrawFillText(LNHandle spriteTextRenderer_, const L
 
     Ref<detail::FontRequester> font = makeRef<detail::FontRequester>();
     String text = String::fromUtf8(text_);
-    detail::RenderingManager* renderingManager = detail::RenderingManager::instance();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     renderer->drawFillText(
         (localTransformOrNull_) ? *reinterpret_cast<const Matrix*>(localTransformOrNull_) : Matrix::Identity,
         Vector2::Zero,

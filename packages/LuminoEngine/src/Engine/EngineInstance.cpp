@@ -38,7 +38,16 @@ void EngineInstance::terminate() {
     }
 }
 
-EngineInstance::EngineInstance() {
+EngineInstance::EngineInstance()
+    : m_options()
+    , m_modules()
+    , m_mainThreadTaskDispatcher()
+    , m_activeDiagnostics()
+    , m_runtimeManager()
+    , m_assetManager()
+    , m_graphicsManager()
+    , m_platformManager()
+    , m_renderingManager() {
 }
 
 EngineInstance::~EngineInstance() {
@@ -103,11 +112,11 @@ MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
         if (!result) return result;
     }
     {
-        auto result = initializePlatformManager();
+        auto result = initializeRenderingManager();
         if (!result) return result;
     }
     {
-        auto result = initializeRenderingManager();
+        auto result = initializePlatformManager();
         if (!result) return result;
     }
 
@@ -115,13 +124,13 @@ MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
 }
 
 void EngineInstance::dispose() {
-    if (m_renderingManager) {
-        m_renderingManager->dispose();
-        m_renderingManager = nullptr;
-    }
     if (m_platformManager) {
         m_platformManager->dispose();
         m_platformManager = nullptr;
+    }
+    if (m_renderingManager) {
+        m_renderingManager->dispose();
+        m_renderingManager = nullptr;
     }
     detail::FontManager::terminate();
     if (m_graphicsManager) {
@@ -153,6 +162,7 @@ MaybeResult EngineInstance::initializeRuntimeManager() {
     URef<detail::RuntimeManager> manager(LN_NEW detail::RuntimeManager());
     auto result = manager->init(options);
     if (!result) return result;
+
     m_runtimeManager = std::move(manager);
     return LN_MAKE_SUCCESS();
 }
@@ -189,6 +199,22 @@ MaybeResult EngineInstance::initializeGraphicsManager() {
     return LN_MAKE_SUCCESS();
 }
 
+MaybeResult EngineInstance::initializeRenderingManager() {
+    if (m_renderingManager) return LN_MAKE_SUCCESS();
+
+    detail::RenderingManager::Options options;
+    options.graphicsManager = m_graphicsManager;
+    options.fontManager = detail::FontManager::instance();
+    Ref<detail::RenderingManager> manager(
+        LN_NEW detail::RenderingManager(),
+        false);
+    auto result = manager->init(options);
+    if (!result) return result;
+
+    m_renderingManager = manager;
+    return LN_MAKE_SUCCESS();
+}
+
 MaybeResult EngineInstance::initializePlatformManager() {
     if (m_platformManager) return LN_MAKE_SUCCESS();
 
@@ -197,24 +223,9 @@ MaybeResult EngineInstance::initializePlatformManager() {
     Ref<detail::PlatformManager> manager(
         LN_NEW detail::PlatformManager(m_graphicsManager, detail::RenderingManager::instance()), false);
     auto result = manager->init(options);
-    if (!result) {
-        return result;
-    }
+    if (!result) return result;
 
     m_platformManager = manager;
-    return LN_MAKE_SUCCESS();
-}
-
-MaybeResult EngineInstance::initializeRenderingManager() {
-    detail::RenderingManager::Options options;
-    options.graphicsManager = m_graphicsManager;
-    options.fontManager = detail::FontManager::instance();
-    Ref<detail::RenderingManager> manager(
-        LN_NEW detail::RenderingManager(),
-        false);
-    if (!manager->init(options)) {
-        return LN_MAKE_ERROR();
-    }
     return LN_MAKE_SUCCESS();
 }
 
