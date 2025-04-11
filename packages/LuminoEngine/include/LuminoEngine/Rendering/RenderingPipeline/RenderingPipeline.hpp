@@ -6,8 +6,6 @@ class GraphicsCommandList;
 class RenderView;
 namespace detail {
 class ClusteredShadingSceneRenderer;
-class UnLigitingSceneRenderer;
-class UnLigitingSceneRendererPass;
 } // namespace detail
 
 /**
