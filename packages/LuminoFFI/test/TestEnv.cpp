@@ -5,7 +5,6 @@
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
-#include <LuminoEngine/Rendering/RenderingPipeline/FlatRenderingPipeline.hpp>
 #include "../../LuminoEngine/src/Platform/GLFWPlatformWindowManager.hpp"
 #include "TestEnv.hpp"
 
