@@ -221,13 +221,13 @@ void placementNewObject(void* ptr, TArgs&&... args) {
  */
 LN_CLASS()
 class Object : public RefObject {
-LN_CONSTRUCT_ACCESS:
+public:
     Object();
+    virtual ~Object();
     Result_deprecated<> init();
 
 protected:
-    virtual ~Object();
-    virtual void finalize() override;
+    void finalize() override;
     virtual void onDispose(bool explicitDisposing);
 
     virtual void serialize(Archive& ar);
@@ -251,24 +251,6 @@ public:
 
     void setAssetPath(const detail::AssetPath& value) { m_assetPath = value; }
     const detail::AssetPath& assetPath() const { return m_assetPath; }
-
-    virtual void setTypeInfoOverride(TypeInfo* value);
-
-    //void reloadAsset();
-
-#if defined(LUMINO_TRANSCODER)
-    /** オブジェクトの参照を開放します。 */
-    LN_METHOD(Specialized)
-    void release();
-
-    /** オブジェクトの参照を取得します。 */
-    LN_METHOD(Specialized)
-    void retain();
-
-    /** オブジェクトの参照カウントを取得します。これは内部的に使用される関数です。 */
-    LN_METHOD(Specialized)
-    int getReferenceCount() const;
-#endif
 
 private:
     virtual void onRetained() override;

@@ -10,6 +10,47 @@ namespace ln {
 
 //==============================================================================
 // Material
+// 
+// NOTE: パラメータは Category(Register) ごとに分けるか？ Variant な１つの配列にするか？
+//   A. 分ける場合はこんな感じ
+//       m_constantBuffers[];
+//       m_textures[];
+//       m_samplers[];
+//		 m_storages[];
+//   B. Variant な場合はこんな感じ
+//	     m_parameters[];
+//   内部的にはどちらでも大変さは変わらないかもしれない。
+//   A は UnifiedShader2 ベースの方式とは異なるためマッピングが必要。
+//   B は Lumino 初期のちょっと複雑な ShaderParameter の実装を踏襲することになる。
+// 
+//   0.11 時点の Material は A と B のハイブリッド。
+//   A は ShaderSemanticManager が担当し、 B は Material が担当している。
+//   ただし ShaderSemanticManager は $Global な ConstantBuffer のメンバ には対応していない。
+//   また Material は Shader が変更された時でも前回値を保持したかったため Shader の Layout とは独立管理であり
+//   毎フレーム、設定先のスロットを名前検索していた。
+//   0.12 では、 set only にしてこの辺りを整理してもよい。 (Bに固執しなくてよい)
+// 
+//   最初期は B 方式だったけど、 Vulkan や DX12 をサポートし始めたあたりで、
+//   複雑さをなんとか緩和しようと b, t, s, u... といった Register を意識した A 方式を導入した。
+//   Slang はバックエンドによって異なる BindingLayout を生成するので、
+//   Variant ではなく型情報を固定的にしたコードの見やすさや、バックエンドに引きずられない仕様を決めてのデバッグのやり易さを重視し、
+//   差は RHI レイヤーで対応することにしてみる。
+//   
+//   なお Material に値をセットする API は次のようにする予定。
+//   ```
+//   // 名前指定
+//   material->setIntByName("value1", 123);
+//   // ID 指定
+//   int id = material->findParameter("value1");
+//   material->setIntById(id, 123);
+//   ```
+//   検索できるものは次の通り。
+//   - ConstantBuffer
+//   - Texture
+//   - SamplerState
+//   - StorageBuffer
+//   - $Global な ConstantBuffer のメンバ
+//
 // https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
 // https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
 //
@@ -23,8 +64,6 @@ namespace ln {
 // - UE4 > BaseColor, Roughness, Metallic, Specular
 
         
-
-LN_OBJECT_IMPLEMENT(Material, Object) {}
 
 static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
@@ -47,13 +86,7 @@ Ref<Material> Material::create(Texture* mainTexture)
     return makeObject_deprecated<Material>(mainTexture);
 }
 
-Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
-{
-    return makeObject_deprecated<Material>(mainTexture, shadingModel);
-}
-
 Material::Material()
-    : m_needRefreshShaderBinding(false)
 {
     m_data.color = Material_DefaultColor;
     m_data.roughness = Material_DefaultRoughness;
@@ -81,23 +114,10 @@ void Material::init()
             detail::RenderingManager::instance()->builtinShader(detail::BuiltinShader::Sprite));
 }
 
-void Material::init(Texture* mainTexture)
-{
-    init(mainTexture, ShadingModel::Default);
-}
-
-void Material::init(Texture* mainTexture, ShadingModel shadingModel)
-{
+void Material::init(Texture* mainTexture) {
     init();
     setMainTexture(mainTexture);
-    m_shadingModel = shadingModel;
-}
-
-void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
-{
-    init();
-    setMainTexture(mainTexture);
-    setColor(phongMaterialData.diffuse);
+    m_shadingModel = ShadingModel::Default;
 }
 
 void Material::setMainTexture(Texture* value)
@@ -110,34 +130,17 @@ Texture* Material::mainTexture() const
 	return m_mainTexture;
 }
 
-void Material::setNormalMap(Texture* value)
-{
-    m_normalMap = value;
-}
-
 Texture* Material::normalMap() const
 {
-    return m_normalMap;
+    return nullptr;
 }
 
-void Material::setMetallicRoughnessTexture(Texture* value)
-{
-    m_metallicRoughnessTexture = value;
+Texture* Material::metallicRoughnessTexture() const {
+    return nullptr;
 }
 
-Texture* Material::metallicRoughnessTexture() const
-{
-    return m_metallicRoughnessTexture;
-}
-
-void Material::setOcclusionTexture(Texture* value)
-{
-    m_occlusionTexture = value;
-}
-
-Texture* Material::occlusionTexture() const
-{
-    return m_occlusionTexture;
+Texture* Material::occlusionTexture() const {
+    return nullptr;
 }
 
 void Material::setColor(const Color& value)
@@ -163,7 +166,6 @@ void Material::setEmissive(const Color& value)
 void Material::setShader(Shader* shader)
 {
     m_shader = shader;
-    m_needRefreshShaderBinding = true;
     
     m_unifiedShader2 = shader->m_unifiedShader2;
     kokage::UnifiedShader2* unifiedShader = shader->m_unifiedShader2;
@@ -200,8 +202,7 @@ int Material::findParameterIndex(const std::string_view& name) const {
 
 void Material::setInt(const StringView& name, int value)
 {
-	detail::ShaderParameterValue* param = getValue(name);
-	param->setInt(value);
+    LN_NOTIMPLEMENTED();
 }
 
 void Material::setFloat(int parameterIndex, float value) {
@@ -214,44 +215,33 @@ void Material::setFloat(int parameterIndex, float value) {
     }
 }
 
-void Material::setFloatArray(const StringView& name, const float* values, int length)
-{
-	detail::ShaderParameterValue* param = getValue(name);
-	param->setFloatArray(values, length);
+void Material::setFloatArray(const StringView& name, const float* values, int length) {
+    LN_NOTIMPLEMENTED();
 }
 
-void Material::setVector(const StringView& name, const Vector4& value)
-{
-    detail::ShaderParameterValue* param = getValue(name);
-    param->setVector(value);
+void Material::setVector(const StringView& name, const Vector4& value) {
+    LN_NOTIMPLEMENTED();
 }
 
-void Material::setVectorArray(const StringView& name, const Vector4* values, int length)
-{
-	detail::ShaderParameterValue* param = getValue(name);
-	param->setVectorArray(values, length);
+void Material::setVectorArray(const StringView& name, const Vector4* values, int length) {
+    LN_NOTIMPLEMENTED();
 }
 
-void Material::setMatrix(const StringView& name, const Matrix& value)
-{
-    detail::ShaderParameterValue* param = getValue(name);
-    param->setMatrix(value);
+void Material::setMatrix(const StringView& name, const Matrix& value) {
+    LN_NOTIMPLEMENTED();
 }
 
-void Material::setTexture(const StringView& name, Texture* value)
-{
-	detail::ShaderParameterValue* param = getValue(name);
-	param->setTexture(value);
+void Material::setTexture(const StringView& name, Texture* value) {
+    LN_NOTIMPLEMENTED();
 }
 
-void Material::setColor(const StringView& name, const Color& value)
-{
-	detail::ShaderParameterValue* param = getValue(name);
-	param->setVector(value.toVector4());
+void Material::setColor(const StringView& name, const Color& value) {
+    LN_NOTIMPLEMENTED();
 }
 
-void Material::setBufferData(const StringView& uniformBufferName, const void* data, int size)
-{
+void Material::setBufferData(const StringView& uniformBufferName, const void* data, int size) {
+    LN_NOTIMPLEMENTED();
+    #if 0
     ByteBuffer* buffer;
 
     const auto itr = std::find_if(
@@ -269,6 +259,7 @@ void Material::setBufferData(const StringView& uniformBufferName, const void* da
     }
 
     buffer->assign(data, size);
+    #endif
 }
 
 void Material::setBlendMode(Optional_deprecated<BlendMode> mode)
@@ -291,179 +282,7 @@ void Material::setDepthWriteEnabled(Optional_deprecated<bool> enabled)
     depthWriteEnabled = enabled;
 }
 
-detail::ShaderParameterValue* Material::getValue(const ln::StringView& name)
-{
-	for (auto& pair : m_values) {
-		if (pair.first == name) {
-			return pair.second.get();
-		}
-	}
-
-	auto v = std::make_shared<detail::ShaderParameterValue>();
-	m_values.push_back({ String(name), v });
-    m_needRefreshShaderBinding = true;
-	return m_values.back().second.get();
-}
-
-void Material::updateShaderVariables(GraphicsCommandList* commandList, detail::ShaderSecondaryDescriptor* descriptor)
-{
-    Shader* target = descriptor->shader();
-    const ShaderDescriptorLayout* layout = target->descriptorLayout();
-
-    if (m_needRefreshShaderBinding) {
-        for (UniformBufferEntiry& e : m_uniformBufferData) {
-            e.descriptorIndex = layout->findUniformBufferRegisterIndex(e.name);
-        }
-        m_needRefreshShaderBinding = false;
-    }
-
-    // Material から Shader へ検索をかける。
-    // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
-
-    for (const auto& pair : m_values) {
-        auto* param = target->findParameter(pair.first);
-        if (param) {
-            switch (pair.second->type())
-            {
-            case ShaderVariableType::Unknown:
-                LN_UNREACHABLE();
-                break;
-            case ShaderVariableType::Bool:
-                LN_NOTIMPLEMENTED();
-                break;
-            case ShaderVariableType::BoolArray:
-                LN_NOTIMPLEMENTED();
-                break;
-            case ShaderVariableType::Int:
-                param->setInt(pair.second->getInt(), descriptor);
-                break;
-            case ShaderVariableType::Float:
-                param->setFloat(pair.second->getFloat(), descriptor);
-                break;
-            case ShaderVariableType::FloatArray:
-                param->setFloatArray(pair.second->getFloatArray(), pair.second->getArrayLength(), descriptor);
-                break;
-            case ShaderVariableType::Vector:
-                param->setVector(pair.second->getVector(), descriptor);
-                break;
-            case ShaderVariableType::VectorArray:
-                param->setVectorArray(pair.second->getVectorArray(), pair.second->getArrayLength(), descriptor);
-                break;
-            case ShaderVariableType::Matrix:
-                param->setMatrix(pair.second->getMatrix(), descriptor);
-                break;
-            case ShaderVariableType::MatrixArray:
-                param->setMatrixArray(pair.second->getMatrixArray(), pair.second->getArrayLength(), descriptor);
-                break;
-            case ShaderVariableType::Texture:
-                //param->setTexture(pair.second->getTexture(), descriptor);
-                descriptor->setTexture(param->m_dataIndex, pair.second->getTexture());
-                break;
-            case ShaderVariableType::Pointer:
-                LN_NOTIMPLEMENTED();
-                break;
-            default:
-                break;
-            }
-        }
-    }
-
-    for (const UniformBufferEntiry& e : m_uniformBufferData) {
-        if (!descriptor->uniformBuffer(e.descriptorIndex).buffer) {
-            descriptor->setUniformBuffer(e.descriptorIndex, commandList->allocateUniformBuffer(layout->m_buffers[e.descriptorIndex].size));
-        }
-        descriptor->setUniformBufferData(e.descriptorIndex, e.data->data(), e.data->size());
-    }
-}
-
 void Material::updateShaderVariables2(GraphicsCommandList* commandList, ShaderDescriptor* descriptor) {
-    
-    
-    
-    
-    const ShaderPass* target = descriptor->shaderPass();
-    const ShaderDescriptorLayout* layout = target->shaderPassDescriptorLayout();
-
-    if (m_needRefreshShaderBinding) {
-        for (UniformBufferEntiry& e : m_uniformBufferData) {
-            e.descriptorIndex = layout->findUniformBufferRegisterIndex(e.name);
-        }
-        m_needRefreshShaderBinding = false;
-    }
-
-    // Material から Shader へ検索をかける。
-    // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
-
-    for (const auto& pair : m_values) {
-        if (pair.second->type() == ShaderVariableType::Texture) {
-            int memberIndex = layout->findTextureRegisterIndex(pair.first);
-            if (memberIndex >= 0) {
-                descriptor->setTexture(memberIndex, pair.second->getTexture());
-            }
-        }
-        else {
-            int memberIndex = layout->findUniformMemberIndex(pair.first);
-            if (memberIndex >= 0) {
-                const auto& memberInfo = layout->m_members[memberIndex];
-
-                switch (pair.second->type()) {
-                    case ShaderVariableType::Unknown:
-                        LN_UNREACHABLE();
-                        break;
-                    case ShaderVariableType::Bool:
-                        LN_NOTIMPLEMENTED();
-                        break;
-                    case ShaderVariableType::BoolArray:
-                        LN_NOTIMPLEMENTED();
-                        break;
-                    case ShaderVariableType::Int:
-                        descriptor->setInt(memberIndex, pair.second->getInt());
-                        break;
-                    case ShaderVariableType::Float:
-                        descriptor->setFloat(memberIndex, pair.second->getFloat());
-                        break;
-                    case ShaderVariableType::FloatArray:
-                        descriptor->setFloatArray(memberIndex, pair.second->getFloatArray(), pair.second->getArrayLength());
-                        break;
-                    case ShaderVariableType::Vector:
-                        descriptor->setVector(memberIndex, pair.second->getVector());
-                        break;
-                    case ShaderVariableType::VectorArray:
-                        descriptor->setVectorArray(memberIndex, pair.second->getVectorArray(), pair.second->getArrayLength());
-                        break;
-                    case ShaderVariableType::Matrix:
-                        descriptor->setMatrix(memberIndex, pair.second->getMatrix());
-                        break;
-                    case ShaderVariableType::MatrixArray:
-                        descriptor->setMatrixArray(memberIndex, pair.second->getMatrixArray(), pair.second->getArrayLength());
-                        break;
-                    case ShaderVariableType::Texture:
-                        //param->setTexture(pair.second->getTexture(), descriptor);
-                        //descriptor->setTexture(param->m_dataIndex, pair.second->getTexture());
-                        break;
-                    case ShaderVariableType::Pointer:
-                        LN_NOTIMPLEMENTED();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-
-
-        //auto* param = target->findParameter(pair.first);
-        //if (param) {
-        //}
-    }
-
-    for (const UniformBufferEntiry& e : m_uniformBufferData) {
-        if (!descriptor->uniformBuffer(e.descriptorIndex).buffer) {
-            descriptor->setUniformBuffer(e.descriptorIndex, commandList->allocateUniformBuffer(layout->m_buffers[e.descriptorIndex].size));
-        }
-        descriptor->setUniformBufferData(e.descriptorIndex, e.data->data(), e.data->size());
-    }
-
     if (!m_globalConstantBufferMember.empty()) {
         const auto& members = m_unifiedShader2->globalConstantBufferMembers();
         for (int i = 0; i < m_globalConstantBufferMember.size(); i++) {

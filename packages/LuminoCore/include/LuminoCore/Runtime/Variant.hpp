@@ -115,7 +115,7 @@ LN_CONSTRUCT_ACCESS:
 	
 	/** init. */
 	LN_METHOD()
-    Result_deprecated<> init() { return Object::init(); }
+    void init() { Object::init(); }
 
 public:
 	void clear() LN_NOEXCEPT;

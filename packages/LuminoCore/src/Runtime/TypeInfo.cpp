@@ -32,7 +32,6 @@ TypeInfo::TypeInfo(const String& className, TypeInfo* baseType, TypeInfoClass ty
 	: m_name(className)
 	, m_typeClass(typeClass)
 	, m_baseType(baseType)
-	, m_managedTypeInfoId(-1)
 {
 }
 
@@ -40,7 +39,6 @@ TypeInfo::TypeInfo(const String& className)
 	: m_name(className)
 	, m_typeClass(TypeInfoClass::Object)
 	, m_baseType(nullptr)
-	, m_managedTypeInfoId(-1)
 {
 }
 

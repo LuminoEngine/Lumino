@@ -84,13 +84,13 @@ LN_OBJECT_IMPLEMENT(ZVTestEventArgs1, Object) {
 }
 
 bool ZVTestEventArgs1::init(int v) {
-    if (!Object::init()) return false;
+    Object::init();
     m_value = v;
     return true;
 }
 
 bool ZVTestEventArgs1::init() {
-    if (!Object::init()) return false;
+    Object::init();
     m_value = 0;
     return true;
 }

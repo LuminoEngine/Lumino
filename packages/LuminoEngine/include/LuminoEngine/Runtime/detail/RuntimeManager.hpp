@@ -9,7 +9,6 @@ namespace detail {
 
 struct ObjectRuntimeData {
     int index = -1; // inded of RuntimeManager::m_objectEntryList (LNHandle)
-    int64_t managedObjectId = -1;
     bool fromCreate = false;
 };
 
@@ -69,10 +68,6 @@ public:
 
     ObjectEntry* getObjectEntry(LNHandle handle);
     Object* getObjectFromHandle(LNHandle handle);
-
-    void setManagedObjectId(LNHandle handle, int64_t id);
-    int64_t getManagedObjectId(LNHandle handle);
-    int64_t getManagedTypeInfoId(LNHandle handle);
 
     //static void setReferenceCountTracker(LNReferenceCountTrackerCallback callback);
     void setReferenceTrackEnabled(LNHandle handle);

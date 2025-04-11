@@ -29,48 +29,18 @@ class FontManager;
 enum class BuiltinShader {
     CopyScreen,
     Sprite,
+
+    /** @deprecated */
     ClusteredShadingDefault,
+    /** @deprecated */
     ForwardGBufferPrepass,
+    /** @deprecated */
     ShadowCaster,
-    // LegacyDiffuse,		// Lambert Shading
-
+    /** @deprecated */
     BlackShader,
-
-    InfinitePlaneGrid,
-
-    // for Sky
-    SkyLowAltitudeOptimized,
-    SkyDome,
-
-    ScreenBlurPostEffect,
-    TonePostEffect,
-
-    // for Bloom
-    LuminosityHighPassShader,
-    SeperableBlur,
-    BloomComposite,
-
-    // for SSR
-    SSRRayTracing,
-    SSRBlur,
-    SSRComposite,
-
-    // for LightShaft
-    RadialBlur,
-
-    SSAOOcclusionMap,
-    FilmicPostEffect,
-    Copy, // TODO: CopyScreen と統合でいいかも
-
-    TransitionEffectWithoutMask,
-    TransitionEffectWithMask,
-
+    /** @deprecated */
     NanoVG,
 
-    BlendShape,
-
-    MToon,
-    ImGui,
 };
 
 enum class BuiltinMaterial {
@@ -231,7 +201,6 @@ public:
 
     const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
     const Ref<Material>& defaultMaterial() const { return m_defaultMaterial; }
-    const Ref<Texture2D>& randomTexture() const { return m_randomTexture; }
     const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
     const Ref<Material>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
     const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
@@ -302,7 +271,6 @@ private:
     Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
     Ref<Material> m_defaultMaterial;
-    Ref<Texture2D> m_randomTexture;
     std::array<Ref<Shader>, 27> m_builtinShaders;
     std::array<Ref<Material>, 2> m_builtinMaterials;
     Ref<Material> m_primitiveMeshDefaultMaterial;       // FIXME: リファクタリングで SceneManager から移動してきたもの。m_builtinMaterials に混ぜていいかも

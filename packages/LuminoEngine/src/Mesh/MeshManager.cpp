@@ -9,11 +9,6 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
-#include "MeshImporters/GLTFImporter.hpp"
-#include "MeshImporters/VRMImporter.hpp"
-#include "MeshImporters/FbxImporter.hpp"
-#include "MeshImporters/ObjMeshImporter.hpp"
-#include "MeshImporters/PmxImporter.hpp"
 #include "MeshBoneMapper.hpp"
 #include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 
@@ -247,6 +242,7 @@ Ref<MeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, f
 
 void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPath, float scale) {
     LN_NOTIMPLEMENTED();
+#if 0
     {
         auto diag = makeObject_deprecated<DiagnosticsManager>();
         {
@@ -264,9 +260,13 @@ void MeshManager::loadStaticMeshModel(MeshModel* model, const AssetPath& assetPa
 
     model->m_filePath = assetPath;
     model->m_scale = scale;
+#endif
 }
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, MeshImportSettings* settings) {
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+#if 0
     static const Char* candidateExts[] = { _TT(".gltf"), _TT(".glb"), _TT(".fbx") };
     auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
     if (path) {
@@ -337,6 +337,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 
         // return mesh->createSkinnedMeshModel();
     }
+#endif
 }
 
 Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringView& filePath, DiagnosticsManager* diag) {

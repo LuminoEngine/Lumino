@@ -123,9 +123,6 @@ enum class SceneClearMode {
 
     /** (未実装) */
     Sky0,
-
-    /** スカイドームでクリアします。 */
-    SkyDome,
 };
 
 // DrawElement の大分類。SceneRenderer に投入する DrawElement を決める。

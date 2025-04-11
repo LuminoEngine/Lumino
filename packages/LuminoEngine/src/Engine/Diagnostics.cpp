@@ -22,8 +22,8 @@ DiagnosticsManager::DiagnosticsManager()
 DiagnosticsManager::~DiagnosticsManager() {
 }
 
-Result_deprecated<> DiagnosticsManager::init() {
-    return Object::init();
+void DiagnosticsManager::init() {
+    Object::init();
 }
 
 void DiagnosticsManager::reportError(StringView message) {

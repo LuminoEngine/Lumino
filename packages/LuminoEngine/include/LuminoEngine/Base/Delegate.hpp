@@ -72,8 +72,7 @@ LN_CONSTRUCT_ACCESS:
     Delegate()
         : m_function() {}
 
-    Result_deprecated<> init() {
-        return Object::init();
+    void init() { Object::init();
     }
 
     void init(const std::function<void()>& function) {

@@ -1,5 +1,4 @@
 ﻿#include <LuminoCore/Runtime/Object.hpp>
-#include <LuminoCore/Runtime/TypeInfo.hpp>
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 
 namespace ln {
@@ -211,22 +210,6 @@ ObjectEntry* RuntimeManager::getObjectEntry(LNHandle handle) {
 
 Object* RuntimeManager::getObjectFromHandle(LNHandle handle) {
     return m_objectEntryList[static_cast<int>(handle)].object;
-}
-
-void RuntimeManager::setManagedObjectId(LNHandle handle, int64_t id) {
-    auto runtimeData = detail::ObjectHelper::getRuntimeData(m_objectEntryList[static_cast<int>(handle)].object);
-    runtimeData->managedObjectId = id;
-}
-
-int64_t RuntimeManager::getManagedObjectId(LNHandle handle) {
-    auto runtimeData = detail::ObjectHelper::getRuntimeData(m_objectEntryList[static_cast<int>(handle)].object);
-    return runtimeData->managedObjectId;
-}
-
-int64_t RuntimeManager::getManagedTypeInfoId(LNHandle handle) {
-    auto obj = m_objectEntryList[static_cast<int>(handle)].object;
-    auto typeInfo = TypeInfo::getTypeInfo(obj);
-    return detail::TypeInfoInternal::getManagedTypeInfoId(typeInfo);
 }
 
 // void RuntimeManager::setReferenceCountTracker(LNReferenceCountTrackerCallback callback)

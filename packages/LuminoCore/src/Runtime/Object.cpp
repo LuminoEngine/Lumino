@@ -35,7 +35,7 @@ Object::~Object() {
 
 Result_deprecated<> Object::init() {
     TypeInfo::initializeObjectProperties(this);
-    return ok();
+    return LN_MAKE_SUCCESS();
 }
 
 void Object::finalize() {
@@ -61,21 +61,6 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor) {
     }
     return false;
 }
-
-void Object::setTypeInfoOverride(TypeInfo* value) {
-    LN_UNREACHABLE();
-}
-
-//void Object::reloadAsset()
-//{
-//	if (!m_assetPath.isNull()) {
-//		detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(this, m_assetPath);
-//	}
-//}
-
-//void Object::onSetAssetFilePath(const Path& filePath)
-//{
-//}
 
 void Object::onRetained() {
     if (m_runtimeData) {

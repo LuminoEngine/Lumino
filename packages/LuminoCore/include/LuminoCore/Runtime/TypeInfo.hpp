@@ -182,17 +182,10 @@ private:
     TypeInfoClass m_typeClass;
     List<Ref<PropertyInfo>> m_properties; // obsolete
     //List<Ref<ViewPropertyInfo>> m_viewProperties;
-    int64_t m_managedTypeInfoId;
+    //int64_t m_managedTypeInfoId;
 
     friend struct detail::TypeInfoInternal;
 };
-
-namespace detail {
-struct TypeInfoInternal {
-    static void setManagedTypeInfoId(TypeInfo* typeInfo, int64_t id) { typeInfo->m_managedTypeInfoId = id; }
-    static int64_t getManagedTypeInfoId(const TypeInfo* typeInfo) { return typeInfo->m_managedTypeInfoId; }
-};
-} // namespace detail
 
 // class Serializer
 //{

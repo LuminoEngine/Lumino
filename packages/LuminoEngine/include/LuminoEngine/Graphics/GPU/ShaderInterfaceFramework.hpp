@@ -89,15 +89,6 @@ struct PbrMaterialData
     Color emissive;
 };
 
-struct PhongMaterialData
-{
-    Color diffuse;
-    Color ambient;
-    Color specular;
-    Color emissive;
-    float power;
-};
-
 // シーン単位のデータに関する情報
 struct SceneInfo
 {
