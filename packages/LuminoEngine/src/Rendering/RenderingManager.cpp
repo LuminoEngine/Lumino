@@ -141,7 +141,7 @@ bool RenderingManager::init(const Settings& settings) {
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
-    m_defaultMaterial = makeObject_deprecated<Material>();
+    m_defaultMaterial = Material::create();
 
     {
         m_builtinMaterials[(int)BuiltinMaterial::Default] = Material::create();
@@ -152,7 +152,7 @@ bool RenderingManager::init(const Settings& settings) {
         m_builtinMaterials[(int)BuiltinMaterial::Unlit] = material;
     }
 
-    m_primitiveMeshDefaultMaterial = makeObject_deprecated<Material>();
+    m_primitiveMeshDefaultMaterial = Material::create();
     m_primitiveMeshDefaultMaterial->setColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
     m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
