@@ -15,7 +15,6 @@
 #include "RenderElement.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "SceneRenderer.hpp"
-#include "RLIs/RLIMaterial.hpp"
 #include "RLIs/RLICulling.hpp"
 
 namespace ln {

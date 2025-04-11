@@ -28,6 +28,8 @@ public:
 
     ShaderTechnique* getShaderTechnique(Shader* fallbackShader, const Batch* batch, const BatchElement* batchElement);
 
+    static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
+
 private:
     detail::RenderingManager* m_manager;
     Shader* m_fallbackShader;
