@@ -1,5 +1,4 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/GPU/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
