@@ -39,7 +39,6 @@ namespace LuminoBuild
         public string LuminoDocDir;
         public string LuminoPackageDir;
         public string LuminoPackageLibDir;
-        public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
         public string LuminoExternalDir;
         public string[] Args;

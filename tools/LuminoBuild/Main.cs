@@ -98,7 +98,6 @@ namespace LuminoBuild
                 b.LuminoDocDir = Path.GetFullPath(Path.Combine(b.RootDir, "docs"));
                 b.LuminoPackageDir = Path.GetFullPath(Path.Combine(b.BuildDir, "Package"));
                 b.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(b.LuminoPackageDir, "lib"));
-                b.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(b.RootDir, "tools/PackageSource"));
                 b.LuminoExternalDir = Path.GetFullPath(Path.Combine(b.RootDir, "external"));
 
                 var positionalArgs = args.Where(x => !x.Contains("--")).ToList();
