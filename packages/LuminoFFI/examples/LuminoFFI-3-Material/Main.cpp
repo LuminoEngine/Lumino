@@ -22,7 +22,7 @@ int main() {
     
 
     LNHandle material1 = LN_NULL_HANDLE;
-    LNTexture2D_CreateFromSourceFile("C:/Proj/LN/Lumino/packages/LuminoFFI/examples/Assets/Sample2.slang", &material1);
+    LNMaterial_CreateFromSourceFile("C:/Proj/LN/Lumino/packages/LuminoFFI/examples/Assets/Sample2.slang", &material1);
 
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     LNBatchRenderer_Get(&spriteRenderer);

@@ -1,6 +1,7 @@
 ﻿#include "TestEnv.hpp"
 
 int main(int argc, char** argv) {
+#if 0
     if (argc == 1) {
         char* testArgs[] = {
             argv[0],
@@ -10,6 +11,7 @@ int main(int argc, char** argv) {
         argc = sizeof(testArgs) / sizeof(char*);
         argv = testArgs;
     }
+#endif
 
 #ifdef _WIN32
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

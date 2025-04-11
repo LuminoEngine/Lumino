@@ -253,14 +253,14 @@ extern LUMINO_API LNResult LNShader_Create(const void* data, int32_t length, LNH
 // LNMaterial
 //==============================================================================
 extern LUMINO_API LNResult LNMaterial_Create(LNHandle* outMaterial);
-extern LUMINO_API LNResult LNTexture2D_CreateFromShaderData(const uint8_t* data, int32_t length, LNHandle* outMaterial);
+extern LUMINO_API LNResult LNMaterial_CreateFromShaderData(const uint8_t* data, int32_t length, LNHandle* outMaterial);
 
 /**
  * Compile the shader source files to create the material.
  * 
  * @attention This function is for desktop environments.
  */
-extern LUMINO_API LNResult LNTexture2D_CreateFromSourceFile(const char* filePathUTF8, LNHandle* outMaterial);
+extern LUMINO_API LNResult LNMaterial_CreateFromSourceFile(const char* filePathUTF8, LNHandle* outMaterial);
 
 extern LUMINO_API LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture);
 extern LUMINO_API LNResult LNMaterial_SetShader(LNHandle material, LNHandle shader);

@@ -674,7 +674,7 @@ LNResult LNMaterial_Create(LNHandle* outMaterial) {
 	LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNTexture2D_CreateFromShaderData(const uint8_t* data, int32_t length, LNHandle* outMaterial) {
+LNResult LNMaterial_CreateFromShaderData(const uint8_t* data, int32_t length, LNHandle* outMaterial) {
     LN_FFI_TRY_BEGIN;
     Ref<Shader> shader = Shader::create(data, length);
     Ref<Material> material = Material::create();
@@ -684,7 +684,7 @@ LNResult LNTexture2D_CreateFromShaderData(const uint8_t* data, int32_t length, L
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNTexture2D_CreateFromSourceFile(const char* filePathUTF8, LNHandle* outMaterial) {
+LNResult LNMaterial_CreateFromSourceFile(const char* filePathUTF8, LNHandle* outMaterial) {
     LN_FFI_TRY_BEGIN;
     Ref<Shader> shader = Shader::createFromSourceFile(std::filesystem::u8path(filePathUTF8));
     Ref<Material> material = Material::create();
