@@ -235,7 +235,8 @@ set(LOCAL_LIBRARIES
     Vorbis::vorbisfile
     #nanovg::nanovg
     ZLIB::ZLIB
-    PNG::PNG
+    PNG::PNG # vcpkg 2025.03.19
+    #libpng # vcpkg 2024.03.25
     freetype
     tinyobjloader::tinyobjloader
     nlohmann_json::nlohmann_json

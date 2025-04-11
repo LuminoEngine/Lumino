@@ -2,6 +2,10 @@
 
 Prepare vcpkg in the root of the repository by referring to [here](https://learn.microsoft.com/ja-jp/vcpkg/get_started/get-started).
 
+```
+git clone -b 2025.03.19 https://github.com/microsoft/vcpkg.git
+```
+
 ```sh
 python ./scripts/build_engine.py
 ```
@@ -22,7 +26,7 @@ npm run build
 
 ```sh
 dotnet tool install dotnet-script -g
-dotnet script scripts/PrepareWebGPU.csx
+python ./scripts/prepare_webgpu.py
 dotnet run -- BuildEngine wasm32-emscripten
 ```
 
