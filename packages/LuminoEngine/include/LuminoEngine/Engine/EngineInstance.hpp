@@ -17,6 +17,7 @@ namespace detail {
 class RuntimeManager;
 class PlatformManager;
 class AssetManager;
+class RenderingManager;
 } // namespace detail
 
 class EngineInstance {
@@ -47,6 +48,7 @@ public:
     const URef<detail::AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
     const Ref<detail::PlatformManager>& platformManager() const { return m_platformManager; }
+    const Ref<detail::RenderingManager>& renderingManager() const { return m_renderingManager; }
 
     ~EngineInstance();
 
@@ -57,6 +59,7 @@ private:
     MaybeResult initializeRuntimeManager();
     MaybeResult initializeGraphicsManager();
     MaybeResult initializePlatformManager();
+    MaybeResult initializeRenderingManager();
 
     static std::unique_ptr<EngineInstance> s_instance;
 
@@ -68,6 +71,7 @@ private:
     URef<detail::AssetManager> m_assetManager;
     Ref<GraphicsManager> m_graphicsManager;
     Ref<detail::PlatformManager> m_platformManager;
+    Ref<detail::RenderingManager> m_renderingManager;
 };
 
 } // namespace ln

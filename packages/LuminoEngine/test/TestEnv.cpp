@@ -72,8 +72,6 @@ void TestEnv::teardown() {
     renderView = nullptr;
     flatRenderingPipeline = nullptr;
     swapChain = nullptr;
-
-    detail::RenderingManager::terminate();
     Engine::terminate();
 }
 

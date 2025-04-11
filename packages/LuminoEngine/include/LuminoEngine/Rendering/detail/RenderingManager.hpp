@@ -140,15 +140,15 @@ enum class BuiltinMaterial {
  */
 class RenderingManager : public Module {
 public:
-    struct Settings {
+    struct Options {
         GraphicsManager* graphicsManager;
         FontManager* fontManager;
     };
-    static RenderingManager* initialize(const Settings& settings);
-    static void terminate();
-    static inline RenderingManager* instance() { return s_instance; }
-
-
+    static RenderingManager* instance(); // TODO: remove
+    RenderingManager();
+    ~RenderingManager() override;
+    MaybeResult init(const Options& options);
+    void dispose();
 
     struct BlendShapeShader {
         Ref<Shader> shader;
@@ -206,10 +206,6 @@ public:
     const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
 private:
-    RenderingManager();
-    ~RenderingManager() override;
-    bool init(const Settings& settings);
-    void dispose();
 
     void createBuiltinShader(BuiltinShader index, const Char* name, const void* data, int dataLen);
 

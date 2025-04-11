@@ -36,46 +36,27 @@ namespace detail {
 // RenderingManager
 
 RenderingManager* RenderingManager::s_instance = nullptr;
-
-RenderingManager* RenderingManager::initialize(const Settings& settings) {
-    if (s_instance) return s_instance;
-
-    auto m = Ref<RenderingManager>(LN_NEW detail::RenderingManager(), false);
-    s_instance = m;
-    if (!m->init(settings)) return nullptr;
-
-    EngineInstance::instance()->registerModule(m);
-    return m;
-}
-
-void RenderingManager::terminate() {
-    if (s_instance) {
-        s_instance->dispose();
-        EngineInstance::instance()->unregisterModule(s_instance);
-        s_instance = nullptr;
-    }
+RenderingManager* RenderingManager::instance() {
+    return s_instance;
 }
 
 RenderingManager::RenderingManager()
     : m_graphicsManager(nullptr)
     , m_fontManager(nullptr)
     , m_standardVertexDeclaration(nullptr)
-    //, m_spriteRenderFeature(nullptr)
-    //, m_meshRenderFeature(nullptr)
-    //, m_meshGeneraterRenderFeature(nullptr)
     , m_stageDataPageManager(nullptr) {
-    assert(s_instance == nullptr);
+    s_instance = this;
 }
 
 RenderingManager::~RenderingManager() {
 }
 
-bool RenderingManager::init(const Settings& settings) {
+MaybeResult RenderingManager::init(const Options& options) {
     LN_LOG_DEBUG("RenderingManager Initialization started.");
     auto* context = RuntimeContext::current();
 
-    m_graphicsManager = settings.graphicsManager;
-    m_fontManager = settings.fontManager;
+    m_graphicsManager = options.graphicsManager;
+    m_fontManager = options.fontManager;
 
     static VertexElement elements[] = {
         { 0, VertexElementType::Float4, VertexElementUsage::Position, 0 },
@@ -126,15 +107,15 @@ bool RenderingManager::init(const Settings& settings) {
     m_batchInstructionDispatcher = makeURef<BatchInstructionEncoder>(this);
     m_spriteRenderer = Ref<BatchRenderer>(LN_NEW BatchRenderer(), false);
     if (!m_spriteRenderer->init()) {
-        return false;
+        return LN_MAKE_ERROR();
     }
     m_primitiveMeshRenderer = Ref<PrimitiveMeshRenderer>(LN_NEW PrimitiveMeshRenderer(), false);
     if (!m_primitiveMeshRenderer->init()) {
-        return false;
+        return LN_MAKE_ERROR();
     }
     m_spriteTextRenderer = Ref<SpriteTextRenderer>(LN_NEW SpriteTextRenderer(), false);
     if (!m_spriteTextRenderer->init()) {
-		return false;
+        return LN_MAKE_ERROR();
 	}
 
     m_profiler = std::make_unique<RenderingProfiler>();
@@ -158,7 +139,7 @@ bool RenderingManager::init(const Settings& settings) {
     m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 
     LN_LOG_DEBUG("RenderingManager Initialization finished.");
-    return true;
+    return LN_MAKE_SUCCESS();
 }
 
 void RenderingManager::dispose() {
