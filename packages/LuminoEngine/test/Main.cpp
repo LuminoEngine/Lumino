@@ -17,7 +17,5 @@ int main(int argc, char** argv) {
 
     TestEnv::setup();
     testing::InitGoogleTest(&argc, argv);
-    int result = RUN_ALL_TESTS();
-
-    return result;
+    return RUN_ALL_TESTS();
 }
