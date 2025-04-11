@@ -19,7 +19,6 @@ namespace LuminoBuild.Rules
             if (Utils.IsWin32)
             {
                 builder.DoTask("MakeNuGetPackage_Core");
-                builder.DoTask("MakeInstaller_Win32");
             }
 #endif
         }

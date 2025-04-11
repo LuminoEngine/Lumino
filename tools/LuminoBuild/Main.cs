@@ -59,7 +59,6 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEmbeddedResources" };
 
                 //args = new string[] { "MakeNativePackage" };
-                //args = new string[] { "MakeInstaller_Win32" };
 
                 //args = new string[] { "BuildExternals", "wasm32-emscripten" };
                 //args = new string[] { "BuildEngine_Emscripten", "wasm32-emscripten" };
@@ -129,7 +128,6 @@ namespace LuminoBuild
                 taskManager.Tasks.Add(new Tasks.BuildEngine_Android());
                 taskManager.Tasks.Add(new Tasks.BuildEngine());
                 taskManager.Tasks.Add(new Tasks.MakeNativePackage());
-                taskManager.Tasks.Add(new Tasks.MakeInstaller_Win32());
                 taskManager.Tasks.Add(new Tasks.MakePackage_HSP3());
                 taskManager.Tasks.Add(new Tasks.MakePackage_macOS());
                 taskManager.Tasks.Add(new Tasks.MakePackage_Ruby());

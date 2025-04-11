@@ -60,14 +60,6 @@ python -m http.server 8000
 ----------
 
 
-```
-dotnet run -- BuildExternalProjects MSVC2019-x64-MT
-dotnet run -- BuildEngine_MSVC MSVC2019-x64-MT
-dotnet run -- MakeNativePackage
-dotnet run -- MakeInstaller_Win32
-```
-
-
 ### 起動できない場合…
 
 Conosle:

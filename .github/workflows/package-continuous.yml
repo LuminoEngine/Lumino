@@ -184,9 +184,6 @@ jobs:
   #     with:
   #       name: NativePackage-MSVC2019-x64-MT
   #       path: ./build/NativePackage
-    
-  #   - name: Build
-  #     run: dotnet run -- MakeInstaller_Win32
 
   #   - uses: actions/upload-artifact@v1
   #     with:
