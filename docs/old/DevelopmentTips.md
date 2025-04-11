@@ -10,7 +10,6 @@ git lfs install
 
 dotnet run -- BuildExternalProjects macOS
 dotnet run -- BuildEngine_macOS
-dotnet run -- MakeNativePackage
 ```
 
 iOS
@@ -20,7 +19,6 @@ iOS
 dotnet run -- BuildExternalProjects iOS-OS64
 dotnet run -- BuildExternalProjects iOS-SIMULATOR64
 dotnet run -- BuildEngine_iOS
-dotnet run -- MakeNativePackage
 ```
 
 
@@ -33,7 +31,6 @@ dotnet run -- BuildExternalProjects Android-x86
 dotnet run -- BuildExternalProjects Android-arm64-v8a
 dotnet run -- BuildExternalProjects Android-armeabi-v7a
 dotnet run -- BuildEngine_Android
-dotnet run -- MakeNativePackage
 ```
 
 
@@ -43,7 +40,6 @@ Web
 ```
 dotnet run -- BuildExternalProjects Emscripten
 dotnet run -- BuildEngine_Emscripten
-dotnet run -- MakeNativePackage
 ```
 
 ```

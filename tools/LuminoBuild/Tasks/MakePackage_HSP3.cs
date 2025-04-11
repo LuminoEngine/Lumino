@@ -23,7 +23,7 @@ namespace LuminoBuild.Tasks
                 Utils.CopyFile(Path.Combine(builder.BuildDir, "NativePackage", "Engine", "MSVC2019-x86-MT", "bin", "LuminoHSP3.dll"), packageDir);
                 Utils.CopyFile(Path.Combine(srcDir, "README_HSP3.txt"), packageDir);
                 Utils.CopyDirectory(Path.Combine(srcDir, "samples"), Path.Combine(packageDir, "samples"));
-                MakeNativePackage.GenerateReadme(builder, packageDir);
+                //MakeNativePackage.GenerateReadme(builder, packageDir);
             }
         }
 

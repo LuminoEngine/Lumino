@@ -33,8 +33,6 @@ jobs:
       run: dotnet run -- BuildExternals x64-windows-static
     - name: Build
       run: dotnet run -- BuildEngine x64-windows-static
-    - name: Package
-      run: dotnet run -- MakeNativePackage x64-windows-static
         
     - uses: actions/upload-artifact@v1
       with:
@@ -64,8 +62,6 @@ jobs:
       run: dotnet run -- BuildExternals wasm32-emscripten
     - name: Build
       run: dotnet run -- BuildEngine wasm32-emscripten
-    - name: Package
-      run: dotnet run -- MakeNativePackage wasm32-emscripten
         
     - uses: actions/upload-artifact@v1
       with:
@@ -98,7 +94,6 @@ jobs:
   #       dotnet run -- BuildExternalProjects Android-arm64-v8a
   #       dotnet run -- BuildExternalProjects Android-armeabi-v7a
   #       dotnet run -- BuildEngine_Android
-  #       dotnet run -- MakeNativePackage
 
   #   - uses: actions/upload-artifact@v1
   #     with:
@@ -128,7 +123,6 @@ jobs:
   #     run: |
   #       dotnet run -- BuildExternalProjects macOS
   #       dotnet run -- BuildEngine_macOS
-  #       dotnet run -- MakeNativePackage
 
   #   - uses: actions/upload-artifact@v1
   #     with:
@@ -159,7 +153,6 @@ jobs:
 #        dotnet run -- BuildExternalProjects iOS-OS64
 #        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
 #        dotnet run -- BuildEngine_iOS
-#        dotnet run -- MakeNativePackage
 
 #    - uses: actions/upload-artifact@v1
 #      with:

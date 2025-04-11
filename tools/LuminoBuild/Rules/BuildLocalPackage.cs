@@ -37,8 +37,6 @@ namespace LuminoBuild.Rules
             }
 
             builder.DoTask("BuildDocuments");
-
-            builder.DoTask("MakeNativePackage");
 #endif
         }
     }
