@@ -12,6 +12,7 @@
 #include "RenderFeature/ExtensionRenderFeature.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/DebugPrint.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
@@ -90,8 +91,8 @@ MaybeResult RenderingManager::init(const Options& options) {
     const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
     auto result = ln::kokage::ShaderCompiler::create();
     auto result2 = result->get()->build(
-        //"C:/Proj/LN/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
-        "E:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
+        "C:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
+        //"E:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
     //if (!result2) return;
     m_builtinShaders[(int)BuiltinShader::Sprite]->setupShader2(result->get()->shader());
 #endif
@@ -138,6 +139,15 @@ MaybeResult RenderingManager::init(const Options& options) {
     m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
     m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 
+    // DebugPrint
+    {
+        m_debugPrint = makeURef<DebugPrint>(m_spriteRenderer.get());
+        auto result = m_debugPrint->init();
+        if (!result) {
+            return result;
+        }
+    }
+
     LN_LOG_DEBUG("RenderingManager Initialization finished.");
     return LN_MAKE_SUCCESS();
 }
@@ -157,6 +167,12 @@ void RenderingManager::dispose() {
     //m_spriteRenderFeature2 = nullptr;
     //m_blitRenderFeature = nullptr;
     //m_standardVertexDeclarationRHI = nullptr;
+
+    if (m_debugPrint) {
+        m_debugPrint->dispose();
+        m_debugPrint = nullptr;
+    }
+
     m_standardVertexDeclaration = nullptr;
     //m_renderFeatures.clear();
 

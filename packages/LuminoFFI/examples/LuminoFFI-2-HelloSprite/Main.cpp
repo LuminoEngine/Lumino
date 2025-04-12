@@ -96,7 +96,7 @@ int main() {
             transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
             transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
             LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-            LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
+            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
                 100, 100,
                 0.5f, 0.5f,
                 0, 0, 1, 1,

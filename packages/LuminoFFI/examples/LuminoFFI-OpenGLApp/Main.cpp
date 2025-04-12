@@ -179,7 +179,7 @@ int main() {
             for (int i = 0; i < 500; i++) {
                 transform.m41 = 10 + i;
                 LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-                LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
+                LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
                     200, 100,
                     0, 0,
                     0, 0, 1, 1,
@@ -191,7 +191,7 @@ int main() {
         
             transform.m41 = 400;
             LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material2, &transform);
-            LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
+            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
                 300, 200,
                 0, 0,
                 0, 0, 1, 1,
@@ -226,7 +226,7 @@ int main() {
             LNMatrix_SetIdentity(&transform);
             transform.m41 = 0;
             LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-            LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
+            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
                 100, 100,
                 0, 0,
                 0, 0, 1, 1,

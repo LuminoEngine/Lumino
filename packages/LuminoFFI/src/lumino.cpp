@@ -17,6 +17,7 @@
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/DebugPrint.hpp>
 #include <lumino.h>
 
 
@@ -458,6 +459,9 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
                 r->end();
             }
 
+            renderingManager->debugPrint()->print(renderingContext, "!test");
+
+
             auto& batchProxyCollector = renderingContext->batchProxyCollector();
             batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
 
@@ -633,11 +637,11 @@ LNResult LNTexture2D_Create(int32_t width, int32_t height, LNHandle* outTexture2
 
 LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D) {
     LN_FFI_TRY_BEGIN;
-    Result_deprecated<Ref<Texture2D>> texture = Texture2D::createFromImageFileData(data, length);
+    Result<Ref<Texture2D>> texture = Texture2D::createFromImageFileData(data, length);
     if (!texture) {
         return TO_FFI_ERROR(texture.error());
     }
-    *outTexture2D = ::Runtime::wrapObject(texture.unwrap(), true);
+    *outTexture2D = ::Runtime::wrapObject(texture.value(), true);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -854,7 +858,7 @@ LNResult LNBatchRenderer_EndBatch(LNHandle spriteRenderer_) {
 	LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNBatchRenderer_DrawSprite(
+LNResult LNBatchRenderer_DrawSprite_deprecated(
     LNHandle spriteRenderer,
     const LNMatrix* localTransformOrNull,
     float width,

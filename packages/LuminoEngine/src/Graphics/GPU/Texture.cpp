@@ -127,11 +127,11 @@ Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint) {
     }
 }
 
-Result_deprecated<Ref<Texture2D>> Texture2D::createFromImageFileData(const uint8_t* data, int32_t length) {
+Result<Ref<Texture2D>> Texture2D::createFromImageFileData(const uint8_t* data, int32_t length) {
     MemoryStream stream(data, length);
     Ref<Texture2D> ref = wrapRef(LN_NEW Texture2D);
     auto result = ref->init(&stream);
-    if (!result) return result;
+    if (!result) return LN_TO_ERROR(result);
     return ref;
 }
 
@@ -194,7 +194,7 @@ void Texture2D::init(int width, int height, TextureFormat format) {
 //     //return true;
 // }
 //
-MaybeResult_deprecated Texture2D::init(Stream* stream, TextureFormat format) {
+MaybeResult Texture2D::init(Stream* stream, TextureFormat format) {
     auto bitmap = makeObject_deprecated<Bitmap2D>();
     auto result = bitmap->load(stream);
     if (!result) return result;

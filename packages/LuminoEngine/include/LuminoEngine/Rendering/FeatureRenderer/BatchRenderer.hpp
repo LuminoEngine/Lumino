@@ -7,6 +7,9 @@ class InstructionBatchProxy;
 }
 
 /**
+ *
+ * @note
+ * 従来、 SpriteRenderer だったものを置き換えたもの。
  */
 class BatchRenderer : public Object {
 public:

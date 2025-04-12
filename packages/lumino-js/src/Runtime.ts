@@ -105,7 +105,7 @@ export class Runtime {
             API.LNBatchRenderer_Get = module.cwrap("LNBatchRenderer_Get", "number", ["number"]);
             API.LNBatchRenderer_BeginBatch = module.cwrap("LNBatchRenderer_BeginBatch", "number", ["number", "number", "number", "number"]);
             API.LNBatchRenderer_EndBatch = module.cwrap("LNBatchRenderer_EndBatch", "number", ["number"]);
-            API.LNBatchRenderer_DrawSprite = module.cwrap("LNBatchRenderer_DrawSprite", "number", ["number","number","number","number","number","number","number","number","number","number","number","number","number","number","number","number"]);
+            API.LNBatchRenderer_DrawSprite_deprecated = module.cwrap("LNBatchRenderer_DrawSprite_deprecated", "number", ["number","number","number","number","number","number","number","number","number","number","number","number","number","number","number","number"]);
 
             //API.LNRenderingContext_Create = module.cwrap("LNRenderingContext_Create", "number", ["number", "number"]);
             API.LNObject_Release = module.cwrap("LNObject_Release", "number", ["number"]);
@@ -202,7 +202,7 @@ export class API {
     public static LNBatchRenderer_Get: (outSpriteRenderer: number) => Result;
     public static LNBatchRenderer_BeginBatch: (spriteRenderer: Handle, graphicsCommandList: Handle, material: Handle, transform: number) => Result;
     public static LNBatchRenderer_EndBatch: (spriteRenderer: Handle) => Result;
-    public static LNBatchRenderer_DrawSprite: (spriteRenderer: Handle, localTransformOrNull: number, width: number, height: number, anchorRatioX: number, anchorRatioY: number, uvRectX: number, uvRectY: number, uvRectW: number, uvRectH: number, r: number, g: number, b: number, a: number, baseDirection: number, billboardType: number) => Result;
+    public static LNBatchRenderer_DrawSprite_deprecated: (spriteRenderer: Handle, localTransformOrNull: number, width: number, height: number, anchorRatioX: number, anchorRatioY: number, uvRectX: number, uvRectY: number, uvRectW: number, uvRectH: number, r: number, g: number, b: number, a: number, baseDirection: number, billboardType: number) => Result;
 
     
     //public static LNRenderingContext_Create: (graphicsContext: Handle, outReturn: number) => Result;

@@ -32,6 +32,7 @@ class SurfaceContext;
 class BatchRenderer;
 class PrimitiveMeshRenderer;
 class SpriteTextRenderer;
+class DebugPrint;
 
 class RenderingPipeline;
 class SceneRenderingPipeline;

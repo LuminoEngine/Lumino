@@ -72,7 +72,7 @@ int main() {
             transform.m41 = width / 2;
             transform.m42 = height / 2;
             LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-            LNBatchRenderer_DrawSprite(spriteRenderer, NULL,
+            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
                 width - 20,
                 height - 20,
                 0.5f, 0.5f,

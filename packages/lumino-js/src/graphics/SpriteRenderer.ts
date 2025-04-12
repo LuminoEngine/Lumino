@@ -73,7 +73,7 @@ export class SpriteRenderer {
         color: IColor,
         baseDirection: SpriteBaseDirection,
         billboardType: BillboardType): void {
-        Runtime.safeCall(() => API.LNBatchRenderer_DrawSprite(
+        Runtime.safeCall(() => API.LNBatchRenderer_DrawSprite_deprecated(
             this._handle,
             localTransform ? Runtime.setMatrix(localTransform.m) : 0,
             size.width, size.height,

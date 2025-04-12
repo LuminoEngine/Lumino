@@ -44,7 +44,7 @@ TEST_F(Test_Material, Basic1) {
         transform.m41 = 0;
         transform.m42 = 0;
         LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-        LNBatchRenderer_DrawSprite(
+        LNBatchRenderer_DrawSprite_deprecated(
             spriteRenderer,
             NULL,
             320,

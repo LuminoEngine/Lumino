@@ -69,7 +69,7 @@ TEST_F(Test_BatchRendering, Basic1) {
                     LNMatrix localTransform;
                     LNMatrix_SetIdentity(&localTransform);
                     transform.m41 = i * 32;
-                    LNBatchRenderer_DrawSprite(
+                    LNBatchRenderer_DrawSprite_deprecated(
                         spriteRenderer,
                         &transform,
                         32, 32,
@@ -152,7 +152,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
                     LNMatrix localTransform;
                     LNMatrix_SetIdentity(&localTransform);
                     transform.m41 = i;
-                    LNBatchRenderer_DrawSprite(
+                    LNBatchRenderer_DrawSprite_deprecated(
                         spriteRenderer,
                         &transform,
                         32, 32,
