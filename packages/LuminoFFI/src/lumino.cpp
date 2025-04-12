@@ -459,7 +459,6 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
                 r->end();
             }
 
-            renderingManager->debugPrint()->print(renderingContext, "!test");
 
 
             auto& batchProxyCollector = renderingContext->batchProxyCollector();
@@ -534,6 +533,17 @@ LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList_, LNCommandLi
     outProfilerng->drawCallCount = renderingContext->commandList()->m_drawCall;
     LN_FFI_TRY_END_RETURN;
 
+}
+//==============================================================================
+// LNDebug
+//==============================================================================
+LNResult LNDebug_Println(LNHandle graphicsContext, const char* str) {
+    LN_FFI_TRY_BEGIN;
+    SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+    GraphicsCommandList* commandList = renderingContext->commandList();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
+    renderingManager->debugPrint()->print(renderingContext->renderingContext(), str);
+    LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext_) {
@@ -642,6 +652,16 @@ LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length
         return TO_FFI_ERROR(texture.error());
     }
     *outTexture2D = ::Runtime::wrapObject(texture.value(), true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNTexture2D_CreateFromImageFile(const char* filePathUTF8, LNHandle* outTexture2D) {
+    LN_FFI_TRY_BEGIN;
+    auto data = ln::FileSystem::readAllBytes(ln::String::fromUtf8(filePathUTF8));
+    if (!data) {
+        return TO_FFI_ERROR(data.error());
+    }
+    return LNTexture2D_CreateFromImageFileData(data->data(), data->size(), outTexture2D);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -845,8 +865,14 @@ LNResult LNBatchRenderer_BeginBatch(
     BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
     SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
-    const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
-    commandList->renderingContext()->setTransfrom(*transform);
+
+    if (transform_) {
+        const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
+        commandList->renderingContext()->setTransfrom(*transform);
+    }
+    else {
+        commandList->renderingContext()->setTransfrom(Matrix::Identity);
+    }
     spriteRenderer->begin(commandList->renderingContext(), material);
     LN_FFI_TRY_END_RETURN;
 }

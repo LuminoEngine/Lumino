@@ -2,7 +2,6 @@
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
-set(CMAKE_CXX_STANDARD 17)
 set(LN_LIB_OUTPUT_LOCAL_DIR "lib/") # TODO: deprecated?
 
 # Unicode char set.

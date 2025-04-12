@@ -153,6 +153,11 @@ extern LUMINO_API LNResult LNCommandList_EndRenderPass(LNHandle renderingCommand
 extern LUMINO_API LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList,LNCommandListProfilerng* outProfilerng);
 
 //==============================================================================
+// LNDebug
+//==============================================================================
+extern LUMINO_API LNResult LNDebug_Println(LNHandle graphicsContext, const char* str);
+
+//==============================================================================
 //
 //==============================================================================
 // いわゆるカメラ情報
@@ -183,6 +188,14 @@ extern LUMINO_API LNResult LNTexture2D_Create(int32_t width, int32_t height, LNH
  */
 extern LUMINO_API LNResult LNTexture2D_CreateFromImageFileData(const uint8_t* data, int32_t length, LNHandle* outTexture2D);
 
+/**
+ * Loads an image file and creates a texture.
+ * 
+ * @attention This function is a utility. It is only available in the desktop environment.
+ */
+extern LUMINO_API LNResult LNTexture2D_CreateFromImageFile(const char* filePathUTF8, LNHandle* outTexture2D);
+
+
 extern LUMINO_API LNResult LNTexture2D_GetContext(LNHandle texture2D, LNHandle* outTextureRenderingContext);
 
 //==============================================================================
@@ -199,7 +212,7 @@ extern LUMINO_API LNResult LNMaterial_CreateFromShaderData(const uint8_t* data, 
 /**
  * Compile the shader source files to create the material.
  * 
- * @attention This function is for desktop environments.
+ * @attention This function is a utility. It is only available in the desktop environment.
  */
 extern LUMINO_API LNResult LNMaterial_CreateFromSourceFile(const char* filePathUTF8, LNHandle* outMaterial);
 
