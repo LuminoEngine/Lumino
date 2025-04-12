@@ -23,7 +23,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
         LNHandle depthBuffer = LN_NULL_HANDLE;
         LNHandle commandList = LN_NULL_HANDLE;
         ASSERT_EQ(
-            LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
 
         // Rendering pass.
         {
@@ -61,10 +61,10 @@ TEST_F(Test_SpriteRenderer, Basic1) {
                 LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
-            ASSERT_EQ(LN_OK, LNRenderPass_End(renderingPass));
+            ASSERT_EQ(LN_OK, LNCommandList_EndRenderPass(commandList, renderingPass));
         }
 
-        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
         ASSERT_SCREENSHOT(U"Rendering/Expects/Test_SpriteRenderer.Basic1.png");
         TestEnv::present();
     }

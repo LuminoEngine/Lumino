@@ -160,7 +160,7 @@ extern LUMINO_API LNResult LNInstance_ShouldQuit(LNBool* outQuit);
 //==============================================================================
 
 /**
- * Begin rendering a frame.
+ * Begin rendering the frame.
  * 
  * @param[int] graphicsContext : LNGraphicsContext handle.
  * @param[int] width : Backbuffer width.
@@ -174,8 +174,10 @@ extern LUMINO_API LNResult LNInstance_ShouldQuit(LNBool* outQuit);
  *
  * outRenderTarget and outDepthBuffer is a special buffer that represents
  * the default Framebuffer and can only be used to attach to an LNRenderPass.
+ * 
+ * The frame must be ended by @see LNGraphicsContext_EndFrame.
  */
-extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
+extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
     LNHandle graphicsContext,
     int32_t width,
     int32_t height,
@@ -185,8 +187,11 @@ extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
 );
 
 /**
+ * Ends the frame.
+ * 
+ * @param[int] graphicsContext : LNGraphicsContext handle.
  */
-extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext, LNHandle graphicsCommandList);
+extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 
 //==============================================================================
 // LNGLGraphicsContext
@@ -208,6 +213,8 @@ typedef struct LNCommandListProfilerng {
 
 extern LUMINO_API LNResult LNCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
 
+extern LUMINO_API LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList, LNHandle renderPass_);
+
 extern LUMINO_API LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList,LNCommandListProfilerng* outProfilerng);
 
 //==============================================================================
@@ -226,7 +233,6 @@ extern LUMINO_API LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSc
 // LNRenderPass
 //==============================================================================
 
-extern LUMINO_API LNResult LNRenderPass_End(LNHandle renderPass);
  
 //==============================================================================
 // LNTexture

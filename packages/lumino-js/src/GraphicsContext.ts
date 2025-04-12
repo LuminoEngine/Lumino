@@ -55,7 +55,7 @@ export abstract class GraphicsContext {
         const handle1 = Runtime.module._malloc(4);
         const handle2 = Runtime.module._malloc(4);
         const handle3 = Runtime.module._malloc(4);
-        Runtime.safeCall(() => API.LNGraphicsContext_PrepareFrame(this._handle, width, height, handle1, handle2, handle3));
+        Runtime.safeCall(() => API.LNGraphicsContext_BeginFrame(this._handle, width, height, handle1, handle2, handle3));
         console.log("prepareFrame malloc", handle1, handle2, handle3);
         const value1 = Runtime.module.getValue(handle1, "i32");
         const value2 = Runtime.module.getValue(handle2, "i32");
@@ -73,7 +73,7 @@ export abstract class GraphicsContext {
      * Sends the command list recorded in GraphicsCommandList to the GPU.
      */
     public submitCommandList(commandList: GraphicsCommandList): void {
-        API.LNGraphicsContext_EndFrame(this.handle, commandList.handle);
+        API.LNGraphicsContext_EndFrame(this.handle);
     }
 }
 

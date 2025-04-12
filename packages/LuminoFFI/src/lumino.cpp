@@ -238,7 +238,7 @@ LNResult LNInstance_ShouldQuit(LNBool* outQuit) {
 //==============================================================================
 //
 //==============================================================================
-extern LUMINO_API LNResult LNGraphicsContext_PrepareFrame(
+extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
     LNHandle graphicsContext,
     int32_t width,
     int32_t height,
@@ -301,7 +301,7 @@ LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, 
 //       FFI のコンセプト変更により、GraphicsCommandList Graphics 以外で CommandList 的なものを公開することはないと考えられるため。
 //==============================================================================
 
-extern LNResult LNCommandList_BeginRenderPass(
+LNResult LNCommandList_BeginRenderPass(
     LNHandle renderingCommandList_,
     LNRenderPassDescriptor descriptor_,
     LNHandle renderingViewPoint_,
@@ -353,45 +353,13 @@ extern LNResult LNCommandList_BeginRenderPass(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList_, LNCommandListProfilerng* outProfilerng) {
-    LN_FFI_TRY_BEGIN;
-    SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
-    outProfilerng->drawCallCount = renderingContext->commandList()->m_drawCall;
-    LN_FFI_TRY_END_RETURN;
-
-}
-
-LNResult LNGraphicsContext_EndFrame(
-    LNHandle graphicsContext_,
-    LNHandle renderingCommandList_) {
-    LN_FFI_TRY_BEGIN;
-    SurfaceContext* renderingContext2 = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
-    CommandList* renderingContext = renderingContext2->renderingContext();
-    SurfaceContext* context = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext_);
-    
-    
-    GraphicsCommandList* commandList = context->commandList();
-    commandList->endCommandRecoding();
-
-    // この後 Present までの間で、描画結果などを VRAM から RAM に転送することがある。ユニットテストとか。
-    // 別案として CaptureRequest だけ投げておいてコールバックを呼んでもらう方法も考えたが、
-    // バックバッファのキャプチャ以外でも使うかもしれないので、コールバックはやめておく。
-    context->context()->submitCurrentCommandList();
-
-    LN_FFI_TRY_END_RETURN;
-}
-
-//==============================================================================
-// LNRenderPass
-//==============================================================================
-
-LNResult LNRenderPass_End(LNHandle renderPass_) {
+LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle renderPass_) {
     LN_FFI_TRY_BEGIN;
     FFIRenderPass* renderPass = LN_HANDLE_TO_OBJECT(FFIRenderPass, renderPass_);
     GraphicsContext* context = renderPass->owner->context();
     CommandList* renderingContext = renderPass->owner->renderingContext();
     kanata::DrawEventList* drawEventList = renderPass->owner->drawEventList();
-    
+
     if (1) {
 
         //RenderPass* renderPass = context->currentRenderPass();
@@ -418,9 +386,8 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
             detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
             // g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
             kanata::BatchCollector* batchList = renderingContext->batchCollector();
-            //g_drawCommandList = 
+            //g_drawCommandList =
             //g_boxMeshBatchProxy = makeURef<kanata::BoxMeshBatchProxy>();
-
 
             detail::RenderViewInfo renderViewInfo;
             // renderViewInfo.cameraInfo.makePerspective(Vector3(10, 10, 10), Vector3::normalize(-1, -1, -1), 0.3, Size(renderPass->width(), renderPass->height()), 0.1, 1000.0);
@@ -491,7 +458,6 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
                 r->end();
             }
 
-            
             auto& batchProxyCollector = renderingContext->batchProxyCollector();
             batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
 
@@ -557,6 +523,36 @@ LNResult LNRenderPass_End(LNHandle renderPass_) {
     LNObject_Release(renderPass_);
     LN_FFI_TRY_END_RETURN;
 }
+
+LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList_, LNCommandListProfilerng* outProfilerng) {
+    LN_FFI_TRY_BEGIN;
+    SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
+    outProfilerng->drawCallCount = renderingContext->commandList()->m_drawCall;
+    LN_FFI_TRY_END_RETURN;
+
+}
+
+LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext_) {
+    LN_FFI_TRY_BEGIN;
+    //SurfaceContext* renderingContext2 = LN_HANDLE_TO_OBJECT(SurfaceContext, commandList_);
+    SurfaceContext* context = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext_);
+    CommandList* renderingContext = context->renderingContext();
+    
+    GraphicsCommandList* commandList = context->commandList();
+    commandList->endCommandRecoding();
+
+    // この後 Present までの間で、描画結果などを VRAM から RAM に転送することがある。ユニットテストとか。
+    // 別案として CaptureRequest だけ投げておいてコールバックを呼んでもらう方法も考えたが、
+    // バックバッファのキャプチャ以外でも使うかもしれないので、コールバックはやめておく。
+    context->context()->submitCurrentCommandList();
+
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LNRenderPass
+//==============================================================================
+
 
 
 //==============================================================================

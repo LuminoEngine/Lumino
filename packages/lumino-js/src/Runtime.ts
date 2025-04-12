@@ -87,15 +87,15 @@ export class Runtime {
             API.LNInstance_Terminate = module.cwrap("LNInstance_Terminate", "void", []);
             API.LNGLGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGLGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
 
-            API.LNGraphicsContext_PrepareFrame = module.cwrap("LNGraphicsContext_PrepareFrame", "number", ["number", "number", "number", "number", "number", "number"]);
-            API.LNGraphicsContext_EndFrame = module.cwrap("LNGraphicsContext_EndFrame", "number", ["number", "number"]);
+            API.LNGraphicsContext_BeginFrame = module.cwrap("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number", "number", "number"]);
+            API.LNGraphicsContext_EndFrame = module.cwrap("LNGraphicsContext_EndFrame", "number", ["number"]);
             
             API.LNCommandList_BeginRenderPass = module.cwrap("LNCommandList_BeginRenderPass", "number", ["number", "number", "number", "number"]);
             
             API.LNViewPoint_Create = module.cwrap("LNViewPoint_Create", "number", ["number"]);
             API.LNViewPoint_SetupPerspective2DLH = module.cwrap("LNViewPoint_SetupPerspective2DLH", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
 
-            API.LNRenderPass_End = module.cwrap("LNRenderPass_End", "number", ["number"]);
+            API.LNCommandList_EndRenderPass = module.cwrap("LNCommandList_EndRenderPass", "number", ["number", "number"]);
 
             API.LNTexture2D_CreateFromImageFileData = module.cwrap("LNTexture2D_CreateFromImageFileData", "number", ["number", "number", "number"]);
 
@@ -183,8 +183,8 @@ export class API {
     public static LNInstance_Terminate: () => void;
 
     public static LNGLGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
-    public static LNGraphicsContext_PrepareFrame: (graphicsContext: Handle,width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
-    public static LNGraphicsContext_EndFrame: (graphicsContext: Handle, graphicsCommandList: number) => Result;
+    public static LNGraphicsContext_BeginFrame: (graphicsContext: Handle,width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
+    public static LNGraphicsContext_EndFrame: (graphicsContext: Handle) => Result;
 
     public static LNCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
 
@@ -192,7 +192,7 @@ export class API {
     public static LNViewPoint_Create: (outGraphicsViewPoint: number) => Result;
     public static LNViewPoint_SetupPerspective2DLH: (graphicsViewPoint: Handle, x: number, y: number, z: number, width: number, height: number, nearZ: number, farZ: number) => Result;
 
-    public static LNRenderPass_End: (renderPass: Handle) => Result;
+    public static LNCommandList_EndRenderPass: (commandList: Handle, renderPass: Handle) => Result;
 
     public static LNTexture2D_CreateFromImageFileData: (data: number, length: number, outTexture2D: number) => Result;
 

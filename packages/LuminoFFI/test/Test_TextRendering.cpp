@@ -12,9 +12,9 @@ TEST_F(Test_TextRendering, Basic) {
     LNHandle depthBuffer = LN_NULL_HANDLE;
     LNHandle commandList = LN_NULL_HANDLE;
     ASSERT_EQ(
-        LN_OK, LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+        LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
 
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext, commandList));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
     TestEnv::present();
     TestEnv::present();
 

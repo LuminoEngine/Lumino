@@ -18,7 +18,7 @@ TEST_F(Test_Material, Basic1) {
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
         LNHandle commandList = LN_NULL_HANDLE;
-        LNGraphicsContext_PrepareFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
 
         int index = -1;
         LNMaterial_FindParameterIndex(material1, "u_Value1", &index);
@@ -63,9 +63,9 @@ TEST_F(Test_Material, Basic1) {
             LN_BILLBOARD_TYPE_NONE);
         LNBatchRenderer_EndBatch(spriteRenderer);
 
-        LNRenderPass_End(renderingPass);
+        LNCommandList_EndRenderPass(commandList, renderingPass);
 
-        LNGraphicsContext_EndFrame(surfaceContext, commandList);
+        LNGraphicsContext_EndFrame(surfaceContext);
         ASSERT_SCREENSHOT(U"Test_Material.Basic1/Expects.png");
         TestEnv::present();
     };

@@ -1,10 +1,8 @@
 ﻿#include <lumino.h>
 
 int main() {
-    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
-
     // 1. 最初に LNInstance_Initialize で Lumino を初期化します。
-    //    なお全ての API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
+    //    なおほとんどの API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
     //    以降のサンプルではエラーチェックを省略しています。
     LNResult result = LNInstance_Initialize();
     if (result != LN_OK) {
@@ -32,8 +30,8 @@ int main() {
             break;
         }
 
-        // x. 現在のウィンドウサイズにマッチするようにフレームバッファ (バックバッファ) を準備します。
-        //    また LNGraphicsContext_PrepareFrame からは 1 フレーム分の描画を行うために必要なリソース取得できます。
+        // x. 現在のウィンドウサイズにマッチするようにバックバッファを準備し、ひとつのフレームの描画を開始します。
+        //    LNGraphicsContext_BeginFrame からは 1 フレーム分の描画を行うために必要なリソース取得できます。
         //    colorBuffer と depthBuffer は描画先バッファです。これからここに描画を行います。
         int width = 0;
         int height = 0;
@@ -41,14 +39,15 @@ int main() {
         LNHandle depthBuffer = LN_NULL_HANDLE;
         LNHandle commandList = LN_NULL_HANDLE;
         LNWindow_GetFramebufferSize(window, &width, &height);
-        LNGraphicsContext_PrepareFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
 
         // x. 2D シーンを描画するための視点情報を構築します。
         //    このサンプルは画面をクリアするだけであるため、この情報はダミーです。
         LNViewPoint_SetupPerspectiveOrthoLH(viewPoint, 0, 0, 0, 0, 0, 0, width, height, -1000, 1000);
 
         // x. レンダーターゲットをクリアするための RenderPass を開始します。
-        //    なお WebGPU などと同様、 RenderPass を開始することなくクリアする方法はありません。
+        //    RenderPass を開始することなくクリアする方法はありません。
+        //    このサンプルではクリアするだけなので、 BeginRenderPass の後はすぐに EndRenderPass を呼び出しています。
         LNHandle renderingPass = LN_NULL_HANDLE;
         LNRenderPassDescriptor descriptor;
         descriptor.renderTargets[0].renderTarget = colorBuffer;
@@ -63,9 +62,9 @@ int main() {
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint, &renderingPass);
-        LNRenderPass_End(renderingPass);
+        LNCommandList_EndRenderPass(commandList, renderingPass);
 
-        LNGraphicsContext_EndFrame(graphicsContext, commandList);
+        LNGraphicsContext_EndFrame(graphicsContext);
         LNWindow_Present(window);
 
         // x. このサンプルのように LNWindow を使っている場合、発生したデバイスロストは自動的に復旧されます。 

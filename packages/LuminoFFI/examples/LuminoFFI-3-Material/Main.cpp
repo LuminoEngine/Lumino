@@ -41,7 +41,7 @@ int main() {
         LNHandle depthBuffer = LN_NULL_HANDLE;
         LNHandle commandList = LN_NULL_HANDLE;
         LNWindow_GetFramebufferSize(window, &width, &height);
-        LNGraphicsContext_PrepareFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
 
         LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, width, height, -500, 500);
         //LNViewPoint_SetupPerspectiveOrthoLH(viewPoint, 0, 0, 100, 0, 0, 0, width, height, -1000, 1000);
@@ -83,9 +83,9 @@ int main() {
             LNBatchRenderer_EndBatch(spriteRenderer);
         }
 
-        LNRenderPass_End(renderingPass);
+        LNCommandList_EndRenderPass(commandList, renderingPass);
 
-        LNGraphicsContext_EndFrame(graphicsContext, commandList);
+        LNGraphicsContext_EndFrame(graphicsContext);
         LNWindow_Present(window);
 
         frameCount++;

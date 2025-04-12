@@ -11,6 +11,6 @@ export class RenderPass extends LuminoObject {
     }
 
     public end(): void {
-        API.LNRenderPass_End(this.handle);
+        API.LNCommandList_EndRenderPass(this._owner.handle, this.handle);
     }
 }

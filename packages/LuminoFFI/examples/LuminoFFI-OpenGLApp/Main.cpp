@@ -146,7 +146,7 @@ int main() {
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
         LNHandle commandList = LN_NULL_HANDLE;
-        LNGraphicsContext_PrepareFrame(graphicsContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(graphicsContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
 
         // RenderPass
         //   Lumino では RenderPass=視点を起点とした描画シーケンスと考えてみる。
@@ -200,7 +200,7 @@ int main() {
                 LN_BILLBOARD_TYPE_NONE);
             LNBatchRenderer_EndBatch(spriteRenderer);
 
-            if (LNRenderPass_End(renderingPass) != LN_OK) {
+            if (LNCommandList_EndRenderPass(commandList, renderingPass) != LN_OK) {
                 return 1;
             }
         }
@@ -235,7 +235,7 @@ int main() {
                 LN_BILLBOARD_TYPE_NONE);
             LNBatchRenderer_EndBatch(spriteRenderer);
 
-            if (LNRenderPass_End(renderingPass) != LN_OK) {
+            if (LNCommandList_EndRenderPass(commandList, renderingPass) != LN_OK) {
                 return 1;
             }
         }
@@ -245,7 +245,7 @@ int main() {
         //LNSpriteTextRenderer_DrawFillText(spriteTextRenderer, NULL, "Hello!!");
         //LNSpriteTextRenderer_EndBatch(spriteTextRenderer);
 
-        if (LNGraphicsContext_EndFrame(graphicsContext, commandList) != LN_OK) {
+        if (LNGraphicsContext_EndFrame(graphicsContext) != LN_OK) {
             return 1;
         }
         std::cout << t.elapsedMilliseconds() << "[ms] Total" << std::endl;
