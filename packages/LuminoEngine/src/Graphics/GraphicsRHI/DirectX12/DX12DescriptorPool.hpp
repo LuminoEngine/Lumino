@@ -1,5 +1,4 @@
-﻿
-#pragma once
+﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include "DX12Helper.hpp"
 

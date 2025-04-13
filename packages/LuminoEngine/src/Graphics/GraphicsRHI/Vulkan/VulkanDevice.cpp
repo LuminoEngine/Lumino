@@ -152,16 +152,18 @@ void VulkanDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
 
 Result<Ref<ISwapChain>> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
     auto ptr = makeRef<VulkanSwapChain>();
-    if (!ptr->init(this, window, backbufferSize)) {
-        return LN_MAKE_ERROR();
+    auto result = ptr->init(this, window, backbufferSize);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }
 
 Result<Ref<ICommandList>> VulkanDevice::onCreateCommandList() {
     auto ptr = makeRef<VulkanCommandList>();
-    if (!ptr->init(this)) {
-        return LN_MAKE_ERROR();
+    auto result = ptr->init(this);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }

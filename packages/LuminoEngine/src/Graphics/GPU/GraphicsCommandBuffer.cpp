@@ -50,6 +50,7 @@ MaybeResult GraphicsCommandList::init(GraphicsManager* manager) {
         m_graphicsContext->singleFrameConstantBufferAllocatorPageManager());
     m_uniformBufferOffsetAlignment = device->caps().uniformBufferOffsetAlignment;
     resetState();
+    return LN_MAKE_SUCCESS();
 }
 
 void GraphicsCommandList::dispose() {

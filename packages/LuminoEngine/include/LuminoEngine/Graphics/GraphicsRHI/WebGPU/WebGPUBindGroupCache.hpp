@@ -13,7 +13,7 @@ public:
     void dispose();
     MaybeResult_deprecated getOrCreate(
         WebGPUShaderPass* shaderPass,
-        const detail::ShaderDescriptorTableUpdateInfo& updateInfo,
+        const ShaderDescriptorTableUpdateInfo& updateInfo,
         WGPUBindGroup* outBindGroup); 
 
 private:

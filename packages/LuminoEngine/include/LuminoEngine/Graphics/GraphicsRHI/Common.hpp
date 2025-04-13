@@ -262,6 +262,23 @@ enum class ShaderVariableType {
 
 
 namespace detail {
+class RHIDeviceObject;
+class IGraphicsDevice;
+class ISwapChain;
+class ICommandList;
+//class ICommandQueue;
+class IRenderPass;
+class IVertexDeclaration;
+class ISamplerState;
+class IShaderPass;
+class IPipeline;
+class IDescriptorPool;
+class IDescriptor;
+class NativeRenderPassCache;
+class NativePipelineCache;
+class RHIBitmap;
+class RHIResource;
+class RHIProfiler;
 
 static const int MaxMultiRenderTargets = 4;
 
