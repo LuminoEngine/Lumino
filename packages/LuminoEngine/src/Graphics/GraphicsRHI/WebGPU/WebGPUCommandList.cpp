@@ -51,8 +51,7 @@ void WebGPUCommandList::onRestoreExternalRenderState() {
     LN_NOTIMPLEMENTED();
 }
 
-void WebGPUCommandList::onBeginCommandRecoding() {
-    //if (LN_ASSERT(!m_isRecording)) return;
+MaybeResult WebGPUCommandList::onBeginCommandRecoding() {
     m_transferBufferSingleFrameAllocator->cleanup();
 	
     WGPUCommandEncoderDescriptor encoderDesc = {};
@@ -61,19 +60,17 @@ void WebGPUCommandList::onBeginCommandRecoding() {
 
     //wgpuCommandEncoderInsertDebugMarker(m_commandEncoder, { "!Do one thing", 10 });
     //wgpuCommandEncoderRelease(encoder);
+    return LN_MAKE_SUCCESS();
 }
 
-void WebGPUCommandList::onEndCommandRecoding() {
-    //if (LN_ASSERT(m_isRecording)) return;
-    //m_isRecording = false;
-
-    
+MaybeResult WebGPUCommandList::onEndCommandRecoding() {
     WGPUCommandBufferDescriptor cmdBufferDescriptor = {};
     m_lastFinishedCommandBuffer = wgpuCommandEncoderFinish(m_commandEncoder, &cmdBufferDescriptor);
     // TODO: Release 必要？
     
     wgpuCommandEncoderRelease(m_commandEncoder);
     m_commandEncoder = nullptr;
+    return LN_MAKE_SUCCESS();
 }
 
 void WebGPUCommandList::onBeginRenderPass(IRenderPass* renderPass) {

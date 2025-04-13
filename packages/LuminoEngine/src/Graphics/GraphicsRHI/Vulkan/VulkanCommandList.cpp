@@ -170,7 +170,7 @@ void VulkanCommandList::onSaveExternalRenderState() {
 void VulkanCommandList::onRestoreExternalRenderState() {
 }
 
-void VulkanCommandList::onBeginCommandRecoding() {
+MaybeResult VulkanCommandList::onBeginCommandRecoding() {
     m_transferBufferSingleFrameAllocator->cleanup();
 
     VkCommandBufferBeginInfo beginInfo = {};
@@ -178,15 +178,17 @@ void VulkanCommandList::onBeginCommandRecoding() {
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
     VkResult r = vkBeginCommandBuffer(m_commandBuffer, &beginInfo);
     if (r != VK_SUCCESS) {
-        LN_LOG_ERROR("vkBeginCommandBuffer failed.");
+        return LN_MAKE_ERROR("vkBeginCommandBuffer failed.");
     }
+    return LN_MAKE_SUCCESS();
 }
 
-void VulkanCommandList::onEndCommandRecoding() {
+MaybeResult VulkanCommandList::onEndCommandRecoding() {
     VkResult r = vkEndCommandBuffer(m_commandBuffer);
     if (r != VK_SUCCESS) {
-        LN_LOG_ERROR("vkBeginCommandBuffer failed.");
+        return LN_MAKE_ERROR("vkBeginCommandBuffer failed.");
     }
+    return LN_MAKE_SUCCESS();
 }
 
 void VulkanCommandList::onBeginRenderPass(IRenderPass* renderPass_) {

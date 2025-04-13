@@ -210,6 +210,36 @@ void placementNewObject(void* ptr, TArgs&&... args) {
     static_cast<T*>(ptr)->init(std::forward<TArgs>(args)...);
 }
 
+template<class T, typename... InitArgs>
+Result<Ref<T>> makeRefWithInit(InitArgs&&... initArgs) {
+    // NOTE: static-create() vs constructor() vs init()
+    //   - static-create(): Rust の Constructor Pattern.
+    //       オブジェクトが構築された時点で、フィールドには正常な値が設定されているという仕組み。
+    //       しかし終了処理は create() 内と、オブジェクトのデストラクタないし 
+    //       dispose() で行う必要があり、処理の重複がかなり増えることになる。
+    //       特にスマートポインタとかも使えない低レイヤーの API 呼び出しにおいて。(FILE* とか)
+    //   - constructor():
+    //       エラーを返す手段が例外しかないのでこちらをメインに使うことは無い。
+    //       DI の考えで、他オブジェクトをコンストラクタで参照だけ受け取り
+    //       依存するインターフェイスを分かりやすくするテクニックもあるが、
+    //       constructor() と init() へ別々の引数リストを与える実装は難しい（多分できない）し、
+    //       アプリレイヤーならともかく、今の機能縮小した Lumino では
+    //       依存関係がわかり辛くなるといったことも少ないと考えられる。
+    //   - init():
+    //       ということで、従来通りではあるが、 init() をメインで使っていくことにする。
+
+    auto ptr = LN_NEW T();
+    if (!ptr) {
+        return LN_MAKE_ERROR("Failed to create object.");
+    }
+    auto ref = Ref<T>(ptr, false);
+    auto result = ptr->init(std::forward<InitArgs>(initArgs)...);
+    if (!result) {
+        return LN_TO_ERROR(result);
+    }
+    return ref;
+}
+
 /**
  * 公開クラスの型階層のルート要素です。
  * 

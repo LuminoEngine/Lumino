@@ -95,9 +95,7 @@ void DX12GraphicsContext::onRestoreExternalRenderState()
 {
 }
 
-void DX12GraphicsContext::onBeginCommandRecoding()
-{
-    //printf("-----\n");
+MaybeResult DX12GraphicsContext::onBeginCommandRecoding() {
     m_uploadBufferAllocator->cleanup();
 
     // https://docs.microsoft.com/ja-jp/windows/win32/direct3d12/recording-command-lists-and-bundles
@@ -106,21 +104,19 @@ void DX12GraphicsContext::onBeginCommandRecoding()
     // 逆にひとつの Allocator から複数の CommandList を作ったとき、Allocator だけ Reset() してしまうと、
     // 生きている CommandList が使っているメモリが壊れてしまう。
     if (FAILED(m_dxCommandAllocator->Reset())) {
-        LN_ERROR("Reset failed.");
-        return;
+        return LN_MAKE_ERROR("Allocator reset failed.");
     }
     if (FAILED(m_dxCommandList->Reset(m_dxCommandAllocator.Get(), nullptr))) {
-        LN_ERROR("Reset failed.");
-        return;
+        return LN_MAKE_ERROR("Reset failed.");
     }
+    return LN_MAKE_SUCCESS();
 }
 
-void DX12GraphicsContext::onEndCommandRecoding()
-{
+MaybeResult DX12GraphicsContext::onEndCommandRecoding() {
     if (FAILED(m_dxCommandList->Close())) {
-        LN_ERROR("Close failed.");
-        return;
+        return LN_MAKE_ERROR("Close failed.");
     }
+    return LN_MAKE_SUCCESS();
 }
 
 void DX12GraphicsContext::onBeginRenderPass(IRenderPass* baseRenderPass)

@@ -238,8 +238,8 @@ public:
     void leaveRenderState();
 
     /////////
-    void begin();
-    void end();
+    MaybeResult begin();
+    MaybeResult end();
     void beginRenderPass(IRenderPass* value);
     void endRenderPass(IRenderPass* value);
     void setBlendState(const BlendStateDesc& value);
@@ -279,8 +279,8 @@ public: // TODO:
 
     virtual void onSaveExternalRenderState() = 0;
     virtual void onRestoreExternalRenderState() = 0;
-    virtual void onBeginCommandRecoding() = 0;
-    virtual void onEndCommandRecoding() = 0;
+    virtual MaybeResult onBeginCommandRecoding() = 0;
+    virtual MaybeResult onEndCommandRecoding() = 0;
     virtual void onBeginRenderPass(IRenderPass* renderPass) = 0;
     virtual void onEndRenderPass(IRenderPass* renderPass) = 0;
     virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) = 0;

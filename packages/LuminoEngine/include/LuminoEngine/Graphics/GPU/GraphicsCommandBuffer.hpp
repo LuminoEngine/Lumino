@@ -189,8 +189,8 @@ public:
     /** @} */
 
     // 外部アプリに組み込むときに使いたい
-    void beginCommandRecoding();
-    void endCommandRecoding();
+    MaybeResult beginCommandRecoding();
+    MaybeResult endCommandRecoding();
 
 protected:
     void onDispose(bool explicitDisposing) override;

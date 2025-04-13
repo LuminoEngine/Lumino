@@ -304,18 +304,20 @@ void GraphicsCommandList::interruptCurrentRenderPassFromResolveRHI() {
     }
 }
 
-void GraphicsCommandList::beginCommandRecoding() {
-    if (LN_ASSERT(m_scopeState == ScopeState::Idle)) return;
-    m_rhiResource->begin();
+MaybeResult GraphicsCommandList::beginCommandRecoding() {
+    LN_TRY_ASSERT(m_scopeState == ScopeState::Idle);
+    LN_TRY(m_rhiResource->begin());
     m_singleFrameUniformBufferAllocator->cleanup();
     m_scopeState = ScopeState::RenderPassOutside;
+    return LN_MAKE_SUCCESS();
 }
 
-void GraphicsCommandList::endCommandRecoding() {
-    if (LN_ASSERT(m_scopeState == ScopeState::RenderPassOutside)) return;
-    m_rhiResource->end();
+MaybeResult GraphicsCommandList::endCommandRecoding() {
+    LN_TRY_ASSERT(m_scopeState == ScopeState::RenderPassOutside);
+    LN_TRY(m_rhiResource->end());
     m_singleFrameUniformBufferAllocator->unmap();
     m_scopeState = ScopeState::Idle;
+    return LN_MAKE_SUCCESS();
 }
 
 // IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。

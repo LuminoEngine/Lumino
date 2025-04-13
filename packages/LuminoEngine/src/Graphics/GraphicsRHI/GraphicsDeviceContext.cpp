@@ -411,7 +411,7 @@ void ICommandList::leaveRenderState() {
     onRestoreExternalRenderState();
 }
 
-void ICommandList::begin() {
+MaybeResult ICommandList::begin() {
     for (IRenderPass* renderPass : m_renderPasses) {
         renderPass->releaseObjects();
     }
@@ -419,11 +419,11 @@ void ICommandList::begin() {
     m_inflightResources.clear();
 
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
-    onBeginCommandRecoding();
+    return onBeginCommandRecoding();
 }
 
-void ICommandList::end() {
-    onEndCommandRecoding();
+MaybeResult ICommandList::end() {
+    return onEndCommandRecoding();
 }
 
 void ICommandList::beginRenderPass(IRenderPass* value) {

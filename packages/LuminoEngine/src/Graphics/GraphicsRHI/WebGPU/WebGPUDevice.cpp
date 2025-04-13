@@ -203,11 +203,7 @@ void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
 }
 
 Result<Ref<ISwapChain>> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    auto ptr = makeRef<WebGPUSwapChain>();
-    if (!ptr->init(this, window, backbufferSize)) {
-        return LN_MAKE_ERROR();
-    }
-    return ptr;
+    return makeRefWithInit<WebGPUSwapChain>(this, window, backbufferSize);
 }
 
 Result<Ref<ICommandList>> WebGPUDevice::onCreateCommandList() {
@@ -302,12 +298,7 @@ Ref<RHIResource> WebGPUDevice::onCreateDepthBuffer(uint32_t width, uint32_t heig
 }
 
 Result<Ref<ISamplerState>> WebGPUDevice::onCreateSamplerState(const SamplerStateData& desc) {
-    auto ptr = makeRef<WebGPUSamplerState>();
-    auto result = ptr->init(this, desc);
-    if (!result) {
-        return LN_TO_ERROR(result);
-    }
-    return ptr;
+    return makeRefWithInit<WebGPUSamplerState>(this, desc);
 }
 
 Ref<IShaderPass> WebGPUDevice::onCreateShaderPass(

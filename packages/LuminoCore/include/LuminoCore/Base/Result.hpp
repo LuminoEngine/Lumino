@@ -161,6 +161,16 @@ ErrType_deprecated<ErrorCode> makeInternalError_deprecated(const std::string& me
 #define LN_MAKE_ERROR_UNREACHABLE_deprecated() LN_MAKE_ERROR_deprecated("Unreachable code reached.")
 #define LN_MAKE_ERROR_NOT_IMPLEMENTED_deprecated() LN_MAKE_ERROR_deprecated("Not implemented.")
 
+#define LN_TRY(x)                   \
+    {                               \
+        auto result = x;            \
+        if (!result) return result; \
+    }
+
+#define LN_TRY_ASSERT(expr, ...)                                                          \
+    if (LN_ASSERT(expr, __VA_ARGS__)) return LN_MAKE_ERROR();
+
+
 //==============================================================================
 // BasicResult_deprecated
 
@@ -738,9 +748,4 @@ inline tl::unexpected<ErrorCode> toError(const BasicResult_deprecated<T, ErrorCo
     template<typename... Args> \
     auto err(Args&&... args)->decltype(ln::err(std::forward<Args>(args)...)) { return ln::err(std::forward<Args>(args)...); } \
 
-
-#define LN_TRY(x) { \
-    auto result = x; \
-    if (!result) return result; \
-}
 

@@ -6,7 +6,6 @@ AccessModifierOffset: -4
 AllowAllArgumentsOnNextLine: false
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
-AlignEscapedNewlines: Right
 
 AlignTrailingComments: true
 #----------
@@ -25,7 +24,11 @@ PenaltyBreakBeforeFirstCallParameter: 0
 BinPackArguments: false
 AlignAfterOpenBracket: AlwaysBreak
 #----------
-
+# #define A         \
+#   int aaaa;       \
+#   int b;          \
+#   int dddddddddd;
+AlignEscapedNewlines: LeftWithLastLine
 #----------
 # ```
 # auto a =

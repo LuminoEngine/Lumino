@@ -17,8 +17,8 @@ public:
 protected:
     void onSaveExternalRenderState() override;
     void onRestoreExternalRenderState() override;
-    void onBeginCommandRecoding() override;
-    void onEndCommandRecoding() override;
+    MaybeResult onBeginCommandRecoding() override;
+    MaybeResult onEndCommandRecoding() override;
     void onBeginRenderPass(IRenderPass* renderPass) override;
     void onEndRenderPass(IRenderPass* renderPass) override;
     void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;

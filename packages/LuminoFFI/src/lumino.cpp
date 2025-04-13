@@ -85,25 +85,31 @@ extern "C" {
 
 #define LN_FFI_TRY_BEGIN try {
 
-#define LN_FFI_TRY_END_RETURN               \
-    }                                         \
+#define LN_FFI_TRY_END_RETURN             \
+    }                                     \
     catch (Exception & e) {               \
         return FFI::processException(&e); \
-    }                                         \
+    }                                     \
     return LN_OK;
 
-#define LN_FFI_TRY_END                                                                                        \
-    }                                                                                                                  \
-    catch (Exception & e) {                                                                                            \
-        FFI::processException(&e);                                                                              \
+#define LN_FFI_TRY_END             \
+    }                              \
+    catch (Exception & e) {        \
+        FFI::processException(&e); \
     }             
 
 #define LN_HANDLE_TO_OBJECT(type, h) static_cast<type*>((h) ? ::Runtime::getObject(h) : nullptr)
-//#define LN_HANDLE_TO_OBJECT2(type, h) static_cast<type*>((h) ? ::FFI::getObject(reinterpret_cast<LNHandle>(h)) : nullptr)
-//#define LN_WRAP_OBJECT(type, obj, fromCreate) reinterpret_cast<type>(::FFI::wrapObject(obj, false))
 #define LN_RELEASE_OBJECT(h) LNObject_Release(reinterpret_cast<LNHandle>(h))
 
 #define TO_FFI_ERROR(result) LN_ERROR_UNKNOWN // TODO:
+
+#define TRY_FFI_RESULT(expr)             \
+    {                                    \
+        auto result = (expr);            \
+        if (!result) {                   \
+            return TO_FFI_ERROR(result); \
+        }                                \
+    }
 
 // #define LN_DEFINE_HANDLE(object) typedef struct object##_T* object
 // NOTE: ↑こういうタイプセーフなハンドル定義は行わない。
@@ -239,7 +245,7 @@ LNResult LNInstance_ShouldQuit(LNBool* outQuit) {
 //==============================================================================
 //
 //==============================================================================
-extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
+LNResult LNGraphicsContext_BeginFrame(
     LNHandle graphicsContext,
     int32_t width,
     int32_t height,
@@ -253,7 +259,7 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
     *outDepthBuffer = ln::Runtime::wrapObject(context->currentDepthBuffer(), false);
     *outCommandList = ::Runtime::wrapObject(surfaceContext, false);
     surfaceContext->commandList()->reset();
-    surfaceContext->commandList()->beginCommandRecoding();
+    TRY_FFI_RESULT(surfaceContext->commandList()->beginCommandRecoding());
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -543,7 +549,7 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext_) {
     CommandList* renderingContext = context->renderingContext();
     
     GraphicsCommandList* commandList = context->commandList();
-    commandList->endCommandRecoding();
+    TRY_FFI_RESULT(commandList->endCommandRecoding());
 
     // この後 Present までの間で、描画結果などを VRAM から RAM に転送することがある。ユニットテストとか。
     // 別案として CaptureRequest だけ投げておいてコールバックを呼んでもらう方法も考えたが、

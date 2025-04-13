@@ -134,13 +134,14 @@ void GLGraphicsContext::onRestoreExternalRenderState() {
     GL_CHECK(glClearColor(m_savedState.m_clearColor[0], m_savedState.m_clearColor[1], m_savedState.m_clearColor[2], m_savedState.m_clearColor[3]));
 }
 
-void GLGraphicsContext::onBeginCommandRecoding() {
+MaybeResult GLGraphicsContext::onBeginCommandRecoding() {
     m_state->clear();
     m_time1US = 0;
+    return LN_MAKE_SUCCESS();
 }
 
-void GLGraphicsContext::onEndCommandRecoding() {
-    //std::cout << m_time1US << "[ms] bind" << std::endl;
+MaybeResult GLGraphicsContext::onEndCommandRecoding() {
+    return LN_MAKE_SUCCESS();
 }
 
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass) {
