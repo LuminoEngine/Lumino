@@ -18,7 +18,7 @@ public:
     void onDestroy() override;
     MaybeResult_deprecated createPipelineVertexLayout(
         const WebGPUShaderPass* shaderPass,
-        WebGPUPipelineVertexLayout* outLayout);
+        WebGPUPipelineVertexLayout* outLayout) const;
 
 private:
     std::vector<VertexElement> m_elements;

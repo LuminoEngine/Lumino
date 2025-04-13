@@ -28,6 +28,10 @@ public:
     const std::vector<AttributeDescriptionSource>& vertexAttributeDescriptionSources() const { return m_attributeSources; }
     const VulkanVertexDeclaration::AttributeDescriptionSource* findAttributeDescriptionSource(kokage::AttributeUsage usage, int usageIndex) const;
 
+    MaybeResult createPipelineVertexLayout(
+        const VulkanShaderPass* shaderPass,
+        std::vector<VkVertexInputAttributeDescription>* outAttrs) const;
+
 private:
     std::vector<VertexElement> m_elements;
     uint32_t m_maxStreamCount;

@@ -18,6 +18,7 @@ namespace detail {
 class VulkanSwapChain;
 class VulkanRenderTarget;
 class VulkanRenderPass2;
+class VulkanCommandList;
 
 } // namespace detail
 } // namespace ln

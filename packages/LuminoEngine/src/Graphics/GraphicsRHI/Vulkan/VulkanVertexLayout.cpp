@@ -1,4 +1,5 @@
 ﻿#include <LuminoEngine/Graphics/GraphicsRHI/RHIHelper.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanShaderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanVertexLayout.hpp>
 
 namespace ln {
@@ -67,6 +68,39 @@ const VulkanVertexDeclaration::AttributeDescriptionSource* VulkanVertexDeclarati
         }
     }
     return nullptr;
+}
+
+MaybeResult VulkanVertexDeclaration::createPipelineVertexLayout(
+    const VulkanShaderPass* shaderPass,
+    std::vector<VkVertexInputAttributeDescription>* outAttrs) const {
+    const std::vector<kokage::VertexInputAttribute>& inputAttributes = shaderPass->attributes();
+
+    for (size_t i = 0; i < inputAttributes.size(); i++) {
+        const auto& attr = inputAttributes[i];
+
+        // Find
+        const AttributeDescriptionSource* source = nullptr;
+        for (const AttributeDescriptionSource& e : m_attributeSources) {
+            auto u = IGraphicsHelper::AttributeUsageToElementUsage(attr.usage);
+            if (e.usage == u && e.usageIndex == attr.index) {
+                source = &e;
+            }
+        }
+        if (!source) {
+            // Shader が必要としている情報が頂点バッファ側に足りていない。警告が出る。
+            return LN_MAKE_ERROR();
+        }
+
+        // Pick
+        VkVertexInputAttributeDescription desc;
+        desc.location = i;
+        desc.binding = source->binding;
+        desc.format = source->format;
+        desc.offset = source->offset;
+        outAttrs->push_back(desc);
+    }
+
+    return LN_MAKE_SUCCESS();
 }
 
 } // namespace detail

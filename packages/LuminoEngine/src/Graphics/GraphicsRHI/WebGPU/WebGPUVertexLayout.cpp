@@ -63,7 +63,7 @@ void WebGPUVertexLayout::onDestroy() {
 
 MaybeResult_deprecated WebGPUVertexLayout::createPipelineVertexLayout(
     const WebGPUShaderPass* shaderPass,
-    WebGPUPipelineVertexLayout* outLayout) {
+    WebGPUPipelineVertexLayout* outLayout) const {
     const std::vector<kokage::VertexInputAttribute>& inputAttributes = shaderPass->attributes();
 
     // まずは最大の StreamIndex 分だけ BufferLayout を確保する

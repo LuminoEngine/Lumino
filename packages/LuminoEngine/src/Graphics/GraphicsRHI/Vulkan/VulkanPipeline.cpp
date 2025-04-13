@@ -69,7 +69,13 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-    {
+    if (shaderPass->m_isVer2) {
+        auto result1 = vertexDeclaration->createPipelineVertexLayout(shaderPass, &attributeDescriptions);
+        if (!result1) {
+            return err(result1.error());
+        }
+    }
+    else {
         const auto& attrs = shaderPass->attributes();
         for (size_t i = 0; i < attrs.size(); i++) {
             const auto& attr = attrs[i];
@@ -87,10 +93,11 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
         }
     }
 
+
     const auto& bindingDescription = vertexDeclaration->vertexBindingDescriptions();
     vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescription.size());
-    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
     vertexInputInfo.pVertexBindingDescriptions = bindingDescription.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
     vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
@@ -284,6 +291,11 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
     pipelineCreateInfo.subpass = 0;
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 
+    // FIXME:
+    // - validation layer: vkCreateGraphicsPipelines(): pCreateInfos[0].pVertexInputState Vertex attribute at location 1 not consumed by vertex shader.
+    // 2025/4/13 時点 の slang では、ある VertexAttribute が実際に使われているかどうかを判断する方法が無いようだ。
+    // 使われていないものは pVertexAttributeDescriptions に入れないようにするべきなのだが、今はそれができない。
+    // どうしてもやるなら、 spirv-dis 等を使って調べる必要がある。
     LN_VK_CHECK(vkCreateGraphicsPipelines(m_device->vulkanDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, m_device->vulkanAllocator(), &m_pipeline));
 
     return ok();

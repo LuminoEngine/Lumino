@@ -55,6 +55,7 @@ Ref<Shader> Shader::createFromSourceFile(const std::filesystem::path& filePath) 
     if (!r2) return nullptr;
     Ref<Shader> ref(LN_NEW Shader(), false);
     ref->setupShader3(r1->get()->shader());
+    ref->m_name = String::fromUtf8(filePath.filename().u8string());
     return ref;
 }
 
