@@ -5,7 +5,6 @@
         "zlib",
         "libvorbis",
         "stb",
-        "pcre2",
         "tinyobjloader",
         "tinygltf",
         "nanovg",

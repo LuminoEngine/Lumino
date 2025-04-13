@@ -278,8 +278,6 @@ set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
     LuminoEngine
-    #pcre
-    pcre2_32
     Vorbis::vorbis
     Vorbis::vorbisenc
     Vorbis::vorbisfile
