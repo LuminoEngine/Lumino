@@ -50,7 +50,6 @@ int main() {
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     LNBatchRenderer_Get(&spriteRenderer);
 
-    LNCommandListProfilerng lastFrameProfilerng = {};
     std::vector<Sprite> sprites;
     for (int i = 0; i < SPRITE_COUNT; ++i) {
         Sprite sprite;
@@ -63,6 +62,7 @@ int main() {
         sprites.push_back(sprite);
     }
 
+    LNGraphicsProfilerng profilerng = {};
     int frameCount = 0;
     while (true) {
         LNBool quit = LN_FALSE;
@@ -139,14 +139,19 @@ int main() {
         LNBatchRenderer_EndBatch(spriteRenderer);
 
         
-        LNDebug_Println(graphicsContext, (std::string("Frame: ") + std::to_string(frameCount)).c_str());
+        //LNDebug_Println(graphicsContext, (std::string("Frame: ") + std::to_string(frameCount)).c_str());
+        LNDebug_Println(
+            graphicsContext,
+            (std::string("FPS: ") + std::to_string(profilerng.actualFPS)).c_str());
         //LNDebug_Println(
         //    graphicsContext,
-        //    (std::string("DrawCall: ") + std::to_string(lastFrameProfilerng.drawCallCount)).c_str());
+        //    (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
 
 
         LNCommandList_EndRenderPass(commandList, renderingPass);
-        LNCommandList_GetProfilerng(commandList, &lastFrameProfilerng);
+
+        
+        LNDebug_GetGraphicsProfilerng(commandList, &profilerng);
 
         LNGraphicsContext_EndFrame(graphicsContext);
         LNWindow_Present(window);

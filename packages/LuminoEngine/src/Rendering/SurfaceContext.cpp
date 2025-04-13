@@ -17,6 +17,7 @@ Result_deprecated<Ref<SurfaceContext>> SurfaceContext::createFromWindow(detail::
     if (!result) {
         return result;
     }
+    context->m_ownerWindowOrNull = window;
     context->m_context = result.unwrap();
     context->m_renderingContext = makeObject_deprecated<CommandList>();
     context->m_drawEventList = makeURef<kanata::DrawEventList>(renderingManager);

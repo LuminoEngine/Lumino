@@ -2,6 +2,7 @@
 
 namespace ln {
 class PlatformWindow;
+class FPSController;
 
 enum class WindowSystem {
     Native,

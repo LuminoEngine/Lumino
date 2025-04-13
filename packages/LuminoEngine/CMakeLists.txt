@@ -16,7 +16,7 @@ file(GLOB LN_SOURCES_Base include/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Bas
 file(GLOB LN_SOURCES_Engine include/LuminoEngine/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
 file(GLOB LN_SOURCES_Asset include/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp)
 file(GLOB LN_SOURCES_Graphics include/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
-file(GLOB LN_SOURCES_Platform include/LuminoEngine/*.hpp include/LuminoEngine/detail/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
+file(GLOB LN_SOURCES_Platform include/LuminoEngine/Platform/*.hpp include/LuminoEngine/Platform/detail/*.hpp src/Platform/*.cpp src/Platform/*.hpp)
 if (LN_EMSCRIPTEN)
 elseif (WIN32)
     set(LN_SOURCES_Platform

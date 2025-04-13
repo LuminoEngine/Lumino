@@ -1,18 +1,13 @@
-﻿
-#include "Internal.hpp"
+﻿#include "Internal.hpp"
 #include <float.h>
 #include <chrono>
 #include <thread>
 #include <LuminoCore/IO/DllLoader.hpp>
-#include "FpsController.hpp"
+#include <LuminoEngine/Platform/FPSController.hpp>
 
 namespace ln {
-namespace detail {
 
-//==============================================================================
-// FpsController
-
-FpsController::FpsController()
+FPSController::FPSController()
     : m_timer()
     , m_frameRate(0)
     , m_frameTime(0)
@@ -36,7 +31,7 @@ FpsController::FpsController()
 {
 #ifdef _WIN32
     typedef HRESULT(WINAPI* PFN_timeBeginPeriod)(UINT uPeriod);
-    m_winmm = DllLoader::load(_TT("Winmm"));
+    m_winmm = detail::DllLoader::load(_TT("Winmm"));
     PFN_timeBeginPeriod func = reinterpret_cast<PFN_timeBeginPeriod>(m_winmm->getProcAddress("timeBeginPeriod"));
   
     // これが無いと Sleep() 精度が落ちる。ほとんどの環境では 10ms 単位となり、
@@ -51,7 +46,7 @@ FpsController::FpsController()
     m_timer.start();
 }
 
-void FpsController::setFrameRate(int value)
+void FPSController::setFrameRate(int value)
 {
     m_frameRate = value;
     m_frameTime = 1000 / m_frameRate;
@@ -59,7 +54,7 @@ void FpsController::setFrameRate(int value)
     m_externalTimes.resize(m_frameRate);
 }
 
-void FpsController::process()
+void FPSController::process()
 {
 #if 1
 	uint64_t externalElapsedTick = m_timer.elapsedMilliseconds();
@@ -110,7 +105,7 @@ void FpsController::process()
 #endif
 }
 
-void FpsController::processForMeasure()
+void FPSController::processForMeasure()
 {
 #if 1
 	uint64_t externalElapsedTick = m_timer.elapsedMilliseconds();
@@ -134,13 +129,13 @@ void FpsController::processForMeasure()
 #endif
 }
 
-void FpsController::refreshSystemDelay()
+void FPSController::refreshSystemDelay()
 {
     m_timer.start();
     m_frameCount = 0;
 }
 
-void FpsController::measureTimes(uint64_t externalElapsedTime, uint64_t frameElapsedTime)
+void FPSController::measureTimes(uint64_t externalElapsedTime, uint64_t frameElapsedTime)
 {
     if (m_measureTimes) {
 
@@ -185,6 +180,5 @@ void FpsController::measureTimes(uint64_t externalElapsedTime, uint64_t frameEla
     }
 }
 
-} // namespace detail
 } // namespace ln
 

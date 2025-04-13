@@ -4,6 +4,7 @@
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/FPSController.hpp>
 #include <LuminoEngine/Graphics/Bitmap/BitmapRenderingContext.hpp>
 #include <LuminoEngine/Graphics/GPU/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/GPU/VertexLayout.hpp>
@@ -523,13 +524,6 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList_, LNCommandListProfilerng* outProfilerng) {
-    LN_FFI_TRY_BEGIN;
-    SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
-    outProfilerng->drawCallCount = renderingContext->commandList()->m_drawCall;
-    LN_FFI_TRY_END_RETURN;
-
-}
 //==============================================================================
 // LNDebug
 //==============================================================================
@@ -539,6 +533,23 @@ LNResult LNDebug_Println(LNHandle graphicsContext, const char* str) {
     GraphicsCommandList* commandList = renderingContext->commandList();
     detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     renderingManager->debugPrint()->print(renderingContext->renderingContext(), str);
+    LN_FFI_TRY_END_RETURN;
+}
+
+
+LNResult LNDebug_GetGraphicsProfilerng(LNHandle graphicsContext, LNGraphicsProfilerng* outProfilerng) {
+    LN_FFI_TRY_BEGIN;
+    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+    GraphicsCommandList* commandList = surfaceContext->commandList();
+    outProfilerng->drawCallCount = commandList->m_drawCall;
+
+    PlatformWindow* window = surfaceContext->ownerWindowOrNull();
+    if (window) {
+        outProfilerng->actualFPS = window->fpsController()->totalFps();
+    }
+    else {
+        outProfilerng->actualFPS = 0.0f;
+    }
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -1017,8 +1028,7 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsConte
 LNResult LNWindow_Present(LNHandle window) {
     LN_FFI_TRY_BEGIN;
     PlatformWindow* platformWindow = LN_HANDLE_TO_OBJECT(PlatformWindow, window);
-    SurfaceContext* context = platformWindow->surfaceContext();
-    context->context()->present();
+    TRY_FFI_RESULT(platformWindow->present());
     LN_FFI_TRY_END_RETURN;
 }
 

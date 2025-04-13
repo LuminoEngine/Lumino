@@ -89,8 +89,8 @@ TEST_F(Test_BatchRendering, Basic1) {
         ASSERT_SCREENSHOT(U"Test_BatchRendering.Basic1/Expects.png");
 
         // ドローコールは1回だけ。
-        LNCommandListProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(commandList, &profilerng));
+        LNGraphicsProfilerng profilerng;
+        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfilerng(commandList, &profilerng));
         ASSERT_EQ(1, profilerng.drawCallCount);
 
         TestEnv::present();
@@ -171,8 +171,8 @@ TEST_F(Test_BatchRendering, TooMany10000) {
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
         
         // ドローコールは1回だけ。
-        LNCommandListProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNCommandList_GetProfilerng(commandList, &profilerng));
+        LNGraphicsProfilerng profilerng;
+        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfilerng(commandList, &profilerng));
         ASSERT_EQ(2, profilerng.drawCallCount);
         // NOTE: 現在インデックスの総数 50000 個くらいになっていて、10000個描画すると 60000 使うことになる。
         // なので 50000+10000 の2回に分けられる。

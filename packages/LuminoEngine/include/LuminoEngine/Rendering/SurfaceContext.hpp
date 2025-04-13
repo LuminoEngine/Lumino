@@ -33,12 +33,14 @@ public:
     SurfaceContext();
     ~SurfaceContext() override;
 
+    PlatformWindow* ownerWindowOrNull() const { return m_ownerWindowOrNull; }
     const Ref<GraphicsContext>& context() const { return m_context; }
     GraphicsCommandList* commandList() const;
     const Ref<CommandList>& renderingContext() const { return m_renderingContext; }
     const URef<kanata::DrawEventList>& drawEventList() const { return m_drawEventList; }
 
 private:
+    PlatformWindow* m_ownerWindowOrNull;
     Ref<GraphicsContext> m_context;
     Ref<CommandList> m_renderingContext;
     URef<kanata::DrawEventList> m_drawEventList;

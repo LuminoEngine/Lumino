@@ -8,11 +8,9 @@ namespace ln {
 
 class PlatformWindow : public Object {
 public:
-    virtual ~PlatformWindow() = default;
-    //virtual void dispose() = 0;
-
     float dpiFactor() const { return m_dpiFactor; }
     SurfaceContext* surfaceContext() const;
+    FPSController* fpsController() const;
 
     virtual void setWindowTitle(const String& title) = 0;
     virtual void getSize(SizeI* size) = 0;
@@ -32,12 +30,14 @@ public:
     void attachEventListener(IPlatforEventListener* listener);
     void detachEventListener(IPlatforEventListener* listener);
     bool sendEventToAllListener(const PlatformEventArgs& e); // return : isHandled
+    MaybeResult present();
 
     // TODO: intenral
     detail::PlatformWindowManager* windowManager() const { return m_windowManager; }
 
 protected:
     PlatformWindow();
+    ~PlatformWindow() override;
     Result_deprecated<> init(detail::PlatformWindowManager* windowManager);
     void setDPIFactor(float value) { m_dpiFactor = value; }
 
@@ -46,6 +46,7 @@ private:
     List<IPlatforEventListener*> m_eventListeners;
     float m_dpiFactor;
     Ref<SurfaceContext> m_surfaceContext;
+    URef<FPSController> m_fpsController;
 
     friend class detail::PlatformManager;
 };

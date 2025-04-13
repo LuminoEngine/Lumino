@@ -2,13 +2,13 @@
 
 namespace ln {
 namespace detail {
-class EngineManager;
 class DllLoader;
+} // namespace detail
 
-class FpsController
+class FPSController : public URefObject
 {
 public:
-    FpsController();
+    FPSController();
 
     void setFrameRate(int frameRate);
     void setMeasurementEnabled(bool enabled) { m_measureTimes = enabled; }
@@ -86,6 +86,5 @@ private:
     Ref<detail::DllLoader> m_winmm;
 };
 
-} // namespace detail
 } // namespace ln
 

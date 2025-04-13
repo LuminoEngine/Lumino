@@ -1,6 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/FPSController.hpp>
 #include <LuminoEngine/Platform/detail/PlatformWindowManager.hpp>
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 
@@ -12,12 +13,21 @@ namespace ln {
 PlatformWindow::PlatformWindow()
     : m_windowManager(nullptr)
     , m_eventListeners()
-    , m_dpiFactor(1.0f) {
+    , m_dpiFactor(1.0f)
+    , m_surfaceContext()
+    , m_fpsController(makeURef<FPSController>()) {
+}
+
+PlatformWindow::~PlatformWindow() {
 }
 
 Result_deprecated<> PlatformWindow::init(detail::PlatformWindowManager* windowManager) {
     m_windowManager = windowManager;
     return ok();
+}
+
+FPSController* PlatformWindow::fpsController() const {
+    return m_fpsController;
 }
 
 SurfaceContext* PlatformWindow::surfaceContext() const {
@@ -50,6 +60,12 @@ bool PlatformWindow::sendEventToAllListener(const PlatformEventArgs& e) {
     }
 
     return false;
+}
+
+MaybeResult PlatformWindow::present() {
+    m_surfaceContext->context()->present();
+    m_fpsController->process();
+    return LN_MAKE_SUCCESS();
 }
 
 } // namespace ln

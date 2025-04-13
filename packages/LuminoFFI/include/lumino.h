@@ -141,20 +141,22 @@ extern LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, 
 //==============================================================================
 // LNCommandList
 //==============================================================================
-typedef struct LNCommandListProfilerng {
-    int32_t drawCallCount;
-} LNCommandListProfilerng;
 
 extern LUMINO_API LNResult LNCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
 
 extern LUMINO_API LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList, LNHandle renderPass_);
 
-extern LUMINO_API LNResult LNCommandList_GetProfilerng(LNHandle renderingCommandList,LNCommandListProfilerng* outProfilerng);
-
 //==============================================================================
 // LNDebug
 //==============================================================================
 extern LUMINO_API LNResult LNDebug_Println(LNHandle graphicsContext, const char* str);
+
+typedef struct LNGraphicsProfilerng {
+    int32_t drawCallCount;
+    float actualFPS;
+} LNGraphicsProfilerng;
+
+extern LUMINO_API LNResult LNDebug_GetGraphicsProfilerng(LNHandle graphicsContext, LNGraphicsProfilerng* outProfilerng);
 
 //==============================================================================
 //
@@ -320,9 +322,11 @@ extern LUMINO_API LNResult LNWindow_GetFramebufferSize(LNHandle window, int32_t*
 extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outGraphicsContext);
 
 /**
- * バックバッファをフロントバッファに転送します。
- *
- * 外部コンテキストを使っている場合、この関数は使えません。
+ * Transfers the back buffer to the front buffer.
+ * 
+ * The time since the last Present is waited to be the specified FPS.
+ * 
+ * This function is not available when using an external context.
  */
 extern LUMINO_API LNResult LNWindow_Present(LNHandle window);
 
