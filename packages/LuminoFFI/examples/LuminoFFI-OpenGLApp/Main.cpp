@@ -68,7 +68,7 @@ int main() {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     LNHandle graphicsContext = LN_NULL_HANDLE;
-    if (LNGLGraphicsContext_CreateFromCurrentGL(width, height, &graphicsContext) != LN_OK) {
+    if (LNGraphicsContext_CreateFromCurrentGL(width, height, &graphicsContext) != LN_OK) {
         return 1;
     }
 

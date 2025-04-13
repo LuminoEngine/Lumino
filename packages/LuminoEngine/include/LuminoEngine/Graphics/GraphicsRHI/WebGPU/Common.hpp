@@ -13,6 +13,6 @@ class WebGPUDescriptorPool;
 class WebGPUDescriptor;
 class WebGPUSingleFrameAllocatorPageManager;
 class WebGPUSingleFrameAllocator;
-	
+
 } // namespace detail
 } // namespace ln

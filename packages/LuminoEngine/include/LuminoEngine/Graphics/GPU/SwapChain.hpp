@@ -89,7 +89,7 @@ protected:
 protected:
     GraphicsContext();
     ~GraphicsContext() override;
-    MaybeResult init(PlatformWindow* window);
+    MaybeResult init(PlatformWindow* windowOrNull);
     virtual void onCreateRHIObjects();
 
 protected:

@@ -24,6 +24,7 @@ if(LN_EMSCRIPTEN)
     string(APPEND LOCAL_LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=1")
     string(APPEND LOCAL_LINK_FLAGS " -s NO_EXIT_RUNTIME=1")
     string(APPEND LOCAL_LINK_FLAGS " -s ALLOW_MEMORY_GROWTH=1")
+    string(APPEND LOCAL_LINK_FLAGS " -s USE_WEBGPU=1")
 
     # MODULARIZE 有効にすると、次のようにモジュール全体がラップされる。
     #   var Module = function(Module) { /* Emscripten の生成コード */ }

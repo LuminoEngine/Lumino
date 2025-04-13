@@ -85,7 +85,7 @@ export class Runtime {
 
             API.LNInstance_Initialize = module.cwrap("LNInstance_Initialize", "number", []);
             API.LNInstance_Terminate = module.cwrap("LNInstance_Terminate", "void", []);
-            API.LNGLGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGLGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
+            API.LNGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
 
             API.LNGraphicsContext_BeginFrame = module.cwrap("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number", "number", "number"]);
             API.LNGraphicsContext_EndFrame = module.cwrap("LNGraphicsContext_EndFrame", "number", ["number"]);
@@ -182,7 +182,7 @@ export class API {
     public static LNInstance_Initialize: () => Result;
     public static LNInstance_Terminate: () => void;
 
-    public static LNGLGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
+    public static LNGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
     public static LNGraphicsContext_BeginFrame: (graphicsContext: Handle,width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
     public static LNGraphicsContext_EndFrame: (graphicsContext: Handle) => Result;
 

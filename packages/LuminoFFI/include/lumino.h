@@ -128,16 +128,15 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
  */
 extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 
-//==============================================================================
-// LNGLGraphicsContext
-//==============================================================================
+/**
+ * 
+ */
+extern LUMINO_API LNResult LNGraphicsContext_CreateFromWebGPUCanvas(const char* selector, LNHandle* outGraphicsContext);
 
 /**
  * Creates a LNGLGraphicsContext from the current OpenGL Context.
  */
-extern LUMINO_API LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext);
-
-extern LUMINO_API LNResult LNGLGraphicsContext_AcquireFrame(LNHandle graphicsContext, int32_t width, int32_t height);
+extern LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext);
 
 //==============================================================================
 // LNCommandList

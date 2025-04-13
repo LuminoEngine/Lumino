@@ -188,6 +188,10 @@ Ref<WebGPUGraphicsContext> WebGPUGraphicsContext::create(const Settings& setting
     return ptr;
 }
 
+//Ref<WebGPUGraphicsContext> createFromSelector(const char* selector) {
+//
+//}
+
 WebGPUGraphicsContext::WebGPUGraphicsContext() {
 }
 

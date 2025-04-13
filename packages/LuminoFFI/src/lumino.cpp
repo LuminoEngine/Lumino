@@ -257,31 +257,21 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
     LN_FFI_TRY_END_RETURN;
 }
 
+LNResult LNGraphicsContext_CreateFromWebGPUCanvas(const char* selector, LNHandle* outGraphicsContext) {
+    LN_FFI_TRY_BEGIN;
+    //OpenGLGraphicsContext::Settings s;
+    //s.window = nullptr;
+    //s.width = 640;
+    //s.height = 480;
+    //Ref<OpenGLGraphicsContext> context = OpenGLGraphicsContext::create(s);
+    //detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
+    //Ref<SurfaceContext> surfaceContext = SurfaceContext::createFromExternal(renderingManager, context);
+    //*outGraphicsContext = ::Runtime::wrapObject(surfaceContext, true);
+    LN_FFI_TRY_END_RETURN;
+}
 
-//LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, int32_t width, int32_t height) {
-//    LN_FFI_TRY_BEGIN;
-//    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
-//    GraphicsContext* context = surfaceContext->context;
-//    GraphicsCommandList* commandList = context->currentCommandList2();
-//    commandList->beginCommandRecoding();
-//    LN_FFI_TRY_END_RETURN;
-//}
-//
-//LNResult LNGraphicsContext_Present(LNHandle graphicsContext) {
-//    LN_FFI_TRY_BEGIN;
-//    SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
-//    context->present();
-//    LN_FFI_TRY_END_RETURN;
-//}
 
-//LNResult LNGraphicsContext_Release(LNHandle handle) {
-//    LN_SAFE_RELEASE(handle)
-//
-//}
-
-//==============================================================================
-
-LNResult LNGLGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext) {
+LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext) {
     LN_FFI_TRY_BEGIN;
     OpenGLGraphicsContext::Settings s;
     s.window = nullptr;

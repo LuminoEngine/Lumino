@@ -33,10 +33,10 @@ class GLFWPlatformWindow
 {
 public:
 	GLFWPlatformWindow();
-	virtual ~GLFWPlatformWindow();
+	~GLFWPlatformWindow() override;
 
     Result_deprecated<> init(GLFWPlatformWindowManager* windowManager, const WindowCreationSettings& settings, GLFWContext* sharedContext);
-	void dispose();
+	void dispose() override;
     void setWindowTitle(const String& title) override;
 	void getSize(SizeI* size) override;
 	void setSize(const SizeI& size) override;

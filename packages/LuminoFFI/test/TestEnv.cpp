@@ -32,7 +32,7 @@ void TestEnv::initialize() {
     windowOptions.clientHeight = 240;
     mainWindow = ln::EngineInstance::instance()->platformManager()->createWindow(windowOptions).unwrap();
 
-    LNGLGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
+    LNGraphicsContext_CreateFromCurrentGL(320, 240, &surfaceContext);
 #else
     LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
     LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_VULKAN);

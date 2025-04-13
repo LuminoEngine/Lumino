@@ -39,9 +39,9 @@ export class WebGLGraphicsContext extends GraphicsContext {
         Runtime.module.GL.makeContextCurrent(Runtime.webglContextHandle);
 
 
-        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNGLGraphicsContext_CreateFromCurrentGL(webglContext.canvas.width, webglContext.canvas.height, r));
+        this._handle = Runtime.safeCallWithReturnHandle((r) => API.LNGraphicsContext_CreateFromCurrentGL(webglContext.canvas.width, webglContext.canvas.height, r));
 
-        console.log("LNGLGraphicsContext_CreateFromCurrentGL", webglContext.canvas.width, webglContext.canvas.height);
+        console.log("LNGraphicsContext_CreateFromCurrentGL", webglContext.canvas.width, webglContext.canvas.height);
         // this._handle = Runtime.returnPointerView[0];
         // console.log("handle3", this._handle, Runtime.returnPointerView.byteOffset);
     }

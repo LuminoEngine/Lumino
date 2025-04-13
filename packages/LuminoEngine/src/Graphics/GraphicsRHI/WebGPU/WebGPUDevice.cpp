@@ -1,5 +1,4 @@
-﻿#include <Windows.h>
-#include <LuminoEngine/Platform/PlatformSupport.hpp>
+﻿#include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBindGroupCache.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBufferSingleFrameAllocator.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
@@ -16,6 +15,10 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUPipeline.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDescriptorPool.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
+
+#ifdef LN_OS_WIN32
+#include <Windows.h>
+#endif
 
 namespace ln {
 namespace detail {
@@ -35,8 +38,13 @@ bool WebGPUDevice::init(const Settings& settings) {
     //capabilities.timedWaitAnyMaxCount = 0;
     WGPUInstanceDescriptor desc = {};
     desc.nextInChain = nullptr;
+#ifdef __EMSCRIPTEN__
+    desc.features.timedWaitAnyEnable = 1;
+    desc.features.timedWaitAnyMaxCount = 8;
+#else
     desc.capabilities.timedWaitAnyEnable = 1;
     desc.capabilities.timedWaitAnyMaxCount = 8;
+#endif
     m_instance = wgpuCreateInstance(&desc);
     if (!m_instance) {
         LN_LOG_ERROR("wgpuCreateInstance failed.");
@@ -390,6 +398,18 @@ Result_deprecated<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUD
 
 // https://github.com/eliemichel/glfw3webgpu/blob/main/glfw3webgpu.c
 WGPUSurface WebGPUDevice::getWGPUSurface(PlatformWindow* window) const {
+#ifdef __EMSCRIPTEN__
+
+    WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
+    fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
+    fromCanvasHTMLSelector.chain.next = NULL;
+    fromCanvasHTMLSelector.selector = "canvas";
+
+    WGPUSurfaceDescriptor surfaceDescriptor = {};
+    surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;
+#endif
+
+#ifdef LN_OS_WIN32
     HWND hWnd = reinterpret_cast<HWND>(PlatformSupport::getWin32WindowHandle(window));
     HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
@@ -406,10 +426,11 @@ WGPUSurface WebGPUDevice::getWGPUSurface(PlatformWindow* window) const {
     hwndDesc.hinstance = hInstance;
     hwndDesc.hwnd = hWnd;
 
-    WGPUSurfaceDescriptor desc = {};
-    desc.nextInChain = &hwndDesc.chain;
+    WGPUSurfaceDescriptor surfaceDescriptor = {};
+    surfaceDescriptor.nextInChain = &hwndDesc.chain;
+#endif
 
-    return wgpuInstanceCreateSurface(m_instance, &desc);
+    return wgpuInstanceCreateSurface(m_instance, &surfaceDescriptor);
 }
 
 } // namespace detail

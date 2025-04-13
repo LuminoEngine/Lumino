@@ -84,6 +84,7 @@ public:
     };
 
     static Ref<WebGPUGraphicsContext> create(const Settings& settings);
+    //static Ref<WebGPUGraphicsContext> createFromSelector(const char* selector);
 
     detail::IGraphicsDevice* rhiDevice() const override;
 

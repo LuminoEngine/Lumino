@@ -30,7 +30,7 @@ GraphicsContext::GraphicsContext()
 GraphicsContext::~GraphicsContext() {
 }
 
-MaybeResult GraphicsContext::init(PlatformWindow* window) {
+MaybeResult GraphicsContext::init(PlatformWindow* windowOrNull) {
     Object::init();
 
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
@@ -38,10 +38,10 @@ MaybeResult GraphicsContext::init(PlatformWindow* window) {
     m_rhiResourceRegistry = makeURef<detail::RHIGraphicsObjectRegistry>(m_manager->resourceRegistry());
 
     // Create SwapChain
-    if (window) {
+    if (windowOrNull) {
         SizeI backbufferSize;
-        window->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
-        auto result = rhiDevice()->createSwapChain(window, backbufferSize);
+        windowOrNull->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
+        auto result = rhiDevice()->createSwapChain(windowOrNull, backbufferSize);
         if (!result) return LN_TO_ERROR(result);
         m_rhiObject = std::move(result).value();
     }
