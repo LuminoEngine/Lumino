@@ -54,6 +54,10 @@ Result_deprecated<> VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformW
 void VulkanSwapChain::onDestroy() {
     VkDevice device = m_deviceContext->vulkanDevice();
 
+    // Solution for the following validation error.
+    // - validation layer: vkDestroySemaphore(): can't be called on VkSemaphore 0xcad092000000000d that is currently in use by VkQueue 0x27454dbbcf0.
+    vkQueueWaitIdle(m_deviceContext->m_graphicsQueue);
+
     for (auto& x : m_imageAvailableSemaphores) {
         vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
     }

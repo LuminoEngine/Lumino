@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanDescriptorPool.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanShaderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanCommandList.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/Vulkan/VulkanPipeline.hpp>
 #include "VulkanSingleFrameAllocator.hpp"
 
 namespace ln {
@@ -252,7 +253,7 @@ void VulkanCommandList::onSubmitStatus(const GraphicsContextState& state, uint32
 
     if (submitSource == GraphicsContextSubmitSource_Draw) {
         if (pipeline) {
-            auto vulkanPipeline = static_cast<VulkanPipeline2*>(pipeline);
+            auto vulkanPipeline = static_cast<VulkanPipeline*>(pipeline);
             vkCmdBindPipeline(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->nativePipeline());
         }
 
@@ -391,7 +392,7 @@ void VulkanCommandList::onDispatch(const GraphicsContextState& state, IPipeline*
         vkCmdPipelineBarrier(m_commandBuffer, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 1, &bufferBarrier, 0, nullptr);
     }
 
-    VulkanPipeline2* pipeline = static_cast<VulkanPipeline2*>(basePipeline);
+    VulkanPipeline* pipeline = static_cast<VulkanPipeline*>(basePipeline);
     vkCmdBindPipeline(m_commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline->nativePipeline());
 
     VkPipelineLayout pipelineLayout = shaderPass->vulkanPipelineLayout();
