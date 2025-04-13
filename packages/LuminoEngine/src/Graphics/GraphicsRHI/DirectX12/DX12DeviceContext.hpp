@@ -55,7 +55,7 @@ protected:
     Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) override;
     Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
     Ref<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
-    Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
+    Result<Ref<ISamplerState>> onCreateSamplerState(const SamplerStateData& desc) override;
     Ref<IShaderPass> onCreateShaderPass(
         const ShaderPassCreateInfo& createInfo,
         const ShaderPassCreateInfo2* createInfo2OrNull,

@@ -117,7 +117,9 @@ detail::ISamplerState* SamplerState::resolveRHIObject(GraphicsCommandList* conte
 
     if (m_modified) {
         detail::IGraphicsDevice* device = graphicsContext->rhiDevice();
-        Ref<detail::ISamplerState> ref = device->createSamplerState(m_desc);
+        auto result = device->createSamplerState(m_desc);
+        LN_ASSERT_RESULT(result);
+        Ref<detail::ISamplerState> ref = std::move(result).value();
         graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
         rhiObject = ref;
     }

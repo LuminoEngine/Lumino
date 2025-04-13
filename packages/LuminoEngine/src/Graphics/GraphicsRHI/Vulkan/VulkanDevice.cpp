@@ -237,10 +237,11 @@ Ref<RHIResource> VulkanDevice::onCreateDepthBuffer(uint32_t width, uint32_t heig
     return ptr;
 }
 
-Ref<ISamplerState> VulkanDevice::onCreateSamplerState(const SamplerStateData& desc) {
+Result<Ref<ISamplerState>> VulkanDevice::onCreateSamplerState(const SamplerStateData& desc) {
     auto ptr = makeRef<VulkanSamplerState>();
-    if (!ptr->init(this, desc)) {
-        return nullptr;
+    auto result = ptr->init(this, desc);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }

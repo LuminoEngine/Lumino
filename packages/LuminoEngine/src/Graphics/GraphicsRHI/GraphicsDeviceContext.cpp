@@ -79,7 +79,9 @@ void IGraphicsDevice::refreshCaps() {
 
 Result<Ref<ISwapChain>> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
     auto result = onCreateSwapChain(window, backbufferSize);
-    if (!result) return result;
+    if (!result) {
+        return result;
+    }
     Ref<ISwapChain> ptr = std::move(result).value();
     ptr->m_device = this;
     ptr->m_objectId = m_objectNextId++;
@@ -89,7 +91,9 @@ Result<Ref<ISwapChain>> IGraphicsDevice::createSwapChain(PlatformWindow* window,
 
 Result<Ref<ICommandList>> IGraphicsDevice::createCommandList() {
     auto result = onCreateCommandList();
-    if (!result) return result;
+    if (!result) {
+        return result;
+    }
     Ref<ICommandList> ptr = std::move(result).value();
     ptr->m_device = this;
     ptr->m_objectId = m_objectNextId++;
@@ -226,13 +230,15 @@ Ref<RHIResource> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t hei
     return ptr;
 }
 
-Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& desc) {
-    Ref<ISamplerState> ptr = onCreateSamplerState(desc);
-    if (ptr) {
-        ptr->m_device = this;
-        ptr->m_objectId = m_objectNextId++;
-        m_profiler->addSamplerState(ptr);
+Result<Ref<ISamplerState>> IGraphicsDevice::createSamplerState(const SamplerStateData& desc) {
+    auto result = onCreateSamplerState(desc);
+    if (!result) {
+        return result;
     }
+    Ref<ISamplerState> ptr = std::move(result).value();
+    ptr->m_device = this;
+    ptr->m_objectId = m_objectNextId++;
+    m_profiler->addSamplerState(ptr);
     return ptr;
 }
 

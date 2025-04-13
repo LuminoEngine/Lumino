@@ -171,7 +171,7 @@ public:
     Ref<RHIResource> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa);
     Ref<RHIResource> createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
     Ref<RHIResource> createDepthBuffer(uint32_t width, uint32_t height);
-    Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
+    Result<Ref<ISamplerState>> createSamplerState(const SamplerStateData& desc);
     Ref<IShaderPass> createShaderPass(
         const ShaderPassCreateInfo& createInfo,
         const ShaderPassCreateInfo2* createInfo2OrNull,
@@ -208,7 +208,7 @@ protected:
     virtual Ref<RHIResource> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, bool msaa) = 0;
     virtual Ref<RHIResource> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) = 0;
     virtual Ref<RHIResource> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
-    virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
+    virtual Result<Ref<ISamplerState>> onCreateSamplerState(const SamplerStateData& desc) = 0;
     virtual Ref<IShaderPass> onCreateShaderPass(
         const ShaderPassCreateInfo& createInfo,
         const ShaderPassCreateInfo2* createInfo2OrNull,

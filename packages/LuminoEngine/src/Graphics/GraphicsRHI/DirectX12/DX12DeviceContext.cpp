@@ -469,10 +469,11 @@ Ref<RHIResource> DX12Device::onCreateDepthBuffer(uint32_t width, uint32_t height
     return ptr;
 }
 
-Ref<ISamplerState> DX12Device::onCreateSamplerState(const SamplerStateData& desc) {
+Result<Ref<ISamplerState>> DX12Device::onCreateSamplerState(const SamplerStateData& desc) {
     auto ptr = makeRef<DX12SamplerState>();
-    if (!ptr->init(this, desc)) {
-        return nullptr;
+    auto result = ptr->init(this, desc);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }

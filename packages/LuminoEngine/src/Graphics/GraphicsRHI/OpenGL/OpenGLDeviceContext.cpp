@@ -297,7 +297,7 @@ Ref<RHIResource> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t heig
     return ptr;
 }
 
-Ref<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& desc) {
+Result<Ref<ISamplerState>> OpenGLDevice::onCreateSamplerState(const SamplerStateData& desc) {
     auto ptr = makeRef<GLSamplerState>();
     ptr->init(this, desc);
     return ptr;
