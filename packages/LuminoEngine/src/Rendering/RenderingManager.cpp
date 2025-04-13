@@ -141,7 +141,7 @@ MaybeResult RenderingManager::init(const Options& options) {
 
     // DebugPrint
     {
-        m_debugPrint = makeURef<DebugPrint>(m_spriteRenderer.get());
+        m_debugPrint = makeURef<DebugPrint>(this, m_spriteRenderer.get());
         auto result = m_debugPrint->init();
         if (!result) {
             return result;

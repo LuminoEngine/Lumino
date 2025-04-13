@@ -458,11 +458,12 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
 
 
 
-            auto& batchProxyCollector = renderingContext->batchProxyCollector();
-            batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
 
             // Render commands
             {
+                auto& batchProxyCollector = renderingContext->batchProxyCollector();
+                batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
+
                 drawEventList->clear();
                 //ln::ElapsedTimer t1;
                 renderPass->sceneRenderPass->buildDrawEvents(
@@ -532,7 +533,7 @@ LNResult LNDebug_Println(LNHandle graphicsContext, const char* str) {
     SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     GraphicsCommandList* commandList = renderingContext->commandList();
     detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
-    renderingManager->debugPrint()->print(renderingContext->renderingContext(), str);
+    renderingManager->debugPrint()->print(str);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -560,6 +561,13 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext_) {
     CommandList* renderingContext = context->renderingContext();
     
     GraphicsCommandList* commandList = context->commandList();
+
+    // Render Debug
+    {
+        detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
+        TRY_FFI_RESULT(renderingManager->debugPrint()->render(context, renderingContext));
+    }
+
     TRY_FFI_RESULT(commandList->endCommandRecoding());
 
     // この後 Present までの間で、描画結果などを VRAM から RAM に転送することがある。ユニットテストとか。

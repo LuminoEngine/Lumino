@@ -1,15 +1,26 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
+#include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
+#include <LuminoEngine/Graphics/GPU/SwapChain.hpp>
+#include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/DebugPrint.hpp>
 
 namespace ln {
 
-DebugPrint::DebugPrint(BatchRenderer* batchRenderer)
-    : m_batchRenderer(batchRenderer)
-    , m_fontTexture()
-    , m_material() {
+DebugPrint::DebugPrint(detail::RenderingManager* manager, BatchRenderer* batchRenderer)
+    : m_manager(manager)
+    , m_batchRenderer(batchRenderer)
+    , m_fontTexture(nullptr)
+    , m_material(nullptr)
+    , m_textBuffer{}
+    , m_textBufferUsed(0)
+    , m_renderPass(nullptr)
+    , m_viewPoint(nullptr) {
 }
 
 DebugPrint::~DebugPrint() {
@@ -30,6 +41,10 @@ MaybeResult DebugPrint::init() {
 
     m_material = Material::create(m_fontTexture);
 
+    m_renderPass = makeRef<kanata::UnlitRenderPass>(m_manager);
+
+    m_viewPoint = makeRef<RenderViewPoint>();
+
     return LN_MAKE_SUCCESS();
 }
 
@@ -37,7 +52,31 @@ void DebugPrint::dispose() {
     m_fontTexture = nullptr;
 }
 
-void DebugPrint::print(CommandList* commandList, const std::string_view& text) {
+void DebugPrint::print(const std::string_view& text) {
+    if (m_textBufferUsed + text.size() >= m_textBuffer.size()) {
+        return;
+    }
+    for (char c : text) {
+        m_textBuffer[m_textBufferUsed++] = c;
+    }
+}
+
+MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* commandList) {
+    GraphicsContext* graphicsContext = surfaceContext->context();
+    GraphicsCommandList* graphicsCommandList = surfaceContext->commandList();
+    RenderTargetTexture* colorBuffer = graphicsContext->currentBackbuffer();
+    DepthBuffer* depthBuffer = graphicsContext->currentDepthBuffer();
+    RenderPass* renderPass = RenderPass::get(
+        colorBuffer,
+        nullptr,//depthBuffer,
+        ln::ClearFlags::None, Color::Red);
+    //graphicsCommandList->beginRenderPass(renderPass);
+
+    Size viewSize(colorBuffer->width(), colorBuffer->height());
+    m_viewPoint->resetPerspective2DLH(Vector3(0, 0, 0), viewSize, 0.0f, 100.0f);
+
+    commandList->clearCommandsAndState(m_viewPoint);
+
     const float paddingLeft = 8;
     const float paddingTop = 8;
     const float frameWidth = 16;
@@ -47,8 +86,8 @@ void DebugPrint::print(CommandList* commandList, const std::string_view& text) {
     const float textureHeight = static_cast<float>(m_fontTexture->height());
     m_batchRenderer->begin(commandList, m_material);
 
-    for (size_t i = 0; i < text.size(); i++) {
-        char codePoint = text[i];
+    for (size_t i = 0; i < m_textBufferUsed; i++) {
+        char codePoint = m_textBuffer[i];
         if (codePoint < 0 || 127 < codePoint) {
             codePoint = 63; // ?
         }
@@ -72,6 +111,44 @@ void DebugPrint::print(CommandList* commandList, const std::string_view& text) {
     }
 
     m_batchRenderer->end();
+    //graphicsCommandList->endRenderPass();
+
+    
+
+    // Render commands
+    {
+        kanata::DrawEventList* drawEventList = surfaceContext->drawEventList();
+        kanata::BatchCollector* batchList = commandList->batchCollector();
+        batchList->clear(m_viewPoint);
+
+
+        auto& batchProxyCollector = commandList->batchProxyCollector();
+        batchProxyCollector->resolveSingleFrameBatchProxies(batchList);
+
+        drawEventList->clear();
+        //ln::ElapsedTimer t1;
+
+        detail::SceneInfo sceneInfo;
+        detail::RenderViewInfo renderViewInfo;
+        m_viewPoint->makeCameraInfo(&renderViewInfo.cameraInfo);
+
+        m_renderPass->buildDrawEvents(
+            nullptr,
+            batchList,
+            graphicsCommandList,
+            renderPass,
+            renderViewInfo,
+            sceneInfo,
+            drawEventList);
+        //std::cout << t1.elapsedMilliseconds() << "[ms] buildDrawCommands" << std::endl;
+        ln::ElapsedTimer t2;
+        drawEventList->submitDrawEvents(graphicsCommandList);
+        //std::cout << t2.elapsedMilliseconds() << "[ms] xx" << std::endl;
+    }
+
+    m_textBufferUsed = 0;
+
+    return LN_MAKE_SUCCESS();
 }
 
 } // namespace ln
