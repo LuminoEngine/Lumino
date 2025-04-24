@@ -79,22 +79,25 @@ MaybeResult RenderingManager::init(const Options& options) {
     // Sprite
     {
         static const unsigned char data[] = {
-#include "Resource/Sprite.lcfx.inl"
+#include "Resource/Sprite.lcsh.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
-        MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject_deprecated<Shader>(_TT("Sprite"), &stream);
+        auto result = Shader::createFromCompiledShader(data, size, "Sprite");
+        if (!result) {
+            return LN_TO_ERROR(result);
+        }
+        m_builtinShaders[(int)BuiltinShader::Sprite] = result.value();
     }
 
-#ifdef LN_USE_SLANG // テスト用
-    const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
-    auto result = ln::kokage::ShaderCompiler::create();
-    auto result2 = result->get()->build(
-        "C:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
-        //"E:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
-    //if (!result2) return;
-    m_builtinShaders[(int)BuiltinShader::Sprite]->setupShader2(result->get()->shader());
-#endif
+//#ifdef LN_USE_SLANG // テスト用
+//    const auto dir = Path(String::fromCString(__FILE__)).parent() / U"Resource";
+//    auto result = ln::kokage::ShaderCompiler::create();
+//    auto result2 = result->get()->build(
+//        "C:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
+//        //"E:/Proj/Lumino/packages/LuminoEngine/src/Rendering/Resource/Sprite.slang");
+//    //if (!result2) return;
+//    m_builtinShaders[(int)BuiltinShader::Sprite]->setupShader2(result->get()->shader());
+//#endif
 
     m_screenRectangleRenderFeature = makeURef<kanata::ScreenRectangleRenderFeature>(this);
     m_screenRectangleRenderFeature->init();

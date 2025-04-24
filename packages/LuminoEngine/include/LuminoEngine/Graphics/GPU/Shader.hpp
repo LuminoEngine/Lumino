@@ -400,6 +400,7 @@ class LN_API Shader
 {
 public:
     static Ref<Shader> createFromSourceFile(const std::filesystem::path& filePath);
+    static Result<Ref<Shader>> createFromCompiledShader(const void* data, int32_t length, const std::string_view& name);
 
     static Ref<Shader> create(const void* data, int32_t length);
 

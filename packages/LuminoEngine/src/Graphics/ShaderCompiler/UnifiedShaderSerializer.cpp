@@ -47,13 +47,13 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // File header
     {
-        writer->write("lcus", 4); // Magic number
+        writer->write("lcsh", 4); // Magic number
         writer->writeInt16(FileVersion_Current);
     }
 
     // Blob
     {
-        writer->write("lcus.bl.", 8); // Chunk signature
+        writer->write("lcsh.bl.", 8); // Chunk signature
 
         const auto& blobs = shader->m_blobs;
         writer->writeInt16(blobs.size());
@@ -65,7 +65,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // TargetEntryPoint
     {
-        writer->write("lcus.te.", 8); // Chunk signature
+        writer->write("lcsh.te.", 8); // Chunk signature
 
         const auto& entryPoints = shader->m_targetEntryPoints;
         writer->writeInt16(entryPoints.size());
@@ -118,7 +118,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // TargetShaderPass
     {
-        writer->write("lcus.tp.", 8); // Chunk signature
+        writer->write("lcsh.tp.", 8); // Chunk signature
 
         const auto& targetShaderPasses = shader->m_targetShaderPasses;
         writer->writeInt16(targetShaderPasses.size());
@@ -140,6 +140,8 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
                     writer->writeInt16(value.index);
                     writer->writeInt16(value.count);
                     writer->writeInt8(value.used);
+                    writer->writeInt8(static_cast<int8_t>(value.descriptorEntryCategory));
+                    writer->writeInt16(value.descriptorEntryIndex);
                     // members
                     {
                         const auto& members = value.members;
@@ -158,7 +160,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // GlobalShaderPass
     {
-        writer->write("lcus.gp.", 8); // Chunk signature
+        writer->write("lcsh.gp.", 8); // Chunk signature
 
         const auto& globalShaderPasses = shader->m_globalShaderPasses;
         writer->writeInt16(globalShaderPasses.size());
@@ -204,7 +206,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // GlobalConstantBufferMember
     {
-        writer->write("lcus.gm.", 8); // Chunk signature
+        writer->write("lcsh.gm.", 8); // Chunk signature
 
         const auto& globalMembers = shader->m_globalMembers;
         writer->writeInt16(globalMembers.size());
@@ -222,7 +224,7 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
 
     // GlobalResourceLayout
     {
-        writer->write("lcus.gl.", 8); // Chunk signature
+        writer->write("lcsh.gl.", 8); // Chunk signature
 
         const auto& globalResourceLayout = shader->m_globalResourceLayout;
         writer->writeInt16(globalResourceLayout->buffers.size());
@@ -257,17 +259,18 @@ MaybeResult UnifiedShaderSerializer::saveToFile(const UnifiedShader2* shader, co
     return LN_MAKE_SUCCESS();
 }
 
-Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::filesystem::path& filePath) {
-    auto stream = FileStream::create(Path::fromStdPath(filePath), FileOpenMode::Read);
-    auto reader = makeRef<BinaryReader>(stream);
+Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromData(const void* data, int32_t length) {
+    //auto stream = FileStream::create(Path::fromStdPath(filePath), FileOpenMode::Read);
+    MemoryStream stream(data, length);
+    auto reader = makeRef<BinaryReader>(&stream);
     Ref<UnifiedShader2> shader = makeRef<UnifiedShader2>();
 
     // File header
     {
-        auto r1 = checkSignature(reader, "lcus", 4);
+        auto r1 = checkSignature(reader, "lcsh", 4);
         if (!r1) return LN_TO_ERROR(r1);
 
-        int fileVersion = reader->readUInt32();
+        int fileVersion = reader->readInt16();
         if (fileVersion < FileVersion_1 || fileVersion >= FileVersion_Last) {
             return LN_MAKE_ERROR("Unsupported file version");
         }
@@ -275,7 +278,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // Blob
     {
-        auto r1 = checkSignature(reader, "lcus.bl.", 8);
+        auto r1 = checkSignature(reader, "lcsh.bl.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -287,7 +290,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // TargetEntryPoint
     {
-        auto r1 = checkSignature(reader, "lcus.te.", 8);
+        auto r1 = checkSignature(reader, "lcsh.te.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -340,7 +343,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // TargetShaderPass
     {
-        auto r1 = checkSignature(reader, "lcus.tp.", 8);
+        auto r1 = checkSignature(reader, "lcsh.tp.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -361,6 +364,8 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
                     info.index = reader->readInt16();
                     info.count = reader->readInt16();
                     info.used = static_cast<ShaderStageFlags>(reader->readInt8());
+                    info.descriptorEntryCategory = static_cast<RegisterCategory>(reader->readInt8());
+                    info.descriptorEntryIndex = reader->readInt16();
                     // members
                     {
                         int16_t count = reader->readInt16();
@@ -380,7 +385,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
     
     // GlobalShaderPass
     {
-        auto r1 = checkSignature(reader, "lcus.gp.", 8);
+        auto r1 = checkSignature(reader, "lcsh.gp.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -393,6 +398,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
             // targetShaderPassIds
             {
                 int16_t count = reader->readInt16();
+                pass->targetShaderPassIds.clear();
                 for (int16_t iTargetShaderPass = 0; iTargetShaderPass < count; iTargetShaderPass++) {
                     pass->targetShaderPassIds.push_back(static_cast<TargetShaderPassId>(reader->readInt8()));
                 }
@@ -421,7 +427,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // GlobalConstantBufferMember
     {
-        auto r1 = checkSignature(reader, "lcus.gm.", 8);
+        auto r1 = checkSignature(reader, "lcsh.gm.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         int16_t count = reader->readInt16();
@@ -439,7 +445,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer::loadFromFile(const std::fil
 
     // GlobalResourceLayout
     {
-        auto r1 = checkSignature(reader, "lcus.gl.", 8);
+        auto r1 = checkSignature(reader, "lcsh.gl.", 8);
         if (!r1) return LN_TO_ERROR(r1);
 
         GlobalResourceLayout* globalResourceLayout = shader->globalResourceLayout();

@@ -16,6 +16,7 @@
 #include "../../LuminoEngine/src/Graphics/ShaderCompiler/UnifiedShaderCompiler.hpp"
 #include <LuminoEngine/Graphics/ShaderCompiler/detail/ShaderManager.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
+#include <LuminoEngine/Graphics/ShaderCompiler/UnifiedShaderSerializer.hpp>
 #include "../../LuminoEngine/src/Graphics/ShaderCompiler/ShaderTranspiler.hpp"
 #include "../../LuminoEngine/src/Graphics/ShaderCompiler/HLSLMetadataParser.hpp"
 
@@ -62,6 +63,15 @@ Ref<Shader> Shader::createFromSourceFile(const std::filesystem::path& filePath) 
     LN_NOTIMPLEMENTED();
     return nullptr;
 #endif
+}
+
+Result<Ref<Shader>> Shader::createFromCompiledShader(const void* data, int32_t length, const std::string_view& name) {
+    auto r1 = kokage::UnifiedShaderSerializer::loadFromData(data, length);
+    if (!r1) return LN_TO_ERROR(r1);
+    Ref<Shader> ref(LN_NEW Shader(), false);
+    ref->setupShader3(r1->get());
+    ref->m_name = String::fromUtf8(name);
+    return ref;
 }
 
 Ref<Shader> Shader::create(const void* data, int32_t length) {
