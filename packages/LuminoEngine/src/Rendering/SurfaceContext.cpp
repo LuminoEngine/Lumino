@@ -35,9 +35,12 @@ Ref<SurfaceContext> SurfaceContext::createFromExternal(
 }
 
 SurfaceContext::SurfaceContext()
-    : m_context(nullptr) 
+    : m_ownerWindowOrNull(nullptr)
+    , m_context(nullptr) 
     , m_renderingContext()
-    , m_drawEventList() {
+    , m_drawEventList()
+    , m_frameTimer()
+    , m_lastFrameTime(0.0f) {
 }
 
 SurfaceContext::~SurfaceContext() {
@@ -45,6 +48,14 @@ SurfaceContext::~SurfaceContext() {
 
 GraphicsCommandList* SurfaceContext::commandList() const {
     return m_context->currentCommandList2();
+}
+
+void SurfaceContext::beginFrame() {
+    m_frameTimer.start();
+}
+
+void SurfaceContext::endFrame() {
+    m_lastFrameTime = static_cast<float>(m_frameTimer.elapsed());
 }
 
 } // namespace ln

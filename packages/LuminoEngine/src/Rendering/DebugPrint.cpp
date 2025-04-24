@@ -53,12 +53,13 @@ void DebugPrint::dispose() {
 }
 
 void DebugPrint::print(const std::string_view& text) {
-    if (m_textBufferUsed + text.size() >= m_textBuffer.size()) {
+    if (m_textBufferUsed + (text.size() + 1) >= m_textBuffer.size()) {
         return;
     }
     for (char c : text) {
         m_textBuffer[m_textBufferUsed++] = c;
     }
+    m_textBuffer[m_textBufferUsed++] = '\n';
 }
 
 MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* commandList) {
@@ -86,8 +87,15 @@ MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* comm
     const float textureHeight = static_cast<float>(m_fontTexture->height());
     m_batchRenderer->begin(commandList, m_material);
 
+    float textX = 0;
+    float textY = 0;
     for (size_t i = 0; i < m_textBufferUsed; i++) {
         char codePoint = m_textBuffer[i];
+        if (codePoint == '\n') {
+            textX = 0;
+            textY += frameHeight;
+            continue;
+        }
         if (codePoint < 0 || 127 < codePoint) {
             codePoint = 63; // ?
         }
@@ -98,7 +106,7 @@ MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* comm
             y / textureHeight,
             frameWidth / textureWidth,
             frameHeight / textureHeight);
-        Matrix pos = Matrix::makeTranslation(Vector3(paddingLeft + static_cast<float>(i) * frameWidth, paddingTop, 0));
+        Matrix pos = Matrix::makeTranslation(Vector3(paddingLeft + textX, paddingTop + textY, 0));
         m_batchRenderer->drawSprite(
             pos,
             Size(frameWidth, frameHeight),
@@ -108,6 +116,7 @@ MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* comm
             SpriteBaseDirection::Basic2D,
             BillboardType::None,
             SpriteFlipFlags::None);
+        textX += frameWidth;
     }
 
     m_batchRenderer->end();

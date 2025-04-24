@@ -21,8 +21,8 @@ const int ICON_MAX_INDEX = 2;
 void updateSprite(Sprite* s);
 
 int main() {
-    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
-    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_VULKAN);
+    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_VULKAN);
 
     LNResult result = LNInstance_Initialize();
     if (result != LN_OK) {
@@ -143,9 +143,12 @@ int main() {
         LNDebug_Println(
             graphicsContext,
             (std::string("FPS: ") + std::to_string(profilerng.actualFPS)).c_str());
-        //LNDebug_Println(
-        //    graphicsContext,
-        //    (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
+        LNDebug_Println(
+            graphicsContext,
+            (std::string("FrameTime: ") + std::to_string(profilerng.lastFrameTime)).c_str());
+        LNDebug_Println(
+            graphicsContext,
+            (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
 
 
         LNCommandList_EndRenderPass(commandList, renderingPass);

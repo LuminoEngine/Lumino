@@ -38,12 +38,18 @@ public:
     GraphicsCommandList* commandList() const;
     const Ref<CommandList>& renderingContext() const { return m_renderingContext; }
     const URef<kanata::DrawEventList>& drawEventList() const { return m_drawEventList; }
+    float lastFrameTime() const { return m_lastFrameTime; }
+
+    void beginFrame();
+    void endFrame();
 
 private:
     PlatformWindow* m_ownerWindowOrNull;
     Ref<GraphicsContext> m_context;
     Ref<CommandList> m_renderingContext;
     URef<kanata::DrawEventList> m_drawEventList;
+    ln::ElapsedTimer m_frameTimer;
+    float m_lastFrameTime;
 };
 
 } // namespace ln

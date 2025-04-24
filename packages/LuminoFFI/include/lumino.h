@@ -154,6 +154,7 @@ extern LUMINO_API LNResult LNDebug_Println(LNHandle graphicsContext, const char*
 typedef struct LNGraphicsProfilerng {
     int32_t drawCallCount;
     float actualFPS;
+    float lastFrameTime;
 } LNGraphicsProfilerng;
 
 extern LUMINO_API LNResult LNDebug_GetGraphicsProfilerng(LNHandle graphicsContext, LNGraphicsProfilerng* outProfilerng);

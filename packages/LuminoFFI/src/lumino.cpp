@@ -255,12 +255,38 @@ LNResult LNGraphicsContext_BeginFrame(
     LNHandle* outCommandList) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
+    surfaceContext->beginFrame();
     GraphicsContext* context = surfaceContext->context();
     *outColorBuffer = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
     *outDepthBuffer = ln::Runtime::wrapObject(context->currentDepthBuffer(), false);
     *outCommandList = ::Runtime::wrapObject(surfaceContext, false);
     surfaceContext->commandList()->reset();
     TRY_FFI_RESULT(surfaceContext->commandList()->beginCommandRecoding());
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext_) {
+    LN_FFI_TRY_BEGIN;
+    //SurfaceContext* renderingContext2 = LN_HANDLE_TO_OBJECT(SurfaceContext, commandList_);
+    SurfaceContext* context = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext_);
+    CommandList* renderingContext = context->renderingContext();
+
+    GraphicsCommandList* commandList = context->commandList();
+
+    // Render Debug
+    {
+        detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
+        TRY_FFI_RESULT(renderingManager->debugPrint()->render(context, renderingContext));
+    }
+
+    TRY_FFI_RESULT(commandList->endCommandRecoding());
+
+    // この後 Present までの間で、描画結果などを VRAM から RAM に転送することがある。ユニットテストとか。
+    // 別案として CaptureRequest だけ投げておいてコールバックを呼んでもらう方法も考えたが、
+    // バックバッファのキャプチャ以外でも使うかもしれないので、コールバックはやめておく。
+    context->context()->submitCurrentCommandList();
+
+    context->endFrame();
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -543,6 +569,7 @@ LNResult LNDebug_GetGraphicsProfilerng(LNHandle graphicsContext, LNGraphicsProfi
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     GraphicsCommandList* commandList = surfaceContext->commandList();
     outProfilerng->drawCallCount = commandList->m_drawCall;
+    outProfilerng->lastFrameTime = surfaceContext->lastFrameTime();
 
     PlatformWindow* window = surfaceContext->ownerWindowOrNull();
     if (window) {
@@ -554,29 +581,6 @@ LNResult LNDebug_GetGraphicsProfilerng(LNHandle graphicsContext, LNGraphicsProfi
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext_) {
-    LN_FFI_TRY_BEGIN;
-    //SurfaceContext* renderingContext2 = LN_HANDLE_TO_OBJECT(SurfaceContext, commandList_);
-    SurfaceContext* context = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext_);
-    CommandList* renderingContext = context->renderingContext();
-    
-    GraphicsCommandList* commandList = context->commandList();
-
-    // Render Debug
-    {
-        detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
-        TRY_FFI_RESULT(renderingManager->debugPrint()->render(context, renderingContext));
-    }
-
-    TRY_FFI_RESULT(commandList->endCommandRecoding());
-
-    // この後 Present までの間で、描画結果などを VRAM から RAM に転送することがある。ユニットテストとか。
-    // 別案として CaptureRequest だけ投げておいてコールバックを呼んでもらう方法も考えたが、
-    // バックバッファのキャプチャ以外でも使うかもしれないので、コールバックはやめておく。
-    context->context()->submitCurrentCommandList();
-
-    LN_FFI_TRY_END_RETURN;
-}
 
 //==============================================================================
 // LNRenderPass
