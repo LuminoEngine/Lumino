@@ -200,31 +200,16 @@ Result_deprecated<> VulkanDescriptorPool2::allocate(IDescriptor** outDescriptor)
 
     VulkanDescriptor2* descriptor = m_activePage->descriptors[m_activePageUsedCount];
 
-    if (m_shaderPass->m_isVer2) {
-        VkDescriptorSetLayout layout = m_shaderPass->nativeDescriptorSetLayout();
+    VkDescriptorSetLayout layout = m_shaderPass->nativeDescriptorSetLayout();
 
-        VkDescriptorSetAllocateInfo allocInfo;
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.pNext = nullptr;
-        allocInfo.descriptorPool = m_activePage->pool;
-        allocInfo.descriptorSetCount = 1;
-        allocInfo.pSetLayouts = &layout;
-        LN_VK_CHECK(
-            vkAllocateDescriptorSets(m_device->vulkanDevice(), &allocInfo, &descriptor->m_descriptorSet2));
-
-    }
-    else {
-        const auto& layout = m_shaderPass->descriptorSetLayouts();
-
-        VkDescriptorSetAllocateInfo allocInfo;
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.pNext = nullptr;
-        allocInfo.descriptorPool = m_activePage->pool;
-        allocInfo.descriptorSetCount = layout.size();
-        allocInfo.pSetLayouts = layout.data();
-        LN_VK_CHECK(
-            vkAllocateDescriptorSets(m_device->vulkanDevice(), &allocInfo, descriptor->descriptorSets().data()));
-    }
+    VkDescriptorSetAllocateInfo allocInfo;
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.pNext = nullptr;
+    allocInfo.descriptorPool = m_activePage->pool;
+    allocInfo.descriptorSetCount = 1;
+    allocInfo.pSetLayouts = &layout;
+    LN_VK_CHECK(
+        vkAllocateDescriptorSets(m_device->vulkanDevice(), &allocInfo, &descriptor->m_descriptorSet2));
 
     m_activePageUsedCount++;
     *outDescriptor = descriptor;

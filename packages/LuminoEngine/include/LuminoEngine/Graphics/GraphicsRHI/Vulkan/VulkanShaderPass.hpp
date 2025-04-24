@@ -14,10 +14,10 @@ public:
     MaybeResult init2(
         VulkanDevice* deviceContext,
         const ShaderPassCreateInfo2& createInfo);
-    Result_deprecated<> init(
-        VulkanDevice* deviceContext,
-        const ShaderPassCreateInfo& createInfo,
-        ShaderCompilationDiag* diag);
+    //Result_deprecated<> init(
+    //    VulkanDevice* deviceContext,
+    //    const ShaderPassCreateInfo& createInfo,
+    //    ShaderCompilationDiag* diag);
     void onDestroy() override;
     virtual void onBind() override { RefObjectHelper::retain(this); }
     virtual void onUnBind() override { RefObjectHelper::release(this); }
@@ -30,7 +30,6 @@ public:
     const std::string& fragEntryPointName() const { return m_fragEntryPointName; }
     const std::string& compEntryPointName() const { return m_compEntryPointName; }
     VkPipelineLayout vulkanPipelineLayout() const { return m_pipelineLayout; }
-    const std::array<VkDescriptorSetLayout, kokage::DescriptorType_Count>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
 
     const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(
         VulkanCommandList* commandBuffer, 
@@ -76,7 +75,6 @@ private:
     std::string m_fragEntryPointName;
     std::string m_compEntryPointName;
     VkPipelineLayout m_pipelineLayout;
-    std::array<VkDescriptorSetLayout, kokage::DescriptorType_Count> m_descriptorSetLayouts;
 
     std::vector<VkWriteDescriptorSet> m_descriptorWriteInfo;
     std::vector<DescriptorInfo2> m_bufferDescriptorBufferInfo;

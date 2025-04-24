@@ -157,325 +157,317 @@ MaybeResult VulkanShaderPass::createPipelineLayout(const ShaderPassCreateInfo2& 
     return LN_MAKE_SUCCESS();
 }
 
-Result_deprecated<> VulkanShaderPass::init(
-    VulkanDevice* deviceContext,
-    const ShaderPassCreateInfo& createInfo,
-    ShaderCompilationDiag* diag) {
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
-
-    if (!IShaderPass::init(createInfo)) {
-        return err();
-    }
-
-    VkDevice device = m_deviceContext->vulkanDevice();
-
-    // Create ShaderModule
-    {
-        // vert
-        if (createInfo.vsCode) {
-            m_vertEntryPointName = createInfo.vsEntryPointName;
-
-            VkShaderModuleCreateInfo shaderCreateInfo = {};
-            shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-            shaderCreateInfo.codeSize = createInfo.vsCodeLen;
-            shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.vsCode);
-
-            LN_VK_CHECK(vkCreateShaderModule(
-                device,
-                &shaderCreateInfo,
-                m_deviceContext->vulkanAllocator(),
-                &m_vertShaderModule));
-        }
-
-        // frag
-        if (createInfo.psCode) {
-            m_fragEntryPointName = createInfo.psEntryPointName;
-
-            VkShaderModuleCreateInfo shaderCreateInfo = {};
-            shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-            shaderCreateInfo.codeSize = createInfo.psCodeLen;
-            shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.psCode);
-
-            LN_VK_CHECK(vkCreateShaderModule(
-                device,
-                &shaderCreateInfo,
-                m_deviceContext->vulkanAllocator(),
-                &m_fragShaderModule));
-        }
-
-        // comp
-        if (createInfo.csCode) {
-            m_compEntryPointName = createInfo.csEntryPointName;
-
-            VkShaderModuleCreateInfo shaderCreateInfo = {};
-            shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-            shaderCreateInfo.codeSize = createInfo.csCodeLen;
-            shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.csCode);
-
-            LN_VK_CHECK(vkCreateShaderModule(
-                device,
-                &shaderCreateInfo,
-                m_deviceContext->vulkanAllocator(),
-                &m_compShaderModule));
-        }
-    }
-
-    // DescriptorSetLayout
-    {
-        // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
-
-        // NOTE: なんで DescriptorSet を3つ作るの？
-        // → https://qiita.com/lriki/items/934804030d56fd88dcc8#%E6%9C%AC%E9%A1%8C
-        //   set=0 を UniformBuffer,
-        //   set=1 を Texture,
-        //   set=2 を Sampler として扱いたい。
-        //   GLSL でいうところの layout(set=*) を変えるには、複数の DescriptorSet を作らなければならない。
-
-        const auto stageFlag = [](const kokage::DescriptorLayout* d, kokage::DescriptorType t) {
-            return ((d->isReferenceFromVertexStage(t)) ? VK_SHADER_STAGE_VERTEX_BIT : 0) |
-                ((d->isReferenceFromPixelStage(t)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0) |
-                ((d->isReferenceFromComputeStage(t)) ? VK_SHADER_STAGE_COMPUTE_BIT : 0);
-        };
-
-        // set=0, 'b' register in HLSL
-        {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->bufferSlots().size());
-            m_bufferDescriptorBufferInfo.reserve(createInfo.descriptorLayout->bufferSlots().size());
-            for (auto& item : createInfo.descriptorLayout->bufferSlots()) {
-                VkDescriptorSetLayoutBinding layoutBinding = {};
-                layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(
-                    createInfo.descriptorLayout,
-                    kokage::DescriptorType_UniformBuffer);
-                // NOTE: ↑この getShaderVisibility() は全ての CBV に対しての設定となるため、最適解ではない。
-                // ただ個々の CBV まで対応となると非常に複雑になるためここまでにしておく。
-                layoutBinding.pImmutableSamplers = nullptr;
-                layoutBindings.push_back(layoutBinding);
-
-                DescriptorInfo2 info;
-                info.bufferInfo.buffer = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                info.bufferInfo.offset = 0;
-                info.bufferInfo.range = item.size;
-                m_bufferDescriptorBufferInfo.push_back(info);
-
-                VkWriteDescriptorSet set;
-                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                set.pNext = nullptr;
-                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                set.dstBinding = item.binding;
-                set.dstArrayElement = 0;
-                set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                set.pImageInfo = nullptr;
-                set.pBufferInfo = &m_bufferDescriptorBufferInfo.back().bufferInfo;
-                set.pTexelBufferView = nullptr;
-                m_descriptorWriteInfo.push_back(set);
-            }
-
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = layoutBindings.size(); // 0 で空のインスタンスだけ作ることは可能
-            layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(
-                device,
-                &layoutInfo,
-                m_deviceContext->vulkanAllocator(),
-                &m_descriptorSetLayouts[kokage::DescriptorType_UniformBuffer]));
-        }
-
-        // set=1, 't' register in HLSL (Texture and CombinedSampler)
-        {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->resourceSlots().size());
-            m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->resourceSlots().size());
-            for (auto& item : createInfo.descriptorLayout->resourceSlots()) {
-                // FIXME: descriptorType を computeShader かどうかで固定しているが、 今は ComputeShader では Texture 型は許可しない (というか使えるのか未調査)
-                VkDescriptorSetLayoutBinding layoutBinding = {};
-                layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = (m_compShaderModule) ? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
-                                                                    : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, kokage::DescriptorType_Texture);
-                layoutBinding.pImmutableSamplers = nullptr;
-                layoutBindings.push_back(layoutBinding);
-
-                DescriptorInfo2 info;
-                info.imageInfo.sampler = VK_NULL_HANDLE;
-                info.imageInfo.imageView = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                m_textureDescripterImageInfo.push_back(info);
-
-                VkWriteDescriptorSet set;
-                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                set.pNext = nullptr;
-                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                set.dstBinding = item.binding;
-                set.dstArrayElement = 0;
-                set.descriptorCount = 1;
-                set.descriptorType = (m_compShaderModule) ? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
-                                                            : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                set.pBufferInfo = (m_compShaderModule) ? &m_textureDescripterImageInfo.back().bufferInfo : nullptr;
-                set.pImageInfo = (!m_compShaderModule) ? &m_textureDescripterImageInfo.back().imageInfo : nullptr;
-                set.pTexelBufferView = nullptr;
-                m_descriptorWriteInfo.push_back(set);
-            }
-
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = layoutBindings.size(); // 0 で空のインスタンスだけ作ることは可能
-            layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(
-                device,
-                &layoutInfo,
-                m_deviceContext->vulkanAllocator(),
-                &m_descriptorSetLayouts[kokage::DescriptorType_Texture]));
-        }
-
-        // set=2, 's' register in HLSL (SamplerState)
-        {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->samplerSlots().size());
-            m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerSlots().size());
-            for (auto& item : createInfo.descriptorLayout->samplerSlots()) {
-                VkDescriptorSetLayoutBinding layoutBinding = {};
-                layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType =
-                    VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
-                layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(
-                    createInfo.descriptorLayout,
-                    kokage::DescriptorType_SamplerState);
-                layoutBinding.pImmutableSamplers = nullptr;
-                layoutBindings.push_back(layoutBinding);
-
-                DescriptorInfo2 info;
-                info.imageInfo.sampler = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
-                info.imageInfo.imageView = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                m_samplerDescripterImageInfo.push_back(info);
-
-                VkWriteDescriptorSet set;
-                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                set.pNext = nullptr;
-                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                set.dstBinding = item.binding;
-                set.dstArrayElement = 0;
-                set.descriptorCount = 1;
-                set.descriptorType =
-                    VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                set.pImageInfo = &m_samplerDescripterImageInfo.back().imageInfo;
-                set.pBufferInfo = nullptr;
-                set.pTexelBufferView = nullptr;
-                m_descriptorWriteInfo.push_back(set);
-            }
-
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = layoutBindings.size(); // 0 で空のインスタンスだけ作ることは可能
-            layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(
-                device,
-                &layoutInfo,
-                m_deviceContext->vulkanAllocator(),
-                &m_descriptorSetLayouts[kokage::DescriptorType_SamplerState]));
-        }
-
-        // set=3, 'u' register in HLSL (UnorderdAccess)
-        {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->unorderdSlots().size());
-            m_storageDescriptorBufferInfo.reserve(createInfo.descriptorLayout->unorderdSlots().size());
-            for (auto& item : createInfo.descriptorLayout->unorderdSlots()) {
-                VkDescriptorSetLayoutBinding layoutBinding = {};
-                layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-                layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags = stageFlag(
-                    createInfo.descriptorLayout,
-                    kokage::DescriptorType_UnorderdAccess);
-                layoutBinding.pImmutableSamplers = nullptr;
-                layoutBindings.push_back(layoutBinding);
-
-                DescriptorInfo2 info;
-                info.bufferInfo.buffer = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                info.bufferInfo.offset = 0;
-                info.bufferInfo.range = item.size;
-                m_storageDescriptorBufferInfo.push_back(info);
-
-                VkWriteDescriptorSet set;
-                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                set.pNext = nullptr;
-                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
-                set.dstBinding = item.binding;
-                set.dstArrayElement = 0;
-                set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-                set.pImageInfo = nullptr;
-                set.pBufferInfo = &m_storageDescriptorBufferInfo.back().bufferInfo;
-                set.pTexelBufferView = nullptr;
-                m_descriptorWriteInfo.push_back(set);
-            }
-
-        }
-    }
-
-    // PipelineLayout
-    {
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = m_descriptorSetLayouts.size();
-        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
-        LN_VK_CHECK(vkCreatePipelineLayout(
-            device,
-            &pipelineLayoutInfo,
-            m_deviceContext->vulkanAllocator(),
-            &m_pipelineLayout));
-    }
-
-    //m_descriptorTable = makeRef<VulkanShaderDescriptorTable>();
-    //if (!m_descriptorTable->init(m_deviceContext, this, createInfo.descriptorLayout)) {
-    //    return false;
-    //}
-
-    return ok();
-}
+//Result_deprecated<> VulkanShaderPass::init(
+//    VulkanDevice* deviceContext,
+//    const ShaderPassCreateInfo& createInfo,
+//    ShaderCompilationDiag* diag) {
+//    LN_DCHECK(deviceContext);
+//    m_deviceContext = deviceContext;
+//
+//    if (!IShaderPass::init(createInfo)) {
+//        return err();
+//    }
+//
+//    VkDevice nativeDevice = m_deviceContext->vulkanDevice();
+//
+//    // Create ShaderModule
+//    {
+//        // vert
+//        if (createInfo.vsCode) {
+//            m_vertEntryPointName = createInfo.vsEntryPointName;
+//
+//            VkShaderModuleCreateInfo shaderCreateInfo = {};
+//            shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+//            shaderCreateInfo.codeSize = createInfo.vsCodeLen;
+//            shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.vsCode);
+//
+//            LN_VK_CHECK(vkCreateShaderModule(
+//                nativeDevice,
+//                &shaderCreateInfo,
+//                m_deviceContext->vulkanAllocator(),
+//                &m_vertShaderModule));
+//        }
+//
+//        // frag
+//        if (createInfo.psCode) {
+//            m_fragEntryPointName = createInfo.psEntryPointName;
+//
+//            VkShaderModuleCreateInfo shaderCreateInfo = {};
+//            shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+//            shaderCreateInfo.codeSize = createInfo.psCodeLen;
+//            shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.psCode);
+//
+//            LN_VK_CHECK(vkCreateShaderModule(
+//                nativeDevice,
+//                &shaderCreateInfo,
+//                m_deviceContext->vulkanAllocator(),
+//                &m_fragShaderModule));
+//        }
+//
+//        // comp
+//        if (createInfo.csCode) {
+//            m_compEntryPointName = createInfo.csEntryPointName;
+//
+//            VkShaderModuleCreateInfo shaderCreateInfo = {};
+//            shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+//            shaderCreateInfo.codeSize = createInfo.csCodeLen;
+//            shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.csCode);
+//
+//            LN_VK_CHECK(vkCreateShaderModule(
+//                nativeDevice,
+//                &shaderCreateInfo,
+//                m_deviceContext->vulkanAllocator(),
+//                &m_compShaderModule));
+//        }
+//    }
+//
+//    // DescriptorSetLayout
+//    {
+//        // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
+//
+//        // NOTE: なんで DescriptorSet を3つ作るの？
+//        // → https://qiita.com/lriki/items/934804030d56fd88dcc8#%E6%9C%AC%E9%A1%8C
+//        //   set=0 を UniformBuffer,
+//        //   set=1 を Texture,
+//        //   set=2 を Sampler として扱いたい。
+//        //   GLSL でいうところの layout(set=*) を変えるには、複数の DescriptorSet を作らなければならない。
+//
+//        const auto stageFlag = [](const kokage::DescriptorLayout* d, kokage::DescriptorType t) {
+//            return ((d->isReferenceFromVertexStage(t)) ? VK_SHADER_STAGE_VERTEX_BIT : 0) |
+//                ((d->isReferenceFromPixelStage(t)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0) |
+//                ((d->isReferenceFromComputeStage(t)) ? VK_SHADER_STAGE_COMPUTE_BIT : 0);
+//        };
+//
+//        // set=0, 'b' register in HLSL
+//        {
+//            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+//            layoutBindings.reserve(createInfo.descriptorLayout->bufferSlots().size());
+//            m_bufferDescriptorBufferInfo.reserve(createInfo.descriptorLayout->bufferSlots().size());
+//            for (auto& item : createInfo.descriptorLayout->bufferSlots()) {
+//                VkDescriptorSetLayoutBinding layoutBinding = {};
+//                layoutBinding.binding = item.binding;
+//                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+//                layoutBinding.descriptorCount = 1;
+//                layoutBinding.stageFlags = stageFlag(
+//                    createInfo.descriptorLayout,
+//                    kokage::DescriptorType_UniformBuffer);
+//                // NOTE: ↑この getShaderVisibility() は全ての CBV に対しての設定となるため、最適解ではない。
+//                // ただ個々の CBV まで対応となると非常に複雑になるためここまでにしておく。
+//                layoutBinding.pImmutableSamplers = nullptr;
+//                layoutBindings.push_back(layoutBinding);
+//
+//                DescriptorInfo2 info;
+//                info.bufferInfo.buffer = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                info.bufferInfo.offset = 0;
+//                info.bufferInfo.range = item.size;
+//                m_bufferDescriptorBufferInfo.push_back(info);
+//
+//                VkWriteDescriptorSet set;
+//                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//                set.pNext = nullptr;
+//                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                set.dstBinding = item.binding;
+//                set.dstArrayElement = 0;
+//                set.descriptorCount = 1;
+//                set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+//                set.pImageInfo = nullptr;
+//                set.pBufferInfo = &m_bufferDescriptorBufferInfo.back().bufferInfo;
+//                set.pTexelBufferView = nullptr;
+//                m_descriptorWriteInfo.push_back(set);
+//            }
+//
+//            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+//            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+//            layoutInfo.bindingCount = layoutBindings.size(); // 0 で空のインスタンスだけ作ることは可能
+//            layoutInfo.pBindings = layoutBindings.data();
+//            LN_VK_CHECK(vkCreateDescriptorSetLayout(
+//                nativeDevice,
+//                &layoutInfo,
+//                m_deviceContext->vulkanAllocator(),
+//                &m_descriptorSetLayouts[kokage::DescriptorType_UniformBuffer]));
+//        }
+//
+//        // set=1, 't' register in HLSL (Texture and CombinedSampler)
+//        {
+//            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+//            layoutBindings.reserve(createInfo.descriptorLayout->resourceSlots().size());
+//            m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->resourceSlots().size());
+//            for (auto& item : createInfo.descriptorLayout->resourceSlots()) {
+//                // FIXME: descriptorType を computeShader かどうかで固定しているが、 今は ComputeShader では Texture 型は許可しない (というか使えるのか未調査)
+//                VkDescriptorSetLayoutBinding layoutBinding = {};
+//                layoutBinding.binding = item.binding;
+//                layoutBinding.descriptorType = (m_compShaderModule) ? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+//                                                                    : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//                layoutBinding.descriptorCount = 1;
+//                layoutBinding.stageFlags = stageFlag(createInfo.descriptorLayout, kokage::DescriptorType_Texture);
+//                layoutBinding.pImmutableSamplers = nullptr;
+//                layoutBindings.push_back(layoutBinding);
+//
+//                DescriptorInfo2 info;
+//                info.imageInfo.sampler = VK_NULL_HANDLE;
+//                info.imageInfo.imageView = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+//                m_textureDescripterImageInfo.push_back(info);
+//
+//                VkWriteDescriptorSet set;
+//                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//                set.pNext = nullptr;
+//                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                set.dstBinding = item.binding;
+//                set.dstArrayElement = 0;
+//                set.descriptorCount = 1;
+//                set.descriptorType = (m_compShaderModule) ? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+//                                                            : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//                set.pBufferInfo = (m_compShaderModule) ? &m_textureDescripterImageInfo.back().bufferInfo : nullptr;
+//                set.pImageInfo = (!m_compShaderModule) ? &m_textureDescripterImageInfo.back().imageInfo : nullptr;
+//                set.pTexelBufferView = nullptr;
+//                m_descriptorWriteInfo.push_back(set);
+//            }
+//
+//            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+//            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+//            layoutInfo.bindingCount = layoutBindings.size(); // 0 で空のインスタンスだけ作ることは可能
+//            layoutInfo.pBindings = layoutBindings.data();
+//            LN_VK_CHECK(vkCreateDescriptorSetLayout(
+//                nativeDevice,
+//                &layoutInfo,
+//                m_deviceContext->vulkanAllocator(),
+//                &m_descriptorSetLayouts[kokage::DescriptorType_Texture]));
+//        }
+//
+//        // set=2, 's' register in HLSL (SamplerState)
+//        {
+//            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+//            layoutBindings.reserve(createInfo.descriptorLayout->samplerSlots().size());
+//            m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerSlots().size());
+//            for (auto& item : createInfo.descriptorLayout->samplerSlots()) {
+//                VkDescriptorSetLayoutBinding layoutBinding = {};
+//                layoutBinding.binding = item.binding;
+//                layoutBinding.descriptorType =
+//                    VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
+//                layoutBinding.descriptorCount = 1;
+//                layoutBinding.stageFlags = stageFlag(
+//                    createInfo.descriptorLayout,
+//                    kokage::DescriptorType_SamplerState);
+//                layoutBinding.pImmutableSamplers = nullptr;
+//                layoutBindings.push_back(layoutBinding);
+//
+//                DescriptorInfo2 info;
+//                info.imageInfo.sampler = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+//                info.imageInfo.imageView = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+//                m_samplerDescripterImageInfo.push_back(info);
+//
+//                VkWriteDescriptorSet set;
+//                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//                set.pNext = nullptr;
+//                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                set.dstBinding = item.binding;
+//                set.dstArrayElement = 0;
+//                set.descriptorCount = 1;
+//                set.descriptorType =
+//                    VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//                set.pImageInfo = &m_samplerDescripterImageInfo.back().imageInfo;
+//                set.pBufferInfo = nullptr;
+//                set.pTexelBufferView = nullptr;
+//                m_descriptorWriteInfo.push_back(set);
+//            }
+//
+//            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+//            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+//            layoutInfo.bindingCount = layoutBindings.size(); // 0 で空のインスタンスだけ作ることは可能
+//            layoutInfo.pBindings = layoutBindings.data();
+//            LN_VK_CHECK(vkCreateDescriptorSetLayout(
+//                nativeDevice,
+//                &layoutInfo,
+//                m_deviceContext->vulkanAllocator(),
+//                &m_descriptorSetLayouts[kokage::DescriptorType_SamplerState]));
+//        }
+//
+//        // set=3, 'u' register in HLSL (UnorderdAccess)
+//        {
+//            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+//            layoutBindings.reserve(createInfo.descriptorLayout->unorderdSlots().size());
+//            m_storageDescriptorBufferInfo.reserve(createInfo.descriptorLayout->unorderdSlots().size());
+//            for (auto& item : createInfo.descriptorLayout->unorderdSlots()) {
+//                VkDescriptorSetLayoutBinding layoutBinding = {};
+//                layoutBinding.binding = item.binding;
+//                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+//                layoutBinding.descriptorCount = 1;
+//                layoutBinding.stageFlags = stageFlag(
+//                    createInfo.descriptorLayout,
+//                    kokage::DescriptorType_UnorderdAccess);
+//                layoutBinding.pImmutableSamplers = nullptr;
+//                layoutBindings.push_back(layoutBinding);
+//
+//                DescriptorInfo2 info;
+//                info.bufferInfo.buffer = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                info.bufferInfo.offset = 0;
+//                info.bufferInfo.range = item.size;
+//                m_storageDescriptorBufferInfo.push_back(info);
+//
+//                VkWriteDescriptorSet set;
+//                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//                set.pNext = nullptr;
+//                set.dstSet = VK_NULL_HANDLE; // set from submitDescriptorWriteInfo
+//                set.dstBinding = item.binding;
+//                set.dstArrayElement = 0;
+//                set.descriptorCount = 1;
+//                set.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+//                set.pImageInfo = nullptr;
+//                set.pBufferInfo = &m_storageDescriptorBufferInfo.back().bufferInfo;
+//                set.pTexelBufferView = nullptr;
+//                m_descriptorWriteInfo.push_back(set);
+//            }
+//
+//        }
+//    }
+//
+//    // PipelineLayout
+//    {
+//        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+//        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+//        pipelineLayoutInfo.setLayoutCount = m_descriptorSetLayouts.size();
+//        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
+//        LN_VK_CHECK(vkCreatePipelineLayout(
+//            nativeDevice,
+//            &pipelineLayoutInfo,
+//            m_deviceContext->vulkanAllocator(),
+//            &m_pipelineLayout));
+//    }
+//
+//    //m_descriptorTable = makeRef<VulkanShaderDescriptorTable>();
+//    //if (!m_descriptorTable->init(m_deviceContext, this, createInfo.descriptorLayout)) {
+//    //    return false;
+//    //}
+//
+//    return ok();
+//}
 
 void VulkanShaderPass::onDestroy() {
     if (m_deviceContext) {
-        VkDevice device = m_deviceContext->vulkanDevice();
-
-        //if (m_descriptorTable) {
-        //    m_descriptorTable->dispose();
-        //    m_descriptorTable = nullptr;
-        //}
+        VkDevice nativeDevice = m_deviceContext->vulkanDevice();
 
         if (m_pipelineLayout) {
-            vkDestroyPipelineLayout(device, m_pipelineLayout, m_deviceContext->vulkanAllocator());
+            vkDestroyPipelineLayout(nativeDevice, m_pipelineLayout, m_deviceContext->vulkanAllocator());
             m_pipelineLayout = VK_NULL_HANDLE;
         }
 
-        for (auto& layout : m_descriptorSetLayouts) {
-            if (layout) {
-                vkDestroyDescriptorSetLayout(device, layout, m_deviceContext->vulkanAllocator());
-                layout = VK_NULL_HANDLE;
-            }
+        if (m_nativeDescriptorSetLayout) {
+            vkDestroyDescriptorSetLayout(nativeDevice, m_nativeDescriptorSetLayout, m_deviceContext->vulkanAllocator());
+            m_nativeDescriptorSetLayout = VK_NULL_HANDLE;
         }
 
         if (m_vertShaderModule) {
-            vkDestroyShaderModule(device, m_vertShaderModule, m_deviceContext->vulkanAllocator());
+            vkDestroyShaderModule(nativeDevice, m_vertShaderModule, m_deviceContext->vulkanAllocator());
             m_vertShaderModule = VK_NULL_HANDLE;
         }
 
         if (m_fragShaderModule) {
-            vkDestroyShaderModule(device, m_fragShaderModule, m_deviceContext->vulkanAllocator());
+            vkDestroyShaderModule(nativeDevice, m_fragShaderModule, m_deviceContext->vulkanAllocator());
             m_fragShaderModule = VK_NULL_HANDLE;
         }
 
-        //m_deviceContext->pipelineCache()->invalidateFromShaderPass(this);
         m_deviceContext = nullptr;
     }
 

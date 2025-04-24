@@ -257,9 +257,7 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(
         }
     }
     else {
-        if (!ptr->init(this, createInfo, diag)) {
-            return nullptr;
-        }
+        LN_ASSERT(0);
     }
     return ptr;
 }

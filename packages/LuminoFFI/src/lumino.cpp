@@ -503,7 +503,6 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
                 //std::cout << t1.elapsedMilliseconds() << "[ms] buildDrawCommands" << std::endl;
                 ln::ElapsedTimer t2;
                 drawEventList->submitDrawEvents(commandList);
-                std::cout << t2.elapsedMilliseconds() << "[ms] xx" << std::endl;
             }
 
             /*
