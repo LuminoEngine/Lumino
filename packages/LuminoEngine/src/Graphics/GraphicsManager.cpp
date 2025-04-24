@@ -339,7 +339,7 @@ Result_deprecated<Ref<GraphicsContext>> GraphicsManager::createGraphicsContext(P
         else if (m_settings.graphicsAPI == LN_GRAPHICS_BACKEND_WEBGPU) {
 #ifdef LN_USE_WEBGPU
             WebGPUGraphicsContext::Settings s;
-            s.mainWindow = window;
+            s.mainWindowOrNull = window;
             s.debugMode = m_settings.debugMode;
             result = WebGPUGraphicsContext::create(s);
 #endif

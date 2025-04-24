@@ -83,9 +83,14 @@ export class Runtime {
             API.LNRenderPassDescriptor_SetRenderTarget = module.cwrap("LNRenderPassDescriptor_SetRenderTarget", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
             API.LNRenderPassDescriptor_SetDepthBuffer = module.cwrap("LNRenderPassDescriptor_SetDepthBuffer", "number", ["number", "number", "number", "number", "number", "number"]);
 
-            API.LNInstance_Initialize = module.cwrap("LNInstance_Initialize", "number", []);
-            API.LNInstance_Terminate = module.cwrap("LNInstance_Terminate", "void", []);
-            API.LNGraphicsContext_CreateFromCurrentGL = module.cwrap("LNGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
+            API.LNInstance_Initialize = module.cwrap(
+                "LNInstance_Initialize", "number", []);
+            API.LNInstance_Terminate = module.cwrap(
+                "LNInstance_Terminate", "void", []);
+            API.LNGraphicsContext_CreateFromWebGPUCanvas = module.cwrap(
+                "LNGraphicsContext_CreateFromWebGPUCanvas", "number", ["number", "number"], { async: true });
+            API.LNGraphicsContext_CreateFromCurrentGL = module.cwrap(
+                "LNGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
 
             API.LNGraphicsContext_BeginFrame = module.cwrap("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number", "number", "number"]);
             API.LNGraphicsContext_EndFrame = module.cwrap("LNGraphicsContext_EndFrame", "number", ["number"]);
@@ -182,8 +187,9 @@ export class API {
     public static LNInstance_Initialize: () => Result;
     public static LNInstance_Terminate: () => void;
 
+    public static LNGraphicsContext_CreateFromWebGPUCanvas: (selector: number, outGraphicsContext: number) => Result;
     public static LNGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
-    public static LNGraphicsContext_BeginFrame: (graphicsContext: Handle,width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
+    public static LNGraphicsContext_BeginFrame: (graphicsContext: Handle, width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
     public static LNGraphicsContext_EndFrame: (graphicsContext: Handle) => Result;
 
     public static LNCommandList_BeginRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;

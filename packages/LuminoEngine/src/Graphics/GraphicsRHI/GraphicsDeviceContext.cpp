@@ -77,8 +77,8 @@ void IGraphicsDevice::refreshCaps() {
     onGetDeviceProperties(&m_caps);
 }
 
-Result<Ref<ISwapChain>> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    auto result = onCreateSwapChain(window, backbufferSize);
+Result<Ref<ISwapChain>> IGraphicsDevice::createSwapChain(const SwapChainCreateInfo& createInfo) {
+    auto result = onCreateSwapChain(createInfo);
     if (!result) {
         return result;
     }

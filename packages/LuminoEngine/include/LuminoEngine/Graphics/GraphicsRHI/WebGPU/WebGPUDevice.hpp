@@ -7,7 +7,6 @@ namespace detail {
 class WebGPUDevice : public IGraphicsDevice {
 public:
     struct Settings {
-        PlatformWindow* mainWindow = nullptr;
         bool debugMode = false;
     };
 
@@ -23,13 +22,11 @@ public:
     const Ref<WebGPUSingleFrameAllocatorPageManager>& transferBufferSingleFrameAllocator() const {
         return m_transferBufferSingleFrameAllocator;
     }
-	
-	WGPUSurface getWGPUSurface(PlatformWindow* window) const;
 
 protected:
     INativeGraphicsInterface* getNativeInterface() const override;
     void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) override;
-    Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+    Result<Ref<ISwapChain>> onCreateSwapChain(const SwapChainCreateInfo& createInfo) override;
     Result<Ref<ICommandList>> onCreateCommandList() override;
     Result<Ref<IRenderPass>> onCreateRenderPass(const RenderPassCreateInfo& createInfo) override;
     Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;

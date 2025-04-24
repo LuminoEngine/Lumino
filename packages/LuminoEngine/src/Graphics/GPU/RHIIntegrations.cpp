@@ -24,7 +24,6 @@
 #include <LuminoEngine/Graphics/GPU/RHIIntegrations.hpp>
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Graphics/GPU/DepthBuffer.hpp>
-#include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
 
 namespace ln {
 
@@ -65,7 +64,15 @@ bool DirectX12GraphicsContext::init(const Settings& settings) {
     }
     m_device->refreshCaps();
 
-    auto r = GraphicsContext::init(settings.mainWindow);
+    PlatformWindow* window = settings.mainWindow;
+    detail::SwapChainCreateInfo createInfo = {};
+    createInfo.window = window;
+    window->getFramebufferSize(&createInfo.backbufferSize.width, &createInfo.backbufferSize.height);
+    auto result = rhiDevice()->createSwapChain(createInfo);
+    LN_ASSERT_RESULT(result);
+    Ref<detail::ISwapChain> ref = std::move(result).value();
+
+    auto r = GraphicsContext::init(ref);
     LN_ASSERT_RESULT(r);
     return true;
 }
@@ -123,7 +130,15 @@ bool VulkanGraphicsContext::init(const Settings& settings) {
     }
     m_device->refreshCaps();
 
-    auto r = GraphicsContext::init(settings.mainWindow);
+    PlatformWindow* window = settings.mainWindow;
+    detail::SwapChainCreateInfo createInfo = {};
+    createInfo.window = window;
+    window->getFramebufferSize(&createInfo.backbufferSize.width, &createInfo.backbufferSize.height);
+    auto result = rhiDevice()->createSwapChain(createInfo);
+    LN_ASSERT_RESULT(result);
+    Ref<detail::ISwapChain> ref = std::move(result).value();
+
+    auto r = GraphicsContext::init(ref);
     LN_ASSERT_RESULT(r);
     return true;
 }
@@ -201,7 +216,6 @@ WebGPUGraphicsContext::~WebGPUGraphicsContext() {
 bool WebGPUGraphicsContext::init(const Settings& settings) {
 
     detail::WebGPUDevice::Settings dcSettings;
-    dcSettings.mainWindow = settings.mainWindow;
     dcSettings.debugMode = settings.debugMode;
     auto device = makeRef<detail::WebGPUDevice>();
     bool driverSupported = false;
@@ -214,7 +228,19 @@ bool WebGPUGraphicsContext::init(const Settings& settings) {
     }
     m_device->refreshCaps();
 
-    auto r = GraphicsContext::init(settings.mainWindow);
+    PlatformWindow* window = settings.mainWindowOrNull;
+    detail::SwapChainCreateInfo createInfo = {};
+    createInfo.window = window;
+    createInfo.webgpuCanvasSelectorOrNull = settings.selectorOrNull;
+    if (window) {
+        createInfo.window = window;
+        window->getFramebufferSize(&createInfo.backbufferSize.width, &createInfo.backbufferSize.height);
+    }
+    auto result = rhiDevice()->createSwapChain(createInfo);
+    LN_ASSERT_RESULT(result);
+    Ref<detail::ISwapChain> ref = std::move(result).value();
+
+    auto r = GraphicsContext::init(ref);
     LN_ASSERT_RESULT(r);
     return true;
 }
@@ -287,8 +313,16 @@ bool OpenGLGraphicsContext::init(const Settings& settings) {
     }
 
     m_device->refreshCaps();
+
+    PlatformWindow* window = settings.window;
+    detail::SwapChainCreateInfo createInfo = {};
+    createInfo.window = window;
+    window->getFramebufferSize(&createInfo.backbufferSize.width, &createInfo.backbufferSize.height);
+    auto result = rhiDevice()->createSwapChain(createInfo);
+    LN_ASSERT_RESULT(result);
+    Ref<detail::ISwapChain> ref = std::move(result).value();
     
-    auto r = GraphicsContext::init(settings.window);
+    auto r = GraphicsContext::init(ref);
     LN_ASSERT_RESULT(r);
     return true;
 }
@@ -306,7 +340,6 @@ void OpenGLGraphicsContext::onCreateRHIObjects() {
         const int count = 1;
         m_backbuffers.resize(count);
         m_depthBuffers.resize(count);
-        m_renderPasses.resize(count);
 
         // Dummy RenderTarget representing the back buffer.
         //m_wrapedRHIRenderTarget = wrapRef(LN_NEW detail::GLRenderTargetTexture());
@@ -322,19 +355,6 @@ void OpenGLGraphicsContext::onCreateRHIObjects() {
         m_wrapedRenderTarget->resetNativeObject(0);
         m_wrapedRenderTarget->resetSize(m_externalWidth, m_externalHeight);
         m_backbuffers[0] = m_wrapedRenderTarget;
-
-        // Dummy RenderPass representing the back buffer.
-        //m_wrapedRHIRenderPass = wrapRef(LN_NEW detail::GLRenderPass());
-        //if (!m_wrapedRHIRenderPass->initFromNativeFBO(m_externalDefaultFBO, m_wrapedRHIRenderTarget)) {
-        //    LN_ERROR("GLRenderPass failed.");
-        //    return;
-        //}
-        m_wrapedRenderPass = wrapRef(LN_NEW RenderPass());
-        if (!m_wrapedRenderPass->init(m_wrapedRenderTarget, nullptr)) {
-            LN_ERROR("RenderPass failed.");
-            return;
-        }
-        m_renderPasses[0] = m_wrapedRenderPass;
     }
     else {
         GraphicsContext::onCreateRHIObjects();

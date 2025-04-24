@@ -1,4 +1,8 @@
-﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUHelper.hpp>
+﻿#ifdef LN_OS_WIN32
+#include <Windows.h>
+#endif
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPURenderTarget.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
@@ -19,11 +23,20 @@ WebGPUSwapChain::WebGPUSwapChain()
     , m_currentRenderTargets{} {
 }
 
-Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* window, const SizeI& backbufferSize) {
+MaybeResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainCreateInfo& createInfo) {
     m_device = device;
-    m_wgpuSurface = m_device->getWGPUSurface(window);
-    m_width = backbufferSize.width;
-    m_height = backbufferSize.height;
+    m_wgpuSurface = getWGPUSurface(createInfo);
+
+    if (createInfo.window) {
+        m_width = createInfo.backbufferSize.width;
+        m_height = createInfo.backbufferSize.height;
+    }
+    else {
+        // Emscripten ではサイズ 0,0 で wgpuSurfaceConfigure() すると、
+        // 自動的に現在の canvas サイズに合わせてくれる。
+        m_width = 0;
+        m_height = 0;
+    }
 
     WGPUDevice wgpuDevice = m_device->wgpuDevice();
     WGPUAdapter wgpuAdapter = m_device->wgpuAdapter();
@@ -39,7 +52,7 @@ Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* 
 #else
         WGPUStatus result = wgpuSurfaceGetCapabilities(m_wgpuSurface, wgpuAdapter, &capabilities);
         if (result != WGPUStatus_Success) {
-            return LN_MAKE_ERROR_deprecated("wgpuSurfaceGetCapabilities failed. %d", result);
+            return LN_MAKE_ERROR("wgpuSurfaceGetCapabilities failed. %d", result);
         }
 #endif
         preferredFormat = capabilities.formats[0];
@@ -89,20 +102,28 @@ Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* 
     //    return err();
     //}
 
+    
+    if (!createInfo.window) {
+        WGPUSurfaceTexture surfaceTexture;
+        wgpuSurfaceGetCurrentTexture(m_wgpuSurface, &surfaceTexture);
+        m_width = wgpuTextureGetWidth(surfaceTexture.texture);
+        m_height = wgpuTextureGetHeight(surfaceTexture.texture);
+        std::cout << "canvas backbuffer size: " << m_width << "," << m_height << std::endl;
+    }
+
 
     for (int i = 0; i < BackbufferCount; i++) {
         auto renderTarget = makeRef<WebGPURenderTarget>();
-        if (!renderTarget->initForSwapChainWrapper(m_device, m_width, m_height, m_format, preferredFormat)) {
-            return err();
+        auto result = renderTarget->initForSwapChainWrapper(m_device, m_width, m_height, m_format, preferredFormat);
+        if (!result) {
+            return LN_TO_ERROR(result);
         }
         m_currentRenderTargets[i] = renderTarget;
     }
 	
-	//
-
     // https://hackmd.io/@webgpu/HJdib9rOD#GPUFence--gt-GPUQueueonSubmittedWorkDone
 	
-    return ok();
+    return LN_MAKE_SUCCESS();
 }
 
 void WebGPUSwapChain::onDestroy() {
@@ -121,6 +142,8 @@ void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
     *outImageIndex = m_imageIndex;
     
 	// Get the surface texture
+    // NOTE: Dawn では surfaceTexture.texture は毎回異なる値を返したので、
+    //   これをもとにバックバッファ数を推定することは無理そう。
     WGPUSurfaceTexture surfaceTexture;
     wgpuSurfaceGetCurrentTexture(m_wgpuSurface, &surfaceTexture);
 #ifdef LN_WEBGPU_LEGACY
@@ -178,6 +201,42 @@ void WebGPUSwapChain::present() {
 //#endif
 
     m_imageIndex = (m_imageIndex + 1) % BackbufferCount;
+}
+
+// https://github.com/eliemichel/glfw3webgpu/blob/main/glfw3webgpu.c
+WGPUSurface WebGPUSwapChain::getWGPUSurface(const SwapChainCreateInfo& createInfo) const {
+#ifdef __EMSCRIPTEN__
+    WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
+    fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
+    fromCanvasHTMLSelector.chain.next = NULL;
+    fromCanvasHTMLSelector.selector = "#my_canvas";
+
+    WGPUSurfaceDescriptor surfaceDescriptor = {};
+    surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;
+#endif
+
+#ifdef LN_OS_WIN32
+    HWND hWnd = reinterpret_cast<HWND>(PlatformSupport::getWin32WindowHandle(createInfo.window));
+    HINSTANCE hInstance = ::GetModuleHandle(NULL);
+
+    WGPUChainedStruct chainedStruct1 = {};
+    chainedStruct1.next = nullptr;
+#ifdef WEBGPU_BACKEND_DAWN
+    chainedStruct1.sType = WGPUSType_SurfaceSourceWindowsHWND;
+#else
+    chainedStruct1.sType = WGPUSType_SurfaceDescriptorFromWindowsHWND;
+#endif
+
+    WGPUSurfaceDescriptorFromWindowsHWND hwndDesc = {};
+    hwndDesc.chain = chainedStruct1;
+    hwndDesc.hinstance = hInstance;
+    hwndDesc.hwnd = hWnd;
+
+    WGPUSurfaceDescriptor surfaceDescriptor = {};
+    surfaceDescriptor.nextInChain = &hwndDesc.chain;
+#endif
+
+    return wgpuInstanceCreateSurface(m_device->nativeInstance(), &surfaceDescriptor);
 }
 
 } // namespace detail

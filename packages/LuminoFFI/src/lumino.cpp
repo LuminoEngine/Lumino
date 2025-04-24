@@ -257,6 +257,8 @@ LNResult LNGraphicsContext_BeginFrame(
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     surfaceContext->beginFrame();
     GraphicsContext* context = surfaceContext->context();
+    std::cout << "LNGraphicsContext_BeginFrame currentBackbuffer:" << context->currentBackbuffer() << std::endl;
+    std::cout << "LNGraphicsContext_BeginFrame currentDepthBuffer:" << context->currentDepthBuffer() << std::endl;
     *outColorBuffer = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
     *outDepthBuffer = ln::Runtime::wrapObject(context->currentDepthBuffer(), false);
     *outCommandList = ::Runtime::wrapObject(surfaceContext, false);
@@ -292,17 +294,16 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext_) {
 
 LNResult LNGraphicsContext_CreateFromWebGPUCanvas(const char* selector, LNHandle* outGraphicsContext) {
     LN_FFI_TRY_BEGIN;
-    //OpenGLGraphicsContext::Settings s;
-    //s.window = nullptr;
-    //s.width = 640;
-    //s.height = 480;
-    //Ref<OpenGLGraphicsContext> context = OpenGLGraphicsContext::create(s);
-    //detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
-    //Ref<SurfaceContext> surfaceContext = SurfaceContext::createFromExternal(renderingManager, context);
-    //*outGraphicsContext = ::Runtime::wrapObject(surfaceContext, true);
+    WebGPUGraphicsContext::Settings s;
+    s.selectorOrNull = selector;
+    s.debugMode = true; // TODO:
+    Ref<WebGPUGraphicsContext> context = WebGPUGraphicsContext::create(s);
+    Ref<SurfaceContext> surfaceContext = SurfaceContext::createFromExternal(
+        EngineInstance::instance()->renderingManager(),
+        context);
+    *outGraphicsContext = ::Runtime::wrapObject(surfaceContext, true);
     LN_FFI_TRY_END_RETURN;
 }
-
 
 LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext) {
     LN_FFI_TRY_BEGIN;

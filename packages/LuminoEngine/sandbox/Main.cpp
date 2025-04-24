@@ -71,6 +71,7 @@ void run() {
     //auto spriteRenderer = makeURef<detail::SpriteRenderer>();
     //spriteRenderer->init();
 
+    #if 0
     while (utils_processEvents()) {
         auto commandList = swapChain->currentCommandList2();
         commandList->beginCommandRecoding();
@@ -123,6 +124,7 @@ void run() {
         //std::cout << t.elapsedMilliseconds() << "[ms]" << std::endl;
         //::Sleep(16);
     }
+    #endif
 }
 
 int main() {

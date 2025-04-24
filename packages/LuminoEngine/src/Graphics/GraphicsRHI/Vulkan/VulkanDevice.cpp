@@ -150,9 +150,9 @@ void VulkanDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->shaderTarget = kokage::ShaderTarget_SPIRV;
 }
 
-Result<Ref<ISwapChain>> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
+Result<Ref<ISwapChain>> VulkanDevice::onCreateSwapChain(const SwapChainCreateInfo& createInfo) {
     auto ptr = makeRef<VulkanSwapChain>();
-    auto result = ptr->init(this, window, backbufferSize);
+    auto result = ptr->init(this, createInfo.window, createInfo.backbufferSize);
     if (!result) {
         return LN_TO_ERROR(result);
     }

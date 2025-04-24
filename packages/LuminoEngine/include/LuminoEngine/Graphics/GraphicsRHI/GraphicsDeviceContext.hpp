@@ -107,6 +107,12 @@ struct ShaderDescriptorCombinedSampler {
     ISamplerState* stamplerState;
 };
 
+struct SwapChainCreateInfo {
+    PlatformWindow* window; // WebGPU で selector を使っている場合は nullptr
+    SizeI backbufferSize;
+    const char* webgpuCanvasSelectorOrNull;
+};
+
 struct RenderPassCreateInfo {
     const DeviceFramebufferState& buffers;
     ClearFlags clearFlags;
@@ -167,7 +173,7 @@ public:
     const GraphicsDeviceProperties& caps() { return m_caps; }
     void refreshCaps();
 
-    Result<Ref<ISwapChain>> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
+    Result<Ref<ISwapChain>> createSwapChain(const SwapChainCreateInfo& createInfo);
     Result<Ref<ICommandList>> createCommandList();
     Result<Ref<IRenderPass>> createRenderPass(const RenderPassCreateInfo& createInfo);
     Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
@@ -204,7 +210,7 @@ public:
 
 protected:
     virtual void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) = 0;
-    virtual Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
+    virtual Result<Ref<ISwapChain>> onCreateSwapChain(const SwapChainCreateInfo& createInfo) = 0;
     virtual Result<Ref<ICommandList>> onCreateCommandList() = 0;
     virtual Result<Ref<IRenderPass>> onCreateRenderPass(const RenderPassCreateInfo& createInfo) = 0;
     virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;

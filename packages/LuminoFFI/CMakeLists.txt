@@ -50,6 +50,8 @@ if(LN_EMSCRIPTEN)
     # GLFW 3 を使用するように指定する。
     string(APPEND LOCAL_LINK_FLAGS " -s USE_GLFW=3")
 
+    string(APPEND LOCAL_LINK_FLAGS " -s ASYNCIFY=1")
+
     # Emscripten が内部的に定義する色々なユーティリティ関数があるが、デフォルトでは export されない。
     # EXPORTED_RUNTIME_METHODS は、そのような関数を export するための設定。
     # - ccall/cwrap: ライブラリの関数を呼び出すための機能を使えるようにする。
@@ -59,7 +61,7 @@ if(LN_EMSCRIPTEN)
     #   ただし、ccall には string や array の変換ユーティリティがついている。特に理由が無ければ、 ccall または cwrap を利用するのが無難。
     # - _malloc/_free: C++側に ArrayBuffer など大きなデータを渡すときは、C++ がアクセスできるメモリ領域に一度コピーする必要がある。
     # - HEAPxx: Emscripten 4.0 あたりから、HEAPxx はデフォルトで export されなくなったので、明示的に指定が必要。
-    string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','GL','HEAPU8','HEAPF32']\" ")
+    string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','GL','WebGPU','HEAPU8','HEAPF32']\" ")
     string(APPEND LOCAL_LINK_FLAGS " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free', 'getValue']\" ")
 
     # for Debug

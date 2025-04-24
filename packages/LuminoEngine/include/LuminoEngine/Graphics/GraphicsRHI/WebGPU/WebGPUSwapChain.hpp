@@ -16,7 +16,7 @@ public:
     static const int BackbufferCount = 3;
 	
     WebGPUSwapChain();
-    Result_deprecated<> init(WebGPUDevice* device, PlatformWindow* window, const SizeI& backbufferSize);
+    MaybeResult init(WebGPUDevice* device, const SwapChainCreateInfo& createInfo);
     void onDestroy() override;
 	
     uint32_t getBackbufferCount() override;
@@ -27,6 +27,8 @@ public:
     void present();
 
 private:
+    WGPUSurface getWGPUSurface(const SwapChainCreateInfo& createInfo) const;
+
     WebGPUDevice* m_device;
     WGPUSurface m_wgpuSurface;
     TextureFormat m_format;

@@ -1,5 +1,4 @@
-﻿#include <LuminoEngine/Platform/PlatformSupport.hpp>
-#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBindGroupCache.hpp>
+﻿#include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBindGroupCache.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUBufferSingleFrameAllocator.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUSwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUCommandList.hpp>
@@ -16,10 +15,6 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDescriptorPool.hpp>
 #include <LuminoEngine/Graphics/GraphicsRHI/WebGPU/WebGPUDevice.hpp>
 
-#ifdef LN_OS_WIN32
-#include <Windows.h>
-#endif
-
 namespace ln {
 namespace detail {
 
@@ -32,20 +27,18 @@ WebGPUDevice::WebGPUDevice()
 }
 
 bool WebGPUDevice::init(const Settings& settings) {
-    // https://developer.chrome.com/blog/new-in-webgpu-128?hl=ja#dawn_updates
-    //WGPUInstanceCapabilities capabilities = WGPU_INSTANCE_CAPABILITIES_INIT;
-    //capabilities.timedWaitAnyEnable = 1;
-    //capabilities.timedWaitAnyMaxCount = 0;
+#ifdef LN_WEBGPU_LEGACY
+    // emsdk/upstream/emscripten/system/lib/webgpu/webgpu.cpp を見ると、
+    // > assert(descriptor == nullptr); // descriptor not implemented yet
+    // という assert があるので、引数は nullptr にしている。
+    m_instance = wgpuCreateInstance(nullptr);
+#else
     WGPUInstanceDescriptor desc = {};
     desc.nextInChain = nullptr;
-#ifdef LN_WEBGPU_LEGACY
-    desc.features.timedWaitAnyEnable = 1;
-    desc.features.timedWaitAnyMaxCount = 8;
-#else
     desc.capabilities.timedWaitAnyEnable = 1;
     desc.capabilities.timedWaitAnyMaxCount = 8;
-#endif
     m_instance = wgpuCreateInstance(&desc);
+#endif
     if (!m_instance) {
         LN_LOG_ERROR("wgpuCreateInstance failed.");
         return false;
@@ -227,8 +220,8 @@ void WebGPUDevice::onGetDeviceProperties(GraphicsDeviceProperties* outCaps) {
     outCaps->shaderTarget = kokage::ShaderTarget_WGSL;
 }
 
-Result<Ref<ISwapChain>> WebGPUDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) {
-    return makeRefWithInit<WebGPUSwapChain>(this, window, backbufferSize);
+Result<Ref<ISwapChain>> WebGPUDevice::onCreateSwapChain(const SwapChainCreateInfo& createInfo) {
+    return makeRefWithInit<WebGPUSwapChain>(this, createInfo);
 }
 
 Result<Ref<ICommandList>> WebGPUDevice::onCreateCommandList() {
@@ -432,43 +425,6 @@ Result_deprecated<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUD
     }
 
     return ok();
-}
-
-// https://github.com/eliemichel/glfw3webgpu/blob/main/glfw3webgpu.c
-WGPUSurface WebGPUDevice::getWGPUSurface(PlatformWindow* window) const {
-#ifdef __EMSCRIPTEN__
-
-    WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
-    fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
-    fromCanvasHTMLSelector.chain.next = NULL;
-    fromCanvasHTMLSelector.selector = "my_canvas";
-
-    WGPUSurfaceDescriptor surfaceDescriptor = {};
-    surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;
-#endif
-
-#ifdef LN_OS_WIN32
-    HWND hWnd = reinterpret_cast<HWND>(PlatformSupport::getWin32WindowHandle(window));
-    HINSTANCE hInstance = ::GetModuleHandle(NULL);
-
-    WGPUChainedStruct chainedStruct1 = {};
-    chainedStruct1.next = nullptr;
-#ifdef WEBGPU_BACKEND_DAWN
-    chainedStruct1.sType = WGPUSType_SurfaceSourceWindowsHWND;
-#else
-    chainedStruct1.sType = WGPUSType_SurfaceDescriptorFromWindowsHWND;
-#endif
-
-    WGPUSurfaceDescriptorFromWindowsHWND hwndDesc = {};
-    hwndDesc.chain = chainedStruct1;
-    hwndDesc.hinstance = hInstance;
-    hwndDesc.hwnd = hWnd;
-
-    WGPUSurfaceDescriptor surfaceDescriptor = {};
-    surfaceDescriptor.nextInChain = &hwndDesc.chain;
-#endif
-
-    return wgpuInstanceCreateSurface(m_instance, &surfaceDescriptor);
 }
 
 } // namespace detail

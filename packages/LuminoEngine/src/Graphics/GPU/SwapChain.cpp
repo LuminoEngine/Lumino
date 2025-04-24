@@ -5,7 +5,6 @@
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Graphics/GPU/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/GPU/SwapChain.hpp>
-#include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Graphics/GPU/ShaderDescriptor.hpp>
 #include "RenderTargetTextureCache.hpp"
@@ -30,22 +29,15 @@ GraphicsContext::GraphicsContext()
 GraphicsContext::~GraphicsContext() {
 }
 
-MaybeResult GraphicsContext::init(PlatformWindow* windowOrNull) {
+MaybeResult GraphicsContext::init(detail::ISwapChain* rhiObject) {
     Object::init();
 
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 
     m_rhiResourceRegistry = makeURef<detail::RHIGraphicsObjectRegistry>(m_manager->resourceRegistry());
 
-    // Create SwapChain
-    if (windowOrNull) {
-        SizeI backbufferSize;
-        windowOrNull->getFramebufferSize(&backbufferSize.width, &backbufferSize.height);
-        auto result = rhiDevice()->createSwapChain(windowOrNull, backbufferSize);
-        if (!result) return LN_TO_ERROR(result);
-        m_rhiObject = std::move(result).value();
-    }
-    else {
+    m_rhiObject = rhiObject;
+    if (!m_rhiObject) {
         LN_LOG_INFO("Create a GraphicsContext with no SwapChain.");
     }
 
@@ -74,7 +66,6 @@ void GraphicsContext::onCreateRHIObjects() {
         const int count = getBackbufferCount();
         m_backbuffers.resize(count);
         m_depthBuffers.resize(count);
-        m_renderPasses.resize(count);
         for (int i = 0; i < count; i++) {
             // backbuffer
             auto buffer = makeObject_deprecated<RenderTargetTexture>(this);
@@ -84,11 +75,6 @@ void GraphicsContext::onCreateRHIObjects() {
             // DepthBuffer
             auto depthBuffer = makeObject_deprecated<DepthBuffer>(buffer->width(), buffer->height());
             m_depthBuffers[i] = depthBuffer;
-
-            // RenderPass
-            auto renderPass = makeObject_deprecated<RenderPass>(buffer, depthBuffer);
-            renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0x00);
-            m_renderPasses[i] = renderPass;
         }
     }
 }
@@ -166,11 +152,6 @@ DepthBuffer* GraphicsContext::currentDepthBuffer() const {
 GraphicsCommandList* GraphicsContext::currentCommandList2() const {
     if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
     return m_commandLists[m_imageIndex];
-}
-
-RenderPass* GraphicsContext::currentRenderPass() const {
-    if (LN_REQUIRE(m_imageIndex >= 0)) return nullptr;
-    return m_renderPasses[m_imageIndex];
 }
 
 detail::RHIDeviceObject* GraphicsContext::getRHIObject(IGraphicsObject* object) const {

@@ -68,8 +68,6 @@ public:
     RenderTargetTexture* currentBackbuffer() const;
     DepthBuffer* currentDepthBuffer() const;
 
-    RenderPass* currentRenderPass() const;
-
     // resolve せず直接取得する。
     detail::RHIDeviceObject* getRHIObject(IGraphicsObject* object) const;
 
@@ -89,7 +87,7 @@ protected:
 protected:
     GraphicsContext();
     ~GraphicsContext() override;
-    MaybeResult init(PlatformWindow* windowOrNull);
+    MaybeResult init(detail::ISwapChain* rhiObject);
     virtual void onCreateRHIObjects();
 
 protected:
@@ -107,7 +105,6 @@ protected:
     URef<detail::RHIGraphicsObjectRegistry> m_rhiResourceRegistry;
     std::vector<Ref<RenderTargetTexture>> m_backbuffers;
     std::vector<Ref<DepthBuffer>> m_depthBuffers;
-    std::vector<Ref<RenderPass>> m_renderPasses;
     std::vector<Ref<GraphicsCommandList>> m_commandLists;
     int m_imageIndex;
 

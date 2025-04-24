@@ -79,7 +79,9 @@ public:
 class WebGPUGraphicsContext : public GraphicsContext {
 public:
     struct Settings {
-        PlatformWindow* mainWindow = nullptr;
+        // PlatformWindow または selector が必要
+        PlatformWindow* mainWindowOrNull = nullptr;
+        const char* selectorOrNull = nullptr;
         bool debugMode = false;
     };
 
@@ -127,9 +129,6 @@ private:
     Ref<detail::OpenGLDevice> m_device;
     PlatformWindow* m_window;
     Ref<RenderTargetTexture> m_wrapedRenderTarget;
-    Ref<RenderPass> m_wrapedRenderPass;
-    //Ref<detail::GLRenderTargetTexture> m_wrapedRHIRenderTarget;
-    //Ref<detail::GLRenderPass> m_wrapedRHIRenderPass;
     uint32_t m_externalDefaultFBO;
     int32_t m_externalWidth;
     int32_t m_externalHeight;

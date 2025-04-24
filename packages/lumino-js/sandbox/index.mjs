@@ -3,6 +3,7 @@ import * as Lumino from "../lib/lumino.mjs";
 //const image = new Image();
 const imagePath = "./icon256.png";
 
+const USE_WEBGPU = true;
 
 let graphcisContext = undefined;
 let commandList = undefined;
@@ -14,16 +15,21 @@ const options = {
     wasmPath: "../lib/LuminoFFI.wasm",
 }
 
-Lumino.Runtime.initialize(options).then(() => {
+Lumino.Runtime.initialize(options).then(async () => {
 
     console.log("Lumino initialized2");
     Lumino.API.LNInstance_Initialize();
 
-    const canvas = document.getElementById("my_canvas");
-    var gl = canvas.getContext("webgl2");
-    console.log("UNIFORM_BUFFER_OFFSET_ALIGNMENT", gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT));
+    if (USE_WEBGPU) {
+        graphcisContext = await Lumino.WebGPUGraphicsContext.create("#my_canvas");
+    }
+    else {
+        const canvas = document.getElementById("my_canvas");
+        var gl = canvas.getContext("webgl2");
+        console.log("UNIFORM_BUFFER_OFFSET_ALIGNMENT", gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT));
+        graphcisContext = new Lumino.WebGLGraphicsContext(gl);
+    }
 
-    graphcisContext = new Lumino.WebGLGraphicsContext(gl);
     viewPoint = new Lumino.GraphicsViewPoint();
 
     console.log("=== initialized ===");

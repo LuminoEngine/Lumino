@@ -44,7 +44,7 @@ public:
 protected:
 	INativeGraphicsInterface* getNativeInterface() const override;
     void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) override;
-	Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	Result<Ref<ISwapChain>> onCreateSwapChain(const SwapChainCreateInfo& createInfo) override;
 	Result<Ref<ICommandList>> onCreateCommandList() override;
     Result<Ref<IRenderPass>> onCreateRenderPass(const RenderPassCreateInfo& createInfo) override;
 	Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
