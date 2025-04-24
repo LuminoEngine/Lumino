@@ -7,7 +7,7 @@ export class Texture2D extends LuminoObject {
         super();
 
         const ptr = Runtime.module._malloc(buffer.byteLength) as number;
-        Runtime.module.HEAP8.set(new Uint8Array(buffer), ptr);
+        Runtime.module.HEAPU8.set(new Uint8Array(buffer), ptr);
 
         //const u81 = new Uint8Array(buffer, 0, buffer.byteLength);
 

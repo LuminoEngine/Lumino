@@ -19,9 +19,8 @@ Lumino.Runtime.initialize(options).then(() => {
     console.log("Lumino initialized2");
     Lumino.API.LNInstance_Initialize();
 
-    const canvas = document.getElementById("maincanvas");
+    const canvas = document.getElementById("my_canvas");
     var gl = canvas.getContext("webgl2");
-
     console.log("UNIFORM_BUFFER_OFFSET_ALIGNMENT", gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT));
 
     graphcisContext = new Lumino.WebGLGraphicsContext(gl);
@@ -64,7 +63,6 @@ function render() {
 
         const commandList = graphcisContext.commandList();
     
-        commandList.reset();
         {
             const desc = {
                 renderTargets: [
