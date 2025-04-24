@@ -32,6 +32,7 @@ BatchProxyCollector::~BatchProxyCollector() {
 void BatchProxyCollector::dispose() {
     clear();
 }
+
 void BatchProxyCollector::clear() {
     {
         SingleFrameBatchProxy* p = m_headSingleFrameBatchProxyDestructList;
@@ -43,6 +44,7 @@ void BatchProxyCollector::clear() {
         m_tailSingleFrameBatchProxyDestructList = nullptr;
     }
     m_resolvedSingleFrameBatchProxies = false;
+    m_dataAllocator->cleanup();
 
     m_headBatchProxy = nullptr;
     m_tailBatchProxy = nullptr;
