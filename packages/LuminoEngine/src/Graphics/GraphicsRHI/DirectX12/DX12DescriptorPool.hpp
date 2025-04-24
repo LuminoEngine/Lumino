@@ -9,39 +9,6 @@ class DX12ShaderPass;
 class DX12DescriptorPool;
 class DX12GraphicsContext;
 
-//struct DX12DescriptorHeapView
-//{
-//    //VulkanBuffer* buffer;
-//    //uint32_t offset;
-//};
-//
-//class DX12DescriptorHeapAllocatorPage
-//	: public AbstractLinearAllocatorPage
-//{
-//public:
-//
-//private:
-//};
-//
-//class DX12DescriptorHeapAllocatorPageManager
-//	: public LinearAllocatorPageManager
-//{
-//public:
-//
-//private:
-//};
-//
-//class VulkanSingleFrameAllocator
-//	: public AbstractLinearAllocator
-//{
-//public:
-//	VulkanSingleFrameAllocator(DX12DescriptorHeapAllocatorPageManager* manager);
-//	DX12DescriptorHeapView allocate(size_t size, size_t alignment = 64);
-//
-//protected:
-//};
-//
-
 class DX12Descriptor
 	: public IDescriptor
 {

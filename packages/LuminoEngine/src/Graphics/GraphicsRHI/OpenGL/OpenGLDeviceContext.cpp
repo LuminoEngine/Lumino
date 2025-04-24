@@ -227,10 +227,17 @@ Result<Ref<ICommandList>> OpenGLDevice::onCreateCommandList() {
     return ptr;
 }
 
-Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+Result<Ref<IRenderPass>> OpenGLDevice::onCreateRenderPass(const RenderPassCreateInfo& createInfo) {
     auto ptr = makeRef<GLRenderPass>();
-    if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
-        return nullptr;
+    auto result = ptr->init(
+        this,
+        createInfo.buffers,
+        createInfo.clearFlags,
+        createInfo.clearColor,
+        createInfo.clearDepth,
+        createInfo.clearStencil);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }

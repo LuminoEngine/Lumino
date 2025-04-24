@@ -21,8 +21,8 @@ const int ICON_MAX_INDEX = 2;
 void updateSprite(Sprite* s);
 
 int main() {
-    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
     LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_VULKAN);
+    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
 
     LNResult result = LNInstance_Initialize();
     if (result != LN_OK) {

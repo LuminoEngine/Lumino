@@ -107,6 +107,14 @@ struct ShaderDescriptorCombinedSampler {
     ISamplerState* stamplerState;
 };
 
+struct RenderPassCreateInfo {
+    const DeviceFramebufferState& buffers;
+    ClearFlags clearFlags;
+    const Color& clearColor;
+    float clearDepth;
+    uint8_t clearStencil;
+};
+
 
 struct ShaderPassCreateInfo {
     const char* name;
@@ -161,7 +169,7 @@ public:
 
     Result<Ref<ISwapChain>> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
     Result<Ref<ICommandList>> createCommandList();
-    Ref<IRenderPass> createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+    Result<Ref<IRenderPass>> createRenderPass(const RenderPassCreateInfo& createInfo);
     Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
     Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
     Ref<RHIResource> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
@@ -198,7 +206,7 @@ protected:
     virtual void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) = 0;
     virtual Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
     virtual Result<Ref<ICommandList>> onCreateCommandList() = 0;
-    virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
+    virtual Result<Ref<IRenderPass>> onCreateRenderPass(const RenderPassCreateInfo& createInfo) = 0;
     virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
     virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
     virtual Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;

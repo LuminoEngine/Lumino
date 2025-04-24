@@ -38,10 +38,12 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key) {
         }
         buffers.depthBuffer = key.depthBuffer;
 
-        auto renderPass = m_device->createRenderPass(buffers, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
-        if (!renderPass) {
+        RenderPassCreateInfo createInfo{buffers, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil};
+        auto result = m_device->createRenderPass(createInfo);
+        if (!result) {
             return nullptr;
         }
+        Ref<detail::IRenderPass> renderPass = std::move(result).value();
 
         m_hashMap.insert({ hash, { 1, renderPass } });
         DiagnosticsManager::activeDiagnostics()->setCounterValue(ProfilingItem::Graphics_RenderPassCount, m_hashMap.size());

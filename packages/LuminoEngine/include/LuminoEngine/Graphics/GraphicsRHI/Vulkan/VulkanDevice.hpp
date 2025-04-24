@@ -46,7 +46,7 @@ protected:
     void onGetDeviceProperties(GraphicsDeviceProperties* outCaps) override;
 	Result<Ref<ISwapChain>> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	Result<Ref<ICommandList>> onCreateCommandList() override;
-	Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
+    Result<Ref<IRenderPass>> onCreateRenderPass(const RenderPassCreateInfo& createInfo) override;
 	Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
 	Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;

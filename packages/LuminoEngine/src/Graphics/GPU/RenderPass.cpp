@@ -273,8 +273,16 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsCommandList* context, 
             buffers.renderTargets[i] = key.renderTargets[i];
         }
         buffers.depthBuffer = key.depthBuffer;
-        Ref<detail::IRenderPass> ref = device->createRenderPass(buffers, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
 
+        detail::RenderPassCreateInfo createInfo{
+            buffers,
+            key.clearFlags,
+            key.clearColor,
+            key.clearDepth,
+            key.clearStencil};
+        auto result = device->createRenderPass(createInfo);
+        LN_ASSERT_RESULT(result);
+        Ref<detail::IRenderPass> ref = std::move(result).value();
 
         graphicsContext->rhiResourceRegistry()->registerObject(this, ref);
         rhiObject = ref;

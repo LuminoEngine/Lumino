@@ -361,8 +361,6 @@ void VulkanCommandList::onSetSubData(RHIResource* resource, size_t offset, const
             break;
     }
 
-    // VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
-    // stagingBuffer->setData(offset, data, length);
     VulkanSingleFrameBufferInfo stagingBuffer = cmdCopyBuffer(length, buffer);
     stagingBuffer.buffer->setData(stagingBuffer.offset + offset, data, length);
 }

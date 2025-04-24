@@ -400,10 +400,16 @@ Result<Ref<ICommandList>> DX12Device::onCreateCommandList() {
     return ptr;
 }
 
-Ref<IRenderPass> DX12Device::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
+Result<Ref<IRenderPass>> DX12Device::onCreateRenderPass(const RenderPassCreateInfo& createInfo) {
     auto ptr = makeRef<DX12RenderPass>();
-    if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
-        return nullptr;
+    if (!ptr->init(
+            this,
+            createInfo.buffers,
+            createInfo.clearFlags,
+            createInfo.clearColor,
+            createInfo.clearDepth,
+            createInfo.clearStencil)) {
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }

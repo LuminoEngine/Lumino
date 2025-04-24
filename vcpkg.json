@@ -1,8 +1,8 @@
 {
     "dependencies": [
-        "libogg",
-        "libpng",
         "zlib",
+        "libpng",
+        "libogg",
         "libvorbis",
         "stb",
         "tinyobjloader",

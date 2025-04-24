@@ -101,13 +101,18 @@ Result<Ref<ICommandList>> IGraphicsDevice::createCommandList() {
     return ptr;
 }
 
-Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) {
-    Ref<IRenderPass> ptr = onCreateRenderPass(buffers, clearFlags, clearColor, clearDepth, clearStencil);
+Result<Ref<IRenderPass>> IGraphicsDevice::createRenderPass(const RenderPassCreateInfo& createInfo) {
+    auto result = onCreateRenderPass(createInfo);
+    if (!result) {
+        return result;
+    }
+    Ref<IRenderPass> ptr = std::move(result).value();
     if (ptr) {
         ptr->m_device = this;
         ptr->m_objectId = m_objectNextId++;
 
         // Preserve dependent object references
+        const DeviceFramebufferState& buffers = createInfo.buffers;
         for (uint32_t i = 0; i < buffers.renderTargets.size(); i++) {
             ptr->m_renderTargets[i] = buffers.renderTargets[i];
         }
