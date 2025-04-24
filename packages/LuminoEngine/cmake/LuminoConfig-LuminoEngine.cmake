@@ -25,6 +25,5 @@ find_package(ZLIB REQUIRED)
 find_package(Vorbis CONFIG REQUIRED)
 find_package(PNG CONFIG REQUIRED) # vcpkg 2025.03.19
 #find_package(libpng CONFIG REQUIRED) # vcpkg 2024.03.25
-find_package(nanovg CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(tinyobjloader CONFIG REQUIRED)

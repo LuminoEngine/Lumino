@@ -251,17 +251,6 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "clone --depth 1 -b v5.4.0 https://github.com/lua/lua.git");
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "lua", "CMakeLists.txt"), "lua");
             }
-            if (!Directory.Exists("nanovg"))
-            {
-                Utils.CallProcess("git", "clone https://github.com/memononen/nanovg.git");
-                using (CurrentDir.Enter("nanovg"))
-                {
-                    Utils.CallProcess("git", "checkout c35e80c3fed7445b4e2973fccccc89afd97834cf");
-                }
-
-                // TODO: https://github.com/memononen/nanovg/pull/565 のマージ待ち
-                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "nanovg", "CMakeLists.txt"), "nanovg");
-            }
             if (!BuildEnvironment.FromCI && !Directory.Exists("glTF-Sample-Models"))
             {
                 Utils.CallProcess("git", "clone https://github.com/KhronosGroup/glTF-Sample-Models");
@@ -283,7 +272,6 @@ namespace LuminoBuild.Tasks
                     var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
                     var cppyamlRuntime = "-DYAML_MSVC_SHARED_RT=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
 
-                    BuildProjectMSVC(builder, "nanovg", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "SDL2", reposDir, targetName, targetFullName, configuration, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF ");
                     BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, targetName, targetFullName, configuration, $"-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectMSVC(builder, "lua", reposDir, targetName, targetFullName, configuration);
@@ -303,7 +291,6 @@ namespace LuminoBuild.Tasks
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, $"{targetName}", "ExternalInstall", "ogg"));
 
                         BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir,targetName, "-DTMXLITE_STATIC_LIB=ON");
-                        BuildProjectAndroid(builder, "nanovg", reposDir, targetName);
                     }
                 }
 
@@ -314,7 +301,6 @@ namespace LuminoBuild.Tasks
                 //    var oggInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "ogg"));
 
                 //    BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
-                //    BuildProjectEm(builder, "nanovg", reposDir, "Emscripten");
                 //}
 
             }
@@ -344,7 +330,6 @@ namespace LuminoBuild.Tasks
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.BuildDir, dirName, "ExternalInstall", "ogg"));
 
                         BuildProject(builder, "tmxlite/tmxlite", "", reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
-                        BuildProject(builder, "nanovg", "", reposDir, dirName, generator, args);
                     }
                 }
 
@@ -365,7 +350,6 @@ namespace LuminoBuild.Tasks
 
                         var generator = "Xcode";
                         BuildProject(builder, "tmxlite/tmxlite", t.Config, reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
-                        BuildProject(builder, "nanovg", t.Config, reposDir, dirName, generator, args);
                     }
                 }
             }

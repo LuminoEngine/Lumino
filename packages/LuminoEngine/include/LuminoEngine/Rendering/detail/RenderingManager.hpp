@@ -20,7 +20,6 @@ class SpriteTextRenderFeature;
 class FrameRectRenderFeature;
 class ShapesRenderFeature;
 class ShapesRenderFeature2;
-class PathRenderFeature;
 class ExtensionRenderFeature;
 class RenderingProfiler;
 class FontManager;
@@ -37,8 +36,6 @@ enum class BuiltinShader {
     ShadowCaster,
     /** @deprecated */
     BlackShader,
-    /** @deprecated */
-    NanoVG,
 
 };
 
@@ -183,7 +180,6 @@ public:
 //#else
 //    const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
 //#endif
-    //const Ref<PathRenderFeature>& pathRenderFeature() const { return m_pathRenderFeature; }
     //const Ref<ExtensionRenderFeature>& extensionRenderFeature() const { return m_extensionRenderFeature; }
     //const List<Ref<RenderFeature>>& renderFeatures() const { return m_renderFeatures; }
     const URef<kanata::ScreenRectangleRenderFeature>& screenRectangleRenderFeature() const { return m_screenRectangleRenderFeature; }
@@ -228,7 +224,6 @@ private:
 //#else
 //    Ref<ShapesRenderFeature> m_shapesRenderFeature;
 //#endif
-//    Ref<PathRenderFeature> m_pathRenderFeature;
 //    Ref<ExtensionRenderFeature> m_extensionRenderFeature;
 //    List<Ref<RenderFeature>> m_renderFeatures;
 

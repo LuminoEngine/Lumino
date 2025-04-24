@@ -7,7 +7,6 @@
         "stb",
         "tinyobjloader",
         "tinygltf",
-        "nanovg",
         "vulkan-headers",
         "nlohmann-json",
         "tl-expected",

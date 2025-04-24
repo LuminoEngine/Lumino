@@ -233,7 +233,6 @@ set(LOCAL_LIBRARIES
     Vorbis::vorbis
     Vorbis::vorbisenc
     Vorbis::vorbisfile
-    #nanovg::nanovg
     ZLIB::ZLIB
     PNG::PNG # vcpkg 2025.03.19
     #libpng # vcpkg 2024.03.25

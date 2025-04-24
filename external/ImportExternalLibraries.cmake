@@ -438,19 +438,6 @@ set_target_properties(lua PROPERTIES IMPORTED_LOCATION_DEBUG "${lua_LIBRARY_DEBU
 set_target_properties(lua PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${lua_ROOT}/include)
 list(APPEND LN_EXTERNAL_LIBS lua)
 
-# #--------------------------------------
-# # nanovg
-# ln_make_external_find_path(nanovg_ROOT "nanovg")
-
-# find_library(nanovg_LIBRARY_RELEASE NAMES nanovg PATHS ${nanovg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-# find_library(nanovg_LIBRARY_DEBUG NAMES nanovgd nanovg PATHS ${nanovg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-
-# add_library(nanovg STATIC IMPORTED)
-# set_target_properties(nanovg PROPERTIES IMPORTED_LOCATION_RELEASE "${nanovg_LIBRARY_RELEASE}")
-# set_target_properties(nanovg PROPERTIES IMPORTED_LOCATION_DEBUG "${nanovg_LIBRARY_DEBUG}")
-# set_target_properties(nanovg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${nanovg_ROOT}/include)
-# list(APPEND LN_EXTERNAL_LIBS nanovg)
-
 #--------------------------------------
 # FBX SDK
 

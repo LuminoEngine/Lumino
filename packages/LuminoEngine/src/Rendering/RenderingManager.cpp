@@ -8,7 +8,6 @@
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/MeshRenderFeature.hpp"
-#include "RenderFeature/PathRenderFeature.hpp"
 #include "RenderFeature/ExtensionRenderFeature.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
