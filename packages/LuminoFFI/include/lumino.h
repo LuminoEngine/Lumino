@@ -149,7 +149,18 @@ extern LUMINO_API LNResult LNCommandList_EndRenderPass(LNHandle renderingCommand
 //==============================================================================
 // LNDebug
 //==============================================================================
-extern LUMINO_API LNResult LNDebug_Println(LNHandle graphicsContext, const char* str);
+
+/**
+ * Prints a string.
+ * 
+ * Draws a string in the top left corner of the screen using the built-in bitmap font.
+
+ * Note the following restrictions:
+ * - Only ASCII characters can be used.
+ * - A maximum of 512 characters can be drawn.
+ * - The actual drawing takes place when LNGraphicsContext_EndFrame is called.
+ */
+extern LUMINO_API LNResult LNDebug_Print(LNHandle graphicsContext, const char* str);
 
 typedef struct LNGraphicsProfilerng {
     int32_t drawCallCount;

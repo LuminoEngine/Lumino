@@ -46,8 +46,20 @@ SurfaceContext::SurfaceContext()
 SurfaceContext::~SurfaceContext() {
 }
 
+GraphicsContext* SurfaceContext::context() const {
+    return m_context;
+}
+
 GraphicsCommandList* SurfaceContext::commandList() const {
     return m_context->currentCommandList2();
+}
+
+CommandList* SurfaceContext::renderingContext() const {
+    return m_renderingContext;
+}
+
+kanata::DrawEventList* SurfaceContext::drawEventList() const {
+    return m_drawEventList;
 }
 
 void SurfaceContext::beginFrame() {

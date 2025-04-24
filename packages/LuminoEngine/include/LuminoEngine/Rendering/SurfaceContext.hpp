@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "Kanata/KDrawEvent.hpp"
+#include "Kanata/Common.hpp"
 
 namespace ln {
 
@@ -34,10 +34,10 @@ public:
     ~SurfaceContext() override;
 
     PlatformWindow* ownerWindowOrNull() const { return m_ownerWindowOrNull; }
-    const Ref<GraphicsContext>& context() const { return m_context; }
+    GraphicsContext* context() const;
     GraphicsCommandList* commandList() const;
-    const Ref<CommandList>& renderingContext() const { return m_renderingContext; }
-    const URef<kanata::DrawEventList>& drawEventList() const { return m_drawEventList; }
+    CommandList* renderingContext() const;
+    kanata::DrawEventList* drawEventList() const;
     float lastFrameTime() const { return m_lastFrameTime; }
 
     void beginFrame();

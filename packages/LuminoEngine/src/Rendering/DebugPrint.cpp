@@ -5,6 +5,7 @@
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
+#include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
@@ -53,7 +54,7 @@ void DebugPrint::dispose() {
 }
 
 void DebugPrint::print(const std::string_view& text) {
-    if (m_textBufferUsed + (text.size() + 1) >= m_textBuffer.size()) {
+    if (m_textBufferUsed + (text.size() + 1) > m_textBuffer.size()) {
         return;
     }
     for (char c : text) {

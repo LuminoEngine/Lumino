@@ -139,14 +139,14 @@ int main() {
         LNBatchRenderer_EndBatch(spriteRenderer);
 
         
-        //LNDebug_Println(graphicsContext, (std::string("Frame: ") + std::to_string(frameCount)).c_str());
-        LNDebug_Println(
+        //LNDebug_Print(graphicsContext, (std::string("Frame: ") + std::to_string(frameCount)).c_str());
+        LNDebug_Print(
             graphicsContext,
             (std::string("FPS: ") + std::to_string(profilerng.actualFPS)).c_str());
-        LNDebug_Println(
+        LNDebug_Print(
             graphicsContext,
             (std::string("FrameTime: ") + std::to_string(profilerng.lastFrameTime)).c_str());
-        LNDebug_Println(
+        LNDebug_Print(
             graphicsContext,
             (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
 
@@ -154,9 +154,9 @@ int main() {
         LNCommandList_EndRenderPass(commandList, renderingPass);
 
         
-        LNDebug_GetGraphicsProfilerng(commandList, &profilerng);
 
         LNGraphicsContext_EndFrame(graphicsContext);
+        LNDebug_GetGraphicsProfilerng(commandList, &profilerng);
         LNWindow_Present(window);
 
 

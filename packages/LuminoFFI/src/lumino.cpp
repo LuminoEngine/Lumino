@@ -554,7 +554,7 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
 //==============================================================================
 // LNDebug
 //==============================================================================
-LNResult LNDebug_Println(LNHandle graphicsContext, const char* str) {
+LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     GraphicsCommandList* commandList = renderingContext->commandList();
