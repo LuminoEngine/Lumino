@@ -52,13 +52,17 @@ void wgpuPollEvents([[maybe_unused]] WGPUDevice device, [[maybe_unused]] bool yi
 }
 
 RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
+#ifdef LN_WEBGPU_LEGACY
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+#else
     WGPUDevice nativeDevice = m_rhiDevice->wgpuDevice();
     WGPUQueue nativeQueue = m_rhiDevice->wgpuQueue();
     uint32_t pixelSize = 4; //RHIHelper::getPixelSize(textureFormat());
     uint32_t width = extentSize().width;
     uint32_t height = extentSize().height;
     uint32_t size = width * height * pixelSize;
-    const uint64_t timeoutNS = 5 * 1000 * 1000 * 1000; // 5s
+    const uint64_t timeoutNS = 5ULL * 1000 * 1000 * 1000; // 5s
 
     // Wait queue idle.
     {
@@ -211,6 +215,7 @@ RHIRef<RHIBitmap> WebGPURenderTarget::readData() {
     wgpuBufferDestroy(nativeBuffer);
     wgpuBufferRelease(nativeBuffer);
     return bitmap;
+#endif // LN_WEBGPU_LEGACY
 }
 
 /*

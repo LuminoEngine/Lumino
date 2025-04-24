@@ -95,12 +95,20 @@ WGPUShaderModule WebGPUShaderPass::createShaderModule(
     const byte_t* source, size_t sourceSize, const char* entryPointName) {
     WGPUDevice nativeDevice = m_wgpuDevice->wgpuDevice();
 
-    WGPUShaderModuleDescriptor shaderDesc = WGPU_SHADER_MODULE_DESCRIPTOR_INIT;
-#ifdef WEBGPU_BACKEND_WGPU
-    shaderDesc.hintCount = 0;
-    shaderDesc.hints = nullptr;
-#endif
-    WGPUShaderSourceWGSL shaderCodeDesc = WGPU_SHADER_SOURCE_WGSL_INIT;
+    WGPUShaderModuleDescriptor shaderDesc = {};
+#ifdef LN_WEBGPU_LEGACY
+    std::string code(reinterpret_cast<const char*>(source), sourceSize);
+    WGPUShaderModuleWGSLDescriptor shaderCodeDesc = {};
+    shaderCodeDesc.chain.next = nullptr;
+    shaderCodeDesc.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
+    shaderCodeDesc.code = code.c_str();
+    shaderDesc.nextInChain = &shaderCodeDesc.chain;
+#else
+    //#ifdef WEBGPU_BACKEND_WGPU
+    //    shaderDesc.hintCount = 0;
+    //    shaderDesc.hints = nullptr;
+    //#endif
+    WGPUShaderSourceWGSL shaderCodeDesc = {};
     // Set the chained struct's header
     shaderCodeDesc.chain.next = nullptr;
     shaderCodeDesc.chain.sType = WGPUSType_ShaderSourceWGSL;
@@ -108,6 +116,7 @@ WGPUShaderModule WebGPUShaderPass::createShaderModule(
     shaderDesc.nextInChain = &shaderCodeDesc.chain;
     shaderCodeDesc.code.data = reinterpret_cast<const char*>(source);
     shaderCodeDesc.code.length = sourceSize;
+#endif
     WGPUShaderModule shaderModule = wgpuDeviceCreateShaderModule(nativeDevice, &shaderDesc);
     if (!shaderModule) {
         LN_MAKE_ERROR_deprecated("Failed wgpuDeviceCreateShaderModule");
@@ -186,6 +195,23 @@ MaybeResult_deprecated WebGPUShaderPass::createPipelineLayout(const ShaderPassCr
 }
 
 void WebGPUShaderPass::setupLayoutEntryDefault(WGPUBindGroupLayoutEntry* entry) {
+#ifdef LN_WEBGPU_LEGACY
+    entry->buffer.nextInChain = nullptr;
+    entry->buffer.type = WGPUBufferBindingType_Undefined;
+    entry->buffer.hasDynamicOffset = false;
+
+    entry->sampler.nextInChain = nullptr;
+    entry->sampler.type = WGPUSamplerBindingType_Undefined;
+
+    entry->storageTexture.nextInChain = nullptr;
+    entry->storageTexture.access = WGPUStorageTextureAccess_Undefined;
+    entry->storageTexture.format = WGPUTextureFormat_Undefined;
+    entry->storageTexture.viewDimension = WGPUTextureViewDimension_Undefined;
+
+    entry->texture.nextInChain = nullptr;
+    entry->texture.multisampled = false;
+    entry->texture.sampleType = WGPUTextureSampleType_Undefined;
+#else
     entry->buffer.nextInChain = nullptr;
     entry->buffer.type = WGPUBufferBindingType_BindingNotUsed;
     entry->buffer.hasDynamicOffset = false;
@@ -201,6 +227,7 @@ void WebGPUShaderPass::setupLayoutEntryDefault(WGPUBindGroupLayoutEntry* entry) 
     entry->texture.nextInChain = nullptr;
     entry->texture.multisampled = false;
     entry->texture.sampleType = WGPUTextureSampleType_BindingNotUsed;
+#endif
 }
 
 } // namespace detail

@@ -44,7 +44,6 @@ MaybeResult_deprecated WebGPUTexture2D::init(
     textureViewDesc.baseArrayLayer = 0;
     textureViewDesc.arrayLayerCount = 1;
     textureViewDesc.aspect = WGPUTextureAspect_All;
-    textureViewDesc.usage = WGPUTextureUsage_None;
     m_nativeTextureView = wgpuTextureCreateView(m_nativeTexture, &textureViewDesc);
     if (!m_nativeTextureView) {
         return LN_MAKE_ERROR_deprecated("wgpuTextureCreateView Failed.");

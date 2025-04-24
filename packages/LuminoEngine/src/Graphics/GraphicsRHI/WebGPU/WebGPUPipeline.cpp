@@ -133,8 +133,12 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
 
     // WGPUVertexState
     pipelineDesc.vertex.module = shaderPass->nativeVertShaderModule();
+#ifdef LN_WEBGPU_LEGACY
+    pipelineDesc.vertex.entryPoint = shaderPass->vertEntryPointName().c_str();
+#else
     pipelineDesc.vertex.entryPoint.data = shaderPass->vertEntryPointName().c_str();
     pipelineDesc.vertex.entryPoint.length = shaderPass->vertEntryPointName().length();
+#endif
     pipelineDesc.vertex.constantCount = 0;
     pipelineDesc.vertex.constants = nullptr;
     pipelineDesc.vertex.bufferCount = pipelineVertexLayout.bufferLayouts.size();
@@ -175,7 +179,9 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
         default:
             return LN_MAKE_ERROR_deprecated("Unsupported cull mode %d", state.rasterizerState.cullMode);
     }
+#ifndef LN_WEBGPU_LEGACY
     pipelineDesc.primitive.unclippedDepth = 0;
+#endif
 
     // WGPUFragmentState
     std::array<WGPUColorTargetState, MaxMultiRenderTargets> colorTargetStates;
@@ -183,8 +189,12 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
     WGPUFragmentState fragmentState = WGPU_FRAGMENT_STATE_INIT;
     {
         fragmentState.module = shaderPass->nativeFragShaderModule();
+#ifdef LN_WEBGPU_LEGACY
+        fragmentState.entryPoint = shaderPass->fragEntryPointName().c_str();
+#else
         fragmentState.entryPoint.data = shaderPass->fragEntryPointName().c_str();
         fragmentState.entryPoint.length = shaderPass->fragEntryPointName().length();
+#endif
         fragmentState.constantCount = 0;
         fragmentState.constants = nullptr;
 
@@ -222,9 +232,14 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
     if (renderPass->m_depthBuffer) {
         WebGPUDepthBuffer* depthBuffer = static_cast<WebGPUDepthBuffer*>(renderPass->m_depthBuffer);
         depthStencilState.format = depthBuffer->nativeFormat();
-        depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled
-            ? WGPUOptionalBool_True
-            : WGPUOptionalBool_False;
+
+#ifdef LN_WEBGPU_LEGACY
+        depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled ? 1
+                                                                                        : 0;
+#else
+        depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled ? WGPUOptionalBool_True
+                                                                                        : WGPUOptionalBool_False;
+#endif
 
         depthStencilState.depthCompare = toWGPUCompareFunction(state.depthStencilState.depthTestFunc);
         depthStencilState.stencilFront = toWGPUStencilFaceState(state.depthStencilState.frontFace);

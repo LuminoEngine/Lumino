@@ -23,7 +23,7 @@ WGPUVertexFormat toWGPUVertexFormat(VertexElementType format) {
             return WGPUVertexFormat_Sint16x4;
         default:
             LN_NOTIMPLEMENTED();
-            return WGPUVertexFormat_Uint8;
+            return WGPUVertexFormat_Float32;
     }
 }
 

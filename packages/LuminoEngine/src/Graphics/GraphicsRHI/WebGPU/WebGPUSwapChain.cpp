@@ -34,10 +34,14 @@ Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* 
     bool supportsMailbox = false;
     {
         WGPUSurfaceCapabilities capabilities = WGPU_SURFACE_CAPABILITIES_INIT;
+#ifdef LN_WEBGPU_LEGACY
+        wgpuSurfaceGetCapabilities(m_wgpuSurface, wgpuAdapter, &capabilities);
+#else
         WGPUStatus result = wgpuSurfaceGetCapabilities(m_wgpuSurface, wgpuAdapter, &capabilities);
         if (result != WGPUStatus_Success) {
             return LN_MAKE_ERROR_deprecated("wgpuSurfaceGetCapabilities failed. %d", result);
         }
+#endif
         preferredFormat = capabilities.formats[0];
         for (size_t i = 0; i < capabilities.presentModeCount; i++) {
             WGPUPresentMode mode = capabilities.presentModes[i];
@@ -51,13 +55,13 @@ Result_deprecated<> WebGPUSwapChain::init(WebGPUDevice* device, PlatformWindow* 
     // Configure the surface
     WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
     config.nextInChain = nullptr;
+    config.device = wgpuDevice;
+    config.format = preferredFormat;
+    config.usage = WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_CopySrc; // CopySrc is for screen capture
     config.width = m_width;
     config.height = m_height;
-    config.usage = WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_CopySrc; // CopySrc is for screen capture
-    config.format = preferredFormat;
     config.viewFormatCount = 0;
     config.viewFormats = nullptr;
-    config.device = wgpuDevice;
     config.presentMode = supportsMailbox ? WGPUPresentMode_Mailbox : WGPUPresentMode_Fifo,
     config.alphaMode = WGPUCompositeAlphaMode_Auto;
     wgpuSurfaceConfigure(m_wgpuSurface, &config);
@@ -119,15 +123,22 @@ void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
 	// Get the surface texture
     WGPUSurfaceTexture surfaceTexture;
     wgpuSurfaceGetCurrentTexture(m_wgpuSurface, &surfaceTexture);
+#ifdef LN_WEBGPU_LEGACY
+    if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_Success) {
+        LN_LOG_ERROR("wgpuSurfaceGetCurrentTexture failed.");
+        return;
+    }
+#else
     if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal) {
         LN_LOG_ERROR("wgpuSurfaceGetCurrentTexture failed.");
         return;
     }
+#endif
     
 	// Create a view for this surface texture
     WGPUTextureViewDescriptor viewDescriptor = WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;
     viewDescriptor.nextInChain = nullptr;
-    viewDescriptor.label = { "Surface texture view", 20 };
+    viewDescriptor.label = LN_WEBGPU_MAKE_STRING_VIEW("Surface texture view");
     viewDescriptor.format = wgpuTextureGetFormat(surfaceTexture.texture);
     viewDescriptor.dimension = WGPUTextureViewDimension_2D;
     viewDescriptor.baseMipLevel = 0;

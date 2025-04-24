@@ -167,8 +167,8 @@ ErrType_deprecated<ErrorCode> makeInternalError_deprecated(const std::string& me
         if (!result) return result; \
     }
 
-#define LN_TRY_ASSERT(expr, ...)                                                          \
-    if (LN_ASSERT(expr, __VA_ARGS__)) return LN_MAKE_ERROR();
+#define LN_TRY_ASSERT(expr)                                                          \
+    if (LN_ASSERT(expr)) return LN_MAKE_ERROR();
 
 
 //==============================================================================

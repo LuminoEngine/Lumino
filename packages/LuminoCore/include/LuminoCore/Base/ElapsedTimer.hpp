@@ -7,24 +7,24 @@ class ElapsedTimer
 {
 public:
 	/** インスタンス構築と同時に、経過時間の計測を開始します。 */
-	ElapsedTimer() LN_NOEXCEPT;
+    ElapsedTimer() noexcept;
 
-	ElapsedTimer(const char* tag) LN_NOEXCEPT;
-	~ElapsedTimer() LN_NOEXCEPT;
+	ElapsedTimer(const char* tag) noexcept;
+    ~ElapsedTimer() noexcept;
 
 	/** 経過時間をゼロにリセットして、経過時間の計測を開始します。 */
-	void start() LN_NOEXCEPT;
+    void start() noexcept;
 
 	/** 経過時間の取得します。(ミリ秒単位) */
-	uint64_t elapsedMilliseconds() const LN_NOEXCEPT;
+	uint64_t elapsedMilliseconds() const noexcept;
 
 	/** 経過時間の取得します。(マイクロ秒単位) */
-	uint64_t elapsedMicroseconds() const LN_NOEXCEPT;
+	uint64_t elapsedMicroseconds() const noexcept;
 
 	/** 経過時間の取得します。(ナノ秒単位) */
-	uint64_t elapsedNanoseconds() const LN_NOEXCEPT;
+	uint64_t elapsedNanoseconds() const noexcept;
 
-	double elapsed() const LN_NOEXCEPT { return static_cast<double>(elapsedNanoseconds()) / 1000000000; }
+	double elapsed() const noexcept { return static_cast<double>(elapsedNanoseconds()) / 1000000000; }
 
 private:
 	uint64_t m_value1;

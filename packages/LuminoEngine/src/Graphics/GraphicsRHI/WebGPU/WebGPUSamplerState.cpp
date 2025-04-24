@@ -48,8 +48,8 @@ MaybeResult WebGPUSamplerState::init(WebGPUDevice* device, const SamplerStateDat
     samplerDesc.addressModeU = address;
     samplerDesc.addressModeV = address;
     samplerDesc.addressModeW = address;
-    samplerDesc.minFilter = filter;
     samplerDesc.magFilter = filter;
+    samplerDesc.minFilter = filter;
     samplerDesc.mipmapFilter = WGPUMipmapFilterMode_Linear;
     samplerDesc.lodMinClamp = 0.0f;
     samplerDesc.lodMaxClamp = 1.0f;

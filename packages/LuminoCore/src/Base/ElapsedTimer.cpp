@@ -12,26 +12,23 @@
 
 namespace ln {
 
-ElapsedTimer::ElapsedTimer(const char* tag) LN_NOEXCEPT
+ElapsedTimer::ElapsedTimer(const char* tag) noexcept
 	: ElapsedTimer()
 {
 	m_tag = tag;
 }
 
-ElapsedTimer::~ElapsedTimer()
-{
+ElapsedTimer::~ElapsedTimer() noexcept {
 	if (m_tag) {
 		std::cout << m_tag << ": " << elapsedMicroseconds() << " [usec]" << std::endl;
 	}
 }
 
-uint64_t ElapsedTimer::elapsedMilliseconds() const LN_NOEXCEPT
-{
+uint64_t ElapsedTimer::elapsedMilliseconds() const noexcept {
 	return elapsedNanoseconds() / 1000000;
 }
 
-uint64_t ElapsedTimer::elapsedMicroseconds() const LN_NOEXCEPT
-{
+uint64_t ElapsedTimer::elapsedMicroseconds() const noexcept {
 	return elapsedNanoseconds() / 1000;
 }
 

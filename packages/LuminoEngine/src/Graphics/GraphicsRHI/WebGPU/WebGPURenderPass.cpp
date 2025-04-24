@@ -58,10 +58,12 @@ Result_deprecated<> WebGPURenderPass::init(
             m_depthStencilAttachment.depthLoadOp = WGPULoadOp_Load;
             m_depthStencilAttachment.stencilLoadOp = WGPULoadOp_Load;
         }
+        m_depthStencilAttachment.depthClearValue = clearDepth;
+        m_depthStencilAttachment.depthReadOnly = 0;
         m_depthStencilAttachment.depthStoreOp = WGPUStoreOp_Store;
         m_depthStencilAttachment.stencilStoreOp = WGPUStoreOp_Store;
-        m_depthStencilAttachment.depthClearValue = clearDepth;
         m_depthStencilAttachment.stencilClearValue = clearStencil;
+        m_depthStencilAttachment.stencilReadOnly = 0;
         m_renderPassDesc.depthStencilAttachment = &m_depthStencilAttachment;
     }
 

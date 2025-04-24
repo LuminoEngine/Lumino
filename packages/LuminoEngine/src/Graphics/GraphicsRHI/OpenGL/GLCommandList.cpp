@@ -34,7 +34,7 @@ Result_deprecated<> GLGraphicsContext::init(OpenGLDevice* owner) {
     ICommandList::init(owner);
     m_device = owner;
 
-    memset(&m_savedState, sizeof(m_savedState), 0);
+    memset(&m_savedState, 0, sizeof(m_savedState));
     return ok();
 }
 

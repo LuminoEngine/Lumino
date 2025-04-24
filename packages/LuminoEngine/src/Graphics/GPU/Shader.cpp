@@ -49,6 +49,7 @@ void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag) {
 // Shader
 
 Ref<Shader> Shader::createFromSourceFile(const std::filesystem::path& filePath) {
+#ifdef LN_USE_SLANG
     auto r1 = ln::kokage::ShaderCompiler::create();
     if (!r1) return nullptr;
     auto r2 = r1->get()->build(filePath);
@@ -57,6 +58,10 @@ Ref<Shader> Shader::createFromSourceFile(const std::filesystem::path& filePath) 
     ref->setupShader3(r1->get()->shader());
     ref->m_name = String::fromUtf8(filePath.filename().u8string());
     return ref;
+#else
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+#endif
 }
 
 Ref<Shader> Shader::create(const void* data, int32_t length) {

@@ -38,7 +38,7 @@ bool WebGPUDevice::init(const Settings& settings) {
     //capabilities.timedWaitAnyMaxCount = 0;
     WGPUInstanceDescriptor desc = {};
     desc.nextInChain = nullptr;
-#ifdef __EMSCRIPTEN__
+#ifdef LN_WEBGPU_LEGACY
     desc.features.timedWaitAnyEnable = 1;
     desc.features.timedWaitAnyMaxCount = 8;
 #else
@@ -53,31 +53,37 @@ bool WebGPUDevice::init(const Settings& settings) {
 
     // Select adapter
     {
-        auto onAdapterRequestEnded = [](WGPURequestAdapterStatus status,
-                                        WGPUAdapter adapter,
-                                        WGPUStringView message,
-                                        void* userdata1,
-                                        void* userdata2) {
-            WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata1);
-            self->m_adapters.push_back({ status, adapter });
-        };
         WGPURequestAdapterOptions adapterOptions = {};
         adapterOptions.nextInChain = nullptr;
         adapterOptions.compatibleSurface = nullptr;
         adapterOptions.powerPreference = WGPUPowerPreference_Undefined;
         adapterOptions.forceFallbackAdapter = false;
+#ifdef LN_WEBGPU_LEGACY
+        auto onAdapterRequestEnded = [](WGPURequestAdapterStatus status,
+                                        WGPUAdapter adapter,
+                                        char const* message, void* userdata) {
+            WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata);
+            self->m_adapters.push_back({status, adapter});
+        };
+        wgpuInstanceRequestAdapter(m_instance, &adapterOptions, onAdapterRequestEnded, this);
+#else
+        auto onAdapterRequestEnded = [](WGPURequestAdapterStatus status,
+                                        WGPUAdapter adapter,
+                                        LN_WEBGPU_STRING_VIEW message,
+                                        LN_WEBGPU_USERDATA_PARAMS(userdata)) {
+            WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata);
+            self->m_adapters.push_back({status, adapter});
+        };
         WGPURequestAdapterCallbackInfo callbackInfo = {};
         callbackInfo.nextInChain = nullptr;
         callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
         callbackInfo.callback = onAdapterRequestEnded;
         callbackInfo.userdata1 = this;
-        WGPUFuture future = wgpuInstanceRequestAdapter(
-            m_instance,
-            &adapterOptions, 
-            callbackInfo);
+        WGPUFuture future = wgpuInstanceRequestAdapter(m_instance, &adapterOptions, callbackInfo);
+#endif
 
 #ifdef __EMSCRIPTEN__
-        while (!userData.requestEnded) {
+        while (m_adapters.empty()) {
             emscripten_sleep(100);
         }
 #endif // __EMSCRIPTEN__
@@ -118,21 +124,21 @@ bool WebGPUDevice::init(const Settings& settings) {
 
     // Request device.
     {
-        WGPULimits limits = WGPU_LIMITS_INIT;
-        //limits.maxBufferSize = 2097152;
 
         WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
         deviceDesc.nextInChain = nullptr;
-        deviceDesc.label = { "Lumino device", 13 };
+        deviceDesc.label = LN_WEBGPU_MAKE_STRING_VIEW("Lumino device");
         deviceDesc.requiredFeatureCount = 0;
         deviceDesc.requiredFeatures = nullptr;
-        deviceDesc.requiredLimits = &limits;
+        deviceDesc.requiredLimits = nullptr;
         deviceDesc.defaultQueue.nextInChain = nullptr;
-        deviceDesc.defaultQueue.label = { "Lumino default queue", 20 };
-        deviceDesc.deviceLostCallbackInfo = WGPU_DEVICE_LOST_CALLBACK_INFO_INIT;
-        deviceDesc.uncapturedErrorCallbackInfo = WGPU_UNCAPTURED_ERROR_CALLBACK_INFO_INIT;
+        deviceDesc.defaultQueue.label = LN_WEBGPU_MAKE_STRING_VIEW("Lumino default queue");
+        // TODO: これの設定はしておいた方がよさそう
+        //deviceDesc.deviceLostCallbackInfo = WGPU_DEVICE_LOST_CALLBACK_INFO_INIT;
+        //deviceDesc.uncapturedErrorCallbackInfo = WGPU_UNCAPTURED_ERROR_CALLBACK_INFO_INIT;
 
         // Setup debug log.
+#ifndef LN_WEBGPU_LEGACY
         if (settings.debugMode) {
             auto onDeviceError = [](WGPUDevice const* device, WGPUErrorType type, WGPUStringView message, void*, void*) {
                 LN_LOG_ERROR("WebGPU({}): {}", static_cast<int>(type), std::string_view(message.data, message.length));
@@ -144,20 +150,39 @@ bool WebGPUDevice::init(const Settings& settings) {
             callbackInfo.userdata2 = nullptr;
             deviceDesc.uncapturedErrorCallbackInfo = callbackInfo;
         }
+#endif
 
         if (!requestDevice(adapter, deviceDesc)) {
             return false;
         }
+
+#ifdef LN_WEBGPU_LEGACY
+        auto onDeviceError = [](WGPUErrorType type, char const* message, void* /* pUserData */) {
+            std::cout << "Uncaptured device error: type " << type;
+            if (message) std::cout << " (" << message << ")";
+            std::cout << std::endl;
+        };
+        wgpuDeviceSetUncapturedErrorCallback(m_device, onDeviceError, nullptr /* pUserData */);
+#endif
     }
 
     // Diag
     {
+#ifdef LN_WEBGPU_LEGACY
+        WGPUSupportedLimits adapterSupportedLimits = {};
+        WGPUSupportedLimits deviceSupportedLimits = {};
+        wgpuAdapterGetLimits(adapter, &adapterSupportedLimits);
+        wgpuDeviceGetLimits(m_device, &deviceSupportedLimits);
+        const WGPULimits& adapterLimits = adapterSupportedLimits.limits;
+        const WGPULimits& deviceLimits = deviceSupportedLimits.limits;
+#else
         WGPULimits adapterLimits = {};
         WGPULimits deviceLimits = {};
         wgpuAdapterGetLimits(adapter, &adapterLimits);
+        wgpuDeviceGetLimits(m_device, &deviceLimits);
+#endif
         LN_LOG_INFO("Adapter Supported limits:");
         LN_LOG_INFO("  maxVertexAttributes: {}", adapterLimits.maxVertexAttributes);
-        wgpuDeviceGetLimits(m_device, &deviceLimits);
         LN_LOG_INFO("Device Supported limits:");
         LN_LOG_INFO("  maxVertexAttributes: {}", deviceLimits.maxVertexAttributes);
     }
@@ -362,6 +387,19 @@ void WebGPUDevice::onQueuePresent(ISwapChain* swapChain) {
 
 Result_deprecated<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUDeviceDescriptor& descriptor) {
 
+#ifdef LN_WEBGPU_LEGACY
+    auto onDeviceRequestEnded =
+        [](WGPURequestDeviceStatus status, WGPUDevice device, char const* message, void* pUserData) {
+            WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(pUserData);
+            if (status == WGPURequestDeviceStatus_Success) {
+                self->m_device = device;
+            }
+            else {
+                std::cout << "Could not get WebGPU device: " << message << std::endl;
+            }
+        };
+    wgpuAdapterRequestDevice(adapter, &descriptor, onDeviceRequestEnded, this);
+#else
     auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status,
                                    WGPUDevice device,
                                    WGPUStringView message,
@@ -380,9 +418,10 @@ Result_deprecated<> WebGPUDevice::requestDevice(WGPUAdapter adapter, const WGPUD
     callbackInfo.userdata1 = this;
     callbackInfo.userdata2 = nullptr;
     wgpuAdapterRequestDevice(adapter, &descriptor, callbackInfo);
+    #endif
 
 #ifdef __EMSCRIPTEN__
-    while (!userData.requestEnded) {
+    while (!m_device) {
         emscripten_sleep(100);
     }
 #endif // __EMSCRIPTEN__
@@ -402,7 +441,7 @@ WGPUSurface WebGPUDevice::getWGPUSurface(PlatformWindow* window) const {
     WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
     fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
     fromCanvasHTMLSelector.chain.next = NULL;
-    fromCanvasHTMLSelector.selector = "canvas";
+    fromCanvasHTMLSelector.selector = "my_canvas";
 
     WGPUSurfaceDescriptor surfaceDescriptor = {};
     surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;

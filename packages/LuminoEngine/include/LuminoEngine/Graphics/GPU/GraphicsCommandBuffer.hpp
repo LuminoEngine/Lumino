@@ -161,7 +161,7 @@ public:
     /** @{ */
 
     MaybeResult init(GraphicsManager* manager);
-    void dispose();
+    void dispose() override;
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
     void reset();
     GraphicsContext* graphicsContext() const { return m_graphicsContext; }

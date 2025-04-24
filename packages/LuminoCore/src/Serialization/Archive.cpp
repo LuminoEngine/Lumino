@@ -17,7 +17,7 @@ Archive::Archive(ArchiveStore* store, ArchiveMode mode)
     setup(store, mode);
 }
 
-Archive::~Archive() {
+Archive::~Archive() noexcept {
 }
 
 void Archive::processNull() {
