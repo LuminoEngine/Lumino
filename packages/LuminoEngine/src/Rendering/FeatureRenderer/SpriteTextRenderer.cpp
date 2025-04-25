@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KSpriteTextRenderFeature.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 class SpriteTextRenderer::DrawTextElementSFBatchProxy : public kanata::SingleFrameBatchProxy {

@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Graphics/GPU/SwapChain.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>

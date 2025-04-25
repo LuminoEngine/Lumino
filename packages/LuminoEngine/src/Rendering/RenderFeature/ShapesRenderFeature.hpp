@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../RenderElement.hpp"
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {

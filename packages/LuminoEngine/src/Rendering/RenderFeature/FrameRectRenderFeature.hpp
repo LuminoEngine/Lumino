@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Drawing.hpp>
 #include "../RenderElement.hpp"
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include "../RLIs/RLIBatchList.hpp"
 
 namespace ln {

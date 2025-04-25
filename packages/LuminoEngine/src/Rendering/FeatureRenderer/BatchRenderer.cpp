@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionEncoder.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/detail/SpriteMeshGenerater.hpp>
 
 namespace ln {

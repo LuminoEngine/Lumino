@@ -15,7 +15,7 @@ private:
 class CullingSystem : public URefObject {
     // NOTE: FlustumCulling や OcclusionCulling の実装は、
     //   godot の RendererSceneCull::_scene_cull() が参考になりそう。
-    //   
+    //
     // NOTE: DrawSprite() の中で BatchProxy を作るとすると、BatchProxy に対して Culling するのでは遅くないか？
     //   描画されないかもしれない大量のSpriteDataができてしまう懸念がある。
     //   ただこれについては、動的に作った BatchProxy はやむを得ないかもしれない。
@@ -57,7 +57,7 @@ class CullingSystem : public URefObject {
     //
     //   この Proxy の収取を担当しているのは BatchProxyCollector.
     //   このクラスは RenderingContext が既に持っている。
-}
+};
 
 } // namespace ln
 

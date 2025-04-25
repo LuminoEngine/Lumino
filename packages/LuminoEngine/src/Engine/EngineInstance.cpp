@@ -10,7 +10,7 @@
 #include <LuminoEngine/Runtime/detail/RuntimeManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include "../Audio/AudioManager.hpp"
 #include <LuminoEngine/Audio/GameAudio.hpp>
 

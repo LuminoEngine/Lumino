@@ -4,7 +4,7 @@
 #include <LuminoEngine/Graphics/GPU/ShaderDescriptor.hpp>
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 

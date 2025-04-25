@@ -1,7 +1,7 @@
 ﻿#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 namespace kanata {

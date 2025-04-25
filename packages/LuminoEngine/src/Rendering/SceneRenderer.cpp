@@ -1,6 +1,6 @@
 ﻿#include "Internal.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderViewPoint.hpp>
 #include <LuminoEngine/Rendering/SceneRenderer.hpp>
 
@@ -120,7 +120,10 @@ void SceneRenderer::setupElement(DrawElement* instance) {
 
 void SceneRenderer::drawSprite(const SpriteData& data) {
     struct SpriteDrawElement final : public DrawElement {
-        SpriteData& data;
+        SpriteData data;
+        SpriteDrawElement()
+            : DrawElement(DrawElementType::Sprite) {}
+        const Matrix& worldMatrix() override { return data.transform; }
         void onRender() override {}
     };
     auto* instance = newDrawElement<SpriteDrawElement>();

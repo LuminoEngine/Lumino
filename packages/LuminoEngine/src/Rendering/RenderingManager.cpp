@@ -7,8 +7,8 @@
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include "DrawElementListBuilder.hpp"
 #include "RenderFeature/MeshRenderFeature.hpp"
-#include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingProfiler.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/DebugPrint.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
 

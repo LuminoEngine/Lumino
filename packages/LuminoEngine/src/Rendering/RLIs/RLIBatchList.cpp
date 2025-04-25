@@ -1,6 +1,5 @@
-﻿
-#include "Internal.hpp"
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+﻿#include "Internal.hpp"
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include "RLIBatch.hpp"
 #include "RLIBatchList.hpp"
 

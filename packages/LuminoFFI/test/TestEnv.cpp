@@ -3,7 +3,7 @@
 #include <LuminoEngine/Platform/detail/PlatformManager.hpp>
 #include <LuminoEngine/Platform/detail/GLFWPlatformWindow.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include "../../LuminoEngine/src/Platform/GLFWPlatformWindowManager.hpp"
 #include "TestEnv.hpp"

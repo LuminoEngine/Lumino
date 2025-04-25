@@ -1,6 +1,6 @@
 ﻿#include <LuminoEngine/Graphics/GPU/Shader.hpp>
 #include <LuminoEngine/Rendering/Kanata/KUnlitRenderPass.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 namespace kanata {

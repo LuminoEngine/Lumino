@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KScreenRectangleRenderFeature.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 namespace kanata {

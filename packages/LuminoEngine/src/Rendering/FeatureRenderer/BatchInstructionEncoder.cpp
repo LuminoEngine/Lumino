@@ -1,7 +1,7 @@
 ﻿#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchInstructionEncoder.hpp>
 #include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 namespace detail {

@@ -1,7 +1,7 @@
 ﻿#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KMeshRenderFeature.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/MeshRenderer.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
 
 namespace ln {

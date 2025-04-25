@@ -6,7 +6,7 @@
 #include <LuminoEngine/Graphics/GPU/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include "FrameRectRenderFeature.hpp"
 
 namespace ln {

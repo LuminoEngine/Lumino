@@ -7,7 +7,7 @@
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include <LuminoEngine/Rendering/Kanata/KSceneRenderPass.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
 
 namespace ln {

@@ -1,6 +1,6 @@
 ﻿#include <LuminoEngine/Rendering/Kanata/KRenderingContext.hpp>
 #include <LuminoEngine/Rendering/Kanata/KRenderView.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 namespace kanata {

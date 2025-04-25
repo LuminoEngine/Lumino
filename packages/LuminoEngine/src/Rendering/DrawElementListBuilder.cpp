@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include "DrawElementListBuilder.hpp"
 
 namespace ln {

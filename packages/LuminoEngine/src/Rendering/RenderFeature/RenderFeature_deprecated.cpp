@@ -5,8 +5,8 @@
 #include <LuminoEngine/Graphics/GPU/GraphicsCommandBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderStage.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 
 namespace ln {
 namespace detail {

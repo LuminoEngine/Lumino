@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 
 namespace ln {

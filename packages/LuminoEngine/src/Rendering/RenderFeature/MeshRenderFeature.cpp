@@ -8,7 +8,7 @@
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Rendering/InstancedMeshesModel.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include "MeshRenderFeature.hpp"
 
 namespace ln {

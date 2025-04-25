@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/MeshModel.hpp>
 #include <LuminoEngine/Mesh/MeshModelFactory.hpp>
-#include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
+#include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
 #include "MeshGeneraters/CylinderMeshGenerater.hpp"
 #include "MeshGeneraters/TeapotMeshGenerater.hpp"

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoEngine/Rendering/detail/RenderStage.hpp>
+#include <LuminoEngine/Rendering/RenderStage.hpp>
 #include "Common.hpp"
 #include "RLIBatch.hpp"
 
