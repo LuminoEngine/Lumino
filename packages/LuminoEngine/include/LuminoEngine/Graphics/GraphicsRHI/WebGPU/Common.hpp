@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/GraphicsRHI/GraphicsDeviceContext.hpp>
 
 #ifdef __EMSCRIPTEN__
+#define LN_WEBGPU_BROWSER 1
 #define LN_WEBGPU_LEGACY 1
 #define LN_WEBGPU_STRING_VIEW const char*
 #define LN_WEBGPU_MAKE_STRING_VIEW(literal) literal

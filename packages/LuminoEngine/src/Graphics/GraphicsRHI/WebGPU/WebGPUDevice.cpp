@@ -48,6 +48,7 @@ bool WebGPUDevice::init(const Settings& settings) {
     {
         WGPURequestAdapterOptions adapterOptions = {};
         adapterOptions.nextInChain = nullptr;
+        //adapterOptions.featureLevel = WGPUFeatureLevel_Compatibility;
         adapterOptions.compatibleSurface = nullptr;
         adapterOptions.powerPreference = WGPUPowerPreference_Undefined;
         adapterOptions.forceFallbackAdapter = false;

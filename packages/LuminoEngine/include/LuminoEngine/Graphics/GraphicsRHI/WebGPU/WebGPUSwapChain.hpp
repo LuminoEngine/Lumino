@@ -13,7 +13,7 @@ namespace detail {
 class WebGPUSwapChain : public ISwapChain {
 public:
     // WebGPU ではいくつバッファがあるかは取得できないようだった
-    static const int BackbufferCount = 3;
+    static const int BackbufferCount = 1;
 	
     WebGPUSwapChain();
     MaybeResult init(WebGPUDevice* device, const SwapChainCreateInfo& createInfo);
@@ -27,6 +27,7 @@ public:
     void present();
 
 private:
+    void releaseCurrentTexture();
     WGPUSurface getWGPUSurface(const SwapChainCreateInfo& createInfo) const;
 
     WebGPUDevice* m_device;
@@ -35,7 +36,10 @@ private:
     int m_width;
     int m_height;
     int m_imageIndex;
-    std::array<Ref<WebGPURenderTarget>, 3> m_currentRenderTargets;
+    std::array<Ref<WebGPURenderTarget>, BackbufferCount> m_currentRenderTargets;
+
+    WGPUTexture m_nativeCurrentTexture;
+    WGPUTextureView m_nativeCurrentTextureView;
 };
 
 } // namespace detail

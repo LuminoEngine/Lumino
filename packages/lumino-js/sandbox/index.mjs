@@ -10,6 +10,7 @@ let commandList = undefined;
 let viewPoint = undefined;
 let texture = undefined;
 let material = undefined;
+let frameCount = 0;
 
 const options = {
     wasmPath: "../lib/LuminoFFI.wasm",
@@ -55,108 +56,59 @@ Lumino.Runtime.initialize(options).then(async () => {
 
     //Lumino.API.LNInstance_Terminate();
 
-function isReady() {
-    return texture !== undefined;
-}
+    function isReady() {
+        return texture !== undefined;
+    }
 
-function render() {
+    function render() {
 
-    if (isReady()) {
-        console.log("=== Begin Frame ===");
-        viewPoint.setupPerspective2D(800, 600);
+        if (isReady()) {
+            console.log("=== Begin Frame ===");
+            viewPoint.setupPerspective2D(800, 600);
 
-        graphcisContext.prepareFrame(800, 600);
+            graphcisContext.prepareFrame(800, 600);
 
-        const commandList = graphcisContext.commandList();
-    
-        {
-            const desc = {
-                renderTargets: [
-                    {
-                        renderTarget: graphcisContext.currentColorBuffer,
-                        clearColor: { r: 0, g: 1, b: 1, a: 1 }
+            const commandList = graphcisContext.commandList();
+        
+            {
+                const desc = {
+                    renderTargets: [
+                        {
+                            renderTarget: graphcisContext.currentColorBuffer,
+                            clearColor: { r: 0, g: 1, b: 1, a: 1 }
+                        }
+                    ],
+                    depthBuffer: {
+                        depthBuffer: graphcisContext.currentDepthBuffer,
+                        clearDepth: 1.0,
+                        clearStencil: 0,
                     }
-                ],
-                depthBuffer: {
-                    depthBuffer: graphcisContext.currentDepthBuffer,
-                    clearDepth: 1.0,
-                    clearStencil: 0,
-                }
-            };
+                };
 
-            const renderPass = commandList.beginRenderPass(desc, viewPoint);
-            const spriteRenderer = Lumino.SpriteRenderer.get();
-            spriteRenderer.beginBatch(commandList, material, new Lumino.Matrix());
-            spriteRenderer.drawSprite(
-                null,
-                { width: 256, height: 256 },
-                { x: 0, y: 0 },
-                {x: 0, y: 0, width: 1, height: 1},
-                {r: 1, g: 1, b: 1, a: 1},
-                Lumino.SpriteBaseDirection.Basic2D,
-                Lumino.BillboardType.None);
-            spriteRenderer.endBatch();
-            renderPass.end();
+                const renderPass = commandList.beginRenderPass(desc, viewPoint);
+                const spriteRenderer = Lumino.SpriteRenderer.get();
+                spriteRenderer.beginBatch(commandList, material, new Lumino.Matrix());
+                spriteRenderer.drawSprite(
+                    null,
+                    { width: 256, height: 256 },
+                    { x: 0, y: 0 },
+                    {x: 0, y: 0, width: 1, height: 1},
+                    {r: 1, g: 1, b: 1, a: 1},
+                    Lumino.SpriteBaseDirection.Basic2D,
+                    Lumino.BillboardType.None);
+                spriteRenderer.endBatch();
+                renderPass.end();
+            }
+        
+            graphcisContext.submitCommandList(commandList);
+            console.log("=== End Frame ===");
         }
-    
-        graphcisContext.submitCommandList(commandList);
-        console.log("=== End Frame ===");
+
+        //if (frameCount < 2) {
+            window.requestAnimationFrame(render);
+        //}
+        frameCount++;
     }
 
-    window.requestAnimationFrame(render);
-}
-
-render();
-
-
-
-    // console.log("canvas", canvas);
-    // console.log("Lumino.Runtime.module.GL", Lumino.Runtime.module.GL);
-    // const emGLContextHandle = Lumino.Runtime.module.GL.registerContext(gl, {
-    //     // option は Effekseer を参考にしています。
-    //     // Emscripte の生成するコードではコンテキスト情報として保持するものの参照はされていないようなので、仮の値を設定しておきます。
-    //     // ※設定しておかないと ReferenceError が発生します。
-    //     majorVersion: 1,
-    //     minorVersion: 0,
-    //     enableExtensionsByDefault: true,
-    // });
-    // console.log("emGLContextHandle", emGLContextHandle);
-
-    
-    // gl.clearColor(0.0, 0.0, 1.0, 1.0);
-    // gl.clear(gl.COLOR_BUFFER_BIT);
-
-    /*
-    if (!canvas.getContextSafariWebGL2Fixed) {
-        canvas.getContextSafariWebGL2Fixed = canvas.getContext;
-        function fixedGetContext(ver, attrs) {
-            var gl = canvas.getContextSafariWebGL2Fixed(ver, attrs);
-            return ((ver == 'webgl') == (gl instanceof WebGLRenderingContext)) ? gl : null;
-        }
-        canvas.getContext = fixedGetContext;
-    }
-
-      var ctx =
-        (canvas.getContext("webgl", webGLContextAttributes)
-          // https://caniuse.com/#feat=webgl
-          );
-
-      if (!ctx) return 0;
-      */
+    render();
 });
-
-
-// const promise = LuminoFFI();
-// promise.then((module) => {
-//     console.log("loaded 1", module);
-
-
-//     Lumino.API = {
-//         LNInstance_Initialize: module.cwrap("LNInstance_Initialize", "number", []),
-//     };
-
-
-//     const result = Lumino.API.LNInstance_Initialize();
-//     console.log("Lumino initialized", result);
-// });
-

@@ -29,7 +29,12 @@ Result_deprecated<> WebGPURenderPass::init(
         WGPURenderPassColorAttachment* attachment = &m_colorAttachments[i];
         attachment->view = nullptr;          // set at resolve();
         attachment->resolveTarget = nullptr; // MSAA で使うらしい？
-        attachment->loadOp = WGPULoadOp_Clear;
+        if (clearFlags & ClearFlags::Color) {
+            attachment->loadOp = WGPULoadOp_Clear;
+        }
+        else {
+            attachment->loadOp = WGPULoadOp_Load;
+        }
         attachment->storeOp = WGPUStoreOp_Store;
         attachment->clearValue = WGPUColor{ clearColor.r, clearColor.g, clearColor.b, clearColor.a };
 #ifndef WEBGPU_BACKEND_WGPU

@@ -64,6 +64,8 @@ kanata::DrawEventList* SurfaceContext::drawEventList() const {
 
 void SurfaceContext::beginFrame() {
     m_frameTimer.start();
+
+    m_context->nextFrame();
 }
 
 void SurfaceContext::endFrame() {

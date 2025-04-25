@@ -20,7 +20,9 @@ WebGPUSwapChain::WebGPUSwapChain()
     , m_width(0)
     , m_height(0)
     , m_imageIndex(0)
-    , m_currentRenderTargets{} {
+    , m_currentRenderTargets{}
+    , m_nativeCurrentTexture(nullptr)
+    , m_nativeCurrentTextureView(nullptr) {
 }
 
 MaybeResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainCreateInfo& createInfo) {
@@ -104,10 +106,13 @@ MaybeResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainCreateInf
 
     
     if (!createInfo.window) {
-        WGPUSurfaceTexture surfaceTexture;
-        wgpuSurfaceGetCurrentTexture(m_wgpuSurface, &surfaceTexture);
-        m_width = wgpuTextureGetWidth(surfaceTexture.texture);
-        m_height = wgpuTextureGetHeight(surfaceTexture.texture);
+        //WGPUSurfaceTexture surfaceTexture;
+        //wgpuSurfaceGetCurrentTexture(m_wgpuSurface, &surfaceTexture);
+        //m_width = wgpuTextureGetWidth(surfaceTexture.texture);
+        //m_height = wgpuTextureGetHeight(surfaceTexture.texture);
+        m_width = 800;
+        m_height = 600;
+        //std::cout << "surfaceTexture: " << surfaceTexture.texture << std::endl;
         std::cout << "canvas backbuffer size: " << m_width << "," << m_height << std::endl;
     }
 
@@ -131,6 +136,7 @@ void WebGPUSwapChain::onDestroy() {
         i->destroy();
     }
     m_currentRenderTargets = {};
+    releaseCurrentTexture();
     m_wgpuSurface = nullptr;
 }
 
@@ -139,6 +145,7 @@ uint32_t WebGPUSwapChain::getBackbufferCount() {
 }
 
 void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
+    releaseCurrentTexture();
     *outImageIndex = m_imageIndex;
     
 	// Get the surface texture
@@ -157,6 +164,7 @@ void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
         return;
     }
 #endif
+    m_nativeCurrentTexture = surfaceTexture.texture;
     
 	// Create a view for this surface texture
     WGPUTextureViewDescriptor viewDescriptor = WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;
@@ -169,17 +177,10 @@ void WebGPUSwapChain::acquireNextImage(int* outImageIndex) {
     viewDescriptor.baseArrayLayer = 0;
     viewDescriptor.arrayLayerCount = 1;
     viewDescriptor.aspect = WGPUTextureAspect_All;
-    WGPUTextureView targetView = wgpuTextureCreateView(surfaceTexture.texture, &viewDescriptor);
-
-    // https://github.com/eliemichel/LearnWebGPU-Code/blob/step025/main.cpp
-#ifndef WEBGPU_BACKEND_WGPU
-    // We no longer need the texture, only its view
-    // (NB: with wgpu-native, surface textures must not be manually released)
-    //wgpuTextureRelease(surfaceTexture.texture);
-#endif // WEBGPU_BACKEND_WGPU
+    m_nativeCurrentTextureView = wgpuTextureCreateView(surfaceTexture.texture, &viewDescriptor);
 
     WebGPURenderTarget* renderTarget = m_currentRenderTargets[m_imageIndex];
-    renderTarget->wrapTextureView(surfaceTexture.texture, targetView);
+    renderTarget->wrapTextureView(surfaceTexture.texture, m_nativeCurrentTextureView);
 }
 
 RHIResource* WebGPUSwapChain::getRenderTarget(int imageIndex) const {
@@ -201,6 +202,18 @@ void WebGPUSwapChain::present() {
 //#endif
 
     m_imageIndex = (m_imageIndex + 1) % BackbufferCount;
+}
+
+// https://webgpu-native.github.io/webgpu-headers/Surfaces.html#Surface-Presenting
+void WebGPUSwapChain::releaseCurrentTexture() {
+    if (m_nativeCurrentTextureView) {
+        wgpuTextureViewRelease(m_nativeCurrentTextureView);
+        m_nativeCurrentTextureView = nullptr;
+    }
+    if (m_nativeCurrentTexture) {
+        wgpuTextureRelease(m_nativeCurrentTexture);
+        m_nativeCurrentTexture = nullptr;
+    }
 }
 
 // https://github.com/eliemichel/glfw3webgpu/blob/main/glfw3webgpu.c

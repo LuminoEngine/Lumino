@@ -71,6 +71,7 @@ public:
     // resolve せず直接取得する。
     detail::RHIDeviceObject* getRHIObject(IGraphicsObject* object) const;
 
+    void nextFrame();
     void submitCurrentCommandList();
     void present();
 
@@ -94,7 +95,6 @@ protected:
     int getBackbufferCount() const;
     void resizeBackbuffer(int width, int height);
     void resetRHIBackbuffers();
-    void nextFrame();
     void presentInternal();
     detail::ISwapChain* resolveRHIObject(GraphicsCommandList* context, bool* outModified) const;
     int imageIndex() const { return m_imageIndex; }

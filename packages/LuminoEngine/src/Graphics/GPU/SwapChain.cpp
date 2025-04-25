@@ -57,7 +57,6 @@ MaybeResult GraphicsContext::init(detail::ISwapChain* rhiObject) {
         m_commandLists[i] = commandList;
     }
 
-    nextFrame();
     return LN_MAKE_SUCCESS();
 }
 
@@ -136,7 +135,6 @@ void GraphicsContext::resizeBackbuffer(int width, int height) {
 
     if (LN_ENSURE(m_rhiObject->resizeBackbuffer(width, height))) return;
     resetRHIBackbuffers();
-    nextFrame();
 }
 
 RenderTargetTexture* GraphicsContext::currentBackbuffer() const {
@@ -174,8 +172,6 @@ void GraphicsContext::submitCurrentCommandList() {
 
 void GraphicsContext::present() {
     presentInternal();
-
-    nextFrame();
 }
 
 void GraphicsContext::resetRHIBackbuffers() {
