@@ -89,7 +89,7 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsCommandList* context, Rende
 	if (m_generators.isEmpty()) return;
     auto localBatch = static_cast<Batch*>(batch);
 
-    // TODO: ↓ SceneRenderer から、一連の Batch 描画の開始タイミングを教えてもらってそこでやるほうがいいかも
+    // TODO: ↓ SceneRenderPass から、一連の Batch 描画の開始タイミングを教えてもらってそこでやるほうがいいかも
     if (localBatch->data.indexOffset == 0) {
         // Prepare buffers
         int vertexCount = 0;

@@ -724,7 +724,7 @@ void CommandList::setObjectId(int value) {
     m_builder->setObjectId(value);
 }
 
-// FIXME: 旧 SceneRenderer のステートフルな実装と、新しい方式をつなぐための一時的な措置
+// FIXME: 旧 SceneRenderPass のステートフルな実装と、新しい方式をつなぐための一時的な措置
 //void CommandList::applyBatchMaterial(kanata::Batch* batch) {
 //    const auto& params = m_builder->primaryGeometryStageParameters();
 //    if (params.m_blendMode) {

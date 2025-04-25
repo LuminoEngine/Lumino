@@ -23,7 +23,7 @@ public:
 	// DrawElement が持っている CombinedWorldTransform への参照。
 	// null の場合は Matrix::Identity とみなす。
 	// 単純に RenderFeatureBatch のサイズを増やしたくないのでポインタで用意してある。
-	// RenderFeatureBatch の寿命は SceneRenderer の内部だけであり、その間は DrawElement(が持っている CombinedWorldTransform) が消えることはない。
+	// RenderFeatureBatch の寿命は SceneRenderPass の内部だけであり、その間は DrawElement(が持っている CombinedWorldTransform) が消えることはない。
 	// Sprite や SpriteText など DynamicVertexBuffer を作るものたちは、Vertex を作るときに Transform するので、これは null となる。
 	// Mesh (サブセット単位) などはこれに値がセットされる。
 	const Matrix* m_worldTransform;

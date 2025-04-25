@@ -30,7 +30,7 @@ class SurfaceContext;
 class BatchRenderer;
 class PrimitiveMeshRenderer;
 class SpriteTextRenderer;
-class SceneRenderer;
+class SceneRenderPass;
 class RendererServer;
 class DebugPrint;
 
@@ -123,7 +123,7 @@ enum class SceneClearMode {
 };
 
 // DrawElement の大分類。SceneRenderer に投入する DrawElement を決める。
-// SceneRenderer 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
+// SceneRenderPass 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
 enum class RenderPart {
     // シーンのメインコンテンツ。
     // Projection が 3D か 2D(デバイス非依存ピクセル2D座標系) かは RenderView に依る。

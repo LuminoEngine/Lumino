@@ -67,7 +67,7 @@ Material* RenderStage::getMaterialFinal(Material* priorityValue, Material* scene
 	// specified context->setMaterial() or meshObj->setMaterial()
 	if (geometryStageParameters->m_material) return geometryStageParameters->m_material;
 
-    // default は SceneRenderer に決めてもらう
+    // default は SceneRenderPass に決めてもらう
 	return sceneDefaultMaterial;
 }
 

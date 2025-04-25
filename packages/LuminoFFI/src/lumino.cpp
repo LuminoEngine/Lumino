@@ -19,7 +19,7 @@
 #include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
-#include <LuminoEngine/Rendering/SceneRenderer.hpp>
+#include <LuminoEngine/Rendering/SceneRenderPass.hpp>
 #include <LuminoEngine/Rendering/DebugPrint.hpp>
 #include <lumino.h>
 
@@ -119,13 +119,6 @@ extern "C" {
 //   - 継承されたクラスを使いづらくなるため。
 //     例えば LNTexture2D を LNTextre として LNMaterial にセットしたいときなど。
 //     キャストして使ってもよいが、そうすると LNHandle のまま使うのと大差なくなるかも。
-
-class FFIRenderPass : public ln::Object {
-public:
-    SurfaceContext* owner;
-    Ref<kanata::DrawEventsEncoder> sceneRenderPass;
-    RenderPass* renderPass;
-};
 
 //==============================================================================
 
@@ -334,60 +327,61 @@ LNResult LNCommandList_BeginRenderPass(
     LNHandle renderingViewPoint_,
     LNHandle* outRenderPass_) {
     LN_FFI_TRY_BEGIN;
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
     RenderViewPoint* renderingViewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, renderingViewPoint_);
+
+    // Get RenderPass
+    RenderPass* renderPass = nullptr;
+    {
+        ln::ClearFlags clearFlags = ln::ClearFlags::None;
+        if (descriptor_.renderTargets[0].clearEnable) {
+            clearFlags = clearFlags | ln::ClearFlags::Color;
+        }
+        if (descriptor_.depthBuffer.clearDepthEnable) {
+            clearFlags = clearFlags | ln::ClearFlags::Depth;
+        }
+        if (descriptor_.depthBuffer.clearStencilEnable) {
+            clearFlags = clearFlags | ln::ClearFlags::Stencil;
+        }
+        renderPass = RenderPass::get(
+            LN_HANDLE_TO_OBJECT(RenderTargetTexture, descriptor_.renderTargets[0].renderTarget),
+            LN_HANDLE_TO_OBJECT(DepthBuffer, descriptor_.depthBuffer.depthBuffer),
+            static_cast<ln::ClearFlags>(clearFlags),
+            Color(
+                descriptor_.renderTargets[0].clearColor[0],
+                descriptor_.renderTargets[0].clearColor[1],
+                descriptor_.renderTargets[0].clearColor[2],
+                descriptor_.renderTargets[0].clearColor[3]),
+            descriptor_.depthBuffer.clearDepth,
+            descriptor_.depthBuffer.clearStencil);
+    }
+
     renderingContext->renderingContext()->clearCommandsAndState(renderingViewPoint);
+    SceneRenderPass* sceneRenderPass = renderingManager->sceneRenderer();
+    sceneRenderPass->reset(renderingContext, renderPass, renderingViewPoint);
 
-    
-    Ref<FFIRenderPass> renderPass = makeObject_deprecated<FFIRenderPass>();
-    renderPass->owner = renderingContext;
 
-    ln::ClearFlags clearFlags = ln::ClearFlags::None;
-    if (descriptor_.renderTargets[0].clearEnable) {
-        clearFlags = clearFlags | ln::ClearFlags::Color;
-	}
-    if (descriptor_.depthBuffer.clearDepthEnable) {
-		clearFlags = clearFlags | ln::ClearFlags::Depth;
-	}
-	if (descriptor_.depthBuffer.clearStencilEnable) {
-		clearFlags = clearFlags | ln::ClearFlags::Stencil;
-	}
-
-    renderPass->renderPass = RenderPass::get(
-        LN_HANDLE_TO_OBJECT(RenderTargetTexture, descriptor_.renderTargets[0].renderTarget), 
-        LN_HANDLE_TO_OBJECT(DepthBuffer, descriptor_.depthBuffer.depthBuffer),
-        static_cast<ln::ClearFlags>(clearFlags),
-        Color(
-            descriptor_.renderTargets[0].clearColor[0],
-            descriptor_.renderTargets[0].clearColor[1],
-            descriptor_.renderTargets[0].clearColor[2],
-            descriptor_.renderTargets[0].clearColor[3]),
-        descriptor_.depthBuffer.clearDepth,
-        descriptor_.depthBuffer.clearStencil
-    );
-
-    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
-    renderPass->sceneRenderPass = makeRef<kanata::DrawEventsEncoder>(renderingManager);
-
-    *outRenderPass_ = ::Runtime::wrapObject(renderPass, true);
+    *outRenderPass_ = ::Runtime::wrapObject(sceneRenderPass, false);
 
     
     // 背景クリアテスト
-    renderingContext->commandList()->beginRenderPass(renderPass->renderPass);
-    //renderingContext->commandList->clear(ClearFlags::All, Color::Aqua);
-    renderingContext->commandList()->endRenderPass();
+    //renderingContext->commandList()->beginRenderPass(renderPass->renderPass);
+    ////renderingContext->commandList->clear(ClearFlags::All, Color::Aqua);
+    //renderingContext->commandList()->endRenderPass();
 
-    renderingManager->sceneRenderer()->reset(renderingViewPoint);
 
     LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle renderPass_) {
     LN_FFI_TRY_BEGIN;
-    FFIRenderPass* renderPass = LN_HANDLE_TO_OBJECT(FFIRenderPass, renderPass_);
-    GraphicsContext* context = renderPass->owner->context();
-    CommandList* renderingContext = renderPass->owner->renderingContext();
-    kanata::DrawEventList* drawEventList = renderPass->owner->drawEventList();
+    detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
+    kanata::DrawEventsEncoder* drawEventsEncoder = renderingManager->drawEventsEncoder();
+    SceneRenderPass* renderPass = LN_HANDLE_TO_OBJECT(SceneRenderPass, renderPass_);
+    GraphicsContext* context = renderPass->currentContext()->context();
+    CommandList* renderingContext = renderPass->currentContext()->renderingContext();
+    kanata::DrawEventList* drawEventList = renderPass->currentContext()->drawEventList();
 
     if (1) {
 
@@ -412,7 +406,6 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
             // URef<kanata::BatchCollector> g_batchList;
             //URef<kanata::BoxMeshBatchProxy> g_boxMeshBatchProxy;
 
-            detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
             // g_batchList = makeURef<kanata::BatchCollector>(renderingManager);
             kanata::BatchCollector* batchList = renderingContext->batchCollector();
             //g_drawCommandList =
@@ -498,10 +491,10 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
 
                 drawEventList->clear();
                 //ln::ElapsedTimer t1;
-                renderPass->sceneRenderPass->buildDrawEvents(
+                drawEventsEncoder->buildDrawEvents(
                     batchList,
                     commandList,
-                    renderPass->renderPass,
+                    renderPass->currentRenderPass(),
                     renderViewInfo,
                     sceneInfo,
                     drawEventList);
@@ -514,8 +507,6 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
 #endif
     }
 
-    // TODO: まだキャッシュとかできていなのでこれが必要
-    LNObject_Release(renderPass_);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -904,7 +895,7 @@ LNResult LNBatchRenderer_DrawSprite_deprecated(
     data.billboardType = static_cast<BillboardType>(billboardType);
     data.flipFlags = SpriteFlipFlags::None;
 
-    SceneRenderer* renderer = detail::RenderingManager::instance()->sceneRenderer();
+    SceneRenderPass* renderer = detail::RenderingManager::instance()->sceneRenderer();
     renderer->drawSprite(g_lastMaterial, data);
 
     //BatchRenderer* renderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer);

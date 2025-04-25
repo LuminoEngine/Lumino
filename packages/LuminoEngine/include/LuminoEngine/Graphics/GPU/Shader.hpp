@@ -58,7 +58,7 @@ class UnifiedShaderTechnique;
     極限まで最適化するなら SingleFrame 以外の UniformBuffer もほしいが、ひとまず保留。
     というか Vulkan の allocationCount の問題があったけど、Buffer 自体はそれほど多く作れるものではない。
     またMaterial から使うときも、結局 Material 自体は UniformBuffer を持たずに map で値を持っていて、
-    SceneRenderer から submit するときに その map のデータを SingleFrame UniformBuffer へ転記する。
+    SceneRenderPass から submit するときに その map のデータを SingleFrame UniformBuffer へ転記する。
     ※こうしないと Material のシリアライズが大変。
 
     次に ShaderDefaultDescriptor の Pool を作る。
@@ -81,7 +81,7 @@ class UnifiedShaderTechnique;
     ただこの人は UniformBuffer ではなく普通の ByteArray を持つようにしなければならない。
 
 
-    SceneRenderer 辺りからの使われ方は、だいたい次のようになる。
+    SceneRenderPass 辺りからの使われ方は、だいたい次のようになる。
     ```
     viewUniformBuffer = シーン描画開始時に確定して共有
 
@@ -98,7 +98,7 @@ class UnifiedShaderTechnique;
 
     [2020/12/16] そもそも ShaderDescriptor をたくさん作れるようにする必要はある？
     ----------
-    SceneRenderer から本気でマルチスレッドでコマンドリスト作る場合…かな。
+    SceneRenderPass から本気でマルチスレッドでコマンドリスト作る場合…かな。
 
     Vulkan は API の仕様上 Pool からたくさんの Descriptor を作る必要があるけど、
     ラッパー側では 092f21e7507a6480d61249480ad267bb1916e22f 時点のように

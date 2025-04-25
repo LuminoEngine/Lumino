@@ -72,7 +72,7 @@ enum class BuiltinMaterial {
  * コマンドリストを構築する。
  * ※描画自体はコマンドリストがあればいいので RenderingContext はなくてもいいが、手動でコマンドリストを作るのは非常に大変なので、ある意味ユーティリティ的な立ち位置のクラス。
  *
- * ### SceneRenderer
+ * ### SceneRenderPass
  * コマンドリスト (RenderStage の集合) をどのように描画するかを決めるクラス。
  * 3D なら ForwardShading だったり、2D なら NoShading だったり。
  * RenderStage の集合に対して遅延描画などの描画方式の都合（不透明、半透明）や最適化のための並び替えフィルタリング、カリングなどを行い正確に効率よく描画する。
@@ -81,7 +81,7 @@ enum class BuiltinMaterial {
  * ### RenderView
  * シーンレンダリングが行われるフレームバッファと考えてよい。
  * RenderStage の集合 を入力して描画を行う、シーンレンダリングのエントリーポイント。
- * SceneRenderer のインスタンスを持つ。（SceneRendererとは 1:1 の関係）
+ * SceneRenderPass のインスタンスを持つ。（SceneRendererとは 1:1 の関係）
  * RenderStage の集合 に対しては n:n。
  * これは主にエディタ上で、シーンのプレビューを異なるウィンドウで見れるようにするための仕組み。(通常レンダリングと深度マップを同時表示など)
  * オフスクリーンレンダリングでも使用される。
@@ -113,7 +113,7 @@ enum class BuiltinMaterial {
  * --------
  * RenderingContext は CommandBuffer を構築する。
  * CommandBuffer は fix したら、それが持つ描画コマンドをもとに RenderStage リストを構築する。
- * SceneRenderer はコマンド実行ポイントで、CommandBuffer が持つ RenderStage リストを実行する。
+ * SceneRenderPass はコマンド実行ポイントで、CommandBuffer が持つ RenderStage リストを実行する。
  *
  * コマンド実行ポイント：https://docs.unity3d.com/ja/current/Manual/GraphicsCommandBuffers.html
  *
@@ -160,7 +160,8 @@ public:
     GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     FontManager* fontManager() const { return m_fontManager; }
     const Ref<VertexLayout>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
-    SceneRenderer* sceneRenderer() const;
+    SceneRenderPass* sceneRenderer() const;
+    kanata::DrawEventsEncoder* drawEventsEncoder() const;
     const URef<DebugPrint>& debugPrint() const { return m_debugPrint; }
 
     //const Ref<detail::IVertexDeclaration>& standardVertexDeclarationRHI() const { return m_standardVertexDeclarationRHI; }
@@ -198,7 +199,8 @@ private:
     GraphicsManager* m_graphicsManager;
     FontManager* m_fontManager;
     Ref<VertexLayout> m_standardVertexDeclaration;
-    Ref<SceneRenderer> m_sceneRenderer;
+    Ref<SceneRenderPass> m_sceneRenderer;
+    Ref<kanata::DrawEventsEncoder> m_drawEventsEncoder;
     URef<DebugPrint> m_debugPrint;
     //Ref<detail::IVertexDeclaration> m_standardVertexDeclarationRHI;
     // Ref<DrawElementListBuilder> m_renderStageListBuilder;

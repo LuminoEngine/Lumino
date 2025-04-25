@@ -23,7 +23,7 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/RendererServer.hpp>
-#include <LuminoEngine/Rendering/SceneRenderer.hpp>
+#include <LuminoEngine/Rendering/SceneRenderPass.hpp>
 
 namespace ln {
 
@@ -140,7 +140,8 @@ MaybeResult RenderingManager::init(const Options& options) {
     m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
     m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 
-    m_sceneRenderer = SceneRenderer::create(this);
+    m_sceneRenderer = SceneRenderPass::create(this);
+    m_drawEventsEncoder = makeRef<kanata::DrawEventsEncoder>(this);
 
     // DebugPrint
     {
@@ -187,8 +188,12 @@ void RenderingManager::dispose() {
     LN_LOG_DEBUG("RenderingManager dispose finished.");
 }
 
-SceneRenderer* RenderingManager::sceneRenderer() const {
+SceneRenderPass* RenderingManager::sceneRenderer() const {
     return m_sceneRenderer;
+}
+
+kanata::DrawEventsEncoder* RenderingManager::drawEventsEncoder() const {
+    return m_drawEventsEncoder;
 }
 
 } // namespace detail

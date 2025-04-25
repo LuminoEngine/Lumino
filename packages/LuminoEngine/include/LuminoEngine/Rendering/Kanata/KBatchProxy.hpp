@@ -12,7 +12,7 @@ struct BatchProxyState {
     int32_t renderPriority;
     int32_t objectId;
 
-    // TODO: 以下は廃止したい。旧 SceneRenderer との互換性のために残してある。 SceneRenderer レベルまで継承を重ねる意味があまりない。
+    // TODO: 以下は廃止したい。旧 SceneRenderPass との互換性のために残してある。 SceneRenderer レベルまで継承を重ねる意味があまりない。
     // SceneNode 側の Material の継承機能を強化したいところ。
     Optional_deprecated<BlendMode> m_blendMode;
     Optional_deprecated<CullMode> m_cullingMode;

@@ -4,17 +4,17 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/RenderViewPoint.hpp>
-#include <LuminoEngine/Rendering/SceneRenderer.hpp>
+#include <LuminoEngine/Rendering/SceneRenderPass.hpp>
 
 namespace ln {
 
-Ref<SceneRenderer> SceneRenderer::create(detail::RenderingManager* manager) {
-    Ref<SceneRenderer> instance(LN_NEW SceneRenderer(manager), false);
+Ref<SceneRenderPass> SceneRenderPass::create(detail::RenderingManager* manager) {
+    Ref<SceneRenderPass> instance(LN_NEW SceneRenderPass(manager), false);
     instance->init();
     return instance;
 }
 
-SceneRenderer::SceneRenderer(detail::RenderingManager* manager)
+SceneRenderPass::SceneRenderPass(detail::RenderingManager* manager)
     : m_manager(manager)
     , m_dataAllocator(makeRef<detail::LinearAllocator>(manager->stageDataPageManager()))
     , m_rendererServer(nullptr)
@@ -26,15 +26,16 @@ SceneRenderer::SceneRenderer(detail::RenderingManager* manager)
     m_rendererServer = RendererServer::create();
 }
 
-void SceneRenderer::dispose() {
+void SceneRenderPass::onDispose(bool explicitDisposing) {
     destructDrawElementList();
+    Object::onDispose(explicitDisposing);
 }
 
-RendererServer* SceneRenderer::rendererServer() const {
+RendererServer* SceneRenderPass::rendererServer() const {
     return m_rendererServer;
 }
 
-void SceneRenderer::destructDrawElementList() {
+void SceneRenderPass::destructDrawElementList() {
     DrawElement* p = m_headDrawElement;
     while (p) {
         p->~DrawElement();
@@ -45,7 +46,7 @@ void SceneRenderer::destructDrawElementList() {
     m_visibleDrawElementCount = 0;
 }
 
-void SceneRenderer::addDrawElement(DrawElement* instance) {
+void SceneRenderPass::addDrawElement(DrawElement* instance) {
     if (m_tailDrawElement) {
         m_tailDrawElement->next = instance;
     }
@@ -55,13 +56,15 @@ void SceneRenderer::addDrawElement(DrawElement* instance) {
     m_tailDrawElement = instance;
 }
 
-void SceneRenderer::reset(const RenderViewPoint* currentViewPoint) {
-    m_currentViewPoint = currentViewPoint;
+void SceneRenderPass::reset(SurfaceContext* context, RenderPass* renderPass, const RenderViewPoint* viewPoint) {
+    m_currentContext = context;
+    m_currentRenderPass = renderPass;
+    m_currentViewPoint = viewPoint;
     destructDrawElementList();
     m_dataAllocator->cleanup();
 }
 
-void SceneRenderer::render(CommandList* commandList) {
+void SceneRenderPass::render(CommandList* commandList) {
     // 可視 DrawElement を配列に集める
     auto** visibleElements = static_cast<DrawElement**>(
         m_dataAllocator->allocate(sizeof(DrawElement*) * m_visibleDrawElementCount));
@@ -110,7 +113,7 @@ void SceneRenderer::render(CommandList* commandList) {
     }
 }
 
-void SceneRenderer::setupElement(DrawElement* instance) {
+void SceneRenderPass::setupElement(DrawElement* instance) {
     // TODO: View Culling
     // instance.visible = ...;
     m_visibleDrawElementCount++;
@@ -136,7 +139,7 @@ void SceneRenderer::setupElement(DrawElement* instance) {
     }
 }
 
-void SceneRenderer::drawSprite(Material* material, const SpriteData& data) {
+void SceneRenderPass::drawSprite(Material* material, const SpriteData& data) {
     struct SpriteDrawElement final : public DrawElement {
         SpriteData data;
         Material* material;
