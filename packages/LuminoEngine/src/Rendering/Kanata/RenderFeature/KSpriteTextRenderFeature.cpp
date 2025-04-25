@@ -2,6 +2,7 @@
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
 #include <LuminoEngine/Graphics/GPU/Texture.hpp>
 #include <LuminoEngine/Graphics/GPU/SamplerState.hpp>
+#include <LuminoEngine/Rendering/RenderViewPoint.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>

@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/GPU/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GPU/SwapChain.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
+#include <LuminoEngine/Rendering/RenderViewPoint.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>

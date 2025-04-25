@@ -2,7 +2,6 @@
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/detail/MeshGenerater.hpp>
@@ -30,10 +29,6 @@ PrimitiveMeshRenderer::PrimitiveMeshRenderer()
 Result_deprecated<> PrimitiveMeshRenderer::init() {
     if (!Object::init()) return err();
     return ok();
-}
-
-void PrimitiveMeshRenderer::begin(RenderingContext_deprecated* renderingContext, Material* material) {
-    begin(renderingContext->commandList(), material);
 }
 
 void PrimitiveMeshRenderer::begin(CommandList* commandList, Material* material) {

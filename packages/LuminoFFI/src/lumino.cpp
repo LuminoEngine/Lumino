@@ -15,6 +15,7 @@
 #include <LuminoEngine/Asset/detail/AssetManager.hpp>
 #include <LuminoEngine/Graphics/Font/detail/FontManager.hpp>
 #include <LuminoEngine/Graphics/GraphicsManager.hpp>
+#include <LuminoEngine/Rendering/RenderViewPoint.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>

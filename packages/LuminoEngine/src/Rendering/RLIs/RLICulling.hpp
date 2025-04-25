@@ -11,7 +11,7 @@ class RLICulling_deprecated {
 public:
     RLICulling_deprecated();
     void cull(
-        const RenderView* renderView,
+        //const RenderView* renderView,
         //RenderingContext_deprecated* renderingContext,
         CommandListServer* commandListServer);
 

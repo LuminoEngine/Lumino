@@ -112,7 +112,6 @@ file(GLOB LN_SOURCES_Rendering "include/LuminoEngine/Rendering/*.hpp" "include/L
 file(GLOB LN_SOURCES_Rendering_RLIs "src/Rendering/RLIs/*.cpp" "src/Rendering/RLIs/*.hpp")
 file(GLOB LN_SOURCES_Rendering_RenderFeature_deprecated "include/LuminoEngine/Rendering/RenderFeature/*.hpp" "src/Rendering/RenderFeature/*.cpp" "src/Rendering/RenderFeature/*.hpp")
 file(GLOB LN_SOURCES_Rendering_FeatureRenderer "include/LuminoEngine/Rendering/FeatureRenderer/*.hpp" "src/Rendering/FeatureRenderer/*.cpp" "src/Rendering/FeatureRenderer/*.hpp")
-file(GLOB LN_SOURCES_Rendering_RenderingPipeline "include/LuminoEngine/Rendering/RenderingPipeline/*.hpp" "src/Rendering/RenderingPipeline/*.cpp" "src/Rendering/RenderingPipeline/*.hpp")
 file(GLOB LN_SOURCES_Rendering_Kanata "include/LuminoEngine/Rendering/Kanata/*.hpp" "src/Rendering/Kanata/*.cpp" "src/Rendering/Kanata/*.hpp")
 file(GLOB LN_SOURCES_Rendering_Kanata_RenderFeature "include/LuminoEngine/Rendering/Kanata/RenderFeature/*.hpp" "src/Rendering/Kanata/RenderFeature/*.cpp" "src/Rendering/Kanata/RenderFeature/*.hpp")
 file(GLOB LN_SOURCES_Testing "include/LuminoEngine/Testing/*.hpp" "src/Testing/*.cpp" "src/Testing/*.hpp")
@@ -170,7 +169,6 @@ source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("Rendering/RLIs" FILES ${LN_SOURCES_Rendering_RLIs})
 source_group("Rendering/RenderFeature_deprecated" FILES ${LN_SOURCES_Rendering_RenderFeature_deprecated})
 source_group("Rendering/FeatureRenderer" FILES ${LN_SOURCES_Rendering_FeatureRenderer})
-source_group("Rendering/RenderingPipeline" FILES ${LN_SOURCES_Rendering_RenderingPipeline})
 source_group("Rendering/Kanata" FILES ${LN_SOURCES_Rendering_Kanata})
 source_group("Rendering/Kanata/RenderFeature" FILES ${LN_SOURCES_Rendering_Kanata_RenderFeature})
 source_group("Testing" FILES ${LN_SOURCES_Testing})
@@ -210,7 +208,6 @@ set(LN_SOURCES
     ${LN_SOURCES_Rendering_RLIs}
     ${LN_SOURCES_Rendering_RenderFeature_deprecated}
     ${LN_SOURCES_Rendering_FeatureRenderer}
-    ${LN_SOURCES_Rendering_RenderingPipeline}
     ${LN_SOURCES_Rendering_Kanata}
     ${LN_SOURCES_Rendering_Kanata_RenderFeature}
     ${LN_SOURCES_Testing}

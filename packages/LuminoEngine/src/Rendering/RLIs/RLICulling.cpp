@@ -1,7 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include "../CommandListServer.hpp"

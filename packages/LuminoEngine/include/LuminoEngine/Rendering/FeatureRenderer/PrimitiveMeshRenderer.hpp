@@ -6,7 +6,6 @@ namespace ln {
 class PrimitiveMeshRenderer : public Object {
 public:
 
-    void begin(RenderingContext_deprecated* renderingContext, Material* material);
     void begin(CommandList* commandList, Material* material);
     void end();
 
