@@ -13,7 +13,8 @@ public:
     void cull(
         //const RenderView* renderView,
         //RenderingContext_deprecated* renderingContext,
-        CommandListServer* commandListServer);
+        //CommandListServer* commandListServer
+    );
 
     const DynamicLightInfo* mainLight() const { return m_mainLight; }
     const std::vector<const DynamicLightInfo*>& visibleLights() const { return m_visibleLights; }

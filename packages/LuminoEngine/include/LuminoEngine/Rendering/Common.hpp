@@ -253,7 +253,6 @@ class BuiltinEffectData;
 class RenderDrawElement;
 class SkeletonInstance;
 class MorphInstance;
-class CommandListServer;
 class RLIMaterial;
 class RLIBatchState;
 class FormattedText;

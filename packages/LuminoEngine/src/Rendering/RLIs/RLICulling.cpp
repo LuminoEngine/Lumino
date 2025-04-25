@@ -2,7 +2,6 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
-#include "../CommandListServer.hpp"
 #include "RLICulling.hpp"
 
 namespace ln {
