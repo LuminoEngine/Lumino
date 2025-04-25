@@ -11,7 +11,7 @@ class MeshResource;
 namespace detail {
 
 // 単純なメッシュ形状を描画する。
-// MeshRenderFeature が Mesh(VertexBuffer, IndexBuffer) を受け取って描画するのに対し、
+// MeshRenderFeature_deprecated が Mesh(VertexBuffer, IndexBuffer) を受け取って描画するのに対し、
 // こちらは形状の情報（球なら中心位置と半径）を受け取って描画する。そのためデータサイズを非常に小さく抑えることができる。
 // また、スプライトのようなバッファリングによるドローコール削減も狙う。
     /*

@@ -444,7 +444,7 @@ void CommandList::drawMesh(MeshResource* meshResource, int sectionIndex) {
 
         virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
             // TODO: boneTexture を送る仕組み
-            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, *state, context, meshResource, sectionIndex);
+            return static_cast<detail::MeshRenderFeature_deprecated*>(renderFeature)->drawMesh(batchList, *state, context, meshResource, sectionIndex);
         }
     };
 
@@ -461,7 +461,7 @@ void CommandList::drawMesh(MeshResource* meshResource, int sectionIndex) {
 
 void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex) {
     if (LN_ASSERT(mesh)) return;
-#ifdef LN_USE_KANATA
+
     class DrawMeshSFBatchProxy : public kanata::SingleFrameBatchProxy {
     public:
         Ref<Material> material;
@@ -476,34 +476,10 @@ void CommandList::drawMesh(MeshPrimitive* mesh, int sectionIndex) {
     proxy->material = m_builder->material();
     proxy->mesh = mesh;
     proxy->sectionIndex = sectionIndex;
-#else
-    class DrawMesh : public detail::RenderDrawElement {
-    public:
-        Ref<MeshPrimitive> mesh;
-        int sectionIndex;
-
-        // SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
-        //Ref<SkinnedMeshModel> skinnedMeshModel;
-
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-            // TODO: boneTexture を送る仕組み
-            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, *state, context, mesh, sectionIndex, nullptr, nullptr);
-        }
-    };
-
-    //if (meshResource->isInitialEmpty()) return;
-
-    m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
-    auto* element = m_builder->addNewDrawElement<DrawMesh>(m_manager->meshRenderFeature());
-    element->mesh = mesh;
-    element->sectionIndex = sectionIndex;
-
-    // TODO: bounding
-#endif
 }
 
 void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph) {
-#ifdef LN_USE_KANATA
+
     class DrawSkinndMeshSFBatchProxy : public kanata::SingleFrameBatchProxy {
     public:
         Ref<Material> material;
@@ -525,36 +501,11 @@ void CommandList::drawSkinnedMesh(MeshPrimitive* mesh, int sectionIndex, detail:
     proxy->sectionIndex = sectionIndex;
     proxy->skeleton = skeleton;
     proxy->morph = morph;
-#else
-    class DrawSkinnedMesh : public detail::RenderDrawElement {
-    public:
-        Ref<MeshPrimitive> mesh;
-        int sectionIndex;
-
-        // SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
-        Ref<detail::SkeletonInstance> skeleton;
-        Ref<detail::MorphInstance> morph;
-
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, *state, context, mesh, sectionIndex, skeleton, morph);
-        }
-    };
-
-    m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
-    auto* element = m_builder->addNewDrawElement<DrawSkinnedMesh>(m_manager->meshRenderFeature());
-    element->mesh = mesh;
-    element->sectionIndex = sectionIndex;
-    element->skeleton = skeleton;
-    element->morph = morph;
-
-    // TODO: bounding
-#endif
 }
 
 void CommandList::drawMeshInstanced(Material* material, InstancedMeshList* list) {
     if (LN_ASSERT(material)) return;
     if (LN_ASSERT(list)) return;
-#ifdef LN_USE_KANATA
     class DrawInstancedMeshListSFBatchProxy : public kanata::SingleFrameBatchProxy {
     public:
         Ref<Material> material;
@@ -570,22 +521,6 @@ void CommandList::drawMeshInstanced(Material* material, InstancedMeshList* list)
     auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<DrawInstancedMeshListSFBatchProxy>();
     proxy->material = material;
     proxy->list = list;
-#else
-    class DrawMeshInstanced : public detail::RenderDrawElement {
-    public:
-        Ref<InstancedMeshList> list;
-
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMeshInstanced(batchList, *state, context, list);
-        }
-    };
-
-    if (list->instanceCount() <= 0) return;
-
-    m_builder->setPrimitiveTopology(list->mesh()->sections()[list->sectionIndex()].topology);
-    auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(m_manager->meshRenderFeature());
-    element->list = list;
-#endif
 }
 
 void CommandList::drawTextSprite(const StringView& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font) {

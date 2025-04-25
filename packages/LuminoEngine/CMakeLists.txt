@@ -110,7 +110,7 @@ file(GLOB LN_SOURCES_Mesh_MeshImporters "include/LuminoEngine/Mesh/MeshGenerater
 file(GLOB LN_SOURCES_Mesh_MeshGeneraters "include/LuminoEngine/Mesh/detail/*.hpp" "src/Mesh/MeshGeneraters/*.cpp" "src/Mesh/MeshGeneraters/*.hpp")
 file(GLOB LN_SOURCES_Rendering "include/LuminoEngine/Rendering/*.hpp" "include/LuminoEngine/Rendering/detail/*.hpp" "src/Rendering/*.cpp" "src/Rendering/*.hpp")
 file(GLOB LN_SOURCES_Rendering_RLIs "src/Rendering/RLIs/*.cpp" "src/Rendering/RLIs/*.hpp")
-file(GLOB LN_SOURCES_Rendering_RenderFeature "include/LuminoEngine/Rendering/RenderFeature/*.hpp" "src/Rendering/RenderFeature/*.cpp" "src/Rendering/RenderFeature/*.hpp")
+file(GLOB LN_SOURCES_Rendering_RenderFeature_deprecated "include/LuminoEngine/Rendering/RenderFeature/*.hpp" "src/Rendering/RenderFeature/*.cpp" "src/Rendering/RenderFeature/*.hpp")
 file(GLOB LN_SOURCES_Rendering_FeatureRenderer "include/LuminoEngine/Rendering/FeatureRenderer/*.hpp" "src/Rendering/FeatureRenderer/*.cpp" "src/Rendering/FeatureRenderer/*.hpp")
 file(GLOB LN_SOURCES_Rendering_RenderingPipeline "include/LuminoEngine/Rendering/RenderingPipeline/*.hpp" "src/Rendering/RenderingPipeline/*.cpp" "src/Rendering/RenderingPipeline/*.hpp")
 file(GLOB LN_SOURCES_Rendering_Kanata "include/LuminoEngine/Rendering/Kanata/*.hpp" "src/Rendering/Kanata/*.cpp" "src/Rendering/Kanata/*.hpp")
@@ -168,7 +168,7 @@ source_group("Mesh/MeshImporters" FILES ${LN_SOURCES_Mesh_MeshImporters})
 source_group("Mesh/MeshGeneraters" FILES ${LN_SOURCES_Mesh_MeshGeneraters})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("Rendering/RLIs" FILES ${LN_SOURCES_Rendering_RLIs})
-source_group("Rendering/RenderFeature" FILES ${LN_SOURCES_Rendering_RenderFeature})
+source_group("Rendering/RenderFeature_deprecated" FILES ${LN_SOURCES_Rendering_RenderFeature_deprecated})
 source_group("Rendering/FeatureRenderer" FILES ${LN_SOURCES_Rendering_FeatureRenderer})
 source_group("Rendering/RenderingPipeline" FILES ${LN_SOURCES_Rendering_RenderingPipeline})
 source_group("Rendering/Kanata" FILES ${LN_SOURCES_Rendering_Kanata})
@@ -208,7 +208,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Mesh_MeshGeneraters}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_Rendering_RLIs}
-    ${LN_SOURCES_Rendering_RenderFeature}
+    ${LN_SOURCES_Rendering_RenderFeature_deprecated}
     ${LN_SOURCES_Rendering_FeatureRenderer}
     ${LN_SOURCES_Rendering_RenderingPipeline}
     ${LN_SOURCES_Rendering_Kanata}

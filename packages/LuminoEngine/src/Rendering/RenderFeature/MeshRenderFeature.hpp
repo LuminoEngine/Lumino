@@ -9,11 +9,11 @@ class MeshSkeleton;
 class InstancedMeshList;
 namespace detail {
 
-class MeshRenderFeature	// TODO: MeshSectionRenderFeature
+class MeshRenderFeature_deprecated	// TODO: MeshSectionRenderFeature
 	: public RenderFeature
 {
 public:
-	MeshRenderFeature();
+	MeshRenderFeature_deprecated();
 	void init(RenderingManager* manager);
 
 	RequestBatchResult drawMesh(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshResource* mesh, int sectionIndex);

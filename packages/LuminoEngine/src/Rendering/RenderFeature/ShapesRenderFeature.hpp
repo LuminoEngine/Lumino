@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
+#include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../RenderElement.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include "../RLIs/RLIBatchList.hpp"

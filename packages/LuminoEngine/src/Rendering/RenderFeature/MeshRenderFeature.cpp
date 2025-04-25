@@ -15,18 +15,18 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// MeshRenderFeature
+// MeshRenderFeature_deprecated
 
-MeshRenderFeature::MeshRenderFeature()
+MeshRenderFeature_deprecated::MeshRenderFeature_deprecated()
 {
 }
 
-void MeshRenderFeature::init(RenderingManager* manager)
+void MeshRenderFeature_deprecated::init(RenderingManager* manager)
 {
 	RenderFeature::init();
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshResource* mesh, int sectionIndex)
+RequestBatchResult MeshRenderFeature_deprecated::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshResource* mesh, int sectionIndex)
 {
 	if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
@@ -60,7 +60,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
+RequestBatchResult MeshRenderFeature_deprecated::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshPrimitive* mesh, int sectionIndex, detail::SkeletonInstance* skeleton, detail::MorphInstance* morph)
 {
     if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
@@ -154,7 +154,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, InstancedMeshList* list)
+RequestBatchResult MeshRenderFeature_deprecated::drawMeshInstanced(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, InstancedMeshList* list)
 {
 	if (LN_REQUIRE(list != nullptr)) return RequestBatchResult::Staging;
 
@@ -189,7 +189,7 @@ RequestBatchResult MeshRenderFeature::drawMeshInstanced(detail::RenderFeatureBat
 	return RequestBatchResult::Submitted;
 }
 
-RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList, bool instanced)
+RequestBatchResult MeshRenderFeature_deprecated::attemptSubmitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList, bool instanced)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -209,12 +209,12 @@ RequestBatchResult MeshRenderFeature::attemptSubmitBatch(GraphicsCommandList* co
 #endif
 }
 
-void MeshRenderFeature::beginRendering()
+void MeshRenderFeature_deprecated::beginRendering()
 {
 	m_drawList.clear();
 }
 
-void MeshRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
+void MeshRenderFeature_deprecated::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList)
 {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
@@ -233,7 +233,7 @@ void MeshRenderFeature::submitBatch(GraphicsCommandList* context, detail::Render
 #endif
 }
 
-void MeshRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
+void MeshRenderFeature_deprecated::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch)
 {
 	auto localBatch = static_cast<Batch*>(batch);
 
@@ -255,7 +255,7 @@ void MeshRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureB
 	}
 }
 
-MeshRenderFeature::Batch* MeshRenderFeature::acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
+MeshRenderFeature_deprecated::Batch* MeshRenderFeature_deprecated::acquireBatch(RenderFeatureBatchList* batchList, const RLIBatchState& batchState)
 {
 	// TODO: Batching
 	Batch* batch = batchList->addNewBatch<Batch>(this, batchState);
