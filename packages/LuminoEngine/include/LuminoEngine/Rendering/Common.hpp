@@ -539,11 +539,14 @@ struct ShaderTechniqueRequestClasses {
 
 enum class BatchInstructionType {
     None, // 処理用
-    StandardMesh,
+    StandardMesh, // MeshGenerater
     DynamicMaterial, // SpriteText など、内部で Material や Texture が変わるもの
     UserCall, // TODO:
 };
 
+// 動的Meshの生成フラグメント。
+// 例えば同一 Material の複数の Sprite を描画すると、BatchInstruction は複数作られ、
+// それが BatchInstructionEncoder によって、結合された 1 つの Batch にまとめられる。（ドローコールが 1 つになる）
 struct BatchInstruction {
     BatchInstructionType type;
     BatchInstruction* next;
