@@ -43,7 +43,7 @@ MaybeResult DebugPrint::init() {
 
     m_material = Material::create(m_fontTexture);
 
-    m_renderPass = makeRef<kanata::UnlitRenderPass>(m_manager);
+    m_renderPass = makeRef<kanata::DrawEventsEncoder>(m_manager);
 
     m_viewPoint = makeRef<RenderViewPoint>();
 

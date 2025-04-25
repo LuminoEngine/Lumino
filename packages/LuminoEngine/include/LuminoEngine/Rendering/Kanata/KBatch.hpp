@@ -29,7 +29,7 @@ struct BatchMaterial {
     // その場合に備えて、以下のようなステートと同じように、Texture も持てるようにする必要があるかもしれない。
 
     // 以下、Material の継承を解決した、Batch 生成時点で確定しているステート。
-    // SceneRenderPass で必要に応じてオーバーライドされたあと、最終的に確定する。 
+    // DrawEventsEncoder で必要に応じてオーバーライドされたあと、最終的に確定する。 
     BlendMode blendMode;
     CullMode cullingMode;
     bool depthTestEnabled;

@@ -17,7 +17,7 @@ class DrawEventList;
 struct DrawEvent;
 class RenderView;
 class RenderingContext;
-class SceneRenderPass;
+class DrawEventsEncoder;
 
 class ScreenRectangleRenderFeature;
 class PrimitiveMeshRenderer;

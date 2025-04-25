@@ -6,12 +6,9 @@
 namespace ln {
 namespace kanata {
 
-class SceneRenderPass : public Object {
+class DrawEventsEncoder : public Object {
 public:
-    SceneRenderPass(
-        detail::RenderingManager* manager,
-        Shader* fallbackShader,
-        kokage::ShaderTechniqueClass_Phase phase);
+    DrawEventsEncoder(detail::RenderingManager* manager);
 
     std::function<void(DrawEvent*)> overrideCommand;
 
@@ -37,4 +34,3 @@ private:
 
 } // namespace kanata
 } // namespace ln
-

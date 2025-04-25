@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
-#include "Kanata/KUnlitRenderPass.hpp"
+#include "Kanata/KSceneRenderPass.hpp"
 
 namespace ln {
 
@@ -20,7 +20,7 @@ private:
     Ref<Material> m_material;
     std::array<char, 512> m_textBuffer;
     int32_t m_textBufferUsed;
-    Ref<kanata::UnlitRenderPass> m_renderPass;
+    Ref<kanata::DrawEventsEncoder> m_renderPass;
     Ref<RenderViewPoint> m_viewPoint;
 };
 

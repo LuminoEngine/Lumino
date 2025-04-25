@@ -13,16 +13,13 @@
 namespace ln {
 namespace kanata {
 
-SceneRenderPass::SceneRenderPass(
-    detail::RenderingManager* manager,
-    Shader* fallbackShader,
-    kokage::ShaderTechniqueClass_Phase phase)
+DrawEventsEncoder::DrawEventsEncoder(detail::RenderingManager* manager)
     : m_manager(manager)
-    , m_fallbackShader(fallbackShader)
-    , m_phase(phase) {
+    , m_fallbackShader(manager->builtinShader(detail::BuiltinShader::Sprite))
+    , m_phase(kokage::ShaderTechniqueClass_Phase::Forward) {
 }
 
-void SceneRenderPass::buildDrawEvents(
+void DrawEventsEncoder::buildDrawEvents(
     const BatchCollector* batchList,
     GraphicsCommandList* descriptorAllocator,
     RenderPass* renderPass,
@@ -106,7 +103,9 @@ void SceneRenderPass::buildDrawEvents(
                     }
                     // DepthStencilState
                     {
-                        drawEvent->pipelineState.depthStencilState.depthTestFunc = (batchMaterial.depthTestEnabled) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
+                        drawEvent->pipelineState.depthStencilState.depthTestFunc = (batchMaterial.depthTestEnabled)
+                            ? ComparisonFunc::LessEqual
+                            : ComparisonFunc::Always;
                         drawEvent->pipelineState.depthStencilState.depthWriteEnabled = batchMaterial.depthWriteEnabled;
                     }
                 }
@@ -189,7 +188,10 @@ void SceneRenderPass::buildDrawEvents(
                 drawEvent->shaderPass = shaderPass;
 
                 // Setup descriptor
-                semanticsManager->updateRenderViewVariables(descriptor, renderViewInfo, sceneInfo); // TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
+                semanticsManager->updateRenderViewVariables(
+                    descriptor,
+                    renderViewInfo,
+                    sceneInfo); // TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
                 semanticsManager->updateElementVariables(descriptor, renderViewInfo.cameraInfo, elementInfo);
                 semanticsManager->updateSubsetVariables(descriptor, subsetInfo);
 
@@ -213,7 +215,7 @@ void SceneRenderPass::buildDrawEvents(
         ev->renderPass = renderPass;
         currentRenderPass = renderPass;
     }
-  
+
     // End render pass.
     if (currentRenderPass) {
         auto* ev = drawEventList->newDrawEvent<EndRenderPassDrawEvent>();
@@ -222,9 +224,10 @@ void SceneRenderPass::buildDrawEvents(
     }
 }
 
-ShaderTechnique* SceneRenderPass::getShaderTechnique(Shader* fallbackShader, const Batch* batch, const BatchElement* batchElement) {
+ShaderTechnique*
+DrawEventsEncoder::getShaderTechnique(Shader* fallbackShader, const Batch* batch, const BatchElement* batchElement) {
     Material* material = batch->material.material;
-    
+
     // Select shader
     Shader* actualShader = fallbackShader;
     if (material) {
@@ -271,7 +274,6 @@ ShaderTechnique* SceneRenderPass::getShaderTechnique(Shader* fallbackShader, con
         }
     }
 
-
     if (m_phase == kokage::ShaderTechniqueClass_Phase::Forward) {
         // ShadingMode は Default phase (Render to color-buffer) のみ有効
         switch (batch->material.shadingModel) {
@@ -292,7 +294,6 @@ ShaderTechnique* SceneRenderPass::getShaderTechnique(Shader* fallbackShader, con
                 break;
         }
 
-
         // Default phase の場合は、ユーザー定義のシェーダに、条件にマッチする Technique が無かったとしても、Default にフォールバックしてみる。
         // つまり、少なくともユーザーがカスタマイズしたいと思った表現に近づけるようにする。
         ShaderTechnique* tech = actualShader->findTechniqueByVariantKey(variantKey.value(), false);
@@ -310,7 +311,7 @@ ShaderTechnique* SceneRenderPass::getShaderTechnique(Shader* fallbackShader, con
     }
 }
 
-void SceneRenderPass::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state) {
+void DrawEventsEncoder::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state) {
     // もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
     // TODO: アルファも一緒のブレンド方式にしているので、個別指定で改善できそう
     switch (mode) {
@@ -383,4 +384,3 @@ void SceneRenderPass::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state
 
 } // namespace kanata
 } // namespace ln
-

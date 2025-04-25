@@ -29,7 +29,7 @@
 #include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include <LuminoEngine/Rendering/Kanata/KDrawEvent.hpp>
 #include <LuminoEngine/Rendering/Kanata/KPipelineState.hpp>
-#include <LuminoEngine/Rendering/Kanata/KUnlitRenderPass.hpp>
+#include <LuminoEngine/Rendering/Kanata/KSceneRenderPass.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxyCollector.hpp>
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
@@ -123,7 +123,7 @@ extern "C" {
 class FFIRenderPass : public ln::Object {
 public:
     SurfaceContext* owner;
-    Ref<kanata::UnlitRenderPass> sceneRenderPass;
+    Ref<kanata::DrawEventsEncoder> sceneRenderPass;
     RenderPass* renderPass;
 };
 
@@ -367,7 +367,7 @@ LNResult LNCommandList_BeginRenderPass(
     );
 
     detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
-    renderPass->sceneRenderPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
+    renderPass->sceneRenderPass = makeRef<kanata::DrawEventsEncoder>(renderingManager);
 
     *outRenderPass_ = ::Runtime::wrapObject(renderPass, true);
 
@@ -616,7 +616,7 @@ LNResult LNViewPoint_SetupPerspective2DLH(
 LNResult LNUnlitSceneRenderingPass_Create(LNHandle* outUnlitSceneRenderingPass) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
-    Ref<kanata::UnlitRenderPass> renderingPass = makeRef<kanata::UnlitRenderPass>(renderingManager);
+    Ref<kanata::DrawEventsEncoder> renderingPass = makeRef<kanata::DrawEventsEncoder>(renderingManager);
     *outUnlitSceneRenderingPass = ::Runtime::wrapObject(renderingPass, true);
     LN_FFI_TRY_END_RETURN;
 }
