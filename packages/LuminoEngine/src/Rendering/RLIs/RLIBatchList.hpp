@@ -20,11 +20,6 @@ public:
 	RenderFeatureBatch* firstBatch() const { return m_head; }
 	RenderFeatureBatch* lastBatch() const { return m_tail; }
 
-	//
-	//void prepareState(const CameraInfo& cameraInfo, RenderStage* stage, RenderDrawElement* element);
-
-	//
-	//void render(GraphicsCommandList* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
 
     // TODO: とりいそぎ
     RenderTargetTexture* renderTarget = nullptr;

@@ -9,7 +9,6 @@
 #include <LuminoEngine/Rendering/Kanata/KSceneRenderPass.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/MeshModeEntity.hpp>
-#include "../SceneRenderer.hpp"
 
 namespace ln {
 namespace kanata {
@@ -24,7 +23,6 @@ SceneRenderPass::SceneRenderPass(
 }
 
 void SceneRenderPass::buildDrawEvents(
-    detail::SceneRenderer* sceneRenderer,
     const BatchCollector* batchList,
     GraphicsCommandList* descriptorAllocator,
     RenderPass* renderPass,
@@ -200,11 +198,6 @@ void SceneRenderPass::buildDrawEvents(
                     detail::PbrMaterialData pbrMaterialData = material->getPbrMaterialData();
                     semanticsManager->updateSubsetVariables_PBR(descriptor, pbrMaterialData);
                     material->updateShaderVariables2(descriptorAllocator, descriptor);
-
-                    // TODO: これが実質 ClusteredShadingSceneRenderer 専用なので、なんとかしたいところ。
-                    if (sceneRenderer) {
-                        sceneRenderer->onSetAdditionalShaderPassVariables2(descriptor, shaderPass);
-                    }
                 }
 
                 if (overrideCommand) {

@@ -7,7 +7,6 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/detail/RenderStage.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>
-#include "../SceneRenderer.hpp"
 
 namespace ln {
 namespace detail {

@@ -331,7 +331,7 @@ ShaderDescriptor* ShaderDescriptorPool::allocate(ShaderPass* shaderPass) {
 }
 
 //==============================================================================
-// SceneRendererPass
+// ShaderSecondaryDescriptor
 
 ShaderSecondaryDescriptor::ShaderSecondaryDescriptor()
     : m_shader(nullptr) {
@@ -503,7 +503,7 @@ void ShaderSecondaryDescriptor::setMatrixArray(int memberIndex, const Matrix* va
 
 #if 0
 //==============================================================================
-// SceneRendererPass
+// ShaderSecondaryDescriptor
 	
 ShaderSecondaryDescriptor::ShaderSecondaryDescriptor()
 	: m_pool(nullptr)

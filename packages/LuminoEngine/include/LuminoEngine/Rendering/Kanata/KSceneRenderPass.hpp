@@ -16,7 +16,6 @@ public:
     std::function<void(DrawEvent*)> overrideCommand;
 
     void buildDrawEvents(
-        detail::SceneRenderer* sceneRenderer,   // TODO: いらなくしたい
         const BatchCollector* batchList,
         GraphicsCommandList* descriptorAllocator,
         RenderPass* renderPass,

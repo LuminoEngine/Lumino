@@ -494,7 +494,6 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
                 drawEventList->clear();
                 //ln::ElapsedTimer t1;
                 renderPass->sceneRenderPass->buildDrawEvents(
-                    nullptr,
                     batchList,
                     commandList,
                     renderPass->renderPass,

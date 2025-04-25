@@ -143,7 +143,6 @@ MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* comm
         m_viewPoint->makeCameraInfo(&renderViewInfo.cameraInfo);
 
         m_renderPass->buildDrawEvents(
-            nullptr,
             batchList,
             graphicsCommandList,
             renderPass,

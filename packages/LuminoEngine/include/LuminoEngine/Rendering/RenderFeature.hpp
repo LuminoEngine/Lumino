@@ -17,7 +17,6 @@ struct SubsetInfo;
 class RenderFeatureBatchList;
 class RenderDrawElement;
 class RenderStage;
-class SceneRendererPass;
 class SkeletonInstance;
 class RenderFeatureBatch;
 
