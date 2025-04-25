@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/detail/RenderStage.hpp>
-#include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/MeshRenderFeature.hpp"
 #include "RenderFeature/PrimitiveRenderFeature.hpp"
 #include "RenderFeature/SpriteTextRenderFeature.hpp"

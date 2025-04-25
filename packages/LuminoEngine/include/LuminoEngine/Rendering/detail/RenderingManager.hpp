@@ -11,7 +11,6 @@ namespace detail {
 class IVertexDeclaration;
 class LinearAllocatorPageManager;
 class DrawElementListBuilder;
-class BlitRenderFeature;
 class MeshRenderFeature;
 class MeshGeneraterRenderFeature;
 class PrimitiveRenderFeature;
@@ -166,7 +165,6 @@ public:
     //const Ref<detail::IVertexDeclaration>& standardVertexDeclarationRHI() const { return m_standardVertexDeclarationRHI; }
     // const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
 
-    //const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
     //const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
     //const Ref<MeshGeneraterRenderFeature>& meshGeneraterRenderFeature() const { return m_meshGeneraterRenderFeature; }
     //const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
@@ -205,7 +203,6 @@ private:
     URef<DebugPrint> m_debugPrint;
     //Ref<detail::IVertexDeclaration> m_standardVertexDeclarationRHI;
     // Ref<DrawElementListBuilder> m_renderStageListBuilder;
-//    Ref<BlitRenderFeature> m_blitRenderFeature;
 //    Ref<MeshRenderFeature> m_meshRenderFeature;
 //    Ref<MeshGeneraterRenderFeature> m_meshGeneraterRenderFeature;
 //    Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;

@@ -6,7 +6,6 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoCore/Base/LinearAllocator.hpp>
 #include "DrawElementListBuilder.hpp"
-#include "RenderFeature/BlitRenderFeature.hpp"
 #include "RenderFeature/MeshRenderFeature.hpp"
 #include <LuminoEngine/Rendering/detail/RenderingProfiler.hpp>
 #include <LuminoEngine/Rendering/detail/RenderingManager.hpp>

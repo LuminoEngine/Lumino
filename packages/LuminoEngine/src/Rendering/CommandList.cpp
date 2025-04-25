@@ -353,75 +353,15 @@ void CommandList::drawLineStripPrimitive(int pointCount, const Vector3* points, 
 //#endif
 //}
 
-//void CommandList::drawScreenRectangle() {
-//#ifdef LN_USE_KANATA
-//    LN_NOTIMPLEMENTED();
-//#else
-//    class DrawScreenRectangle : public detail::RenderDrawElement {
-//    public:
-//        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-//            return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, *state);
-//        }
-//    };
-//
-//    m_builder->advanceFence();
-//
-//    m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip); // TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
-//    auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(m_manager->blitRenderFeature());
-//    element->targetPhase = RenderPart::Geometry;
-//
-//    m_builder->advanceFence();
-//#endif
-//}
-
 //void CommandList::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
 //{
 //    blit(source, destination, nullptr);
 //}
 //
-//void CommandList::blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material)
-//{
-//    class Blit : public detail::RenderDrawElement
-//    {
-//    public:
-//        Ref<RenderTargetTexture> source;
-//
-//        virtual void onSubsetInfoOverride(detail::SubsetInfo* subsetInfo)
-//        {
-//            if (source) {
-//                subsetInfo->materialTexture = source;
-//            }
-//        }
-//
-//        virtual void onDraw(GraphicsCommandList* context, RenderFeature* renderFeatures) override
-//        {
-//            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
-//        }
-//    };
-//
-//    // TODO: scoped_gurad
-//    RenderTargetTexture* oldTarget = renderTarget(0);
-//    setRenderTarget(0, destination);
-//
-//    m_builder->setMaterial(material);
-//
-//    m_builder->advanceFence();
-//
-//    auto* element = m_builder->addNewDrawElement<Blit>(
-//        m_manager->blitRenderFeature(),
-//        m_builder->blitRenderFeatureStageParameters());
-//    element->targetPhase = RenderPart::PostEffect;
-//    element->source = source;
-//
-//    setRenderTarget(0, oldTarget);
-//
-//    m_builder->advanceFence();
-//}
 
 void CommandList::blit(Material* source, RenderTargetTexture* destination/*, RenderPart phase*/) {
     if (LN_ASSERT(source)) return;
 
-#ifdef LN_USE_KANATA
     class ScreenRectangleSingleFrameBatchProxy : public kanata::SingleFrameBatchProxy {
     public:
         Material* material;
@@ -441,45 +381,6 @@ void CommandList::blit(Material* source, RenderTargetTexture* destination/*, Ren
             LN_ERROR();
         }
     }
-#endif
-#else
-    class Blit : public detail::RenderDrawElement {
-    public:
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-            return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, *state);
-        }
-    };
-
-
-    // TODO: scoped_gurad
-    RenderPass* newTarget = nullptr;
-    RenderPass* oldTarget = nullptr;
-    if (destination) {
-        newTarget = RenderPass::get(destination);
-        oldTarget = renderPass();
-        setRenderPass(newTarget);
-    }
-
-    //clear();
-
-    m_builder->setMaterial(source);
-
-    m_builder->advanceFence();
-
-    m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip); // TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
-
-    //auto oldRenderPhase = m_builder->renderPhase();
-    //m_builder->setRenderPhase(phase);
-    auto* element = m_builder->addNewDrawElement<Blit>(m_manager->blitRenderFeature());
-    //element->targetPhase = phase;
-
-    if (destination) {
-        setRenderPass(oldTarget);
-    }
-
-    //m_builder->setRenderPhase(oldRenderPhase);
-
-    m_builder->advanceFence();
 #endif
 }
 
