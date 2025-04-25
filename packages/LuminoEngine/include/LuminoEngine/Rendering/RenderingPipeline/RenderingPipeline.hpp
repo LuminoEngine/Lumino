@@ -30,7 +30,7 @@ protected:
         const detail::SceneGlobalRenderParams* sceneGlobalParams) = 0;
 
     SizeI m_renderingFrameBufferSize; // render() の内側だけで使える
-    detail::RLICulling m_cullingResult;
+    detail::RLICulling_deprecated m_cullingResult;
 
 private:
     // TODO: renderTarget は RenderView::builtinRenderTarget(Current) で取りたい

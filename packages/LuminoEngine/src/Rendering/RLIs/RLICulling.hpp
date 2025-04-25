@@ -7,12 +7,12 @@ namespace detail {
 
 // RenderPipeline のうち、カリング部分をモジュール化したもの。
 // Unity の CullResults 相当。
-class RLICulling {
+class RLICulling_deprecated {
 public:
-    RLICulling();
+    RLICulling_deprecated();
     void cull(
         const RenderView* renderView,
-        RenderingContext_deprecated* renderingContext,
+        //RenderingContext_deprecated* renderingContext,
         CommandListServer* commandListServer);
 
     const DynamicLightInfo* mainLight() const { return m_mainLight; }

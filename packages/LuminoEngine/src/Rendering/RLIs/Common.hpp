@@ -2,7 +2,7 @@
 
 namespace ln {
 namespace detail {
-class RLICulling;
+class RLICulling_deprecated;
 class RenderFeatureBatch;
 class RLIBatchState;
 

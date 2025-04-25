@@ -10,14 +10,16 @@
 namespace ln {
 namespace detail {
 
-RLICulling::RLICulling()
+RLICulling_deprecated::RLICulling_deprecated()
     : m_mainLight(nullptr)
     , m_visibleLights()
     , m_parts()
     , m_zSortDistanceBase(ZSortDistanceBase::CameraScreenDistance) {
 }
 
-void RLICulling::cull(
+#if 0
+
+void RLICulling_deprecated::cull(
     const RenderView* renderView,
     RenderingContext_deprecated* renderingContext,
     CommandListServer* commandListServer) {
@@ -119,6 +121,8 @@ void RLICulling::cull(
 
     
 }
+
+#endif
 
 } // namespace detail
 } // namespace ln
