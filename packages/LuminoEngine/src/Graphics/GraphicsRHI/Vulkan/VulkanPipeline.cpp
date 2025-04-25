@@ -316,13 +316,11 @@ Result_deprecated<> VulkanPipeline::createComputePipeline(const DevicePipelineSt
     VkComputePipelineCreateInfo pipelineCreateInfo; // = vks::initializers::computePipelineCreateInfo(compute.pipelineLayout, 0);
     pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
     pipelineCreateInfo.pNext = nullptr;
-    ;
     pipelineCreateInfo.flags = 0;
     pipelineCreateInfo.stage = shaderStage;
     pipelineCreateInfo.layout = shaderPass->vulkanPipelineLayout();
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineCreateInfo.basePipelineIndex = 0;
-    //computePipelineCreateInfo.stage = loadShader(getShadersPath() + "computecloth/cloth.comp.spv", VK_SHADER_STAGE_COMPUTE_BIT);
 
     //VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
     //pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

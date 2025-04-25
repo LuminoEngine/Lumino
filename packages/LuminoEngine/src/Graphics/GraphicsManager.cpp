@@ -128,7 +128,6 @@ MaybeResult GraphicsManager::init(const Settings& settings) {
     m_profiler = std::make_unique<detail::GraphicsProfiler>();
 
     m_texture2DCache.init(64);
-    m_shaderCache.init(64);
 
 //    // Create device context
 //    {
@@ -248,7 +247,6 @@ void GraphicsManager::dispose() {
         m_meshManager = nullptr;
     }
 
-    m_shaderCache.dispose();
     m_texture2DCache.dispose();
     if (m_renderPassCache) {
         m_renderPassCache->clear();
@@ -510,86 +508,5 @@ detail::StreamingBufferAllocatorManager* GraphicsManager::obtainIndexBufferStrea
         return m_indexBufferStreamingAllocatorManager.back();
     }
 }
-
-Ref<Shader> GraphicsManager::loadShader(const StringView& filePath) {
-    m_shaderCache.collectUnreferenceObjects(false);
-
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-    static const std::vector<const Char*> exts = { _TT(".hlsl"), _TT(".fx"), _TT(".lcfx") };
-#else
-    static const std::vector<const Char*> exts = { _TT(".lcfx") };
-#endif
-    return detail::AssetManager::loadObjectWithCacheHelper<Shader>(&m_shaderCache, nullptr, exts, filePath, nullptr);
-}
-
-//void GraphicsManager::createOpenGLContext(const Settings& settings) {
-//    OpenGLDevice::Settings dcSettings;
-//    dcSettings.platformManager = m_platformManager;
-//    dcSettings.mainWindow = m_platformManager->mainWindow();
-//    dcSettings.defaultFramebuffer = 0;
-//    auto device = makeRef<OpenGLDevice>();
-//    bool driverSupported = false;
-//    if (!device->init(dcSettings)) {
-//        LN_ERROR("OpenGL driver initialization failed.");
-//        return;
-//    }
-//    else {
-//        m_deviceContext = device;
-//    }
-//}
-//
-//void GraphicsManager::createVulkanContext(const Settings& settings) {
-//#ifdef LN_USE_VULKAN
-//    VulkanDevice::Settings dcSettings;
-//    dcSettings.mainWindow = m_platformManager->mainWindow();
-//    dcSettings.debugMode = settings.debugMode;
-//
-//    bool driverSupported = false;
-//    auto device = detail::VulkanDevice::create(dcSettings, &driverSupported);
-//    if (!device) {
-//        if (!driverSupported) {
-//            // ドライバが Vulkan をサポートしていない。継続する。
-//        }
-//        else {
-//            LN_ERROR("Vulkan driver initialization failed.");
-//            return;
-//        }
-//    }
-//    else {
-//        m_deviceContext = *device;
-//    }
-//#endif
-//}
-//
-//void GraphicsManager::createDirectX12Context(const Settings& settings) {
-//#if _WIN32
-//    DX12Device::Settings dcSettings;
-//    dcSettings.mainWindow = m_platformManager->mainWindow();
-//    dcSettings.debugMode = settings.debugMode;
-//    dcSettings.priorityAdapterName = settings.priorityGPUName.toStdWString();
-//    auto ctx = makeRef<DX12Device>();
-//    bool driverSupported = false;
-//    if (!ctx->init(dcSettings, &driverSupported)) {
-//        if (!driverSupported) {
-//            // ドライバが Vulkan をサポートしていない。継続する。
-//        }
-//        else {
-//            LN_ERROR("Vulkan driver initialization failed.");
-//            return;
-//        }
-//    }
-//    else {
-//        m_deviceContext = ctx;
-//    }
-//#endif
-//}
-
-//Ref<RenderingCommandList> GraphicsManager::submitCommandList(RenderingCommandList* commandList)
-//{
-//	if (LN_REQUIRE(commandList)) return nullptr;
-//    commandList->execute(); // TODO: test
-//	commandList->clear();
-//	return m_inFlightRenderingCommandList;
-//}
 
 } // namespace ln

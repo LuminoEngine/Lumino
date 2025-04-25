@@ -694,10 +694,11 @@ LNResult LNTexture2D_GetContext(LNHandle texture2D_, LNHandle* outTextureRenderi
 //==============================================================================
 // LNShader
 //==============================================================================
-LNResult LNShader_Create(const void* data, int32_t length, LNHandle* outShader) {
+LNResult LNShader_CreateFromSourceCode(const void* code, int32_t length, LNHandle* outShader) {
     LN_FFI_TRY_BEGIN;
-    Ref<Shader> shader = Shader::create(data, length);
-    *outShader = ::Runtime::wrapObject(shader, true);
+    LN_NOTIMPLEMENTED();
+    //Ref<Shader> shader = Shader::create(data, length);
+    //*outShader = ::Runtime::wrapObject(shader, true);
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -711,16 +712,6 @@ LNResult LNMaterial_Create(LNHandle* outMaterial) {
     material->setBlendMode(BlendMode::Alpha);
     *outMaterial = ::Runtime::wrapObject(material, true);
 	LN_FFI_TRY_END_RETURN;
-}
-
-LNResult LNMaterial_CreateFromShaderData(const uint8_t* data, int32_t length, LNHandle* outMaterial) {
-    LN_FFI_TRY_BEGIN;
-    Ref<Shader> shader = Shader::create(data, length);
-    Ref<Material> material = Material::create();
-    material->setShader(shader);
-    material->setBlendMode(BlendMode::Alpha);
-    *outMaterial = ::Runtime::wrapObject(material, true);
-    LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNMaterial_CreateFromSourceFile(const char* filePathUTF8, LNHandle* outMaterial) {

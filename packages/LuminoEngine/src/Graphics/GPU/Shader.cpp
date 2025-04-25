@@ -23,30 +23,6 @@
 namespace ln {
 
 //==============================================================================
-// ShaderCompilationProperties
-
-ShaderCompilationProperties::ShaderCompilationProperties() {
-}
-
-ShaderCompilationProperties::~ShaderCompilationProperties() {
-}
-
-void ShaderCompilationProperties::init() {
-}
-
-void ShaderCompilationProperties::addIncludeDirectory(const StringView& value) {
-    m_includeDirectories.add(value);
-}
-
-void ShaderCompilationProperties::addDefinition(const StringView& value) {
-    m_definitions.add(value);
-}
-
-void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag) {
-    m_diag = diag;
-}
-
-//==============================================================================
 // Shader
 
 Ref<Shader> Shader::createFromSourceFile(const std::filesystem::path& filePath) {
@@ -74,26 +50,6 @@ Result<Ref<Shader>> Shader::createFromCompiledShader(const void* data, int32_t l
     return ref;
 }
 
-Ref<Shader> Shader::create(const void* data, int32_t length) {
-    Ref<Shader> ptr(LN_NEW Shader(), false);
-    MemoryStream stream(data, length);
-    ptr->init();
-    ptr->createFromStream(&stream, nullptr);
-    return ptr;
-}
-
-Ref<Shader> Shader::create(const StringView& filePath, ShaderCompilationProperties* properties) {
-    return ln::makeObject_deprecated<Shader>(filePath, properties);
-}
-
-Ref<Shader> Shader::load(const StringView& filePath, AssetImportSettings* settings) {
-    return GraphicsManager::instance()->loadShader(filePath);
-}
-
-Ref<Shader> Shader::create(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties) {
-    return ln::makeObject_deprecated<Shader>(vertexShaderFilePath, pixelShaderFilePath, properties);
-}
-
 Shader::Shader()
     : m_graphicsManager(nullptr)
     , m_name()
@@ -108,87 +64,6 @@ void Shader::init() {
     detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_graphicsManager);
 }
 
-void Shader::init(const StringView& filePath, ShaderCompilationProperties* properties) {
-    Shader::init();
-    auto stream = FileStream::create(filePath, FileOpenMode::Read);
-    loadFromStream(detail::AssetPath::makeFromLocalFilePath(filePath), stream, properties);
-}
-
-void Shader::init(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties) {
-    Shader::init();
-    Ref<DiagnosticsManager> localDiag = nullptr;
-    if (properties) localDiag = properties->m_diag;
-    if (!localDiag) localDiag = makeObject_deprecated<DiagnosticsManager>();
-
-    auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
-    auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
-
-    {
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-        List<Path> includeDirs;
-        if (properties) {
-            for (auto& path : properties->m_includeDirectories)
-                includeDirs.add(path);
-        }
-
-        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), localDiag);
-        if (!compiler.compileSingleCodes(
-                reinterpret_cast<const char*>(vsData.unwrap().data()), vsData.unwrap().size(), "main", reinterpret_cast<const char*>(psData.unwrap().data()), psData.unwrap().size(), "main", includeDirs, {})) {
-            LN_ERROR();
-            return;
-        }
-        if (!compiler.link()) {
-            LN_ERROR();
-            return;
-        }
-
-        createFromUnifiedShader(compiler.unifiedShader(), localDiag);
-#else
-        LN_NOTIMPLEMENTED();
-        return;
-#endif
-    }
-    //createSinglePassShader(
-    //    reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
-
-    m_name = Path(vertexShaderFilePath).fileNameWithoutExtension();
-    m_name += _TT(",");
-    m_name += Path(pixelShaderFilePath).fileNameWithoutExtension();
-
-    if (!properties || !properties->m_diag) {
-        if (localDiag->hasError()) {
-            LN_ERROR(localDiag->toString());
-            return;
-        }
-        else if (localDiag->hasWarning()) {
-            LN_LOG_WARNING(localDiag->toString());
-        }
-    }
-}
-
-void Shader::init(const String& name, Stream* stream) {
-    Shader::init();
-    Ref<DiagnosticsManager> localDiag = makeObject_deprecated<DiagnosticsManager>();
-
-    m_name = name;
-
-    createFromStream(stream, localDiag);
-
-    if (localDiag->hasError()) {
-        LN_LOG_ERROR(localDiag->toString());
-        LN_ERROR(name);
-        return;
-    }
-    else if (localDiag->hasWarning()) {
-        LN_LOG_WARNING(localDiag->toString());
-    }
-}
-
-void Shader::init(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag) {
-    Shader::init();
-    createFromUnifiedShader(unifiedShader, diag);
-}
-
 MaybeResult_deprecated Shader::setupShader2(Ref<kokage::UnifiedShader2> unifiedShader2) {
     m_unifiedShader2 = unifiedShader2;
     kokage::GlobalShaderPass* globalShaderPass = m_unifiedShader2->globalShaderPasses()[0].get();
@@ -201,14 +76,14 @@ MaybeResult Shader::setupShader3(kokage::UnifiedShader2* unifiedShader2) {
     m_unifiedShader2 = unifiedShader2;
     
     Ref<ShaderTechnique> tech(LN_NEW ShaderTechnique(), false);
-    tech->m_owner = this;
+    tech->init(this, U"T0");
     m_techniques->add(tech);
 
     for (const auto& globalShaderPass : m_unifiedShader2->globalShaderPasses()) {
         Ref<ShaderPass> pass(LN_NEW ShaderPass(), false);
         pass->init(tech);
         pass->setupShader2(unifiedShader2, globalShaderPass);
-        tech->m_passes->add(pass);
+        tech->m_passes.push_back(pass);
     }
 
     //kokage::GlobalShaderPass* globalShaderPass = [0].get();
@@ -221,96 +96,6 @@ MaybeResult Shader::setupShader3(kokage::UnifiedShader2* unifiedShader2) {
     //tech->setupSemanticsManager();
     //m_descriptor2 = makeObject_deprecated<detail::ShaderSecondaryDescriptor>(this);
     return LN_MAKE_SUCCESS();
-}
-
-bool Shader::loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties) {
-    Ref<DiagnosticsManager> localDiag = nullptr;
-    if (properties) localDiag = properties->m_diag;
-    if (!localDiag) localDiag = makeObject_deprecated<DiagnosticsManager>();
-
-    m_name = path.path().fileNameWithoutExtension();
-
-    //Path path = filePath;
-    //if (path.hasExtension(detail::UnifiedShader::FileExt)) {
-    if (path.path().hasExtension(kokage::UnifiedShader::FileExt)) {
-        //auto file = FileStream::create(filePath, FileOpenMode::Read);
-        createFromStream(stream, localDiag);
-    }
-    else {
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-        //if (LN_REQUIRE(path.scheme() == detail::AssetPath::FileSchemeName)) return false;
-
-        //ByteBuffer buffer = FileSystem::readAllBytes(filePath);
-        auto buffer = stream->readToEnd();
-
-        List<Path> includeDirs = { path.path().parent() };
-        List<String> definitions;
-        if (properties) {
-            for (auto& path : properties->m_includeDirectories)
-                includeDirs.add(path);
-            for (auto& def : properties->m_definitions)
-                definitions.add(def);
-        }
-
-        kokage::UnifiedShaderCompiler compiler(detail::ShaderManager::instance(), localDiag);
-        if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
-            LN_ERROR(localDiag->toString());
-            return false;
-        }
-        if (!compiler.link()) {
-            LN_ERROR();
-            return false;
-        }
-
-        createFromUnifiedShader(compiler.unifiedShader(), localDiag);
-#else
-        LN_NOTIMPLEMENTED();
-#endif
-    }
-
-    if (!properties || !properties->m_diag) {
-        if (localDiag->hasError()) {
-            LN_ERROR(localDiag->toString());
-            return false;
-        }
-        else if (localDiag->hasWarning()) {
-            LN_LOG_WARNING(localDiag->toString());
-        }
-    }
-
-    return true;
-}
-
-void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag) {
-    Ref<kokage::UnifiedShader> unifiedShader(LN_NEW kokage::UnifiedShader(diag), false);
-    if (unifiedShader->load(stream)) {
-        createFromUnifiedShader(unifiedShader, diag);
-    }
-}
-
-void Shader::createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag) {
-    const std::string asciiName = m_name.toStdString();
-    m_descriptorLayout = makeObject_deprecated<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
-    m_descriptor = makeObject_deprecated<ShaderDefaultDescriptor>(this);
-
-    for (const auto& kokageTech : unifiedShader->techniques()) {
-        auto tech = makeObject_deprecated<ShaderTechnique>(this, kokageTech);
-        m_techniques->add(tech);
-
-        for (const auto& kokagePassId : kokageTech->passes) {
-            Ref<ShaderPass> pass(LN_NEW ShaderPass, false);
-            pass->init(
-                tech,
-                unifiedShader,
-                kokagePassId,
-                m_descriptorLayout,
-                diag);
-            tech->m_passes->add(pass);
-        }
-
-        tech->setupSemanticsManager();
-        m_descriptor2 = makeObject_deprecated<detail::ShaderSecondaryDescriptor>(this);
-    }
 }
 
 void Shader::onDispose(bool explicitDisposing) {
@@ -331,13 +116,9 @@ void Shader::onChangeDevice(detail::IGraphicsDevice* device) {
 
 void Shader::onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) {
     if (!stream) return;
-
-    loadFromStream(assetPath, stream, nullptr);
+    LN_NOTIMPLEMENTED();
 }
 
-ShaderParameter2* Shader::findParameter(const StringView& name) const {
-    return m_descriptor->findParameter2(name);
-}
 
 ShaderTechnique* Shader::findTechnique(const StringView& name) const {
     for (auto& tech : m_techniques) {
@@ -367,33 +148,6 @@ Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const {
     return m_techniques;
 }
 
-void Shader::setFloat(const StringView& parameterName, float value) {
-    if (auto* param = findParameter(parameterName)) {
-        param->setFloat(value);
-    }
-}
-
-void Shader::setVector(const StringView& parameterName, const Vector3& value) {
-    setVector(parameterName, Vector4(value, 0.0));
-}
-
-void Shader::setVector(const StringView& parameterName, const Vector4& value) {
-    if (auto* param = findParameter(parameterName)) {
-        param->setVector(value);
-    }
-}
-
-void Shader::setTexture(const StringView& parameterName, Texture* value) {
-    if (auto* param = findParameter(parameterName)) {
-        param->setTexture(value);
-    }
-}
-
-//Ref<ShaderDefaultDescriptor> Shader::createDescriptor()
-//{
-//    return makeObject_deprecated<ShaderDefaultDescriptor>(this);
-//}
-
 Ref<detail::ShaderSecondaryDescriptor> Shader::acquireDescriptor() {
     return m_descriptor2;
 }
@@ -404,71 +158,26 @@ void Shader::addAffectVariantKey(uint32_t crc32key) {
     }
 }
 
-// TODO: 名前の指定方法をもう少しいい感じにしたい。PostEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
-ShaderTechnique* Shader::findTechniqueByClass(const kokage::ShaderTechniqueClass& techniqueClass) const {
-    ShaderTechnique* defaultTech = nullptr;
-    for (auto& tech : m_techniques) {
-        if (kokage::ShaderTechniqueClass::equals(detail::ShaderInternal::techniqueClass(tech), techniqueClass)) {
-            return tech;
-        }
-        if (detail::ShaderInternal::techniqueClass(tech).defaultTechnique) {
-            defaultTech = tech;
-        }
-    }
-
-    if (defaultTech) {
-        return defaultTech;
-    }
-
-    return nullptr;
-}
-
 //==============================================================================
 // ShaderTechnique
 
 ShaderTechnique::ShaderTechnique()
     : m_owner(nullptr)
-    , m_passes(makeList<Ref<ShaderPass>>()) {
+    , m_passes() {
 }
 
 ShaderTechnique::~ShaderTechnique() {
 }
 
-void ShaderTechnique::init(Shader* owner, const kokage::UnifiedShaderTechnique* kokageTech) {
+void ShaderTechnique::init(Shader* owner, const String& name) {
     Object::init();
     m_owner = owner;
-    m_name = String::fromUtf8(kokageTech->name);
-    m_techniqueClass = kokageTech->techniqueClass;
-    kokage::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
-    if (kokageTech->hasVariant()) {
-        // VariantKey の検索には Hash を使う。
-        // シンボル名を StringArray または String のまま検索する場合、効率的に検索するにはソートが必要だったりとかなり手間が多く、
-        // 検索よりもキーの前処理に時間がかかってしまう。
-        // この Hash はシンボル名ごとの Hash の単純な加算結果なので、並び順も気にせず、整数の比較だけで検索できる。
-        m_variantKey = kokage::VariantSet::calcHash(kokageTech->variantSet.values);
-#ifdef LN_DEBUG
-        m_variantKeys = kokageTech->variantSet.values;
-#endif
-
-        for (const auto& value : kokageTech->variantSet.values) {
-            owner->addAffectVariantKey(detail::MixHash::computeSingle(value.data(), value.length()));
-        }
-    }
+    m_name = name;
 }
 
-void ShaderTechnique::setupSemanticsManager() {
-    m_semanticsManager = std::make_unique<detail::ShaderTechniqueSemanticsManager>();
-    m_semanticsManager->init(this);
-}
-
-Ref<ReadOnlyList<Ref<ShaderPass>>> ShaderTechnique::passes() const {
+const std::vector<Ref<ShaderPass>>& ShaderTechnique::passes() const {
     return m_passes;
 }
-
-//void ShaderTechnique::addShaderPass(ShaderPass* pass) {
-//    m_passes->add(pass);
-//    pass->setOwner(this);
-//}
 
 //==============================================================================
 // ShaderPass
@@ -1161,17 +870,4 @@ void ShaderPassDescriptorLayout::init(const kokage::DescriptorLayout& layout, co
     }
 }
 
-namespace detail {
-kokage::ShaderRenderState* ShaderInternal::getShaderRenderState(ShaderPass* pass) {
-    return pass->m_renderState;
-}
-
-ShaderTechnique* ShaderInternal::findTechniqueByClass(const Shader* shader, const kokage::ShaderTechniqueClass& techniqueClass) {
-    return shader->findTechniqueByClass(techniqueClass);
-}
-
-const kokage::ShaderTechniqueClass& ShaderInternal::techniqueClass(ShaderTechnique* technique) {
-    return technique->m_techniqueClass;
-}
-} // namespace detail
 } // namespace ln

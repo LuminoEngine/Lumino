@@ -402,76 +402,13 @@ public:
     static Ref<Shader> createFromSourceFile(const std::filesystem::path& filePath);
     static Result<Ref<Shader>> createFromCompiledShader(const void* data, int32_t length, const std::string_view& name);
 
-    static Ref<Shader> create(const void* data, int32_t length);
-
-    /**
-     * 事前コンパイル済みシェーダファイルまたはシェーダプログラムファイルから Shader オブジェクトを作成します。
-     *
-     * @param[in]   filePath : 入力ファイル名
-     *
-     * シェーダプログラムファイル の読み込み機能はデバッグを目的として用意されています。
-     *
-     * シェーダプログラムファイルを読み込むことができるのは、デスクトップターゲットのみです。
-     * モバイルターゲット、Web ターゲットでは事前コンパイル済みシェーダファイルのみを読み込むことができます。
-     * 
-     * @deprecated
-     */
-    static Ref<Shader> create(const StringView& filePath, ShaderCompilationProperties* properties = nullptr);
-
-    /**
-     * load
-     */
-    LN_METHOD()
-    static Ref<Shader> load(const StringView& filePath, AssetImportSettings* settings = nullptr);
-
-    /**
-     * Lumino の独自拡張 (technique 構文など) を使用しない HLSL シェーダをコンパイルし、Shader オブジェクトを作成します。
-     * 
-     * 作成された Shader は、1 つの ShaderTechnique と 1 つの ShaderPass を持ちます。
-     */
-    static Ref<Shader> create(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
-
-    /**
-     * 名前を指定してこの Shader に含まれる ShaderParameter を検索します。
-     *
-     * @param[in]   name : パラメータの名前
-     * @return      一致した ShaderParameter。見つからない場合は nullptr。
-     *
-     * @attention 現在、SamplerState の設定は未サポートです。将来的には、この関数で SamplerState 型のパラメータを検索できるようにする予定です。
-     */
-    ShaderParameter2* findParameter(const StringView& name) const;
-
-    /**
-     * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。
-     *
-     * @param[in]   name : 定数バッファの名前
-     * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
-     */
+    /** @experimental */
     ShaderTechnique* findTechnique(const StringView& name) const;
 
     ShaderTechnique* findTechniqueByVariantKey(uint32_t key, bool strict) const;
 
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
-
-
-    /** 浮動小数点値を設定します。 */
-    LN_METHOD()
-    void setFloat(const StringView& parameterName, float value);
-    
-    /** ベクトル値を設定します。 */
-    LN_METHOD(OverloadPostfix = "3")
-    void setVector(const StringView& parameterName, const Vector3& value);
-
-    /** ベクトル値を設定します。 */
-    LN_METHOD(OverloadPostfix = "4")
-    void setVector(const StringView& parameterName, const Vector4& value);
-
-    /** setTexture */
-    LN_METHOD()
-    void setTexture(const StringView& parameterName, Texture* value);
-
-    // ↑このあたりは HC4 のエフェクトで、ひとつの Shader をたくさんの Material から参照するときの共通パラメータを設定したいため、公開した。
 
     /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */
     //Ref<ShaderDefaultDescriptor> createDescriptor();
@@ -492,21 +429,12 @@ protected:
     void onChangeDevice(detail::IGraphicsDevice* device) override;
     void onLoadResourceFile(Stream* stream, const detail::AssetPath& assetPath) override;
 
-LN_CONSTRUCT_ACCESS:
+protected:
 	Shader();
-    virtual ~Shader();
+    ~Shader() override;
     void init();
-    void init(const StringView& filePath, ShaderCompilationProperties* properties = nullptr);
-    void init(const StringView& vertexShaderFilePath, const StringView& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
-    void init(const String& name, Stream* stream);
-    void init(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
 public:
-    ShaderTechnique* findTechniqueByClass(const kokage::ShaderTechniqueClass& techniqueClass) const;
-    bool loadFromStream(const detail::AssetPath& path, Stream* stream, ShaderCompilationProperties* properties);
-    void createFromStream(Stream* stream, DiagnosticsManager* diag);
-    void createFromUnifiedShader(kokage::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
-
     GraphicsManager* m_graphicsManager;
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
@@ -523,40 +451,27 @@ public:
 };
 
 /**
- * シェーダプログラムに含まれる 1 つのテクニックを表します。
+ * Represents one technique within a shader program.
+ * 
+ * NOTE: This data structure is currently not utilized.
  */
 class LN_API ShaderTechnique final
     : public Object
 {
 public:
-    /** この ShaderPass が含まれている Shader を取得します。 */
     Shader* shader() const { return m_owner; }
-
-    /** テクニックの名前を取得します。 */
     const String& name() const { return m_name; }
-
-    /** このテクニックに含まれる ShaderPass を取得します。 */
-    Ref<ReadOnlyList<Ref<ShaderPass>>> passes() const;
-
-    detail::ShaderTechniqueSemanticsManager* semanticsManager2() { return m_semanticsManager.get(); }
+    const std::vector<Ref<ShaderPass>>& passes() const;
 
 private:
-public:
     ShaderTechnique();
     virtual ~ShaderTechnique();
-    void init(Shader* owner, const kokage::UnifiedShaderTechnique* kokageTech);
-    void setupSemanticsManager();
-    //void addShaderPass(ShaderPass* pass);
+    void init(Shader* owner, const String& name);
 
     Shader* m_owner;
     String m_name;
-    Ref<List<Ref<ShaderPass>>> m_passes;
-    kokage::ShaderTechniqueClass m_techniqueClass;
-    std::unique_ptr<detail::ShaderTechniqueSemanticsManager> m_semanticsManager;
+    std::vector<Ref<ShaderPass>> m_passes;
     uint32_t m_variantKey;
-#ifdef LN_DEBUG
-    std::vector<std::string> m_variantKeys;
-#endif
 
     friend class Shader;
     friend class ShaderPass;
@@ -649,33 +564,4 @@ private:
     friend class detail::ShaderInternal;
 };
 
-class ShaderCompilationProperties
-    : public Object
-{
-public:
-    void addIncludeDirectory(const StringView& value);
-    void addDefinition(const StringView& value);
-    void setDiagnostics(DiagnosticsManager* diag);
-
-    LN_CONSTRUCT_ACCESS : ShaderCompilationProperties();
-    virtual ~ShaderCompilationProperties();
-    void init();
-
-private:
-    List<String> m_includeDirectories;
-    List<String> m_definitions;
-    Ref<DiagnosticsManager> m_diag;
-
-    friend class Shader;
-};
-
-namespace detail {
-class ShaderInternal
-{
-public:
-    static kokage::ShaderRenderState* getShaderRenderState(ShaderPass* pass);
-    static ShaderTechnique* findTechniqueByClass(const Shader* shader, const kokage::ShaderTechniqueClass& techniqueClass);
-    static const kokage::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
-};
-} // namespace detail
 } // namespace ln

@@ -47,37 +47,6 @@ bool SceneRendererPass::filterElement(RenderDrawElement* element) const {
                                 RenderDrawElementTypeFlags::Transparent)) != RenderDrawElementTypeFlags::None;
 }
 
-// void SceneRendererPass::onBeginPass(GraphicsCommandList* context, FrameBuffer* frameBuffer)
-// void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsCommandList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-//{
-// }
-
-// ShaderTechnique* SceneRendererPass::selectShaderTechniqueHelper(
-//	const ShaderTechniqueRequestClasses& requester,
-//	Shader* requestedShader,
-//	ShadingModel requestedShadingModel,
-//	Shader* defaultShader,
-//	ShaderTechnique* defaultTechnique,
-//	ShaderTechniqueClass_Phase phase)
-//{
-//	const Shader* actualShader = (requestedShader) ? requestedShader : defaultShader;
-//
-//	ShaderTechniqueClass classSet;
-//	classSet.defaultTechnique = false;
-//	classSet.phase = phase;
-//	classSet.meshProcess = requester.meshProcess;
-//	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-//	classSet.drawMode = requester.drawMode;
-//	classSet.normalClass = requester.normal;
-//	classSet.roughnessClass = requester.roughness;
-//	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
-//	if (technique)
-//		return technique;
-//	else
-//		return defaultTechnique;
-// }
-
-//}
 //==============================================================================
 // SceneRenderer
 

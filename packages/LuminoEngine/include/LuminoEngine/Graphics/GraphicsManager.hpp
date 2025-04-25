@@ -91,7 +91,6 @@ public:
 
     Ref<Texture2D> loadTexture2D(const StringView& filePath);
     Ref<Texture2D> loadTexture2DFromOnMemoryData(const detail::AssetPath* baseDir, const StringView& filePath, std::function<Ref<Texture2D>(const detail::AssetRequiredPathSet*)> factory);
-    Ref<Shader> loadShader(const StringView& filePath);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
@@ -141,7 +140,6 @@ private:
     Ref<detail::FrameBufferCache> m_frameBufferCache; // TODO: いらないかも
     URef<detail::RenderPassCache> m_renderPassCache;
     detail::ObjectCache<String, Texture2D> m_texture2DCache;
-    detail::ObjectCache<String, Shader> m_shaderCache;
     List<IGraphicsResource*> m_graphicsResources;
     List<INativeGraphicsExtension*> m_extensions;
 

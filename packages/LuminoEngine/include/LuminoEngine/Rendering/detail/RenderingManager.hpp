@@ -203,9 +203,6 @@ public:
     const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
 private:
-
-    void createBuiltinShader(BuiltinShader index, const Char* name, const void* data, int dataLen);
-
     GraphicsManager* m_graphicsManager;
     FontManager* m_fontManager;
     Ref<VertexLayout> m_standardVertexDeclaration;

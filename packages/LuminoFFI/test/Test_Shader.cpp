@@ -10,7 +10,7 @@ TEST_F(Test_Shader, Basic1) {
     // Create Shader.
     const auto code = TestEnv::compileShader(TestEnv::getTestDataPath(U"Test_Shader.Basic1/Test_Shader.Basic1.fx"));
     LNHandle shader1 = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNShader_Create(code.data(), code.size(), &shader1));
+    ASSERT_EQ(LN_OK, LNShader_CreateFromSourceCode(code.data(), code.size(), &shader1));
 
     // Create Material.
     LNHandle material1 = LN_NULL_HANDLE;

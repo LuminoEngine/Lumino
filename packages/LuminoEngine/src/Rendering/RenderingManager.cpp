@@ -184,10 +184,5 @@ void RenderingManager::dispose() {
     LN_LOG_DEBUG("RenderingManager dispose finished.");
 }
 
-void RenderingManager::createBuiltinShader(BuiltinShader index, const Char* name, const void* data, int dataLen) {
-    MemoryStream stream(data, dataLen);
-    m_builtinShaders[static_cast<int>(index)] = makeObject_deprecated<Shader>(name, &stream);
-}
-
 } // namespace detail
 } // namespace ln

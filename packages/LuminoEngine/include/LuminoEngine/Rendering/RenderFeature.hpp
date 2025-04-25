@@ -41,26 +41,6 @@ public:
     virtual bool drawElementTransformNegate() const;
     // TODO: ↑は↓に統合していい気がする
 
-    // SceneRenderer で確定し、各 RenderFeature に渡されてくる入力パラメータを処理する。
-    // 基本的にこのベースメソッドを呼び出すだけでよい。
-    // SpritetextRenderFerture など、RenderFeature 固有のパラメータ (グリフテクスチャなど) で
-    // パラメータをオーバーライドしたい場合はここで処理する。
-    virtual void updateRenderParameters(
-		detail::ShaderSecondaryDescriptor* descriptor,
-		detail::RenderDrawElement* element,
-		ShaderTechnique* tech,
-		const detail::RenderViewInfo& renderViewInfo,
-		const detail::SceneInfo& sceneInfo,
-		const detail::ElementInfo& elementInfo,
-		const detail::SubsetInfo& subsetInfo);
-
-	static void updateRenderParametersDefault(
-		detail::ShaderSecondaryDescriptor* descriptor,
-		ShaderTechnique* tech,
-		const detail::RenderViewInfo& renderViewInfo,
-		const detail::SceneInfo& sceneInfo,
-		const detail::ElementInfo& elementInfo,
-		const detail::SubsetInfo& subsetInfo);
 
 private:
 };

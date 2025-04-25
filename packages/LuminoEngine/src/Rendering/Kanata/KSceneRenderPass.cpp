@@ -303,8 +303,6 @@ ShaderTechnique* SceneRenderPass::getShaderTechnique(Shader* fallbackShader, con
         // Default phase の場合は、ユーザー定義のシェーダに、条件にマッチする Technique が無かったとしても、Default にフォールバックしてみる。
         // つまり、少なくともユーザーがカスタマイズしたいと思った表現に近づけるようにする。
         ShaderTechnique* tech = actualShader->findTechniqueByVariantKey(variantKey.value(), false);
-        //classSet.defaultTechnique = true;
-        //ShaderTechnique* tech = detail::ShaderInternal::findTechniqueByClass(actualShader, classSet);
         LN_DCHECK(tech);
         return tech;
     }
@@ -312,8 +310,6 @@ ShaderTechnique* SceneRenderPass::getShaderTechnique(Shader* fallbackShader, con
         // Default phase 以外は、G-Buffer 作成などレンダリングエンジンの都合に合わせた Output が必要となるため、
         // ユーザーのシェーダが厳格にそれをオーバーライドしたい場合を除いて、fallbackShader にフォールバックする。
         ShaderTechnique* tech = actualShader->findTechniqueByVariantKey(variantKey.value(), true);
-        //classSet.shadingModel = kokage::ShaderTechniqueClass_ShadingModel::Default;
-        //ShaderTechnique* tech = detail::ShaderInternal::findTechniqueByClass(actualShader, classSet);
         if (tech)
             return tech;
         else
