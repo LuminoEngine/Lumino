@@ -83,9 +83,6 @@ public:
     void drawBatchProxy(kanata::BatchProxy* batchProxy);
 
 
-    // TODO: deprecated. シャドウパスなど、マルチパスの SceneRenderer を実行するとき、メイン以外のパスでもクリアしてしまうので、対策するか、いっそ無くす。
-    void clear(Flags<ClearFlags> flags = ClearFlags::All, const Color& color = Color::Zero, float z = 1.0f, uint8_t stencil = 0x00);
-
     void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
     //   void drawPlane(Material* material, float width, float depth, const Color& color = Color::White);
     //   void drawPlane(Material* material, float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color = Color::White);

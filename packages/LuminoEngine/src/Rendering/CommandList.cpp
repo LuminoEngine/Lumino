@@ -151,35 +151,6 @@ void CommandList::drawBatchProxy(kanata::BatchProxy* batchProxy) {
     m_batchProxyCollector->addBatchProxy(batchProxy);
 }
 
-void CommandList::clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil) {
-#ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
-#else
-    class Clear : public detail::RenderDrawElement {
-    public:
-        ClearFlags flags;
-        Color color;
-        float z;
-        uint8_t stencil;
-
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-            return static_cast<detail::ClearRenderFeature*>(renderFeature)->clear(batchList, *state, flags, color, z, stencil);
-        }
-    };
-
-    m_builder->advanceFence();
-
-    auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature());
-    element->addFlags(detail::RenderDrawElementTypeFlags::Clear);
-    element->flags = flags;
-    element->color = color;
-    element->z = z;
-    element->stencil = stencil;
-
-    m_builder->advanceFence();
-#endif
-}
-
 void CommandList::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor) {
 #ifdef LN_USE_KANATA
     auto* proxy = m_batchProxyCollector->newSingleFrameBatchProxy<kanata::SingleLineSingleFrameBatchProxy>();

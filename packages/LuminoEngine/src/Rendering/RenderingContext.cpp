@@ -140,10 +140,6 @@ void RenderingContext_deprecated::drawBatchProxy(kanata::BatchProxy* batchProxy)
     m_commandList->drawBatchProxy(batchProxy);
 }
 
-void RenderingContext_deprecated::clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil) {
-    m_commandList->clear(flags, color, z, stencil);
-}
-
 void RenderingContext_deprecated::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor) {
     m_commandList->drawLine(from, fromColor, to, toColor);
 }
