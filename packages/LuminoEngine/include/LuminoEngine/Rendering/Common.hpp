@@ -30,6 +30,7 @@ class SurfaceContext;
 class BatchRenderer;
 class PrimitiveMeshRenderer;
 class SpriteTextRenderer;
+class SceneRenderer;
 class DebugPrint;
 
 static const int MaxRenderMorphTargets = 4;
@@ -242,7 +243,6 @@ struct SpriteData {
 
 namespace detail {
 class MeshGenerater;
-class SceneRenderer;
 class DrawElementList;
 class DrawElementListBuilder;
 class FontRequester;

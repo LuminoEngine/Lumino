@@ -136,8 +136,6 @@ public: // TODO: internal
     }
 
     const detail::PbrMaterialData& getPbrMaterialData() const { return m_data; }
-
-    friend class detail::SceneRenderer;
 };
 
 } // namespace ln

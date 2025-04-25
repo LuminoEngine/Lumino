@@ -22,6 +22,7 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
+#include <LuminoEngine/Rendering/SceneRenderer.hpp>
 
 namespace ln {
 
@@ -142,6 +143,8 @@ MaybeResult RenderingManager::init(const Options& options) {
     m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
     m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 
+    m_sceneRenderer = SceneRenderer::create(this);
+
     // DebugPrint
     {
         m_debugPrint = makeURef<DebugPrint>(this, m_spriteRenderer.get());
@@ -157,6 +160,11 @@ MaybeResult RenderingManager::init(const Options& options) {
 
 void RenderingManager::dispose() {
     LN_LOG_DEBUG("RenderingManager dispose started.");
+
+    if (m_sceneRenderer) {
+        m_sceneRenderer->dispose();
+        m_sceneRenderer = nullptr;
+    }
 
     for (int i = 0; i < m_builtinShaders.size(); i++) {
         m_builtinShaders[i] = nullptr;
@@ -180,6 +188,10 @@ void RenderingManager::dispose() {
     //m_renderFeatures.clear();
 
     LN_LOG_DEBUG("RenderingManager dispose finished.");
+}
+
+SceneRenderer* RenderingManager::sceneRenderer() const {
+    return m_sceneRenderer;
 }
 
 } // namespace detail

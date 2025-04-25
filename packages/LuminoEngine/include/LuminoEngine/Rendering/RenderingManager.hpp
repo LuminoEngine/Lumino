@@ -160,6 +160,7 @@ public:
     GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     FontManager* fontManager() const { return m_fontManager; }
     const Ref<VertexLayout>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
+    SceneRenderer* sceneRenderer() const;
     const URef<DebugPrint>& debugPrint() const { return m_debugPrint; }
 
     //const Ref<detail::IVertexDeclaration>& standardVertexDeclarationRHI() const { return m_standardVertexDeclarationRHI; }
@@ -198,6 +199,7 @@ private:
     GraphicsManager* m_graphicsManager;
     FontManager* m_fontManager;
     Ref<VertexLayout> m_standardVertexDeclaration;
+    Ref<SceneRenderer> m_sceneRenderer;
     URef<DebugPrint> m_debugPrint;
     //Ref<detail::IVertexDeclaration> m_standardVertexDeclarationRHI;
     // Ref<DrawElementListBuilder> m_renderStageListBuilder;

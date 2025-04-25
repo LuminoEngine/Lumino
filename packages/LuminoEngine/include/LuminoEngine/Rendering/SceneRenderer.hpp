@@ -9,6 +9,9 @@ class SceneRenderer final : public Object {
     //   それさえまたぐ状況でのZソートが出来なくなるため、改めて用意した。
     //   RenderPass の begin~end の間で使用できる。
 public:
+    static Ref<SceneRenderer> create(detail::RenderingManager* manager);
+
+    void dispose();
     void reset(const RenderViewPoint* currentViewPoint);
     void render();
     void drawSprite(const SpriteData& data);
@@ -35,8 +38,6 @@ private:
     };
 
     SceneRenderer(detail::RenderingManager* manager);
-    MaybeResult init();
-    void dispose();
     void destructDrawElementList();
     void addDrawElement(DrawElement* instance);
     void setupElement(DrawElement* instance);

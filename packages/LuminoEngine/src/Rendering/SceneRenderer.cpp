@@ -6,6 +6,12 @@
 
 namespace ln {
 
+Ref<SceneRenderer> SceneRenderer::create(detail::RenderingManager* manager) {
+    Ref<SceneRenderer> instance(LN_NEW SceneRenderer(manager), false);
+    instance->init();
+    return instance;
+}
+
 SceneRenderer::SceneRenderer(detail::RenderingManager* manager)
     : m_manager(manager)
     , m_dataAllocator(makeRef<detail::LinearAllocator>(manager->stageDataPageManager()))
