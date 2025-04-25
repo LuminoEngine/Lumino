@@ -310,7 +310,7 @@ void DrawElementListBuilder::popState()
 	}
 }
 
-RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature)
+RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature_deprecated* renderFeature)
 {
 	RenderStage* lastStage = nullptr;
 	RenderStage* newStage = nullptr;

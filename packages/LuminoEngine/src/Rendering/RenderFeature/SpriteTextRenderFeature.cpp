@@ -26,7 +26,7 @@ SpriteTextRenderFeature::SpriteTextRenderFeature()
 
 void SpriteTextRenderFeature::init(RenderingManager* manager)
 {
-    RenderFeature::init();
+    RenderFeature_deprecated::init();
 	m_manager = manager;
 	m_lastFont = nullptr;
 	m_vertexLayout = manager->standardVertexDeclaration();

@@ -5,7 +5,7 @@
 namespace ln {
 class VertexLayout;
 class Shader;
-class RenderFeature;
+class RenderFeature_deprecated;
 
 namespace detail {
 class IVertexDeclaration;
@@ -173,7 +173,7 @@ public:
 //#else
 //    const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
 //#endif
-    //const List<Ref<RenderFeature>>& renderFeatures() const { return m_renderFeatures; }
+    //const List<Ref<RenderFeature_deprecated>>& renderFeatures() const { return m_renderFeatures; }
     const URef<kanata::ScreenRectangleRenderFeature>& screenRectangleRenderFeature() const { return m_screenRectangleRenderFeature; }
     const URef<kanata::PrimitiveMeshRenderer>& primitiveRenderer() const { return m_primitiveRenderer; }
     const URef<kanata::MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
@@ -209,7 +209,7 @@ private:
 //#else
 //    Ref<ShapesRenderFeature> m_shapesRenderFeature;
 //#endif
-//    List<Ref<RenderFeature>> m_renderFeatures;
+//    List<Ref<RenderFeature_deprecated>> m_renderFeatures;
 
     /*
     名前どうしようか問題
@@ -228,7 +228,7 @@ private:
     ・XXProcessor は、 MeshProcessing という言葉があるように、描画するというよりは何かを加工・構築するイメージがある。
     ・Context/RenderingContext は既に同じような名前のものがあるため、それと同列に考えられるのも困る。
     ・SpriteRenderer は逆にそのものズバリ感が強すぎる。全く別の用途として XXXXSceneRenderer などがあり、混乱の可能性が高い。
-      ・でも、SceneRenderer を RenderFeature にするのもアリかも。その方が Unity のイメージにも近い。
+      ・でも、SceneRenderer を RenderFeature_deprecated にするのもアリかも。その方が Unity のイメージにも近い。
     */
     URef<kanata::ScreenRectangleRenderFeature> m_screenRectangleRenderFeature;
     URef<kanata::PrimitiveMeshRenderer> m_primitiveRenderer;

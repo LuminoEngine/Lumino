@@ -93,7 +93,7 @@ enum class HumanoidBones
 //};
 //LN_FLAGS_OPERATORS(BoneType);
 
-//class RenderFeature
+//class RenderFeature_deprecated
 //	: public Object
 //{
 //public:

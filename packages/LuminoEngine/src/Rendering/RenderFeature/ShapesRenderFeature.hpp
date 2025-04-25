@@ -157,7 +157,7 @@ private:
 #ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
 #else
 class ShapesRenderFeature
-	: public RenderFeature
+	: public RenderFeature_deprecated
 {
 public:
 	ShapesRenderFeature();
@@ -647,7 +647,7 @@ private:
 
 // TODO: name:BoxElementRenderFeature
 class ShapesRenderFeature2
-	: public RenderFeature
+	: public RenderFeature_deprecated
 {
 public:
 	ShapesRenderFeature2();
@@ -707,7 +707,7 @@ class DrawShapesElement : public RenderDrawElement
 public:
 	ShapesRendererCommandList commandList;
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature_deprecated* renderFeature, const RLIBatchState* state) override
 	{
 #ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
 		return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(batchList, *state, &commandList);
@@ -725,7 +725,7 @@ class DrawBoxElementShape : public RenderDrawElement
 public:
     BoxElementShapeCommandList commandList;
 
-    virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+    virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature_deprecated* renderFeature, const RLIBatchState* state) override
     {
         return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(batchList, *state, &commandList);
     }

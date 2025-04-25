@@ -6,7 +6,7 @@
 
 namespace ln {
 class ShaderTechnique;
-class RenderFeature_deprecated;
+class RenderFeature;
 class Material;
 
 namespace detail {
@@ -24,7 +24,7 @@ class RenderFeatureBatch;
 
 } // namespace detail
 
-class RenderFeature_deprecated
+class RenderFeature
 	: public Object
 {
 public:

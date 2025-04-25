@@ -1017,7 +1017,7 @@ ShapesRenderFeature::ShapesRenderFeature()
 
 void ShapesRenderFeature::init(RenderingManager* manager)
 {
-    RenderFeature::init();
+    RenderFeature_deprecated::init();
     m_internal = makeRef<ShapesRenderFeature>();
     m_internal->init(manager);
 }

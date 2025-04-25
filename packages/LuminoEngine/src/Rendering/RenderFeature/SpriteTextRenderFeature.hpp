@@ -13,7 +13,7 @@ namespace ln {
 namespace detail {
 	
 class SpriteTextRenderFeature
-	: public RenderFeature
+	: public RenderFeature_deprecated
 	, public TextLayoutEngine
 {
 public:
@@ -25,7 +25,7 @@ public:
 	RequestBatchResult drawFlexGlyphRun(RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
 
 protected:
-	// RenderFeature interface
+	// RenderFeature_deprecated interface
 	virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) override;
@@ -118,7 +118,7 @@ public:
 	SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
 	Ref<SamplerState> samplerState;
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature_deprecated* renderFeature, const RLIBatchState* state) override
 	{
 		if (glyphRun) {
 			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, *state, context, glyphRun->font, glyphRun, anchor, baseDirection, combinedWorldMatrix());
@@ -142,7 +142,7 @@ public:
 	//	return FontHelper::resolveFontCore(font, dpiScale);
 	//}
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature_deprecated* renderFeature, const RLIBatchState* state) override
 	{
 		return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawChar(batchList, *state, context, font, codePoint, color, combinedWorldMatrix() * transform);
 	}
@@ -154,7 +154,7 @@ public:
 //public:
 //	//Ref<detail::FlexText> flexText;
 //
-//	virtual void onDraw(GraphicsCommandList* context, RenderFeature* renderFeatures) override
+//	virtual void onDraw(GraphicsCommandList* context, RenderFeature_deprecated* renderFeatures) override
 //	{
 //	}
 //};

@@ -23,7 +23,7 @@ namespace detail {
      flush 時に頂点データ化するという流れで描画を行う。
     */
 class MeshGeneraterRenderFeature
-	: public RenderFeature
+	: public RenderFeature_deprecated
 {
 public:
 	MeshGeneraterRenderFeature();
@@ -97,7 +97,7 @@ private:
 };
 
 class PrimitiveRenderFeature
-	: public RenderFeature
+	: public RenderFeature_deprecated
 {
 public:
 	PrimitiveRenderFeature();

@@ -23,7 +23,7 @@ FrameRectRenderFeature_deprecated::FrameRectRenderFeature_deprecated()
 
 void FrameRectRenderFeature_deprecated::init(RenderingManager* manager)
 {
-	RenderFeature::init();
+	RenderFeature_deprecated::init();
     m_vertexLayout = manager->standardVertexDeclaration();
 }
 

@@ -12,7 +12,7 @@ namespace ln {
 class Shader;
 class GraphicsCommandList;
 class Material;
-class RenderFeature;
+class RenderFeature_deprecated;
 namespace detail {
 class RenderDrawElement;
 class RenderStage;
@@ -138,7 +138,7 @@ public:
     int m_objectId = 0;
 
     // これは Manager が持っているインスタンスを指す。ユーザー定義の場合はそっち。インスタンスは RenderStage モジュール内では管理しない。参照のみ。
-    RenderFeature* renderFeature;
+    RenderFeature_deprecated* renderFeature;
 
     RenderStage();
 

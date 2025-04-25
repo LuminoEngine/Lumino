@@ -38,7 +38,7 @@ void RenderFeatureBatchList::setCurrentStage(detail::RenderStage* stage)
 //	addNewBatch<ClearBatch>(nullptr);
 //}
 
-void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner, const RLIBatchState& state)
+void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature_deprecated* owner, const RLIBatchState& state)
 {
 	if (LN_REQUIRE(batch)) return;
 	if (LN_REQUIRE(m_currentStage)) return;
@@ -56,7 +56,7 @@ void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner
 	}
 }
 
-//bool RenderFeatureBatchList::lastBatchRenderFeatureIs(RenderFeature* renderFeature) const
+//bool RenderFeatureBatchList::lastBatchRenderFeatureIs(RenderFeature_deprecated* renderFeature) const
 //{
 //	if (m_tail) {
 //		return m_tail->renderFeature() == renderFeature;
@@ -66,7 +66,7 @@ void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner
 //	}
 //}
 
-bool RenderFeatureBatchList::equalsLastBatchState(RenderFeature* renderFeature, const RLIBatchState& state)
+bool RenderFeatureBatchList::equalsLastBatchState(RenderFeature_deprecated* renderFeature, const RLIBatchState& state)
 {
 	if (!m_tail) return false;
 	if (m_tail->renderFeature() != renderFeature) return false;

@@ -11,7 +11,7 @@ namespace ln {
 namespace detail {
 
 class FrameRectRenderFeature_deprecated
-	: public RenderFeature
+	: public RenderFeature_deprecated
 {
 public:
 	FrameRectRenderFeature_deprecated();
@@ -72,7 +72,7 @@ public:
     Thickness borderThickness;
     Rect srcRect;
 
-	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const RLIBatchState* state) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature_deprecated* renderFeature, const RLIBatchState* state) override
 	{
 		m_srcTextureSize.width = state->m_subsetInfo.materialTexture->width();
 		m_srcTextureSize.height = state->m_subsetInfo.materialTexture->height();

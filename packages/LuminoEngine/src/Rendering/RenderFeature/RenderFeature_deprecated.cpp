@@ -16,13 +16,13 @@ namespace detail {
 } // namespace detail
 
 //==============================================================================
-// RenderFeature
+// RenderFeature_deprecated
 
-void RenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo)
+void RenderFeature_deprecated::onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo)
 {
 }
 
-bool RenderFeature::drawElementTransformNegate() const
+bool RenderFeature_deprecated::drawElementTransformNegate() const
 {
     return false;
 }

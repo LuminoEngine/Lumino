@@ -10,7 +10,7 @@ class InstancedMeshList;
 namespace detail {
 
 class MeshRenderFeature_deprecated	// TODO: MeshSectionRenderFeature
-	: public RenderFeature
+	: public RenderFeature_deprecated
 {
 public:
 	MeshRenderFeature_deprecated();

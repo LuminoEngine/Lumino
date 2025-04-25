@@ -37,11 +37,11 @@ public:
 
 	// ↓RenderFeature から使って良いもの
 
-	//bool lastBatchRenderFeatureIs(RenderFeature* renderFeature) const;
-	bool equalsLastBatchState(RenderFeature* renderFeature, const RLIBatchState& state);
+	//bool lastBatchRenderFeatureIs(RenderFeature_deprecated* renderFeature) const;
+	bool equalsLastBatchState(RenderFeature_deprecated* renderFeature, const RLIBatchState& state);
 
 	template<class TBatch>
-	TBatch* addNewBatch(RenderFeature* owner, const RLIBatchState& state)
+	TBatch* addNewBatch(RenderFeature_deprecated* owner, const RLIBatchState& state)
 	{
 		void* buffer = m_allocator->allocate(sizeof(TBatch));
 		TBatch* batch = new (buffer)TBatch();
@@ -50,7 +50,7 @@ public:
 	}
 
 private:
-	void add(RenderFeatureBatch* batch, RenderFeature* owner, const RLIBatchState& state);
+	void add(RenderFeatureBatch* batch, RenderFeature_deprecated* owner, const RLIBatchState& state);
 
 	detail::RenderingManager* m_manager;
 	Ref<detail::LinearAllocator> m_allocator;

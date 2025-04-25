@@ -23,7 +23,7 @@ MeshRenderFeature_deprecated::MeshRenderFeature_deprecated()
 
 void MeshRenderFeature_deprecated::init(RenderingManager* manager)
 {
-	RenderFeature::init();
+	RenderFeature_deprecated::init();
 }
 
 RequestBatchResult MeshRenderFeature_deprecated::drawMesh(detail::RenderFeatureBatchList* batchList, const RLIBatchState& batchState, GraphicsCommandList* context, MeshResource* mesh, int sectionIndex)

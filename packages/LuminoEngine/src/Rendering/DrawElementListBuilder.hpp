@@ -83,7 +83,7 @@ public:
 
 	template<class TElement>
 	TElement* addNewDrawElement(
-		RenderFeature* renderFeature)
+		RenderFeature_deprecated* renderFeature)
 	{
 		RenderStage* stage = prepareRenderStage(renderFeature);
 		if (LN_ENSURE(stage)) return nullptr;
@@ -127,7 +127,7 @@ public:	// TODO: internal
         All = 0xFFFF,
     };
 
-	RenderStage* prepareRenderStage(RenderFeature* renderFeature);
+	RenderStage* prepareRenderStage(RenderFeature_deprecated* renderFeature);
     void prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement, RenderStage* stage);
     const Ref<State>& primaryState() { return m_aliveStateStack.front(); }
     const Ref<State>& primaryStateConst() const { return m_aliveStateStack.front(); }
