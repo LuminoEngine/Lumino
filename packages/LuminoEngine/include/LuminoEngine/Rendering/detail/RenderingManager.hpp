@@ -20,7 +20,6 @@ class SpriteTextRenderFeature;
 class FrameRectRenderFeature;
 class ShapesRenderFeature;
 class ShapesRenderFeature2;
-class ExtensionRenderFeature;
 class RenderingProfiler;
 class FontManager;
 
@@ -180,7 +179,6 @@ public:
 //#else
 //    const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
 //#endif
-    //const Ref<ExtensionRenderFeature>& extensionRenderFeature() const { return m_extensionRenderFeature; }
     //const List<Ref<RenderFeature>>& renderFeatures() const { return m_renderFeatures; }
     const URef<kanata::ScreenRectangleRenderFeature>& screenRectangleRenderFeature() const { return m_screenRectangleRenderFeature; }
     const URef<kanata::PrimitiveMeshRenderer>& primitiveRenderer() const { return m_primitiveRenderer; }
@@ -221,7 +219,6 @@ private:
 //#else
 //    Ref<ShapesRenderFeature> m_shapesRenderFeature;
 //#endif
-//    Ref<ExtensionRenderFeature> m_extensionRenderFeature;
 //    List<Ref<RenderFeature>> m_renderFeatures;
 
     /*

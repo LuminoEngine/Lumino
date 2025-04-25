@@ -862,27 +862,6 @@ void CommandList::drawChar(uint32_t codePoint, const Color& color, Font* font, c
 #endif
 }
 
-void CommandList::invokeExtensionRendering(INativeGraphicsExtension* extension) {
-#ifdef LN_USE_KANATA
-    LN_NOTIMPLEMENTED();
-#else
-    class InvokeExtensionRendering : public detail::RenderDrawElement {
-    public:
-        INativeGraphicsExtension* extension;
-
-        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsCommandList* context, RenderFeature* renderFeature, const detail::RLIBatchState* state) override {
-            return static_cast<detail::ExtensionRenderFeature*>(renderFeature)->invoke(context, batchList, extension);
-            //context->drawExtension(extension);
-        }
-    };
-
-    auto* element = m_builder->addNewDrawElement<InvokeExtensionRendering>(m_manager->extensionRenderFeature());
-    element->extension = extension;
-
-    // TODO: bounding
-#endif
-}
-
 void CommandList::drawRegularPolygonPrimitive(int vertexCount, float radius, const Color& color, bool fill, const Matrix& localTransform) {
 #ifdef LN_USE_KANATA
     LN_NOTIMPLEMENTED();

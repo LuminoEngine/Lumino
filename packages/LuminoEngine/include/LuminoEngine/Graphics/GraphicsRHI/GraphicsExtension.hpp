@@ -23,6 +23,7 @@ public:
 private:
 };
 
+/** @deprecated */
 class INativeGraphicsExtension
 {
 public:

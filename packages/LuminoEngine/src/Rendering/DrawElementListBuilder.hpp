@@ -7,7 +7,6 @@
 #include "RenderFeature/SpriteTextRenderFeature.hpp"
 #include "RenderFeature/FrameRectRenderFeature.hpp"
 #include "RenderFeature/ShapesRenderFeature.hpp"
-#include "RenderFeature/ExtensionRenderFeature.hpp"
 
 namespace ln {
 class RenderViewPoint;

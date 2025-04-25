@@ -231,10 +231,6 @@ void RenderingContext_deprecated::drawChar(uint32_t codePoint, const Color& colo
     m_commandList->drawChar(codePoint, color, font, transform);
 }
 
-void RenderingContext_deprecated::invokeExtensionRendering(INativeGraphicsExtension* extension) {
-    m_commandList->invokeExtensionRendering(extension);
-}
-
 void RenderingContext_deprecated::addAmbientLight(const Color& color, float intensity) {
     addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));
 }
