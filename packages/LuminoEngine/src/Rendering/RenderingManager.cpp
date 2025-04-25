@@ -70,11 +70,14 @@ MaybeResult RenderingManager::init(const Options& options) {
     // CopyScreen
     {
         static const unsigned char data[] = {
-#include "Resource/CopyScreen.lcfx.inl"
+#include "Resource/CopyScreen.lcsh.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
-        MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::CopyScreen] = makeObject_deprecated<Shader>(_TT("CopyScreen"), &stream);
+        auto result = Shader::createFromCompiledShader(data, size, "CopyScreen");
+        if (!result) {
+            return LN_TO_ERROR(result);
+        }
+        m_builtinShaders[(int)BuiltinShader::CopyScreen] = result.value();
     }
     // Sprite
     {

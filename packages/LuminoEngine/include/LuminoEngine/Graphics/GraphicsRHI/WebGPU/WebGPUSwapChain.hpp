@@ -13,7 +13,7 @@ namespace detail {
 class WebGPUSwapChain : public ISwapChain {
 public:
     // WebGPU ではいくつバッファがあるかは取得できないようだった
-    static const int BackbufferCount = 1;
+    static const int BackbufferCount = 3;
 	
     WebGPUSwapChain();
     MaybeResult init(WebGPUDevice* device, const SwapChainCreateInfo& createInfo);
