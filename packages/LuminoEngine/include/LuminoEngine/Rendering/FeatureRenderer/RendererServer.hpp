@@ -5,11 +5,19 @@ namespace ln {
 
 class RendererServer : public URefObject {
 public:
+    static URef<RendererServer> create();
+    BatchRenderer* spriteRenderer() const;
+
+    void reset();
+    void activate(BatchRenderer* renderer, CommandList* commandList, Material* material);
+    void flush();
 
 private:
     RendererServer();
     MaybeResult init();
 
+    Ref<BatchRenderer> m_spriteRenderer;
+    BatchRenderer* m_activeRenderer;
 };
 
 class CullingSystem : public URefObject {

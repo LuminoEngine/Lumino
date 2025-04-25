@@ -17,6 +17,7 @@ public:
 
     void begin(CommandList* commandList, Material* material);
     void end();
+    Material* currentMaterial() const;
 
     void drawSprite(const SpriteData& sprite);
     void drawSprite(
@@ -29,9 +30,9 @@ public:
         BillboardType billboardType,
         const Flags<SpriteFlipFlags>& flipFlags);
 
-private:
     BatchRenderer();
     Result_deprecated<> init();
+private:
 
     CommandList* m_commandList;
     detail::InstructionBatchProxy* m_currentProxy;

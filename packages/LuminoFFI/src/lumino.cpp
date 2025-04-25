@@ -19,6 +19,7 @@
 #include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Rendering/SurfaceContext.hpp>
 #include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/SceneRenderer.hpp>
 #include <LuminoEngine/Rendering/DebugPrint.hpp>
 #include <lumino.h>
 
@@ -376,6 +377,8 @@ LNResult LNCommandList_BeginRenderPass(
     //renderingContext->commandList->clear(ClearFlags::All, Color::Aqua);
     renderingContext->commandList()->endRenderPass();
 
+    renderingManager->sceneRenderer()->reset(renderingViewPoint);
+
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -433,59 +436,60 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
             // Build batch test.
             Ref<VertexBuffer> g_vertexBuffer;
             Ref<Material> material;
-            if (0) {
-                Vertex v[] = {
-                    // Vertex(Vector3(0, 5.5, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
-                    // Vertex(Vector3(-5.5, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
-                    // Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
+            //if (0) {
+            //    Vertex v[] = {
+            //        // Vertex(Vector3(0, 5.5, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
+            //        // Vertex(Vector3(-5.5, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Red),
+            //        // Vertex(Vector3(5.5, 0, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Red),
 
-                    Vertex(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
-                    Vertex(Vector3(0, 10, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Green),
-                    Vertex(Vector3(10, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Blue),
-                };
-                g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+            //        Vertex(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector2(0, 0), Color::Red),
+            //        Vertex(Vector3(0, 10, 0), Vector3(0, 0, 1), Vector2(0, 1), Color::Green),
+            //        Vertex(Vector3(10, 0, 0), Vector3(0, 0, 1), Vector2(1, 0), Color::Blue),
+            //    };
+            //    g_vertexBuffer = makeObject_deprecated<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-                Ref<Material> material = Material::create();
+            //    Ref<Material> material = Material::create();
 
-                // 手動で頑張るパターン
-                batchList->batchProxyState = &batchState;
-                auto* batch = batchList->newBatch<kanata::Batch>(1, material);
-                batch->elemets2[0].vertexBuffers = {};
-                batch->elemets2[0].vertexBuffers[0] = g_vertexBuffer;
-                batch->elemets2[0].indexBuffer = nullptr;
-                batch->elemets2[0].firstIndex = 0;
-                batch->elemets2[0].firstVertex = 0;
-                batch->elemets2[0].primitiveCount = 1;
-                batch->elemets2[0].instanceCount = 0;
-                batch->vertexLayout = renderingManager->standardVertexDeclaration();
-                batch->primitiveTopology = PrimitiveTopology::TriangleList;
+            //    // 手動で頑張るパターン
+            //    batchList->batchProxyState = &batchState;
+            //    auto* batch = batchList->newBatch<kanata::Batch>(1, material);
+            //    batch->elemets2[0].vertexBuffers = {};
+            //    batch->elemets2[0].vertexBuffers[0] = g_vertexBuffer;
+            //    batch->elemets2[0].indexBuffer = nullptr;
+            //    batch->elemets2[0].firstIndex = 0;
+            //    batch->elemets2[0].firstVertex = 0;
+            //    batch->elemets2[0].primitiveCount = 1;
+            //    batch->elemets2[0].instanceCount = 0;
+            //    batch->vertexLayout = renderingManager->standardVertexDeclaration();
+            //    batch->primitiveTopology = PrimitiveTopology::TriangleList;
 
-                // Proxy を使い、Static な Mesh を描画するパターン
-                // g_boxMeshBatchProxy->getBatch(g_batchList);
+            //    // Proxy を使い、Static な Mesh を描画するパターン
+            //    // g_boxMeshBatchProxy->getBatch(g_batchList);
 
-                //
-                // auto& r = g_batchList->primitiveRenderer();
-                // r->begin();
-                // r->drawBox(Box(0.5), Color::Red, Matrix::makeTranslation(2, 0, 0));
-                // r->drawBox(Box(2), Color::Red, Matrix::makeTranslation(-2, 0, 0));
-                // r->end();
+            //    //
+            //    // auto& r = g_batchList->primitiveRenderer();
+            //    // r->begin();
+            //    // r->drawBox(Box(0.5), Color::Red, Matrix::makeTranslation(2, 0, 0));
+            //    // r->drawBox(Box(2), Color::Red, Matrix::makeTranslation(-2, 0, 0));
+            //    // r->end();
 
-                auto& r = EngineInstance::instance()->renderingManager()->spriteRenderer();
-                r->begin(renderingContext, material);
-                r->drawSprite(
-                    Matrix::makeTranslation(0, 0, 0),
-                    Size(100, 200),
-                    Vector2(0, 0),
-                    Rect(0, 0, 1, 1),
-                    Color::Red,
-                    SpriteBaseDirection::Basic2D,
-                    BillboardType::None,
-                    SpriteFlipFlags::None);
-                r->end();
-            }
+            //    auto& r = EngineInstance::instance()->renderingManager()->spriteRenderer();
+            //    r->begin(renderingContext, material);
+            //    r->drawSprite(
+            //        Matrix::makeTranslation(0, 0, 0),
+            //        Size(100, 200),
+            //        Vector2(0, 0),
+            //        Rect(0, 0, 1, 1),
+            //        Color::Red,
+            //        SpriteBaseDirection::Basic2D,
+            //        BillboardType::None,
+            //        SpriteFlipFlags::None);
+            //    r->end();
+            //}
 
 
-
+            
+            renderingManager->sceneRenderer()->render(renderingContext);
 
             // Render commands
             {
@@ -759,12 +763,14 @@ LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) 
 
 LNResult LNBatchRenderer_Get(LNHandle* outSpriteRenderer) {
     LN_FFI_TRY_BEGIN;
-	detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
-    BatchRenderer* spriteRenderer = renderingManager->spriteRenderer();
-        *outSpriteRenderer = ::Runtime::wrapObject(spriteRenderer, false);
+	//detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
+ //   BatchRenderer* spriteRenderer = renderingManager->spriteRenderer();
+ //       *outSpriteRenderer = ::Runtime::wrapObject(spriteRenderer, false);
+    *outSpriteRenderer = 0;
 	LN_FFI_TRY_END_RETURN;
 }
 
+Material* g_lastMaterial = nullptr;
 LNResult LNBatchRenderer_BeginBatch(
     LNHandle spriteRenderer_,
     LNHandle graphicsCommandList_,
@@ -826,6 +832,7 @@ LNResult LNBatchRenderer_BeginBatch(
     //
 
     LN_FFI_TRY_BEGIN;
+    
     //std::cout << "spriteRenderer: " << spriteRenderer_ << std::endl;
     //std::cout << "graphicsCommandList: " << graphicsCommandList_ << std::endl;
     //std::cout << "material: " << material_ << std::endl;
@@ -839,22 +846,24 @@ LNResult LNBatchRenderer_BeginBatch(
     BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
     SurfaceContext* commandList = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsCommandList_);
     Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
-
-    if (transform_) {
-        const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
-        commandList->renderingContext()->setTransfrom(*transform);
+    g_lastMaterial = material;
+    if (0) {
+        if (transform_) {
+            const Matrix* transform = reinterpret_cast<const Matrix*>(transform_);
+            commandList->renderingContext()->setTransfrom(*transform);
+        }
+        else {
+            commandList->renderingContext()->setTransfrom(Matrix::Identity);
+        }
+        spriteRenderer->begin(commandList->renderingContext(), material);
     }
-    else {
-        commandList->renderingContext()->setTransfrom(Matrix::Identity);
-    }
-    spriteRenderer->begin(commandList->renderingContext(), material);
     LN_FFI_TRY_END_RETURN;
 }
 
 LNResult LNBatchRenderer_EndBatch(LNHandle spriteRenderer_) {
     LN_FFI_TRY_BEGIN;
-	BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
-	spriteRenderer->end();
+	//BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
+	//spriteRenderer->end();
 	LN_FFI_TRY_END_RETURN;
 }
 
@@ -884,16 +893,30 @@ LNResult LNBatchRenderer_DrawSprite_deprecated(
 
     LN_FFI_TRY_BEGIN;
     const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
-    BatchRenderer* renderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer);
-    renderer->drawSprite(
-        (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
-        Size(width, height),
-        Vector2(anchorRatioX, anchorRatioY),
-        Rect(uvRectX, uvRectY, uvRectW, uvRectH),
-        Color(r, g, b, a),
-        static_cast<SpriteBaseDirection>(baseDirection),
-        static_cast<BillboardType>(billboardType),
-        SpriteFlipFlags::None);
+
+    SpriteData data;
+    data.transform = (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity;
+    data.size = Size(width, height);
+    data.anchorRatio = Vector2(anchorRatioX, anchorRatioY);
+    data.srcUVRect = Rect(uvRectX, uvRectY, uvRectW, uvRectH);
+    data.color = Color(r, g, b, a);
+    data.baseDirection = static_cast<SpriteBaseDirection>(baseDirection);
+    data.billboardType = static_cast<BillboardType>(billboardType);
+    data.flipFlags = SpriteFlipFlags::None;
+
+    SceneRenderer* renderer = detail::RenderingManager::instance()->sceneRenderer();
+    renderer->drawSprite(g_lastMaterial, data);
+
+    //BatchRenderer* renderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer);
+    //renderer->drawSprite(
+    //    (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
+    //    Size(width, height),
+    //    Vector2(anchorRatioX, anchorRatioY),
+    //    Rect(uvRectX, uvRectY, uvRectW, uvRectH),
+    //    Color(r, g, b, a),
+    //    static_cast<SpriteBaseDirection>(baseDirection),
+    //    static_cast<BillboardType>(billboardType),
+    //    SpriteFlipFlags::None);
     LN_FFI_TRY_END_RETURN;
 }
 

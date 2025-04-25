@@ -22,6 +22,7 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/PrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/RendererServer.hpp>
 #include <LuminoEngine/Rendering/SceneRenderer.hpp>
 
 namespace ln {
@@ -110,10 +111,6 @@ MaybeResult RenderingManager::init(const Options& options) {
     m_frameRectRenderFeature = makeURef<kanata::FrameRectRenderFeature>(this);
 
     m_batchInstructionDispatcher = makeURef<BatchInstructionEncoder>(this);
-    m_spriteRenderer = Ref<BatchRenderer>(LN_NEW BatchRenderer(), false);
-    if (!m_spriteRenderer->init()) {
-        return LN_MAKE_ERROR();
-    }
     m_primitiveMeshRenderer = Ref<PrimitiveMeshRenderer>(LN_NEW PrimitiveMeshRenderer(), false);
     if (!m_primitiveMeshRenderer->init()) {
         return LN_MAKE_ERROR();
@@ -147,7 +144,7 @@ MaybeResult RenderingManager::init(const Options& options) {
 
     // DebugPrint
     {
-        m_debugPrint = makeURef<DebugPrint>(this, m_spriteRenderer.get());
+        m_debugPrint = makeURef<DebugPrint>(this, m_sceneRenderer->rendererServer()->spriteRenderer());
         auto result = m_debugPrint->init();
         if (!result) {
             return result;

@@ -13,8 +13,11 @@ public:
 
     void dispose();
     void reset(const RenderViewPoint* currentViewPoint);
-    void render();
-    void drawSprite(const SpriteData& data);
+    void render(CommandList* commandList); // TODO: 実際に欲しいのは Collector だけのはず
+
+    void drawSprite(Material* material, const SpriteData& data);
+
+    RendererServer* rendererServer() const;
 
 private:
     enum class DrawElementType {
@@ -34,7 +37,7 @@ private:
             , visible(true) {}
         virtual ~DrawElement() {}
         virtual const Matrix& worldMatrix() = 0;
-        virtual void onRender() = 0;
+        virtual void onRender(RendererServer* rendererServer, CommandList* commandList) = 0;
     };
 
     SceneRenderer(detail::RenderingManager* manager);
@@ -53,6 +56,7 @@ private:
 
     detail::RenderingManager* m_manager;
     Ref<detail::LinearAllocator> m_dataAllocator;
+    URef<RendererServer> m_rendererServer;
     DrawElement* m_headDrawElement;
     DrawElement* m_tailDrawElement;
     int m_visibleDrawElementCount;

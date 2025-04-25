@@ -31,6 +31,7 @@ class BatchRenderer;
 class PrimitiveMeshRenderer;
 class SpriteTextRenderer;
 class SceneRenderer;
+class RendererServer;
 class DebugPrint;
 
 static const int MaxRenderMorphTargets = 4;

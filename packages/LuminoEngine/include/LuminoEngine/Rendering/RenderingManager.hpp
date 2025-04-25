@@ -183,7 +183,6 @@ public:
     const URef<kanata::FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
 
     const URef<BatchInstructionEncoder>& batchInstructionDispatcher() const { return m_batchInstructionDispatcher; }
-    const Ref<BatchRenderer>& spriteRenderer() const { return m_spriteRenderer; }
     const Ref<PrimitiveMeshRenderer>& primitiveMeshRenderer() const { return m_primitiveMeshRenderer; }
     const Ref<SpriteTextRenderer>& spriteTextRenderer() const { return m_spriteTextRenderer; }
 
@@ -240,7 +239,6 @@ private:
     URef<kanata::FrameRectRenderFeature> m_frameRectRenderFeature;
 
     URef<BatchInstructionEncoder> m_batchInstructionDispatcher;
-    Ref<BatchRenderer> m_spriteRenderer;
     Ref<PrimitiveMeshRenderer> m_primitiveMeshRenderer;
     Ref<SpriteTextRenderer> m_spriteTextRenderer;
 

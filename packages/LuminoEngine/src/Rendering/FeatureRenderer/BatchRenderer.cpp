@@ -29,10 +29,6 @@ public:
 
 } // namespace detail
 
-BatchRenderer* BatchRenderer::get() {
-    return detail::RenderingManager::instance()->spriteRenderer();
-}
-
 BatchRenderer::BatchRenderer()
     : m_commandList(nullptr)
     , m_currentProxy(nullptr) {
@@ -57,6 +53,10 @@ void BatchRenderer::begin(CommandList* commandList, Material* material) {
 void BatchRenderer::end() {
     m_commandList = nullptr;
     m_currentProxy = nullptr;
+}
+
+Material* BatchRenderer::currentMaterial() const {
+    return m_currentProxy->material;
 }
 
 void BatchRenderer::drawSprite(const SpriteData& sprite) {
