@@ -3,7 +3,6 @@
 #include "RenderFeature/MeshRenderFeature.hpp"
 #include "RenderFeature/PrimitiveRenderFeature.hpp"
 #include "RenderFeature/SpriteTextRenderFeature.hpp"
-#include "RenderFeature/FrameRectRenderFeature.hpp"
 #include "RenderFeature/ShapesRenderFeature.hpp"
 
 namespace ln {

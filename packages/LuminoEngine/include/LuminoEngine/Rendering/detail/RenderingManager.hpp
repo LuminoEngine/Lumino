@@ -15,7 +15,7 @@ class MeshRenderFeature;
 class MeshGeneraterRenderFeature;
 class PrimitiveRenderFeature;
 class SpriteTextRenderFeature;
-class FrameRectRenderFeature;
+class FrameRectRenderFeature_deprecated;
 class ShapesRenderFeature;
 class ShapesRenderFeature2;
 class RenderingProfiler;
@@ -169,7 +169,6 @@ public:
     //const Ref<MeshGeneraterRenderFeature>& meshGeneraterRenderFeature() const { return m_meshGeneraterRenderFeature; }
     //const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
     //const Ref<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
-//    const Ref<FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
 //#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
 //    const Ref<ShapesRenderFeature2>& shapesRenderFeature() const { return m_shapesRenderFeature; }
 //#else
@@ -207,7 +206,6 @@ private:
 //    Ref<MeshGeneraterRenderFeature> m_meshGeneraterRenderFeature;
 //    Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
 //    Ref<SpriteTextRenderFeature> m_spriteTextRenderFeature;
-//    Ref<FrameRectRenderFeature> m_frameRectRenderFeature;
 //#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
 //    Ref<ShapesRenderFeature2> m_shapesRenderFeature;
 //#else

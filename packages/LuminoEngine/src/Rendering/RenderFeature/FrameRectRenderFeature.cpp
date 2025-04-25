@@ -13,21 +13,21 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// FrameRectRenderFeature
+// FrameRectRenderFeature_deprecated
 
-FrameRectRenderFeature::FrameRectRenderFeature()
+FrameRectRenderFeature_deprecated::FrameRectRenderFeature_deprecated()
     : m_buffersReservedSpriteCount(0)
     , m_worldTransform(nullptr)
 {
 }
 
-void FrameRectRenderFeature::init(RenderingManager* manager)
+void FrameRectRenderFeature_deprecated::init(RenderingManager* manager)
 {
 	RenderFeature::init();
     m_vertexLayout = manager->standardVertexDeclaration();
 }
 
-RequestBatchResult FrameRectRenderFeature::drawRequest(
+RequestBatchResult FrameRectRenderFeature_deprecated::drawRequest(
 	RenderFeatureBatchList* batchList,
 	const RLIBatchState& batchState,
 	const Rect& rect,
@@ -102,11 +102,11 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(
 	return RequestBatchResult::Staging;
 }
 
-void FrameRectRenderFeature::beginRendering()
+void FrameRectRenderFeature_deprecated::beginRendering()
 {
 }
 
-void FrameRectRenderFeature::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) {
+void FrameRectRenderFeature_deprecated::submitBatch(GraphicsCommandList* context, detail::RenderFeatureBatchList* batchList) {
 #ifdef LN_RLI_BATCH
 	LN_UNREACHABLE();
 #else
@@ -122,7 +122,7 @@ void FrameRectRenderFeature::submitBatch(GraphicsCommandList* context, detail::R
 #endif
 }
 
-void FrameRectRenderFeature::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) {
+void FrameRectRenderFeature_deprecated::renderBatch(GraphicsCommandList* context, RenderFeatureBatch* batch) {
 	auto localBatch = static_cast<Batch*>(batch);
 	context->setVertexLayout(m_vertexLayout);
 	context->setVertexBuffer(0, m_vertexBuffer);
@@ -130,7 +130,7 @@ void FrameRectRenderFeature::renderBatch(GraphicsCommandList* context, RenderFea
 	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
 }
 
-void FrameRectRenderFeature::prepareBuffers(int spriteCount)
+void FrameRectRenderFeature_deprecated::prepareBuffers(int spriteCount)
 {
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -171,7 +171,7 @@ void FrameRectRenderFeature::prepareBuffers(int spriteCount)
 	}
 }
 
-void FrameRectRenderFeature::addSprite(Batch* batch, const Vector3& pos0, const Vector2& uv0, const Vector3& pos1, const Vector2& uv1, const Vector3& pos2, const Vector2& uv2, const Vector3& pos3, const Vector2& uv3)
+void FrameRectRenderFeature_deprecated::addSprite(Batch* batch, const Vector3& pos0, const Vector2& uv0, const Vector3& pos1, const Vector2& uv1, const Vector3& pos2, const Vector2& uv2, const Vector3& pos3, const Vector2& uv3)
 {
 	int count = batch->data.spriteOffset + batch->data.spriteCount + 1;
 	prepareBuffers(count);
@@ -196,7 +196,7 @@ void FrameRectRenderFeature::addSprite(Batch* batch, const Vector3& pos0, const 
 	batch->data.spriteCount++;
 }
 
-void FrameRectRenderFeature::putRectangleStretch(Batch* batch, const Rect& rect, const Rect& srcUVRect)
+void FrameRectRenderFeature_deprecated::putRectangleStretch(Batch* batch, const Rect& rect, const Rect& srcUVRect)
 {
 	if (rect.isEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -217,7 +217,7 @@ void FrameRectRenderFeature::putRectangleStretch(Batch* batch, const Rect& rect,
 		Vector3(pos_r, pos_b, 0), Vector2(uv_r, uv_b));	// bottom-right
 }
 
-void FrameRectRenderFeature::putRectangleTiling(Batch* batch, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect)
+void FrameRectRenderFeature_deprecated::putRectangleTiling(Batch* batch, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect)
 {
 	if (rect.isEmpty()) return;		// 矩形がつぶれているので書く必要はない
 
@@ -268,7 +268,7 @@ void FrameRectRenderFeature::putRectangleTiling(Batch* batch, const Rect& rect, 
 	}
 }
 
-void FrameRectRenderFeature::putRectangle(Batch* batch, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, Sprite9DrawMode wrapMode)
+void FrameRectRenderFeature_deprecated::putRectangle(Batch* batch, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, Sprite9DrawMode wrapMode)
 {
 	if (wrapMode == Sprite9DrawMode::StretchedBorderFrame || wrapMode == Sprite9DrawMode::StretchedBoxFrame)
 	{
@@ -280,7 +280,7 @@ void FrameRectRenderFeature::putRectangle(Batch* batch, const Rect& rect, const 
 	}
 }
 
-void FrameRectRenderFeature::putFrameRectangle(Batch* batch, const Rect& rect, const Thickness& borderThickness, Rect srcRect, Sprite9DrawMode wrapMode, const SizeI& srcTextureSize)
+void FrameRectRenderFeature_deprecated::putFrameRectangle(Batch* batch, const Rect& rect, const Thickness& borderThickness, Rect srcRect, Sprite9DrawMode wrapMode, const SizeI& srcTextureSize)
 {
 	if (srcRect.isEmpty()) return;
 	if (srcTextureSize.width == 0) return;

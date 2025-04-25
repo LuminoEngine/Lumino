@@ -10,11 +10,11 @@
 namespace ln {
 namespace detail {
 
-class FrameRectRenderFeature
+class FrameRectRenderFeature_deprecated
 	: public RenderFeature
 {
 public:
-	FrameRectRenderFeature();
+	FrameRectRenderFeature_deprecated();
 	void init(RenderingManager* manager);
 
 	RequestBatchResult drawRequest(
@@ -77,7 +77,7 @@ public:
 		m_srcTextureSize.width = state->m_subsetInfo.materialTexture->width();
 		m_srcTextureSize.height = state->m_subsetInfo.materialTexture->height();
 
-		return static_cast<detail::FrameRectRenderFeature*>(renderFeature)->drawRequest(
+		return static_cast<detail::FrameRectRenderFeature_deprecated*>(renderFeature)->drawRequest(
 			batchList, *state, rect, transform, borderThickness, srcRect, imageDrawMode, m_srcTextureSize);
     }
 
