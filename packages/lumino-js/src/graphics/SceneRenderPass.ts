@@ -1,12 +1,12 @@
-import { Material } from "./graphics/Material";
+import { Material } from "./Material";
 import { GraphicsCommandList } from "./GraphicsCommandList";
-import { LuminoObject } from "./LuminoObject";
-import { IColor } from "./math/Color";
-import { Matrix } from "./math/Matrix";
-import { IRect } from "./math/Rect";
-import { ISize } from "./math/Types";
-import { IVector2 } from "./math/Vector2";
-import { API, Handle, Pointer, Runtime } from "./Runtime";
+import { LuminoObject } from "../LuminoObject";
+import { IColor } from "../math/Color";
+import { Matrix } from "../math/Matrix";
+import { IRect } from "../math/Rect";
+import { ISize } from "../math/Types";
+import { IVector2 } from "../math/Vector2";
+import { API, Handle, Pointer, Runtime } from "../Runtime";
 
 export class SceneRenderPass extends LuminoObject {
     private _owner: GraphicsCommandList;

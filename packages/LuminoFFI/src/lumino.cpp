@@ -535,19 +535,6 @@ LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass_, const LNDrawSpr
     data.baseDirection = static_cast<SpriteBaseDirection>(params_->baseDirection);
     data.billboardType = static_cast<BillboardType>(params_->billboardType);
     data.flipFlags = SpriteFlipFlags::None;
-    std::cout << "LNSceneRenderPass_DrawSprite: " << std::endl;
-    std::cout << "  material: " << params_->material << std::endl;
-    std::cout << "  size: " << data.size.x << ", " << data.size.y << std::endl;
-    std::cout << "  srcUVRect : " << data.srcUVRect.x << ", " << data.srcUVRect.y << ", " << data.srcUVRect.width
-              << ", " << data.srcUVRect.height << std::endl;
-    std::cout << "  color: " << data.color.r << std::endl;
-    std::cout << "  baseDirection: " << (int)data.baseDirection << std::endl;
-    std::cout << "  billboardType: " << (int)data.billboardType << std::endl;
-
-    auto m = params_->worldTransform;
-    std::cout << "  worldTransform1: " << m.m11 << ", " << m.m12 << std::endl;
-    std::cout << "  worldTransform2: " << m.m21 << ", " << m.m22 << std::endl;
-
     sceneRenderPass->drawSprite(
         LN_HANDLE_TO_OBJECT(Material, params_->material),
         toMatrix(params_->worldTransform),

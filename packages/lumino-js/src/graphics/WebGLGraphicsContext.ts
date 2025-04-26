@@ -1,5 +1,5 @@
 import { GraphicsContext } from "./GraphicsContext";
-import { API, Runtime } from "./Runtime";
+import { API, Runtime } from "../Runtime";
 
 export class WebGLGraphicsContext extends GraphicsContext {
 

@@ -1,25 +1,24 @@
 
 // @ts-ignore
 //import LuminoFFIModule from "../dist/LuminoFFI.js";
-import { DepthBuffer } from "./DepthBuffer";
-import { GraphicsContext } from "./GraphicsContext";
+import { DepthBuffer } from "./graphics/DepthBuffer";
+import { GraphicsContext } from "./graphics/GraphicsContext";
 export * from "./math/Types";
 export * from "./math/Matrix";
-export * from ".//GraphicsContext";
-export * from "./GraphicsCommandList";
-export * from "./SceneRenderPass";
-export * from "./GraphicsViewPoint";
+export * from "./graphics/GraphicsContext";
+export * from "./graphics/GraphicsCommandList";
+export * from "./graphics/SceneRenderPass";
+export * from "./graphics/GraphicsViewPoint";
 export * from "./graphics/Material";
-export * from "./Texture2D";
-export * from "./graphics/SpriteRenderer";
-import { RenderTexture } from "./RenderTargetTexture";
+export * from "./graphics/Texture2D";
+import { RenderTexture } from "./graphics/RenderTargetTexture";
 
 import { Runtime, API } from "./Runtime";
 //console.log("aaa", LuminoFFIModule());
 
 export * from "./Runtime";
-export * from "./WebGPUGraphicsContext";
-export * from "./WebGLGraphicsContext";
+export * from "./graphics/WebGPUGraphicsContext";
+export * from "./graphics/WebGLGraphicsContext";
 
 // const canvas = document.getElementById("maincanvas") as HTMLCanvasElement;
 // var gl = canvas.getContext("webgl");

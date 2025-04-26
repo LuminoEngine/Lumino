@@ -1,5 +1,5 @@
 import { GraphicsContext } from "./GraphicsContext";
-import { API, Handle, Result, Runtime } from "./Runtime";
+import { API, Handle, Result, Runtime } from "../Runtime";
 
 export class WebGPUGraphicsContext extends GraphicsContext {
     public static async create(selector: string): Promise<WebGPUGraphicsContext> {

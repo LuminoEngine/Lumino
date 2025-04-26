@@ -1,6 +1,6 @@
 import { GraphicsContext } from "./GraphicsContext";
-import { LuminoObject } from "./LuminoObject";
-import { API, Runtime } from "./Runtime";
+import { LuminoObject } from "../LuminoObject";
+import { API, Runtime } from "../Runtime";
 
 export class Texture2D extends LuminoObject {
     public constructor(buffer: ArrayBuffer) {

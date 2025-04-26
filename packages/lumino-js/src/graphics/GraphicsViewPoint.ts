@@ -1,5 +1,5 @@
-import { LuminoObject } from "./LuminoObject";
-import { API, Runtime } from "./Runtime";
+import { LuminoObject } from "../LuminoObject";
+import { API, Runtime } from "../Runtime";
 
 export class GraphicsViewPoint extends LuminoObject {
     

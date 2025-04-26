@@ -1,9 +1,8 @@
 import { GraphicsContext } from "./GraphicsContext";
-import { LuminoObject } from "./LuminoObject";
+import { LuminoObject } from "../LuminoObject";
 
-export class DepthBuffer extends LuminoObject {
+export class RenderTexture extends LuminoObject {
     private _owner: GraphicsContext;
-    
     public constructor(graphicsContext: GraphicsContext) {
         super();
         this._owner = graphicsContext;

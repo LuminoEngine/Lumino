@@ -1,4 +1,4 @@
-import { DepthBuffer } from "./DepthBuffer";
+import { DepthBuffer } from "./graphics/DepthBuffer";
 import { GraphicsCommandList } from "./GraphicsCommandList";
 import { RenderTexture } from "./RenderTargetTexture";
 import { API, Handle, Runtime } from "./Runtime";

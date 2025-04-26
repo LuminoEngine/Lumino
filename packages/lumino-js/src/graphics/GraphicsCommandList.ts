@@ -1,12 +1,12 @@
+import { IColor } from "../math/Color";
+import { LuminoObject } from "../LuminoObject";
 import { DepthBuffer } from "./DepthBuffer";
 import { GraphicsContext } from "./GraphicsContext";
-import { GraphicsViewPoint } from "./GraphicsViewPoint";
-import { LuminoObject } from "./LuminoObject";
-import { SceneRenderPass } from "./SceneRenderPass";
 import { RenderTexture } from "./RenderTargetTexture";
-import { API, Runtime } from "./Runtime";
-import { MAX_RENDER_TARGETS } from "./types";
-import { IColor } from "./math/Color";
+import { GraphicsViewPoint } from "./GraphicsViewPoint";
+import { API, Runtime } from "../Runtime";
+import { MAX_RENDER_TARGETS } from "../types";
+import { SceneRenderPass } from "./SceneRenderPass";
 
 export interface BeginRederPassDescriptor {
     renderTargets: {
