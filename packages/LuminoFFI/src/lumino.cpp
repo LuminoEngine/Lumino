@@ -321,11 +321,11 @@ LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LN
 //       FFI のコンセプト変更により、GraphicsCommandList Graphics 以外で CommandList 的なものを公開することはないと考えられるため。
 //==============================================================================
 
-LNResult LNCommandList_BeginRenderPass(
+LNResult LNCommandList_BeginSceneRenderPass(
     LNHandle renderingCommandList_,
     LNRenderPassDescriptor descriptor_,
     LNHandle renderingViewPoint_,
-    LNHandle* outRenderPass_) {
+    LNHandle* outSceneRenderPass_) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     SurfaceContext* renderingContext = LN_HANDLE_TO_OBJECT(SurfaceContext, renderingCommandList_);
@@ -362,7 +362,7 @@ LNResult LNCommandList_BeginRenderPass(
     sceneRenderPass->reset(renderingContext, renderPass, renderingViewPoint);
 
 
-    *outRenderPass_ = ::Runtime::wrapObject(sceneRenderPass, false);
+    *outSceneRenderPass_ = ::Runtime::wrapObject(sceneRenderPass, false);
 
     
     // 背景クリアテスト
@@ -374,11 +374,11 @@ LNResult LNCommandList_BeginRenderPass(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle renderPass_) {
+LNResult LNCommandList_EndSceneRenderPass(LNHandle renderingCommandList_, LNHandle sceneRenderPass_) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     kanata::DrawEventsEncoder* drawEventsEncoder = renderingManager->drawEventsEncoder();
-    SceneRenderPass* renderPass = LN_HANDLE_TO_OBJECT(SceneRenderPass, renderPass_);
+    SceneRenderPass* renderPass = LN_HANDLE_TO_OBJECT(SceneRenderPass, sceneRenderPass_);
     GraphicsContext* context = renderPass->currentContext()->context();
     CommandList* renderingContext = renderPass->currentContext()->renderingContext();
     kanata::DrawEventList* drawEventList = renderPass->currentContext()->drawEventList();
@@ -510,6 +510,39 @@ LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList_, LNHandle re
     LN_FFI_TRY_END_RETURN;
 }
 
+inline const Vector2& toVector2(const LNVector2& v) {
+    return *reinterpret_cast<const Vector2*>(&v);
+}
+inline const Rect& toRect(const LNRect& v) {
+    return *reinterpret_cast<const Rect*>(&v);
+}
+inline const Color& toColor(const LNColor& v) {
+    return *reinterpret_cast<const Color*>(&v);
+}
+
+//==============================================================================
+// LNSceneRenderPass
+//==============================================================================
+LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass_, const LNDrawSpriteParams* params_) {
+    LN_FFI_TRY_BEGIN;
+    SceneRenderPass* sceneRenderPass = LN_HANDLE_TO_OBJECT(SceneRenderPass, sceneRenderPass_);
+    
+    const Matrix* localTransform = reinterpret_cast<const Matrix*>(params_->localTransformOrNull);
+    SpriteData data;
+    data.transform = (localTransform) ? *reinterpret_cast<const Matrix*>(localTransform) : Matrix::Identity;
+    data.size = toVector2(params_->size);
+    data.anchorRatio = toVector2(params_->anchorRatio);
+    data.srcUVRect = toRect(params_->uvRect);
+    data.color = toColor(params_->color);
+    data.baseDirection = static_cast<SpriteBaseDirection>(params_->baseDirection);
+    data.billboardType = static_cast<BillboardType>(params_->billboardType);
+    data.flipFlags = SpriteFlipFlags::None;
+
+    sceneRenderPass->drawSprite(LN_HANDLE_TO_OBJECT(Material, params_->material), data);
+
+    LN_FFI_TRY_END_RETURN;
+}
+
 //==============================================================================
 // LNDebug
 //==============================================================================
@@ -570,26 +603,7 @@ LNResult LNViewPoint_Create(LNHandle* outRenderingViewPoint) {
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNViewPoint_SetupPerspectiveOrthoLH(
-    LNHandle graphicsViewPoint,
-    float x,
-    float y,
-    float z,
-    float lookAtX,
-    float lookAtY,
-    float lookAtZ,
-    float width,
-    float height,
-    float nearZ,
-    float farZ) {
-    LN_FFI_TRY_BEGIN;
-    RenderViewPoint* viewPoint = LN_HANDLE_TO_OBJECT(RenderViewPoint, graphicsViewPoint);
-    viewPoint->resetPerspectiveOrthoLH(
-        Vector3(x, y, z), Vector3(lookAtX, lookAtY, lookAtZ), Size(width, height), nearZ, farZ);
-    LN_FFI_TRY_END_RETURN;
-}
-
-LNResult LNViewPoint_SetupPerspective2DLH(
+LNResult LNViewPoint_SetupOrtho2D(
     LNHandle graphicsViewPoint,
     float x,
     float y,

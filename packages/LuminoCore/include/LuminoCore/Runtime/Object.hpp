@@ -2,13 +2,10 @@
 #include "Common.hpp"
 #include "../IO/Path.hpp"
 #include "../Serialization/Serialization.hpp"
+
+// see: https://github.com/LuminoEngine/Lumino/wiki/Graphics-Basic
 #define LN_COORD_RH 1
-#define LN_FACE_FRONT_CW 1 // 主流のゲームエンジンに合わせた。
-// Unity(CW): https://docs.unity3d.com/ja/2022.1/Manual/AnatomyofaMesh.html
-// Godot(CW): https://docs.godotengine.org/ja/4.x/classes/class_arraymesh.html
-// Babylon.js(CW): https://doc.babylonjs.com/typedoc/enums/BABYLON.Orientation
-// UE(CW): https://orenda.co.jp/blog/ue4-%E7%B0%A1%E5%8D%98%E3%81%AA%E3%83%97%E3%83%AD%E3%82%B7%E3%83%BC%E3%82%B8%E3%83%A3%E3%83%AB%E3%83%A1%E3%83%83%E3%82%B7%E3%83%A5%E3%82%92%E4%BD%9C%E6%88%90%E3%81%97%E3%81%A6%E3%81%BF/
-// pixi.js(CW):
+#define LN_FACE_FRONT_CW 1
 
 namespace ln {
 class RuntimeContext;

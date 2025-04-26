@@ -142,6 +142,16 @@ typedef struct LNRect {
     float height;
 } LNRect;
 
+//==============================================================================
+// LNRect
+//==============================================================================
+typedef struct LNColor {
+    float r;
+    float g;
+    float b;
+    float a;
+} LNColor;
+
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

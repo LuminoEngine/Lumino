@@ -43,7 +43,7 @@ void TestEnv::initialize() {
 
 
     LNViewPoint_Create(&viewPoint);
-    LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, 320, 240, -500, 500);
+    LNViewPoint_SetupOrtho2D(viewPoint, 0, 0, 0, 320, 240, -500, 500);
 }
 
 void TestEnv::terminate() {

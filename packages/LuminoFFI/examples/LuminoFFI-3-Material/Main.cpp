@@ -43,8 +43,7 @@ int main() {
         LNWindow_GetFramebufferSize(window, &width, &height);
         LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
 
-        LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, width, height, -500, 500);
-        //LNViewPoint_SetupPerspectiveOrthoLH(viewPoint, 0, 0, 100, 0, 0, 0, width, height, -1000, 1000);
+        LNViewPoint_SetupOrtho2D(viewPoint, 0, 0, 0, width, height, -500, 500);
 
         int index = -1;
         LNMaterial_FindParameterIndex(material1, "u_Time", &index);

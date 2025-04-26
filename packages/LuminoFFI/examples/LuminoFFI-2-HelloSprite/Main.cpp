@@ -71,8 +71,7 @@ int main() {
         LNWindow_GetFramebufferSize(window, &width, &height);
         LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
 
-        LNViewPoint_SetupPerspective2DLH(viewPoint, 0, 0, 0, width, height, -500, 500);
-        //LNViewPoint_SetupPerspectiveOrthoLH(viewPoint, 0, 0, 100, 0, 0, 0, width, height, -1000, 1000);
+        LNViewPoint_SetupOrtho2D(viewPoint, 0, 0, 0, width, height, -500, 500);
 
         LNHandle renderingPass = LN_NULL_HANDLE;
         LNRenderPassDescriptor descriptor;
@@ -89,22 +88,32 @@ int main() {
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint, &renderingPass);
 
+
+        LNDrawSpriteParams params = {};
+        params.material = material1;
+        params.size = {100, 100};
+        params.anchorRatio = {0, 0}; //{0.5f, 0.5f};
+        params.uvRect = {0, 0, 1, 1};
+        params.color = {1, 1, 1, 1};
+        params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+        params.billboardType = LN_BILLBOARD_TYPE_NONE;
+        LNSceneRenderPass_DrawSprite(renderingPass, &params);
         
-        {
-            LNMatrix transform;
-            LNMatrix_SetIdentity(&transform);
-            transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
-            transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
-            LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
-                100, 100,
-                0,0,//0.5f, 0.5f,
-                0, 0, 1, 1,
-                1, 1, 1, 1,
-                LN_SPRITE_BASE_DIRECTION_BASIC2D,
-                LN_BILLBOARD_TYPE_NONE);
-            LNBatchRenderer_EndBatch(spriteRenderer);
-        }
+        //{
+        //    LNMatrix transform;
+        //    LNMatrix_SetIdentity(&transform);
+        //    transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
+        //    transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
+        //    LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
+        //    LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
+        //        100, 100,
+        //        0,0,//0.5f, 0.5f,
+        //        0, 0, 1, 1,
+        //        1, 1, 1, 1,
+        //        LN_SPRITE_BASE_DIRECTION_BASIC2D,
+        //        LN_BILLBOARD_TYPE_NONE);
+        //    LNBatchRenderer_EndBatch(spriteRenderer);
+        //}
 
         LNCommandList_EndSceneRenderPass(commandList, renderingPass);
 

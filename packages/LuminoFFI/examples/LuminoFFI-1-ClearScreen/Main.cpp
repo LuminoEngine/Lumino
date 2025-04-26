@@ -43,7 +43,7 @@ int main() {
 
         // x. 2D シーンを描画するための視点情報を構築します。
         //    このサンプルは画面をクリアするだけであるため、この情報はダミーです。
-        LNViewPoint_SetupPerspectiveOrthoLH(viewPoint, 0, 0, 0, 0, 0, 0, width, height, -1000, 1000);
+        LNViewPoint_SetupOrtho2D(viewPoint, 0, 0, 0, width, height, -1000, 1000);
 
         // x. レンダーターゲットをクリアするための RenderPass を開始します。
         //    RenderPass を開始することなくクリアする方法はありません。
