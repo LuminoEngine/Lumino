@@ -45,7 +45,7 @@ TEST_F(Test_Shader, Basic1) {
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
             ASSERT_EQ(
-                LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+                LN_OK, LNGraphicsContext_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -65,7 +65,7 @@ TEST_F(Test_Shader, Basic1) {
                 LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
-            ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(renderingPass));
+            ASSERT_EQ(LN_OK, LNGraphicsContext_EndSceneRenderPass(renderingPass));
         }
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));

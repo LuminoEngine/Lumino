@@ -76,9 +76,8 @@ int main() {
         int height = 0;
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
         LNWindow_GetFramebufferSize(window, &width, &height);
-        LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer);
 
         LNViewPoint_SetupOrtho2D(viewPoint, 0, 0, 0, width, height, -500, 500);
 
@@ -95,7 +94,7 @@ int main() {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint, &renderingPass);
+        LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint, &renderingPass);
 
 
         for (int i = 0; i < SPRITE_COUNT; ++i) {
@@ -141,12 +140,12 @@ int main() {
             (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
 
 
-        LNCommandList_EndSceneRenderPass(commandList, renderingPass);
+        LNGraphicsContext_EndSceneRenderPass(graphicsContext, renderingPass);
 
         
 
         LNGraphicsContext_EndFrame(graphicsContext);
-        LNDebug_GetGraphicsProfilerng(commandList, &profilerng);
+        LNDebug_GetGraphicsProfilerng(graphicsContext, &profilerng);
         LNWindow_Present(window);
 
 

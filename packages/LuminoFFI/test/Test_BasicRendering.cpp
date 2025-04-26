@@ -10,9 +10,8 @@ TEST_F(Test_BasicRendering, Clear1) {
     {
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
         ASSERT_EQ(
-            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer));
 
         LNHandle renderingPass = LN_NULL_HANDLE;
         LNRenderPassDescriptor descriptor;
@@ -27,9 +26,11 @@ TEST_F(Test_BasicRendering, Clear1) {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        ASSERT_EQ(LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+        ASSERT_EQ(
+            LN_OK,
+            LNGraphicsContext_BeginSceneRenderPass(surfaceContext, descriptor, TestEnv::viewPoint, &renderingPass));
 
-        ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndSceneRenderPass(surfaceContext, renderingPass));
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
 

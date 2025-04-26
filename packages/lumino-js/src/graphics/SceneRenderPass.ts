@@ -7,13 +7,14 @@ import { IRect } from "../math/Rect";
 import { ISize } from "../math/Types";
 import { IVector2 } from "../math/Vector2";
 import { API, Handle, Pointer, Runtime } from "../Runtime";
+import { GraphicsContext } from "./GraphicsContext";
 
 export class SceneRenderPass extends LuminoObject {
-    private _owner: GraphicsCommandList;
+    private _owner: GraphicsContext;
     
-    public constructor(commandList: GraphicsCommandList) {
+    public constructor(owner: GraphicsContext) {
         super();
-        this._owner = commandList;
+        this._owner = owner;
     }
 
     public drawSprite(params: LNDrawSpriteParams): void {
@@ -21,9 +22,6 @@ export class SceneRenderPass extends LuminoObject {
         API.LNSceneRenderPass_DrawSprite(this.handle, ptr);
     }
 
-    public end(): void {
-        API.LNCommandList_EndSceneRenderPass(this._owner.handle, this.handle);
-    }
 }
 
 export enum LNSpriteBaseDirection {

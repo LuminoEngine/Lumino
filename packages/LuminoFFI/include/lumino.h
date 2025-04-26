@@ -117,8 +117,7 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
     int32_t width,
     int32_t height,
     LNHandle* outColorBuffer,
-    LNHandle* outDepthBuffer,
-    LNHandle* outCommandList
+    LNHandle* outDepthBuffer
 );
 
 /**
@@ -138,13 +137,10 @@ extern LUMINO_API LNResult LNGraphicsContext_CreateFromWebGPUCanvas(const char* 
  */
 extern LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LNHandle* outGraphicsContext);
 
-//==============================================================================
-// LNCommandList
-//==============================================================================
 
-extern LUMINO_API LNResult LNCommandList_BeginSceneRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outSceneRenderPass);
+extern LUMINO_API LNResult LNGraphicsContext_BeginSceneRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outSceneRenderPass);
 
-extern LUMINO_API LNResult LNCommandList_EndSceneRenderPass(LNHandle renderingCommandList, LNHandle sceneRenderPass);
+extern LUMINO_API LNResult LNGraphicsContext_EndSceneRenderPass(LNHandle renderingCommandList, LNHandle sceneRenderPass);
 
 
 //==============================================================================

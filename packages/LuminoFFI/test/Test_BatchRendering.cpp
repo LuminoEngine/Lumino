@@ -36,9 +36,8 @@ TEST_F(Test_BatchRendering, Basic1) {
         // Begin frame.
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
         ASSERT_EQ(
-            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer));
 
         // Rendering pass.
         {
@@ -56,7 +55,8 @@ TEST_F(Test_BatchRendering, Basic1) {
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
             ASSERT_EQ(
-                LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+                LN_OK,
+                LNGraphicsContext_BeginSceneRenderPass(surfaceContext, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -79,7 +79,7 @@ TEST_F(Test_BatchRendering, Basic1) {
                 }
             }
 
-            ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
+            ASSERT_EQ(LN_OK, LNGraphicsContext_EndSceneRenderPass(surfaceContext, renderingPass));
         }
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
@@ -87,7 +87,7 @@ TEST_F(Test_BatchRendering, Basic1) {
 
         // ドローコールは1回だけ。
         LNGraphicsProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfilerng(commandList, &profilerng));
+        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfilerng(surfaceContext, &profilerng));
         ASSERT_EQ(1, profilerng.drawCallCount);
 
         TestEnv::present();
@@ -116,9 +116,8 @@ TEST_F(Test_BatchRendering, TooMany10000) {
         // Begin frame.
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
         ASSERT_EQ(
-            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer));
 
         // Rendering pass.
         {
@@ -136,7 +135,8 @@ TEST_F(Test_BatchRendering, TooMany10000) {
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
             ASSERT_EQ(
-                LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+                LN_OK,
+                LNGraphicsContext_BeginSceneRenderPass(surfaceContext, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -159,14 +159,14 @@ TEST_F(Test_BatchRendering, TooMany10000) {
                 }
             }
 
-            ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
+            ASSERT_EQ(LN_OK, LNGraphicsContext_EndSceneRenderPass(surfaceContext, renderingPass));
         }
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
         
         // ドローコールは1回だけ。
         LNGraphicsProfilerng profilerng;
-        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfilerng(commandList, &profilerng));
+        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfilerng(surfaceContext, &profilerng));
         ASSERT_EQ(2, profilerng.drawCallCount);
         // NOTE: 現在インデックスの総数 50000 個くらいになっていて、10000個描画すると 60000 使うことになる。
         // なので 50000+10000 の2回に分けられる。

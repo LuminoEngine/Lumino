@@ -92,15 +92,15 @@ export class Runtime {
             API.LNGraphicsContext_CreateFromCurrentGL = module.cwrap(
                 "LNGraphicsContext_CreateFromCurrentGL", "number", ["number", "number", "number"]);
 
-            API.LNGraphicsContext_BeginFrame = module.cwrap("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number", "number", "number"]);
+            API.LNGraphicsContext_BeginFrame = module.cwrap("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number", "number"]);
             API.LNGraphicsContext_EndFrame = module.cwrap("LNGraphicsContext_EndFrame", "number", ["number"]);
             
             
             API.LNViewPoint_Create = module.cwrap("LNViewPoint_Create", "number", ["number"]);
             API.LNViewPoint_SetupOrtho2D = module.cwrap("LNViewPoint_SetupOrtho2D", "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
             
-            API.LNCommandList_BeginSceneRenderPass = module.cwrap("LNCommandList_BeginSceneRenderPass", "number", ["number", "number", "number", "number"]);
-            API.LNCommandList_EndSceneRenderPass = module.cwrap("LNCommandList_EndSceneRenderPass", "number", ["number", "number"]);
+            API.LNGraphicsContext_BeginSceneRenderPass = module.cwrap("LNGraphicsContext_BeginSceneRenderPass", "number", ["number", "number", "number", "number"]);
+            API.LNGraphicsContext_EndSceneRenderPass = module.cwrap("LNGraphicsContext_EndSceneRenderPass", "number", ["number", "number"]);
 
             API.LNSceneRenderPass_DrawSprite = module.cwrap("LNSceneRenderPass_DrawSprite", "number", ["number", "number"]);
 
@@ -192,16 +192,15 @@ export class API {
 
     public static LNGraphicsContext_CreateFromWebGPUCanvas: (selector: number, outGraphicsContext: number) => Result;
     public static LNGraphicsContext_CreateFromCurrentGL: (width: number, height: number, outGraphicsContext: number) => Result;
-    public static LNGraphicsContext_BeginFrame: (graphicsContext: Handle, width: number, height: number, outColorBuffer: number, outDepthBuffer: number, outCommandList: number) => Result;
+    public static LNGraphicsContext_BeginFrame: (graphicsContext: Handle, width: number, height: number, outColorBuffer: number, outDepthBuffer: number) => Result;
     public static LNGraphicsContext_EndFrame: (graphicsContext: Handle) => Result;
-
+    public static LNGraphicsContext_BeginSceneRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
+    public static LNGraphicsContext_EndSceneRenderPass: (commandList: Handle, renderPass: Handle) => Result;
 
 
     public static LNViewPoint_Create: (outGraphicsViewPoint: number) => Result;
     public static LNViewPoint_SetupOrtho2D: (graphicsViewPoint: Handle, x: number, y: number, z: number, width: number, height: number, nearZ: number, farZ: number) => Result;
     
-    public static LNCommandList_BeginSceneRenderPass: (graphicsCommandList: Handle, descriptor: Handle, viewPoint: Handle, ouRenderPass: number) => Result;
-    public static LNCommandList_EndSceneRenderPass: (commandList: Handle, renderPass: Handle) => Result;
 
     public static LNSceneRenderPass_DrawSprite: (renderPass: Handle, params: Pointer) => Result;
 

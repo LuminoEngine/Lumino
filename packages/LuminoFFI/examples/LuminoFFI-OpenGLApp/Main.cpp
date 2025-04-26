@@ -145,8 +145,7 @@ int main() {
 
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
-        LNGraphicsContext_BeginFrame(graphicsContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(graphicsContext, 320, 240, &colorBuffer, &depthBuffer);
 
         // RenderPass
         //   Lumino では RenderPass=視点を起点とした描画シーケンスと考えてみる。
@@ -170,10 +169,12 @@ int main() {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            if (LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
+            if (LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint1, &renderingPass) !=
+                LN_OK) {
                 return 1;
             }
 
+#if 0
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
             for (int i = 0; i < 500; i++) {
@@ -199,12 +200,14 @@ int main() {
                 LN_SPRITE_BASE_DIRECTION_BASIC2D,
                 LN_BILLBOARD_TYPE_NONE);
             LNBatchRenderer_EndBatch(spriteRenderer);
+#endif
 
-            if (LNCommandList_EndSceneRenderPass(commandList, renderingPass) != LN_OK) {
+            if (LNGraphicsContext_EndSceneRenderPass(graphicsContext, renderingPass) != LN_OK) {
                 return 1;
             }
         }
 
+#if 0
         // RenderPass
         if (0) {
 
@@ -215,7 +218,8 @@ int main() {
             descriptor.depthBuffer.depthBuffer = depthBuffer;
             descriptor.depthBuffer.clearDepthEnable = LN_FALSE;
             descriptor.depthBuffer.clearStencilEnable = LN_FALSE;
-            if (LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
+            if (LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint2, &renderingPass) !=
+                LN_OK) {
                 return 1;
             }
 
@@ -232,10 +236,11 @@ int main() {
                 LN_BILLBOARD_TYPE_NONE);
             LNBatchRenderer_EndBatch(spriteRenderer);
 
-            if (LNCommandList_EndSceneRenderPass(commandList, renderingPass) != LN_OK) {
+            if (LNGraphicsContext_EndSceneRenderPass(commandList, renderingPass) != LN_OK) {
                 return 1;
             }
         }
+#endif
 
 
         //LNSpriteTextRenderer_BeginBatch(spriteTextRenderer, renderingCommandList, material, &transform);

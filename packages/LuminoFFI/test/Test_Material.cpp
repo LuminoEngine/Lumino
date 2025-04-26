@@ -17,8 +17,7 @@ TEST_F(Test_Material, Basic1) {
     {
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
-        LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer);
 
         int index = -1;
         LNMaterial_FindParameterIndex(material1, "u_Value1", &index);
@@ -37,7 +36,7 @@ TEST_F(Test_Material, Basic1) {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass);
+        LNGraphicsContext_BeginSceneRenderPass(surfaceContext, descriptor, TestEnv::viewPoint, &renderingPass);
 
         LNMatrix transform;
         LNMatrix_SetIdentity(&transform);
@@ -55,7 +54,7 @@ TEST_F(Test_Material, Basic1) {
         params.billboardType = LN_BILLBOARD_TYPE_NONE;
         LNSceneRenderPass_DrawSprite(renderingPass, &params);
 
-        LNCommandList_EndSceneRenderPass(commandList, renderingPass);
+        LNGraphicsContext_EndSceneRenderPass(surfaceContext, renderingPass);
 
         LNGraphicsContext_EndFrame(surfaceContext);
         ASSERT_SCREENSHOT(U"Test_Material.Basic1/Expects.png");

@@ -246,15 +246,13 @@ LNResult LNGraphicsContext_BeginFrame(
     int32_t width,
     int32_t height,
     LNHandle* outColorBuffer,
-    LNHandle* outDepthBuffer,
-    LNHandle* outCommandList) {
+    LNHandle* outDepthBuffer) {
     LN_FFI_TRY_BEGIN;
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     surfaceContext->beginFrame();
     GraphicsContext* context = surfaceContext->context();
     *outColorBuffer = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
     *outDepthBuffer = ln::Runtime::wrapObject(context->currentDepthBuffer(), false);
-    *outCommandList = ::Runtime::wrapObject(surfaceContext, false);
     surfaceContext->commandList()->reset();
     TRY_FFI_RESULT(surfaceContext->commandList()->beginCommandRecoding());
     LN_FFI_TRY_END_RETURN;
@@ -319,7 +317,7 @@ LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, int32_t height, LN
 //       FFI のコンセプト変更により、GraphicsCommandList Graphics 以外で CommandList 的なものを公開することはないと考えられるため。
 //==============================================================================
 
-LNResult LNCommandList_BeginSceneRenderPass(
+LNResult LNGraphicsContext_BeginSceneRenderPass(
     LNHandle renderingCommandList_,
     LNRenderPassDescriptor descriptor_,
     LNHandle renderingViewPoint_,
@@ -372,7 +370,7 @@ LNResult LNCommandList_BeginSceneRenderPass(
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNCommandList_EndSceneRenderPass(LNHandle renderingCommandList_, LNHandle sceneRenderPass_) {
+LNResult LNGraphicsContext_EndSceneRenderPass(LNHandle renderingCommandList_, LNHandle sceneRenderPass_) {
     LN_FFI_TRY_BEGIN;
     detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
     kanata::DrawEventsEncoder* drawEventsEncoder = renderingManager->drawEventsEncoder();

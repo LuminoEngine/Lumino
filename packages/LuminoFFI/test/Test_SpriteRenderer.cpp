@@ -21,9 +21,8 @@ TEST_F(Test_SpriteRenderer, Basic1) {
         // Begin frame.
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
         ASSERT_EQ(
-            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer, &commandList));
+            LN_OK, LNGraphicsContext_BeginFrame(surfaceContext, 320, 240, &colorBuffer, &depthBuffer));
 
         // Rendering pass.
         {
@@ -41,7 +40,8 @@ TEST_F(Test_SpriteRenderer, Basic1) {
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
             ASSERT_EQ(
-                LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+                LN_OK,
+                LNGraphicsContext_BeginSceneRenderPass(surfaceContext, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -62,7 +62,7 @@ TEST_F(Test_SpriteRenderer, Basic1) {
                 LNSceneRenderPass_DrawSprite(renderingPass, &params);
             }
 
-            ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
+            ASSERT_EQ(LN_OK, LNGraphicsContext_EndSceneRenderPass(surfaceContext, renderingPass));
         }
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));

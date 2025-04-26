@@ -37,9 +37,8 @@ int main() {
         int height = 0;
         LNHandle colorBuffer = LN_NULL_HANDLE;
         LNHandle depthBuffer = LN_NULL_HANDLE;
-        LNHandle commandList = LN_NULL_HANDLE;
         LNWindow_GetFramebufferSize(window, &width, &height);
-        LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer, &commandList);
+        LNGraphicsContext_BeginFrame(graphicsContext, width, height, &colorBuffer, &depthBuffer);
 
         // x. 2D シーンを描画するための視点情報を構築します。
         //    このサンプルは画面をクリアするだけであるため、この情報はダミーです。
@@ -61,8 +60,8 @@ int main() {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint, &renderingPass);
-        LNCommandList_EndSceneRenderPass(commandList, renderingPass);
+        LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint, &renderingPass);
+        LNGraphicsContext_EndSceneRenderPass(graphicsContext, renderingPass);
 
         LNGraphicsContext_EndFrame(graphicsContext);
         LNWindow_Present(window);

@@ -6,7 +6,6 @@ const imagePath = "./icon256.png";
 const USE_WEBGPU = true;
 
 let graphcisContext = undefined;
-let commandList = undefined;
 let viewPoint = undefined;
 let texture = undefined;
 let material = undefined;
@@ -66,9 +65,7 @@ Lumino.Runtime.initialize(options).then(async () => {
             console.log("=== Begin Frame ===");
             viewPoint.setupPerspective2D(800, 600);
 
-            graphcisContext.prepareFrame(800, 600);
-
-            const commandList = graphcisContext.commandList();
+            graphcisContext.beginFrame(800, 600);
         
             {
                 const desc = {
@@ -85,7 +82,7 @@ Lumino.Runtime.initialize(options).then(async () => {
                     }
                 };
 
-                const renderPass = commandList.beginRenderPass(desc, viewPoint);
+                const renderPass = graphcisContext.beginSceneRenderPass(desc, viewPoint);
 
                 renderPass.drawSprite({
                     material: material,
@@ -109,26 +106,10 @@ Lumino.Runtime.initialize(options).then(async () => {
                     billboardType: Lumino.LNBillboardType.LN_BILLBOARD_TYPE_NONE,
                 });
                 
-
-
-/*
-                const spriteRenderer = Lumino.SpriteRenderer.get();
-                spriteRenderer.beginBatch(commandList, material, new Lumino.Matrix());
-                spriteRenderer.drawSprite(
-                    null,
-                    { width: 256, height: 256 },
-                    { x: 0, y: 0 },
-                    {x: 0, y: 0, width: 1, height: 1},
-                    {r: 1, g: 1, b: 1, a: 1},
-                    Lumino.SpriteBaseDirection.Basic2D,
-                    Lumino.BillboardType.None);
-                spriteRenderer.endBatch();
-                */
-                
-                renderPass.end();
+                graphcisContext.endSceneRenderPass(renderPass);
             }
         
-            graphcisContext.submitCommandList(commandList);
+            graphcisContext.endFrame();
             console.log("=== End Frame ===");
         }
 
