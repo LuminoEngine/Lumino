@@ -2,10 +2,11 @@ import { DepthBuffer } from "./DepthBuffer";
 import { GraphicsContext } from "./GraphicsContext";
 import { GraphicsViewPoint } from "./GraphicsViewPoint";
 import { LuminoObject } from "./LuminoObject";
-import { RenderPass } from "./RenderPass";
+import { SceneRenderPass } from "./SceneRenderPass";
 import { RenderTexture } from "./RenderTargetTexture";
 import { API, Runtime } from "./Runtime";
-import { IColor, MAX_RENDER_TARGETS } from "./types";
+import { MAX_RENDER_TARGETS } from "./types";
+import { IColor } from "./math/Color";
 
 export interface BeginRederPassDescriptor {
     renderTargets: {
@@ -30,7 +31,7 @@ export class GraphicsCommandList extends LuminoObject {
         this._owner = owner;
     }
 
-    public beginRenderPass(descriptor: BeginRederPassDescriptor, viewPoint: GraphicsViewPoint): RenderPass {
+    public beginRenderPass(descriptor: BeginRederPassDescriptor, viewPoint: GraphicsViewPoint): SceneRenderPass {
         const desc = API.LNRenderPassDescriptor_Get();
         const count = descriptor.renderTargets.length;
         if (count <= 0 || count > MAX_RENDER_TARGETS) {
@@ -75,7 +76,7 @@ export class GraphicsCommandList extends LuminoObject {
         }
         
         const handle = Runtime.safeCallWithReturnHandle((r) => API.LNCommandList_BeginSceneRenderPass(this.handle, desc, viewPoint.handle, r));
-        const renderPass = new RenderPass(this);
+        const renderPass = new SceneRenderPass(this);
         renderPass._setHandle(handle, false);
         return renderPass;
     }

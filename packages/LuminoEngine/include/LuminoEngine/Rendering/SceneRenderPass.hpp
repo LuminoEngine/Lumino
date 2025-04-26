@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoCore/Base/LinearAllocator.hpp>
 #include "Common.hpp"
 
 namespace ln {
@@ -57,7 +58,7 @@ private:
     template<class T, class... TArgs>
     T* newDrawElement() {
         void* buffer = m_dataAllocator->allocate(sizeof(T));
-        T* data = new (buffer) T(std::forward<TArgs>(args)...);
+        T* data = new (buffer) T();
         addDrawElement(data);
         return data;
     }

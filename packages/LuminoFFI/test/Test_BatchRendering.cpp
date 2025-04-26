@@ -67,7 +67,7 @@ TEST_F(Test_BatchRendering, Basic1) {
                 for (int i = 0; i < 5; i++) {
                     transform.m41 = i * 32;
                     LNDrawSpriteParams params = {};
-                    params.worldTransformOrNull = &transform;
+                    params.worldTransform = transform;
                     params.material = material1;
                     params.size = {32, 32};
                     params.anchorRatio = {0, 0};
@@ -147,7 +147,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
                 for (int i = 0; i < 10000; i++) {
                     transform.m41 = i * 32;
                     LNDrawSpriteParams params = {};
-                    params.worldTransformOrNull = &transform;
+                    params.worldTransform = transform;
                     params.material = material1;
                     params.size = {32, 32};
                     params.anchorRatio = {0, 0};

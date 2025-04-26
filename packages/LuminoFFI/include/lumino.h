@@ -152,7 +152,7 @@ extern LUMINO_API LNResult LNCommandList_EndSceneRenderPass(LNHandle renderingCo
 //==============================================================================
 typedef struct LNDrawSpriteParams {
     LNHandle material;
-    const LNMatrix* worldTransformOrNull;
+    LNMatrix worldTransform;
     LNVector2 size;
     LNVector2 anchorRatio;
     LNRect uvRect;

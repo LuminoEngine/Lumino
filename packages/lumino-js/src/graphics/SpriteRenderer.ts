@@ -2,7 +2,9 @@ import { GraphicsCommandList } from "../GraphicsCommandList";
 import { API, Runtime } from "../Runtime";
 import { Material } from "./Material";
 import { Matrix } from "../math/Matrix";
-import { IColor, IPoint, IRect, ISize } from "../math/Types";
+import { IPoint, ISize } from "../math/Types";
+import { IRect } from "src/math/Rect";
+import { IColor } from "src/math/Color";
 
 /** 3D 空間での基準方向を表す値 */
 export enum SpriteBaseDirection {

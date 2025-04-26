@@ -72,7 +72,7 @@ int main() {
             transform.m42 = height / 2;
 
             LNDrawSpriteParams params = {};
-            params.worldTransformOrNull = &transform;
+            params.worldTransform = transform;
             params.material = material1;
             params.size = {static_cast<float>(width - 20), static_cast<float>(height - 20)};
             params.anchorRatio = {0.5f, 0.5f};

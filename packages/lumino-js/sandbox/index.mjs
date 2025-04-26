@@ -86,6 +86,32 @@ Lumino.Runtime.initialize(options).then(async () => {
                 };
 
                 const renderPass = commandList.beginRenderPass(desc, viewPoint);
+
+                renderPass.drawSprite({
+                    material: material,
+                    transform: new Lumino.Matrix(),
+                    size: {
+                        width: 256,
+                        height: 256,
+                    },
+                    anchorRatio: {
+                        x: 0,
+                        y: 0,
+                    },
+                    uvRect: {
+                        x: 0,
+                        y: 0,
+                        width: 1,
+                        height: 1,
+                    },
+                    color: { r: 1, g: 1, b: 1, a: 1 },
+                    baseDirection: Lumino.LNSpriteBaseDirection.LN_SPRITE_BASE_DIRECTION_BASIC2D,
+                    billboardType: Lumino.LNBillboardType.LN_BILLBOARD_TYPE_NONE,
+                });
+                
+
+
+/*
                 const spriteRenderer = Lumino.SpriteRenderer.get();
                 spriteRenderer.beginBatch(commandList, material, new Lumino.Matrix());
                 spriteRenderer.drawSprite(
@@ -97,6 +123,8 @@ Lumino.Runtime.initialize(options).then(async () => {
                     Lumino.SpriteBaseDirection.Basic2D,
                     Lumino.BillboardType.None);
                 spriteRenderer.endBatch();
+                */
+                
                 renderPass.end();
             }
         

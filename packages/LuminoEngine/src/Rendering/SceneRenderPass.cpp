@@ -1,5 +1,4 @@
 ﻿#include "Internal.hpp"
-#include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/RendererServer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/RenderingManager.hpp>

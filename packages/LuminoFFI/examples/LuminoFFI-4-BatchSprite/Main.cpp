@@ -117,7 +117,7 @@ int main() {
             float frameH = ICON_SIZE / textureHeight;
 
             LNDrawSpriteParams params = {};
-            params.worldTransformOrNull = &transform;
+            params.worldTransform = transform;
             params.material = material1;
             params.size = {ICON_SIZE, ICON_SIZE};
             params.anchorRatio = {0.5f, 0.5f};

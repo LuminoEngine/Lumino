@@ -94,7 +94,7 @@ int main() {
         transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
 
         LNDrawSpriteParams params = {};
-        params.worldTransformOrNull = &transform;
+        params.worldTransform = transform;
         params.material = material1;
         params.size = {100, 100};
         params.anchorRatio = {0.5f, 0.5f};

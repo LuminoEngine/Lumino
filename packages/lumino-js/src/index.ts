@@ -7,6 +7,7 @@ export * from "./math/Types";
 export * from "./math/Matrix";
 export * from ".//GraphicsContext";
 export * from "./GraphicsCommandList";
+export * from "./SceneRenderPass";
 export * from "./GraphicsViewPoint";
 export * from "./graphics/Material";
 export * from "./Texture2D";

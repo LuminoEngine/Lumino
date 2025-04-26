@@ -45,7 +45,7 @@ TEST_F(Test_Material, Basic1) {
         transform.m42 = 0;
 
         LNDrawSpriteParams params = {};
-        params.worldTransformOrNull = &transform;
+        params.worldTransform = transform;
         params.material = material1;
         params.size = {320, 240};
         params.anchorRatio = {0, 0};
