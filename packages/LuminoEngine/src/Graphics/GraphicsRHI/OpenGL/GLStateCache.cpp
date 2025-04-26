@@ -191,7 +191,28 @@ void GLStateCache::setDepthStencilState(const DepthStencilStateDesc& state) {
     // stencilDepthFailOp
     // stencilPassOp
     GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
-#if LN_FACE_FRONT_CCW
+#ifdef LN_FACE_FRONT_CW
+    GL_CHECK_DEBUG(glStencilFuncSeparate(
+        GL_BACK,
+        cmpFuncTable[(int)state.frontFace.stencilFunc],
+        state.stencilReferenceValue,
+        0xFFFFFFFF));
+    GL_CHECK_DEBUG(glStencilFuncSeparate(
+        GL_FRONT,
+        cmpFuncTable[(int)state.backFace.stencilFunc],
+        state.stencilReferenceValue,
+        0xFFFFFFFF));
+    GL_CHECK_DEBUG(glStencilOpSeparate(
+        GL_BACK,
+        stencilOpTable[(int)state.frontFace.stencilFailOp],
+        stencilOpTable[(int)state.frontFace.stencilDepthFailOp],
+        stencilOpTable[(int)state.frontFace.stencilPassOp]));
+    GL_CHECK_DEBUG(glStencilOpSeparate(
+        GL_FRONT,
+        stencilOpTable[(int)state.backFace.stencilFailOp],
+        stencilOpTable[(int)state.backFace.stencilDepthFailOp],
+        stencilOpTable[(int)state.backFace.stencilPassOp]));
+#else
     GL_CHECK_DEBUG(glStencilFuncSeparate(
         GL_FRONT,
         cmpFuncTable[(int)state.frontFace.stencilFunc],
@@ -212,27 +233,6 @@ void GLStateCache::setDepthStencilState(const DepthStencilStateDesc& state) {
         stencilOpTable[(int)state.backFace.stencilFailOp],
         stencilOpTable[(int)state.backFace.stencilDepthFailOp],
         stencilOpTable[(int)state.backFace.stencilPassOp]));
-#else
-    GL_CHECK_DEBUG(glStencilFuncSeparate(
-        GL_BACK,
-        cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc],
-        m_depthStencilState.stencilReferenceValue,
-        0xFFFFFFFF));
-    GL_CHECK_DEBUG(glStencilFuncSeparate(
-        GL_FRONT,
-        cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc],
-        m_depthStencilState.stencilReferenceValue,
-        0xFFFFFFFF));
-    GL_CHECK_DEBUG(glStencilOpSeparate(
-        GL_BACK,
-        stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp],
-        stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp],
-        stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
-    GL_CHECK_DEBUG(glStencilOpSeparate(
-        GL_FRONT,
-        stencilOpTable[(int)m_depthStencilState.backFace.stencilFailOp],
-        stencilOpTable[(int)m_depthStencilState.backFace.stencilDepthFailOp],
-        stencilOpTable[(int)m_depthStencilState.backFace.stencilPassOp]));
 #endif
 
     //GL_CHECK_DEBUG(glStencilOp(stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));

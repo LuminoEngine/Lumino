@@ -22,7 +22,7 @@ void updateSprite(Sprite* s);
 
 int main() {
     LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_VULKAN);
-    //LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
+    LNConfig_SetGraphicsBackend(LN_GRAPHICS_BACKEND_WEBGPU);
 
     LNResult result = LNInstance_Initialize();
     if (result != LN_OK) {
@@ -96,7 +96,7 @@ int main() {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint, &renderingPass);
+        LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint, &renderingPass);
 
 
         LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, nullptr);
@@ -151,7 +151,7 @@ int main() {
             (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
 
 
-        LNCommandList_EndRenderPass(commandList, renderingPass);
+        LNCommandList_EndSceneRenderPass(commandList, renderingPass);
 
         
 

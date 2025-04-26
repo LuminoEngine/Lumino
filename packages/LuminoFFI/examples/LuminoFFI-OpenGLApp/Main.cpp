@@ -170,7 +170,7 @@ int main() {
             descriptor.depthBuffer.clearStencil = 0;
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-            if (LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
+            if (LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint1, &renderingPass) != LN_OK) {
                 return 1;
             }
 
@@ -200,7 +200,7 @@ int main() {
                 LN_BILLBOARD_TYPE_NONE);
             LNBatchRenderer_EndBatch(spriteRenderer);
 
-            if (LNCommandList_EndRenderPass(commandList, renderingPass) != LN_OK) {
+            if (LNCommandList_EndSceneRenderPass(commandList, renderingPass) != LN_OK) {
                 return 1;
             }
         }
@@ -218,7 +218,7 @@ int main() {
             descriptor.depthBuffer.depthBuffer = depthBuffer;
             descriptor.depthBuffer.clearDepthEnable = LN_FALSE;
             descriptor.depthBuffer.clearStencilEnable = LN_FALSE;
-            if (LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
+            if (LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint2, &renderingPass) != LN_OK) {
                 return 1;
             }
 
@@ -235,7 +235,7 @@ int main() {
                 LN_BILLBOARD_TYPE_NONE);
             LNBatchRenderer_EndBatch(spriteRenderer);
 
-            if (LNCommandList_EndRenderPass(commandList, renderingPass) != LN_OK) {
+            if (LNCommandList_EndSceneRenderPass(commandList, renderingPass) != LN_OK) {
                 return 1;
             }
         }

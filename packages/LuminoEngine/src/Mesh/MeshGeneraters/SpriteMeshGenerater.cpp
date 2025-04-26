@@ -136,8 +136,8 @@ void SpriteMeshGenerater::onGenerate(MeshGeneraterBuffer* buf) {
 #ifdef LN_COORD_RH
         Vector2 origin(-center);
         vertices[0].setPosition(origin.x, origin.y, 0);
-        vertices[1].setPosition(origin.x, origin.y + sprite.size.y, 0);
-        vertices[2].setPosition(origin.x + sprite.size.x, origin.y, 0);
+        vertices[1].setPosition(origin.x + sprite.size.x, origin.y, 0);
+        vertices[2].setPosition(origin.x, origin.y + sprite.size.y, 0);
         vertices[3].setPosition(origin.x + sprite.size.x, origin.y + sprite.size.y, 0);
 #else
         Vector2 origin(-center);
@@ -248,10 +248,10 @@ void SpriteMeshGenerater::onGenerate(MeshGeneraterBuffer* buf) {
 #ifdef LN_COORD_RH
         vertices[0].uv.x = l;
         vertices[0].uv.y = t;
-        vertices[1].uv.x = l;
-        vertices[1].uv.y = b;
-        vertices[2].uv.x = r;
-        vertices[2].uv.y = t;
+        vertices[1].uv.x = r;
+        vertices[1].uv.y = t;
+        vertices[2].uv.x = l;
+        vertices[2].uv.y = b;
         vertices[3].uv.x = r;
         vertices[3].uv.y = b;
 #else

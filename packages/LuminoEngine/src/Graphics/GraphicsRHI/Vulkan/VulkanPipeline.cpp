@@ -134,10 +134,10 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
         rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
         rasterizerInfo.polygonMode = VulkanHelper::LNFillModeToVkPolygonMode(desc.fillMode);
         rasterizerInfo.cullMode = VulkanHelper::LNCullModeToVkCullMode(desc.cullMode);
-#ifdef LN_COORD_RH
-        rasterizerInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-#else
+#ifdef LN_FACE_FRONT_CW
         rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+#else
+        rasterizerInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 #endif
         rasterizerInfo.depthBiasEnable = VK_FALSE;
         rasterizerInfo.depthBiasConstantFactor = 0.0f;

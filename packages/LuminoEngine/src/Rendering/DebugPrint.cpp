@@ -76,7 +76,7 @@ MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* comm
     //graphicsCommandList->beginRenderPass(renderPass);
 
     Size viewSize(colorBuffer->width(), colorBuffer->height());
-    m_viewPoint->resetPerspective2DLH(Vector3(0, 0, 0), viewSize, 0.0f, 100.0f);
+    m_viewPoint->resetPerspective2DRH(Vector3(0, 0, 0), viewSize, 0.0f, 100.0f);
 
     commandList->clearCommandsAndState(m_viewPoint);
 

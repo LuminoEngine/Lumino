@@ -142,9 +142,17 @@ extern LUMINO_API LNResult LNGraphicsContext_CreateFromCurrentGL(int32_t width, 
 // LNCommandList
 //==============================================================================
 
-extern LUMINO_API LNResult LNCommandList_BeginRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outRenderPass);
+extern LUMINO_API LNResult LNCommandList_BeginSceneRenderPass(LNHandle renderingCommandList, LNRenderPassDescriptor descriptor, LNHandle renderingViewPoint, LNHandle* outSceneRenderPass);
 
-extern LUMINO_API LNResult LNCommandList_EndRenderPass(LNHandle renderingCommandList, LNHandle renderPass_);
+extern LUMINO_API LNResult LNCommandList_EndSceneRenderPass(LNHandle renderingCommandList, LNHandle sceneRenderPass);
+
+
+//==============================================================================
+// LNSceneRenderPass
+//==============================================================================
+
+extern LUMINO_API LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass);
+
 
 //==============================================================================
 // LNDebug
@@ -249,48 +257,6 @@ extern LUMINO_API LNResult LNTextureRenderingContext_StrokeText(LNHandle texture
 //==============================================================================
 // 
 //==============================================================================
-/** A value that represents a reference direction in 3D space. */
-typedef enum LNSpriteBaseDirection {
-    /** X+ (右向き) */
-    LN_SPRITE_BASE_DIRECTION_XPLUS = 0,
-
-    /** Y+ (上向き) */
-    LN_SPRITE_BASE_DIRECTION_YPLUS = 1,
-
-    /** Z+ */
-    LN_SPRITE_BASE_DIRECTION_ZPLUS = 2,
-
-    /** X- (左向き) */
-    LN_SPRITE_BASE_DIRECTION_XMINUS = 3,
-
-    /** Y- (下向き) */
-    LN_SPRITE_BASE_DIRECTION_YMINUS = 4,
-
-    /** Z- */
-    LN_SPRITE_BASE_DIRECTION_ZMINUS = 5,
-
-    /** 2D 基本方向 (Z+ 向、左上原点) */
-    LN_SPRITE_BASE_DIRECTION_BASIC2D = 6,
-
-    LN_SPRITE_BASE_DIRECTION_MAX_ENUM = 0x7FFFFFFF,
-} LNSpriteBaseDirection;
-
-/** How to calculate billboards.*/
-typedef enum LNBillboardType {
-    /** ビルボードの計算を行わない */
-    LN_BILLBOARD_TYPE_NONE = 0,
-
-    /** カメラ (ビュー行列) に対して正面を向く */
-    LN_BILLBOARD_TYPE_TO_CAMERA_POINT = 1,
-
-    /** スクリーン (ビュー平面) に対して正面を向く */
-    LN_BILLBOARD_TYPE_TO_SCREEN = 2,
-
-    /** Y 軸回転のみ行う */
-    LN_BILLBOARD_TYPE_ROT_Y = 3,
-
-    LN_BILLBOARD_TYPE_MAX_ENUM = 0x7FFFFFFF,
-} LNBillboardType;
 
 extern LUMINO_API LNResult LNBatchRenderer_Get(LNHandle* outSpriteRenderer);
 extern LUMINO_API LNResult LNBatchRenderer_BeginBatch(

@@ -27,9 +27,9 @@ TEST_F(Test_BasicRendering, Clear1) {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        ASSERT_EQ(LN_OK, LNCommandList_BeginRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+        ASSERT_EQ(LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
-        ASSERT_EQ(LN_OK, LNCommandList_EndRenderPass(commandList, renderingPass));
+        ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
 

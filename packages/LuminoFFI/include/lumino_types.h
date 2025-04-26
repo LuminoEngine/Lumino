@@ -52,6 +52,49 @@ typedef int8_t LNBool;
 #define LN_TRUE 1
 #define LN_FALSE 0
 
+/** A value that represents a reference direction in 3D space. */
+typedef enum LNSpriteBaseDirection {
+    /** X+ (右向き) */
+    LN_SPRITE_BASE_DIRECTION_XPLUS = 0,
+
+    /** Y+ (上向き) */
+    LN_SPRITE_BASE_DIRECTION_YPLUS = 1,
+
+    /** Z+ */
+    LN_SPRITE_BASE_DIRECTION_ZPLUS = 2,
+
+    /** X- (左向き) */
+    LN_SPRITE_BASE_DIRECTION_XMINUS = 3,
+
+    /** Y- (下向き) */
+    LN_SPRITE_BASE_DIRECTION_YMINUS = 4,
+
+    /** Z- */
+    LN_SPRITE_BASE_DIRECTION_ZMINUS = 5,
+
+    /** 2D 基本方向 (Z+ 向、左上原点) */
+    LN_SPRITE_BASE_DIRECTION_BASIC2D = 6,
+
+    LN_SPRITE_BASE_DIRECTION_MAX_ENUM = 0x7FFFFFFF,
+} LNSpriteBaseDirection;
+
+/** How to calculate billboards.*/
+typedef enum LNBillboardType {
+    /** ビルボードの計算を行わない */
+    LN_BILLBOARD_TYPE_NONE = 0,
+
+    /** カメラ (ビュー行列) に対して正面を向く */
+    LN_BILLBOARD_TYPE_TO_CAMERA_POINT = 1,
+
+    /** スクリーン (ビュー平面) に対して正面を向く */
+    LN_BILLBOARD_TYPE_TO_SCREEN = 2,
+
+    /** Y 軸回転のみ行う */
+    LN_BILLBOARD_TYPE_ROT_Y = 3,
+
+    LN_BILLBOARD_TYPE_MAX_ENUM = 0x7FFFFFFF,
+} LNBillboardType;
+
 //==============================================================================
 // LNVector2
 //==============================================================================
@@ -70,7 +113,7 @@ typedef struct LNVector3 {
 } LNVector3;
 
 //==============================================================================
-//
+// LNMatrix
 //==============================================================================
 typedef struct LNMatrix {
     union {
@@ -88,6 +131,16 @@ typedef struct LNMatrix {
 //extern LUMINO_API LNStructHandle LNMatrix_New();
 //extern LUMINO_API void LNMatrix_Delete(LNStructHandle matrix);
 extern LUMINO_API void LNMatrix_SetIdentity(LNMatrix* pMatrix);
+
+//==============================================================================
+// LNRect
+//==============================================================================
+typedef struct LNRect {
+    float x;
+    float y;
+    float width;
+    float height;
+} LNRect;
 
 #ifdef __cplusplus
 } // extern "C"

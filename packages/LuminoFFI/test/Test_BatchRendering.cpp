@@ -56,7 +56,7 @@ TEST_F(Test_BatchRendering, Basic1) {
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
             ASSERT_EQ(
-                LN_OK, LNCommandList_BeginRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+                LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -82,7 +82,7 @@ TEST_F(Test_BatchRendering, Basic1) {
                 LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
-            ASSERT_EQ(LN_OK, LNCommandList_EndRenderPass(commandList, renderingPass));
+            ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
         }
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));
@@ -139,7 +139,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
             descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
             descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
             ASSERT_EQ(
-                LN_OK, LNCommandList_BeginRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
+                LN_OK, LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass));
 
             // Draw Sprite.
             {
@@ -165,7 +165,7 @@ TEST_F(Test_BatchRendering, TooMany10000) {
                 LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
-            ASSERT_EQ(LN_OK, LNCommandList_EndRenderPass(commandList, renderingPass));
+            ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
         }
 
         ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(surfaceContext));

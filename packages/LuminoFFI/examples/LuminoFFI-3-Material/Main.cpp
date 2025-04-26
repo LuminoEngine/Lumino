@@ -63,7 +63,7 @@ int main() {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNCommandList_BeginRenderPass(commandList, descriptor, viewPoint, &renderingPass);
+        LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint, &renderingPass);
 
         
         {
@@ -83,7 +83,7 @@ int main() {
             LNBatchRenderer_EndBatch(spriteRenderer);
         }
 
-        LNCommandList_EndRenderPass(commandList, renderingPass);
+        LNCommandList_EndSceneRenderPass(commandList, renderingPass);
 
         LNGraphicsContext_EndFrame(graphicsContext);
         LNWindow_Present(window);

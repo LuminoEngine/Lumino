@@ -37,7 +37,7 @@ TEST_F(Test_Material, Basic1) {
         descriptor.depthBuffer.clearStencil = 0;
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
-        LNCommandList_BeginRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass);
+        LNCommandList_BeginSceneRenderPass(commandList, descriptor, TestEnv::viewPoint, &renderingPass);
 
         LNMatrix transform;
         LNMatrix_SetIdentity(&transform);
@@ -63,7 +63,7 @@ TEST_F(Test_Material, Basic1) {
             LN_BILLBOARD_TYPE_NONE);
         LNBatchRenderer_EndBatch(spriteRenderer);
 
-        LNCommandList_EndRenderPass(commandList, renderingPass);
+        LNCommandList_EndSceneRenderPass(commandList, renderingPass);
 
         LNGraphicsContext_EndFrame(surfaceContext);
         ASSERT_SCREENSHOT(U"Test_Material.Basic1/Expects.png");

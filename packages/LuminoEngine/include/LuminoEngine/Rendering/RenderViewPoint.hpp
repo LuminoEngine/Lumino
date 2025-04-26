@@ -33,6 +33,7 @@ public:
     resetPerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
     void resetPerspectiveOrthoLH(const Vector3& viewPos, const Vector3& lookPos, const Size& size, float n, float f);
     void resetPerspective2DLH(const Vector3& viewPos, const Size& size, float n, float f);
+    void resetPerspective2DRH(const Vector3& viewPos, const Size& size, float n, float f);
     void copyFrom(const RenderViewPoint* other);
     void makeCameraInfo(detail::CameraInfo* cameraInfo) const;
 };

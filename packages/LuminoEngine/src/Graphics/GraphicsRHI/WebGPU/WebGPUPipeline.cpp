@@ -165,7 +165,12 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
             return LN_MAKE_ERROR_deprecated("Unsupported topology %d", state.topology);
     }
     pipelineDesc.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
+
+#ifdef LN_FACE_FRONT_CW
+    pipelineDesc.primitive.frontFace = WGPUFrontFace_CW;
+#else
     pipelineDesc.primitive.frontFace = WGPUFrontFace_CCW;
+#endif
     switch (state.rasterizerState.cullMode) {
         case CullMode::None:
             pipelineDesc.primitive.cullMode = WGPUCullMode_None;

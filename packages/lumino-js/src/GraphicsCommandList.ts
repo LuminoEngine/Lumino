@@ -74,7 +74,7 @@ export class GraphicsCommandList extends LuminoObject {
             );
         }
         
-        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNCommandList_BeginRenderPass(this.handle, desc, viewPoint.handle, r));
+        const handle = Runtime.safeCallWithReturnHandle((r) => API.LNCommandList_BeginSceneRenderPass(this.handle, desc, viewPoint.handle, r));
         const renderPass = new RenderPass(this);
         renderPass._setHandle(handle, false);
         return renderPass;
