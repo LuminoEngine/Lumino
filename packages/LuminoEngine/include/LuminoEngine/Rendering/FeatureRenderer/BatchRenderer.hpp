@@ -19,16 +19,7 @@ public:
     void end();
     Material* currentMaterial() const;
 
-    void drawSprite(const SpriteData& sprite);
-    void drawSprite(
-        const Matrix& transform,
-        const Size& size,
-        const Vector2& anchorRatio,
-        const Rect& srcUVRect,
-        const Color& color,
-        SpriteBaseDirection baseDirection,
-        BillboardType billboardType,
-        const Flags<SpriteFlipFlags>& flipFlags);
+    void drawSprite(const Matrix& worldTransform, const SpriteData& sprite);
 
     BatchRenderer();
     Result_deprecated<> init();

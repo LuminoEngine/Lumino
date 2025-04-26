@@ -43,25 +43,17 @@ TEST_F(Test_Material, Basic1) {
         LNMatrix_SetIdentity(&transform);
         transform.m41 = 0;
         transform.m42 = 0;
-        LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-        LNBatchRenderer_DrawSprite_deprecated(
-            spriteRenderer,
-            NULL,
-            320,
-            240,
-            0,
-            0,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            LN_SPRITE_BASE_DIRECTION_BASIC2D,
-            LN_BILLBOARD_TYPE_NONE);
-        LNBatchRenderer_EndBatch(spriteRenderer);
+
+        LNDrawSpriteParams params = {};
+        params.worldTransformOrNull = &transform;
+        params.material = material1;
+        params.size = {320, 240};
+        params.anchorRatio = {0, 0};
+        params.uvRect = {0, 0, 1, 1};
+        params.color = {1, 1, 1, 1};
+        params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+        params.billboardType = LN_BILLBOARD_TYPE_NONE;
+        LNSceneRenderPass_DrawSprite(renderingPass, &params);
 
         LNCommandList_EndSceneRenderPass(commandList, renderingPass);
 

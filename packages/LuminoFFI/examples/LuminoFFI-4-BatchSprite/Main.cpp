@@ -98,7 +98,6 @@ int main() {
         LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint, &renderingPass);
 
 
-        LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, nullptr);
         for (int i = 0; i < SPRITE_COUNT; ++i) {
             Sprite& sprite = sprites[i];
             updateSprite(&sprite);
@@ -117,25 +116,17 @@ int main() {
             float frameW = ICON_SIZE / textureWidth;
             float frameH = ICON_SIZE / textureHeight;
 
-            LNBatchRenderer_DrawSprite_deprecated(
-                spriteRenderer,
-                &transform,
-                ICON_SIZE,
-                ICON_SIZE,
-                0.5f,
-                0.5f,
-                frameX,
-                frameY,
-                frameW,
-                frameH,
-                1,
-                1,
-                1,
-                1,
-                LN_SPRITE_BASE_DIRECTION_BASIC2D,
-                LN_BILLBOARD_TYPE_NONE);
+            LNDrawSpriteParams params = {};
+            params.worldTransformOrNull = &transform;
+            params.material = material1;
+            params.size = {ICON_SIZE, ICON_SIZE};
+            params.anchorRatio = {0.5f, 0.5f};
+            params.uvRect = {frameX, frameY, frameW, frameH};
+            params.color = {1, 1, 1, 1};
+            params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+            params.billboardType = LN_BILLBOARD_TYPE_NONE;
+            LNSceneRenderPass_DrawSprite(renderingPass, &params);
         }
-        LNBatchRenderer_EndBatch(spriteRenderer);
 
         
         //LNDebug_Print(graphicsContext, (std::string("Frame: ") + std::to_string(frameCount)).c_str());

@@ -252,8 +252,6 @@ LNResult LNGraphicsContext_BeginFrame(
     SurfaceContext* surfaceContext = LN_HANDLE_TO_OBJECT(SurfaceContext, graphicsContext);
     surfaceContext->beginFrame();
     GraphicsContext* context = surfaceContext->context();
-    std::cout << "LNGraphicsContext_BeginFrame currentBackbuffer:" << context->currentBackbuffer() << std::endl;
-    std::cout << "LNGraphicsContext_BeginFrame currentDepthBuffer:" << context->currentDepthBuffer() << std::endl;
     *outColorBuffer = ln::Runtime::wrapObject(context->currentBackbuffer(), false);
     *outDepthBuffer = ln::Runtime::wrapObject(context->currentDepthBuffer(), false);
     *outCommandList = ::Runtime::wrapObject(surfaceContext, false);
@@ -519,6 +517,9 @@ inline const Rect& toRect(const LNRect& v) {
 inline const Color& toColor(const LNColor& v) {
     return *reinterpret_cast<const Color*>(&v);
 }
+inline const Matrix& toMatrix(const LNMatrix& v) {
+    return *reinterpret_cast<const Matrix*>(&v);
+}
 
 //==============================================================================
 // LNSceneRenderPass
@@ -526,10 +527,9 @@ inline const Color& toColor(const LNColor& v) {
 LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass_, const LNDrawSpriteParams* params_) {
     LN_FFI_TRY_BEGIN;
     SceneRenderPass* sceneRenderPass = LN_HANDLE_TO_OBJECT(SceneRenderPass, sceneRenderPass_);
-    
-    const Matrix* localTransform = reinterpret_cast<const Matrix*>(params_->localTransformOrNull);
+
+    const Matrix* worldTransform = reinterpret_cast<const Matrix*>(params_->worldTransformOrNull);
     SpriteData data;
-    data.transform = (localTransform) ? *reinterpret_cast<const Matrix*>(localTransform) : Matrix::Identity;
     data.size = toVector2(params_->size);
     data.anchorRatio = toVector2(params_->anchorRatio);
     data.srcUVRect = toRect(params_->uvRect);
@@ -538,7 +538,10 @@ LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass_, const LNDrawSpr
     data.billboardType = static_cast<BillboardType>(params_->billboardType);
     data.flipFlags = SpriteFlipFlags::None;
 
-    sceneRenderPass->drawSprite(LN_HANDLE_TO_OBJECT(Material, params_->material), data);
+    sceneRenderPass->drawSprite(
+        LN_HANDLE_TO_OBJECT(Material, params_->material),
+        (worldTransform) ? *worldTransform : Matrix::Identity,
+        data);
 
     LN_FFI_TRY_END_RETURN;
 }
@@ -900,7 +903,7 @@ LNResult LNBatchRenderer_DrawSprite_deprecated(
     const Matrix* localTransform = reinterpret_cast<const Matrix*>(localTransformOrNull);
 
     SpriteData data;
-    data.transform = (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity;
+    //data.transform = (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity;
     data.size = Size(width, height);
     data.anchorRatio = Vector2(anchorRatioX, anchorRatioY);
     data.srcUVRect = Rect(uvRectX, uvRectY, uvRectW, uvRectH);
@@ -910,7 +913,7 @@ LNResult LNBatchRenderer_DrawSprite_deprecated(
     data.flipFlags = SpriteFlipFlags::None;
 
     SceneRenderPass* renderer = detail::RenderingManager::instance()->sceneRenderer();
-    renderer->drawSprite(g_lastMaterial, data);
+    renderer->drawSprite(g_lastMaterial, Matrix::Identity, data);
 
     //BatchRenderer* renderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer);
     //renderer->drawSprite(

@@ -59,11 +59,11 @@ Material* BatchRenderer::currentMaterial() const {
     return m_currentProxy->material;
 }
 
-void BatchRenderer::drawSprite(const SpriteData& sprite) {
+void BatchRenderer::drawSprite(const Matrix& worldTransform, const SpriteData& sprite) {
     auto& collector = m_commandList->batchProxyCollector();
     detail::SpriteMeshGenerater* instruction = collector->newFrameRawData<detail::SpriteMeshGenerater>();
     instruction->type = detail::BatchInstructionType::StandardMesh;
-    instruction->setTransform(sprite.transform);
+    instruction->setTransform(worldTransform);
     instruction->sprite = sprite;
     instruction->next = nullptr;
     if (!m_currentProxy->first) {
@@ -74,27 +74,6 @@ void BatchRenderer::drawSprite(const SpriteData& sprite) {
         m_currentProxy->last->next = instruction;
         m_currentProxy->last = instruction;
     }
-}
-
-void BatchRenderer::drawSprite(
-    const Matrix& transform,
-    const Size& size,
-    const Vector2& anchorRatio,
-    const Rect& srcUVRect,
-    const Color& color,
-    SpriteBaseDirection baseDirection,
-    BillboardType billboardType,
-    const Flags<SpriteFlipFlags>& flipFlags) {
-    drawSprite({
-        transform,
-        size,
-        anchorRatio,
-        srcUVRect,
-        color,
-        baseDirection,
-        billboardType,
-        flipFlags,
-    });
 }
 
 } // namespace ln

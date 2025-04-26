@@ -139,22 +139,24 @@ void SceneRenderPass::setupElement(DrawElement* instance) {
     }
 }
 
-void SceneRenderPass::drawSprite(Material* material, const SpriteData& data) {
+void SceneRenderPass::drawSprite(Material* material, const Matrix& worldTransform, const SpriteData& data) {
     struct SpriteDrawElement final : public DrawElement {
         SpriteData data;
         Material* material;
+        Matrix worldTransform;
         SpriteDrawElement()
             : DrawElement(DrawElementType::Sprite) {}
-        const Matrix& worldMatrix() override { return data.transform; }
+        const Matrix& worldMatrix() override { return worldTransform; }
         void onRender(RendererServer* rendererServer, CommandList* commandList) override {
             auto* renderer = rendererServer->spriteRenderer();
             rendererServer->activate(renderer, commandList, material);
-            renderer->drawSprite(data);
+            renderer->drawSprite(worldTransform, data);
         }
     };
     auto* instance = newDrawElement<SpriteDrawElement>();
     instance->data = data;
     instance->material = material;
+    instance->worldTransform = worldTransform;
     setupElement(instance);
 }
 

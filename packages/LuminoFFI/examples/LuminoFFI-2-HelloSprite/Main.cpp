@@ -87,34 +87,23 @@ int main() {
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNCommandList_BeginSceneRenderPass(commandList, descriptor, viewPoint, &renderingPass);
-
+        
+        LNMatrix transform;
+        LNMatrix_SetIdentity(&transform);
+        transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
+        transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
 
         LNDrawSpriteParams params = {};
+        params.worldTransformOrNull = &transform;
         params.material = material1;
         params.size = {100, 100};
-        params.anchorRatio = {0, 0}; //{0.5f, 0.5f};
+        params.anchorRatio = {0.5f, 0.5f};
         params.uvRect = {0, 0, 1, 1};
         params.color = {1, 1, 1, 1};
         params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
         params.billboardType = LN_BILLBOARD_TYPE_NONE;
         LNSceneRenderPass_DrawSprite(renderingPass, &params);
         
-        //{
-        //    LNMatrix transform;
-        //    LNMatrix_SetIdentity(&transform);
-        //    transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
-        //    transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
-        //    LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-        //    LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
-        //        100, 100,
-        //        0,0,//0.5f, 0.5f,
-        //        0, 0, 1, 1,
-        //        1, 1, 1, 1,
-        //        LN_SPRITE_BASE_DIRECTION_BASIC2D,
-        //        LN_BILLBOARD_TYPE_NONE);
-        //    LNBatchRenderer_EndBatch(spriteRenderer);
-        //}
-
         LNCommandList_EndSceneRenderPass(commandList, renderingPass);
 
         LNGraphicsContext_EndFrame(graphicsContext);

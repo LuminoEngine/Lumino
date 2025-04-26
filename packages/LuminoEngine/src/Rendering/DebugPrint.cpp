@@ -76,7 +76,7 @@ MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* comm
     //graphicsCommandList->beginRenderPass(renderPass);
 
     Size viewSize(colorBuffer->width(), colorBuffer->height());
-    m_viewPoint->resetPerspective2DRH(Vector3(0, 0, 0), viewSize, 0.0f, 100.0f);
+    m_viewPoint->resetPerspective2DLH(Vector3(0, 0, 0), viewSize, 0.0f, 100.0f);
 
     commandList->clearCommandsAndState(m_viewPoint);
 
@@ -109,15 +109,15 @@ MaybeResult DebugPrint::render(SurfaceContext* surfaceContext, CommandList* comm
             frameWidth / textureWidth,
             frameHeight / textureHeight);
         Matrix pos = Matrix::makeTranslation(Vector3(paddingLeft + textX, paddingTop + textY, 0));
-        m_batchRenderer->drawSprite(
-            pos,
-            Size(frameWidth, frameHeight),
-            Vector2::Zero,
-            srcUVRect,
-            Color::White,
-            SpriteBaseDirection::Basic2D,
-            BillboardType::None,
-            SpriteFlipFlags::None);
+        SpriteData data;
+        data.size = Size(frameWidth, frameHeight);
+        data.anchorRatio = Vector2::Zero;
+        data.srcUVRect = srcUVRect;
+        data.color = Color::White;
+        data.baseDirection = SpriteBaseDirection::Basic2D;
+        data.billboardType = BillboardType::None;
+        data.flipFlags = SpriteFlipFlags::None;
+        m_batchRenderer->drawSprite(pos, data);
         textX += frameWidth;
     }
 

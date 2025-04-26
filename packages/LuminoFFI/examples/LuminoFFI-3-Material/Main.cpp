@@ -70,16 +70,17 @@ int main() {
             LNMatrix_SetIdentity(&transform);
             transform.m41 = width / 2;
             transform.m42 = height / 2;
-            LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
-                width - 20,
-                height - 20,
-                0.5f, 0.5f,
-                0, 0, 1, 1,
-                1, 1, 1, 1,
-                LN_SPRITE_BASE_DIRECTION_BASIC2D,
-                LN_BILLBOARD_TYPE_NONE);
-            LNBatchRenderer_EndBatch(spriteRenderer);
+
+            LNDrawSpriteParams params = {};
+            params.worldTransformOrNull = &transform;
+            params.material = material1;
+            params.size = {static_cast<float>(width - 20), static_cast<float>(height - 20)};
+            params.anchorRatio = {0.5f, 0.5f};
+            params.uvRect = {0, 0, 1, 1};
+            params.color = {1, 1, 1, 1};
+            params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+            params.billboardType = LN_BILLBOARD_TYPE_NONE;
+            LNSceneRenderPass_DrawSprite(renderingPass, &params);
         }
 
         LNCommandList_EndSceneRenderPass(commandList, renderingPass);

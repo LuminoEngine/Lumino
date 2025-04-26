@@ -232,7 +232,7 @@ enum class SpriteFlipFlags : uint8_t {
 LN_FLAGS_OPERATORS(SpriteFlipFlags);
 
 struct SpriteData {
-    Matrix transform;
+    //Matrix transform;
     Vector2 size;
     Vector2 anchorRatio;
     Rect srcUVRect;

@@ -62,24 +62,21 @@ TEST_F(Test_BatchRendering, Basic1) {
             {
                 LNMatrix transform;
                 LNMatrix_SetIdentity(&transform);
-                LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
 
                 // 5回描いてみる。
                 for (int i = 0; i < 5; i++) {
-                    LNMatrix localTransform;
-                    LNMatrix_SetIdentity(&localTransform);
                     transform.m41 = i * 32;
-                    LNBatchRenderer_DrawSprite_deprecated(
-                        spriteRenderer,
-                        &transform,
-                        32, 32,
-                        0, 0,
-                        0, 0, 1, 1,
-                        1, 1, 1, 1,
-                        LN_SPRITE_BASE_DIRECTION_BASIC2D,
-                        LN_BILLBOARD_TYPE_NONE);
+                    LNDrawSpriteParams params = {};
+                    params.worldTransformOrNull = &transform;
+                    params.material = material1;
+                    params.size = {32, 32};
+                    params.anchorRatio = {0, 0};
+                    params.uvRect = {0, 0, 1, 1};
+                    params.color = {1, 1, 1, 1};
+                    params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+                    params.billboardType = LN_BILLBOARD_TYPE_NONE;
+                    LNSceneRenderPass_DrawSprite(renderingPass, &params);
                 }
-                LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
             ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));
@@ -145,24 +142,21 @@ TEST_F(Test_BatchRendering, TooMany10000) {
             {
                 LNMatrix transform;
                 LNMatrix_SetIdentity(&transform);
-                LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
 
-                // 5回描いてみる。
+                // たくさん描いてみる。
                 for (int i = 0; i < 10000; i++) {
-                    LNMatrix localTransform;
-                    LNMatrix_SetIdentity(&localTransform);
-                    transform.m41 = i;
-                    LNBatchRenderer_DrawSprite_deprecated(
-                        spriteRenderer,
-                        &transform,
-                        32, 32,
-                        0, 0,
-                        0, 0, 1, 1,
-                        1, 1, 1, 1,
-                        LN_SPRITE_BASE_DIRECTION_BASIC2D,
-                        LN_BILLBOARD_TYPE_NONE);
+                    transform.m41 = i * 32;
+                    LNDrawSpriteParams params = {};
+                    params.worldTransformOrNull = &transform;
+                    params.material = material1;
+                    params.size = {32, 32};
+                    params.anchorRatio = {0, 0};
+                    params.uvRect = {0, 0, 1, 1};
+                    params.color = {1, 1, 1, 1};
+                    params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+                    params.billboardType = LN_BILLBOARD_TYPE_NONE;
+                    LNSceneRenderPass_DrawSprite(renderingPass, &params);
                 }
-                LNBatchRenderer_EndBatch(spriteRenderer);
             }
 
             ASSERT_EQ(LN_OK, LNCommandList_EndSceneRenderPass(commandList, renderingPass));

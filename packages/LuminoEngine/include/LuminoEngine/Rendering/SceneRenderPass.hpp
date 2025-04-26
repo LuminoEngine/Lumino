@@ -20,7 +20,7 @@ public:
     void reset(SurfaceContext* context, RenderPass* renderPass, const RenderViewPoint* viewPoint);
     void render(CommandList* commandList); // TODO: 実際に欲しいのは Collector だけのはず
 
-    void drawSprite(Material* material, const SpriteData& data);
+    void drawSprite(Material* material, const Matrix& worldTransform, const SpriteData& data);
 
     SurfaceContext* currentContext() const { return m_currentContext; }
     RenderPass* currentRenderPass() const { return m_currentRenderPass; }
