@@ -414,10 +414,10 @@ Result<Ref<IRenderPass>> DX12Device::onCreateRenderPass(const RenderPassCreateIn
     return ptr;
 }
 
-Ref<IPipeline> DX12Device::onCreatePipeline(const DevicePipelineStateDesc& state) {
+Result<Ref<IPipeline>> DX12Device::onCreatePipeline(const DevicePipelineCreateInfo& createInfo) {
     auto ptr = makeRef<DX12Pipeline>();
-    if (!ptr->init(this, state)) {
-        return nullptr;
+    if (!ptr->init(this, createInfo)) {
+        return LN_MAKE_ERROR();
     }
     return ptr;
 }
@@ -536,12 +536,12 @@ DX12Pipeline::DX12Pipeline()
     : m_device(nullptr) {
 }
 
-bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc& state) {
+bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineCreateInfo& createInfo) {
     LN_DCHECK(deviceContext);
-    LN_DCHECK(state.renderPass);
+    LN_DCHECK(createInfo.renderPass);
     m_device = deviceContext;
 
-    DX12ShaderPass* shaderPass = static_cast<DX12ShaderPass*>(state.shaderPass);
+    DX12ShaderPass* shaderPass = static_cast<DX12ShaderPass*>(createInfo.shaderPass);
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
     psoDesc.pRootSignature = shaderPass->rootSignature();
@@ -562,10 +562,10 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
     {
         ZeroMemory(&psoDesc.BlendState, sizeof(psoDesc.BlendState));
         psoDesc.BlendState.AlphaToCoverageEnable = FALSE;
-        psoDesc.BlendState.IndependentBlendEnable = state.blendState.independentBlendEnable;
+        psoDesc.BlendState.IndependentBlendEnable = createInfo.blendState.independentBlendEnable;
         for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++) {
             D3D12_RENDER_TARGET_BLEND_DESC& dst = psoDesc.BlendState.RenderTarget[i];
-            const RenderTargetBlendDesc& src = state.blendState.renderTargets[i];
+            const RenderTargetBlendDesc& src = createInfo.blendState.renderTargets[i];
             dst.BlendEnable = src.blendEnable;
             dst.LogicOpEnable = FALSE;
             dst.SrcBlend = DX12Helper::LNBlendFactorToDX12Blend(src.sourceBlend);
@@ -590,8 +590,8 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
 
     // RasterizerState
     {
-        psoDesc.RasterizerState.FillMode = DX12Helper::LNFillModeToDX12FillMode(state.rasterizerState.fillMode);
-        psoDesc.RasterizerState.CullMode = DX12Helper::LNCullModeToDX12CullMode(state.rasterizerState.cullMode);
+        psoDesc.RasterizerState.FillMode = DX12Helper::LNFillModeToDX12FillMode(createInfo.rasterizerState.fillMode);
+        psoDesc.RasterizerState.CullMode = DX12Helper::LNCullModeToDX12CullMode(createInfo.rasterizerState.cullMode);
 #ifdef LN_COORD_RH
         psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
 #else
@@ -609,21 +609,32 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
 
     // DepthStencilState
     {
-        if (state.renderPass->hasDepthBuffer()) {
+        if (createInfo.renderPass->hasDepthBuffer()) {
             psoDesc.DepthStencilState.DepthEnable = TRUE;
-            psoDesc.DepthStencilState.DepthWriteMask = state.depthStencilState.depthWriteEnabled ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
-            psoDesc.DepthStencilState.DepthFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(state.depthStencilState.depthTestFunc);
-            psoDesc.DepthStencilState.StencilEnable = state.depthStencilState.stencilEnabled;
+            psoDesc.DepthStencilState.DepthWriteMask = createInfo.depthStencilState.depthWriteEnabled
+                ? D3D12_DEPTH_WRITE_MASK_ALL
+                : D3D12_DEPTH_WRITE_MASK_ZERO;
+            psoDesc.DepthStencilState.DepthFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(
+                createInfo.depthStencilState.depthTestFunc);
+            psoDesc.DepthStencilState.StencilEnable = createInfo.depthStencilState.stencilEnabled;
             psoDesc.DepthStencilState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
             psoDesc.DepthStencilState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
-            psoDesc.DepthStencilState.FrontFace.StencilFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.frontFace.stencilFailOp);
-            psoDesc.DepthStencilState.FrontFace.StencilDepthFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.frontFace.stencilDepthFailOp);
-            psoDesc.DepthStencilState.FrontFace.StencilPassOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.frontFace.stencilPassOp);
-            psoDesc.DepthStencilState.FrontFace.StencilFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(state.depthStencilState.frontFace.stencilFunc);
-            psoDesc.DepthStencilState.BackFace.StencilFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.backFace.stencilFailOp);
-            psoDesc.DepthStencilState.BackFace.StencilDepthFailOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.backFace.stencilDepthFailOp);
-            psoDesc.DepthStencilState.BackFace.StencilPassOp = DX12Helper::LNStencilOpToDX12StencilOp(state.depthStencilState.backFace.stencilPassOp);
-            psoDesc.DepthStencilState.BackFace.StencilFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(state.depthStencilState.backFace.stencilFunc);
+            psoDesc.DepthStencilState.FrontFace.StencilFailOp = DX12Helper::LNStencilOpToDX12StencilOp(
+                createInfo.depthStencilState.frontFace.stencilFailOp);
+            psoDesc.DepthStencilState.FrontFace.StencilDepthFailOp = DX12Helper::LNStencilOpToDX12StencilOp(
+                createInfo.depthStencilState.frontFace.stencilDepthFailOp);
+            psoDesc.DepthStencilState.FrontFace.StencilPassOp = DX12Helper::LNStencilOpToDX12StencilOp(
+                createInfo.depthStencilState.frontFace.stencilPassOp);
+            psoDesc.DepthStencilState.FrontFace.StencilFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(
+                createInfo.depthStencilState.frontFace.stencilFunc);
+            psoDesc.DepthStencilState.BackFace.StencilFailOp = DX12Helper::LNStencilOpToDX12StencilOp(
+                createInfo.depthStencilState.backFace.stencilFailOp);
+            psoDesc.DepthStencilState.BackFace.StencilDepthFailOp = DX12Helper::LNStencilOpToDX12StencilOp(
+                createInfo.depthStencilState.backFace.stencilDepthFailOp);
+            psoDesc.DepthStencilState.BackFace.StencilPassOp = DX12Helper::LNStencilOpToDX12StencilOp(
+                createInfo.depthStencilState.backFace.stencilPassOp);
+            psoDesc.DepthStencilState.BackFace.StencilFunc = DX12Helper::LNComparisonFuncToDX12ComparisonFunc(
+                createInfo.depthStencilState.backFace.stencilFunc);
         }
         else {
             ZeroMemory(&psoDesc.DepthStencilState, sizeof(psoDesc.DepthStencilState));
@@ -632,14 +643,14 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
 
     // InputLayout
     {
-        DX12VertexDeclaration* layout = static_cast<DX12VertexDeclaration*>(state.vertexDeclaration);
+        DX12VertexDeclaration* layout = static_cast<DX12VertexDeclaration*>(createInfo.vertexDeclaration);
         psoDesc.InputLayout.pInputElementDescs = layout->elements().data();
         psoDesc.InputLayout.NumElements = static_cast<UINT>(layout->elements().size());
     }
 
     psoDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
 
-    switch (state.topology) {
+    switch (createInfo.topology) {
         case PrimitiveTopology::TriangleList:
         case PrimitiveTopology::TriangleStrip:
             psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -658,7 +669,7 @@ bool DX12Pipeline::init(DX12Device* deviceContext, const DevicePipelineStateDesc
 
     // RenderPass
     {
-        DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(state.renderPass);
+        DX12RenderPass* renderPass = static_cast<DX12RenderPass*>(createInfo.renderPass);
 
         psoDesc.NumRenderTargets = renderPass->getAvailableRenderTargetCount();
         UINT i = 0;

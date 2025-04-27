@@ -8,7 +8,7 @@ class WebGPUPipeline : public IPipeline {
 public:
     WebGPUPipeline();
     ~WebGPUPipeline() override;
-    MaybeResult_deprecated init(WebGPUDevice* m_wgpuDevice, const DevicePipelineStateDesc& state);
+    MaybeResult_deprecated init(WebGPUDevice* m_wgpuDevice, const DevicePipelineCreateInfo& createInfo);
     void onDestroy() override;
 
     WGPURenderPipeline nativePipeline() const { return m_nativePipeline; }

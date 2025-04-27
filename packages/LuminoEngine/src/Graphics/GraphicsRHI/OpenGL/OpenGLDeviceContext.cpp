@@ -242,10 +242,11 @@ Result<Ref<IRenderPass>> OpenGLDevice::onCreateRenderPass(const RenderPassCreate
     return ptr;
 }
 
-Ref<IPipeline> OpenGLDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
+Result<Ref<IPipeline>> OpenGLDevice::onCreatePipeline(const DevicePipelineCreateInfo& createInfo) {
     auto ptr = makeRef<GLPipeline>();
-    if (!ptr->init(this, state)) {
-        return nullptr;
+    auto result = ptr->init(this, createInfo);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }
@@ -589,13 +590,13 @@ GLPipeline::GLPipeline()
     , m_primitiveTopology(0) {
 }
 
-Result_deprecated<> GLPipeline::init(OpenGLDevice* device, const DevicePipelineStateDesc& state) {
+Result_deprecated<> GLPipeline::init(OpenGLDevice* device, const DevicePipelineCreateInfo& createInfo) {
     m_device = device;
-    m_blendState = state.blendState;
-    m_rasterizerState = state.rasterizerState;
-    m_depthStencilState = state.depthStencilState;
+    m_blendState = createInfo.blendState;
+    m_rasterizerState = createInfo.rasterizerState;
+    m_depthStencilState = createInfo.depthStencilState;
 
-    switch (state.topology) {
+    switch (createInfo.topology) {
         case PrimitiveTopology::TriangleList:
             m_primitiveTopology = GL_TRIANGLES;
             break;

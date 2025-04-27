@@ -10,24 +10,21 @@ namespace detail {
 // - VK_DYNAMIC_STATE_BLEND_CONSTANTS,
 // - VK_DYNAMIC_STATE_STENCIL_REFERENCE,
 // なお、これらは computeHash に含める必要はない。
-class VulkanPipeline
-	: public IPipeline
-{
+class VulkanPipeline : public IPipeline {
 public:
-	VulkanPipeline();
-    Result_deprecated<> init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state);
-	void onDestroy() override;
-	VkPipeline nativePipeline() const { return m_pipeline; }
+    VulkanPipeline();
+    Result_deprecated<> init(VulkanDevice* deviceContext, const DevicePipelineCreateInfo& createInfo);
+    void onDestroy() override;
+    VkPipeline nativePipeline() const { return m_pipeline; }
 
 private:
-    Result_deprecated<> createGraphicsPipeline(const DevicePipelineStateDesc& state);
-    Result_deprecated<> createComputePipeline(const DevicePipelineStateDesc& state);
+    Result_deprecated<> createGraphicsPipeline(const DevicePipelineCreateInfo& createInfo);
+    Result_deprecated<> createComputePipeline(const DevicePipelineCreateInfo& createInfo);
 
-	VulkanDevice* m_device;
-	VulkanRenderPass2* m_ownerRenderPass;
-	VkPipeline m_pipeline;
+    VulkanDevice* m_device;
+    VulkanRenderPass2* m_ownerRenderPass;
+    VkPipeline m_pipeline;
 };
-
 
 } // namespace detail
 } // namespace ln

@@ -46,7 +46,7 @@ protected:
     Result<Ref<ISwapChain>> onCreateSwapChain(const SwapChainCreateInfo& createInfo) override;
     Result<Ref<ICommandList>> onCreateCommandList() override;
     Result<Ref<IRenderPass>> onCreateRenderPass(const RenderPassCreateInfo& createInfo) override;
-    Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
+    Result<Ref<IPipeline>> onCreatePipeline(const DevicePipelineCreateInfo& state) override;
     Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
     Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
     Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
@@ -93,7 +93,7 @@ class DX12Pipeline
 {
 public:
 	DX12Pipeline();
-    bool init(DX12Device* deviceContext, const DevicePipelineStateDesc& state);
+    bool init(DX12Device* deviceContext, const DevicePipelineCreateInfo& state);
         void onDestroy() override;
     ID3D12PipelineState* dxPipelineState() const { return m_pipelineState.Get(); }
 

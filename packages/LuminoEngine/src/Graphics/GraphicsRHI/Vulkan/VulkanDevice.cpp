@@ -183,10 +183,11 @@ Result<Ref<IRenderPass>> VulkanDevice::onCreateRenderPass(const RenderPassCreate
     return ptr;
 }
 
-Ref<IPipeline> VulkanDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
+Result<Ref<IPipeline>> VulkanDevice::onCreatePipeline(const DevicePipelineCreateInfo& createInfo) {
     auto ptr = makeRef<VulkanPipeline>();
-    if (!ptr->init(this, state)) {
-        return nullptr;
+    auto result = ptr->init(this, createInfo);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }

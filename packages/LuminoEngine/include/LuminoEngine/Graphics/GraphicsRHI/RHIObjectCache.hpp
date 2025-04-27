@@ -38,7 +38,7 @@ private:
 // IShaderPass または IRenderPass の dispose 時に、invalidate が呼ばれ、関係している IPipeline が削除される。
 class NativePipelineCache {
 public:
-    using FindKey = DevicePipelineStateDesc;
+    using FindKey = DevicePipelineCreateInfo;
 
     NativePipelineCache(IGraphicsDevice* device);
     void clear();

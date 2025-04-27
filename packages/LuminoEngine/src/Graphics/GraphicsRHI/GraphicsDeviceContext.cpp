@@ -146,8 +146,12 @@ Result<Ref<IRenderPass>> IGraphicsDevice::createRenderPass(const RenderPassCreat
     return ptr;
 }
 
-Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& state) {
-    Ref<IPipeline> ptr = onCreatePipeline(state);
+Result<Ref<IPipeline>> IGraphicsDevice::createPipeline(const DevicePipelineCreateInfo& state) {
+    Result<Ref<IPipeline>> result = onCreatePipeline(state);
+    if (!result) {
+        return result;
+    }
+    Ref<IPipeline> ptr = std::move(result).value();
     if (ptr) {
         ptr->m_sourceVertexLayout = state.vertexDeclaration;
         ptr->m_sourceRenderPass = state.renderPass;
@@ -527,9 +531,9 @@ void ICommandList::setSubData3D(RHIResource* resource, int x, int y, int z, int 
 
 void ICommandList::dispatch(int groupCountX, int groupCountY, int groupCountZ) {
     //commitStatus(GraphicsContextSubmitSource_Dispatch);
-    DevicePipelineStateDesc state;
-    state.shaderPass = m_staging.shaderPass;
-    IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
+    DevicePipelineCreateInfo createInfo;
+    createInfo.shaderPass = m_staging.shaderPass;
+    IPipeline* pipeline = device()->pipelineCache()->findOrCreate(createInfo);
     onDispatch(m_staging, pipeline, groupCountX, groupCountY, groupCountZ);
     //endCommit(GraphicsContextSubmitSource_Dispatch);
 }
@@ -573,7 +577,7 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource) {
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
     //if (submitSource == GraphicsContextSubmitSource_Dispatch) {
-    //	IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
+    //	IPipeline* pipeline = device()->pipelineCache()->findOrCreate(createInfo);
 
     //}
     //else
@@ -582,15 +586,15 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource) {
 
         // TODO: modified check
 
-        DevicePipelineStateDesc state;
-        state.blendState = m_staging.pipelineState.blendState;
-        state.rasterizerState = m_staging.pipelineState.rasterizerState;
-        state.depthStencilState = m_staging.pipelineState.depthStencilState;
-        state.topology = m_staging.pipelineState.topology;
-        state.vertexDeclaration = m_staging.pipelineState.vertexDeclaration;
-        state.shaderPass = m_staging.shaderPass;
-        state.renderPass = m_currentRenderPass;
-        IPipeline* pipeline = device()->pipelineCache()->findOrCreate(state);
+        DevicePipelineCreateInfo createInfo;
+        createInfo.blendState = m_staging.pipelineState.blendState;
+        createInfo.rasterizerState = m_staging.pipelineState.rasterizerState;
+        createInfo.depthStencilState = m_staging.pipelineState.depthStencilState;
+        createInfo.topology = m_staging.pipelineState.topology;
+        createInfo.vertexDeclaration = m_staging.pipelineState.vertexDeclaration;
+        createInfo.shaderPass = m_staging.shaderPass;
+        createInfo.renderPass = m_currentRenderPass;
+        IPipeline* pipeline = device()->pipelineCache()->findOrCreate(createInfo);
 
         // CommandList 実行中のリソース削除を防ぐため、参照カウントを増やしておく
         for (const auto& v : m_staging.primitive.vertexBuffers) {

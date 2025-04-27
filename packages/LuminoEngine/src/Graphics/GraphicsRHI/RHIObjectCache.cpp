@@ -128,11 +128,12 @@ IPipeline* NativePipelineCache::findOrCreate(const FindKey& key) {
         return itr->second;
     }
     else {
-        auto pipeline = m_device->createPipeline(key);
-        if (!pipeline) {
+        auto result = m_device->createPipeline(key);
+        if (!result) {
             return nullptr;
         }
 
+        Ref<IPipeline> pipeline = std::move(result).value();
         m_hashMap.insert({ hash, pipeline });
         return pipeline;
     }

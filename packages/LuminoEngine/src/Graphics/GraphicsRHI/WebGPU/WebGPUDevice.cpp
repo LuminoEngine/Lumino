@@ -248,10 +248,11 @@ Result<Ref<IRenderPass>> WebGPUDevice::onCreateRenderPass(const RenderPassCreate
     return ptr;
 }
 
-Ref<IPipeline> WebGPUDevice::onCreatePipeline(const DevicePipelineStateDesc& state) {
+Result<Ref<IPipeline>> WebGPUDevice::onCreatePipeline(const DevicePipelineCreateInfo& createInfo) {
     auto ptr = makeRef<WebGPUPipeline>();
-    if (!ptr->init(this, state)) {
-        return nullptr;
+    auto result = ptr->init(this, createInfo);
+    if (!result) {
+        return LN_TO_ERROR(result);
     }
     return ptr;
 }

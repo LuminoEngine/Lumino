@@ -12,15 +12,15 @@ VulkanPipeline::VulkanPipeline()
     , m_pipeline(VK_NULL_HANDLE) {
 }
 
-Result_deprecated<> VulkanPipeline::init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state) {
+Result_deprecated<> VulkanPipeline::init(VulkanDevice* deviceContext, const DevicePipelineCreateInfo& createInfo) {
     LN_DCHECK(deviceContext);
     m_device = deviceContext;
 
-    if (state.renderPass) {
-        return createGraphicsPipeline(state);
+    if (createInfo.renderPass) {
+        return createGraphicsPipeline(createInfo);
     }
     else {
-        return createComputePipeline(state);
+        return createComputePipeline(createInfo);
     }
 }
 
@@ -35,13 +35,13 @@ void VulkanPipeline::onDestroy() {
     IPipeline::onDestroy();
 }
 
-Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineStateDesc& state) {
-    LN_DCHECK(state.renderPass);
-    m_ownerRenderPass = static_cast<VulkanRenderPass2*>(state.renderPass);
+Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineCreateInfo& createInfo) {
+    LN_DCHECK(createInfo.renderPass);
+    m_ownerRenderPass = static_cast<VulkanRenderPass2*>(createInfo.renderPass);
 
-    auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.vertexDeclaration);
-    auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
-    //m_relatedFramebuffer = m_deviceContext->framebufferCache()->findOrCreate(state.framebufferState);
+    auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(createInfo.vertexDeclaration);
+    auto* shaderPass = static_cast<VulkanShaderPass*>(createInfo.shaderPass);
+    //m_relatedFramebuffer = m_deviceContext->framebufferCache()->findOrCreate(createInfo.framebufferState);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -102,21 +102,21 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VulkanHelper::LNPrimitiveTopologyToVkPrimitiveTopology(state.topology);
+    inputAssembly.topology = VulkanHelper::LNPrimitiveTopologyToVkPrimitiveTopology(createInfo.topology);
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     VkViewport viewport = {};
     //viewport.x = 0.0f;
     //viewport.y = 0.0f;
-    //viewport.width = state.regionRects.viewportRect.width; //(float)swapChainExtent.width;
-    //viewport.height = state.regionRects.viewportRect.height;//(float)swapChainExtent.height;
+    //viewport.width = createInfo.regionRects.viewportRect.width; //(float)swapChainExtent.width;
+    //viewport.height = createInfo.regionRects.viewportRect.height;//(float)swapChainExtent.height;
     //viewport.minDepth = 0.0f;
     //viewport.maxDepth = 1.0f;
 
     VkRect2D scissor = {};
     //scissor.offset = { 0, 0 };
-    //scissor.extent.width = state.regionRects.scissorRect.width;;
-    //scissor.extent.height = state.regionRects.scissorRect.height;;
+    //scissor.extent.width = createInfo.regionRects.scissorRect.width;;
+    //scissor.extent.height = createInfo.regionRects.scissorRect.height;;
 
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -127,7 +127,7 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
 
     VkPipelineRasterizationStateCreateInfo rasterizerInfo = {};
     {
-        const RasterizerStateDesc& desc = state.rasterizerState;
+        const RasterizerStateDesc& desc = createInfo.rasterizerState;
 
         rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         rasterizerInfo.depthClampEnable = VK_FALSE;
@@ -169,7 +169,7 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
     //depthStencil.stencilTestEnable = VK_FALSE;
     VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
     {
-        const DepthStencilStateDesc& desc = state.depthStencilState;
+        const DepthStencilStateDesc& desc = createInfo.depthStencilState;
 
         depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencilStateInfo.pNext = nullptr;
@@ -207,7 +207,7 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
     VkPipelineColorBlendStateCreateInfo colorBlending = {};
     VkPipelineColorBlendAttachmentState colorBlendAttachments[BlendStateDesc::MaxRenderTargets] = {};
     {
-        const BlendStateDesc& desc = state.blendState;
+        const BlendStateDesc& desc = createInfo.blendState;
         int attachmentsCount = 0;
         for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++) {
             if (framebuffer->renderTargets()[i]) {
@@ -301,8 +301,8 @@ Result_deprecated<> VulkanPipeline::createGraphicsPipeline(const DevicePipelineS
     return ok();
 }
 
-Result_deprecated<> VulkanPipeline::createComputePipeline(const DevicePipelineStateDesc& state) {
-    auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
+Result_deprecated<> VulkanPipeline::createComputePipeline(const DevicePipelineCreateInfo& createInfo) {
+    auto* shaderPass = static_cast<VulkanShaderPass*>(createInfo.shaderPass);
 
     VkPipelineShaderStageCreateInfo shaderStage = {};
     shaderStage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

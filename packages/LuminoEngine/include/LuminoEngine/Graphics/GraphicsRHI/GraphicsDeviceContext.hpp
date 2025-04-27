@@ -36,7 +36,7 @@ struct DevicePipelineState {
     PrimitiveTopology topology = PrimitiveTopology::TriangleList;
 };
 
-struct DevicePipelineStateDesc {
+struct DevicePipelineCreateInfo {
     BlendStateDesc blendState;
     RasterizerStateDesc rasterizerState;
     DepthStencilStateDesc depthStencilState;
@@ -176,7 +176,7 @@ public:
     Result<Ref<ISwapChain>> createSwapChain(const SwapChainCreateInfo& createInfo);
     Result<Ref<ICommandList>> createCommandList();
     Result<Ref<IRenderPass>> createRenderPass(const RenderPassCreateInfo& createInfo);
-    Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
+    Result<Ref<IPipeline>> createPipeline(const DevicePipelineCreateInfo& createInfo);
     Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
     Ref<RHIResource> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
     Ref<RHIResource> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
@@ -213,7 +213,7 @@ protected:
     virtual Result<Ref<ISwapChain>> onCreateSwapChain(const SwapChainCreateInfo& createInfo) = 0;
     virtual Result<Ref<ICommandList>> onCreateCommandList() = 0;
     virtual Result<Ref<IRenderPass>> onCreateRenderPass(const RenderPassCreateInfo& createInfo) = 0;
-    virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
+    virtual Result<Ref<IPipeline>> onCreatePipeline(const DevicePipelineCreateInfo& createInfo) = 0;
     virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
     virtual Ref<RHIResource> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
     virtual Ref<RHIResource> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;

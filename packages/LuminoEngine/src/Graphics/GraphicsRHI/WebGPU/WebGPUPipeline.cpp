@@ -117,12 +117,12 @@ WebGPUPipeline::WebGPUPipeline()
 WebGPUPipeline::~WebGPUPipeline() {
 }
 
-MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineStateDesc& state) {
+MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const DevicePipelineCreateInfo& createInfo) {
     m_wgpuDevice = wgpuDevice;
     WGPUDevice nativeDevice = wgpuDevice->wgpuDevice();
-    WebGPUShaderPass* shaderPass = static_cast<WebGPUShaderPass*>(state.shaderPass);
-    WebGPURenderPass* renderPass = static_cast<WebGPURenderPass*>(state.renderPass);
-    WebGPUVertexLayout* vertexLayout = static_cast<WebGPUVertexLayout*>(state.vertexDeclaration);
+    WebGPUShaderPass* shaderPass = static_cast<WebGPUShaderPass*>(createInfo.shaderPass);
+    WebGPURenderPass* renderPass = static_cast<WebGPURenderPass*>(createInfo.renderPass);
+    WebGPUVertexLayout* vertexLayout = static_cast<WebGPUVertexLayout*>(createInfo.vertexDeclaration);
 
     WebGPUPipelineVertexLayout pipelineVertexLayout;
     auto result1 = vertexLayout->createPipelineVertexLayout(shaderPass, &pipelineVertexLayout);
@@ -145,7 +145,7 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
     pipelineDesc.vertex.buffers = pipelineVertexLayout.bufferLayouts.data();
 
     // WGPUPrimitiveState
-    switch (state.topology) {
+    switch (createInfo.topology) {
         case PrimitiveTopology::TriangleList:
             pipelineDesc.primitive.topology = WGPUPrimitiveTopology_TriangleList;
             break;
@@ -162,7 +162,7 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
             pipelineDesc.primitive.topology = WGPUPrimitiveTopology_PointList;
             break;
         default:
-            return LN_MAKE_ERROR_deprecated("Unsupported topology %d", state.topology);
+            return LN_MAKE_ERROR_deprecated("Unsupported topology %d", createInfo.topology);
     }
     pipelineDesc.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
 
@@ -171,7 +171,7 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
 #else
     pipelineDesc.primitive.frontFace = WGPUFrontFace_CCW;
 #endif
-    switch (state.rasterizerState.cullMode) {
+    switch (createInfo.rasterizerState.cullMode) {
         case CullMode::None:
             pipelineDesc.primitive.cullMode = WGPUCullMode_None;
             break;
@@ -182,7 +182,7 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
             pipelineDesc.primitive.cullMode = WGPUCullMode_Back;
             break;
         default:
-            return LN_MAKE_ERROR_deprecated("Unsupported cull mode %d", state.rasterizerState.cullMode);
+            return LN_MAKE_ERROR_deprecated("Unsupported cull mode %d", createInfo.rasterizerState.cullMode);
     }
 #ifndef LN_WEBGPU_LEGACY
     pipelineDesc.primitive.unclippedDepth = 0;
@@ -207,9 +207,9 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
         for (int i = 0; i < targetCount; i++) {
             WebGPURenderTarget* renderTarget = static_cast<WebGPURenderTarget*>(
                 renderPass->m_renderTargets[i]);
-            const RenderTargetBlendDesc& desc = state.blendState.independentBlendEnable
-                ? state.blendState.renderTargets[0]
-                : state.blendState.renderTargets[i];
+            const RenderTargetBlendDesc& desc = createInfo.blendState.independentBlendEnable
+                ? createInfo.blendState.renderTargets[0]
+                : createInfo.blendState.renderTargets[i];
             WGPUBlendState& blendState = blendStates[i];
             blendState = WGPU_BLEND_STATE_INIT;
             blendState.color.srcFactor = toWGPUBlendFactor(desc.sourceBlend);
@@ -239,16 +239,16 @@ MaybeResult_deprecated WebGPUPipeline::init(WebGPUDevice* wgpuDevice, const Devi
         depthStencilState.format = depthBuffer->nativeFormat();
 
 #ifdef LN_WEBGPU_LEGACY
-        depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled ? 1
+        depthStencilState.depthWriteEnabled = createInfo.depthStencilState.depthWriteEnabled ? 1
                                                                                         : 0;
 #else
-        depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled ? WGPUOptionalBool_True
+        depthStencilState.depthWriteEnabled = createInfo.depthStencilState.depthWriteEnabled ? WGPUOptionalBool_True
                                                                                         : WGPUOptionalBool_False;
 #endif
 
-        depthStencilState.depthCompare = toWGPUCompareFunction(state.depthStencilState.depthTestFunc);
-        depthStencilState.stencilFront = toWGPUStencilFaceState(state.depthStencilState.frontFace);
-        depthStencilState.stencilBack = toWGPUStencilFaceState(state.depthStencilState.backFace);
+        depthStencilState.depthCompare = toWGPUCompareFunction(createInfo.depthStencilState.depthTestFunc);
+        depthStencilState.stencilFront = toWGPUStencilFaceState(createInfo.depthStencilState.frontFace);
+        depthStencilState.stencilBack = toWGPUStencilFaceState(createInfo.depthStencilState.backFace);
         depthStencilState.stencilReadMask = 0xFFFFFFFF;
         depthStencilState.stencilWriteMask = 0xFFFFFFFF;
         depthStencilState.depthBias = 0;
