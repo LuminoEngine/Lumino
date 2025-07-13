@@ -33,6 +33,15 @@ private:
     };
 
     // SceneNode と考えてOK。Zソートの対象となる。
+    // NOTE: 後々この構造は公開して、Godot の CanvasItem のように構築済みの instruction として使えるようにしたい。
+    //   現在の、とりあえず drawSprite で雑に描けて勝手に DrawElement を作ってくれる仕組みはそのまま維持でよいだろう。
+    //   適材適所がある。
+    //   - CanvasItem のような方式は
+    //   - 事前準備無しでで雑に描画する方法は
+    // NOTE: ちなみに Godot は CanvasItem が z_index を持っていて、この単位で描画順を決められる。
+    //   なお TileMap は個々の TileData が z_index を持てるが、
+    //   これは  TileMapLayer::_rendering_update() にて 異なる z_index の Tile を描画しようとしたとき、
+    //   新たな CanvasItem を作成していた。
     struct DrawElement {
         DrawElementType type;
         DrawElement* next;
