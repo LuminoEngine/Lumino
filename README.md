@@ -44,7 +44,7 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 ## Build and Unit Tests
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
-[![Build with LUMINO_BUILD_BASE_ONLY](https://github.com/LuminoEngine/Lumino/actions/workflows/build-LUMINO_BUILD_BASE_ONLY.yml/badge.svg)](https://github.com/LuminoEngine/Lumino/actions/workflows/build-LUMINO_BUILD_BASE_ONLY.yml)
+[![Build with LUMINO_BUILD_CORE_ONLY](https://github.com/LuminoEngine/Lumino/actions/workflows/build-LUMINO_BUILD_CORE_ONLY.yml/badge.svg)](https://github.com/LuminoEngine/Lumino/actions/workflows/build-LUMINO_BUILD_CORE_ONLY.yml)
 
 ## Documents
 

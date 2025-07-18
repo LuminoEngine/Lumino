@@ -1,4 +1,4 @@
-# Using only the Base module
+# Using only the Core module
 
 1. Configure
 
@@ -7,14 +7,14 @@
 cmake -S <RepositoryRootDir> -B <BuildDir> -G<Generator> \
   -DCMAKE_INSTALL_PREFIX=<InstallDir> \
   -DCMAKE_DEBUG_POSTFIX=d \
-  -DLUMINO_BUILD_BASE_ONLY=ON \
+  -DLUMINO_BUILD_CORE_ONLY=ON \
   -DLUMINO_BUILD_TESTS=OFF
 
 # With unit tests.
 cmake -S <RepositoryRootDir> -B <BuildDir> -G<Generator> \
   -DCMAKE_INSTALL_PREFIX=<InstallDir> \
   -DCMAKE_DEBUG_POSTFIX=d \
-  -DLUMINO_BUILD_BASE_ONLY=ON
+  -DLUMINO_BUILD_CORE_ONLY=ON
 ```
 
 2. Build

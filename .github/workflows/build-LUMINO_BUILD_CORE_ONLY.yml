@@ -1,4 +1,4 @@
-name: Build with LUMINO_BUILD_BASE_ONLY
+name: Build with LUMINO_BUILD_CORE_ONLY
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
         cmake -S . -B build -G"${{ matrix.os == 'windows-latest' && 'Visual Studio 17 2022' || 'Unix Makefiles' }}"
         -DCMAKE_INSTALL_PREFIX=installed
         -DCMAKE_DEBUG_POSTFIX=d
-        -DLUMINO_BUILD_BASE_ONLY=ON
+        -DLUMINO_BUILD_CORE_ONLY=ON
         -DLUMINO_BUILD_TESTS=OFF
           
     - name: Build

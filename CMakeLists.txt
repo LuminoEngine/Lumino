@@ -44,7 +44,7 @@ option(LUMINO_BUILD_ENGINE "Builds LuminoEngine." ON)
 option(LUMINO_BUILD_TESTS "Builds unit test projects." ON)
 
 # Builds only the Base module.
-option(LUMINO_BUILD_BASE_ONLY "Builds only the Base module." OFF)
+option(LUMINO_BUILD_CORE_ONLY "Builds only the Base module." OFF)
 
 # -------------------------------------------------------------------------------
 # Options (experimental)
@@ -196,7 +196,7 @@ else()
     set(LN_BUILD_TESTS OFF)
 endif()
 
-if(LUMINO_BUILD_BASE_ONLY)
+if(LUMINO_BUILD_CORE_ONLY)
     set(LN_BUILD_BASE ON)
     set(LN_BUILD_ENGINE OFF)
 endif()
