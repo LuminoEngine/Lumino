@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <tl/expected.hpp>
+#include "detail/tl/expected.hpp"
 #include "String.hpp"
 
 namespace ln {

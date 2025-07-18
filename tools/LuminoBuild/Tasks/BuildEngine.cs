@@ -76,7 +76,7 @@ namespace LuminoBuild.Tasks
                         $"-DVCPKG_TARGET_TRIPLET={b.Triplet}",
                         $"-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
                         $"-DLN_MSVC_STATIC_RUNTIME={targetInfo.StaticRuntime}",
-                        $"-DLN_BUILD_TESTS=ON",
+                        $"-DLUMINO_BUILD_TESTS=ON",
                         $"-DLN_BUILD_EDITOR=ON",
                         //$"-DLN_BUILD_SHARED_LIBRARY=ON",
                         $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
@@ -136,7 +136,7 @@ namespace LuminoBuild.Tasks
                         $"-DCMAKE_DEBUG_POSTFIX=d",
                         $"-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE={EmscriptenEnv.EmsdkDir}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
                         $"-DVCPKG_TARGET_TRIPLET=\"{b.Triplet}\"",
-                        $"-DLN_BUILD_TESTS=OFF",
+                        $"-DLUMINO_BUILD_TESTS=OFF",
                     };
 
                     if (BuildEnvironment.FromCI)

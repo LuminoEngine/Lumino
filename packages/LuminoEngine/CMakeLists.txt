@@ -255,7 +255,6 @@ target_include_directories(
     "../LuminoFFI/include"
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_ENGINE_REPO_DIR="${CMAKE_CURRENT_LIST_DIR}")

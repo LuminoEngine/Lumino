@@ -2,17 +2,17 @@
 ==========
 
 Lumino is an open source library for building interactive applications such as games and digital art.
-It provides a simple API that runs on multiple platforms and is available for multiple programming languages.
+It provides a API that runs on multiple platforms and is available for multiple programming languages.
 
 Lumino はゲームやデジタルアートなどのインタラクティブアプリケーションを構築するためのオープンソースライブラリです。
-マルチプラットフォームで動作し複数のプログラミング言語から利用できる、シンプルな API を提供します。
+マルチプラットフォームで動作し複数のプログラミング言語から利用できる API を提供します。
 
 ## 💡 Project Status
 
 Lumino is currently being developed with the following two use cases in mind.
 
 - A. Use the core game engine modules (Graphics, Audio, Input, etc.) in other game engines or applications.
-- B. Use the basic modules (String, Array, FileSystem, etc.) in IoT platforms and testing tools. (auxiliary)
+- [B. Use the basic modules (String, Array, FileSystem, etc.) in IoT platforms and testing tools. (auxiliary)](./docs/use-base-module.md)
 
 Until v0.10.1, Lumino was developed as a standalone game engine, but the main motivation was technical exploration.
 
@@ -27,7 +27,7 @@ The future development concept is as follows:
 Lumino は現在、次の2つのユースケースを想定して開発を続けています。
 
 - A. ゲームエンジンのコアモジュール (Graphics, Audio, Input 等) を 他のゲームエンジンやアプリケーションで利用する。
-- B. 基礎的なモジュール (String, Array, FileSystem, 等) を IoTプラットフォームやテスティングツール で利用する。（補助的）
+- [B. 基礎的なモジュール (String, Array, FileSystem, 等) を IoTプラットフォームやテスティングツール で利用する。（補助的）](./docs/use-base-module.md)
 
 v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして開発を続けていましたが、その主な動機は技術的探求でした。
 
@@ -44,6 +44,7 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 ## Build and Unit Tests
 
 [![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
+[![Build with LUMINO_BUILD_BASE_ONLY](https://github.com/LuminoEngine/Lumino/actions/workflows/build-LUMINO_BUILD_BASE_ONLY.yml/badge.svg)](https://github.com/LuminoEngine/Lumino/actions/workflows/build-LUMINO_BUILD_BASE_ONLY.yml)
 
 ## Documents
 

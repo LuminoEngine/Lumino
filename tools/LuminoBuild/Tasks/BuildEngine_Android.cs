@@ -66,7 +66,7 @@ namespace LuminoBuild.Tasks
                             $"-DANDROID_STL=c++_shared",
                             $"-DANDROID_NATIVE_API_LEVEL=26",
                             $"-DLN_TARGET_ARCH={targetName}",
-                            $"-DLN_BUILD_TESTS=OFF",
+                            $"-DLUMINO_BUILD_TESTS=OFF",
                             $"-DLN_BUILD_TOOLS=OFF",
                         };
 

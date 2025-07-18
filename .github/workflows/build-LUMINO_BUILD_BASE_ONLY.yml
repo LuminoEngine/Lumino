@@ -1,0 +1,40 @@
+name: Build with LUMINO_BUILD_BASE_ONLY
+
+on:
+  push:
+    branches:
+      - dev-lyric # main
+
+jobs:
+  build-base-only:
+    strategy:
+      matrix:
+        os: [windows-latest] #[ubuntu-latest, windows-latest, macos-latest]
+        #build_tests: [ON, OFF]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v1.13
+      with:
+        cmake-version: 'latest'
+    
+    - name: Configure CMake (with tests)
+      run: >
+        cmake -S . -B build -G"${{ matrix.os == 'windows-latest' && 'Visual Studio 17 2022' || 'Unix Makefiles' }}"
+        -DCMAKE_INSTALL_PREFIX=installed
+        -DCMAKE_DEBUG_POSTFIX=d
+        -DLUMINO_BUILD_BASE_ONLY=ON
+        -DLUMINO_BUILD_TESTS=OFF
+          
+    - name: Build
+      run: |
+        cmake --build build --config Debug --target install
+        cmake --build build --config Release --target install
+          
+    # - name: Test
+    #   run: |
+    #     ctest --test-dir build --config Debug --output-on-failure --verbose
+    #     ctest --test-dir build --config Release --output-on-failure --verbose

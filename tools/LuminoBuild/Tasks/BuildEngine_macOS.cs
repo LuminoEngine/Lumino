@@ -26,7 +26,7 @@ namespace LuminoBuild.Tasks
                 $"{builder.RootDir}",
                 $"-DCMAKE_INSTALL_PREFIX={cmakeOutputDir}",
                 $"-DLN_TARGET_ARCH:STRING=macOS",
-                $"-DLN_BUILD_TESTS=ON",
+                $"-DLUMINO_BUILD_TESTS=ON",
                 $"-DLN_BUILD_TOOLS=ON",
                 $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
                 $"-G", "\"Xcode\"",

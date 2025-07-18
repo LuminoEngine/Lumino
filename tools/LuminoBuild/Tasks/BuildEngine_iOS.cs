@@ -31,7 +31,7 @@ namespace LuminoBuild.Tasks
                 $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\"",
                 $"-DPLATFORM={platform}",
                 $"-DLN_TARGET_ARCH:STRING={buildDirName}",
-                $"-DLN_BUILD_TESTS=OFF",
+                $"-DLUMINO_BUILD_TESTS=OFF",
                 $"-DLN_BUILD_TOOLS=OFF",
                 $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=OFF",
                 $"-G\"Xcode\"",

@@ -31,9 +31,26 @@ message("VCPKG_CMAKE_SYSTEM_NAME: ${VCPKG_CMAKE_SYSTEM_NAME}")
 # -------------------------------------------------------------------------------
 # Options
 # -------------------------------------------------------------------------------
+# MSVC Runtime library.
+option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
+
+# Builds LuminoCore.
+option(LUMINO_BUILD_BASE "Builds LuminoCore." ON)
+
+# Builds LuminoEngine.
+option(LUMINO_BUILD_ENGINE "Builds LuminoEngine." ON)
+
+# Builds Unit-Tests.
+option(LUMINO_BUILD_TESTS "Builds unit test projects." ON)
+
+# Builds only the Base module.
+option(LUMINO_BUILD_BASE_ONLY "Builds only the Base module." OFF)
+
+# -------------------------------------------------------------------------------
+# Options (experimental)
+# -------------------------------------------------------------------------------
 option(LN_TARGET_ARCH "arch." "Unknown")
 
-option(LN_BUILD_TESTS "build unit test projects." ON)
 
 option(LUMINO_BUILD_EXAMPLES "build example projects." ON)
 
@@ -46,18 +63,10 @@ option(LN_BUILD_BINDINGS "build language bindings." OFF)
 # build shared library
 option(LN_BUILD_SHARED_LIBRARY "build shared library." OFF)
 
-# build LuminoCore.
-option(LUMINO_BUILD_CORE "build LuminoCore." ON)
-
-# build LuminoEngine.
-option(LUMINO_BUILD_ENGINE "build LuminoEngine." ON)
 
 # build embedded shader transcompiler.
 option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." OFF)
 option(LUMINO_USE_SLANG "build tool projects.build embedded shader transcompiler." OFF)
-
-# MSVC Runtime library.
-option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
 
 # use SDL on MSVC
 option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
@@ -168,16 +177,34 @@ if(WIN32)
     set(LN_USE_DIRECTX12 ON)
 endif()
 
+if(LUMINO_BUILD_BASE)
+    set(LN_BUILD_BASE ON)
+else()
+    set(LN_BUILD_BASE OFF)
+endif()
 
 if(LUMINO_BUILD_ENGINE)
-    set(LUMINO_BUILD_CORE ON)
+    set(LN_BUILD_ENGINE ON)
+    set(LUMINO_BUILD_BASE ON)
+else()
+    set(LN_BUILD_ENGINE OFF)
+endif()
+
+if(LUMINO_BUILD_TESTS)
+    set(LN_BUILD_TESTS ON)
+else()
+    set(LN_BUILD_TESTS OFF)
+endif()
+
+if(LUMINO_BUILD_BASE_ONLY)
+    set(LN_BUILD_BASE ON)
+    set(LN_BUILD_ENGINE OFF)
 endif()
 
 # -------------------------------------------------------------------------------
 # Externals
 # -------------------------------------------------------------------------------
-find_package(tl-expected CONFIG REQUIRED)
-if(LN_OS_DESKTOP)
+if(LN_BUILD_TESTS AND LN_OS_DESKTOP)
     find_package(GTest CONFIG REQUIRED)
 endif()
 
@@ -194,20 +221,19 @@ set(LN_SOURCES_gtest
 set(LN_GLTF_SAMPLE_MODELS_DIR "${CMAKE_CURRENT_LIST_DIR}/build/ExternalSource/glTF-Sample-Models/")
 
 # ------------------------------------------------------------------------------
-if(LUMINO_BUILD_CORE)
+if(LN_BUILD_BASE)
     add_subdirectory(packages/LuminoCore)
 endif()
 
-if(LUMINO_USE_WEBGPU)
-    set(LN_USE_WEBGPU ON)
-    if(LN_OS_DESKTOP)
-        set(LN_DESKTOP_WEBGPU ON)
-        set(WEBGPU_BACKEND "DAWN")
-        add_subdirectory(build/tools/WebGPU-distribution)
+if(LN_BUILD_ENGINE)
+    if(LUMINO_USE_WEBGPU)
+        set(LN_USE_WEBGPU ON)
+        if(LN_OS_DESKTOP)
+            set(LN_DESKTOP_WEBGPU ON)
+            set(WEBGPU_BACKEND "DAWN")
+            add_subdirectory(build/tools/WebGPU-distribution)
+        endif()
     endif()
-endif()
-
-if(LUMINO_BUILD_ENGINE)
     if(LN_EMSCRIPTEN)
         add_subdirectory(packages/LuminoEngine)
         add_subdirectory(examples/Example-WebLibrary)

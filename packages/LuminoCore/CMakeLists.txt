@@ -54,7 +54,7 @@ target_include_directories(
     "src"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE tl::expected ${LN_LINK_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/LuminoCore.PCH.h")
@@ -128,7 +128,6 @@ endif()
 #-------------------------------------------------------------------------------
 # Sub-projects
 #-------------------------------------------------------------------------------
-
 if (LN_BUILD_TESTS)
     add_subdirectory(test)
 endif()
