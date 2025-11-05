@@ -9,7 +9,7 @@
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
 // https://github.com/shader-slang/slang/pull/6679
-#pragma comment(lib, "C:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
+//#pragma comment(lib, "C:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 //#pragma comment(lib, "E:/Proj/Lumino/vcpkg/packages/shader-slang_x64-windows/lib/slang.lib")
 static slang::CompilerOptionValue fromInt3(uint8_t v0, int v1, int v2) {
     slang::CompilerOptionValue value;

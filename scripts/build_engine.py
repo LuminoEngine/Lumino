@@ -1,8 +1,6 @@
 import utils
 
-# slang が MD しか使えないようなので。
-#triplet = "x64-windows-static"
-triplet = "x64-windows"
+triplet = "x64-windows" # slang が MD しか使えないようなので、 Static Runtime (x64-windows-static) は使わない
 generator = "Visual Studio 17 2022"
 build_dir = f"{utils.root_dir}/build/buildtrees/{triplet}/lumino"
 installDir = f"{utils.root_dir}/build/installed/{triplet}"

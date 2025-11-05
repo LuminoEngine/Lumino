@@ -1,50 +1,53 @@
 {
-    "dependencies": [
-        "zlib",
-        "libpng",
-        "libogg",
-        "libvorbis",
-        "stb",
-        "tinyobjloader",
-        "tinygltf",
-        "vulkan-headers",
-        "nlohmann-json",
-        "tl-expected",
-        {
-            "name": "freetype",
-            "features": ["png", "zlib"]
-        },
-        {
-            "name": "gtest",
-            "platform": "windows | linux | osx"
-        },
-        {
-            "name": "glfw3",
-            "platform": "windows | linux | osx"
-        },
-        {
-            "name": "glad",
-            "platform": "windows | linux | osx"
-        },
-        {
-            "name": "glslang",
-            "platform": "windows | linux | osx"
-        },
-        {
-            "name": "spirv-cross",
-            "platform": "windows | linux | osx"
-        },
-        {
-            "name": "shader-slang",
-            "platform": "windows | linux | osx"
-        },
-        {
-            "name": "openal-soft",
-            "platform": "windows | linux | osx"
-        },
-        {
-            "name": "cli11",
-            "platform": "windows | linux | osx"
-        }
-    ]
+  "dependencies": [
+    "zlib",
+    "libpng",
+    "libogg",
+    "libvorbis",
+    "stb",
+    "tinyobjloader",
+    "tinygltf",
+    "vulkan-headers",
+    "nlohmann-json",
+    "tl-expected",
+    {
+      "name": "freetype",
+      "features": [
+        "png",
+        "zlib"
+      ]
+    },
+    {
+      "name": "gtest",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "glfw3",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "glad",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "glslang",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "spirv-cross",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "shader-slang",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "openal-soft",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "cli11",
+      "platform": "windows | linux | osx"
+    }
+  ]
 }

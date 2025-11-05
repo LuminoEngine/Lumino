@@ -3,7 +3,7 @@
 Prepare vcpkg in the root of the repository by referring to [here](https://learn.microsoft.com/ja-jp/vcpkg/get_started/get-started).
 
 ```
-git clone -b 2025.03.19 https://github.com/microsoft/vcpkg.git
+git clone https://github.com/microsoft/vcpkg.git
 ```
 
 ```sh
@@ -20,7 +20,6 @@ npm install
 npm run build
 
 ```
-
 
 ## WebGPU (Dawn)
 

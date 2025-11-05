@@ -162,6 +162,169 @@ extern LUMINO_API LNResult LNSceneRenderPass_DrawSprite(
     const LNDrawSpriteParams* params);
 
 //==============================================================================
+// LNRenderItem (RenderingServer スタイルの描画アイテム)
+//==============================================================================
+
+/**
+ * 描画アイテムを作成します。
+ * 
+ * 描画アイテムは、事前に描画内容を定義しておき、後で高速に描画するためのオブジェクトです。
+ * Godot の RenderingServer のように、リソースを効率的に管理できます。
+ * 
+ * @param[out] outRenderItem : 作成された描画アイテムのハンドル
+ */
+extern LUMINO_API LNResult LNRenderItem_Create(LNHandle* outRenderItem);
+
+/**
+ * テクスチャ矩形を描画アイテムに追加します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] rect : 描画する矩形 (ローカル座標系)
+ * @param[in] texture : 描画するテクスチャ
+ * @param[in] uvRect : テクスチャのUV座標 (0.0~1.0)、NULL の場合は全体 (0,0,1,1)
+ */
+extern LUMINO_API LNResult LNRenderItem_AddTextureRect(
+    LNHandle renderItem,
+    const LNRect* rect,
+    LNHandle texture,
+    const LNRect* uvRect);
+
+/**
+ * スプライトを描画アイテムに追加します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] size : スプライトのサイズ
+ * @param[in] texture : 描画するテクスチャ
+ * @param[in] uvRect : テクスチャのUV座標 (0.0~1.0)、NULL の場合は全体 (0,0,1,1)
+ * @param[in] anchorRatio : アンカーポイント (0.0~1.0)、NULL の場合は中心 (0.5, 0.5)
+ */
+extern LUMINO_API LNResult LNRenderItem_AddSprite(
+    LNHandle renderItem,
+    const LNVector2* size,
+    LNHandle texture,
+    const LNRect* uvRect,
+    const LNVector2* anchorRatio);
+
+/**
+ * 描画アイテムの位置を設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] x : X座標
+ * @param[in] y : Y座標
+ * @param[in] z : Z座標
+ */
+extern LUMINO_API LNResult LNRenderItem_SetPosition(
+    LNHandle renderItem,
+    float x,
+    float y,
+    float z);
+
+/**
+ * 描画アイテムの回転を設定します (オイラー角、度数法)。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] x : X軸回転 (度)
+ * @param[in] y : Y軸回転 (度)
+ * @param[in] z : Z軸回転 (度)
+ */
+extern LUMINO_API LNResult LNRenderItem_SetRotation(
+    LNHandle renderItem,
+    float x,
+    float y,
+    float z);
+
+/**
+ * 描画アイテムのスケールを設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] x : Xスケール
+ * @param[in] y : Yスケール
+ * @param[in] z : Zスケール
+ */
+extern LUMINO_API LNResult LNRenderItem_SetScale(
+    LNHandle renderItem,
+    float x,
+    float y,
+    float z);
+
+/**
+ * 描画アイテムのワールド変換行列を設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] transform : 変換行列
+ */
+extern LUMINO_API LNResult LNRenderItem_SetTransform(
+    LNHandle renderItem,
+    const LNMatrix* transform);
+
+/**
+ * 描画アイテムの色を設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] color : 色 (RGBA)
+ */
+extern LUMINO_API LNResult LNRenderItem_SetColor(
+    LNHandle renderItem,
+    const LNColor* color);
+
+/**
+ * 描画アイテムのマテリアルを設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] material : マテリアル
+ */
+extern LUMINO_API LNResult LNRenderItem_SetMaterial(
+    LNHandle renderItem,
+    LNHandle material);
+
+/**
+ * 描画アイテムのビルボードタイプを設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] billboardType : ビルボードタイプ
+ */
+extern LUMINO_API LNResult LNRenderItem_SetBillboardType(
+    LNHandle renderItem,
+    LNBillboardType billboardType);
+
+/**
+ * 描画アイテムの基準方向を設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] baseDirection : 基準方向
+ */
+extern LUMINO_API LNResult LNRenderItem_SetBaseDirection(
+    LNHandle renderItem,
+    LNSpriteBaseDirection baseDirection);
+
+/**
+ * 描画アイテムの可視状態を設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] visible : 可視かどうか
+ */
+extern LUMINO_API LNResult LNRenderItem_SetVisible(
+    LNHandle renderItem,
+    LNBool visible);
+
+/**
+ * 描画アイテムの内容をクリアします。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ */
+extern LUMINO_API LNResult LNRenderItem_Clear(LNHandle renderItem);
+
+/**
+ * 描画アイテムを描画します。
+ * 
+ * @param[in] sceneRenderPass : シーンレンダーパス
+ * @param[in] renderItem : 描画アイテムのハンドル
+ */
+extern LUMINO_API LNResult LNSceneRenderPass_DrawRenderItem(
+    LNHandle sceneRenderPass,
+    LNHandle renderItem);
+
+//==============================================================================
 // LNDebug
 //==============================================================================
 
