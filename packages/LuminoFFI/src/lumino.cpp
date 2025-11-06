@@ -541,6 +541,13 @@ LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass_, const LNDrawSpr
     LN_FFI_TRY_END_RETURN;
 }
 
+LNResult LNSceneRenderPass_DrawRenderItem(LNHandle sceneRenderPass_, LNHandle renderItem)
+{
+    LN_FFI_TRY_BEGIN;
+    SceneRenderPass* sceneRenderPass = LN_HANDLE_TO_OBJECT(SceneRenderPass, sceneRenderPass_);
+    LN_FFI_TRY_END_RETURN;
+}
+
 //==============================================================================
 // LNMesh
 //==============================================================================
@@ -552,14 +559,21 @@ LNResult LNMesh_Create(LNHandle* outMesh) {
 }
 
 LNResult LNMesh_AddSprite2DSurface(
-    LNHandle mesh,
-    LNHandle material,
-    LNVector2 size,
-    LNVector2 anchor,
-    LNRect uvRect,
-    LNColor color) {
+    LNHandle mesh_,
+    LNHandle material_,
+    LNVector2 size_,
+    LNVector2 anchor_,
+    LNRect uvRect_,
+    LNColor color_) {
     LN_FFI_TRY_BEGIN;
-    // TODO:
+    Mesh* mesh = LN_HANDLE_TO_OBJECT(Mesh, mesh_);
+    Material* material = LN_HANDLE_TO_OBJECT(Material, material_);
+    mesh->addSprite2DSurface(
+        material,
+        toVector2(size_),
+        toVector2(anchor_),
+        toRect(uvRect_),
+        toColor(color_));
     LN_FFI_TRY_END_RETURN;
 }
 

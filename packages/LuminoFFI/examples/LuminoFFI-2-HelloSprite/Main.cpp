@@ -56,6 +56,10 @@ int main() {
     LNMesh_Create(&mesh);
     LNMesh_AddSprite2DSurface(mesh, material1, {100, 100}, {0.5f, 0.5f}, {0, 0, 1, 1}, {1, 1, 1, 1});
 
+    LNHandle renderItem = LN_NULL_HANDLE;
+    LNRenderItem_Create(&renderItem);
+    LNRenderItem_SetMesh(renderItem, mesh);
+
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     LNBatchRenderer_Get(&spriteRenderer);
 
@@ -91,6 +95,7 @@ int main() {
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint, &renderingPass);
         
+        LNSceneRenderPass_DrawRenderItem(renderingPass, renderItem);
         //LNMatrix transform;
         //LNMatrix_SetIdentity(&transform);
         //transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
@@ -115,6 +120,7 @@ int main() {
         frameCount++;
     };
 
+    LNObject_Release(renderItem);
     LNObject_Release(mesh);
     LNObject_Release(material1);
     LNObject_Release(texture1);

@@ -161,6 +161,13 @@ extern LUMINO_API LNResult LNSceneRenderPass_DrawSprite(
     LNHandle sceneRenderPass,
     const LNDrawSpriteParams* params);
 
+/**
+ * RenderItem を描画します。
+ */
+extern LUMINO_API LNResult LNSceneRenderPass_DrawRenderItem(
+    LNHandle sceneRenderPass,
+    LNHandle renderItem);
+
 //==============================================================================
 // LNMesh
 //==============================================================================
@@ -176,6 +183,32 @@ extern LUMINO_API LNResult LNMesh_AddSprite2DSurface(
     LNVector2 anchor,
     LNRect uvRect,
     LNColor color);
+
+//==============================================================================
+// LNRenderItem
+//==============================================================================
+
+/**
+ * RenderItem を作成します。
+ * 
+ * @param[out] outRenderItem : 作成された描画アイテムのハンドル
+ */
+extern LUMINO_API LNResult LNRenderItem_Create(LNHandle* outRenderItem);
+
+/**
+ * 描画アイテムのワールド変換行列を設定します。
+ * 
+ * @param[in] renderItem : 描画アイテムのハンドル
+ * @param[in] transform : 変換行列
+ */
+extern LUMINO_API LNResult LNRenderItem_SetTransform(
+    LNHandle renderItem,
+    const LNMatrix* transform);
+
+/**
+ */
+extern LUMINO_API LNResult LNRenderItem_SetMesh(LNHandle renderItem, LNHandle mesh);
+
 
 //==============================================================================
 // LNDebug

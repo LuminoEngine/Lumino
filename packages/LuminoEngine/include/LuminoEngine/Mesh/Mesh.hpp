@@ -14,11 +14,14 @@ struct MeshSurfaceData {
     //   MeshSurfaceData はあくまでメッシュデータ（Resource）の一部です。
     //   MeshSurfaceData は複数の描画で共有できますが、 Batch はそれ自体がひとつの描画単位です。
 
-    Ref<VertexBuffer> vertexBuffer;    // struct Vertex. (Pos0, Normal0, tangent)
-    Ref<VertexBuffer> attributeBuffer; // struct Vertex. (Color0, UV0, uv2, custom0-3)
+    // Ref<VertexBuffer> vertexBuffer;    // struct Vertex. (Pos0, Normal0, tangent)
+    // Ref<VertexBuffer> attributeBuffer; // struct Vertex. (Color0, UV0, uv2, custom0-3)
+    
+	Ref<VertexBuffer> mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
     uint32_t vertexCount = 0;
     Ref<IndexBuffer> indexBuffer;
     uint32_t indexCount = 0;
+    Ref<VertexLayout> vertexLayout;
     Ref<Material> material;
 };
 
@@ -37,6 +40,15 @@ public:
 
     //Vector<uint8_t> blend_shape_data;
 
+    void addSprite2DSurface(
+        Material* material,
+        Vector2 size,
+        Vector2 anchor,
+        Rect uvRect,
+        Color color);
+
+private:
+    Array<MeshSurfaceData> m_surfaces;
 };
 
 } // namespace ln

@@ -16,18 +16,7 @@ class SceneRenderPass final : public Object {
     //   これは godot と似たイメージ。　 (RendererSceneCull, RendererCanvasCull)
     //
 public:
-    static Ref<SceneRenderPass> create(detail::RenderingManager* manager);
 
-    void reset(SurfaceContext* context, RenderPass* renderPass, const RenderViewPoint* viewPoint);
-    void render(CommandList* commandList); // TODO: 実際に欲しいのは Collector だけのはず
-
-    void drawSprite(Material* material, const Matrix& worldTransform, const SpriteData& data);
-
-    SurfaceContext* currentContext() const { return m_currentContext; }
-    RenderPass* currentRenderPass() const { return m_currentRenderPass; }
-    RendererServer* rendererServer() const;
-
-private:
     enum class DrawElementType {
         Sprite,
     };
@@ -56,12 +45,25 @@ private:
         virtual const Matrix& worldMatrix() = 0;
         virtual void onRender(RendererServer* rendererServer, CommandList* commandList) = 0;
     };
+    void addDrawElement(DrawElement* instance);
+    void setupElement(DrawElement* instance);
 
+
+    static Ref<SceneRenderPass> create(detail::RenderingManager* manager);
+
+    void reset(SurfaceContext* context, RenderPass* renderPass, const RenderViewPoint* viewPoint);
+    void render(CommandList* commandList); // TODO: 実際に欲しいのは Collector だけのはず
+
+    void drawSprite(Material* material, const Matrix& worldTransform, const SpriteData& data);
+
+    SurfaceContext* currentContext() const { return m_currentContext; }
+    RenderPass* currentRenderPass() const { return m_currentRenderPass; }
+    RendererServer* rendererServer() const;
+
+private:
     SceneRenderPass(detail::RenderingManager* manager);
     void onDispose(bool explicitDisposing) override;
     void destructDrawElementList();
-    void addDrawElement(DrawElement* instance);
-    void setupElement(DrawElement* instance);
 
     // Not call destructor.
     template<class T, class... TArgs>
