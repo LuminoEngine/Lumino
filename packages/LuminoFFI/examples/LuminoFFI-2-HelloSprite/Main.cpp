@@ -52,6 +52,10 @@ int main() {
     LNMaterial_Create(&material1);
     LNMaterial_SetMainTexture(material1, texture1);
 
+    LNHandle mesh = LN_NULL_HANDLE;
+    LNMesh_Create(&mesh);
+    LNMesh_AddSprite2DSurface(mesh, material1, {100, 100}, {0.5f, 0.5f}, {0, 0, 1, 1}, {1, 1, 1, 1});
+
     LNHandle spriteRenderer = LN_NULL_HANDLE;
     LNBatchRenderer_Get(&spriteRenderer);
 
@@ -87,21 +91,21 @@ int main() {
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint, &renderingPass);
         
-        LNMatrix transform;
-        LNMatrix_SetIdentity(&transform);
-        transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
-        transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
+        //LNMatrix transform;
+        //LNMatrix_SetIdentity(&transform);
+        //transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
+        //transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
 
-        LNDrawSpriteParams params = {};
-        params.worldTransform = transform;
-        params.material = material1;
-        params.size = {100, 100};
-        params.anchorRatio = {0.5f, 0.5f};
-        params.uvRect = {0, 0, 1, 1};
-        params.color = {1, 1, 1, 1};
-        params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
-        params.billboardType = LN_BILLBOARD_TYPE_NONE;
-        LNSceneRenderPass_DrawSprite(renderingPass, &params);
+        //LNDrawSpriteParams params = {};
+        //params.worldTransform = transform;
+        //params.material = material1;
+        //params.size = {100, 100};
+        //params.anchorRatio = {0.5f, 0.5f};
+        //params.uvRect = {0, 0, 1, 1};
+        //params.color = {1, 1, 1, 1};
+        //params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+        //params.billboardType = LN_BILLBOARD_TYPE_NONE;
+        //LNSceneRenderPass_DrawSprite(renderingPass, &params);
         
         LNGraphicsContext_EndSceneRenderPass(graphicsContext, renderingPass);
 
@@ -111,6 +115,7 @@ int main() {
         frameCount++;
     };
 
+    LNObject_Release(mesh);
     LNObject_Release(material1);
     LNObject_Release(texture1);
     LNObject_Release(viewPoint);

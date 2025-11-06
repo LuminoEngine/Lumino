@@ -36,6 +36,7 @@
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
 #include <LuminoEngine/Graphics/Font/Font.hpp>
+#include <LuminoEngine/Mesh/Mesh.hpp>
 
 namespace ln {
 
@@ -537,6 +538,28 @@ LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass_, const LNDrawSpr
         LN_HANDLE_TO_OBJECT(Material, params_->material),
         toMatrix(params_->worldTransform),
         data);
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LNMesh
+//==============================================================================
+LNResult LNMesh_Create(LNHandle* outMesh) {
+    LN_FFI_TRY_BEGIN;
+    Ref<Mesh> mesh = Mesh::create();
+    *outMesh = ::Runtime::wrapObject(mesh, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNMesh_AddSprite2DSurface(
+    LNHandle mesh,
+    LNHandle material,
+    LNVector2 size,
+    LNVector2 anchor,
+    LNRect uvRect,
+    LNColor color) {
+    LN_FFI_TRY_BEGIN;
+    // TODO:
     LN_FFI_TRY_END_RETURN;
 }
 
