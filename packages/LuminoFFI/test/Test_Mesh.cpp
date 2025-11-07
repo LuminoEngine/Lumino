@@ -51,17 +51,6 @@ TEST_F(Test_Mesh, Basic1) {
 
         LNSceneRenderPass_DrawRenderItem(renderingPass, renderItem);
 
-        //LNDrawSpriteParams params = {};
-        //params.worldTransform = transform;
-        //params.material = material1;
-        //params.size = {320, 240};
-        //params.anchorRatio = {0, 0};
-        //params.uvRect = {0, 0, 1, 1};
-        //params.color = {1, 1, 1, 1};
-        //params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
-        //params.billboardType = LN_BILLBOARD_TYPE_NONE;
-        //LNSceneRenderPass_DrawSprite(renderingPass, &params);
-
         LNGraphicsContext_EndSceneRenderPass(surfaceContext, renderingPass);
 
         LNGraphicsContext_EndFrame(surfaceContext);

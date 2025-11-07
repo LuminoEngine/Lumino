@@ -1,4 +1,5 @@
 ﻿#include <fstream>
+#include <Windows.h>
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/ShaderCompiler/UnifiedShader2.hpp>
 #include <LuminoEngine/Graphics/ShaderCompiler/ShaderCompiler.hpp>
@@ -212,6 +213,23 @@ MaybeResult ShaderCompiler::init() {
     if (SLANG_FAILED(result)) {
         return LN_MAKE_ERROR("slang::createGlobalSession failed. (%d)", result);
     }
+
+    // SLANG_DXIL の Target へコンパイルしようとすると次のようなエラーが発生する問題の対策。
+    // ```
+    // (0): error 100: failed to load downstream compiler 'dxc'
+    // (0): warning 52001: dxil shared library not found, so 'dxc' output cannot be signed! Shader code will not be runnable in non-development environments.
+    // (0): note 99999: failed to load dynamic library 'dxcompiler'
+    // (0): error 52002: could not find a suitable pass-through compiler for 'dxc'.
+    // ```
+    // 次のあたりで発生している。
+    // https://github.com/shader-slang/slang/blob/master/source/slang/slang-check.cpp#L144
+    // slang は内部的に dxc (の dxcompiler.dll) をロードしようとするが、それが見つからないエラー。
+    // LoadLibrary する前に独自の存在チェックが入っているような気がする。
+    // なので、こちらからパスを指定する必要があった。
+
+
+    m_globalSession->setDownstreamCompilerPath(SlangPassThrough::SLANG_PASS_THROUGH_DXC, //"C:\\VulkanSDK\\1.4.309.0\\Bin");
+
     return LN_MAKE_SUCCESS();
 }
 
