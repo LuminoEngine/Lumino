@@ -30,5 +30,23 @@ bool D3DCompilerAPI::Initialize()
     return true;
 }
 
+// LoadLibrary で読み込み可能な dxcompiler.dll が保存されているフォルダのパスを検索する
+std::filesystem::path D3DCompilerAPI::findDXCompilerDLLPath() {
+    // LoadLibrary してみて、成功したらそのモジュールが保存されているパスを返す
+    const wchar_t* dllNames[] = {
+        L"dxcompiler.dll",
+    };
+    for (const auto& dllName : dllNames) {
+        HMODULE hModule = ::LoadLibraryW(dllName);
+        if (hModule) {
+            wchar_t path[MAX_PATH];
+            ::GetModuleFileNameW(hModule, path, MAX_PATH);
+            ::FreeLibrary(hModule);
+            return std::filesystem::path(path).parent_path();
+        }
+    }
+    return std::filesystem::path();
+}
+
 } // namespace detail
 } // namespace ln

@@ -6,6 +6,9 @@
 #include "ShaderMetadataParser.hpp"
 #include "DescriptorLayoutBuilder.hpp"
 #include "SlangFileSystem.hpp"
+#ifdef _WIN32
+#include <LuminoEngine/Graphics/ShaderCompiler/detail/D3DCompilerAPI.hpp>
+#endif
 
 #ifdef LN_USE_SLANG
 // https://shader-slang.org/slang/user-guide/compiling#using-the-compilation-api
@@ -214,6 +217,7 @@ MaybeResult ShaderCompiler::init() {
         return LN_MAKE_ERROR("slang::createGlobalSession failed. (%d)", result);
     }
 
+#ifdef _WIN32
     // SLANG_DXIL の Target へコンパイルしようとすると次のようなエラーが発生する問題の対策。
     // ```
     // (0): error 100: failed to load downstream compiler 'dxc'
@@ -226,10 +230,11 @@ MaybeResult ShaderCompiler::init() {
     // slang は内部的に dxc (の dxcompiler.dll) をロードしようとするが、それが見つからないエラー。
     // LoadLibrary する前に独自の存在チェックが入っているような気がする。
     // なので、こちらからパスを指定する必要があった。
-
-
-    m_globalSession->setDownstreamCompilerPath(SlangPassThrough::SLANG_PASS_THROUGH_DXC, //"C:\\VulkanSDK\\1.4.309.0\\Bin");
-
+    const std::filesystem::path path = detail::D3DCompilerAPI::findDXCompilerDLLPath();
+    if (!path.empty()) {
+        m_globalSession->setDownstreamCompilerPath(SlangPassThrough::SLANG_PASS_THROUGH_DXC, path.string().c_str());
+    }
+#endif
     return LN_MAKE_SUCCESS();
 }
 

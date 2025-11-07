@@ -30,6 +30,8 @@ public:
 	static PFN_D3DCompileFromFile D3DCompileFromFile;
 	static PFN_D3DReflect D3DReflect;
 	static HMODULE s_hD3DCompilerDLL;
+
+	static std::filesystem::path findDXCompilerDLLPath();
 };
 
 } // namespace detail
