@@ -157,6 +157,7 @@ typedef struct LNDrawSpriteParams {
     LNBillboardType billboardType;
 } LNDrawSpriteParams;
 
+/** @deprecated */
 extern LUMINO_API LNResult LNSceneRenderPass_DrawSprite(
     LNHandle sceneRenderPass,
     const LNDrawSpriteParams* params);

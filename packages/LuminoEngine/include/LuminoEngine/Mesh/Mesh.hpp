@@ -47,7 +47,9 @@ public:
         Rect uvRect,
         Color color);
 
-private:
+public: // TODO: private
+    Mesh();
+    detail::MeshManager* m_manager;
     Array<MeshSurfaceData> m_surfaces;
 };
 

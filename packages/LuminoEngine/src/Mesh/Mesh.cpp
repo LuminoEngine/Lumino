@@ -1,12 +1,22 @@
 ﻿#include "Internal.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexLayout.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/IndexBuffer.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
-#include <LuminoEngine/detail\SpriteMeshGenerater.hpp>
+#include <LuminoEngine/Mesh/detail/SpriteMeshGenerater.hpp>
+#include <LuminoEngine/Mesh/detail/MeshManager.hpp>
 
 namespace ln {
 
 Ref<Mesh> Mesh::create() {
     Ref<Mesh> ref(LN_NEW Mesh(), false);
     return ref;
+}
+
+Mesh::Mesh()
+    : m_manager(detail::MeshManager::instance()) {
 }
 
 void Mesh::addSprite2DSurface(
@@ -16,15 +26,14 @@ void Mesh::addSprite2DSurface(
     Rect uvRect,
     Color color) {
     detail::SpriteMeshGenerater generater;
-    generater.data.size = size;
-    generater.data.anchorRatio = anchor;
-    generater.data.srcUVRect = uvRect;
-    generater.data.color = color;
-    generater.data.baseDirection = SpriteBaseDirection::Basic2D;
-    generater.data.billboardType = BillboardType::None;
-    generater.data.flipFlags = SpriteFlipFlags::None;
+    generater.sprite.size = size;
+    generater.sprite.anchorRatio = anchor;
+    generater.sprite.srcUVRect = uvRect;
+    generater.sprite.color = color;
+    generater.sprite.baseDirection = SpriteBaseDirection::Basic2D;
+    generater.sprite.billboardType = BillboardType::None;
+    generater.sprite.flipFlags = SpriteFlipFlags::None;
 
-    
     Ref<VertexLayout> vertexLayout = makeObject_deprecated<VertexLayout>();
     int streamIndex = 0;
     vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Position, 0);
@@ -38,10 +47,11 @@ void Mesh::addSprite2DSurface(
     Ref<VertexBuffer> vertexBuffer = VertexBuffer::create(vertexCount * sizeof(Vertex));
     Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indexCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
 
-	Ref<LinearAllocator> allocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
+	Ref<detail::LinearAllocator> allocator = makeRef<detail::LinearAllocator>(m_manager->linearAllocatorPageManager());
     detail::MeshGeneraterBuffer buffer(allocator);
-    buffer.setBuffer(vertexBuffer.writableData(), indexBuffer.writableData(), indexBuffer->format(), 0);
-    buffer.generate(generater);
+    void* indexData = indexBuffer->map(MapMode::Write);
+    buffer.setBuffer(reinterpret_cast<Vertex*>(vertexBuffer->writableData()), indexData, indexBuffer->format(), 0);
+    buffer.generate(&generater);
 
     MeshSurfaceData surface;
     surface.vertexCount = vertexCount;
@@ -50,6 +60,7 @@ void Mesh::addSprite2DSurface(
     surface.indexBuffer = indexBuffer;
     surface.vertexLayout = vertexLayout;
     surface.material = material;
+    m_surfaces.push(surface);
 }
 
 

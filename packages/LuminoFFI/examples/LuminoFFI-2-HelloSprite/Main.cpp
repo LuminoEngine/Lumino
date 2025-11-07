@@ -94,12 +94,13 @@ int main() {
         descriptor.depthBuffer.clearDepthEnable = LN_TRUE;
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint, &renderingPass);
-        
+
+        LNMatrix transform;
+        LNMatrix_SetIdentity(&transform);
+        transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
+        transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
+        LNRenderItem_SetTransform(renderItem, &transform);
         LNSceneRenderPass_DrawRenderItem(renderingPass, renderItem);
-        //LNMatrix transform;
-        //LNMatrix_SetIdentity(&transform);
-        //transform.m41 = 320 + (100.0f * cosf(0.05f * frameCount));
-        //transform.m42 = 240 + (100.0f * sinf(0.05f * frameCount));
 
         //LNDrawSpriteParams params = {};
         //params.worldTransform = transform;

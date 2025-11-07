@@ -36,11 +36,13 @@ public:
         DrawElement* next;
         float zDistance;
         bool visible;
+        bool singleFrameResource;
         DrawElement(DrawElementType t)
             : type(t)
             , next(nullptr)
             , zDistance(0.0f)
-            , visible(true) {}
+            , visible(true)
+            , singleFrameResource(true) {}
         virtual ~DrawElement() {}
         virtual const Matrix& worldMatrix() = 0;
         virtual void onRender(RendererServer* rendererServer, CommandList* commandList) = 0;

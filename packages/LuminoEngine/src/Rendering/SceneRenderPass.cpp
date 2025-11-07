@@ -26,7 +26,6 @@ SceneRenderPass::SceneRenderPass(detail::RenderingManager* manager)
 }
 
 void SceneRenderPass::onDispose(bool explicitDisposing) {
-    destructDrawElementList();
     Object::onDispose(explicitDisposing);
 }
 
@@ -37,7 +36,9 @@ RendererServer* SceneRenderPass::rendererServer() const {
 void SceneRenderPass::destructDrawElementList() {
     DrawElement* p = m_headDrawElement;
     while (p) {
-        p->~DrawElement();
+        if (p->singleFrameResource) {
+            p->~DrawElement();
+        }
         p = p->next;
     }
     m_headDrawElement = nullptr;
@@ -53,6 +54,7 @@ void SceneRenderPass::addDrawElement(DrawElement* instance) {
         m_headDrawElement = instance;
     }
     m_tailDrawElement = instance;
+    m_visibleDrawElementCount++;
 }
 
 void SceneRenderPass::reset(SurfaceContext* context, RenderPass* renderPass, const RenderViewPoint* viewPoint) {
@@ -110,12 +112,12 @@ void SceneRenderPass::render(CommandList* commandList) {
         }
         m_rendererServer->flush();
     }
+    destructDrawElementList();
 }
 
 void SceneRenderPass::setupElement(DrawElement* instance) {
     // TODO: View Culling
     // instance.visible = ...;
-    m_visibleDrawElementCount++;
 
     // calculate distance for ZSort
     auto& position = instance->worldMatrix().position();

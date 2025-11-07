@@ -1,41 +1,43 @@
-﻿
-#pragma once
+﻿#pragma once
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/GPU/VertexLayout.hpp>
+#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/SceneRenderPass.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatch.hpp>
+#include <LuminoEngine/Rendering/Kanata/KBatchList.hpp>
 #include "Common.hpp"
 
 namespace ln {
 class Texture;
+class Mesh;
 
-class RenderItem final : public SceneRenderPass::DrawElement {
-	Material* material;
-	Matrix worldTransform;
-	SpriteDrawElement()
-		: DrawElement(DrawElementType::Sprite) {}
-	const Matrix& worldMatrix() override { return worldTransform; }
-	void onRender(RendererServer* rendererServer, CommandList* commandList) override {
-		//const URef<kanata::BatchCollector>& batchCollector() const { return m_batchCollector; }
-		Batch* batch = commandList->batchCollector()->newBatch();
+namespace detail {
+class MeshDrawElement final : public SceneRenderPass::DrawElement {
+public:
+    std::unique_ptr<kanata::BatchProxyState> m_batchProxyState; // Dummy
+    //Material* material;
+    Matrix worldTransform;
+    Ref<Mesh> mesh;
+    MeshDrawElement();
+    ~MeshDrawElement() override;
+    const Matrix& worldMatrix() override { return worldTransform; }
+    void onRender(RendererServer* rendererServer, CommandList* commandList) override;
+};
+} // namespace detail
 
-		
-    // Make batch
-    Batch* batch = collector->newBatch<Batch>(1, material);
-    for (int i = 0; i < vbCount; ++i) {
-        batch->elemets2[0].vertexBuffers[i] = vb[i];
-    }
-    batch->elemets2[0].indexBuffer = ib;
-    batch->elemets2[0].firstIndex = section.startIndex;
-    batch->elemets2[0].primitiveCount = section.primitiveCount;
-    batch->vertexLayout = layout;
-    batch->primitiveTopology = section.topology;
-    batch->skeleton = skeleton;
+class RenderItem final : public Object {
+public:
+    static Ref<RenderItem> create();
+    void setMesh(Mesh* mesh);
+    void setTransform(const Matrix& matrix);
 
-
-    if (transform) {
-        batch->worldTransform = Matrix::multiply(batch->worldTransform, *transform);
-    }
-		// MeshRenderFeature::drawMesh
-	}
+public:
+    RenderItem();
+    std::unique_ptr<detail::MeshDrawElement> m_drawElement;
 };
 
 } // namespace ln

@@ -103,6 +103,7 @@ enum class HumanoidBones
 //};
 
 namespace detail {
+class MeshManager;
 class MeshModelInstance;
 } // namespace detail
 } // namespace ln

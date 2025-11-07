@@ -35,6 +35,7 @@
 #include <LuminoEngine/Rendering/Kanata/RenderFeature/KPrimitiveMeshRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/FeatureRenderer/SpriteTextRenderer.hpp>
+#include <LuminoEngine/Rendering/RenderItem.hpp>
 #include <LuminoEngine/Graphics/Font/Font.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 
@@ -541,10 +542,12 @@ LNResult LNSceneRenderPass_DrawSprite(LNHandle sceneRenderPass_, const LNDrawSpr
     LN_FFI_TRY_END_RETURN;
 }
 
-LNResult LNSceneRenderPass_DrawRenderItem(LNHandle sceneRenderPass_, LNHandle renderItem)
+LNResult LNSceneRenderPass_DrawRenderItem(LNHandle sceneRenderPass_, LNHandle renderItem_)
 {
     LN_FFI_TRY_BEGIN;
     SceneRenderPass* sceneRenderPass = LN_HANDLE_TO_OBJECT(SceneRenderPass, sceneRenderPass_);
+    RenderItem* renderItem = LN_HANDLE_TO_OBJECT(RenderItem, renderItem_);
+    sceneRenderPass->addDrawElement(renderItem->m_drawElement.get()); // TODO: 多重追加禁止
     LN_FFI_TRY_END_RETURN;
 }
 
@@ -574,6 +577,32 @@ LNResult LNMesh_AddSprite2DSurface(
         toVector2(anchor_),
         toRect(uvRect_),
         toColor(color_));
+    LN_FFI_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LNMesh
+//==============================================================================
+LNResult LNRenderItem_Create(LNHandle* outRenderItem) {
+    LN_FFI_TRY_BEGIN;
+    Ref<RenderItem> renderItem = RenderItem::create();
+    *outRenderItem = ::Runtime::wrapObject(renderItem, true);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNRenderItem_SetTransform(LNHandle renderItem_, const LNMatrix* transform_) {
+    LN_FFI_TRY_BEGIN;
+    RenderItem* renderItem = LN_HANDLE_TO_OBJECT(RenderItem, renderItem_);
+    const Matrix& transform = toMatrix(*transform_);
+    renderItem->setTransform(transform);
+    LN_FFI_TRY_END_RETURN;
+}
+
+LNResult LNRenderItem_SetMesh(LNHandle renderItem_, LNHandle mesh_) {
+    LN_FFI_TRY_BEGIN;
+    RenderItem* renderItem = LN_HANDLE_TO_OBJECT(RenderItem, renderItem_);
+    Mesh* mesh = LN_HANDLE_TO_OBJECT(Mesh, mesh_);
+    renderItem->setMesh(mesh);
     LN_FFI_TRY_END_RETURN;
 }
 
