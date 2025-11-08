@@ -1,5 +1,7 @@
 ﻿#include "Internal.hpp"
 #include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/RendererServer.hpp>
+#include <LuminoEngine/Rendering/FeatureRenderer/BatchRenderer.hpp>
 #include <LuminoEngine/Rendering/RenderItem.hpp>
 #include <LuminoEngine/Rendering/Kanata/KBatchProxy.hpp>
 
@@ -20,21 +22,34 @@ void MeshDrawElement::onRender(RendererServer* rendererServer, CommandList* comm
     kanata::BatchCollector* collector = commandList->batchCollector();
     collector->batchProxyState = m_batchProxyState.get();
 
-    const int surfaceCount = mesh->m_surfaces.size();
-    for (int iSurface = 0; iSurface < surfaceCount; iSurface++) {
-        const MeshSurfaceData& surface = mesh->m_surfaces[iSurface];
-        // Make batch
-        kanata::Batch* batch = collector->newBatch<kanata::Batch>(1, surface.material);
-
-        batch->elemets2[0].vertexBuffers[0] = surface.mainVertexBuffer;
-        batch->elemets2[0].indexBuffer = surface.indexBuffer;
-        batch->elemets2[0].firstIndex = 0;
-        batch->elemets2[0].primitiveCount = surface.indexCount / 3; // TODO: primitiveType による
-        batch->vertexLayout = surface.vertexLayout;
-        batch->primitiveTopology = PrimitiveTopology::TriangleList; //surface.topology;
-
-        batch->worldTransform = worldTransform;
+    if (1) {
+        const int surfaceCount = mesh->m_surfaces.size();
+        for (int iSurface = 0; iSurface < surfaceCount; iSurface++) {
+            const MeshSurfaceData& surface = mesh->m_surfaces[iSurface];
+            auto* renderer = rendererServer->batchRenderer();
+            rendererServer->activate(renderer, commandList, surface.material);
+            renderer->drawMesh(worldTransform, mesh, iSurface);
+        }
     }
+    else {
+
+        const int surfaceCount = mesh->m_surfaces.size();
+        for (int iSurface = 0; iSurface < surfaceCount; iSurface++) {
+            const MeshSurfaceData& surface = mesh->m_surfaces[iSurface];
+            // Make batch
+            kanata::Batch* batch = collector->newBatch<kanata::Batch>(1, surface.material);
+
+            batch->elemets2[0].vertexBuffers[0] = surface.mainVertexBuffer;
+            batch->elemets2[0].indexBuffer = surface.indexBuffer;
+            batch->elemets2[0].firstIndex = 0;
+            batch->elemets2[0].primitiveCount = surface.indexCount / 3; // TODO: primitiveType による
+            batch->vertexLayout = surface.vertexLayout;
+            batch->primitiveTopology = PrimitiveTopology::TriangleList; //surface.topology;
+
+            batch->worldTransform = worldTransform;
+        }
+    }
+
 
 
 #if 0

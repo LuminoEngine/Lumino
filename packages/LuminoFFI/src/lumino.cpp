@@ -464,7 +464,7 @@ LNResult LNGraphicsContext_EndSceneRenderPass(LNHandle renderingCommandList_, LN
             //    // r->drawBox(Box(2), Color::Red, Matrix::makeTranslation(-2, 0, 0));
             //    // r->end();
 
-            //    auto& r = EngineInstance::instance()->renderingManager()->spriteRenderer();
+            //    auto& r = EngineInstance::instance()->renderingManager()->batchRenderer();
             //    r->begin(renderingContext, material);
             //    r->drawSprite(
             //        Matrix::makeTranslation(0, 0, 0),
@@ -832,8 +832,8 @@ LNResult LNTextureRenderingContext_StrokeText(LNHandle textureRenderingContext) 
 LNResult LNBatchRenderer_Get(LNHandle* outSpriteRenderer) {
     LN_FFI_TRY_BEGIN;
 	//detail::RenderingManager* renderingManager = EngineInstance::instance()->renderingManager();
- //   BatchRenderer* spriteRenderer = renderingManager->spriteRenderer();
- //       *outSpriteRenderer = ::Runtime::wrapObject(spriteRenderer, false);
+ //   BatchRenderer* batchRenderer = renderingManager->batchRenderer();
+ //       *outSpriteRenderer = ::Runtime::wrapObject(batchRenderer, false);
     *outSpriteRenderer = 0;
 	LN_FFI_TRY_END_RETURN;
 }
@@ -901,7 +901,7 @@ LNResult LNBatchRenderer_BeginBatch(
 
     LN_FFI_TRY_BEGIN;
     
-    //std::cout << "spriteRenderer: " << spriteRenderer_ << std::endl;
+    //std::cout << "batchRenderer: " << spriteRenderer_ << std::endl;
     //std::cout << "graphicsCommandList: " << graphicsCommandList_ << std::endl;
     //std::cout << "material: " << material_ << std::endl;
     //std::cout << "transform: " << transform_ << std::endl;
@@ -930,8 +930,8 @@ LNResult LNBatchRenderer_BeginBatch(
 
 LNResult LNBatchRenderer_EndBatch(LNHandle spriteRenderer_) {
     LN_FFI_TRY_BEGIN;
-	//BatchRenderer* spriteRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
-	//spriteRenderer->end();
+	//BatchRenderer* batchRenderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer_);
+	//batchRenderer->end();
 	LN_FFI_TRY_END_RETURN;
 }
 
@@ -975,7 +975,7 @@ LNResult LNBatchRenderer_DrawSprite_deprecated(
     SceneRenderPass* renderer = detail::RenderingManager::instance()->sceneRenderer();
     renderer->drawSprite(g_lastMaterial, Matrix::Identity, data);
 
-    //BatchRenderer* renderer = LN_HANDLE_TO_OBJECT(BatchRenderer, spriteRenderer);
+    //BatchRenderer* renderer = LN_HANDLE_TO_OBJECT(BatchRenderer, batchRenderer);
     //renderer->drawSprite(
     //    (localTransformOrNull) ? *reinterpret_cast<const Matrix*>(localTransformOrNull) : Matrix::Identity,
     //    Size(width, height),

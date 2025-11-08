@@ -6,6 +6,7 @@
 #include <LuminoEngine/Rendering/CommandList.hpp>
 #include <LuminoEngine/Rendering/RenderingManager.hpp>
 #include <LuminoEngine/Mesh/detail/SpriteMeshGenerater.hpp>
+#include <LuminoEngine/Mesh/Mesh.hpp>
 
 namespace ln {
 namespace detail {
@@ -65,6 +66,7 @@ void BatchRenderer::drawSprite(const Matrix& worldTransform, const SpriteData& s
     instruction->type = detail::BatchInstructionType::StandardMesh;
     instruction->setTransform(worldTransform);
     instruction->sprite = sprite;
+
     instruction->next = nullptr;
     if (!m_currentProxy->first) {
         m_currentProxy->first = instruction;
@@ -75,5 +77,25 @@ void BatchRenderer::drawSprite(const Matrix& worldTransform, const SpriteData& s
         m_currentProxy->last = instruction;
     }
 }
+
+void BatchRenderer::drawMesh(const Matrix& worldTransform, Mesh* mesh, int32_t surfaceIndex) {
+    auto& collector = m_commandList->batchProxyCollector();
+    detail::TranscriptionMeshGenerater* instruction = collector->newFrameRawData<detail::TranscriptionMeshGenerater>();
+    instruction->type = detail::BatchInstructionType::StandardMesh;
+    instruction->setTransform(worldTransform);
+    instruction->mesh = mesh;
+    instruction->surfaceIndex = surfaceIndex; // TODO:
+
+    instruction->next = nullptr;
+    if (!m_currentProxy->first) {
+        m_currentProxy->first = instruction;
+        m_currentProxy->last = instruction;
+    }
+    else {
+        m_currentProxy->last->next = instruction;
+        m_currentProxy->last = instruction;
+    }
+
+} // namespace detail
 
 } // namespace ln

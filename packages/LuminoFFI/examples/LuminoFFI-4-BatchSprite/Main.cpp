@@ -3,6 +3,14 @@
 #include <format>
 #include <lumino.h>
 
+// USE_MESH: true
+// - 平均 0.02ms (処理落ちする)
+// USE_MESH: true & TranscriptionMeshGenerater
+// - 平均 0.005ms (DrawCall: 2)
+// USE_MESH: false
+// - 平均 0.005ms (DrawCall: 2)
+const bool USE_MESH = true;
+
 struct Sprite {
     float x;
     float y;
@@ -10,11 +18,13 @@ struct Sprite {
     float vy;
     float angle;
     int iconIndex;
+    LNHandle mesh;
+    LNHandle renderItem;
 };
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
-const int SPRITE_COUNT = 1000;
+const int SPRITE_COUNT = 5000;
 const float ICON_SIZE = 24;
 const int ICON_MAX_INDEX = 2;
 
@@ -59,6 +69,27 @@ int main() {
         sprite.vy = (rand() % 100 - 50) / 100.0f;
         sprite.angle = (rand() % 360) * (3.14159f / 180.0f);
         sprite.iconIndex = rand() % (ICON_MAX_INDEX + 1);
+
+        if (USE_MESH) {
+            LNHandle mesh = LN_NULL_HANDLE;
+            LNMesh_Create(&mesh);
+            LNMesh_AddSprite2DSurface(
+                mesh,
+                material1,
+                {ICON_SIZE, ICON_SIZE},
+                {0.5f, 0.5f},
+                {static_cast<float>(sprite.iconIndex % 16) * ICON_SIZE / textureWidth,
+                 static_cast<float>(sprite.iconIndex / 16) * ICON_SIZE / textureHeight,
+                 ICON_SIZE / textureWidth,
+                 ICON_SIZE / textureHeight},
+                {1, 1, 1, 1});
+            LNHandle renderItem = LN_NULL_HANDLE;
+            LNRenderItem_Create(&renderItem);
+            LNRenderItem_SetMesh(renderItem, mesh);
+            LNObject_Release(mesh);
+            sprite.mesh = mesh;
+            sprite.renderItem = renderItem;
+        }
         sprites.push_back(sprite);
     }
 
@@ -96,35 +127,54 @@ int main() {
         descriptor.depthBuffer.clearStencilEnable = LN_TRUE;
         LNGraphicsContext_BeginSceneRenderPass(graphicsContext, descriptor, viewPoint, &renderingPass);
 
+        
+        if (USE_MESH) {
+            for (int i = 0; i < SPRITE_COUNT; ++i) {
+                Sprite& sprite = sprites[i];
+                updateSprite(&sprite);
+                LNMatrix transform;
+                LNMatrix_SetIdentity(&transform);
+                transform.m41 = sprite.x;
+                transform.m42 = sprite.y;
+                transform.m43 = 0.0f;
+                transform.m11 = cosf(sprite.angle);
+                transform.m12 = -sinf(sprite.angle);
+                transform.m21 = sinf(sprite.angle);
+                transform.m22 = cosf(sprite.angle);
+                LNRenderItem_SetTransform(sprite.renderItem, &transform);
+                LNSceneRenderPass_DrawRenderItem(renderingPass, sprite.renderItem);
+            }
+        }
+        else {
+            for (int i = 0; i < SPRITE_COUNT; ++i) {
+                Sprite& sprite = sprites[i];
+                updateSprite(&sprite);
+                LNMatrix transform;
+                LNMatrix_SetIdentity(&transform);
+                transform.m41 = sprite.x;
+                transform.m42 = sprite.y;
+                transform.m43 = 0.0f;
+                transform.m11 = cosf(sprite.angle);
+                transform.m12 = -sinf(sprite.angle);
+                transform.m21 = sinf(sprite.angle);
+                transform.m22 = cosf(sprite.angle);
 
-        for (int i = 0; i < SPRITE_COUNT; ++i) {
-            Sprite& sprite = sprites[i];
-            updateSprite(&sprite);
-            LNMatrix transform;
-            LNMatrix_SetIdentity(&transform);
-            transform.m41 = sprite.x;
-            transform.m42 = sprite.y;
-            transform.m43 = 0.0f;
-            transform.m11 = cosf(sprite.angle);
-            transform.m12 = -sinf(sprite.angle);
-            transform.m21 = sinf(sprite.angle);
-            transform.m22 = cosf(sprite.angle);
+                float frameX = static_cast<float>(sprite.iconIndex % 16) * ICON_SIZE / textureWidth;
+                float frameY = static_cast<float>(sprite.iconIndex / 16) * ICON_SIZE / textureHeight;
+                float frameW = ICON_SIZE / textureWidth;
+                float frameH = ICON_SIZE / textureHeight;
 
-            float frameX = static_cast<float>(sprite.iconIndex % 16) * ICON_SIZE / textureWidth;
-            float frameY = static_cast<float>(sprite.iconIndex / 16) * ICON_SIZE / textureHeight;
-            float frameW = ICON_SIZE / textureWidth;
-            float frameH = ICON_SIZE / textureHeight;
-
-            LNDrawSpriteParams params = {};
-            params.worldTransform = transform;
-            params.material = material1;
-            params.size = {ICON_SIZE, ICON_SIZE};
-            params.anchorRatio = {0.5f, 0.5f};
-            params.uvRect = {frameX, frameY, frameW, frameH};
-            params.color = {1, 1, 1, 1};
-            params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
-            params.billboardType = LN_BILLBOARD_TYPE_NONE;
-            LNSceneRenderPass_DrawSprite(renderingPass, &params);
+                LNDrawSpriteParams params = {};
+                params.worldTransform = transform;
+                params.material = material1;
+                params.size = {ICON_SIZE, ICON_SIZE};
+                params.anchorRatio = {0.5f, 0.5f};
+                params.uvRect = {frameX, frameY, frameW, frameH};
+                params.color = {1, 1, 1, 1};
+                params.baseDirection = LN_SPRITE_BASE_DIRECTION_BASIC2D;
+                params.billboardType = LN_BILLBOARD_TYPE_NONE;
+                LNSceneRenderPass_DrawSprite(renderingPass, &params);
+            }
         }
 
         

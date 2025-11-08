@@ -149,7 +149,7 @@ void SceneRenderPass::drawSprite(Material* material, const Matrix& worldTransfor
             : DrawElement(DrawElementType::Sprite) {}
         const Matrix& worldMatrix() override { return worldTransform; }
         void onRender(RendererServer* rendererServer, CommandList* commandList) override {
-            auto* renderer = rendererServer->spriteRenderer();
+            auto* renderer = rendererServer->batchRenderer();
             rendererServer->activate(renderer, commandList, material);
             renderer->drawSprite(worldTransform, data);
         }

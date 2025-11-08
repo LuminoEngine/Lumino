@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
+#include "detail/MeshGenerater.hpp"
 
 namespace ln {
 class Material;
@@ -52,5 +53,21 @@ public: // TODO: private
     detail::MeshManager* m_manager;
     Array<MeshSurfaceData> m_surfaces;
 };
+
+namespace detail {
+class TranscriptionMeshGenerater : public MeshGenerater {
+public:
+    Mesh* mesh;
+    int surfaceIndex;
+
+    int vertexCount() const override { return mesh->m_surfaces[surfaceIndex].vertexCount; }
+    int indexCount() const override { return mesh->m_surfaces[surfaceIndex].indexCount; }
+    PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; } // TODO:
+    void onGenerate(MeshGeneraterBuffer* buf) override;
+    void copyFrom(const TranscriptionMeshGenerater* other);
+    LN_MESHGENERATOR_CLONE_IMPLEMENT(TranscriptionMeshGenerater);
+};
+
+} // namespace detail
 
 } // namespace ln

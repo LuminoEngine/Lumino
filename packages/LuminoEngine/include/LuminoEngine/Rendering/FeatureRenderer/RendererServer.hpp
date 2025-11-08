@@ -6,7 +6,7 @@ namespace ln {
 class RendererServer : public URefObject {
 public:
     static URef<RendererServer> create();
-    BatchRenderer* spriteRenderer() const;
+    BatchRenderer* batchRenderer() const;
 
     void reset();
     void activate(BatchRenderer* renderer, CommandList* commandList, Material* material);
@@ -16,7 +16,7 @@ private:
     RendererServer();
     MaybeResult init();
 
-    Ref<BatchRenderer> m_spriteRenderer;
+    Ref<BatchRenderer> m_batchRenderer;
     BatchRenderer* m_activeRenderer;
 };
 

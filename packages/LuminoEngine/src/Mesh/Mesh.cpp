@@ -64,4 +64,37 @@ void Mesh::addSprite2DSurface(
 }
 
 
+namespace detail {
+void TranscriptionMeshGenerater::onGenerate(MeshGeneraterBuffer* buf) {
+    // mesh の vertexBuffer と indexBuffer からデータをコピーする
+    const MeshSurfaceData& surface = mesh->m_surfaces[surfaceIndex];
+    LN_ASSERT(surface.indexBuffer->format() == IndexBufferFormat::UInt16);
+    const void* vertexData = surface.mainVertexBuffer->data();
+    const void* indexData = surface.indexBuffer->data();
+    std::memcpy(buf->vertexBuffer(), vertexData, surface.vertexCount * sizeof(Vertex));
+    if (buf->indexFormat() == IndexBufferFormat::UInt16) {
+        LN_NOTIMPLEMENTED();
+        //std::memcpy(buf->indexBuffer(), indexData, surface.indexCount * sizeof(uint16_t));
+    }
+    else if (buf->indexFormat() == IndexBufferFormat::UInt32) {
+        const uint16_t* src = reinterpret_cast<const uint16_t*>(indexData);
+        uint32_t* dst = reinterpret_cast<uint32_t*>(buf->indexBuffer());
+        for (uint32_t i = 0; i < surface.indexCount; i++) {
+            buf->setI(i, static_cast<uint32_t>(src[i]));
+            //dst[i] = m_indexNumberOffset + static_cast<uint32_t>(src[i]);
+        }
+    }
+    else {
+        LN_UNREACHABLE();
+    }
+}
+
+void TranscriptionMeshGenerater::copyFrom(const TranscriptionMeshGenerater* other) {
+    MeshGenerater::copyFrom(other);
+    mesh = other->mesh;
+    surfaceIndex = other->surfaceIndex;
+}
+
+
+} // namespace detail
 } // namespace ln

@@ -86,8 +86,9 @@ public:
 
     void generate(MeshGenerater* generator);
 
-
     Vertex* vertexBuffer() const { return m_vertexBuffer; }
+    void* indexBuffer() const { return m_indexBuffer; }
+    IndexBufferFormat indexFormat() const { return m_indexFormat; }
 
     inline void setV(int index, const Vertex& v)
     {

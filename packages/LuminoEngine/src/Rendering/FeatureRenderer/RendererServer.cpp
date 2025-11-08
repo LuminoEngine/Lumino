@@ -11,19 +11,19 @@ URef<RendererServer> RendererServer::create() {
 }
 
 RendererServer::RendererServer()
-    : m_spriteRenderer(nullptr) {
+    : m_batchRenderer(nullptr) {
 
 }
 MaybeResult RendererServer::init() {
-    m_spriteRenderer = Ref<BatchRenderer>(LN_NEW BatchRenderer(), false);
-    if (!m_spriteRenderer->init()) {
+    m_batchRenderer = Ref<BatchRenderer>(LN_NEW BatchRenderer(), false);
+    if (!m_batchRenderer->init()) {
         return LN_MAKE_ERROR();
     }
     return LN_MAKE_SUCCESS();
 }
 
-BatchRenderer* RendererServer::spriteRenderer() const {
-    return m_spriteRenderer;
+BatchRenderer* RendererServer::batchRenderer() const {
+    return m_batchRenderer;
 }
 
 void RendererServer::reset() {

@@ -179,27 +179,27 @@ int main() {
             LNMatrix_SetIdentity(&transform);
             for (int i = 0; i < 500; i++) {
                 transform.m41 = 10 + i;
-                LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-                LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
+                LNBatchRenderer_BeginBatch(batchRenderer, commandList, material1, &transform);
+                LNBatchRenderer_DrawSprite_deprecated(batchRenderer, NULL,
                     200, 100,
                     0, 0,
                     0, 0, 1, 1,
                     0, 0, 1, 1,
                     LN_SPRITE_BASE_DIRECTION_BASIC2D,
                     LN_BILLBOARD_TYPE_NONE);
-                LNBatchRenderer_EndBatch(spriteRenderer);
+                LNBatchRenderer_EndBatch(batchRenderer);
             }
         
             transform.m41 = 400;
-            LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material2, &transform);
-            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
+            LNBatchRenderer_BeginBatch(batchRenderer, commandList, material2, &transform);
+            LNBatchRenderer_DrawSprite_deprecated(batchRenderer, NULL,
                 300, 200,
                 0, 0,
                 0, 0, 1, 1,
                 1, 1, 1, 1,
                 LN_SPRITE_BASE_DIRECTION_BASIC2D,
                 LN_BILLBOARD_TYPE_NONE);
-            LNBatchRenderer_EndBatch(spriteRenderer);
+            LNBatchRenderer_EndBatch(batchRenderer);
 #endif
 
             if (LNGraphicsContext_EndSceneRenderPass(graphicsContext, renderingPass) != LN_OK) {
@@ -226,15 +226,15 @@ int main() {
             LNMatrix transform;
             LNMatrix_SetIdentity(&transform);
             transform.m41 = 0;
-            LNBatchRenderer_BeginBatch(spriteRenderer, commandList, material1, &transform);
-            LNBatchRenderer_DrawSprite_deprecated(spriteRenderer, NULL,
+            LNBatchRenderer_BeginBatch(batchRenderer, commandList, material1, &transform);
+            LNBatchRenderer_DrawSprite_deprecated(batchRenderer, NULL,
                 100, 100,
                 0, 0,
                 0, 0, 1, 1,
                 0, 0, 1, 1,
                 LN_SPRITE_BASE_DIRECTION_ZPLUS,
                 LN_BILLBOARD_TYPE_NONE);
-            LNBatchRenderer_EndBatch(spriteRenderer);
+            LNBatchRenderer_EndBatch(batchRenderer);
 
             if (LNGraphicsContext_EndSceneRenderPass(commandList, renderingPass) != LN_OK) {
                 return 1;

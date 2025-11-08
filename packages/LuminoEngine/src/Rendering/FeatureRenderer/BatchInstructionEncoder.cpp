@@ -52,8 +52,6 @@ void BatchInstructionEncoder::flush(
                 static_cast<MeshGenerater*>(currentLast));
             break;
         }
-        default:
-            break;
     }
 }
 

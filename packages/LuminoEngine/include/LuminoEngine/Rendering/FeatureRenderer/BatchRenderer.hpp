@@ -2,6 +2,7 @@
 #include "../Common.hpp"
 
 namespace ln {
+class Mesh;
 namespace detail {
 class InstructionBatchProxy;
 }
@@ -20,6 +21,7 @@ public:
     Material* currentMaterial() const;
 
     void drawSprite(const Matrix& worldTransform, const SpriteData& sprite);
+    void drawMesh(const Matrix& worldTransform, Mesh* mesh, int32_t surfaceIndex);
 
     BatchRenderer();
     Result_deprecated<> init();

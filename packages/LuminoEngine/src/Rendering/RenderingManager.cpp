@@ -145,7 +145,7 @@ MaybeResult RenderingManager::init(const Options& options) {
 
     // DebugPrint
     {
-        m_debugPrint = makeURef<DebugPrint>(this, m_sceneRenderer->rendererServer()->spriteRenderer());
+        m_debugPrint = makeURef<DebugPrint>(this, m_sceneRenderer->rendererServer()->batchRenderer());
         auto result = m_debugPrint->init();
         if (!result) {
             return result;

@@ -541,6 +541,7 @@ struct ShaderTechniqueRequestClasses {
 enum class BatchInstructionType {
     None, // 処理用
     StandardMesh, // MeshGenerater
+    /** @deprecated テキスト描画はライブラリでサポートしても良いが、そのメッシュ生成は Mesh を使う */
     DynamicMaterial, // SpriteText など、内部で Material や Texture が変わるもの
     UserCall, // TODO:
 };

@@ -40,6 +40,8 @@ public:
     /** インデックスバッファのサイズを変更します。 */
     void resize(int indexCount);
 
+    const void* data() const { return m_buffer.data(); }
+
     /** インデックスバッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。 */
     void* map(MapMode mode);
 
