@@ -17,6 +17,11 @@ namespace ln {
 
 LN_OBJECT_IMPLEMENT(Sound, Object) {}
 
+Ref<Sound> Sound::createFromData(const void* data, int32_t size) {
+    Ref<Sound> ref(LN_NEW Sound(), false);
+    return ref;
+}
+
 Sound::Sound()
     : m_manager(nullptr)
 	//, m_gameAudioFlags(0)

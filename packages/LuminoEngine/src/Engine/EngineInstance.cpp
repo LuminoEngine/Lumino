@@ -47,7 +47,8 @@ EngineInstance::EngineInstance()
     , m_assetManager()
     , m_graphicsManager()
     , m_platformManager()
-    , m_renderingManager() {
+    , m_renderingManager()
+    , m_audioManager() {
 }
 
 EngineInstance::~EngineInstance() {
@@ -119,11 +120,19 @@ MaybeResult EngineInstance::init(const RuntimeModuleSettings& settings) {
         auto result = initializePlatformManager();
         if (!result) return result;
     }
+    {
+        auto result = initializeAudioManager();
+        if (!result) return result;
+    }
 
     return LN_MAKE_SUCCESS();
 }
 
 void EngineInstance::dispose() {
+    if (m_audioManager) {
+        m_audioManager->terminate();
+        m_audioManager = nullptr;
+    }
     if (m_platformManager) {
         m_platformManager->dispose();
         m_platformManager = nullptr;
@@ -226,6 +235,20 @@ MaybeResult EngineInstance::initializePlatformManager() {
     if (!result) return result;
 
     m_platformManager = manager;
+    return LN_MAKE_SUCCESS();
+}
+
+MaybeResult EngineInstance::initializeAudioManager() {
+    if (m_audioManager) return LN_MAKE_SUCCESS();
+
+    //Ref<detail::AudioManager2>
+
+    detail::AudioManager2::Settings settings;
+    settings.assetManager = detail::AssetManager::instance();
+    auto result = detail::AudioManager2::initialize(settings);
+    if (!result) return LN_MAKE_ERROR();
+
+    m_audioManager = detail::AudioManager2::instance();
     return LN_MAKE_SUCCESS();
 }
 

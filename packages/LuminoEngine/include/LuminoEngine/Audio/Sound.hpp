@@ -73,6 +73,8 @@ LN_CLASS()
 class Sound : public Object {
     LN_OBJECT;
 public:
+    static Ref<Sound> createFromData(const void* data, int32_t size);
+
     ///** Sound クラスのインスタンスを作成します。 */
     //static SoundPtr create(const StringView& filePath);
 

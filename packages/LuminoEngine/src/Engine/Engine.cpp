@@ -25,16 +25,6 @@ MaybeResult_deprecated Engine::initialize(const EngineOptions& options) {
     if (!EngineInstance::initialize(engineOptions)) {
         return LN_MAKE_ERROR_deprecated();
     }
-
-    
-    if (options.audio.enabled) {
-        detail::AudioManager2::Settings settings;
-        settings.assetManager = detail::AssetManager::instance();
-        auto result = detail::AudioManager2::initialize(settings);
-        if (!result) {
-            return result;
-        }
-    }
     return LN_MAKE_SUCCESS();
 }
 

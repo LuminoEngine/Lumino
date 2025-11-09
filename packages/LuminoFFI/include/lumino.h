@@ -1,8 +1,8 @@
 ﻿// clang-format off
 #ifndef LUMINO_API_H_
 #define LUMINO_API_H_
-
 #include "lumino_types.h"
+#include "lumino_audio.h"
 
 #ifdef __cplusplus
 extern "C" {

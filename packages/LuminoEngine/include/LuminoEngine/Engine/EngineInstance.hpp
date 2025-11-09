@@ -18,6 +18,7 @@ class RuntimeManager;
 class PlatformManager;
 class AssetManager;
 class RenderingManager;
+class AudioManager2;
 } // namespace detail
 
 class EngineInstance {
@@ -60,6 +61,7 @@ private:
     MaybeResult initializeGraphicsManager();
     MaybeResult initializeRenderingManager();
     MaybeResult initializePlatformManager();
+    MaybeResult initializeAudioManager();
 
     static std::unique_ptr<EngineInstance> s_instance;
 
@@ -72,6 +74,7 @@ private:
     Ref<GraphicsManager> m_graphicsManager;
     Ref<detail::PlatformManager> m_platformManager;
     Ref<detail::RenderingManager> m_renderingManager;
+    Ref<detail::AudioManager2> m_audioManager;
 };
 
 } // namespace ln

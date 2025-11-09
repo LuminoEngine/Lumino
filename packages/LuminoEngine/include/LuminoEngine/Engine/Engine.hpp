@@ -24,15 +24,15 @@ struct GraphicsOptions {
     LNGraphicsBackend graphicsAPI = LN_GRAPHICS_BACKEND_DEFAULT;
 };
 
-struct AudioOptions {
-    bool enabled = false;
-};
+//struct AudioOptions {
+//    bool enabled = false;
+//};
 
 struct EngineOptions {
     [[dprecated]]
     PlatformOptions platform;
     GraphicsOptions graphics;
-    AudioOptions audio;
+    //AudioOptions audio;
 };
 
 class Engine {
