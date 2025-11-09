@@ -1,23 +1,65 @@
 ﻿#pragma once
 
 namespace ln {
+namespace a2 {
+class AudioFrameChannel;
 
-// TODO: AudioBuffer
+/**
+ * 音響処理の単位となる音声データのフレームを表します。
+ * 
+ * AudioFrame は AudioFrameChannel のコレクションで、各チャンネルごとの音声データを保持します。
+ * 
+ * AudioFrame                |<-- 2048 floats -->|
+ * - AudioFrameChannel[0](L) |...................|
+ * - AudioFrameChannel[1](R) |...................|
+ * 
+ * データ構造は chromium(blink) や godot を参考にしていますが、
+ * これはどちらかというと chromium 寄りです。
+ * chromium では AudioBus というクラスに対応しますが、Web で検索すると
+ * AudioBus という名前はどちらかというと godot で使われているような
+ * ミキサーに近い概念を指すことが多いようでしたので、このような名前にしています。
+ * 
+ * godot を参考にしていますが godot の AudioFrame は L-R の１サンプリング分の
+ * 構造体であり、それとは異なる点に注意してください。理由は次の通りです。
+ * - chromium の他、いくつかのサウンドプログラミングのサンプルでは
+ *   ch 別の配列を使っているのが多いように見えたため。
+ * - 波形編集ソフトの見た目と同じようなイメージが出来ると考えたため。
+ * - godot では 3D オーディオの計算などで 2ch では足りない場合に
+ *   audio_vector という固有の概念の配列を使って対応していたが、
+ *   それが直感的にわかりにくいと感じたため。
+ */
 class AudioFrame : public RefObject {
-	// NOTE: v0.10.0 までの ARIAudioBus に相当するクラス。
-	//	通常、 1秒分の音声データを保持するバッファ。
-	//	chome(blink) の Bus に相当する。
-	//	godot だと AudioFrame は L-R の１サンプリング分の構造体なので、godot を参考にする際は注意。
 
-	// NOTE: インターリーブ配列とするかどうか
-	//  インターリーブ配列は、例えば 2ch の場合、LRLRLRLR... というようにデータが並ぶ。
-	//  これは Master からサウンドドライバに流す音声データの形式。
+    // 1度の process で処理するサンプル数。
+    // = 各 Audio API に送り込む 1 回分のサンプル数。
+    // 1 チャンネル分。
+    // レート 44100 の場合はだいたい 1/16 秒くらい。そのくらいに１度 process が実行される。
+    // XAudio では 128 の倍数である必要があるので注意。https://msdn.microsoft.com/ja-jp/library/microsoft.directx_sdk.xaudio2.xaudio2_buffer(v=vs.85).aspx
+    // 値を小さくするほど (高レベルAPIとしての) 演奏開始から実際に音が鳴るまでの遅延が少なくなるが、process の回数 (ノードをたどる回数) が増えるので処理は重くなる。
+    static const int PROCESSING_SIZE_IN_FRAMES = 2048;
+
+    // NOTE: v0.10.0 までの ARIAudioBus に相当するクラス。
+    //	通常、 1秒分の音声データを保持するバッファ。
+    //	chome(blink) の Bus に相当する。
+    //	godot だと AudioFrame は L-R の１サンプリング分の構造体なので、godot を参考にする際は注意。
+
+    // NOTE: インターリーブ配列とするかどうか
+    //  インターリーブ配列は、例えば 2ch の場合、LRLRLRLR... というようにデータが並ぶ。
+    //  これは Master からサウンドドライバに流す音声データの形式。
     //  godot はこの形式だが、 chome(blink) や WebAudio、 LoSound は非インターリーブ配列を使っている。
-	//  godot は常に 2ch を前提としているため、音声フィルタは全てそれを前提に作られている。
+    //  godot は常に 2ch を前提としているため、音声フィルタは全てそれを前提に作られている。
     //  インターリーブ配列の方がドライバに送る際に変換が不要であるため、効率が良い。
     //  一般的なのは非インターリーブ配列の方だと思う。
+
+	// AudioEffectDistortionInstance::process
 };
 
+/**
+ * 
+ */
+class AudioFrameChannel : public URefObject {};
+
+} // namespace a2
 } // namespace ln
 
 
