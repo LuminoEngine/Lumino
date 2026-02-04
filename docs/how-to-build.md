@@ -4,6 +4,7 @@ Prepare vcpkg in the root of the repository by referring to [here](https://learn
 
 ```
 git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg; .\bootstrap-vcpkg.bat
 ```
 
 ```sh
