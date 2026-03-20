@@ -12,6 +12,10 @@
 #include <unordered_map>
 #include <mutex>
 
+#include "DescriptorPoolManager.hpp"
+#include "FrameResourceManager.hpp"
+#include "StagingBufferPool.hpp"
+
 namespace lumino::rhi::vulkan {
 
 // ─── Utilities ───────────────────────────────────────────────────────────
@@ -24,11 +28,15 @@ u32 vertexFormatSize(VertexFormat fmt);
 
 class VulkanBuffer final : public Buffer {
 public:
-    VulkanBuffer(VkDevice device, VkPhysicalDevice physDevice, const BufferDesc& desc);
+    /// @param deviceLocal  If true, allocates DEVICE_LOCAL memory (not CPU-mappable).
+    ///                     Vertex and Index buffers use this path; initial data is
+    ///                     uploaded later via StagingBufferPool::uploadImmediate().
+    VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
+                 bool deviceLocal = false);
     ~VulkanBuffer() override;
 
     u64 size() const override { return size_; }
-    void* map() override;
+    void* map() override;   ///< Returns nullptr for device-local buffers.
     void unmap() override;
 
     VkBuffer handle() const { return buffer_; }
@@ -38,6 +46,7 @@ private:
     VkBuffer buffer_ = VK_NULL_HANDLE;
     VkDeviceMemory memory_ = VK_NULL_HANDLE;
     u64 size_ = 0;
+    bool deviceLocal_ = false;
     void* mapped_ = nullptr;
 };
 
@@ -45,7 +54,7 @@ private:
 
 class VulkanTexture final : public Texture {
 public:
-    VulkanTexture(VkDevice device, VkPhysicalDevice physDevice, const TextureDesc& desc);
+    VulkanTexture(VkDevice device, VkPhysicalDevice physicalDevice, const TextureDesc& desc);
     /// Wraps an externally-owned VkImage (e.g. swap chain image).
     VulkanTexture(VkDevice device, VkImage image, TextureFormat format, u32 width, u32 height);
     ~VulkanTexture() override;
@@ -128,7 +137,7 @@ class VulkanBindGroup final : public BindGroup {
 public:
     VulkanBindGroup(
         VkDevice device,
-        VkDescriptorPool pool,
+        DescriptorPoolManager& poolManager,
         VkDescriptorSetLayout layout,
         const BindGroupDesc& desc);
     ~VulkanBindGroup() override;
@@ -136,7 +145,7 @@ public:
 
 private:
     VkDevice device_;
-    VkDescriptorPool pool_;
+    VkDescriptorPool pool_ = VK_NULL_HANDLE; ///< Pool that owns set_; used for vkFreeDescriptorSets.
     VkDescriptorSet set_ = VK_NULL_HANDLE;
 };
 
@@ -197,7 +206,9 @@ class VulkanDevice;
 class VulkanCommandBuffer final : public CommandBuffer {
 public:
     VulkanCommandBuffer(VulkanDevice* device, VkCommandBuffer cmd);
-    ~VulkanCommandBuffer() override = default;
+    /// Queues vkFreeCommandBuffers via FrameResourceManager so the handle is
+    /// only freed after the GPU is done with it.
+    ~VulkanCommandBuffer() override;
 
     RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
     void submit() override;
@@ -206,6 +217,9 @@ private:
     VulkanDevice* device_;
     VkCommandBuffer cmd_;
     VulkanRenderPassEncoder* encoder_ = nullptr;
+    /// Frame index recorded at submit() time; used to schedule deferred cleanup.
+    u32 submittedFrame_ = 0;
+    bool submitted_ = false;
 };
 
 // ─── VulkanSwapChain ─────────────────────────────────────────────────────
@@ -308,7 +322,12 @@ public:
 
     VkRenderPass getOrCreateRenderPass(const RenderPassKey& key);
     VkFramebuffer getOrCreateFramebuffer(const FramebufferKey& key);
-    VkDescriptorPool descriptorPool() const { return descriptorPool_; }
+    DescriptorPoolManager& descriptorPoolManager() { return descriptorPoolManager_; }
+    FrameResourceManager& frameResources() { return frameResources_; }
+
+    /// Called at the start of each frame (after waiting for the in-flight fence)
+    /// to execute deferred cleanups for that frame index.
+    void beginFrame(u32 frameIndex) { frameResources_.beginFrame(frameIndex); }
 
     void setActiveSwapChain(VulkanSwapChain* sc) { activeSwapChain_ = sc; }
     VulkanSwapChain* activeSwapChain() const { return activeSwapChain_; }
@@ -321,7 +340,10 @@ private:
     u32 graphicsFamily_ = 0;
     VkQueue graphicsQueue_ = VK_NULL_HANDLE;
     VkCommandPool commandPool_ = VK_NULL_HANDLE;
-    VkDescriptorPool descriptorPool_ = VK_NULL_HANDLE;
+
+    DescriptorPoolManager descriptorPoolManager_;
+    FrameResourceManager frameResources_;
+    StagingBufferPool stagingPool_;
 
     VulkanSwapChain* activeSwapChain_ = nullptr;
 

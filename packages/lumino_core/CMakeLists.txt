@@ -24,6 +24,9 @@ file(GLOB LN_LOCAL_SOURCES_graphics
     include/${PROJECT_NAME}/graphics/*.hpp
     src/graphics/rhi/vulkan/VulkanBackend.hpp
     src/graphics/rhi/vulkan/VulkanBackend.cpp
+    src/graphics/rhi/vulkan/DescriptorPoolManager.hpp
+    src/graphics/rhi/vulkan/FrameResourceManager.hpp
+    src/graphics/rhi/vulkan/StagingBufferPool.hpp
 )
 source_group("graphics" FILES ${LN_LOCAL_SOURCES_graphics})
 

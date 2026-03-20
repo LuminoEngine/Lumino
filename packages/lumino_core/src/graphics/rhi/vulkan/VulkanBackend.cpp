@@ -77,9 +77,9 @@ static VkCompareOp toVkCompareOp(CompareFunction fn) {
     return VK_COMPARE_OP_LESS;
 }
 
-static uint32_t findMemoryType(VkPhysicalDevice physDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+static uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memProps;
-    vkGetPhysicalDeviceMemoryProperties(physDevice, &memProps);
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
     for (uint32_t i = 0; i < memProps.memoryTypeCount; ++i) {
         if ((typeFilter & (1 << i)) && (memProps.memoryTypes[i].propertyFlags & properties) == properties) {
             return i;
@@ -90,8 +90,9 @@ static uint32_t findMemoryType(VkPhysicalDevice physDevice, uint32_t typeFilter,
 
 // ─── VulkanBuffer ────────────────────────────────────────────────────────
 
-VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physDevice, const BufferDesc& desc)
-    : device_(device), size_(desc.size) {
+VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
+                           bool deviceLocal)
+    : device_(device), size_(desc.size), deviceLocal_(deviceLocal) {
     VkBufferCreateInfo bufInfo{};
     bufInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufInfo.size = desc.size;
@@ -102,6 +103,8 @@ VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physDevice, const B
     if (desc.usage & BufferUsage::Storage) bufInfo.usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
     if (desc.usage & BufferUsage::CopySrc) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
     if (desc.usage & BufferUsage::CopyDst) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+    // Device-local buffers need TRANSFER_DST so staging can copy into them.
+    if (deviceLocal) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
     bufInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     vkCreateBuffer(device_, &bufInfo, nullptr, &buffer_);
@@ -109,16 +112,20 @@ VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physDevice, const B
     VkMemoryRequirements memReqs;
     vkGetBufferMemoryRequirements(device_, buffer_, &memReqs);
 
+    VkMemoryPropertyFlags memFlags = deviceLocal
+        ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+        : (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memReqs.size;
-    allocInfo.memoryTypeIndex = findMemoryType(
-        physDevice, memReqs.memoryTypeBits,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memReqs.memoryTypeBits, memFlags);
     vkAllocateMemory(device_, &allocInfo, nullptr, &memory_);
     vkBindBufferMemory(device_, buffer_, memory_, 0);
 
-    if (desc.initialData) {
+    // Device-local buffers: initialData is uploaded by the caller (via StagingBufferPool).
+    // Host-visible buffers: copy directly.
+    if (!deviceLocal && desc.initialData) {
         void* mapped = map();
         if (mapped) {
             std::memcpy(mapped, desc.initialData, desc.size);
@@ -133,6 +140,7 @@ VulkanBuffer::~VulkanBuffer() {
 }
 
 void* VulkanBuffer::map() {
+    if (deviceLocal_) return nullptr;  // device-local memory cannot be CPU-mapped
     if (!mapped_) vkMapMemory(device_, memory_, 0, size_, 0, &mapped_);
     return mapped_;
 }
@@ -146,7 +154,7 @@ void VulkanBuffer::unmap() {
 
 // ─── VulkanTexture ───────────────────────────────────────────────────────
 
-VulkanTexture::VulkanTexture(VkDevice device, VkPhysicalDevice physDevice, const TextureDesc& desc)
+VulkanTexture::VulkanTexture(VkDevice device, VkPhysicalDevice physicalDevice, const TextureDesc& desc)
     : device_(device), format_(desc.format), width_(desc.width), height_(desc.height), ownsImage_(true) {
     VkImageCreateInfo imgInfo{};
     imgInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -179,7 +187,7 @@ VulkanTexture::VulkanTexture(VkDevice device, VkPhysicalDevice physDevice, const
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memReqs.size;
     allocInfo.memoryTypeIndex = findMemoryType(
-        physDevice, memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        physicalDevice, memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     vkAllocateMemory(device_, &allocInfo, nullptr, &memory_);
     vkBindImageMemory(device_, image_, memory_, 0);
 }
@@ -309,14 +317,12 @@ VulkanBindGroupLayout::~VulkanBindGroupLayout() {
 // ─── VulkanBindGroup ─────────────────────────────────────────────────────
 
 VulkanBindGroup::VulkanBindGroup(
-    VkDevice device, VkDescriptorPool pool, VkDescriptorSetLayout layout, const BindGroupDesc& desc)
-    : device_(device), pool_(pool) {
-    VkDescriptorSetAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = pool;
-    allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &layout;
-    vkAllocateDescriptorSets(device_, &allocInfo, &set_);
+    VkDevice device, DescriptorPoolManager& poolManager, VkDescriptorSetLayout layout,
+    const BindGroupDesc& desc)
+    : device_(device) {
+    auto [pool, set] = poolManager.allocate(layout);
+    pool_ = pool;
+    set_  = set;
 
     std::vector<VkWriteDescriptorSet> writes;
     std::vector<VkDescriptorBufferInfo> bufInfos(desc.entries.size());
@@ -358,7 +364,9 @@ VulkanBindGroup::VulkanBindGroup(
 }
 
 VulkanBindGroup::~VulkanBindGroup() {
-    // Descriptor sets are freed when the pool is reset/destroyed.
+    if (set_ != VK_NULL_HANDLE && pool_ != VK_NULL_HANDLE) {
+        vkFreeDescriptorSets(device_, pool_, 1, &set_);
+    }
 }
 
 // ─── VulkanPipelineLayout ────────────────────────────────────────────────
@@ -726,6 +734,9 @@ TextureView* VulkanSwapChain::acquireNextTexture() {
     vkWaitForFences(dev, 1, &inFlightFences_[currentFrame_], VK_TRUE, UINT64_MAX);
     vkResetFences(dev, 1, &inFlightFences_[currentFrame_]);
 
+    // Run deferred cleanups for this frame index now that the GPU is done with it.
+    device_->beginFrame(currentFrame_);
+
     vkAcquireNextImageKHR(dev, swapchain_, UINT64_MAX, imageAvailable_[currentFrame_], VK_NULL_HANDLE, &imageIndex_);
     device_->setActiveSwapChain(this);
     return views_[imageIndex_].get();
@@ -814,6 +825,8 @@ void VulkanCommandBuffer::submit() {
 
     auto* sc = device_->activeSwapChain();
     if (sc) {
+        submittedFrame_ = sc->currentFrame();
+        submitted_ = true;
         waitSemaphore = sc->imageAvailableSemaphore();
         signalSemaphore = sc->renderFinishedSemaphore();
         fence = sc->inFlightFence();
@@ -828,6 +841,22 @@ void VulkanCommandBuffer::submit() {
 
     delete encoder_;
     encoder_ = nullptr;
+}
+
+VulkanCommandBuffer::~VulkanCommandBuffer() {
+    // Queue vkFreeCommandBuffers to run once the GPU finishes this frame.
+    // If the command buffer was never submitted, free immediately.
+    VkDevice dev = device_->vkDevice();
+    VkCommandPool pool = device_->commandPool();
+    VkCommandBuffer cmd = cmd_;
+
+    if (submitted_) {
+        device_->frameResources().queueDelete(submittedFrame_, [dev, pool, cmd]() {
+            vkFreeCommandBuffers(dev, pool, 1, &cmd);
+        });
+    } else {
+        vkFreeCommandBuffers(dev, pool, 1, &cmd);
+    }
 }
 
 // ─── VulkanDevice ────────────────────────────────────────────────────────
@@ -920,30 +949,23 @@ VulkanDevice::VulkanDevice(const DeviceDesc& desc) {
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool_);
 
-    // Descriptor pool
-    VkDescriptorPoolSize poolSizes[] = {
-        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 256},
-        {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 256},
-        {VK_DESCRIPTOR_TYPE_SAMPLER, 256},
-        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 64},
-    };
-    VkDescriptorPoolCreateInfo dpInfo{};
-    dpInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    dpInfo.maxSets = 256;
-    dpInfo.poolSizeCount = 4;
-    dpInfo.pPoolSizes = poolSizes;
-    dpInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-    vkCreateDescriptorPool(device_, &dpInfo, nullptr, &descriptorPool_);
+    // Resource management subsystems
+    descriptorPoolManager_.init(device_);
+    stagingPool_.init(device_, physicalDevice_);
 }
 
 VulkanDevice::~VulkanDevice() {
     if (device_) vkDeviceWaitIdle(device_);
 
+    // Flush any deferred cleanups (e.g., command buffers) before destroying the pool.
+    frameResources_.flushAll();
+
     // Destroy caches
     for (auto& [key, fb] : framebufferCache_) vkDestroyFramebuffer(device_, fb, nullptr);
     for (auto& [key, rp] : renderPassCache_) vkDestroyRenderPass(device_, rp, nullptr);
 
-    if (descriptorPool_) vkDestroyDescriptorPool(device_, descriptorPool_, nullptr);
+    stagingPool_.destroy();
+    descriptorPoolManager_.destroy();
     if (commandPool_) vkDestroyCommandPool(device_, commandPool_, nullptr);
     if (device_) vkDestroyDevice(device_, nullptr);
     if (instance_) vkDestroyInstance(instance_, nullptr);
@@ -1051,7 +1073,18 @@ Result<Ref<SwapChain>> VulkanDevice::createSwapChain(const SwapChainDesc& desc) 
 }
 
 Result<Ref<Buffer>> VulkanDevice::createBuffer(const BufferDesc& desc) {
-    auto buf = Ref<VulkanBuffer>::adopt(new VulkanBuffer(device_, physicalDevice_, desc));
+    // Vertex and Index buffers benefit from device-local (GPU-optimal) memory.
+    // Other buffer types (Uniform, Storage) remain host-visible for easy CPU updates.
+    bool useDeviceLocal =
+        (desc.usage & BufferUsage::Vertex) || (desc.usage & BufferUsage::Index);
+
+    auto buf = Ref<VulkanBuffer>::adopt(new VulkanBuffer(device_, physicalDevice_, desc, useDeviceLocal));
+
+    if (useDeviceLocal && desc.initialData && desc.size > 0) {
+        stagingPool_.uploadImmediate(
+            graphicsQueue_, commandPool_, buf->handle(), desc.initialData, desc.size);
+    }
+
     return Ref<Buffer>(buf);
 }
 
@@ -1089,7 +1122,8 @@ Result<Ref<BindGroupLayout>> VulkanDevice::createBindGroupLayout(const BindGroup
 
 Result<Ref<BindGroup>> VulkanDevice::createBindGroup(const BindGroupDesc& desc) {
     auto* layout = static_cast<VulkanBindGroupLayout*>(desc.layout);
-    auto bg = Ref<VulkanBindGroup>::adopt(new VulkanBindGroup(device_, descriptorPool_, layout->handle(), desc));
+    auto bg = Ref<VulkanBindGroup>::adopt(
+        new VulkanBindGroup(device_, descriptorPoolManager_, layout->handle(), desc));
     return Ref<BindGroup>(bg);
 }
 
