@@ -1,4 +1,7 @@
 {
+  "name": "lumino",
+  "version": "0.1.0",
+  "description": "Game library",
   "dependencies": [
     "zlib",
     "libpng",

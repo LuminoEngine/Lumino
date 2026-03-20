@@ -23,3 +23,20 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 - フレームワークのような機能をすべて廃止します。例えばゲームUIやシーングラフです。これらの機能はクライアント側のプログラム言語で書いた方が都合が良いことに気づきました。
 - ゲームエンジンのコアモジュールを、 FFI (Foreign function interface) として提供します。 Lumino を直接利用してゲームを開発することは想定しません。他のゲームエンジンを開発する際の低レイヤーコンポーネントを想定します。
 - FFI の安定化に努めます。つまり、純粋な C 言語の API として提供することになります。おそらく Lumino を使って流暢なゲームプログラムを書くことはできなくなります。しかし今後の Lumino の活用のために、イディオムやコーディングスタイルのトレンドに左右されない基盤が必要と考えました。
+
+## How to Build
+
+```powershell
+# vcpkg
+git clone https://github.com/microsoft/vcpkg.git ./vcpkg
+./vcpkg/bootstrap-vcpkg.bat -disableMetrics
+
+# 3. CMake 設定 (vcpkg ツールチェイン込み)
+cmake -B build -G "Visual Studio 18 2026" -DCMAKE_TOOLCHAIN_FILE=[PathToThisRepo]/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+# 4. ビルド
+cmake --build build --config Release --parallel
+
+# 5. テスト実行
+ctest --test-dir build -C Release --output-on-failure
+```
