@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include <CLI/CLI.hpp>
 
 #ifdef LUMINO_USE_SLANG
 #include <lumino_shader/ShaderCompiler.hpp>
@@ -53,12 +54,15 @@ static bool binaryToHexArray(const fs::path& inputFile) {
 }
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        std::cerr << "Usage: luminosc <input.slang>" << std::endl;
-        return 1;
-    }
+    CLI::App app{"luminosc - Lumino Shader Compiler"};
 
-    fs::path inputFile = argv[1];
+    fs::path inputFile;
+    app.add_option("file", inputFile, "Input .slang file.")->required();
+
+    bool dumpEnabled = false;
+    app.add_flag("--dump", dumpEnabled, "Dump generated shader code (SPIR-V, WGSL, etc.) to files.");
+
+    CLI11_PARSE(app, argc, argv);
 
 #ifdef LUMINO_USE_SLANG
     auto compilerResult = ShaderCompiler::create();
@@ -68,6 +72,7 @@ int main(int argc, char** argv) {
     }
 
     auto& compiler = compilerResult.value();
+    compiler->setDumpEnabled(dumpEnabled);
 
     auto buildResult = compiler->build(inputFile);
     if (!buildResult) {

@@ -24,6 +24,12 @@ cmake --build build --config Release --parallel
 ctest --test-dir build -C Release --output-on-failure
 ```
 
+## リポジトリアーキテクチャ
+
+- `/packages`: Lumino の機能は複数のパッケージに分割されています。各パッケージには README.md があり、機能の概要や使用方法が説明されています。
+- `/docs`: ドキュメントや設計資料を格納する場所です。
+- `/legacy`: 古いバージョンのコードです。実装の際の参考にするために保存されています。
+
 ## アーキテクチャコンセプト
 
 ### ランタイム

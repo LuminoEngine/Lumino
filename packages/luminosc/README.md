@@ -3,19 +3,17 @@
 Lumino シェーダーコンパイラ CLI ツール。  
 Slang シェーダーソース (`.slang`) をクロスコンパイルし、Lumino ランタイムで読み込める `.lcsh` バイナリを生成します。
 
-## ビルド
-
-```sh
-cmake -B build -G "Visual Studio 18 2026"
-cmake --build build --config Release --target luminosc
-```
-
-`LUMINO_USE_SLANG=ON`（デフォルト）が必要です。
-
 ## 使い方
 
 ```sh
-luminosc <input.slang>
+# 通常コンパイル（ダンプなし）
+luminosc input.slang
+
+# ダンプファイルを出力する場合
+luminosc --dump input.slang
+
+# ヘルプ表示
+luminosc --help
 ```
 
 入力ファイルと同じディレクトリに以下の 2 ファイルが出力されます。
