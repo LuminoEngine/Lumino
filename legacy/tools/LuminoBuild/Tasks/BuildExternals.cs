@@ -20,6 +20,7 @@ namespace LuminoBuild.Tasks
 
         private void BuildCore(Build b)
         {
+            return;
             string lockFile = Path.Combine(b.BuildToolsDir, $"{b.Triplet}.lock");
             if (File.Exists(lockFile))
             {

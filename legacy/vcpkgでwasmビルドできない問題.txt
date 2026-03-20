@@ -1,0 +1,77 @@
+v3.25.2
+
+
+tools
+2024-03-29 Error
+
+
+
+なんか、vcpkg 本体を 2024-3-14 に戻してもエラー。
+> [DEBUG] 1013: cmd_execute_and_stream_data() returned -1073740791 after 77413005 us
+emsdk が悪い？
+→ 悪くなかった。タグ間違い。 vcpkg-2024-3-25で、emsdk4.0.7でビルドできる。
+
+
+## vcpkg-2024-3-25, tools-2024-3-14, emsdk-4.0.7
+成功。
+
+## vcpkg-2024-3-25, tools-2024-3-29, emsdk-4.0.7
+成功。
+
+## vcpkg-2024-3-25, tools-2024-4-23, emsdk-4.0.7
+成功。
+
+## vcpkg-2024-3-25, tools-2024-6-10, emsdk-4.0.7
+成功。 vcpkg-tools はあんまり関係ないのかなと思う。 vcpkg 側の cmake のバージョンか？
+
+
+C:\Proj\Lumino\vcpkg\downloads\tools\cmake-3.30.1-windows\cmake-3.30.1-windows-i386/bin/cmake.exe --debug-output -DALL_FEATURES= -DCURRENT_BUILDTREES_DIR=C:/Proj/Lumino/vcpkg/buildtrees/zlib -DCURRENT_PACKAGES_DIR=C:/Proj/Lumino/vcpkg/packages/zlib_wasm32-emscripten -DCURRENT_PORT_DIR=C:/Users/lriki/AppData/Local/vcpkg/registries/git-trees/3f05e04b9aededb96786a911a16193cdb711f0c9 -D_HOST_TRIPLET=x64-windows -DFEATURES=core -DPORT=zlib -DVERSION=1.3.1 -DVCPKG_USE_HEAD_VERSION=0 -D_VCPKG_EDITABLE=0 -D_VCPKG_NO_DOWNLOADS=0 -DZ_VCPKG_CHAINLOAD_TOOLCHAIN_FILE=C:/Proj/Lumino/build/tools/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DZ_VCPKG_POST_PORTFILE_INCLUDES= -DCMD=BUILD -DDOWNLOADS=C:/Proj/Lumino/vcpkg/downloads -DTARGET_TRIPLET=wasm32-emscripten -DTARGET_TRIPLET_FILE=C:/Proj/Lumino/vcpkg/triplets/community/wasm32-emscripten.cmake -DVCPKG_BASE_VERSION=2999-12-31 -DVCPKG_CONCURRENCY=17 -DVCPKG_PLATFORM_TOOLSET=external -DGIT="C:/Program Files/Git/cmd/git.exe" -DVCPKG_PORT_CONFIGS="C:\Proj\Lumino\vcpkg_installed\x64-windows\share\vcpkg-cmake\vcpkg-port-config.cmake" -DVCPKG_ROOT_DIR=C:/Proj/Lumino/vcpkg -DPACKAGES_DIR=C:/Proj/Lumino/vcpkg/packages -DBUILDTREES_DIR=C:/Proj/Lumino/vcpkg/buildtrees -D_VCPKG_INSTALLED_DIR=C:/Proj/Lumino/vcpkg_installed -DDOWNLOADS=C:/Proj/Lumino/vcpkg/downloads -DVCPKG_MANIFEST_INSTALL=OFF -P "C:\Proj\Lumino\vcpkg\scripts\ports.cmake"
+
+
+  vcpkg install zlib zlib:x64-windows curl boost
+  vcpkg install --triplet x64-windows
+See https://learn.microsoft.com/vcpkg/commands/install for more information.
+Options:
+  --allow-unsupported    Continues with a warning on unsupported ports, rather than failing
+  --x-asset-sources=...  Asset caching sources. See 'vcpkg help assetcaching'
+  --binarysource=...     Binary caching sources. See 'vcpkg help binarycaching'
+  --x-buildtrees-root=...
+                         Buildtrees directory (experimental)
+  --classic              Force classic mode, even if a manifest could be found.
+  --clean-after-build    Cleans buildtrees, packages and downloads after building each package
+  --clean-buildtrees-after-build
+                         Cleans buildtrees after building each package
+  --clean-downloads-after-build
+                         Cleans downloads after building each package
+  --clean-packages-after-build
+                         Cleans packages after building each package
+  --downloads-root=...   Downloads directory (default: %VCPKG_DOWNLOADS%)
+  --dry-run              Does not actually build or install
+  --editable             Disables source re-extraction and binary caching for libraries on the
+                         command line (classic mode)
+  --enforce-port-checks  Fails install if a port has detected problems or attempts to use a
+                         deprecated feature
+  --x-feature=...        Additional features from the top-level manifest to install (manifest mode)
+  --head                 Installs the libraries on the command line using the latest upstream
+                         sources (classic mode)
+  --host-triplet=...     Host triplet. See 'vcpkg help triplet' (default:
+                         %VCPKG_DEFAULT_HOST_TRIPLET%)
+  --x-install-root=...   Installed directory (experimental)
+  --keep-going           Continues installing packages on failure
+  --x-no-default-features
+                         Does not install the default features from the top-level manifest (manifest
+                         mode)
+  --no-downloads         Does not download new sources
+  --no-print-usage       Does not print CMake usage information after install
+  --only-binarycaching   Fails if cached binaries are not available
+  --only-downloads       Makes best-effort attempt to download sources without building
+  --overlay-ports=...    Overlay-port directories, or directories containing overlay-port
+                         directories (also: %VCPKG_OVERLAY_PORTS%)
+  --overlay-triplets=... Directories of overlay triplets (also: %VCPKG_OVERLAY_TRIPLETS%)
+  --x-packages-root=...  Packages directory (experimental)
+  --recurse              Allows removal of packages as part of installation
+  --triplet=...          Target triplet. See 'vcpkg help triplet' (default: %VCPKG_DEFAULT_TRIPLET%)
+  --vcpkg-root=...       The vcpkg root directory (default: %VCPKG_ROOT%)
+  --x-write-nuget-packages-config=...
+                         Writes a NuGet packages.config-formatted file for use with external binary
+                         caching. See `vcpkg help binarycaching` for more information
