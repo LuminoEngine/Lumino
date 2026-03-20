@@ -17,6 +17,7 @@ enum class ErrorCode {
     AlreadyInitialized,
     DeviceLost,
     ShaderCompilationFailed,
+    RuntimeError,
 };
 
 /// Lightweight error type carrying a code and optional message.

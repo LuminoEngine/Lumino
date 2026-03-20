@@ -169,10 +169,12 @@ public:
     VulkanRenderPipeline(VkDevice device, VkRenderPass renderPass, const RenderPipelineDesc& desc);
     ~VulkanRenderPipeline() override;
     VkPipeline handle() const { return pipeline_; }
+    VkPipelineLayout layoutHandle() const { return layout_; }
 
 private:
     VkDevice device_;
     VkPipeline pipeline_ = VK_NULL_HANDLE;
+    VkPipelineLayout layout_ = VK_NULL_HANDLE;
 };
 
 // ─── VulkanRenderPassEncoder ─────────────────────────────────────────────

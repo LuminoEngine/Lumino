@@ -71,11 +71,12 @@ inline bool operator&(BufferUsage a, BufferUsage b) {
 }
 
 enum class TextureUsage : u32 {
-    Sampled   = 0x01,
-    Storage   = 0x02,
+    Sampled      = 0x01,
+    Storage      = 0x02,
     RenderTarget = 0x04,
-    CopySrc   = 0x08,
-    CopyDst   = 0x10,
+    CopySrc      = 0x08,
+    CopyDst      = 0x10,
+    DepthStencil = 0x20,  // depth/stencil attachment
 };
 inline TextureUsage operator|(TextureUsage a, TextureUsage b) {
     return static_cast<TextureUsage>(static_cast<u32>(a) | static_cast<u32>(b));
@@ -196,6 +197,7 @@ struct TextureDesc {
     u32 mipLevels = 1;
     TextureFormat format = TextureFormat::RGBA8Unorm;
     TextureUsage usage = TextureUsage::Sampled;
+    const void* initialData = nullptr; ///< If non-null, pixel data uploaded via staging buffer.
 };
 
 struct SamplerDesc {

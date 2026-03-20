@@ -173,6 +173,8 @@ VulkanTexture::VulkanTexture(VkDevice device, VkPhysicalDevice physicalDevice, c
         imgInfo.usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
     if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::RenderTarget))
         imgInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::DepthStencil))
+        imgInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::CopyDst))
         imgInfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::CopySrc))
@@ -530,6 +532,7 @@ VulkanRenderPipeline::VulkanRenderPipeline(VkDevice device, VkRenderPass renderP
     pipelineInfo.subpass = 0;
 
     vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline_);
+    layout_ = vkLayout;
 }
 
 VulkanRenderPipeline::~VulkanRenderPipeline() {
@@ -575,6 +578,7 @@ VulkanRenderPassEncoder::VulkanRenderPassEncoder(
 void VulkanRenderPassEncoder::setPipeline(RenderPipeline* pipeline) {
     auto* vp = static_cast<VulkanRenderPipeline*>(pipeline);
     vkCmdBindPipeline(cmd_, VK_PIPELINE_BIND_POINT_GRAPHICS, vp->handle());
+    currentPipelineLayout_ = vp->layoutHandle();
 }
 
 void VulkanRenderPassEncoder::setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) {
@@ -786,7 +790,7 @@ RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& de
         }
     }
     if (desc.depthStencilAttachment) {
-        rpKey.depthFormat = VK_FORMAT_D24_UNORM_S8_UINT;
+        rpKey.depthFormat = static_cast<VulkanTextureView*>(desc.depthStencilAttachment->view)->vkFormat();
     }
 
     VkRenderPass renderPass = device_->getOrCreateRenderPass(rpKey);
@@ -1090,6 +1094,22 @@ Result<Ref<Buffer>> VulkanDevice::createBuffer(const BufferDesc& desc) {
 
 Result<Ref<Texture>> VulkanDevice::createTexture(const TextureDesc& desc) {
     auto tex = Ref<VulkanTexture>::adopt(new VulkanTexture(device_, physicalDevice_, desc));
+
+    // Upload initial data via staging buffer if provided.
+    if (desc.initialData) {
+        u32 bpp = 4; // Assume 4 bytes per pixel for common formats.
+        if (desc.format == TextureFormat::R8Unorm) bpp = 1;
+        else if (desc.format == TextureFormat::RG8Unorm) bpp = 2;
+        else if (desc.format == TextureFormat::RGBA16Float) bpp = 8;
+        else if (desc.format == TextureFormat::RGBA32Float) bpp = 16;
+        VkDeviceSize imageSize = static_cast<VkDeviceSize>(desc.width) * desc.height * bpp;
+
+        stagingPool_.uploadTextureImmediate(
+            graphicsQueue_, commandPool_,
+            tex->handle(), desc.initialData, imageSize,
+            desc.width, desc.height);
+    }
+
     return Ref<Texture>(tex);
 }
 

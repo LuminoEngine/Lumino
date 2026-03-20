@@ -1,0 +1,43 @@
+﻿#include <lumino_core/graphics/Mesh.hpp>
+
+namespace lumino {
+
+Result<Ref<Mesh>> Mesh::create(
+    rhi::Device* device,
+    const std::vector<Vertex>& vertices,
+    const std::vector<u32>& indices,
+    const std::vector<SubMesh>& submeshes) {
+
+    auto mesh = Ref<Mesh>::adopt(new Mesh());
+
+    // Create vertex buffer.
+    rhi::BufferDesc vbDesc;
+    vbDesc.size = vertices.size() * sizeof(Vertex);
+    vbDesc.usage = rhi::BufferUsage::Vertex;
+    vbDesc.initialData = vertices.data();
+    auto vbResult = device->createBuffer(vbDesc);
+    if (!vbResult) return tl::make_unexpected(vbResult.error());
+    mesh->vertexBuffer_ = std::move(*vbResult);
+
+    // Create index buffer.
+    rhi::BufferDesc ibDesc;
+    ibDesc.size = indices.size() * sizeof(u32);
+    ibDesc.usage = rhi::BufferUsage::Index;
+    ibDesc.initialData = indices.data();
+    auto ibResult = device->createBuffer(ibDesc);
+    if (!ibResult) return tl::make_unexpected(ibResult.error());
+    mesh->indexBuffer_ = std::move(*ibResult);
+
+    mesh->submeshes_ = submeshes;
+
+    // Determine how many material slots are needed.
+    u32 maxMaterialIndex = 0;
+    for (auto& sub : submeshes) {
+        if (sub.materialIndex > maxMaterialIndex) maxMaterialIndex = sub.materialIndex;
+    }
+    mesh->materials_.resize(maxMaterialIndex + 1);
+
+    return mesh;
+}
+
+} // namespace lumino
