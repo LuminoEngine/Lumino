@@ -43,6 +43,7 @@ endif()
 #-------------------------------------------------------------------------------
 add_subdirectory(packages/lumino_base)
 add_subdirectory(packages/lumino_core)
+add_subdirectory(packages/lumino_api)
 
 #-------------------------------------------------------------------------------
 # Examples

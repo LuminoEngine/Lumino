@@ -1,4 +1,4 @@
-project(lumino_core)
+﻿project(lumino_core)
 
 #-------------------------------------------------------------------------------
 # Dependencies

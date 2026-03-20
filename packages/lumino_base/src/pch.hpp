@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 // Standard C headers
 #include <cassert>

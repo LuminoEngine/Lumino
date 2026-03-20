@@ -1,9 +1,7 @@
-#include "vulkan_backend.hpp"
+﻿#include "vulkan_backend.hpp"
 
-#ifndef __NX__
-    #define GLFW_INCLUDE_VULKAN
-    #include <GLFW/glfw3.h>
-#endif
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 
 #include <algorithm>
 #include <cassert>
@@ -644,17 +642,10 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
     : device_(device), format_(desc.format) {
     // Create surface
     VkSurfaceKHR surface = VK_NULL_HANDLE;
-#ifdef __NX__
-    VkViSurfaceCreateInfoNN surfInfo{};
-    surfInfo.sType = VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN;
-    surfInfo.window = desc.nativeWindowHandle;
-    vkCreateViSurfaceNN(device_->instance(), &surfInfo, nullptr, &surface);
-#else
     glfwCreateWindowSurface(
         device_->instance(),
         static_cast<GLFWwindow*>(desc.nativeWindowHandle),
         nullptr, &surface);
-#endif
 
     // Query surface capabilities
     VkSurfaceCapabilitiesKHR caps{};
@@ -857,15 +848,11 @@ VulkanDevice::VulkanDevice(const DeviceDesc& desc) {
         VK_KHR_SURFACE_EXTENSION_NAME,
     };
 
-#ifndef __NX__
     uint32_t glfwExtCount = 0;
     const char** glfwExts = glfwGetRequiredInstanceExtensions(&glfwExtCount);
     if (glfwExts) {
         instanceExtensions.assign(glfwExts, glfwExts + glfwExtCount);
     }
-#else
-    instanceExtensions.push_back(VK_NN_VI_SURFACE_EXTENSION_NAME);
-#endif
 
     std::vector<const char*> layers;
     if (desc.enableValidation) {

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /// @file vulkan_backend.hpp
 /// Internal Vulkan implementation of the RHI interfaces.

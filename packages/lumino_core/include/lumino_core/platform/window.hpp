@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <lumino_base/types.hpp>
 #include <functional>

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /// @file rhi.hpp
 /// WebGPU-style Rendering Hardware Interface for Lumino.

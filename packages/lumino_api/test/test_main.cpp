@@ -1,21 +1,24 @@
-﻿// ---------------------------------------------------------------------------
+﻿#include <lumino_api/lumino_api.h>
+#include <gtest/gtest.h>
+
+// ---------------------------------------------------------------------------
 // Environment: 初期化・終了処理
 // ---------------------------------------------------------------------------
-class LuminoBaseEnvironment : public ::testing::Environment {
+class LuminoApiEnvironment : public ::testing::Environment {
 public:
     void SetUp() override {
-        // TODO: lumino_base の初期化処理をここに追加する
+        // TODO: lumino_api の初期化処理をここに追加する
     }
 
     void TearDown() override {
-        // TODO: lumino_base の終了処理をここに追加する
+        // TODO: lumino_api の終了処理をここに追加する
     }
 };
 
 // ---------------------------------------------------------------------------
 // ダミーテストケース
 // ---------------------------------------------------------------------------
-TEST(LuminoBaseTest, Placeholder) {
+TEST(LuminoApiTest, Placeholder) {
     SUCCEED();
 }
 
@@ -24,6 +27,6 @@ TEST(LuminoBaseTest, Placeholder) {
 // ---------------------------------------------------------------------------
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
-    ::testing::AddGlobalTestEnvironment(new LuminoBaseEnvironment());
+    ::testing::AddGlobalTestEnvironment(new LuminoApiEnvironment());
     return RUN_ALL_TESTS();
 }
