@@ -10,10 +10,10 @@
 ///   - Vulkan complexities (descriptor pools, pipeline caches, framebuffers)
 ///     are hidden inside the backend.
 
-#include <lumino_base/types.hpp>
-#include <lumino_base/result.hpp>
-#include <lumino_base/ref_counted.hpp>
-#include <lumino_base/math.hpp>
+#include <lumino_base/Types.hpp>
+#include <lumino_base/Result.hpp>
+#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/Math.hpp>
 
 #include <string>
 #include <vector>

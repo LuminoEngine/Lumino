@@ -28,7 +28,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_TESTS)
     add_executable(lumino_api_test
-        test/test_main.cpp
+        test/TestMain.cpp
     )
     target_precompile_headers(lumino_api_test PRIVATE test/pch.hpp)
     target_link_libraries(lumino_api_test PRIVATE lumino_api GTest::gtest)

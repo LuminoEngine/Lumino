@@ -5,7 +5,7 @@
 /// Pipeline caches, descriptor pools, and framebuffer management are
 /// hidden here so the public RHI API stays clean.
 
-#include <lumino_core/graphics/rhi/rhi.hpp>
+#include <lumino_core/graphics/rhi/Rhi.hpp>
 
 #include <vulkan/vulkan.h>
 #include <vector>

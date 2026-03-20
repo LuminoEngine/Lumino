@@ -1,2 +1,2 @@
-add_executable(hello_triangle hello_triangle.cpp)
+add_executable(hello_triangle HelloTriangle.cpp)
 target_link_libraries(hello_triangle PRIVATE lumino_core lumino_base)

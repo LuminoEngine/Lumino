@@ -1,4 +1,4 @@
-﻿#include <lumino_base/math.hpp>
+﻿#include <lumino_base/Math.hpp>
 #include <cmath>
 
 namespace lumino {

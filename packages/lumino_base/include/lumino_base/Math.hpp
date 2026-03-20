@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <cmath>
-#include "types.hpp"
+#include "Types.hpp"
 
 namespace lumino {
 

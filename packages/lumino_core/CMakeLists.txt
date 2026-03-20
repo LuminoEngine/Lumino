@@ -22,8 +22,8 @@ file(GLOB LN_LOCAL_SOURCES_graphics
     src/graphics/*.cpp
     src/graphics/*.hpp
     include/${PROJECT_NAME}/graphics/*.hpp
-    src/graphics/rhi/vulkan/vulkan_backend.hpp
-    src/graphics/rhi/vulkan/vulkan_backend.cpp
+    src/graphics/rhi/vulkan/VulkanBackend.hpp
+    src/graphics/rhi/vulkan/VulkanBackend.cpp
 )
 source_group("graphics" FILES ${LN_LOCAL_SOURCES_graphics})
 
@@ -70,7 +70,7 @@ endif()
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_TESTS)
     add_executable(lumino_core_test
-        test/test_main.cpp
+        test/TestMain.cpp
     )
     target_precompile_headers(lumino_core_test PRIVATE test/pch.hpp)
     target_link_libraries(lumino_core_test PRIVATE lumino_core GTest::gtest)

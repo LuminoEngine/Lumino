@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <lumino_base/types.hpp>
+#include <lumino_base/Types.hpp>
 #include <functional>
 #include <string>
 
