@@ -231,6 +231,7 @@ private:
     void cleanup();
 
     VulkanDevice* device_;
+    VkSurfaceKHR surface_ = VK_NULL_HANDLE;
     VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
     VkExtent2D extent_{};
     TextureFormat format_;

@@ -641,15 +641,14 @@ size_t FramebufferKeyHash::operator()(const FramebufferKey& key) const {
 VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc)
     : device_(device), format_(desc.format) {
     // Create surface
-    VkSurfaceKHR surface = VK_NULL_HANDLE;
     glfwCreateWindowSurface(
         device_->instance(),
         static_cast<GLFWwindow*>(desc.nativeWindowHandle),
-        nullptr, &surface);
+        nullptr, &surface_);
 
     // Query surface capabilities
     VkSurfaceCapabilitiesKHR caps{};
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device_->physicalDevice(), surface, &caps);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device_->physicalDevice(), surface_, &caps);
 
     extent_ = caps.currentExtent;
     if (extent_.width == UINT32_MAX) {
@@ -663,7 +662,7 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
 
     VkSwapchainCreateInfoKHR swapInfo{};
     swapInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    swapInfo.surface = surface;
+    swapInfo.surface = surface_;
     swapInfo.minImageCount = imageCount;
     swapInfo.imageFormat = toVkFormat(desc.format);
     swapInfo.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
@@ -702,8 +701,6 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
         vkCreateFence(device_->vkDevice(), &fenceInfo, nullptr, &inFlightFences_[i]);
     }
 
-    // Keep surface handle for cleanup — store it (we'll leak it for now; proper fix in production)
-    // In a real implementation, the surface would be stored as a member. For this MVP we just keep going.
 }
 
 VulkanSwapChain::~VulkanSwapChain() {
@@ -721,6 +718,7 @@ void VulkanSwapChain::cleanup() {
     }
     views_.clear();
     if (swapchain_) vkDestroySwapchainKHR(dev, swapchain_, nullptr);
+    if (surface_) vkDestroySurfaceKHR(device_->instance(), surface_, nullptr);
 }
 
 TextureView* VulkanSwapChain::acquireNextTexture() {
