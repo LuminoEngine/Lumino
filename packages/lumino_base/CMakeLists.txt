@@ -20,4 +20,5 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
