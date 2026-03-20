@@ -20,8 +20,6 @@ option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
 #-------------------------------------------------------------------------------
 if(EMSCRIPTEN)
     set(LUMINO_PLATFORM_WEB TRUE)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch" OR DEFINED __NX__)
-    set(LUMINO_PLATFORM_NX TRUE)
 else()
     set(LUMINO_PLATFORM_DESKTOP TRUE)
 endif()
@@ -44,23 +42,9 @@ endif()
 #-------------------------------------------------------------------------------
 # packages
 #-------------------------------------------------------------------------------
-add_subdirectory(packages/base)
+add_subdirectory(packages/lumino_base)
+add_subdirectory(packages/lumino_core)
 
-#-------------------------------------------------------------------------------
-# Platform library
-#-------------------------------------------------------------------------------
-if(LUMINO_BUILD_GRAPHICS OR LUMINO_BUILD_INPUT)
-    add_library(lumino_platform STATIC
-        src/lumino/platform/window.cpp
-    )
-    target_include_directories(lumino_platform PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    )
-    target_link_libraries(lumino_platform PUBLIC lumino_base)
-    if(LUMINO_PLATFORM_DESKTOP)
-        target_link_libraries(lumino_platform PRIVATE glfw)
-    endif()
-endif()
 
 #-------------------------------------------------------------------------------
 # Graphics library
@@ -75,7 +59,7 @@ if(LUMINO_BUILD_GRAPHICS)
     target_include_directories(lumino_graphics PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
     )
-    target_link_libraries(lumino_graphics PUBLIC lumino_base lumino_platform)
+    target_link_libraries(lumino_graphics PUBLIC lumino_base lumino_core)
 
     if(Vulkan_FOUND)
         target_link_libraries(lumino_graphics PRIVATE Vulkan::Vulkan)

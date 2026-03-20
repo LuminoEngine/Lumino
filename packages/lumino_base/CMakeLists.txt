@@ -3,7 +3,7 @@ project(lumino_base)
 file(GLOB LN_LOCAL_SOURCES
     src/*.cpp
     src/*.hpp
-    include/lumino_base/*.hpp
+    include/${PROJECT_NAME}/*.hpp
 )
 
 #-------------------------------------------------------------------------------
