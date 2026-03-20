@@ -64,3 +64,15 @@ endif()
 if(LUMINO_PLATFORM_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 endif()
+
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+if(LUMINO_BUILD_TESTS)
+    add_executable(lumino_core_test
+        test/test_main.cpp
+    )
+    target_precompile_headers(lumino_core_test PRIVATE test/pch.hpp)
+    target_link_libraries(lumino_core_test PRIVATE lumino_core GTest::gtest)
+    add_test(NAME lumino_core_test COMMAND lumino_core_test)
+endif()

@@ -31,12 +31,12 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 git clone https://github.com/microsoft/vcpkg.git ./vcpkg
 ./vcpkg/bootstrap-vcpkg.bat -disableMetrics
 
-# 3. CMake 設定 (vcpkg ツールチェイン込み)
+# CMake 設定
 cmake -B build -G "Visual Studio 18 2026" -DCMAKE_TOOLCHAIN_FILE=[PathToThisRepo]/vcpkg/scripts/buildsystems/vcpkg.cmake
 
-# 4. ビルド
+# ビルド
 cmake --build build --config Release --parallel
 
-# 5. テスト実行
+# テスト実行
 ctest --test-dir build -C Release --output-on-failure
 ```

@@ -22,3 +22,15 @@ target_include_directories(
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
+
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+if(LUMINO_BUILD_TESTS)
+    add_executable(lumino_base_test
+        test/test_main.cpp
+    )
+    target_precompile_headers(lumino_base_test PRIVATE test/pch.hpp)
+    target_link_libraries(lumino_base_test PRIVATE lumino_base GTest::gtest)
+    add_test(NAME lumino_base_test COMMAND lumino_base_test)
+endif()

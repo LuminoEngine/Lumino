@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Options
 #-------------------------------------------------------------------------------
 option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
-option(LUMINO_BUILD_TESTS    "Build unit tests"           OFF)
+option(LUMINO_BUILD_TESTS    "Build unit tests"           ON)
 option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
 
 #-------------------------------------------------------------------------------
@@ -31,6 +31,14 @@ if(LUMINO_PLATFORM_DESKTOP)
 endif()
 
 #-------------------------------------------------------------------------------
+# Tests (GTest は packages より前に find_package する)
+#-------------------------------------------------------------------------------
+if(LUMINO_BUILD_TESTS)
+    enable_testing()
+    find_package(GTest CONFIG REQUIRED)
+endif()
+
+#-------------------------------------------------------------------------------
 # packages
 #-------------------------------------------------------------------------------
 add_subdirectory(packages/lumino_base)
@@ -41,13 +49,4 @@ add_subdirectory(packages/lumino_core)
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_EXAMPLES)
     add_subdirectory(examples)
-endif()
-
-#-------------------------------------------------------------------------------
-# Tests
-#-------------------------------------------------------------------------------
-if(LUMINO_BUILD_TESTS)
-    enable_testing()
-    find_package(GTest CONFIG REQUIRED)
-    add_subdirectory(tests)
 endif()
