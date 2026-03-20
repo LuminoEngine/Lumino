@@ -1,0 +1,56 @@
+﻿project(lumino_shader)
+
+#-------------------------------------------------------------------------------
+# Options
+#-------------------------------------------------------------------------------
+option(LUMINO_USE_SLANG "Enable Slang shader compiler" ON)
+
+#-------------------------------------------------------------------------------
+# Dependencies
+#-------------------------------------------------------------------------------
+find_package(nlohmann_json CONFIG REQUIRED)
+if(LUMINO_USE_SLANG)
+    find_package(slang CONFIG REQUIRED)
+endif()
+
+#-------------------------------------------------------------------------------
+# Sources
+#-------------------------------------------------------------------------------
+file(GLOB LN_LOCAL_SOURCES
+    src/*.cpp
+    src/*.hpp
+    include/${PROJECT_NAME}/*.hpp
+)
+source_group("Source Files" FILES ${LN_LOCAL_SOURCES})
+
+#-------------------------------------------------------------------------------
+# Targets
+#-------------------------------------------------------------------------------
+add_library(
+    ${PROJECT_NAME} STATIC
+    ${LN_LOCAL_SOURCES}
+)
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
+target_link_libraries(${PROJECT_NAME} PUBLIC lumino_base)
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+
+if(LUMINO_USE_SLANG)
+    target_link_libraries(${PROJECT_NAME} PRIVATE slang::slang)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_USE_SLANG)
+endif()
+
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+if(LUMINO_BUILD_TESTS)
+    add_executable(lumino_shader_test
+        test/TestMain.cpp
+    )
+    target_compile_definitions(lumino_shader_test PRIVATE TEST_DATA_DIR="${CMAKE_CURRENT_LIST_DIR}/test/data/")
+    target_link_libraries(lumino_shader_test PRIVATE lumino_shader GTest::gtest)
+    add_test(NAME lumino_shader_test COMMAND lumino_shader_test)
+endif()
