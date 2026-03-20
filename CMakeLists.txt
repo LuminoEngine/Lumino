@@ -8,9 +8,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #-------------------------------------------------------------------------------
 # Options
 #-------------------------------------------------------------------------------
-option(LUMINO_BUILD_GRAPHICS "Build the Graphics module" ON)
-option(LUMINO_BUILD_INPUT    "Build the Input module"    OFF)
-option(LUMINO_BUILD_AUDIO    "Build the Audio module"    OFF)
 option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
 option(LUMINO_BUILD_TESTS    "Build unit tests"           OFF)
 option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
@@ -29,14 +26,8 @@ endif()
 #-------------------------------------------------------------------------------
 find_package(tl-expected CONFIG REQUIRED)
 
-if(LUMINO_BUILD_GRAPHICS)
-    find_package(Vulkan QUIET)
-    if(NOT Vulkan_FOUND)
-        find_package(vulkan-headers CONFIG REQUIRED)
-    endif()
-    if(LUMINO_PLATFORM_DESKTOP)
-        find_package(glfw3 CONFIG REQUIRED)
-    endif()
+if(LUMINO_PLATFORM_DESKTOP)
+    find_package(glfw3 CONFIG REQUIRED)
 endif()
 
 #-------------------------------------------------------------------------------
@@ -45,43 +36,10 @@ endif()
 add_subdirectory(packages/lumino_base)
 add_subdirectory(packages/lumino_core)
 
-
-#-------------------------------------------------------------------------------
-# Graphics library
-#-------------------------------------------------------------------------------
-if(LUMINO_BUILD_GRAPHICS)
-    add_library(lumino_graphics STATIC
-        src/lumino/graphics/rhi/vulkan/vulkan_backend.cpp
-    )
-    target_include_directories(lumino_graphics PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    )
-    target_include_directories(lumino_graphics PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-    )
-    target_link_libraries(lumino_graphics PUBLIC lumino_base lumino_core)
-
-    if(Vulkan_FOUND)
-        target_link_libraries(lumino_graphics PRIVATE Vulkan::Vulkan)
-    else()
-        target_link_libraries(lumino_graphics PRIVATE Vulkan::Headers)
-        # Link the Vulkan loader
-        if(WIN32)
-            target_link_libraries(lumino_graphics PRIVATE vulkan-1)
-        else()
-            target_link_libraries(lumino_graphics PRIVATE vulkan)
-        endif()
-    endif()
-
-    if(LUMINO_PLATFORM_DESKTOP)
-        target_link_libraries(lumino_graphics PRIVATE glfw)
-    endif()
-endif()
-
 #-------------------------------------------------------------------------------
 # Examples
 #-------------------------------------------------------------------------------
-if(LUMINO_BUILD_EXAMPLES AND LUMINO_BUILD_GRAPHICS)
+if(LUMINO_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
