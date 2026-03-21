@@ -1,4 +1,4 @@
-#include <lumino_core/graphics/ForwardRenderer.hpp>
+﻿#include <lumino_core/graphics/ForwardRenderer.hpp>
 #include <cstring>
 
 namespace ln {
@@ -12,7 +12,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     renderer->colorFormat_ = colorFormat;
     renderer->depthFormat_ = depthFormat;
 
-    // ── Set 0: View BindGroupLayout ──
+    // ---- Set 0: View BindGroupLayout ----
     // Binding 0: ViewParamsUBO (Vertex + Fragment)
     rhi::BindGroupLayoutDesc viewBGLDesc;
     viewBGLDesc.entries = {
@@ -22,7 +22,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     if (!viewBGLResult) return tl::make_unexpected(viewBGLResult.error());
     renderer->viewBindGroupLayout_ = std::move(*viewBGLResult);
 
-    // ── Set 1: Material BindGroupLayout (placeholder — actual layout from Material) ──
+    // ---- Set 1: Material BindGroupLayout (placeholder actual layout from Material) ----
     // Binding 0: MaterialParams UBO, Binding 1: texture, Binding 2: sampler
     rhi::BindGroupLayoutDesc matBGLDesc;
     matBGLDesc.entries = {
@@ -37,7 +37,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
         matBGL = std::move(*r);
     }
 
-    // ── Set 2: Object BindGroupLayout ──
+    // ---- Set 2: Object BindGroupLayout ----
     // Binding 0: ObjectParamsUBO (Vertex)
     rhi::BindGroupLayoutDesc objBGLDesc;
     objBGLDesc.entries = {
@@ -47,7 +47,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     if (!objBGLResult) return tl::make_unexpected(objBGLResult.error());
     renderer->objectBindGroupLayout_ = std::move(*objBGLResult);
 
-    // ── PipelineLayout (Set 0, Set 1, Set 2) ──
+    // ---- PipelineLayout (Set 0, Set 1, Set 2) ----
     rhi::PipelineLayoutDesc plDesc;
     plDesc.bindGroupLayouts = {
         renderer->viewBindGroupLayout_.get(),
@@ -58,7 +58,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     if (!plResult) return tl::make_unexpected(plResult.error());
     renderer->pipelineLayout_ = std::move(*plResult);
 
-    // ── Per-view UBO ──
+    // ---- Per-view UBO ----
     rhi::BufferDesc viewBufDesc;
     viewBufDesc.size = sizeof(ViewParamsUBO);
     viewBufDesc.usage = rhi::BufferUsage::Uniform;
@@ -66,7 +66,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     if (!viewBufResult) return tl::make_unexpected(viewBufResult.error());
     renderer->viewUBO_ = std::move(*viewBufResult);
 
-    // ── Per-view BindGroup ──
+    // ---- Per-view BindGroup ----
     rhi::BindGroupDesc viewBGDesc;
     viewBGDesc.layout = renderer->viewBindGroupLayout_.get();
     viewBGDesc.entries = {
@@ -122,7 +122,7 @@ Result<void> ForwardRenderer::renderFrame(
     auto ensureResult = ensureObjectResources(device, totalDraws);
     if (!ensureResult) return tl::make_unexpected(ensureResult.error());
 
-    // ── Update View UBO ──
+    // ---- Update View UBO ----
     {
         ViewParamsUBO viewParams{};
         Matrix4x4 vp = camera.viewProjectionMatrix();
@@ -157,7 +157,7 @@ Result<void> ForwardRenderer::renderFrame(
         }
     }
 
-    // ── Begin Render Pass ──
+    // ---- Begin Render Pass ----
     rhi::DepthStencilAttachment depthAttachment;
     depthAttachment.view = depthTarget;
     depthAttachment.depthLoadOp = rhi::LoadOp::Clear;
@@ -171,7 +171,7 @@ Result<void> ForwardRenderer::renderFrame(
     auto* cmd = device->createCommandBuffer();
     auto* pass = cmd->beginRenderPass(rpDesc);
 
-    // ── Draw Objects ──
+    // ---- Draw Objects ----
     size_t drawIndex = 0;
     for (auto& obj : objects) {
         auto* mesh = obj.mesh.get();

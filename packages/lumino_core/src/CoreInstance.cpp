@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <lumino_core/CoreInstance.hpp>
+#include <lumino_core/ObjectRegistry.hpp>
 
 namespace ln {
 
@@ -20,10 +21,12 @@ void CoreInstance::terminate() {
 
 VoidResult CoreInstance::init(const Settings& settings) {
     m_settings = settings;
+    objectRegistry_ = std::make_unique<ObjectRegistry>();
     return LN_MAKE_SUCCESS();
 }
 
 void CoreInstance::dispose() {
+    objectRegistry_.reset();
 }
 
 } // namespace ln

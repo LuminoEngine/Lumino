@@ -29,10 +29,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 # Tests
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_TESTS)
-    add_executable(lumino_base_test
-        test/TestMain.cpp
-    )
-    target_precompile_headers(lumino_base_test PRIVATE test/pch.hpp)
-    target_link_libraries(lumino_base_test PRIVATE lumino_base GTest::gtest)
-    add_test(NAME lumino_base_test COMMAND lumino_base_test)
+    add_subdirectory(test)
 endif()

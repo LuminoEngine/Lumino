@@ -5,3 +5,4 @@
 #include "lumino_base/Result.hpp"
 #include "lumino_base/RefCounted.hpp"
 #include "lumino_base/Types.hpp"
+#include "lumino_base/Logger.hpp"

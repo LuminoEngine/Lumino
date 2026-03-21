@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /// @file DescriptorPoolManager.hpp
 /// Growing pool of Vulkan descriptor pools.

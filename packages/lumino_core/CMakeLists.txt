@@ -16,7 +16,11 @@ find_package(Stb REQUIRED)
 file(GLOB LN_LOCAL_SOURCES_core
     src/pch.hpp
     src/CoreInstance.cpp
+    src/Object.cpp
+    src/ObjectRegistry.cpp
     include/${PROJECT_NAME}/CoreInstance.hpp
+    include/${PROJECT_NAME}/Object.hpp
+    include/${PROJECT_NAME}/ObjectRegistry.hpp
 )
 file(GLOB LN_LOCAL_SOURCES_platform src/platform/*.cpp src/platform/*.hpp include/${PROJECT_NAME}/platform/*.hpp)
 
@@ -108,10 +112,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 # Tests
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_TESTS)
-    add_executable(lumino_core_test
-        test/TestMain.cpp
-    )
-    target_precompile_headers(lumino_core_test PRIVATE test/pch.hpp)
-    target_link_libraries(lumino_core_test PRIVATE lumino_core GTest::gtest)
-    add_test(NAME lumino_core_test COMMAND lumino_core_test)
+    add_subdirectory(test)
 endif()

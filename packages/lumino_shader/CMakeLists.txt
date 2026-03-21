@@ -47,10 +47,5 @@ endif()
 # Tests
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_TESTS)
-    add_executable(lumino_shader_test
-        test/TestMain.cpp
-    )
-    target_compile_definitions(lumino_shader_test PRIVATE TEST_DATA_DIR="${CMAKE_CURRENT_LIST_DIR}/test/data/")
-    target_link_libraries(lumino_shader_test PRIVATE lumino_shader GTest::gtest)
-    add_test(NAME lumino_shader_test COMMAND lumino_shader_test)
+    add_subdirectory(test)
 endif()

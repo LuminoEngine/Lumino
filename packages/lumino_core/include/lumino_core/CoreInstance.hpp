@@ -2,7 +2,9 @@
 
 namespace ln {
 
+class ObjectRegistry;
 
+// Library root manager クラス。シングルトンで、ライブラリ全体の初期化や終了処理を管理する。
 class CoreInstance final {
 public:
     struct Settings {};
@@ -10,11 +12,14 @@ public:
     static VoidResult initialize(const Settings& settings);
     static void terminate();
 
+    ObjectRegistry* objectRegistry() { return objectRegistry_.get(); }
+
 private:
     VoidResult init(const Settings& settings);
     void dispose();
     static std::unique_ptr<CoreInstance> s_instance;
     Settings m_settings;
+    std::unique_ptr<ObjectRegistry> objectRegistry_;
 };
 
 } // namespace ln

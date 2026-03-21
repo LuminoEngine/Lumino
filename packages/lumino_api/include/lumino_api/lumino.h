@@ -39,7 +39,22 @@ typedef enum LNResult {
 
     /** 無効な引数 */
     LN_ERROR_INVALID_ARGUMENT = -3,
+
+    /** 無効なハンドル */
+    LN_ERROR_INVALID_HANDLE = -4,
 } LNResult;
+
+//------------------------------------------------------------------------------
+// Handle type
+//------------------------------------------------------------------------------
+
+/**
+ * オブジェクトハンドル。上位16bitが世代番号、下位16bitがインデックス。
+ */
+typedef uint32_t LNHandle;
+
+/** 無効なハンドル */
+#define LN_NULL_HANDLE ((LNHandle)0)
 
 //------------------------------------------------------------------------------
 // LNInstance
@@ -54,6 +69,32 @@ extern LUMINO_API LNResult LNInstance_Initialize();
  * Lumino のインスタンスを終了します。
  */
 extern LUMINO_API void LNInstance_Terminate();
+
+//------------------------------------------------------------------------------
+// LNObject
+//------------------------------------------------------------------------------
+
+/**
+ * ハンドルに対応するオブジェクトを解放します。
+ */
+extern LUMINO_API LNResult LNObject_Release(LNHandle handle);
+
+//------------------------------------------------------------------------------
+// LNTexture2D
+//------------------------------------------------------------------------------
+
+/**
+ * 2D テクスチャを作成します。
+ * @param[in]  width     幅 (ピクセル)
+ * @param[in]  height    高さ (ピクセル)
+ * @param[in]  format    テクスチャフォーマット
+ * @param[out] outHandle 作成されたテクスチャのハンドル
+ */
+extern LUMINO_API LNResult LNTexture2D_Create(
+    uint32_t width,
+    uint32_t height,
+    uint32_t format,
+    LNHandle* outHandle);
 
 #ifdef __cplusplus
 } // extern "C"

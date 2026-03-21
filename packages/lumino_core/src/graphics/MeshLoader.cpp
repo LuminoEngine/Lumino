@@ -1,4 +1,4 @@
-// stb_image implementation is in TextureLoader.cpp — avoid duplicate.
+﻿// stb_image implementation is in TextureLoader.cpp - avoid duplicate.
 // Include stb_image.h ourselves (via angle brackets for vcpkg), then tell
 // tinygltf not to include it again (it uses quotes which may fail).
 #include <stb_image.h>
@@ -370,7 +370,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
                     prim.material >= 0 ? prim.material : 0);
                 submeshes.push_back(sub);
             } else {
-                // No indices — generate sequential indices.
+                // No indices - generate sequential indices.
                 for (u32 i = 0; i < static_cast<u32>(vertexCount); ++i) {
                     allIndices.push_back(vertexOffset + i);
                 }
