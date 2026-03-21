@@ -1,16 +1,18 @@
 ﻿#pragma once
 
-/// @file StagingBufferPool.hpp
-/// Host-visible staging buffer pool for synchronous CPU → GPU uploads.
-///
-/// Device-local buffers (Vertex, Index) cannot be mapped by the CPU.
-/// This pool maintains a set of HOST_VISIBLE | HOST_COHERENT staging buffers
-/// and provides `uploadImmediate()` to copy data through a one-time command
-/// buffer, waiting for completion before returning.
-///
-/// Freed pages are returned to the pool and reused, avoiding repeated
-/// vkAllocateMemory calls.  Phase 1-4 uses synchronous transfer only;
-/// async pipelined staging can be added in Phase 2 when needed.
+/**
+ * @file StagingBufferPool.hpp
+ * Host-visible staging buffer pool for synchronous CPU → GPU uploads.
+ * 
+ * Device-local buffers (Vertex, Index) cannot be mapped by the CPU.
+ * This pool maintains a set of HOST_VISIBLE | HOST_COHERENT staging buffers
+ * and provides `uploadImmediate()` to copy data through a one-time command
+ * buffer, waiting for completion before returning.
+ * 
+ * Freed pages are returned to the pool and reused, avoiding repeated
+ * vkAllocateMemory calls.  Phase 1-4 uses synchronous transfer only;
+ * async pipelined staging can be added in Phase 2 when needed.
+ */
 
 #include <lumino_base/Types.hpp>
 
@@ -39,9 +41,11 @@ public:
         freePages_.clear();
     }
 
-    /// Copy `size` bytes from `data` into `dstBuffer` (device-local).
-    /// Allocates or recycles a staging page, records a one-time command
-    /// buffer, submits it, and waits for the queue to be idle before returning.
+    /**
+     * Copy `size` bytes from `data` into `dstBuffer` (device-local).
+     * Allocates or recycles a staging page, records a one-time command
+     * buffer, submits it, and waits for the queue to be idle before returning.
+     */
     void uploadImmediate(VkQueue queue, VkCommandPool cmdPool,
                          VkBuffer dstBuffer, const void* data, VkDeviceSize size) {
         Page staging = acquirePage(size);
@@ -84,8 +88,10 @@ public:
         releasePage(staging);
     }
 
-    /// Copy `size` bytes from `data` into `dstImage` (device-local).
-    /// Transitions the image layout and copies via a staging buffer.
+    /**
+     * Copy `size` bytes from `data` into `dstImage` (device-local).
+     * Transitions the image layout and copies via a staging buffer.
+     */
     void uploadTextureImmediate(VkQueue queue, VkCommandPool cmdPool,
                                 VkImage dstImage, const void* data, VkDeviceSize size,
                                 u32 width, u32 height) {

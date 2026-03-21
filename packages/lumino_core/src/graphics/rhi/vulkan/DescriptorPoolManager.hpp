@@ -1,15 +1,17 @@
 ﻿#pragma once
 
-/// @file DescriptorPoolManager.hpp
-/// Growing pool of Vulkan descriptor pools.
-///
-/// A single fixed-size VkDescriptorPool will overflow if many BindGroups are
-/// created (e.g., one per draw call, per material, etc.).  This manager
-/// transparently adds new pools whenever VK_ERROR_OUT_OF_POOL_MEMORY is
-/// returned, so callers never need to handle pool exhaustion manually.
-///
-/// The pools are created with VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
-/// so that individual descriptor sets can be freed on BindGroup destruction.
+/**
+ * @file DescriptorPoolManager.hpp
+ * Growing pool of Vulkan descriptor pools.
+ * 
+ * A single fixed-size VkDescriptorPool will overflow if many BindGroups are
+ * created (e.g., one per draw call, per material, etc.).  This manager
+ * transparently adds new pools whenever VK_ERROR_OUT_OF_POOL_MEMORY is
+ * returned, so callers never need to handle pool exhaustion manually.
+ * 
+ * The pools are created with VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
+ * so that individual descriptor sets can be freed on BindGroup destruction.
+ */
 
 #include <lumino_base/Types.hpp>
 
@@ -21,9 +23,11 @@ namespace ln::rhi::vulkan {
 
 class DescriptorPoolManager {
 public:
-    /// Number of descriptor sets per pool page.  Each page also allocates
-    /// SETS_PER_POOL * 4 descriptors of each type to cover typical usage
-    /// (1–4 descriptors per set).
+    /**
+     * Number of descriptor sets per pool page.  Each page also allocates
+     * SETS_PER_POOL * 4 descriptors of each type to cover typical usage
+     * (1–4 descriptors per set).
+     */
     static constexpr u32 SETS_PER_POOL = 64;
 
     void init(VkDevice device) {
@@ -38,8 +42,10 @@ public:
         pools_.clear();
     }
 
-    /// Allocate one descriptor set from `layout`.
-    /// Returns {pool, set}.  On failure both handles are VK_NULL_HANDLE.
+    /**
+     * Allocate one descriptor set from `layout`.
+     * Returns {pool, set}.  On failure both handles are VK_NULL_HANDLE.
+     */
     std::pair<VkDescriptorPool, VkDescriptorSet> allocate(VkDescriptorSetLayout layout) {
         for (;;) {
             VkDescriptorSetAllocateInfo allocInfo{};

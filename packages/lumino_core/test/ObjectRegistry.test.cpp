@@ -1,4 +1,4 @@
-﻿#include <lumino_core/ObjectRegistry.hpp>
+﻿#include <lumino_core/runtime/ObjectRegistry.hpp>
 #include <lumino_core/CoreInstance.hpp>
 
 // テスト用の Object サブクラス

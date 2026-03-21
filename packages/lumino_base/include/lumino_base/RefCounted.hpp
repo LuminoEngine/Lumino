@@ -6,7 +6,7 @@
 
 namespace ln {
 
-/// Intrusive reference-counted base class.
+/** Intrusive reference-counted base class. */
 class RefCounted {
 public:
     RefCounted() = default;
@@ -29,8 +29,10 @@ private:
     mutable std::atomic<uint32_t> refCount_{1};
 };
 
-/// Smart pointer for RefCounted objects. Does NOT addRef on construction from raw pointer
-/// (assumes ownership of the initial ref). Use Ref::adopt() or Ref::create().
+/**
+ * Smart pointer for RefCounted objects. Does NOT addRef on construction from raw pointer
+ * (assumes ownership of the initial ref). Use Ref::adopt() or Ref::create().
+ */
 template <typename T>
 class Ref {
 public:
@@ -68,7 +70,7 @@ public:
         if (ptr_) ptr_->addRef();
     }
 
-    /// Adopt a raw pointer (takes ownership of existing ref).
+    /** Adopt a raw pointer (takes ownership of existing ref). */
     static Ref adopt(T* p) {
         Ref r;
         r.ptr_ = p;

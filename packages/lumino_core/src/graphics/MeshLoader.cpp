@@ -16,7 +16,7 @@
 
 namespace ln {
 
-/// Helper: read accessor data as float array.
+/** Helper: read accessor data as float array. */
 static std::vector<float> readAccessorAsFloat(
     const tinygltf::Model& model,
     int accessorIndex) {
@@ -57,7 +57,7 @@ static std::vector<float> readAccessorAsFloat(
     return result;
 }
 
-/// Helper: read index accessor as u32 array.
+/** Helper: read index accessor as u32 array. */
 static std::vector<u32> readIndices(
     const tinygltf::Model& model,
     int accessorIndex) {
@@ -95,7 +95,7 @@ static std::vector<u32> readIndices(
     return result;
 }
 
-/// Helper: extract Transform from a glTF node.
+/** Helper: extract Transform from a glTF node. */
 static Transform nodeTransform(const tinygltf::Node& node) {
     Transform t;
     if (node.matrix.size() == 16) {
@@ -127,7 +127,7 @@ static Transform nodeTransform(const tinygltf::Node& node) {
     return t;
 }
 
-/// Load textures from glTF images.
+/** Load textures from glTF images. */
 static std::vector<Ref<rhi::Texture>> loadGltfTextures(
     rhi::Device* device,
     const tinygltf::Model& model) {

@@ -16,7 +16,7 @@ using i64 = int64_t;
 using f32 = float;
 using f64 = double;
 
-/// Non-owning view of a contiguous range.
+/** Non-owning view of a contiguous range. */
 template <typename T>
 struct Span {
     T* data_ = nullptr;

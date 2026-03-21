@@ -92,7 +92,7 @@ struct Quaternion {
     static constexpr Quaternion identity() { return {0, 0, 0, 1}; }
 };
 
-/// Column-major 4x4 matrix.
+/** Column-major 4x4 matrix. */
 struct Matrix4x4 {
     f32 m[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 

@@ -1,9 +1,11 @@
 ﻿#pragma once
 
-/// @file vulkan_backend.hpp
-/// Internal Vulkan implementation of the RHI interfaces.
-/// Pipeline caches, descriptor pools, and framebuffer management are
-/// hidden here so the public RHI API stays clean.
+/**
+ * @file vulkan_backend.hpp
+ * Internal Vulkan implementation of the RHI interfaces.
+ * Pipeline caches, descriptor pools, and framebuffer management are
+ * hidden here so the public RHI API stays clean.
+ */
 
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 
@@ -28,9 +30,11 @@ u32 vertexFormatSize(VertexFormat fmt);
 
 class VulkanBuffer final : public Buffer {
 public:
-    /// @param deviceLocal  If true, allocates DEVICE_LOCAL memory (not CPU-mappable).
-    ///                     Vertex and Index buffers use this path; initial data is
-    ///                     uploaded later via StagingBufferPool::uploadImmediate().
+    /**
+     * @param deviceLocal  If true, allocates DEVICE_LOCAL memory (not CPU-mappable).
+     *                     Vertex and Index buffers use this path; initial data is
+     *                     uploaded later via StagingBufferPool::uploadImmediate().
+     */
     VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
                  bool deviceLocal = false);
     ~VulkanBuffer() override;
@@ -55,7 +59,7 @@ private:
 class VulkanTexture final : public Texture {
 public:
     VulkanTexture(VkDevice device, VkPhysicalDevice physicalDevice, const TextureDesc& desc);
-    /// Wraps an externally-owned VkImage (e.g. swap chain image).
+    /** Wraps an externally-owned VkImage (e.g. swap chain image). */
     VulkanTexture(VkDevice device, VkImage image, TextureFormat format, u32 width, u32 height);
     ~VulkanTexture() override;
 
@@ -208,8 +212,10 @@ class VulkanDevice;
 class VulkanCommandBuffer final : public CommandBuffer {
 public:
     VulkanCommandBuffer(VulkanDevice* device, VkCommandBuffer cmd);
-    /// Queues vkFreeCommandBuffers via FrameResourceManager so the handle is
-    /// only freed after the GPU is done with it.
+    /**
+     * Queues vkFreeCommandBuffers via FrameResourceManager so the handle is
+     * only freed after the GPU is done with it.
+     */
     ~VulkanCommandBuffer() override;
 
     RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
@@ -219,7 +225,7 @@ private:
     VulkanDevice* device_;
     VkCommandBuffer cmd_;
     VulkanRenderPassEncoder* encoder_ = nullptr;
-    /// Frame index recorded at submit() time; used to schedule deferred cleanup.
+    /** Frame index recorded at submit() time; used to schedule deferred cleanup. */
     u32 submittedFrame_ = 0;
     bool submitted_ = false;
 };
@@ -327,8 +333,10 @@ public:
     DescriptorPoolManager& descriptorPoolManager() { return descriptorPoolManager_; }
     FrameResourceManager& frameResources() { return frameResources_; }
 
-    /// Called at the start of each frame (after waiting for the in-flight fence)
-    /// to execute deferred cleanups for that frame index.
+    /**
+     * Called at the start of each frame (after waiting for the in-flight fence)
+     * to execute deferred cleanups for that frame index.
+     */
     void beginFrame(u32 frameIndex) { frameResources_.beginFrame(frameIndex); }
 
     void setActiveSwapChain(VulkanSwapChain* sc) { activeSwapChain_ = sc; }

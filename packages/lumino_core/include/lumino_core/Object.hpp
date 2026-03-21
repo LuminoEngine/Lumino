@@ -7,8 +7,10 @@ namespace ln {
 
 class ObjectRegistry;
 
-/// C-API で公開するオブジェクトの基底クラス。
-/// RefCounted を継承し、ObjectRegistry でのハンドル管理に必要なスロット情報を保持する。
+/**
+ * C-API で公開するオブジェクトの基底クラス。
+ * RefCounted を継承し、ObjectRegistry でのハンドル管理に必要なスロット情報を保持する。
+ */
 class Object : public RefCounted {
 public:
     Object() = default;

@@ -22,8 +22,8 @@ file(GLOB LN_LOCAL_SOURCES_core
     include/${PROJECT_NAME}/Object.hpp
     include/${PROJECT_NAME}/ObjectRegistry.hpp
 )
+file(GLOB LN_LOCAL_SOURCES_runtime src/runtime/*.cpp src/runtime/*.hpp include/${PROJECT_NAME}/runtime/*.hpp)
 file(GLOB LN_LOCAL_SOURCES_platform src/platform/*.cpp src/platform/*.hpp include/${PROJECT_NAME}/platform/*.hpp)
-
 file(GLOB LN_LOCAL_SOURCES_graphics
     src/graphics/*.cpp
     src/graphics/*.hpp
@@ -36,11 +36,13 @@ file(GLOB LN_LOCAL_SOURCES_graphics
 )
 
 source_group("" FILES ${LN_LOCAL_SOURCES_core})
+source_group("runtime" FILES ${LN_LOCAL_SOURCES_runtime})
 source_group("platform" FILES ${LN_LOCAL_SOURCES_platform})
 source_group("graphics" FILES ${LN_LOCAL_SOURCES_graphics})
 
 set(LN_LOCAL_SOURCES
     ${LN_LOCAL_SOURCES_core}
+    ${LN_LOCAL_SOURCES_runtime}
     ${LN_LOCAL_SOURCES_platform}
     ${LN_LOCAL_SOURCES_graphics}
 )

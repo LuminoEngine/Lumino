@@ -8,40 +8,42 @@
 
 namespace ln {
 
-/// ハンドル型。上位16bit が世代番号、下位16bit がスロットインデックス。
+/** ハンドル型。上位16bit が世代番号、下位16bit がスロットインデックス。 */
 using LNHandle = uint32_t;
 constexpr LNHandle LN_NULL_HANDLE = 0;
 
-/// C-API で公開するオブジェクトを世代番号付きハンドルで管理するレジストリ。
+/** C-API で公開するオブジェクトを世代番号付きハンドルで管理するレジストリ。 */
 class ObjectRegistry {
 public:
     ObjectRegistry();
     ~ObjectRegistry();
 
-    /// オブジェクトを登録しハンドルを返す。レジストリが Ref で所有権を持つ。
+    /** オブジェクトを登録しハンドルを返す。レジストリが Ref で所有権を持つ。 */
     LNHandle registerObject(Ref<Object> obj);
 
-    /// ハンドルからオブジェクトポインタを解決する。無効なハンドルは nullptr を返す。
+    /** ハンドルからオブジェクトポインタを解決する。無効なハンドルは nullptr を返す。 */
     Object* resolve(LNHandle handle) const;
 
-    /// テンプレート版 resolve。型キャストを行う。
+    /** テンプレート版 resolve。型キャストを行う。 */
     template <typename T>
     T* resolve(LNHandle handle) const {
         return static_cast<T*>(resolve(handle));
     }
 
-    /// ハンドルに対応するオブジェクトの所有権を解放する。
-    /// 他に参照がなければオブジェクトは破棄される。
-    /// 成功時 true、無効ハンドル時 false を返す。
+    /**
+     * ハンドルに対応するオブジェクトの所有権を解放する。
+     * 他に参照がなければオブジェクトは破棄される。
+     * 成功時 true、無効ハンドル時 false を返す。
+     */
     bool release(LNHandle handle);
 
-    /// オブジェクトのデストラクタから呼ばれる内部用。スロットをクリーンアップする。
+    /** オブジェクトのデストラクタから呼ばれる内部用。スロットをクリーンアップする。 */
     void unregister(Object* obj);
 
-    /// 現在登録されているオブジェクト数。
+    /** 現在登録されているオブジェクト数。 */
     size_t size() const;
 
-    /// ハンドルユーティリティ
+    /** ハンドルユーティリティ */
     static LNHandle makeHandle(uint16_t index, uint16_t generation) {
         return (static_cast<uint32_t>(generation) << 16) | static_cast<uint32_t>(index);
     }

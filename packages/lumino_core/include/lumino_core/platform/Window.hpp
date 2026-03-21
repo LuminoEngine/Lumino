@@ -6,7 +6,7 @@
 
 namespace ln::platform {
 
-/// Window creation descriptor.
+/** Window creation descriptor. */
 struct WindowDesc {
     std::string title = "Lumino";
     u32 width = 1280;
@@ -14,12 +14,12 @@ struct WindowDesc {
     bool resizable = false;
 };
 
-/// Platform-specific window handle.
+/** Platform-specific window handle. */
 struct NativeWindowHandle {
     void* glfwWindow = nullptr;
 };
 
-/// Platform window abstraction.
+/** Platform window abstraction. */
 class PlatformWindow {
 public:
     ~PlatformWindow();
@@ -29,16 +29,16 @@ public:
     PlatformWindow(PlatformWindow&&) noexcept;
     PlatformWindow& operator=(PlatformWindow&&) noexcept;
 
-    /// Create a platform window. Returns nullptr on failure.
+    /** Create a platform window. Returns nullptr on failure. */
     static PlatformWindow* create(const WindowDesc& desc);
 
-    /// Poll events and return false if the window should close.
+    /** Poll events and return false if the window should close. */
     bool processEvents();
 
-    /// Get the native window handle.
+    /** Get the native window handle. */
     NativeWindowHandle nativeHandle() const;
 
-    /// Get framebuffer size in pixels.
+    /** Get framebuffer size in pixels. */
     void framebufferSize(u32& width, u32& height) const;
 
 private:

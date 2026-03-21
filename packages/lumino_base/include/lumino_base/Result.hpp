@@ -5,7 +5,7 @@
 
 namespace ln {
 
-/// Error code for Lumino operations.
+/** Error code for Lumino operations. */
 enum class ErrorCode {
     OK = 0,
     Unknown,
@@ -20,7 +20,7 @@ enum class ErrorCode {
     RuntimeError,
 };
 
-/// Lightweight error type carrying a code and optional message.
+/** Lightweight error type carrying a code and optional message. */
 struct Error {
     ErrorCode code = ErrorCode::Unknown;
     std::string message;
@@ -30,11 +30,11 @@ struct Error {
     Error(ErrorCode c, std::string msg) : code(c), message(std::move(msg)) {}
 };
 
-/// Result type: either a value T or an Error.
+/** Result type: either a value T or an Error. */
 template <typename T>
 using Result = tl::expected<T, Error>;
 
-/// Result type for void-returning operations.
+/** Result type for void-returning operations. */
 using VoidResult = tl::expected<void, Error>;
 
 // clang-format off

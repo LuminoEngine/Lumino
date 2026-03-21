@@ -1,7 +1,7 @@
 ﻿#include "pch.hpp"
 #include <LuminoBase.hpp>
 #include <lumino_core/CoreInstance.hpp>
-#include <lumino_core/ObjectRegistry.hpp>
+#include <lumino_core/runtime/ObjectRegistry.hpp>
 #include <lumino_core/graphics/Texture2D.hpp>
 #include <lumino_api/lumino.h>
 

@@ -67,23 +67,25 @@ using LogCallback = void (*)(LogLevel level, const char* file, int line,
 
 class Logger {
 public:
-    /// ログ出力レベルフィルタを設定する。設定レベル未満のログは破棄される。
+    /** ログ出力レベルフィルタを設定する。設定レベル未満のログは破棄される。 */
     static void setLevel(LogLevel level);
 
-    /// 現在のログレベルフィルタを返す。
+    /** 現在のログレベルフィルタを返す。 */
     static LogLevel level();
 
-    /// 指定レベルのログを出力すべきか判定する。
+    /** 指定レベルのログを出力すべきか判定する。 */
     static bool shouldLog(LogLevel level);
 
-    /// カスタムコールバックを登録する。nullptr を渡すと解除と同義。
-    /// 登録後は stderr へのデフォルト出力は行われない。
+    /**
+     * カスタムコールバックを登録する。nullptr を渡すと解除と同義。
+     * 登録後は stderr へのデフォルト出力は行われない。
+     */
     static void setCallback(LogCallback cb);
 
-    /// 登録済みコールバックを解除し、デフォルト stderr 出力に戻す。
+    /** 登録済みコールバックを解除し、デフォルト stderr 出力に戻す。 */
     static void clearCallback();
 
-    /// ログを出力する。printf 互換の書式指定子が使用可能。
+    /** ログを出力する。printf 互換の書式指定子が使用可能。 */
     static void log(LogLocation location, LogLevel level, const char* format, ...);
 
 private:
