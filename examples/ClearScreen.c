@@ -26,7 +26,17 @@ int main(void) {
         return 1;
     }
 
-    // 3. メインループ
+    // 3. ウィンドウに関連づいた GraphicsContext を取得します。
+    LNHandle graphicsContext = LN_NULL_HANDLE;
+    result = LNWindow_GetGraphicsContext(window, &graphicsContext);
+    if (result != LN_OK) {
+        fprintf(stderr, "LNWindow_GetGraphicsContext failed: %d\n", result);
+        LNObject_Release(window);
+        LNInstance_Terminate();
+        return 1;
+    }
+
+    // 4. メインループ
     int cont = 1;
     while (cont) {
         // イベント処理。ウィンドウが閉じられると cont が 0 になります。
@@ -34,25 +44,26 @@ int main(void) {
         if (result != LN_OK || !cont) break;
 
         // フレーム開始
-        result = LNGraphicsContext_BeginFrame(window);
+        result = LNGraphicsContext_BeginFrame(graphicsContext);
         if (result != LN_OK) break;
 
         // レンダーパス開始 (ライトグリーンでクリア)
-        result = LNGraphicsContext_BeginRenderPass(window, 0.60f, 0.85f, 0.60f, 1.0f);
+        result = LNGraphicsContext_BeginRenderPass(graphicsContext, 0.60f, 0.85f, 0.60f, 1.0f);
         if (result != LN_OK) break;
 
         // このサンプルはクリアするだけなので、描画コマンドはありません。
 
         // レンダーパス終了
-        result = LNGraphicsContext_EndRenderPass(window);
+        result = LNGraphicsContext_EndRenderPass(graphicsContext);
         if (result != LN_OK) break;
 
         // フレーム終了・画面表示
-        result = LNGraphicsContext_EndFrame(window);
+        result = LNGraphicsContext_EndFrame(graphicsContext);
         if (result != LN_OK) break;
     }
 
-    // 4. リソースを解放します。
+    // 5. リソースを解放します。
+    LNObject_Release(graphicsContext);
     LNObject_Release(window);
     LNInstance_Terminate();
 

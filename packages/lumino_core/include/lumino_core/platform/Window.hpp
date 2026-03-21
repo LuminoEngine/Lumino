@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <lumino_base/Types.hpp>
+#include <lumino_core/Object.hpp>
 #include <functional>
 #include <string>
 
@@ -25,14 +26,12 @@ struct NativeWindowHandle {
 };
 
 /** Platform window abstraction. */
-class PlatformWindow {
+class PlatformWindow : public ln::Object {
 public:
-    ~PlatformWindow();
+    ~PlatformWindow() override;
 
     PlatformWindow(const PlatformWindow&) = delete;
     PlatformWindow& operator=(const PlatformWindow&) = delete;
-    PlatformWindow(PlatformWindow&&) noexcept;
-    PlatformWindow& operator=(PlatformWindow&&) noexcept;
 
     /** Create a platform window. Returns nullptr on failure. */
     static PlatformWindow* create(const WindowDesc& desc);

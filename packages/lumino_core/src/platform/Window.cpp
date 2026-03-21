@@ -41,19 +41,6 @@ PlatformWindow::~PlatformWindow() {
     }
 }
 
-PlatformWindow::PlatformWindow(PlatformWindow&& o) noexcept : impl_(o.impl_) {
-    o.impl_ = nullptr;
-}
-
-PlatformWindow& PlatformWindow::operator=(PlatformWindow&& o) noexcept {
-    if (this != &o) {
-        delete impl_;
-        impl_ = o.impl_;
-        o.impl_ = nullptr;
-    }
-    return *this;
-}
-
 PlatformWindow* PlatformWindow::create(const WindowDesc& desc) {
     auto win = new PlatformWindow();
     win->impl_ = new Impl();

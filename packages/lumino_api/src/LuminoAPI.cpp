@@ -1,4 +1,4 @@
-﻿#include "pch.hpp"
+#include "pch.hpp"
 #include <LuminoBase.hpp>
 #include <lumino_core/CoreInstance.hpp>
 #include <lumino_core/Object.hpp>
@@ -7,25 +7,6 @@
 #include <lumino_core/platform/Window.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_api/lumino.h>
-
-//------------------------------------------------------------------------------
-// WindowObject PlatformWindow の C_API 向けラッパー
-//------------------------------------------------------------------------------
-
-class WindowObject : public ln::Object {
-public:
-    ~WindowObject() override {
-        delete window_;
-    }
-
-    ln::platform::PlatformWindow* window_ = nullptr;
-
-    // フレームスコープの一時状態
-    ln::rhi::CommandBuffer* currentCmd_ = nullptr;
-    ln::rhi::TextureView* currentColorTarget_ = nullptr;
-    ln::rhi::TextureView* currentDepthTarget_ = nullptr;
-    ln::rhi::RenderPassEncoder* currentPass_ = nullptr;
-};
 
 //------------------------------------------------------------------------------
 // LNInstance
@@ -96,9 +77,7 @@ LNResult LNWindow_Create(
     auto* window = ln::platform::PlatformWindow::create(winDesc, gfxDesc);
     if (!window) return LN_ERROR_UNKNOWN;
 
-    auto obj = ln::Ref<WindowObject>::adopt(LN_NEW WindowObject());
-    obj->window_ = window;
-
+    auto obj = ln::Ref<ln::platform::PlatformWindow>::adopt(window);
     LNHandle handle = instance->objectRegistry()->registerObject(std::move(obj));
     if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
 
@@ -113,10 +92,39 @@ LNResult LNWindow_ProcessEvents(LNHandle handle, int* outContinue) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* obj = instance->objectRegistry()->resolve<WindowObject>(handle);
+    auto* obj = instance->objectRegistry()->resolve<ln::platform::PlatformWindow>(handle);
     if (!obj) return LN_ERROR_INVALID_HANDLE;
 
-    *outContinue = obj->window_->processEvents() ? 1 : 0;
+    *outContinue = obj->processEvents() ? 1 : 0;
+    return LN_OK;
+}
+
+LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* obj = instance->objectRegistry()->resolve<ln::platform::PlatformWindow>(window);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+
+    auto* ctx = obj->graphicsContext();
+    if (!ctx) return LN_ERROR_UNKNOWN;
+
+    // 既に登録済みの場合はハンドルを再構成して返す
+    if (ctx->generation() != 0) {
+        *outHandle = ln::ObjectRegistry::makeHandle(ctx->registryIndex(), ctx->generation());
+        return LN_OK;
+    }
+
+    // 初回登録: window が所有しているので addRef してから登録する
+    ctx->addRef();
+    LNHandle handle = instance->objectRegistry()->registerObject(
+        ln::Ref<ln::GraphicsContext>::adopt(ctx));
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
+
+    *outHandle = handle;
     return LN_OK;
 }
 
@@ -124,44 +132,40 @@ LNResult LNWindow_ProcessEvents(LNHandle handle, int* outContinue) {
 // LNGraphicsContext
 //------------------------------------------------------------------------------
 
-LNResult LNGraphicsContext_BeginFrame(LNHandle window) {
+LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* obj = instance->objectRegistry()->resolve<WindowObject>(window);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-
-    auto* ctx = obj->window_->graphicsContext();
-    if (!ctx) return LN_ERROR_UNKNOWN;
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto frameResult = ctx->beginFrame();
     if (!frameResult) return LN_ERROR_UNKNOWN;
 
-    obj->currentColorTarget_ = frameResult->colorTarget;
-    obj->currentDepthTarget_ = frameResult->depthTarget;
-    obj->currentCmd_ = ctx->device()->createCommandBuffer();
-    if (!obj->currentCmd_) return LN_ERROR_UNKNOWN;
+    ctx->currentColorTarget_ = frameResult->colorTarget;
+    ctx->currentDepthTarget_ = frameResult->depthTarget;
+    ctx->currentCmd_ = ctx->device()->createCommandBuffer();
+    if (!ctx->currentCmd_) return LN_ERROR_UNKNOWN;
 
     return LN_OK;
 }
 
 LNResult LNGraphicsContext_BeginRenderPass(
-    LNHandle window, float r, float g, float b, float a) {
+    LNHandle graphicsContext, float r, float g, float b, float a) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* obj = instance->objectRegistry()->resolve<WindowObject>(window);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-    if (!obj->currentCmd_) return LN_ERROR_UNKNOWN;
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx || !ctx->currentCmd_) return LN_ERROR_INVALID_HANDLE;
 
     ln::rhi::ColorAttachment colorAttach;
-    colorAttach.view = obj->currentColorTarget_;
+    colorAttach.view = ctx->currentColorTarget_;
     colorAttach.loadOp = ln::rhi::LoadOp::Clear;
     colorAttach.storeOp = ln::rhi::StoreOp::Store;
     colorAttach.clearColor = {r, g, b, a};
 
     ln::rhi::DepthStencilAttachment depthAttach;
-    depthAttach.view = obj->currentDepthTarget_;
+    depthAttach.view = ctx->currentDepthTarget_;
     depthAttach.depthLoadOp = ln::rhi::LoadOp::Clear;
     depthAttach.depthStoreOp = ln::rhi::StoreOp::Store;
     depthAttach.clearDepth = 1.0f;
@@ -170,38 +174,36 @@ LNResult LNGraphicsContext_BeginRenderPass(
     rpDesc.colorAttachments = {colorAttach};
     rpDesc.depthStencilAttachment = &depthAttach;
 
-    obj->currentPass_ = obj->currentCmd_->beginRenderPass(rpDesc);
-    if (!obj->currentPass_) return LN_ERROR_UNKNOWN;
+    ctx->currentPass_ = ctx->currentCmd_->beginRenderPass(rpDesc);
+    if (!ctx->currentPass_) return LN_ERROR_UNKNOWN;
 
     return LN_OK;
 }
 
-LNResult LNGraphicsContext_EndRenderPass(LNHandle window) {
+LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* obj = instance->objectRegistry()->resolve<WindowObject>(window);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-    if (!obj->currentPass_) return LN_ERROR_UNKNOWN;
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx || !ctx->currentPass_) return LN_ERROR_INVALID_HANDLE;
 
-    obj->currentPass_->end();
-    obj->currentPass_ = nullptr;
+    ctx->currentPass_->end();
+    ctx->currentPass_ = nullptr;
 
     return LN_OK;
 }
 
-LNResult LNGraphicsContext_EndFrame(LNHandle window) {
+LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* obj = instance->objectRegistry()->resolve<WindowObject>(window);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-    if (!obj->currentCmd_) return LN_ERROR_UNKNOWN;
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx || !ctx->currentCmd_) return LN_ERROR_INVALID_HANDLE;
 
-    obj->currentCmd_->submit();
-    obj->currentCmd_ = nullptr;
+    ctx->currentCmd_->submit();
+    ctx->currentCmd_ = nullptr;
 
-    obj->window_->graphicsContext()->endFrame();
+    ctx->endFrame();
 
     return LN_OK;
 }

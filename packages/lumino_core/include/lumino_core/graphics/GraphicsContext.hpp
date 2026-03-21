@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <lumino_base/RefCounted.hpp>
 #include <lumino_base/Result.hpp>
+#include <lumino_core/Object.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 #include <lumino_core/platform/Window.hpp>
 
@@ -35,7 +35,7 @@ struct FrameInfo {
  *
  * After creation, the rendering code is identical regardless of the creation path.
  */
-class GraphicsContext : public RefCounted {
+class GraphicsContext : public Object {
 public:
     ~GraphicsContext() override;
 
@@ -68,6 +68,12 @@ public:
 
     /** Current framebuffer height in pixels. */
     u32 height() const { return height_; }
+
+    // フレームスコープの一時状態 (BeginFrame〜EndFrame 間有効)
+    rhi::CommandBuffer*        currentCmd_         = nullptr;
+    rhi::TextureView*          currentColorTarget_ = nullptr;
+    rhi::TextureView*          currentDepthTarget_ = nullptr;
+    rhi::RenderPassEncoder*    currentPass_        = nullptr;
 
 private:
     GraphicsContext() = default;
