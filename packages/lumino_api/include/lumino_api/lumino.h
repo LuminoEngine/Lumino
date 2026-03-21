@@ -94,7 +94,8 @@ extern LUMINO_API LNResult LNTexture2D_Create(
     uint32_t width,
     uint32_t height,
     uint32_t format,
-    LNHandle* outHandle);
+    LNHandle* outHandle
+);
 
 #ifdef __cplusplus
 } // extern "C"

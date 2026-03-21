@@ -3,9 +3,14 @@
  *
  * RHI API を使って色付き三角形を描画するデモ。
  * Phase 1 の検証マイルストーン: Vulkan バックエンドが正しく動作することを確認する。
+ *
+ * PlatformWindow でウィンドウを作成し、
+ * window->graphicsContext() でデバイス・スワップチェーンを取得する。
+ * 低レベル RHI (Buffer, Pipeline 等) は ctx->device() 経由で使用する。
  */
 
 #include <lumino_core/platform/Window.hpp>
+#include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 #include <lumino_shader/ShaderCompiler.hpp>
 #include <lumino_shader/UnifiedShader.hpp>
@@ -33,44 +38,25 @@ int main() {
     using namespace ln::rhi;
     using namespace ln::platform;
 
-    // 1. ウィンドウ作成
+    // 1. Window + GraphicsContext
     WindowDesc winDesc;
     winDesc.title = "Lumino - Hello Triangle";
     winDesc.width = 1280;
     winDesc.height = 720;
-    auto* window = PlatformWindow::create(winDesc);
+
+    GraphicsContextDesc gfxDesc;
+    gfxDesc.preferredBackend = Backend::Vulkan;
+    gfxDesc.enableValidation = true;
+
+    auto* window = PlatformWindow::create(winDesc, gfxDesc);
     if (!window) {
         fprintf(stderr, "Failed to create window\n");
         return 1;
     }
+    auto* ctx = window->graphicsContext();
+    auto* device = ctx->device();
 
-    // 2. RHI デバイス作成
-    DeviceDesc devDesc;
-    devDesc.backend = Backend::Vulkan;
-    devDesc.enableValidation = true;
-    auto deviceResult = Device::create(devDesc);
-    if (!deviceResult) {
-        fprintf(stderr, "Failed to create device: %s\n", deviceResult.error().message.c_str());
-        return 1;
-    }
-    auto device = std::move(*deviceResult);
-
-    // 3. スワップチェーン作成
-    SwapChainDesc scDesc;
-    auto handle = window->nativeHandle();
-    scDesc.nativeWindowHandle = handle.glfwWindow;
-    scDesc.width = winDesc.width;
-    scDesc.height = winDesc.height;
-    scDesc.format = TextureFormat::BGRA8UnormSrgb;
-    scDesc.vsync = true;
-    auto swapChainResult = device->createSwapChain(scDesc);
-    if (!swapChainResult) {
-        fprintf(stderr, "Failed to create swap chain\n");
-        return 1;
-    }
-    auto swapChain = std::move(*swapChainResult);
-
-    // 4. 頂点バッファ
+    // 2. 頂点バッファ
     BufferDesc vbDesc;
     vbDesc.size = sizeof(s_vertices);
     vbDesc.usage = BufferUsage::Vertex;
@@ -79,7 +65,7 @@ int main() {
     if (!vbResult) { fprintf(stderr, "Failed to create vertex buffer\n"); return 1; }
     auto vertexBuffer = std::move(*vbResult);
 
-    // 5. シェーダーコンパイル (lumino_shader)
+    // 3. シェーダーコンパイル (lumino_shader)
     auto compilerResult = ln::shader::ShaderCompiler::create();
     if (!compilerResult) {
         fprintf(stderr, "Failed to create shader compiler: %s\n", compilerResult.error().message.c_str());
@@ -132,13 +118,13 @@ int main() {
     auto vertShader = std::move(*vsResult);
     auto fragShader = std::move(*fsResult);
 
-    // 6. パイプラインレイアウト（バインドなし）
+    // 4. パイプラインレイアウト（バインドなし）
     PipelineLayoutDesc plDesc;
     auto plResult = device->createPipelineLayout(plDesc);
     if (!plResult) { fprintf(stderr, "Failed to create pipeline layout\n"); return 1; }
     auto pipelineLayout = std::move(*plResult);
 
-    // 7. レンダーパイプライン
+    // 5. レンダーパイプライン
     RenderPipelineDesc rpDesc;
     rpDesc.layout = pipelineLayout.get();
     rpDesc.vertexShader = vertShader.get();
@@ -147,7 +133,7 @@ int main() {
     rpDesc.fragmentEntry = fragEP->name;
     rpDesc.topology = PrimitiveTopology::TriangleList;
     rpDesc.cullMode = CullMode::None;
-    rpDesc.colorFormats = {swapChain->format()};
+    rpDesc.colorFormats = {ctx->colorFormat()};
 
     VertexBufferLayout vbl;
     vbl.stride = sizeof(Vertex);
@@ -163,15 +149,16 @@ int main() {
 
     printf("Lumino RHI initialized. Rendering...\n");
 
-    // 8. メインループ
+    // 6. メインループ
     while (window->processEvents()) {
-        auto* backbuffer = swapChain->acquireNextTexture();
+        auto frame = ctx->beginFrame();
+        if (!frame) { fprintf(stderr, "beginFrame failed\n"); break; }
 
         auto* cmd = device->createCommandBuffer();
 
         RenderPassDesc passDesc;
         passDesc.colorAttachments.push_back({
-            backbuffer,
+            frame->colorTarget,
             LoadOp::Clear,
             StoreOp::Store,
             {0.1f, 0.1f, 0.15f, 1.0f},
@@ -184,14 +171,12 @@ int main() {
         pass->end();
 
         cmd->submit();
-        swapChain->present();
+        ctx->endFrame();
 
         delete cmd;
     }
 
-    device->waitIdle();
-    delete window;
-
     printf("Done.\n");
+    delete window;
     return 0;
 }

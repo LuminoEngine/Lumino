@@ -5,7 +5,7 @@
 
 namespace ln {
 
-/// Standard vertex layout for 3D rendering (64 bytes).
+/** Standard vertex layout for 3D rendering (64 bytes). */
 struct Vertex {
     Vector3 position;   // 12 bytes
     Vector3 normal;     // 12 bytes
@@ -16,7 +16,7 @@ struct Vertex {
 
 static_assert(sizeof(Vertex) == 64, "Vertex must be 64 bytes");
 
-/// Returns the standard VertexBufferLayout matching the Vertex struct.
+/** Returns the standard VertexBufferLayout matching the Vertex struct. */
 inline rhi::VertexBufferLayout standardVertexLayout() {
     rhi::VertexBufferLayout layout;
     layout.stride = sizeof(Vertex);

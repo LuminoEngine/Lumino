@@ -1,14 +1,16 @@
 ﻿#pragma once
 
-/// @file rhi.hpp
-/// WebGPU-style Rendering Hardware Interface for Lumino.
-///
-/// Design principles:
-///   - Resources are immutable after creation.
-///   - Pipeline state is pre-built.
-///   - Commands are encoded then submitted (two-phase).
-///   - Vulkan complexities (descriptor pools, pipeline caches, framebuffers)
-///     are hidden inside the backend.
+/**
+ * @file rhi.hpp
+ * WebGPU-style Rendering Hardware Interface for Lumino.
+ * 
+ * Design principles:
+ *   - Resources are immutable after creation.
+ *   - Pipeline state is pre-built.
+ *   - Commands are encoded then submitted (two-phase).
+ *   - Vulkan complexities (descriptor pools, pipeline caches, framebuffers)
+ *     are hidden inside the backend.
+ */
 
 #include <lumino_base/Types.hpp>
 #include <lumino_base/Result.hpp>
@@ -325,7 +327,7 @@ class Buffer : public RefCounted {
 public:
     virtual ~Buffer() = default;
     virtual u64 size() const = 0;
-    /// Map the buffer for CPU write. Returns nullptr if not mappable.
+    /** Map the buffer for CPU write. Returns nullptr if not mappable. */
     virtual void* map() = 0;
     virtual void unmap() = 0;
 };
@@ -401,9 +403,9 @@ public:
 class SwapChain : public RefCounted {
 public:
     virtual ~SwapChain() = default;
-    /// Acquire the next framebuffer texture view. Must be called once per frame.
+    /** Acquire the next framebuffer texture view. Must be called once per frame. */
     virtual TextureView* acquireNextTexture() = 0;
-    /// Present the current frame.
+    /** Present the current frame. */
     virtual void present() = 0;
     virtual u32 width() const = 0;
     virtual u32 height() const = 0;
@@ -416,7 +418,7 @@ class Device : public RefCounted {
 public:
     virtual ~Device() = default;
 
-    /// Create a device with the given backend.
+    /** Create a device with the given backend. */
     static Result<Ref<Device>> create(const DeviceDesc& desc);
 
     // Resource creation
@@ -431,10 +433,10 @@ public:
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
-    /// Create a command buffer for this frame.
+    /** Create a command buffer for this frame. */
     virtual CommandBuffer* createCommandBuffer() = 0;
 
-    /// Wait for the device to become idle.
+    /** Wait for the device to become idle. */
     virtual void waitIdle() = 0;
 };
 

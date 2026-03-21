@@ -1,12 +1,15 @@
-/**
+﻿/**
  * ForwardRendering.cpp
  *
  * Phase 2 デモ: ForwardRenderer でプロシージャルメッシュを描画する。
  * Camera, Material, Mesh, ForwardRenderer の動作確認。
+ *
+ * PlatformWindow でウィンドウを作成し、
+ * window->graphicsContext() で Device + SwapChain + DepthBuffer を取得する。
  */
 
 #include <lumino_core/platform/Window.hpp>
-#include <lumino_core/graphics/rhi/Rhi.hpp>
+#include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_core/graphics/ForwardRenderer.hpp>
 #include <lumino_core/graphics/Camera.hpp>
 #include <lumino_core/graphics/Mesh.hpp>
@@ -73,75 +76,46 @@ int main() {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    // 1. Window
+    // 1. Window + GraphicsContext
     WindowDesc winDesc;
     winDesc.title = "Lumino - Forward Rendering";
     winDesc.width = 1280;
     winDesc.height = 720;
-    auto* window = PlatformWindow::create(winDesc);
+
+    GraphicsContextDesc gfxDesc;
+    gfxDesc.preferredBackend = Backend::Vulkan;
+    gfxDesc.enableValidation = true;
+
+    auto* window = PlatformWindow::create(winDesc, gfxDesc);
     if (!window) { fprintf(stderr, "Failed to create window\n"); return 1; }
+    auto* ctx = window->graphicsContext();
 
-    // 2. Device
-    DeviceDesc devDesc;
-    devDesc.backend = Backend::Vulkan;
-    devDesc.enableValidation = true;
-    auto deviceResult = Device::create(devDesc);
-    if (!deviceResult) { fprintf(stderr, "Device: %s\n", deviceResult.error().message.c_str()); return 1; }
-    auto device = std::move(*deviceResult);
-
-    // 3. SwapChain
-    SwapChainDesc scDesc;
-    scDesc.nativeWindowHandle = window->nativeHandle().glfwWindow;
-    scDesc.width = winDesc.width;
-    scDesc.height = winDesc.height;
-    scDesc.format = TextureFormat::BGRA8UnormSrgb;
-    scDesc.vsync = true;
-    auto swapChainResult = device->createSwapChain(scDesc);
-    if (!swapChainResult) { fprintf(stderr, "SwapChain failed\n"); return 1; }
-    auto swapChain = std::move(*swapChainResult);
-
-    // 4. Depth texture
-    TextureDesc depthTexDesc;
-    depthTexDesc.width = winDesc.width;
-    depthTexDesc.height = winDesc.height;
-    depthTexDesc.format = TextureFormat::Depth32Float;
-    depthTexDesc.usage = TextureUsage::DepthStencil;
-    auto depthTexResult = device->createTexture(depthTexDesc);
-    if (!depthTexResult) { fprintf(stderr, "Depth texture failed\n"); return 1; }
-    auto depthTex = std::move(*depthTexResult);
-    auto depthViewResult = device->createTextureView(depthTex.get());
-    if (!depthViewResult) { fprintf(stderr, "Depth view failed\n"); return 1; }
-    auto depthView = std::move(*depthViewResult);
-
-    // 5. ForwardRenderer
-    auto rendererResult = ForwardRenderer::create(
-        device.get(), swapChain->format(), TextureFormat::Depth32Float);
+    // 2. ForwardRenderer
+    auto rendererResult = ForwardRenderer::create(ctx);
     if (!rendererResult) { fprintf(stderr, "Renderer failed\n"); return 1; }
     auto renderer = std::move(*rendererResult);
 
-    // 6. Material (BasicLit)
-    auto matResult = MaterialFactory::createBasicLit(
-        device.get(), renderer->pipelineLayout(),
-        swapChain->format(), TextureFormat::Depth32Float);
+    // 3. Material (BasicLit)
+    auto matResult = MaterialFactory::createBasicLit(ctx, renderer->pipelineLayout());
     if (!matResult) { fprintf(stderr, "Material: %s\n", matResult.error().message.c_str()); return 1; }
     auto material = std::move(*matResult);
     material->setColor(Color{0.8f, 0.5f, 0.2f, 1.0f});
-    auto ubgResult = material->updateBindGroup(device.get());
+    auto ubgResult = material->updateBindGroup(ctx->device());
     if (!ubgResult) { fprintf(stderr, "Material bind group: %s\n", ubgResult.error().message.c_str()); return 1; }
 
-    // 7. Cube mesh
-    auto meshResult = createCubeMesh(device.get());
+    // 4. Cube mesh
+    auto meshResult = createCubeMesh(ctx->device());
     if (!meshResult) { fprintf(stderr, "Mesh failed\n"); return 1; }
     auto mesh = std::move(*meshResult);
     mesh->materials() = {material};
 
-    // 8. Camera
+    // 5. Camera
     Camera camera;
     camera.setPerspective(60.0f * 3.14159f / 180.0f,
-        static_cast<f32>(winDesc.width) / static_cast<f32>(winDesc.height),
+        static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
         0.1f, 100.0f);
 
-    // 9. Light
+    // 6. Light
     DirectionalLight light;
     light.direction = Vector3{0.3f, -1.0f, 0.5f};
     light.color = Color::white();
@@ -150,36 +124,30 @@ int main() {
 
     printf("Lumino ForwardRenderer initialized. Rendering...\n");
 
-    // 10. Main loop
+    // 7. Main loop
     f32 time = 0.0f;
     while (window->processEvents()) {
         time += 0.016f; // ~60fps
 
-        // Orbit camera (angles in radians)
         camera.setOrbit({0, 0, 0}, 3.0f, time * 0.5f, 0.35f);
 
-        // Build render objects
         RenderObject obj;
         obj.mesh = mesh;
         obj.transform.rotation = Quaternion::fromEuler(time * 20.0f, time * 30.0f, 0.0f);
         std::vector<RenderObject> objects = {obj};
 
-        auto* backbuffer = swapChain->acquireNextTexture();
+        auto frame = ctx->beginFrame();
+        if (!frame) { fprintf(stderr, "beginFrame failed\n"); break; }
 
         auto renderResult = renderer->renderFrame(
-            device.get(), backbuffer, depthView.get(),
+            ctx->device(), frame->colorTarget, frame->depthTarget,
             camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
+        if (!renderResult) { fprintf(stderr, "Render error\n"); }
 
-        if (!renderResult) {
-            fprintf(stderr, "Render error\n");
-        }
-
-        swapChain->present();
+        ctx->endFrame();
     }
 
-    device->waitIdle();
-    delete window;
-
     printf("Done.\n");
+    delete window;
     return 0;
 }

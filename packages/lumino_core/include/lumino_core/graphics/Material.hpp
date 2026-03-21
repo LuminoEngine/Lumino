@@ -8,7 +8,7 @@
 
 namespace ln {
 
-/// GPU-aligned view params (Set 0): must match shader ViewParams struct.
+/** GPU-aligned view params (Set 0): must match shader ViewParams struct. */
 struct ViewParamsUBO {
     f32 viewProj[16];
     f32 cameraPos[4];
@@ -17,18 +17,18 @@ struct ViewParamsUBO {
     f32 ambientColor[4];
 };
 
-/// GPU-aligned material params for Unlit (Set 1).
+/** GPU-aligned material params for Unlit (Set 1). */
 struct UnlitMaterialParamsUBO {
     f32 color[4];
 };
 
-/// GPU-aligned material params for BasicLit (Set 1).
+/** GPU-aligned material params for BasicLit (Set 1). */
 struct BasicLitMaterialParamsUBO {
     f32 color[4];
     f32 specular[4]; // xyz = specular color, w = shininess
 };
 
-/// GPU-aligned object params (Set 2): must match shader ObjectParams struct.
+/** GPU-aligned object params (Set 2): must match shader ObjectParams struct. */
 struct ObjectParamsUBO {
     f32 world[16];
     f32 normalMatrix[16];
@@ -39,8 +39,10 @@ enum class MaterialType {
     BasicLit,
 };
 
-/// Material: shader + parameters + render state + textures.
-/// Manages a RenderPipeline and per-material BindGroup (Set 1).
+/**
+ * Material: shader + parameters + render state + textures.
+ * Manages a RenderPipeline and per-material BindGroup (Set 1).
+ */
 class Material : public RefCounted {
 public:
     ~Material() override = default;
@@ -62,11 +64,13 @@ public:
     rhi::BindGroupLayout* materialBindGroupLayout() const { return materialBindGroupLayout_.get(); }
     rhi::BindGroup* materialBindGroup() const { return materialBindGroup_.get(); }
 
-    /// Rebuild the BindGroup after parameter changes. Call before rendering.
+    /** Rebuild the BindGroup after parameter changes. Call before rendering. */
     Result<void> updateBindGroup(rhi::Device* device);
 
-    /// Rebuild the RenderPipeline. Must be called after render state changes
-    /// or initially during creation.
+    /**
+     * Rebuild the RenderPipeline. Must be called after render state changes
+     * or initially during creation.
+     */
     Result<void> buildPipeline(
         rhi::Device* device,
         rhi::PipelineLayout* pipelineLayout,
@@ -113,22 +117,34 @@ private:
     bool paramsDirty_ = true;
 };
 
-/// Factory for creating built-in materials from precompiled shaders.
+class GraphicsContext;
+
+/** Factory for creating built-in materials from precompiled shaders. */
 class MaterialFactory {
 public:
-    /// Create an Unlit material (texture * color, no lighting).
+    /** Create an Unlit material (texture * color, no lighting). */
     static Result<Ref<Material>> createUnlit(
         rhi::Device* device,
         rhi::PipelineLayout* pipelineLayout,
         rhi::TextureFormat colorFormat,
         rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
 
-    /// Create a BasicLit material (Blinn-Phong, 1 directional light).
+    /** Create an Unlit material from a GraphicsContext. */
+    static Result<Ref<Material>> createUnlit(
+        GraphicsContext* ctx,
+        rhi::PipelineLayout* pipelineLayout);
+
+    /** Create a BasicLit material (Blinn-Phong, 1 directional light). */
     static Result<Ref<Material>> createBasicLit(
         rhi::Device* device,
         rhi::PipelineLayout* pipelineLayout,
         rhi::TextureFormat colorFormat,
         rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
+
+    /** Create a BasicLit material from a GraphicsContext. */
+    static Result<Ref<Material>> createBasicLit(
+        GraphicsContext* ctx,
+        rhi::PipelineLayout* pipelineLayout);
 
 private:
     static Result<Ref<Material>> createMaterialFromShaderData(

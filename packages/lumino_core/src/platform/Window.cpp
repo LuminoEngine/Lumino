@@ -1,4 +1,5 @@
 ﻿#include <lumino_core/platform/Window.hpp>
+#include <lumino_core/graphics/GraphicsContext.hpp>
 
 #ifdef LN_NX
     #include <nn/nn_Common.h>
@@ -28,10 +29,13 @@ static GlfwGuard& ensureGlfw() {
 // ─── Impl ───
 struct PlatformWindow::Impl {
     GLFWwindow* window = nullptr;
+    Ref<ln::GraphicsContext> graphicsContext;
 };
 
 PlatformWindow::~PlatformWindow() {
     if (impl_) {
+        // Graphics context must be torn down before the GLFW window
+        impl_->graphicsContext.reset();
         if (impl_->window) glfwDestroyWindow(impl_->window);
         delete impl_;
     }
@@ -68,6 +72,23 @@ PlatformWindow* PlatformWindow::create(const WindowDesc& desc) {
         return nullptr;
     }
     return win;
+}
+
+PlatformWindow* PlatformWindow::create(const WindowDesc& desc, const ln::GraphicsContextDesc& gfxDesc) {
+    auto* win = PlatformWindow::create(desc);
+    if (!win) return nullptr;
+
+    auto ctxResult = ln::GraphicsContext::createForWindow(win, gfxDesc);
+    if (!ctxResult) {
+        delete win;
+        return nullptr;
+    }
+    win->impl_->graphicsContext = std::move(*ctxResult);
+    return win;
+}
+
+ln::GraphicsContext* PlatformWindow::graphicsContext() const {
+    return impl_ ? impl_->graphicsContext.get() : nullptr;
 }
 
 bool PlatformWindow::processEvents() {

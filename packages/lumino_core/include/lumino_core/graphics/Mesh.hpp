@@ -7,17 +7,17 @@
 
 namespace ln {
 
-/// A sub-range of a mesh's index buffer, associated with a material.
+/** A sub-range of a mesh's index buffer, associated with a material. */
 struct SubMesh {
     u32 indexOffset = 0;
     u32 indexCount = 0;
     u32 materialIndex = 0;
 };
 
-/// A mesh containing vertex/index GPU buffers and submesh ranges.
+/** A mesh containing vertex/index GPU buffers and submesh ranges. */
 class Mesh : public RefCounted {
 public:
-    /// Create a mesh from CPU data and upload to GPU.
+    /** Create a mesh from CPU data and upload to GPU. */
     static Result<Ref<Mesh>> create(
         rhi::Device* device,
         const std::vector<Vertex>& vertices,
@@ -28,7 +28,7 @@ public:
     rhi::Buffer* indexBuffer() const { return indexBuffer_.get(); }
     const std::vector<SubMesh>& submeshes() const { return submeshes_; }
 
-    /// Material slots for this mesh. One per unique materialIndex used in submeshes.
+    /** Material slots for this mesh. One per unique materialIndex used in submeshes. */
     std::vector<Ref<Material>>& materials() { return materials_; }
     const std::vector<Ref<Material>>& materials() const { return materials_; }
 

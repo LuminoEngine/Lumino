@@ -1,4 +1,5 @@
 ﻿#include <lumino_core/graphics/ForwardRenderer.hpp>
+#include <lumino_core/graphics/GraphicsContext.hpp>
 #include <cstring>
 
 namespace ln {
@@ -77,6 +78,10 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     renderer->viewBindGroup_ = std::move(*viewBGResult);
 
     return renderer;
+}
+
+Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
+    return create(ctx->device(), ctx->colorFormat(), ctx->depthFormat());
 }
 
 Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t count) {

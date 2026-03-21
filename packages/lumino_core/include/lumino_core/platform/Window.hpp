@@ -4,6 +4,11 @@
 #include <functional>
 #include <string>
 
+namespace ln {
+class GraphicsContext;
+struct GraphicsContextDesc;
+} // namespace ln
+
 namespace ln::platform {
 
 /** Window creation descriptor. */
@@ -32,6 +37,9 @@ public:
     /** Create a platform window. Returns nullptr on failure. */
     static PlatformWindow* create(const WindowDesc& desc);
 
+    /** Create a platform window with an attached graphics context. Returns nullptr on failure. */
+    static PlatformWindow* create(const WindowDesc& desc, const GraphicsContextDesc& gfxDesc);
+
     /** Poll events and return false if the window should close. */
     bool processEvents();
 
@@ -40,6 +48,9 @@ public:
 
     /** Get framebuffer size in pixels. */
     void framebufferSize(u32& width, u32& height) const;
+
+    /** Get the graphics context attached to this window. May be nullptr. */
+    GraphicsContext* graphicsContext() const;
 
 private:
     PlatformWindow() = default;

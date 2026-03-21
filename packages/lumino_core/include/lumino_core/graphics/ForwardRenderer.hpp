@@ -8,18 +8,21 @@
 #include <lumino_core/graphics/Mesh.hpp>
 #include <lumino_core/graphics/MeshLoader.hpp>
 #include <lumino_core/graphics/Transform.hpp>
+#include <lumino_core/graphics/GraphicsContext.hpp>
 
 namespace ln {
 
-/// Lighting parameters for the forward renderer.
+/** Lighting parameters for the forward renderer. */
 struct DirectionalLight {
     Vector3 direction = Vector3{0.0f, -1.0f, 0.5f};
     Color color = Color::white();
     Color ambient = Color{0.15f, 0.15f, 0.15f, 1.0f};
 };
 
-/// A simple single-pass forward renderer.
-/// Manages per-view and per-object UBOs, and drives the RHI command encoding.
+/**
+ * A simple single-pass forward renderer.
+ * Manages per-view and per-object UBOs, and drives the RHI command encoding.
+ */
 class ForwardRenderer : public RefCounted {
 public:
     static Result<Ref<ForwardRenderer>> create(
@@ -27,24 +30,29 @@ public:
         rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8Unorm,
         rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
 
-    /// Shared PipelineLayout (3 sets: view, material, object).
+    /** Create from a GraphicsContext (uses its device and formats). */
+    static Result<Ref<ForwardRenderer>> create(GraphicsContext* ctx);
+
+    /** Shared PipelineLayout (3 sets: view, material, object). */
     rhi::PipelineLayout* pipelineLayout() const { return pipelineLayout_.get(); }
 
-    /// Color format used by this renderer.
+    /** Color format used by this renderer. */
     rhi::TextureFormat colorFormat() const { return colorFormat_; }
 
-    /// Depth format used by this renderer.
+    /** Depth format used by this renderer. */
     rhi::TextureFormat depthFormat() const { return depthFormat_; }
 
-    /// Set the directional light for the scene.
+    /** Set the directional light for the scene. */
     void setLight(const DirectionalLight& light) { light_ = light; }
 
-    /// Render a frame.
-    /// @param colorTarget  The color texture view to render into (from SwapChain).
-    /// @param depthTarget  The depth texture view to use. Must be created externally.
-    /// @param camera       The camera for this frame.
-    /// @param objects      The objects to render.
-    /// @param clearColor   Background clear color.
+    /**
+     * Render a frame.
+     * @param colorTarget  The color texture view to render into (from SwapChain).
+     * @param depthTarget  The depth texture view to use. Must be created externally.
+     * @param camera       The camera for this frame.
+     * @param objects      The objects to render.
+     * @param clearColor   Background clear color.
+     */
     Result<void> renderFrame(
         rhi::Device* device,
         rhi::TextureView* colorTarget,

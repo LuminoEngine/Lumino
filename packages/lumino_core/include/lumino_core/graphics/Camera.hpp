@@ -8,7 +8,7 @@ enum class ProjectionMode {
     Orthographic,
 };
 
-/// Camera for 3D rendering. Produces view and projection matrices.
+/** Camera for 3D rendering. Produces view and projection matrices. */
 class Camera {
 public:
     Camera();
@@ -17,7 +17,7 @@ public:
     void setOrthographic(f32 width, f32 height, f32 nearClip, f32 farClip);
     void setLookAt(const Vector3& eye, const Vector3& target, const Vector3& up = Vector3::unitY());
 
-    /// Helper: orbit around target at given distance, yaw and pitch angles (radians).
+    /** Helper: orbit around target at given distance, yaw and pitch angles (radians). */
     void setOrbit(const Vector3& target, f32 distance, f32 yaw, f32 pitch);
 
     const Vector3& position() const { return position_; }

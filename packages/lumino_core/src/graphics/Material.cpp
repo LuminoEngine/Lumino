@@ -1,4 +1,5 @@
 ﻿#include <lumino_core/graphics/Material.hpp>
+#include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_core/graphics/TextureLoader.hpp>
 #include <lumino_shader/UnifiedShader.hpp>
 #include <lumino_shader/UnifiedShaderSerializer.hpp>
@@ -263,6 +264,18 @@ Result<Ref<Material>> MaterialFactory::createBasicLit(
         device, pipelineLayout, colorFormat, depthFormat,
         s_basicLitShaderData, sizeof(s_basicLitShaderData),
         MaterialType::BasicLit);
+}
+
+Result<Ref<Material>> MaterialFactory::createUnlit(
+    GraphicsContext* ctx,
+    rhi::PipelineLayout* pipelineLayout) {
+    return createUnlit(ctx->device(), pipelineLayout, ctx->colorFormat(), ctx->depthFormat());
+}
+
+Result<Ref<Material>> MaterialFactory::createBasicLit(
+    GraphicsContext* ctx,
+    rhi::PipelineLayout* pipelineLayout) {
+    return createBasicLit(ctx->device(), pipelineLayout, ctx->colorFormat(), ctx->depthFormat());
 }
 
 } // namespace ln

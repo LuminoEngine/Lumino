@@ -9,23 +9,25 @@
 
 namespace ln {
 
-/// A renderable object loaded from a model file.
+/** A renderable object loaded from a model file. */
 struct RenderObject {
     Ref<Mesh> mesh;
     Transform transform;
 };
 
-/// Result of loading a model file.
+/** Result of loading a model file. */
 struct LoadedModel {
     std::vector<RenderObject> objects;
     std::vector<Ref<Material>> materials;
 };
 
-/// Loads 3D models (glTF) into Mesh/Material objects.
+/** Loads 3D models (glTF) into Mesh/Material objects. */
 class MeshLoader {
 public:
-    /// Load a glTF or glb file.
-    /// @param pipelineLayout Shared PipelineLayout for all materials (3 BindGroupLayouts: view, material, object).
+    /**
+     * Load a glTF or glb file.
+     * @param pipelineLayout Shared PipelineLayout for all materials (3 BindGroupLayouts: view, material, object).
+     */
     static Result<LoadedModel> loadGltf(
         rhi::Device* device,
         rhi::PipelineLayout* pipelineLayout,
