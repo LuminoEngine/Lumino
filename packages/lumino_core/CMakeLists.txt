@@ -13,12 +13,12 @@ find_package(Stb REQUIRED)
 #-------------------------------------------------------------------------------
 # Sources
 #-------------------------------------------------------------------------------
-file(GLOB LN_LOCAL_SOURCES_platform
-    src/platform/*.cpp
-    src/platform/*.hpp
-    include/${PROJECT_NAME}/platform/*.hpp
+file(GLOB LN_LOCAL_SOURCES_core
+    src/pch.hpp
+    src/CoreInstance.cpp
+    include/${PROJECT_NAME}/CoreInstance.hpp
 )
-source_group("platform" FILES ${LN_LOCAL_SOURCES_platform})
+file(GLOB LN_LOCAL_SOURCES_platform src/platform/*.cpp src/platform/*.hpp include/${PROJECT_NAME}/platform/*.hpp)
 
 file(GLOB LN_LOCAL_SOURCES_graphics
     src/graphics/*.cpp
@@ -30,9 +30,13 @@ file(GLOB LN_LOCAL_SOURCES_graphics
     src/graphics/rhi/vulkan/FrameResourceManager.hpp
     src/graphics/rhi/vulkan/StagingBufferPool.hpp
 )
+
+source_group("" FILES ${LN_LOCAL_SOURCES_core})
+source_group("platform" FILES ${LN_LOCAL_SOURCES_platform})
 source_group("graphics" FILES ${LN_LOCAL_SOURCES_graphics})
 
 set(LN_LOCAL_SOURCES
+    ${LN_LOCAL_SOURCES_core}
     ${LN_LOCAL_SOURCES_platform}
     ${LN_LOCAL_SOURCES_graphics}
 )

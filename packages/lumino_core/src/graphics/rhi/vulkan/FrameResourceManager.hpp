@@ -18,7 +18,7 @@
 #include <functional>
 #include <vector>
 
-namespace lumino::rhi::vulkan {
+namespace ln::rhi::vulkan {
 
 class FrameResourceManager {
 public:
@@ -52,4 +52,4 @@ private:
     std::array<std::vector<std::function<void()>>, MAX_FRAMES> deleteQueues_;
 };
 
-} // namespace lumino::rhi::vulkan
+} // namespace ln::rhi::vulkan

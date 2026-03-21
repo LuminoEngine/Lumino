@@ -18,7 +18,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace lumino::rhi::vulkan {
+namespace ln::rhi::vulkan {
 
 class StagingBufferPool {
 public:
@@ -232,4 +232,4 @@ private:
     }
 };
 
-} // namespace lumino::rhi::vulkan
+} // namespace ln::rhi::vulkan

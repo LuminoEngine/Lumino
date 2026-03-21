@@ -2,7 +2,7 @@
 #include "pch.hpp"
 #include <lumino_shader/UnifiedShader.hpp>
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 RegisterCategory GlobalResourceLayout::getRegisterCategoryByName(const std::string& name) const {
@@ -284,4 +284,4 @@ VoidResult UnifiedShader::mergeTargetBindingLayoutInfo(
 }
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

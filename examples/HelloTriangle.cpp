@@ -29,9 +29,9 @@ int main() {
 #ifdef _WIN32
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-    using namespace lumino;
-    using namespace lumino::rhi;
-    using namespace lumino::platform;
+    using namespace ln;
+    using namespace ln::rhi;
+    using namespace ln::platform;
 
     // 1. ウィンドウ作成
     WindowDesc winDesc;
@@ -80,7 +80,7 @@ int main() {
     auto vertexBuffer = std::move(*vbResult);
 
     // 5. シェーダーコンパイル (lumino_shader)
-    auto compilerResult = lumino::shader::ShaderCompiler::create();
+    auto compilerResult = ln::shader::ShaderCompiler::create();
     if (!compilerResult) {
         fprintf(stderr, "Failed to create shader compiler: %s\n", compilerResult.error().message.c_str());
         return 1;
@@ -93,7 +93,7 @@ int main() {
         return 1;
     }
 
-    lumino::shader::UnifiedShader* unifiedShader = compiler->shader();
+    ln::shader::UnifiedShader* unifiedShader = compiler->shader();
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
         fprintf(stderr, "No shader passes found\n");
@@ -101,7 +101,7 @@ int main() {
     }
 
     auto* globalPass = globalPasses[0].get();
-    auto targetPassId = globalPass->getTargetShaderPassId(lumino::shader::ShaderTarget_SPIRV);
+    auto targetPassId = globalPass->getTargetShaderPassId(ln::shader::ShaderTarget_SPIRV);
     auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
     if (!targetPass) {
         fprintf(stderr, "No SPIRV target pass found\n");
@@ -119,12 +119,12 @@ int main() {
     auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
 
     ShaderModuleDesc vsDesc;
-    vsDesc.spirvCode = reinterpret_cast<const lumino::u32*>(vertBlob->data.data());
+    vsDesc.spirvCode = reinterpret_cast<const ln::u32*>(vertBlob->data.data());
     vsDesc.spirvSizeBytes = vertBlob->data.size();
     auto vsResult = device->createShaderModule(vsDesc);
 
     ShaderModuleDesc fsDesc;
-    fsDesc.spirvCode = reinterpret_cast<const lumino::u32*>(fragBlob->data.data());
+    fsDesc.spirvCode = reinterpret_cast<const ln::u32*>(fragBlob->data.data());
     fsDesc.spirvSizeBytes = fragBlob->data.size();
     auto fsResult = device->createShaderModule(fsDesc);
 

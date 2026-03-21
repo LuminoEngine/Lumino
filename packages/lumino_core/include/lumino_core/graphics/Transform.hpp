@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <lumino_base/Math.hpp>
 
-namespace lumino {
+namespace ln {
 
 /// TRS transform: position, rotation (quaternion), scale.
 struct Transform {
@@ -26,4 +26,4 @@ struct Transform {
     static Transform identity() { return {}; }
 };
 
-} // namespace lumino
+} // namespace ln

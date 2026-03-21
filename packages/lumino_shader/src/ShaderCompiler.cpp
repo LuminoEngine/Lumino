@@ -11,7 +11,7 @@
 #include <Windows.h>
 #endif
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 namespace {
@@ -950,6 +950,6 @@ Result<VertexInputAttribute> ShaderCompiler::makeVertexInputAttribute(
 }
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln
 
 #endif // LUMINO_USE_SLANG

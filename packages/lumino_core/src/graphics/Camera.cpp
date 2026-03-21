@@ -1,7 +1,7 @@
 ﻿#include <lumino_core/graphics/Camera.hpp>
 #include <cmath>
 
-namespace lumino {
+namespace ln {
 
 Camera::Camera() = default;
 
@@ -56,4 +56,4 @@ Matrix4x4 Camera::viewProjectionMatrix() const {
     return projectionMatrix() * viewMatrix();
 }
 
-} // namespace lumino
+} // namespace ln

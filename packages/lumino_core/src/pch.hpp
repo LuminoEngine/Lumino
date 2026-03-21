@@ -1,11 +1,9 @@
 ﻿#pragma once
 
-// Standard C headers
+// Standard headers
 #include <cassert>
 #include <cmath>
 #include <cstring>
-
-// Standard C++ headers
 #include <algorithm>
 #include <memory>
 #include <mutex>
@@ -13,3 +11,5 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <LuminoBase.hpp>

@@ -7,7 +7,7 @@
 #include <fstream>
 #include <vector>
 
-namespace lumino {
+namespace ln {
 
 static Result<Ref<rhi::Texture>> createTextureFromRGBA(rhi::Device* device, const u8* pixels, u32 w, u32 h) {
     rhi::TextureDesc desc;
@@ -49,4 +49,4 @@ Result<Ref<rhi::Texture>> TextureLoader::createWhiteTexture(rhi::Device* device)
     return createTextureFromRGBA(device, white, 1, 1);
 }
 
-} // namespace lumino
+} // namespace ln

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <cstddef>
 
-namespace lumino {
+namespace ln {
 
 using u8  = uint8_t;
 using u16 = uint16_t;
@@ -36,4 +36,4 @@ struct Span {
     constexpr T* end() const { return data_ + size_; }
 };
 
-} // namespace lumino
+} // namespace ln

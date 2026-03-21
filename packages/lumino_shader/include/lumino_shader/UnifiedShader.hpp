@@ -3,7 +3,7 @@
 
 #include "Common.hpp"
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 using GlobalConstantBufferMemberId = int16_t;
@@ -172,4 +172,4 @@ private:
 };
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

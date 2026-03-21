@@ -16,7 +16,7 @@
 #include "FrameResourceManager.hpp"
 #include "StagingBufferPool.hpp"
 
-namespace lumino::rhi::vulkan {
+namespace ln::rhi::vulkan {
 
 // ─── Utilities ───────────────────────────────────────────────────────────
 
@@ -355,4 +355,4 @@ private:
     std::unordered_map<FramebufferKey, VkFramebuffer, FramebufferKeyHash> framebufferCache_;
 };
 
-} // namespace lumino::rhi::vulkan
+} // namespace ln::rhi::vulkan

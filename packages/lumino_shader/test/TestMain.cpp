@@ -4,8 +4,8 @@
 #include <lumino_shader/UnifiedShader.hpp>
 #include <lumino_shader/UnifiedShaderSerializer.hpp>
 
-using namespace lumino;
-using namespace lumino::shader;
+using namespace ln;
+using namespace ln::shader;
 
 TEST(UnifiedShaderSerializer, RoundTrip) {
     // Build a simple UnifiedShader manually

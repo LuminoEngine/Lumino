@@ -5,7 +5,7 @@
 #include <lumino_core/graphics/Vertex.hpp>
 #include <lumino_core/graphics/Material.hpp>
 
-namespace lumino {
+namespace ln {
 
 /// A sub-range of a mesh's index buffer, associated with a material.
 struct SubMesh {
@@ -39,4 +39,4 @@ private:
     std::vector<Ref<Material>> materials_;
 };
 
-} // namespace lumino
+} // namespace ln

@@ -4,7 +4,7 @@
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 #include <string>
 
-namespace lumino {
+namespace ln {
 
 /// Loads image files into RHI textures via stb_image.
 class TextureLoader {
@@ -19,4 +19,4 @@ public:
     static Result<Ref<rhi::Texture>> createWhiteTexture(rhi::Device* device);
 };
 
-} // namespace lumino
+} // namespace ln

@@ -4,9 +4,11 @@
 # Sources
 #-------------------------------------------------------------------------------
 file(GLOB LN_LOCAL_SOURCES
+    src/pch.hpp
     src/*.cpp
     src/*.hpp
     include/${PROJECT_NAME}/*.hpp
+    include/LuminoBase.hpp
 )
 
 #-------------------------------------------------------------------------------

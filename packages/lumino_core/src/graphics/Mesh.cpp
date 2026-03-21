@@ -1,6 +1,6 @@
 ﻿#include <lumino_core/graphics/Mesh.hpp>
 
-namespace lumino {
+namespace ln {
 
 Result<Ref<Mesh>> Mesh::create(
     rhi::Device* device,
@@ -40,4 +40,4 @@ Result<Ref<Mesh>> Mesh::create(
     return mesh;
 }
 
-} // namespace lumino
+} // namespace ln

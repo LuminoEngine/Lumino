@@ -1,7 +1,7 @@
 ﻿#include <lumino_base/Math.hpp>
 #include <cmath>
 
-namespace lumino {
+namespace ln {
 
 // ─── Quaternion ──────────────────────────────────────────────────────────
 
@@ -225,4 +225,4 @@ Matrix4x4 Matrix4x4::inversed() const {
     return r;
 }
 
-} // namespace lumino
+} // namespace ln

@@ -19,7 +19,7 @@ public:
 #include <lumino_base/Math.hpp>
 #include <cmath>
 
-using namespace lumino;
+using namespace ln;
 
 TEST(VertexTest, Size) {
     EXPECT_EQ(sizeof(Vertex), 64u);

@@ -8,7 +8,7 @@
 #include <slang.h>
 #include <slang-com-ptr.h>
 
-namespace lumino {
+namespace ln {
 namespace shader {
 namespace fs = std::filesystem;
 class UnifiedShader;
@@ -65,6 +65,6 @@ private:
 };
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln
 
 #endif // LUMINO_USE_SLANG

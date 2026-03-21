@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace lumino::rhi {
+namespace ln::rhi {
 
 // ─── Forward declarations ───
 class Device;
@@ -438,4 +438,4 @@ public:
     virtual void waitIdle() = 0;
 };
 
-} // namespace lumino::rhi
+} // namespace ln::rhi

@@ -1,7 +1,7 @@
 #include <lumino_core/graphics/ForwardRenderer.hpp>
 #include <cstring>
 
-namespace lumino {
+namespace ln {
 
 Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     rhi::Device* device,
@@ -224,4 +224,4 @@ Result<void> ForwardRenderer::renderFrame(
     return {};
 }
 
-} // namespace lumino
+} // namespace ln

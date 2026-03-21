@@ -3,7 +3,7 @@
 #include <lumino_shader/UnifiedShader.hpp>
 #include "DescriptorLayoutBuilder.hpp"
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 DescriptorLayoutBuilder::DescriptorLayoutBuilder() {
@@ -145,4 +145,4 @@ VoidResult DescriptorLayoutBuilder::getOrCreateDescriptorLayoutEntry(
 }
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

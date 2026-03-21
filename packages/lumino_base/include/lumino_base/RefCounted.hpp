@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <utility>
 
-namespace lumino {
+namespace ln {
 
 /// Intrusive reference-counted base class.
 class RefCounted {
@@ -94,4 +94,4 @@ private:
     T* ptr_ = nullptr;
 };
 
-} // namespace lumino
+} // namespace ln

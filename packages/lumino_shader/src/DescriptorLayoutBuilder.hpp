@@ -3,7 +3,7 @@
 
 #include <lumino_shader/Common.hpp>
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 class UnifiedShader;
@@ -29,4 +29,4 @@ private:
 };
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

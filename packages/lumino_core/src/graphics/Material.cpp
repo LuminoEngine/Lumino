@@ -14,7 +14,7 @@ static const unsigned char s_basicLitShaderData[] = {
 #include "shaders/BasicLit.lcsh.inl"
 };
 
-namespace lumino {
+namespace ln {
 
 // ─── Material ────────────────────────────────────────────────────────────
 
@@ -265,4 +265,4 @@ Result<Ref<Material>> MaterialFactory::createBasicLit(
         MaterialType::BasicLit);
 }
 
-} // namespace lumino
+} // namespace ln

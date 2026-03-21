@@ -14,7 +14,7 @@
 #include <cstring>
 #include <algorithm>
 
-namespace lumino {
+namespace ln {
 
 /// Helper: read accessor data as float array.
 static std::vector<float> readAccessorAsFloat(
@@ -406,4 +406,4 @@ Result<LoadedModel> MeshLoader::loadGltf(
     return result;
 }
 
-} // namespace lumino
+} // namespace ln

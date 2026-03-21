@@ -14,8 +14,8 @@
 #include <lumino_shader/UnifiedShaderSerializer.hpp>
 
 namespace fs = std::filesystem;
-using namespace lumino;
-using namespace lumino::shader;
+using namespace ln;
+using namespace ln::shader;
 
 static bool binaryToHexArray(const fs::path& inputFile) {
     std::ifstream inFile(inputFile, std::ios::binary);

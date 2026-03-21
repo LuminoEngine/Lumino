@@ -19,9 +19,9 @@
 #include <cmath>
 #include <vector>
 
-using namespace lumino;
-using namespace lumino::rhi;
-using namespace lumino::platform;
+using namespace ln;
+using namespace ln::rhi;
+using namespace ln::platform;
 
 /// Generate a unit cube mesh (24 vertices, 36 indices).
 static Result<Ref<Mesh>> createCubeMesh(Device* device) {

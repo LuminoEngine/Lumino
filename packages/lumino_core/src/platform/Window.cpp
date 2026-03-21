@@ -9,7 +9,7 @@
     #include <GLFW/glfw3.h>
 #endif
 
-namespace lumino::platform {
+namespace ln::platform {
 
 // ─── GLFW global init ───
 #ifndef LN_NX
@@ -88,4 +88,4 @@ void PlatformWindow::framebufferSize(u32& width, u32& height) const {
     height = static_cast<u32>(h);
 }
 
-} // namespace lumino::platform
+} // namespace ln::platform

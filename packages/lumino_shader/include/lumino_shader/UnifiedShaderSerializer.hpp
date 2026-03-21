@@ -4,7 +4,7 @@
 #include "Common.hpp"
 #include <filesystem>
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 class UnifiedShader;
@@ -23,4 +23,4 @@ public:
 };
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

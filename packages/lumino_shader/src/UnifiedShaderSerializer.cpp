@@ -3,7 +3,7 @@
 #include <lumino_shader/UnifiedShader.hpp>
 #include <lumino_shader/UnifiedShaderSerializer.hpp>
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 namespace {
@@ -439,4 +439,4 @@ Result<Ref<UnifiedShader>> UnifiedShaderSerializer::loadFromData(const void* dat
 }
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

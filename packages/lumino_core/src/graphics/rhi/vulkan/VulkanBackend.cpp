@@ -8,7 +8,7 @@
 #include <cstring>
 #include <numeric>
 
-namespace lumino::rhi::vulkan {
+namespace ln::rhi::vulkan {
 
 // ─── Format conversion ──────────────────────────────────────────────────
 
@@ -1184,11 +1184,11 @@ void VulkanDevice::waitIdle() {
     if (device_) vkDeviceWaitIdle(device_);
 }
 
-} // namespace lumino::rhi::vulkan
+} // namespace ln::rhi::vulkan
 
 // ─── Device::create factory ──────────────────────────────────────────────
 
-namespace lumino::rhi {
+namespace ln::rhi {
 
 Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
     if (desc.backend == Backend::Vulkan) {
@@ -1201,4 +1201,4 @@ Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
     return tl::unexpected(Error{ErrorCode::NotSupported, "Unsupported backend"});
 }
 
-} // namespace lumino::rhi
+} // namespace ln::rhi

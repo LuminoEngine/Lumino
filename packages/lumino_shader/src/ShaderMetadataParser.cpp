@@ -5,7 +5,7 @@
 
 using json = nlohmann::json;
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 ShaderMetadataParser::ShaderMetadataParser() {
@@ -59,4 +59,4 @@ VoidResult ShaderMetadataParser::parse(const std::string& code) {
 }
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

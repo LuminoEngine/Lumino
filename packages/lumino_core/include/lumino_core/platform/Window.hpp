@@ -4,7 +4,7 @@
 #include <functional>
 #include <string>
 
-namespace lumino::platform {
+namespace ln::platform {
 
 /// Window creation descriptor.
 struct WindowDesc {
@@ -48,4 +48,4 @@ private:
     Impl* impl_ = nullptr;
 };
 
-} // namespace lumino::platform
+} // namespace ln::platform

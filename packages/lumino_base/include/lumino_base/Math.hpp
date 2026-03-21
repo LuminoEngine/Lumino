@@ -2,7 +2,7 @@
 #include <cmath>
 #include "Types.hpp"
 
-namespace lumino {
+namespace ln {
 
 struct Vector2 {
     f32 x = 0, y = 0;
@@ -116,4 +116,4 @@ struct Matrix4x4 {
     Matrix4x4 operator*(const Matrix4x4& rhs) const;
 };
 
-} // namespace lumino
+} // namespace ln

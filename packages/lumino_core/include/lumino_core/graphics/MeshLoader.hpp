@@ -7,7 +7,7 @@
 #include <lumino_core/graphics/Transform.hpp>
 #include <string>
 
-namespace lumino {
+namespace ln {
 
 /// A renderable object loaded from a model file.
 struct RenderObject {
@@ -34,4 +34,4 @@ public:
         rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
 };
 
-} // namespace lumino
+} // namespace ln

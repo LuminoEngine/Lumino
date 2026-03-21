@@ -6,7 +6,7 @@
 #include <lumino_core/graphics/Vertex.hpp>
 #include <string>
 
-namespace lumino {
+namespace ln {
 
 /// GPU-aligned view params (Set 0): must match shader ViewParams struct.
 struct ViewParamsUBO {
@@ -140,4 +140,4 @@ private:
         MaterialType type);
 };
 
-} // namespace lumino
+} // namespace ln

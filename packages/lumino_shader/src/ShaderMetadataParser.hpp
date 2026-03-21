@@ -3,7 +3,7 @@
 
 #include <lumino_shader/Common.hpp>
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 class ShaderMetadataParser final {
@@ -25,4 +25,4 @@ private:
 };
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

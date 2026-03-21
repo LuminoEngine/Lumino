@@ -10,7 +10,7 @@
 #include <lumino_base/RefCounted.hpp>
 #include <lumino_base/Types.hpp>
 
-namespace lumino {
+namespace ln {
 namespace shader {
 
 static const char* kGlobalConstantBufferName = "$Global";
@@ -99,9 +99,9 @@ struct VertexInputAttribute {
 using VertexInputAttributeTable = std::vector<VertexInputAttribute>;
 
 // Error helper macros for the shader package.
-#define LNSHADER_MAKE_ERROR(msg) tl::make_unexpected(::lumino::Error{::lumino::ErrorCode::ShaderCompilationFailed, msg})
-#define LNSHADER_MAKE_ERROR_FMT(msg) tl::make_unexpected(::lumino::Error{::lumino::ErrorCode::ShaderCompilationFailed, msg})
-#define LNSHADER_OK() ::lumino::VoidResult{}
+#define LNSHADER_MAKE_ERROR(msg) tl::make_unexpected(::ln::Error{::ln::ErrorCode::ShaderCompilationFailed, msg})
+#define LNSHADER_MAKE_ERROR_FMT(msg) tl::make_unexpected(::ln::Error{::ln::ErrorCode::ShaderCompilationFailed, msg})
+#define LNSHADER_OK() ::ln::VoidResult{}
 
 } // namespace shader
-} // namespace lumino
+} // namespace ln

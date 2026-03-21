@@ -3,7 +3,7 @@
 #include <tl/expected.hpp>
 #include <string>
 
-namespace lumino {
+namespace ln {
 
 /// Error code for Lumino operations.
 enum class ErrorCode {
@@ -37,4 +37,7 @@ using Result = tl::expected<T, Error>;
 /// Result type for void-returning operations.
 using VoidResult = tl::expected<void, Error>;
 
-} // namespace lumino
+// clang-format off
+#define LN_MAKE_SUCCESS() {}
+
+} // namespace ln

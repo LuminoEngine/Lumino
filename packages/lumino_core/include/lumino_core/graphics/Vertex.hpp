@@ -3,7 +3,7 @@
 #include <lumino_base/Math.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 
-namespace lumino {
+namespace ln {
 
 /// Standard vertex layout for 3D rendering (64 bytes).
 struct Vertex {
@@ -31,4 +31,4 @@ inline rhi::VertexBufferLayout standardVertexLayout() {
     return layout;
 }
 
-} // namespace lumino
+} // namespace ln

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <lumino_base/Math.hpp>
 
-namespace lumino {
+namespace ln {
 
 enum class ProjectionMode {
     Perspective,
@@ -41,4 +41,4 @@ private:
     f32 farClip_ = 1000.0f;
 };
 
-} // namespace lumino
+} // namespace ln

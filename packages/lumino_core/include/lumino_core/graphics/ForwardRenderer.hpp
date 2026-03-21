@@ -9,7 +9,7 @@
 #include <lumino_core/graphics/MeshLoader.hpp>
 #include <lumino_core/graphics/Transform.hpp>
 
-namespace lumino {
+namespace ln {
 
 /// Lighting parameters for the forward renderer.
 struct DirectionalLight {
@@ -75,4 +75,4 @@ private:
     Result<void> ensureObjectResources(rhi::Device* device, size_t count);
 };
 
-} // namespace lumino
+} // namespace ln

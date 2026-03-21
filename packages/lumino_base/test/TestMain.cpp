@@ -16,7 +16,7 @@ public:
 #include <lumino_base/Math.hpp>
 #include <cmath>
 
-using namespace lumino;
+using namespace ln;
 
 TEST(MathTest, Vector3_Normalize) {
     Vector3 v{3.0f, 0.0f, 4.0f};

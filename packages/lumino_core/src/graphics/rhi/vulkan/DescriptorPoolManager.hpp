@@ -17,7 +17,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace lumino::rhi::vulkan {
+namespace ln::rhi::vulkan {
 
 class DescriptorPoolManager {
 public:
@@ -89,4 +89,4 @@ private:
     }
 };
 
-} // namespace lumino::rhi::vulkan
+} // namespace ln::rhi::vulkan

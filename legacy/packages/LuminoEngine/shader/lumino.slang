@@ -14,7 +14,7 @@ public cbuffer LNRenderElementBuffer
     /* [352] */// int ln_objectId;
 };  /* [368(alignd:16)] */// int dummy[3];
 
-public namespace lumino {
+public namespace ln {
     /** 
      * Standard vertex shader input structure.
      */
