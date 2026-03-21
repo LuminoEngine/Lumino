@@ -80,6 +80,64 @@ extern LUMINO_API void LNInstance_Terminate();
 extern LUMINO_API LNResult LNObject_Release(LNHandle handle);
 
 //------------------------------------------------------------------------------
+// LNWindow
+//------------------------------------------------------------------------------
+
+/**
+ * ウィンドウを作成します。内部で GraphicsContext も作成されます。
+ * @param[in]  title     ウィンドウタイトル
+ * @param[in]  width     幅 (ピクセル)
+ * @param[in]  height    高さ (ピクセル)
+ * @param[out] outHandle 作成されたウィンドウのハンドル
+ */
+extern LUMINO_API LNResult LNWindow_Create(
+    const char* title,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle
+);
+
+/**
+ * ウィンドウのイベントを処理します。
+ * @param[in]  handle      ウィンドウのハンドル
+ * @param[out] outContinue ループ継続可否 (0 で終了)
+ */
+extern LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, int* outContinue);
+
+//------------------------------------------------------------------------------
+// LNGraphicsContext
+//------------------------------------------------------------------------------
+
+/**
+ * フレームの描画を開始します。
+ * @param[in] window ウィンドウのハンドル
+ */
+extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle window);
+
+/**
+ * レンダーパスを開始します。指定したカラーでレンダーターゲットをクリアします。
+ * @param[in] window ウィンドウのハンドル
+ * @param[in] r      クリアカラー R (0.0 - 1.0)
+ * @param[in] g      クリアカラー G (0.0 - 1.0)
+ * @param[in] b      クリアカラー B (0.0 - 1.0)
+ * @param[in] a      クリアカラー A (0.0 - 1.0)
+ */
+extern LUMINO_API LNResult LNGraphicsContext_BeginRenderPass(
+    LNHandle window, float r, float g, float b, float a);
+
+/**
+ * レンダーパスを終了します。
+ * @param[in] window ウィンドウのハンドル
+ */
+extern LUMINO_API LNResult LNGraphicsContext_EndRenderPass(LNHandle window);
+
+/**
+ * フレームの描画を終了し、画面に表示します。
+ * @param[in] window ウィンドウのハンドル
+ */
+extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle window);
+
+//------------------------------------------------------------------------------
 // LNTexture2D
 //------------------------------------------------------------------------------
 

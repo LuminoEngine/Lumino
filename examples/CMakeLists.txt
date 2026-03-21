@@ -6,3 +6,12 @@ target_compile_definitions(hello_triangle PRIVATE
 
 add_executable(forward_rendering ForwardRendering.cpp)
 target_link_libraries(forward_rendering PRIVATE lumino_core lumino_base lumino_shader)
+
+add_executable(clear_screen ClearScreen.c)
+target_link_libraries(clear_screen PRIVATE lumino_api)
+# Windows: 実行時に lumino_api.dll を見つけられるようコピーする
+add_custom_command(TARGET clear_screen POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:lumino_api>
+        $<TARGET_FILE_DIR:clear_screen>
+)
