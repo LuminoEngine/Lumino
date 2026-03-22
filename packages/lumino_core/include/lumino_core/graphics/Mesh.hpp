@@ -22,11 +22,13 @@ public:
         rhi::Device* device,
         const std::vector<Vertex>& vertices,
         const std::vector<u32>& indices,
-        const std::vector<SubMesh>& submeshes);
+        const std::vector<SubMesh>& submeshes,
+        rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
 
     rhi::Buffer* vertexBuffer() const { return vertexBuffer_.get(); }
     rhi::Buffer* indexBuffer() const { return indexBuffer_.get(); }
     const std::vector<SubMesh>& submeshes() const { return submeshes_; }
+    rhi::PrimitiveTopology topology() const { return topology_; }
 
     /** Material slots for this mesh. One per unique materialIndex used in submeshes. */
     std::vector<Ref<Material>>& materials() { return materials_; }
@@ -37,6 +39,7 @@ private:
     Ref<rhi::Buffer> indexBuffer_;
     std::vector<SubMesh> submeshes_;
     std::vector<Ref<Material>> materials_;
+    rhi::PrimitiveTopology topology_ = rhi::PrimitiveTopology::TriangleList;
 };
 
 } // namespace ln

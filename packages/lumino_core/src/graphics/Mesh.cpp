@@ -6,9 +6,11 @@ Result<Ref<Mesh>> Mesh::create(
     rhi::Device* device,
     const std::vector<Vertex>& vertices,
     const std::vector<u32>& indices,
-    const std::vector<SubMesh>& submeshes) {
+    const std::vector<SubMesh>& submeshes,
+    rhi::PrimitiveTopology topology) {
 
     auto mesh = Ref<Mesh>::adopt(new Mesh());
+    mesh->topology_ = topology;
 
     // Create vertex buffer.
     rhi::BufferDesc vbDesc;

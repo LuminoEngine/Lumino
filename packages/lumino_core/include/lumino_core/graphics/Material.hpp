@@ -75,7 +75,8 @@ public:
         rhi::Device* device,
         rhi::PipelineLayout* pipelineLayout,
         rhi::TextureFormat colorFormat,
-        rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
+        rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float,
+        rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
 
 private:
     friend class MaterialFactory;

@@ -7,6 +7,9 @@ target_compile_definitions(hello_triangle PRIVATE
 add_executable(forward_rendering ForwardRendering.cpp)
 target_link_libraries(forward_rendering PRIVATE lumino_core lumino_base lumino_shader)
 
+add_executable(hello_mesh HelloMesh.cpp)
+target_link_libraries(hello_mesh PRIVATE lumino_core lumino_base lumino_shader)
+
 add_executable(clear_screen ClearScreen.c)
 target_link_libraries(clear_screen PRIVATE lumino_api)
 # Windows: 実行時に lumino_api.dll を見つけられるようコピーする

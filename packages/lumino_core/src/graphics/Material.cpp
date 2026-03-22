@@ -111,7 +111,8 @@ Result<void> Material::buildPipeline(
     rhi::Device* device,
     rhi::PipelineLayout* pipelineLayout,
     rhi::TextureFormat colorFormat,
-    rhi::TextureFormat depthFormat) {
+    rhi::TextureFormat depthFormat,
+    rhi::PrimitiveTopology topology) {
 
     rhi::RenderPipelineDesc rpDesc;
     rpDesc.layout = pipelineLayout;
@@ -120,7 +121,7 @@ Result<void> Material::buildPipeline(
     rpDesc.vertexEntry = vertEntry_;
     rpDesc.fragmentEntry = fragEntry_;
     rpDesc.vertexBuffers = {standardVertexLayout()};
-    rpDesc.topology = rhi::PrimitiveTopology::TriangleList;
+    rpDesc.topology = topology;
     rpDesc.cullMode = cullMode_;
     rpDesc.colorFormats = {colorFormat};
     rpDesc.depthStencilFormat = depthFormat;
