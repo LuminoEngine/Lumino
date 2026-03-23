@@ -15,4 +15,7 @@ add_executable(
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE lumino_shader GTest::gtest)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
+)
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})

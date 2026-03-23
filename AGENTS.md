@@ -14,8 +14,8 @@ Lumino はゲームやデジタルアートなどのインタラクティブア�
 ## Development Commands
 
 ```sh
-# CMake 設定 (vcpkg ツールチェイン込み)
-cmake -B build -G "Visual Studio 18 2026"
+# CMake 設定
+cmake -B build
 
 # ビルド
 cmake --build build --config Release --parallel

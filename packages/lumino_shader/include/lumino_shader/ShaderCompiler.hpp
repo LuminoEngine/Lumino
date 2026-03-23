@@ -22,6 +22,7 @@ public:
     UnifiedShader* shader() const { return m_shader.get(); }
 
     void setDumpEnabled(bool enabled) { m_dump = enabled; }
+    void addSearchPath(const fs::path& path) { m_searchPaths.push_back(path); }
 
     ~ShaderCompiler();
 
@@ -61,6 +62,7 @@ private:
     fs::path m_inputDirPath;
     fs::path m_dumpDirPath;
     bool m_dump;
+    std::vector<fs::path> m_searchPaths;
     Ref<UnifiedShader> m_shader;
 };
 

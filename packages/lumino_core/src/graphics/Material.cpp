@@ -243,8 +243,6 @@ Result<Ref<Material>> MaterialFactory::createMaterialFromShaderData(
     return mat;
 }
 
-// ─── MaterialFactory ─────────────────────────────────────────────────────
-
 Result<Ref<Material>> MaterialFactory::createUnlit(
     rhi::Device* device,
     rhi::PipelineLayout* pipelineLayout,

@@ -62,6 +62,9 @@ int main(int argc, char** argv) {
     bool dumpEnabled = false;
     app.add_flag("--dump", dumpEnabled, "Dump generated shader code (SPIR-V, WGSL, etc.) to files.");
 
+    std::vector<fs::path> searchPaths;
+    app.add_option("-I,--search-path", searchPaths, "Additional search paths for import.");
+
     CLI11_PARSE(app, argc, argv);
 
 #ifdef LUMINO_USE_SLANG
@@ -73,6 +76,9 @@ int main(int argc, char** argv) {
 
     auto& compiler = compilerResult.value();
     compiler->setDumpEnabled(dumpEnabled);
+    for (const auto& sp : searchPaths) {
+        compiler->addSearchPath(sp);
+    }
 
     auto buildResult = compiler->build(inputFile);
     if (!buildResult) {

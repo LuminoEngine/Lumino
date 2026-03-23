@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <lumino_base/Types.hpp>
+#include <lumino_base/Result.hpp>
+#include <lumino_base/RefCounted.hpp>
 #include <lumino_core/Object.hpp>
 #include <functional>
 #include <string>
@@ -33,11 +35,11 @@ public:
     PlatformWindow(const PlatformWindow&) = delete;
     PlatformWindow& operator=(const PlatformWindow&) = delete;
 
-    /** Create a platform window. Returns nullptr on failure. */
-    static PlatformWindow* create(const WindowDesc& desc);
+    /** Create a platform window. */
+    static Result<Ref<PlatformWindow>> create(const WindowDesc& desc);
 
-    /** Create a platform window with an attached graphics context. Returns nullptr on failure. */
-    static PlatformWindow* create(const WindowDesc& desc, const GraphicsContextDesc& gfxDesc);
+    /** Create a platform window with an attached graphics context. */
+    static Result<Ref<PlatformWindow>> create(const WindowDesc& desc, const GraphicsContextDesc& gfxDesc);
 
     /** Poll events and return false if the window should close. */
     bool processEvents();

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+﻿
 #include <gtest/gtest.h>
 #include <fstream>
 #include <lumino_shader/UnifiedShader.hpp>
@@ -27,13 +27,18 @@ TEST(UnifiedShaderSerializer, RoundTrip) {
     ep->inputAttributes.push_back(attr);
 
     // Create global resource layout entry
-    auto result = shader->getOrCreateInputResourceWithVerify(
-        "$Global", RegisterCategory_ConstantBuffer, 64, 0);
+    auto result = shader->getOrCreateInputResourceWithVerify("$Global", RegisterCategory_ConstantBuffer, 64, 0);
     ASSERT_TRUE(result.has_value());
 
     // Create a global constant buffer member
     auto memberResult = shader->getOrCreateGlobalMemberWithVerify(
-        "color", ShaderGlobalMemberType_Float, ShaderGlobalMemberKind_Vector, 0, 4, 0, 0);
+        "color",
+        ShaderGlobalMemberType_Float,
+        ShaderGlobalMemberKind_Vector,
+        0,
+        4,
+        0,
+        0);
     ASSERT_TRUE(memberResult.has_value());
 
     // Create a target shader pass
@@ -54,9 +59,7 @@ TEST(UnifiedShaderSerializer, RoundTrip) {
     // Read back
     std::ifstream ifs(tempPath, std::ios::binary);
     ASSERT_TRUE(ifs.good());
-    std::vector<uint8_t> fileData(
-        (std::istreambuf_iterator<char>(ifs)),
-        std::istreambuf_iterator<char>());
+    std::vector<uint8_t> fileData((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
     ifs.close();
 
     auto loadResult = UnifiedShaderSerializer::loadFromData(fileData.data(), fileData.size());
@@ -91,9 +94,4 @@ TEST(UnifiedShaderSerializer, RoundTrip) {
 
     // Cleanup
     std::filesystem::remove(tempPath);
-}
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }

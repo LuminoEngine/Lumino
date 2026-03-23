@@ -90,9 +90,10 @@ static uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFil
 
 // ─── VulkanBuffer ────────────────────────────────────────────────────────
 
-VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
+VulkanBuffer::VulkanBuffer(VulkanDevice* device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
                            bool deviceLocal)
     : device_(device), size_(desc.size), deviceLocal_(deviceLocal) {
+    VkDevice dev = device_->vkDevice();
     VkBufferCreateInfo bufInfo{};
     bufInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufInfo.size = desc.size;
@@ -107,10 +108,10 @@ VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, con
     if (deviceLocal) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
     bufInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    vkCreateBuffer(device_, &bufInfo, nullptr, &buffer_);
+    vkCreateBuffer(dev, &bufInfo, nullptr, &buffer_);
 
     VkMemoryRequirements memReqs;
-    vkGetBufferMemoryRequirements(device_, buffer_, &memReqs);
+    vkGetBufferMemoryRequirements(dev, buffer_, &memReqs);
 
     VkMemoryPropertyFlags memFlags = deviceLocal
         ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
@@ -120,8 +121,8 @@ VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, con
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memReqs.size;
     allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memReqs.memoryTypeBits, memFlags);
-    vkAllocateMemory(device_, &allocInfo, nullptr, &memory_);
-    vkBindBufferMemory(device_, buffer_, memory_, 0);
+    vkAllocateMemory(dev, &allocInfo, nullptr, &memory_);
+    vkBindBufferMemory(dev, buffer_, memory_, 0);
 
     // Device-local buffers: initialData is uploaded by the caller (via StagingBufferPool).
     // Host-visible buffers: copy directly.
@@ -135,19 +136,24 @@ VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, con
 }
 
 VulkanBuffer::~VulkanBuffer() {
-    if (buffer_) vkDestroyBuffer(device_, buffer_, nullptr);
-    if (memory_) vkFreeMemory(device_, memory_, nullptr);
+    VkDevice dev = device_->vkDevice();
+    VkBuffer buf = buffer_;
+    VkDeviceMemory mem = memory_;
+    device_->frameResources().queueDelete(device_->currentFrameIndex(), [dev, buf, mem]() {
+        if (buf) vkDestroyBuffer(dev, buf, nullptr);
+        if (mem) vkFreeMemory(dev, mem, nullptr);
+    });
 }
 
 void* VulkanBuffer::map() {
     if (deviceLocal_) return nullptr;  // device-local memory cannot be CPU-mapped
-    if (!mapped_) vkMapMemory(device_, memory_, 0, size_, 0, &mapped_);
+    if (!mapped_) vkMapMemory(device_->vkDevice(), memory_, 0, size_, 0, &mapped_);
     return mapped_;
 }
 
 void VulkanBuffer::unmap() {
     if (mapped_) {
-        vkUnmapMemory(device_, memory_);
+        vkUnmapMemory(device_->vkDevice(), memory_);
         mapped_ = nullptr;
     }
 }
@@ -239,7 +245,7 @@ static VkSamplerAddressMode toVkAddressMode(AddressMode a) {
     return VK_SAMPLER_ADDRESS_MODE_REPEAT;
 }
 
-VulkanSampler::VulkanSampler(VkDevice device, const SamplerDesc& desc) : device_(device) {
+VulkanSampler::VulkanSampler(VulkanDevice* device, const SamplerDesc& desc) : device_(device) {
     VkSamplerCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     info.magFilter = toVkFilter(desc.magFilter);
@@ -251,11 +257,15 @@ VulkanSampler::VulkanSampler(VkDevice device, const SamplerDesc& desc) : device_
     info.anisotropyEnable = desc.maxAnisotropy > 1 ? VK_TRUE : VK_FALSE;
     info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    vkCreateSampler(device_, &info, nullptr, &sampler_);
+    vkCreateSampler(device_->vkDevice(), &info, nullptr, &sampler_);
 }
 
 VulkanSampler::~VulkanSampler() {
-    if (sampler_) vkDestroySampler(device_, sampler_, nullptr);
+    VkDevice dev = device_->vkDevice();
+    VkSampler s = sampler_;
+    device_->frameResources().queueDelete(device_->currentFrameIndex(), [dev, s]() {
+        if (s) vkDestroySampler(dev, s, nullptr);
+    });
 }
 
 // ─── VulkanShaderModule ──────────────────────────────────────────────────
@@ -319,7 +329,7 @@ VulkanBindGroupLayout::~VulkanBindGroupLayout() {
 // ─── VulkanBindGroup ─────────────────────────────────────────────────────
 
 VulkanBindGroup::VulkanBindGroup(
-    VkDevice device, DescriptorPoolManager& poolManager, VkDescriptorSetLayout layout,
+    VulkanDevice* device, DescriptorPoolManager& poolManager, VkDescriptorSetLayout layout,
     const BindGroupDesc& desc)
     : device_(device) {
     auto [pool, set] = poolManager.allocate(layout);
@@ -361,14 +371,18 @@ VulkanBindGroup::VulkanBindGroup(
     }
 
     if (!writes.empty()) {
-        vkUpdateDescriptorSets(device_, static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
+        vkUpdateDescriptorSets(device_->vkDevice(), static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
     }
 }
 
 VulkanBindGroup::~VulkanBindGroup() {
-    if (set_ != VK_NULL_HANDLE && pool_ != VK_NULL_HANDLE) {
-        vkFreeDescriptorSets(device_, pool_, 1, &set_);
-    }
+    VkDevice dev = device_->vkDevice();
+    VkDescriptorPool pool = pool_;
+    VkDescriptorSet set = set_;
+    device_->frameResources().queueDelete(device_->currentFrameIndex(), [dev, pool, set]() {
+        if (set != VK_NULL_HANDLE && pool != VK_NULL_HANDLE)
+            vkFreeDescriptorSets(dev, pool, 1, &set);
+    });
 }
 
 // ─── VulkanPipelineLayout ────────────────────────────────────────────────
@@ -393,7 +407,7 @@ VulkanPipelineLayout::~VulkanPipelineLayout() {
 
 // ─── VulkanRenderPipeline ────────────────────────────────────────────────
 
-VulkanRenderPipeline::VulkanRenderPipeline(VkDevice device, VkRenderPass renderPass, const RenderPipelineDesc& desc)
+VulkanRenderPipeline::VulkanRenderPipeline(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc)
     : device_(device) {
     // Shader stages
     VkPipelineShaderStageCreateInfo stages[2]{};
@@ -531,12 +545,16 @@ VulkanRenderPipeline::VulkanRenderPipeline(VkDevice device, VkRenderPass renderP
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
 
-    vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline_);
+    vkCreateGraphicsPipelines(device_->vkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline_);
     layout_ = vkLayout;
 }
 
 VulkanRenderPipeline::~VulkanRenderPipeline() {
-    if (pipeline_) vkDestroyPipeline(device_, pipeline_, nullptr);
+    VkDevice dev = device_->vkDevice();
+    VkPipeline p = pipeline_;
+    device_->frameResources().queueDelete(device_->currentFrameIndex(), [dev, p]() {
+        if (p) vkDestroyPipeline(dev, p, nullptr);
+    });
 }
 
 // ─── VulkanRenderPassEncoder ─────────────────────────────────────────────
@@ -568,8 +586,10 @@ VulkanRenderPassEncoder::VulkanRenderPassEncoder(
 
     vkCmdBeginRenderPass(cmd_, &rpBegin, VK_SUBPASS_CONTENTS_INLINE);
 
-    // Set default viewport and scissor
-    VkViewport vp{0, 0, static_cast<float>(extent.width), static_cast<float>(extent.height), 0, 1};
+    // Set default viewport and scissor.
+    // Use negative height (y = height, h = -height) to flip Vulkan's Y axis so that
+    // +Y points upward, matching standard math / OpenGL NDC convention.
+    VkViewport vp{0, static_cast<float>(extent.height), static_cast<float>(extent.width), -static_cast<float>(extent.height), 0, 1};
     vkCmdSetViewport(cmd_, 0, 1, &vp);
     VkRect2D scissor{{0, 0}, extent};
     vkCmdSetScissor(cmd_, 0, 1, &scissor);
@@ -1082,7 +1102,7 @@ Result<Ref<Buffer>> VulkanDevice::createBuffer(const BufferDesc& desc) {
     bool useDeviceLocal =
         (desc.usage & BufferUsage::Vertex) || (desc.usage & BufferUsage::Index);
 
-    auto buf = Ref<VulkanBuffer>::adopt(new VulkanBuffer(device_, physicalDevice_, desc, useDeviceLocal));
+    auto buf = Ref<VulkanBuffer>::adopt(new VulkanBuffer(this, physicalDevice_, desc, useDeviceLocal));
 
     if (useDeviceLocal && desc.initialData && desc.size > 0) {
         stagingPool_.uploadImmediate(
@@ -1126,7 +1146,7 @@ Result<Ref<TextureView>> VulkanDevice::createTextureView(Texture* texture) {
 }
 
 Result<Ref<Sampler>> VulkanDevice::createSampler(const SamplerDesc& desc) {
-    auto s = Ref<VulkanSampler>::adopt(new VulkanSampler(device_, desc));
+    auto s = Ref<VulkanSampler>::adopt(new VulkanSampler(this, desc));
     return Ref<Sampler>(s);
 }
 
@@ -1143,7 +1163,7 @@ Result<Ref<BindGroupLayout>> VulkanDevice::createBindGroupLayout(const BindGroup
 Result<Ref<BindGroup>> VulkanDevice::createBindGroup(const BindGroupDesc& desc) {
     auto* layout = static_cast<VulkanBindGroupLayout*>(desc.layout);
     auto bg = Ref<VulkanBindGroup>::adopt(
-        new VulkanBindGroup(device_, descriptorPoolManager_, layout->handle(), desc));
+        new VulkanBindGroup(this, descriptorPoolManager_, layout->handle(), desc));
     return Ref<BindGroup>(bg);
 }
 
@@ -1164,7 +1184,7 @@ Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipel
     }
     VkRenderPass renderPass = getOrCreateRenderPass(rpKey);
 
-    auto rp = Ref<VulkanRenderPipeline>::adopt(new VulkanRenderPipeline(device_, renderPass, desc));
+    auto rp = Ref<VulkanRenderPipeline>::adopt(new VulkanRenderPipeline(this, renderPass, desc));
     return Ref<RenderPipeline>(rp);
 }
 

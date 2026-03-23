@@ -26,6 +26,9 @@ VkFormat toVkFormat(TextureFormat fmt);
 VkFormat toVkVertexFormat(VertexFormat fmt);
 u32 vertexFormatSize(VertexFormat fmt);
 
+// Forward declaration so Buffer/Sampler/BindGroup/Pipeline can hold VulkanDevice*
+class VulkanDevice;
+
 // ─── VulkanBuffer ────────────────────────────────────────────────────────
 
 class VulkanBuffer final : public Buffer {
@@ -35,7 +38,7 @@ public:
      *                     Vertex and Index buffers use this path; initial data is
      *                     uploaded later via StagingBufferPool::uploadImmediate().
      */
-    VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
+    VulkanBuffer(VulkanDevice* device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
                  bool deviceLocal = false);
     ~VulkanBuffer() override;
 
@@ -46,7 +49,7 @@ public:
     VkBuffer handle() const { return buffer_; }
 
 private:
-    VkDevice device_;
+    VulkanDevice* device_;
     VkBuffer buffer_ = VK_NULL_HANDLE;
     VkDeviceMemory memory_ = VK_NULL_HANDLE;
     u64 size_ = 0;
@@ -100,12 +103,12 @@ private:
 
 class VulkanSampler final : public Sampler {
 public:
-    VulkanSampler(VkDevice device, const SamplerDesc& desc);
+    VulkanSampler(VulkanDevice* device, const SamplerDesc& desc);
     ~VulkanSampler() override;
     VkSampler handle() const { return sampler_; }
 
 private:
-    VkDevice device_;
+    VulkanDevice* device_;
     VkSampler sampler_ = VK_NULL_HANDLE;
 };
 
@@ -140,7 +143,7 @@ private:
 class VulkanBindGroup final : public BindGroup {
 public:
     VulkanBindGroup(
-        VkDevice device,
+        VulkanDevice* device,
         DescriptorPoolManager& poolManager,
         VkDescriptorSetLayout layout,
         const BindGroupDesc& desc);
@@ -148,7 +151,7 @@ public:
     VkDescriptorSet handle() const { return set_; }
 
 private:
-    VkDevice device_;
+    VulkanDevice* device_;
     VkDescriptorPool pool_ = VK_NULL_HANDLE; ///< Pool that owns set_; used for vkFreeDescriptorSets.
     VkDescriptorSet set_ = VK_NULL_HANDLE;
 };
@@ -170,13 +173,13 @@ private:
 
 class VulkanRenderPipeline final : public RenderPipeline {
 public:
-    VulkanRenderPipeline(VkDevice device, VkRenderPass renderPass, const RenderPipelineDesc& desc);
+    VulkanRenderPipeline(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc);
     ~VulkanRenderPipeline() override;
     VkPipeline handle() const { return pipeline_; }
     VkPipelineLayout layoutHandle() const { return layout_; }
 
 private:
-    VkDevice device_;
+    VulkanDevice* device_;
     VkPipeline pipeline_ = VK_NULL_HANDLE;
     VkPipelineLayout layout_ = VK_NULL_HANDLE;
 };
@@ -206,8 +209,6 @@ private:
 };
 
 // ─── VulkanCommandBuffer ─────────────────────────────────────────────────
-
-class VulkanDevice;
 
 class VulkanCommandBuffer final : public CommandBuffer {
 public:
@@ -341,6 +342,9 @@ public:
 
     void setActiveSwapChain(VulkanSwapChain* sc) { activeSwapChain_ = sc; }
     VulkanSwapChain* activeSwapChain() const { return activeSwapChain_; }
+    u32 currentFrameIndex() const {
+        return activeSwapChain_ ? activeSwapChain_->currentFrame() : 0u;
+    }
 
 private:
     VkInstance instance_ = VK_NULL_HANDLE;

@@ -21,7 +21,11 @@ file(GLOB LN_LOCAL_SOURCES
     src/*.hpp
     include/${PROJECT_NAME}/*.hpp
 )
-source_group("Source Files" FILES ${LN_LOCAL_SOURCES})
+file(GLOB LN_LOCAL_SOURCES_shaders
+    shaders/*.slang
+)
+source_group("" FILES ${LN_LOCAL_SOURCES})
+source_group("shaders" FILES ${LN_LOCAL_SOURCES_shaders})
 
 #-------------------------------------------------------------------------------
 # Targets
@@ -29,6 +33,7 @@ source_group("Source Files" FILES ${LN_LOCAL_SOURCES})
 add_library(
     ${PROJECT_NAME} STATIC
     ${LN_LOCAL_SOURCES}
+    ${LN_LOCAL_SOURCES_shaders}
 )
 target_include_directories(
     ${PROJECT_NAME} PUBLIC

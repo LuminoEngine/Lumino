@@ -86,9 +86,8 @@ int main() {
     gfxDesc.preferredBackend = Backend::Vulkan;
     gfxDesc.enableValidation = true;
 
-    auto* window = PlatformWindow::create(winDesc, gfxDesc);
-    if (!window) { fprintf(stderr, "Failed to create window\n"); return 1; }
-    auto* ctx = window->graphicsContext();
+    auto window = *PlatformWindow::create(winDesc, gfxDesc);
+    auto ctx = window->graphicsContext();
 
     // 2. ForwardRenderer
     auto rendererResult = ForwardRenderer::create(ctx);
@@ -148,6 +147,5 @@ int main() {
     }
 
     printf("Done.\n");
-    delete window;
     return 0;
 }

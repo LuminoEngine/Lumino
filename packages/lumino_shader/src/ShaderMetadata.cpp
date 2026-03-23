@@ -1,17 +1,17 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
 #include <nlohmann/json.hpp>
-#include "ShaderMetadataParser.hpp"
+#include "ShaderMetadata.hpp"
 
 using json = nlohmann::json;
 
 namespace ln {
 namespace shader {
 
-ShaderMetadataParser::ShaderMetadataParser() {
+ShaderMetadata::ShaderMetadata() {
 }
 
-VoidResult ShaderMetadataParser::parse(const std::string& code) {
+VoidResult ShaderMetadata::parse(const std::string& code) {
     // Find `#ifdef LUMINO_METADATA`
     size_t start = code.find("#ifdef");
     size_t metadataPos = std::string::npos;

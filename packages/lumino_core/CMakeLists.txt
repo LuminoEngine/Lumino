@@ -34,17 +34,20 @@ file(GLOB LN_LOCAL_SOURCES_graphics
     src/graphics/rhi/vulkan/FrameResourceManager.hpp
     src/graphics/rhi/vulkan/StagingBufferPool.hpp
 )
+file(GLOB LN_LOCAL_SOURCES_shaders shaders/*.slang)
 
 source_group("" FILES ${LN_LOCAL_SOURCES_core})
 source_group("runtime" FILES ${LN_LOCAL_SOURCES_runtime})
 source_group("platform" FILES ${LN_LOCAL_SOURCES_platform})
 source_group("graphics" FILES ${LN_LOCAL_SOURCES_graphics})
+source_group("shaders" FILES ${LN_LOCAL_SOURCES_shaders})
 
 set(LN_LOCAL_SOURCES
     ${LN_LOCAL_SOURCES_core}
     ${LN_LOCAL_SOURCES_runtime}
     ${LN_LOCAL_SOURCES_platform}
     ${LN_LOCAL_SOURCES_graphics}
+    ${LN_LOCAL_SOURCES_shaders}
 )
 
 #-------------------------------------------------------------------------------
@@ -97,8 +100,8 @@ foreach(SHADER_NAME ${LN_BUILTIN_SHADERS})
 
     add_custom_command(
         OUTPUT ${SHADER_INL}
-        COMMAND luminosc ${SHADER_SRC}
-        DEPENDS ${SHADER_SRC} luminosc
+        COMMAND luminosc -I ${CMAKE_CURRENT_SOURCE_DIR}/../lumino_shader/shaders ${SHADER_SRC}
+        DEPENDS ${SHADER_SRC} luminosc ${CMAKE_CURRENT_SOURCE_DIR}/../lumino_shader/shaders/lumino.slang
         COMMENT "Compiling shader ${SHADER_NAME}.slang"
     )
     list(APPEND LN_SHADER_INL_FILES ${SHADER_INL})

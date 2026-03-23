@@ -5,22 +5,11 @@
 //   Set 1 (per-material): MaterialParams { color, specular, shininess } + texture + sampler
 //   Set 2 (per-object):   ObjectParams { world, normalMatrix }
 
-struct ViewParams {
-    float4x4 viewProj;
-    float4   cameraPos;    // xyz = position
-    float4   lightDir;     // xyz = direction (towards light)
-    float4   lightColor;   // xyz = color, w = intensity
-    float4   ambientColor; // xyz = ambient color
-};
+import lumino;
 
 struct MaterialParams {
     float4 color;      // base color (rgba)
     float4 specular;   // xyz = specular color, w = shininess
-};
-
-struct ObjectParams {
-    float4x4 world;
-    float4x4 normalMatrix;
 };
 
 [[vk::binding(0, 0)]] ConstantBuffer<ViewParams>      viewParams;
@@ -28,14 +17,6 @@ struct ObjectParams {
 [[vk::binding(1, 1)]] Texture2D                        baseTexture;
 [[vk::binding(2, 1)]] SamplerState                     baseSampler;
 [[vk::binding(0, 2)]] ConstantBuffer<ObjectParams>     objectParams;
-
-struct VSInput {
-    float3 position : POSITION;
-    float3 normal   : NORMAL;
-    float2 uv       : TEXCOORD;
-    float4 color    : COLOR;
-    float4 tangent  : TANGENT;
-};
 
 struct VSOutput {
     float4 position  : SV_POSITION;

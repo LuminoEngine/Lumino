@@ -41,8 +41,8 @@ PlatformWindow::~PlatformWindow() {
     }
 }
 
-PlatformWindow* PlatformWindow::create(const WindowDesc& desc) {
-    auto win = new PlatformWindow();
+Result<Ref<PlatformWindow>> PlatformWindow::create(const WindowDesc& desc) {
+    auto win = Ref<PlatformWindow>::adopt(new PlatformWindow());
     win->impl_ = new Impl();
 
     ensureGlfw();
@@ -55,21 +55,18 @@ PlatformWindow* PlatformWindow::create(const WindowDesc& desc) {
         nullptr,
         nullptr);
     if (!win->impl_->window) {
-        delete win;
-        return nullptr;
+        return tl::make_unexpected(ln::Error{ln::ErrorCode::RuntimeError, "glfwCreateWindow failed"});
     }
     return win;
 }
 
-PlatformWindow* PlatformWindow::create(const WindowDesc& desc, const ln::GraphicsContextDesc& gfxDesc) {
-    auto* win = PlatformWindow::create(desc);
-    if (!win) return nullptr;
+Result<Ref<PlatformWindow>> PlatformWindow::create(const WindowDesc& desc, const ln::GraphicsContextDesc& gfxDesc) {
+    auto winResult = PlatformWindow::create(desc);
+    if (!winResult) return tl::make_unexpected(winResult.error());
+    auto win = std::move(*winResult);
 
-    auto ctxResult = ln::GraphicsContext::createForWindow(win, gfxDesc);
-    if (!ctxResult) {
-        delete win;
-        return nullptr;
-    }
+    auto ctxResult = ln::GraphicsContext::createForWindow(win.get(), gfxDesc);
+    if (!ctxResult) return tl::make_unexpected(ctxResult.error());
     win->impl_->graphicsContext = std::move(*ctxResult);
     return win;
 }

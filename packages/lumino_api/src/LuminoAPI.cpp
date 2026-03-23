@@ -74,10 +74,10 @@ LNResult LNWindow_Create(
 
     ln::GraphicsContextDesc gfxDesc;
 
-    auto* window = ln::platform::PlatformWindow::create(winDesc, gfxDesc);
-    if (!window) return LN_ERROR_UNKNOWN;
+    auto windowResult = ln::platform::PlatformWindow::create(winDesc, gfxDesc);
+    if (!windowResult) return LN_ERROR_UNKNOWN;
 
-    auto obj = ln::Ref<ln::platform::PlatformWindow>::adopt(window);
+    auto obj = std::move(*windowResult);
     LNHandle handle = instance->objectRegistry()->registerObject(std::move(obj));
     if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
 

@@ -2,7 +2,7 @@
 #include "pch.hpp"
 #include <lumino_shader/UnifiedShader.hpp>
 #include <lumino_shader/ShaderCompiler.hpp>
-#include "ShaderMetadataParser.hpp"
+#include "ShaderMetadata.hpp"
 #include "DescriptorLayoutBuilder.hpp"
 
 #ifdef LUMINO_USE_SLANG
@@ -219,7 +219,7 @@ VoidResult ShaderCompiler::build(const fs::path& inputFilePath) {
 
     // Parse metadata.
     {
-        ShaderMetadataParser parser;
+        ShaderMetadata parser;
         auto result = parser.parse(code);
         if (!result) return result;
         for (const auto& pass : parser.passes()) {
@@ -260,7 +260,14 @@ VoidResult ShaderCompiler::buildModule() {
     sessionDesc.compilerOptionEntryCount = options.size();
 
     // Include/Module paths
+    std::vector<std::string> searchPathStrings;
+    for (const auto& p : m_searchPaths) {
+        searchPathStrings.push_back(p.string());
+    }
     std::vector<const char*> searchPaths;
+    for (const auto& s : searchPathStrings) {
+        searchPaths.push_back(s.c_str());
+    }
     sessionDesc.searchPaths = searchPaths.data();
     sessionDesc.searchPathCount = searchPaths.size();
 
