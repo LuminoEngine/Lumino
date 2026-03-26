@@ -195,6 +195,11 @@ VoidResult ShaderCompiler2::buildModule() {
     sessionDesc.targetCount = targetDescs.size();
     sessionDesc.compilerOptionEntries = options.data();
     sessionDesc.compilerOptionEntryCount = options.size();
+    // CPU Matrix4x4 is column-major; tell Slang to use column-major layout in
+    // constant buffers so that the uploaded bytes are interpreted correctly by
+    // the GPU.  Without this, Slang defaults to row-major for SPIR-V and the
+    // GPU would see the transpose of the intended matrix.
+    sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
 
     // Include/Module paths
     std::vector<std::string> searchPathStrings;

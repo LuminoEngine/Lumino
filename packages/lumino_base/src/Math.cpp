@@ -88,7 +88,8 @@ Matrix4x4 Matrix4x4::perspectiveRH(f32 fovY, f32 aspect, f32 nearZ, f32 farZ) {
     r.m[5]  = 1.0f / tanHalf;
     r.m[10] = farZ / (nearZ - farZ);
     r.m[11] = -1.0f;
-    r.m[14] = (nearZ * farZ) / (nearZ - farZ);
+    //r.m[14] = (nearZ * farZ) / (nearZ - farZ);
+    r.m[14] = -(farZ * nearZ) / (farZ - nearZ);
     return r;
 }
 
@@ -106,25 +107,26 @@ Matrix4x4 Matrix4x4::ortho(f32 left, f32 right, f32 bottom, f32 top, f32 nearZ, 
 }
 
 Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, const Vector3& up) {
-    //Matrix4x4 Matrix4x4::lookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up) {
+//Matrix4x4 Matrix4x4::lookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up) {
     
     Vector3 xaxis, yaxis;
     // 注視点からカメラ位置までのベクトルをZ軸とする
-    Vector3 zaxis = position - lookAt_;
+    Vector3 zaxis = lookAt_ - position;
+    //Vector3 zaxis = position - lookAt_;
     zaxis.normalize();
     // Z軸と上方向のベクトルの外積をとるとX軸が分かる
-    xaxis = Vector3::cross(up, zaxis);
+    xaxis = Vector3::cross(zaxis, up);
     xaxis.normalize();
     // 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
-    yaxis = Vector3::cross(zaxis, xaxis);
+    yaxis = Vector3::cross(xaxis, zaxis);
 
     return Matrix4x4(
-        xaxis.x, yaxis.x, zaxis.x, 0.0f, 
-        xaxis.y, yaxis.y, zaxis.y, 0.0f,
-        xaxis.z, yaxis.z, zaxis.z, 0.0f,
+        xaxis.x, yaxis.x, -zaxis.x, 0.0f, 
+        xaxis.y, yaxis.y, -zaxis.y, 0.0f,
+        xaxis.z, yaxis.z, -zaxis.z, 0.0f,
         -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z),
         -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z),
-        -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
+        (zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
         1.0f);
     
     
@@ -143,6 +145,8 @@ Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, c
     //r.m[1] = u.x;  r.m[5] = u.y;  r.m[9]  = u.z;  r.m[13] = -Vector3::dot(u, eye);
     //r.m[2] = -f.x; r.m[6] = -f.y; r.m[10] = -f.z; r.m[14] = Vector3::dot(f, eye);
     //r.m[3] = 0;    r.m[7] = 0;    r.m[11] = 0;    r.m[15] = 1;
+    //
+    //r = Matrix4x4::translate({0.5f, 0.f, 0.f});
     //return r;
 }
 

@@ -49,7 +49,7 @@ int main() {
     auto matResult = MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
     if (!matResult) { fprintf(stderr, "Material: %s\n", matResult.error().message.c_str()); return 1; }
     auto material = std::move(*matResult);
-    material->setCullMode(CullMode::None);
+    //material->setCullMode(CullMode::None);
     auto bpResult = material->buildPipeline(
         ctx->device(), renderer->pipelineLayout(),
         ctx->colorFormat(), ctx->depthFormat());
@@ -58,17 +58,20 @@ int main() {
     if (!ubgResult) { fprintf(stderr, "Material bind group: %s\n", ubgResult.error().message.c_str()); return 1; }
 
     // 4. Triangle mesh with per-vertex colors
+    // 反時計回り (CCW) が正面。右手座標系ということで。godot と同じ。
     Vertex v0{};
     v0.position = {0.0f, 0.5f, 0.0f};
     v0.color = {1.0f, 0.0f, 0.0f, 1.0f};
-
     Vertex v1{};
-    v1.position = {0.5f, -0.5f, 0.0f};
+    v1.position = {-0.5f, -0.5f, 0.0f};
     v1.color = {0.0f, 1.0f, 0.0f, 1.0f};
-
     Vertex v2{};
-    v2.position = {-0.5f, -0.5f, 0.0f};
+    v2.position ={0.5f, -0.5f, 0.0f};
     v2.color = {0.0f, 0.0f, 1.0f, 1.0f};
+
+    //v0.position.x += 0.5f;
+    //v1.position.x += 0.5f;
+    //v2.position.x += 0.5f;
 
     std::vector<Vertex> vertices = {v0, v1, v2};
     std::vector<u32> indices = {0, 1, 2};
@@ -90,7 +93,9 @@ int main() {
         static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
         0.1f,
         100.0f);
-    camera.setLookAt({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f});
+    camera.setLookAt({0.0f, 0.0f, 5.f}, {0.0f, 0.0f, 0.0f});
+    //camera.setLookAt({0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+    //camera.setLookAt({-0.5f, 0.0f, -1.0f}, {-0.5f, 0.0f, 0.0f});
 
     printf("Lumino HelloMesh initialized. Rendering...\n");
 
@@ -99,7 +104,8 @@ int main() {
     while (window->processEvents()) {
         RenderObject obj;
         obj.mesh = mesh;
-        obj.transform.rotation = Quaternion::fromAxisAngle(Vector3::unitY(), (float)frameCount * 0.01f);
+        obj.transform.position.x = 0.5;
+        obj.transform.rotation = Quaternion::fromAxisAngle(Vector3::unitY(), (float)frameCount * 0.1f);
         std::vector<RenderObject> objects = {obj};
 
         auto frame = ctx->beginFrame();

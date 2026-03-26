@@ -132,7 +132,7 @@ int main() {
 
         RenderObject obj;
         obj.mesh = mesh;
-        obj.transform.rotation = Quaternion::fromEuler(time * 20.0f, time * 30.0f, 0.0f);
+        obj.transform.rotation = Quaternion::fromEuler(time * 10.0f, time * 15.0f, 0.0f);
         std::vector<RenderObject> objects = {obj};
 
         auto frame = ctx->beginFrame();
