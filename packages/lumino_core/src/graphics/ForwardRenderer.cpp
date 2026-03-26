@@ -1,36 +1,116 @@
 ﻿#include <lumino_core/graphics/ForwardRenderer.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
+#include <lumino_shader/UnifiedShader2.hpp>
+#include <lumino_shader/UnifiedShaderSerializer2.hpp>
 #include <cstring>
 
+// Precompiled BasicLit shader data for extracting reflection info.
+static const unsigned char s_basicLitShaderData[] = {
+#include "shaders/BasicLit.lcsh.inl"
+};
+
 namespace ln {
+
+// ------ Helpers (same as Material.cpp — local linkage) --------------------------------------------
+
+static rhi::BindingType mapElementKind(shader::ParameterBlockElementKind kind) {
+    switch (kind) {
+    case shader::ParameterBlockElementKind_ConstantBuffer: return rhi::BindingType::UniformBuffer;
+    case shader::ParameterBlockElementKind_Texture:        return rhi::BindingType::SampledTexture;
+    case shader::ParameterBlockElementKind_SamplerState:   return rhi::BindingType::Sampler;
+    case shader::ParameterBlockElementKind_StorageBuffer:  return rhi::BindingType::StorageBuffer;
+    default: return rhi::BindingType::UniformBuffer;
+    }
+}
+
+static rhi::BindGroupLayoutDesc buildBindGroupLayoutFromReflection(
+    const shader::ParameterBlockLayout2& block,
+    const shader::TargetBindingLayout2& mergedBindings) {
+    rhi::BindGroupLayoutDesc desc;
+    for (const auto& binding : mergedBindings.bindings) {
+        if (binding.setIndex != block.setIndex) continue;
+        rhi::BindGroupLayoutEntry entry;
+        entry.binding = binding.bindingIndex;
+        entry.type = mapElementKind(binding.kind);
+        entry.visibility = static_cast<rhi::ShaderStage>(binding.used);
+        desc.entries.push_back(entry);
+    }
+    return desc;
+}
+
+static const shader::ParameterBlockLayout2* findParameterBlock(
+    const shader::UnifiedShader2* shader, const std::string& name) {
+    for (const auto& block : shader->parameterBlocks()) {
+        if (block.name == name) return &block;
+    }
+    return nullptr;
+}
+
+static int16_t findConstantBufferSize(const shader::ParameterBlockLayout2& block) {
+    for (const auto& elem : block.elements) {
+        if (elem.kind == shader::ParameterBlockElementKind_ConstantBuffer) {
+            return elem.constantBufferSize;
+        }
+    }
+    return -1;
+}
+
+// ------ ForwardRenderer ----------------------------------------------------------------------------------------------------------
 
 Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     rhi::Device* device,
     rhi::TextureFormat colorFormat,
     rhi::TextureFormat depthFormat) {
 
+    // Load BasicLit shader to extract reflection info for BindGroupLayouts.
+    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(
+        s_basicLitShaderData, sizeof(s_basicLitShaderData));
+    if (!loadResult) return tl::make_unexpected(loadResult.error());
+    auto unifiedShader = std::move(*loadResult);
+
+    // Find the Forward pass to get merged binding layout.
+    auto& globalPasses = unifiedShader->globalShaderPasses();
+    if (globalPasses.empty()) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No shader passes found"});
+    }
+    auto* globalPass = globalPasses[0].get();
+    auto targetPassId = globalPass->getTargetShaderPassId(shader::ShaderTarget_SPIRV);
+    auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
+    if (!targetPass) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No SPIRV target pass"});
+    }
+
+    // Find ParameterBlocks by name.
+    auto* viewBlock = findParameterBlock(unifiedShader.get(), "viewData");
+    auto* materialBlock = findParameterBlock(unifiedShader.get(), "materialData");
+    auto* objectBlock = findParameterBlock(unifiedShader.get(), "objectData");
+    if (!viewBlock || !materialBlock || !objectBlock) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError,
+            "Missing required ParameterBlocks (viewData, materialData, objectData)"});
+    }
+
     auto renderer = Ref<ForwardRenderer>::adopt(new ForwardRenderer());
     renderer->colorFormat_ = colorFormat;
     renderer->depthFormat_ = depthFormat;
 
-    // ---- Set 0: View BindGroupLayout ----
-    // Binding 0: ViewParamsUBO (Vertex + Fragment)
-    rhi::BindGroupLayoutDesc viewBGLDesc;
-    viewBGLDesc.entries = {
-        {0, rhi::ShaderStage::Vertex | rhi::ShaderStage::Fragment, rhi::BindingType::UniformBuffer},
-    };
+    // Get CB sizes from reflection.
+    int16_t viewCBSize = findConstantBufferSize(*viewBlock);
+    int16_t objectCBSize = findConstantBufferSize(*objectBlock);
+    if (viewCBSize <= 0 || objectCBSize <= 0) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError,
+            "Invalid constant buffer sizes in reflection"});
+    }
+    renderer->viewUBOSize_ = static_cast<u64>(viewCBSize);
+    renderer->objectUBOSize_ = static_cast<u64>(objectCBSize);
+
+    // ---- Set 0: View BindGroupLayout (from "viewData" reflection) ----
+    auto viewBGLDesc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
     auto viewBGLResult = device->createBindGroupLayout(viewBGLDesc);
     if (!viewBGLResult) return tl::make_unexpected(viewBGLResult.error());
     renderer->viewBindGroupLayout_ = std::move(*viewBGLResult);
 
-    // ---- Set 1: Material BindGroupLayout (placeholder actual layout from Material) ----
-    // Binding 0: MaterialParams UBO, Binding 1: texture, Binding 2: sampler
-    rhi::BindGroupLayoutDesc matBGLDesc;
-    matBGLDesc.entries = {
-        {0, rhi::ShaderStage::Vertex | rhi::ShaderStage::Fragment, rhi::BindingType::UniformBuffer},
-        {1, rhi::ShaderStage::Fragment, rhi::BindingType::SampledTexture},
-        {2, rhi::ShaderStage::Fragment, rhi::BindingType::Sampler},
-    };
+    // ---- Set 1: Material BindGroupLayout (from "materialData" reflection) ----
+    auto matBGLDesc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
     Ref<rhi::BindGroupLayout> matBGL;
     {
         auto r = device->createBindGroupLayout(matBGLDesc);
@@ -38,12 +118,8 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
         matBGL = std::move(*r);
     }
 
-    // ---- Set 2: Object BindGroupLayout ----
-    // Binding 0: ObjectParamsUBO (Vertex)
-    rhi::BindGroupLayoutDesc objBGLDesc;
-    objBGLDesc.entries = {
-        {0, rhi::ShaderStage::Vertex, rhi::BindingType::UniformBuffer},
-    };
+    // ---- Set 2: Object BindGroupLayout (from "objectData" reflection) ----
+    auto objBGLDesc = buildBindGroupLayoutFromReflection(*objectBlock, targetPass->bindingLayout);
     auto objBGLResult = device->createBindGroupLayout(objBGLDesc);
     if (!objBGLResult) return tl::make_unexpected(objBGLResult.error());
     renderer->objectBindGroupLayout_ = std::move(*objBGLResult);
@@ -61,7 +137,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
 
     // ---- Per-view UBO ----
     rhi::BufferDesc viewBufDesc;
-    viewBufDesc.size = sizeof(ViewParamsUBO);
+    viewBufDesc.size = renderer->viewUBOSize_;
     viewBufDesc.usage = rhi::BufferUsage::Uniform;
     auto viewBufResult = device->createBuffer(viewBufDesc);
     if (!viewBufResult) return tl::make_unexpected(viewBufResult.error());
@@ -71,7 +147,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     rhi::BindGroupDesc viewBGDesc;
     viewBGDesc.layout = renderer->viewBindGroupLayout_.get();
     viewBGDesc.entries = {
-        {0, renderer->viewUBO_.get(), 0, sizeof(ViewParamsUBO), nullptr, nullptr},
+        {0, renderer->viewUBO_.get(), 0, renderer->viewUBOSize_, nullptr, nullptr},
     };
     auto viewBGResult = device->createBindGroup(viewBGDesc);
     if (!viewBGResult) return tl::make_unexpected(viewBGResult.error());
@@ -88,7 +164,7 @@ Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t 
     while (objectUBOs_.size() < count) {
         // Create object UBO
         rhi::BufferDesc bufDesc;
-        bufDesc.size = sizeof(ObjectParamsUBO);
+        bufDesc.size = objectUBOSize_;
         bufDesc.usage = rhi::BufferUsage::Uniform;
         auto bufResult = device->createBuffer(bufDesc);
         if (!bufResult) return tl::make_unexpected(bufResult.error());
@@ -98,7 +174,7 @@ Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t 
         rhi::BindGroupDesc bgDesc;
         bgDesc.layout = objectBindGroupLayout_.get();
         bgDesc.entries = {
-            {0, buf.get(), 0, sizeof(ObjectParamsUBO), nullptr, nullptr},
+            {0, buf.get(), 0, objectUBOSize_, nullptr, nullptr},
         };
         auto bgResult = device->createBindGroup(bgDesc);
         if (!bgResult) return tl::make_unexpected(bgResult.error());

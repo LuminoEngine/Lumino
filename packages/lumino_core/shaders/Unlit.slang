@@ -1,9 +1,9 @@
 // Unlit.slang — テクスチャ × カラー、ライティングなし
 //
-// BindGroup layout:
-//   Set 0 (per-view):  ViewParams   { viewProj }
-//   Set 1 (per-material): MaterialParams { color } + texture + sampler
-//   Set 2 (per-object): ObjectParams { world }
+// ParameterBlock layout:
+//   Set 0 (per-view):     viewData     — ViewParams (implicit CB)
+//   Set 1 (per-material): materialData — MaterialData (CB + Texture + Sampler)
+//   Set 2 (per-object):   objectData   — ObjectParams (implicit CB)
 
 import lumino;
 
@@ -11,11 +11,15 @@ struct MaterialParams {
     float4 color;
 };
 
-[[vk::binding(0, 0)]] ConstantBuffer<ViewParams>     viewParams;
-[[vk::binding(0, 1)]] ConstantBuffer<MaterialParams>  materialParams;
-[[vk::binding(1, 1)]] Texture2D                       baseTexture;
-[[vk::binding(2, 1)]] SamplerState                    baseSampler;
-[[vk::binding(0, 2)]] ConstantBuffer<ObjectParams>    objectParams;
+struct MaterialData {
+    ConstantBuffer<MaterialParams> params;
+    Texture2D                      baseTexture;
+    SamplerState                   baseSampler;
+};
+
+ParameterBlock<ViewParams>     viewData;       // -> Set 0
+ParameterBlock<MaterialData>   materialData;   // -> Set 1
+ParameterBlock<ObjectParams>   objectData;     // -> Set 2
 
 struct VSOutput {
     float4 position : SV_POSITION;
@@ -26,8 +30,8 @@ struct VSOutput {
 [shader("vertex")]
 VSOutput vsMain(VSInput input) {
     VSOutput output;
-    float4 worldPos = mul(objectParams.world, float4(input.position, 1.0));
-    output.position = mul(viewParams.viewProj, worldPos);
+    float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
+    output.position = mul(viewData.viewProj, worldPos);
     output.uv = input.uv;
     output.color = input.color;
     return output;
@@ -35,8 +39,8 @@ VSOutput vsMain(VSInput input) {
 
 [shader("fragment")]
 float4 fsMain(VSOutput input) : SV_TARGET {
-    float4 texColor = baseTexture.Sample(baseSampler, input.uv);
-    return texColor * materialParams.color * input.color;
+    float4 texColor = materialData.baseTexture.Sample(materialData.baseSampler, input.uv);
+    return texColor * materialData.params.color * input.color;
 }
 
 #ifdef LUMINO_METADATA

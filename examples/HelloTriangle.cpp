@@ -12,8 +12,8 @@
 #include <lumino_core/platform/Window.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
-#include <lumino_shader/ShaderCompiler.hpp>
-#include <lumino_shader/UnifiedShader.hpp>
+#include <lumino_shader/ShaderCompiler2.hpp>
+#include <lumino_shader/UnifiedShader2.hpp>
 
 #include <cstdio>
 #include <cstdlib>
@@ -62,7 +62,7 @@ int main() {
     auto vertexBuffer = std::move(*vbResult);
 
     // 3. シェーダーコンパイル (lumino_shader)
-    auto compilerResult = ln::shader::ShaderCompiler::create();
+    auto compilerResult = ln::shader::ShaderCompiler2::create();
     if (!compilerResult) {
         fprintf(stderr, "Failed to create shader compiler: %s\n", compilerResult.error().message.c_str());
         return 1;
@@ -75,7 +75,7 @@ int main() {
         return 1;
     }
 
-    ln::shader::UnifiedShader* unifiedShader = compiler->shader();
+    ln::shader::UnifiedShader2* unifiedShader = compiler->shader();
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
         fprintf(stderr, "No shader passes found\n");

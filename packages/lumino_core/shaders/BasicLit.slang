@@ -1,9 +1,9 @@
 // BasicLit.slang — Blinn-Phong ライティング (1 Directional Light)
 //
-// BindGroup layout:
-//   Set 0 (per-view):     ViewParams  { viewProj, cameraPos, lightDir, lightColor, ambientColor }
-//   Set 1 (per-material): MaterialParams { color, specular, shininess } + texture + sampler
-//   Set 2 (per-object):   ObjectParams { world, normalMatrix }
+// ParameterBlock layout:
+//   Set 0 (per-view):     viewData     — ViewParams (implicit CB)
+//   Set 1 (per-material): materialData — MaterialData (CB + Texture + Sampler)
+//   Set 2 (per-object):   objectData   — ObjectParams (implicit CB)
 
 import lumino;
 
@@ -12,11 +12,15 @@ struct MaterialParams {
     float4 specular;   // xyz = specular color, w = shininess
 };
 
-[[vk::binding(0, 0)]] ConstantBuffer<ViewParams>      viewParams;
-[[vk::binding(0, 1)]] ConstantBuffer<MaterialParams>   materialParams;
-[[vk::binding(1, 1)]] Texture2D                        baseTexture;
-[[vk::binding(2, 1)]] SamplerState                     baseSampler;
-[[vk::binding(0, 2)]] ConstantBuffer<ObjectParams>     objectParams;
+struct MaterialData {
+    ConstantBuffer<MaterialParams> params;
+    Texture2D                      baseTexture;
+    SamplerState                   baseSampler;
+};
+
+ParameterBlock<ViewParams>     viewData;       // -> Set 0
+ParameterBlock<MaterialData>   materialData;   // -> Set 1
+ParameterBlock<ObjectParams>   objectData;     // -> Set 2
 
 struct VSOutput {
     float4 position  : SV_POSITION;
@@ -29,10 +33,10 @@ struct VSOutput {
 [shader("vertex")]
 VSOutput vsMain(VSInput input) {
     VSOutput output;
-    float4 worldPos = mul(objectParams.world, float4(input.position, 1.0));
-    output.position  = mul(viewParams.viewProj, worldPos);
+    float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
+    output.position  = mul(viewData.viewProj, worldPos);
     output.worldPos  = worldPos.xyz;
-    output.worldNorm = normalize(mul((float3x3)objectParams.normalMatrix, input.normal));
+    output.worldNorm = normalize(mul((float3x3)objectData.normalMatrix, input.normal));
     output.uv        = input.uv;
     output.color     = input.color;
     return output;
@@ -40,25 +44,25 @@ VSOutput vsMain(VSInput input) {
 
 [shader("fragment")]
 float4 fsMain(VSOutput input) : SV_TARGET {
-    float4 texColor = baseTexture.Sample(baseSampler, input.uv);
-    float4 baseColor = texColor * materialParams.color * input.color;
+    float4 texColor = materialData.baseTexture.Sample(materialData.baseSampler, input.uv);
+    float4 baseColor = texColor * materialData.params.color * input.color;
 
     float3 N = normalize(input.worldNorm);
-    float3 L = normalize(viewParams.lightDir.xyz);
-    float3 V = normalize(viewParams.cameraPos.xyz - input.worldPos);
+    float3 L = normalize(viewData.lightDir.xyz);
+    float3 V = normalize(viewData.cameraPos.xyz - input.worldPos);
     float3 H = normalize(L + V);
 
     // Diffuse (Lambert)
     float NdotL = max(dot(N, L), 0.0);
-    float3 diffuse = baseColor.rgb * viewParams.lightColor.xyz * NdotL;
+    float3 diffuse = baseColor.rgb * viewData.lightColor.xyz * NdotL;
 
     // Specular (Blinn-Phong)
     float NdotH = max(dot(N, H), 0.0);
-    float shininess = materialParams.specular.w;
-    float3 specular = materialParams.specular.xyz * viewParams.lightColor.xyz * pow(NdotH, shininess);
+    float shininess = materialData.params.specular.w;
+    float3 specular = materialData.params.specular.xyz * viewData.lightColor.xyz * pow(NdotH, shininess);
 
     // Ambient
-    float3 ambient = baseColor.rgb * viewParams.ambientColor.xyz;
+    float3 ambient = baseColor.rgb * viewData.ambientColor.xyz;
 
     float3 finalColor = ambient + diffuse + specular;
     return float4(finalColor, baseColor.a);

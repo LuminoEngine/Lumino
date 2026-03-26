@@ -52,8 +52,35 @@ Quaternion Quaternion::slerp(const Quaternion& a, const Quaternion& b, f32 t) {
 }
 
 // ─── Matrix4x4 ──────────────────────────────────────────────────────────
+//Matrix4x4::Matrix4x4() = default;
 
-Matrix4x4 Matrix4x4::perspective(f32 fovY, f32 aspect, f32 nearZ, f32 farZ) {
+Matrix4x4::Matrix4x4(
+    float m11,
+    float m12,
+    float m13,
+    float m14,
+    float m21,
+    float m22,
+    float m23,
+    float m24,
+    float m31,
+    float m32,
+    float m33,
+    float m34,
+    float m41,
+    float m42,
+    float m43,
+    float m44)
+    : m{
+        m11, m12, m13, m14,
+        m21, m22, m23, m24,
+        m31, m32, m33, m34,
+        m41, m42, m43, m44
+    } {
+}
+
+
+Matrix4x4 Matrix4x4::perspectiveRH(f32 fovY, f32 aspect, f32 nearZ, f32 farZ) {
     Matrix4x4 r;
     const f32 tanHalf = std::tan(fovY * 0.5f);
     for (auto& v : r.m) v = 0;
@@ -78,23 +105,45 @@ Matrix4x4 Matrix4x4::ortho(f32 left, f32 right, f32 bottom, f32 top, f32 nearZ, 
     return r;
 }
 
-Matrix4x4 Matrix4x4::lookAt(const Vector3& eye, const Vector3& target, const Vector3& up) {
-    Vector3 f = target - eye;
-    const f32 fLen = f.length();
-    if (fLen > 0) f = f * (1.0f / fLen);
+Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, const Vector3& up) {
+    //Matrix4x4 Matrix4x4::lookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up) {
+    
+    Vector3 xaxis, yaxis;
+    // 注視点からカメラ位置までのベクトルをZ軸とする
+    Vector3 zaxis = position - lookAt_;
+    zaxis.normalize();
+    // Z軸と上方向のベクトルの外積をとるとX軸が分かる
+    xaxis = Vector3::cross(up, zaxis);
+    xaxis.normalize();
+    // 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
+    yaxis = Vector3::cross(zaxis, xaxis);
 
-    Vector3 s = Vector3::cross(f, up);
-    const f32 sLen = s.length();
-    if (sLen > 0) s = s * (1.0f / sLen);
+    return Matrix4x4(
+        xaxis.x, yaxis.x, zaxis.x, 0.0f, 
+        xaxis.y, yaxis.y, zaxis.y, 0.0f,
+        xaxis.z, yaxis.z, zaxis.z, 0.0f,
+        -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z),
+        -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z),
+        -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
+        1.0f);
+    
+    
+    //Vector3 f = target - eye;
+    //const f32 fLen = f.length();
+    //if (fLen > 0) f = f * (1.0f / fLen);
 
-    Vector3 u = Vector3::cross(s, f);
+    //Vector3 s = Vector3::cross(f, up);
+    //const f32 sLen = s.length();
+    //if (sLen > 0) s = s * (1.0f / sLen);
 
-    Matrix4x4 r;
-    r.m[0] = s.x;  r.m[4] = s.y;  r.m[8]  = s.z;  r.m[12] = -Vector3::dot(s, eye);
-    r.m[1] = u.x;  r.m[5] = u.y;  r.m[9]  = u.z;  r.m[13] = -Vector3::dot(u, eye);
-    r.m[2] = -f.x; r.m[6] = -f.y; r.m[10] = -f.z; r.m[14] = Vector3::dot(f, eye);
-    r.m[3] = 0;    r.m[7] = 0;    r.m[11] = 0;    r.m[15] = 1;
-    return r;
+    //Vector3 u = Vector3::cross(s, f);
+
+    //Matrix4x4 r;
+    //r.m[0] = s.x;  r.m[4] = s.y;  r.m[8]  = s.z;  r.m[12] = -Vector3::dot(s, eye);
+    //r.m[1] = u.x;  r.m[5] = u.y;  r.m[9]  = u.z;  r.m[13] = -Vector3::dot(u, eye);
+    //r.m[2] = -f.x; r.m[6] = -f.y; r.m[10] = -f.z; r.m[14] = Vector3::dot(f, eye);
+    //r.m[3] = 0;    r.m[7] = 0;    r.m[11] = 0;    r.m[15] = 1;
+    //return r;
 }
 
 Matrix4x4 Matrix4x4::operator*(const Matrix4x4& rhs) const {

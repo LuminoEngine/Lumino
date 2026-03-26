@@ -74,6 +74,10 @@ private:
     Ref<rhi::Buffer> viewUBO_;
     Ref<rhi::BindGroup> viewBindGroup_;
 
+    // Reflected UBO sizes
+    u64 viewUBOSize_ = 0;
+    u64 objectUBOSize_ = 0;
+
     // Per-object resources (resized dynamically)
     std::vector<Ref<rhi::Buffer>> objectUBOs_;
     std::vector<Ref<rhi::BindGroup>> objectBindGroups_;

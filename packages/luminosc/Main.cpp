@@ -8,10 +8,10 @@
 #include <CLI/CLI.hpp>
 
 #ifdef LUMINO_USE_SLANG
-#include <lumino_shader/ShaderCompiler.hpp>
+#include <lumino_shader/ShaderCompiler2.hpp>
 #endif
-#include <lumino_shader/UnifiedShader.hpp>
-#include <lumino_shader/UnifiedShaderSerializer.hpp>
+#include <lumino_shader/UnifiedShader2.hpp>
+#include <lumino_shader/UnifiedShaderSerializer2.hpp>
 
 namespace fs = std::filesystem;
 using namespace ln;
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     CLI11_PARSE(app, argc, argv);
 
 #ifdef LUMINO_USE_SLANG
-    auto compilerResult = ShaderCompiler::create();
+    auto compilerResult = ShaderCompiler2::create();
     if (!compilerResult) {
         std::cerr << "Error: " << compilerResult.error().message << std::endl;
         return 1;
@@ -86,12 +86,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    UnifiedShader* shader = compiler->shader();
+    UnifiedShader2* shader = compiler->shader();
 
     fs::path outputFilePath = inputFile;
-    outputFilePath.replace_extension(UnifiedShaderSerializer::FileExt);
+    outputFilePath.replace_extension(UnifiedShaderSerializer2::FileExt);
 
-    auto saveResult = UnifiedShaderSerializer::saveToFile(shader, outputFilePath);
+    auto saveResult = UnifiedShaderSerializer2::saveToFile(shader, outputFilePath);
     if (!saveResult) {
         std::cerr << "Error: " << saveResult.error().message << std::endl;
         return 1;

@@ -39,12 +39,12 @@ void Camera::setOrbit(const Vector3& target, f32 distance, f32 yaw, f32 pitch) {
 }
 
 Matrix4x4 Camera::viewMatrix() const {
-    return Matrix4x4::lookAt(position_, target_, up_);
+    return Matrix4x4::lookAtRH(position_, target_, up_);
 }
 
 Matrix4x4 Camera::projectionMatrix() const {
     if (mode_ == ProjectionMode::Perspective) {
-        return Matrix4x4::perspective(fovY_, aspect_, nearClip_, farClip_);
+        return Matrix4x4::perspectiveRH(fovY_, aspect_, nearClip_, farClip_);
     } else {
         f32 hw = orthoWidth_ * 0.5f;
         f32 hh = orthoHeight_ * 0.5f;

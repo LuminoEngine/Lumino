@@ -102,6 +102,7 @@ private:
     f32 shininess_ = 32.0f;
 
     // Uniform buffer for material params
+    u64 materialParamBufferSize_ = 0;
     Ref<rhi::Buffer> paramBuffer_;
 
     // Textures

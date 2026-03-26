@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Common.hpp"
+#include "UnifiedShader.hpp"
 
 namespace ln {
 namespace shader {

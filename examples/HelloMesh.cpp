@@ -84,15 +84,22 @@ int main() {
 
     // 5. Orthographic camera looking at the origin
     Camera camera;
-    camera.setOrthographic(2.0f, 2.0f, 0.1f, 10.0f);
-    camera.setLookAt({0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+    camera.setPerspective(
+        //0.3f,
+        60.0f * 3.14159f / 180.0f,
+        static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
+        0.1f,
+        100.0f);
+    camera.setLookAt({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f});
 
     printf("Lumino HelloMesh initialized. Rendering...\n");
 
     // 6. Main loop
+    int frameCount = 0;
     while (window->processEvents()) {
         RenderObject obj;
         obj.mesh = mesh;
+        obj.transform.rotation = Quaternion::fromAxisAngle(Vector3::unitY(), (float)frameCount * 0.01f);
         std::vector<RenderObject> objects = {obj};
 
         auto frame = ctx->beginFrame();
@@ -104,6 +111,7 @@ int main() {
         if (!renderResult) { fprintf(stderr, "Render error\n"); }
 
         ctx->endFrame();
+        frameCount++;
     }
 
     printf("Done.\n");
