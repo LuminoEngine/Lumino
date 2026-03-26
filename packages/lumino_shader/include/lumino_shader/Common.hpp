@@ -77,6 +77,13 @@ enum ShaderStageFlags {
     ShaderStageFlags_Compute = 0x04,
 };
 
+enum ParameterBlockElementKind {
+    ParameterBlockElementKind_ConstantBuffer = 0,
+    ParameterBlockElementKind_Texture = 1,
+    ParameterBlockElementKind_SamplerState = 2,
+    ParameterBlockElementKind_StorageBuffer = 3,
+};
+
 enum AttributeUsage {
     AttributeUsage_Unknown = 0,
     AttributeUsage_Position = 1,

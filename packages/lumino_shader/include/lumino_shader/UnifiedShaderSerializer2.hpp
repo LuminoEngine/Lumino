@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 
 #include "Common.hpp"
@@ -7,10 +7,9 @@
 namespace ln {
 namespace shader {
 
-class UnifiedShader;
+class UnifiedShader2;
 
-/** @deprecated */
-class UnifiedShaderSerializer final {
+class UnifiedShaderSerializer2 final {
 public:
     enum FileVersion {
         FileVersion_1 = 1,
@@ -19,8 +18,8 @@ public:
     };
     static constexpr const char* FileExt = "lcsh";
 
-    static VoidResult saveToFile(const UnifiedShader* shader, const std::filesystem::path& filePath);
-    static Result<Ref<UnifiedShader>> loadFromData(const void* data, size_t length);
+    static VoidResult saveToFile(const UnifiedShader2* shader, const std::filesystem::path& filePath);
+    static Result<Ref<UnifiedShader2>> loadFromData(const void* data, size_t length);
 };
 
 } // namespace shader

@@ -120,6 +120,7 @@ struct GlobalConstantBufferMember {
     int32_t matrixColumns;
 };
 
+/** @deprecated */
 class UnifiedShader : public RefCounted {
 public:
     UnifiedShader();

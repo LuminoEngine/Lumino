@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 
 #include "Common.hpp"
@@ -11,44 +11,36 @@
 namespace ln {
 namespace shader {
 namespace fs = std::filesystem;
-class UnifiedShader;
-class GlobalShaderPass;
+class UnifiedShader2;
+struct GlobalShaderPass2;
 
-/** @deprecated */
-class ShaderCompiler final {
+class ShaderCompiler2 final {
 public:
-    static Result<std::unique_ptr<ShaderCompiler>> create();
+    static Result<std::unique_ptr<ShaderCompiler2>> create();
 
     VoidResult build(const fs::path& inputFilePath);
-    UnifiedShader* shader() const { return m_shader.get(); }
+    UnifiedShader2* shader() const { return m_shader.get(); }
 
     void setDumpEnabled(bool enabled) { m_dump = enabled; }
     void addSearchPath(const fs::path& path) { m_searchPaths.push_back(path); }
 
-    ~ShaderCompiler();
+    ~ShaderCompiler2();
 
 private:
-    ShaderCompiler();
+    ShaderCompiler2();
     VoidResult init();
     VoidResult buildModule();
-    VoidResult buildInputResources(int targetIndex);
+    VoidResult buildParameterBlocks(int targetIndex);
     VoidResult buildTarget(ShaderTarget target, int targetIndex);
     VoidResult buildEntryPoint(ShaderTarget target, int targetIndex, int entryPointIndex);
     VoidResult buildTargetShaderPass(
-        ShaderTarget target, int targetIndex, GlobalShaderPass* globalShaderPass);
+        ShaderTarget target, int targetIndex, GlobalShaderPass2* globalShaderPass);
 
-    static VoidResult getBindingResourceInfo(
-        slang::VariableLayoutReflection* parameter,
-        std::string* outName,
-        RegisterCategory* outRegisterCategory,
-        int* outConstantBufferSize,
-        int* outArrayElementCount);
-
-    void traverseVariableSemaintic(
+    void traverseVariableSemantic(
         slang::VariableLayoutReflection* var,
         const std::function<void(slang::VariableLayoutReflection* var)>& callback);
 
-    VoidResult mergeTargetInputResources();
+    VoidResult mergeTargetBindingLayouts();
 
     Result<VertexInputAttribute> makeVertexInputAttribute(
         const std::string& varName,
@@ -64,7 +56,8 @@ private:
     fs::path m_dumpDirPath;
     bool m_dump;
     std::vector<fs::path> m_searchPaths;
-    Ref<UnifiedShader> m_shader;
+    Ref<UnifiedShader2> m_shader;
+    bool m_parameterBlocksBuilt = false;
 };
 
 } // namespace shader
