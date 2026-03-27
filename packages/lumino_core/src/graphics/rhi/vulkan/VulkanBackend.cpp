@@ -739,16 +739,12 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
 
     // Create sync objects
     VkSemaphoreCreateInfo semInfo{VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
-    VkFenceCreateInfo fenceInfo{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
     imageAvailableSemaphores_.resize(maxFrames_);
     renderFinished_.resize(maxFrames_);
-    inFlightFences_.resize(maxFrames_);
     for (u32 i = 0; i < maxFrames_; ++i) {
         vkCreateSemaphore(device_->vkDevice(), &semInfo, nullptr, &imageAvailableSemaphores_[i]);
         vkCreateSemaphore(device_->vkDevice(), &semInfo, nullptr, &renderFinished_[i]);
-        vkCreateFence(device_->vkDevice(), &fenceInfo, nullptr, &inFlightFences_[i]);
     }
 
 }
@@ -764,7 +760,6 @@ void VulkanSwapChain::cleanup() {
     for (u32 i = 0; i < maxFrames_; ++i) {
         if (imageAvailableSemaphores_[i]) vkDestroySemaphore(dev, imageAvailableSemaphores_[i], nullptr);
         if (renderFinished_[i]) vkDestroySemaphore(dev, renderFinished_[i], nullptr);
-        if (inFlightFences_[i]) vkDestroyFence(dev, inFlightFences_[i], nullptr);
     }
     views_.clear();
     if (swapchain_) vkDestroySwapchainKHR(dev, swapchain_, nullptr);
@@ -773,8 +768,6 @@ void VulkanSwapChain::cleanup() {
 
 TextureView* VulkanSwapChain::acquireNextTexture() {
     VkDevice vkDevice = device_->vkDevice();
-    vkWaitForFences(vkDevice, 1, &inFlightFences_[currentFrame_], VK_TRUE, UINT64_MAX);
-    vkResetFences(vkDevice, 1, &inFlightFences_[currentFrame_]);
     if (!commandBuffers_[currentFrame_]->begin()) {
         return nullptr;
     }
@@ -809,23 +802,69 @@ void VulkanSwapChain::present() {
 
 VkSemaphore VulkanSwapChain::imageAvailableSemaphore() const { return imageAvailableSemaphores_[currentFrame_]; }
 VkSemaphore VulkanSwapChain::renderFinishedSemaphore() const { return renderFinished_[currentFrame_]; }
-VkFence VulkanSwapChain::inFlightFence() const { return inFlightFences_[currentFrame_]; }
+
 
 // ------ VulkanCommandBuffer --------------------------------------------------------------------------------------------------
 
 VulkanCommandBuffer::VulkanCommandBuffer(VulkanDevice* device, VkCommandBuffer cmd)
-    : device_(device), cmd_(cmd) {
+    : device_(device)
+    , cmd_(cmd)
+    , inFlightFences_(VK_NULL_HANDLE) {
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    vkCreateFence(device_->vkDevice(), &fenceInfo, device_->vulkanAllocator(), &inFlightFences_);
     //VkCommandBufferBeginInfo beginInfo{};
     //beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     //beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     //vkBeginCommandBuffer(cmd_, &beginInfo);
 }
 
+void VulkanCommandBuffer::finalize() {
+    dispose();
+    CommandBuffer::finalize();
+}
+
+void VulkanCommandBuffer::dispose() {
+    if (inFlightFences_) {
+        // Wait for execution to complete as it may be pending.
+        vkWaitForFences(device_->vkDevice(), 1, &inFlightFences_, VK_TRUE, UINT64_MAX);
+    }
+
+    // CommandBuffer must be released before vkResetDescriptorPool.
+    if (cmd_) {
+        VkCommandPool pool = device_->commandPool();
+        vkFreeCommandBuffers(device_->vkDevice(), pool, 1, &cmd_);
+        cmd_ = VK_NULL_HANDLE;
+    }
+    // Queue vkFreeCommandBuffers to run once the GPU finishes this frame.
+    // If the command buffer was never submitted, free immediately.
+    //VkDevice dev = device_->vkDevice();
+    //VkCommandPool pool = device_->commandPool();
+    //VkCommandBuffer cmd = cmd_;
+
+    //if (submitted_) {
+    //    device_->frameResources().queueDelete(submittedFrame_, [dev, pool, cmd]() {
+    //        vkFreeCommandBuffers(dev, pool, 1, &cmd);
+    //    });
+    //}
+    //else {
+    //    vkFreeCommandBuffers(dev, pool, 1, &cmd);
+    //}
+
+    if (inFlightFences_) {
+        vkDestroyFence(device_->vkDevice(), inFlightFences_, device_->vulkanAllocator());
+        inFlightFences_ = VK_NULL_HANDLE;
+    }
+}
 #define LN_MAKE_VULKAN_ERROR(result, func) LN_MAKE_ERROR("Failed: " func "(%d)", r)
 
 VoidResult VulkanCommandBuffer::begin() {
     // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
     //vkWaitForFences(m_device->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+    VkDevice vkDevice = device_->vkDevice();
+    vkWaitForFences(vkDevice, 1, &inFlightFences_, VK_TRUE, UINT64_MAX);
+    vkResetFences(vkDevice, 1, &inFlightFences_);
 
     vkResetCommandBuffer(cmd_, 0);
     VkCommandBufferBeginInfo beginInfo{};
@@ -897,7 +936,6 @@ void VulkanCommandBuffer::submit() {
         submitted_ = true;
         waitSemaphore = sc->imageAvailableSemaphore();
         signalSemaphore = sc->renderFinishedSemaphore();
-        fence = sc->inFlightFence();
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = &waitSemaphore;
         submitInfo.pWaitDstStageMask = &waitStage;
@@ -905,26 +943,26 @@ void VulkanCommandBuffer::submit() {
         submitInfo.pSignalSemaphores = &signalSemaphore;
     }
 
-    vkQueueSubmit(device_->graphicsQueue(), 1, &submitInfo, fence);
+    vkQueueSubmit(device_->graphicsQueue(), 1, &submitInfo, inFlightFences_);
 
     delete encoder_;
     encoder_ = nullptr;
 }
 
 VulkanCommandBuffer::~VulkanCommandBuffer() {
-    // Queue vkFreeCommandBuffers to run once the GPU finishes this frame.
-    // If the command buffer was never submitted, free immediately.
-    VkDevice dev = device_->vkDevice();
-    VkCommandPool pool = device_->commandPool();
-    VkCommandBuffer cmd = cmd_;
+    //// Queue vkFreeCommandBuffers to run once the GPU finishes this frame.
+    //// If the command buffer was never submitted, free immediately.
+    //VkDevice dev = device_->vkDevice();
+    //VkCommandPool pool = device_->commandPool();
+    //VkCommandBuffer cmd = cmd_;
 
-    if (submitted_) {
-        device_->frameResources().queueDelete(submittedFrame_, [dev, pool, cmd]() {
-            vkFreeCommandBuffers(dev, pool, 1, &cmd);
-        });
-    } else {
-        vkFreeCommandBuffers(dev, pool, 1, &cmd);
-    }
+    //if (submitted_) {
+    //    device_->frameResources().queueDelete(submittedFrame_, [dev, pool, cmd]() {
+    //        vkFreeCommandBuffers(dev, pool, 1, &cmd);
+    //    });
+    //} else {
+    //    vkFreeCommandBuffers(dev, pool, 1, &cmd);
+    //}
 }
 
 // ------ VulkanDevice ----------------------------------------------------------------------------------------------------------------

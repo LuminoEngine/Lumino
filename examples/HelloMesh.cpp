@@ -119,6 +119,8 @@ int main() {
         ctx->endFrame();
         frameCount++;
     }
+
+    // 現状、wait しないと実行中 Command が使っているリソースを解放しようとしてしまうので、必要。
     ctx->waitIdle();
 
     printf("Done.\n");

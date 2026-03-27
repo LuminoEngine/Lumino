@@ -219,14 +219,18 @@ public:
      */
     ~VulkanCommandBuffer() override;
 
+    void dispose();
+
     VoidResult begin();
     RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
     void submit() override;
 
 private:
+    void finalize() override;
     VulkanDevice* device_;
     VkCommandBuffer cmd_;
     VulkanRenderPassEncoder* encoder_ = nullptr;
+    VkFence inFlightFences_;
     /** Frame index recorded at submit() time; used to schedule deferred cleanup. */
     u32 submittedFrame_ = 0;
     bool submitted_ = false;
@@ -247,7 +251,6 @@ public:
 
     VkSemaphore imageAvailableSemaphore() const;
     VkSemaphore renderFinishedSemaphore() const;
-    VkFence inFlightFence() const;
     u32 currentImageIndex() const { return imageIndex_; }
     u32 currentFrame() const { return currentFrame_; }
 
@@ -272,7 +275,6 @@ public:
 
     std::vector<VkSemaphore> imageAvailableSemaphores_;
     std::vector<VkSemaphore> renderFinished_;
-    std::vector<VkFence> inFlightFences_;
     u32 currentFrame_ = 0;
     u32 imageIndex_ = 0;
 };
@@ -330,6 +332,7 @@ public:
     // Internal accessors
     VkInstance instance() const { return instance_; }
     VkDevice vkDevice() const { return device_; }
+    const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
     VkPhysicalDevice physicalDevice() const { return physicalDevice_; }
     VkQueue graphicsQueue() const { return graphicsQueue_; }
     u32 graphicsFamily() const { return graphicsFamily_; }

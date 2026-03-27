@@ -12,9 +12,9 @@ public:
     RefObject() = default;
     virtual ~RefObject() = default;
 
-    void addRef() const;
+    void addRef();
 
-    void release() const;
+    void release();
 
     uint32_t refCount() const { return refCount_.load(std::memory_order_relaxed); }
 
@@ -25,7 +25,7 @@ protected:
 private:
     RefObject(const RefObject&) = delete;
     RefObject& operator=(const RefObject&) = delete;
-    mutable std::atomic<uint32_t> refCount_{1};
+    std::atomic<uint32_t> refCount_{1};
 };
 
 /**
