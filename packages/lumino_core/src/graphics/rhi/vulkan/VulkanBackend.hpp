@@ -240,14 +240,15 @@ private:
 
 class VulkanSwapChain final : public SwapChain {
 public:
-    VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc);
+    VulkanSwapChain();
     ~VulkanSwapChain() override;
+    VoidResult init(VulkanDevice* device, const SwapChainDesc& desc);
 
     TextureView* acquireNextTexture() override;
     void present() override;
     u32 width() const override { return extent_.width; }
     u32 height() const override { return extent_.height; }
-    TextureFormat format() const override { return format_; }
+    //TextureFormat format() const override { return format_; }
 
     VkSemaphore imageAvailableSemaphore() const;
     VkSemaphore renderFinishedSemaphore() const;
@@ -255,13 +256,24 @@ public:
     u32 currentFrame() const { return currentFrame_; }
 
 public:
+    struct SwapChainSupportDetails {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+
+        VkSurfaceTransformFlagBitsKHR preTransform;
+        VkCompositeAlphaFlagBitsKHR compositeAlpha;
+    };
+    static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+    static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+
     void cleanup();
 
     VulkanDevice* device_;
     VkSurfaceKHR surface_ = VK_NULL_HANDLE;
     VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
     VkExtent2D extent_{};
-    TextureFormat format_;
+    //TextureFormat format_;
 
     int maxFrames_;
     std::vector<VkImage> images_;

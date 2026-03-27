@@ -674,17 +674,29 @@ size_t FramebufferKeyHash::operator()(const FramebufferKey& key) const {
 
 // ------ VulkanSwapChain ----------------------------------------------------------------------------------------------------------
 
-VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc)
-    : device_(device), format_(desc.format) {
+VulkanSwapChain::VulkanSwapChain()
+    : device_(nullptr)
+    //, format_(TextureFormat::BGRA8Unorm)
+{
+}
+
+VulkanSwapChain::~VulkanSwapChain() {
+    cleanup();
+}
+
+VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc) {
+    device_ = device;
     // Create surface
-    glfwCreateWindowSurface(
-        device_->instance(),
-        static_cast<GLFWwindow*>(desc.nativeWindowHandle),
-        nullptr, &surface_);
+    glfwCreateWindowSurface(device_->instance(), static_cast<GLFWwindow*>(desc.nativeWindowHandle), nullptr, &surface_);
 
     // Query surface capabilities
     VkSurfaceCapabilitiesKHR caps{};
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device_->physicalDevice(), surface_, &caps);
+
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device_->physicalDevice(), surface_);
+
+    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    //format_ = toTextureFormat(surfaceFormat.format);
 
     extent_ = caps.currentExtent;
     if (extent_.width == UINT32_MAX) {
@@ -693,15 +705,14 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
     }
 
     uint32_t imageCount = caps.minImageCount + 1;
-    if (caps.maxImageCount > 0 && imageCount > caps.maxImageCount)
-        imageCount = caps.maxImageCount;
+    if (caps.maxImageCount > 0 && imageCount > caps.maxImageCount) imageCount = caps.maxImageCount;
 
     VkSwapchainCreateInfoKHR swapInfo{};
     swapInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     swapInfo.surface = surface_;
     swapInfo.minImageCount = imageCount;
-    swapInfo.imageFormat = toVkFormat(desc.format);
-    swapInfo.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+    swapInfo.imageFormat = surfaceFormat.format;
+    swapInfo.imageColorSpace = surfaceFormat.colorSpace;
     swapInfo.imageExtent = extent_;
     swapInfo.imageArrayLayers = 1;
     swapInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -719,12 +730,16 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
     vkGetSwapchainImagesKHR(device_->vkDevice(), swapchain_, &imageCount, images_.data());
 
     // Create image views
-    VkFormat vkFmt = toVkFormat(desc.format);
+    VkFormat vkFmt = swapInfo.imageFormat;
     views_.resize(imageCount);
     for (u32 i = 0; i < imageCount; ++i) {
-        views_[i] = Ref<VulkanTextureView>::adopt(
-            new VulkanTextureView(device_->vkDevice(), images_[i], vkFmt, VK_IMAGE_ASPECT_COLOR_BIT,
-                                  extent_.width, extent_.height));
+        views_[i] = Ref<VulkanTextureView>::adopt(new VulkanTextureView(
+            device_->vkDevice(),
+            images_[i],
+            vkFmt,
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            extent_.width,
+            extent_.height));
     }
 
     // Create CommandBuffers for rendering.
@@ -746,11 +761,7 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
         vkCreateSemaphore(device_->vkDevice(), &semInfo, nullptr, &imageAvailableSemaphores_[i]);
         vkCreateSemaphore(device_->vkDevice(), &semInfo, nullptr, &renderFinished_[i]);
     }
-
-}
-
-VulkanSwapChain::~VulkanSwapChain() {
-    cleanup();
+    return LN_MAKE_SUCCESS();
 }
 
 void VulkanSwapChain::cleanup() {
@@ -764,6 +775,69 @@ void VulkanSwapChain::cleanup() {
     views_.clear();
     if (swapchain_) vkDestroySwapchainKHR(dev, swapchain_, nullptr);
     if (surface_) vkDestroySurfaceKHR(device_->instance(), surface_, nullptr);
+}
+
+VulkanSwapChain::SwapChainSupportDetails VulkanSwapChain::querySwapChainSupport(
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface) {
+    SwapChainSupportDetails details;
+
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+    uint32_t formatCount;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+    if (formatCount != 0) {
+        details.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+    }
+
+    uint32_t presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+
+    if (presentModeCount != 0) {
+        details.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+    }
+
+    if (details.capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
+        details.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    }
+    else {
+        details.preTransform = details.capabilities.currentTransform;
+    }
+
+    // Find a supported composite alpha mode
+    details.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[4] = {
+        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+        VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+    };
+    for (uint32_t i = 0; i < sizeof(compositeAlphaFlags) / sizeof(compositeAlphaFlags[0]); i++) {
+        if (details.capabilities.supportedCompositeAlpha & compositeAlphaFlags[i]) {
+            details.compositeAlpha = compositeAlphaFlags[i];
+            break;
+        }
+    }
+
+    return details;
+}
+
+VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+    if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
+        return {VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
+    }
+
+    for (const auto& availableFormat : availableFormats) {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+            availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            return availableFormat;
+        }
+    }
+
+    return availableFormats[0];
 }
 
 TextureView* VulkanSwapChain::acquireNextTexture() {
@@ -937,10 +1011,10 @@ void VulkanCommandBuffer::submit() {
         waitSemaphore = sc->imageAvailableSemaphore();
         signalSemaphore = sc->renderFinishedSemaphore();
         submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = &waitSemaphore;
+        submitInfo.pWaitSemaphores = &waitSemaphore;// 実行を開始する前に待機するセマフォ
         submitInfo.pWaitDstStageMask = &waitStage;
         submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = &signalSemaphore;
+        submitInfo.pSignalSemaphores = &signalSemaphore;  // 実行を完了したときに通知されるセマフォ
     }
 
     vkQueueSubmit(device_->graphicsQueue(), 1, &submitInfo, inFlightFences_);
@@ -1174,7 +1248,10 @@ VkFramebuffer VulkanDevice::getOrCreateFramebuffer(const FramebufferKey& key) {
 }
 
 Result<Ref<SwapChain>> VulkanDevice::createSwapChain(const SwapChainDesc& desc) {
-    auto sc = Ref<VulkanSwapChain>::adopt(new VulkanSwapChain(this, desc));
+    auto sc = Ref<VulkanSwapChain>::adopt(new VulkanSwapChain());
+    if (!sc->init(this, desc)) {
+        return LN_MAKE_ERROR("Failed to create swap chain.");
+    }
     return Ref<SwapChain>(sc);
 }
 

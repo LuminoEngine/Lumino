@@ -15,7 +15,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
 {
     auto ctx = Ref<GraphicsContext>::adopt(new GraphicsContext());
     ctx->window_ = window;
-    ctx->colorFormat_ = desc.colorFormat;
+    //ctx->colorFormat_ = desc.colorFormat;
 
     u32 fbWidth, fbHeight;
     window->framebufferSize(fbWidth, fbHeight);
@@ -35,7 +35,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     scDesc.nativeWindowHandle = window->nativeHandle().glfwWindow;
     scDesc.width = fbWidth;
     scDesc.height = fbHeight;
-    scDesc.format = desc.colorFormat;
+    //scDesc.format = desc.colorFormat;
     scDesc.vsync = desc.vsync;
     auto swapChainResult = ctx->device_->createSwapChain(scDesc);
     if (!swapChainResult) return tl::make_unexpected(swapChainResult.error());

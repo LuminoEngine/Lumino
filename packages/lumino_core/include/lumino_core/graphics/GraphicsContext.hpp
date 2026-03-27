@@ -10,7 +10,7 @@ namespace ln {
 struct GraphicsContextDesc {
     rhi::Backend preferredBackend = rhi::Backend::Vulkan;
     bool enableValidation = false;
-    rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8UnormSrgb;
+    //rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8UnormSrgb;
     bool vsync = true;
 };
 
@@ -85,7 +85,7 @@ private:
     Ref<rhi::SwapChain> swapChain_;
     Ref<rhi::Texture> depthTexture_;
     Ref<rhi::TextureView> depthView_;
-    rhi::TextureFormat colorFormat_ = rhi::TextureFormat::BGRA8UnormSrgb;
+    rhi::TextureFormat colorFormat_ = rhi::TextureFormat::BGRA8Unorm;
     rhi::TextureFormat depthFormat_ = rhi::TextureFormat::Depth32Float;
     u32 width_ = 0;
     u32 height_ = 0;

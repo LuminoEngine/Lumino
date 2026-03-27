@@ -313,7 +313,6 @@ struct SwapChainDesc {
     void* nativeWindowHandle = nullptr;
     u32 width = 1280;
     u32 height = 720;
-    TextureFormat format = TextureFormat::BGRA8UnormSrgb;
     bool vsync = true;
 };
 
@@ -342,7 +341,21 @@ public:
 };
 
 class TextureView : public RefObject {
-public:
+    // NOTE: なぜ TextureView も公開しているのか？
+    //   legacy では次のように、 Texture が内部に View も持っていた。
+    //   ```
+    //   class VulkanTexture : public Texture {
+    //         VkImage image_;
+    //         VkImageView view_;
+    //   }
+    //   ```
+    //   こうすると RHI を使う側のコードはシンプルになるが、次のようなことが難しくなる可能性がある。
+    //   - Mipmap 生成
+    //   - Cubemap 描画
+    //   - Cascaded shadow map など高度な描画
+    //   完全に隠すのは少しためらわれるのと、 Texture にデフォルトの view を取得するような仕組みにしつつ、
+    //   Material などで隠蔽してみることにする。
+ public:
     virtual ~TextureView() = default;
 };
 
@@ -410,7 +423,6 @@ public:
     virtual void present() = 0;
     virtual u32 width() const = 0;
     virtual u32 height() const = 0;
-    virtual TextureFormat format() const = 0;
 };
 
 // ─── Device (Factory) ────────────────────────────────────────────────────

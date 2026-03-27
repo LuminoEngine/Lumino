@@ -1,9 +1,7 @@
 ﻿/**
- * HelloMesh.cpp
+ * HelloTexture.cpp
  *
- * Mesh API を使って色付き三角形を描画するデモ。
- * VertexBuffer や IndexBuffer を直接操作せず、Mesh にカプセル化された
- * 高レベル API のみで描画を行う。
+ * PNG 画像を TextureLoader で読み込み、四角形 Mesh に貼り付けて描画するデモ。
  */
 
 #include <lumino_core/platform/Window.hpp>
@@ -14,6 +12,7 @@
 #include <lumino_core/graphics/Material.hpp>
 #include <lumino_core/graphics/Vertex.hpp>
 #include <lumino_core/graphics/Transform.hpp>
+#include <lumino_core/graphics/TextureLoader.hpp>
 
 #include <cstdio>
 #include <vector>
@@ -29,7 +28,7 @@ int main() {
 
     // 1. Window + GraphicsContext
     WindowDesc winDesc;
-    winDesc.title = "Lumino - Hello Mesh";
+    winDesc.title = "Lumino - Hello Texture";
     winDesc.width = 1280;
     winDesc.height = 720;
 
@@ -45,35 +44,57 @@ int main() {
     if (!rendererResult) { fprintf(stderr, "Renderer failed\n"); return 1; }
     auto renderer = std::move(*rendererResult);
 
-    // 3. Unlit Material (white color so vertex colors show through)
+    // 3. Unlit Material
     auto matResult = MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
     if (!matResult) { fprintf(stderr, "Material: %s\n", matResult.error().message.c_str()); return 1; }
     auto material = std::move(*matResult);
-    //material->setCullMode(CullMode::None);
+
+    // 4. PNG テクスチャ読み込み
+    auto texResult = TextureLoader::loadFromFile(ctx->device(), ASSETS_DIR "/picture1.png");
+    if (!texResult) { fprintf(stderr, "Texture: %s\n", texResult.error().message.c_str()); return 1; }
+    auto texture = std::move(*texResult);
+    material->setTexture(texture.get());
+
+    // 5. Pipeline & BindGroup ビルド
     auto bpResult = material->buildPipeline(
-        ctx->device(), renderer->pipelineLayout(),
-        ctx->colorFormat(), ctx->depthFormat());
+        ctx->device(),
+        renderer->pipelineLayout(),
+        ctx->colorFormat(),
+        ctx->depthFormat());
     if (!bpResult) { fprintf(stderr, "Pipeline: %s\n", bpResult.error().message.c_str()); return 1; }
     auto ubgResult = material->updateBindGroup(ctx->device());
     if (!ubgResult) { fprintf(stderr, "Material bind group: %s\n", ubgResult.error().message.c_str()); return 1; }
 
-    // 4. Triangle mesh with per-vertex colors
-    // 反時計回り (CCW) が正面。右手座標系ということで。godot と同じ。
+    // 6. UV付き四角形メッシュ (2枚の三角形)
+    //   v0(-0.5, 0.5) --- v1(0.5, 0.5)
+    //      |           /      |
+    //   v2(-0.5,-0.5) --- v3(0.5,-0.5)
     Vertex v0{};
-    v0.position = {0.0f, 0.5f, 0.0f};
-    v0.color = {1.0f, 0.0f, 0.0f, 1.0f};
-    Vertex v1{};
-    v1.position = {-0.5f, -0.5f, 0.0f};
-    v1.color = {0.0f, 1.0f, 0.0f, 1.0f};
-    Vertex v2{};
-    v2.position ={0.5f, -0.5f, 0.0f};
-    v2.color = {0.0f, 0.0f, 1.0f, 1.0f};
+    v0.position = {-0.5f,  0.5f, 0.0f};
+    v0.uv       = {0.0f, 0.0f};
+    v0.color    = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    std::vector<Vertex> vertices = {v0, v1, v2};
-    std::vector<u32> indices = {0, 1, 2};
+    Vertex v1{};
+    v1.position = { 0.5f,  0.5f, 0.0f};
+    v1.uv       = {1.0f, 0.0f};
+    v1.color    = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    Vertex v2{};
+    v2.position = {-0.5f, -0.5f, 0.0f};
+    v2.uv       = {0.0f, 1.0f};
+    v2.color    = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    Vertex v3{};
+    v3.position = { 0.5f, -0.5f, 0.0f};
+    v3.uv       = {1.0f, 1.0f};
+    v3.color    = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    std::vector<Vertex> vertices = {v0, v1, v2, v3};
+    // CCW: 上三角 (v0,v2,v1) + 下三角 (v1,v2,v3)
+    std::vector<u32> indices = {0, 2, 1, 1, 2, 3};
     SubMesh sub;
     sub.indexOffset = 0;
-    sub.indexCount = 3;
+    sub.indexCount = 6;
     sub.materialIndex = 0;
 
     auto meshResult = Mesh::create(ctx->device(), vertices, indices, {sub});
@@ -81,25 +102,22 @@ int main() {
     auto mesh = std::move(*meshResult);
     mesh->materials() = {material};
 
-    // 5. Orthographic camera looking at the origin
+    // 7. Perspective カメラ
     Camera camera;
     camera.setPerspective(
-        //0.3f,
         60.0f * 3.14159f / 180.0f,
         static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
         0.1f,
         100.0f);
-    camera.setLookAt({0.0f, 0.0f, 5.f}, {0.0f, 0.0f, 0.0f});
+    camera.setLookAt({0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 0.0f});
 
-    printf("Lumino HelloMesh initialized. Rendering...\n");
+    printf("Lumino HelloTexture initialized. Rendering...\n");
 
-    // 6. Main loop
-    int frameCount = 0;
+    // 8. Main loop
     while (window->processEvents()) {
         RenderObject obj;
         obj.mesh = mesh;
-        obj.transform.position.x = 0.5;
-        obj.transform.rotation = Quaternion::fromAxisAngle(Vector3::unitY(), (float)frameCount * 0.1f);
+
         std::vector<RenderObject> objects = {obj};
 
         auto frame = ctx->beginFrame();
@@ -107,14 +125,12 @@ int main() {
 
         auto renderResult = renderer->renderFrame(
             ctx->device(), frame->colorTarget, frame->depthTarget,
-            camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
+            camera, objects, Color{0, 0, 0, 1.0f});
         if (!renderResult) { fprintf(stderr, "Render error\n"); }
 
         ctx->endFrame();
-        frameCount++;
     }
 
-    // 現状、wait しないと実行中 Command が使っているリソースを解放しようとしてしまうので、必要。
     ctx->waitIdle();
 
     printf("Done.\n");

@@ -10,6 +10,12 @@ target_link_libraries(forward_rendering PRIVATE lumino_core lumino_base lumino_s
 add_executable(hello_mesh HelloMesh.cpp)
 target_link_libraries(hello_mesh PRIVATE lumino_core lumino_base lumino_shader)
 
+add_executable(hello_texture HelloTexture.cpp)
+target_link_libraries(hello_texture PRIVATE lumino_core lumino_base lumino_shader)
+target_compile_definitions(hello_texture PRIVATE
+    ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets"
+)
+
 add_executable(clear_screen ClearScreen.c)
 target_link_libraries(clear_screen PRIVATE lumino_api)
 # Windows: 実行時に lumino_api.dll を見つけられるようコピーする
