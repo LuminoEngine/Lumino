@@ -3,11 +3,11 @@
 namespace ln {
 
 Object::~Object() {
-    if (registryIndex_ != 0) {
+    if (m_registryIndex != 0) {
         LN_LOG_ERROR(
             "Object was not unregistered before destruction. registryIndex: %hu, generation: %hu",
-            registryIndex_,
-            generation_);
+            m_registryIndex,
+            m_generation);
     }
 }
 

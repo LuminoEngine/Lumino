@@ -42,19 +42,19 @@ public:
                  bool deviceLocal = false);
     ~VulkanBuffer() override;
 
-    u64 size() const override { return size_; }
+    u64 size() const override { return m_size; }
     void* map() override;   ///< Returns nullptr for device-local buffers.
     void unmap() override;
 
-    VkBuffer handle() const { return buffer_; }
+    VkBuffer handle() const { return m_buffer; }
 
 private:
-    VulkanDevice* device_;
-    VkBuffer buffer_ = VK_NULL_HANDLE;
-    VkDeviceMemory memory_ = VK_NULL_HANDLE;
-    u64 size_ = 0;
-    bool deviceLocal_ = false;
-    void* mapped_ = nullptr;
+    VulkanDevice* m_device;
+    VkBuffer m_buffer = VK_NULL_HANDLE;
+    VkDeviceMemory m_memory = VK_NULL_HANDLE;
+    u64 m_size = 0;
+    bool m_deviceLocal = false;
+    void* m_mapped = nullptr;
 };
 
 // ------ VulkanTexture --------------------------------------------------------------------------------------------------------------
@@ -66,18 +66,18 @@ public:
     VulkanTexture(VkDevice device, VkImage image, TextureFormat format, u32 width, u32 height);
     ~VulkanTexture() override;
 
-    u32 width() const override { return width_; }
-    u32 height() const override { return height_; }
-    TextureFormat format() const override { return format_; }
-    VkImage handle() const { return image_; }
+    u32 width() const override { return m_width; }
+    u32 height() const override { return m_height; }
+    TextureFormat format() const override { return m_format; }
+    VkImage handle() const { return m_image; }
 
 private:
-    VkDevice device_;
-    VkImage image_ = VK_NULL_HANDLE;
-    VkDeviceMemory memory_ = VK_NULL_HANDLE;
-    TextureFormat format_;
-    u32 width_, height_;
-    bool ownsImage_ = true;
+    VkDevice m_device;
+    VkImage m_image = VK_NULL_HANDLE;
+    VkDeviceMemory m_memory = VK_NULL_HANDLE;
+    TextureFormat m_format;
+    u32 m_width, m_height;
+    bool m_ownsImage = true;
 };
 
 // ------ VulkanTextureView ------------------------------------------------------------------------------------------------------
@@ -87,16 +87,16 @@ public:
     VulkanTextureView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height);
     ~VulkanTextureView() override;
 
-    VkImageView handle() const { return view_; }
-    VkFormat vkFormat() const { return format_; }
-    u32 width() const { return width_; }
-    u32 height() const { return height_; }
+    VkImageView handle() const { return m_view; }
+    VkFormat vkFormat() const { return m_format; }
+    u32 width() const { return m_width; }
+    u32 height() const { return m_height; }
 
 private:
-    VkDevice device_;
-    VkImageView view_ = VK_NULL_HANDLE;
-    VkFormat format_;
-    u32 width_, height_;
+    VkDevice m_device;
+    VkImageView m_view = VK_NULL_HANDLE;
+    VkFormat m_format;
+    u32 m_width, m_height;
 };
 
 // ------ VulkanSampler --------------------------------------------------------------------------------------------------------------
@@ -105,11 +105,11 @@ class VulkanSampler final : public Sampler {
 public:
     VulkanSampler(VulkanDevice* device, const SamplerDesc& desc);
     ~VulkanSampler() override;
-    VkSampler handle() const { return sampler_; }
+    VkSampler handle() const { return m_sampler; }
 
 private:
-    VulkanDevice* device_;
-    VkSampler sampler_ = VK_NULL_HANDLE;
+    VulkanDevice* m_device;
+    VkSampler m_sampler = VK_NULL_HANDLE;
 };
 
 // ------ VulkanShaderModule ----------------------------------------------------------------------------------------------------
@@ -118,11 +118,11 @@ class VulkanShaderModule final : public ShaderModule {
 public:
     VulkanShaderModule(VkDevice device, const ShaderModuleDesc& desc);
     ~VulkanShaderModule() override;
-    VkShaderModule handle() const { return module_; }
+    VkShaderModule handle() const { return m_module; }
 
 private:
-    VkDevice device_;
-    VkShaderModule module_ = VK_NULL_HANDLE;
+    VkDevice m_device;
+    VkShaderModule m_module = VK_NULL_HANDLE;
 };
 
 // ------ VulkanBindGroupLayout ----------------------------------------------------------------------------------------------
@@ -131,11 +131,11 @@ class VulkanBindGroupLayout final : public BindGroupLayout {
 public:
     VulkanBindGroupLayout(VkDevice device, const BindGroupLayoutDesc& desc);
     ~VulkanBindGroupLayout() override;
-    VkDescriptorSetLayout handle() const { return layout_; }
+    VkDescriptorSetLayout handle() const { return m_layout; }
 
 private:
-    VkDevice device_;
-    VkDescriptorSetLayout layout_ = VK_NULL_HANDLE;
+    VkDevice m_device;
+    VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
 };
 
 // ------ VulkanBindGroup ----------------------------------------------------------------------------------------------------------
@@ -148,12 +148,12 @@ public:
         VkDescriptorSetLayout layout,
         const BindGroupDesc& desc);
     ~VulkanBindGroup() override;
-    VkDescriptorSet handle() const { return set_; }
+    VkDescriptorSet handle() const { return m_set; }
 
 private:
-    VulkanDevice* device_;
-    VkDescriptorPool pool_ = VK_NULL_HANDLE; ///< Pool that owns set_; used for vkFreeDescriptorSets.
-    VkDescriptorSet set_ = VK_NULL_HANDLE;
+    VulkanDevice* m_device;
+    VkDescriptorPool m_pool = VK_NULL_HANDLE; ///< Pool that owns m_set; used for vkFreeDescriptorSets.
+    VkDescriptorSet m_set = VK_NULL_HANDLE;
 };
 
 // ------ VulkanPipelineLayout ------------------------------------------------------------------------------------------------
@@ -162,11 +162,11 @@ class VulkanPipelineLayout final : public PipelineLayout {
 public:
     VulkanPipelineLayout(VkDevice device, const PipelineLayoutDesc& desc);
     ~VulkanPipelineLayout() override;
-    VkPipelineLayout handle() const { return layout_; }
+    VkPipelineLayout handle() const { return m_layout; }
 
 private:
-    VkDevice device_;
-    VkPipelineLayout layout_ = VK_NULL_HANDLE;
+    VkDevice m_device;
+    VkPipelineLayout m_layout = VK_NULL_HANDLE;
 };
 
 // ------ VulkanRenderPipeline ------------------------------------------------------------------------------------------------
@@ -175,13 +175,13 @@ class VulkanRenderPipeline final : public RenderPipeline {
 public:
     VulkanRenderPipeline(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc);
     ~VulkanRenderPipeline() override;
-    VkPipeline handle() const { return pipeline_; }
-    VkPipelineLayout layoutHandle() const { return layout_; }
+    VkPipeline handle() const { return m_pipeline; }
+    VkPipelineLayout layoutHandle() const { return m_layout; }
 
 private:
-    VulkanDevice* device_;
-    VkPipeline pipeline_ = VK_NULL_HANDLE;
-    VkPipelineLayout layout_ = VK_NULL_HANDLE;
+    VulkanDevice* m_device;
+    VkPipeline m_pipeline = VK_NULL_HANDLE;
+    VkPipelineLayout m_layout = VK_NULL_HANDLE;
 };
 
 // ------ VulkanRenderPassEncoder ------------------------------------------------------------------------------------------
@@ -204,8 +204,8 @@ public:
     void end() override;
 
 private:
-    VkCommandBuffer cmd_;
-    VkPipelineLayout currentPipelineLayout_ = VK_NULL_HANDLE;
+    VkCommandBuffer m_cmd;
+    VkPipelineLayout m_currentPipelineLayout = VK_NULL_HANDLE;
 };
 
 // ------ VulkanCommandBuffer --------------------------------------------------------------------------------------------------
@@ -227,13 +227,13 @@ public:
 
 private:
     void finalize() override;
-    VulkanDevice* device_;
-    VkCommandBuffer cmd_;
-    VulkanRenderPassEncoder* encoder_ = nullptr;
-    VkFence inFlightFences_;
+    VulkanDevice* m_device;
+    VkCommandBuffer m_cmd;
+    VulkanRenderPassEncoder* m_encoder = nullptr;
+    VkFence m_inFlightFences;
     /** Frame index recorded at submit() time; used to schedule deferred cleanup. */
-    u32 submittedFrame_ = 0;
-    bool submitted_ = false;
+    u32 m_submittedFrame = 0;
+    bool m_submitted = false;
 };
 
 // ------ VulkanSwapChain ----------------------------------------------------------------------------------------------------------
@@ -246,14 +246,14 @@ public:
 
     TextureView* acquireNextTexture() override;
     void present() override;
-    u32 width() const override { return extent_.width; }
-    u32 height() const override { return extent_.height; }
-    //TextureFormat format() const override { return format_; }
+    u32 width() const override { return m_extent.width; }
+    u32 height() const override { return m_extent.height; }
+    //TextureFormat format() const override { return m_format; }
 
     VkSemaphore imageAvailableSemaphore() const;
     VkSemaphore renderFinishedSemaphore() const;
-    u32 currentImageIndex() const { return imageIndex_; }
-    u32 currentFrame() const { return currentFrame_; }
+    u32 currentImageIndex() const { return m_imageIndex; }
+    u32 currentFrame() const { return m_currentFrame; }
 
 public:
     struct SwapChainSupportDetails {
@@ -269,26 +269,26 @@ public:
 
     void cleanup();
 
-    VulkanDevice* device_;
-    VkSurfaceKHR surface_ = VK_NULL_HANDLE;
-    VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
-    VkExtent2D extent_{};
-    //TextureFormat format_;
+    VulkanDevice* m_device;
+    VkSurfaceKHR m_surface = VK_NULL_HANDLE;
+    VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
+    VkExtent2D m_extent{};
+    //TextureFormat m_format;
 
-    int maxFrames_;
-    std::vector<VkImage> images_;
-    std::vector<Ref<VulkanTextureView>> views_;
-    std::vector<Ref<VulkanCommandBuffer>> commandBuffers_;
+    int m_maxFrames;
+    std::vector<VkImage> m_images;
+    std::vector<Ref<VulkanTextureView>> m_views;
+    std::vector<Ref<VulkanCommandBuffer>> m_commandBuffers;
     // NOTE: なぜ SwapChain に CommandBuffer を持たせるのか？
     //   https://webgpufundamentals.org/webgpu/lessons/ja/webgpu-multiple-canvases.html
     //   コチラを見ると、 WebGPU ではひとつの CommandEncoder を複数の SwapChain で共有しているように見える。
     //   ただしこれをやろうとすると、 CommandBuffer に RenderTarget として使われた Context を、
     //   次の present 対象として覚えておく必要があるなど、管理が複雑になる。
 
-    std::vector<VkSemaphore> imageAvailableSemaphores_;
-    std::vector<VkSemaphore> renderFinished_;
-    u32 currentFrame_ = 0;
-    u32 imageIndex_ = 0;
+    std::vector<VkSemaphore> m_imageAvailableSemaphores;
+    std::vector<VkSemaphore> m_renderFinished;
+    u32 m_currentFrame = 0;
+    u32 m_imageIndex = 0;
 };
 
 // ------ RenderPass Cache --------------------------------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ public:
     VulkanDevice(const DeviceDesc& desc);
     ~VulkanDevice() override;
 
-    bool isValid() const { return device_ != VK_NULL_HANDLE; }
+    bool isValid() const { return m_device != VK_NULL_HANDLE; }
 
     // RHI interface
     Result<Ref<SwapChain>> createSwapChain(const SwapChainDesc& desc) override;
@@ -342,53 +342,53 @@ public:
     void waitIdle() override;
 
     // Internal accessors
-    VkInstance instance() const { return instance_; }
-    VkDevice vkDevice() const { return device_; }
+    VkInstance instance() const { return m_instance; }
+    VkDevice vkDevice() const { return m_device; }
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
-    VkPhysicalDevice physicalDevice() const { return physicalDevice_; }
-    VkQueue graphicsQueue() const { return graphicsQueue_; }
-    u32 graphicsFamily() const { return graphicsFamily_; }
-    VkCommandPool commandPool() const { return commandPool_; }
+    VkPhysicalDevice physicalDevice() const { return m_physicalDevice; }
+    VkQueue graphicsQueue() const { return m_graphicsQueue; }
+    u32 graphicsFamily() const { return m_graphicsFamily; }
+    VkCommandPool commandPool() const { return m_commandPool; }
 
     VkRenderPass getOrCreateRenderPass(const RenderPassKey& key);
     VkFramebuffer getOrCreateFramebuffer(const FramebufferKey& key);
-    DescriptorPoolManager& descriptorPoolManager() { return descriptorPoolManager_; }
-    FrameResourceManager& frameResources() { return frameResources_; }
+    DescriptorPoolManager& descriptorPoolManager() { return m_descriptorPoolManager; }
+    FrameResourceManager& frameResources() { return m_frameResources; }
 
     /**
      * Called at the start of each frame (after waiting for the in-flight fence)
      * to execute deferred cleanups for that frame index.
      */
-    void beginFrame(u32 frameIndex) { frameResources_.beginFrame(frameIndex); }
+    void beginFrame(u32 frameIndex) { m_frameResources.beginFrame(frameIndex); }
 
-    void setActiveSwapChain(VulkanSwapChain* sc) { activeSwapChain_ = sc; }
-    VulkanSwapChain* activeSwapChain() const { return activeSwapChain_; }
+    void setActiveSwapChain(VulkanSwapChain* sc) { m_activeSwapChain = sc; }
+    VulkanSwapChain* activeSwapChain() const { return m_activeSwapChain; }
     u32 currentFrameIndex() const {
-        return activeSwapChain_ ? activeSwapChain_->currentFrame() : 0u;
+        return m_activeSwapChain ? m_activeSwapChain->currentFrame() : 0u;
     }
 
     Result<Ref<VulkanCommandBuffer>> createCommandBuffer();
     CommandBuffer* getCommandBuffer() override;
 
 private:
-    VkInstance instance_ = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerEXT debugMessenger_ = VK_NULL_HANDLE;
-    VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
-    VkDevice device_ = VK_NULL_HANDLE;
-    u32 graphicsFamily_ = 0;
-    VkQueue graphicsQueue_ = VK_NULL_HANDLE;
-    VkCommandPool commandPool_ = VK_NULL_HANDLE;
+    VkInstance m_instance = VK_NULL_HANDLE;
+    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
+    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    VkDevice m_device = VK_NULL_HANDLE;
+    u32 m_graphicsFamily = 0;
+    VkQueue m_graphicsQueue = VK_NULL_HANDLE;
+    VkCommandPool m_commandPool = VK_NULL_HANDLE;
 
-    DescriptorPoolManager descriptorPoolManager_;
-    FrameResourceManager frameResources_;
-    StagingBufferPool stagingPool_;
+    DescriptorPoolManager m_descriptorPoolManager;
+    FrameResourceManager m_frameResources;
+    StagingBufferPool m_stagingPool;
 
-    VulkanSwapChain* activeSwapChain_ = nullptr;
+    VulkanSwapChain* m_activeSwapChain = nullptr;
 
     // Caches (hides Vulkan complexity from RHI users)
-    std::mutex cacheMutex_;
-    std::unordered_map<RenderPassKey, VkRenderPass, RenderPassKeyHash> renderPassCache_;
-    std::unordered_map<FramebufferKey, VkFramebuffer, FramebufferKeyHash> framebufferCache_;
+    std::mutex m_cacheMutex;
+    std::unordered_map<RenderPassKey, VkRenderPass, RenderPassKeyHash> m_renderPassCache;
+    std::unordered_map<FramebufferKey, VkFramebuffer, FramebufferKeyHash> m_framebufferCache;
 };
 
 } // namespace ln::rhi::vulkan

@@ -90,8 +90,8 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     }
 
     auto renderer = Ref<ForwardRenderer>::adopt(new ForwardRenderer());
-    renderer->colorFormat_ = colorFormat;
-    renderer->depthFormat_ = depthFormat;
+    renderer->m_colorFormat = colorFormat;
+    renderer->m_depthFormat = depthFormat;
 
     // Get CB sizes from reflection.
     int16_t viewCBSize = findConstantBufferSize(*viewBlock);
@@ -100,14 +100,14 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
         return tl::make_unexpected(Error{ErrorCode::RuntimeError,
             "Invalid constant buffer sizes in reflection"});
     }
-    renderer->viewUBOSize_ = static_cast<u64>(viewCBSize);
-    renderer->objectUBOSize_ = static_cast<u64>(objectCBSize);
+    renderer->m_viewUBOSize = static_cast<u64>(viewCBSize);
+    renderer->m_objectUBOSize = static_cast<u64>(objectCBSize);
 
     // ---- Set 0: View BindGroupLayout (from "viewData" reflection) ----
     auto viewBGLDesc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
     auto viewBGLResult = device->createBindGroupLayout(viewBGLDesc);
     if (!viewBGLResult) return tl::make_unexpected(viewBGLResult.error());
-    renderer->viewBindGroupLayout_ = std::move(*viewBGLResult);
+    renderer->m_viewBindGroupLayout = std::move(*viewBGLResult);
 
     // ---- Set 1: Material BindGroupLayout (from "materialData" reflection) ----
     auto matBGLDesc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
@@ -122,36 +122,36 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     auto objBGLDesc = buildBindGroupLayoutFromReflection(*objectBlock, targetPass->bindingLayout);
     auto objBGLResult = device->createBindGroupLayout(objBGLDesc);
     if (!objBGLResult) return tl::make_unexpected(objBGLResult.error());
-    renderer->objectBindGroupLayout_ = std::move(*objBGLResult);
+    renderer->m_objectBindGroupLayout = std::move(*objBGLResult);
 
     // ---- PipelineLayout (Set 0, Set 1, Set 2) ----
     rhi::PipelineLayoutDesc plDesc;
     plDesc.bindGroupLayouts = {
-        renderer->viewBindGroupLayout_.get(),
+        renderer->m_viewBindGroupLayout.get(),
         matBGL.get(),
-        renderer->objectBindGroupLayout_.get(),
+        renderer->m_objectBindGroupLayout.get(),
     };
     auto plResult = device->createPipelineLayout(plDesc);
     if (!plResult) return tl::make_unexpected(plResult.error());
-    renderer->pipelineLayout_ = std::move(*plResult);
+    renderer->m_pipelineLayout = std::move(*plResult);
 
     // ---- Per-view UBO ----
     rhi::BufferDesc viewBufDesc;
-    viewBufDesc.size = renderer->viewUBOSize_;
+    viewBufDesc.size = renderer->m_viewUBOSize;
     viewBufDesc.usage = rhi::BufferUsage::Uniform;
     auto viewBufResult = device->createBuffer(viewBufDesc);
     if (!viewBufResult) return tl::make_unexpected(viewBufResult.error());
-    renderer->viewUBO_ = std::move(*viewBufResult);
+    renderer->m_viewUBO = std::move(*viewBufResult);
 
     // ---- Per-view BindGroup ----
     rhi::BindGroupDesc viewBGDesc;
-    viewBGDesc.layout = renderer->viewBindGroupLayout_.get();
+    viewBGDesc.layout = renderer->m_viewBindGroupLayout.get();
     viewBGDesc.entries = {
-        {0, renderer->viewUBO_.get(), 0, renderer->viewUBOSize_, nullptr, nullptr},
+        {0, renderer->m_viewUBO.get(), 0, renderer->m_viewUBOSize, nullptr, nullptr},
     };
     auto viewBGResult = device->createBindGroup(viewBGDesc);
     if (!viewBGResult) return tl::make_unexpected(viewBGResult.error());
-    renderer->viewBindGroup_ = std::move(*viewBGResult);
+    renderer->m_viewBindGroup = std::move(*viewBGResult);
 
     return renderer;
 }
@@ -161,10 +161,10 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
 }
 
 Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t count) {
-    while (objectUBOs_.size() < count) {
+    while (m_objectUBOs.size() < count) {
         // Create object UBO
         rhi::BufferDesc bufDesc;
-        bufDesc.size = objectUBOSize_;
+        bufDesc.size = m_objectUBOSize;
         bufDesc.usage = rhi::BufferUsage::Uniform;
         auto bufResult = device->createBuffer(bufDesc);
         if (!bufResult) return tl::make_unexpected(bufResult.error());
@@ -172,15 +172,15 @@ Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t 
 
         // Create object BindGroup
         rhi::BindGroupDesc bgDesc;
-        bgDesc.layout = objectBindGroupLayout_.get();
+        bgDesc.layout = m_objectBindGroupLayout.get();
         bgDesc.entries = {
-            {0, buf.get(), 0, objectUBOSize_, nullptr, nullptr},
+            {0, buf.get(), 0, m_objectUBOSize, nullptr, nullptr},
         };
         auto bgResult = device->createBindGroup(bgDesc);
         if (!bgResult) return tl::make_unexpected(bgResult.error());
 
-        objectUBOs_.push_back(std::move(buf));
-        objectBindGroups_.push_back(std::move(*bgResult));
+        m_objectUBOs.push_back(std::move(buf));
+        m_objectBindGroups.push_back(std::move(*bgResult));
     }
     return {};
 }
@@ -215,26 +215,26 @@ Result<void> ForwardRenderer::renderFrame(
         viewParams.cameraPos[2] = camPos.z;
         viewParams.cameraPos[3] = 0.0f;
 
-        Vector3 ld = light_.direction.normalized();
+        Vector3 ld = m_light.direction.normalized();
         viewParams.lightDir[0] = ld.x;
         viewParams.lightDir[1] = ld.y;
         viewParams.lightDir[2] = ld.z;
         viewParams.lightDir[3] = 0.0f;
 
-        viewParams.lightColor[0] = light_.color.r;
-        viewParams.lightColor[1] = light_.color.g;
-        viewParams.lightColor[2] = light_.color.b;
-        viewParams.lightColor[3] = light_.color.a;
+        viewParams.lightColor[0] = m_light.color.r;
+        viewParams.lightColor[1] = m_light.color.g;
+        viewParams.lightColor[2] = m_light.color.b;
+        viewParams.lightColor[3] = m_light.color.a;
 
-        viewParams.ambientColor[0] = light_.ambient.r;
-        viewParams.ambientColor[1] = light_.ambient.g;
-        viewParams.ambientColor[2] = light_.ambient.b;
-        viewParams.ambientColor[3] = light_.ambient.a;
+        viewParams.ambientColor[0] = m_light.ambient.r;
+        viewParams.ambientColor[1] = m_light.ambient.g;
+        viewParams.ambientColor[2] = m_light.ambient.b;
+        viewParams.ambientColor[3] = m_light.ambient.a;
 
-        void* mapped = viewUBO_->map();
+        void* mapped = m_viewUBO->map();
         if (mapped) {
             std::memcpy(mapped, &viewParams, sizeof(viewParams));
-            viewUBO_->unmap();
+            m_viewUBO->unmap();
         }
     }
 
@@ -271,10 +271,10 @@ Result<void> ForwardRenderer::renderFrame(
                 std::memcpy(objParams.world, worldMatrix.m, sizeof(f32) * 16);
                 std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(f32) * 16);
 
-                void* mapped = objectUBOs_[drawIndex]->map();
+                void* mapped = m_objectUBOs[drawIndex]->map();
                 if (mapped) {
                     std::memcpy(mapped, &objParams, sizeof(objParams));
-                    objectUBOs_[drawIndex]->unmap();
+                    m_objectUBOs[drawIndex]->unmap();
                 }
             }
 
@@ -289,11 +289,11 @@ Result<void> ForwardRenderer::renderFrame(
 
             if (mat && mat->pipeline()) {
                 pass->setPipeline(mat->pipeline());
-                pass->setBindGroup(0, viewBindGroup_.get());
+                pass->setBindGroup(0, m_viewBindGroup.get());
                 pass->setBindGroup(1, mat->materialBindGroup());
             }
 
-            pass->setBindGroup(2, objectBindGroups_[drawIndex].get());
+            pass->setBindGroup(2, m_objectBindGroups[drawIndex].get());
             pass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
 
             ++drawIndex;

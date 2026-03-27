@@ -32,7 +32,7 @@ public:
      * waited on (so the GPU is no longer using those resources).
      */
     void beginFrame(u32 frameIndex) {
-        auto& q = deleteQueues_[frameIndex % MAX_FRAMES];
+        auto& q = m_deleteQueues[frameIndex % MAX_FRAMES];
         for (auto& fn : q) fn();
         q.clear();
     }
@@ -42,7 +42,7 @@ public:
      * frame index.  Ownership of the callable is transferred.
      */
     void queueDelete(u32 frameIndex, std::function<void()> fn) {
-        deleteQueues_[frameIndex % MAX_FRAMES].push_back(std::move(fn));
+        m_deleteQueues[frameIndex % MAX_FRAMES].push_back(std::move(fn));
     }
 
     /**
@@ -50,14 +50,14 @@ public:
      * the GPU is known to be idle and no more frames will be submitted).
      */
     void flushAll() {
-        for (auto& q : deleteQueues_) {
+        for (auto& q : m_deleteQueues) {
             for (auto& fn : q) fn();
             q.clear();
         }
     }
 
 private:
-    std::array<std::vector<std::function<void()>>, MAX_FRAMES> deleteQueues_;
+    std::array<std::vector<std::function<void()>>, MAX_FRAMES> m_deleteQueues;
 };
 
 } // namespace ln::rhi::vulkan

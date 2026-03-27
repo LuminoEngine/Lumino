@@ -1,11 +1,11 @@
-#include <lumino_core/graphics/GraphicsContext.hpp>
+﻿#include <lumino_core/graphics/GraphicsContext.hpp>
 #include <cstdio>
 
 namespace ln {
 
 GraphicsContext::~GraphicsContext() {
-    if (device_) {
-        device_->waitIdle();
+    if (m_device) {
+        m_device->waitIdle();
     }
 }
 
@@ -14,13 +14,13 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     const GraphicsContextDesc& desc)
 {
     auto ctx = Ref<GraphicsContext>::adopt(new GraphicsContext());
-    ctx->window_ = window;
-    //ctx->colorFormat_ = desc.colorFormat;
+    ctx->m_window = window;
+    //ctx->m_colorFormat = desc.colorFormat;
 
     u32 fbWidth, fbHeight;
     window->framebufferSize(fbWidth, fbHeight);
-    ctx->width_ = fbWidth;
-    ctx->height_ = fbHeight;
+    ctx->m_width = fbWidth;
+    ctx->m_height = fbHeight;
 
     // 1. Device
     rhi::DeviceDesc devDesc;
@@ -28,7 +28,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     devDesc.enableValidation = desc.enableValidation;
     auto deviceResult = rhi::Device::create(devDesc);
     if (!deviceResult) return tl::make_unexpected(deviceResult.error());
-    ctx->device_ = std::move(*deviceResult);
+    ctx->m_device = std::move(*deviceResult);
 
     // 2. SwapChain
     rhi::SwapChainDesc scDesc;
@@ -37,47 +37,47 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     scDesc.height = fbHeight;
     //scDesc.format = desc.colorFormat;
     scDesc.vsync = desc.vsync;
-    auto swapChainResult = ctx->device_->createSwapChain(scDesc);
+    auto swapChainResult = ctx->m_device->createSwapChain(scDesc);
     if (!swapChainResult) return tl::make_unexpected(swapChainResult.error());
-    ctx->swapChain_ = std::move(*swapChainResult);
+    ctx->m_swapChain = std::move(*swapChainResult);
 
     // 3. Depth texture + view
     rhi::TextureDesc depthTexDesc;
     depthTexDesc.width = fbWidth;
     depthTexDesc.height = fbHeight;
-    depthTexDesc.format = ctx->depthFormat_;
+    depthTexDesc.format = ctx->m_depthFormat;
     depthTexDesc.usage = rhi::TextureUsage::DepthStencil;
-    auto depthTexResult = ctx->device_->createTexture(depthTexDesc);
+    auto depthTexResult = ctx->m_device->createTexture(depthTexDesc);
     if (!depthTexResult) return tl::make_unexpected(depthTexResult.error());
-    ctx->depthTexture_ = std::move(*depthTexResult);
+    ctx->m_depthTexture = std::move(*depthTexResult);
 
-    auto depthViewResult = ctx->device_->createTextureView(ctx->depthTexture_.get());
+    auto depthViewResult = ctx->m_device->createTextureView(ctx->m_depthTexture.get());
     if (!depthViewResult) return tl::make_unexpected(depthViewResult.error());
-    ctx->depthView_ = std::move(*depthViewResult);
+    ctx->m_depthView = std::move(*depthViewResult);
 
     return ctx;
 }
 
 Result<FrameInfo> GraphicsContext::beginFrame() {
-    auto* colorTarget = swapChain_->acquireNextTexture();
+    auto* colorTarget = m_swapChain->acquireNextTexture();
     if (!colorTarget) {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to acquire next texture"});
     }
 
     FrameInfo info;
     info.colorTarget = colorTarget;
-    info.depthTarget = depthView_.get();
-    info.width = width_;
-    info.height = height_;
+    info.depthTarget = m_depthView.get();
+    info.width = m_width;
+    info.height = m_height;
     return info;
 }
 
 void GraphicsContext::endFrame() {
-    swapChain_->present();
+    m_swapChain->present();
 }
 
 void GraphicsContext::waitIdle() {
-    if (device_) device_->waitIdle();
+    if (m_device) m_device->waitIdle();
 }
 
 } // namespace ln

@@ -1,4 +1,4 @@
-#include <lumino_core/graphics/Material.hpp>
+﻿#include <lumino_core/graphics/Material.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_core/graphics/TextureLoader.hpp>
 #include <lumino_shader/UnifiedShader2.hpp>
@@ -70,86 +70,86 @@ static int16_t findConstantBufferSize(const shader::ParameterBlockLayout2& block
 // ─── Material ────────────────────────────────────────────────────────────
 
 void Material::setColor(const Color& color) {
-    baseColor_ = color;
-    paramsDirty_ = true;
+    m_baseColor = color;
+    m_paramsDirty = true;
 }
 
 void Material::setTexture(rhi::Texture* texture) {
     if (texture) {
         texture->addRef();
-        baseTexture_ = Ref<rhi::Texture>::adopt(texture);
+        m_baseTexture = Ref<rhi::Texture>::adopt(texture);
     } else {
-        baseTexture_.reset();
+        m_baseTexture.reset();
     }
-    baseTextureView_.reset();
-    paramsDirty_ = true;
+    m_baseTextureView.reset();
+    m_paramsDirty = true;
 }
 
 void Material::setSpecular(const Color& color, f32 shininess) {
-    specularColor_ = color;
-    shininess_ = shininess;
-    paramsDirty_ = true;
+    m_specularColor = color;
+    m_shininess = shininess;
+    m_paramsDirty = true;
 }
 
-void Material::setBlendEnabled(bool enabled) { blendEnabled_ = enabled; }
-void Material::setCullMode(rhi::CullMode mode) { cullMode_ = mode; }
-void Material::setDepthTestEnabled(bool enabled) { depthTestEnabled_ = enabled; }
-void Material::setDepthWriteEnabled(bool enabled) { depthWriteEnabled_ = enabled; }
+void Material::setBlendEnabled(bool enabled) { m_blendEnabled = enabled; }
+void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
+void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
+void Material::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
 
 Result<void> Material::updateBindGroup(rhi::Device* device) {
-    if (!paramsDirty_) return {};
+    if (!m_paramsDirty) return {};
 
     // Update uniform buffer
-    if (paramBuffer_) {
-        void* mapped = paramBuffer_->map();
+    if (m_paramBuffer) {
+        void* mapped = m_paramBuffer->map();
         if (mapped) {
-            if (type_ == MaterialType::Unlit) {
+            if (m_type == MaterialType::Unlit) {
                 UnlitMaterialParamsUBO ubo;
-                ubo.color[0] = baseColor_.r; ubo.color[1] = baseColor_.g;
-                ubo.color[2] = baseColor_.b; ubo.color[3] = baseColor_.a;
+                ubo.color[0] = m_baseColor.r; ubo.color[1] = m_baseColor.g;
+                ubo.color[2] = m_baseColor.b; ubo.color[3] = m_baseColor.a;
                 std::memcpy(mapped, &ubo, sizeof(ubo));
             } else {
                 BasicLitMaterialParamsUBO ubo;
-                ubo.color[0] = baseColor_.r; ubo.color[1] = baseColor_.g;
-                ubo.color[2] = baseColor_.b; ubo.color[3] = baseColor_.a;
-                ubo.specular[0] = specularColor_.r; ubo.specular[1] = specularColor_.g;
-                ubo.specular[2] = specularColor_.b; ubo.specular[3] = shininess_;
+                ubo.color[0] = m_baseColor.r; ubo.color[1] = m_baseColor.g;
+                ubo.color[2] = m_baseColor.b; ubo.color[3] = m_baseColor.a;
+                ubo.specular[0] = m_specularColor.r; ubo.specular[1] = m_specularColor.g;
+                ubo.specular[2] = m_specularColor.b; ubo.specular[3] = m_shininess;
                 std::memcpy(mapped, &ubo, sizeof(ubo));
             }
-            paramBuffer_->unmap();
+            m_paramBuffer->unmap();
         }
     }
 
     // Create texture view if missing
-    if (baseTexture_ && !baseTextureView_) {
-        auto tvResult = device->createTextureView(baseTexture_.get());
+    if (m_baseTexture && !m_baseTextureView) {
+        auto tvResult = device->createTextureView(m_baseTexture.get());
         if (!tvResult) return tl::make_unexpected(tvResult.error());
-        baseTextureView_ = std::move(*tvResult);
+        m_baseTextureView = std::move(*tvResult);
     }
 
     // Create sampler if missing
-    if (!sampler_) {
+    if (!m_sampler) {
         rhi::SamplerDesc samplerDesc;
         auto sampResult = device->createSampler(samplerDesc);
         if (!sampResult) return tl::make_unexpected(sampResult.error());
-        sampler_ = std::move(*sampResult);
+        m_sampler = std::move(*sampResult);
     }
 
     // Recreate BindGroup with current parameters
-    if (materialBindGroupLayout_ && baseTextureView_ && sampler_) {
+    if (m_materialBindGroupLayout && m_baseTextureView && m_sampler) {
         rhi::BindGroupDesc bgDesc;
-        bgDesc.layout = materialBindGroupLayout_.get();
+        bgDesc.layout = m_materialBindGroupLayout.get();
         bgDesc.entries = {
-            {0, paramBuffer_.get(), 0, materialParamBufferSize_, nullptr, nullptr},  // uniform buffer
-            {1, nullptr, 0, 0, baseTextureView_.get(), nullptr},      // texture
-            {2, nullptr, 0, 0, nullptr, sampler_.get()},              // sampler
+            {0, m_paramBuffer.get(), 0, m_materialParamBufferSize, nullptr, nullptr},  // uniform buffer
+            {1, nullptr, 0, 0, m_baseTextureView.get(), nullptr},      // texture
+            {2, nullptr, 0, 0, nullptr, m_sampler.get()},              // sampler
         };
         auto bgResult = device->createBindGroup(bgDesc);
         if (!bgResult) return tl::make_unexpected(bgResult.error());
-        materialBindGroup_ = std::move(*bgResult);
+        m_materialBindGroup = std::move(*bgResult);
     }
 
-    paramsDirty_ = false;
+    m_paramsDirty = false;
     return {};
 }
 
@@ -162,19 +162,19 @@ Result<void> Material::buildPipeline(
 
     rhi::RenderPipelineDesc rpDesc;
     rpDesc.layout = pipelineLayout;
-    rpDesc.vertexShader = vertShader_.get();
-    rpDesc.fragmentShader = fragShader_.get();
-    rpDesc.vertexEntry = vertEntry_;
-    rpDesc.fragmentEntry = fragEntry_;
+    rpDesc.vertexShader = m_vertShader.get();
+    rpDesc.fragmentShader = m_fragShader.get();
+    rpDesc.vertexEntry = m_vertEntry;
+    rpDesc.fragmentEntry = m_fragEntry;
     rpDesc.vertexBuffers = {standardVertexLayout()};
     rpDesc.topology = topology;
-    rpDesc.cullMode = cullMode_;
+    rpDesc.cullMode = m_cullMode;
     rpDesc.colorFormats = {colorFormat};
     rpDesc.depthStencilFormat = depthFormat;
-    rpDesc.depthStencil.depthTestEnable = depthTestEnabled_;
-    rpDesc.depthStencil.depthWriteEnable = depthWriteEnabled_;
+    rpDesc.depthStencil.depthTestEnable = m_depthTestEnabled;
+    rpDesc.depthStencil.depthWriteEnable = m_depthWriteEnabled;
 
-    if (blendEnabled_) {
+    if (m_blendEnabled) {
         rhi::BlendState bs;
         bs.enabled = true;
         bs.srcColor = rhi::BlendFactor::SrcAlpha;
@@ -188,7 +188,7 @@ Result<void> Material::buildPipeline(
 
     auto pipelineResult = device->createRenderPipeline(rpDesc);
     if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
-    pipeline_ = std::move(*pipelineResult);
+    m_pipeline = std::move(*pipelineResult);
     return {};
 }
 
@@ -272,15 +272,15 @@ Result<Ref<Material>> MaterialFactory::createMaterialFromShaderData(
 
     // Assemble material
     auto mat = Ref<Material>::adopt(new Material());
-    mat->type_ = type;
-    mat->vertShader_ = std::move(*vsResult);
-    mat->fragShader_ = std::move(*fsResult);
-    mat->vertEntry_ = vertEP->name;
-    mat->fragEntry_ = fragEP->name;
-    mat->materialBindGroupLayout_ = std::move(*bglResult);
-    mat->materialParamBufferSize_ = paramSize;
-    mat->paramBuffer_ = std::move(*bufResult);
-    mat->baseTexture_ = std::move(*texResult);
+    mat->m_type = type;
+    mat->m_vertShader = std::move(*vsResult);
+    mat->m_fragShader = std::move(*fsResult);
+    mat->m_vertEntry = vertEP->name;
+    mat->m_fragEntry = fragEP->name;
+    mat->m_materialBindGroupLayout = std::move(*bglResult);
+    mat->m_materialParamBufferSize = paramSize;
+    mat->m_paramBuffer = std::move(*bufResult);
+    mat->m_baseTexture = std::move(*texResult);
 
     // Build RenderPipeline
     auto buildResult = mat->buildPipeline(device, pipelineLayout, colorFormat, depthFormat);

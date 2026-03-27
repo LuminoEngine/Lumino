@@ -57,7 +57,7 @@ private:
     PlatformWindow() = default;
 
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* m_impl = nullptr;
 };
 
 } // namespace ln::platform

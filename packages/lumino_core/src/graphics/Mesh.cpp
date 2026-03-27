@@ -10,7 +10,7 @@ Result<Ref<Mesh>> Mesh::create(
     rhi::PrimitiveTopology topology) {
 
     auto mesh = Ref<Mesh>::adopt(new Mesh());
-    mesh->topology_ = topology;
+    mesh->m_topology = topology;
 
     // Create vertex buffer.
     rhi::BufferDesc vbDesc;
@@ -19,7 +19,7 @@ Result<Ref<Mesh>> Mesh::create(
     vbDesc.initialData = vertices.data();
     auto vbResult = device->createBuffer(vbDesc);
     if (!vbResult) return tl::make_unexpected(vbResult.error());
-    mesh->vertexBuffer_ = std::move(*vbResult);
+    mesh->m_vertexBuffer = std::move(*vbResult);
 
     // Create index buffer.
     rhi::BufferDesc ibDesc;
@@ -28,16 +28,16 @@ Result<Ref<Mesh>> Mesh::create(
     ibDesc.initialData = indices.data();
     auto ibResult = device->createBuffer(ibDesc);
     if (!ibResult) return tl::make_unexpected(ibResult.error());
-    mesh->indexBuffer_ = std::move(*ibResult);
+    mesh->m_indexBuffer = std::move(*ibResult);
 
-    mesh->submeshes_ = submeshes;
+    mesh->m_submeshes = submeshes;
 
     // Determine how many material slots are needed.
     u32 maxMaterialIndex = 0;
     for (auto& sub : submeshes) {
         if (sub.materialIndex > maxMaterialIndex) maxMaterialIndex = sub.materialIndex;
     }
-    mesh->materials_.resize(maxMaterialIndex + 1);
+    mesh->m_materials.resize(maxMaterialIndex + 1);
 
     return mesh;
 }

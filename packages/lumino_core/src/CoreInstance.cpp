@@ -21,12 +21,12 @@ void CoreInstance::terminate() {
 
 VoidResult CoreInstance::init(const Settings& settings) {
     m_settings = settings;
-    objectRegistry_ = std::make_unique<ObjectRegistry>();
+    m_objectRegistry = std::make_unique<ObjectRegistry>();
     return LN_MAKE_SUCCESS();
 }
 
 void CoreInstance::dispose() {
-    objectRegistry_.reset();
+    m_objectRegistry.reset();
 }
 
 } // namespace ln

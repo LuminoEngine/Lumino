@@ -31,15 +31,15 @@ public:
     static constexpr u32 SETS_PER_POOL = 64;
 
     void init(VkDevice device) {
-        device_ = device;
+        m_device = device;
         allocateNewPool();
     }
 
     void destroy() {
-        for (auto pool : pools_) {
-            vkDestroyDescriptorPool(device_, pool, nullptr);
+        for (auto pool : m_pools) {
+            vkDestroyDescriptorPool(m_device, pool, nullptr);
         }
-        pools_.clear();
+        m_pools.clear();
     }
 
     /**
@@ -50,14 +50,14 @@ public:
         for (;;) {
             VkDescriptorSetAllocateInfo allocInfo{};
             allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-            allocInfo.descriptorPool = pools_.back();
+            allocInfo.descriptorPool = m_pools.back();
             allocInfo.descriptorSetCount = 1;
             allocInfo.pSetLayouts = &layout;
 
             VkDescriptorSet set = VK_NULL_HANDLE;
-            VkResult result = vkAllocateDescriptorSets(device_, &allocInfo, &set);
+            VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, &set);
             if (result == VK_SUCCESS) {
-                return {pools_.back(), set};
+                return {m_pools.back(), set};
             }
             if (result == VK_ERROR_OUT_OF_POOL_MEMORY ||
                 result == VK_ERROR_FRAGMENTED_POOL) {
@@ -70,8 +70,8 @@ public:
     }
 
 private:
-    VkDevice device_ = VK_NULL_HANDLE;
-    std::vector<VkDescriptorPool> pools_;
+    VkDevice m_device = VK_NULL_HANDLE;
+    std::vector<VkDescriptorPool> m_pools;
 
     void allocateNewPool() {
         VkDescriptorPoolSize poolSizes[] = {
@@ -90,8 +90,8 @@ private:
         dpInfo.pPoolSizes = poolSizes;
 
         VkDescriptorPool pool = VK_NULL_HANDLE;
-        vkCreateDescriptorPool(device_, &dpInfo, nullptr, &pool);
-        pools_.push_back(pool);
+        vkCreateDescriptorPool(m_device, &dpInfo, nullptr, &pool);
+        m_pools.push_back(pool);
     }
 };
 

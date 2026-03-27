@@ -25,8 +25,8 @@ namespace ln::rhi::vulkan {
 class StagingBufferPool {
 public:
     void init(VkDevice device, VkPhysicalDevice physicalDevice) {
-        device_ = device;
-        physicalDevice_ = physicalDevice;
+        m_device = device;
+        m_physicalDevice = physicalDevice;
     }
 
     StagingBufferPool() = default;
@@ -34,11 +34,11 @@ public:
     StagingBufferPool& operator=(const StagingBufferPool&) = delete;
 
     void destroy() {
-        for (auto& page : freePages_) {
-            vkDestroyBuffer(device_, page.buffer, nullptr);
-            vkFreeMemory(device_, page.memory, nullptr);
+        for (auto& page : m_freePages) {
+            vkDestroyBuffer(m_device, page.buffer, nullptr);
+            vkFreeMemory(m_device, page.memory, nullptr);
         }
-        freePages_.clear();
+        m_freePages.clear();
     }
 
     /**
@@ -52,9 +52,9 @@ public:
 
         // Map and fill the staging buffer.
         void* mapped = nullptr;
-        vkMapMemory(device_, staging.memory, 0, size, 0, &mapped);
+        vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
         std::memcpy(mapped, data, size);
-        vkUnmapMemory(device_, staging.memory);
+        vkUnmapMemory(m_device, staging.memory);
 
         // Allocate and record a one-time command buffer.
         VkCommandBufferAllocateInfo allocInfo{};
@@ -64,7 +64,7 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer cmd = VK_NULL_HANDLE;
-        vkAllocateCommandBuffers(device_, &allocInfo, &cmd);
+        vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -84,7 +84,7 @@ public:
         vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
         vkQueueWaitIdle(queue);
 
-        vkFreeCommandBuffers(device_, cmdPool, 1, &cmd);
+        vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
         releasePage(staging);
     }
 
@@ -98,9 +98,9 @@ public:
         Page staging = acquirePage(size);
 
         void* mapped = nullptr;
-        vkMapMemory(device_, staging.memory, 0, size, 0, &mapped);
+        vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
         std::memcpy(mapped, data, size);
-        vkUnmapMemory(device_, staging.memory);
+        vkUnmapMemory(m_device, staging.memory);
 
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -109,7 +109,7 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer cmd = VK_NULL_HANDLE;
-        vkAllocateCommandBuffers(device_, &allocInfo, &cmd);
+        vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -167,7 +167,7 @@ public:
         vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
         vkQueueWaitIdle(queue);
 
-        vkFreeCommandBuffers(device_, cmdPool, 1, &cmd);
+        vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
         releasePage(staging);
     }
 
@@ -178,16 +178,16 @@ private:
         VkDeviceSize capacity = 0;
     };
 
-    VkDevice device_ = VK_NULL_HANDLE;
-    VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
-    std::vector<Page> freePages_;
+    VkDevice m_device = VK_NULL_HANDLE;
+    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    std::vector<Page> m_freePages;
 
     Page acquirePage(VkDeviceSize size) {
         // Reuse any free page that is large enough.
-        for (auto it = freePages_.begin(); it != freePages_.end(); ++it) {
+        for (auto it = m_freePages.begin(); it != m_freePages.end(); ++it) {
             if (it->capacity >= size) {
                 Page p = *it;
-                freePages_.erase(it);
+                m_freePages.erase(it);
                 return p;
             }
         }
@@ -195,7 +195,7 @@ private:
     }
 
     void releasePage(Page page) {
-        freePages_.push_back(page);
+        m_freePages.push_back(page);
     }
 
     Page createPage(VkDeviceSize size) {
@@ -207,13 +207,13 @@ private:
         bufInfo.size = size;
         bufInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
         bufInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        vkCreateBuffer(device_, &bufInfo, nullptr, &page.buffer);
+        vkCreateBuffer(m_device, &bufInfo, nullptr, &page.buffer);
 
         VkMemoryRequirements memReqs;
-        vkGetBufferMemoryRequirements(device_, page.buffer, &memReqs);
+        vkGetBufferMemoryRequirements(m_device, page.buffer, &memReqs);
 
         VkPhysicalDeviceMemoryProperties memProps;
-        vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &memProps);
+        vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProps);
 
         constexpr VkMemoryPropertyFlags required =
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -231,8 +231,8 @@ private:
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memReqs.size;
         allocInfo.memoryTypeIndex = memTypeIdx;
-        vkAllocateMemory(device_, &allocInfo, nullptr, &page.memory);
-        vkBindBufferMemory(device_, page.buffer, page.memory, 0);
+        vkAllocateMemory(m_device, &allocInfo, nullptr, &page.memory);
+        vkBindBufferMemory(m_device, page.buffer, page.memory, 0);
 
         return page;
     }

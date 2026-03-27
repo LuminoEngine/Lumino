@@ -47,7 +47,7 @@ class Material : public RefObject {
 public:
     ~Material() override = default;
 
-    MaterialType type() const { return type_; }
+    MaterialType type() const { return m_type; }
 
     void setColor(const Color& color);
     void setTexture(rhi::Texture* texture);
@@ -60,9 +60,9 @@ public:
     void setDepthWriteEnabled(bool enabled);
 
     // Access internals (used by ForwardRenderer)
-    rhi::RenderPipeline* pipeline() const { return pipeline_.get(); }
-    rhi::BindGroupLayout* materialBindGroupLayout() const { return materialBindGroupLayout_.get(); }
-    rhi::BindGroup* materialBindGroup() const { return materialBindGroup_.get(); }
+    rhi::RenderPipeline* pipeline() const { return m_pipeline.get(); }
+    rhi::BindGroupLayout* materialBindGroupLayout() const { return m_materialBindGroupLayout.get(); }
+    rhi::BindGroup* materialBindGroup() const { return m_materialBindGroup.get(); }
 
     /** Rebuild the BindGroup after parameter changes. Call before rendering. */
     Result<void> updateBindGroup(rhi::Device* device);
@@ -81,42 +81,42 @@ public:
 private:
     friend class MaterialFactory;
 
-    MaterialType type_ = MaterialType::Unlit;
+    MaterialType m_type = MaterialType::Unlit;
 
     // Shader modules
-    Ref<rhi::ShaderModule> vertShader_;
-    Ref<rhi::ShaderModule> fragShader_;
-    std::string vertEntry_;
-    std::string fragEntry_;
+    Ref<rhi::ShaderModule> m_vertShader;
+    Ref<rhi::ShaderModule> m_fragShader;
+    std::string m_vertEntry;
+    std::string m_fragEntry;
 
     // Pipeline
-    Ref<rhi::RenderPipeline> pipeline_;
+    Ref<rhi::RenderPipeline> m_pipeline;
 
     // BindGroup for material (Set 1)
-    Ref<rhi::BindGroupLayout> materialBindGroupLayout_;
-    Ref<rhi::BindGroup> materialBindGroup_;
+    Ref<rhi::BindGroupLayout> m_materialBindGroupLayout;
+    Ref<rhi::BindGroup> m_materialBindGroup;
 
     // Parameters
-    Color baseColor_ = Color::white();
-    Color specularColor_ = Color::white();
-    f32 shininess_ = 32.0f;
+    Color m_baseColor = Color::white();
+    Color m_specularColor = Color::white();
+    f32 m_shininess = 32.0f;
 
     // Uniform buffer for material params
-    u64 materialParamBufferSize_ = 0;
-    Ref<rhi::Buffer> paramBuffer_;
+    u64 m_materialParamBufferSize = 0;
+    Ref<rhi::Buffer> m_paramBuffer;
 
     // Textures
-    Ref<rhi::Texture> baseTexture_;
-    Ref<rhi::TextureView> baseTextureView_;
-    Ref<rhi::Sampler> sampler_;
+    Ref<rhi::Texture> m_baseTexture;
+    Ref<rhi::TextureView> m_baseTextureView;
+    Ref<rhi::Sampler> m_sampler;
 
     // Render state
-    rhi::CullMode cullMode_ = rhi::CullMode::Back;
-    bool blendEnabled_ = false;
-    bool depthTestEnabled_ = true;
-    bool depthWriteEnabled_ = true;
+    rhi::CullMode m_cullMode = rhi::CullMode::Back;
+    bool m_blendEnabled = false;
+    bool m_depthTestEnabled = true;
+    bool m_depthWriteEnabled = true;
 
-    bool paramsDirty_ = true;
+    bool m_paramsDirty = true;
 };
 
 class GraphicsContext;

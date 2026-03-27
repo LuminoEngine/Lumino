@@ -142,10 +142,10 @@ LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext) {
     auto frameResult = ctx->beginFrame();
     if (!frameResult) return LN_ERROR_UNKNOWN;
 
-    ctx->currentColorTarget_ = frameResult->colorTarget;
-    ctx->currentDepthTarget_ = frameResult->depthTarget;
-    ctx->currentCmd_ = ctx->device()->getCommandBuffer();
-    if (!ctx->currentCmd_) return LN_ERROR_UNKNOWN;
+    ctx->m_currentColorTarget = frameResult->colorTarget;
+    ctx->m_currentDepthTarget = frameResult->depthTarget;
+    ctx->m_currentCmd = ctx->device()->getCommandBuffer();
+    if (!ctx->m_currentCmd) return LN_ERROR_UNKNOWN;
 
     return LN_OK;
 }
@@ -156,16 +156,16 @@ LNResult LNGraphicsContext_BeginRenderPass(
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx || !ctx->currentCmd_) return LN_ERROR_INVALID_HANDLE;
+    if (!ctx || !ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
 
     ln::rhi::ColorAttachment colorAttach;
-    colorAttach.view = ctx->currentColorTarget_;
+    colorAttach.view = ctx->m_currentColorTarget;
     colorAttach.loadOp = ln::rhi::LoadOp::Clear;
     colorAttach.storeOp = ln::rhi::StoreOp::Store;
     colorAttach.clearColor = {r, g, b, a};
 
     ln::rhi::DepthStencilAttachment depthAttach;
-    depthAttach.view = ctx->currentDepthTarget_;
+    depthAttach.view = ctx->m_currentDepthTarget;
     depthAttach.depthLoadOp = ln::rhi::LoadOp::Clear;
     depthAttach.depthStoreOp = ln::rhi::StoreOp::Store;
     depthAttach.clearDepth = 1.0f;
@@ -174,8 +174,8 @@ LNResult LNGraphicsContext_BeginRenderPass(
     rpDesc.colorAttachments = {colorAttach};
     rpDesc.depthStencilAttachment = &depthAttach;
 
-    ctx->currentPass_ = ctx->currentCmd_->beginRenderPass(rpDesc);
-    if (!ctx->currentPass_) return LN_ERROR_UNKNOWN;
+    ctx->m_currentPass = ctx->m_currentCmd->beginRenderPass(rpDesc);
+    if (!ctx->m_currentPass) return LN_ERROR_UNKNOWN;
 
     return LN_OK;
 }
@@ -185,10 +185,10 @@ LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext) {
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx || !ctx->currentPass_) return LN_ERROR_INVALID_HANDLE;
+    if (!ctx || !ctx->m_currentPass) return LN_ERROR_INVALID_HANDLE;
 
-    ctx->currentPass_->end();
-    ctx->currentPass_ = nullptr;
+    ctx->m_currentPass->end();
+    ctx->m_currentPass = nullptr;
 
     return LN_OK;
 }
@@ -198,10 +198,10 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx || !ctx->currentCmd_) return LN_ERROR_INVALID_HANDLE;
+    if (!ctx || !ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
 
-    ctx->currentCmd_->submit();
-    ctx->currentCmd_ = nullptr;
+    ctx->m_currentCmd->submit();
+    ctx->m_currentCmd = nullptr;
 
     ctx->endFrame();
 

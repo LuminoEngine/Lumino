@@ -4,10 +4,10 @@
 // テスト用の Object サブクラス
 class TestObject : public ln::Object {
 public:
-    TestObject(int value = 0) : value_(value) {}
-    int value() const { return value_; }
+    TestObject(int value = 0) : m_value(value) {}
+    int value() const { return m_value; }
 private:
-    int value_;
+    int m_value;
 };
 
 class Test_ObjectRegistry : public ::testing::Test {

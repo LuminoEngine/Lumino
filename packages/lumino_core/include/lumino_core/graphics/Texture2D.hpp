@@ -17,14 +17,14 @@ class Texture2D : public Object {
 public:
     Texture2D(uint32_t width, uint32_t height, uint32_t format);
 
-    uint32_t width() const { return width_; }
-    uint32_t height() const { return height_; }
-    uint32_t format() const { return format_; }
+    uint32_t width() const { return m_width; }
+    uint32_t height() const { return m_height; }
+    uint32_t format() const { return m_format; }
 
 private:
-    uint32_t width_;
-    uint32_t height_;
-    uint32_t format_;
+    uint32_t m_width;
+    uint32_t m_height;
+    uint32_t m_format;
 };
 
 } // namespace ln

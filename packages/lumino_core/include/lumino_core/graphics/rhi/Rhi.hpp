@@ -345,8 +345,8 @@ class TextureView : public RefObject {
     //   legacy では次のように、 Texture が内部に View も持っていた。
     //   ```
     //   class VulkanTexture : public Texture {
-    //         VkImage image_;
-    //         VkImageView view_;
+    //         VkImage m_image;
+    //         VkImageView m_view;
     //   }
     //   ```
     //   こうすると RHI を使う側のコードはシンプルになるが、次のようなことが難しくなる可能性がある。

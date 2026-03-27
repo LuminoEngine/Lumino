@@ -70,9 +70,9 @@ private:
         uint16_t generation = 1;
     };
 
-    mutable std::mutex mutex_;
-    std::vector<Slot> slots_;
-    std::vector<uint16_t> freeList_;
+    mutable std::mutex m_mutex;
+    std::vector<Slot> m_slots;
+    std::vector<uint16_t> m_freeList;
 };
 
 } // namespace ln

@@ -34,16 +34,16 @@ public:
     static Result<Ref<ForwardRenderer>> create(GraphicsContext* ctx);
 
     /** Shared PipelineLayout (3 sets: view, material, object). */
-    rhi::PipelineLayout* pipelineLayout() const { return pipelineLayout_.get(); }
+    rhi::PipelineLayout* pipelineLayout() const { return m_pipelineLayout.get(); }
 
     /** Color format used by this renderer. */
-    rhi::TextureFormat colorFormat() const { return colorFormat_; }
+    rhi::TextureFormat colorFormat() const { return m_colorFormat; }
 
     /** Depth format used by this renderer. */
-    rhi::TextureFormat depthFormat() const { return depthFormat_; }
+    rhi::TextureFormat depthFormat() const { return m_depthFormat; }
 
     /** Set the directional light for the scene. */
-    void setLight(const DirectionalLight& light) { light_ = light; }
+    void setLight(const DirectionalLight& light) { m_light = light; }
 
     /**
      * Render a frame.
@@ -62,27 +62,27 @@ public:
         const Color& clearColor = Color{0.1f, 0.1f, 0.1f, 1.0f});
 
 private:
-    rhi::TextureFormat colorFormat_;
-    rhi::TextureFormat depthFormat_;
+    rhi::TextureFormat m_colorFormat;
+    rhi::TextureFormat m_depthFormat;
 
     // Shared layouts
-    Ref<rhi::BindGroupLayout> viewBindGroupLayout_;
-    Ref<rhi::BindGroupLayout> objectBindGroupLayout_;
-    Ref<rhi::PipelineLayout> pipelineLayout_;
+    Ref<rhi::BindGroupLayout> m_viewBindGroupLayout;
+    Ref<rhi::BindGroupLayout> m_objectBindGroupLayout;
+    Ref<rhi::PipelineLayout> m_pipelineLayout;
 
     // Per-view resources
-    Ref<rhi::Buffer> viewUBO_;
-    Ref<rhi::BindGroup> viewBindGroup_;
+    Ref<rhi::Buffer> m_viewUBO;
+    Ref<rhi::BindGroup> m_viewBindGroup;
 
     // Reflected UBO sizes
-    u64 viewUBOSize_ = 0;
-    u64 objectUBOSize_ = 0;
+    u64 m_viewUBOSize = 0;
+    u64 m_objectUBOSize = 0;
 
     // Per-object resources (resized dynamically)
-    std::vector<Ref<rhi::Buffer>> objectUBOs_;
-    std::vector<Ref<rhi::BindGroup>> objectBindGroups_;
+    std::vector<Ref<rhi::Buffer>> m_objectUBOs;
+    std::vector<Ref<rhi::BindGroup>> m_objectBindGroups;
 
-    DirectionalLight light_;
+    DirectionalLight m_light;
 
     Result<void> ensureObjectResources(rhi::Device* device, size_t count);
 };

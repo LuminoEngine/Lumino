@@ -57,38 +57,38 @@ public:
     void waitIdle();
 
     /** The underlying RHI device. */
-    rhi::Device* device() const { return device_.get(); }
+    rhi::Device* device() const { return m_device.get(); }
 
     /** Color format of the swap chain. */
-    rhi::TextureFormat colorFormat() const { return colorFormat_; }
+    rhi::TextureFormat colorFormat() const { return m_colorFormat; }
 
     /** Depth format managed by this context. */
-    rhi::TextureFormat depthFormat() const { return depthFormat_; }
+    rhi::TextureFormat depthFormat() const { return m_depthFormat; }
 
     /** Current framebuffer width in pixels. */
-    u32 width() const { return width_; }
+    u32 width() const { return m_width; }
 
     /** Current framebuffer height in pixels. */
-    u32 height() const { return height_; }
+    u32 height() const { return m_height; }
 
     // フレームスコープの一時状態 (BeginFrame〜EndFrame 間有効)
-    rhi::CommandBuffer*        currentCmd_         = nullptr;
-    rhi::TextureView*          currentColorTarget_ = nullptr;
-    rhi::TextureView*          currentDepthTarget_ = nullptr;
-    rhi::RenderPassEncoder*    currentPass_        = nullptr;
+    rhi::CommandBuffer*        m_currentCmd         = nullptr;
+    rhi::TextureView*          m_currentColorTarget = nullptr;
+    rhi::TextureView*          m_currentDepthTarget = nullptr;
+    rhi::RenderPassEncoder*    m_currentPass        = nullptr;
 
 private:
     GraphicsContext() = default;
 
-    platform::PlatformWindow* window_ = nullptr; // non-owning
-    Ref<rhi::Device> device_;
-    Ref<rhi::SwapChain> swapChain_;
-    Ref<rhi::Texture> depthTexture_;
-    Ref<rhi::TextureView> depthView_;
-    rhi::TextureFormat colorFormat_ = rhi::TextureFormat::BGRA8Unorm;
-    rhi::TextureFormat depthFormat_ = rhi::TextureFormat::Depth32Float;
-    u32 width_ = 0;
-    u32 height_ = 0;
+    platform::PlatformWindow* m_window = nullptr; // non-owning
+    Ref<rhi::Device> m_device;
+    Ref<rhi::SwapChain> m_swapChain;
+    Ref<rhi::Texture> m_depthTexture;
+    Ref<rhi::TextureView> m_depthView;
+    rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;
+    rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth32Float;
+    u32 m_width = 0;
+    u32 m_height = 0;
 };
 
 } // namespace ln

@@ -25,21 +25,21 @@ public:
         const std::vector<SubMesh>& submeshes,
         rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
 
-    rhi::Buffer* vertexBuffer() const { return vertexBuffer_.get(); }
-    rhi::Buffer* indexBuffer() const { return indexBuffer_.get(); }
-    const std::vector<SubMesh>& submeshes() const { return submeshes_; }
-    rhi::PrimitiveTopology topology() const { return topology_; }
+    rhi::Buffer* vertexBuffer() const { return m_vertexBuffer.get(); }
+    rhi::Buffer* indexBuffer() const { return m_indexBuffer.get(); }
+    const std::vector<SubMesh>& submeshes() const { return m_submeshes; }
+    rhi::PrimitiveTopology topology() const { return m_topology; }
 
     /** Material slots for this mesh. One per unique materialIndex used in submeshes. */
-    std::vector<Ref<Material>>& materials() { return materials_; }
-    const std::vector<Ref<Material>>& materials() const { return materials_; }
+    std::vector<Ref<Material>>& materials() { return m_materials; }
+    const std::vector<Ref<Material>>& materials() const { return m_materials; }
 
 private:
-    Ref<rhi::Buffer> vertexBuffer_;
-    Ref<rhi::Buffer> indexBuffer_;
-    std::vector<SubMesh> submeshes_;
-    std::vector<Ref<Material>> materials_;
-    rhi::PrimitiveTopology topology_ = rhi::PrimitiveTopology::TriangleList;
+    Ref<rhi::Buffer> m_vertexBuffer;
+    Ref<rhi::Buffer> m_indexBuffer;
+    std::vector<SubMesh> m_submeshes;
+    std::vector<Ref<Material>> m_materials;
+    rhi::PrimitiveTopology m_topology = rhi::PrimitiveTopology::TriangleList;
 };
 
 } // namespace ln

@@ -33,28 +33,28 @@ struct PlatformWindow::Impl {
 };
 
 PlatformWindow::~PlatformWindow() {
-    if (impl_) {
+    if (m_impl) {
         // Graphics context must be torn down before the GLFW window
-        impl_->graphicsContext.reset();
-        if (impl_->window) glfwDestroyWindow(impl_->window);
-        delete impl_;
+        m_impl->graphicsContext.reset();
+        if (m_impl->window) glfwDestroyWindow(m_impl->window);
+        delete m_impl;
     }
 }
 
 Result<Ref<PlatformWindow>> PlatformWindow::create(const WindowDesc& desc) {
     auto win = Ref<PlatformWindow>::adopt(new PlatformWindow());
-    win->impl_ = new Impl();
+    win->m_impl = new Impl();
 
     ensureGlfw();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, desc.resizable ? GLFW_TRUE : GLFW_FALSE);
-    win->impl_->window = glfwCreateWindow(
+    win->m_impl->window = glfwCreateWindow(
         static_cast<int>(desc.width),
         static_cast<int>(desc.height),
         desc.title.c_str(),
         nullptr,
         nullptr);
-    if (!win->impl_->window) {
+    if (!win->m_impl->window) {
         return tl::make_unexpected(ln::Error{ln::ErrorCode::RuntimeError, "glfwCreateWindow failed"});
     }
     return win;
@@ -67,28 +67,28 @@ Result<Ref<PlatformWindow>> PlatformWindow::create(const WindowDesc& desc, const
 
     auto ctxResult = ln::GraphicsContext::createForWindow(win.get(), gfxDesc);
     if (!ctxResult) return tl::make_unexpected(ctxResult.error());
-    win->impl_->graphicsContext = std::move(*ctxResult);
+    win->m_impl->graphicsContext = std::move(*ctxResult);
     return win;
 }
 
 ln::GraphicsContext* PlatformWindow::graphicsContext() const {
-    return impl_ ? impl_->graphicsContext.get() : nullptr;
+    return m_impl ? m_impl->graphicsContext.get() : nullptr;
 }
 
 bool PlatformWindow::processEvents() {
     glfwPollEvents();
-    return !glfwWindowShouldClose(impl_->window);
+    return !glfwWindowShouldClose(m_impl->window);
 }
 
 NativeWindowHandle PlatformWindow::nativeHandle() const {
     NativeWindowHandle h{};
-    h.glfwWindow = impl_->window;
+    h.glfwWindow = m_impl->window;
     return h;
 }
 
 void PlatformWindow::framebufferSize(u32& width, u32& height) const {
     int w = 0, h = 0;
-    glfwGetFramebufferSize(impl_->window, &w, &h);
+    glfwGetFramebufferSize(m_impl->window, &w, &h);
     width = static_cast<u32>(w);
     height = static_cast<u32>(h);
 }

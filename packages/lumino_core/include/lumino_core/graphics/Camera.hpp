@@ -20,25 +20,25 @@ public:
     /** Helper: orbit around target at given distance, yaw and pitch angles (radians). */
     void setOrbit(const Vector3& target, f32 distance, f32 yaw, f32 pitch);
 
-    const Vector3& position() const { return position_; }
-    const Vector3& target() const { return target_; }
+    const Vector3& position() const { return m_position; }
+    const Vector3& target() const { return m_target; }
 
     Matrix4x4 viewMatrix() const;
     Matrix4x4 projectionMatrix() const;
     Matrix4x4 viewProjectionMatrix() const;
 
 private:
-    Vector3 position_ = {0, 0, 5};
-    Vector3 target_ = Vector3::zero();
-    Vector3 up_ = Vector3::unitY();
+    Vector3 m_position = {0, 0, 5};
+    Vector3 m_target = Vector3::zero();
+    Vector3 m_up = Vector3::unitY();
 
-    ProjectionMode mode_ = ProjectionMode::Perspective;
-    f32 fovY_ = 1.0472f; // ~60 deg
-    f32 aspect_ = 16.0f / 9.0f;
-    f32 orthoWidth_ = 10;
-    f32 orthoHeight_ = 10;
-    f32 nearClip_ = 0.1f;
-    f32 farClip_ = 1000.0f;
+    ProjectionMode m_mode = ProjectionMode::Perspective;
+    f32 m_fovY = 1.0472f; // ~60 deg
+    f32 m_aspect = 16.0f / 9.0f;
+    f32 m_orthoWidth = 10;
+    f32 m_orthoHeight = 10;
+    f32 m_nearClip = 0.1f;
+    f32 m_farClip = 1000.0f;
 };
 
 } // namespace ln

@@ -16,13 +16,13 @@ public:
     Object() = default;
     ~Object() override;
 
-    uint16_t registryIndex() const { return registryIndex_; }
-    uint16_t generation() const { return generation_; }
+    uint16_t registryIndex() const { return m_registryIndex; }
+    uint16_t generation() const { return m_generation; }
 
 private:
     friend class ObjectRegistry;
-    uint16_t registryIndex_ = 0;
-    uint16_t generation_ = 0;
+    uint16_t m_registryIndex = 0;
+    uint16_t m_generation = 0;
 };
 
 } // namespace ln

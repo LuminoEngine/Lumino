@@ -12,14 +12,14 @@ public:
     static VoidResult initialize(const Settings& settings);
     static void terminate();
 
-    ObjectRegistry* objectRegistry() { return objectRegistry_.get(); }
+    ObjectRegistry* objectRegistry() { return m_objectRegistry.get(); }
 
 private:
     VoidResult init(const Settings& settings);
     void dispose();
     static std::unique_ptr<CoreInstance> s_instance;
     Settings m_settings;
-    std::unique_ptr<ObjectRegistry> objectRegistry_;
+    std::unique_ptr<ObjectRegistry> m_objectRegistry;
 };
 
 } // namespace ln
