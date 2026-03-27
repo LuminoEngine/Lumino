@@ -119,6 +119,7 @@ int main() {
         ctx->endFrame();
         frameCount++;
     }
+    ctx->waitIdle();
 
     printf("Done.\n");
     return 0;

@@ -76,4 +76,8 @@ void GraphicsContext::endFrame() {
     swapChain_->present();
 }
 
+void GraphicsContext::waitIdle() {
+    if (device_) device_->waitIdle();
+}
+
 } // namespace ln

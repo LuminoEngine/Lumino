@@ -230,7 +230,9 @@ VulkanTextureView::VulkanTextureView(VkDevice device, VkImage image, VkFormat fo
 }
 
 VulkanTextureView::~VulkanTextureView() {
-    if (view_) vkDestroyImageView(device_, view_, nullptr);
+    if (view_) {
+        vkDestroyImageView(device_, view_, nullptr);
+    }
 }
 
 // ------ VulkanSampler --------------------------------------------------------------------------------------------------------------

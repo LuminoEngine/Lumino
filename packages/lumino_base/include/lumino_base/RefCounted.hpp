@@ -12,20 +12,19 @@ public:
     RefCounted() = default;
     virtual ~RefCounted() = default;
 
-    RefCounted(const RefCounted&) = delete;
-    RefCounted& operator=(const RefCounted&) = delete;
+    void addRef() const;
 
-    void addRef() const { refCount_.fetch_add(1, std::memory_order_relaxed); }
-
-    void release() const {
-        if (refCount_.fetch_sub(1, std::memory_order_acq_rel) == 1) {
-            delete this;
-        }
-    }
+    void release() const;
 
     uint32_t refCount() const { return refCount_.load(std::memory_order_relaxed); }
 
+protected:
+    /** 参照がなくなり、オブジェクトが削除されようとしているときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
+    virtual void finalize();
+
 private:
+    RefCounted(const RefCounted&) = delete;
+    RefCounted& operator=(const RefCounted&) = delete;
     mutable std::atomic<uint32_t> refCount_{1};
 };
 

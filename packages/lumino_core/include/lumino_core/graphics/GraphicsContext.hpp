@@ -54,6 +54,8 @@ public:
     /** Present the current frame. */
     void endFrame();
 
+    void waitIdle();
+
     /** The underlying RHI device. */
     rhi::Device* device() const { return device_.get(); }
 
