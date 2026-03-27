@@ -7,7 +7,7 @@
 #include <memory>
 #include <functional>
 #include <lumino_base/Result.hpp>
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <lumino_base/Types.hpp>
 
 namespace ln {

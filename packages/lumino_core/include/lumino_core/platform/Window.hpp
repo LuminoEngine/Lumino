@@ -2,7 +2,7 @@
 
 #include <lumino_base/Types.hpp>
 #include <lumino_base/Result.hpp>
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <lumino_core/Object.hpp>
 #include <functional>
 #include <string>

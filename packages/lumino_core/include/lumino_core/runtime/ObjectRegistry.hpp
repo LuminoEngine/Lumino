@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <lumino_core/Object.hpp>
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <cstdint>
 #include <mutex>
 #include <vector>

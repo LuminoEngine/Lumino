@@ -121,7 +121,7 @@ struct GlobalConstantBufferMember {
 };
 
 /** @deprecated */
-class UnifiedShader : public RefCounted {
+class UnifiedShader : public RefObject {
 public:
     UnifiedShader();
 

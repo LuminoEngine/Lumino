@@ -14,7 +14,7 @@
 
 #include <lumino_base/Types.hpp>
 #include <lumino_base/Result.hpp>
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <lumino_base/math/Math.hpp>
 #include <lumino_base/math/Matrix4x4.hpp>
 
@@ -324,7 +324,7 @@ struct DeviceDesc {
 
 // ─── Resource Interfaces ─────────────────────────────────────────────────
 
-class Buffer : public RefCounted {
+class Buffer : public RefObject {
 public:
     virtual ~Buffer() = default;
     virtual u64 size() const = 0;
@@ -333,7 +333,7 @@ public:
     virtual void unmap() = 0;
 };
 
-class Texture : public RefCounted {
+class Texture : public RefObject {
 public:
     virtual ~Texture() = default;
     virtual u32 width() const = 0;
@@ -341,37 +341,37 @@ public:
     virtual TextureFormat format() const = 0;
 };
 
-class TextureView : public RefCounted {
+class TextureView : public RefObject {
 public:
     virtual ~TextureView() = default;
 };
 
-class Sampler : public RefCounted {
+class Sampler : public RefObject {
 public:
     virtual ~Sampler() = default;
 };
 
-class ShaderModule : public RefCounted {
+class ShaderModule : public RefObject {
 public:
     virtual ~ShaderModule() = default;
 };
 
-class BindGroupLayout : public RefCounted {
+class BindGroupLayout : public RefObject {
 public:
     virtual ~BindGroupLayout() = default;
 };
 
-class BindGroup : public RefCounted {
+class BindGroup : public RefObject {
 public:
     virtual ~BindGroup() = default;
 };
 
-class PipelineLayout : public RefCounted {
+class PipelineLayout : public RefObject {
 public:
     virtual ~PipelineLayout() = default;
 };
 
-class RenderPipeline : public RefCounted {
+class RenderPipeline : public RefObject {
 public:
     virtual ~RenderPipeline() = default;
 };
@@ -392,7 +392,7 @@ public:
     virtual void end() = 0;
 };
 
-class CommandBuffer : public RefCounted {
+class CommandBuffer : public RefObject {
 public:
     virtual ~CommandBuffer() = default;
     virtual RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) = 0;
@@ -401,7 +401,7 @@ public:
 
 // ─── SwapChain ───────────────────────────────────────────────────────────
 
-class SwapChain : public RefCounted {
+class SwapChain : public RefObject {
 public:
     virtual ~SwapChain() = default;
     /** Acquire the next framebuffer texture view. Must be called once per frame. */
@@ -415,7 +415,7 @@ public:
 
 // ─── Device (Factory) ────────────────────────────────────────────────────
 
-class Device : public RefCounted {
+class Device : public RefObject {
 public:
     virtual ~Device() = default;
 

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <lumino_base/Result.hpp>
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <lumino_core/graphics/Mesh.hpp>
 #include <lumino_core/graphics/Material.hpp>
 #include <lumino_core/graphics/Transform.hpp>

@@ -82,7 +82,7 @@ struct GlobalShaderPass2 {
     }
 };
 
-class UnifiedShader2 : public RefCounted {
+class UnifiedShader2 : public RefObject {
 public:
     UnifiedShader2();
 

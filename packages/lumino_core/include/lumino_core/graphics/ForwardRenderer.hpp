@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <lumino_base/Result.hpp>
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 #include <lumino_core/graphics/Camera.hpp>
 #include <lumino_core/graphics/Material.hpp>
@@ -23,7 +23,7 @@ struct DirectionalLight {
  * A simple single-pass forward renderer.
  * Manages per-view and per-object UBOs, and drives the RHI command encoding.
  */
-class ForwardRenderer : public RefCounted {
+class ForwardRenderer : public RefObject {
 public:
     static Result<Ref<ForwardRenderer>> create(
         rhi::Device* device,

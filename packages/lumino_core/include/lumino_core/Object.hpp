@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <cstdint>
 
 namespace ln {
@@ -9,9 +9,9 @@ class ObjectRegistry;
 
 /**
  * C-API で公開するオブジェクトの基底クラス。
- * RefCounted を継承し、ObjectRegistry でのハンドル管理に必要なスロット情報を保持する。
+ * RefObject を継承し、ObjectRegistry でのハンドル管理に必要なスロット情報を保持する。
  */
-class Object : public RefCounted {
+class Object : public RefObject {
 public:
     Object() = default;
     ~Object() override;

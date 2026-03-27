@@ -7,10 +7,10 @@
 namespace ln {
 
 /** Intrusive reference-counted base class. */
-class RefCounted {
+class RefObject {
 public:
-    RefCounted() = default;
-    virtual ~RefCounted() = default;
+    RefObject() = default;
+    virtual ~RefObject() = default;
 
     void addRef() const;
 
@@ -23,13 +23,13 @@ protected:
     virtual void finalize();
 
 private:
-    RefCounted(const RefCounted&) = delete;
-    RefCounted& operator=(const RefCounted&) = delete;
+    RefObject(const RefObject&) = delete;
+    RefObject& operator=(const RefObject&) = delete;
     mutable std::atomic<uint32_t> refCount_{1};
 };
 
 /**
- * Smart pointer for RefCounted objects. Does NOT addRef on construction from raw pointer
+ * Smart pointer for RefObject objects. Does NOT addRef on construction from raw pointer
  * (assumes ownership of the initial ref). Use Ref::adopt() or Ref::create().
  */
 template <typename T>

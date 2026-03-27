@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <lumino_base/Result.hpp>
-#include <lumino_base/RefCounted.hpp>
+#include <lumino_base/RefObject.hpp>
 #include <lumino_core/graphics/Vertex.hpp>
 #include <lumino_core/graphics/Material.hpp>
 
@@ -15,7 +15,7 @@ struct SubMesh {
 };
 
 /** A mesh containing vertex/index GPU buffers and submesh ranges. */
-class Mesh : public RefCounted {
+class Mesh : public RefObject {
 public:
     /** Create a mesh from CPU data and upload to GPU. */
     static Result<Ref<Mesh>> create(
