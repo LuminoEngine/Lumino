@@ -16,7 +16,7 @@ public:
 #include <lumino_core/graphics/Vertex.hpp>
 #include <lumino_core/graphics/Transform.hpp>
 #include <lumino_core/graphics/Camera.hpp>
-#include <lumino_base/Math.hpp>
+#include <lumino_base/math/Math.hpp>
 #include <cmath>
 
 using namespace ln;

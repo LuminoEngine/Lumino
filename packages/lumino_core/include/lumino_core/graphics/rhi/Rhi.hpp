@@ -15,7 +15,8 @@
 #include <lumino_base/Types.hpp>
 #include <lumino_base/Result.hpp>
 #include <lumino_base/RefCounted.hpp>
-#include <lumino_base/Math.hpp>
+#include <lumino_base/math/Math.hpp>
+#include <lumino_base/math/Matrix4x4.hpp>
 
 #include <string>
 #include <vector>

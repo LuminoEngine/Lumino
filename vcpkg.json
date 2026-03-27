@@ -13,6 +13,7 @@
     "vulkan-headers",
     "nlohmann-json",
     "tl-expected",
+    "glm",
     {
       "name": "freetype",
       "features": [

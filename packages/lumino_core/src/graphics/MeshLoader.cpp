@@ -10,7 +10,7 @@
 
 #include <lumino_core/graphics/MeshLoader.hpp>
 #include <lumino_core/graphics/TextureLoader.hpp>
-#include <lumino_base/Math.hpp>
+#include <lumino_base/math/Math.hpp>
 #include <cstring>
 #include <algorithm>
 

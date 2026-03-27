@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <lumino_base/Math.hpp>
+#include <lumino_base/math/Math.hpp>
 
 namespace ln {
 

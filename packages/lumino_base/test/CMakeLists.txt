@@ -1,5 +1,5 @@
 ﻿project(lumino_base_test)
-
+    find_package(glm CONFIG REQUIRED)
 #-------------------------------------------------------------------------------
 # Sources
 #-------------------------------------------------------------------------------
@@ -14,5 +14,5 @@ add_executable(
     ${LN_LOCAL_SOURCES}
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE lumino_base GTest::gtest)
+target_link_libraries(${PROJECT_NAME} PRIVATE lumino_base GTest::gtest glm::glm)
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})

@@ -4,12 +4,19 @@
 # Sources
 #-------------------------------------------------------------------------------
 file(GLOB LN_LOCAL_SOURCES
-    src/pch.hpp
+    include/LuminoBase.hpp
+    include/${PROJECT_NAME}/*.hpp
     src/*.cpp
     src/*.hpp
-    include/${PROJECT_NAME}/*.hpp
-    include/LuminoBase.hpp
+    src/pch.hpp
 )
+file(GLOB LN_LOCAL_SOURCES_math
+    include/${PROJECT_NAME}/math/*.hpp
+    src/math/*.cpp
+    src/math/*.hpp
+)
+source_group("" FILES ${LN_LOCAL_SOURCES})
+source_group("math" FILES ${LN_LOCAL_SOURCES_math})
 
 #-------------------------------------------------------------------------------
 # Targets
@@ -17,6 +24,7 @@ file(GLOB LN_LOCAL_SOURCES
 add_library(
     ${PROJECT_NAME} STATIC
     ${LN_LOCAL_SOURCES}
+    ${LN_LOCAL_SOURCES_math}
 )
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
