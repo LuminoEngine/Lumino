@@ -88,6 +88,9 @@ public:
     /** ログを出力する。printf 互換の書式指定子が使用可能。 */
     static void log(LogLocation location, LogLevel level, const char* format, ...);
 
+    /** @internal */
+    static const char* getBaseName(const char* path);
+
 private:
     static void writeCore(LogLocation location, LogLevel level, const char* message);
 };

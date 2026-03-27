@@ -40,4 +40,11 @@ using VoidResult = tl::expected<void, Error>;
 // clang-format off
 #define LN_MAKE_SUCCESS() {}
 
+
+#define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
+namespace detail {
+inline std::string formatString() { return {}; }
+std::string formatString(const char* format, ...);
+tl::unexpected<ErrorCode> makeInternalError(const std::string& message, const char* file, const char* function, int line);
+} // namespace detail
 } // namespace ln

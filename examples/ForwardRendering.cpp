@@ -16,7 +16,7 @@
 #include <lumino_core/graphics/Material.hpp>
 #include <lumino_core/graphics/Vertex.hpp>
 #include <lumino_core/graphics/Transform.hpp>
-#include <lumino_base/Math.hpp>
+#include <lumino_base/math/Math.hpp>
 
 #include <cstdio>
 #include <cmath>

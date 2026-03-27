@@ -20,7 +20,7 @@
 
 namespace ln::rhi::vulkan {
 
-// ─── Utilities ───────────────────────────────────────────────────────────
+// ------ Utilities ----------------------------------------------------------------------------------------------------------------------
 
 VkFormat toVkFormat(TextureFormat fmt);
 VkFormat toVkVertexFormat(VertexFormat fmt);
@@ -29,7 +29,7 @@ u32 vertexFormatSize(VertexFormat fmt);
 // Forward declaration so Buffer/Sampler/BindGroup/Pipeline can hold VulkanDevice*
 class VulkanDevice;
 
-// ─── VulkanBuffer ────────────────────────────────────────────────────────
+// ------ VulkanBuffer ----------------------------------------------------------------------------------------------------------------
 
 class VulkanBuffer final : public Buffer {
 public:
@@ -57,7 +57,7 @@ private:
     void* mapped_ = nullptr;
 };
 
-// ─── VulkanTexture ───────────────────────────────────────────────────────
+// ------ VulkanTexture --------------------------------------------------------------------------------------------------------------
 
 class VulkanTexture final : public Texture {
 public:
@@ -80,7 +80,7 @@ private:
     bool ownsImage_ = true;
 };
 
-// ─── VulkanTextureView ───────────────────────────────────────────────────
+// ------ VulkanTextureView ------------------------------------------------------------------------------------------------------
 
 class VulkanTextureView final : public TextureView {
 public:
@@ -99,7 +99,7 @@ private:
     u32 width_, height_;
 };
 
-// ─── VulkanSampler ───────────────────────────────────────────────────────
+// ------ VulkanSampler --------------------------------------------------------------------------------------------------------------
 
 class VulkanSampler final : public Sampler {
 public:
@@ -112,7 +112,7 @@ private:
     VkSampler sampler_ = VK_NULL_HANDLE;
 };
 
-// ─── VulkanShaderModule ──────────────────────────────────────────────────
+// ------ VulkanShaderModule ----------------------------------------------------------------------------------------------------
 
 class VulkanShaderModule final : public ShaderModule {
 public:
@@ -125,7 +125,7 @@ private:
     VkShaderModule module_ = VK_NULL_HANDLE;
 };
 
-// ─── VulkanBindGroupLayout ───────────────────────────────────────────────
+// ------ VulkanBindGroupLayout ----------------------------------------------------------------------------------------------
 
 class VulkanBindGroupLayout final : public BindGroupLayout {
 public:
@@ -138,7 +138,7 @@ private:
     VkDescriptorSetLayout layout_ = VK_NULL_HANDLE;
 };
 
-// ─── VulkanBindGroup ─────────────────────────────────────────────────────
+// ------ VulkanBindGroup ----------------------------------------------------------------------------------------------------------
 
 class VulkanBindGroup final : public BindGroup {
 public:
@@ -156,7 +156,7 @@ private:
     VkDescriptorSet set_ = VK_NULL_HANDLE;
 };
 
-// ─── VulkanPipelineLayout ────────────────────────────────────────────────
+// ------ VulkanPipelineLayout ------------------------------------------------------------------------------------------------
 
 class VulkanPipelineLayout final : public PipelineLayout {
 public:
@@ -169,7 +169,7 @@ private:
     VkPipelineLayout layout_ = VK_NULL_HANDLE;
 };
 
-// ─── VulkanRenderPipeline ────────────────────────────────────────────────
+// ------ VulkanRenderPipeline ------------------------------------------------------------------------------------------------
 
 class VulkanRenderPipeline final : public RenderPipeline {
 public:
@@ -184,7 +184,7 @@ private:
     VkPipelineLayout layout_ = VK_NULL_HANDLE;
 };
 
-// ─── VulkanRenderPassEncoder ─────────────────────────────────────────────
+// ------ VulkanRenderPassEncoder ------------------------------------------------------------------------------------------
 
 class VulkanRenderPassEncoder final : public RenderPassEncoder {
 public:
@@ -208,7 +208,7 @@ private:
     VkPipelineLayout currentPipelineLayout_ = VK_NULL_HANDLE;
 };
 
-// ─── VulkanCommandBuffer ─────────────────────────────────────────────────
+// ------ VulkanCommandBuffer --------------------------------------------------------------------------------------------------
 
 class VulkanCommandBuffer final : public CommandBuffer {
 public:
@@ -219,6 +219,7 @@ public:
      */
     ~VulkanCommandBuffer() override;
 
+    VoidResult begin();
     RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
     void submit() override;
 
@@ -231,7 +232,7 @@ private:
     bool submitted_ = false;
 };
 
-// ─── VulkanSwapChain ─────────────────────────────────────────────────────
+// ------ VulkanSwapChain ----------------------------------------------------------------------------------------------------------
 
 class VulkanSwapChain final : public SwapChain {
 public:
@@ -250,7 +251,7 @@ public:
     u32 currentImageIndex() const { return imageIndex_; }
     u32 currentFrame() const { return currentFrame_; }
 
-private:
+public:
     void cleanup();
 
     VulkanDevice* device_;
@@ -259,18 +260,24 @@ private:
     VkExtent2D extent_{};
     TextureFormat format_;
 
+    int maxFrames_;
     std::vector<VkImage> images_;
     std::vector<Ref<VulkanTextureView>> views_;
+    std::vector<Ref<VulkanCommandBuffer>> commandBuffers_;
+    // NOTE: なぜ SwapChain に CommandBuffer を持たせるのか？
+    //   https://webgpufundamentals.org/webgpu/lessons/ja/webgpu-multiple-canvases.html
+    //   コチラを見ると、 WebGPU ではひとつの CommandEncoder を複数の SwapChain で共有しているように見える。
+    //   ただしこれをやろうとすると、 CommandBuffer に RenderTarget として使われた Context を、
+    //   次の present 対象として覚えておく必要があるなど、管理が複雑になる。
 
-    static constexpr u32 MAX_FRAMES = 2;
-    VkSemaphore imageAvailable_[MAX_FRAMES]{};
-    VkSemaphore renderFinished_[MAX_FRAMES]{};
-    VkFence inFlightFences_[MAX_FRAMES]{};
+    std::vector<VkSemaphore> imageAvailableSemaphores_;
+    std::vector<VkSemaphore> renderFinished_;
+    std::vector<VkFence> inFlightFences_;
     u32 currentFrame_ = 0;
     u32 imageIndex_ = 0;
 };
 
-// ─── RenderPass Cache ────────────────────────────────────────────────────
+// ------ RenderPass Cache --------------------------------------------------------------------------------------------------------
 
 struct RenderPassKey {
     std::vector<VkFormat> colorFormats;
@@ -284,7 +291,7 @@ struct RenderPassKeyHash {
     size_t operator()(const RenderPassKey& key) const;
 };
 
-// ─── Framebuffer Cache ───────────────────────────────────────────────────
+// ------ Framebuffer Cache ------------------------------------------------------------------------------------------------------
 
 struct FramebufferKey {
     VkRenderPass renderPass = VK_NULL_HANDLE;
@@ -298,7 +305,7 @@ struct FramebufferKeyHash {
     size_t operator()(const FramebufferKey& key) const;
 };
 
-// ─── VulkanDevice ────────────────────────────────────────────────────────
+// ------ VulkanDevice ----------------------------------------------------------------------------------------------------------------
 
 class VulkanDevice final : public Device {
 public:
@@ -318,7 +325,6 @@ public:
     Result<Ref<BindGroup>> createBindGroup(const BindGroupDesc& desc) override;
     Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) override;
     Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) override;
-    CommandBuffer* createCommandBuffer() override;
     void waitIdle() override;
 
     // Internal accessors
@@ -345,6 +351,9 @@ public:
     u32 currentFrameIndex() const {
         return activeSwapChain_ ? activeSwapChain_->currentFrame() : 0u;
     }
+
+    Result<Ref<VulkanCommandBuffer>> createCommandBuffer();
+    CommandBuffer* getCommandBuffer() override;
 
 private:
     VkInstance instance_ = VK_NULL_HANDLE;

@@ -144,7 +144,7 @@ LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext) {
 
     ctx->currentColorTarget_ = frameResult->colorTarget;
     ctx->currentDepthTarget_ = frameResult->depthTarget;
-    ctx->currentCmd_ = ctx->device()->createCommandBuffer();
+    ctx->currentCmd_ = ctx->device()->getCommandBuffer();
     if (!ctx->currentCmd_) return LN_ERROR_UNKNOWN;
 
     return LN_OK;

@@ -249,7 +249,8 @@ Result<void> ForwardRenderer::renderFrame(
     rpDesc.colorAttachments = {{colorTarget, rhi::LoadOp::Clear, rhi::StoreOp::Store, clearColor}};
     rpDesc.depthStencilAttachment = &depthAttachment;
 
-    auto* cmd = device->createCommandBuffer();
+
+    auto* cmd = device->getCommandBuffer();
     auto* pass = cmd->beginRenderPass(rpDesc);
 
     // ---- Draw Objects ----

@@ -150,7 +150,7 @@ int main() {
         auto frame = ctx->beginFrame();
         if (!frame) { fprintf(stderr, "beginFrame failed\n"); break; }
 
-        auto* cmd = device->createCommandBuffer();
+        auto* cmd = device->getCommandBuffer();
 
         RenderPassDesc passDesc;
         passDesc.colorAttachments.push_back({

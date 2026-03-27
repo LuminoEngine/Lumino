@@ -10,7 +10,9 @@
 
 namespace ln::rhi::vulkan {
 
-// ─── Format conversion ──────────────────────────────────────────────────
+
+
+// ------ Format conversion ----------------------------------------------------------------------------------------------------
 
 VkFormat toVkFormat(TextureFormat fmt) {
     switch (fmt) {
@@ -88,7 +90,7 @@ static uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFil
     return 0;
 }
 
-// ─── VulkanBuffer ────────────────────────────────────────────────────────
+// ------ VulkanBuffer ----------------------------------------------------------------------------------------------------------------
 
 VulkanBuffer::VulkanBuffer(VulkanDevice* device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
                            bool deviceLocal)
@@ -158,7 +160,7 @@ void VulkanBuffer::unmap() {
     }
 }
 
-// ─── VulkanTexture ───────────────────────────────────────────────────────
+// ------ VulkanTexture --------------------------------------------------------------------------------------------------------------
 
 VulkanTexture::VulkanTexture(VkDevice device, VkPhysicalDevice physicalDevice, const TextureDesc& desc)
     : device_(device), format_(desc.format), width_(desc.width), height_(desc.height), ownsImage_(true) {
@@ -210,7 +212,7 @@ VulkanTexture::~VulkanTexture() {
     }
 }
 
-// ─── VulkanTextureView ───────────────────────────────────────────────────
+// ------ VulkanTextureView ------------------------------------------------------------------------------------------------------
 
 VulkanTextureView::VulkanTextureView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height)
     : device_(device), format_(format), width_(width), height_(height) {
@@ -231,7 +233,7 @@ VulkanTextureView::~VulkanTextureView() {
     if (view_) vkDestroyImageView(device_, view_, nullptr);
 }
 
-// ─── VulkanSampler ───────────────────────────────────────────────────────
+// ------ VulkanSampler --------------------------------------------------------------------------------------------------------------
 
 static VkFilter toVkFilter(FilterMode f) {
     return f == FilterMode::Nearest ? VK_FILTER_NEAREST : VK_FILTER_LINEAR;
@@ -268,7 +270,7 @@ VulkanSampler::~VulkanSampler() {
     });
 }
 
-// ─── VulkanShaderModule ──────────────────────────────────────────────────
+// ------ VulkanShaderModule ----------------------------------------------------------------------------------------------------
 
 VulkanShaderModule::VulkanShaderModule(VkDevice device, const ShaderModuleDesc& desc) : device_(device) {
     VkShaderModuleCreateInfo info{};
@@ -282,7 +284,7 @@ VulkanShaderModule::~VulkanShaderModule() {
     if (module_) vkDestroyShaderModule(device_, module_, nullptr);
 }
 
-// ─── VulkanBindGroupLayout ───────────────────────────────────────────────
+// ------ VulkanBindGroupLayout ----------------------------------------------------------------------------------------------
 
 static VkDescriptorType toVkDescriptorType(BindingType t) {
     switch (t) {
@@ -326,7 +328,7 @@ VulkanBindGroupLayout::~VulkanBindGroupLayout() {
     if (layout_) vkDestroyDescriptorSetLayout(device_, layout_, nullptr);
 }
 
-// ─── VulkanBindGroup ─────────────────────────────────────────────────────
+// ------ VulkanBindGroup ----------------------------------------------------------------------------------------------------------
 
 VulkanBindGroup::VulkanBindGroup(
     VulkanDevice* device, DescriptorPoolManager& poolManager, VkDescriptorSetLayout layout,
@@ -385,7 +387,7 @@ VulkanBindGroup::~VulkanBindGroup() {
     });
 }
 
-// ─── VulkanPipelineLayout ────────────────────────────────────────────────
+// ------ VulkanPipelineLayout ------------------------------------------------------------------------------------------------
 
 VulkanPipelineLayout::VulkanPipelineLayout(VkDevice device, const PipelineLayoutDesc& desc) : device_(device) {
     std::vector<VkDescriptorSetLayout> layouts;
@@ -405,7 +407,7 @@ VulkanPipelineLayout::~VulkanPipelineLayout() {
     if (layout_) vkDestroyPipelineLayout(device_, layout_, nullptr);
 }
 
-// ─── VulkanRenderPipeline ────────────────────────────────────────────────
+// ------ VulkanRenderPipeline ------------------------------------------------------------------------------------------------
 
 VulkanRenderPipeline::VulkanRenderPipeline(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc)
     : device_(device) {
@@ -557,7 +559,7 @@ VulkanRenderPipeline::~VulkanRenderPipeline() {
     });
 }
 
-// ─── VulkanRenderPassEncoder ─────────────────────────────────────────────
+// ------ VulkanRenderPassEncoder ------------------------------------------------------------------------------------------
 
 VulkanRenderPassEncoder::VulkanRenderPassEncoder(
     VkCommandBuffer cmd, VkRenderPass renderPass,
@@ -642,7 +644,7 @@ void VulkanRenderPassEncoder::end() {
     vkCmdEndRenderPass(cmd_);
 }
 
-// ─── RenderPass Cache helpers ────────────────────────────────────────────
+// ------ RenderPass Cache helpers ----------------------------------------------------------------------------------------
 
 bool RenderPassKey::operator==(const RenderPassKey& o) const {
     return colorFormats == o.colorFormats && depthFormat == o.depthFormat && loadOps == o.loadOps;
@@ -668,7 +670,7 @@ size_t FramebufferKeyHash::operator()(const FramebufferKey& key) const {
     return h;
 }
 
-// ─── VulkanSwapChain ─────────────────────────────────────────────────────
+// ------ VulkanSwapChain ----------------------------------------------------------------------------------------------------------
 
 VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc)
     : device_(device), format_(desc.format) {
@@ -711,6 +713,7 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
     // Get swap chain images
     vkGetSwapchainImagesKHR(device_->vkDevice(), swapchain_, &imageCount, nullptr);
     images_.resize(imageCount);
+    maxFrames_ = imageCount;
     vkGetSwapchainImagesKHR(device_->vkDevice(), swapchain_, &imageCount, images_.data());
 
     // Create image views
@@ -722,13 +725,26 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const SwapChainDesc& desc
                                   extent_.width, extent_.height));
     }
 
+    // Create CommandBuffers for rendering.
+    for (u32 i = 0; i < maxFrames_; ++i) {
+        auto commandBuffer = device_->createCommandBuffer();
+        if (!commandBuffer) {
+            // TODO: Error handling
+            throw std::runtime_error("Failed to create command buffer for swap chain.");
+        }
+        commandBuffers_.push_back(*commandBuffer);
+    }
+
     // Create sync objects
     VkSemaphoreCreateInfo semInfo{VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
     VkFenceCreateInfo fenceInfo{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (u32 i = 0; i < MAX_FRAMES; ++i) {
-        vkCreateSemaphore(device_->vkDevice(), &semInfo, nullptr, &imageAvailable_[i]);
+    imageAvailableSemaphores_.resize(maxFrames_);
+    renderFinished_.resize(maxFrames_);
+    inFlightFences_.resize(maxFrames_);
+    for (u32 i = 0; i < maxFrames_; ++i) {
+        vkCreateSemaphore(device_->vkDevice(), &semInfo, nullptr, &imageAvailableSemaphores_[i]);
         vkCreateSemaphore(device_->vkDevice(), &semInfo, nullptr, &renderFinished_[i]);
         vkCreateFence(device_->vkDevice(), &fenceInfo, nullptr, &inFlightFences_[i]);
     }
@@ -743,8 +759,8 @@ void VulkanSwapChain::cleanup() {
     auto dev = device_->vkDevice();
     vkDeviceWaitIdle(dev);
 
-    for (u32 i = 0; i < MAX_FRAMES; ++i) {
-        if (imageAvailable_[i]) vkDestroySemaphore(dev, imageAvailable_[i], nullptr);
+    for (u32 i = 0; i < maxFrames_; ++i) {
+        if (imageAvailableSemaphores_[i]) vkDestroySemaphore(dev, imageAvailableSemaphores_[i], nullptr);
         if (renderFinished_[i]) vkDestroySemaphore(dev, renderFinished_[i], nullptr);
         if (inFlightFences_[i]) vkDestroyFence(dev, inFlightFences_[i], nullptr);
     }
@@ -754,43 +770,69 @@ void VulkanSwapChain::cleanup() {
 }
 
 TextureView* VulkanSwapChain::acquireNextTexture() {
-    auto dev = device_->vkDevice();
-    vkWaitForFences(dev, 1, &inFlightFences_[currentFrame_], VK_TRUE, UINT64_MAX);
-    vkResetFences(dev, 1, &inFlightFences_[currentFrame_]);
+    VkDevice vkDevice = device_->vkDevice();
+    vkWaitForFences(vkDevice, 1, &inFlightFences_[currentFrame_], VK_TRUE, UINT64_MAX);
+    vkResetFences(vkDevice, 1, &inFlightFences_[currentFrame_]);
+    if (!commandBuffers_[currentFrame_]->begin()) {
+        return nullptr;
+    }
 
     // Run deferred cleanups for this frame index now that the GPU is done with it.
     device_->beginFrame(currentFrame_);
 
-    vkAcquireNextImageKHR(dev, swapchain_, UINT64_MAX, imageAvailable_[currentFrame_], VK_NULL_HANDLE, &imageIndex_);
+    // https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation
+    vkAcquireNextImageKHR(
+        vkDevice,
+        swapchain_,
+        UINT64_MAX,
+        imageAvailableSemaphores_[currentFrame_],
+        VK_NULL_HANDLE,
+        &imageIndex_);
     device_->setActiveSwapChain(this);
     return views_[imageIndex_].get();
 }
 
 void VulkanSwapChain::present() {
-    VkPresentInfoKHR presentInfo{};
+    VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = &renderFinished_[currentFrame_];
+    presentInfo.pWaitSemaphores = &renderFinished_[currentFrame_]; // このセマフォの通知を待ってから実際に present する
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = &swapchain_;
     presentInfo.pImageIndices = &imageIndex_;
     vkQueuePresentKHR(device_->graphicsQueue(), &presentInfo);
 
-    currentFrame_ = (currentFrame_ + 1) % MAX_FRAMES;
+    currentFrame_ = (currentFrame_ + 1) % maxFrames_;
 }
 
-VkSemaphore VulkanSwapChain::imageAvailableSemaphore() const { return imageAvailable_[currentFrame_]; }
+VkSemaphore VulkanSwapChain::imageAvailableSemaphore() const { return imageAvailableSemaphores_[currentFrame_]; }
 VkSemaphore VulkanSwapChain::renderFinishedSemaphore() const { return renderFinished_[currentFrame_]; }
 VkFence VulkanSwapChain::inFlightFence() const { return inFlightFences_[currentFrame_]; }
 
-// ─── VulkanCommandBuffer ─────────────────────────────────────────────────
+// ------ VulkanCommandBuffer --------------------------------------------------------------------------------------------------
 
 VulkanCommandBuffer::VulkanCommandBuffer(VulkanDevice* device, VkCommandBuffer cmd)
     : device_(device), cmd_(cmd) {
+    //VkCommandBufferBeginInfo beginInfo{};
+    //beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    //beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    //vkBeginCommandBuffer(cmd_, &beginInfo);
+}
+
+#define LN_MAKE_VULKAN_ERROR(result, func) LN_MAKE_ERROR("Failed: " func "(%d)", r)
+
+VoidResult VulkanCommandBuffer::begin() {
+    // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
+    //vkWaitForFences(m_device->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+
+    vkResetCommandBuffer(cmd_, 0);
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    vkBeginCommandBuffer(cmd_, &beginInfo);
+    if (VkResult r = vkBeginCommandBuffer(cmd_, &beginInfo); r != VK_SUCCESS) {
+        return LN_MAKE_VULKAN_ERROR(r, "vkBeginCommandBuffer");
+    }
+    return LN_MAKE_SUCCESS();
 }
 
 RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
@@ -883,7 +925,7 @@ VulkanCommandBuffer::~VulkanCommandBuffer() {
     }
 }
 
-// ─── VulkanDevice ────────────────────────────────────────────────────────
+// ------ VulkanDevice ----------------------------------------------------------------------------------------------------------------
 
 VulkanDevice::VulkanDevice(const DeviceDesc& desc) {
     // Create instance
@@ -1188,7 +1230,7 @@ Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipel
     return Ref<RenderPipeline>(rp);
 }
 
-CommandBuffer* VulkanDevice::createCommandBuffer() {
+Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = commandPool_;
@@ -1197,7 +1239,12 @@ CommandBuffer* VulkanDevice::createCommandBuffer() {
 
     VkCommandBuffer cmd;
     vkAllocateCommandBuffers(device_, &allocInfo, &cmd);
-    return new VulkanCommandBuffer(this, cmd);
+    return Ref<VulkanCommandBuffer>::adopt(new VulkanCommandBuffer(this, cmd));
+}
+
+CommandBuffer* VulkanDevice::getCommandBuffer() {
+    if (!activeSwapChain_) return nullptr;
+    return activeSwapChain_->commandBuffers_[activeSwapChain_->currentFrame()].get();
 }
 
 void VulkanDevice::waitIdle() {
@@ -1206,7 +1253,7 @@ void VulkanDevice::waitIdle() {
 
 } // namespace ln::rhi::vulkan
 
-// ─── Device::create factory ──────────────────────────────────────────────
+// ------ Device::create factory --------------------------------------------------------------------------------------------
 
 namespace ln::rhi {
 

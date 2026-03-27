@@ -4,6 +4,9 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <cstdio>
+#include <cstring>
+#include <cstdarg>
 
 // Standard C++ headers
 #include <algorithm>

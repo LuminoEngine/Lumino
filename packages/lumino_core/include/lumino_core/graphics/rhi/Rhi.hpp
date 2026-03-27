@@ -392,7 +392,7 @@ public:
     virtual void end() = 0;
 };
 
-class CommandBuffer {
+class CommandBuffer : public RefCounted {
 public:
     virtual ~CommandBuffer() = default;
     virtual RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) = 0;
@@ -435,7 +435,8 @@ public:
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
     /** Create a command buffer for this frame. */
-    virtual CommandBuffer* createCommandBuffer() = 0;
+    //virtual CommandBuffer* createCommandBuffer() = 0;
+    virtual CommandBuffer* getCommandBuffer() = 0;
 
     /** Wait for the device to become idle. */
     virtual void waitIdle() = 0;
