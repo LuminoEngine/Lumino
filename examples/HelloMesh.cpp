@@ -44,11 +44,8 @@ int main() {
     auto renderer = *ForwardRenderer::create(ctx);
 
     // 3. Unlit Material (white color so vertex colors show through)
-    auto material = *MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
+    auto material = *MaterialFactory::createUnlit(ctx);
     //material->setCullMode(CullMode::None);
-    material->buildPipeline(
-        ctx->device(), renderer->pipelineLayout(),
-        ctx->colorFormat(), ctx->depthFormat());
     material->updateBindGroup(ctx->device());
 
     // 4. Triangle mesh with per-vertex colors
@@ -97,7 +94,7 @@ int main() {
         auto frame = *ctx->beginFrame();
 
         renderer->renderFrame(
-            ctx->device(), frame.colorTarget, frame.depthTarget,
+            ctx->device(), ctx->pipelineCache(), frame.colorTarget, frame.depthTarget,
             camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
 
         ctx->endFrame();

@@ -5,6 +5,9 @@ namespace ln {
 
 GraphicsContext::~GraphicsContext() {
     if (m_device) {
+        if (m_pipelineCache) {
+            m_pipelineCache->clear();
+        }
         m_device->waitIdle();
     }
 }
@@ -29,6 +32,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     auto deviceResult = rhi::Device::create(devDesc);
     if (!deviceResult) return tl::make_unexpected(deviceResult.error());
     ctx->m_device = std::move(*deviceResult);
+    ctx->m_pipelineCache = std::make_unique<PipelineCache>(ctx->m_device.get());
 
     // 2. SwapChain
     rhi::SwapChainDesc scDesc;

@@ -153,52 +153,10 @@ Result<void> Material::updateBindGroup(rhi::Device* device) {
     return {};
 }
 
-Result<void> Material::buildPipeline(
-    rhi::Device* device,
-    rhi::PipelineLayout* pipelineLayout,
-    rhi::TextureFormat colorFormat,
-    rhi::TextureFormat depthFormat,
-    rhi::PrimitiveTopology topology) {
-
-    rhi::RenderPipelineDesc rpDesc;
-    rpDesc.layout = pipelineLayout;
-    rpDesc.vertexShader = m_vertShader.get();
-    rpDesc.fragmentShader = m_fragShader.get();
-    rpDesc.vertexEntry = m_vertEntry;
-    rpDesc.fragmentEntry = m_fragEntry;
-    rpDesc.vertexBuffers = {standardVertexLayout()};
-    rpDesc.topology = topology;
-    rpDesc.cullMode = m_cullMode;
-    rpDesc.colorFormats = {colorFormat};
-    rpDesc.depthStencilFormat = depthFormat;
-    rpDesc.depthStencil.depthTestEnable = m_depthTestEnabled;
-    rpDesc.depthStencil.depthWriteEnable = m_depthWriteEnabled;
-
-    if (m_blendEnabled) {
-        rhi::BlendState bs;
-        bs.enabled = true;
-        bs.srcColor = rhi::BlendFactor::SrcAlpha;
-        bs.dstColor = rhi::BlendFactor::OneMinusSrcAlpha;
-        bs.colorOp = rhi::BlendOp::Add;
-        bs.srcAlpha = rhi::BlendFactor::One;
-        bs.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
-        bs.alphaOp = rhi::BlendOp::Add;
-        rpDesc.blendStates = {bs};
-    }
-
-    auto pipelineResult = device->createRenderPipeline(rpDesc);
-    if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
-    m_pipeline = std::move(*pipelineResult);
-    return {};
-}
-
 // ─── Helper: load shaders from precompiled .lcsh data ────────────────────
 
 Result<Ref<Material>> MaterialFactory::createMaterialFromShaderData(
     rhi::Device* device,
-    rhi::PipelineLayout* pipelineLayout,
-    rhi::TextureFormat colorFormat,
-    rhi::TextureFormat depthFormat,
     const unsigned char* shaderData, size_t shaderDataSize,
     MaterialType type) {
 
@@ -282,10 +240,6 @@ Result<Ref<Material>> MaterialFactory::createMaterialFromShaderData(
     mat->m_paramBuffer = std::move(*bufResult);
     mat->m_baseTexture = std::move(*texResult);
 
-    // Build RenderPipeline
-    auto buildResult = mat->buildPipeline(device, pipelineLayout, colorFormat, depthFormat);
-    if (!buildResult) return tl::make_unexpected(buildResult.error());
-
     // Initial bind group update
     auto updateResult = mat->updateBindGroup(device);
     if (!updateResult) return tl::make_unexpected(updateResult.error());
@@ -293,38 +247,26 @@ Result<Ref<Material>> MaterialFactory::createMaterialFromShaderData(
     return mat;
 }
 
-Result<Ref<Material>> MaterialFactory::createUnlit(
-    rhi::Device* device,
-    rhi::PipelineLayout* pipelineLayout,
-    rhi::TextureFormat colorFormat,
-    rhi::TextureFormat depthFormat) {
+Result<Ref<Material>> MaterialFactory::createUnlit(rhi::Device* device) {
     return MaterialFactory::createMaterialFromShaderData(
-        device, pipelineLayout, colorFormat, depthFormat,
+        device,
         s_unlitShaderData, sizeof(s_unlitShaderData),
         MaterialType::Unlit);
 }
 
-Result<Ref<Material>> MaterialFactory::createBasicLit(
-    rhi::Device* device,
-    rhi::PipelineLayout* pipelineLayout,
-    rhi::TextureFormat colorFormat,
-    rhi::TextureFormat depthFormat) {
+Result<Ref<Material>> MaterialFactory::createBasicLit(rhi::Device* device) {
     return MaterialFactory::createMaterialFromShaderData(
-        device, pipelineLayout, colorFormat, depthFormat,
+        device,
         s_basicLitShaderData, sizeof(s_basicLitShaderData),
         MaterialType::BasicLit);
 }
 
-Result<Ref<Material>> MaterialFactory::createUnlit(
-    GraphicsContext* ctx,
-    rhi::PipelineLayout* pipelineLayout) {
-    return createUnlit(ctx->device(), pipelineLayout, ctx->colorFormat(), ctx->depthFormat());
+Result<Ref<Material>> MaterialFactory::createUnlit(GraphicsContext* ctx) {
+    return createUnlit(ctx->device());
 }
 
-Result<Ref<Material>> MaterialFactory::createBasicLit(
-    GraphicsContext* ctx,
-    rhi::PipelineLayout* pipelineLayout) {
-    return createBasicLit(ctx->device(), pipelineLayout, ctx->colorFormat(), ctx->depthFormat());
+Result<Ref<Material>> MaterialFactory::createBasicLit(GraphicsContext* ctx) {
+    return createBasicLit(ctx->device());
 }
 
 } // namespace ln

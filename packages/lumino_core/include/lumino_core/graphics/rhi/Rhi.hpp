@@ -17,6 +17,7 @@
 #include <lumino_base/RefObject.hpp>
 #include <lumino_base/math/Math.hpp>
 #include <lumino_base/math/Matrix4x4.hpp>
+#include "RHIObject.hpp"
 
 #include <string>
 #include <vector>
@@ -323,7 +324,7 @@ struct DeviceDesc {
 
 // ─── Resource Interfaces ─────────────────────────────────────────────────
 
-class Buffer : public RefObject {
+class Buffer : public RHIObject {
 public:
     virtual ~Buffer() = default;
     virtual u64 size() const = 0;
@@ -332,7 +333,7 @@ public:
     virtual void unmap() = 0;
 };
 
-class Texture : public RefObject {
+class Texture : public RHIObject {
 public:
     virtual ~Texture() = default;
     virtual u32 width() const = 0;
@@ -340,7 +341,7 @@ public:
     virtual TextureFormat format() const = 0;
 };
 
-class TextureView : public RefObject {
+class TextureView : public RHIObject {
     // NOTE: なぜ TextureView も公開しているのか？
     //   legacy では次のように、 Texture が内部に View も持っていた。
     //   ```
@@ -359,32 +360,32 @@ class TextureView : public RefObject {
     virtual ~TextureView() = default;
 };
 
-class Sampler : public RefObject {
+class Sampler : public RHIObject {
 public:
     virtual ~Sampler() = default;
 };
 
-class ShaderModule : public RefObject {
+class ShaderModule : public RHIObject {
 public:
     virtual ~ShaderModule() = default;
 };
 
-class BindGroupLayout : public RefObject {
+class BindGroupLayout : public RHIObject {
 public:
     virtual ~BindGroupLayout() = default;
 };
 
-class BindGroup : public RefObject {
+class BindGroup : public RHIObject {
 public:
     virtual ~BindGroup() = default;
 };
 
-class PipelineLayout : public RefObject {
+class PipelineLayout : public RHIObject {
 public:
     virtual ~PipelineLayout() = default;
 };
 
-class RenderPipeline : public RefObject {
+class RenderPipeline : public RHIObject {
 public:
     virtual ~RenderPipeline() = default;
 };
@@ -405,7 +406,7 @@ public:
     virtual void end() = 0;
 };
 
-class CommandBuffer : public RefObject {
+class CommandBuffer : public RHIObject {
 public:
     virtual ~CommandBuffer() = default;
     virtual RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) = 0;
@@ -414,7 +415,7 @@ public:
 
 // ─── SwapChain ───────────────────────────────────────────────────────────
 
-class SwapChain : public RefObject {
+class SwapChain : public RHIObject {
 public:
     virtual ~SwapChain() = default;
     /** Acquire the next framebuffer texture view. Must be called once per frame. */
@@ -427,7 +428,7 @@ public:
 
 // ─── Device (Factory) ────────────────────────────────────────────────────
 
-class Device : public RefObject {
+class Device : public RHIObject {
 public:
     virtual ~Device() = default;
 

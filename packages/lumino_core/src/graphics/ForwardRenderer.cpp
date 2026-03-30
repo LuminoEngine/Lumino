@@ -1,5 +1,6 @@
 ﻿#include <lumino_core/graphics/ForwardRenderer.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
+#include <lumino_core/graphics/PipelineCache.hpp>
 #include <lumino_shader/UnifiedShader2.hpp>
 #include <lumino_shader/UnifiedShaderSerializer2.hpp>
 #include <cstring>
@@ -187,6 +188,7 @@ Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t 
 
 Result<void> ForwardRenderer::renderFrame(
     rhi::Device* device,
+    PipelineCache* pipelineCache,
     rhi::TextureView* colorTarget,
     rhi::TextureView* depthTarget,
     const Camera& camera,
@@ -287,8 +289,34 @@ Result<void> ForwardRenderer::renderFrame(
                 mat = mesh->materials()[0].get();
             }
 
-            if (mat && mat->pipeline()) {
-                pass->setPipeline(mat->pipeline());
+            if (mat) {
+                PipelineCacheKey key;
+                key.vertexShader    = mat->vertexShader();
+                key.fragmentShader  = mat->fragmentShader();
+                key.vertexEntry     = mat->vertexEntry();
+                key.fragmentEntry   = mat->fragmentEntry();
+                key.cullMode        = mat->cullMode();
+                key.blendEnabled    = mat->blendEnabled();
+                if (key.blendEnabled) {
+                    key.blendState.enabled  = true;
+                    key.blendState.srcColor = rhi::BlendFactor::SrcAlpha;
+                    key.blendState.dstColor = rhi::BlendFactor::OneMinusSrcAlpha;
+                    key.blendState.colorOp  = rhi::BlendOp::Add;
+                    key.blendState.srcAlpha = rhi::BlendFactor::One;
+                    key.blendState.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
+                    key.blendState.alphaOp  = rhi::BlendOp::Add;
+                }
+                key.depthTestEnabled  = mat->depthTestEnabled();
+                key.depthWriteEnabled = mat->depthWriteEnabled();
+                key.pipelineLayout    = m_pipelineLayout.get();
+                key.topology          = rhi::PrimitiveTopology::TriangleList;
+                key.colorFormat       = m_colorFormat;
+                key.depthStencilFormat = m_depthFormat;
+                key.sampleCount       = 1;
+
+                auto pipelineResult = pipelineCache->getOrCreate(key);
+                if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
+                pass->setPipeline(*pipelineResult);
                 pass->setBindGroup(0, m_viewBindGroup.get());
                 pass->setBindGroup(1, mat->materialBindGroup());
             }

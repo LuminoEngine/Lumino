@@ -93,7 +93,7 @@ int main() {
     auto renderer = *ForwardRenderer::create(ctx);
 
     // 3. Material (BasicLit)
-    auto material = *MaterialFactory::createBasicLit(ctx, renderer->pipelineLayout());
+    auto material = *MaterialFactory::createBasicLit(ctx);
     material->setColor(Color{0.8f, 0.5f, 0.2f, 1.0f});
     material->updateBindGroup(ctx->device());
 
@@ -131,7 +131,7 @@ int main() {
         auto frame = *ctx->beginFrame();
 
         renderer->renderFrame(
-            ctx->device(), frame.colorTarget, frame.depthTarget,
+            ctx->device(), ctx->pipelineCache(), frame.colorTarget, frame.depthTarget,
             camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
 
         ctx->endFrame();

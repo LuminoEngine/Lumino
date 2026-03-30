@@ -47,6 +47,7 @@ public:
 
     /**
      * Render a frame.
+     * @param pipelineCache Pipeline cache for looking up / creating RenderPipelines.
      * @param colorTarget  The color texture view to render into (from SwapChain).
      * @param depthTarget  The depth texture view to use. Must be created externally.
      * @param camera       The camera for this frame.
@@ -55,6 +56,7 @@ public:
      */
     Result<void> renderFrame(
         rhi::Device* device,
+        PipelineCache* pipelineCache,
         rhi::TextureView* colorTarget,
         rhi::TextureView* depthTarget,
         const Camera& camera,

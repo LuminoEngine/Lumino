@@ -59,24 +59,22 @@ public:
     void setDepthTestEnabled(bool enabled);
     void setDepthWriteEnabled(bool enabled);
 
-    // Access internals (used by ForwardRenderer)
-    rhi::RenderPipeline* pipeline() const { return m_pipeline.get(); }
+    // Shader / render state accessors (used by PipelineCache key construction)
+    rhi::ShaderModule* vertexShader() const { return m_vertShader.get(); }
+    rhi::ShaderModule* fragmentShader() const { return m_fragShader.get(); }
+    const std::string& vertexEntry() const { return m_vertEntry; }
+    const std::string& fragmentEntry() const { return m_fragEntry; }
+    rhi::CullMode cullMode() const { return m_cullMode; }
+    bool blendEnabled() const { return m_blendEnabled; }
+    bool depthTestEnabled() const { return m_depthTestEnabled; }
+    bool depthWriteEnabled() const { return m_depthWriteEnabled; }
+
+    // BindGroup access (used by ForwardRenderer)
     rhi::BindGroupLayout* materialBindGroupLayout() const { return m_materialBindGroupLayout.get(); }
     rhi::BindGroup* materialBindGroup() const { return m_materialBindGroup.get(); }
 
     /** Rebuild the BindGroup after parameter changes. Call before rendering. */
     Result<void> updateBindGroup(rhi::Device* device);
-
-    /**
-     * Rebuild the RenderPipeline. Must be called after render state changes
-     * or initially during creation.
-     */
-    Result<void> buildPipeline(
-        rhi::Device* device,
-        rhi::PipelineLayout* pipelineLayout,
-        rhi::TextureFormat colorFormat,
-        rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float,
-        rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
 
 private:
     friend class MaterialFactory;
@@ -88,9 +86,6 @@ private:
     Ref<rhi::ShaderModule> m_fragShader;
     std::string m_vertEntry;
     std::string m_fragEntry;
-
-    // Pipeline
-    Ref<rhi::RenderPipeline> m_pipeline;
 
     // BindGroup for material (Set 1)
     Ref<rhi::BindGroupLayout> m_materialBindGroupLayout;
@@ -125,35 +120,20 @@ class GraphicsContext;
 class MaterialFactory {
 public:
     /** Create an Unlit material (texture * color, no lighting). */
-    static Result<Ref<Material>> createUnlit(
-        rhi::Device* device,
-        rhi::PipelineLayout* pipelineLayout,
-        rhi::TextureFormat colorFormat,
-        rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
+    static Result<Ref<Material>> createUnlit(rhi::Device* device);
 
     /** Create an Unlit material from a GraphicsContext. */
-    static Result<Ref<Material>> createUnlit(
-        GraphicsContext* ctx,
-        rhi::PipelineLayout* pipelineLayout);
+    static Result<Ref<Material>> createUnlit(GraphicsContext* ctx);
 
     /** Create a BasicLit material (Blinn-Phong, 1 directional light). */
-    static Result<Ref<Material>> createBasicLit(
-        rhi::Device* device,
-        rhi::PipelineLayout* pipelineLayout,
-        rhi::TextureFormat colorFormat,
-        rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
+    static Result<Ref<Material>> createBasicLit(rhi::Device* device);
 
     /** Create a BasicLit material from a GraphicsContext. */
-    static Result<Ref<Material>> createBasicLit(
-        GraphicsContext* ctx,
-        rhi::PipelineLayout* pipelineLayout);
+    static Result<Ref<Material>> createBasicLit(GraphicsContext* ctx);
 
 private:
     static Result<Ref<Material>> createMaterialFromShaderData(
         rhi::Device* device,
-        rhi::PipelineLayout* pipelineLayout,
-        rhi::TextureFormat colorFormat,
-        rhi::TextureFormat depthFormat,
         const unsigned char* shaderData, size_t shaderDataSize,
         MaterialType type);
 };

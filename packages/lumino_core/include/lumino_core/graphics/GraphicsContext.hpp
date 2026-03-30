@@ -1,7 +1,9 @@
 ﻿#pragma once
+#include <memory>
 #include <lumino_base/Result.hpp>
 #include <lumino_core/Object.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
+#include <lumino_core/graphics/PipelineCache.hpp>
 #include <lumino_core/platform/Window.hpp>
 
 namespace ln {
@@ -59,6 +61,9 @@ public:
     /** The underlying RHI device. */
     rhi::Device* device() const { return m_device.get(); }
 
+    /** Pipeline cache for this context. */
+    PipelineCache* pipelineCache() const { return m_pipelineCache.get(); }
+
     /** Color format of the swap chain. */
     rhi::TextureFormat colorFormat() const { return m_colorFormat; }
 
@@ -89,6 +94,7 @@ private:
     rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth32Float;
     u32 m_width = 0;
     u32 m_height = 0;
+    std::unique_ptr<PipelineCache> m_pipelineCache;
 };
 
 } // namespace ln

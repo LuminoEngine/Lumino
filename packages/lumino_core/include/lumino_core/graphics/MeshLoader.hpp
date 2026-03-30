@@ -24,16 +24,10 @@ struct LoadedModel {
 /** Loads 3D models (glTF) into Mesh/Material objects. */
 class MeshLoader {
 public:
-    /**
-     * Load a glTF or glb file.
-     * @param pipelineLayout Shared PipelineLayout for all materials (3 BindGroupLayouts: view, material, object).
-     */
+    /** Load a glTF or glb file. */
     static Result<LoadedModel> loadGltf(
         rhi::Device* device,
-        rhi::PipelineLayout* pipelineLayout,
-        const std::string& path,
-        rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8Unorm,
-        rhi::TextureFormat depthFormat = rhi::TextureFormat::Depth32Float);
+        const std::string& path);
 };
 
 } // namespace ln

@@ -43,18 +43,13 @@ int main() {
     auto renderer = *ForwardRenderer::create(ctx);
 
     // 3. Unlit Material
-    auto material = *MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
+    auto material = *MaterialFactory::createUnlit(ctx);
 
     // 4. PNG テクスチャ読み込み
     auto texture = *TextureLoader::loadFromFile(ctx->device(), ASSETS_DIR "/picture1.png");
     material->setTexture(texture.get());
 
-    // 5. Pipeline & BindGroup ビルド
-    material->buildPipeline(
-        ctx->device(),
-        renderer->pipelineLayout(),
-        ctx->colorFormat(),
-        ctx->depthFormat());
+    // 5. BindGroup ビルド
     material->updateBindGroup(ctx->device());
 
     // 6. UV付き四角形メッシュ (2枚の三角形)
@@ -113,7 +108,7 @@ int main() {
         auto frame = *ctx->beginFrame();
 
         renderer->renderFrame(
-            ctx->device(), frame.colorTarget, frame.depthTarget,
+            ctx->device(), ctx->pipelineCache(), frame.colorTarget, frame.depthTarget,
             camera, objects, Color{0, 0, 0, 1.0f});
 
         ctx->endFrame();

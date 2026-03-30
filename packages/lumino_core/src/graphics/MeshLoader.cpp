@@ -175,10 +175,7 @@ static std::vector<Ref<rhi::Texture>> loadGltfTextures(
 
 Result<LoadedModel> MeshLoader::loadGltf(
     rhi::Device* device,
-    rhi::PipelineLayout* pipelineLayout,
-    const std::string& path,
-    rhi::TextureFormat colorFormat,
-    rhi::TextureFormat depthFormat) {
+    const std::string& path) {
 
     // Load glTF file.
     tinygltf::Model model;
@@ -208,11 +205,11 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
         Ref<Material> mat;
         if (isLit) {
-            auto r = MaterialFactory::createBasicLit(device, pipelineLayout, colorFormat, depthFormat);
+            auto r = MaterialFactory::createBasicLit(device);
             if (!r) return tl::make_unexpected(r.error());
             mat = std::move(*r);
         } else {
-            auto r = MaterialFactory::createUnlit(device, pipelineLayout, colorFormat, depthFormat);
+            auto r = MaterialFactory::createUnlit(device);
             if (!r) return tl::make_unexpected(r.error());
             mat = std::move(*r);
         }
@@ -252,7 +249,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
     // Create a default material if no materials exist.
     if (result.materials.empty()) {
-        auto r = MaterialFactory::createUnlit(device, pipelineLayout, colorFormat, depthFormat);
+        auto r = MaterialFactory::createUnlit(device);
         if (!r) return tl::make_unexpected(r.error());
         auto ubr2 = (*r)->updateBindGroup(device);
         if (!ubr2) return tl::make_unexpected(ubr2.error());
