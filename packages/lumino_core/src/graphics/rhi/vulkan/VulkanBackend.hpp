@@ -241,7 +241,6 @@ private:
 class VulkanSwapChain final : public SwapChain {
 public:
     VulkanSwapChain();
-    ~VulkanSwapChain() override;
     VoidResult init(VulkanDevice* device, const SwapChainDesc& desc);
 
     TextureView* acquireNextTexture() override;
@@ -267,7 +266,7 @@ public:
     static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
     static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
-    void cleanup();
+    void finalize() override;
 
     VulkanDevice* m_device;
     VkSurfaceKHR m_surface = VK_NULL_HANDLE;

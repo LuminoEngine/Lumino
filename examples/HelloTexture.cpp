@@ -40,30 +40,22 @@ int main() {
     auto* ctx = window->graphicsContext();
 
     // 2. ForwardRenderer
-    auto rendererResult = ForwardRenderer::create(ctx);
-    if (!rendererResult) { fprintf(stderr, "Renderer failed\n"); return 1; }
-    auto renderer = std::move(*rendererResult);
+    auto renderer = *ForwardRenderer::create(ctx);
 
     // 3. Unlit Material
-    auto matResult = MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
-    if (!matResult) { fprintf(stderr, "Material: %s\n", matResult.error().message.c_str()); return 1; }
-    auto material = std::move(*matResult);
+    auto material = *MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
 
     // 4. PNG テクスチャ読み込み
-    auto texResult = TextureLoader::loadFromFile(ctx->device(), ASSETS_DIR "/picture1.png");
-    if (!texResult) { fprintf(stderr, "Texture: %s\n", texResult.error().message.c_str()); return 1; }
-    auto texture = std::move(*texResult);
+    auto texture = *TextureLoader::loadFromFile(ctx->device(), ASSETS_DIR "/picture1.png");
     material->setTexture(texture.get());
 
     // 5. Pipeline & BindGroup ビルド
-    auto bpResult = material->buildPipeline(
+    material->buildPipeline(
         ctx->device(),
         renderer->pipelineLayout(),
         ctx->colorFormat(),
         ctx->depthFormat());
-    if (!bpResult) { fprintf(stderr, "Pipeline: %s\n", bpResult.error().message.c_str()); return 1; }
-    auto ubgResult = material->updateBindGroup(ctx->device());
-    if (!ubgResult) { fprintf(stderr, "Material bind group: %s\n", ubgResult.error().message.c_str()); return 1; }
+    material->updateBindGroup(ctx->device());
 
     // 6. UV付き四角形メッシュ (2枚の三角形)
     //   v0(-0.5, 0.5) --- v1(0.5, 0.5)
@@ -97,9 +89,7 @@ int main() {
     sub.indexCount = 6;
     sub.materialIndex = 0;
 
-    auto meshResult = Mesh::create(ctx->device(), vertices, indices, {sub});
-    if (!meshResult) { fprintf(stderr, "Mesh failed\n"); return 1; }
-    auto mesh = std::move(*meshResult);
+    auto mesh = *Mesh::create(ctx->device(), vertices, indices, {sub});
     mesh->materials() = {material};
 
     // 7. Perspective カメラ
@@ -120,13 +110,11 @@ int main() {
 
         std::vector<RenderObject> objects = {obj};
 
-        auto frame = ctx->beginFrame();
-        if (!frame) { fprintf(stderr, "beginFrame failed\n"); break; }
+        auto frame = *ctx->beginFrame();
 
-        auto renderResult = renderer->renderFrame(
-            ctx->device(), frame->colorTarget, frame->depthTarget,
+        renderer->renderFrame(
+            ctx->device(), frame.colorTarget, frame.depthTarget,
             camera, objects, Color{0, 0, 0, 1.0f});
-        if (!renderResult) { fprintf(stderr, "Render error\n"); }
 
         ctx->endFrame();
     }

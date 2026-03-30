@@ -28,11 +28,10 @@ file(GLOB LN_LOCAL_SOURCES_graphics
     src/graphics/*.cpp
     src/graphics/*.hpp
     include/${PROJECT_NAME}/graphics/*.hpp
-    src/graphics/rhi/vulkan/VulkanBackend.hpp
-    src/graphics/rhi/vulkan/VulkanBackend.cpp
-    src/graphics/rhi/vulkan/DescriptorPoolManager.hpp
-    src/graphics/rhi/vulkan/FrameResourceManager.hpp
-    src/graphics/rhi/vulkan/StagingBufferPool.hpp
+)
+file(GLOB LN_LOCAL_SOURCES_graphics_vulkan
+    src/graphics/rhi/vulkan/*.cpp
+    src/graphics/rhi/vulkan/*.hpp
 )
 file(GLOB LN_LOCAL_SOURCES_shaders shaders/*.slang)
 
@@ -40,6 +39,7 @@ source_group("" FILES ${LN_LOCAL_SOURCES_core})
 source_group("runtime" FILES ${LN_LOCAL_SOURCES_runtime})
 source_group("platform" FILES ${LN_LOCAL_SOURCES_platform})
 source_group("graphics" FILES ${LN_LOCAL_SOURCES_graphics})
+source_group("graphics/vulkan" FILES ${LN_LOCAL_SOURCES_graphics_vulkan})
 source_group("shaders" FILES ${LN_LOCAL_SOURCES_shaders})
 
 set(LN_LOCAL_SOURCES
@@ -47,6 +47,7 @@ set(LN_LOCAL_SOURCES
     ${LN_LOCAL_SOURCES_runtime}
     ${LN_LOCAL_SOURCES_platform}
     ${LN_LOCAL_SOURCES_graphics}
+    ${LN_LOCAL_SOURCES_graphics_vulkan}
     ${LN_LOCAL_SOURCES_shaders}
 )
 

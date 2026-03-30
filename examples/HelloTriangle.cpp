@@ -57,23 +57,11 @@ int main() {
     vbDesc.size = sizeof(s_vertices);
     vbDesc.usage = BufferUsage::Vertex;
     vbDesc.initialData = s_vertices;
-    auto vbResult = device->createBuffer(vbDesc);
-    if (!vbResult) { fprintf(stderr, "Failed to create vertex buffer\n"); return 1; }
-    auto vertexBuffer = std::move(*vbResult);
+    auto vertexBuffer = *device->createBuffer(vbDesc);
 
     // 3. シェーダーコンパイル (lumino_shader)
-    auto compilerResult = ln::shader::ShaderCompiler2::create();
-    if (!compilerResult) {
-        fprintf(stderr, "Failed to create shader compiler: %s\n", compilerResult.error().message.c_str());
-        return 1;
-    }
-    auto compiler = std::move(*compilerResult);
-
-    auto buildResult = compiler->build(SHADER_FILE);
-    if (!buildResult) {
-        fprintf(stderr, "Failed to compile shader: %s\n", buildResult.error().message.c_str());
-        return 1;
-    }
+    auto compiler = *ln::shader::ShaderCompiler2::create();
+    compiler->build(SHADER_FILE);
 
     ln::shader::UnifiedShader2* unifiedShader = compiler->shader();
     auto& globalPasses = unifiedShader->globalShaderPasses();
@@ -103,22 +91,16 @@ int main() {
     ShaderModuleDesc vsDesc;
     vsDesc.spirvCode = reinterpret_cast<const ln::u32*>(vertBlob->data.data());
     vsDesc.spirvSizeBytes = vertBlob->data.size();
-    auto vsResult = device->createShaderModule(vsDesc);
+    auto vertShader = *device->createShaderModule(vsDesc);
 
     ShaderModuleDesc fsDesc;
     fsDesc.spirvCode = reinterpret_cast<const ln::u32*>(fragBlob->data.data());
     fsDesc.spirvSizeBytes = fragBlob->data.size();
-    auto fsResult = device->createShaderModule(fsDesc);
-
-    if (!vsResult || !fsResult) { fprintf(stderr, "Failed to create shaders\n"); return 1; }
-    auto vertShader = std::move(*vsResult);
-    auto fragShader = std::move(*fsResult);
+    auto fragShader = *device->createShaderModule(fsDesc);
 
     // 4. パイプラインレイアウト（バインドなし）
     PipelineLayoutDesc plDesc;
-    auto plResult = device->createPipelineLayout(plDesc);
-    if (!plResult) { fprintf(stderr, "Failed to create pipeline layout\n"); return 1; }
-    auto pipelineLayout = std::move(*plResult);
+    auto pipelineLayout = *device->createPipelineLayout(plDesc);
 
     // 5. レンダーパイプライン
     RenderPipelineDesc rpDesc;
@@ -139,22 +121,19 @@ int main() {
     };
     rpDesc.vertexBuffers = {vbl};
 
-    auto pipelineResult = device->createRenderPipeline(rpDesc);
-    if (!pipelineResult) { fprintf(stderr, "Failed to create render pipeline\n"); return 1; }
-    auto pipeline = std::move(*pipelineResult);
+    auto pipeline = *device->createRenderPipeline(rpDesc);
 
     printf("Lumino RHI initialized. Rendering...\n");
 
     // 6. メインループ
     while (window->processEvents()) {
-        auto frame = ctx->beginFrame();
-        if (!frame) { fprintf(stderr, "beginFrame failed\n"); break; }
+        auto frame = *ctx->beginFrame();
 
         auto* cmd = device->getCommandBuffer();
 
         RenderPassDesc passDesc;
         passDesc.colorAttachments.push_back({
-            frame->colorTarget,
+            frame.colorTarget,
             LoadOp::Clear,
             StoreOp::Store,
             {0.1f, 0.1f, 0.15f, 1.0f},

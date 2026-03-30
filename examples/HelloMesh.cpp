@@ -41,21 +41,15 @@ int main() {
     auto* ctx = window->graphicsContext();
 
     // 2. ForwardRenderer
-    auto rendererResult = ForwardRenderer::create(ctx);
-    if (!rendererResult) { fprintf(stderr, "Renderer failed\n"); return 1; }
-    auto renderer = std::move(*rendererResult);
+    auto renderer = *ForwardRenderer::create(ctx);
 
     // 3. Unlit Material (white color so vertex colors show through)
-    auto matResult = MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
-    if (!matResult) { fprintf(stderr, "Material: %s\n", matResult.error().message.c_str()); return 1; }
-    auto material = std::move(*matResult);
+    auto material = *MaterialFactory::createUnlit(ctx, renderer->pipelineLayout());
     //material->setCullMode(CullMode::None);
-    auto bpResult = material->buildPipeline(
+    material->buildPipeline(
         ctx->device(), renderer->pipelineLayout(),
         ctx->colorFormat(), ctx->depthFormat());
-    if (!bpResult) { fprintf(stderr, "Pipeline: %s\n", bpResult.error().message.c_str()); return 1; }
-    auto ubgResult = material->updateBindGroup(ctx->device());
-    if (!ubgResult) { fprintf(stderr, "Material bind group: %s\n", ubgResult.error().message.c_str()); return 1; }
+    material->updateBindGroup(ctx->device());
 
     // 4. Triangle mesh with per-vertex colors
     // 反時計回り (CCW) が正面。右手座標系ということで。godot と同じ。
@@ -76,9 +70,7 @@ int main() {
     sub.indexCount = 3;
     sub.materialIndex = 0;
 
-    auto meshResult = Mesh::create(ctx->device(), vertices, indices, {sub});
-    if (!meshResult) { fprintf(stderr, "Mesh failed\n"); return 1; }
-    auto mesh = std::move(*meshResult);
+    auto mesh = *Mesh::create(ctx->device(), vertices, indices, {sub});
     mesh->materials() = {material};
 
     // 5. Orthographic camera looking at the origin
@@ -102,13 +94,11 @@ int main() {
         obj.transform.rotation = Quaternion::fromAxisAngle(Vector3::unitY(), (float)frameCount * 0.1f);
         std::vector<RenderObject> objects = {obj};
 
-        auto frame = ctx->beginFrame();
-        if (!frame) { fprintf(stderr, "beginFrame failed\n"); break; }
+        auto frame = *ctx->beginFrame();
 
-        auto renderResult = renderer->renderFrame(
-            ctx->device(), frame->colorTarget, frame->depthTarget,
+        renderer->renderFrame(
+            ctx->device(), frame.colorTarget, frame.depthTarget,
             camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
-        if (!renderResult) { fprintf(stderr, "Render error\n"); }
 
         ctx->endFrame();
         frameCount++;

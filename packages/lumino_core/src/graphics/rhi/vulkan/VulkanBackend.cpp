@@ -1,4 +1,5 @@
 ﻿#include "VulkanBackend.hpp"
+#include "VulkanHelpers.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -680,10 +681,6 @@ VulkanSwapChain::VulkanSwapChain()
 {
 }
 
-VulkanSwapChain::~VulkanSwapChain() {
-    cleanup();
-}
-
 VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc) {
     m_device = device;
     // Create surface
@@ -764,7 +761,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     return LN_MAKE_SUCCESS();
 }
 
-void VulkanSwapChain::cleanup() {
+void VulkanSwapChain::finalize() {
     auto dev = m_device->vkDevice();
     vkDeviceWaitIdle(dev);
 
@@ -1085,6 +1082,10 @@ VulkanDevice::VulkanDevice(const DeviceDesc& desc) {
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
     m_physicalDevice = devices[0];
+
+    VkPhysicalDeviceProperties deviceProperties = {};
+    vkGetPhysicalDeviceProperties(m_physicalDevice, &deviceProperties);
+    VulkanHelpers::logDeviceProperties(deviceProperties);
 
     // Find graphics queue family
     uint32_t qfCount = 0;
