@@ -33,14 +33,14 @@ class VulkanDevice;
 
 class VulkanBuffer final : public Buffer {
 public:
+    VulkanBuffer();
     /**
      * @param deviceLocal  If true, allocates DEVICE_LOCAL memory (not CPU-mappable).
      *                     Vertex and Index buffers use this path; initial data is
      *                     uploaded later via StagingBufferPool::uploadImmediate().
      */
-    VulkanBuffer(VulkanDevice* device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
-                 bool deviceLocal = false);
-    ~VulkanBuffer() override;
+    VoidResult init(VulkanDevice* device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
+                    bool deviceLocal = false);
 
     u64 size() const override { return m_size; }
     void* map() override;   ///< Returns nullptr for device-local buffers.
@@ -48,8 +48,11 @@ public:
 
     VkBuffer handle() const { return m_buffer; }
 
+protected:
+    void finalize() override;
+
 private:
-    VulkanDevice* m_device;
+    VulkanDevice* m_device = nullptr;
     VkBuffer m_buffer = VK_NULL_HANDLE;
     VkDeviceMemory m_memory = VK_NULL_HANDLE;
     u64 m_size = 0;
@@ -61,22 +64,25 @@ private:
 
 class VulkanTexture final : public Texture {
 public:
-    VulkanTexture(VkDevice device, VkPhysicalDevice physicalDevice, const TextureDesc& desc);
+    VulkanTexture();
+    VoidResult init(VkDevice device, VkPhysicalDevice physicalDevice, const TextureDesc& desc);
     /** Wraps an externally-owned VkImage (e.g. swap chain image). */
-    VulkanTexture(VkDevice device, VkImage image, TextureFormat format, u32 width, u32 height);
-    ~VulkanTexture() override;
+    VoidResult initFromExternalImage(VkDevice device, VkImage image, TextureFormat format, u32 width, u32 height);
 
     u32 width() const override { return m_width; }
     u32 height() const override { return m_height; }
     TextureFormat format() const override { return m_format; }
     VkImage handle() const { return m_image; }
 
+protected:
+    void finalize() override;
+
 private:
-    VkDevice m_device;
+    VkDevice m_device = VK_NULL_HANDLE;
     VkImage m_image = VK_NULL_HANDLE;
     VkDeviceMemory m_memory = VK_NULL_HANDLE;
-    TextureFormat m_format;
-    u32 m_width, m_height;
+    TextureFormat m_format = TextureFormat::RGBA8Unorm;
+    u32 m_width = 0, m_height = 0;
     bool m_ownsImage = true;
 };
 
@@ -84,31 +90,37 @@ private:
 
 class VulkanTextureView final : public TextureView {
 public:
-    VulkanTextureView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height);
-    ~VulkanTextureView() override;
+    VulkanTextureView();
+    VoidResult init(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height);
 
     VkImageView handle() const { return m_view; }
     VkFormat vkFormat() const { return m_format; }
     u32 width() const { return m_width; }
     u32 height() const { return m_height; }
 
+protected:
+    void finalize() override;
+
 private:
-    VkDevice m_device;
+    VkDevice m_device = VK_NULL_HANDLE;
     VkImageView m_view = VK_NULL_HANDLE;
-    VkFormat m_format;
-    u32 m_width, m_height;
+    VkFormat m_format = VK_FORMAT_UNDEFINED;
+    u32 m_width = 0, m_height = 0;
 };
 
 // ------ VulkanSampler --------------------------------------------------------------------------------------------------------------
 
 class VulkanSampler final : public Sampler {
 public:
-    VulkanSampler(VulkanDevice* device, const SamplerDesc& desc);
-    ~VulkanSampler() override;
+    VulkanSampler();
+    VoidResult init(VulkanDevice* device, const SamplerDesc& desc);
     VkSampler handle() const { return m_sampler; }
 
+protected:
+    void finalize() override;
+
 private:
-    VulkanDevice* m_device;
+    VulkanDevice* m_device = nullptr;
     VkSampler m_sampler = VK_NULL_HANDLE;
 };
 
@@ -116,12 +128,15 @@ private:
 
 class VulkanShaderModule final : public ShaderModule {
 public:
-    VulkanShaderModule(VkDevice device, const ShaderModuleDesc& desc);
-    ~VulkanShaderModule() override;
+    VulkanShaderModule();
+    VoidResult init(VkDevice device, const ShaderModuleDesc& desc);
     VkShaderModule handle() const { return m_module; }
 
+protected:
+    void finalize() override;
+
 private:
-    VkDevice m_device;
+    VkDevice m_device = VK_NULL_HANDLE;
     VkShaderModule m_module = VK_NULL_HANDLE;
 };
 
@@ -129,12 +144,15 @@ private:
 
 class VulkanBindGroupLayout final : public BindGroupLayout {
 public:
-    VulkanBindGroupLayout(VkDevice device, const BindGroupLayoutDesc& desc);
-    ~VulkanBindGroupLayout() override;
+    VulkanBindGroupLayout();
+    VoidResult init(VkDevice device, const BindGroupLayoutDesc& desc);
     VkDescriptorSetLayout handle() const { return m_layout; }
 
+protected:
+    void finalize() override;
+
 private:
-    VkDevice m_device;
+    VkDevice m_device = VK_NULL_HANDLE;
     VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
 };
 
@@ -142,16 +160,16 @@ private:
 
 class VulkanBindGroup final : public BindGroup {
 public:
-    VulkanBindGroup(
-        VulkanDevice* device,
-        DescriptorPoolManager& poolManager,
-        VkDescriptorSetLayout layout,
-        const BindGroupDesc& desc);
-    ~VulkanBindGroup() override;
+    VulkanBindGroup();
+    VoidResult init(VulkanDevice* device, DescriptorPoolManager& poolManager,
+                    VkDescriptorSetLayout layout, const BindGroupDesc& desc);
     VkDescriptorSet handle() const { return m_set; }
 
+protected:
+    void finalize() override;
+
 private:
-    VulkanDevice* m_device;
+    VulkanDevice* m_device = nullptr;
     VkDescriptorPool m_pool = VK_NULL_HANDLE; ///< Pool that owns m_set; used for vkFreeDescriptorSets.
     VkDescriptorSet m_set = VK_NULL_HANDLE;
 };
@@ -160,12 +178,15 @@ private:
 
 class VulkanPipelineLayout final : public PipelineLayout {
 public:
-    VulkanPipelineLayout(VkDevice device, const PipelineLayoutDesc& desc);
-    ~VulkanPipelineLayout() override;
+    VulkanPipelineLayout();
+    VoidResult init(VkDevice device, const PipelineLayoutDesc& desc);
     VkPipelineLayout handle() const { return m_layout; }
 
+protected:
+    void finalize() override;
+
 private:
-    VkDevice m_device;
+    VkDevice m_device = VK_NULL_HANDLE;
     VkPipelineLayout m_layout = VK_NULL_HANDLE;
 };
 
@@ -173,13 +194,16 @@ private:
 
 class VulkanRenderPipeline final : public RenderPipeline {
 public:
-    VulkanRenderPipeline(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc);
-    ~VulkanRenderPipeline() override;
+    VulkanRenderPipeline();
+    VoidResult init(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc);
     VkPipeline handle() const { return m_pipeline; }
     VkPipelineLayout layoutHandle() const { return m_layout; }
 
+protected:
+    void finalize() override;
+
 private:
-    VulkanDevice* m_device;
+    VulkanDevice* m_device = nullptr;
     VkPipeline m_pipeline = VK_NULL_HANDLE;
     VkPipelineLayout m_layout = VK_NULL_HANDLE;
 };
@@ -212,12 +236,8 @@ private:
 
 class VulkanCommandBuffer final : public CommandBuffer {
 public:
-    VulkanCommandBuffer(VulkanDevice* device, VkCommandBuffer cmd);
-    /**
-     * Queues vkFreeCommandBuffers via FrameResourceManager so the handle is
-     * only freed after the GPU is done with it.
-     */
-    ~VulkanCommandBuffer() override;
+    VulkanCommandBuffer();
+    VoidResult init(VulkanDevice* device, VkCommandBuffer cmd);
 
     void dispose();
 
@@ -225,12 +245,14 @@ public:
     RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
     void submit() override;
 
-private:
+protected:
     void finalize() override;
-    VulkanDevice* m_device;
-    VkCommandBuffer m_cmd;
+
+private:
+    VulkanDevice* m_device = nullptr;
+    VkCommandBuffer m_cmd = VK_NULL_HANDLE;
     VulkanRenderPassEncoder* m_encoder = nullptr;
-    VkFence m_inFlightFences;
+    VkFence m_inFlightFences = VK_NULL_HANDLE;
     /** Frame index recorded at submit() time; used to schedule deferred cleanup. */
     u32 m_submittedFrame = 0;
     bool m_submitted = false;
@@ -322,8 +344,8 @@ struct FramebufferKeyHash {
 
 class VulkanDevice final : public Device {
 public:
-    VulkanDevice(const DeviceDesc& desc);
-    ~VulkanDevice() override;
+    VulkanDevice();
+    VoidResult init(const DeviceDesc& desc);
 
     bool isValid() const { return m_device != VK_NULL_HANDLE; }
 
@@ -368,6 +390,9 @@ public:
 
     Result<Ref<VulkanCommandBuffer>> createCommandBuffer();
     CommandBuffer* getCommandBuffer() override;
+
+protected:
+    void finalize() override;
 
 private:
     VkInstance m_instance = VK_NULL_HANDLE;
