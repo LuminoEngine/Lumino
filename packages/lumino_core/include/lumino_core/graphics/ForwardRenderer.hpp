@@ -47,7 +47,6 @@ public:
 
     /**
      * Render a frame.
-     * @param pipelineCache Pipeline cache for looking up / creating RenderPipelines.
      * @param colorTarget  The color texture view to render into (from SwapChain).
      * @param depthTarget  The depth texture view to use. Must be created externally.
      * @param camera       The camera for this frame.
@@ -55,8 +54,6 @@ public:
      * @param clearColor   Background clear color.
      */
     Result<void> renderFrame(
-        rhi::Device* device,
-        PipelineCache* pipelineCache,
         rhi::TextureView* colorTarget,
         rhi::TextureView* depthTarget,
         const Camera& camera,
@@ -86,7 +83,9 @@ private:
 
     DirectionalLight m_light;
 
-    Result<void> ensureObjectResources(rhi::Device* device, size_t count);
+    GraphicsContext* m_ctx = nullptr;
+
+    Result<void> ensureObjectResources(size_t count);
 };
 
 } // namespace ln

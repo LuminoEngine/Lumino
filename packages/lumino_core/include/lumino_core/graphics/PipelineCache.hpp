@@ -38,7 +38,10 @@ struct PipelineCacheKeyHash {
     size_t operator()(const PipelineCacheKey& key) const;
 };
 
-/** Hash-based RenderPipeline cache. Owned by GraphicsContext. */
+/**
+ * ハッシュベースのRenderPipelineキャッシュ。
+ * いわゆる POC (Pipeline Object Cache)
+ */
 class PipelineCache {
 public:
     explicit PipelineCache(rhi::Device* device);

@@ -24,7 +24,7 @@
 
 namespace ln::rhi {
 
-// ─── Forward declarations ───
+// ------ Forward declarations ------
 class Device;
 class SwapChain;
 class Buffer;
@@ -39,7 +39,7 @@ class RenderPipeline;
 class CommandBuffer;
 class RenderPassEncoder;
 
-// ─── Enums ───────────────────────────────────────────────────────────────
+// ------ Enums ------------------------------------------------------------------------------------------------------------------------------
 
 enum class Backend {
     Vulkan,
@@ -186,7 +186,7 @@ enum class AddressMode {
     ClampToEdge,
 };
 
-// ─── Descriptors ─────────────────────────────────────────────────────────
+// ------ Descriptors ------------------------------------------------------------------------------------------------------------------
 
 struct BufferDesc {
     u64 size = 0;
@@ -322,7 +322,7 @@ struct DeviceDesc {
     bool enableValidation = false;
 };
 
-// ─── Resource Interfaces ─────────────────────────────────────────────────
+// ------ Resource Interfaces --------------------------------------------------------------------------------------------------
 
 class Buffer : public RHIObject {
 public:
@@ -390,7 +390,7 @@ public:
     virtual ~RenderPipeline() = default;
 };
 
-// ─── Command Encoding ────────────────────────────────────────────────────
+// ------ Command Encoding --------------------------------------------------------------------------------------------------------
 
 class RenderPassEncoder {
 public:
@@ -413,7 +413,7 @@ public:
     virtual void submit() = 0;
 };
 
-// ─── SwapChain ───────────────────────────────────────────────────────────
+// ------ SwapChain ----------------------------------------------------------------------------------------------------------------------
 
 class SwapChain : public RHIObject {
 public:
@@ -426,7 +426,7 @@ public:
     virtual u32 height() const = 0;
 };
 
-// ─── Device (Factory) ────────────────────────────────────────────────────
+// ------ Device (Factory) --------------------------------------------------------------------------------------------------------
 
 class Device : public RHIObject {
 public:

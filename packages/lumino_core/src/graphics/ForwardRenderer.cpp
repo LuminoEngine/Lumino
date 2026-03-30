@@ -158,10 +158,14 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
 }
 
 Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
-    return create(ctx->device(), ctx->colorFormat(), ctx->depthFormat());
+    auto result = create(ctx->device(), ctx->colorFormat(), ctx->depthFormat());
+    if (!result) return tl::make_unexpected(result.error());
+    (*result)->m_ctx = ctx;
+    return result;
 }
 
-Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t count) {
+Result<void> ForwardRenderer::ensureObjectResources(size_t count) {
+    auto* device = m_ctx->device();
     while (m_objectUBOs.size() < count) {
         // Create object UBO
         rhi::BufferDesc bufDesc;
@@ -187,13 +191,14 @@ Result<void> ForwardRenderer::ensureObjectResources(rhi::Device* device, size_t 
 }
 
 Result<void> ForwardRenderer::renderFrame(
-    rhi::Device* device,
-    PipelineCache* pipelineCache,
     rhi::TextureView* colorTarget,
     rhi::TextureView* depthTarget,
     const Camera& camera,
     const std::vector<RenderObject>& objects,
     const Color& clearColor) {
+
+    auto* device = m_ctx->device();
+    auto* pipelineCache = m_ctx->pipelineCache();
 
     // Count total draw calls (submeshes across all objects).
     size_t totalDraws = 0;
@@ -202,7 +207,7 @@ Result<void> ForwardRenderer::renderFrame(
     }
 
     // Ensure we have enough per-object resources.
-    auto ensureResult = ensureObjectResources(device, totalDraws);
+    auto ensureResult = ensureObjectResources(totalDraws);
     if (!ensureResult) return tl::make_unexpected(ensureResult.error());
 
     // ---- Update View UBO ----

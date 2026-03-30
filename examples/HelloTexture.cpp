@@ -50,7 +50,7 @@ int main() {
     material->setTexture(texture.get());
 
     // 5. BindGroup ビルド
-    material->updateBindGroup(ctx->device());
+    auto _ = material->updateBindGroup(ctx->device());
 
     // 6. UV付き四角形メッシュ (2枚の三角形)
     //   v0(-0.5, 0.5) --- v1(0.5, 0.5)
@@ -107,8 +107,8 @@ int main() {
 
         auto frame = *ctx->beginFrame();
 
-        renderer->renderFrame(
-            ctx->device(), ctx->pipelineCache(), frame.colorTarget, frame.depthTarget,
+        auto _ = renderer->renderFrame(
+            frame.colorTarget, frame.depthTarget,
             camera, objects, Color{0, 0, 0, 1.0f});
 
         ctx->endFrame();
