@@ -1,4 +1,4 @@
-﻿#include <lumino_core/graphics/ForwardRenderer.hpp>
+#include <lumino_core/graphics/ForwardRenderer.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_core/graphics/PipelineCache.hpp>
 #include <lumino_shader/UnifiedShader2.hpp>
@@ -176,19 +176,191 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     return result;
 }
 
+// ------ Multi-pass API ---------------------------------------------------------------------------------------------------------------
+
+void ForwardRenderer::beginFrame() {
+    m_objectAllocator->beginFrame(m_frameCounter++);
+    m_currentCmd = m_ctx->device()->getCommandBuffer();
+}
+
+void ForwardRenderer::endFrame() {
+    m_currentCmd->submit();
+    m_currentCmd = nullptr;
+}
+
+void ForwardRenderer::beginRenderPass(
+    rhi::TextureView* colorTarget,
+    rhi::TextureView* depthTarget,
+    const Color& clearColor) {
+
+    rhi::RenderPassDesc rpDesc;
+    rpDesc.colorAttachments = {{colorTarget, rhi::LoadOp::Clear, rhi::StoreOp::Store, clearColor}};
+
+    rhi::DepthStencilAttachment depthAttachment;
+    if (depthTarget) {
+        depthAttachment.view = depthTarget;
+        depthAttachment.depthLoadOp = rhi::LoadOp::Clear;
+        depthAttachment.depthStoreOp = rhi::StoreOp::Store;
+        depthAttachment.clearDepth = 1.0f;
+        rpDesc.depthStencilAttachment = &depthAttachment;
+    }
+
+    m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
+
+    // Reset deferred bind group state for the new pass.
+    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+        m_passBindGroups[i] = nullptr;
+        m_passBindGroupDirty[i] = false;
+    }
+}
+
+void ForwardRenderer::endRenderPass() {
+    m_currentPass->end();
+    m_currentPass = nullptr;
+}
+
+void ForwardRenderer::setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup) {
+    if (setIndex < kMaxBindGroupSets) {
+        m_passBindGroups[setIndex] = bindGroup;
+        m_passBindGroupDirty[setIndex] = true;
+    }
+}
+
+Result<void> ForwardRenderer::drawMesh(Mesh* mesh, const Transform& transform) {
+    m_currentPass->setVertexBuffer(0, mesh->vertexBuffer());
+    m_currentPass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
+
+    for (auto& sub : mesh->submeshes()) {
+        Material* mat = nullptr;
+        if (sub.materialIndex < mesh->materials().size()) {
+            mat = mesh->materials()[sub.materialIndex].get();
+        }
+        if (!mat && !mesh->materials().empty()) {
+            mat = mesh->materials()[0].get();
+        }
+
+        if (mat) {
+            auto result = drawSubmesh(mesh, mat, transform, sub);
+            if (!result) return result;
+        }
+    }
+    return {};
+}
+
+Result<void> ForwardRenderer::drawMesh(Mesh* mesh, const Transform& transform, Material* material) {
+    m_currentPass->setVertexBuffer(0, mesh->vertexBuffer());
+    m_currentPass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
+
+    for (auto& sub : mesh->submeshes()) {
+        auto result = drawSubmesh(mesh, material, transform, sub);
+        if (!result) {
+            return result;
+        }
+    }
+    return {};
+}
+
+void ForwardRenderer::flushPassBindGroups() {
+    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+        if (m_passBindGroupDirty[i] && m_passBindGroups[i]) {
+            m_currentPass->setBindGroup(i, m_passBindGroups[i]);
+            m_passBindGroupDirty[i] = false;
+        }
+    }
+}
+
+Result<void> ForwardRenderer::drawSubmesh(
+    Mesh* mesh, Material* mat, const Transform& transform, const SubMesh& sub) {
+
+    auto* pipelineCache = m_ctx->pipelineCache();
+
+    // Sub-allocate from the dynamic UBO and write object params.
+    auto alloc = m_objectAllocator->allocate();
+    {
+        Matrix4x4 worldMatrix = transform.matrix();
+        Matrix4x4 normalMatrix = transform.normalMatrix();
+        ObjectParamsUBO objParams{};
+        std::memcpy(objParams.world, worldMatrix.m, sizeof(f32) * 16);
+        std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(f32) * 16);
+        std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
+    }
+
+    PipelineCacheKey key;
+    key.vertexShader    = mat->vertexShader();
+    key.fragmentShader  = mat->fragmentShader();
+    key.vertexEntry     = mat->vertexEntry();
+    key.fragmentEntry   = mat->fragmentEntry();
+    key.cullMode        = mat->cullMode();
+    key.blendEnabled    = mat->blendEnabled();
+    if (key.blendEnabled) {
+        key.blendState.enabled  = true;
+        key.blendState.srcColor = rhi::BlendFactor::SrcAlpha;
+        key.blendState.dstColor = rhi::BlendFactor::OneMinusSrcAlpha;
+        key.blendState.colorOp  = rhi::BlendOp::Add;
+        key.blendState.srcAlpha = rhi::BlendFactor::One;
+        key.blendState.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
+        key.blendState.alphaOp  = rhi::BlendOp::Add;
+    }
+    key.depthTestEnabled  = mat->depthTestEnabled();
+    key.depthWriteEnabled = mat->depthWriteEnabled();
+    key.pipelineLayout    = m_pipelineLayout.get();
+    key.topology          = mesh->topology();
+    key.colorFormat       = m_colorFormat;
+    key.depthStencilFormat = m_depthFormat;
+    key.sampleCount       = 1;
+
+    auto pipelineResult = pipelineCache->getOrCreate(key);
+    if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
+
+    m_currentPass->setPipeline(*pipelineResult);
+    flushPassBindGroups();
+    m_currentPass->setBindGroup(1, mat->materialBindGroup());
+    m_currentPass->setBindGroup(2, alloc.bindGroup, &alloc.dynamicOffset, 1);
+    m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
+
+    return {};
+}
+
+Result<void> ForwardRenderer::drawScreenRect(Material* material) {
+    auto meshResult = getScreenRectMesh();
+    if (!meshResult) return tl::make_unexpected(meshResult.error());
+
+    // Screen rect uses identity transform (NDC coordinates).
+    Transform identity;
+    return drawMesh(*meshResult, identity, material);
+}
+
+Result<Mesh*> ForwardRenderer::getScreenRectMesh() {
+    if (m_screenRectMesh) return m_screenRectMesh.get();
+
+    // Create a fullscreen quad in NDC space: covers [-1, 1] x [-1, 1].
+    std::vector<Vertex> vertices = {
+        // position,             normal,              uv,       color,             tangent
+        {{-1.0f, -1.0f, 0.0f}, {0, 0, 1}, {0, 1}, Color::white(), {1, 0, 0, 1}},
+        {{ 1.0f, -1.0f, 0.0f}, {0, 0, 1}, {1, 1}, Color::white(), {1, 0, 0, 1}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 0, 1}, {1, 0}, Color::white(), {1, 0, 0, 1}},
+        {{-1.0f,  1.0f, 0.0f}, {0, 0, 1}, {0, 0}, Color::white(), {1, 0, 0, 1}},
+    };
+    std::vector<u32> indices = {0, 1, 2, 0, 2, 3};
+    SubMesh sub;
+    sub.indexOffset = 0;
+    sub.indexCount = 6;
+    sub.materialIndex = 0;
+
+    auto result = Mesh::create(m_ctx->device(), vertices, indices, {sub});
+    if (!result) return tl::make_unexpected(result.error());
+    m_screenRectMesh = std::move(*result);
+    return m_screenRectMesh.get();
+}
+
+// ------ High-level convenience (renderFrame) -----------------------------------------------------------------------------------------
+
 Result<void> ForwardRenderer::renderFrame(
     rhi::TextureView* colorTarget,
     rhi::TextureView* depthTarget,
     const Camera& camera,
     const std::vector<RenderObject>& objects,
     const Color& clearColor) {
-
-    auto* device = m_ctx->device();
-    auto* pipelineCache = m_ctx->pipelineCache();
-
-    // Reset the dynamic UBO allocator for this frame.
-    m_objectAllocator->beginFrame(m_frameCounter++);
-
 
     // ---- Update View UBO ----
     {
@@ -225,89 +397,19 @@ Result<void> ForwardRenderer::renderFrame(
         }
     }
 
-    // ---- Begin Render Pass ----
-    rhi::DepthStencilAttachment depthAttachment;
-    depthAttachment.view = depthTarget;
-    depthAttachment.depthLoadOp = rhi::LoadOp::Clear;
-    depthAttachment.depthStoreOp = rhi::StoreOp::Store;
-    depthAttachment.clearDepth = 1.0f;
+    // ---- Use multi-pass API ----
+    beginFrame();
 
-    rhi::RenderPassDesc rpDesc;
-    rpDesc.colorAttachments = {{colorTarget, rhi::LoadOp::Clear, rhi::StoreOp::Store, clearColor}};
-    rpDesc.depthStencilAttachment = &depthAttachment;
+    beginRenderPass(colorTarget, depthTarget, clearColor);
+    setPassBindGroup(0, m_viewBindGroup.get());
 
-
-    auto* cmd = device->getCommandBuffer();
-    auto* pass = cmd->beginRenderPass(rpDesc);
-
-    // ---- Draw Objects ----
     for (auto& obj : objects) {
-        auto* mesh = obj.mesh.get();
-        Transform transform = obj.transform;
-        Matrix4x4 worldMatrix = transform.matrix();
-        Matrix4x4 normalMatrix = transform.normalMatrix();
-
-        pass->setVertexBuffer(0, mesh->vertexBuffer());
-        pass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
-
-        for (auto& sub : mesh->submeshes()) {
-            // Sub-allocate from the dynamic UBO and write object params.
-            auto alloc = m_objectAllocator->allocate();
-            {
-                ObjectParamsUBO objParams{};
-                std::memcpy(objParams.world, worldMatrix.m, sizeof(f32) * 16);
-                std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(f32) * 16);
-                std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
-            }
-
-            // Determine material
-            Material* mat = nullptr;
-            if (sub.materialIndex < mesh->materials().size()) {
-                mat = mesh->materials()[sub.materialIndex].get();
-            }
-            if (!mat && !mesh->materials().empty()) {
-                mat = mesh->materials()[0].get();
-            }
-
-            if (mat) {
-                PipelineCacheKey key;
-                key.vertexShader    = mat->vertexShader();
-                key.fragmentShader  = mat->fragmentShader();
-                key.vertexEntry     = mat->vertexEntry();
-                key.fragmentEntry   = mat->fragmentEntry();
-                key.cullMode        = mat->cullMode();
-                key.blendEnabled    = mat->blendEnabled();
-                if (key.blendEnabled) {
-                    key.blendState.enabled  = true;
-                    key.blendState.srcColor = rhi::BlendFactor::SrcAlpha;
-                    key.blendState.dstColor = rhi::BlendFactor::OneMinusSrcAlpha;
-                    key.blendState.colorOp  = rhi::BlendOp::Add;
-                    key.blendState.srcAlpha = rhi::BlendFactor::One;
-                    key.blendState.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
-                    key.blendState.alphaOp  = rhi::BlendOp::Add;
-                }
-                key.depthTestEnabled  = mat->depthTestEnabled();
-                key.depthWriteEnabled = mat->depthWriteEnabled();
-                key.pipelineLayout    = m_pipelineLayout.get();
-                key.topology          = rhi::PrimitiveTopology::TriangleList;
-                key.colorFormat       = m_colorFormat;
-                key.depthStencilFormat = m_depthFormat;
-                key.sampleCount       = 1;
-
-                auto pipelineResult = pipelineCache->getOrCreate(key);
-                if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
-                pass->setPipeline(*pipelineResult);
-                pass->setBindGroup(0, m_viewBindGroup.get());
-                pass->setBindGroup(1, mat->materialBindGroup());
-            }
-
-            pass->setBindGroup(2, alloc.bindGroup, &alloc.dynamicOffset, 1);
-            pass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
-        }
+        auto result = drawMesh(obj.mesh.get(), obj.transform);
+        if (!result) return result;
     }
 
-    pass->end();
-    cmd->submit();
+    endRenderPass();
+    endFrame();
 
     return {};
 }
