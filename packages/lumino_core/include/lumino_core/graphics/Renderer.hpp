@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include <lumino_base/Result.hpp>
-#include <lumino_base/RefObject.hpp>
+#include <lumino_core/Object.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 #include <lumino_core/graphics/Material.hpp>
 #include <lumino_core/graphics/Mesh.hpp>
@@ -46,7 +46,7 @@ class GraphicsContext;
  *   renderer->endFrame();
  * @endcode
  */
-class Renderer : public RefObject {
+class Renderer : public Object {
 public:
     /** Create from a GraphicsContext (uses its device, formats, and pipeline cache). */
     static Result<Ref<Renderer>> create(GraphicsContext* ctx);

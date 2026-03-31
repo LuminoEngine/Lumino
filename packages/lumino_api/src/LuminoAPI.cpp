@@ -4,9 +4,37 @@
 #include <lumino_core/Object.hpp>
 #include <lumino_core/runtime/ObjectRegistry.hpp>
 #include <lumino_core/graphics/Texture2D.hpp>
+#include <lumino_core/graphics/TextureLoader.hpp>
+#include <lumino_core/graphics/Material.hpp>
+#include <lumino_core/graphics/Mesh.hpp>
+#include <lumino_core/graphics/Renderer.hpp>
+#include <lumino_core/graphics/Camera.hpp>
+#include <lumino_core/graphics/Transform.hpp>
 #include <lumino_core/platform/Window.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
 #include <lumino_api/lumino.h>
+#include <cstring>
+
+//------------------------------------------------------------------------------
+// Internal wrapper classes for value types that need handle management
+//------------------------------------------------------------------------------
+
+namespace {
+
+/** Camera は値型なので Object でラップしてハンドル管理に載せる。 */
+class CameraObject : public ln::Object {
+public:
+    ln::Camera camera;
+};
+
+/** RHI BindGroup + backing Buffer をハンドル管理に載せるラッパー。 */
+class BindGroupObject : public ln::Object {
+public:
+    ln::Ref<ln::rhi::Buffer> buffer;
+    ln::Ref<ln::rhi::BindGroup> bindGroup;
+};
+
+} // anonymous namespace
 
 //------------------------------------------------------------------------------
 // LNInstance
@@ -204,6 +232,471 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     ctx->m_currentCmd = nullptr;
 
     ctx->endFrame();
+
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNTexture2D (file loading)
+//------------------------------------------------------------------------------
+
+LNResult LNTexture2D_LoadFromFile(
+    LNHandle graphicsContext,
+    const char* filePath,
+    LNHandle* outHandle) {
+    if (!outHandle || !filePath) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto texResult = ln::TextureLoader::loadFromFile(ctx->device(), filePath);
+    if (!texResult) return LN_ERROR_UNKNOWN;
+
+    auto rhiTexture = std::move(*texResult);
+    // TODO: extract actual width/height from rhi::Texture if accessor is available
+    auto texture = ln::Ref<ln::Texture2D>::adopt(
+        LN_NEW ln::Texture2D(std::move(rhiTexture), 0, 0));
+
+    LNHandle handle = instance->objectRegistry()->registerObject(std::move(texture));
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
+
+    *outHandle = handle;
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNMaterial
+//------------------------------------------------------------------------------
+
+LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto matResult = ln::MaterialFactory::createUnlit(ctx);
+    if (!matResult) return LN_ERROR_UNKNOWN;
+
+    auto material = std::move(*matResult);
+    LNHandle handle = instance->objectRegistry()->registerObject(std::move(material));
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
+
+    *outHandle = handle;
+    return LN_OK;
+}
+
+LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float a) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    mat->setColor(ln::Color{r, g, b, a});
+    return LN_OK;
+}
+
+LNResult LNMaterial_SetTexture(LNHandle material, LNHandle texture) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    auto* tex = instance->objectRegistry()->resolve<ln::Texture2D>(texture);
+    if (!tex) return LN_ERROR_INVALID_HANDLE;
+
+    mat->setTexture(tex->rhiTexture());
+    return LN_OK;
+}
+
+LNResult LNMaterial_UpdateBindGroup(LNHandle material, LNHandle graphicsContext) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = mat->updateBindGroup(ctx->device());
+    if (!result) return LN_ERROR_UNKNOWN;
+
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNMesh
+//------------------------------------------------------------------------------
+
+LNResult LNMesh_Create(
+    LNHandle graphicsContext,
+    const LNVertex* vertices,
+    uint32_t vertexCount,
+    const uint32_t* indices,
+    uint32_t indexCount,
+    const LNSubMesh* submeshes,
+    uint32_t submeshCount,
+    LNHandle* outHandle) {
+    if (!outHandle || !vertices || !indices || !submeshes) return LN_ERROR_INVALID_ARGUMENT;
+    if (vertexCount == 0 || indexCount == 0 || submeshCount == 0) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    // Convert LNVertex[] → std::vector<ln::Vertex>
+    std::vector<ln::Vertex> verts(vertexCount);
+    for (uint32_t i = 0; i < vertexCount; i++) {
+        const auto& sv = vertices[i];
+        auto& dv = verts[i];
+        dv.position = {sv.posX, sv.posY, sv.posZ};
+        dv.normal   = {sv.normX, sv.normY, sv.normZ};
+        dv.uv       = {sv.u, sv.v};
+        dv.color    = {sv.colorR, sv.colorG, sv.colorB, sv.colorA};
+        dv.tangent  = {sv.tanX, sv.tanY, sv.tanZ, sv.tanW};
+    }
+
+    // Convert indices
+    std::vector<ln::u32> idx(indices, indices + indexCount);
+
+    // Convert LNSubMesh[] → std::vector<ln::SubMesh>
+    std::vector<ln::SubMesh> subs(submeshCount);
+    for (uint32_t i = 0; i < submeshCount; i++) {
+        subs[i].indexOffset   = submeshes[i].indexOffset;
+        subs[i].indexCount    = submeshes[i].indexCount;
+        subs[i].materialIndex = submeshes[i].materialIndex;
+    }
+
+    auto meshResult = ln::Mesh::create(ctx->device(), verts, idx, subs);
+    if (!meshResult) return LN_ERROR_UNKNOWN;
+
+    auto mesh = std::move(*meshResult);
+    LNHandle handle = instance->objectRegistry()->registerObject(std::move(mesh));
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
+
+    *outHandle = handle;
+    return LN_OK;
+}
+
+LNResult LNMesh_SetMaterial(LNHandle meshHandle, uint32_t materialIndex, LNHandle materialHandle) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = instance->objectRegistry()->resolve<ln::Material>(materialHandle);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    auto& materials = mesh->materials();
+    if (materialIndex >= materials.size()) return LN_ERROR_INVALID_ARGUMENT;
+
+    // addRef because materials() stores Ref<Material>
+    mat->addRef();
+    materials[materialIndex] = ln::Ref<ln::Material>::adopt(mat);
+
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNCamera
+//------------------------------------------------------------------------------
+
+LNResult LNCamera_Create(LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto camObj = ln::Ref<CameraObject>::adopt(LN_NEW CameraObject());
+    LNHandle handle = instance->objectRegistry()->registerObject(std::move(camObj));
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
+
+    *outHandle = handle;
+    return LN_OK;
+}
+
+LNResult LNCamera_SetPerspective(
+    LNHandle camera, float fovY, float aspect, float nearClip, float farClip) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+    if (!camObj) return LN_ERROR_INVALID_HANDLE;
+
+    camObj->camera.setPerspective(fovY, aspect, nearClip, farClip);
+    return LN_OK;
+}
+
+LNResult LNCamera_SetLookAt(
+    LNHandle camera,
+    float eyeX, float eyeY, float eyeZ,
+    float targetX, float targetY, float targetZ,
+    float upX, float upY, float upZ) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+    if (!camObj) return LN_ERROR_INVALID_HANDLE;
+
+    camObj->camera.setLookAt(
+        ln::Vector3{eyeX, eyeY, eyeZ},
+        ln::Vector3{targetX, targetY, targetZ},
+        ln::Vector3{upX, upY, upZ});
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNRenderer
+//------------------------------------------------------------------------------
+
+LNResult LNRenderer_Create(LNHandle graphicsContext, LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto rendererResult = ln::Renderer::create(ctx);
+    if (!rendererResult) return LN_ERROR_UNKNOWN;
+
+    auto renderer = std::move(*rendererResult);
+    LNHandle handle = instance->objectRegistry()->registerObject(std::move(renderer));
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
+
+    *outHandle = handle;
+    return LN_OK;
+}
+
+LNResult LNRenderer_BeginFrame(LNHandle renderer) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!r) return LN_ERROR_INVALID_HANDLE;
+
+    r->beginFrame();
+    return LN_OK;
+}
+
+LNResult LNRenderer_EndFrame(LNHandle renderer) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!r) return LN_ERROR_INVALID_HANDLE;
+
+    r->endFrame();
+    return LN_OK;
+}
+
+LNResult LNRenderer_BeginRenderPass(
+    LNHandle renderer, LNHandle graphicsContext,
+    float r, float g, float b, float a) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    ren->beginRenderPass(
+        ctx->m_currentColorTarget,
+        ctx->m_currentDepthTarget,
+        ln::Color{r, g, b, a});
+    return LN_OK;
+}
+
+LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!r) return LN_ERROR_INVALID_HANDLE;
+
+    r->endRenderPass();
+    return LN_OK;
+}
+
+// Internal helper: create a view BindGroup from viewProj matrix and camera position
+static LNResult createViewBindGroupInternal(
+    ln::Renderer* renderer,
+    ln::GraphicsContext* ctx,
+    const float* viewProjMatrix,
+    float camX, float camY, float camZ,
+    LNHandle* outBindGroup) {
+
+    auto* instance = ln::CoreInstance::instance();
+
+    // Fill ViewParamsUBO
+    ln::ViewParamsUBO viewParams{};
+    std::memcpy(viewParams.viewProj, viewProjMatrix, sizeof(float) * 16);
+    viewParams.cameraPos[0] = camX;
+    viewParams.cameraPos[1] = camY;
+    viewParams.cameraPos[2] = camZ;
+    viewParams.cameraPos[3] = 0.0f;
+    // lightDir, lightColor, ambientColor remain zeroed (Unlit)
+
+    // Create UBO buffer
+    ln::rhi::BufferDesc bufDesc;
+    bufDesc.size  = sizeof(ln::ViewParamsUBO);
+    bufDesc.usage = ln::rhi::BufferUsage::Uniform;
+    auto bufResult = ctx->device()->createBuffer(bufDesc);
+    if (!bufResult) return LN_ERROR_UNKNOWN;
+    auto buffer = std::move(*bufResult);
+
+    // Map and fill
+    void* mapped = buffer->map();
+    if (!mapped) return LN_ERROR_UNKNOWN;
+    std::memcpy(mapped, &viewParams, sizeof(viewParams));
+    buffer->unmap();
+
+    // Create BindGroup
+    ln::rhi::BindGroupDesc bgDesc;
+    bgDesc.layout  = renderer->viewBindGroupLayout();
+    bgDesc.entries = {
+        {0, buffer.get(), 0, sizeof(ln::ViewParamsUBO), nullptr, nullptr},
+    };
+    auto bgResult = ctx->device()->createBindGroup(bgDesc);
+    if (!bgResult) return LN_ERROR_UNKNOWN;
+
+    // Wrap in BindGroupObject
+    auto bgObj = ln::Ref<BindGroupObject>::adopt(LN_NEW BindGroupObject());
+    bgObj->buffer    = std::move(buffer);
+    bgObj->bindGroup = std::move(*bgResult);
+
+    LNHandle handle = instance->objectRegistry()->registerObject(std::move(bgObj));
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
+
+    *outBindGroup = handle;
+    return LN_OK;
+}
+
+LNResult LNRenderer_CreateViewBindGroup(
+    LNHandle renderer, LNHandle graphicsContext,
+    LNHandle camera, LNHandle* outBindGroup) {
+    if (!outBindGroup) return LN_ERROR_INVALID_ARGUMENT;
+    *outBindGroup = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+    if (!camObj) return LN_ERROR_INVALID_HANDLE;
+
+    ln::Matrix4x4 vp = camObj->camera.viewProjectionMatrix();
+    ln::Vector3 pos = camObj->camera.position();
+
+    return createViewBindGroupInternal(ren, ctx, vp.m, pos.x, pos.y, pos.z, outBindGroup);
+}
+
+LNResult LNRenderer_CreateViewBindGroupFromMatrix(
+    LNHandle renderer, LNHandle graphicsContext,
+    const float* viewProjMatrix,
+    float cameraPosX, float cameraPosY, float cameraPosZ,
+    LNHandle* outBindGroup) {
+    if (!outBindGroup || !viewProjMatrix) return LN_ERROR_INVALID_ARGUMENT;
+    *outBindGroup = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    return createViewBindGroupInternal(ren, ctx, viewProjMatrix, cameraPosX, cameraPosY, cameraPosZ, outBindGroup);
+}
+
+LNResult LNRenderer_SetViewBindGroup(LNHandle renderer, LNHandle bindGroup) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* bgObj = instance->objectRegistry()->resolve<BindGroupObject>(bindGroup);
+    if (!bgObj) return LN_ERROR_INVALID_HANDLE;
+
+    ren->setPassBindGroup(0, bgObj->bindGroup.get());
+    return LN_OK;
+}
+
+LNResult LNRenderer_DrawMesh(
+    LNHandle renderer, LNHandle meshHandle, const LNTransform* transform) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    ln::Transform xform;
+    if (transform) {
+        xform.position = {transform->posX, transform->posY, transform->posZ};
+        xform.rotation = ln::Quaternion{transform->rotX, transform->rotY, transform->rotZ, transform->rotW};
+        xform.scale    = {transform->scaleX, transform->scaleY, transform->scaleZ};
+    }
+
+    auto result = ren->drawMesh(mesh, xform);
+    if (!result) return LN_ERROR_UNKNOWN;
+
+    return LN_OK;
+}
+
+LNResult LNRenderer_DrawMeshWithMaterial(
+    LNHandle renderer, LNHandle meshHandle,
+    const LNTransform* transform, LNHandle materialHandle) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = instance->objectRegistry()->resolve<ln::Material>(materialHandle);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    ln::Transform xform;
+    if (transform) {
+        xform.position = {transform->posX, transform->posY, transform->posZ};
+        xform.rotation = ln::Quaternion{transform->rotX, transform->rotY, transform->rotZ, transform->rotW};
+        xform.scale    = {transform->scaleX, transform->scaleY, transform->scaleZ};
+    }
+
+    auto result = ren->drawMesh(mesh, xform, mat);
+    if (!result) return LN_ERROR_UNKNOWN;
 
     return LN_OK;
 }

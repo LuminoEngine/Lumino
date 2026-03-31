@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <lumino_base/math/Math.hpp>
-#include <lumino_base/RefObject.hpp>
+#include <lumino_core/Object.hpp>
 #include <lumino_base/Result.hpp>
 #include <lumino_core/graphics/rhi/Rhi.hpp>
 #include <lumino_core/graphics/Vertex.hpp>
@@ -43,7 +43,7 @@ enum class MaterialType {
  * Material: shader + parameters + render state + textures.
  * Manages a RenderPipeline and per-material BindGroup (Set 1).
  */
-class Material : public RefObject {
+class Material : public Object {
 public:
     ~Material() override = default;
 
