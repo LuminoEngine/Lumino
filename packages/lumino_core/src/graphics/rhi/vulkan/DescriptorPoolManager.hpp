@@ -75,10 +75,11 @@ private:
 
     void allocateNewPool() {
         VkDescriptorPoolSize poolSizes[] = {
-            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,  SETS_PER_POOL * 4},
-            {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,   SETS_PER_POOL * 4},
-            {VK_DESCRIPTOR_TYPE_SAMPLER,         SETS_PER_POOL * 4},
-            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,  SETS_PER_POOL},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,          SETS_PER_POOL * 4},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,  SETS_PER_POOL * 2},
+            {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,           SETS_PER_POOL * 4},
+            {VK_DESCRIPTOR_TYPE_SAMPLER,                 SETS_PER_POOL * 4},
+            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,          SETS_PER_POOL},
         };
 
         VkDescriptorPoolCreateInfo dpInfo{};
@@ -86,7 +87,7 @@ private:
         // FREE_DESCRIPTOR_SET_BIT allows individual set deallocation.
         dpInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
         dpInfo.maxSets = SETS_PER_POOL;
-        dpInfo.poolSizeCount = 4;
+        dpInfo.poolSizeCount = 5;
         dpInfo.pPoolSizes = poolSizes;
 
         VkDescriptorPool pool = VK_NULL_HANDLE;

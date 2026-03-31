@@ -250,6 +250,7 @@ struct BindGroupLayoutEntry {
     u32 binding = 0;
     ShaderStage visibility = ShaderStage::Vertex;
     BindingType type = BindingType::UniformBuffer;
+    bool hasDynamicOffset = false;  ///< Only valid for UniformBuffer/StorageBuffer.
 };
 
 struct BindGroupLayoutDesc {
@@ -399,6 +400,8 @@ public:
     virtual void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset = 0) = 0;
     virtual void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset = 0) = 0;
     virtual void setBindGroup(u32 index, BindGroup* group) = 0;
+    virtual void setBindGroup(u32 index, BindGroup* group,
+                              const u32* dynamicOffsets, u32 dynamicOffsetCount) = 0;
     virtual void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth = 0, f32 maxDepth = 1) = 0;
     virtual void setScissorRect(u32 x, u32 y, u32 w, u32 h) = 0;
     virtual void draw(u32 vertexCount, u32 instanceCount = 1, u32 firstVertex = 0, u32 firstInstance = 0) = 0;
@@ -426,6 +429,13 @@ public:
     virtual u32 height() const = 0;
 };
 
+// ------ Device Limits -----------------------------------------------------------------------------------------------------------
+
+struct DeviceLimits {
+    u32 minUniformBufferOffsetAlignment = 256;
+    u32 maxUniformBufferRange = 65536;
+};
+
 // ------ Device (Factory) --------------------------------------------------------------------------------------------------------
 
 class Device : public RHIObject {
@@ -434,6 +444,9 @@ public:
 
     /** Create a device with the given backend. */
     static Result<Ref<Device>> create(const DeviceDesc& desc);
+
+    /** Query device limits. */
+    virtual DeviceLimits deviceLimits() const = 0;
 
     // Resource creation
     virtual Result<Ref<SwapChain>> createSwapChain(const SwapChainDesc& desc) = 0;

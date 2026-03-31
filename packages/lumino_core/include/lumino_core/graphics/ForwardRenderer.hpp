@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <memory>
 #include <vector>
 #include <lumino_base/Result.hpp>
 #include <lumino_base/RefObject.hpp>
@@ -9,6 +10,7 @@
 #include <lumino_core/graphics/MeshLoader.hpp>
 #include <lumino_core/graphics/Transform.hpp>
 #include <lumino_core/graphics/GraphicsContext.hpp>
+#include <lumino_core/graphics/DynamicUniformAllocator.hpp>
 
 namespace ln {
 
@@ -77,15 +79,13 @@ private:
     u64 m_viewUBOSize = 0;
     u64 m_objectUBOSize = 0;
 
-    // Per-object resources (resized dynamically)
-    std::vector<Ref<rhi::Buffer>> m_objectUBOs;
-    std::vector<Ref<rhi::BindGroup>> m_objectBindGroups;
+    // Dynamic UBO allocator for per-object data.
+    std::unique_ptr<DynamicUniformAllocator> m_objectAllocator;
 
     DirectionalLight m_light;
 
     GraphicsContext* m_ctx = nullptr;
-
-    Result<void> ensureObjectResources(size_t count);
+    u32 m_frameCounter = 0;
 };
 
 } // namespace ln

@@ -370,13 +370,26 @@ VoidResult VulkanBindGroupLayout::init(VkDevice device, const BindGroupLayoutDes
 
     std::vector<VkDescriptorSetLayoutBinding> bindings;
     bindings.reserve(desc.entries.size());
+    m_dynamicFlags.reserve(desc.entries.size());
     for (auto& e : desc.entries) {
         VkDescriptorSetLayoutBinding b{};
         b.binding = e.binding;
-        b.descriptorType = toVkDescriptorType(e.type);
         b.descriptorCount = 1;
         b.stageFlags = toVkShaderStage(e.visibility);
+
+        // Use dynamic descriptor type when hasDynamicOffset is set.
+        bool isDynamic = e.hasDynamicOffset &&
+            (e.type == BindingType::UniformBuffer || e.type == BindingType::StorageBuffer);
+        if (isDynamic) {
+            b.descriptorType = (e.type == BindingType::UniformBuffer)
+                ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC
+                : VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+        } else {
+            b.descriptorType = toVkDescriptorType(e.type);
+        }
+
         bindings.push_back(b);
+        m_dynamicFlags.push_back(isDynamic);
     }
 
     VkDescriptorSetLayoutCreateInfo info{};
@@ -399,12 +412,14 @@ void VulkanBindGroupLayout::finalize() {
 VulkanBindGroup::VulkanBindGroup() = default;
 
 VoidResult VulkanBindGroup::init(VulkanDevice* device, DescriptorPoolManager& poolManager,
-                                  VkDescriptorSetLayout layout, const BindGroupDesc& desc) {
+                                  VulkanBindGroupLayout* layout, const BindGroupDesc& desc) {
     m_device = device;
 
-    auto [pool, set] = poolManager.allocate(layout);
+    auto [pool, set] = poolManager.allocate(layout->handle());
     m_pool = pool;
     m_set  = set;
+
+    const auto& dynFlags = layout->dynamicFlags();
 
     std::vector<VkWriteDescriptorSet> writes;
     std::vector<VkDescriptorBufferInfo> bufInfos(desc.entries.size());
@@ -423,7 +438,14 @@ VoidResult VulkanBindGroup::init(VulkanDevice* device, DescriptorPoolManager& po
             bufInfos[i].buffer = vb->handle();
             bufInfos[i].offset = e.offset;
             bufInfos[i].range = e.size > 0 ? e.size : VK_WHOLE_SIZE;
-            w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+            // Use dynamic descriptor type if the layout binding has hasDynamicOffset.
+            bool isDynamic = (e.binding < dynFlags.size()) && dynFlags[e.binding];
+            if (isDynamic) {
+                w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+            } else {
+                w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            }
             w.pBufferInfo = &bufInfos[i];
         } else if (e.textureView) {
             auto* tv = static_cast<VulkanTextureView*>(e.textureView);
@@ -704,6 +726,14 @@ void VulkanRenderPassEncoder::setBindGroup(u32 index, BindGroup* group) {
     auto* vg = static_cast<VulkanBindGroup*>(group);
     VkDescriptorSet set = vg->handle();
     vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout, index, 1, &set, 0, nullptr);
+}
+
+void VulkanRenderPassEncoder::setBindGroup(u32 index, BindGroup* group,
+                                            const u32* dynamicOffsets, u32 dynamicOffsetCount) {
+    auto* vg = static_cast<VulkanBindGroup*>(group);
+    VkDescriptorSet set = vg->handle();
+    vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout,
+                            index, 1, &set, dynamicOffsetCount, dynamicOffsets);
 }
 
 void VulkanRenderPassEncoder::setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) {
@@ -1318,6 +1348,15 @@ VkFramebuffer VulkanDevice::getOrCreateFramebuffer(const FramebufferKey& key) {
     return fb;
 }
 
+DeviceLimits VulkanDevice::deviceLimits() const {
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(m_physicalDevice, &props);
+    DeviceLimits limits;
+    limits.minUniformBufferOffsetAlignment = static_cast<u32>(props.limits.minUniformBufferOffsetAlignment);
+    limits.maxUniformBufferRange = props.limits.maxUniformBufferRange;
+    return limits;
+}
+
 Result<Ref<SwapChain>> VulkanDevice::createSwapChain(const SwapChainDesc& desc) {
     auto sc = Ref<VulkanSwapChain>::adopt(new VulkanSwapChain());
     if (!sc->init(this, desc)) {
@@ -1410,7 +1449,7 @@ Result<Ref<BindGroupLayout>> VulkanDevice::createBindGroupLayout(const BindGroup
 Result<Ref<BindGroup>> VulkanDevice::createBindGroup(const BindGroupDesc& desc) {
     auto* layout = static_cast<VulkanBindGroupLayout*>(desc.layout);
     auto bg = Ref<VulkanBindGroup>::adopt(new VulkanBindGroup());
-    if (!bg->init(this, m_descriptorPoolManager, layout->handle(), desc)) {
+    if (!bg->init(this, m_descriptorPoolManager, layout, desc)) {
         return LN_MAKE_ERROR("Failed to create bind group.");
     }
     return Ref<BindGroup>(bg);

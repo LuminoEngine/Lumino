@@ -148,12 +148,16 @@ public:
     VoidResult init(VkDevice device, const BindGroupLayoutDesc& desc);
     VkDescriptorSetLayout handle() const { return m_layout; }
 
+    /** Per-binding dynamic offset flags (parallel to desc.entries). */
+    const std::vector<bool>& dynamicFlags() const { return m_dynamicFlags; }
+
 protected:
     void finalize() override;
 
 private:
     VkDevice m_device = VK_NULL_HANDLE;
     VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
+    std::vector<bool> m_dynamicFlags;
 };
 
 // ------ VulkanBindGroup ----------------------------------------------------------------------------------------------------------
@@ -162,7 +166,7 @@ class VulkanBindGroup final : public BindGroup {
 public:
     VulkanBindGroup();
     VoidResult init(VulkanDevice* device, DescriptorPoolManager& poolManager,
-                    VkDescriptorSetLayout layout, const BindGroupDesc& desc);
+                    VulkanBindGroupLayout* layout, const BindGroupDesc& desc);
     VkDescriptorSet handle() const { return m_set; }
 
 protected:
@@ -221,6 +225,8 @@ public:
     void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) override;
     void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) override;
     void setBindGroup(u32 index, BindGroup* group) override;
+    void setBindGroup(u32 index, BindGroup* group,
+                      const u32* dynamicOffsets, u32 dynamicOffsetCount) override;
     void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) override;
     void setScissorRect(u32 x, u32 y, u32 w, u32 h) override;
     void draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) override;
@@ -350,6 +356,7 @@ public:
     bool isValid() const { return m_device != VK_NULL_HANDLE; }
 
     // RHI interface
+    DeviceLimits deviceLimits() const override;
     Result<Ref<SwapChain>> createSwapChain(const SwapChainDesc& desc) override;
     Result<Ref<Buffer>> createBuffer(const BufferDesc& desc) override;
     Result<Ref<Texture>> createTexture(const TextureDesc& desc) override;

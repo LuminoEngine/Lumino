@@ -119,8 +119,13 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
         matBGL = std::move(*r);
     }
 
-    // ---- Set 2: Object BindGroupLayout (from "objectData" reflection) ----
+    // ---- Set 2: Object BindGroupLayout (from "objectData" reflection, dynamic UBO) ----
     auto objBGLDesc = buildBindGroupLayoutFromReflection(*objectBlock, targetPass->bindingLayout);
+    for (auto& entry : objBGLDesc.entries) {
+        if (entry.type == rhi::BindingType::UniformBuffer) {
+            entry.hasDynamicOffset = true;
+        }
+    }
     auto objBGLResult = device->createBindGroupLayout(objBGLDesc);
     if (!objBGLResult) return tl::make_unexpected(objBGLResult.error());
     renderer->m_objectBindGroupLayout = std::move(*objBGLResult);
@@ -154,6 +159,13 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(
     if (!viewBGResult) return tl::make_unexpected(viewBGResult.error());
     renderer->m_viewBindGroup = std::move(*viewBGResult);
 
+    // ---- Dynamic UBO Allocator for per-object data ----
+    auto allocResult = DynamicUniformAllocator::create(
+        device, renderer->m_objectBindGroupLayout.get(), 0,
+        static_cast<u32>(renderer->m_objectUBOSize));
+    if (!allocResult) return tl::make_unexpected(allocResult.error());
+    renderer->m_objectAllocator = std::move(*allocResult);
+
     return renderer;
 }
 
@@ -162,32 +174,6 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     if (!result) return tl::make_unexpected(result.error());
     (*result)->m_ctx = ctx;
     return result;
-}
-
-Result<void> ForwardRenderer::ensureObjectResources(size_t count) {
-    auto* device = m_ctx->device();
-    while (m_objectUBOs.size() < count) {
-        // Create object UBO
-        rhi::BufferDesc bufDesc;
-        bufDesc.size = m_objectUBOSize;
-        bufDesc.usage = rhi::BufferUsage::Uniform;
-        auto bufResult = device->createBuffer(bufDesc);
-        if (!bufResult) return tl::make_unexpected(bufResult.error());
-        auto& buf = *bufResult;
-
-        // Create object BindGroup
-        rhi::BindGroupDesc bgDesc;
-        bgDesc.layout = m_objectBindGroupLayout.get();
-        bgDesc.entries = {
-            {0, buf.get(), 0, m_objectUBOSize, nullptr, nullptr},
-        };
-        auto bgResult = device->createBindGroup(bgDesc);
-        if (!bgResult) return tl::make_unexpected(bgResult.error());
-
-        m_objectUBOs.push_back(std::move(buf));
-        m_objectBindGroups.push_back(std::move(*bgResult));
-    }
-    return {};
 }
 
 Result<void> ForwardRenderer::renderFrame(
@@ -200,15 +186,9 @@ Result<void> ForwardRenderer::renderFrame(
     auto* device = m_ctx->device();
     auto* pipelineCache = m_ctx->pipelineCache();
 
-    // Count total draw calls (submeshes across all objects).
-    size_t totalDraws = 0;
-    for (auto& obj : objects) {
-        totalDraws += obj.mesh->submeshes().size();
-    }
+    // Reset the dynamic UBO allocator for this frame.
+    m_objectAllocator->beginFrame(m_frameCounter++);
 
-    // Ensure we have enough per-object resources.
-    auto ensureResult = ensureObjectResources(totalDraws);
-    if (!ensureResult) return tl::make_unexpected(ensureResult.error());
 
     // ---- Update View UBO ----
     {
@@ -261,7 +241,6 @@ Result<void> ForwardRenderer::renderFrame(
     auto* pass = cmd->beginRenderPass(rpDesc);
 
     // ---- Draw Objects ----
-    size_t drawIndex = 0;
     for (auto& obj : objects) {
         auto* mesh = obj.mesh.get();
         Transform transform = obj.transform;
@@ -272,17 +251,13 @@ Result<void> ForwardRenderer::renderFrame(
         pass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
 
         for (auto& sub : mesh->submeshes()) {
-            // Update object UBO
+            // Sub-allocate from the dynamic UBO and write object params.
+            auto alloc = m_objectAllocator->allocate();
             {
                 ObjectParamsUBO objParams{};
                 std::memcpy(objParams.world, worldMatrix.m, sizeof(f32) * 16);
                 std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(f32) * 16);
-
-                void* mapped = m_objectUBOs[drawIndex]->map();
-                if (mapped) {
-                    std::memcpy(mapped, &objParams, sizeof(objParams));
-                    m_objectUBOs[drawIndex]->unmap();
-                }
+                std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
             }
 
             // Determine material
@@ -326,10 +301,8 @@ Result<void> ForwardRenderer::renderFrame(
                 pass->setBindGroup(1, mat->materialBindGroup());
             }
 
-            pass->setBindGroup(2, m_objectBindGroups[drawIndex].get());
+            pass->setBindGroup(2, alloc.bindGroup, &alloc.dynamicOffset, 1);
             pass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
-
-            ++drawIndex;
         }
     }
 
