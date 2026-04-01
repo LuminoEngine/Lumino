@@ -115,8 +115,14 @@ add_dependencies(${PROJECT_NAME} LuminoCore_shaders)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 #-------------------------------------------------------------------------------
-# Tests
+# Subdirectories
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_TESTS)
     add_subdirectory(test)
+endif()
+if(LUMINO_BUILD_EXAMPLES)
+    add_subdirectory(examples/HelloMesh)
+    add_subdirectory(examples/HelloTriangle)
+    add_subdirectory(examples/ForwardRendering)
+    add_subdirectory(examples/HelloTexture)
 endif()

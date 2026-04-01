@@ -4,6 +4,7 @@ project(Lumino VERSION 0.1.0 LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #-------------------------------------------------------------------------------
 # Options
@@ -47,9 +48,3 @@ add_subdirectory(packages/LuminoCore)
 add_subdirectory(packages/LuminoC)
 add_subdirectory(packages/luminosc)
 
-#-------------------------------------------------------------------------------
-# Examples
-#-------------------------------------------------------------------------------
-if(LUMINO_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif()

@@ -35,3 +35,10 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 if(LUMINO_BUILD_TESTS)
     add_subdirectory(test)
 endif()
+
+#-------------------------------------------------------------------------------
+# Examples
+#-------------------------------------------------------------------------------
+if(LUMINO_BUILD_EXAMPLES)
+    add_subdirectory(examples/ClearScreen)
+endif()
