@@ -99,7 +99,6 @@ int main() {
         // 3. Material (BasicLit)
         auto material = *MaterialFactory::createBasicLit(ctx);
         material->setColor(Color{0.8f, 0.5f, 0.2f, 1.0f});
-        auto _ = material->updateBindGroup(ctx->device());
 
         // 4. Cube mesh
         auto mesh = *createCubeMesh(ctx->device());

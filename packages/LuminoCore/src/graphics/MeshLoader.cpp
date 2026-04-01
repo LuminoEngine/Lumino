@@ -242,8 +242,6 @@ Result<LoadedModel> MeshLoader::loadGltf(
             mat->setBlendEnabled(true);
         }
 
-        auto ubr = mat->updateBindGroup(device);
-        if (!ubr) return tl::make_unexpected(ubr.error());
         result.materials.push_back(std::move(mat));
     }
 
@@ -251,8 +249,6 @@ Result<LoadedModel> MeshLoader::loadGltf(
     if (result.materials.empty()) {
         auto r = MaterialFactory::createUnlit(device);
         if (!r) return tl::make_unexpected(r.error());
-        auto ubr2 = (*r)->updateBindGroup(device);
-        if (!ubr2) return tl::make_unexpected(ubr2.error());
         result.materials.push_back(std::move(*r));
     }
 

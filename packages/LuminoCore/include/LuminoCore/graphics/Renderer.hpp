@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <memory>
+#include <array>
+#include <unordered_map>
 #include <LuminoBase/Result.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/graphics/rhi/Rhi.hpp>
@@ -211,6 +213,25 @@ private:
 
     Result<void> drawSubmesh(Mesh* mesh, Material* mat, const Transform& transform, const SubMesh& sub);
     Result<Mesh*> getScreenRectMesh();
+
+    // ---- Per-material BindGroup cache (Renderer-owned) ----
+
+    static constexpr u32 kMaxFramesInFlight = 2;
+
+    /** Cached GPU resources for a single Material, double-buffered per in-flight frame. */
+    struct CachedMaterialBind {
+        uint64_t paramVersion = 0;
+        Ref<rhi::TextureView> textureView;
+        Ref<rhi::Sampler>     sampler;
+        std::array<Ref<rhi::Buffer>,    kMaxFramesInFlight> paramBuffers;
+        std::array<Ref<rhi::BindGroup>, kMaxFramesInFlight> bindGroups;
+        std::array<bool, kMaxFramesInFlight> dirty = {true, true};
+    };
+
+    std::unordered_map<Material*, CachedMaterialBind> m_materialCache;
+
+    /** Get or create the BindGroup for the given material and current frame slot. */
+    Result<rhi::BindGroup*> getOrCreateMaterialBindGroup(Material* mat);
 };
 
 } // namespace ln

@@ -53,10 +53,7 @@ int main() {
         auto texture = *TextureLoader::loadFromFile(ctx->device(), ASSETS_DIR "/picture1.png");
         material->setTexture(texture.get());
 
-        // 5. BindGroup ビルド
-        auto _ = material->updateBindGroup(ctx->device());
-
-        // 6. UV付き四角形メッシュ (2枚の三角形)
+        // 5. UV付き四角形メッシュ (2枚の三角形)
         //   v0(-0.5, 0.5) --- v1(0.5, 0.5)
         //      |           /      |
         //   v2(-0.5,-0.5) --- v3(0.5,-0.5)

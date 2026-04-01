@@ -69,13 +69,9 @@ static int16_t findConstantBufferSize(const shader::ParameterBlockLayout2& block
 
 // ─── Material ────────────────────────────────────────────────────────────
 
-void Material::markAllFramesDirty() {
-    for (auto& d : m_frameDirty) d = true;
-}
-
 void Material::setColor(const Color& color) {
     m_baseColor = color;
-    markAllFramesDirty();
+    markDirty();
 }
 
 void Material::setTexture(rhi::Texture* texture) {
@@ -85,96 +81,35 @@ void Material::setTexture(rhi::Texture* texture) {
     } else {
         m_baseTexture.reset();
     }
-    m_baseTextureView.reset();
-    markAllFramesDirty();
+    markDirty();
 }
 
 void Material::setSpecular(const Color& color, f32 shininess) {
     m_specularColor = color;
     m_shininess = shininess;
-    markAllFramesDirty();
+    markDirty();
+}
+
+void Material::writeMaterialUBO(void* dst) const {
+    if (m_type == MaterialType::Unlit) {
+        UnlitMaterialParamsUBO ubo;
+        ubo.color[0] = m_baseColor.r; ubo.color[1] = m_baseColor.g;
+        ubo.color[2] = m_baseColor.b; ubo.color[3] = m_baseColor.a;
+        std::memcpy(dst, &ubo, sizeof(ubo));
+    } else {
+        BasicLitMaterialParamsUBO ubo;
+        ubo.color[0] = m_baseColor.r; ubo.color[1] = m_baseColor.g;
+        ubo.color[2] = m_baseColor.b; ubo.color[3] = m_baseColor.a;
+        ubo.specular[0] = m_specularColor.r; ubo.specular[1] = m_specularColor.g;
+        ubo.specular[2] = m_specularColor.b; ubo.specular[3] = m_shininess;
+        std::memcpy(dst, &ubo, sizeof(ubo));
+    }
 }
 
 void Material::setBlendEnabled(bool enabled) { m_blendEnabled = enabled; }
 void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
 void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
 void Material::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
-
-Result<void> Material::updateBindGroup(rhi::Device* device) {
-    // Update all in-flight frame slots (used for initial setup / loading).
-    for (u32 i = 0; i < kMaxFramesInFlight; ++i) {
-        auto r = updateBindGroup(device, i);
-        if (!r) return r;
-    }
-    return {};
-}
-
-Result<void> Material::updateBindGroup(rhi::Device* device, u32 frameSlot) {
-    if (!m_frameDirty[frameSlot]) return {};
-
-    // Create texture view if missing
-    if (m_baseTexture && !m_baseTextureView) {
-        auto tvResult = device->createTextureView(m_baseTexture.get());
-        if (!tvResult) return tl::make_unexpected(tvResult.error());
-        m_baseTextureView = std::move(*tvResult);
-    }
-
-    // Create sampler if missing
-    if (!m_sampler) {
-        rhi::SamplerDesc samplerDesc;
-        auto sampResult = device->createSampler(samplerDesc);
-        if (!sampResult) return tl::make_unexpected(sampResult.error());
-        m_sampler = std::move(*sampResult);
-    }
-
-    // Create per-frame buffer if missing
-    if (!m_paramBuffers[frameSlot]) {
-        rhi::BufferDesc bufDesc;
-        bufDesc.size = m_materialParamBufferSize;
-        bufDesc.usage = rhi::BufferUsage::Uniform;
-        auto bufResult = device->createBuffer(bufDesc);
-        if (!bufResult) return tl::make_unexpected(bufResult.error());
-        m_paramBuffers[frameSlot] = std::move(*bufResult);
-    }
-
-    // Update this frame's uniform buffer
-    {
-        void* mapped = m_paramBuffers[frameSlot]->map();
-        if (mapped) {
-            if (m_type == MaterialType::Unlit) {
-                UnlitMaterialParamsUBO ubo;
-                ubo.color[0] = m_baseColor.r; ubo.color[1] = m_baseColor.g;
-                ubo.color[2] = m_baseColor.b; ubo.color[3] = m_baseColor.a;
-                std::memcpy(mapped, &ubo, sizeof(ubo));
-            } else {
-                BasicLitMaterialParamsUBO ubo;
-                ubo.color[0] = m_baseColor.r; ubo.color[1] = m_baseColor.g;
-                ubo.color[2] = m_baseColor.b; ubo.color[3] = m_baseColor.a;
-                ubo.specular[0] = m_specularColor.r; ubo.specular[1] = m_specularColor.g;
-                ubo.specular[2] = m_specularColor.b; ubo.specular[3] = m_shininess;
-                std::memcpy(mapped, &ubo, sizeof(ubo));
-            }
-            m_paramBuffers[frameSlot]->unmap();
-        }
-    }
-
-    // Recreate BindGroup for this frame slot with the frame-specific buffer
-    if (m_materialBindGroupLayout && m_baseTextureView && m_sampler) {
-        rhi::BindGroupDesc bgDesc;
-        bgDesc.layout = m_materialBindGroupLayout.get();
-        bgDesc.entries = {
-            {0, m_paramBuffers[frameSlot].get(), 0, m_materialParamBufferSize, nullptr, nullptr},
-            {1, nullptr, 0, 0, m_baseTextureView.get(), nullptr},
-            {2, nullptr, 0, 0, nullptr, m_sampler.get()},
-        };
-        auto bgResult = device->createBindGroup(bgDesc);
-        if (!bgResult) return tl::make_unexpected(bgResult.error());
-        m_bindGroupCache[frameSlot] = std::move(*bgResult);
-    }
-
-    m_frameDirty[frameSlot] = false;
-    return {};
-}
 
 // ─── Helper: load shaders from precompiled .lcsh data ────────────────────
 
@@ -254,10 +189,6 @@ Result<Ref<Material>> MaterialFactory::createMaterialFromShaderData(
     mat->m_materialBindGroupLayout = std::move(*bglResult);
     mat->m_materialParamBufferSize = paramSize;
     mat->m_baseTexture = std::move(*texResult);
-
-    // Initial bind group update
-    auto updateResult = mat->updateBindGroup(device);
-    if (!updateResult) return tl::make_unexpected(updateResult.error());
 
     return mat;
 }

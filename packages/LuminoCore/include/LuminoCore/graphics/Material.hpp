@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <array>
 #include <LuminoBase/math/Math.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoBase/Result.hpp>
@@ -74,23 +73,21 @@ public:
     bool depthTestEnabled() const { return m_depthTestEnabled; }
     bool depthWriteEnabled() const { return m_depthWriteEnabled; }
 
-    // BindGroup access (used by ForwardRenderer)
+    // BindGroup access (used by Renderer)
     rhi::BindGroupLayout* materialBindGroupLayout() const { return m_materialBindGroupLayout.get(); }
 
-    /** Get the BindGroup for the given in-flight frame slot. */
-    rhi::BindGroup* materialBindGroup(u32 frameSlot) const { return m_bindGroupCache[frameSlot].get(); }
+    /** Parameter version counter. Incremented whenever material parameters change. */
+    uint64_t paramVersion() const { return m_paramVersion; }
 
-    /**
-     * Rebuild the BindGroup for all in-flight frames. Use for initial setup / loading.
-     * Does nothing if parameters have not changed since the last call.
-     */
-    Result<void> updateBindGroup(rhi::Device* device);
+    // Accessors for Renderer-side BindGroup construction
+    rhi::Texture* baseTexture() const { return m_baseTexture.get(); }
+    u64 materialParamBufferSize() const { return m_materialParamBufferSize; }
+    const Color& baseColor() const { return m_baseColor; }
+    const Color& specularColor() const { return m_specularColor; }
+    f32 shininess() const { return m_shininess; }
 
-    /**
-     * Rebuild the BindGroup for a specific in-flight frame slot.
-     * Called internally by Renderer at draw time.
-     */
-    Result<void> updateBindGroup(rhi::Device* device, u32 frameSlot);
+    /** Write material UBO data into the given mapped pointer. */
+    void writeMaterialUBO(void* dst) const;
 
 private:
     friend class MaterialFactory;
@@ -103,15 +100,11 @@ private:
     std::string m_vertEntry;
     std::string m_fragEntry;
 
-    static constexpr u32 kMaxFramesInFlight = 2;
-
     // BindGroup for material (Set 2)
     Ref<rhi::BindGroupLayout> m_materialBindGroupLayout;
 
-    // Per-frame BindGroup and UBO cache (double-buffered for in-flight frames)
-    std::array<Ref<rhi::Buffer>, kMaxFramesInFlight>    m_paramBuffers;
-    std::array<Ref<rhi::BindGroup>, kMaxFramesInFlight> m_bindGroupCache;
-    std::array<bool, kMaxFramesInFlight>                m_frameDirty = {true, true};
+    // Parameter version counter (incremented on any parameter change)
+    uint64_t m_paramVersion = 1;
 
     // Parameters
     Color m_baseColor = Color::white();
@@ -123,8 +116,6 @@ private:
 
     // Textures
     Ref<rhi::Texture> m_baseTexture;
-    Ref<rhi::TextureView> m_baseTextureView;
-    Ref<rhi::Sampler> m_sampler;
 
     // Render state
     rhi::CullMode m_cullMode = rhi::CullMode::Back;
@@ -132,7 +123,7 @@ private:
     bool m_depthTestEnabled = true;
     bool m_depthWriteEnabled = true;
 
-    void markAllFramesDirty();
+    void markDirty() { ++m_paramVersion; }
 };
 
 class GraphicsContext;

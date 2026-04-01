@@ -50,7 +50,6 @@ int main() {
         // 3. Unlit Material (white color so vertex colors show through)
         auto material = *MaterialFactory::createUnlit(ctx);
         //material->setCullMode(CullMode::None);
-        auto _ = material->updateBindGroup(ctx->device());
 
         // 4. Triangle mesh with per-vertex colors
         // 反時計回り (CCW) が正面。右手座標系ということで。godot と同じ。

@@ -369,11 +369,11 @@ Result<void> Renderer::drawSubmesh(
     // After setPipeline, flush any pending pass-scoped bind groups.
     flushPassBindGroups();
 
-    // Ensure the material's per-frame BindGroup is up to date for this frame slot.
-    auto matUpdate = mat->updateBindGroup(m_ctx->device(), m_currentFrameSlot);
-    if (!matUpdate) return tl::make_unexpected(matUpdate.error());
+    // Get or create the material's BindGroup from the Renderer-side cache.
+    auto matBGResult = getOrCreateMaterialBindGroup(mat);
+    if (!matBGResult) return tl::make_unexpected(matBGResult.error());
 
-    m_currentPass->setBindGroup(2, mat->materialBindGroup(m_currentFrameSlot));
+    m_currentPass->setBindGroup(2, *matBGResult);
     m_currentPass->setBindGroup(3, alloc.bindGroup, &alloc.dynamicOffset, 1);
     m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
 
@@ -386,6 +386,75 @@ Result<void> Renderer::drawScreenRect(Material* material) {
 
     Transform identity;
     return drawMesh(*meshResult, identity, material);
+}
+
+Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
+    auto* device = m_ctx->device();
+    u32 frameSlot = m_currentFrameSlot;
+
+    auto& cache = m_materialCache[mat];
+
+    // Check if the material's parameters have changed since last cache update.
+    if (mat->paramVersion() != cache.paramVersion) {
+        // Mark all frame slots dirty so each gets updated when used.
+        for (auto& d : cache.dirty) d = true;
+        cache.paramVersion = mat->paramVersion();
+    }
+
+    if (!cache.dirty[frameSlot]) {
+        return cache.bindGroups[frameSlot].get();
+    }
+
+    // Create texture view if missing or texture changed
+    if (mat->baseTexture() && !cache.textureView) {
+        auto tvResult = device->createTextureView(mat->baseTexture());
+        if (!tvResult) return tl::make_unexpected(tvResult.error());
+        cache.textureView = std::move(*tvResult);
+    }
+
+    // Create sampler if missing
+    if (!cache.sampler) {
+        rhi::SamplerDesc samplerDesc;
+        auto sampResult = device->createSampler(samplerDesc);
+        if (!sampResult) return tl::make_unexpected(sampResult.error());
+        cache.sampler = std::move(*sampResult);
+    }
+
+    // Create per-frame buffer if missing
+    if (!cache.paramBuffers[frameSlot]) {
+        rhi::BufferDesc bufDesc;
+        bufDesc.size = mat->materialParamBufferSize();
+        bufDesc.usage = rhi::BufferUsage::Uniform;
+        auto bufResult = device->createBuffer(bufDesc);
+        if (!bufResult) return tl::make_unexpected(bufResult.error());
+        cache.paramBuffers[frameSlot] = std::move(*bufResult);
+    }
+
+    // Write UBO data
+    {
+        void* mapped = cache.paramBuffers[frameSlot]->map();
+        if (mapped) {
+            mat->writeMaterialUBO(mapped);
+            cache.paramBuffers[frameSlot]->unmap();
+        }
+    }
+
+    // Create BindGroup
+    if (mat->materialBindGroupLayout() && cache.textureView && cache.sampler) {
+        rhi::BindGroupDesc bgDesc;
+        bgDesc.layout = mat->materialBindGroupLayout();
+        bgDesc.entries = {
+            {0, cache.paramBuffers[frameSlot].get(), 0, mat->materialParamBufferSize(), nullptr, nullptr},
+            {1, nullptr, 0, 0, cache.textureView.get(), nullptr},
+            {2, nullptr, 0, 0, nullptr, cache.sampler.get()},
+        };
+        auto bgResult = device->createBindGroup(bgDesc);
+        if (!bgResult) return tl::make_unexpected(bgResult.error());
+        cache.bindGroups[frameSlot] = std::move(*bgResult);
+    }
+
+    cache.dirty[frameSlot] = false;
+    return cache.bindGroups[frameSlot].get();
 }
 
 Result<Mesh*> Renderer::getScreenRectMesh() {

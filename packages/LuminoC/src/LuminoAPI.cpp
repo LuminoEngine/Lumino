@@ -311,22 +311,6 @@ LNResult LNMaterial_SetTexture(LNHandle material, LNHandle texture) {
     return LN_OK;
 }
 
-LNResult LNMaterial_UpdateBindGroup(LNHandle material, LNHandle graphicsContext) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
-    if (!mat) return LN_ERROR_INVALID_HANDLE;
-
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-
-    auto result = mat->updateBindGroup(ctx->device());
-    if (!result) return LN_ERROR_UNKNOWN;
-
-    return LN_OK;
-}
-
 //------------------------------------------------------------------------------
 // LNMesh
 //------------------------------------------------------------------------------

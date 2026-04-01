@@ -242,17 +242,6 @@ extern LUMINO_API LNResult LNMaterial_SetTexture(
     LNHandle texture
 );
 
-/**
- * パラメータ変更後に GPU バインドグループを再構築します。
- * Set* 呼び出し後、描画前に呼ぶ必要があります。
- * @param[in] material         マテリアルのハンドル
- * @param[in] graphicsContext  GraphicsContext のハンドル
- */
-extern LUMINO_API LNResult LNMaterial_UpdateBindGroup(
-    LNHandle material,
-    LNHandle graphicsContext
-);
-
 //------------------------------------------------------------------------------
 // LNMesh
 //------------------------------------------------------------------------------
