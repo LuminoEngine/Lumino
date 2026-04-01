@@ -308,7 +308,7 @@ LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float
     return LN_OK;
 }
 
-LNResult LNMaterial_SetTexture(LNHandle material, LNHandle texture) {
+LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -374,6 +374,97 @@ LNResult LNMesh_Create(
     return LN_OK;
 }
 
+LNResult LNMesh_CreateDynamic(
+    LNHandle graphicsContext,
+    uint32_t maxVertexCount,
+    uint32_t maxIndexCount,
+    LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    if (maxVertexCount == 0 || maxIndexCount == 0) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto meshResult = ln::Mesh::createDynamic(ctx->device(), maxVertexCount, maxIndexCount);
+    if (!meshResult) return LN_ERROR_UNKNOWN;
+    *outHandle = wrapObjectFromCreate(meshResult->get());
+    return LN_OK;
+}
+
+LNResult LNMesh_UpdateVertices(
+    LNHandle meshHandle,
+    uint32_t firstVertex,
+    const LNVertex* vertices,
+    uint32_t count) {
+    if (!vertices || count == 0) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    // Convert LNVertex[] → ln::Vertex[]
+    std::vector<ln::Vertex> verts(count);
+    for (uint32_t i = 0; i < count; i++) {
+        const auto& sv = vertices[i];
+        auto& dv = verts[i];
+        dv.position = {sv.posX, sv.posY, sv.posZ};
+        dv.normal   = {sv.normX, sv.normY, sv.normZ};
+        dv.uv       = {sv.u, sv.v};
+        dv.color    = {sv.colorR, sv.colorG, sv.colorB, sv.colorA};
+        dv.tangent  = {sv.tanX, sv.tanY, sv.tanZ, sv.tanW};
+    }
+
+    auto result = mesh->updateVertices(firstVertex, verts.data(), count);
+    if (!result) return LN_ERROR_UNKNOWN;
+    return LN_OK;
+}
+
+LNResult LNMesh_UpdateIndices(
+    LNHandle meshHandle,
+    uint32_t firstIndex,
+    const uint32_t* indices,
+    uint32_t count) {
+    if (!indices || count == 0) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = mesh->updateIndices(firstIndex, indices, count);
+    if (!result) return LN_ERROR_UNKNOWN;
+    return LN_OK;
+}
+
+LNResult LNMesh_SetSubMeshes(
+    LNHandle meshHandle,
+    const LNSubMesh* submeshes,
+    uint32_t submeshCount) {
+    if (!submeshes || submeshCount == 0) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    std::vector<ln::SubMesh> subs(submeshCount);
+    for (uint32_t i = 0; i < submeshCount; i++) {
+        subs[i].indexOffset   = submeshes[i].indexOffset;
+        subs[i].indexCount    = submeshes[i].indexCount;
+        subs[i].materialIndex = submeshes[i].materialIndex;
+    }
+    mesh->setSubmeshes(subs);
+    return LN_OK;
+}
+
 LNResult LNMesh_SetMaterial(LNHandle meshHandle, uint32_t materialIndex, LNHandle materialHandle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
@@ -419,6 +510,18 @@ LNResult LNCamera_SetPerspective(
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
 
     camObj->camera.setPerspective(fovY, aspect, nearClip, farClip);
+    return LN_OK;
+}
+
+LNResult LNCamera_SetOrthographic(
+    LNHandle camera, float width, float height, float nearClip, float farClip) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+    if (!camObj) return LN_ERROR_INVALID_HANDLE;
+
+    camObj->camera.setOrthographic(width, height, nearClip, farClip);
     return LN_OK;
 }
 

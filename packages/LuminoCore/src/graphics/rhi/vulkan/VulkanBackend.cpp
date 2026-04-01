@@ -1369,10 +1369,11 @@ Result<Ref<SwapChain>> VulkanDevice::createSwapChain(const SwapChainDesc& desc) 
 }
 
 Result<Ref<Buffer>> VulkanDevice::createBuffer(const BufferDesc& desc) {
-    // Vertex and Index buffers benefit from device-local (GPU-optimal) memory.
-    // Other buffer types (Uniform, Storage) remain host-visible for easy CPU updates.
+    // Vertex and Index buffers benefit from device-local (GPU-optimal) memory,
+    // unless the caller explicitly requests mappable (host-visible) buffers.
     bool useDeviceLocal =
-        (desc.usage & BufferUsage::Vertex) || (desc.usage & BufferUsage::Index);
+        !desc.mappable &&
+        ((desc.usage & BufferUsage::Vertex) || (desc.usage & BufferUsage::Index));
 
     auto buf = Ref<VulkanBuffer>::adopt(new VulkanBuffer());
     if (!buf->init(this, m_physicalDevice, desc, useDeviceLocal)) {

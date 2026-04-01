@@ -25,6 +25,22 @@ public:
         const std::vector<SubMesh>& submeshes,
         rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
 
+    /** Create a dynamic mesh with host-visible buffers for per-frame CPU updates. */
+    static Result<Ref<Mesh>> createDynamic(
+        rhi::Device* device,
+        u32 maxVertexCount,
+        u32 maxIndexCount,
+        rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
+
+    /** Update vertex data (only valid for dynamic meshes). */
+    Result<void> updateVertices(u32 firstVertex, const Vertex* vertices, u32 count);
+
+    /** Update index data (only valid for dynamic meshes). */
+    Result<void> updateIndices(u32 firstIndex, const u32* indices, u32 count);
+
+    /** Replace the submesh array and resize material slots accordingly. */
+    void setSubmeshes(const std::vector<SubMesh>& submeshes);
+
     rhi::Buffer* vertexBuffer() const { return m_vertexBuffer.get(); }
     rhi::Buffer* indexBuffer() const { return m_indexBuffer.get(); }
     const std::vector<SubMesh>& submeshes() const { return m_submeshes; }
@@ -40,6 +56,9 @@ private:
     std::vector<SubMesh> m_submeshes;
     std::vector<Ref<Material>> m_materials;
     rhi::PrimitiveTopology m_topology = rhi::PrimitiveTopology::TriangleList;
+    bool m_dynamic = false;
+    u32 m_maxVertexCount = 0;
+    u32 m_maxIndexCount = 0;
 };
 
 } // namespace ln

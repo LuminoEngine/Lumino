@@ -237,11 +237,11 @@ extern LUMINO_API LNResult LNMaterial_SetColor(
 );
 
 /**
- * マテリアルのベーステクスチャを設定します。
+ * マテリアルのメインテクスチャを設定します。
  * @param[in] material マテリアルのハンドル
  * @param[in] texture  Texture2D のハンドル
  */
-extern LUMINO_API LNResult LNMaterial_SetTexture(
+extern LUMINO_API LNResult LNMaterial_SetMainTexture(
     LNHandle material,
     LNHandle texture
 );
@@ -270,6 +270,62 @@ extern LUMINO_API LNResult LNMesh_Create(
     const LNSubMesh* submeshes,
     uint32_t submeshCount,
     LNHandle* outHandle
+);
+
+/**
+ * 毎フレーム CPU から更新可能な動的メッシュを作成します。
+ * 内部で host-visible なバッファを確保します。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  maxVertexCount  最大頂点数
+ * @param[in]  maxIndexCount   最大インデックス数
+ * @param[out] outHandle        作成されたメッシュのハンドル
+ */
+extern LUMINO_API LNResult LNMesh_CreateDynamic(
+    LNHandle graphicsContext,
+    uint32_t maxVertexCount,
+    uint32_t maxIndexCount,
+    LNHandle* outHandle
+);
+
+/**
+ * 動的メッシュの頂点データを更新します。
+ * @param[in] mesh         メッシュのハンドル
+ * @param[in] firstVertex  書き込み開始頂点インデックス
+ * @param[in] vertices     LNVertex 配列
+ * @param[in] count        頂点数
+ */
+extern LUMINO_API LNResult LNMesh_UpdateVertices(
+    LNHandle mesh,
+    uint32_t firstVertex,
+    const LNVertex* vertices,
+    uint32_t count
+);
+
+/**
+ * 動的メッシュのインデックスデータを更新します。
+ * @param[in] mesh        メッシュのハンドル
+ * @param[in] firstIndex  書き込み開始インデックスオフセット
+ * @param[in] indices     uint32_t インデックス配列
+ * @param[in] count       インデックス数
+ */
+extern LUMINO_API LNResult LNMesh_UpdateIndices(
+    LNHandle mesh,
+    uint32_t firstIndex,
+    const uint32_t* indices,
+    uint32_t count
+);
+
+/**
+ * メッシュのサブメッシュ配列を差し替えます。
+ * マテリアルスロットは必要に応じて拡張されます。
+ * @param[in] mesh          メッシュのハンドル
+ * @param[in] submeshes     LNSubMesh 配列
+ * @param[in] submeshCount  サブメッシュ数
+ */
+extern LUMINO_API LNResult LNMesh_SetSubMeshes(
+    LNHandle mesh,
+    const LNSubMesh* submeshes,
+    uint32_t submeshCount
 );
 
 /**
@@ -305,6 +361,19 @@ extern LUMINO_API LNResult LNCamera_Create(LNHandle* outHandle);
 extern LUMINO_API LNResult LNCamera_SetPerspective(
     LNHandle camera,
     float fovY, float aspect, float nearClip, float farClip
+);
+
+/**
+ * カメラに正射影投影を設定します。
+ * @param[in] camera   カメラのハンドル
+ * @param[in] width    投影幅
+ * @param[in] height   投影高さ
+ * @param[in] nearClip ニアクリップ距離
+ * @param[in] farClip  ファークリップ距離
+ */
+extern LUMINO_API LNResult LNCamera_SetOrthographic(
+    LNHandle camera,
+    float width, float height, float nearClip, float farClip
 );
 
 /**

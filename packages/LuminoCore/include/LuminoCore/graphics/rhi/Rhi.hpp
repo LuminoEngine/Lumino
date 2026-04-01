@@ -192,6 +192,7 @@ struct BufferDesc {
     u64 size = 0;
     BufferUsage usage = BufferUsage::Vertex;
     const void* initialData = nullptr;
+    bool mappable = false; ///< If true, buffer is host-visible even for Vertex/Index usage.
 };
 
 struct TextureDesc {

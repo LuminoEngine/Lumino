@@ -24,7 +24,7 @@ int main(void) {
     /* 4. Unlit Material */
     LNHandle material = LN_NULL_HANDLE;
     LNMaterial_CreateUnlit(graphicsContext, &material);
-    LNMaterial_SetTexture(material, texture);
+    LNMaterial_SetMainTexture(material, texture);
 
     /* 5. Quad mesh (4 vertices, 6 indices, CCW winding) */
     /*   v0(-0.5, 0.5) --- v1(0.5, 0.5)
