@@ -118,7 +118,7 @@ int main() {
         rpDesc.colorFormats = {ctx->colorFormat()};
 
         VertexBufferLayout vbl;
-        vbl.stride = sizeof(Vertex);
+        vbl.stride = sizeof(::Vertex);
         vbl.attributes = {
             {0, VertexFormat::Float32x2, 0},                     // position
             {1, VertexFormat::Float32x3, sizeof(float) * 2},     // color

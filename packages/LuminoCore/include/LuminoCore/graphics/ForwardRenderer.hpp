@@ -38,7 +38,7 @@ public:
     // ---- Access the underlying Renderer ----
 
     /** The core Renderer. Use this to implement custom multi-pass rendering. */
-    Renderer* renderer() const { return m_renderer.get(); }
+    Renderer* renderer() const { return m_renderer; }
 
     // ---- Forwarded Renderer API (convenience) ----
 
@@ -94,7 +94,7 @@ public:
 private:
     ForwardRenderer() = default;
 
-    Ref<Renderer> m_renderer;
+    Renderer* m_renderer = nullptr;  // non-owning; owned by GraphicsContext
 
     // Per-frame scene data allocator (lighting, set=1) — double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_sceneAllocator;

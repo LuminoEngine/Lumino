@@ -52,14 +52,6 @@ class GraphicsContext;
  */
 class Renderer : public Object {
 public:
-    /** Create from a GraphicsContext (uses its device, formats, and pipeline cache). */
-    static Result<Ref<Renderer>> create(GraphicsContext* ctx);
-
-    /** Create with an explicit device and formats. ctx may be nullptr if using beginFrame(cmd) explicitly. */
-    static Result<Ref<Renderer>> create(
-        rhi::Device* device,
-        rhi::TextureFormat colorFormat,
-        rhi::TextureFormat depthFormat);
 
     // ---- Layout accessors (for external BindGroup creation) ----
 
@@ -167,6 +159,10 @@ public:
     Result<void> drawScreenRect(Material* material);
 
 private:
+    friend class GraphicsContext;
+
+    static Result<Ref<Renderer>> create(GraphicsContext* ctx);
+
     Renderer() = default;
 
     rhi::TextureFormat m_colorFormat = {};

@@ -4,6 +4,7 @@
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/graphics/rhi/Rhi.hpp>
 #include <LuminoCore/graphics/PipelineCache.hpp>
+#include <LuminoCore/graphics/Renderer.hpp>
 #include <LuminoCore/platform/Window.hpp>
 
 namespace ln {
@@ -76,6 +77,9 @@ public:
 
     rhi::CommandBuffer* currentCommandBuffer() const;
 
+    /** Renderer owned by this context. */
+    Renderer* renderer() const { return m_renderer.get(); }
+
     // フレームスコープの一時状態 (BeginFrame〜EndFrame 間有効)
     rhi::CommandBuffer*        m_currentCmd         = nullptr;
     rhi::TextureView*          m_currentColorTarget = nullptr;
@@ -94,6 +98,7 @@ private:
     u32 m_width = 0;
     u32 m_height = 0;
     std::unique_ptr<PipelineCache> m_pipelineCache;
+    Ref<Renderer> m_renderer;
 };
 
 } // namespace ln

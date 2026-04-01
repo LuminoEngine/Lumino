@@ -19,7 +19,7 @@ int main(void) {
 
     /* 3. Renderer */
     LNHandle renderer = LN_NULL_HANDLE;
-    LNRenderer_Create(graphicsContext, &renderer);
+    LNGraphicsContext_GetRenderer(graphicsContext, &renderer);
 
     /* 4. Texture */
     LNHandle texture = LN_NULL_HANDLE;

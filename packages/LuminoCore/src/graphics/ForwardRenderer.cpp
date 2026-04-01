@@ -5,13 +5,9 @@
 namespace ln {
 
 Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
-    // Create the core Renderer first (also creates the view UBO internally).
-    auto rendererResult = Renderer::create(ctx);
-    if (!rendererResult) return tl::make_unexpected(rendererResult.error());
-
     auto fw   = Ref<ForwardRenderer>::adopt(new ForwardRenderer());
     fw->m_ctx      = ctx;
-    fw->m_renderer = std::move(*rendererResult);
+    fw->m_renderer = ctx->renderer();
 
     // ---- Dynamic UBO allocator for per-frame scene data (lighting, set=1) ----
     {

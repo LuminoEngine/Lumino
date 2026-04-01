@@ -441,7 +441,7 @@ LNResult LNCamera_SetLookAt(
 // LNRenderer
 //------------------------------------------------------------------------------
 
-LNResult LNRenderer_Create(LNHandle graphicsContext, LNHandle* outHandle) {
+LNResult LNGraphicsContext_GetRenderer(LNHandle graphicsContext, LNHandle* outHandle) {
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
@@ -451,11 +451,12 @@ LNResult LNRenderer_Create(LNHandle graphicsContext, LNHandle* outHandle) {
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
-    auto rendererResult = ln::Renderer::create(ctx);
-    if (!rendererResult) return LN_ERROR_UNKNOWN;
+    auto* renderer = ctx->renderer();
+    if (!renderer) return LN_ERROR_UNKNOWN;
 
-    auto renderer = std::move(*rendererResult);
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(renderer));
+    // Renderer is owned by GraphicsContext; add a reference for the C handle.
+    renderer->addRef();
+    LNHandle handle = instance->objectRegistry()->registerObject(ln::Ref<ln::Object>::adopt(renderer));
     if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
 
     *outHandle = handle;

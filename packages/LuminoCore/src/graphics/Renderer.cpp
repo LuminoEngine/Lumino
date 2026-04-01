@@ -60,16 +60,9 @@ static int16_t findConstantBufferSize(const shader::ParameterBlockLayout2& block
 // ------ Renderer::create ------------------------------------------------------------------------------------------
 
 Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
-    auto result = create(ctx->device(), ctx->colorFormat(), ctx->depthFormat());
-    if (!result) return tl::make_unexpected(result.error());
-    (*result)->m_ctx = ctx;
-    return result;
-}
-
-Result<Ref<Renderer>> Renderer::create(
-    rhi::Device* device,
-    rhi::TextureFormat colorFormat,
-    rhi::TextureFormat depthFormat) {
+    auto* device     = ctx->device();
+    auto  colorFormat = ctx->colorFormat();
+    auto  depthFormat = ctx->depthFormat();
 
     // Load BasicLit shader to extract BindGroupLayout info via reflection.
     auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(
@@ -187,6 +180,7 @@ Result<Ref<Renderer>> Renderer::create(
         renderer->m_objectAllocator = std::move(*r);
     }
 
+    renderer->m_ctx = ctx;
     return renderer;
 }
 

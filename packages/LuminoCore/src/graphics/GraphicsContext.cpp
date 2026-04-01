@@ -1,4 +1,5 @@
 ﻿#include <LuminoCore/graphics/GraphicsContext.hpp>
+#include <LuminoCore/graphics/Renderer.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <cstdio>
 
@@ -7,6 +8,8 @@ namespace ln {
 GraphicsContext::~GraphicsContext() {
     auto* dev = device();
     if (dev) {
+        // Destroy Renderer first (holds material cache, UBO allocators, etc.)
+        m_renderer.reset();
         if (m_pipelineCache) {
             m_pipelineCache->clear();
         }
@@ -65,6 +68,11 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     auto depthViewResult = dev->createTextureView(ctx->m_depthTexture.get());
     if (!depthViewResult) return tl::make_unexpected(depthViewResult.error());
     ctx->m_depthView = std::move(*depthViewResult);
+
+    // 3. Renderer
+    auto rendererResult = Renderer::create(ctx.get());
+    if (!rendererResult) return tl::make_unexpected(rendererResult.error());
+    ctx->m_renderer = std::move(*rendererResult);
 
     return ctx;
 }

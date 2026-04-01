@@ -322,11 +322,11 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
 //------------------------------------------------------------------------------
 
 /**
- * Renderer を作成します。
+ * GraphicsContext が所有する Renderer を取得します。
  * @param[in]  graphicsContext GraphicsContext のハンドル
- * @param[out] outHandle       作成された Renderer のハンドル
+ * @param[out] outHandle       Renderer のハンドル
  */
-extern LUMINO_API LNResult LNRenderer_Create(
+extern LUMINO_API LNResult LNGraphicsContext_GetRenderer(
     LNHandle graphicsContext,
     LNHandle* outHandle
 );
