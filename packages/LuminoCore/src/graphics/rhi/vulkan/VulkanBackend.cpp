@@ -984,6 +984,9 @@ void VulkanSwapChain::present() {
 VkSemaphore VulkanSwapChain::imageAvailableSemaphore() const { return m_imageAvailableSemaphores[m_currentFrame]; }
 VkSemaphore VulkanSwapChain::renderFinishedSemaphore() const { return m_renderFinished[m_currentFrame]; }
 
+CommandBuffer* VulkanSwapChain::getCurrentCommandBuffer() {
+    return m_commandBuffers[m_currentFrame].get();
+}
 
 // ------ VulkanCommandBuffer --------------------------------------------------------------------------------------------------
 
@@ -1498,11 +1501,6 @@ Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {
         return LN_MAKE_ERROR("Failed to initialize command buffer.");
     }
     return cb;
-}
-
-CommandBuffer* VulkanDevice::getCommandBuffer() {
-    if (!m_activeSwapChain) return nullptr;
-    return m_activeSwapChain->m_commandBuffers[m_activeSwapChain->currentFrame()].get();
 }
 
 void VulkanDevice::waitIdle() {

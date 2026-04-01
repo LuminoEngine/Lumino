@@ -427,6 +427,9 @@ public:
     virtual void present() = 0;
     virtual u32 width() const = 0;
     virtual u32 height() const = 0;
+
+    /** 現在のフレームの CommandBuffer を取得します。InFrightFrame ごとにインスタンスは変わります。 */
+    virtual CommandBuffer* getCurrentCommandBuffer() = 0;
 };
 
 // ------ Device Limits -----------------------------------------------------------------------------------------------------------
@@ -459,10 +462,6 @@ public:
     virtual Result<Ref<BindGroup>> createBindGroup(const BindGroupDesc& desc) = 0;
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
-
-    /** Create a command buffer for this frame. */
-    //virtual CommandBuffer* createCommandBuffer() = 0;
-    virtual CommandBuffer* getCommandBuffer() = 0;
 
     /** Wait for the device to become idle. */
     virtual void waitIdle() = 0;

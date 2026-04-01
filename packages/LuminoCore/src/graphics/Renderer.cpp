@@ -197,7 +197,7 @@ void Renderer::beginFrame() {
     m_currentFrameSlot = frame % 2;
     m_viewAllocator->beginFrame(frame);
     m_objectAllocator->beginFrame(frame);
-    m_currentCmd = m_ctx->device()->getCommandBuffer();
+    m_currentCmd = m_ctx->currentCommandBuffer();
 }
 
 void Renderer::endFrame() {

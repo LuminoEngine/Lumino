@@ -74,6 +74,8 @@ public:
     /** Current framebuffer height in pixels. */
     u32 height() const { return m_height; }
 
+    rhi::CommandBuffer* currentCommandBuffer() const;
+
     // フレームスコープの一時状態 (BeginFrame〜EndFrame 間有効)
     rhi::CommandBuffer*        m_currentCmd         = nullptr;
     rhi::TextureView*          m_currentColorTarget = nullptr;

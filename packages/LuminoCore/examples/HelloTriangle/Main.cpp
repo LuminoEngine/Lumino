@@ -133,7 +133,7 @@ int main() {
         while (window->processEvents()) {
             auto frame = *ctx->beginFrame();
 
-            auto* cmd = device->getCommandBuffer();
+            auto* cmd = ctx->currentCommandBuffer();
 
             RenderPassDesc passDesc;
             passDesc.colorAttachments.push_back({

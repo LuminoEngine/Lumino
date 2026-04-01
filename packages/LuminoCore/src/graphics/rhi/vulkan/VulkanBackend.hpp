@@ -281,6 +281,7 @@ public:
     VkSemaphore renderFinishedSemaphore() const;
     u32 currentImageIndex() const { return m_imageIndex; }
     u32 currentFrame() const { return m_currentFrame; }
+    CommandBuffer* getCurrentCommandBuffer() override;
 
 public:
     struct SwapChainSupportDetails {
@@ -396,7 +397,6 @@ public:
     }
 
     Result<Ref<VulkanCommandBuffer>> createCommandBuffer();
-    CommandBuffer* getCommandBuffer() override;
 
 protected:
     void finalize() override;

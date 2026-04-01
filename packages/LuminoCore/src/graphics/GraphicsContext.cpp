@@ -19,6 +19,10 @@ rhi::Device* GraphicsContext::device() const {
     return inst ? inst->device() : nullptr;
 }
 
+rhi::CommandBuffer* GraphicsContext::currentCommandBuffer() const {
+    return m_swapChain->getCurrentCommandBuffer();
+}
+
 Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     platform::PlatformWindow* window,
     const GraphicsContextDesc& desc)
