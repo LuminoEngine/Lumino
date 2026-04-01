@@ -44,7 +44,8 @@ int main(void) {
         if (result != LN_OK || !cont) break;
 
         // フレーム開始
-        result = LNGraphicsContext_BeginFrame(graphicsContext);
+        LNHandle renderer;
+        result = LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
         if (result != LN_OK) break;
 
         // レンダーパス開始 (ライトグリーンでクリア)

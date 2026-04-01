@@ -1,4 +1,5 @@
 ﻿#include "pch.hpp"
+#include <unordered_map>
 #include <LuminoBase.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Object.hpp>
@@ -27,6 +28,34 @@ public:
     ln::Camera camera;
 };
 
+/**
+ * Object が未登録の場合、登録して LNHandle を返します。
+ * 登録されている場合は、既存の LNHandle を返します。
+ * 
+ * この関数は Object の所有権をクライアントに渡す時に使います。
+ * クライアントは LNObject_Release を呼び出してオブジェクトを解放する責任があります。
+ */
+LNHandle wrapObjectFromCreate(ln::Object* object) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_NULL_HANDLE;
+    LNHandle handle = instance->objectRegistry()->registerObject(object);
+    object->addRef(); // 登録後に参照カウントを増やす
+    return handle;
+}
+
+/**
+ * Object が未登録の場合、登録して LNHandle を返します。
+ * 登録されている場合は、既存の LNHandle を返します。
+ * 
+ * この関数は Object の所有権をクライアントに渡さない時に使います。
+ * 例えば GraphicsContext が内部で所有している Renderer 等のオブジェクトをクライアントに渡す場合などです。
+ */
+LNHandle wrapObjectFromGet(ln::Object* object) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_NULL_HANDLE;
+    return instance->objectRegistry()->registerObject(object);
+}
+
 } // anonymous namespace
 
 //------------------------------------------------------------------------------
@@ -48,9 +77,9 @@ LNResult LNObject_Release(LNHandle handle) {
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
     if (handle == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
 
-    if (!instance->objectRegistry()->release(handle))
+    if (!instance->objectRegistry()->release(handle)) {
         return LN_ERROR_INVALID_HANDLE;
-
+    }
     return LN_OK;
 }
 
@@ -66,7 +95,7 @@ LNResult LNTexture2D_Create(
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
     auto texture = ln::Ref<ln::Texture2D>::adopt(LN_NEW ln::Texture2D(width, height, format));
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(texture));
+    LNHandle handle = instance->objectRegistry()->registerObject(texture.get());
     if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
 
     *outHandle = handle;
@@ -94,15 +123,10 @@ LNResult LNWindow_Create(
     winDesc.height = height;
 
     ln::GraphicsContextDesc gfxDesc;
-
     auto windowResult = ln::platform::PlatformWindow::create(winDesc, gfxDesc);
     if (!windowResult) return LN_ERROR_UNKNOWN;
 
-    auto obj = std::move(*windowResult);
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(obj));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outHandle = handle;
+    *outHandle = wrapObjectFromCreate(windowResult->get());
     return LN_OK;
 }
 
@@ -130,22 +154,10 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
     auto* obj = instance->objectRegistry()->resolve<ln::platform::PlatformWindow>(window);
     if (!obj) return LN_ERROR_INVALID_HANDLE;
 
-    auto* ctx = obj->graphicsContext();
+    ln::GraphicsContext* ctx = obj->graphicsContext();
     if (!ctx) return LN_ERROR_UNKNOWN;
 
-    // 既に登録済みの場合はハンドルを再構成して返す
-    if (ctx->generation() != 0) {
-        *outHandle = ln::ObjectRegistry::makeHandle(ctx->registryIndex(), ctx->generation());
-        return LN_OK;
-    }
-
-    // 初回登録: window が所有しているので addRef してから登録する
-    ctx->addRef();
-    LNHandle handle = instance->objectRegistry()->registerObject(
-        ln::Ref<ln::GraphicsContext>::adopt(ctx));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outHandle = handle;
+    *outHandle = wrapObjectFromGet(ctx);
     return LN_OK;
 }
 
@@ -153,7 +165,10 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
 // LNGraphicsContext
 //------------------------------------------------------------------------------
 
-LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext) {
+LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, LNHandle* outRenderer) {
+    if (!outRenderer) return LN_ERROR_INVALID_ARGUMENT;
+    *outRenderer = LN_NULL_HANDLE;
+
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -168,6 +183,11 @@ LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext) {
     ctx->m_currentCmd = ctx->currentCommandBuffer();
     if (!ctx->m_currentCmd) return LN_ERROR_UNKNOWN;
 
+    // Renderer ハンドルをキャッシュから取得、または初回登録する
+    auto* renderer = ctx->renderer();
+    renderer->beginFrame();
+
+    *outRenderer = wrapObjectFromGet(renderer);
     return LN_OK;
 }
 
@@ -217,15 +237,15 @@ LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext) {
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (graphicsContext == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
 
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
     if (!ctx || !ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
 
+    ctx->renderer()->endFrame();
     ctx->m_currentCmd->submit();
     ctx->m_currentCmd = nullptr;
-
     ctx->endFrame();
-
     return LN_OK;
 }
 
@@ -253,11 +273,7 @@ LNResult LNTexture2D_LoadFromFile(
     // TODO: extract actual width/height from rhi::Texture if accessor is available
     auto texture = ln::Ref<ln::Texture2D>::adopt(
         LN_NEW ln::Texture2D(std::move(rhiTexture), 0, 0));
-
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(texture));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outHandle = handle;
+    *outHandle = wrapObjectFromCreate(texture.get());
     return LN_OK;
 }
 
@@ -277,12 +293,7 @@ LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
 
     auto matResult = ln::MaterialFactory::createUnlit(ctx);
     if (!matResult) return LN_ERROR_UNKNOWN;
-
-    auto material = std::move(*matResult);
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(material));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outHandle = handle;
+    *outHandle = wrapObjectFromCreate(matResult->get());
     return LN_OK;
 }
 
@@ -359,12 +370,7 @@ LNResult LNMesh_Create(
 
     auto meshResult = ln::Mesh::create(ctx->device(), verts, idx, subs);
     if (!meshResult) return LN_ERROR_UNKNOWN;
-
-    auto mesh = std::move(*meshResult);
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(mesh));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outHandle = handle;
+    *outHandle = wrapObjectFromCreate(meshResult->get());
     return LN_OK;
 }
 
@@ -400,10 +406,7 @@ LNResult LNCamera_Create(LNHandle* outHandle) {
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
     auto camObj = ln::Ref<CameraObject>::adopt(LN_NEW CameraObject());
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(camObj));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outHandle = handle;
+    *outHandle = wrapObjectFromCreate(camObj.get());
     return LN_OK;
 }
 
@@ -440,50 +443,6 @@ LNResult LNCamera_SetLookAt(
 //------------------------------------------------------------------------------
 // LNRenderer
 //------------------------------------------------------------------------------
-
-LNResult LNGraphicsContext_GetRenderer(LNHandle graphicsContext, LNHandle* outHandle) {
-    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
-    *outHandle = LN_NULL_HANDLE;
-
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-
-    auto* renderer = ctx->renderer();
-    if (!renderer) return LN_ERROR_UNKNOWN;
-
-    // Renderer is owned by GraphicsContext; add a reference for the C handle.
-    renderer->addRef();
-    LNHandle handle = instance->objectRegistry()->registerObject(ln::Ref<ln::Object>::adopt(renderer));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outHandle = handle;
-    return LN_OK;
-}
-
-LNResult LNRenderer_BeginFrame(LNHandle renderer) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
-    if (!r) return LN_ERROR_INVALID_HANDLE;
-
-    r->beginFrame();
-    return LN_OK;
-}
-
-LNResult LNRenderer_EndFrame(LNHandle renderer) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
-    if (!r) return LN_ERROR_INVALID_HANDLE;
-
-    r->endFrame();
-    return LN_OK;
-}
 
 LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer, LNHandle graphicsContext,

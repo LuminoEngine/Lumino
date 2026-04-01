@@ -27,7 +27,7 @@ TEST_F(Test_ObjectRegistry, RegisterAndResolve) {
     auto obj = ln::Ref<TestObject>::adopt(new TestObject(42));
     auto* raw = obj.get();
 
-    ln::LNHandle handle = registry()->registerObject(std::move(obj));
+    ln::LNHandle handle = registry()->registerObject(obj.get());
     EXPECT_NE(handle, ln::LN_NULL_HANDLE);
 
     auto* resolved = registry()->resolve(handle);
@@ -43,7 +43,7 @@ TEST_F(Test_ObjectRegistry, NullHandleResolvesNull) {
 
 TEST_F(Test_ObjectRegistry, ReleaseInvalidatesHandle) {
     auto obj = ln::Ref<TestObject>::adopt(new TestObject(1));
-    ln::LNHandle handle = registry()->registerObject(std::move(obj));
+    ln::LNHandle handle = registry()->registerObject(obj.get());
 
     EXPECT_TRUE(registry()->release(handle));
     // 解放後は同じハンドルで resolve できない（世代番号が変わっている）
@@ -54,12 +54,12 @@ TEST_F(Test_ObjectRegistry, ReleaseInvalidatesHandle) {
 
 TEST_F(Test_ObjectRegistry, SlotReuseInvalidatesOldHandle) {
     auto obj1 = ln::Ref<TestObject>::adopt(new TestObject(1));
-    ln::LNHandle handle1 = registry()->registerObject(std::move(obj1));
+    ln::LNHandle handle1 = registry()->registerObject(obj1.get());
     EXPECT_TRUE(registry()->release(handle1));
 
     // 新しいオブジェクトがスロットを再利用
     auto obj2 = ln::Ref<TestObject>::adopt(new TestObject(2));
-    ln::LNHandle handle2 = registry()->registerObject(std::move(obj2));
+    ln::LNHandle handle2 = registry()->registerObject(obj2.get());
 
     // 新旧で異なるハンドル（同じインデックスでも世代番号が異なる）
     EXPECT_NE(handle1, handle2);
@@ -79,10 +79,10 @@ TEST_F(Test_ObjectRegistry, SizeTracking) {
     auto obj1 = ln::Ref<TestObject>::adopt(new TestObject(1));
     auto obj2 = ln::Ref<TestObject>::adopt(new TestObject(2));
 
-    ln::LNHandle h1 = registry()->registerObject(std::move(obj1));
+    ln::LNHandle h1 = registry()->registerObject(obj1.get());
     EXPECT_EQ(registry()->size(), 1u);
 
-    ln::LNHandle h2 = registry()->registerObject(std::move(obj2));
+    ln::LNHandle h2 = registry()->registerObject(obj2.get());
     EXPECT_EQ(registry()->size(), 2u);
 
     registry()->release(h1);

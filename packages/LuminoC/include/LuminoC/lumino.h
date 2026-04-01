@@ -117,10 +117,13 @@ extern LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, int* outConti
 //------------------------------------------------------------------------------
 
 /**
- * フレームの描画を開始します。
- * @param[in] graphicsContext GraphicsContext のハンドル
+ * フレームの描画を開始します。内部で Renderer の beginFrame も呼び出します。
+ * 返された renderer ハンドルは graphicsContext が管理するため、
+ * LNObject_Release を呼ぶ必要はありません。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[out] outRenderer     Renderer のハンドル
  */
-extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext);
+extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, LNHandle* outRenderer);
 
 /**
  * レンダーパスを開始します。指定したカラーでレンダーターゲットをクリアします。
@@ -141,7 +144,8 @@ extern LUMINO_API LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsCont
 
 /**
  * フレームの描画を終了し、画面に表示します。
- * @param[in] graphicsContext GraphicsContext のハンドル
+ * 内部で Renderer の endFrame と GPU コマンド送信も行います。
+ * LNGraphicsContext_BeginFrame を呼んだフレームに対応して呼び出してください。
  */
 extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 
@@ -320,28 +324,6 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
 //------------------------------------------------------------------------------
 // LNRenderer
 //------------------------------------------------------------------------------
-
-/**
- * GraphicsContext が所有する Renderer を取得します。
- * @param[in]  graphicsContext GraphicsContext のハンドル
- * @param[out] outHandle       Renderer のハンドル
- */
-extern LUMINO_API LNResult LNGraphicsContext_GetRenderer(
-    LNHandle graphicsContext,
-    LNHandle* outHandle
-);
-
-/**
- * フレームを開始します。フレーム毎のアロケータをリセットし、コマンドバッファを取得します。
- * @param[in] renderer Renderer のハンドル
- */
-extern LUMINO_API LNResult LNRenderer_BeginFrame(LNHandle renderer);
-
-/**
- * フレームを終了し、記録したコマンドを GPU に送信します。
- * @param[in] renderer Renderer のハンドル
- */
-extern LUMINO_API LNResult LNRenderer_EndFrame(LNHandle renderer);
 
 /**
  * レンダーパスを開始します。カメラデータを set=0 View UBO に自動アップロードします。

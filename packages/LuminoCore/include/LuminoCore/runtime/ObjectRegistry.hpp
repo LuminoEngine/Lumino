@@ -29,7 +29,8 @@ public:
     ~ObjectRegistry();
 
     /** オブジェクトを登録しハンドルを返す。レジストリが Ref で所有権を持つ。 */
-    LNHandle registerObject(Ref<Object> obj);
+    LNHandle registerObject(Object* obj);
+    LNHandle wrapOrRegisterObject(Object* obj);
 
     /** ハンドルからオブジェクトポインタを解決する。無効なハンドルは nullptr を返す。 */
     Object* resolve(LNHandle handle) const;
@@ -66,7 +67,7 @@ public:
 
 private:
     struct Slot {
-        Ref<Object> object;
+        Object* object;
         uint16_t generation = 1;
     };
 
