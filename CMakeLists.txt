@@ -41,10 +41,10 @@ endif()
 #-------------------------------------------------------------------------------
 # packages
 #-------------------------------------------------------------------------------
-add_subdirectory(packages/lumino_base)
-add_subdirectory(packages/lumino_shader)
-add_subdirectory(packages/lumino_core)
-add_subdirectory(packages/lumino_api)
+add_subdirectory(packages/LuminoBase)
+add_subdirectory(packages/LuminoShader)
+add_subdirectory(packages/LuminoCore)
+add_subdirectory(packages/LuminoC)
 add_subdirectory(packages/luminosc)
 
 #-------------------------------------------------------------------------------

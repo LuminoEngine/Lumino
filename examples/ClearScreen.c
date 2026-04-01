@@ -6,7 +6,7 @@
  * このサンプルは C_API (lumino_api) のみを使って記述しています。
  */
 
-#include <lumino_api/lumino.h>
+#include <LuminoC/lumino.h>
 #include <stdio.h>
 
 int main(void) {

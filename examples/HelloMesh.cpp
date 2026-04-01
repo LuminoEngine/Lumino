@@ -6,14 +6,14 @@
  * 高レベル API のみで描画を行う。
  */
 
-#include <lumino_core/platform/Window.hpp>
-#include <lumino_core/graphics/GraphicsContext.hpp>
-#include <lumino_core/graphics/ForwardRenderer.hpp>
-#include <lumino_core/graphics/Camera.hpp>
-#include <lumino_core/graphics/Mesh.hpp>
-#include <lumino_core/graphics/Material.hpp>
-#include <lumino_core/graphics/Vertex.hpp>
-#include <lumino_core/graphics/Transform.hpp>
+#include <LuminoCore/platform/Window.hpp>
+#include <LuminoCore/graphics/GraphicsContext.hpp>
+#include <LuminoCore/graphics/ForwardRenderer.hpp>
+#include <LuminoCore/graphics/Camera.hpp>
+#include <LuminoCore/graphics/Mesh.hpp>
+#include <LuminoCore/graphics/Material.hpp>
+#include <LuminoCore/graphics/Vertex.hpp>
+#include <LuminoCore/graphics/Transform.hpp>
 
 #include <cstdio>
 #include <vector>

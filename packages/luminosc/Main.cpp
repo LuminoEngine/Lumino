@@ -8,10 +8,10 @@
 #include <CLI/CLI.hpp>
 
 #ifdef LUMINO_USE_SLANG
-#include <lumino_shader/ShaderCompiler2.hpp>
+#include <LuminoShader/ShaderCompiler2.hpp>
 #endif
-#include <lumino_shader/UnifiedShader2.hpp>
-#include <lumino_shader/UnifiedShaderSerializer2.hpp>
+#include <LuminoShader/UnifiedShader2.hpp>
+#include <LuminoShader/UnifiedShaderSerializer2.hpp>
 
 namespace fs = std::filesystem;
 using namespace ln;

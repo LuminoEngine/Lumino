@@ -9,11 +9,11 @@
  * 低レベル RHI (Buffer, Pipeline 等) は ctx->device() 経由で使用する。
  */
 
-#include <lumino_core/platform/Window.hpp>
-#include <lumino_core/graphics/GraphicsContext.hpp>
-#include <lumino_core/graphics/rhi/Rhi.hpp>
-#include <lumino_shader/ShaderCompiler2.hpp>
-#include <lumino_shader/UnifiedShader2.hpp>
+#include <LuminoCore/platform/Window.hpp>
+#include <LuminoCore/graphics/GraphicsContext.hpp>
+#include <LuminoCore/graphics/rhi/Rhi.hpp>
+#include <LuminoShader/ShaderCompiler2.hpp>
+#include <LuminoShader/UnifiedShader2.hpp>
 
 #include <cstdio>
 #include <cstdlib>
@@ -59,7 +59,7 @@ int main() {
     vbDesc.initialData = s_vertices;
     auto vertexBuffer = *device->createBuffer(vbDesc);
 
-    // 3. シェーダーコンパイル (lumino_shader)
+    // 3. シェーダーコンパイル
     auto compiler = *ln::shader::ShaderCompiler2::create();
     compiler->build(SHADER_FILE);
 
