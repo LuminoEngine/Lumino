@@ -88,11 +88,12 @@ Result<Ref<Renderer>> Renderer::create(
     }
 
     auto* viewBlock     = findParameterBlock(unifiedShader.get(), "viewData");
+    auto* sceneBlock    = findParameterBlock(unifiedShader.get(), "sceneData");
     auto* materialBlock = findParameterBlock(unifiedShader.get(), "materialData");
     auto* objectBlock   = findParameterBlock(unifiedShader.get(), "objectData");
-    if (!viewBlock || !materialBlock || !objectBlock) {
+    if (!viewBlock || !sceneBlock || !materialBlock || !objectBlock) {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError,
-            "Missing required ParameterBlocks (viewData, materialData, objectData)"});
+            "Missing required ParameterBlocks (viewData, sceneData, materialData, objectData)"});
     }
 
     int16_t objectCBSize = findConstantBufferSize(*objectBlock);
@@ -106,7 +107,7 @@ Result<Ref<Renderer>> Renderer::create(
     renderer->m_depthFormat   = depthFormat;
     renderer->m_objectUBOSize = static_cast<u64>(objectCBSize);
 
-    // ---- Set 0: View BindGroupLayout ----
+    // ---- Set 0: View BindGroupLayout (camera) ----
     {
         auto desc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
         auto r    = device->createBindGroupLayout(desc);
@@ -114,7 +115,15 @@ Result<Ref<Renderer>> Renderer::create(
         renderer->m_viewBindGroupLayout = std::move(*r);
     }
 
-    // ---- Set 1: Material BindGroupLayout (used only for PipelineLayout construction) ----
+    // ---- Set 1: Scene BindGroupLayout (lighting, etc.) ----
+    {
+        auto desc = buildBindGroupLayoutFromReflection(*sceneBlock, targetPass->bindingLayout);
+        auto r    = device->createBindGroupLayout(desc);
+        if (!r) return tl::make_unexpected(r.error());
+        renderer->m_sceneBindGroupLayout = std::move(*r);
+    }
+
+    // ---- Set 2: Material BindGroupLayout (used only for PipelineLayout construction) ----
     Ref<rhi::BindGroupLayout> matBGL;
     {
         auto desc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
@@ -123,7 +132,7 @@ Result<Ref<Renderer>> Renderer::create(
         matBGL = std::move(*r);
     }
 
-    // ---- Set 2: Object BindGroupLayout (dynamic UBO) ----
+    // ---- Set 3: Object BindGroupLayout (dynamic UBO) ----
     {
         auto desc = buildBindGroupLayoutFromReflection(*objectBlock, targetPass->bindingLayout);
         for (auto& entry : desc.entries) {
@@ -136,17 +145,38 @@ Result<Ref<Renderer>> Renderer::create(
         renderer->m_objectBindGroupLayout = std::move(*r);
     }
 
-    // ---- PipelineLayout (Set 0, 1, 2) ----
+    // ---- PipelineLayout (Set 0, 1, 2, 3) ----
     {
         rhi::PipelineLayoutDesc plDesc;
         plDesc.bindGroupLayouts = {
             renderer->m_viewBindGroupLayout.get(),
+            renderer->m_sceneBindGroupLayout.get(),
             matBGL.get(),
             renderer->m_objectBindGroupLayout.get(),
         };
         auto r = device->createPipelineLayout(plDesc);
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_pipelineLayout = std::move(*r);
+    }
+
+    // ---- View UBO (camera data, set=0) ----
+    {
+        renderer->m_viewUBOSize = sizeof(ViewParamsUBO);
+        rhi::BufferDesc bufDesc;
+        bufDesc.size  = renderer->m_viewUBOSize;
+        bufDesc.usage = rhi::BufferUsage::Uniform;
+        auto r = device->createBuffer(bufDesc);
+        if (!r) return tl::make_unexpected(r.error());
+        renderer->m_viewUBO = std::move(*r);
+
+        rhi::BindGroupDesc bgDesc;
+        bgDesc.layout  = renderer->m_viewBindGroupLayout.get();
+        bgDesc.entries = {
+            {0, renderer->m_viewUBO.get(), 0, renderer->m_viewUBOSize, nullptr, nullptr},
+        };
+        auto bgr = device->createBindGroup(bgDesc);
+        if (!bgr) return tl::make_unexpected(bgr.error());
+        renderer->m_viewBindGroup = std::move(*bgr);
     }
 
     // ---- Dynamic UBO allocator for per-object data ----
@@ -174,6 +204,31 @@ void Renderer::endFrame() {
 }
 
 // ------ Pass lifecycle --------------------------------------------------------------------------------------------
+
+void Renderer::beginRenderPass(
+    rhi::TextureView* colorTarget,
+    rhi::TextureView* depthTarget,
+    const Camera& camera,
+    const Color& clearColor) {
+
+    // Upload camera data to view UBO.
+    ViewParamsUBO viewParams{};
+    Matrix4x4 vp = camera.viewProjectionMatrix();
+    std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
+    Vector3 camPos = camera.position();
+    viewParams.cameraPos[0] = camPos.x;
+    viewParams.cameraPos[1] = camPos.y;
+    viewParams.cameraPos[2] = camPos.z;
+    viewParams.cameraPos[3] = 0.0f;
+    void* mapped = m_viewUBO->map();
+    if (mapped) {
+        std::memcpy(mapped, &viewParams, sizeof(viewParams));
+        m_viewUBO->unmap();
+    }
+
+    beginRenderPass(colorTarget, depthTarget, clearColor);
+    setPassBindGroup(0, m_viewBindGroup.get());
+}
 
 void Renderer::beginRenderPass(
     rhi::TextureView* colorTarget,
@@ -303,8 +358,8 @@ Result<void> Renderer::drawSubmesh(
     // After setPipeline, flush any pending pass-scoped bind groups.
     flushPassBindGroups();
 
-    m_currentPass->setBindGroup(1, mat->materialBindGroup());
-    m_currentPass->setBindGroup(2, alloc.bindGroup, &alloc.dynamicOffset, 1);
+    m_currentPass->setBindGroup(2, mat->materialBindGroup());
+    m_currentPass->setBindGroup(3, alloc.bindGroup, &alloc.dynamicOffset, 1);
     m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
 
     return {};

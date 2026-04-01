@@ -8,27 +8,31 @@
 
 namespace ln {
 
-/** GPU-aligned view params (Set 0): must match shader ViewParams struct. */
+/** GPU-aligned view params (Set 0 — camera): must match shader ViewParams struct. */
 struct ViewParamsUBO {
     f32 viewProj[16];
     f32 cameraPos[4];
+};
+
+/** GPU-aligned scene params (Set 1 — lighting): must match shader SceneParams struct. */
+struct SceneParamsUBO {
     f32 lightDir[4];
     f32 lightColor[4];
     f32 ambientColor[4];
 };
 
-/** GPU-aligned material params for Unlit (Set 1). */
+/** GPU-aligned material params for Unlit (Set 2). */
 struct UnlitMaterialParamsUBO {
     f32 color[4];
 };
 
-/** GPU-aligned material params for BasicLit (Set 1). */
+/** GPU-aligned material params for BasicLit (Set 2). */
 struct BasicLitMaterialParamsUBO {
     f32 color[4];
     f32 specular[4]; // xyz = specular color, w = shininess
 };
 
-/** GPU-aligned object params (Set 2): must match shader ObjectParams struct. */
+/** GPU-aligned object params (Set 3): must match shader ObjectParams struct. */
 struct ObjectParamsUBO {
     f32 world[16];
     f32 normalMatrix[16];
@@ -41,7 +45,7 @@ enum class MaterialType {
 
 /**
  * Material: shader + parameters + render state + textures.
- * Manages a RenderPipeline and per-material BindGroup (Set 1).
+ * Manages a RenderPipeline and per-material BindGroup (Set 2).
  */
 class Material : public Object {
 public:
@@ -87,7 +91,7 @@ private:
     std::string m_vertEntry;
     std::string m_fragEntry;
 
-    // BindGroup for material (Set 1)
+    // BindGroup for material (Set 2)
     Ref<rhi::BindGroupLayout> m_materialBindGroupLayout;
     Ref<rhi::BindGroup> m_materialBindGroup;
 

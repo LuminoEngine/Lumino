@@ -3,6 +3,7 @@
 #include <LuminoBase/Result.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/graphics/rhi/Rhi.hpp>
+#include <LuminoCore/graphics/Camera.hpp>
 #include <LuminoCore/graphics/Material.hpp>
 #include <LuminoCore/graphics/Mesh.hpp>
 #include <LuminoCore/graphics/Transform.hpp>
@@ -13,33 +14,34 @@ namespace ln {
 class GraphicsContext;
 
 /**
- * Mid-level multi-pass renderer.
+ * 中級マルチパスレンダラー。
  *
- * Manages per-object dynamic UBO allocation, pipeline caching, and
- * RenderPass encoding. Clients can implement custom multi-pass rendering
- * strategies (G-Buffer, clustered lighting, post-effects, etc.) without
- * subclassing.
+ * オブジェクトごとの動的UBO割り当て、パイプラインキャッシュ、および
+ * RenderPassエンコーディングを管理します。クライアントは、サブクラス化することなく、
+ * カスタムマルチパスレンダリング戦略（Gバッファ、クラスタ化ライティング、ポストエフェクトなど）を実装できます。
  *
- * Designed to be C-API friendly: all state is passed explicitly per call.
+ * C-APIフレンドリーな設計：すべての状態は呼び出しごとに明示的に渡されます。
  *
- * The 3-set BindGroup convention used internally:
- *   - Set 0: per-pass data (view, scene) — supplied by the client via setPassBindGroup()
- *   - Set 1: per-material data            — taken from Material::materialBindGroup()
- *   - Set 2: per-object data (dynamic UBO) — managed internally by Renderer
+ * 内部で使用される4セットBindGroup規約：
+ * - セット0：視点データ（カメラ行列）— beginRenderPass(camera) で自動設定、または setPassBindGroup(0) で上書き可
+ * - セット1：シーン環境データ（ライティング等）— setPassBindGroup(1) を介してクライアントから提供されます
+ * - セット2：マテリアルごとのデータ— Material::materialBindGroup() から取得されます
+ * - セット3：オブジェクトごとのデータ（動的UBO）— Rendererによって内部的に管理されます
  *
  * Usage:
  * @code
  *   renderer->beginFrame();
  *
- *   renderer->beginRenderPass(colorTarget, depthTarget, clearColor);
- *   renderer->setPassBindGroup(0, viewBindGroup);
+ *   // 3Dパス: カメラを渡すと set=0 (ViewUBO) が自動設定される
+ *   renderer->beginRenderPass(colorTarget, depthTarget, camera, clearColor);
+ *   renderer->setPassBindGroup(1, sceneBindGroup);  // ライティング等
  *   for (auto& obj : objects) {
  *       renderer->drawMesh(obj.mesh.get(), obj.transform);
  *   }
  *   renderer->endRenderPass();
  *
+ *   // ポストエフェクトパス: カメラ不要
  *   renderer->beginRenderPass(screenTarget, nullptr, Color::black());
- *   renderer->setPassBindGroup(0, postBindGroup);
  *   renderer->drawScreenRect(postMaterial.get());
  *   renderer->endRenderPass();
  *
@@ -59,16 +61,19 @@ public:
 
     // ---- Layout accessors (for external BindGroup creation) ----
 
-    /** Shared PipelineLayout (3 sets: view, material, object). */
+    /** Shared PipelineLayout (4 sets: view, scene, material, object). */
     rhi::PipelineLayout* pipelineLayout() const { return m_pipelineLayout.get(); }
 
-    /**
-     * BindGroupLayout for set=0 (view/scene data).
-     * Use this to create BindGroups for setPassBindGroup(0, ...).
-     */
+    /** BindGroupLayout for set=0 (camera/view data). */
     rhi::BindGroupLayout* viewBindGroupLayout() const { return m_viewBindGroupLayout.get(); }
 
-    /** BindGroupLayout for set=2 (per-object dynamic UBO). */
+    /**
+     * BindGroupLayout for set=1 (scene environment data: lighting, etc.).
+     * Use this to create BindGroups for setPassBindGroup(1, ...).
+     */
+    rhi::BindGroupLayout* sceneBindGroupLayout() const { return m_sceneBindGroupLayout.get(); }
+
+    /** BindGroupLayout for set=3 (per-object dynamic UBO). */
     rhi::BindGroupLayout* objectBindGroupLayout() const { return m_objectBindGroupLayout.get(); }
 
     /** Color format this renderer was created with. */
@@ -95,9 +100,21 @@ public:
 
     /**
      * Begin a render pass targeting the given attachments.
+     * Camera data is uploaded to the internal View UBO and set=0 is bound automatically.
      * @param colorTarget  Color attachment (required).
      * @param depthTarget  Depth attachment (nullptr to skip depth, e.g. for post-effects).
+     * @param camera       Camera to upload to set=0 View UBO.
      * @param clearColor   Clear color applied to the color attachment.
+     */
+    void beginRenderPass(
+        rhi::TextureView* colorTarget,
+        rhi::TextureView* depthTarget,
+        const Camera& camera,
+        const Color& clearColor = Color{0, 0, 0, 1});
+
+    /**
+     * Begin a render pass without a camera (e.g. post-processing passes).
+     * set=0 is not automatically bound; use setPassBindGroup(0, ...) if needed.
      */
     void beginRenderPass(
         rhi::TextureView* colorTarget,
@@ -149,8 +166,14 @@ private:
 
     // Layouts
     Ref<rhi::BindGroupLayout> m_viewBindGroupLayout;
+    Ref<rhi::BindGroupLayout> m_sceneBindGroupLayout;
     Ref<rhi::BindGroupLayout> m_objectBindGroupLayout;
     Ref<rhi::PipelineLayout>  m_pipelineLayout;
+
+    // Per-frame view UBO (camera data, set=0)
+    u64 m_viewUBOSize = 0;
+    Ref<rhi::Buffer>    m_viewUBO;
+    Ref<rhi::BindGroup> m_viewBindGroup;
 
     // Object UBO size (from shader reflection)
     u64 m_objectUBOSize = 0;

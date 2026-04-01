@@ -27,13 +27,6 @@ public:
     ln::Camera camera;
 };
 
-/** RHI BindGroup + backing Buffer をハンドル管理に載せるラッパー。 */
-class BindGroupObject : public ln::Object {
-public:
-    ln::Ref<ln::rhi::Buffer> buffer;
-    ln::Ref<ln::rhi::BindGroup> bindGroup;
-};
-
 } // anonymous namespace
 
 //------------------------------------------------------------------------------
@@ -509,6 +502,7 @@ LNResult LNRenderer_EndFrame(LNHandle renderer) {
 
 LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer, LNHandle graphicsContext,
+    LNHandle camera,
     float r, float g, float b, float a) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
@@ -519,10 +513,20 @@ LNResult LNRenderer_BeginRenderPass(
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
-    ren->beginRenderPass(
-        ctx->m_currentColorTarget,
-        ctx->m_currentDepthTarget,
-        ln::Color{r, g, b, a});
+    if (camera != LN_NULL_HANDLE) {
+        auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+        if (!camObj) return LN_ERROR_INVALID_HANDLE;
+        ren->beginRenderPass(
+            ctx->m_currentColorTarget,
+            ctx->m_currentDepthTarget,
+            camObj->camera,
+            ln::Color{r, g, b, a});
+    } else {
+        ren->beginRenderPass(
+            ctx->m_currentColorTarget,
+            ctx->m_currentDepthTarget,
+            ln::Color{r, g, b, a});
+    }
     return LN_OK;
 }
 
@@ -534,118 +538,6 @@ LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
     if (!r) return LN_ERROR_INVALID_HANDLE;
 
     r->endRenderPass();
-    return LN_OK;
-}
-
-// Internal helper: create a view BindGroup from viewProj matrix and camera position
-static LNResult createViewBindGroupInternal(
-    ln::Renderer* renderer,
-    ln::GraphicsContext* ctx,
-    const float* viewProjMatrix,
-    float camX, float camY, float camZ,
-    LNHandle* outBindGroup) {
-
-    auto* instance = ln::CoreInstance::instance();
-
-    // Fill ViewParamsUBO
-    ln::ViewParamsUBO viewParams{};
-    std::memcpy(viewParams.viewProj, viewProjMatrix, sizeof(float) * 16);
-    viewParams.cameraPos[0] = camX;
-    viewParams.cameraPos[1] = camY;
-    viewParams.cameraPos[2] = camZ;
-    viewParams.cameraPos[3] = 0.0f;
-    // lightDir, lightColor, ambientColor remain zeroed (Unlit)
-
-    // Create UBO buffer
-    ln::rhi::BufferDesc bufDesc;
-    bufDesc.size  = sizeof(ln::ViewParamsUBO);
-    bufDesc.usage = ln::rhi::BufferUsage::Uniform;
-    auto bufResult = ctx->device()->createBuffer(bufDesc);
-    if (!bufResult) return LN_ERROR_UNKNOWN;
-    auto buffer = std::move(*bufResult);
-
-    // Map and fill
-    void* mapped = buffer->map();
-    if (!mapped) return LN_ERROR_UNKNOWN;
-    std::memcpy(mapped, &viewParams, sizeof(viewParams));
-    buffer->unmap();
-
-    // Create BindGroup
-    ln::rhi::BindGroupDesc bgDesc;
-    bgDesc.layout  = renderer->viewBindGroupLayout();
-    bgDesc.entries = {
-        {0, buffer.get(), 0, sizeof(ln::ViewParamsUBO), nullptr, nullptr},
-    };
-    auto bgResult = ctx->device()->createBindGroup(bgDesc);
-    if (!bgResult) return LN_ERROR_UNKNOWN;
-
-    // Wrap in BindGroupObject
-    auto bgObj = ln::Ref<BindGroupObject>::adopt(LN_NEW BindGroupObject());
-    bgObj->buffer    = std::move(buffer);
-    bgObj->bindGroup = std::move(*bgResult);
-
-    LNHandle handle = instance->objectRegistry()->registerObject(std::move(bgObj));
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
-
-    *outBindGroup = handle;
-    return LN_OK;
-}
-
-LNResult LNRenderer_CreateViewBindGroup(
-    LNHandle renderer, LNHandle graphicsContext,
-    LNHandle camera, LNHandle* outBindGroup) {
-    if (!outBindGroup) return LN_ERROR_INVALID_ARGUMENT;
-    *outBindGroup = LN_NULL_HANDLE;
-
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
-    if (!ren) return LN_ERROR_INVALID_HANDLE;
-
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-
-    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
-    if (!camObj) return LN_ERROR_INVALID_HANDLE;
-
-    ln::Matrix4x4 vp = camObj->camera.viewProjectionMatrix();
-    ln::Vector3 pos = camObj->camera.position();
-
-    return createViewBindGroupInternal(ren, ctx, vp.m, pos.x, pos.y, pos.z, outBindGroup);
-}
-
-LNResult LNRenderer_CreateViewBindGroupFromMatrix(
-    LNHandle renderer, LNHandle graphicsContext,
-    const float* viewProjMatrix,
-    float cameraPosX, float cameraPosY, float cameraPosZ,
-    LNHandle* outBindGroup) {
-    if (!outBindGroup || !viewProjMatrix) return LN_ERROR_INVALID_ARGUMENT;
-    *outBindGroup = LN_NULL_HANDLE;
-
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
-    if (!ren) return LN_ERROR_INVALID_HANDLE;
-
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-
-    return createViewBindGroupInternal(ren, ctx, viewProjMatrix, cameraPosX, cameraPosY, cameraPosZ, outBindGroup);
-}
-
-LNResult LNRenderer_SetViewBindGroup(LNHandle renderer, LNHandle bindGroup) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
-    if (!ren) return LN_ERROR_INVALID_HANDLE;
-
-    auto* bgObj = instance->objectRegistry()->resolve<BindGroupObject>(bindGroup);
-    if (!bgObj) return LN_ERROR_INVALID_HANDLE;
-
-    ren->setPassBindGroup(0, bgObj->bindGroup.get());
     return LN_OK;
 }
 

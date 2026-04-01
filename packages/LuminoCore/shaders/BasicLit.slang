@@ -1,9 +1,10 @@
 // BasicLit.slang — Blinn-Phong ライティング (1 Directional Light)
 //
 // ParameterBlock layout:
-//   Set 0 (per-view):     viewData     — ViewParams (implicit CB)
-//   Set 1 (per-material): materialData — MaterialData (CB + Texture + Sampler)
-//   Set 2 (per-object):   objectData   — ObjectParams (implicit CB)
+//   Set 0 (per-view):     viewData     — ViewParams (camera)
+//   Set 1 (per-scene):    sceneData    — SceneParams (lighting)
+//   Set 2 (per-material): materialData — MaterialData (CB + Texture + Sampler)
+//   Set 3 (per-object):   objectData   — ObjectParams (implicit CB)
 
 import lumino;
 
@@ -19,8 +20,9 @@ struct MaterialData {
 };
 
 ParameterBlock<ViewParams>     viewData;       // -> Set 0
-ParameterBlock<MaterialData>   materialData;   // -> Set 1
-ParameterBlock<ObjectParams>   objectData;     // -> Set 2
+ParameterBlock<SceneParams>    sceneData;      // -> Set 1
+ParameterBlock<MaterialData>   materialData;   // -> Set 2
+ParameterBlock<ObjectParams>   objectData;     // -> Set 3
 
 struct VSOutput {
     float4 position  : SV_POSITION;
@@ -48,21 +50,21 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     float4 baseColor = texColor * materialData.params.color * input.color;
 
     float3 N = normalize(input.worldNorm);
-    float3 L = normalize(viewData.lightDir.xyz);
+    float3 L = normalize(sceneData.lightDir.xyz);
     float3 V = normalize(viewData.cameraPos.xyz - input.worldPos);
     float3 H = normalize(L + V);
 
     // Diffuse (Lambert)
     float NdotL = max(dot(N, L), 0.0);
-    float3 diffuse = baseColor.rgb * viewData.lightColor.xyz * NdotL;
+    float3 diffuse = baseColor.rgb * sceneData.lightColor.xyz * NdotL;
 
     // Specular (Blinn-Phong)
     float NdotH = max(dot(N, H), 0.0);
     float shininess = materialData.params.specular.w;
-    float3 specular = materialData.params.specular.xyz * viewData.lightColor.xyz * pow(NdotH, shininess);
+    float3 specular = materialData.params.specular.xyz * sceneData.lightColor.xyz * pow(NdotH, shininess);
 
     // Ambient
-    float3 ambient = baseColor.rgb * viewData.ambientColor.xyz;
+    float3 ambient = baseColor.rgb * sceneData.ambientColor.xyz;
 
     float3 finalColor = ambient + diffuse + specular;
     return float4(finalColor, baseColor.a);

@@ -1,9 +1,10 @@
 // Unlit.slang — テクスチャ × カラー、ライティングなし
 //
 // ParameterBlock layout:
-//   Set 0 (per-view):     viewData     — ViewParams (implicit CB)
-//   Set 1 (per-material): materialData — MaterialData (CB + Texture + Sampler)
-//   Set 2 (per-object):   objectData   — ObjectParams (implicit CB)
+//   Set 0 (per-view):     viewData     — ViewParams (camera)
+//   Set 1 (per-scene):    sceneData    — SceneParams (lighting, unused)
+//   Set 2 (per-material): materialData — MaterialData (CB + Texture + Sampler)
+//   Set 3 (per-object):   objectData   — ObjectParams (implicit CB)
 
 import lumino;
 
@@ -18,8 +19,9 @@ struct MaterialData {
 };
 
 ParameterBlock<ViewParams>     viewData;       // -> Set 0
-ParameterBlock<MaterialData>   materialData;   // -> Set 1
-ParameterBlock<ObjectParams>   objectData;     // -> Set 2
+ParameterBlock<SceneParams>    sceneData;      // -> Set 1 (unused; required for PipelineLayout compatibility)
+ParameterBlock<MaterialData>   materialData;   // -> Set 2
+ParameterBlock<ObjectParams>   objectData;     // -> Set 3
 
 struct VSOutput {
     float4 position : SV_POSITION;

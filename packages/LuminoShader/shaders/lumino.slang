@@ -6,9 +6,12 @@
 struct ViewParams {
     float4x4 viewProj;
     float4   cameraPos;    // xyz = position
-    float4   lightDir;     // xyz = direction (towards light)
-    float4   lightColor;   // xyz = color, w = intensity
-    float4   ambientColor; // xyz = ambient color
+};
+
+struct SceneParams {
+    float4 lightDir;       // xyz = direction (towards light)
+    float4 lightColor;     // xyz = color, w = intensity
+    float4 ambientColor;   // xyz = ambient color
 };
 
 struct ObjectParams {

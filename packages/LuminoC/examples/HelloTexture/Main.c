@@ -67,15 +67,13 @@ int main(void) {
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     int continueLoop = 1;
     while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
-        LNHandle viewBindGroup = LN_NULL_HANDLE;
+        LNGraphicsContext_BeginFrame(graphicsContext);
         LNRenderer_BeginFrame(renderer);
-        LNRenderer_BeginRenderPass(renderer, graphicsContext, 0.0f, 0.0f, 0.0f, 1.0f);
-        LNRenderer_CreateViewBindGroup(renderer, graphicsContext, camera, &viewBindGroup);
-        LNRenderer_SetViewBindGroup(renderer, viewBindGroup);
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f);
         LNRenderer_DrawMesh(renderer, mesh, &identity);
         LNRenderer_EndRenderPass(renderer);
         LNRenderer_EndFrame(renderer);
-        LNObject_Release(viewBindGroup);
+        LNGraphicsContext_EndFrame(graphicsContext);
     }
 
     /* 9. Cleanup */

@@ -355,14 +355,16 @@ extern LUMINO_API LNResult LNRenderer_BeginFrame(LNHandle renderer);
 extern LUMINO_API LNResult LNRenderer_EndFrame(LNHandle renderer);
 
 /**
- * レンダーパスを開始します。スワップチェインのカラー/デプスターゲットを使用します。
+ * レンダーパスを開始します。カメラデータを set=0 View UBO に自動アップロードします。
  * @param[in] renderer         Renderer のハンドル
  * @param[in] graphicsContext  GraphicsContext のハンドル (現フレームのターゲット取得用)
+ * @param[in] camera           カメラのハンドル (LN_NULL_HANDLE でカメラなし — ポストエフェクト用)
  * @param[in] r,g,b,a          クリアカラー
  */
 extern LUMINO_API LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer,
     LNHandle graphicsContext,
+    LNHandle camera,
     float r, float g, float b, float a
 );
 
@@ -371,49 +373,6 @@ extern LUMINO_API LNResult LNRenderer_BeginRenderPass(
  * @param[in] renderer Renderer のハンドル
  */
 extern LUMINO_API LNResult LNRenderer_EndRenderPass(LNHandle renderer);
-
-/**
- * カメラからビューバインドグループ (set=0) を作成します。
- * ViewParamsUBO を構築し、Renderer の viewBindGroupLayout を使って BindGroup を作成します。
- * ライトパラメータはゼロ (Unlit レンダリング用)。
- * @param[in]  renderer         Renderer のハンドル
- * @param[in]  graphicsContext  GraphicsContext のハンドル
- * @param[in]  camera           カメラのハンドル
- * @param[out] outBindGroup     作成されたバインドグループのハンドル
- */
-extern LUMINO_API LNResult LNRenderer_CreateViewBindGroup(
-    LNHandle renderer,
-    LNHandle graphicsContext,
-    LNHandle camera,
-    LNHandle* outBindGroup
-);
-
-/**
- * 生の行列とカメラ位置からビューバインドグループ (set=0) を作成します。
- * ライトパラメータはゼロ。
- * @param[in]  renderer           Renderer のハンドル
- * @param[in]  graphicsContext    GraphicsContext のハンドル
- * @param[in]  viewProjMatrix     列優先 4x4 行列 (16 floats)
- * @param[in]  cameraPosX,Y,Z     カメラのワールド位置
- * @param[out] outBindGroup        作成されたバインドグループのハンドル
- */
-extern LUMINO_API LNResult LNRenderer_CreateViewBindGroupFromMatrix(
-    LNHandle renderer,
-    LNHandle graphicsContext,
-    const float* viewProjMatrix,
-    float cameraPosX, float cameraPosY, float cameraPosZ,
-    LNHandle* outBindGroup
-);
-
-/**
- * 現在のレンダーパスにビューバインドグループ (set=0) を設定します。
- * @param[in] renderer   Renderer のハンドル
- * @param[in] bindGroup  CreateViewBindGroup で作成したバインドグループのハンドル
- */
-extern LUMINO_API LNResult LNRenderer_SetViewBindGroup(
-    LNHandle renderer,
-    LNHandle bindGroup
-);
 
 /**
  * メッシュを描画します。メッシュに設定されたマテリアルを使用します。

@@ -20,14 +20,16 @@ struct DirectionalLight {
     Color ambient     = Color{0.15f, 0.15f, 0.15f, 1.0f};
 };
 
+
 /**
- * Single-pass forward renderer built on top of Renderer.
+ * Renderer をベースに構築されたシングルパスフォワードレンダラー。
  *
- * Manages camera/lighting data (View UBO, set=0 BindGroup) and exposes a
- * simple one-call API for rendering a full frame. Also delegates the
- * multi-pass Renderer API so callers can access it without an extra hop.
+ * ライティングデータ（Scene UBO、set=1 BindGroup）を管理し、
+ * フレーム全体をレンダリングするためのシンプルなワンコールAPIを提供します。また、
+ * マルチパス Renderer API を委譲することで、呼び出し元は余分なホップなしでアクセスできます。
+ * カメラデータ（set=0）は Renderer が管理し、beginRenderPass(camera) で自動アップロードされます。
  *
- * For custom multi-pass rendering, use renderer() directly.
+ * カスタムのマルチパスレンダリングには、renderer() を直接使用してください。
  */
 class ForwardRenderer : public RefObject {
 public:
@@ -40,21 +42,24 @@ public:
 
     // ---- Forwarded Renderer API (convenience) ----
 
-    rhi::PipelineLayout*    pipelineLayout()       const { return m_renderer->pipelineLayout(); }
+    rhi::PipelineLayout*    pipelineLayout()        const { return m_renderer->pipelineLayout(); }
     rhi::BindGroupLayout*   viewBindGroupLayout()   const { return m_renderer->viewBindGroupLayout(); }
+    rhi::BindGroupLayout*   sceneBindGroupLayout()  const { return m_renderer->sceneBindGroupLayout(); }
     rhi::BindGroupLayout*   objectBindGroupLayout() const { return m_renderer->objectBindGroupLayout(); }
     rhi::TextureFormat      colorFormat()           const { return m_renderer->colorFormat(); }
     rhi::TextureFormat      depthFormat()           const { return m_renderer->depthFormat(); }
 
-    void beginFrame()                                                       { m_renderer->beginFrame(); }
-    void endFrame()                                                         { m_renderer->endFrame(); }
+    void beginFrame()                                                                                   { m_renderer->beginFrame(); }
+    void endFrame()                                                                                     { m_renderer->endFrame(); }
     void beginRenderPass(rhi::TextureView* c, rhi::TextureView* d,
-                         const Color& clear = Color{0,0,0,1})               { m_renderer->beginRenderPass(c, d, clear); }
-    void endRenderPass()                                                    { m_renderer->endRenderPass(); }
-    void setPassBindGroup(u32 set, rhi::BindGroup* bg)                      { m_renderer->setPassBindGroup(set, bg); }
-    Result<void> drawMesh(Mesh* mesh, const Transform& t)                   { return m_renderer->drawMesh(mesh, t); }
-    Result<void> drawMesh(Mesh* mesh, const Transform& t, Material* mat)    { return m_renderer->drawMesh(mesh, t, mat); }
-    Result<void> drawScreenRect(Material* mat)                              { return m_renderer->drawScreenRect(mat); }
+                         const Camera& camera, const Color& clear = Color{0,0,0,1})                    { m_renderer->beginRenderPass(c, d, camera, clear); }
+    void beginRenderPass(rhi::TextureView* c, rhi::TextureView* d,
+                         const Color& clear = Color{0,0,0,1})                                          { m_renderer->beginRenderPass(c, d, clear); }
+    void endRenderPass()                                                                                { m_renderer->endRenderPass(); }
+    void setPassBindGroup(u32 set, rhi::BindGroup* bg)                                                 { m_renderer->setPassBindGroup(set, bg); }
+    Result<void> drawMesh(Mesh* mesh, const Transform& t)                                              { return m_renderer->drawMesh(mesh, t); }
+    Result<void> drawMesh(Mesh* mesh, const Transform& t, Material* mat)                               { return m_renderer->drawMesh(mesh, t, mat); }
+    Result<void> drawScreenRect(Material* mat)                                                         { return m_renderer->drawScreenRect(mat); }
 
     // ---- ForwardRenderer-specific API ----
 
@@ -84,18 +89,18 @@ public:
         const std::vector<RenderObject>& objects,
         const Color& clearColor = Color{0.1f, 0.1f, 0.1f, 1.0f});
 
-    /** The BindGroup for the per-frame View UBO (set=0). */
-    rhi::BindGroup* viewBindGroup() const { return m_viewBindGroup.get(); }
+    /** The BindGroup for the per-frame Scene UBO (set=1: lighting). */
+    rhi::BindGroup* sceneBindGroup() const { return m_sceneBindGroup.get(); }
 
 private:
     ForwardRenderer() = default;
 
     Ref<Renderer> m_renderer;
 
-    // Per-frame view data (camera + lighting), uploaded each renderFrame() call.
-    u64 m_viewUBOSize = 0;
-    Ref<rhi::Buffer>    m_viewUBO;
-    Ref<rhi::BindGroup> m_viewBindGroup;
+    // Per-frame scene data (lighting), uploaded each renderFrame() call (set=1).
+    u64 m_sceneUBOSize = 0;
+    Ref<rhi::Buffer>    m_sceneUBO;
+    Ref<rhi::BindGroup> m_sceneBindGroup;
 
     DirectionalLight m_light;
 
