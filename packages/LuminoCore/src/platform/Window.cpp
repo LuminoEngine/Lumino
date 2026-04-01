@@ -12,19 +12,7 @@
 
 namespace ln::platform {
 
-// ─── GLFW global init ───
-#ifndef LN_NX
-namespace {
-struct GlfwGuard {
-    GlfwGuard() { glfwInit(); }
-    ~GlfwGuard() { glfwTerminate(); }
-};
-static GlfwGuard& ensureGlfw() {
-    static GlfwGuard guard;
-    return guard;
-}
-} // namespace
-#endif
+// GLFW initialization is now managed by CoreInstance.
 
 // ─── Impl ───
 struct PlatformWindow::Impl {
@@ -45,7 +33,7 @@ Result<Ref<PlatformWindow>> PlatformWindow::create(const WindowDesc& desc) {
     auto win = Ref<PlatformWindow>::adopt(new PlatformWindow());
     win->m_impl = new Impl();
 
-    ensureGlfw();
+    // GLFW is already initialized by CoreInstance.
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, desc.resizable ? GLFW_TRUE : GLFW_FALSE);
     win->m_impl->window = glfwCreateWindow(

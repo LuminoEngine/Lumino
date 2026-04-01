@@ -8,10 +8,8 @@
 
 namespace ln {
 
-/** Descriptor for creating a GraphicsContext (device + swap chain + depth buffer). */
+/** Descriptor for creating a GraphicsContext (swap chain + depth buffer). */
 struct GraphicsContextDesc {
-    rhi::Backend preferredBackend = rhi::Backend::Vulkan;
-    bool enableValidation = false;
     //rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8UnormSrgb;
     bool vsync = true;
 };
@@ -58,8 +56,8 @@ public:
 
     void waitIdle();
 
-    /** The underlying RHI device. */
-    rhi::Device* device() const { return m_device.get(); }
+    /** The underlying RHI device (owned by CoreInstance). */
+    rhi::Device* device() const;
 
     /** Pipeline cache for this context. */
     PipelineCache* pipelineCache() const { return m_pipelineCache.get(); }
@@ -86,7 +84,6 @@ private:
     GraphicsContext() = default;
 
     platform::PlatformWindow* m_window = nullptr; // non-owning
-    Ref<rhi::Device> m_device;
     Ref<rhi::SwapChain> m_swapChain;
     Ref<rhi::Texture> m_depthTexture;
     Ref<rhi::TextureView> m_depthView;

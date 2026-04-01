@@ -8,6 +8,7 @@
  * window->graphicsContext() で Device + SwapChain + DepthBuffer を取得する。
  */
 
+#include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/platform/Window.hpp>
 #include <LuminoCore/graphics/GraphicsContext.hpp>
 #include <LuminoCore/graphics/ForwardRenderer.hpp>
@@ -76,67 +77,72 @@ int main() {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    // 1. Window + GraphicsContext
-    WindowDesc winDesc;
-    winDesc.title = "Lumino - Forward Rendering";
-    winDesc.width = 1280;
-    winDesc.height = 720;
+    // 1. CoreInstance + Window + GraphicsContext
+    CoreInstance::Settings coreSettings;
+    coreSettings.preferredBackend = Backend::Vulkan;
+    coreSettings.enableValidation = true;
+    CoreInstance::initialize(coreSettings);
+    {
+        WindowDesc winDesc;
+        winDesc.title = "Lumino - Forward Rendering";
+        winDesc.width = 1280;
+        winDesc.height = 720;
 
-    GraphicsContextDesc gfxDesc;
-    gfxDesc.preferredBackend = Backend::Vulkan;
-    gfxDesc.enableValidation = true;
+        GraphicsContextDesc gfxDesc;
 
-    auto window = *PlatformWindow::create(winDesc, gfxDesc);
-    auto ctx = window->graphicsContext();
+        auto window = *PlatformWindow::create(winDesc, gfxDesc);
+        auto ctx = window->graphicsContext();
 
-    // 2. ForwardRenderer
-    auto renderer = *ForwardRenderer::create(ctx);
+        // 2. ForwardRenderer
+        auto renderer = *ForwardRenderer::create(ctx);
 
-    // 3. Material (BasicLit)
-    auto material = *MaterialFactory::createBasicLit(ctx);
-    material->setColor(Color{0.8f, 0.5f, 0.2f, 1.0f});
-    auto _ = material->updateBindGroup(ctx->device());
+        // 3. Material (BasicLit)
+        auto material = *MaterialFactory::createBasicLit(ctx);
+        material->setColor(Color{0.8f, 0.5f, 0.2f, 1.0f});
+        auto _ = material->updateBindGroup(ctx->device());
 
-    // 4. Cube mesh
-    auto mesh = *createCubeMesh(ctx->device());
-    mesh->materials() = {material};
+        // 4. Cube mesh
+        auto mesh = *createCubeMesh(ctx->device());
+        mesh->materials() = {material};
 
-    // 5. Camera
-    Camera camera;
-    camera.setPerspective(60.0f * 3.14159f / 180.0f,
-        static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
-        0.1f, 100.0f);
+        // 5. Camera
+        Camera camera;
+        camera.setPerspective(60.0f * 3.14159f / 180.0f,
+            static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
+            0.1f, 100.0f);
 
-    // 6. Light
-    DirectionalLight light;
-    light.direction = Vector3{0.3f, -1.0f, 0.5f};
-    light.color = Color::white();
-    light.ambient = Color{0.15f, 0.15f, 0.15f, 1.0f};
-    renderer->setLight(light);
+        // 6. Light
+        DirectionalLight light;
+        light.direction = Vector3{0.3f, -1.0f, 0.5f};
+        light.color = Color::white();
+        light.ambient = Color{0.15f, 0.15f, 0.15f, 1.0f};
+        renderer->setLight(light);
 
-    printf("Lumino ForwardRenderer initialized. Rendering...\n");
+        printf("Lumino ForwardRenderer initialized. Rendering...\n");
 
-    // 7. Main loop
-    f32 time = 0.0f;
-    while (window->processEvents()) {
-        time += 0.016f; // ~60fps
+        // 7. Main loop
+        f32 time = 0.0f;
+        while (window->processEvents()) {
+            time += 0.016f; // ~60fps
 
-        camera.setOrbit({0, 0, 0}, 3.0f, time * 0.5f, 0.35f);
+            camera.setOrbit({0, 0, 0}, 3.0f, time * 0.5f, 0.35f);
 
-        RenderObject obj;
-        obj.mesh = mesh;
-        obj.transform.rotation = Quaternion::fromEuler(time * 10.0f, time * 15.0f, 0.0f);
-        std::vector<RenderObject> objects = {obj};
+            RenderObject obj;
+            obj.mesh = mesh;
+            obj.transform.rotation = Quaternion::fromEuler(time * 10.0f, time * 15.0f, 0.0f);
+            std::vector<RenderObject> objects = {obj};
 
-        auto frame = *ctx->beginFrame();
+            auto frame = *ctx->beginFrame();
 
-        auto _ = renderer->renderFrame(
-            frame.colorTarget, frame.depthTarget,
-            camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
+            auto _ = renderer->renderFrame(
+                frame.colorTarget, frame.depthTarget,
+                camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
 
-        ctx->endFrame();
+            ctx->endFrame();
+        }
+
+        printf("Done.\n");
     }
-
-    printf("Done.\n");
+    CoreInstance::terminate();
     return 0;
 }

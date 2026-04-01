@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <memory>
+#include <LuminoCore/graphics/rhi/Rhi.hpp>
+
 namespace ln {
 
 class ObjectRegistry;
@@ -7,12 +10,18 @@ class ObjectRegistry;
 // Library root manager クラス。シングルトンで、ライブラリ全体の初期化や終了処理を管理する。
 class CoreInstance final {
 public:
-    struct Settings {};
+    struct Settings {
+        rhi::Backend preferredBackend = rhi::Backend::Vulkan;
+        bool enableValidation = false;
+    };
     static CoreInstance* instance() { return s_instance.get(); };
     static VoidResult initialize(const Settings& settings);
     static void terminate();
 
     ObjectRegistry* objectRegistry() { return m_objectRegistry.get(); }
+
+    /** The RHI device owned by this instance. */
+    rhi::Device* device() const { return m_device.get(); }
 
 private:
     VoidResult init(const Settings& settings);
@@ -20,6 +29,7 @@ private:
     static std::unique_ptr<CoreInstance> s_instance;
     Settings m_settings;
     std::unique_ptr<ObjectRegistry> m_objectRegistry;
+    Ref<rhi::Device> m_device;
 };
 
 } // namespace ln

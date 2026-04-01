@@ -1,21 +1,31 @@
 ﻿#include <LuminoCore/graphics/GraphicsContext.hpp>
+#include <LuminoCore/CoreInstance.hpp>
 #include <cstdio>
 
 namespace ln {
 
 GraphicsContext::~GraphicsContext() {
-    if (m_device) {
+    auto* dev = device();
+    if (dev) {
         if (m_pipelineCache) {
             m_pipelineCache->clear();
         }
-        m_device->waitIdle();
+        dev->waitIdle();
     }
+}
+
+rhi::Device* GraphicsContext::device() const {
+    auto* inst = CoreInstance::instance();
+    return inst ? inst->device() : nullptr;
 }
 
 Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     platform::PlatformWindow* window,
     const GraphicsContextDesc& desc)
 {
+    auto* dev = CoreInstance::instance()->device();
+    if (!dev) return tl::make_unexpected(Error{ErrorCode::NotInitialized, "CoreInstance device not initialized"});
+
     auto ctx = Ref<GraphicsContext>::adopt(new GraphicsContext());
     ctx->m_window = window;
     //ctx->m_colorFormat = desc.colorFormat;
@@ -25,37 +35,30 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     ctx->m_width = fbWidth;
     ctx->m_height = fbHeight;
 
-    // 1. Device
-    rhi::DeviceDesc devDesc;
-    devDesc.backend = desc.preferredBackend;
-    devDesc.enableValidation = desc.enableValidation;
-    auto deviceResult = rhi::Device::create(devDesc);
-    if (!deviceResult) return tl::make_unexpected(deviceResult.error());
-    ctx->m_device = std::move(*deviceResult);
-    ctx->m_pipelineCache = std::make_unique<PipelineCache>(ctx->m_device.get());
+    ctx->m_pipelineCache = std::make_unique<PipelineCache>(dev);
 
-    // 2. SwapChain
+    // 1. SwapChain
     rhi::SwapChainDesc scDesc;
     scDesc.nativeWindowHandle = window->nativeHandle().glfwWindow;
     scDesc.width = fbWidth;
     scDesc.height = fbHeight;
     //scDesc.format = desc.colorFormat;
     scDesc.vsync = desc.vsync;
-    auto swapChainResult = ctx->m_device->createSwapChain(scDesc);
+    auto swapChainResult = dev->createSwapChain(scDesc);
     if (!swapChainResult) return tl::make_unexpected(swapChainResult.error());
     ctx->m_swapChain = std::move(*swapChainResult);
 
-    // 3. Depth texture + view
+    // 2. Depth texture + view
     rhi::TextureDesc depthTexDesc;
     depthTexDesc.width = fbWidth;
     depthTexDesc.height = fbHeight;
     depthTexDesc.format = ctx->m_depthFormat;
     depthTexDesc.usage = rhi::TextureUsage::DepthStencil;
-    auto depthTexResult = ctx->m_device->createTexture(depthTexDesc);
+    auto depthTexResult = dev->createTexture(depthTexDesc);
     if (!depthTexResult) return tl::make_unexpected(depthTexResult.error());
     ctx->m_depthTexture = std::move(*depthTexResult);
 
-    auto depthViewResult = ctx->m_device->createTextureView(ctx->m_depthTexture.get());
+    auto depthViewResult = dev->createTextureView(ctx->m_depthTexture.get());
     if (!depthViewResult) return tl::make_unexpected(depthViewResult.error());
     ctx->m_depthView = std::move(*depthViewResult);
 
@@ -81,7 +84,8 @@ void GraphicsContext::endFrame() {
 }
 
 void GraphicsContext::waitIdle() {
-    if (m_device) m_device->waitIdle();
+    auto* dev = device();
+    if (dev) dev->waitIdle();
 }
 
 } // namespace ln

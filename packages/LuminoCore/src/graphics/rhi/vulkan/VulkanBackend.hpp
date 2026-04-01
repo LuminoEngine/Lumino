@@ -308,7 +308,7 @@ public:
     std::vector<Ref<VulkanCommandBuffer>> m_commandBuffers;
     // NOTE: なぜ SwapChain に CommandBuffer を持たせるのか？
     //   https://webgpufundamentals.org/webgpu/lessons/ja/webgpu-multiple-canvases.html
-    //   コチラを見ると、 WebGPU ではひとつの CommandEncoder を複数の SwapChain で共有しているように見える。
+    //   コチラを見ると、 WebGPU ではひとつの CommandEncoder を複数の SwapChain で共有できるるように見える。
     //   ただしこれをやろうとすると、 CommandBuffer に RenderTarget として使われた Context を、
     //   次の present 対象として覚えておく必要があるなど、管理が複雑になる。
 

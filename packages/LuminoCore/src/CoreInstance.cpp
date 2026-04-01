@@ -2,6 +2,11 @@
 #include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/runtime/ObjectRegistry.hpp>
 
+#ifndef LN_NX
+    #define GLFW_INCLUDE_NONE
+    #include <GLFW/glfw3.h>
+#endif
+
 namespace ln {
 
 std::unique_ptr<CoreInstance> CoreInstance::s_instance;
@@ -22,11 +27,30 @@ void CoreInstance::terminate() {
 VoidResult CoreInstance::init(const Settings& settings) {
     m_settings = settings;
     m_objectRegistry = std::make_unique<ObjectRegistry>();
+
+#ifndef LN_NX
+    // GLFW must be initialized before Vulkan device creation,
+    // because VulkanDevice::init() calls glfwGetRequiredInstanceExtensions().
+    glfwInit();
+#endif
+
+    // Create the RHI device
+    rhi::DeviceDesc devDesc;
+    devDesc.backend = settings.preferredBackend;
+    devDesc.enableValidation = settings.enableValidation;
+    auto deviceResult = rhi::Device::create(devDesc);
+    if (!deviceResult) return tl::make_unexpected(deviceResult.error());
+    m_device = std::move(*deviceResult);
+
     return LN_MAKE_SUCCESS();
 }
 
 void CoreInstance::dispose() {
+    m_device.reset();
     m_objectRegistry.reset();
+#ifndef LN_NX
+    glfwTerminate();
+#endif
 }
 
 } // namespace ln

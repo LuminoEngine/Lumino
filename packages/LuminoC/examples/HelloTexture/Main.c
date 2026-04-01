@@ -13,7 +13,7 @@ int main(void) {
 
     /* 2. Window + GraphicsContext */
     LNHandle window = LN_NULL_HANDLE;
-    LNWindow_Create("Lumino - Hello Texture (C)", 1280, 720, &window);
+    LNWindow_Create("LuminoC-HelloTexture", 1280, 720, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 

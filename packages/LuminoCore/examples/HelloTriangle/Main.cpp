@@ -9,6 +9,7 @@
  * 低レベル RHI (Buffer, Pipeline 等) は ctx->device() 経由で使用する。
  */
 
+#include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/platform/Window.hpp>
 #include <LuminoCore/graphics/GraphicsContext.hpp>
 #include <LuminoCore/graphics/rhi/Rhi.hpp>
@@ -38,119 +39,124 @@ int main() {
     using namespace ln::rhi;
     using namespace ln::platform;
 
-    // 1. Window + GraphicsContext
-    WindowDesc winDesc;
-    winDesc.title = "Lumino - Hello Triangle";
-    winDesc.width = 1280;
-    winDesc.height = 720;
+    // 1. CoreInstance + Window + GraphicsContext
+    CoreInstance::Settings coreSettings;
+    coreSettings.preferredBackend = Backend::Vulkan;
+    coreSettings.enableValidation = true;
+    CoreInstance::initialize(coreSettings);
+    {
+        WindowDesc winDesc;
+        winDesc.title = "Lumino - Hello Triangle";
+        winDesc.width = 1280;
+        winDesc.height = 720;
 
-    GraphicsContextDesc gfxDesc;
-    gfxDesc.preferredBackend = Backend::Vulkan;
-    gfxDesc.enableValidation = true;
+        GraphicsContextDesc gfxDesc;
 
-    auto window = *PlatformWindow::create(winDesc, gfxDesc);
-    auto* ctx = window->graphicsContext();
-    auto* device = ctx->device();
+        auto window = *PlatformWindow::create(winDesc, gfxDesc);
+        auto* ctx = window->graphicsContext();
+        auto* device = ctx->device();
 
-    // 2. 頂点バッファ
-    BufferDesc vbDesc;
-    vbDesc.size = sizeof(s_vertices);
-    vbDesc.usage = BufferUsage::Vertex;
-    vbDesc.initialData = s_vertices;
-    auto vertexBuffer = *device->createBuffer(vbDesc);
+        // 2. 頂点バッファ
+        BufferDesc vbDesc;
+        vbDesc.size = sizeof(s_vertices);
+        vbDesc.usage = BufferUsage::Vertex;
+        vbDesc.initialData = s_vertices;
+        auto vertexBuffer = *device->createBuffer(vbDesc);
 
-    // 3. シェーダーコンパイル
-    auto compiler = *ln::shader::ShaderCompiler2::create();
-    compiler->build(SHADER_FILE);
+        // 3. シェーダーコンパイル
+        auto compiler = *ln::shader::ShaderCompiler2::create();
+        compiler->build(SHADER_FILE);
 
-    ln::shader::UnifiedShader2* unifiedShader = compiler->shader();
-    auto& globalPasses = unifiedShader->globalShaderPasses();
-    if (globalPasses.empty()) {
-        fprintf(stderr, "No shader passes found\n");
-        return 1;
+        ln::shader::UnifiedShader2* unifiedShader = compiler->shader();
+        auto& globalPasses = unifiedShader->globalShaderPasses();
+        if (globalPasses.empty()) {
+            fprintf(stderr, "No shader passes found\n");
+            return 1;
+        }
+
+        auto* globalPass = globalPasses[0].get();
+        auto targetPassId = globalPass->getTargetShaderPassId(ln::shader::ShaderTarget_SPIRV);
+        auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
+        if (!targetPass) {
+            fprintf(stderr, "No SPIRV target pass found\n");
+            return 1;
+        }
+
+        auto* vertEP = unifiedShader->targetEntryPoint(targetPass->vertEntryPointId);
+        auto* fragEP = unifiedShader->targetEntryPoint(targetPass->fragEntryPointId);
+        if (!vertEP || !fragEP) {
+            fprintf(stderr, "Missing vertex or fragment entry point\n");
+            return 1;
+        }
+
+        auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
+        auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
+
+        ShaderModuleDesc vsDesc;
+        vsDesc.spirvCode = reinterpret_cast<const ln::u32*>(vertBlob->data.data());
+        vsDesc.spirvSizeBytes = vertBlob->data.size();
+        auto vertShader = *device->createShaderModule(vsDesc);
+
+        ShaderModuleDesc fsDesc;
+        fsDesc.spirvCode = reinterpret_cast<const ln::u32*>(fragBlob->data.data());
+        fsDesc.spirvSizeBytes = fragBlob->data.size();
+        auto fragShader = *device->createShaderModule(fsDesc);
+
+        // 4. パイプラインレイアウト（バインドなし）
+        PipelineLayoutDesc plDesc;
+        auto pipelineLayout = *device->createPipelineLayout(plDesc);
+
+        // 5. レンダーパイプライン
+        RenderPipelineDesc rpDesc;
+        rpDesc.layout = pipelineLayout.get();
+        rpDesc.vertexShader = vertShader.get();
+        rpDesc.fragmentShader = fragShader.get();
+        rpDesc.vertexEntry = vertEP->name;
+        rpDesc.fragmentEntry = fragEP->name;
+        rpDesc.topology = PrimitiveTopology::TriangleList;
+        rpDesc.cullMode = CullMode::None;
+        rpDesc.colorFormats = {ctx->colorFormat()};
+
+        VertexBufferLayout vbl;
+        vbl.stride = sizeof(Vertex);
+        vbl.attributes = {
+            {0, VertexFormat::Float32x2, 0},                     // position
+            {1, VertexFormat::Float32x3, sizeof(float) * 2},     // color
+        };
+        rpDesc.vertexBuffers = {vbl};
+
+        auto pipeline = *device->createRenderPipeline(rpDesc);
+
+        printf("Lumino RHI initialized. Rendering...\n");
+
+        // 6. メインループ
+        while (window->processEvents()) {
+            auto frame = *ctx->beginFrame();
+
+            auto* cmd = device->getCommandBuffer();
+
+            RenderPassDesc passDesc;
+            passDesc.colorAttachments.push_back({
+                frame.colorTarget,
+                LoadOp::Clear,
+                StoreOp::Store,
+                {0.1f, 0.1f, 0.15f, 1.0f},
+            });
+
+            auto* pass = cmd->beginRenderPass(passDesc);
+            pass->setPipeline(pipeline.get());
+            pass->setVertexBuffer(0, vertexBuffer.get());
+            pass->draw(3);
+            pass->end();
+
+            cmd->submit();
+            ctx->endFrame();
+
+            delete cmd;
+        }
+
+        printf("Done.\n");
     }
-
-    auto* globalPass = globalPasses[0].get();
-    auto targetPassId = globalPass->getTargetShaderPassId(ln::shader::ShaderTarget_SPIRV);
-    auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
-    if (!targetPass) {
-        fprintf(stderr, "No SPIRV target pass found\n");
-        return 1;
-    }
-
-    auto* vertEP = unifiedShader->targetEntryPoint(targetPass->vertEntryPointId);
-    auto* fragEP = unifiedShader->targetEntryPoint(targetPass->fragEntryPointId);
-    if (!vertEP || !fragEP) {
-        fprintf(stderr, "Missing vertex or fragment entry point\n");
-        return 1;
-    }
-
-    auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
-    auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
-
-    ShaderModuleDesc vsDesc;
-    vsDesc.spirvCode = reinterpret_cast<const ln::u32*>(vertBlob->data.data());
-    vsDesc.spirvSizeBytes = vertBlob->data.size();
-    auto vertShader = *device->createShaderModule(vsDesc);
-
-    ShaderModuleDesc fsDesc;
-    fsDesc.spirvCode = reinterpret_cast<const ln::u32*>(fragBlob->data.data());
-    fsDesc.spirvSizeBytes = fragBlob->data.size();
-    auto fragShader = *device->createShaderModule(fsDesc);
-
-    // 4. パイプラインレイアウト（バインドなし）
-    PipelineLayoutDesc plDesc;
-    auto pipelineLayout = *device->createPipelineLayout(plDesc);
-
-    // 5. レンダーパイプライン
-    RenderPipelineDesc rpDesc;
-    rpDesc.layout = pipelineLayout.get();
-    rpDesc.vertexShader = vertShader.get();
-    rpDesc.fragmentShader = fragShader.get();
-    rpDesc.vertexEntry = vertEP->name;
-    rpDesc.fragmentEntry = fragEP->name;
-    rpDesc.topology = PrimitiveTopology::TriangleList;
-    rpDesc.cullMode = CullMode::None;
-    rpDesc.colorFormats = {ctx->colorFormat()};
-
-    VertexBufferLayout vbl;
-    vbl.stride = sizeof(Vertex);
-    vbl.attributes = {
-        {0, VertexFormat::Float32x2, 0},                     // position
-        {1, VertexFormat::Float32x3, sizeof(float) * 2},     // color
-    };
-    rpDesc.vertexBuffers = {vbl};
-
-    auto pipeline = *device->createRenderPipeline(rpDesc);
-
-    printf("Lumino RHI initialized. Rendering...\n");
-
-    // 6. メインループ
-    while (window->processEvents()) {
-        auto frame = *ctx->beginFrame();
-
-        auto* cmd = device->getCommandBuffer();
-
-        RenderPassDesc passDesc;
-        passDesc.colorAttachments.push_back({
-            frame.colorTarget,
-            LoadOp::Clear,
-            StoreOp::Store,
-            {0.1f, 0.1f, 0.15f, 1.0f},
-        });
-
-        auto* pass = cmd->beginRenderPass(passDesc);
-        pass->setPipeline(pipeline.get());
-        pass->setVertexBuffer(0, vertexBuffer.get());
-        pass->draw(3);
-        pass->end();
-
-        cmd->submit();
-        ctx->endFrame();
-
-        delete cmd;
-    }
-
-    printf("Done.\n");
+    CoreInstance::terminate();
     return 0;
 }
