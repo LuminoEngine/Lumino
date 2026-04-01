@@ -107,17 +107,27 @@ Result<Ref<Renderer>> Renderer::create(
     renderer->m_depthFormat   = depthFormat;
     renderer->m_objectUBOSize = static_cast<u64>(objectCBSize);
 
-    // ---- Set 0: View BindGroupLayout (camera) ----
+    // ---- Set 0: View BindGroupLayout (camera, dynamic UBO) ----
     {
         auto desc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
+        for (auto& entry : desc.entries) {
+            if (entry.type == rhi::BindingType::UniformBuffer) {
+                entry.hasDynamicOffset = true;
+            }
+        }
         auto r    = device->createBindGroupLayout(desc);
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_viewBindGroupLayout = std::move(*r);
     }
 
-    // ---- Set 1: Scene BindGroupLayout (lighting, etc.) ----
+    // ---- Set 1: Scene BindGroupLayout (lighting, dynamic UBO) ----
     {
         auto desc = buildBindGroupLayoutFromReflection(*sceneBlock, targetPass->bindingLayout);
+        for (auto& entry : desc.entries) {
+            if (entry.type == rhi::BindingType::UniformBuffer) {
+                entry.hasDynamicOffset = true;
+            }
+        }
         auto r    = device->createBindGroupLayout(desc);
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_sceneBindGroupLayout = std::move(*r);
@@ -159,24 +169,13 @@ Result<Ref<Renderer>> Renderer::create(
         renderer->m_pipelineLayout = std::move(*r);
     }
 
-    // ---- View UBO (camera data, set=0) ----
+    // ---- Dynamic UBO allocator for per-frame view data (camera, set=0) ----
     {
-        renderer->m_viewUBOSize = sizeof(ViewParamsUBO);
-        rhi::BufferDesc bufDesc;
-        bufDesc.size  = renderer->m_viewUBOSize;
-        bufDesc.usage = rhi::BufferUsage::Uniform;
-        auto r = device->createBuffer(bufDesc);
+        auto r = DynamicUniformAllocator::create(
+            device, renderer->m_viewBindGroupLayout.get(), 0,
+            static_cast<u32>(sizeof(ViewParamsUBO)));
         if (!r) return tl::make_unexpected(r.error());
-        renderer->m_viewUBO = std::move(*r);
-
-        rhi::BindGroupDesc bgDesc;
-        bgDesc.layout  = renderer->m_viewBindGroupLayout.get();
-        bgDesc.entries = {
-            {0, renderer->m_viewUBO.get(), 0, renderer->m_viewUBOSize, nullptr, nullptr},
-        };
-        auto bgr = device->createBindGroup(bgDesc);
-        if (!bgr) return tl::make_unexpected(bgr.error());
-        renderer->m_viewBindGroup = std::move(*bgr);
+        renderer->m_viewAllocator = std::move(*r);
     }
 
     // ---- Dynamic UBO allocator for per-object data ----
@@ -194,7 +193,10 @@ Result<Ref<Renderer>> Renderer::create(
 // ------ Frame lifecycle -------------------------------------------------------------------------------------------
 
 void Renderer::beginFrame() {
-    m_objectAllocator->beginFrame(m_frameCounter++);
+    u32 frame = m_frameCounter++;
+    m_currentFrameSlot = frame % 2;
+    m_viewAllocator->beginFrame(frame);
+    m_objectAllocator->beginFrame(frame);
     m_currentCmd = m_ctx->device()->getCommandBuffer();
 }
 
@@ -211,23 +213,22 @@ void Renderer::beginRenderPass(
     const Camera& camera,
     const Color& clearColor) {
 
-    // Upload camera data to view UBO.
-    ViewParamsUBO viewParams{};
-    Matrix4x4 vp = camera.viewProjectionMatrix();
-    std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
-    Vector3 camPos = camera.position();
-    viewParams.cameraPos[0] = camPos.x;
-    viewParams.cameraPos[1] = camPos.y;
-    viewParams.cameraPos[2] = camPos.z;
-    viewParams.cameraPos[3] = 0.0f;
-    void* mapped = m_viewUBO->map();
-    if (mapped) {
-        std::memcpy(mapped, &viewParams, sizeof(viewParams));
-        m_viewUBO->unmap();
+    // Allocate view UBO from the per-frame allocator and upload camera data.
+    auto viewAlloc = m_viewAllocator->allocate();
+    {
+        ViewParamsUBO viewParams{};
+        Matrix4x4 vp = camera.viewProjectionMatrix();
+        std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
+        Vector3 camPos = camera.position();
+        viewParams.cameraPos[0] = camPos.x;
+        viewParams.cameraPos[1] = camPos.y;
+        viewParams.cameraPos[2] = camPos.z;
+        viewParams.cameraPos[3] = 0.0f;
+        std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
     }
 
     beginRenderPass(colorTarget, depthTarget, clearColor);
-    setPassBindGroup(0, m_viewBindGroup.get());
+    setPassBindGroup(0, viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
 void Renderer::beginRenderPass(
@@ -251,8 +252,10 @@ void Renderer::beginRenderPass(
 
     // Clear any pass-scoped bind group state from the previous pass.
     for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
-        m_passBindGroups[i]     = nullptr;
-        m_passBindGroupDirty[i] = false;
+        m_passBindGroups[i]                  = nullptr;
+        m_passBindGroupDynamicOffsets[i]     = 0;
+        m_passBindGroupDynamicOffsetCounts[i] = 0;
+        m_passBindGroupDirty[i]              = false;
     }
 }
 
@@ -261,16 +264,24 @@ void Renderer::endRenderPass() {
     m_currentPass = nullptr;
 }
 
-void Renderer::setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup) {
+void Renderer::setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup,
+                                u32 dynamicOffset, u32 dynamicOffsetCount) {
     if (setIndex >= kMaxBindGroupSets) return;
-    m_passBindGroups[setIndex]     = bindGroup;
-    m_passBindGroupDirty[setIndex] = true;
+    m_passBindGroups[setIndex]                = bindGroup;
+    m_passBindGroupDynamicOffsets[setIndex]     = dynamicOffset;
+    m_passBindGroupDynamicOffsetCounts[setIndex] = dynamicOffsetCount;
+    m_passBindGroupDirty[setIndex]             = true;
 }
 
 void Renderer::flushPassBindGroups() {
     for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
         if (m_passBindGroupDirty[i] && m_passBindGroups[i]) {
-            m_currentPass->setBindGroup(i, m_passBindGroups[i]);
+            if (m_passBindGroupDynamicOffsetCounts[i] > 0) {
+                m_currentPass->setBindGroup(i, m_passBindGroups[i],
+                    &m_passBindGroupDynamicOffsets[i], m_passBindGroupDynamicOffsetCounts[i]);
+            } else {
+                m_currentPass->setBindGroup(i, m_passBindGroups[i]);
+            }
             m_passBindGroupDirty[i] = false;
         }
     }
@@ -358,7 +369,11 @@ Result<void> Renderer::drawSubmesh(
     // After setPipeline, flush any pending pass-scoped bind groups.
     flushPassBindGroups();
 
-    m_currentPass->setBindGroup(2, mat->materialBindGroup());
+    // Ensure the material's per-frame BindGroup is up to date for this frame slot.
+    auto matUpdate = mat->updateBindGroup(m_ctx->device(), m_currentFrameSlot);
+    if (!matUpdate) return tl::make_unexpected(matUpdate.error());
+
+    m_currentPass->setBindGroup(2, mat->materialBindGroup(m_currentFrameSlot));
     m_currentPass->setBindGroup(3, alloc.bindGroup, &alloc.dynamicOffset, 1);
     m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
 

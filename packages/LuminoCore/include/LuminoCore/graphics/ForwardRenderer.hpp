@@ -56,7 +56,8 @@ public:
     void beginRenderPass(rhi::TextureView* c, rhi::TextureView* d,
                          const Color& clear = Color{0,0,0,1})                                          { m_renderer->beginRenderPass(c, d, clear); }
     void endRenderPass()                                                                                { m_renderer->endRenderPass(); }
-    void setPassBindGroup(u32 set, rhi::BindGroup* bg)                                                 { m_renderer->setPassBindGroup(set, bg); }
+    void setPassBindGroup(u32 set, rhi::BindGroup* bg,
+                          u32 dynOffset = 0, u32 dynOffsetCount = 0)                                   { m_renderer->setPassBindGroup(set, bg, dynOffset, dynOffsetCount); }
     Result<void> drawMesh(Mesh* mesh, const Transform& t)                                              { return m_renderer->drawMesh(mesh, t); }
     Result<void> drawMesh(Mesh* mesh, const Transform& t, Material* mat)                               { return m_renderer->drawMesh(mesh, t, mat); }
     Result<void> drawScreenRect(Material* mat)                                                         { return m_renderer->drawScreenRect(mat); }
@@ -89,18 +90,14 @@ public:
         const std::vector<RenderObject>& objects,
         const Color& clearColor = Color{0.1f, 0.1f, 0.1f, 1.0f});
 
-    /** The BindGroup for the per-frame Scene UBO (set=1: lighting). */
-    rhi::BindGroup* sceneBindGroup() const { return m_sceneBindGroup.get(); }
 
 private:
     ForwardRenderer() = default;
 
     Ref<Renderer> m_renderer;
 
-    // Per-frame scene data (lighting), uploaded each renderFrame() call (set=1).
-    u64 m_sceneUBOSize = 0;
-    Ref<rhi::Buffer>    m_sceneUBO;
-    Ref<rhi::BindGroup> m_sceneBindGroup;
+    // Per-frame scene data allocator (lighting, set=1) — double-buffered via DynamicUniformAllocator
+    std::unique_ptr<DynamicUniformAllocator> m_sceneAllocator;
 
     DirectionalLight m_light;
 

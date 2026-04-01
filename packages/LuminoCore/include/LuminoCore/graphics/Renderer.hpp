@@ -96,6 +96,9 @@ public:
      */
     void endFrame();
 
+    /** Current in-flight frame slot (0 or 1). Valid after beginFrame(). */
+    u32 currentFrameSlot() const { return m_currentFrameSlot; }
+
     // ---- Pass lifecycle ----
 
     /**
@@ -131,10 +134,13 @@ public:
      *
      * Typical use: setPassBindGroup(0, viewBindGroup) once per pass.
      *
-     * @param setIndex   Descriptor set index (0, 1, or 2).
-     * @param bindGroup  BindGroup to bind. Pass nullptr to unbind.
+     * @param setIndex        Descriptor set index (0–3).
+     * @param bindGroup       BindGroup to bind. Pass nullptr to unbind.
+     * @param dynamicOffset   Dynamic offset for UBO bindings (0 if none).
+     * @param dynamicOffsetCount Number of dynamic offsets (0 or 1).
      */
-    void setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup);
+    void setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup,
+                          u32 dynamicOffset = 0, u32 dynamicOffsetCount = 0);
 
     // ---- Drawing ----
 
@@ -170,10 +176,8 @@ private:
     Ref<rhi::BindGroupLayout> m_objectBindGroupLayout;
     Ref<rhi::PipelineLayout>  m_pipelineLayout;
 
-    // Per-frame view UBO (camera data, set=0)
-    u64 m_viewUBOSize = 0;
-    Ref<rhi::Buffer>    m_viewUBO;
-    Ref<rhi::BindGroup> m_viewBindGroup;
+    // Per-frame view UBO allocator (camera data, set=0) — double-buffered via DynamicUniformAllocator
+    std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;
 
     // Object UBO size (from shader reflection)
     u64 m_objectUBOSize = 0;
@@ -188,6 +192,7 @@ private:
     GraphicsContext* m_ctx = nullptr;
 
     u32 m_frameCounter = 0;
+    u32 m_currentFrameSlot = 0;
 
     // Per-frame command encoding state (valid between beginFrame / endFrame)
     rhi::CommandBuffer*     m_currentCmd  = nullptr;
@@ -196,6 +201,8 @@ private:
     // Deferred per-pass bind groups (set via setPassBindGroup, flushed after setPipeline)
     static constexpr u32 kMaxBindGroupSets = 4;
     rhi::BindGroup* m_passBindGroups[kMaxBindGroupSets] = {};
+    u32             m_passBindGroupDynamicOffsets[kMaxBindGroupSets] = {};
+    u32             m_passBindGroupDynamicOffsetCounts[kMaxBindGroupSets] = {};
     bool            m_passBindGroupDirty[kMaxBindGroupSets] = {};
 
     // Flush all dirty pass BindGroups to the current RenderPassEncoder.

@@ -13,25 +13,14 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     fw->m_ctx      = ctx;
     fw->m_renderer = std::move(*rendererResult);
 
-    // ---- Per-scene UBO (lighting, set=1) ----
-    fw->m_sceneUBOSize = sizeof(SceneParamsUBO);
-
-    rhi::BufferDesc sceneBufDesc;
-    sceneBufDesc.size  = fw->m_sceneUBOSize;
-    sceneBufDesc.usage = rhi::BufferUsage::Uniform;
-    auto sceneBufResult = ctx->device()->createBuffer(sceneBufDesc);
-    if (!sceneBufResult) return tl::make_unexpected(sceneBufResult.error());
-    fw->m_sceneUBO = std::move(*sceneBufResult);
-
-    // ---- Per-scene BindGroup (set=1) ----
-    rhi::BindGroupDesc sceneBGDesc;
-    sceneBGDesc.layout  = fw->m_renderer->sceneBindGroupLayout();
-    sceneBGDesc.entries = {
-        {0, fw->m_sceneUBO.get(), 0, fw->m_sceneUBOSize, nullptr, nullptr},
-    };
-    auto sceneBGResult = ctx->device()->createBindGroup(sceneBGDesc);
-    if (!sceneBGResult) return tl::make_unexpected(sceneBGResult.error());
-    fw->m_sceneBindGroup = std::move(*sceneBGResult);
+    // ---- Dynamic UBO allocator for per-frame scene data (lighting, set=1) ----
+    {
+        auto r = DynamicUniformAllocator::create(
+            ctx->device(), fw->m_renderer->sceneBindGroupLayout(), 0,
+            static_cast<u32>(sizeof(SceneParamsUBO)));
+        if (!r) return tl::make_unexpected(r.error());
+        fw->m_sceneAllocator = std::move(*r);
+    }
 
     return fw;
 }
@@ -43,7 +32,13 @@ Result<void> ForwardRenderer::renderFrame(
     const std::vector<RenderObject>& objects,
     const Color& clearColor) {
 
-    // ---- Upload Scene UBO (lighting) ----
+    // ---- Render via the core Renderer ----
+    // beginFrame resets allocators; scene allocator must also be reset with the same frame counter.
+    m_renderer->beginFrame();
+    m_sceneAllocator->beginFrame(m_renderer->currentFrameSlot());
+
+    // ---- Allocate and upload Scene UBO (lighting) from the per-frame allocator ----
+    auto sceneAlloc = m_sceneAllocator->allocate();
     {
         SceneParamsUBO sceneParams{};
 
@@ -63,19 +58,11 @@ Result<void> ForwardRenderer::renderFrame(
         sceneParams.ambientColor[2] = m_light.ambient.b;
         sceneParams.ambientColor[3] = m_light.ambient.a;
 
-        void* mapped = m_sceneUBO->map();
-        if (mapped) {
-            std::memcpy(mapped, &sceneParams, sizeof(sceneParams));
-            m_sceneUBO->unmap();
-        }
+        std::memcpy(sceneAlloc.cpuPtr, &sceneParams, sizeof(sceneParams));
     }
 
-    // ---- Render via the core Renderer ----
-    // beginRenderPass with camera auto-uploads the View UBO and binds set=0.
-    m_renderer->beginFrame();
-
     m_renderer->beginRenderPass(colorTarget, depthTarget, camera, clearColor);
-    m_renderer->setPassBindGroup(1, m_sceneBindGroup.get());
+    m_renderer->setPassBindGroup(1, sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
 
     for (const auto& obj : objects) {
         auto result = m_renderer->drawMesh(obj.mesh.get(), obj.transform);

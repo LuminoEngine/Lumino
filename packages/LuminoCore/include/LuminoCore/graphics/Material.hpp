@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <array>
 #include <LuminoBase/math/Math.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoBase/Result.hpp>
@@ -75,10 +76,21 @@ public:
 
     // BindGroup access (used by ForwardRenderer)
     rhi::BindGroupLayout* materialBindGroupLayout() const { return m_materialBindGroupLayout.get(); }
-    rhi::BindGroup* materialBindGroup() const { return m_materialBindGroup.get(); }
 
-    /** Rebuild the BindGroup after parameter changes. Call before rendering. */
+    /** Get the BindGroup for the given in-flight frame slot. */
+    rhi::BindGroup* materialBindGroup(u32 frameSlot) const { return m_bindGroupCache[frameSlot].get(); }
+
+    /**
+     * Rebuild the BindGroup for all in-flight frames. Use for initial setup / loading.
+     * Does nothing if parameters have not changed since the last call.
+     */
     Result<void> updateBindGroup(rhi::Device* device);
+
+    /**
+     * Rebuild the BindGroup for a specific in-flight frame slot.
+     * Called internally by Renderer at draw time.
+     */
+    Result<void> updateBindGroup(rhi::Device* device, u32 frameSlot);
 
 private:
     friend class MaterialFactory;
@@ -91,18 +103,23 @@ private:
     std::string m_vertEntry;
     std::string m_fragEntry;
 
+    static constexpr u32 kMaxFramesInFlight = 2;
+
     // BindGroup for material (Set 2)
     Ref<rhi::BindGroupLayout> m_materialBindGroupLayout;
-    Ref<rhi::BindGroup> m_materialBindGroup;
+
+    // Per-frame BindGroup and UBO cache (double-buffered for in-flight frames)
+    std::array<Ref<rhi::Buffer>, kMaxFramesInFlight>    m_paramBuffers;
+    std::array<Ref<rhi::BindGroup>, kMaxFramesInFlight> m_bindGroupCache;
+    std::array<bool, kMaxFramesInFlight>                m_frameDirty = {true, true};
 
     // Parameters
     Color m_baseColor = Color::white();
     Color m_specularColor = Color::white();
     f32 m_shininess = 32.0f;
 
-    // Uniform buffer for material params
+    // Material param buffer size (from shader reflection)
     u64 m_materialParamBufferSize = 0;
-    Ref<rhi::Buffer> m_paramBuffer;
 
     // Textures
     Ref<rhi::Texture> m_baseTexture;
@@ -115,7 +132,7 @@ private:
     bool m_depthTestEnabled = true;
     bool m_depthWriteEnabled = true;
 
-    bool m_paramsDirty = true;
+    void markAllFramesDirty();
 };
 
 class GraphicsContext;
