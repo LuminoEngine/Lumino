@@ -41,4 +41,5 @@ endif()
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_EXAMPLES)
     add_subdirectory(examples/ClearScreen)
+    add_subdirectory(examples/HelloTexture)
 endif()
