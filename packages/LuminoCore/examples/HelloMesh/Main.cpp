@@ -41,7 +41,7 @@ int main() {
 
         GraphicsContextDesc gfxDesc;
 
-        auto window = *PlatformWindow::create(winDesc, gfxDesc);
+        auto window = *PlatformWindow::create(CoreInstance::instance()->graphicsModule(), winDesc, gfxDesc);
         auto* ctx = window->graphicsContext();
 
         // 2. ForwardRenderer

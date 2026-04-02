@@ -1,4 +1,5 @@
 ﻿#include <algorithm>
+#include <LuminoCore/graphics/GraphicsModule.hpp>
 #include <LuminoCore/graphics/GraphicsContext.hpp>
 #include <LuminoCore/graphics/Renderer.hpp>
 #include <LuminoCore/graphics/DebugPrint.hpp>
@@ -6,6 +7,11 @@
 #include <cstdio>
 
 namespace ln {
+
+GraphicsContext::GraphicsContext()
+    : m_module(nullptr) {
+
+}
 
 GraphicsContext::~GraphicsContext() {
     auto* dev = device();
@@ -19,23 +25,19 @@ GraphicsContext::~GraphicsContext() {
     }
 }
 
-rhi::Device* GraphicsContext::device() const {
-    auto* inst = CoreInstance::instance();
-    return inst ? inst->device() : nullptr;
-}
-
 rhi::CommandBuffer* GraphicsContext::currentCommandBuffer() const {
     return m_swapChain->getCurrentCommandBuffer();
 }
 
 Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
+    GraphicsModule* module,
     platform::PlatformWindow* window,
     const GraphicsContextDesc& desc)
 {
-    auto* dev = CoreInstance::instance()->device();
-    if (!dev) return tl::make_unexpected(Error{ErrorCode::NotInitialized, "CoreInstance device not initialized"});
+    auto* dev = module->device();
 
     auto ctx = Ref<GraphicsContext>::adopt(new GraphicsContext());
+    ctx->m_module = module;
     ctx->m_window = window;
     //ctx->m_colorFormat = desc.colorFormat;
 
@@ -152,6 +154,10 @@ void GraphicsContext::debugPrintText(const char* str) {
 void GraphicsContext::waitIdle() {
     auto* dev = device();
     if (dev) dev->waitIdle();
+}
+
+rhi::Device* GraphicsContext::device() const {
+    return m_module->device();
 }
 
 } // namespace ln

@@ -23,6 +23,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
+    
+typedef uint32_t LNBool;
+#define LN_FALSE 0U
+#define LN_TRUE 1U
 
 //------------------------------------------------------------------------------
 // Result / error codes
@@ -59,11 +63,14 @@ typedef uint32_t LNHandle;
 //------------------------------------------------------------------------------
 // LNInstance
 //------------------------------------------------------------------------------
+typedef struct LNInstanceInitializeSettings {
+    LNBool enableValidation; /**< デバッグ用のバリデーションレイヤーを有効にするか */
+} LNInstanceInitializeSettings;
 
 /**
  * Lumino のインスタンスを初期化します。
  */
-extern LUMINO_API LNResult LNInstance_Initialize();
+extern LUMINO_API LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings);
 
 /**
  * Lumino のインスタンスを終了します。

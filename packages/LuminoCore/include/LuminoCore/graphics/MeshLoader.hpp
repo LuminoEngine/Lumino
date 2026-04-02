@@ -9,6 +9,8 @@
 
 namespace ln {
 
+class GraphicsModule;
+
 /** A renderable object loaded from a model file. */
 struct RenderObject {
     Ref<Mesh> mesh;
@@ -26,7 +28,7 @@ class MeshLoader {
 public:
     /** Load a glTF or glb file. */
     static Result<LoadedModel> loadGltf(
-        rhi::Device* device,
+        GraphicsModule* module,
         const std::string& path);
 };
 

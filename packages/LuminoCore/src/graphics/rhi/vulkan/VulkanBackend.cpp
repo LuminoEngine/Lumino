@@ -11,8 +11,6 @@
 
 namespace ln::rhi::vulkan {
 
-
-
 // ------ Format conversion ----------------------------------------------------------------------------------------------------
 
 VkFormat toVkFormat(TextureFormat fmt) {
@@ -867,7 +865,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     swapInfo.imageColorSpace = surfaceFormat.colorSpace;
     swapInfo.imageExtent = m_extent;
     swapInfo.imageArrayLayers = 1;
-    swapInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    swapInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT; // readData できるようにするため、VK_IMAGE_USAGE_TRANSFER_SRC_BIT も指定しておく
     swapInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     swapInfo.preTransform = caps.currentTransform;
     swapInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -1524,7 +1522,8 @@ Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipel
         rpKey.colorFormats.push_back(toVkFormat(fmt));
         rpKey.loadOps.push_back(VK_ATTACHMENT_LOAD_OP_CLEAR);
     }
-    if (desc.depthStencil.depthTestEnable) {
+    if (desc.depthStencil.depthTestEnable || desc.depthStencil.depthWriteEnable ||
+        desc.depthStencil.stencilTestEnable) {
         rpKey.depthFormat = toVkFormat(desc.depthStencilFormat);
     }
     VkRenderPass renderPass = getOrCreateRenderPass(rpKey);

@@ -1,10 +1,9 @@
 ﻿#pragma once
-
 #include <memory>
 #include <LuminoCore/graphics/rhi/Rhi.hpp>
 
 namespace ln {
-
+class GraphicsModule;
 class ObjectRegistry;
 
 // Library root manager クラス。シングルトンで、ライブラリ全体の初期化や終了処理を管理する。
@@ -19,9 +18,7 @@ public:
     static void terminate();
 
     ObjectRegistry* objectRegistry() { return m_objectRegistry.get(); }
-
-    /** The RHI device owned by this instance. */
-    rhi::Device* device() const { return m_device.get(); }
+    GraphicsModule* graphicsModule() const { return m_graphicsModule.get(); }
 
 private:
     VoidResult init(const Settings& settings);
@@ -29,7 +26,7 @@ private:
     static std::unique_ptr<CoreInstance> s_instance;
     Settings m_settings;
     std::unique_ptr<ObjectRegistry> m_objectRegistry;
-    Ref<rhi::Device> m_device;
+    Ref<GraphicsModule> m_graphicsModule;
 };
 
 } // namespace ln

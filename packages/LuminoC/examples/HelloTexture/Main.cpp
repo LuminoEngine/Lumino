@@ -10,7 +10,9 @@
 
 int main(void) {
     /* 1. Runtime initialize */
-    LNInstance_Initialize();
+    LNInstanceInitializeSettings settings = {};
+    settings.enableValidation = LN_TRUE;
+    LNInstance_Initialize(&settings);
 
     /* 2. Window + GraphicsContext */
     LNHandle window = LN_NULL_HANDLE;

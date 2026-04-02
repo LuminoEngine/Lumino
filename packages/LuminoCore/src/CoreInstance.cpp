@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoCore/CoreInstance.hpp>
+#include <LuminoCore/graphics/GraphicsModule.hpp>
 #include <LuminoCore/runtime/ObjectRegistry.hpp>
 
 #ifndef LN_NX
@@ -34,19 +35,25 @@ VoidResult CoreInstance::init(const Settings& settings) {
     glfwInit();
 #endif
 
-    // Create the RHI device
-    rhi::DeviceDesc devDesc;
-    devDesc.backend = settings.preferredBackend;
-    devDesc.enableValidation = settings.enableValidation;
-    auto deviceResult = rhi::Device::create(devDesc);
-    if (!deviceResult) return tl::make_unexpected(deviceResult.error());
-    m_device = std::move(*deviceResult);
+    {
+        GraphicsModule::Settings settings;
+        settings.enableValidation = m_settings.enableValidation;
+        settings.preferredBackend = m_settings.preferredBackend;
+        auto result = GraphicsModule::create(settings);
+        if (!result) {
+            return tl::make_unexpected(result.error());
+        }
+        m_graphicsModule = std::move(*result);
+    }
 
     return LN_MAKE_SUCCESS();
 }
 
 void CoreInstance::dispose() {
-    m_device.reset();
+    if (m_graphicsModule) {
+        m_graphicsModule->dispose();
+        m_graphicsModule.reset();
+    }
     m_objectRegistry.reset();
 #ifndef LN_NX
     glfwTerminate();

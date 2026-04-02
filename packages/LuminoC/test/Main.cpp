@@ -4,7 +4,9 @@
 class LuminoApiEnvironment : public ::testing::Environment {
 public:
     void SetUp() override {
-        ASSERT_EQ(LN_OK, LNInstance_Initialize());
+        LNInstanceInitializeSettings settings = {};
+        settings.enableValidation = LN_TRUE;
+        ASSERT_EQ(LN_OK, LNInstance_Initialize(&settings));
     }
 
     void TearDown() override {

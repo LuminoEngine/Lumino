@@ -10,6 +10,7 @@
 #include <LuminoCore/platform/Window.hpp>
 
 namespace ln {
+class GraphicsModule;
 
 /** Descriptor for creating a GraphicsContext (swap chain + depth buffer). */
 struct GraphicsContextDesc {
@@ -44,6 +45,7 @@ public:
 
     /** Create a graphics context for an existing window. */
     static Result<Ref<GraphicsContext>> createForWindow(
+        GraphicsModule* module,
         platform::PlatformWindow* window,
         const GraphicsContextDesc& desc);
 
@@ -68,6 +70,9 @@ public:
     const std::vector<uint8_t>& captureBuffer() const { return m_captureBuffer; }
 
     void waitIdle();
+
+    /** The GraphicsModule that owns the RHI device. */
+    GraphicsModule* module() const { return m_module; }
 
     /** The underlying RHI device (owned by CoreInstance). */
     rhi::Device* device() const;
@@ -117,8 +122,9 @@ public:
     rhi::RenderPassEncoder*    m_currentPass        = nullptr;
 
 private:
-    GraphicsContext() = default;
+    GraphicsContext();
 
+    GraphicsModule* m_module;
     platform::PlatformWindow* m_window = nullptr; // non-owning
     Ref<rhi::SwapChain> m_swapChain;
 

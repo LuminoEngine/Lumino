@@ -11,7 +11,9 @@
 
 int main(void) {
     // 1. Lumino を初期化します。
-    LNResult result = LNInstance_Initialize();
+    LNInstanceInitializeSettings settings = {};
+    settings.enableValidation = LN_TRUE;
+    LNResult result = LNInstance_Initialize(&settings);
     if (result != LN_OK) {
         fprintf(stderr, "LNInstance_Initialize failed: %d\n", result);
         return 1;

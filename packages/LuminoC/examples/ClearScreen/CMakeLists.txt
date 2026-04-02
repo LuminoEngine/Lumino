@@ -1,5 +1,5 @@
 project(LuminoC-ClearScreen)
-add_executable(${PROJECT_NAME} Main.c)
+add_executable(${PROJECT_NAME} Main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoC)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "examples")
 # Windows: 実行時に LuminoC.dll を見つけられるようコピーする

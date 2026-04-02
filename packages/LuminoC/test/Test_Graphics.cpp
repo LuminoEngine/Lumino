@@ -96,6 +96,8 @@ TEST_F(Test_Graphics, HelloTexture) {
     LNObject_Release(texture);
 }
 
+// ステンシルマスクがスプライトに適用できることを検証します。
+// スプライトの左半分は表示され、右半分はマスクされて透明になるはずです。
 TEST_F(Test_Graphics, StencilMask1) {
     // Create a 64x64 mask texture: left half white (alpha=1), right half transparent (alpha=0).
     //const uint32_t maskW = 64, maskH = 64;
@@ -131,7 +133,7 @@ TEST_F(Test_Graphics, StencilMask1) {
 
     // Create mask quad mesh (covers left half of screen in NDC-like coords)
     LNVertex maskVerts[4] = {
-        { -0.5f,  0.5f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top-left
+        { -1.5f,  0.5f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top-left
         {  0.5f,  0.5f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top-right
         { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-left
         {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-right
@@ -174,17 +176,17 @@ TEST_F(Test_Graphics, StencilMask1) {
     ASSERT_EQ(LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f), LN_OK);
 
-    int cont = 0;
-   //for (int i = 0; i < 10; i++) {
-    while (true) {
-        LNHandle result = LNWindow_ProcessEvents(window, &cont);
-        if (result != LN_OK || !cont) break;
+   // int cont = 0;
+   ////for (int i = 0; i < 10; i++) {
+   // while (true) {
+   //     LNHandle result = LNWindow_ProcessEvents(window, &cont);
+   //     if (result != LN_OK || !cont) break;
 
         // Render
         LNTransform identity = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1};
         LNHandle renderer;
         ASSERT_EQ(LNGraphicsContext_BeginFrame(graphicsContext, &renderer), LN_OK);
-        ASSERT_EQ(LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.5f, 1.0f), LN_OK);
+        ASSERT_EQ(LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.5f, 0.5f, 0.5f, 1.0f), LN_OK);
 
         // Push mask - 左半分のみ描画を許可する (テクスチャが塗られている部分)
         ASSERT_EQ(LNRenderer_PushStencilMask(renderer, maskMesh, &identity, maskMat), LN_OK);
@@ -198,7 +200,7 @@ TEST_F(Test_Graphics, StencilMask1) {
 
         ASSERT_EQ(LNRenderer_EndRenderPass(renderer), LN_OK);
         ASSERT_EQ(LNGraphicsContext_EndFrame(graphicsContext), LN_OK);
-    }
+    //}
 
 #if 1
     // Capture and compare

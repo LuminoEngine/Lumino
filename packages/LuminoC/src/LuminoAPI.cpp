@@ -62,8 +62,10 @@ LNHandle wrapObjectFromGet(ln::Object* object) {
 // LNInstance
 //------------------------------------------------------------------------------
 
-LNResult LNInstance_Initialize() {
-    auto result = ln::CoreInstance::initialize(ln::CoreInstance::Settings{});
+LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
+    ln::CoreInstance::Settings s = {};
+    s.enableValidation = settings ? settings->enableValidation : false;
+    auto result = ln::CoreInstance::initialize(s);
     if (!result) return LN_ERROR_UNKNOWN;
     return LN_OK;
 }
@@ -121,7 +123,9 @@ LNResult LNWindow_Create(
     winDesc.height = height;
 
     ln::GraphicsContextDesc gfxDesc;
-    auto windowResult = ln::platform::PlatformWindow::create(winDesc, gfxDesc);
+    auto windowResult = ln::platform::PlatformWindow::create(instance->graphicsModule(),
+        winDesc,
+        gfxDesc);
     if (!windowResult) return LN_ERROR_UNKNOWN;
 
     *outHandle = wrapObjectFromCreate(windowResult->get());
@@ -270,8 +274,8 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     }
 
     // 2. Submit all recorded GPU commands.
+    // renderer()->endFrame() internally calls m_currentCmd->submit(); do not submit again.
     ctx->renderer()->endFrame();
-    ctx->m_currentCmd->submit();
     ctx->m_currentCmd = nullptr;
 
     // 3. Present + update FPS stats.

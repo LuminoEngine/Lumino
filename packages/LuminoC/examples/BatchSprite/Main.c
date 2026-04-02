@@ -173,7 +173,9 @@ static uint32_t buildBatches(
 //------------------------------------------------------------------------------
 int main(void) {
     /* 1. Initialize */
-    LNInstance_Initialize();
+    LNInstanceInitializeSettings settings = {};
+    settings.enableValidation = LN_TRUE;
+    LNInstance_Initialize(&settings);
 
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-BatchSprite", WINDOW_W, WINDOW_H, &window);

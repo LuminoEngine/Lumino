@@ -8,6 +8,7 @@
 #include <string>
 
 namespace ln {
+class GraphicsModule;
 class GraphicsContext;
 struct GraphicsContextDesc;
 } // namespace ln
@@ -35,11 +36,8 @@ public:
     PlatformWindow(const PlatformWindow&) = delete;
     PlatformWindow& operator=(const PlatformWindow&) = delete;
 
-    /** Create a platform window. */
-    static Result<Ref<PlatformWindow>> create(const WindowDesc& desc);
-
     /** Create a platform window with an attached graphics context. */
-    static Result<Ref<PlatformWindow>> create(const WindowDesc& desc, const GraphicsContextDesc& gfxDesc);
+    static Result<Ref<PlatformWindow>> create(GraphicsModule* module, const WindowDesc& desc, const GraphicsContextDesc& gfxDesc);
 
     /** Poll events and return false if the window should close. */
     bool processEvents();

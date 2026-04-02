@@ -90,9 +90,10 @@ public:
     void writeMaterialUBO(void* dst) const;
 
 private:
+    Material();
     friend class MaterialFactory;
 
-    MaterialType m_type = MaterialType::Unlit;
+    MaterialType m_type;
 
     // Shader modules
     Ref<rhi::ShaderModule> m_vertShader;
@@ -104,50 +105,50 @@ private:
     Ref<rhi::BindGroupLayout> m_materialBindGroupLayout;
 
     // Parameter version counter (incremented on any parameter change)
-    uint64_t m_paramVersion = 1;
+    uint64_t m_paramVersion;
 
     // Parameters
-    Color m_baseColor = Color::white();
-    Color m_specularColor = Color::white();
-    f32 m_shininess = 32.0f;
+    Color m_baseColor;
+    Color m_specularColor;
+    f32 m_shininess;
 
     // Material param buffer size (from shader reflection)
-    u64 m_materialParamBufferSize = 0;
+    u64 m_materialParamBufferSize;
 
     // Textures
     Ref<rhi::Texture> m_baseTexture;
 
     // Render state
-    rhi::CullMode m_cullMode = rhi::CullMode::Back;
-    bool m_blendEnabled = false;
-    bool m_depthTestEnabled = true;
-    bool m_depthWriteEnabled = true;
+    rhi::CullMode m_cullMode;
+    bool m_blendEnabled;
+    bool m_depthTestEnabled;
+    bool m_depthWriteEnabled;
 
     void markDirty() { ++m_paramVersion; }
 };
 
 class GraphicsContext;
+class GraphicsModule;
+enum class BuiltinShader;
 
 /** Factory for creating built-in materials from precompiled shaders. */
 class MaterialFactory {
 public:
     /** Create an Unlit material (texture * color, no lighting). */
-    static Result<Ref<Material>> createUnlit(rhi::Device* device);
+    static Result<Ref<Material>> createUnlit(GraphicsModule* module);
 
     /** Create an Unlit material from a GraphicsContext. */
     static Result<Ref<Material>> createUnlit(GraphicsContext* ctx);
 
     /** Create a BasicLit material (Blinn-Phong, 1 directional light). */
-    static Result<Ref<Material>> createBasicLit(rhi::Device* device);
+    static Result<Ref<Material>> createBasicLit(GraphicsModule* module);
 
     /** Create a BasicLit material from a GraphicsContext. */
     static Result<Ref<Material>> createBasicLit(GraphicsContext* ctx);
 
 private:
-    static Result<Ref<Material>> createMaterialFromShaderData(
-        rhi::Device* device,
-        const unsigned char* shaderData, size_t shaderDataSize,
-        MaterialType type);
+    static Result<Ref<Material>> createMaterialFromBuiltin(
+        GraphicsModule* module, BuiltinShader shader, MaterialType type);
 };
 
 } // namespace ln

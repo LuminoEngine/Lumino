@@ -35,6 +35,20 @@ bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
     }
     if (depthTestEnabled  != o.depthTestEnabled)  return false;
     if (depthWriteEnabled != o.depthWriteEnabled) return false;
+    if (stencilTestEnabled != o.stencilTestEnabled) return false;
+    if (stencilTestEnabled) {
+        if (stencilFront.compare     != o.stencilFront.compare)     return false;
+        if (stencilFront.failOp      != o.stencilFront.failOp)      return false;
+        if (stencilFront.depthFailOp != o.stencilFront.depthFailOp) return false;
+        if (stencilFront.passOp      != o.stencilFront.passOp)      return false;
+        if (stencilBack.compare      != o.stencilBack.compare)      return false;
+        if (stencilBack.failOp       != o.stencilBack.failOp)       return false;
+        if (stencilBack.depthFailOp  != o.stencilBack.depthFailOp)  return false;
+        if (stencilBack.passOp       != o.stencilBack.passOp)       return false;
+        if (stencilReadMask  != o.stencilReadMask)  return false;
+        if (stencilWriteMask != o.stencilWriteMask) return false;
+    }
+    if (colorWriteEnabled != o.colorWriteEnabled) return false;
     if (pipelineLayout    != o.pipelineLayout)    return false;
     if (topology          != o.topology)          return false;
     if (colorFormat       != o.colorFormat)       return false;

@@ -9,6 +9,7 @@
 #include <tiny_gltf.h>
 
 #include <LuminoCore/graphics/MeshLoader.hpp>
+#include <LuminoCore/graphics/GraphicsModule.hpp>
 #include <LuminoCore/graphics/TextureLoader.hpp>
 #include <LuminoBase/math/Math.hpp>
 #include <cstring>
@@ -174,8 +175,9 @@ static std::vector<Ref<rhi::Texture>> loadGltfTextures(
 }
 
 Result<LoadedModel> MeshLoader::loadGltf(
-    rhi::Device* device,
+    GraphicsModule* module,
     const std::string& path) {
+    auto* device = module->device();
 
     // Load glTF file.
     tinygltf::Model model;
@@ -205,11 +207,11 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
         Ref<Material> mat;
         if (isLit) {
-            auto r = MaterialFactory::createBasicLit(device);
+            auto r = MaterialFactory::createBasicLit(module);
             if (!r) return tl::make_unexpected(r.error());
             mat = std::move(*r);
         } else {
-            auto r = MaterialFactory::createUnlit(device);
+            auto r = MaterialFactory::createUnlit(module);
             if (!r) return tl::make_unexpected(r.error());
             mat = std::move(*r);
         }
@@ -247,7 +249,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
     // Create a default material if no materials exist.
     if (result.materials.empty()) {
-        auto r = MaterialFactory::createUnlit(device);
+        auto r = MaterialFactory::createUnlit(module);
         if (!r) return tl::make_unexpected(r.error());
         result.materials.push_back(std::move(*r));
     }
