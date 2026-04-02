@@ -457,6 +457,30 @@ extern LUMINO_API LNResult LNRenderer_DrawMeshWithMaterial(
     LNHandle material
 );
 
+/**
+ * ステンシルマスクをプッシュします。
+ * maskMesh をステンシルバッファにのみ描画し（カラー書き込みなし）、
+ * 以降の DrawMesh 呼び出しはマスク領域内のみ描画されます。
+ * ネスト可能（内部でステンシル参照値をインクリメント）。
+ * @param[in] renderer   Renderer のハンドル
+ * @param[in] mesh       マスク形状のメッシュ（アルファマスクテクスチャ付き）
+ * @param[in] transform  LNTransform へのポインタ (NULL で単位変換)
+ * @param[in] material   マスク描画に使うマテリアルのハンドル
+ */
+extern LUMINO_API LNResult LNRenderer_PushStencilMask(
+    LNHandle renderer,
+    LNHandle mesh,
+    const LNTransform* transform,
+    LNHandle material
+);
+
+/**
+ * 直前の PushStencilMask に対応するマスクを解除します。
+ * 内部でマスクメッシュを再描画してステンシル値をデクリメントします。
+ * @param[in] renderer Renderer のハンドル
+ */
+extern LUMINO_API LNResult LNRenderer_PopStencilMask(LNHandle renderer);
+
 //------------------------------------------------------------------------------
 // LNDebug
 //------------------------------------------------------------------------------

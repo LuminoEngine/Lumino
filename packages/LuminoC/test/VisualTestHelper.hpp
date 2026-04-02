@@ -4,8 +4,6 @@
 #include <vector>
 #include <string>
 
-#define LN_UPDATE_REFERENCES 0
-
 namespace VisualTest {
 
 /** Save RGBA8 pixel data to a PNG file. */
@@ -38,6 +36,7 @@ bool compareImages(
 bool captureAndCompare(
     const char* name,
     const uint8_t* data, uint32_t width, uint32_t height,
-    const std::string& dataDir);
+    const std::string& dataDir,
+    bool forceUpdate = false);
 
 } // namespace VisualTest

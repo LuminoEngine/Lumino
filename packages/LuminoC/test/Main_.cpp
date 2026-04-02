@@ -13,12 +13,12 @@ public:
 };
 
 int main(int argc, char** argv) {
-#if 0 // Debug Utility.
+#if 1 // Debug Utility.
         if (argc == 1) {
             char* testArgs[] = {
                 argv[0],
                 (char*)"--gtest_break_on_failure",
-                (char*)"--gtest_filter=Test_Object.Texture2DCreateAndRelease",
+                (char*)"--gtest_filter=Test_Graphics.StencilMask1",
             };
             argc = sizeof(testArgs) / sizeof(char*);
             argv = testArgs;

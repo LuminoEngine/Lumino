@@ -170,6 +170,25 @@ public:
      */
     Result<void> drawScreenRect(Material* material);
 
+    // ---- Stencil Mask ----
+
+    /**
+     * ステンシルマスクをプッシュします。
+     * maskMesh をステンシルバッファにのみ描画し（カラー書き込みなし）、
+     * 以降の drawMesh はマスク領域内のみ描画されます。
+     * ネスト可能（内部でステンシル参照値をインクリメント）。
+     * @param mesh       マスク形状のメッシュ（アルファマスクテクスチャ付き）
+     * @param transform  メッシュのトランスフォーム
+     * @param material   マスク描画に使うマテリアル（テクスチャ参照のため）
+     */
+    Result<void> pushStencilMask(Mesh* mesh, const Transform& transform, Material* material);
+
+    /**
+     * 直前の pushStencilMask に対応するマスクを解除します。
+     * 内部でマスクメッシュを再描画してステンシル値をデクリメントします。
+     */
+    Result<void> popStencilMask();
+
 private:
     friend class GraphicsContext;
 
@@ -222,6 +241,20 @@ private:
 
     Result<void> drawSubmesh(Mesh* mesh, Material* mat, const Transform& transform, const SubMesh& sub);
     Result<Mesh*> getScreenRectMesh();
+
+    // ---- Stencil mask internal helpers ----
+
+    /** Draw a mesh for the purpose of stencil write only (no color output). */
+    Result<void> drawStencilMaskMesh(Mesh* mesh, const Transform& transform, Material* material,
+                                     rhi::CompareFunction compare, u32 stencilRef, rhi::StencilOp passOp);
+
+    struct StencilMaskEntry {
+        Mesh* mesh;
+        Transform transform;
+        Material* material;
+    };
+    std::vector<StencilMaskEntry> m_stencilMaskStack;
+    u32 m_stencilRef = 0;
 
     // ---- Per-material BindGroup cache (Renderer-owned) ----
 

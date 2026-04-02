@@ -231,6 +231,7 @@ public:
                       const u32* dynamicOffsets, u32 dynamicOffsetCount) override;
     void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) override;
     void setScissorRect(u32 x, u32 y, u32 w, u32 h) override;
+    void setStencilReference(u32 reference) override;
     void draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) override;
     void drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) override;
     void end() override;
@@ -327,6 +328,7 @@ struct RenderPassKey {
     std::vector<VkFormat> colorFormats;
     VkFormat depthFormat = VK_FORMAT_UNDEFINED;
     std::vector<VkAttachmentLoadOp> loadOps;
+    VkAttachmentLoadOp stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
     bool operator==(const RenderPassKey& o) const;
 };

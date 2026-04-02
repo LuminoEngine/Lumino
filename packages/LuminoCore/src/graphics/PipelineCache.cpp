@@ -62,6 +62,20 @@ size_t PipelineCacheKeyHash::operator()(const PipelineCacheKey& key) const {
     }
     hash_combine(seed, key.depthTestEnabled);
     hash_combine(seed, key.depthWriteEnabled);
+    hash_combine(seed, key.stencilTestEnabled);
+    if (key.stencilTestEnabled) {
+        hash_combine(seed, static_cast<uint32_t>(key.stencilFront.compare));
+        hash_combine(seed, static_cast<uint32_t>(key.stencilFront.failOp));
+        hash_combine(seed, static_cast<uint32_t>(key.stencilFront.depthFailOp));
+        hash_combine(seed, static_cast<uint32_t>(key.stencilFront.passOp));
+        hash_combine(seed, static_cast<uint32_t>(key.stencilBack.compare));
+        hash_combine(seed, static_cast<uint32_t>(key.stencilBack.failOp));
+        hash_combine(seed, static_cast<uint32_t>(key.stencilBack.depthFailOp));
+        hash_combine(seed, static_cast<uint32_t>(key.stencilBack.passOp));
+        hash_combine(seed, key.stencilReadMask);
+        hash_combine(seed, key.stencilWriteMask);
+    }
+    hash_combine(seed, key.colorWriteEnabled);
     hash_combine(seed, reinterpret_cast<uintptr_t>(key.pipelineLayout));
     hash_combine(seed, static_cast<uint32_t>(key.topology));
     hash_combine(seed, static_cast<uint32_t>(key.colorFormat));
@@ -100,10 +114,21 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     rpDesc.depthStencilFormat              = key.depthStencilFormat;
     rpDesc.depthStencil.depthTestEnable    = key.depthTestEnabled;
     rpDesc.depthStencil.depthWriteEnable   = key.depthWriteEnabled;
+    rpDesc.depthStencil.stencilTestEnable  = key.stencilTestEnabled;
+    rpDesc.depthStencil.stencilFront       = key.stencilFront;
+    rpDesc.depthStencil.stencilBack        = key.stencilBack;
+    rpDesc.depthStencil.stencilReadMask    = key.stencilReadMask;
+    rpDesc.depthStencil.stencilWriteMask   = key.stencilWriteMask;
     rpDesc.sampleCount     = key.sampleCount;
 
     if (key.blendEnabled) {
-        rpDesc.blendStates = {key.blendState};
+        rhi::BlendState bs = key.blendState;
+        bs.colorWriteEnabled = key.colorWriteEnabled;
+        rpDesc.blendStates = {bs};
+    } else {
+        rhi::BlendState bs;
+        bs.colorWriteEnabled = key.colorWriteEnabled;
+        rpDesc.blendStates = {bs};
     }
 
     auto result = m_device->createRenderPipeline(rpDesc);

@@ -22,6 +22,9 @@ cmake --build build --config Release --parallel
 
 # テスト実行
 ctest --test-dir build -C Release --output-on-failure
+
+# シェーダのコンパイル (共有ライブラリを -I で指定する必要があります)
+build/packages/luminosc/Release/luminosc.exe -I packages/LuminoShader/shaders MyShader.slang
 ```
 
 ## リポジトリアーキテクチャ

@@ -240,6 +240,9 @@ void Renderer::beginRenderPass(
         depthAttachment.depthLoadOp   = rhi::LoadOp::Clear;
         depthAttachment.depthStoreOp  = rhi::StoreOp::Store;
         depthAttachment.clearDepth    = 1.0f;
+        depthAttachment.stencilLoadOp  = rhi::LoadOp::Clear;
+        depthAttachment.stencilStoreOp = rhi::StoreOp::Store;
+        depthAttachment.clearStencil   = 0;
         rpDesc.depthStencilAttachment = &depthAttachment;
     }
 
@@ -382,6 +385,17 @@ Result<void> Renderer::drawSubmesh(
     }
     key.depthTestEnabled    = mat->depthTestEnabled();
     key.depthWriteEnabled   = mat->depthWriteEnabled();
+    // When a stencil mask is active, enable stencil test to restrict drawing to masked area.
+    if (m_stencilRef > 0) {
+        key.stencilTestEnabled = true;
+        key.stencilFront.compare   = rhi::CompareFunction::Equal;
+        key.stencilFront.failOp    = rhi::StencilOp::Keep;
+        key.stencilFront.depthFailOp = rhi::StencilOp::Keep;
+        key.stencilFront.passOp    = rhi::StencilOp::Keep;
+        key.stencilBack = key.stencilFront;
+        key.stencilReadMask  = 0xFF;
+        key.stencilWriteMask = 0x00;
+    }
     key.pipelineLayout      = m_pipelineLayout.get();
     key.topology            = mesh->topology();
     key.colorFormat         = m_colorFormat;
@@ -392,6 +406,11 @@ Result<void> Renderer::drawSubmesh(
     if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
 
     m_currentPass->setPipeline(*pipelineResult);
+
+    // Set dynamic stencil reference when stencil mask is active.
+    if (m_stencilRef > 0) {
+        m_currentPass->setStencilReference(m_stencilRef);
+    }
 
     // After setPipeline, flush any pending pass-scoped bind groups.
     flushPassBindGroups();
@@ -414,6 +433,118 @@ Result<void> Renderer::drawScreenRect(Material* material) {
 
     Transform identity;
     return drawMesh(*meshResult, identity, material);
+}
+
+// ------ Stencil Mask --------------------------------------------------------------------------------------------
+
+Result<void> Renderer::drawStencilMaskMesh(
+    Mesh* mesh, const Transform& transform, Material* material,
+    rhi::CompareFunction compare, u32 stencilRef, rhi::StencilOp passOp) {
+
+    auto* pipelineCache = m_ctx->pipelineCache();
+
+    m_currentPass->setVertexBuffer(0, mesh->vertexBuffer());
+    m_currentPass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
+
+    for (const auto& sub : mesh->submeshes()) {
+        Material* mat = material;
+        if (!mat && sub.materialIndex < mesh->materials().size()) {
+            mat = mesh->materials()[sub.materialIndex].get();
+        }
+        if (!mat && !mesh->materials().empty()) {
+            mat = mesh->materials()[0].get();
+        }
+        if (!mat) continue;
+
+        // Allocate per-object UBO
+        auto alloc = m_objectAllocator->allocate();
+        {
+            Matrix4x4 worldMatrix  = transform.matrix();
+            Matrix4x4 normalMatrix = transform.normalMatrix();
+            ObjectParamsUBO objParams{};
+            std::memcpy(objParams.world,        worldMatrix.m,  sizeof(f32) * 16);
+            std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(f32) * 16);
+            std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
+        }
+
+        // Build pipeline key for stencil write
+        PipelineCacheKey key;
+        key.vertexShader       = mat->vertexShader();
+        key.fragmentShader     = mat->fragmentShader();
+        key.vertexEntry        = mat->vertexEntry();
+        key.fragmentEntry      = mat->fragmentEntry();
+        key.cullMode           = rhi::CullMode::None;
+        key.blendEnabled       = false;
+        key.depthTestEnabled   = false;
+        key.depthWriteEnabled  = false;
+        key.colorWriteEnabled  = false;
+        key.stencilTestEnabled = true;
+        key.stencilFront.compare   = compare;
+        key.stencilFront.failOp    = rhi::StencilOp::Keep;
+        key.stencilFront.depthFailOp = rhi::StencilOp::Keep;
+        key.stencilFront.passOp    = passOp;
+        key.stencilBack            = key.stencilFront;
+        key.stencilReadMask  = 0xFF;
+        key.stencilWriteMask = 0xFF;
+        key.pipelineLayout   = m_pipelineLayout.get();
+        key.topology         = mesh->topology();
+        key.colorFormat      = m_colorFormat;
+        key.depthStencilFormat = m_depthFormat;
+        key.sampleCount      = 1;
+
+        auto pipelineResult = pipelineCache->getOrCreate(key);
+        if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
+
+        m_currentPass->setPipeline(*pipelineResult);
+        m_currentPass->setStencilReference(stencilRef);
+        flushPassBindGroups();
+
+        auto matBGResult = getOrCreateMaterialBindGroup(mat);
+        if (!matBGResult) return tl::make_unexpected(matBGResult.error());
+
+        m_currentPass->setBindGroup(2, *matBGResult);
+        m_currentPass->setBindGroup(3, alloc.bindGroup, &alloc.dynamicOffset, 1);
+        m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
+        ++m_drawCallCount;
+    }
+    return {};
+}
+
+Result<void> Renderer::pushStencilMask(Mesh* mesh, const Transform& transform, Material* material) {
+    // Save mask info for later pop.
+    m_stencilMaskStack.push_back({mesh, transform, material});
+
+    // Draw mask mesh into stencil buffer: increment stencil where stencil == m_stencilRef.
+    // After this, the mask area will have stencil == m_stencilRef + 1.
+    auto result = drawStencilMaskMesh(
+        mesh, transform, material,
+        rhi::CompareFunction::Equal,  // compare: pass where stencil == current ref
+        m_stencilRef,                 // dynamic reference value
+        rhi::StencilOp::IncrementClamp);
+    if (!result) return result;
+
+    m_stencilRef++;
+    return {};
+}
+
+Result<void> Renderer::popStencilMask() {
+    if (m_stencilMaskStack.empty()) {
+        return tl::make_unexpected(Error{ErrorCode::InvalidArgument, "Stencil mask stack underflow"});
+    }
+
+    auto entry = m_stencilMaskStack.back();
+    m_stencilMaskStack.pop_back();
+
+    // Redraw the mask mesh to decrement stencil back.
+    auto result = drawStencilMaskMesh(
+        entry.mesh, entry.transform, entry.material,
+        rhi::CompareFunction::Equal,
+        m_stencilRef,                 // match the incremented value
+        rhi::StencilOp::DecrementClamp);
+    if (!result) return result;
+
+    m_stencilRef--;
+    return {};
 }
 
 Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {

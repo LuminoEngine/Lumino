@@ -12,6 +12,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
+#define LN_UPDATE_REFERENCES 0
+
 namespace VisualTest {
 
 bool savePng(const char* path, const uint8_t* data, uint32_t width, uint32_t height) {
@@ -91,12 +93,13 @@ bool compareImages(
 bool captureAndCompare(
     const char* name,
     const uint8_t* data, uint32_t width, uint32_t height,
-    const std::string& dataDir) {
+    const std::string& dataDir,
+    bool forceUpdate) {
     std::string expectedDir = dataDir + "/Expected";
     std::string expectedPath = expectedDir + "/" + name + ".png";
 
     // If LN_UPDATE_REFERENCES is set, save as new reference.
-    if (LN_UPDATE_REFERENCES) {
+    if (forceUpdate || LN_UPDATE_REFERENCES) {
         if (savePng(expectedPath.c_str(), data, width, height)) {
             std::printf("[VisualTest] Updated reference: %s\n", expectedPath.c_str());
             return true;

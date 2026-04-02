@@ -156,6 +156,15 @@ enum class CompareFunction {
     Always,
 };
 
+enum class StencilOp {
+    Keep,
+    Zero,
+    Replace,
+    IncrementClamp,
+    DecrementClamp,
+    Invert,
+};
+
 enum class LoadOp {
     Load,
     Clear,
@@ -239,12 +248,25 @@ struct BlendState {
     BlendFactor srcAlpha = BlendFactor::One;
     BlendFactor dstAlpha = BlendFactor::Zero;
     BlendOp alphaOp = BlendOp::Add;
+    bool colorWriteEnabled = true;
+};
+
+struct StencilFaceState {
+    CompareFunction compare = CompareFunction::Always;
+    StencilOp failOp      = StencilOp::Keep;
+    StencilOp depthFailOp = StencilOp::Keep;
+    StencilOp passOp      = StencilOp::Keep;
 };
 
 struct DepthStencilState {
     bool depthTestEnable = false;
     bool depthWriteEnable = false;
     CompareFunction depthCompare = CompareFunction::Less;
+    bool stencilTestEnable = false;
+    StencilFaceState stencilFront;
+    StencilFaceState stencilBack;
+    u32 stencilReadMask  = 0xFF;
+    u32 stencilWriteMask = 0xFF;
 };
 
 struct BindGroupLayoutEntry {
@@ -305,6 +327,9 @@ struct DepthStencilAttachment {
     LoadOp depthLoadOp = LoadOp::Clear;
     StoreOp depthStoreOp = StoreOp::Store;
     f32 clearDepth = 1.0f;
+    LoadOp stencilLoadOp = LoadOp::Clear;
+    StoreOp stencilStoreOp = StoreOp::Store;
+    u32 clearStencil = 0;
 };
 
 struct RenderPassDesc {
@@ -405,6 +430,7 @@ public:
                               const u32* dynamicOffsets, u32 dynamicOffsetCount) = 0;
     virtual void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth = 0, f32 maxDepth = 1) = 0;
     virtual void setScissorRect(u32 x, u32 y, u32 w, u32 h) = 0;
+    virtual void setStencilReference(u32 reference) = 0;
     virtual void draw(u32 vertexCount, u32 instanceCount = 1, u32 firstVertex = 0, u32 firstInstance = 0) = 0;
     virtual void drawIndexed(u32 indexCount, u32 instanceCount = 1, u32 firstIndex = 0, i32 baseVertex = 0, u32 firstInstance = 0) = 0;
     virtual void end() = 0;

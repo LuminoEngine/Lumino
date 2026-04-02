@@ -24,6 +24,12 @@ struct PipelineCacheKey {
     rhi::BlendState blendState;     // blendEnabled==false の場合は無視
     bool depthTestEnabled = true;
     bool depthWriteEnabled = true;
+    bool stencilTestEnabled = false;
+    rhi::StencilFaceState stencilFront;
+    rhi::StencilFaceState stencilBack;
+    u32 stencilReadMask = 0xFF;
+    u32 stencilWriteMask = 0xFF;
+    bool colorWriteEnabled = true;
     // 描画コンテキスト由来
     rhi::PipelineLayout* pipelineLayout = nullptr;
     rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList;

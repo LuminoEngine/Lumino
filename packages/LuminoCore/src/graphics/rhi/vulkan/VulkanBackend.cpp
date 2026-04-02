@@ -80,6 +80,30 @@ static VkCompareOp toVkCompareOp(CompareFunction fn) {
     return VK_COMPARE_OP_LESS;
 }
 
+static VkStencilOp toVkStencilOp(StencilOp op) {
+    switch (op) {
+        case StencilOp::Keep:           return VK_STENCIL_OP_KEEP;
+        case StencilOp::Zero:           return VK_STENCIL_OP_ZERO;
+        case StencilOp::Replace:        return VK_STENCIL_OP_REPLACE;
+        case StencilOp::IncrementClamp: return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+        case StencilOp::DecrementClamp: return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+        case StencilOp::Invert:         return VK_STENCIL_OP_INVERT;
+    }
+    return VK_STENCIL_OP_KEEP;
+}
+
+static VkStencilOpState toVkStencilOpState(const StencilFaceState& face, u32 readMask, u32 writeMask) {
+    VkStencilOpState s{};
+    s.failOp      = toVkStencilOp(face.failOp);
+    s.passOp      = toVkStencilOp(face.passOp);
+    s.depthFailOp = toVkStencilOp(face.depthFailOp);
+    s.compareOp   = toVkCompareOp(face.compare);
+    s.compareMask = readMask;
+    s.writeMask   = writeMask;
+    s.reference   = 0; // set dynamically via vkCmdSetStencilReference
+    return s;
+}
+
 static uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memProps;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
@@ -570,10 +594,10 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     viewportState.viewportCount = 1;
     viewportState.scissorCount = 1;
 
-    VkDynamicState dynStates[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkDynamicState dynStates[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_STENCIL_REFERENCE};
     VkPipelineDynamicStateCreateInfo dynamicState{};
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    dynamicState.dynamicStateCount = 2;
+    dynamicState.dynamicStateCount = 3;
     dynamicState.pDynamicStates = dynStates;
 
     // Rasterization
@@ -597,8 +621,11 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachments;
     for (size_t i = 0; i < desc.colorFormats.size(); ++i) {
         VkPipelineColorBlendAttachmentState att{};
-        att.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                             VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        bool colorWrite = (i < desc.blendStates.size()) ? desc.blendStates[i].colorWriteEnabled : true;
+        att.colorWriteMask = colorWrite
+            ? (VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+               VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+            : 0;
         if (i < desc.blendStates.size() && desc.blendStates[i].enabled) {
             auto& bs = desc.blendStates[i];
             att.blendEnable = VK_TRUE;
@@ -629,6 +656,17 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     depthStencil.depthTestEnable = desc.depthStencil.depthTestEnable ? VK_TRUE : VK_FALSE;
     depthStencil.depthWriteEnable = desc.depthStencil.depthWriteEnable ? VK_TRUE : VK_FALSE;
     depthStencil.depthCompareOp = toVkCompareOp(desc.depthStencil.depthCompare);
+    depthStencil.stencilTestEnable = desc.depthStencil.stencilTestEnable ? VK_TRUE : VK_FALSE;
+    if (desc.depthStencil.stencilTestEnable) {
+        depthStencil.front = toVkStencilOpState(
+            desc.depthStencil.stencilFront,
+            desc.depthStencil.stencilReadMask,
+            desc.depthStencil.stencilWriteMask);
+        depthStencil.back = toVkStencilOpState(
+            desc.depthStencil.stencilBack,
+            desc.depthStencil.stencilReadMask,
+            desc.depthStencil.stencilWriteMask);
+    }
 
     // Pipeline layout
     auto* pLayout = static_cast<VulkanPipelineLayout*>(desc.layout);
@@ -681,7 +719,7 @@ VulkanRenderPassEncoder::VulkanRenderPassEncoder(
     }
     if (desc.depthStencilAttachment) {
         VkClearValue cv{};
-        cv.depthStencil = {desc.depthStencilAttachment->clearDepth, 0};
+        cv.depthStencil = {desc.depthStencilAttachment->clearDepth, desc.depthStencilAttachment->clearStencil};
         clearValues.push_back(cv);
     }
 
@@ -747,6 +785,10 @@ void VulkanRenderPassEncoder::setScissorRect(u32 x, u32 y, u32 w, u32 h) {
     vkCmdSetScissor(m_cmd, 0, 1, &sc);
 }
 
+void VulkanRenderPassEncoder::setStencilReference(u32 reference) {
+    vkCmdSetStencilReference(m_cmd, VK_STENCIL_FACE_FRONT_AND_BACK, reference);
+}
+
 void VulkanRenderPassEncoder::draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) {
     vkCmdDraw(m_cmd, vertexCount, instanceCount, firstVertex, firstInstance);
 }
@@ -762,7 +804,7 @@ void VulkanRenderPassEncoder::end() {
 // ------ RenderPass Cache helpers ----------------------------------------------------------------------------------------
 
 bool RenderPassKey::operator==(const RenderPassKey& o) const {
-    return colorFormats == o.colorFormats && depthFormat == o.depthFormat && loadOps == o.loadOps;
+    return colorFormats == o.colorFormats && depthFormat == o.depthFormat && loadOps == o.loadOps && stencilLoadOp == o.stencilLoadOp;
 }
 
 size_t RenderPassKeyHash::operator()(const RenderPassKey& key) const {
@@ -770,6 +812,7 @@ size_t RenderPassKeyHash::operator()(const RenderPassKey& key) const {
     for (auto f : key.colorFormats) h ^= std::hash<int>()(f) + 0x9e3779b9 + (h << 6) + (h >> 2);
     h ^= std::hash<int>()(key.depthFormat) + 0x9e3779b9 + (h << 6) + (h >> 2);
     for (auto op : key.loadOps) h ^= std::hash<int>()(op) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    h ^= std::hash<int>()(key.stencilLoadOp) + 0x9e3779b9 + (h << 6) + (h >> 2);
     return h;
 }
 
@@ -1080,6 +1123,10 @@ RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& de
     }
     if (desc.depthStencilAttachment) {
         rpKey.depthFormat = static_cast<VulkanTextureView*>(desc.depthStencilAttachment->view)->vkFormat();
+        rpKey.stencilLoadOp =
+            desc.depthStencilAttachment->stencilLoadOp == LoadOp::Clear ? VK_ATTACHMENT_LOAD_OP_CLEAR :
+            desc.depthStencilAttachment->stencilLoadOp == LoadOp::Load  ? VK_ATTACHMENT_LOAD_OP_LOAD :
+                                                                          VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     }
 
     VkRenderPass renderPass = m_device->getOrCreateRenderPass(rpKey);
@@ -1290,9 +1337,9 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
         att.format = key.depthFormat;
         att.samples = VK_SAMPLE_COUNT_1_BIT;
         att.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        att.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        att.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        att.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        att.stencilLoadOp = key.stencilLoadOp;
+        att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
         att.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         att.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         attachments.push_back(att);
@@ -1417,7 +1464,9 @@ Result<Ref<TextureView>> VulkanDevice::createTextureView(Texture* texture) {
     auto* vtex = static_cast<VulkanTexture*>(texture);
     VkFormat fmt = toVkFormat(vtex->format());
     VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
-    if (vtex->format() == TextureFormat::Depth24Stencil8 || vtex->format() == TextureFormat::Depth32Float) {
+    if (vtex->format() == TextureFormat::Depth24Stencil8) {
+        aspect = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+    } else if (vtex->format() == TextureFormat::Depth32Float) {
         aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
     }
     auto view = Ref<VulkanTextureView>::adopt(new VulkanTextureView());

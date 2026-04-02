@@ -135,7 +135,7 @@ private:
     Ref<rhi::Texture> m_depthTexture;
     Ref<rhi::TextureView> m_depthView;
     rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;
-    rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth32Float;
+    rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth24Stencil8;
     u32 m_width = 0;
     u32 m_height = 0;
     std::unique_ptr<PipelineCache> m_pipelineCache;
