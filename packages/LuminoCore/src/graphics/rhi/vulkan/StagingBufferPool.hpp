@@ -171,6 +171,95 @@ public:
         releasePage(staging);
     }
 
+    /**
+     * Copy pixel data from `srcImage` (device-local) into a CPU-side buffer.
+     * Transitions the image layout for transfer and restores it afterwards.
+     */
+    std::vector<uint8_t> downloadTextureImmediate(
+        VkQueue queue, VkCommandPool cmdPool,
+        VkImage srcImage, VkImageLayout currentLayout,
+        u32 width, u32 height, VkFormat /*format*/)
+    {
+        const VkDeviceSize size = static_cast<VkDeviceSize>(width) * height * 4; // BGRA8 / RGBA8
+        Page staging = acquirePage(size);
+
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool = cmdPool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer cmd = VK_NULL_HANDLE;
+        vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        vkBeginCommandBuffer(cmd, &beginInfo);
+
+        // Transition currentLayout → TRANSFER_SRC_OPTIMAL
+        VkImageMemoryBarrier barrier{};
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.oldLayout = currentLayout;
+        barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = srcImage;
+        barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        barrier.subresourceRange.baseMipLevel = 0;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.baseArrayLayer = 0;
+        barrier.subresourceRange.layerCount = 1;
+        barrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        vkCmdPipelineBarrier(cmd,
+            VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+            0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+        // Copy image → buffer
+        VkBufferImageCopy region{};
+        region.bufferOffset = 0;
+        region.bufferRowLength = 0;   // tightly packed
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount = 1;
+        region.imageOffset = {0, 0, 0};
+        region.imageExtent = {width, height, 1};
+        vkCmdCopyImageToBuffer(cmd, srcImage,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, staging.buffer, 1, &region);
+
+        // Transition TRANSFER_SRC_OPTIMAL → original layout
+        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.newLayout = currentLayout;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        vkCmdPipelineBarrier(cmd,
+            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+            0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+        vkEndCommandBuffer(cmd);
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &cmd;
+        vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(queue);
+
+        // Map staging buffer and copy to CPU vector.
+        void* mapped = nullptr;
+        vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
+        std::vector<uint8_t> result(size);
+        std::memcpy(result.data(), mapped, size);
+        vkUnmapMemory(m_device, staging.memory);
+
+        vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
+        releasePage(staging);
+        return result;
+    }
+
 private:
     struct Page {
         VkBuffer buffer = VK_NULL_HANDLE;
@@ -205,7 +294,7 @@ private:
         VkBufferCreateInfo bufInfo{};
         bufInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufInfo.size = size;
-        bufInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        bufInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         bufInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         vkCreateBuffer(m_device, &bufInfo, nullptr, &page.buffer);
 

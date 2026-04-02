@@ -65,6 +65,14 @@ struct LogLocation {
 using LogCallback = void (*)(LogLevel level, const char* file, int line,
                               const char* func, const char* message);
 
+/**
+ * ログ出力を制御するクラスです。 ログの出力は通常、 LN_LOG_INFO などのマクロを使用してください。
+ * 
+ * @example
+ * ```
+ * LN_LOG_INFO("maxImageDimension1D: %u", maxImageDimension1D);
+ * ```
+ */
 class Logger {
 public:
     /** ログ出力レベルフィルタを設定する。設定レベル未満のログは破棄される。 */

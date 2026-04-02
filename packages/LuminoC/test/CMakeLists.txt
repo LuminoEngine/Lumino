@@ -14,6 +14,8 @@ add_executable(
     ${LN_LOCAL_SOURCES}
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoC GTest::gtest)
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
@@ -23,3 +25,5 @@ add_custom_command(TARGET LuminoC_test POST_BUILD
         $<TARGET_FILE:LuminoC>
         $<TARGET_FILE_DIR:LuminoC_test>
 )
+
+add_dependencies(${PROJECT_NAME} LuminoC)

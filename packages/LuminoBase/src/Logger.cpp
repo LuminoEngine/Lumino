@@ -32,11 +32,7 @@ static const char* levelChar(LogLevel level) {
 }
 
 // ファイルスコープ globals（g_mutex で保護）
-#ifdef NDEBUG
 static LogLevel g_level = LogLevel::Info;
-#else
-static LogLevel g_level = LogLevel::Debug;
-#endif
 static LogCallback g_callback = nullptr;
 static std::mutex g_mutex;
 

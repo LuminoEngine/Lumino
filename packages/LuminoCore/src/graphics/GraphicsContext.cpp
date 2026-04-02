@@ -1,4 +1,5 @@
-﻿#include <LuminoCore/graphics/GraphicsContext.hpp>
+﻿#include <algorithm>
+#include <LuminoCore/graphics/GraphicsContext.hpp>
 #include <LuminoCore/graphics/Renderer.hpp>
 #include <LuminoCore/graphics/DebugPrint.hpp>
 #include <LuminoCore/CoreInstance.hpp>
@@ -95,12 +96,40 @@ Result<FrameInfo> GraphicsContext::beginFrame() {
 }
 
 void GraphicsContext::endFrame() {
+    m_lastColorTarget = m_currentColorTarget;
     m_swapChain->present();
 
     auto now = Clock::now();
     auto elapsedUs = std::chrono::duration_cast<std::chrono::microseconds>(now - m_frameBeginTime).count();
     m_lastFrameTimeMs = static_cast<float>(elapsedUs) / 1000.0f;
     m_fps = (m_lastFrameTimeMs > 0.0f) ? (1000.0f / m_lastFrameTimeMs) : 0.0f;
+}
+
+Result<void> GraphicsContext::captureBackbuffer() {
+    if (!m_lastColorTarget) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No backbuffer available. Call after endFrame()."});
+    }
+
+    auto* dev = device();
+    if (!dev) {
+        return tl::make_unexpected(Error{ErrorCode::NotInitialized, "Device not available."});
+    }
+
+    dev->waitIdle();
+
+    auto result = dev->readbackTexture(m_lastColorTarget);
+    if (!result) {
+        return tl::make_unexpected(result.error());
+    }
+
+    m_captureBuffer = std::move(*result);
+
+    // BGRA → RGBA swizzle (swapchain format is BGRA8Unorm)
+    for (size_t i = 0; i < m_captureBuffer.size(); i += 4) {
+        std::swap(m_captureBuffer[i], m_captureBuffer[i + 2]);
+    }
+
+    return {};
 }
 
 Result<void> GraphicsContext::initDebugPrint() {

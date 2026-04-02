@@ -149,6 +149,22 @@ extern LUMINO_API LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsCont
  */
 extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 
+/**
+ * 直前のフレームのバックバッファの内容を RGBA8 ピクセルデータとして取得します。
+ * LNGraphicsContext_EndFrame の後に呼び出してください。
+ * 返されるポインタは、次の LNGraphicsContext_CaptureBackbuffer 呼び出しまで有効です。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[out] outData         ピクセルデータの先頭ポインタ
+ * @param[out] outWidth        画像の幅 (ピクセル)
+ * @param[out] outHeight       画像の高さ (ピクセル)
+ */
+extern LUMINO_API LNResult LNGraphicsContext_CaptureBackbuffer(
+    LNHandle graphicsContext,
+    const uint8_t** outData,
+    int32_t* outWidth,
+    int32_t* outHeight
+);
+
 //------------------------------------------------------------------------------
 // Value structs
 //------------------------------------------------------------------------------

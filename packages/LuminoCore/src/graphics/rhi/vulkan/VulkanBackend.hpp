@@ -94,6 +94,7 @@ public:
     VoidResult init(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height);
 
     VkImageView handle() const { return m_view; }
+    VkImage image() const { return m_image; }
     VkFormat vkFormat() const { return m_format; }
     u32 width() const { return m_width; }
     u32 height() const { return m_height; }
@@ -104,6 +105,7 @@ protected:
 private:
     VkDevice m_device = VK_NULL_HANDLE;
     VkImageView m_view = VK_NULL_HANDLE;
+    VkImage m_image = VK_NULL_HANDLE;
     VkFormat m_format = VK_FORMAT_UNDEFINED;
     u32 m_width = 0, m_height = 0;
 };
@@ -368,6 +370,7 @@ public:
     Result<Ref<BindGroup>> createBindGroup(const BindGroupDesc& desc) override;
     Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) override;
     Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) override;
+    Result<std::vector<uint8_t>> readbackTexture(TextureView* view) override;
     void waitIdle() override;
 
     // Internal accessors

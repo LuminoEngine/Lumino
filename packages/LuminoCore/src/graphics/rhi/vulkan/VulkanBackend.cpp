@@ -250,6 +250,7 @@ VulkanTextureView::VulkanTextureView() = default;
 
 VoidResult VulkanTextureView::init(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height) {
     m_device = device;
+    m_image = image;
     m_format = format;
     m_width = width;
     m_height = height;
@@ -1502,6 +1503,24 @@ Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {
         return LN_MAKE_ERROR("Failed to initialize command buffer.");
     }
     return cb;
+}
+
+Result<std::vector<uint8_t>> VulkanDevice::readbackTexture(TextureView* view) {
+    auto* vkView = static_cast<VulkanTextureView*>(view);
+    if (!vkView || vkView->image() == VK_NULL_HANDLE) {
+        return tl::make_unexpected(Error{ErrorCode::InvalidArgument, "Invalid TextureView for readback."});
+    }
+
+    // Swapchain images are in PRESENT_SRC_KHR after present().
+    const VkImageLayout currentLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+    auto pixels = m_stagingPool.downloadTextureImmediate(
+        m_graphicsQueue, m_commandPool,
+        vkView->image(), currentLayout,
+        vkView->width(), vkView->height(),
+        vkView->vkFormat());
+
+    return pixels;
 }
 
 void VulkanDevice::waitIdle() {

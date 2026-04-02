@@ -464,6 +464,9 @@ public:
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
+    /** Read back the contents of a texture view into a CPU-side pixel buffer. */
+    virtual Result<std::vector<uint8_t>> readbackTexture(TextureView* view) = 0;
+
     /** Wait for the device to become idle. */
     virtual void waitIdle() = 0;
 };

@@ -95,10 +95,8 @@ LNResult LNTexture2D_Create(
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
     auto texture = ln::Ref<ln::Texture2D>::adopt(LN_NEW ln::Texture2D(width, height, format));
-    LNHandle handle = instance->objectRegistry()->registerObject(texture.get());
-    if (handle == LN_NULL_HANDLE) return LN_ERROR_UNKNOWN;
 
-    *outHandle = handle;
+    *outHandle = wrapObjectFromCreate(texture.get());
     return LN_OK;
 }
 
@@ -234,6 +232,29 @@ LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext) {
     return LN_OK;
 }
 
+LNResult LNGraphicsContext_CaptureBackbuffer(
+    LNHandle graphicsContext,
+    const uint8_t** outData,
+    int32_t* outWidth,
+    int32_t* outHeight) {
+    if (!outData || !outWidth || !outHeight) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = ctx->captureBackbuffer();
+    if (!result) return LN_ERROR_UNKNOWN;
+
+    const auto& pixels = ctx->captureBuffer();
+    *outData = pixels.data();
+    *outWidth = static_cast<int32_t>(ctx->width());
+    *outHeight = static_cast<int32_t>(ctx->height());
+    return LN_OK;
+}
+
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
@@ -245,7 +266,7 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     // 1. Render DebugPrint overlay (records commands into the open command buffer).
     auto* dp = ctx->debugPrint();
     if (dp) {
-        dp->render(ctx); // ignore error; best-effort overlay
+        (void)dp->render(ctx); // ignore error; best-effort overlay
     }
 
     // 2. Submit all recorded GPU commands.

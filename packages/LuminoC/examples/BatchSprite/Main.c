@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BatchSprite.c
  *
  * 1000 個以上のスプライトを動的メッシュ (LNMesh_CreateDynamic) で

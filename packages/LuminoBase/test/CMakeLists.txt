@@ -1,5 +1,6 @@
 ﻿project(LuminoBase_test)
-    find_package(glm CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+
 #-------------------------------------------------------------------------------
 # Sources
 #-------------------------------------------------------------------------------

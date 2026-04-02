@@ -57,6 +57,16 @@ public:
     /** Present the current frame. */
     void endFrame();
 
+    /**
+     * Capture the backbuffer contents as RGBA8 pixel data.
+     * Must be called after endFrame(). The returned pointer is valid until
+     * the next call to captureBackbuffer().
+     */
+    Result<void> captureBackbuffer();
+
+    /** Access the pixel data captured by the last captureBackbuffer() call. */
+    const std::vector<uint8_t>& captureBuffer() const { return m_captureBuffer; }
+
     void waitIdle();
 
     /** The underlying RHI device (owned by CoreInstance). */
@@ -120,6 +130,8 @@ private:
     bool              m_firstFrame     = true;
     float             m_lastFrameTimeMs = 0.0f;
     float             m_fps             = 0.0f;
+    rhi::TextureView* m_lastColorTarget = nullptr;
+    std::vector<uint8_t> m_captureBuffer;
     Ref<rhi::Texture> m_depthTexture;
     Ref<rhi::TextureView> m_depthView;
     rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;
