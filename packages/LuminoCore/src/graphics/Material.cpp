@@ -106,4 +106,12 @@ Result<Ref<Material>> MaterialFactory::createBasicLit(GraphicsContext* ctx) {
     return createBasicLit(ctx->module());
 }
 
+Result<Ref<Material>> MaterialFactory::createStencilMask(GraphicsModule* module) {
+    return createMaterialFromBuiltin(module, BuiltinShader::StencilMask, MaterialType::Unlit);
+}
+
+Result<Ref<Material>> MaterialFactory::createStencilMask(GraphicsContext* ctx) {
+    return createStencilMask(ctx->module());
+}
+
 } // namespace ln

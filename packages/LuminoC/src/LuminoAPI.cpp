@@ -347,7 +347,7 @@ LNResult LNTexture2D_LoadFromFile(
 // LNMaterial
 //------------------------------------------------------------------------------
 
-LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
+LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinShader shader, LNHandle* outHandle) {
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
@@ -357,10 +357,27 @@ LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
-    auto matResult = ln::MaterialFactory::createUnlit(ctx);
+    ln::Result<ln::Ref<ln::Material>> matResult;
+    switch (shader) {
+    case LN_BUILTIN_SHADER_UNLIT:
+        matResult = ln::MaterialFactory::createUnlit(ctx);
+        break;
+    case LN_BUILTIN_SHADER_BASIC_LIT:
+        matResult = ln::MaterialFactory::createBasicLit(ctx);
+        break;
+    case LN_BUILTIN_SHADER_STENCIL_MASK:
+        matResult = ln::MaterialFactory::createStencilMask(ctx);
+        break;
+    default:
+        return LN_ERROR_INVALID_ARGUMENT;
+    }
     if (!matResult) return LN_ERROR_UNKNOWN;
     *outHandle = wrapObjectFromCreate(matResult->get());
     return LN_OK;
+}
+
+LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
+    return LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, outHandle);
 }
 
 LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float a) {

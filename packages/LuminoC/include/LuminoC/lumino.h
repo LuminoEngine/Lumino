@@ -239,7 +239,30 @@ extern LUMINO_API LNResult LNTexture2D_LoadFromFile(
 // LNMaterial
 //------------------------------------------------------------------------------
 
+/** ビルトインシェーダの種類 */
+typedef enum LNBuiltinShader {
+    /** Unlit: テクスチャ * カラー、ライティングなし */
+    LN_BUILTIN_SHADER_UNLIT       = 0,
+    /** BasicLit: Blinn-Phong、1方向ライト */
+    LN_BUILTIN_SHADER_BASIC_LIT   = 1,
+    /** StencilMask: ステンシルバッファへの書き込み専用 */
+    LN_BUILTIN_SHADER_STENCIL_MASK = 2,
+} LNBuiltinShader;
+
 /**
+ * ビルトインシェーダを指定してマテリアルを作成します。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  shader          使用するビルトインシェーダ
+ * @param[out] outHandle       作成されたマテリアルのハンドル
+ */
+extern LUMINO_API LNResult LNMaterial_CreateFromBuiltinShader(
+    LNHandle graphicsContext,
+    LNBuiltinShader shader,
+    LNHandle* outHandle
+);
+
+/**
+ * @deprecated LNMaterial_CreateFromBuiltinShader(ctx, LN_BUILTIN_SHADER_UNLIT, out) を使用してください。
  * Unlit マテリアルを作成します (テクスチャ * カラー、ライティングなし)。
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outHandle       作成されたマテリアルのハンドル

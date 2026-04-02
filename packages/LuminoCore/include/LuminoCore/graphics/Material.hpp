@@ -146,6 +146,12 @@ public:
     /** Create a BasicLit material from a GraphicsContext. */
     static Result<Ref<Material>> createBasicLit(GraphicsContext* ctx);
 
+    /** Create a StencilMask material (alpha-tested stencil write, no color output). */
+    static Result<Ref<Material>> createStencilMask(GraphicsModule* module);
+
+    /** Create a StencilMask material from a GraphicsContext. */
+    static Result<Ref<Material>> createStencilMask(GraphicsContext* ctx);
+
 private:
     static Result<Ref<Material>> createMaterialFromBuiltin(
         GraphicsModule* module, BuiltinShader shader, MaterialType type);
