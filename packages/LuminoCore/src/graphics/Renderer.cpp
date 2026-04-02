@@ -192,6 +192,7 @@ void Renderer::beginFrame() {
     m_viewAllocator->beginFrame(frame);
     m_objectAllocator->beginFrame(frame);
     m_currentCmd = m_ctx->currentCommandBuffer();
+    m_drawCallCount = 0;
 }
 
 void Renderer::endFrame() {
@@ -256,6 +257,38 @@ void Renderer::beginRenderPass(
 void Renderer::endRenderPass() {
     m_currentPass->end();
     m_currentPass = nullptr;
+}
+
+void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
+    rhi::ColorAttachment colorAttach;
+    colorAttach.view       = colorTarget;
+    colorAttach.loadOp     = rhi::LoadOp::Load;
+    colorAttach.storeOp    = rhi::StoreOp::Store;
+    colorAttach.clearColor = Color{0.0f, 0.0f, 0.0f, 0.0f};
+
+    rhi::RenderPassDesc rpDesc;
+    rpDesc.colorAttachments      = {colorAttach};
+    rpDesc.depthStencilAttachment = nullptr;
+
+    m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
+
+    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+        m_passBindGroups[i]                   = nullptr;
+        m_passBindGroupDynamicOffsets[i]      = 0;
+        m_passBindGroupDynamicOffsetCounts[i] = 0;
+        m_passBindGroupDirty[i]               = false;
+    }
+
+    // Vertices are already in NDC, so upload an identity view-projection matrix.
+    auto viewAlloc = m_viewAllocator->allocate();
+    ViewParamsUBO viewParams{};
+    // Column-major identity matrix.
+    viewParams.viewProj[0]  = 1.0f;
+    viewParams.viewProj[5]  = 1.0f;
+    viewParams.viewProj[10] = 1.0f;
+    viewParams.viewProj[15] = 1.0f;
+    std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
+    setPassBindGroup(0, viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
 void Renderer::setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup,
@@ -370,6 +403,7 @@ Result<void> Renderer::drawSubmesh(
     m_currentPass->setBindGroup(2, *matBGResult);
     m_currentPass->setBindGroup(3, alloc.bindGroup, &alloc.dynamicOffset, 1);
     m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
+    ++m_drawCallCount;
 
     return {};
 }

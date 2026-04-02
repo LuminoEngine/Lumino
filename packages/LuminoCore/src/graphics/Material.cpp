@@ -17,7 +17,7 @@ static const unsigned char s_basicLitShaderData[] = {
 
 namespace ln {
 
-// ─── Helpers ─────────────────────────────────────────────────────────────
+// ------ Helpers --------------------------------------------------------------------------------------------------------------------------
 
 static rhi::BindingType mapElementKind(shader::ParameterBlockElementKind kind) {
     switch (kind) {
@@ -67,7 +67,7 @@ static int16_t findConstantBufferSize(const shader::ParameterBlockLayout2& block
     return -1;
 }
 
-// ─── Material ────────────────────────────────────────────────────────────
+// ------ Material ------------------------------------------------------------------------------------------------------------------------
 
 void Material::setColor(const Color& color) {
     m_baseColor = color;
@@ -111,7 +111,7 @@ void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
 void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
 void Material::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
 
-// ─── Helper: load shaders from precompiled .lcsh data ────────────────────
+// ------ Helper: load shaders from precompiled .lcsh data ----------------------------------------
 
 Result<Ref<Material>> MaterialFactory::createMaterialFromShaderData(
     rhi::Device* device,

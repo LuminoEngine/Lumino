@@ -4,6 +4,7 @@
  * PNG 画像を LNTexture2D_LoadFromFile で読み込み、四角形メッシュに貼り付けて描画するデモ。
  * packages/LuminoCore/examples/HelloTexture/Main.cpp の C-API 版。
  */
+#include <string>
 #include <LuminoC/lumino.h>
 #include <stdio.h>
 
@@ -59,6 +60,7 @@ int main(void) {
     printf("Lumino HelloTexture (C) initialized. Rendering...\n");
 
     /* 7. Main loop */
+    LNGraphicsProfiler profilerng = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     int continueLoop = 1;
     while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
@@ -67,6 +69,12 @@ int main(void) {
         LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f);
         LNRenderer_DrawMesh(renderer, mesh, &identity);
         LNRenderer_EndRenderPass(renderer);
+
+        LNDebug_GetGraphicsProfiler(graphicsContext, &profilerng);
+        LNDebug_Print(graphicsContext, (std::string("FPS: ") + std::to_string(profilerng.fps)).c_str());
+        LNDebug_Print(graphicsContext, (std::string("FrameTime(ms): ") + std::to_string(profilerng.lastFrameTimeMs)).c_str());
+        LNDebug_Print(graphicsContext, (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
+
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 

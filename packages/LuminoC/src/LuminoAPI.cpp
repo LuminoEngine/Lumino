@@ -242,10 +242,51 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
     if (!ctx || !ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
 
+    // 1. Render DebugPrint overlay (records commands into the open command buffer).
+    auto* dp = ctx->debugPrint();
+    if (dp) {
+        dp->render(ctx); // ignore error; best-effort overlay
+    }
+
+    // 2. Submit all recorded GPU commands.
     ctx->renderer()->endFrame();
     ctx->m_currentCmd->submit();
     ctx->m_currentCmd = nullptr;
+
+    // 3. Present + update FPS stats.
     ctx->endFrame();
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNDebug
+//------------------------------------------------------------------------------
+
+LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
+    if (!str) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    ctx->debugPrintText(str);
+    return LN_OK;
+}
+
+LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfiler* outProfiler) {
+    if (!outProfiler) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    outProfiler->drawCallCount   = static_cast<int32_t>(ctx->renderer()->drawCallCount());
+    outProfiler->fps             = ctx->fps();
+    outProfiler->lastFrameTimeMs = ctx->lastFrameTimeMs();
     return LN_OK;
 }
 

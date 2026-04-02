@@ -1,5 +1,6 @@
 ﻿#include <LuminoCore/graphics/GraphicsContext.hpp>
 #include <LuminoCore/graphics/Renderer.hpp>
+#include <LuminoCore/graphics/DebugPrint.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <cstdio>
 
@@ -83,6 +84,8 @@ Result<FrameInfo> GraphicsContext::beginFrame() {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to acquire next texture"});
     }
 
+    m_frameBeginTime = Clock::now();
+
     FrameInfo info;
     info.colorTarget = colorTarget;
     info.depthTarget = m_depthView.get();
@@ -93,6 +96,28 @@ Result<FrameInfo> GraphicsContext::beginFrame() {
 
 void GraphicsContext::endFrame() {
     m_swapChain->present();
+
+    auto now = Clock::now();
+    auto elapsedUs = std::chrono::duration_cast<std::chrono::microseconds>(now - m_frameBeginTime).count();
+    m_lastFrameTimeMs = static_cast<float>(elapsedUs) / 1000.0f;
+    m_fps = (m_lastFrameTimeMs > 0.0f) ? (1000.0f / m_lastFrameTimeMs) : 0.0f;
+}
+
+Result<void> GraphicsContext::initDebugPrint() {
+    auto result = DebugPrint::create(this);
+    if (!result) return tl::make_unexpected(result.error());
+    m_debugPrint = std::move(*result);
+    return {};
+}
+
+void GraphicsContext::debugPrintText(const char* str) {
+    if (!str) return;
+    if (!m_debugPrint) {
+        // Lazy init on first use.
+        auto r = initDebugPrint();
+        if (!r) return; // silently ignore if initialization fails
+    }
+    m_debugPrint->print(str);
 }
 
 void GraphicsContext::waitIdle() {

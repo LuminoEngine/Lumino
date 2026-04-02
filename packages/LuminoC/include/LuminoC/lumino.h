@@ -441,6 +441,45 @@ extern LUMINO_API LNResult LNRenderer_DrawMeshWithMaterial(
     LNHandle material
 );
 
+//------------------------------------------------------------------------------
+// LNDebug
+//------------------------------------------------------------------------------
+
+/**
+ * グラフィックスプロファイリング情報。
+ */
+typedef struct LNGraphicsProfiler {
+    /** 現在フレームのドローコール数。 */
+    int32_t drawCallCount;
+
+    /** 実際のフレームレート (FPS)。 */
+    float fps;
+
+    /** 直前フレームの所要時間 (ミリ秒)。 */
+    float lastFrameTimeMs;
+} LNGraphicsProfiler;
+
+/**
+ * グラフィックスプロファイリング情報を取得します。
+ * LNGraphicsContext_EndFrame の後に呼び出すと前フレームの計測値が得られます。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[out] outProfiler    プロファイリング情報の出力先
+ */
+extern LUMINO_API LNResult LNDebug_GetGraphicsProfiler(
+    LNHandle graphicsContext,
+    LNGraphicsProfiler* outProfiler);
+
+/**
+ * デバッグ文字列を画面左上に描画します。
+ * ASCII 文字のみ使用可能で、最大 512 文字まで蓄積できます。
+ * 実際の描画は LNGraphicsContext_EndFrame の内部で行われます。
+ * @param[in] graphicsContext GraphicsContext のハンドル
+ * @param[in] str            描画する文字列 (UTF-8/ASCII)
+ */
+extern LUMINO_API LNResult LNDebug_Print(
+    LNHandle graphicsContext,
+    const char* str);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

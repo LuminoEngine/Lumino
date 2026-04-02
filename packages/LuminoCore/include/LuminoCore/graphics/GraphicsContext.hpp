@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include <memory>
+#include <chrono>
 #include <LuminoBase/Result.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/graphics/rhi/Rhi.hpp>
 #include <LuminoCore/graphics/PipelineCache.hpp>
 #include <LuminoCore/graphics/Renderer.hpp>
+#include <LuminoCore/graphics/DebugPrint.hpp>
 #include <LuminoCore/platform/Window.hpp>
 
 namespace ln {
@@ -12,7 +14,7 @@ namespace ln {
 /** Descriptor for creating a GraphicsContext (swap chain + depth buffer). */
 struct GraphicsContextDesc {
     //rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8UnormSrgb;
-    bool vsync = true;
+    bool vsync = false;
 };
 
 /** Per-frame rendering targets returned by GraphicsContext::beginFrame(). */
@@ -80,6 +82,24 @@ public:
     /** Renderer owned by this context. */
     Renderer* renderer() const { return m_renderer.get(); }
 
+    /** Debug print helper owned by this context. Created lazily on first use. */
+    DebugPrint* debugPrint() { return m_debugPrint.get(); }
+
+    /**
+     * Queue a debug string for overlay rendering in the current frame.
+     * Safe to call before DebugPrint is initialized — ignored if unavailable.
+     */
+    void debugPrintText(const char* str);
+
+    /** Initialize (or re-initialize) the DebugPrint subsystem. */
+    Result<void> initDebugPrint();
+
+    /** Frame time of the last completed frame in milliseconds. */
+    float lastFrameTimeMs() const { return m_lastFrameTimeMs; }
+
+    /** Frames per second (averaged over the last completed frame). */
+    float fps() const { return m_fps; }
+
     // フレームスコープの一時状態 (BeginFrame〜EndFrame 間有効)
     rhi::CommandBuffer*        m_currentCmd         = nullptr;
     rhi::TextureView*          m_currentColorTarget = nullptr;
@@ -91,6 +111,15 @@ private:
 
     platform::PlatformWindow* m_window = nullptr; // non-owning
     Ref<rhi::SwapChain> m_swapChain;
+
+    Ref<DebugPrint> m_debugPrint;
+
+    // Frame timing
+    using Clock = std::chrono::high_resolution_clock;
+    Clock::time_point m_frameBeginTime = {};
+    bool              m_firstFrame     = true;
+    float             m_lastFrameTimeMs = 0.0f;
+    float             m_fps             = 0.0f;
     Ref<rhi::Texture> m_depthTexture;
     Ref<rhi::TextureView> m_depthView;
     rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;

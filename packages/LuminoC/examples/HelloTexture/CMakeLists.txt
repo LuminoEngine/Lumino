@@ -1,5 +1,5 @@
 project(LuminoC-HelloTexture)
-add_executable(${PROJECT_NAME} Main.c)
+add_executable(${PROJECT_NAME} Main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw LuminoC)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../assets"
@@ -11,3 +11,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         $<TARGET_FILE:LuminoC>
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
+
+add_dependencies(${PROJECT_NAME} LuminoC)
