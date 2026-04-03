@@ -64,8 +64,6 @@ public:
     Result<Ref<TextureView>> createTextureView(Texture* texture) override;
     Result<Ref<Sampler>> createSampler(const SamplerDesc& desc) override;
     Result<Ref<ShaderModule>> createShaderModule(const ShaderModuleDesc& desc) override;
-    Result<Ref<BindGroupLayout>> createBindGroupLayout(const BindGroupLayoutDesc& desc) override;
-    Result<Ref<BindGroup>> createBindGroup(const BindGroupDesc& desc) override;
     Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) override;
     Result<Ref<RenderPass>> createRenderPass(const RenderPassLayoutDesc& desc) override;
     Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) override;

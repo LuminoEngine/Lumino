@@ -4,6 +4,7 @@
 #include <LuminoBase/Result.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <LuminoCore/Graphics/Vertex.hpp>
+#include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <string>
 
 namespace ln {
@@ -63,25 +64,25 @@ public:
     void setDepthTestEnabled(bool enabled);
     void setDepthWriteEnabled(bool enabled);
 
+    // ShaderPass accessor
+    ShaderPass* shaderPass() const { return m_shaderPass.get(); }
+
     // Shader / render state accessors (used by PipelineCache key construction)
-    rhi::ShaderModule* vertexShader() const { return m_vertShader.get(); }
-    rhi::ShaderModule* fragmentShader() const { return m_fragShader.get(); }
-    const std::string& vertexEntry() const { return m_vertEntry; }
-    const std::string& fragmentEntry() const { return m_fragEntry; }
+    rhi::ShaderModule* vertexShader() const { return m_shaderPass->vertexShader(); }
+    rhi::ShaderModule* fragmentShader() const { return m_shaderPass->fragmentShader(); }
+    const std::string& vertexEntry() const { return m_shaderPass->vertexEntry(); }
+    const std::string& fragmentEntry() const { return m_shaderPass->fragmentEntry(); }
     rhi::CullMode cullMode() const { return m_cullMode; }
     bool blendEnabled() const { return m_blendEnabled; }
     bool depthTestEnabled() const { return m_depthTestEnabled; }
     bool depthWriteEnabled() const { return m_depthWriteEnabled; }
-
-    // BindGroup access (used by Renderer)
-    rhi::BindGroupLayout* materialBindGroupLayout() const { return m_materialBindGroupLayout.get(); }
 
     /** Parameter version counter. Incremented whenever material parameters change. */
     uint64_t paramVersion() const { return m_paramVersion; }
 
     // Accessors for Renderer-side BindGroup construction
     rhi::Texture* baseTexture() const { return m_baseTexture.get(); }
-    u64 materialParamBufferSize() const { return m_materialParamBufferSize; }
+    u64 materialParamBufferSize() const { return m_shaderPass->materialParamBufferSize(); }
     const Color& baseColor() const { return m_baseColor; }
     const Color& specularColor() const { return m_specularColor; }
     f32 shininess() const { return m_shininess; }
@@ -95,14 +96,8 @@ private:
 
     MaterialType m_type;
 
-    // Shader modules
-    Ref<rhi::ShaderModule> m_vertShader;
-    Ref<rhi::ShaderModule> m_fragShader;
-    std::string m_vertEntry;
-    std::string m_fragEntry;
-
-    // BindGroup for material (Set 2)
-    Ref<rhi::BindGroupLayout> m_materialBindGroupLayout;
+    // ShaderPass (owns shader modules, PipelineLayout, material param info)
+    Ref<ShaderPass> m_shaderPass;
 
     // Parameter version counter (incremented on any parameter change)
     uint64_t m_paramVersion;
@@ -111,9 +106,6 @@ private:
     Color m_baseColor;
     Color m_specularColor;
     f32 m_shininess;
-
-    // Material param buffer size (from shader reflection)
-    u64 m_materialParamBufferSize;
 
     // Textures
     Ref<rhi::Texture> m_baseTexture;

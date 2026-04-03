@@ -1,4 +1,5 @@
 ﻿#include <LuminoCore/Graphics/PipelineCache.hpp>
+#include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <LuminoCore/Graphics/Vertex.hpp>
 #include <functional>
 
@@ -18,11 +19,8 @@ static void hash_combine(size_t& seed, const T& val) {
 //------------------------------------------------------------------------------
 
 bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
-    if (vertexShader   != o.vertexShader)   return false;
-    if (fragmentShader != o.fragmentShader) return false;
-    if (vertexEntry    != o.vertexEntry)    return false;
-    if (fragmentEntry  != o.fragmentEntry)  return false;
-    if (cullMode       != o.cullMode)       return false;
+    if (shaderPass      != o.shaderPass)      return false;
+    if (cullMode        != o.cullMode)        return false;
     if (blendEnabled   != o.blendEnabled)   return false;
     if (blendEnabled) {
         if (blendState.enabled  != o.blendState.enabled)  return false;
@@ -49,7 +47,6 @@ bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
         if (stencilWriteMask != o.stencilWriteMask) return false;
     }
     if (colorWriteEnabled != o.colorWriteEnabled) return false;
-    if (pipelineLayout    != o.pipelineLayout)    return false;
     if (topology          != o.topology)          return false;
     if (renderPass        != o.renderPass)        return false;
     return true;
@@ -57,10 +54,7 @@ bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
 
 size_t PipelineCacheKeyHash::operator()(const PipelineCacheKey& key) const {
     size_t seed = 0;
-    hash_combine(seed, reinterpret_cast<uintptr_t>(key.vertexShader));
-    hash_combine(seed, reinterpret_cast<uintptr_t>(key.fragmentShader));
-    hash_combine(seed, key.vertexEntry);
-    hash_combine(seed, key.fragmentEntry);
+    hash_combine(seed, reinterpret_cast<uintptr_t>(key.shaderPass));
     hash_combine(seed, static_cast<uint32_t>(key.cullMode));
     hash_combine(seed, key.blendEnabled);
     if (key.blendEnabled) {
@@ -88,7 +82,6 @@ size_t PipelineCacheKeyHash::operator()(const PipelineCacheKey& key) const {
         hash_combine(seed, key.stencilWriteMask);
     }
     hash_combine(seed, key.colorWriteEnabled);
-    hash_combine(seed, reinterpret_cast<uintptr_t>(key.pipelineLayout));
     hash_combine(seed, static_cast<uint32_t>(key.topology));
     hash_combine(seed, reinterpret_cast<uintptr_t>(key.renderPass));
     return seed;
@@ -112,11 +105,11 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     }
 
     rhi::RenderPipelineDesc rpDesc;
-    rpDesc.layout          = key.pipelineLayout;
-    rpDesc.vertexShader    = key.vertexShader;
-    rpDesc.fragmentShader  = key.fragmentShader;
-    rpDesc.vertexEntry     = key.vertexEntry;
-    rpDesc.fragmentEntry   = key.fragmentEntry;
+    rpDesc.layout          = key.shaderPass->pipelineLayout();
+    rpDesc.vertexShader    = key.shaderPass->vertexShader();
+    rpDesc.fragmentShader  = key.shaderPass->fragmentShader();
+    rpDesc.vertexEntry     = key.shaderPass->vertexEntry();
+    rpDesc.fragmentEntry   = key.shaderPass->fragmentEntry();
     rpDesc.vertexBuffers   = {standardVertexLayout()};
     rpDesc.topology        = key.topology;
     rpDesc.cullMode        = key.cullMode;
@@ -144,9 +137,9 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
 
     auto [it2, inserted] = m_cache.emplace(key, std::move(*result));
     if (inserted) {
-        trackObject(key.vertexShader);
-        trackObject(key.fragmentShader);
-        trackObject(key.pipelineLayout);
+        trackObject(key.shaderPass->vertexShader());
+        trackObject(key.shaderPass->fragmentShader());
+        trackObject(key.shaderPass->pipelineLayout());
         trackObject(key.renderPass);
     }
     return it2->second.get();
@@ -174,7 +167,13 @@ void PipelineCache::trackObject(rhi::RHIObject* obj) {
 void PipelineCache::evictByObject(rhi::RHIObject* obj) {
     for (auto it = m_cache.begin(); it != m_cache.end(); ) {
         const auto& k = it->first;
-        if (k.vertexShader == obj || k.fragmentShader == obj || k.pipelineLayout == obj || k.renderPass == obj) {
+        bool match = (k.renderPass == obj);
+        if (!match && k.shaderPass) {
+            match = (k.shaderPass->vertexShader() == obj ||
+                     k.shaderPass->fragmentShader() == obj ||
+                     k.shaderPass->pipelineLayout() == obj);
+        }
+        if (match) {
             it = m_cache.erase(it);
         } else {
             ++it;

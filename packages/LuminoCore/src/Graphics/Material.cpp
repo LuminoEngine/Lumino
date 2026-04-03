@@ -1,9 +1,7 @@
 #include <LuminoCore/Graphics/Material.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
-#include <LuminoShader/UnifiedShader2.hpp>
-#include <LuminoShader/UnifiedShaderSerializer2.hpp>
-#include "ShaderUtils.hpp"
+#include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <cstring>
 
 namespace ln {
@@ -13,16 +11,11 @@ namespace ln {
 Material::Material()
     : Object()
     , m_type(MaterialType::Unlit)
-    , m_vertShader(nullptr)
-    , m_fragShader(nullptr)
-    , m_vertEntry()
-    , m_fragEntry()
-    , m_materialBindGroupLayout(nullptr)
+    , m_shaderPass(nullptr)
     , m_paramVersion(1)
     , m_baseColor(Color::white())
     , m_specularColor(Color::white())
     , m_shininess(32.0f)
-    , m_materialParamBufferSize(0)
     , m_baseTexture(nullptr)
     , m_cullMode(rhi::CullMode::Back)
     , m_blendEnabled(true)
@@ -76,19 +69,14 @@ void Material::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enable
 
 Result<Ref<Material>> MaterialFactory::createMaterialFromBuiltin(
     GraphicsModule* module, BuiltinShader shader, MaterialType type) {
-    const auto& data = module->builtinShader(shader);
-    if (!data.initialized) {
+    const auto& shaderPass = module->builtinShader(shader);
+    if (!shaderPass) {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Builtin shader not initialized"});
     }
 
     auto mat = Ref<Material>::adopt(new Material());
     mat->m_type = type;
-    mat->m_vertShader = data.vertShader;
-    mat->m_fragShader = data.fragShader;
-    mat->m_vertEntry = data.vertEntry;
-    mat->m_fragEntry = data.fragEntry;
-    mat->m_materialBindGroupLayout = data.materialBindGroupLayout;
-    mat->m_materialParamBufferSize = data.materialParamBufferSize;
+    mat->m_shaderPass = shaderPass;
     mat->m_baseTexture = module->whiteTexture();
     return mat;
 }
@@ -119,75 +107,16 @@ Result<Ref<Material>> MaterialFactory::createStencilMask(GraphicsContext* ctx) {
 
 Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
     GraphicsModule* module, const void* data, size_t size) {
-    using namespace detail;
-
-    // Deserialize the unified shader from the binary blob.
-    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
-    if (!loadResult) return tl::make_unexpected(loadResult.error());
-    auto unifiedShader = std::move(*loadResult);
-
-    // Find the first pass for SPIR-V target.
-    auto& globalPasses = unifiedShader->globalShaderPasses();
-    if (globalPasses.empty()) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No shader passes found"});
-    }
-
-    auto* globalPass = globalPasses[0].get();
-    auto targetPassId = globalPass->getTargetShaderPassId(shader::ShaderTarget_SPIRV);
-    auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
-    if (!targetPass) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No SPIRV target pass"});
-    }
-
-    auto* vertEP = unifiedShader->targetEntryPoint(targetPass->vertEntryPointId);
-    auto* fragEP = unifiedShader->targetEntryPoint(targetPass->fragEntryPointId);
-    if (!vertEP || !fragEP) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Missing entry points"});
-    }
-
-    auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
-    auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
-
-    // Create shader modules
-    auto* device = module->device();
-
-    rhi::ShaderModuleDesc vsDesc;
-    vsDesc.spirvCode = reinterpret_cast<const u32*>(vertBlob->data.data());
-    vsDesc.spirvSizeBytes = vertBlob->data.size();
-    auto vsResult = device->createShaderModule(vsDesc);
-    if (!vsResult) return tl::make_unexpected(vsResult.error());
-
-    rhi::ShaderModuleDesc fsDesc;
-    fsDesc.spirvCode = reinterpret_cast<const u32*>(fragBlob->data.data());
-    fsDesc.spirvSizeBytes = fragBlob->data.size();
-    auto fsResult = device->createShaderModule(fsDesc);
-    if (!fsResult) return tl::make_unexpected(fsResult.error());
-
-    // Build material BindGroupLayout from "materialData" ParameterBlock reflection
-    auto* materialBlock = findParameterBlock(unifiedShader.get(), "materialData");
-    if (!materialBlock) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No 'materialData' ParameterBlock found"});
-    }
-
-    auto bglDesc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
-    auto bglResult = device->createBindGroupLayout(bglDesc);
-    if (!bglResult) return tl::make_unexpected(bglResult.error());
-
-    // Get material CB size from reflection
-    int16_t cbSize = findConstantBufferSize(*materialBlock);
-    if (cbSize <= 0) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No constant buffer found in 'materialData'"});
-    }
+    auto shaderPassResult = ShaderPass::createFromCompiledShader(
+        data, size,
+        module->viewLayoutDesc(), module->sceneLayoutDesc(), module->objectLayoutDesc(),
+        module->device());
+    if (!shaderPassResult) return tl::make_unexpected(shaderPassResult.error());
 
     // Create the Material
     auto mat = Ref<Material>::adopt(new Material());
     mat->m_type = MaterialType::Unlit;
-    mat->m_vertShader = std::move(*vsResult);
-    mat->m_fragShader = std::move(*fsResult);
-    mat->m_vertEntry = vertEP->name;
-    mat->m_fragEntry = fragEP->name;
-    mat->m_materialBindGroupLayout = std::move(*bglResult);
-    mat->m_materialParamBufferSize = static_cast<u64>(cbSize);
+    mat->m_shaderPass = std::move(*shaderPassResult);
     mat->m_baseTexture = module->whiteTexture();
     return mat;
 }

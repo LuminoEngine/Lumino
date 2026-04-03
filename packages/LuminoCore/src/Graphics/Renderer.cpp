@@ -1,104 +1,28 @@
 #include <LuminoCore/Graphics/Renderer.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
+#include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/PipelineCache.hpp>
-#include <LuminoShader/UnifiedShader2.hpp>
-#include <LuminoShader/UnifiedShaderSerializer2.hpp>
+#include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <cstring>
 
-// Precompiled BasicLit shader data for extracting BindGroupLayout reflection.
-static const unsigned char s_basicLitShaderData[] = {
-#include "shaders/BasicLit.lcsh.inl"
-};
-
 namespace ln {
-
-// ------ Reflection helpers (local linkage) -----------------------------------------------------------------------
-
-static rhi::BindingType mapElementKind(shader::ParameterBlockElementKind kind) {
-    switch (kind) {
-    case shader::ParameterBlockElementKind_ConstantBuffer: return rhi::BindingType::UniformBuffer;
-    case shader::ParameterBlockElementKind_Texture:        return rhi::BindingType::SampledTexture;
-    case shader::ParameterBlockElementKind_SamplerState:   return rhi::BindingType::Sampler;
-    case shader::ParameterBlockElementKind_StorageBuffer:  return rhi::BindingType::StorageBuffer;
-    default:                                               return rhi::BindingType::UniformBuffer;
-    }
-}
-
-static rhi::BindGroupLayoutDesc buildBindGroupLayoutFromReflection(
-    const shader::ParameterBlockLayout2& block,
-    const shader::TargetBindingLayout2& mergedBindings) {
-
-    rhi::BindGroupLayoutDesc desc;
-    for (const auto& binding : mergedBindings.bindings) {
-        if (binding.setIndex != block.setIndex) continue;
-        rhi::BindGroupLayoutEntry entry;
-        entry.binding    = binding.bindingIndex;
-        entry.type       = mapElementKind(binding.kind);
-        entry.visibility = static_cast<rhi::ShaderStage>(binding.used);
-        desc.entries.push_back(entry);
-    }
-    return desc;
-}
-
-static const shader::ParameterBlockLayout2* findParameterBlock(
-    const shader::UnifiedShader2* shader, const std::string& name) {
-    for (const auto& block : shader->parameterBlocks()) {
-        if (block.name == name) return &block;
-    }
-    return nullptr;
-}
-
-static int16_t findConstantBufferSize(const shader::ParameterBlockLayout2& block) {
-    for (const auto& elem : block.elements) {
-        if (elem.kind == shader::ParameterBlockElementKind_ConstantBuffer) {
-            return elem.constantBufferSize;
-        }
-    }
-    return -1;
-}
 
 // ------ Renderer::create ------------------------------------------------------------------------------------------
 
 Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
-    auto* device     = ctx->device();
+    auto* device      = ctx->device();
+    auto* module      = ctx->module();
     auto  colorFormat = ctx->colorFormat();
     auto  depthFormat = ctx->depthFormat();
-
-    // Load BasicLit shader to extract BindGroupLayout info via reflection.
-    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(
-        s_basicLitShaderData, sizeof(s_basicLitShaderData));
-    if (!loadResult) return tl::make_unexpected(loadResult.error());
-    auto unifiedShader = std::move(*loadResult);
-
-    auto& globalPasses = unifiedShader->globalShaderPasses();
-    if (globalPasses.empty()) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No shader passes found"});
-    }
-    auto targetPassId = globalPasses[0]->getTargetShaderPassId(shader::ShaderTarget_SPIRV);
-    auto* targetPass  = unifiedShader->targetShaderPass(targetPassId);
-    if (!targetPass) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No SPIRV target pass"});
-    }
-
-    auto* viewBlock     = findParameterBlock(unifiedShader.get(), "viewData");
-    auto* sceneBlock    = findParameterBlock(unifiedShader.get(), "sceneData");
-    auto* materialBlock = findParameterBlock(unifiedShader.get(), "materialData");
-    auto* objectBlock   = findParameterBlock(unifiedShader.get(), "objectData");
-    if (!viewBlock || !sceneBlock || !materialBlock || !objectBlock) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError,
-            "Missing required ParameterBlocks (viewData, sceneData, materialData, objectData)"});
-    }
-
-    int16_t objectCBSize = findConstantBufferSize(*objectBlock);
-    if (objectCBSize <= 0) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError,
-            "Invalid object constant buffer size in reflection"});
-    }
 
     auto renderer = Ref<Renderer>::adopt(new Renderer());
     renderer->m_colorFormat   = colorFormat;
     renderer->m_depthFormat   = depthFormat;
-    renderer->m_objectUBOSize = static_cast<u64>(objectCBSize);
+    renderer->m_objectUBOSize = module->objectUBOSize();
+
+    // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
+    const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
+    renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
 
     // Create persistent RenderPass for pipeline creation
     {
@@ -110,81 +34,19 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
         renderer->m_renderPass = std::move(*rpResult);
     }
 
-    // ---- Set 0: View BindGroupLayout (camera, dynamic UBO) ----
-    {
-        auto desc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
-        for (auto& entry : desc.entries) {
-            if (entry.type == rhi::BindingType::UniformBuffer) {
-                entry.hasDynamicOffset = true;
-            }
-        }
-        auto r    = device->createBindGroupLayout(desc);
-        if (!r) return tl::make_unexpected(r.error());
-        renderer->m_viewBindGroupLayout = std::move(*r);
-    }
-
-    // ---- Set 1: Scene BindGroupLayout (lighting, dynamic UBO) ----
-    {
-        auto desc = buildBindGroupLayoutFromReflection(*sceneBlock, targetPass->bindingLayout);
-        for (auto& entry : desc.entries) {
-            if (entry.type == rhi::BindingType::UniformBuffer) {
-                entry.hasDynamicOffset = true;
-            }
-        }
-        auto r    = device->createBindGroupLayout(desc);
-        if (!r) return tl::make_unexpected(r.error());
-        renderer->m_sceneBindGroupLayout = std::move(*r);
-    }
-
-    // ---- Set 2: Material BindGroupLayout (used only for PipelineLayout construction) ----
-    Ref<rhi::BindGroupLayout> matBGL;
-    {
-        auto desc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
-        auto r    = device->createBindGroupLayout(desc);
-        if (!r) return tl::make_unexpected(r.error());
-        matBGL = std::move(*r);
-    }
-
-    // ---- Set 3: Object BindGroupLayout (dynamic UBO) ----
-    {
-        auto desc = buildBindGroupLayoutFromReflection(*objectBlock, targetPass->bindingLayout);
-        for (auto& entry : desc.entries) {
-            if (entry.type == rhi::BindingType::UniformBuffer) {
-                entry.hasDynamicOffset = true;
-            }
-        }
-        auto r = device->createBindGroupLayout(desc);
-        if (!r) return tl::make_unexpected(r.error());
-        renderer->m_objectBindGroupLayout = std::move(*r);
-    }
-
-    // ---- PipelineLayout (Set 0, 1, 2, 3) ----
-    {
-        rhi::PipelineLayoutDesc plDesc;
-        plDesc.bindGroupLayouts = {
-            renderer->m_viewBindGroupLayout.get(),
-            renderer->m_sceneBindGroupLayout.get(),
-            matBGL.get(),
-            renderer->m_objectBindGroupLayout.get(),
-        };
-        auto r = device->createPipelineLayout(plDesc);
-        if (!r) return tl::make_unexpected(r.error());
-        renderer->m_pipelineLayout = std::move(*r);
-    }
-
     // ---- Dynamic UBO allocator for per-frame view data (camera, set=0) ----
     {
         auto r = DynamicUniformAllocator::create(
-            device, renderer->m_viewBindGroupLayout.get(), 0,
+            device, renderer->m_referencePipelineLayout, 0, 0,
             static_cast<u32>(sizeof(ViewParamsUBO)));
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_viewAllocator = std::move(*r);
     }
 
-    // ---- Dynamic UBO allocator for per-object data ----
+    // ---- Dynamic UBO allocator for per-object data (set=3) ----
     {
         auto r = DynamicUniformAllocator::create(
-            device, renderer->m_objectBindGroupLayout.get(), 0,
+            device, renderer->m_referencePipelineLayout, 3, 0,
             static_cast<u32>(renderer->m_objectUBOSize));
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_objectAllocator = std::move(*r);
@@ -392,12 +254,9 @@ Result<void> Renderer::drawSubmesh(
 
     // Resolve pipeline.
     PipelineCacheKey key;
-    key.vertexShader       = mat->vertexShader();
-    key.fragmentShader     = mat->fragmentShader();
-    key.vertexEntry        = mat->vertexEntry();
-    key.fragmentEntry      = mat->fragmentEntry();
-    key.cullMode           = mat->cullMode();
-    key.blendEnabled       = mat->blendEnabled();
+    key.shaderPass          = mat->shaderPass();
+    key.cullMode            = mat->cullMode();
+    key.blendEnabled        = mat->blendEnabled();
     if (key.blendEnabled) {
         key.blendState.enabled  = true;
         key.blendState.srcColor = rhi::BlendFactor::SrcAlpha;
@@ -420,7 +279,6 @@ Result<void> Renderer::drawSubmesh(
         key.stencilReadMask  = 0xFF;
         key.stencilWriteMask = 0x00;
     }
-    key.pipelineLayout      = m_pipelineLayout.get();
     key.topology            = mesh->topology();
     key.renderPass          = m_renderPass.get();
 
@@ -491,10 +349,7 @@ Result<void> Renderer::drawStencilMaskMesh(
 
         // Build pipeline key for stencil write
         PipelineCacheKey key;
-        key.vertexShader       = mat->vertexShader();
-        key.fragmentShader     = mat->fragmentShader();
-        key.vertexEntry        = mat->vertexEntry();
-        key.fragmentEntry      = mat->fragmentEntry();
+        key.shaderPass         = mat->shaderPass();
         key.cullMode           = rhi::CullMode::None;
         key.blendEnabled       = false;
         key.depthTestEnabled   = false;
@@ -508,7 +363,6 @@ Result<void> Renderer::drawStencilMaskMesh(
         key.stencilBack            = key.stencilFront;
         key.stencilReadMask  = 0xFF;
         key.stencilWriteMask = 0xFF;
-        key.pipelineLayout   = m_pipelineLayout.get();
         key.topology         = mesh->topology();
         key.renderPass       = m_renderPass.get();
 
@@ -621,16 +475,14 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         }
     }
 
-    // Create BindGroup
-    if (mat->materialBindGroupLayout() && cache.textureView && cache.sampler) {
-        rhi::BindGroupDesc bgDesc;
-        bgDesc.layout = mat->materialBindGroupLayout();
-        bgDesc.entries = {
+    // Create BindGroup via the material's PipelineLayout (set=2)
+    if (cache.textureView && cache.sampler) {
+        std::vector<rhi::BindGroupEntry> entries = {
             {0, cache.paramBuffers[frameSlot].get(), 0, mat->materialParamBufferSize(), nullptr, nullptr},
             {1, nullptr, 0, 0, cache.textureView.get(), nullptr},
             {2, nullptr, 0, 0, nullptr, cache.sampler.get()},
         };
-        auto bgResult = device->createBindGroup(bgDesc);
+        auto bgResult = mat->shaderPass()->pipelineLayout()->createBindGroup(2, entries);
         if (!bgResult) return tl::make_unexpected(bgResult.error());
         cache.bindGroups[frameSlot] = std::move(*bgResult);
     }

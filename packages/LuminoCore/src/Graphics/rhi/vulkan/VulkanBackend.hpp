@@ -188,15 +188,20 @@ private:
 class VulkanPipelineLayout final : public PipelineLayout {
 public:
     VulkanPipelineLayout();
-    VoidResult init(VkDevice device, const PipelineLayoutDesc& desc);
+    VoidResult init(VulkanDevice* device, const PipelineLayoutDesc& desc);
     VkPipelineLayout handle() const { return m_layout; }
+
+    Result<Ref<BindGroup>> createBindGroup(
+        u32 setIndex, const std::vector<BindGroupEntry>& entries) override;
 
 protected:
     void finalize() override;
 
 private:
+    VulkanDevice* m_vulkanDevice = nullptr;
     VkDevice m_device = VK_NULL_HANDLE;
     VkPipelineLayout m_layout = VK_NULL_HANDLE;
+    std::vector<Ref<VulkanBindGroupLayout>> m_bindGroupLayouts;
 };
 
 // ------ VulkanRenderPass ----------------------------------------------------------------------------------------------------

@@ -105,7 +105,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("vkCreateInstance failed.");
     }
 
-#if 1
+#if 0
     // Setup debug messenger
     if (desc.enableValidation) {
         VkDebugUtilsMessengerCreateInfoEXT createInfo{};
@@ -384,26 +384,9 @@ Result<Ref<ShaderModule>> VulkanDevice::createShaderModule(const ShaderModuleDes
     return Ref<ShaderModule>(sm);
 }
 
-Result<Ref<BindGroupLayout>> VulkanDevice::createBindGroupLayout(const BindGroupLayoutDesc& desc) {
-    auto bgl = Ref<VulkanBindGroupLayout>::adopt(new VulkanBindGroupLayout());
-    if (!bgl->init(m_device, desc)) {
-        return LN_MAKE_ERROR("Failed to create bind group layout.");
-    }
-    return Ref<BindGroupLayout>(bgl);
-}
-
-Result<Ref<BindGroup>> VulkanDevice::createBindGroup(const BindGroupDesc& desc) {
-    auto* layout = static_cast<VulkanBindGroupLayout*>(desc.layout);
-    auto bg = Ref<VulkanBindGroup>::adopt(new VulkanBindGroup());
-    if (!bg->init(this, m_descriptorPoolManager, layout, desc)) {
-        return LN_MAKE_ERROR("Failed to create bind group.");
-    }
-    return Ref<BindGroup>(bg);
-}
-
 Result<Ref<PipelineLayout>> VulkanDevice::createPipelineLayout(const PipelineLayoutDesc& desc) {
     auto pl = Ref<VulkanPipelineLayout>::adopt(new VulkanPipelineLayout());
-    if (!pl->init(m_device, desc)) {
+    if (!pl->init(this, desc)) {
         return LN_MAKE_ERROR("Failed to create pipeline layout.");
     }
     return Ref<PipelineLayout>(pl);

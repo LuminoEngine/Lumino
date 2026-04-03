@@ -17,14 +17,16 @@ DynamicUniformAllocator::~DynamicUniformAllocator() {
 
 Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create(
     rhi::Device* device,
-    rhi::BindGroupLayout* layout,
+    rhi::PipelineLayout* pipelineLayout,
+    u32 setIndex,
     u32 binding,
     u32 elementSize,
     u32 framesInFlight) {
 
     auto alloc = std::unique_ptr<DynamicUniformAllocator>(new DynamicUniformAllocator());
     alloc->m_device = device;
-    alloc->m_layout = layout;
+    alloc->m_pipelineLayout = pipelineLayout;
+    alloc->m_setIndex = setIndex;
     alloc->m_binding = binding;
     alloc->m_elementSize = elementSize;
     alloc->m_framesInFlight = framesInFlight;
@@ -100,14 +102,12 @@ Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to map dynamic UBO page"});
     }
 
-    // Create a BindGroup for this page.
+    // Create a BindGroup for this page via PipelineLayout.
     // The descriptor range is m_alignedElementSize (one element); actual offset is dynamic.
-    rhi::BindGroupDesc bgDesc;
-    bgDesc.layout = m_layout;
-    bgDesc.entries = {
+    std::vector<rhi::BindGroupEntry> entries = {
         {m_binding, page.buffer.get(), 0, m_alignedElementSize, nullptr, nullptr},
     };
-    auto bgResult = m_device->createBindGroup(bgDesc);
+    auto bgResult = m_pipelineLayout->createBindGroup(m_setIndex, entries);
     if (!bgResult) return tl::make_unexpected(bgResult.error());
     page.bindGroup = std::move(*bgResult);
 

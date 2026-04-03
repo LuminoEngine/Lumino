@@ -298,7 +298,7 @@ struct BindGroupDesc {
 };
 
 struct PipelineLayoutDesc {
-    std::vector<BindGroupLayout*> bindGroupLayouts;
+    std::vector<BindGroupLayoutDesc> setLayouts;
 };
 
 struct RenderPassLayoutDesc {
@@ -417,6 +417,10 @@ public:
 class PipelineLayout : public RHIObject {
 public:
     virtual ~PipelineLayout() = default;
+
+    /** Create a BindGroup for the specified descriptor set index. */
+    virtual Result<Ref<BindGroup>> createBindGroup(
+        u32 setIndex, const std::vector<BindGroupEntry>& entries) = 0;
 };
 
 class RenderPipeline : public RHIObject {
@@ -502,8 +506,6 @@ public:
     virtual Result<Ref<TextureView>> createTextureView(Texture* texture) = 0;
     virtual Result<Ref<Sampler>> createSampler(const SamplerDesc& desc) = 0;
     virtual Result<Ref<ShaderModule>> createShaderModule(const ShaderModuleDesc& desc) = 0;
-    virtual Result<Ref<BindGroupLayout>> createBindGroupLayout(const BindGroupLayoutDesc& desc) = 0;
-    virtual Result<Ref<BindGroup>> createBindGroup(const BindGroupDesc& desc) = 0;
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPass>> createRenderPass(const RenderPassLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;

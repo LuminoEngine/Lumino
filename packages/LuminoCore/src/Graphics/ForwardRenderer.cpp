@@ -1,5 +1,6 @@
 #include <LuminoCore/Graphics/ForwardRenderer.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
+#include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <cstring>
 
 namespace ln {
@@ -9,10 +10,13 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     fw->m_ctx      = ctx;
     fw->m_renderer = ctx->renderer();
 
+    // Use BasicLit's PipelineLayout as reference for the scene allocator (set=1)
+    auto* refPipelineLayout = ctx->module()->builtinShader(BuiltinShader::BasicLit)->pipelineLayout();
+
     // ---- Dynamic UBO allocator for per-frame scene data (lighting, set=1) ----
     {
         auto r = DynamicUniformAllocator::create(
-            ctx->device(), fw->m_renderer->sceneBindGroupLayout(), 0,
+            ctx->device(), refPipelineLayout, 1, 0,
             static_cast<u32>(sizeof(SceneParamsUBO)));
         if (!r) return tl::make_unexpected(r.error());
         fw->m_sceneAllocator = std::move(*r);

@@ -53,23 +53,6 @@ class GraphicsContext;
 class Renderer : public Object {
 public:
 
-    // ---- Layout accessors (for external BindGroup creation) ----
-
-    /** Shared PipelineLayout (4 sets: view, scene, material, object). */
-    rhi::PipelineLayout* pipelineLayout() const { return m_pipelineLayout.get(); }
-
-    /** BindGroupLayout for set=0 (camera/view data). */
-    rhi::BindGroupLayout* viewBindGroupLayout() const { return m_viewBindGroupLayout.get(); }
-
-    /**
-     * BindGroupLayout for set=1 (scene environment data: lighting, etc.).
-     * Use this to create BindGroups for setPassBindGroup(1, ...).
-     */
-    rhi::BindGroupLayout* sceneBindGroupLayout() const { return m_sceneBindGroupLayout.get(); }
-
-    /** BindGroupLayout for set=3 (per-object dynamic UBO). */
-    rhi::BindGroupLayout* objectBindGroupLayout() const { return m_objectBindGroupLayout.get(); }
-
     /** Color format this renderer was created with. */
     rhi::TextureFormat colorFormat() const { return m_colorFormat; }
 
@@ -209,11 +192,8 @@ private:
     rhi::TextureFormat m_depthFormat = {};
     Ref<rhi::RenderPass> m_renderPass;
 
-    // Layouts
-    Ref<rhi::BindGroupLayout> m_viewBindGroupLayout;
-    Ref<rhi::BindGroupLayout> m_sceneBindGroupLayout;
-    Ref<rhi::BindGroupLayout> m_objectBindGroupLayout;
-    Ref<rhi::PipelineLayout>  m_pipelineLayout;
+    // Reference PipelineLayout (from a builtin ShaderPass, used for dynamic UBO allocators)
+    rhi::PipelineLayout* m_referencePipelineLayout = nullptr;
 
     // Per-frame view UBO allocator (camera data, set=0) — double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;

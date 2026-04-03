@@ -573,23 +573,50 @@ void VulkanBindGroup::finalize() {
 
 VulkanPipelineLayout::VulkanPipelineLayout() = default;
 
-VoidResult VulkanPipelineLayout::init(VkDevice device, const PipelineLayoutDesc& desc) {
-    m_device = device;
+VoidResult VulkanPipelineLayout::init(VulkanDevice* vulkanDevice, const PipelineLayoutDesc& desc) {
+    m_vulkanDevice = vulkanDevice;
+    m_device = vulkanDevice->vkDevice();
 
-    std::vector<VkDescriptorSetLayout> layouts;
-    layouts.reserve(desc.bindGroupLayouts.size());
-    for (auto* bgl : desc.bindGroupLayouts) {
-        layouts.push_back(static_cast<VulkanBindGroupLayout*>(bgl)->handle());
+    // Create internal BindGroupLayouts from the descriptor
+    m_bindGroupLayouts.reserve(desc.setLayouts.size());
+    std::vector<VkDescriptorSetLayout> vkLayouts;
+    vkLayouts.reserve(desc.setLayouts.size());
+
+    for (const auto& setLayout : desc.setLayouts) {
+        auto bgl = Ref<VulkanBindGroupLayout>::adopt(new VulkanBindGroupLayout());
+        if (!bgl->init(m_device, setLayout)) {
+            return LN_MAKE_ERROR("Failed to create internal bind group layout.");
+        }
+        vkLayouts.push_back(bgl->handle());
+        m_bindGroupLayouts.push_back(std::move(bgl));
     }
 
     VkPipelineLayoutCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    info.setLayoutCount = static_cast<uint32_t>(layouts.size());
-    info.pSetLayouts = layouts.data();
+    info.setLayoutCount = static_cast<uint32_t>(vkLayouts.size());
+    info.pSetLayouts = vkLayouts.data();
     if (vkCreatePipelineLayout(m_device, &info, nullptr, &m_layout) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreatePipelineLayout failed.");
     }
     return LN_MAKE_SUCCESS();
+}
+
+Result<Ref<BindGroup>> VulkanPipelineLayout::createBindGroup(
+    u32 setIndex, const std::vector<BindGroupEntry>& entries) {
+    if (setIndex >= m_bindGroupLayouts.size()) {
+        return LN_MAKE_ERROR("setIndex out of range.");
+    }
+
+    BindGroupDesc bgDesc;
+    bgDesc.layout = m_bindGroupLayouts[setIndex].get();
+    bgDesc.entries = entries;
+
+    auto bg = Ref<VulkanBindGroup>::adopt(new VulkanBindGroup());
+    if (!bg->init(m_vulkanDevice, m_vulkanDevice->descriptorPoolManager(),
+                  m_bindGroupLayouts[setIndex].get(), bgDesc)) {
+        return LN_MAKE_ERROR("Failed to create bind group.");
+    }
+    return Ref<BindGroup>(bg);
 }
 
 void VulkanPipelineLayout::finalize() {

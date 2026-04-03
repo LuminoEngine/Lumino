@@ -9,16 +9,15 @@
 
 namespace ln {
 
+class ShaderPass;
+
 /**
  * RenderPipelineの検索または作成に使用するキー。
  * マテリアル由来のフィールドとレンダリングコンテキストのフィールドが組み合わされます。
  */
 struct PipelineCacheKey {
     // Material 由来
-    rhi::ShaderModule* vertexShader = nullptr;
-    rhi::ShaderModule* fragmentShader = nullptr;
-    std::string vertexEntry;
-    std::string fragmentEntry;
+    ShaderPass* shaderPass = nullptr;
     rhi::CullMode cullMode = rhi::CullMode::Back;
     bool blendEnabled = false;
     rhi::BlendState blendState;     // blendEnabled==false の場合は無視
@@ -31,7 +30,6 @@ struct PipelineCacheKey {
     u32 stencilWriteMask = 0xFF;
     bool colorWriteEnabled = true;
     // 描画コンテキスト由来
-    rhi::PipelineLayout* pipelineLayout = nullptr;
     rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList;
     rhi::RenderPass* renderPass = nullptr;
 

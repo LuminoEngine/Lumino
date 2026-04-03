@@ -1,4 +1,5 @@
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
+#include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
@@ -23,8 +24,7 @@ using detail::buildBindGroupLayoutFromReflection;
 using detail::findParameterBlock;
 using detail::findConstantBufferSize;
 
-// ------ GraphicsModule -------------------------------------------------------
-
+//------------------------------------------------------------------------------
 Result<Ref<GraphicsModule>> GraphicsModule::create(const Settings& settings) {
     auto module = Ref<GraphicsModule>::adopt(new GraphicsModule());
     auto result = module->init(settings);
@@ -49,7 +49,11 @@ VoidResult GraphicsModule::init(const Settings& settings) {
     if (!deviceResult) return tl::make_unexpected(deviceResult.error());
     m_device = std::move(*deviceResult);
 
-    // Initialize builtin shaders
+    // Extract shared BindGroupLayoutDescs from BasicLit shader reflection
+    auto r0 = extractSharedLayoutDescs(s_basicLitShaderData, sizeof(s_basicLitShaderData));
+    if (!r0) return r0;
+
+    // Initialize builtin shaders (now using ShaderPass)
     auto r1 = initBuiltinShader(BuiltinShader::Unlit, s_unlitShaderData, sizeof(s_unlitShaderData));
     if (!r1) return r1;
     auto r2 = initBuiltinShader(BuiltinShader::BasicLit, s_basicLitShaderData, sizeof(s_basicLitShaderData));
@@ -65,73 +69,64 @@ VoidResult GraphicsModule::init(const Settings& settings) {
     return LN_MAKE_SUCCESS();
 }
 
-VoidResult GraphicsModule::initBuiltinShader(BuiltinShader id, const unsigned char* data, size_t size) {
-    // Deserialize the unified shader from the binary blob.
+VoidResult GraphicsModule::extractSharedLayoutDescs(const unsigned char* data, size_t size) {
+    // Load BasicLit shader to extract BindGroupLayout info via reflection.
     auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
     if (!loadResult) return tl::make_unexpected(loadResult.error());
     auto unifiedShader = std::move(*loadResult);
 
-    // Find the Forward pass for SPIR-V target.
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No shader passes found"});
     }
-
-    auto* globalPass = globalPasses[0].get();
-    auto targetPassId = globalPass->getTargetShaderPassId(shader::ShaderTarget_SPIRV);
+    auto targetPassId = globalPasses[0]->getTargetShaderPassId(shader::ShaderTarget_SPIRV);
     auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
     if (!targetPass) {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No SPIRV target pass"});
     }
 
-    auto* vertEP = unifiedShader->targetEntryPoint(targetPass->vertEntryPointId);
-    auto* fragEP = unifiedShader->targetEntryPoint(targetPass->fragEntryPointId);
-    if (!vertEP || !fragEP) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Missing entry points"});
+    auto* viewBlock = findParameterBlock(unifiedShader.get(), "viewData");
+    auto* sceneBlock = findParameterBlock(unifiedShader.get(), "sceneData");
+    auto* objectBlock = findParameterBlock(unifiedShader.get(), "objectData");
+    if (!viewBlock || !sceneBlock || !objectBlock) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError,
+            "Missing required ParameterBlocks (viewData, sceneData, objectData)"});
     }
 
-    auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
-    auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
-
-    // Create shader modules
-    rhi::ShaderModuleDesc vsDesc;
-    vsDesc.spirvCode = reinterpret_cast<const u32*>(vertBlob->data.data());
-    vsDesc.spirvSizeBytes = vertBlob->data.size();
-    auto vsResult = m_device->createShaderModule(vsDesc);
-    if (!vsResult) return tl::make_unexpected(vsResult.error());
-
-    rhi::ShaderModuleDesc fsDesc;
-    fsDesc.spirvCode = reinterpret_cast<const u32*>(fragBlob->data.data());
-    fsDesc.spirvSizeBytes = fragBlob->data.size();
-    auto fsResult = m_device->createShaderModule(fsDesc);
-    if (!fsResult) return tl::make_unexpected(fsResult.error());
-
-    // Build material BindGroupLayout from "materialData" ParameterBlock reflection
-    auto* materialBlock = findParameterBlock(unifiedShader.get(), "materialData");
-    if (!materialBlock) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No 'materialData' ParameterBlock found"});
+    // Build BindGroupLayoutDescs and set hasDynamicOffset for UBO entries
+    m_viewLayoutDesc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
+    for (auto& entry : m_viewLayoutDesc.entries) {
+        if (entry.type == rhi::BindingType::UniformBuffer) entry.hasDynamicOffset = true;
     }
 
-    auto bglDesc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
-    auto bglResult = m_device->createBindGroupLayout(bglDesc);
-    if (!bglResult) return tl::make_unexpected(bglResult.error());
-
-    // Get material CB size from reflection
-    int16_t cbSize = findConstantBufferSize(*materialBlock);
-    if (cbSize <= 0) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No constant buffer found in 'materialData'"});
+    m_sceneLayoutDesc = buildBindGroupLayoutFromReflection(*sceneBlock, targetPass->bindingLayout);
+    for (auto& entry : m_sceneLayoutDesc.entries) {
+        if (entry.type == rhi::BindingType::UniformBuffer) entry.hasDynamicOffset = true;
     }
 
-    // Store in cache
-    auto& entry = m_builtinShaders[static_cast<int>(id)];
-    entry.vertShader = std::move(*vsResult);
-    entry.fragShader = std::move(*fsResult);
-    entry.vertEntry = vertEP->name;
-    entry.fragEntry = fragEP->name;
-    entry.materialBindGroupLayout = std::move(*bglResult);
-    entry.materialParamBufferSize = static_cast<u64>(cbSize);
-    entry.initialized = true;
+    m_objectLayoutDesc = buildBindGroupLayoutFromReflection(*objectBlock, targetPass->bindingLayout);
+    for (auto& entry : m_objectLayoutDesc.entries) {
+        if (entry.type == rhi::BindingType::UniformBuffer) entry.hasDynamicOffset = true;
+    }
 
+    int16_t objectCBSize = findConstantBufferSize(*objectBlock);
+    if (objectCBSize <= 0) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError,
+            "Invalid object constant buffer size in reflection"});
+    }
+    m_objectUBOSize = static_cast<u64>(objectCBSize);
+
+    return LN_MAKE_SUCCESS();
+}
+
+VoidResult GraphicsModule::initBuiltinShader(BuiltinShader id, const unsigned char* data, size_t size) {
+    auto result = ShaderPass::createFromCompiledShader(
+        data, size,
+        m_viewLayoutDesc, m_sceneLayoutDesc, m_objectLayoutDesc,
+        m_device.get());
+    if (!result) return tl::make_unexpected(result.error());
+
+    m_builtinShaders[static_cast<int>(id)] = std::move(*result);
     return LN_MAKE_SUCCESS();
 }
 

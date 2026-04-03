@@ -42,10 +42,6 @@ public:
 
     // ---- Forwarded Renderer API (convenience) ----
 
-    rhi::PipelineLayout*    pipelineLayout()        const { return m_renderer->pipelineLayout(); }
-    rhi::BindGroupLayout*   viewBindGroupLayout()   const { return m_renderer->viewBindGroupLayout(); }
-    rhi::BindGroupLayout*   sceneBindGroupLayout()  const { return m_renderer->sceneBindGroupLayout(); }
-    rhi::BindGroupLayout*   objectBindGroupLayout() const { return m_renderer->objectBindGroupLayout(); }
     rhi::TextureFormat      colorFormat()           const { return m_renderer->colorFormat(); }
     rhi::TextureFormat      depthFormat()           const { return m_renderer->depthFormat(); }
 

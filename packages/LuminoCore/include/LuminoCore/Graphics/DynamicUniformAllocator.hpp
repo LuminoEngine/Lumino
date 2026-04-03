@@ -33,15 +33,17 @@ public:
 
     /**
      * Create a new allocator.
-     * @param device        RHI device.
-     * @param layout        BindGroupLayout with hasDynamicOffset=true on the UBO binding.
-     * @param binding       Binding index of the UBO within the layout.
-     * @param elementSize   Size of one element in bytes (e.g. sizeof(ObjectParamsUBO)).
-     * @param framesInFlight Number of frames in flight (default 2 for double-buffering).
+     * @param device          RHI device.
+     * @param pipelineLayout  PipelineLayout that owns the BindGroupLayout for the target set.
+     * @param setIndex        Descriptor set index within the PipelineLayout.
+     * @param binding         Binding index of the UBO within the layout.
+     * @param elementSize     Size of one element in bytes (e.g. sizeof(ObjectParamsUBO)).
+     * @param framesInFlight  Number of frames in flight (default 2 for double-buffering).
      */
     static Result<std::unique_ptr<DynamicUniformAllocator>> create(
         rhi::Device* device,
-        rhi::BindGroupLayout* layout,
+        rhi::PipelineLayout* pipelineLayout,
+        u32 setIndex,
         u32 binding,
         u32 elementSize,
         u32 framesInFlight = 2);
@@ -70,7 +72,8 @@ private:
     };
 
     rhi::Device* m_device = nullptr;
-    rhi::BindGroupLayout* m_layout = nullptr;
+    rhi::PipelineLayout* m_pipelineLayout = nullptr;
+    u32 m_setIndex = 0;
     u32 m_binding = 0;
     u32 m_elementSize = 0;
     u32 m_alignedElementSize = 0;
