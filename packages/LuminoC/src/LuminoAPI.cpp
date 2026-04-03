@@ -279,7 +279,7 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
 
     // 2. Submit all recorded GPU commands.
     // Transition the swapchain image to PRESENT_SRC_KHR before submitting.
-    ctx->renderer()->endFrame(ctx->m_currentColorTarget);
+    ctx->renderer()->endFrame();
     ctx->m_currentCmd = nullptr;
 
     // 3. Present + update FPS stats.

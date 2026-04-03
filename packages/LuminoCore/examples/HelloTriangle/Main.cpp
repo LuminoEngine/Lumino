@@ -153,7 +153,6 @@ int main() {
             pass->draw(3);
             pass->end();
 
-            cmd->transitionToPresent(frame.colorTarget);
             cmd->submit();
             ctx->endFrame();
 

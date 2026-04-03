@@ -455,8 +455,6 @@ class CommandBuffer : public RHIObject {
 public:
     virtual ~CommandBuffer() = default;
     virtual RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) = 0;
-    /** Transition a color attachment from COLOR_ATTACHMENT_OPTIMAL to PRESENT_SRC_KHR. */
-    virtual void transitionToPresent(TextureView* colorTarget) = 0;
     /** Transition a color attachment from COLOR_ATTACHMENT_OPTIMAL to SHADER_READ_ONLY_OPTIMAL. */
     virtual void transitionToShaderRead(TextureView* colorTarget) = 0;
     virtual void submit() = 0;

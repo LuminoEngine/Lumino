@@ -205,10 +205,7 @@ void Renderer::beginFrame() {
     m_drawCallCount = 0;
 }
 
-void Renderer::endFrame(rhi::TextureView* presentTarget) {
-    if (presentTarget) {
-        m_currentCmd->transitionToPresent(presentTarget);
-    }
+void Renderer::endFrame() {
     m_currentCmd->submit();
     m_currentCmd = nullptr;
 }

@@ -90,7 +90,7 @@ public:
      * @param presentTarget  If non-null, a barrier is recorded to transition
      *                       the image from COLOR_ATTACHMENT_OPTIMAL to PRESENT_SRC_KHR.
      */
-    void endFrame(rhi::TextureView* presentTarget = nullptr);
+    void endFrame();
 
     /** Current in-flight frame slot (0 or 1). Valid after beginFrame(). */
     u32 currentFrameSlot() const { return m_currentFrameSlot; }
