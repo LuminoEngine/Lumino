@@ -133,6 +133,8 @@ public:
     VulkanShaderModule();
     VoidResult init(VkDevice device, const ShaderModuleDesc& desc);
     VkShaderModule handle() const { return m_module; }
+    const u32* spirvData() const { return m_spirv.data(); }
+    size_t spirvSizeBytes() const { return m_spirv.size() * sizeof(u32); }
 
 protected:
     void finalize() override;
@@ -140,6 +142,7 @@ protected:
 private:
     VkDevice m_device = VK_NULL_HANDLE;
     VkShaderModule m_module = VK_NULL_HANDLE;
+    std::vector<u32> m_spirv;
 };
 
 // ------ VulkanBindGroupLayout ----------------------------------------------------------------------------------------------
@@ -194,6 +197,22 @@ protected:
 private:
     VkDevice m_device = VK_NULL_HANDLE;
     VkPipelineLayout m_layout = VK_NULL_HANDLE;
+};
+
+// ------ VulkanRenderPass ----------------------------------------------------------------------------------------------------
+
+class VulkanRenderPass final : public RenderPass {
+public:
+    VulkanRenderPass(VkRenderPass handle, const RenderPassLayoutDesc& desc)
+        : m_handle(handle), m_desc(desc) {}
+    ~VulkanRenderPass() override = default;
+
+    const RenderPassLayoutDesc& layoutDesc() const override { return m_desc; }
+    VkRenderPass handle() const { return m_handle; }
+
+private:
+    VkRenderPass m_handle;
+    RenderPassLayoutDesc m_desc;
 };
 
 // ------ VulkanRenderPipeline ------------------------------------------------------------------------------------------------
@@ -252,6 +271,7 @@ public:
 
     VoidResult begin();
     RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
+    void transitionToPresent(TextureView* colorTarget) override;
     void submit() override;
 
 protected:
@@ -325,12 +345,18 @@ public:
 // ------ RenderPass Cache --------------------------------------------------------------------------------------------------------
 
 struct RenderPassKey {
-    std::vector<VkFormat> colorFormats;
+    struct ColorAttachment {
+        VkFormat format;
+        VkAttachmentLoadOp loadOp;
+        bool operator==(const ColorAttachment& other) const;
+    };
+
+    //std::array<ColorAttachment, kMaxMultiRenderTargets> colorAttachments;
+    std::vector<ColorAttachment> colorAttachments;
     VkFormat depthFormat = VK_FORMAT_UNDEFINED;
-    std::vector<VkAttachmentLoadOp> loadOps;
     VkAttachmentLoadOp stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
-    bool operator==(const RenderPassKey& o) const;
+    bool operator==(const RenderPassKey& other) const;
 };
 
 struct RenderPassKeyHash {
@@ -371,6 +397,7 @@ public:
     Result<Ref<BindGroupLayout>> createBindGroupLayout(const BindGroupLayoutDesc& desc) override;
     Result<Ref<BindGroup>> createBindGroup(const BindGroupDesc& desc) override;
     Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) override;
+    Result<Ref<RenderPass>> createRenderPass(const RenderPassLayoutDesc& desc) override;
     Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) override;
     Result<std::vector<uint8_t>> readbackTexture(TextureView* view) override;
     void waitIdle() override;
@@ -381,7 +408,7 @@ public:
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
     VkPhysicalDevice physicalDevice() const { return m_physicalDevice; }
     VkQueue graphicsQueue() const { return m_graphicsQueue; }
-    u32 graphicsFamily() const { return m_graphicsFamily; }
+    uint32_t graphicsFamily() const { return m_graphicsQueuFamily; }
     VkCommandPool commandPool() const { return m_commandPool; }
 
     VkRenderPass getOrCreateRenderPass(const RenderPassKey& key);
@@ -407,11 +434,18 @@ protected:
     void finalize() override;
 
 private:
+    static VoidResult lookupQueueFamilies(
+        VkPhysicalDevice physicalDevice,
+        uint32_t* outGraphicsQueuFamily);
+
     VkInstance m_instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     VkDevice m_device = VK_NULL_HANDLE;
-    u32 m_graphicsFamily = 0;
+
+    //std::vector<VkQueueFamilyProperties> m_queueFamilyProps;
+    //std::optional<uint32_t> m_graphicsFamily;
+    uint32_t m_graphicsQueuFamily;
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;
     VkCommandPool m_commandPool = VK_NULL_HANDLE;
 

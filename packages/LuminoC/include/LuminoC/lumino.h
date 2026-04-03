@@ -262,6 +262,20 @@ extern LUMINO_API LNResult LNMaterial_CreateFromBuiltinShader(
 );
 
 /**
+ * コンパイル済みシェーダ (.lcsh) のバイナリデータからマテリアルを作成します。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  data            コンパイル済みシェーダのバイナリデータ
+ * @param[in]  size            バイナリデータのサイズ (バイト)
+ * @param[out] outHandle       作成されたマテリアルのハンドル
+ */
+extern LUMINO_API LNResult LNMaterial_CreateFromCompiledShader(
+    LNHandle graphicsContext,
+    const void* data,
+    uint32_t size,
+    LNHandle* outHandle
+);
+
+/**
  * @deprecated LNMaterial_CreateFromBuiltinShader(ctx, LN_BUILTIN_SHADER_UNLIT, out) を使用してください。
  * Unlit マテリアルを作成します (テクスチャ * カラー、ライティングなし)。
  * @param[in]  graphicsContext GraphicsContext のハンドル

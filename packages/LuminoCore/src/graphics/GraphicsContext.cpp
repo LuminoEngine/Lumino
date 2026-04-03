@@ -16,12 +16,12 @@ GraphicsContext::GraphicsContext()
 GraphicsContext::~GraphicsContext() {
     auto* dev = device();
     if (dev) {
+        dev->waitIdle();
         // Destroy Renderer first (holds material cache, UBO allocators, etc.)
         m_renderer.reset();
         if (m_pipelineCache) {
             m_pipelineCache->clear();
         }
-        dev->waitIdle();
     }
 }
 

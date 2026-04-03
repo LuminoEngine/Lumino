@@ -87,8 +87,10 @@ public:
     /**
      * End the current frame and submit all recorded commands to the GPU.
      * Must be called after the last endRenderPass().
+     * @param presentTarget  If non-null, a barrier is recorded to transition
+     *                       the image from COLOR_ATTACHMENT_OPTIMAL to PRESENT_SRC_KHR.
      */
-    void endFrame();
+    void endFrame(rhi::TextureView* presentTarget = nullptr);
 
     /** Current in-flight frame slot (0 or 1). Valid after beginFrame(). */
     u32 currentFrameSlot() const { return m_currentFrameSlot; }
@@ -198,6 +200,7 @@ private:
 
     rhi::TextureFormat m_colorFormat = {};
     rhi::TextureFormat m_depthFormat = {};
+    Ref<rhi::RenderPass> m_renderPass;
 
     // Layouts
     Ref<rhi::BindGroupLayout> m_viewBindGroupLayout;

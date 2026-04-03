@@ -23,6 +23,7 @@
 #include <vector>
 
 namespace ln::rhi {
+static const int kMaxMultiRenderTargets = 4;
 
 // ------ Forward declarations ------
 class Device;
@@ -37,6 +38,7 @@ class BindGroup;
 class PipelineLayout;
 class RenderPipeline;
 class CommandBuffer;
+class RenderPass;
 class RenderPassEncoder;
 
 // ------ Enums ------------------------------------------------------------------------------------------------------------------------------
@@ -47,6 +49,7 @@ enum class Backend {
 };
 
 enum class TextureFormat {
+    Undefined,
     BGRA8Unorm,
     BGRA8UnormSrgb,
     RGBA8Unorm,
@@ -298,6 +301,12 @@ struct PipelineLayoutDesc {
     std::vector<BindGroupLayout*> bindGroupLayouts;
 };
 
+struct RenderPassLayoutDesc {
+    std::vector<TextureFormat> colorFormats;
+    TextureFormat depthStencilFormat = TextureFormat::Undefined;
+    u32 sampleCount = 1;
+};
+
 struct RenderPipelineDesc {
     PipelineLayout* layout = nullptr;
     ShaderModule* vertexShader = nullptr;
@@ -308,11 +317,9 @@ struct RenderPipelineDesc {
     PrimitiveTopology topology = PrimitiveTopology::TriangleList;
     CullMode cullMode = CullMode::None;
     FrontFace frontFace = FrontFace::CCW;
-    std::vector<TextureFormat> colorFormats;
+    RenderPass* renderPass = nullptr;
     std::vector<BlendState> blendStates;
-    TextureFormat depthStencilFormat = TextureFormat::Depth24Stencil8;
     DepthStencilState depthStencil;
-    u32 sampleCount = 1;
 };
 
 struct ColorAttachment {
@@ -417,6 +424,14 @@ public:
     virtual ~RenderPipeline() = default;
 };
 
+// ------ RenderPass ----------------------------------------------------------------------------------------------------------------
+
+class RenderPass : public RHIObject {
+public:
+    virtual ~RenderPass() = default;
+    virtual const RenderPassLayoutDesc& layoutDesc() const = 0;
+};
+
 // ------ Command Encoding --------------------------------------------------------------------------------------------------------
 
 class RenderPassEncoder {
@@ -440,6 +455,8 @@ class CommandBuffer : public RHIObject {
 public:
     virtual ~CommandBuffer() = default;
     virtual RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) = 0;
+    /** Transition a color attachment from COLOR_ATTACHMENT_OPTIMAL to PRESENT_SRC_KHR. */
+    virtual void transitionToPresent(TextureView* colorTarget) = 0;
     virtual void submit() = 0;
 };
 
@@ -488,6 +505,7 @@ public:
     virtual Result<Ref<BindGroupLayout>> createBindGroupLayout(const BindGroupLayoutDesc& desc) = 0;
     virtual Result<Ref<BindGroup>> createBindGroup(const BindGroupDesc& desc) = 0;
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
+    virtual Result<Ref<RenderPass>> createRenderPass(const RenderPassLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
     /** Read back the contents of a texture view into a CPU-side pixel buffer. */

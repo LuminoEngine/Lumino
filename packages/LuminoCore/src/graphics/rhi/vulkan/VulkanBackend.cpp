@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <iostream>
 #include <numeric>
+#include <unordered_set>
 
 namespace ln::rhi::vulkan {
 
@@ -15,6 +17,7 @@ namespace ln::rhi::vulkan {
 
 VkFormat toVkFormat(TextureFormat fmt) {
     switch (fmt) {
+        case TextureFormat::Undefined:        return VK_FORMAT_UNDEFINED;
         case TextureFormat::BGRA8Unorm:       return VK_FORMAT_B8G8R8A8_UNORM;
         case TextureFormat::BGRA8UnormSrgb:   return VK_FORMAT_B8G8R8A8_SRGB;
         case TextureFormat::RGBA8Unorm:       return VK_FORMAT_R8G8B8A8_UNORM;
@@ -350,6 +353,8 @@ VulkanShaderModule::VulkanShaderModule() = default;
 VoidResult VulkanShaderModule::init(VkDevice device, const ShaderModuleDesc& desc) {
     m_device = device;
 
+    m_spirv.assign(desc.spirvCode, desc.spirvCode + desc.spirvSizeBytes / sizeof(u32));
+
     VkShaderModuleCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     info.codeSize = desc.spirvSizeBytes;
@@ -532,6 +537,45 @@ void VulkanPipelineLayout::finalize() {
 
 // ------ VulkanRenderPipeline ------------------------------------------------------------------------------------------------
 
+// Minimal SPIR-V reflection: returns the set of vertex input locations consumed by the shader.
+// Parses OpVariable (storage class Input) and OpDecorate (Location decoration) instructions.
+static std::unordered_set<uint32_t> reflectVertexInputLocations(const uint32_t* spirv, size_t sizeBytes) {
+    const size_t wordCount = sizeBytes / 4;
+    if (wordCount < 5) return {};
+
+    std::unordered_set<uint32_t> inputVarIds;
+    std::unordered_map<uint32_t, uint32_t> locationByVarId;
+
+    size_t i = 5; // skip header
+    while (i < wordCount) {
+        uint32_t word = spirv[i];
+        uint32_t opcode = word & 0xFFFF;
+        uint32_t wc    = (word >> 16) & 0xFFFF;
+        if (wc == 0 || i + wc > wordCount) break;
+
+        if (opcode == 59 && wc >= 4) {          // OpVariable: result_type, result_id, storage_class
+            uint32_t resultId     = spirv[i + 2];
+            uint32_t storageClass = spirv[i + 3];
+            if (storageClass == 1)               // Input
+                inputVarIds.insert(resultId);
+        } else if (opcode == 71 && wc >= 4) {   // OpDecorate: target_id, decoration, value...
+            uint32_t targetId   = spirv[i + 1];
+            uint32_t decoration = spirv[i + 2];
+            if (decoration == 30)                // Location
+                locationByVarId[targetId] = spirv[i + 3];
+        }
+        i += wc;
+    }
+
+    std::unordered_set<uint32_t> usedLocations;
+    for (uint32_t id : inputVarIds) {
+        auto it = locationByVarId.find(id);
+        if (it != locationByVarId.end())
+            usedLocations.insert(it->second);
+    }
+    return usedLocations;
+}
+
 VulkanRenderPipeline::VulkanRenderPipeline() = default;
 
 VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc) {
@@ -565,6 +609,22 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
             ad.format = toVkVertexFormat(a.format);
             ad.offset = a.offset;
             attrDescs.push_back(ad);
+        }
+    }
+
+    // Filter vertex attributes to only those actually consumed by the vertex shader.
+    // This avoids Vulkan Validation WARNING-Shader-OutputNotConsumed when the standard
+    // layout declares attributes (e.g. normal, tangent) that the shader doesn't use.
+    if (desc.vertexShader) {
+        auto* vsModule = static_cast<VulkanShaderModule*>(desc.vertexShader);
+        auto usedLocations = reflectVertexInputLocations(vsModule->spirvData(), vsModule->spirvSizeBytes());
+        if (!usedLocations.empty()) {
+            attrDescs.erase(
+                std::remove_if(attrDescs.begin(), attrDescs.end(),
+                    [&](const VkVertexInputAttributeDescription& a) {
+                        return usedLocations.find(a.location) == usedLocations.end();
+                    }),
+                attrDescs.end());
         }
     }
 
@@ -617,7 +677,8 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
 
     // Color blend
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachments;
-    for (size_t i = 0; i < desc.colorFormats.size(); ++i) {
+    const auto& colorFormats = desc.renderPass->layoutDesc().colorFormats;
+    for (size_t i = 0; i < colorFormats.size(); ++i) {
         VkPipelineColorBlendAttachmentState att{};
         bool colorWrite = (i < desc.blendStates.size()) ? desc.blendStates[i].colorWriteEnabled : true;
         att.colorWriteMask = colorWrite
@@ -801,15 +862,22 @@ void VulkanRenderPassEncoder::end() {
 
 // ------ RenderPass Cache helpers ----------------------------------------------------------------------------------------
 
-bool RenderPassKey::operator==(const RenderPassKey& o) const {
-    return colorFormats == o.colorFormats && depthFormat == o.depthFormat && loadOps == o.loadOps && stencilLoadOp == o.stencilLoadOp;
+bool RenderPassKey::ColorAttachment::operator==(const ColorAttachment& other) const {
+    return format == other.format && loadOp == other.loadOp;
+}
+
+bool RenderPassKey::operator==(const RenderPassKey& other) const {
+    return colorAttachments == other.colorAttachments && depthFormat == other.depthFormat &&
+        stencilLoadOp == other.stencilLoadOp;
 }
 
 size_t RenderPassKeyHash::operator()(const RenderPassKey& key) const {
     size_t h = 0;
-    for (auto f : key.colorFormats) h ^= std::hash<int>()(f) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    for (const auto& a : key.colorAttachments) {
+        h ^= std::hash<int>()(a.format) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        h ^= std::hash<int>()(a.loadOp) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    }
     h ^= std::hash<int>()(key.depthFormat) + 0x9e3779b9 + (h << 6) + (h >> 2);
-    for (auto op : key.loadOps) h ^= std::hash<int>()(op) + 0x9e3779b9 + (h << 6) + (h >> 2);
     h ^= std::hash<int>()(key.stencilLoadOp) + 0x9e3779b9 + (h << 6) + (h >> 2);
     return h;
 }
@@ -884,8 +952,13 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     m_views.resize(imageCount);
     for (u32 i = 0; i < imageCount; ++i) {
         auto view = Ref<VulkanTextureView>::adopt(new VulkanTextureView());
-        if (!view->init(m_device->vkDevice(), m_images[i], vkFmt, VK_IMAGE_ASPECT_COLOR_BIT,
-                        m_extent.width, m_extent.height)) {
+        if (!view->init(
+                m_device->vkDevice(),
+                m_images[i],
+                vkFmt,
+                VK_IMAGE_ASPECT_COLOR_BIT,
+                m_extent.width,
+                m_extent.height)) {
             return LN_MAKE_ERROR("Failed to create swap chain image view.");
         }
         m_views[i] = view;
@@ -1107,13 +1180,20 @@ RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& de
     // Build RenderPassKey
     RenderPassKey rpKey;
     u32 fbWidth = 0, fbHeight = 0;
-    for (auto& ca : desc.colorAttachments) {
+    for (size_t i = 0; i < desc.colorAttachments.size(); ++i) {
+    //}
+    //for (auto& ca : desc.colorAttachments) {
+        auto& ca = desc.colorAttachments[i];
         auto* view = static_cast<VulkanTextureView*>(ca.view);
-        rpKey.colorFormats.push_back(view->vkFormat());
-        rpKey.loadOps.push_back(
-            ca.loadOp == LoadOp::Clear ? VK_ATTACHMENT_LOAD_OP_CLEAR :
-            ca.loadOp == LoadOp::Load  ? VK_ATTACHMENT_LOAD_OP_LOAD :
-                                         VK_ATTACHMENT_LOAD_OP_DONT_CARE);
+
+        
+        RenderPassKey::ColorAttachment attachment = {};
+        attachment.format = view->vkFormat();
+        attachment.loadOp = ca.loadOp == LoadOp::Clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
+            : ca.loadOp == LoadOp::Load                ? VK_ATTACHMENT_LOAD_OP_LOAD
+                                                       : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        rpKey.colorAttachments.push_back(attachment);
+
         if (fbWidth == 0) {
             fbWidth = view->width();
             fbHeight = view->height();
@@ -1148,6 +1228,37 @@ RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& de
     return m_encoder;
 }
 
+void VulkanCommandBuffer::transitionToPresent(TextureView* colorTarget) {
+    auto* vkView = static_cast<VulkanTextureView*>(colorTarget);
+
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = vkView->image();
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 1;
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = 0;
+
+    vkCmdPipelineBarrier(
+        m_cmd,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+        0,
+        0,
+        nullptr,
+        0,
+        nullptr,
+        1,
+        &barrier);
+}
+
 void VulkanCommandBuffer::submit() {
     vkEndCommandBuffer(m_cmd);
 
@@ -1180,6 +1291,50 @@ void VulkanCommandBuffer::submit() {
     m_encoder = nullptr;
 }
 
+// ------ Debug messenger helpers -------------------------------------------------------------------------------------------------
+
+static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+    } else {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+}
+
+static void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+        func(instance, debugMessenger, pAllocator);
+    }
+}
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+    std::cerr << "Vulkan validation: [ " << pCallbackData->pMessageIdName << " ] |  MessageID = " << std::hex<< std::dec
+              << pCallbackData->messageIdNumber << std::dec << std::endl;
+    std::cerr << pCallbackData->pMessage << std::endl;
+
+    if (pCallbackData->objectCount > 0) {
+        std::cerr << "Objects: " << pCallbackData->objectCount << std::endl;
+        for (int i = 0; i < pCallbackData->objectCount; i++) {
+            const auto& obj = pCallbackData->pObjects[i];
+            // TODO: type は 次のようにして文字列化できるようにしたい。
+            // #include <vulkan/vk_enum_string_helper.h>
+            // const char* typeName = string_VkObjectType(VK_OBJECT_TYPE_DEVICE);
+            // Returns "VK_OBJECT_TYPE_DEVICE"
+            std::cerr << "  [" << i << "] Type: " << obj.objectType
+                      << ", Handle: " << std::hex << obj.objectHandle << std::dec << ", Name: " << (obj.pObjectName ? obj.pObjectName : "N/A") << std::endl;
+        }
+    }
+
+#if defined(_MSC_VER) && defined(_DEBUG)
+    //if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+    __debugbreak();
+    //}
+#endif
+
+    return VK_FALSE;
+}
 
 // ------ VulkanDevice ----------------------------------------------------------------------------------------------------------------
 
@@ -1205,6 +1360,10 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         instanceExtensions.assign(glfwExts, glfwExts + glfwExtCount);
     }
 
+    if (desc.enableValidation) {
+        instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
+
     std::vector<const char*> layers;
     if (desc.enableValidation) {
         layers.push_back("VK_LAYER_KHRONOS_validation");
@@ -1222,6 +1381,20 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("vkCreateInstance failed.");
     }
 
+#if 1
+    // Setup debug messenger
+    if (desc.enableValidation) {
+        VkDebugUtilsMessengerCreateInfoEXT createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+        createInfo.pfnUserCallback = debugCallback;
+        if (CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
+            std::cerr << "Warning: Failed to set up Vulkan debug messenger." << std::endl;
+        }
+    }
+#endif
+
     // Select physical device
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
@@ -1234,24 +1407,20 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
     vkGetPhysicalDeviceProperties(m_physicalDevice, &deviceProperties);
     VulkanHelpers::logDeviceProperties(deviceProperties);
 
-    // Find graphics queue family
-    uint32_t qfCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &qfCount, nullptr);
-    std::vector<VkQueueFamilyProperties> qfProps(qfCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &qfCount, qfProps.data());
-
-    for (uint32_t i = 0; i < qfCount; ++i) {
-        if (qfProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            m_graphicsFamily = i;
-            break;
+    
+    {
+        auto result = lookupQueueFamilies(m_physicalDevice, &m_graphicsQueuFamily);
+        if (!result) {
+            return LN_BOX_ERROR(result);
         }
     }
+
 
     // Create logical device
     float priority = 1.0f;
     VkDeviceQueueCreateInfo queueInfo{};
     queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueInfo.queueFamilyIndex = m_graphicsFamily;
+    queueInfo.queueFamilyIndex = m_graphicsQueuFamily;
     queueInfo.queueCount = 1;
     queueInfo.pQueuePriorities = &priority;
 
@@ -1268,12 +1437,12 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("vkCreateDevice failed.");
     }
 
-    vkGetDeviceQueue(m_device, m_graphicsFamily, 0, &m_graphicsQueue);
+    vkGetDeviceQueue(m_device, m_graphicsQueuFamily, 0, &m_graphicsQueue);
 
     // Command pool
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = m_graphicsFamily;
+    poolInfo.queueFamilyIndex = m_graphicsQueuFamily;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
 
@@ -1297,6 +1466,7 @@ void VulkanDevice::finalize() {
     m_descriptorPoolManager.destroy();
     if (m_commandPool) vkDestroyCommandPool(m_device, m_commandPool, nullptr);
     if (m_device) vkDestroyDevice(m_device, nullptr);
+    if (m_debugMessenger) DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
     if (m_instance) vkDestroyInstance(m_instance, nullptr);
     Device::finalize();
 }
@@ -1309,18 +1479,18 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
     std::vector<VkAttachmentDescription> attachments;
     std::vector<VkAttachmentReference> colorRefs;
 
-    for (size_t i = 0; i < key.colorFormats.size(); ++i) {
+    for (size_t i = 0; i < key.colorAttachments.size(); ++i) {
         VkAttachmentDescription att{};
-        att.format = key.colorFormats[i];
+        att.format = key.colorAttachments[i].format;
         att.samples = VK_SAMPLE_COUNT_1_BIT;
-        att.loadOp = (i < key.loadOps.size()) ? key.loadOps[i] : VK_ATTACHMENT_LOAD_OP_CLEAR;
+        att.loadOp = key.colorAttachments[i].loadOp;
         att.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         att.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         att.initialLayout = att.loadOp == VK_ATTACHMENT_LOAD_OP_LOAD
                                 ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
                                 : VK_IMAGE_LAYOUT_UNDEFINED;
-        att.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        att.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         attachments.push_back(att);
 
         VkAttachmentReference ref{};
@@ -1515,18 +1685,26 @@ Result<Ref<PipelineLayout>> VulkanDevice::createPipelineLayout(const PipelineLay
     return Ref<PipelineLayout>(pl);
 }
 
-Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipelineDesc& desc) {
-    // Need a compatible render pass for pipeline creation
+Result<Ref<RenderPass>> VulkanDevice::createRenderPass(const RenderPassLayoutDesc& desc) {
     RenderPassKey rpKey;
     for (auto& fmt : desc.colorFormats) {
-        rpKey.colorFormats.push_back(toVkFormat(fmt));
-        rpKey.loadOps.push_back(VK_ATTACHMENT_LOAD_OP_CLEAR);
+        RenderPassKey::ColorAttachment attachment = {};
+        attachment.format = toVkFormat(fmt);
+        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        rpKey.colorAttachments.push_back(attachment);
     }
-    if (desc.depthStencil.depthTestEnable || desc.depthStencil.depthWriteEnable ||
-        desc.depthStencil.stencilTestEnable) {
+    if (desc.depthStencilFormat != TextureFormat::Undefined) {
         rpKey.depthFormat = toVkFormat(desc.depthStencilFormat);
     }
-    VkRenderPass renderPass = getOrCreateRenderPass(rpKey);
+    VkRenderPass vkRenderPass = getOrCreateRenderPass(rpKey);
+
+    auto rp = Ref<VulkanRenderPass>::adopt(new VulkanRenderPass(vkRenderPass, desc));
+    return Ref<RenderPass>(rp);
+}
+
+Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipelineDesc& desc) {
+    auto* vulkanRP = static_cast<vulkan::VulkanRenderPass*>(desc.renderPass);
+    VkRenderPass renderPass = vulkanRP->handle();
 
     auto rp = Ref<VulkanRenderPipeline>::adopt(new VulkanRenderPipeline());
     if (!rp->init(this, renderPass, desc)) {
@@ -1573,6 +1751,118 @@ Result<std::vector<uint8_t>> VulkanDevice::readbackTexture(TextureView* view) {
 
 void VulkanDevice::waitIdle() {
     if (m_device) vkDeviceWaitIdle(m_device);
+}
+
+// Vulkan Tutorial(https://vulkan-tutorial.com/Compute_Shader) では
+// VK_QUEUE_GRAPHICS_BIT と VK_QUEUE_COMPUTE_BIT が両方サポートされている QueueFamily を使っており、
+// Vulkan 自体も そのような QueueFamily が最低1つあることをサポートしているとのこと。
+//
+// ただここでは、 Graphics と Compute、 そして Transfer を別々にサポートしている QueueFamily を優先して探すようにする
+// …というのを昔作ったので、そのまま移植してみている。
+// 現状、実際に使っているのは Graphics Queue だけなので注意。
+//
+VoidResult VulkanDevice::lookupQueueFamilies(
+    VkPhysicalDevice physicalDevice,
+    uint32_t* outGraphicsQueuFamily) {
+    auto graphicsFamilyIndex = UINT32_MAX;
+    auto computeFamilyIndex = UINT32_MAX;
+    auto transferFamilyIndex = UINT32_MAX;
+    auto graphicsQueueIndex = UINT32_MAX;
+    auto computeQueueIndex = UINT32_MAX;
+    auto transferQueueindex = UINT32_MAX;
+    std::vector<VkQueueFamilyProperties> queueFamilyProps;
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::vector<float> queuePriorities;
+    {
+        uint32_t propCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propCount, nullptr);
+        queueFamilyProps.resize(propCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propCount, queueFamilyProps.data());
+        queueCreateInfos.resize(propCount);
+
+        // Family[0]: Graphics|Compute|Transfer, QueueCount=16
+        // 
+
+        int queueIndex = 0;
+        int totalQueueCount = 0;
+        float queuePriority = 1.0f;
+        for (int i = 0; i < propCount; ++i) {
+            queueCreateInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfos[i].pNext = nullptr;
+            queueCreateInfos[i].flags = 0;
+            queueCreateInfos[i].queueCount = queueFamilyProps[i].queueCount;
+            queueCreateInfos[i].queueFamilyIndex = i;
+
+            totalQueueCount += queueFamilyProps[i].queueCount;
+
+            // Graphics queue
+            //if (m_queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            if ((queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) &&
+                (queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+                if (graphicsFamilyIndex == UINT32_MAX) {
+                    graphicsFamilyIndex = i;
+                    graphicsQueueIndex = queueIndex;
+                    queueIndex++;
+                }
+            }
+
+            // Compute queue
+            if ((queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT) &&
+                ((queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
+                if (computeFamilyIndex == UINT32_MAX) {
+                    computeFamilyIndex = i;
+                    computeQueueIndex = queueIndex;
+                    queueIndex++;
+                }
+            }
+
+            // Transfer queue
+            if ((queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) &&
+                ((queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
+                if (transferFamilyIndex == UINT32_MAX) {
+                    transferFamilyIndex = i;
+                    transferQueueindex = queueIndex;
+                    queueIndex++;
+                }
+            }
+        }
+
+        // 1つも見つからなければ仕方ないので共用のものを探す.
+        if (computeFamilyIndex == UINT32_MAX) {
+            for (auto i = 0u; i < propCount; ++i) {
+                if (queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
+                    if (computeFamilyIndex == UINT32_MAX) {
+                        computeFamilyIndex = i;
+                        computeQueueIndex = queueIndex;
+                        queueIndex++;
+                    }
+                }
+            }
+        }
+
+        // 1つも見つからなければ仕方ないので共用のものを探す.
+        if (transferFamilyIndex == UINT32_MAX) {
+            for (auto i = 0u; i < propCount; ++i) {
+                if (queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) {
+                    if (transferFamilyIndex == UINT32_MAX) {
+                        transferFamilyIndex = i;
+                        transferQueueindex = queueIndex;
+                        queueIndex++;
+                    }
+                }
+            }
+        }
+
+        uint32_t offset = 0u;
+        queuePriorities.resize(totalQueueCount);
+        for (uint32_t i = 0u; i < propCount; ++i) {
+            queueCreateInfos[i].pQueuePriorities = &queuePriorities[offset];
+            offset += queueCreateInfos[i].queueCount;
+        }
+    }
+
+    *outGraphicsQueuFamily = graphicsFamilyIndex;
+    return LN_MAKE_SUCCESS();
 }
 
 } // namespace ln::rhi::vulkan

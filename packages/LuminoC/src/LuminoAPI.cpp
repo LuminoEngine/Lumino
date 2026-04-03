@@ -274,8 +274,8 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     }
 
     // 2. Submit all recorded GPU commands.
-    // renderer()->endFrame() internally calls m_currentCmd->submit(); do not submit again.
-    ctx->renderer()->endFrame();
+    // Transition the swapchain image to PRESENT_SRC_KHR before submitting.
+    ctx->renderer()->endFrame(ctx->m_currentColorTarget);
     ctx->m_currentCmd = nullptr;
 
     // 3. Present + update FPS stats.
@@ -378,6 +378,22 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
 
 LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
     return LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, outHandle);
+}
+
+LNResult LNMaterial_CreateFromCompiledShader(LNHandle graphicsContext, const void* data, uint32_t size, LNHandle* outHandle) {
+    if (!data || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto matResult = ln::MaterialFactory::createFromCompiledShader(ctx, data, static_cast<size_t>(size));
+    if (!matResult) return LN_ERROR_UNKNOWN;
+    *outHandle = wrapObjectFromCreate(matResult->get());
+    return LN_OK;
 }
 
 LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float a) {

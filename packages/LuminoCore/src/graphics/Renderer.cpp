@@ -100,6 +100,16 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     renderer->m_depthFormat   = depthFormat;
     renderer->m_objectUBOSize = static_cast<u64>(objectCBSize);
 
+    // Create persistent RenderPass for pipeline creation
+    {
+        rhi::RenderPassLayoutDesc rpLayoutDesc;
+        rpLayoutDesc.colorFormats = {colorFormat};
+        rpLayoutDesc.depthStencilFormat = depthFormat;
+        auto rpResult = device->createRenderPass(rpLayoutDesc);
+        if (!rpResult) return tl::make_unexpected(rpResult.error());
+        renderer->m_renderPass = std::move(*rpResult);
+    }
+
     // ---- Set 0: View BindGroupLayout (camera, dynamic UBO) ----
     {
         auto desc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
@@ -195,7 +205,10 @@ void Renderer::beginFrame() {
     m_drawCallCount = 0;
 }
 
-void Renderer::endFrame() {
+void Renderer::endFrame(rhi::TextureView* presentTarget) {
+    if (presentTarget) {
+        m_currentCmd->transitionToPresent(presentTarget);
+    }
     m_currentCmd->submit();
     m_currentCmd = nullptr;
 }
@@ -398,9 +411,7 @@ Result<void> Renderer::drawSubmesh(
     }
     key.pipelineLayout      = m_pipelineLayout.get();
     key.topology            = mesh->topology();
-    key.colorFormat         = m_colorFormat;
-    key.depthStencilFormat  = m_depthFormat;
-    key.sampleCount         = 1;
+    key.renderPass          = m_renderPass.get();
 
     auto pipelineResult = pipelineCache->getOrCreate(key);
     if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
@@ -488,9 +499,7 @@ Result<void> Renderer::drawStencilMaskMesh(
         key.stencilWriteMask = 0xFF;
         key.pipelineLayout   = m_pipelineLayout.get();
         key.topology         = mesh->topology();
-        key.colorFormat      = m_colorFormat;
-        key.depthStencilFormat = m_depthFormat;
-        key.sampleCount      = 1;
+        key.renderPass       = m_renderPass.get();
 
         auto pipelineResult = pipelineCache->getOrCreate(key);
         if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());

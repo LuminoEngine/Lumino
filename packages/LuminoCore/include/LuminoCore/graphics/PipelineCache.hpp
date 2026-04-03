@@ -33,9 +33,7 @@ struct PipelineCacheKey {
     // 描画コンテキスト由来
     rhi::PipelineLayout* pipelineLayout = nullptr;
     rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList;
-    rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8Unorm;
-    rhi::TextureFormat depthStencilFormat = rhi::TextureFormat::Depth32Float;
-    u32 sampleCount = 1;
+    rhi::RenderPass* renderPass = nullptr;
 
     bool operator==(const PipelineCacheKey& o) const;
 };

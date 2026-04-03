@@ -106,7 +106,11 @@ int main() {
         PipelineLayoutDesc plDesc;
         auto pipelineLayout = *device->createPipelineLayout(plDesc);
 
-        // 5. レンダーパイプライン
+        // 5. レンダーパス & レンダーパイプライン
+        RenderPassLayoutDesc rpLayoutDesc;
+        rpLayoutDesc.colorFormats = {ctx->colorFormat()};
+        auto renderPass = *device->createRenderPass(rpLayoutDesc);
+
         RenderPipelineDesc rpDesc;
         rpDesc.layout = pipelineLayout.get();
         rpDesc.vertexShader = vertShader.get();
@@ -115,7 +119,7 @@ int main() {
         rpDesc.fragmentEntry = fragEP->name;
         rpDesc.topology = PrimitiveTopology::TriangleList;
         rpDesc.cullMode = CullMode::None;
-        rpDesc.colorFormats = {ctx->colorFormat()};
+        rpDesc.renderPass = renderPass.get();
 
         VertexBufferLayout vbl;
         vbl.stride = sizeof(::Vertex);
@@ -149,6 +153,7 @@ int main() {
             pass->draw(3);
             pass->end();
 
+            cmd->transitionToPresent(frame.colorTarget);
             cmd->submit();
             ctx->endFrame();
 

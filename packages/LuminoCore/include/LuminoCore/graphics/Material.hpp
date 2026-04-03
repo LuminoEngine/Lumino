@@ -152,6 +152,14 @@ public:
     /** Create a StencilMask material from a GraphicsContext. */
     static Result<Ref<Material>> createStencilMask(GraphicsContext* ctx);
 
+    /** Create a material from a compiled shader binary (.lcsh). */
+    static Result<Ref<Material>> createFromCompiledShader(
+        GraphicsModule* module, const void* data, size_t size);
+
+    /** Create a material from a compiled shader binary (.lcsh) via GraphicsContext. */
+    static Result<Ref<Material>> createFromCompiledShader(
+        GraphicsContext* ctx, const void* data, size_t size);
+
 private:
     static Result<Ref<Material>> createMaterialFromBuiltin(
         GraphicsModule* module, BuiltinShader shader, MaterialType type);

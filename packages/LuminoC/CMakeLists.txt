@@ -40,7 +40,5 @@ endif()
 # Examples
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_EXAMPLES)
-    add_subdirectory(examples/ClearScreen)
-    add_subdirectory(examples/HelloTexture)
-    add_subdirectory(examples/BatchSprite)
+    add_subdirectory(examples)
 endif()

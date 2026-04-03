@@ -49,8 +49,8 @@ public:
     rhi::TextureFormat      colorFormat()           const { return m_renderer->colorFormat(); }
     rhi::TextureFormat      depthFormat()           const { return m_renderer->depthFormat(); }
 
-    void beginFrame()                                                                                   { m_renderer->beginFrame(); }
-    void endFrame()                                                                                     { m_renderer->endFrame(); }
+    void beginFrame() { m_renderer->beginFrame(); }
+    void endFrame() { m_renderer->endFrame(); }
     void beginRenderPass(rhi::TextureView* c, rhi::TextureView* d,
                          const Camera& camera, const Color& clear = Color{0,0,0,1})                    { m_renderer->beginRenderPass(c, d, camera, clear); }
     void beginRenderPass(rhi::TextureView* c, rhi::TextureView* d,

@@ -1,3 +1,3 @@
-project(LuminoC-ClearScreen)
+project(LuminoC-CustomShader)
 add_executable(${PROJECT_NAME} Main.cpp)
 setup_sample_configurations(${PROJECT_NAME})

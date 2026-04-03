@@ -51,9 +51,7 @@ bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
     if (colorWriteEnabled != o.colorWriteEnabled) return false;
     if (pipelineLayout    != o.pipelineLayout)    return false;
     if (topology          != o.topology)          return false;
-    if (colorFormat       != o.colorFormat)       return false;
-    if (depthStencilFormat != o.depthStencilFormat) return false;
-    if (sampleCount       != o.sampleCount)       return false;
+    if (renderPass        != o.renderPass)        return false;
     return true;
 }
 
@@ -92,9 +90,7 @@ size_t PipelineCacheKeyHash::operator()(const PipelineCacheKey& key) const {
     hash_combine(seed, key.colorWriteEnabled);
     hash_combine(seed, reinterpret_cast<uintptr_t>(key.pipelineLayout));
     hash_combine(seed, static_cast<uint32_t>(key.topology));
-    hash_combine(seed, static_cast<uint32_t>(key.colorFormat));
-    hash_combine(seed, static_cast<uint32_t>(key.depthStencilFormat));
-    hash_combine(seed, key.sampleCount);
+    hash_combine(seed, reinterpret_cast<uintptr_t>(key.renderPass));
     return seed;
 }
 
@@ -124,8 +120,7 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     rpDesc.vertexBuffers   = {standardVertexLayout()};
     rpDesc.topology        = key.topology;
     rpDesc.cullMode        = key.cullMode;
-    rpDesc.colorFormats    = {key.colorFormat};
-    rpDesc.depthStencilFormat              = key.depthStencilFormat;
+    rpDesc.renderPass      = key.renderPass;
     rpDesc.depthStencil.depthTestEnable    = key.depthTestEnabled;
     rpDesc.depthStencil.depthWriteEnable   = key.depthWriteEnabled;
     rpDesc.depthStencil.stencilTestEnable  = key.stencilTestEnabled;
@@ -133,7 +128,6 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     rpDesc.depthStencil.stencilBack        = key.stencilBack;
     rpDesc.depthStencil.stencilReadMask    = key.stencilReadMask;
     rpDesc.depthStencil.stencilWriteMask   = key.stencilWriteMask;
-    rpDesc.sampleCount     = key.sampleCount;
 
     if (key.blendEnabled) {
         rhi::BlendState bs = key.blendState;
@@ -153,6 +147,7 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
         trackObject(key.vertexShader);
         trackObject(key.fragmentShader);
         trackObject(key.pipelineLayout);
+        trackObject(key.renderPass);
     }
     return it2->second.get();
 }
@@ -179,7 +174,7 @@ void PipelineCache::trackObject(rhi::RHIObject* obj) {
 void PipelineCache::evictByObject(rhi::RHIObject* obj) {
     for (auto it = m_cache.begin(); it != m_cache.end(); ) {
         const auto& k = it->first;
-        if (k.vertexShader == obj || k.fragmentShader == obj || k.pipelineLayout == obj) {
+        if (k.vertexShader == obj || k.fragmentShader == obj || k.pipelineLayout == obj || k.renderPass == obj) {
             it = m_cache.erase(it);
         } else {
             ++it;

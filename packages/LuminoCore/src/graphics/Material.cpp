@@ -1,6 +1,9 @@
 #include <LuminoCore/graphics/Material.hpp>
 #include <LuminoCore/graphics/GraphicsContext.hpp>
 #include <LuminoCore/graphics/GraphicsModule.hpp>
+#include <LuminoShader/UnifiedShader2.hpp>
+#include <LuminoShader/UnifiedShaderSerializer2.hpp>
+#include "ShaderUtils.hpp"
 #include <cstring>
 
 namespace ln {
@@ -112,6 +115,86 @@ Result<Ref<Material>> MaterialFactory::createStencilMask(GraphicsModule* module)
 
 Result<Ref<Material>> MaterialFactory::createStencilMask(GraphicsContext* ctx) {
     return createStencilMask(ctx->module());
+}
+
+Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
+    GraphicsModule* module, const void* data, size_t size) {
+    using namespace detail;
+
+    // Deserialize the unified shader from the binary blob.
+    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
+    if (!loadResult) return tl::make_unexpected(loadResult.error());
+    auto unifiedShader = std::move(*loadResult);
+
+    // Find the first pass for SPIR-V target.
+    auto& globalPasses = unifiedShader->globalShaderPasses();
+    if (globalPasses.empty()) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No shader passes found"});
+    }
+
+    auto* globalPass = globalPasses[0].get();
+    auto targetPassId = globalPass->getTargetShaderPassId(shader::ShaderTarget_SPIRV);
+    auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
+    if (!targetPass) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No SPIRV target pass"});
+    }
+
+    auto* vertEP = unifiedShader->targetEntryPoint(targetPass->vertEntryPointId);
+    auto* fragEP = unifiedShader->targetEntryPoint(targetPass->fragEntryPointId);
+    if (!vertEP || !fragEP) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Missing entry points"});
+    }
+
+    auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
+    auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
+
+    // Create shader modules
+    auto* device = module->device();
+
+    rhi::ShaderModuleDesc vsDesc;
+    vsDesc.spirvCode = reinterpret_cast<const u32*>(vertBlob->data.data());
+    vsDesc.spirvSizeBytes = vertBlob->data.size();
+    auto vsResult = device->createShaderModule(vsDesc);
+    if (!vsResult) return tl::make_unexpected(vsResult.error());
+
+    rhi::ShaderModuleDesc fsDesc;
+    fsDesc.spirvCode = reinterpret_cast<const u32*>(fragBlob->data.data());
+    fsDesc.spirvSizeBytes = fragBlob->data.size();
+    auto fsResult = device->createShaderModule(fsDesc);
+    if (!fsResult) return tl::make_unexpected(fsResult.error());
+
+    // Build material BindGroupLayout from "materialData" ParameterBlock reflection
+    auto* materialBlock = findParameterBlock(unifiedShader.get(), "materialData");
+    if (!materialBlock) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No 'materialData' ParameterBlock found"});
+    }
+
+    auto bglDesc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
+    auto bglResult = device->createBindGroupLayout(bglDesc);
+    if (!bglResult) return tl::make_unexpected(bglResult.error());
+
+    // Get material CB size from reflection
+    int16_t cbSize = findConstantBufferSize(*materialBlock);
+    if (cbSize <= 0) {
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No constant buffer found in 'materialData'"});
+    }
+
+    // Create the Material
+    auto mat = Ref<Material>::adopt(new Material());
+    mat->m_type = MaterialType::Unlit;
+    mat->m_vertShader = std::move(*vsResult);
+    mat->m_fragShader = std::move(*fsResult);
+    mat->m_vertEntry = vertEP->name;
+    mat->m_fragEntry = fragEP->name;
+    mat->m_materialBindGroupLayout = std::move(*bglResult);
+    mat->m_materialParamBufferSize = static_cast<u64>(cbSize);
+    mat->m_baseTexture = module->whiteTexture();
+    return mat;
+}
+
+Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
+    GraphicsContext* ctx, const void* data, size_t size) {
+    return createFromCompiledShader(ctx->module(), data, size);
 }
 
 } // namespace ln

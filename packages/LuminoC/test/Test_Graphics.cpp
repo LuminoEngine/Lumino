@@ -1,6 +1,8 @@
 ﻿#include "pch.hpp"
 #include <LuminoC/lumino.h>
 #include "VisualTestHelper.hpp"
+#include <vector>
+#include <cstdio>
 
 class Test_Graphics : public ::testing::Test {
 protected:
@@ -190,4 +192,69 @@ TEST_F(Test_Graphics, StencilMask1) {
     LNObject_Release(maskMat);
     LNObject_Release(maskTex); // discard the empty one
     LNObject_Release(spriteTex);
+}
+
+// コンパイル済みシェーダ (.lcsh) からマテリアルを作成し、赤い三角形を描画するテスト。
+TEST_F(Test_Graphics, CustomShaderMaterial) {
+    // Load compiled shader from file
+    const char* shaderPath = TEST_DATA_DIR "/Data/Unlit.lcsh";
+    FILE* fp = fopen(shaderPath, "rb");
+    ASSERT_NE(nullptr, fp) << "Failed to open: " << shaderPath;
+    fseek(fp, 0, SEEK_END);
+    long sz = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    std::vector<unsigned char> shaderData(sz);
+    fread(shaderData.data(), 1, sz, fp);
+    fclose(fp);
+    ASSERT_GT(shaderData.size(), 0u);
+
+    // Create material from compiled shader
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromCompiledShader(
+        graphicsContext, shaderData.data(), (uint32_t)shaderData.size(), &material));
+    ASSERT_EQ(LN_OK, LNMaterial_SetColor(material, 1.0f, 0.0f, 0.0f, 1.0f)); // Red
+
+    // Triangle mesh
+    LNVertex vertices[3] = {
+        /* posX   posY   posZ   normX normY normZ  u    v    r    g    b    a    tanX tanY tanZ tanW */
+        {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top
+        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-left
+        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-right
+    };
+    uint32_t indices[3] = { 0, 1, 2 };
+    LNSubMesh sub = { 0, 3, 0 };
+
+    LNHandle mesh = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, vertices, 3, indices, 3, &sub, 1, &mesh));
+    ASSERT_EQ(LN_OK, LNMesh_SetMaterial(mesh, 0, material));
+
+    // Camera
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
+        60.0f * 3.14159f / 180.0f, 320.0f / 240.0f, 0.1f, 100.0f));
+    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
+        0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
+
+    // Render one frame
+    LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
+    LNHandle renderer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer));
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity));
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    // Capture and verify
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    EXPECT_EQ(320, w);
+    EXPECT_EQ(240, h);
+
+    // Cleanup
+    LNObject_Release(camera);
+    LNObject_Release(mesh);
+    LNObject_Release(material);
 }

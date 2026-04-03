@@ -66,7 +66,7 @@ Result<void> ForwardRenderer::renderFrame(
     }
 
     m_renderer->endRenderPass();
-    m_renderer->endFrame();
+    m_renderer->endFrame(colorTarget);
 
     return {};
 }
