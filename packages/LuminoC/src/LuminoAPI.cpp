@@ -28,6 +28,10 @@ public:
     ln::Camera camera;
 };
 
+// Per-renderer state: whether the current render pass targets a render target texture.
+// If non-null, LNRenderer_EndRenderPass will call endRenderPassWithTransition.
+static bool s_renderingToRenderTarget = false;
+
 /**
  * Object が未登録の場合、登録して LNHandle を返します。
  * 登録されている場合は、既存の LNHandle を返します。
@@ -683,7 +687,12 @@ LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
     auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
     if (!r) return LN_ERROR_INVALID_HANDLE;
 
-    r->endRenderPass();
+    if (s_renderingToRenderTarget) {
+        r->endRenderPassWithTransition();
+        s_renderingToRenderTarget = false;
+    } else {
+        r->endRenderPass();
+    }
     return LN_OK;
 }
 
@@ -779,5 +788,70 @@ LNResult LNRenderer_PopStencilMask(LNHandle renderer) {
     auto result = ren->popStencilMask();
     if (!result) return LN_ERROR_UNKNOWN;
 
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNTexture2D_CreateRenderTarget
+//------------------------------------------------------------------------------
+
+LNResult LNTexture2D_CreateRenderTarget(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto rtResult = ln::Texture2D::createRenderTarget(ctx->device(), width, height);
+    if (!rtResult) return LN_ERROR_UNKNOWN;
+
+    *outHandle = wrapObjectFromCreate(rtResult->get());
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNRenderer_BeginRenderPassToTexture
+//------------------------------------------------------------------------------
+
+LNResult LNRenderer_BeginRenderPassToTexture(
+    LNHandle renderer,
+    LNHandle renderTargetTexture,
+    LNHandle camera,
+    float r, float g, float b, float a) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* tex = instance->objectRegistry()->resolve<ln::Texture2D>(renderTargetTexture);
+    if (!tex || !tex->isRenderTarget()) return LN_ERROR_INVALID_HANDLE;
+
+    auto* colorView = tex->rhiTextureView();
+    auto* depthView = tex->depthView();
+    if (!colorView) return LN_ERROR_INVALID_HANDLE;
+
+    if (camera != LN_NULL_HANDLE) {
+        auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+        if (!camObj) return LN_ERROR_INVALID_HANDLE;
+        ren->beginRenderPass(
+            colorView, depthView,
+            camObj->camera,
+            ln::Color{r, g, b, a});
+    } else {
+        ren->beginRenderPass(
+            colorView, depthView,
+            ln::Color{r, g, b, a});
+    }
+
+    s_renderingToRenderTarget = true;
     return LN_OK;
 }

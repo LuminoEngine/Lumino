@@ -124,6 +124,13 @@ public:
     void endRenderPass();
 
     /**
+     * End the current render pass and transition the color target
+     * from COLOR_ATTACHMENT_OPTIMAL to SHADER_READ_ONLY_OPTIMAL.
+     * Use this when the render target will be sampled as a texture afterwards.
+     */
+    void endRenderPassWithTransition();
+
+    /**
      * Begin an overlay render pass without clearing the color target (LoadOp::Load).
      * Intended for HUD / debug overlays drawn on top of an already-rendered scene.
      * No camera is bound; positions should be in NDC.
@@ -230,6 +237,7 @@ private:
     // Per-frame command encoding state (valid between beginFrame / endFrame)
     rhi::CommandBuffer*     m_currentCmd  = nullptr;
     rhi::RenderPassEncoder* m_currentPass = nullptr;
+    rhi::TextureView*       m_currentColorTarget = nullptr;
 
     // Deferred per-pass bind groups (set via setPassBindGroup, flushed after setPipeline)
     static constexpr u32 kMaxBindGroupSets = 4;
@@ -266,6 +274,7 @@ private:
     /** Cached GPU resources for a single Material, double-buffered per in-flight frame. */
     struct CachedMaterialBind {
         uint64_t paramVersion = 0;
+        rhi::Texture* lastBaseTexture = nullptr;
         Ref<rhi::TextureView> textureView;
         Ref<rhi::Sampler>     sampler;
         std::array<Ref<rhi::Buffer>,    kMaxFramesInFlight> paramBuffers;

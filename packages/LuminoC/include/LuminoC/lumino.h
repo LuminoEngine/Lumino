@@ -224,6 +224,23 @@ extern LUMINO_API LNResult LNTexture2D_Create(
 );
 
 /**
+ * レンダーターゲットテクスチャを作成します。
+ * 内部で BGRA8Unorm カラーテクスチャと Depth24Stencil8 深度テクスチャを生成します。
+ * 作成されたテクスチャは LNRenderer_BeginRenderPassToTexture で描画先として使用でき、
+ * 描画後は LNMaterial_SetMainTexture でマテリアルに設定してサンプリングできます。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  width           幅 (ピクセル)
+ * @param[in]  height          高さ (ピクセル)
+ * @param[out] outHandle       作成されたテクスチャのハンドル
+ */
+extern LUMINO_API LNResult LNTexture2D_CreateRenderTarget(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle
+);
+
+/**
  * 画像ファイルから 2D テクスチャを読み込みます (PNG, JPG, BMP, TGA 等)。
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  filePath        画像ファイルパス (UTF-8)
@@ -464,6 +481,23 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
 extern LUMINO_API LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer,
     LNHandle graphicsContext,
+    LNHandle camera,
+    float r, float g, float b, float a
+);
+
+/**
+ * レンダーターゲットテクスチャへのレンダーパスを開始します。
+ * LNTexture2D_CreateRenderTarget で作成したテクスチャを描画先として使用します。
+ * 対応する LNRenderer_EndRenderPass 呼び出し時に、テクスチャは自動的に
+ * シェーダ読み取り可能なレイアウトに遷移されます。
+ * @param[in] renderer           Renderer のハンドル
+ * @param[in] renderTargetTexture LNTexture2D_CreateRenderTarget で作成したテクスチャのハンドル
+ * @param[in] camera             カメラのハンドル (LN_NULL_HANDLE でカメラなし)
+ * @param[in] r,g,b,a            クリアカラー
+ */
+extern LUMINO_API LNResult LNRenderer_BeginRenderPassToTexture(
+    LNHandle renderer,
+    LNHandle renderTargetTexture,
     LNHandle camera,
     float r, float g, float b, float a
 );

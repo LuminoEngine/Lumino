@@ -272,6 +272,7 @@ public:
     VoidResult begin();
     RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
     void transitionToPresent(TextureView* colorTarget) override;
+    void transitionToShaderRead(TextureView* colorTarget) override;
     void submit() override;
 
 protected:

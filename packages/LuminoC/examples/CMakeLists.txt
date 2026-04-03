@@ -34,4 +34,5 @@ add_subdirectory(ClearScreen)
 add_subdirectory(HelloTexture)
 add_subdirectory(BatchSprite)
 add_subdirectory(CustomShader)
+add_subdirectory(RenderTargets)
 

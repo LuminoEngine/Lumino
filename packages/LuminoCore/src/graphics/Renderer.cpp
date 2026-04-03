@@ -261,6 +261,9 @@ void Renderer::beginRenderPass(
 
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
 
+    // Track the current color target for endRenderPassWithTransition.
+    m_currentColorTarget = colorTarget;
+
     // Clear any pass-scoped bind group state from the previous pass.
     for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
         m_passBindGroups[i]                  = nullptr;
@@ -273,6 +276,17 @@ void Renderer::beginRenderPass(
 void Renderer::endRenderPass() {
     m_currentPass->end();
     m_currentPass = nullptr;
+    m_currentColorTarget = nullptr;
+}
+
+void Renderer::endRenderPassWithTransition() {
+    auto* colorTarget = m_currentColorTarget;
+    m_currentPass->end();
+    m_currentPass = nullptr;
+    m_currentColorTarget = nullptr;
+    if (colorTarget) {
+        m_currentCmd->transitionToShaderRead(colorTarget);
+    }
 }
 
 void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
@@ -574,10 +588,13 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     }
 
     // Create texture view if missing or texture changed
-    if (mat->baseTexture() && !cache.textureView) {
+    if (mat->baseTexture() && (!cache.textureView || cache.lastBaseTexture != mat->baseTexture())) {
         auto tvResult = device->createTextureView(mat->baseTexture());
         if (!tvResult) return tl::make_unexpected(tvResult.error());
         cache.textureView = std::move(*tvResult);
+        cache.lastBaseTexture = mat->baseTexture();
+        // Texture view changed, all bind groups must be recreated
+        for (auto& d : cache.dirty) d = true;
     }
 
     // Create sampler if missing
