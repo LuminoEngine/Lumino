@@ -3,16 +3,16 @@
 #include <LuminoBase.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Object.hpp>
-#include <LuminoCore/runtime/ObjectRegistry.hpp>
-#include <LuminoCore/graphics/Texture2D.hpp>
-#include <LuminoCore/graphics/TextureLoader.hpp>
-#include <LuminoCore/graphics/Material.hpp>
-#include <LuminoCore/graphics/Mesh.hpp>
-#include <LuminoCore/graphics/Renderer.hpp>
-#include <LuminoCore/graphics/Camera.hpp>
-#include <LuminoCore/graphics/Transform.hpp>
-#include <LuminoCore/platform/Window.hpp>
-#include <LuminoCore/graphics/GraphicsContext.hpp>
+#include <LuminoCore/Runtime/ObjectRegistry.hpp>
+#include <LuminoCore/Graphics/Texture2D.hpp>
+#include <LuminoCore/Graphics/TextureLoader.hpp>
+#include <LuminoCore/Graphics/Material.hpp>
+#include <LuminoCore/Graphics/Mesh.hpp>
+#include <LuminoCore/Graphics/Renderer.hpp>
+#include <LuminoCore/Graphics/Camera.hpp>
+#include <LuminoCore/Graphics/Transform.hpp>
+#include <LuminoCore/Platform/Window.hpp>
+#include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoC/lumino.h>
 #include <cstring>
 

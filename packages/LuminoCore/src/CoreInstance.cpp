@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoCore/CoreInstance.hpp>
-#include <LuminoCore/graphics/GraphicsModule.hpp>
-#include <LuminoCore/runtime/ObjectRegistry.hpp>
+#include <LuminoCore/Graphics/GraphicsModule.hpp>
+#include <LuminoCore/Runtime/ObjectRegistry.hpp>
 
 #ifndef LN_NX
     #define GLFW_INCLUDE_NONE

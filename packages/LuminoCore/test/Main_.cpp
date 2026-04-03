@@ -13,9 +13,9 @@ public:
 //------------------------------------------------------------------------------
 // Graphics module tests (CPU-only, no GPU)
 //------------------------------------------------------------------------------
-#include <LuminoCore/graphics/Vertex.hpp>
-#include <LuminoCore/graphics/Transform.hpp>
-#include <LuminoCore/graphics/Camera.hpp>
+#include <LuminoCore/Graphics/Vertex.hpp>
+#include <LuminoCore/Graphics/Transform.hpp>
+#include <LuminoCore/Graphics/Camera.hpp>
 #include <LuminoBase/math/Math.hpp>
 #include <cmath>
 

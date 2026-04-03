@@ -1,4 +1,4 @@
-﻿#include <LuminoCore/runtime/ObjectRegistry.hpp>
+﻿#include <LuminoCore/Runtime/ObjectRegistry.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 
 // テスト用の Object サブクラス

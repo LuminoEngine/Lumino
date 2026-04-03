@@ -10,9 +10,9 @@
  */
 
 #include <LuminoCore/CoreInstance.hpp>
-#include <LuminoCore/platform/Window.hpp>
-#include <LuminoCore/graphics/GraphicsContext.hpp>
-#include <LuminoCore/graphics/rhi/Rhi.hpp>
+#include <LuminoCore/Platform/Window.hpp>
+#include <LuminoCore/Graphics/GraphicsContext.hpp>
+#include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <LuminoShader/ShaderCompiler2.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 

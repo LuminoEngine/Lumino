@@ -22,32 +22,32 @@ file(GLOB LN_LOCAL_SOURCES_core
     include/${PROJECT_NAME}/Object.hpp
     include/${PROJECT_NAME}/ObjectRegistry.hpp
 )
-file(GLOB LN_LOCAL_SOURCES_runtime src/runtime/*.cpp src/runtime/*.hpp include/${PROJECT_NAME}/runtime/*.hpp)
-file(GLOB LN_LOCAL_SOURCES_platform src/platform/*.cpp src/platform/*.hpp include/${PROJECT_NAME}/platform/*.hpp)
-file(GLOB LN_LOCAL_SOURCES_graphics
-    src/graphics/*.cpp
-    src/graphics/*.hpp
-    include/${PROJECT_NAME}/graphics/*.hpp
+file(GLOB LN_LOCAL_SOURCES_Runtime src/Runtime/*.cpp src/Runtime/*.hpp include/${PROJECT_NAME}/Runtime/*.hpp)
+file(GLOB LN_LOCAL_SOURCES_Platform src/Platform/*.cpp src/Platform/*.hpp include/${PROJECT_NAME}/Platform/*.hpp)
+file(GLOB LN_LOCAL_SOURCES_Graphics
+    src/Graphics/*.cpp
+    src/Graphics/*.hpp
+    include/${PROJECT_NAME}/Graphics/*.hpp
 )
-file(GLOB LN_LOCAL_SOURCES_graphics_vulkan
-    src/graphics/rhi/vulkan/*.cpp
-    src/graphics/rhi/vulkan/*.hpp
+file(GLOB LN_LOCAL_SOURCES_Graphics_vulkan
+    src/Graphics/rhi/vulkan/*.cpp
+    src/Graphics/rhi/vulkan/*.hpp
 )
 file(GLOB LN_LOCAL_SOURCES_shaders shaders/*.slang)
 
 source_group("" FILES ${LN_LOCAL_SOURCES_core})
-source_group("runtime" FILES ${LN_LOCAL_SOURCES_runtime})
-source_group("platform" FILES ${LN_LOCAL_SOURCES_platform})
-source_group("graphics" FILES ${LN_LOCAL_SOURCES_graphics})
-source_group("graphics/vulkan" FILES ${LN_LOCAL_SOURCES_graphics_vulkan})
+source_group("Runtime" FILES ${LN_LOCAL_SOURCES_Runtime})
+source_group("Platform" FILES ${LN_LOCAL_SOURCES_Platform})
+source_group("Graphics" FILES ${LN_LOCAL_SOURCES_Graphics})
+source_group("Graphics/vulkan" FILES ${LN_LOCAL_SOURCES_Graphics_vulkan})
 source_group("shaders" FILES ${LN_LOCAL_SOURCES_shaders})
 
 set(LN_LOCAL_SOURCES
     ${LN_LOCAL_SOURCES_core}
-    ${LN_LOCAL_SOURCES_runtime}
-    ${LN_LOCAL_SOURCES_platform}
-    ${LN_LOCAL_SOURCES_graphics}
-    ${LN_LOCAL_SOURCES_graphics_vulkan}
+    ${LN_LOCAL_SOURCES_Runtime}
+    ${LN_LOCAL_SOURCES_Platform}
+    ${LN_LOCAL_SOURCES_Graphics}
+    ${LN_LOCAL_SOURCES_Graphics_vulkan}
     ${LN_LOCAL_SOURCES_shaders}
 )
 

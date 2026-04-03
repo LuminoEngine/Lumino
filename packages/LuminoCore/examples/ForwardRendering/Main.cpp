@@ -9,14 +9,14 @@
  */
 
 #include <LuminoCore/CoreInstance.hpp>
-#include <LuminoCore/platform/Window.hpp>
-#include <LuminoCore/graphics/GraphicsContext.hpp>
-#include <LuminoCore/graphics/ForwardRenderer.hpp>
-#include <LuminoCore/graphics/Camera.hpp>
-#include <LuminoCore/graphics/Mesh.hpp>
-#include <LuminoCore/graphics/Material.hpp>
-#include <LuminoCore/graphics/Vertex.hpp>
-#include <LuminoCore/graphics/Transform.hpp>
+#include <LuminoCore/Platform/Window.hpp>
+#include <LuminoCore/Graphics/GraphicsContext.hpp>
+#include <LuminoCore/Graphics/ForwardRenderer.hpp>
+#include <LuminoCore/Graphics/Camera.hpp>
+#include <LuminoCore/Graphics/Mesh.hpp>
+#include <LuminoCore/Graphics/Material.hpp>
+#include <LuminoCore/Graphics/Vertex.hpp>
+#include <LuminoCore/Graphics/Transform.hpp>
 #include <LuminoBase/math/Math.hpp>
 
 #include <cstdio>
