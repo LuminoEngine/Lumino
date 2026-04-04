@@ -99,6 +99,8 @@ public:
     VkFormat vkFormat() const { return m_format; }
     u32 width() const { return m_width; }
     u32 height() const { return m_height; }
+    bool isSwapchainBackbuffer() const { return m_isSwapchainBackbuffer; }
+    void setIsSwapchainBackbuffer(bool v) { m_isSwapchainBackbuffer = v; }
 
 protected:
     void finalize() override;
@@ -109,6 +111,7 @@ private:
     VkImage m_image = VK_NULL_HANDLE;
     VkFormat m_format = VK_FORMAT_UNDEFINED;
     u32 m_width = 0, m_height = 0;
+    bool m_isSwapchainBackbuffer = false;
 };
 
 // ------ VulkanSampler --------------------------------------------------------------------------------------------------------------
@@ -210,11 +213,11 @@ private:
 class VulkanRenderPass final : public RenderPass {
 public:
     VulkanRenderPass(VkRenderPass handle, const RenderPassLayoutDesc& desc)
-        : m_handle(handle), m_desc(desc) {}
+        : m_vkRenderPass(handle), m_desc(desc) {}
     ~VulkanRenderPass() override = default;
 
     const RenderPassLayoutDesc& layoutDesc() const override { return m_desc; }
-    VkRenderPass handle() const { return m_handle; }
+    VkRenderPass handle() const { return m_vkRenderPass; }
 
     // Called by VulkanCommandBuffer::beginRenderPass to activate encoding
     void beginEncoding(VkCommandBuffer cmd, VkFramebuffer framebuffer,
@@ -235,7 +238,7 @@ public:
     void end() override;
 
 private:
-    VkRenderPass m_handle;
+    VkRenderPass m_vkRenderPass;
     RenderPassLayoutDesc m_desc;
     // Encoding state (valid between beginEncoding and end)
     VkCommandBuffer m_cmd = VK_NULL_HANDLE;

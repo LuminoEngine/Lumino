@@ -12,6 +12,7 @@ struct RenderPassKey {
     struct ColorAttachment {
         VkFormat format;
         VkAttachmentLoadOp loadOp;
+        bool isSwapchainBackbuffer = false;
         bool operator==(const ColorAttachment& other) const;
     };
 

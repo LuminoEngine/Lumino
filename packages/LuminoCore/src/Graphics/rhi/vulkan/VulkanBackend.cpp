@@ -891,7 +891,7 @@ void VulkanRenderPass::beginEncoding(
 
     VkRenderPassBeginInfo rpBegin{};
     rpBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rpBegin.renderPass = m_handle;
+    rpBegin.renderPass = m_vkRenderPass;
     rpBegin.framebuffer = framebuffer;
     rpBegin.renderArea.extent = extent;
     rpBegin.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -971,7 +971,8 @@ void VulkanRenderPass::end() {
 // ------ RenderPass Cache helpers ----------------------------------------------------------------------------------------
 
 bool RenderPassKey::ColorAttachment::operator==(const ColorAttachment& other) const {
-    return format == other.format && loadOp == other.loadOp;
+    return format == other.format && loadOp == other.loadOp
+        && isSwapchainBackbuffer == other.isSwapchainBackbuffer;
 }
 
 bool RenderPassKey::operator==(const RenderPassKey& other) const {
@@ -984,6 +985,7 @@ size_t RenderPassKeyHash::operator()(const RenderPassKey& key) const {
     for (const auto& a : key.colorAttachments) {
         h ^= std::hash<int>()(a.format) + 0x9e3779b9 + (h << 6) + (h >> 2);
         h ^= std::hash<int>()(a.loadOp) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        h ^= std::hash<bool>()(a.isSwapchainBackbuffer) + 0x9e3779b9 + (h << 6) + (h >> 2);
     }
     h ^= std::hash<int>()(key.depthFormat) + 0x9e3779b9 + (h << 6) + (h >> 2);
     h ^= std::hash<int>()(key.stencilLoadOp) + 0x9e3779b9 + (h << 6) + (h >> 2);
@@ -1115,6 +1117,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
                 m_extent.height)) {
             return LN_MAKE_ERROR("Failed to create swap chain image view.");
         }
+        view->setIsSwapchainBackbuffer(true);
         m_views[i] = view;
     }
 
@@ -1342,6 +1345,7 @@ RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
         attachment.loadOp = ca.loadOp == LoadOp::Clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
             : ca.loadOp == LoadOp::Load                ? VK_ATTACHMENT_LOAD_OP_LOAD
                                                        : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachment.isSwapchainBackbuffer = view->isSwapchainBackbuffer();
         rpKey.colorAttachments.push_back(attachment);
 
         if (fbWidth == 0) {

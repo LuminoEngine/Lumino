@@ -211,10 +211,20 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
         att.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         att.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        att.initialLayout = att.loadOp == VK_ATTACHMENT_LOAD_OP_LOAD
-                                ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                                : VK_IMAGE_LAYOUT_UNDEFINED;
-        att.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        if (key.colorAttachments[i].isSwapchainBackbuffer) {
+            // NOTE: スワップチェーンのバックバッファは present 前後どちらも PRESENT_SRC_KHR とする。
+            //   初期化時に PRESENT_SRC_KHR へ遷移済みなので initialLayout も PRESENT_SRC_KHR を指定する。
+            //   ※ Vulkan Tutorial ではシングルパスでフレーム開始時にクリアするため UNDEFINED を指定しているが、
+            //   Lumino ではマルチパスでフレーム開始時にクリアしないこともあるため、適切なレイアウトを指定する。
+            //   see: [ VUID-VkPresentInfoKHR-pImageIndices-01430 ]
+            att.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            att.finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        } else {
+            att.initialLayout = att.loadOp == VK_ATTACHMENT_LOAD_OP_LOAD
+                                    ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                                    : VK_IMAGE_LAYOUT_UNDEFINED;
+            att.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        }
         attachments.push_back(att);
 
         VkAttachmentReference ref{};
