@@ -190,8 +190,6 @@ private:
 
     rhi::TextureFormat m_colorFormat = {};
     rhi::TextureFormat m_depthFormat = {};
-    Ref<rhi::RenderPass> m_renderPass;
-
     // Reference PipelineLayout (from a builtin ShaderPass, used for dynamic UBO allocators)
     rhi::PipelineLayout* m_referencePipelineLayout = nullptr;
 
@@ -216,7 +214,7 @@ private:
 
     // Per-frame command encoding state (valid between beginFrame / endFrame)
     rhi::CommandBuffer*     m_currentCmd  = nullptr;
-    rhi::RenderPassEncoder* m_currentPass = nullptr;
+    rhi::RenderPass* m_currentPass = nullptr;
     rhi::TextureView*       m_currentColorTarget = nullptr;
 
     // Deferred per-pass bind groups (set via setPassBindGroup, flushed after setPipeline)
@@ -226,7 +224,7 @@ private:
     u32             m_passBindGroupDynamicOffsetCounts[kMaxBindGroupSets] = {};
     bool            m_passBindGroupDirty[kMaxBindGroupSets] = {};
 
-    // Flush all dirty pass BindGroups to the current RenderPassEncoder.
+    // Flush all dirty pass BindGroups to the current RenderPass.
     // Called inside drawSubmesh after setPipeline.
     void flushPassBindGroups();
 

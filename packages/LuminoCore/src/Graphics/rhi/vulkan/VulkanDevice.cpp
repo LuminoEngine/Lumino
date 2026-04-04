@@ -392,23 +392,6 @@ Result<Ref<PipelineLayout>> VulkanDevice::createPipelineLayout(const PipelineLay
     return Ref<PipelineLayout>(pl);
 }
 
-Result<Ref<RenderPass>> VulkanDevice::createRenderPass(const RenderPassLayoutDesc& desc) {
-    RenderPassKey rpKey;
-    for (auto& fmt : desc.colorFormats) {
-        RenderPassKey::ColorAttachment attachment = {};
-        attachment.format = toVkFormat(fmt);
-        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        rpKey.colorAttachments.push_back(attachment);
-    }
-    if (desc.depthStencilFormat != TextureFormat::Undefined) {
-        rpKey.depthFormat = toVkFormat(desc.depthStencilFormat);
-    }
-    VkRenderPass vkRenderPass = getOrCreateRenderPass(rpKey);
-
-    auto rp = Ref<VulkanRenderPass>::adopt(new VulkanRenderPass(vkRenderPass, desc));
-    return Ref<RenderPass>(rp);
-}
-
 Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipelineDesc& desc) {
     auto* vulkanRP = static_cast<vulkan::VulkanRenderPass*>(desc.renderPass);
     VkRenderPass renderPass = vulkanRP->handle();

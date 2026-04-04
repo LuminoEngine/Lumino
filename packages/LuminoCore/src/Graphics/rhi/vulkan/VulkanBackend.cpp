@@ -35,6 +35,23 @@ VkFormat toVkFormat(TextureFormat fmt) {
     return VK_FORMAT_R8G8B8A8_UNORM;
 }
 
+TextureFormat fromVkFormat(VkFormat fmt) {
+    switch (fmt) {
+        case VK_FORMAT_UNDEFINED:              return TextureFormat::Undefined;
+        case VK_FORMAT_B8G8R8A8_UNORM:         return TextureFormat::BGRA8Unorm;
+        case VK_FORMAT_B8G8R8A8_SRGB:          return TextureFormat::BGRA8UnormSrgb;
+        case VK_FORMAT_R8G8B8A8_UNORM:         return TextureFormat::RGBA8Unorm;
+        case VK_FORMAT_R8G8B8A8_SRGB:          return TextureFormat::RGBA8UnormSrgb;
+        case VK_FORMAT_D24_UNORM_S8_UINT:      return TextureFormat::Depth24Stencil8;
+        case VK_FORMAT_D32_SFLOAT:             return TextureFormat::Depth32Float;
+        case VK_FORMAT_R8_UNORM:               return TextureFormat::R8Unorm;
+        case VK_FORMAT_R8G8_UNORM:             return TextureFormat::RG8Unorm;
+        case VK_FORMAT_R16G16B16A16_SFLOAT:    return TextureFormat::RGBA16Float;
+        case VK_FORMAT_R32G32B32A32_SFLOAT:    return TextureFormat::RGBA32Float;
+        default:                               return TextureFormat::Undefined;
+    }
+}
+
 VkFormat toVkVertexFormat(VertexFormat fmt) {
     switch (fmt) {
         case VertexFormat::Float32x2:  return VK_FORMAT_R32G32_SFLOAT;
@@ -852,13 +869,14 @@ void VulkanRenderPipeline::finalize() {
     RenderPipeline::finalize();
 }
 
-// ------ VulkanRenderPassEncoder ------------------------------------------------------------------------------------------
+// ------ VulkanRenderPass encoding methods ---------------------------------------------------------------------------------
 
-VulkanRenderPassEncoder::VulkanRenderPassEncoder(
-    VkCommandBuffer cmd, VkRenderPass renderPass,
-    VkFramebuffer framebuffer, VkExtent2D extent,
-    const RenderPassDesc& desc)
-    : m_cmd(cmd) {
+void VulkanRenderPass::beginEncoding(
+    VkCommandBuffer cmd, VkFramebuffer framebuffer,
+    VkExtent2D extent, const RenderPassDesc& desc) {
+    m_cmd = cmd;
+    m_currentPipelineLayout = VK_NULL_HANDLE;
+
     std::vector<VkClearValue> clearValues;
     for (auto& ca : desc.colorAttachments) {
         VkClearValue cv{};
@@ -873,7 +891,7 @@ VulkanRenderPassEncoder::VulkanRenderPassEncoder(
 
     VkRenderPassBeginInfo rpBegin{};
     rpBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rpBegin.renderPass = renderPass;
+    rpBegin.renderPass = m_handle;
     rpBegin.framebuffer = framebuffer;
     rpBegin.renderArea.extent = extent;
     rpBegin.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -890,63 +908,64 @@ VulkanRenderPassEncoder::VulkanRenderPassEncoder(
     vkCmdSetScissor(m_cmd, 0, 1, &scissor);
 }
 
-void VulkanRenderPassEncoder::setPipeline(RenderPipeline* pipeline) {
+void VulkanRenderPass::setPipeline(RenderPipeline* pipeline) {
     auto* vp = static_cast<VulkanRenderPipeline*>(pipeline);
     vkCmdBindPipeline(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vp->handle());
     m_currentPipelineLayout = vp->layoutHandle();
 }
 
-void VulkanRenderPassEncoder::setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) {
+void VulkanRenderPass::setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) {
     auto* vb = static_cast<VulkanBuffer*>(buffer);
     VkBuffer buf = vb->handle();
     VkDeviceSize off = offset;
     vkCmdBindVertexBuffers(m_cmd, slot, 1, &buf, &off);
 }
 
-void VulkanRenderPassEncoder::setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) {
+void VulkanRenderPass::setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) {
     auto* vb = static_cast<VulkanBuffer*>(buffer);
     VkIndexType type = format == IndexFormat::Uint16 ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32;
     vkCmdBindIndexBuffer(m_cmd, vb->handle(), offset, type);
 }
 
-void VulkanRenderPassEncoder::setBindGroup(u32 index, BindGroup* group) {
+void VulkanRenderPass::setBindGroup(u32 index, BindGroup* group) {
     auto* vg = static_cast<VulkanBindGroup*>(group);
     VkDescriptorSet set = vg->handle();
     vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout, index, 1, &set, 0, nullptr);
 }
 
-void VulkanRenderPassEncoder::setBindGroup(u32 index, BindGroup* group,
-                                            const u32* dynamicOffsets, u32 dynamicOffsetCount) {
+void VulkanRenderPass::setBindGroup(u32 index, BindGroup* group,
+                                     const u32* dynamicOffsets, u32 dynamicOffsetCount) {
     auto* vg = static_cast<VulkanBindGroup*>(group);
     VkDescriptorSet set = vg->handle();
     vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout,
                             index, 1, &set, dynamicOffsetCount, dynamicOffsets);
 }
 
-void VulkanRenderPassEncoder::setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) {
+void VulkanRenderPass::setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) {
     VkViewport vp{x, y, w, h, minDepth, maxDepth};
     vkCmdSetViewport(m_cmd, 0, 1, &vp);
 }
 
-void VulkanRenderPassEncoder::setScissorRect(u32 x, u32 y, u32 w, u32 h) {
+void VulkanRenderPass::setScissorRect(u32 x, u32 y, u32 w, u32 h) {
     VkRect2D sc{{static_cast<int32_t>(x), static_cast<int32_t>(y)}, {w, h}};
     vkCmdSetScissor(m_cmd, 0, 1, &sc);
 }
 
-void VulkanRenderPassEncoder::setStencilReference(u32 reference) {
+void VulkanRenderPass::setStencilReference(u32 reference) {
     vkCmdSetStencilReference(m_cmd, VK_STENCIL_FACE_FRONT_AND_BACK, reference);
 }
 
-void VulkanRenderPassEncoder::draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) {
+void VulkanRenderPass::draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) {
     vkCmdDraw(m_cmd, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
-void VulkanRenderPassEncoder::drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) {
+void VulkanRenderPass::drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) {
     vkCmdDrawIndexed(m_cmd, indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 
-void VulkanRenderPassEncoder::end() {
+void VulkanRenderPass::end() {
     vkCmdEndRenderPass(m_cmd);
+    m_cmd = VK_NULL_HANDLE;
 }
 
 // ------ RenderPass Cache helpers ----------------------------------------------------------------------------------------
@@ -1310,17 +1329,14 @@ VoidResult VulkanCommandBuffer::begin() {
     return LN_MAKE_SUCCESS();
 }
 
-RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
+RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
     // Build RenderPassKey
     RenderPassKey rpKey;
     u32 fbWidth = 0, fbHeight = 0;
     for (size_t i = 0; i < desc.colorAttachments.size(); ++i) {
-    //}
-    //for (auto& ca : desc.colorAttachments) {
         auto& ca = desc.colorAttachments[i];
         auto* view = static_cast<VulkanTextureView*>(ca.view);
 
-        
         RenderPassKey::ColorAttachment attachment = {};
         attachment.format = view->vkFormat();
         attachment.loadOp = ca.loadOp == LoadOp::Clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
@@ -1341,11 +1357,29 @@ RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& de
                                                                           VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     }
 
-    VkRenderPass renderPass = m_device->getOrCreateRenderPass(rpKey);
+    VkRenderPass vkRenderPass = m_device->getOrCreateRenderPass(rpKey);
+
+    // Get or create cached VulkanRenderPass
+    auto it = m_renderPassCache.find(rpKey);
+    if (it == m_renderPassCache.end()) {
+        // Build RenderPassLayoutDesc from the actual attachments
+        RenderPassLayoutDesc layoutDesc;
+        for (auto& ca : desc.colorAttachments) {
+            auto* view = static_cast<VulkanTextureView*>(ca.view);
+            layoutDesc.colorFormats.push_back(fromVkFormat(view->vkFormat()));
+        }
+        if (desc.depthStencilAttachment) {
+            layoutDesc.depthStencilFormat = fromVkFormat(
+                static_cast<VulkanTextureView*>(desc.depthStencilAttachment->view)->vkFormat());
+        }
+
+        auto rp = Ref<VulkanRenderPass>::adopt(new VulkanRenderPass(vkRenderPass, layoutDesc));
+        it = m_renderPassCache.emplace(rpKey, std::move(rp)).first;
+    }
 
     // Build FramebufferKey
     FramebufferKey fbKey;
-    fbKey.renderPass = renderPass;
+    fbKey.renderPass = vkRenderPass;
     fbKey.width = fbWidth;
     fbKey.height = fbHeight;
     for (auto& ca : desc.colorAttachments) {
@@ -1358,7 +1392,8 @@ RenderPassEncoder* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& de
     VkFramebuffer framebuffer = m_device->getOrCreateFramebuffer(fbKey);
     VkExtent2D extent{fbKey.width, fbKey.height};
 
-    m_encoder = new VulkanRenderPassEncoder(m_cmd, renderPass, framebuffer, extent, desc);
+    m_encoder = it->second.get();
+    m_encoder->beginEncoding(m_cmd, framebuffer, extent, desc);
     return m_encoder;
 }
 
@@ -1421,7 +1456,6 @@ void VulkanCommandBuffer::submit() {
 
     vkQueueSubmit(m_device->graphicsQueue(), 1, &submitInfo, m_inFlightFences);
 
-    delete m_encoder;
     m_encoder = nullptr;
 }
 

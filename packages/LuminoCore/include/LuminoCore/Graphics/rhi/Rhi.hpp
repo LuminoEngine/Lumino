@@ -39,7 +39,6 @@ class PipelineLayout;
 class RenderPipeline;
 class CommandBuffer;
 class RenderPass;
-class RenderPassEncoder;
 
 // ------ Enums ------------------------------------------------------------------------------------------------------------------------------
 
@@ -434,13 +433,8 @@ class RenderPass : public RHIObject {
 public:
     virtual ~RenderPass() = default;
     virtual const RenderPassLayoutDesc& layoutDesc() const = 0;
-};
 
-// ------ Command Encoding --------------------------------------------------------------------------------------------------------
-
-class RenderPassEncoder {
-public:
-    virtual ~RenderPassEncoder() = default;
+    // Encoding methods
     virtual void setPipeline(RenderPipeline* pipeline) = 0;
     virtual void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset = 0) = 0;
     virtual void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset = 0) = 0;
@@ -455,10 +449,12 @@ public:
     virtual void end() = 0;
 };
 
+// ------ Command Encoding --------------------------------------------------------------------------------------------------------
+
 class CommandBuffer : public RHIObject {
 public:
     virtual ~CommandBuffer() = default;
-    virtual RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) = 0;
+    virtual RenderPass* beginRenderPass(const RenderPassDesc& desc) = 0;
     /** Transition a color attachment from COLOR_ATTACHMENT_OPTIMAL to SHADER_READ_ONLY_OPTIMAL. */
     virtual void transitionToShaderRead(TextureView* colorTarget) = 0;
     virtual void submit() = 0;
@@ -507,7 +503,6 @@ public:
     virtual Result<Ref<Sampler>> createSampler(const SamplerDesc& desc) = 0;
     virtual Result<Ref<ShaderModule>> createShaderModule(const ShaderModuleDesc& desc) = 0;
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
-    virtual Result<Ref<RenderPass>> createRenderPass(const RenderPassLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
     /** Read back the contents of a texture view into a CPU-side pixel buffer. */

@@ -119,7 +119,7 @@ public:
     rhi::CommandBuffer*        m_currentCmd         = nullptr;
     rhi::TextureView*          m_currentColorTarget = nullptr;
     rhi::TextureView*          m_currentDepthTarget = nullptr;
-    rhi::RenderPassEncoder*    m_currentPass        = nullptr;
+    rhi::RenderPass*           m_currentPass        = nullptr;
 
 private:
     GraphicsContext();

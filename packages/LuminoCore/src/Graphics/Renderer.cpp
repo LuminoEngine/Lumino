@@ -24,16 +24,6 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
     renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
 
-    // Create persistent RenderPass for pipeline creation
-    {
-        rhi::RenderPassLayoutDesc rpLayoutDesc;
-        rpLayoutDesc.colorFormats = {colorFormat};
-        rpLayoutDesc.depthStencilFormat = depthFormat;
-        auto rpResult = device->createRenderPass(rpLayoutDesc);
-        if (!rpResult) return tl::make_unexpected(rpResult.error());
-        renderer->m_renderPass = std::move(*rpResult);
-    }
-
     // ---- Dynamic UBO allocator for per-frame view data (camera, set=0) ----
     {
         auto r = DynamicUniformAllocator::create(
@@ -280,7 +270,7 @@ Result<void> Renderer::drawSubmesh(
         key.stencilWriteMask = 0x00;
     }
     key.topology            = mesh->topology();
-    key.renderPass          = m_renderPass.get();
+    key.renderPass          = m_currentPass;
 
     auto pipelineResult = pipelineCache->getOrCreate(key);
     if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
@@ -364,7 +354,7 @@ Result<void> Renderer::drawStencilMaskMesh(
         key.stencilReadMask  = 0xFF;
         key.stencilWriteMask = 0xFF;
         key.topology         = mesh->topology();
-        key.renderPass       = m_renderPass.get();
+        key.renderPass       = m_currentPass;
 
         auto pipelineResult = pipelineCache->getOrCreate(key);
         if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());

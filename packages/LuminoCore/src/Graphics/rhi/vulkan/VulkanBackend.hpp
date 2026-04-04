@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <mutex>
 
+#include "VulkanCacheKeys.hpp"
 #include "DescriptorPoolManager.hpp"
 #include "FrameResourceManager.hpp"
 #include "StagingBufferPool.hpp"
@@ -215,9 +216,30 @@ public:
     const RenderPassLayoutDesc& layoutDesc() const override { return m_desc; }
     VkRenderPass handle() const { return m_handle; }
 
+    // Called by VulkanCommandBuffer::beginRenderPass to activate encoding
+    void beginEncoding(VkCommandBuffer cmd, VkFramebuffer framebuffer,
+                       VkExtent2D extent, const RenderPassDesc& desc);
+
+    // Encoding methods
+    void setPipeline(RenderPipeline* pipeline) override;
+    void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) override;
+    void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) override;
+    void setBindGroup(u32 index, BindGroup* group) override;
+    void setBindGroup(u32 index, BindGroup* group,
+                      const u32* dynamicOffsets, u32 dynamicOffsetCount) override;
+    void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) override;
+    void setScissorRect(u32 x, u32 y, u32 w, u32 h) override;
+    void setStencilReference(u32 reference) override;
+    void draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) override;
+    void drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) override;
+    void end() override;
+
 private:
     VkRenderPass m_handle;
     RenderPassLayoutDesc m_desc;
+    // Encoding state (valid between beginEncoding and end)
+    VkCommandBuffer m_cmd = VK_NULL_HANDLE;
+    VkPipelineLayout m_currentPipelineLayout = VK_NULL_HANDLE;
 };
 
 // ------ VulkanRenderPipeline ------------------------------------------------------------------------------------------------
@@ -238,33 +260,6 @@ private:
     VkPipelineLayout m_layout = VK_NULL_HANDLE;
 };
 
-// ------ VulkanRenderPassEncoder ------------------------------------------------------------------------------------------
-
-class VulkanRenderPassEncoder final : public RenderPassEncoder {
-public:
-    VulkanRenderPassEncoder(VkCommandBuffer cmd, VkRenderPass renderPass,
-                            VkFramebuffer framebuffer, VkExtent2D extent,
-                            const RenderPassDesc& desc);
-    ~VulkanRenderPassEncoder() override = default;
-
-    void setPipeline(RenderPipeline* pipeline) override;
-    void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) override;
-    void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) override;
-    void setBindGroup(u32 index, BindGroup* group) override;
-    void setBindGroup(u32 index, BindGroup* group,
-                      const u32* dynamicOffsets, u32 dynamicOffsetCount) override;
-    void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) override;
-    void setScissorRect(u32 x, u32 y, u32 w, u32 h) override;
-    void setStencilReference(u32 reference) override;
-    void draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) override;
-    void drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) override;
-    void end() override;
-
-private:
-    VkCommandBuffer m_cmd;
-    VkPipelineLayout m_currentPipelineLayout = VK_NULL_HANDLE;
-};
-
 // ------ VulkanCommandBuffer --------------------------------------------------------------------------------------------------
 
 class VulkanCommandBuffer final : public CommandBuffer {
@@ -275,7 +270,7 @@ public:
     void dispose();
 
     VoidResult begin();
-    RenderPassEncoder* beginRenderPass(const RenderPassDesc& desc) override;
+    RenderPass* beginRenderPass(const RenderPassDesc& desc) override;
     void transitionToShaderRead(TextureView* colorTarget) override;
     void submit() override;
 
@@ -285,11 +280,14 @@ protected:
 private:
     VulkanDevice* m_device = nullptr;
     VkCommandBuffer m_cmd = VK_NULL_HANDLE;
-    VulkanRenderPassEncoder* m_encoder = nullptr;
+    VulkanRenderPass* m_encoder = nullptr; // non-owning; owned by m_renderPassCache
     VkFence m_inFlightFences = VK_NULL_HANDLE;
     /** Frame index recorded at submit() time; used to schedule deferred cleanup. */
     u32 m_submittedFrame = 0;
     bool m_submitted = false;
+
+    // Cached RenderPass objects keyed by attachment layout
+    std::unordered_map<RenderPassKey, Ref<VulkanRenderPass>, RenderPassKeyHash> m_renderPassCache;
 };
 
 // ------ VulkanSwapChain ----------------------------------------------------------------------------------------------------------

@@ -6,46 +6,12 @@
 #include <unordered_map>
 #include <mutex>
 
+#include "VulkanCacheKeys.hpp"
 #include "DescriptorPoolManager.hpp"
 #include "FrameResourceManager.hpp"
 #include "StagingBufferPool.hpp"
 
 namespace ln::rhi::vulkan {
-
-// ------ RenderPass Cache --------------------------------------------------------------------------------------------------------
-
-struct RenderPassKey {
-    struct ColorAttachment {
-        VkFormat format;
-        VkAttachmentLoadOp loadOp;
-        bool operator==(const ColorAttachment& other) const;
-    };
-
-    //std::array<ColorAttachment, kMaxMultiRenderTargets> colorAttachments;
-    std::vector<ColorAttachment> colorAttachments;
-    VkFormat depthFormat = VK_FORMAT_UNDEFINED;
-    VkAttachmentLoadOp stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-
-    bool operator==(const RenderPassKey& other) const;
-};
-
-struct RenderPassKeyHash {
-    size_t operator()(const RenderPassKey& key) const;
-};
-
-// ------ Framebuffer Cache ------------------------------------------------------------------------------------------------------
-
-struct FramebufferKey {
-    VkRenderPass renderPass = VK_NULL_HANDLE;
-    std::vector<VkImageView> attachments;
-    u32 width = 0, height = 0;
-
-    bool operator==(const FramebufferKey& o) const;
-};
-
-struct FramebufferKeyHash {
-    size_t operator()(const FramebufferKey& key) const;
-};
 
 // ------ VulkanDevice ----------------------------------------------------------------------------------------------------------------
 
@@ -65,7 +31,6 @@ public:
     Result<Ref<Sampler>> createSampler(const SamplerDesc& desc) override;
     Result<Ref<ShaderModule>> createShaderModule(const ShaderModuleDesc& desc) override;
     Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) override;
-    Result<Ref<RenderPass>> createRenderPass(const RenderPassLayoutDesc& desc) override;
     Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) override;
     Result<std::vector<uint8_t>> readbackTexture(TextureView* view) override;
     void waitIdle() override;

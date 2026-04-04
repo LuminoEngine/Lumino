@@ -106,11 +106,7 @@ int main() {
         PipelineLayoutDesc plDesc;
         auto pipelineLayout = *device->createPipelineLayout(plDesc);
 
-        // 5. レンダーパス & レンダーパイプライン
-        RenderPassLayoutDesc rpLayoutDesc;
-        rpLayoutDesc.colorFormats = {ctx->colorFormat()};
-        auto renderPass = *device->createRenderPass(rpLayoutDesc);
-
+        // 5. レンダーパイプライン（RenderPass は beginRenderPass 時に取得）
         RenderPipelineDesc rpDesc;
         rpDesc.layout = pipelineLayout.get();
         rpDesc.vertexShader = vertShader.get();
@@ -119,7 +115,6 @@ int main() {
         rpDesc.fragmentEntry = fragEP->name;
         rpDesc.topology = PrimitiveTopology::TriangleList;
         rpDesc.cullMode = CullMode::None;
-        rpDesc.renderPass = renderPass.get();
 
         VertexBufferLayout vbl;
         vbl.stride = sizeof(::Vertex);
@@ -129,7 +124,7 @@ int main() {
         };
         rpDesc.vertexBuffers = {vbl};
 
-        auto pipeline = *device->createRenderPipeline(rpDesc);
+        Ref<RenderPipeline> pipeline;
 
         printf("Lumino RHI initialized. Rendering...\n");
 
@@ -148,6 +143,12 @@ int main() {
             });
 
             auto* pass = cmd->beginRenderPass(passDesc);
+
+            if (!pipeline) {
+                rpDesc.renderPass = pass;
+                pipeline = *device->createRenderPipeline(rpDesc);
+            }
+
             pass->setPipeline(pipeline.get());
             pass->setVertexBuffer(0, vertexBuffer.get());
             pass->draw(3);
