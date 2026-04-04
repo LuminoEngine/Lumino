@@ -105,7 +105,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("vkCreateInstance failed.");
     }
 
-#if 0
+#if 1
     // Setup debug messenger
     if (desc.enableValidation) {
         VkDebugUtilsMessengerCreateInfoEXT createInfo{};
@@ -372,7 +372,7 @@ Result<Ref<TextureView>> VulkanDevice::createTextureView(Texture* texture) {
         aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
     }
     auto view = Ref<VulkanTextureView>::adopt(new VulkanTextureView());
-    if (!view->init(m_device, vtex->handle(), fmt, aspect, vtex->width(), vtex->height())) {
+    if (!view->init(this, vtex->handle(), fmt, aspect, vtex->width(), vtex->height())) {
         return LN_MAKE_ERROR("Failed to create texture view.");
     }
     return Ref<TextureView>(view);

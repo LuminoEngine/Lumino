@@ -157,6 +157,12 @@ extern LUMINO_API LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsCont
 extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 
 /**
+ * @internal GPU の処理が完了するまで待機します。
+ * 通常は必要ありません。主にライブラリ内部動作の問題調査に使用します。
+ */
+extern LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext);
+
+/**
  * 直前のフレームのバックバッファの内容を RGBA8 ピクセルデータとして取得します。
  * LNGraphicsContext_EndFrame の後に呼び出してください。
  * 返されるポインタは、次の LNGraphicsContext_CaptureBackbuffer 呼び出しまで有効です。

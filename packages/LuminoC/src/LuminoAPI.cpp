@@ -60,6 +60,13 @@ LNHandle wrapObjectFromGet(ln::Object* object) {
     return instance->objectRegistry()->registerObject(object);
 }
 
+template<typename T>
+T* resolveObject(LNHandle handle) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return nullptr;
+    return instance->objectRegistry()->resolve<T>(handle);
+}
+
 } // anonymous namespace
 
 //------------------------------------------------------------------------------
@@ -261,6 +268,14 @@ LNResult LNGraphicsContext_CaptureBackbuffer(
     *outWidth = static_cast<int32_t>(ctx->width());
     *outHeight = static_cast<int32_t>(ctx->height());
     return LN_OK;
+}
+
+LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext) {
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+    ctx->waitIdle();
+    return LN_OK;
+
 }
 
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {

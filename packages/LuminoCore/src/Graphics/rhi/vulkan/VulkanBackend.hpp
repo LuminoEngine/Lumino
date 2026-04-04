@@ -92,7 +92,7 @@ private:
 class VulkanTextureView final : public TextureView {
 public:
     VulkanTextureView();
-    VoidResult init(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height);
+    VoidResult init(VulkanDevice* device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height);
 
     VkImageView handle() const { return m_view; }
     VkImage image() const { return m_image; }
@@ -106,7 +106,7 @@ protected:
     void finalize() override;
 
 private:
-    VkDevice m_device = VK_NULL_HANDLE;
+    VulkanDevice* m_device = nullptr;
     VkImageView m_view = VK_NULL_HANDLE;
     VkImage m_image = VK_NULL_HANDLE;
     VkFormat m_format = VK_FORMAT_UNDEFINED;

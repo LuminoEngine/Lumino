@@ -97,8 +97,6 @@ int main() {
             100.0f);
         camera.setLookAt({0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 0.0f});
 
-        printf("Lumino HelloTexture initialized. Rendering...\n");
-
         // 8. Main loop
         while (window->processEvents()) {
             RenderObject obj;

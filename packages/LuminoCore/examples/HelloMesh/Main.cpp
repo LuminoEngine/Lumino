@@ -83,8 +83,6 @@ int main() {
             100.0f);
         camera.setLookAt({0.0f, 0.0f, 5.f}, {0.0f, 0.0f, 0.0f});
 
-        printf("Lumino HelloMesh initialized. Rendering...\n");
-
         // 6. Main loop
         int frameCount = 0;
         while (window->processEvents()) {

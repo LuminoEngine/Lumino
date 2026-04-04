@@ -126,8 +126,6 @@ int main() {
 
         Ref<RenderPipeline> pipeline;
 
-        printf("Lumino RHI initialized. Rendering...\n");
-
         // 6. メインループ
         while (window->processEvents()) {
             auto frame = *ctx->beginFrame();

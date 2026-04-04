@@ -110,8 +110,6 @@ int main(void) {
     LNMesh_Create(graphicsContext, rightQuadVerts, 4, quadIndices, 6, &quadSub, 1, &rightQuadMesh);
     LNMesh_SetMaterial(rightQuadMesh, 0, matRT2);
 
-    printf("Lumino RenderTargets (C) initialized. Rendering...\n");
-
     /* 7. Main loop */
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNGraphicsProfiler profiler = {};

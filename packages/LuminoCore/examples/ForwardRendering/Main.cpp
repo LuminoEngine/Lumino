@@ -116,9 +116,7 @@ int main() {
         light.color = Color::white();
         light.ambient = Color{0.15f, 0.15f, 0.15f, 1.0f};
         renderer->setLight(light);
-
-        printf("Lumino ForwardRenderer initialized. Rendering...\n");
-
+        
         // 7. Main loop
         f32 time = 0.0f;
         while (window->processEvents()) {

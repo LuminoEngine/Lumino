@@ -76,8 +76,6 @@ int main(void) {
         0.0f, 0.0f, 0.0f,   /* target */
         0.0f, 1.0f, 0.0f);  /* up */
 
-    printf("Lumino CustomShader (C) initialized. Rendering...\n");
-
     /* 7. Main loop */
     LNGraphicsProfiler profilerng = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };

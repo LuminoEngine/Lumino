@@ -23,6 +23,15 @@
 namespace ln::rhi::vulkan {
 
 class FrameResourceManager {
+    // NOTE: このようなリソース管理は RHI の外と中のどちらで行うべき？
+    //   「いつ安全に破棄できるか」の判断はバックエンド固有です。
+    //   - Vulkan: Fence シグナル後 / フレームインデックスのラップ
+    //   - D3D12: Fence 値が特定値を超えた後（ほぼ同じ）
+    //   - Metal: Command Buffer の completion handler
+    //   - D3D11 ドライバが内部管理するため対策不要
+    //   - WebGPU ランタイムが管理するため対策不要 
+    //   RHI の外側で統一的に処理しようとすると、最も保守的な戦略（全バックエンドで N フレーム待つ等）を
+    //   強制することになり、不要なレイテンシが生まれます。
 public:
     static constexpr u32 MAX_FRAMES = 2;
 

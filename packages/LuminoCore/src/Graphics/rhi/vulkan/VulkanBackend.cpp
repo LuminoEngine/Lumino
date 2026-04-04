@@ -335,15 +335,13 @@ VoidResult VulkanTexture::initFromExternalImage(VulkanDevice* device, VkImage im
 
 void VulkanTexture::finalize() {
     if (m_ownsImage) {
-        VkDevice vkDevice = m_device->vkDevice();
-        if (m_image) {
-            vkDestroyImage(vkDevice, m_image, nullptr);
-            m_image = VK_NULL_HANDLE;
-        }
-        if (m_memory) {
-            vkFreeMemory(vkDevice, m_memory, nullptr);
-            m_memory = VK_NULL_HANDLE;
-        }
+        VkDevice dev = m_device->vkDevice();
+        VkImage img = m_image;
+        VkDeviceMemory mem = m_memory;
+        m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, img, mem]() {
+            if (img) vkDestroyImage(dev, img, nullptr);
+            if (mem) vkFreeMemory(dev, mem, nullptr);
+        });
     }
     Texture::finalize();
 }
@@ -352,7 +350,7 @@ void VulkanTexture::finalize() {
 
 VulkanTextureView::VulkanTextureView() = default;
 
-VoidResult VulkanTextureView::init(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height) {
+VoidResult VulkanTextureView::init(VulkanDevice* device, VkImage image, VkFormat format, VkImageAspectFlags aspect, u32 width, u32 height) {
     m_device = device;
     m_image = image;
     m_format = format;
@@ -369,14 +367,18 @@ VoidResult VulkanTextureView::init(VkDevice device, VkImage image, VkFormat form
     info.subresourceRange.levelCount = 1;
     info.subresourceRange.baseArrayLayer = 0;
     info.subresourceRange.layerCount = 1;
-    if (vkCreateImageView(m_device, &info, nullptr, &m_view) != VK_SUCCESS) {
+    if (vkCreateImageView(m_device->vkDevice(), &info, nullptr, &m_view) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateImageView failed.");
     }
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanTextureView::finalize() {
-    if (m_view) vkDestroyImageView(m_device, m_view, nullptr);
+    VkDevice dev = m_device->vkDevice();
+    VkImageView view = m_view;
+    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, view]() {
+        if (view) vkDestroyImageView(dev, view, nullptr);
+    });
     TextureView::finalize();
 }
 
@@ -1109,7 +1111,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     for (u32 i = 0; i < imageCount; ++i) {
         auto view = Ref<VulkanTextureView>::adopt(new VulkanTextureView());
         if (!view->init(
-                m_device->vkDevice(),
+                m_device,
                 m_images[i],
                 vkFmt,
                 VK_IMAGE_ASPECT_COLOR_BIT,
