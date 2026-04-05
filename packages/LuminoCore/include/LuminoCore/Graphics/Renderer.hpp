@@ -24,11 +24,11 @@ class GraphicsContext;
  *
  * C-APIフレンドリーな設計：すべての状態は呼び出しごとに明示的に渡されます。
  *
- * 内部で使用される4セットBindGroup規約：
- * - セット0：視点データ（カメラ行列）— beginRenderPass(camera) で自動設定、または setPassBindGroup(0) で上書き可
- * - セット1：シーン環境データ（ライティング等）— setPassBindGroup(1) を介してクライアントから提供されます
- * - セット2：マテリアルごとのデータ— Material::materialBindGroup() から取得されます
- * - セット3：オブジェクトごとのデータ（動的UBO）— Rendererによって内部的に管理されます
+ * 内部で使用されるBindGroup規約（セットインデックスはシェーダリフレクションから決定）：
+ * - $Material セット：マテリアルごとのデータ— Material から取得されます
+ * - View セット：視点データ（カメラ行列）— beginRenderPass(camera) で自動設定
+ * - Scene セット：シーン環境データ（ライティング等）— setPassBindGroup() を介してクライアントから提供
+ * - Object セット：オブジェクトごとのデータ（動的UBO）— Rendererによって内部的に管理
  *
  * Usage:
  * @code
@@ -193,7 +193,12 @@ private:
     // Reference PipelineLayout (from a builtin ShaderPass, used for dynamic UBO allocators)
     rhi::PipelineLayout* m_referencePipelineLayout = nullptr;
 
-    // Per-frame view UBO allocator (camera data, set=0) — double-buffered via DynamicUniformAllocator
+    // Reflection-based descriptor set indices
+    int16_t m_viewSetIndex = -1;
+    int16_t m_sceneSetIndex = -1;
+    int16_t m_objectSetIndex = -1;
+
+    // Per-frame view UBO allocator (camera data) — double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;
 
     // Object UBO size (from shader reflection)

@@ -1,4 +1,4 @@
-// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
 #include <LuminoShader/UnifiedShader.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
@@ -283,6 +283,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
     slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
     int parameterCount = programLayout->getParameterCount();
 
+    // --- Pass 1: Collect ParameterBlock parameters ---
     for (int i = 0; i < parameterCount; i++) {
         slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
         slang::TypeReflection* type = parameter->getType();
@@ -290,16 +291,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
         slang::TypeReflection::Kind kind = type->getKind();
 
         if (kind != slang::TypeReflection::Kind::ParameterBlock) {
-            // v2 only supports ParameterBlock parameters.
-            // Skip VaryingInput/VaryingOutput which are entry point parameters.
-            slang::ParameterCategory category = parameter->getCategory();
-            if (category == slang::ParameterCategory::VaryingInput ||
-                category == slang::ParameterCategory::VaryingOutput) {
-                continue;
-            }
-            return LNSHADER_MAKE_ERROR(
-                "ShaderCompiler2 requires all resources to be in ParameterBlock. Found bare parameter: " +
-                std::string(parameter->getName()));
+            continue;
         }
 
         ParameterBlockLayout2 layout;
@@ -398,6 +390,119 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
         }
 
         m_shader->addParameterBlock(std::move(layout));
+    }
+
+    // --- Pass 2: Collect $Global (bare uniform) parameters into a synthetic "$Material" block ---
+    {
+        ParameterBlockLayout2 globalLayout;
+        globalLayout.name = "$Material";
+        globalLayout.setIndex = -1;
+        globalLayout.hasImplicitConstantBuffer = false;
+
+        bool hasGlobalCB = false;
+        int globalCBSize = 0;
+
+        for (int i = 0; i < parameterCount; i++) {
+            slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
+            slang::TypeReflection* type = parameter->getType();
+            slang::TypeReflection::Kind kind = type->getKind();
+            slang::ParameterCategory category = parameter->getCategory();
+
+            // Skip ParameterBlock (handled in Pass 1) and varying I/O
+            if (kind == slang::TypeReflection::Kind::ParameterBlock) continue;
+            if (category == slang::ParameterCategory::VaryingInput ||
+                category == slang::ParameterCategory::VaryingOutput) continue;
+
+            // Bare Uniform (scalar/vector/matrix) → $Global CB member
+            if (category == slang::ParameterCategory::Uniform) {
+                slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
+                GlobalMemberInfo memberInfo;
+                memberInfo.name = parameter->getName();
+                memberInfo.offset = static_cast<int16_t>(
+                    parameter->getOffset(slang::ParameterCategory::Uniform));
+                memberInfo.size = static_cast<int16_t>(
+                    typeLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
+                globalLayout.members.push_back(std::move(memberInfo));
+                hasGlobalCB = true;
+                continue;
+            }
+
+            // Explicit ConstantBuffer
+            if (kind == slang::TypeReflection::Kind::ConstantBuffer) {
+                ParameterBlockElement2 elem;
+                elem.name = parameter->getName();
+                elem.kind = ParameterBlockElementKind_ConstantBuffer;
+                slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
+                slang::TypeLayoutReflection* cbElementLayout =
+                    typeLayout->getElementTypeLayout();
+                elem.constantBufferSize = static_cast<int16_t>(
+                    cbElementLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
+                globalLayout.elements.push_back(std::move(elem));
+
+                // Determine set index from binding space (should be 0 for $Global space)
+                if (globalLayout.setIndex < 0) {
+                    globalLayout.setIndex = static_cast<int16_t>(
+                        parameter->getBindingSpace(slang::ParameterCategory::DescriptorTableSlot));
+                }
+                continue;
+            }
+
+            // Texture resource
+            if (kind == slang::TypeReflection::Kind::Resource) {
+                ParameterBlockElement2 elem;
+                elem.name = parameter->getName();
+                elem.kind = ParameterBlockElementKind_Texture;
+                elem.constantBufferSize = -1;
+                globalLayout.elements.push_back(std::move(elem));
+
+                if (globalLayout.setIndex < 0) {
+                    globalLayout.setIndex = static_cast<int16_t>(
+                        parameter->getBindingSpace(slang::ParameterCategory::DescriptorTableSlot));
+                }
+                continue;
+            }
+
+            // SamplerState
+            if (kind == slang::TypeReflection::Kind::SamplerState) {
+                ParameterBlockElement2 elem;
+                elem.name = parameter->getName();
+                elem.kind = ParameterBlockElementKind_SamplerState;
+                elem.constantBufferSize = -1;
+                globalLayout.elements.push_back(std::move(elem));
+
+                if (globalLayout.setIndex < 0) {
+                    globalLayout.setIndex = static_cast<int16_t>(
+                        parameter->getBindingSpace(slang::ParameterCategory::DescriptorTableSlot));
+                }
+                continue;
+            }
+        }
+
+        // If there are $Global uniform members, add an implicit CB element
+        if (hasGlobalCB) {
+            globalCBSize = static_cast<int>(
+                programLayout->getGlobalConstantBufferSize());
+            if (globalCBSize > 0) {
+                globalLayout.hasImplicitConstantBuffer = true;
+                ParameterBlockElement2 elem;
+                elem.name = kGlobalConstantBufferName; // "$Global"
+                elem.kind = ParameterBlockElementKind_ConstantBuffer;
+                elem.constantBufferSize = static_cast<int16_t>(globalCBSize);
+                globalLayout.elements.insert(globalLayout.elements.begin(), elem);
+
+                if (globalLayout.setIndex < 0) {
+                    globalLayout.setIndex = 0; // $Global defaults to space 0
+                }
+            }
+        }
+
+        // Only add if we found any bare resources
+        if (!globalLayout.elements.empty()) {
+            if (globalLayout.setIndex < 0) {
+                globalLayout.setIndex = 0;
+            }
+            m_shader->addParameterBlock(std::move(globalLayout));
+        }
     }
 
     m_parameterBlocksBuilt = true;
@@ -645,6 +750,80 @@ VoidResult ShaderCompiler2::buildEntryPoint(
                 elementTypeLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
             binding.used = stageFlags;
             entryPoint->bindingLayout.bindings.push_back(binding);
+        }
+    }
+
+    // --- Collect $Global (bare uniform) bindings ---
+    {
+        int16_t globalSetIndex = 0; // $Global is always in space 0
+
+        // $Global constant buffer (if bare uniform members exist)
+        int globalCBSize = static_cast<int>(programLayout->getGlobalConstantBufferSize());
+        if (globalCBSize > 0) {
+            TargetBinding2 binding;
+            binding.name = kGlobalConstantBufferName; // "$Global"
+            binding.kind = ParameterBlockElementKind_ConstantBuffer;
+            binding.setIndex = globalSetIndex;
+            binding.bindingIndex = static_cast<int16_t>(
+                programLayout->getGlobalConstantBufferBinding());
+            binding.size = static_cast<int16_t>(globalCBSize);
+            binding.used = stageFlags;
+            entryPoint->bindingLayout.bindings.push_back(binding);
+        }
+
+        // Explicit ConstantBuffer / Texture / Sampler declared as bare params
+        for (int i = 0; i < programParameterCount; i++) {
+            slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
+            slang::TypeReflection* type = parameter->getType();
+            slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
+            slang::TypeReflection::Kind kind = type->getKind();
+            slang::ParameterCategory category = parameter->getCategory();
+
+            // Skip ParameterBlock and varying I/O, and Uniform ($Global CB members)
+            if (kind == slang::TypeReflection::Kind::ParameterBlock) continue;
+            if (category == slang::ParameterCategory::VaryingInput ||
+                category == slang::ParameterCategory::VaryingOutput) continue;
+            if (category == slang::ParameterCategory::Uniform) continue;
+
+            if (kind == slang::TypeReflection::Kind::ConstantBuffer) {
+                TargetBinding2 binding;
+                binding.name = parameter->getName();
+                binding.kind = ParameterBlockElementKind_ConstantBuffer;
+                binding.setIndex = static_cast<int16_t>(
+                    parameter->getBindingSpace(slang::ParameterCategory::DescriptorTableSlot));
+                binding.bindingIndex = static_cast<int16_t>(
+                    parameter->getBindingIndex());
+                slang::TypeLayoutReflection* cbElementLayout =
+                    typeLayout->getElementTypeLayout();
+                binding.size = static_cast<int16_t>(
+                    cbElementLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
+                binding.used = stageFlags;
+                entryPoint->bindingLayout.bindings.push_back(binding);
+            }
+            else if (kind == slang::TypeReflection::Kind::Resource) {
+                TargetBinding2 binding;
+                binding.name = parameter->getName();
+                binding.kind = ParameterBlockElementKind_Texture;
+                binding.setIndex = static_cast<int16_t>(
+                    parameter->getBindingSpace(slang::ParameterCategory::DescriptorTableSlot));
+                binding.bindingIndex = static_cast<int16_t>(
+                    parameter->getBindingIndex());
+                binding.size = 0;
+                binding.used = stageFlags;
+                entryPoint->bindingLayout.bindings.push_back(binding);
+            }
+            else if (kind == slang::TypeReflection::Kind::SamplerState) {
+                TargetBinding2 binding;
+                binding.name = parameter->getName();
+                binding.kind = ParameterBlockElementKind_SamplerState;
+                binding.setIndex = static_cast<int16_t>(
+                    parameter->getBindingSpace(slang::ParameterCategory::DescriptorTableSlot));
+                binding.bindingIndex = static_cast<int16_t>(
+                    parameter->getBindingIndex());
+                binding.size = 0;
+                binding.used = stageFlags;
+                entryPoint->bindingLayout.bindings.push_back(binding);
+            }
         }
     }
 

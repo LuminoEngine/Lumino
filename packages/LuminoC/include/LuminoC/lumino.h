@@ -299,6 +299,23 @@ extern LUMINO_API LNResult LNMaterial_CreateFromCompiledShader(
 );
 
 /**
+ * シェーダソースファイル (.slang) を実行時コンパイルしてマテリアルを作成します。
+ * デスクトップ環境 (LUMINO_USE_SLANG が有効な場合) のみ使用可能です。
+ * テストやサンプルプログラムでの利用を想定しており、本番環境では
+ * LNMaterial_CreateFromCompiledShader の使用を推奨します。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  shaderFilePath  コンパイルする .slang ファイルのパス
+ * @param[in]  searchPathOrNull      lumino.slang を含むディレクトリのパス (NULL 可)
+ * @param[out] outHandle       作成されたマテリアルのハンドル
+ */
+// extern LUMINO_API LNResult LNMaterial_CreateFromShaderSourceFile(
+//     LNHandle graphicsContext,
+//     const char* shaderFilePath,
+//     const char* searchPathOrNull,
+//     LNHandle* outHandle
+// );
+
+/**
  * @deprecated LNMaterial_CreateFromBuiltinShader(ctx, LN_BUILTIN_SHADER_UNLIT, out) を使用してください。
  * Unlit マテリアルを作成します (テクスチャ * カラー、ライティングなし)。
  * @param[in]  graphicsContext GraphicsContext のハンドル

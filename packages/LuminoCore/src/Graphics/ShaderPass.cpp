@@ -2,6 +2,7 @@
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
 #include "ShaderUtils.hpp"
+#include <algorithm>
 
 namespace ln {
 
@@ -17,6 +18,8 @@ Result<Ref<ShaderPass>> ShaderPass::create(
     std::string fragEntry,
     rhi::PipelineLayoutDesc pipelineLayoutDesc,
     u64 materialParamBufferSize,
+    int16_t materialSetIndex,
+    std::vector<MaterialMemberInfo> materialMembers,
     rhi::Device* device) {
 
     auto plResult = device->createPipelineLayout(pipelineLayoutDesc);
@@ -29,6 +32,8 @@ Result<Ref<ShaderPass>> ShaderPass::create(
     sp->m_fragEntry = std::move(fragEntry);
     sp->m_pipelineLayout = std::move(*plResult);
     sp->m_materialParamBufferSize = materialParamBufferSize;
+    sp->m_materialSetIndex = materialSetIndex;
+    sp->m_materialMembers = std::move(materialMembers);
     return sp;
 }
 
@@ -38,6 +43,9 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     const rhi::BindGroupLayoutDesc& viewLayoutDesc,
     const rhi::BindGroupLayoutDesc& sceneLayoutDesc,
     const rhi::BindGroupLayoutDesc& objectLayoutDesc,
+    int16_t viewSetIndex,
+    int16_t sceneSetIndex,
+    int16_t objectSetIndex,
     rhi::Device* device) {
 
     // Deserialize the unified shader from the binary blob.
@@ -80,29 +88,46 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     auto fsResult = device->createShaderModule(fsDesc);
     if (!fsResult) return tl::make_unexpected(fsResult.error());
 
-    // Build material BindGroupLayout from "materialData" ParameterBlock reflection
-    auto* materialBlock = findParameterBlock(unifiedShader.get(), "materialData");
+    // Build material BindGroupLayout from "$Material" ParameterBlock reflection
+    auto* materialBlock = findParameterBlock(unifiedShader.get(), "$Material");
     if (!materialBlock) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No 'materialData' ParameterBlock found"});
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No '$Material' ParameterBlock found"});
     }
 
     auto materialLayoutDesc = buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
+    int16_t materialSetIdx = materialBlock->setIndex;
 
     // Get material CB size from reflection
     int16_t cbSize = findConstantBufferSize(*materialBlock);
     if (cbSize <= 0) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No constant buffer found in 'materialData'"});
+        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No constant buffer found in '$Material'"});
     }
 
-    // Assemble PipelineLayoutDesc: Set0=view, Set1=scene, Set2=material, Set3=object
+    // Determine the max set index to size the PipelineLayoutDesc properly
+    int16_t maxSet = std::max({materialSetIdx, viewSetIndex, sceneSetIndex, objectSetIndex});
+
+    // Assemble PipelineLayoutDesc using reflection-based set indices
     rhi::PipelineLayoutDesc plDesc;
-    plDesc.setLayouts = {viewLayoutDesc, sceneLayoutDesc, materialLayoutDesc, objectLayoutDesc};
+    plDesc.setLayouts.resize(static_cast<size_t>(maxSet) + 1);
+    plDesc.setLayouts[materialSetIdx] = materialLayoutDesc;
+    plDesc.setLayouts[viewSetIndex] = viewLayoutDesc;
+    plDesc.setLayouts[sceneSetIndex] = sceneLayoutDesc;
+    plDesc.setLayouts[objectSetIndex] = objectLayoutDesc;
+
+    // Convert GlobalMemberInfo to MaterialMemberInfo
+    std::vector<MaterialMemberInfo> members;
+    members.reserve(materialBlock->members.size());
+    for (const auto& gm : materialBlock->members) {
+        members.push_back({gm.name, gm.offset, gm.size});
+    }
 
     return create(
         std::move(*vsResult), std::move(*fsResult),
         vertEP->name, fragEP->name,
         std::move(plDesc),
         static_cast<u64>(cbSize),
+        materialSetIdx,
+        std::move(members),
         device);
 }
 

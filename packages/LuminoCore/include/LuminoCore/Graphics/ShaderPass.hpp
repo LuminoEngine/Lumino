@@ -3,26 +3,30 @@
 #include <LuminoBase/RefObject.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <string>
+#include <vector>
 
 namespace ln {
 
+/** Info about a single member within a material constant buffer (from shader reflection). */
+struct MaterialMemberInfo {
+    std::string name;       // e.g. "u_time"
+    int16_t offset;         // byte offset within the CB
+    int16_t size;           // byte size
+};
+
 /**
- * ShaderPass: シェーダモジュールとPipelineLayout（4 Set分）をまとめて保持する。
+ * ShaderPass: シェーダモジュールとPipelineLayoutをまとめて保持する。
  *
- * 4セット規約:
- * - Set 0: View (camera) data
- * - Set 1: Scene (lighting) data
- * - Set 2: Material data (per-shader)
- * - Set 3: Object (per-draw) data
- *
- * PipelineLayoutは内部でBindGroupLayoutを所有するため、
- * クライアントはBindGroupLayoutを直接触る必要がない。
+ * セットインデックスはシェーダのリフレクション情報から動的に決定される:
+ * - $Material (bare uniform) → Set N (通常 0)
+ * - viewData  (ParameterBlock) → Set N+1
+ * - sceneData (ParameterBlock) → Set N+2
+ * - objectData(ParameterBlock) → Set N+3
  */
 class ShaderPass : public RefObject {
 public:
     /**
      * 事前構築済みのPipelineLayoutDescからShaderPassを生成する。
-     * @param pipelineLayoutDesc 4 Set分のBindGroupLayoutDescを含むレイアウト記述
      */
     static Result<Ref<ShaderPass>> create(
         Ref<rhi::ShaderModule> vertShader,
@@ -31,18 +35,24 @@ public:
         std::string fragEntry,
         rhi::PipelineLayoutDesc pipelineLayoutDesc,
         u64 materialParamBufferSize,
+        int16_t materialSetIndex,
+        std::vector<MaterialMemberInfo> materialMembers,
         rhi::Device* device);
 
     /**
      * .lcshバイナリからシェーダモジュールとPipelineLayoutを一括構築する。
-     * Set0/1/3のBindGroupLayoutDescは共有のものを引数で受け取る。
-     * Set2（materialData）はリフレクション情報から自動構築される。
+     * view/scene/objectのBindGroupLayoutDescは共有のものを引数で受け取り、
+     * リフレクション情報に基づくセットインデックスに配置する。
+     * $Material レイアウトはリフレクション情報から自動構築される。
      */
     static Result<Ref<ShaderPass>> createFromCompiledShader(
         const void* data, size_t size,
         const rhi::BindGroupLayoutDesc& viewLayoutDesc,
         const rhi::BindGroupLayoutDesc& sceneLayoutDesc,
         const rhi::BindGroupLayoutDesc& objectLayoutDesc,
+        int16_t viewSetIndex,
+        int16_t sceneSetIndex,
+        int16_t objectSetIndex,
         rhi::Device* device);
 
     // Accessors
@@ -53,6 +63,12 @@ public:
     rhi::PipelineLayout* pipelineLayout() const { return m_pipelineLayout.get(); }
     u64 materialParamBufferSize() const { return m_materialParamBufferSize; }
 
+    /** Descriptor set index for the material ($Material) BindGroup. */
+    int16_t materialSetIndex() const { return m_materialSetIndex; }
+
+    /** $Global CB member layout for name-based parameter setting. */
+    const std::vector<MaterialMemberInfo>& materialMembers() const { return m_materialMembers; }
+
 private:
     ShaderPass() = default;
 
@@ -62,6 +78,8 @@ private:
     std::string m_fragEntry;
     Ref<rhi::PipelineLayout> m_pipelineLayout;
     u64 m_materialParamBufferSize = 0;
+    int16_t m_materialSetIndex = -1;
+    std::vector<MaterialMemberInfo> m_materialMembers;
 };
 
 } // namespace ln

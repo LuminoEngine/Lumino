@@ -10,18 +10,21 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     fw->m_ctx      = ctx;
     fw->m_renderer = ctx->renderer();
 
-    // Use BasicLit's PipelineLayout as reference for the scene allocator (set=1)
+    // Use BasicLit's PipelineLayout as reference for the scene allocator
     auto* refPipelineLayout = ctx->module()->builtinShader(BuiltinShader::BasicLit)->pipelineLayout();
+    int16_t sceneSetIndex = ctx->module()->sceneSetIndex();
 
-    // ---- Dynamic UBO allocator for per-frame scene data (lighting, set=1) ----
+    // ---- Dynamic UBO allocator for per-frame scene data (lighting) ----
     {
         auto r = DynamicUniformAllocator::create(
-            ctx->device(), refPipelineLayout, 1, 0,
+            ctx->device(), refPipelineLayout,
+            static_cast<u32>(sceneSetIndex), 0,
             static_cast<u32>(sizeof(SceneParamsUBO)));
         if (!r) return tl::make_unexpected(r.error());
         fw->m_sceneAllocator = std::move(*r);
     }
 
+    fw->m_sceneSetIndex = sceneSetIndex;
     return fw;
 }
 
@@ -62,7 +65,8 @@ Result<void> ForwardRenderer::renderFrame(
     }
 
     m_renderer->beginRenderPass(colorTarget, depthTarget, camera, clearColor);
-    m_renderer->setPassBindGroup(1, sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
+    m_renderer->setPassBindGroup(
+        static_cast<u32>(m_sceneSetIndex), sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
 
     for (const auto& obj : objects) {
         auto result = m_renderer->drawMesh(obj.mesh.get(), obj.transform);

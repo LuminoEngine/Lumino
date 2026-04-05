@@ -6,57 +6,54 @@
 #include <LuminoCore/Graphics/Vertex.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <string>
+#include <vector>
 
 namespace ln {
 
-/** GPU-aligned view params (Set 0 — camera): must match shader ViewParams struct. */
+/** GPU-aligned view params (Set N — camera): must match shader ViewParams struct. */
 struct ViewParamsUBO {
     f32 viewProj[16];
     f32 cameraPos[4];
 };
 
-/** GPU-aligned scene params (Set 1 — lighting): must match shader SceneParams struct. */
+/** GPU-aligned scene params (Set N — lighting): must match shader SceneParams struct. */
 struct SceneParamsUBO {
     f32 lightDir[4];
     f32 lightColor[4];
     f32 ambientColor[4];
 };
 
-/** GPU-aligned material params for Unlit (Set 2). */
-struct UnlitMaterialParamsUBO {
-    f32 color[4];
-};
-
-/** GPU-aligned material params for BasicLit (Set 2). */
-struct BasicLitMaterialParamsUBO {
-    f32 color[4];
-    f32 specular[4]; // xyz = specular color, w = shininess
-};
-
-/** GPU-aligned object params (Set 3): must match shader ObjectParams struct. */
+/** GPU-aligned object params (Set N): must match shader ObjectParams struct. */
 struct ObjectParamsUBO {
     f32 world[16];
     f32 normalMatrix[16];
 };
 
-enum class MaterialType {
-    Unlit,
-    BasicLit,
-};
-
 /**
  * Material: shader + parameters + render state + textures.
- * Manages a RenderPipeline and per-material BindGroup (Set 2).
+ * Manages a RenderPipeline and per-material BindGroup.
+ *
+ * Parameter storage is driven by shader reflection:
+ * - $Global CB members are stored in a byte buffer (m_paramBuffer)
+ * - Texture/Sampler slots are stored in m_baseTexture (extensible later)
  */
 class Material : public Object {
 public:
     ~Material() override = default;
 
-    MaterialType type() const { return m_type; }
+    /** Set a named float4 parameter in the material's $Global constant buffer. */
+    void setFloat4(const std::string& name, const f32* values);
 
+    /** Set a named float parameter in the material's $Global constant buffer. */
+    void setFloat(const std::string& name, f32 value);
+
+    /** Convenience: set the "color" field of the CB named "u_params". */
     void setColor(const Color& color);
-    void setTexture(rhi::Texture* texture);
+
+    /** Convenience: set color + specular for BasicLit-style shaders. */
     void setSpecular(const Color& color, f32 shininess);
+
+    void setTexture(rhi::Texture* texture);
 
     // Render state
     void setBlendEnabled(bool enabled);
@@ -84,8 +81,6 @@ public:
     rhi::Texture* baseTexture() const { return m_baseTexture.get(); }
     u64 materialParamBufferSize() const { return m_shaderPass->materialParamBufferSize(); }
     const Color& baseColor() const { return m_baseColor; }
-    const Color& specularColor() const { return m_specularColor; }
-    f32 shininess() const { return m_shininess; }
 
     /** Write material UBO data into the given mapped pointer. */
     void writeMaterialUBO(void* dst) const;
@@ -94,18 +89,17 @@ private:
     Material();
     friend class MaterialFactory;
 
-    MaterialType m_type;
-
     // ShaderPass (owns shader modules, PipelineLayout, material param info)
     Ref<ShaderPass> m_shaderPass;
 
     // Parameter version counter (incremented on any parameter change)
     uint64_t m_paramVersion;
 
-    // Parameters
+    // Generic material parameter buffer (matches $Global CB layout from reflection)
+    std::vector<uint8_t> m_paramBuffer;
+
+    // Cached base color (for convenience accessors)
     Color m_baseColor;
-    Color m_specularColor;
-    f32 m_shininess;
 
     // Textures
     Ref<rhi::Texture> m_baseTexture;
@@ -117,6 +111,9 @@ private:
     bool m_depthWriteEnabled;
 
     void markDirty() { ++m_paramVersion; }
+
+    /** Find offset of a named member in $Global CB. Returns -1 if not found. */
+    int findMemberOffset(const std::string& name) const;
 };
 
 class GraphicsContext;
@@ -154,7 +151,7 @@ public:
 
 private:
     static Result<Ref<Material>> createMaterialFromBuiltin(
-        GraphicsModule* module, BuiltinShader shader, MaterialType type);
+        GraphicsModule* module, BuiltinShader shader);
 };
 
 } // namespace ln

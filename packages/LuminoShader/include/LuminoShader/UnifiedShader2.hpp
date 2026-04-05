@@ -14,6 +14,13 @@ using BlobId2 = int16_t;
 
 class UnifiedShader2;
 
+// Info about a single member within a $Global constant buffer.
+struct GlobalMemberInfo {
+    std::string name;       // e.g. "u_time"
+    int16_t offset;         // byte offset within the CB
+    int16_t size;           // byte size
+};
+
 // Single element within a ParameterBlock (ConstantBuffer, Texture, Sampler, etc.)
 struct ParameterBlockElement2 {
     std::string name;                    // "params", "baseTexture", "" (implicit CB)
@@ -23,10 +30,11 @@ struct ParameterBlockElement2 {
 
 // ParameterBlock layout (target-independent)
 struct ParameterBlockLayout2 {
-    std::string name;                    // "viewData", "materialData", etc.
+    std::string name;                    // "viewData", "$Material", etc.
     int16_t setIndex;                    // Descriptor set index
     bool hasImplicitConstantBuffer;      // true when the struct contains only plain data fields
     std::vector<ParameterBlockElement2> elements;
+    std::vector<GlobalMemberInfo> members; // $Global CB member info (empty for real ParameterBlocks)
 };
 
 // Per-target binding information

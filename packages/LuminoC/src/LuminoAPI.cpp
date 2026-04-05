@@ -395,6 +395,45 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
     return LN_OK;
 }
 
+//LNResult LNMaterial_CreateFromShaderSourceFile(
+//    LNHandle graphicsContext,
+//    const char* shaderFilePath,
+//    const char* searchPathOrNull,
+//    LNHandle* outHandle) {
+//#ifndef LUMINO_USE_SLANG
+//    return LN_ERROR_NOT_SUPPORTED;
+//#else
+//    if (!shaderFilePath || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
+//    *outHandle = LN_NULL_HANDLE;
+//
+//    auto* instance = ln::CoreInstance::instance();
+//    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+//
+//    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+//    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+//
+//    auto compilerResult = ln::shader::ShaderCompiler2::create();
+//    if (!compilerResult) return LN_ERROR_UNKNOWN;
+//    auto& compiler = *compilerResult;
+//
+//    if (searchPath) {
+//        compiler->addSearchPath(searchPath);
+//    }
+//
+//    auto buildResult = compiler->build(shaderFilePath);
+//    if (!buildResult) return LN_ERROR_UNKNOWN;
+//
+//    auto memResult = ln::shader::UnifiedShaderSerializer2::saveToMemory(compiler->shader());
+//    if (!memResult) return LN_ERROR_UNKNOWN;
+//    auto& bytes = *memResult;
+//
+//    auto matResult = ln::MaterialFactory::createFromCompiledShader(ctx, bytes.data(), bytes.size());
+//    if (!matResult) return LN_ERROR_UNKNOWN;
+//    *outHandle = wrapObjectFromCreate(matResult->get());
+//    return LN_OK;
+//#endif
+//}
+
 LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
     return LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, outHandle);
 }

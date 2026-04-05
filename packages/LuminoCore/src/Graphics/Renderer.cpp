@@ -20,23 +20,30 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     renderer->m_depthFormat   = depthFormat;
     renderer->m_objectUBOSize = module->objectUBOSize();
 
+    // Store reflection-based set indices
+    renderer->m_viewSetIndex     = module->viewSetIndex();
+    renderer->m_sceneSetIndex    = module->sceneSetIndex();
+    renderer->m_objectSetIndex   = module->objectSetIndex();
+
     // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
     const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
     renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
 
-    // ---- Dynamic UBO allocator for per-frame view data (camera, set=0) ----
+    // ---- Dynamic UBO allocator for per-frame view data (camera) ----
     {
         auto r = DynamicUniformAllocator::create(
-            device, renderer->m_referencePipelineLayout, 0, 0,
+            device, renderer->m_referencePipelineLayout,
+            static_cast<u32>(renderer->m_viewSetIndex), 0,
             static_cast<u32>(sizeof(ViewParamsUBO)));
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_viewAllocator = std::move(*r);
     }
 
-    // ---- Dynamic UBO allocator for per-object data (set=3) ----
+    // ---- Dynamic UBO allocator for per-object data ----
     {
         auto r = DynamicUniformAllocator::create(
-            device, renderer->m_referencePipelineLayout, 3, 0,
+            device, renderer->m_referencePipelineLayout,
+            static_cast<u32>(renderer->m_objectSetIndex), 0,
             static_cast<u32>(renderer->m_objectUBOSize));
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_objectAllocator = std::move(*r);
@@ -85,7 +92,7 @@ void Renderer::beginRenderPass(
     }
 
     beginRenderPass(colorTarget, depthTarget, clearColor);
-    setPassBindGroup(0, viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
+    setPassBindGroup(static_cast<u32>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
 void Renderer::beginRenderPass(
@@ -167,7 +174,7 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
     viewParams.viewProj[10] = 1.0f;
     viewParams.viewProj[15] = 1.0f;
     std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
-    setPassBindGroup(0, viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
+    setPassBindGroup(static_cast<u32>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
 void Renderer::setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup,
@@ -289,8 +296,9 @@ Result<void> Renderer::drawSubmesh(
     auto matBGResult = getOrCreateMaterialBindGroup(mat);
     if (!matBGResult) return tl::make_unexpected(matBGResult.error());
 
-    m_currentPass->setBindGroup(2, *matBGResult);
-    m_currentPass->setBindGroup(3, alloc.bindGroup, &alloc.dynamicOffset, 1);
+    int16_t matSet = mat->shaderPass()->materialSetIndex();
+    m_currentPass->setBindGroup(static_cast<u32>(matSet), *matBGResult);
+    m_currentPass->setBindGroup(static_cast<u32>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
     m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
     ++m_drawCallCount;
 
@@ -366,8 +374,9 @@ Result<void> Renderer::drawStencilMaskMesh(
         auto matBGResult = getOrCreateMaterialBindGroup(mat);
         if (!matBGResult) return tl::make_unexpected(matBGResult.error());
 
-        m_currentPass->setBindGroup(2, *matBGResult);
-        m_currentPass->setBindGroup(3, alloc.bindGroup, &alloc.dynamicOffset, 1);
+        int16_t matSet = mat->shaderPass()->materialSetIndex();
+        m_currentPass->setBindGroup(static_cast<u32>(matSet), *matBGResult);
+        m_currentPass->setBindGroup(static_cast<u32>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
         m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
         ++m_drawCallCount;
     }
@@ -465,14 +474,16 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         }
     }
 
-    // Create BindGroup via the material's PipelineLayout (set=2)
+    // Create BindGroup via the material's PipelineLayout at the material set index.
     if (cache.textureView && cache.sampler) {
+        int16_t matSet = mat->shaderPass()->materialSetIndex();
         std::vector<rhi::BindGroupEntry> entries = {
             {0, cache.paramBuffers[frameSlot].get(), 0, mat->materialParamBufferSize(), nullptr, nullptr},
             {1, nullptr, 0, 0, cache.textureView.get(), nullptr},
             {2, nullptr, 0, 0, nullptr, cache.sampler.get()},
         };
-        auto bgResult = mat->shaderPass()->pipelineLayout()->createBindGroup(2, entries);
+        auto bgResult = mat->shaderPass()->pipelineLayout()->createBindGroup(
+            static_cast<u32>(matSet), entries);
         if (!bgResult) return tl::make_unexpected(bgResult.error());
         cache.bindGroups[frameSlot] = std::move(*bgResult);
     }

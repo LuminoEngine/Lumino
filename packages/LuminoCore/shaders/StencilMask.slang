@@ -4,28 +4,30 @@
 // ステンシルバッファへの書き込み専用で使用し、
 // カラー出力はパイプラインステート (colorWriteEnabled=false) で抑制する。
 //
-// ParameterBlock layout:
-//   Set 0 (per-view):     viewData     — ViewParams (camera)
-//   Set 1 (per-scene):    sceneData    — SceneParams (unused)
-//   Set 2 (per-material): materialData — MaterialData (CB + Texture + Sampler)
-//   Set 3 (per-object):   objectData   — ObjectParams (implicit CB)
+// Set 0 ($Global / material): u_params, u_baseTexture, u_baseSampler
+// Set 1 (per-view):           viewData   — ViewParams
+// Set 2 (per-scene):          sceneData  — SceneParams (unused)
+// Set 3 (per-object):         objectData — ObjectParams
 
 import lumino;
 
+//------------------------------------------------------------------------------
+// Material parameters (bare uniforms → $Global, Set 0)
+//------------------------------------------------------------------------------
 struct MaterialParams {
     float4 color;
 };
 
-struct MaterialData {
-    ConstantBuffer<MaterialParams> params;
-    Texture2D                      baseTexture;
-    SamplerState                   baseSampler;
-};
+uniform ConstantBuffer<MaterialParams> u_params;
+uniform Texture2D                      u_baseTexture;
+uniform SamplerState                   u_baseSampler;
 
-ParameterBlock<ViewParams>     viewData;       // -> Set 0
-ParameterBlock<SceneParams>    sceneData;      // -> Set 1 (unused; required for PipelineLayout compatibility)
-ParameterBlock<MaterialData>   materialData;   // -> Set 2
-ParameterBlock<ObjectParams>   objectData;     // -> Set 3
+//------------------------------------------------------------------------------
+// System ParameterBlocks (Sets 1–3)
+//------------------------------------------------------------------------------
+ParameterBlock<ViewParams>     viewData;
+ParameterBlock<SceneParams>    sceneData;
+ParameterBlock<ObjectParams>   objectData;
 
 struct VSOutput {
     float4 position : SV_POSITION;
@@ -45,11 +47,11 @@ VSOutput vsMain(VSInput input) {
 
 [shader("fragment")]
 float4 fsMain(VSOutput input) : SV_TARGET {
-    float4 texColor = materialData.baseTexture.Sample(materialData.baseSampler, input.uv);
-    float alpha = texColor.a * materialData.params.color.a * input.color.a;
+    float4 texColor = u_baseTexture.Sample(u_baseSampler, input.uv);
+    float alpha = texColor.a * u_params.color.a * input.color.a;
     if (alpha < 0.5)
         discard;
-    return texColor * materialData.params.color * input.color;
+    return texColor * u_params.color * input.color;
 }
 
 #ifdef LUMINO_METADATA

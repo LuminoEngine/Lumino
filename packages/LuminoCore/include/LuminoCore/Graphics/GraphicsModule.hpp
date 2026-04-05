@@ -32,17 +32,26 @@ public:
     /** Shared default white texture. */
     const Ref<rhi::Texture>& whiteTexture() const { return m_whiteTexture; }
 
-    /** Shared BindGroupLayoutDesc for Set 0 (view/camera data). */
+    /** Shared BindGroupLayoutDesc for view/camera data. */
     const rhi::BindGroupLayoutDesc& viewLayoutDesc() const { return m_viewLayoutDesc; }
 
-    /** Shared BindGroupLayoutDesc for Set 1 (scene/lighting data). */
+    /** Shared BindGroupLayoutDesc for scene/lighting data. */
     const rhi::BindGroupLayoutDesc& sceneLayoutDesc() const { return m_sceneLayoutDesc; }
 
-    /** Shared BindGroupLayoutDesc for Set 3 (per-object data). */
+    /** Shared BindGroupLayoutDesc for per-object data. */
     const rhi::BindGroupLayoutDesc& objectLayoutDesc() const { return m_objectLayoutDesc; }
 
     /** Per-object UBO size from shader reflection. */
     u64 objectUBOSize() const { return m_objectUBOSize; }
+
+    /** Descriptor set index for view data (from shader reflection). */
+    int16_t viewSetIndex() const { return m_viewSetIndex; }
+
+    /** Descriptor set index for scene data (from shader reflection). */
+    int16_t sceneSetIndex() const { return m_sceneSetIndex; }
+
+    /** Descriptor set index for object data (from shader reflection). */
+    int16_t objectSetIndex() const { return m_objectSetIndex; }
 
 private:
     GraphicsModule();
@@ -55,10 +64,15 @@ private:
     Ref<rhi::Texture> m_whiteTexture;
 
     // Shared BindGroupLayoutDescs (value types, no GPU objects)
-    rhi::BindGroupLayoutDesc m_viewLayoutDesc;   // Set 0
-    rhi::BindGroupLayoutDesc m_sceneLayoutDesc;  // Set 1
-    rhi::BindGroupLayoutDesc m_objectLayoutDesc; // Set 3
+    rhi::BindGroupLayoutDesc m_viewLayoutDesc;
+    rhi::BindGroupLayoutDesc m_sceneLayoutDesc;
+    rhi::BindGroupLayoutDesc m_objectLayoutDesc;
     u64 m_objectUBOSize = 0;
+
+    // Descriptor set indices from shader reflection
+    int16_t m_viewSetIndex = -1;
+    int16_t m_sceneSetIndex = -1;
+    int16_t m_objectSetIndex = -1;
 };
 
 } // namespace ln

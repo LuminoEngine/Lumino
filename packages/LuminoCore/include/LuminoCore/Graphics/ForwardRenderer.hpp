@@ -92,8 +92,11 @@ private:
 
     Renderer* m_renderer = nullptr;  // non-owning; owned by GraphicsContext
 
-    // Per-frame scene data allocator (lighting, set=1) — double-buffered via DynamicUniformAllocator
+    // Per-frame scene data allocator (lighting) — double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_sceneAllocator;
+
+    // Reflection-based scene set index
+    int16_t m_sceneSetIndex = -1;
 
     DirectionalLight m_light;
 

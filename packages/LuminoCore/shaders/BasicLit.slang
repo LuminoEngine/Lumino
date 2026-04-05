@@ -1,9 +1,9 @@
 // BasicLit.slang — Blinn-Phong ライティング (1 Directional Light)
 //
-// ParameterBlock layout:
-//   Set 0 (per-view):     viewData     — ViewParams (camera)
-//   Set 1 (per-scene):    sceneData    — SceneParams (lighting)
-//   Set 2 (per-material): materialData — MaterialData (CB + Texture + Sampler)
+// Descriptor set layout (assigned by Slang):
+//   Set 0 (per-material): $Global uniforms (u_params, u_baseTexture, u_baseSampler)
+//   Set 1 (per-view):     viewData     — ViewParams (camera)
+//   Set 2 (per-scene):    sceneData    — SceneParams (lighting)
 //   Set 3 (per-object):   objectData   — ObjectParams (implicit CB)
 
 import lumino;
@@ -13,16 +13,13 @@ struct MaterialParams {
     float4 specular;   // xyz = specular color, w = shininess
 };
 
-struct MaterialData {
-    ConstantBuffer<MaterialParams> params;
-    Texture2D                      baseTexture;
-    SamplerState                   baseSampler;
-};
+ParameterBlock<ViewParams>     viewData;
+ParameterBlock<SceneParams>    sceneData;
+ParameterBlock<ObjectParams>   objectData;
 
-ParameterBlock<ViewParams>     viewData;       // -> Set 0
-ParameterBlock<SceneParams>    sceneData;      // -> Set 1
-ParameterBlock<MaterialData>   materialData;   // -> Set 2
-ParameterBlock<ObjectParams>   objectData;     // -> Set 3
+uniform ConstantBuffer<MaterialParams> u_params;
+uniform Texture2D                      u_baseTexture;
+uniform SamplerState                   u_baseSampler;
 
 struct VSOutput {
     float4 position  : SV_POSITION;
@@ -46,8 +43,8 @@ VSOutput vsMain(VSInput input) {
 
 [shader("fragment")]
 float4 fsMain(VSOutput input) : SV_TARGET {
-    float4 texColor = materialData.baseTexture.Sample(materialData.baseSampler, input.uv);
-    float4 baseColor = texColor * materialData.params.color * input.color;
+    float4 texColor = u_baseTexture.Sample(u_baseSampler, input.uv);
+    float4 baseColor = texColor * u_params.color * input.color;
 
     float3 N = normalize(input.worldNorm);
     float3 L = normalize(sceneData.lightDir.xyz);
@@ -60,8 +57,8 @@ float4 fsMain(VSOutput input) : SV_TARGET {
 
     // Specular (Blinn-Phong)
     float NdotH = max(dot(N, H), 0.0);
-    float shininess = materialData.params.specular.w;
-    float3 specular = materialData.params.specular.xyz * sceneData.lightColor.xyz * pow(NdotH, shininess);
+    float shininess = u_params.specular.w;
+    float3 specular = u_params.specular.xyz * sceneData.lightColor.xyz * pow(NdotH, shininess);
 
     // Ambient
     float3 ambient = baseColor.rgb * sceneData.ambientColor.xyz;

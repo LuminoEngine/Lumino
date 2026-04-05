@@ -170,6 +170,13 @@ VoidResult UnifiedShaderSerializer2::saveToFile(const UnifiedShader2* shader, co
                 writer.writeInt8(static_cast<int8_t>(elem.kind));
                 writer.writeInt16(elem.constantBufferSize);
             }
+            // v2: GlobalMemberInfo
+            writer.writeInt16(static_cast<int16_t>(block.members.size()));
+            for (const auto& m : block.members) {
+                writeString(writer, m.name);
+                writer.writeInt16(m.offset);
+                writer.writeInt16(m.size);
+            }
         }
     }
 
@@ -232,13 +239,14 @@ VoidResult UnifiedShaderSerializer2::saveToFile(const UnifiedShader2* shader, co
 Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(const void* data, size_t length) {
     BinaryReader2 reader(static_cast<const uint8_t*>(data), length);
     Ref<UnifiedShader2> shader = Ref<UnifiedShader2>::adopt(new UnifiedShader2());
+    int fileVersion = 0;
 
     // File header
     {
         auto r1 = checkSignature(reader, "lcs2", 4);
         if (!r1) return tl::make_unexpected(r1.error());
 
-        int fileVersion = reader.readInt16();
+        fileVersion = reader.readInt16();
         if (fileVersion < FileVersion_1 || fileVersion >= FileVersion_Last) {
             return LNSHADER_MAKE_ERROR("Unsupported file version");
         }
@@ -274,6 +282,17 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(const void* d
                 elem.kind = static_cast<ParameterBlockElementKind>(reader.readInt8());
                 elem.constantBufferSize = reader.readInt16();
                 block.elements.push_back(std::move(elem));
+            }
+            // v2: GlobalMemberInfo
+            if (fileVersion >= FileVersion_2) {
+                int16_t memberCount = reader.readInt16();
+                for (int16_t j = 0; j < memberCount; j++) {
+                    GlobalMemberInfo m;
+                    m.name = readString(reader);
+                    m.offset = reader.readInt16();
+                    m.size = reader.readInt16();
+                    block.members.push_back(std::move(m));
+                }
             }
             shader->addParameterBlock(std::move(block));
         }

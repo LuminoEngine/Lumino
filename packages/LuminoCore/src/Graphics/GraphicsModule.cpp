@@ -93,6 +93,13 @@ VoidResult GraphicsModule::extractSharedLayoutDescs(const unsigned char* data, s
             "Missing required ParameterBlocks (viewData, sceneData, objectData)"});
     }
 
+    // Store set indices from reflection
+    ‚±‚ê‚ç‚É‚Â‚¢‚ÄAÅ‰‚É“Ç‚Ýž‚Þ BasicLit ‚ðŠî€‚É‚µ‚Ä‚µ‚Ü‚Á‚Ä‚¢‚é‚Ì‚ÅA
+        legacy ‚Ì ShaderFramwrok ‚Ì‚æ‚¤‚É ShaderPass ‚ÅŽ‚½‚¹‚½‚¢
+    m_viewSetIndex = viewBlock->setIndex;
+    m_sceneSetIndex = sceneBlock->setIndex;
+    m_objectSetIndex = objectBlock->setIndex;
+
     // Build BindGroupLayoutDescs and set hasDynamicOffset for UBO entries
     m_viewLayoutDesc = buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
     for (auto& entry : m_viewLayoutDesc.entries) {
@@ -123,6 +130,7 @@ VoidResult GraphicsModule::initBuiltinShader(BuiltinShader id, const unsigned ch
     auto result = ShaderPass::createFromCompiledShader(
         data, size,
         m_viewLayoutDesc, m_sceneLayoutDesc, m_objectLayoutDesc,
+        m_viewSetIndex, m_sceneSetIndex, m_objectSetIndex,
         m_device.get());
     if (!result) return tl::make_unexpected(result.error());
 
