@@ -192,17 +192,13 @@ private:
     rhi::TextureFormat m_depthFormat = {};
     // Reference PipelineLayout (from a builtin ShaderPass, used for dynamic UBO allocators)
     rhi::PipelineLayout* m_referencePipelineLayout = nullptr;
-
-    // Reflection-based descriptor set indices
     int16_t m_viewSetIndex = -1;
-    int16_t m_sceneSetIndex = -1;
     int16_t m_objectSetIndex = -1;
+    u64 m_objectUBOSize = 0;
 
     // Per-frame view UBO allocator (camera data) — double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;
 
-    // Object UBO size (from shader reflection)
-    u64 m_objectUBOSize = 0;
 
     // Per-frame dynamic UBO allocator for per-object data
     std::unique_ptr<DynamicUniformAllocator> m_objectAllocator;

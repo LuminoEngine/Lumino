@@ -42,10 +42,12 @@ using VoidResult = tl::expected<void, Error>;
 
 #define LN_BOX_ERROR(otherResult) tl::make_unexpected(otherResult.error())
 
+// ErrorCode: RuntimeError
 #define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
+
 namespace detail {
 inline std::string formatString() { return {}; }
 std::string formatString(const char* format, ...);
-tl::unexpected<ErrorCode> makeInternalError(const std::string& message, const char* file, const char* function, int line);
+tl::unexpected<Error> makeInternalError(const std::string& message, const char* file, const char* function, int line);
 } // namespace detail
 } // namespace ln

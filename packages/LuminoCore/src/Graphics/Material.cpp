@@ -153,8 +153,6 @@ Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
     GraphicsModule* module, const void* data, size_t size) {
     auto shaderPassResult = ShaderPass::createFromCompiledShader(
         data, size,
-        module->viewLayoutDesc(), module->sceneLayoutDesc(), module->objectLayoutDesc(),
-        module->viewSetIndex(), module->sceneSetIndex(), module->objectSetIndex(),
         module->device());
     if (!shaderPassResult) return tl::make_unexpected(shaderPassResult.error());
 

@@ -11,8 +11,9 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     fw->m_renderer = ctx->renderer();
 
     // Use BasicLit's PipelineLayout as reference for the scene allocator
-    auto* refPipelineLayout = ctx->module()->builtinShader(BuiltinShader::BasicLit)->pipelineLayout();
-    int16_t sceneSetIndex = ctx->module()->sceneSetIndex();
+    const auto& refShaderPass = ctx->module()->builtinShader(BuiltinShader::BasicLit);
+    auto* refPipelineLayout = refShaderPass->pipelineLayout();
+    int16_t sceneSetIndex = refShaderPass->sceneSetIndex();
 
     // ---- Dynamic UBO allocator for per-frame scene data (lighting) ----
     {

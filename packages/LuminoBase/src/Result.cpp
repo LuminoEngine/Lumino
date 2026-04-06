@@ -19,7 +19,7 @@ std::string formatString(const char* format, ...) {
 
 // 0.11.0 移行の開発コンセプトで、よりモダングラフィックス API に似た振る舞いを目指すことにした。
 // なので主に Dawn を参考にして、Error 発生時に合わせてエラーログを出力するようにしている。
-tl::unexpected<ErrorCode> makeInternalError(
+tl::unexpected<Error> makeInternalError(
     const std::string& message, const char* file, const char* function, int line) {
     const char* filename = Logger::getBaseName(file);
     std::string logMessage = formatString(
@@ -34,7 +34,7 @@ tl::unexpected<ErrorCode> makeInternalError(
 #ifdef _MSC_VER
     __debugbreak();
 #endif
-    return tl::unexpected(ErrorCode::Unknown);
+    return tl::make_unexpected(Error{ErrorCode::RuntimeError, logMessage});
 }
 } // namespace detail
 } // namespace ln

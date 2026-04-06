@@ -18,16 +18,13 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     auto renderer = Ref<Renderer>::adopt(new Renderer());
     renderer->m_colorFormat   = colorFormat;
     renderer->m_depthFormat   = depthFormat;
-    renderer->m_objectUBOSize = module->objectUBOSize();
-
-    // Store reflection-based set indices
-    renderer->m_viewSetIndex     = module->viewSetIndex();
-    renderer->m_sceneSetIndex    = module->sceneSetIndex();
-    renderer->m_objectSetIndex   = module->objectSetIndex();
 
     // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
     const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
     renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
+    renderer->m_viewSetIndex = refShaderPass->viewSetIndex();
+    renderer->m_objectSetIndex = refShaderPass->objectSetIndex();
+    renderer->m_objectUBOSize = refShaderPass->objectUBOSize();
 
     // ---- Dynamic UBO allocator for per-frame view data (camera) ----
     {

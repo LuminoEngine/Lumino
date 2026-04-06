@@ -93,6 +93,7 @@ set(LN_SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
 set(LN_BUILTIN_SHADERS
     Unlit
     BasicLit
+    StencilMask
 )
 
 foreach(SHADER_NAME ${LN_BUILTIN_SHADERS})

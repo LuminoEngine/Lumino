@@ -7,6 +7,7 @@
 
 namespace ln {
 
+
 /** Info about a single member within a material constant buffer (from shader reflection). */
 struct MaterialMemberInfo {
     std::string name;       // e.g. "u_time"
@@ -19,25 +20,13 @@ struct MaterialMemberInfo {
  *
  * セットインデックスはシェーダのリフレクション情報から動的に決定される:
  * - $Material (bare uniform) → Set N (通常 0)
- * - viewData  (ParameterBlock) → Set N+1
- * - sceneData (ParameterBlock) → Set N+2
- * - objectData(ParameterBlock) → Set N+3
+ * - viewData  (ParameterBlock) → Set ?N
+ * - sceneData (ParameterBlock) → Set ?N
+ * - objectData(ParameterBlock) → Set ?N
  */
 class ShaderPass : public RefObject {
 public:
-    /**
-     * 事前構築済みのPipelineLayoutDescからShaderPassを生成する。
-     */
-    static Result<Ref<ShaderPass>> create(
-        Ref<rhi::ShaderModule> vertShader,
-        Ref<rhi::ShaderModule> fragShader,
-        std::string vertEntry,
-        std::string fragEntry,
-        rhi::PipelineLayoutDesc pipelineLayoutDesc,
-        u64 materialParamBufferSize,
-        int16_t materialSetIndex,
-        std::vector<MaterialMemberInfo> materialMembers,
-        rhi::Device* device);
+    inline static const char* kViewDataParameterBlockName = "viewData";
 
     /**
      * .lcshバイナリからシェーダモジュールとPipelineLayoutを一括構築する。
@@ -47,12 +36,6 @@ public:
      */
     static Result<Ref<ShaderPass>> createFromCompiledShader(
         const void* data, size_t size,
-        const rhi::BindGroupLayoutDesc& viewLayoutDesc,
-        const rhi::BindGroupLayoutDesc& sceneLayoutDesc,
-        const rhi::BindGroupLayoutDesc& objectLayoutDesc,
-        int16_t viewSetIndex,
-        int16_t sceneSetIndex,
-        int16_t objectSetIndex,
         rhi::Device* device);
 
     // Accessors
@@ -69,6 +52,27 @@ public:
     /** $Global CB member layout for name-based parameter setting. */
     const std::vector<MaterialMemberInfo>& materialMembers() const { return m_materialMembers; }
 
+    /** Descriptor set index for view data (from shader reflection). */
+    int16_t viewSetIndex() const { return m_viewSetIndex; }
+
+    /** Descriptor set index for scene data (from shader reflection). */
+    int16_t sceneSetIndex() const { return m_sceneSetIndex; }
+
+    /** Descriptor set index for object data (from shader reflection). */
+    int16_t objectSetIndex() const { return m_objectSetIndex; }
+
+    /** Shared BindGroupLayoutDesc for view/camera data. */
+    const rhi::BindGroupLayoutDesc& viewLayoutDesc() const { return m_viewLayoutDesc; }
+
+    /** Shared BindGroupLayoutDesc for scene/lighting data. */
+    const rhi::BindGroupLayoutDesc& sceneLayoutDesc() const { return m_sceneLayoutDesc; }
+
+    /** Shared BindGroupLayoutDesc for per-object data. */
+    const rhi::BindGroupLayoutDesc& objectLayoutDesc() const { return m_objectLayoutDesc; }
+
+    /** Per-object UBO size from shader reflection. */
+    u64 objectUBOSize() const { return m_objectUBOSize; }
+
 private:
     ShaderPass() = default;
 
@@ -80,6 +84,17 @@ private:
     u64 m_materialParamBufferSize = 0;
     int16_t m_materialSetIndex = -1;
     std::vector<MaterialMemberInfo> m_materialMembers;
+
+    // Descriptor set indices from shader reflection
+    int16_t m_viewSetIndex = -1;
+    int16_t m_sceneSetIndex = -1;
+    int16_t m_objectSetIndex = -1;
+
+    // Shared BindGroupLayoutDescs (value types, no GPU objects)
+    rhi::BindGroupLayoutDesc m_viewLayoutDesc;
+    rhi::BindGroupLayoutDesc m_sceneLayoutDesc;
+    rhi::BindGroupLayoutDesc m_objectLayoutDesc;
+    u64 m_objectUBOSize = 0;
 };
 
 } // namespace ln
