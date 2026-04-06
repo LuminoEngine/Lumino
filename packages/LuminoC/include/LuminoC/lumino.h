@@ -346,6 +346,12 @@ extern LUMINO_API LNResult LNMaterial_SetMainTexture(
     LNHandle texture
 );
 
+extern LUMINO_API LNResult LNMaterial_SetFloat4(
+    LNHandle material,
+    const char* name,
+    const float* values
+);
+
 //------------------------------------------------------------------------------
 // LNMesh
 //------------------------------------------------------------------------------
@@ -581,6 +587,116 @@ extern LUMINO_API LNResult LNRenderer_PushStencilMask(
  * @param[in] renderer Renderer のハンドル
  */
 extern LUMINO_API LNResult LNRenderer_PopStencilMask(LNHandle renderer);
+
+//------------------------------------------------------------------------------
+// LNDrawCommandBuffer
+//------------------------------------------------------------------------------
+
+/**
+ * DrawCommandBuffer を作成します。
+ * @param[out] outHandle 作成された DrawCommandBuffer のハンドル
+ */
+extern LUMINO_API LNResult LNDrawCommandBuffer_Create(LNHandle* outHandle);
+
+/**
+ * DrawCommandBuffer をクリアします。フレーム先頭で呼び出してください。
+ * @param[in] buffer DrawCommandBuffer のハンドル
+ */
+extern LUMINO_API LNResult LNDrawCommandBuffer_Clear(LNHandle buffer);
+
+/**
+ * スプライト描画コマンドを追加します。
+ * @param[in] buffer    DrawCommandBuffer のハンドル
+ * @param[in] material  マテリアルのハンドル
+ * @param[in] zIndex    ソート優先度
+ * @param[in] posX,posY,posZ  位置
+ * @param[in] sizeW,sizeH     サイズ
+ * @param[in] uvX,uvY,uvW,uvH UV 矩形
+ * @param[in] colorR,colorG,colorB,colorA 頂点カラー
+ * @param[in] rotation  Z 軸回転 (ラジアン)
+ */
+extern LUMINO_API LNResult LNDrawCommandBuffer_DrawSprite(
+    LNHandle buffer,
+    LNHandle material,
+    int32_t  zIndex,
+    float posX, float posY, float posZ,
+    float sizeW, float sizeH,
+    float uvX, float uvY, float uvW, float uvH,
+    float colorR, float colorG, float colorB, float colorA,
+    float rotation);
+
+/**
+ * スプライト描画コマンドを一括追加します。
+ */
+typedef struct LNSpriteCommand {
+    float posX, posY, posZ;
+    float sizeW, sizeH;
+    float uvX, uvY, uvW, uvH;
+    float colorR, colorG, colorB, colorA;
+    float rotation;
+    int32_t zIndex;
+} LNSpriteCommand;
+
+extern LUMINO_API LNResult LNDrawCommandBuffer_DrawSprites(
+    LNHandle buffer,
+    LNHandle material,
+    const LNSpriteCommand* sprites,
+    uint32_t count);
+
+/**
+ * サブメッシュ単位の描画コマンドを追加します。
+ * @param[in] buffer        DrawCommandBuffer のハンドル
+ * @param[in] mesh          メッシュのハンドル
+ * @param[in] submeshIndex  サブメッシュインデックス
+ * @param[in] material      マテリアルのハンドル
+ * @param[in] transform     LNTransform へのポインタ (NULL で単位変換)
+ * @param[in] zIndex        ソート優先度
+ */
+extern LUMINO_API LNResult LNDrawCommandBuffer_DrawSubMesh(
+    LNHandle buffer,
+    LNHandle mesh,
+    uint32_t submeshIndex,
+    LNHandle material,
+    const LNTransform* transform,
+    int32_t zIndex);
+
+/**
+ * メッシュの全サブメッシュを一括で描画コマンドに追加します (便利 API)。
+ * @param[in] buffer    DrawCommandBuffer のハンドル
+ * @param[in] mesh      メッシュのハンドル
+ * @param[in] transform LNTransform へのポインタ (NULL で単位変換)
+ * @param[in] zIndex    ソート優先度
+ */
+extern LUMINO_API LNResult LNDrawCommandBuffer_DrawMesh(
+    LNHandle buffer,
+    LNHandle mesh,
+    const LNTransform* transform,
+    int32_t zIndex);
+
+//------------------------------------------------------------------------------
+// LNBatchProcessor
+//------------------------------------------------------------------------------
+
+/**
+ * BatchProcessor を作成します。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[out] outHandle       作成された BatchProcessor のハンドル
+ */
+extern LUMINO_API LNResult LNBatchProcessor_Create(
+    LNHandle graphicsContext,
+    LNHandle* outHandle);
+
+/**
+ * DrawCommandBuffer の内容をソート→バッチ化→描画します。
+ * beginRenderPass ～ endRenderPass の間で呼び出してください。
+ * @param[in] batchProcessor BatchProcessor のハンドル
+ * @param[in] renderer       Renderer のハンドル
+ * @param[in] commandBuffer  DrawCommandBuffer のハンドル
+ */
+extern LUMINO_API LNResult LNBatchProcessor_Flush(
+    LNHandle batchProcessor,
+    LNHandle renderer,
+    LNHandle commandBuffer);
 
 //------------------------------------------------------------------------------
 // LNDebug

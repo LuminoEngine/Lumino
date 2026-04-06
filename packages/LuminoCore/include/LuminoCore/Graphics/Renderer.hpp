@@ -156,6 +156,13 @@ public:
     Result<void> drawMesh(Mesh* mesh, const Transform& transform, Material* material);
 
     /**
+     * Draw a single submesh with an explicit material and transform.
+     * Used by BatchProcessor for per-submesh drawing.
+     */
+    Result<void> drawSingleSubMesh(Mesh* mesh, u32 submeshIndex,
+                                   Material* material, const Transform& transform);
+
+    /**
      * Draw a fullscreen rectangle using the given material.
      * Intended for post-processing passes. The quad covers NDC [-1,1]x[-1,1]
      * with UV (0,0) at top-left and (1,1) at bottom-right.

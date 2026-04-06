@@ -1,27 +1,19 @@
-// Unlit.slang — テクスチャ × カラー、ライティングなし
-//
-// ParameterBlock layout:
-//   Set 0 (per-view):     viewData     — ViewParams (camera)
-//   Set 1 (per-scene):    sceneData    — SceneParams (lighting, unused)
-//   Set 2 (per-material): materialData — MaterialData (CB + Texture + Sampler)
-//   Set 3 (per-object):   objectData   — ObjectParams (implicit CB)
-
 import lumino;
 
-struct MaterialParams {
-    float4 color;
-};
+// struct MaterialParams {
+//     float4 color;
+// };
 
-struct MaterialData {
-    ConstantBuffer<MaterialParams> params;
-    Texture2D                      baseTexture;
-    SamplerState                   baseSampler;
-};
+// uniform ConstantBuffer<MaterialParams> u_params;
 
-ParameterBlock<ViewParams>     viewData;       // -> Set 0
-ParameterBlock<SceneParams>    sceneData;      // -> Set 1 (unused; required for PipelineLayout compatibility)
-ParameterBlock<MaterialData>   materialData;   // -> Set 2
-ParameterBlock<ObjectParams>   objectData;     // -> Set 3
+ParameterBlock<ViewParams>     viewData;
+ParameterBlock<SceneParams>    sceneData;
+ParameterBlock<ObjectParams>   objectData;
+
+uniform float4 u_myColor;
+uniform Texture2D                      u_baseTexture;
+uniform SamplerState                   u_baseSampler;
+
 
 struct VSOutput {
     float4 position : SV_POSITION;
@@ -41,8 +33,8 @@ VSOutput vsMain(VSInput input) {
 
 [shader("fragment")]
 float4 fsMain(VSOutput input) : SV_TARGET {
-    float4 texColor = materialData.baseTexture.Sample(materialData.baseSampler, input.uv);
-    return texColor * materialData.params.color * input.color;
+    float4 texColor = u_baseTexture.Sample(u_baseSampler, input.uv);
+    return texColor * u_myColor * input.color;
 }
 
 #ifdef LUMINO_METADATA

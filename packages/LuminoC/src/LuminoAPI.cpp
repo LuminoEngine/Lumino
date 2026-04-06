@@ -11,6 +11,7 @@
 #include <LuminoCore/Graphics/Renderer.hpp>
 #include <LuminoCore/Graphics/Camera.hpp>
 #include <LuminoCore/Graphics/Transform.hpp>
+#include <LuminoCore/Graphics/Batch.hpp>
 #include <LuminoCore/Platform/Window.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoC/lumino.h>
@@ -28,9 +29,32 @@ public:
     ln::Camera camera;
 };
 
+/** DrawCommandBuffer を Object でラップしてハンドル管理に載せる。 */
+class DrawCommandBufferObject : public ln::Object {
+public:
+    ln::DrawCommandBuffer buffer;
+};
+
+/** BatchProcessor を Object でラップしてハンドル管理に載せる。 */
+class BatchProcessorObject : public ln::Object {
+public:
+    std::unique_ptr<ln::BatchProcessor> processor;
+};
+
 // Per-renderer state: whether the current render pass targets a render target texture.
 // If non-null, LNRenderer_EndRenderPass will call endRenderPassWithTransition.
 static bool s_renderingToRenderTarget = false;
+
+/** Convert LNTransform pointer to ln::Transform (identity if null). */
+ln::Transform toLnTransform(const LNTransform* transform) {
+    ln::Transform xform;
+    if (transform) {
+        xform.position = {transform->posX, transform->posY, transform->posZ};
+        xform.rotation = ln::Quaternion{transform->rotX, transform->rotY, transform->rotZ, transform->rotW};
+        xform.scale    = {transform->scaleX, transform->scaleY, transform->scaleZ};
+    }
+    return xform;
+}
 
 /**
  * Object が未登録の場合、登録して LNHandle を返します。
@@ -479,6 +503,13 @@ LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture) {
     return LN_OK;
 }
 
+extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* name, const float* values) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+    mat->setFloat4(name, values);
+    return LN_OK;
+
+}
 //------------------------------------------------------------------------------
 // LNMesh
 //------------------------------------------------------------------------------
@@ -907,5 +938,145 @@ LNResult LNRenderer_BeginRenderPassToTexture(
     }
 
     s_renderingToRenderTarget = true;
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNDrawCommandBuffer
+//------------------------------------------------------------------------------
+
+LNResult LNDrawCommandBuffer_Create(LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* obj = new DrawCommandBufferObject();
+    *outHandle = wrapObjectFromCreate(obj);
+    return LN_OK;
+}
+
+LNResult LNDrawCommandBuffer_Clear(LNHandle buffer) {
+    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+    obj->buffer.clear();
+    return LN_OK;
+}
+
+LNResult LNDrawCommandBuffer_DrawSprite(
+    LNHandle buffer, LNHandle material, int32_t zIndex,
+    float posX, float posY, float posZ,
+    float sizeW, float sizeH,
+    float uvX, float uvY, float uvW, float uvH,
+    float colorR, float colorG, float colorB, float colorA,
+    float rotation) {
+
+    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    obj->buffer.drawSprite(
+        mat, zIndex,
+        ln::Vector3{posX, posY, posZ},
+        ln::Vector2{sizeW, sizeH},
+        ln::Vector2{uvX, uvY},
+        ln::Vector2{uvW, uvH},
+        ln::Color{colorR, colorG, colorB, colorA},
+        rotation);
+    return LN_OK;
+}
+
+LNResult LNDrawCommandBuffer_DrawSprites(
+    LNHandle buffer, LNHandle material,
+    const LNSpriteCommand* sprites, uint32_t count) {
+
+    if (!sprites && count > 0) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    for (uint32_t i = 0; i < count; ++i) {
+        const auto& s = sprites[i];
+        obj->buffer.drawSprite(
+            mat, s.zIndex,
+            ln::Vector3{s.posX, s.posY, s.posZ},
+            ln::Vector2{s.sizeW, s.sizeH},
+            ln::Vector2{s.uvX, s.uvY},
+            ln::Vector2{s.uvW, s.uvH},
+            ln::Color{s.colorR, s.colorG, s.colorB, s.colorA},
+            s.rotation);
+    }
+    return LN_OK;
+}
+
+LNResult LNDrawCommandBuffer_DrawSubMesh(
+    LNHandle buffer, LNHandle meshHandle, uint32_t submeshIndex,
+    LNHandle materialHandle, const LNTransform* transform, int32_t zIndex) {
+
+    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = resolveObject<ln::Material>(materialHandle);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    obj->buffer.drawSubMesh(mesh, submeshIndex, mat, toLnTransform(transform), zIndex);
+    return LN_OK;
+}
+
+LNResult LNDrawCommandBuffer_DrawMesh(
+    LNHandle buffer, LNHandle meshHandle,
+    const LNTransform* transform, int32_t zIndex) {
+
+    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    obj->buffer.drawMesh(mesh, toLnTransform(transform), zIndex);
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNBatchProcessor
+//------------------------------------------------------------------------------
+
+LNResult LNBatchProcessor_Create(LNHandle graphicsContext, LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = ln::BatchProcessor::create(ctx);
+    if (!result) return LN_ERROR_UNKNOWN;
+
+    auto* obj = new BatchProcessorObject();
+    obj->processor = std::move(*result);
+    *outHandle = wrapObjectFromCreate(obj);
+    return LN_OK;
+}
+
+LNResult LNBatchProcessor_Flush(
+    LNHandle batchProcessor, LNHandle renderer, LNHandle commandBuffer) {
+
+    auto* bpObj = resolveObject<BatchProcessorObject>(batchProcessor);
+    if (!bpObj) return LN_ERROR_INVALID_HANDLE;
+
+    auto* ren = resolveObject<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* cmdObj = resolveObject<DrawCommandBufferObject>(commandBuffer);
+    if (!cmdObj) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = bpObj->processor->flush(ren, &cmdObj->buffer);
+    if (!result) return LN_ERROR_UNKNOWN;
+
     return LN_OK;
 }

@@ -302,6 +302,17 @@ Result<void> Renderer::drawSubmesh(
     return {};
 }
 
+Result<void> Renderer::drawSingleSubMesh(
+    Mesh* mesh, u32 submeshIndex, Material* material, const Transform& transform) {
+
+    const auto& submeshes = mesh->submeshes();
+    if (submeshIndex >= submeshes.size()) return {};
+
+    m_currentPass->setVertexBuffer(0, mesh->vertexBuffer());
+    m_currentPass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
+    return drawSubmesh(mesh, material, transform, submeshes[submeshIndex]);
+}
+
 Result<void> Renderer::drawScreenRect(Material* material) {
     auto meshResult = getScreenRectMesh();
     if (!meshResult) return tl::make_unexpected(meshResult.error());

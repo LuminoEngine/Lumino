@@ -48,7 +48,10 @@ int main(void) {
     LNHandle material = LN_NULL_HANDLE;
     LNMaterial_CreateFromCompiledShader(graphicsContext,
         shaderData.data(), (uint32_t)shaderData.size(), &material);
-    LNMaterial_SetColor(material, 1.0f, 0.0f, 0.0f, 1.0f); /* Red */
+    //LNMaterial_SetColor(material, 1.0f, 0.0f, 0.0f, 1.0f); /* Red */
+
+    const float myColor[4] = {0.0f, 1.0f, 0.0f, 1.0f}; /* Green */
+    LNMaterial_SetFloat4(material, "u_myColor", myColor);
 
     /* 5. Triangle mesh (3 vertices, 3 indices, CCW winding) */
     LNVertex vertices[3] = {
