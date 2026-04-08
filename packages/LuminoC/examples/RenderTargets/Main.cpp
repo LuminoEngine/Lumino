@@ -112,7 +112,7 @@ int main(void) {
 
     /* 7. Main loop */
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
-    LNGraphicsProfiler profiler = {};
+    LNGraphicsProfilering profiler = {};
     int continueLoop = 1;
     float angle = 0.0f;
     while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {

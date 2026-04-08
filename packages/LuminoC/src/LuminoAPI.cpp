@@ -343,7 +343,7 @@ LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     return LN_OK;
 }
 
-LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfiler* outProfiler) {
+LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfilering* outProfiler) {
     if (!outProfiler) return LN_ERROR_INVALID_ARGUMENT;
 
     auto* instance = ln::CoreInstance::instance();
@@ -805,34 +805,6 @@ LNResult LNRenderer_DrawMesh(
     return LN_OK;
 }
 
-LNResult LNRenderer_DrawMeshWithMaterial(
-    LNHandle renderer, LNHandle meshHandle,
-    const LNTransform* transform, LNHandle materialHandle) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
-    if (!ren) return LN_ERROR_INVALID_HANDLE;
-
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
-    if (!mesh) return LN_ERROR_INVALID_HANDLE;
-
-    auto* mat = instance->objectRegistry()->resolve<ln::Material>(materialHandle);
-    if (!mat) return LN_ERROR_INVALID_HANDLE;
-
-    ln::Transform xform;
-    if (transform) {
-        xform.position = {transform->posX, transform->posY, transform->posZ};
-        xform.rotation = ln::Quaternion{transform->rotX, transform->rotY, transform->rotZ, transform->rotW};
-        xform.scale    = {transform->scaleX, transform->scaleY, transform->scaleZ};
-    }
-
-    auto result = ren->drawMesh(mesh, xform, mat);
-    if (!result) return LN_ERROR_UNKNOWN;
-
-    return LN_OK;
-}
-
 //------------------------------------------------------------------------------
 
 LNResult LNRenderer_PushStencilMask(
@@ -949,8 +921,8 @@ LNResult LNDrawCommandBuffer_Create(LNHandle* outHandle) {
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* obj = new DrawCommandBufferObject();
-    *outHandle = wrapObjectFromCreate(obj);
+    auto obj = ln::Ref<DrawCommandBufferObject>::adopt(LN_NEW DrawCommandBufferObject());
+    *outHandle = wrapObjectFromCreate(obj.get());
     return LN_OK;
 }
 
@@ -1057,9 +1029,9 @@ LNResult LNBatchProcessor_Create(LNHandle graphicsContext, LNHandle* outHandle) 
     auto result = ln::BatchProcessor::create(ctx);
     if (!result) return LN_ERROR_UNKNOWN;
 
-    auto* obj = new BatchProcessorObject();
+    auto obj = ln::Ref<BatchProcessorObject>::adopt(LN_NEW BatchProcessorObject());
     obj->processor = std::move(*result);
-    *outHandle = wrapObjectFromCreate(obj);
+    *outHandle = wrapObjectFromCreate(obj.get());
     return LN_OK;
 }
 

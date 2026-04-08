@@ -1,7 +1,10 @@
+# https://pystyle.info/apps/clang-format-editor/
+#
 ---
-Language:        Cpp
-# BasedOnStyle:  Mozilla
-ColumnLimit: 120  # GitHub preview width.
+Language: Cpp
+# BasedOnStyle: Mozilla
+# IDE で左右に FileList と Chat を表示することが多くなったため標準的なサイズの 80 とした。
+ColumnLimit: 80
 AccessModifierOffset: -4
 AllowAllArgumentsOnNextLine: false
 AlignConsecutiveAssignments: false
@@ -13,11 +16,14 @@ AlignTrailingComments: true
 #   int a,
 #   int b,
 #   int c)
+#BreakBeforeCloseBracketFunction: true # TODO: BreakBeforeClose～ 系は True にしたいのだけど、 Clang 22 以上が必要で VS2022 を新しくする必要がある。
 AllowAllParametersOfDeclarationOnNextLine: false
 #BinPackParameters: AlwaysOnePerLine
 BinPackParameters: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
+BreakAfterReturnType: Automatic
+PenaltyReturnTypeOnItsOwnLine: 100000
 BreakBeforeBraces: Custom
 BreakConstructorInitializers: BeforeComma
 PenaltyBreakBeforeFirstCallParameter: 0
@@ -87,7 +93,7 @@ BreakBeforeInheritanceComma: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
 BreakAfterJavaFieldAnnotations: false
-BreakStringLiterals: true
+BreakStringLiterals: false
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -124,7 +130,6 @@ NamespaceIndentation: None
 ObjCBlockIndentWidth: 4
 ObjCSpaceAfterProperty: true
 ObjCSpaceBeforeProtocolList: false
-PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Left
 ReflowComments:  false  # Leave the arrangement of comments to the programmer.
 SortIncludes:    false

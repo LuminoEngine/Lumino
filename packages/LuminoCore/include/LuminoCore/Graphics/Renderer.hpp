@@ -150,8 +150,10 @@ public:
     Result<void> drawMesh(Mesh* mesh, const Transform& transform);
 
     /**
-     * Draw a mesh using an explicit material for all submeshes.
-     * The mesh's own materials are ignored.
+     * すべてのサブメッシュに明示的なマテリアルを使用してメッシュを描画します。
+     *
+     * 主にポストエフェクト用の特殊用途です。
+     * メッシュ自体のマテリアルは無視されます。
      */
     Result<void> drawMesh(Mesh* mesh, const Transform& transform, Material* material);
 

@@ -7,6 +7,7 @@ function(setup_sample_configurations TARGET)
     target_link_libraries(${TARGET} PRIVATE LuminoC glfw)
     set_target_properties(${TARGET} PROPERTIES FOLDER "examples")
     add_dependencies(${TARGET} LuminoC)
+    target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
     if(LN_DESKTOP_WEBGPU)
         target_link_libraries(${TARGET} PRIVATE webgpu)

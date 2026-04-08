@@ -550,21 +550,6 @@ extern LUMINO_API LNResult LNRenderer_DrawMesh(
 );
 
 /**
- * 明示的なマテリアルを使ってメッシュを描画します。
- * メッシュ自身のマテリアルは無視されます。
- * @param[in] renderer   Renderer のハンドル
- * @param[in] mesh       メッシュのハンドル
- * @param[in] transform  LNTransform へのポインタ (NULL で単位変換)
- * @param[in] material   マテリアルのハンドル
- */
-extern LUMINO_API LNResult LNRenderer_DrawMeshWithMaterial(
-    LNHandle renderer,
-    LNHandle mesh,
-    const LNTransform* transform,
-    LNHandle material
-);
-
-/**
  * ステンシルマスクをプッシュします。
  * maskMesh をステンシルバッファにのみ描画し（カラー書き込みなし）、
  * 以降の DrawMesh 呼び出しはマスク領域内のみ描画されます。
@@ -705,7 +690,7 @@ extern LUMINO_API LNResult LNBatchProcessor_Flush(
 /**
  * グラフィックスプロファイリング情報。
  */
-typedef struct LNGraphicsProfiler {
+typedef struct LNGraphicsProfilering {
     /** 現在フレームのドローコール数。 */
     int32_t drawCallCount;
 
@@ -724,7 +709,7 @@ typedef struct LNGraphicsProfiler {
  */
 extern LUMINO_API LNResult LNDebug_GetGraphicsProfiler(
     LNHandle graphicsContext,
-    LNGraphicsProfiler* outProfiler);
+    LNGraphicsProfilering* outProfiler);
 
 /**
  * デバッグ文字列を画面左上に描画します。

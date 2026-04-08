@@ -240,9 +240,13 @@ Result<void> BatchProcessor::flushSpriteGroup(
 
     // Upload to GPU
     auto vr = m_spriteMesh->updateVertices(0, m_vertexStaging.data(), totalVertices);
-    if (!vr) return vr;
+    if (!vr) {
+        return vr;
+    }
     auto ir = m_spriteMesh->updateIndices(0, m_indexStaging.data(), totalIndices);
-    if (!ir) return ir;
+    if (!ir) {
+        return ir;
+    }
 
     m_spriteMesh->setSubmeshes(m_submeshStaging);
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BatchRendering example
  *
  * Demonstrates the DrawCommandBuffer + BatchProcessor API.
@@ -8,7 +8,7 @@
  * Compare with the old BatchSprite example where the client had to
  * manage sorting, vertex generation, and dynamic mesh updates manually.
  */
-#include <LuminoC/lumino.h>
+#include "../Utils.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -133,15 +133,10 @@ int main(void) {
             0.15f, 0.15f, 0.2f, 1.0f);
         LNBatchProcessor_Flush(batchProcessor, renderer, commandBuffer);
         LNRenderer_EndRenderPass(renderer);
-        LNGraphicsContext_EndFrame(graphicsContext);
 
-        /* Print stats every 100 frames */
-        if (frame % 100 == 0) {
-            LNGraphicsProfiler profiler;
-            LNDebug_GetGraphicsProfiler(graphicsContext, &profiler);
-            printf("Frame %d: %d draw calls, %.1f FPS\n",
-                   frame, profiler.drawCallCount, profiler.fps);
-        }
+        printGraphicsProfilering(graphicsContext);
+
+        LNGraphicsContext_EndFrame(graphicsContext);
 
         frame++;
     }

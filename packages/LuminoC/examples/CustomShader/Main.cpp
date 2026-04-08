@@ -80,7 +80,7 @@ int main(void) {
         0.0f, 1.0f, 0.0f);  /* up */
 
     /* 7. Main loop */
-    LNGraphicsProfiler profilerng = {};
+    LNGraphicsProfilering profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     int continueLoop = 1;
     while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
@@ -90,10 +90,10 @@ int main(void) {
         LNRenderer_DrawMesh(renderer, mesh, &identity);
         LNRenderer_EndRenderPass(renderer);
 
-        LNDebug_GetGraphicsProfiler(graphicsContext, &profilerng);
-        LNDebug_Print(graphicsContext, (std::string("FPS: ") + std::to_string(profilerng.fps)).c_str());
-        LNDebug_Print(graphicsContext, (std::string("FrameTime(ms): ") + std::to_string(profilerng.lastFrameTimeMs)).c_str());
-        LNDebug_Print(graphicsContext, (std::string("DrawCall: ") + std::to_string(profilerng.drawCallCount)).c_str());
+        LNDebug_GetGraphicsProfiler(graphicsContext, &profilering);
+        LNDebug_Print(graphicsContext, (std::string("FPS: ") + std::to_string(profilering.fps)).c_str());
+        LNDebug_Print(graphicsContext, (std::string("FrameTime(ms): ") + std::to_string(profilering.lastFrameTimeMs)).c_str());
+        LNDebug_Print(graphicsContext, (std::string("DrawCall: ") + std::to_string(profilering.drawCallCount)).c_str());
 
         LNGraphicsContext_EndFrame(graphicsContext);
     }
