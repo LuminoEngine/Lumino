@@ -54,7 +54,7 @@ public:
     void endRenderPass()                                                                                { m_renderer->endRenderPass(); }
     void setPassBindGroup(u32 set, rhi::BindGroup* bg,
                           u32 dynOffset = 0, u32 dynOffsetCount = 0)                                   { m_renderer->setPassBindGroup(set, bg, dynOffset, dynOffsetCount); }
-    Result<void> drawMesh(Mesh* mesh, const Transform& t)                                              { return m_renderer->drawMesh(mesh, t); }
+    Result<void> drawMesh(Mesh* mesh, const Transform& t)                                              { return m_renderer->drawMeshImmediate(mesh, t); }
     Result<void> drawScreenRect(Material* mat)                                                         { return m_renderer->drawScreenRect(mat); }
 
     // ---- ForwardRenderer-specific API ----

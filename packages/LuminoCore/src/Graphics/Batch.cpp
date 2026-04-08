@@ -268,7 +268,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
     }
 
     // Draw with identity transform (positions are already world-space)
-    return renderer->drawMesh(m_spriteMesh.get(), Transform::identity());
+    return renderer->drawMeshImmediate(m_spriteMesh.get(), Transform::identity());
 }
 
 Result<void> BatchProcessor::flushSubMeshGroup(

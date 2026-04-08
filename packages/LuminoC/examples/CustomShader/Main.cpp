@@ -87,7 +87,7 @@ int main(void) {
         LNHandle renderer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
         LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f);
-        LNRenderer_DrawMesh(renderer, mesh, &identity);
+        LNRenderer_DrawMesh(renderer, mesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
 
         LNDebug_GetGraphicsProfiler(graphicsContext, &profilering);

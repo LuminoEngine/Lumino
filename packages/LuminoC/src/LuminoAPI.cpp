@@ -41,10 +41,6 @@ public:
     std::unique_ptr<ln::BatchProcessor> processor;
 };
 
-// Per-renderer state: whether the current render pass targets a render target texture.
-// If non-null, LNRenderer_EndRenderPass will call endRenderPassWithTransition.
-static bool s_renderingToRenderTarget = false;
-
 /** Convert LNTransform pointer to ln::Transform (identity if null). */
 ln::Transform toLnTransform(const LNTransform* transform) {
     ln::Transform xform;
@@ -772,9 +768,9 @@ LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
     auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
     if (!r) return LN_ERROR_INVALID_HANDLE;
 
-    if (s_renderingToRenderTarget) {
+    if (r->m_renderingToRenderTarget) {
         r->endRenderPassWithTransition();
-        s_renderingToRenderTarget = false;
+        r->m_renderingToRenderTarget = false;
     } else {
         r->endRenderPass();
     }
@@ -782,6 +778,22 @@ LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
 }
 
 LNResult LNRenderer_DrawMesh(
+    LNHandle renderer, LNHandle meshHandle, const LNTransform* transform,
+    int32_t zIndex) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    ren->drawMesh(mesh, toLnTransform(transform), zIndex);
+    return LN_OK;
+}
+
+LNResult LNRenderer_DrawMeshImmediate(
     LNHandle renderer, LNHandle meshHandle, const LNTransform* transform) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
@@ -792,16 +804,36 @@ LNResult LNRenderer_DrawMesh(
     auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
-    ln::Transform xform;
-    if (transform) {
-        xform.position = {transform->posX, transform->posY, transform->posZ};
-        xform.rotation = ln::Quaternion{transform->rotX, transform->rotY, transform->rotZ, transform->rotW};
-        xform.scale    = {transform->scaleX, transform->scaleY, transform->scaleZ};
-    }
-
-    auto result = ren->drawMesh(mesh, xform);
+    auto result = ren->drawMeshImmediate(mesh, toLnTransform(transform));
     if (!result) return LN_ERROR_UNKNOWN;
 
+    return LN_OK;
+}
+
+LNResult LNRenderer_DrawSprite(
+    LNHandle renderer, LNHandle material, int32_t zIndex,
+    float posX, float posY, float posZ,
+    float sizeW, float sizeH,
+    float uvX, float uvY, float uvW, float uvH,
+    float colorR, float colorG, float colorB, float colorA,
+    float rotation) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    ren->drawSprite(
+        mat, zIndex,
+        ln::Vector3{posX, posY, posZ},
+        ln::Vector2{sizeW, sizeH},
+        ln::Vector2{uvX, uvY},
+        ln::Vector2{uvW, uvH},
+        ln::Color{colorR, colorG, colorB, colorA},
+        rotation);
     return LN_OK;
 }
 
@@ -909,9 +941,10 @@ LNResult LNRenderer_BeginRenderPassToTexture(
             ln::Color{r, g, b, a});
     }
 
-    s_renderingToRenderTarget = true;
+    ren->m_renderingToRenderTarget = true;
     return LN_OK;
 }
+
 
 //------------------------------------------------------------------------------
 // LNDrawCommandBuffer

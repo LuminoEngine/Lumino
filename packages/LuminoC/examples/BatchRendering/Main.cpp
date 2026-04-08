@@ -1,9 +1,10 @@
 ﻿/**
  * BatchRendering example
  *
- * Demonstrates the DrawCommandBuffer + BatchProcessor API.
- * 1024 sprites with 2 alternating materials are batched and drawn
- * with minimal draw calls. A mesh is also drawn via the same buffer.
+ * Demonstrates transparent batch rendering via LNRenderer_DrawSprite
+ * and LNRenderer_DrawMesh. 1024 sprites with 2 alternating materials
+ * are automatically batched and drawn with minimal draw calls.
+ * A mesh is also drawn via the same Renderer.
  *
  * Compare with the old BatchSprite example where the client had to
  * manage sorting, vertex generation, and dynamic mesh updates manually.
@@ -53,12 +54,6 @@ int main(void) {
         0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f);
 
-    /* DrawCommandBuffer + BatchProcessor */
-    LNHandle commandBuffer = LN_NULL_HANDLE;
-    LNHandle batchProcessor = LN_NULL_HANDLE;
-    LNDrawCommandBuffer_Create(&commandBuffer);
-    LNBatchProcessor_Create(graphicsContext, &batchProcessor);
-
     /* A simple quad mesh to demonstrate mixed sprite + mesh rendering */
     LNVertex quadVerts[4] = {};
     /* Top-left */
@@ -97,7 +92,11 @@ int main(void) {
     while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
         float t = frame * 0.02f;
 
-        LNDrawCommandBuffer_Clear(commandBuffer);
+        /* Render */
+        LNHandle renderer = LN_NULL_HANDLE;
+        LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, camera,
+            0.15f, 0.15f, 0.2f, 1.0f);
 
         /* Add sprites */
         int cols = 32;
@@ -113,8 +112,8 @@ int main(void) {
             int zIndex = (int)(sinf(t + i * 0.1f) * 10.0f);
             LNHandle mat = (i % 2 == 0) ? material0 : material1;
 
-            LNDrawCommandBuffer_DrawSprite(
-                commandBuffer, mat, zIndex,
+            LNRenderer_DrawSprite(
+                renderer, mat, zIndex,
                 x, y, 0.0f,
                 16.0f, 16.0f,
                 0.0f, 0.0f, 1.0f, 1.0f,
@@ -124,14 +123,8 @@ int main(void) {
 
         /* Add mesh */
         LNTransform meshTransform = { 200.0f, 200.0f, 0.0f,  0,0,0,1,  1,1,1 };
-        LNDrawCommandBuffer_DrawMesh(commandBuffer, mesh, &meshTransform, 0);
+        LNRenderer_DrawMesh(renderer, mesh, &meshTransform, 0);
 
-        /* Render */
-        LNHandle renderer = LN_NULL_HANDLE;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
-        LNRenderer_BeginRenderPass(renderer, graphicsContext, camera,
-            0.15f, 0.15f, 0.2f, 1.0f);
-        LNBatchProcessor_Flush(batchProcessor, renderer, commandBuffer);
         LNRenderer_EndRenderPass(renderer);
 
         printGraphicsProfilering(graphicsContext);
@@ -142,8 +135,6 @@ int main(void) {
     }
 
     /* --- Cleanup --- */
-    LNObject_Release(batchProcessor);
-    LNObject_Release(commandBuffer);
     LNObject_Release(mesh);
     LNObject_Release(material1);
     LNObject_Release(material0);

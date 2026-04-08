@@ -258,7 +258,7 @@ int main(void) {
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
         LNRenderer_BeginRenderPass(renderer, graphicsContext, camera,
             0.15f, 0.15f, 0.2f, 1.0f);
-        LNRenderer_DrawMesh(renderer, mesh, &identity);
+        LNRenderer_DrawMesh(renderer, mesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
         LNGraphicsContext_EndFrame(graphicsContext);
 

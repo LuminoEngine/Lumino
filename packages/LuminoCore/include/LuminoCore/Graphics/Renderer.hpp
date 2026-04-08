@@ -10,6 +10,7 @@
 #include <LuminoCore/Graphics/Mesh.hpp>
 #include <LuminoCore/Graphics/Transform.hpp>
 #include <LuminoCore/Graphics/DynamicUniformAllocator.hpp>
+#include <LuminoCore/Graphics/Batch.hpp>
 
 namespace ln {
 
@@ -140,22 +141,39 @@ public:
     /** Draw call count for the current frame. Reset each beginFrame(). */
     u32 drawCallCount() const { return m_drawCallCount; }
 
-    // ---- Drawing ----
+    // ---- Drawing (batched) ----
 
     /**
-     * Draw a mesh with the given world transform.
-     * Per-submesh: resolves the material from the mesh, selects or creates a
-     * cached pipeline, allocates object UBO, and records the draw call.
+     * メッシュ描画コマンドを内部コマンドバッファに蓄積します。
+     * 蓄積されたコマンドは endRenderPass() 時に自動的にソート→バッチ化→描画されます。
+     * @param mesh      メッシュ
+     * @param transform ワールドトランスフォーム
+     * @param zIndex    ソート優先度 (デフォルト 0)
      */
-    Result<void> drawMesh(Mesh* mesh, const Transform& transform);
+    void drawMesh(Mesh* mesh, const Transform& transform, i32 zIndex = 0);
 
     /**
-     * すべてのサブメッシュに明示的なマテリアルを使用してメッシュを描画します。
-     *
+     * スプライト描画コマンドを内部コマンドバッファに蓄積します。
+     * 蓄積されたコマンドは endRenderPass() 時に自動的にソート→バッチ化→描画されます。
+     */
+    void drawSprite(Material* material, i32 zIndex,
+                    const Vector3& pos, const Vector2& size,
+                    const Vector2& uvOffset, const Vector2& uvSize,
+                    const Color& color, f32 rotation = 0.0f);
+
+    // ---- Drawing (immediate) ----
+
+    /**
+     * メッシュを即座に描画します (バッチ化なし)。
+     * レンダーパス内で即時に GPU コマンドを発行します。
+     */
+    Result<void> drawMeshImmediate(Mesh* mesh, const Transform& transform);
+
+    /**
+     * すべてのサブメッシュに明示的なマテリアルを使用してメッシュを即座に描画します。
      * 主にポストエフェクト用の特殊用途です。
-     * メッシュ自体のマテリアルは無視されます。
      */
-    Result<void> drawMesh(Mesh* mesh, const Transform& transform, Material* material);
+    Result<void> drawMeshImmediate(Mesh* mesh, const Transform& transform, Material* material);
 
     /**
      * Draw a single submesh with an explicit material and transform.
@@ -189,6 +207,12 @@ public:
      * 内部でマスクメッシュを再描画してステンシル値をデクリメントします。
      */
     Result<void> popStencilMask();
+
+    // フレームスコープの一時状態 (C API からアクセス可能)
+
+    /** レンダーターゲットテクスチャへの描画中かどうか。
+     *  true の場合、endRenderPass で endRenderPassWithTransition を呼ぶ。 */
+    bool m_renderingToRenderTarget = false;
 
 private:
     friend class GraphicsContext;
@@ -254,6 +278,14 @@ private:
     };
     std::vector<StencilMaskEntry> m_stencilMaskStack;
     u32 m_stencilRef = 0;
+
+    // ---- Batch rendering (internal) ----
+
+    DrawCommandBuffer m_commandBuffer;
+    std::unique_ptr<BatchProcessor> m_batchProcessor;
+
+    /** Flush batched commands and clear the command buffer. */
+    Result<void> flushBatch();
 
     // ---- Per-material BindGroup cache (Renderer-owned) ----
 

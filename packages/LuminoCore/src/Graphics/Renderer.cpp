@@ -1,4 +1,5 @@
 #include <LuminoCore/Graphics/Renderer.hpp>
+#include <LuminoCore/Graphics/Batch.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/PipelineCache.hpp>
@@ -59,6 +60,14 @@ void Renderer::beginFrame() {
     m_objectAllocator->beginFrame(frame);
     m_currentCmd = m_ctx->currentCommandBuffer();
     m_drawCallCount = 0;
+
+    // Lazy-initialize the batch processor on first use.
+    if (!m_batchProcessor) {
+        auto result = BatchProcessor::create(m_ctx);
+        if (result) {
+            m_batchProcessor = std::move(*result);
+        }
+    }
 }
 
 void Renderer::endFrame() {
@@ -124,15 +133,24 @@ void Renderer::beginRenderPass(
         m_passBindGroupDynamicOffsetCounts[i] = 0;
         m_passBindGroupDirty[i]              = false;
     }
+
+    // Clear the internal command buffer for this render pass.
+    m_commandBuffer.clear();
 }
 
 void Renderer::endRenderPass() {
+    // Flush batched draw commands before ending the render pass.
+    (void)flushBatch();
+
     m_currentPass->end();
     m_currentPass = nullptr;
     m_currentColorTarget = nullptr;
 }
 
 void Renderer::endRenderPassWithTransition() {
+    // Flush batched draw commands before ending the render pass.
+    (void)flushBatch();
+
     auto* colorTarget = m_currentColorTarget;
     m_currentPass->end();
     m_currentPass = nullptr;
@@ -197,9 +215,31 @@ void Renderer::flushPassBindGroups() {
     }
 }
 
-// ------ Drawing ---------------------------------------------------------------------------------------------------
+// ------ Drawing (batched) -----------------------------------------------------------------------------------------
 
-Result<void> Renderer::drawMesh(Mesh* mesh, const Transform& transform) {
+void Renderer::drawMesh(Mesh* mesh, const Transform& transform, i32 zIndex) {
+    m_commandBuffer.drawMesh(mesh, transform, zIndex);
+}
+
+void Renderer::drawSprite(Material* material, i32 zIndex,
+                          const Vector3& pos, const Vector2& size,
+                          const Vector2& uvOffset, const Vector2& uvSize,
+                          const Color& color, f32 rotation) {
+    m_commandBuffer.drawSprite(material, zIndex, pos, size, uvOffset, uvSize, color, rotation);
+}
+
+Result<void> Renderer::flushBatch() {
+    if (m_batchProcessor && !m_commandBuffer.commands().empty()) {
+        auto result = m_batchProcessor->flush(this, &m_commandBuffer);
+        m_commandBuffer.clear();
+        return result;
+    }
+    return {};
+}
+
+// ------ Drawing (immediate) ---------------------------------------------------------------------------------------
+
+Result<void> Renderer::drawMeshImmediate(Mesh* mesh, const Transform& transform) {
     m_currentPass->setVertexBuffer(0, mesh->vertexBuffer());
     m_currentPass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
 
@@ -219,7 +259,7 @@ Result<void> Renderer::drawMesh(Mesh* mesh, const Transform& transform) {
     return {};
 }
 
-Result<void> Renderer::drawMesh(Mesh* mesh, const Transform& transform, Material* material) {
+Result<void> Renderer::drawMeshImmediate(Mesh* mesh, const Transform& transform, Material* material) {
     m_currentPass->setVertexBuffer(0, mesh->vertexBuffer());
     m_currentPass->setIndexBuffer(mesh->indexBuffer(), rhi::IndexFormat::Uint32);
 
@@ -318,7 +358,7 @@ Result<void> Renderer::drawScreenRect(Material* material) {
     if (!meshResult) return tl::make_unexpected(meshResult.error());
 
     Transform identity;
-    return drawMesh(*meshResult, identity, material);
+    return drawMeshImmediate(*meshResult, identity, material);
 }
 
 // ------ Stencil Mask --------------------------------------------------------------------------------------------
@@ -392,6 +432,10 @@ Result<void> Renderer::drawStencilMaskMesh(
 }
 
 Result<void> Renderer::pushStencilMask(Mesh* mesh, const Transform& transform, Material* material) {
+    // Flush any pending batched commands before changing stencil state.
+    auto flushResult = flushBatch();
+    if (!flushResult) return flushResult;
+
     // Save mask info for later pop.
     m_stencilMaskStack.push_back({mesh, transform, material});
 
@@ -409,6 +453,10 @@ Result<void> Renderer::pushStencilMask(Mesh* mesh, const Transform& transform, M
 }
 
 Result<void> Renderer::popStencilMask() {
+    // Flush any pending batched commands before changing stencil state.
+    auto flushResult = flushBatch();
+    if (!flushResult) return flushResult;
+
     if (m_stencilMaskStack.empty()) {
         return tl::make_unexpected(Error{ErrorCode::InvalidArgument, "Stencil mask stack underflow"});
     }

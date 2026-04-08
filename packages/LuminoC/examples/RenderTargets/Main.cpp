@@ -133,7 +133,7 @@ int main(void) {
 
         /* --- Pass 1: Render red triangle into RT1 --- */
         LNRenderer_BeginRenderPassToTexture(renderer, rt1, camera, 0.2f, 0.0f, 0.0f, 1.0f);
-        LNRenderer_DrawMesh(renderer, triMesh1, &triTransform);
+        LNRenderer_DrawMesh(renderer, triMesh1, &triTransform, 0);
         LNRenderer_EndRenderPass(renderer);
 
         /* --- Pass 2: Render green triangle into RT2 --- */
@@ -144,13 +144,13 @@ int main(void) {
             1, 1, 1
         };
         LNRenderer_BeginRenderPassToTexture(renderer, rt2, camera, 0.0f, 0.0f, 0.2f, 1.0f);
-        LNRenderer_DrawMesh(renderer, triMesh2, &triTransform2);
+        LNRenderer_DrawMesh(renderer, triMesh2, &triTransform2, 0);
         LNRenderer_EndRenderPass(renderer);
 
         /* --- Pass 3: Draw both RT textures side-by-side on backbuffer --- */
         LNRenderer_BeginRenderPass(renderer, graphicsContext, LN_NULL_HANDLE, 0.1f, 0.1f, 0.1f, 1.0f);
-        LNRenderer_DrawMesh(renderer, leftQuadMesh, &identity);
-        LNRenderer_DrawMesh(renderer, rightQuadMesh, &identity);
+        LNRenderer_DrawMesh(renderer, leftQuadMesh, &identity, 0);
+        LNRenderer_DrawMesh(renderer, rightQuadMesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
 
         /* Profiler overlay */

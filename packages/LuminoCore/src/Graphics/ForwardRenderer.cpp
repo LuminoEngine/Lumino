@@ -70,7 +70,7 @@ Result<void> ForwardRenderer::renderFrame(
         static_cast<u32>(m_sceneSetIndex), sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
 
     for (const auto& obj : objects) {
-        auto result = m_renderer->drawMesh(obj.mesh.get(), obj.transform);
+        auto result = m_renderer->drawMeshImmediate(obj.mesh.get(), obj.transform);
         if (!result) return result;
     }
 

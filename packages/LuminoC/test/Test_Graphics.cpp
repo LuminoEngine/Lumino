@@ -79,7 +79,7 @@ TEST_F(Test_Graphics, HelloTexture) {
     LNHandle renderer;
     ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer));
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 1.0f, 1.0f));
-    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
@@ -164,7 +164,7 @@ TEST_F(Test_Graphics, StencilMask1) {
     ASSERT_EQ(LN_OK, LNRenderer_PushStencilMask(renderer, maskMesh, &identity, maskMat));
 
     // Draw green quad - should only be visible in masked area
-    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, quadMesh, &identity));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, quadMesh, &identity, 0));
 
     // Pop mask
     ASSERT_EQ(LN_OK, LNRenderer_PopStencilMask(renderer));
@@ -241,7 +241,7 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     LNHandle renderer;
     ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer));
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f));
-    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 

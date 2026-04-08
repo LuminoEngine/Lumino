@@ -148,7 +148,7 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
     Renderer* renderer = ctx->renderer();
     renderer->beginOverlayRenderPass(ctx->m_currentColorTarget);
     Transform identity;
-    auto dr = renderer->drawMesh(m_mesh.get(), identity, m_material.get());
+    auto dr = renderer->drawMeshImmediate(m_mesh.get(), identity, m_material.get());
     renderer->endRenderPass();
     return dr;
 }
