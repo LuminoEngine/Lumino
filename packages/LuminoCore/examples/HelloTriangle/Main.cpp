@@ -75,10 +75,25 @@ int main() {
         }
 
         auto* globalPass = globalPasses[0].get();
-        auto targetPassId = globalPass->getTargetShaderPassId(ln::shader::ShaderTarget_SPIRV);
+
+        // Select shader target based on the device backend.
+        ln::shader::ShaderTarget shaderTarget;
+        ShaderCodeFormat codeFormat;
+        switch (device->backend()) {
+            case Backend::WebGPU:
+                shaderTarget = ln::shader::ShaderTarget_WGSL;
+                codeFormat = ShaderCodeFormat::WGSL;
+                break;
+            default:
+                shaderTarget = ln::shader::ShaderTarget_SPIRV;
+                codeFormat = ShaderCodeFormat::SPIRV;
+                break;
+        }
+
+        auto targetPassId = globalPass->getTargetShaderPassId(shaderTarget);
         auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
         if (!targetPass) {
-            fprintf(stderr, "No SPIRV target pass found\n");
+            fprintf(stderr, "No target pass found for the current backend\n");
             return 1;
         }
 
@@ -93,13 +108,15 @@ int main() {
         auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
 
         ShaderModuleDesc vsDesc;
-        vsDesc.spirvCode = reinterpret_cast<const ln::u32*>(vertBlob->data.data());
-        vsDesc.spirvSizeBytes = vertBlob->data.size();
+        vsDesc.format = codeFormat;
+        vsDesc.code = vertBlob->data.data();
+        vsDesc.codeSizeBytes = vertBlob->data.size();
         auto vertShader = *device->createShaderModule(vsDesc);
 
         ShaderModuleDesc fsDesc;
-        fsDesc.spirvCode = reinterpret_cast<const ln::u32*>(fragBlob->data.data());
-        fsDesc.spirvSizeBytes = fragBlob->data.size();
+        fsDesc.format = codeFormat;
+        fsDesc.code = fragBlob->data.data();
+        fsDesc.codeSizeBytes = fragBlob->data.size();
         auto fragShader = *device->createShaderModule(fsDesc);
 
         // 4. パイプラインレイアウト（バインドなし）

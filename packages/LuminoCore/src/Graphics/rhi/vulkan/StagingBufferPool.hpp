@@ -47,7 +47,8 @@ public:
      * buffer, submits it, and waits for the queue to be idle before returning.
      */
     void uploadImmediate(VkQueue queue, VkCommandPool cmdPool,
-                         VkBuffer dstBuffer, const void* data, VkDeviceSize size) {
+                         VkBuffer dstBuffer, const void* data, VkDeviceSize size,
+                         VkDeviceSize dstOffset = 0) {
         Page staging = acquirePage(size);
 
         // Map and fill the staging buffer.
@@ -71,7 +72,7 @@ public:
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         vkBeginCommandBuffer(cmd, &beginInfo);
 
-        VkBufferCopy region{0, 0, size};
+        VkBufferCopy region{0, dstOffset, size};
         vkCmdCopyBuffer(cmd, staging.buffer, dstBuffer, 1, &region);
 
         vkEndCommandBuffer(cmd);

@@ -11,6 +11,7 @@ Result<Ref<Mesh>> Mesh::create(
     rhi::PrimitiveTopology topology) {
 
     auto mesh = Ref<Mesh>::adopt(new Mesh());
+    mesh->m_device = device;
     mesh->m_topology = topology;
 
     // Create vertex buffer.
@@ -50,25 +51,24 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     rhi::PrimitiveTopology topology) {
 
     auto mesh = Ref<Mesh>::adopt(new Mesh());
+    mesh->m_device = device;
     mesh->m_topology = topology;
     mesh->m_dynamic = true;
     mesh->m_maxVertexCount = maxVertexCount;
     mesh->m_maxIndexCount = maxIndexCount;
 
-    // Create host-visible vertex buffer.
+    // Create vertex buffer for dynamic updates.
     rhi::BufferDesc vbDesc;
     vbDesc.size = static_cast<u64>(maxVertexCount) * sizeof(Vertex);
     vbDesc.usage = rhi::BufferUsage::Vertex;
-    vbDesc.mappable = true;
     auto vbResult = device->createBuffer(vbDesc);
     if (!vbResult) return tl::make_unexpected(vbResult.error());
     mesh->m_vertexBuffer = std::move(*vbResult);
 
-    // Create host-visible index buffer.
+    // Create index buffer for dynamic updates.
     rhi::BufferDesc ibDesc;
     ibDesc.size = static_cast<u64>(maxIndexCount) * sizeof(u32);
     ibDesc.usage = rhi::BufferUsage::Index;
-    ibDesc.mappable = true;
     auto ibResult = device->createBuffer(ibDesc);
     if (!ibResult) return tl::make_unexpected(ibResult.error());
     mesh->m_indexBuffer = std::move(*ibResult);
@@ -80,22 +80,22 @@ Result<void> Mesh::updateVertices(u32 firstVertex, const Vertex* vertices, u32 c
     if (!m_dynamic) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Mesh is not dynamic"});
     if (firstVertex + count > m_maxVertexCount) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Vertex range out of bounds"});
 
-    void* mapped = m_vertexBuffer->map();
-    if (!mapped) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to map vertex buffer"});
-    std::memcpy(static_cast<u8*>(mapped) + firstVertex * sizeof(Vertex), vertices, count * sizeof(Vertex));
-    m_vertexBuffer->unmap();
-    return {};
+    return m_device->writeBuffer(
+        m_vertexBuffer.get(),
+        static_cast<u64>(firstVertex) * sizeof(Vertex),
+        vertices,
+        static_cast<u64>(count) * sizeof(Vertex));
 }
 
 Result<void> Mesh::updateIndices(u32 firstIndex, const u32* indices, u32 count) {
     if (!m_dynamic) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Mesh is not dynamic"});
     if (firstIndex + count > m_maxIndexCount) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Index range out of bounds"});
 
-    void* mapped = m_indexBuffer->map();
-    if (!mapped) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to map index buffer"});
-    std::memcpy(static_cast<u8*>(mapped) + firstIndex * sizeof(u32), indices, count * sizeof(u32));
-    m_indexBuffer->unmap();
-    return {};
+    return m_device->writeBuffer(
+        m_indexBuffer.get(),
+        static_cast<u64>(firstIndex) * sizeof(u32),
+        indices,
+        static_cast<u64>(count) * sizeof(u32));
 }
 
 void Mesh::setSubmeshes(const std::vector<SubMesh>& submeshes) {

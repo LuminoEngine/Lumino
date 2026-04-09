@@ -32,8 +32,10 @@ public:
     Result<Ref<ShaderModule>> createShaderModule(const ShaderModuleDesc& desc) override;
     Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) override;
     Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) override;
+    VoidResult writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) override;
     Result<std::vector<uint8_t>> readbackTexture(TextureView* view) override;
     void waitIdle() override;
+    Backend backend() const override { return Backend::Vulkan; }
 
     // Internal accessors
     VkInstance instance() const { return m_instance; }

@@ -6,6 +6,22 @@
 
 namespace ln {
 
+static shader::ShaderTarget backendToShaderTarget(rhi::Backend backend) {
+    switch (backend) {
+        case rhi::Backend::Vulkan: return shader::ShaderTarget_SPIRV;
+        case rhi::Backend::WebGPU: return shader::ShaderTarget_WGSL;
+    }
+    return shader::ShaderTarget_SPIRV;
+}
+
+static rhi::ShaderCodeFormat backendToCodeFormat(rhi::Backend backend) {
+    switch (backend) {
+        case rhi::Backend::Vulkan: return rhi::ShaderCodeFormat::SPIRV;
+        case rhi::Backend::WebGPU: return rhi::ShaderCodeFormat::WGSL;
+    }
+    return rhi::ShaderCodeFormat::SPIRV;
+}
+
 //------------------------------------------------------------------------------
 Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     const void* data, size_t size,
@@ -18,17 +34,20 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     }
     auto unifiedShader = std::move(*loadResult);
 
-    // Find the first pass for SPIR-V target.
+    // Find the first pass for the backend's shader target.
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
         return LN_MAKE_ERROR("No shader passes found");
     }
 
+    auto shaderTarget = backendToShaderTarget(device->backend());
+    auto codeFormat = backendToCodeFormat(device->backend());
+
     auto* globalPass = globalPasses[0].get();
-    auto targetPassId = globalPass->getTargetShaderPassId(shader::ShaderTarget_SPIRV);
+    auto targetPassId = globalPass->getTargetShaderPassId(shaderTarget);
     auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
     if (!targetPass) {
-        return LN_MAKE_ERROR("No SPIRV target pass");
+        return LN_MAKE_ERROR("No target pass found for the current backend");
     }
 
     auto* vertEP = unifiedShader->targetEntryPoint(targetPass->vertEntryPointId);
@@ -42,16 +61,18 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
 
     // Create shader modules
     rhi::ShaderModuleDesc vsDesc;
-    vsDesc.spirvCode = reinterpret_cast<const u32*>(vertBlob->data.data());
-    vsDesc.spirvSizeBytes = vertBlob->data.size();
+    vsDesc.format = codeFormat;
+    vsDesc.code = vertBlob->data.data();
+    vsDesc.codeSizeBytes = vertBlob->data.size();
     auto vsResult = device->createShaderModule(vsDesc);
     if (!vsResult) {
         return LN_BOX_ERROR(vsResult);
     }
 
     rhi::ShaderModuleDesc fsDesc;
-    fsDesc.spirvCode = reinterpret_cast<const u32*>(fragBlob->data.data());
-    fsDesc.spirvSizeBytes = fragBlob->data.size();
+    fsDesc.format = codeFormat;
+    fsDesc.code = fragBlob->data.data();
+    fsDesc.codeSizeBytes = fragBlob->data.size();
     auto fsResult = device->createShaderModule(fsDesc);
     if (!fsResult) {
         return LN_BOX_ERROR(fsResult);

@@ -48,6 +48,7 @@ public:
     void unmap() override;
 
     VkBuffer handle() const { return m_buffer; }
+    bool isDeviceLocal() const { return m_deviceLocal; }
 
 protected:
     void finalize() override;

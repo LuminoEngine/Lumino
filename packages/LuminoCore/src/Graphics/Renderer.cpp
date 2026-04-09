@@ -71,6 +71,10 @@ void Renderer::beginFrame() {
 }
 
 void Renderer::endFrame() {
+    // Flush dynamic uniform buffers to GPU before submission.
+    (void)m_viewAllocator->flushFrame();
+    (void)m_objectAllocator->flushFrame();
+
     m_currentCmd->submit();
     m_currentCmd = nullptr;
 }
@@ -521,13 +525,20 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         cache.paramBuffers[frameSlot] = std::move(*bufResult);
     }
 
-    // Write UBO data
+    // Write UBO data via writeBuffer (compatible with all backends).
     {
-        void* mapped = cache.paramBuffers[frameSlot]->map();
-        if (mapped) {
-            mat->writeMaterialUBO(mapped);
-            cache.paramBuffers[frameSlot]->unmap();
+        auto uboSize = mat->materialParamBufferSize();
+        u8 uboStaging[512];
+        std::vector<u8> uboStagingHeap;
+        void* stagingPtr;
+        if (uboSize <= sizeof(uboStaging)) {
+            stagingPtr = uboStaging;
+        } else {
+            uboStagingHeap.resize(static_cast<size_t>(uboSize));
+            stagingPtr = uboStagingHeap.data();
         }
+        mat->writeMaterialUBO(stagingPtr);
+        (void)device->writeBuffer(cache.paramBuffers[frameSlot].get(), 0, stagingPtr, uboSize);
     }
 
     // Create BindGroup via the material's PipelineLayout at the material set index.

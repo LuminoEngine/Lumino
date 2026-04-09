@@ -12,7 +12,7 @@ namespace ln {
 
 /** Result of a dynamic uniform buffer sub-allocation. */
 struct DynamicUniformAllocation {
-    void* cpuPtr;                ///< CPU-writable pointer (persistently mapped).
+    void* cpuPtr;                ///< CPU-writable pointer into shadow buffer.
     rhi::BindGroup* bindGroup;   ///< BindGroup to bind (one per page).
     u32 dynamicOffset;           ///< Dynamic offset to pass to setBindGroup.
 };
@@ -21,15 +21,18 @@ struct DynamicUniformAllocation {
  * Per-frame linear allocator for dynamic uniform buffers.
  *
  * Manages pages of large uniform buffers. Each frame, object UBO data is
- * sub-allocated from a linear allocator. A single VkDescriptorSet per page
+ * sub-allocated from a linear allocator. A single BindGroup per page
  * is bound repeatedly with different dynamic offsets.
+ *
+ * Writes are collected in a CPU shadow buffer and flushed to the GPU
+ * via Device::writeBuffer() before submission.
  *
  * Double-buffered: each frame index has its own set of pages so that
  * frame N can write while frame N-1 is still in flight on the GPU.
  */
 class DynamicUniformAllocator {
 public:
-    ~DynamicUniformAllocator();
+    ~DynamicUniformAllocator() = default;
 
     /**
      * Create a new allocator.
@@ -54,13 +57,16 @@ public:
     /** Sub-allocate one element. Returns CPU pointer + bind info. */
     DynamicUniformAllocation allocate();
 
+    /** Flush all written data in the current frame to the GPU. Call before submit. */
+    VoidResult flushFrame();
+
 private:
     DynamicUniformAllocator() = default;
 
     struct Page {
         Ref<rhi::Buffer> buffer;
         Ref<rhi::BindGroup> bindGroup;
-        void* mappedBase = nullptr;
+        std::vector<u8> cpuShadow;
         u32 usedElements = 0;
     };
 

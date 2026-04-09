@@ -225,9 +225,15 @@ struct SamplerDesc {
     u32 maxAnisotropy = 1;
 };
 
+enum class ShaderCodeFormat {
+    SPIRV,
+    WGSL,
+};
+
 struct ShaderModuleDesc {
-    const u32* spirvCode = nullptr;
-    size_t spirvSizeBytes = 0;
+    ShaderCodeFormat format = ShaderCodeFormat::SPIRV;
+    const void* code = nullptr;
+    size_t codeSizeBytes = 0;
 };
 
 struct VertexAttribute {
@@ -505,11 +511,17 @@ public:
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
+    /** Write data to a buffer. Works on all backends including those without map/unmap support. */
+    virtual VoidResult writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) = 0;
+
     /** Read back the contents of a texture view into a CPU-side pixel buffer. */
     virtual Result<std::vector<uint8_t>> readbackTexture(TextureView* view) = 0;
 
     /** Wait for the device to become idle. */
     virtual void waitIdle() = 0;
+
+    /** Get the backend type of this device. */
+    virtual Backend backend() const = 0;
 };
 
 } // namespace ln::rhi

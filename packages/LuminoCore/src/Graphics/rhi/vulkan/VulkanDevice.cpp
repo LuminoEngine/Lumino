@@ -431,6 +431,22 @@ Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {
     return cb;
 }
 
+VoidResult VulkanDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) {
+    auto* vkBuffer = static_cast<vulkan::VulkanBuffer*>(dst);
+    if (vkBuffer->isDeviceLocal()) {
+        m_stagingPool.uploadImmediate(m_graphicsQueue, m_commandPool,
+                                      vkBuffer->handle(), data, size, dstOffset);
+    } else {
+        void* mapped = vkBuffer->map();
+        if (!mapped) {
+            return LN_MAKE_ERROR("Failed to map buffer for writeBuffer.");
+        }
+        std::memcpy(static_cast<u8*>(mapped) + dstOffset, data, size);
+        vkBuffer->unmap();
+    }
+    return LN_MAKE_SUCCESS();
+}
+
 Result<std::vector<uint8_t>> VulkanDevice::readbackTexture(TextureView* view) {
     auto* vkView = static_cast<VulkanTextureView*>(view);
     if (!vkView || vkView->image() == VK_NULL_HANDLE) {

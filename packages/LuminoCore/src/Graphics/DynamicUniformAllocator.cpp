@@ -1,19 +1,7 @@
-﻿#include <LuminoCore/Graphics/DynamicUniformAllocator.hpp>
+#include <LuminoCore/Graphics/DynamicUniformAllocator.hpp>
 #include <cstring>
 
 namespace ln {
-
-DynamicUniformAllocator::~DynamicUniformAllocator() {
-    // Unmap all persistently-mapped pages.
-    for (auto& frame : m_frames) {
-        for (auto& page : frame.pages) {
-            if (page.mappedBase) {
-                page.buffer->unmap();
-                page.mappedBase = nullptr;
-            }
-        }
-    }
-}
 
 Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create(
     rhi::Device* device,
@@ -79,10 +67,22 @@ DynamicUniformAllocation DynamicUniformAllocator::allocate() {
 
     auto& page = frame.pages[frame.currentPage];
     u32 offset = page.usedElements * m_alignedElementSize;
-    void* ptr = static_cast<u8*>(page.mappedBase) + offset;
+    void* ptr = page.cpuShadow.data() + offset;
     ++page.usedElements;
 
     return {ptr, page.bindGroup.get(), offset};
+}
+
+VoidResult DynamicUniformAllocator::flushFrame() {
+    auto& frame = m_frames[m_currentFrameSlot];
+    for (auto& page : frame.pages) {
+        if (page.usedElements > 0) {
+            u64 usedBytes = static_cast<u64>(page.usedElements) * m_alignedElementSize;
+            auto result = m_device->writeBuffer(page.buffer.get(), 0, page.cpuShadow.data(), usedBytes);
+            if (!result) return result;
+        }
+    }
+    return LN_MAKE_SUCCESS();
 }
 
 Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
@@ -96,11 +96,8 @@ Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
     if (!bufResult) return tl::make_unexpected(bufResult.error());
     page.buffer = std::move(*bufResult);
 
-    // Persistently map.
-    page.mappedBase = page.buffer->map();
-    if (!page.mappedBase) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to map dynamic UBO page"});
-    }
+    // Allocate CPU shadow buffer.
+    page.cpuShadow.resize(m_pageByteSize);
 
     // Create a BindGroup for this page via PipelineLayout.
     // The descriptor range is m_alignedElementSize (one element); actual offset is dynamic.

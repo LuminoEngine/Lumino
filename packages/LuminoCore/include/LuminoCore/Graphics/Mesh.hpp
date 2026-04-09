@@ -51,6 +51,7 @@ public:
     const std::vector<Ref<Material>>& materials() const { return m_materials; }
 
 private:
+    rhi::Device* m_device = nullptr;
     Ref<rhi::Buffer> m_vertexBuffer;
     Ref<rhi::Buffer> m_indexBuffer;
     std::vector<SubMesh> m_submeshes;

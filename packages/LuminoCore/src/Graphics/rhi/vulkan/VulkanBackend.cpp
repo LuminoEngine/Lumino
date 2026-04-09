@@ -434,12 +434,17 @@ VulkanShaderModule::VulkanShaderModule() = default;
 VoidResult VulkanShaderModule::init(VkDevice device, const ShaderModuleDesc& desc) {
     m_device = device;
 
-    m_spirv.assign(desc.spirvCode, desc.spirvCode + desc.spirvSizeBytes / sizeof(u32));
+    if (desc.format != ShaderCodeFormat::SPIRV) {
+        return LN_MAKE_ERROR("VulkanShaderModule only accepts SPIRV format.");
+    }
+
+    const u32* spirvCode = static_cast<const u32*>(desc.code);
+    m_spirv.assign(spirvCode, spirvCode + desc.codeSizeBytes / sizeof(u32));
 
     VkShaderModuleCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    info.codeSize = desc.spirvSizeBytes;
-    info.pCode = desc.spirvCode;
+    info.codeSize = desc.codeSizeBytes;
+    info.pCode = spirvCode;
     if (vkCreateShaderModule(m_device, &info, nullptr, &m_module) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateShaderModule failed.");
     }
