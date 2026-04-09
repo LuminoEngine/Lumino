@@ -21,9 +21,15 @@ protected:
 };
 
 TEST_F(Test_Graphics, ClearScreen) {
-    LNHandle renderer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginRenderPass(graphicsContext, 0.0f, 0.0f, 1.0f, 1.0f));
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachment.clearColor[0] = 0.0f;
+    rpDesc.colorAttachment.clearColor[1] = 0.0f;
+    rpDesc.colorAttachment.clearColor[2] = 1.0f;
+    rpDesc.colorAttachment.clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginRenderPass(graphicsContext, &rpDesc));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndRenderPass(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
@@ -76,8 +82,8 @@ TEST_F(Test_Graphics, HelloTexture) {
 
     // Render one frame
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
-    LNHandle renderer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer));
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 1.0f, 1.0f));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
@@ -156,8 +162,8 @@ TEST_F(Test_Graphics, StencilMask1) {
 
     // Render
     LNTransform identity = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1};
-    LNHandle renderer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer));
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.5f, 0.5f, 0.5f, 1.0f));
 
     // Push mask - 左半分のみ描画を許可する (テクスチャが塗られている部分)
@@ -238,8 +244,8 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
 
     // Render one frame
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
-    LNHandle renderer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer));
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));

@@ -38,11 +38,17 @@ int main(void) {
 
         // フレーム開始
         //   現在のウィンドウサイズにマッチするようにバックバッファを準備し、ひとつのフレームの描画を開始します。
-        LNHandle renderer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
+        LNHandle renderer, colorBuffer, depthBuffer;
+        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
 
         // レンダーパス開始 (ライトグリーンでクリア)
-        LNGraphicsContext_BeginRenderPass(graphicsContext, 0.60f, 0.85f, 0.60f, 1.0f);
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachment.clearColor[0] = 0.60f;
+        rpDesc.colorAttachment.clearColor[1] = 0.85f;
+        rpDesc.colorAttachment.clearColor[2] = 0.60f;
+        rpDesc.colorAttachment.clearColor[3] = 1.0f;
+        LNGraphicsContext_BeginRenderPass(graphicsContext, &rpDesc);
 
         // このサンプルはクリアするだけなので、描画コマンドはありません。
 

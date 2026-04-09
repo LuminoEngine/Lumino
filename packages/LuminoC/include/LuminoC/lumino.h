@@ -174,23 +174,28 @@ typedef struct LNRenderPassDesc {
 
 /**
  * フレームの描画を開始します。内部で Renderer の beginFrame も呼び出します。
- * 返された renderer ハンドルは graphicsContext が管理するため、
+ * 返された renderer, colorBuffer, depthBuffer ハンドルは graphicsContext が管理するため、
  * LNObject_Release を呼ぶ必要はありません。
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outRenderer     Renderer のハンドル
+ * @param[out] outColorBuffer  現フレームのバックバッファ (SwapChain のカラーテクスチャ) のハンドル
+ * @param[out] outDepthBuffer  現フレームのデプスバッファのハンドル
  */
-extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, LNHandle* outRenderer);
+extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
+    LNHandle graphicsContext,
+    LNHandle* outRenderer,
+    LNHandle* outColorBuffer,
+    LNHandle* outDepthBuffer);
 
 /**
- * レンダーパスを開始します。指定したカラーでレンダーターゲットをクリアします。
+ * レンダーパスを開始します。LNRenderPassDesc で描画先やクリア方法を指定します。
+ * desc は LNRenderPassDesc_Init で初期化してから使用してください。
+ * renderTarget / depthBuffer が LN_NULL_HANDLE の場合、バックバッファが使用されます。
  * @param[in] graphicsContext GraphicsContext のハンドル
- * @param[in] r               クリアカラー R (0.0 - 1.0)
- * @param[in] g               クリアカラー G (0.0 - 1.0)
- * @param[in] b               クリアカラー B (0.0 - 1.0)
- * @param[in] a               クリアカラー A (0.0 - 1.0)
+ * @param[in] desc            レンダーパスの設定
  */
 extern LUMINO_API LNResult LNGraphicsContext_BeginRenderPass(
-    LNHandle graphicsContext, float r, float g, float b, float a);
+    LNHandle graphicsContext, const LNRenderPassDesc* desc);
 
 /**
  * LNRenderPassDesc を適切なデフォルト値で初期化します。
@@ -198,30 +203,6 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginRenderPass(
  * @param[out] desc 初期化するデスクリプタ
  */
 extern LUMINO_API void LNRenderPassDesc_Init(LNRenderPassDesc* desc);
-
-///**
-// * フレームの描画を開始します (拡張版)。
-// * LNGraphicsContext_BeginFrame と同様ですが、バックバッファのハンドルも返します。
-// * outBackbuffer は GraphicsContext が管理するため LNObject_Release を呼ぶ必要はありません。
-// * @param[in]  graphicsContext GraphicsContext のハンドル
-// * @param[out] outRenderer     Renderer のハンドル
-// * @param[out] outBackbuffer   バックバッファのハンドル (LNRenderPassDesc で使用可能)
-// */
-//extern LUMINO_API LNResult LNGraphicsContext_BeginFrameEx(
-//    LNHandle  graphicsContext,
-//    LNHandle* outRenderer,
-//    LNHandle* outBackbuffer);
-//
-///**
-// * レンダーパスを開始します (拡張版)。
-// * 描画先のレンダーターゲット・デプスバッファと、クリア方法を指定できます。
-// * desc は事前に LNRenderPassDesc_Init で初期化してください。
-// * @param[in] graphicsContext GraphicsContext のハンドル
-// * @param[in] desc            レンダーパスの設定
-// */
-//extern LUMINO_API LNResult LNGraphicsContext_BeginRenderPassEx(
-//    LNHandle              graphicsContext,
-//    const LNRenderPassDesc* desc);
 
 /**
  * レンダーパスを終了します。

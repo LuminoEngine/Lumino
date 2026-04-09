@@ -197,13 +197,29 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
     return LN_OK;
 }
 
+/** LNLoadOp → rhi::LoadOp 変換 */
+static ln::rhi::LoadOp toRhiLoadOp(LNLoadOp op) {
+    switch (op) {
+        case LN_LOAD_OP_LOAD:      return ln::rhi::LoadOp::Load;
+        case LN_LOAD_OP_DONT_CARE: return ln::rhi::LoadOp::DontCare;
+        case LN_LOAD_OP_CLEAR:
+        default:                   return ln::rhi::LoadOp::Clear;
+    }
+}
+
 //------------------------------------------------------------------------------
 // LNGraphicsContext
 //------------------------------------------------------------------------------
 
-LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, LNHandle* outRenderer) {
-    if (!outRenderer) return LN_ERROR_INVALID_ARGUMENT;
+LNResult LNGraphicsContext_BeginFrame(
+    LNHandle graphicsContext,
+    LNHandle* outRenderer,
+    LNHandle* outColorBuffer,
+    LNHandle* outDepthBuffer) {
+    if (!outRenderer || !outColorBuffer || !outDepthBuffer) return LN_ERROR_INVALID_ARGUMENT;
     *outRenderer = LN_NULL_HANDLE;
+    *outColorBuffer = LN_NULL_HANDLE;
+    *outDepthBuffer = LN_NULL_HANDLE;
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
@@ -222,11 +238,18 @@ LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext, LNHandle* outRen
     renderer->beginFrame();
 
     *outRenderer = wrapObjectFromGet(renderer);
+
+    // バックバッファ・デプスバッファのハンドルを返す
+    const ln::FramebufferInfo* fb = ctx->currentFramebuffer();
+    *outColorBuffer = wrapObjectFromGet(fb->colorTexture.get());
+    *outDepthBuffer = wrapObjectFromGet(fb->depthTexture.get());
     return LN_OK;
 }
 
 LNResult LNGraphicsContext_BeginRenderPass(
-    LNHandle graphicsContext, float r, float g, float b, float a) {
+    LNHandle graphicsContext, const LNRenderPassDesc* desc) {
+    if (!desc) return LN_ERROR_INVALID_ARGUMENT;
+
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -235,17 +258,38 @@ LNResult LNGraphicsContext_BeginRenderPass(
 
     const ln::FramebufferInfo* fb = ctx->currentFramebuffer();
 
+    // カラーアタッチメント
     ln::rhi::ColorAttachment colorAttach;
-    colorAttach.view = fb->colorTexture->rhiTextureView();
-    colorAttach.loadOp = ln::rhi::LoadOp::Clear;
+    if (desc->colorAttachment.renderTarget != LN_NULL_HANDLE) {
+        auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->colorAttachment.renderTarget);
+        if (!tex) return LN_ERROR_INVALID_HANDLE;
+        colorAttach.view = tex->rhiTextureView();
+    } else {
+        colorAttach.view = fb->colorTexture->rhiTextureView();
+    }
+    colorAttach.loadOp = toRhiLoadOp(desc->colorAttachment.loadOp);
     colorAttach.storeOp = ln::rhi::StoreOp::Store;
-    colorAttach.clearColor = {r, g, b, a};
+    colorAttach.clearColor = {
+        desc->colorAttachment.clearColor[0],
+        desc->colorAttachment.clearColor[1],
+        desc->colorAttachment.clearColor[2],
+        desc->colorAttachment.clearColor[3]};
 
+    // デプス・ステンシルアタッチメント
     ln::rhi::DepthStencilAttachment depthAttach;
-    depthAttach.view = fb->depthTexture->rhiTextureView();
-    depthAttach.depthLoadOp = ln::rhi::LoadOp::Clear;
+    if (desc->depthStencil.depthBuffer != LN_NULL_HANDLE) {
+        auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->depthStencil.depthBuffer);
+        if (!tex) return LN_ERROR_INVALID_HANDLE;
+        depthAttach.view = tex->rhiTextureView();
+    } else {
+        depthAttach.view = fb->depthTexture->rhiTextureView();
+    }
+    depthAttach.depthLoadOp = toRhiLoadOp(desc->depthStencil.depthLoadOp);
     depthAttach.depthStoreOp = ln::rhi::StoreOp::Store;
-    depthAttach.clearDepth = 1.0f;
+    depthAttach.clearDepth = desc->depthStencil.clearDepth;
+    depthAttach.stencilLoadOp = toRhiLoadOp(desc->depthStencil.stencilLoadOp);
+    depthAttach.stencilStoreOp = ln::rhi::StoreOp::Store;
+    depthAttach.clearStencil = desc->depthStencil.clearStencil;
 
     ln::rhi::RenderPassDesc rpDesc;
     rpDesc.colorAttachments = {colorAttach};
@@ -271,7 +315,7 @@ LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext) {
 }
 
 //------------------------------------------------------------------------------
-// LNRenderPassDesc / LNGraphicsContext Ex 関数
+// LNRenderPassDesc / LNGraphicsContext 関数
 //------------------------------------------------------------------------------
 
 void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {
@@ -280,149 +324,6 @@ void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {
     desc->depthStencil.clearDepth = 1.0f;
     // loadOp フィールドは LN_LOAD_OP_CLEAR == 0 なのでゼロ初期化で OK
 }
-
-/** LNLoadOp → rhi::LoadOp 変換 */
-static ln::rhi::LoadOp toRhiLoadOp(LNLoadOp op) {
-    switch (op) {
-        case LN_LOAD_OP_LOAD:      return ln::rhi::LoadOp::Load;
-        case LN_LOAD_OP_DONT_CARE: return ln::rhi::LoadOp::DontCare;
-        case LN_LOAD_OP_CLEAR:
-        default:                   return ln::rhi::LoadOp::Clear;
-    }
-}
-
-///**
-// * ハンドルからカラー/デプスの TextureView を解決する。
-// * LN_NULL_HANDLE の場合はバックバッファ (ctx の現在のターゲット) を使用する。
-// */
-//static bool resolveTargetViews(
-//    ln::ObjectRegistry* reg, ln::GraphicsContext* ctx,
-//    LNHandle colorHandle, LNHandle depthHandle,
-//    ln::rhi::TextureView*& outColor, ln::rhi::TextureView*& outDepth) {
-//
-//    // カラーターゲット解決
-//    if (colorHandle == LN_NULL_HANDLE) {
-//        outColor = ctx->m_currentColorTarget;
-//    } else {
-//        auto* obj = reg->resolve(colorHandle);
-//        if (!obj) return false;
-//        // BackbufferWrapper を試行
-//        auto* bbw = dynamic_cast<BackbufferWrapper*>(obj);
-//        if (bbw) {
-//            outColor = bbw->colorView;
-//        } else {
-//            auto* tex = dynamic_cast<ln::Texture*>(obj);
-//            if (!tex) return false;
-//            outColor = tex->rhiTextureView();
-//        }
-//    }
-//
-//    // デプスターゲット解決
-//    if (depthHandle == LN_NULL_HANDLE) {
-//        outDepth = ctx->m_currentDepthTarget;
-//    } else {
-//        auto* obj = reg->resolve(depthHandle);
-//        if (!obj) return false;
-//        auto* bbw = dynamic_cast<BackbufferWrapper*>(obj);
-//        if (bbw) {
-//            outDepth = bbw->depthView;
-//        } else {
-//            auto* tex = dynamic_cast<ln::Texture*>(obj);
-//            if (!tex) return false;
-//            outDepth = tex->depthView();
-//        }
-//    }
-//
-//    return true;
-//}
-
-//LNResult LNGraphicsContext_BeginFrameEx(
-//    LNHandle graphicsContext, LNHandle* outRenderer, LNHandle* outBackbuffer) {
-//    if (!outRenderer || !outBackbuffer) return LN_ERROR_INVALID_ARGUMENT;
-//    *outRenderer = LN_NULL_HANDLE;
-//    *outBackbuffer = LN_NULL_HANDLE;
-//
-//    auto* instance = ln::CoreInstance::instance();
-//    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-//
-//    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-//    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-//
-//    auto frameResult = ctx->beginFrame();
-//    if (!frameResult) return LN_ERROR_UNKNOWN;
-//
-//    ctx->m_currentColorTarget = frameResult->colorTarget;
-//    ctx->m_currentDepthTarget = frameResult->depthTarget;
-//    ctx->m_currentCmd = ctx->currentCommandBuffer();
-//    if (!ctx->m_currentCmd) return LN_ERROR_UNKNOWN;
-//
-//    // Renderer
-//    auto* renderer = ctx->renderer();
-//    renderer->beginFrame();
-//    *outRenderer = wrapObjectFromGet(renderer);
-//
-//    // BackbufferWrapper (初回作成、以降は再利用)
-//    if (!ctx->m_backbufferWrapper) {
-//        ctx->m_backbufferWrapper = new BackbufferWrapper();
-//    }
-//    static_cast<BackbufferWrapper*>(ctx->m_backbufferWrapper)->update(*frameResult);
-//    *outBackbuffer = wrapObjectFromGet(ctx->m_backbufferWrapper);
-//
-//    return LN_OK;
-//}
-//
-//LNResult LNGraphicsContext_BeginRenderPassEx(
-//    LNHandle graphicsContext, const LNRenderPassDesc* desc) {
-//    if (!desc) return LN_ERROR_INVALID_ARGUMENT;
-//
-//    auto* instance = ln::CoreInstance::instance();
-//    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-//
-//    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-//    if (!ctx || !ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
-//
-//    // ターゲットの解決
-//    ln::rhi::TextureView* colorView = nullptr;
-//    ln::rhi::TextureView* depthView = nullptr;
-//    if (!resolveTargetViews(
-//            instance->objectRegistry(), ctx,
-//            desc->colorAttachment.renderTarget,
-//            desc->depthStencil.depthBuffer,
-//            colorView, depthView)) {
-//        return LN_ERROR_INVALID_HANDLE;
-//    }
-//
-//    // カラーアタッチメント
-//    ln::rhi::ColorAttachment colorAttach;
-//    colorAttach.view = colorView;
-//    colorAttach.loadOp = toRhiLoadOp(desc->colorAttachment.loadOp);
-//    colorAttach.storeOp = ln::rhi::StoreOp::Store;
-//    colorAttach.clearColor = {
-//        desc->colorAttachment.clearColor[0],
-//        desc->colorAttachment.clearColor[1],
-//        desc->colorAttachment.clearColor[2],
-//        desc->colorAttachment.clearColor[3]};
-//
-//    // デプス・ステンシルアタッチメント
-//    ln::rhi::DepthStencilAttachment depthAttach;
-//    depthAttach.view = depthView;
-//    depthAttach.depthLoadOp = toRhiLoadOp(desc->depthStencil.depthLoadOp);
-//    depthAttach.depthStoreOp = ln::rhi::StoreOp::Store;
-//    depthAttach.clearDepth = desc->depthStencil.clearDepth;
-//    depthAttach.stencilLoadOp = toRhiLoadOp(desc->depthStencil.stencilLoadOp);
-//    depthAttach.stencilStoreOp = ln::rhi::StoreOp::Store;
-//    depthAttach.clearStencil = desc->depthStencil.clearStencil;
-//
-//    // RenderPass 開始
-//    ln::rhi::RenderPassDesc rpDesc;
-//    rpDesc.colorAttachments = {colorAttach};
-//    rpDesc.depthStencilAttachment = &depthAttach;
-//
-//    ctx->m_currentPass = ctx->m_currentCmd->beginRenderPass(rpDesc);
-//    if (!ctx->m_currentPass) return LN_ERROR_UNKNOWN;
-//
-//    return LN_OK;
-//}
 
 LNResult LNGraphicsContext_CaptureBackbuffer(
     LNHandle graphicsContext,

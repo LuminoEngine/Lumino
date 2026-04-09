@@ -128,8 +128,8 @@ int main(void) {
             1, 1, 1                                        /* scale */
         };
 
-        LNHandle renderer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
+        LNHandle renderer, colorBuffer, depthBuffer;
+        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
 
         /* --- Pass 1: Render red triangle into RT1 --- */
         LNRenderer_BeginRenderPassToTexture(renderer, rt1, camera, 0.2f, 0.0f, 0.0f, 1.0f);

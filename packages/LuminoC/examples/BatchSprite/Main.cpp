@@ -254,8 +254,8 @@ int main(void) {
         }
 
         /* Draw */
-        LNHandle renderer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
+        LNHandle renderer, colorBuffer, depthBuffer;
+        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
         LNRenderer_BeginRenderPass(renderer, graphicsContext, camera,
             0.15f, 0.15f, 0.2f, 1.0f);
         LNRenderer_DrawMesh(renderer, mesh, &identity, 0);

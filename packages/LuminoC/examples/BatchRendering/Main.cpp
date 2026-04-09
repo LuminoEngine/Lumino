@@ -93,8 +93,8 @@ int main(void) {
         float t = frame * 0.02f;
 
         /* Render */
-        LNHandle renderer = LN_NULL_HANDLE;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
+        LNHandle renderer = LN_NULL_HANDLE, colorBuffer, depthBuffer;
+        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
         LNRenderer_BeginRenderPass(renderer, graphicsContext, camera,
             0.15f, 0.15f, 0.2f, 1.0f);
 
