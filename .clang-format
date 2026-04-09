@@ -3,8 +3,8 @@
 ---
 Language: Cpp
 # BasedOnStyle: Mozilla
-# IDE で左右に FileList と Chat を表示することが多くなったため標準的なサイズの 80 とした。
-ColumnLimit: 80
+# IDE で左右に FileList と Chat を表示することが多くなったため 120 -> 100 へ。
+ColumnLimit: 100
 AccessModifierOffset: -4
 AllowAllArgumentsOnNextLine: false
 AlignConsecutiveAssignments: false

@@ -105,7 +105,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("vkCreateInstance failed.");
     }
 
-#if 0
+#if 1
     // Setup debug messenger
     if (desc.enableValidation) {
         VkDebugUtilsMessengerCreateInfoEXT createInfo{};
@@ -200,6 +200,7 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
     auto it = m_renderPassCache.find(key);
     if (it != m_renderPassCache.end()) return it->second;
 
+    // TODO: vector やめたい
     std::vector<VkAttachmentDescription> attachments;
     std::vector<VkAttachmentReference> colorRefs;
 
@@ -217,18 +218,27 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
             //   ※ Vulkan Tutorial ではシングルパスでフレーム開始時にクリアするため UNDEFINED を指定しているが、
             //   Lumino ではマルチパスでフレーム開始時にクリアしないこともあるため、適切なレイアウトを指定する。
             //   see: [ VUID-VkPresentInfoKHR-pImageIndices-01430 ]
+            //
+            // NOTE: Barrier に乗せて遷移させることは許可されていない。ここで何とかする必要がある。
+            //   https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
+            //   validation layer: Submitted command buffer expects image 0x50 (subresource: aspectMask 0x1 array layer 0, mip level 0) to be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR--instead, image 0x50's current layout is VK_IMAGE_LAYOUT_UNDEFINED.
+            //
             att.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
             att.finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         } else {
-            att.initialLayout = att.loadOp == VK_ATTACHMENT_LOAD_OP_LOAD
-                                    ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                                    : VK_IMAGE_LAYOUT_UNDEFINED;
-            att.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            // パス終了後はシェーダ入力(テクスチャ)として使用できるように VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL に遷移する。
+            // https://qiita.com/Pctg-x8/items/a1a39678e9ca95c59d19
+            att.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;  // もし DONT_CARE と併用する場合は UNDEFINED にしておくとよい
+            att.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         }
         attachments.push_back(att);
 
         VkAttachmentReference ref{};
         ref.attachment = static_cast<uint32_t>(i);
+        // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL まはた GENERAL でなければならない。
+        // (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkRenderPassCreateInfo-pAttachments-00836)
+        // VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ではダメ。
+        // 要するに、描画中のレンダーターゲットは書き込み可能なレイアウトにしておきなさい、ということ。
         ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         colorRefs.push_back(ref);
     }

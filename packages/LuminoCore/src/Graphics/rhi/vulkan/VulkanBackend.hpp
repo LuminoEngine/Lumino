@@ -275,7 +275,6 @@ public:
 
     VoidResult begin();
     RenderPass* beginRenderPass(const RenderPassDesc& desc) override;
-    void transitionToShaderRead(TextureView* colorTarget) override;
     void submit() override;
 
 protected:

@@ -281,44 +281,59 @@ VoidResult VulkanTexture::init(VulkanDevice* device, VkPhysicalDevice physicalDe
 
     // VkImageCreateInfo::initialLayout でレイアウトを指定できそうなものだけど、
     // ↑のコメントの通り実際にはできないので、ここで明示的にレイアウト遷移しておく。
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::DepthStencil)) {
-        {
-            auto result = m_device->beginSingleTimeCommands();
-            if (!result) {
-                return LN_BOX_ERROR(result);
-            }
-            VkCommandBuffer commandBuffer = *result;
-
-            VkImageMemoryBarrier barrier = {};
-            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            barrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrier.image = m_image;
-            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-            barrier.subresourceRange.baseMipLevel = 0;
-            barrier.subresourceRange.levelCount = 1;
-            barrier.subresourceRange.baseArrayLayer = 0;
-            barrier.subresourceRange.layerCount = 1;
-
-            VkPipelineStageFlags sourceStage;
-            VkPipelineStageFlags destinationStage;
-            {
-                barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-                if (hasStencilComponent(imgInfo.format)) {
-                    barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
-                }
-                sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-                destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-            }
-
-            vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-
-            m_device->endSingleTimeCommands(commandBuffer);
+    const bool isRenderTarget = (static_cast<u32>(usage) &
+                                static_cast<u32>(TextureUsage::RenderTarget)) != 0;
+    const bool isDepthBuffer = (static_cast<u32>(usage) &
+                                static_cast<u32>(TextureUsage::DepthStencil)) != 0;
+    if (isRenderTarget || isDepthBuffer) {
+        auto result = m_device->beginSingleTimeCommands();
+        if (!result) {
+            return LN_BOX_ERROR(result);
         }
+        VkCommandBuffer commandBuffer = *result;
+
+        VkImageMemoryBarrier barrier = {};
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        if (isRenderTarget) {
+            // RenderTarget は、RenderPass で描画中以外は
+            // VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL (シェーダで読み取り可能) にしておく。
+            // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (レンダーターゲット書き込み用) にしておく例もあるが、
+            // どのみち使う時には VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL する処理をどこかに挟まないとならないので、
+            // 逆に複雑になると考え、このようにしている。
+            barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        }
+        else {
+            barrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            if (hasStencilComponent(imgInfo.format)) {
+                barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+            }
+        }
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = m_image;
+        barrier.subresourceRange.baseMipLevel = 0;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.baseArrayLayer = 0;
+        barrier.subresourceRange.layerCount = 1;
+
+        vkCmdPipelineBarrier(
+            commandBuffer,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // Fragment Shader で使うまでにはレイアウト遷移しておく必要がある。
+            0,
+            0,
+            nullptr,
+            0,
+            nullptr,
+            1,
+            &barrier);
+        
+         m_device->endSingleTimeCommands(commandBuffer);
     }
     return LN_MAKE_SUCCESS();
 }
@@ -1406,37 +1421,6 @@ RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
     m_encoder = it->second.get();
     m_encoder->beginEncoding(m_cmd, framebuffer, extent, desc);
     return m_encoder;
-}
-
-void VulkanCommandBuffer::transitionToShaderRead(TextureView* colorTarget) {
-    auto* vkView = static_cast<VulkanTextureView*>(colorTarget);
-
-    VkImageMemoryBarrier barrier{};
-    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image = vkView->image();
-    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
-    barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = 1;
-    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-    vkCmdPipelineBarrier(
-        m_cmd,
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-        0,
-        0,
-        nullptr,
-        0,
-        nullptr,
-        1,
-        &barrier);
 }
 
 void VulkanCommandBuffer::submit() {

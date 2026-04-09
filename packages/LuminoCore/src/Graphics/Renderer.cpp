@@ -156,19 +156,6 @@ void Renderer::endRenderPass() {
     m_currentColorTarget = nullptr;
 }
 
-void Renderer::endRenderPassWithTransition() {
-    // Flush batched draw commands before ending the render pass.
-    (void)flushBatch();
-
-    auto* colorTarget = m_currentColorTarget;
-    m_currentPass->end();
-    m_currentPass = nullptr;
-    m_currentColorTarget = nullptr;
-    if (colorTarget) {
-        m_currentCmd->transitionToShaderRead(colorTarget);
-    }
-}
-
 void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
     rhi::ColorAttachment colorAttach;
     colorAttach.view       = colorTarget;

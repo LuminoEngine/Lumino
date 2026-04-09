@@ -108,13 +108,6 @@ public:
     void endRenderPass();
 
     /**
-     * End the current render pass and transition the color target
-     * from COLOR_ATTACHMENT_OPTIMAL to SHADER_READ_ONLY_OPTIMAL.
-     * Use this when the render target will be sampled as a texture afterwards.
-     */
-    void endRenderPassWithTransition();
-
-    /**
      * Begin an overlay render pass without clearing the color target (LoadOp::Load).
      * Intended for HUD / debug overlays drawn on top of an already-rendered scene.
      * No camera is bound; positions should be in NDC.
@@ -207,12 +200,6 @@ public:
      * 内部でマスクメッシュを再描画してステンシル値をデクリメントします。
      */
     Result<void> popStencilMask();
-
-    // フレームスコープの一時状態 (C API からアクセス可能)
-
-    /** レンダーターゲットテクスチャへの描画中かどうか。
-     *  true の場合、endRenderPass で endRenderPassWithTransition を呼ぶ。 */
-    bool m_renderingToRenderTarget = false;
 
 private:
     friend class GraphicsContext;

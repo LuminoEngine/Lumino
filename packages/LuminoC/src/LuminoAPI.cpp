@@ -927,12 +927,7 @@ LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
     auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
     if (!r) return LN_ERROR_INVALID_HANDLE;
 
-    if (r->m_renderingToRenderTarget) {
-        r->endRenderPassWithTransition();
-        r->m_renderingToRenderTarget = false;
-    } else {
-        r->endRenderPass();
-    }
+    r->endRenderPass();
     return LN_OK;
 }
 
@@ -1099,8 +1094,7 @@ LNResult LNRenderer_BeginRenderPassToTexture(
             colorView, depthView,
             ln::Color{r, g, b, a});
     }
-
-    ren->m_renderingToRenderTarget = true;
+    
     return LN_OK;
 }
 
