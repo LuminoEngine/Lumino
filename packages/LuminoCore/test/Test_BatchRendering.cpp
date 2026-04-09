@@ -1,4 +1,4 @@
-#include <LuminoCore/Graphics/Batch.hpp>
+﻿#include <LuminoCore/Graphics/Batch.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
 #include <cmath>
 

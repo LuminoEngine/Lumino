@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <vector>
-#include <array>
 #include <LuminoBase/Types.hpp>
 #include <LuminoBase/Result.hpp>
 #include <LuminoBase/RefObject.hpp>
@@ -49,7 +48,7 @@ public:
         u32 setIndex,
         u32 binding,
         u32 elementSize,
-        u32 framesInFlight = 2);
+        u32 framesInFlight);
 
     /** Called at the start of each frame to reset the allocator for reuse. */
     void beginFrame(u32 frameIndex);
@@ -70,8 +69,6 @@ private:
         u32 usedElements = 0;
     };
 
-    static constexpr u32 MAX_FRAMES = 2;
-
     struct FrameData {
         std::vector<Page> pages;
         u32 currentPage = 0;
@@ -87,7 +84,7 @@ private:
     u32 m_pageByteSize = 0;
     u32 m_framesInFlight = 2;
 
-    std::array<FrameData, MAX_FRAMES> m_frames;
+    std::vector<FrameData> m_frames;
     u32 m_currentFrameSlot = 0;
 
     Result<Page> createPage();

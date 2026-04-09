@@ -27,12 +27,16 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     renderer->m_objectSetIndex = refShaderPass->objectSetIndex();
     renderer->m_objectUBOSize = refShaderPass->objectUBOSize();
 
+    u32 framesInFlight = ctx->maxFramesInFlight();
+    renderer->m_framesInFlight = framesInFlight;
+
     // ---- Dynamic UBO allocator for per-frame view data (camera) ----
     {
         auto r = DynamicUniformAllocator::create(
             device, renderer->m_referencePipelineLayout,
             static_cast<u32>(renderer->m_viewSetIndex), 0,
-            static_cast<u32>(sizeof(ViewParamsUBO)));
+            static_cast<u32>(sizeof(ViewParamsUBO)),
+            framesInFlight);
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_viewAllocator = std::move(*r);
     }
@@ -42,7 +46,8 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
         auto r = DynamicUniformAllocator::create(
             device, renderer->m_referencePipelineLayout,
             static_cast<u32>(renderer->m_objectSetIndex), 0,
-            static_cast<u32>(renderer->m_objectUBOSize));
+            static_cast<u32>(renderer->m_objectUBOSize),
+            framesInFlight);
         if (!r) return tl::make_unexpected(r.error());
         renderer->m_objectAllocator = std::move(*r);
     }
@@ -55,7 +60,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
 
 void Renderer::beginFrame() {
     u32 frame = m_frameCounter++;
-    m_currentFrameSlot = frame % 2;
+    m_currentFrameSlot = frame % m_framesInFlight;
     m_viewAllocator->beginFrame(frame);
     m_objectAllocator->beginFrame(frame);
     m_currentCmd = m_ctx->currentCommandBuffer();
@@ -485,6 +490,13 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     u32 frameSlot = m_currentFrameSlot;
 
     auto& cache = m_materialCache[mat];
+
+    // Initialize vectors on first access.
+    if (cache.dirty.empty()) {
+        cache.paramBuffers.resize(m_framesInFlight);
+        cache.bindGroups.resize(m_framesInFlight);
+        cache.dirty.assign(m_framesInFlight, true);
+    }
 
     // Check if the material's parameters have changed since last cache update.
     if (mat->paramVersion() != cache.paramVersion) {

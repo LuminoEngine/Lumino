@@ -29,6 +29,10 @@ rhi::CommandBuffer* GraphicsContext::currentCommandBuffer() const {
     return m_swapChain->getCurrentCommandBuffer();
 }
 
+u32 GraphicsContext::maxFramesInFlight() const {
+    return m_swapChain->maxFramesInFlight();
+}
+
 Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     GraphicsModule* module,
     platform::PlatformWindow* window,

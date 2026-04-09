@@ -305,6 +305,7 @@ public:
     void present() override;
     u32 width() const override { return m_extent.width; }
     u32 height() const override { return m_extent.height; }
+    u32 maxFramesInFlight() const override { return static_cast<u32>(m_maxFrames); }
     //TextureFormat format() const override { return m_format; }
 
     VkSemaphore imageAvailableSemaphore() const;

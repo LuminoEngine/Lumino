@@ -76,7 +76,7 @@ public:
      */
     void endFrame();
 
-    /** Current in-flight frame slot (0 or 1). Valid after beginFrame(). */
+    /** Current in-flight frame slot. Valid after beginFrame(). */
     u32 currentFrameSlot() const { return m_currentFrameSlot; }
 
     // ---- Pass lifecycle ----
@@ -244,6 +244,7 @@ private:
 
     u32 m_frameCounter = 0;
     u32 m_currentFrameSlot = 0;
+    u32 m_framesInFlight = 2;
     u32 m_drawCallCount = 0;
 
     // Per-frame command encoding state (valid between beginFrame / endFrame)
@@ -289,17 +290,15 @@ private:
 
     // ---- Per-material BindGroup cache (Renderer-owned) ----
 
-    static constexpr u32 kMaxFramesInFlight = 2;
-
     /** Cached GPU resources for a single Material, double-buffered per in-flight frame. */
     struct CachedMaterialBind {
         uint64_t paramVersion = 0;
         rhi::Texture* lastBaseTexture = nullptr;
         Ref<rhi::TextureView> textureView;
         Ref<rhi::Sampler>     sampler;
-        std::array<Ref<rhi::Buffer>,    kMaxFramesInFlight> paramBuffers;
-        std::array<Ref<rhi::BindGroup>, kMaxFramesInFlight> bindGroups;
-        std::array<bool, kMaxFramesInFlight> dirty = {true, true};
+        std::vector<Ref<rhi::Buffer>>    paramBuffers;
+        std::vector<Ref<rhi::BindGroup>> bindGroups;
+        std::vector<bool> dirty;
     };
 
     std::unordered_map<Material*, CachedMaterialBind> m_materialCache;

@@ -26,6 +26,9 @@ Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create
     alloc->m_maxElementsPerPage = limits.maxUniformBufferRange / alloc->m_alignedElementSize;
     alloc->m_pageByteSize = alloc->m_maxElementsPerPage * alloc->m_alignedElementSize;
 
+    // Resize frame data to match the requested frames-in-flight count.
+    alloc->m_frames.resize(framesInFlight);
+
     // Pre-create one page per frame slot.
     for (u32 f = 0; f < framesInFlight; ++f) {
         auto pageResult = alloc->createPage();

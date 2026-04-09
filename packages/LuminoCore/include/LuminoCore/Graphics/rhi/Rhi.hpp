@@ -478,6 +478,9 @@ public:
     virtual u32 width() const = 0;
     virtual u32 height() const = 0;
 
+    /** インフライトフレーム数を返します (SwapChain イメージ数)。 */
+    virtual u32 maxFramesInFlight() const = 0;
+
     /** 現在のフレームの CommandBuffer を取得します。InFrightFrame ごとにインスタンスは変わります。 */
     virtual CommandBuffer* getCurrentCommandBuffer() = 0;
 };
@@ -514,7 +517,11 @@ public:
     /** Write data to a buffer. Works on all backends including those without map/unmap support. */
     virtual VoidResult writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) = 0;
 
-    /** Read back the contents of a texture view into a CPU-side pixel buffer. */
+    /**
+     * テクスチャビューの内容をCPU側のピクセルバッファに読み戻します。
+     * この関数は主にテストで使用するもので、実行速度は速くありません。
+     * 通常のゲームループで使用することは想定されていません。
+     */
     virtual Result<std::vector<uint8_t>> readbackTexture(TextureView* view) = 0;
 
     /** Wait for the device to become idle. */

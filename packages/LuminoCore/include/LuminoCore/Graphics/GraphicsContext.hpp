@@ -92,6 +92,9 @@ public:
     /** Current framebuffer height in pixels. */
     u32 height() const { return m_height; }
 
+    /** Number of in-flight frames (from swap chain). */
+    u32 maxFramesInFlight() const;
+
     rhi::CommandBuffer* currentCommandBuffer() const;
 
     /** Renderer owned by this context. */

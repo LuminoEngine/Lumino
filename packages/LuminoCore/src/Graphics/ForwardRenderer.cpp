@@ -20,7 +20,8 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
         auto r = DynamicUniformAllocator::create(
             ctx->device(), refPipelineLayout,
             static_cast<u32>(sceneSetIndex), 0,
-            static_cast<u32>(sizeof(SceneParamsUBO)));
+            static_cast<u32>(sizeof(SceneParamsUBO)),
+            ctx->maxFramesInFlight());
         if (!r) return tl::make_unexpected(r.error());
         fw->m_sceneAllocator = std::move(*r);
     }

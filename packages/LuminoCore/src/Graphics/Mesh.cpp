@@ -58,9 +58,12 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     mesh->m_maxIndexCount = maxIndexCount;
 
     // Create vertex buffer for dynamic updates.
+    // mappable=true ensures host-visible memory so writeBuffer() uses map/memcpy
+    // instead of staging+vkQueueWaitIdle, which would stall the GPU every frame.
     rhi::BufferDesc vbDesc;
     vbDesc.size = static_cast<u64>(maxVertexCount) * sizeof(Vertex);
     vbDesc.usage = rhi::BufferUsage::Vertex;
+    vbDesc.mappable = true;
     auto vbResult = device->createBuffer(vbDesc);
     if (!vbResult) return tl::make_unexpected(vbResult.error());
     mesh->m_vertexBuffer = std::move(*vbResult);
@@ -69,6 +72,7 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     rhi::BufferDesc ibDesc;
     ibDesc.size = static_cast<u64>(maxIndexCount) * sizeof(u32);
     ibDesc.usage = rhi::BufferUsage::Index;
+    ibDesc.mappable = true;
     auto ibResult = device->createBuffer(ibDesc);
     if (!ibResult) return tl::make_unexpected(ibResult.error());
     mesh->m_indexBuffer = std::move(*ibResult);
