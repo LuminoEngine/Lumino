@@ -13,6 +13,7 @@
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/ForwardRenderer.hpp>
 #include <LuminoCore/Graphics/Camera.hpp>
+#include <LuminoCore/Graphics/Texture2D.hpp>
 #include <LuminoCore/Graphics/Mesh.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
 #include <LuminoCore/Graphics/Vertex.hpp>
@@ -129,10 +130,11 @@ int main() {
             obj.transform.rotation = Quaternion::fromEuler(time * 10.0f, time * 15.0f, 0.0f);
             std::vector<RenderObject> objects = {obj};
 
-            auto frame = *ctx->beginFrame();
+            const FramebufferInfo* fb = *ctx->beginFrame();
 
             auto _ = renderer->renderFrame(
-                frame.colorTarget, frame.depthTarget,
+                fb->colorTexture->rhiTextureView(),
+                fb->depthTexture->rhiTextureView(),
                 camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
 
             ctx->endFrame();

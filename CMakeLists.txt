@@ -12,6 +12,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
 option(LUMINO_BUILD_TESTS    "Build unit tests"           ON)
 option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
+option(LUMINO_ENABLE_WEBGPU  "Enable WebGPU backend via Dawn" OFF)
 
 #-------------------------------------------------------------------------------
 # Platform detection
@@ -29,6 +30,9 @@ find_package(tl-expected CONFIG REQUIRED)
 
 if(LUMINO_PLATFORM_DESKTOP)
     find_package(glfw3 CONFIG REQUIRED)
+endif()
+if(LUMINO_ENABLE_WEBGPU)
+    find_package(dawn CONFIG REQUIRED)
 endif()
 
 #-------------------------------------------------------------------------------

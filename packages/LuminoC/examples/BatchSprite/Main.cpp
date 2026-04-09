@@ -221,10 +221,10 @@ int main(void) {
     /* 7. Main loop */
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     int frame = 0;
-    int continueLoop = 1;
+    LNBool quit = LN_FALSE;
     int materialsAssigned = 0;
 
-    while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
+    while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         /* Animate: slight wobble */
         float t = frame * 0.02f;
         for (int i = 0; i < SPRITE_COUNT; i++) {

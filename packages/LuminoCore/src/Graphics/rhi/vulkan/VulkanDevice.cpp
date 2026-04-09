@@ -645,6 +645,10 @@ VoidResult VulkanDevice::lookupQueueFamilies(
 
 // ------ Device::create factory --------------------------------------------------------------------------------------------
 
+#ifdef LUMINO_ENABLE_WEBGPU
+#include "../webgpu/WebGPUDevice.hpp"
+#endif
+
 namespace ln::rhi {
 
 Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
@@ -655,6 +659,15 @@ Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
         }
         return Ref<Device>(dev);
     }
+#ifdef LUMINO_ENABLE_WEBGPU
+    if (desc.backend == Backend::WebGPU) {
+        auto dev = Ref<webgpu::WebGPUDevice>::adopt(new webgpu::WebGPUDevice());
+        if (!dev->init(desc)) {
+            return tl::unexpected(Error{ErrorCode::NotInitialized, "Failed to initialize WebGPU device"});
+        }
+        return Ref<Device>(dev);
+    }
+#endif
     return tl::unexpected(Error{ErrorCode::NotSupported, "Unsupported backend"});
 }
 

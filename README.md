@@ -32,7 +32,7 @@ git clone https://github.com/microsoft/vcpkg.git ./vcpkg
 ./vcpkg/bootstrap-vcpkg.bat
 
 # CMake 設定
-cmake -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=E:/Proj/Lumino//vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=E:/Proj/Lumino//vcpkg/scripts/buildsystems/vcpkg.cmake -DLUMINO_ENABLE_WEBGPU=ON
 
 # ビルド
 cmake --build build --config Release --parallel

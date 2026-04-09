@@ -9,6 +9,7 @@
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/ForwardRenderer.hpp>
 #include <LuminoCore/Graphics/Camera.hpp>
+#include <LuminoCore/Graphics/Texture2D.hpp>
 #include <LuminoCore/Graphics/Mesh.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
 #include <LuminoCore/Graphics/Vertex.hpp>
@@ -104,10 +105,11 @@ int main() {
 
             std::vector<RenderObject> objects = {obj};
 
-            auto frame = *ctx->beginFrame();
+            const FramebufferInfo* fb = *ctx->beginFrame();
 
             auto _ = renderer->renderFrame(
-                frame.colorTarget, frame.depthTarget,
+                fb->colorTexture->rhiTextureView(),
+                fb->depthTexture->rhiTextureView(),
                 camera, objects, Color{0, 0, 0, 1.0f});
 
             ctx->endFrame();

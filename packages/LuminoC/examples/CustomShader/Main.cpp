@@ -82,8 +82,8 @@ int main(void) {
     /* 7. Main loop */
     LNGraphicsProfilering profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
-    int continueLoop = 1;
-    while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
+    LNBool quit = LN_FALSE;
+    while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         LNHandle renderer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
         LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f);

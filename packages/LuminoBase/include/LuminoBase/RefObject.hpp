@@ -76,6 +76,17 @@ public:
         return r;
     }
 
+    /** 生ポインタを引き受ける (参照カウントもインクリメントする)。 */
+    static Ref retain(T* p) {
+        if (p) {
+            p->addRef();
+        }
+        Ref r;
+        r.ptr_ = p;
+        return r;
+    }
+
+
     void reset() {
         if (ptr_) {
             ptr_->release();

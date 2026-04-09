@@ -29,11 +29,7 @@ VoidResult CoreInstance::init(const Settings& settings) {
     m_settings = settings;
     m_objectRegistry = std::make_unique<ObjectRegistry>();
 
-#ifndef LN_NX
-    // GLFW must be initialized before Vulkan device creation,
-    // because VulkanDevice::init() calls glfwGetRequiredInstanceExtensions().
     glfwInit();
-#endif
 
     {
         GraphicsModule::Settings settings;
@@ -55,9 +51,7 @@ void CoreInstance::dispose() {
         m_graphicsModule.reset();
     }
     m_objectRegistry.reset();
-#ifndef LN_NX
     glfwTerminate();
-#endif
 }
 
 } // namespace ln

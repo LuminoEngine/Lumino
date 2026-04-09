@@ -12,23 +12,40 @@ namespace ln {
  * C-API で公開する 2D テクスチャオブジェクト。
  * RHI テクスチャをラップし、ハンドル管理の基盤として機能する。
  */
-class Texture2D : public Object {
+class Texture : public Object {
 public:
-    Texture2D(uint32_t width, uint32_t height, uint32_t format);
+    Texture(uint32_t width, uint32_t height, rhi::TextureFormat format);
 
     /** RHI テクスチャから構築（TextureLoader の結果をラップ）。 */
-    Texture2D(Ref<rhi::Texture> rhiTexture, uint32_t width, uint32_t height);
+    Texture(Ref<rhi::Texture> rhiTexture, uint32_t width, uint32_t height);
+
+    /**
+     * バックバッファをラップしてクライアントに提供するダミーの Texture オブジェクトを作成します。
+     * この Texture は実際のテクスチャリソースを持たず、GraphicsContext::beginFrame() で
+     * 毎フレーム更新されるバックバッファビューを提供するためのものです。
+     */
+    static Ref<Texture> createBackbufferWrapper();
+
+    /**
+     * 深度ステンシルテクスチャを作成します。
+     */
+    static Result<Ref<Texture>> createDepthStencil(
+        rhi::Device* device,
+        uint32_t width,
+        uint32_t height);
 
     /**
      * レンダーターゲットテクスチャを作成します。
      * カラーテクスチャ (BGRA8Unorm, Sampled|RenderTarget) と
      * 深度テクスチャ (Depth24Stencil8) を内部で生成します。
+     * 
+     * @deprecated
      */
-    static Result<Ref<Texture2D>> createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height);
+    static Result<Ref<Texture>> createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height);
 
     uint32_t width() const { return m_width; }
     uint32_t height() const { return m_height; }
-    uint32_t format() const { return m_format; }
+    rhi::TextureFormat format() const { return m_format; }
 
     /** 内部の RHI テクスチャ（未設定時は nullptr）。 */
     rhi::Texture* rhiTexture() const { return m_rhiTexture.get(); }
@@ -42,10 +59,16 @@ public:
     /** レンダーターゲットとして作成されたかどうか。 */
     bool isRenderTarget() const { return m_isRenderTarget; }
 
+    void wrapBackbuffer(
+        rhi::TextureView* rhiTextureView,
+        uint32_t width,
+        uint32_t height,
+        rhi::TextureFormat format);
+
 private:
     uint32_t m_width;
     uint32_t m_height;
-    uint32_t m_format;
+    rhi::TextureFormat m_format;
     bool m_isRenderTarget = false;
     Ref<rhi::Texture> m_rhiTexture;
     Ref<rhi::TextureView> m_rhiTextureView;

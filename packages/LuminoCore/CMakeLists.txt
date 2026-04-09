@@ -33,6 +33,12 @@ file(GLOB LN_LOCAL_SOURCES_Graphics_vulkan
     src/Graphics/rhi/vulkan/*.cpp
     src/Graphics/rhi/vulkan/*.hpp
 )
+if(LUMINO_ENABLE_WEBGPU)
+    file(GLOB LN_LOCAL_SOURCES_Graphics_webgpu
+        src/Graphics/rhi/webgpu/*.cpp
+        src/Graphics/rhi/webgpu/*.hpp
+    )
+endif()
 file(GLOB LN_LOCAL_SOURCES_shaders shaders/*.slang)
 
 source_group("" FILES ${LN_LOCAL_SOURCES_core})
@@ -40,6 +46,9 @@ source_group("Runtime" FILES ${LN_LOCAL_SOURCES_Runtime})
 source_group("Platform" FILES ${LN_LOCAL_SOURCES_Platform})
 source_group("Graphics" FILES ${LN_LOCAL_SOURCES_Graphics})
 source_group("Graphics/vulkan" FILES ${LN_LOCAL_SOURCES_Graphics_vulkan})
+if(LUMINO_ENABLE_WEBGPU)
+    source_group("Graphics/webgpu" FILES ${LN_LOCAL_SOURCES_Graphics_webgpu})
+endif()
 source_group("shaders" FILES ${LN_LOCAL_SOURCES_shaders})
 
 set(LN_LOCAL_SOURCES
@@ -48,6 +57,7 @@ set(LN_LOCAL_SOURCES
     ${LN_LOCAL_SOURCES_Platform}
     ${LN_LOCAL_SOURCES_Graphics}
     ${LN_LOCAL_SOURCES_Graphics_vulkan}
+    ${LN_LOCAL_SOURCES_Graphics_webgpu}
     ${LN_LOCAL_SOURCES_shaders}
 )
 
@@ -83,6 +93,11 @@ endif()
 
 if(LUMINO_PLATFORM_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+endif()
+
+if(LUMINO_ENABLE_WEBGPU)
+    target_link_libraries(${PROJECT_NAME} PRIVATE dawn::webgpu_dawn)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LUMINO_ENABLE_WEBGPU)
 endif()
 
 #-------------------------------------------------------------------------------

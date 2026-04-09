@@ -12,6 +12,7 @@
 #include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Platform/Window.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
+#include <LuminoCore/Graphics/Texture2D.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <LuminoShader/ShaderCompiler2.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
@@ -43,7 +44,7 @@ int main() {
     CoreInstance::Settings coreSettings;
     coreSettings.preferredBackend = Backend::Vulkan;
     coreSettings.enableValidation = true;
-    CoreInstance::initialize(coreSettings);
+    auto _ = CoreInstance::initialize(coreSettings);
     {
         WindowDesc winDesc;
         winDesc.title = "Lumino - Hello Triangle";
@@ -65,7 +66,7 @@ int main() {
 
         // 3. シェーダーコンパイル
         auto compiler = *ln::shader::ShaderCompiler2::create();
-        compiler->build(SHADER_FILE);
+        auto _ = compiler->build(SHADER_FILE);
 
         ln::shader::UnifiedShader2* unifiedShader = compiler->shader();
         auto& globalPasses = unifiedShader->globalShaderPasses();
@@ -145,13 +146,13 @@ int main() {
 
         // 6. メインループ
         while (window->processEvents()) {
-            auto frame = *ctx->beginFrame();
+            const FramebufferInfo* fb = *ctx->beginFrame();
 
             auto* cmd = ctx->currentCommandBuffer();
 
             RenderPassDesc passDesc;
             passDesc.colorAttachments.push_back({
-                frame.colorTarget,
+                fb->colorTexture->rhiTextureView(),
                 LoadOp::Clear,
                 StoreOp::Store,
                 {0.1f, 0.1f, 0.15f, 1.0f},

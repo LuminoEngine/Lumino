@@ -87,9 +87,9 @@ int main(void) {
 
     /* --- Main loop --- */
     int frame = 0;
-    int continueLoop = 1;
+    LNBool quit = LN_FALSE;
 
-    while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
+    while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         float t = frame * 0.02f;
 
         /* Render */

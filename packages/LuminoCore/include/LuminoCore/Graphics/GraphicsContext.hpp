@@ -11,6 +11,7 @@
 
 namespace ln {
 class GraphicsModule;
+class Texture;
 
 /** Descriptor for creating a GraphicsContext (swap chain + depth buffer). */
 struct GraphicsContextDesc {
@@ -19,11 +20,9 @@ struct GraphicsContextDesc {
 };
 
 /** Per-frame rendering targets returned by GraphicsContext::beginFrame(). */
-struct FrameInfo {
-    rhi::TextureView* colorTarget;
-    rhi::TextureView* depthTarget;
-    u32 width;
-    u32 height;
+struct FramebufferInfo {
+    Ref<Texture> colorTexture;
+    Ref<Texture> depthTexture;
 };
 
 /**
@@ -41,6 +40,7 @@ struct FrameInfo {
  */
 class GraphicsContext : public Object {
 public:
+
     ~GraphicsContext() override;
 
     /** Create a graphics context for an existing window. */
@@ -54,7 +54,8 @@ public:
     // static Result<Ref<GraphicsContext>> createExternal(const ExternalContextDesc& desc);
 
     /** Acquire the next back buffer and prepare frame targets. */
-    Result<FrameInfo> beginFrame();
+    Result<const FramebufferInfo*> beginFrame();
+    const FramebufferInfo* currentFramebuffer() const;
 
     /** Present the current frame. */
     void endFrame();
@@ -120,16 +121,16 @@ public:
 
     // フレームスコープの一時状態 (BeginFrame〜EndFrame 間有効)
     rhi::CommandBuffer*        m_currentCmd         = nullptr;
-    rhi::TextureView*          m_currentColorTarget = nullptr;
-    rhi::TextureView*          m_currentDepthTarget = nullptr;
     rhi::RenderPass*           m_currentPass        = nullptr;
 
 private:
+
     GraphicsContext();
 
     GraphicsModule* m_module;
     platform::PlatformWindow* m_window = nullptr; // non-owning
     Ref<rhi::SwapChain> m_swapChain;
+    std::vector<FramebufferInfo> m_framebuffers; // SwapChain Image (InFlightFrame) ごとに1つ
 
     Ref<DebugPrint> m_debugPrint;
 
@@ -141,8 +142,6 @@ private:
     float             m_fps             = 0.0f;
     rhi::TextureView* m_lastColorTarget = nullptr;
     std::vector<uint8_t> m_captureBuffer;
-    Ref<rhi::Texture> m_depthTexture;
-    Ref<rhi::TextureView> m_depthView;
     rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;
     rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth24Stencil8;
     u32 m_width = 0;

@@ -10,7 +10,9 @@
 #include <stdio.h>
 
 int main(void) {
-    // 1. Lumino を初期化します。
+    // Lumino を初期化します。
+    //    なおほとんどの API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
+    //    以降のサンプルではエラーチェックを省略しています。
     LNInstanceInitializeSettings settings = {};
     settings.enableValidation = LN_TRUE;
     LNResult result = LNInstance_Initialize(&settings);
@@ -19,50 +21,36 @@ int main(void) {
         return 1;
     }
 
-    // 2. ウィンドウを作成します。内部で GraphicsContext (Vulkan デバイス・スワップチェーン) も作成されます。
+    // ウィンドウを作成し、関連づいた GraphicsContext を取得します。
+    //    内部で GraphicsContext (RHI Device, SwapChain) も作成されます。
     LNHandle window = LN_NULL_HANDLE;
-    result = LNWindow_Create("Lumino - Clear Screen", 1280, 720, &window);
-    if (result != LN_OK) {
-        fprintf(stderr, "LNWindow_Create failed: %d\n", result);
-        LNInstance_Terminate();
-        return 1;
-    }
-
-    // 3. ウィンドウに関連づいた GraphicsContext を取得します。
     LNHandle graphicsContext = LN_NULL_HANDLE;
-    result = LNWindow_GetGraphicsContext(window, &graphicsContext);
-    if (result != LN_OK) {
-        fprintf(stderr, "LNWindow_GetGraphicsContext failed: %d\n", result);
-        LNObject_Release(window);
-        LNInstance_Terminate();
-        return 1;
-    }
+    LNWindow_Create("Lumino - Clear Screen", 1280, 720, &window);
+    LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    // 4. メインループ
-    int cont = 1;
-    while (cont) {
-        // イベント処理。ウィンドウが閉じられると cont が 0 になります。
-        result = LNWindow_ProcessEvents(window, &cont);
-        if (result != LN_OK || !cont) break;
+    // メインループ
+    LNBool quit = LN_FALSE;
+    while (!quit) {
+        // イベント処理。ウィンドウが閉じられると quit が LN_TRUE になります。
+        //   LNWindow_ProcessEvents は GUI アプリケーションに必要なイベント処理です。 この処理は定期的に呼び出す必要があります。
+        //   また quit にはウィンドウがクローズされた場合など、アプリケーションが終了すべきかどうかを返します。
+        LNWindow_ProcessEvents(window, &quit);
 
         // フレーム開始
+        //   現在のウィンドウサイズにマッチするようにバックバッファを準備し、ひとつのフレームの描画を開始します。
         LNHandle renderer;
-        result = LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
-        if (result != LN_OK) break;
+        LNGraphicsContext_BeginFrame(graphicsContext, &renderer);
 
         // レンダーパス開始 (ライトグリーンでクリア)
-        result = LNGraphicsContext_BeginRenderPass(graphicsContext, 0.60f, 0.85f, 0.60f, 1.0f);
-        if (result != LN_OK) break;
+        LNGraphicsContext_BeginRenderPass(graphicsContext, 0.60f, 0.85f, 0.60f, 1.0f);
 
         // このサンプルはクリアするだけなので、描画コマンドはありません。
 
         // レンダーパス終了
-        result = LNGraphicsContext_EndRenderPass(graphicsContext);
-        if (result != LN_OK) break;
+        LNGraphicsContext_EndRenderPass(graphicsContext);
 
         // フレーム終了・画面表示
-        result = LNGraphicsContext_EndFrame(graphicsContext);
-        if (result != LN_OK) break;
+        LNGraphicsContext_EndFrame(graphicsContext);
     }
 
     // 5. リソースを解放します。

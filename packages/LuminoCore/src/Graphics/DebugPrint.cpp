@@ -1,5 +1,6 @@
 ﻿#include <LuminoCore/Graphics/DebugPrint.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
+#include <LuminoCore/Graphics/Texture2D.hpp>
 #include <LuminoCore/Graphics/Renderer.hpp>
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoCore/Graphics/Transform.hpp>
@@ -146,7 +147,8 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
 
     // Render as overlay (LoadOp::Load — preserves the scene).
     Renderer* renderer = ctx->renderer();
-    renderer->beginOverlayRenderPass(ctx->m_currentColorTarget);
+    const FramebufferInfo* fb = ctx->currentFramebuffer();
+    renderer->beginOverlayRenderPass(fb->colorTexture->rhiTextureView());
     Transform identity;
     auto dr = renderer->drawMeshImmediate(m_mesh.get(), identity, m_material.get());
     renderer->endRenderPass();

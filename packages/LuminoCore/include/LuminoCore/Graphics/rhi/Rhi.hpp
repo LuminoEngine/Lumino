@@ -481,6 +481,9 @@ public:
     /** インフライトフレーム数を返します (SwapChain イメージ数)。 */
     virtual u32 maxFramesInFlight() const = 0;
 
+    virtual u32 currentFrame() const = 0;
+
+
     /** 現在のフレームの CommandBuffer を取得します。InFrightFrame ごとにインスタンスは変わります。 */
     virtual CommandBuffer* getCurrentCommandBuffer() = 0;
 };

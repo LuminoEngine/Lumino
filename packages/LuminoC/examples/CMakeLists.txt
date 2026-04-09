@@ -9,9 +9,9 @@ function(setup_sample_configurations TARGET)
     add_dependencies(${TARGET} LuminoC)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-    if(LN_DESKTOP_WEBGPU)
-        target_link_libraries(${TARGET} PRIVATE webgpu)
-        target_copy_webgpu_binaries(${TARGET})
+    # WebGPU (copy dll)
+    if(LUMINO_ENABLE_WEBGPU)
+        target_link_libraries(${TARGET} PRIVATE dawn::webgpu_dawn)
     endif()
     
     # copy dll

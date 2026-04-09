@@ -49,6 +49,20 @@ typedef enum LNResult {
 } LNResult;
 
 //------------------------------------------------------------------------------
+// Enums
+//------------------------------------------------------------------------------
+
+/**
+ * レンダーパスのアタッチメントのロード操作。
+ * ゼロ初期化時のデフォルトは LN_LOAD_OP_CLEAR。
+ */
+typedef enum LNLoadOp {
+    LN_LOAD_OP_CLEAR     = 0,  /**< クリアする */
+    LN_LOAD_OP_LOAD      = 1,  /**< 既存の内容を保持する */
+    LN_LOAD_OP_DONT_CARE = 2,  /**< 内容不定 (パフォーマンス最適化) */
+} LNLoadOp;
+
+//------------------------------------------------------------------------------
 // Handle type
 //------------------------------------------------------------------------------
 
@@ -115,9 +129,44 @@ extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle handle, LNHandle
 /**
  * ウィンドウのイベントを処理します。
  * @param[in]  handle      ウィンドウのハンドル
- * @param[out] outContinue ループ継続可否 (0 で終了)
+ * @param[out] outQuit 終了フラグ (LN_TRUE でループ終了)
  */
-extern LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, int* outContinue);
+extern LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit);
+
+//------------------------------------------------------------------------------
+// Render pass descriptor structs
+//------------------------------------------------------------------------------
+
+/**
+ * カラーアタッチメントの設定。
+ * @note renderTarget が LN_NULL_HANDLE の場合、バックバッファが使用されます。
+ */
+typedef struct LNColorAttachmentDesc {
+    LNHandle renderTarget;  /**< 描画先テクスチャ (LN_NULL_HANDLE = バックバッファ) */
+    float    clearColor[4]; /**< クリアカラー RGBA (loadOp == CLEAR 時に使用) */
+    LNLoadOp loadOp;        /**< ロード操作 (デフォルト: LN_LOAD_OP_CLEAR) */
+} LNColorAttachmentDesc;
+
+/**
+ * デプス・ステンシルアタッチメントの設定。
+ * @note depthBuffer が LN_NULL_HANDLE の場合、バックバッファのデプスバッファが使用されます。
+ */
+typedef struct LNDepthStencilAttachmentDesc {
+    LNHandle depthBuffer;     /**< デプスバッファ (LN_NULL_HANDLE = バックバッファのデプス) */
+    float    clearDepth;      /**< クリアデプス値 (デフォルト: 1.0f、要 LNRenderPassDesc_Init) */
+    uint32_t clearStencil;    /**< クリアステンシル値 (デフォルト: 0) */
+    LNLoadOp depthLoadOp;     /**< デプスのロード操作 (デフォルト: LN_LOAD_OP_CLEAR) */
+    LNLoadOp stencilLoadOp;   /**< ステンシルのロード操作 (デフォルト: LN_LOAD_OP_CLEAR) */
+} LNDepthStencilAttachmentDesc;
+
+/**
+ * レンダーパスの設定。
+ * LNRenderPassDesc_Init で初期化してから使用してください。
+ */
+typedef struct LNRenderPassDesc {
+    LNColorAttachmentDesc        colorAttachment; /**< カラーアタッチメント */
+    LNDepthStencilAttachmentDesc depthStencil;     /**< デプス・ステンシルアタッチメント */
+} LNRenderPassDesc;
 
 //------------------------------------------------------------------------------
 // LNGraphicsContext
@@ -142,6 +191,37 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(LNHandle graphicsContext
  */
 extern LUMINO_API LNResult LNGraphicsContext_BeginRenderPass(
     LNHandle graphicsContext, float r, float g, float b, float a);
+
+/**
+ * LNRenderPassDesc を適切なデフォルト値で初期化します。
+ * (clearDepth=1.0f, clearStencil=0, loadOp=CLEAR, renderTarget=NULL_HANDLE)
+ * @param[out] desc 初期化するデスクリプタ
+ */
+extern LUMINO_API void LNRenderPassDesc_Init(LNRenderPassDesc* desc);
+
+///**
+// * フレームの描画を開始します (拡張版)。
+// * LNGraphicsContext_BeginFrame と同様ですが、バックバッファのハンドルも返します。
+// * outBackbuffer は GraphicsContext が管理するため LNObject_Release を呼ぶ必要はありません。
+// * @param[in]  graphicsContext GraphicsContext のハンドル
+// * @param[out] outRenderer     Renderer のハンドル
+// * @param[out] outBackbuffer   バックバッファのハンドル (LNRenderPassDesc で使用可能)
+// */
+//extern LUMINO_API LNResult LNGraphicsContext_BeginFrameEx(
+//    LNHandle  graphicsContext,
+//    LNHandle* outRenderer,
+//    LNHandle* outBackbuffer);
+//
+///**
+// * レンダーパスを開始します (拡張版)。
+// * 描画先のレンダーターゲット・デプスバッファと、クリア方法を指定できます。
+// * desc は事前に LNRenderPassDesc_Init で初期化してください。
+// * @param[in] graphicsContext GraphicsContext のハンドル
+// * @param[in] desc            レンダーパスの設定
+// */
+//extern LUMINO_API LNResult LNGraphicsContext_BeginRenderPassEx(
+//    LNHandle              graphicsContext,
+//    const LNRenderPassDesc* desc);
 
 /**
  * レンダーパスを終了します。
@@ -339,7 +419,7 @@ extern LUMINO_API LNResult LNMaterial_SetColor(
 /**
  * マテリアルのメインテクスチャを設定します。
  * @param[in] material マテリアルのハンドル
- * @param[in] texture  Texture2D のハンドル
+ * @param[in] texture  Texture のハンドル
  */
 extern LUMINO_API LNResult LNMaterial_SetMainTexture(
     LNHandle material,

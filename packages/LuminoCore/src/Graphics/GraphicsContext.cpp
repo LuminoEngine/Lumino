@@ -2,6 +2,7 @@
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/Renderer.hpp>
+#include <LuminoCore/Graphics/Texture2D.hpp>
 #include <LuminoCore/Graphics/DebugPrint.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <cstdio>
@@ -52,7 +53,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
 
     ctx->m_pipelineCache = std::make_unique<PipelineCache>(dev);
 
-    // 1. SwapChain
+    // SwapChain
     rhi::SwapChainDesc scDesc;
     scDesc.nativeWindowHandle = window->nativeHandle().glfwWindow;
     scDesc.width = fbWidth;
@@ -63,21 +64,19 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     if (!swapChainResult) return tl::make_unexpected(swapChainResult.error());
     ctx->m_swapChain = std::move(*swapChainResult);
 
-    // 2. Depth texture + view
-    rhi::TextureDesc depthTexDesc;
-    depthTexDesc.width = fbWidth;
-    depthTexDesc.height = fbHeight;
-    depthTexDesc.format = ctx->m_depthFormat;
-    depthTexDesc.usage = rhi::TextureUsage::DepthStencil;
-    auto depthTexResult = dev->createTexture(depthTexDesc);
-    if (!depthTexResult) return tl::make_unexpected(depthTexResult.error());
-    ctx->m_depthTexture = std::move(*depthTexResult);
+    // InFlightFrame ごとにフレームバッファを1つずつ作成して管理する。
+    // バックバッファは毎フレーム更新されるため、ここではダミーのテクスチャを作成しておく。
+    const uint32_t inFlights = ctx->m_swapChain->maxFramesInFlight();
+    for (uint32_t i = 0; i < inFlights; i++) {
+        FramebufferInfo fb;
+        fb.colorTexture = Texture::createBackbufferWrapper();
+        auto result = Texture::createDepthStencil(dev, fbWidth, fbHeight);
+        if (!result) return tl::make_unexpected(result.error());
+        fb.depthTexture = *result;
+        ctx->m_framebuffers.push_back(std::move(fb));
+    }
 
-    auto depthViewResult = dev->createTextureView(ctx->m_depthTexture.get());
-    if (!depthViewResult) return tl::make_unexpected(depthViewResult.error());
-    ctx->m_depthView = std::move(*depthViewResult);
-
-    // 3. Renderer
+    // Renderer
     auto rendererResult = Renderer::create(ctx.get());
     if (!rendererResult) return tl::make_unexpected(rendererResult.error());
     ctx->m_renderer = std::move(*rendererResult);
@@ -85,24 +84,32 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     return ctx;
 }
 
-Result<FrameInfo> GraphicsContext::beginFrame() {
+Result<const FramebufferInfo*> GraphicsContext::beginFrame() {
     auto* colorTarget = m_swapChain->acquireNextTexture();
     if (!colorTarget) {
         return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to acquire next texture"});
     }
 
+    uint32_t currentFrame = m_swapChain->currentFrame();
+    FramebufferInfo* fb = &m_framebuffers[currentFrame];
+    fb->colorTexture->wrapBackbuffer(
+        colorTarget,
+        m_width,
+        m_height,
+        m_colorFormat);
+
     m_frameBeginTime = Clock::now();
 
-    FrameInfo info;
-    info.colorTarget = colorTarget;
-    info.depthTarget = m_depthView.get();
-    info.width = m_width;
-    info.height = m_height;
-    return info;
+    return fb;
+}
+
+const FramebufferInfo* GraphicsContext::currentFramebuffer() const {
+    uint32_t currentFrame = m_swapChain->currentFrame();
+    return &m_framebuffers[currentFrame];
 }
 
 void GraphicsContext::endFrame() {
-    m_lastColorTarget = m_currentColorTarget;
+    m_lastColorTarget = currentFramebuffer()->colorTexture->rhiTextureView();
     m_swapChain->present();
 
     auto now = Clock::now();

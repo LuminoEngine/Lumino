@@ -29,6 +29,11 @@ target_include_directories(
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 
+# WebGPU (copy dll)
+if(LUMINO_ENABLE_WEBGPU)
+    target_link_libraries(${PROJECT_NAME} PRIVATE dawn::webgpu_dawn)
+endif()
+
 #-------------------------------------------------------------------------------
 # Tests
 #-------------------------------------------------------------------------------

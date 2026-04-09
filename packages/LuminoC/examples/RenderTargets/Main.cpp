@@ -113,9 +113,9 @@ int main(void) {
     /* 7. Main loop */
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNGraphicsProfilering profiler = {};
-    int continueLoop = 1;
+    LNBool quit = LN_FALSE;
     float angle = 0.0f;
-    while (LNWindow_ProcessEvents(window, &continueLoop) == LN_OK && continueLoop) {
+    while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         angle += 0.02f;
 
         /* Rotate the triangle */
