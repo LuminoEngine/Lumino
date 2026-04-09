@@ -6,7 +6,7 @@
 
 namespace ln {
 
-/** Intrusive reference-counted base class. */
+/** 侵入型参照カウントの基底クラス。 */
 class RefObject {
 public:
     RefObject() = default;
@@ -29,8 +29,8 @@ private:
 };
 
 /**
- * Smart pointer for RefObject objects. Does NOT addRef on construction from raw pointer
- * (assumes ownership of the initial ref). Use Ref::adopt() or Ref::create().
+ * RefObject 用スマートポインタ。生ポインタからの構築時に addRef を行わない
+ * (初期参照の所有権を引き継ぐ)。Ref::adopt() または Ref::create() を使用すること。
  */
 template <typename T>
 class Ref {
@@ -69,7 +69,7 @@ public:
         if (ptr_) ptr_->addRef();
     }
 
-    /** Adopt a raw pointer (takes ownership of existing ref). */
+    /** 生ポインタを引き受ける (既存の参照の所有権を取得)。 */
     static Ref adopt(T* p) {
         Ref r;
         r.ptr_ = p;

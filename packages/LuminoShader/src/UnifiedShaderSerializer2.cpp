@@ -1,6 +1,5 @@
 // Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
-#include <LuminoShader/UnifiedShader.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
 

@@ -23,38 +23,6 @@ enum ShaderTarget {
     ShaderTarget_METAL = 4,
 };
 
-enum RegisterCategory {
-    RegisterCategory_Unknown = -1,
-    RegisterCategory_ConstantBuffer = 0,
-    RegisterCategory_TextureOrCombinedSampler = 1,
-    RegisterCategory_SamplerState = 2,
-    RegisterCategory_UnorderdAccess = 3,
-    RegisterCategory_Count = 4,
-};
-
-enum BindingResourceCategory {
-    BindingResourceCategory_Unknown = 0,
-    BindingResourceCategory_ConstantBuffer = 1,
-    BindingResourceCategory_TextureOrCombinedSampler = 2,
-    BindingResourceCategory_SamplerState = 3,
-    BindingResourceCategory_UnorderdAccess = 4,
-};
-
-enum ShaderGlobalMemberType {
-    ShaderGlobalMemberType_Unknown = 0,
-    ShaderGlobalMemberType_Bool = 1,
-    ShaderGlobalMemberType_Int = 2,
-    ShaderGlobalMemberType_Float = 3,
-};
-
-enum ShaderGlobalMemberKind {
-    ShaderGlobalMemberKind_Unknown = 0,
-    ShaderGlobalMemberKind_Scalar = 1,
-    ShaderGlobalMemberKind_Vector = 2,
-    ShaderGlobalMemberKind_Matrix = 3,
-    ShaderGlobalMemberKind_Array = 4,
-};
-
 enum DescriptorType {
     DescriptorType_UniformBuffer = 0,
     DescriptorType_Texture = 1,
@@ -104,6 +72,13 @@ struct VertexInputAttribute {
 };
 
 using VertexInputAttributeTable = std::vector<VertexInputAttribute>;
+
+using BlobId = int16_t;
+
+struct Blob {
+    BlobId id;
+    std::vector<uint8_t> data;
+};
 
 // Error helper macros for the shader package.
 #define LNSHADER_MAKE_ERROR(msg) tl::make_unexpected(::ln::Error{::ln::ErrorCode::ShaderCompilationFailed, msg})

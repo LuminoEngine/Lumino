@@ -38,7 +38,7 @@ static const unsigned char kShaderData[] = {
 #include "Standard.lcsh.inl"
 };
 
-auto result = UnifiedShaderSerializer::loadFromData(kShaderData, sizeof(kShaderData));
+auto result = UnifiedShaderSerializer2::loadFromData(kShaderData, sizeof(kShaderData));
 ```
 
 ## シェーダーソースの書き方

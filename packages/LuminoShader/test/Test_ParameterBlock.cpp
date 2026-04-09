@@ -1,30 +1,11 @@
 ﻿#include <fstream>
 #include <gtest/gtest.h>
-#include <LuminoShader/UnifiedShader.hpp>
-#include <LuminoShader/ShaderCompiler.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/ShaderCompiler2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
 
 using namespace ln;
 using namespace ln::shader;
-
-TEST(Test_ParameterBlock, Basic1) {
-    auto compiler = *ShaderCompiler::create();
-    auto inputFilePath = std::filesystem::path(TEST_DATA_DIR) / "ParameterBlock1.slang";
-
-    auto buildResult = compiler->build(inputFilePath);
-    if (!buildResult) {
-        std::cerr << "Error: " << buildResult.error().message << std::endl;
-    }
-
-    UnifiedShader* shader = compiler->shader();
-
-    printf("");
-}
-
-//----------------------------------------------------------------------
-// v2 tests
 
 static std::unique_ptr<ShaderCompiler2> compileParameterBlock1() {
     auto compiler = *ShaderCompiler2::create();

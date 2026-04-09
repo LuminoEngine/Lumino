@@ -5,7 +5,7 @@ namespace ln {
 struct Vector3;
 struct Quaternion;
 
-/** Column-major 4x4 matrix. */
+/** 列優先の 4x4 行列。 */
 struct Matrix4x4 {
     f32 m[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 

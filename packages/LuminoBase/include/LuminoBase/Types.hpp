@@ -16,7 +16,7 @@ using i64 = int64_t;
 using f32 = float;
 using f64 = double;
 
-/** Non-owning view of a contiguous range. */
+/** 連続したメモリ範囲への非所有ビュー。 */
 template <typename T>
 struct Span {
     T* data_ = nullptr;

@@ -5,7 +5,7 @@
 
 namespace ln {
 
-/** Error code for Lumino operations. */
+/** Lumino の操作に使用するエラーコード。 */
 enum class ErrorCode {
     OK = 0,
     Unknown,
@@ -20,7 +20,7 @@ enum class ErrorCode {
     RuntimeError,
 };
 
-/** Lightweight error type carrying a code and optional message. */
+/** コードとオプションのメッセージを持つ軽量エラー型。 */
 struct Error {
     ErrorCode code = ErrorCode::Unknown;
     std::string message;
@@ -30,11 +30,11 @@ struct Error {
     Error(ErrorCode c, std::string msg) : code(c), message(std::move(msg)) {}
 };
 
-/** Result type: either a value T or an Error. */
+/** 結果型。値 T またはエラー Error のいずれかを持つ。 */
 template <typename T>
 using Result = tl::expected<T, Error>;
 
-/** Result type for void-returning operations. */
+/** void を返す操作用の結果型。 */
 using VoidResult = tl::expected<void, Error>;
 
 // clang-format off

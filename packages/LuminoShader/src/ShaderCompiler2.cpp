@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
-#include <LuminoShader/UnifiedShader.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/ShaderCompiler2.hpp>
 #include "ShaderMetadata.hpp"
@@ -134,7 +133,7 @@ VoidResult ShaderCompiler2::build(const fs::path& inputFilePath) {
 
     if (m_dump) {
         m_dumpDirPath = inputFilePath;
-        m_dumpDirPath += ".dump2";
+        m_dumpDirPath += ".dump";
         fs::create_directories(m_dumpDirPath);
     }
 
