@@ -8,10 +8,15 @@
 #include <numeric>
 #include <unordered_set>
 
+#include <LuminoBase/SmallVector.hpp>
 #include "VulkanHelpers.hpp"
+#include "VulkanBuffer.hpp"
+#include "VulkanTexture.hpp"
+#include "VulkanTextureView.hpp"
+#include "VulkanCommandBuffer.hpp"
+#include "VulkanSwapChain.hpp"
 #include "VulkanBackend.hpp"
 #include "VulkanDevice.hpp"
-
 
 namespace ln::rhi::vulkan {
 
@@ -200,9 +205,8 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
     auto it = m_renderPassCache.find(key);
     if (it != m_renderPassCache.end()) return it->second;
 
-    // TODO: vector やめたい
-    std::vector<VkAttachmentDescription> attachments;
-    std::vector<VkAttachmentReference> colorRefs;
+    SmallVector<VkAttachmentDescription, kMaxMultiRenderTargets + 1> attachments;
+    SmallVector<VkAttachmentReference, kMaxMultiRenderTargets> colorRefs;
 
     for (size_t i = 0; i < key.colorAttachments.size(); ++i) {
         VkAttachmentDescription att{};
@@ -374,7 +378,7 @@ Result<Ref<Texture>> VulkanDevice::createTexture(const TextureDesc& desc) {
 
 Result<Ref<TextureView>> VulkanDevice::createTextureView(Texture* texture) {
     auto* vtex = static_cast<VulkanTexture*>(texture);
-    VkFormat fmt = toVkFormat(vtex->format());
+    VkFormat fmt = VulkanHelpers::toVkFormat(vtex->format());
     VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
     if (vtex->format() == TextureFormat::Depth24Stencil8) {
         aspect = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
@@ -421,6 +425,10 @@ Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipel
         return LN_MAKE_ERROR("Failed to create render pipeline.");
     }
     return Ref<RenderPipeline>(rp);
+}
+
+u32 VulkanDevice::currentFrameIndex() const {
+    return m_activeSwapChain ? m_activeSwapChain->currentFrame() : 0u;
 }
 
 Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {

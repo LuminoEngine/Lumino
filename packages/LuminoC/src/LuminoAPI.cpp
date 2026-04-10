@@ -80,8 +80,8 @@ LNHandle wrapObjectFromGet(ln::Object* object) {
     return instance->objectRegistry()->registerObject(object);
 }
 
-template<typename T>
-T* resolveObject(LNHandle handle) {
+template<typename T, typename H>
+T* resolveObject(H handle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return nullptr;
     return instance->objectRegistry()->resolve<T>(handle);
@@ -208,7 +208,7 @@ static ln::rhi::LoadOp toRhiLoadOp(LNLoadOp op) {
 }
 
 //------------------------------------------------------------------------------
-// LNGraphicsContext
+// LNHandle
 //------------------------------------------------------------------------------
 
 LNResult LNGraphicsContext_BeginFrame(
@@ -259,21 +259,39 @@ LNResult LNGraphicsContext_BeginRenderPass(
     const ln::FramebufferInfo* fb = ctx->currentFramebuffer();
 
     // カラーアタッチメント
-    ln::rhi::ColorAttachment colorAttach;
-    if (desc->colorAttachment.renderTarget != LN_NULL_HANDLE) {
-        auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->colorAttachment.renderTarget);
-        if (!tex) return LN_ERROR_INVALID_HANDLE;
-        colorAttach.view = tex->rhiTextureView();
-    } else {
+    ln::rhi::RenderPassDesc rpDesc;
+    if (desc->colorAttachmentCount == 0) {
+        // count が 0 の場合、バックバッファをフォールバック
+        ln::rhi::ColorAttachment colorAttach;
         colorAttach.view = fb->colorTexture->rhiTextureView();
+        colorAttach.loadOp = toRhiLoadOp(desc->colorAttachments[0].loadOp);
+        colorAttach.storeOp = ln::rhi::StoreOp::Store;
+        colorAttach.clearColor = {
+            desc->colorAttachments[0].clearColor[0],
+            desc->colorAttachments[0].clearColor[1],
+            desc->colorAttachments[0].clearColor[2],
+            desc->colorAttachments[0].clearColor[3]};
+        rpDesc.colorAttachments.push_back(colorAttach);
+    } else {
+        for (uint32_t i = 0; i < desc->colorAttachmentCount; ++i) {
+            ln::rhi::ColorAttachment colorAttach;
+            if (desc->colorAttachments[i].renderTarget != LN_NULL_HANDLE) {
+                auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->colorAttachments[i].renderTarget);
+                if (!tex) return LN_ERROR_INVALID_HANDLE;
+                colorAttach.view = tex->rhiTextureView();
+            } else {
+                colorAttach.view = fb->colorTexture->rhiTextureView();
+            }
+            colorAttach.loadOp = toRhiLoadOp(desc->colorAttachments[i].loadOp);
+            colorAttach.storeOp = ln::rhi::StoreOp::Store;
+            colorAttach.clearColor = {
+                desc->colorAttachments[i].clearColor[0],
+                desc->colorAttachments[i].clearColor[1],
+                desc->colorAttachments[i].clearColor[2],
+                desc->colorAttachments[i].clearColor[3]};
+            rpDesc.colorAttachments.push_back(colorAttach);
+        }
     }
-    colorAttach.loadOp = toRhiLoadOp(desc->colorAttachment.loadOp);
-    colorAttach.storeOp = ln::rhi::StoreOp::Store;
-    colorAttach.clearColor = {
-        desc->colorAttachment.clearColor[0],
-        desc->colorAttachment.clearColor[1],
-        desc->colorAttachment.clearColor[2],
-        desc->colorAttachment.clearColor[3]};
 
     // デプス・ステンシルアタッチメント
     ln::rhi::DepthStencilAttachment depthAttach;
@@ -291,8 +309,6 @@ LNResult LNGraphicsContext_BeginRenderPass(
     depthAttach.stencilStoreOp = ln::rhi::StoreOp::Store;
     depthAttach.clearStencil = desc->depthStencil.clearStencil;
 
-    ln::rhi::RenderPassDesc rpDesc;
-    rpDesc.colorAttachments = {colorAttach};
     rpDesc.depthStencilAttachment = &depthAttach;
 
     ctx->m_currentPass = ctx->m_currentCmd->beginRenderPass(rpDesc);
@@ -315,7 +331,7 @@ LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext) {
 }
 
 //------------------------------------------------------------------------------
-// LNRenderPassDesc / LNGraphicsContext 関数
+// LNRenderPassDesc / LNHandle 関数
 //------------------------------------------------------------------------------
 
 void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {

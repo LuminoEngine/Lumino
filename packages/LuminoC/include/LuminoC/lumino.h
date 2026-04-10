@@ -57,9 +57,21 @@ typedef enum LNResult {
  * ゼロ初期化時のデフォルトは LN_LOAD_OP_CLEAR。
  */
 typedef enum LNLoadOp {
-    LN_LOAD_OP_CLEAR     = 0,  /**< クリアする */
-    LN_LOAD_OP_LOAD      = 1,  /**< 既存の内容を保持する */
-    LN_LOAD_OP_DONT_CARE = 2,  /**< 内容不定 (パフォーマンス最適化) */
+    /**
+     * 内容をクリアします。
+     */
+    LN_LOAD_OP_CLEAR     = 0,
+    /**
+     * 既存の内容を保持します。
+     */
+    LN_LOAD_OP_LOAD      = 1,
+    /**
+     * 内容不定 (パフォーマンス最適化)
+     * ポストプロセスや G-Buffer のように出力先の全ピクセルを書き換える時に指定できます。
+     */
+    LN_LOAD_OP_DONT_CARE = 2,
+
+    LN_LOAD_OP__FORCE32 = 0x7FFFFFFF,
 } LNLoadOp;
 
 //------------------------------------------------------------------------------
@@ -134,6 +146,13 @@ extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle handle, LNHandle
 extern LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit);
 
 //------------------------------------------------------------------------------
+// Constants
+//------------------------------------------------------------------------------
+
+/** 同時に指定できるカラーアタッチメントの最大数 */
+#define LN_MAX_COLOR_ATTACHMENTS 8
+
+//------------------------------------------------------------------------------
 // Render pass descriptor structs
 //------------------------------------------------------------------------------
 
@@ -164,7 +183,8 @@ typedef struct LNDepthStencilAttachmentDesc {
  * LNRenderPassDesc_Init で初期化してから使用してください。
  */
 typedef struct LNRenderPassDesc {
-    LNColorAttachmentDesc        colorAttachment; /**< カラーアタッチメント */
+    uint32_t colorAttachmentCount; /**< 使用するカラーアタッチメント数 (0 の場合バックバッファを使用) */
+    LNColorAttachmentDesc colorAttachments[LN_MAX_COLOR_ATTACHMENTS]; /**< カラーアタッチメント配列 */
     LNDepthStencilAttachmentDesc depthStencil;     /**< デプス・ステンシルアタッチメント */
 } LNRenderPassDesc;
 

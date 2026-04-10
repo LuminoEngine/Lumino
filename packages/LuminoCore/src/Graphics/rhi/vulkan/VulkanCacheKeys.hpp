@@ -1,8 +1,9 @@
 #pragma once
 
 #include <LuminoBase/Types.hpp>
+#include <LuminoBase/SmallVector.hpp>
+#include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <vulkan/vulkan.h>
-#include <vector>
 
 namespace ln::rhi::vulkan {
 
@@ -16,7 +17,7 @@ struct RenderPassKey {
         bool operator==(const ColorAttachment& other) const;
     };
 
-    std::vector<ColorAttachment> colorAttachments;
+    SmallVector<ColorAttachment, kMaxMultiRenderTargets> colorAttachments;
     VkFormat depthFormat = VK_FORMAT_UNDEFINED;
     VkAttachmentLoadOp stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
@@ -31,7 +32,7 @@ struct RenderPassKeyHash {
 
 struct FramebufferKey {
     VkRenderPass renderPass = VK_NULL_HANDLE;
-    std::vector<VkImageView> attachments;
+    SmallVector<VkImageView, kMaxMultiRenderTargets + 1> attachments;
     u32 width = 0, height = 0;
 
     bool operator==(const FramebufferKey& o) const;

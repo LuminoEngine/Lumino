@@ -42,12 +42,19 @@ int main(void) {
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
 
         // レンダーパス開始 (ライトグリーンでクリア)
-        LNRenderPassDesc rpDesc;
-        LNRenderPassDesc_Init(&rpDesc);
-        rpDesc.colorAttachment.clearColor[0] = 0.60f;
-        rpDesc.colorAttachment.clearColor[1] = 0.85f;
-        rpDesc.colorAttachment.clearColor[2] = 0.60f;
-        rpDesc.colorAttachment.clearColor[3] = 1.0f;
+        LNRenderPassDesc rpDesc = {};
+        rpDesc.colorAttachmentCount = 1;
+        rpDesc.colorAttachments[0].renderTarget = colorBuffer;
+        rpDesc.colorAttachments[0].clearColor[0] = 0.60f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.85f;
+        rpDesc.colorAttachments[0].clearColor[2] = 0.60f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_CLEAR;
+        rpDesc.depthStencil.depthBuffer = depthBuffer;
+        rpDesc.depthStencil.clearDepth = 1.0f;
+        rpDesc.depthStencil.clearStencil = 0x00;
+        rpDesc.depthStencil.depthLoadOp = LN_LOAD_OP_CLEAR;
+        rpDesc.depthStencil.stencilLoadOp = LN_LOAD_OP_CLEAR;
         LNGraphicsContext_BeginRenderPass(graphicsContext, &rpDesc);
 
         // このサンプルはクリアするだけなので、描画コマンドはありません。

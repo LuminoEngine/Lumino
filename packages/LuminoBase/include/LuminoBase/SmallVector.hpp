@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <cstddef>
 #include <cassert>
 #include <utility>
@@ -114,10 +114,19 @@ public:
     bool empty() const { return m_size == 0; }
     static constexpr std::size_t capacity() { return Capacity; }
 
-private:
     T* data() { return reinterpret_cast<T*>(m_storage); }
     const T* data() const { return reinterpret_cast<const T*>(m_storage); }
 
+    bool operator==(const SmallVector& other) const {
+        if (m_size != other.m_size) return false;
+        for (std::size_t i = 0; i < m_size; ++i) {
+            if (!(data()[i] == other.data()[i])) return false;
+        }
+        return true;
+    }
+    bool operator!=(const SmallVector& other) const { return !(*this == other); }
+
+private:
     alignas(T) unsigned char m_storage[sizeof(T) * Capacity];
     std::size_t m_size;
 };

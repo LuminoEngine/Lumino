@@ -25,10 +25,10 @@ TEST_F(Test_Graphics, ClearScreen) {
     ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
     LNRenderPassDesc rpDesc;
     LNRenderPassDesc_Init(&rpDesc);
-    rpDesc.colorAttachment.clearColor[0] = 0.0f;
-    rpDesc.colorAttachment.clearColor[1] = 0.0f;
-    rpDesc.colorAttachment.clearColor[2] = 1.0f;
-    rpDesc.colorAttachment.clearColor[3] = 1.0f;
+    rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
     ASSERT_EQ(LN_OK, LNGraphicsContext_BeginRenderPass(graphicsContext, &rpDesc));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndRenderPass(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));

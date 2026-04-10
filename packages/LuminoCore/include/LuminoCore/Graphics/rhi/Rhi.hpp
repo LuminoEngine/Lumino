@@ -23,7 +23,8 @@
 #include <vector>
 
 namespace ln::rhi {
-static const int kMaxMultiRenderTargets = 4;
+static const int kMaxMultiRenderTargets = 8;
+static const int kMaxBindGroupEntries = 16;
 
 // ------ Forward declarations ------
 class Device;

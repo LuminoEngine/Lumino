@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
+#include "VulkanCommon.hpp"
 
-#include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
 #include <mutex>
@@ -12,8 +11,6 @@
 #include "StagingBufferPool.hpp"
 
 namespace ln::rhi::vulkan {
-
-// ------ VulkanDevice ----------------------------------------------------------------------------------------------------------------
 
 class VulkanDevice final : public Device {
 public:
@@ -59,20 +56,12 @@ public:
 
     void setActiveSwapChain(VulkanSwapChain* sc) { m_activeSwapChain = sc; }
     VulkanSwapChain* activeSwapChain() const { return m_activeSwapChain; }
-    u32 currentFrameIndex() const {
-        return m_activeSwapChain ? m_activeSwapChain->currentFrame() : 0u;
-    }
+    u32 currentFrameIndex() const;
 
     Result<Ref<VulkanCommandBuffer>> createCommandBuffer();
 
     Result<VkCommandBuffer> beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-    //VoidResult transitionImageLayoutImmediately(
-    //    VkImage image,
-    //    VkFormat format,
-    //    uint32_t mipLevel,
-    //    VkImageLayout oldLayout,
-    //    VkImageLayout newLayout);
 
 private:
     void finalize() override;
@@ -85,8 +74,6 @@ private:
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     VkDevice m_device = VK_NULL_HANDLE;
 
-    //std::vector<VkQueueFamilyProperties> m_queueFamilyProps;
-    //std::optional<uint32_t> m_graphicsFamily;
     uint32_t m_graphicsQueuFamily;
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;
     VkCommandPool m_commandPool = VK_NULL_HANDLE;
