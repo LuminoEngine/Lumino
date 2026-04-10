@@ -37,7 +37,7 @@ VoidResult CoreInstance::init(const Settings& settings) {
         settings.preferredBackend = m_settings.preferredBackend;
         auto result = GraphicsModule::create(settings);
         if (!result) {
-            return tl::make_unexpected(result.error());
+            return LN_FORWARD_ERROR(result);
         }
         m_graphicsModule = std::move(*result);
     }

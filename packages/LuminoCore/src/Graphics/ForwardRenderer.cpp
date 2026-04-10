@@ -22,7 +22,7 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
             static_cast<u32>(sceneSetIndex), 0,
             static_cast<u32>(sizeof(SceneParamsUBO)),
             ctx->maxFramesInFlight());
-        if (!r) return tl::make_unexpected(r.error());
+        if (!r) return LN_FORWARD_ERROR(r);
         fw->m_sceneAllocator = std::move(*r);
     }
 

@@ -61,7 +61,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     //scDesc.format = desc.colorFormat;
     scDesc.vsync = desc.vsync;
     auto swapChainResult = dev->createSwapChain(scDesc);
-    if (!swapChainResult) return tl::make_unexpected(swapChainResult.error());
+    if (!swapChainResult) return LN_FORWARD_ERROR(swapChainResult);
     ctx->m_swapChain = std::move(*swapChainResult);
 
     // InFlightFrame ごとにフレームバッファを1つずつ作成して管理する。
@@ -71,14 +71,14 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
         FramebufferInfo fb;
         fb.colorTexture = Texture::createBackbufferWrapper();
         auto result = Texture::createDepthStencil(dev, fbWidth, fbHeight);
-        if (!result) return tl::make_unexpected(result.error());
+        if (!result) return LN_FORWARD_ERROR(result);
         fb.depthTexture = *result;
         ctx->m_framebuffers.push_back(std::move(fb));
     }
 
     // Renderer
     auto rendererResult = Renderer::create(ctx.get());
-    if (!rendererResult) return tl::make_unexpected(rendererResult.error());
+    if (!rendererResult) return LN_FORWARD_ERROR(rendererResult);
     ctx->m_renderer = std::move(*rendererResult);
 
     return ctx;
@@ -87,7 +87,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
 Result<const FramebufferInfo*> GraphicsContext::beginFrame() {
     auto* colorTarget = m_swapChain->acquireNextTexture();
     if (!colorTarget) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Failed to acquire next texture"});
+        return LN_MAKE_ERROR("Failed to acquire next texture");
     }
 
     uint32_t currentFrame = m_swapChain->currentFrame();
@@ -120,19 +120,19 @@ void GraphicsContext::endFrame() {
 
 Result<void> GraphicsContext::captureBackbuffer() {
     if (!m_lastColorTarget) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "No backbuffer available. Call after endFrame()."});
+        return LN_MAKE_ERROR("No backbuffer available. Call after endFrame().");
     }
 
     auto* dev = device();
     if (!dev) {
-        return tl::make_unexpected(Error{ErrorCode::NotInitialized, "Device not available."});
+        return LN_MAKE_ERROR("Device not available.");
     }
 
     dev->waitIdle();
 
     auto result = dev->readbackTexture(m_lastColorTarget);
     if (!result) {
-        return tl::make_unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
 
     m_captureBuffer = std::move(*result);
@@ -147,7 +147,7 @@ Result<void> GraphicsContext::captureBackbuffer() {
 
 Result<void> GraphicsContext::initDebugPrint() {
     auto result = DebugPrint::create(this);
-    if (!result) return tl::make_unexpected(result.error());
+    if (!result) return LN_FORWARD_ERROR(result);
     m_debugPrint = std::move(*result);
     return {};
 }

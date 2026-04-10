@@ -143,7 +143,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
         while (newCapacity < count) newCapacity *= 2;
 
         auto result = Mesh::createDynamic(m_ctx->device(), newCapacity * 4, newCapacity * 6);
-        if (!result) return tl::make_unexpected(result.error());
+        if (!result) return LN_FORWARD_ERROR(result);
         m_spriteMesh = std::move(*result);
         m_spriteMeshCapacity = newCapacity;
     }

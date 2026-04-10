@@ -37,7 +37,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
             static_cast<u32>(renderer->m_viewSetIndex), 0,
             static_cast<u32>(sizeof(ViewParamsUBO)),
             framesInFlight);
-        if (!r) return tl::make_unexpected(r.error());
+        if (!r) return LN_FORWARD_ERROR(r);
         renderer->m_viewAllocator = std::move(*r);
     }
 
@@ -48,7 +48,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
             static_cast<u32>(renderer->m_objectSetIndex), 0,
             static_cast<u32>(renderer->m_objectUBOSize),
             framesInFlight);
-        if (!r) return tl::make_unexpected(r.error());
+        if (!r) return LN_FORWARD_ERROR(r);
         renderer->m_objectAllocator = std::move(*r);
     }
 
@@ -313,7 +313,7 @@ Result<void> Renderer::drawSubmesh(
     key.renderPass          = m_currentPass;
 
     auto pipelineResult = pipelineCache->getOrCreate(key);
-    if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
+    if (!pipelineResult) return LN_FORWARD_ERROR(pipelineResult);
 
     m_currentPass->setPipeline(*pipelineResult);
 
@@ -327,7 +327,7 @@ Result<void> Renderer::drawSubmesh(
 
     // Get or create the material's BindGroup from the Renderer-side cache.
     auto matBGResult = getOrCreateMaterialBindGroup(mat);
-    if (!matBGResult) return tl::make_unexpected(matBGResult.error());
+    if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
 
     int16_t matSet = mat->shaderPass()->materialSetIndex();
     m_currentPass->setBindGroup(static_cast<u32>(matSet), *matBGResult);
@@ -351,7 +351,7 @@ Result<void> Renderer::drawSingleSubMesh(
 
 Result<void> Renderer::drawScreenRect(Material* material) {
     auto meshResult = getScreenRectMesh();
-    if (!meshResult) return tl::make_unexpected(meshResult.error());
+    if (!meshResult) return LN_FORWARD_ERROR(meshResult);
 
     Transform identity;
     return drawMeshImmediate(*meshResult, identity, material);
@@ -409,14 +409,14 @@ Result<void> Renderer::drawStencilMaskMesh(
         key.renderPass       = m_currentPass;
 
         auto pipelineResult = pipelineCache->getOrCreate(key);
-        if (!pipelineResult) return tl::make_unexpected(pipelineResult.error());
+        if (!pipelineResult) return LN_FORWARD_ERROR(pipelineResult);
 
         m_currentPass->setPipeline(*pipelineResult);
         m_currentPass->setStencilReference(stencilRef);
         flushPassBindGroups();
 
         auto matBGResult = getOrCreateMaterialBindGroup(mat);
-        if (!matBGResult) return tl::make_unexpected(matBGResult.error());
+        if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
 
         int16_t matSet = mat->shaderPass()->materialSetIndex();
         m_currentPass->setBindGroup(static_cast<u32>(matSet), *matBGResult);
@@ -454,7 +454,7 @@ Result<void> Renderer::popStencilMask() {
     if (!flushResult) return flushResult;
 
     if (m_stencilMaskStack.empty()) {
-        return tl::make_unexpected(Error{ErrorCode::InvalidArgument, "Stencil mask stack underflow"});
+        return LN_MAKE_ERROR("Stencil mask stack underflow");
     }
 
     auto entry = m_stencilMaskStack.back();
@@ -499,7 +499,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     // Create texture view if missing or texture changed
     if (mat->baseTexture() && (!cache.textureView || cache.lastBaseTexture != mat->baseTexture())) {
         auto tvResult = device->createTextureView(mat->baseTexture());
-        if (!tvResult) return tl::make_unexpected(tvResult.error());
+        if (!tvResult) return LN_FORWARD_ERROR(tvResult);
         cache.textureView = std::move(*tvResult);
         cache.lastBaseTexture = mat->baseTexture();
         // Texture view changed, all bind groups must be recreated
@@ -510,7 +510,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     if (!cache.sampler) {
         rhi::SamplerDesc samplerDesc;
         auto sampResult = device->createSampler(samplerDesc);
-        if (!sampResult) return tl::make_unexpected(sampResult.error());
+        if (!sampResult) return LN_FORWARD_ERROR(sampResult);
         cache.sampler = std::move(*sampResult);
     }
 
@@ -520,7 +520,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         bufDesc.size = mat->materialParamBufferSize();
         bufDesc.usage = rhi::BufferUsage::Uniform;
         auto bufResult = device->createBuffer(bufDesc);
-        if (!bufResult) return tl::make_unexpected(bufResult.error());
+        if (!bufResult) return LN_FORWARD_ERROR(bufResult);
         cache.paramBuffers[frameSlot] = std::move(*bufResult);
     }
 
@@ -550,7 +550,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         };
         auto bgResult = mat->shaderPass()->pipelineLayout()->createBindGroup(
             static_cast<u32>(matSet), entries);
-        if (!bgResult) return tl::make_unexpected(bgResult.error());
+        if (!bgResult) return LN_FORWARD_ERROR(bgResult);
         cache.bindGroups[frameSlot] = std::move(*bgResult);
     }
 
@@ -576,7 +576,7 @@ Result<Mesh*> Renderer::getScreenRectMesh() {
     sub.materialIndex = 0;
 
     auto result = Mesh::create(m_ctx->device(), vertices, indices, {sub});
-    if (!result) return tl::make_unexpected(result.error());
+    if (!result) return LN_FORWARD_ERROR(result);
     m_screenRectMesh = std::move(*result);
     return m_screenRectMesh.get();
 }

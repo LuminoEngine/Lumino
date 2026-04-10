@@ -145,7 +145,7 @@ VoidResult WebGPUPipelineLayout::init(WebGPUDevice* device, const PipelineLayout
         auto bgl = Ref<WebGPUBindGroupLayout>::adopt(new WebGPUBindGroupLayout());
         auto result = bgl->init(m_device, setLayout);
         if (!result) {
-            return tl::unexpected(result.error());
+            return LN_FORWARD_ERROR(result);
         }
         wgpuLayouts.push_back(bgl->handle());
         m_bindGroupLayouts.push_back(std::move(bgl));
@@ -170,7 +170,7 @@ Result<Ref<BindGroup>> WebGPUPipelineLayout::createBindGroup(
     }
     auto bg = Ref<WebGPUBindGroup>::adopt(new WebGPUBindGroup());
     auto r  = bg->init(m_device, m_bindGroupLayouts[setIndex].get(), entries);
-    if (!r) return tl::unexpected(r.error());
+    if (!r) return LN_FORWARD_ERROR(r);
     return Ref<BindGroup>(bg);
 }
 

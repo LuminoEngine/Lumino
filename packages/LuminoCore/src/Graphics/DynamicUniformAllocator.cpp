@@ -32,7 +32,7 @@ Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create
     // Pre-create one page per frame slot.
     for (u32 f = 0; f < framesInFlight; ++f) {
         auto pageResult = alloc->createPage();
-        if (!pageResult) return tl::make_unexpected(pageResult.error());
+        if (!pageResult) return LN_FORWARD_ERROR(pageResult);
         alloc->m_frames[f].pages.push_back(std::move(*pageResult));
     }
 
@@ -96,7 +96,7 @@ Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
     bufDesc.size = m_pageByteSize;
     bufDesc.usage = rhi::BufferUsage::Uniform;
     auto bufResult = m_device->createBuffer(bufDesc);
-    if (!bufResult) return tl::make_unexpected(bufResult.error());
+    if (!bufResult) return LN_FORWARD_ERROR(bufResult);
     page.buffer = std::move(*bufResult);
 
     // Allocate CPU shadow buffer.
@@ -108,7 +108,7 @@ Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
         {m_binding, page.buffer.get(), 0, m_alignedElementSize, nullptr, nullptr},
     };
     auto bgResult = m_pipelineLayout->createBindGroup(m_setIndex, entries);
-    if (!bgResult) return tl::make_unexpected(bgResult.error());
+    if (!bgResult) return LN_FORWARD_ERROR(bgResult);
     page.bindGroup = std::move(*bgResult);
 
     return page;

@@ -40,7 +40,7 @@ using VoidResult = tl::expected<void, Error>;
 // clang-format off
 #define LN_MAKE_SUCCESS() {}
 
-#define LN_BOX_ERROR(otherResult) tl::make_unexpected(otherResult.error())
+#define LN_FORWARD_ERROR(otherResult) tl::make_unexpected(otherResult.error())
 
 // ErrorCode: RuntimeError
 #define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);

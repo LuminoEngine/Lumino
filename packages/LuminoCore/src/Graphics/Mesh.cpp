@@ -20,7 +20,7 @@ Result<Ref<Mesh>> Mesh::create(
     vbDesc.usage = rhi::BufferUsage::Vertex;
     vbDesc.initialData = vertices.data();
     auto vbResult = device->createBuffer(vbDesc);
-    if (!vbResult) return tl::make_unexpected(vbResult.error());
+    if (!vbResult) return LN_FORWARD_ERROR(vbResult);
     mesh->m_vertexBuffer = std::move(*vbResult);
 
     // Create index buffer.
@@ -29,7 +29,7 @@ Result<Ref<Mesh>> Mesh::create(
     ibDesc.usage = rhi::BufferUsage::Index;
     ibDesc.initialData = indices.data();
     auto ibResult = device->createBuffer(ibDesc);
-    if (!ibResult) return tl::make_unexpected(ibResult.error());
+    if (!ibResult) return LN_FORWARD_ERROR(ibResult);
     mesh->m_indexBuffer = std::move(*ibResult);
 
     mesh->m_submeshes = submeshes;
@@ -65,7 +65,7 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     vbDesc.usage = rhi::BufferUsage::Vertex;
     vbDesc.mappable = true;
     auto vbResult = device->createBuffer(vbDesc);
-    if (!vbResult) return tl::make_unexpected(vbResult.error());
+    if (!vbResult) return LN_FORWARD_ERROR(vbResult);
     mesh->m_vertexBuffer = std::move(*vbResult);
 
     // Create index buffer for dynamic updates.
@@ -74,15 +74,15 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     ibDesc.usage = rhi::BufferUsage::Index;
     ibDesc.mappable = true;
     auto ibResult = device->createBuffer(ibDesc);
-    if (!ibResult) return tl::make_unexpected(ibResult.error());
+    if (!ibResult) return LN_FORWARD_ERROR(ibResult);
     mesh->m_indexBuffer = std::move(*ibResult);
 
     return mesh;
 }
 
 Result<void> Mesh::updateVertices(u32 firstVertex, const Vertex* vertices, u32 count) {
-    if (!m_dynamic) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Mesh is not dynamic"});
-    if (firstVertex + count > m_maxVertexCount) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Vertex range out of bounds"});
+    if (!m_dynamic) return LN_MAKE_ERROR("Mesh is not dynamic");
+    if (firstVertex + count > m_maxVertexCount) return LN_MAKE_ERROR("Vertex range out of bounds");
 
     return m_device->writeBuffer(
         m_vertexBuffer.get(),
@@ -92,8 +92,8 @@ Result<void> Mesh::updateVertices(u32 firstVertex, const Vertex* vertices, u32 c
 }
 
 Result<void> Mesh::updateIndices(u32 firstIndex, const u32* indices, u32 count) {
-    if (!m_dynamic) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Mesh is not dynamic"});
-    if (firstIndex + count > m_maxIndexCount) return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Index range out of bounds"});
+    if (!m_dynamic) return LN_MAKE_ERROR("Mesh is not dynamic");
+    if (firstIndex + count > m_maxIndexCount) return LN_MAKE_ERROR("Index range out of bounds");
 
     return m_device->writeBuffer(
         m_indexBuffer.get(),

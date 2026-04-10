@@ -26,14 +26,14 @@ Result<Ref<DebugPrint>> DebugPrint::create(GraphicsContext* ctx) {
     auto texResult = TextureLoader::loadFromMemory(
         ctx->device(), s_fontPngData, sizeof(s_fontPngData));
     if (!texResult) {
-        return tl::make_unexpected(texResult.error());
+        return LN_FORWARD_ERROR(texResult);
     }
     dp->m_fontTexture = std::move(*texResult);
 
     // Unlit material: alpha blending on, depth off (overlay).
     auto matResult = MaterialFactory::createUnlit(ctx);
     if (!matResult) {
-        return tl::make_unexpected(matResult.error());
+        return LN_FORWARD_ERROR(matResult);
     }
     dp->m_material = std::move(*matResult);
     dp->m_material->setTexture(dp->m_fontTexture.get());
@@ -45,7 +45,7 @@ Result<Ref<DebugPrint>> DebugPrint::create(GraphicsContext* ctx) {
     auto meshResult = Mesh::createDynamic(
         ctx->device(), kMaxChars * kVertsPerChar, kMaxChars * kVertsPerChar);
     if (!meshResult) {
-        return tl::make_unexpected(meshResult.error());
+        return LN_FORWARD_ERROR(meshResult);
     }
     dp->m_mesh = std::move(*meshResult);
     dp->m_mesh->materials().push_back(dp->m_material);

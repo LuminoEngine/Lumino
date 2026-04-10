@@ -211,7 +211,7 @@ Result<Ref<SwapChain>> WebGPUDevice::createSwapChain(const SwapChainDesc& desc) 
     auto sc = Ref<WebGPUSwapChain>::adopt(new WebGPUSwapChain());
     auto result = sc->init(this, desc);
     if (!result) {
-        return tl::unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
     return Ref<SwapChain>(sc);
 }
@@ -220,7 +220,7 @@ Result<Ref<Buffer>> WebGPUDevice::createBuffer(const BufferDesc& desc) {
     auto buf = Ref<WebGPUBuffer>::adopt(new WebGPUBuffer());
     auto result = buf->init(this, desc);
     if (!result) {
-        return tl::unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
     return Ref<Buffer>(buf);
 }
@@ -229,7 +229,7 @@ Result<Ref<Texture>> WebGPUDevice::createTexture(const TextureDesc& desc) {
     auto tex = Ref<WebGPUTexture>::adopt(new WebGPUTexture());
     auto result = tex->init(this, desc);
     if (!result) {
-        return tl::unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
     return Ref<Texture>(tex);
 }
@@ -244,20 +244,20 @@ Result<Ref<TextureView>> WebGPUDevice::createTextureView(Texture* texture) {
     auto result = view->init(this, webgpuTex->handle(), fmt, aspect,
                              webgpuTex->width(), webgpuTex->height());
     if (!result) {
-        return tl::unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
     return Ref<TextureView>(view);
 }
 
 Result<Ref<Sampler>> WebGPUDevice::createSampler(const SamplerDesc&) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU Sampler not yet implemented."});
+    return LN_MAKE_ERROR("WebGPU Sampler not yet implemented.");
 }
 
 Result<Ref<ShaderModule>> WebGPUDevice::createShaderModule(const ShaderModuleDesc& desc) {
     auto sm = Ref<WebGPUShaderModule>::adopt(new WebGPUShaderModule());
     auto result = sm->init(this, desc);
     if (!result) {
-        return tl::unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
     return Ref<ShaderModule>(sm);
 }
@@ -266,13 +266,13 @@ Result<Ref<PipelineLayout>> WebGPUDevice::createPipelineLayout(const PipelineLay
     auto pl = Ref<WebGPUPipelineLayout>::adopt(new WebGPUPipelineLayout());
     auto result = pl->init(this, desc);
     if (!result) {
-        return tl::unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
     return Ref<PipelineLayout>(pl);
 }
 
 Result<Ref<RenderPipeline>> WebGPUDevice::createRenderPipeline(const RenderPipelineDesc&) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU RenderPipeline not yet implemented."});
+    return LN_MAKE_ERROR("WebGPU RenderPipeline not yet implemented.");
 }
 
 VoidResult WebGPUDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) {
@@ -282,7 +282,7 @@ VoidResult WebGPUDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* dat
 }
 
 Result<std::vector<uint8_t>> WebGPUDevice::readbackTexture(TextureView*) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU readbackTexture not yet implemented."});
+    return LN_MAKE_ERROR("WebGPU readbackTexture not yet implemented.");
 }
 
 void WebGPUDevice::waitIdle() {

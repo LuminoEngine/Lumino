@@ -48,7 +48,7 @@ Result<Ref<PlatformWindow>> PlatformWindow::create(
         nullptr,
         nullptr);
     if (!win->m_impl->window) {
-        return tl::make_unexpected(ln::Error{ln::ErrorCode::RuntimeError, "glfwCreateWindow failed"});
+        return LN_MAKE_ERROR("glfwCreateWindow failed");
     }
     
     //auto winResult = PlatformWindow::create(desc);
@@ -56,7 +56,7 @@ Result<Ref<PlatformWindow>> PlatformWindow::create(
     //auto win = std::move(*winResult);
 
     auto ctxResult = ln::GraphicsContext::createForWindow(module, win.get(), gfxDesc);
-    if (!ctxResult) return tl::make_unexpected(ctxResult.error());
+    if (!ctxResult) return LN_FORWARD_ERROR(ctxResult);
     win->m_impl->graphicsContext = std::move(*ctxResult);
     return win;
 }

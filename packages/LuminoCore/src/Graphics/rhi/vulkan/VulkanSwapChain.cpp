@@ -74,7 +74,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     {
         auto result = m_device->beginSingleTimeCommands();
         if (!result) {
-            return LN_BOX_ERROR(result);
+            return LN_FORWARD_ERROR(result);
         }
         VkCommandBuffer commandBuffer = *result;
         for (size_t i = 0; i < m_images.size(); ++i) {

@@ -191,7 +191,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
         ok = loader.LoadASCIIFromFile(&model, &errStr, &warnStr, path);
     }
     if (!ok) {
-        return tl::make_unexpected(Error{ErrorCode::IOError, errStr});
+        return LN_MAKE_ERROR("%s", errStr.c_str());
     }
 
     // Load textures from embedded images.
@@ -208,11 +208,11 @@ Result<LoadedModel> MeshLoader::loadGltf(
         Ref<Material> mat;
         if (isLit) {
             auto r = MaterialFactory::createBasicLit(module);
-            if (!r) return tl::make_unexpected(r.error());
+            if (!r) return LN_FORWARD_ERROR(r);
             mat = std::move(*r);
         } else {
             auto r = MaterialFactory::createUnlit(module);
-            if (!r) return tl::make_unexpected(r.error());
+            if (!r) return LN_FORWARD_ERROR(r);
             mat = std::move(*r);
         }
 
@@ -250,7 +250,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
     // Create a default material if no materials exist.
     if (result.materials.empty()) {
         auto r = MaterialFactory::createUnlit(module);
-        if (!r) return tl::make_unexpected(r.error());
+        if (!r) return LN_FORWARD_ERROR(r);
         result.materials.push_back(std::move(*r));
     }
 
@@ -381,7 +381,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
         if (allVertices.empty()) continue;
 
         auto meshResult = Mesh::create(device, allVertices, allIndices, submeshes);
-        if (!meshResult) return tl::make_unexpected(meshResult.error());
+        if (!meshResult) return LN_FORWARD_ERROR(meshResult);
 
         auto& mesh = *meshResult;
         // Assign materials to mesh slots.

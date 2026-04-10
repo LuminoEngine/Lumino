@@ -99,7 +99,7 @@ Result<Ref<Material>> MaterialFactory::createMaterialFromBuiltin(
     GraphicsModule* module, BuiltinShader shader) {
     const auto& shaderPass = module->builtinShader(shader);
     if (!shaderPass) {
-        return tl::make_unexpected(Error{ErrorCode::RuntimeError, "Builtin shader not initialized"});
+        return LN_MAKE_ERROR("Builtin shader not initialized");
     }
 
     auto mat = Ref<Material>::adopt(new Material());
@@ -154,7 +154,7 @@ Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
     auto shaderPassResult = ShaderPass::createFromCompiledShader(
         data, size,
         module->device());
-    if (!shaderPassResult) return tl::make_unexpected(shaderPassResult.error());
+    if (!shaderPassResult) return LN_FORWARD_ERROR(shaderPassResult);
 
     // Create the Material
     auto mat = Ref<Material>::adopt(new Material());

@@ -30,7 +30,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     // Deserialize the unified shader from the binary blob.
     auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
     if (!loadResult) {
-        return LN_BOX_ERROR(loadResult);
+        return LN_FORWARD_ERROR(loadResult);
     }
     auto unifiedShader = std::move(*loadResult);
 
@@ -66,7 +66,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     vsDesc.codeSizeBytes = vertBlob->data.size();
     auto vsResult = device->createShaderModule(vsDesc);
     if (!vsResult) {
-        return LN_BOX_ERROR(vsResult);
+        return LN_FORWARD_ERROR(vsResult);
     }
 
     rhi::ShaderModuleDesc fsDesc;
@@ -75,7 +75,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     fsDesc.codeSizeBytes = fragBlob->data.size();
     auto fsResult = device->createShaderModule(fsDesc);
     if (!fsResult) {
-        return LN_BOX_ERROR(fsResult);
+        return LN_FORWARD_ERROR(fsResult);
     }
 
     // Build material BindGroupLayout from "$Material" ParameterBlock reflection
@@ -98,8 +98,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     auto* sceneBlock = detail::findParameterBlock(unifiedShader.get(), "sceneData");
     auto* objectBlock = detail::findParameterBlock(unifiedShader.get(), "objectData");
     if (!viewBlock || !sceneBlock || !objectBlock) {
-        return tl::make_unexpected(
-            Error{ErrorCode::RuntimeError, "Missing required ParameterBlocks (viewData, sceneData, objectData)"});
+        return LN_MAKE_ERROR("Missing required ParameterBlocks (viewData, sceneData, objectData)");
     }
 
     int16_t viewSetIndex = viewBlock->setIndex;
@@ -124,8 +123,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
 
     int16_t objectCBSize = detail::findConstantBufferSize(*objectBlock);
     if (objectCBSize <= 0) {
-        return tl::make_unexpected(
-            Error{ErrorCode::RuntimeError, "Invalid object constant buffer size in reflection"});
+        return LN_MAKE_ERROR("Invalid object constant buffer size in reflection");
     }
 
     // Determine the max set index to size the PipelineLayoutDesc properly
@@ -150,7 +148,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     {
         auto plResult = device->createPipelineLayout(plDesc);
         if (!plResult) {
-            return LN_BOX_ERROR(plResult);
+            return LN_FORWARD_ERROR(plResult);
         }
 
         auto sp = Ref<ShaderPass>::adopt(new ShaderPass());

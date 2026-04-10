@@ -133,7 +133,7 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     }
 
     auto result = m_device->createRenderPipeline(rpDesc);
-    if (!result) return tl::make_unexpected(result.error());
+    if (!result) return LN_FORWARD_ERROR(result);
 
     auto [it2, inserted] = m_cache.emplace(key, std::move(*result));
     if (inserted) {

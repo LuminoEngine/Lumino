@@ -22,7 +22,7 @@ static Result<Ref<rhi::Texture>> createTextureFromRGBA(rhi::Device* device, cons
 Result<Ref<rhi::Texture>> TextureLoader::loadFromFile(rhi::Device* device, const std::string& path) {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
     if (!file) {
-        return tl::make_unexpected(Error{ErrorCode::IOError, "Failed to open file: " + path});
+        return LN_MAKE_ERROR("Failed to open file: %s", path.c_str());
     }
     auto fileSize = file.tellg();
     file.seekg(0);
@@ -37,7 +37,7 @@ Result<Ref<rhi::Texture>> TextureLoader::loadFromMemory(rhi::Device* device, con
         static_cast<const stbi_uc*>(data), static_cast<int>(size),
         &w, &h, &channels, 4);
     if (!pixels) {
-        return tl::make_unexpected(Error{ErrorCode::IOError, "stb_image decode failed"});
+        return LN_MAKE_ERROR("stb_image decode failed");
     }
     auto result = createTextureFromRGBA(device, pixels, static_cast<u32>(w), static_cast<u32>(h));
     stbi_image_free(pixels);

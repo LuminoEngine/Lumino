@@ -140,7 +140,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
     {
         auto result = lookupQueueFamilies(m_physicalDevice, &m_graphicsQueuFamily);
         if (!result) {
-            return LN_BOX_ERROR(result);
+            return LN_FORWARD_ERROR(result);
         }
     }
 
@@ -468,7 +468,7 @@ VoidResult VulkanDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* dat
 Result<std::vector<uint8_t>> VulkanDevice::readbackTexture(TextureView* view) {
     auto* vkView = static_cast<VulkanTextureView*>(view);
     if (!vkView || vkView->image() == VK_NULL_HANDLE) {
-        return tl::make_unexpected(Error{ErrorCode::InvalidArgument, "Invalid TextureView for readback."});
+        return LN_MAKE_ERROR("Invalid TextureView for readback.");
     }
 
     // Swapchain images are in PRESENT_SRC_KHR after present().
@@ -673,7 +673,7 @@ Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
     if (desc.backend == Backend::Vulkan) {
         auto dev = Ref<vulkan::VulkanDevice>::adopt(new vulkan::VulkanDevice());
         if (!dev->init(desc)) {
-            return tl::unexpected(Error{ErrorCode::NotInitialized, "Failed to initialize Vulkan device"});
+            return LN_MAKE_ERROR("Failed to initialize Vulkan device");
         }
         return Ref<Device>(dev);
     }
@@ -681,12 +681,12 @@ Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
     if (desc.backend == Backend::WebGPU) {
         auto dev = Ref<webgpu::WebGPUDevice>::adopt(new webgpu::WebGPUDevice());
         if (!dev->init(desc)) {
-            return tl::unexpected(Error{ErrorCode::NotInitialized, "Failed to initialize WebGPU device"});
+            return LN_MAKE_ERROR("Failed to initialize WebGPU device");
         }
         return Ref<Device>(dev);
     }
 #endif
-    return tl::unexpected(Error{ErrorCode::NotSupported, "Unsupported backend"});
+    return LN_MAKE_ERROR("Unsupported backend");
 }
 
 } // namespace ln::rhi

@@ -22,7 +22,7 @@ Result<Ref<GraphicsModule>> GraphicsModule::create(const Settings& settings) {
     auto module = Ref<GraphicsModule>::adopt(new GraphicsModule());
     auto result = module->init(settings);
     if (!result) {
-        return tl::make_unexpected(result.error());
+        return LN_FORWARD_ERROR(result);
     }
     return module;
 }
@@ -39,7 +39,7 @@ VoidResult GraphicsModule::init(const Settings& settings) {
     devDesc.backend = settings.preferredBackend;
     devDesc.enableValidation = settings.enableValidation;
     auto deviceResult = rhi::Device::create(devDesc);
-    if (!deviceResult) return tl::make_unexpected(deviceResult.error());
+    if (!deviceResult) return LN_FORWARD_ERROR(deviceResult);
     m_device = std::move(*deviceResult);
 
     // Initialize builtin shaders (now using ShaderPass)
@@ -52,7 +52,7 @@ VoidResult GraphicsModule::init(const Settings& settings) {
 
     // Create shared default white texture
     auto texResult = TextureLoader::createWhiteTexture(m_device.get());
-    if (!texResult) return tl::make_unexpected(texResult.error());
+    if (!texResult) return LN_FORWARD_ERROR(texResult);
     m_whiteTexture = std::move(*texResult);
 
     return LN_MAKE_SUCCESS();
@@ -63,7 +63,7 @@ VoidResult GraphicsModule::initBuiltinShader(BuiltinShader id, const unsigned ch
         data, size,
         m_device.get());
     if (!result) {
-        return LN_BOX_ERROR(result);
+        return LN_FORWARD_ERROR(result);
     }
 
     m_builtinShaders[static_cast<int>(id)] = std::move(*result);
