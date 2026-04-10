@@ -15,7 +15,6 @@ protected:
     }
 
     void TearDown() override {
-        if (graphicsContext != LN_NULL_HANDLE) LNObject_Release(graphicsContext);
         if (window != LN_NULL_HANDLE) LNObject_Release(window);
     }
 };

@@ -36,12 +36,18 @@ public:
     WGPUQueue wgpuQueue() const { return m_queue; }
 
 private:
+    struct WebGPUAdapterEntry {
+        WGPURequestAdapterStatus status;
+        WGPUAdapter adapter;
+    };
+
     void finalize() override;
 
     WGPUInstance m_instance = nullptr;
     WGPUAdapter  m_adapter  = nullptr;
     WGPUDevice   m_device   = nullptr;
     WGPUQueue    m_queue    = nullptr;
+    std::vector<WebGPUAdapterEntry> m_adapters;
 };
 
 } // namespace ln::rhi::webgpu

@@ -1,8 +1,11 @@
 ﻿#include <iostream>
-#include <dawn/native/DawnNative.h>
-#include <dawn/dawn_proc_table.h>
-
+#include <Windows.h>
+#include <d3dcompiler.h>
 #include "WebGPUDevice.hpp"
+#include "WebGPUSwapChain.hpp"
+#include "WebGPUTexture.hpp"
+#include "WebGPUTextureView.hpp"
+#include "WebGPUHelpers.hpp"
 
 namespace ln::rhi::webgpu {
 
@@ -11,13 +14,8 @@ namespace ln::rhi::webgpu {
 WebGPUDevice::WebGPUDevice() = default;
 
 VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
-    // Dawn の C API はデフォルトで関数ポインタ経由のディスパッチを使う。
-    // スタティックリンク時はネイティブの proc テーブルを明示的に登録する必要がある。
-    //dawnProcSetProcs(&dawn::native::GetProcs());
-
     // WebGPU インスタンスを生成する
     {
-        // https://qiita.com/lriki/items/1ecdf377a6b2b57ba331
         WGPUInstanceFeatureName features[] = {
             WGPUInstanceFeatureName_TimedWaitAny
         };
@@ -25,120 +23,123 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         limits.nextInChain = nullptr;
         limits.timedWaitAnyMaxCount = 8;
 
-        WGPUInstanceDescriptor desc = {};
-        desc.nextInChain = nullptr;
-        desc.requiredFeatureCount = sizeof(features) / sizeof(features[0]);
-        desc.requiredFeatures = features;
-        desc.requiredLimits = &limits;
-        m_instance = wgpuCreateInstance(&desc);
+        WGPUInstanceDescriptor instDesc = {};
+        instDesc.nextInChain = nullptr;
+        instDesc.requiredFeatureCount = sizeof(features) / sizeof(features[0]);
+        instDesc.requiredFeatures = features;
+        instDesc.requiredLimits = &limits;
+        m_instance = wgpuCreateInstance(&instDesc);
         if (!m_instance) {
             return LN_MAKE_ERROR("wgpuCreateInstance failed.");
         }
     }
 
-    
-    // WGPURequestAdapterOptions adapterOptions = {};
-    //adapterOptions.nextInChain = nullptr;
-    ////adapterOptions.featureLevel = WGPUFeatureLevel_Compatibility;
-    //adapterOptions.compatibleSurface = nullptr;
-    //adapterOptions.powerPreference = WGPUPowerPreference_Undefined;
-    //adapterOptions.forceFallbackAdapter = false;
-    //auto onAdapterRequestEnded = [](WGPURequestAdapterStatus status,
-    //                            WGPUAdapter adapter,
-    //                            char const* message,
-    //                            void* userdata) {
-    //    WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata);
-    //    //self->m_adapters.push_back({status, adapter});
-    //};
-    //wgpuInstanceRequestAdapter(
-    //    m_instance,
-    //    &adapterOptions,
-    //    onAdapterRequestEnded,
-    //    this);
+    // Error: DynamicLib.Open: d3dcompiler_47.dll Windows Error: 87
+    HMODULE m_hD3DCompilerDLL = ::LoadLibraryW(D3DCOMPILER_DLL_W);
+    if (m_hD3DCompilerDLL) {
+        //D3DCompile2 = reinterpret_cast<PFN_D3DCompile2>(
+        //    ::GetProcAddress(m_hD3DCompilerDLL, "D3DCompile2"));
+    }
 
- #if 0
     // アダプターをリクエストする
-    // Dawn のネイティブ実装ではコールバックは同期的に呼ばれるため、
+    // Dawn の WGPUCallbackMode_AllowSpontaneous モードではコールバックは同期的に呼ばれるため、
     // 呼び出し直後に結果を参照できる。
-    struct AdapterRequest {
-        WGPUAdapter adapter = nullptr;
-        WGPURequestAdapterStatus status = WGPURequestAdapterStatus_Unknown;
-    } adapterReq;
+    {
+        //struct AdapterRequest {
+        //    WGPUAdapter adapter = nullptr;
+        //    WGPURequestAdapterStatus status = {};
+        //} adapterReq;
 
-    WGPURequestAdapterOptions adapterOptions = {};
-    adapterOptions.powerPreference = WGPUPowerPreference_HighPerformance;
+        WGPURequestAdapterOptions adapterOptions = WGPU_REQUEST_ADAPTER_OPTIONS_INIT;
+        adapterOptions.nextInChain = nullptr;
+        adapterOptions.compatibleSurface = nullptr;
+        adapterOptions.powerPreference = WGPUPowerPreference_HighPerformance;
+        adapterOptions.forceFallbackAdapter = false;
 
-    wgpuInstanceRequestAdapter(
-        m_instance,
-        &adapterOptions,
-        [](WGPURequestAdapterStatus status, WGPUAdapter adapter, char const* message, void* userdata) {
-            auto* req = static_cast<AdapterRequest*>(userdata);
-            req->status = status;
-            req->adapter = adapter;
+        WGPURequestAdapterCallbackInfo callbackInfo = WGPU_REQUEST_ADAPTER_CALLBACK_INFO_INIT;
+        callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
+        callbackInfo.callback = [](WGPURequestAdapterStatus status, WGPUAdapter adapter,
+                                   WGPUStringView message,
+                                   void* userdata1,
+                                   void*) {
+            WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata1);
+            self->m_adapters.push_back({status, adapter});
+            //auto* req = static_cast<AdapterRequest*>(userdata1);
+            //req->status = status;
+            //req->adapter = adapter;
             if (status != WGPURequestAdapterStatus_Success) {
                 std::cerr << "[WebGPU] RequestAdapter failed: "
-                          << (message ? message : "(no message)") << "\n";
+                          << std::string(message.data, message.length) << "\n";
             }
-        },
-        &adapterReq);
+        };
+        callbackInfo.userdata1 = this;
 
-    if (adapterReq.status != WGPURequestAdapterStatus_Success || !adapterReq.adapter) {
-        wgpuInstanceRelease(m_instance);
-        m_instance = nullptr;
-        return LN_MAKE_ERROR("wgpuInstanceRequestAdapter failed.");
+        WGPUFuture _ = wgpuInstanceRequestAdapter(m_instance, &adapterOptions, callbackInfo);
+
+        //if (adapterReq.status != WGPURequestAdapterStatus_Success || !adapterReq.adapter) {
+        //    return LN_MAKE_ERROR("wgpuInstanceRequestAdapter failed.");
+        //}
+        m_adapter = m_adapters[0].adapter; //adapterReq.adapter;
     }
-    m_adapter = adapterReq.adapter;
 
     // アダプター情報をログ出力する
-    WGPUAdapterProperties props = {};
-    wgpuAdapterGetProperties(m_adapter, &props);
-    std::cout << "[WebGPU] Adapter: " << (props.name ? props.name : "unknown")
-              << " / " << (props.driverDescription ? props.driverDescription : "")
-              << "\n";
+    {
+        WGPUAdapterInfo info = WGPU_ADAPTER_INFO_INIT;
+        wgpuAdapterGetInfo(m_adapter, &info);
+        std::cout << "[WebGPU] Adapter: "
+                  << std::string(info.device.data, info.device.length)
+                  << " / " << std::string(info.description.data, info.description.length)
+                  << "\n";
+    }
 
     // デバイスをリクエストする
-    struct DeviceRequest {
-        WGPUDevice device = nullptr;
-        WGPURequestDeviceStatus status = WGPURequestDeviceStatus_Unknown;
-    } deviceReq;
+    {
+        struct DeviceRequest {
+            WGPUDevice device = nullptr;
+            WGPURequestDeviceStatus status = {};
+        } deviceReq;
 
-    WGPUDeviceDescriptor deviceDesc = {};
-    deviceDesc.label = "LuminoDevice";
+        WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
+        deviceDesc.label = {"LuminoDevice", WGPU_STRLEN};
 
-    wgpuAdapterRequestDevice(
-        m_adapter,
-        &deviceDesc,
-        [](WGPURequestDeviceStatus status, WGPUDevice device, char const* message, void* userdata) {
-            auto* req = static_cast<DeviceRequest*>(userdata);
+        // エラーコールバック
+        deviceDesc.uncapturedErrorCallbackInfo.callback =
+            [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {
+                std::cerr << "[WebGPU] Uncaptured error [type=" << static_cast<int>(type) << "]: "
+                          << std::string(message.data, message.length) << "\n";
+#if defined(_MSC_VER) && defined(_DEBUG)
+                __debugbreak();
+#endif
+            };
+
+        // デバイスロストコールバック
+        deviceDesc.deviceLostCallbackInfo.callback =
+            [](WGPUDevice const*, WGPUDeviceLostReason reason, WGPUStringView message, void*, void*) {
+                std::cerr << "[WebGPU] Device lost [reason=" << static_cast<int>(reason) << "]: "
+                          << std::string(message.data, message.length) << "\n";
+            };
+
+        WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
+        callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
+        callbackInfo.callback = [](WGPURequestDeviceStatus status, WGPUDevice device,
+                                   WGPUStringView message, void* userdata1, void*) {
+            auto* req = static_cast<DeviceRequest*>(userdata1);
             req->status = status;
             req->device = device;
             if (status != WGPURequestDeviceStatus_Success) {
                 std::cerr << "[WebGPU] RequestDevice failed: "
-                          << (message ? message : "(no message)") << "\n";
+                          << std::string(message.data, message.length) << "\n";
             }
-        },
-        &deviceReq);
+        };
+        callbackInfo.userdata1 = &deviceReq;
 
-    if (deviceReq.status != WGPURequestDeviceStatus_Success || !deviceReq.device) {
-        wgpuAdapterRelease(m_adapter);
-        m_adapter = nullptr;
-        wgpuInstanceRelease(m_instance);
-        m_instance = nullptr;
-        return LN_MAKE_ERROR("wgpuAdapterRequestDevice failed.");
+        wgpuAdapterRequestDevice(m_adapter, &deviceDesc, callbackInfo);
+
+        if (deviceReq.status != WGPURequestDeviceStatus_Success || !deviceReq.device) {
+            return LN_MAKE_ERROR("wgpuAdapterRequestDevice failed.");
+        }
+        m_device = deviceReq.device;
     }
-    m_device = deviceReq.device;
-
-    // デバイスエラーコールバックを登録する
-    wgpuDeviceSetUncapturedErrorCallback(
-        m_device,
-        [](WGPUErrorType type, char const* message, void*) {
-            std::cerr << "[WebGPU] Uncaptured error [type=" << static_cast<int>(type) << "]: "
-                      << (message ? message : "(no message)") << "\n";
-#if defined(_MSC_VER) && defined(_DEBUG)
-            __debugbreak();
-#endif
-        },
-        nullptr);
 
     // デフォルトキューを取得する
     m_queue = wgpuDeviceGetQueue(m_device);
@@ -147,7 +148,6 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
     }
 
     std::cout << "[WebGPU] Device initialized successfully.\n";
-#endif
     return LN_MAKE_SUCCESS();
 }
 
@@ -178,20 +178,41 @@ DeviceLimits WebGPUDevice::deviceLimits() const {
     return DeviceLimits{};
 }
 
-Result<Ref<SwapChain>> WebGPUDevice::createSwapChain(const SwapChainDesc&) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU SwapChain not yet implemented."});
+Result<Ref<SwapChain>> WebGPUDevice::createSwapChain(const SwapChainDesc& desc) {
+    auto sc = Ref<WebGPUSwapChain>::adopt(new WebGPUSwapChain());
+    auto result = sc->init(this, desc);
+    if (!result) {
+        return tl::unexpected(result.error());
+    }
+    return Ref<SwapChain>(sc);
 }
 
 Result<Ref<Buffer>> WebGPUDevice::createBuffer(const BufferDesc&) {
     return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU Buffer not yet implemented."});
 }
 
-Result<Ref<Texture>> WebGPUDevice::createTexture(const TextureDesc&) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU Texture not yet implemented."});
+Result<Ref<Texture>> WebGPUDevice::createTexture(const TextureDesc& desc) {
+    auto tex = Ref<WebGPUTexture>::adopt(new WebGPUTexture());
+    auto result = tex->init(this, desc);
+    if (!result) {
+        return tl::unexpected(result.error());
+    }
+    return Ref<Texture>(tex);
 }
 
-Result<Ref<TextureView>> WebGPUDevice::createTextureView(Texture*) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU TextureView not yet implemented."});
+Result<Ref<TextureView>> WebGPUDevice::createTextureView(Texture* texture) {
+    auto* webgpuTex = static_cast<WebGPUTexture*>(texture);
+    auto view = Ref<WebGPUTextureView>::adopt(new WebGPUTextureView());
+    WGPUTextureFormat fmt = toWGPUTextureFormat(webgpuTex->format());
+    WGPUTextureAspect aspect = WGPUTextureAspect_All;
+    // Depth/stencil textures need DepthOnly aspect for shader binding,
+    // but All is fine for render attachment usage.
+    auto result = view->init(this, webgpuTex->handle(), fmt, aspect,
+                             webgpuTex->width(), webgpuTex->height());
+    if (!result) {
+        return tl::unexpected(result.error());
+    }
+    return Ref<TextureView>(view);
 }
 
 Result<Ref<Sampler>> WebGPUDevice::createSampler(const SamplerDesc&) {

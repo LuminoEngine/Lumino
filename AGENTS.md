@@ -50,6 +50,16 @@ build/packages/luminosc/Release/luminosc.exe -I packages/LuminoShader/shaders My
 - デスクトップ: Vulkan + QuickJS
 - コンシューマゲーム機: Vulkan-like + QuickJS
 
+### C-API
+
+Lumino の機能は C-API として提供します。 C-API は次のヘッダファイルを参照してください。
+
+- packages\LuminoC\include\LuminoC\lumino.h
+
+この C-API の基本的なライフサイクルは次のサンプルプログラムを参照してください。
+
+- packages\LuminoC\examples\ClearScreen\Main.cpp
+
 ### 古い実装と教訓
 
 `legacy` フォルダに入っているのは旧バージョンの Lumino です。 

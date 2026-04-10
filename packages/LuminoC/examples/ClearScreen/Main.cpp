@@ -5,7 +5,6 @@
  * 他のサンプル (HelloTriangle.cpp など) が C++ API を使っているのに対し、
  * このサンプルは C_API (lumino_api) のみを使って記述しています。
  */
-
 #include <LuminoC/lumino.h>
 #include <stdio.h>
 
@@ -14,7 +13,8 @@ int main(void) {
     //    なおほとんどの API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
     //    以降のサンプルではエラーチェックを省略しています。
     LNInstanceInitializeSettings settings = {};
-    settings.enableValidation = LN_TRUE;
+    settings.preferredBackend =
+        LN_GRAPHICS_BACKEND_WEBGPU;
     LNResult result = LNInstance_Initialize(&settings);
     if (result != LN_OK) {
         fprintf(stderr, "LNInstance_Initialize failed: %d\n", result);
@@ -63,13 +63,16 @@ int main(void) {
         LNGraphicsContext_EndRenderPass(graphicsContext);
 
         // フレーム終了・画面表示
+        //   GPU コマンドの Submit とスワップチェインの Present は内部に隠蔽されています。
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 
-    // 5. リソースを解放します。
-    LNObject_Release(graphicsContext);
+    // リソースを解放します。
+    //   明示的に解放する必要があるのは、 LNWindow_Create のように "Create" という名前の関数で作成されたオブジェクトだけです。
+    //   LNWindow_GetGraphicsContext や LNGraphicsContext_BeginFrame などで取得したハンドルは、明示的に解放する必要はありません。
     LNObject_Release(window);
-    LNInstance_Terminate();
 
+    // Lumino を終了します。すべての内部的なグローバルリソースが解放されます。
+    LNInstance_Terminate();
     return 0;
 }

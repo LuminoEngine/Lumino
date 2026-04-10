@@ -52,6 +52,13 @@ typedef enum LNResult {
 // Enums
 //------------------------------------------------------------------------------
 
+/** Graphics Backend. */
+typedef enum LNGraphicsBackend {
+    LN_GRAPHICS_BACKEND_DEFAULT = 0,
+    LN_GRAPHICS_BACKEND_VULKAN = 1,
+    LN_GRAPHICS_BACKEND_WEBGPU = 2,
+} LNGraphicsBackend;
+
 /**
  * レンダーパスのアタッチメントのロード操作。
  * ゼロ初期化時のデフォルトは LN_LOAD_OP_CLEAR。
@@ -90,7 +97,10 @@ typedef uint32_t LNHandle;
 // LNInstance
 //------------------------------------------------------------------------------
 typedef struct LNInstanceInitializeSettings {
-    LNBool enableValidation; /**< デバッグ用のバリデーションレイヤーを有効にするか */
+     /** 使用するグラフィックスバックエンド (デフォルト: LN_GRAPHICS_BACKEND_DEFAULT) */
+    LNGraphicsBackend preferredBackend;
+    /** デバッグ用のバリデーションレイヤーを有効にするか */
+    LNBool enableValidation;
 } LNInstanceInitializeSettings;
 
 /**

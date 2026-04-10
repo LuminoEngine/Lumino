@@ -95,7 +95,25 @@ T* resolveObject(H handle) {
 
 LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
     ln::CoreInstance::Settings s = {};
-    s.enableValidation = settings ? settings->enableValidation : false;
+    if (settings) {
+        s.enableValidation = settings->enableValidation;
+        switch (settings->preferredBackend) {
+            case LN_GRAPHICS_BACKEND_VULKAN:
+                s.preferredBackend = ln::rhi::Backend::Vulkan;
+                break;
+            case LN_GRAPHICS_BACKEND_WEBGPU:
+                s.preferredBackend = ln::rhi::Backend::WebGPU;
+                break;
+            case LN_GRAPHICS_BACKEND_DEFAULT:
+            default:
+#ifdef __EMSCRIPTEN__
+                s.preferredBackend = ln::rhi::Backend::WebGPU;
+#else
+                s.preferredBackend = ln::rhi::Backend::Vulkan;
+#endif
+                break;
+        }
+    }
     auto result = ln::CoreInstance::initialize(s);
     if (!result) return LN_ERROR_UNKNOWN;
     return LN_OK;
