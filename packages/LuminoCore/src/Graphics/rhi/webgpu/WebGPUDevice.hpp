@@ -48,6 +48,10 @@ private:
     WGPUDevice   m_device   = nullptr;
     WGPUQueue    m_queue    = nullptr;
     std::vector<WebGPUAdapterEntry> m_adapters;
+
+#ifdef _WIN32
+    HMODULE m_hD3DCompilerDLL = nullptr;
+#endif
 };
 
 } // namespace ln::rhi::webgpu

@@ -1,6 +1,11 @@
 ﻿#pragma once
+#ifdef _WIN32
+#define NOMINMAX
+#include <Windows.h>
+#include <d3dcompiler.h>
+#endif
 
-// Standard headers
+#include <iostream>
 #include <cassert>
 #include <cmath>
 #include <cstring>

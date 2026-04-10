@@ -1,10 +1,10 @@
-﻿#include <iostream>
-#include <Windows.h>
-#include <d3dcompiler.h>
-#include "WebGPUDevice.hpp"
+﻿#include "WebGPUDevice.hpp"
 #include "WebGPUSwapChain.hpp"
 #include "WebGPUTexture.hpp"
 #include "WebGPUTextureView.hpp"
+#include "WebGPUBuffer.hpp"
+#include "WebGPUShaderModule.hpp"
+#include "WebGPUPipelineLayout.hpp"
 #include "WebGPUHelpers.hpp"
 
 namespace ln::rhi::webgpu {
@@ -34,12 +34,14 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         }
     }
 
-    // Error: DynamicLib.Open: d3dcompiler_47.dll Windows Error: 87
-    HMODULE m_hD3DCompilerDLL = ::LoadLibraryW(D3DCOMPILER_DLL_W);
-    if (m_hD3DCompilerDLL) {
-        //D3DCompile2 = reinterpret_cast<PFN_D3DCompile2>(
-        //    ::GetProcAddress(m_hD3DCompilerDLL, "D3DCompile2"));
-    }
+#ifdef _WIN32
+    // Windows 環境の場合、D3DCompiler DLL をロードしておく。
+    // 先にこうしておかないと、wgpuInstanceRequestAdapter で次のようなエラーが発生することがあった。
+    // - Error: DynamicLib.Open: d3dcompiler_47.dll Windows Error: 87
+    // - [WebGPU] RequestDevice failed: DynamicLib.Open: dxil.dll Windows Error: 87
+    //m_hD3DCompilerDLL = ::LoadLibraryW(D3DCOMPILER_DLL_W);
+
+#endif
 
     // アダプターをリクエストする
     // Dawn の WGPUCallbackMode_AllowSpontaneous モードではコールバックは同期的に呼ばれるため、
@@ -52,9 +54,11 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
 
         WGPURequestAdapterOptions adapterOptions = WGPU_REQUEST_ADAPTER_OPTIONS_INIT;
         adapterOptions.nextInChain = nullptr;
-        adapterOptions.compatibleSurface = nullptr;
+        adapterOptions.featureLevel = WGPUFeatureLevel_Undefined;
         adapterOptions.powerPreference = WGPUPowerPreference_HighPerformance;
         adapterOptions.forceFallbackAdapter = false;
+        adapterOptions.backendType = WGPUBackendType_Vulkan;
+        adapterOptions.compatibleSurface = nullptr;
 
         WGPURequestAdapterCallbackInfo callbackInfo = WGPU_REQUEST_ADAPTER_CALLBACK_INFO_INIT;
         callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
@@ -103,26 +107,36 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         deviceDesc.label = {"LuminoDevice", WGPU_STRLEN};
 
         // エラーコールバック
-        deviceDesc.uncapturedErrorCallbackInfo.callback =
+        auto onUncapturedError =
             [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {
-                std::cerr << "[WebGPU] Uncaptured error [type=" << static_cast<int>(type) << "]: "
-                          << std::string(message.data, message.length) << "\n";
+                std::cerr << "[WebGPU] Uncaptured error [type=" << static_cast<int>(type)
+                          << "]: " << std::string(message.data, message.length) << "\n";
 #if defined(_MSC_VER) && defined(_DEBUG)
                 __debugbreak();
 #endif
             };
+        deviceDesc.uncapturedErrorCallbackInfo.callback = onUncapturedError;
+
+
 
         // デバイスロストコールバック
+        // mode を AllowSpontaneous にしないとコールバックが EventManager にキューイングされ、
+        // Instance 破棄時に CallbackCancelled に書き換えられてしまう。
+        deviceDesc.deviceLostCallbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
         deviceDesc.deviceLostCallbackInfo.callback =
             [](WGPUDevice const*, WGPUDeviceLostReason reason, WGPUStringView message, void*, void*) {
+                if (reason == WGPUDeviceLostReason_Destroyed) {
+                    return; // 正常な破棄時は無視する
+                }
                 std::cerr << "[WebGPU] Device lost [reason=" << static_cast<int>(reason) << "]: "
                           << std::string(message.data, message.length) << "\n";
             };
 
-        WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
-        callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
-        callbackInfo.callback = [](WGPURequestDeviceStatus status, WGPUDevice device,
-                                   WGPUStringView message, void* userdata1, void*) {
+        auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status,
+                                       WGPUDevice device,
+                                       WGPUStringView message,
+                                       void* userdata1,
+                                       void* userdata2) {
             auto* req = static_cast<DeviceRequest*>(userdata1);
             req->status = status;
             req->device = device;
@@ -131,7 +145,15 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
                           << std::string(message.data, message.length) << "\n";
             }
         };
+
+
+        WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
+        callbackInfo.nextInChain = nullptr;
+        callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
+        //callbackInfo.userdata1 = this;
         callbackInfo.userdata1 = &deviceReq;
+        callbackInfo.userdata2 = nullptr;
+        callbackInfo.callback = onDeviceRequestEnded;
 
         wgpuAdapterRequestDevice(m_adapter, &deviceDesc, callbackInfo);
 
@@ -157,6 +179,7 @@ void WebGPUDevice::finalize() {
         m_queue = nullptr;
     }
     if (m_device) {
+        wgpuDeviceDestroy(m_device); // Destroyed 理由でコールバックを即発火させてから解放する
         wgpuDeviceRelease(m_device);
         m_device = nullptr;
     }
@@ -168,6 +191,12 @@ void WebGPUDevice::finalize() {
         wgpuInstanceRelease(m_instance);
         m_instance = nullptr;
     }
+#ifdef _WIN32
+    if (m_hD3DCompilerDLL) {
+        ::FreeLibrary(m_hD3DCompilerDLL);
+        m_hD3DCompilerDLL = nullptr;
+    }
+#endif
     Device::finalize();
 }
 
@@ -187,8 +216,13 @@ Result<Ref<SwapChain>> WebGPUDevice::createSwapChain(const SwapChainDesc& desc) 
     return Ref<SwapChain>(sc);
 }
 
-Result<Ref<Buffer>> WebGPUDevice::createBuffer(const BufferDesc&) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU Buffer not yet implemented."});
+Result<Ref<Buffer>> WebGPUDevice::createBuffer(const BufferDesc& desc) {
+    auto buf = Ref<WebGPUBuffer>::adopt(new WebGPUBuffer());
+    auto result = buf->init(this, desc);
+    if (!result) {
+        return tl::unexpected(result.error());
+    }
+    return Ref<Buffer>(buf);
 }
 
 Result<Ref<Texture>> WebGPUDevice::createTexture(const TextureDesc& desc) {
@@ -219,20 +253,32 @@ Result<Ref<Sampler>> WebGPUDevice::createSampler(const SamplerDesc&) {
     return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU Sampler not yet implemented."});
 }
 
-Result<Ref<ShaderModule>> WebGPUDevice::createShaderModule(const ShaderModuleDesc&) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU ShaderModule not yet implemented."});
+Result<Ref<ShaderModule>> WebGPUDevice::createShaderModule(const ShaderModuleDesc& desc) {
+    auto sm = Ref<WebGPUShaderModule>::adopt(new WebGPUShaderModule());
+    auto result = sm->init(this, desc);
+    if (!result) {
+        return tl::unexpected(result.error());
+    }
+    return Ref<ShaderModule>(sm);
 }
 
-Result<Ref<PipelineLayout>> WebGPUDevice::createPipelineLayout(const PipelineLayoutDesc&) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU PipelineLayout not yet implemented."});
+Result<Ref<PipelineLayout>> WebGPUDevice::createPipelineLayout(const PipelineLayoutDesc& desc) {
+    auto pl = Ref<WebGPUPipelineLayout>::adopt(new WebGPUPipelineLayout());
+    auto result = pl->init(this, desc);
+    if (!result) {
+        return tl::unexpected(result.error());
+    }
+    return Ref<PipelineLayout>(pl);
 }
 
 Result<Ref<RenderPipeline>> WebGPUDevice::createRenderPipeline(const RenderPipelineDesc&) {
     return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU RenderPipeline not yet implemented."});
 }
 
-VoidResult WebGPUDevice::writeBuffer(Buffer*, u64, const void*, u64) {
-    return tl::unexpected(Error{ErrorCode::NotSupported, "WebGPU writeBuffer not yet implemented."});
+VoidResult WebGPUDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) {
+    auto* wgpuBuf = static_cast<WebGPUBuffer*>(dst);
+    wgpuQueueWriteBuffer(m_queue, wgpuBuf->handle(), dstOffset, data, size);
+    return LN_MAKE_SUCCESS();
 }
 
 Result<std::vector<uint8_t>> WebGPUDevice::readbackTexture(TextureView*) {
