@@ -18,10 +18,7 @@
 #define SPRITE_COUNT 1024
 
 int main(void) {
-    /* --- Initialization --- */
-    LNInstanceInitializeSettings settings = {};
-    settings.enableValidation = LN_TRUE;
-    LNInstance_Initialize(&settings);
+    InitializeInstance();
 
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("BatchRendering", WINDOW_W, WINDOW_H, &window);

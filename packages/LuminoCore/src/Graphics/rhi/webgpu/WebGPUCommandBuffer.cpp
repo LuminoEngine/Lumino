@@ -161,8 +161,23 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
         return nullptr;
     }
 
-    m_currentRenderPass = Ref<WebGPURenderPass>::adopt(new WebGPURenderPass());
-    m_currentRenderPass->init(rpEncoder, layoutDesc);
+    // Look up (or allocate) a WebGPURenderPass wrapper for this attachment
+    // layout. Reusing the same wrapper instance across frames keeps the
+    // rhi::RenderPass* pointer — which is part of PipelineCacheKey — stable,
+    // so the upstream PipelineCache hits instead of recompiling every draw.
+    WebGPURenderPassLayoutKey key;
+    key.colorFormats = layoutDesc.colorFormats;
+    key.depthStencilFormat = layoutDesc.depthStencilFormat;
+    key.sampleCount = layoutDesc.sampleCount;
+
+    auto it = m_renderPassCache.find(key);
+    if (it == m_renderPassCache.end()) {
+        auto rp = Ref<WebGPURenderPass>::adopt(new WebGPURenderPass());
+        it = m_renderPassCache.emplace(std::move(key), std::move(rp)).first;
+    }
+    // Re-bind the ephemeral encoder to the cached wrapper each frame.
+    it->second->init(rpEncoder, layoutDesc);
+    m_currentRenderPass = it->second;
     return m_currentRenderPass.get();
 }
 
@@ -183,6 +198,7 @@ void WebGPUCommandBuffer::submit() {
 
 void WebGPUCommandBuffer::finalize() {
     m_currentRenderPass = nullptr;
+    m_renderPassCache.clear();
     if (m_encoder) {
         wgpuCommandEncoderRelease(m_encoder);
         m_encoder = nullptr;
