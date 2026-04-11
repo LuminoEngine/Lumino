@@ -113,7 +113,8 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
             static_cast<double>(src.clearColor.a)
         };
 
-        // TODO: layoutDesc.colorFormats tracking for pipeline compatibility
+        // Track color format for pipeline compatibility lookup.
+        layoutDesc.colorFormats.push_back(fromWGPUTextureFormat(view->format()));
     }
 
     // Build depth/stencil attachment if present
@@ -123,6 +124,7 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
         hasDepthStencil = true;
         auto* dsView = static_cast<WebGPUTextureView*>(desc.depthStencilAttachment->view);
         depthStencilAttachment.view = dsView->handle();
+        layoutDesc.depthStencilFormat = fromWGPUTextureFormat(dsView->format());
         depthStencilAttachment.depthLoadOp = toWGPULoadOp(desc.depthStencilAttachment->depthLoadOp);
         depthStencilAttachment.depthStoreOp = toWGPUStoreOp(desc.depthStencilAttachment->depthStoreOp);
         depthStencilAttachment.depthClearValue = desc.depthStencilAttachment->clearDepth;

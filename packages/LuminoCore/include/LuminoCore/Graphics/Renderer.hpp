@@ -104,6 +104,21 @@ public:
         rhi::TextureView* depthTarget,
         const Color& clearColor = Color{0, 0, 0, 1});
 
+    /**
+     * Begin a render pass with a fully specified RenderPassDesc.
+     * Camera data is uploaded to the internal View UBO and set=0 is bound automatically.
+     * @param rpDesc  RHI render pass descriptor.
+     * @param camera  Camera to upload to set=0 View UBO.
+     */
+    void beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera);
+
+    /**
+     * Begin a render pass with a fully specified RenderPassDesc, without a camera.
+     * set=0 is not automatically bound; use setPassBindGroup(0, ...) if needed.
+     * @param rpDesc  RHI render pass descriptor.
+     */
+    void beginRenderPass(const rhi::RenderPassDesc& rpDesc);
+
     /** End the current render pass. */
     void endRenderPass();
 

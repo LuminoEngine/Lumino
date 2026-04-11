@@ -27,6 +27,7 @@ endif()
 # vcpkg packages (found via toolchain)
 #-------------------------------------------------------------------------------
 find_package(tl-expected CONFIG REQUIRED)
+find_package(directx-dxc CONFIG) # optional, used for shader compilation on Windows
 
 if(LUMINO_PLATFORM_DESKTOP)
     find_package(glfw3 CONFIG REQUIRED)

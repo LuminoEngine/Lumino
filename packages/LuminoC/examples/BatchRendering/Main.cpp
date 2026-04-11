@@ -95,8 +95,13 @@ int main(void) {
         /* Render */
         LNHandle renderer = LN_NULL_HANDLE, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
-        LNRenderer_BeginRenderPass(renderer, graphicsContext, camera,
-            0.15f, 0.15f, 0.2f, 1.0f);
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].clearColor[0] = 0.15f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.15f;
+        rpDesc.colorAttachments[0].clearColor[2] = 0.2f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
 
         /* Add sprites */
         int cols = 32;

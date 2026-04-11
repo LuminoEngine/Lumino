@@ -132,7 +132,15 @@ int main(void) {
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
 
         /* --- Pass 1: Render red triangle into RT1 --- */
-        LNRenderer_BeginRenderPassToTexture(renderer, rt1, camera, 0.2f, 0.0f, 0.0f, 1.0f);
+        LNRenderPassDesc rt1Desc;
+        LNRenderPassDesc_Init(&rt1Desc);
+        rt1Desc.colorAttachmentCount = 1;
+        rt1Desc.colorAttachments[0].renderTarget = rt1;
+        rt1Desc.colorAttachments[0].clearColor[0] = 0.2f;
+        rt1Desc.colorAttachments[0].clearColor[1] = 0.0f;
+        rt1Desc.colorAttachments[0].clearColor[2] = 0.0f;
+        rt1Desc.colorAttachments[0].clearColor[3] = 1.0f;
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rt1Desc, camera);
         LNRenderer_DrawMesh(renderer, triMesh1, &triTransform, 0);
         LNRenderer_EndRenderPass(renderer);
 
@@ -143,12 +151,26 @@ int main(void) {
             0, 0, sinf(-angle * 0.5f), cosf(-angle * 0.5f),
             1, 1, 1
         };
-        LNRenderer_BeginRenderPassToTexture(renderer, rt2, camera, 0.0f, 0.0f, 0.2f, 1.0f);
+        LNRenderPassDesc rt2Desc;
+        LNRenderPassDesc_Init(&rt2Desc);
+        rt2Desc.colorAttachmentCount = 1;
+        rt2Desc.colorAttachments[0].renderTarget = rt2;
+        rt2Desc.colorAttachments[0].clearColor[0] = 0.0f;
+        rt2Desc.colorAttachments[0].clearColor[1] = 0.0f;
+        rt2Desc.colorAttachments[0].clearColor[2] = 0.2f;
+        rt2Desc.colorAttachments[0].clearColor[3] = 1.0f;
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rt2Desc, camera);
         LNRenderer_DrawMesh(renderer, triMesh2, &triTransform2, 0);
         LNRenderer_EndRenderPass(renderer);
 
         /* --- Pass 3: Draw both RT textures side-by-side on backbuffer --- */
-        LNRenderer_BeginRenderPass(renderer, graphicsContext, LN_NULL_HANDLE, 0.1f, 0.1f, 0.1f, 1.0f);
+        LNRenderPassDesc bbDesc;
+        LNRenderPassDesc_Init(&bbDesc);
+        bbDesc.colorAttachments[0].clearColor[0] = 0.1f;
+        bbDesc.colorAttachments[0].clearColor[1] = 0.1f;
+        bbDesc.colorAttachments[0].clearColor[2] = 0.1f;
+        bbDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &bbDesc, LN_NULL_HANDLE);
         LNRenderer_DrawMesh(renderer, leftQuadMesh, &identity, 0);
         LNRenderer_DrawMesh(renderer, rightQuadMesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);

@@ -43,24 +43,18 @@ int main(void) {
 
         // レンダーパス開始 (ライトグリーンでクリア)
         LNRenderPassDesc rpDesc = {};
-        rpDesc.colorAttachmentCount = 1;
-        rpDesc.colorAttachments[0].renderTarget = colorBuffer;
+        LNRenderPassDesc_Init(&rpDesc);
         rpDesc.colorAttachments[0].clearColor[0] = 0.60f;
         rpDesc.colorAttachments[0].clearColor[1] = 0.85f;
         rpDesc.colorAttachments[0].clearColor[2] = 0.60f;
         rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
         rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_CLEAR;
-        rpDesc.depthStencil.depthBuffer = depthBuffer;
-        rpDesc.depthStencil.clearDepth = 1.0f;
-        rpDesc.depthStencil.clearStencil = 0x00;
-        rpDesc.depthStencil.depthLoadOp = LN_LOAD_OP_CLEAR;
-        rpDesc.depthStencil.stencilLoadOp = LN_LOAD_OP_CLEAR;
-        LNGraphicsContext_BeginRenderPass(graphicsContext, &rpDesc);
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE);
 
         // このサンプルはクリアするだけなので、描画コマンドはありません。
 
         // レンダーパス終了
-        LNGraphicsContext_EndRenderPass(graphicsContext);
+        LNRenderer_EndRenderPass(renderer);
 
         // フレーム終了・画面表示
         //   GPU コマンドの Submit とスワップチェインの Present は内部に隠蔽されています。

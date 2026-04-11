@@ -218,27 +218,11 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
     LNHandle* outDepthBuffer);
 
 /**
- * レンダーパスを開始します。LNRenderPassDesc で描画先やクリア方法を指定します。
- * desc は LNRenderPassDesc_Init で初期化してから使用してください。
- * renderTarget / depthBuffer が LN_NULL_HANDLE の場合、バックバッファが使用されます。
- * @param[in] graphicsContext GraphicsContext のハンドル
- * @param[in] desc            レンダーパスの設定
- */
-extern LUMINO_API LNResult LNGraphicsContext_BeginRenderPass(
-    LNHandle graphicsContext, const LNRenderPassDesc* desc);
-
-/**
  * LNRenderPassDesc を適切なデフォルト値で初期化します。
  * (clearDepth=1.0f, clearStencil=0, loadOp=CLEAR, renderTarget=NULL_HANDLE)
  * @param[out] desc 初期化するデスクリプタ
  */
 extern LUMINO_API void LNRenderPassDesc_Init(LNRenderPassDesc* desc);
-
-/**
- * レンダーパスを終了します。
- * @param[in] graphicsContext GraphicsContext のハンドル
- */
-extern LUMINO_API LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext);
 
 /**
  * フレームの描画を終了し、画面に表示します。
@@ -323,7 +307,7 @@ extern LUMINO_API LNResult LNTexture2D_Create(
 /**
  * レンダーターゲットテクスチャを作成します。
  * 内部で BGRA8Unorm カラーテクスチャと Depth24Stencil8 深度テクスチャを生成します。
- * 作成されたテクスチャは LNRenderer_BeginRenderPassToTexture で描画先として使用でき、
+ * 作成されたテクスチャは LNRenderPassDesc の renderTarget に指定して描画先として使用でき、
  * 描画後は LNMaterial_SetMainTexture でマテリアルに設定してサンプリングできます。
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  width           幅 (ピクセル)
@@ -592,34 +576,20 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
 //------------------------------------------------------------------------------
 
 /**
- * レンダーパスを開始します。カメラデータを set=0 View UBO に自動アップロードします。
+ * レンダーパスを開始します。LNRenderPassDesc で描画先やクリア方法を指定します。
+ * desc は LNRenderPassDesc_Init で初期化してから使用してください。
+ * renderTarget / depthBuffer が LN_NULL_HANDLE の場合、バックバッファが使用されます。
+ * camera が有効な場合、カメラデータを set=0 View UBO に自動アップロードします。
  * @param[in] renderer         Renderer のハンドル
- * @param[in] graphicsContext  GraphicsContext のハンドル (現フレームのターゲット取得用)
+ * @param[in] graphicsContext  GraphicsContext のハンドル (バックバッファ取得用)
+ * @param[in] desc             レンダーパスの設定
  * @param[in] camera           カメラのハンドル (LN_NULL_HANDLE でカメラなし — ポストエフェクト用)
- * @param[in] r,g,b,a          クリアカラー
  */
 extern LUMINO_API LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer,
     LNHandle graphicsContext,
-    LNHandle camera,
-    float r, float g, float b, float a
-);
-
-/**
- * レンダーターゲットテクスチャへのレンダーパスを開始します。
- * LNTexture2D_CreateRenderTarget で作成したテクスチャを描画先として使用します。
- * 対応する LNRenderer_EndRenderPass 呼び出し時に、テクスチャは自動的に
- * シェーダ読み取り可能なレイアウトに遷移されます。
- * @param[in] renderer           Renderer のハンドル
- * @param[in] renderTargetTexture LNTexture2D_CreateRenderTarget で作成したテクスチャのハンドル
- * @param[in] camera             カメラのハンドル (LN_NULL_HANDLE でカメラなし)
- * @param[in] r,g,b,a            クリアカラー
- */
-extern LUMINO_API LNResult LNRenderer_BeginRenderPassToTexture(
-    LNHandle renderer,
-    LNHandle renderTargetTexture,
-    LNHandle camera,
-    float r, float g, float b, float a
+    const LNRenderPassDesc* desc,
+    LNHandle camera
 );
 
 /**

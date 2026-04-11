@@ -86,7 +86,9 @@ int main(void) {
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
-        LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f);
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
         LNRenderer_DrawMesh(renderer, mesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
 

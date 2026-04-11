@@ -75,4 +75,129 @@ inline WGPUStoreOp toWGPUStoreOp(StoreOp op) {
     }
 }
 
+//------------------------------------------------------------------------------
+inline WGPUFilterMode toWGPUFilterMode(FilterMode v) {
+    switch (v) {
+        case FilterMode::Nearest: return WGPUFilterMode_Nearest;
+        case FilterMode::Linear:  return WGPUFilterMode_Linear;
+        default:                  return WGPUFilterMode_Linear;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUMipmapFilterMode toWGPUMipmapFilterMode(FilterMode v) {
+    switch (v) {
+        case FilterMode::Nearest: return WGPUMipmapFilterMode_Nearest;
+        case FilterMode::Linear:  return WGPUMipmapFilterMode_Linear;
+        default:                  return WGPUMipmapFilterMode_Linear;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUAddressMode toWGPUAddressMode(AddressMode v) {
+    switch (v) {
+        case AddressMode::Repeat:         return WGPUAddressMode_Repeat;
+        case AddressMode::MirroredRepeat: return WGPUAddressMode_MirrorRepeat;
+        case AddressMode::ClampToEdge:    return WGPUAddressMode_ClampToEdge;
+        default:                          return WGPUAddressMode_Repeat;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUPrimitiveTopology toWGPUPrimitiveTopology(PrimitiveTopology v) {
+    switch (v) {
+        case PrimitiveTopology::TriangleList:  return WGPUPrimitiveTopology_TriangleList;
+        case PrimitiveTopology::TriangleStrip: return WGPUPrimitiveTopology_TriangleStrip;
+        case PrimitiveTopology::LineList:      return WGPUPrimitiveTopology_LineList;
+        case PrimitiveTopology::LineStrip:     return WGPUPrimitiveTopology_LineStrip;
+        case PrimitiveTopology::PointList:     return WGPUPrimitiveTopology_PointList;
+        default:                               return WGPUPrimitiveTopology_TriangleList;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUCullMode toWGPUCullMode(CullMode v) {
+    switch (v) {
+        case CullMode::None:  return WGPUCullMode_None;
+        case CullMode::Front: return WGPUCullMode_Front;
+        case CullMode::Back:  return WGPUCullMode_Back;
+        default:              return WGPUCullMode_None;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUFrontFace toWGPUFrontFace(FrontFace v) {
+    switch (v) {
+        case FrontFace::CCW: return WGPUFrontFace_CCW;
+        case FrontFace::CW:  return WGPUFrontFace_CW;
+        default:             return WGPUFrontFace_CCW;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUBlendFactor toWGPUBlendFactor(BlendFactor v) {
+    switch (v) {
+        case BlendFactor::Zero:             return WGPUBlendFactor_Zero;
+        case BlendFactor::One:              return WGPUBlendFactor_One;
+        case BlendFactor::SrcAlpha:         return WGPUBlendFactor_SrcAlpha;
+        case BlendFactor::OneMinusSrcAlpha: return WGPUBlendFactor_OneMinusSrcAlpha;
+        case BlendFactor::DstAlpha:         return WGPUBlendFactor_DstAlpha;
+        case BlendFactor::OneMinusDstAlpha: return WGPUBlendFactor_OneMinusDstAlpha;
+        default:                            return WGPUBlendFactor_Zero;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUBlendOperation toWGPUBlendOperation(BlendOp v) {
+    switch (v) {
+        case BlendOp::Add:             return WGPUBlendOperation_Add;
+        case BlendOp::Subtract:        return WGPUBlendOperation_Subtract;
+        case BlendOp::ReverseSubtract: return WGPUBlendOperation_ReverseSubtract;
+        case BlendOp::Min:             return WGPUBlendOperation_Min;
+        case BlendOp::Max:             return WGPUBlendOperation_Max;
+        default:                       return WGPUBlendOperation_Add;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUCompareFunction toWGPUCompareFunction(CompareFunction v) {
+    switch (v) {
+        case CompareFunction::Never:        return WGPUCompareFunction_Never;
+        case CompareFunction::Less:         return WGPUCompareFunction_Less;
+        case CompareFunction::LessEqual:    return WGPUCompareFunction_LessEqual;
+        case CompareFunction::Greater:      return WGPUCompareFunction_Greater;
+        case CompareFunction::GreaterEqual: return WGPUCompareFunction_GreaterEqual;
+        case CompareFunction::Equal:        return WGPUCompareFunction_Equal;
+        case CompareFunction::NotEqual:     return WGPUCompareFunction_NotEqual;
+        case CompareFunction::Always:       return WGPUCompareFunction_Always;
+        default:                            return WGPUCompareFunction_Always;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUStencilOperation toWGPUStencilOperation(StencilOp v) {
+    switch (v) {
+        case StencilOp::Keep:           return WGPUStencilOperation_Keep;
+        case StencilOp::Zero:           return WGPUStencilOperation_Zero;
+        case StencilOp::Replace:        return WGPUStencilOperation_Replace;
+        case StencilOp::IncrementClamp: return WGPUStencilOperation_IncrementClamp;
+        case StencilOp::DecrementClamp: return WGPUStencilOperation_DecrementClamp;
+        case StencilOp::Invert:         return WGPUStencilOperation_Invert;
+        default:                        return WGPUStencilOperation_Keep;
+    }
+}
+
+//------------------------------------------------------------------------------
+inline WGPUVertexFormat toWGPUVertexFormat(VertexFormat v) {
+    switch (v) {
+        case VertexFormat::Float32x2:   return WGPUVertexFormat_Float32x2;
+        case VertexFormat::Float32x3:   return WGPUVertexFormat_Float32x3;
+        case VertexFormat::Float32x4:   return WGPUVertexFormat_Float32x4;
+        case VertexFormat::Uint8x4Norm: return WGPUVertexFormat_Unorm8x4;
+        case VertexFormat::Sint16x2:    return WGPUVertexFormat_Sint16x2;
+        case VertexFormat::Sint16x4:    return WGPUVertexFormat_Sint16x4;
+        default:                        return WGPUVertexFormat_Float32x3;
+    }
+}
+
 } // namespace ln::rhi::webgpu

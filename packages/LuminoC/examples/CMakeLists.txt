@@ -13,7 +13,7 @@ function(setup_sample_configurations TARGET)
     if(LUMINO_ENABLE_WEBGPU)
         target_link_libraries(${TARGET} PRIVATE dawn::webgpu_dawn)
     endif()
-    
+
     # copy dll
     add_custom_command(
         TARGET ${TARGET} POST_BUILD
@@ -21,6 +21,22 @@ function(setup_sample_configurations TARGET)
         $<TARGET_FILE:LuminoC>
         $<TARGET_FILE_DIR:${TARGET}>
     )
+
+    # DXC libraries required by Dawn's D3D12 backend
+    if(LUMINO_ENABLE_WEBGPU AND TARGET Microsoft::DirectXShaderCompiler)
+        add_custom_command(
+            TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:Microsoft::DirectXShaderCompiler>
+                $<TARGET_FILE_DIR:${TARGET}>
+        )
+        add_custom_command(
+            TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:Microsoft::DXIL>
+                $<TARGET_FILE_DIR:${TARGET}>
+        )
+    endif()
     # add_custom_command(TARGET ${TARGET} POST_BUILD
     #     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     #         $<TARGET_FILE:glfw>

@@ -1,35 +1,27 @@
 ﻿/**
- * HelloTexture.c
- *
  * PNG 画像を LNTexture2D_LoadFromFile で読み込み、四角形メッシュに貼り付けて描画するデモ。
- * packages/LuminoCore/examples/HelloTexture/Main.cpp の C-API 版。
  */
-#include <LuminoC/lumino.h>
-#include <string>
-#include <stdio.h>
+#include "../Utils.h"
 
 int main(void) {
-    /* 1. Runtime initialize */
-    LNInstanceInitializeSettings settings = {};
-    settings.enableValidation = LN_TRUE;
-    LNInstance_Initialize(&settings);
+    InitializeInstance();
 
-    /* 2. Window + GraphicsContext */
+    /* Window + GraphicsContext */
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-HelloTexture", 1280, 720, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    /* 3. Texture */
+    /* Texture */
     LNHandle texture = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture);
 
-    /* 4. Unlit Material */
+    /* Unlit Material */
     LNHandle material = LN_NULL_HANDLE;
     LNMaterial_CreateUnlit(graphicsContext, &material);
     LNMaterial_SetMainTexture(material, texture);
 
-    /* 5. Quad mesh (4 vertices, 6 indices, CCW winding) */
+    /* Quad mesh (4 vertices, 6 indices, CCW winding) */
     /*   v0(-0.5, 0.5) --- v1(0.5, 0.5)
      *      |           /      |
      *   v2(-0.5,-0.5) --- v3(0.5,-0.5)  */
@@ -47,7 +39,7 @@ int main(void) {
     LNMesh_Create(graphicsContext, vertices, 4, indices, 6, &sub, 1, &mesh);
     LNMesh_SetMaterial(mesh, 0, material);
 
-    /* 6. Perspective camera */
+    /* Perspective camera */
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
@@ -59,14 +51,21 @@ int main(void) {
         0.0f, 0.0f, 0.0f,   /* target */
         0.0f, 1.0f, 0.0f);  /* up */
     
-    /* 7. Main loop */
+    /* Main loop */
     LNGraphicsProfilering profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
-        LNRenderer_BeginRenderPass(renderer, graphicsContext, camera, 0.0f, 0.0f, 0.0f, 1.0f);
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].clearColor[0] = 0.60f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.85f;
+        rpDesc.colorAttachments[0].clearColor[2] = 0.60f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_CLEAR;
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
         LNRenderer_DrawMesh(renderer, mesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
 
@@ -78,7 +77,7 @@ int main(void) {
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 
-    /* 8. Cleanup */
+    /* Cleanup */
     LNObject_Release(mesh);
     LNObject_Release(material);
     LNObject_Release(texture);
@@ -86,6 +85,5 @@ int main(void) {
     LNObject_Release(window);
     LNInstance_Terminate();
 
-    printf("Done.\n");
     return 0;
 }

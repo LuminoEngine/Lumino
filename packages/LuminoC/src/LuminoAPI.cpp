@@ -264,92 +264,8 @@ LNResult LNGraphicsContext_BeginFrame(
     return LN_OK;
 }
 
-LNResult LNGraphicsContext_BeginRenderPass(
-    LNHandle graphicsContext, const LNRenderPassDesc* desc) {
-    if (!desc) return LN_ERROR_INVALID_ARGUMENT;
-
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx || !ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
-
-    const ln::FramebufferInfo* fb = ctx->currentFramebuffer();
-
-    // カラーアタッチメント
-    ln::rhi::RenderPassDesc rpDesc;
-    if (desc->colorAttachmentCount == 0) {
-        // count が 0 の場合、バックバッファをフォールバック
-        ln::rhi::ColorAttachment colorAttach;
-        colorAttach.view = fb->colorTexture->rhiTextureView();
-        colorAttach.loadOp = toRhiLoadOp(desc->colorAttachments[0].loadOp);
-        colorAttach.storeOp = ln::rhi::StoreOp::Store;
-        colorAttach.clearColor = {
-            desc->colorAttachments[0].clearColor[0],
-            desc->colorAttachments[0].clearColor[1],
-            desc->colorAttachments[0].clearColor[2],
-            desc->colorAttachments[0].clearColor[3]};
-        rpDesc.colorAttachments.push_back(colorAttach);
-    } else {
-        for (uint32_t i = 0; i < desc->colorAttachmentCount; ++i) {
-            ln::rhi::ColorAttachment colorAttach;
-            if (desc->colorAttachments[i].renderTarget != LN_NULL_HANDLE) {
-                auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->colorAttachments[i].renderTarget);
-                if (!tex) return LN_ERROR_INVALID_HANDLE;
-                colorAttach.view = tex->rhiTextureView();
-            } else {
-                colorAttach.view = fb->colorTexture->rhiTextureView();
-            }
-            colorAttach.loadOp = toRhiLoadOp(desc->colorAttachments[i].loadOp);
-            colorAttach.storeOp = ln::rhi::StoreOp::Store;
-            colorAttach.clearColor = {
-                desc->colorAttachments[i].clearColor[0],
-                desc->colorAttachments[i].clearColor[1],
-                desc->colorAttachments[i].clearColor[2],
-                desc->colorAttachments[i].clearColor[3]};
-            rpDesc.colorAttachments.push_back(colorAttach);
-        }
-    }
-
-    // デプス・ステンシルアタッチメント
-    ln::rhi::DepthStencilAttachment depthAttach;
-    if (desc->depthStencil.depthBuffer != LN_NULL_HANDLE) {
-        auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->depthStencil.depthBuffer);
-        if (!tex) return LN_ERROR_INVALID_HANDLE;
-        depthAttach.view = tex->rhiTextureView();
-    } else {
-        depthAttach.view = fb->depthTexture->rhiTextureView();
-    }
-    depthAttach.depthLoadOp = toRhiLoadOp(desc->depthStencil.depthLoadOp);
-    depthAttach.depthStoreOp = ln::rhi::StoreOp::Store;
-    depthAttach.clearDepth = desc->depthStencil.clearDepth;
-    depthAttach.stencilLoadOp = toRhiLoadOp(desc->depthStencil.stencilLoadOp);
-    depthAttach.stencilStoreOp = ln::rhi::StoreOp::Store;
-    depthAttach.clearStencil = desc->depthStencil.clearStencil;
-
-    rpDesc.depthStencilAttachment = &depthAttach;
-
-    ctx->m_currentPass = ctx->m_currentCmd->beginRenderPass(rpDesc);
-    if (!ctx->m_currentPass) return LN_ERROR_UNKNOWN;
-
-    return LN_OK;
-}
-
-LNResult LNGraphicsContext_EndRenderPass(LNHandle graphicsContext) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx || !ctx->m_currentPass) return LN_ERROR_INVALID_HANDLE;
-
-    ctx->m_currentPass->end();
-    ctx->m_currentPass = nullptr;
-
-    return LN_OK;
-}
-
 //------------------------------------------------------------------------------
-// LNRenderPassDesc / LNHandle 関数
+// LNRenderPassDesc
 //------------------------------------------------------------------------------
 
 void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {
@@ -825,8 +741,9 @@ LNResult LNCamera_SetLookAt(
 
 LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer, LNHandle graphicsContext,
-    LNHandle camera,
-    float r, float g, float b, float a) {
+    const LNRenderPassDesc* desc, LNHandle camera) {
+    if (!desc) return LN_ERROR_INVALID_ARGUMENT;
+
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -838,19 +755,70 @@ LNResult LNRenderer_BeginRenderPass(
 
     const ln::FramebufferInfo* fb = ctx->currentFramebuffer();
 
+    // カラーアタッチメント
+    ln::rhi::RenderPassDesc rpDesc;
+    ln::Texture* firstRTTexture = nullptr;
+    if (desc->colorAttachmentCount == 0) {
+        // count が 0 の場合、バックバッファをフォールバック
+        ln::rhi::ColorAttachment colorAttach;
+        colorAttach.view = fb->colorTexture->rhiTextureView();
+        colorAttach.loadOp = toRhiLoadOp(desc->colorAttachments[0].loadOp);
+        colorAttach.storeOp = ln::rhi::StoreOp::Store;
+        colorAttach.clearColor = {
+            desc->colorAttachments[0].clearColor[0],
+            desc->colorAttachments[0].clearColor[1],
+            desc->colorAttachments[0].clearColor[2],
+            desc->colorAttachments[0].clearColor[3]};
+        rpDesc.colorAttachments.push_back(colorAttach);
+    } else {
+        for (uint32_t i = 0; i < desc->colorAttachmentCount; ++i) {
+            ln::rhi::ColorAttachment colorAttach;
+            if (desc->colorAttachments[i].renderTarget != LN_NULL_HANDLE) {
+                auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->colorAttachments[i].renderTarget);
+                if (!tex) return LN_ERROR_INVALID_HANDLE;
+                colorAttach.view = tex->rhiTextureView();
+                if (i == 0) firstRTTexture = tex;
+            } else {
+                colorAttach.view = fb->colorTexture->rhiTextureView();
+            }
+            colorAttach.loadOp = toRhiLoadOp(desc->colorAttachments[i].loadOp);
+            colorAttach.storeOp = ln::rhi::StoreOp::Store;
+            colorAttach.clearColor = {
+                desc->colorAttachments[i].clearColor[0],
+                desc->colorAttachments[i].clearColor[1],
+                desc->colorAttachments[i].clearColor[2],
+                desc->colorAttachments[i].clearColor[3]};
+            rpDesc.colorAttachments.push_back(colorAttach);
+        }
+    }
+
+    // デプス・ステンシルアタッチメント
+    ln::rhi::DepthStencilAttachment depthAttach;
+    if (desc->depthStencil.depthBuffer != LN_NULL_HANDLE) {
+        auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->depthStencil.depthBuffer);
+        if (!tex) return LN_ERROR_INVALID_HANDLE;
+        depthAttach.view = tex->rhiTextureView();
+    } else if (firstRTTexture && firstRTTexture->isRenderTarget() && firstRTTexture->depthView()) {
+        // RT テクスチャに関連付いたデプスバッファを自動使用
+        depthAttach.view = firstRTTexture->depthView();
+    } else {
+        depthAttach.view = fb->depthTexture->rhiTextureView();
+    }
+    depthAttach.depthLoadOp = toRhiLoadOp(desc->depthStencil.depthLoadOp);
+    depthAttach.depthStoreOp = ln::rhi::StoreOp::Store;
+    depthAttach.clearDepth = desc->depthStencil.clearDepth;
+    depthAttach.stencilLoadOp = toRhiLoadOp(desc->depthStencil.stencilLoadOp);
+    depthAttach.stencilStoreOp = ln::rhi::StoreOp::Store;
+    depthAttach.clearStencil = desc->depthStencil.clearStencil;
+
+    rpDesc.depthStencilAttachment = &depthAttach;
+
     if (camera != LN_NULL_HANDLE) {
         auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
         if (!camObj) return LN_ERROR_INVALID_HANDLE;
-        ren->beginRenderPass(
-            fb->colorTexture->rhiTextureView(),
-            fb->depthTexture->rhiTextureView(),
-            camObj->camera,
-            ln::Color{r, g, b, a});
+        ren->beginRenderPass(rpDesc, camObj->camera);
     } else {
-        ren->beginRenderPass(
-            fb->colorTexture->rhiTextureView(),
-            fb->depthTexture->rhiTextureView(),
-            ln::Color{r, g, b, a});
+        ren->beginRenderPass(rpDesc);
     }
     return LN_OK;
 }
@@ -994,45 +962,6 @@ LNResult LNTexture2D_CreateRenderTarget(
     *outHandle = wrapObjectFromCreate(rtResult->get());
     return LN_OK;
 }
-
-//------------------------------------------------------------------------------
-// LNRenderer_BeginRenderPassToTexture
-//------------------------------------------------------------------------------
-
-LNResult LNRenderer_BeginRenderPassToTexture(
-    LNHandle renderer,
-    LNHandle renderTargetTexture,
-    LNHandle camera,
-    float r, float g, float b, float a) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
-    if (!ren) return LN_ERROR_INVALID_HANDLE;
-
-    auto* tex = instance->objectRegistry()->resolve<ln::Texture>(renderTargetTexture);
-    if (!tex || !tex->isRenderTarget()) return LN_ERROR_INVALID_HANDLE;
-
-    auto* colorView = tex->rhiTextureView();
-    auto* depthView = tex->depthView();
-    if (!colorView) return LN_ERROR_INVALID_HANDLE;
-
-    if (camera != LN_NULL_HANDLE) {
-        auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
-        if (!camObj) return LN_ERROR_INVALID_HANDLE;
-        ren->beginRenderPass(
-            colorView, depthView,
-            camObj->camera,
-            ln::Color{r, g, b, a});
-    } else {
-        ren->beginRenderPass(
-            colorView, depthView,
-            ln::Color{r, g, b, a});
-    }
-    
-    return LN_OK;
-}
-
 
 //------------------------------------------------------------------------------
 // LNDrawCommandBuffer

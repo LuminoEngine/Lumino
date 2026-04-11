@@ -256,8 +256,13 @@ int main(void) {
         /* Draw */
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
-        LNRenderer_BeginRenderPass(renderer, graphicsContext, camera,
-            0.15f, 0.15f, 0.2f, 1.0f);
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].clearColor[0] = 0.15f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.15f;
+        rpDesc.colorAttachments[0].clearColor[2] = 0.2f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
         LNRenderer_DrawMesh(renderer, mesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
         LNGraphicsContext_EndFrame(graphicsContext);

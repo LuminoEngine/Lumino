@@ -5,6 +5,8 @@
 #include "WebGPUBuffer.hpp"
 #include "WebGPUShaderModule.hpp"
 #include "WebGPUPipelineLayout.hpp"
+#include "WebGPUSampler.hpp"
+#include "WebGPURenderPipeline.hpp"
 #include "WebGPUHelpers.hpp"
 
 namespace ln::rhi::webgpu {
@@ -249,8 +251,13 @@ Result<Ref<TextureView>> WebGPUDevice::createTextureView(Texture* texture) {
     return Ref<TextureView>(view);
 }
 
-Result<Ref<Sampler>> WebGPUDevice::createSampler(const SamplerDesc&) {
-    return LN_MAKE_ERROR("WebGPU Sampler not yet implemented.");
+Result<Ref<Sampler>> WebGPUDevice::createSampler(const SamplerDesc& desc) {
+    auto s = Ref<WebGPUSampler>::adopt(new WebGPUSampler());
+    auto result = s->init(this, desc);
+    if (!result) {
+        return LN_FORWARD_ERROR(result);
+    }
+    return Ref<Sampler>(s);
 }
 
 Result<Ref<ShaderModule>> WebGPUDevice::createShaderModule(const ShaderModuleDesc& desc) {
@@ -271,8 +278,13 @@ Result<Ref<PipelineLayout>> WebGPUDevice::createPipelineLayout(const PipelineLay
     return Ref<PipelineLayout>(pl);
 }
 
-Result<Ref<RenderPipeline>> WebGPUDevice::createRenderPipeline(const RenderPipelineDesc&) {
-    return LN_MAKE_ERROR("WebGPU RenderPipeline not yet implemented.");
+Result<Ref<RenderPipeline>> WebGPUDevice::createRenderPipeline(const RenderPipelineDesc& desc) {
+    auto rp = Ref<WebGPURenderPipeline>::adopt(new WebGPURenderPipeline());
+    auto result = rp->init(this, desc);
+    if (!result) {
+        return LN_FORWARD_ERROR(result);
+    }
+    return Ref<RenderPipeline>(rp);
 }
 
 VoidResult WebGPUDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) {

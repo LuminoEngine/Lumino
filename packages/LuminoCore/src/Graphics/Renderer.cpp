@@ -147,6 +147,43 @@ void Renderer::beginRenderPass(
     m_commandBuffer.clear();
 }
 
+void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera) {
+    // Allocate view UBO from the per-frame allocator and upload camera data.
+    auto viewAlloc = m_viewAllocator->allocate();
+    {
+        ViewParamsUBO viewParams{};
+        Matrix4x4 vp = camera.viewProjectionMatrix();
+        std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
+        Vector3 camPos = camera.position();
+        viewParams.cameraPos[0] = camPos.x;
+        viewParams.cameraPos[1] = camPos.y;
+        viewParams.cameraPos[2] = camPos.z;
+        viewParams.cameraPos[3] = 0.0f;
+        std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
+    }
+
+    beginRenderPass(rpDesc);
+    setPassBindGroup(static_cast<u32>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
+}
+
+void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc) {
+    m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
+
+    // Track the current color target for endRenderPassWithTransition.
+    m_currentColorTarget = rpDesc.colorAttachments.empty() ? nullptr : rpDesc.colorAttachments[0].view;
+
+    // Clear any pass-scoped bind group state from the previous pass.
+    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+        m_passBindGroups[i]                  = nullptr;
+        m_passBindGroupDynamicOffsets[i]     = 0;
+        m_passBindGroupDynamicOffsetCounts[i] = 0;
+        m_passBindGroupDirty[i]              = false;
+    }
+
+    // Clear the internal command buffer for this render pass.
+    m_commandBuffer.clear();
+}
+
 void Renderer::endRenderPass() {
     // Flush batched draw commands before ending the render pass.
     (void)flushBatch();
