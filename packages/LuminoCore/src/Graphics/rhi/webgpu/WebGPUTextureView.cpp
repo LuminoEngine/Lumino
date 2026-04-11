@@ -9,6 +9,7 @@ VoidResult WebGPUTextureView::init(
     WebGPUDevice* device, WGPUTexture texture, WGPUTextureFormat format,
     WGPUTextureAspect aspect, u32 width, u32 height)
 {
+    m_format = format;
     m_width = width;
     m_height = height;
     m_ownsView = true;
@@ -29,8 +30,9 @@ VoidResult WebGPUTextureView::init(
     return LN_MAKE_SUCCESS();
 }
 
-void WebGPUTextureView::initFromExternal(WGPUTextureView view, u32 width, u32 height) {
+void WebGPUTextureView::initFromExternal(WGPUTextureView view, WGPUTextureFormat format, u32 width, u32 height) {
     m_view = view;
+    m_format = format;
     m_width = width;
     m_height = height;
     m_ownsView = false;

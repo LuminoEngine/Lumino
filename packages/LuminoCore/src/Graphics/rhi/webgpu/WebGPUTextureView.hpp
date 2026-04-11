@@ -15,12 +15,13 @@ public:
                     WGPUTextureAspect aspect, u32 width, u32 height);
 
     /** Wrap an externally-owned WGPUTextureView (swap chain back-buffer). */
-    void initFromExternal(WGPUTextureView view, u32 width, u32 height);
+    void initFromExternal(WGPUTextureView view, WGPUTextureFormat format, u32 width, u32 height);
 
     /** Replace the wrapped view (called each frame for swap chain textures). */
     void rewrap(WGPUTextureView view);
 
     WGPUTextureView handle() const { return m_view; }
+    WGPUTextureFormat format() const { return m_format; }
     u32 width() const { return m_width; }
     u32 height() const { return m_height; }
 
@@ -29,6 +30,7 @@ protected:
 
 private:
     WGPUTextureView m_view = nullptr;
+    WGPUTextureFormat m_format = WGPUTextureFormat_Undefined;
     u32 m_width = 0;
     u32 m_height = 0;
     bool m_ownsView = true;

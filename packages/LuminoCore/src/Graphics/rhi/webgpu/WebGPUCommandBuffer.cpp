@@ -2,6 +2,9 @@
 #include "WebGPUCommandBuffer.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUTextureView.hpp"
+#include "WebGPUBuffer.hpp"
+#include "WebGPUPipelineLayout.hpp"
+#include "WebGPURenderPipeline.hpp"
 #include "WebGPUHelpers.hpp"
 
 namespace ln::rhi::webgpu {
@@ -17,44 +20,56 @@ void WebGPURenderPass::init(WGPURenderPassEncoder encoder, const RenderPassLayou
     m_layoutDesc = layoutDesc;
 }
 
-void WebGPURenderPass::setPipeline(RenderPipeline*) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setPipeline(RenderPipeline* pipeline) {
+    auto* wp = static_cast<WebGPURenderPipeline*>(pipeline);
+    wgpuRenderPassEncoderSetPipeline(m_encoder, wp->handle());
 }
 
-void WebGPURenderPass::setVertexBuffer(u32, Buffer*, u64) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) {
+    auto* wb = static_cast<WebGPUBuffer*>(buffer);
+    wgpuRenderPassEncoderSetVertexBuffer(m_encoder, slot, wb->handle(), offset, WGPU_WHOLE_SIZE);
 }
 
-void WebGPURenderPass::setIndexBuffer(Buffer*, IndexFormat, u64) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) {
+    auto* wb = static_cast<WebGPUBuffer*>(buffer);
+    wgpuRenderPassEncoderSetIndexBuffer(m_encoder, wb->handle(),
+                                        toWGPUIndexFormat(format),
+                                        offset, WGPU_WHOLE_SIZE);
 }
 
-void WebGPURenderPass::setBindGroup(u32, BindGroup*) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setBindGroup(u32 index, BindGroup* group) {
+    auto* wg = static_cast<WebGPUBindGroup*>(group);
+    wgpuRenderPassEncoderSetBindGroup(m_encoder, index, wg->handle(), 0, nullptr);
 }
 
-void WebGPURenderPass::setBindGroup(u32, BindGroup*, const u32*, u32) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setBindGroup(u32 index, BindGroup* group,
+                                    const u32* dynamicOffsets, u32 dynamicOffsetCount) {
+    auto* wg = static_cast<WebGPUBindGroup*>(group);
+    wgpuRenderPassEncoderSetBindGroup(m_encoder, index, wg->handle(),
+                                      dynamicOffsetCount, dynamicOffsets);
 }
 
-void WebGPURenderPass::setViewport(f32, f32, f32, f32, f32, f32) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) {
+    wgpuRenderPassEncoderSetViewport(m_encoder, x, y, w, h, minDepth, maxDepth);
 }
 
-void WebGPURenderPass::setScissorRect(u32, u32, u32, u32) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setScissorRect(u32 x, u32 y, u32 w, u32 h) {
+    wgpuRenderPassEncoderSetScissorRect(m_encoder, x, y, w, h);
 }
 
-void WebGPURenderPass::setStencilReference(u32) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::setStencilReference(u32 reference) {
+    wgpuRenderPassEncoderSetStencilReference(m_encoder, reference);
 }
 
-void WebGPURenderPass::draw(u32, u32, u32, u32) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::draw(u32 vertexCount, u32 instanceCount,
+                            u32 firstVertex, u32 firstInstance) {
+    wgpuRenderPassEncoderDraw(m_encoder, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
-void WebGPURenderPass::drawIndexed(u32, u32, u32, i32, u32) {
-    // Not needed for ClearScreen
+void WebGPURenderPass::drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex,
+                                   i32 baseVertex, u32 firstInstance) {
+    wgpuRenderPassEncoderDrawIndexed(m_encoder, indexCount, instanceCount,
+                                     firstIndex, baseVertex, firstInstance);
 }
 
 void WebGPURenderPass::end() {

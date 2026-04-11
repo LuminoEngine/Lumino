@@ -1,6 +1,7 @@
 #include "WebGPUPipelineLayout.hpp"
 #include "WebGPUBuffer.hpp"
 #include "WebGPUDevice.hpp"
+#include "WebGPUSampler.hpp"
 #include "WebGPUTextureView.hpp"
 
 namespace ln::rhi::webgpu {
@@ -100,7 +101,7 @@ VoidResult WebGPUBindGroup::init(WebGPUDevice* device, WebGPUBindGroupLayout* la
         } else if (e.textureView) {
             entry.textureView = static_cast<WebGPUTextureView*>(e.textureView)->handle();
         } else if (e.sampler) {
-            return LN_MAKE_ERROR("WebGPUBindGroup: Sampler binding not yet implemented.");
+            entry.sampler = static_cast<WebGPUSampler*>(e.sampler)->handle();
         } else {
             return LN_MAKE_ERROR("WebGPUBindGroup: BindGroupEntry has no resource set.");
         }

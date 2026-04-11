@@ -75,7 +75,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
 
     // Create the backbuffer view wrapper (reused each frame)
     m_currentBackbufferView = Ref<WebGPUTextureView>::adopt(new WebGPUTextureView());
-    m_currentBackbufferView->initFromExternal(nullptr, m_width, m_height);
+    m_currentBackbufferView->initFromExternal(nullptr, m_surfaceFormat, m_width, m_height);
 
     // Create CommandBuffers for each in-flight frame
     m_maxFrames = 2;

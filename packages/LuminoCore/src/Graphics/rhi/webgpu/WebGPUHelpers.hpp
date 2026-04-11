@@ -200,4 +200,13 @@ inline WGPUVertexFormat toWGPUVertexFormat(VertexFormat v) {
     }
 }
 
+//------------------------------------------------------------------------------
+inline WGPUIndexFormat toWGPUIndexFormat(IndexFormat v) {
+    switch (v) {
+        case IndexFormat::Uint16: return WGPUIndexFormat_Uint16;
+        case IndexFormat::Uint32: return WGPUIndexFormat_Uint32;
+        default:                  return WGPUIndexFormat_Uint32;
+    }
+}
+
 } // namespace ln::rhi::webgpu

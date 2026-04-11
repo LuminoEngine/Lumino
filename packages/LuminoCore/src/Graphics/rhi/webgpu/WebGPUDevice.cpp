@@ -41,7 +41,7 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
     // 先にこうしておかないと、wgpuInstanceRequestAdapter で次のようなエラーが発生することがあった。
     // - Error: DynamicLib.Open: d3dcompiler_47.dll Windows Error: 87
     // - [WebGPU] RequestDevice failed: DynamicLib.Open: dxil.dll Windows Error: 87
-    //m_hD3DCompilerDLL = ::LoadLibraryW(D3DCOMPILER_DLL_W);
+    m_hD3DCompilerDLL = ::LoadLibraryW(D3DCOMPILER_DLL_W);
 
 #endif
 
@@ -59,7 +59,7 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         adapterOptions.featureLevel = WGPUFeatureLevel_Undefined;
         adapterOptions.powerPreference = WGPUPowerPreference_HighPerformance;
         adapterOptions.forceFallbackAdapter = false;
-        adapterOptions.backendType = WGPUBackendType_Vulkan;
+        //adapterOptions.backendType = WGPUBackendType_Vulkan;
         adapterOptions.compatibleSurface = nullptr;
 
         WGPURequestAdapterCallbackInfo callbackInfo = WGPU_REQUEST_ADAPTER_CALLBACK_INFO_INIT;
@@ -171,7 +171,6 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("wgpuDeviceGetQueue failed.");
     }
 
-    std::cout << "[WebGPU] Device initialized successfully.\n";
     return LN_MAKE_SUCCESS();
 }
 
