@@ -2,6 +2,7 @@ build/
 build_*/
 build/Lumino-*/
 lib/
+emsdk/
 build.sln
 ReleasePackage-*/
 .vscode

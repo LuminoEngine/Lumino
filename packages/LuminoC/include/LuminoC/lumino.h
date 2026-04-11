@@ -23,7 +23,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
-    
+
+//------------------------------------------------------------------------------
+// Phase 0 smoke test
+//------------------------------------------------------------------------------
+
+/**
+ * Phase 0 動作確認用。stdout に "Lumino HelloTest: <value>" を出力して value を返す。
+ * ランタイム初期化等は一切不要で、Emscripten のツールチェインとシンボルエクスポートの
+ * 疎通確認のためだけに使用する。
+ */
+extern LUMINO_API int32_t LNHelloTest(int32_t value);
+
 typedef uint32_t LNBool;
 #define LN_FALSE 0U
 #define LN_TRUE 1U
