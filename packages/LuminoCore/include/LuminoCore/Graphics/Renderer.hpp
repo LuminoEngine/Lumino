@@ -228,12 +228,15 @@ private:
     // Reference PipelineLayout (from a builtin ShaderPass, used for dynamic UBO allocators)
     rhi::PipelineLayout* m_referencePipelineLayout = nullptr;
     int16_t m_viewSetIndex = -1;
+    int16_t m_sceneSetIndex = -1;
     int16_t m_objectSetIndex = -1;
     u64 m_objectUBOSize = 0;
 
     // Per-frame view UBO allocator (camera data) — double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;
 
+    // Per-frame dynamic UBO allocator for scene-level data (lighting etc.)
+    std::unique_ptr<DynamicUniformAllocator> m_sceneAllocator;
 
     // Per-frame dynamic UBO allocator for per-object data
     std::unique_ptr<DynamicUniformAllocator> m_objectAllocator;
@@ -307,6 +310,7 @@ private:
 
     /** Get or create the BindGroup for the given material and current frame slot. */
     Result<rhi::BindGroup*> getOrCreateMaterialBindGroup(Material* mat);
+
 };
 
 } // namespace ln

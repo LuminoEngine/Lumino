@@ -24,6 +24,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
     renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
     renderer->m_viewSetIndex = refShaderPass->viewSetIndex();
+    renderer->m_sceneSetIndex = refShaderPass->sceneSetIndex();
     renderer->m_objectSetIndex = refShaderPass->objectSetIndex();
     renderer->m_objectUBOSize = refShaderPass->objectUBOSize();
 
@@ -39,6 +40,17 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
             framesInFlight);
         if (!r) return LN_FORWARD_ERROR(r);
         renderer->m_viewAllocator = std::move(*r);
+    }
+
+    // ---- Dynamic UBO allocator for per-scene data (lighting etc.) ----
+    {
+        auto r = DynamicUniformAllocator::create(
+            device, renderer->m_referencePipelineLayout,
+            static_cast<u32>(renderer->m_sceneSetIndex), 0,
+            static_cast<u32>(sizeof(SceneParamsUBO)),
+            framesInFlight);
+        if (!r) return LN_FORWARD_ERROR(r);
+        renderer->m_sceneAllocator = std::move(*r);
     }
 
     // ---- Dynamic UBO allocator for per-object data ----
@@ -62,6 +74,7 @@ void Renderer::beginFrame() {
     u32 frame = m_frameCounter++;
     m_currentFrameSlot = frame % m_framesInFlight;
     m_viewAllocator->beginFrame(frame);
+    m_sceneAllocator->beginFrame(frame);
     m_objectAllocator->beginFrame(frame);
     m_currentCmd = m_ctx->currentCommandBuffer();
     m_drawCallCount = 0;
@@ -78,6 +91,7 @@ void Renderer::beginFrame() {
 void Renderer::endFrame() {
     // Flush dynamic uniform buffers to GPU before submission.
     (void)m_viewAllocator->flushFrame();
+    (void)m_sceneAllocator->flushFrame();
     (void)m_objectAllocator->flushFrame();
 
     m_currentCmd->submit();
@@ -362,6 +376,19 @@ Result<void> Renderer::drawSubmesh(
     // After setPipeline, flush any pending pass-scoped bind groups.
     flushPassBindGroups();
 
+    // WebGPU requires every slot declared in the pipeline layout to have a bind group bound
+    // before drawIndexed. When a shader declares sceneData as a ParameterBlock but the user
+    // has not set a scene bind group via setPassBindGroup, we allocate a zero-initialized
+    // SceneParamsUBO and bind it so validation passes.
+    if (m_sceneSetIndex >= 0 && !m_passBindGroups[m_sceneSetIndex]) {
+        auto sceneAlloc = m_sceneAllocator->allocate();
+        SceneParamsUBO defaultScene{};
+        std::memcpy(sceneAlloc.cpuPtr, &defaultScene, sizeof(defaultScene));
+        setPassBindGroup(static_cast<u32>(m_sceneSetIndex),
+                         sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
+        flushPassBindGroups();
+    }
+
     // Get or create the material's BindGroup from the Renderer-side cache.
     auto matBGResult = getOrCreateMaterialBindGroup(mat);
     if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
@@ -451,6 +478,16 @@ Result<void> Renderer::drawStencilMaskMesh(
         m_currentPass->setPipeline(*pipelineResult);
         m_currentPass->setStencilReference(stencilRef);
         flushPassBindGroups();
+
+        // Same as drawSubmesh: auto-bind a default scene bind group if not set.
+        if (m_sceneSetIndex >= 0 && !m_passBindGroups[m_sceneSetIndex]) {
+            auto sceneAlloc = m_sceneAllocator->allocate();
+            SceneParamsUBO defaultScene{};
+            std::memcpy(sceneAlloc.cpuPtr, &defaultScene, sizeof(defaultScene));
+            setPassBindGroup(static_cast<u32>(m_sceneSetIndex),
+                             sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
+            flushPassBindGroups();
+        }
 
         auto matBGResult = getOrCreateMaterialBindGroup(mat);
         if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
