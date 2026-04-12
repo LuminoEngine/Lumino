@@ -1,4 +1,4 @@
-#include "WebGPUSampler.hpp"
+﻿#include "WebGPUSampler.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUHelpers.hpp"
 

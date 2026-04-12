@@ -1,4 +1,4 @@
-#if !defined(__EMSCRIPTEN__)
+﻿#if !defined(__EMSCRIPTEN__)
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #ifdef _WIN32

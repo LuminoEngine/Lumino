@@ -1,4 +1,4 @@
-#include "WebGPUTextureView.hpp"
+﻿#include "WebGPUTextureView.hpp"
 #include "WebGPUDevice.hpp"
 
 namespace ln::rhi::webgpu {

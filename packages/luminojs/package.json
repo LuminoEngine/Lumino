@@ -1,0 +1,25 @@
+{
+  "name": "luminojs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "module": "lib/luminojs.mjs",
+  "types": "lib/index.d.ts",
+  "description": "TypeScript / WebAssembly bindings for Lumino.",
+  "scripts": {
+    "build:typecheck": "tsc --noEmit",
+    "build:rollup": "rollup --config rollup.config.mjs",
+    "build": "npm run build:typecheck && npm run build:rollup",
+    "dev": "npx serve . --cors"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.13.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "serve": "^14.2.6"
+  }
+}

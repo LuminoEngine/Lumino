@@ -1,4 +1,4 @@
-#include <LuminoBase/Logger.hpp>
+﻿#include <LuminoBase/Logger.hpp>
 #include "WebGPUCommandBuffer.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUTextureView.hpp"
@@ -163,7 +163,7 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
 
     // Look up (or allocate) a WebGPURenderPass wrapper for this attachment
     // layout. Reusing the same wrapper instance across frames keeps the
-    // rhi::RenderPass* pointer — which is part of PipelineCacheKey — stable,
+    // rhi::RenderPass* pointer - swhich is part of PipelineCacheKey - stable,
     // so the upstream PipelineCache hits instead of recompiling every draw.
     WebGPURenderPassLayoutKey key;
     key.colorFormats = layoutDesc.colorFormats;

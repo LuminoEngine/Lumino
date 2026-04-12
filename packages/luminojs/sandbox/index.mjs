@@ -26,6 +26,7 @@ try {
         printErr: (t) => appendLog("[stderr] " + t),
     });
     appendLog("Runtime initialized.");
+    appendLog("Build timestamp: " + Runtime.getBuildTimestamp());
 
     // 2. Initialize Lumino instance (creates WebGPU device)
     await Instance.initialize({ preferredBackend: GraphicsBackend.WebGPU });

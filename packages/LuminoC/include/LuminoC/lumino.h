@@ -35,6 +35,13 @@ extern "C" {
  */
 extern LUMINO_API int32_t LNHelloTest(int32_t value);
 
+/**
+ * このバイナリのビルド情報を文字列で返します。
+ * 内容は未定ですが、ビルド日時やコミットハッシュなどが含まれる予定です。
+ * 正しいバイナリが読み込まれているかの確認用です。
+ */
+extern LUMINO_API const char* LNBuildInfo_GetBuildTimestamp();
+
 typedef uint32_t LNBool;
 #define LN_FALSE 0U
 #define LN_TRUE 1U

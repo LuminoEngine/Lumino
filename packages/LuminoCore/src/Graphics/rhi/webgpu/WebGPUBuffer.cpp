@@ -1,4 +1,4 @@
-#include "WebGPUBuffer.hpp"
+﻿#include "WebGPUBuffer.hpp"
 #include "WebGPUDevice.hpp"
 
 namespace ln::rhi::webgpu {

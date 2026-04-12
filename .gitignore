@@ -3,6 +3,7 @@ build_*/
 build/Lumino-*/
 lib/
 emsdk/
+third_party/
 build.sln
 ReleasePackage-*/
 .vscode

@@ -46,10 +46,6 @@
       "platform": "windows | linux | osx"
     },
     {
-      "name": "dawn",
-      "platform": "windows | linux | osx"
-    },
-    {
       "name": "openal-soft",
       "platform": "windows | linux | osx"
     },

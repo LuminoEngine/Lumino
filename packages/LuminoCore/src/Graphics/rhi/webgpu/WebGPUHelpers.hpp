@@ -1,6 +1,12 @@
-#pragma once
+﻿#pragma once
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <webgpu/webgpu.h>
+
+// 最初に Dawn を使っていた時の名残り。
+// 今は WebGPU-distribution  を使っているが、少しヘッダが古いようだ。
+#define LN_WEBGPU_DAWN_LATEST 0
+#define WGPU_TRUE 1
+#define WGPU_FALSE 0
 
 namespace ln::rhi::webgpu {
 

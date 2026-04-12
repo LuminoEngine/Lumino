@@ -68,6 +68,11 @@ ln::rhi::Backend toRhiBackend(LNGraphicsBackend b) {
 
 extern "C" {
 
+LUMINO_API const char* LNBuildInfo_GetBuildTimestamp(void) {
+    static const char kTimestamp[] = __DATE__ " " __TIME__;
+    return kTimestamp;
+}
+
 LUMINO_API LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
     ensureLoggerInstalled();
     std::printf("LNInstance_Initialize: called\n");

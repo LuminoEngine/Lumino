@@ -1,0 +1,181 @@
+import {
+    Result,
+    type Handle,
+    type RuntimeOptions,
+} from "./types";
+
+//------------------------------------------------------------------------------
+// Emscripten Module type (subset we use)
+//------------------------------------------------------------------------------
+
+interface EmscriptenModule {
+    cwrap(ident: string, returnType: string | null, argTypes: string[], opts?: { async?: boolean }): (...args: unknown[]) => unknown;
+    _malloc(size: number): number;
+    _free(ptr: number): void;
+    UTF8ToString(ptr: number): string;
+    HEAPU8: Uint8Array;
+    HEAPU32: Uint32Array;
+    HEAPF32: Float32Array;
+}
+
+type ModuleFactory = (opts?: Record<string, unknown>) => Promise<EmscriptenModule>;
+
+//------------------------------------------------------------------------------
+// Internal cwrap bindings
+//------------------------------------------------------------------------------
+
+/** @internal Holds cwrap'ed C function references. */
+export const API: Record<string, (...args: never[]) => unknown> = {};
+
+//------------------------------------------------------------------------------
+// Runtime
+//------------------------------------------------------------------------------
+
+export class Runtime {
+    /** The raw Emscripten module. Accessible for advanced usage. */
+    static module: EmscriptenModule;
+
+    // Pre-allocated 4-byte slot for single out-parameter reads.
+    private static _returnPtr = 0;
+    private static _returnView: Uint32Array | undefined;
+    private static _heapBuffer: ArrayBufferLike | undefined;
+
+    /** Has `initialize` been called? */
+    static get initialized(): boolean {
+        return !!this.module;
+    }
+
+    /**
+     * このバイナリがビルドされた日時文字列を返す。
+     * ランタイム初期化不要。正しい WASM が読み込まれているかの確認用。
+     */
+    static getBuildTimestamp(): string {
+        const ptr = API.LNBuildInfo_GetBuildTimestamp() as number;
+        return this.module.UTF8ToString(ptr);
+    }
+
+    /**
+     * Load the Emscripten WASM module and bind all C-API symbols.
+     */
+    static async initialize(options?: RuntimeOptions): Promise<void> {
+        // Dynamic import – the file sits in lib/ alongside the built TS output.
+        const { default: LuminoC } = await import("./LuminoC.mjs") as { default: ModuleFactory };
+
+        const moduleOpts: Record<string, unknown> = {};
+        if (options?.wasmPath) {
+            const wasmPath = options.wasmPath;
+            moduleOpts["locateFile"] = (path: string) =>
+                path.endsWith(".wasm") ? wasmPath : path;
+        }
+        if (options?.print)    moduleOpts["print"]    = options.print;
+        if (options?.printErr) moduleOpts["printErr"] = options.printErr;
+
+        this.module = await LuminoC(moduleOpts);
+
+        // Pre-allocate a 4-byte slot for out-parameter reads.
+        this._returnPtr = this.module._malloc(4);
+
+        // Bind all C-API functions via cwrap.
+        this._bindAPI();
+    }
+
+    //--------------------------------------------------------------------------
+    // Return-pointer helpers (handles HEAP buffer grow)
+    //--------------------------------------------------------------------------
+
+    /**
+     * Get the pre-allocated return pointer and a Uint32Array view into it.
+     * Automatically recreates the view if the backing ArrayBuffer has changed
+     * due to WASM memory growth.
+     */
+    static getReturnPointerInfo(): [ptr: number, view: Uint32Array] {
+        const buf = this.module.HEAPU8.buffer;
+        if (!this._returnView || this._heapBuffer !== buf) {
+            this._heapBuffer = buf;
+            this._returnView = new Uint32Array(buf, this._returnPtr, 1);
+        }
+        return [this._returnPtr, this._returnView];
+    }
+
+    //--------------------------------------------------------------------------
+    // Safe-call wrappers (sync)
+    //--------------------------------------------------------------------------
+
+    /** Call a C function and throw on non-OK result. */
+    static safeCall(fn: () => number): void {
+        const rc = fn();
+        if (rc !== Result.OK) {
+            throw new Error(`Lumino C-API error: ${rc}`);
+        }
+    }
+
+    /** Call a C function that returns a handle via the pre-allocated out-pointer. */
+    static safeCallWithReturnHandle(fn: (ptr: number) => number): Handle {
+        const [ptr, view] = this.getReturnPointerInfo();
+        const rc = fn(ptr);
+        if (rc !== Result.OK) {
+            throw new Error(`Lumino C-API error: ${rc}`);
+        }
+        return view[0];
+    }
+
+    //--------------------------------------------------------------------------
+    // Safe-call wrappers (async — ASYNCIFY)
+    //--------------------------------------------------------------------------
+
+    /** Async variant of `safeCall`. */
+    static async safeCallAsync(fn: () => number | Promise<number>): Promise<void> {
+        const rc = await fn();
+        if (rc !== Result.OK) {
+            throw new Error(`Lumino C-API error: ${rc}`);
+        }
+    }
+
+    /** Async variant of `safeCallWithReturnHandle`. */
+    static async safeCallWithReturnHandleAsync(fn: (ptr: number) => number | Promise<number>): Promise<Handle> {
+        const [ptr, view] = this.getReturnPointerInfo();
+        const rc = await fn(ptr);
+        if (rc !== Result.OK) {
+            throw new Error(`Lumino C-API error: ${rc}`);
+        }
+        // Re-read view after await (HEAP may have grown).
+        const [, freshView] = this.getReturnPointerInfo();
+        return freshView[0];
+    }
+
+    //--------------------------------------------------------------------------
+    // Private: cwrap bindings
+    //--------------------------------------------------------------------------
+
+    private static _bindAPI(): void {
+        const m = this.module;
+        const cw = m.cwrap.bind(m);
+
+        // Phase 0
+        API.LNHelloTest = cw("LNHelloTest", "number", ["number"]);
+        API.LNBuildInfo_GetBuildTimestamp = cw("LNBuildInfo_GetBuildTimestamp", "number", []);
+
+        // Instance
+        API.LNInstance_Initialize = cw("LNInstance_Initialize", "number", ["number"], { async: true });
+        API.LNInstance_Terminate  = cw("LNInstance_Terminate",  null,     [],         { async: true });
+
+        // Object
+        API.LNObject_Release = cw("LNObject_Release", "number", ["number"]);
+
+        // Window
+        API.LNWindow_CreateFromCanvas   = cw("LNWindow_CreateFromCanvas",   "number", ["string", "number", "number", "number"], { async: true });
+        API.LNWindow_GetGraphicsContext = cw("LNWindow_GetGraphicsContext", "number", ["number", "number"]);
+        API.LNWindow_ProcessEvents      = cw("LNWindow_ProcessEvents",      "number", ["number", "number"]);
+
+        // GraphicsContext
+        API.LNGraphicsContext_BeginFrame = cw("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number"], { async: true });
+        API.LNGraphicsContext_EndFrame   = cw("LNGraphicsContext_EndFrame",   "number", ["number"]);
+
+        // RenderPassDesc
+        API.LNRenderPassDesc_Init = cw("LNRenderPassDesc_Init", null, ["number"]);
+
+        // Renderer
+        API.LNRenderer_BeginRenderPass = cw("LNRenderer_BeginRenderPass", "number", ["number", "number", "number", "number"]);
+        API.LNRenderer_EndRenderPass   = cw("LNRenderer_EndRenderPass",   "number", ["number"]);
+    }
+}

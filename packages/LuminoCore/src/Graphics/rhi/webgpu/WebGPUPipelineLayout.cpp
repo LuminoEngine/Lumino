@@ -1,4 +1,4 @@
-#include "WebGPUPipelineLayout.hpp"
+﻿#include "WebGPUPipelineLayout.hpp"
 #include "WebGPUBuffer.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUSampler.hpp"
@@ -39,16 +39,16 @@ VoidResult WebGPUBindGroupLayout::init(WebGPUDevice* device, const BindGroupLayo
         switch (e.type) {
             case BindingType::UniformBuffer:
                 entry.buffer.type = WGPUBufferBindingType_Uniform;
-                entry.buffer.hasDynamicOffset = e.hasDynamicOffset ? WGPU_TRUE : WGPU_FALSE;
+                entry.buffer.hasDynamicOffset = e.hasDynamicOffset ? true : false;
                 break;
             case BindingType::StorageBuffer:
                 entry.buffer.type = WGPUBufferBindingType_Storage;
-                entry.buffer.hasDynamicOffset = e.hasDynamicOffset ? WGPU_TRUE : WGPU_FALSE;
+                entry.buffer.hasDynamicOffset = e.hasDynamicOffset ? true : false;
                 break;
             case BindingType::SampledTexture:
                 entry.texture.sampleType = WGPUTextureSampleType_Float;
                 entry.texture.viewDimension = WGPUTextureViewDimension_2D;
-                entry.texture.multisampled = WGPU_FALSE;
+                entry.texture.multisampled = false;
                 break;
             case BindingType::Sampler:
                 entry.sampler.type = WGPUSamplerBindingType_Filtering;

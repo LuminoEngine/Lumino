@@ -27,9 +27,8 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
 
     // WebGPU インスタンスを生成する
     {
-        WGPUInstanceFeatureName features[] = {
-            WGPUInstanceFeatureName_TimedWaitAny
-        };
+#if LN_WEBGPU_DAWN_LATEST
+        WGPUInstanceFeatureName features[] = {WGPUInstanceFeatureName_TimedWaitAny};
         WGPUInstanceLimits limits = {};
         limits.nextInChain = nullptr;
         limits.timedWaitAnyMaxCount = 8;
@@ -40,6 +39,13 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         instDesc.requiredFeatures = features;
         instDesc.requiredLimits = &limits;
         m_instance = wgpuCreateInstance(&instDesc);
+#else
+        WGPUInstanceDescriptor desc = WGPU_INSTANCE_DESCRIPTOR_INIT;
+        desc.nextInChain = nullptr;
+        desc.capabilities.timedWaitAnyEnable = 1;
+        desc.capabilities.timedWaitAnyMaxCount = 8;
+        m_instance = wgpuCreateInstance(&desc);
+#endif
         if (!m_instance) {
             return LN_MAKE_ERROR("wgpuCreateInstance failed.");
         }

@@ -1,4 +1,4 @@
-#include "WebGPUTexture.hpp"
+﻿#include "WebGPUTexture.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUHelpers.hpp"
 

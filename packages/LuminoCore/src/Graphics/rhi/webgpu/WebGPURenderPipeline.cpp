@@ -1,4 +1,4 @@
-#include "WebGPURenderPipeline.hpp"
+﻿#include "WebGPURenderPipeline.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUShaderModule.hpp"
 #include "WebGPUPipelineLayout.hpp"
@@ -65,7 +65,7 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
     pipelineDesc.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pipelineDesc.primitive.frontFace = toWGPUFrontFace(desc.frontFace);
     pipelineDesc.primitive.cullMode = toWGPUCullMode(desc.cullMode);
-    pipelineDesc.primitive.unclippedDepth = WGPU_FALSE;
+    pipelineDesc.primitive.unclippedDepth = false;
 
     // ---- Fragment state ----
     const auto& renderPassLayout = desc.renderPass->layoutDesc();
@@ -142,7 +142,7 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
     // ---- Multisample state ----
     pipelineDesc.multisample.count = 1;
     pipelineDesc.multisample.mask = ~0u;
-    pipelineDesc.multisample.alphaToCoverageEnabled = WGPU_FALSE;
+    pipelineDesc.multisample.alphaToCoverageEnabled = false;
 
     m_pipeline = wgpuDeviceCreateRenderPipeline(m_device->wgpuDevice(), &pipelineDesc);
     if (!m_pipeline) {

@@ -1,4 +1,4 @@
-#include "WebGPUShaderModule.hpp"
+﻿#include "WebGPUShaderModule.hpp"
 #include "WebGPUDevice.hpp"
 
 namespace ln::rhi::webgpu {

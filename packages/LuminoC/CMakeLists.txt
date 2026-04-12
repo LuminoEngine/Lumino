@@ -3,80 +3,28 @@ project(LuminoC)
 #-------------------------------------------------------------------------------
 # Emscripten — WebAssembly build
 #-------------------------------------------------------------------------------
-# Sources are pulled directly into the wasm executable (not separate libraries).
-# Dawn is configured in the root CMakeLists.txt and provides emdawnwebgpu
-# (WebGPU C-API shim for Emscripten — same webgpu.h as desktop Dawn).
+# LuminoBase and LuminoCore are built as static libraries and linked via
+# target_link_libraries. WebGPU-distribution is configured in the root
+# CMakeLists.txt and provides a unified webgpu target.
 if(EMSCRIPTEN)
-    #-------------------------------------------------------------------------
-    # Dependency: tl::expected (header-only). LuminoBase's Result.hpp uses it.
-    # Pulled in via FetchContent so the web build does not depend on vcpkg.
-    #-------------------------------------------------------------------------
-    include(FetchContent)
-    FetchContent_Declare(
-        tl_expected
-        GIT_REPOSITORY https://github.com/TartanLlama/expected.git
-        GIT_TAG        v1.1.0
-        GIT_SHALLOW    TRUE
-    )
-    set(EXPECTED_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(tl_expected)
-    # tl::expected is header-only; just need the include dir.
-    set(LN_TL_EXPECTED_INCLUDE_DIR "${tl_expected_SOURCE_DIR}/include")
-
-    #-------------------------------------------------------------------------
-    # Sources
-    #-------------------------------------------------------------------------
     set(LN_WEB_SOURCES
-        # LuminoC entry points (web-specific)
-        src/HelloTest.cpp
         src/WasmAPI.cpp
-        # LuminoBase essentials
-        ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/Logger.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/Result.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/RefObject.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/math/Math.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/math/Matrix4x4.cpp
-        # LuminoCore essentials
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/CoreInstance.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Object.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Runtime/ObjectRegistry.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Platform/Window.cpp
-        # Graphics essentials (Phase 3)
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/GraphicsContext.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/Texture2D.cpp
-        # WebGPU RHI backend (Phase 2)
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/DeviceFactory_Web.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUDevice.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUSwapChain.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUTexture.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUTextureView.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUBuffer.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUShaderModule.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUPipelineLayout.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUSampler.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPURenderPipeline.cpp
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUCommandBuffer.cpp
     )
 
     add_executable(${PROJECT_NAME} ${LN_WEB_SOURCES})
     target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/packages/LuminoBase/include
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/include
-        # WebGPU RHI hpp files live in the src tree (private headers).
-        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src
-        ${LN_TL_EXPECTED_INCLUDE_DIR}
-    )
     target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        SUFFIX ".mjs"
-    )
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".mjs")
 
-    # Link Dawn's emdawnwebgpu — provides webgpu.h C-API implementation
-    # for Emscripten (bridges to the browser's native WebGPU).
-    target_link_libraries(${PROJECT_NAME} PRIVATE emdawnwebgpu_c)
+    # LuminoCore transitively provides LuminoBase, tl::expected, and emdawnwebgpu_c.
+    target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
+
+    # LuminoCore private headers (RHI) needed by WasmAPI.cpp.
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src
+    )
 
     # Emscripten link flags
     set(LN_EM_LINK_FLAGS "")
@@ -89,7 +37,7 @@ if(EMSCRIPTEN)
     string(APPEND LN_EM_LINK_FLAGS " -sALLOW_MEMORY_GROWTH=1")
     string(APPEND LN_EM_LINK_FLAGS " -sNO_EXIT_RUNTIME=1")
     string(APPEND LN_EM_LINK_FLAGS " -sDISABLE_EXCEPTION_CATCHING=1")
-    string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','HEAPU8','HEAPU32','HEAPF32']\"")
+    string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','HEAPU8','HEAPU32','HEAPF32','UTF8ToString']\"")
     string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_FUNCTIONS=\"['_malloc','_free']\"")
     # ASYNCIFY is required for WebGPU async operations (RequestAdapter,
     # RequestDevice, etc.) to yield to the browser event loop.
@@ -135,9 +83,10 @@ target_include_directories(
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 
-# WebGPU (copy dll)
+# WebGPU
 if(LUMINO_ENABLE_WEBGPU)
-    target_link_libraries(${PROJECT_NAME} PRIVATE dawn::webgpu_dawn)
+    target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
+    target_copy_webgpu_binaries(${PROJECT_NAME})
 endif()
 
 #-------------------------------------------------------------------------------

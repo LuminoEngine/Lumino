@@ -90,6 +90,20 @@ T* resolveObject(H handle) {
 } // anonymous namespace
 
 //------------------------------------------------------------------------------
+// Test
+//------------------------------------------------------------------------------
+int32_t LNHelloTest(int32_t value) {
+    std::printf("Lumino HelloTest: %d\n", value);
+    return value;
+}
+
+const char* LNBuildInfo_GetBuildTimestamp() {
+    // __DATE__ = "Apr 12 2026", __TIME__ = "12:34:56"
+    static const char kTimestamp[] = __DATE__ " " __TIME__;
+    return kTimestamp;
+}
+
+//------------------------------------------------------------------------------
 // LNInstance
 //------------------------------------------------------------------------------
 

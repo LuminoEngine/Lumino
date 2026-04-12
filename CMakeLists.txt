@@ -18,41 +18,49 @@ endif()
 #-------------------------------------------------------------------------------
 # Options
 #-------------------------------------------------------------------------------
-option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
 # Tests require GTest which is not set up for the web build, so default OFF on Emscripten.
 if(LUMINO_PLATFORM_WEB)
+    option(LUMINO_BUILD_EXAMPLES "Build example applications" OFF)
     option(LUMINO_BUILD_TESTS "Build unit tests" OFF)
 else()
+    option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
     option(LUMINO_BUILD_TESTS "Build unit tests" ON)
 endif()
 option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
-option(LUMINO_ENABLE_WEBGPU  "Enable WebGPU backend via Dawn" OFF)
+option(LUMINO_ENABLE_WEBGPU  "Enable WebGPU backend via WebGPU-distribution" OFF)
+if(LUMINO_PLATFORM_WEB)
+    option(LUMINO_ENABLE_VULKAN "Enable Vulkan backend" OFF)
+else()
+    option(LUMINO_ENABLE_VULKAN "Enable Vulkan backend" ON)
+endif()
 
 #-------------------------------------------------------------------------------
 # Web (Emscripten) build
 #-------------------------------------------------------------------------------
-# Sources are pulled directly into the LuminoC executable (see
-# packages/LuminoC/CMakeLists.txt). Dawn provides webgpu.h and emdawnwebgpu
-# for a unified WebGPU C-API across desktop and web.
+# LuminoBase and LuminoCore are built as static libraries, then linked by
+# LuminoC. WebGPU-distribution provides a unified webgpu target that
+# automatically selects the emdawnwebgpu backend on Emscripten.
 if(LUMINO_PLATFORM_WEB)
-    # Dawn — provides emdawnwebgpu (WebGPU C-API shim for Emscripten).
-    # DAWN_SOURCE_DIR is configurable; defaults to <repo>/third_party/dawn.
-    if(NOT DEFINED DAWN_SOURCE_DIR)
-        set(DAWN_SOURCE_DIR "${CMAKE_SOURCE_DIR}/third_party/dawn")
-    endif()
-    if(NOT EXISTS "${DAWN_SOURCE_DIR}/CMakeLists.txt")
-        message(FATAL_ERROR
-            "Dawn source not found at ${DAWN_SOURCE_DIR}.\n"
-            "Clone it with:\n"
-            "  git clone https://dawn.googlesource.com/dawn ${DAWN_SOURCE_DIR}\n"
-            "Or set -DDAWN_SOURCE_DIR=<path> to point to an existing checkout.")
-    endif()
-    set(DAWN_FETCH_DEPENDENCIES ON CACHE BOOL "" FORCE)
-    #set(DAWN_FETCH_DEPENDENCIES OFF CACHE BOOL "" FORCE)
-    set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
-    set(DAWN_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
-    add_subdirectory("${DAWN_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/dawn" EXCLUDE_FROM_ALL)
+    # tl::expected via FetchContent (no vcpkg on web).
+    # Must be available before LuminoBase (which links tl::expected).
+    include(FetchContent)
+    FetchContent_Declare(
+        tl_expected
+        GIT_REPOSITORY https://github.com/TartanLlama/expected.git
+        GIT_TAG        v1.1.0
+        GIT_SHALLOW    TRUE
+    )
+    set(EXPECTED_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(tl_expected)
 
+    # WebGPU-distribution — automatically selects EMDAWNWEBGPU on Emscripten.
+    add_subdirectory(third_party/webgpu)
+
+    # WebGPU is always enabled for Emscripten
+    set(LUMINO_ENABLE_WEBGPU ON CACHE BOOL "" FORCE)
+
+    add_subdirectory(packages/LuminoBase)
+    add_subdirectory(packages/LuminoCore)
     add_subdirectory(packages/LuminoC)
     return()
 endif()
@@ -65,8 +73,11 @@ find_package(directx-dxc CONFIG) # optional, used for shader compilation on Wind
 
 find_package(glfw3 CONFIG REQUIRED)
 
+# WebGPU-distribution — use DAWN backend by default on desktop.
+# Override with -DWEBGPU_BACKEND=WGPU to switch to wgpu-native.
 if(LUMINO_ENABLE_WEBGPU)
-    find_package(dawn CONFIG REQUIRED)
+    set(WEBGPU_BACKEND "DAWN" CACHE STRING "WebGPU backend implementation")
+    add_subdirectory(third_party/webgpu)
 endif()
 
 #-------------------------------------------------------------------------------
