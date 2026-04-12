@@ -6,5 +6,7 @@
 #include <memory>
 #include <algorithm>
 #include <functional>
+#ifndef __EMSCRIPTEN__
 #include <filesystem>
 #include <fstream>
+#endif

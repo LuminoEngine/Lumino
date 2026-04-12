@@ -3,12 +3,11 @@
 #include <LuminoCore/Graphics/Texture2D.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <cstdio>
-
-#if !defined(__EMSCRIPTEN__)
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/Renderer.hpp>
-#include <LuminoCore/Graphics/DebugPrint.hpp>
 #include <LuminoCore/Graphics/PipelineCache.hpp>
+#if !defined(__EMSCRIPTEN__)
+#include <LuminoCore/Graphics/DebugPrint.hpp>
 #endif
 
 namespace ln {
@@ -22,13 +21,11 @@ GraphicsContext::~GraphicsContext() {
     auto* dev = device();
     if (dev) {
         dev->waitIdle();
-#if !defined(__EMSCRIPTEN__)
         // Destroy Renderer first (holds material cache, UBO allocators, etc.)
         m_renderer.reset();
         if (m_pipelineCache) {
             m_pipelineCache->clear();
         }
-#endif
     }
 }
 
@@ -192,31 +189,31 @@ void GraphicsContext::waitIdle() {
 }
 
 rhi::Device* GraphicsContext::device() const {
-    if (m_rhiDevice) return m_rhiDevice;
-#if !defined(__EMSCRIPTEN__)
     return m_module ? m_module->device() : nullptr;
-#else
-    return nullptr;
-#endif
 }
 
 Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
-    rhi::Device* dev,
+    GraphicsModule* module,
     const std::string& canvasSelector,
     u32 width,
     u32 height,
     const GraphicsContextDesc& desc)
 {
+    if (!module) {
+        return LN_MAKE_ERROR("GraphicsModule is null.");
+    }
+    auto* dev = module->device();
     if (!dev) {
         return LN_MAKE_ERROR("RHI device is null.");
     }
 
     auto ctx = Ref<GraphicsContext>::adopt(new GraphicsContext());
-    ctx->m_module = nullptr;
-    ctx->m_rhiDevice = dev;
+    ctx->m_module = module;
     ctx->m_window = nullptr;
     ctx->m_width = width;
     ctx->m_height = height;
+
+    ctx->m_pipelineCache = std::make_unique<PipelineCache>(dev);
 
     // SwapChain — pass the canvas selector via nativeWindowHandle
     rhi::SwapChainDesc scDesc;
@@ -239,9 +236,10 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
         ctx->m_framebuffers.push_back(std::move(fb));
     }
 
-    // Renderer — skip on web for Phase 3.
-    // Full Renderer depends on GraphicsModule / builtin shaders which are unavailable.
-    // Phase 6 will add a web-compatible Renderer path.
+    // Renderer
+    auto rendererResult = Renderer::create(ctx.get());
+    if (!rendererResult) return LN_FORWARD_ERROR(rendererResult);
+    ctx->m_renderer = std::move(*rendererResult);
 
     return ctx;
 }

@@ -58,7 +58,11 @@ if(LUMINO_PLATFORM_WEB)
     # WebGPU is always enabled for Emscripten
     set(LUMINO_ENABLE_WEBGPU ON CACHE BOOL "" FORCE)
 
+    # Disable Slang compiler for WASM (only shader deserialization is needed)
+    set(LUMINO_USE_SLANG OFF CACHE BOOL "" FORCE)
+
     add_subdirectory(packages/LuminoBase)
+    add_subdirectory(packages/LuminoShader)
     add_subdirectory(packages/LuminoCore)
     add_subdirectory(packages/LuminoC)
     return()

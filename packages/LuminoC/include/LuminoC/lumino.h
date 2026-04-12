@@ -384,6 +384,20 @@ extern LUMINO_API LNResult LNTexture2D_LoadFromFile(
     LNHandle* outHandle
 );
 
+/**
+ * メモリ上の画像データから 2D テクスチャを読み込みます (PNG, JPG, BMP, TGA 等)。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  data            画像データへのポインタ
+ * @param[in]  size            データサイズ (バイト)
+ * @param[out] outHandle       作成されたテクスチャのハンドル
+ */
+extern LUMINO_API LNResult LNTexture2D_LoadFromMemory(
+    LNHandle graphicsContext,
+    const void* data,
+    uint32_t size,
+    LNHandle* outHandle
+);
+
 //------------------------------------------------------------------------------
 // LNMaterial
 //------------------------------------------------------------------------------

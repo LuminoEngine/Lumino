@@ -1,10 +1,7 @@
 ﻿#include <LuminoBase.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Runtime/ObjectRegistry.hpp>
-
-#if !defined(__EMSCRIPTEN__)
-    #include <LuminoCore/Graphics/GraphicsModule.hpp>
-#endif
+#include <LuminoCore/Graphics/GraphicsModule.hpp>
 
 #if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
     #define GLFW_INCLUDE_NONE
@@ -33,33 +30,20 @@ VoidResult CoreInstance::init(const Settings& settings) {
     m_settings = settings;
     m_objectRegistry = std::make_unique<ObjectRegistry>();
 
-#if defined(__EMSCRIPTEN__)
-    // Web では GLFW を使わない。GraphicsModule は使わず RHI Device を直接生成する。
-    LN_LOG_INFO("CoreInstance::init: emscripten build — creating WebGPU device directly");
-    {
-        rhi::DeviceDesc devDesc;
-        devDesc.backend = m_settings.preferredBackend;
-        devDesc.enableValidation = m_settings.enableValidation;
-        auto deviceResult = rhi::Device::create(devDesc);
-        if (!deviceResult) {
-            return LN_FORWARD_ERROR(deviceResult);
-        }
-        m_rhiDevice = std::move(*deviceResult);
-    }
-#else
+#if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
     glfwInit();
+#endif
 
     {
-        GraphicsModule::Settings settings;
-        settings.enableValidation = m_settings.enableValidation;
-        settings.preferredBackend = m_settings.preferredBackend;
-        auto result = GraphicsModule::create(settings);
+        GraphicsModule::Settings gfxSettings;
+        gfxSettings.enableValidation = m_settings.enableValidation;
+        gfxSettings.preferredBackend = m_settings.preferredBackend;
+        auto result = GraphicsModule::create(gfxSettings);
         if (!result) {
             return LN_FORWARD_ERROR(result);
         }
         m_graphicsModule = std::move(*result);
     }
-#endif
 
     LN_LOG_INFO("CoreInstance::init: end");
     return LN_MAKE_SUCCESS();
@@ -67,14 +51,10 @@ VoidResult CoreInstance::init(const Settings& settings) {
 
 void CoreInstance::dispose() {
     LN_LOG_INFO("CoreInstance::dispose: begin");
-#if defined(__EMSCRIPTEN__)
-    m_rhiDevice.reset();
-#else
     if (m_graphicsModule) {
         m_graphicsModule->dispose();
         m_graphicsModule.reset();
     }
-#endif
     m_objectRegistry.reset();
 #if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
     glfwTerminate();
@@ -83,11 +63,7 @@ void CoreInstance::dispose() {
 }
 
 rhi::Device* CoreInstance::rhiDevice() const {
-#if defined(__EMSCRIPTEN__)
-    return m_rhiDevice.get();
-#else
     return m_graphicsModule ? m_graphicsModule->device() : nullptr;
-#endif
 }
 
 } // namespace ln

@@ -18,14 +18,9 @@ public:
     static void terminate();
 
     ObjectRegistry* objectRegistry() { return m_objectRegistry.get(); }
-#if !defined(__EMSCRIPTEN__)
     GraphicsModule* graphicsModule() const { return m_graphicsModule.get(); }
-#else
-    // Web ビルドでは GraphicsModule は使わず、RHI Device を直接保持する。
-    GraphicsModule* graphicsModule() const { return nullptr; }
-#endif
 
-    /** RHI デバイスへのアクセサ。Web では CoreInstance が直接保持する。Desktop では GraphicsModule 経由。 */
+    /** RHI デバイスへのアクセサ。GraphicsModule 経由。 */
     rhi::Device* rhiDevice() const;
 
 private:
@@ -34,11 +29,7 @@ private:
     static std::unique_ptr<CoreInstance> s_instance;
     Settings m_settings;
     std::unique_ptr<ObjectRegistry> m_objectRegistry;
-#if !defined(__EMSCRIPTEN__)
     Ref<GraphicsModule> m_graphicsModule;
-#else
-    Ref<rhi::Device> m_rhiDevice;
-#endif
 };
 
 } // namespace ln

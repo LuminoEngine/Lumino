@@ -10,9 +10,7 @@ if(LUMINO_ENABLE_VULKAN)
     endif()
 endif()
 
-if(NOT EMSCRIPTEN)
-    find_package(Stb REQUIRED)
-endif()
+find_package(Stb REQUIRED)
 
 #-------------------------------------------------------------------------------
 # Sources
@@ -50,22 +48,12 @@ endif()
 
 file(GLOB LN_LOCAL_SOURCES_shaders shaders/*.slang)
 
-# Emscripten: exclude desktop-only Graphics files (depend on Stb/LuminoShader/desktop features)
+# Emscripten: exclude desktop-only Graphics files
 if(EMSCRIPTEN)
     set(LN_DESKTOP_ONLY_GRAPHICS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Batch.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Camera.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/DebugPrint.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/DynamicUniformAllocator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/ForwardRenderer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/GraphicsModule.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Material.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Mesh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/MeshLoader.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/PipelineCache.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Renderer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/ShaderPass.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/TextureLoader.cpp
     )
     list(REMOVE_ITEM LN_LOCAL_SOURCES_Graphics ${LN_DESKTOP_ONLY_GRAPHICS})
 
@@ -111,11 +99,8 @@ target_include_directories(
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC LuminoBase)
 
-# Desktop-only dependencies
-if(NOT EMSCRIPTEN)
-    target_link_libraries(${PROJECT_NAME} PRIVATE LuminoShader)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
-endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoShader)
+target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
 
 # Vulkan
 if(LUMINO_ENABLE_VULKAN)
@@ -133,7 +118,7 @@ if(LUMINO_ENABLE_VULKAN)
 endif()
 
 # GLFW (desktop only)
-if(LUMINO_PLATFORM_DESKTOP)
+if(NOT LUMINO_PLATFORM_WEB)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 endif()
 

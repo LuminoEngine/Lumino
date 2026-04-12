@@ -4,7 +4,9 @@
 #define STBI_NO_STDIO
 #include <stb_image.h>
 
+#ifndef __EMSCRIPTEN__
 #include <fstream>
+#endif
 #include <vector>
 
 namespace ln {
@@ -19,6 +21,7 @@ static Result<Ref<rhi::Texture>> createTextureFromRGBA(rhi::Device* device, cons
     return device->createTexture(desc);
 }
 
+#ifndef __EMSCRIPTEN__
 Result<Ref<rhi::Texture>> TextureLoader::loadFromFile(rhi::Device* device, const std::string& path) {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
     if (!file) {
@@ -30,6 +33,7 @@ Result<Ref<rhi::Texture>> TextureLoader::loadFromFile(rhi::Device* device, const
     file.read(reinterpret_cast<char*>(buf.data()), fileSize);
     return loadFromMemory(device, buf.data(), buf.size());
 }
+#endif // !__EMSCRIPTEN__
 
 Result<Ref<rhi::Texture>> TextureLoader::loadFromMemory(rhi::Device* device, const void* data, size_t size) {
     int w, h, channels;

@@ -52,21 +52,11 @@ Result<Ref<PlatformWindow>> PlatformWindow::create(
     win->m_impl->canvasSelector = desc.canvasSelector;
 
     // GraphicsContext を canvas から作成する。
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) {
-        return LN_MAKE_ERROR("CoreInstance not initialized.");
-    }
-    auto* rhiDev = instance->rhiDevice();
-    if (!rhiDev) {
-        return LN_MAKE_ERROR("RHI device not initialized.");
-    }
-
     auto ctxResult = ln::GraphicsContext::createForCanvas(
-        rhiDev, desc.canvasSelector, desc.width, desc.height, gfxDesc);
+        module, desc.canvasSelector, desc.width, desc.height, gfxDesc);
     if (!ctxResult) return LN_FORWARD_ERROR(ctxResult);
     win->m_impl->graphicsContext = std::move(*ctxResult);
 
-    (void)module;
     return win;
 }
 
