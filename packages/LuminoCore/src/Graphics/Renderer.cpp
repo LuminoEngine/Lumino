@@ -20,48 +20,52 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     renderer->m_colorFormat   = colorFormat;
     renderer->m_depthFormat   = depthFormat;
 
-    // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
-    const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
-    renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
-    renderer->m_viewSetIndex = refShaderPass->viewSetIndex();
-    renderer->m_sceneSetIndex = refShaderPass->sceneSetIndex();
-    renderer->m_objectSetIndex = refShaderPass->objectSetIndex();
-    renderer->m_objectUBOSize = refShaderPass->objectUBOSize();
-
     u32 framesInFlight = ctx->maxFramesInFlight();
     renderer->m_framesInFlight = framesInFlight;
 
-    // ---- Dynamic UBO allocator for per-frame view data (camera) ----
-    {
-        auto r = DynamicUniformAllocator::create(
-            device, renderer->m_referencePipelineLayout,
-            static_cast<u32>(renderer->m_viewSetIndex), 0,
-            static_cast<u32>(sizeof(ViewParamsUBO)),
-            framesInFlight);
-        if (!r) return LN_FORWARD_ERROR(r);
-        renderer->m_viewAllocator = std::move(*r);
-    }
+    // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
+    // Web builds may not have GraphicsModule / builtin shaders available yet.
+    // In that case, skip UBO allocator creation — only basic pass begin/end will work.
+    if (module) {
+        const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
+        renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
+        renderer->m_viewSetIndex = refShaderPass->viewSetIndex();
+        renderer->m_sceneSetIndex = refShaderPass->sceneSetIndex();
+        renderer->m_objectSetIndex = refShaderPass->objectSetIndex();
+        renderer->m_objectUBOSize = refShaderPass->objectUBOSize();
 
-    // ---- Dynamic UBO allocator for per-scene data (lighting etc.) ----
-    {
-        auto r = DynamicUniformAllocator::create(
-            device, renderer->m_referencePipelineLayout,
-            static_cast<u32>(renderer->m_sceneSetIndex), 0,
-            static_cast<u32>(sizeof(SceneParamsUBO)),
-            framesInFlight);
-        if (!r) return LN_FORWARD_ERROR(r);
-        renderer->m_sceneAllocator = std::move(*r);
-    }
+        // ---- Dynamic UBO allocator for per-frame view data (camera) ----
+        {
+            auto r = DynamicUniformAllocator::create(
+                device, renderer->m_referencePipelineLayout,
+                static_cast<u32>(renderer->m_viewSetIndex), 0,
+                static_cast<u32>(sizeof(ViewParamsUBO)),
+                framesInFlight);
+            if (!r) return LN_FORWARD_ERROR(r);
+            renderer->m_viewAllocator = std::move(*r);
+        }
 
-    // ---- Dynamic UBO allocator for per-object data ----
-    {
-        auto r = DynamicUniformAllocator::create(
-            device, renderer->m_referencePipelineLayout,
-            static_cast<u32>(renderer->m_objectSetIndex), 0,
-            static_cast<u32>(renderer->m_objectUBOSize),
-            framesInFlight);
-        if (!r) return LN_FORWARD_ERROR(r);
-        renderer->m_objectAllocator = std::move(*r);
+        // ---- Dynamic UBO allocator for per-scene data (lighting etc.) ----
+        {
+            auto r = DynamicUniformAllocator::create(
+                device, renderer->m_referencePipelineLayout,
+                static_cast<u32>(renderer->m_sceneSetIndex), 0,
+                static_cast<u32>(sizeof(SceneParamsUBO)),
+                framesInFlight);
+            if (!r) return LN_FORWARD_ERROR(r);
+            renderer->m_sceneAllocator = std::move(*r);
+        }
+
+        // ---- Dynamic UBO allocator for per-object data ----
+        {
+            auto r = DynamicUniformAllocator::create(
+                device, renderer->m_referencePipelineLayout,
+                static_cast<u32>(renderer->m_objectSetIndex), 0,
+                static_cast<u32>(renderer->m_objectUBOSize),
+                framesInFlight);
+            if (!r) return LN_FORWARD_ERROR(r);
+            renderer->m_objectAllocator = std::move(*r);
+        }
     }
 
     renderer->m_ctx = ctx;
@@ -73,9 +77,9 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
 void Renderer::beginFrame() {
     u32 frame = m_frameCounter++;
     m_currentFrameSlot = frame % m_framesInFlight;
-    m_viewAllocator->beginFrame(frame);
-    m_sceneAllocator->beginFrame(frame);
-    m_objectAllocator->beginFrame(frame);
+    if (m_viewAllocator)   m_viewAllocator->beginFrame(frame);
+    if (m_sceneAllocator)  m_sceneAllocator->beginFrame(frame);
+    if (m_objectAllocator) m_objectAllocator->beginFrame(frame);
     m_currentCmd = m_ctx->currentCommandBuffer();
     m_drawCallCount = 0;
 
@@ -90,9 +94,9 @@ void Renderer::beginFrame() {
 
 void Renderer::endFrame() {
     // Flush dynamic uniform buffers to GPU before submission.
-    (void)m_viewAllocator->flushFrame();
-    (void)m_sceneAllocator->flushFrame();
-    (void)m_objectAllocator->flushFrame();
+    if (m_viewAllocator)   (void)m_viewAllocator->flushFrame();
+    if (m_sceneAllocator)  (void)m_sceneAllocator->flushFrame();
+    if (m_objectAllocator) (void)m_objectAllocator->flushFrame();
 
     m_currentCmd->submit();
     m_currentCmd = nullptr;

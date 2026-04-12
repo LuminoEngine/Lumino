@@ -1,11 +1,15 @@
 ﻿#include <algorithm>
-#include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
-#include <LuminoCore/Graphics/Renderer.hpp>
 #include <LuminoCore/Graphics/Texture2D.hpp>
-#include <LuminoCore/Graphics/DebugPrint.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <cstdio>
+
+#if !defined(__EMSCRIPTEN__)
+#include <LuminoCore/Graphics/GraphicsModule.hpp>
+#include <LuminoCore/Graphics/Renderer.hpp>
+#include <LuminoCore/Graphics/DebugPrint.hpp>
+#include <LuminoCore/Graphics/PipelineCache.hpp>
+#endif
 
 namespace ln {
 
@@ -18,11 +22,13 @@ GraphicsContext::~GraphicsContext() {
     auto* dev = device();
     if (dev) {
         dev->waitIdle();
+#if !defined(__EMSCRIPTEN__)
         // Destroy Renderer first (holds material cache, UBO allocators, etc.)
         m_renderer.reset();
         if (m_pipelineCache) {
             m_pipelineCache->clear();
         }
+#endif
     }
 }
 
@@ -33,6 +39,8 @@ rhi::CommandBuffer* GraphicsContext::currentCommandBuffer() const {
 u32 GraphicsContext::maxFramesInFlight() const {
     return m_swapChain->maxFramesInFlight();
 }
+
+#if !defined(__EMSCRIPTEN__)
 
 Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     GraphicsModule* module,
@@ -83,6 +91,8 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
 
     return ctx;
 }
+
+#endif // !defined(__EMSCRIPTEN__)
 
 Result<const FramebufferInfo*> GraphicsContext::beginFrame() {
     auto* colorTarget = m_swapChain->acquireNextTexture();
@@ -145,6 +155,8 @@ Result<void> GraphicsContext::captureBackbuffer() {
     return {};
 }
 
+#if !defined(__EMSCRIPTEN__)
+
 Result<void> GraphicsContext::initDebugPrint() {
     auto result = DebugPrint::create(this);
     if (!result) return LN_FORWARD_ERROR(result);
@@ -162,13 +174,76 @@ void GraphicsContext::debugPrintText(const char* str) {
     m_debugPrint->print(str);
 }
 
+#else // __EMSCRIPTEN__
+
+Result<void> GraphicsContext::initDebugPrint() {
+    return {}; // not supported on web
+}
+
+void GraphicsContext::debugPrintText(const char* /*str*/) {
+    // not supported on web
+}
+
+#endif // __EMSCRIPTEN__
+
 void GraphicsContext::waitIdle() {
     auto* dev = device();
     if (dev) dev->waitIdle();
 }
 
 rhi::Device* GraphicsContext::device() const {
-    return m_module->device();
+    if (m_rhiDevice) return m_rhiDevice;
+#if !defined(__EMSCRIPTEN__)
+    return m_module ? m_module->device() : nullptr;
+#else
+    return nullptr;
+#endif
+}
+
+Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
+    rhi::Device* dev,
+    const std::string& canvasSelector,
+    u32 width,
+    u32 height,
+    const GraphicsContextDesc& desc)
+{
+    if (!dev) {
+        return LN_MAKE_ERROR("RHI device is null.");
+    }
+
+    auto ctx = Ref<GraphicsContext>::adopt(new GraphicsContext());
+    ctx->m_module = nullptr;
+    ctx->m_rhiDevice = dev;
+    ctx->m_window = nullptr;
+    ctx->m_width = width;
+    ctx->m_height = height;
+
+    // SwapChain — pass the canvas selector via nativeWindowHandle
+    rhi::SwapChainDesc scDesc;
+    scDesc.nativeWindowHandle = const_cast<char*>(canvasSelector.c_str());
+    scDesc.width = width;
+    scDesc.height = height;
+    scDesc.vsync = desc.vsync;
+    auto swapChainResult = dev->createSwapChain(scDesc);
+    if (!swapChainResult) return LN_FORWARD_ERROR(swapChainResult);
+    ctx->m_swapChain = std::move(*swapChainResult);
+
+    // InFlightFrame framebuffers
+    const uint32_t inFlights = ctx->m_swapChain->maxFramesInFlight();
+    for (uint32_t i = 0; i < inFlights; i++) {
+        FramebufferInfo fb;
+        fb.colorTexture = Texture::createBackbufferWrapper();
+        auto result = Texture::createDepthStencil(dev, width, height);
+        if (!result) return LN_FORWARD_ERROR(result);
+        fb.depthTexture = *result;
+        ctx->m_framebuffers.push_back(std::move(fb));
+    }
+
+    // Renderer — skip on web for Phase 3.
+    // Full Renderer depends on GraphicsModule / builtin shaders which are unavailable.
+    // Phase 6 will add a web-compatible Renderer path.
+
+    return ctx;
 }
 
 } // namespace ln

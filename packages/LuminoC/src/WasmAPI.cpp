@@ -14,6 +14,9 @@
 #include <cstdio>
 #include <LuminoBase.hpp>
 #include <LuminoCore/CoreInstance.hpp>
+#include <LuminoCore/Runtime/ObjectRegistry.hpp>
+#include <LuminoCore/Platform/Window.hpp>
+#include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoC/lumino.h>
 
 namespace {
@@ -84,6 +87,111 @@ LUMINO_API void LNInstance_Terminate() {
     std::printf("LNInstance_Terminate: called\n");
     ln::CoreInstance::terminate();
     std::printf("LNInstance_Terminate: success\n");
+}
+
+//------------------------------------------------------------------------------
+// Handle helpers (mirrors LuminoAPI.cpp's anonymous namespace)
+//------------------------------------------------------------------------------
+
+static LNHandle wrapObjectFromCreate(ln::Object* object) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_NULL_HANDLE;
+    LNHandle handle = instance->objectRegistry()->registerObject(object);
+    object->addRef();
+    return handle;
+}
+
+static LNHandle wrapObjectFromGet(ln::Object* object) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_NULL_HANDLE;
+    return instance->objectRegistry()->registerObject(object);
+}
+
+//------------------------------------------------------------------------------
+// LNObject
+//------------------------------------------------------------------------------
+
+LUMINO_API LNResult LNObject_Release(LNHandle handle) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (handle == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
+    if (!instance->objectRegistry()->release(handle)) {
+        return LN_ERROR_INVALID_HANDLE;
+    }
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNWindow
+//------------------------------------------------------------------------------
+
+LUMINO_API LNResult LNWindow_CreateFromCanvas(
+    const char* canvasSelector,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle) {
+    if (!canvasSelector || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    ln::platform::WindowDesc winDesc;
+    winDesc.canvasSelector = canvasSelector;
+    winDesc.width = width;
+    winDesc.height = height;
+
+    ln::GraphicsContextDesc gfxDesc;
+    auto windowResult = ln::platform::PlatformWindow::create(
+        nullptr, winDesc, gfxDesc);
+    if (!windowResult) return LN_ERROR_UNKNOWN;
+
+    *outHandle = wrapObjectFromCreate(windowResult->get());
+    return LN_OK;
+}
+
+LUMINO_API LNResult LNWindow_Create(
+    const char* title,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle) {
+    // Web ビルドでは GLFW ベースの Window は作成できない。
+    (void)title;
+    (void)width;
+    (void)height;
+    if (outHandle) *outHandle = LN_NULL_HANDLE;
+    return LN_ERROR_UNKNOWN;
+}
+
+LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* obj = instance->objectRegistry()->resolve<ln::platform::PlatformWindow>(window);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+
+    ln::GraphicsContext* ctx = obj->graphicsContext();
+    if (!ctx) return LN_ERROR_UNKNOWN;
+
+    *outHandle = wrapObjectFromGet(ctx);
+    return LN_OK;
+}
+
+LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit) {
+    if (!outQuit) return LN_ERROR_INVALID_ARGUMENT;
+    *outQuit = LN_FALSE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* obj = instance->objectRegistry()->resolve<ln::platform::PlatformWindow>(handle);
+    if (!obj) return LN_ERROR_INVALID_HANDLE;
+
+    *outQuit = obj->processEvents() ? LN_FALSE : LN_TRUE;
+    return LN_OK;
 }
 
 } // extern "C"

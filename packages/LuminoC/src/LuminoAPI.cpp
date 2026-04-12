@@ -184,6 +184,19 @@ LNResult LNWindow_Create(
     return LN_OK;
 }
 
+LNResult LNWindow_CreateFromCanvas(
+    const char* canvasSelector,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle) {
+    // Desktop では canvas ベースの Window は作成できない。
+    (void)canvasSelector;
+    (void)width;
+    (void)height;
+    if (outHandle) *outHandle = LN_NULL_HANDLE;
+    return LN_ERROR_UNKNOWN;
+}
+
 LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit) {
     if (!outQuit) return LN_ERROR_INVALID_ARGUMENT;
     *outQuit = LN_FALSE;

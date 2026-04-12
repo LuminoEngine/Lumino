@@ -1,5 +1,6 @@
 ﻿#include <LuminoCore/Platform/Window.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
+#include <LuminoCore/CoreInstance.hpp>
 
 #if defined(__EMSCRIPTEN__)
     #include <emscripten/html5.h>
@@ -50,9 +51,22 @@ Result<Ref<PlatformWindow>> PlatformWindow::create(
     win->m_impl = new Impl();
     win->m_impl->canvasSelector = desc.canvasSelector;
 
-    // GraphicsContext の作成は Phase 2 の WebGPU 対応で行う。Phase 1 では nullptr のまま。
+    // GraphicsContext を canvas から作成する。
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) {
+        return LN_MAKE_ERROR("CoreInstance not initialized.");
+    }
+    auto* rhiDev = instance->rhiDevice();
+    if (!rhiDev) {
+        return LN_MAKE_ERROR("RHI device not initialized.");
+    }
+
+    auto ctxResult = ln::GraphicsContext::createForCanvas(
+        rhiDev, desc.canvasSelector, desc.width, desc.height, gfxDesc);
+    if (!ctxResult) return LN_FORWARD_ERROR(ctxResult);
+    win->m_impl->graphicsContext = std::move(*ctxResult);
+
     (void)module;
-    (void)gfxDesc;
     return win;
 }
 

@@ -152,6 +152,22 @@ extern LUMINO_API LNResult LNWindow_Create(
 );
 
 /**
+ * HTML canvas に紐づく Window を作成します。Web 専用。
+ * canvasSelector は CSS セレクタ (例: "#my_canvas")。
+ * デスクトップビルドでは LN_ERROR_UNKNOWN を返します。
+ * @param[in]  canvasSelector CSS セレクタで指定された canvas
+ * @param[in]  width          キャンバスの幅 (ピクセル)
+ * @param[in]  height         キャンバスの高さ (ピクセル)
+ * @param[out] outHandle      作成されたウィンドウのハンドル
+ */
+extern LUMINO_API LNResult LNWindow_CreateFromCanvas(
+    const char* canvasSelector,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle
+);
+
+/**
  * ウィンドウに関連付けられた GraphicsContext のハンドルを取得します。
  * 繰り返し呼び出しても同じハンドルを返します。
  * @param[in]  handle            ウィンドウのハンドル

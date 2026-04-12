@@ -7,6 +7,7 @@
 #endif
 #endif // !__EMSCRIPTEN__
 
+#include <cstring>
 #include <LuminoBase/Logger.hpp>
 #include "WebGPUSwapChain.hpp"
 #include "WebGPUDevice.hpp"
@@ -26,9 +27,26 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     // Create WGPUSurface
     {
 #if defined(__EMSCRIPTEN__)
-        // Web: canvas-based surface creation は Phase 3 で実装する。
-        // Phase 2 ではデバイスの init/finalize だけを確認するため、ここには来ない。
-        return LN_MAKE_ERROR("WebGPUSwapChain::init not yet implemented for web (Phase 3).");
+        // Web: canvas selector 文字列から surface を作成する。
+        // desc.nativeWindowHandle は const char* (CSS セレクタ) として渡される。
+        const char* canvasSelector = static_cast<const char*>(desc.nativeWindowHandle);
+        if (!canvasSelector || canvasSelector[0] == '\0') {
+            return LN_MAKE_ERROR("Invalid canvas selector for WebGPU surface creation.");
+        }
+
+        WGPUEmscriptenSurfaceSourceCanvasHTMLSelector canvasSource =
+            WGPU_EMSCRIPTEN_SURFACE_SOURCE_CANVAS_HTML_SELECTOR_INIT;
+        canvasSource.selector.data = canvasSelector;
+        canvasSource.selector.length = strlen(canvasSelector);
+
+        WGPUSurfaceDescriptor surfaceDesc = WGPU_SURFACE_DESCRIPTOR_INIT;
+        surfaceDesc.nextInChain = &canvasSource.chain;
+        m_surface = wgpuInstanceCreateSurface(device->wgpuInstance(), &surfaceDesc);
+        if (!m_surface) {
+            return LN_MAKE_ERROR("Failed to create WGPUSurface from canvas.");
+        }
+        LN_LOG_INFO("[WebGPU] Canvas surface created: selector='%s', %ux%u",
+                    canvasSelector, desc.width, desc.height);
 #else
         auto* glfwWindow = static_cast<GLFWwindow*>(desc.nativeWindowHandle);
 #ifdef _WIN32

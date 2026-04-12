@@ -41,6 +41,9 @@ if(EMSCRIPTEN)
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Object.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Runtime/ObjectRegistry.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Platform/Window.cpp
+        # Graphics essentials (Phase 3)
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/GraphicsContext.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/Texture2D.cpp
         # WebGPU RHI backend (Phase 2)
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/DeviceFactory_Web.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUDevice.cpp

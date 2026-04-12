@@ -4,9 +4,11 @@
 #include <LuminoBase/Result.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
+#if !defined(__EMSCRIPTEN__)
 #include <LuminoCore/Graphics/PipelineCache.hpp>
 #include <LuminoCore/Graphics/Renderer.hpp>
 #include <LuminoCore/Graphics/DebugPrint.hpp>
+#endif
 #include <LuminoCore/Platform/Window.hpp>
 
 namespace ln {
@@ -49,8 +51,18 @@ public:
         platform::PlatformWindow* window,
         const GraphicsContextDesc& desc);
 
+    /**
+     * Create a graphics context from an HTML canvas (web only).
+     * Uses the RHI device directly without GraphicsModule.
+     */
+    static Result<Ref<GraphicsContext>> createForCanvas(
+        rhi::Device* dev,
+        const std::string& canvasSelector,
+        u32 width,
+        u32 height,
+        const GraphicsContextDesc& desc);
+
     // Future creation paths
-    // static Result<Ref<GraphicsContext>> createFromCanvas(const char* selector);
     // static Result<Ref<GraphicsContext>> createExternal(const ExternalContextDesc& desc);
 
     /** Acquire the next back buffer and prepare frame targets. */
@@ -78,8 +90,10 @@ public:
     /** The underlying RHI device (owned by CoreInstance). */
     rhi::Device* device() const;
 
+#if !defined(__EMSCRIPTEN__)
     /** Pipeline cache for this context. */
     PipelineCache* pipelineCache() const { return m_pipelineCache.get(); }
+#endif
 
     /** Color format of the swap chain. */
     rhi::TextureFormat colorFormat() const { return m_colorFormat; }
@@ -98,11 +112,13 @@ public:
 
     rhi::CommandBuffer* currentCommandBuffer() const;
 
+#if !defined(__EMSCRIPTEN__)
     /** Renderer owned by this context. */
     Renderer* renderer() const { return m_renderer.get(); }
 
     /** Debug print helper owned by this context. Created lazily on first use. */
     DebugPrint* debugPrint() { return m_debugPrint.get(); }
+#endif
 
     /**
      * Queue a debug string for overlay rendering in the current frame.
@@ -128,11 +144,14 @@ private:
     GraphicsContext();
 
     GraphicsModule* m_module;
+    rhi::Device* m_rhiDevice = nullptr; // non-owning; used by web path where m_module is null
     platform::PlatformWindow* m_window = nullptr; // non-owning
     Ref<rhi::SwapChain> m_swapChain;
     std::vector<FramebufferInfo> m_framebuffers; // SwapChain Image (InFlightFrame) ごとに1つ
 
+#if !defined(__EMSCRIPTEN__)
     Ref<DebugPrint> m_debugPrint;
+#endif
 
     // Frame timing
     using Clock = std::chrono::high_resolution_clock;
@@ -146,8 +165,10 @@ private:
     rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth24Stencil8;
     u32 m_width = 0;
     u32 m_height = 0;
+#if !defined(__EMSCRIPTEN__)
     std::unique_ptr<PipelineCache> m_pipelineCache;
     Ref<Renderer> m_renderer;
+#endif
 };
 
 } // namespace ln
