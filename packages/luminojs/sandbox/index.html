@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Lumino Phase 1 Sandbox</title>
+    <title>Lumino Phase 2 Sandbox</title>
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -39,12 +39,13 @@
     </style>
   </head>
   <body>
-    <h1>Lumino Phase 1 Sandbox</h1>
+    <h1>Lumino Phase 2 Sandbox</h1>
     <p>
       Phase 0 smoke test (<code>LNHelloTest</code>) runs automatically on load.
-      Phase 1 adds <code>LNInstance_Initialize</code> / <code>LNInstance_Terminate</code>
-      buttons that drive the real <code>ln::CoreInstance</code>. Watch both the
-      on-page log and the DevTools console.
+      Phase 2 adds WebGPU device initialization:
+      <code>LNInstance_Initialize</code> now creates a WebGPU device internally.
+      Watch the on-page log for <code>WebGPUDevice::init</code> and
+      <code>WebGPUDevice::finalize</code> messages.
     </p>
 
     <div class="row">

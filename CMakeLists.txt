@@ -29,15 +29,30 @@ option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
 option(LUMINO_ENABLE_WEBGPU  "Enable WebGPU backend via Dawn" OFF)
 
 #-------------------------------------------------------------------------------
-# Web (Emscripten) build — Phase 0 + Phase 1
+# Web (Emscripten) build
 #-------------------------------------------------------------------------------
-# Phase 0 scope: LuminoC with a minimal HelloTest export.
-# Phase 1 scope: additionally exposes LNInstance_Initialize / Terminate backed
-# by a minimal slice of LuminoBase + LuminoCore (sources pulled directly into
-# the LuminoC executable — see packages/LuminoC/CMakeLists.txt).
-# LuminoShader / WebGPU / Vulkan / GLFW / GTest are still skipped and will be
-# re-enabled in later phases.
+# Sources are pulled directly into the LuminoC executable (see
+# packages/LuminoC/CMakeLists.txt). Dawn provides webgpu.h and emdawnwebgpu
+# for a unified WebGPU C-API across desktop and web.
 if(LUMINO_PLATFORM_WEB)
+    # Dawn — provides emdawnwebgpu (WebGPU C-API shim for Emscripten).
+    # DAWN_SOURCE_DIR is configurable; defaults to <repo>/third_party/dawn.
+    if(NOT DEFINED DAWN_SOURCE_DIR)
+        set(DAWN_SOURCE_DIR "${CMAKE_SOURCE_DIR}/third_party/dawn")
+    endif()
+    if(NOT EXISTS "${DAWN_SOURCE_DIR}/CMakeLists.txt")
+        message(FATAL_ERROR
+            "Dawn source not found at ${DAWN_SOURCE_DIR}.\n"
+            "Clone it with:\n"
+            "  git clone https://dawn.googlesource.com/dawn ${DAWN_SOURCE_DIR}\n"
+            "Or set -DDAWN_SOURCE_DIR=<path> to point to an existing checkout.")
+    endif()
+    set(DAWN_FETCH_DEPENDENCIES ON CACHE BOOL "" FORCE)
+    #set(DAWN_FETCH_DEPENDENCIES OFF CACHE BOOL "" FORCE)
+    set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+    set(DAWN_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+    add_subdirectory("${DAWN_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/dawn" EXCLUDE_FROM_ALL)
+
     add_subdirectory(packages/LuminoC)
     return()
 endif()

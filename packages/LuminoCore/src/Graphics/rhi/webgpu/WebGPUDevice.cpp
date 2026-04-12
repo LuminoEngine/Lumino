@@ -8,6 +8,13 @@
 #include "WebGPUSampler.hpp"
 #include "WebGPURenderPipeline.hpp"
 #include "WebGPUHelpers.hpp"
+#include <LuminoBase/Logger.hpp>
+
+// TODO: あとで LuminoCore を wasm へリンクするように修正する。
+// そうすればこれは pch に移動できるはず。
+#if defined(__EMSCRIPTEN__)
+#include <emscripten/emscripten.h>
+#endif
 
 namespace ln::rhi::webgpu {
 
@@ -16,6 +23,8 @@ namespace ln::rhi::webgpu {
 WebGPUDevice::WebGPUDevice() = default;
 
 VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
+    LN_LOG_INFO("WebGPUDevice::init: begin");
+
     // WebGPU インスタンスを生成する
     {
         WGPUInstanceFeatureName features[] = {
@@ -74,8 +83,7 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
             //req->status = status;
             //req->adapter = adapter;
             if (status != WGPURequestAdapterStatus_Success) {
-                std::cerr << "[WebGPU] RequestAdapter failed: "
-                          << std::string(message.data, message.length) << "\n";
+                LN_LOG_ERROR("[WebGPU] RequestAdapter failed: %.*s", (int)message.length, message.data);
             }
         };
         callbackInfo.userdata1 = this;
@@ -85,17 +93,34 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         //if (adapterReq.status != WGPURequestAdapterStatus_Success || !adapterReq.adapter) {
         //    return LN_MAKE_ERROR("wgpuInstanceRequestAdapter failed.");
         //}
+
+        // Wait WGPUFuture
+#ifdef __EMSCRIPTEN__
+        while (m_adapters.empty()) {
+            emscripten_sleep(100);
+        }
+#endif // __EMSCRIPTEN__
+
+        if (m_adapters.empty()) {
+            return LN_MAKE_ERROR("Adapter not found.");
+        }
+
+        //printf("m_adapters %d\n", (int)m_adapters.size());
         m_adapter = m_adapters[0].adapter; //adapterReq.adapter;
     }
 
     // アダプター情報をログ出力する
     {
         WGPUAdapterInfo info = WGPU_ADAPTER_INFO_INIT;
-        wgpuAdapterGetInfo(m_adapter, &info);
-        std::cout << "[WebGPU] Adapter: "
-                  << std::string(info.device.data, info.device.length)
-                  << " / " << std::string(info.description.data, info.description.length)
-                  << "\n";
+        WGPUStatus status = wgpuAdapterGetInfo(m_adapter, &info);
+        if (status != WGPUStatus_Success) {
+            LN_LOG_ERROR("wgpuAdapterGetInfo failed: %d", static_cast<int>(status));
+        }
+        LN_LOG_INFO(
+            "WebGPU Adapter: %s / %s / %s",
+            std::string(info.device.data, info.device.length).c_str(),
+            std::string(info.vendor.data, info.vendor.length).c_str(),
+            std::string(info.description.data, info.description.length).c_str());
     }
 
     // デバイスをリクエストする
@@ -111,8 +136,8 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         // エラーコールバック
         auto onUncapturedError =
             [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {
-                std::cerr << "[WebGPU] Uncaptured error [type=" << static_cast<int>(type)
-                          << "]: " << std::string(message.data, message.length) << "\n";
+            LN_LOG_ERROR("[WebGPU] Uncaptured error [type=%d]: %s", static_cast<int>(type),
+                std::string(message.data, message.length).c_str());
 #if defined(_MSC_VER) && defined(_DEBUG)
                 __debugbreak();
 #endif
@@ -130,8 +155,10 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
                 if (reason == WGPUDeviceLostReason_Destroyed) {
                     return; // 正常な破棄時は無視する
                 }
-                std::cerr << "[WebGPU] Device lost [reason=" << static_cast<int>(reason) << "]: "
-                          << std::string(message.data, message.length) << "\n";
+                LN_LOG_ERROR(
+                    "[WebGPU] Device lost [reason=%d]: %s",
+                    static_cast<int>(reason),
+                    std::string(message.data, message.length).c_str());
             };
 
         auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status,
@@ -143,21 +170,27 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
             req->status = status;
             req->device = device;
             if (status != WGPURequestDeviceStatus_Success) {
-                std::cerr << "[WebGPU] RequestDevice failed: "
-                          << std::string(message.data, message.length) << "\n";
+                LN_LOG_ERROR(
+                    "[WebGPU] RequestDevice failed: %s",
+                    std::string(message.data, message.length).c_str());
             }
         };
-
 
         WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
         callbackInfo.nextInChain = nullptr;
         callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
+        callbackInfo.callback = onDeviceRequestEnded;
         //callbackInfo.userdata1 = this;
         callbackInfo.userdata1 = &deviceReq;
         callbackInfo.userdata2 = nullptr;
-        callbackInfo.callback = onDeviceRequestEnded;
+        WGPUFuture _ = wgpuAdapterRequestDevice(m_adapter, &deviceDesc, callbackInfo);
 
-        wgpuAdapterRequestDevice(m_adapter, &deviceDesc, callbackInfo);
+        // Wait WGPUFuture
+#ifdef __EMSCRIPTEN__
+        while (deviceReq.device == nullptr) {
+            emscripten_sleep(100);
+        }
+#endif // __EMSCRIPTEN__
 
         if (deviceReq.status != WGPURequestDeviceStatus_Success || !deviceReq.device) {
             return LN_MAKE_ERROR("wgpuAdapterRequestDevice failed.");
@@ -165,16 +198,19 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         m_device = deviceReq.device;
     }
 
+
     // デフォルトキューを取得する
     m_queue = wgpuDeviceGetQueue(m_device);
     if (!m_queue) {
         return LN_MAKE_ERROR("wgpuDeviceGetQueue failed.");
     }
 
+    LN_LOG_INFO("WebGPUDevice::init: end (success)");
     return LN_MAKE_SUCCESS();
 }
 
 void WebGPUDevice::finalize() {
+    LN_LOG_INFO("WebGPUDevice::finalize: begin");
     if (m_queue) {
         wgpuQueueRelease(m_queue);
         m_queue = nullptr;
@@ -198,6 +234,7 @@ void WebGPUDevice::finalize() {
         m_hD3DCompilerDLL = nullptr;
     }
 #endif
+    LN_LOG_INFO("WebGPUDevice::finalize: end");
     Device::finalize();
 }
 
@@ -297,9 +334,13 @@ Result<std::vector<uint8_t>> WebGPUDevice::readbackTexture(TextureView*) {
 }
 
 void WebGPUDevice::waitIdle() {
+#if defined(__EMSCRIPTEN__)
+    // FIXME: wgpuDeviceTick は使えないので、もし Web 上でバックバッファをキャプチャしたいとかなったら別の手段を考える。
+#else
     if (m_device) {
         wgpuDeviceTick(m_device);
     }
+#endif
 }
 
 } // namespace ln::rhi::webgpu

@@ -36,12 +36,12 @@ const helloTest = mod.cwrap("LNHelloTest", "number", ["number"]);
 const helloResult = helloTest(42);
 appendLog(`LNHelloTest(42) = ${helloResult}`);
 
-// ─── Phase 1: LNInstance_Initialize / LNInstance_Terminate ──────────────
-// LNInstance_Initialize takes a pointer to LNInstanceInitializeSettings.
-// For Phase 1 we just pass NULL (0) → CoreInstance uses its defaults and
-// skips GraphicsModule creation under __EMSCRIPTEN__.
-const lnInstanceInitialize = mod.cwrap("LNInstance_Initialize", "number", ["number"]);
-const lnInstanceTerminate  = mod.cwrap("LNInstance_Terminate",  null,     []);
+// ─── Phase 1 + Phase 2: LNInstance_Initialize / LNInstance_Terminate ────
+// Phase 2: CoreInstance::init now creates a WebGPU device internally.
+// Because WebGPU adapter/device requests are async, ASYNCIFY is used.
+// cwrap with {async:true} returns a Promise for functions that may yield.
+const lnInstanceInitialize = mod.cwrap("LNInstance_Initialize", "number", ["number"], {async: true});
+const lnInstanceTerminate  = mod.cwrap("LNInstance_Terminate",  null,     [], {async: true});
 
 let initialized = false;
 
@@ -50,10 +50,10 @@ function refreshButtons() {
     btnTerminate.disabled = !initialized;
 }
 
-btnInit.addEventListener("click", () => {
+btnInit.addEventListener("click", async () => {
     appendLog("--- click: LNInstance_Initialize ---");
     try {
-        const rc = lnInstanceInitialize(0 /* settings = nullptr */);
+        const rc = await lnInstanceInitialize(0 /* settings = nullptr */);
         appendLog(`LNInstance_Initialize returned ${rc}`);
         if (rc === 0) initialized = true;
     } catch (e) {
@@ -62,10 +62,10 @@ btnInit.addEventListener("click", () => {
     refreshButtons();
 });
 
-btnTerminate.addEventListener("click", () => {
+btnTerminate.addEventListener("click", async () => {
     appendLog("--- click: LNInstance_Terminate ---");
     try {
-        lnInstanceTerminate();
+        await lnInstanceTerminate();
         initialized = false;
         appendLog("LNInstance_Terminate returned");
     } catch (e) {

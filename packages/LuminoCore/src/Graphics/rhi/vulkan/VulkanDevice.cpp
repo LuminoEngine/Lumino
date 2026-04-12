@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
-#include <iostream>
+#include <LuminoBase/Logger.hpp>
 #include <numeric>
 #include <unordered_set>
 
@@ -39,20 +39,18 @@ static void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMesse
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-    std::cerr << "Vulkan validation: [ " << pCallbackData->pMessageIdName << " ] |  MessageID = " << std::hex<< std::dec
-              << pCallbackData->messageIdNumber << std::dec << std::endl;
-    std::cerr << pCallbackData->pMessage << std::endl;
+    LN_LOG_ERROR("Vulkan validation: [ %s ] |  MessageID = %d", pCallbackData->pMessageIdName, pCallbackData->messageIdNumber);
+    LN_LOG_ERROR("%s", pCallbackData->pMessage);
 
     if (pCallbackData->objectCount > 0) {
-        std::cerr << "Objects: " << pCallbackData->objectCount << std::endl;
+        LN_LOG_ERROR("Objects: %u", pCallbackData->objectCount);
         for (int i = 0; i < pCallbackData->objectCount; i++) {
             const auto& obj = pCallbackData->pObjects[i];
             // TODO: type は 次のようにして文字列化できるようにしたい。
             // #include <vulkan/vk_enum_string_helper.h>
             // const char* typeName = string_VkObjectType(VK_OBJECT_TYPE_DEVICE);
             // Returns "VK_OBJECT_TYPE_DEVICE"
-            std::cerr << "  [" << i << "] Type: " << obj.objectType
-                      << ", Handle: " << std::hex << obj.objectHandle << std::dec << ", Name: " << (obj.pObjectName ? obj.pObjectName : "N/A") << std::endl;
+            LN_LOG_ERROR("  [%d] Type: %d, Handle: 0x%llx, Name: %s", i, (int)obj.objectType, (unsigned long long)obj.objectHandle, (obj.pObjectName ? obj.pObjectName : "N/A"));
         }
     }
 
@@ -119,7 +117,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         createInfo.pfnUserCallback = debugCallback;
         if (CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
-            std::cerr << "Warning: Failed to set up Vulkan debug messenger." << std::endl;
+            LN_LOG_ERROR("Warning: Failed to set up Vulkan debug messenger.");
         }
     }
 #endif

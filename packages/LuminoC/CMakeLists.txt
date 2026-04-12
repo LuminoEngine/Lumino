@@ -1,16 +1,11 @@
 project(LuminoC)
 
 #-------------------------------------------------------------------------------
-# Emscripten (Phase 0 + Phase 1) — HelloTest + CoreInstance init/terminate
+# Emscripten — WebAssembly build
 #-------------------------------------------------------------------------------
-# Phase 0 exported only LNHelloTest to validate the Emscripten toolchain.
-# Phase 1 additionally pulls a minimal slice of LuminoBase + LuminoCore into
-# the wasm executable so that LNInstance_Initialize / LNInstance_Terminate can
-# drive the real ln::CoreInstance and surface its log output in the browser.
-#
-# GraphicsModule / WebGPU backend are still *not* linked here — that lands in
-# Phase 2/4. The CoreInstance::init path is gated by __EMSCRIPTEN__ and skips
-# glfwInit / GraphicsModule creation entirely.
+# Sources are pulled directly into the wasm executable (not separate libraries).
+# Dawn is configured in the root CMakeLists.txt and provides emdawnwebgpu
+# (WebGPU C-API shim for Emscripten — same webgpu.h as desktop Dawn).
 if(EMSCRIPTEN)
     #-------------------------------------------------------------------------
     # Dependency: tl::expected (header-only). LuminoBase's Result.hpp uses it.
@@ -29,7 +24,7 @@ if(EMSCRIPTEN)
     set(LN_TL_EXPECTED_INCLUDE_DIR "${tl_expected_SOURCE_DIR}/include")
 
     #-------------------------------------------------------------------------
-    # Sources: HelloTest + Phase 1 LuminoBase/LuminoCore minimal slice.
+    # Sources
     #-------------------------------------------------------------------------
     set(LN_WEB_SOURCES
         # LuminoC entry points (web-specific)
@@ -41,11 +36,23 @@ if(EMSCRIPTEN)
         ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/RefObject.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/math/Math.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoBase/src/math/Matrix4x4.cpp
-        # LuminoCore essentials (enough for CoreInstance::init / dispose)
+        # LuminoCore essentials
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/CoreInstance.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Object.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Runtime/ObjectRegistry.cpp
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Platform/Window.cpp
+        # WebGPU RHI backend (Phase 2)
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/DeviceFactory_Web.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUDevice.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUSwapChain.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUTexture.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUTextureView.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUBuffer.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUShaderModule.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUPipelineLayout.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUSampler.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPURenderPipeline.cpp
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src/Graphics/rhi/webgpu/WebGPUCommandBuffer.cpp
     )
 
     add_executable(${PROJECT_NAME} ${LN_WEB_SOURCES})
@@ -55,6 +62,8 @@ if(EMSCRIPTEN)
     target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/packages/LuminoBase/include
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/include
+        # WebGPU RHI hpp files live in the src tree (private headers).
+        ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src
         ${LN_TL_EXPECTED_INCLUDE_DIR}
     )
     target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
@@ -62,21 +71,27 @@ if(EMSCRIPTEN)
         SUFFIX ".mjs"
     )
 
-    # Emscripten link flags. Keep the set minimal for Phase 1 — heavier flags
-    # (USE_WEBGPU, ASYNCIFY, etc.) are introduced in Phase 4.
+    # Link Dawn's emdawnwebgpu — provides webgpu.h C-API implementation
+    # for Emscripten (bridges to the browser's native WebGPU).
+    target_link_libraries(${PROJECT_NAME} PRIVATE emdawnwebgpu_c)
+
+    # Emscripten link flags
     set(LN_EM_LINK_FLAGS "")
-    string(APPEND LN_EM_LINK_FLAGS " -s WASM=1")
-    string(APPEND LN_EM_LINK_FLAGS " -s MODULARIZE=1")
-    string(APPEND LN_EM_LINK_FLAGS " -s EXPORT_NAME=\"${PROJECT_NAME}\"")
-    string(APPEND LN_EM_LINK_FLAGS " -s EXPORT_ES6=1")
-    string(APPEND LN_EM_LINK_FLAGS " -s ENVIRONMENT=web")
-    string(APPEND LN_EM_LINK_FLAGS " -s NO_FILESYSTEM=1")
-    string(APPEND LN_EM_LINK_FLAGS " -s ALLOW_MEMORY_GROWTH=1")
-    string(APPEND LN_EM_LINK_FLAGS " -s NO_EXIT_RUNTIME=1")
-    string(APPEND LN_EM_LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=1")
-    string(APPEND LN_EM_LINK_FLAGS " -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap']\"")
-    string(APPEND LN_EM_LINK_FLAGS " -s EXPORTED_FUNCTIONS=\"['_malloc','_free']\"")
-    # Debug-friendly output for Phase 1.
+    string(APPEND LN_EM_LINK_FLAGS " -sWASM=1")
+    string(APPEND LN_EM_LINK_FLAGS " -sMODULARIZE=1")
+    string(APPEND LN_EM_LINK_FLAGS " -sEXPORT_NAME=\"${PROJECT_NAME}\"")
+    string(APPEND LN_EM_LINK_FLAGS " -sEXPORT_ES6=1")
+    string(APPEND LN_EM_LINK_FLAGS " -sENVIRONMENT=web")
+    string(APPEND LN_EM_LINK_FLAGS " -sNO_FILESYSTEM=1")
+    string(APPEND LN_EM_LINK_FLAGS " -sALLOW_MEMORY_GROWTH=1")
+    string(APPEND LN_EM_LINK_FLAGS " -sNO_EXIT_RUNTIME=1")
+    string(APPEND LN_EM_LINK_FLAGS " -sDISABLE_EXCEPTION_CATCHING=1")
+    string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap']\"")
+    string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_FUNCTIONS=\"['_malloc','_free']\"")
+    # ASYNCIFY is required for WebGPU async operations (RequestAdapter,
+    # RequestDevice, etc.) to yield to the browser event loop.
+    string(APPEND LN_EM_LINK_FLAGS " -sASYNCIFY=1")
+    # Debug-friendly output for development.
     string(APPEND LN_EM_LINK_FLAGS " -O0")
     string(APPEND LN_EM_LINK_FLAGS " -g3")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${LN_EM_LINK_FLAGS}")

@@ -1,11 +1,13 @@
+#if !defined(__EMSCRIPTEN__)
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #ifdef _WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #endif
+#endif // !__EMSCRIPTEN__
 
-#include <iostream>
+#include <LuminoBase/Logger.hpp>
 #include "WebGPUSwapChain.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUCommandBuffer.hpp"
@@ -21,8 +23,13 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     m_width = desc.width;
     m_height = desc.height;
 
-    // Create WGPUSurface from GLFW window
+    // Create WGPUSurface
     {
+#if defined(__EMSCRIPTEN__)
+        // Web: canvas-based surface creation は Phase 3 で実装する。
+        // Phase 2 ではデバイスの init/finalize だけを確認するため、ここには来ない。
+        return LN_MAKE_ERROR("WebGPUSwapChain::init not yet implemented for web (Phase 3).");
+#else
         auto* glfwWindow = static_cast<GLFWwindow*>(desc.nativeWindowHandle);
 #ifdef _WIN32
         WGPUSurfaceSourceWindowsHWND hwndSource = WGPU_SURFACE_SOURCE_WINDOWS_HWND_INIT;
@@ -38,6 +45,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
         if (!m_surface) {
             return LN_MAKE_ERROR("Failed to create WGPUSurface.");
         }
+#endif // __EMSCRIPTEN__
     }
 
     // Query surface capabilities
@@ -49,7 +57,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
         return LN_MAKE_ERROR("No supported surface formats.");
     }
     m_surfaceFormat = caps.formats[0];
-    std::cout << "[WebGPU] Surface format: " << static_cast<int>(m_surfaceFormat) << "\n";
+    LN_LOG_INFO("[WebGPU] Surface format: %d", static_cast<int>(m_surfaceFormat));
 
     // Choose present mode: prefer Mailbox (non-vsync) or Fifo (vsync)
     WGPUPresentMode presentMode = WGPUPresentMode_Fifo;
@@ -107,8 +115,7 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
     wgpuSurfaceGetCurrentTexture(m_surface, &surfaceTexture);
     if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal &&
         surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal) {
-        std::cerr << "[WebGPU] wgpuSurfaceGetCurrentTexture failed: status="
-                  << static_cast<int>(surfaceTexture.status) << "\n";
+        LN_LOG_ERROR("[WebGPU] wgpuSurfaceGetCurrentTexture failed: status=%d", static_cast<int>(surfaceTexture.status));
         return nullptr;
     }
     m_currentTexture = surfaceTexture.texture;
@@ -124,7 +131,7 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
     viewDesc.aspect = WGPUTextureAspect_All;
     m_currentTextureView = wgpuTextureCreateView(m_currentTexture, &viewDesc);
     if (!m_currentTextureView) {
-        std::cerr << "[WebGPU] wgpuTextureCreateView for swap chain failed.\n";
+        LN_LOG_ERROR("[WebGPU] wgpuTextureCreateView for swap chain failed.");
         return nullptr;
     }
 

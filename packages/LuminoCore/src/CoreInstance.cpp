@@ -34,8 +34,18 @@ VoidResult CoreInstance::init(const Settings& settings) {
     m_objectRegistry = std::make_unique<ObjectRegistry>();
 
 #if defined(__EMSCRIPTEN__)
-    // Web では GLFW を使わない。GraphicsModule は Phase 2 (WebGPU rhi 対応) で復活予定。
-    LN_LOG_INFO("CoreInstance::init: emscripten build — skipping glfwInit and GraphicsModule");
+    // Web では GLFW を使わない。GraphicsModule は使わず RHI Device を直接生成する。
+    LN_LOG_INFO("CoreInstance::init: emscripten build — creating WebGPU device directly");
+    {
+        rhi::DeviceDesc devDesc;
+        devDesc.backend = m_settings.preferredBackend;
+        devDesc.enableValidation = m_settings.enableValidation;
+        auto deviceResult = rhi::Device::create(devDesc);
+        if (!deviceResult) {
+            return LN_FORWARD_ERROR(deviceResult);
+        }
+        m_rhiDevice = std::move(*deviceResult);
+    }
 #else
     glfwInit();
 
@@ -57,7 +67,9 @@ VoidResult CoreInstance::init(const Settings& settings) {
 
 void CoreInstance::dispose() {
     LN_LOG_INFO("CoreInstance::dispose: begin");
-#if !defined(__EMSCRIPTEN__)
+#if defined(__EMSCRIPTEN__)
+    m_rhiDevice.reset();
+#else
     if (m_graphicsModule) {
         m_graphicsModule->dispose();
         m_graphicsModule.reset();
@@ -68,6 +80,14 @@ void CoreInstance::dispose() {
     glfwTerminate();
 #endif
     LN_LOG_INFO("CoreInstance::dispose: end");
+}
+
+rhi::Device* CoreInstance::rhiDevice() const {
+#if defined(__EMSCRIPTEN__)
+    return m_rhiDevice.get();
+#else
+    return m_graphicsModule ? m_graphicsModule->device() : nullptr;
+#endif
 }
 
 } // namespace ln

@@ -21,9 +21,12 @@ public:
 #if !defined(__EMSCRIPTEN__)
     GraphicsModule* graphicsModule() const { return m_graphicsModule.get(); }
 #else
-    // Phase 1 時点の web ビルドでは GraphicsModule は未統合。常に nullptr。
+    // Web ビルドでは GraphicsModule は使わず、RHI Device を直接保持する。
     GraphicsModule* graphicsModule() const { return nullptr; }
 #endif
+
+    /** RHI デバイスへのアクセサ。Web では CoreInstance が直接保持する。Desktop では GraphicsModule 経由。 */
+    rhi::Device* rhiDevice() const;
 
 private:
     VoidResult init(const Settings& settings);
@@ -33,6 +36,8 @@ private:
     std::unique_ptr<ObjectRegistry> m_objectRegistry;
 #if !defined(__EMSCRIPTEN__)
     Ref<GraphicsModule> m_graphicsModule;
+#else
+    Ref<rhi::Device> m_rhiDevice;
 #endif
 };
 

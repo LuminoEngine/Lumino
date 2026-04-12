@@ -1,4 +1,4 @@
-#include <iostream>
+#include <LuminoBase/Logger.hpp>
 #include "WebGPUCommandBuffer.hpp"
 #include "WebGPUDevice.hpp"
 #include "WebGPUTextureView.hpp"
@@ -157,7 +157,7 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
 
     WGPURenderPassEncoder rpEncoder = wgpuCommandEncoderBeginRenderPass(m_encoder, &rpDesc);
     if (!rpEncoder) {
-        std::cerr << "[WebGPU] wgpuCommandEncoderBeginRenderPass failed.\n";
+        LN_LOG_ERROR("[WebGPU] wgpuCommandEncoderBeginRenderPass failed.");
         return nullptr;
     }
 
