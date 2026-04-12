@@ -113,10 +113,18 @@ def _run_with_emsdk(emsdk_root: Path, cmd_args: list[str]) -> None:
 
 def cmd_configure(emsdk_root: Path) -> None:
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
+    vcpkg_toolchain = REPO_ROOT / "vcpkg" / "scripts" / "buildsystems" / "vcpkg.cmake"
+    emscripten_toolchain = (
+        emsdk_root / "upstream" / "emscripten" / "cmake" / "Modules" / "Platform" / "Emscripten.cmake"
+    )
+    if not emscripten_toolchain.is_file():
+        raise FileNotFoundError(
+            f"Emscripten CMake toolchain not found at {emscripten_toolchain}. "
+            "Make sure emsdk is installed and activated."
+        )
     _run_with_emsdk(
         emsdk_root,
         [
-            "emcmake",
             "cmake",
             "-S",
             str(REPO_ROOT),
@@ -126,6 +134,12 @@ def cmd_configure(emsdk_root: Path) -> None:
             "Ninja",
             "-DCMAKE_BUILD_TYPE=Debug",
             "-DCMAKE_MAKE_PROGRAM=C:/Proj/Lumino/vcpkg/downloads/tools/ninja-1.13.2-windows/ninja.exe",
+            f"-DCMAKE_TOOLCHAIN_FILE={vcpkg_toolchain}",
+            f"-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE={emscripten_toolchain}",
+            "-DVCPKG_TARGET_TRIPLET=wasm32-emscripten",
+            "-DLUMINO_PLATFORM_WEB=ON",
+            "-DLUMINO_ENABLE_WEBGPU=ON",
+            "-DWEBGPU_BACKEND=EMDAWNWEBGPU",
         ],
     )
 

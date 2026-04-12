@@ -146,7 +146,7 @@ endif()
 #-------------------------------------------------------------------------------
 # Shader compilation (slang → lcsh → lcsh.inl) — desktop only
 #-------------------------------------------------------------------------------
-if(NOT EMSCRIPTEN)
+if(NOT LUMINO_PLATFORM_WEB)
     set(LN_SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
 
     set(LN_BUILTIN_SHADERS

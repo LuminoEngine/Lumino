@@ -13,7 +13,6 @@
     "vulkan-headers",
     "nlohmann-json",
     "tl-expected",
-    "glm",
     {
       "name": "freetype",
       "features": [
@@ -23,6 +22,10 @@
     },
     {
       "name": "gtest",
+      "platform": "windows | linux | osx"
+    },
+    {
+      "name": "glm",
       "platform": "windows | linux | osx"
     },
     {
