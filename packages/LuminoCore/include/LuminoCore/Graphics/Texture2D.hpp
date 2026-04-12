@@ -35,11 +35,9 @@ public:
         uint32_t height);
 
     /**
-     * レンダーターゲットテクスチャを作成します。
-     * カラーテクスチャ (BGRA8Unorm, Sampled|RenderTarget) と
-     * 深度テクスチャ (Depth24Stencil8) を内部で生成します。
-     * 
-     * @deprecated
+     * レンダーターゲットテクスチャ (カラーのみ) を作成します。
+     * BGRA8Unorm, Sampled|RenderTarget のカラーテクスチャを生成します。
+     * 深度バッファは createDepthStencil() で別途作成してください。
      */
     static Result<Ref<Texture>> createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height);
 
@@ -52,9 +50,6 @@ public:
 
     /** カラーテクスチャの TextureView（RT の場合のみ有効）。 */
     rhi::TextureView* rhiTextureView() const { return m_rhiTextureView.get(); }
-
-    /** 深度テクスチャの TextureView（RT の場合のみ有効）。 */
-    rhi::TextureView* depthView() const { return m_depthView.get(); }
 
     /** レンダーターゲットとして作成されたかどうか。 */
     bool isRenderTarget() const { return m_isRenderTarget; }
@@ -72,8 +67,6 @@ private:
     bool m_isRenderTarget = false;
     Ref<rhi::Texture> m_rhiTexture;
     Ref<rhi::TextureView> m_rhiTextureView;
-    Ref<rhi::Texture> m_depthTexture;
-    Ref<rhi::TextureView> m_depthView;
 };
 
 } // namespace ln

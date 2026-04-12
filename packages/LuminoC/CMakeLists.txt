@@ -8,7 +8,7 @@ project(LuminoC)
 # CMakeLists.txt and provides a unified webgpu target.
 if(EMSCRIPTEN)
     set(LN_WEB_SOURCES
-        src/WasmAPI.cpp
+        src/LuminoAPI.cpp
     )
 
     add_executable(${PROJECT_NAME} ${LN_WEB_SOURCES})
@@ -21,7 +21,7 @@ if(EMSCRIPTEN)
     # LuminoCore transitively provides LuminoBase, tl::expected, and emdawnwebgpu_c.
     target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
 
-    # LuminoCore private headers (RHI) needed by WasmAPI.cpp.
+    # LuminoCore private headers (RHI) needed by LuminoAPI.cpp.
     target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src
     )

@@ -339,8 +339,10 @@ extern LUMINO_API LNResult LNTexture2D_Create(
 );
 
 /**
- * レンダーターゲットテクスチャを作成します。
- * 内部で BGRA8Unorm カラーテクスチャと Depth24Stencil8 深度テクスチャを生成します。
+ * レンダーターゲットテクスチャ (カラーのみ) を作成します。
+ * BGRA8Unorm カラーテクスチャを生成します。
+ * 深度バッファは LNTexture2D_CreateDepthStencil で別途作成し、
+ * LNDepthStencilAttachmentDesc の depthBuffer に設定してください。
  * 作成されたテクスチャは LNRenderPassDesc の renderTarget に指定して描画先として使用でき、
  * 描画後は LNMaterial_SetMainTexture でマテリアルに設定してサンプリングできます。
  * @param[in]  graphicsContext GraphicsContext のハンドル
@@ -349,6 +351,21 @@ extern LUMINO_API LNResult LNTexture2D_Create(
  * @param[out] outHandle       作成されたテクスチャのハンドル
  */
 extern LUMINO_API LNResult LNTexture2D_CreateRenderTarget(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle
+);
+
+/**
+ * 深度ステンシルテクスチャを作成します。
+ * 作成されたテクスチャは LNDepthStencilAttachmentDesc の depthBuffer に指定して使用します。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  width           幅 (ピクセル)
+ * @param[in]  height          高さ (ピクセル)
+ * @param[out] outHandle       作成されたテクスチャのハンドル
+ */
+extern LUMINO_API LNResult LNTexture2D_CreateDepthStencil(
     LNHandle graphicsContext,
     uint32_t width,
     uint32_t height,

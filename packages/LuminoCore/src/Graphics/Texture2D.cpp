@@ -48,7 +48,6 @@ Result<Ref<Texture>> Texture::createDepthStencil(
     return tex;
 }
 
-// TODO: これよろしくないので廃止する。 Texture 同時に Color と Depth まで持つのは無し。
 Result<Ref<Texture>> Texture::createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height) {
     // Color texture (BGRA8Unorm — matches swapchain for pipeline compatibility)
     rhi::TextureDesc colorDesc;
@@ -62,24 +61,10 @@ Result<Ref<Texture>> Texture::createRenderTarget(rhi::Device* device, uint32_t w
     auto colorViewResult = device->createTextureView(colorResult->get());
     if (!colorViewResult) return LN_FORWARD_ERROR(colorViewResult);
 
-    // Depth texture (Depth24Stencil8 — matches swapchain depth)
-    rhi::TextureDesc depthDesc;
-    depthDesc.width = width;
-    depthDesc.height = height;
-    depthDesc.format = rhi::TextureFormat::Depth24Stencil8;
-    depthDesc.usage = rhi::TextureUsage::DepthStencil;
-    auto depthResult = device->createTexture(depthDesc);
-    if (!depthResult) return LN_FORWARD_ERROR(depthResult);
-
-    auto depthViewResult = device->createTextureView(depthResult->get());
-    if (!depthViewResult) return LN_FORWARD_ERROR(depthViewResult);
-
     auto tex = Ref<Texture>::adopt(new Texture(width, height, rhi::TextureFormat::BGRA8Unorm));
     tex->m_isRenderTarget = true;
     tex->m_rhiTexture = std::move(*colorResult);
     tex->m_rhiTextureView = std::move(*colorViewResult);
-    tex->m_depthTexture = std::move(*depthResult);
-    tex->m_depthView = std::move(*depthViewResult);
     return tex;
 }
 

@@ -1,10 +1,18 @@
 ﻿#include "pch.hpp"
+#include <cstdio>
+#include <cstring>
 #include <unordered_map>
 #include <LuminoBase.hpp>
 #include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/Runtime/ObjectRegistry.hpp>
+#include <LuminoCore/Platform/Window.hpp>
+#include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/Texture2D.hpp>
+#include <LuminoCore/Graphics/rhi/Rhi.hpp>
+#include <LuminoC/lumino.h>
+
+#ifndef __EMSCRIPTEN__
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
 #include <LuminoCore/Graphics/Mesh.hpp>
@@ -12,16 +20,49 @@
 #include <LuminoCore/Graphics/Camera.hpp>
 #include <LuminoCore/Graphics/Transform.hpp>
 #include <LuminoCore/Graphics/Batch.hpp>
-#include <LuminoCore/Platform/Window.hpp>
-#include <LuminoCore/Graphics/GraphicsContext.hpp>
-#include <LuminoC/lumino.h>
-#include <cstring>
+#endif
 
 //------------------------------------------------------------------------------
-// Internal wrapper classes for value types that need handle management
+// Internal helpers
 //------------------------------------------------------------------------------
 
 namespace {
+
+#ifdef __EMSCRIPTEN__
+//--------------------------------------
+// Wasm: route LuminoBase logger to stdout so Emscripten forwards it to
+// the browser console.log.
+//--------------------------------------
+void luminoLogToStdout(ln::LogLevel level, const char* file, int line,
+                       const char* /*func*/, const char* message) {
+    const char* levelStr = "?";
+    switch (level) {
+        case ln::LogLevel::Trace:   levelStr = "T"; break;
+        case ln::LogLevel::Debug:   levelStr = "D"; break;
+        case ln::LogLevel::Verbose: levelStr = "V"; break;
+        case ln::LogLevel::Info:    levelStr = "I"; break;
+        case ln::LogLevel::Warning: levelStr = "W"; break;
+        case ln::LogLevel::Error:   levelStr = "E"; break;
+        case ln::LogLevel::Fatal:   levelStr = "F"; break;
+        default: break;
+    }
+    std::printf("[Lumino][%s] %s:%d %s\n", levelStr, file ? file : "?", line, message ? message : "");
+}
+
+bool s_loggerInstalled = false;
+
+void ensureLoggerInstalled() {
+    if (s_loggerInstalled) return;
+    ln::Logger::setLevel(ln::LogLevel::Trace);
+    ln::Logger::setCallback(&luminoLogToStdout);
+    s_loggerInstalled = true;
+}
+#endif // __EMSCRIPTEN__
+
+#ifndef __EMSCRIPTEN__
+//--------------------------------------
+// Desktop: value-type wrappers for handle management
+//--------------------------------------
 
 /** Camera は値型なので Object でラップしてハンドル管理に載せる。 */
 class CameraObject : public ln::Object {
@@ -51,11 +92,16 @@ ln::Transform toLnTransform(const LNTransform* transform) {
     }
     return xform;
 }
+#endif // !__EMSCRIPTEN__
+
+//--------------------------------------
+// Shared: Object handle helpers
+//--------------------------------------
 
 /**
  * Object が未登録の場合、登録して LNHandle を返します。
  * 登録されている場合は、既存の LNHandle を返します。
- * 
+ *
  * この関数は Object の所有権をクライアントに渡す時に使います。
  * クライアントは LNObject_Release を呼び出してオブジェクトを解放する責任があります。
  */
@@ -63,14 +109,14 @@ LNHandle wrapObjectFromCreate(ln::Object* object) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_NULL_HANDLE;
     LNHandle handle = instance->objectRegistry()->registerObject(object);
-    object->addRef(); // 登録後に参照カウントを増やす
+    object->addRef();
     return handle;
 }
 
 /**
  * Object が未登録の場合、登録して LNHandle を返します。
  * 登録されている場合は、既存の LNHandle を返します。
- * 
+ *
  * この関数は Object の所有権をクライアントに渡さない時に使います。
  * 例えば GraphicsContext が内部で所有している Renderer 等のオブジェクトをクライアントに渡す場合などです。
  */
@@ -87,18 +133,138 @@ T* resolveObject(H handle) {
     return instance->objectRegistry()->resolve<T>(handle);
 }
 
+//--------------------------------------
+// Shared: RHI helpers
+//--------------------------------------
+
+/** LNLoadOp → rhi::LoadOp 変換 */
+ln::rhi::LoadOp toRhiLoadOp(LNLoadOp op) {
+    switch (op) {
+        case LN_LOAD_OP_LOAD:      return ln::rhi::LoadOp::Load;
+        case LN_LOAD_OP_DONT_CARE: return ln::rhi::LoadOp::DontCare;
+        case LN_LOAD_OP_CLEAR:
+        default:                   return ln::rhi::LoadOp::Clear;
+    }
+}
+
+#ifdef __EMSCRIPTEN__
+//--------------------------------------
+// Wasm: lightweight render-pass wrapper
+//
+// Desktop uses the full Renderer class (PipelineCache, UBO allocators, batching
+// etc.) which is not available on Emscripten. For the web path we only need
+// begin/end render pass, so this thin Object delegates directly to the
+// rhi::CommandBuffer / rhi::RenderPass layer.
+//--------------------------------------
+class WebRenderer : public ln::Object {
+public:
+    void bind(ln::GraphicsContext* ctx) {
+        m_ctx = ctx;
+        m_currentPass = nullptr;
+    }
+
+    ln::GraphicsContext* ctx() const { return m_ctx; }
+
+    LNResult beginRenderPass(ln::GraphicsContext* gfxCtx,
+                             const LNRenderPassDesc* desc) {
+        if (!desc) return LN_ERROR_INVALID_ARGUMENT;
+
+        auto* cmd = gfxCtx->currentCommandBuffer();
+        if (!cmd) return LN_ERROR_UNKNOWN;
+
+        auto* instance = ln::CoreInstance::instance();
+        if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+        ln::rhi::RenderPassDesc rhiDesc;
+
+        const auto* fb = gfxCtx->currentFramebuffer();
+        if (!fb) return LN_ERROR_UNKNOWN;
+
+        uint32_t count = desc->colorAttachmentCount;
+        if (count == 0) count = 1;
+
+        for (uint32_t i = 0; i < count; i++) {
+            ln::rhi::ColorAttachment ca;
+
+            if (i < desc->colorAttachmentCount) {
+                const auto& src = desc->colorAttachments[i];
+                if (src.renderTarget != LN_NULL_HANDLE) {
+                    auto* tex = instance->objectRegistry()
+                                    ->resolve<ln::Texture>(src.renderTarget);
+                    ca.view = tex ? tex->rhiTextureView() : nullptr;
+                } else {
+                    ca.view = fb->colorTexture
+                                  ? fb->colorTexture->rhiTextureView()
+                                  : nullptr;
+                }
+                ca.clearColor = {src.clearColor[0], src.clearColor[1],
+                                 src.clearColor[2], src.clearColor[3]};
+                ca.loadOp = toRhiLoadOp(src.loadOp);
+            } else {
+                // Implicit backbuffer attachment when count was 0.
+                ca.view = fb->colorTexture
+                              ? fb->colorTexture->rhiTextureView()
+                              : nullptr;
+                ca.loadOp = ln::rhi::LoadOp::Clear;
+                ca.clearColor = {0, 0, 0, 1};
+            }
+            rhiDesc.colorAttachments.push_back(ca);
+        }
+
+        ln::rhi::DepthStencilAttachment dsa;
+        if (desc->depthStencil.depthBuffer != LN_NULL_HANDLE) {
+            auto* tex = instance->objectRegistry()
+                            ->resolve<ln::Texture>(desc->depthStencil.depthBuffer);
+            dsa.view = tex ? tex->rhiTextureView() : nullptr;
+        } else {
+            dsa.view = fb->depthTexture
+                           ? fb->depthTexture->rhiTextureView()
+                           : nullptr;
+        }
+        dsa.clearDepth = desc->depthStencil.clearDepth;
+        dsa.clearStencil = desc->depthStencil.clearStencil;
+        dsa.depthLoadOp = toRhiLoadOp(desc->depthStencil.depthLoadOp);
+        dsa.stencilLoadOp = toRhiLoadOp(desc->depthStencil.stencilLoadOp);
+        rhiDesc.depthStencilAttachment = &dsa;
+
+        m_currentPass = cmd->beginRenderPass(rhiDesc);
+        if (!m_currentPass) return LN_ERROR_UNKNOWN;
+        gfxCtx->m_currentPass = m_currentPass;
+        return LN_OK;
+    }
+
+    LNResult endRenderPass() {
+        if (!m_currentPass) return LN_ERROR_UNKNOWN;
+        m_currentPass->end();
+        if (m_ctx) m_ctx->m_currentPass = nullptr;
+        m_currentPass = nullptr;
+        return LN_OK;
+    }
+
+private:
+    ln::GraphicsContext* m_ctx = nullptr;
+    ln::rhi::RenderPass* m_currentPass = nullptr;
+};
+#endif // __EMSCRIPTEN__
+
 } // anonymous namespace
 
 //------------------------------------------------------------------------------
 // Test
 //------------------------------------------------------------------------------
+
+#ifndef __EMSCRIPTEN__
 int32_t LNHelloTest(int32_t value) {
     std::printf("Lumino HelloTest: %d\n", value);
     return value;
 }
+#endif
+
+//------------------------------------------------------------------------------
+// LNBuildInfo
+//------------------------------------------------------------------------------
 
 const char* LNBuildInfo_GetBuildTimestamp() {
-    // __DATE__ = "Apr 12 2026", __TIME__ = "12:34:56"
     static const char kTimestamp[] = __DATE__ " " __TIME__;
     return kTimestamp;
 }
@@ -108,6 +274,11 @@ const char* LNBuildInfo_GetBuildTimestamp() {
 //------------------------------------------------------------------------------
 
 LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
+#ifdef __EMSCRIPTEN__
+    ensureLoggerInstalled();
+    std::printf("LNInstance_Initialize: called\n");
+#endif
+
     ln::CoreInstance::Settings s = {};
     if (settings) {
         s.enableValidation = settings->enableValidation;
@@ -128,14 +299,35 @@ LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
                 break;
         }
     }
+
     auto result = ln::CoreInstance::initialize(s);
-    if (!result) return LN_ERROR_UNKNOWN;
+    if (!result) {
+#ifdef __EMSCRIPTEN__
+        std::printf("LNInstance_Initialize: FAILED\n");
+#endif
+        return LN_ERROR_UNKNOWN;
+    }
+
+#ifdef __EMSCRIPTEN__
+    std::printf("LNInstance_Initialize: success\n");
+#endif
     return LN_OK;
 }
 
 void LNInstance_Terminate() {
+#ifdef __EMSCRIPTEN__
+    ensureLoggerInstalled();
+    std::printf("LNInstance_Terminate: called\n");
+#endif
     ln::CoreInstance::terminate();
+#ifdef __EMSCRIPTEN__
+    std::printf("LNInstance_Terminate: success\n");
+#endif
 }
+
+//------------------------------------------------------------------------------
+// LNObject
+//------------------------------------------------------------------------------
 
 LNResult LNObject_Release(LNHandle handle) {
     auto* instance = ln::CoreInstance::instance();
@@ -148,6 +340,11 @@ LNResult LNObject_Release(LNHandle handle) {
     return LN_OK;
 }
 
+//------------------------------------------------------------------------------
+// LNTexture2D
+//------------------------------------------------------------------------------
+
+#ifndef __EMSCRIPTEN__
 LNResult LNTexture2D_Create(
     uint32_t width,
     uint32_t height,
@@ -167,6 +364,7 @@ LNResult LNTexture2D_Create(
     *outHandle = wrapObjectFromCreate(texture.get());
     return LN_OK;
 }
+#endif // !__EMSCRIPTEN__
 
 //------------------------------------------------------------------------------
 // LNWindow
@@ -177,6 +375,14 @@ LNResult LNWindow_Create(
     uint32_t width,
     uint32_t height,
     LNHandle* outHandle) {
+#ifdef __EMSCRIPTEN__
+    // Wasm ビルドでは GLFW ベースの Window は作成できない。
+    (void)title;
+    (void)width;
+    (void)height;
+    if (outHandle) *outHandle = LN_NULL_HANDLE;
+    return LN_ERROR_UNKNOWN;
+#else
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
@@ -196,6 +402,7 @@ LNResult LNWindow_Create(
 
     *outHandle = wrapObjectFromCreate(windowResult->get());
     return LN_OK;
+#endif
 }
 
 LNResult LNWindow_CreateFromCanvas(
@@ -203,12 +410,33 @@ LNResult LNWindow_CreateFromCanvas(
     uint32_t width,
     uint32_t height,
     LNHandle* outHandle) {
+#ifdef __EMSCRIPTEN__
+    if (!canvasSelector || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    ln::platform::WindowDesc winDesc;
+    winDesc.canvasSelector = canvasSelector;
+    winDesc.width = width;
+    winDesc.height = height;
+
+    ln::GraphicsContextDesc gfxDesc;
+    auto windowResult = ln::platform::PlatformWindow::create(
+        nullptr, winDesc, gfxDesc);
+    if (!windowResult) return LN_ERROR_UNKNOWN;
+
+    *outHandle = wrapObjectFromCreate(windowResult->get());
+    return LN_OK;
+#else
     // Desktop では canvas ベースの Window は作成できない。
     (void)canvasSelector;
     (void)width;
     (void)height;
     if (outHandle) *outHandle = LN_NULL_HANDLE;
     return LN_ERROR_UNKNOWN;
+#endif
 }
 
 LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit) {
@@ -242,18 +470,8 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
     return LN_OK;
 }
 
-/** LNLoadOp → rhi::LoadOp 変換 */
-static ln::rhi::LoadOp toRhiLoadOp(LNLoadOp op) {
-    switch (op) {
-        case LN_LOAD_OP_LOAD:      return ln::rhi::LoadOp::Load;
-        case LN_LOAD_OP_DONT_CARE: return ln::rhi::LoadOp::DontCare;
-        case LN_LOAD_OP_CLEAR:
-        default:                   return ln::rhi::LoadOp::Clear;
-    }
-}
-
 //------------------------------------------------------------------------------
-// LNHandle
+// LNGraphicsContext
 //------------------------------------------------------------------------------
 
 LNResult LNGraphicsContext_BeginFrame(
@@ -278,13 +496,22 @@ LNResult LNGraphicsContext_BeginFrame(
     ctx->m_currentCmd = ctx->currentCommandBuffer();
     if (!ctx->m_currentCmd) return LN_ERROR_UNKNOWN;
 
-    // Renderer ハンドルをキャッシュから取得、または初回登録する
+#ifdef __EMSCRIPTEN__
+    // Wasm: use a lightweight WebRenderer (no PipelineCache / UBO allocators).
+    // A single static instance is sufficient for single-window usage.
+    static ln::Ref<WebRenderer> s_webRenderer;
+    if (!s_webRenderer) {
+        s_webRenderer = ln::Ref<WebRenderer>::adopt(LN_NEW WebRenderer());
+    }
+    s_webRenderer->bind(ctx);
+    *outRenderer = wrapObjectFromGet(s_webRenderer.get());
+#else
+    // Desktop: use the full Renderer.
     auto* renderer = ctx->renderer();
     renderer->beginFrame();
-
     *outRenderer = wrapObjectFromGet(renderer);
+#endif
 
-    // バックバッファ・デプスバッファのハンドルを返す
     const ln::FramebufferInfo* fb = ctx->currentFramebuffer();
     *outColorBuffer = wrapObjectFromGet(fb->colorTexture.get());
     *outDepthBuffer = wrapObjectFromGet(fb->depthTexture.get());
@@ -297,11 +524,16 @@ LNResult LNGraphicsContext_BeginFrame(
 
 void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {
     if (!desc) return;
-    memset(desc, 0, sizeof(*desc));
+    std::memset(desc, 0, sizeof(*desc));
     desc->depthStencil.clearDepth = 1.0f;
     // loadOp フィールドは LN_LOAD_OP_CLEAR == 0 なのでゼロ初期化で OK
 }
 
+//------------------------------------------------------------------------------
+// LNGraphicsContext (continued)
+//------------------------------------------------------------------------------
+
+#ifndef __EMSCRIPTEN__
 LNResult LNGraphicsContext_CaptureBackbuffer(
     LNHandle graphicsContext,
     const uint8_t** outData,
@@ -330,8 +562,8 @@ LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext) {
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
     ctx->waitIdle();
     return LN_OK;
-
 }
+#endif // !__EMSCRIPTEN__
 
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();
@@ -339,7 +571,13 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     if (graphicsContext == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
 
     auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-    if (!ctx || !ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+#ifdef __EMSCRIPTEN__
+    ctx->m_currentCmd = nullptr;
+    ctx->endFrame();
+#else
+    if (!ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
 
     // 1. Render DebugPrint overlay (records commands into the open command buffer).
     auto* dp = ctx->debugPrint();
@@ -348,12 +586,12 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     }
 
     // 2. Submit all recorded GPU commands.
-    // Transition the swapchain image to PRESENT_SRC_KHR before submitting.
     ctx->renderer()->endFrame();
     ctx->m_currentCmd = nullptr;
 
     // 3. Present + update FPS stats.
     ctx->endFrame();
+#endif
     return LN_OK;
 }
 
@@ -361,6 +599,7 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
 // LNDebug
 //------------------------------------------------------------------------------
 
+#ifndef __EMSCRIPTEN__
 LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     if (!str) return LN_ERROR_INVALID_ARGUMENT;
 
@@ -450,45 +689,6 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
     return LN_OK;
 }
 
-//LNResult LNMaterial_CreateFromShaderSourceFile(
-//    LNHandle graphicsContext,
-//    const char* shaderFilePath,
-//    const char* searchPathOrNull,
-//    LNHandle* outHandle) {
-//#ifndef LUMINO_USE_SLANG
-//    return LN_ERROR_NOT_SUPPORTED;
-//#else
-//    if (!shaderFilePath || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
-//    *outHandle = LN_NULL_HANDLE;
-//
-//    auto* instance = ln::CoreInstance::instance();
-//    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-//
-//    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
-//    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-//
-//    auto compilerResult = ln::shader::ShaderCompiler2::create();
-//    if (!compilerResult) return LN_ERROR_UNKNOWN;
-//    auto& compiler = *compilerResult;
-//
-//    if (searchPath) {
-//        compiler->addSearchPath(searchPath);
-//    }
-//
-//    auto buildResult = compiler->build(shaderFilePath);
-//    if (!buildResult) return LN_ERROR_UNKNOWN;
-//
-//    auto memResult = ln::shader::UnifiedShaderSerializer2::saveToMemory(compiler->shader());
-//    if (!memResult) return LN_ERROR_UNKNOWN;
-//    auto& bytes = *memResult;
-//
-//    auto matResult = ln::MaterialFactory::createFromCompiledShader(ctx, bytes.data(), bytes.size());
-//    if (!matResult) return LN_ERROR_UNKNOWN;
-//    *outHandle = wrapObjectFromCreate(matResult->get());
-//    return LN_OK;
-//#endif
-//}
-
 LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
     return LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, outHandle);
 }
@@ -539,8 +739,8 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* n
     if (!mat) return LN_ERROR_INVALID_HANDLE;
     mat->setFloat4(name, values);
     return LN_OK;
-
 }
+
 //------------------------------------------------------------------------------
 // LNMesh
 //------------------------------------------------------------------------------
@@ -761,6 +961,7 @@ LNResult LNCamera_SetLookAt(
         ln::Vector3{upX, upY, upZ});
     return LN_OK;
 }
+#endif // !__EMSCRIPTEN__
 
 //------------------------------------------------------------------------------
 // LNRenderer
@@ -774,6 +975,17 @@ LNResult LNRenderer_BeginRenderPass(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
+#ifdef __EMSCRIPTEN__
+    (void)camera; // Camera not yet supported on web.
+
+    auto* wr = instance->objectRegistry()->resolve<WebRenderer>(renderer);
+    if (!wr) return LN_ERROR_INVALID_HANDLE;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    return wr->beginRenderPass(ctx, desc);
+#else
     auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
@@ -825,9 +1037,6 @@ LNResult LNRenderer_BeginRenderPass(
         auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->depthStencil.depthBuffer);
         if (!tex) return LN_ERROR_INVALID_HANDLE;
         depthAttach.view = tex->rhiTextureView();
-    } else if (firstRTTexture && firstRTTexture->isRenderTarget() && firstRTTexture->depthView()) {
-        // RT テクスチャに関連付いたデプスバッファを自動使用
-        depthAttach.view = firstRTTexture->depthView();
     } else {
         depthAttach.view = fb->depthTexture->rhiTextureView();
     }
@@ -848,19 +1057,26 @@ LNResult LNRenderer_BeginRenderPass(
         ren->beginRenderPass(rpDesc);
     }
     return LN_OK;
+#endif
 }
 
 LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
+#ifdef __EMSCRIPTEN__
+    auto* wr = instance->objectRegistry()->resolve<WebRenderer>(renderer);
+    if (!wr) return LN_ERROR_INVALID_HANDLE;
+    return wr->endRenderPass();
+#else
     auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
     if (!r) return LN_ERROR_INVALID_HANDLE;
-
     r->endRenderPass();
     return LN_OK;
+#endif
 }
 
+#ifndef __EMSCRIPTEN__
 LNResult LNRenderer_DrawMesh(
     LNHandle renderer, LNHandle meshHandle, const LNTransform* transform,
     int32_t zIndex) {
@@ -920,8 +1136,6 @@ LNResult LNRenderer_DrawSprite(
         rotation);
     return LN_OK;
 }
-
-//------------------------------------------------------------------------------
 
 LNResult LNRenderer_PushStencilMask(
     LNHandle renderer, LNHandle meshHandle,
@@ -987,6 +1201,32 @@ LNResult LNTexture2D_CreateRenderTarget(
     if (!rtResult) return LN_ERROR_UNKNOWN;
 
     *outHandle = wrapObjectFromCreate(rtResult->get());
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNTexture2D_CreateDepthStencil
+//------------------------------------------------------------------------------
+
+LNResult LNTexture2D_CreateDepthStencil(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto dsResult = ln::Texture::createDepthStencil(ctx->device(), width, height);
+    if (!dsResult) return LN_ERROR_UNKNOWN;
+
+    *outHandle = wrapObjectFromCreate(dsResult->get());
     return LN_OK;
 }
 
@@ -1129,3 +1369,4 @@ LNResult LNBatchProcessor_Flush(
 
     return LN_OK;
 }
+#endif // !__EMSCRIPTEN__

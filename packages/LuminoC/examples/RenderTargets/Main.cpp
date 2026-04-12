@@ -31,6 +31,10 @@ int main(void) {
     LNTexture2D_CreateRenderTarget(graphicsContext, rtWidth, rtHeight, &rt1);
     LNTexture2D_CreateRenderTarget(graphicsContext, rtWidth, rtHeight, &rt2);
 
+    /* Shared depth buffer for RT rendering (both RTs are the same size) */
+    LNHandle rtDepth = LN_NULL_HANDLE;
+    LNTexture2D_CreateDepthStencil(graphicsContext, rtWidth, rtHeight, &rtDepth);
+
     /* 4. Create a triangle mesh to draw into each render target */
     LNVertex triVertices[3] = {
         /* posX   posY   posZ   nX nY nZ  u    v    r    g    b    a    tX tY tZ tW */
@@ -136,6 +140,7 @@ int main(void) {
         LNRenderPassDesc_Init(&rt1Desc);
         rt1Desc.colorAttachmentCount = 1;
         rt1Desc.colorAttachments[0].renderTarget = rt1;
+        rt1Desc.depthStencil.depthBuffer = rtDepth;
         rt1Desc.colorAttachments[0].clearColor[0] = 0.2f;
         rt1Desc.colorAttachments[0].clearColor[1] = 0.0f;
         rt1Desc.colorAttachments[0].clearColor[2] = 0.0f;
@@ -155,6 +160,7 @@ int main(void) {
         LNRenderPassDesc_Init(&rt2Desc);
         rt2Desc.colorAttachmentCount = 1;
         rt2Desc.colorAttachments[0].renderTarget = rt2;
+        rt2Desc.depthStencil.depthBuffer = rtDepth;
         rt2Desc.colorAttachments[0].clearColor[0] = 0.0f;
         rt2Desc.colorAttachments[0].clearColor[1] = 0.0f;
         rt2Desc.colorAttachments[0].clearColor[2] = 0.2f;
@@ -193,6 +199,7 @@ int main(void) {
     LNObject_Release(matGreen);
     LNObject_Release(matRed);
     LNObject_Release(camera);
+    LNObject_Release(rtDepth);
     LNObject_Release(rt2);
     LNObject_Release(rt1);
     LNObject_Release(window);
