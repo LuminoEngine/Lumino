@@ -89,7 +89,7 @@ if(EMSCRIPTEN)
     string(APPEND LN_EM_LINK_FLAGS " -sALLOW_MEMORY_GROWTH=1")
     string(APPEND LN_EM_LINK_FLAGS " -sNO_EXIT_RUNTIME=1")
     string(APPEND LN_EM_LINK_FLAGS " -sDISABLE_EXCEPTION_CATCHING=1")
-    string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap']\"")
+    string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','HEAPU8','HEAPU32','HEAPF32']\"")
     string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_FUNCTIONS=\"['_malloc','_free']\"")
     # ASYNCIFY is required for WebGPU async operations (RequestAdapter,
     # RequestDevice, etc.) to yield to the browser event loop.

@@ -2,24 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Lumino Phase 2 Sandbox</title>
+    <title>Lumino ClearScreen</title>
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        max-width: 720px;
+        max-width: 1320px;
         margin: 24px auto;
         padding: 0 16px;
         color: #222;
-      }
-      button {
-        font-size: 14px;
-        padding: 8px 16px;
-        margin-right: 8px;
-        cursor: pointer;
-      }
-      button:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
       }
       #log {
         background: #111;
@@ -28,37 +18,18 @@
         border-radius: 4px;
         font-family: Consolas, "Courier New", monospace;
         font-size: 12px;
-        min-height: 200px;
+        min-height: 120px;
         white-space: pre-wrap;
         overflow-y: auto;
-        max-height: 400px;
-      }
-      .row {
-        margin: 16px 0;
+        max-height: 300px;
       }
     </style>
   </head>
   <body>
-    <h1>Lumino Phase 3 Sandbox</h1>
-    <p>
-      Phase 0 smoke test (<code>LNHelloTest</code>) runs automatically on load.
-      Phase 2 adds WebGPU device initialization:
-      <code>LNInstance_Initialize</code> now creates a WebGPU device internally.
-      Phase 3 adds <code>LNWindow_CreateFromCanvas</code>:
-      creates a Window + GraphicsContext from an HTML canvas.
-    </p>
+    <h1>Lumino ClearScreen</h1>
 
-    <div class="row">
-      <button id="btn-init"      disabled>LNInstance_Initialize</button>
-      <button id="btn-terminate" disabled>LNInstance_Terminate</button>
-    </div>
-    <div class="row">
-      <button id="btn-create-window" disabled>LNWindow_CreateFromCanvas</button>
-      <button id="btn-get-ctx"       disabled>LNWindow_GetGraphicsContext</button>
-      <button id="btn-release-window" disabled>LNObject_Release (window)</button>
-    </div>
-
-    <canvas id="my_canvas" width="640" height="480" style="border: 1px solid #999; display: block; margin: 16px 0;"></canvas>
+    <canvas id="my_canvas" width="1280" height="720"
+            style="border: 1px solid #999; display: block; margin: 16px 0;"></canvas>
 
     <h3>Log</h3>
     <div id="log"></div>

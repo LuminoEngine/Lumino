@@ -48,4 +48,8 @@ git clone -b 5.0.5 https://github.com/emscripten-core/emsdk.git ./emsdk
 ./emsdk/emsdk install 5.0.5
 ./emsdk/emsdk activate 5.0.5
 python scripts/build_wasm.py
+
+cd packages/luminojs
+npm install
+npm run build
 ```

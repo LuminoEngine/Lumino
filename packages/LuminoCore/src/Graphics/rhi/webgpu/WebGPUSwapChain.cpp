@@ -169,7 +169,11 @@ void WebGPUSwapChain::present() {
     m_commandBuffers[m_currentFrame]->submit();
 
     // Present the surface
+    // On the web, requestAnimationFrame handles presentation automatically;
+    // wgpuSurfacePresent is unsupported in emdawnwebgpu.
+#ifndef __EMSCRIPTEN__
     wgpuSurfacePresent(m_surface);
+#endif
 
     // Round-robin frame index
     m_currentFrame = (m_currentFrame + 1) % m_maxFrames;
