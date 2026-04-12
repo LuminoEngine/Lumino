@@ -29,11 +29,14 @@ option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
 option(LUMINO_ENABLE_WEBGPU  "Enable WebGPU backend via Dawn" OFF)
 
 #-------------------------------------------------------------------------------
-# Web (Emscripten) build — Phase 0
+# Web (Emscripten) build — Phase 0 + Phase 1
 #-------------------------------------------------------------------------------
-# Phase 0 scope: build only LuminoC with a minimal HelloTest export.
-# LuminoBase / LuminoCore / LuminoShader / WebGPU / Vulkan / GLFW / GTest are all
-# skipped here and will be re-enabled in later phases.
+# Phase 0 scope: LuminoC with a minimal HelloTest export.
+# Phase 1 scope: additionally exposes LNInstance_Initialize / Terminate backed
+# by a minimal slice of LuminoBase + LuminoCore (sources pulled directly into
+# the LuminoC executable — see packages/LuminoC/CMakeLists.txt).
+# LuminoShader / WebGPU / Vulkan / GLFW / GTest are still skipped and will be
+# re-enabled in later phases.
 if(LUMINO_PLATFORM_WEB)
     add_subdirectory(packages/LuminoC)
     return()

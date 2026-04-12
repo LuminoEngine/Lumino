@@ -18,7 +18,12 @@ public:
     static void terminate();
 
     ObjectRegistry* objectRegistry() { return m_objectRegistry.get(); }
+#if !defined(__EMSCRIPTEN__)
     GraphicsModule* graphicsModule() const { return m_graphicsModule.get(); }
+#else
+    // Phase 1 時点の web ビルドでは GraphicsModule は未統合。常に nullptr。
+    GraphicsModule* graphicsModule() const { return nullptr; }
+#endif
 
 private:
     VoidResult init(const Settings& settings);
@@ -26,7 +31,9 @@ private:
     static std::unique_ptr<CoreInstance> s_instance;
     Settings m_settings;
     std::unique_ptr<ObjectRegistry> m_objectRegistry;
+#if !defined(__EMSCRIPTEN__)
     Ref<GraphicsModule> m_graphicsModule;
+#endif
 };
 
 } // namespace ln

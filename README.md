@@ -41,8 +41,10 @@ cmake --build build --config Release --parallel
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-```
+```sh
+# wasm (emscripten)
 git clone -b 5.0.5 https://github.com/emscripten-core/emsdk.git ./emsdk
 ./emsdk/emsdk install 5.0.5
 ./emsdk/emsdk activate 5.0.5
+python scripts/build_wasm.py
 ```

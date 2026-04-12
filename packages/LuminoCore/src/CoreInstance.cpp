@@ -1,9 +1,12 @@
-﻿#pragma once
+﻿#include <LuminoBase.hpp>
 #include <LuminoCore/CoreInstance.hpp>
-#include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Runtime/ObjectRegistry.hpp>
 
-#ifndef LN_NX
+#if !defined(__EMSCRIPTEN__)
+    #include <LuminoCore/Graphics/GraphicsModule.hpp>
+#endif
+
+#if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
     #define GLFW_INCLUDE_NONE
     #include <GLFW/glfw3.h>
 #endif
@@ -26,9 +29,14 @@ void CoreInstance::terminate() {
 }
 
 VoidResult CoreInstance::init(const Settings& settings) {
+    LN_LOG_INFO("CoreInstance::init: begin");
     m_settings = settings;
     m_objectRegistry = std::make_unique<ObjectRegistry>();
 
+#if defined(__EMSCRIPTEN__)
+    // Web では GLFW を使わない。GraphicsModule は Phase 2 (WebGPU rhi 対応) で復活予定。
+    LN_LOG_INFO("CoreInstance::init: emscripten build — skipping glfwInit and GraphicsModule");
+#else
     glfwInit();
 
     {
@@ -41,17 +49,25 @@ VoidResult CoreInstance::init(const Settings& settings) {
         }
         m_graphicsModule = std::move(*result);
     }
+#endif
 
+    LN_LOG_INFO("CoreInstance::init: end");
     return LN_MAKE_SUCCESS();
 }
 
 void CoreInstance::dispose() {
+    LN_LOG_INFO("CoreInstance::dispose: begin");
+#if !defined(__EMSCRIPTEN__)
     if (m_graphicsModule) {
         m_graphicsModule->dispose();
         m_graphicsModule.reset();
     }
+#endif
     m_objectRegistry.reset();
+#if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
     glfwTerminate();
+#endif
+    LN_LOG_INFO("CoreInstance::dispose: end");
 }
 
 } // namespace ln

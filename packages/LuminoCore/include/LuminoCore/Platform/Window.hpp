@@ -21,11 +21,21 @@ struct WindowDesc {
     u32 width = 1280;
     u32 height = 720;
     bool resizable = false;
+    /**
+     * Web 専用: 紐づける HTML canvas の CSS セレクタ (例: "#my_canvas")。
+     * デスクトップビルドでは無視される。
+     */
+    std::string canvasSelector;
 };
 
 /** Platform-specific window handle. */
 struct NativeWindowHandle {
     void* glfwWindow = nullptr;
+    /**
+     * Web 専用: canvas の CSS セレクタ。デスクトップでは未使用。
+     * Impl 側で保持している文字列へのポインタで、PlatformWindow の寿命内で有効。
+     */
+    const char* canvasSelector = nullptr;
 };
 
 /** Platform window abstraction. */

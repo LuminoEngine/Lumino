@@ -2,17 +2,59 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Lumino Phase 0 HelloTest</title>
+    <title>Lumino Phase 1 Sandbox</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        max-width: 720px;
+        margin: 24px auto;
+        padding: 0 16px;
+        color: #222;
+      }
+      button {
+        font-size: 14px;
+        padding: 8px 16px;
+        margin-right: 8px;
+        cursor: pointer;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+      #log {
+        background: #111;
+        color: #e0e0e0;
+        padding: 12px;
+        border-radius: 4px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 12px;
+        min-height: 200px;
+        white-space: pre-wrap;
+        overflow-y: auto;
+        max-height: 400px;
+      }
+      .row {
+        margin: 16px 0;
+      }
+    </style>
   </head>
   <body>
-    <h1>Lumino Phase 0 HelloTest</h1>
+    <h1>Lumino Phase 1 Sandbox</h1>
     <p>
-      Open DevTools &rarr; Console. You should see two lines:
+      Phase 0 smoke test (<code>LNHelloTest</code>) runs automatically on load.
+      Phase 1 adds <code>LNInstance_Initialize</code> / <code>LNInstance_Terminate</code>
+      buttons that drive the real <code>ln::CoreInstance</code>. Watch both the
+      on-page log and the DevTools console.
     </p>
-    <pre>
-Lumino HelloTest: 42
-LNHelloTest(42) = 42
-    </pre>
+
+    <div class="row">
+      <button id="btn-init"      disabled>LNInstance_Initialize</button>
+      <button id="btn-terminate" disabled>LNInstance_Terminate</button>
+    </div>
+
+    <h3>Log</h3>
+    <div id="log"></div>
+
     <script type="module" src="./index.mjs"></script>
   </body>
 </html>

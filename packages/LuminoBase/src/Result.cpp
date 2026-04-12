@@ -1,5 +1,4 @@
-﻿#pragma once
-#include <LuminoBase/Logger.hpp>
+﻿#include <LuminoBase/Logger.hpp>
 #include <LuminoBase/Result.hpp>
 
 namespace ln {
