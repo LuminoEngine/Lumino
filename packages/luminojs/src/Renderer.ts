@@ -1,14 +1,17 @@
 import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
+import type { Mesh } from "./Mesh";
 import { API, Runtime } from "./Runtime";
 import {
     type Handle,
     type RenderPassDesc,
+    type Transform,
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
     LoadOp,
     SIZEOF_RENDER_PASS_DESC,
     SIZEOF_COLOR_ATTACHMENT_DESC,
+    SIZEOF_TRANSFORM,
 } from "./types";
 
 export class Renderer extends LuminoObject {
@@ -17,6 +20,11 @@ export class Renderer extends LuminoObject {
     private _descPtr = 0;
     private _descView: DataView | null = null;
     private _descHeapBuf: ArrayBufferLike | null = null;
+
+    // Pre-allocated WASM buffer for LNTransform (40 bytes).
+    private _transformPtr = 0;
+    private _transformView: DataView | null = null;
+    private _transformHeapBuf: ArrayBufferLike | null = null;
 
     /**
      * Begin a render pass.
@@ -39,11 +47,31 @@ export class Renderer extends LuminoObject {
             (API.LNRenderer_EndRenderPass as (r: number) => number)(this._handle));
     }
 
+    /**
+     * Submit a mesh draw command.
+     *
+     * @param mesh      Mesh to draw.
+     * @param transform TRS transform.
+     * @param zIndex    Sort priority (default 0).
+     */
+    drawMesh(mesh: Mesh, transform: Transform, zIndex = 0): void {
+        const ptr = this._serializeTransform(transform);
+        Runtime.safeCall(() =>
+            (API.LNRenderer_DrawMesh as (
+                r: number, mesh: number, t: number, z: number,
+            ) => number)(this._handle, mesh.handle, ptr, zIndex));
+    }
+
     override dispose(): void {
         if (this._descPtr) {
             Runtime.module._free(this._descPtr);
             this._descPtr = 0;
             this._descView = null;
+        }
+        if (this._transformPtr) {
+            Runtime.module._free(this._transformPtr);
+            this._transformPtr = 0;
+            this._transformView = null;
         }
         super.dispose();
     }
@@ -61,6 +89,43 @@ export class Renderer extends LuminoObject {
             this._descHeapBuf = buf;
             this._descView = new DataView(buf, this._descPtr, SIZEOF_RENDER_PASS_DESC);
         }
+    }
+
+    private _ensureTransformBuffer(): void {
+        if (!this._transformPtr) {
+            this._transformPtr = Runtime.module._malloc(SIZEOF_TRANSFORM);
+        }
+        const buf = Runtime.module.HEAPU8.buffer;
+        if (!this._transformView || this._transformHeapBuf !== buf) {
+            this._transformHeapBuf = buf;
+            this._transformView = new DataView(buf, this._transformPtr, SIZEOF_TRANSFORM);
+        }
+    }
+
+    /**
+     * Write a `Transform` into WASM linear memory and return its pointer.
+     *
+     * C layout (wasm32, 40 bytes):
+     * ```
+     * offset 0:  float posX, posY, posZ        (12 bytes)
+     * offset 12: float rotX, rotY, rotZ, rotW  (16 bytes)
+     * offset 28: float scaleX, scaleY, scaleZ  (12 bytes)
+     * ```
+     */
+    private _serializeTransform(t: Transform): number {
+        this._ensureTransformBuffer();
+        const v = this._transformView!;
+        v.setFloat32(0,  t.position[0], true);
+        v.setFloat32(4,  t.position[1], true);
+        v.setFloat32(8,  t.position[2], true);
+        v.setFloat32(12, t.rotation[0], true);
+        v.setFloat32(16, t.rotation[1], true);
+        v.setFloat32(20, t.rotation[2], true);
+        v.setFloat32(24, t.rotation[3], true);
+        v.setFloat32(28, t.scale[0], true);
+        v.setFloat32(32, t.scale[1], true);
+        v.setFloat32(36, t.scale[2], true);
+        return this._transformPtr;
     }
 
     /**

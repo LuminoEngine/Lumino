@@ -36,6 +36,7 @@ BUILD_DIR = REPO_ROOT / "build" / "wasm"
 OUTPUT_DIR = REPO_ROOT / "packages" / "luminojs" / "lib"
 # Emscripten SDK is always cloned into <repo>/emsdk per README.md.
 EMSDK_ROOT = REPO_ROOT / "emsdk"
+NINJA = REPO_ROOT / "vcpkg" / "downloads" / "tools" / "ninja-1.13.2-windows" / "ninja.exe"
 
 # Files produced by the Emscripten link step that should be shipped to the
 # TypeScript package.
@@ -133,7 +134,7 @@ def cmd_configure(emsdk_root: Path) -> None:
             "-G",
             "Ninja",
             "-DCMAKE_BUILD_TYPE=Debug",
-            "-DCMAKE_MAKE_PROGRAM=C:/Proj/Lumino/vcpkg/downloads/tools/ninja-1.13.2-windows/ninja.exe",
+            f"-DCMAKE_MAKE_PROGRAM={NINJA}",
             f"-DCMAKE_TOOLCHAIN_FILE={vcpkg_toolchain}",
             f"-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE={emscripten_toolchain}",
             "-DVCPKG_TARGET_TRIPLET=wasm32-emscripten",

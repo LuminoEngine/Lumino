@@ -458,10 +458,12 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     if (!ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
 
     // 1. Render DebugPrint overlay (records commands into the open command buffer).
+#if !defined(__EMSCRIPTEN__)
     auto* dp = ctx->debugPrint();
     if (dp) {
         (void)dp->render(ctx); // ignore error; best-effort overlay
     }
+#endif
 
     // 2. Submit all recorded GPU commands.
     ctx->renderer()->endFrame();

@@ -93,3 +93,40 @@ export const SIZEOF_RENDER_PASS_DESC = 216;
 /** Byte size of `LNInstanceInitializeSettings` in wasm memory. */
 export const SIZEOF_INSTANCE_INIT_SETTINGS = 8;
 // Layout: preferredBackend(u32,0) enableValidation(u32,4)
+
+/** Byte size of `LNVertex` in wasm memory. */
+export const SIZEOF_VERTEX = 64;
+// Layout: posX,posY,posZ(f32x3,0) normX,normY,normZ(f32x3,12)
+//         u,v(f32x2,24) colorR,G,B,A(f32x4,32) tanX,Y,Z,W(f32x4,48)
+
+/** Byte size of `LNSubMesh` in wasm memory. */
+export const SIZEOF_SUBMESH = 12;
+// Layout: indexOffset(u32,0) indexCount(u32,4) materialIndex(u32,8)
+
+/** Byte size of `LNTransform` in wasm memory. */
+export const SIZEOF_TRANSFORM = 40;
+// Layout: posX,posY,posZ(f32x3,0) rotX,rotY,rotZ,rotW(f32x4,12)
+//         scaleX,scaleY,scaleZ(f32x3,28)
+
+/** Vertex data matching C `LNVertex` (64 bytes). */
+export interface Vertex {
+    position: [number, number, number];
+    normal: [number, number, number];
+    uv: [number, number];
+    color: [number, number, number, number];
+    tangent: [number, number, number, number];
+}
+
+/** Sub-mesh descriptor matching C `LNSubMesh` (12 bytes). */
+export interface SubMesh {
+    indexOffset: number;
+    indexCount: number;
+    materialIndex: number;
+}
+
+/** TRS transform matching C `LNTransform` (40 bytes). */
+export interface Transform {
+    position: [number, number, number];
+    rotation: [number, number, number, number]; // quaternion (x, y, z, w)
+    scale: [number, number, number];
+}

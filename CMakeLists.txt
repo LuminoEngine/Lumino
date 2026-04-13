@@ -78,7 +78,7 @@ endif()
 if(LUMINO_ENABLE_WEBGPU)
     set(WEBGPU_BACKEND "DAWN" CACHE STRING "WebGPU backend implementation")
     add_subdirectory(third_party/webgpu)
-    #find_package(glfw3 CONFIG REQUIRED)
+    find_package(glfw3 CONFIG REQUIRED)
 else()
     find_package(directx-dxc CONFIG) # optional, used for shader compilation on Windows
     find_package(glfw3 CONFIG REQUIRED)

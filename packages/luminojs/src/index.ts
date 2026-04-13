@@ -4,6 +4,10 @@ export { Window } from "./Window";
 export { GraphicsContext } from "./GraphicsContext";
 export type { FrameInfo } from "./GraphicsContext";
 export { Renderer } from "./Renderer";
+export { Texture } from "./Texture";
+export { Material } from "./Material";
+export { Mesh } from "./Mesh";
+export { Camera } from "./Camera";
 export { LuminoObject } from "./LuminoObject";
 export {
     Result,
@@ -11,6 +15,9 @@ export {
     LoadOp,
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
+    SIZEOF_VERTEX,
+    SIZEOF_SUBMESH,
+    SIZEOF_TRANSFORM,
 } from "./types";
 export type {
     Handle,
@@ -19,4 +26,7 @@ export type {
     DepthStencilAttachmentDesc,
     RenderPassDesc,
     RuntimeOptions,
+    Vertex,
+    SubMesh,
+    Transform,
 } from "./types";

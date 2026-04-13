@@ -1,4 +1,4 @@
-#include <LuminoCore/Graphics/Renderer.hpp>
+﻿#include <LuminoCore/Graphics/Renderer.hpp>
 #include <LuminoCore/Graphics/Batch.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
@@ -566,7 +566,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     // Check if the material's parameters have changed since last cache update.
     if (mat->paramVersion() != cache.paramVersion) {
         // Mark all frame slots dirty so each gets updated when used.
-        for (auto& d : cache.dirty) d = true;
+        for (auto&& d : cache.dirty) d = true;
         cache.paramVersion = mat->paramVersion();
     }
 
@@ -581,7 +581,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         cache.textureView = std::move(*tvResult);
         cache.lastBaseTexture = mat->baseTexture();
         // Texture view changed, all bind groups must be recreated
-        for (auto& d : cache.dirty) d = true;
+        for (auto&& d : cache.dirty) d = true;
     }
 
     // Create sampler if missing
