@@ -23,16 +23,10 @@ static rhi::ShaderCodeFormat backendToCodeFormat(rhi::Backend backend) {
 }
 
 //------------------------------------------------------------------------------
-Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
-    const void* data, size_t size,
+// Internal: shared implementation used by createFromCompiledShader and createFromUnifiedShader
+Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
+    shader::UnifiedShader2* unifiedShader,
     rhi::Device* device) {
-
-    // Deserialize the unified shader from the binary blob.
-    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
-    if (!loadResult) {
-        return LN_FORWARD_ERROR(loadResult);
-    }
-    auto unifiedShader = std::move(*loadResult);
 
     // Find the first pass for the backend's shader target.
     auto& globalPasses = unifiedShader->globalShaderPasses();
@@ -79,7 +73,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     }
 
     // Build material BindGroupLayout from "$Material" ParameterBlock reflection
-    auto* materialBlock = detail::findParameterBlock(unifiedShader.get(), "$Material");
+    auto* materialBlock = detail::findParameterBlock(unifiedShader, "$Material");
     if (!materialBlock) {
         return LN_MAKE_ERROR("No '$Material' ParameterBlock found");
     }
@@ -94,9 +88,9 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     }
 
     // Discover view/scene/object blocks from reflection
-    auto* viewBlock = detail::findParameterBlock(unifiedShader.get(), "viewData");
-    auto* sceneBlock = detail::findParameterBlock(unifiedShader.get(), "sceneData");
-    auto* objectBlock = detail::findParameterBlock(unifiedShader.get(), "objectData");
+    auto* viewBlock = detail::findParameterBlock(unifiedShader, "viewData");
+    auto* sceneBlock = detail::findParameterBlock(unifiedShader, "sceneData");
+    auto* objectBlock = detail::findParameterBlock(unifiedShader, "objectData");
     if (!viewBlock || !sceneBlock || !objectBlock) {
         return LN_MAKE_ERROR("Missing required ParameterBlocks (viewData, sceneData, objectData)");
     }
@@ -153,33 +147,55 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     }
 
     // Create Instance
-    {
-        auto plResult = device->createPipelineLayout(plDesc);
-        if (!plResult) {
-            return LN_FORWARD_ERROR(plResult);
-        }
-
-        auto sp = Ref<ShaderPass>::adopt(new ShaderPass());
-        sp->m_vertShader = std::move(*vsResult);
-        sp->m_fragShader = std::move(*fsResult);
-        sp->m_vertEntry = std::move(vertEP->name);
-        sp->m_fragEntry = std::move(fragEP->name);
-        sp->m_pipelineLayout = std::move(*plResult);
-        sp->m_materialParamBufferSize = static_cast<u64>(cbSize);
-        sp->m_materialSetIndex = materialSetIdx;
-        sp->m_materialMembers = std::move(members);
-        sp->m_materialLayoutDesc = materialLayoutDesc;
-        sp->m_materialBindingNames = std::move(materialBindingNames);
-        sp->m_viewSetIndex = viewSetIndex;
-        sp->m_sceneSetIndex = sceneSetIndex;
-        sp->m_objectSetIndex = objectSetIndex;
-        sp->m_viewLayoutDesc = std::move(viewLayoutDesc);
-        sp->m_sceneLayoutDesc = std::move(sceneLayoutDesc);
-        sp->m_objectLayoutDesc = std::move(objectLayoutDesc);
-        sp->m_objectUBOSize = static_cast<u64>(objectCBSize);
-
-        return sp;
+    auto plResult = device->createPipelineLayout(plDesc);
+    if (!plResult) {
+        return LN_FORWARD_ERROR(plResult);
     }
+
+    auto sp = Ref<ShaderPass>::adopt(new ShaderPass());
+    sp->m_vertShader = std::move(*vsResult);
+    sp->m_fragShader = std::move(*fsResult);
+    sp->m_vertEntry = std::move(vertEP->name);
+    sp->m_fragEntry = std::move(fragEP->name);
+    sp->m_pipelineLayout = std::move(*plResult);
+    sp->m_materialParamBufferSize = static_cast<u64>(cbSize);
+    sp->m_materialSetIndex = materialSetIdx;
+    sp->m_materialMembers = std::move(members);
+    sp->m_materialLayoutDesc = materialLayoutDesc;
+    sp->m_materialBindingNames = std::move(materialBindingNames);
+    sp->m_viewSetIndex = viewSetIndex;
+    sp->m_sceneSetIndex = sceneSetIndex;
+    sp->m_objectSetIndex = objectSetIndex;
+    sp->m_viewLayoutDesc = std::move(viewLayoutDesc);
+    sp->m_sceneLayoutDesc = std::move(sceneLayoutDesc);
+    sp->m_objectLayoutDesc = std::move(objectLayoutDesc);
+    sp->m_objectUBOSize = static_cast<u64>(objectCBSize);
+
+    return sp;
 }
+
+//------------------------------------------------------------------------------
+Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
+    const void* data, size_t size,
+    rhi::Device* device) {
+
+    // Deserialize the unified shader from the binary blob.
+    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
+    if (!loadResult) {
+        return LN_FORWARD_ERROR(loadResult);
+    }
+    auto unifiedShader = std::move(*loadResult);
+
+    return buildFromUnifiedShader(unifiedShader.get(), device);
+}
+
+#ifdef LUMINO_USE_SLANG
+//------------------------------------------------------------------------------
+Result<Ref<ShaderPass>> ShaderPass::createFromUnifiedShader(
+    shader::UnifiedShader2* unifiedShader,
+    rhi::Device* device) {
+    return buildFromUnifiedShader(unifiedShader, device);
+}
+#endif // LUMINO_USE_SLANG
 
 } // namespace ln

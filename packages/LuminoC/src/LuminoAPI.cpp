@@ -340,7 +340,7 @@ LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* obj = instance->objectRegistry()->resolve<ln::platform::PlatformWindow>(handle);
+    auto* obj = resolveObject<ln::platform::PlatformWindow>(handle);
     if (!obj) return LN_ERROR_INVALID_HANDLE;
 
     *outQuit = obj->processEvents() ? LN_FALSE : LN_TRUE;
@@ -354,7 +354,7 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* obj = instance->objectRegistry()->resolve<ln::platform::PlatformWindow>(window);
+    auto* obj = resolveObject<ln::platform::PlatformWindow>(window);
     if (!obj) return LN_ERROR_INVALID_HANDLE;
 
     ln::GraphicsContext* ctx = obj->graphicsContext();
@@ -381,7 +381,7 @@ LNResult LNGraphicsContext_BeginFrame(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto frameResult = ctx->beginFrame();
@@ -426,7 +426,7 @@ LNResult LNGraphicsContext_CaptureBackbuffer(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto result = ctx->captureBackbuffer();
@@ -452,7 +452,7 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
     if (graphicsContext == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     if (!ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
@@ -485,7 +485,7 @@ LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     ctx->debugPrintText(str);
@@ -498,7 +498,7 @@ LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfile
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     outProfiler->drawCallCount   = static_cast<int32_t>(ctx->renderer()->drawCallCount());
@@ -521,7 +521,7 @@ LNResult LNTexture2D_LoadFromFile(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto texResult = ln::TextureLoader::loadFromFile(ctx->device(), filePath);
@@ -547,7 +547,7 @@ LNResult LNTexture2D_LoadFromMemory(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto texResult = ln::TextureLoader::loadFromMemory(
@@ -572,7 +572,7 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     ln::Result<ln::Ref<ln::Material>> matResult;
@@ -605,7 +605,7 @@ LNResult LNMaterial_CreateFromCompiledShader(LNHandle graphicsContext, const voi
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto matResult = ln::MaterialFactory::createFromCompiledShader(ctx, data, static_cast<size_t>(size));
@@ -618,7 +618,7 @@ LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
+    auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
 
     mat->setColor(ln::Color{r, g, b, a});
@@ -629,10 +629,10 @@ LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
+    auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
 
-    auto* tex = instance->objectRegistry()->resolve<ln::Texture>(texture);
+    auto* tex = resolveObject<ln::Texture>(texture);
     if (!tex) return LN_ERROR_INVALID_HANDLE;
 
     mat->setTexture(tex->rhiTexture());
@@ -678,7 +678,7 @@ LNResult LNMesh_Create(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     // Convert LNVertex[] → std::vector<ln::Vertex>
@@ -722,7 +722,7 @@ LNResult LNMesh_CreateDynamic(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto meshResult = ln::Mesh::createDynamic(ctx->device(), maxVertexCount, maxIndexCount);
@@ -741,7 +741,7 @@ LNResult LNMesh_UpdateVertices(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
     // Convert LNVertex[] → ln::Vertex[]
@@ -771,7 +771,7 @@ LNResult LNMesh_UpdateIndices(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
     auto result = mesh->updateIndices(firstIndex, indices, count);
@@ -788,7 +788,7 @@ LNResult LNMesh_SetSubMeshes(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
     std::vector<ln::SubMesh> subs(submeshCount);
@@ -805,10 +805,10 @@ LNResult LNMesh_SetMaterial(LNHandle meshHandle, uint32_t materialIndex, LNHandl
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
-    auto* mat = instance->objectRegistry()->resolve<ln::Material>(materialHandle);
+    auto* mat = resolveObject<ln::Material>(materialHandle);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
 
     auto& materials = mesh->materials();
@@ -842,7 +842,7 @@ LNResult LNCamera_SetPerspective(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+    auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
 
     camObj->camera.setPerspective(fovY, aspect, nearClip, farClip);
@@ -854,7 +854,7 @@ LNResult LNCamera_SetOrthographic(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+    auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
 
     camObj->camera.setOrthographic(width, height, nearClip, farClip);
@@ -869,7 +869,7 @@ LNResult LNCamera_SetLookAt(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+    auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
 
     camObj->camera.setLookAt(
@@ -891,10 +891,10 @@ LNResult LNRenderer_BeginRenderPass(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     const ln::FramebufferInfo* fb = ctx->currentFramebuffer();
@@ -918,7 +918,7 @@ LNResult LNRenderer_BeginRenderPass(
         for (uint32_t i = 0; i < desc->colorAttachmentCount; ++i) {
             ln::rhi::ColorAttachment colorAttach;
             if (desc->colorAttachments[i].renderTarget != LN_NULL_HANDLE) {
-                auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->colorAttachments[i].renderTarget);
+                auto* tex = resolveObject<ln::Texture>(desc->colorAttachments[i].renderTarget);
                 if (!tex) return LN_ERROR_INVALID_HANDLE;
                 colorAttach.view = tex->rhiTextureView();
                 if (i == 0) firstRTTexture = tex;
@@ -939,7 +939,7 @@ LNResult LNRenderer_BeginRenderPass(
     // デプス・ステンシルアタッチメント
     ln::rhi::DepthStencilAttachment depthAttach;
     if (desc->depthStencil.depthBuffer != LN_NULL_HANDLE) {
-        auto* tex = instance->objectRegistry()->resolve<ln::Texture>(desc->depthStencil.depthBuffer);
+        auto* tex = resolveObject<ln::Texture>(desc->depthStencil.depthBuffer);
         if (!tex) return LN_ERROR_INVALID_HANDLE;
         depthAttach.view = tex->rhiTextureView();
     } else {
@@ -955,7 +955,7 @@ LNResult LNRenderer_BeginRenderPass(
     rpDesc.depthStencilAttachment = &depthAttach;
 
     if (camera != LN_NULL_HANDLE) {
-        auto* camObj = instance->objectRegistry()->resolve<CameraObject>(camera);
+        auto* camObj = resolveObject<CameraObject>(camera);
         if (!camObj) return LN_ERROR_INVALID_HANDLE;
         ren->beginRenderPass(rpDesc, camObj->camera);
     } else {
@@ -968,7 +968,7 @@ LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* r = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* r = resolveObject<ln::Renderer>(renderer);
     if (!r) return LN_ERROR_INVALID_HANDLE;
     r->endRenderPass();
     return LN_OK;
@@ -980,10 +980,10 @@ LNResult LNRenderer_DrawMesh(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
     ren->drawMesh(mesh, toLnTransform(transform), zIndex);
@@ -995,10 +995,10 @@ LNResult LNRenderer_DrawMeshImmediate(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
     auto result = ren->drawMeshImmediate(mesh, toLnTransform(transform));
@@ -1012,10 +1012,10 @@ LNResult LNRenderer_DrawMeshImmediateWithMaterial(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
     auto* mat = resolveObject<ln::Material>(materialHandle);
@@ -1031,7 +1031,7 @@ LNResult LNRenderer_DrawScreenRect(LNHandle renderer, LNHandle materialHandle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto* mat = resolveObject<ln::Material>(materialHandle);
@@ -1053,10 +1053,10 @@ LNResult LNRenderer_DrawSprite(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
-    auto* mat = instance->objectRegistry()->resolve<ln::Material>(material);
+    auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
 
     ren->drawSprite(
@@ -1076,13 +1076,13 @@ LNResult LNRenderer_PushStencilMask(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
-    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
 
-    auto* mat = instance->objectRegistry()->resolve<ln::Material>(materialHandle);
+    auto* mat = resolveObject<ln::Material>(materialHandle);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
 
     ln::Transform xform;
@@ -1102,7 +1102,7 @@ LNResult LNRenderer_PopStencilMask(LNHandle renderer) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto result = ren->popStencilMask();
@@ -1127,7 +1127,7 @@ LNResult LNTexture2D_CreateRenderTarget(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto rtResult = ln::Texture::createRenderTarget(ctx->device(), width, height);
@@ -1154,7 +1154,7 @@ LNResult LNTexture2D_CreateRenderTargetEx(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto rtResult = ln::Texture::createRenderTarget(
@@ -1181,7 +1181,7 @@ LNResult LNTexture2D_CreateDepthStencil(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto dsResult = ln::Texture::createDepthStencil(ctx->device(), width, height);

@@ -4,6 +4,10 @@
 #include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <cstring>
 
+#ifdef LUMINO_USE_SLANG
+#include <LuminoShader/ShaderCompiler2.hpp>
+#endif // LUMINO_USE_SLANG
+
 namespace ln {
 
 // ------ Material ------------------------------------------------------------------------------------------------------------------------
@@ -187,6 +191,49 @@ Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
 Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
     GraphicsContext* ctx, const void* data, size_t size) {
     return createFromCompiledShader(ctx->module(), data, size);
+}
+
+Result<Ref<Material>> MaterialFactory::createFromShaderSourceFile(
+    GraphicsContext* ctx,
+    std::string_view shaderFilePath,
+    std::string_view searchPath) {
+#ifdef LUMINO_USE_SLANG
+    using namespace ln::shader;
+    namespace fs = std::filesystem;
+
+    auto compilerResult = ShaderCompiler2::create();
+    if (!compilerResult) return LN_FORWARD_ERROR(compilerResult);
+    auto& compiler = *compilerResult;
+
+    if (!searchPath.empty()) {
+        compiler->addSearchPath(fs::path(searchPath));
+    }
+
+    auto buildResult = compiler->build(fs::path(shaderFilePath));
+    if (!buildResult) return LN_FORWARD_ERROR(buildResult);
+
+    auto shaderPassResult = ShaderPass::createFromUnifiedShader(
+        compiler->shader(), ctx->module()->device());
+    if (!shaderPassResult) return LN_FORWARD_ERROR(shaderPassResult);
+
+    auto mat = Ref<Material>::adopt(new Material());
+    mat->m_shaderPass = std::move(*shaderPassResult);
+    mat->m_baseTexture = ctx->module()->whiteTexture();
+
+    auto bufSize = mat->m_shaderPass->materialParamBufferSize();
+    if (bufSize > 0) {
+        mat->m_paramBuffer.resize(static_cast<size_t>(bufSize), 0);
+        if (bufSize >= sizeof(f32) * 4) {
+            f32 white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+            std::memcpy(mat->m_paramBuffer.data(), white, sizeof(white));
+        }
+    }
+
+    return mat;
+#else
+    (void)ctx; (void)shaderFilePath; (void)searchPath;
+    return LN_MAKE_ERROR("LNMaterial_CreateFromShaderSourceFile requires LUMINO_USE_SLANG");
+#endif // LUMINO_USE_SLANG
 }
 
 } // namespace ln

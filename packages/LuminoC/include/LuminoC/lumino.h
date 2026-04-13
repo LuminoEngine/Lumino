@@ -480,12 +480,12 @@ extern LUMINO_API LNResult LNMaterial_CreateFromCompiledShader(
  * @param[in]  searchPathOrNull      lumino.slang を含むディレクトリのパス (NULL 可)
  * @param[out] outHandle       作成されたマテリアルのハンドル
  */
-// extern LUMINO_API LNResult LNMaterial_CreateFromShaderSourceFile(
-//     LNHandle graphicsContext,
-//     const char* shaderFilePath,
-//     const char* searchPathOrNull,
-//     LNHandle* outHandle
-// );
+extern LUMINO_API LNResult LNMaterial_CreateFromShaderSourceFile(
+    LNHandle graphicsContext,
+    const char* shaderFilePath,
+    const char* searchPathOrNull,
+    LNHandle* outHandle
+);
 
 /**
  * @deprecated LNMaterial_CreateFromBuiltinShader(ctx, LN_BUILTIN_SHADER_UNLIT, out) を使用してください。
@@ -687,13 +687,13 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
 
 /**
  * レンダーパスを開始します。LNRenderPassDesc で描画先やクリア方法を指定します。
- * desc は LNRenderPassDesc_Init で初期化してから使用してください。
+ * desc は LNRenderPassDesc_Init で初期化してから使用してくださsい。
  * renderTarget / depthBuffer が LN_NULL_HANDLE の場合、バックバッファが使用されます。
  * camera が有効な場合、カメラデータを set=0 View UBO に自動アップロードします。
  * @param[in] renderer         Renderer のハンドル
  * @param[in] graphicsContext  GraphicsContext のハンドル (バックバッファ取得用)
  * @param[in] desc             レンダーパスの設定
- * @param[in] camera           カメラのハンドル (LN_NULL_HANDLE でカメラなし — ポストエフェクト用)
+ * @param[in] camera           カメラのハンドル (LN_NULL_HANDLE でカメラなし - ポストエフェクト用)
  */
 extern LUMINO_API LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer,
@@ -812,7 +812,7 @@ extern LUMINO_API LNResult LNRenderer_PushStencilMask(
 extern LUMINO_API LNResult LNRenderer_PopStencilMask(LNHandle renderer);
 
 //------------------------------------------------------------------------------
-// LNDrawCommandBuffer (deprecated — use LNRenderer_DrawMesh / LNRenderer_DrawSprite)
+// LNDrawCommandBuffer (deprecated - use LNRenderer_DrawMesh / LNRenderer_DrawSprite)
 //------------------------------------------------------------------------------
 
 /**
@@ -898,7 +898,7 @@ extern LUMINO_API LNResult LNDrawCommandBuffer_DrawMesh(
     int32_t zIndex);
 
 //------------------------------------------------------------------------------
-// LNBatchProcessor (deprecated — use LNRenderer_DrawMesh / LNRenderer_DrawSprite)
+// LNBatchProcessor (deprecated - use LNRenderer_DrawMesh / LNRenderer_DrawSprite)
 //------------------------------------------------------------------------------
 
 /**

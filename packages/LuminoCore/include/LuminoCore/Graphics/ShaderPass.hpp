@@ -7,6 +7,9 @@
 
 namespace ln {
 
+// Forward declaration for LUMINO_USE_SLANG overload
+namespace shader { class UnifiedShader2; }
+
 
 /** Info about a single member within a material constant buffer (from shader reflection). */
 struct MaterialMemberInfo {
@@ -37,6 +40,17 @@ public:
     static Result<Ref<ShaderPass>> createFromCompiledShader(
         const void* data, size_t size,
         rhi::Device* device);
+
+#ifdef LUMINO_USE_SLANG
+    /**
+     * コンパイル済み UnifiedShader2 からシェーダモジュールと PipelineLayout を構築する。
+     * ShaderCompiler2 でコンパイルした結果を直接渡すことで、
+     * シリアライズ/デシリアライズを省略できる。LUMINO_USE_SLANG が有効な場合のみ使用可能。
+     */
+    static Result<Ref<ShaderPass>> createFromUnifiedShader(
+        shader::UnifiedShader2* unifiedShader,
+        rhi::Device* device);
+#endif // LUMINO_USE_SLANG
 
     // Accessors
     rhi::ShaderModule* vertexShader() const { return m_vertShader.get(); }
@@ -81,6 +95,10 @@ public:
 
 private:
     ShaderPass() = default;
+
+    /** Internal: shared implementation used by createFromCompiledShader and createFromUnifiedShader. */
+    static Result<Ref<ShaderPass>> buildFromUnifiedShader(
+        shader::UnifiedShader2* unifiedShader, rhi::Device* device);
 
     Ref<rhi::ShaderModule> m_vertShader;
     Ref<rhi::ShaderModule> m_fragShader;

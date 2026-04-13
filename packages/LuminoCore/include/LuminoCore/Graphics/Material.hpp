@@ -6,6 +6,7 @@
 #include <LuminoCore/Graphics/Vertex.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <unordered_map>
 
@@ -163,6 +164,18 @@ public:
     /** Create a material from a compiled shader binary (.lcsh) via GraphicsContext. */
     static Result<Ref<Material>> createFromCompiledShader(
         GraphicsContext* ctx, const void* data, size_t size);
+
+    /**
+     * .slang ソースファイルを実行時コンパイルしてマテリアルを作成します。
+     * LUMINO_USE_SLANG が有効なデスクトップビルドでのみ動作します。
+     * @param ctx            GraphicsContext のハンドル
+     * @param shaderFilePath コンパイルする .slang ファイルのパス
+     * @param searchPath     lumino.slang を含むディレクトリのパス (空文字列で無効)
+     */
+    static Result<Ref<Material>> createFromShaderSourceFile(
+        GraphicsContext* ctx,
+        std::string_view shaderFilePath,
+        std::string_view searchPath);
 
 private:
     static Result<Ref<Material>> createMaterialFromBuiltin(

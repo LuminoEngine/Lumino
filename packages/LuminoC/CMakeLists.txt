@@ -1,7 +1,7 @@
-project(LuminoC)
+﻿project(LuminoC)
 
 #-------------------------------------------------------------------------------
-# Emscripten — WebAssembly build
+# Emscripten - WebAssembly build
 #-------------------------------------------------------------------------------
 # LuminoBase and LuminoCore are built as static libraries and linked via
 # target_link_libraries. WebGPU-distribution is configured in the root

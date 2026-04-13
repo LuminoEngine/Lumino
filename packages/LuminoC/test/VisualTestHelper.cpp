@@ -112,7 +112,7 @@ bool captureAndCompare(
     std::vector<uint8_t> expectedData;
     uint32_t expectedW, expectedH;
     if (!loadPng(expectedPath.c_str(), expectedData, expectedW, expectedH)) {
-        // No reference image — save current capture and report.
+        // No reference image - save current capture and report.
         std::string latestPath = dataDir + "/Expected/" + name + "-latest.png";
         savePng(latestPath.c_str(), data, width, height);
         std::printf("[VisualTest] Reference not found: %s\n", expectedPath.c_str());
