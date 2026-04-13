@@ -13,11 +13,7 @@
  *      c. 頂点/インデックスデータを更新
  *      d. DrawMesh で描画
  */
-#include <LuminoC/lumino.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
+#include "../Utils.h"
 
 //------------------------------------------------------------------------------
 // Constants
@@ -171,11 +167,8 @@ static uint32_t buildBatches(
 //------------------------------------------------------------------------------
 // Main
 //------------------------------------------------------------------------------
-int main(void) {
-    /* 1. Initialize */
-    LNInstanceInitializeSettings settings = {};
-    settings.enableValidation = LN_TRUE;
-    LNInstance_Initialize(&settings);
+int main() {
+    InitializeInstance();
 
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-BatchSprite", WINDOW_W, WINDOW_H, &window);

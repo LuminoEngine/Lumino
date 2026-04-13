@@ -4,16 +4,10 @@
  * 2 つのレンダーターゲットテクスチャにそれぞれ異なる背景色で三角形を描画し、
  * それらをバックバッファに並べて表示するデモ。
  */
-#include <string>
-#include <LuminoC/lumino.h>
-#include <stdio.h>
-#include <math.h>
+#include "../Utils.h"
 
 int main(void) {
-    /* 1. Runtime initialize */
-    LNInstanceInitializeSettings settings = {};
-    settings.enableValidation = LN_TRUE;
-    LNInstance_Initialize(&settings);
+    InitializeInstance();
 
     /* 2. Window + GraphicsContext */
     const uint32_t windowWidth = 1280;

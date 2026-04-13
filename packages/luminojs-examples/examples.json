@@ -1,0 +1,11 @@
+{
+  "categories": [
+    {
+      "name": "Basic",
+      "items": [
+        { "id": "clear_screen", "title": "Clear Screen" },
+        { "id": "hello_texture", "title": "Hello Texture" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumino Examples</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --sidebar-width: 220px;
+      --bg: #1e1e1e;
+      --bg-sidebar: #252526;
+      --bg-code: #282c34;
+      --text: #cccccc;
+      --text-dim: #888888;
+      --accent: #569cd6;
+      --border: #333333;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* --- Header --- */
+    #header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    #header a {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    /* --- 3 Column Layout --- */
+    #main {
+      display: flex;
+      height: calc(100% - 40px);
+    }
+
+    /* --- Sidebar --- */
+    #sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+    #sidebar .category {
+      padding: 8px 16px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+    }
+    #sidebar a {
+      display: block;
+      padding: 4px 16px 4px 24px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      border-left: 3px solid transparent;
+    }
+    #sidebar a:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    #sidebar a.active {
+      background: rgba(86,156,214,0.15);
+      border-left-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* --- Code Panel --- */
+    #code-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+    #code-header {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    #code-body {
+      flex: 1;
+      overflow: auto;
+      background: var(--bg-code);
+    }
+    #code-body pre {
+      margin: 0;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      tab-size: 4;
+    }
+    #code-body code {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    /* --- Preview Panel --- */
+    #preview-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #preview-header {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    #preview-body {
+      flex: 1;
+      background: #000;
+    }
+    #preview-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* --- Placeholder --- */
+    .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="header"><a href="#">Lumino Examples</a></div>
+  <div id="main">
+    <nav id="sidebar"></nav>
+    <div id="code-panel">
+      <div id="code-header">Source</div>
+      <div id="code-body">
+        <div class="placeholder">Select an example from the sidebar</div>
+      </div>
+    </div>
+    <div id="preview-panel">
+      <div id="preview-header">Preview</div>
+      <div id="preview-body">
+        <div class="placeholder">Select an example from the sidebar</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/typescript.min.js"></script>
+  <script type="module">
+    const sidebar = document.getElementById("sidebar");
+    const codeHeader = document.getElementById("code-header");
+    const codeBody = document.getElementById("code-body");
+    const previewHeader = document.getElementById("preview-header");
+    const previewBody = document.getElementById("preview-body");
+
+    let examples = [];
+    let currentId = null;
+
+    // --- Load manifest ---
+    async function loadManifest() {
+      const res = await fetch("./examples.json");
+      const data = await res.json();
+      examples = [];
+      for (const cat of data.categories) {
+        const catEl = document.createElement("div");
+        catEl.className = "category";
+        catEl.textContent = cat.name;
+        sidebar.appendChild(catEl);
+
+        for (const item of cat.items) {
+          examples.push(item);
+          const a = document.createElement("a");
+          a.href = "#" + item.id;
+          a.textContent = item.title;
+          a.dataset.id = item.id;
+          sidebar.appendChild(a);
+        }
+      }
+    }
+
+    // --- Select an example ---
+    async function selectExample(id) {
+      if (!id || currentId === id) return;
+      const item = examples.find((e) => e.id === id);
+      if (!item) return;
+      currentId = id;
+
+      // Update sidebar highlight
+      for (const a of sidebar.querySelectorAll("a")) {
+        a.classList.toggle("active", a.dataset.id === id);
+        if (a.dataset.id === id) {
+          a.scrollIntoView({ behavior: "auto", block: "nearest" });
+        }
+      }
+
+      // Load source code
+      codeHeader.textContent = `src/${id}/main.ts`;
+      try {
+        const res = await fetch(`./src/${id}/main.ts`);
+        const code = await res.text();
+        const highlighted = hljs.highlight(code, { language: "typescript" });
+        codeBody.innerHTML = `<pre><code class="hljs">${highlighted.value}</code></pre>`;
+      } catch {
+        codeBody.innerHTML = `<div class="placeholder">Failed to load source</div>`;
+      }
+
+      // Load preview iframe
+      previewHeader.textContent = item.title;
+      previewBody.innerHTML = `<iframe src="./src/${id}/index.html"></iframe>`;
+    }
+
+    // --- Hash routing ---
+    function onHashChange() {
+      const hash = window.location.hash.slice(1);
+      if (hash) selectExample(hash);
+    }
+
+    window.addEventListener("hashchange", onHashChange);
+
+    // --- Init ---
+    await loadManifest();
+    onHashChange();
+  </script>
+</body>
+</html>

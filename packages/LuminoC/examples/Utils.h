@@ -1,12 +1,14 @@
-﻿
-#pragma once
+﻿#pragma once
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 #include <string>
 #include <LuminoC/lumino.h>
 
 void InitializeInstance() {
     LNInstanceInitializeSettings settings = {};
     settings.preferredBackend = LN_GRAPHICS_BACKEND_WEBGPU;
+    settings.enableValidation = LN_TRUE;
     LNInstance_Initialize(&settings);
 }
 

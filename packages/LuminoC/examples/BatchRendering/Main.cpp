@@ -10,14 +10,12 @@
  * manage sorting, vertex generation, and dynamic mesh updates manually.
  */
 #include "../Utils.h"
-#include <stdio.h>
-#include <math.h>
 
 #define WINDOW_W 1280
 #define WINDOW_H 720
 #define SPRITE_COUNT 1024
 
-int main(void) {
+int main() {
     InitializeInstance();
 
     LNHandle window = LN_NULL_HANDLE;
