@@ -52,6 +52,12 @@ public:
     /** $Global CB member layout for name-based parameter setting. */
     const std::vector<MaterialMemberInfo>& materialMembers() const { return m_materialMembers; }
 
+    /** BindGroupLayoutDesc for the material ($Material) set. */
+    const rhi::BindGroupLayoutDesc& materialLayoutDesc() const { return m_materialLayoutDesc; }
+
+    /** Binding names in the material set (parallel to materialLayoutDesc().entries). */
+    const std::vector<std::string>& materialBindingNames() const { return m_materialBindingNames; }
+
     /** Descriptor set index for view data (from shader reflection). */
     int16_t viewSetIndex() const { return m_viewSetIndex; }
 
@@ -89,6 +95,10 @@ private:
     int16_t m_viewSetIndex = -1;
     int16_t m_sceneSetIndex = -1;
     int16_t m_objectSetIndex = -1;
+
+    // Material set layout from reflection
+    rhi::BindGroupLayoutDesc m_materialLayoutDesc;
+    std::vector<std::string> m_materialBindingNames;
 
     // Shared BindGroupLayoutDescs (value types, no GPU objects)
     rhi::BindGroupLayoutDesc m_viewLayoutDesc;

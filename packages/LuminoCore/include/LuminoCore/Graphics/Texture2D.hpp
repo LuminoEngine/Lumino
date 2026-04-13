@@ -41,6 +41,13 @@ public:
      */
     static Result<Ref<Texture>> createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height);
 
+    /**
+     * 指定フォーマットのレンダーターゲットテクスチャを作成します。
+     * Sampled|RenderTarget のカラーテクスチャを生成します。
+     */
+    static Result<Ref<Texture>> createRenderTarget(
+        rhi::Device* device, uint32_t width, uint32_t height, rhi::TextureFormat format);
+
     uint32_t width() const { return m_width; }
     uint32_t height() const { return m_height; }
     rhi::TextureFormat format() const { return m_format; }

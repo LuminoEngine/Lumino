@@ -126,6 +126,14 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
         return LN_MAKE_ERROR("Invalid object constant buffer size in reflection");
     }
 
+    // Collect binding names for the material set (parallel to materialLayoutDesc entries)
+    std::vector<std::string> materialBindingNames;
+    for (const auto& binding : targetPass->bindingLayout.bindings) {
+        if (binding.setIndex == materialSetIdx) {
+            materialBindingNames.push_back(binding.name);
+        }
+    }
+
     // Determine the max set index to size the PipelineLayoutDesc properly
     int16_t maxSet = std::max({materialSetIdx, viewSetIndex, sceneSetIndex, objectSetIndex});
 
@@ -160,6 +168,8 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
         sp->m_materialParamBufferSize = static_cast<u64>(cbSize);
         sp->m_materialSetIndex = materialSetIdx;
         sp->m_materialMembers = std::move(members);
+        sp->m_materialLayoutDesc = materialLayoutDesc;
+        sp->m_materialBindingNames = std::move(materialBindingNames);
         sp->m_viewSetIndex = viewSetIndex;
         sp->m_sceneSetIndex = sceneSetIndex;
         sp->m_objectSetIndex = objectSetIndex;

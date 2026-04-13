@@ -115,12 +115,28 @@ void Renderer::beginRenderPass(
     {
         ViewParamsUBO viewParams{};
         Matrix4x4 vp = camera.viewProjectionMatrix();
+        Matrix4x4 v  = camera.viewMatrix();
+        Matrix4x4 p  = camera.projectionMatrix();
+        Matrix4x4 ivp = vp.inversed();
+        Matrix4x4 ip  = p.inversed();
         std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
         Vector3 camPos = camera.position();
         viewParams.cameraPos[0] = camPos.x;
         viewParams.cameraPos[1] = camPos.y;
         viewParams.cameraPos[2] = camPos.z;
         viewParams.cameraPos[3] = 0.0f;
+        std::memcpy(viewParams.view, v.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.proj, p.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.invViewProj, ivp.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.invProj, ip.m, sizeof(f32) * 16);
+        if (colorTarget) {
+            f32 w = static_cast<f32>(colorTarget->width());
+            f32 h = static_cast<f32>(colorTarget->height());
+            viewParams.screenSize[0] = w;
+            viewParams.screenSize[1] = h;
+            viewParams.screenSize[2] = 1.0f / w;
+            viewParams.screenSize[3] = 1.0f / h;
+        }
         std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
     }
 
@@ -171,12 +187,28 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& 
     {
         ViewParamsUBO viewParams{};
         Matrix4x4 vp = camera.viewProjectionMatrix();
+        Matrix4x4 v  = camera.viewMatrix();
+        Matrix4x4 p  = camera.projectionMatrix();
+        Matrix4x4 ivp = vp.inversed();
+        Matrix4x4 ip  = p.inversed();
         std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
         Vector3 camPos = camera.position();
         viewParams.cameraPos[0] = camPos.x;
         viewParams.cameraPos[1] = camPos.y;
         viewParams.cameraPos[2] = camPos.z;
         viewParams.cameraPos[3] = 0.0f;
+        std::memcpy(viewParams.view, v.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.proj, p.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.invViewProj, ivp.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.invProj, ip.m, sizeof(f32) * 16);
+        if (!rpDesc.colorAttachments.empty() && rpDesc.colorAttachments[0].view) {
+            f32 w = static_cast<f32>(rpDesc.colorAttachments[0].view->width());
+            f32 h = static_cast<f32>(rpDesc.colorAttachments[0].view->height());
+            viewParams.screenSize[0] = w;
+            viewParams.screenSize[1] = h;
+            viewParams.screenSize[2] = 1.0f / w;
+            viewParams.screenSize[3] = 1.0f / h;
+        }
         std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
     }
 
@@ -234,11 +266,27 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
     // Vertices are already in NDC, so upload an identity view-projection matrix.
     auto viewAlloc = m_viewAllocator->allocate();
     ViewParamsUBO viewParams{};
-    // Column-major identity matrix.
+    // Column-major identity matrix for viewProj, view, proj, invViewProj.
     viewParams.viewProj[0]  = 1.0f;
     viewParams.viewProj[5]  = 1.0f;
     viewParams.viewProj[10] = 1.0f;
     viewParams.viewProj[15] = 1.0f;
+    viewParams.view[0]  = 1.0f;
+    viewParams.view[5]  = 1.0f;
+    viewParams.view[10] = 1.0f;
+    viewParams.view[15] = 1.0f;
+    viewParams.proj[0]  = 1.0f;
+    viewParams.proj[5]  = 1.0f;
+    viewParams.proj[10] = 1.0f;
+    viewParams.proj[15] = 1.0f;
+    viewParams.invViewProj[0]  = 1.0f;
+    viewParams.invViewProj[5]  = 1.0f;
+    viewParams.invViewProj[10] = 1.0f;
+    viewParams.invViewProj[15] = 1.0f;
+    viewParams.invProj[0]  = 1.0f;
+    viewParams.invProj[5]  = 1.0f;
+    viewParams.invProj[10] = 1.0f;
+    viewParams.invProj[15] = 1.0f;
     std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
     setPassBindGroup(static_cast<u32>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
@@ -574,14 +622,33 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         return cache.bindGroups[frameSlot].get();
     }
 
-    // Create texture view if missing or texture changed
-    if (mat->baseTexture() && (!cache.textureView || cache.lastBaseTexture != mat->baseTexture())) {
-        auto tvResult = device->createTextureView(mat->baseTexture());
-        if (!tvResult) return LN_FORWARD_ERROR(tvResult);
-        cache.textureView = std::move(*tvResult);
-        cache.lastBaseTexture = mat->baseTexture();
-        // Texture view changed, all bind groups must be recreated
-        for (auto&& d : cache.dirty) d = true;
+    // Use reflection to discover all texture bindings in the material set
+    const auto& layoutDesc = mat->shaderPass()->materialLayoutDesc();
+    const auto& bindingNames = mat->shaderPass()->materialBindingNames();
+
+    // For each SampledTexture binding, resolve the texture and create/update views
+    for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
+        const auto& layoutEntry = layoutDesc.entries[i];
+        if (layoutEntry.type != rhi::BindingType::SampledTexture) continue;
+
+        // Look up named texture, fall back to baseTexture
+        rhi::Texture* tex = mat->baseTexture(); // default
+        if (i < bindingNames.size()) {
+            auto it = mat->namedTextures().find(bindingNames[i]);
+            if (it != mat->namedTextures().end()) {
+                tex = it->second.get();
+            }
+        }
+
+        u32 binding = layoutEntry.binding;
+        if (tex && (!cache.textureViews.count(binding) || cache.lastTextures[binding] != tex)) {
+            auto tvResult = device->createTextureView(tex);
+            if (!tvResult) return LN_FORWARD_ERROR(tvResult);
+            cache.textureViews[binding] = std::move(*tvResult);
+            cache.lastTextures[binding] = tex;
+            // Texture view changed, all bind groups must be recreated
+            for (auto&& d : cache.dirty) d = true;
+        }
     }
 
     // Create sampler if missing
@@ -619,13 +686,30 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     }
 
     // Create BindGroup via the material's PipelineLayout at the material set index.
-    if (cache.textureView && cache.sampler) {
+    // Use reflection to build entries dynamically.
+    {
         int16_t matSet = mat->shaderPass()->materialSetIndex();
-        std::vector<rhi::BindGroupEntry> entries = {
-            {0, cache.paramBuffers[frameSlot].get(), 0, mat->materialParamBufferSize(), nullptr, nullptr},
-            {1, nullptr, 0, 0, cache.textureView.get(), nullptr},
-            {2, nullptr, 0, 0, nullptr, cache.sampler.get()},
-        };
+        std::vector<rhi::BindGroupEntry> entries;
+
+        for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
+            const auto& layoutEntry = layoutDesc.entries[i];
+            rhi::BindGroupEntry entry{};
+            entry.binding = layoutEntry.binding;
+
+            if (layoutEntry.type == rhi::BindingType::UniformBuffer) {
+                entry.buffer = cache.paramBuffers[frameSlot].get();
+                entry.size = mat->materialParamBufferSize();
+            } else if (layoutEntry.type == rhi::BindingType::SampledTexture) {
+                auto viewIt = cache.textureViews.find(layoutEntry.binding);
+                if (viewIt != cache.textureViews.end()) {
+                    entry.textureView = viewIt->second.get();
+                }
+            } else if (layoutEntry.type == rhi::BindingType::Sampler) {
+                entry.sampler = cache.sampler.get();
+            }
+            entries.push_back(entry);
+        }
+
         auto bgResult = mat->shaderPass()->pipelineLayout()->createBindGroup(
             static_cast<u32>(matSet), entries);
         if (!bgResult) return LN_FORWARD_ERROR(bgResult);

@@ -358,6 +358,23 @@ extern LUMINO_API LNResult LNTexture2D_CreateRenderTarget(
 );
 
 /**
+ * 指定フォーマットのレンダーターゲットテクスチャを作成します。
+ * Sampled|RenderTarget のカラーテクスチャを生成します。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  width           幅 (ピクセル)
+ * @param[in]  height          高さ (ピクセル)
+ * @param[in]  format          テクスチャフォーマット (LNTextureFormat)
+ * @param[out] outHandle       作成されたテクスチャのハンドル
+ */
+extern LUMINO_API LNResult LNTexture2D_CreateRenderTargetEx(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    uint32_t format,
+    LNHandle* outHandle
+);
+
+/**
  * 深度ステンシルテクスチャを作成します。
  * 作成されたテクスチャは LNDepthStencilAttachmentDesc の depthBuffer に指定して使用します。
  * @param[in]  graphicsContext GraphicsContext のハンドル
@@ -411,6 +428,21 @@ typedef enum LNBuiltinShader {
     /** StencilMask: ステンシルバッファへの書き込み専用 */
     LN_BUILTIN_SHADER_STENCIL_MASK = 2,
 } LNBuiltinShader;
+
+/**
+ * テクスチャフォーマット。
+ * 値は内部 rhi::TextureFormat と一致します。
+ */
+typedef enum LNTextureFormat {
+    LN_TEXTURE_FORMAT_BGRA8_UNORM      = 1,
+    LN_TEXTURE_FORMAT_BGRA8_UNORM_SRGB = 2,
+    LN_TEXTURE_FORMAT_RGBA8_UNORM      = 3,
+    LN_TEXTURE_FORMAT_RGBA8_UNORM_SRGB = 4,
+    LN_TEXTURE_FORMAT_R8_UNORM         = 7,
+    LN_TEXTURE_FORMAT_RG8_UNORM        = 8,
+    LN_TEXTURE_FORMAT_RGBA16_FLOAT     = 9,
+    LN_TEXTURE_FORMAT_RGBA32_FLOAT     = 10,
+} LNTextureFormat;
 
 /**
  * ビルトインシェーダを指定してマテリアルを作成します。
@@ -490,6 +522,19 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(
     LNHandle material,
     const char* name,
     const float* values
+);
+
+/**
+ * シェーダバインディング名でテクスチャを設定します。
+ * シェーダの uniform Texture2D 変数名（例: "u_sceneColor"）を指定します。
+ * @param[in] material マテリアルのハンドル
+ * @param[in] name     シェーダ内のテクスチャバインディング名 (UTF-8)
+ * @param[in] texture  Texture のハンドル
+ */
+extern LUMINO_API LNResult LNMaterial_SetNamedTexture(
+    LNHandle material,
+    const char* name,
+    LNHandle texture
 );
 
 //------------------------------------------------------------------------------
@@ -690,6 +735,33 @@ extern LUMINO_API LNResult LNRenderer_DrawMeshImmediate(
     LNHandle renderer,
     LNHandle mesh,
     const LNTransform* transform
+);
+
+/**
+ * メッシュを指定マテリアルで即座に描画します (バッチ化なし)。
+ * メッシュに設定されたマテリアルではなく、引数のマテリアルを使用します。
+ * @param[in] renderer  Renderer のハンドル
+ * @param[in] mesh      メッシュのハンドル
+ * @param[in] transform ワールドトランスフォーム (NULL で単位行列)
+ * @param[in] material  マテリアルのハンドル
+ */
+extern LUMINO_API LNResult LNRenderer_DrawMeshImmediateWithMaterial(
+    LNHandle renderer,
+    LNHandle mesh,
+    const LNTransform* transform,
+    LNHandle material
+);
+
+/**
+ * フルスクリーン矩形を指定マテリアルで描画します。
+ * ポストプロセス・スクリーンスペースエフェクト用です。
+ * NDC [-1,1]x[-1,1] をカバーする矩形を描画します。
+ * @param[in] renderer  Renderer のハンドル
+ * @param[in] material  マテリアルのハンドル
+ */
+extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
+    LNHandle renderer,
+    LNHandle material
 );
 
 /**

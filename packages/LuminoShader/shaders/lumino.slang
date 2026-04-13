@@ -6,6 +6,11 @@
 struct ViewParams {
     float4x4 viewProj;
     float4   cameraPos;    // xyz = position
+    float4x4 view;         // view matrix (world -> view)
+    float4x4 proj;         // projection matrix (view -> clip)
+    float4x4 invViewProj;  // inverse of viewProj (clip -> world)
+    float4x4 invProj;      // inverse of proj (clip -> view)
+    float4   screenSize;   // (width, height, 1/width, 1/height)
 };
 
 struct SceneParams {

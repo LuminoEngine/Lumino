@@ -68,6 +68,26 @@ Result<Ref<Texture>> Texture::createRenderTarget(rhi::Device* device, uint32_t w
     return tex;
 }
 
+Result<Ref<Texture>> Texture::createRenderTarget(
+    rhi::Device* device, uint32_t width, uint32_t height, rhi::TextureFormat format) {
+    rhi::TextureDesc colorDesc;
+    colorDesc.width = width;
+    colorDesc.height = height;
+    colorDesc.format = format;
+    colorDesc.usage = rhi::TextureUsage::Sampled | rhi::TextureUsage::RenderTarget;
+    auto colorResult = device->createTexture(colorDesc);
+    if (!colorResult) return LN_FORWARD_ERROR(colorResult);
+
+    auto colorViewResult = device->createTextureView(colorResult->get());
+    if (!colorViewResult) return LN_FORWARD_ERROR(colorViewResult);
+
+    auto tex = Ref<Texture>::adopt(new Texture(width, height, format));
+    tex->m_isRenderTarget = true;
+    tex->m_rhiTexture = std::move(*colorResult);
+    tex->m_rhiTextureView = std::move(*colorViewResult);
+    return tex;
+}
+
 void Texture::wrapBackbuffer(
     rhi::TextureView* rhiTextureView,
     uint32_t width,

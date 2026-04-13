@@ -7,6 +7,7 @@
 #include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace ln {
 
@@ -14,6 +15,11 @@ namespace ln {
 struct ViewParamsUBO {
     f32 viewProj[16];
     f32 cameraPos[4];
+    f32 view[16];         // view matrix (world -> view)
+    f32 proj[16];         // projection matrix (view -> clip)
+    f32 invViewProj[16]; // inverse of viewProj (clip -> world)
+    f32 invProj[16];     // inverse of proj (clip -> view)
+    f32 screenSize[4];   // (width, height, 1/width, 1/height)
 };
 
 /** GPU-aligned scene params (Set N — lighting): must match shader SceneParams struct. */
@@ -55,6 +61,9 @@ public:
 
     void setTexture(rhi::Texture* texture);
 
+    /** Set a texture by shader binding name (e.g., "u_sceneColor"). */
+    void setNamedTexture(const std::string& name, rhi::Texture* texture);
+
     // Render state
     void setBlendEnabled(bool enabled);
     void setCullMode(rhi::CullMode mode);
@@ -82,6 +91,9 @@ public:
     u64 materialParamBufferSize() const { return m_shaderPass->materialParamBufferSize(); }
     const Color& baseColor() const { return m_baseColor; }
 
+    /** Named textures map (for reflection-driven bind group construction). */
+    const std::unordered_map<std::string, Ref<rhi::Texture>>& namedTextures() const { return m_namedTextures; }
+
     /** Write material UBO data into the given mapped pointer. */
     void writeMaterialUBO(void* dst) const;
 
@@ -103,6 +115,9 @@ private:
 
     // Textures
     Ref<rhi::Texture> m_baseTexture;
+
+    // Named texture slots (keyed by shader binding name, e.g., "u_sceneColor")
+    std::unordered_map<std::string, Ref<rhi::Texture>> m_namedTextures;
 
     // Render state
     rhi::CullMode m_cullMode;

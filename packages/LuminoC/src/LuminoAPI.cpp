@@ -646,6 +646,18 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* n
     return LN_OK;
 }
 
+LNResult LNMaterial_SetNamedTexture(LNHandle material, const char* name, LNHandle texture) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (!name) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* tex = resolveObject<ln::Texture>(texture);
+    if (!tex) return LN_ERROR_INVALID_HANDLE;
+
+    mat->setNamedTexture(name, tex->rhiTexture());
+    return LN_OK;
+}
+
 //------------------------------------------------------------------------------
 // LNMesh
 //------------------------------------------------------------------------------
@@ -995,6 +1007,42 @@ LNResult LNRenderer_DrawMeshImmediate(
     return LN_OK;
 }
 
+LNResult LNRenderer_DrawMeshImmediateWithMaterial(
+    LNHandle renderer, LNHandle meshHandle, const LNTransform* transform, LNHandle materialHandle) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mesh = instance->objectRegistry()->resolve<ln::Mesh>(meshHandle);
+    if (!mesh) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = resolveObject<ln::Material>(materialHandle);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = ren->drawMeshImmediate(mesh, toLnTransform(transform), mat);
+    if (!result) return LN_ERROR_UNKNOWN;
+
+    return LN_OK;
+}
+
+LNResult LNRenderer_DrawScreenRect(LNHandle renderer, LNHandle materialHandle) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ren = instance->objectRegistry()->resolve<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto* mat = resolveObject<ln::Material>(materialHandle);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = ren->drawScreenRect(mat);
+    if (!result) return LN_ERROR_UNKNOWN;
+
+    return LN_OK;
+}
+
 LNResult LNRenderer_DrawSprite(
     LNHandle renderer, LNHandle material, int32_t zIndex,
     float posX, float posY, float posZ,
@@ -1083,6 +1131,34 @@ LNResult LNTexture2D_CreateRenderTarget(
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto rtResult = ln::Texture::createRenderTarget(ctx->device(), width, height);
+    if (!rtResult) return LN_ERROR_UNKNOWN;
+
+    *outHandle = wrapObjectFromCreate(rtResult->get());
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNTexture2D_CreateRenderTargetEx
+//------------------------------------------------------------------------------
+
+LNResult LNTexture2D_CreateRenderTargetEx(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    uint32_t format,
+    LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = instance->objectRegistry()->resolve<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto rtResult = ln::Texture::createRenderTarget(
+        ctx->device(), width, height, static_cast<ln::rhi::TextureFormat>(format));
     if (!rtResult) return LN_ERROR_UNKNOWN;
 
     *outHandle = wrapObjectFromCreate(rtResult->get());

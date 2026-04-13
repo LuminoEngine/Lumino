@@ -88,6 +88,16 @@ void Material::writeMaterialUBO(void* dst) const {
     }
 }
 
+void Material::setNamedTexture(const std::string& name, rhi::Texture* texture) {
+    if (texture) {
+        texture->addRef();
+        m_namedTextures[name] = Ref<rhi::Texture>::adopt(texture);
+    } else {
+        m_namedTextures.erase(name);
+    }
+    markDirty();
+}
+
 void Material::setBlendEnabled(bool enabled) { m_blendEnabled = enabled; }
 void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
 void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }

@@ -298,8 +298,9 @@ private:
     /** Cached GPU resources for a single Material, double-buffered per in-flight frame. */
     struct CachedMaterialBind {
         uint64_t paramVersion = 0;
-        rhi::Texture* lastBaseTexture = nullptr;
-        Ref<rhi::TextureView> textureView;
+        // Per-binding texture tracking (binding index -> last texture pointer)
+        std::unordered_map<u32, rhi::Texture*> lastTextures;
+        std::unordered_map<u32, Ref<rhi::TextureView>> textureViews;
         Ref<rhi::Sampler>     sampler;
         std::vector<Ref<rhi::Buffer>>    paramBuffers;
         std::vector<Ref<rhi::BindGroup>> bindGroups;

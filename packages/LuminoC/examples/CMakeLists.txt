@@ -54,4 +54,5 @@ add_subdirectory(BatchSprite)
 add_subdirectory(BatchRendering)
 add_subdirectory(CustomShader)
 add_subdirectory(RenderTargets)
+add_subdirectory(SSR)
 

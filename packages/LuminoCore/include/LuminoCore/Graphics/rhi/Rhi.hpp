@@ -396,8 +396,11 @@ class TextureView : public RHIObject {
     //   - Cascaded shadow map など高度な描画
     //   完全に隠すのは少しためらわれるのと、 Texture にデフォルトの view を取得するような仕組みにしつつ、
     //   Material などで隠蔽してみることにする。
+
  public:
     virtual ~TextureView() = default;
+    virtual u32 width() const = 0;
+    virtual u32 height() const = 0;
 };
 
 class Sampler : public RHIObject {

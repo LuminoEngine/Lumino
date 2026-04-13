@@ -5,10 +5,7 @@
  * LNMaterial_CreateFromCompiledShader で Material を作成して
  * 赤い三角形を描画するデモ。
  */
-#include <string>
-#include <vector>
-#include <LuminoC/lumino.h>
-#include <stdio.h>
+#include "../Utils.h"
 
 static std::vector<unsigned char> loadFile(const char* path) {
     FILE* fp = fopen(path, "rb");
@@ -25,11 +22,8 @@ static std::vector<unsigned char> loadFile(const char* path) {
     return buf;
 }
 
-int main(void) {
-    /* 1. Runtime initialize */
-    LNInstanceInitializeSettings settings = {};
-    settings.enableValidation = LN_TRUE;
-    LNInstance_Initialize(&settings);
+int main() {
+    InitializeInstance();
 
     /* 2. Window + GraphicsContext */
     LNHandle window = LN_NULL_HANDLE;
