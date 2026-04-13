@@ -614,6 +614,25 @@ LNResult LNMaterial_CreateFromCompiledShader(LNHandle graphicsContext, const voi
     return LN_OK;
 }
 
+LNResult LNMaterial_CreateFromShaderSourceFile(LNHandle graphicsContext, const char* shaderFilePath, const char* searchPathOrNull, LNHandle* outHandle) {
+    if (!shaderFilePath || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto matResult = ln::MaterialFactory::createFromShaderSourceFile(
+        ctx,
+        shaderFilePath,
+        searchPathOrNull ? searchPathOrNull : "");
+    if (!matResult) return LN_ERROR_UNKNOWN;
+    *outHandle = wrapObjectFromCreate(matResult->get());
+    return LN_OK;
+}
+
 LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float a) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;

@@ -77,7 +77,7 @@ int main() {
     /* Scene materials (Unlit) */
     LNHandle matGround = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matGround);
-    LNMaterial_SetColor(matGround, 0.3f, 0.3f, 0.35f, 1.0f); /* dark gray ground */
+    LNMaterial_SetColor(matGround, 0.3f, 0.3f, 0.3f, 1.0f); /* dark gray ground */
 
     LNHandle matTriangle = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matTriangle);
@@ -85,13 +85,19 @@ int main() {
 
     /* DepthNormal material */
     LNHandle matDepthNormal = LN_NULL_HANDLE;
-    LNMaterial_CreateFromCompiledShader(graphicsContext,
-        depthNormalShaderData.data(), (uint32_t)depthNormalShaderData.size(), &matDepthNormal);
-
+    LNMaterial_CreateFromShaderSourceFile(
+        graphicsContext,
+        ASSETS_DIR "/DepthNormal.slang",
+        "C:/Proj/Lumino/packages/LuminoShader/shaders",
+        &matDepthNormal);
+    
     /* SSR material */
     LNHandle matSSR = LN_NULL_HANDLE;
-    LNMaterial_CreateFromCompiledShader(graphicsContext,
-        ssrShaderData.data(), (uint32_t)ssrShaderData.size(), &matSSR);
+    LNMaterial_CreateFromShaderSourceFile(
+        graphicsContext,
+        ASSETS_DIR "/SSR.slang",
+        "C:/Proj/Lumino/packages/LuminoShader/shaders",
+        &matSSR);
 
     /* SSR parameters: maxDistance, stepSize, thickness, maxSteps */
     const float ssrSettings[4] = {10.0f, 0.05f, 0.3f, 128.0f};
@@ -105,13 +111,14 @@ int main() {
     /* Scene geometry                                                      */
     /* ------------------------------------------------------------------ */
 
+    // clang-format off
     /* Ground plane: 4 vertices at Y=0, extends from (-3,-3) to (3,3) */
     LNVertex groundVertices[4] = {
-        /* posX   posY   posZ   nX nY nZ   u    v    r    g    b    a    tX tY tZ tW */
-        { -3.0f,  0.0f, -3.0f,  0, 1, 0,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
-        {  3.0f,  0.0f, -3.0f,  0, 1, 0,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
-        { -3.0f,  0.0f,  3.0f,  0, 1, 0,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
-        {  3.0f,  0.0f,  3.0f,  0, 1, 0,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        /* posX   posY   posZ   nX nY nZ   u    v      r g b a   tX tY tZ tW */
+        { -2.0f,  0.0f, -2.0f,  0, 1, 0,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+        {  2.0f,  0.0f, -2.0f,  0, 1, 0,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+        { -2.0f,  0.0f,  2.0f,  0, 1, 0,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        {  2.0f,  0.0f,  2.0f,  0, 1, 0,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
     };
     uint32_t groundIndices[6] = { 0, 2, 1,  1, 2, 3 };
     LNSubMesh groundSub = { 0, 6, 0 };
@@ -123,9 +130,9 @@ int main() {
 
     /* Rotating triangle: hovers above ground at Y=0.8 */
     LNVertex triVertices[3] = {
-        {  0.0f,  0.6f,  0.0f,  0, 0, 1,  0.5f, 0.0f,  1,1,1,1,  1,0,0,0 },
-        {  0.5f, -0.2f,  0.0f,  0, 0, 1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
-        { -0.5f, -0.2f,  0.0f,  0, 0, 1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        {  0.0f,  1.0f,  0.0f,  0, 0, 1,  0.5f, 0.0f,  1,1,1,1,  1,0,0,0 },
+        {  1.0f,  0.0f,  0.0f,  0, 0, 1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        { -1.0f,  0.0f,  0.0f,  0, 0, 1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
     };
     uint32_t triIndices[3] = { 0, 2, 1 };
     LNSubMesh triSub = { 0, 3, 0 };
@@ -157,15 +164,24 @@ int main() {
     LNTransform groundTransform = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNGraphicsProfilering profiler = {};
     LNBool quit = LN_FALSE;
-    float angle = 0.0f;
+    float cameraAngle = 0.0f;
+    float triangleAngle = 0.0f;
 
+    float frameTime = 0.0f;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
-        angle += 0.01f;
+        frameTime += 0.02f;
+        cameraAngle = sinf(frameTime);
+        //triangleAngle += 0.01f;
+
+        LNCamera_SetLookAt(camera,
+            0.0f + cameraAngle, 2.5f, 5.0f,   /* eye: slightly above and behind */
+            0.0f, 0.5f, 0.0f,   /* target: slightly above ground */
+            0.0f, 1.0f, 0.0f);  /* up */
 
         /* Triangle transform: rotate around Y axis, hover above ground */
         LNTransform triTransform = {
-            0.0f, 0.8f, 0.0f,                                     /* position */
-            0.0f, sinf(angle * 0.5f), 0.0f, cosf(angle * 0.5f),  /* rotation (Y axis) */
+            0.0f, 0.0f, 0.0f,                                     /* position */
+            0.0f, sinf(triangleAngle * 0.5f), 0.0f, cosf(triangleAngle * 0.5f),  /* rotation (Y axis) */
             1.0f, 1.0f, 1.0f                                      /* scale */
         };
 
@@ -216,7 +232,7 @@ int main() {
         /* ============================================================== */
         /* Pass 3: SSR + Composite (fullscreen)                            */
         /* ============================================================== */
-        {
+        if (1){
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             /* Render to backbuffer */
