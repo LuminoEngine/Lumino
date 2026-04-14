@@ -59,16 +59,16 @@ int main() {
     /* Load custom shaders                                                 */
     /* ------------------------------------------------------------------ */
 
-    auto depthNormalShaderData = loadFile(ASSETS_DIR "/DepthNormal.lcsh");
-    if (depthNormalShaderData.empty()) {
-        fprintf(stderr, "Failed to load DepthNormal.lcsh\n");
-        return 1;
-    }
-    auto ssrShaderData = loadFile(ASSETS_DIR "/SSR.lcsh");
-    if (ssrShaderData.empty()) {
-        fprintf(stderr, "Failed to load SSR.lcsh\n");
-        return 1;
-    }
+    //auto depthNormalShaderData = loadFile(ASSETS_DIR "/DepthNormal.lcsh");
+    //if (depthNormalShaderData.empty()) {
+    //    fprintf(stderr, "Failed to load DepthNormal.lcsh\n");
+    //    return 1;
+    //}
+    //auto ssrShaderData = loadFile(ASSETS_DIR "/SSR.lcsh");
+    //if (ssrShaderData.empty()) {
+    //    fprintf(stderr, "Failed to load SSR.lcsh\n");
+    //    return 1;
+    //}
 
     /* ------------------------------------------------------------------ */
     /* Materials                                                           */
@@ -88,7 +88,7 @@ int main() {
     LNMaterial_CreateFromShaderSourceFile(
         graphicsContext,
         ASSETS_DIR "/DepthNormal.slang",
-        "C:/Proj/Lumino/packages/LuminoShader/shaders",
+        LN_REPO_ROOT_DIR "/packages/LuminoShader/shaders",
         &matDepthNormal);
     
     /* SSR material */
@@ -96,7 +96,7 @@ int main() {
     LNMaterial_CreateFromShaderSourceFile(
         graphicsContext,
         ASSETS_DIR "/SSR.slang",
-        "C:/Proj/Lumino/packages/LuminoShader/shaders",
+        LN_REPO_ROOT_DIR "/packages/LuminoShader/shaders",
         &matSSR);
 
     /* SSR parameters: maxDistance, stepSize, thickness, maxSteps */
@@ -187,18 +187,37 @@ int main() {
 
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
+        
+
+        // test
+        if (0) {
+            LNRenderPassDesc rpDesc;
+            LNRenderPassDesc_Init(&rpDesc);
+            rpDesc.colorAttachmentCount = 1;
+            rpDesc.colorAttachments[0].renderTarget = colorBuffer;
+            rpDesc.colorAttachments[0].clearColor[0] = 0.05f;
+            rpDesc.colorAttachments[0].clearColor[1] = 0.05f;
+            rpDesc.colorAttachments[0].clearColor[2] = 0.05f;
+            rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+            rpDesc.depthStencil.depthBuffer = depthBuffer;
+
+            LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
+            LNRenderer_DrawMesh(renderer, groundMesh, &groundTransform, 0);
+            LNRenderer_DrawMesh(renderer, triMesh, &triTransform, 0);
+            LNRenderer_EndRenderPass(renderer);
+        }
 
         /* ============================================================== */
         /* Pass 1: Scene color                                             */
         /* ============================================================== */
-        {
+        if (1) {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             rpDesc.colorAttachmentCount = 1;
             rpDesc.colorAttachments[0].renderTarget = sceneColorRT;
             rpDesc.colorAttachments[0].clearColor[0] = 0.05f;
             rpDesc.colorAttachments[0].clearColor[1] = 0.05f;
-            rpDesc.colorAttachments[0].clearColor[2] = 0.08f;
+            rpDesc.colorAttachments[0].clearColor[2] = 0.05f;
             rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
             rpDesc.depthStencil.depthBuffer = sceneDepth;
 
@@ -211,7 +230,7 @@ int main() {
         /* ============================================================== */
         /* Pass 2: Depth + Normal                                          */
         /* ============================================================== */
-        {
+        if (1) {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             rpDesc.colorAttachmentCount = 1;
@@ -232,7 +251,7 @@ int main() {
         /* ============================================================== */
         /* Pass 3: SSR + Composite (fullscreen)                            */
         /* ============================================================== */
-        if (1){
+        if (1) {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             /* Render to backbuffer */
