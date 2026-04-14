@@ -47,17 +47,17 @@ inline TextureFormat fromWGPUTextureFormat(WGPUTextureFormat fmt) {
 //------------------------------------------------------------------------------
 inline WGPUTextureUsage toWGPUTextureUsage(TextureUsage usage) {
     WGPUTextureUsage result = WGPUTextureUsage_None;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::Sampled))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::Sampled))
         result |= WGPUTextureUsage_TextureBinding;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::Storage))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::Storage))
         result |= WGPUTextureUsage_StorageBinding;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::RenderTarget))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::RenderTarget))
         result |= WGPUTextureUsage_RenderAttachment;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::CopySrc))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::CopySrc))
         result |= WGPUTextureUsage_CopySrc;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::CopyDst))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::CopyDst))
         result |= WGPUTextureUsage_CopyDst;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::DepthStencil))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::DepthStencil))
         result |= WGPUTextureUsage_RenderAttachment;
     return result;
 }

@@ -39,16 +39,16 @@ private:
     DebugPrint() = default;
 
     // 最大文字数 (改行含む)
-    static constexpr u32 kMaxChars = 512;
+    static constexpr uint32_t kMaxChars = 512;
     // 1 文字あたりの頂点数 (2三角形 = 6頂点)
-    static constexpr u32 kVertsPerChar = 6;
+    static constexpr uint32_t kVertsPerChar = 6;
 
     Ref<rhi::Texture>  m_fontTexture;
     Ref<Material>      m_material;
     Ref<Mesh>          m_mesh;
 
     std::array<char, kMaxChars> m_textBuffer = {};
-    u32 m_textBufferUsed = 0;
+    uint32_t m_textBufferUsed = 0;
 };
 
 } // namespace ln

@@ -1,4 +1,4 @@
-// clang-format off
+ï»¿// clang-format off
 #include <LuminoBase/math/Math.hpp>
 #include <cmath>
 #include <iostream>
@@ -8,12 +8,12 @@ using namespace ln;
 
 class Test_Matrix4x4 : public ::testing::Test {};
 
-static constexpr f32 kPi = 3.14159265358979323846f;
-static constexpr f32 kEps = 1e-5f;
+static constexpr float kPi = 3.14159265358979323846f;
+static constexpr float kEps = 1e-5f;
 
-// float ‚Ì‰‰Z•û–@‚ªƒRƒ“ƒpƒCƒ‰‚É‚æ‚Á‚ÄˆÙ‚È‚èAŒ‹‰Ê‚ª”÷–­‚Éˆá‚­‚È‚éB
-// ‚»‚Ì·‚ğ‹zû‚·‚é‚½‚ßA”äŠr‚·‚éŒ…”‚ğw’è‚·‚éB
-// (‹ï‘Ì“I‚É‚Ç‚¤ˆÙ‚È‚é‚Ì‚©‚Í’²¸’†BVS2010 ‚Æ VS2013 ‚Å‚Í Vector3::project() ‚ÌŒë·‚ªˆê”Ô‘å‚«‚©‚Á‚½)
+// float ã®æ¼”ç®—æ–¹æ³•ãŒã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã«ã‚ˆã£ã¦ç•°ãªã‚Šã€çµæœãŒå¾®å¦™ã«é•ããªã‚‹ã€‚
+// ãã®å·®ã‚’å¸åã™ã‚‹ãŸã‚ã€æ¯”è¼ƒã™ã‚‹æ¡æ•°ã‚’æŒ‡å®šã™ã‚‹ã€‚
+// (å…·ä½“çš„ã«ã©ã†ç•°ãªã‚‹ã®ã‹ã¯èª¿æŸ»ä¸­ã€‚VS2010 ã¨ VS2013 ã§ã¯ Vector3::project() ã®èª¤å·®ãŒä¸€ç•ªå¤§ãã‹ã£ãŸ)
 #define LN_FLOAT_THRESHOLD 0.0001f
 
 // Helper: multiply Matrix4x4 by Vector4 (M * v, column-vector convention).
@@ -26,7 +26,7 @@ static Vector4 mulMV(const Matrix4x4& M, const Vector4& v) {
     return r;
 }
 
-static bool matNear(const Matrix4x4& a, const Matrix4x4& b, f32 eps = kEps) {
+static bool matNear(const Matrix4x4& a, const Matrix4x4& b, float eps = kEps) {
     for (int i = 0; i < 16; ++i)
         if (std::abs(a.m[i] - b.m[i]) > eps) return false;
     return true;
@@ -154,7 +154,6 @@ TEST_F(Test_Matrix4x4, RowMajorLayout) {
 
     //auto* a = &identity;
 
-    // mat4 ‚ğ float[16] ‚É•ÏŠ·‚·‚é
     float dataGL[16];
     std::memcpy(dataGL, &identity, sizeof(float) * 16);
     std::memcpy(dataGL, &m1, sizeof(float) * 16);
@@ -231,21 +230,21 @@ TEST_F(Test_Matrix4x4, RotateZ_90) {
 }
 
 TEST_F(Test_Matrix4x4, FromQuaternion_MatchesRotateX) {
-    f32 angle = 0.7f;
+    float angle = 0.7f;
     Matrix4x4 mr = Matrix4x4::rotateX(angle);
     Matrix4x4 mq = Matrix4x4::fromQuaternion(Quaternion::fromAxisAngle(Vector3::unitX(), angle));
     EXPECT_TRUE(matNear(mr, mq));
 }
 
 TEST_F(Test_Matrix4x4, FromQuaternion_MatchesRotateY) {
-    f32 angle = 1.2f;
+    float angle = 1.2f;
     Matrix4x4 mr = Matrix4x4::rotateY(angle);
     Matrix4x4 mq = Matrix4x4::fromQuaternion(Quaternion::fromAxisAngle(Vector3::unitY(), angle));
     EXPECT_TRUE(matNear(mr, mq));
 }
 
 TEST_F(Test_Matrix4x4, FromQuaternion_MatchesRotateZ) {
-    f32 angle = -0.5f;
+    float angle = -0.5f;
     Matrix4x4 mr = Matrix4x4::rotateZ(angle);
     Matrix4x4 mq = Matrix4x4::fromQuaternion(Quaternion::fromAxisAngle(Vector3::unitZ(), angle));
     EXPECT_TRUE(matNear(mr, mq));

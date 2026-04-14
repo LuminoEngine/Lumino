@@ -13,7 +13,7 @@ namespace ln {
 struct DynamicUniformAllocation {
     void* cpuPtr;                ///< CPU-writable pointer into shadow buffer.
     rhi::BindGroup* bindGroup;   ///< BindGroup to bind (one per page).
-    u32 dynamicOffset;           ///< Dynamic offset to pass to setBindGroup.
+    uint32_t dynamicOffset;           ///< Dynamic offset to pass to setBindGroup.
 };
 
 /**
@@ -45,13 +45,13 @@ public:
     static Result<std::unique_ptr<DynamicUniformAllocator>> create(
         rhi::Device* device,
         rhi::PipelineLayout* pipelineLayout,
-        u32 setIndex,
-        u32 binding,
-        u32 elementSize,
-        u32 framesInFlight);
+        uint32_t setIndex,
+        uint32_t binding,
+        uint32_t elementSize,
+        uint32_t framesInFlight);
 
     /** Called at the start of each frame to reset the allocator for reuse. */
-    void beginFrame(u32 frameIndex);
+    void beginFrame(uint32_t frameIndex);
 
     /** Sub-allocate one element. Returns CPU pointer + bind info. */
     DynamicUniformAllocation allocate();
@@ -65,27 +65,27 @@ private:
     struct Page {
         Ref<rhi::Buffer> buffer;
         Ref<rhi::BindGroup> bindGroup;
-        std::vector<u8> cpuShadow;
-        u32 usedElements = 0;
+        std::vector<uint8_t> cpuShadow;
+        uint32_t usedElements = 0;
     };
 
     struct FrameData {
         std::vector<Page> pages;
-        u32 currentPage = 0;
+        uint32_t currentPage = 0;
     };
 
     rhi::Device* m_device = nullptr;
     rhi::PipelineLayout* m_pipelineLayout = nullptr;
-    u32 m_setIndex = 0;
-    u32 m_binding = 0;
-    u32 m_elementSize = 0;
-    u32 m_alignedElementSize = 0;
-    u32 m_maxElementsPerPage = 0;
-    u32 m_pageByteSize = 0;
-    u32 m_framesInFlight = 2;
+    uint32_t m_setIndex = 0;
+    uint32_t m_binding = 0;
+    uint32_t m_elementSize = 0;
+    uint32_t m_alignedElementSize = 0;
+    uint32_t m_maxElementsPerPage = 0;
+    uint32_t m_pageByteSize = 0;
+    uint32_t m_framesInFlight = 2;
 
     std::vector<FrameData> m_frames;
-    u32 m_currentFrameSlot = 0;
+    uint32_t m_currentFrameSlot = 0;
 
     Result<Page> createPage();
 };

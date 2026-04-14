@@ -62,7 +62,7 @@ enum class TextureFormat {
     RGBA32Float,
 };
 
-enum class BufferUsage : u32 {
+enum class BufferUsage : uint32_t {
     Vertex  = 0x01,
     Index   = 0x02,
     Uniform = 0x04,
@@ -71,13 +71,13 @@ enum class BufferUsage : u32 {
     CopyDst = 0x20,
 };
 inline BufferUsage operator|(BufferUsage a, BufferUsage b) {
-    return static_cast<BufferUsage>(static_cast<u32>(a) | static_cast<u32>(b));
+    return static_cast<BufferUsage>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
 }
 inline bool operator&(BufferUsage a, BufferUsage b) {
-    return (static_cast<u32>(a) & static_cast<u32>(b)) != 0;
+    return (static_cast<uint32_t>(a) & static_cast<uint32_t>(b)) != 0;
 }
 
-enum class TextureUsage : u32 {
+enum class TextureUsage : uint32_t {
     Sampled      = 0x01,
     Storage      = 0x02,
     RenderTarget = 0x04,
@@ -86,16 +86,16 @@ enum class TextureUsage : u32 {
     DepthStencil = 0x20,  // depth/stencil attachment
 };
 inline TextureUsage operator|(TextureUsage a, TextureUsage b) {
-    return static_cast<TextureUsage>(static_cast<u32>(a) | static_cast<u32>(b));
+    return static_cast<TextureUsage>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
 }
 
-enum class ShaderStage : u32 {
+enum class ShaderStage : uint32_t {
     Vertex   = 0x01,
     Fragment = 0x02,
     Compute  = 0x04,
 };
 inline ShaderStage operator|(ShaderStage a, ShaderStage b) {
-    return static_cast<ShaderStage>(static_cast<u32>(a) | static_cast<u32>(b));
+    return static_cast<ShaderStage>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
 }
 
 enum class VertexFormat {
@@ -201,17 +201,17 @@ enum class AddressMode {
 // ------ Descriptors ------------------------------------------------------------------------------------------------------------------
 
 struct BufferDesc {
-    u64 size = 0;
+    uint64_t size = 0;
     BufferUsage usage = BufferUsage::Vertex;
     const void* initialData = nullptr;
     bool mappable = false; ///< If true, buffer is host-visible even for Vertex/Index usage.
 };
 
 struct TextureDesc {
-    u32 width = 1;
-    u32 height = 1;
-    u32 depthOrArrayLayers = 1;
-    u32 mipLevels = 1;
+    uint32_t width = 1;
+    uint32_t height = 1;
+    uint32_t depthOrArrayLayers = 1;
+    uint32_t mipLevels = 1;
     TextureFormat format = TextureFormat::RGBA8Unorm;
     TextureUsage usage = TextureUsage::Sampled;
     const void* initialData = nullptr; ///< If non-null, pixel data uploaded via staging buffer.
@@ -223,7 +223,7 @@ struct SamplerDesc {
     AddressMode addressU = AddressMode::Repeat;
     AddressMode addressV = AddressMode::Repeat;
     AddressMode addressW = AddressMode::Repeat;
-    u32 maxAnisotropy = 1;
+    uint32_t maxAnisotropy = 1;
 };
 
 enum class ShaderCodeFormat {
@@ -238,13 +238,13 @@ struct ShaderModuleDesc {
 };
 
 struct VertexAttribute {
-    u32 location = 0;
+    uint32_t location = 0;
     VertexFormat format = VertexFormat::Float32x3;
-    u32 offset = 0;
+    uint32_t offset = 0;
 };
 
 struct VertexBufferLayout {
-    u32 stride = 0;
+    uint32_t stride = 0;
     std::vector<VertexAttribute> attributes;
     bool perInstance = false;
 };
@@ -274,12 +274,12 @@ struct DepthStencilState {
     bool stencilTestEnable = false;
     StencilFaceState stencilFront;
     StencilFaceState stencilBack;
-    u32 stencilReadMask  = 0xFF;
-    u32 stencilWriteMask = 0xFF;
+    uint32_t stencilReadMask  = 0xFF;
+    uint32_t stencilWriteMask = 0xFF;
 };
 
 struct BindGroupLayoutEntry {
-    u32 binding = 0;
+    uint32_t binding = 0;
     ShaderStage visibility = ShaderStage::Vertex;
     BindingType type = BindingType::UniformBuffer;
     bool hasDynamicOffset = false;  ///< Only valid for UniformBuffer/StorageBuffer.
@@ -290,10 +290,10 @@ struct BindGroupLayoutDesc {
 };
 
 struct BindGroupEntry {
-    u32 binding = 0;
+    uint32_t binding = 0;
     Buffer* buffer = nullptr;          // for uniform/storage
-    u64 offset = 0;
-    u64 size = 0;
+    uint64_t offset = 0;
+    uint64_t size = 0;
     TextureView* textureView = nullptr; // for sampled texture
     Sampler* sampler = nullptr;         // for sampler
 };
@@ -310,7 +310,7 @@ struct PipelineLayoutDesc {
 struct RenderPassLayoutDesc {
     std::vector<TextureFormat> colorFormats;
     TextureFormat depthStencilFormat = TextureFormat::Undefined;
-    u32 sampleCount = 1;
+    uint32_t sampleCount = 1;
 };
 
 struct RenderPipelineDesc {
@@ -339,10 +339,10 @@ struct DepthStencilAttachment {
     TextureView* view = nullptr;
     LoadOp depthLoadOp = LoadOp::Clear;
     StoreOp depthStoreOp = StoreOp::Store;
-    f32 clearDepth = 1.0f;
+    float clearDepth = 1.0f;
     LoadOp stencilLoadOp = LoadOp::Clear;
     StoreOp stencilStoreOp = StoreOp::Store;
-    u32 clearStencil = 0;
+    uint32_t clearStencil = 0;
 };
 
 struct RenderPassDesc {
@@ -352,8 +352,8 @@ struct RenderPassDesc {
 
 struct SwapChainDesc {
     void* nativeWindowHandle = nullptr;
-    u32 width = 1280;
-    u32 height = 720;
+    uint32_t width = 1280;
+    uint32_t height = 720;
     bool vsync = true;
 };
 
@@ -367,7 +367,7 @@ struct DeviceDesc {
 class Buffer : public RHIObject {
 public:
     virtual ~Buffer() = default;
-    virtual u64 size() const = 0;
+    virtual uint64_t size() const = 0;
     /** Map the buffer for CPU write. Returns nullptr if not mappable. */
     virtual void* map() = 0;
     virtual void unmap() = 0;
@@ -376,8 +376,8 @@ public:
 class Texture : public RHIObject {
 public:
     virtual ~Texture() = default;
-    virtual u32 width() const = 0;
-    virtual u32 height() const = 0;
+    virtual uint32_t width() const = 0;
+    virtual uint32_t height() const = 0;
     virtual TextureFormat format() const = 0;
 };
 
@@ -399,8 +399,8 @@ class TextureView : public RHIObject {
 
  public:
     virtual ~TextureView() = default;
-    virtual u32 width() const = 0;
-    virtual u32 height() const = 0;
+    virtual uint32_t width() const = 0;
+    virtual uint32_t height() const = 0;
 };
 
 class Sampler : public RHIObject {
@@ -429,7 +429,7 @@ public:
 
     /** Create a BindGroup for the specified descriptor set index. */
     virtual Result<Ref<BindGroup>> createBindGroup(
-        u32 setIndex, const std::vector<BindGroupEntry>& entries) = 0;
+        uint32_t setIndex, const std::vector<BindGroupEntry>& entries) = 0;
 };
 
 class RenderPipeline : public RHIObject {
@@ -446,16 +446,16 @@ public:
 
     // Encoding methods
     virtual void setPipeline(RenderPipeline* pipeline) = 0;
-    virtual void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset = 0) = 0;
-    virtual void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset = 0) = 0;
-    virtual void setBindGroup(u32 index, BindGroup* group) = 0;
-    virtual void setBindGroup(u32 index, BindGroup* group,
-                              const u32* dynamicOffsets, u32 dynamicOffsetCount) = 0;
-    virtual void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth = 0, f32 maxDepth = 1) = 0;
-    virtual void setScissorRect(u32 x, u32 y, u32 w, u32 h) = 0;
-    virtual void setStencilReference(u32 reference) = 0;
-    virtual void draw(u32 vertexCount, u32 instanceCount = 1, u32 firstVertex = 0, u32 firstInstance = 0) = 0;
-    virtual void drawIndexed(u32 indexCount, u32 instanceCount = 1, u32 firstIndex = 0, i32 baseVertex = 0, u32 firstInstance = 0) = 0;
+    virtual void setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t offset = 0) = 0;
+    virtual void setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset = 0) = 0;
+    virtual void setBindGroup(uint32_t index, BindGroup* group) = 0;
+    virtual void setBindGroup(uint32_t index, BindGroup* group,
+                              const uint32_t* dynamicOffsets, uint32_t dynamicOffsetCount) = 0;
+    virtual void setViewport(float x, float y, float w, float h, float minDepth = 0, float maxDepth = 1) = 0;
+    virtual void setScissorRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h) = 0;
+    virtual void setStencilReference(uint32_t reference) = 0;
+    virtual void draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
+    virtual void drawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t baseVertex = 0, uint32_t firstInstance = 0) = 0;
     virtual void end() = 0;
 };
 
@@ -477,13 +477,13 @@ public:
     virtual TextureView* acquireNextTexture() = 0;
     /** Present the current frame. */
     virtual void present() = 0;
-    virtual u32 width() const = 0;
-    virtual u32 height() const = 0;
+    virtual uint32_t width() const = 0;
+    virtual uint32_t height() const = 0;
 
     /** インフライトフレーム数を返します (SwapChain イメージ数)。 */
-    virtual u32 maxFramesInFlight() const = 0;
+    virtual uint32_t maxFramesInFlight() const = 0;
 
-    virtual u32 currentFrame() const = 0;
+    virtual uint32_t currentFrame() const = 0;
 
 
     /** 現在のフレームの CommandBuffer を取得します。InFrightFrame ごとにインスタンスは変わります。 */
@@ -493,8 +493,8 @@ public:
 // ------ Device Limits -----------------------------------------------------------------------------------------------------------
 
 struct DeviceLimits {
-    u32 minUniformBufferOffsetAlignment = 256;
-    u32 maxUniformBufferRange = 65536;
+    uint32_t minUniformBufferOffsetAlignment = 256;
+    uint32_t maxUniformBufferRange = 65536;
 };
 
 // ------ Device (Factory) --------------------------------------------------------------------------------------------------------
@@ -520,7 +520,7 @@ public:
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
     /** Write data to a buffer. Works on all backends including those without map/unmap support. */
-    virtual VoidResult writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) = 0;
+    virtual VoidResult writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) = 0;
 
     /**
      * テクスチャビューの内容をCPU側のピクセルバッファに読み戻します。

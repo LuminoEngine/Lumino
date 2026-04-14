@@ -12,11 +12,11 @@ public:
         VulkanDevice* device,
         VkImage image,
         TextureFormat format,
-        u32 width,
-        u32 height);
+        uint32_t width,
+        uint32_t height);
 
-    u32 width() const override { return m_width; }
-    u32 height() const override { return m_height; }
+    uint32_t width() const override { return m_width; }
+    uint32_t height() const override { return m_height; }
     TextureFormat format() const override { return m_format; }
     VkImage handle() const { return m_image; }
 
@@ -28,7 +28,7 @@ private:
     VkImage m_image = VK_NULL_HANDLE;
     VkDeviceMemory m_memory = VK_NULL_HANDLE;
     TextureFormat m_format = TextureFormat::RGBA8Unorm;
-    u32 m_width = 0, m_height = 0;
+    uint32_t m_width = 0, m_height = 0;
     bool m_ownsImage = true;
 };
 

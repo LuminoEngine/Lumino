@@ -16,10 +16,10 @@ public:
 
     TextureView* acquireNextTexture() override;
     void present() override;
-    u32 width() const override { return m_width; }
-    u32 height() const override { return m_height; }
-    u32 maxFramesInFlight() const override { return m_maxFrames; }
-    u32 currentFrame() const override { return m_currentFrame; }
+    uint32_t width() const override { return m_width; }
+    uint32_t height() const override { return m_height; }
+    uint32_t maxFramesInFlight() const override { return m_maxFrames; }
+    uint32_t currentFrame() const override { return m_currentFrame; }
     CommandBuffer* getCurrentCommandBuffer() override;
 
 protected:
@@ -29,10 +29,10 @@ private:
     WebGPUDevice* m_device = nullptr;
     WGPUSurface m_surface = nullptr;
     WGPUTextureFormat m_surfaceFormat = WGPUTextureFormat_Undefined;
-    u32 m_width = 0;
-    u32 m_height = 0;
-    u32 m_maxFrames = 2;
-    u32 m_currentFrame = 0;
+    uint32_t m_width = 0;
+    uint32_t m_height = 0;
+    uint32_t m_maxFrames = 2;
+    uint32_t m_currentFrame = 0;
 
     // Per-frame resources
     std::vector<Ref<WebGPUCommandBuffer>> m_commandBuffers;

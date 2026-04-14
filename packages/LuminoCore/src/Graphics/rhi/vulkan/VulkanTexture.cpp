@@ -36,16 +36,16 @@ VoidResult VulkanTexture::init(
     imgInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
     auto usage = desc.usage;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::Sampled))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::Sampled))
         imgInfo.usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::RenderTarget))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::RenderTarget))
         imgInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::DepthStencil)) {
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::DepthStencil)) {
         imgInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     }
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::CopyDst))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::CopyDst))
         imgInfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    if (static_cast<u32>(usage) & static_cast<u32>(TextureUsage::CopySrc))
+    if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::CopySrc))
         imgInfo.usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 
     VkDevice vkDevice = m_device->vkDevice();
@@ -70,10 +70,10 @@ VoidResult VulkanTexture::init(
 
     // VkImageCreateInfo::initialLayout でレイアウトを指定できそうなものだけど、
     // ↑のコメントの通り実際にはできないので、ここで明示的にレイアウト遷移しておく。
-    const bool isRenderTarget = (static_cast<u32>(usage) &
-                                 static_cast<u32>(TextureUsage::RenderTarget)) != 0;
-    const bool isDepthBuffer = (static_cast<u32>(usage) &
-                                static_cast<u32>(TextureUsage::DepthStencil)) != 0;
+    const bool isRenderTarget = (static_cast<uint32_t>(usage) &
+                                 static_cast<uint32_t>(TextureUsage::RenderTarget)) != 0;
+    const bool isDepthBuffer = (static_cast<uint32_t>(usage) &
+                                static_cast<uint32_t>(TextureUsage::DepthStencil)) != 0;
     if (isRenderTarget || isDepthBuffer) {
         auto result = m_device->beginSingleTimeCommands();
         if (!result) {
@@ -131,8 +131,8 @@ VoidResult VulkanTexture::initFromExternalImage(
     VulkanDevice* device,
     VkImage image,
     TextureFormat format,
-    u32 width,
-    u32 height) {
+    uint32_t width,
+    uint32_t height) {
     m_device = device;
     m_image = image;
     m_format = format;

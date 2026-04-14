@@ -20,7 +20,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     renderer->m_colorFormat   = colorFormat;
     renderer->m_depthFormat   = depthFormat;
 
-    u32 framesInFlight = ctx->maxFramesInFlight();
+    uint32_t framesInFlight = ctx->maxFramesInFlight();
     renderer->m_framesInFlight = framesInFlight;
 
     // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
@@ -38,8 +38,8 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
         {
             auto r = DynamicUniformAllocator::create(
                 device, renderer->m_referencePipelineLayout,
-                static_cast<u32>(renderer->m_viewSetIndex), 0,
-                static_cast<u32>(sizeof(ViewParamsUBO)),
+                static_cast<uint32_t>(renderer->m_viewSetIndex), 0,
+                static_cast<uint32_t>(sizeof(ViewParamsUBO)),
                 framesInFlight);
             if (!r) return LN_FORWARD_ERROR(r);
             renderer->m_viewAllocator = std::move(*r);
@@ -49,8 +49,8 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
         {
             auto r = DynamicUniformAllocator::create(
                 device, renderer->m_referencePipelineLayout,
-                static_cast<u32>(renderer->m_sceneSetIndex), 0,
-                static_cast<u32>(sizeof(SceneParamsUBO)),
+                static_cast<uint32_t>(renderer->m_sceneSetIndex), 0,
+                static_cast<uint32_t>(sizeof(SceneParamsUBO)),
                 framesInFlight);
             if (!r) return LN_FORWARD_ERROR(r);
             renderer->m_sceneAllocator = std::move(*r);
@@ -60,8 +60,8 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
         {
             auto r = DynamicUniformAllocator::create(
                 device, renderer->m_referencePipelineLayout,
-                static_cast<u32>(renderer->m_objectSetIndex), 0,
-                static_cast<u32>(renderer->m_objectUBOSize),
+                static_cast<uint32_t>(renderer->m_objectSetIndex), 0,
+                static_cast<uint32_t>(renderer->m_objectUBOSize),
                 framesInFlight);
             if (!r) return LN_FORWARD_ERROR(r);
             renderer->m_objectAllocator = std::move(*r);
@@ -75,7 +75,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
 // ------ Frame lifecycle -------------------------------------------------------------------------------------------
 
 void Renderer::beginFrame() {
-    u32 frame = m_frameCounter++;
+    uint32_t frame = m_frameCounter++;
     m_currentFrameSlot = frame % m_framesInFlight;
     if (m_viewAllocator)   m_viewAllocator->beginFrame(frame);
     if (m_sceneAllocator)  m_sceneAllocator->beginFrame(frame);
@@ -119,19 +119,19 @@ void Renderer::beginRenderPass(
         Matrix4x4 p  = camera.projectionMatrix();
         Matrix4x4 ivp = vp.inversed();
         Matrix4x4 ip  = p.inversed();
-        std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.viewProj, vp.m, sizeof(float) * 16);
         Vector3 camPos = camera.position();
         viewParams.cameraPos[0] = camPos.x;
         viewParams.cameraPos[1] = camPos.y;
         viewParams.cameraPos[2] = camPos.z;
         viewParams.cameraPos[3] = 0.0f;
-        std::memcpy(viewParams.view, v.m, sizeof(f32) * 16);
-        std::memcpy(viewParams.proj, p.m, sizeof(f32) * 16);
-        std::memcpy(viewParams.invViewProj, ivp.m, sizeof(f32) * 16);
-        std::memcpy(viewParams.invProj, ip.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.view, v.m, sizeof(float) * 16);
+        std::memcpy(viewParams.proj, p.m, sizeof(float) * 16);
+        std::memcpy(viewParams.invViewProj, ivp.m, sizeof(float) * 16);
+        std::memcpy(viewParams.invProj, ip.m, sizeof(float) * 16);
         if (colorTarget) {
-            f32 w = static_cast<f32>(colorTarget->width());
-            f32 h = static_cast<f32>(colorTarget->height());
+            float w = static_cast<float>(colorTarget->width());
+            float h = static_cast<float>(colorTarget->height());
             viewParams.screenSize[0] = w;
             viewParams.screenSize[1] = h;
             viewParams.screenSize[2] = 1.0f / w;
@@ -141,7 +141,7 @@ void Renderer::beginRenderPass(
     }
 
     beginRenderPass(colorTarget, depthTarget, clearColor);
-    setPassBindGroup(static_cast<u32>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
+    setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
 void Renderer::beginRenderPass(
@@ -170,7 +170,7 @@ void Renderer::beginRenderPass(
     m_currentColorTarget = colorTarget;
 
     // Clear any pass-scoped bind group state from the previous pass.
-    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+    for (uint32_t i = 0; i < kMaxBindGroupSets; ++i) {
         m_passBindGroups[i]                  = nullptr;
         m_passBindGroupDynamicOffsets[i]     = 0;
         m_passBindGroupDynamicOffsetCounts[i] = 0;
@@ -191,19 +191,19 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& 
         Matrix4x4 p  = camera.projectionMatrix();
         Matrix4x4 ivp = vp.inversed();
         Matrix4x4 ip  = p.inversed();
-        std::memcpy(viewParams.viewProj, vp.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.viewProj, vp.m, sizeof(float) * 16);
         Vector3 camPos = camera.position();
         viewParams.cameraPos[0] = camPos.x;
         viewParams.cameraPos[1] = camPos.y;
         viewParams.cameraPos[2] = camPos.z;
         viewParams.cameraPos[3] = 0.0f;
-        std::memcpy(viewParams.view, v.m, sizeof(f32) * 16);
-        std::memcpy(viewParams.proj, p.m, sizeof(f32) * 16);
-        std::memcpy(viewParams.invViewProj, ivp.m, sizeof(f32) * 16);
-        std::memcpy(viewParams.invProj, ip.m, sizeof(f32) * 16);
+        std::memcpy(viewParams.view, v.m, sizeof(float) * 16);
+        std::memcpy(viewParams.proj, p.m, sizeof(float) * 16);
+        std::memcpy(viewParams.invViewProj, ivp.m, sizeof(float) * 16);
+        std::memcpy(viewParams.invProj, ip.m, sizeof(float) * 16);
         if (!rpDesc.colorAttachments.empty() && rpDesc.colorAttachments[0].view) {
-            f32 w = static_cast<f32>(rpDesc.colorAttachments[0].view->width());
-            f32 h = static_cast<f32>(rpDesc.colorAttachments[0].view->height());
+            float w = static_cast<float>(rpDesc.colorAttachments[0].view->width());
+            float h = static_cast<float>(rpDesc.colorAttachments[0].view->height());
             viewParams.screenSize[0] = w;
             viewParams.screenSize[1] = h;
             viewParams.screenSize[2] = 1.0f / w;
@@ -213,7 +213,7 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& 
     }
 
     beginRenderPass(rpDesc);
-    setPassBindGroup(static_cast<u32>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
+    setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
 void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc) {
@@ -223,7 +223,7 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc) {
     m_currentColorTarget = rpDesc.colorAttachments.empty() ? nullptr : rpDesc.colorAttachments[0].view;
 
     // Clear any pass-scoped bind group state from the previous pass.
-    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+    for (uint32_t i = 0; i < kMaxBindGroupSets; ++i) {
         m_passBindGroups[i]                  = nullptr;
         m_passBindGroupDynamicOffsets[i]     = 0;
         m_passBindGroupDynamicOffsetCounts[i] = 0;
@@ -256,7 +256,7 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
 
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
 
-    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+    for (uint32_t i = 0; i < kMaxBindGroupSets; ++i) {
         m_passBindGroups[i]                   = nullptr;
         m_passBindGroupDynamicOffsets[i]      = 0;
         m_passBindGroupDynamicOffsetCounts[i] = 0;
@@ -288,11 +288,11 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
     viewParams.invProj[10] = 1.0f;
     viewParams.invProj[15] = 1.0f;
     std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
-    setPassBindGroup(static_cast<u32>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
+    setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
-void Renderer::setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup,
-                                u32 dynamicOffset, u32 dynamicOffsetCount) {
+void Renderer::setPassBindGroup(uint32_t setIndex, rhi::BindGroup* bindGroup,
+                                uint32_t dynamicOffset, uint32_t dynamicOffsetCount) {
     if (setIndex >= kMaxBindGroupSets) return;
     m_passBindGroups[setIndex]                = bindGroup;
     m_passBindGroupDynamicOffsets[setIndex]     = dynamicOffset;
@@ -301,7 +301,7 @@ void Renderer::setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup,
 }
 
 void Renderer::flushPassBindGroups() {
-    for (u32 i = 0; i < kMaxBindGroupSets; ++i) {
+    for (uint32_t i = 0; i < kMaxBindGroupSets; ++i) {
         if (m_passBindGroupDirty[i] && m_passBindGroups[i]) {
             if (m_passBindGroupDynamicOffsetCounts[i] > 0) {
                 m_currentPass->setBindGroup(i, m_passBindGroups[i],
@@ -316,14 +316,14 @@ void Renderer::flushPassBindGroups() {
 
 // ------ Drawing (batched) -----------------------------------------------------------------------------------------
 
-void Renderer::drawMesh(Mesh* mesh, const Transform& transform, i32 zIndex) {
+void Renderer::drawMesh(Mesh* mesh, const Transform& transform, int32_t zIndex) {
     m_commandBuffer.drawMesh(mesh, transform, zIndex);
 }
 
-void Renderer::drawSprite(Material* material, i32 zIndex,
+void Renderer::drawSprite(Material* material, int32_t zIndex,
                           const Vector3& pos, const Vector2& size,
                           const Vector2& uvOffset, const Vector2& uvSize,
-                          const Color& color, f32 rotation) {
+                          const Color& color, float rotation) {
     m_commandBuffer.drawSprite(material, zIndex, pos, size, uvOffset, uvSize, color, rotation);
 }
 
@@ -380,8 +380,8 @@ Result<void> Renderer::drawSubmesh(
         Matrix4x4 worldMatrix  = transform.matrix();
         Matrix4x4 normalMatrix = transform.normalMatrix();
         ObjectParamsUBO objParams{};
-        std::memcpy(objParams.world,        worldMatrix.m,  sizeof(f32) * 16);
-        std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(f32) * 16);
+        std::memcpy(objParams.world,        worldMatrix.m,  sizeof(float) * 16);
+        std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(float) * 16);
         std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
     }
 
@@ -436,7 +436,7 @@ Result<void> Renderer::drawSubmesh(
         auto sceneAlloc = m_sceneAllocator->allocate();
         SceneParamsUBO defaultScene{};
         std::memcpy(sceneAlloc.cpuPtr, &defaultScene, sizeof(defaultScene));
-        setPassBindGroup(static_cast<u32>(m_sceneSetIndex),
+        setPassBindGroup(static_cast<uint32_t>(m_sceneSetIndex),
                          sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
         flushPassBindGroups();
     }
@@ -446,8 +446,8 @@ Result<void> Renderer::drawSubmesh(
     if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
 
     int16_t matSet = mat->shaderPass()->materialSetIndex();
-    m_currentPass->setBindGroup(static_cast<u32>(matSet), *matBGResult);
-    m_currentPass->setBindGroup(static_cast<u32>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
+    m_currentPass->setBindGroup(static_cast<uint32_t>(matSet), *matBGResult);
+    m_currentPass->setBindGroup(static_cast<uint32_t>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
     m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
     ++m_drawCallCount;
 
@@ -455,7 +455,7 @@ Result<void> Renderer::drawSubmesh(
 }
 
 Result<void> Renderer::drawSingleSubMesh(
-    Mesh* mesh, u32 submeshIndex, Material* material, const Transform& transform) {
+    Mesh* mesh, uint32_t submeshIndex, Material* material, const Transform& transform) {
 
     const auto& submeshes = mesh->submeshes();
     if (submeshIndex >= submeshes.size()) return {};
@@ -477,7 +477,7 @@ Result<void> Renderer::drawScreenRect(Material* material) {
 
 Result<void> Renderer::drawStencilMaskMesh(
     Mesh* mesh, const Transform& transform, Material* material,
-    rhi::CompareFunction compare, u32 stencilRef, rhi::StencilOp passOp) {
+    rhi::CompareFunction compare, uint32_t stencilRef, rhi::StencilOp passOp) {
 
     auto* pipelineCache = m_ctx->pipelineCache();
 
@@ -500,8 +500,8 @@ Result<void> Renderer::drawStencilMaskMesh(
             Matrix4x4 worldMatrix  = transform.matrix();
             Matrix4x4 normalMatrix = transform.normalMatrix();
             ObjectParamsUBO objParams{};
-            std::memcpy(objParams.world,        worldMatrix.m,  sizeof(f32) * 16);
-            std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(f32) * 16);
+            std::memcpy(objParams.world,        worldMatrix.m,  sizeof(float) * 16);
+            std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(float) * 16);
             std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
         }
 
@@ -536,7 +536,7 @@ Result<void> Renderer::drawStencilMaskMesh(
             auto sceneAlloc = m_sceneAllocator->allocate();
             SceneParamsUBO defaultScene{};
             std::memcpy(sceneAlloc.cpuPtr, &defaultScene, sizeof(defaultScene));
-            setPassBindGroup(static_cast<u32>(m_sceneSetIndex),
+            setPassBindGroup(static_cast<uint32_t>(m_sceneSetIndex),
                              sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
             flushPassBindGroups();
         }
@@ -545,8 +545,8 @@ Result<void> Renderer::drawStencilMaskMesh(
         if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
 
         int16_t matSet = mat->shaderPass()->materialSetIndex();
-        m_currentPass->setBindGroup(static_cast<u32>(matSet), *matBGResult);
-        m_currentPass->setBindGroup(static_cast<u32>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
+        m_currentPass->setBindGroup(static_cast<uint32_t>(matSet), *matBGResult);
+        m_currentPass->setBindGroup(static_cast<uint32_t>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
         m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
         ++m_drawCallCount;
     }
@@ -600,7 +600,7 @@ Result<void> Renderer::popStencilMask() {
 
 Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     auto* device = m_ctx->device();
-    u32 frameSlot = m_currentFrameSlot;
+    uint32_t frameSlot = m_currentFrameSlot;
 
     auto& cache = m_materialCache[mat];
 
@@ -640,7 +640,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
             }
         }
 
-        u32 binding = layoutEntry.binding;
+        uint32_t binding = layoutEntry.binding;
         if (tex && (!cache.textureViews.count(binding) || cache.lastTextures[binding] != tex)) {
             auto tvResult = device->createTextureView(tex);
             if (!tvResult) return LN_FORWARD_ERROR(tvResult);
@@ -672,8 +672,8 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     // Write UBO data via writeBuffer (compatible with all backends).
     {
         auto uboSize = mat->materialParamBufferSize();
-        u8 uboStaging[512];
-        std::vector<u8> uboStagingHeap;
+        uint8_t uboStaging[512];
+        std::vector<uint8_t> uboStagingHeap;
         void* stagingPtr;
         if (uboSize <= sizeof(uboStaging)) {
             stagingPtr = uboStaging;
@@ -711,7 +711,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         }
 
         auto bgResult = mat->shaderPass()->pipelineLayout()->createBindGroup(
-            static_cast<u32>(matSet), entries);
+            static_cast<uint32_t>(matSet), entries);
         if (!bgResult) return LN_FORWARD_ERROR(bgResult);
         cache.bindGroups[frameSlot] = std::move(*bgResult);
     }
@@ -731,7 +731,7 @@ Result<Mesh*> Renderer::getScreenRectMesh() {
         {{ 1.0f,  1.0f, 0.0f}, {0, 0, 1}, {1, 0}, Color::white(), {1, 0, 0, 1}},
         {{-1.0f,  1.0f, 0.0f}, {0, 0, 1}, {0, 0}, Color::white(), {1, 0, 0, 1}},
     };
-    std::vector<u32> indices = {0, 1, 2, 0, 2, 3};
+    std::vector<uint32_t> indices = {0, 1, 2, 0, 2, 3};
     SubMesh sub;
     sub.indexOffset   = 0;
     sub.indexCount    = 6;

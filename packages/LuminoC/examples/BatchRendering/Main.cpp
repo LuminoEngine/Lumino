@@ -30,7 +30,7 @@ int main() {
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture0);
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture1);
 
-    /* Materials — two unlit materials */
+    /* Materials - two unlit materials */
     LNHandle material0 = LN_NULL_HANDLE;
     LNHandle material1 = LN_NULL_HANDLE;
     LNMaterial_CreateUnlit(graphicsContext, &material0);

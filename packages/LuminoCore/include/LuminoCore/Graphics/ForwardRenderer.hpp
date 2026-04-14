@@ -52,8 +52,8 @@ public:
     void beginRenderPass(rhi::TextureView* c, rhi::TextureView* d,
                          const Color& clear = Color{0,0,0,1})                                          { m_renderer->beginRenderPass(c, d, clear); }
     void endRenderPass()                                                                                { m_renderer->endRenderPass(); }
-    void setPassBindGroup(u32 set, rhi::BindGroup* bg,
-                          u32 dynOffset = 0, u32 dynOffsetCount = 0)                                   { m_renderer->setPassBindGroup(set, bg, dynOffset, dynOffsetCount); }
+    void setPassBindGroup(uint32_t set, rhi::BindGroup* bg,
+                          uint32_t dynOffset = 0, uint32_t dynOffsetCount = 0)                                   { m_renderer->setPassBindGroup(set, bg, dynOffset, dynOffsetCount); }
     Result<void> drawMesh(Mesh* mesh, const Transform& t)                                              { return m_renderer->drawMeshImmediate(mesh, t); }
     Result<void> drawScreenRect(Material* mat)                                                         { return m_renderer->drawScreenRect(mat); }
 

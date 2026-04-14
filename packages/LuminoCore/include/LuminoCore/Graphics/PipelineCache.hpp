@@ -26,8 +26,8 @@ struct PipelineCacheKey {
     bool stencilTestEnabled = false;
     rhi::StencilFaceState stencilFront;
     rhi::StencilFaceState stencilBack;
-    u32 stencilReadMask = 0xFF;
-    u32 stencilWriteMask = 0xFF;
+    uint32_t stencilReadMask = 0xFF;
+    uint32_t stencilWriteMask = 0xFF;
     bool colorWriteEnabled = true;
     // 描画コンテキスト由来
     rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList;

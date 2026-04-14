@@ -48,7 +48,7 @@ public:
     WGPUPipelineLayout handle() const { return m_layout; }
 
     Result<Ref<BindGroup>> createBindGroup(
-        u32 setIndex, const std::vector<BindGroupEntry>& entries) override;
+        uint32_t setIndex, const std::vector<BindGroupEntry>& entries) override;
 
 protected:
     void finalize() override;

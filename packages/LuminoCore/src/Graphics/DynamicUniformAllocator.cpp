@@ -6,10 +6,10 @@ namespace ln {
 Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create(
     rhi::Device* device,
     rhi::PipelineLayout* pipelineLayout,
-    u32 setIndex,
-    u32 binding,
-    u32 elementSize,
-    u32 framesInFlight) {
+    uint32_t setIndex,
+    uint32_t binding,
+    uint32_t elementSize,
+    uint32_t framesInFlight) {
 
     auto alloc = std::unique_ptr<DynamicUniformAllocator>(new DynamicUniformAllocator());
     alloc->m_device = device;
@@ -21,7 +21,7 @@ Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create
 
     // Query alignment from device.
     auto limits = device->deviceLimits();
-    u32 alignment = limits.minUniformBufferOffsetAlignment;
+    uint32_t alignment = limits.minUniformBufferOffsetAlignment;
     alloc->m_alignedElementSize = ((elementSize + alignment - 1) / alignment) * alignment;
     alloc->m_maxElementsPerPage = limits.maxUniformBufferRange / alloc->m_alignedElementSize;
     alloc->m_pageByteSize = alloc->m_maxElementsPerPage * alloc->m_alignedElementSize;
@@ -30,7 +30,7 @@ Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create
     alloc->m_frames.resize(framesInFlight);
 
     // Pre-create one page per frame slot.
-    for (u32 f = 0; f < framesInFlight; ++f) {
+    for (uint32_t f = 0; f < framesInFlight; ++f) {
         auto pageResult = alloc->createPage();
         if (!pageResult) return LN_FORWARD_ERROR(pageResult);
         alloc->m_frames[f].pages.push_back(std::move(*pageResult));
@@ -39,7 +39,7 @@ Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create
     return alloc;
 }
 
-void DynamicUniformAllocator::beginFrame(u32 frameIndex) {
+void DynamicUniformAllocator::beginFrame(uint32_t frameIndex) {
     m_currentFrameSlot = frameIndex % m_framesInFlight;
     auto& frame = m_frames[m_currentFrameSlot];
     // Reset all pages for reuse.
@@ -69,7 +69,7 @@ DynamicUniformAllocation DynamicUniformAllocator::allocate() {
     }
 
     auto& page = frame.pages[frame.currentPage];
-    u32 offset = page.usedElements * m_alignedElementSize;
+    uint32_t offset = page.usedElements * m_alignedElementSize;
     void* ptr = page.cpuShadow.data() + offset;
     ++page.usedElements;
 
@@ -80,7 +80,7 @@ VoidResult DynamicUniformAllocator::flushFrame() {
     auto& frame = m_frames[m_currentFrameSlot];
     for (auto& page : frame.pages) {
         if (page.usedElements > 0) {
-            u64 usedBytes = static_cast<u64>(page.usedElements) * m_alignedElementSize;
+            uint64_t usedBytes = static_cast<uint64_t>(page.usedElements) * m_alignedElementSize;
             auto result = m_device->writeBuffer(page.buffer.get(), 0, page.cpuShadow.data(), usedBytes);
             if (!result) return result;
         }

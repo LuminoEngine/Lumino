@@ -10,15 +10,15 @@ public:
 
     TextureView* acquireNextTexture() override;
     void present() override;
-    u32 width() const override { return m_extent.width; }
-    u32 height() const override { return m_extent.height; }
-    u32 maxFramesInFlight() const override { return static_cast<u32>(m_maxFrames); }
+    uint32_t width() const override { return m_extent.width; }
+    uint32_t height() const override { return m_extent.height; }
+    uint32_t maxFramesInFlight() const override { return static_cast<uint32_t>(m_maxFrames); }
     //TextureFormat format() const override { return m_format; }
 
     VkSemaphore imageAvailableSemaphore() const;
     VkSemaphore renderFinishedSemaphore() const;
-    u32 currentImageIndex() const { return m_imageIndex; }
-    u32 currentFrame() const { return m_currentFrame; }
+    uint32_t currentImageIndex() const { return m_imageIndex; }
+    uint32_t currentFrame() const { return m_currentFrame; }
     CommandBuffer* getCurrentCommandBuffer() override;
 
 public:
@@ -56,8 +56,8 @@ public:
 
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
     std::vector<VkSemaphore> m_renderFinished;
-    u32 m_currentFrame = 0;
-    u32 m_imageIndex = 0;
+    uint32_t m_currentFrame = 0;
+    uint32_t m_imageIndex = 0;
 };
 
 } // namespace ln::rhi::vulkan

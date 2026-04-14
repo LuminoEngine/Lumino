@@ -14,10 +14,10 @@ public:
     VoidResult init(WebGPUDevice* device, const TextureDesc& desc);
 
     /** Wrap an externally-owned WGPUTexture (e.g. swap chain back-buffer). */
-    void initFromExternal(WGPUTexture texture, TextureFormat format, u32 width, u32 height);
+    void initFromExternal(WGPUTexture texture, TextureFormat format, uint32_t width, uint32_t height);
 
-    u32 width() const override { return m_width; }
-    u32 height() const override { return m_height; }
+    uint32_t width() const override { return m_width; }
+    uint32_t height() const override { return m_height; }
     TextureFormat format() const override { return m_format; }
     WGPUTexture handle() const { return m_texture; }
 
@@ -27,8 +27,8 @@ protected:
 private:
     WGPUTexture m_texture = nullptr;
     TextureFormat m_format = TextureFormat::RGBA8Unorm;
-    u32 m_width = 0;
-    u32 m_height = 0;
+    uint32_t m_width = 0;
+    uint32_t m_height = 0;
     bool m_ownsTexture = true;
 };
 

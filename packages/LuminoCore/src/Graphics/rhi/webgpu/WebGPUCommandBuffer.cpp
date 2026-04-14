@@ -25,49 +25,49 @@ void WebGPURenderPass::setPipeline(RenderPipeline* pipeline) {
     wgpuRenderPassEncoderSetPipeline(m_encoder, wp->handle());
 }
 
-void WebGPURenderPass::setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) {
+void WebGPURenderPass::setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t offset) {
     auto* wb = static_cast<WebGPUBuffer*>(buffer);
     wgpuRenderPassEncoderSetVertexBuffer(m_encoder, slot, wb->handle(), offset, WGPU_WHOLE_SIZE);
 }
 
-void WebGPURenderPass::setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) {
+void WebGPURenderPass::setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset) {
     auto* wb = static_cast<WebGPUBuffer*>(buffer);
     wgpuRenderPassEncoderSetIndexBuffer(m_encoder, wb->handle(),
                                         toWGPUIndexFormat(format),
                                         offset, WGPU_WHOLE_SIZE);
 }
 
-void WebGPURenderPass::setBindGroup(u32 index, BindGroup* group) {
+void WebGPURenderPass::setBindGroup(uint32_t index, BindGroup* group) {
     auto* wg = static_cast<WebGPUBindGroup*>(group);
     wgpuRenderPassEncoderSetBindGroup(m_encoder, index, wg->handle(), 0, nullptr);
 }
 
-void WebGPURenderPass::setBindGroup(u32 index, BindGroup* group,
-                                    const u32* dynamicOffsets, u32 dynamicOffsetCount) {
+void WebGPURenderPass::setBindGroup(uint32_t index, BindGroup* group,
+                                    const uint32_t* dynamicOffsets, uint32_t dynamicOffsetCount) {
     auto* wg = static_cast<WebGPUBindGroup*>(group);
     wgpuRenderPassEncoderSetBindGroup(m_encoder, index, wg->handle(),
                                       dynamicOffsetCount, dynamicOffsets);
 }
 
-void WebGPURenderPass::setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) {
+void WebGPURenderPass::setViewport(float x, float y, float w, float h, float minDepth, float maxDepth) {
     wgpuRenderPassEncoderSetViewport(m_encoder, x, y, w, h, minDepth, maxDepth);
 }
 
-void WebGPURenderPass::setScissorRect(u32 x, u32 y, u32 w, u32 h) {
+void WebGPURenderPass::setScissorRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
     wgpuRenderPassEncoderSetScissorRect(m_encoder, x, y, w, h);
 }
 
-void WebGPURenderPass::setStencilReference(u32 reference) {
+void WebGPURenderPass::setStencilReference(uint32_t reference) {
     wgpuRenderPassEncoderSetStencilReference(m_encoder, reference);
 }
 
-void WebGPURenderPass::draw(u32 vertexCount, u32 instanceCount,
-                            u32 firstVertex, u32 firstInstance) {
+void WebGPURenderPass::draw(uint32_t vertexCount, uint32_t instanceCount,
+                            uint32_t firstVertex, uint32_t firstInstance) {
     wgpuRenderPassEncoderDraw(m_encoder, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
-void WebGPURenderPass::drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex,
-                                   i32 baseVertex, u32 firstInstance) {
+void WebGPURenderPass::drawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex,
+                                   int32_t baseVertex, uint32_t firstInstance) {
     wgpuRenderPassEncoderDrawIndexed(m_encoder, indexCount, instanceCount,
                                      firstIndex, baseVertex, firstInstance);
 }

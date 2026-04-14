@@ -65,7 +65,7 @@ int main() {
         v2.color = {0.0f, 0.0f, 1.0f, 1.0f};
 
         std::vector<Vertex> vertices = {v0, v1, v2};
-        std::vector<u32> indices = {0, 1, 2};
+        std::vector<uint32_t> indices = {0, 1, 2};
         SubMesh sub;
         sub.indexOffset = 0;
         sub.indexCount = 3;
@@ -79,7 +79,7 @@ int main() {
         camera.setPerspective(
             //0.3f,
             60.0f * 3.14159f / 180.0f,
-            static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
+            static_cast<float>(ctx->width()) / static_cast<float>(ctx->height()),
             0.1f,
             100.0f);
         camera.setLookAt({0.0f, 0.0f, 5.f}, {0.0f, 0.0f, 0.0f});

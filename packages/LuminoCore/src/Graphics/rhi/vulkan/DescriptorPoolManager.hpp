@@ -28,7 +28,7 @@ public:
      * SETS_PER_POOL * 4 descriptors of each type to cover typical usage
      * (1–4 descriptors per set).
      */
-    static constexpr u32 SETS_PER_POOL = 64;
+    static constexpr uint32_t SETS_PER_POOL = 64;
 
     void init(VkDevice device) {
         m_device = device;

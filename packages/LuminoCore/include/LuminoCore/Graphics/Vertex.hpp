@@ -10,7 +10,7 @@ struct Vertex {
     Vector3 position;   // 12 bytes
     Vector3 normal;     // 12 bytes
     Vector2 uv;         //  8 bytes
-    Color   color;      // 16 bytes (r,g,b,a as f32)
+    Color   color;      // 16 bytes (r,g,b,a as float)
     Vector4 tangent;    // 16 bytes (xyz = tangent, w = binormal sign)
 };
 

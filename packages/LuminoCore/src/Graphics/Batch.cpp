@@ -11,17 +11,17 @@ namespace ln {
 // DrawCommand::sortKey
 // ---------------------------------------------------------------------------
 
-u64 DrawCommand::sortKey() const {
+uint64_t DrawCommand::sortKey() const {
     // | 63..48 (16bit) | 47..16 (32bit)          | 15..1 (15bit) | 0 (1bit) |
     // | zIndex + 32768 | material ptr hash        | reserved      | type     |
-    u64 z = static_cast<u64>(static_cast<u32>(zIndex + 32768)) & 0xFFFF;
+    uint64_t z = static_cast<uint64_t>(static_cast<uint32_t>(zIndex + 32768)) & 0xFFFF;
 
     // Material pointer hash — groups same-material commands together.
     // Uses only the pointer value (no dereference), so safe with any pointer.
-    u64 matHash = static_cast<u64>(
-        (static_cast<u64>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) & 0xFFFFFFFF;
+    uint64_t matHash = static_cast<uint64_t>(
+        (static_cast<uint64_t>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) & 0xFFFFFFFF;
 
-    u64 t = (type == DrawCommandType::SubMesh) ? 1 : 0;
+    uint64_t t = (type == DrawCommandType::SubMesh) ? 1 : 0;
 
     return (z << 48) | (matHash << 16) | t;
 }
@@ -35,10 +35,10 @@ void DrawCommandBuffer::clear() {
 }
 
 void DrawCommandBuffer::drawSprite(
-    Material* material, i32 zIndex,
+    Material* material, int32_t zIndex,
     const Vector3& pos, const Vector2& size,
     const Vector2& uvOffset, const Vector2& uvSize,
-    const Color& color, f32 rotation) {
+    const Color& color, float rotation) {
 
     DrawCommand cmd{};
     cmd.type = DrawCommandType::Sprite;
@@ -54,8 +54,8 @@ void DrawCommandBuffer::drawSprite(
 }
 
 void DrawCommandBuffer::drawSubMesh(
-    Mesh* mesh, u32 submeshIndex, Material* material,
-    const Transform& transform, i32 zIndex) {
+    Mesh* mesh, uint32_t submeshIndex, Material* material,
+    const Transform& transform, int32_t zIndex) {
 
     DrawCommand cmd{};
     cmd.type = DrawCommandType::SubMesh;
@@ -67,10 +67,10 @@ void DrawCommandBuffer::drawSubMesh(
     m_commands.push_back(cmd);
 }
 
-void DrawCommandBuffer::drawMesh(Mesh* mesh, const Transform& transform, i32 zIndex) {
+void DrawCommandBuffer::drawMesh(Mesh* mesh, const Transform& transform, int32_t zIndex) {
     const auto& submeshes = mesh->submeshes();
     const auto& materials = mesh->materials();
-    for (u32 i = 0; i < static_cast<u32>(submeshes.size()); ++i) {
+    for (uint32_t i = 0; i < static_cast<uint32_t>(submeshes.size()); ++i) {
         Material* mat = nullptr;
         if (submeshes[i].materialIndex < materials.size()) {
             mat = materials[submeshes[i].materialIndex].get();
@@ -104,12 +104,12 @@ Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* comman
 
     sortCommands(commands);
 
-    u32 groupStart = 0;
-    u32 count = static_cast<u32>(commands.size());
+    uint32_t groupStart = 0;
+    uint32_t count = static_cast<uint32_t>(commands.size());
 
     while (groupStart < count) {
         DrawCommandType groupType = commands[groupStart].type;
-        u32 groupEnd = groupStart + 1;
+        uint32_t groupEnd = groupStart + 1;
 
         // Find contiguous group of same type + same material
         while (groupEnd < count &&
@@ -118,7 +118,7 @@ Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* comman
             ++groupEnd;
         }
 
-        u32 groupCount = groupEnd - groupStart;
+        uint32_t groupCount = groupEnd - groupStart;
 
         if (groupType == DrawCommandType::Sprite) {
             auto result = flushSpriteGroup(renderer, &commands[groupStart], groupCount);
@@ -135,11 +135,11 @@ Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* comman
 }
 
 Result<void> BatchProcessor::flushSpriteGroup(
-    Renderer* renderer, const DrawCommand* begin, u32 count) {
+    Renderer* renderer, const DrawCommand* begin, uint32_t count) {
 
     // Ensure DynamicMesh has enough capacity
     if (count > m_spriteMeshCapacity) {
-        u32 newCapacity = m_spriteMeshCapacity == 0 ? 256 : m_spriteMeshCapacity;
+        uint32_t newCapacity = m_spriteMeshCapacity == 0 ? 256 : m_spriteMeshCapacity;
         while (newCapacity < count) newCapacity *= 2;
 
         auto result = Mesh::createDynamic(m_ctx->device(), newCapacity * 4, newCapacity * 6);
@@ -148,23 +148,23 @@ Result<void> BatchProcessor::flushSpriteGroup(
         m_spriteMeshCapacity = newCapacity;
     }
 
-    u32 totalVertices = count * 4;
-    u32 totalIndices = count * 6;
+    uint32_t totalVertices = count * 4;
+    uint32_t totalIndices = count * 6;
     m_vertexStaging.resize(totalVertices);
     m_indexStaging.resize(totalIndices);
     m_submeshStaging.clear();
 
     // Track material boundaries for submesh splitting
     Material* currentMaterial = begin[0].material;
-    u32 batchStartSprite = 0;
+    uint32_t batchStartSprite = 0;
 
-    for (u32 i = 0; i <= count; ++i) {
+    for (uint32_t i = 0; i <= count; ++i) {
         // Detect material boundary
         if (i == count || begin[i].material != currentMaterial) {
             SubMesh sub;
             sub.indexOffset = batchStartSprite * 6;
             sub.indexCount = (i - batchStartSprite) * 6;
-            sub.materialIndex = static_cast<u32>(m_submeshStaging.size());
+            sub.materialIndex = static_cast<uint32_t>(m_submeshStaging.size());
             m_submeshStaging.push_back(sub);
 
             if (i < count) {
@@ -176,32 +176,32 @@ Result<void> BatchProcessor::flushSpriteGroup(
         if (i == count) break;
 
         const auto& s = begin[i].sprite;
-        f32 hw = s.size.x * 0.5f;
-        f32 hh = s.size.y * 0.5f;
+        float hw = s.size.x * 0.5f;
+        float hh = s.size.y * 0.5f;
 
         // Corner offsets (before rotation)
-        f32 cx[4] = { -hw,  hw, -hw,  hw };
-        f32 cy[4] = {  hh,  hh, -hh, -hh };
+        float cx[4] = { -hw,  hw, -hw,  hw };
+        float cy[4] = {  hh,  hh, -hh, -hh };
 
         // Apply rotation if non-zero
         if (s.rotation != 0.0f) {
-            f32 cosR = std::cos(s.rotation);
-            f32 sinR = std::sin(s.rotation);
+            float cosR = std::cos(s.rotation);
+            float sinR = std::sin(s.rotation);
             for (int j = 0; j < 4; ++j) {
-                f32 rx = cx[j] * cosR - cy[j] * sinR;
-                f32 ry = cx[j] * sinR + cy[j] * cosR;
+                float rx = cx[j] * cosR - cy[j] * sinR;
+                float ry = cx[j] * sinR + cy[j] * cosR;
                 cx[j] = rx;
                 cy[j] = ry;
             }
         }
 
-        f32 u0 = s.uvOffset.x;
-        f32 v0 = s.uvOffset.y;
-        f32 u1 = s.uvOffset.x + s.uvSize.x;
-        f32 v1 = s.uvOffset.y + s.uvSize.y;
+        float u0 = s.uvOffset.x;
+        float v0 = s.uvOffset.y;
+        float u1 = s.uvOffset.x + s.uvSize.x;
+        float v1 = s.uvOffset.y + s.uvSize.y;
 
-        u32 vi = i * 4;
-        u32 ii = i * 6;
+        uint32_t vi = i * 4;
+        uint32_t ii = i * 6;
 
         // Generate 4 vertices
         Vertex v{};
@@ -254,8 +254,8 @@ Result<void> BatchProcessor::flushSpriteGroup(
     auto& meshMaterials = m_spriteMesh->materials();
     meshMaterials.resize(m_submeshStaging.size());
     currentMaterial = begin[0].material;
-    u32 matSlot = 0;
-    for (u32 i = 0; i <= count; ++i) {
+    uint32_t matSlot = 0;
+    for (uint32_t i = 0; i <= count; ++i) {
         if (i == count || (i > 0 && begin[i].material != currentMaterial)) {
             // addRef + adopt: borrow a non-owning raw pointer into a Ref
             currentMaterial->addRef();
@@ -272,10 +272,10 @@ Result<void> BatchProcessor::flushSpriteGroup(
 }
 
 Result<void> BatchProcessor::flushSubMeshGroup(
-    Renderer* renderer, const DrawCommand* begin, u32 count) {
+    Renderer* renderer, const DrawCommand* begin, uint32_t count) {
 
     // Phase 1: draw each submesh individually
-    for (u32 i = 0; i < count; ++i) {
+    for (uint32_t i = 0; i < count; ++i) {
         const auto& cmd = begin[i];
         auto result = renderer->drawSingleSubMesh(
             cmd.submesh.mesh, cmd.submesh.submeshIndex,

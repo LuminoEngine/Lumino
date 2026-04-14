@@ -19,8 +19,8 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     {
         auto r = DynamicUniformAllocator::create(
             ctx->device(), refPipelineLayout,
-            static_cast<u32>(sceneSetIndex), 0,
-            static_cast<u32>(sizeof(SceneParamsUBO)),
+            static_cast<uint32_t>(sceneSetIndex), 0,
+            static_cast<uint32_t>(sizeof(SceneParamsUBO)),
             ctx->maxFramesInFlight());
         if (!r) return LN_FORWARD_ERROR(r);
         fw->m_sceneAllocator = std::move(*r);
@@ -68,7 +68,7 @@ Result<void> ForwardRenderer::renderFrame(
 
     m_renderer->beginRenderPass(colorTarget, depthTarget, camera, clearColor);
     m_renderer->setPassBindGroup(
-        static_cast<u32>(m_sceneSetIndex), sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
+        static_cast<uint32_t>(m_sceneSetIndex), sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
 
     for (const auto& obj : objects) {
         auto result = m_renderer->drawMeshImmediate(obj.mesh.get(), obj.transform);

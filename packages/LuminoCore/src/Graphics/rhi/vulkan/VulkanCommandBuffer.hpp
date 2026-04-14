@@ -24,7 +24,7 @@ private:
     VulkanRenderPass* m_encoder = nullptr; // non-owning; owned by m_renderPassCache
     VkFence m_inFlightFences = VK_NULL_HANDLE;
     /** Frame index recorded at submit() time; used to schedule deferred cleanup. */
-    u32 m_submittedFrame = 0;
+    uint32_t m_submittedFrame = 0;
     bool m_submitted = false;
 
     // Cached RenderPass objects keyed by attachment layout

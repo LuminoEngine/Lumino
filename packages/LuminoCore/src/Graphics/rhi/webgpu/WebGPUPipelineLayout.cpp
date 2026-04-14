@@ -10,10 +10,10 @@ namespace {
 
 WGPUShaderStage toWGPUShaderStage(ShaderStage stage) {
     WGPUShaderStage result = WGPUShaderStage_None;
-    const u32 bits = static_cast<u32>(stage);
-    if (bits & static_cast<u32>(ShaderStage::Vertex))   result |= WGPUShaderStage_Vertex;
-    if (bits & static_cast<u32>(ShaderStage::Fragment)) result |= WGPUShaderStage_Fragment;
-    if (bits & static_cast<u32>(ShaderStage::Compute))  result |= WGPUShaderStage_Compute;
+    const uint32_t bits = static_cast<uint32_t>(stage);
+    if (bits & static_cast<uint32_t>(ShaderStage::Vertex))   result |= WGPUShaderStage_Vertex;
+    if (bits & static_cast<uint32_t>(ShaderStage::Fragment)) result |= WGPUShaderStage_Fragment;
+    if (bits & static_cast<uint32_t>(ShaderStage::Compute))  result |= WGPUShaderStage_Compute;
     return result;
 }
 
@@ -165,7 +165,7 @@ VoidResult WebGPUPipelineLayout::init(WebGPUDevice* device, const PipelineLayout
 }
 
 Result<Ref<BindGroup>> WebGPUPipelineLayout::createBindGroup(
-    u32 setIndex, const std::vector<BindGroupEntry>& entries) {
+    uint32_t setIndex, const std::vector<BindGroupEntry>& entries) {
     if (setIndex >= m_bindGroupLayouts.size()) {
         return LN_MAKE_ERROR("WebGPUPipelineLayout::createBindGroup: setIndex out of range.");
     }

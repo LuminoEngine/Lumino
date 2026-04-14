@@ -12,7 +12,7 @@ public:
     WebGPUBuffer();
     VoidResult init(WebGPUDevice* device, const BufferDesc& desc);
 
-    u64 size() const override { return m_size; }
+    uint64_t size() const override { return m_size; }
     void* map() override;
     void unmap() override;
 
@@ -24,7 +24,7 @@ protected:
 private:
     WebGPUDevice* m_device = nullptr;
     WGPUBuffer m_buffer = nullptr;
-    u64 m_size = 0;
+    uint64_t m_size = 0;
     std::vector<uint8_t> m_shadow;
 };
 

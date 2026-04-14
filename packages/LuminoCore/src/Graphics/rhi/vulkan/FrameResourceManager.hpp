@@ -33,14 +33,14 @@ class FrameResourceManager {
     //   RHI の外側で統一的に処理しようとすると、最も保守的な戦略（全バックエンドで N フレーム待つ等）を
     //   強制することになり、不要なレイテンシが生まれます。
 public:
-    static constexpr u32 MAX_FRAMES = 2;
+    static constexpr uint32_t MAX_FRAMES = 2;
 
     /**
      * Execute all deferred deletions queued for `frameIndex`, then clear the
      * queue.  Call this after the corresponding in-flight fence has been
      * waited on (so the GPU is no longer using those resources).
      */
-    void beginFrame(u32 frameIndex) {
+    void beginFrame(uint32_t frameIndex) {
         auto& q = m_deleteQueues[frameIndex % MAX_FRAMES];
         for (auto& fn : q) fn();
         q.clear();
@@ -50,7 +50,7 @@ public:
      * Queue `fn` to run the next time beginFrame() is called with the same
      * frame index.  Ownership of the callable is transferred.
      */
-    void queueDelete(u32 frameIndex, std::function<void()> fn) {
+    void queueDelete(uint32_t frameIndex, std::function<void()> fn) {
         m_deleteQueues[frameIndex % MAX_FRAMES].push_back(std::move(fn));
     }
 

@@ -105,7 +105,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
 
     // Create CommandBuffers for each in-flight frame
     m_maxFrames = 2;
-    for (u32 i = 0; i < m_maxFrames; ++i) {
+    for (uint32_t i = 0; i < m_maxFrames; ++i) {
         auto cmdBuf = Ref<WebGPUCommandBuffer>::adopt(new WebGPUCommandBuffer());
         auto result = cmdBuf->init(device);
         if (!result) {

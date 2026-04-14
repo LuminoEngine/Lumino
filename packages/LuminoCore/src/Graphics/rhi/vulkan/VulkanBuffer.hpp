@@ -14,7 +14,7 @@ public:
     VoidResult init(VulkanDevice* device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
                     bool deviceLocal = false);
 
-    u64 size() const override { return m_size; }
+    uint64_t size() const override { return m_size; }
     void* map() override;   ///< Returns nullptr for device-local buffers.
     void unmap() override;
 
@@ -28,7 +28,7 @@ private:
     VulkanDevice* m_device = nullptr;
     VkBuffer m_buffer = VK_NULL_HANDLE;
     VkDeviceMemory m_memory = VK_NULL_HANDLE;
-    u64 m_size = 0;
+    uint64_t m_size = 0;
     bool m_deviceLocal = false;
     void* m_mapped = nullptr;
 };

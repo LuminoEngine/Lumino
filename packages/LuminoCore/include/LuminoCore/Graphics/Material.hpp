@@ -14,26 +14,26 @@ namespace ln {
 
 /** GPU-aligned view params (Set N — camera): must match shader ViewParams struct. */
 struct ViewParamsUBO {
-    f32 viewProj[16];
-    f32 cameraPos[4];
-    f32 view[16];         // view matrix (world -> view)
-    f32 proj[16];         // projection matrix (view -> clip)
-    f32 invViewProj[16]; // inverse of viewProj (clip -> world)
-    f32 invProj[16];     // inverse of proj (clip -> view)
-    f32 screenSize[4];   // (width, height, 1/width, 1/height)
+    float viewProj[16];
+    float cameraPos[4];
+    float view[16];         // view matrix (world -> view)
+    float proj[16];         // projection matrix (view -> clip)
+    float invViewProj[16]; // inverse of viewProj (clip -> world)
+    float invProj[16];     // inverse of proj (clip -> view)
+    float screenSize[4];   // (width, height, 1/width, 1/height)
 };
 
 /** GPU-aligned scene params (Set N — lighting): must match shader SceneParams struct. */
 struct SceneParamsUBO {
-    f32 lightDir[4];
-    f32 lightColor[4];
-    f32 ambientColor[4];
+    float lightDir[4];
+    float lightColor[4];
+    float ambientColor[4];
 };
 
 /** GPU-aligned object params (Set N): must match shader ObjectParams struct. */
 struct ObjectParamsUBO {
-    f32 world[16];
-    f32 normalMatrix[16];
+    float world[16];
+    float normalMatrix[16];
 };
 
 /**
@@ -49,16 +49,16 @@ public:
     ~Material() override = default;
 
     /** Set a named float4 parameter in the material's $Global constant buffer. */
-    void setFloat4(const std::string& name, const f32* values);
+    void setFloat4(const std::string& name, const float* values);
 
     /** Set a named float parameter in the material's $Global constant buffer. */
-    void setFloat(const std::string& name, f32 value);
+    void setFloat(const std::string& name, float value);
 
     /** Convenience: set the "color" field of the CB named "u_params". */
     void setColor(const Color& color);
 
     /** Convenience: set color + specular for BasicLit-style shaders. */
-    void setSpecular(const Color& color, f32 shininess);
+    void setSpecular(const Color& color, float shininess);
 
     void setTexture(rhi::Texture* texture);
 
@@ -89,7 +89,7 @@ public:
 
     // Accessors for Renderer-side BindGroup construction
     rhi::Texture* baseTexture() const { return m_baseTexture.get(); }
-    u64 materialParamBufferSize() const { return m_shaderPass->materialParamBufferSize(); }
+    uint64_t materialParamBufferSize() const { return m_shaderPass->materialParamBufferSize(); }
     const Color& baseColor() const { return m_baseColor; }
 
     /** Named textures map (for reflection-driven bind group construction). */

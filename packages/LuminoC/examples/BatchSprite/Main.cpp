@@ -34,7 +34,7 @@ typedef struct Sprite {
     float uvL, uvT, uvW, uvH;
     float r, g, b, a;
     int zIndex;
-    int textureSlot; /* 0 or 1 — determines which material/texture to use */
+    int textureSlot; /* 0 or 1 - determines which material/texture to use */
 } Sprite;
 
 static Sprite s_sprites[SPRITE_COUNT];
@@ -175,13 +175,13 @@ int main() {
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    /* 2. Textures — load the same image for both slots (demo purposes) */
+    /* 2. Textures - load the same image for both slots (demo purposes) */
     LNHandle texture0 = LN_NULL_HANDLE;
     LNHandle texture1 = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture0);
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture1);
 
-    /* 3. Materials — two unlit materials with different tints */
+    /* 3. Materials - two unlit materials with different tints */
     LNHandle material0 = LN_NULL_HANDLE;
     LNHandle material1 = LN_NULL_HANDLE;
     LNMaterial_CreateUnlit(graphicsContext, &material0);

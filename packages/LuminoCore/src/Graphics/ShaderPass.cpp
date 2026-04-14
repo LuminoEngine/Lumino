@@ -158,7 +158,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     sp->m_vertEntry = std::move(vertEP->name);
     sp->m_fragEntry = std::move(fragEP->name);
     sp->m_pipelineLayout = std::move(*plResult);
-    sp->m_materialParamBufferSize = static_cast<u64>(cbSize);
+    sp->m_materialParamBufferSize = static_cast<uint64_t>(cbSize);
     sp->m_materialSetIndex = materialSetIdx;
     sp->m_materialMembers = std::move(members);
     sp->m_materialLayoutDesc = materialLayoutDesc;
@@ -169,7 +169,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     sp->m_viewLayoutDesc = std::move(viewLayoutDesc);
     sp->m_sceneLayoutDesc = std::move(sceneLayoutDesc);
     sp->m_objectLayoutDesc = std::move(objectLayoutDesc);
-    sp->m_objectUBOSize = static_cast<u64>(objectCBSize);
+    sp->m_objectUBOSize = static_cast<uint64_t>(objectCBSize);
 
     return sp;
 }

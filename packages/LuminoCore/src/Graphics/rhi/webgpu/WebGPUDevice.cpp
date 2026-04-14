@@ -329,7 +329,7 @@ Result<Ref<RenderPipeline>> WebGPUDevice::createRenderPipeline(const RenderPipel
     return Ref<RenderPipeline>(rp);
 }
 
-VoidResult WebGPUDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) {
+VoidResult WebGPUDevice::writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) {
     auto* wgpuBuf = static_cast<WebGPUBuffer*>(dst);
     wgpuQueueWriteBuffer(m_queue, wgpuBuf->handle(), dstOffset, data, size);
     return LN_MAKE_SUCCESS();

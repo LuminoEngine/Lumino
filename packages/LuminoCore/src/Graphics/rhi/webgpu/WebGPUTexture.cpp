@@ -29,7 +29,7 @@ VoidResult WebGPUTexture::init(WebGPUDevice* device, const TextureDesc& desc) {
 
     // Upload initial pixel data via the queue if provided.
     if (desc.initialData) {
-        u32 bpp = 4; // Assume 4 bytes per pixel for common formats.
+        uint32_t bpp = 4; // Assume 4 bytes per pixel for common formats.
         if (desc.format == TextureFormat::R8Unorm)          bpp = 1;
         else if (desc.format == TextureFormat::RG8Unorm)    bpp = 2;
         else if (desc.format == TextureFormat::RGBA16Float) bpp = 8;
@@ -55,7 +55,7 @@ VoidResult WebGPUTexture::init(WebGPUDevice* device, const TextureDesc& desc) {
     return LN_MAKE_SUCCESS();
 }
 
-void WebGPUTexture::initFromExternal(WGPUTexture texture, TextureFormat format, u32 width, u32 height) {
+void WebGPUTexture::initFromExternal(WGPUTexture texture, TextureFormat format, uint32_t width, uint32_t height) {
     m_texture = texture;
     m_format = format;
     m_width = width;

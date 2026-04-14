@@ -87,12 +87,12 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
     };
 
     std::vector<Vertex> verts;
-    std::vector<u32> idxs;
+    std::vector<uint32_t> idxs;
     verts.reserve(m_textBufferUsed * kVertsPerChar);
     idxs.reserve(m_textBufferUsed * kVertsPerChar);
 
     float textX = 0.0f, textY = 0.0f;
-    for (u32 i = 0; i < m_textBufferUsed; ++i) {
+    for (uint32_t i = 0; i < m_textBufferUsed; ++i) {
         char cp = m_textBuffer[i];
         if (cp == '\n') {
             textX = 0.0f;
@@ -119,7 +119,7 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
         const float nx0 = ndcX(sx0), ny0 = ndcY(sy0);
         const float nx1 = ndcX(sx1), ny1 = ndcY(sy1);
 
-        u32 base = static_cast<u32>(verts.size());
+        uint32_t base = static_cast<uint32_t>(verts.size());
         verts.push_back(makeVertex(nx0, ny0, u0, v0)); // top-left
         verts.push_back(makeVertex(nx0, ny1, u0, v1)); // bottom-left
         verts.push_back(makeVertex(nx1, ny0, u1, v0)); // top-right
@@ -135,15 +135,15 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
     }
 
     // Upload geometry.
-    auto r1 = m_mesh->updateVertices(0, verts.data(), static_cast<u32>(verts.size()));
+    auto r1 = m_mesh->updateVertices(0, verts.data(), static_cast<uint32_t>(verts.size()));
     if (!r1) {
         return r1;
     }
-    auto r2 = m_mesh->updateIndices(0, idxs.data(), static_cast<u32>(idxs.size()));
+    auto r2 = m_mesh->updateIndices(0, idxs.data(), static_cast<uint32_t>(idxs.size()));
     if (!r2) {
         return r2;
     }
-    m_mesh->setSubmeshes({{0, static_cast<u32>(idxs.size()), 0}});
+    m_mesh->setSubmeshes({{0, static_cast<uint32_t>(idxs.size()), 0}});
 
     // Render as overlay (LoadOp::Load — preserves the scene).
     Renderer* renderer = ctx->renderer();

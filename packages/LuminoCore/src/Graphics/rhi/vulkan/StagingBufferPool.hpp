@@ -95,7 +95,7 @@ public:
      */
     void uploadTextureImmediate(VkQueue queue, VkCommandPool cmdPool,
                                 VkImage dstImage, const void* data, VkDeviceSize size,
-                                u32 width, u32 height) {
+                                uint32_t width, uint32_t height) {
         Page staging = acquirePage(size);
 
         void* mapped = nullptr;
@@ -179,7 +179,7 @@ public:
     std::vector<uint8_t> downloadTextureImmediate(
         VkQueue queue, VkCommandPool cmdPool,
         VkImage srcImage, VkImageLayout currentLayout,
-        u32 width, u32 height, VkFormat /*format*/)
+        uint32_t width, uint32_t height, VkFormat /*format*/)
     {
         const VkDeviceSize size = static_cast<VkDeviceSize>(width) * height * 4; // BGRA8 / RGBA8
         Page staging = acquirePage(size);

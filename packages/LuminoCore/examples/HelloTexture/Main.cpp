@@ -80,7 +80,7 @@ int main() {
 
         std::vector<Vertex> vertices = {v0, v1, v2, v3};
         // CCW: 上三角 (v0,v2,v1) + 下三角 (v1,v2,v3)
-        std::vector<u32> indices = {0, 2, 1, 1, 2, 3};
+        std::vector<uint32_t> indices = {0, 2, 1, 1, 2, 3};
         SubMesh sub;
         sub.indexOffset = 0;
         sub.indexCount = 6;
@@ -93,7 +93,7 @@ int main() {
         Camera camera;
         camera.setPerspective(
             60.0f * 3.14159f / 180.0f,
-            static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
+            static_cast<float>(ctx->width()) / static_cast<float>(ctx->height()),
             0.1f,
             100.0f);
         camera.setLookAt({0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 0.0f});

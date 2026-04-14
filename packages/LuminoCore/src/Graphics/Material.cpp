@@ -32,17 +32,17 @@ int Material::findMemberOffset(const std::string& name) const {
     return -1;
 }
 
-void Material::setFloat4(const std::string& name, const f32* values) {
+void Material::setFloat4(const std::string& name, const float* values) {
     int offset = findMemberOffset(name);
-    if (offset < 0 || static_cast<size_t>(offset) + sizeof(f32) * 4 > m_paramBuffer.size()) return;
-    std::memcpy(m_paramBuffer.data() + offset, values, sizeof(f32) * 4);
+    if (offset < 0 || static_cast<size_t>(offset) + sizeof(float) * 4 > m_paramBuffer.size()) return;
+    std::memcpy(m_paramBuffer.data() + offset, values, sizeof(float) * 4);
     markDirty();
 }
 
-void Material::setFloat(const std::string& name, f32 value) {
+void Material::setFloat(const std::string& name, float value) {
     int offset = findMemberOffset(name);
-    if (offset < 0 || static_cast<size_t>(offset) + sizeof(f32) > m_paramBuffer.size()) return;
-    std::memcpy(m_paramBuffer.data() + offset, &value, sizeof(f32));
+    if (offset < 0 || static_cast<size_t>(offset) + sizeof(float) > m_paramBuffer.size()) return;
+    std::memcpy(m_paramBuffer.data() + offset, &value, sizeof(float));
     markDirty();
 }
 
@@ -60,18 +60,18 @@ void Material::setColor(const Color& color) {
     // the *first* ConstantBuffer in the $Material block.
     // For simplicity: write the entire color as the first 16 bytes of the buffer.
     // This works because BasicLit's MaterialParams starts with float4 color.
-    if (m_paramBuffer.size() >= sizeof(f32) * 4) {
-        f32 rgba[4] = { color.r, color.g, color.b, color.a };
+    if (m_paramBuffer.size() >= sizeof(float) * 4) {
+        float rgba[4] = { color.r, color.g, color.b, color.a };
         std::memcpy(m_paramBuffer.data(), rgba, sizeof(rgba));
         markDirty();
     }
 }
 
-void Material::setSpecular(const Color& color, f32 shininess) {
+void Material::setSpecular(const Color& color, float shininess) {
     // Write to "specular" field at offset 16 (after float4 color)
-    if (m_paramBuffer.size() >= sizeof(f32) * 8) {
-        f32 spec[4] = { color.r, color.g, color.b, shininess };
-        std::memcpy(m_paramBuffer.data() + sizeof(f32) * 4, spec, sizeof(spec));
+    if (m_paramBuffer.size() >= sizeof(float) * 8) {
+        float spec[4] = { color.r, color.g, color.b, shininess };
+        std::memcpy(m_paramBuffer.data() + sizeof(float) * 4, spec, sizeof(spec));
         markDirty();
     }
 }
@@ -125,8 +125,8 @@ Result<Ref<Material>> MaterialFactory::createMaterialFromBuiltin(
     if (bufSize > 0) {
         mat->m_paramBuffer.resize(static_cast<size_t>(bufSize), 0);
         // Set default color to white (first float4)
-        if (bufSize >= sizeof(f32) * 4) {
-            f32 white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        if (bufSize >= sizeof(float) * 4) {
+            float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
             std::memcpy(mat->m_paramBuffer.data(), white, sizeof(white));
         }
     }
@@ -179,8 +179,8 @@ Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
     auto bufSize = mat->m_shaderPass->materialParamBufferSize();
     if (bufSize > 0) {
         mat->m_paramBuffer.resize(static_cast<size_t>(bufSize), 0);
-        if (bufSize >= sizeof(f32) * 4) {
-            f32 white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        if (bufSize >= sizeof(float) * 4) {
+            float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
             std::memcpy(mat->m_paramBuffer.data(), white, sizeof(white));
         }
     }
@@ -223,8 +223,8 @@ Result<Ref<Material>> MaterialFactory::createFromShaderSourceFile(
     auto bufSize = mat->m_shaderPass->materialParamBufferSize();
     if (bufSize > 0) {
         mat->m_paramBuffer.resize(static_cast<size_t>(bufSize), 0);
-        if (bufSize >= sizeof(f32) * 4) {
-            f32 white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        if (bufSize >= sizeof(float) * 4) {
+            float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
             std::memcpy(mat->m_paramBuffer.data(), white, sizeof(white));
         }
     }

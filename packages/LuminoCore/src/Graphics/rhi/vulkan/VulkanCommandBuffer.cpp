@@ -84,7 +84,7 @@ VoidResult VulkanCommandBuffer::begin() {
 RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
     // Build RenderPassKey
     RenderPassKey rpKey;
-    u32 fbWidth = 0, fbHeight = 0;
+    uint32_t fbWidth = 0, fbHeight = 0;
     for (size_t i = 0; i < desc.colorAttachments.size(); ++i) {
         auto& ca = desc.colorAttachments[i];
         auto* view = static_cast<VulkanTextureView*>(ca.view);

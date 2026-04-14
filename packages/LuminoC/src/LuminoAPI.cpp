@@ -713,7 +713,7 @@ LNResult LNMesh_Create(
     }
 
     // Convert indices
-    std::vector<ln::u32> idx(indices, indices + indexCount);
+    std::vector<uint32_t> idx(indices, indices + indexCount);
 
     // Convert LNSubMesh[] → std::vector<ln::SubMesh>
     std::vector<ln::SubMesh> subs(submeshCount);

@@ -58,7 +58,7 @@ public:
     const std::string& vertexEntry() const { return m_vertEntry; }
     const std::string& fragmentEntry() const { return m_fragEntry; }
     rhi::PipelineLayout* pipelineLayout() const { return m_pipelineLayout.get(); }
-    u64 materialParamBufferSize() const { return m_materialParamBufferSize; }
+    uint64_t materialParamBufferSize() const { return m_materialParamBufferSize; }
 
     /** Descriptor set index for the material ($Material) BindGroup. */
     int16_t materialSetIndex() const { return m_materialSetIndex; }
@@ -91,7 +91,7 @@ public:
     const rhi::BindGroupLayoutDesc& objectLayoutDesc() const { return m_objectLayoutDesc; }
 
     /** Per-object UBO size from shader reflection. */
-    u64 objectUBOSize() const { return m_objectUBOSize; }
+    uint64_t objectUBOSize() const { return m_objectUBOSize; }
 
 private:
     ShaderPass() = default;
@@ -105,7 +105,7 @@ private:
     std::string m_vertEntry;
     std::string m_fragEntry;
     Ref<rhi::PipelineLayout> m_pipelineLayout;
-    u64 m_materialParamBufferSize = 0;
+    uint64_t m_materialParamBufferSize = 0;
     int16_t m_materialSetIndex = -1;
     std::vector<MaterialMemberInfo> m_materialMembers;
 
@@ -122,7 +122,7 @@ private:
     rhi::BindGroupLayoutDesc m_viewLayoutDesc;
     rhi::BindGroupLayoutDesc m_sceneLayoutDesc;
     rhi::BindGroupLayoutDesc m_objectLayoutDesc;
-    u64 m_objectUBOSize = 0;
+    uint64_t m_objectUBOSize = 0;
 };
 
 } // namespace ln

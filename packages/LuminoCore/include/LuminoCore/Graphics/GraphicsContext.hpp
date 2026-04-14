@@ -55,8 +55,8 @@ public:
     static Result<Ref<GraphicsContext>> createForCanvas(
         GraphicsModule* module,
         const std::string& canvasSelector,
-        u32 width,
-        u32 height,
+        uint32_t width,
+        uint32_t height,
         const GraphicsContextDesc& desc);
 
     // Future creation paths
@@ -97,13 +97,13 @@ public:
     rhi::TextureFormat depthFormat() const { return m_depthFormat; }
 
     /** Current framebuffer width in pixels. */
-    u32 width() const { return m_width; }
+    uint32_t width() const { return m_width; }
 
     /** Current framebuffer height in pixels. */
-    u32 height() const { return m_height; }
+    uint32_t height() const { return m_height; }
 
     /** Number of in-flight frames (from swap chain). */
-    u32 maxFramesInFlight() const;
+    uint32_t maxFramesInFlight() const;
 
     rhi::CommandBuffer* currentCommandBuffer() const;
 
@@ -157,8 +157,8 @@ private:
     std::vector<uint8_t> m_captureBuffer;
     rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;
     rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth24Stencil8;
-    u32 m_width = 0;
-    u32 m_height = 0;
+    uint32_t m_width = 0;
+    uint32_t m_height = 0;
     std::unique_ptr<PipelineCache> m_pipelineCache;
     Ref<Renderer> m_renderer;
 };

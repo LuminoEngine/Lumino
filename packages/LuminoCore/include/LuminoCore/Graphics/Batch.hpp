@@ -18,7 +18,7 @@ class Material;
 // DrawCommand
 // ---------------------------------------------------------------------------
 
-enum class DrawCommandType : u8 {
+enum class DrawCommandType : uint8_t {
     Sprite,
     SubMesh,
 };
@@ -32,7 +32,7 @@ struct DrawCommand {
     DrawCommand& operator=(const DrawCommand& o) { std::memcpy(this, &o, sizeof(*this)); return *this; }
 
     DrawCommandType type;
-    i32 zIndex;          // user-specified sort priority
+    int32_t zIndex;          // user-specified sort priority
     Material* material;  // sort key & draw material
 
     // --- Sprite ---
@@ -42,13 +42,13 @@ struct DrawCommand {
         Vector2 uvOffset;
         Vector2 uvSize;
         Color   color;
-        f32     rotation; // Z-axis rotation (rad)
+        float     rotation; // Z-axis rotation (rad)
     };
 
     // --- SubMesh ---
     struct SubMeshData {
         Mesh*     mesh;
-        u32       submeshIndex;
+        uint32_t       submeshIndex;
         Transform transform;
     };
 
@@ -58,7 +58,7 @@ struct DrawCommand {
     };
 
     // Sort key packed into 64-bit integer
-    u64 sortKey() const;
+    uint64_t sortKey() const;
 };
 
 // ---------------------------------------------------------------------------
@@ -69,17 +69,17 @@ class DrawCommandBuffer {
 public:
     void clear();
 
-    void drawSprite(Material* material, i32 zIndex,
+    void drawSprite(Material* material, int32_t zIndex,
                     const Vector3& pos, const Vector2& size,
                     const Vector2& uvOffset, const Vector2& uvSize,
-                    const Color& color, f32 rotation = 0.0f);
+                    const Color& color, float rotation = 0.0f);
 
     // Primary API: submesh granularity (1 command = 1 material)
-    void drawSubMesh(Mesh* mesh, u32 submeshIndex, Material* material,
-                     const Transform& transform, i32 zIndex);
+    void drawSubMesh(Mesh* mesh, uint32_t submeshIndex, Material* material,
+                     const Transform& transform, int32_t zIndex);
 
     // Convenience API: expands all submeshes into individual commands
-    void drawMesh(Mesh* mesh, const Transform& transform, i32 zIndex);
+    void drawMesh(Mesh* mesh, const Transform& transform, int32_t zIndex);
 
     const std::vector<DrawCommand>& commands() const { return m_commands; }
     std::vector<DrawCommand>& commands() { return m_commands; }
@@ -105,16 +105,16 @@ public:
 private:
     BatchProcessor() = default;
 
-    Result<void> flushSpriteGroup(Renderer* renderer, const DrawCommand* begin, u32 count);
-    Result<void> flushSubMeshGroup(Renderer* renderer, const DrawCommand* begin, u32 count);
+    Result<void> flushSpriteGroup(Renderer* renderer, const DrawCommand* begin, uint32_t count);
+    Result<void> flushSubMeshGroup(Renderer* renderer, const DrawCommand* begin, uint32_t count);
 
     // Sprite DynamicMesh (reused across frames, grows as needed)
     Ref<Mesh> m_spriteMesh;
-    u32 m_spriteMeshCapacity = 0; // current sprite capacity
+    uint32_t m_spriteMeshCapacity = 0; // current sprite capacity
 
     // CPU staging buffers
     std::vector<Vertex>  m_vertexStaging;
-    std::vector<u32>     m_indexStaging;
+    std::vector<uint32_t>     m_indexStaging;
     std::vector<SubMesh> m_submeshStaging;
 
     GraphicsContext* m_ctx = nullptr;

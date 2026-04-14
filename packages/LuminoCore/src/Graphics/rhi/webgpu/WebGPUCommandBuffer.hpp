@@ -16,7 +16,7 @@ class WebGPUDevice;
 struct WebGPURenderPassLayoutKey {
     std::vector<TextureFormat> colorFormats;
     TextureFormat depthStencilFormat = TextureFormat::Undefined;
-    u32 sampleCount = 1;
+    uint32_t sampleCount = 1;
 
     bool operator==(const WebGPURenderPassLayoutKey& other) const {
         return depthStencilFormat == other.depthStencilFormat
@@ -27,7 +27,7 @@ struct WebGPURenderPassLayoutKey {
 
 struct WebGPURenderPassLayoutKeyHash {
     size_t operator()(const WebGPURenderPassLayoutKey& k) const {
-        size_t h = std::hash<u32>{}(k.sampleCount);
+        size_t h = std::hash<uint32_t>{}(k.sampleCount);
         h ^= std::hash<int>{}(static_cast<int>(k.depthStencilFormat))
              + 0x9e3779b9 + (h << 6) + (h >> 2);
         for (auto f : k.colorFormats) {
@@ -47,16 +47,16 @@ public:
 
     const RenderPassLayoutDesc& layoutDesc() const override { return m_layoutDesc; }
     void setPipeline(RenderPipeline* pipeline) override;
-    void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) override;
-    void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) override;
-    void setBindGroup(u32 index, BindGroup* group) override;
-    void setBindGroup(u32 index, BindGroup* group,
-                      const u32* dynamicOffsets, u32 dynamicOffsetCount) override;
-    void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) override;
-    void setScissorRect(u32 x, u32 y, u32 w, u32 h) override;
-    void setStencilReference(u32 reference) override;
-    void draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) override;
-    void drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) override;
+    void setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t offset) override;
+    void setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset) override;
+    void setBindGroup(uint32_t index, BindGroup* group) override;
+    void setBindGroup(uint32_t index, BindGroup* group,
+                      const uint32_t* dynamicOffsets, uint32_t dynamicOffsetCount) override;
+    void setViewport(float x, float y, float w, float h, float minDepth, float maxDepth) override;
+    void setScissorRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h) override;
+    void setStencilReference(uint32_t reference) override;
+    void draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) override;
+    void drawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) override;
     void end() override;
 
 protected:

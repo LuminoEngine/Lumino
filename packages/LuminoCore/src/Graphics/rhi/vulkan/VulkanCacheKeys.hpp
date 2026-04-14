@@ -33,7 +33,7 @@ struct RenderPassKeyHash {
 struct FramebufferKey {
     VkRenderPass renderPass = VK_NULL_HANDLE;
     SmallVector<VkImageView, kMaxMultiRenderTargets + 1> attachments;
-    u32 width = 0, height = 0;
+    uint32_t width = 0, height = 0;
 
     bool operator==(const FramebufferKey& o) const;
 };

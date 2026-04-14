@@ -34,8 +34,8 @@ public:
     VulkanShaderModule();
     VoidResult init(VkDevice device, const ShaderModuleDesc& desc);
     VkShaderModule handle() const { return m_module; }
-    const u32* spirvData() const { return m_spirv.data(); }
-    size_t spirvSizeBytes() const { return m_spirv.size() * sizeof(u32); }
+    const uint32_t* spirvData() const { return m_spirv.data(); }
+    size_t spirvSizeBytes() const { return m_spirv.size() * sizeof(uint32_t); }
 
 protected:
     void finalize() override;
@@ -43,7 +43,7 @@ protected:
 private:
     VkDevice m_device = VK_NULL_HANDLE;
     VkShaderModule m_module = VK_NULL_HANDLE;
-    std::vector<u32> m_spirv;
+    std::vector<uint32_t> m_spirv;
 };
 
 // ------ VulkanBindGroupLayout ----------------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ public:
     VkPipelineLayout handle() const { return m_layout; }
 
     Result<Ref<BindGroup>> createBindGroup(
-        u32 setIndex, const std::vector<BindGroupEntry>& entries) override;
+        uint32_t setIndex, const std::vector<BindGroupEntry>& entries) override;
 
 protected:
     void finalize() override;
@@ -122,16 +122,16 @@ public:
 
     // Encoding methods
     void setPipeline(RenderPipeline* pipeline) override;
-    void setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) override;
-    void setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) override;
-    void setBindGroup(u32 index, BindGroup* group) override;
-    void setBindGroup(u32 index, BindGroup* group,
-                      const u32* dynamicOffsets, u32 dynamicOffsetCount) override;
-    void setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) override;
-    void setScissorRect(u32 x, u32 y, u32 w, u32 h) override;
-    void setStencilReference(u32 reference) override;
-    void draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) override;
-    void drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) override;
+    void setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t offset) override;
+    void setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset) override;
+    void setBindGroup(uint32_t index, BindGroup* group) override;
+    void setBindGroup(uint32_t index, BindGroup* group,
+                      const uint32_t* dynamicOffsets, uint32_t dynamicOffsetCount) override;
+    void setViewport(float x, float y, float w, float h, float minDepth, float maxDepth) override;
+    void setScissorRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h) override;
+    void setStencilReference(uint32_t reference) override;
+    void draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) override;
+    void drawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) override;
     void end() override;
 
 private:

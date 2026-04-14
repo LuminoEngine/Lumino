@@ -71,14 +71,14 @@ NativeWindowHandle PlatformWindow::nativeHandle() const {
     return h;
 }
 
-void PlatformWindow::framebufferSize(u32& width, u32& height) const {
+void PlatformWindow::framebufferSize(uint32_t& width, uint32_t& height) const {
     width  = 0;
     height = 0;
     if (!m_impl || m_impl->canvasSelector.empty()) return;
     int w = 0, h = 0;
     emscripten_get_canvas_element_size(m_impl->canvasSelector.c_str(), &w, &h);
-    width  = static_cast<u32>(w);
-    height = static_cast<u32>(h);
+    width  = static_cast<uint32_t>(w);
+    height = static_cast<uint32_t>(h);
 }
 
 #else
@@ -126,11 +126,11 @@ NativeWindowHandle PlatformWindow::nativeHandle() const {
     return h;
 }
 
-void PlatformWindow::framebufferSize(u32& width, u32& height) const {
+void PlatformWindow::framebufferSize(uint32_t& width, uint32_t& height) const {
     int w = 0, h = 0;
     glfwGetFramebufferSize(m_impl->window, &w, &h);
-    width = static_cast<u32>(w);
-    height = static_cast<u32>(h);
+    width = static_cast<uint32_t>(w);
+    height = static_cast<uint32_t>(h);
 }
 
 #endif // __EMSCRIPTEN__

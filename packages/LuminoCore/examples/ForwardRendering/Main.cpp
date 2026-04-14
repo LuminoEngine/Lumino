@@ -31,10 +31,10 @@ using namespace ln::platform;
 /// Generate a unit cube mesh (24 vertices, 36 indices).
 static Result<Ref<Mesh>> createCubeMesh(Device* device) {
     std::vector<Vertex> verts;
-    std::vector<u32> indices;
+    std::vector<uint32_t> indices;
 
     auto addFace = [&](Vector3 n, Vector3 u, Vector3 v) {
-        u32 base = static_cast<u32>(verts.size());
+        uint32_t base = static_cast<uint32_t>(verts.size());
         Vector3 p0 = Vector3{n.x - u.x - v.x, n.y - u.y - v.y, n.z - u.z - v.z};
         Vector3 p1 = Vector3{n.x + u.x - v.x, n.y + u.y - v.y, n.z + u.z - v.z};
         Vector3 p2 = Vector3{n.x + u.x + v.x, n.y + u.y + v.y, n.z + u.z + v.z};
@@ -67,7 +67,7 @@ static Result<Ref<Mesh>> createCubeMesh(Device* device) {
 
     SubMesh sub;
     sub.indexOffset = 0;
-    sub.indexCount = static_cast<u32>(indices.size());
+    sub.indexCount = static_cast<uint32_t>(indices.size());
     sub.materialIndex = 0;
 
     return Mesh::create(device, verts, indices, {sub});
@@ -108,7 +108,7 @@ int main() {
         // 5. Camera
         Camera camera;
         camera.setPerspective(60.0f * 3.14159f / 180.0f,
-            static_cast<f32>(ctx->width()) / static_cast<f32>(ctx->height()),
+            static_cast<float>(ctx->width()) / static_cast<float>(ctx->height()),
             0.1f, 100.0f);
 
         // 6. Light
@@ -119,7 +119,7 @@ int main() {
         renderer->setLight(light);
         
         // 7. Main loop
-        f32 time = 0.0f;
+        float time = 0.0f;
         while (window->processEvents()) {
             time += 0.016f; // ~60fps
 

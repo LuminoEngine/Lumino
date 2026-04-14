@@ -6,7 +6,7 @@ namespace ln {
 Result<Ref<Mesh>> Mesh::create(
     rhi::Device* device,
     const std::vector<Vertex>& vertices,
-    const std::vector<u32>& indices,
+    const std::vector<uint32_t>& indices,
     const std::vector<SubMesh>& submeshes,
     rhi::PrimitiveTopology topology) {
 
@@ -25,7 +25,7 @@ Result<Ref<Mesh>> Mesh::create(
 
     // Create index buffer.
     rhi::BufferDesc ibDesc;
-    ibDesc.size = indices.size() * sizeof(u32);
+    ibDesc.size = indices.size() * sizeof(uint32_t);
     ibDesc.usage = rhi::BufferUsage::Index;
     ibDesc.initialData = indices.data();
     auto ibResult = device->createBuffer(ibDesc);
@@ -35,7 +35,7 @@ Result<Ref<Mesh>> Mesh::create(
     mesh->m_submeshes = submeshes;
 
     // Determine how many material slots are needed.
-    u32 maxMaterialIndex = 0;
+    uint32_t maxMaterialIndex = 0;
     for (auto& sub : submeshes) {
         if (sub.materialIndex > maxMaterialIndex) maxMaterialIndex = sub.materialIndex;
     }
@@ -46,8 +46,8 @@ Result<Ref<Mesh>> Mesh::create(
 
 Result<Ref<Mesh>> Mesh::createDynamic(
     rhi::Device* device,
-    u32 maxVertexCount,
-    u32 maxIndexCount,
+    uint32_t maxVertexCount,
+    uint32_t maxIndexCount,
     rhi::PrimitiveTopology topology) {
 
     auto mesh = Ref<Mesh>::adopt(new Mesh());
@@ -61,7 +61,7 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     // mappable=true ensures host-visible memory so writeBuffer() uses map/memcpy
     // instead of staging+vkQueueWaitIdle, which would stall the GPU every frame.
     rhi::BufferDesc vbDesc;
-    vbDesc.size = static_cast<u64>(maxVertexCount) * sizeof(Vertex);
+    vbDesc.size = static_cast<uint64_t>(maxVertexCount) * sizeof(Vertex);
     vbDesc.usage = rhi::BufferUsage::Vertex;
     vbDesc.mappable = true;
     auto vbResult = device->createBuffer(vbDesc);
@@ -70,7 +70,7 @@ Result<Ref<Mesh>> Mesh::createDynamic(
 
     // Create index buffer for dynamic updates.
     rhi::BufferDesc ibDesc;
-    ibDesc.size = static_cast<u64>(maxIndexCount) * sizeof(u32);
+    ibDesc.size = static_cast<uint64_t>(maxIndexCount) * sizeof(uint32_t);
     ibDesc.usage = rhi::BufferUsage::Index;
     ibDesc.mappable = true;
     auto ibResult = device->createBuffer(ibDesc);
@@ -80,37 +80,37 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     return mesh;
 }
 
-Result<void> Mesh::updateVertices(u32 firstVertex, const Vertex* vertices, u32 count) {
+Result<void> Mesh::updateVertices(uint32_t firstVertex, const Vertex* vertices, uint32_t count) {
     if (!m_dynamic) return LN_MAKE_ERROR("Mesh is not dynamic");
     if (firstVertex + count > m_maxVertexCount) return LN_MAKE_ERROR("Vertex range out of bounds");
 
     return m_device->writeBuffer(
         m_vertexBuffer.get(),
-        static_cast<u64>(firstVertex) * sizeof(Vertex),
+        static_cast<uint64_t>(firstVertex) * sizeof(Vertex),
         vertices,
-        static_cast<u64>(count) * sizeof(Vertex));
+        static_cast<uint64_t>(count) * sizeof(Vertex));
 }
 
-Result<void> Mesh::updateIndices(u32 firstIndex, const u32* indices, u32 count) {
+Result<void> Mesh::updateIndices(uint32_t firstIndex, const uint32_t* indices, uint32_t count) {
     if (!m_dynamic) return LN_MAKE_ERROR("Mesh is not dynamic");
     if (firstIndex + count > m_maxIndexCount) return LN_MAKE_ERROR("Index range out of bounds");
 
     return m_device->writeBuffer(
         m_indexBuffer.get(),
-        static_cast<u64>(firstIndex) * sizeof(u32),
+        static_cast<uint64_t>(firstIndex) * sizeof(uint32_t),
         indices,
-        static_cast<u64>(count) * sizeof(u32));
+        static_cast<uint64_t>(count) * sizeof(uint32_t));
 }
 
 void Mesh::setSubmeshes(const std::vector<SubMesh>& submeshes) {
     m_submeshes = submeshes;
 
     // Resize material slots to accommodate new submeshes.
-    u32 maxMaterialIndex = 0;
+    uint32_t maxMaterialIndex = 0;
     for (auto& sub : submeshes) {
         if (sub.materialIndex > maxMaterialIndex) maxMaterialIndex = sub.materialIndex;
     }
-    if (maxMaterialIndex + 1 > static_cast<u32>(m_materials.size())) {
+    if (maxMaterialIndex + 1 > static_cast<uint32_t>(m_materials.size())) {
         m_materials.resize(maxMaterialIndex + 1);
     }
 }

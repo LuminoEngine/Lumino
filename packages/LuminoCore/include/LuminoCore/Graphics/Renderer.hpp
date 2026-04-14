@@ -77,7 +77,7 @@ public:
     void endFrame();
 
     /** Current in-flight frame slot. Valid after beginFrame(). */
-    u32 currentFrameSlot() const { return m_currentFrameSlot; }
+    uint32_t currentFrameSlot() const { return m_currentFrameSlot; }
 
     // ---- Pass lifecycle ----
 
@@ -141,13 +141,13 @@ public:
      * @param dynamicOffset   Dynamic offset for UBO bindings (0 if none).
      * @param dynamicOffsetCount Number of dynamic offsets (0 or 1).
      */
-    void setPassBindGroup(u32 setIndex, rhi::BindGroup* bindGroup,
-                          u32 dynamicOffset = 0, u32 dynamicOffsetCount = 0);
+    void setPassBindGroup(uint32_t setIndex, rhi::BindGroup* bindGroup,
+                          uint32_t dynamicOffset = 0, uint32_t dynamicOffsetCount = 0);
 
     // ---- Statistics ----
 
     /** Draw call count for the current frame. Reset each beginFrame(). */
-    u32 drawCallCount() const { return m_drawCallCount; }
+    uint32_t drawCallCount() const { return m_drawCallCount; }
 
     // ---- Drawing (batched) ----
 
@@ -158,16 +158,16 @@ public:
      * @param transform ワールドトランスフォーム
      * @param zIndex    ソート優先度 (デフォルト 0)
      */
-    void drawMesh(Mesh* mesh, const Transform& transform, i32 zIndex = 0);
+    void drawMesh(Mesh* mesh, const Transform& transform, int32_t zIndex = 0);
 
     /**
      * スプライト描画コマンドを内部コマンドバッファに蓄積します。
      * 蓄積されたコマンドは endRenderPass() 時に自動的にソート→バッチ化→描画されます。
      */
-    void drawSprite(Material* material, i32 zIndex,
+    void drawSprite(Material* material, int32_t zIndex,
                     const Vector3& pos, const Vector2& size,
                     const Vector2& uvOffset, const Vector2& uvSize,
-                    const Color& color, f32 rotation = 0.0f);
+                    const Color& color, float rotation = 0.0f);
 
     // ---- Drawing (immediate) ----
 
@@ -187,7 +187,7 @@ public:
      * Draw a single submesh with an explicit material and transform.
      * Used by BatchProcessor for per-submesh drawing.
      */
-    Result<void> drawSingleSubMesh(Mesh* mesh, u32 submeshIndex,
+    Result<void> drawSingleSubMesh(Mesh* mesh, uint32_t submeshIndex,
                                    Material* material, const Transform& transform);
 
     /**
@@ -230,7 +230,7 @@ private:
     int16_t m_viewSetIndex = -1;
     int16_t m_sceneSetIndex = -1;
     int16_t m_objectSetIndex = -1;
-    u64 m_objectUBOSize = 0;
+    uint64_t m_objectUBOSize = 0;
 
     // Per-frame view UBO allocator (camera data) — double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;
@@ -247,10 +247,10 @@ private:
     // Context (non-owning; provides device + pipelineCache)
     GraphicsContext* m_ctx = nullptr;
 
-    u32 m_frameCounter = 0;
-    u32 m_currentFrameSlot = 0;
-    u32 m_framesInFlight = 2;
-    u32 m_drawCallCount = 0;
+    uint32_t m_frameCounter = 0;
+    uint32_t m_currentFrameSlot = 0;
+    uint32_t m_framesInFlight = 2;
+    uint32_t m_drawCallCount = 0;
 
     // Per-frame command encoding state (valid between beginFrame / endFrame)
     rhi::CommandBuffer*     m_currentCmd  = nullptr;
@@ -258,10 +258,10 @@ private:
     rhi::TextureView*       m_currentColorTarget = nullptr;
 
     // Deferred per-pass bind groups (set via setPassBindGroup, flushed after setPipeline)
-    static constexpr u32 kMaxBindGroupSets = 4;
+    static constexpr uint32_t kMaxBindGroupSets = 4;
     rhi::BindGroup* m_passBindGroups[kMaxBindGroupSets] = {};
-    u32             m_passBindGroupDynamicOffsets[kMaxBindGroupSets] = {};
-    u32             m_passBindGroupDynamicOffsetCounts[kMaxBindGroupSets] = {};
+    uint32_t             m_passBindGroupDynamicOffsets[kMaxBindGroupSets] = {};
+    uint32_t             m_passBindGroupDynamicOffsetCounts[kMaxBindGroupSets] = {};
     bool            m_passBindGroupDirty[kMaxBindGroupSets] = {};
 
     // Flush all dirty pass BindGroups to the current RenderPass.
@@ -275,7 +275,7 @@ private:
 
     /** Draw a mesh for the purpose of stencil write only (no color output). */
     Result<void> drawStencilMaskMesh(Mesh* mesh, const Transform& transform, Material* material,
-                                     rhi::CompareFunction compare, u32 stencilRef, rhi::StencilOp passOp);
+                                     rhi::CompareFunction compare, uint32_t stencilRef, rhi::StencilOp passOp);
 
     struct StencilMaskEntry {
         Mesh* mesh;
@@ -283,7 +283,7 @@ private:
         Material* material;
     };
     std::vector<StencilMaskEntry> m_stencilMaskStack;
-    u32 m_stencilRef = 0;
+    uint32_t m_stencilRef = 0;
 
     // ---- Batch rendering (internal) ----
 
@@ -299,8 +299,8 @@ private:
     struct CachedMaterialBind {
         uint64_t paramVersion = 0;
         // Per-binding texture tracking (binding index -> last texture pointer)
-        std::unordered_map<u32, rhi::Texture*> lastTextures;
-        std::unordered_map<u32, Ref<rhi::TextureView>> textureViews;
+        std::unordered_map<uint32_t, rhi::Texture*> lastTextures;
+        std::unordered_map<uint32_t, Ref<rhi::TextureView>> textureViews;
         Ref<rhi::Sampler>     sampler;
         std::vector<Ref<rhi::Buffer>>    paramBuffers;
         std::vector<Ref<rhi::BindGroup>> bindGroups;

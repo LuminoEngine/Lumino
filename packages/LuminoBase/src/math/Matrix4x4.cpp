@@ -29,9 +29,9 @@ Matrix4x4::Matrix4x4(
 }
 
 // perspectiveRH_NO
-Matrix4x4 Matrix4x4::perspectiveRH(f32 fovY, f32 aspect, f32 nearZ, f32 farZ) {
+Matrix4x4 Matrix4x4::perspectiveRH(float fovY, float aspect, float nearZ, float farZ) {
     Matrix4x4 r;
-    const f32 tanHalf = std::tan(fovY * 0.5f);
+    const float tanHalf = std::tan(fovY * 0.5f);
     for (auto& v : r.m) v = 0;
     r.m[0]  = 1.0f / (aspect * tanHalf);
     r.m[5]  = 1.0f / tanHalf;
@@ -41,7 +41,7 @@ Matrix4x4 Matrix4x4::perspectiveRH(f32 fovY, f32 aspect, f32 nearZ, f32 farZ) {
     return r;
 }
 
-Matrix4x4 Matrix4x4::ortho(f32 left, f32 right, f32 bottom, f32 top, f32 nearZ, f32 farZ) {
+Matrix4x4 Matrix4x4::ortho(float left, float right, float bottom, float top, float nearZ, float farZ) {
     Matrix4x4 r;
     for (auto& v : r.m) v = 0;
     r.m[0]  = 2.0f / (right - left);
@@ -79,11 +79,11 @@ Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, c
     
     
     //Vector3 f = target - eye;
-    //const f32 fLen = f.length();
+    //const float fLen = f.length();
     //if (fLen > 0) f = f * (1.0f / fLen);
 
     //Vector3 s = Vector3::cross(f, up);
-    //const f32 sLen = s.length();
+    //const float sLen = s.length();
     //if (sLen > 0) s = s * (1.0f / sLen);
 
     //Vector3 u = Vector3::cross(s, f);
@@ -102,7 +102,7 @@ Matrix4x4 Matrix4x4::operator*(const Matrix4x4& rhs) const {
     Matrix4x4 r;
     for (int col = 0; col < 4; ++col) {
         for (int row = 0; row < 4; ++row) {
-            f32 sum = 0;
+            float sum = 0;
             for (int k = 0; k < 4; ++k) {
                 sum += m[k * 4 + row] * rhs.m[col * 4 + k];
             }
@@ -124,38 +124,38 @@ Matrix4x4 Matrix4x4::scale(const Vector3& s) {
     return r;
 }
 
-Matrix4x4 Matrix4x4::rotateX(f32 angle) {
+Matrix4x4 Matrix4x4::rotateX(float angle) {
     Matrix4x4 r;
-    f32 c = std::cos(angle), s = std::sin(angle);
+    float c = std::cos(angle), s = std::sin(angle);
     r.m[5] = c; r.m[6] = s;
     r.m[9] = -s; r.m[10] = c;
     return r;
 }
 
-Matrix4x4 Matrix4x4::rotateY(f32 angle) {
+Matrix4x4 Matrix4x4::rotateY(float angle) {
     Matrix4x4 r;
-    f32 c = std::cos(angle), s = std::sin(angle);
+    float c = std::cos(angle), s = std::sin(angle);
     r.m[0] = c; r.m[2] = -s;
     r.m[8] = s; r.m[10] = c;
     return r;
 }
 
-Matrix4x4 Matrix4x4::rotateZ(f32 angle) {
+Matrix4x4 Matrix4x4::rotateZ(float angle) {
     Matrix4x4 r;
-    f32 c = std::cos(angle), s = std::sin(angle);
+    float c = std::cos(angle), s = std::sin(angle);
     r.m[0] = c; r.m[1] = s;
     r.m[4] = -s; r.m[5] = c;
     return r;
 }
 
-Matrix4x4 Matrix4x4::rotateAxis(const Vector3& axis, f32 angle) {
+Matrix4x4 Matrix4x4::rotateAxis(const Vector3& axis, float angle) {
     return fromQuaternion(Quaternion::fromAxisAngle(axis, angle));
 }
 
 Matrix4x4 Matrix4x4::fromQuaternion(const Quaternion& q) {
-    f32 xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
-    f32 xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
-    f32 wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
+    float xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
+    float xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
+    float wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
 
     Matrix4x4 r;
     r.m[0]  = 1 - 2 * (yy + zz);
@@ -184,27 +184,27 @@ Matrix4x4 Matrix4x4::transposed() const {
 
 Matrix4x4 Matrix4x4::inversed() const {
     // Cofactor expansion (general 4x4 inverse).
-    f32 a00 = m[0], a01 = m[1], a02 = m[2],  a03 = m[3];
-    f32 a10 = m[4], a11 = m[5], a12 = m[6],  a13 = m[7];
-    f32 a20 = m[8], a21 = m[9], a22 = m[10], a23 = m[11];
-    f32 a30 = m[12], a31 = m[13], a32 = m[14], a33 = m[15];
+    float a00 = m[0], a01 = m[1], a02 = m[2],  a03 = m[3];
+    float a10 = m[4], a11 = m[5], a12 = m[6],  a13 = m[7];
+    float a20 = m[8], a21 = m[9], a22 = m[10], a23 = m[11];
+    float a30 = m[12], a31 = m[13], a32 = m[14], a33 = m[15];
 
-    f32 b00 = a00 * a11 - a01 * a10;
-    f32 b01 = a00 * a12 - a02 * a10;
-    f32 b02 = a00 * a13 - a03 * a10;
-    f32 b03 = a01 * a12 - a02 * a11;
-    f32 b04 = a01 * a13 - a03 * a11;
-    f32 b05 = a02 * a13 - a03 * a12;
-    f32 b06 = a20 * a31 - a21 * a30;
-    f32 b07 = a20 * a32 - a22 * a30;
-    f32 b08 = a20 * a33 - a23 * a30;
-    f32 b09 = a21 * a32 - a22 * a31;
-    f32 b10 = a21 * a33 - a23 * a31;
-    f32 b11 = a22 * a33 - a23 * a32;
+    float b00 = a00 * a11 - a01 * a10;
+    float b01 = a00 * a12 - a02 * a10;
+    float b02 = a00 * a13 - a03 * a10;
+    float b03 = a01 * a12 - a02 * a11;
+    float b04 = a01 * a13 - a03 * a11;
+    float b05 = a02 * a13 - a03 * a12;
+    float b06 = a20 * a31 - a21 * a30;
+    float b07 = a20 * a32 - a22 * a30;
+    float b08 = a20 * a33 - a23 * a30;
+    float b09 = a21 * a32 - a22 * a31;
+    float b10 = a21 * a33 - a23 * a31;
+    float b11 = a22 * a33 - a23 * a32;
 
-    f32 det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+    float det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
     if (std::abs(det) < 1e-12f) return identity();
-    f32 invDet = 1.0f / det;
+    float invDet = 1.0f / det;
 
     Matrix4x4 r;
     r.m[0]  = ( a11 * b11 - a12 * b10 + a13 * b09) * invDet;

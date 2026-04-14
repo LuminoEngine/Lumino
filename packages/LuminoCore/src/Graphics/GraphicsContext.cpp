@@ -33,7 +33,7 @@ rhi::CommandBuffer* GraphicsContext::currentCommandBuffer() const {
     return m_swapChain->getCurrentCommandBuffer();
 }
 
-u32 GraphicsContext::maxFramesInFlight() const {
+uint32_t GraphicsContext::maxFramesInFlight() const {
     return m_swapChain->maxFramesInFlight();
 }
 
@@ -51,7 +51,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     ctx->m_window = window;
     //ctx->m_colorFormat = desc.colorFormat;
 
-    u32 fbWidth, fbHeight;
+    uint32_t fbWidth, fbHeight;
     window->framebufferSize(fbWidth, fbHeight);
     ctx->m_width = fbWidth;
     ctx->m_height = fbHeight;
@@ -195,8 +195,8 @@ rhi::Device* GraphicsContext::device() const {
 Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
     GraphicsModule* module,
     const std::string& canvasSelector,
-    u32 width,
-    u32 height,
+    uint32_t width,
+    uint32_t height,
     const GraphicsContextDesc& desc)
 {
     if (!module) {

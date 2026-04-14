@@ -18,8 +18,8 @@ namespace ln::platform {
 /** Window creation descriptor. */
 struct WindowDesc {
     std::string title = "Lumino";
-    u32 width = 1280;
-    u32 height = 720;
+    uint32_t width = 1280;
+    uint32_t height = 720;
     bool resizable = false;
     /**
      * Web 専用: 紐づける HTML canvas の CSS セレクタ (例: "#my_canvas")。
@@ -56,7 +56,7 @@ public:
     NativeWindowHandle nativeHandle() const;
 
     /** Get framebuffer size in pixels. */
-    void framebufferSize(u32& width, u32& height) const;
+    void framebufferSize(uint32_t& width, uint32_t& height) const;
 
     /** Get the graphics context attached to this window. May be nullptr. */
     GraphicsContext* graphicsContext() const;

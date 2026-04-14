@@ -317,7 +317,7 @@ DeviceLimits VulkanDevice::deviceLimits() const {
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(m_physicalDevice, &props);
     DeviceLimits limits;
-    limits.minUniformBufferOffsetAlignment = static_cast<u32>(props.limits.minUniformBufferOffsetAlignment);
+    limits.minUniformBufferOffsetAlignment = static_cast<uint32_t>(props.limits.minUniformBufferOffsetAlignment);
     limits.maxUniformBufferRange = props.limits.maxUniformBufferRange;
     return limits;
 }
@@ -358,7 +358,7 @@ Result<Ref<Texture>> VulkanDevice::createTexture(const TextureDesc& desc) {
 
     // Upload initial data via staging buffer if provided.
     if (desc.initialData) {
-        u32 bpp = 4; // Assume 4 bytes per pixel for common formats.
+        uint32_t bpp = 4; // Assume 4 bytes per pixel for common formats.
         if (desc.format == TextureFormat::R8Unorm) bpp = 1;
         else if (desc.format == TextureFormat::RG8Unorm) bpp = 2;
         else if (desc.format == TextureFormat::RGBA16Float) bpp = 8;
@@ -425,7 +425,7 @@ Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipel
     return Ref<RenderPipeline>(rp);
 }
 
-u32 VulkanDevice::currentFrameIndex() const {
+uint32_t VulkanDevice::currentFrameIndex() const {
     return m_activeSwapChain ? m_activeSwapChain->currentFrame() : 0u;
 }
 
@@ -447,7 +447,7 @@ Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {
     return cb;
 }
 
-VoidResult VulkanDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* data, u64 size) {
+VoidResult VulkanDevice::writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) {
     auto* vkBuffer = static_cast<vulkan::VulkanBuffer*>(dst);
     if (vkBuffer->isDeviceLocal()) {
         m_stagingPool.uploadImmediate(m_graphicsQueue, m_commandPool,
@@ -457,7 +457,7 @@ VoidResult VulkanDevice::writeBuffer(Buffer* dst, u64 dstOffset, const void* dat
         if (!mapped) {
             return LN_MAKE_ERROR("Failed to map buffer for writeBuffer.");
         }
-        std::memcpy(static_cast<u8*>(mapped) + dstOffset, data, size);
+        std::memcpy(static_cast<uint8_t*>(mapped) + dstOffset, data, size);
         vkBuffer->unmap();
     }
     return LN_MAKE_SUCCESS();

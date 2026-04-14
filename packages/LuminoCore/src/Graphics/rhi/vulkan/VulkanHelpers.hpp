@@ -163,8 +163,8 @@ public:
 
     static VkStencilOpState toVkStencilOpState(
         const StencilFaceState& face,
-        u32 readMask,
-        u32 writeMask) {
+        uint32_t readMask,
+        uint32_t writeMask) {
         VkStencilOpState s{};
         s.failOp = toVkStencilOp(face.failOp);
         s.passOp = toVkStencilOp(face.passOp);

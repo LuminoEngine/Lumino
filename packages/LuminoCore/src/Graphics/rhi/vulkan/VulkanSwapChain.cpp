@@ -116,7 +116,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     // Create image views
     VkFormat vkFmt = swapInfo.imageFormat;
     m_views.resize(imageCount);
-    for (u32 i = 0; i < imageCount; ++i) {
+    for (uint32_t i = 0; i < imageCount; ++i) {
         auto view = Ref<VulkanTextureView>::adopt(new VulkanTextureView());
         if (!view->init(
                 m_device,
@@ -132,7 +132,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     }
 
     // Create CommandBuffers for rendering.
-    for (u32 i = 0; i < m_maxFrames; ++i) {
+    for (uint32_t i = 0; i < m_maxFrames; ++i) {
         auto commandBuffer = m_device->createCommandBuffer();
         if (!commandBuffer) {
             // TODO: Error handling
@@ -146,7 +146,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
 
     m_imageAvailableSemaphores.resize(m_maxFrames);
     m_renderFinished.resize(m_maxFrames);
-    for (u32 i = 0; i < m_maxFrames; ++i) {
+    for (uint32_t i = 0; i < m_maxFrames; ++i) {
         vkCreateSemaphore(m_device->vkDevice(), &semInfo, nullptr, &m_imageAvailableSemaphores[i]);
         vkCreateSemaphore(m_device->vkDevice(), &semInfo, nullptr, &m_renderFinished[i]);
     }
@@ -157,7 +157,7 @@ void VulkanSwapChain::finalize() {
     auto dev = m_device->vkDevice();
     vkDeviceWaitIdle(dev);
 
-    for (u32 i = 0; i < m_maxFrames; ++i) {
+    for (uint32_t i = 0; i < m_maxFrames; ++i) {
         if (m_imageAvailableSemaphores[i])
             vkDestroySemaphore(dev, m_imageAvailableSemaphores[i], nullptr);
         if (m_renderFinished[i]) vkDestroySemaphore(dev, m_renderFinished[i], nullptr);

@@ -58,8 +58,8 @@ static std::vector<float> readAccessorAsFloat(
     return result;
 }
 
-/** Helper: read index accessor as u32 array. */
-static std::vector<u32> readIndices(
+/** Helper: read index accessor as uint32_t array. */
+static std::vector<uint32_t> readIndices(
     const tinygltf::Model& model,
     int accessorIndex) {
 
@@ -70,7 +70,7 @@ static std::vector<u32> readIndices(
     const unsigned char* base =
         buffer.data.data() + bufferView.byteOffset + accessor.byteOffset;
 
-    std::vector<u32> result(accessor.count);
+    std::vector<uint32_t> result(accessor.count);
     const size_t stride = bufferView.byteStride > 0
         ? bufferView.byteStride
         : 0;  // 0 means tightly packed
@@ -102,28 +102,28 @@ static Transform nodeTransform(const tinygltf::Node& node) {
     if (node.matrix.size() == 16) {
         // Decompose matrix into TRS (simplified: just extract translation)
         t.position = Vector3{
-            static_cast<f32>(node.matrix[12]),
-            static_cast<f32>(node.matrix[13]),
-            static_cast<f32>(node.matrix[14])};
+            static_cast<float>(node.matrix[12]),
+            static_cast<float>(node.matrix[13]),
+            static_cast<float>(node.matrix[14])};
     }
     if (node.translation.size() == 3) {
         t.position = Vector3{
-            static_cast<f32>(node.translation[0]),
-            static_cast<f32>(node.translation[1]),
-            static_cast<f32>(node.translation[2])};
+            static_cast<float>(node.translation[0]),
+            static_cast<float>(node.translation[1]),
+            static_cast<float>(node.translation[2])};
     }
     if (node.rotation.size() == 4) {
         t.rotation = Quaternion{
-            static_cast<f32>(node.rotation[0]),
-            static_cast<f32>(node.rotation[1]),
-            static_cast<f32>(node.rotation[2]),
-            static_cast<f32>(node.rotation[3])};
+            static_cast<float>(node.rotation[0]),
+            static_cast<float>(node.rotation[1]),
+            static_cast<float>(node.rotation[2]),
+            static_cast<float>(node.rotation[3])};
     }
     if (node.scale.size() == 3) {
         t.scale = Vector3{
-            static_cast<f32>(node.scale[0]),
-            static_cast<f32>(node.scale[1]),
-            static_cast<f32>(node.scale[2])};
+            static_cast<float>(node.scale[0]),
+            static_cast<float>(node.scale[1]),
+            static_cast<float>(node.scale[2])};
     }
     return t;
 }
@@ -159,8 +159,8 @@ static std::vector<Ref<rhi::Texture>> loadGltfTextures(
         }
 
         rhi::TextureDesc texDesc;
-        texDesc.width = static_cast<u32>(img.width);
-        texDesc.height = static_cast<u32>(img.height);
+        texDesc.width = static_cast<uint32_t>(img.width);
+        texDesc.height = static_cast<uint32_t>(img.height);
         texDesc.format = rhi::TextureFormat::RGBA8Unorm;
         texDesc.usage = rhi::TextureUsage::Sampled | rhi::TextureUsage::CopyDst;
         texDesc.initialData = pixelData;
@@ -218,10 +218,10 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
         // Set base color.
         mat->setColor(Color{
-            static_cast<f32>(pbr.baseColorFactor[0]),
-            static_cast<f32>(pbr.baseColorFactor[1]),
-            static_cast<f32>(pbr.baseColorFactor[2]),
-            static_cast<f32>(pbr.baseColorFactor[3])});
+            static_cast<float>(pbr.baseColorFactor[0]),
+            static_cast<float>(pbr.baseColorFactor[1]),
+            static_cast<float>(pbr.baseColorFactor[2]),
+            static_cast<float>(pbr.baseColorFactor[3])});
 
         // Set texture.
         if (hasTexture) {
@@ -284,7 +284,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
         // Merge all primitives of this mesh into one Mesh object.
         std::vector<Vertex> allVertices;
-        std::vector<u32> allIndices;
+        std::vector<uint32_t> allIndices;
         std::vector<SubMesh> submeshes;
 
         for (auto& prim : gltfMesh.primitives) {
@@ -292,8 +292,8 @@ Result<LoadedModel> MeshLoader::loadGltf(
                 continue;  // Skip non-triangles.
             }
 
-            u32 vertexOffset = static_cast<u32>(allVertices.size());
-            u32 indexOffset = static_cast<u32>(allIndices.size());
+            uint32_t vertexOffset = static_cast<uint32_t>(allVertices.size());
+            uint32_t indexOffset = static_cast<uint32_t>(allIndices.size());
 
             // Read positions (required).
             auto posIt = prim.attributes.find("POSITION");
@@ -360,19 +360,19 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
                 SubMesh sub;
                 sub.indexOffset = indexOffset;
-                sub.indexCount = static_cast<u32>(indices.size());
-                sub.materialIndex = static_cast<u32>(
+                sub.indexCount = static_cast<uint32_t>(indices.size());
+                sub.materialIndex = static_cast<uint32_t>(
                     prim.material >= 0 ? prim.material : 0);
                 submeshes.push_back(sub);
             } else {
                 // No indices - generate sequential indices.
-                for (u32 i = 0; i < static_cast<u32>(vertexCount); ++i) {
+                for (uint32_t i = 0; i < static_cast<uint32_t>(vertexCount); ++i) {
                     allIndices.push_back(vertexOffset + i);
                 }
                 SubMesh sub;
                 sub.indexOffset = indexOffset;
-                sub.indexCount = static_cast<u32>(vertexCount);
-                sub.materialIndex = static_cast<u32>(
+                sub.indexCount = static_cast<uint32_t>(vertexCount);
+                sub.materialIndex = static_cast<uint32_t>(
                     prim.material >= 0 ? prim.material : 0);
                 submeshes.push_back(sub);
             }
@@ -386,7 +386,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
         auto& mesh = *meshResult;
         // Assign materials to mesh slots.
         for (auto& sub : submeshes) {
-            u32 idx = sub.materialIndex;
+            uint32_t idx = sub.materialIndex;
             if (idx < result.materials.size() && idx < mesh->materials().size()) {
                 mesh->materials()[idx] = result.materials[idx];
             }

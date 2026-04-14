@@ -11,8 +11,8 @@ VoidResult VulkanTextureView::init(
     VkImage image,
     VkFormat format,
     VkImageAspectFlags aspect,
-    u32 width,
-    u32 height) {
+    uint32_t width,
+    uint32_t height) {
     m_device = device;
     m_image = image;
     m_format = format;

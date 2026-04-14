@@ -70,8 +70,8 @@ VoidResult VulkanShaderModule::init(VkDevice device, const ShaderModuleDesc& des
         return LN_MAKE_ERROR("VulkanShaderModule only accepts SPIRV format.");
     }
 
-    const u32* spirvCode = static_cast<const u32*>(desc.code);
-    m_spirv.assign(spirvCode, spirvCode + desc.codeSizeBytes / sizeof(u32));
+    const uint32_t* spirvCode = static_cast<const uint32_t*>(desc.code);
+    m_spirv.assign(spirvCode, spirvCode + desc.codeSizeBytes / sizeof(uint32_t));
 
     VkShaderModuleCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -103,9 +103,9 @@ static VkDescriptorType toVkDescriptorType(BindingType t) {
 
 static VkShaderStageFlags toVkShaderStage(ShaderStage s) {
     VkShaderStageFlags flags = 0;
-    if (static_cast<u32>(s) & static_cast<u32>(ShaderStage::Vertex))   flags |= VK_SHADER_STAGE_VERTEX_BIT;
-    if (static_cast<u32>(s) & static_cast<u32>(ShaderStage::Fragment)) flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
-    if (static_cast<u32>(s) & static_cast<u32>(ShaderStage::Compute))  flags |= VK_SHADER_STAGE_COMPUTE_BIT;
+    if (static_cast<uint32_t>(s) & static_cast<uint32_t>(ShaderStage::Vertex))   flags |= VK_SHADER_STAGE_VERTEX_BIT;
+    if (static_cast<uint32_t>(s) & static_cast<uint32_t>(ShaderStage::Fragment)) flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
+    if (static_cast<uint32_t>(s) & static_cast<uint32_t>(ShaderStage::Compute))  flags |= VK_SHADER_STAGE_COMPUTE_BIT;
     return flags;
 }
 
@@ -259,7 +259,7 @@ VoidResult VulkanPipelineLayout::init(VulkanDevice* vulkanDevice, const Pipeline
 }
 
 Result<Ref<BindGroup>> VulkanPipelineLayout::createBindGroup(
-    u32 setIndex, const std::vector<BindGroupEntry>& entries) {
+    uint32_t setIndex, const std::vector<BindGroupEntry>& entries) {
     if (setIndex >= m_bindGroupLayouts.size()) {
         return LN_MAKE_ERROR("setIndex out of range.");
     }
@@ -340,7 +340,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     // Vertex input
     std::vector<VkVertexInputBindingDescription> bindingDescs;
     std::vector<VkVertexInputAttributeDescription> attrDescs;
-    for (u32 i = 0; i < desc.vertexBuffers.size(); ++i) {
+    for (uint32_t i = 0; i < desc.vertexBuffers.size(); ++i) {
         auto& vb = desc.vertexBuffers[i];
         VkVertexInputBindingDescription bd{};
         bd.binding = i;
@@ -554,52 +554,52 @@ void VulkanRenderPass::setPipeline(RenderPipeline* pipeline) {
     m_currentPipelineLayout = vp->layoutHandle();
 }
 
-void VulkanRenderPass::setVertexBuffer(u32 slot, Buffer* buffer, u64 offset) {
+void VulkanRenderPass::setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t offset) {
     auto* vb = static_cast<VulkanBuffer*>(buffer);
     VkBuffer buf = vb->handle();
     VkDeviceSize off = offset;
     vkCmdBindVertexBuffers(m_cmd, slot, 1, &buf, &off);
 }
 
-void VulkanRenderPass::setIndexBuffer(Buffer* buffer, IndexFormat format, u64 offset) {
+void VulkanRenderPass::setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset) {
     auto* vb = static_cast<VulkanBuffer*>(buffer);
     VkIndexType type = format == IndexFormat::Uint16 ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32;
     vkCmdBindIndexBuffer(m_cmd, vb->handle(), offset, type);
 }
 
-void VulkanRenderPass::setBindGroup(u32 index, BindGroup* group) {
+void VulkanRenderPass::setBindGroup(uint32_t index, BindGroup* group) {
     auto* vg = static_cast<VulkanBindGroup*>(group);
     VkDescriptorSet set = vg->handle();
     vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout, index, 1, &set, 0, nullptr);
 }
 
-void VulkanRenderPass::setBindGroup(u32 index, BindGroup* group,
-                                     const u32* dynamicOffsets, u32 dynamicOffsetCount) {
+void VulkanRenderPass::setBindGroup(uint32_t index, BindGroup* group,
+                                     const uint32_t* dynamicOffsets, uint32_t dynamicOffsetCount) {
     auto* vg = static_cast<VulkanBindGroup*>(group);
     VkDescriptorSet set = vg->handle();
     vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout,
                             index, 1, &set, dynamicOffsetCount, dynamicOffsets);
 }
 
-void VulkanRenderPass::setViewport(f32 x, f32 y, f32 w, f32 h, f32 minDepth, f32 maxDepth) {
+void VulkanRenderPass::setViewport(float x, float y, float w, float h, float minDepth, float maxDepth) {
     VkViewport vp{x, y, w, h, minDepth, maxDepth};
     vkCmdSetViewport(m_cmd, 0, 1, &vp);
 }
 
-void VulkanRenderPass::setScissorRect(u32 x, u32 y, u32 w, u32 h) {
+void VulkanRenderPass::setScissorRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
     VkRect2D sc{{static_cast<int32_t>(x), static_cast<int32_t>(y)}, {w, h}};
     vkCmdSetScissor(m_cmd, 0, 1, &sc);
 }
 
-void VulkanRenderPass::setStencilReference(u32 reference) {
+void VulkanRenderPass::setStencilReference(uint32_t reference) {
     vkCmdSetStencilReference(m_cmd, VK_STENCIL_FACE_FRONT_AND_BACK, reference);
 }
 
-void VulkanRenderPass::draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance) {
+void VulkanRenderPass::draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
     vkCmdDraw(m_cmd, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
-void VulkanRenderPass::drawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 baseVertex, u32 firstInstance) {
+void VulkanRenderPass::drawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) {
     vkCmdDrawIndexed(m_cmd, indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 
@@ -639,8 +639,8 @@ bool FramebufferKey::operator==(const FramebufferKey& o) const {
 size_t FramebufferKeyHash::operator()(const FramebufferKey& key) const {
     size_t h = std::hash<void*>()(key.renderPass);
     for (auto v : key.attachments) h ^= std::hash<void*>()(v) + 0x9e3779b9 + (h << 6) + (h >> 2);
-    h ^= std::hash<u32>()(key.width) + 0x9e3779b9 + (h << 6) + (h >> 2);
-    h ^= std::hash<u32>()(key.height) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    h ^= std::hash<uint32_t>()(key.width) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    h ^= std::hash<uint32_t>()(key.height) + 0x9e3779b9 + (h << 6) + (h >> 2);
     return h;
 }
 
