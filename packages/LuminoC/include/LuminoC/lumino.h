@@ -347,6 +347,16 @@ typedef enum LNBlendMode {
     LN_BLEND_MODE_MULTIPLY = 4,
 } LNBlendMode;
 
+/** ポリゴンのカリングモード */
+typedef enum LNCullMode {
+    /** カリングなし (両面描画) */
+    LN_CULL_MODE_NONE  = 0,
+    /** 前面をカリング */
+    LN_CULL_MODE_FRONT = 1,
+    /** 背面をカリング (デフォルト) */
+    LN_CULL_MODE_BACK  = 2,
+} LNCullMode;
+
 /**
  * ビルトインシェーダを指定してマテリアルを作成します。
  * @param[in]  graphicsContext GraphicsContext のハンドル
@@ -448,6 +458,16 @@ extern LUMINO_API LNResult LNMaterial_SetNamedTexture(
 extern LUMINO_API LNResult LNMaterial_SetBlendMode(
     LNHandle material,
     LNBlendMode blendMode
+);
+
+/**
+ * マテリアルのカリングモードを設定します。
+ * @param[in] material  マテリアルのハンドル
+ * @param[in] cullMode  カリングモード
+ */
+extern LUMINO_API LNResult LNMaterial_SetCullMode(
+    LNHandle material,
+    LNCullMode cullMode
 );
 
 //------------------------------------------------------------------------------

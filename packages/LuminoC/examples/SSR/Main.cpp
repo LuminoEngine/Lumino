@@ -68,6 +68,14 @@ int main() {
         LN_TEXTURE_FORMAT_RGBA8_UNORM,
         &gbuffersC);
 
+    LNHandle debugRenderTarget = LN_NULL_HANDLE;
+    LNTexture2D_CreateRenderTargetEx(
+        graphicsContext,
+        windowWidth,
+        windowHeight,
+        LN_TEXTURE_FORMAT_RGBA32_FLOAT,
+        &debugRenderTarget);
+
     /* Shared depth buffer */
     LNHandle sceneDepth = LN_NULL_HANDLE;
     LNTexture2D_CreateDepthStencil(graphicsContext, windowWidth, windowHeight, &sceneDepth);
@@ -111,6 +119,7 @@ int main() {
         ASSETS_DIR "/GBuffer.slang",
         LN_REPO_ROOT_DIR "/packages/LuminoShader/shaders",
         &gbufferMaterial);
+    LNMaterial_SetCullMode(gbufferMaterial, LN_CULL_MODE_NONE);
     
     /* SSR material */
     LNHandle matSSR = LN_NULL_HANDLE;
@@ -202,8 +211,8 @@ int main() {
 
         /* Triangle transform: rotate around Y axis, hover above ground */
         LNTransform triTransform = {
-            0.0f, 0.0f, 0.0f,                                     /* position */
-            0.0f, sinf(triangleAngle * 0.5f), 0.0f, cosf(triangleAngle * 0.5f),  /* rotation (Y axis) */
+            0.0f, 1.0f, -1.0f,                                     /* position */
+            0.0f, sinf(triangleAngle * 0.5f), sinf(triangleAngle * 0.5f)*0.4, cosf(triangleAngle * 0.5f),  /* rotation (Y axis) */
             1.0f, 1.0f, 1.0f                                      /* scale */
         };
 
@@ -291,7 +300,9 @@ int main() {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             /* Render to backbuffer */
+            rpDesc.colorAttachmentCount = 1;
             rpDesc.colorAttachments[0].renderTarget = colorBuffer;
+            //rpDesc.colorAttachments[0].renderTarget = debugRenderTarget;
             rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[2] = 0.0f;
@@ -303,13 +314,14 @@ int main() {
             LNRenderer_EndRenderPass(renderer);
         }
 
-        /* Profiler overlay */
-        LNDebug_GetGraphicsProfiler(graphicsContext, &profiler);
-        LNDebug_Print(graphicsContext,
-            (std::string("FPS: ") + std::to_string(profiler.fps)).c_str());
-        LNDebug_Print(graphicsContext,
-            (std::string("DrawCall: ") + std::to_string(profiler.drawCallCount)).c_str());
+        ///* Profiler overlay */
+        //LNDebug_GetGraphicsProfiler(graphicsContext, &profiler);
+        //LNDebug_Print(graphicsContext,
+        //    (std::string("FPS: ") + std::to_string(profiler.fps)).c_str());
+        //LNDebug_Print(graphicsContext,
+        //    (std::string("DrawCall: ") + std::to_string(profiler.drawCallCount)).c_str());
 
+        printGraphicsProfilering(graphicsContext);
         LNGraphicsContext_EndFrame(graphicsContext);
 
         _sleep(16); /* ~60 FPS */
@@ -327,6 +339,8 @@ int main() {
     LNObject_Release(groundMaterial);
     LNObject_Release(camera);
     LNObject_Release(sceneDepth);
+    LNObject_Release(debugRenderTarget);
+    LNObject_Release(gbuffersC);
     LNObject_Release(gbuffersB);
     LNObject_Release(gbuffersA);
     LNObject_Release(window);

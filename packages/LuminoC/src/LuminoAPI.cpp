@@ -673,6 +673,14 @@ LNResult LNMaterial_SetBlendMode(LNHandle material, LNBlendMode blendMode) {
     return LN_OK;
 }
 
+LNResult LNMaterial_SetCullMode(LNHandle material, LNCullMode cullMode) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    mat->setCullMode(static_cast<ln::rhi::CullMode>(cullMode));
+    return LN_OK;
+}
+
 LNResult LNMaterial_SetNamedTexture(LNHandle material, const char* name, LNHandle texture) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
