@@ -1,4 +1,4 @@
-// Web-only Device::create factory.
+﻿// Web-only Device::create factory.
 // On desktop, Device::create lives in VulkanDevice.cpp and handles both Vulkan
 // and WebGPU backends. On Emscripten, Vulkan is unavailable so we provide a
 // separate translation unit that only instantiates the WebGPU backend.

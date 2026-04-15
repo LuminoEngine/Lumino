@@ -1,4 +1,4 @@
-project(LuminoCore-HelloTexture)
+﻿project(LuminoCore-HelloTexture)
 add_executable(${PROJECT_NAME} Main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore LuminoBase LuminoShader)
 target_compile_definitions(${PROJECT_NAME} PRIVATE

@@ -25,7 +25,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
 
     // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
     // Web builds may not have GraphicsModule / builtin shaders available yet.
-    // In that case, skip UBO allocator creation — only basic pass begin/end will work.
+    // In that case, skip UBO allocator creation - only basic pass begin/end will work.
     if (module) {
         const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
         renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();

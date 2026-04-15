@@ -215,7 +215,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
 
     ctx->m_pipelineCache = std::make_unique<PipelineCache>(dev);
 
-    // SwapChain — pass the canvas selector via nativeWindowHandle
+    // SwapChain - pass the canvas selector via nativeWindowHandle
     rhi::SwapChainDesc scDesc;
     scDesc.nativeWindowHandle = const_cast<char*>(canvasSelector.c_str());
     scDesc.width = width;

@@ -1,4 +1,4 @@
-#include <LuminoCore/Graphics/DynamicUniformAllocator.hpp>
+﻿#include <LuminoCore/Graphics/DynamicUniformAllocator.hpp>
 #include <cstring>
 
 namespace ln {

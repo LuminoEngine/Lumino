@@ -26,7 +26,7 @@ public:
     /**
      * Number of descriptor sets per pool page.  Each page also allocates
      * SETS_PER_POOL * 4 descriptors of each type to cover typical usage
-     * (1–4 descriptors per set).
+     * (1-4 descriptors per set).
      */
     static constexpr uint32_t SETS_PER_POOL = 64;
 
@@ -64,7 +64,7 @@ public:
                 allocateNewPool();
                 continue;
             }
-            // Unexpected error — return null handles.
+            // Unexpected error - return null handles.
             return {VK_NULL_HANDLE, VK_NULL_HANDLE};
         }
     }

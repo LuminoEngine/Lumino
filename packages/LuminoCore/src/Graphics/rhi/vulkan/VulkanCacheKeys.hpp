@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <LuminoBase/Types.hpp>
 #include <LuminoBase/SmallVector.hpp>

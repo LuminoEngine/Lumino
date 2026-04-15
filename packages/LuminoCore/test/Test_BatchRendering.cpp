@@ -4,14 +4,14 @@
 
 using namespace ln;
 
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Helpers: fake Material pointers for sort-key testing (never dereferenced)
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 static Material* fakeMat(uintptr_t id) { return reinterpret_cast<Material*>(id); }
 
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // DrawCommandBuffer tests
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 class Test_DrawCommandBuffer : public ::testing::Test {
 protected:
@@ -72,9 +72,9 @@ TEST_F(Test_DrawCommandBuffer, Clear) {
     EXPECT_TRUE(m_buf.commands().empty());
 }
 
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // SortKey tests
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 class Test_SortKey : public ::testing::Test {};
 
@@ -91,7 +91,7 @@ TEST_F(Test_SortKey, ZIndexPrimary) {
 }
 
 TEST_F(Test_SortKey, MaterialSecondary) {
-    // Same zIndex, different materials — should produce different sort keys
+    // Same zIndex, different materials - should produce different sort keys
     DrawCommand a{}, b{};
     a.type = DrawCommandType::Sprite;
     b.type = DrawCommandType::Sprite;
@@ -124,9 +124,9 @@ TEST_F(Test_SortKey, TypeTertiary) {
     EXPECT_LT(a.sortKey(), b.sortKey());
 }
 
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Sort tests
-// ---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 class Test_BatchSort : public ::testing::Test {};
 

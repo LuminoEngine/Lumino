@@ -26,10 +26,10 @@ class GraphicsContext;
  * C-APIフレンドリーな設計：すべての状態は呼び出しごとに明示的に渡されます。
  *
  * 内部で使用されるBindGroup規約（セットインデックスはシェーダリフレクションから決定）：
- * - $Material セット：マテリアルごとのデータ— Material から取得されます
- * - View セット：視点データ（カメラ行列）— beginRenderPass(camera) で自動設定
- * - Scene セット：シーン環境データ（ライティング等）— setPassBindGroup() を介してクライアントから提供
- * - Object セット：オブジェクトごとのデータ（動的UBO）— Rendererによって内部的に管理
+ * - $Material セット：マテリアルごとのデータ- Material から取得されます
+ * - View セット：視点データ（カメラ行列）- beginRenderPass(camera) で自動設定
+ * - Scene セット：シーン環境データ（ライティング等）- setPassBindGroup() を介してクライアントから提供
+ * - Object セット：オブジェクトごとのデータ（動的UBO）- Rendererによって内部的に管理
  *
  * Usage:
  * @code
@@ -131,12 +131,12 @@ public:
 
     /**
      * Bind a BindGroup to the given descriptor set for the current pass.
-     * Changes take effect lazily — they are flushed to the GPU after the
+     * Changes take effect lazily - they are flushed to the GPU after the
      * next setPipeline call (inside drawMesh / drawScreenRect).
      *
      * Typical use: setPassBindGroup(0, viewBindGroup) once per pass.
      *
-     * @param setIndex        Descriptor set index (0–3).
+     * @param setIndex        Descriptor set index (0-3).
      * @param bindGroup       BindGroup to bind. Pass nullptr to unbind.
      * @param dynamicOffset   Dynamic offset for UBO bindings (0 if none).
      * @param dynamicOffsetCount Number of dynamic offsets (0 or 1).
@@ -232,7 +232,7 @@ private:
     int16_t m_objectSetIndex = -1;
     uint64_t m_objectUBOSize = 0;
 
-    // Per-frame view UBO allocator (camera data) — double-buffered via DynamicUniformAllocator
+    // Per-frame view UBO allocator (camera data) - double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;
 
     // Per-frame dynamic UBO allocator for scene-level data (lighting etc.)

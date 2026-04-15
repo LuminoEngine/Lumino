@@ -65,7 +65,7 @@ public:
     /**
      * Render a single-pass frame (convenience wrapper).
      * Uploads camera and lighting data to the View UBO, then calls
-     * beginFrame / beginRenderPass / drawMesh × N / endRenderPass / endFrame.
+     * beginFrame / beginRenderPass / drawMesh x N / endRenderPass / endFrame.
      *
      * Equivalent to:
      * @code
@@ -91,7 +91,7 @@ private:
 
     Renderer* m_renderer = nullptr;  // non-owning; owned by GraphicsContext
 
-    // Per-frame scene data allocator (lighting) — double-buffered via DynamicUniformAllocator
+    // Per-frame scene data allocator (lighting) - double-buffered via DynamicUniformAllocator
     std::unique_ptr<DynamicUniformAllocator> m_sceneAllocator;
 
     // Reflection-based scene set index

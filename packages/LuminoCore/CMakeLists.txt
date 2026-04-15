@@ -133,7 +133,7 @@ if(LUMINO_ENABLE_WEBGPU)
 endif()
 
 #-------------------------------------------------------------------------------
-# Shader compilation (slang → lcsh → lcsh.inl) — desktop only
+# Shader compilation (slang → lcsh → lcsh.inl) - desktop only
 #-------------------------------------------------------------------------------
 if(NOT LUMINO_PLATFORM_WEB)
     set(LN_SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)

@@ -117,7 +117,7 @@ public:
 
     /**
      * Queue a debug string for overlay rendering in the current frame.
-     * Safe to call before DebugPrint is initialized — ignored if unavailable.
+     * Safe to call before DebugPrint is initialized - ignored if unavailable.
      */
     void debugPrintText(const char* str);
 
@@ -130,7 +130,7 @@ public:
     /** Frames per second (averaged over the last completed frame). */
     float fps() const { return m_fps; }
 
-    // フレームスコープの一時状態 (BeginFrame〜EndFrame 間有効)
+    // フレームスコープの一時状態 (BeginFrame~EndFrame 間有効)
     rhi::CommandBuffer*        m_currentCmd         = nullptr;
     rhi::RenderPass*           m_currentPass        = nullptr;
 

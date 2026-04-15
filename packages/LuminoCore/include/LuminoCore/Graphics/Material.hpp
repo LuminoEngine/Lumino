@@ -12,7 +12,7 @@
 
 namespace ln {
 
-/** GPU-aligned view params (Set N — camera): must match shader ViewParams struct. */
+/** GPU-aligned view params (Set N - camera): must match shader ViewParams struct. */
 struct ViewParamsUBO {
     float viewProj[16];
     float cameraPos[4];
@@ -23,7 +23,7 @@ struct ViewParamsUBO {
     float screenSize[4];   // (width, height, 1/width, 1/height)
 };
 
-/** GPU-aligned scene params (Set N — lighting): must match shader SceneParams struct. */
+/** GPU-aligned scene params (Set N - lighting): must match shader SceneParams struct. */
 struct SceneParamsUBO {
     float lightDir[4];
     float lightColor[4];

@@ -7,16 +7,17 @@
 
 namespace ln {
 
-// ---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // DrawCommand::sortKey
-// ---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 
 uint64_t DrawCommand::sortKey() const {
     // | 63..48 (16bit) | 47..16 (32bit)          | 15..1 (15bit) | 0 (1bit) |
     // | zIndex + 32768 | material ptr hash        | reserved      | type     |
     uint64_t z = static_cast<uint64_t>(static_cast<uint32_t>(zIndex + 32768)) & 0xFFFF;
 
-    // Material pointer hash — groups same-material commands together.
+    // Material pointer hash - groups same-material commands together.
     // Uses only the pointer value (no dereference), so safe with any pointer.
     uint64_t matHash = static_cast<uint64_t>(
         (static_cast<uint64_t>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) & 0xFFFFFFFF;
@@ -26,9 +27,11 @@ uint64_t DrawCommand::sortKey() const {
     return (z << 48) | (matHash << 16) | t;
 }
 
-// ---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // DrawCommandBuffer
-// ---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 
 void DrawCommandBuffer::clear() {
     m_commands.clear();
@@ -81,9 +84,11 @@ void DrawCommandBuffer::drawMesh(Mesh* mesh, const Transform& transform, int32_t
     }
 }
 
-// ---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // BatchProcessor
-// ---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 
 Result<std::unique_ptr<BatchProcessor>> BatchProcessor::create(GraphicsContext* ctx) {
     auto processor = std::unique_ptr<BatchProcessor>(new BatchProcessor());

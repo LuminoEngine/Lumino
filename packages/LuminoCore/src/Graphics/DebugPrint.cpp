@@ -145,7 +145,7 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
     }
     m_mesh->setSubmeshes({{0, static_cast<uint32_t>(idxs.size()), 0}});
 
-    // Render as overlay (LoadOp::Load — preserves the scene).
+    // Render as overlay (LoadOp::Load - preserves the scene).
     Renderer* renderer = ctx->renderer();
     const FramebufferInfo* fb = ctx->currentFramebuffer();
     renderer->beginOverlayRenderPass(fb->colorTexture->rhiTextureView());
