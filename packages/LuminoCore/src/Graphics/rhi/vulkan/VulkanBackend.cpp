@@ -422,17 +422,22 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
     // Color blend
+    // NOTE: independentBlend is not required, so all attachments must be identical.
+    // For attachments beyond what the material specifies, fall back to blendStates[0].
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachments;
     const auto& colorFormats = desc.renderPass->layoutDesc().colorFormats;
+    const bool hasBs = !desc.blendStates.empty();
     for (size_t i = 0; i < colorFormats.size(); ++i) {
+        // Use per-attachment state if available, otherwise replicate the first entry.
+        const size_t bsIdx = (i < desc.blendStates.size()) ? i : 0;
         VkPipelineColorBlendAttachmentState att{};
-        bool colorWrite = (i < desc.blendStates.size()) ? desc.blendStates[i].colorWriteEnabled : true;
+        bool colorWrite = hasBs ? desc.blendStates[bsIdx].colorWriteEnabled : true;
         att.colorWriteMask = colorWrite
             ? (VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
                VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
             : 0;
-        if (i < desc.blendStates.size() && desc.blendStates[i].enabled) {
-            auto& bs = desc.blendStates[i];
+        if (hasBs && desc.blendStates[bsIdx].enabled) {
+            auto& bs = desc.blendStates[bsIdx];
             att.blendEnable = VK_TRUE;
             att.srcColorBlendFactor = VulkanHelpers::toVkBlendFactor(bs.srcColor);
             att.dstColorBlendFactor = VulkanHelpers::toVkBlendFactor(bs.dstColor);

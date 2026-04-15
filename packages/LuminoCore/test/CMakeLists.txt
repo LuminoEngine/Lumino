@@ -15,4 +15,8 @@ add_executable(
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore GTest::gtest)
+target_include_directories(
+    ${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../LuminoC/include
+)
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})

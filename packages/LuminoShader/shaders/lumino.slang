@@ -31,3 +31,46 @@ struct VSInput {
     float4 color    : COLOR;
     float4 tangent  : TANGENT;
 };
+
+//------------------------------------------------------------------------------
+// System ParameterBlocks (Sets 1–3)
+//------------------------------------------------------------------------------
+ParameterBlock<ViewParams>     viewData;
+ParameterBlock<SceneParams>    sceneData;
+ParameterBlock<ObjectParams>   objectData;
+
+//------------------------------------------------------------------------------
+// Convenience aliases (legacy-compatible ln_ prefix)
+//------------------------------------------------------------------------------
+
+// View
+
+/** View 行列 */
+#define ln_View              viewData.view
+
+/** Projection 行列 */
+#define ln_Projection        viewData.proj
+
+/** View-Projection 行列 */
+#define ln_ViewProjection    viewData.viewProj
+
+/** Projection の逆行列 */
+#define ln_ProjectionI       viewData.invProj
+
+/** View-Projection の逆行列 */
+#define ln_ViewProjectionI   viewData.invViewProj
+
+/** ワールド空間上のカメラ位置 */
+#define ln_CameraPosition    viewData.cameraPos.xyz
+
+/** スクリーン解像度 (width, height, 1/width, 1/height) */
+#define ln_Resolution        viewData.screenSize
+
+// Scene
+// #define ln_MainLightDir      sceneData.lightDir.xyz
+// #define ln_MainLightColor    (sceneData.lightColor.xyz * sceneData.lightColor.w)
+// #define ln_AmbientColor      sceneData.ambientColor.xyz
+
+// Object
+#define ln_World             objectData.world
+#define ln_NormalMatrix      objectData.normalMatrix

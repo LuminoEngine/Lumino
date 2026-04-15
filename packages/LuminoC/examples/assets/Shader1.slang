@@ -6,10 +6,6 @@ import lumino;
 
 // uniform ConstantBuffer<MaterialParams> u_params;
 
-ParameterBlock<ViewParams>     viewData;
-ParameterBlock<SceneParams>    sceneData;
-ParameterBlock<ObjectParams>   objectData;
-
 uniform float4 u_myColor;
 uniform Texture2D                      u_baseTexture;
 uniform SamplerState                   u_baseSampler;

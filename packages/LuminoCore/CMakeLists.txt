@@ -100,7 +100,11 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC LuminoBase)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoShader)
-target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
+target_include_directories(
+    ${PROJECT_NAME} PRIVATE
+    ${Stb_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../LuminoC/include
+)
 
 # Vulkan
 if(LUMINO_ENABLE_VULKAN)

@@ -13,10 +13,6 @@ struct MaterialParams {
     float4 specular;   // xyz = specular color, w = shininess
 };
 
-ParameterBlock<ViewParams>     viewData;
-ParameterBlock<SceneParams>    sceneData;
-ParameterBlock<ObjectParams>   objectData;
-
 uniform ConstantBuffer<MaterialParams> u_params;
 uniform Texture2D                      u_baseTexture;
 uniform SamplerState                   u_baseSampler;

@@ -22,13 +22,6 @@ uniform ConstantBuffer<MaterialParams> u_params;
 uniform Texture2D                      u_baseTexture;
 uniform SamplerState                   u_baseSampler;
 
-//------------------------------------------------------------------------------
-// System ParameterBlocks (Sets 1–3)
-//------------------------------------------------------------------------------
-ParameterBlock<ViewParams>     viewData;
-ParameterBlock<SceneParams>    sceneData;
-ParameterBlock<ObjectParams>   objectData;
-
 struct VSOutput {
     float4 position : SV_POSITION;
     float2 uv       : TEXCOORD;

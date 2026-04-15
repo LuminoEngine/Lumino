@@ -13,10 +13,6 @@ struct SSRParams {
     float4 ssrSettings; // x=maxDistance, y=stepSize, z=thickness, w=maxSteps
 };
 
-ParameterBlock<ViewParams>     viewData;
-ParameterBlock<SceneParams>    sceneData;
-ParameterBlock<ObjectParams>   objectData;
-
 uniform ConstantBuffer<SSRParams> u_params;
 uniform Texture2D                 u_sceneColor;
 uniform SamplerState              u_sceneColorSampler;

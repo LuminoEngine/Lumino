@@ -22,4 +22,5 @@
 #include <vector>
 #include <optional>
 
+#include <LuminoC/lumino_types.h>
 #include <LuminoBase.hpp>

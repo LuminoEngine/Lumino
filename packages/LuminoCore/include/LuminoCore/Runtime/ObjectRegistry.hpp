@@ -10,7 +10,6 @@ namespace ln {
 
 /** ハンドル型。上位16bit が世代番号、下位16bit がスロットインデックス。 */
 using LNHandle = uint32_t;
-constexpr LNHandle LN_NULL_HANDLE = 0;
 
 /** C-API で公開するオブジェクトを世代番号付きハンドルで管理するレジストリ。 */
 class ObjectRegistry {

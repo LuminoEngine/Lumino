@@ -28,7 +28,7 @@ TEST_F(Test_ObjectRegistry, RegisterAndResolve) {
     auto* raw = obj.get();
 
     ln::LNHandle handle = registry()->registerObject(obj.get());
-    EXPECT_NE(handle, ln::LN_NULL_HANDLE);
+    EXPECT_NE(handle, LN_NULL_HANDLE);
 
     auto* resolved = registry()->resolve(handle);
     EXPECT_EQ(resolved, raw);
@@ -38,7 +38,7 @@ TEST_F(Test_ObjectRegistry, RegisterAndResolve) {
 }
 
 TEST_F(Test_ObjectRegistry, NullHandleResolvesNull) {
-    EXPECT_EQ(registry()->resolve(ln::LN_NULL_HANDLE), nullptr);
+    EXPECT_EQ(registry()->resolve(LN_NULL_HANDLE), nullptr);
 }
 
 TEST_F(Test_ObjectRegistry, ReleaseInvalidatesHandle) {

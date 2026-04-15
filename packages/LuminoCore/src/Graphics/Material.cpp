@@ -1,4 +1,4 @@
-#include <LuminoCore/Graphics/Material.hpp>
+﻿#include <LuminoCore/Graphics/Material.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
@@ -210,7 +210,11 @@ Result<Ref<Material>> MaterialFactory::createFromShaderSourceFile(
     }
 
     auto buildResult = compiler->build(fs::path(shaderFilePath));
-    if (!buildResult) return LN_FORWARD_ERROR(buildResult);
+    if (!buildResult) {
+        // TODO: ログとかにちゃんと出す
+        std::cerr << "Error: " << buildResult.error().message << std::endl;
+        return LN_FORWARD_ERROR(buildResult);
+    }
 
     auto shaderPassResult = ShaderPass::createFromUnifiedShader(
         compiler->shader(), ctx->module()->device());
