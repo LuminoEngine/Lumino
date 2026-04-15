@@ -19,8 +19,7 @@ struct PipelineCacheKey {
     // Material 由来
     ShaderPass* shaderPass = nullptr;
     rhi::CullMode cullMode = rhi::CullMode::Back;
-    bool blendEnabled = false;
-    rhi::BlendState blendState;     // blendEnabled==false の場合は無視
+    rhi::BlendState blendState;     // blendState.enabled==false の場合、他のフィールドは無視
     bool depthTestEnabled = true;
     bool depthWriteEnabled = true;
     bool stencilTestEnabled = false;

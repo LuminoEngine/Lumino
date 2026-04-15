@@ -241,7 +241,7 @@ Result<LoadedModel> MeshLoader::loadGltf(
 
         // Alpha blend.
         if (gltfMat.alphaMode == "BLEND") {
-            mat->setBlendEnabled(true);
+            mat->setBlendMode(BlendMode::Alpha);
         }
 
         result.materials.push_back(std::move(mat));

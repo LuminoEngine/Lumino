@@ -17,8 +17,8 @@ uniform SamplerState                   u_baseSampler;
 
 struct VSOutput {
     float4 position  : SV_POSITION;
-    //float4 color    : COLOR;
-    //float2 uv       : TEXCOORD0;
+    float4 color    : COLOR;
+    float2 uv       : TEXCOORD0;
     float3 worldNormal : TEXCOORD1;
     float3 viewPos   : TEXCOORD2;
 };
@@ -32,9 +32,9 @@ struct FSOutput {
     //   カメラ位置との距離では無いので注意。
     //   NDR Depth でもない線形の値なので注意。
 
-    float4 RT0: SV_TARGET0;  // Albedo
-    float4 RT1: SV_TARGET1;
-    float4 RT2: SV_TARGET2;  // WorldNormal.x, WorldNormal.y, WorldNormal.z, ScreenDepth
+    float4 gbufferA: SV_TARGET0;  // [Albedo.r, Albedo.g, Albedo.b, NONE]
+    float4 gbufferB: SV_TARGET1;  // [WorldNormal.x, WorldNormal.y, WorldNormal.z, ScreenDepth]
+    float4 gbufferC: SV_TARGET2;  // [Metallic, Roughness, AO, NONE] (glTF Metal-Roughness)
     
    
 
@@ -64,10 +64,10 @@ VSOutput vsMain(VSInput input) {
     output.viewPos  = viewPos4.xyz;
     // Transform normal to view space
     float3 worldNorm = normalize(mul((float3x3)objectData.normalMatrix, input.normal));
-    output.worldNormal = float3(1, 0, 0);//worldNorm;//normalize(mul((float3x3)viewData.view, worldNorm));
+    output.worldNormal = worldNorm;//normalize(mul((float3x3)viewData.view, worldNorm));
     //output.viewPos4 = viewPos4;
-    //output.uv = input.uv;
-    //output.color = input.color;
+    output.uv = input.uv;
+    output.color = input.color;
     return output;
 }
 
@@ -75,21 +75,24 @@ VSOutput vsMain(VSInput input) {
 FSOutput fsMain(VSOutput input) {
     FSOutput output;
     
-    float viewDepth = 1.0 - input.viewPos.z; 
+    // Linear view-space depth: -viewPos.z (camera looks along -Z, so this is positive
+    // distance in front of the near plane). Cleared value 0 means "no geometry".
+    float viewDepth = -input.viewPos.z;
     float3 worldNormal = input.worldNormal;
 
-    //float4 textureColor = u_baseTexture.Sample(u_baseSampler, input.uv);
-   // float4 color = textureColor * input.color;
+    float4 textureColor = u_baseTexture.Sample(u_baseSampler, input.uv);
+    float4 color = textureColor * u_params.color * input.color;
 
-    output.RT0 = float4(float3(1, 0, 0), viewDepth);//float4(color.rgb, 1);
-    output.RT1 = float4(0, 0, 1, 1); // dummy
-    output.RT2 = float4(float3(1, 0, 0), 0.5);
+    output.gbufferA = float4(color.rgb, 1);
+    output.gbufferB = float4(worldNormal, viewDepth);
+    // dummy: metallic=0.5, roughness=0.1, AO=1.0 — makes surfaces reflective for the SSR demo
+    output.gbufferC = float4(0.5, 0.1, 1.0, 1.0);
 
 
     // float linearDepth = -input.viewPos.z; // negate: camera looks along -Z in view space
     // float3 N = normalize(input.viewNorm);
     // // Encode normal from [-1,1] to [0,1]
-    // output.RT0 = float4(linearDepth, N.x * 0.5 + 0.5, N.y * 0.5 + 0.5, N.z * 0.5 + 0.5);
+    // output.gbufferA = float4(linearDepth, N.x * 0.5 + 0.5, N.y * 0.5 + 0.5, N.z * 0.5 + 0.5);
     return output;
 }
 

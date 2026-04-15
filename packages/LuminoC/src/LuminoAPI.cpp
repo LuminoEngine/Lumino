@@ -665,6 +665,14 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* n
     return LN_OK;
 }
 
+LNResult LNMaterial_SetBlendMode(LNHandle material, LNBlendMode blendMode) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    mat->setBlendMode(static_cast<ln::BlendMode>(blendMode));
+    return LN_OK;
+}
+
 LNResult LNMaterial_SetNamedTexture(LNHandle material, const char* name, LNHandle texture) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;

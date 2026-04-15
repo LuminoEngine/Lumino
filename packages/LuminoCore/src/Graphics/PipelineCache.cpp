@@ -21,9 +21,8 @@ static void hash_combine(size_t& seed, const T& val) {
 bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
     if (shaderPass      != o.shaderPass)      return false;
     if (cullMode        != o.cullMode)        return false;
-    if (blendEnabled   != o.blendEnabled)   return false;
-    if (blendEnabled) {
-        if (blendState.enabled  != o.blendState.enabled)  return false;
+    if (blendState.enabled != o.blendState.enabled) return false;
+    if (blendState.enabled) {
         if (blendState.srcColor != o.blendState.srcColor) return false;
         if (blendState.dstColor != o.blendState.dstColor) return false;
         if (blendState.colorOp  != o.blendState.colorOp)  return false;
@@ -56,9 +55,8 @@ size_t PipelineCacheKeyHash::operator()(const PipelineCacheKey& key) const {
     size_t seed = 0;
     hash_combine(seed, reinterpret_cast<uintptr_t>(key.shaderPass));
     hash_combine(seed, static_cast<uint32_t>(key.cullMode));
-    hash_combine(seed, key.blendEnabled);
-    if (key.blendEnabled) {
-        hash_combine(seed, key.blendState.enabled);
+    hash_combine(seed, key.blendState.enabled);
+    if (key.blendState.enabled) {
         hash_combine(seed, static_cast<uint32_t>(key.blendState.srcColor));
         hash_combine(seed, static_cast<uint32_t>(key.blendState.dstColor));
         hash_combine(seed, static_cast<uint32_t>(key.blendState.colorOp));
@@ -122,12 +120,8 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     rpDesc.depthStencil.stencilReadMask    = key.stencilReadMask;
     rpDesc.depthStencil.stencilWriteMask   = key.stencilWriteMask;
 
-    if (key.blendEnabled) {
+    {
         rhi::BlendState bs = key.blendState;
-        bs.colorWriteEnabled = key.colorWriteEnabled;
-        rpDesc.blendStates = {bs};
-    } else {
-        rhi::BlendState bs;
         bs.colorWriteEnabled = key.colorWriteEnabled;
         rpDesc.blendStates = {bs};
     }

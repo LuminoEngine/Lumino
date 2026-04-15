@@ -134,8 +134,12 @@ enum class FrontFace {
 enum class BlendFactor {
     Zero,
     One,
+    SrcColor,
+    OneMinusSrcColor,
     SrcAlpha,
     OneMinusSrcAlpha,
+    DstColor,
+    OneMinusDstColor,
     DstAlpha,
     OneMinusDstAlpha,
 };

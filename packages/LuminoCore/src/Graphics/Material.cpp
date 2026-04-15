@@ -19,7 +19,7 @@ Material::Material()
     , m_baseColor(Color::white())
     , m_baseTexture(nullptr)
     , m_cullMode(rhi::CullMode::Back)
-    , m_blendEnabled(true)
+    , m_blendMode(BlendMode::Normal)
     , m_depthTestEnabled(true)
     , m_depthWriteEnabled(true) {
 }
@@ -102,7 +102,7 @@ void Material::setNamedTexture(const std::string& name, rhi::Texture* texture) {
     markDirty();
 }
 
-void Material::setBlendEnabled(bool enabled) { m_blendEnabled = enabled; }
+void Material::setBlendMode(BlendMode mode) { m_blendMode = mode; }
 void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
 void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
 void Material::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }

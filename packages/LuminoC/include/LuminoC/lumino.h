@@ -7,7 +7,6 @@
 extern "C" {
 #endif // __cplusplus
 
-    
 //------------------------------------------------------------------------------
 // Phase 0 smoke test
 //------------------------------------------------------------------------------
@@ -334,6 +333,20 @@ extern LUMINO_API LNResult LNTexture2D_LoadFromMemory(
 // LNMaterial
 //------------------------------------------------------------------------------
 
+/** 合成方法 */
+typedef enum LNBlendMode {
+    /** 通常 */
+    LN_BLEND_MODE_NORMAL = 0,
+    /** アルファブレンド (RGB をアルファブレンドし、A を加算合成) */
+    LN_BLEND_MODE_ALPHA = 1,
+    /** 加算合成 */
+    LN_BLEND_MODE_ADD = 2,
+    /** 減算合成 */
+    LN_BLEND_MODE_SUBTRACT = 3,
+    /** 乗算合成 */
+    LN_BLEND_MODE_MULTIPLY = 4,
+} LNBlendMode;
+
 /**
  * ビルトインシェーダを指定してマテリアルを作成します。
  * @param[in]  graphicsContext GraphicsContext のハンドル
@@ -425,6 +438,16 @@ extern LUMINO_API LNResult LNMaterial_SetNamedTexture(
     LNHandle material,
     const char* name,
     LNHandle texture
+);
+
+/**
+ * マテリアルのブレンドモードを設定します。
+ * @param[in] material  マテリアルのハンドル
+ * @param[in] blendMode 合成方法
+ */
+extern LUMINO_API LNResult LNMaterial_SetBlendMode(
+    LNHandle material,
+    LNBlendMode blendMode
 );
 
 //------------------------------------------------------------------------------

@@ -145,8 +145,12 @@ inline WGPUBlendFactor toWGPUBlendFactor(BlendFactor v) {
     switch (v) {
         case BlendFactor::Zero:             return WGPUBlendFactor_Zero;
         case BlendFactor::One:              return WGPUBlendFactor_One;
+        case BlendFactor::SrcColor:         return WGPUBlendFactor_Src;
+        case BlendFactor::OneMinusSrcColor: return WGPUBlendFactor_OneMinusSrc;
         case BlendFactor::SrcAlpha:         return WGPUBlendFactor_SrcAlpha;
         case BlendFactor::OneMinusSrcAlpha: return WGPUBlendFactor_OneMinusSrcAlpha;
+        case BlendFactor::DstColor:         return WGPUBlendFactor_Dst;
+        case BlendFactor::OneMinusDstColor: return WGPUBlendFactor_OneMinusDst;
         case BlendFactor::DstAlpha:         return WGPUBlendFactor_DstAlpha;
         case BlendFactor::OneMinusDstAlpha: return WGPUBlendFactor_OneMinusDstAlpha;
         default:                            return WGPUBlendFactor_Zero;

@@ -12,6 +12,15 @@
 
 namespace ln {
 
+/** @see LNBlendMode */
+enum class BlendMode {
+    Normal = 0,
+    Alpha = 1,
+    Add = 2,
+    Subtract = 3,
+    Multiply = 4,
+};
+
 /** GPU-aligned view params (Set N - camera): must match shader ViewParams struct. */
 struct ViewParamsUBO {
     float viewProj[16];
@@ -66,7 +75,7 @@ public:
     void setNamedTexture(const std::string& name, rhi::Texture* texture);
 
     // Render state
-    void setBlendEnabled(bool enabled);
+    void setBlendMode(BlendMode mode);
     void setCullMode(rhi::CullMode mode);
     void setDepthTestEnabled(bool enabled);
     void setDepthWriteEnabled(bool enabled);
@@ -80,7 +89,7 @@ public:
     const std::string& vertexEntry() const { return m_shaderPass->vertexEntry(); }
     const std::string& fragmentEntry() const { return m_shaderPass->fragmentEntry(); }
     rhi::CullMode cullMode() const { return m_cullMode; }
-    bool blendEnabled() const { return m_blendEnabled; }
+    BlendMode blendMode() const { return m_blendMode; }
     bool depthTestEnabled() const { return m_depthTestEnabled; }
     bool depthWriteEnabled() const { return m_depthWriteEnabled; }
 
@@ -122,7 +131,7 @@ private:
 
     // Render state
     rhi::CullMode m_cullMode;
-    bool m_blendEnabled;
+    BlendMode m_blendMode;
     bool m_depthTestEnabled;
     bool m_depthWriteEnabled;
 

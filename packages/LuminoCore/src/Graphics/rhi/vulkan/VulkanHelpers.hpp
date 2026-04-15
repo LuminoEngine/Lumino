@@ -93,10 +93,18 @@ public:
                 return VK_BLEND_FACTOR_ZERO;
             case BlendFactor::One:
                 return VK_BLEND_FACTOR_ONE;
+            case BlendFactor::SrcColor:
+                return VK_BLEND_FACTOR_SRC_COLOR;
+            case BlendFactor::OneMinusSrcColor:
+                return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
             case BlendFactor::SrcAlpha:
                 return VK_BLEND_FACTOR_SRC_ALPHA;
             case BlendFactor::OneMinusSrcAlpha:
                 return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            case BlendFactor::DstColor:
+                return VK_BLEND_FACTOR_DST_COLOR;
+            case BlendFactor::OneMinusDstColor:
+                return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
             case BlendFactor::DstAlpha:
                 return VK_BLEND_FACTOR_DST_ALPHA;
             case BlendFactor::OneMinusDstAlpha:

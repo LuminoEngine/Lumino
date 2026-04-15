@@ -8,6 +8,56 @@
 
 namespace ln {
 
+namespace {
+
+rhi::BlendState resolveBlendState(BlendMode mode) {
+    rhi::BlendState s;
+    switch (mode) {
+        case BlendMode::Normal:
+            s.enabled = false;
+            break;
+        case BlendMode::Alpha:
+            s.enabled  = true;
+            s.srcColor = rhi::BlendFactor::SrcAlpha;
+            s.dstColor = rhi::BlendFactor::OneMinusSrcAlpha;
+            s.colorOp  = rhi::BlendOp::Add;
+            s.srcAlpha = rhi::BlendFactor::One;
+            s.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
+            s.alphaOp  = rhi::BlendOp::Add;
+            break;
+        case BlendMode::Add:
+            s.enabled  = true;
+            s.srcColor = rhi::BlendFactor::SrcAlpha;
+            s.dstColor = rhi::BlendFactor::One;
+            s.colorOp  = rhi::BlendOp::Add;
+            s.srcAlpha = rhi::BlendFactor::Zero;
+            s.dstAlpha = rhi::BlendFactor::One;
+            s.alphaOp  = rhi::BlendOp::Add;
+            break;
+        case BlendMode::Subtract:
+            s.enabled  = true;
+            s.srcColor = rhi::BlendFactor::SrcAlpha;
+            s.dstColor = rhi::BlendFactor::One;
+            s.colorOp  = rhi::BlendOp::ReverseSubtract;
+            s.srcAlpha = rhi::BlendFactor::Zero;
+            s.dstAlpha = rhi::BlendFactor::One;
+            s.alphaOp  = rhi::BlendOp::Add;
+            break;
+        case BlendMode::Multiply:
+            s.enabled  = true;
+            s.srcColor = rhi::BlendFactor::Zero;
+            s.dstColor = rhi::BlendFactor::SrcColor;
+            s.colorOp  = rhi::BlendOp::Add;
+            s.srcAlpha = rhi::BlendFactor::Zero;
+            s.dstAlpha = rhi::BlendFactor::One;
+            s.alphaOp  = rhi::BlendOp::Add;
+            break;
+    }
+    return s;
+}
+
+} // namespace
+
 // ------ Renderer::create ------------------------------------------------------------------------------------------
 
 Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
@@ -389,16 +439,7 @@ Result<void> Renderer::drawSubmesh(
     PipelineCacheKey key;
     key.shaderPass          = mat->shaderPass();
     key.cullMode            = mat->cullMode();
-    key.blendEnabled        = mat->blendEnabled();
-    if (key.blendEnabled) {
-        key.blendState.enabled  = true;
-        key.blendState.srcColor = rhi::BlendFactor::SrcAlpha;
-        key.blendState.dstColor = rhi::BlendFactor::OneMinusSrcAlpha;
-        key.blendState.colorOp  = rhi::BlendOp::Add;
-        key.blendState.srcAlpha = rhi::BlendFactor::One;
-        key.blendState.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
-        key.blendState.alphaOp  = rhi::BlendOp::Add;
-    }
+    key.blendState          = resolveBlendState(mat->blendMode());
     key.depthTestEnabled    = mat->depthTestEnabled();
     key.depthWriteEnabled   = mat->depthWriteEnabled();
     // When a stencil mask is active, enable stencil test to restrict drawing to masked area.
@@ -509,7 +550,7 @@ Result<void> Renderer::drawStencilMaskMesh(
         PipelineCacheKey key;
         key.shaderPass         = mat->shaderPass();
         key.cullMode           = rhi::CullMode::None;
-        key.blendEnabled       = false;
+        key.blendState.enabled = false;
         key.depthTestEnabled   = false;
         key.depthWriteEnabled  = false;
         key.colorWriteEnabled  = false;

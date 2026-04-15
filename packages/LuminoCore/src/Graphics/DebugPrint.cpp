@@ -37,7 +37,7 @@ Result<Ref<DebugPrint>> DebugPrint::create(GraphicsContext* ctx) {
     }
     dp->m_material = std::move(*matResult);
     dp->m_material->setTexture(dp->m_fontTexture.get());
-    dp->m_material->setBlendEnabled(true);
+    dp->m_material->setBlendMode(BlendMode::Alpha);
     dp->m_material->setDepthTestEnabled(false);
     dp->m_material->setDepthWriteEnabled(false);
 

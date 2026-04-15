@@ -42,32 +42,31 @@ int main() {
     /* Render targets                                                      */
     /* ------------------------------------------------------------------ */
 
-    // RT0: Albedo.x, Albedo.y, Albedo.z, 0
-    LNHandle gbuffersRT0 = LN_NULL_HANDLE;
+    // GBufferA: Albedo.x, Albedo.y, Albedo.z, 0
+    LNHandle gbuffersA = LN_NULL_HANDLE;
     LNTexture2D_CreateRenderTargetEx(
         graphicsContext,
         windowWidth,
         windowHeight,
         LN_TEXTURE_FORMAT_RGBA8_UNORM,
-        &gbuffersRT0);
+        &gbuffersA);
 
-    // RT1: 
-    LNHandle gbuffersRT1 = LN_NULL_HANDLE;
-    LNTexture2D_CreateRenderTargetEx(
-        graphicsContext,
-        windowWidth,
-        windowHeight,
-        LN_TEXTURE_FORMAT_RGBA8_UNORM,
-        &gbuffersRT1);
-
-    // RT2: WorldNormal.x, WorldNormal.y, WorldNormal.z, Depth
-    LNHandle gbuffersRT2 = LN_NULL_HANDLE;
+    // GBufferB: WorldNormal.x, WorldNormal.y, WorldNormal.z, Depth
+    LNHandle gbuffersB = LN_NULL_HANDLE;
     LNTexture2D_CreateRenderTargetEx(
         graphicsContext,
         windowWidth,
         windowHeight,
         LN_TEXTURE_FORMAT_RGBA32_FLOAT,
-        &gbuffersRT2);
+        &gbuffersB);
+
+    LNHandle gbuffersC = LN_NULL_HANDLE;
+    LNTexture2D_CreateRenderTargetEx(
+        graphicsContext,
+        windowWidth,
+        windowHeight,
+        LN_TEXTURE_FORMAT_RGBA8_UNORM,
+        &gbuffersC);
 
     /* Shared depth buffer */
     LNHandle sceneDepth = LN_NULL_HANDLE;
@@ -92,14 +91,18 @@ int main() {
     /* Materials                                                           */
     /* ------------------------------------------------------------------ */
 
-    /* Scene materials (Unlit) */
-    LNHandle matGround = LN_NULL_HANDLE;
-    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matGround);
-    LNMaterial_SetColor(matGround, 0.3f, 0.3f, 0.3f, 1.0f); /* dark gray ground */
+    LNHandle gridTexture = LN_NULL_HANDLE;
+    LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/CheckerGridGray1.png", &gridTexture);
 
-    LNHandle matTriangle = LN_NULL_HANDLE;
-    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matTriangle);
-    LNMaterial_SetColor(matTriangle, 1.0f, 0.4f, 0.2f, 1.0f); /* orange */
+    /* Scene materials (Unlit) */
+    LNHandle groundMaterial = LN_NULL_HANDLE;
+    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &groundMaterial);
+    LNMaterial_SetColor(groundMaterial, 0.8f, 0.3f, 0.3f, 1.0f); /* dark gray ground */
+    LNMaterial_SetMainTexture(groundMaterial, gridTexture);
+
+    LNHandle triangleMaterial = LN_NULL_HANDLE;
+    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &triangleMaterial);
+    LNMaterial_SetColor(triangleMaterial, 1.0f, 0.4f, 0.2f, 1.0f); /* orange */
 
     /* DepthNormal material */
     LNHandle gbufferMaterial = LN_NULL_HANDLE;
@@ -122,8 +125,9 @@ int main() {
     LNMaterial_SetFloat4(matSSR, "ssrSettings", ssrSettings);
 
     /* Bind render target textures to SSR material */
-    LNMaterial_SetNamedTexture(matSSR, "u_sceneColor", gbuffersRT0);
-    LNMaterial_SetNamedTexture(matSSR, "u_depthNormal", gbuffersRT1);
+    LNMaterial_SetNamedTexture(matSSR, "u_gbufferA", gbuffersA);
+    LNMaterial_SetNamedTexture(matSSR, "u_gbufferB", gbuffersB);
+    LNMaterial_SetNamedTexture(matSSR, "u_gbufferC", gbuffersC);
 
     /* ------------------------------------------------------------------ */
     /* Scene geometry                                                      */
@@ -133,10 +137,10 @@ int main() {
     /* Ground plane: 4 vertices at Y=0, extends from (-3,-3) to (3,3) */
     LNVertex groundVertices[4] = {
         /* posX   posY   posZ   nX nY nZ   u    v      r g b a   tX tY tZ tW */
-        { -2.0f,  0.0f, -2.0f,  0, 1, 0,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
-        {  2.0f,  0.0f, -2.0f,  0, 1, 0,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
-        { -2.0f,  0.0f,  2.0f,  0, 1, 0,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
-        {  2.0f,  0.0f,  2.0f,  0, 1, 0,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        { -2.0f,  0.0f, -2.0f,  0, 1, 0,  0.0f, 0.0f,  0.5f,0.5f,0.5f,1,  1,0,0,0 },
+        {  2.0f,  0.0f, -2.0f,  0, 1, 0,  1.0f, 0.0f,  0.5f,0.5f,0.5f,1,  1,0,0,0 },
+        { -2.0f,  0.0f,  2.0f,  0, 1, 0,  0.0f, 1.0f,  0.5f,0.5f,0.5f,1,  1,0,0,0 },
+        {  2.0f,  0.0f,  2.0f,  0, 1, 0,  1.0f, 1.0f,  0.5f,0.5f,0.5f,1,  1,0,0,0 },
     };
     uint32_t groundIndices[6] = { 0, 2, 1,  1, 2, 3 };
     LNSubMesh groundSub = { 0, 6, 0 };
@@ -144,13 +148,13 @@ int main() {
     LNHandle groundMesh = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, groundVertices, 4, groundIndices, 6,
         &groundSub, 1, &groundMesh);
-    LNMesh_SetMaterial(groundMesh, 0, matGround);
+    LNMesh_SetMaterial(groundMesh, 0, groundMaterial);
 
     /* Rotating triangle: hovers above ground at Y=0.8 */
     LNVertex triVertices[3] = {
         {  0.0f,  1.0f,  0.0f,  0, 0, 1,  0.5f, 0.0f,  1,0,0,1,  1,0,0,0 },
         {  1.0f,  0.0f,  0.0f,  0, 0, 1,  1.0f, 1.0f,  0,1,0,1,  1,0,0,0 },
-        { -1.0f,  0.0f,  0.0f,  0, 0, 1,  0.0f, 1.0f,  0,0,0,1,  1,0,0,0 },
+        { -1.0f,  0.0f,  0.0f,  0, 0, 1,  0.0f, 1.0f,  0,0,1,1,  1,0,0,0 },
     };
     uint32_t triIndices[3] = { 0, 2, 1 };
     LNSubMesh triSub = { 0, 3, 0 };
@@ -158,7 +162,7 @@ int main() {
     LNHandle triMesh = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, triVertices, 3, triIndices, 3,
         &triSub, 1, &triMesh);
-    LNMesh_SetMaterial(triMesh, 0, matTriangle);
+    LNMesh_SetMaterial(triMesh, 0, triangleMaterial);
 
     /* ------------------------------------------------------------------ */
     /* Camera                                                              */
@@ -189,7 +193,7 @@ int main() {
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         frameTime += 0.02f;
         cameraAngle = sinf(frameTime);
-        //triangleAngle += 0.01f;
+        triangleAngle += 0.05f;
 
         LNCamera_SetLookAt(camera,
             0.0f + cameraAngle, 2.5f, 5.0f,   /* eye: slightly above and behind */
@@ -233,17 +237,17 @@ int main() {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             rpDesc.colorAttachmentCount = 3;
-            rpDesc.colorAttachments[0].renderTarget = gbuffersRT0;
+            rpDesc.colorAttachments[0].renderTarget = gbuffersA;
             rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[2] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[3] = 0.0f;
-            rpDesc.colorAttachments[1].renderTarget = gbuffersRT1;
+            rpDesc.colorAttachments[1].renderTarget = gbuffersB;
             rpDesc.colorAttachments[1].clearColor[0] = 0.0f;
             rpDesc.colorAttachments[1].clearColor[1] = 0.0f;
             rpDesc.colorAttachments[1].clearColor[2] = 0.0f;
             rpDesc.colorAttachments[1].clearColor[3] = 0.0f;
-            rpDesc.colorAttachments[2].renderTarget = gbuffersRT2;
+            rpDesc.colorAttachments[2].renderTarget = gbuffersC;
             rpDesc.colorAttachments[2].clearColor[0] = 0.0f;
             rpDesc.colorAttachments[2].clearColor[1] = 0.0f;
             rpDesc.colorAttachments[2].clearColor[2] = 0.0f;
@@ -266,7 +270,7 @@ int main() {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             rpDesc.colorAttachmentCount = 1;
-            rpDesc.colorAttachments[0].renderTarget = gbuffersRT1;
+            rpDesc.colorAttachments[0].renderTarget = gbuffersB;
             rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[2] = 0.0f;
@@ -283,14 +287,16 @@ int main() {
         //============================================================== 
         /* Pass 3: SSR + Composite (fullscreen)                            */
         //============================================================== 
-        if (0) {
+        if (1) {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
             /* Render to backbuffer */
+            rpDesc.colorAttachments[0].renderTarget = colorBuffer;
             rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[2] = 0.0f;
             rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+            rpDesc.depthStencil.depthBuffer = depthBuffer;
 
             LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
             LNRenderer_DrawScreenRect(renderer, matSSR);
@@ -317,12 +323,12 @@ int main() {
     LNObject_Release(groundMesh);
     LNObject_Release(matSSR);
     LNObject_Release(gbufferMaterial);
-    LNObject_Release(matTriangle);
-    LNObject_Release(matGround);
+    LNObject_Release(triangleMaterial);
+    LNObject_Release(groundMaterial);
     LNObject_Release(camera);
     LNObject_Release(sceneDepth);
-    LNObject_Release(gbuffersRT1);
-    LNObject_Release(gbuffersRT0);
+    LNObject_Release(gbuffersB);
+    LNObject_Release(gbuffersA);
     LNObject_Release(window);
     LNInstance_Terminate();
 
