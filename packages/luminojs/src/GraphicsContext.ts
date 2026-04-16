@@ -19,21 +19,19 @@ export class GraphicsContext extends LuminoObject {
      * The returned `renderer`, `colorBuffer`, and `depthBuffer` handles are
      * owned by the C-side GraphicsContext - do **not** call `dispose()` on them.
      */
-    async beginFrame(): Promise<FrameInfo> {
+    beginFrame(): FrameInfo {
         const m = Runtime.module;
 
         // We need 3 out-handles (12 bytes).
         const outPtr = m._malloc(12);
         try {
-            await Runtime.safeCallAsync(() =>
+            Runtime.safeCall(() =>
                 (API.LNGraphicsContext_BeginFrame as (
                     ctx: number, r: number, c: number, d: number,
-                ) => number | Promise<number>)(
+                ) => number)(
                     this._handle, outPtr, outPtr + 4, outPtr + 8));
 
-            // Read the three handles. Re-derive view after await (grow-safe).
-            const buf = m.HEAPU8.buffer;
-            const outView = new Uint32Array(buf, outPtr, 3);
+            const outView = new Uint32Array(m.HEAPU8.buffer, outPtr, 3);
             const rendererHandle = outView[0];
             const colorBuffer    = outView[1];
             const depthBuffer    = outView[2];

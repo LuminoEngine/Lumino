@@ -27,7 +27,7 @@ async function main() {
 
     // 4. Render loop
     function frame() {
-        ctx.beginFrame().then(({ renderer }) => {
+        const { renderer } = ctx.beginFrame();
         renderer.beginRenderPass(ctx, {
             colorAttachments: [
                 {
@@ -39,7 +39,6 @@ async function main() {
         renderer.endRenderPass();
         ctx.endFrame();
         requestAnimationFrame(frame);
-        });
     }
     requestAnimationFrame(frame);
 }

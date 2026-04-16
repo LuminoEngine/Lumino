@@ -37,6 +37,13 @@ if(EMSCRIPTEN)
     string(APPEND LN_EM_LINK_FLAGS " -sALLOW_MEMORY_GROWTH=1")
     string(APPEND LN_EM_LINK_FLAGS " -sNO_EXIT_RUNTIME=1")
     string(APPEND LN_EM_LINK_FLAGS " -sDISABLE_EXCEPTION_CATCHING=1")
+
+    # EXPORTED_RUNTIME_METHODS は、ライブラリの関数を呼び出すための機能として、
+    # ccall / cwrap を使えるようにするかどうか、という設定。
+    # それぞれ Module.call(), Module.cwrap() を使えるようにするかというだけだが、EXPORTED_RUNTIME_METHODS 未指定の場合、これらが使えなくなる。
+    # (ちなみに、cwrap は ccall を function() でラップするだけ)
+    # ccall を使わない場合は Moudle["_myFunction"].apply(...) のようにすることで C 関数を呼び出すことができる。
+    # ただし、ccall には string や array の変換ユーティリティがついている。特に理由が無ければ、 ccall または cwrap を利用するのが無難。
     string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','HEAPU8','HEAPU32','HEAPF32','UTF8ToString']\"")
     string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_FUNCTIONS=\"['_malloc','_free']\"")
     # ASYNCIFY is required for WebGPU async operations (RequestAdapter,

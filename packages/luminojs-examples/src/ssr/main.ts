@@ -153,11 +153,12 @@ async function main() {
             scale: [1, 1, 1],
         };
 
-        ctx.beginFrame().then(({ renderer, colorBuffer, depthBuffer }) => {
-            // -- G-Buffer pass --
-            renderer.beginRenderPass(
-                ctx,
-                {
+        const { renderer, colorBuffer, depthBuffer } = ctx.beginFrame();
+
+        // -- G-Buffer pass --
+        renderer.beginRenderPass(
+            ctx,
+            {
                 colorAttachments: [
                     { renderTarget: gbufferA.handle, clearColor: [0, 0, 0, 0], loadOp: LoadOp.Clear },
                     { renderTarget: gbufferB.handle, clearColor: [0, 0, 0, 0], loadOp: LoadOp.Clear },
@@ -165,30 +166,29 @@ async function main() {
                 ],
                 depthStencil: { depthBuffer: sceneDepth.handle },
                 shaderPassName: "GBuffer",
-                },
-                camera.handle,
-            );
-            renderer.drawMesh(groundMesh, groundTransform, 0);
-            renderer.drawMesh(triMesh, triTransform, 0);
-            renderer.endRenderPass();
+            },
+            camera.handle,
+        );
+        renderer.drawMesh(groundMesh, groundTransform, 0);
+        renderer.drawMesh(triMesh, triTransform, 0);
+        renderer.endRenderPass();
 
-            // -- SSR + Composite pass --
-            renderer.beginRenderPass(
-                ctx,
-                {
-                colorAttachments: [
-                    { renderTarget: colorBuffer, clearColor: [0, 0, 0, 1], loadOp: LoadOp.Clear },
-                ],
-                depthStencil: { depthBuffer },
-                },
-                camera.handle,
-            );
-            renderer.drawScreenRect(matSSR);
-            renderer.endRenderPass();
+        // -- SSR + Composite pass --
+        renderer.beginRenderPass(
+            ctx,
+            {
+            colorAttachments: [
+                { renderTarget: colorBuffer, clearColor: [0, 0, 0, 1], loadOp: LoadOp.Clear },
+            ],
+            depthStencil: { depthBuffer },
+            },
+            camera.handle,
+        );
+        renderer.drawScreenRect(matSSR);
+        renderer.endRenderPass();
 
-            ctx.endFrame();
-            requestAnimationFrame(frame);
-        });
+        ctx.endFrame();
+        requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
 }

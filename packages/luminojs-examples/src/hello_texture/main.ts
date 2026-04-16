@@ -60,24 +60,23 @@ async function main() {
     const identity: Transform = { position: [0, 0, 0], rotation: [0, 0, 0, 1], scale: [1, 1, 1] };
 
     function frame() {
-        ctx.beginFrame().then(({ renderer }) => {
-            renderer.beginRenderPass(
-                ctx,
+        const { renderer } = ctx.beginFrame();
+        renderer.beginRenderPass(
+            ctx,
+            {
+            colorAttachments: [
                 {
-                colorAttachments: [
-                    {
-                    clearColor: [0.6, 0.85, 0.6, 1.0],
-                    loadOp: LoadOp.Clear,
-                    },
-                ],
+                clearColor: [0.6, 0.85, 0.6, 1.0],
+                loadOp: LoadOp.Clear,
                 },
-                camera.handle,
-            );
-            renderer.drawMesh(mesh, identity);
-            renderer.endRenderPass();
-            ctx.endFrame();
-            requestAnimationFrame(frame);
-        });
+            ],
+            },
+            camera.handle,
+        );
+        renderer.drawMesh(mesh, identity);
+        renderer.endRenderPass();
+        ctx.endFrame();
+        requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
 }

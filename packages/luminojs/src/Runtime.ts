@@ -148,6 +148,14 @@ export class Runtime {
     //--------------------------------------------------------------------------
 
     private static _bindAPI(): void {
+
+        // NOTE: ccall と cwrap の違い
+        // ccall
+        // const result = Module.ccall('Add', 'number', ['number', 'number'], [1, 2]);
+        // cwrap
+        // const add = Module.cwrap('Add', 'number', ['number', 'number']);
+        // const result = add(4, 5);
+
         const m = this.module;
         const cw = m.cwrap.bind(m);
 
@@ -168,7 +176,7 @@ export class Runtime {
         API.LNWindow_ProcessEvents      = cw("LNWindow_ProcessEvents",      "number", ["number", "number"]);
 
         // GraphicsContext
-        API.LNGraphicsContext_BeginFrame = cw("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number"], { async: true });
+        API.LNGraphicsContext_BeginFrame = cw("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number"]);
         API.LNGraphicsContext_EndFrame   = cw("LNGraphicsContext_EndFrame",   "number", ["number"]);
 
         // RenderPassDesc
