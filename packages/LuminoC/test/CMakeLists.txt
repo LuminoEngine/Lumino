@@ -17,6 +17,10 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoC GTest::gtest)
+if(LN_ENABLE_WEBGPU)
+    target_copy_webgpu_binaries(${PROJECT_NAME})
+endif()
+
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 # DLL をテスト実行ファイルのディレクトリへコピー (Windows)

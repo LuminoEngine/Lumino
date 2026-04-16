@@ -9,10 +9,13 @@ function(setup_sample_configurations TARGET)
     add_dependencies(${TARGET} LuminoC)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-    # WebGPU
+    # WebGPU (copy dll)
     if(LN_ENABLE_WEBGPU)
-        target_link_libraries(${TARGET} PRIVATE webgpu)
         target_copy_webgpu_binaries(${TARGET})
+    endif()
+
+    if(LUMINO_USE_SLANG)
+        target_link_libraries(${TARGET} PRIVATE slang::slang)
     endif()
 
     # copy dll
@@ -38,11 +41,6 @@ function(setup_sample_configurations TARGET)
                 $<TARGET_FILE_DIR:${TARGET}>
         )
     endif()
-    # add_custom_command(TARGET ${TARGET} POST_BUILD
-    #     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    #         $<TARGET_FILE:glfw>
-    #         $<TARGET_FILE_DIR:${TARGET}>
-    # )
 endfunction()
 
 #-------------------------------------------------------------------------------

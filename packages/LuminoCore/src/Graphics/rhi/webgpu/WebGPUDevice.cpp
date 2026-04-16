@@ -72,9 +72,11 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         WGPURequestAdapterOptions adapterOptions = WGPU_REQUEST_ADAPTER_OPTIONS_INIT;
         adapterOptions.nextInChain = nullptr;
         adapterOptions.featureLevel = WGPUFeatureLevel_Undefined;
-        adapterOptions.powerPreference = WGPUPowerPreference_HighPerformance;
+        // 2026/4/16時点では WGPUPowerPreference_HighPerformance を指定すると Chrome で次のように Warning するので Undefined にしておく。
+        // The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127
+        adapterOptions.powerPreference = WGPUPowerPreference_Undefined;
         adapterOptions.forceFallbackAdapter = false;
-        //adapterOptions.backendType = WGPUBackendType_Vulkan;
+        adapterOptions.backendType = WGPUBackendType_Undefined; // デバッグとかで必要なら WGPUBackendType_Vulkan とかにしてみよう。
         adapterOptions.compatibleSurface = nullptr;
 
         WGPURequestAdapterCallbackInfo callbackInfo = WGPU_REQUEST_ADAPTER_CALLBACK_INFO_INIT;

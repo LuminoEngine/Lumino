@@ -6,40 +6,40 @@
 int main(void) {
     InitializeInstance();
 
-    /* Window + GraphicsContext */
+    // Window + GraphicsContext
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-HelloTexture", 1280, 720, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    /* Texture */
+    // Texture
     LNHandle texture = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture);
 
-    /* Unlit Material */
+    // Unlit Material
     LNHandle material = LN_NULL_HANDLE;
     LNMaterial_CreateUnlit(graphicsContext, &material);
     LNMaterial_SetMainTexture(material, texture);
 
-    /* Quad mesh (4 vertices, 6 indices, CCW winding) */
-    /*   v0(-0.5, 0.5) --- v1(0.5, 0.5)
-     *      |           /      |
-     *   v2(-0.5,-0.5) --- v3(0.5,-0.5)  */
+    // Quad mesh (4 vertices, 6 indices, CCW winding)
+    //   v0(-0.5, 0.5) --- v1(0.5, 0.5)
+    //      |           /      |
+    //   v2(-0.5,-0.5) --- v3(0.5,-0.5)
     LNVertex vertices[4] = {
-        /* posX   posY   posZ   normX normY normZ  u    v    r    g    b    a    tanX tanY tanZ tanW */
-        { -0.5f,  0.5f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, /* v0 */
-        {  0.5f,  0.5f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, /* v1 */
-        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, /* v2 */
-        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, /* v3 */
+        // posX   posY   posZ   normX normY normZ  u    v    r    g    b    a    tanX tanY tanZ tanW
+        { -0.5f,  0.5f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // v0
+        {  0.5f,  0.5f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // v1
+        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // v2
+        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // v3
     };
-    uint32_t indices[6] = { 0, 2, 1,  1, 2, 3 };  /* CCW: upper tri + lower tri */
+    uint32_t indices[6] = { 0, 2, 1,  1, 2, 3 };  // CCW: upper tri + lower tri
     LNSubMesh sub = { 0, 6, 0 };
 
     LNHandle mesh = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, vertices, 4, indices, 6, &sub, 1, &mesh);
     LNMesh_SetMaterial(mesh, 0, material);
 
-    /* Perspective camera */
+    // Perspective camera
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
@@ -47,11 +47,11 @@ int main(void) {
         1280.0f / 720.0f,
         0.1f, 100.0f);
     LNCamera_SetLookAt(camera,
-        0.0f, 0.0f, 3.0f,   /* eye */
-        0.0f, 0.0f, 0.0f,   /* target */
-        0.0f, 1.0f, 0.0f);  /* up */
+        0.0f, 0.0f, 3.0f,   // eye
+        0.0f, 0.0f, 0.0f,   // target
+        0.0f, 1.0f, 0.0f);  // up
     
-    /* Main loop */
+    // Main loop
     LNGraphicsProfilering profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;
@@ -77,7 +77,7 @@ int main(void) {
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 
-    /* Cleanup */
+    // Cleanup
     LNObject_Release(mesh);
     LNObject_Release(material);
     LNObject_Release(texture);

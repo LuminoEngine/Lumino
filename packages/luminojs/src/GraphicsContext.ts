@@ -17,7 +17,7 @@ export class GraphicsContext extends LuminoObject {
      * Begin a new frame. Must be paired with `endFrame()`.
      *
      * The returned `renderer`, `colorBuffer`, and `depthBuffer` handles are
-     * owned by the C-side GraphicsContext — do **not** call `dispose()` on them.
+     * owned by the C-side GraphicsContext - do **not** call `dispose()` on them.
      */
     async beginFrame(): Promise<FrameInfo> {
         const m = Runtime.module;

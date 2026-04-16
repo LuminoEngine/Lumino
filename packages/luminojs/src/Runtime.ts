@@ -178,14 +178,20 @@ export class Runtime {
         API.LNRenderer_BeginRenderPass = cw("LNRenderer_BeginRenderPass", "number", ["number", "number", "number", "number"]);
         API.LNRenderer_EndRenderPass   = cw("LNRenderer_EndRenderPass",   "number", ["number"]);
         API.LNRenderer_DrawMesh        = cw("LNRenderer_DrawMesh",        "number", ["number", "number", "number", "number"]);
+        API.LNRenderer_DrawScreenRect  = cw("LNRenderer_DrawScreenRect",  "number", ["number", "number"]);
 
         // Texture
-        API.LNTexture2D_LoadFromMemory = cw("LNTexture2D_LoadFromMemory", "number", ["number", "number", "number", "number"], { async: true });
+        API.LNTexture2D_LoadFromMemory      = cw("LNTexture2D_LoadFromMemory",      "number", ["number", "number", "number", "number"], { async: true });
+        API.LNTexture2D_CreateRenderTargetEx = cw("LNTexture2D_CreateRenderTargetEx", "number", ["number", "number", "number", "number", "number"]);
+        API.LNTexture2D_CreateDepthStencil   = cw("LNTexture2D_CreateDepthStencil",   "number", ["number", "number", "number", "number"]);
 
         // Material
-        API.LNMaterial_CreateUnlit     = cw("LNMaterial_CreateUnlit",     "number", ["number", "number"]);
-        API.LNMaterial_SetMainTexture  = cw("LNMaterial_SetMainTexture",  "number", ["number", "number"]);
-        API.LNMaterial_SetColor        = cw("LNMaterial_SetColor",        "number", ["number", "number", "number", "number", "number"]);
+        API.LNMaterial_CreateUnlit              = cw("LNMaterial_CreateUnlit",              "number", ["number", "number"]);
+        API.LNMaterial_CreateFromCompiledShader  = cw("LNMaterial_CreateFromCompiledShader",  "number", ["number", "number", "number", "number"], { async: true });
+        API.LNMaterial_SetMainTexture            = cw("LNMaterial_SetMainTexture",            "number", ["number", "number"]);
+        API.LNMaterial_SetColor                  = cw("LNMaterial_SetColor",                  "number", ["number", "number", "number", "number", "number"]);
+        API.LNMaterial_SetFloat4                 = cw("LNMaterial_SetFloat4",                 "number", ["number", "string", "number"]);
+        API.LNMaterial_SetNamedTexture           = cw("LNMaterial_SetNamedTexture",           "number", ["number", "string", "number"]);
 
         // Mesh
         API.LNMesh_Create      = cw("LNMesh_Create",      "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);

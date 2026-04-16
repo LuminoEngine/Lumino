@@ -21,6 +21,19 @@ export enum LoadOp {
     DontCare = 2,
 }
 
+/** Texture format (matches C LNTextureFormat). */
+export enum TextureFormat {
+    Undefined       = 0,
+    BGRA8_UNORM     = 1,
+    BGRA8_UNORM_SRGB = 2,
+    RGBA8_UNORM     = 3,
+    RGBA8_UNORM_SRGB = 4,
+    R8_UNORM        = 7,
+    RG8_UNORM       = 8,
+    RGBA16_FLOAT    = 9,
+    RGBA32_FLOAT    = 10,
+}
+
 /** Opaque object handle (uint32). */
 export type Handle = number;
 
@@ -59,6 +72,8 @@ export interface DepthStencilAttachmentDesc {
 export interface RenderPassDesc {
     colorAttachments?: ColorAttachmentDesc[];
     depthStencil?: DepthStencilAttachmentDesc;
+    /** Shader pass name to select (e.g. "GBuffer"). NULL/empty = "Forward". */
+    shaderPassName?: string;
 }
 
 /** Options for `Runtime.initialize`. */
@@ -85,10 +100,11 @@ export const SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC = 20;
 //         depthLoadOp(u32,12) stencilLoadOp(u32,16)
 
 /** Byte size of `LNRenderPassDesc` in wasm memory. */
-export const SIZEOF_RENDER_PASS_DESC = 216;
+export const SIZEOF_RENDER_PASS_DESC = 220;
 // Layout: colorAttachmentCount(u32,0)
 //         colorAttachments[8](24*8=192, offset 4)
 //         depthStencil(20, offset 196)
+//         shaderPassName(ptr,216)
 
 /** Byte size of `LNInstanceInitializeSettings` in wasm memory. */
 export const SIZEOF_INSTANCE_INIT_SETTINGS = 8;

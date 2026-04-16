@@ -1,8 +1,31 @@
 import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
 import { API, Runtime } from "./Runtime";
+import type { TextureFormat } from "./types";
 
 export class Texture extends LuminoObject {
+    /** Create a render target texture with a specific format. */
+    static createRenderTargetEx(ctx: GraphicsContext, width: number, height: number, format: TextureFormat): Texture {
+        const handle = Runtime.safeCallWithReturnHandle((out) =>
+            (API.LNTexture2D_CreateRenderTargetEx as (
+                ctx: number, w: number, h: number, fmt: number, out: number,
+            ) => number)(ctx.handle, width, height, format, out));
+        const tex = new Texture();
+        tex._setHandle(handle, true);
+        return tex;
+    }
+
+    /** Create a depth-stencil texture. */
+    static createDepthStencil(ctx: GraphicsContext, width: number, height: number): Texture {
+        const handle = Runtime.safeCallWithReturnHandle((out) =>
+            (API.LNTexture2D_CreateDepthStencil as (
+                ctx: number, w: number, h: number, out: number,
+            ) => number)(ctx.handle, width, height, out));
+        const tex = new Texture();
+        tex._setHandle(handle, true);
+        return tex;
+    }
+
     /**
      * Create a texture from raw image data (PNG, etc.) already in memory.
      *

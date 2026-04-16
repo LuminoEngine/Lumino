@@ -3,15 +3,12 @@ build_*/
 build/Lumino-*/
 lib/
 emsdk/
-third_party/
 build.sln
 ReleasePackage-*/
 .vscode
 .ln
 tmp/
 lumino.exe
-vcpkg/
-vcpkg_installed/
 *.dump/
 
 

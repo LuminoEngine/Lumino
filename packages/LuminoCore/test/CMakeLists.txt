@@ -14,9 +14,13 @@ add_executable(
     ${LN_LOCAL_SOURCES}
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore GTest::gtest)
 target_include_directories(
     ${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../LuminoC/include
 )
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore GTest::gtest)
+if(LN_ENABLE_WEBGPU)
+    target_copy_webgpu_binaries(${PROJECT_NAME})
+endif()
+
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})

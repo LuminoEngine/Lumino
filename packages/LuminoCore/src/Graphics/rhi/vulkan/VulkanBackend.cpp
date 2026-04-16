@@ -547,6 +547,7 @@ void VulkanRenderPass::beginEncoding(
     // Set default viewport and scissor.
     // Use negative height (y = height, h = -height) to flip Vulkan's Y axis so that
     // +Y points upward, matching standard math / OpenGL NDC convention.
+    // (VK_KHR_maintenance1)
     VkViewport vp{0, static_cast<float>(extent.height), static_cast<float>(extent.width), -static_cast<float>(extent.height), 0, 1};
     vkCmdSetViewport(m_cmd, 0, 1, &vp);
     VkRect2D scissor{{0, 0}, extent};

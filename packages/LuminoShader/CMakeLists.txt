@@ -9,9 +9,6 @@ option(LUMINO_USE_SLANG "Enable Slang shader compiler" ON)
 # Dependencies
 #-------------------------------------------------------------------------------
 find_package(nlohmann_json CONFIG REQUIRED)
-if(LUMINO_USE_SLANG)
-    find_package(slang CONFIG REQUIRED)
-endif()
 
 #-------------------------------------------------------------------------------
 # Sources

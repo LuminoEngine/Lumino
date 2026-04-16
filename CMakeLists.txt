@@ -13,8 +13,7 @@ add_definitions(-DLN_REPO_ROOT_DIR="${CMAKE_SOURCE_DIR}")
 option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
 option(LUMINO_BUILD_TESTS "Build unit tests" ON)
 option(LUMINO_BUILD_TOOLS "Build tools" ON)
-option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
-option(LUMINO_ENABLE_WEBGPU  "Enable WebGPU backend via WebGPU-distribution" OFF)
+option(LUMINO_USE_WEBGPU  "Enable WebGPU backend" ON)
 
 #-------------------------------------------------------------------------------
 # Common packages (found via vcpkg toolchain on all platforms)
@@ -27,11 +26,11 @@ find_package(tl-expected CONFIG REQUIRED)
 if(EMSCRIPTEN)
     set(LN_PLATFORM_WEB ON)
     set(LN_ENABLE_VULKAN OFF)
-    set(LN_ENABLE_WEBGPU OFF)
+    set(LN_ENABLE_WEBGPU ON)
 else()
     set(LN_PLATFORM_DESKTOP ON)
     set(LN_ENABLE_VULKAN ON)
-    if(LUMINO_ENABLE_WEBGPU)
+    if(LUMINO_USE_WEBGPU)
         set(LN_ENABLE_WEBGPU ON)
     else()
         set(LN_ENABLE_WEBGPU OFF)
@@ -46,7 +45,7 @@ endif()
 # automatically selects the emdawnwebgpu backend on Emscripten.
 if(LN_PLATFORM_WEB)
     # WebGPU-distribution — automatically selects EMDAWNWEBGPU on Emscripten.
-    add_subdirectory(third_party/webgpu)
+    add_subdirectory(build/webgpu)
 
     # WebGPU is always enabled for Emscripten
     #set(LN_ENABLE_WEBGPU ON CACHE BOOL "" FORCE)
@@ -69,7 +68,7 @@ endif()
 # Override with -DWEBGPU_BACKEND=WGPU to switch to wgpu-native.
 if(LN_ENABLE_WEBGPU)
     set(WEBGPU_BACKEND "DAWN" CACHE STRING "WebGPU backend implementation")
-    add_subdirectory(third_party/webgpu)
+    add_subdirectory(build/webgpu)
     find_package(glfw3 CONFIG REQUIRED)
 else()
     find_package(glfw3 CONFIG REQUIRED)
@@ -79,6 +78,9 @@ if(LN_PLATFORM_DESKTOP)
     find_package(directx-dxc CONFIG) # dawn で必要になる
 endif()
 
+if(LUMINO_USE_SLANG)
+    find_package(slang CONFIG REQUIRED)
+endif()
 #-------------------------------------------------------------------------------
 # Tests (GTest は packages より前に find_package する)
 #-------------------------------------------------------------------------------

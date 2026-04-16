@@ -6,6 +6,12 @@
         { "id": "clear_screen", "title": "Clear Screen" },
         { "id": "hello_texture", "title": "Hello Texture" }
       ]
+    },
+    {
+      "name": "Advanced",
+      "items": [
+        { "id": "ssr", "title": "Screen Space Reflection" }
+      ]
     }
   ]
 }

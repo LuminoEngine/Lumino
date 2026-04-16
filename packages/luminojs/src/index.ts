@@ -13,6 +13,7 @@ export {
     Result,
     GraphicsBackend,
     LoadOp,
+    TextureFormat,
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
     SIZEOF_VERTEX,

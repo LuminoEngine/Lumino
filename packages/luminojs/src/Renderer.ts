@@ -1,5 +1,6 @@
 import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
+import type { Material } from "./Material";
 import type { Mesh } from "./Mesh";
 import { API, Runtime } from "./Runtime";
 import {
@@ -15,7 +16,7 @@ import {
 } from "./types";
 
 export class Renderer extends LuminoObject {
-    // Pre-allocated WASM buffer for LNRenderPassDesc (216 bytes).
+    // Pre-allocated WASM buffer for LNRenderPassDesc (220 bytes).
     // Created lazily on first use; freed when the Renderer is disposed.
     private _descPtr = 0;
     private _descView: DataView | null = null;
@@ -26,6 +27,9 @@ export class Renderer extends LuminoObject {
     private _transformView: DataView | null = null;
     private _transformHeapBuf: ArrayBufferLike | null = null;
 
+    // Temporary string pointer for shaderPassName (freed after BeginRenderPass).
+    private _lastShaderPassNamePtr = 0;
+
     /**
      * Begin a render pass.
      *
@@ -35,10 +39,17 @@ export class Renderer extends LuminoObject {
      */
     beginRenderPass(ctx: GraphicsContext, desc: RenderPassDesc, camera: Handle = LN_NULL_HANDLE): void {
         const ptr = this._serializeDesc(desc);
-        Runtime.safeCall(() =>
-            (API.LNRenderer_BeginRenderPass as (
-                r: number, ctx: number, d: number, cam: number,
-            ) => number)(this._handle, ctx.handle, ptr, camera));
+        try {
+            Runtime.safeCall(() =>
+                (API.LNRenderer_BeginRenderPass as (
+                    r: number, ctx: number, d: number, cam: number,
+                ) => number)(this._handle, ctx.handle, ptr, camera));
+        } finally {
+            if (this._lastShaderPassNamePtr) {
+                Runtime.module._free(this._lastShaderPassNamePtr);
+                this._lastShaderPassNamePtr = 0;
+            }
+        }
     }
 
     /** End the current render pass. */
@@ -60,6 +71,14 @@ export class Renderer extends LuminoObject {
             (API.LNRenderer_DrawMesh as (
                 r: number, mesh: number, t: number, z: number,
             ) => number)(this._handle, mesh.handle, ptr, zIndex));
+    }
+
+    /** Draw a full-screen rectangle with the given material (for post-processing). */
+    drawScreenRect(material: Material): void {
+        Runtime.safeCall(() =>
+            (API.LNRenderer_DrawScreenRect as (
+                r: number, mat: number,
+            ) => number)(this._handle, material.handle));
     }
 
     override dispose(): void {
@@ -181,6 +200,20 @@ export class Renderer extends LuminoObject {
         v.setUint32(dsBase + 8,  ds?.clearStencil   ?? 0, true);
         v.setUint32(dsBase + 12, ds?.depthLoadOp    ?? LoadOp.Clear, true);
         v.setUint32(dsBase + 16, ds?.stencilLoadOp  ?? LoadOp.Clear, true);
+
+        // --- shaderPassName (const char* at offset 216) ---
+        if (desc.shaderPassName) {
+            const encoder = new TextEncoder();
+            const encoded = encoder.encode(desc.shaderPassName);
+            const strPtr = Runtime.module._malloc(encoded.length + 1);
+            Runtime.module.HEAPU8.set(encoded, strPtr);
+            Runtime.module.HEAPU8[strPtr + encoded.length] = 0; // null terminator
+            v.setUint32(216, strPtr, true);
+            this._lastShaderPassNamePtr = strPtr;
+        } else {
+            v.setUint32(216, 0, true);
+            this._lastShaderPassNamePtr = 0;
+        }
 
         return this._descPtr;
     }

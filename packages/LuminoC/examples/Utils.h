@@ -32,3 +32,18 @@ void printGraphicsProfilering(LNHandle graphicsContext) {
         (std::string("DrawCall: ") + std::to_string(profilering.drawCallCount))
             .c_str());
 }
+
+std::vector<unsigned char> loadFile(const char* path) {
+    FILE* fp = fopen(path, "rb");
+    if (!fp) {
+        fprintf(stderr, "Failed to open: %s\n", path);
+        return {};
+    }
+    fseek(fp, 0, SEEK_END);
+    long sz = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    std::vector<unsigned char> buf(sz);
+    fread(buf.data(), 1, sz, fp);
+    fclose(fp);
+    return buf;
+}

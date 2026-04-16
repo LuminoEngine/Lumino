@@ -9,7 +9,7 @@
 int main(void) {
     InitializeInstance();
 
-    /* 2. Window + GraphicsContext */
+    // 2. Window + GraphicsContext
     const uint32_t windowWidth = 1280;
     const uint32_t windowHeight = 720;
     LNHandle window = LN_NULL_HANDLE;
@@ -17,7 +17,7 @@ int main(void) {
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    /* 3. Create two render target textures (512x512 each) */
+    // 3. Create two render target textures (512x512 each)
     const uint32_t rtWidth = 512;
     const uint32_t rtHeight = 512;
     LNHandle rt1 = LN_NULL_HANDLE;
@@ -25,13 +25,13 @@ int main(void) {
     LNTexture2D_CreateRenderTarget(graphicsContext, rtWidth, rtHeight, &rt1);
     LNTexture2D_CreateRenderTarget(graphicsContext, rtWidth, rtHeight, &rt2);
 
-    /* Shared depth buffer for RT rendering (both RTs are the same size) */
+    // Shared depth buffer for RT rendering (both RTs are the same size)
     LNHandle rtDepth = LN_NULL_HANDLE;
     LNTexture2D_CreateDepthStencil(graphicsContext, rtWidth, rtHeight, &rtDepth);
 
-    /* 4. Create a triangle mesh to draw into each render target */
+    // 4. Create a triangle mesh to draw into each render target
     LNVertex triVertices[3] = {
-        /* posX   posY   posZ   nX nY nZ  u    v    r    g    b    a    tX tY tZ tW */
+        // posX   posY   posZ   nX nY nZ  u    v    r    g    b    a    tX tY tZ tW
         {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f,0.0f,  1,1,1,1,  1,0,0,0 },
         {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f,1.0f,  1,1,1,1,  1,0,0,0 },
         { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f,1.0f,  1,1,1,1,  1,0,0,0 },
@@ -39,27 +39,27 @@ int main(void) {
     uint32_t triIndices[3] = { 0, 2, 1 };
     LNSubMesh triSub = { 0, 3, 0 };
 
-    /* Material for RT1 (red tinted triangle) */
+    // Material for RT1 (red tinted triangle)
     LNHandle matRed = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matRed);
     LNMaterial_SetColor(matRed, 1.0f, 0.3f, 0.3f, 1.0f);
 
-    /* Material for RT2 (green tinted triangle) */
+    // Material for RT2 (green tinted triangle)
     LNHandle matGreen = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matGreen);
     LNMaterial_SetColor(matGreen, 0.3f, 1.0f, 0.3f, 1.0f);
 
-    /* Triangle mesh for RT1 */
+    // Triangle mesh for RT1
     LNHandle triMesh1 = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, triVertices, 3, triIndices, 3, &triSub, 1, &triMesh1);
     LNMesh_SetMaterial(triMesh1, 0, matRed);
 
-    /* Triangle mesh for RT2 */
+    // Triangle mesh for RT2
     LNHandle triMesh2 = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, triVertices, 3, triIndices, 3, &triSub, 1, &triMesh2);
     LNMesh_SetMaterial(triMesh2, 0, matGreen);
 
-    /* 5. Camera for rendering into RTs (perspective) */
+    // 5. Camera for rendering into RTs (perspective)
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
@@ -67,12 +67,12 @@ int main(void) {
         (float)rtWidth / (float)rtHeight,
         0.1f, 100.0f);
     LNCamera_SetLookAt(camera,
-        0.0f, 0.0f, 2.0f,   /* eye */
-        0.0f, 0.0f, 0.0f,   /* target */
-        0.0f, 1.0f, 0.0f);  /* up */
+        0.0f, 0.0f, 2.0f,   // eye
+        0.0f, 0.0f, 0.0f,   // target
+        0.0f, 1.0f, 0.0f);  // up
 
-    /* 6. Two screen quads to display RT textures side-by-side on backbuffer */
-    /*    Left quad: [-1, -1] to [0, 1]   Right quad: [0, -1] to [1, 1] */
+    // 6. Two screen quads to display RT textures side-by-side on backbuffer
+    //    Left quad: [-1, -1] to [0, 1]   Right quad: [0, -1] to [1, 1]
     LNVertex leftQuadVerts[4] = {
         { -1.0f,  1.0f, 0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
         {  0.0f,  1.0f, 0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
@@ -88,27 +88,27 @@ int main(void) {
     uint32_t quadIndices[6] = { 0, 2, 1,  1, 2, 3 };
     LNSubMesh quadSub = { 0, 6, 0 };
 
-    /* Material for left quad (uses RT1 as texture) */
+    // Material for left quad (uses RT1 as texture)
     LNHandle matRT1 = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matRT1);
     LNMaterial_SetMainTexture(matRT1, rt1);
 
-    /* Material for right quad (uses RT2 as texture) */
+    // Material for right quad (uses RT2 as texture)
     LNHandle matRT2 = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matRT2);
     LNMaterial_SetMainTexture(matRT2, rt2);
 
-    /* Left quad mesh */
+    // Left quad mesh
     LNHandle leftQuadMesh = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, leftQuadVerts, 4, quadIndices, 6, &quadSub, 1, &leftQuadMesh);
     LNMesh_SetMaterial(leftQuadMesh, 0, matRT1);
 
-    /* Right quad mesh */
+    // Right quad mesh
     LNHandle rightQuadMesh = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, rightQuadVerts, 4, quadIndices, 6, &quadSub, 1, &rightQuadMesh);
     LNMesh_SetMaterial(rightQuadMesh, 0, matRT2);
 
-    /* 7. Main loop */
+    // 7. Main loop
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNGraphicsProfilering profiler = {};
     LNBool quit = LN_FALSE;
@@ -116,20 +116,20 @@ int main(void) {
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         angle += 0.02f;
 
-        /* Rotate the triangle */
+        // Rotate the triangle
         float sinA = sinf(angle);
         float cosA = cosf(angle);
-        /* Quaternion for rotation around Z axis: (0, 0, sin(a/2), cos(a/2)) */
+        // Quaternion for rotation around Z axis: (0, 0, sin(a/2), cos(a/2))
         LNTransform triTransform = {
-            0, 0, 0,                                       /* position */
-            0, 0, sinf(angle * 0.5f), cosf(angle * 0.5f), /* rotation (Z axis) */
-            1, 1, 1                                        /* scale */
+            0, 0, 0,                                       // position
+            0, 0, sinf(angle * 0.5f), cosf(angle * 0.5f), // rotation (Z axis)
+            1, 1, 1                                        // scale
         };
 
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
 
-        /* --- Pass 1: Render red triangle into RT1 --- */
+        // --- Pass 1: Render red triangle into RT1 ---
         LNRenderPassDesc rt1Desc;
         LNRenderPassDesc_Init(&rt1Desc);
         rt1Desc.colorAttachmentCount = 1;
@@ -143,8 +143,8 @@ int main(void) {
         LNRenderer_DrawMesh(renderer, triMesh1, &triTransform, 0);
         LNRenderer_EndRenderPass(renderer);
 
-        /* --- Pass 2: Render green triangle into RT2 --- */
-        /* Rotate the opposite direction for visual difference */
+        // --- Pass 2: Render green triangle into RT2 ---
+        // Rotate the opposite direction for visual difference
         LNTransform triTransform2 = {
             0, 0, 0,
             0, 0, sinf(-angle * 0.5f), cosf(-angle * 0.5f),
@@ -163,7 +163,7 @@ int main(void) {
         LNRenderer_DrawMesh(renderer, triMesh2, &triTransform2, 0);
         LNRenderer_EndRenderPass(renderer);
 
-        /* --- Pass 3: Draw both RT textures side-by-side on backbuffer --- */
+        // --- Pass 3: Draw both RT textures side-by-side on backbuffer ---
         LNRenderPassDesc bbDesc;
         LNRenderPassDesc_Init(&bbDesc);
         bbDesc.colorAttachments[0].clearColor[0] = 0.1f;
@@ -175,7 +175,7 @@ int main(void) {
         LNRenderer_DrawMesh(renderer, rightQuadMesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
 
-        /* Profiler overlay */
+        // Profiler overlay
         LNDebug_GetGraphicsProfiler(graphicsContext, &profiler);
         LNDebug_Print(graphicsContext, (std::string("FPS: ") + std::to_string(profiler.fps)).c_str());
         LNDebug_Print(graphicsContext, (std::string("DrawCall: ") + std::to_string(profiler.drawCallCount)).c_str());
@@ -183,7 +183,7 @@ int main(void) {
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 
-    /* 8. Cleanup */
+    // 8. Cleanup
     LNObject_Release(rightQuadMesh);
     LNObject_Release(leftQuadMesh);
     LNObject_Release(matRT2);

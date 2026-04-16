@@ -175,13 +175,13 @@ int main() {
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    /* 2. Textures - load the same image for both slots (demo purposes) */
+    // 2. Textures - load the same image for both slots (demo purposes)
     LNHandle texture0 = LN_NULL_HANDLE;
     LNHandle texture1 = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture0);
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture1);
 
-    /* 3. Materials - two unlit materials with different tints */
+    // 3. Materials - two unlit materials with different tints
     LNHandle material0 = LN_NULL_HANDLE;
     LNHandle material1 = LN_NULL_HANDLE;
     LNMaterial_CreateUnlit(graphicsContext, &material0);
@@ -189,64 +189,64 @@ int main() {
     LNMaterial_CreateUnlit(graphicsContext, &material1);
     LNMaterial_SetMainTexture(material1, texture1);
 
-    /* 4. Dynamic mesh */
+    // 4. Dynamic mesh
     LNHandle mesh = LN_NULL_HANDLE;
     LNMesh_CreateDynamic(graphicsContext, MAX_VERTICES, MAX_INDICES, &mesh);
 
-    /* Pre-assign materials to slot 0 and 1 */
-    /* We need at least one submesh to size the material array initially.
-       SetSubMeshes will expand as needed, but let's set materials after first build. */
+    // Pre-assign materials to slot 0 and 1
+    // We need at least one submesh to size the material array initially.
+    // SetSubMeshes will expand as needed, but let's set materials after first build.
 
-    /* 5. Orthographic camera (pixel-space: origin at center) */
+    // 5. Orthographic camera (pixel-space: origin at center)
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetOrthographic(camera, (float)WINDOW_W, (float)WINDOW_H, -1000.0f, 1000.0f);
     LNCamera_SetLookAt(camera,
-        0.0f, 0.0f, 1.0f,   /* eye */
-        0.0f, 0.0f, 0.0f,   /* target */
-        0.0f, 1.0f, 0.0f);  /* up */
+        0.0f, 0.0f, 1.0f,   // eye
+        0.0f, 0.0f, 0.0f,   // target
+        0.0f, 1.0f, 0.0f);  // up
 
-    /* 6. Initialize sprites */
+    // 6. Initialize sprites
     initSprites();
 
     printf("Lumino BatchSprite: %d sprites. Rendering...\n", SPRITE_COUNT);
 
-    /* 7. Main loop */
+    // 7. Main loop
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     int frame = 0;
     LNBool quit = LN_FALSE;
     int materialsAssigned = 0;
 
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
-        /* Animate: slight wobble */
+        // Animate: slight wobble
         float t = frame * 0.02f;
         for (int i = 0; i < SPRITE_COUNT; i++) {
             s_sprites[i].zIndex = (int)(sinf(t + i * 0.1f) * 10.0f);
         }
 
-        /* Sort sprites (z-index primary, texture secondary for batch efficiency) */
+        // Sort sprites (z-index primary, texture secondary for batch efficiency)
         qsort(s_sprites, SPRITE_COUNT, sizeof(Sprite), compareSprites);
 
-        /* Build vertex data and batches */
+        // Build vertex data and batches
         uint32_t vertCount = 0, idxCount = 0;
         uint32_t batchCount = buildBatches(
             s_sprites, SPRITE_COUNT,
             s_vertexBuf, s_indexBuf, s_submeshBuf,
             &vertCount, &idxCount);
 
-        /* Upload to dynamic mesh */
+        // Upload to dynamic mesh
         LNMesh_UpdateVertices(mesh, 0, s_vertexBuf, vertCount);
         LNMesh_UpdateIndices(mesh, 0, s_indexBuf, idxCount);
         LNMesh_SetSubMeshes(mesh, s_submeshBuf, batchCount);
 
-        /* Assign materials (safe to call every frame; cheap) */
+        // Assign materials (safe to call every frame; cheap)
         if (!materialsAssigned) {
             LNMesh_SetMaterial(mesh, 0, material0);
             LNMesh_SetMaterial(mesh, 1, material1);
             materialsAssigned = 1;
         }
 
-        /* Draw */
+        // Draw
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
         LNRenderPassDesc rpDesc;
@@ -263,7 +263,7 @@ int main() {
         frame++;
     }
 
-    /* 8. Cleanup */
+    // 8. Cleanup
     LNObject_Release(mesh);
     LNObject_Release(material1);
     LNObject_Release(material0);
