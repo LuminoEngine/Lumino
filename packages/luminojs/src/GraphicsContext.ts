@@ -12,6 +12,37 @@ export interface FrameInfo {
 
 export class GraphicsContext extends LuminoObject {
     private _renderer: Renderer | null = null;
+    private _windowHandle: Handle = 0;
+
+    /**
+     * HTML `<canvas>` 要素を描画先として GraphicsContext を作成する。
+     * Web のみ対応。
+     * `width` / `height` を省略した場合は selector で見つけた canvas のサイズを使用する。
+     */
+    static async createFromCanvas(
+        canvasSelector: string,
+        options?: { width?: number; height?: number },
+    ): Promise<GraphicsContext> {
+        let width  = options?.width;
+        let height = options?.height;
+        if (width === undefined || height === undefined) {
+            const canvas = document.querySelector(canvasSelector) as HTMLCanvasElement | null;
+            if (!canvas) throw new Error(`createFromCanvas: canvas not found: "${canvasSelector}"`);
+            if (width  === undefined) width  = canvas.width;
+            if (height === undefined) height = canvas.height;
+        }
+        const windowHandle = await Runtime.safeCallWithReturnHandleAsync((ptr) =>
+            (API.LNWindow_CreateFromCanvas as (s: string, w: number, h: number, p: number) => number | Promise<number>)(
+                canvasSelector, width!, height!, ptr,
+            ));
+        const ctxHandle = Runtime.safeCallWithReturnHandle((ptr) =>
+            (API.LNWindow_GetGraphicsContext as (h: number, p: number) => number)(
+                windowHandle, ptr));
+        const ctx = new GraphicsContext();
+        ctx._windowHandle = windowHandle;
+        ctx._setHandle(ctxHandle, false);
+        return ctx;
+    }
 
     /**
      * Begin a new frame. Must be paired with `endFrame()`.
@@ -52,5 +83,14 @@ export class GraphicsContext extends LuminoObject {
     endFrame(): void {
         Runtime.safeCall(() =>
             (API.LNGraphicsContext_EndFrame as (h: number) => number)(this._handle));
+    }
+
+    override dispose(): void {
+        this._renderer = null;
+        if (this._windowHandle !== 0) {
+            (API.LNObject_Release as (h: number) => number)(this._windowHandle);
+            this._windowHandle = 0;
+        }
+        this._handle = 0;
     }
 }

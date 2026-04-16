@@ -1,5 +1,4 @@
 export { Runtime } from "./Runtime";
-export { Window } from "./Window";
 export { GraphicsContext } from "./GraphicsContext";
 export type { FrameInfo } from "./GraphicsContext";
 export { Renderer } from "./Renderer";

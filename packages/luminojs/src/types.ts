@@ -78,8 +78,6 @@ export interface RuntimeOptions {
     print?: (text: string) => void;
     /** Callback for stderr lines from the C runtime. */
     printErr?: (text: string) => void;
-    /** Preferred graphics backend. Default: `GraphicsBackend.Default`. */
-    preferredBackend?: GraphicsBackend;
     /** Enable graphics validation layer. */
     enableValidation?: boolean;
 }

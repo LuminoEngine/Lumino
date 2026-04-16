@@ -71,8 +71,20 @@ export class Runtime {
             moduleOpts["locateFile"] = (path: string) =>
                 path.endsWith(".wasm") ? wasmPath : path;
         }
-        if (options?.print)    moduleOpts["print"]    = options.print;
-        if (options?.printErr) moduleOpts["printErr"] = options.printErr;
+
+        // Setup print functions.
+        let printFunc: ((text: string) => void) | undefined = options?.print;
+        let printErrFunc: ((text: string) => void) | undefined = options?.printErr;
+        if (!printFunc)  {
+            printFunc = (text: string) => console.log("[stdout]", text);
+        }
+        if (!printErrFunc)  {
+            printErrFunc = (text: string) => console.warn("[stderr]", text);
+        }
+        moduleOpts["print"]    = printFunc;
+        moduleOpts["printErr"] = printErrFunc;
+
+        const preferredBackend: GraphicsBackend = GraphicsBackend.WebGPU;
 
         this.module = await LuminoC(moduleOpts);
 
@@ -84,13 +96,11 @@ export class Runtime {
 
         // Initialize Lumino graphics instance.
         const m = this.module;
-        let ptr = 0;
-        if (options?.preferredBackend !== undefined || options?.enableValidation !== undefined) {
-            ptr = m._malloc(SIZEOF_INSTANCE_INIT_SETTINGS);
-            const view = new DataView(m.HEAPU8.buffer, ptr, SIZEOF_INSTANCE_INIT_SETTINGS);
-            view.setUint32(0, options?.preferredBackend ?? GraphicsBackend.Default, true);
-            view.setUint32(4, options?.enableValidation ? 1 : 0, true);
-        }
+        const ptr = m._malloc(SIZEOF_INSTANCE_INIT_SETTINGS);
+        const view = new DataView(m.HEAPU8.buffer, ptr, SIZEOF_INSTANCE_INIT_SETTINGS);
+        view.setUint32(0, preferredBackend, true);
+        view.setUint32(4, options?.enableValidation ? 1 : 0, true);
+        
         try {
             await this.safeCallAsync(() =>
                 (API.LNInstance_Initialize as (p: number) => number | Promise<number>)(ptr));
@@ -198,7 +208,6 @@ export class Runtime {
         // Window
         API.LNWindow_CreateFromCanvas   = cw("LNWindow_CreateFromCanvas",   "number", ["string", "number", "number", "number"], { async: true });
         API.LNWindow_GetGraphicsContext = cw("LNWindow_GetGraphicsContext", "number", ["number", "number"]);
-        API.LNWindow_ProcessEvents      = cw("LNWindow_ProcessEvents",      "number", ["number", "number"]);
 
         // GraphicsContext
         API.LNGraphicsContext_BeginFrame = cw("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number"]);

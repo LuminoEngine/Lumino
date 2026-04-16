@@ -10,8 +10,7 @@
  */
 import {
     Runtime,
-    Window,
-    GraphicsBackend,
+    GraphicsContext,
     LoadOp,
     TextureFormat,
     Texture,
@@ -28,58 +27,46 @@ async function main() {
     const W = canvas.width;
     const H = canvas.height;
 
-    // 1. Load WASM module and initialize Lumino instance (creates WebGPU device)
+    // Load WASM module and initialize Lumino instance (creates WebGPU device)
     await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
-        print: (t: string) => console.log("[stdout]", t),
-        printErr: (t: string) => console.warn("[stderr]", t),
-        preferredBackend: GraphicsBackend.WebGPU,
     });
 
-    // 3. Create Window from canvas
-    const win = await Window.createFromCanvas("#my_canvas", W, H);
-    const ctx = win.getGraphicsContext();
+    // Create GraphicsContext from canvas
+    const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
-    // --------------------------------------------------------------
     // Render targets
-    // --------------------------------------------------------------
-    const gbufferA = Texture.createRenderTargetEx(ctx, W, H, TextureFormat.RGBA8_UNORM);
-    const gbufferB = Texture.createRenderTargetEx(ctx, W, H, TextureFormat.RGBA32_FLOAT);
-    const gbufferC = Texture.createRenderTargetEx(ctx, W, H, TextureFormat.RGBA8_UNORM);
-    const sceneDepth = Texture.createDepthStencil(ctx, W, H);
+    const gbufferA = Texture.createRenderTargetEx(context, W, H, TextureFormat.RGBA8_UNORM);
+    const gbufferB = Texture.createRenderTargetEx(context, W, H, TextureFormat.RGBA32_FLOAT);
+    const gbufferC = Texture.createRenderTargetEx(context, W, H, TextureFormat.RGBA8_UNORM);
+    const sceneDepth = Texture.createDepthStencil(context, W, H);
 
-    // --------------------------------------------------------------
     // Materials
-    // --------------------------------------------------------------
     const gridTexture = await Texture.loadFromURL(
-        ctx,
+        context,
         new URL("../../public/CheckerGridGray1.png", import.meta.url).href,
     );
 
     // Scene materials (Unlit)
-    const groundMaterial = Material.createUnlit(ctx);
-    groundMaterial.setColor(0.4, 0.4, 0.4, 1.0); // orange
+    const groundMaterial = Material.createUnlit(context);
+    groundMaterial.setColor(0.4, 0.4, 0.4, 1.0);
     //groundMaterial.setMainTexture(gridTexture);
 
-    const triangleMaterial = Material.createUnlit(ctx);
+    const triangleMaterial = Material.createUnlit(context);
     triangleMaterial.setColor(1.0, 1.0, 1.0, 1.0);
 
     // SSR material (from pre-compiled shader)
     const ssrResp = await fetch(new URL("../../public/SSR.lcsh", import.meta.url).href);
     const ssrData = new Uint8Array(await ssrResp.arrayBuffer());
-    const matSSR = await Material.createFromCompiledShader(ctx, ssrData);
+    const matSSR = await Material.createFromCompiledShader(context, ssrData);
     matSSR.setFloat4("ssrSettings", [10.0, 0.05, 0.3, 128.0]);
     matSSR.setNamedTexture("u_gbufferA", gbufferA);
     matSSR.setNamedTexture("u_gbufferB", gbufferB);
     matSSR.setNamedTexture("u_gbufferC", gbufferC);
 
-    // --------------------------------------------------------------
-    // Scene geometry
-    // --------------------------------------------------------------
-
     // Ground plane: 4 vertices at Y=0
     const groundMesh = Mesh.create(
-        ctx,
+        context,
         [
             { position: [-2, 0, -2], normal: [0, 1, 0], uv: [0, 0], color: [0.5, 0.5, 0.5, 1], tangent: [1, 0, 0, 0] },
             { position: [ 2, 0, -2], normal: [0, 1, 0], uv: [1, 0], color: [0.5, 0.5, 0.5, 1], tangent: [1, 0, 0, 0] },
@@ -93,7 +80,7 @@ async function main() {
 
     // Rotating triangle: hovers above ground
     const triMesh = Mesh.create(
-        ctx,
+        context,
         [
             { position: [ 0, 1, 0], normal: [0, 0, 1], uv: [0.5, 0], color: [1, 0, 0, 1], tangent: [1, 0, 0, 0] },
             { position: [ 1, 0, 0], normal: [0, 0, 1], uv: [1, 1],   color: [0, 1, 0, 1], tangent: [1, 0, 0, 0] },
@@ -104,9 +91,6 @@ async function main() {
     );
     triMesh.setMaterial(0, triangleMaterial);
 
-    // --------------------------------------------------------------
-    // Camera
-    // --------------------------------------------------------------
     const camera = Camera.create();
     camera.setPerspective(
         (45 * Math.PI) / 180,
@@ -116,9 +100,6 @@ async function main() {
     );
     camera.setLookAt(0, 2.5, 5, 0, 0.5, 0, 0, 1, 0);
 
-    // --------------------------------------------------------------
-    // Main loop
-    // --------------------------------------------------------------
     const groundTransform: Transform = {
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
@@ -150,11 +131,11 @@ async function main() {
             scale: [1, 1, 1],
         };
 
-        const { renderer, colorBuffer, depthBuffer } = ctx.beginFrame();
+        const { renderer, colorBuffer, depthBuffer } = context.beginFrame();
 
         // -- G-Buffer pass --
         renderer.beginRenderPass(
-            ctx,
+            context,
             {
                 colorAttachments: [
                     { renderTarget: gbufferA.handle, clearColor: [0, 0, 0, 0], loadOp: LoadOp.Clear },
@@ -172,7 +153,7 @@ async function main() {
 
         // -- SSR + Composite pass --
         renderer.beginRenderPass(
-            ctx,
+            context,
             {
             colorAttachments: [
                 { renderTarget: colorBuffer, clearColor: [0, 0, 0, 1], loadOp: LoadOp.Clear },
@@ -184,7 +165,7 @@ async function main() {
         renderer.drawScreenRect(matSSR);
         renderer.endRenderPass();
 
-        ctx.endFrame();
+        context.endFrame();
         requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);

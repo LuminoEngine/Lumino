@@ -1,7 +1,6 @@
 import {
     Runtime,
-    Window,
-    GraphicsBackend,
+    GraphicsContext,
     LoadOp,
 } from "luminojs";
 
@@ -10,22 +9,18 @@ async function main() {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    // 1. Load WASM module and initialize Lumino instance (creates WebGPU device)
+    // Load WASM module and initialize Lumino instance (creates WebGPU device)
     await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
-        print: (t: string) => console.log("[stdout]", t),
-        printErr: (t: string) => console.warn("[stderr]", t),
-        preferredBackend: GraphicsBackend.WebGPU,
     });
 
-    // 3. Create Window from canvas
-    const win = await Window.createFromCanvas("#my_canvas", canvas.width, canvas.height);
-    const ctx = win.getGraphicsContext();
+    // Create GraphicsContext from canvas
+    const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
-    // 4. Render loop
+    // Render loop
     function frame() {
-        const { renderer } = ctx.beginFrame();
-        renderer.beginRenderPass(ctx, {
+        const { renderer } = context.beginFrame();
+        renderer.beginRenderPass(context, {
             colorAttachments: [
                 {
                     clearColor: [0.6, 0.85, 0.6, 1.0],
@@ -34,7 +29,7 @@ async function main() {
             ],
         });
         renderer.endRenderPass();
-        ctx.endFrame();
+        context.endFrame();
         requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
