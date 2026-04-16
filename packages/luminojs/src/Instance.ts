@@ -7,10 +7,15 @@ import { API, Runtime } from "./Runtime";
 
 export class Instance {
     /**
-     * Initialize the Lumino runtime.
-     * Must be called after `Runtime.initialize()`.
+     * Load the WASM module and initialize the Lumino graphics instance.
+     * This is the single entry point for library initialization.
      */
     static async initialize(settings?: InstanceInitializeSettings): Promise<void> {
+        await Runtime.initialize({
+            wasmPath: settings?.wasmPath,
+            print: settings?.print,
+            printErr: settings?.printErr,
+        });
         const m = Runtime.module;
         let ptr = 0; // nullptr → defaults
         if (settings) {

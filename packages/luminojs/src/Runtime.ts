@@ -58,6 +58,8 @@ export class Runtime {
      * Load the Emscripten WASM module and bind all C-API symbols.
      */
     static async initialize(options?: RuntimeOptions): Promise<void> {
+        if (this.initialized) return;
+
         // Dynamic import – the file sits in lib/ alongside the built TS output.
         const { default: LuminoC } = await import("./LuminoC.mjs") as { default: ModuleFactory };
 

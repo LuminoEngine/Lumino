@@ -45,6 +45,12 @@ export const LN_MAX_COLOR_ATTACHMENTS = 8;
 
 /** Options for `Instance.initialize`. */
 export interface InstanceInitializeSettings {
+    /** Path (or URL) to `LuminoC.wasm`. Forwarded to Emscripten `locateFile`. */
+    wasmPath?: string;
+    /** Callback for stdout lines from the C runtime. */
+    print?: (text: string) => void;
+    /** Callback for stderr lines from the C runtime. */
+    printErr?: (text: string) => void;
     preferredBackend?: GraphicsBackend;
     enableValidation?: boolean;
 }
@@ -76,7 +82,7 @@ export interface RenderPassDesc {
     shaderPassName?: string;
 }
 
-/** Options for `Runtime.initialize`. */
+/** @internal Options for `Runtime.initialize`. */
 export interface RuntimeOptions {
     /** Path (or URL) to `LuminoC.wasm`. Forwarded to Emscripten `locateFile`. */
     wasmPath?: string;

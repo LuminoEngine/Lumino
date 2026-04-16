@@ -26,7 +26,6 @@ export type {
     ColorAttachmentDesc,
     DepthStencilAttachmentDesc,
     RenderPassDesc,
-    RuntimeOptions,
     Vertex,
     SubMesh,
     Transform,

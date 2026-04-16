@@ -1,5 +1,4 @@
 import {
-    Runtime,
     Instance,
     Window,
     GraphicsBackend,
@@ -16,15 +15,13 @@ async function main() {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    // 1. Load WASM module
-    await Runtime.initialize({
+    // 1. Load WASM module and initialize Lumino instance (creates WebGPU device)
+    await Instance.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
         print: (t: string) => console.log("[stdout]", t),
         printErr: (t: string) => console.warn("[stderr]", t),
+        preferredBackend: GraphicsBackend.WebGPU,
     });
-
-    // 2. Initialize Lumino instance (creates WebGPU device)
-    await Instance.initialize({ preferredBackend: GraphicsBackend.WebGPU });
 
     // 3. Create Window from canvas
     const win = await Window.createFromCanvas("#my_canvas", canvas.width, canvas.height);
