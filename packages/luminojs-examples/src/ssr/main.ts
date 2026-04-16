@@ -17,6 +17,7 @@ import {
     Material,
     Mesh,
     Camera,
+    CullMode,
 } from "luminojs";
 import type { Transform } from "luminojs";
 
@@ -53,6 +54,7 @@ async function main() {
     //groundMaterial.setMainTexture(gridTexture);
 
     const triangleMaterial = Material.createUnlit(context);
+    triangleMaterial.setCullMode(CullMode.None);  // 両面描画
     triangleMaterial.setColor(1.0, 1.0, 1.0, 1.0);
 
     // SSR material (from pre-compiled shader)

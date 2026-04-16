@@ -2,6 +2,7 @@ import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
 import type { Texture } from "./Texture";
 import { API, Runtime } from "./Runtime";
+import { CullMode } from "./types";
 
 export class Material extends LuminoObject {
     /** Create a material using the built-in Unlit shader. */
@@ -74,5 +75,13 @@ export class Material extends LuminoObject {
             (API.LNMaterial_SetNamedTexture as (
                 mat: number, name: string, tex: number,
             ) => number)(this._handle, name, texture.handle));
+    }
+
+    /** Set face culling mode. */
+    setCullMode(mode: CullMode): void {
+        Runtime.safeCall(() =>
+            (API.LNMaterial_SetCullMode as (
+                mat: number, mode: number,
+            ) => number)(this._handle, mode));
     }
 }

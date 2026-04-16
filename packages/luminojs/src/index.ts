@@ -12,6 +12,7 @@ export {
     GraphicsBackend,
     LoadOp,
     TextureFormat,
+    CullMode,
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
     SIZEOF_VERTEX,

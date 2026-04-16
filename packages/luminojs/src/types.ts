@@ -21,6 +21,16 @@ export enum LoadOp {
     DontCare = 2,
 }
 
+/** Face culling mode (matches C LNCullMode). */
+export enum CullMode {
+    /** No culling - render both sides. */
+    None  = 0,
+    /** Cull front faces. */
+    Front = 1,
+    /** Cull back faces (default). */
+    Back  = 2,
+}
+
 /** Texture format (matches C LNTextureFormat). */
 export enum TextureFormat {
     Undefined       = 0,
