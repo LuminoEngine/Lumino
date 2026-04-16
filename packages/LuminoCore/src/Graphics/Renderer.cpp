@@ -231,7 +231,9 @@ void Renderer::beginRenderPass(
     m_commandBuffer.clear();
 }
 
-void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera) {
+void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera,
+                                const std::string& shaderPassName) {
+    m_currentShaderPassName = shaderPassName.empty() ? std::string("Forward") : shaderPassName;
     // Allocate view UBO from the per-frame allocator and upload camera data.
     auto viewAlloc = m_viewAllocator->allocate();
     {
@@ -262,11 +264,13 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& 
         std::memcpy(viewAlloc.cpuPtr, &viewParams, sizeof(viewParams));
     }
 
-    beginRenderPass(rpDesc);
+    beginRenderPass(rpDesc, m_currentShaderPassName);
     setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
-void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc) {
+void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc,
+                                const std::string& shaderPassName) {
+    m_currentShaderPassName = shaderPassName.empty() ? std::string("Forward") : shaderPassName;
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
 
     // Track the current color target for endRenderPassWithTransition.
@@ -422,6 +426,13 @@ Result<void> Renderer::drawMeshImmediate(Mesh* mesh, const Transform& transform,
 Result<void> Renderer::drawSubmesh(
     Mesh* mesh, Material* mat, const Transform& transform, const SubMesh& sub) {
 
+    // Resolve which ShaderPass to use based on the currently active render pass name.
+    // If the material has no matching pass, skip this draw (Unity URP ShaderTagId behavior).
+    ShaderPass* activePass = mat->findPass(m_currentShaderPassName);
+    if (!activePass) {
+        return {};
+    }
+
     auto* pipelineCache = m_ctx->pipelineCache();
 
     // Allocate per-object UBO slot and write transforms.
@@ -437,7 +448,7 @@ Result<void> Renderer::drawSubmesh(
 
     // Resolve pipeline.
     PipelineCacheKey key;
-    key.shaderPass          = mat->shaderPass();
+    key.shaderPass          = activePass;
     key.cullMode            = mat->cullMode();
     key.blendState          = resolveBlendState(mat->blendMode());
     key.depthTestEnabled    = mat->depthTestEnabled();
@@ -483,10 +494,10 @@ Result<void> Renderer::drawSubmesh(
     }
 
     // Get or create the material's BindGroup from the Renderer-side cache.
-    auto matBGResult = getOrCreateMaterialBindGroup(mat);
+    auto matBGResult = getOrCreateMaterialBindGroup(mat, activePass);
     if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
 
-    int16_t matSet = mat->shaderPass()->materialSetIndex();
+    int16_t matSet = activePass->materialSetIndex();
     m_currentPass->setBindGroup(static_cast<uint32_t>(matSet), *matBGResult);
     m_currentPass->setBindGroup(static_cast<uint32_t>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
     m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
@@ -535,6 +546,12 @@ Result<void> Renderer::drawStencilMaskMesh(
         }
         if (!mat) continue;
 
+        // Stencil mask draw uses a dedicated stencil shader pass — try the active
+        // render-pass name first, fall back to the material's default pass.
+        ShaderPass* activePass = mat->findPass(m_currentShaderPassName);
+        if (!activePass) activePass = mat->shaderPass();
+        if (!activePass) continue;
+
         // Allocate per-object UBO
         auto alloc = m_objectAllocator->allocate();
         {
@@ -548,7 +565,7 @@ Result<void> Renderer::drawStencilMaskMesh(
 
         // Build pipeline key for stencil write
         PipelineCacheKey key;
-        key.shaderPass         = mat->shaderPass();
+        key.shaderPass         = activePass;
         key.cullMode           = rhi::CullMode::None;
         key.blendState.enabled = false;
         key.depthTestEnabled   = false;
@@ -582,10 +599,10 @@ Result<void> Renderer::drawStencilMaskMesh(
             flushPassBindGroups();
         }
 
-        auto matBGResult = getOrCreateMaterialBindGroup(mat);
+        auto matBGResult = getOrCreateMaterialBindGroup(mat, activePass);
         if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
 
-        int16_t matSet = mat->shaderPass()->materialSetIndex();
+        int16_t matSet = activePass->materialSetIndex();
         m_currentPass->setBindGroup(static_cast<uint32_t>(matSet), *matBGResult);
         m_currentPass->setBindGroup(static_cast<uint32_t>(m_objectSetIndex), alloc.bindGroup, &alloc.dynamicOffset, 1);
         m_currentPass->drawIndexed(sub.indexCount, 1, sub.indexOffset);
@@ -639,11 +656,11 @@ Result<void> Renderer::popStencilMask() {
     return {};
 }
 
-Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
+Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, ShaderPass* pass) {
     auto* device = m_ctx->device();
     uint32_t frameSlot = m_currentFrameSlot;
 
-    auto& cache = m_materialCache[mat];
+    auto& cache = m_materialCache[MaterialBindKey{mat, pass}];
 
     // Initialize vectors on first access.
     if (cache.dirty.empty()) {
@@ -664,8 +681,8 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
     }
 
     // Use reflection to discover all texture bindings in the material set
-    const auto& layoutDesc = mat->shaderPass()->materialLayoutDesc();
-    const auto& bindingNames = mat->shaderPass()->materialBindingNames();
+    const auto& layoutDesc = pass->materialLayoutDesc();
+    const auto& bindingNames = pass->materialBindingNames();
 
     // For each SampledTexture binding, resolve the texture and create/update views
     for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
@@ -726,10 +743,10 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
         (void)device->writeBuffer(cache.paramBuffers[frameSlot].get(), 0, stagingPtr, uboSize);
     }
 
-    // Create BindGroup via the material's PipelineLayout at the material set index.
+    // Create BindGroup via the pass's PipelineLayout at the material set index.
     // Use reflection to build entries dynamically.
     {
-        int16_t matSet = mat->shaderPass()->materialSetIndex();
+        int16_t matSet = pass->materialSetIndex();
         std::vector<rhi::BindGroupEntry> entries;
 
         for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
@@ -751,7 +768,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat) {
             entries.push_back(entry);
         }
 
-        auto bgResult = mat->shaderPass()->pipelineLayout()->createBindGroup(
+        auto bgResult = pass->pipelineLayout()->createBindGroup(
             static_cast<uint32_t>(matSet), entries);
         if (!bgResult) return LN_FORWARD_ERROR(bgResult);
         cache.bindGroups[frameSlot] = std::move(*bgResult);

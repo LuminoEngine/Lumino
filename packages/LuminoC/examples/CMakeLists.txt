@@ -10,7 +10,7 @@ function(setup_sample_configurations TARGET)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
     # WebGPU
-    if(LUMINO_ENABLE_WEBGPU)
+    if(LN_ENABLE_WEBGPU)
         target_link_libraries(${TARGET} PRIVATE webgpu)
         target_copy_webgpu_binaries(${TARGET})
     endif()
@@ -24,7 +24,7 @@ function(setup_sample_configurations TARGET)
     )
 
     # DXC libraries required by Dawn's D3D12 backend
-    if(LUMINO_ENABLE_WEBGPU AND TARGET Microsoft::DirectXShaderCompiler)
+    if(LN_ENABLE_WEBGPU AND TARGET Microsoft::DirectXShaderCompiler)
         add_custom_command(
             TARGET ${TARGET} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different

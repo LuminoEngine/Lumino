@@ -137,14 +137,13 @@ float4 fsMain(VSOutput input) : SV_TARGET {
             break;
         }
 
-        float sampledDepth = u_gbufferB.Sample(u_gbufferBSampler, sampleUV).w;
+        float sampledDepth = u_gbufferB.SampleLevel(u_gbufferBSampler, sampleUV, 0).w;
         float rayDepth = -rayPos.z;
 
         if (rayDepth > sampledDepth && rayDepth - sampledDepth < thickness) {
-            float3 hitColor = u_gbufferA.Sample(u_gbufferASampler, sampleUV).rgb;
+            float3 hitColor = u_gbufferA.SampleLevel(u_gbufferASampler, sampleUV, 0).rgb;
             float fade = 1.0 - (i / maxSteps);
-            float2 edgeFade = smoothstep(0.0, 0.1, sampleUV) *
-                              (1.0 - smoothstep(0.9, 1.0, sampleUV));
+            float2 edgeFade = smoothstep(0.0, 0.1, sampleUV) * (1.0 - smoothstep(0.9, 1.0, sampleUV));
             float edgeFactor = edgeFade.x * edgeFade.y;
             reflectionRGB = hitColor;
             reflectionStrength = fade * edgeFactor;
@@ -152,6 +151,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
         }
     }
 
+    // TODO: ここでは sceneColor と加算しているが、実際にはその前に reflection の値だけ書きだした後ブラーを適用してからブレンドすると良い。
     float3 reflection = reflectionRGB * fresnel * roughnessFade * reflectionStrength;
     float3 finalColor = sceneColor.rgb + reflection;
     return float4(finalColor, 1.0);

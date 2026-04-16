@@ -81,13 +81,29 @@ public:
     void setDepthWriteEnabled(bool enabled);
 
     // ShaderPass accessor
-    ShaderPass* shaderPass() const { return m_shaderPass.get(); }
+    /** Default (primary) ShaderPass — the first pass registered, typically "Forward".
+     *  Used for material parameter layout and as a fallback accessor. */
+    ShaderPass* shaderPass() const { return m_defaultShaderPass.get(); }
+
+    /** Look up a ShaderPass by name (e.g. "Forward", "GBuffer"). Returns nullptr if absent. */
+    ShaderPass* findPass(const std::string& name) const {
+        auto it = m_shaderPasses.find(name);
+        return (it != m_shaderPasses.end()) ? it->second.get() : nullptr;
+    }
+
+    /** Whether this material has a ShaderPass with the given name. */
+    bool hasPass(const std::string& name) const {
+        return m_shaderPasses.find(name) != m_shaderPasses.end();
+    }
+
+    /** All ShaderPasses registered on this material, keyed by pass name. */
+    const std::unordered_map<std::string, Ref<ShaderPass>>& shaderPasses() const { return m_shaderPasses; }
 
     // Shader / render state accessors (used by PipelineCache key construction)
-    rhi::ShaderModule* vertexShader() const { return m_shaderPass->vertexShader(); }
-    rhi::ShaderModule* fragmentShader() const { return m_shaderPass->fragmentShader(); }
-    const std::string& vertexEntry() const { return m_shaderPass->vertexEntry(); }
-    const std::string& fragmentEntry() const { return m_shaderPass->fragmentEntry(); }
+    rhi::ShaderModule* vertexShader() const { return m_defaultShaderPass->vertexShader(); }
+    rhi::ShaderModule* fragmentShader() const { return m_defaultShaderPass->fragmentShader(); }
+    const std::string& vertexEntry() const { return m_defaultShaderPass->vertexEntry(); }
+    const std::string& fragmentEntry() const { return m_defaultShaderPass->fragmentEntry(); }
     rhi::CullMode cullMode() const { return m_cullMode; }
     BlendMode blendMode() const { return m_blendMode; }
     bool depthTestEnabled() const { return m_depthTestEnabled; }
@@ -98,7 +114,7 @@ public:
 
     // Accessors for Renderer-side BindGroup construction
     rhi::Texture* baseTexture() const { return m_baseTexture.get(); }
-    uint64_t materialParamBufferSize() const { return m_shaderPass->materialParamBufferSize(); }
+    uint64_t materialParamBufferSize() const { return m_defaultShaderPass->materialParamBufferSize(); }
     const Color& baseColor() const { return m_baseColor; }
 
     /** Named textures map (for reflection-driven bind group construction). */
@@ -111,8 +127,15 @@ private:
     Material();
     friend class MaterialFactory;
 
-    // ShaderPass (owns shader modules, PipelineLayout, material param info)
-    Ref<ShaderPass> m_shaderPass;
+    // ShaderPasses keyed by pass name (e.g. "Forward", "GBuffer").
+    // Same material can be rendered in different render passes by looking up by name.
+    // 前提: 同一マテリアル内の全パスは $Material の layout (params/テクスチャ slot) を共有する。
+    std::unordered_map<std::string, Ref<ShaderPass>> m_shaderPasses;
+
+    // Default (primary) pass — typically the first registered, used for material param layout.
+    // Held as a separate Ref to keep hot-path accessors (shaderPass()/materialParamBufferSize)
+    // from doing map lookups.
+    Ref<ShaderPass> m_defaultShaderPass;
 
     // Parameter version counter (incremented on any parameter change)
     uint64_t m_paramVersion;
@@ -189,6 +212,10 @@ public:
 private:
     static Result<Ref<Material>> createMaterialFromBuiltin(
         GraphicsModule* module, BuiltinShader shader);
+
+    // Shared helpers (friend access to Material internals via MaterialFactory).
+    static void registerPass(Material* mat, Ref<ShaderPass> pass);
+    static void initParamBufferFromDefaultPass(Material* mat);
 };
 
 } // namespace ln

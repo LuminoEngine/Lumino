@@ -139,6 +139,22 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
         deviceDesc.label = {"LuminoDevice", WGPU_STRLEN};
 
+        // RGBA32Float 等の float32 テクスチャをフィルタリング可能にする feature を要求する。
+        // これがないと float32 テクスチャのバインドグループレイアウトで
+        // UnfilterableFloat vs Float のバリデーションエラーが発生する。
+        // もしこれが使えない場合は TextureFormt で WGPUTextureSampleType_UnfilterableFloat を検討する必要があるかも。
+        std::vector<WGPUFeatureName> requiredFeatures;
+        if (wgpuAdapterHasFeature(m_adapter, WGPUFeatureName_Float32Filterable)) {
+            requiredFeatures.push_back(WGPUFeatureName_Float32Filterable);
+            LN_LOG_INFO("WebGPUDevice: enabling Float32Filterable feature.");
+        } else {
+            LN_LOG_WARNING("WebGPUDevice: Float32Filterable not supported by adapter.");
+        }
+        if (!requiredFeatures.empty()) {
+            deviceDesc.requiredFeatureCount = requiredFeatures.size();
+            deviceDesc.requiredFeatures = requiredFeatures.data();
+        }
+
         // エラーコールバック
         auto onUncapturedError =
             [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {

@@ -84,7 +84,7 @@ target_include_directories(
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 
 # WebGPU
-if(LUMINO_ENABLE_WEBGPU)
+if(LN_ENABLE_WEBGPU)
     target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
     target_copy_webgpu_binaries(${PROJECT_NAME})
 endif()

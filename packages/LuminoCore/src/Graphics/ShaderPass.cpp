@@ -26,18 +26,22 @@ static rhi::ShaderCodeFormat backendToCodeFormat(rhi::Backend backend) {
 // Internal: shared implementation used by createFromCompiledShader and createFromUnifiedShader
 Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     shader::UnifiedShader2* unifiedShader,
-    rhi::Device* device) {
+    rhi::Device* device,
+    size_t passIndex) {
 
-    // Find the first pass for the backend's shader target.
+    // Select the requested pass for the backend's shader target.
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
         return LN_MAKE_ERROR("No shader passes found");
+    }
+    if (passIndex >= globalPasses.size()) {
+        return LN_MAKE_ERROR("Shader pass index out of range");
     }
 
     auto shaderTarget = backendToShaderTarget(device->backend());
     auto codeFormat = backendToCodeFormat(device->backend());
 
-    auto* globalPass = globalPasses[0].get();
+    auto* globalPass = globalPasses[passIndex].get();
     auto targetPassId = globalPass->getTargetShaderPassId(shaderTarget);
     auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
     if (!targetPass) {
@@ -153,6 +157,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     }
 
     auto sp = Ref<ShaderPass>::adopt(new ShaderPass());
+    sp->m_passName = globalPass->name;
     sp->m_vertShader = std::move(*vsResult);
     sp->m_fragShader = std::move(*fsResult);
     sp->m_vertEntry = std::move(vertEP->name);
@@ -177,7 +182,8 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
 //------------------------------------------------------------------------------
 Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     const void* data, size_t size,
-    rhi::Device* device) {
+    rhi::Device* device,
+    size_t passIndex) {
 
     // Deserialize the unified shader from the binary blob.
     auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
@@ -186,15 +192,16 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     }
     auto unifiedShader = std::move(*loadResult);
 
-    return buildFromUnifiedShader(unifiedShader.get(), device);
+    return buildFromUnifiedShader(unifiedShader.get(), device, passIndex);
 }
 
 #ifdef LUMINO_USE_SLANG
 //------------------------------------------------------------------------------
 Result<Ref<ShaderPass>> ShaderPass::createFromUnifiedShader(
     shader::UnifiedShader2* unifiedShader,
-    rhi::Device* device) {
-    return buildFromUnifiedShader(unifiedShader, device);
+    rhi::Device* device,
+    size_t passIndex) {
+    return buildFromUnifiedShader(unifiedShader, device, passIndex);
 }
 #endif // LUMINO_USE_SLANG
 

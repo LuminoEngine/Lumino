@@ -989,12 +989,17 @@ LNResult LNRenderer_BeginRenderPass(
 
     rpDesc.depthStencilAttachment = &depthAttach;
 
+    std::string shaderPassName =
+        (desc->shaderPassName && desc->shaderPassName[0] != '\0')
+            ? std::string(desc->shaderPassName)
+            : std::string();
+
     if (camera != LN_NULL_HANDLE) {
         auto* camObj = resolveObject<CameraObject>(camera);
         if (!camObj) return LN_ERROR_INVALID_HANDLE;
-        ren->beginRenderPass(rpDesc, camObj->camera);
+        ren->beginRenderPass(rpDesc, camObj->camera, shaderPassName);
     } else {
-        ren->beginRenderPass(rpDesc);
+        ren->beginRenderPass(rpDesc, shaderPassName);
     }
     return LN_OK;
 }

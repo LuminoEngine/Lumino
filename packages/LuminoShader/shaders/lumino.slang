@@ -74,3 +74,36 @@ ParameterBlock<ObjectParams>   objectData;
 // Object
 #define ln_World             objectData.world
 #define ln_NormalMatrix      objectData.normalMatrix
+
+//------------------------------------------------------------------------------
+// GBuffer layout (Deferred / SSR 共通)
+//------------------------------------------------------------------------------
+// GBufferA : [Albedo.rgb, _]                    (RGBA8_UNORM)
+// GBufferB : [WorldNormal.xyz, ViewDepth]       (RGBA32_FLOAT)
+//            ViewDepth = -viewPos.z (カメラ前方 +, 線形距離)
+// GBufferC : [Metallic, Roughness, AO, _]       (RGBA8_UNORM, glTF Metal-Roughness)
+//
+// ※ Depth を線形にしている理由については examples/assets/GBuffer.slang のコメントを参照。
+struct LNGBufferOutput {
+    float4 gbufferA : SV_TARGET0;
+    float4 gbufferB : SV_TARGET1;
+    float4 gbufferC : SV_TARGET2;
+};
+
+/** GBuffer 出力を共通レイアウトでパックします。
+ *  @param albedo       sRGB 空間の基底色 (0..1)
+ *  @param worldNormal  ワールド空間の正規化済み法線
+ *  @param viewDepth    -viewPos.z (線形, カメラ前方 +)
+ *  @param metallic     0..1 (glTF Metal-Roughness)
+ *  @param roughness    0..1
+ *  @param ao           0..1
+ */
+LNGBufferOutput lnPackGBuffer(
+    float3 albedo, float3 worldNormal, float viewDepth,
+    float metallic, float roughness, float ao) {
+    LNGBufferOutput o;
+    o.gbufferA = float4(albedo, 1.0);
+    o.gbufferB = float4(worldNormal, viewDepth);
+    o.gbufferC = float4(metallic, roughness, ao, 1.0);
+    return o;
+}

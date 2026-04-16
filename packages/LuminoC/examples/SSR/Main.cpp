@@ -112,15 +112,6 @@ int main() {
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &triangleMaterial);
     LNMaterial_SetColor(triangleMaterial, 1.0f, 0.4f, 0.2f, 1.0f); /* orange */
 
-    /* DepthNormal material */
-    LNHandle gbufferMaterial = LN_NULL_HANDLE;
-    LNMaterial_CreateFromShaderSourceFile(
-        graphicsContext,
-        ASSETS_DIR "/GBuffer.slang",
-        LN_REPO_ROOT_DIR "/packages/LuminoShader/shaders",
-        &gbufferMaterial);
-    LNMaterial_SetCullMode(gbufferMaterial, LN_CULL_MODE_NONE);
-    
     /* SSR material */
     LNHandle matSSR = LN_NULL_HANDLE;
     LNMaterial_CreateFromShaderSourceFile(
@@ -262,19 +253,18 @@ int main() {
             rpDesc.colorAttachments[2].clearColor[2] = 0.0f;
             rpDesc.colorAttachments[2].clearColor[3] = 0.0f;
             rpDesc.depthStencil.depthBuffer = sceneDepth;
+            rpDesc.shaderPassName = "GBuffer";
 
             LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
-            /* Draw the same geometry with DepthNormal material override */
-            LNRenderer_DrawMeshImmediateWithMaterial(renderer, groundMesh, &groundTransform, gbufferMaterial);
-            LNRenderer_DrawMeshImmediateWithMaterial(renderer, triMesh, &triTransform, gbufferMaterial);
-            //LNRenderer_DrawMesh(renderer, groundMesh, &groundTransform, 0);
-            //LNRenderer_DrawMesh(renderer, triMesh, &triTransform, 0);
+            /* 各 Mesh の Material から "GBuffer" パスが自動選択される (無い Material はスキップ) */
+            LNRenderer_DrawMesh(renderer, groundMesh, &groundTransform, 0);
+            LNRenderer_DrawMesh(renderer, triMesh, &triTransform, 0);
             LNRenderer_EndRenderPass(renderer);
         }
 
-        //============================================================== 
+        //==============================================================
         /* Pass 2: Depth + Normal                                          */
-        //============================================================== 
+        //==============================================================
         if (0) {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
@@ -287,9 +277,6 @@ int main() {
             rpDesc.depthStencil.depthBuffer = sceneDepth;
 
             LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
-            /* Draw the same geometry with DepthNormal material override */
-            LNRenderer_DrawMeshImmediateWithMaterial(renderer, groundMesh, &groundTransform, gbufferMaterial);
-            LNRenderer_DrawMeshImmediateWithMaterial(renderer, triMesh, &triTransform, gbufferMaterial);
             LNRenderer_EndRenderPass(renderer);
         }
 
@@ -334,7 +321,6 @@ int main() {
     LNObject_Release(triMesh);
     LNObject_Release(groundMesh);
     LNObject_Release(matSSR);
-    LNObject_Release(gbufferMaterial);
     LNObject_Release(triangleMaterial);
     LNObject_Release(groundMaterial);
     LNObject_Release(camera);

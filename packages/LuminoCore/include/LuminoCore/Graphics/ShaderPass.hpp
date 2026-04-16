@@ -32,27 +32,36 @@ public:
     inline static const char* kViewDataParameterBlockName = "viewData";
 
     /**
-     * .lcshバイナリからシェーダモジュールとPipelineLayoutを一括構築する。
+     * .lcshバイナリから指定インデックスのパス (GlobalShaderPass) のシェーダモジュールと
+     * PipelineLayoutを一括構築する。
      * view/scene/objectのBindGroupLayoutDescは共有のものを引数で受け取り、
      * リフレクション情報に基づくセットインデックスに配置する。
      * $Material レイアウトはリフレクション情報から自動構築される。
+     * @param passIndex UnifiedShader2 内の GlobalShaderPass インデックス (デフォルト 0)
      */
     static Result<Ref<ShaderPass>> createFromCompiledShader(
         const void* data, size_t size,
-        rhi::Device* device);
+        rhi::Device* device,
+        size_t passIndex = 0);
 
 #ifdef LUMINO_USE_SLANG
     /**
-     * コンパイル済み UnifiedShader2 からシェーダモジュールと PipelineLayout を構築する。
+     * コンパイル済み UnifiedShader2 から指定インデックスのパスを構築する。
      * ShaderCompiler2 でコンパイルした結果を直接渡すことで、
      * シリアライズ/デシリアライズを省略できる。LUMINO_USE_SLANG が有効な場合のみ使用可能。
+     * @param passIndex UnifiedShader2 内の GlobalShaderPass インデックス (デフォルト 0)
      */
     static Result<Ref<ShaderPass>> createFromUnifiedShader(
         shader::UnifiedShader2* unifiedShader,
-        rhi::Device* device);
+        rhi::Device* device,
+        size_t passIndex = 0);
 #endif // LUMINO_USE_SLANG
 
     // Accessors
+
+    /** このパスの名前 (例: "Forward", "GBuffer"). */
+    const std::string& passName() const { return m_passName; }
+
     rhi::ShaderModule* vertexShader() const { return m_vertShader.get(); }
     rhi::ShaderModule* fragmentShader() const { return m_fragShader.get(); }
     const std::string& vertexEntry() const { return m_vertEntry; }
@@ -98,8 +107,9 @@ private:
 
     /** Internal: shared implementation used by createFromCompiledShader and createFromUnifiedShader. */
     static Result<Ref<ShaderPass>> buildFromUnifiedShader(
-        shader::UnifiedShader2* unifiedShader, rhi::Device* device);
+        shader::UnifiedShader2* unifiedShader, rhi::Device* device, size_t passIndex);
 
+    std::string m_passName;
     Ref<rhi::ShaderModule> m_vertShader;
     Ref<rhi::ShaderModule> m_fragShader;
     std::string m_vertEntry;

@@ -144,6 +144,15 @@ typedef struct LNRenderPassDesc {
     uint32_t colorAttachmentCount; /**< 使用するカラーアタッチメント数 (0 の場合バックバッファを使用) */
     LNColorAttachmentDesc colorAttachments[LN_MAX_COLOR_ATTACHMENTS]; /**< カラーアタッチメント配列 */
     LNDepthStencilAttachmentDesc depthStencil;     /**< デプス・ステンシルアタッチメント */
+    /**
+     * このレンダーパス内でマテリアルから優先的に選択する ShaderPass の名前。
+     * NULL または空文字列の場合は "Forward" が使用されます。
+     * マテリアルがこの名前の ShaderPass を持たない場合、
+     * そのメッシュの描画はスキップされます (Unity の ShaderTagId と同じ挙動)。
+     * 代表的なパス名: "Forward", "GBuffer", "Shadow" など。
+     * 文字列は LNRenderer_BeginRenderPass の呼び出し中のみ有効である必要があります。
+     */
+    const char* shaderPassName;
 } LNRenderPassDesc;
 
 //------------------------------------------------------------------------------

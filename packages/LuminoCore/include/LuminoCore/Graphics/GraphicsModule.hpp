@@ -3,6 +3,7 @@
 #include "ShaderPass.hpp"
 #include <array>
 #include <string>
+#include <vector>
 
 namespace ln {
 
@@ -26,8 +27,15 @@ public:
     /** The RHI device owned by this instance. */
     rhi::Device* device() const { return m_device.get(); }
 
-    /** Cached builtin ShaderPass. */
-    const Ref<ShaderPass>& builtinShader(BuiltinShader id) const { return m_builtinShaders[static_cast<int>(id)]; }
+    /** Cached builtin ShaderPasses (all passes of a built-in shader). */
+    const std::vector<Ref<ShaderPass>>& builtinShaderPasses(BuiltinShader id) const {
+        return m_builtinShaders[static_cast<int>(id)];
+    }
+
+    /** Default (primary) ShaderPass of a builtin shader — first pass registered (usually "Forward"). */
+    const Ref<ShaderPass>& builtinShader(BuiltinShader id) const {
+        return m_builtinShaders[static_cast<int>(id)].front();
+    }
 
     /** Shared default white texture. */
     const Ref<rhi::Texture>& whiteTexture() const { return m_whiteTexture; }
@@ -38,7 +46,8 @@ private:
     VoidResult initBuiltinShader(BuiltinShader id, const unsigned char* data, size_t size);
 
     Ref<rhi::Device> m_device;
-    std::array<Ref<ShaderPass>, 3> m_builtinShaders;
+    // Each builtin shader holds a list of ShaderPasses (e.g. {Forward, GBuffer, ...}).
+    std::array<std::vector<Ref<ShaderPass>>, 3> m_builtinShaders;
     Ref<rhi::Texture> m_whiteTexture;
 
 };

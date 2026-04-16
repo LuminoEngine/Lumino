@@ -661,7 +661,7 @@ VoidResult VulkanDevice::lookupQueueFamilies(
 
 // ------ Device::create factory --------------------------------------------------------------------------------------------
 
-#ifdef LUMINO_ENABLE_WEBGPU
+#ifdef LN_ENABLE_WEBGPU
 #include "../webgpu/WebGPUDevice.hpp"
 #endif
 
@@ -675,7 +675,7 @@ Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
         }
         return Ref<Device>(dev);
     }
-#ifdef LUMINO_ENABLE_WEBGPU
+#ifdef LN_ENABLE_WEBGPU
     if (desc.backend == Backend::WebGPU) {
         auto dev = Ref<webgpu::WebGPUDevice>::adopt(new webgpu::WebGPUDevice());
         if (!dev->init(desc)) {

@@ -29,6 +29,10 @@
       "platform": "windows | linux | osx"
     },
     {
+      "name": "directx-dxc",
+      "platform": "windows"
+    },
+    {
       "name": "glfw3",
       "platform": "windows | linux | osx"
     },

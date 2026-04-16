@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------------------
 # Dependencies
 #-------------------------------------------------------------------------------
-if(LUMINO_ENABLE_VULKAN)
+if(LN_ENABLE_VULKAN)
     find_package(Vulkan QUIET)
     if(NOT Vulkan_FOUND)
         find_package(vulkan-headers CONFIG REQUIRED)
@@ -32,14 +32,14 @@ file(GLOB LN_LOCAL_SOURCES_Graphics
     include/${PROJECT_NAME}/Graphics/*.hpp
 )
 
-if(LUMINO_ENABLE_VULKAN)
+if(LN_ENABLE_VULKAN)
     file(GLOB LN_LOCAL_SOURCES_Graphics_vulkan
         src/Graphics/rhi/vulkan/*.cpp
         src/Graphics/rhi/vulkan/*.hpp
     )
 endif()
 
-if(LUMINO_ENABLE_WEBGPU)
+if(LN_ENABLE_WEBGPU)
     file(GLOB LN_LOCAL_SOURCES_Graphics_webgpu
         src/Graphics/rhi/webgpu/*.cpp
         src/Graphics/rhi/webgpu/*.hpp
@@ -67,10 +67,10 @@ source_group("" FILES ${LN_LOCAL_SOURCES_core})
 source_group("Runtime" FILES ${LN_LOCAL_SOURCES_Runtime})
 source_group("Platform" FILES ${LN_LOCAL_SOURCES_Platform})
 source_group("Graphics" FILES ${LN_LOCAL_SOURCES_Graphics})
-if(LUMINO_ENABLE_VULKAN)
+if(LN_ENABLE_VULKAN)
     source_group("Graphics/vulkan" FILES ${LN_LOCAL_SOURCES_Graphics_vulkan})
 endif()
-if(LUMINO_ENABLE_WEBGPU)
+if(LN_ENABLE_WEBGPU)
     source_group("Graphics/webgpu" FILES ${LN_LOCAL_SOURCES_Graphics_webgpu})
 endif()
 source_group("shaders" FILES ${LN_LOCAL_SOURCES_shaders})
@@ -107,7 +107,7 @@ target_include_directories(
 )
 
 # Vulkan
-if(LUMINO_ENABLE_VULKAN)
+if(LN_ENABLE_VULKAN)
     if(Vulkan_FOUND)
         target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
     else()
@@ -122,20 +122,20 @@ if(LUMINO_ENABLE_VULKAN)
 endif()
 
 # GLFW (desktop only)
-if(NOT LUMINO_PLATFORM_WEB)
+if(LN_PLATFORM_DESKTOP)
     target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 endif()
 
 # WebGPU
-if(LUMINO_ENABLE_WEBGPU)
+if(LN_ENABLE_WEBGPU)
     target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE LUMINO_ENABLE_WEBGPU)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_ENABLE_WEBGPU=1)
 endif()
 
 #-------------------------------------------------------------------------------
 # Shader compilation (slang → lcsh → lcsh.inl) - desktop only
 #-------------------------------------------------------------------------------
-if(NOT LUMINO_PLATFORM_WEB)
+if(LN_PLATFORM_DESKTOP)
     set(LN_SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
 
     set(LN_BUILTIN_SHADERS

@@ -107,17 +107,23 @@ public:
     /**
      * Begin a render pass with a fully specified RenderPassDesc.
      * Camera data is uploaded to the internal View UBO and set=0 is bound automatically.
-     * @param rpDesc  RHI render pass descriptor.
-     * @param camera  Camera to upload to set=0 View UBO.
+     * @param rpDesc          RHI render pass descriptor.
+     * @param camera          Camera to upload to set=0 View UBO.
+     * @param shaderPassName  描画時にマテリアルから優先的に選択する ShaderPass 名。
+     *                        空文字列の場合 "Forward" が使用されます。
+     *                        マテリアルがこの名前のパスを持たない場合、その描画はスキップされます。
      */
-    void beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera);
+    void beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera,
+                         const std::string& shaderPassName = {});
 
     /**
      * Begin a render pass with a fully specified RenderPassDesc, without a camera.
      * set=0 is not automatically bound; use setPassBindGroup(0, ...) if needed.
-     * @param rpDesc  RHI render pass descriptor.
+     * @param rpDesc          RHI render pass descriptor.
+     * @param shaderPassName  描画時にマテリアルから優先的に選択する ShaderPass 名 (空 = "Forward")。
      */
-    void beginRenderPass(const rhi::RenderPassDesc& rpDesc);
+    void beginRenderPass(const rhi::RenderPassDesc& rpDesc,
+                         const std::string& shaderPassName = {});
 
     /** End the current render pass. */
     void endRenderPass();
@@ -257,6 +263,11 @@ private:
     rhi::RenderPass* m_currentPass = nullptr;
     rhi::TextureView*       m_currentColorTarget = nullptr;
 
+    // Shader pass name to prefer when drawing materials in the current render pass.
+    // Materials lacking this pass will have their draws skipped.
+    // Default is "Forward".
+    std::string m_currentShaderPassName = "Forward";
+
     // Deferred per-pass bind groups (set via setPassBindGroup, flushed after setPipeline)
     static constexpr uint32_t kMaxBindGroupSets = 4;
     rhi::BindGroup* m_passBindGroups[kMaxBindGroupSets] = {};
@@ -307,10 +318,25 @@ private:
         std::vector<bool> dirty;
     };
 
-    std::unordered_map<Material*, CachedMaterialBind> m_materialCache;
+    /** Composite key: Material's bind group depends on both the Material's parameters
+     *  and the ShaderPass's PipelineLayout / material set layout. */
+    struct MaterialBindKey {
+        Material*   mat;
+        ShaderPass* pass;
+        bool operator==(const MaterialBindKey& o) const {
+            return mat == o.mat && pass == o.pass;
+        }
+    };
+    struct MaterialBindKeyHash {
+        size_t operator()(const MaterialBindKey& k) const {
+            return std::hash<Material*>()(k.mat) ^
+                   (std::hash<ShaderPass*>()(k.pass) << 1);
+        }
+    };
+    std::unordered_map<MaterialBindKey, CachedMaterialBind, MaterialBindKeyHash> m_materialCache;
 
-    /** Get or create the BindGroup for the given material and current frame slot. */
-    Result<rhi::BindGroup*> getOrCreateMaterialBindGroup(Material* mat);
+    /** Get or create the BindGroup for (material, pass) and current frame slot. */
+    Result<rhi::BindGroup*> getOrCreateMaterialBindGroup(Material* mat, ShaderPass* pass);
 
 };
 

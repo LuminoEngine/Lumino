@@ -8,36 +8,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_definitions(-DLN_REPO_ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 #-------------------------------------------------------------------------------
-# Platform detection
-#-------------------------------------------------------------------------------
-# message("EMSCRIPTEN: ${EMSCRIPTEN}")
-# if(DEFINED EMSCRIPTEN)
-#     set(LUMINO_PLATFORM_WEB TRUE)
-# else()
-#     set(LUMINO_PLATFORM_DESKTOP TRUE)
-# endif()
-
-#-------------------------------------------------------------------------------
 # Options
 #-------------------------------------------------------------------------------
-option(LUMINO_PLATFORM_WEB "" OFF)
-# Tests require GTest which is not set up for the web build, so default OFF on Emscripten.
-if(LUMINO_PLATFORM_WEB)
-    option(LUMINO_BUILD_EXAMPLES "Build example applications" OFF)
-    option(LUMINO_BUILD_TESTS "Build unit tests" OFF)
-    option(LUMINO_BUILD_TOOLS "Build tools" OFF)
-else()
-    option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
-    option(LUMINO_BUILD_TESTS "Build unit tests" ON)
-    option(LUMINO_BUILD_TOOLS "Build tools" ON)
-endif()
+option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
+option(LUMINO_BUILD_TESTS "Build unit tests" ON)
+option(LUMINO_BUILD_TOOLS "Build tools" ON)
 option(LUMINO_ENABLE_VALIDATION "Enable GPU validation layers" ON)
 option(LUMINO_ENABLE_WEBGPU  "Enable WebGPU backend via WebGPU-distribution" OFF)
-if(LUMINO_PLATFORM_WEB)
-    option(LUMINO_ENABLE_VULKAN "Enable Vulkan backend" OFF)
-else()
-    option(LUMINO_ENABLE_VULKAN "Enable Vulkan backend" ON)
-endif()
 
 #-------------------------------------------------------------------------------
 # Common packages (found via vcpkg toolchain on all platforms)
@@ -45,17 +22,34 @@ endif()
 find_package(tl-expected CONFIG REQUIRED)
 
 #-------------------------------------------------------------------------------
+# Configuration
+#-------------------------------------------------------------------------------
+if(EMSCRIPTEN)
+    set(LN_PLATFORM_WEB ON)
+    set(LN_ENABLE_VULKAN OFF)
+    set(LN_ENABLE_WEBGPU OFF)
+else()
+    set(LN_PLATFORM_DESKTOP ON)
+    set(LN_ENABLE_VULKAN ON)
+    if(LUMINO_ENABLE_WEBGPU)
+        set(LN_ENABLE_WEBGPU ON)
+    else()
+        set(LN_ENABLE_WEBGPU OFF)
+    endif()
+endif()
+
+#-------------------------------------------------------------------------------
 # Web (Emscripten) build
 #-------------------------------------------------------------------------------
 # LuminoBase and LuminoCore are built as static libraries, then linked by
 # LuminoC. WebGPU-distribution provides a unified webgpu target that
 # automatically selects the emdawnwebgpu backend on Emscripten.
-if(LUMINO_PLATFORM_WEB)
+if(LN_PLATFORM_WEB)
     # WebGPU-distribution — automatically selects EMDAWNWEBGPU on Emscripten.
     add_subdirectory(third_party/webgpu)
 
     # WebGPU is always enabled for Emscripten
-    set(LUMINO_ENABLE_WEBGPU ON CACHE BOOL "" FORCE)
+    #set(LN_ENABLE_WEBGPU ON CACHE BOOL "" FORCE)
 
     # Disable Slang compiler for WASM (only shader deserialization is needed)
     set(LUMINO_USE_SLANG OFF CACHE BOOL "" FORCE)
@@ -71,16 +65,18 @@ endif()
 # vcpkg packages (found via toolchain) — desktop only
 #-------------------------------------------------------------------------------
 
-
 # WebGPU-distribution — use DAWN backend by default on desktop.
 # Override with -DWEBGPU_BACKEND=WGPU to switch to wgpu-native.
-if(LUMINO_ENABLE_WEBGPU)
+if(LN_ENABLE_WEBGPU)
     set(WEBGPU_BACKEND "DAWN" CACHE STRING "WebGPU backend implementation")
     add_subdirectory(third_party/webgpu)
     find_package(glfw3 CONFIG REQUIRED)
 else()
-    find_package(directx-dxc CONFIG) # optional, used for shader compilation on Windows
     find_package(glfw3 CONFIG REQUIRED)
+endif()
+
+if(LN_PLATFORM_DESKTOP)
+    find_package(directx-dxc CONFIG) # dawn で必要になる
 endif()
 
 #-------------------------------------------------------------------------------

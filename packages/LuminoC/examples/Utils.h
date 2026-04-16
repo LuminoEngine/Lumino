@@ -7,8 +7,11 @@
 #include <LuminoC/lumino.h>
 
 void InitializeInstance() {
+#ifdef _WIN32
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
     LNInstanceInitializeSettings settings = {};
-    //settings.preferredBackend = LN_GRAPHICS_BACKEND_WEBGPU;
+    settings.preferredBackend = LN_GRAPHICS_BACKEND_WEBGPU;
     settings.enableValidation = LN_TRUE;
     LNInstance_Initialize(&settings);
 }
