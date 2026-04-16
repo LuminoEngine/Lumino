@@ -42,6 +42,12 @@ NINJA = REPO_ROOT / "build" / "vcpkg" / "downloads" / "tools" / "ninja-1.13.2-wi
 # TypeScript package.
 ARTIFACT_NAMES = ("LuminoC.mjs", "LuminoC.wasm", "LuminoC.wasm.map")
 
+# C++ example assets (shaders, textures) that should be available to the
+# TypeScript examples via the Vite dev server / production build.
+EXAMPLE_ASSETS_SRC = REPO_ROOT / "packages" / "LuminoC" / "examples" / "assets"
+EXAMPLE_ASSETS_DEST = REPO_ROOT / "packages" / "luminojs-examples" / "public"
+EXAMPLE_ASSET_GLOBS = ("*.lcsh", "*.png")
+
 
 #----------------------------------------------------------------------------
 # Emscripten SDK resolution
@@ -185,6 +191,25 @@ def _copy_artifacts() -> None:
         copied += 1
     if copied == 0:
         raise RuntimeError("No artifacts were copied. Did the build succeed?")
+
+    _copy_example_assets()
+
+
+def _copy_example_assets() -> None:
+    """Copy C++ example assets (shaders, textures) to luminojs-examples/public/.
+
+    Files placed in public/ are served by Vite at the root URL path without
+    any processing, so TypeScript examples can reference them as "/foo.lcsh".
+    """
+    if not EXAMPLE_ASSETS_SRC.is_dir():
+        print(f"[build_wasm] warning: example assets directory not found: {EXAMPLE_ASSETS_SRC}")
+        return
+    EXAMPLE_ASSETS_DEST.mkdir(parents=True, exist_ok=True)
+    for pattern in EXAMPLE_ASSET_GLOBS:
+        for src_file in sorted(EXAMPLE_ASSETS_SRC.glob(pattern)):
+            dst_file = EXAMPLE_ASSETS_DEST / src_file.name
+            shutil.copy2(src_file, dst_file)
+            print(f"[build_wasm] copied {src_file.name} -> {dst_file}")
 
 
 #----------------------------------------------------------------------------

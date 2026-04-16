@@ -19,16 +19,16 @@ Lumino はゲームやデジタルアートなどのインタラクティブア�
 
 ```sh
 # CMake 設定
-cmake -B build
+cmake -B build/lumino-x64-windows
 
 # ビルド
-cmake --build build --config Release --parallel
+cmake --build build/lumino-x64-windows --config Release --parallel
 
 # テスト実行
-ctest --test-dir build -C Release --output-on-failure
+ctest --test-dir build/lumino-x64-windows -C Release --output-on-failure
 
 # シェーダのコンパイル (共有ライブラリを -I で指定する必要があります)
-build/packages/luminosc/Release/luminosc.exe -I packages/LuminoShader/shaders MyShader.slang
+build/lumino-x64-windows/packages/luminosc/Release/luminosc.exe -I packages/LuminoShader/shaders MyShader.slang
 ```
 
 ## リポジトリアーキテクチャ

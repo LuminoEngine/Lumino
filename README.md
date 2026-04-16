@@ -39,7 +39,7 @@ git clone -b 2026.03.18 https://github.com/microsoft/vcpkg.git ./build/vcpkg
 git clone https://github.com/eliemichel/WebGPU-distribution.git ./build/webgpu
 
 # CMake 設定
-cmake -B build/lumino-x64-windows -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=[PATH_TO_REPO]/build/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake -B build/lumino-x64-windows -G "Visual Studio 18 2026" -A x64 -DCMAKE_TOOLCHAIN_FILE=[PATH_TO_REPO]/build/vcpkg/scripts/buildsystems/vcpkg.cmake
 
 # ビルド
 cmake --build build/lumino-x64-windows --config Release --parallel
