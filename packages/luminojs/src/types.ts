@@ -43,18 +43,6 @@ export const LN_NULL_HANDLE: Handle = 0;
 /** Maximum number of simultaneous color attachments. */
 export const LN_MAX_COLOR_ATTACHMENTS = 8;
 
-/** Options for `Instance.initialize`. */
-export interface InstanceInitializeSettings {
-    /** Path (or URL) to `LuminoC.wasm`. Forwarded to Emscripten `locateFile`. */
-    wasmPath?: string;
-    /** Callback for stdout lines from the C runtime. */
-    print?: (text: string) => void;
-    /** Callback for stderr lines from the C runtime. */
-    printErr?: (text: string) => void;
-    preferredBackend?: GraphicsBackend;
-    enableValidation?: boolean;
-}
-
 /** Describes a single color attachment for a render pass. */
 export interface ColorAttachmentDesc {
     /** Render target handle (`LN_NULL_HANDLE` = back-buffer). */
@@ -82,7 +70,7 @@ export interface RenderPassDesc {
     shaderPassName?: string;
 }
 
-/** @internal Options for `Runtime.initialize`. */
+/** Options for `Runtime.initialize`. */
 export interface RuntimeOptions {
     /** Path (or URL) to `LuminoC.wasm`. Forwarded to Emscripten `locateFile`. */
     wasmPath?: string;
@@ -90,6 +78,10 @@ export interface RuntimeOptions {
     print?: (text: string) => void;
     /** Callback for stderr lines from the C runtime. */
     printErr?: (text: string) => void;
+    /** Preferred graphics backend. Default: `GraphicsBackend.Default`. */
+    preferredBackend?: GraphicsBackend;
+    /** Enable graphics validation layer. */
+    enableValidation?: boolean;
 }
 
 //------------------------------------------------------------------------------

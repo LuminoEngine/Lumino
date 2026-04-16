@@ -9,7 +9,7 @@
  *   Pass 2: SSR + composite (full-screen post-process)
  */
 import {
-    Instance,
+    Runtime,
     Window,
     GraphicsBackend,
     LoadOp,
@@ -29,7 +29,7 @@ async function main() {
     const H = canvas.height;
 
     // 1. Load WASM module and initialize Lumino instance (creates WebGPU device)
-    await Instance.initialize({
+    await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
         print: (t: string) => console.log("[stdout]", t),
         printErr: (t: string) => console.warn("[stderr]", t),

@@ -1,5 +1,4 @@
 export { Runtime } from "./Runtime";
-export { Instance } from "./Instance";
 export { Window } from "./Window";
 export { GraphicsContext } from "./GraphicsContext";
 export type { FrameInfo } from "./GraphicsContext";
@@ -22,7 +21,7 @@ export {
 } from "./types";
 export type {
     Handle,
-    InstanceInitializeSettings,
+    RuntimeOptions,
     ColorAttachmentDesc,
     DepthStencilAttachmentDesc,
     RenderPassDesc,
