@@ -227,7 +227,7 @@
       // Load source code
       codeHeader.textContent = `src/${id}/main.ts`;
       try {
-        const res = await fetch(`./src/${id}/main.ts`);
+        const res = await fetch(`./src/${id}/main.ts?raw-source`);
         const code = await res.text();
         const highlighted = hljs.highlight(code, { language: "typescript" });
         codeBody.innerHTML = `<pre><code class="hljs">${highlighted.value}</code></pre>`;

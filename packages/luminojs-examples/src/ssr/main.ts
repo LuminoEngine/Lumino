@@ -107,10 +107,17 @@ async function main() {
         scale: [1, 1, 1],
     };
 
+    const statsEl = document.getElementById("stats")!;
+    let lastStatsTime = performance.now();
+    let statsFrameCount = 0;
+    let fps = 0;
+    let renderMs = 0;
+
     let frameTime = 0;
     let triangleAngle = 0;
 
-    function frame() {
+    function render() {
+        const t0 = performance.now();
         frameTime += 0.02;
         triangleAngle += 0.05;
         const cameraAngle = Math.sin(frameTime);
@@ -169,9 +176,20 @@ async function main() {
         renderer.endRenderPass();
 
         context.endFrame();
-        requestAnimationFrame(frame);
+
+        const t1 = performance.now();
+        renderMs = t1 - t0;
+        statsFrameCount++;
+        if (t1 - lastStatsTime >= 1000) {
+            fps = statsFrameCount;
+            statsFrameCount = 0;
+            lastStatsTime = t1;
+        }
+        statsEl.textContent = `FPS: ${fps}\nrender: ${renderMs.toFixed(2)} ms`;
+
+        requestAnimationFrame(render);
     }
-    requestAnimationFrame(frame);
+    requestAnimationFrame(render);
 }
 
 main();

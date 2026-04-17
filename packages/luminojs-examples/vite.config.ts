@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
-import { readdirSync, statSync } from "fs";
+import { readdirSync, statSync, readFileSync, existsSync } from "fs";
 
 // Collect all sample entry points: src/*/index.html
 function getSampleInputs(): Record<string, string> {
@@ -16,7 +16,30 @@ function getSampleInputs(): Record<string, string> {
   return inputs;
 }
 
+// Plugin that serves raw TypeScript source files without transformation,
+// so the example viewer can display the original source (with comments, etc.).
+function rawSourcePlugin() {
+  const srcDir = resolve(__dirname, "src");
+  return {
+    name: "raw-source",
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        // Match requests like /src/<id>/main.ts?raw-source (query param distinguishes
+        // source-display fetches from actual module script imports)
+        const m = req.url?.match(/^\/src\/([^/]+)\/main\.ts\?.*raw-source/);
+        if (!m) return next();
+        const filePath = resolve(srcDir, m[1], "main.ts");
+        if (!existsSync(filePath)) return next();
+        const content = readFileSync(filePath, "utf-8");
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.end(content);
+      });
+    },
+  };
+}
+
 export default defineConfig({
+  plugins: [rawSourcePlugin()],
   build: {
     target: "esnext",
     rollupOptions: {

@@ -221,6 +221,7 @@ export class Runtime {
         API.LNRenderer_EndRenderPass   = cw("LNRenderer_EndRenderPass",   "number", ["number"]);
         API.LNRenderer_DrawMesh        = cw("LNRenderer_DrawMesh",        "number", ["number", "number", "number", "number"]);
         API.LNRenderer_DrawScreenRect  = cw("LNRenderer_DrawScreenRect",  "number", ["number", "number"]);
+        API.LNRenderer_DrawSprite      = cw("LNRenderer_DrawSprite",      "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]);
 
         // Texture
         API.LNTexture2D_LoadFromMemory      = cw("LNTexture2D_LoadFromMemory",      "number", ["number", "number", "number", "number"], { async: true });

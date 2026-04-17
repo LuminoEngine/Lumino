@@ -73,6 +73,52 @@ export class Renderer extends LuminoObject {
             ) => number)(this._handle, mesh.handle, ptr, zIndex));
     }
 
+    /**
+     * Submit a sprite draw command (batched).
+     *
+     * @param material  Material to draw with.
+     * @param zIndex    Sort priority.
+     * @param posX      X position.
+     * @param posY      Y position.
+     * @param posZ      Z position.
+     * @param sizeW     Sprite width.
+     * @param sizeH     Sprite height.
+     * @param uvX       UV rect X.
+     * @param uvY       UV rect Y.
+     * @param uvW       UV rect width.
+     * @param uvH       UV rect height.
+     * @param colorR    Vertex color R.
+     * @param colorG    Vertex color G.
+     * @param colorB    Vertex color B.
+     * @param colorA    Vertex color A.
+     * @param rotation  Z-axis rotation (radians).
+     */
+    drawSprite(
+        material: Material, zIndex: number,
+        posX: number, posY: number, posZ: number,
+        sizeW: number, sizeH: number,
+        uvX: number, uvY: number, uvW: number, uvH: number,
+        colorR: number, colorG: number, colorB: number, colorA: number,
+        rotation: number,
+    ): void {
+        Runtime.safeCall(() =>
+            (API.LNRenderer_DrawSprite as (
+                r: number, mat: number, z: number,
+                px: number, py: number, pz: number,
+                sw: number, sh: number,
+                ux: number, uy: number, uw: number, uh: number,
+                cr: number, cg: number, cb: number, ca: number,
+                rot: number,
+            ) => number)(
+                this._handle, material.handle, zIndex,
+                posX, posY, posZ,
+                sizeW, sizeH,
+                uvX, uvY, uvW, uvH,
+                colorR, colorG, colorB, colorA,
+                rotation,
+            ));
+    }
+
     /** Draw a full-screen rectangle with the given material (for post-processing). */
     drawScreenRect(material: Material): void {
         Runtime.safeCall(() =>
