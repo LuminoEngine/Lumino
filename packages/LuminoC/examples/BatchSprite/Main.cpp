@@ -18,8 +18,6 @@
 //------------------------------------------------------------------------------
 // Constants
 //------------------------------------------------------------------------------
-#define WINDOW_W 1280
-#define WINDOW_H 720
 #define SPRITE_COUNT 1024
 #define MAX_VERTICES (SPRITE_COUNT * 4)
 #define MAX_INDICES  (SPRITE_COUNT * 6)
@@ -248,7 +246,7 @@ int main() {
 
         // Draw
         LNHandle renderer, colorBuffer, depthBuffer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
+        LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
         LNRenderPassDesc rpDesc;
         LNRenderPassDesc_Init(&rpDesc);
         rpDesc.colorAttachments[0].clearColor[0] = 0.15f;

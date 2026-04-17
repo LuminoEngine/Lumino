@@ -13,6 +13,7 @@ export interface FrameInfo {
 export class GraphicsContext extends LuminoObject {
     private _renderer: Renderer | null = null;
     private _windowHandle: Handle = 0;
+    private _canvas: HTMLCanvasElement | null = null;
 
     /**
      * HTML `<canvas>` 要素を描画先として GraphicsContext を作成する。
@@ -25,12 +26,10 @@ export class GraphicsContext extends LuminoObject {
     ): Promise<GraphicsContext> {
         let width  = options?.width;
         let height = options?.height;
-        if (width === undefined || height === undefined) {
-            const canvas = document.querySelector(canvasSelector) as HTMLCanvasElement | null;
-            if (!canvas) throw new Error(`createFromCanvas: canvas not found: "${canvasSelector}"`);
-            if (width  === undefined) width  = canvas.width;
-            if (height === undefined) height = canvas.height;
-        }
+        const canvas = document.querySelector(canvasSelector) as HTMLCanvasElement | null;
+        if (!canvas) throw new Error(`createFromCanvas: canvas not found: "${canvasSelector}"`);
+        if (width  === undefined) width  = canvas.width;
+        if (height === undefined) height = canvas.height;
         const windowHandle = await Runtime.safeCallWithReturnHandleAsync((ptr) =>
             (API.LNWindow_CreateFromCanvas as (s: string, w: number, h: number, p: number) => number | Promise<number>)(
                 canvasSelector, width!, height!, ptr,
@@ -40,6 +39,7 @@ export class GraphicsContext extends LuminoObject {
                 windowHandle, ptr));
         const ctx = new GraphicsContext();
         ctx._windowHandle = windowHandle;
+        ctx._canvas = canvas;
         ctx._setHandle(ctxHandle, false);
         return ctx;
     }
@@ -47,20 +47,33 @@ export class GraphicsContext extends LuminoObject {
     /**
      * Begin a new frame. Must be paired with `endFrame()`.
      *
+     * Canvas の現在の width/height を自動取得し、サイズが変わっていれば
+     * SwapChain と深度バッファを自動リサイズします。
+     *
      * The returned `renderer`, `colorBuffer`, and `depthBuffer` handles are
      * owned by the C-side GraphicsContext - do **not** call `dispose()` on them.
      */
     beginFrame(): FrameInfo {
         const m = Runtime.module;
 
+        // Get current canvas dimensions
+        let width = 0;
+        let height = 0;
+        if (this._canvas) {
+            width = this._canvas.width;
+            height = this._canvas.height;
+        }
+
         // We need 3 out-handles (12 bytes).
         const outPtr = m._malloc(12);
         try {
             Runtime.safeCall(() =>
                 (API.LNGraphicsContext_BeginFrame as (
-                    ctx: number, r: number, c: number, d: number,
+                    ctx: number, w: number, h: number,
+                    r: number, c: number, d: number,
                 ) => number)(
-                    this._handle, outPtr, outPtr + 4, outPtr + 8));
+                    this._handle, width, height,
+                    outPtr, outPtr + 4, outPtr + 8));
 
             const outView = new Uint32Array(m.HEAPU8.buffer, outPtr, 3);
             const rendererHandle = outView[0];

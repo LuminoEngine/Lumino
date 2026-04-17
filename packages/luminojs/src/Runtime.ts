@@ -210,7 +210,7 @@ export class Runtime {
         API.LNWindow_GetGraphicsContext = cw("LNWindow_GetGraphicsContext", "number", ["number", "number"]);
 
         // GraphicsContext
-        API.LNGraphicsContext_BeginFrame = cw("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number"]);
+        API.LNGraphicsContext_BeginFrame = cw("LNGraphicsContext_BeginFrame", "number", ["number", "number", "number", "number", "number", "number"]);
         API.LNGraphicsContext_EndFrame   = cw("LNGraphicsContext_EndFrame",   "number", ["number"]);
 
         // RenderPassDesc

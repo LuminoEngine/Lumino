@@ -146,7 +146,7 @@ int main() {
 
         // 6. メインループ
         while (window->processEvents()) {
-            const FramebufferInfo* fb = *ctx->beginFrame();
+            const FramebufferInfo* fb = *ctx->beginFrame(ctx->width(), ctx->height());
 
             auto* cmd = ctx->currentCommandBuffer();
 

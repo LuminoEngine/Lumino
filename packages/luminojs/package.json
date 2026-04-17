@@ -5,7 +5,12 @@
   "type": "module",
   "module": "lib/luminojs.mjs",
   "types": "lib/index.d.ts",
+  "license": "MIT",
   "description": "TypeScript / WebAssembly bindings for Lumino.",
+  "files": [
+    "bin/**",
+    "lib/**"
+  ],
   "scripts": {
     "build:typecheck": "tsc --noEmit",
     "build:rollup": "rollup --config rollup.config.mjs",

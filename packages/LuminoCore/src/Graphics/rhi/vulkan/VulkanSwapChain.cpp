@@ -281,5 +281,9 @@ CommandBuffer* VulkanSwapChain::getCurrentCommandBuffer() {
     return m_commandBuffers[m_currentFrame].get();
 }
 
+VoidResult VulkanSwapChain::resize(uint32_t /*width*/, uint32_t /*height*/) {
+    return LN_MAKE_ERROR("VulkanSwapChain::resize is not yet implemented.");
+}
+
 
 } // namespace ln::rhi::vulkan

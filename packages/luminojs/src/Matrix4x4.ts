@@ -12,6 +12,14 @@ const _mulTmp = new Float32Array(16);
  * GC Pressure を抑えるため、各メソッドは this を変更して返す。
  */
 export class Matrix4x4 {
+    // NOTE: なぜ result 引数を取るのか？
+    //   既存の行列を上書きして再利用したいケースがあるため。
+    //   新しい行列を返すだけだと、 GC Pressure が発生してしまう。
+    //   Lumino は別のゲームエンジンを作るための基盤、つまり低レイヤーに位置するライブラリなので、
+    //   オーバーヘッドは可能な限り抑えたい。
+    //   …けれども、サンプルなどで使う場合はさすがに冗長なので、result 引数はオプショナルにして、
+    //   指定しない場合は新しい行列を返すようにする。
+
     readonly m: Float32Array;
 
     public constructor() {

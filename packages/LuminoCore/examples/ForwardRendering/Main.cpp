@@ -130,7 +130,7 @@ int main() {
             obj.transform.rotation = Quaternion::fromEuler(time * 10.0f, time * 15.0f, 0.0f);
             std::vector<RenderObject> objects = {obj};
 
-            const FramebufferInfo* fb = *ctx->beginFrame();
+            const FramebufferInfo* fb = *ctx->beginFrame(ctx->width(), ctx->height());
 
             auto _ = renderer->renderFrame(
                 fb->colorTexture->rhiTextureView(),

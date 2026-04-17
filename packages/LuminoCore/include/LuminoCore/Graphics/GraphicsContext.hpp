@@ -62,8 +62,11 @@ public:
     // Future creation paths
     // static Result<Ref<GraphicsContext>> createExternal(const ExternalContextDesc& desc);
 
-    /** Acquire the next back buffer and prepare frame targets. */
-    Result<const FramebufferInfo*> beginFrame();
+    /** Acquire the next back buffer and prepare frame targets.
+     * width/height で現在の描画先サイズを指定します。
+     * 前フレームと異なる場合、SwapChain と深度バッファを自動的にリサイズします。
+     */
+    Result<const FramebufferInfo*> beginFrame(uint32_t width, uint32_t height);
     const FramebufferInfo* currentFramebuffer() const;
 
     /** Present the current frame. */

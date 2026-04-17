@@ -484,11 +484,13 @@ public:
     virtual uint32_t width() const = 0;
     virtual uint32_t height() const = 0;
 
+    /** サーフェスを新しいサイズで再設定します。サイズが同一の場合は何もしません。 */
+    virtual VoidResult resize(uint32_t width, uint32_t height) = 0;
+
     /** インフライトフレーム数を返します (SwapChain イメージ数)。 */
     virtual uint32_t maxFramesInFlight() const = 0;
 
     virtual uint32_t currentFrame() const = 0;
-
 
     /** 現在のフレームの CommandBuffer を取得します。InFrightFrame ごとにインスタンスは変わります。 */
     virtual CommandBuffer* getCurrentCommandBuffer() = 0;

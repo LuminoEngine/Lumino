@@ -93,7 +93,7 @@ int main() {
             obj.transform.rotation = Quaternion::fromAxisAngle(Vector3::unitY(), (float)frameCount * 0.1f);
             std::vector<RenderObject> objects = {obj};
 
-            const FramebufferInfo* fb = *ctx->beginFrame();
+            const FramebufferInfo* fb = *ctx->beginFrame(ctx->width(), ctx->height());
 
             auto _ = renderer->renderFrame(
                 fb->colorTexture->rhiTextureView(),

@@ -87,6 +87,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
             }
         }
     }
+    m_presentMode = presentMode;
 
     // Configure the surface
     WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
@@ -181,6 +182,44 @@ void WebGPUSwapChain::present() {
 
 CommandBuffer* WebGPUSwapChain::getCurrentCommandBuffer() {
     return m_commandBuffers[m_currentFrame].get();
+}
+
+VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
+    if (width == m_width && height == m_height) {
+        return LN_MAKE_SUCCESS();
+    }
+
+    m_device->waitIdle();
+
+    // Release current frame's texture resources
+    if (m_currentTextureView) {
+        wgpuTextureViewRelease(m_currentTextureView);
+        m_currentTextureView = nullptr;
+    }
+    if (m_currentTexture) {
+        wgpuTextureRelease(m_currentTexture);
+        m_currentTexture = nullptr;
+    }
+
+    // Reconfigure the surface with new dimensions
+    WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
+    config.device = m_device->wgpuDevice();
+    config.format = m_surfaceFormat;
+    config.usage = WGPUTextureUsage_RenderAttachment;
+    config.width = width;
+    config.height = height;
+    config.alphaMode = WGPUCompositeAlphaMode_Auto;
+    config.presentMode = m_presentMode;
+    wgpuSurfaceConfigure(m_surface, &config);
+
+    m_width = width;
+    m_height = height;
+
+    // Update the backbuffer view wrapper dimensions
+    m_currentBackbufferView->initFromExternal(nullptr, m_surfaceFormat, m_width, m_height);
+
+    LN_LOG_INFO("[WebGPU] SwapChain resized to %ux%u", width, height);
+    return LN_MAKE_SUCCESS();
 }
 
 void WebGPUSwapChain::finalize() {

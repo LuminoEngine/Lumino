@@ -12,7 +12,7 @@ int main() {
 
     // 2. Window + GraphicsContext
     LNHandle window = LN_NULL_HANDLE;
-    LNWindow_Create("LuminoC-CustomShader", 1280, 720, &window);
+    LNWindow_Create("LuminoC-CustomShader", WINDOW_W, WINDOW_H, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
@@ -51,7 +51,7 @@ int main() {
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
         60.0f * 3.14159f / 180.0f,
-        1280.0f / 720.0f,
+        (float)WINDOW_W / (float)WINDOW_H,
         0.1f, 100.0f);
     LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f,   // eye
@@ -64,7 +64,7 @@ int main() {
     LNBool quit = LN_FALSE;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         LNHandle renderer, colorBuffer, depthBuffer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
+        LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
         LNRenderPassDesc rpDesc;
         LNRenderPassDesc_Init(&rpDesc);
         LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);

@@ -12,6 +12,7 @@ public:
     void present() override;
     uint32_t width() const override { return m_extent.width; }
     uint32_t height() const override { return m_extent.height; }
+    VoidResult resize(uint32_t width, uint32_t height) override;
     uint32_t maxFramesInFlight() const override { return static_cast<uint32_t>(m_maxFrames); }
     //TextureFormat format() const override { return m_format; }
 

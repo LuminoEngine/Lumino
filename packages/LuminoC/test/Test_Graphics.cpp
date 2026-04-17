@@ -4,13 +4,16 @@
 #include <vector>
 #include <cstdio>
 
+#define TEST_W 320
+#define TEST_H 240
+
 class Test_Graphics : public ::testing::Test {
 protected:
     LNHandle window = LN_NULL_HANDLE;
     LNHandle graphicsContext = LN_NULL_HANDLE;
 
     void SetUp() override {
-        ASSERT_EQ(LN_OK, LNWindow_Create("VisualTest", 320, 240, &window));
+        ASSERT_EQ(LN_OK, LNWindow_Create("VisualTest", TEST_W, TEST_H, &window));
         ASSERT_EQ(LN_OK, LNWindow_GetGraphicsContext(window, &graphicsContext));
     }
 
@@ -21,7 +24,7 @@ protected:
 
 TEST_F(Test_Graphics, ClearScreen) {
     LNHandle renderer, colorBuffer, depthBuffer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
     LNRenderPassDesc rpDesc;
     LNRenderPassDesc_Init(&rpDesc);
     rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
@@ -36,8 +39,8 @@ TEST_F(Test_Graphics, ClearScreen) {
     int32_t w = 0, h = 0;
     ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
     ASSERT_NE(nullptr, data);
-    ASSERT_EQ(320, w);
-    ASSERT_EQ(240, h);
+    ASSERT_EQ(TEST_W, w);
+    ASSERT_EQ(TEST_H, h);
 
     ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.ClearScreen", data, w, h, TEST_DATA_DIR));
 }
@@ -72,7 +75,7 @@ TEST_F(Test_Graphics, HelloTexture) {
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
         60.0f * 3.14159f / 180.0f,
-        320.0f / 240.0f,
+        TEST_W.0f / TEST_H.0f,
         0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f,
@@ -81,7 +84,7 @@ TEST_F(Test_Graphics, HelloTexture) {
 
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNHandle renderer, colorBuffer, depthBuffer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
     LNRenderPassDesc rpDesc;
     LNRenderPassDesc_Init(&rpDesc);
     rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
@@ -160,13 +163,13 @@ TEST_F(Test_Graphics, StencilMask1) {
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
-        60.0f * 3.14159f / 180.0f, 320.0f / 240.0f, 0.1f, 100.0f));
+        60.0f * 3.14159f / 180.0f, TEST_W.0f / TEST_H.0f, 0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
 
     LNTransform identity = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1};
     LNHandle renderer, colorBuffer, depthBuffer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
     LNRenderPassDesc rpDesc;
     LNRenderPassDesc_Init(&rpDesc);
     rpDesc.colorAttachments[0].clearColor[0] = 0.5f;
@@ -196,8 +199,8 @@ TEST_F(Test_Graphics, StencilMask1) {
     // Verify the center-right area is background color (blue), not green.
     // The mask covers x in [-0.5, 0.0] in world coords, so roughly the left-center area.
     // Just verify the test runs without crashing. Detailed visual comparison requires reference images.
-    EXPECT_EQ(320, w);
-    EXPECT_EQ(240, h);
+    EXPECT_EQ(TEST_W, w);
+    EXPECT_EQ(TEST_H, h);
 
     // Cleanup
     LNObject_Release(camera);
@@ -247,13 +250,13 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
-        60.0f * 3.14159f / 180.0f, 320.0f / 240.0f, 0.1f, 100.0f));
+        60.0f * 3.14159f / 180.0f, TEST_W.0f / TEST_H.0f, 0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
 
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNHandle renderer, colorBuffer, depthBuffer;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
     LNRenderPassDesc rpDesc;
     LNRenderPassDesc_Init(&rpDesc);
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
@@ -266,8 +269,8 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     int32_t w = 0, h = 0;
     ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
     ASSERT_NE(nullptr, data);
-    EXPECT_EQ(320, w);
-    EXPECT_EQ(240, h);
+    EXPECT_EQ(TEST_W, w);
+    EXPECT_EQ(TEST_H, h);
 
     // Cleanup
     LNObject_Release(camera);

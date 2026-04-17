@@ -18,6 +18,7 @@ public:
     void present() override;
     uint32_t width() const override { return m_width; }
     uint32_t height() const override { return m_height; }
+    VoidResult resize(uint32_t width, uint32_t height) override;
     uint32_t maxFramesInFlight() const override { return m_maxFrames; }
     uint32_t currentFrame() const override { return m_currentFrame; }
     CommandBuffer* getCurrentCommandBuffer() override;
@@ -29,6 +30,7 @@ private:
     WebGPUDevice* m_device = nullptr;
     WGPUSurface m_surface = nullptr;
     WGPUTextureFormat m_surfaceFormat = WGPUTextureFormat_Undefined;
+    WGPUPresentMode m_presentMode = WGPUPresentMode_Fifo;
     uint32_t m_width = 0;
     uint32_t m_height = 0;
     uint32_t m_maxFrames = 2;

@@ -10,10 +10,8 @@ int main(void) {
     InitializeInstance();
 
     // 2. Window + GraphicsContext
-    const uint32_t windowWidth = 1280;
-    const uint32_t windowHeight = 720;
     LNHandle window = LN_NULL_HANDLE;
-    LNWindow_Create("LuminoC-RenderTargets", windowWidth, windowHeight, &window);
+    LNWindow_Create("LuminoC-RenderTargets", WINDOW_W, WINDOW_H, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
@@ -127,7 +125,7 @@ int main(void) {
         };
 
         LNHandle renderer, colorBuffer, depthBuffer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
+        LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
 
         // --- Pass 1: Render red triangle into RT1 ---
         LNRenderPassDesc rt1Desc;

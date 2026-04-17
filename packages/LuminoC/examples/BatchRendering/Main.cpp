@@ -11,8 +11,6 @@
  */
 #include "../Utils.h"
 
-#define WINDOW_W 1280
-#define WINDOW_H 720
 #define SPRITE_COUNT 1024
 
 int main() {
@@ -89,7 +87,7 @@ int main() {
 
         // Render
         LNHandle renderer = LN_NULL_HANDLE, colorBuffer, depthBuffer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
+        LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
         LNRenderPassDesc rpDesc;
         LNRenderPassDesc_Init(&rpDesc);
         rpDesc.colorAttachments[0].clearColor[0] = 0.15f;

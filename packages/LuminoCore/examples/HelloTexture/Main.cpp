@@ -105,7 +105,7 @@ int main() {
 
             std::vector<RenderObject> objects = {obj};
 
-            const FramebufferInfo* fb = *ctx->beginFrame();
+            const FramebufferInfo* fb = *ctx->beginFrame(ctx->width(), ctx->height());
 
             auto _ = renderer->renderFrame(
                 fb->colorTexture->rhiTextureView(),

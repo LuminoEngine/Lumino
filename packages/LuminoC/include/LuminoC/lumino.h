@@ -161,15 +161,20 @@ typedef struct LNRenderPassDesc {
 
 /**
  * フレームの描画を開始します。内部で Renderer の beginFrame も呼び出します。
+ * width/height が前フレームと異なる場合、SwapChain と深度バッファを自動的にリサイズします。
  * 返された renderer, colorBuffer, depthBuffer ハンドルは graphicsContext が管理するため、
  * LNObject_Release を呼ぶ必要はありません。
  * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  width          描画先の幅 (ピクセル)
+ * @param[in]  height         描画先の高さ (ピクセル)
  * @param[out] outRenderer     Renderer のハンドル
  * @param[out] outColorBuffer  現フレームのバックバッファ (SwapChain のカラーテクスチャ) のハンドル
  * @param[out] outDepthBuffer  現フレームのデプスバッファのハンドル
  */
 extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
     LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
     LNHandle* outRenderer,
     LNHandle* outColorBuffer,
     LNHandle* outDepthBuffer);

@@ -8,6 +8,9 @@
 #include <LuminoC/lumino.h>
 #include <stdio.h>
 
+#define WINDOW_W 1280
+#define WINDOW_H 720
+
 int main(void) {
     // Lumino を初期化します。
     //    なおほとんどの API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
@@ -25,7 +28,7 @@ int main(void) {
     //    内部で GraphicsContext (RHI Device, SwapChain) も作成されます。
     LNHandle window = LN_NULL_HANDLE;
     LNHandle graphicsContext = LN_NULL_HANDLE;
-    LNWindow_Create("Lumino - Clear Screen", 1280, 720, &window);
+    LNWindow_Create("Lumino - Clear Screen", WINDOW_W, WINDOW_H, &window);
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
     // メインループ
@@ -39,7 +42,7 @@ int main(void) {
         // フレーム開始
         //   現在のウィンドウサイズにマッチするようにバックバッファを準備し、ひとつのフレームの描画を開始します。
         LNHandle renderer, colorBuffer, depthBuffer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
+        LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
 
         // レンダーパス開始 (ライトグリーンでクリア)
         LNRenderPassDesc rpDesc = {};

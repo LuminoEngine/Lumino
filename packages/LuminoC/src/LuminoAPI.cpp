@@ -370,6 +370,8 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
 
 LNResult LNGraphicsContext_BeginFrame(
     LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
     LNHandle* outRenderer,
     LNHandle* outColorBuffer,
     LNHandle* outDepthBuffer) {
@@ -384,7 +386,7 @@ LNResult LNGraphicsContext_BeginFrame(
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
-    auto frameResult = ctx->beginFrame();
+    auto frameResult = ctx->beginFrame(width, height);
     if (!frameResult) return LN_ERROR_UNKNOWN;
 
     ctx->m_currentCmd = ctx->currentCommandBuffer();

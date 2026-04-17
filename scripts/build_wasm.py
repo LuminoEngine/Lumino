@@ -43,6 +43,12 @@ VCPKG_TOOLCHAIN = REPO_ROOT / "build" / "vcpkg" / "scripts" / "buildsystems" / "
 # TypeScript package.
 ARTIFACT_NAMES = ("LuminoC.mjs", "LuminoC.wasm", "LuminoC.wasm.map")
 
+# Native binaries (luminosc) built for x64-Windows that are bundled into the
+# TypeScript package for use as a local CLI tool.
+NATIVE_BIN_SRC = REPO_ROOT / "build" / "lumino-x64-windows" / "packages" / "luminosc" / "Release"
+NATIVE_BIN_DEST = REPO_ROOT / "packages" / "luminojs" / "bin" / "x64-windows"
+NATIVE_BIN_GLOBS = ("*.exe", "*.dll")
+
 # C++ example assets (shaders, textures) that should be available to the
 # TypeScript examples via the Vite dev server / production build.
 EXAMPLE_ASSETS_SRC = REPO_ROOT / "packages" / "LuminoC" / "examples" / "assets"
@@ -192,7 +198,21 @@ def _copy_artifacts() -> None:
     if copied == 0:
         raise RuntimeError("No artifacts were copied. Did the build succeed?")
 
+    _copy_native_binaries()
     _copy_example_assets()
+
+
+def _copy_native_binaries() -> None:
+    """Copy luminosc exe/dll from the x64-Windows Release build to luminojs/bin/x64-windows/."""
+    if not NATIVE_BIN_SRC.is_dir():
+        print(f"[build_wasm] warning: native bin directory not found: {NATIVE_BIN_SRC}")
+        return
+    NATIVE_BIN_DEST.mkdir(parents=True, exist_ok=True)
+    for pattern in NATIVE_BIN_GLOBS:
+        for src_file in sorted(NATIVE_BIN_SRC.glob(pattern)):
+            dst_file = NATIVE_BIN_DEST / src_file.name
+            shutil.copy2(src_file, dst_file)
+            print(f"[build_wasm] copied {src_file.name} -> {dst_file}")
 
 
 def _copy_example_assets() -> None:

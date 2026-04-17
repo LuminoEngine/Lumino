@@ -91,7 +91,26 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
 
 #endif // !defined(__EMSCRIPTEN__)
 
-Result<const FramebufferInfo*> GraphicsContext::beginFrame() {
+Result<const FramebufferInfo*> GraphicsContext::beginFrame(uint32_t width, uint32_t height) {
+    // サイズが変更された場合は、スワップチェーンと深度バッファのサイズを変更します。
+    if (width != m_width || height != m_height) {
+        auto resizeResult = m_swapChain->resize(width, height);
+        if (!resizeResult) {
+            return LN_FORWARD_ERROR(resizeResult);
+        }
+
+        // in-flight frames の深度バッファを再作成する
+        auto* dev = device();
+        for (auto& fb : m_framebuffers) {
+            auto result = Texture::createDepthStencil(dev, width, height);
+            if (!result) return LN_FORWARD_ERROR(result);
+            fb.depthTexture = *result;
+        }
+
+        m_width = width;
+        m_height = height;
+    }
+
     auto* colorTarget = m_swapChain->acquireNextTexture();
     if (!colorTarget) {
         return LN_MAKE_ERROR("Failed to acquire next texture");

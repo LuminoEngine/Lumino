@@ -16,10 +16,8 @@ int main() {
     InitializeInstance();
 
     // Window + GraphicsContext
-    const uint32_t windowWidth = 1280;
-    const uint32_t windowHeight = 720;
     LNHandle window = LN_NULL_HANDLE;
-    LNWindow_Create("LuminoC-SSR", windowWidth, windowHeight, &window);
+    LNWindow_Create("LuminoC-SSR", WINDOW_W, WINDOW_H, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
@@ -31,8 +29,8 @@ int main() {
     LNHandle gbuffersA = LN_NULL_HANDLE;
     LNTexture2D_CreateRenderTargetEx(
         graphicsContext,
-        windowWidth,
-        windowHeight,
+        WINDOW_W,
+        WINDOW_H,
         LN_TEXTURE_FORMAT_RGBA8_UNORM,
         &gbuffersA);
 
@@ -40,30 +38,30 @@ int main() {
     LNHandle gbuffersB = LN_NULL_HANDLE;
     LNTexture2D_CreateRenderTargetEx(
         graphicsContext,
-        windowWidth,
-        windowHeight,
+        WINDOW_W,
+        WINDOW_H,
         LN_TEXTURE_FORMAT_RGBA32_FLOAT,
         &gbuffersB);
 
     LNHandle gbuffersC = LN_NULL_HANDLE;
     LNTexture2D_CreateRenderTargetEx(
         graphicsContext,
-        windowWidth,
-        windowHeight,
+        WINDOW_W,
+        WINDOW_H,
         LN_TEXTURE_FORMAT_RGBA8_UNORM,
         &gbuffersC);
 
     LNHandle debugRenderTarget = LN_NULL_HANDLE;
     LNTexture2D_CreateRenderTargetEx(
         graphicsContext,
-        windowWidth,
-        windowHeight,
+        WINDOW_W,
+        WINDOW_H,
         LN_TEXTURE_FORMAT_RGBA32_FLOAT,
         &debugRenderTarget);
 
     // Shared depth buffer
     LNHandle sceneDepth = LN_NULL_HANDLE;
-    LNTexture2D_CreateDepthStencil(graphicsContext, windowWidth, windowHeight, &sceneDepth);
+    LNTexture2D_CreateDepthStencil(graphicsContext, WINDOW_W, WINDOW_H, &sceneDepth);
 
     //--------------------------------------------------------------
     // Materials
@@ -148,7 +146,7 @@ int main() {
     LNCamera_Create(&camera);
     //LNCamera_SetPerspective(camera,
     //    45.0f * 3.14159f / 180.0f,
-    //    (float)windowWidth / (float)windowHeight,
+    //    (float)WINDOW_W / (float)WINDOW_H,
     //    0.1f, 10.0f);
     LNCamera_SetOrthographic(
         camera,
@@ -185,7 +183,7 @@ int main() {
         };
 
         LNHandle renderer, colorBuffer, depthBuffer;
-        LNGraphicsContext_BeginFrame(graphicsContext, &renderer, &colorBuffer, &depthBuffer);
+        LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
         
 #if 0   // test
         {
