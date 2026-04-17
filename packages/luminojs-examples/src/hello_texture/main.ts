@@ -6,6 +6,7 @@ import {
     Material,
     Mesh,
     Camera,
+    Matrix4x4,
     Transform,
 } from "luminojs";
 
@@ -45,8 +46,11 @@ async function main() {
 
     // 7. Create perspective camera
     const camera = Camera.create();
-    camera.setPerspective((60 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
-    camera.setLookAt(0, 0, 3, 0, 0, 0, 0, 1, 0);
+    const viewMatrix = Matrix4x4.makeLookAt(
+        { x: 0, y: 0, z: 3 }, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 });
+    const projMatrix = Matrix4x4.makePerspective(
+        (60 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
+    camera.setMatrices(viewMatrix, projMatrix);
 
     // 8. Render loop
     const identity: Transform = { position: [0, 0, 0], rotation: [0, 0, 0, 1], scale: [1, 1, 1] };

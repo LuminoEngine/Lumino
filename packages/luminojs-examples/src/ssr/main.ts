@@ -17,6 +17,7 @@ import {
     Material,
     Mesh,
     Camera,
+    Matrix4x4,
     CullMode,
 } from "luminojs";
 import type { Transform } from "luminojs";
@@ -94,13 +95,11 @@ async function main() {
     triMesh.setMaterial(0, triangleMaterial);
 
     const camera = Camera.create();
-    camera.setPerspective(
-        (45 * Math.PI) / 180,
-        W / H,
-        0.1,
-        10.0,
-    );
-    camera.setLookAt(0, 2.5, 5, 0, 0.5, 0, 0, 1, 0);
+    const viewMatrix = Matrix4x4.makeLookAt(
+        { x: 0, y: 2.5, z: 5 }, { x: 0, y: 0.5, z: 0 }, { x: 0, y: 1, z: 0 });
+    const projMatrix = Matrix4x4.makePerspective(
+        (45 * Math.PI) / 180, W / H, 0.1, 10.0);
+    camera.setMatrices(viewMatrix, projMatrix);
 
     const groundTransform: Transform = {
         position: [0, 0, 0],
@@ -116,11 +115,13 @@ async function main() {
         triangleAngle += 0.05;
         const cameraAngle = Math.sin(frameTime);
 
-        camera.setLookAt(
-            0 + cameraAngle, 2.5, 5, // eye
-            0, 0.5, 0,               // target
-            0, 1, 0,                  // up
+        Matrix4x4.makeLookAt(
+            { x: 0 + cameraAngle, y: 2.5, z: 5 },
+            { x: 0, y: 0.5, z: 0 },
+            { x: 0, y: 1, z: 0 },
+            viewMatrix
         );
+        camera.setMatrices(viewMatrix, projMatrix);
 
         const triTransform: Transform = {
             position: [0, 1, -1],

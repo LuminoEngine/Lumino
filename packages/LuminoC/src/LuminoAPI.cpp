@@ -914,6 +914,24 @@ LNResult LNCamera_SetLookAt(
     return LN_OK;
 }
 
+LNResult LNCamera_SetMatrices(
+    LNHandle camera, const float* viewMatrix, const float* projMatrix) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* camObj = resolveObject<CameraObject>(camera);
+    if (!camObj) return LN_ERROR_INVALID_HANDLE;
+
+    if (!viewMatrix || !projMatrix) return LN_ERROR_INVALID_ARGUMENT;
+
+    ln::Matrix4x4 view, proj;
+    std::memcpy(view.m, viewMatrix, sizeof(float) * 16);
+    std::memcpy(proj.m, projMatrix, sizeof(float) * 16);
+    camObj->camera.setViewMatrix(view);
+    camObj->camera.setProjectionMatrix(proj);
+    return LN_OK;
+}
+
 //------------------------------------------------------------------------------
 // LNRenderer
 //------------------------------------------------------------------------------

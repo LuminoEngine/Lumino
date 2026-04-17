@@ -623,6 +623,18 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
     float upX, float upY, float upZ
 );
 
+/**
+ * カメラのビュー行列とプロジェクション行列を直接設定します。
+ * @param[in] camera       カメラのハンドル
+ * @param[in] viewMatrix   ビュー行列 (float x 16, 列優先)
+ * @param[in] projMatrix   プロジェクション行列 (float x 16, 列優先)
+ */
+extern LUMINO_API LNResult LNCamera_SetMatrices(
+    LNHandle camera,
+    const float* viewMatrix,
+    const float* projMatrix
+);
+
 //------------------------------------------------------------------------------
 // LNRenderer
 //------------------------------------------------------------------------------

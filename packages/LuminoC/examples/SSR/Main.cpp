@@ -146,10 +146,15 @@ int main() {
 
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
-    LNCamera_SetPerspective(camera,
-        45.0f * 3.14159f / 180.0f,
-        (float)windowWidth / (float)windowHeight,
-        0.1f, 10.0f);
+    //LNCamera_SetPerspective(camera,
+    //    45.0f * 3.14159f / 180.0f,
+    //    (float)windowWidth / (float)windowHeight,
+    //    0.1f, 10.0f);
+    LNCamera_SetOrthographic(
+        camera,
+        6.0f, 6.0f,   // width, height
+        0.1f, 10.0f
+    );
     LNCamera_SetLookAt(camera,
         0.0f, 2.5f, 5.0f,   // eye: slightly above and behind
         0.0f, 0.5f, 0.0f,   // target: slightly above ground

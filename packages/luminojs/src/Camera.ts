@@ -1,4 +1,5 @@
 import { LuminoObject } from "./LuminoObject";
+import { Matrix4x4 } from "./Matrix4x4";
 import { API, Runtime } from "./Runtime";
 
 export class Camera extends LuminoObject {
@@ -32,5 +33,23 @@ export class Camera extends LuminoObject {
                 tx: number, ty: number, tz: number,
                 ux: number, uy: number, uz: number,
             ) => number)(this._handle, eyeX, eyeY, eyeZ, targetX, targetY, targetZ, upX, upY, upZ));
+    }
+
+    /** Set view and projection matrices directly. */
+    setMatrices(view: Matrix4x4, proj: Matrix4x4): void {
+        const m = Runtime.module;
+        const byteLen = 16 * 4; // 64 bytes per matrix
+        const ptr = m._malloc(byteLen * 2);
+        try {
+            const heap = new Float32Array(m.HEAPU8.buffer, ptr, 32);
+            heap.set(view.m, 0);
+            heap.set(proj.m, 16);
+            Runtime.safeCall(() =>
+                (API.LNCamera_SetMatrices as (
+                    cam: number, viewPtr: number, projPtr: number,
+                ) => number)(this._handle, ptr, ptr + byteLen));
+        } finally {
+            m._free(ptr);
+        }
     }
 }
