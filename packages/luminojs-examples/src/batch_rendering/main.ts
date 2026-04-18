@@ -35,16 +35,16 @@ async function main() {
 
     // Textures
     const texture0 = await Texture.loadFromURL(
-        context, new URL("../../public/picture1.png", import.meta.url).href);
+        new URL("../../public/picture1.png", import.meta.url).href);
     const texture1 = await Texture.loadFromURL(
-        context, new URL("../../public/picture1.png", import.meta.url).href);
+        new URL("../../public/picture1.png", import.meta.url).href);
 
     // Materials - two unlit materials
-    const material0 = Material.createUnlit(context);
+    const material0 = Material.createUnlit();
     material0.setMainTexture(texture0);
     material0.setColor(1.0, 0.8, 0.8, 1.0);
 
-    const material1 = Material.createUnlit(context);
+    const material1 = Material.createUnlit();
     material1.setMainTexture(texture1);
     material1.setColor(0.8, 0.8, 1.0, 1.0);
 
@@ -60,7 +60,6 @@ async function main() {
 
     // A simple quad mesh to demonstrate mixed sprite + mesh rendering
     const mesh = Mesh.create(
-        context,
         [
             { position: [-50, 50, 0], normal: [0, 0, 1], uv: [0, 0], color: [1, 1, 1, 1], tangent: [1, 0, 0, 0] },
             { position: [50, 50, 0], normal: [0, 0, 1], uv: [1, 0], color: [1, 1, 1, 1], tangent: [1, 0, 0, 0] },

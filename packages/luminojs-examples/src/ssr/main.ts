@@ -45,23 +45,22 @@ async function main() {
 
     // Materials
     const gridTexture = await Texture.loadFromURL(
-        context,
         new URL("../../public/CheckerGridGray1.png", import.meta.url).href,
     );
 
     // Scene materials (Unlit)
-    const groundMaterial = Material.createUnlit(context);
+    const groundMaterial = Material.createUnlit();
     groundMaterial.setColor(0.4, 0.4, 0.4, 1.0);
     //groundMaterial.setMainTexture(gridTexture);
 
-    const triangleMaterial = Material.createUnlit(context);
+    const triangleMaterial = Material.createUnlit();
     triangleMaterial.setCullMode(CullMode.None);  // 両面描画
     triangleMaterial.setColor(1.0, 1.0, 1.0, 1.0);
 
     // SSR material (from pre-compiled shader)
     const ssrResp = await fetch(new URL("../../public/SSR.lcsh", import.meta.url).href);
     const ssrData = new Uint8Array(await ssrResp.arrayBuffer());
-    const matSSR = await Material.createFromCompiledShader(context, ssrData);
+    const matSSR = Material.createFromCompiledShader(ssrData);
     matSSR.setFloat4("ssrSettings", [10.0, 0.05, 0.3, 128.0]);
     matSSR.setNamedTexture("u_gbufferA", gbufferA);
     matSSR.setNamedTexture("u_gbufferB", gbufferB);
@@ -69,7 +68,6 @@ async function main() {
 
     // Ground plane: 4 vertices at Y=0
     const groundMesh = Mesh.create(
-        context,
         [
             { position: [-2, 0, -2], normal: [0, 1, 0], uv: [0, 0], color: [0.5, 0.5, 0.5, 1], tangent: [1, 0, 0, 0] },
             { position: [ 2, 0, -2], normal: [0, 1, 0], uv: [1, 0], color: [0.5, 0.5, 0.5, 1], tangent: [1, 0, 0, 0] },
@@ -83,7 +81,6 @@ async function main() {
 
     // Rotating triangle: hovers above ground
     const triMesh = Mesh.create(
-        context,
         [
             { position: [ 0, 1, 0], normal: [0, 0, 1], uv: [0.5, 0], color: [1, 0, 0, 1], tangent: [1, 0, 0, 0] },
             { position: [ 1, 0, 0], normal: [0, 0, 1], uv: [1, 1],   color: [0, 1, 0, 1], tangent: [1, 0, 0, 0] },

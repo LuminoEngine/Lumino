@@ -1,10 +1,27 @@
 import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
+import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import type { TextureFormat } from "./types";
+import { TextureFormat } from "./types";
 
-export class Texture extends LuminoObject {
-    /** Create a render target texture with a specific format. */
+type TextureSource =
+    | { kind: "pngBytes"; data: Uint8Array }
+    | { kind: "pixels"; data: Uint8Array; width: number; height: number; format: TextureFormat }
+    | { kind: "external" };  // RenderTarget / DepthStencil - not a Residency target.
+
+export class Texture extends LuminoObject implements ResidentResource {
+    private _source: TextureSource = { kind: "external" };
+    private _width = 0;
+    private _height = 0;
+    private _dirty = false;
+    private _lastUsedFrame = 0;
+    private _isResidencyTarget = false;
+
+    get lastUsedFrame(): number { return this._lastUsedFrame; }
+    get width(): number { return this._width; }
+    get height(): number { return this._height; }
+
+    /** Create a render target texture with a specific format. (Residency 対象外、ctx 必須) */
     static createRenderTargetEx(ctx: GraphicsContext, width: number, height: number, format: TextureFormat): Texture {
         const handle = Runtime.safeCallWithReturnHandle((out) =>
             (API.LNTexture2D_CreateRenderTargetEx as (
@@ -12,10 +29,13 @@ export class Texture extends LuminoObject {
             ) => number)(ctx.handle, width, height, format, out));
         const tex = new Texture();
         tex._setHandle(handle, true);
+        tex._width = width;
+        tex._height = height;
+        tex._source = { kind: "external" };
         return tex;
     }
 
-    /** Create a depth-stencil texture. */
+    /** Create a depth-stencil texture. (Residency 対象外、ctx 必須) */
     static createDepthStencil(ctx: GraphicsContext, width: number, height: number): Texture {
         const handle = Runtime.safeCallWithReturnHandle((out) =>
             (API.LNTexture2D_CreateDepthStencil as (
@@ -23,42 +43,121 @@ export class Texture extends LuminoObject {
             ) => number)(ctx.handle, width, height, out));
         const tex = new Texture();
         tex._setHandle(handle, true);
+        tex._width = width;
+        tex._height = height;
+        tex._source = { kind: "external" };
         return tex;
     }
 
     /**
-     * Create a texture from raw image data (PNG, etc.) already in memory.
-     *
-     * @param ctx  GraphicsContext handle owner.
-     * @param data Image file bytes (e.g. PNG).
+     * Define a texture from raw image file bytes (PNG, JPG, etc.).
+     * GPU アップロードは最初の描画時に遅延実行される。
      */
-    static async loadFromMemory(ctx: GraphicsContext, data: Uint8Array): Promise<Texture> {
-        const m = Runtime.module;
-        const ptr = m._malloc(data.byteLength);
-        try {
-            m.HEAPU8.set(data, ptr);
-            const handle = await Runtime.safeCallWithReturnHandleAsync((out) =>
-                (API.LNTexture2D_LoadFromMemory as (
-                    ctx: number, data: number, size: number, out: number,
-                ) => number | Promise<number>)(ctx.handle, ptr, data.byteLength, out));
-            const tex = new Texture();
-            tex._setHandle(handle, true);
-            return tex;
-        } finally {
-            m._free(ptr);
-        }
+    static loadFromMemory(data: Uint8Array): Texture {
+        const tex = new Texture();
+        tex._source = { kind: "pngBytes", data };
+        tex._dirty = true;
+        tex._isResidencyTarget = true;
+        return tex;
     }
 
     /**
-     * Fetch an image from a URL and create a texture.
-     *
-     * @param ctx GraphicsContext handle owner.
-     * @param url URL to fetch (relative or absolute).
+     * Define a texture from decoded pixel data (e.g., from createImageBitmap).
+     * `data` はフォーマットに対応する生ピクセル配列。
      */
-    static async loadFromURL(ctx: GraphicsContext, url: string): Promise<Texture> {
+    static createFromPixels(
+        data: Uint8Array,
+        width: number,
+        height: number,
+        format: TextureFormat = TextureFormat.RGBA8_UNORM,
+    ): Texture {
+        const tex = new Texture();
+        tex._source = { kind: "pixels", data, width, height, format };
+        tex._width = width;
+        tex._height = height;
+        tex._dirty = true;
+        tex._isResidencyTarget = true;
+        return tex;
+    }
+
+    /** Fetch an image from a URL and define a texture. */
+    static async loadFromURL(url: string): Promise<Texture> {
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`Failed to fetch texture: ${resp.status} ${url}`);
         const buf = await resp.arrayBuffer();
-        return Texture.loadFromMemory(ctx, new Uint8Array(buf));
+        return Texture.loadFromMemory(new Uint8Array(buf));
+    }
+
+    /**
+     * @internal Called by Renderer / Material during draw time to guarantee the
+     * GPU resource exists. Safe to call repeatedly; only uploads when needed.
+     */
+    ensure(ctx: GraphicsContext): void {
+        if (!this._isResidencyTarget) return;
+        if (this._handle !== 0 && !this._dirty) {
+            this._lastUsedFrame = ctx.currentFrame;
+            return;
+        }
+
+        if (this._handle !== 0) {
+            // Dirty re-upload: release the old handle first.
+            (API.LNObject_Release as (h: number) => number)(this._handle);
+            this._handle = 0;
+        }
+
+        const m = Runtime.module;
+        if (this._source.kind === "pngBytes") {
+            const data = this._source.data;
+            const ptr = m._malloc(data.byteLength);
+            try {
+                m.HEAPU8.set(data, ptr);
+                const handle = Runtime.safeCallWithReturnHandle((out) =>
+                    (API.LNTexture2D_LoadFromMemory as (
+                        ctx: number, data: number, size: number, out: number,
+                    ) => number)(ctx.handle, ptr, data.byteLength, out));
+                this._setHandle(handle, true);
+            } finally {
+                m._free(ptr);
+            }
+        } else if (this._source.kind === "pixels") {
+            const src = this._source;
+            const ptr = m._malloc(src.data.byteLength);
+            try {
+                m.HEAPU8.set(src.data, ptr);
+                const handle = Runtime.safeCallWithReturnHandle((out) =>
+                    (API.LNTexture2D_CreateFromPixels as (
+                        ctx: number, w: number, h: number, fmt: number,
+                        pix: number, size: number, out: number,
+                    ) => number)(ctx.handle, src.width, src.height, src.format,
+                        ptr, src.data.byteLength, out));
+                this._setHandle(handle, true);
+            } finally {
+                m._free(ptr);
+            }
+        }
+
+        this._dirty = false;
+        this._lastUsedFrame = ctx.currentFrame;
+        ctx.residencyManager.register(this);
+    }
+
+    /**
+     * @internal Release the GPU resource while keeping source data.
+     * Called by ResidencyManager on GC, and by dispose().
+     */
+    evict(): void {
+        if (this._handle === 0) return;
+        (API.LNObject_Release as (h: number) => number)(this._handle);
+        this._handle = 0;
+    }
+
+    override dispose(): void {
+        if (this._isResidencyTarget) {
+            this.evict();
+            this._source = { kind: "external" };
+            this._isResidencyTarget = false;
+        } else {
+            super.dispose();
+        }
     }
 }

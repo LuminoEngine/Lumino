@@ -343,6 +343,27 @@ extern LUMINO_API LNResult LNTexture2D_LoadFromMemory(
     LNHandle* outHandle
 );
 
+/**
+ * デコード済みのピクセルデータから 2D テクスチャを作成します。
+ * ブラウザの createImageBitmap 等でデコードした RGBA 等の生ピクセルを直接アップロードする用途。
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  width           幅 (ピクセル)
+ * @param[in]  height          高さ (ピクセル)
+ * @param[in]  format          テクスチャフォーマット (LNTextureFormat)
+ * @param[in]  pixelData       ピクセルデータへのポインタ (format で指定されたフォーマットに従う)
+ * @param[in]  dataSizeBytes   ピクセルデータサイズ (バイト)
+ * @param[out] outHandle       作成されたテクスチャのハンドル
+ */
+extern LUMINO_API LNResult LNTexture2D_CreateFromPixels(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    uint32_t format,
+    const void* pixelData,
+    uint32_t dataSizeBytes,
+    LNHandle* outHandle
+);
+
 //------------------------------------------------------------------------------
 // LNMaterial
 //------------------------------------------------------------------------------

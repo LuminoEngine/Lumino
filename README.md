@@ -53,8 +53,6 @@ ctest --test-dir build/lumino-x64-windows -C Release --output-on-failure
 git clone -b 5.0.5 https://github.com/emscripten-core/emsdk.git ./build/emsdk
 ./build/emsdk/emsdk install 5.0.5
 ./build/emsdk/emsdk activate 5.0.5
-
-# .wasm ビルド
 python scripts/build_wasm.py
 
 # TypeScript バインディングのビルド

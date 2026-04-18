@@ -1,5 +1,6 @@
 import { LuminoObject } from "./LuminoObject";
 import { Renderer } from "./Renderer";
+import { ResidencyManager } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
 import type { Handle } from "./types";
 
@@ -14,6 +15,14 @@ export class GraphicsContext extends LuminoObject {
     private _renderer: Renderer | null = null;
     private _windowHandle: Handle = 0;
     private _canvas: HTMLCanvasElement | null = null;
+    private _currentFrame = 0;
+    private _residencyManager = new ResidencyManager();
+
+    /** @internal Frame counter incremented at the start of each beginFrame(). */
+    get currentFrame(): number { return this._currentFrame; }
+
+    /** @internal Resource residency tracker owned by this context. */
+    get residencyManager(): ResidencyManager { return this._residencyManager; }
 
     /**
      * HTML `<canvas>` 要素を描画先として GraphicsContext を作成する。
@@ -55,6 +64,9 @@ export class GraphicsContext extends LuminoObject {
      */
     beginFrame(): FrameInfo {
         const m = Runtime.module;
+
+        this._currentFrame++;
+        this._residencyManager.gc(this._currentFrame);
 
         // Get current canvas dimensions
         let width = 0;
@@ -99,6 +111,7 @@ export class GraphicsContext extends LuminoObject {
     }
 
     override dispose(): void {
+        this._residencyManager.disposeAll();
         this._renderer = null;
         if (this._windowHandle !== 0) {
             (API.LNObject_Release as (h: number) => number)(this._windowHandle);

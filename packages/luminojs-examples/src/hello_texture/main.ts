@@ -24,15 +24,14 @@ async function main() {
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
     // Load texture
-    const texture = await Texture.loadFromURL(context, new URL("./assets/picture1.png", import.meta.url).href);
+    const texture = await Texture.loadFromURL(new URL("./assets/picture1.png", import.meta.url).href);
 
     // Create Unlit material with texture
-    const material = Material.createUnlit(context);
+    const material = Material.createUnlit();
     material.setMainTexture(texture);
 
     // Create quad mesh
     const mesh = Mesh.create(
-        context,
         [
             { position: [-0.5, 0.5, 0], normal: [0, 0, 1], uv: [0, 0], color: [1, 1, 1, 1], tangent: [1, 0, 0, 0] },
             { position: [0.5, 0.5, 0], normal: [0, 0, 1], uv: [1, 0], color: [1, 1, 1, 1], tangent: [1, 0, 0, 0] },

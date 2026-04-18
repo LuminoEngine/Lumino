@@ -16,28 +16,33 @@ import {
 } from "./types";
 
 export class Renderer extends LuminoObject {
-    // Pre-allocated WASM buffer for LNRenderPassDesc (220 bytes).
-    // Created lazily on first use; freed when the Renderer is disposed.
+    // LNRenderPassDesc 用の事前確保 WASM バッファ (220 バイト)。
+    // 初回使用時に遅延生成し、Renderer が dispose されるときに解放する。
     private _descPtr = 0;
     private _descView: DataView | null = null;
     private _descHeapBuf: ArrayBufferLike | null = null;
 
-    // Pre-allocated WASM buffer for LNTransform (40 bytes).
+    // LNTransform 用の事前確保 WASM バッファ (40 バイト)。
     private _transformPtr = 0;
     private _transformView: DataView | null = null;
     private _transformHeapBuf: ArrayBufferLike | null = null;
 
-    // Temporary string pointer for shaderPassName (freed after BeginRenderPass).
+    // shaderPassName 用の一時文字列ポインタ (BeginRenderPass 後に解放する)。
     private _lastShaderPassNamePtr = 0;
 
+    // beginRenderPass/endRenderPass 間にバインドされるコンテキスト。
+    // draw 系メソッドがリソース引数の Residency `ensure()` を呼ぶために使用する。
+    private _boundCtx: GraphicsContext | null = null;
+
     /**
-     * Begin a render pass.
+     * レンダーパスを開始する。
      *
-     * @param ctx    The GraphicsContext that owns this Renderer.
-     * @param desc   Render pass descriptor (color attachments, depth, clear values…).
-     * @param camera Camera handle, or `LN_NULL_HANDLE` (default).
+     * @param ctx    この Renderer を所有する GraphicsContext。
+     * @param desc   レンダーパスディスクリプタ (カラーアタッチメント、デプス、クリア値など)。
+     * @param camera カメラハンドル。省略時は `LN_NULL_HANDLE`。
      */
     beginRenderPass(ctx: GraphicsContext, desc: RenderPassDesc, camera: Handle = LN_NULL_HANDLE): void {
+        this._boundCtx = ctx;
         const ptr = this._serializeDesc(desc);
         try {
             Runtime.safeCall(() =>
@@ -52,20 +57,24 @@ export class Renderer extends LuminoObject {
         }
     }
 
-    /** End the current render pass. */
+    /** 現在のレンダーパスを終了する。 */
     endRenderPass(): void {
         Runtime.safeCall(() =>
             (API.LNRenderer_EndRenderPass as (r: number) => number)(this._handle));
+        this._boundCtx = null;
     }
 
     /**
-     * Submit a mesh draw command.
+     * メッシュの描画コマンドを送信する。
      *
-     * @param mesh      Mesh to draw.
-     * @param transform TRS transform.
-     * @param zIndex    Sort priority (default 0).
+     * @param mesh      描画する Mesh。
+     * @param transform TRS トランスフォーム。
+     * @param zIndex    ソート優先度 (デフォルト 0)。
      */
     drawMesh(mesh: Mesh, transform: Transform, zIndex = 0): void {
+        if (!this._boundCtx) throw new Error("Renderer.drawMesh called outside of a render pass");
+        mesh.ensure(this._boundCtx);
+        if (mesh.handle === 0) return;
         const ptr = this._serializeTransform(transform);
         Runtime.safeCall(() =>
             (API.LNRenderer_DrawMesh as (
@@ -74,24 +83,24 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * Submit a sprite draw command (batched).
+     * スプライトの描画コマンドを送信する (バッチ処理)。
      *
-     * @param material  Material to draw with.
-     * @param zIndex    Sort priority.
-     * @param posX      X position.
-     * @param posY      Y position.
-     * @param posZ      Z position.
-     * @param sizeW     Sprite width.
-     * @param sizeH     Sprite height.
-     * @param uvX       UV rect X.
-     * @param uvY       UV rect Y.
-     * @param uvW       UV rect width.
-     * @param uvH       UV rect height.
-     * @param colorR    Vertex color R.
-     * @param colorG    Vertex color G.
-     * @param colorB    Vertex color B.
-     * @param colorA    Vertex color A.
-     * @param rotation  Z-axis rotation (radians).
+     * @param material  使用する Material。
+     * @param zIndex    ソート優先度。
+     * @param posX      X 座標。
+     * @param posY      Y 座標。
+     * @param posZ      Z 座標。
+     * @param sizeW     スプライト幅。
+     * @param sizeH     スプライト高さ。
+     * @param uvX       UV 矩形の X。
+     * @param uvY       UV 矩形の Y。
+     * @param uvW       UV 矩形の幅。
+     * @param uvH       UV 矩形の高さ。
+     * @param colorR    頂点カラー R。
+     * @param colorG    頂点カラー G。
+     * @param colorB    頂点カラー B。
+     * @param colorA    頂点カラー A。
+     * @param rotation  Z 軸回転 (ラジアン)。
      */
     drawSprite(
         material: Material, zIndex: number,
@@ -101,6 +110,9 @@ export class Renderer extends LuminoObject {
         colorR: number, colorG: number, colorB: number, colorA: number,
         rotation: number,
     ): void {
+        if (!this._boundCtx) throw new Error("Renderer.drawSprite called outside of a render pass");
+        material.ensure(this._boundCtx);
+        if (material.handle === 0) return;
         Runtime.safeCall(() =>
             (API.LNRenderer_DrawSprite as (
                 r: number, mat: number, z: number,
@@ -119,8 +131,11 @@ export class Renderer extends LuminoObject {
             ));
     }
 
-    /** Draw a full-screen rectangle with the given material (for post-processing). */
+    /** 指定したマテリアルでフルスクリーン矩形を描画する (ポストプロセス用)。 */
     drawScreenRect(material: Material): void {
+        if (!this._boundCtx) throw new Error("Renderer.drawScreenRect called outside of a render pass");
+        material.ensure(this._boundCtx);
+        if (material.handle === 0) return;
         Runtime.safeCall(() =>
             (API.LNRenderer_DrawScreenRect as (
                 r: number, mat: number,
@@ -142,7 +157,7 @@ export class Renderer extends LuminoObject {
     }
 
     //--------------------------------------------------------------------------
-    // Private: serialize RenderPassDesc into pre-allocated WASM memory
+    // Private: RenderPassDesc を事前確保した WASM メモリへシリアライズする
     //--------------------------------------------------------------------------
 
     private _ensureDescBuffer(): void {
@@ -168,13 +183,13 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * Write a `Transform` into WASM linear memory and return its pointer.
+     * `Transform` を WASM 線形メモリに書き込み、そのポインタを返す。
      *
-     * C layout (wasm32, 40 bytes):
+     * C レイアウト (wasm32, 40 バイト):
      * ```
-     * offset 0:  float posX, posY, posZ        (12 bytes)
-     * offset 12: float rotX, rotY, rotZ, rotW  (16 bytes)
-     * offset 28: float scaleX, scaleY, scaleZ  (12 bytes)
+     * offset 0:  float posX, posY, posZ        (12 バイト)
+     * offset 12: float rotX, rotY, rotZ, rotW  (16 バイト)
+     * offset 28: float scaleX, scaleY, scaleZ  (12 バイト)
      * ```
      */
     private _serializeTransform(t: Transform): number {
@@ -194,17 +209,17 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * Write a `RenderPassDesc` into WASM linear memory and return its pointer.
+     * `RenderPassDesc` を WASM 線形メモリに書き込み、そのポインタを返す。
      *
-     * C layout (wasm32, 4-byte aligned, total 216 bytes):
+     * C レイアウト (wasm32, 4 バイトアライン、合計 216 バイト):
      * ```
      * offset 0:   uint32_t colorAttachmentCount
-     * offset 4:   LNColorAttachmentDesc colorAttachments[8]  (each 24 bytes)
-     *   per-attachment:
+     * offset 4:   LNColorAttachmentDesc colorAttachments[8]  (各 24 バイト)
+     *   アタッチメントごと:
      *     +0  uint32_t renderTarget
      *     +4  float    clearColor[4]
      *     +20 uint32_t loadOp
-     * offset 196: LNDepthStencilAttachmentDesc depthStencil  (20 bytes)
+     * offset 196: LNDepthStencilAttachmentDesc depthStencil  (20 バイト)
      *     +0  uint32_t depthBuffer
      *     +4  float    clearDepth
      *     +8  uint32_t clearStencil
@@ -216,12 +231,12 @@ export class Renderer extends LuminoObject {
         this._ensureDescBuffer();
         const v = this._descView!;
 
-        // Zero-fill the whole struct first (safe defaults: all zeros ≡ CLEAR,
-        // renderTarget=NULL_HANDLE, clearDepth will be set below).
+        // 構造体全体をゼロクリアする (安全なデフォルト値: 全ゼロ = CLEAR、
+        // renderTarget=NULL_HANDLE、clearDepth は後で設定する)。
         const bytes = new Uint8Array(v.buffer, this._descPtr, SIZEOF_RENDER_PASS_DESC);
         bytes.fill(0);
 
-        // --- Color attachments ---
+        // --- カラーアタッチメント ---
         const attachments = desc.colorAttachments ?? [];
         const count = Math.min(attachments.length, LN_MAX_COLOR_ATTACHMENTS);
         v.setUint32(0, count, true);
@@ -238,7 +253,7 @@ export class Renderer extends LuminoObject {
             v.setUint32(base + 20, a.loadOp ?? LoadOp.Clear, true);
         }
 
-        // --- Depth/stencil ---
+        // --- デプス/ステンシル ---
         const dsBase = 4 + LN_MAX_COLOR_ATTACHMENTS * SIZEOF_COLOR_ATTACHMENT_DESC; // 196
         const ds = desc.depthStencil;
         v.setUint32(dsBase + 0,  ds?.depthBuffer   ?? LN_NULL_HANDLE, true);
@@ -247,13 +262,13 @@ export class Renderer extends LuminoObject {
         v.setUint32(dsBase + 12, ds?.depthLoadOp    ?? LoadOp.Clear, true);
         v.setUint32(dsBase + 16, ds?.stencilLoadOp  ?? LoadOp.Clear, true);
 
-        // --- shaderPassName (const char* at offset 216) ---
+        // --- shaderPassName (offset 216 の const char*) ---
         if (desc.shaderPassName) {
             const encoder = new TextEncoder();
             const encoded = encoder.encode(desc.shaderPassName);
             const strPtr = Runtime.module._malloc(encoded.length + 1);
             Runtime.module.HEAPU8.set(encoded, strPtr);
-            Runtime.module.HEAPU8[strPtr + encoded.length] = 0; // null terminator
+            Runtime.module.HEAPU8[strPtr + encoded.length] = 0; // ヌル終端
             v.setUint32(216, strPtr, true);
             this._lastShaderPassNamePtr = strPtr;
         } else {

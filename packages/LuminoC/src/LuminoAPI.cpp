@@ -563,6 +563,39 @@ LNResult LNTexture2D_LoadFromMemory(
     return LN_OK;
 }
 
+LNResult LNTexture2D_CreateFromPixels(
+    LNHandle graphicsContext,
+    uint32_t width,
+    uint32_t height,
+    uint32_t format,
+    const void* pixelData,
+    uint32_t dataSizeBytes,
+    LNHandle* outHandle) {
+    if (!outHandle || !pixelData || dataSizeBytes == 0) return LN_ERROR_INVALID_ARGUMENT;
+    if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    ln::rhi::TextureDesc texDesc;
+    texDesc.width = width;
+    texDesc.height = height;
+    texDesc.format = static_cast<ln::rhi::TextureFormat>(format);
+    texDesc.usage = ln::rhi::TextureUsage::Sampled | ln::rhi::TextureUsage::CopyDst;
+    texDesc.initialData = pixelData;
+
+    auto texResult = ctx->device()->createTexture(texDesc);
+    if (!texResult) return LN_ERROR_UNKNOWN;
+
+    auto rhiTexture = std::move(*texResult);
+    auto texture = ln::Ref<ln::Texture>::adopt(
+        LN_NEW ln::Texture(std::move(rhiTexture),
+            static_cast<int>(width), static_cast<int>(height)));
+    *outHandle = wrapObjectFromCreate(texture.get());
+    return LN_OK;
+}
+
 //------------------------------------------------------------------------------
 // LNMaterial
 //------------------------------------------------------------------------------

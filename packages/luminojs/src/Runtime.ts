@@ -224,13 +224,14 @@ export class Runtime {
         API.LNRenderer_DrawSprite      = cw("LNRenderer_DrawSprite",      "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]);
 
         // Texture
-        API.LNTexture2D_LoadFromMemory      = cw("LNTexture2D_LoadFromMemory",      "number", ["number", "number", "number", "number"], { async: true });
+        API.LNTexture2D_LoadFromMemory      = cw("LNTexture2D_LoadFromMemory",      "number", ["number", "number", "number", "number"]);
+        API.LNTexture2D_CreateFromPixels    = cw("LNTexture2D_CreateFromPixels",    "number", ["number", "number", "number", "number", "number", "number", "number"]);
         API.LNTexture2D_CreateRenderTargetEx = cw("LNTexture2D_CreateRenderTargetEx", "number", ["number", "number", "number", "number", "number"]);
         API.LNTexture2D_CreateDepthStencil   = cw("LNTexture2D_CreateDepthStencil",   "number", ["number", "number", "number", "number"]);
 
         // Material
         API.LNMaterial_CreateUnlit              = cw("LNMaterial_CreateUnlit",              "number", ["number", "number"]);
-        API.LNMaterial_CreateFromCompiledShader  = cw("LNMaterial_CreateFromCompiledShader",  "number", ["number", "number", "number", "number"], { async: true });
+        API.LNMaterial_CreateFromCompiledShader  = cw("LNMaterial_CreateFromCompiledShader",  "number", ["number", "number", "number", "number"]);
         API.LNMaterial_SetMainTexture            = cw("LNMaterial_SetMainTexture",            "number", ["number", "number"]);
         API.LNMaterial_SetColor                  = cw("LNMaterial_SetColor",                  "number", ["number", "number", "number", "number", "number"]);
         API.LNMaterial_SetFloat4                 = cw("LNMaterial_SetFloat4",                 "number", ["number", "string", "number"]);
