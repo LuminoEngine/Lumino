@@ -14,6 +14,7 @@
 
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
+#include <stb_image.h>
 #include <LuminoCore/Graphics/Mesh.hpp>
 #include <LuminoCore/Graphics/Renderer.hpp>
 #include <LuminoCore/Graphics/Camera.hpp>
@@ -593,6 +594,42 @@ LNResult LNTexture2D_CreateFromPixels(
         LN_NEW ln::Texture(std::move(rhiTexture),
             static_cast<int>(width), static_cast<int>(height)));
     *outHandle = wrapObjectFromCreate(texture.get());
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+// LNImage
+//------------------------------------------------------------------------------
+
+LNResult LNImage_DecodeFromMemory(
+    const void* data,
+    uint32_t size,
+    uint32_t* outWidth,
+    uint32_t* outHeight,
+    const void** outPixels,
+    uint32_t* outPixelsSize) {
+    if (!data || size == 0) return LN_ERROR_INVALID_ARGUMENT;
+    if (!outWidth || !outHeight || !outPixels || !outPixelsSize)
+        return LN_ERROR_INVALID_ARGUMENT;
+
+    int w = 0, h = 0, channels = 0;
+    // RGBA8 (4チャンネル) に強制変換してデコード
+    uint8_t* pixels = stbi_load_from_memory(
+        static_cast<const stbi_uc*>(data),
+        static_cast<int>(size),
+        &w, &h, &channels, 4);
+    if (!pixels) return LN_ERROR_UNKNOWN;
+
+    *outWidth = static_cast<uint32_t>(w);
+    *outHeight = static_cast<uint32_t>(h);
+    *outPixels = pixels;
+    *outPixelsSize = static_cast<uint32_t>(w) * static_cast<uint32_t>(h) * 4;
+    return LN_OK;
+}
+
+LNResult LNImage_FreePixels(const void* pixels) {
+    if (!pixels) return LN_ERROR_INVALID_ARGUMENT;
+    stbi_image_free(const_cast<void*>(pixels));
     return LN_OK;
 }
 

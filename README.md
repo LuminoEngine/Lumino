@@ -49,7 +49,7 @@ ctest --test-dir build/lumino-x64-windows -C Release --output-on-failure
 ```
 
 ```sh
-# emscripten 準備
+# wasm ビルド
 git clone -b 5.0.5 https://github.com/emscripten-core/emsdk.git ./build/emsdk
 ./build/emsdk/emsdk install 5.0.5
 ./build/emsdk/emsdk activate 5.0.5

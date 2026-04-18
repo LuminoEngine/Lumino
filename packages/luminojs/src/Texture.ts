@@ -2,10 +2,9 @@ import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
 import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import { TextureFormat } from "./types";
+import { Result, TextureFormat } from "./types";
 
 type TextureSource =
-    | { kind: "pngBytes"; data: Uint8Array }
     | { kind: "pixels"; data: Uint8Array; width: number; height: number; format: TextureFormat }
     | { kind: "external" };  // RenderTarget / DepthStencil - not a Residency target.
 
@@ -50,15 +49,42 @@ export class Texture extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * Define a texture from raw image file bytes (PNG, JPG, etc.).
+     * 画像ファイルのバイト列 (PNG, JPG, BMP, TGA 等) からテクスチャを定義する。
+     * 呼び出し時点で画像をデコードし、幅・高さが即座に参照可能になる。
      * GPU アップロードは最初の描画時に遅延実行される。
      */
     static loadFromMemory(data: Uint8Array): Texture {
-        const tex = new Texture();
-        tex._source = { kind: "pngBytes", data };
-        tex._dirty = true;
-        tex._isResidencyTarget = true;
-        return tex;
+        const m = Runtime.module;
+        const inPtr = m._malloc(data.byteLength);
+        // out パラメータ用の一時バッファ (uint32 x 4 = 16 bytes)
+        const outPtr = m._malloc(16);
+        try {
+            m.HEAPU8.set(data, inPtr);
+            const rc = (API.LNImage_DecodeFromMemory as (
+                data: number, size: number,
+                outW: number, outH: number, outPix: number, outPixSize: number,
+            ) => number)(inPtr, data.byteLength,
+                outPtr, outPtr + 4, outPtr + 8, outPtr + 12);
+            if (rc !== Result.OK) throw new Error(`LNImage_DecodeFromMemory failed: ${rc}`);
+
+            const view = new Uint32Array(m.HEAPU32.buffer, outPtr, 4);
+            const width = view[0];
+            const height = view[1];
+            const pixelsPtr = view[2];
+            const pixelsSize = view[3];
+
+            // デコード済みピクセルを JS 側にコピー (WASM メモリ節約)
+            const pixels = new Uint8Array(pixelsSize);
+            pixels.set(m.HEAPU8.subarray(pixelsPtr, pixelsPtr + pixelsSize));
+
+            // C++ 側のデコードバッファを解放
+            (API.LNImage_FreePixels as (p: number) => number)(pixelsPtr);
+
+            return Texture.createFromPixels(pixels, width, height, TextureFormat.RGBA8_UNORM);
+        } finally {
+            m._free(outPtr);
+            m._free(inPtr);
+        }
     }
 
     /**
@@ -106,20 +132,7 @@ export class Texture extends LuminoObject implements ResidentResource {
         }
 
         const m = Runtime.module;
-        if (this._source.kind === "pngBytes") {
-            const data = this._source.data;
-            const ptr = m._malloc(data.byteLength);
-            try {
-                m.HEAPU8.set(data, ptr);
-                const handle = Runtime.safeCallWithReturnHandle((out) =>
-                    (API.LNTexture2D_LoadFromMemory as (
-                        ctx: number, data: number, size: number, out: number,
-                    ) => number)(ctx.handle, ptr, data.byteLength, out));
-                this._setHandle(handle, true);
-            } finally {
-                m._free(ptr);
-            }
-        } else if (this._source.kind === "pixels") {
+        if (this._source.kind === "pixels") {
             const src = this._source;
             const ptr = m._malloc(src.data.byteLength);
             try {

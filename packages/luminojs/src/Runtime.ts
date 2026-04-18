@@ -224,10 +224,13 @@ export class Runtime {
         API.LNRenderer_DrawSprite      = cw("LNRenderer_DrawSprite",      "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]);
 
         // Texture
-        API.LNTexture2D_LoadFromMemory      = cw("LNTexture2D_LoadFromMemory",      "number", ["number", "number", "number", "number"]);
         API.LNTexture2D_CreateFromPixels    = cw("LNTexture2D_CreateFromPixels",    "number", ["number", "number", "number", "number", "number", "number", "number"]);
         API.LNTexture2D_CreateRenderTargetEx = cw("LNTexture2D_CreateRenderTargetEx", "number", ["number", "number", "number", "number", "number"]);
         API.LNTexture2D_CreateDepthStencil   = cw("LNTexture2D_CreateDepthStencil",   "number", ["number", "number", "number", "number"]);
+
+        // Image (GPU 非依存の画像デコード)
+        API.LNImage_DecodeFromMemory = cw("LNImage_DecodeFromMemory", "number", ["number", "number", "number", "number", "number", "number"]);
+        API.LNImage_FreePixels       = cw("LNImage_FreePixels",       "number", ["number"]);
 
         // Material
         API.LNMaterial_CreateUnlit              = cw("LNMaterial_CreateUnlit",              "number", ["number", "number"]);

@@ -365,6 +365,37 @@ extern LUMINO_API LNResult LNTexture2D_CreateFromPixels(
 );
 
 //------------------------------------------------------------------------------
+// LNImage
+//------------------------------------------------------------------------------
+
+/**
+ * メモリ上の画像データ (PNG, JPG, BMP, TGA 等) をデコードし、
+ * RGBA8 ピクセルデータとして返します。
+ * GPU コンテキスト不要の純粋な CPU 処理です。
+ * 返されたピクセルデータは LNImage_FreePixels で解放してください。
+ * @param[in]  data          画像データへのポインタ
+ * @param[in]  size          データサイズ (バイト)
+ * @param[out] outWidth      画像の幅 (ピクセル)
+ * @param[out] outHeight     画像の高さ (ピクセル)
+ * @param[out] outPixels     デコードされた RGBA8 ピクセルデータへのポインタ
+ * @param[out] outPixelsSize ピクセルデータのサイズ (バイト, = width * height * 4)
+ */
+extern LUMINO_API LNResult LNImage_DecodeFromMemory(
+    const void* data,
+    uint32_t size,
+    uint32_t* outWidth,
+    uint32_t* outHeight,
+    const void** outPixels,
+    uint32_t* outPixelsSize
+);
+
+/**
+ * LNImage_DecodeFromMemory で確保されたピクセルデータを解放します。
+ * @param[in] pixels 解放するピクセルデータへのポインタ
+ */
+extern LUMINO_API LNResult LNImage_FreePixels(const void* pixels);
+
+//------------------------------------------------------------------------------
 // LNMaterial
 //------------------------------------------------------------------------------
 
