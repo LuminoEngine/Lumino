@@ -152,7 +152,7 @@ async function main() {
                 depthStencil: { depthBuffer: sceneDepth.handle },
                 shaderPassName: "GBuffer",
             },
-            camera.handle,
+            camera,
         );
         renderer.drawMesh(groundMesh, groundTransform, 0);
         renderer.drawMesh(triMesh, triTransform, 0);
@@ -167,7 +167,7 @@ async function main() {
             ],
             depthStencil: { depthBuffer },
             },
-            camera.handle,
+            camera,
         );
         renderer.drawScreenRect(matSSR);
         renderer.endRenderPass();

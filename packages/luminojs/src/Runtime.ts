@@ -94,6 +94,8 @@ export class Runtime {
         // Bind all C-API functions via cwrap.
         this._bindAPI();
 
+        console.log("[Lumino] Build:", Runtime.getBuildTimestamp());
+
         // Initialize Lumino graphics instance.
         const m = this.module;
         const ptr = m._malloc(SIZEOF_INSTANCE_INIT_SETTINGS);

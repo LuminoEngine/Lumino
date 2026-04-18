@@ -1,10 +1,10 @@
 import { LuminoObject } from "./LuminoObject";
+import type { Camera } from "./Camera";
 import type { GraphicsContext } from "./GraphicsContext";
 import type { Material } from "./Material";
 import type { Mesh } from "./Mesh";
 import { API, Runtime } from "./Runtime";
 import {
-    type Handle,
     type RenderPassDesc,
     type Transform,
     LN_NULL_HANDLE,
@@ -39,16 +39,16 @@ export class Renderer extends LuminoObject {
      *
      * @param ctx    この Renderer を所有する GraphicsContext。
      * @param desc   レンダーパスディスクリプタ (カラーアタッチメント、デプス、クリア値など)。
-     * @param camera カメラハンドル。省略時は `LN_NULL_HANDLE`。
+     * @param camera カメラ。
      */
-    beginRenderPass(ctx: GraphicsContext, desc: RenderPassDesc, camera: Handle = LN_NULL_HANDLE): void {
+    beginRenderPass(ctx: GraphicsContext, desc: RenderPassDesc, camera: Camera): void {
         this._boundCtx = ctx;
         const ptr = this._serializeDesc(desc);
         try {
             Runtime.safeCall(() =>
                 (API.LNRenderer_BeginRenderPass as (
                     r: number, ctx: number, d: number, cam: number,
-                ) => number)(this._handle, ctx.handle, ptr, camera));
+                ) => number)(this._handle, ctx.handle, ptr, camera.handle));
         } finally {
             if (this._lastShaderPassNamePtr) {
                 Runtime.module._free(this._lastShaderPassNamePtr);

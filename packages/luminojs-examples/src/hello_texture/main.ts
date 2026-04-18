@@ -66,7 +66,7 @@ async function main() {
                     },
                 ],
             },
-            camera.handle,
+            camera,
         );
         renderer.drawMesh(mesh, identity);
         renderer.endRenderPass();

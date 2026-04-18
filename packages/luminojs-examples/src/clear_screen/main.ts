@@ -2,6 +2,7 @@ import {
     Runtime,
     GraphicsContext,
     LoadOp,
+    Camera,
 } from "luminojs";
 
 async function main() {
@@ -17,6 +18,8 @@ async function main() {
     // Create GraphicsContext from canvas
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
+    const camera = Camera.create();
+
     // Render loop
     function frame() {
         const { renderer } = context.beginFrame();
@@ -27,7 +30,7 @@ async function main() {
                     loadOp: LoadOp.Clear,
                 },
             ],
-        });
+        }, camera);
         renderer.endRenderPass();
         context.endFrame();
         requestAnimationFrame(frame);

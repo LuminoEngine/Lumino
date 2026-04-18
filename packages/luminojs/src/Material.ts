@@ -11,7 +11,7 @@ type MaterialSource =
 
 export class Material extends LuminoObject implements ResidentResource {
     private _source: MaterialSource;
-    private _mainTexture: Texture | null = null;
+    private _mainTexture: Texture | undefined;
     private _namedTextures: Map<string, Texture> = new Map();
     private _color: [number, number, number, number] | null = null;
     private _float4s: Map<string, [number, number, number, number]> = new Map();
@@ -27,59 +27,69 @@ export class Material extends LuminoObject implements ResidentResource {
         this._source = source;
     }
 
-    /** Create a material using the built-in Unlit shader. GPU 側生成は遅延。 */
+    /** 組み込みの Unlit シェーダーを用いてマテリアルを作成します。GPU 側生成は遅延。 */
     static createUnlit(): Material {
         const mat = new Material({ kind: "unlit" });
         mat._dirty = true;
         return mat;
     }
 
-    /** Create a material from pre-compiled shader binary (.lcsh). GPU 側生成は遅延。 */
+    /** コンパイル済みシェーダバイナリ (.lcsh) からマテリアルを作成します。GPU 側生成は遅延。 */
     static createFromCompiledShader(data: Uint8Array): Material {
         const mat = new Material({ kind: "compiled", data });
         mat._dirty = true;
         return mat;
     }
 
-    /** Set the main (diffuse) texture. (shadow state only; applied at ensure time) */
-    setMainTexture(texture: Texture): void {
+    /**
+     * メイン (ディフューズ) テクスチャを設定します。(シャドウ状態のみ保持し、ensure 時に反映)
+     *
+     * undefined が指定された場合、組み込みの小さな白テクスチャが描画に使用されます。
+     */
+    setMainTexture(texture: Texture | undefined): void {
         this._mainTexture = texture;
         this._paramsDirty = true;
     }
 
-    /** Set the base color (RGBA, 0-1). */
+    /** ベースカラー (RGBA, 0-1) を設定します。 */
     setColor(r: number, g: number, b: number, a: number): void {
         this._color = [r, g, b, a];
         this._paramsDirty = true;
     }
 
-    /** Set a float4 shader parameter by name. */
+    /** 名前付き float4 シェーダパラメータを設定します。 */
     setFloat4(name: string, values: [number, number, number, number]): void {
         this._float4s.set(name, [values[0], values[1], values[2], values[3]]);
         this._paramsDirty = true;
     }
 
-    /** Bind a texture to a named shader uniform. */
+    /**
+     * 名前付きシェーダ uniform にテクスチャをバインドします。
+     *
+     * ある名前に対して一度もバインドされなかった場合(あるいは下層の C++ Material に
+     * その名前で `null` が渡された場合)、未バインドのリソースをサンプリングしないよう、
+     * 組み込みの 1x1 白テクスチャがスロットに割り当てられます。
+     */
     setNamedTexture(name: string, texture: Texture): void {
         this._namedTextures.set(name, texture);
         this._paramsDirty = true;
     }
 
-    /** Set face culling mode. */
+    /** フェースカリングモードを設定します。 */
     setCullMode(mode: CullMode): void {
         this._cullMode = mode;
         this._paramsDirty = true;
     }
 
     /**
-     * @internal Called by Renderer (or Mesh.ensure) at draw time. Creates the
-     * C++ Material on first use and applies any shadowed parameter changes.
+     * @internal 描画時に Renderer (または Mesh.ensure) から呼び出されます。
+     * 初回使用時に C++ Material を生成し、シャドウされたパラメータ変更を適用します。
      */
     ensure(ctx: GraphicsContext): void {
         if (this._handle === 0) {
             this._createGpuMaterial(ctx);
-            // All params must be applied after creation, regardless of prior
-            // _paramsDirty state.
+            // 生成直後は _paramsDirty の以前の状態にかかわらず、
+            // すべてのパラメータを適用する必要がある。
             this._paramsDirty = true;
         }
 
@@ -93,7 +103,7 @@ export class Material extends LuminoObject implements ResidentResource {
         ctx.residencyManager.register(this);
     }
 
-    /** @internal Release the GPU material; next ensure() rebuilds and re-applies params. */
+    /** @internal GPU マテリアルを解放します。次の ensure() で再生成され、パラメータも再適用されます。 */
     evict(): void {
         if (this._handle === 0) return;
         (API.LNObject_Release as (h: number) => number)(this._handle);
@@ -103,7 +113,7 @@ export class Material extends LuminoObject implements ResidentResource {
 
     override dispose(): void {
         this.evict();
-        this._mainTexture = null;
+        this._mainTexture = undefined;
         this._namedTextures.clear();
         this._float4s.clear();
     }

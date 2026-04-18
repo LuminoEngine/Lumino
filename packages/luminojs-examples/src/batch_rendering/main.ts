@@ -96,7 +96,7 @@ async function main() {
                     },
                 ],
             },
-            camera.handle,
+            camera,
         );
 
         // Add sprites

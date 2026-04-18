@@ -1,4 +1,5 @@
 ﻿#include <LuminoCore/Graphics/Material.hpp>
+#include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
@@ -83,7 +84,7 @@ void Material::setTexture(rhi::Texture* texture) {
         texture->addRef();
         m_baseTexture = Ref<rhi::Texture>::adopt(texture);
     } else {
-        m_baseTexture.reset();
+        m_baseTexture = CoreInstance::instance()->graphicsModule()->whiteTexture();
     }
     markDirty();
 }
@@ -99,7 +100,7 @@ void Material::setNamedTexture(const std::string& name, rhi::Texture* texture) {
         texture->addRef();
         m_namedTextures[name] = Ref<rhi::Texture>::adopt(texture);
     } else {
-        m_namedTextures.erase(name);
+        m_namedTextures[name] = CoreInstance::instance()->graphicsModule()->whiteTexture();
     }
     markDirty();
 }
