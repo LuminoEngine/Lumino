@@ -33,7 +33,7 @@ int main() {
     CoreInstance::Settings coreSettings;
     coreSettings.preferredBackend = Backend::Vulkan;
     coreSettings.enableValidation = true;
-    CoreInstance::initialize(coreSettings);
+    (void)CoreInstance::initialize(coreSettings);
     {
         WindowDesc winDesc;
         winDesc.title = "Lumino - Hello Mesh";

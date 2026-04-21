@@ -83,6 +83,36 @@ export class Renderer extends LuminoObject {
     }
 
     /**
+     * ステンシルマスクをプッシュする。
+     * mesh をステンシルバッファにのみ描画し、以降の描画はマスク領域内のみ出力される。
+     * ネスト可 (内部で stencil 参照値をインクリメント)。popStencilMask と対で呼ぶこと。
+     *
+     * レンダーパスの depthStencil にステンシル付きバッファが必要。
+     *
+     * @param mesh      マスク形状のメッシュ。
+     * @param transform マスクメッシュの TRS。
+     * @param material  マスク描画用マテリアル (StencilMask シェーダ推奨)。
+     */
+    pushStencilMask(mesh: Mesh, transform: Transform, material: Material): void {
+        if (!this._boundCtx) throw new Error("Renderer.pushStencilMask called outside of a render pass");
+        mesh.ensure(this._boundCtx);
+        material.ensure(this._boundCtx);
+        if (mesh.handle === 0 || material.handle === 0) return;
+        const ptr = this._serializeTransform(transform);
+        Runtime.safeCall(() =>
+            (API.LNRenderer_PushStencilMask as (
+                r: number, mesh: number, t: number, mat: number,
+            ) => number)(this._handle, mesh.handle, ptr, material.handle));
+    }
+
+    /** 直前の pushStencilMask と対になるマスクを解除する。 */
+    popStencilMask(): void {
+        if (!this._boundCtx) throw new Error("Renderer.popStencilMask called outside of a render pass");
+        Runtime.safeCall(() =>
+            (API.LNRenderer_PopStencilMask as (r: number) => number)(this._handle));
+    }
+
+    /**
      * スプライトの描画コマンドを送信する (バッチ処理)。
      *
      * @param material  使用する Material。

@@ -224,6 +224,8 @@ export class Runtime {
         API.LNRenderer_DrawMesh        = cw("LNRenderer_DrawMesh",        "number", ["number", "number", "number", "number"]);
         API.LNRenderer_DrawScreenRect  = cw("LNRenderer_DrawScreenRect",  "number", ["number", "number"]);
         API.LNRenderer_DrawSprite      = cw("LNRenderer_DrawSprite",      "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]);
+        API.LNRenderer_PushStencilMask = cw("LNRenderer_PushStencilMask", "number", ["number", "number", "number", "number"]);
+        API.LNRenderer_PopStencilMask  = cw("LNRenderer_PopStencilMask",  "number", ["number"]);
 
         // Texture
         API.LNTexture2D_CreateFromPixels    = cw("LNTexture2D_CreateFromPixels",    "number", ["number", "number", "number", "number", "number", "number", "number"]);

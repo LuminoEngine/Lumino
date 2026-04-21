@@ -178,7 +178,7 @@ int main() {
         // Triangle transform: rotate around Y axis, hover above ground
         LNTransform triTransform = {
             0.0f, 1.0f, -1.0f,                                     // position
-            0.0f, sinf(triangleAngle * 0.5f), sinf(triangleAngle * 0.5f)*0.4, cosf(triangleAngle * 0.5f),  // rotation (Y axis)
+            0.0f, sinf(triangleAngle * 0.5f), sinf(triangleAngle * 0.5f)*0.4f, cosf(triangleAngle * 0.5f),  // rotation (Y axis)
             1.0f, 1.0f, 1.0f                                      // scale
         };
 

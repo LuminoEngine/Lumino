@@ -11,6 +11,7 @@
     {
       "name": "Advanced",
       "items": [
+        { "id": "stencil_mask", "title": "Stencil Mask" },
         { "id": "ssr", "title": "Screen Space Reflection" }
       ]
     }

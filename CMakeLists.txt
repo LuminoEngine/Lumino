@@ -23,6 +23,9 @@ find_package(tl-expected CONFIG REQUIRED)
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
+# 警告をエラーとして扱う
+set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+
 if(EMSCRIPTEN)
     set(LN_PLATFORM_WEB ON)
     set(LN_ENABLE_VULKAN OFF)

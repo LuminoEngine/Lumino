@@ -1,4 +1,4 @@
-#include <LuminoCore/CoreInstance.hpp>
+﻿#include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
 
