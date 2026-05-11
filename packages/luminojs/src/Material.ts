@@ -3,7 +3,7 @@ import type { GraphicsContext } from "./GraphicsContext";
 import type { Texture } from "./Texture";
 import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import { CullMode } from "./types";
+import { BlendMode, CullMode } from "./types";
 
 type MaterialSource =
     | { kind: "unlit" }
@@ -16,6 +16,7 @@ export class Material extends LuminoObject implements ResidentResource {
     private _color: [number, number, number, number] | null = null;
     private _float4s: Map<string, [number, number, number, number]> = new Map();
     private _cullMode: CullMode | null = null;
+    private _blendMode: BlendMode | null = null;
     private _dirty = false;
     private _paramsDirty = false;
     private _lastUsedFrame = 0;
@@ -78,6 +79,12 @@ export class Material extends LuminoObject implements ResidentResource {
     /** フェースカリングモードを設定します。 */
     setCullMode(mode: CullMode): void {
         this._cullMode = mode;
+        this._paramsDirty = true;
+    }
+
+    /** ブレンドモードを設定します。 */
+    setBlendMode(mode: BlendMode): void {
+        this._blendMode = mode;
         this._paramsDirty = true;
     }
 
@@ -196,6 +203,14 @@ export class Material extends LuminoObject implements ResidentResource {
             const mode = this._cullMode;
             Runtime.safeCall(() =>
                 (API.LNMaterial_SetCullMode as (
+                    mat: number, mode: number,
+                ) => number)(this._handle, mode));
+        }
+
+        if (this._blendMode !== null) {
+            const mode = this._blendMode;
+            Runtime.safeCall(() =>
+                (API.LNMaterial_SetBlendMode as (
                     mat: number, mode: number,
                 ) => number)(this._handle, mode));
         }

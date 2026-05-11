@@ -21,6 +21,15 @@ export enum LoadOp {
     DontCare = 2,
 }
 
+/** Blend mode (matches C LNBlendMode). */
+export enum BlendMode {
+    Normal   = 0,
+    Alpha    = 1,
+    Add      = 2,
+    Subtract = 3,
+    Multiply = 4,
+}
+
 /** Face culling mode (matches C LNCullMode). */
 export enum CullMode {
     /** No culling - render both sides. */

@@ -14,6 +14,7 @@ export {
     GraphicsBackend,
     LoadOp,
     TextureFormat,
+    BlendMode,
     CullMode,
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
