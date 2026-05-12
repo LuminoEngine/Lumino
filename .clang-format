@@ -1,152 +1,96 @@
 # https://pystyle.info/apps/clang-format-editor/
 #
----
 Language: Cpp
-# BasedOnStyle: Mozilla
-# IDE で左右に FileList と Chat を表示することが多くなったため 120 -> 100 へ。
-ColumnLimit: 100
-AccessModifierOffset: -4
-AllowAllArgumentsOnNextLine: false
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
 
-AlignTrailingComments: true
-#----------
-# Type LongLongFunction(
-#   int a,
-#   int b,
-#   int c)
-#BreakBeforeCloseBracketFunction: true # TODO: BreakBeforeClose～ 系は True にしたいのだけど、 Clang 22 以上が必要で VS2022 を新しくする必要がある。
-AllowAllParametersOfDeclarationOnNextLine: false
-#BinPackParameters: AlwaysOnePerLine
-BinPackParameters: false
-AlwaysBreakAfterDefinitionReturnType: None
-AlwaysBreakAfterReturnType: None
-BreakAfterReturnType: Automatic
-PenaltyReturnTypeOnItsOwnLine: 100000
-BreakBeforeBraces: Custom
-BreakConstructorInitializers: BeforeComma
-PenaltyBreakBeforeFirstCallParameter: 0
-BinPackArguments: false
-AlignAfterOpenBracket: AlwaysBreak
-#----------
-# #define A         \
-#   int aaaa;       \
-#   int b;          \
-#   int dddddddddd;
-AlignEscapedNewlines: LeftWithLastLine
-#----------
-# ```
-# auto a =
-#   func(a, b);
-# ```
-# ↓
-# ```
-# auto a = func(
-#     a,
-#     b);
-PenaltyBreakAssignment: 1000
-#----------
-# ```
-# depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled
-#                                           ? WGPUOptionalBool_True
-#                                           : WGPUOptionalBool_False;
-# ```
-# ↓
-# ```
-# depthStencilState.depthWriteEnabled = state.depthStencilState.depthWriteEnabled
-#     ? WGPUOptionalBool_True
-#     : WGPUOptionalBool_False;
-# ```
-AlignOperands: false
-#----------
-PenaltyBreakFirstLessLess: 120
-PenaltyBreakComment: 300
-PenaltyBreakString: 1000
-PenaltyExcessCharacter: 1000000
-
-
-AllowShortBlocksOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: InlineOnly
-AllowShortIfStatementsOnASingleLine: true
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: true
-BraceWrapping:   
-  AfterClass:      false
-  AfterControlStatement: false
-  AfterEnum:       false
-  AfterFunction:   false
-  AfterNamespace:  false
-  AfterObjCDeclaration: false
-  AfterStruct:     false
-  AfterUnion:      false
-  BeforeCatch:     true
-  BeforeElse:      true
-  IndentBraces:    false
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
-BreakBeforeBinaryOperators: None
-BreakBeforeInheritanceComma: true
-BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: false
-BreakAfterJavaFieldAnnotations: false
-BreakStringLiterals: false
-CommentPragmas:  '^ IWYU pragma:'
-CompactNamespaces: false
-ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ConstructorInitializerIndentWidth: 4
+# インデント設定
+UseTab: Never
+TabWidth: 4
+IndentWidth: 4
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: true
-DerivePointerAlignment: false
-DisableFormat:   false
-ExperimentalAutoDetectBinPacking: false
-FixNamespaceComments: false
-ForEachMacros:   
-  - foreach
-  - Q_FOREACH
-  - BOOST_FOREACH
-IncludeCategories: 
-  - Regex:           '^<.*\.h>'
-    Priority:        1
-  - Regex:           '^<.*'
-    Priority:        2
-  - Regex:           '.*'
-    Priority:        3
-IncludeIsMainRegex: '([-_](test|unittest))?$'
-IndentCaseLabels: true
-IndentPPDirectives: None
-IndentWidth:     4
-IndentWrappedFunctionNames: false
-JavaScriptQuotes: Leave
-JavaScriptWrapImports: true
-KeepEmptyLinesAtTheStartOfBlocks: true
-MacroBlockBegin: ''
-MacroBlockEnd:   ''
-MaxEmptyLinesToKeep: 1
-NamespaceIndentation: None
-ObjCBlockIndentWidth: 4
-ObjCSpaceAfterProperty: true
-ObjCSpaceBeforeProtocolList: false
-PointerAlignment: Left
-ReflowComments:  false  # Leave the arrangement of comments to the programmer.
-SortIncludes:    false
-SortUsingDeclarations: true
-SpaceAfterCStyleCast: false
-SpaceAfterTemplateKeyword: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 1
-SpacesInAngles:  false
-SpacesInContainerLiterals: true
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
-Standard:        Cpp11
-TabWidth:        8
-UseTab:          Never
-...
+ConstructorInitializerIndentWidth: 4
+BracedInitializerIndentWidth: 4
+AccessModifierOffset: -4
 
+# IDE で左右に FileList と Chat を表示することが多くなったため 120 -> 100 へ
+ColumnLimit: 100
+
+# 用の改行設定
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterClass: false
+    AfterControlStatement: false
+    AfterEnum: false
+    AfterFunction: false
+    AfterNamespace: false
+    AfterObjCDeclaration: false
+    AfterStruct: false
+    AfterUnion: false
+    BeforeCatch: true
+    BeforeElse: true
+    IndentBraces: false
+    SplitEmptyFunction: false
+    SplitEmptyRecord: false
+    SplitEmptyNamespace: false
+
+# たくさんの引数があるときに改行する
+# int Func(
+#	  int a,
+#	  int b)
+AllowAllParametersOfDeclarationOnNextLine: false
+PenaltyBreakBeforeFirstCallParameter: 0
+
+# パラメータ改行が発生した時、関数ヘッダ最後の ) を、引数と同じ行にする
+# int Func(
+#	  int a,
+#	  int b) const
+AlignAfterOpenBracket: AlwaysBreak
+
+# int* や int& のように、 * や & を型側に付ける
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# 短いインライン関数は { } を改行しない
+AllowShortFunctionsOnASingleLine: InlineOnly
+
+# = の直後で改行するより、関数引数を 1 つずつ改行することを優先する
+# (デフォルト 2 → 大きくすることで「= 後改行」のコストを上げる)
+# int a = Func(   // = の後の改行の優先度を下げたい
+#     ...
+# )
+PenaltyBreakAssignment: 100
+
+# 戻り値は関数名と同じ行にする
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 1000000
+
+# namespace の { } 内はインデントしない
+NamespaceIndentation: None
+
+SortIncludes: false
+
+#-------------------------------------------------------------------------------
+# Webの標準的なフォーマッタの Prettier に合わせるような設定
+# https://gist.github.com/nicklasfrahm/4a4fff24381f85ada76ccb651f555e1f
+#-------------------------------------------------------------------------------
+IndentCaseLabels: true
+#PenaltyReturnTypeOnItsOwnLine: 200
+#UseTab: Never
+#SortIncludes: true
+SortUsingDeclarations: false
+AlignConsecutiveMacros: false
+AlignEscapedNewlines: DontAlign
+#AlignAfterOpenBracket: BlockIndent
+AlignOperands: false
+AlignTrailingComments: false
+BinPackArguments: false
+BinPackParameters: false
+SpacesInContainerLiterals: false
+Cpp11BracedListStyle: true
+#AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Always
+FixNamespaceComments: false
+ReflowComments: false
+#NamespaceIndentation: All
+BreakStringLiterals: false
+BreakConstructorInitializers: AfterColon
+IndentPPDirectives: BeforeHash

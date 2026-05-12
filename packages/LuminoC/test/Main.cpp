@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
             char* testArgs[] = {
                 argv[0],
                 (char*)"--gtest_break_on_failure",
-                (char*)"--gtest_filter=Test_Graphics.StencilMask1",
+                (char*)"--gtest_filter=Test_Graphics.TwoSprites",
             };
             argc = sizeof(testArgs) / sizeof(char*);
             argv = testArgs;

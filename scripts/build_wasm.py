@@ -1,23 +1,12 @@
 #!/usr/bin/env python3
 """Build Lumino for the web (Emscripten / WebAssembly).
 
-Phase 0 responsibilities:
-  - Use the Emscripten SDK installed at ``<repo>/emsdk`` (as documented in
-    README.md: ``git clone -b 5.0.5 ... ./emsdk``).
-  - Run ``emcmake cmake -S . -B build/wasm`` and then ``cmake --build``.
-  - Copy the generated artifacts (``LuminoC.mjs``, ``LuminoC.wasm``,
-    ``LuminoC.wasm.map``) into ``packages/luminojs/lib/`` so that the
-    sandbox HTML can load them directly.
-
-Only the Python standard library is used so that the script runs on any
-machine that already has Python 3.8+ and the in-tree emsdk clone.
-
 Usage:
     python scripts/build_wasm.py              # configure + build + copy
     python scripts/build_wasm.py all          # same as above
     python scripts/build_wasm.py configure    # cmake configure only
     python scripts/build_wasm.py build        # cmake --build + copy
-    python scripts/build_wasm.py clean        # remove build/wasm and lib output
+    python scripts/build_wasm.py clean        # remove output
 """
 
 from __future__ import annotations
@@ -32,15 +21,15 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-BUILD_DIR = REPO_ROOT / "build" / "wasm"
+BUILD_DIR = REPO_ROOT / "build" / "lumino-wasm32-emscripten"
 OUTPUT_DIR = REPO_ROOT / "packages" / "luminojs" / "lib"
+
 # Emscripten SDK is always cloned into <repo>/emsdk per README.md.
 EMSDK_ROOT = REPO_ROOT / "build" / "emsdk"
 NINJA = REPO_ROOT / "build" / "vcpkg" / "downloads" / "tools" / "ninja-1.13.2-windows" / "ninja.exe"
 VCPKG_TOOLCHAIN = REPO_ROOT / "build" / "vcpkg" / "scripts" / "buildsystems" / "vcpkg.cmake"
 
-# Files produced by the Emscripten link step that should be shipped to the
-# TypeScript package.
+# Files produced by the Emscripten link step that should be shipped to the TypeScript package.
 ARTIFACT_NAMES = ("LuminoC.mjs", "LuminoC.wasm", "LuminoC.wasm.map")
 
 # Native binaries (luminosc) built for x64-Windows that are bundled into the
@@ -92,30 +81,9 @@ def resolve_emsdk() -> Path:
 #----------------------------------------------------------------------------
 
 def _run_with_emsdk(emsdk_root: Path, cmd_args: list[str]) -> None:
-    """Run ``cmd_args`` in a shell that has ``emsdk_env`` activated.
-
-    We do **not** try to capture emsdk's environment into Python and then
-    forward it via ``subprocess.run(..., env=env)``; that approach is fragile
-    on Windows because emsdk_env.bat dynamically generates a set_env script
-    and any failure in that pipeline is hard to diagnose. Instead, we ask the
-    OS shell to chain ``call emsdk_env.bat`` (or ``. emsdk_env.sh``) with the
-    real command, so emsdk's environment lives only for the duration of the
-    child shell.
-    """
     env_script = _find_emsdk_env(emsdk_root)
     print(f"[build_wasm] $ {' '.join(cmd_args)}", flush=True)
     if os.name == "nt":
-        # Windows quoting is a minefield. If we pass a Python list to
-        # subprocess, ``list2cmdline`` would escape inner quotes with ``\"``
-        # (a MSVCRT-style escape), but cmd.exe does NOT understand ``\"`` and
-        # interprets it literally, producing errors like
-        #   '"C:\...\emsdk_env.bat"' is not recognized ...
-        # Instead, build the full cmd.exe command line ourselves and pass it
-        # as a single STRING to subprocess.run. Python will forward the string
-        # to CreateProcess verbatim (no further escaping), and cmd.exe's /s
-        # flag treats the /c argument very simply: if the first and last char
-        # are ``"``, strip them and run the rest as-is. That lets us keep
-        # embedded quotes around paths-with-spaces without any escaping dance.
         inner = subprocess.list2cmdline(cmd_args)
         full = f'cmd.exe /s /c "call "{env_script}" >NUL && {inner}"'
         subprocess.run(full, check=True, cwd=str(REPO_ROOT))
@@ -181,8 +149,6 @@ def cmd_clean() -> None:
 
 def _copy_artifacts() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    # Emscripten places outputs in the same directory as the executable target.
-    # With the current CMake layout that is build/wasm/packages/LuminoC/.
     src_dir = BUILD_DIR / "packages" / "LuminoC"
     copied = 0
     for name in ARTIFACT_NAMES:
@@ -203,7 +169,6 @@ def _copy_artifacts() -> None:
 
 
 def _copy_native_binaries() -> None:
-    """Copy luminosc exe/dll from the x64-Windows Release build to luminojs/bin/x64-windows/."""
     if not NATIVE_BIN_SRC.is_dir():
         print(f"[build_wasm] warning: native bin directory not found: {NATIVE_BIN_SRC}")
         return
@@ -215,12 +180,10 @@ def _copy_native_binaries() -> None:
             print(f"[build_wasm] copied {src_file.name} -> {dst_file}")
 
 
+# C++のサンプルアセット（シェーダー、テクスチャ）を luminojs-examples 内にコピーします。
+# public/に配置されたファイルは、ViteによってルートURLパスで処理されずに配信されるため、
+# TypeScriptのサンプルでは「/foo.lcsh」のように参照できます。
 def _copy_example_assets() -> None:
-    """Copy C++ example assets (shaders, textures) to luminojs-examples/public/.
-
-    Files placed in public/ are served by Vite at the root URL path without
-    any processing, so TypeScript examples can reference them as "/foo.lcsh".
-    """
     if not EXAMPLE_ASSETS_SRC.is_dir():
         print(f"[build_wasm] warning: example assets directory not found: {EXAMPLE_ASSETS_SRC}")
         return
@@ -230,7 +193,6 @@ def _copy_example_assets() -> None:
             dst_file = EXAMPLE_ASSETS_DEST / src_file.name
             shutil.copy2(src_file, dst_file)
             print(f"[build_wasm] copied {src_file.name} -> {dst_file}")
-
 
 #----------------------------------------------------------------------------
 # main

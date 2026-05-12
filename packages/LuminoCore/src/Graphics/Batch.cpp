@@ -8,29 +8,32 @@
 namespace ln {
 
 //-----------------------------------------------------------------------------
-// DrawCommand::sortKey
-
+// DrawCommand
 //-----------------------------------------------------------------------------
 
 uint64_t DrawCommand::sortKey() const {
-    // | 63..48 (16bit) | 47..16 (32bit)          | 15..1 (15bit) | 0 (1bit) |
-    // | zIndex + 32768 | material ptr hash        | reserved      | type     |
+    // | 63..48 (16bit) | 47 (1bit) | 46..32 (15bit) | 31..0 (32bit)   |
+    // | zIndex + 32768 | type      | reserved        | material hash   |
+    //
+    // タイプはビット47（32ビットmatHashの上位）を占めるため、特定のzレベルにあるすべてのスプライト（タイプ=0）は、
+    // 同じレベルにあるすべてのサブメッシュ（タイプ=1）よりも前にソートされます。
+    // これにより、ソートされた出力においてすべてのスプライトが連続した状態になり、
+    // flushSpriteGroup がグループ全体に対して単一の頂点バッファを構築するために必要な条件が満たされます。
     uint64_t z = static_cast<uint64_t>(static_cast<uint32_t>(zIndex + 32768)) & 0xFFFF;
 
-    // Material pointer hash - groups same-material commands together.
-    // Uses only the pointer value (no dereference), so safe with any pointer.
-    uint64_t matHash = static_cast<uint64_t>(
-        (static_cast<uint64_t>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) & 0xFFFFFFFF;
+    // Material pointer hash - 同じ種類のコマンドを同じタイプ内でグループ化します。
+    uint64_t matHash =
+        static_cast<uint64_t>(
+            (static_cast<uint64_t>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) &
+        0xFFFFFFFF;
 
-    uint64_t t = (type == DrawCommandType::SubMesh) ? 1 : 0;
+    uint64_t t = (type == DrawCommandType::SubMesh) ? 1ULL : 0ULL;
 
-    return (z << 48) | (matHash << 16) | t;
+    return (z << 48) | (t << 47) | matHash;
 }
-
 
 //-----------------------------------------------------------------------------
 // DrawCommandBuffer
-
 //-----------------------------------------------------------------------------
 
 void DrawCommandBuffer::clear() {
@@ -87,7 +90,6 @@ void DrawCommandBuffer::drawMesh(Mesh* mesh, const Transform& transform, int32_t
 
 //-----------------------------------------------------------------------------
 // BatchProcessor
-
 //-----------------------------------------------------------------------------
 
 Result<std::unique_ptr<BatchProcessor>> BatchProcessor::create(GraphicsContext* ctx) {
@@ -97,7 +99,7 @@ Result<std::unique_ptr<BatchProcessor>> BatchProcessor::create(GraphicsContext* 
 }
 
 void BatchProcessor::sortCommands(std::vector<DrawCommand>& commands) {
-    std::sort(commands.begin(), commands.end(),
+    std::stable_sort (commands.begin(), commands.end(),
         [](const DrawCommand& a, const DrawCommand& b) {
             return a.sortKey() < b.sortKey();
         });
@@ -116,10 +118,13 @@ Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* comman
         DrawCommandType groupType = commands[groupStart].type;
         uint32_t groupEnd = groupStart + 1;
 
-        // Find contiguous group of same type + same material
+        // Find contiguous group of same type.
+        // Sprites with different materials are batched together into one flushSpriteGroup call,
+        // which builds separate submeshes per material in a single vertex buffer.
+        // Splitting by material here would cause each group to overwrite the same m_spriteMesh
+        // buffer from offset 0, corrupting vertex data for earlier draw calls.
         while (groupEnd < count &&
-               commands[groupEnd].type == groupType &&
-               commands[groupEnd].material == commands[groupStart].material) {
+               commands[groupEnd].type == groupType) {
             ++groupEnd;
         }
 
@@ -277,14 +282,15 @@ Result<void> BatchProcessor::flushSpriteGroup(
 }
 
 Result<void> BatchProcessor::flushSubMeshGroup(
-    Renderer* renderer, const DrawCommand* begin, uint32_t count) {
+    Renderer* renderer,
+    const DrawCommand* begin,
+    uint32_t count) {
 
     // Phase 1: draw each submesh individually
     for (uint32_t i = 0; i < count; ++i) {
         const auto& cmd = begin[i];
         auto result = renderer->drawSingleSubMesh(
-            cmd.submesh.mesh, cmd.submesh.submeshIndex,
-            cmd.material, cmd.submesh.transform);
+            cmd.submesh.mesh, cmd.submesh.submeshIndex, cmd.material, cmd.submesh.transform);
         if (!result) return result;
     }
 

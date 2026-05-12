@@ -777,7 +777,7 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
 
 /**
  * スプライト描画コマンドを内部コマンドバッファに蓄積します。
- * 蓄積されたコマンドは LNRenderer_EndRenderPass 時に自動的にソート→バッチ化→描画されます。
+ *
  * @param[in] renderer  Renderer のハンドル
  * @param[in] material  マテリアルのハンドル
  * @param[in] zIndex    ソート優先度
@@ -786,6 +786,14 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
  * @param[in] uvX,uvY,uvW,uvH UV 矩形
  * @param[in] colorR,colorG,colorB,colorA 頂点カラー
  * @param[in] rotation  Z 軸回転 (ラジアン)
+ * 
+ * 蓄積されたコマンドは LNRenderer_EndRenderPass 時に自動的にソート→バッチ化→描画されます。
+ * 
+ * ## DrawMesh vs DrawSprite
+ * 例えば4頂点の四角形Mesh を 5000 個描画する場合、DrawMesh は 5000 ドローコールになりますが、DrawSprite は 1 ドローコールで描画できます。
+ * Intel Core i9, GeForce RTX 3070 の環境でも顕著で、前者では 20ms 近くかかるのに対し、後者は 1ms 未満で描画できます。
+ * もちろん自前で Mesh を作成して DrawMesh で描画することも可能ですが、DrawSprite は内部でバッチングを行うため、
+ * タイルマップなど、同一マテリアルで多数のスプライトを描画する場合は DrawSprite が便利でしょう。
  */
 extern LUMINO_API LNResult LNRenderer_DrawSprite(
     LNHandle renderer,

@@ -212,6 +212,72 @@ TEST_F(Test_Graphics, StencilMask1) {
     LNObject_Release(spriteTex);
 }
 
+// 2つのスプライトを横に並べて描画するテスト。
+// 左: Sprite.png テクスチャ付き Unlit、右: デフォルト Unlit (白)。
+// (左側が白になってしまう問題の修正確認)
+TEST_F(Test_Graphics, TwoSprites) {
+    LNHandle texture = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Sprite.png", &texture));
+
+    LNHandle mat1 = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &mat1));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(mat1, texture));
+
+    LNHandle mat2 = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &mat2));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f));
+    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f));
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+
+    // Left
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, mat1, 0,
+        -80.0f, 0.0f, 0.0f,
+        100.0f, 100.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        0.0f));
+
+    // Right
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, mat2, 0,
+        80.0f, 0.0f, 0.0f,
+        100.0f, 100.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        0.0f));
+
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+
+    ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.TwoSprites", data, w, h, TEST_DATA_DIR, true));
+
+    LNObject_Release(camera);
+    LNObject_Release(mat2);
+    LNObject_Release(mat1);
+    LNObject_Release(texture);
+}
+
 // コンパイル済みシェーダ (.lcsh) からマテリアルを作成し、赤い三角形を描画するテスト。
 TEST_F(Test_Graphics, CustomShaderMaterial) {
     // Load compiled shader from file

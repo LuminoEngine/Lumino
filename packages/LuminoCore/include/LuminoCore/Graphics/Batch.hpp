@@ -28,8 +28,8 @@ struct DrawCommand {
         std::memset(&sprite, 0, sizeof(sprite));
     }
     ~DrawCommand() = default;
-    DrawCommand(const DrawCommand& o) { std::memcpy(this, &o, sizeof(*this)); }
-    DrawCommand& operator=(const DrawCommand& o) { std::memcpy(this, &o, sizeof(*this)); return *this; }
+    DrawCommand(const DrawCommand& o) { std::memcpy(static_cast<void*>(this), &o, sizeof(*this)); }
+    DrawCommand& operator=(const DrawCommand& o) { std::memcpy(static_cast<void*>(this), &o, sizeof(*this)); return *this; }
 
     DrawCommandType type;
     int32_t zIndex;          // user-specified sort priority
