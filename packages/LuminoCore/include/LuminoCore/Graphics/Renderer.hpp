@@ -155,6 +155,12 @@ public:
     /** Draw call count for the current frame. Reset each beginFrame(). */
     uint32_t drawCallCount() const { return m_drawCallCount; }
 
+    /**
+     * 現在の (もしくは直前の) レンダーパスのカメラが 2D モードかどうか。
+     * BatchProcessor がスプライト頂点レイアウトを 2D 用に切り替えるために参照します。
+     */
+    bool isCurrentCamera2D() const { return m_currentCamera2D; }
+
     // ---- Drawing (batched) ----
 
     /**
@@ -300,6 +306,9 @@ private:
 
     DrawCommandBuffer m_commandBuffer;
     std::unique_ptr<BatchProcessor> m_batchProcessor;
+
+    /** Set by beginRenderPass(camera, ...) based on Camera::is2D(). */
+    bool m_currentCamera2D = false;
 
     /** Flush batched commands and clear the command buffer. */
     Result<void> flushBatch();

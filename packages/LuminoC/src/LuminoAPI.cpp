@@ -968,6 +968,18 @@ LNResult LNCamera_SetOrthographic(
     return LN_OK;
 }
 
+LNResult LNCamera_SetOrthographic2D(
+    LNHandle camera, float width, float height, float nearClip, float farClip) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* camObj = resolveObject<CameraObject>(camera);
+    if (!camObj) return LN_ERROR_INVALID_HANDLE;
+
+    camObj->camera.setOrthographic2D(width, height, nearClip, farClip);
+    return LN_OK;
+}
+
 LNResult LNCamera_SetLookAt(
     LNHandle camera,
     float eyeX, float eyeY, float eyeZ,

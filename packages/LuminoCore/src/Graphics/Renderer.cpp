@@ -191,6 +191,7 @@ void Renderer::beginRenderPass(
     }
 
     beginRenderPass(colorTarget, depthTarget, clearColor);
+    m_currentCamera2D = camera.is2D();
     setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
@@ -265,12 +266,14 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& 
     }
 
     beginRenderPass(rpDesc, m_currentShaderPassName);
+    m_currentCamera2D = camera.is2D();
     setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
 void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc,
                                 const std::string& shaderPassName) {
     m_currentShaderPassName = shaderPassName.empty() ? std::string("Forward") : shaderPassName;
+    m_currentCamera2D = false;
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
 
     // Track the current color target for endRenderPassWithTransition.
@@ -295,6 +298,7 @@ void Renderer::endRenderPass() {
     m_currentPass->end();
     m_currentPass = nullptr;
     m_currentColorTarget = nullptr;
+    m_currentCamera2D = false;
 }
 
 void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {

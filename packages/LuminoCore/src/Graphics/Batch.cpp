@@ -158,6 +158,10 @@ Result<void> BatchProcessor::flushSpriteGroup(
         m_spriteMeshCapacity = newCapacity;
     }
 
+    // 2D カメラの場合、頂点 cy の符号を反転して左上原点 (Y+ 下) のレイアウトに切り替える。
+    // Y 反転プロジェクションとの二重反転により NDC ワインディングは CCW のまま保たれる。
+    const bool layout2D = renderer->isCurrentCamera2D();
+
     uint32_t totalVertices = count * 4;
     uint32_t totalIndices = count * 6;
     m_vertexStaging.resize(totalVertices);
@@ -190,8 +194,16 @@ Result<void> BatchProcessor::flushSpriteGroup(
         float hh = s.size.y * 0.5f;
 
         // Corner offsets (before rotation)
+        //   3D (Y+ up):   v0=TL(-hw,+hh) v1=TR(+hw,+hh) v2=BL(-hw,-hh) v3=BR(+hw,-hh)
+        //   2D (Y+ down): v0=TL(-hw,-hh) v1=TR(+hw,-hh) v2=BL(-hw,+hh) v3=BR(+hw,+hh)
+        // UV / index winding は両モード共通。2D は ortho Y 反転と組み合わさり NDC で CCW のまま。
         float cx[4] = { -hw,  hw, -hw,  hw };
-        float cy[4] = {  hh,  hh, -hh, -hh };
+        float cy[4];
+        if (layout2D) {
+            cy[0] = -hh; cy[1] = -hh; cy[2] =  hh; cy[3] =  hh;
+        } else {
+            cy[0] =  hh; cy[1] =  hh; cy[2] = -hh; cy[3] = -hh;
+        }
 
         // Apply rotation if non-zero
         if (s.rotation != 0.0f) {

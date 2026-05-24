@@ -2,6 +2,8 @@
 
 Lumino でグラフィックスプログラムを書く際に理解しておくべき基本仕様をまとめます。
 
+基本的には [glTF](https://github.com/khronosgroup/gltf) 及びそのエコシステムに従います。
+
 ## 座標系
 
 Lumino は **右手座標系** を採用しています。
@@ -12,6 +14,10 @@ Lumino は **右手座標系** を採用しています。
 
 これは OpenGL や Godot と同じ規約です。
 
+> glTF:
+> - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#coordinate-system-and-units
+> - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#projection-matrices
+
 ## 面の表裏（ワインディングオーダー）
 
 **反時計回り (Counter-Clockwise, CCW)** で定義された面が正面です。
@@ -20,6 +26,9 @@ Lumino は **右手座標系** を採用しています。
 - 右手座標系において、右ねじの法則に従って法線が手前を向く方向が正面となります
 
 三角形の頂点を反時計回りに並べると、その面がカメラに向かって表示されます。
+
+> glTF:
+> - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#instantiation
 
 ## NDC（正規化デバイス座標）
 
@@ -61,6 +70,9 @@ Lumino の NDC は以下の範囲です:
 (0,1)-----(1,1)
 ```
 
+> glTF:
+> - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#images
+
 ## 行列
 
 ### メモリレイアウト
@@ -78,6 +90,9 @@ Lumino の NDC は以下の範囲です:
 
 主な計算は [glm](https://github.com/g-truc/glm) と同様の結果になるようテストされています。
 
+> glTF:
+> - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#data-alignment
+
 ### 乗算順序
 
 **左から乗算** する規約です。変換は右から左へ適用されます。
@@ -89,10 +104,3 @@ viewProj = projection * view;
 // シェーダー側 (Slang/HLSL)
 output.position = mul(viewProj, worldPos);  // matrix * vector
 ```
-
-## 不具合と思われる動作を見つけたら
-
-基本的には [glTF](https://github.com/khronosgroup/gltf) 及びそのエコシステムに従います。
-
-不具合と思われる動作を見つけたら、 GitHub の Issue から報告をお願いいたします。
-

@@ -28,6 +28,17 @@ public:
     /** Helper: 正射影投影行列を作成し、それを設定します。 */
     void setOrthographic(float width, float height, float nearClip, float farClip);
 
+    /**
+     * Helper: 2D 用正射影投影行列を作成し、それを設定します。
+     * 画面座標 (0, 0) が左上、(width, height) が右下に対応します。
+     * ビュー行列は単位行列に設定されます。
+     * このカメラで描画するスプライトは、左上原点・Y軸下向きのレイアウトで自動生成されます。
+     */
+    void setOrthographic2D(float width, float height, float nearClip, float farClip);
+
+    /** このカメラが 2D モード (setOrthographic2D 使用) かどうか。 */
+    bool is2D() const { return m_is2D; }
+
     const Matrix4x4& viewMatrix() const { return m_viewMatrix; }
     const Matrix4x4& projectionMatrix() const { return m_projMatrix; }
     Matrix4x4 viewProjectionMatrix() const;
@@ -35,6 +46,7 @@ public:
 private:
     Matrix4x4 m_viewMatrix = Matrix4x4::identity();
     Matrix4x4 m_projMatrix = Matrix4x4::identity();
+    bool      m_is2D       = false;
 };
 
 } // namespace ln

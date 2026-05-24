@@ -29,7 +29,7 @@ extern LUMINO_API const char* LNBuildInfo_GetBuildTimestamp();
 // LNInstance
 //------------------------------------------------------------------------------
 typedef struct LNInstanceInitializeSettings {
-     /** 使用するグラフィックスバックエンド (デフォルト: LN_GRAPHICS_BACKEND_DEFAULT) */
+    /** 使用するグラフィックスバックエンド (デフォルト: LN_GRAPHICS_BACKEND_DEFAULT) */
     LNGraphicsBackend preferredBackend;
     /** デバッグ用のバリデーションレイヤーを有効にするか */
     LNBool enableValidation;
@@ -662,6 +662,29 @@ extern LUMINO_API LNResult LNCamera_SetPerspective(
  * @param[in] farClip  ファークリップ距離
  */
 extern LUMINO_API LNResult LNCamera_SetOrthographic(
+    LNHandle camera,
+    float width, float height, float nearClip, float farClip
+);
+
+/**
+ * カメラに 2D 用の正射影投影 (左上原点・Y軸下向き) を設定します。
+ * 画面座標 (0, 0) が左上、(width, height) が右下に対応します。
+ * ビュー行列は単位行列に設定されます。
+ * このカメラで LNRenderer_DrawSprite による描画を行うと、スプライト頂点が
+ * 左上原点・Y軸下向きのレイアウトで自動生成されます (UV 反転やマテリアルの
+ * カリング設定変更は不要です)。
+ *
+ * 注意: このカメラで 3D メッシュ (LNRenderer_DrawMesh) を描画する場合は、
+ * Y 軸反転によりワインディングが反転するため、マテリアルの CullMode を
+ * None に設定するか、フロントフェイス向きを CW に揃える必要があります。
+ *
+ * @param[in] camera   カメラのハンドル
+ * @param[in] width    画面幅 (ピクセル)
+ * @param[in] height   画面高さ (ピクセル)
+ * @param[in] nearClip ニアクリップ距離
+ * @param[in] farClip  ファークリップ距離
+ */
+extern LUMINO_API LNResult LNCamera_SetOrthographic2D(
     LNHandle camera,
     float width, float height, float nearClip, float farClip
 );
