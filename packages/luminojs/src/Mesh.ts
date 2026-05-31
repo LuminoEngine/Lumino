@@ -19,7 +19,11 @@ export class Mesh extends LuminoObject implements ResidentResource {
 
     /**
      * Define a mesh from vertex, index, and sub-mesh data.
+     * 頂点・インデックス・サブメッシュデータからメッシュを定義します。
      * GPU バッファは最初の描画時に遅延生成される。
+     * @param vertices  頂点配列
+     * @param indices   インデックス配列 (uint32)
+     * @param submeshes サブメッシュ配列 (インデックス範囲とマテリアルスロット)
      */
     static create(
         vertices: Vertex[],
@@ -36,7 +40,12 @@ export class Mesh extends LuminoObject implements ResidentResource {
         return mesh;
     }
 
-    /** Assign a material to the given slot index. (JS 側シャドウ、ensure 時に C 側へ反映) */
+    /**
+     * Assign a material to the given slot index.
+     * 指定マテリアルスロットにマテリアルを設定します。(JS 側シャドウ、ensure 時に C 側へ反映)
+     * @param materialIndex マテリアルスロットインデックス
+     * @param material      設定するマテリアル
+     */
     setMaterial(materialIndex: number, material: Material): void {
         while (this._materials.length <= materialIndex) this._materials.push(null);
         this._materials[materialIndex] = material;

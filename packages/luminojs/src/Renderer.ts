@@ -36,6 +36,8 @@ export class Renderer extends LuminoObject {
 
     /**
      * レンダーパスを開始する。
+     * `renderTarget` / `depthBuffer` が未設定の場合、バックバッファが使用されます。
+     * カメラが有効な場合、カメラデータを View UBO に自動アップロードします。
      *
      * @param ctx    この Renderer を所有する GraphicsContext。
      * @param desc   レンダーパスディスクリプタ (カラーアタッチメント、デプス、クリア値など)。
@@ -65,7 +67,9 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * メッシュの描画コマンドを送信する。
+     * メッシュの描画コマンドを内部バッファに蘊積する。
+     * 蘊積されたコマンドは `endRenderPass()` 時に自動的にソート・バッチ化・描画されます。
+     * メッシュに設定されたマテリアルが使用されます。
      *
      * @param mesh      描画する Mesh。
      * @param transform TRS トランスフォーム。
@@ -84,12 +88,12 @@ export class Renderer extends LuminoObject {
 
     /**
      * ステンシルマスクをプッシュする。
-     * mesh をステンシルバッファにのみ描画し、以降の描画はマスク領域内のみ出力される。
+     * mesh をステンシルバッファにのみ描画し（カラー書き込みなし）、以降の描画はマスク領域内のみ出力される。
      * ネスト可 (内部で stencil 参照値をインクリメント)。popStencilMask と対で呼ぶこと。
      *
      * レンダーパスの depthStencil にステンシル付きバッファが必要。
      *
-     * @param mesh      マスク形状のメッシュ。
+     * @param mesh      マスク形状のメッシュ (アルファマスクテクスチャ付き)。
      * @param transform マスクメッシュの TRS。
      * @param material  マスク描画用マテリアル (StencilMask シェーダ推奨)。
      */
@@ -105,7 +109,10 @@ export class Renderer extends LuminoObject {
             ) => number)(this._handle, mesh.handle, ptr, material.handle));
     }
 
-    /** 直前の pushStencilMask と対になるマスクを解除する。 */
+    /**
+     * 直前の `pushStencilMask()` と対になるマスクを解除する。
+     * 内部でマスクメッシュを再描画してステンシル値をデクリメントします。
+     */
     popStencilMask(): void {
         if (!this._boundCtx) throw new Error("Renderer.popStencilMask called outside of a render pass");
         Runtime.safeCall(() =>
@@ -113,7 +120,11 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * スプライトの描画コマンドを送信する (バッチ処理)。
+     * スプライトの描画コマンドを内部バッファに蘊積する (バッチ処理)。
+     * 蘊積されたコマンドは `endRenderPass()` 時に自動的にソート・バッチ化・描画されます。
+     *
+     * @note `drawMesh()` と比べ、同一マテリアルで多数のスプライトを描画する場合は大幅に高速です。
+     * 内部でバッチングを行いドローコール数を削減するため、タイルマップなど大量のスプライト描画に適しています。
      *
      * @param material  使用する Material。
      * @param zIndex    ソート優先度。
@@ -161,7 +172,11 @@ export class Renderer extends LuminoObject {
             ));
     }
 
-    /** 指定したマテリアルでフルスクリーン矩形を描画する (ポストプロセス用)。 */
+    /**
+     * 指定したマテリアルでフルスクリーン矩形を描画する (ポストプロセス用)。
+     * NDC [-1,1]×[-1,1] をカバーする矩形を描画します。
+     * @param material 使用するマテリアル。
+     */
     drawScreenRect(material: Material): void {
         if (!this._boundCtx) throw new Error("Renderer.drawScreenRect called outside of a render pass");
         material.ensure(this._boundCtx);

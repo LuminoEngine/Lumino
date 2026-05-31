@@ -20,7 +20,15 @@ export class Texture extends LuminoObject implements ResidentResource {
     get width(): number { return this._width; }
     get height(): number { return this._height; }
 
-    /** Create a render target texture with a specific format. (Residency 対象外、ctx 必須) */
+    /**
+     * Create a render target texture with a specific format.
+     * 指定フォーマットのレンダーターゲットテクスチャを作成します。
+     * Sampled かつ RenderTarget として使用できます。(Residency 対象外、ctx 必須)
+     * @param ctx    GraphicsContext
+     * @param width  幅 (ピクセル)
+     * @param height 高さ (ピクセル)
+     * @param format テクスチャフォーマット
+     */
     static createRenderTargetEx(ctx: GraphicsContext, width: number, height: number, format: TextureFormat): Texture {
         const handle = Runtime.safeCallWithReturnHandle((out) =>
             (API.LNTexture2D_CreateRenderTargetEx as (
@@ -34,7 +42,14 @@ export class Texture extends LuminoObject implements ResidentResource {
         return tex;
     }
 
-    /** Create a depth-stencil texture. (Residency 対象外、ctx 必須) */
+    /**
+     * Create a depth-stencil texture.
+     * 深度ステンシルテクスチャを作成します。
+     * 作成されたテクスチャは `DepthStencilAttachmentDesc.depthBuffer` に指定して使用します。(Residency 対象外、ctx 必須)
+     * @param ctx    GraphicsContext
+     * @param width  幅 (ピクセル)
+     * @param height 高さ (ピクセル)
+     */
     static createDepthStencil(ctx: GraphicsContext, width: number, height: number): Texture {
         const handle = Runtime.safeCallWithReturnHandle((out) =>
             (API.LNTexture2D_CreateDepthStencil as (
@@ -52,6 +67,7 @@ export class Texture extends LuminoObject implements ResidentResource {
      * 画像ファイルのバイト列 (PNG, JPG, BMP, TGA 等) からテクスチャを定義する。
      * 呼び出し時点で画像をデコードし、幅・高さが即座に参照可能になる。
      * GPU アップロードは最初の描画時に遅延実行される。
+     * @param data 画像ファイルのバイト列
      */
     static loadFromMemory(data: Uint8Array): Texture {
         const m = Runtime.module;
@@ -89,7 +105,11 @@ export class Texture extends LuminoObject implements ResidentResource {
 
     /**
      * Define a texture from decoded pixel data (e.g., from createImageBitmap).
-     * `data` はフォーマットに対応する生ピクセル配列。
+     * デコード済みの生ピクセルデータからテクスチャを定義します。
+     * @param data   生ピクセルデータ (format で指定されたフォーマットに従う)
+     * @param width  幅 (ピクセル)
+     * @param height 高さ (ピクセル)
+     * @param format テクスチャフォーマット (デフォルト: `TextureFormat.RGBA8_UNORM`)
      */
     static createFromPixels(
         data: Uint8Array,

@@ -1,9 +1,14 @@
-/** Lumino C-API result codes. */
+/** Lumino C-API result codes. 失敗時は例外として投げられます。 */
 export enum Result {
+    /** 成功 */
     OK = 0,
+    /** 不明なエラー */
     ERROR_UNKNOWN = -1,
+    /** ランタイム未初期化 */
     RUNTIME_UNINITIALIZED = -2,
+    /** 無効な引数 */
     ERROR_INVALID_ARGUMENT = -3,
+    /** 無効なハンドル */
     ERROR_INVALID_HANDLE = -4,
 }
 
@@ -14,29 +19,43 @@ export enum GraphicsBackend {
     WebGPU = 2,
 }
 
-/** Render pass attachment load operation. */
+/**
+ * Render pass attachment load operation.
+ * レンダーパスのアタッチメントのロード操作。ゼロ初期化時のデフォルトは `Clear`。
+ */
 export enum LoadOp {
+    /** 内容をクリアします。 */
     Clear = 0,
+    /** 既存の内容を保持します。 */
     Load = 1,
+    /**
+     * 内容不定 (パフォーマンス最適化)。
+     * ポストプロセスや G-Buffer のように出力先の全ピクセルを書き換える場合に指定できます。
+     */
     DontCare = 2,
 }
 
-/** Blend mode (matches C LNBlendMode). */
+/** Blend mode (matches C LNBlendMode). 合成方法。 */
 export enum BlendMode {
+    /** 通常 */
     Normal   = 0,
+    /** アルファブレンド (RGB をアルファブレンドし、A を加算合成) */
     Alpha    = 1,
+    /** 加算合成 */
     Add      = 2,
+    /** 減算合成 */
     Subtract = 3,
+    /** 乗算合成 */
     Multiply = 4,
 }
 
-/** Face culling mode (matches C LNCullMode). */
+/** Face culling mode (matches C LNCullMode). ポリゴンのカリングモード。 */
 export enum CullMode {
-    /** No culling - render both sides. */
+    /** No culling - render both sides. カリングなし (両面描画)。 */
     None  = 0,
-    /** Cull front faces. */
+    /** Cull front faces. 前面をカリング。 */
     Front = 1,
-    /** Cull back faces (default). */
+    /** Cull back faces (default). 背面をカリング (デフォルト)。 */
     Back  = 2,
 }
 
@@ -62,30 +81,54 @@ export const LN_NULL_HANDLE: Handle = 0;
 /** Maximum number of simultaneous color attachments. */
 export const LN_MAX_COLOR_ATTACHMENTS = 8;
 
-/** Describes a single color attachment for a render pass. */
+/**
+ * Describes a single color attachment for a render pass.
+ * カラーアタッチメントの設定。
+ * @note `renderTarget` が未設定の場合、バックバッファが使用されます。
+ */
 export interface ColorAttachmentDesc {
     /** Render target handle (`LN_NULL_HANDLE` = back-buffer). */
     renderTarget?: Handle;
-    /** RGBA clear color. Default `[0, 0, 0, 1]`. */
+    /** RGBA クリアカラー。`loadOp` が `Clear` のときに使用されます。デフォルト `[0, 0, 0, 1]`。 */
     clearColor?: [number, number, number, number];
     /** Load operation. Default `LoadOp.Clear`. */
     loadOp?: LoadOp;
 }
 
-/** Describes the depth-stencil attachment for a render pass. */
+/**
+ * Describes the depth-stencil attachment for a render pass.
+ * デプス・ステンシルアタッチメントの設定。
+ * @note `depthBuffer` が未設定の場合、バックバッファのデプスバッファが使用されます。
+ */
 export interface DepthStencilAttachmentDesc {
+    /** デプスバッファ (未設定 = バックバッファのデプス)。 */
     depthBuffer?: Handle;
+    /** クリアデプス値。デフォルト: 1.0。 */
     clearDepth?: number;
+    /** クリアステンシル値。デフォルト: 0。 */
     clearStencil?: number;
+    /** デプスのロード操作。デフォルト: `LoadOp.Clear`。 */
     depthLoadOp?: LoadOp;
+    /** ステンシルのロード操作。デフォルト: `LoadOp.Clear`。 */
     stencilLoadOp?: LoadOp;
 }
 
-/** Full render pass descriptor (mirrors C `LNRenderPassDesc`). */
+/**
+ * Full render pass descriptor (mirrors C `LNRenderPassDesc`).
+ * レンダーパスの設定。
+ */
 export interface RenderPassDesc {
+    /** カラーアタッチメント配列。未設定または空配列の場合、バックバッファが使用されます。 */
     colorAttachments?: ColorAttachmentDesc[];
+    /** デプス・ステンシルアタッチメント。 */
     depthStencil?: DepthStencilAttachmentDesc;
-    /** Shader pass name to select (e.g. "GBuffer"). NULL/empty = "Forward". */
+    /**
+     * Shader pass name to select (e.g. "GBuffer"). NULL/empty = "Forward".
+     * マテリアルから優先的に選択する ShaderPass の名前。
+     * 未設定または空文字列の場合は "Forward" が使用されます。
+     * マテリアルがこの名前の ShaderPass を持たない場合、そのメッシュの描画はスキップされます。
+     * 代表的なパス名: "Forward", "GBuffer", "Shadow" など。
+     */
     shaderPassName?: string;
 }
 
@@ -139,7 +182,10 @@ export const SIZEOF_TRANSFORM = 40;
 // Layout: posX,posY,posZ(f32x3,0) rotX,rotY,rotZ,rotW(f32x4,12)
 //         scaleX,scaleY,scaleZ(f32x3,28)
 
-/** Vertex data matching C `LNVertex` (64 bytes). */
+/**
+ * Vertex data matching C `LNVertex` (64 bytes).
+ * 標準頂点データ (64 bytes)。
+ */
 export interface Vertex {
     position: [number, number, number];
     normal: [number, number, number];
@@ -148,14 +194,20 @@ export interface Vertex {
     tangent: [number, number, number, number];
 }
 
-/** Sub-mesh descriptor matching C `LNSubMesh` (12 bytes). */
+/**
+ * Sub-mesh descriptor matching C `LNSubMesh` (12 bytes).
+ * サブメッシュ (インデックスバッファの部分範囲とマテリアルインデックス)。
+ */
 export interface SubMesh {
     indexOffset: number;
     indexCount: number;
     materialIndex: number;
 }
 
-/** TRS transform matching C `LNTransform` (40 bytes). */
+/**
+ * TRS transform matching C `LNTransform` (40 bytes).
+ * TRS トランスフォーム。
+ */
 export interface Transform {
     position: [number, number, number];
     rotation: [number, number, number, number]; // quaternion (x, y, z, w)

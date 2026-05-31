@@ -28,14 +28,18 @@ export class Material extends LuminoObject implements ResidentResource {
         this._source = source;
     }
 
-    /** 組み込みの Unlit シェーダーを用いてマテリアルを作成します。GPU 側生成は遅延。 */
+    /** 組み込みの Unlit シェーダーを用いてマテリアルを作成します。(テクスチャ * カラー、ライティングなし)
+     * GPU 側リソースは最初の描画時に遅延生成されます。 */
     static createUnlit(): Material {
         const mat = new Material({ kind: "unlit" });
         mat._dirty = true;
         return mat;
     }
 
-    /** コンパイル済みシェーダバイナリ (.lcsh) からマテリアルを作成します。GPU 側生成は遅延。 */
+    /**
+     * コンパイル済みシェーダバイナリ (.lcsh) からマテリアルを作成します。GPU 側生成は遅延。
+     * @param data コンパイル済みシェーダのバイナリデータ
+     */
     static createFromCompiledShader(data: Uint8Array): Material {
         const mat = new Material({ kind: "compiled", data });
         mat._dirty = true;
@@ -52,7 +56,13 @@ export class Material extends LuminoObject implements ResidentResource {
         this._paramsDirty = true;
     }
 
-    /** ベースカラー (RGBA, 0-1) を設定します。 */
+    /**
+     * ベースカラー (RGBA, 0.0 - 1.0) を設定します。
+     * @param r 赤成分 (0.0 - 1.0)
+     * @param g 緑成分 (0.0 - 1.0)
+     * @param b 青成分 (0.0 - 1.0)
+     * @param a アルファ成分 (0.0 - 1.0)
+     */
     setColor(r: number, g: number, b: number, a: number): void {
         this._color = [r, g, b, a];
         this._paramsDirty = true;
@@ -70,19 +80,27 @@ export class Material extends LuminoObject implements ResidentResource {
      * ある名前に対して一度もバインドされなかった場合(あるいは下層の C++ Material に
      * その名前で `null` が渡された場合)、未バインドのリソースをサンプリングしないよう、
      * 組み込みの 1x1 白テクスチャがスロットに割り当てられます。
+     * @param name    シェーダ内のテクスチャバインディング名 (例: `"u_sceneColor"`)
+     * @param texture バインドするテクスチャ
      */
     setNamedTexture(name: string, texture: Texture): void {
         this._namedTextures.set(name, texture);
         this._paramsDirty = true;
     }
 
-    /** フェースカリングモードを設定します。 */
+    /**
+     * フェースカリングモードを設定します。
+     * @param mode カリングモード
+     */
     setCullMode(mode: CullMode): void {
         this._cullMode = mode;
         this._paramsDirty = true;
     }
 
-    /** ブレンドモードを設定します。 */
+    /**
+     * ブレンドモードを設定します。
+     * @param mode 合成方法
+     */
     setBlendMode(mode: BlendMode): void {
         this._blendMode = mode;
         this._paramsDirty = true;

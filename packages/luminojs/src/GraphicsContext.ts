@@ -4,10 +4,15 @@ import { ResidencyManager } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
 import type { Handle } from "./types";
 
-/** Return value of `GraphicsContext.beginFrame()`. */
+/**
+ * Return value of `GraphicsContext.beginFrame()`.
+ * `GraphicsContext.beginFrame()` の戳り値。
+ */
 export interface FrameInfo {
     renderer: Renderer;
+    /** 現フレームのバックバッファ (SwapChain のカラーテクスチャ)。 */
     colorBuffer: Handle;
+    /** 現フレームのデプスバッファ。 */
     depthBuffer: Handle;
 }
 
@@ -26,8 +31,10 @@ export class GraphicsContext extends LuminoObject {
 
     /**
      * HTML `<canvas>` 要素を描画先として GraphicsContext を作成する。
-     * Web のみ対応。
+     * Web のみ対応。デスクトップビルドでは例外を投げます。
      * `width` / `height` を省略した場合は selector で見つけた canvas のサイズを使用する。
+     * @param canvasSelector 描画先 canvas の CSS セレクタ (例: `"#my_canvas"`)
+     * @param options        幅・高さ (ピクセル) の上書き指定。省略時は canvas のサイズを使用。
      */
     static async createFromCanvas(
         canvasSelector: string,
@@ -104,7 +111,10 @@ export class GraphicsContext extends LuminoObject {
         }
     }
 
-    /** Finish the current frame and present. */
+    /** Finish the current frame and present.
+     * フレームの描画を終了し、画面に表示します。
+     * `beginFrame()` と対になるように呼び出してください。
+     */
     endFrame(): void {
         Runtime.safeCall(() =>
             (API.LNGraphicsContext_EndFrame as (h: number) => number)(this._handle));
