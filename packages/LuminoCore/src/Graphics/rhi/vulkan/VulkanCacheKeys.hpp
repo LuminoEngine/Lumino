@@ -19,6 +19,7 @@ struct RenderPassKey {
 
     SmallVector<ColorAttachment, kMaxMultiRenderTargets> colorAttachments;
     VkFormat depthFormat = VK_FORMAT_UNDEFINED;
+    VkAttachmentLoadOp depthLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     VkAttachmentLoadOp stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
     bool operator==(const RenderPassKey& other) const;

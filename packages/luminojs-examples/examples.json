@@ -5,7 +5,8 @@
       "items": [
         { "id": "clear_screen", "title": "Clear Screen" },
         { "id": "hello_texture", "title": "Hello Texture" },
-        { "id": "batch_rendering", "title": "Batch Rendering" }
+        { "id": "batch_rendering", "title": "Batch Rendering" },
+        { "id": "sprite_2d", "title": "Sprite 2D" }
       ]
     },
     {

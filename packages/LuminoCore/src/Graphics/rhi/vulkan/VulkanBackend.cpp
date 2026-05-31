@@ -623,7 +623,7 @@ bool RenderPassKey::ColorAttachment::operator==(const ColorAttachment& other) co
 
 bool RenderPassKey::operator==(const RenderPassKey& other) const {
     return colorAttachments == other.colorAttachments && depthFormat == other.depthFormat &&
-        stencilLoadOp == other.stencilLoadOp;
+        depthLoadOp == other.depthLoadOp && stencilLoadOp == other.stencilLoadOp;
 }
 
 size_t RenderPassKeyHash::operator()(const RenderPassKey& key) const {
@@ -634,6 +634,7 @@ size_t RenderPassKeyHash::operator()(const RenderPassKey& key) const {
         h ^= std::hash<bool>()(a.isSwapchainBackbuffer) + 0x9e3779b9 + (h << 6) + (h >> 2);
     }
     h ^= std::hash<int>()(key.depthFormat) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    h ^= std::hash<int>()(key.depthLoadOp) + 0x9e3779b9 + (h << 6) + (h >> 2);
     h ^= std::hash<int>()(key.stencilLoadOp) + 0x9e3779b9 + (h << 6) + (h >> 2);
     return h;
 }

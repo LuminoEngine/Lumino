@@ -250,11 +250,19 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
         VkAttachmentDescription att{};
         att.format = key.depthFormat;
         att.samples = VK_SAMPLE_COUNT_1_BIT;
-        att.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        att.loadOp = key.depthLoadOp;
         att.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         att.stencilLoadOp = key.stencilLoadOp;
         att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-        att.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        // depth または stencil のいずれかが LOAD の場合、既存の内容を読み込むため
+        // initialLayout を UNDEFINED にはできない (VUID-VkAttachmentDescription-format-06699/06700)。
+        // 直前のパスの finalLayout (= DEPTH_STENCIL_ATTACHMENT_OPTIMAL) を引き継ぐ。
+        // ※ Load を指定する場合、呼び出し側は事前にこのデプスバッファを描画済みである必要がある。
+        const bool depthOrStencilLoad = (key.depthLoadOp == VK_ATTACHMENT_LOAD_OP_LOAD) ||
+                                        (key.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_LOAD);
+        att.initialLayout = depthOrStencilLoad
+            ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+            : VK_IMAGE_LAYOUT_UNDEFINED;
         att.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         attachments.push_back(att);
 
@@ -277,6 +285,14 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
     dep.srcAccessMask = 0;
     dep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     dep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    if (key.depthFormat != VK_FORMAT_UNDEFINED) {
+        // デプス・ステンシルを Load する場合、直前パスのデプス書き込みと
+        // 本パスのデプス読み書きを正しく同期させる。
+        dep.srcStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+        dep.dstStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+        dep.srcAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        dep.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    }
 
     VkRenderPassCreateInfo rpInfo{};
     rpInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;

@@ -31,6 +31,31 @@ export class Camera extends LuminoObject {
     }
 
     /**
+     * Set a 2D orthographic projection (top-left origin, Y+ pointing down).
+     * カメラに 2D 用の正射影投影 (左上原点・Y軸下向き) を設定します。
+     *
+     * 画面座標 (0, 0) が左上、(width, height) が右下に対応します。
+     * ビュー行列は単位行列に設定されます。このカメラで `Renderer.drawSprite` を
+     * 行うと、スプライト頂点が左上原点・Y軸下向きのレイアウトで自動生成されます
+     * (UV 反転やマテリアルのカリング設定変更は不要です)。
+     *
+     * 注意: このカメラで 3D メッシュ (`Renderer.drawMesh`) を描画する場合は、
+     * Y 軸反転によりワインディングが反転するため、マテリアルの CullMode を
+     * None に設定するか、フロントフェイス向きを CW に揃える必要があります。
+     *
+     * @param width    画面幅 (ピクセル)
+     * @param height   画面高さ (ピクセル)
+     * @param nearClip ニアクリップ距離
+     * @param farClip  ファークリップ距離
+     */
+    setOrthographic2D(width: number, height: number, nearClip: number, farClip: number): void {
+        Runtime.safeCall(() =>
+            (API.LNCamera_SetOrthographic2D as (
+                cam: number, width: number, height: number, near: number, far: number,
+            ) => number)(this._handle, width, height, nearClip, farClip));
+    }
+
+    /**
      * Set the view matrix via eye / target / up vectors.
      * ビュー行列を視点・注視点・上方向ベクトルで設定します。
      * @param eyeX    視点位置 X

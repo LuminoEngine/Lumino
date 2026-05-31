@@ -105,6 +105,11 @@ RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
     if (desc.depthStencilAttachment) {
         rpKey.depthFormat = static_cast<VulkanTextureView*>(desc.depthStencilAttachment->view)
                                 ->vkFormat();
+        rpKey.depthLoadOp = desc.depthStencilAttachment->depthLoadOp == LoadOp::Clear
+            ? VK_ATTACHMENT_LOAD_OP_CLEAR
+            : desc.depthStencilAttachment->depthLoadOp == LoadOp::Load
+            ? VK_ATTACHMENT_LOAD_OP_LOAD
+            : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         rpKey.stencilLoadOp = desc.depthStencilAttachment->stencilLoadOp == LoadOp::Clear
             ? VK_ATTACHMENT_LOAD_OP_CLEAR
             : desc.depthStencilAttachment->stencilLoadOp == LoadOp::Load

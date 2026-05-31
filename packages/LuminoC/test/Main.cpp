@@ -6,6 +6,7 @@ public:
     void SetUp() override {
         LNInstanceInitializeSettings settings = {};
         settings.enableValidation = LN_TRUE;
+        //settings.preferredBackend = LN_GRAPHICS_BACKEND_WEBGPU;
         ASSERT_EQ(LN_OK, LNInstance_Initialize(&settings));
     }
 
@@ -15,12 +16,12 @@ public:
 };
 
 int main(int argc, char** argv) {
-#if 0 // Debug Utility.
+#if 1 // Debug Utility.
         if (argc == 1) {
             char* testArgs[] = {
                 argv[0],
                 (char*)"--gtest_break_on_failure",
-                (char*)"--gtest_filter=Test_Graphics.TwoSprites",
+                (char*)"--gtest_filter=Test_Graphics.LoadOpLoadDepthStencil",
             };
             argc = sizeof(testArgs) / sizeof(char*);
             argv = testArgs;

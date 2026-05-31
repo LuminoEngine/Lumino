@@ -343,3 +343,150 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     LNObject_Release(mesh);
     LNObject_Release(material);
 }
+
+// [A案] カラーアタッチメントの LoadOp::Load 単体の検証。
+//
+// 色の Load 経路だけを切り分けて検証するため、デプス・ステンシルは
+// 既定の CLEAR のままにし、カラーのみ LoadOp::Load を指定します。
+// (デプス・ステンシルの Load は別バグがあるため、ここでは触らない)
+//
+// 同一フレーム内で 2 つの RenderPass を実行します。
+//   Pass 1: 画面全体を青 (0,0,1) でクリア (LoadOp = Clear)
+//   Pass 2: カラーのみ LoadOp = Load で開始し、何も描画しない
+//
+// Pass 2 の clearColor はあえて赤 (1,0,0) に設定しておきます。
+// LoadOp::Load が正しく機能していれば、Pass 1 の青がそのまま保持され、
+// 最終結果は青になるはずです。
+// もし不具合により Load 指定時にもクリアされてしまうと、結果は赤 (clearColor) になります。
+TEST_F(Test_Graphics, LoadOpLoadColor) {
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+
+    // --- Pass 1: 画面全体を青でクリア (LoadOp = Clear) ---
+    {
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_CLEAR;
+        rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    }
+
+    // --- Pass 2: カラーのみ LoadOp = Load で開始 (何も描画しない) ---
+    // デプス・ステンシルは LNRenderPassDesc_Init 既定の CLEAR のままにする。
+    {
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_LOAD;
+        // クリアされてしまった場合に検知できるよう、clearColor は赤にしておく。
+        rpDesc.colorAttachments[0].clearColor[0] = 1.0f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[2] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    }
+
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    ASSERT_EQ(TEST_W, w);
+    ASSERT_EQ(TEST_H, h);
+
+    // 中央ピクセルをサンプリング (キャプチャは RGBA8 に swizzle 済み)
+    const int cx = w / 2;
+    const int cy = h / 2;
+    const uint8_t* px = data + (static_cast<size_t>(cy) * w + cx) * 4;
+    const int r = px[0];
+    const int g = px[1];
+    const int b = px[2];
+
+    // LoadOp::Load が機能していれば Pass 1 の青が保持されている (R≈0, B≈255)。
+    // 不具合で再クリアされている場合は Pass 2 の clearColor 赤になる (R≈255, B≈0)。
+    EXPECT_LT(r, 64)
+        << "R channel が高すぎます。LoadOp::Load が無視され赤でクリアされた可能性があります。RGBA=("
+        << r << "," << g << "," << b << ")";
+    EXPECT_GT(b, 192)
+        << "B channel が低すぎます。Pass 1 の青が保持されていません。RGBA=("
+        << r << "," << g << "," << b << ")";
+
+    // 視覚確認用に PNG を保存
+   // VisualTest::savePng(TEST_DATA_DIR "/LoadOpLoadColor_actual.png", data, w, h);
+}
+
+// [B案] カラー + デプス + ステンシルすべてに LoadOp::Load を指定する検証。
+//
+// 以前はこの組み合わせで Vulkan Validation Error
+//   (VUID-VkAttachmentDescription-format-06700: stencilLoadOp=LOAD なのに
+//    initialLayout=UNDEFINED) が発生していた。
+// depthLoadOp の配線漏れと initialLayout の修正後、エラーなく動作し、
+// かつ Pass 1 の青が保持されることを検証する。
+//
+//   Pass 1: 画面全体を青 (0,0,1) でクリア (全アタッチメント Clear)
+//   Pass 2: カラー・デプス・ステンシルすべて Load で開始し、何も描画しない
+TEST_F(Test_Graphics, LoadOpLoadDepthStencil) {
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+
+    // --- Pass 1: 全アタッチメントをクリア (LoadOp = Clear) ---
+    {
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_CLEAR;
+        rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    }
+
+    // --- Pass 2: カラー・デプス・ステンシルすべて Load で開始 (何も描画しない) ---
+    {
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_LOAD;
+        // クリアされてしまった場合に検知できるよう、clearColor は赤にしておく。
+        rpDesc.colorAttachments[0].clearColor[0] = 1.0f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[2] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        rpDesc.depthStencil.depthLoadOp = LN_LOAD_OP_LOAD;
+        rpDesc.depthStencil.stencilLoadOp = LN_LOAD_OP_LOAD;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    }
+
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    ASSERT_EQ(TEST_W, w);
+    ASSERT_EQ(TEST_H, h);
+
+    // 中央ピクセルをサンプリング (キャプチャは RGBA8 に swizzle 済み)
+    const int cx = w / 2;
+    const int cy = h / 2;
+    const uint8_t* px = data + (static_cast<size_t>(cy) * w + cx) * 4;
+    const int r = px[0];
+    const int g = px[1];
+    const int b = px[2];
+
+    EXPECT_LT(r, 64)
+        << "R channel が高すぎます。LoadOp::Load が無視され赤でクリアされた可能性があります。RGBA=("
+        << r << "," << g << "," << b << ")";
+    EXPECT_GT(b, 192)
+        << "B channel が低すぎます。Pass 1 の青が保持されていません。RGBA=("
+        << r << "," << g << "," << b << ")";
+
+    // 視覚確認用に PNG を保存
+    //VisualTest::savePng(TEST_DATA_DIR "/LoadOpLoadDepthStencil_actual.png", data, w, h);
+}
