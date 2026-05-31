@@ -9,6 +9,7 @@
 #include "WebGPURenderPipeline.hpp"
 #include "WebGPUHelpers.hpp"
 #include <LuminoBase/Logger.hpp>
+#include <cstring>
 
 // TODO: あとで LuminoCore を wasm へリンクするように修正する。
 // そうすればこれは pch に移動できるはず。
@@ -353,8 +354,119 @@ VoidResult WebGPUDevice::writeBuffer(Buffer* dst, uint64_t dstOffset, const void
     return LN_MAKE_SUCCESS();
 }
 
-Result<std::vector<uint8_t>> WebGPUDevice::readbackTexture(TextureView*) {
-    return LN_MAKE_ERROR("WebGPU readbackTexture not yet implemented.");
+Result<std::vector<uint8_t>> WebGPUDevice::readbackTexture(TextureView* view) {
+    auto* wgpuView = static_cast<WebGPUTextureView*>(view);
+    if (!wgpuView) {
+        return LN_MAKE_ERROR("Invalid TextureView for readback.");
+    }
+    WGPUTexture srcTexture = wgpuView->sourceTexture();
+    if (!srcTexture) {
+        return LN_MAKE_ERROR("TextureView has no source WGPUTexture for readback.");
+    }
+
+    const uint32_t width = wgpuView->width();
+    const uint32_t height = wgpuView->height();
+    // バックバッファは BGRA8/RGBA8 を想定 (4 bytes/pixel)。
+    // 返すデータはスワップチェーンの生バイト列で、RGBA への並べ替えは
+    // GraphicsContext 側で行われる (Vulkan 実装と同じ規約)。
+    const uint32_t bytesPerPixel = 4;
+
+    // WebGPU の texture->buffer コピーは bytesPerRow が 256 の倍数である必要がある。
+    const uint32_t unpaddedBytesPerRow = width * bytesPerPixel;
+    const uint32_t kAlign = 256;
+    const uint32_t paddedBytesPerRow = (unpaddedBytesPerRow + kAlign - 1) / kAlign * kAlign;
+    const uint64_t bufferSize = static_cast<uint64_t>(paddedBytesPerRow) * height;
+
+    // CPU から読み出せるステージングバッファを作成する。
+    WGPUBufferDescriptor bufDesc = WGPU_BUFFER_DESCRIPTOR_INIT;
+    bufDesc.size = bufferSize;
+    bufDesc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
+    bufDesc.mappedAtCreation = false;
+    WGPUBuffer staging = wgpuDeviceCreateBuffer(m_device, &bufDesc);
+    if (!staging) {
+        return LN_MAKE_ERROR("Failed to create readback staging buffer.");
+    }
+
+    // テクスチャ → バッファのコピーをエンコードして送信する。
+    WGPUCommandEncoderDescriptor encDesc = WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;
+    WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(m_device, &encDesc);
+
+    WGPUTexelCopyTextureInfo src = WGPU_TEXEL_COPY_TEXTURE_INFO_INIT;
+    src.texture = srcTexture;
+    src.mipLevel = 0;
+    src.origin = {0, 0, 0};
+    src.aspect = WGPUTextureAspect_All;
+
+    WGPUTexelCopyBufferInfo dst = WGPU_TEXEL_COPY_BUFFER_INFO_INIT;
+    dst.buffer = staging;
+    dst.layout.offset = 0;
+    dst.layout.bytesPerRow = paddedBytesPerRow;
+    dst.layout.rowsPerImage = height;
+
+    WGPUExtent3D extent = {width, height, 1};
+    wgpuCommandEncoderCopyTextureToBuffer(encoder, &src, &dst, &extent);
+
+    WGPUCommandBufferDescriptor cmdDesc = WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;
+    WGPUCommandBuffer cmd = wgpuCommandEncoderFinish(encoder, &cmdDesc);
+    wgpuQueueSubmit(m_queue, 1, &cmd);
+    wgpuCommandBufferRelease(cmd);
+    wgpuCommandEncoderRelease(encoder);
+
+#if defined(__EMSCRIPTEN__)
+    // Web 上ではマップ完了を同期的に待てないため未対応。
+    wgpuBufferRelease(staging);
+    return LN_MAKE_ERROR("readbackTexture is not supported on Emscripten.");
+#else
+    // ステージングバッファをマップし、コールバックが発火するまでデバイスを回す。
+    struct MapState {
+        bool done = false;
+        WGPUMapAsyncStatus status = WGPUMapAsyncStatus_Force32;
+    } mapState;
+
+    WGPUBufferMapCallbackInfo mapCbInfo = WGPU_BUFFER_MAP_CALLBACK_INFO_INIT;
+    mapCbInfo.mode = WGPUCallbackMode_AllowSpontaneous;
+    mapCbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView message,
+                            void* userdata1, void*) {
+        auto* st = static_cast<MapState*>(userdata1);
+        st->status = status;
+        st->done = true;
+        if (status != WGPUMapAsyncStatus_Success) {
+            LN_LOG_ERROR("[WebGPU] Buffer map for readback failed: %.*s",
+                         static_cast<int>(message.length), message.data);
+        }
+    };
+    mapCbInfo.userdata1 = &mapState;
+    wgpuBufferMapAsync(staging, WGPUMapMode_Read, 0, bufferSize, mapCbInfo);
+
+    while (!mapState.done) {
+        wgpuDeviceTick(m_device);
+    }
+
+    if (mapState.status != WGPUMapAsyncStatus_Success) {
+        wgpuBufferRelease(staging);
+        return LN_MAKE_ERROR("wgpuBufferMapAsync failed.");
+    }
+
+    const uint8_t* mapped = static_cast<const uint8_t*>(
+        wgpuBufferGetConstMappedRange(staging, 0, bufferSize));
+    if (!mapped) {
+        wgpuBufferUnmap(staging);
+        wgpuBufferRelease(staging);
+        return LN_MAKE_ERROR("wgpuBufferGetConstMappedRange returned null.");
+    }
+
+    // 行パディングを取り除きながらコピーする。
+    std::vector<uint8_t> pixels(static_cast<size_t>(unpaddedBytesPerRow) * height);
+    for (uint32_t y = 0; y < height; ++y) {
+        std::memcpy(pixels.data() + static_cast<size_t>(y) * unpaddedBytesPerRow,
+                    mapped + static_cast<size_t>(y) * paddedBytesPerRow,
+                    unpaddedBytesPerRow);
+    }
+
+    wgpuBufferUnmap(staging);
+    wgpuBufferRelease(staging);
+    return pixels;
+#endif
 }
 
 void WebGPUDevice::waitIdle() {

@@ -27,6 +27,8 @@ VoidResult WebGPUTextureView::init(
     if (!m_view) {
         return LN_MAKE_ERROR("wgpuTextureCreateView failed.");
     }
+    // readback でコピー元として使えるよう、元テクスチャを保持する (非所有)。
+    m_sourceTexture = texture;
     return LN_MAKE_SUCCESS();
 }
 
@@ -38,11 +40,12 @@ void WebGPUTextureView::initFromExternal(WGPUTextureView view, WGPUTextureFormat
     m_ownsView = false;
 }
 
-void WebGPUTextureView::rewrap(WGPUTextureView view) {
+void WebGPUTextureView::rewrap(WGPUTextureView view, WGPUTexture sourceTexture) {
     if (m_ownsView && m_view) {
         wgpuTextureViewRelease(m_view);
     }
     m_view = view;
+    m_sourceTexture = sourceTexture;
     m_ownsView = false;
 }
 

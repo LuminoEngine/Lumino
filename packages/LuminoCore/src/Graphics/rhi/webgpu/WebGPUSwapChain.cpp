@@ -77,6 +77,15 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     m_surfaceFormat = caps.formats[0];
     LN_LOG_INFO("[WebGPU] Surface format: %d", static_cast<int>(m_surfaceFormat));
 
+    // CopySrc: バックバッファを readbackTexture でキャプチャできるようにする。
+    // サーフェスがサポートしている場合のみ付与する (未サポートなら警告のみ)。
+    m_surfaceUsage = WGPUTextureUsage_RenderAttachment;
+    if (caps.usages & WGPUTextureUsage_CopySrc) {
+        m_surfaceUsage |= WGPUTextureUsage_CopySrc;
+    } else {
+        LN_LOG_WARNING("[WebGPU] Surface does not support CopySrc; backbuffer readback will be unavailable.");
+    }
+
     // Choose present mode: prefer Mailbox (non-vsync) or Fifo (vsync)
     WGPUPresentMode presentMode = WGPUPresentMode_Fifo;
     if (!desc.vsync) {
@@ -93,7 +102,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
     config.device = device->wgpuDevice();
     config.format = m_surfaceFormat;
-    config.usage = WGPUTextureUsage_RenderAttachment;
+    config.usage = m_surfaceUsage;
     config.width = desc.width;
     config.height = desc.height;
     config.alphaMode = WGPUCompositeAlphaMode_Auto;
@@ -103,6 +112,13 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     // Create the backbuffer view wrapper (reused each frame)
     m_currentBackbufferView = Ref<WebGPUTextureView>::adopt(new WebGPUTextureView());
     m_currentBackbufferView->initFromExternal(nullptr, m_surfaceFormat, m_width, m_height);
+
+#if !defined(__EMSCRIPTEN__)
+    // readback 用キャプチャテクスチャを作成する。
+    if (auto r = recreateCaptureTexture(); !r) {
+        return LN_FORWARD_ERROR(r);
+    }
+#endif
 
     // Create CommandBuffers for each in-flight frame
     m_maxFrames = 2;
@@ -154,8 +170,14 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
         return nullptr;
     }
 
-    // Update the wrapper view
-    m_currentBackbufferView->rewrap(m_currentTextureView);
+    // Update the wrapper view。
+    // readback のコピー元は present 後も生存する永続キャプチャテクスチャを指す
+    // (サーフェステクスチャは present で破棄されるため直接は使えない)。
+#if !defined(__EMSCRIPTEN__)
+    m_currentBackbufferView->rewrap(m_currentTextureView, m_captureTexture);
+#else
+    m_currentBackbufferView->rewrap(m_currentTextureView, nullptr);
+#endif
 
     // Begin the command buffer for this frame
     if (!m_commandBuffers[m_currentFrame]->begin()) {
@@ -168,6 +190,12 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
 void WebGPUSwapChain::present() {
     // Submit the command buffer
     m_commandBuffers[m_currentFrame]->submit();
+
+#if !defined(__EMSCRIPTEN__)
+    // present でサーフェステクスチャが破棄される前に、readback 用の
+    // 永続テクスチャへバックバッファをコピーしておく。
+    copyBackbufferToCaptureTexture();
+#endif
 
     // Present the surface
     // On the web, requestAnimationFrame handles presentation automatically;
@@ -205,7 +233,7 @@ VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
     WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
     config.device = m_device->wgpuDevice();
     config.format = m_surfaceFormat;
-    config.usage = WGPUTextureUsage_RenderAttachment;
+    config.usage = m_surfaceUsage;
     config.width = width;
     config.height = height;
     config.alphaMode = WGPUCompositeAlphaMode_Auto;
@@ -217,6 +245,13 @@ VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
 
     // Update the backbuffer view wrapper dimensions
     m_currentBackbufferView->initFromExternal(nullptr, m_surfaceFormat, m_width, m_height);
+
+#if !defined(__EMSCRIPTEN__)
+    // キャプチャテクスチャも新サイズで再作成する。
+    if (auto r = recreateCaptureTexture(); !r) {
+        return LN_FORWARD_ERROR(r);
+    }
+#endif
 
     LN_LOG_INFO("[WebGPU] SwapChain resized to %ux%u", width, height);
     return LN_MAKE_SUCCESS();
@@ -240,6 +275,10 @@ void WebGPUSwapChain::finalize() {
         m_currentTexture = nullptr;
     }
 
+#if !defined(__EMSCRIPTEN__)
+    releaseCaptureTexture();
+#endif
+
     if (m_surface) {
         wgpuSurfaceUnconfigure(m_surface);
         wgpuSurfaceRelease(m_surface);
@@ -248,5 +287,70 @@ void WebGPUSwapChain::finalize() {
 
     SwapChain::finalize();
 }
+
+#if !defined(__EMSCRIPTEN__)
+
+void WebGPUSwapChain::releaseCaptureTexture() {
+    if (m_captureTexture) {
+        wgpuTextureRelease(m_captureTexture);
+        m_captureTexture = nullptr;
+    }
+}
+
+VoidResult WebGPUSwapChain::recreateCaptureTexture() {
+    releaseCaptureTexture();
+
+    // サーフェスが CopySrc 非対応ならキャプチャ不可。テクスチャは作らない。
+    if (!(m_surfaceUsage & WGPUTextureUsage_CopySrc)) {
+        return LN_MAKE_SUCCESS();
+    }
+
+    WGPUTextureDescriptor texDesc = WGPU_TEXTURE_DESCRIPTOR_INIT;
+    // CopyDst: サーフェスからのコピー先 / CopySrc: readback のコピー元。
+    texDesc.usage = WGPUTextureUsage_CopyDst | WGPUTextureUsage_CopySrc;
+    texDesc.dimension = WGPUTextureDimension_2D;
+    texDesc.size = {m_width, m_height, 1};
+    texDesc.format = m_surfaceFormat;
+    texDesc.mipLevelCount = 1;
+    texDesc.sampleCount = 1;
+
+    m_captureTexture = wgpuDeviceCreateTexture(m_device->wgpuDevice(), &texDesc);
+    if (!m_captureTexture) {
+        return LN_MAKE_ERROR("Failed to create backbuffer capture texture.");
+    }
+    return LN_MAKE_SUCCESS();
+}
+
+void WebGPUSwapChain::copyBackbufferToCaptureTexture() {
+    if (!m_captureTexture || !m_currentTexture) {
+        return;
+    }
+
+    WGPUCommandEncoderDescriptor encDesc = WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;
+    WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(m_device->wgpuDevice(), &encDesc);
+
+    WGPUTexelCopyTextureInfo src = WGPU_TEXEL_COPY_TEXTURE_INFO_INIT;
+    src.texture = m_currentTexture;
+    src.mipLevel = 0;
+    src.origin = {0, 0, 0};
+    src.aspect = WGPUTextureAspect_All;
+
+    WGPUTexelCopyTextureInfo dst = WGPU_TEXEL_COPY_TEXTURE_INFO_INIT;
+    dst.texture = m_captureTexture;
+    dst.mipLevel = 0;
+    dst.origin = {0, 0, 0};
+    dst.aspect = WGPUTextureAspect_All;
+
+    WGPUExtent3D extent = {m_width, m_height, 1};
+    wgpuCommandEncoderCopyTextureToTexture(encoder, &src, &dst, &extent);
+
+    WGPUCommandBufferDescriptor cmdDesc = WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;
+    WGPUCommandBuffer cmd = wgpuCommandEncoderFinish(encoder, &cmdDesc);
+    wgpuQueueSubmit(m_device->wgpuQueue(), 1, &cmd);
+    wgpuCommandBufferRelease(cmd);
+    wgpuCommandEncoderRelease(encoder);
+}
+
+#endif // !__EMSCRIPTEN__
 
 } // namespace ln::rhi::webgpu

@@ -30,6 +30,7 @@ private:
     WebGPUDevice* m_device = nullptr;
     WGPUSurface m_surface = nullptr;
     WGPUTextureFormat m_surfaceFormat = WGPUTextureFormat_Undefined;
+    WGPUTextureUsage m_surfaceUsage = WGPUTextureUsage_RenderAttachment;
     WGPUPresentMode m_presentMode = WGPUPresentMode_Fifo;
     uint32_t m_width = 0;
     uint32_t m_height = 0;
@@ -43,6 +44,17 @@ private:
     // Current frame's texture (from wgpuSurfaceGetCurrentTexture)
     WGPUTexture m_currentTexture = nullptr;
     WGPUTextureView m_currentTextureView = nullptr;
+
+    // バックバッファのキャプチャ用 (非 Emscripten のみ)。
+    // サーフェステクスチャは present 後に破棄され readback できないため、
+    // present 直前にここへコピーしておき、readbackTexture はこの永続テクスチャを読む。
+    WGPUTexture m_captureTexture = nullptr;
+
+#if !defined(__EMSCRIPTEN__)
+    void releaseCaptureTexture();
+    VoidResult recreateCaptureTexture();
+    void copyBackbufferToCaptureTexture();
+#endif
 };
 
 } // namespace ln::rhi::webgpu
