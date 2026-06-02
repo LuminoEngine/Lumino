@@ -170,6 +170,93 @@ TEST_F(Test_BatchSort, SameZIndex_GroupByMaterial) {
     EXPECT_NE(cmds[0].material, cmds[2].material);
 }
 
+//------------------------------------------------------------------------------
+// SpriteMeshPool tests
+//
+// Regression guard for the bug where every sprite flush in a frame reused a single
+// shared DynamicMesh buffer. Because draws are recorded into one command encoder
+// and executed only at submit, a shared buffer let later flushes (e.g. UI sprites)
+// overwrite earlier flushes (e.g. the background sprite), so the background drew
+// the last flush's geometry instead of its own. The pool must hand each flush a
+// distinct slot within a frame, and recycle slots across frames.
+//------------------------------------------------------------------------------
+
+class Test_SpriteMeshPool : public ::testing::Test {};
+
+TEST_F(Test_SpriteMeshPool, DistinctSlotsWithinFrame) {
+    SpriteMeshPool pool;
+
+    // Each flush in a frame must get a distinct, monotonically increasing slot so
+    // that no two flushes share a buffer.
+    EXPECT_EQ(pool.acquireSlot(), 0u);
+    EXPECT_EQ(pool.acquireSlot(), 1u);
+    EXPECT_EQ(pool.acquireSlot(), 2u);
+    EXPECT_EQ(pool.slotCount(), 3u);
+    EXPECT_EQ(pool.frameCursor(), 3u);
+}
+
+TEST_F(Test_SpriteMeshPool, ResetFrameRecyclesSlots) {
+    SpriteMeshPool pool;
+
+    pool.acquireSlot();
+    pool.acquireSlot();
+    EXPECT_EQ(pool.slotCount(), 2u);
+
+    // New frame: cursor rewinds and slots are reused rather than reallocated.
+    pool.resetFrame();
+    EXPECT_EQ(pool.frameCursor(), 0u);
+    EXPECT_EQ(pool.acquireSlot(), 0u);
+    EXPECT_EQ(pool.acquireSlot(), 1u);
+    EXPECT_EQ(pool.slotCount(), 2u); // no growth: same two slots reused
+}
+
+TEST_F(Test_SpriteMeshPool, SlotCountGrowsToPeakFlushesPerFrame) {
+    SpriteMeshPool pool;
+
+    // Frame 1: 2 flushes.
+    pool.acquireSlot();
+    pool.acquireSlot();
+    pool.resetFrame();
+
+    // Frame 2: 4 flushes -> pool grows to the new peak.
+    for (int i = 0; i < 4; ++i) pool.acquireSlot();
+    EXPECT_EQ(pool.slotCount(), 4u);
+
+    // Frame 3: 1 flush -> pool retains its peak capacity (slots kept for reuse).
+    pool.resetFrame();
+    pool.acquireSlot();
+    EXPECT_EQ(pool.slotCount(), 4u);
+}
+
+TEST_F(Test_SpriteMeshPool, GrowCapacityDoublesFromBase) {
+    // Empty slot grows to the 256-sprite base, then doubles to fit the request.
+    EXPECT_EQ(SpriteMeshPool::growCapacity(0, 1), 256u);
+    EXPECT_EQ(SpriteMeshPool::growCapacity(0, 256), 256u);
+    EXPECT_EQ(SpriteMeshPool::growCapacity(0, 257), 512u);
+    EXPECT_EQ(SpriteMeshPool::growCapacity(0, 1000), 1024u);
+
+    // An already-sized slot only grows when the request exceeds it.
+    EXPECT_EQ(SpriteMeshPool::growCapacity(512, 100), 512u);
+    EXPECT_EQ(SpriteMeshPool::growCapacity(512, 600), 1024u);
+}
+
+TEST_F(Test_SpriteMeshPool, SlotCapacityRetainedAcrossFrames) {
+    SpriteMeshPool pool;
+
+    // Frame 1: first flush needs 300 sprites -> caller allocates 512 capacity.
+    uint32_t idx = pool.acquireSlot();
+    auto& slot = pool.slotAt(idx);
+    ASSERT_LT(slot.capacity, 300u); // freshly created slot starts empty
+    slot.capacity = SpriteMeshPool::growCapacity(slot.capacity, 300);
+    EXPECT_EQ(slot.capacity, 512u);
+
+    // Frame 2: same slot reused for a smaller flush -> no reallocation needed.
+    pool.resetFrame();
+    uint32_t idx2 = pool.acquireSlot();
+    EXPECT_EQ(idx2, idx);
+    EXPECT_EQ(pool.slotAt(idx2).capacity, 512u);
+}
+
 TEST_F(Test_BatchSort, MixedTypes_SeparatedByType) {
     std::vector<DrawCommand> cmds(4);
     Material* mat = fakeMat(0x1000);

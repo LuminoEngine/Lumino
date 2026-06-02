@@ -278,6 +278,112 @@ TEST_F(Test_Graphics, TwoSprites) {
     LNObject_Release(texture);
 }
 
+// 同一フレーム内の異なる RenderPass でそれぞれスプライトを描画したとき、
+// 先行パスのスプライトが後続パスのスプライトに上書きされないことを検証する。
+//
+// 回帰の背景:
+//   スプライト描画は 1 つのコマンドエンコーダに記録され EndFrame の submit 時に
+//   まとめて実行される。以前は全フレームで単一の共有 DynamicMesh に毎回
+//   オフセット 0 から頂点を書き込んでいたため、フレーム内で flush が複数回
+//   走ると、後続 flush (UI スプライト) の writeBuffer が先行 flush (背景
+//   スプライト) の頂点バッファを上書きし、submit 時には全描画が最後の
+//   データを読んでしまっていた。結果、背景スプライトが UI スプライトの
+//   ジオメトリに化けて画面中央から消える、という不具合が起きていた。
+//
+// このテストは:
+//   Pass 1: 画面中央に大きな赤いスプライト (背景相当)
+//   Pass 2: 隅に小さな緑のスプライト (UI 相当, LoadOp = Load)
+// を 1 フレームで描画し、画面中央が赤のまま保たれることを確認する。
+// 不具合がある場合、Pass 1 の描画が Pass 2 の小さな隅ジオメトリを読むため、
+// 中央はクリア色 (青) になってしまう。
+TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
+    // テクスチャなし Unlit (既定の白テクスチャ) を 2 つ用意する。
+    // drawSprite の頂点カラーで色付けするため、テクスチャは不要。
+    LNHandle bgMat = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &bgMat));
+    LNHandle uiMat = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &uiMat));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f));
+    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f));
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+
+    // --- Pass 1: 中央の大きな赤いスプライト (背景相当, LoadOp = Clear で青クリア) ---
+    {
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_CLEAR;
+        rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+        rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+        ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+            renderer, bgMat, 0,
+            0.0f, 0.0f, 0.0f,   // 画面中央
+            200.0f, 200.0f,     // 中央を確実に覆う大きさ
+            0.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 0.0f, 1.0f, // 赤
+            0.0f));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    }
+
+    // --- Pass 2: 隅の小さな緑のスプライト (UI 相当, LoadOp = Load) ---
+    {
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].loadOp = LN_LOAD_OP_LOAD;
+        rpDesc.depthStencil.depthLoadOp = LN_LOAD_OP_LOAD;
+        rpDesc.depthStencil.stencilLoadOp = LN_LOAD_OP_LOAD;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+        ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+            renderer, uiMat, 0,
+            120.0f, 80.0f, 0.0f, // 中央から離れた隅
+            40.0f, 40.0f,        // 中央には掛からない小ささ
+            0.0f, 0.0f, 1.0f, 1.0f,
+            0.0f, 1.0f, 0.0f, 1.0f, // 緑
+            0.0f));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    }
+
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    ASSERT_EQ(TEST_W, w);
+    ASSERT_EQ(TEST_H, h);
+
+    // 中央ピクセルをサンプリング (キャプチャは RGBA8 に swizzle 済み)。
+    const int cx = w / 2;
+    const int cy = h / 2;
+    const uint8_t* px = data + (static_cast<size_t>(cy) * w + cx) * 4;
+    const int r = px[0];
+    const int g = px[1];
+    const int b = px[2];
+
+    // 修正後は Pass 1 の赤いスプライトが中央に残る (R 高, B 低)。
+    // 不具合時は Pass 1 が Pass 2 の隅ジオメトリを読み、中央がクリア色の青になる。
+    EXPECT_GT(r, 192)
+        << "R channel が低すぎます。背景スプライトが UI スプライトに上書きされた可能性があります。RGBA=("
+        << r << "," << g << "," << b << ")";
+    EXPECT_LT(b, 64)
+        << "B channel が高すぎます。中央がクリア色 (青) になり背景スプライトが消えています。RGBA=("
+        << r << "," << g << "," << b << ")";
+
+    LNObject_Release(camera);
+    LNObject_Release(uiMat);
+    LNObject_Release(bgMat);
+}
+
 // コンパイル済みシェーダ (.lcsh) からマテリアルを作成し、赤い三角形を描画するテスト。
 TEST_F(Test_Graphics, CustomShaderMaterial) {
     // Load compiled shader from file

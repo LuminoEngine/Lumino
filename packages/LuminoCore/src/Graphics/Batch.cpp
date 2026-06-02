@@ -89,6 +89,24 @@ void DrawCommandBuffer::drawMesh(Mesh* mesh, const Transform& transform, int32_t
 
 
 //-----------------------------------------------------------------------------
+// SpriteMeshPool
+//-----------------------------------------------------------------------------
+
+uint32_t SpriteMeshPool::acquireSlot() {
+    uint32_t index = m_cursor++;
+    if (index >= m_slots.size()) {
+        m_slots.resize(index + 1);
+    }
+    return index;
+}
+
+uint32_t SpriteMeshPool::growCapacity(uint32_t current, uint32_t count) {
+    uint32_t newCapacity = current == 0 ? 256 : current;
+    while (newCapacity < count) newCapacity *= 2;
+    return newCapacity;
+}
+
+//-----------------------------------------------------------------------------
 // BatchProcessor
 //-----------------------------------------------------------------------------
 
@@ -147,16 +165,20 @@ Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* comman
 Result<void> BatchProcessor::flushSpriteGroup(
     Renderer* renderer, const DrawCommand* begin, uint32_t count) {
 
-    // Ensure DynamicMesh has enough capacity
-    if (count > m_spriteMeshCapacity) {
-        uint32_t newCapacity = m_spriteMeshCapacity == 0 ? 256 : m_spriteMeshCapacity;
-        while (newCapacity < count) newCapacity *= 2;
+    // Acquire a distinct pool slot for this flush. Each flush within a frame must
+    // use its own buffer: draws are recorded now but executed at submit, so a
+    // shared buffer would let later flushes overwrite earlier flushes' vertices.
+    uint32_t slotIndex = m_spritePool.acquireSlot();
+    auto& slot = m_spritePool.slotAt(slotIndex);
+    if (count > slot.capacity) {
+        uint32_t newCapacity = SpriteMeshPool::growCapacity(slot.capacity, count);
 
         auto result = Mesh::createDynamic(m_ctx->device(), newCapacity * 4, newCapacity * 6);
         if (!result) return LN_FORWARD_ERROR(result);
-        m_spriteMesh = std::move(*result);
-        m_spriteMeshCapacity = newCapacity;
+        slot.mesh = std::move(*result);
+        slot.capacity = newCapacity;
     }
+    Mesh* spriteMesh = slot.mesh.get();
 
     // 2D カメラの場合、頂点 cy の符号を反転して左上原点 (Y+ 下) のレイアウトに切り替える。
     // Y 反転プロジェクションとの二重反転により NDC ワインディングは CCW のまま保たれる。
@@ -261,19 +283,19 @@ Result<void> BatchProcessor::flushSpriteGroup(
     }
 
     // Upload to GPU
-    auto vr = m_spriteMesh->updateVertices(0, m_vertexStaging.data(), totalVertices);
+    auto vr = spriteMesh->updateVertices(0, m_vertexStaging.data(), totalVertices);
     if (!vr) {
         return vr;
     }
-    auto ir = m_spriteMesh->updateIndices(0, m_indexStaging.data(), totalIndices);
+    auto ir = spriteMesh->updateIndices(0, m_indexStaging.data(), totalIndices);
     if (!ir) {
         return ir;
     }
 
-    m_spriteMesh->setSubmeshes(m_submeshStaging);
+    spriteMesh->setSubmeshes(m_submeshStaging);
 
     // Assign materials to mesh slots
-    auto& meshMaterials = m_spriteMesh->materials();
+    auto& meshMaterials = spriteMesh->materials();
     meshMaterials.resize(m_submeshStaging.size());
     currentMaterial = begin[0].material;
     uint32_t matSlot = 0;
@@ -290,7 +312,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
     }
 
     // Draw with identity transform (positions are already world-space)
-    return renderer->drawMeshImmediate(m_spriteMesh.get(), Transform::identity());
+    return renderer->drawMeshImmediate(spriteMesh, Transform::identity());
 }
 
 Result<void> BatchProcessor::flushSubMeshGroup(

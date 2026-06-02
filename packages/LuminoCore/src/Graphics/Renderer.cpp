@@ -140,6 +140,11 @@ void Renderer::beginFrame() {
             m_batchProcessor = std::move(*result);
         }
     }
+
+    // Rewind the sprite mesh pool so this frame's per-flush buffers are recycled.
+    if (m_batchProcessor) {
+        m_batchProcessor->resetFrame();
+    }
 }
 
 void Renderer::endFrame() {
