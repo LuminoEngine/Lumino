@@ -1,4 +1,5 @@
 ﻿#include "pch.hpp"
+#include <cstdarg>
 #include <mutex>
 #include <LuminoBase/Logger.hpp>
 

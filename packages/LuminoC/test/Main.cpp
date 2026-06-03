@@ -16,7 +16,7 @@ public:
 };
 
 int main(int argc, char** argv) {
-#if 1 // Debug Utility.
+#if 0 // Debug Utility.
         if (argc == 1) {
             char* testArgs[] = {
                 argv[0],

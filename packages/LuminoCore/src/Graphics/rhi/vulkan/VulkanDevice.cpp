@@ -216,14 +216,12 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
         att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         if (key.colorAttachments[i].isSwapchainBackbuffer) {
             // NOTE: スワップチェーンのバックバッファは present 前後どちらも PRESENT_SRC_KHR とする。
-            //   初期化時に PRESENT_SRC_KHR へ遷移済みなので initialLayout も PRESENT_SRC_KHR を指定する。
+            //   present 後・再 acquire 後のレイアウトは PRESENT_SRC_KHR のまま残るため、initialLayout も PRESENT_SRC_KHR を指定する。
+            //   各イメージの初回 acquire 時のみ UNDEFINED から PRESENT_SRC_KHR へ遷移させる処理を
+            //   VulkanSwapChain::acquireNextTexture() で行っている (presentable image は acquire 後でないと遷移できないため)。
             //   ※ Vulkan Tutorial ではシングルパスでフレーム開始時にクリアするため UNDEFINED を指定しているが、
             //   Lumino ではマルチパスでフレーム開始時にクリアしないこともあるため、適切なレイアウトを指定する。
             //   see: [ VUID-VkPresentInfoKHR-pImageIndices-01430 ]
-            //
-            // NOTE: Barrier に乗せて遷移させることは許可されていない。ここで何とかする必要がある。
-            //   https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
-            //   validation layer: Submitted command buffer expects image 0x50 (subresource: aspectMask 0x1 array layer 0, mip level 0) to be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR--instead, image 0x50's current layout is VK_IMAGE_LAYOUT_UNDEFINED.
             //
             att.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
             att.finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;

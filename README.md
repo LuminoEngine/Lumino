@@ -30,7 +30,7 @@ v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして�
 
 ## ビルド方法
 
-```powershell
+```sh
 # vcpkg 準備
 git clone -b 2026.03.18 https://github.com/microsoft/vcpkg.git ./build/vcpkg
 ./build/vcpkg/bootstrap-vcpkg.bat

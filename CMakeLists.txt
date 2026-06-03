@@ -94,6 +94,55 @@ if(LUMINO_BUILD_TESTS)
 endif()
 
 #-------------------------------------------------------------------------------
+# Utils
+#-------------------------------------------------------------------------------
+function(setup_c_api_client_configurations TARGET)
+    target_link_libraries(${TARGET} PRIVATE LuminoC glfw)
+    add_dependencies(${TARGET} LuminoC)
+
+    # WebGPU (copy dll)
+    if(LN_ENABLE_WEBGPU)
+        target_copy_webgpu_binaries(${TARGET})
+    endif()
+
+    if(LUMINO_USE_SLANG)
+        target_link_libraries(${TARGET} PRIVATE slang::slang)
+    endif()
+
+    # LuminoC.dll
+    add_custom_command(
+        TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:LuminoC>
+        $<TARGET_FILE_DIR:${TARGET}>
+    )
+
+    # glfw.dll
+    add_custom_command(
+        TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:glfw>
+        $<TARGET_FILE_DIR:${TARGET}>
+    )
+
+    # DXC libraries required by Dawn's D3D12 backend
+    if(LN_ENABLE_WEBGPU AND TARGET Microsoft::DirectXShaderCompiler)
+        add_custom_command(
+            TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:Microsoft::DirectXShaderCompiler>
+                $<TARGET_FILE_DIR:${TARGET}>
+        )
+        add_custom_command(
+            TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:Microsoft::DXIL>
+                $<TARGET_FILE_DIR:${TARGET}>
+        )
+    endif()
+endfunction()
+
+#-------------------------------------------------------------------------------
 # packages
 #-------------------------------------------------------------------------------
 add_subdirectory(packages/LuminoBase)

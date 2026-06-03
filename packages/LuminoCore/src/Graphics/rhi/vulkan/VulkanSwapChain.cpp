@@ -67,51 +67,14 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     m_maxFrames = imageCount;
     vkGetSwapchainImagesKHR(m_device->vkDevice(), m_swapchain, &imageCount, m_images.data());
 
-    // バックバッファのデフォルトレイアウトがは VK_IMAGE_LAYOUT_UNDEFINED なので、
-    // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR に確定しておく。
-    // こうしないと RenderPass 側で、初回の描画なのかどうかで initialLayout の指定を変える必要があり、
-    // キャッシュしている RenderPass のヒット率を下げてしまうことになる。
-    {
-        auto result = m_device->beginSingleTimeCommands();
-        if (!result) {
-            return LN_FORWARD_ERROR(result);
-        }
-        VkCommandBuffer commandBuffer = *result;
-        for (size_t i = 0; i < m_images.size(); ++i) {
-            VkImageMemoryBarrier barrier = {};
-            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-            barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrier.image = m_images[i];
-
-            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            barrier.subresourceRange.baseMipLevel = 0;
-            barrier.subresourceRange.levelCount = 1;
-            barrier.subresourceRange.baseArrayLayer = 0;
-            barrier.subresourceRange.layerCount = 1;
-            VkPipelineStageFlags sourceStage;
-            VkPipelineStageFlags destinationStage;
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-            vkCmdPipelineBarrier(
-                commandBuffer,
-                sourceStage,
-                destinationStage,
-                0,
-                0,
-                nullptr,
-                0,
-                nullptr,
-                1,
-                &barrier);
-        }
-        m_device->endSingleTimeCommands(commandBuffer);
-    }
+    // バックバッファのデフォルトレイアウトは VK_IMAGE_LAYOUT_UNDEFINED であり、
+    // RenderPass 側 (VulkanDevice.cpp) は initialLayout=PRESENT_SRC_KHR を要求する。
+    // この差分を初回描画前に埋めたいが、presentable image は vkAcquireNextImageKHR で
+    // 取得した後でなければレイアウト遷移を含む一切の使用が許可されていない
+    // (VUID UNASSIGNED-non-acquired-swapchain-image-used)。
+    // そのため init 時に一括遷移するのではなく、acquireNextTexture() で各イメージを
+    // 初めて取得したときにのみ UNDEFINED -> PRESENT_SRC_KHR の barrier を積む。
+    m_imageLayoutInitialized.assign(m_images.size(), false);
 
     // Create image views
     VkFormat vkFmt = swapInfo.imageFormat;
@@ -127,7 +90,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
                 m_extent.height)) {
             return LN_MAKE_ERROR("Failed to create swap chain image view.");
         }
-        view->setIsSwapchainBackbuffer(true);
+        view->setSwapchainBackbufferIndex(i);
         m_views[i] = view;
     }
 
@@ -252,6 +215,40 @@ TextureView* VulkanSwapChain::acquireNextTexture() {
         m_imageAvailableSemaphores[m_currentFrame],
         VK_NULL_HANDLE,
         &m_imageIndex);
+
+    // 取得したイメージが初めての acquire であれば、RenderPass が要求する
+    // initialLayout=PRESENT_SRC_KHR に合わせて UNDEFINED から遷移させる。
+    // 2 フレーム目以降は直前の present がイメージを PRESENT_SRC_KHR のまま残すため不要。
+    // acquire 後・present 前のこのタイミングで遷移するのは仕様上許可されている。
+    if (!m_imageLayoutInitialized[m_imageIndex]) {
+        VkImageMemoryBarrier barrier = {};
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = m_images[m_imageIndex];
+        barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        barrier.subresourceRange.baseMipLevel = 0;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.baseArrayLayer = 0;
+        barrier.subresourceRange.layerCount = 1;
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = 0;
+        vkCmdPipelineBarrier(
+            m_commandBuffers[m_currentFrame]->vkCommandBuffer(),
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+            0,
+            0,
+            nullptr,
+            0,
+            nullptr,
+            1,
+            &barrier);
+        m_imageLayoutInitialized[m_imageIndex] = true;
+    }
+
     m_device->setActiveSwapChain(this);
     return m_views[m_imageIndex].get();
 }

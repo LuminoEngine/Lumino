@@ -19,8 +19,8 @@ public:
     VkFormat vkFormat() const { return m_format; }
     uint32_t width() const override { return m_width; }
     uint32_t height() const override { return m_height; }
-    bool isSwapchainBackbuffer() const { return m_isSwapchainBackbuffer; }
-    void setIsSwapchainBackbuffer(bool v) { m_isSwapchainBackbuffer = v; }
+    bool isSwapchainBackbuffer() const { return m_swapchainBackbufferIndex >= 0; }
+    void setSwapchainBackbufferIndex(int32_t index) { m_swapchainBackbufferIndex = index; }
 
 protected:
     void finalize() override;
@@ -31,7 +31,7 @@ private:
     VkImage m_image = VK_NULL_HANDLE;
     VkFormat m_format = VK_FORMAT_UNDEFINED;
     uint32_t m_width = 0, m_height = 0;
-    bool m_isSwapchainBackbuffer = false;
+    int32_t m_swapchainBackbufferIndex = -1;
 };
 
 } // namespace ln::rhi::vulkan

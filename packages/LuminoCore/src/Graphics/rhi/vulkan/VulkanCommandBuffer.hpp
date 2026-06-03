@@ -15,6 +15,8 @@ public:
     RenderPass* beginRenderPass(const RenderPassDesc& desc) override;
     void submit() override;
 
+    VkCommandBuffer vkCommandBuffer() const { return m_cmd; }
+
 protected:
     void finalize() override;
 

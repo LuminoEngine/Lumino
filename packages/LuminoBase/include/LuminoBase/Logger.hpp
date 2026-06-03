@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <cstdarg>
-
 #ifdef _MSC_VER
 #define LN_FUNC_SIG __FUNCTION__
 #else

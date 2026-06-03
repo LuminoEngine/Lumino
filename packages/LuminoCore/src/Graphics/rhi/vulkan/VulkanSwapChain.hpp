@@ -47,6 +47,9 @@ public:
 
     int m_maxFrames;
     std::vector<VkImage> m_images;
+    // 各スワップチェーンイメージが一度でも acquire 後にレイアウト確定済みかどうか。
+    // 初回 acquire 時のみ UNDEFINED -> PRESENT_SRC_KHR の遷移を描画用コマンドバッファへ積む。
+    std::vector<bool> m_imageLayoutInitialized;
     std::vector<Ref<VulkanTextureView>> m_views;
     std::vector<Ref<VulkanCommandBuffer>> m_commandBuffers;
     // NOTE: なぜ SwapChain に CommandBuffer を持たせるのか？
