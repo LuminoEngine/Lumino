@@ -59,6 +59,9 @@ AllowShortFunctionsOnASingleLine: InlineOnly
 # )
 PenaltyBreakAssignment: 100
 
+# コンストラクタ初期化子の : や , を行頭に置く
+BreakConstructorInitializers: BeforeComma
+
 # 戻り値は関数名と同じ行にする
 AlwaysBreakAfterReturnType: None
 PenaltyReturnTypeOnItsOwnLine: 1000000
@@ -66,6 +69,7 @@ PenaltyReturnTypeOnItsOwnLine: 1000000
 # namespace の { } 内はインデントしない
 NamespaceIndentation: None
 
+# #include を自動ソートしない
 SortIncludes: false
 
 #-------------------------------------------------------------------------------
@@ -92,5 +96,5 @@ FixNamespaceComments: false
 ReflowComments: false
 #NamespaceIndentation: All
 BreakStringLiterals: false
-BreakConstructorInitializers: AfterColon
+#BreakConstructorInitializers: AfterColon
 IndentPPDirectives: BeforeHash
