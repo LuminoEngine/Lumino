@@ -278,6 +278,175 @@ TEST_F(Test_Graphics, TwoSprites) {
     LNObject_Release(texture);
 }
 
+// 深度テストOFFのテスト。
+TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
+    uint32_t indices[6] = { 0, 2, 1, 1, 2, 3 };
+    LNSubMesh sub = { 0, 6, 0 };
+
+    // 深度テスト有効の赤・手前の四角
+    LNHandle nearMat = LN_NULL_HANDLE;
+    LNHandle nearMesh = LN_NULL_HANDLE;
+    {
+        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &nearMat));
+        ASSERT_EQ(LN_OK, LNMaterial_SetColor(nearMat, 1.0f, 0.0f, 0.0f, 1.0f));
+        LNVertex nearVerts[4] = {
+            { -0.6f,  0.6f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f,  0.6f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            { -0.6f, -0.6f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f, -0.6f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        };
+        ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, nearVerts, 4, indices, 6, &sub, 1, &nearMesh));
+        ASSERT_EQ(LN_OK, LNMesh_SetMaterial(nearMesh, 0, nearMat));
+    }
+    
+    // 深度テスト無効の緑・奥の四角。手前の赤い四角が緑を覆い隠すはず。
+    LNHandle farMat = LN_NULL_HANDLE;
+    LNHandle farMesh = LN_NULL_HANDLE;
+    {
+        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &farMat));
+        ASSERT_EQ(LN_OK, LNMaterial_SetColor(farMat, 0.0f, 1.0f, 0.0f, 1.0f));
+        ASSERT_EQ(LN_OK, LNMaterial_SetDepthTestEnabled(farMat, LN_FALSE));
+
+        LNVertex farVerts[4] = {
+            { -0.6f,  0.6f, -0.5f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f,  0.6f, -0.5f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            { -0.6f, -0.6f, -0.5f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f, -0.6f, -0.5f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        };
+        
+        ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, farVerts, 4, indices, 6, &sub, 1, &farMesh));
+        ASSERT_EQ(LN_OK, LNMesh_SetMaterial(farMesh, 0, farMat));
+    }
+
+    // Camera. Z- 方向が投影される。
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
+        60.0f * 3.14159f / 180.0f,
+        TEST_W.0f / TEST_H.0f,
+        0.1f, 100.0f));
+    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
+        0.0f, 0.0f, 3.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f));
+
+    LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, nearMesh, &identity, 0));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, farMesh, &identity, 0));
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    // DepthTest が OFF なので、後から描かれた緑い四角が、赤い四角に隠されずに、描画されるはず。
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    const int cx = w / 2;
+    const int cy = h / 2;
+    const uint8_t* px = data + (static_cast<size_t>(cy) * w + cx) * 4;
+    EXPECT_LT(px[0], 96);
+    EXPECT_GT(px[1], 160);
+
+    LNObject_Release(camera);
+    LNObject_Release(farMesh);
+    LNObject_Release(nearMesh);
+    LNObject_Release(farMat);
+    LNObject_Release(nearMat);
+}
+
+// 深度書き込みOFFのテスト。
+TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
+    uint32_t indices[6] = { 0, 2, 1, 1, 2, 3 };
+    LNSubMesh sub = { 0, 6, 0 };
+
+    // NearMesh (Red)
+    LNHandle nearMat = LN_NULL_HANDLE;
+    LNHandle nearMesh = LN_NULL_HANDLE;
+    {
+        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &nearMat));
+        ASSERT_EQ(LN_OK, LNMaterial_SetColor(nearMat, 1.0f, 0.0f, 0.0f, 1.0f));
+        ASSERT_EQ(LN_OK, LNMaterial_SetDepthWriteEnabled(nearMat, LN_FALSE));
+        LNVertex nearVerts[4] = {
+            { -0.6f,  0.6f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f,  0.6f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            { -0.6f, -0.6f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f, -0.6f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        };
+        ASSERT_EQ(
+            LN_OK, LNMesh_Create(graphicsContext, nearVerts, 4, indices, 6, &sub, 1, &nearMesh));
+        ASSERT_EQ(LN_OK, LNMesh_SetMaterial(nearMesh, 0, nearMat));
+    }
+
+    // FarMesh (Green). 
+    LNHandle farMat = LN_NULL_HANDLE;
+    LNHandle farMesh = LN_NULL_HANDLE;
+    {
+        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &farMat));
+        ASSERT_EQ(LN_OK, LNMaterial_SetColor(farMat, 0.0f, 1.0f, 0.0f, 1.0f));
+        LNVertex farVerts[4] = {
+            { -0.6f,  0.6f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f,  0.6f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+            { -0.6f, -0.6f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+            {  0.6f, -0.6f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        };
+        ASSERT_EQ(
+            LN_OK, LNMesh_Create(graphicsContext, farVerts, 4, indices, 6, &sub, 1, &farMesh));
+        ASSERT_EQ(LN_OK, LNMesh_SetMaterial(farMesh, 0, farMat));
+    }
+    
+    // Camera. Z- 方向が投影される。
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
+        60.0f * 3.14159f / 180.0f,
+        TEST_W.0f / TEST_H.0f,
+        0.1f, 100.0f));
+    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
+        0.0f, 0.0f, 3.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f));
+
+    LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, nearMesh, &identity, 0));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, farMesh, &identity, 0));
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    const int cx = w / 2;
+    const int cy = h / 2;
+    const uint8_t* px = data + (static_cast<size_t>(cy) * w + cx) * 4;
+    EXPECT_LT(px[0], 96);
+    EXPECT_GT(px[1], 160);
+
+    LNObject_Release(camera);
+    LNObject_Release(farMesh);
+    LNObject_Release(nearMesh);
+    LNObject_Release(farMat);
+    LNObject_Release(nearMat);
+}
+
 // 同一フレーム内の異なる RenderPass でそれぞれスプライトを描画したとき、
 // 先行パスのスプライトが後続パスのスプライトに上書きされないことを検証する。
 //

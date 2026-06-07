@@ -536,6 +536,26 @@ extern LUMINO_API LNResult LNMaterial_SetCullMode(
     LNCullMode cullMode
 );
 
+/**
+ * マテリアルのデプステスト有効/無効を設定します。
+ * @param[in] material マテリアルのハンドル
+ * @param[in] enabled  LN_TRUE: 有効, LN_FALSE: 無効
+ */
+extern LUMINO_API LNResult LNMaterial_SetDepthTestEnabled(
+    LNHandle material,
+    LNBool enabled
+);
+
+/**
+ * マテリアルのデプス書き込み有効/無効を設定します。
+ * @param[in] material マテリアルのハンドル
+ * @param[in] enabled  LN_TRUE: 有効, LN_FALSE: 無効
+ */
+extern LUMINO_API LNResult LNMaterial_SetDepthWriteEnabled(
+    LNHandle material,
+    LNBool enabled
+);
+
 //------------------------------------------------------------------------------
 // LNMesh
 //------------------------------------------------------------------------------

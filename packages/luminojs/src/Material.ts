@@ -17,6 +17,8 @@ export class Material extends LuminoObject implements ResidentResource {
     private _float4s: Map<string, [number, number, number, number]> = new Map();
     private _cullMode: CullMode | null = null;
     private _blendMode: BlendMode | null = null;
+    private _depthTestEnabled: boolean | null = null;
+    private _depthWriteEnabled: boolean | null = null;
     private _dirty = false;
     private _paramsDirty = false;
     private _lastUsedFrame = 0;
@@ -103,6 +105,24 @@ export class Material extends LuminoObject implements ResidentResource {
      */
     setBlendMode(mode: BlendMode): void {
         this._blendMode = mode;
+        this._paramsDirty = true;
+    }
+
+    /**
+     * デプステストの有効/無効を設定します。
+     * @param enabled true で有効
+     */
+    setDepthTestEnabled(enabled: boolean): void {
+        this._depthTestEnabled = enabled;
+        this._paramsDirty = true;
+    }
+
+    /**
+     * デプス書き込みの有効/無効を設定します。
+     * @param enabled true で有効
+     */
+    setDepthWriteEnabled(enabled: boolean): void {
+        this._depthWriteEnabled = enabled;
         this._paramsDirty = true;
     }
 
@@ -231,6 +251,22 @@ export class Material extends LuminoObject implements ResidentResource {
                 (API.LNMaterial_SetBlendMode as (
                     mat: number, mode: number,
                 ) => number)(this._handle, mode));
+        }
+
+        if (this._depthTestEnabled !== null) {
+            const enabled = this._depthTestEnabled ? 1 : 0;
+            Runtime.safeCall(() =>
+                (API.LNMaterial_SetDepthTestEnabled as (
+                    mat: number, enabled: number,
+                ) => number)(this._handle, enabled));
+        }
+
+        if (this._depthWriteEnabled !== null) {
+            const enabled = this._depthWriteEnabled ? 1 : 0;
+            Runtime.safeCall(() =>
+                (API.LNMaterial_SetDepthWriteEnabled as (
+                    mat: number, enabled: number,
+                ) => number)(this._handle, enabled));
         }
     }
 }

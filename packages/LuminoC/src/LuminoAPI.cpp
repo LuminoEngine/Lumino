@@ -753,6 +753,22 @@ LNResult LNMaterial_SetCullMode(LNHandle material, LNCullMode cullMode) {
     return LN_OK;
 }
 
+LNResult LNMaterial_SetDepthTestEnabled(LNHandle material, LNBool enabled) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    mat->setDepthTestEnabled(enabled != LN_FALSE);
+    return LN_OK;
+}
+
+LNResult LNMaterial_SetDepthWriteEnabled(LNHandle material, LNBool enabled) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+
+    mat->setDepthWriteEnabled(enabled != LN_FALSE);
+    return LN_OK;
+}
+
 LNResult LNMaterial_SetNamedTexture(LNHandle material, const char* name, LNHandle texture) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;

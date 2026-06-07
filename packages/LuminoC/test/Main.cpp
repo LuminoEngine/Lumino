@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
             char* testArgs[] = {
                 argv[0],
                 (char*)"--gtest_break_on_failure",
-                (char*)"--gtest_filter=Test_Graphics.LoadOpLoadDepthStencil",
+                (char*)"--gtest_filter=Test_Graphics.MaterialDepthWriteEnabled",
             };
             argc = sizeof(testArgs) / sizeof(char*);
             argv = testArgs;
