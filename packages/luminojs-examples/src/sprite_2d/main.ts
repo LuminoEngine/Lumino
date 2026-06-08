@@ -87,6 +87,7 @@ async function main() {
             material, 0,
             MARGIN + half, MARGIN + half, 0.0,
             SPR, SPR,
+            0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
             1.0, 0.4, 0.4, 1.0,
             0.0);
@@ -96,6 +97,7 @@ async function main() {
             material, 0,
             WINDOW_W - MARGIN - half, MARGIN + half, 0.0,
             SPR, SPR,
+            0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
             0.4, 1.0, 0.4, 1.0,
             0.0);
@@ -105,6 +107,7 @@ async function main() {
             material, 0,
             MARGIN + half, WINDOW_H - MARGIN - half, 0.0,
             SPR, SPR,
+            0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
             0.4, 0.4, 1.0, 1.0,
             0.0);
@@ -114,6 +117,7 @@ async function main() {
             material, 0,
             WINDOW_W - MARGIN - half, WINDOW_H - MARGIN - half, 0.0,
             SPR, SPR,
+            0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
             1.0, 1.0, 0.4, 1.0,
             0.0);
@@ -123,6 +127,7 @@ async function main() {
             material, 0,
             WINDOW_W * 0.5, WINDOW_H * 0.5, 0.0,
             SPR * 2.0, SPR * 2.0,
+            0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
             1.0, 1.0, 1.0, 1.0,
             t);

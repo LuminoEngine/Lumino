@@ -43,6 +43,7 @@ void DrawCommandBuffer::clear() {
 void DrawCommandBuffer::drawSprite(
     Material* material, int32_t zIndex,
     const Vector3& pos, const Vector2& size,
+    const Vector2& pivot,
     const Vector2& uvOffset, const Vector2& uvSize,
     const Color& color, float rotation) {
 
@@ -52,6 +53,7 @@ void DrawCommandBuffer::drawSprite(
     cmd.material = material;
     cmd.sprite.position = pos;
     cmd.sprite.size = size;
+    cmd.sprite.pivot = pivot;
     cmd.sprite.uvOffset = uvOffset;
     cmd.sprite.uvSize = uvSize;
     cmd.sprite.color = color;
@@ -212,19 +214,29 @@ Result<void> BatchProcessor::flushSpriteGroup(
         if (i == count) break;
 
         const auto& s = begin[i].sprite;
-        float hw = s.size.x * 0.5f;
-        float hh = s.size.y * 0.5f;
+        float w = s.size.x;
+        float h = s.size.y;
+
+        // pivot は矩形上の基準点 (0,0)=視覚的な左上, (0.5,0.5)=中央, (1,1)=右下。
+        // pos がこの pivot 位置に一致し、下の rotation もこの点を軸に回転する。
+        float left  = -s.pivot.x * w;
+        float right = (1.0f - s.pivot.x) * w;
 
         // Corner offsets (before rotation)
-        //   3D (Y+ up):   v0=TL(-hw,+hh) v1=TR(+hw,+hh) v2=BL(-hw,-hh) v3=BR(+hw,-hh)
-        //   2D (Y+ down): v0=TL(-hw,-hh) v1=TR(+hw,-hh) v2=BL(-hw,+hh) v3=BR(+hw,+hh)
+        //   v0=TL(left,top) v1=TR(right,top) v2=BL(left,bottom) v3=BR(right,bottom)
+        //   3D (Y+ up):   top は +、bottom は - (pivot.y=0 が視覚的な上端)
+        //   2D (Y+ down): top/bottom の符号が反転
         // UV / index winding は両モード共通。2D は ortho Y 反転と組み合わさり NDC で CCW のまま。
-        float cx[4] = { -hw,  hw, -hw,  hw };
+        float cx[4] = { left, right, left, right };
         float cy[4];
         if (layout2D) {
-            cy[0] = -hh; cy[1] = -hh; cy[2] =  hh; cy[3] =  hh;
+            float top    = -s.pivot.y * h;
+            float bottom = (1.0f - s.pivot.y) * h;
+            cy[0] = top; cy[1] = top; cy[2] = bottom; cy[3] = bottom;
         } else {
-            cy[0] =  hh; cy[1] =  hh; cy[2] = -hh; cy[3] = -hh;
+            float top    =  s.pivot.y * h;
+            float bottom = -(1.0f - s.pivot.y) * h;
+            cy[0] = top; cy[1] = top; cy[2] = bottom; cy[3] = bottom;
         }
 
         // Apply rotation if non-zero

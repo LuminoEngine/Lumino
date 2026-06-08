@@ -24,10 +24,19 @@ endif()
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 # DLL をテスト実行ファイルのディレクトリへコピー (Windows)
-add_custom_command(TARGET LuminoC_test POST_BUILD
+add_custom_command(
+    TARGET LuminoC_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:LuminoC>
         $<TARGET_FILE_DIR:LuminoC_test>
+)
+
+# glfw.dll
+add_custom_command(
+    TARGET LuminoC_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:glfw>
+    $<TARGET_FILE_DIR:LuminoC_test>
 )
 
 add_dependencies(${PROJECT_NAME} LuminoC)

@@ -27,6 +27,7 @@ TEST_F(Test_DrawCommandBuffer, DrawSprite) {
     Material* mat = fakeMat(0x1000);
     m_buf.drawSprite(mat, 5,
         Vector3{1, 2, 3}, Vector2{10, 20},
+        Vector2{0.25f, 0.75f},
         Vector2{0.1f, 0.2f}, Vector2{0.5f, 0.6f},
         Color{1, 0, 0, 1}, 0.5f);
 
@@ -40,6 +41,8 @@ TEST_F(Test_DrawCommandBuffer, DrawSprite) {
     EXPECT_NEAR(cmd.sprite.position.z, 3.0f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.size.x, 10.0f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.size.y, 20.0f, 1e-5f);
+    EXPECT_NEAR(cmd.sprite.pivot.x, 0.25f, 1e-5f);
+    EXPECT_NEAR(cmd.sprite.pivot.y, 0.75f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.uvOffset.x, 0.1f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.uvSize.x, 0.5f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.color.r, 1.0f, 1e-5f);
@@ -66,7 +69,7 @@ TEST_F(Test_DrawCommandBuffer, DrawSubMesh) {
 
 TEST_F(Test_DrawCommandBuffer, Clear) {
     Material* mat = fakeMat(0x1000);
-    m_buf.drawSprite(mat, 0, {}, {1,1}, {}, {1,1}, Color::white());
+    m_buf.drawSprite(mat, 0, {}, {1,1}, {0.5f,0.5f}, {}, {1,1}, Color::white());
     EXPECT_EQ(m_buf.commands().size(), 1u);
     m_buf.clear();
     EXPECT_TRUE(m_buf.commands().empty());

@@ -39,6 +39,7 @@ struct DrawCommand {
     struct SpriteData {
         Vector3 position;
         Vector2 size;
+        Vector2 pivot;      // 矩形上の基準点/回転軸 (0,0)=左上, (0.5,0.5)=中央, (1,1)=右下
         Vector2 uvOffset;
         Vector2 uvSize;
         Color   color;
@@ -71,6 +72,7 @@ public:
 
     void drawSprite(Material* material, int32_t zIndex,
                     const Vector3& pos, const Vector2& size,
+                    const Vector2& pivot,
                     const Vector2& uvOffset, const Vector2& uvSize,
                     const Color& color, float rotation = 0.0f);
 

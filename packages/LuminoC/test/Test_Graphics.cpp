@@ -249,6 +249,7 @@ TEST_F(Test_Graphics, TwoSprites) {
         renderer, mat1, 0,
         -80.0f, 0.0f, 0.0f,
         100.0f, 100.0f,
+        0.5f, 0.5f,
         0.0f, 0.0f, 1.0f, 1.0f,
         1.0f, 1.0f, 1.0f, 1.0f,
         0.0f));
@@ -258,6 +259,7 @@ TEST_F(Test_Graphics, TwoSprites) {
         renderer, mat2, 0,
         80.0f, 0.0f, 0.0f,
         100.0f, 100.0f,
+        0.5f, 0.5f,
         0.0f, 0.0f, 1.0f, 1.0f,
         1.0f, 1.0f, 1.0f, 1.0f,
         0.0f));
@@ -498,6 +500,7 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
             renderer, bgMat, 0,
             0.0f, 0.0f, 0.0f,   // 画面中央
             200.0f, 200.0f,     // 中央を確実に覆う大きさ
+            0.5f, 0.5f,
             0.0f, 0.0f, 1.0f, 1.0f,
             1.0f, 0.0f, 0.0f, 1.0f, // 赤
             0.0f));
@@ -516,6 +519,7 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
             renderer, uiMat, 0,
             120.0f, 80.0f, 0.0f, // 中央から離れた隅
             40.0f, 40.0f,        // 中央には掛からない小ささ
+            0.5f, 0.5f,
             0.0f, 0.0f, 1.0f, 1.0f,
             0.0f, 1.0f, 0.0f, 1.0f, // 緑
             0.0f));

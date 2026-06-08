@@ -114,6 +114,7 @@ int main() {
                 renderer, mat, zIndex,
                 x, y, 0.0f,
                 16.0f, 16.0f,
+                0.5f, 0.5f,
                 0.0f, 0.0f, 1.0f, 1.0f,
                 1.0f, 1.0f, 1.0f, 1.0f,
                 0.0f);

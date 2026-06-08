@@ -1205,6 +1205,7 @@ LNResult LNRenderer_DrawSprite(
     LNHandle renderer, LNHandle material, int32_t zIndex,
     float posX, float posY, float posZ,
     float sizeW, float sizeH,
+    float pivotX, float pivotY,
     float uvX, float uvY, float uvW, float uvH,
     float colorR, float colorG, float colorB, float colorA,
     float rotation) {
@@ -1221,6 +1222,7 @@ LNResult LNRenderer_DrawSprite(
         mat, zIndex,
         ln::Vector3{posX, posY, posZ},
         ln::Vector2{sizeW, sizeH},
+        ln::Vector2{pivotX, pivotY},
         ln::Vector2{uvX, uvY},
         ln::Vector2{uvW, uvH},
         ln::Color{colorR, colorG, colorB, colorA},
@@ -1387,6 +1389,7 @@ LNResult LNDrawCommandBuffer_DrawSprite(
         mat, zIndex,
         ln::Vector3{posX, posY, posZ},
         ln::Vector2{sizeW, sizeH},
+        ln::Vector2{0.5f, 0.5f}, // deprecated API: 従来どおり中央原点
         ln::Vector2{uvX, uvY},
         ln::Vector2{uvW, uvH},
         ln::Color{colorR, colorG, colorB, colorA},
@@ -1412,6 +1415,7 @@ LNResult LNDrawCommandBuffer_DrawSprites(
             mat, s.zIndex,
             ln::Vector3{s.posX, s.posY, s.posZ},
             ln::Vector2{s.sizeW, s.sizeH},
+            ln::Vector2{0.5f, 0.5f}, // deprecated API: 従来どおり中央原点
             ln::Vector2{s.uvX, s.uvY},
             ln::Vector2{s.uvW, s.uvH},
             ln::Color{s.colorR, s.colorG, s.colorB, s.colorA},

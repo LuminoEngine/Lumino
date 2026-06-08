@@ -133,6 +133,8 @@ export class Renderer extends LuminoObject {
      * @param posZ      Z 座標。
      * @param sizeW     スプライト幅。
      * @param sizeH     スプライト高さ。
+     * @param pivotX    矩形上の基準点 X (0.0〜1.0)。0=左, 0.5=中央, 1=右。posX がこの位置に一致し、回転軸にもなる。
+     * @param pivotY    矩形上の基準点 Y (0.0〜1.0)。0=上, 0.5=中央, 1=下。posY がこの位置に一致し、回転軸にもなる。
      * @param uvX       UV 矩形の X。
      * @param uvY       UV 矩形の Y。
      * @param uvW       UV 矩形の幅。
@@ -147,6 +149,7 @@ export class Renderer extends LuminoObject {
         material: Material, zIndex: number,
         posX: number, posY: number, posZ: number,
         sizeW: number, sizeH: number,
+        pivotX: number, pivotY: number,
         uvX: number, uvY: number, uvW: number, uvH: number,
         colorR: number, colorG: number, colorB: number, colorA: number,
         rotation: number,
@@ -159,6 +162,7 @@ export class Renderer extends LuminoObject {
                 r: number, mat: number, z: number,
                 px: number, py: number, pz: number,
                 sw: number, sh: number,
+                pvx: number, pvy: number,
                 ux: number, uy: number, uw: number, uh: number,
                 cr: number, cg: number, cb: number, ca: number,
                 rot: number,
@@ -166,6 +170,7 @@ export class Renderer extends LuminoObject {
                 this._handle, material.handle, zIndex,
                 posX, posY, posZ,
                 sizeW, sizeH,
+                pivotX, pivotY,
                 uvX, uvY, uvW, uvH,
                 colorR, colorG, colorB, colorA,
                 rotation,

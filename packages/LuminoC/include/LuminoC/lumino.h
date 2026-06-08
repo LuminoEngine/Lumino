@@ -824,14 +824,17 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
  * @param[in] renderer  Renderer のハンドル
  * @param[in] material  マテリアルのハンドル
  * @param[in] zIndex    ソート優先度
- * @param[in] posX,posY,posZ  位置
+ * @param[in] posX,posY,posZ  位置 (スプライト矩形上の pivot 位置がこの座標に一致します)
  * @param[in] sizeW,sizeH     サイズ
+ * @param[in] pivotX,pivotY   矩形上の基準点 (0.0〜1.0)。(0,0)=視覚的な左上, (0.5,0.5)=中央, (1,1)=右下。
+ *                            この点が posX,posY に配置され、rotation の回転軸にもなります。
+ *                            CanvasRenderingContext2D の fillRect のように左上原点で描きたい場合は (0,0) を指定します。
  * @param[in] uvX,uvY,uvW,uvH UV 矩形
  * @param[in] colorR,colorG,colorB,colorA 頂点カラー
  * @param[in] rotation  Z 軸回転 (ラジアン)
- * 
+ *
  * 蓄積されたコマンドは LNRenderer_EndRenderPass 時に自動的にソート→バッチ化→描画されます。
- * 
+ *
  * ## DrawMesh vs DrawSprite
  * 例えば4頂点の四角形Mesh を 5000 個描画する場合、DrawMesh は 5000 ドローコールになりますが、DrawSprite は 1 ドローコールで描画できます。
  * Intel Core i9, GeForce RTX 3070 の環境でも顕著で、前者では 20ms 近くかかるのに対し、後者は 1ms 未満で描画できます。
@@ -841,9 +844,10 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
 extern LUMINO_API LNResult LNRenderer_DrawSprite(
     LNHandle renderer,
     LNHandle material,
-    int32_t  zIndex,
+    int32_t zIndex,
     float posX, float posY, float posZ,
     float sizeW, float sizeH,
+    float pivotX, float pivotY,
     float uvX, float uvY, float uvW, float uvH,
     float colorR, float colorG, float colorB, float colorA,
     float rotation
