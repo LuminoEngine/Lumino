@@ -419,6 +419,17 @@ void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {
 //------------------------------------------------------------------------------
 
 #ifndef __EMSCRIPTEN__
+LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    ctx->requestCaptureBackbuffer();
+    return LN_OK;
+}
+
 LNResult LNGraphicsContext_CaptureBackbuffer(
     LNHandle graphicsContext,
     const uint8_t** outData,
@@ -985,14 +996,15 @@ LNResult LNCamera_SetOrthographic(
 }
 
 LNResult LNCamera_SetOrthographic2D(
-    LNHandle camera, float width, float height, float nearClip, float farClip) {
+    LNHandle camera, float width, float height, float nearClip, float farClip,
+    float pivotX, float pivotY) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
     auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
 
-    camObj->camera.setOrthographic2D(width, height, nearClip, farClip);
+    camObj->camera.setOrthographic2D(width, height, nearClip, farClip, pivotX, pivotY);
     return LN_OK;
 }
 

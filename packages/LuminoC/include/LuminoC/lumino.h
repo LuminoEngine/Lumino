@@ -200,8 +200,21 @@ extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 extern LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext);
 
 /**
+ * 現在のフレームのバックバッファをキャプチャするよう要求します。
+ * LNGraphicsContext_EndFrame の前に呼び出してください。
+ *
+ * スワップチェーンイメージは present 後に acquire 解除されると一切使用できなくなる
+ * (VUID UNASSIGNED-non-acquired-swapchain-image-used) ため、実際の読み戻しは
+ * present 直前 (EndFrame 内) に行われます。読み戻した内容は EndFrame の後に
+ * LNGraphicsContext_CaptureBackbuffer で取得します。
+ * @param[in] graphicsContext GraphicsContext のハンドル
+ */
+extern LUMINO_API LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext);
+
+/**
  * 直前のフレームのバックバッファの内容を RGBA8 ピクセルデータとして取得します。
- * LNGraphicsContext_EndFrame の後に呼び出してください。
+ * 事前に (EndFrame の前に) LNGraphicsContext_RequestCaptureBackbuffer を呼び、
+ * その後 LNGraphicsContext_EndFrame を呼んでから本関数を呼び出してください。
  * 返されるポインタは、次の LNGraphicsContext_CaptureBackbuffer 呼び出しまで有効です。
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outData         ピクセルデータの先頭ポインタ
@@ -698,15 +711,21 @@ extern LUMINO_API LNResult LNCamera_SetOrthographic(
  * Y 軸反転によりワインディングが反転するため、マテリアルの CullMode を
  * None に設定するか、フロントフェイス向きを CW に揃える必要があります。
  *
+ * pivotX, pivotY (0..1) で原点 (画面座標 (0,0)) の位置を指定できます。
+ * pivot=(0,0) で左上、(0.5,0.5) で画面中央、(1,1) で右下が原点になります。
+ *
  * @param[in] camera   カメラのハンドル
  * @param[in] width    画面幅 (ピクセル)
  * @param[in] height   画面高さ (ピクセル)
  * @param[in] nearClip ニアクリップ距離
  * @param[in] farClip  ファークリップ距離
+ * @param[in] pivotX   原点の水平位置 (0..1)。0=左, 0.5=中央, 1=右
+ * @param[in] pivotY   原点の垂直位置 (0..1)。0=上, 0.5=中央, 1=下
  */
 extern LUMINO_API LNResult LNCamera_SetOrthographic2D(
     LNHandle camera,
-    float width, float height, float nearClip, float farClip
+    float width, float height, float nearClip, float farClip,
+    float pivotX, float pivotY
 );
 
 /**

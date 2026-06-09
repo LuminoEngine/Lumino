@@ -1,4 +1,4 @@
-#include <LuminoCore/Graphics/Camera.hpp>
+﻿#include <LuminoCore/Graphics/Camera.hpp>
 #include <cmath>
 
 namespace ln {
@@ -36,8 +36,15 @@ void Camera::setOrthographic(float width, float height, float nearClip, float fa
     m_is2D = false;
 }
 
-void Camera::setOrthographic2D(float width, float height, float nearClip, float farClip) {
-    m_projMatrix = Matrix4x4::ortho(0.0f, width, height, 0.0f, nearClip, farClip);
+void Camera::setOrthographic2D(float width, float height, float nearClip, float farClip,
+                               float pivotX, float pivotY) {
+    // pivot (0..1) で原点 (スクリーン座標 (0,0)) を画面上の任意位置へ移動する。
+    // 原点は画面左上から (pivotX*width, pivotY*height) ピクセルの位置に置かれる。
+    const float left = -pivotX * width;
+    const float right = (1.0f - pivotX) * width;
+    const float top = -pivotY * height;
+    const float bottom = (1.0f - pivotY) * height;
+    m_projMatrix = Matrix4x4::ortho(left, right, bottom, top, nearClip, farClip);
     m_viewMatrix = Matrix4x4::identity();
     m_is2D = true;
 }

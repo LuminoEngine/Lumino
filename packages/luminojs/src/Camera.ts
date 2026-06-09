@@ -43,16 +43,25 @@ export class Camera extends LuminoObject {
      * Y 軸反転によりワインディングが反転するため、マテリアルの CullMode を
      * None に設定するか、フロントフェイス向きを CW に揃える必要があります。
      *
+     * pivotX, pivotY (0..1) で原点 (画面座標 (0,0)) の位置を指定できます。
+     * pivot=(0,0) で左上、(0.5,0.5) で画面中央、(1,1) で右下が原点になります。
+     *
      * @param width    画面幅 (ピクセル)
      * @param height   画面高さ (ピクセル)
      * @param nearClip ニアクリップ距離
      * @param farClip  ファークリップ距離
+     * @param pivotX   原点の水平位置 (0..1)。0=左, 0.5=中央, 1=右 (既定 0)
+     * @param pivotY   原点の垂直位置 (0..1)。0=上, 0.5=中央, 1=下 (既定 0)
      */
-    setOrthographic2D(width: number, height: number, nearClip: number, farClip: number): void {
+    setOrthographic2D(
+        width: number, height: number, nearClip: number, farClip: number,
+        pivotX = 0, pivotY = 0,
+    ): void {
         Runtime.safeCall(() =>
             (API.LNCamera_SetOrthographic2D as (
                 cam: number, width: number, height: number, near: number, far: number,
-            ) => number)(this._handle, width, height, nearClip, farClip));
+                pivotX: number, pivotY: number,
+            ) => number)(this._handle, width, height, nearClip, farClip, pivotX, pivotY));
     }
 
     /**

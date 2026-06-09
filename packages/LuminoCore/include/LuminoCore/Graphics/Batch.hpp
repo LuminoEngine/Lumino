@@ -24,7 +24,7 @@ enum class DrawCommandType : uint8_t {
 };
 
 struct DrawCommand {
-    DrawCommand() : type(DrawCommandType::Sprite), zIndex(0), material(nullptr) {
+    DrawCommand() : type(DrawCommandType::Sprite), zIndex(0), material(nullptr), sequence(0) {
         std::memset(&sprite, 0, sizeof(sprite));
     }
     ~DrawCommand() = default;
@@ -34,6 +34,7 @@ struct DrawCommand {
     DrawCommandType type;
     int32_t zIndex;          // user-specified sort priority
     Material* material;  // sort key & draw material
+    uint32_t sequence;   // submission order within the render pass (SubMesh sort tiebreaker)
 
     // --- Sprite ---
     struct SpriteData {

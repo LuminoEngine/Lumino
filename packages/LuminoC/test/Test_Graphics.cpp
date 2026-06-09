@@ -33,6 +33,7 @@ TEST_F(Test_Graphics, ClearScreen) {
     rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
@@ -94,6 +95,7 @@ TEST_F(Test_Graphics, HelloTexture) {
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // Capture and compare
@@ -188,6 +190,7 @@ TEST_F(Test_Graphics, StencilMask1) {
     ASSERT_EQ(LN_OK, LNRenderer_PopStencilMask(renderer));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // Capture and compare
@@ -265,6 +268,7 @@ TEST_F(Test_Graphics, TwoSprites) {
         0.0f));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
@@ -345,6 +349,7 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, nearMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, farMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+   // ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // DepthTest が OFF なので、後から描かれた緑い四角が、赤い四角に隠されずに、描画されるはず。
@@ -430,6 +435,7 @@ TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, nearMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, farMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
@@ -526,6 +532,7 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
@@ -607,6 +614,7 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // Capture and verify
@@ -669,6 +677,7 @@ TEST_F(Test_Graphics, LoadOpLoadColor) {
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
@@ -742,6 +751,7 @@ TEST_F(Test_Graphics, LoadOpLoadDepthStencil) {
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
@@ -768,4 +778,90 @@ TEST_F(Test_Graphics, LoadOpLoadDepthStencil) {
 
     // 視覚確認用に PNG を保存
     //VisualTest::savePng(TEST_DATA_DIR "/LoadOpLoadDepthStencil_actual.png", data, w, h);
+}
+
+// LNCamera_SetOrthographic2D の pivot 引数の検証。
+//
+// pivot=(0.5, 0.5) を指定すると、原点 (ワールド座標 (0,0)) が画面中央に対応する。
+// このカメラで視点 (0,0,0) のままワールド (0,0,0) にスプライトを描画すると、
+// スプライトは画面中央に表示されるはず。
+//
+// setOrthographic2D はビュー行列を単位行列に設定する (= 視点は (0,0,0))。
+// そのため setLookAt は呼ばない。
+//
+// 検証:
+//   - 画面中央ピクセルがスプライト色 (赤) になっている。
+//   - 画面四隅はクリア色 (青) のまま (スプライトが全画面を覆っていない = 中央寄せの確認)。
+TEST_F(Test_Graphics, Orthographic2DPivotCenter) {
+    // テクスチャなし Unlit (既定の白テクスチャ)。色は drawSprite の頂点カラーで与える。
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &material));
+
+    // pivot=(0.5, 0.5) で原点を画面中央に。視点はデフォルトの単位ビュー行列 = (0,0,0)。
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetOrthographic2D(camera,
+        (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f,
+        0.5f, 0.5f));
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[2] = 1.0f; // 青クリア
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+
+    // ワールド (0,0,0) に、アンカー中央 (0.5,0.5) の赤いスプライトを描画。
+    // 四隅 (160px 角の外) には掛からない 100x100 の大きさにして中央寄せを判定可能にする。
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, material, 0,
+        0.0f, 0.0f, 0.0f,   // 原点 = pivot により画面中央
+        100.0f, 100.0f,
+        0.5f, 0.5f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        1.0f, 0.0f, 0.0f, 1.0f, // 赤
+        0.0f));
+
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    ASSERT_EQ(TEST_W, w);
+    ASSERT_EQ(TEST_H, h);
+
+    // 中央ピクセルをサンプリング (キャプチャは RGBA8 に swizzle 済み)。
+    const int cx = w / 2;
+    const int cy = h / 2;
+    const uint8_t* center = data + (static_cast<size_t>(cy) * w + cx) * 4;
+    const int cr = center[0];
+    const int cg = center[1];
+    const int cb = center[2];
+
+    // pivot=(0.5,0.5) で原点が画面中央 → 中央に赤いスプライトが出る (R 高, B 低)。
+    // pivot が効いていないと原点は左上のままで、中央はクリア色 (青) になる。
+    EXPECT_GT(cr, 192)
+        << "中央の R channel が低すぎます。pivot=(0.5,0.5) で原点が画面中央に来ていない可能性があります。RGBA=("
+        << cr << "," << cg << "," << cb << ")";
+    EXPECT_LT(cb, 64)
+        << "中央の B channel が高すぎます。中央がクリア色 (青) のままでスプライトが中央に描かれていません。RGBA=("
+        << cr << "," << cg << "," << cb << ")";
+
+    // 四隅 (左上) はクリア色 (青) のまま = スプライトが全画面を覆っておらず中央寄せである確認。
+    const uint8_t* corner = data + (static_cast<size_t>(4) * w + 4) * 4;
+    EXPECT_LT(corner[0], 64)
+        << "左上隅が赤くなっています。スプライトが中央に収まっていません。RGBA=("
+        << (int)corner[0] << "," << (int)corner[1] << "," << (int)corner[2] << ")";
+    EXPECT_GT(corner[2], 192)
+        << "左上隅の B channel が低すぎます。クリア色 (青) が保持されていません。RGBA=("
+        << (int)corner[0] << "," << (int)corner[1] << "," << (int)corner[2] << ")";
+
+    LNObject_Release(camera);
+    LNObject_Release(material);
 }

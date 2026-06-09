@@ -12,24 +12,34 @@ namespace ln {
 //-----------------------------------------------------------------------------
 
 uint64_t DrawCommand::sortKey() const {
-    // | 63..48 (16bit) | 47 (1bit) | 46..32 (15bit) | 31..0 (32bit)   |
-    // | zIndex + 32768 | type      | reserved        | material hash   |
+    // | 63..48 (16bit) | 47 (1bit) | 46..32 (15bit) | 31..0 (32bit)                 |
+    // | zIndex + 32768 | type      | reserved        | Sprite:matHash / SubMesh:seq  |
     //
-    // タイプはビット47（32ビットmatHashの上位）を占めるため、特定のzレベルにあるすべてのスプライト（タイプ=0）は、
+    // タイプはビット47（下位フィールドの上位）を占めるため、特定のzレベルにあるすべてのスプライト（タイプ=0）は、
     // 同じレベルにあるすべてのサブメッシュ（タイプ=1）よりも前にソートされます。
     // これにより、ソートされた出力においてすべてのスプライトが連続した状態になり、
     // flushSpriteGroup がグループ全体に対して単一の頂点バッファを構築するために必要な条件が満たされます。
     uint64_t z = static_cast<uint64_t>(static_cast<uint32_t>(zIndex + 32768)) & 0xFFFF;
 
-    // Material pointer hash - 同じ種類のコマンドを同じタイプ内でグループ化します。
-    uint64_t matHash =
-        static_cast<uint64_t>(
-            (static_cast<uint64_t>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) &
-        0xFFFFFFFF;
-
     uint64_t t = (type == DrawCommandType::SubMesh) ? 1ULL : 0ULL;
 
-    return (z << 48) | (t << 47) | matHash;
+    // 下位フィールドの意味はタイプビットで分離されるため衝突しない。
+    //   Sprite : マテリアルポインタのハッシュ。同一マテリアルを隣接させ、flushSpriteGroup が
+    //            交互マテリアルでも少ないサブメッシュ数（=少ない draw 数）に束ねられるようにする。
+    //   SubMesh: 投入順 (sequence)。flushSubMeshGroup は個別描画でマテリアル束ねの実利が無く、
+    //            むしろ並べ替えると深度テスト/書き込みを無効化した描画の投入順が壊れるため、
+    //            投入順を厳密に保持する。
+    uint64_t lower;
+    if (type == DrawCommandType::Sprite) {
+        lower =
+            static_cast<uint64_t>(
+                (static_cast<uint64_t>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) &
+            0xFFFFFFFF;
+    } else {
+        lower = static_cast<uint64_t>(sequence);
+    }
+
+    return (z << 48) | (t << 47) | lower;
 }
 
 //-----------------------------------------------------------------------------
@@ -51,6 +61,7 @@ void DrawCommandBuffer::drawSprite(
     cmd.type = DrawCommandType::Sprite;
     cmd.zIndex = zIndex;
     cmd.material = material;
+    cmd.sequence = static_cast<uint32_t>(m_commands.size());
     cmd.sprite.position = pos;
     cmd.sprite.size = size;
     cmd.sprite.pivot = pivot;
@@ -69,6 +80,7 @@ void DrawCommandBuffer::drawSubMesh(
     cmd.type = DrawCommandType::SubMesh;
     cmd.zIndex = zIndex;
     cmd.material = material;
+    cmd.sequence = static_cast<uint32_t>(m_commands.size());
     cmd.submesh.mesh = mesh;
     cmd.submesh.submeshIndex = submeshIndex;
     cmd.submesh.transform = transform;

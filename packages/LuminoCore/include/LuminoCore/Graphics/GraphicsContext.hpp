@@ -73,9 +73,23 @@ public:
     void endFrame();
 
     /**
-     * Capture the backbuffer contents as RGBA8 pixel data.
-     * Must be called after endFrame(). The returned pointer is valid until
-     * the next call to captureBackbuffer().
+     * 現在のフレームのバックバッファをキャプチャするよう要求します。
+     * endFrame() の前に呼び出してください。
+     *
+     * スワップチェーンイメージは present() の後に acquire 解除されると
+     * レイアウト遷移を含む一切の使用ができなくなる
+     * (VUID UNASSIGNED-non-acquired-swapchain-image-used) ため、
+     * 実際の読み戻しは present() 直前 (endFrame() 内) に行います。
+     * この要求フラグが立っているフレームだけ読み戻すことで、
+     * 毎フレームの読み戻しコストを回避します。
+     */
+    void requestCaptureBackbuffer();
+
+    /**
+     * requestCaptureBackbuffer() で要求し endFrame() で読み戻された
+     * バックバッファ内容を確定させます。endFrame() の後に呼び出してください。
+     * captureBuffer() で取得できるピクセルデータは、次のキャプチャまで有効です。
+     * 事前に requestCaptureBackbuffer() を呼んでいない場合はエラーを返します。
      */
     Result<void> captureBackbuffer();
 
@@ -141,6 +155,9 @@ private:
 
     GraphicsContext();
 
+    // present() 直前に現在のバックバッファを m_captureBuffer へ読み戻す。
+    Result<void> captureBackbufferInternal();
+
     GraphicsModule* m_module;
     platform::PlatformWindow* m_window = nullptr; // non-owning
     Ref<rhi::SwapChain> m_swapChain;
@@ -156,7 +173,8 @@ private:
     bool              m_firstFrame     = true;
     float             m_lastFrameTimeMs = 0.0f;
     float             m_fps             = 0.0f;
-    rhi::TextureView* m_lastColorTarget = nullptr;
+    bool                 m_captureRequested = false; // 今フレームのキャプチャ要求
+    bool                 m_captureValid     = false; // m_captureBuffer に有効な内容があるか
     std::vector<uint8_t> m_captureBuffer;
     rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;
     rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth24Stencil8;

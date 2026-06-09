@@ -92,6 +92,9 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
 #endif // !defined(__EMSCRIPTEN__)
 
 Result<const FramebufferInfo*> GraphicsContext::beginFrame(uint32_t width, uint32_t height) {
+    // 前フレームのキャプチャ結果を無効化する (このフレームで要求が無ければ取得不可)。
+    m_captureValid = false;
+
     // サイズが変更された場合は、スワップチェーンと深度バッファのサイズを変更します。
     if (width != m_width || height != m_height) {
         auto resizeResult = m_swapChain->resize(width, height);
@@ -135,7 +138,17 @@ const FramebufferInfo* GraphicsContext::currentFramebuffer() const {
 }
 
 void GraphicsContext::endFrame() {
-    m_lastColorTarget = currentFramebuffer()->colorTexture->rhiTextureView();
+    // present() の後はスワップチェーンイメージが acquire 解除され、
+    // レイアウト遷移を含む一切の使用ができなくなる
+    // (VUID UNASSIGNED-non-acquired-swapchain-image-used)。
+    // そのため、キャプチャ要求があるフレームは present() 直前に読み戻す。
+    // この時点では描画コマンドは submit 済みで、イメージは acquire 済み・
+    // PRESENT_SRC_KHR レイアウトのまま残っている。
+    if (m_captureRequested) {
+        (void)captureBackbufferInternal();
+        m_captureRequested = false;
+    }
+
     m_swapChain->present();
 
     auto now = Clock::now();
@@ -144,19 +157,24 @@ void GraphicsContext::endFrame() {
     m_fps = (m_lastFrameTimeMs > 0.0f) ? (1000.0f / m_lastFrameTimeMs) : 0.0f;
 }
 
-Result<void> GraphicsContext::captureBackbuffer() {
-    if (!m_lastColorTarget) {
-        return LN_MAKE_ERROR("No backbuffer available. Call after endFrame().");
-    }
+void GraphicsContext::requestCaptureBackbuffer() {
+    m_captureRequested = true;
+}
+
+Result<void> GraphicsContext::captureBackbufferInternal() {
+    m_captureValid = false;
 
     auto* dev = device();
     if (!dev) {
         return LN_MAKE_ERROR("Device not available.");
     }
 
-    dev->waitIdle();
+    auto* view = currentFramebuffer()->colorTexture->rhiTextureView();
+    if (!view) {
+        return LN_MAKE_ERROR("No backbuffer available.");
+    }
 
-    auto result = dev->readbackTexture(m_lastColorTarget);
+    auto result = dev->readbackTexture(view);
     if (!result) {
         return LN_FORWARD_ERROR(result);
     }
@@ -164,10 +182,19 @@ Result<void> GraphicsContext::captureBackbuffer() {
     m_captureBuffer = std::move(*result);
 
     // BGRA → RGBA swizzle (swapchain format is BGRA8Unorm)
-    for (size_t i = 0; i < m_captureBuffer.size(); i += 4) {
+    for (size_t i = 0; i + 3 < m_captureBuffer.size(); i += 4) {
         std::swap(m_captureBuffer[i], m_captureBuffer[i + 2]);
     }
 
+    m_captureValid = true;
+    return {};
+}
+
+Result<void> GraphicsContext::captureBackbuffer() {
+    if (!m_captureValid) {
+        return LN_MAKE_ERROR(
+            "No captured backbuffer. Call requestCaptureBackbuffer() before endFrame().");
+    }
     return {};
 }
 
