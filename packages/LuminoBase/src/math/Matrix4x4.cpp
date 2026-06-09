@@ -98,6 +98,15 @@ Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, c
     //return r;
 }
 
+Vector3 Matrix4x4::transformCoord(const Vector3& v) const {
+    // 列優先 (m[col*4 + row])、列ベクトル規約 out = M * (v, 1)。平行移動は m[12..14]。
+    return Vector3{
+        m[0] * v.x + m[4] * v.y + m[8]  * v.z + m[12],
+        m[1] * v.x + m[5] * v.y + m[9]  * v.z + m[13],
+        m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14],
+    };
+}
+
 Matrix4x4 Matrix4x4::operator*(const Matrix4x4& rhs) const {
     Matrix4x4 r;
     for (int col = 0; col < 4; ++col) {

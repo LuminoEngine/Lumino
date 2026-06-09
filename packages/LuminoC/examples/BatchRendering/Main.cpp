@@ -102,6 +102,9 @@ int main() {
         float offsetX = -(cols * spacing) * 0.5f;
         float offsetY = -(((float)SPRITE_COUNT / cols) * spacing) * 0.5f;
 
+        // ノード全体で 1 つの行列を共有し、スプライトごとには offset (x, y) だけ渡す。
+        // (タイルマップのように多数のスプライトを描く際の典型パターン)
+        LNMatrix nodeXf = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
         for (int i = 0; i < SPRITE_COUNT; i++) {
             int col = i % cols;
             int row = i / cols;
@@ -112,12 +115,12 @@ int main() {
 
             LNRenderer_DrawSprite(
                 renderer, mat, zIndex,
-                x, y, 0.0f,
+                &nodeXf,
+                x, y,
                 16.0f, 16.0f,
                 0.5f, 0.5f,
                 0.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f, 1.0f,
-                0.0f);
+                1.0f, 1.0f, 1.0f, 1.0f);
         }
 
         // Add mesh

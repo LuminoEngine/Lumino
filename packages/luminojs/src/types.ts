@@ -182,6 +182,9 @@ export const SIZEOF_TRANSFORM = 40;
 // Layout: posX,posY,posZ(f32x3,0) rotX,rotY,rotZ,rotW(f32x4,12)
 //         scaleX,scaleY,scaleZ(f32x3,28)
 
+/** Byte size of `LNMatrix` in wasm memory (列優先 4x4, float[16])。 */
+export const SIZEOF_MATRIX = 64;
+
 /**
  * Vertex data matching C `LNVertex` (64 bytes).
  * 標準頂点データ (64 bytes)。

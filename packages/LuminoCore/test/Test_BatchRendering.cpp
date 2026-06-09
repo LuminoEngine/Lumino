@@ -25,20 +25,26 @@ TEST_F(Test_DrawCommandBuffer, Empty) {
 
 TEST_F(Test_DrawCommandBuffer, DrawSprite) {
     Material* mat = fakeMat(0x1000);
+    Matrix4x4 xf = Matrix4x4::translate(Vector3{1, 2, 3});
     m_buf.drawSprite(mat, 5,
-        Vector3{1, 2, 3}, Vector2{10, 20},
+        xf,
+        Vector2{7, 8},
+        Vector2{10, 20},
         Vector2{0.25f, 0.75f},
         Vector2{0.1f, 0.2f}, Vector2{0.5f, 0.6f},
-        Color{1, 0, 0, 1}, 0.5f);
+        Color{1, 0, 0, 1});
 
     ASSERT_EQ(m_buf.commands().size(), 1u);
     const auto& cmd = m_buf.commands()[0];
     EXPECT_EQ(cmd.type, DrawCommandType::Sprite);
     EXPECT_EQ(cmd.zIndex, 5);
     EXPECT_EQ(cmd.material, mat);
-    EXPECT_NEAR(cmd.sprite.position.x, 1.0f, 1e-5f);
-    EXPECT_NEAR(cmd.sprite.position.y, 2.0f, 1e-5f);
-    EXPECT_NEAR(cmd.sprite.position.z, 3.0f, 1e-5f);
+    // 平行移動成分 (列優先: m[12..14])
+    EXPECT_NEAR(cmd.sprite.transform.m[12], 1.0f, 1e-5f);
+    EXPECT_NEAR(cmd.sprite.transform.m[13], 2.0f, 1e-5f);
+    EXPECT_NEAR(cmd.sprite.transform.m[14], 3.0f, 1e-5f);
+    EXPECT_NEAR(cmd.sprite.offset.x, 7.0f, 1e-5f);
+    EXPECT_NEAR(cmd.sprite.offset.y, 8.0f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.size.x, 10.0f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.size.y, 20.0f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.pivot.x, 0.25f, 1e-5f);
@@ -46,7 +52,6 @@ TEST_F(Test_DrawCommandBuffer, DrawSprite) {
     EXPECT_NEAR(cmd.sprite.uvOffset.x, 0.1f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.uvSize.x, 0.5f, 1e-5f);
     EXPECT_NEAR(cmd.sprite.color.r, 1.0f, 1e-5f);
-    EXPECT_NEAR(cmd.sprite.rotation, 0.5f, 1e-5f);
 }
 
 TEST_F(Test_DrawCommandBuffer, DrawSubMesh) {
@@ -69,7 +74,7 @@ TEST_F(Test_DrawCommandBuffer, DrawSubMesh) {
 
 TEST_F(Test_DrawCommandBuffer, Clear) {
     Material* mat = fakeMat(0x1000);
-    m_buf.drawSprite(mat, 0, {}, {1,1}, {0.5f,0.5f}, {}, {1,1}, Color::white());
+    m_buf.drawSprite(mat, 0, {}, {}, {1,1}, {0.5f,0.5f}, {}, {1,1}, Color::white());
     EXPECT_EQ(m_buf.commands().size(), 1u);
     m_buf.clear();
     EXPECT_TRUE(m_buf.commands().empty());
@@ -171,6 +176,28 @@ TEST_F(Test_BatchSort, SameZIndex_GroupByMaterial) {
     EXPECT_EQ(cmds[0].material, cmds[1].material);
     EXPECT_EQ(cmds[2].material, cmds[3].material);
     EXPECT_NE(cmds[0].material, cmds[2].material);
+}
+
+TEST_F(Test_BatchSort, SameZIndex_SubMeshPreservesSubmissionOrder) {
+    // SubMesh draws at the same zIndex must keep submission order, independent of
+    // material address. flushSubMeshGroup draws each submesh individually (no
+    // material batching to gain), and reordering would break order-dependent draws
+    // such as depth-test/-write-disabled overdraw. Sprites group by material;
+    // submeshes preserve submission order via the sequence tiebreaker.
+    DrawCommandBuffer buf;
+    Material* matA = fakeMat(0x2000);
+    Material* matB = fakeMat(0x1000); // intentionally lower address than matA
+    Mesh* mesh = reinterpret_cast<Mesh*>(0x3000);
+    Transform t;
+
+    buf.drawSubMesh(mesh, 0, matA, t, 0); // submitted 1st
+    buf.drawSubMesh(mesh, 0, matB, t, 0); // submitted 2nd
+
+    std::vector<DrawCommand> cmds = buf.commands();
+    BatchProcessor::sortCommands(cmds);
+
+    EXPECT_EQ(cmds[0].material, matA); // submission order preserved
+    EXPECT_EQ(cmds[1].material, matB);
 }
 
 //------------------------------------------------------------------------------

@@ -91,6 +91,14 @@ ln::Transform toLnTransform(const LNTransform* transform) {
     return xform;
 }
 
+/** Convert LNMatrix pointer to ln::Matrix4x4 (identity if null). */
+ln::Matrix4x4 toLnMatrix(const LNMatrix* matrix) {
+    if (!matrix) return ln::Matrix4x4::identity();
+    ln::Matrix4x4 m;
+    std::memcpy(m.m, matrix->m, sizeof(float) * 16);
+    return m;
+}
+
 //--------------------------------------
 // Shared: Object handle helpers
 //--------------------------------------
@@ -1215,12 +1223,12 @@ LNResult LNRenderer_DrawScreenRect(LNHandle renderer, LNHandle materialHandle) {
 
 LNResult LNRenderer_DrawSprite(
     LNHandle renderer, LNHandle material, int32_t zIndex,
-    float posX, float posY, float posZ,
+    const LNMatrix* transform,
+    float offsetX, float offsetY,
     float sizeW, float sizeH,
     float pivotX, float pivotY,
     float uvX, float uvY, float uvW, float uvH,
-    float colorR, float colorG, float colorB, float colorA,
-    float rotation) {
+    float colorR, float colorG, float colorB, float colorA) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -1232,13 +1240,13 @@ LNResult LNRenderer_DrawSprite(
 
     ren->drawSprite(
         mat, zIndex,
-        ln::Vector3{posX, posY, posZ},
+        toLnMatrix(transform),
+        ln::Vector2{offsetX, offsetY},
         ln::Vector2{sizeW, sizeH},
         ln::Vector2{pivotX, pivotY},
         ln::Vector2{uvX, uvY},
         ln::Vector2{uvW, uvH},
-        ln::Color{colorR, colorG, colorB, colorA},
-        rotation);
+        ln::Color{colorR, colorG, colorB, colorA});
     return LN_OK;
 }
 
@@ -1397,15 +1405,19 @@ LNResult LNDrawCommandBuffer_DrawSprite(
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
 
+    // deprecated API: position + Z 回転を行列に畳み込む (world = T * Rz)。
+    ln::Matrix4x4 xform =
+        ln::Matrix4x4::translate(ln::Vector3{posX, posY, posZ}) *
+        ln::Matrix4x4::rotateZ(rotation);
     obj->buffer.drawSprite(
         mat, zIndex,
-        ln::Vector3{posX, posY, posZ},
+        xform,
+        ln::Vector2{0.0f, 0.0f}, // deprecated API: offset は使わない (位置は xform に含む)
         ln::Vector2{sizeW, sizeH},
         ln::Vector2{0.5f, 0.5f}, // deprecated API: 従来どおり中央原点
         ln::Vector2{uvX, uvY},
         ln::Vector2{uvW, uvH},
-        ln::Color{colorR, colorG, colorB, colorA},
-        rotation);
+        ln::Color{colorR, colorG, colorB, colorA});
     return LN_OK;
 }
 
@@ -1423,15 +1435,19 @@ LNResult LNDrawCommandBuffer_DrawSprites(
 
     for (uint32_t i = 0; i < count; ++i) {
         const auto& s = sprites[i];
+        // deprecated API: position + Z 回転を行列に畳み込む (world = T * Rz)。
+        ln::Matrix4x4 xform =
+            ln::Matrix4x4::translate(ln::Vector3{s.posX, s.posY, s.posZ}) *
+            ln::Matrix4x4::rotateZ(s.rotation);
         obj->buffer.drawSprite(
             mat, s.zIndex,
-            ln::Vector3{s.posX, s.posY, s.posZ},
+            xform,
+            ln::Vector2{0.0f, 0.0f}, // deprecated API: offset は使わない (位置は xform に含む)
             ln::Vector2{s.sizeW, s.sizeH},
             ln::Vector2{0.5f, 0.5f}, // deprecated API: 従来どおり中央原点
             ln::Vector2{s.uvX, s.uvY},
             ln::Vector2{s.uvW, s.uvH},
-            ln::Color{s.colorR, s.colorG, s.colorB, s.colorA},
-            s.rotation);
+            ln::Color{s.colorR, s.colorG, s.colorB, s.colorA});
     }
     return LN_OK;
 }

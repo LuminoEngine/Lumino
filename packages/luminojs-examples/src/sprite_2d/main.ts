@@ -26,6 +26,7 @@ import {
     Texture,
     Material,
     Camera,
+    Matrix4x4,
 } from "luminojs";
 
 const WINDOW_W = 1280;
@@ -85,52 +86,55 @@ async function main() {
         // Top-Left (red tint)
         renderer.drawSprite(
             material, 0,
-            MARGIN + half, MARGIN + half, 0.0,
+            Matrix4x4.makeTranslation(MARGIN + half, MARGIN + half, 0.0),
+            0.0, 0.0,
             SPR, SPR,
             0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
-            1.0, 0.4, 0.4, 1.0,
-            0.0);
+            1.0, 0.4, 0.4, 1.0);
 
         // Top-Right (green tint)
         renderer.drawSprite(
             material, 0,
-            WINDOW_W - MARGIN - half, MARGIN + half, 0.0,
+            Matrix4x4.makeTranslation(WINDOW_W - MARGIN - half, MARGIN + half, 0.0),
+            0.0, 0.0,
             SPR, SPR,
             0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
-            0.4, 1.0, 0.4, 1.0,
-            0.0);
+            0.4, 1.0, 0.4, 1.0);
 
         // Bottom-Left (blue tint)
         renderer.drawSprite(
             material, 0,
-            MARGIN + half, WINDOW_H - MARGIN - half, 0.0,
+            Matrix4x4.makeTranslation(MARGIN + half, WINDOW_H - MARGIN - half, 0.0),
+            0.0, 0.0,
             SPR, SPR,
             0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
-            0.4, 0.4, 1.0, 1.0,
-            0.0);
+            0.4, 0.4, 1.0, 1.0);
 
         // Bottom-Right (yellow tint)
         renderer.drawSprite(
             material, 0,
-            WINDOW_W - MARGIN - half, WINDOW_H - MARGIN - half, 0.0,
+            Matrix4x4.makeTranslation(WINDOW_W - MARGIN - half, WINDOW_H - MARGIN - half, 0.0),
+            0.0, 0.0,
             SPR, SPR,
             0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
-            1.0, 1.0, 0.4, 1.0,
-            0.0);
+            1.0, 1.0, 0.4, 1.0);
 
         // Center sprite, rotating - visually verifies orientation & winding.
+        // world = T(center) * Rz(t): pivot 中心まわりに回転して中央へ配置。
+        const centerXf = Matrix4x4.makeTranslation(WINDOW_W * 0.5, WINDOW_H * 0.5, 0.0)
+            .multiply(Matrix4x4.makeRotationZ(t));
         renderer.drawSprite(
             material, 0,
-            WINDOW_W * 0.5, WINDOW_H * 0.5, 0.0,
+            centerXf,
+            0.0, 0.0,
             SPR * 2.0, SPR * 2.0,
             0.5, 0.5,
             0.0, 0.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0,
-            t);
+            1.0, 1.0, 1.0, 1.0);
 
         renderer.endRenderPass();
         context.endFrame();

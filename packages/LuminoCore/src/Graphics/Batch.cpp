@@ -52,23 +52,23 @@ void DrawCommandBuffer::clear() {
 
 void DrawCommandBuffer::drawSprite(
     Material* material, int32_t zIndex,
-    const Vector3& pos, const Vector2& size,
-    const Vector2& pivot,
+    const Matrix4x4& transform, const Vector2& offset,
+    const Vector2& size, const Vector2& pivot,
     const Vector2& uvOffset, const Vector2& uvSize,
-    const Color& color, float rotation) {
+    const Color& color) {
 
     DrawCommand cmd{};
     cmd.type = DrawCommandType::Sprite;
     cmd.zIndex = zIndex;
     cmd.material = material;
     cmd.sequence = static_cast<uint32_t>(m_commands.size());
-    cmd.sprite.position = pos;
+    cmd.sprite.offset = offset;
     cmd.sprite.size = size;
     cmd.sprite.pivot = pivot;
     cmd.sprite.uvOffset = uvOffset;
     cmd.sprite.uvSize = uvSize;
     cmd.sprite.color = color;
-    cmd.sprite.rotation = rotation;
+    cmd.sprite.transform = transform;
     m_commands.push_back(cmd);
 }
 
@@ -251,16 +251,13 @@ Result<void> BatchProcessor::flushSpriteGroup(
             cy[0] = top; cy[1] = top; cy[2] = bottom; cy[3] = bottom;
         }
 
-        // Apply rotation if non-zero
-        if (s.rotation != 0.0f) {
-            float cosR = std::cos(s.rotation);
-            float sinR = std::sin(s.rotation);
-            for (int j = 0; j < 4; ++j) {
-                float rx = cx[j] * cosR - cy[j] * sinR;
-                float ry = cx[j] * sinR + cy[j] * cosR;
-                cx[j] = rx;
-                cy[j] = ry;
-            }
+        // ローカル矩形の4隅を offset だけずらし、transform でワールド空間へ変換する。
+        // world = transform * (localCorner + offset)。
+        // position / rotation / scale は transform に畳み込まれている。
+        Vector3 world[4];
+        for (int j = 0; j < 4; ++j) {
+            world[j] = s.transform.transformCoord(
+                Vector3{cx[j] + s.offset.x, cy[j] + s.offset.y, 0.0f});
         }
 
         float u0 = s.uvOffset.x;
@@ -278,22 +275,22 @@ Result<void> BatchProcessor::flushSpriteGroup(
         v.color = s.color;
 
         // v0: top-left
-        v.position = {s.position.x + cx[0], s.position.y + cy[0], s.position.z};
+        v.position = world[0];
         v.uv = {u0, v0};
         m_vertexStaging[vi + 0] = v;
 
         // v1: top-right
-        v.position = {s.position.x + cx[1], s.position.y + cy[1], s.position.z};
+        v.position = world[1];
         v.uv = {u1, v0};
         m_vertexStaging[vi + 1] = v;
 
         // v2: bottom-left
-        v.position = {s.position.x + cx[2], s.position.y + cy[2], s.position.z};
+        v.position = world[2];
         v.uv = {u0, v1};
         m_vertexStaging[vi + 2] = v;
 
         // v3: bottom-right
-        v.position = {s.position.x + cx[3], s.position.y + cy[3], s.position.z};
+        v.position = world[3];
         v.uv = {u1, v1};
         m_vertexStaging[vi + 3] = v;
 

@@ -384,11 +384,11 @@ void Renderer::drawMesh(Mesh* mesh, const Transform& transform, int32_t zIndex) 
 }
 
 void Renderer::drawSprite(Material* material, int32_t zIndex,
-                          const Vector3& pos, const Vector2& size,
-                          const Vector2& pivot,
+                          const Matrix4x4& transform, const Vector2& offset,
+                          const Vector2& size, const Vector2& pivot,
                           const Vector2& uvOffset, const Vector2& uvSize,
-                          const Color& color, float rotation) {
-    m_commandBuffer.drawSprite(material, zIndex, pos, size, pivot, uvOffset, uvSize, color, rotation);
+                          const Color& color) {
+    m_commandBuffer.drawSprite(material, zIndex, transform, offset, size, pivot, uvOffset, uvSize, color);
 }
 
 Result<void> Renderer::flushBatch() {

@@ -29,6 +29,12 @@ struct Matrix4x4 {
     Matrix4x4 transposed() const;
     Matrix4x4 inversed() const;
 
+    /**
+     * 点 (w=1) を変換する。列ベクトル規約 out = M * (v, 1)。
+     * 透視除算は行わない (アフィン変換用)。
+     */
+    Vector3 transformCoord(const Vector3& v) const;
+
     Matrix4x4 operator*(const Matrix4x4& rhs) const;
 };
 

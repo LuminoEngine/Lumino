@@ -7,6 +7,12 @@
 #define TEST_W 320
 #define TEST_H 240
 
+/** 列優先の並進行列を作るヘルパ (平行移動は m[12..14])。 */
+static LNMatrix translationMatrix(float x, float y, float z) {
+    LNMatrix m = {{ 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  x, y, z, 1 }};
+    return m;
+}
+
 class Test_Graphics : public ::testing::Test {
 protected:
     LNHandle window = LN_NULL_HANDLE;
@@ -248,24 +254,26 @@ TEST_F(Test_Graphics, TwoSprites) {
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
 
     // Left
+    LNMatrix xfLeft = translationMatrix(-80.0f, 0.0f, 0.0f);
     ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
         renderer, mat1, 0,
-        -80.0f, 0.0f, 0.0f,
+        &xfLeft,
+        0.0f, 0.0f,
         100.0f, 100.0f,
         0.5f, 0.5f,
         0.0f, 0.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f, 1.0f,
-        0.0f));
+        1.0f, 1.0f, 1.0f, 1.0f));
 
     // Right
+    LNMatrix xfRight = translationMatrix(80.0f, 0.0f, 0.0f);
     ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
         renderer, mat2, 0,
-        80.0f, 0.0f, 0.0f,
+        &xfRight,
+        0.0f, 0.0f,
         100.0f, 100.0f,
         0.5f, 0.5f,
         0.0f, 0.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f, 1.0f,
-        0.0f));
+        1.0f, 1.0f, 1.0f, 1.0f));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
@@ -349,7 +357,7 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, nearMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, farMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-   // ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
     ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // DepthTest が OFF なので、後から描かれた緑い四角が、赤い四角に隠されずに、描画されるはず。
@@ -502,14 +510,15 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
         rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
         rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
         ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+        LNMatrix xfBg = translationMatrix(0.0f, 0.0f, 0.0f); // 画面中央
         ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
             renderer, bgMat, 0,
-            0.0f, 0.0f, 0.0f,   // 画面中央
+            &xfBg,
+            0.0f, 0.0f,
             200.0f, 200.0f,     // 中央を確実に覆う大きさ
             0.5f, 0.5f,
             0.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, 0.0f, 0.0f, 1.0f, // 赤
-            0.0f));
+            1.0f, 0.0f, 0.0f, 1.0f)); // 赤
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
@@ -521,14 +530,15 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
         rpDesc.depthStencil.depthLoadOp = LN_LOAD_OP_LOAD;
         rpDesc.depthStencil.stencilLoadOp = LN_LOAD_OP_LOAD;
         ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+        LNMatrix xfUi = translationMatrix(120.0f, 80.0f, 0.0f); // 中央から離れた隅
         ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
             renderer, uiMat, 0,
-            120.0f, 80.0f, 0.0f, // 中央から離れた隅
+            &xfUi,
+            0.0f, 0.0f,
             40.0f, 40.0f,        // 中央には掛からない小ささ
             0.5f, 0.5f,
             0.0f, 0.0f, 1.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 1.0f, // 緑
-            0.0f));
+            0.0f, 1.0f, 0.0f, 1.0f)); // 緑
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
@@ -816,14 +826,15 @@ TEST_F(Test_Graphics, Orthographic2DPivotCenter) {
 
     // ワールド (0,0,0) に、アンカー中央 (0.5,0.5) の赤いスプライトを描画。
     // 四隅 (160px 角の外) には掛からない 100x100 の大きさにして中央寄せを判定可能にする。
+    LNMatrix xfCenter = translationMatrix(0.0f, 0.0f, 0.0f); // 原点 = pivot により画面中央
     ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
         renderer, material, 0,
-        0.0f, 0.0f, 0.0f,   // 原点 = pivot により画面中央
+        &xfCenter,
+        0.0f, 0.0f,
         100.0f, 100.0f,
         0.5f, 0.5f,
         0.0f, 0.0f, 1.0f, 1.0f,
-        1.0f, 0.0f, 0.0f, 1.0f, // 赤
-        0.0f));
+        1.0f, 0.0f, 0.0f, 1.0f)); // 赤
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));

@@ -38,13 +38,13 @@ struct DrawCommand {
 
     // --- Sprite ---
     struct SpriteData {
-        Vector3 position;
+        Vector2 offset;     // ノードローカル空間でのスプライト位置 (transform 適用前に加算)
         Vector2 size;
-        Vector2 pivot;      // 矩形上の基準点/回転軸 (0,0)=左上, (0.5,0.5)=中央, (1,1)=右下
+        Vector2 pivot;      // 矩形上の基準点 (0,0)=左上, (0.5,0.5)=中央, (1,1)=右下。ローカル矩形の原点。
         Vector2 uvOffset;
         Vector2 uvSize;
         Color   color;
-        float     rotation; // Z-axis rotation (rad)
+        Matrix4x4 transform; // ワールド変換 (position/rotation/scale を畳み込んだ行列)
     };
 
     // --- SubMesh ---
@@ -71,11 +71,15 @@ class DrawCommandBuffer {
 public:
     void clear();
 
+    // ローカル矩形 (size + pivot) を offset だけずらし、transform でワールド空間へ配置する。
+    // world = transform * (localCorner + offset)。
+    // position / rotation / scale は transform に畳み込む。offset はノード内の
+    // 多数スプライト (Tilemap 等) で transform を共有しつつ位置を変えるための軽量オフセット。
     void drawSprite(Material* material, int32_t zIndex,
-                    const Vector3& pos, const Vector2& size,
-                    const Vector2& pivot,
+                    const Matrix4x4& transform, const Vector2& offset,
+                    const Vector2& size, const Vector2& pivot,
                     const Vector2& uvOffset, const Vector2& uvSize,
-                    const Color& color, float rotation = 0.0f);
+                    const Color& color);
 
     // Primary API: submesh granularity (1 command = 1 material)
     void drawSubMesh(Mesh* mesh, uint32_t submeshIndex, Material* material,

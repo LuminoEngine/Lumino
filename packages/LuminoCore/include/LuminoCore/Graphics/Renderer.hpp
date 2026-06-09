@@ -177,10 +177,10 @@ public:
      * 蓄積されたコマンドは endRenderPass() 時に自動的にソート→バッチ化→描画されます。
      */
     void drawSprite(Material* material, int32_t zIndex,
-                    const Vector3& pos, const Vector2& size,
-                    const Vector2& pivot,
+                    const Matrix4x4& transform, const Vector2& offset,
+                    const Vector2& size, const Vector2& pivot,
                     const Vector2& uvOffset, const Vector2& uvSize,
-                    const Color& color, float rotation = 0.0f);
+                    const Color& color);
 
     // ---- Drawing (immediate) ----
 

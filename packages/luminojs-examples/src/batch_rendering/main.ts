@@ -105,6 +105,9 @@ async function main() {
         const offsetX = -(cols * spacing) * 0.5;
         const offsetY = -((SPRITE_COUNT / cols) * spacing) * 0.5;
 
+        // ノード全体で 1 つの行列を共有し、スプライトごとには offset (x, y) だけ渡す。
+        // 行列インスタンスはこの 1 個だけで済む (タイルマップ等の典型パターン)。
+        const nodeXf = new Matrix4x4(); // 単位行列
         for (let i = 0; i < SPRITE_COUNT; i++) {
             const col = i % cols;
             const row = Math.floor(i / cols);
@@ -115,12 +118,12 @@ async function main() {
 
             renderer.drawSprite(
                 mat, zIndex,
-                x, y, 0.0,
+                nodeXf,
+                x, y,
                 16.0, 16.0,
                 0.5, 0.5,
                 0.0, 0.0, 1.0, 1.0,
                 1.0, 1.0, 1.0, 1.0,
-                0.0,
             );
         }
 

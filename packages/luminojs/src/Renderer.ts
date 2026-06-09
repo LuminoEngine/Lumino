@@ -3,6 +3,7 @@ import type { Camera } from "./Camera";
 import type { GraphicsContext } from "./GraphicsContext";
 import type { Material } from "./Material";
 import type { Mesh } from "./Mesh";
+import type { Matrix4x4 } from "./Matrix4x4";
 import { API, Runtime } from "./Runtime";
 import {
     type RenderPassDesc,
@@ -13,6 +14,7 @@ import {
     SIZEOF_RENDER_PASS_DESC,
     SIZEOF_COLOR_ATTACHMENT_DESC,
     SIZEOF_TRANSFORM,
+    SIZEOF_MATRIX,
 } from "./types";
 
 export class Renderer extends LuminoObject {
@@ -26,6 +28,9 @@ export class Renderer extends LuminoObject {
     private _transformPtr = 0;
     private _transformView: DataView | null = null;
     private _transformHeapBuf: ArrayBufferLike | null = null;
+
+    // LNMatrix 用の事前確保 WASM バッファ (64 バイト)。
+    private _matrixPtr = 0;
 
     // shaderPassName 用の一時文字列ポインタ (BeginRenderPass 後に解放する)。
     private _lastShaderPassNamePtr = 0;
@@ -123,18 +128,28 @@ export class Renderer extends LuminoObject {
      * スプライトの描画コマンドを内部バッファに蘊積する (バッチ処理)。
      * 蘊積されたコマンドは `endRenderPass()` 時に自動的にソート・バッチ化・描画されます。
      *
+     * スプライトは size と pivot で定義されるローカル矩形を `offset` だけずらし、
+     * `transform` でワールド空間へ配置して描画します
+     * (world = transform * (localCorner + offset))。
+     * 位置・回転・スケールは `transform` に畳み込んでください
+     * (クライアント側のシーングラフから求めたワールド行列をそのまま渡せます)。
+     *
+     * `offset` は、Tilemap / Tiling Sprite / 9-Sliced Sprite のように 1 ノード内で多数の
+     * スプライトを描く際、`transform` (= ノードのワールド行列) を 1 インスタンス共有しつつ、
+     * タイルごとの位置だけを軽量に変えるためのオフセットです (行列を毎回生成せずに済みます)。
+     *
      * @note `drawMesh()` と比べ、同一マテリアルで多数のスプライトを描画する場合は大幅に高速です。
      * 内部でバッチングを行いドローコール数を削減するため、タイルマップなど大量のスプライト描画に適しています。
      *
      * @param material  使用する Material。
      * @param zIndex    ソート優先度。
-     * @param posX      X 座標。
-     * @param posY      Y 座標。
-     * @param posZ      Z 座標。
-     * @param sizeW     スプライト幅。
-     * @param sizeH     スプライト高さ。
-     * @param pivotX    矩形上の基準点 X (0.0〜1.0)。0=左, 0.5=中央, 1=右。posX がこの位置に一致し、回転軸にもなる。
-     * @param pivotY    矩形上の基準点 Y (0.0〜1.0)。0=上, 0.5=中央, 1=下。posY がこの位置に一致し、回転軸にもなる。
+     * @param transform ワールド変換行列。
+     * @param offsetX   ノードローカル空間でのスプライト位置 X (transform 適用前に加算)。矩形上の pivot 位置がここに来る。
+     * @param offsetY   ノードローカル空間でのスプライト位置 Y (transform 適用前に加算)。矩形上の pivot 位置がここに来る。
+     * @param sizeW     スプライト幅 (ローカル)。
+     * @param sizeH     スプライト高さ (ローカル)。
+     * @param pivotX    矩形上の基準点 X (0.0〜1.0)。0=左, 0.5=中央, 1=右。offset 位置に一致し、回転軸にもなる。
+     * @param pivotY    矩形上の基準点 Y (0.0〜1.0)。0=上, 0.5=中央, 1=下。offset 位置に一致し、回転軸にもなる。
      * @param uvX       UV 矩形の X。
      * @param uvY       UV 矩形の Y。
      * @param uvW       UV 矩形の幅。
@@ -143,37 +158,37 @@ export class Renderer extends LuminoObject {
      * @param colorG    頂点カラー G。
      * @param colorB    頂点カラー B。
      * @param colorA    頂点カラー A。
-     * @param rotation  Z 軸回転 (ラジアン)。
      */
     drawSprite(
         material: Material, zIndex: number,
-        posX: number, posY: number, posZ: number,
+        transform: Matrix4x4,
+        offsetX: number, offsetY: number,
         sizeW: number, sizeH: number,
         pivotX: number, pivotY: number,
         uvX: number, uvY: number, uvW: number, uvH: number,
         colorR: number, colorG: number, colorB: number, colorA: number,
-        rotation: number,
     ): void {
         if (!this._boundCtx) throw new Error("Renderer.drawSprite called outside of a render pass");
         material.ensure(this._boundCtx);
         if (material.handle === 0) return;
+        const ptr = this._serializeMatrix(transform);
         Runtime.safeCall(() =>
             (API.LNRenderer_DrawSprite as (
                 r: number, mat: number, z: number,
-                px: number, py: number, pz: number,
+                t: number,
+                ox: number, oy: number,
                 sw: number, sh: number,
                 pvx: number, pvy: number,
                 ux: number, uy: number, uw: number, uh: number,
                 cr: number, cg: number, cb: number, ca: number,
-                rot: number,
             ) => number)(
                 this._handle, material.handle, zIndex,
-                posX, posY, posZ,
+                ptr,
+                offsetX, offsetY,
                 sizeW, sizeH,
                 pivotX, pivotY,
                 uvX, uvY, uvW, uvH,
                 colorR, colorG, colorB, colorA,
-                rotation,
             ));
     }
 
@@ -202,6 +217,10 @@ export class Renderer extends LuminoObject {
             Runtime.module._free(this._transformPtr);
             this._transformPtr = 0;
             this._transformView = null;
+        }
+        if (this._matrixPtr) {
+            Runtime.module._free(this._matrixPtr);
+            this._matrixPtr = 0;
         }
         super.dispose();
     }
@@ -242,6 +261,18 @@ export class Renderer extends LuminoObject {
      * offset 28: float scaleX, scaleY, scaleZ  (12 バイト)
      * ```
      */
+    /**
+     * `Matrix4x4` (列優先 float[16]) を WASM 線形メモリに書き込み、そのポインタを返す。
+     */
+    private _serializeMatrix(m: Matrix4x4): number {
+        if (!this._matrixPtr) {
+            this._matrixPtr = Runtime.module._malloc(SIZEOF_MATRIX);
+        }
+        // HEAPF32 はメモリ成長で差し替わるため、毎回最新を参照する。
+        Runtime.module.HEAPF32.set(m.m, this._matrixPtr >> 2);
+        return this._matrixPtr;
+    }
+
     private _serializeTransform(t: Transform): number {
         this._ensureTransformBuffer();
         const v = this._transformView!;

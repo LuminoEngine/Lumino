@@ -261,6 +261,19 @@ typedef struct LNTransform {
     float scaleX, scaleY, scaleZ;
 } LNTransform;
 
+/**
+ * 列優先 4x4 行列 (ln::Matrix4x4 と同一レイアウト)。
+ *
+ * 要素は m[col * 4 + row] でアクセスし、平行移動成分は m[12], m[13], m[14]。
+ * 点の変換は列ベクトル規約 (world = M * (v, 1)) です。
+ *
+ * シーングラフのワールド変換のように、TRS では表現できない合成結果
+ * (非一様スケール + 回転によるシア等) も指定できます。
+ */
+typedef struct LNMatrix {
+    float m[16];
+} LNMatrix;
+
 //------------------------------------------------------------------------------
 // LNTexture2D
 //------------------------------------------------------------------------------
@@ -840,17 +853,28 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
 /**
  * スプライト描画コマンドを内部コマンドバッファに蓄積します。
  *
+ * スプライトは size と pivot で定義されるローカル矩形を offset だけずらし、transform で
+ * ワールド空間へ配置して描画します (world = transform * (localCorner + offset))。
+ * 位置・回転・スケールは transform に畳み込んでください (LNRenderer_DrawMesh と同じく、
+ * クライアント側のシーングラフから求めたワールド行列をそのまま渡せます)。
+ * size / pivot / uv / color / offset はスプライトローカルのプロパティです。
+ *
+ * offset は、Tilemap / Tiling Sprite / 9-Sliced Sprite のように 1 ノード内で多数の
+ * スプライトを描く際、transform (= ノードのワールド行列) を共有しつつタイルごとの位置だけを
+ * 軽量に変えるためのオフセットです (行列を毎回作らずに済みます)。
+ *
  * @param[in] renderer  Renderer のハンドル
  * @param[in] material  マテリアルのハンドル
  * @param[in] zIndex    ソート優先度
- * @param[in] posX,posY,posZ  位置 (スプライト矩形上の pivot 位置がこの座標に一致します)
- * @param[in] sizeW,sizeH     サイズ
+ * @param[in] transform LNMatrix へのポインタ (NULL で単位変換)。ワールド変換行列。
+ * @param[in] offsetX,offsetY ノードローカル空間でのスプライト位置 (transform 適用前に加算)。
+ *                            矩形上の pivot 位置がこの座標に配置されます。
+ * @param[in] sizeW,sizeH     サイズ (ローカル)
  * @param[in] pivotX,pivotY   矩形上の基準点 (0.0〜1.0)。(0,0)=視覚的な左上, (0.5,0.5)=中央, (1,1)=右下。
- *                            この点が posX,posY に配置され、rotation の回転軸にもなります。
+ *                            この点が offset 位置に配置され、transform の回転軸にもなります。
  *                            CanvasRenderingContext2D の fillRect のように左上原点で描きたい場合は (0,0) を指定します。
  * @param[in] uvX,uvY,uvW,uvH UV 矩形
  * @param[in] colorR,colorG,colorB,colorA 頂点カラー
- * @param[in] rotation  Z 軸回転 (ラジアン)
  *
  * 蓄積されたコマンドは LNRenderer_EndRenderPass 時に自動的にソート→バッチ化→描画されます。
  *
@@ -864,12 +888,12 @@ extern LUMINO_API LNResult LNRenderer_DrawSprite(
     LNHandle renderer,
     LNHandle material,
     int32_t zIndex,
-    float posX, float posY, float posZ,
+    const LNMatrix* transform,
+    float offsetX, float offsetY,
     float sizeW, float sizeH,
     float pivotX, float pivotY,
     float uvX, float uvY, float uvW, float uvH,
-    float colorR, float colorG, float colorB, float colorA,
-    float rotation
+    float colorR, float colorG, float colorB, float colorA
 );
 
 /**

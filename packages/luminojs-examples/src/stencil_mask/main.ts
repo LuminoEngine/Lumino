@@ -125,6 +125,8 @@ async function main() {
         const spacing = 32;
         const offsetX = -(cols * spacing) * 0.5;
         const offsetY = -(rows * spacing) * 0.5;
+        // ノード全体で 1 つの行列を共有し、スプライトごとには offset だけ渡す。
+        const nodeXf = new Matrix4x4(); // 単位行列
         for (let i = 0; i < cols * rows; i++) {
             const col = i % cols;
             const row = Math.floor(i / cols);
@@ -133,12 +135,12 @@ async function main() {
             const wobble = Math.sin(phase + col * 0.2 + row * 0.15) * 3.0;
             renderer.drawSprite(
                 spriteMat, 0,
-                x, y + wobble, 0.0,
+                nodeXf,
+                x, y + wobble,
                 28.0, 28.0,
                 0.5, 0.5,
                 0.0, 0.0, 1.0, 1.0,
                 1.0, 1.0, 1.0, 1.0,
-                0.0,
             );
         }
 

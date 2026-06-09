@@ -114,6 +114,28 @@ TEST_F(Test_Matrix4x4, ViewProjectionRH) {
     );
 }
 
+// ---- transformCoord (列ベクトル規約 out = M * (v, 1)) ----
+
+TEST_F(Test_Matrix4x4, TransformCoord_Translation) {
+    Matrix4x4 t = Matrix4x4::translate(Vector3(3, 4, 5));
+    Vector3 v = t.transformCoord(Vector3(0, 0, 0));
+    ASSERT_NEAR(v.x, 3.f, kEps);
+    ASSERT_NEAR(v.y, 4.f, kEps);
+    ASSERT_NEAR(v.z, 5.f, kEps);
+}
+
+TEST_F(Test_Matrix4x4, TransformCoord_TRS) {
+    // world = T(10,0,0) * Rz(90deg) * S(2) を点 (1,0,0) に適用:
+    //   S -> (2,0,0), Rz90 -> (0,2,0), T -> (10,2,0)
+    Matrix4x4 M = Matrix4x4::translate(Vector3(10, 0, 0))
+                * Matrix4x4::rotateZ(kPi / 2)
+                * Matrix4x4::scale(Vector3(2, 2, 2));
+    Vector3 v = M.transformCoord(Vector3(1, 0, 0));
+    ASSERT_NEAR(v.x, 10.f, kEps);
+    ASSERT_NEAR(v.y, 2.f, kEps);
+    ASSERT_NEAR(v.z, 0.f, kEps);
+}
+
 #if 0
 
 
