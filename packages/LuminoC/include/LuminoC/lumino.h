@@ -60,6 +60,7 @@ extern LUMINO_API LNResult LNObject_Release(LNHandle handle);
 
 /**
  * ウィンドウを作成します。内部で GraphicsContext も作成されます。
+ *
  * @param[in]  title     ウィンドウタイトル
  * @param[in]  width     幅 (ピクセル)
  * @param[in]  height    高さ (ピクセル)
@@ -76,6 +77,7 @@ extern LUMINO_API LNResult LNWindow_Create(
  * HTML canvas に紐づく Window を作成します。Web 専用。
  * canvasSelector は CSS セレクタ (例: "#my_canvas")。
  * デスクトップビルドでは LN_ERROR_UNKNOWN を返します。
+ *
  * @param[in]  canvasSelector CSS セレクタで指定された canvas
  * @param[in]  width          キャンバスの幅 (ピクセル)
  * @param[in]  height         キャンバスの高さ (ピクセル)
@@ -91,6 +93,7 @@ extern LUMINO_API LNResult LNWindow_CreateFromCanvas(
 /**
  * ウィンドウに関連付けられた GraphicsContext のハンドルを取得します。
  * 繰り返し呼び出しても同じハンドルを返します。
+ *
  * @param[in]  handle            ウィンドウのハンドル
  * @param[out] outGraphicsContext GraphicsContext のハンドル
  */
@@ -98,6 +101,7 @@ extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle handle, LNHandle
 
 /**
  * ウィンドウのイベントを処理します。
+ *
  * @param[in]  handle      ウィンドウのハンドル
  * @param[out] outQuit 終了フラグ (LN_TRUE でループ終了)
  */
@@ -164,6 +168,7 @@ typedef struct LNRenderPassDesc {
  * width/height が前フレームと異なる場合、SwapChain と深度バッファを自動的にリサイズします。
  * 返された renderer, colorBuffer, depthBuffer ハンドルは graphicsContext が管理するため、
  * LNObject_Release を呼ぶ必要はありません。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  width          描画先の幅 (ピクセル)
  * @param[in]  height         描画先の高さ (ピクセル)
@@ -182,6 +187,7 @@ extern LUMINO_API LNResult LNGraphicsContext_BeginFrame(
 /**
  * LNRenderPassDesc を適切なデフォルト値で初期化します。
  * (clearDepth=1.0f, clearStencil=0, loadOp=CLEAR, renderTarget=NULL_HANDLE)
+ *
  * @param[out] desc 初期化するデスクリプタ
  */
 extern LUMINO_API void LNRenderPassDesc_Init(LNRenderPassDesc* desc);
@@ -207,6 +213,7 @@ extern LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext);
  * (VUID UNASSIGNED-non-acquired-swapchain-image-used) ため、実際の読み戻しは
  * present 直前 (EndFrame 内) に行われます。読み戻した内容は EndFrame の後に
  * LNGraphicsContext_CaptureBackbuffer で取得します。
+ *
  * @param[in] graphicsContext GraphicsContext のハンドル
  */
 extern LUMINO_API LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext);
@@ -216,6 +223,7 @@ extern LUMINO_API LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle g
  * 事前に (EndFrame の前に) LNGraphicsContext_RequestCaptureBackbuffer を呼び、
  * その後 LNGraphicsContext_EndFrame を呼んでから本関数を呼び出してください。
  * 返されるポインタは、次の LNGraphicsContext_CaptureBackbuffer 呼び出しまで有効です。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outData         ピクセルデータの先頭ポインタ
  * @param[out] outWidth        画像の幅 (ピクセル)
@@ -280,6 +288,7 @@ typedef struct LNMatrix {
 
 /**
  * 2D テクスチャを作成します。
+ *
  * @param[in]  width     幅 (ピクセル)
  * @param[in]  height    高さ (ピクセル)
  * @param[in]  format    テクスチャフォーマット
@@ -299,6 +308,7 @@ extern LUMINO_API LNResult LNTexture2D_Create(
  * LNDepthStencilAttachmentDesc の depthBuffer に設定してください。
  * 作成されたテクスチャは LNRenderPassDesc の renderTarget に指定して描画先として使用でき、
  * 描画後は LNMaterial_SetMainTexture でマテリアルに設定してサンプリングできます。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  width           幅 (ピクセル)
  * @param[in]  height          高さ (ピクセル)
@@ -314,6 +324,7 @@ extern LUMINO_API LNResult LNTexture2D_CreateRenderTarget(
 /**
  * 指定フォーマットのレンダーターゲットテクスチャを作成します。
  * Sampled|RenderTarget のカラーテクスチャを生成します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  width           幅 (ピクセル)
  * @param[in]  height          高さ (ピクセル)
@@ -331,6 +342,7 @@ extern LUMINO_API LNResult LNTexture2D_CreateRenderTargetEx(
 /**
  * 深度ステンシルテクスチャを作成します。
  * 作成されたテクスチャは LNDepthStencilAttachmentDesc の depthBuffer に指定して使用します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  width           幅 (ピクセル)
  * @param[in]  height          高さ (ピクセル)
@@ -345,6 +357,7 @@ extern LUMINO_API LNResult LNTexture2D_CreateDepthStencil(
 
 /**
  * 画像ファイルから 2D テクスチャを読み込みます (PNG, JPG, BMP, TGA 等)。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  filePath        画像ファイルパス (UTF-8)
  * @param[out] outHandle       作成されたテクスチャのハンドル
@@ -357,6 +370,7 @@ extern LUMINO_API LNResult LNTexture2D_LoadFromFile(
 
 /**
  * メモリ上の画像データから 2D テクスチャを読み込みます (PNG, JPG, BMP, TGA 等)。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  data            画像データへのポインタ
  * @param[in]  size            データサイズ (バイト)
@@ -372,6 +386,7 @@ extern LUMINO_API LNResult LNTexture2D_LoadFromMemory(
 /**
  * デコード済みのピクセルデータから 2D テクスチャを作成します。
  * ブラウザの createImageBitmap 等でデコードした RGBA 等の生ピクセルを直接アップロードする用途。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  width           幅 (ピクセル)
  * @param[in]  height          高さ (ピクセル)
@@ -399,6 +414,7 @@ extern LUMINO_API LNResult LNTexture2D_CreateFromPixels(
  * RGBA8 ピクセルデータとして返します。
  * GPU コンテキスト不要の純粋な CPU 処理です。
  * 返されたピクセルデータは LNImage_FreePixels で解放してください。
+ *
  * @param[in]  data          画像データへのポインタ
  * @param[in]  size          データサイズ (バイト)
  * @param[out] outWidth      画像の幅 (ピクセル)
@@ -417,6 +433,7 @@ extern LUMINO_API LNResult LNImage_DecodeFromMemory(
 
 /**
  * LNImage_DecodeFromMemory で確保されたピクセルデータを解放します。
+ *
  * @param[in] pixels 解放するピクセルデータへのポインタ
  */
 extern LUMINO_API LNResult LNImage_FreePixels(const void* pixels);
@@ -451,6 +468,7 @@ typedef enum LNCullMode {
 
 /**
  * ビルトインシェーダを指定してマテリアルを作成します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  shader          使用するビルトインシェーダ
  * @param[out] outHandle       作成されたマテリアルのハンドル
@@ -463,6 +481,7 @@ extern LUMINO_API LNResult LNMaterial_CreateFromBuiltinShader(
 
 /**
  * コンパイル済みシェーダ (.lcsh) のバイナリデータからマテリアルを作成します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  data            コンパイル済みシェーダのバイナリデータ
  * @param[in]  size            バイナリデータのサイズ (バイト)
@@ -480,6 +499,7 @@ extern LUMINO_API LNResult LNMaterial_CreateFromCompiledShader(
  * デスクトップ環境 (LUMINO_USE_SLANG が有効な場合) のみ使用可能です。
  * テストやサンプルプログラムでの利用を想定しており、本番環境では
  * LNMaterial_CreateFromCompiledShader の使用を推奨します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  shaderFilePath  コンパイルする .slang ファイルのパス
  * @param[in]  searchPathOrNull      lumino.slang を含むディレクトリのパス (NULL 可)
@@ -495,6 +515,7 @@ extern LUMINO_API LNResult LNMaterial_CreateFromShaderSourceFile(
 /**
  * @deprecated LNMaterial_CreateFromBuiltinShader(ctx, LN_BUILTIN_SHADER_UNLIT, out) を使用してください。
  * Unlit マテリアルを作成します (テクスチャ * カラー、ライティングなし)。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outHandle       作成されたマテリアルのハンドル
  */
@@ -505,6 +526,7 @@ extern LUMINO_API LNResult LNMaterial_CreateUnlit(
 
 /**
  * マテリアルのベースカラーを設定します。
+ *
  * @param[in] material マテリアルのハンドル
  * @param[in] r,g,b,a  カラー成分 (0.0 - 1.0)
  */
@@ -515,6 +537,7 @@ extern LUMINO_API LNResult LNMaterial_SetColor(
 
 /**
  * マテリアルのメインテクスチャを設定します。
+ *
  * @param[in] material マテリアルのハンドル
  * @param[in] texture  Texture のハンドル
  */
@@ -532,6 +555,7 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(
 /**
  * シェーダバインディング名でテクスチャを設定します。
  * シェーダの uniform Texture2D 変数名（例: "u_sceneColor"）を指定します。
+ *
  * @param[in] material マテリアルのハンドル
  * @param[in] name     シェーダ内のテクスチャバインディング名 (UTF-8)
  * @param[in] texture  Texture のハンドル
@@ -544,6 +568,7 @@ extern LUMINO_API LNResult LNMaterial_SetNamedTexture(
 
 /**
  * マテリアルのブレンドモードを設定します。
+ *
  * @param[in] material  マテリアルのハンドル
  * @param[in] blendMode 合成方法
  */
@@ -554,6 +579,7 @@ extern LUMINO_API LNResult LNMaterial_SetBlendMode(
 
 /**
  * マテリアルのカリングモードを設定します。
+ *
  * @param[in] material  マテリアルのハンドル
  * @param[in] cullMode  カリングモード
  */
@@ -564,6 +590,7 @@ extern LUMINO_API LNResult LNMaterial_SetCullMode(
 
 /**
  * マテリアルのデプステスト有効/無効を設定します。
+ *
  * @param[in] material マテリアルのハンドル
  * @param[in] enabled  LN_TRUE: 有効, LN_FALSE: 無効
  */
@@ -574,6 +601,7 @@ extern LUMINO_API LNResult LNMaterial_SetDepthTestEnabled(
 
 /**
  * マテリアルのデプス書き込み有効/無効を設定します。
+ *
  * @param[in] material マテリアルのハンドル
  * @param[in] enabled  LN_TRUE: 有効, LN_FALSE: 無効
  */
@@ -588,6 +616,7 @@ extern LUMINO_API LNResult LNMaterial_SetDepthWriteEnabled(
 
 /**
  * 頂点・インデックスデータからメッシュを作成します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  vertices        LNVertex 配列
  * @param[in]  vertexCount     頂点数
@@ -611,6 +640,7 @@ extern LUMINO_API LNResult LNMesh_Create(
 /**
  * 毎フレーム CPU から更新可能な動的メッシュを作成します。
  * 内部で host-visible なバッファを確保します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  maxVertexCount  最大頂点数
  * @param[in]  maxIndexCount   最大インデックス数
@@ -625,6 +655,7 @@ extern LUMINO_API LNResult LNMesh_CreateDynamic(
 
 /**
  * 動的メッシュの頂点データを更新します。
+ *
  * @param[in] mesh         メッシュのハンドル
  * @param[in] firstVertex  書き込み開始頂点インデックス
  * @param[in] vertices     LNVertex 配列
@@ -639,6 +670,7 @@ extern LUMINO_API LNResult LNMesh_UpdateVertices(
 
 /**
  * 動的メッシュのインデックスデータを更新します。
+ *
  * @param[in] mesh        メッシュのハンドル
  * @param[in] firstIndex  書き込み開始インデックスオフセット
  * @param[in] indices     uint32_t インデックス配列
@@ -654,6 +686,7 @@ extern LUMINO_API LNResult LNMesh_UpdateIndices(
 /**
  * メッシュのサブメッシュ配列を差し替えます。
  * マテリアルスロットは必要に応じて拡張されます。
+ *
  * @param[in] mesh          メッシュのハンドル
  * @param[in] submeshes     LNSubMesh 配列
  * @param[in] submeshCount  サブメッシュ数
@@ -666,6 +699,7 @@ extern LUMINO_API LNResult LNMesh_SetSubMeshes(
 
 /**
  * メッシュの指定マテリアルスロットにマテリアルを設定します。
+ *
  * @param[in] mesh            メッシュのハンドル
  * @param[in] materialIndex   マテリアルスロットインデックス
  * @param[in] material        マテリアルのハンドル
@@ -682,12 +716,14 @@ extern LUMINO_API LNResult LNMesh_SetMaterial(
 
 /**
  * デフォルト設定のカメラを作成します。
+ *
  * @param[out] outHandle 作成されたカメラのハンドル
  */
 extern LUMINO_API LNResult LNCamera_Create(LNHandle* outHandle);
 
 /**
  * カメラに透視投影を設定します。
+ *
  * @param[in] camera   カメラのハンドル
  * @param[in] fovY     垂直視野角 (ラジアン)
  * @param[in] aspect   アスペクト比 (幅 / 高さ)
@@ -701,6 +737,7 @@ extern LUMINO_API LNResult LNCamera_SetPerspective(
 
 /**
  * カメラに正射影投影を設定します。
+ *
  * @param[in] camera   カメラのハンドル
  * @param[in] width    投影幅
  * @param[in] height   投影高さ
@@ -743,6 +780,7 @@ extern LUMINO_API LNResult LNCamera_SetOrthographic2D(
 
 /**
  * カメラの注視点を設定します。
+ *
  * @param[in] camera                   カメラのハンドル
  * @param[in] eyeX, eyeY, eyeZ        視点位置
  * @param[in] targetX, targetY, targetZ 注視点
@@ -757,6 +795,7 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
 
 /**
  * カメラのビュー行列とプロジェクション行列を直接設定します。
+ *
  * @param[in] camera       カメラのハンドル
  * @param[in] viewMatrix   ビュー行列 (float x 16, 列優先)
  * @param[in] projMatrix   プロジェクション行列 (float x 16, 列優先)
@@ -776,6 +815,7 @@ extern LUMINO_API LNResult LNCamera_SetMatrices(
  * desc は LNRenderPassDesc_Init で初期化してから使用してくださsい。
  * renderTarget / depthBuffer が LN_NULL_HANDLE の場合、バックバッファが使用されます。
  * camera が有効な場合、カメラデータを set=0 View UBO に自動アップロードします。
+ *
  * @param[in] renderer         Renderer のハンドル
  * @param[in] graphicsContext  GraphicsContext のハンドル (バックバッファ取得用)
  * @param[in] desc             レンダーパスの設定
@@ -790,6 +830,7 @@ extern LUMINO_API LNResult LNRenderer_BeginRenderPass(
 
 /**
  * レンダーパスを終了します。
+ *
  * @param[in] renderer Renderer のハンドル
  */
 extern LUMINO_API LNResult LNRenderer_EndRenderPass(LNHandle renderer);
@@ -798,6 +839,7 @@ extern LUMINO_API LNResult LNRenderer_EndRenderPass(LNHandle renderer);
  * メッシュ描画コマンドを内部コマンドバッファに蓄積します。
  * 蓄積されたコマンドは LNRenderer_EndRenderPass 時に自動的にソート→バッチ化→描画されます。
  * メッシュに設定されたマテリアルを使用します。
+ *
  * @param[in] renderer   Renderer のハンドル
  * @param[in] mesh       メッシュのハンドル
  * @param[in] transform  LNTransform へのポインタ (NULL で単位変換)
@@ -813,6 +855,7 @@ extern LUMINO_API LNResult LNRenderer_DrawMesh(
 /**
  * メッシュを即座に描画します (バッチ化なし)。
  * レンダーパス内で即時に GPU コマンドを発行します。
+ *
  * @param[in] renderer   Renderer のハンドル
  * @param[in] mesh       メッシュのハンドル
  * @param[in] transform  LNTransform へのポインタ (NULL で単位変換)
@@ -826,6 +869,7 @@ extern LUMINO_API LNResult LNRenderer_DrawMeshImmediate(
 /**
  * メッシュを指定マテリアルで即座に描画します (バッチ化なし)。
  * メッシュに設定されたマテリアルではなく、引数のマテリアルを使用します。
+ *
  * @param[in] renderer  Renderer のハンドル
  * @param[in] mesh      メッシュのハンドル
  * @param[in] transform ワールドトランスフォーム (NULL で単位行列)
@@ -842,6 +886,7 @@ extern LUMINO_API LNResult LNRenderer_DrawMeshImmediateWithMaterial(
  * フルスクリーン矩形を指定マテリアルで描画します。
  * ポストプロセス・スクリーンスペースエフェクト用です。
  * NDC [-1,1]x[-1,1] をカバーする矩形を描画します。
+ *
  * @param[in] renderer  Renderer のハンドル
  * @param[in] material  マテリアルのハンドル
  */
@@ -901,6 +946,7 @@ extern LUMINO_API LNResult LNRenderer_DrawSprite(
  * maskMesh をステンシルバッファにのみ描画し（カラー書き込みなし）、
  * 以降の DrawMesh 呼び出しはマスク領域内のみ描画されます。
  * ネスト可能（内部でステンシル参照値をインクリメント）。
+ *
  * @param[in] renderer   Renderer のハンドル
  * @param[in] mesh       マスク形状のメッシュ（アルファマスクテクスチャ付き）
  * @param[in] transform  LNTransform へのポインタ (NULL で単位変換)
@@ -916,6 +962,7 @@ extern LUMINO_API LNResult LNRenderer_PushStencilMask(
 /**
  * 直前の PushStencilMask に対応するマスクを解除します。
  * 内部でマスクメッシュを再描画してステンシル値をデクリメントします。
+ *
  * @param[in] renderer Renderer のハンドル
  */
 extern LUMINO_API LNResult LNRenderer_PopStencilMask(LNHandle renderer);
@@ -927,18 +974,21 @@ extern LUMINO_API LNResult LNRenderer_PopStencilMask(LNHandle renderer);
 /**
  * @deprecated LNRenderer_DrawMesh / LNRenderer_DrawSprite を使用してください。
  * DrawCommandBuffer を作成します。
+ *
  * @param[out] outHandle 作成された DrawCommandBuffer のハンドル
  */
 extern LUMINO_API LNResult LNDrawCommandBuffer_Create(LNHandle* outHandle);
 
 /**
  * DrawCommandBuffer をクリアします。フレーム先頭で呼び出してください。
+ *
  * @param[in] buffer DrawCommandBuffer のハンドル
  */
 extern LUMINO_API LNResult LNDrawCommandBuffer_Clear(LNHandle buffer);
 
 /**
  * スプライト描画コマンドを追加します。
+ *
  * @param[in] buffer    DrawCommandBuffer のハンドル
  * @param[in] material  マテリアルのハンドル
  * @param[in] zIndex    ソート優先度
@@ -978,6 +1028,7 @@ extern LUMINO_API LNResult LNDrawCommandBuffer_DrawSprites(
 
 /**
  * サブメッシュ単位の描画コマンドを追加します。
+ *
  * @param[in] buffer        DrawCommandBuffer のハンドル
  * @param[in] mesh          メッシュのハンドル
  * @param[in] submeshIndex  サブメッシュインデックス
@@ -995,6 +1046,7 @@ extern LUMINO_API LNResult LNDrawCommandBuffer_DrawSubMesh(
 
 /**
  * メッシュの全サブメッシュを一括で描画コマンドに追加します (便利 API)。
+ *
  * @param[in] buffer    DrawCommandBuffer のハンドル
  * @param[in] mesh      メッシュのハンドル
  * @param[in] transform LNTransform へのポインタ (NULL で単位変換)
@@ -1013,6 +1065,7 @@ extern LUMINO_API LNResult LNDrawCommandBuffer_DrawMesh(
 /**
  * @deprecated LNRenderer_DrawMesh / LNRenderer_DrawSprite を使用してください。
  * BatchProcessor を作成します。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outHandle       作成された BatchProcessor のハンドル
  */
@@ -1023,6 +1076,7 @@ extern LUMINO_API LNResult LNBatchProcessor_Create(
 /**
  * DrawCommandBuffer の内容をソート→バッチ化→描画します。
  * beginRenderPass ～ endRenderPass の間で呼び出してください。
+ *
  * @param[in] batchProcessor BatchProcessor のハンドル
  * @param[in] renderer       Renderer のハンドル
  * @param[in] commandBuffer  DrawCommandBuffer のハンドル
@@ -1053,6 +1107,7 @@ typedef struct LNGraphicsProfilering {
 /**
  * グラフィックスプロファイリング情報を取得します。
  * LNGraphicsContext_EndFrame の後に呼び出すと前フレームの計測値が得られます。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outProfiler    プロファイリング情報の出力先
  */
@@ -1064,6 +1119,7 @@ extern LUMINO_API LNResult LNDebug_GetGraphicsProfiler(
  * デバッグ文字列を画面左上に描画します。
  * ASCII 文字のみ使用可能で、最大 512 文字まで蓄積できます。
  * 実際の描画は LNGraphicsContext_EndFrame の内部で行われます。
+ *
  * @param[in] graphicsContext GraphicsContext のハンドル
  * @param[in] str            描画する文字列 (UTF-8/ASCII)
  */

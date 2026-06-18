@@ -76,19 +76,27 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
         return LN_FORWARD_ERROR(fsResult);
     }
 
-    // Build material BindGroupLayout from "$Material" ParameterBlock reflection
+    // Build material BindGroupLayout from the optional "$Material" ParameterBlock.
+    //
+    // $Material は「素の uniform / リソース」をまとめた合成ブロック。
+    // フルスクリーン blit のような最小シェーダではマテリアル定数バッファを持たない
+    // (テクスチャ+サンプラだけ、あるいは素のパラメータが何も無い) ことがある。
+    // そのため $Material ブロックの有無も、その中の定数バッファの有無もどちらも任意とし、
+    // 無い場合は materialSetIdx = -1 / cbSize = 0 として扱う。
+    rhi::BindGroupLayoutDesc materialLayoutDesc;
+    int16_t materialSetIdx = -1;
+    int16_t cbSize = 0;
+
     auto* materialBlock = detail::findParameterBlock(unifiedShader, "$Material");
-    if (!materialBlock) {
-        return LN_MAKE_ERROR("No '$Material' ParameterBlock found");
-    }
+    if (materialBlock) {
+        materialLayoutDesc = detail::buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
+        materialSetIdx = materialBlock->setIndex;
 
-    auto materialLayoutDesc = detail::buildBindGroupLayoutFromReflection(*materialBlock, targetPass->bindingLayout);
-    int16_t materialSetIdx = materialBlock->setIndex;
-
-    // Get material CB size from reflection
-    int16_t cbSize = detail::findConstantBufferSize(*materialBlock);
-    if (cbSize <= 0) {
-        return LN_MAKE_ERROR("No constant buffer found in '$Material'");
+        // 定数バッファは任意。見つからない場合は 0 (= マテリアル UBO 無し) とする。
+        int16_t foundCbSize = detail::findConstantBufferSize(*materialBlock);
+        if (foundCbSize > 0) {
+            cbSize = foundCbSize;
+        }
     }
 
     // Discover view/scene/object blocks from reflection
@@ -138,16 +146,20 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     // Assemble PipelineLayoutDesc using reflection-based set indices
     rhi::PipelineLayoutDesc plDesc;
     plDesc.setLayouts.resize(static_cast<size_t>(maxSet) + 1);
-    plDesc.setLayouts[materialSetIdx] = materialLayoutDesc;
+    if (materialSetIdx >= 0) {
+        plDesc.setLayouts[materialSetIdx] = materialLayoutDesc;
+    }
     plDesc.setLayouts[viewSetIndex] = viewLayoutDesc;
     plDesc.setLayouts[sceneSetIndex] = sceneLayoutDesc;
     plDesc.setLayouts[objectSetIndex] = objectLayoutDesc;
 
     // Convert GlobalMemberInfo to MaterialMemberInfo
     std::vector<MaterialMemberInfo> members;
-    members.reserve(materialBlock->members.size());
-    for (const auto& gm : materialBlock->members) {
-        members.push_back({gm.name, gm.offset, gm.size});
+    if (materialBlock) {
+        members.reserve(materialBlock->members.size());
+        for (const auto& gm : materialBlock->members) {
+            members.push_back({gm.name, gm.offset, gm.size});
+        }
     }
 
     // Create Instance

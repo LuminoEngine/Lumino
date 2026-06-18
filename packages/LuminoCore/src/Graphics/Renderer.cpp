@@ -727,8 +727,13 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         cache.sampler = std::move(*sampResult);
     }
 
-    // Create per-frame buffer if missing
-    if (!cache.paramBuffers[frameSlot]) {
+    // Create per-frame buffer if missing.
+    // マテリアル定数バッファを持たないシェーダ (例: フルスクリーン blit) では
+    // materialParamBufferSize() == 0 になる。0 バイトの UBO 作成はバックエンドの
+    // バリデーションエラーになり得るため、CB がある場合のみ作成・書き込みする。
+    // この場合 materialLayoutDesc に UniformBuffer エントリは存在しないため、
+    // 後段の BindGroup 構築で paramBuffer が参照されることもない。
+    if (mat->materialParamBufferSize() > 0 && !cache.paramBuffers[frameSlot]) {
         rhi::BufferDesc bufDesc;
         bufDesc.size = mat->materialParamBufferSize();
         bufDesc.usage = rhi::BufferUsage::Uniform;
@@ -738,7 +743,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
     }
 
     // Write UBO data via writeBuffer (compatible with all backends).
-    {
+    if (mat->materialParamBufferSize() > 0) {
         auto uboSize = mat->materialParamBufferSize();
         uint8_t uboStaging[512];
         std::vector<uint8_t> uboStagingHeap;

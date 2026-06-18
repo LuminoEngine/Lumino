@@ -6,16 +6,13 @@
 #include <vector>
 
 namespace ln {
-
-// Forward declaration for LUMINO_USE_SLANG overload
 namespace shader { class UnifiedShader2; }
 
-
-/** Info about a single member within a material constant buffer (from shader reflection). */
+/** マテリアル定数バッファ内の単一メンバ情報 (シェーダリフレクションから取得) */
 struct MaterialMemberInfo {
-    std::string name;       // e.g. "u_time"
-    int16_t offset;         // byte offset within the CB
-    int16_t size;           // byte size
+    std::string name;       // 例: "u_time"
+    int16_t offset;         // CB内のバイトオフセット
+    int16_t size;           // バイトサイズ
 };
 
 /**
@@ -36,7 +33,7 @@ public:
      * PipelineLayoutを一括構築する。
      * view/scene/objectのBindGroupLayoutDescは共有のものを引数で受け取り、
      * リフレクション情報に基づくセットインデックスに配置する。
-     * $Material レイアウトはリフレクション情報から自動構築される。
+     *
      * @param passIndex UnifiedShader2 内の GlobalShaderPass インデックス (デフォルト 0)
      */
     static Result<Ref<ShaderPass>> createFromCompiledShader(
@@ -57,7 +54,7 @@ public:
         size_t passIndex = 0);
 #endif // LUMINO_USE_SLANG
 
-    // Accessors
+    // アクセサ
 
     /** このパスの名前 (例: "Forward", "GBuffer"). */
     const std::string& passName() const { return m_passName; }
@@ -69,43 +66,43 @@ public:
     rhi::PipelineLayout* pipelineLayout() const { return m_pipelineLayout.get(); }
     uint64_t materialParamBufferSize() const { return m_materialParamBufferSize; }
 
-    /** Descriptor set index for the material ($Material) BindGroup. */
+    /** マテリアル ($Material) BindGroup のディスクリプタセットインデックス。 */
     int16_t materialSetIndex() const { return m_materialSetIndex; }
 
-    /** $Global CB member layout for name-based parameter setting. */
+    /** 名前ベースのパラメータ設定のための $Global CB メンバレイアウト。 */
     const std::vector<MaterialMemberInfo>& materialMembers() const { return m_materialMembers; }
 
-    /** BindGroupLayoutDesc for the material ($Material) set. */
+    /** マテリアル ($Material) セットの BindGroupLayoutDesc。 */
     const rhi::BindGroupLayoutDesc& materialLayoutDesc() const { return m_materialLayoutDesc; }
 
-    /** Binding names in the material set (parallel to materialLayoutDesc().entries). */
+    /** マテリアルセット内のバインディング名 (materialLayoutDesc().entries と対応)。 */
     const std::vector<std::string>& materialBindingNames() const { return m_materialBindingNames; }
 
-    /** Descriptor set index for view data (from shader reflection). */
+    /** ビューデータのディスクリプタセットインデックス (シェーダリフレクションから取得)。 */
     int16_t viewSetIndex() const { return m_viewSetIndex; }
 
-    /** Descriptor set index for scene data (from shader reflection). */
+    /** シーンデータのディスクリプタセットインデックス (シェーダリフレクションから取得)。 */
     int16_t sceneSetIndex() const { return m_sceneSetIndex; }
 
-    /** Descriptor set index for object data (from shader reflection). */
+    /** オブジェクトデータのディスクリプタセットインデックス (シェーダリフレクションから取得)。 */
     int16_t objectSetIndex() const { return m_objectSetIndex; }
 
-    /** Shared BindGroupLayoutDesc for view/camera data. */
+    /** ビュー/カメラデータの共有 BindGroupLayoutDesc。 */
     const rhi::BindGroupLayoutDesc& viewLayoutDesc() const { return m_viewLayoutDesc; }
 
-    /** Shared BindGroupLayoutDesc for scene/lighting data. */
+    /** シーン/ライティングデータの共有 BindGroupLayoutDesc。 */
     const rhi::BindGroupLayoutDesc& sceneLayoutDesc() const { return m_sceneLayoutDesc; }
 
-    /** Shared BindGroupLayoutDesc for per-object data. */
+    /** オブジェクト単位データの共有 BindGroupLayoutDesc。 */
     const rhi::BindGroupLayoutDesc& objectLayoutDesc() const { return m_objectLayoutDesc; }
 
-    /** Per-object UBO size from shader reflection. */
+    /** シェーダリフレクションから取得したオブジェクト単位の UBO サイズ。 */
     uint64_t objectUBOSize() const { return m_objectUBOSize; }
 
 private:
     ShaderPass() = default;
 
-    /** Internal: shared implementation used by createFromCompiledShader and createFromUnifiedShader. */
+    /** 内部用: createFromCompiledShader と createFromUnifiedShader が共有する実装。 */
     static Result<Ref<ShaderPass>> buildFromUnifiedShader(
         shader::UnifiedShader2* unifiedShader, rhi::Device* device, size_t passIndex);
 
@@ -119,16 +116,16 @@ private:
     int16_t m_materialSetIndex = -1;
     std::vector<MaterialMemberInfo> m_materialMembers;
 
-    // Descriptor set indices from shader reflection
+    // シェーダリフレクションから取得したディスクリプタセットインデックス
     int16_t m_viewSetIndex = -1;
     int16_t m_sceneSetIndex = -1;
     int16_t m_objectSetIndex = -1;
 
-    // Material set layout from reflection
+    // リフレクションから取得したマテリアルセットレイアウト
     rhi::BindGroupLayoutDesc m_materialLayoutDesc;
     std::vector<std::string> m_materialBindingNames;
 
-    // Shared BindGroupLayoutDescs (value types, no GPU objects)
+    // 共有 BindGroupLayoutDesc (値型、GPUオブジェクトは持たない)
     rhi::BindGroupLayoutDesc m_viewLayoutDesc;
     rhi::BindGroupLayoutDesc m_sceneLayoutDesc;
     rhi::BindGroupLayoutDesc m_objectLayoutDesc;
