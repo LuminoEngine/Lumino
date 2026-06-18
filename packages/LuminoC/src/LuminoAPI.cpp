@@ -1035,7 +1035,7 @@ LNResult LNCamera_SetLookAt(
 }
 
 LNResult LNCamera_SetMatrices(
-    LNHandle camera, const float* viewMatrix, const float* projMatrix) {
+    LNHandle camera, const float* viewMatrix, const float* projMatrix, LNBool is2D) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -1049,6 +1049,7 @@ LNResult LNCamera_SetMatrices(
     std::memcpy(proj.m, projMatrix, sizeof(float) * 16);
     camObj->camera.setViewMatrix(view);
     camObj->camera.setProjectionMatrix(proj);
+    camObj->camera.setIs2D(is2D != LN_FALSE);
     return LN_OK;
 }
 

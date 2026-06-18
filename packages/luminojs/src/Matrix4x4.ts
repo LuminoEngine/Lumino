@@ -115,6 +115,47 @@ export class Matrix4x4 {
         return result;
     }
 
+    /**
+     * C++ Camera::setOrthographic2D が作成する射影行列と同一。
+     * 左上原点・Y軸下向きの 2D 用正射影投影行列を作成する。
+     *
+     * pivotX, pivotY (0..1) で原点 (スクリーン座標 (0,0)) の位置を指定する。
+     * pivot=(0,0) で左上、(0.5,0.5) で画面中央、(1,1) で右下が原点になる。
+     *
+     * @param width    画面幅 (ピクセル)
+     * @param height   画面高さ (ピクセル)
+     * @param nearZ    ニアクリップ距離
+     * @param farZ     ファークリップ距離
+     * @param pivotX   原点の水平位置 (0..1)。0=左, 0.5=中央, 1=右 (既定 0)
+     * @param pivotY   原点の垂直位置 (0..1)。0=上, 0.5=中央, 1=下 (既定 0)
+     */
+    public static makeOrthographic2D(
+        width: number, height: number, nearZ: number, farZ: number,
+        pivotX = 0, pivotY = 0, result?: Matrix4x4,
+    ): Matrix4x4 {
+        result = result ?? new Matrix4x4();
+        // 原点は画面左上から (pivotX*width, pivotY*height) ピクセルの位置に置かれる。
+        const left = -pivotX * width;
+        const right = (1.0 - pivotX) * width;
+        const top = -pivotY * height;
+        const bottom = (1.0 - pivotY) * height;
+        // C++ Matrix4x4::ortho(left, right, bottom, top, nearZ, farZ) と同一。
+        const m = result.m;
+        m[0]  = 2.0 / (right - left);
+        m[1]  = 0; m[2]  = 0; m[3]  = 0;
+        m[4]  = 0;
+        m[5]  = 2.0 / (top - bottom);
+        m[6]  = 0; m[7]  = 0;
+        m[8]  = 0; m[9]  = 0;
+        m[10] = 1.0 / (nearZ - farZ);
+        m[11] = 0;
+        m[12] = -(right + left) / (right - left);
+        m[13] = -(top + bottom) / (top - bottom);
+        m[14] = nearZ / (nearZ - farZ);
+        m[15] = 1.0;
+        return result;
+    }
+
     /** C++ Matrix4x4::translate と同一 (平行移動行列)。 */
     public static makeTranslation(x: number, y: number, z: number, result?: Matrix4x4): Matrix4x4 {
         result = result ?? new Matrix4x4();

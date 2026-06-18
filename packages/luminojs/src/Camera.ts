@@ -96,8 +96,10 @@ export class Camera extends LuminoObject {
      * カメラのビュー行列とプロジェクション行列を直接設定します。
      * @param view ビュー行列 (列優先 float x 16)
      * @param proj プロジェクション行列 (列優先 float x 16)
+     * @param is2D 2D モードフラグ。`true` で 2D カメラ (スプライトが左上原点・Y軸下向き
+     *             のレイアウトで自動生成される)。既定は `false`
      */
-    setMatrices(view: Matrix4x4, proj: Matrix4x4): void {
+    setMatrices(view: Matrix4x4, proj: Matrix4x4, is2D = false): void {
         const m = Runtime.module;
         const byteLen = 16 * 4; // 64 bytes per matrix
         const ptr = m._malloc(byteLen * 2);
@@ -107,8 +109,8 @@ export class Camera extends LuminoObject {
             heap.set(proj.m, 16);
             Runtime.safeCall(() =>
                 (API.LNCamera_SetMatrices as (
-                    cam: number, viewPtr: number, projPtr: number,
-                ) => number)(this._handle, ptr, ptr + byteLen));
+                    cam: number, viewPtr: number, projPtr: number, is2D: number,
+                ) => number)(this._handle, ptr, ptr + byteLen, is2D ? 1 : 0));
         } finally {
             m._free(ptr);
         }

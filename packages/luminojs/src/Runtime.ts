@@ -257,6 +257,6 @@ export class Runtime {
         API.LNCamera_SetPerspective = cw("LNCamera_SetPerspective", "number", ["number", "number", "number", "number", "number"]);
         API.LNCamera_SetOrthographic2D = cw("LNCamera_SetOrthographic2D", "number", ["number", "number", "number", "number", "number", "number", "number"]);
         API.LNCamera_SetLookAt      = cw("LNCamera_SetLookAt",      "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]);
-        API.LNCamera_SetMatrices    = cw("LNCamera_SetMatrices",    "number", ["number", "number", "number"]);
+        API.LNCamera_SetMatrices    = cw("LNCamera_SetMatrices",    "number", ["number", "number", "number", "number"]);
     }
 }

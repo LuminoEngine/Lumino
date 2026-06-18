@@ -42,6 +42,9 @@ public:
     /** このカメラが 2D モード (setOrthographic2D 使用) かどうか。 */
     bool is2D() const { return m_is2D; }
 
+    /** このカメラの 2D モードフラグを直接設定します。 */
+    void setIs2D(bool value) { m_is2D = value; }
+
     const Matrix4x4& viewMatrix() const { return m_viewMatrix; }
     const Matrix4x4& projectionMatrix() const { return m_projMatrix; }
     Matrix4x4 viewProjectionMatrix() const;

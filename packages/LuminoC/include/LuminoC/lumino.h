@@ -799,11 +799,13 @@ extern LUMINO_API LNResult LNCamera_SetLookAt(
  * @param[in] camera       カメラのハンドル
  * @param[in] viewMatrix   ビュー行列 (float x 16, 列優先)
  * @param[in] projMatrix   プロジェクション行列 (float x 16, 列優先)
+ * @param[in] is2D         2D モードフラグ (LN_TRUE: 2D, LN_FALSE: 3D)
  */
 extern LUMINO_API LNResult LNCamera_SetMatrices(
     LNHandle camera,
     const float* viewMatrix,
-    const float* projMatrix
+    const float* projMatrix,
+    LNBool is2D
 );
 
 //------------------------------------------------------------------------------
