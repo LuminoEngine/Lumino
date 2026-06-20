@@ -4,46 +4,47 @@ Slang シェーダをコンパイルし、マルチターゲット (SPIRV / DXIL
 
 ## 設計方針
 
-シェーダリソースは **更新頻度別** に `ParameterBlock<T>` で分離する。
+シェーダリソースは **更新頻度別** に Descriptor Set へ分離する。マテリアルパラメータは
+`$Global`（bare uniform）、システムデータ（カメラ・ライト・オブジェクト行列）は
+`ParameterBlock<T>` で宣言する。
 
 ```text
-Set 0 (per-view)     : カメラ・ライトなど — フレームに1回更新
-Set 1 (per-material)  : マテリアルパラメータ・テクスチャ — マテリアル切り替え時
-Set 2 (per-object)    : ワールド行列 — オブジェクトごと
+Set 0 ($Global / per-material) : マテリアルパラメータ・テクスチャ — マテリアル切り替え時
+Set 1 (per-view)               : カメラ — フレームに1回更新
+Set 2 (per-scene)              : ライト — フレームに1回更新
+Set 3 (per-object)             : ワールド行列 — オブジェクトごと
 ```
 
-Slang の `ParameterBlock<T>` が独立した descriptor set にマップされるため、クライアント側は set 番号と中身の要素だけ知ればよい。名前に意味を持たせるのはクライアント側の役割。
+bare uniform は `$Global`（Set 0）にまとめられ、`ParameterBlock<T>` は独立した descriptor set
+（Set 1〜3）にマップされる。システム ParameterBlock（Set 1〜3）は `import lumino;` が提供するため、
+シェーダ作者が宣言するのは Set 0 のマテリアルパラメータだけでよい。
+
+> シェーダの書き方・Material API からのパラメータ設定は
+> [docs/shader-conventions.md](../../docs/shader-conventions.md) を参照。
 
 ## シェーダの書き方
 
-```slang
-struct ViewParams {
-    float4x4 viewProj;
-    float4   cameraPos;
-};
+`import lumino;` でシステム ParameterBlock（`viewData` / `sceneData` / `objectData`）と
+共通構造体（`VSInput` 等）を取り込む。シェーダ作者が宣言するのはマテリアルパラメータ
+（`$Global`, Set 0）だけ。
 
+```slang
+import lumino;   // viewData / sceneData / objectData / VSInput を提供
+
+// マテリアルパラメータ (bare uniform → $Global, Set 0)
 struct MaterialParams {
     float4 color;
     float4 specular;
 };
-
-struct MaterialData {
-    ConstantBuffer<MaterialParams> params;
-    Texture2D                      baseTexture;
-    SamplerState                   baseSampler;
-};
-
-struct ObjectParams {
-    float4x4 world;
-    float4x4 normalMatrix;
-};
-
-ParameterBlock<ViewParams>     viewData;       // -> Set 0
-ParameterBlock<MaterialData>   materialData;   // -> Set 1
-ParameterBlock<ObjectParams>   objectData;     // -> Set 2
+uniform ConstantBuffer<MaterialParams> u_params;
+uniform Texture2D                      u_baseTexture;
+uniform SamplerState                   u_baseSampler;
 
 [shader("vertex")]
-VSOutput vsMain(VSInput input) { ... }
+VSOutput vsMain(VSInput input) {
+    // viewData / objectData は import lumino で利用可能 (Set 1 / Set 3)
+    ...
+}
 
 [shader("fragment")]
 float4 fsMain(VSOutput input) : SV_TARGET { ... }
@@ -59,11 +60,16 @@ float4 fsMain(VSOutput input) : SV_TARGET { ... }
 
 [Slang Documentation](https://docs.shader-slang.org/en/stable/index.html)
 
-### ParameterBlock のルール
+### リソース宣言のルール
 
-- plain data のみの構造体 (`ViewParams`, `ObjectParams`) → 暗黙の ConstantBuffer として扱われる。C++ 側からはアライメント済みの構造体をそのままセットする。
-- 明示的な `ConstantBuffer<T>`, `Texture2D`, `SamplerState` を混在させる場合 (`MaterialData`) → 各フィールドが個別のバインディングになる。
-- `$Global` (bare uniform 変数) は非サポート。すべてのリソースは `ParameterBlock` に含める。
+- **マテリアルパラメータ**は bare uniform（`uniform ConstantBuffer<T>`, `uniform Texture2D`,
+  `uniform SamplerState`, または単独の `uniform float4` 等）で宣言する。これらは `$Global`
+  （Set 0）にまとめられ、Material API から名前指定で値を設定する。
+- **システムデータ**は `ParameterBlock<T>` で宣言する。plain data のみの構造体
+  (`ViewParams`, `ObjectParams`) は暗黙の ConstantBuffer として扱われ、C++ 側からは
+  アライメント済みの構造体をそのままセットする。
+- `ParameterBlock<T>` 内に明示的な `ConstantBuffer<T>`, `Texture2D`, `SamplerState` を
+  混在させた場合、各フィールドが個別のバインディングになる。
 
 ## C++ からの使い方
 
@@ -87,10 +93,11 @@ UnifiedShader2* shader = compiler->shader();
 ### リフレクション情報の取得
 
 ```cpp
-// ParameterBlock の列挙
+// ParameterBlock の列挙 (システムデータ: viewData / sceneData / objectData)
+// ※ マテリアルパラメータは $Global (Set 0) 側。ここには現れない。
 for (const auto& block : shader->parameterBlocks()) {
-    // block.name      : "viewData", "materialData", "objectData"
-    // block.setIndex   : descriptor set 番号 (0, 1, 2)
+    // block.name      : "viewData", "sceneData", "objectData"
+    // block.setIndex   : descriptor set 番号 (1, 2, 3)
     // block.hasImplicitConstantBuffer : plain data のみなら true
 
     for (const auto& elem : block.elements) {

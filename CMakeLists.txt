@@ -44,19 +44,12 @@ endif()
 #-------------------------------------------------------------------------------
 # Web (Emscripten) build
 #-------------------------------------------------------------------------------
-# LuminoBase and LuminoCore are built as static libraries, then linked by
-# LuminoC. WebGPU-distribution provides a unified webgpu target that
-# automatically selects the emdawnwebgpu backend on Emscripten.
+# WebGPU-distributionは、Emscripten上でemdawnwebgpuバックエンドを
+# 自動的に選択する統合WebGPUターゲットを提供します。
 if(LN_PLATFORM_WEB)
-    # WebGPU-distribution — automatically selects EMDAWNWEBGPU on Emscripten.
-    add_subdirectory(build/webgpu)
-
-    # WebGPU is always enabled for Emscripten
-    #set(LN_ENABLE_WEBGPU ON CACHE BOOL "" FORCE)
-
     # Disable Slang compiler for WASM (only shader deserialization is needed)
     set(LUMINO_USE_SLANG OFF CACHE BOOL "" FORCE)
-
+    add_subdirectory(build/webgpu)
     add_subdirectory(packages/LuminoBase)
     add_subdirectory(packages/LuminoShader)
     add_subdirectory(packages/LuminoCore)
@@ -67,10 +60,9 @@ endif()
 #-------------------------------------------------------------------------------
 # vcpkg packages (found via toolchain) — desktop only
 #-------------------------------------------------------------------------------
-
-# WebGPU-distribution — use DAWN backend by default on desktop.
-# Override with -DWEBGPU_BACKEND=WGPU to switch to wgpu-native.
 if(LN_ENABLE_WEBGPU)
+    # Dawn を使う。
+    # -DWEBGPU_BACKEND=WGPU を指定すると、wgpu-nativeに切り替わる…らしい。
     set(WEBGPU_BACKEND "DAWN" CACHE STRING "WebGPU backend implementation")
     add_subdirectory(build/webgpu)
     find_package(glfw3 CONFIG REQUIRED)
@@ -85,6 +77,7 @@ endif()
 if(LUMINO_USE_SLANG)
     find_package(slang CONFIG REQUIRED)
 endif()
+
 #-------------------------------------------------------------------------------
 # Tests (GTest は packages より前に find_package する)
 #-------------------------------------------------------------------------------
@@ -96,7 +89,7 @@ endif()
 #-------------------------------------------------------------------------------
 # Utils
 #-------------------------------------------------------------------------------
-function(setup_c_api_client_configurations TARGET)
+function(ln_setup_c_api_client_configurations TARGET)
     target_link_libraries(${TARGET} PRIVATE LuminoC glfw)
     add_dependencies(${TARGET} LuminoC)
 
@@ -107,6 +100,12 @@ function(setup_c_api_client_configurations TARGET)
 
     if(LUMINO_USE_SLANG)
         target_link_libraries(${TARGET} PRIVATE slang::slang)
+        add_custom_command(
+            TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:slang::slang>
+            $<TARGET_FILE_DIR:${TARGET}>
+        )
     endif()
 
     # LuminoC.dll

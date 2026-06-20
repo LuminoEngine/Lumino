@@ -6,7 +6,7 @@ function(setup_sample_configurations TARGET)
     target_compile_definitions(${TARGET} PRIVATE ASSETS_DIR="${LOCAL_ASSETS_DIR}")
     set_target_properties(${TARGET} PROPERTIES FOLDER "examples")
     target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    setup_c_api_client_configurations(${TARGET})
+    ln_setup_c_api_client_configurations(${TARGET})
 endfunction()
 
 #-------------------------------------------------------------------------------
@@ -14,6 +14,7 @@ endfunction()
 #-------------------------------------------------------------------------------
 add_subdirectory(ClearScreen)
 add_subdirectory(HelloTexture)
+add_subdirectory(HelloSprite)
 add_subdirectory(BatchSprite)
 add_subdirectory(BatchRendering)
 #add_subdirectory(Sprite2D)

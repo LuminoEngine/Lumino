@@ -119,6 +119,87 @@ TEST_F(Test_Graphics, HelloTexture) {
     LNObject_Release(texture);
 }
 
+
+
+
+
+TEST_F(Test_Graphics, SpriteOrder) {
+    LNHandle redTexture = LN_NULL_HANDLE;
+    LNHandle redMaterial = LN_NULL_HANDLE;
+    LNHandle greenTexture = LN_NULL_HANDLE;
+    LNHandle greenMaterial = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Red.png", &redTexture));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Green.png", &greenTexture));
+
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &redMaterial));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &greenMaterial));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(redMaterial, redTexture));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(greenMaterial, greenTexture));
+    LNMaterial_SetBlendMode(redMaterial, LN_BLEND_MODE_ALPHA);
+    LNMaterial_SetBlendMode(greenMaterial, LN_BLEND_MODE_ALPHA);
+
+    LNMaterial_SetDepthTestEnabled(redMaterial, LN_FALSE);
+    LNMaterial_SetDepthTestEnabled(greenMaterial, LN_FALSE);
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f);
+    LNCamera_SetLookAt(camera,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f);
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[0] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[1] = 0.0f;
+    rpDesc.colorAttachments[0].clearColor[2] = 1.0f;
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+    
+    LNMatrix identity = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
+
+    LNRenderer_DrawSprite(
+        renderer, redMaterial, 0,
+        &identity,
+        0.0f, 0.0f,         // offset (sprite position)
+        128.0f, 128.0f,     // size
+        0.5f, 0.5f,         // pivot (center)
+        0.0f, 0.0f, 1.0f, 1.0f, // uv
+        1.0f, 1.0f, 1.0f, 1.0f); // color
+
+    LNRenderer_DrawSprite(
+        renderer, greenMaterial, 0,
+        &identity,
+        40.0f, 0.0f,         // offset (sprite position)
+        128.0f, 128.0f,     // size
+        0.5f, 0.5f,         // pivot (center)
+        0.0f, 0.0f, 1.0f, 1.0f, // uv
+        1.0f, 1.0f, 1.0f, 1.0f); // color
+
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    // Capture and compare
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+
+    ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.SpriteOrder3", data, w, h, TEST_DATA_DIR, true));
+
+    LNObject_Release(camera);
+    LNObject_Release(greenMaterial);
+    LNObject_Release(greenTexture);
+    LNObject_Release(redMaterial);
+    LNObject_Release(redTexture);
+}
+
+
+
 // ステンシルマスクがスプライトに適用できることを検証します。
 // スプライトの左半分は表示され、右半分はマスクされて透明になるはずです。
 TEST_F(Test_Graphics, StencilMask1) {
@@ -718,7 +799,7 @@ TEST_F(Test_Graphics, LoadOpLoadColor) {
    // VisualTest::savePng(TEST_DATA_DIR "/LoadOpLoadColor_actual.png", data, w, h);
 }
 
-// [B案] カラー + デプス + ステンシルすべてに LoadOp::Load を指定する検証。
+// カラー + デプス + ステンシルすべてに LoadOp::Load を指定する検証。
 //
 // 以前はこの組み合わせで Vulkan Validation Error
 //   (VUID-VkAttachmentDescription-format-06700: stencilLoadOp=LOAD なのに
