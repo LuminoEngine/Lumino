@@ -141,6 +141,23 @@ typedef struct LNDepthStencilAttachmentDesc {
 } LNDepthStencilAttachmentDesc;
 
 /**
+ * 同一 zIndex 内での描画順 (二次ソート)。
+ * zIndex 自体は常に主キー (エンジンが指定するレイヤ/レンダーキュー番号) であり、
+ * 本モードはその中での並びだけを決めます。
+ * 距離はカメラ位置からのユークリッド距離ではなくビュー平面からの距離 (ビュー空間 Z) で
+ * 計算されるため、Perspective / Orthographic の両方で正しく機能します。
+ * @note 深度ソートはカメラを指定した RenderPass でのみ有効です。
+ */
+typedef enum LNSortMode {
+    /** 投入順 (描画順 = 呼び出し順)。既定値。ソート方針はアプリ側が制御します。 */
+    LN_SORT_MODE_STABLE = 0,
+    /** 手前→奥 (ビュー平面からの距離が小さい順)。不透明の overdraw 削減向け。 */
+    LN_SORT_MODE_FRONT_TO_BACK = 1,
+    /** 奥→手前 (ビュー平面からの距離が大きい順)。半透明の正しいアルファ合成向け。 */
+    LN_SORT_MODE_BACK_TO_FRONT = 2,
+} LNSortMode;
+
+/**
  * レンダーパスの設定。
  * LNRenderPassDesc_Init で初期化してから使用してください。
  */
@@ -157,6 +174,11 @@ typedef struct LNRenderPassDesc {
      * 文字列は LNRenderer_BeginRenderPass の呼び出し中のみ有効である必要があります。
      */
     const char* shaderPassName;
+    /**
+     * 同一 zIndex 内のスプライト/メッシュの描画順 (デフォルト: LN_SORT_MODE_STABLE = 投入順)。
+     * FRONT_TO_BACK / BACK_TO_FRONT はカメラ指定時のみ有効。
+     */
+    LNSortMode sortMode;
 } LNRenderPassDesc;
 
 //------------------------------------------------------------------------------

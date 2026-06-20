@@ -12,8 +12,8 @@ namespace ln {
 //-----------------------------------------------------------------------------
 
 uint64_t DrawCommand::sortKey() const {
-    // | 63..48 (16bit) | 47 (1bit) | 46..32 (15bit) | 31..0 (32bit)                 |
-    // | zIndex + 32768 | type      | reserved        | Sprite:matHash / SubMesh:seq  |
+    // | 63..48 (16bit) | 47 (1bit) | 46..32 (15bit) | 31..0 (32bit) |
+    // | zIndex + 32768 | type      | reserved        | sequence       |
     //
     // タイプはビット47（下位フィールドの上位）を占めるため、特定のzレベルにあるすべてのスプライト（タイプ=0）は、
     // 同じレベルにあるすべてのサブメッシュ（タイプ=1）よりも前にソートされます。
@@ -23,21 +23,18 @@ uint64_t DrawCommand::sortKey() const {
 
     uint64_t t = (type == DrawCommandType::SubMesh) ? 1ULL : 0ULL;
 
-    // 下位フィールドの意味はタイプビットで分離されるため衝突しない。
-    //   Sprite : マテリアルポインタのハッシュ。同一マテリアルを隣接させ、flushSpriteGroup が
-    //            交互マテリアルでも少ないサブメッシュ数（=少ない draw 数）に束ねられるようにする。
-    //   SubMesh: 投入順 (sequence)。flushSubMeshGroup は個別描画でマテリアル束ねの実利が無く、
-    //            むしろ並べ替えると深度テスト/書き込みを無効化した描画の投入順が壊れるため、
-    //            投入順を厳密に保持する。
-    uint64_t lower;
-    if (type == DrawCommandType::Sprite) {
-        lower =
-            static_cast<uint64_t>(
-                (static_cast<uint64_t>(reinterpret_cast<uintptr_t>(material)) * 2654435761ULL) >> 16) &
-            0xFFFFFFFF;
-    } else {
-        lower = static_cast<uint64_t>(sequence);
-    }
+    // 下位フィールドは Sprite / SubMesh いずれも投入順 (sequence) を使う。
+    //
+    // 以前は Sprite のみマテリアルポインタのハッシュでソートし、同一マテリアルを隣接させて
+    // draw 数を減らす最適化をしていた。しかしこれは同一 zIndex のスプライトの前後関係を
+    // マテリアルのアドレス次第（実質ランダム）で決めてしまい、「後から描いたものが前面に来る」
+    // というペインターズアルゴリズムの期待を壊していた（半透明スプライトでは順序の入れ替え自体が
+    // 合成結果を変えてしまうため不正）。
+    //
+    // 投入順を厳密に保持することで同 z の前後関係が描画順どおりになる。連続する同一マテリアルの
+    // スプライトは flushSpriteGroup 側で 1 サブメッシュに束ねられるため、よくあるケースでは
+    // draw 数は増えない（マテリアルが交互になる時だけサブメッシュが分割される）。
+    uint64_t lower = static_cast<uint64_t>(sequence);
 
     return (z << 48) | (t << 47) | lower;
 }
@@ -130,18 +127,54 @@ Result<std::unique_ptr<BatchProcessor>> BatchProcessor::create(GraphicsContext* 
     return processor;
 }
 
-void BatchProcessor::sortCommands(std::vector<DrawCommand>& commands) {
-    std::stable_sort (commands.begin(), commands.end(),
-        [](const DrawCommand& a, const DrawCommand& b) {
-            return a.sortKey() < b.sortKey();
+void BatchProcessor::sortCommands(std::vector<DrawCommand>& commands, SortMode mode) {
+    if (mode == SortMode::Stable) {
+        // zIndex 主 + type + 投入順。sortKey() に畳み込んだ単調キーで比較する。
+        std::stable_sort(commands.begin(), commands.end(),
+            [](const DrawCommand& a, const DrawCommand& b) {
+                return a.sortKey() < b.sortKey();
+            });
+        return;
+    }
+
+    // 深度モード: zIndex を主キーに残しつつ、同一 zIndex 内をビュー平面からの距離で並べる。
+    // type ビットは使わない (スプライトとサブメッシュを深度順に混在させる必要があるため)。
+    // 距離が等しい場合は投入順 (sequence) で安定化する。
+    const bool frontToBack = (mode == SortMode::FrontToBack);
+    std::stable_sort(commands.begin(), commands.end(),
+        [frontToBack](const DrawCommand& a, const DrawCommand& b) {
+            if (a.zIndex != b.zIndex) return a.zIndex < b.zIndex;
+            if (a.viewDepth != b.viewDepth) {
+                return frontToBack ? (a.viewDepth < b.viewDepth)
+                                   : (a.viewDepth > b.viewDepth);
+            }
+            return a.sequence < b.sequence;
         });
 }
 
-Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* commandBuffer) {
+Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* commandBuffer,
+                                   const Matrix4x4& viewMatrix, SortMode sortMode) {
     auto& commands = commandBuffer->commands();
     if (commands.empty()) return {};
 
-    sortCommands(commands);
+    // 深度モードでは各コマンドのソート基準点をビュー空間へ変換し、ビュー平面からの距離を求める。
+    // 基準点: スプライトはアンカー (transform * offset)、サブメッシュは原点 (transform の平行移動)。
+    // ビュー空間 Z はカメラ前方が負になる RH 系のため、距離 = -viewZ とする
+    // (Perspective/Orthographic いずれでもビュー平面からの距離として正しい)。
+    if (sortMode != SortMode::Stable) {
+        for (auto& cmd : commands) {
+            Vector3 worldPos;
+            if (cmd.type == DrawCommandType::Sprite) {
+                worldPos = cmd.sprite.transform.transformCoord(
+                    Vector3{cmd.sprite.offset.x, cmd.sprite.offset.y, 0.0f});
+            } else {
+                worldPos = cmd.submesh.transform.matrix().transformCoord(Vector3::zero());
+            }
+            cmd.viewDepth = -viewMatrix.transformCoord(worldPos).z;
+        }
+    }
+
+    sortCommands(commands, sortMode);
 
     uint32_t groupStart = 0;
     uint32_t count = static_cast<uint32_t>(commands.size());

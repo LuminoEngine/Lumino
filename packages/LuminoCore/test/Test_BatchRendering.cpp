@@ -98,22 +98,25 @@ TEST_F(Test_SortKey, ZIndexPrimary) {
     EXPECT_LT(a.sortKey(), b.sortKey());
 }
 
-TEST_F(Test_SortKey, MaterialSecondary) {
-    // Same zIndex, different materials - should produce different sort keys
+TEST_F(Test_SortKey, SequenceSecondary) {
+    // 同一 zIndex・同一 type のスプライトは投入順 (sequence) でキーが決まる。
+    // マテリアルのアドレスはキーに影響しない (旧実装のマテリアルハッシュ tiebreak を廃止し、
+    // 「後から描いたものが前面」というペインターズアルゴリズムを保証するため)。
     DrawCommand a{}, b{};
     a.type = DrawCommandType::Sprite;
     b.type = DrawCommandType::Sprite;
     a.zIndex = 0;
     b.zIndex = 0;
-    a.material = fakeMat(0x1000);
-    b.material = fakeMat(0x2000);
+    a.material = fakeMat(0x2000); // a の方がアドレスは大きいが…
+    b.material = fakeMat(0x1000);
+    a.sequence = 0;               // …先に投入された a のキーが小さくなる
+    b.sequence = 1;
 
-    // We don't care about the order, just that same-material commands
-    // get the same key and different materials get different keys.
-    EXPECT_NE(a.sortKey(), b.sortKey());
+    EXPECT_LT(a.sortKey(), b.sortKey());
 
-    // Same material should give same key
+    // マテリアルが違っても sequence が同じならキーは等しい (マテリアルはキーに無関係)。
     DrawCommand c = a;
+    c.material = fakeMat(0x9999);
     EXPECT_EQ(a.sortKey(), c.sortKey());
 }
 
@@ -155,35 +158,38 @@ TEST_F(Test_BatchSort, SortByZIndex) {
     EXPECT_EQ(cmds[2].zIndex, 10);
 }
 
-TEST_F(Test_BatchSort, SameZIndex_GroupByMaterial) {
-    std::vector<DrawCommand> cmds(4);
-    Material* matA = fakeMat(0x1000);
-    Material* matB = fakeMat(0x2000);
+TEST_F(Test_BatchSort, SameZIndex_SpritePreservesSubmissionOrder) {
+    // 同一 zIndex のスプライトはマテリアルで並べ替えず投入順を厳密に保持する。
+    // 半透明スプライトでは「後から描いたものが前面」というペインターズアルゴリズムを
+    // 守る必要があり、マテリアルアドレス順に並べ替えると前後関係が壊れるため。
+    // 連続する同一マテリアルは flushSpriteGroup 側で 1 サブメッシュに束ねられるので、
+    // 投入順を保ってもよくあるケースでは draw 数は増えない。
+    DrawCommandBuffer buf;
+    Material* matA = fakeMat(0x2000);
+    Material* matB = fakeMat(0x1000); // 意図的に matA より低いアドレス
 
-    // Interleaved materials: A, B, A, B
-    for (auto& c : cmds) {
-        c.type = DrawCommandType::Sprite;
-        c.zIndex = 0;
-    }
-    cmds[0].material = matA;
-    cmds[1].material = matB;
-    cmds[2].material = matA;
-    cmds[3].material = matB;
+    // 交互に投入: A, B, A, B
+    buf.drawSprite(matA, 0, {}, {}, {1, 1}, {0.5f, 0.5f}, {}, {1, 1}, Color::white());
+    buf.drawSprite(matB, 0, {}, {}, {1, 1}, {0.5f, 0.5f}, {}, {1, 1}, Color::white());
+    buf.drawSprite(matA, 0, {}, {}, {1, 1}, {0.5f, 0.5f}, {}, {1, 1}, Color::white());
+    buf.drawSprite(matB, 0, {}, {}, {1, 1}, {0.5f, 0.5f}, {}, {1, 1}, Color::white());
 
+    std::vector<DrawCommand> cmds = buf.commands();
     BatchProcessor::sortCommands(cmds);
 
-    // After sort, same materials should be adjacent
-    EXPECT_EQ(cmds[0].material, cmds[1].material);
-    EXPECT_EQ(cmds[2].material, cmds[3].material);
-    EXPECT_NE(cmds[0].material, cmds[2].material);
+    // 投入順 A, B, A, B のまま保持される (マテリアルでグループ化しない)。
+    EXPECT_EQ(cmds[0].material, matA);
+    EXPECT_EQ(cmds[1].material, matB);
+    EXPECT_EQ(cmds[2].material, matA);
+    EXPECT_EQ(cmds[3].material, matB);
 }
 
 TEST_F(Test_BatchSort, SameZIndex_SubMeshPreservesSubmissionOrder) {
     // SubMesh draws at the same zIndex must keep submission order, independent of
     // material address. flushSubMeshGroup draws each submesh individually (no
     // material batching to gain), and reordering would break order-dependent draws
-    // such as depth-test/-write-disabled overdraw. Sprites group by material;
-    // submeshes preserve submission order via the sequence tiebreaker.
+    // such as depth-test/-write-disabled overdraw. Both sprites and submeshes now
+    // preserve submission order via the sequence tiebreaker.
     DrawCommandBuffer buf;
     Material* matA = fakeMat(0x2000);
     Material* matB = fakeMat(0x1000); // intentionally lower address than matA
@@ -198,6 +204,70 @@ TEST_F(Test_BatchSort, SameZIndex_SubMeshPreservesSubmissionOrder) {
 
     EXPECT_EQ(cmds[0].material, matA); // submission order preserved
     EXPECT_EQ(cmds[1].material, matB);
+}
+
+// SortMode::BackToFront: 同一 zIndex 内をビュー平面からの距離が大きい順 (奥→手前) に並べる。
+// viewDepth は flush() がビュー行列から算出するが、ここでは並べ替えロジックの検証のため直接設定する。
+TEST_F(Test_BatchSort, DepthSort_BackToFront) {
+    std::vector<DrawCommand> cmds(3);
+    for (auto& c : cmds) { c.type = DrawCommandType::Sprite; c.zIndex = 0; c.material = fakeMat(0x1000); }
+    cmds[0].sequence = 0; cmds[0].viewDepth = 5.0f;   // 中間
+    cmds[1].sequence = 1; cmds[1].viewDepth = 10.0f;  // 最奥
+    cmds[2].sequence = 2; cmds[2].viewDepth = 1.0f;   // 最手前
+
+    BatchProcessor::sortCommands(cmds, SortMode::BackToFront);
+
+    // 奥 (大きい viewDepth) から先に描く。
+    EXPECT_FLOAT_EQ(cmds[0].viewDepth, 10.0f);
+    EXPECT_FLOAT_EQ(cmds[1].viewDepth, 5.0f);
+    EXPECT_FLOAT_EQ(cmds[2].viewDepth, 1.0f);
+}
+
+// SortMode::FrontToBack: 手前 (小さい viewDepth) から先に描く。
+TEST_F(Test_BatchSort, DepthSort_FrontToBack) {
+    std::vector<DrawCommand> cmds(3);
+    for (auto& c : cmds) { c.type = DrawCommandType::Sprite; c.zIndex = 0; c.material = fakeMat(0x1000); }
+    cmds[0].sequence = 0; cmds[0].viewDepth = 5.0f;
+    cmds[1].sequence = 1; cmds[1].viewDepth = 10.0f;
+    cmds[2].sequence = 2; cmds[2].viewDepth = 1.0f;
+
+    BatchProcessor::sortCommands(cmds, SortMode::FrontToBack);
+
+    EXPECT_FLOAT_EQ(cmds[0].viewDepth, 1.0f);
+    EXPECT_FLOAT_EQ(cmds[1].viewDepth, 5.0f);
+    EXPECT_FLOAT_EQ(cmds[2].viewDepth, 10.0f);
+}
+
+// zIndex は深度モードでも主キー。深度より優先される (エンジン指定のレイヤが常に勝つ)。
+TEST_F(Test_BatchSort, DepthSort_ZIndexDominatesDepth) {
+    std::vector<DrawCommand> cmds(2);
+    for (auto& c : cmds) { c.type = DrawCommandType::Sprite; c.material = fakeMat(0x1000); }
+    // zIndex が小さい方を、たとえ手前 (depth 大) でも先に描く。
+    cmds[0].zIndex = 1; cmds[0].sequence = 0; cmds[0].viewDepth = 100.0f;
+    cmds[1].zIndex = 0; cmds[1].sequence = 1; cmds[1].viewDepth = 0.0f;
+
+    BatchProcessor::sortCommands(cmds, SortMode::BackToFront);
+
+    EXPECT_EQ(cmds[0].zIndex, 0); // zIndex=0 が先 (深度に関わらず)
+    EXPECT_EQ(cmds[1].zIndex, 1);
+}
+
+// 深度が等しい場合は投入順 (sequence) で安定化する。
+TEST_F(Test_BatchSort, DepthSort_EqualDepthKeepsSubmissionOrder) {
+    std::vector<DrawCommand> cmds(3);
+    for (auto& c : cmds) {
+        c.type = DrawCommandType::Sprite; c.zIndex = 0; c.material = fakeMat(0x1000);
+        c.viewDepth = 3.0f; // 全て同じ距離
+    }
+    cmds[0].sequence = 0;
+    cmds[1].sequence = 1;
+    cmds[2].sequence = 2;
+
+    BatchProcessor::sortCommands(cmds, SortMode::BackToFront);
+
+    EXPECT_EQ(cmds[0].sequence, 0u);
+    EXPECT_EQ(cmds[1].sequence, 1u);
+    EXPECT_EQ(cmds[2].sequence, 2u);
 }
 
 //------------------------------------------------------------------------------

@@ -23,8 +23,24 @@ enum class DrawCommandType : uint8_t {
     SubMesh,
 };
 
+// 同一 zIndex 内の二次ソート方法。zIndex 自体は常に主キー (エンジンが指定するレイヤ/
+// レンダーキュー番号) であり、本モードはその中での並びだけを決める。
+//   Stable      : 投入順 (描画順 = 呼び出し順)。ポリシー中立の既定値。
+//   FrontToBack : ビュー平面からの距離が小さい順 (手前→奥)。不透明の overdraw 削減向け。
+//   BackToFront : ビュー平面からの距離が大きい順 (奥→手前)。半透明の正しい合成向け。
+//
+// 距離はカメラ位置からのユークリッド距離ではなくビュー空間 Z (ビュー平面からの距離) を
+// 用いるため、Perspective / Orthographic の両方で正しく機能する。
+enum class SortMode : uint8_t {
+    Stable,
+    FrontToBack,
+    BackToFront,
+};
+
 struct DrawCommand {
-    DrawCommand() : type(DrawCommandType::Sprite), zIndex(0), material(nullptr), sequence(0) {
+    DrawCommand()
+        : type(DrawCommandType::Sprite), zIndex(0), material(nullptr), sequence(0),
+          viewDepth(0.0f) {
         std::memset(&sprite, 0, sizeof(sprite));
     }
     ~DrawCommand() = default;
@@ -34,7 +50,9 @@ struct DrawCommand {
     DrawCommandType type;
     int32_t zIndex;          // user-specified sort priority
     Material* material;  // sort key & draw material
-    uint32_t sequence;   // submission order within the render pass (SubMesh sort tiebreaker)
+    uint32_t sequence;   // submission order within the render pass (sort tiebreaker)
+    float viewDepth;     // ビュー平面からの距離。SortMode::FrontToBack/BackToFront 時に
+                         // flush() が viewMatrix から算出する (Stable 時は未使用)。
 
     // --- Sprite ---
     struct SpriteData {
@@ -154,14 +172,19 @@ public:
     static Result<std::unique_ptr<BatchProcessor>> create(GraphicsContext* ctx);
 
     // Sort, batch, and draw all commands via Renderer::drawMesh().
-    Result<void> flush(Renderer* renderer, DrawCommandBuffer* commandBuffer);
+    // viewMatrix は SortMode::FrontToBack/BackToFront 時にビュー空間 Z を算出するために使う
+    // (Stable 時は無視される)。
+    Result<void> flush(Renderer* renderer, DrawCommandBuffer* commandBuffer,
+                       const Matrix4x4& viewMatrix, SortMode sortMode);
 
     // Rewind the per-frame sprite mesh pool. Call once at the start of each frame
     // so the per-flush buffers are recycled.
     void resetFrame() { m_spritePool.resetFrame(); }
 
-    // Exposed for testing
-    static void sortCommands(std::vector<DrawCommand>& commands);
+    // Exposed for testing. mode に応じて並べ替える。FrontToBack/BackToFront は各コマンドの
+    // viewDepth を読むため、呼び出し前に viewDepth が設定済みである必要がある (flush が設定する)。
+    static void sortCommands(std::vector<DrawCommand>& commands,
+                             SortMode mode = SortMode::Stable);
 
 private:
     BatchProcessor() = default;

@@ -93,7 +93,8 @@ public:
         rhi::TextureView* colorTarget,
         rhi::TextureView* depthTarget,
         const Camera& camera,
-        const Color& clearColor = Color{0, 0, 0, 1});
+        const Color& clearColor = Color{0, 0, 0, 1},
+        SortMode sortMode = SortMode::Stable);
 
     /**
      * Begin a render pass without a camera (e.g. post-processing passes).
@@ -114,7 +115,8 @@ public:
      *                        マテリアルがこの名前のパスを持たない場合、その描画はスキップされます。
      */
     void beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera,
-                         const std::string& shaderPassName = {});
+                         const std::string& shaderPassName = {},
+                         SortMode sortMode = SortMode::Stable);
 
     /**
      * Begin a render pass with a fully specified RenderPassDesc, without a camera.
@@ -310,6 +312,13 @@ private:
 
     /** Set by beginRenderPass(camera, ...) based on Camera::is2D(). */
     bool m_currentCamera2D = false;
+
+    /** 現在のパスのビュー行列。深度ソート (SortMode::FrontToBack/BackToFront) で使用。
+     *  カメラ無しパスでは単位行列。 */
+    Matrix4x4 m_currentViewMatrix = Matrix4x4::identity();
+
+    /** 現在のパスの二次ソート方法。beginRenderPass(camera, ...) で指定。既定は Stable。 */
+    SortMode m_currentSortMode = SortMode::Stable;
 
     /** Flush batched commands and clear the command buffer. */
     Result<void> flushBatch();

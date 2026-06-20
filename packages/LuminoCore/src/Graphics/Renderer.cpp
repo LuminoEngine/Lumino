@@ -163,7 +163,8 @@ void Renderer::beginRenderPass(
     rhi::TextureView* colorTarget,
     rhi::TextureView* depthTarget,
     const Camera& camera,
-    const Color& clearColor) {
+    const Color& clearColor,
+    SortMode sortMode) {
 
     // Allocate view UBO from the per-frame allocator and upload camera data.
     auto viewAlloc = m_viewAllocator->allocate();
@@ -197,6 +198,8 @@ void Renderer::beginRenderPass(
 
     beginRenderPass(colorTarget, depthTarget, clearColor);
     m_currentCamera2D = camera.is2D();
+    m_currentViewMatrix = camera.viewMatrix();
+    m_currentSortMode = sortMode;
     setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
@@ -238,7 +241,7 @@ void Renderer::beginRenderPass(
 }
 
 void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera,
-                                const std::string& shaderPassName) {
+                                const std::string& shaderPassName, SortMode sortMode) {
     m_currentShaderPassName = shaderPassName.empty() ? std::string("Forward") : shaderPassName;
     // Allocate view UBO from the per-frame allocator and upload camera data.
     auto viewAlloc = m_viewAllocator->allocate();
@@ -272,6 +275,8 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& 
 
     beginRenderPass(rpDesc, m_currentShaderPassName);
     m_currentCamera2D = camera.is2D();
+    m_currentViewMatrix = camera.viewMatrix();
+    m_currentSortMode = sortMode;
     setPassBindGroup(static_cast<uint32_t>(m_viewSetIndex), viewAlloc.bindGroup, viewAlloc.dynamicOffset, 1);
 }
 
@@ -304,6 +309,10 @@ void Renderer::endRenderPass() {
     m_currentPass = nullptr;
     m_currentColorTarget = nullptr;
     m_currentCamera2D = false;
+    // 次のパスへソート状態が漏れないようリセットする。カメラ付き beginRenderPass が
+    // begin 時に再設定する。カメラ無しパスは Stable のまま。
+    m_currentSortMode = SortMode::Stable;
+    m_currentViewMatrix = Matrix4x4::identity();
 }
 
 void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
@@ -393,7 +402,8 @@ void Renderer::drawSprite(Material* material, int32_t zIndex,
 
 Result<void> Renderer::flushBatch() {
     if (m_batchProcessor && !m_commandBuffer.commands().empty()) {
-        auto result = m_batchProcessor->flush(this, &m_commandBuffer);
+        auto result = m_batchProcessor->flush(this, &m_commandBuffer,
+                                              m_currentViewMatrix, m_currentSortMode);
         m_commandBuffer.clear();
         return result;
     }
@@ -463,6 +473,14 @@ Result<void> Renderer::drawSubmesh(
     key.blendState          = resolveBlendState(mat->blendMode());
     key.depthTestEnabled    = mat->depthTestEnabled();
     key.depthWriteEnabled   = mat->depthWriteEnabled();
+    // 半透明ブレンドのマテリアルは深度を書き込まない。
+    // テクスチャの透明部分を含む矩形全体が深度を書き込むと、同 zIndex の後続スプライトが
+    // 深度テスト (Less) で弾かれ、円が矩形の輪郭で「見切れ」る不具合が起きる。
+    // 半透明の前後関係は描画順 (ペインターズアルゴリズム, sortKey の sequence) で解決するため、
+    // 透明矩形が深度バッファを上書きしないようにする。
+    if (mat->blendMode() != BlendMode::Normal) {
+        key.depthWriteEnabled = false;
+    }
     // When a stencil mask is active, enable stencil test to restrict drawing to masked area.
     if (m_stencilRef > 0) {
         key.stencilTestEnabled = true;

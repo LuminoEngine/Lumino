@@ -128,8 +128,8 @@ TEST_F(Test_Graphics, SpriteOrder) {
     LNHandle redMaterial = LN_NULL_HANDLE;
     LNHandle greenTexture = LN_NULL_HANDLE;
     LNHandle greenMaterial = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Red.png", &redTexture));
-    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Green.png", &greenTexture));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/RedMargined.png", &redTexture));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/GreenMargined.png", &greenTexture));
 
     ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &redMaterial));
     ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &greenMaterial));
@@ -138,8 +138,9 @@ TEST_F(Test_Graphics, SpriteOrder) {
     LNMaterial_SetBlendMode(redMaterial, LN_BLEND_MODE_ALPHA);
     LNMaterial_SetBlendMode(greenMaterial, LN_BLEND_MODE_ALPHA);
 
-    LNMaterial_SetDepthTestEnabled(redMaterial, LN_FALSE);
-    LNMaterial_SetDepthTestEnabled(greenMaterial, LN_FALSE);
+    // 深度テストは既定 (有効) のまま。半透明ブレンドのマテリアルは深度を書き込まない
+    // ようになったため (Renderer::drawSubmesh)、同 zIndex で後から描いた緑が
+    // 手前のスプライトの透明矩形に見切られることなく前面に描画される。
 
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
@@ -189,13 +190,69 @@ TEST_F(Test_Graphics, SpriteOrder) {
     ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
     ASSERT_NE(nullptr, data);
 
-    ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.SpriteOrder3", data, w, h, TEST_DATA_DIR, true));
+    ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.SpriteOrder", data, w, h, TEST_DATA_DIR));
 
     LNObject_Release(camera);
     LNObject_Release(greenMaterial);
     LNObject_Release(greenTexture);
     LNObject_Release(redMaterial);
     LNObject_Release(redTexture);
+}
+
+// SortMode (BACK_TO_FRONT) がワールド Z に基づいて前後を解決することを検証する。
+// 手前 (緑, z=+0.5) を先に、奥 (赤, z=-0.5) を後に投入する。
+// 投入順 (Stable) なら後から描いた赤が上になるはずだが、BACK_TO_FRONT では
+// 奥→手前へ並べ替えられ、手前の緑が上に描画される。中央ピクセルが緑になることを確認する。
+TEST_F(Test_Graphics, SpriteDepthSortBackToFront) {
+    LNHandle greenMat = LN_NULL_HANDLE, redMat = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &greenMat));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &redMat));
+    LNMaterial_SetBlendMode(greenMat, LN_BLEND_MODE_ALPHA);
+    LNMaterial_SetBlendMode(redMat, LN_BLEND_MODE_ALPHA);
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f);
+    LNCamera_SetLookAt(camera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[2] = 1.0f; // 青クリア
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    rpDesc.sortMode = LN_SORT_MODE_BACK_TO_FRONT;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+
+    LNMatrix front = translationMatrix(0.0f, 0.0f,  0.5f); // カメラ(z=1)に近い = 手前
+    LNMatrix back  = translationMatrix(0.0f, 0.0f, -0.5f); // 遠い = 奥
+
+    // 手前 (緑) を先に投入。
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, greenMat, 0, &front, 0.0f, 0.0f, 100.0f, 100.0f, 0.5f, 0.5f,
+        0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f));
+    // 奥 (赤) を後に投入。
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, redMat, 0, &back, 0.0f, 0.0f, 100.0f, 100.0f, 0.5f, 0.5f,
+        0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f));
+
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    const uint8_t* px = data + (static_cast<size_t>(h / 2) * w + w / 2) * 4;
+    // 手前の緑が前面に並べ替えられている → 中央は緑 (G 高, R 低)。
+    EXPECT_GT(px[1], 160) << "中央が緑ではありません。BACK_TO_FRONT の深度ソートが効いていない可能性があります。RGBA=("
+                          << (int)px[0] << "," << (int)px[1] << "," << (int)px[2] << ")";
+    EXPECT_LT(px[0], 96);
+
+    LNObject_Release(camera);
+    LNObject_Release(redMat);
+    LNObject_Release(greenMat);
 }
 
 

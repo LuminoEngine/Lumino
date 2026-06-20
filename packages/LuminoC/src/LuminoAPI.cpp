@@ -152,6 +152,15 @@ ln::rhi::LoadOp toRhiLoadOp(LNLoadOp op) {
     }
 }
 
+ln::SortMode toLnSortMode(LNSortMode mode) {
+    switch (mode) {
+        case LN_SORT_MODE_FRONT_TO_BACK: return ln::SortMode::FrontToBack;
+        case LN_SORT_MODE_BACK_TO_FRONT: return ln::SortMode::BackToFront;
+        case LN_SORT_MODE_STABLE:
+        default:                         return ln::SortMode::Stable;
+    }
+}
+
 
 
 } // anonymous namespace
@@ -1136,8 +1145,9 @@ LNResult LNRenderer_BeginRenderPass(
     if (camera != LN_NULL_HANDLE) {
         auto* camObj = resolveObject<CameraObject>(camera);
         if (!camObj) return LN_ERROR_INVALID_HANDLE;
-        ren->beginRenderPass(rpDesc, camObj->camera, shaderPassName);
+        ren->beginRenderPass(rpDesc, camObj->camera, shaderPassName, toLnSortMode(desc->sortMode));
     } else {
+        // カメラ無しパスは深度ソートできないため sortMode は無視 (Stable のまま)。
         ren->beginRenderPass(rpDesc, shaderPassName);
     }
     return LN_OK;
@@ -1516,7 +1526,9 @@ LNResult LNBatchProcessor_Flush(
     auto* cmdObj = resolveObject<DrawCommandBufferObject>(commandBuffer);
     if (!cmdObj) return LN_ERROR_INVALID_HANDLE;
 
-    auto result = bpObj->processor->flush(ren, &cmdObj->buffer);
+    // 低レベルの手動 flush API。カメラ/ソート方針を持たないため Stable (投入順) で処理する。
+    auto result = bpObj->processor->flush(
+        ren, &cmdObj->buffer, ln::Matrix4x4::identity(), ln::SortMode::Stable);
     if (!result) return LN_ERROR_UNKNOWN;
 
     return LN_OK;
