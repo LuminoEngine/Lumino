@@ -1151,6 +1151,24 @@ extern LUMINO_API LNResult LNDebug_Print(
     LNHandle graphicsContext,
     const char* str);
 
+/**
+ * 指定した公開構造体の sizeof (バイト数) を返します。
+ * C API と各言語バインディング間の構造体レイアウト同期を実行時に検証するための
+ * デバッグ用関数です。ランタイムの初期化は不要です。
+ *
+ * 構造体サイズはポインタ幅などプラットフォームによって異なります
+ * (例: LNRenderPassDesc は const char* を含むため wasm32 と x64 で異なる)。
+ * このため、バインディング側は自身が想定する定数値をハードコードで比較するのではなく、
+ * 実行中のバイナリに本関数で問い合わせた値と照合してください。
+ *
+ * @param[in]  structName 構造体名 (lumino.h の typedef 名。例: "LNRenderPassDesc")
+ * @param[out] outSize    sizeof の結果 (バイト数)
+ * @return 成功時は LN_OK。未知の構造体名の場合は LN_ERROR_INVALID_ARGUMENT。
+ */
+extern LUMINO_API LNResult LNDebug_GetStructSize(
+    const char* structName,
+    uint32_t* outSize);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

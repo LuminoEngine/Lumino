@@ -509,6 +509,76 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
 // LNDebug
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+// ABI レイアウト同期の表明 (wasm32)
+//
+// 下記の構造体サイズは packages/luminojs/src/types.ts の SIZEOF_* 定数と一致して
+// いなければなりません。lumino.h の構造体を拡張・変更した場合は、必ず TS 側の
+// SIZEOF_* 定数とシリアライズ処理 (Renderer.ts の _serializeDesc 等) も更新して
+// ください。同期崩れはヒープ外読み書き (未定義動作) を引き起こします。
+//
+// 実行時にも LNDebug_GetStructSize と Runtime.initialize() の照合で検証されますが、
+// この static_assert はビルド時に wasm32 の期待値をロックします。
+// 構造体サイズはポインタ幅に依存し、const char* を含む LNRenderPassDesc は x64
+// デスクトップでは異なるサイズになるため、wasm32 (__EMSCRIPTEN__) でのみ表明します。
+//------------------------------------------------------------------------------
+#ifdef __EMSCRIPTEN__
+static_assert(sizeof(LNInstanceInitializeSettings) == 8,
+    "LNInstanceInitializeSettings のレイアウトが変わりました。types.ts の SIZEOF_INSTANCE_INIT_SETTINGS を更新してください");
+static_assert(sizeof(LNColorAttachmentDesc) == 24,
+    "LNColorAttachmentDesc のレイアウトが変わりました。types.ts の SIZEOF_COLOR_ATTACHMENT_DESC を更新してください");
+static_assert(sizeof(LNDepthStencilAttachmentDesc) == 20,
+    "LNDepthStencilAttachmentDesc のレイアウトが変わりました。types.ts の SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC を更新してください");
+static_assert(sizeof(LNRenderPassDesc) == 224,
+    "LNRenderPassDesc のレイアウトが変わりました。types.ts の SIZEOF_RENDER_PASS_DESC と Renderer.ts の _serializeDesc を更新してください");
+static_assert(sizeof(LNVertex) == 64,
+    "LNVertex のレイアウトが変わりました。types.ts の SIZEOF_VERTEX を更新してください");
+static_assert(sizeof(LNSubMesh) == 12,
+    "LNSubMesh のレイアウトが変わりました。types.ts の SIZEOF_SUBMESH を更新してください");
+static_assert(sizeof(LNTransform) == 40,
+    "LNTransform のレイアウトが変わりました。types.ts の SIZEOF_TRANSFORM を更新してください");
+static_assert(sizeof(LNMatrix) == 64,
+    "LNMatrix のレイアウトが変わりました。types.ts の SIZEOF_MATRIX を更新してください");
+static_assert(sizeof(LNSpriteCommand) == 60,
+    "LNSpriteCommand のレイアウトが変わりました。バインディング側のシリアライズ処理を更新してください");
+static_assert(sizeof(LNGraphicsProfiler) == 12,
+    "LNGraphicsProfiler のレイアウトが変わりました。バインディング側の読み取り処理を更新してください");
+#endif // __EMSCRIPTEN__
+
+// LNDebug_GetStructSize はランタイムに依存しない純粋関数のため、wasm32 でも
+// エクスポートされるように __EMSCRIPTEN__ ガードの外に置きます。
+LNResult LNDebug_GetStructSize(const char* structName, uint32_t* outSize) {
+    if (!structName || !outSize) return LN_ERROR_INVALID_ARGUMENT;
+
+    // 構造体名 -> sizeof の対応表。lumino.h に公開構造体を追加したら、ここと
+    // types.ts の SIZEOF_* の双方に追加してください。
+    struct StructSizeEntry {
+        const char* name;
+        uint32_t    size;
+    };
+    static const StructSizeEntry table[] = {
+        { "LNInstanceInitializeSettings", static_cast<uint32_t>(sizeof(LNInstanceInitializeSettings)) },
+        { "LNColorAttachmentDesc",        static_cast<uint32_t>(sizeof(LNColorAttachmentDesc)) },
+        { "LNDepthStencilAttachmentDesc", static_cast<uint32_t>(sizeof(LNDepthStencilAttachmentDesc)) },
+        { "LNRenderPassDesc",             static_cast<uint32_t>(sizeof(LNRenderPassDesc)) },
+        { "LNVertex",                     static_cast<uint32_t>(sizeof(LNVertex)) },
+        { "LNSubMesh",                    static_cast<uint32_t>(sizeof(LNSubMesh)) },
+        { "LNTransform",                  static_cast<uint32_t>(sizeof(LNTransform)) },
+        { "LNMatrix",                     static_cast<uint32_t>(sizeof(LNMatrix)) },
+        { "LNSpriteCommand",              static_cast<uint32_t>(sizeof(LNSpriteCommand)) },
+        { "LNGraphicsProfiler",           static_cast<uint32_t>(sizeof(LNGraphicsProfiler)) },
+    };
+
+    for (const auto& entry : table) {
+        if (std::strcmp(structName, entry.name) == 0) {
+            *outSize = entry.size;
+            return LN_OK;
+        }
+    }
+    // 未知の構造体名。引数が不正とみなす。
+    return LN_ERROR_INVALID_ARGUMENT;
+}
+
 #ifndef __EMSCRIPTEN__
 LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     if (!str) return LN_ERROR_INVALID_ARGUMENT;

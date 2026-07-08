@@ -4,6 +4,13 @@ import {
     type Handle,
     type RuntimeOptions,
     SIZEOF_INSTANCE_INIT_SETTINGS,
+    SIZEOF_COLOR_ATTACHMENT_DESC,
+    SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC,
+    SIZEOF_RENDER_PASS_DESC,
+    SIZEOF_VERTEX,
+    SIZEOF_SUBMESH,
+    SIZEOF_TRANSFORM,
+    SIZEOF_MATRIX,
 } from "./types";
 
 //------------------------------------------------------------------------------
@@ -95,6 +102,11 @@ export class Runtime {
         this._bindAPI();
 
         console.log("[Lumino] Build:", Runtime.getBuildTimestamp());
+
+        // C API と TS 側の構造体レイアウト同期を検証する。
+        // 不一致があれば以降のシリアライズがヒープ外読み書き (未定義動作) を
+        // 起こすため、ここで即座に例外を投げて早期に検出する。
+        this._verifyStructLayouts();
 
         // Initialize Lumino graphics instance.
         const m = this.module;
@@ -200,6 +212,9 @@ export class Runtime {
         API.LNHelloTest = cw("LNHelloTest", "number", ["number"]);
         API.LNBuildInfo_GetBuildTimestamp = cw("LNBuildInfo_GetBuildTimestamp", "number", []);
 
+        // Debug (ABI レイアウト検証)
+        API.LNDebug_GetStructSize = cw("LNDebug_GetStructSize", "number", ["string", "number"]);
+
         // Instance
         API.LNInstance_Initialize = cw("LNInstance_Initialize", "number", ["number"], { async: true });
         API.LNInstance_Terminate  = cw("LNInstance_Terminate",  null,     [],         { async: true });
@@ -258,5 +273,60 @@ export class Runtime {
         API.LNCamera_SetOrthographic2D = cw("LNCamera_SetOrthographic2D", "number", ["number", "number", "number", "number", "number", "number", "number"]);
         API.LNCamera_SetLookAt      = cw("LNCamera_SetLookAt",      "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]);
         API.LNCamera_SetMatrices    = cw("LNCamera_SetMatrices",    "number", ["number", "number", "number", "number"]);
+    }
+
+    //--------------------------------------------------------------------------
+    // Private: ABI レイアウト検証
+    //--------------------------------------------------------------------------
+
+    /**
+     * 実行中の WASM バイナリに問い合わせた構造体サイズと、types.ts の SIZEOF_*
+     * 定数を照合する。構造体サイズはプラットフォーム (ポインタ幅) で異なるため、
+     * 定数値をハードコードで比較するのではなく、常に実バイナリへ問い合わせる。
+     *
+     * 不一致は lumino.h と types.ts のレイアウト同期崩れを意味し、シリアライズ時の
+     * ヒープ外読み書き (未定義動作) につながるため、初期化時に即例外とする。
+     */
+    private static _verifyStructLayouts(): void {
+        // [構造体名, TS 側が想定するサイズ]。types.ts の SIZEOF_* を全て網羅する。
+        const expected: ReadonlyArray<readonly [name: string, size: number]> = [
+            ["LNInstanceInitializeSettings", SIZEOF_INSTANCE_INIT_SETTINGS],
+            ["LNColorAttachmentDesc",        SIZEOF_COLOR_ATTACHMENT_DESC],
+            ["LNDepthStencilAttachmentDesc", SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC],
+            ["LNRenderPassDesc",             SIZEOF_RENDER_PASS_DESC],
+            ["LNVertex",                     SIZEOF_VERTEX],
+            ["LNSubMesh",                    SIZEOF_SUBMESH],
+            ["LNTransform",                  SIZEOF_TRANSFORM],
+            ["LNMatrix",                     SIZEOF_MATRIX],
+        ];
+
+        const getStructSize = API.LNDebug_GetStructSize as
+            (name: string, outPtr: number) => number;
+
+        const mismatches: string[] = [];
+        for (const [name, tsSize] of expected) {
+            const [ptr] = this.getReturnPointerInfo();
+            const rc = getStructSize(name, ptr);
+            if (rc !== Result.OK) {
+                // WASM が構造体名を認識しない = lumino.h への登録漏れ。
+                throw new Error(
+                    `ABI レイアウト検証に失敗しました: WASM が構造体 "${name}" を認識しません ` +
+                    `(rc=${rc})。LuminoAPI.cpp の LNDebug_GetStructSize に登録されているか確認してください。`);
+            }
+            // WASM メモリ成長に備え、呼び出し後に view を取り直す。
+            const [, view] = this.getReturnPointerInfo();
+            const wasmSize = view[0];
+            if (wasmSize !== tsSize) {
+                mismatches.push(`${name}: types.ts=${tsSize} bytes, WASM=${wasmSize} bytes`);
+            }
+        }
+
+        if (mismatches.length > 0) {
+            throw new Error(
+                "ABI レイアウト不整合を検出しました。lumino.h の構造体レイアウトと " +
+                "packages/luminojs/src/types.ts の SIZEOF_* 定数が一致していません:\n" +
+                mismatches.map((m) => "  - " + m).join("\n") +
+                "\ntypes.ts の SIZEOF_* とシリアライズ処理 (Renderer.ts の _serializeDesc 等) を更新してください。");
+        }
     }
 }
