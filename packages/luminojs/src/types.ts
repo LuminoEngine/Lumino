@@ -35,6 +35,23 @@ export enum LoadOp {
     DontCare = 2,
 }
 
+/**
+ * 同一 zIndex 内での描画順 (二次ソート)。matches C `LNSortMode`。
+ * zIndex 自体は常に主キー (エンジンが指定するレイヤ/レンダーキュー番号) であり、
+ * 本モードはその中での並びだけを決めます。
+ * 距離はカメラ位置からのユークリッド距離ではなくビュー平面からの距離 (ビュー空間 Z) で
+ * 計算されるため、Perspective / Orthographic の両方で正しく機能します。
+ * @note 深度ソートはカメラを指定した RenderPass でのみ有効です。
+ */
+export enum SortMode {
+    /** 投入順 (描画順 = 呼び出し順)。既定値。ソート方針はアプリ側が制御します。 */
+    Stable = 0,
+    /** 手前→奥 (ビュー平面からの距離が小さい順)。不透明の overdraw 削減向け。 */
+    FrontToBack = 1,
+    /** 奥→手前 (ビュー平面からの距離が大きい順)。半透明の正しいアルファ合成向け。 */
+    BackToFront = 2,
+}
+
 /** Blend mode (matches C LNBlendMode). 合成方法。 */
 export enum BlendMode {
     /** 通常 */
@@ -130,6 +147,11 @@ export interface RenderPassDesc {
      * 代表的なパス名: "Forward", "GBuffer", "Shadow" など。
      */
     shaderPassName?: string;
+    /**
+     * 同一 zIndex 内のスプライト/メッシュの描画順 (デフォルト: `SortMode.Stable` = 投入順)。
+     * `FrontToBack` / `BackToFront` はカメラ指定時のみ有効。
+     */
+    sortMode?: SortMode;
 }
 
 /** Options for `Runtime.initialize`. */
@@ -158,11 +180,12 @@ export const SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC = 20;
 //         depthLoadOp(u32,12) stencilLoadOp(u32,16)
 
 /** Byte size of `LNRenderPassDesc` in wasm memory. */
-export const SIZEOF_RENDER_PASS_DESC = 220;
+export const SIZEOF_RENDER_PASS_DESC = 224;
 // Layout: colorAttachmentCount(u32,0)
 //         colorAttachments[8](24*8=192, offset 4)
 //         depthStencil(20, offset 196)
 //         shaderPassName(ptr,216)
+//         sortMode(u32,220)
 
 /** Byte size of `LNInstanceInitializeSettings` in wasm memory. */
 export const SIZEOF_INSTANCE_INIT_SETTINGS = 8;

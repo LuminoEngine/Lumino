@@ -18,7 +18,7 @@ import {
 } from "./types";
 
 export class Renderer extends LuminoObject {
-    // LNRenderPassDesc 用の事前確保 WASM バッファ (220 バイト)。
+    // LNRenderPassDesc 用の事前確保 WASM バッファ (224 バイト)。
     // 初回使用時に遅延生成し、Renderer が dispose されるときに解放する。
     private _descPtr = 0;
     private _descView: DataView | null = null;
@@ -292,7 +292,7 @@ export class Renderer extends LuminoObject {
     /**
      * `RenderPassDesc` を WASM 線形メモリに書き込み、そのポインタを返す。
      *
-     * C レイアウト (wasm32, 4 バイトアライン、合計 216 バイト):
+     * C レイアウト (wasm32, 4 バイトアライン、合計 224 バイト):
      * ```
      * offset 0:   uint32_t colorAttachmentCount
      * offset 4:   LNColorAttachmentDesc colorAttachments[8]  (各 24 バイト)
@@ -306,6 +306,8 @@ export class Renderer extends LuminoObject {
      *     +8  uint32_t clearStencil
      *     +12 uint32_t depthLoadOp
      *     +16 uint32_t stencilLoadOp
+     * offset 216: const char* shaderPassName  (ポインタ, 4 バイト)
+     * offset 220: LNSortMode sortMode         (uint32_t, 4 バイト)
      * ```
      */
     private _serializeDesc(desc: RenderPassDesc): number {
@@ -356,6 +358,9 @@ export class Renderer extends LuminoObject {
             v.setUint32(216, 0, true);
             this._lastShaderPassNamePtr = 0;
         }
+
+        // --- sortMode (offset 220) ---
+        v.setUint32(220, desc.sortMode ?? 0, true);
 
         return this._descPtr;
     }

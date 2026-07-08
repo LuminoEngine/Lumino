@@ -13,6 +13,7 @@ export {
     Result,
     GraphicsBackend,
     LoadOp,
+    SortMode,
     TextureFormat,
     BlendMode,
     CullMode,
