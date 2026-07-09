@@ -422,7 +422,7 @@ TEST_F(Test_Graphics, TwoSprites) {
     ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
     ASSERT_NE(nullptr, data);
 
-    ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.TwoSprites", data, w, h, TEST_DATA_DIR, true));
+    ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.TwoSprites", data, w, h, TEST_DATA_DIR));
 
     LNObject_Release(camera);
     LNObject_Release(mat2);
