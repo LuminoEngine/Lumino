@@ -164,6 +164,22 @@ export interface RenderPassDesc {
     sortMode?: SortMode;
 }
 
+/**
+ * `Runtime.decodeImage` のデコード結果。
+ * GPU 非依存の純 CPU 経路 (stb_image) でデコードされた RGBA8 画像です。
+ */
+export interface DecodedImage {
+    /** 画像の幅 (ピクセル)。 */
+    width: number;
+    /** 画像の高さ (ピクセル)。 */
+    height: number;
+    /**
+     * RGBA8 ピクセル列 (長さ = width * height * 4)。
+     * WASM ヒープからコピー済みの JS 所有バッファです。
+     */
+    pixels: Uint8Array;
+}
+
 /** Options for `Runtime.initialize`. */
 export interface RuntimeOptions {
     /** Path (or URL) to `LuminoC.wasm`. Forwarded to Emscripten `locateFile`. */

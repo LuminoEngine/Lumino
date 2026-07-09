@@ -1,0 +1,194 @@
+// luminojs WASM スモークテスト (改善案 #12)。
+//
+// GoogleTest はすべてデスクトップ (Vulkan) ビルドを検証しており、luminojs が実際に
+// ロードする WASM バイナリ (LuminoC.wasm) を検証する自動テストが存在しなかった。
+// 本テストは「ブラウザが実際にロードする経路」で WASM を読み込み、GPU に依存しない
+// (もしくは WebGPU デバイス初期化までで完結する) API の疎通を検証する。
+//
+// 採用方式: Playwright + フル Chromium (channel: "chromium")。
+//  - LuminoC.mjs は -sENVIRONMENT=web でビルドされており、素の Node では
+//    "not compiled for this environment" で instantiate に失敗する。
+//  - Runtime.initialize() は内部で LNInstance_Initialize -> WebGPU デバイス生成を
+//    行うため WebGPU が必須。Node には WebGPU が無いが、フル Chromium なら
+//    (ハードウェア、もしくは --enable-unsafe-swiftshader によるソフトウェア実装で)
+//    WebGPU デバイスを生成できる。
+//
+// 実行前提はこのディレクトリの README.md を参照。
+
+import { test, expect } from "@playwright/test";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { startStaticServer } from "./static-server.mjs";
+import { makePng } from "./make-png.mjs";
+
+// このファイルは test/smoke/ にあるため、../../ が luminojs パッケージルート。
+const packageRoot = path.resolve(fileURLToPath(new URL("../../", import.meta.url)));
+
+// 既知のピクセル値を持つ 2x2 PNG。上から下・左から右の RGBA8。
+//   (0,0)=赤  (1,0)=緑
+//   (0,1)=青  (1,1)=白
+const TEST_PNG = makePng(
+    2,
+    2,
+    Buffer.from([
+        255, 0, 0, 255, /**/ 0, 255, 0, 255,
+        0, 0, 255, 255, /**/ 255, 255, 255, 255,
+    ]),
+);
+
+// WebGPU が使えない環境で initialize (WebGPU 必須) の検証をどう扱うかのフラグ。
+//   false (既定): skip しない。WebGPU が使えない環境ではこのテストは「失敗」する。
+//                 -> どの環境で WebGPU が使える/使えないかに気づくための設定。
+//   true        : WebGPU アダプタが取得できない環境では initialize の検証を自動 skip する。
+//                 -> GPU 無しの CI 等で GPU 非依存の 4 項目だけを回したいときに切り替える。
+// この定数を書き換えるだけで ON/OFF を切り替えられる。
+// 一時的に切り替えたい場合は環境変数 LUMINO_SMOKE_SKIP_NO_WEBGPU=1 でも true にできる。
+const SKIP_INITIALIZE_WHEN_NO_WEBGPU =
+    false || process.env.LUMINO_SMOKE_SKIP_NO_WEBGPU === "1";
+
+// beforeAll で WASM を一度だけロード・初期化し、各 API の結果をここに集約する。
+// こうすることで WASM ロード (-O0 -g3 のため数秒かかる) を 1 回に抑えつつ、
+// 各検証項目を独立した test() として明快に表現できる。
+let result;
+let server;
+
+test.beforeAll(async ({ browser }) => {
+    server = await startStaticServer(packageRoot);
+
+    const page = await browser.newPage();
+    // ブラウザ側のログを Node 側へ中継 (失敗時の診断用)。
+    page.on("console", (msg) => console.log(`[browser:${msg.type()}]`, msg.text()));
+    page.on("pageerror", (err) => console.log("[browser:pageerror]", err.message));
+
+    await page.goto(server.baseURL + "/");
+
+    result = await page.evaluate(async ({ pngBytes }) => {
+        const res = {
+            moduleLoaded: false,
+            loadError: null,
+            webgpuAvailable: false,
+            initialize: {},
+            helloTest: {},
+            buildTimestamp: {},
+            decodeImage: {},
+        };
+
+        // WebGPU アダプタの有無を先に調べる (skip 判定に使う)。
+        // これは「WebGPU が使えるか」の素の指標で、initialize の成否とは分けて扱う。
+        // (アダプタはあるのに initialize が落ちる = 実装バグは skip させず検出したいため)。
+        try {
+            res.webgpuAvailable =
+                "gpu" in navigator && !!(await navigator.gpu.requestAdapter());
+        } catch {
+            res.webgpuAvailable = false;
+        }
+
+        let Runtime;
+        try {
+            ({ Runtime } = await import(location.origin + "/lib/luminojs.mjs"));
+            res.moduleLoaded = true;
+        } catch (e) {
+            res.loadError = String(e && e.stack ? e.stack : e);
+            return res;
+        }
+
+        // 1. Runtime.initialize()
+        //    = WASM ロード + 全 C-API バインド + 構造体レイアウト照合 (#10) +
+        //      LNInstance_Initialize (WebGPU デバイス生成)。
+        //    構造体サイズ不一致があれば _verifyStructLayouts が例外を投げるため、
+        //    initialize が成功すること自体が #10 の照合成功を意味する。
+        try {
+            await Runtime.initialize();
+            res.initialize = { ok: true, initialized: Runtime.initialized };
+        } catch (e) {
+            res.initialize = { ok: false, error: String(e && e.message ? e.message : e) };
+        }
+
+        // 2. LNHelloTest(42) == 42。
+        //    公開ラッパは無いが、Runtime.module 経由で実バイナリのエクスポートを直接叩く。
+        try {
+            const hello = Runtime.module.cwrap("LNHelloTest", "number", ["number"]);
+            res.helloTest = { ok: true, value: hello(42) };
+        } catch (e) {
+            res.helloTest = { ok: false, error: String(e && e.message ? e.message : e) };
+        }
+
+        // 3. getBuildTimestamp() が空でない文字列を返す。
+        try {
+            const ts = Runtime.getBuildTimestamp();
+            res.buildTimestamp = { ok: true, value: ts };
+        } catch (e) {
+            res.buildTimestamp = { ok: false, error: String(e && e.message ? e.message : e) };
+        }
+
+        // 4. 画像デコード (GPU 非依存の純 CPU 経路)。
+        try {
+            const decoded = Runtime.decodeImage(new Uint8Array(pngBytes));
+            res.decodeImage = {
+                ok: true,
+                width: decoded.width,
+                height: decoded.height,
+                length: decoded.pixels.length,
+                firstPixel: Array.from(decoded.pixels.slice(0, 4)),
+            };
+        } catch (e) {
+            res.decodeImage = { ok: false, error: String(e && e.message ? e.message : e) };
+        }
+
+        return res;
+    }, { pngBytes: Array.from(TEST_PNG) });
+
+    await page.close();
+});
+
+test.afterAll(async () => {
+    if (server) {
+        await new Promise((resolve) => server.server.close(resolve));
+    }
+});
+
+test("WASM モジュール (LuminoC.mjs/.wasm) がブラウザでロードできる", () => {
+    expect(result.loadError, "module load error").toBeNull();
+    expect(result.moduleLoaded).toBe(true);
+});
+
+test("Runtime.initialize() が成功する (WASM ロード + LNInstance_Initialize + ABI照合#10)", () => {
+    // SKIP_INITIALIZE_WHEN_NO_WEBGPU が true かつ WebGPU アダプタが無い環境でのみ skip。
+    // 既定 (false) では skip せず、WebGPU が使えない環境では「失敗」させて気づけるようにする。
+    test.skip(
+        SKIP_INITIALIZE_WHEN_NO_WEBGPU && !result.webgpuAvailable,
+        "WebGPU アダプタが利用できない環境のため skip (SKIP_INITIALIZE_WHEN_NO_WEBGPU=true)");
+
+    // 構造体サイズ照合 (#10) は initialize 内で走る。不一致なら例外になるため、
+    // ここで error が null であることが照合成功の確認を兼ねる。
+    expect(result.initialize.error ?? null, "initialize error").toBeNull();
+    expect(result.initialize.ok).toBe(true);
+    expect(result.initialize.initialized).toBe(true);
+});
+
+test("LNHelloTest(42) が 42 を返す", () => {
+    expect(result.helloTest.error ?? null, "helloTest error").toBeNull();
+    expect(result.helloTest.value).toBe(42);
+});
+
+test("getBuildTimestamp() が空でない文字列を返す", () => {
+    expect(result.buildTimestamp.error ?? null, "buildTimestamp error").toBeNull();
+    expect(typeof result.buildTimestamp.value).toBe("string");
+    expect(result.buildTimestamp.value.length).toBeGreaterThan(0);
+});
+
+test("decodeImage() が小さな PNG を期待どおりの RGBA ピクセルにデコードする", () => {
+    expect(result.decodeImage.error ?? null, "decodeImage error").toBeNull();
+    expect(result.decodeImage.width).toBe(2);
+    expect(result.decodeImage.height).toBe(2);
+    // RGBA8 なので幅 * 高さ * 4 バイト。
+    expect(result.decodeImage.length).toBe(2 * 2 * 4);
+    // 先頭ピクセル (左上) は赤。
+    expect(result.decodeImage.firstPixel).toEqual([255, 0, 0, 255]);
+});
+
+// TODO(#12): GPU (WebGPU) レンダリング経路のスモークは未対応。
+// BeginFrame / DrawSprite / DrawMesh / Capture 等は swapchain/canvas と実描画を
+// 伴い、headless GPU 環境への依存が強い (SwiftShader での安定動作が要検証)。
+// 将来 headless での実描画が安定して確認できたら、RenderTarget への描画 +
+// ピクセル読み戻しによる最小の実描画スモークをここに追加する。

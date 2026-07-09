@@ -365,4 +365,11 @@ ASALocalRun/
 ## 親ディレクトリが無視されている場合、内側のファイルパターンでの再取り込みは
 ## できないため、[Bb]in/ (上記 VS セクション) に対する例外は本ファイルの
 ## 最後に置く必要がある。
+
+# Playwright スモークテスト (packages/luminojs) の生成物。
+# 実行するカレントディレクトリに作られるため、パッケージ配下に出ることがある。
+test-results/
+playwright-report/
+blob-report/
+
 !packages/luminosc-npm/bin/

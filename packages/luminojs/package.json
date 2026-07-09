@@ -25,9 +25,12 @@
         "build:typecheck": "tsc --noEmit",
         "build:rollup": "rollup --config rollup.config.mjs",
         "build": "npm run build:typecheck && npm run build:rollup",
-        "dev": "npx serve . --cors"
+        "dev": "npx serve . --cors",
+        "pretest:smoke": "npm run build",
+        "test:smoke": "playwright test --config test/smoke/playwright.config.mjs"
     },
     "devDependencies": {
+        "@playwright/test": "1.59.1",
         "@rollup/plugin-node-resolve": "^16.0.1",
         "@rollup/plugin-typescript": "^11.1.6",
         "rollup": "^4.13.0",

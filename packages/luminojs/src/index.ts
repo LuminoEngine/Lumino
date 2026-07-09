@@ -26,6 +26,7 @@ export {
 export type {
     Handle,
     RuntimeOptions,
+    DecodedImage,
     ColorAttachmentDesc,
     DepthStencilAttachmentDesc,
     RenderPassDesc,

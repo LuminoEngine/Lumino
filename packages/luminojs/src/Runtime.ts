@@ -3,6 +3,7 @@ import {
     GraphicsBackend,
     type Handle,
     type RuntimeOptions,
+    type DecodedImage,
     SIZEOF_INSTANCE_INIT_SETTINGS,
     SIZEOF_COLOR_ATTACHMENT_DESC,
     SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC,
@@ -126,6 +127,63 @@ export class Runtime {
     /** Shut down the Lumino runtime. */
     static async terminate(): Promise<void> {
         await (API.LNInstance_Terminate as () => Promise<void>)();
+    }
+
+    //--------------------------------------------------------------------------
+    // 画像デコード (GPU 非依存)
+    //--------------------------------------------------------------------------
+
+    /**
+     * PNG / JPEG などの画像バイト列をデコードして RGBA8 ピクセルを返す。
+     * stb_image による純 CPU 処理で、WebGPU (GPU) には依存しない。
+     *
+     * WASM モジュールがロード済み (= `initialize()` 済み) であることが前提。
+     * デコード自体はグラフィックスインスタンスの初期化を必要としないが、
+     * ヒープアクセスのために module のロードは必要となる。
+     *
+     * @param data エンコード済み画像バイト列 (PNG / JPEG など)
+     * @returns デコード結果。ピクセルは WASM ヒープからコピー済みの JS 所有バッファ。
+     */
+    static decodeImage(data: Uint8Array): DecodedImage {
+        if (!this.module) {
+            throw new Error(
+                "Runtime.decodeImage: WASM モジュールが未ロードです。先に initialize() を呼んでください。");
+        }
+        const m = this.module;
+
+        // 入力データを WASM ヒープへコピーする。
+        const dataPtr = m._malloc(data.length);
+        // 出力用の 4 スロット (outWidth, outHeight, outPixelsPtr, outPixelsSize) を確保する。
+        const outPtr = m._malloc(16);
+        try {
+            m.HEAPU8.set(data, dataPtr);
+
+            const decode = API.LNImage_DecodeFromMemory as
+                (data: number, size: number, outW: number, outH: number,
+                    outPx: number, outSize: number) => number;
+            const rc = decode(dataPtr, data.length, outPtr, outPtr + 4, outPtr + 8, outPtr + 12);
+            if (rc !== Result.OK) {
+                throw new Error(`Lumino C-API error: LNImage_DecodeFromMemory (${rc})`);
+            }
+
+            // stbi_load はヒープを成長させることがあるため、呼び出し後に view を取り直す。
+            const out = new Uint32Array(m.HEAPU8.buffer, outPtr, 4);
+            const width = out[0];
+            const height = out[1];
+            const pixelsPtr = out[2];
+            const pixelsSize = out[3];
+
+            // C 側が確保したピクセルを JS 所有のバッファへコピーする。
+            const pixels = m.HEAPU8.slice(pixelsPtr, pixelsPtr + pixelsSize);
+
+            // C 側のピクセルバッファを解放する。
+            (API.LNImage_FreePixels as (p: number) => number)(pixelsPtr);
+
+            return { width, height, pixels };
+        } finally {
+            m._free(dataPtr);
+            m._free(outPtr);
+        }
     }
 
     //--------------------------------------------------------------------------
