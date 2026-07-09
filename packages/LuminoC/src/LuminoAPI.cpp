@@ -68,18 +68,6 @@ public:
     ln::Camera camera;
 };
 
-/** DrawCommandBuffer を Object でラップしてハンドル管理に載せる。 */
-class DrawCommandBufferObject : public ln::Object {
-public:
-    ln::DrawCommandBuffer buffer;
-};
-
-/** BatchProcessor を Object でラップしてハンドル管理に載せる。 */
-class BatchProcessorObject : public ln::Object {
-public:
-    std::unique_ptr<ln::BatchProcessor> processor;
-};
-
 /** Convert LNTransform pointer to ln::Transform (identity if null). */
 ln::Transform toLnTransform(const LNTransform* transform) {
     ln::Transform xform;
@@ -539,8 +527,6 @@ static_assert(sizeof(LNTransform) == 40,
     "LNTransform のレイアウトが変わりました。types.ts の SIZEOF_TRANSFORM を更新してください");
 static_assert(sizeof(LNMatrix) == 64,
     "LNMatrix のレイアウトが変わりました。types.ts の SIZEOF_MATRIX を更新してください");
-static_assert(sizeof(LNSpriteCommand) == 60,
-    "LNSpriteCommand のレイアウトが変わりました。バインディング側のシリアライズ処理を更新してください");
 static_assert(sizeof(LNGraphicsProfiler) == 12,
     "LNGraphicsProfiler のレイアウトが変わりました。バインディング側の読み取り処理を更新してください");
 #endif // __EMSCRIPTEN__
@@ -565,7 +551,6 @@ LNResult LNDebug_GetStructSize(const char* structName, uint32_t* outSize) {
         { "LNSubMesh",                    static_cast<uint32_t>(sizeof(LNSubMesh)) },
         { "LNTransform",                  static_cast<uint32_t>(sizeof(LNTransform)) },
         { "LNMatrix",                     static_cast<uint32_t>(sizeof(LNMatrix)) },
-        { "LNSpriteCommand",              static_cast<uint32_t>(sizeof(LNSpriteCommand)) },
         { "LNGraphicsProfiler",           static_cast<uint32_t>(sizeof(LNGraphicsProfiler)) },
     };
 
@@ -593,7 +578,7 @@ LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     return LN_OK;
 }
 
-LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfilering* outProfiler) {
+LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfiler* outProfiler) {
     if (!outProfiler) return LN_ERROR_INVALID_ARGUMENT;
 
     auto* instance = ln::CoreInstance::instance();
@@ -762,10 +747,6 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
     if (!matResult) return LN_ERROR_UNKNOWN;
     *outHandle = wrapObjectFromCreate(matResult->get());
     return LN_OK;
-}
-
-LNResult LNMaterial_CreateUnlit(LNHandle graphicsContext, LNHandle* outHandle) {
-    return LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, outHandle);
 }
 
 LNResult LNMaterial_CreateFromCompiledShader(LNHandle graphicsContext, const void* data, uint32_t size, LNHandle* outHandle) {
@@ -1449,157 +1430,5 @@ LNResult LNTexture2D_CreateDepthStencil(
     if (!dsResult) return LN_ERROR_UNKNOWN;
 
     *outHandle = wrapObjectFromCreate(dsResult->get());
-    return LN_OK;
-}
-
-//------------------------------------------------------------------------------
-// LNDrawCommandBuffer
-//------------------------------------------------------------------------------
-
-LNResult LNDrawCommandBuffer_Create(LNHandle* outHandle) {
-    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
-    *outHandle = LN_NULL_HANDLE;
-
-    auto obj = ln::Ref<DrawCommandBufferObject>::adopt(LN_NEW DrawCommandBufferObject());
-    *outHandle = wrapObjectFromCreate(obj.get());
-    return LN_OK;
-}
-
-LNResult LNDrawCommandBuffer_Clear(LNHandle buffer) {
-    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-    obj->buffer.clear();
-    return LN_OK;
-}
-
-LNResult LNDrawCommandBuffer_DrawSprite(
-    LNHandle buffer, LNHandle material, int32_t zIndex,
-    float posX, float posY, float posZ,
-    float sizeW, float sizeH,
-    float uvX, float uvY, float uvW, float uvH,
-    float colorR, float colorG, float colorB, float colorA,
-    float rotation) {
-
-    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-
-    auto* mat = resolveObject<ln::Material>(material);
-    if (!mat) return LN_ERROR_INVALID_HANDLE;
-
-    // deprecated API: position + Z 回転を行列に畳み込む (world = T * Rz)。
-    ln::Matrix4x4 xform =
-        ln::Matrix4x4::translate(ln::Vector3{posX, posY, posZ}) *
-        ln::Matrix4x4::rotateZ(rotation);
-    obj->buffer.drawSprite(
-        mat, zIndex,
-        xform,
-        ln::Vector2{0.0f, 0.0f}, // deprecated API: offset は使わない (位置は xform に含む)
-        ln::Vector2{sizeW, sizeH},
-        ln::Vector2{0.5f, 0.5f}, // deprecated API: 従来どおり中央原点
-        ln::Vector2{uvX, uvY},
-        ln::Vector2{uvW, uvH},
-        ln::Color{colorR, colorG, colorB, colorA});
-    return LN_OK;
-}
-
-LNResult LNDrawCommandBuffer_DrawSprites(
-    LNHandle buffer, LNHandle material,
-    const LNSpriteCommand* sprites, uint32_t count) {
-
-    if (!sprites && count > 0) return LN_ERROR_INVALID_ARGUMENT;
-
-    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-
-    auto* mat = resolveObject<ln::Material>(material);
-    if (!mat) return LN_ERROR_INVALID_HANDLE;
-
-    for (uint32_t i = 0; i < count; ++i) {
-        const auto& s = sprites[i];
-        // deprecated API: position + Z 回転を行列に畳み込む (world = T * Rz)。
-        ln::Matrix4x4 xform =
-            ln::Matrix4x4::translate(ln::Vector3{s.posX, s.posY, s.posZ}) *
-            ln::Matrix4x4::rotateZ(s.rotation);
-        obj->buffer.drawSprite(
-            mat, s.zIndex,
-            xform,
-            ln::Vector2{0.0f, 0.0f}, // deprecated API: offset は使わない (位置は xform に含む)
-            ln::Vector2{s.sizeW, s.sizeH},
-            ln::Vector2{0.5f, 0.5f}, // deprecated API: 従来どおり中央原点
-            ln::Vector2{s.uvX, s.uvY},
-            ln::Vector2{s.uvW, s.uvH},
-            ln::Color{s.colorR, s.colorG, s.colorB, s.colorA});
-    }
-    return LN_OK;
-}
-
-LNResult LNDrawCommandBuffer_DrawSubMesh(
-    LNHandle buffer, LNHandle meshHandle, uint32_t submeshIndex,
-    LNHandle materialHandle, const LNTransform* transform, int32_t zIndex) {
-
-    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-
-    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
-    if (!mesh) return LN_ERROR_INVALID_HANDLE;
-
-    auto* mat = resolveObject<ln::Material>(materialHandle);
-    if (!mat) return LN_ERROR_INVALID_HANDLE;
-
-    obj->buffer.drawSubMesh(mesh, submeshIndex, mat, toLnTransform(transform), zIndex);
-    return LN_OK;
-}
-
-LNResult LNDrawCommandBuffer_DrawMesh(
-    LNHandle buffer, LNHandle meshHandle,
-    const LNTransform* transform, int32_t zIndex) {
-
-    auto* obj = resolveObject<DrawCommandBufferObject>(buffer);
-    if (!obj) return LN_ERROR_INVALID_HANDLE;
-
-    auto* mesh = resolveObject<ln::Mesh>(meshHandle);
-    if (!mesh) return LN_ERROR_INVALID_HANDLE;
-
-    obj->buffer.drawMesh(mesh, toLnTransform(transform), zIndex);
-    return LN_OK;
-}
-
-//------------------------------------------------------------------------------
-// LNBatchProcessor
-//------------------------------------------------------------------------------
-
-LNResult LNBatchProcessor_Create(LNHandle graphicsContext, LNHandle* outHandle) {
-    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
-    *outHandle = LN_NULL_HANDLE;
-
-    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
-    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-
-    auto result = ln::BatchProcessor::create(ctx);
-    if (!result) return LN_ERROR_UNKNOWN;
-
-    auto obj = ln::Ref<BatchProcessorObject>::adopt(LN_NEW BatchProcessorObject());
-    obj->processor = std::move(*result);
-    *outHandle = wrapObjectFromCreate(obj.get());
-    return LN_OK;
-}
-
-LNResult LNBatchProcessor_Flush(
-    LNHandle batchProcessor, LNHandle renderer, LNHandle commandBuffer) {
-
-    auto* bpObj = resolveObject<BatchProcessorObject>(batchProcessor);
-    if (!bpObj) return LN_ERROR_INVALID_HANDLE;
-
-    auto* ren = resolveObject<ln::Renderer>(renderer);
-    if (!ren) return LN_ERROR_INVALID_HANDLE;
-
-    auto* cmdObj = resolveObject<DrawCommandBufferObject>(commandBuffer);
-    if (!cmdObj) return LN_ERROR_INVALID_HANDLE;
-
-    // 低レベルの手動 flush API。カメラ/ソート方針を持たないため Stable (投入順) で処理する。
-    auto result = bpObj->processor->flush(
-        ren, &cmdObj->buffer, ln::Matrix4x4::identity(), ln::SortMode::Stable);
-    if (!result) return LN_ERROR_UNKNOWN;
-
     return LN_OK;
 }

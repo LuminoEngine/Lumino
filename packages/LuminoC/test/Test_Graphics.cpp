@@ -59,7 +59,7 @@ TEST_F(Test_Graphics, HelloTexture) {
 
     // Create Unlit material with the texture
     LNHandle material = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material, texture));
 
     // Create quad mesh
@@ -131,8 +131,8 @@ TEST_F(Test_Graphics, SpriteOrder) {
     ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/RedMargined.png", &redTexture));
     ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/GreenMargined.png", &greenTexture));
 
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &redMaterial));
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &greenMaterial));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &redMaterial));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &greenMaterial));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(redMaterial, redTexture));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(greenMaterial, greenTexture));
     LNMaterial_SetBlendMode(redMaterial, LN_BLEND_MODE_ALPHA);
@@ -205,8 +205,8 @@ TEST_F(Test_Graphics, SpriteOrder) {
 // 奥→手前へ並べ替えられ、手前の緑が上に描画される。中央ピクセルが緑になることを確認する。
 TEST_F(Test_Graphics, SpriteDepthSortBackToFront) {
     LNHandle greenMat = LN_NULL_HANDLE, redMat = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &greenMat));
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &redMat));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &greenMat));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &redMat));
     LNMaterial_SetBlendMode(greenMat, LN_BLEND_MODE_ALPHA);
     LNMaterial_SetBlendMode(redMat, LN_BLEND_MODE_ALPHA);
 
@@ -290,7 +290,7 @@ TEST_F(Test_Graphics, StencilMask1) {
 
     // Create a fullscreen green quad to be masked
     LNHandle greenMat = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &greenMat));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &greenMat));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(greenMat, spriteTex));
 
     LNVertex quadVerts[4] = {
@@ -367,11 +367,11 @@ TEST_F(Test_Graphics, TwoSprites) {
     ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Sprite.png", &texture));
 
     LNHandle mat1 = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &mat1));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &mat1));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(mat1, texture));
 
     LNHandle mat2 = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &mat2));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &mat2));
 
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
@@ -439,7 +439,7 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     LNHandle nearMat = LN_NULL_HANDLE;
     LNHandle nearMesh = LN_NULL_HANDLE;
     {
-        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &nearMat));
+        ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &nearMat));
         ASSERT_EQ(LN_OK, LNMaterial_SetColor(nearMat, 1.0f, 0.0f, 0.0f, 1.0f));
         LNVertex nearVerts[4] = {
             { -0.6f,  0.6f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
@@ -455,7 +455,7 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     LNHandle farMat = LN_NULL_HANDLE;
     LNHandle farMesh = LN_NULL_HANDLE;
     {
-        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &farMat));
+        ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &farMat));
         ASSERT_EQ(LN_OK, LNMaterial_SetColor(farMat, 0.0f, 1.0f, 0.0f, 1.0f));
         ASSERT_EQ(LN_OK, LNMaterial_SetDepthTestEnabled(farMat, LN_FALSE));
 
@@ -525,7 +525,7 @@ TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     LNHandle nearMat = LN_NULL_HANDLE;
     LNHandle nearMesh = LN_NULL_HANDLE;
     {
-        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &nearMat));
+        ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &nearMat));
         ASSERT_EQ(LN_OK, LNMaterial_SetColor(nearMat, 1.0f, 0.0f, 0.0f, 1.0f));
         ASSERT_EQ(LN_OK, LNMaterial_SetDepthWriteEnabled(nearMat, LN_FALSE));
         LNVertex nearVerts[4] = {
@@ -543,7 +543,7 @@ TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     LNHandle farMat = LN_NULL_HANDLE;
     LNHandle farMesh = LN_NULL_HANDLE;
     {
-        ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &farMat));
+        ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &farMat));
         ASSERT_EQ(LN_OK, LNMaterial_SetColor(farMat, 0.0f, 1.0f, 0.0f, 1.0f));
         LNVertex farVerts[4] = {
             { -0.6f,  0.6f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
@@ -623,9 +623,9 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
     // テクスチャなし Unlit (既定の白テクスチャ) を 2 つ用意する。
     // drawSprite の頂点カラーで色付けするため、テクスチャは不要。
     LNHandle bgMat = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &bgMat));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &bgMat));
     LNHandle uiMat = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &uiMat));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &uiMat));
 
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
@@ -943,7 +943,7 @@ TEST_F(Test_Graphics, LoadOpLoadDepthStencil) {
 TEST_F(Test_Graphics, Orthographic2DPivotCenter) {
     // テクスチャなし Unlit (既定の白テクスチャ)。色は drawSprite の頂点カラーで与える。
     LNHandle material = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNMaterial_CreateUnlit(graphicsContext, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
 
     // pivot=(0.5, 0.5) で原点を画面中央に。視点はデフォルトの単位ビュー行列 = (0,0,0)。
     LNHandle camera = LN_NULL_HANDLE;

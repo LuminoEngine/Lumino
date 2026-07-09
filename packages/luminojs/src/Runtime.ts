@@ -252,7 +252,7 @@ export class Runtime {
         API.LNImage_FreePixels       = cw("LNImage_FreePixels",       "number", ["number"]);
 
         // Material
-        API.LNMaterial_CreateUnlit              = cw("LNMaterial_CreateUnlit",              "number", ["number", "number"]);
+        API.LNMaterial_CreateFromBuiltinShader  = cw("LNMaterial_CreateFromBuiltinShader",  "number", ["number", "number", "number"]);
         API.LNMaterial_CreateFromCompiledShader  = cw("LNMaterial_CreateFromCompiledShader",  "number", ["number", "number", "number", "number"]);
         API.LNMaterial_SetMainTexture            = cw("LNMaterial_SetMainTexture",            "number", ["number", "number"]);
         API.LNMaterial_SetColor                  = cw("LNMaterial_SetColor",                  "number", ["number", "number", "number", "number", "number"]);

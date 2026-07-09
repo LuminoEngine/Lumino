@@ -18,7 +18,7 @@ int main(void) {
 
     // Unlit Material
     LNHandle material = LN_NULL_HANDLE;
-    LNMaterial_CreateUnlit(graphicsContext, &material);
+    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material);
     LNMaterial_SetMainTexture(material, texture);
 
     // Quad mesh (4 vertices, 6 indices, CCW winding)
@@ -52,7 +52,7 @@ int main(void) {
         0.0f, 1.0f, 0.0f);  // up
     
     // Main loop
-    LNGraphicsProfilering profilering = {};
+    LNGraphicsProfiler profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {

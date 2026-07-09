@@ -1,4 +1,4 @@
-# 依頼: build_wasm.py の emsdk エラーメッセージ修正 (改善案 #6)
+# [done] 依頼: build_wasm.py の emsdk エラーメッセージ修正 (改善案 #6)
 
 推奨モデル: Sonnet / 目安: 10分 / 人間確認: 不要
 

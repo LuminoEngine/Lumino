@@ -160,7 +160,7 @@ int main() {
 
     // Main loop
     LNTransform groundTransform = { 0,0,0,  0,0,0,1,  1,1,1 };
-    LNGraphicsProfilering profiler = {};
+    LNGraphicsProfiler profiler = {};
     LNBool quit = LN_FALSE;
     float cameraAngle = 0.0f;
     float triangleAngle = 0.0f;

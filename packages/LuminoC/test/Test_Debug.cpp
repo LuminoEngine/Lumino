@@ -23,7 +23,6 @@ TEST_F(Test_Debug, GetStructSizeReturnsPositiveForKnownNames) {
         "LNSubMesh",
         "LNTransform",
         "LNMatrix",
-        "LNSpriteCommand",
         "LNGraphicsProfiler",
     };
     for (const char* name : names) {

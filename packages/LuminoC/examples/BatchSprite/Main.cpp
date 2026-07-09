@@ -182,9 +182,9 @@ int main() {
     // 3. Materials - two unlit materials with different tints
     LNHandle material0 = LN_NULL_HANDLE;
     LNHandle material1 = LN_NULL_HANDLE;
-    LNMaterial_CreateUnlit(graphicsContext, &material0);
+    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material0);
     LNMaterial_SetMainTexture(material0, texture0);
-    LNMaterial_CreateUnlit(graphicsContext, &material1);
+    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material1);
     LNMaterial_SetMainTexture(material1, texture1);
 
     // 4. Dynamic mesh

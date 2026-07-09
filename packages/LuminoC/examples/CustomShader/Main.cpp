@@ -59,7 +59,7 @@ int main() {
         0.0f, 1.0f, 0.0f);  // up
 
     // 7. Main loop
-    LNGraphicsProfilering profilering = {};
+    LNGraphicsProfiler profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {

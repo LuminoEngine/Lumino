@@ -108,7 +108,7 @@ int main(void) {
 
     // 7. Main loop
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
-    LNGraphicsProfilering profiler = {};
+    LNGraphicsProfiler profiler = {};
     LNBool quit = LN_FALSE;
     float angle = 0.0f;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {

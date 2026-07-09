@@ -76,6 +76,16 @@ export enum CullMode {
     Back  = 2,
 }
 
+/** Built-in shader kind (matches C `LNBuiltinShader`). ビルトインシェーダの種類。 */
+export enum BuiltinShader {
+    /** Unlit: テクスチャ * カラー、ライティングなし。 */
+    Unlit       = 0,
+    /** BasicLit: Blinn-Phong、1方向ライト。 */
+    BasicLit    = 1,
+    /** StencilMask: ステンシルバッファへの書き込み専用。 */
+    StencilMask = 2,
+}
+
 /** Texture format (matches C LNTextureFormat). */
 export enum TextureFormat {
     Undefined       = 0,

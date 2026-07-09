@@ -21,7 +21,7 @@ int main() {
 
     // Unlit Material
     LNHandle material = LN_NULL_HANDLE;
-    LNMaterial_CreateUnlit(graphicsContext, &material);
+    LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material);
     LNMaterial_SetMainTexture(material, texture);
     LNMaterial_SetBlendMode(material, LN_BLEND_MODE_ALPHA);
 

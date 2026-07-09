@@ -3,7 +3,7 @@ import type { GraphicsContext } from "./GraphicsContext";
 import type { Texture } from "./Texture";
 import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import { BlendMode, CullMode } from "./types";
+import { BlendMode, BuiltinShader, CullMode } from "./types";
 
 type MaterialSource =
     | { kind: "unlit" }
@@ -168,9 +168,9 @@ export class Material extends LuminoObject implements ResidentResource {
     private _createGpuMaterial(ctx: GraphicsContext): void {
         if (this._source.kind === "unlit") {
             const handle = Runtime.safeCallWithReturnHandle((out) =>
-                (API.LNMaterial_CreateUnlit as (
-                    ctx: number, out: number,
-                ) => number)(ctx.handle, out));
+                (API.LNMaterial_CreateFromBuiltinShader as (
+                    ctx: number, shader: number, out: number,
+                ) => number)(ctx.handle, BuiltinShader.Unlit, out));
             this._setHandle(handle, true);
         } else {
             const data = this._source.data;
