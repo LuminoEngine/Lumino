@@ -26,6 +26,11 @@ OUTPUT_DIR = REPO_ROOT / "packages" / "luminojs" / "lib"
 
 # Emscripten SDK is always cloned into <repo>/emsdk per README.md.
 EMSDK_ROOT = REPO_ROOT / "build" / "emsdk"
+
+# WebGPU-distribution is pinned to this commit per README.md. Update both
+# when bumping the Dawn version.
+WEBGPU_ROOT = REPO_ROOT / "build" / "webgpu"
+WEBGPU_EXPECTED_COMMIT = "17dcd42a7683355e7a40ac4e97e77f36dff5b5ab"
 NINJA = REPO_ROOT / "build" / "vcpkg" / "downloads" / "tools" / "ninja-1.13.2-windows" / "ninja.exe"
 VCPKG_TOOLCHAIN = REPO_ROOT / "build" / "vcpkg" / "scripts" / "buildsystems" / "vcpkg.cmake"
 
@@ -76,6 +81,34 @@ def resolve_emsdk() -> Path:
     return EMSDK_ROOT
 
 
+def check_webgpu_pin() -> None:
+    """build/webgpu が README.md に記載のコミットで固定されているか確認します。"""
+    if not WEBGPU_ROOT.is_dir():
+        raise SystemExit(
+            f"webgpu directory not found at {WEBGPU_ROOT}.\n"
+            "Clone it into the repository root as described in README.md:\n"
+            "  git clone https://github.com/eliemichel/WebGPU-distribution.git ./build/webgpu\n"
+            f"  git -C ./build/webgpu checkout {WEBGPU_EXPECTED_COMMIT}"
+        )
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(WEBGPU_ROOT), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return
+    actual_commit = result.stdout.strip()
+    if actual_commit != WEBGPU_EXPECTED_COMMIT:
+        print(
+            f"[build_wasm] warning: build/webgpu is at {actual_commit}, "
+            f"expected {WEBGPU_EXPECTED_COMMIT} (see README.md). "
+            "Dawn version may differ from the pinned one.",
+            flush=True,
+        )
+
+
 #----------------------------------------------------------------------------
 # Commands
 #----------------------------------------------------------------------------
@@ -94,6 +127,7 @@ def _run_with_emsdk(emsdk_root: Path, cmd_args: list[str]) -> None:
 
 
 def cmd_configure(emsdk_root: Path) -> None:
+    check_webgpu_pin()
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
     emscripten_toolchain = (
         emsdk_root / "upstream" / "emscripten" / "cmake" / "Modules" / "Platform" / "Emscripten.cmake"

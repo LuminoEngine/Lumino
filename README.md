@@ -37,6 +37,7 @@ git clone -b 2026.03.18 https://github.com/microsoft/vcpkg.git ./build/vcpkg
 
 # webgpu 準備
 git clone https://github.com/eliemichel/WebGPU-distribution.git ./build/webgpu
+git -C ./build/webgpu checkout 17dcd42a7683355e7a40ac4e97e77f36dff5b5ab
 
 # CMake 設定
 cmake -B build/lumino-x64-windows -G "Visual Studio 18 2026" -A x64 -DCMAKE_TOOLCHAIN_FILE=[PATH_TO_REPO]/build/vcpkg/scripts/buildsystems/vcpkg.cmake

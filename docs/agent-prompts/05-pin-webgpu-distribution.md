@@ -1,4 +1,4 @@
-# 依頼: WebGPU-distribution のバージョン固定 (改善案 #5)
+# [done] 依頼: WebGPU-distribution のバージョン固定 (改善案 #5)
 
 推奨モデル: Sonnet / 目安: 15分 / 人間確認: 不要
 
