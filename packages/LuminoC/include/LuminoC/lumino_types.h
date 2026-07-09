@@ -46,6 +46,9 @@ typedef enum LNResult {
 
     /** 無効なハンドル */
     LN_ERROR_INVALID_HANDLE = -4,
+
+    /** 現在のビルド/プラットフォームでは未対応の機能 (例: WASM ビルドでの一部 GraphicsContext API) */
+    LN_ERROR_NOT_SUPPORTED = -5,
 } LNResult;
 
 //------------------------------------------------------------------------------

@@ -423,8 +423,12 @@ void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {
 // LNGraphicsContext (continued)
 //------------------------------------------------------------------------------
 
-#ifndef __EMSCRIPTEN__
 LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext) {
+#ifdef __EMSCRIPTEN__
+    // Web (WASM) ビルドでは非対応。
+    (void)graphicsContext;
+    return LN_ERROR_NOT_SUPPORTED;
+#else
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -433,6 +437,7 @@ LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext) {
 
     ctx->requestCaptureBackbuffer();
     return LN_OK;
+#endif // __EMSCRIPTEN__
 }
 
 LNResult LNGraphicsContext_CaptureBackbuffer(
@@ -442,6 +447,14 @@ LNResult LNGraphicsContext_CaptureBackbuffer(
     int32_t* outHeight) {
     if (!outData || !outWidth || !outHeight) return LN_ERROR_INVALID_ARGUMENT;
 
+#ifdef __EMSCRIPTEN__
+    // Web (WASM) ビルドでは非対応。
+    (void)graphicsContext;
+    *outData = nullptr;
+    *outWidth = 0;
+    *outHeight = 0;
+    return LN_ERROR_NOT_SUPPORTED;
+#else
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
@@ -456,15 +469,21 @@ LNResult LNGraphicsContext_CaptureBackbuffer(
     *outWidth = static_cast<int32_t>(ctx->width());
     *outHeight = static_cast<int32_t>(ctx->height());
     return LN_OK;
+#endif // __EMSCRIPTEN__
 }
 
-LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext) {
+LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext) {
+#ifdef __EMSCRIPTEN__
+    // Web (WASM) ビルドでは非対応。
+    (void)graphicsContext;
+    return LN_ERROR_NOT_SUPPORTED;
+#else
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
     ctx->waitIdle();
     return LN_OK;
+#endif // __EMSCRIPTEN__
 }
-#endif // !__EMSCRIPTEN__
 
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();

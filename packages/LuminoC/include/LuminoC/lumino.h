@@ -60,6 +60,8 @@ extern LUMINO_API LNResult LNObject_Release(LNHandle handle);
 
 /**
  * ウィンドウを作成します。内部で GraphicsContext も作成されます。
+ * デスクトップ専用。Web (WASM) ビルドでは GLFW ベースの Window を作成できないため
+ * LN_ERROR_UNKNOWN を返します (Web では LNWindow_CreateFromCanvas を使用してください)。
  *
  * @param[in]  title     ウィンドウタイトル
  * @param[in]  width     幅 (ピクセル)
@@ -224,6 +226,8 @@ extern LUMINO_API LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext);
 /**
  * @internal GPU の処理が完了するまで待機します。
  * 通常は必要ありません。主にライブラリ内部動作の問題調査に使用します。
+ *
+ * Web (WASM) ビルドでは非対応で、常に LN_ERROR_NOT_SUPPORTED を返します。
  */
 extern LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext);
 
@@ -236,6 +240,8 @@ extern LUMINO_API LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext);
  * present 直前 (EndFrame 内) に行われます。読み戻した内容は EndFrame の後に
  * LNGraphicsContext_CaptureBackbuffer で取得します。
  *
+ * Web (WASM) ビルドでは非対応で、常に LN_ERROR_NOT_SUPPORTED を返します。
+ *
  * @param[in] graphicsContext GraphicsContext のハンドル
  */
 extern LUMINO_API LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext);
@@ -245,6 +251,9 @@ extern LUMINO_API LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle g
  * 事前に (EndFrame の前に) LNGraphicsContext_RequestCaptureBackbuffer を呼び、
  * その後 LNGraphicsContext_EndFrame を呼んでから本関数を呼び出してください。
  * 返されるポインタは、次の LNGraphicsContext_CaptureBackbuffer 呼び出しまで有効です。
+ *
+ * Web (WASM) ビルドでは非対応で、常に LN_ERROR_NOT_SUPPORTED を返します
+ * (outData に nullptr、outWidth/outHeight に 0 が設定されます)。
  *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outData         ピクセルデータの先頭ポインタ
