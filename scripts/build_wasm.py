@@ -24,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 BUILD_DIR = REPO_ROOT / "build" / "lumino-wasm32-emscripten"
 OUTPUT_DIR = REPO_ROOT / "packages" / "luminojs" / "lib"
 
-# Emscripten SDK is always cloned into <repo>/emsdk per README.md.
+# Emscripten SDK is always cloned into <repo>/build/emsdk per README.md.
 EMSDK_ROOT = REPO_ROOT / "build" / "emsdk"
 
 # WebGPU-distribution is pinned to this commit per README.md. Update both
@@ -63,10 +63,10 @@ def _find_emsdk_env(emsdk_root: Path) -> Path:
     if not candidate.is_file():
         raise FileNotFoundError(
             f"emsdk env script not found at {candidate}. "
-            "Clone emsdk into <repo>/emsdk as described in README.md:\n"
-            "  git clone -b 5.0.5 https://github.com/emscripten-core/emsdk.git ./emsdk\n"
-            "  ./emsdk/emsdk install 5.0.5\n"
-            "  ./emsdk/emsdk activate 5.0.5"
+            "Clone emsdk into <repo>/build/emsdk as described in README.md:\n"
+            "  git clone -b 5.0.5 https://github.com/emscripten-core/emsdk.git ./build/emsdk\n"
+            "  ./build/emsdk/emsdk install 5.0.5\n"
+            "  ./build/emsdk/emsdk activate 5.0.5"
         )
     return candidate
 
@@ -76,7 +76,7 @@ def resolve_emsdk() -> Path:
     if not EMSDK_ROOT.is_dir():
         raise SystemExit(
             f"emsdk directory not found at {EMSDK_ROOT}.\n"
-            "Clone it into the repository root as described in README.md"
+            "Clone it into <repo>/build/emsdk as described in README.md"
         )
     return EMSDK_ROOT
 
