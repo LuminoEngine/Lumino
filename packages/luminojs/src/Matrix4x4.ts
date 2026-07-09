@@ -40,7 +40,7 @@ export class Matrix4x4 {
         return this;
     }
 
-    /** C++ Matrix4x4::perspectiveRH と同一 (RH, depth [-1,1]) */
+    /** C++ Matrix4x4::perspectiveRH と同一 (RH, depth [0,1], glm::perspectiveRH_ZO 相当) */
     public static makePerspective(fovY: number, aspect: number, nearZ: number, farZ: number, result?: Matrix4x4): Matrix4x4 {
         result = result ?? new Matrix4x4();
         const tanHalf = Math.tan(fovY * 0.5);
@@ -55,11 +55,11 @@ export class Matrix4x4 {
         m[7]  = 0;
         m[8]  = 0;
         m[9]  = 0;
-        m[10] = -(farZ + nearZ) / (farZ - nearZ);
+        m[10] = farZ / (nearZ - farZ);
         m[11] = -1.0;
         m[12] = 0;
         m[13] = 0;
-        m[14] = -(2.0 * farZ * nearZ) / (farZ - nearZ);
+        m[14] = -(farZ * nearZ) / (farZ - nearZ);
         m[15] = 0;
         return result;
     }

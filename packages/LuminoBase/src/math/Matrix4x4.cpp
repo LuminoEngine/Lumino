@@ -28,16 +28,18 @@ Matrix4x4::Matrix4x4(
     } {
 }
 
-// perspectiveRH_NO
+// perspectiveRH_ZO (クリップ空間 Z を 0..1 とする RH 射影。
+// WebGPU/Vulkan/D3D と同じ規約で、docs/graphics-conventions.md および ortho と整合する。
+// glm::perspectiveRH_ZO と一致する)
 Matrix4x4 Matrix4x4::perspectiveRH(float fovY, float aspect, float nearZ, float farZ) {
     Matrix4x4 r;
     const float tanHalf = std::tan(fovY * 0.5f);
     for (auto& v : r.m) v = 0;
     r.m[0]  = 1.0f / (aspect * tanHalf);
     r.m[5]  = 1.0f / tanHalf;
-    r.m[10] = -(farZ + nearZ) / (farZ - nearZ);
+    r.m[10] = farZ / (nearZ - farZ);
     r.m[11] = -1.0f;
-    r.m[14] = -(2.0f * farZ * nearZ) / (farZ - nearZ);
+    r.m[14] = -(farZ * nearZ) / (farZ - nearZ);
     return r;
 }
 
