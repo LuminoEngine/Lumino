@@ -93,6 +93,24 @@ Lumino の NDC は以下の範囲です:
 > glTF:
 > - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#data-alignment
 
+> **CPU 側メモリレイアウトとシェーダレジスタパッキングの関係**
+>
+> [shader-conventions.md](shader-conventions.md) では「シェーダ側は行優先 (row-major)」と
+> 説明していますが、これはこのページの「列優先」と矛盾していません。同じバイト列を
+> 2つの異なる視点 (CPU 配列の並び / GPU レジスタへの詰め方) から説明しているだけです。
+>
+> - **CPU 側 (このページの主題)**: `Matrix4x4` の `m[16]` 配列上での値の並び方。列優先
+>   (`m[0]` から `m[3]` が第1列)。
+> - **シェーダ側**: Slang コンパイラがコンスタントバッファ内で行列を GPU レジスタへ
+>   詰める際の規約。Lumino は `SLANG_MATRIX_LAYOUT_COLUMN_MAJOR` を指定していますが、
+>   Slang は HLSL 由来の命名を使うため、生成される SPIR-V の装飾は `RowMajor` になります。
+>
+> **転置は行われません**。CPU 側で書き込んだ列優先のバイト列は、そのまま (バイト単位で)
+> GPU に渡され、GPU 側はそれを「行優先」の詰め方として解釈します。「列優先」「行優先」は
+> 同じデータに対する別の慣習上のラベルです。詳細な経緯は
+> [LuminoShader/ARCHITECTURE.md](../packages/LuminoShader/ARCHITECTURE.md#slang_matrix_layout_column_major-について)
+> を参照してください。
+
 ### 乗算順序
 
 **左から乗算** する規約です。変換は右から左へ適用されます。

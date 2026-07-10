@@ -238,10 +238,24 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
   output.position = mul(ln_ViewProjection, worldPos);
   ```
 
-- 行列のメモリレイアウトは 行優先 (row-major)。クライアント側（C++/TS）から書き込む値の
-  並びと一致します。
+- コンスタントバッファ内での行列の GPU レジスタパッキングは 行優先 (row-major)。転置なしで
+  クライアント側（C++/TS）から書き込んだバイト列をそのまま解釈できます (下記の補足を参照)。
 - NDC は Z が 0（近）〜1（遠）、Y は上が正。バックエンド差はランタイムが吸収するため、シェーダは
   バックエンドを意識する必要はありません。
+
+> **CPU 側メモリレイアウトとシェーダレジスタパッキングの関係**
+>
+> [graphics-conventions.md](graphics-conventions.md) では「CPU 側 (`Matrix4x4`) は
+> 列優先 (Column-major)」と説明しており、上記の「シェーダ側は行優先」と一見矛盾して見えますが、
+> 同じバイト列を 2つの異なる視点 (CPU 配列の並び / GPU レジスタへの詰め方) から説明している
+> だけで、矛盾ではありません。
+>
+> Lumino は Slang のコンパイルオプションに `SLANG_MATRIX_LAYOUT_COLUMN_MAJOR` を指定しています。
+> これは CPU 側の列優先バイト列を転置せずにそのまま GPU へ渡すための設定ですが、Slang は
+> HLSL 由来の命名を使うため、生成される SPIR-V の装飾は (COLUMN_MAJOR という指定にもかかわらず)
+> `RowMajor` になります。詳細な経緯は
+> [LuminoShader/ARCHITECTURE.md](../packages/LuminoShader/ARCHITECTURE.md#slang_matrix_layout_column_major-について)
+> を参照してください。
 
 ---
 
