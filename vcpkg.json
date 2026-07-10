@@ -3,23 +3,11 @@
   "version": "0.1.0",
   "description": "Game library",
   "dependencies": [
-    "zlib",
-    "libpng",
-    "libogg",
-    "libvorbis",
     "stb",
-    "tinyobjloader",
     "tinygltf",
     "vulkan-headers",
     "nlohmann-json",
     "tl-expected",
-    {
-      "name": "freetype",
-      "features": [
-        "png",
-        "zlib"
-      ]
-    },
     {
       "name": "gtest",
       "platform": "windows | linux | osx"
@@ -37,23 +25,7 @@
       "platform": "windows | linux | osx"
     },
     {
-      "name": "glad",
-      "platform": "windows | linux | osx"
-    },
-    {
-      "name": "glslang",
-      "platform": "windows | linux | osx"
-    },
-    {
-      "name": "spirv-cross",
-      "platform": "windows | linux | osx"
-    },
-    {
       "name": "shader-slang",
-      "platform": "windows | linux | osx"
-    },
-    {
-      "name": "openal-soft",
       "platform": "windows | linux | osx"
     },
     {
