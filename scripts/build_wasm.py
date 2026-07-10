@@ -2,11 +2,12 @@
 """Build Lumino for the web (Emscripten / WebAssembly).
 
 Usage:
-    python scripts/build_wasm.py              # configure + build + copy
+    python scripts/build_wasm.py              # configure + build + copy (Release)
     python scripts/build_wasm.py all          # same as above
     python scripts/build_wasm.py configure    # cmake configure only
     python scripts/build_wasm.py build        # cmake --build + copy
     python scripts/build_wasm.py clean        # remove output
+    python scripts/build_wasm.py --debug      # Debug 構成でビルド (build/lumino-wasm32-emscripten-debug)
 """
 
 from __future__ import annotations
@@ -21,7 +22,9 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-BUILD_DIR = REPO_ROOT / "build" / "lumino-wasm32-emscripten"
+# フラグなし(Release)は従来と同じディレクトリ名を使う。--debug は専用ディレクトリに分離する。
+BUILD_DIR_RELEASE = REPO_ROOT / "build" / "lumino-wasm32-emscripten"
+BUILD_DIR_DEBUG = REPO_ROOT / "build" / "lumino-wasm32-emscripten-debug"
 OUTPUT_DIR = REPO_ROOT / "packages" / "luminojs" / "lib"
 
 # Emscripten SDK is always cloned into <repo>/build/emsdk per README.md.
@@ -126,9 +129,19 @@ def _run_with_emsdk(emsdk_root: Path, cmd_args: list[str]) -> None:
         subprocess.run(["bash", "-c", full], check=True, cwd=str(REPO_ROOT))
 
 
-def cmd_configure(emsdk_root: Path) -> None:
+def _build_dir(debug: bool) -> Path:
+    return BUILD_DIR_DEBUG if debug else BUILD_DIR_RELEASE
+
+
+def _build_type(debug: bool) -> str:
+    return "Debug" if debug else "Release"
+
+
+def cmd_configure(emsdk_root: Path, debug: bool) -> None:
     check_webgpu_pin()
-    BUILD_DIR.mkdir(parents=True, exist_ok=True)
+    build_dir = _build_dir(debug)
+    build_type = _build_type(debug)
+    build_dir.mkdir(parents=True, exist_ok=True)
     emscripten_toolchain = (
         emsdk_root / "upstream" / "emscripten" / "cmake" / "Modules" / "Platform" / "Emscripten.cmake"
     )
@@ -137,6 +150,7 @@ def cmd_configure(emsdk_root: Path) -> None:
             f"Emscripten CMake toolchain not found at {emscripten_toolchain}. "
             "Make sure emsdk is installed and activated."
         )
+    print(f"[build_wasm] configuring ({build_type}) -> {build_dir}", flush=True)
     _run_with_emsdk(
         emsdk_root,
         [
@@ -144,10 +158,10 @@ def cmd_configure(emsdk_root: Path) -> None:
             "-S",
             str(REPO_ROOT),
             "-B",
-            str(BUILD_DIR),
+            str(build_dir),
             "-G",
             "Ninja",
-            "-DCMAKE_BUILD_TYPE=Debug",
+            f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_MAKE_PROGRAM={NINJA}",
             f"-DCMAKE_TOOLCHAIN_FILE={VCPKG_TOOLCHAIN}",
             f"-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE={emscripten_toolchain}",
@@ -162,17 +176,22 @@ def cmd_configure(emsdk_root: Path) -> None:
     )
 
 
-def cmd_build(emsdk_root: Path) -> None:
-    if not (BUILD_DIR / "CMakeCache.txt").exists():
-        cmd_configure(emsdk_root)
-    _run_with_emsdk(emsdk_root, ["cmake", "--build", str(BUILD_DIR)])
-    _copy_artifacts()
+def cmd_build(emsdk_root: Path, debug: bool) -> None:
+    build_dir = _build_dir(debug)
+    build_type = _build_type(debug)
+    if not (build_dir / "CMakeCache.txt").exists():
+        cmd_configure(emsdk_root, debug)
+    print(f"[build_wasm] building ({build_type}) -> {build_dir}", flush=True)
+    _run_with_emsdk(emsdk_root, ["cmake", "--build", str(build_dir)])
+    _copy_artifacts(debug)
+    _print_size_report()
 
 
-def cmd_clean() -> None:
-    if BUILD_DIR.exists():
-        print(f"[build_wasm] removing {BUILD_DIR}")
-        shutil.rmtree(BUILD_DIR)
+def cmd_clean(debug: bool) -> None:
+    build_dir = _build_dir(debug)
+    if build_dir.exists():
+        print(f"[build_wasm] removing {build_dir}")
+        shutil.rmtree(build_dir)
     if OUTPUT_DIR.exists():
         for name in ARTIFACT_NAMES:
             p = OUTPUT_DIR / name
@@ -181,9 +200,11 @@ def cmd_clean() -> None:
                 p.unlink()
 
 
-def _copy_artifacts() -> None:
+def _copy_artifacts(debug: bool) -> None:
+    build_dir = _build_dir(debug)
+    build_type = _build_type(debug)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    src_dir = BUILD_DIR / "packages" / "LuminoC"
+    src_dir = build_dir / "packages" / "LuminoC"
     copied = 0
     for name in ARTIFACT_NAMES:
         src = src_dir / name
@@ -193,13 +214,40 @@ def _copy_artifacts() -> None:
             raise FileNotFoundError(f"Expected build artifact not found: {src}")
         dst = OUTPUT_DIR / name
         shutil.copy2(src, dst)
-        print(f"[build_wasm] copied {src} -> {dst}")
+        print(f"[build_wasm] copied ({build_type}) {src} -> {dst}")
         copied += 1
     if copied == 0:
         raise RuntimeError("No artifacts were copied. Did the build succeed?")
 
     _copy_native_binaries()
     _copy_example_assets()
+
+
+def _human_size(num_bytes: int) -> str:
+    return f"{num_bytes / 1024:.1f} KiB"
+
+
+def _print_size_report() -> None:
+    """Debug/Release 両方のビルド成果物のサイズを、存在するものだけ比較表示します。"""
+    sources = {
+        "Debug": BUILD_DIR_DEBUG / "packages" / "LuminoC",
+        "Release": BUILD_DIR_RELEASE / "packages" / "LuminoC",
+    }
+    print("[build_wasm] artifact size report:", flush=True)
+    for name in ("LuminoC.wasm", "LuminoC.mjs"):
+        sizes: dict[str, int] = {}
+        for label, src_dir in sources.items():
+            p = src_dir / name
+            if p.exists():
+                sizes[label] = p.stat().st_size
+        if not sizes:
+            continue
+        parts = [f"{label}={_human_size(size)}" for label, size in sizes.items()]
+        line = f"[build_wasm]   {name}: " + ", ".join(parts)
+        if "Debug" in sizes and "Release" in sizes and sizes["Debug"] > 0:
+            ratio = sizes["Release"] / sizes["Debug"] * 100
+            line += f" (Release = {ratio:.1f}% of Debug)"
+        print(line, flush=True)
 
 
 def _copy_native_binaries() -> None:
@@ -242,19 +290,28 @@ def main(argv: list[str] | None = None) -> int:
         choices=("all", "configure", "build", "clean"),
         help="Step to run (default: all)",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help=(
+            "Debug 構成でビルドする (最適化なし、ソースマップ付き)。"
+            "未指定時は Release 構成 (-O2) でビルドする。"
+        ),
+    )
     args = parser.parse_args(argv)
 
     if args.action == "clean":
-        cmd_clean()
+        cmd_clean(args.debug)
         return 0
 
     emsdk_root = resolve_emsdk()
     print(f"[build_wasm] using EMSDK: {emsdk_root}")
+    print(f"[build_wasm] build type: {_build_type(args.debug)}")
 
     if args.action in ("configure", "all"):
-        cmd_configure(emsdk_root)
+        cmd_configure(emsdk_root, args.debug)
     if args.action in ("build", "all"):
-        cmd_build(emsdk_root)
+        cmd_build(emsdk_root, args.debug)
 
     print("[build_wasm] done.")
     return 0

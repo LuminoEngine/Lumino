@@ -49,9 +49,16 @@ if(EMSCRIPTEN)
     # ASYNCIFY is required for WebGPU async operations (RequestAdapter,
     # RequestDevice, etc.) to yield to the browser event loop.
     string(APPEND LN_EM_LINK_FLAGS " -sASYNCIFY=1")
-    # Debug-friendly output for development.
-    string(APPEND LN_EM_LINK_FLAGS " -O0")
-    string(APPEND LN_EM_LINK_FLAGS " -g3")
+    # 最適化レベルは CMAKE_BUILD_TYPE に連動させる。
+    # Debug: ブラウザの開発者ツールでソースマップ付きデバッグができるよう最適化を無効化する。
+    # Release: まず -O2 で安定を確認する。将来的に -O3 や -flto (Link Time Optimization)
+    #          への引き上げを検討する余地がある。
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        string(APPEND LN_EM_LINK_FLAGS " -O0")
+        string(APPEND LN_EM_LINK_FLAGS " -g3")
+    else()
+        string(APPEND LN_EM_LINK_FLAGS " -O2")
+    endif()
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${LN_EM_LINK_FLAGS}")
 
     return()
