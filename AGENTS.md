@@ -49,7 +49,15 @@ build/lumino-x64-windows/packages/luminosc/Release/luminosc.exe -I packages/Lumi
 
 ### ランタイム
 
-- ブラウザ: WebGPU
+現状 (実装済み) のグラフィックスバックエンドは次の通りです。
+
+- ブラウザ: WebGPU (WASM 経由)
+- デスクトップ: Vulkan
+
+以下は将来構想です。QuickJS の組み込みやコンシューマゲーム機向けバックエンドはまだ実装されて
+いません。現状はデスクトップ・ブラウザとも、クライアントは TypeScript/JavaScript で記述し、
+`luminojs` (WASM バインディング) 経由で Lumino を呼び出す構成です。
+
 - デスクトップ: Vulkan + QuickJS
 - コンシューマゲーム機: Vulkan-like + QuickJS
 

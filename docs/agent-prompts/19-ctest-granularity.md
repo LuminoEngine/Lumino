@@ -4,7 +4,7 @@
 
 ---
 
-あなたは Lumino リポジトリ (`c:\Proj\dragon-baby-engine\.build\Lumino`) のテスト登録を改善します。
+あなたは Lumino リポジトリ のテスト登録を改善します。
 
 ## 背景
 
