@@ -21,8 +21,6 @@ if(LN_ENABLE_WEBGPU)
     target_copy_webgpu_binaries(${PROJECT_NAME})
 endif()
 
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
-
 # DLL をテスト実行ファイルのディレクトリへコピー (Windows)
 add_custom_command(
     TARGET LuminoC_test POST_BUILD
@@ -40,3 +38,18 @@ add_custom_command(
 )
 
 add_dependencies(${PROJECT_NAME} LuminoC)
+
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+# gtest_discover_tests は POST_BUILD で実行ファイルを --gtest_list_tests 起動するため、
+# 依存 DLL (LuminoC.dll, glfw.dll 等) のコピーより後ろに置く必要がある。
+# 実 GPU 描画を伴う Test_Graphics.* は CI から除外しやすいよう label "gpu" を付ける。
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME}
+    TEST_FILTER "-Test_Graphics.*"
+)
+gtest_discover_tests(${PROJECT_NAME}
+    TEST_FILTER "Test_Graphics.*"
+    PROPERTIES LABELS "gpu"
+)

@@ -18,4 +18,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LuminoShader GTest::gtest)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
 )
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME})

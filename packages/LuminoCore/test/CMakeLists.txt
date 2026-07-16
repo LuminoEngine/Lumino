@@ -23,4 +23,8 @@ if(LN_ENABLE_WEBGPU)
     target_copy_webgpu_binaries(${PROJECT_NAME})
 endif()
 
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME})

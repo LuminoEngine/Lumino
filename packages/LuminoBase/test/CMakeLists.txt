@@ -16,4 +16,9 @@ add_executable(
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoBase GTest::gtest glm::glm)
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
+#-------------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------------
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME})
