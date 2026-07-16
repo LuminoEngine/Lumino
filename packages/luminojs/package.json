@@ -20,12 +20,16 @@
     "types": "lib/index.d.ts",
     "license": "MIT",
     "description": "TypeScript / WebAssembly bindings for Lumino.",
-    "files": ["bin/**", "lib/**"],
+    "files": [
+        "bin/**",
+        "lib/**"
+    ],
     "scripts": {
         "build:typecheck": "tsc --noEmit",
         "build:rollup": "rollup --config rollup.config.mjs",
         "build": "npm run build:typecheck && npm run build:rollup",
         "dev": "npx serve . --cors",
+        "test": "vitest run",
         "pretest:smoke": "npm run build",
         "test:smoke": "playwright test --config test/smoke/playwright.config.mjs"
     },
@@ -35,7 +39,8 @@
         "@rollup/plugin-typescript": "^11.1.6",
         "rollup": "^4.13.0",
         "tslib": "^2.6.2",
-        "typescript": "^5.4.3"
+        "typescript": "^5.4.3",
+        "vitest": "^4.1.10"
     },
     "dependencies": {
         "serve": "^14.2.6"

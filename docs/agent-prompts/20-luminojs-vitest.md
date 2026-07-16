@@ -1,4 +1,4 @@
-# 依頼: luminojs 単体テスト導入 (vitest) (改善案 #20)
+# [done] 依頼: luminojs 単体テスト導入 (vitest) (改善案 #20)
 
 推奨モデル: Sonnet / 目安: 1日 / 人間確認: 不要
 

@@ -8,14 +8,11 @@ import { API, Runtime } from "./Runtime";
 import {
     type RenderPassDesc,
     type Transform,
-    LN_NULL_HANDLE,
-    LN_MAX_COLOR_ATTACHMENTS,
-    LoadOp,
     SIZEOF_RENDER_PASS_DESC,
-    SIZEOF_COLOR_ATTACHMENT_DESC,
     SIZEOF_TRANSFORM,
     SIZEOF_MATRIX,
 } from "./types";
+import { writeRenderPassDesc, writeTransform } from "./serialize";
 
 export class Renderer extends LuminoObject {
     // LNRenderPassDesc 用の事前確保 WASM バッファ (224 バイト)。
@@ -252,16 +249,6 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * `Transform` を WASM 線形メモリに書き込み、そのポインタを返す。
-     *
-     * C レイアウト (wasm32, 40 バイト):
-     * ```
-     * offset 0:  float posX, posY, posZ        (12 バイト)
-     * offset 12: float rotX, rotY, rotZ, rotW  (16 バイト)
-     * offset 28: float scaleX, scaleY, scaleZ  (12 バイト)
-     * ```
-     */
-    /**
      * `Matrix4x4` (列優先 float[16]) を WASM 線形メモリに書き込み、そのポインタを返す。
      */
     private _serializeMatrix(m: Matrix4x4): number {
@@ -273,95 +260,36 @@ export class Renderer extends LuminoObject {
         return this._matrixPtr;
     }
 
+    /**
+     * `Transform` を WASM 線形メモリに書き込み、そのポインタを返す。
+     * レイアウトとテストは `./serialize.ts` の `writeTransform` を参照。
+     */
     private _serializeTransform(t: Transform): number {
         this._ensureTransformBuffer();
-        const v = this._transformView!;
-        v.setFloat32(0,  t.position[0], true);
-        v.setFloat32(4,  t.position[1], true);
-        v.setFloat32(8,  t.position[2], true);
-        v.setFloat32(12, t.rotation[0], true);
-        v.setFloat32(16, t.rotation[1], true);
-        v.setFloat32(20, t.rotation[2], true);
-        v.setFloat32(24, t.rotation[3], true);
-        v.setFloat32(28, t.scale[0], true);
-        v.setFloat32(32, t.scale[1], true);
-        v.setFloat32(36, t.scale[2], true);
+        writeTransform(this._transformView!, t);
         return this._transformPtr;
     }
 
     /**
      * `RenderPassDesc` を WASM 線形メモリに書き込み、そのポインタを返す。
-     *
-     * C レイアウト (wasm32, 4 バイトアライン、合計 224 バイト):
-     * ```
-     * offset 0:   uint32_t colorAttachmentCount
-     * offset 4:   LNColorAttachmentDesc colorAttachments[8]  (各 24 バイト)
-     *   アタッチメントごと:
-     *     +0  uint32_t renderTarget
-     *     +4  float    clearColor[4]
-     *     +20 uint32_t loadOp
-     * offset 196: LNDepthStencilAttachmentDesc depthStencil  (20 バイト)
-     *     +0  uint32_t depthBuffer
-     *     +4  float    clearDepth
-     *     +8  uint32_t clearStencil
-     *     +12 uint32_t depthLoadOp
-     *     +16 uint32_t stencilLoadOp
-     * offset 216: const char* shaderPassName  (ポインタ, 4 バイト)
-     * offset 220: LNSortMode sortMode         (uint32_t, 4 バイト)
-     * ```
+     * レイアウトとテストは `./serialize.ts` の `writeRenderPassDesc` を参照。
+     * shaderPassName の文字列は WASM ヒープへの確保が必要なため、ここで行う
+     * (呼び出し後の解放は `beginRenderPass` の finally ブロックで行われる)。
      */
     private _serializeDesc(desc: RenderPassDesc): number {
         this._ensureDescBuffer();
-        const v = this._descView!;
 
-        // 構造体全体をゼロクリアする (安全なデフォルト値: 全ゼロ = CLEAR、
-        // renderTarget=NULL_HANDLE、clearDepth は後で設定する)。
-        const bytes = new Uint8Array(v.buffer, this._descPtr, SIZEOF_RENDER_PASS_DESC);
-        bytes.fill(0);
-
-        // --- カラーアタッチメント ---
-        const attachments = desc.colorAttachments ?? [];
-        const count = Math.min(attachments.length, LN_MAX_COLOR_ATTACHMENTS);
-        v.setUint32(0, count, true);
-
-        for (let i = 0; i < count; i++) {
-            const a = attachments[i];
-            const base = 4 + i * SIZEOF_COLOR_ATTACHMENT_DESC;
-            v.setUint32(base + 0, a.renderTarget ?? LN_NULL_HANDLE, true);
-            const c = a.clearColor ?? [0, 0, 0, 1];
-            v.setFloat32(base + 4,  c[0], true);
-            v.setFloat32(base + 8,  c[1], true);
-            v.setFloat32(base + 12, c[2], true);
-            v.setFloat32(base + 16, c[3], true);
-            v.setUint32(base + 20, a.loadOp ?? LoadOp.Clear, true);
-        }
-
-        // --- デプス/ステンシル ---
-        const dsBase = 4 + LN_MAX_COLOR_ATTACHMENTS * SIZEOF_COLOR_ATTACHMENT_DESC; // 196
-        const ds = desc.depthStencil;
-        v.setUint32(dsBase + 0,  ds?.depthBuffer   ?? LN_NULL_HANDLE, true);
-        v.setFloat32(dsBase + 4, ds?.clearDepth     ?? 1.0, true);
-        v.setUint32(dsBase + 8,  ds?.clearStencil   ?? 0, true);
-        v.setUint32(dsBase + 12, ds?.depthLoadOp    ?? LoadOp.Clear, true);
-        v.setUint32(dsBase + 16, ds?.stencilLoadOp  ?? LoadOp.Clear, true);
-
-        // --- shaderPassName (offset 216 の const char*) ---
+        let strPtr = 0;
         if (desc.shaderPassName) {
             const encoder = new TextEncoder();
             const encoded = encoder.encode(desc.shaderPassName);
-            const strPtr = Runtime.module._malloc(encoded.length + 1);
+            strPtr = Runtime.module._malloc(encoded.length + 1);
             Runtime.module.HEAPU8.set(encoded, strPtr);
             Runtime.module.HEAPU8[strPtr + encoded.length] = 0; // ヌル終端
-            v.setUint32(216, strPtr, true);
-            this._lastShaderPassNamePtr = strPtr;
-        } else {
-            v.setUint32(216, 0, true);
-            this._lastShaderPassNamePtr = 0;
         }
+        this._lastShaderPassNamePtr = strPtr;
 
-        // --- sortMode (offset 220) ---
-        v.setUint32(220, desc.sortMode ?? 0, true);
-
+        writeRenderPassDesc(this._descView!, desc, strPtr);
         return this._descPtr;
     }
 }

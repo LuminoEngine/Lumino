@@ -61,6 +61,7 @@ python scripts/build_wasm.py --debug   # Debug ビルド (最適化なし、ソ�
 cd packages/luminojs
 npm install
 npm run build
+npm run test
 
 # サンプルの実行
 cd packages/luminojs-examples
