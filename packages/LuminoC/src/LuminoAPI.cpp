@@ -7,6 +7,7 @@
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/Runtime/ObjectRegistry.hpp>
 #include <LuminoCore/Platform/Window.hpp>
+#include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/Texture2D.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
@@ -103,6 +104,11 @@ LNHandle wrapObjectFromCreate(ln::Object* object) {
     if (!instance) return LN_NULL_HANDLE;
     LNHandle handle = instance->objectRegistry()->registerObject(object);
     object->addRef();
+    // 作成時点のデバイス世代を記録する。デバイスロスト復旧後、世代が一致しない
+    // オブジェクトは stale として描画からスキップされる。
+    if (auto* module = instance->graphicsModule()) {
+        object->setDeviceGeneration(module->deviceGeneration());
+    }
     return handle;
 }
 
@@ -116,7 +122,13 @@ LNHandle wrapObjectFromCreate(ln::Object* object) {
 LNHandle wrapObjectFromGet(ln::Object* object) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_NULL_HANDLE;
-    return instance->objectRegistry()->registerObject(object);
+    if (auto* module = instance->graphicsModule()) {
+        object->setDeviceGeneration(module->deviceGeneration());
+    }
+    // NOTE: registerObject は常に新しいスロットを確保するため、毎フレーム呼ばれる
+    // BeginFrame の out ハンドルで使うとスロットが枯渇する。既登録ならそのハンドルを
+    // 返す wrapOrRegisterObject を使う。
+    return instance->objectRegistry()->wrapOrRegisterObject(object);
 }
 
 template<typename T, typename H>
@@ -124,6 +136,59 @@ T* resolveObject(H handle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return nullptr;
     return instance->objectRegistry()->resolve<T>(handle);
+}
+
+//--------------------------------------
+// Shared: Device lost helpers
+//--------------------------------------
+
+/**
+ * デバイスロスト中 (自動復旧中を含む) かどうか。
+ * GPU 依存の C API はこのチェックが true の間 LN_ERROR_DEVICE_LOST を返し、
+ * RHI には一切触れない (デバイスロスト設計の RHI ガード)。
+ * ランタイム未初期化の場合は false を返す (各 API の未初期化チェックに委ねる)。
+ */
+bool isDeviceLostNow() {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return false;
+    auto* module = instance->graphicsModule();
+    return module && module->deviceState() != ln::GraphicsModule::DeviceState::Running;
+}
+
+/** ln::Error のエラーコードを LNResult にマップする。 */
+LNResult toLNResult(const ln::Error& error) {
+    switch (error.code) {
+        case ln::ErrorCode::DeviceLost:      return LN_ERROR_DEVICE_LOST;
+        case ln::ErrorCode::InvalidArgument: return LN_ERROR_INVALID_ARGUMENT;
+        case ln::ErrorCode::NotSupported:    return LN_ERROR_NOT_SUPPORTED;
+        case ln::ErrorCode::NotInitialized:  return LN_RUNTIME_UNINITIALIZED;
+        default:                             return LN_ERROR_UNKNOWN;
+    }
+}
+
+/**
+ * デバイスロスト復旧をまたいだ stale リソースかどうか。
+ * stale リソースは旧デバイスの GPU リソースを参照しているため、
+ * 描画に使用してはならない (使用は警告付きでスキップされる)。
+ * LNObject_Release による解放は常に安全である。
+ */
+bool isStaleResource(const ln::Object* obj) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance || !obj) return false;
+    auto* module = instance->graphicsModule();
+    return module && obj->deviceGeneration() != module->deviceGeneration();
+}
+
+/** stale リソースの使用をスキップしたことを警告する (プロセス内で一度だけ)。 */
+void warnStaleResourceSkipped(const char* what) {
+    static bool warned = false;
+    if (!warned) {
+        warned = true;
+        LN_LOG_WARNING(
+            "Stale resource (created before device recovery) passed to %s. "
+            "The operation was skipped. Release and recreate resources after device lost.",
+            what ? what : "?");
+    }
 }
 
 //--------------------------------------
@@ -288,6 +353,7 @@ LNResult LNWindow_Create(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     ln::platform::WindowDesc winDesc;
     winDesc.title = title ? title : "Lumino";
@@ -316,6 +382,7 @@ LNResult LNWindow_CreateFromCanvas(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     ln::platform::WindowDesc winDesc;
     winDesc.canvasSelector = canvasSelector;
@@ -389,11 +456,29 @@ LNResult LNGraphicsContext_BeginFrame(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
+    // デバイスロスト中は自動復旧ステートマシンを 1 ステップ進める。
+    // 復旧が完了していなければ RHI に触れずに LN_ERROR_DEVICE_LOST を返す。
+    // クライアントはフレームループを回し続けるだけで復旧が進行し、
+    // 完了後の BeginFrame から LN_OK に戻る。
+    if (isDeviceLostNow()) {
+        auto* module = instance->graphicsModule();
+        module->pumpRecovery();
+        if (module->deviceState() != ln::GraphicsModule::DeviceState::Running) {
+            return LN_ERROR_DEVICE_LOST;
+        }
+        // 復旧完了。このままフレームを開始する。
+    }
+
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     auto frameResult = ctx->beginFrame(width, height);
-    if (!frameResult) return LN_ERROR_UNKNOWN;
+    if (!frameResult) {
+        // acquire 中にロストが検知された場合 (このフレームが最初の検知点) も
+        // LN_ERROR_DEVICE_LOST として返す。
+        if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
+        return toLNResult(frameResult.error());
+    }
 
     ctx->m_currentCmd = ctx->currentCommandBuffer();
     if (!ctx->m_currentCmd) return LN_ERROR_UNKNOWN;
@@ -431,6 +516,7 @@ LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext) {
 #else
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -457,6 +543,7 @@ LNResult LNGraphicsContext_CaptureBackbuffer(
 #else
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -478,6 +565,7 @@ LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext) {
     (void)graphicsContext;
     return LN_ERROR_NOT_SUPPORTED;
 #else
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
     ctx->waitIdle();
@@ -488,6 +576,7 @@ LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext) {
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
     if (graphicsContext == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -583,6 +672,17 @@ LNResult LNDebug_GetStructSize(const char* structName, uint32_t* outSize) {
     return LN_ERROR_INVALID_ARGUMENT;
 }
 
+LNResult LNDebug_SimulateDeviceLost(LNBool deep) {
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* device = instance->rhiDevice();
+    if (!device) return LN_ERROR_UNKNOWN;
+
+    device->debugSimulateDeviceLost(deep != LN_FALSE);
+    return LN_OK;
+}
+
 #ifndef __EMSCRIPTEN__
 LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     if (!str) return LN_ERROR_INVALID_ARGUMENT;
@@ -625,6 +725,7 @@ LNResult LNTexture2D_LoadFromFile(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -651,6 +752,7 @@ LNResult LNTexture2D_LoadFromMemory(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -677,6 +779,7 @@ LNResult LNTexture2D_CreateFromPixels(
     if (!outHandle || !pixelData || dataSizeBytes == 0) return LN_ERROR_INVALID_ARGUMENT;
     if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -745,6 +848,7 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -774,6 +878,7 @@ LNResult LNMaterial_CreateFromCompiledShader(LNHandle graphicsContext, const voi
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -790,6 +895,7 @@ LNResult LNMaterial_CreateFromShaderSourceFile(LNHandle graphicsContext, const c
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -809,6 +915,10 @@ LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float
 
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     mat->setColor(ln::Color{r, g, b, a});
     return LN_OK;
@@ -820,9 +930,17 @@ LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture) {
 
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     auto* tex = resolveObject<ln::Texture>(texture);
     if (!tex) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(tex)) {
+        warnStaleResourceSkipped("texture");
+        return LN_OK;
+    }
 
     mat->setTexture(tex->rhiTexture());
     return LN_OK;
@@ -831,6 +949,10 @@ LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture) {
 extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* name, const float* values) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
     mat->setFloat4(name, values);
     return LN_OK;
 }
@@ -838,6 +960,10 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* n
 LNResult LNMaterial_SetBlendMode(LNHandle material, LNBlendMode blendMode) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     mat->setBlendMode(static_cast<ln::BlendMode>(blendMode));
     return LN_OK;
@@ -846,6 +972,10 @@ LNResult LNMaterial_SetBlendMode(LNHandle material, LNBlendMode blendMode) {
 LNResult LNMaterial_SetCullMode(LNHandle material, LNCullMode cullMode) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     mat->setCullMode(static_cast<ln::rhi::CullMode>(cullMode));
     return LN_OK;
@@ -854,6 +984,10 @@ LNResult LNMaterial_SetCullMode(LNHandle material, LNCullMode cullMode) {
 LNResult LNMaterial_SetDepthTestEnabled(LNHandle material, LNBool enabled) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     mat->setDepthTestEnabled(enabled != LN_FALSE);
     return LN_OK;
@@ -862,6 +996,10 @@ LNResult LNMaterial_SetDepthTestEnabled(LNHandle material, LNBool enabled) {
 LNResult LNMaterial_SetDepthWriteEnabled(LNHandle material, LNBool enabled) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     mat->setDepthWriteEnabled(enabled != LN_FALSE);
     return LN_OK;
@@ -870,10 +1008,18 @@ LNResult LNMaterial_SetDepthWriteEnabled(LNHandle material, LNBool enabled) {
 LNResult LNMaterial_SetNamedTexture(LNHandle material, const char* name, LNHandle texture) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
     if (!name) return LN_ERROR_INVALID_ARGUMENT;
 
     auto* tex = resolveObject<ln::Texture>(texture);
     if (!tex) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(tex)) {
+        warnStaleResourceSkipped("texture");
+        return LN_OK;
+    }
 
     mat->setNamedTexture(name, tex->rhiTexture());
     return LN_OK;
@@ -898,6 +1044,7 @@ LNResult LNMesh_Create(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -942,6 +1089,7 @@ LNResult LNMesh_CreateDynamic(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -961,9 +1109,14 @@ LNResult LNMesh_UpdateVertices(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     // Convert LNVertex[] → ln::Vertex[]
     std::vector<ln::Vertex> verts(count);
@@ -991,9 +1144,14 @@ LNResult LNMesh_UpdateIndices(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     auto result = mesh->updateIndices(firstIndex, indices, count);
     if (!result) return LN_ERROR_UNKNOWN;
@@ -1011,6 +1169,10 @@ LNResult LNMesh_SetSubMeshes(
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     std::vector<ln::SubMesh> subs(submeshCount);
     for (uint32_t i = 0; i < submeshCount; i++) {
@@ -1028,9 +1190,17 @@ LNResult LNMesh_SetMaterial(LNHandle meshHandle, uint32_t materialIndex, LNHandl
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     auto* mat = resolveObject<ln::Material>(materialHandle);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     auto& materials = mesh->materials();
     if (materialIndex >= materials.size()) return LN_ERROR_INVALID_ARGUMENT;
@@ -1143,6 +1313,7 @@ LNResult LNRenderer_BeginRenderPass(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
@@ -1173,6 +1344,12 @@ LNResult LNRenderer_BeginRenderPass(
             if (desc->colorAttachments[i].renderTarget != LN_NULL_HANDLE) {
                 auto* tex = resolveObject<ln::Texture>(desc->colorAttachments[i].renderTarget);
                 if (!tex) return LN_ERROR_INVALID_HANDLE;
+                // stale なレンダーターゲットはパス全体が成立しないためハードエラー。
+                // (描画スキップと違い、以降の draw の描画先が失われるため)
+                if (isStaleResource(tex)) {
+                    warnStaleResourceSkipped("render target attachment");
+                    return LN_ERROR_INVALID_HANDLE;
+                }
                 colorAttach.view = tex->rhiTextureView();
                 if (i == 0) firstRTTexture = tex;
             } else {
@@ -1194,6 +1371,10 @@ LNResult LNRenderer_BeginRenderPass(
     if (desc->depthStencil.depthBuffer != LN_NULL_HANDLE) {
         auto* tex = resolveObject<ln::Texture>(desc->depthStencil.depthBuffer);
         if (!tex) return LN_ERROR_INVALID_HANDLE;
+        if (isStaleResource(tex)) {
+            warnStaleResourceSkipped("depth-stencil attachment");
+            return LN_ERROR_INVALID_HANDLE;
+        }
         depthAttach.view = tex->rhiTextureView();
     } else {
         depthAttach.view = fb->depthTexture->rhiTextureView();
@@ -1226,6 +1407,7 @@ LNResult LNRenderer_BeginRenderPass(
 LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* r = resolveObject<ln::Renderer>(renderer);
     if (!r) return LN_ERROR_INVALID_HANDLE;
@@ -1238,12 +1420,17 @@ LNResult LNRenderer_DrawMesh(
     int32_t zIndex) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     ren->drawMesh(mesh, toLnTransform(transform), zIndex);
     return LN_OK;
@@ -1253,12 +1440,17 @@ LNResult LNRenderer_DrawMeshImmediate(
     LNHandle renderer, LNHandle meshHandle, const LNTransform* transform) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     auto result = ren->drawMeshImmediate(mesh, toLnTransform(transform));
     if (!result) return LN_ERROR_UNKNOWN;
@@ -1270,15 +1462,24 @@ LNResult LNRenderer_DrawMeshImmediateWithMaterial(
     LNHandle renderer, LNHandle meshHandle, const LNTransform* transform, LNHandle materialHandle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     auto* mat = resolveObject<ln::Material>(materialHandle);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     auto result = ren->drawMeshImmediate(mesh, toLnTransform(transform), mat);
     if (!result) return LN_ERROR_UNKNOWN;
@@ -1289,12 +1490,17 @@ LNResult LNRenderer_DrawMeshImmediateWithMaterial(
 LNResult LNRenderer_DrawScreenRect(LNHandle renderer, LNHandle materialHandle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto* mat = resolveObject<ln::Material>(materialHandle);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     auto result = ren->drawScreenRect(mat);
     if (!result) return LN_ERROR_UNKNOWN;
@@ -1312,12 +1518,17 @@ LNResult LNRenderer_DrawSprite(
     float colorR, float colorG, float colorB, float colorA) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     ren->drawSprite(
         mat, zIndex,
@@ -1336,15 +1547,24 @@ LNResult LNRenderer_PushStencilMask(
     const LNTransform* transform, LNHandle materialHandle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mesh)) {
+        warnStaleResourceSkipped("mesh");
+        return LN_OK;
+    }
 
     auto* mat = resolveObject<ln::Material>(materialHandle);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
 
     ln::Transform xform;
     if (transform) {
@@ -1362,6 +1582,7 @@ LNResult LNRenderer_PushStencilMask(
 LNResult LNRenderer_PopStencilMask(LNHandle renderer) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
     if (!ren) return LN_ERROR_INVALID_HANDLE;
@@ -1387,6 +1608,7 @@ LNResult LNTexture2D_CreateRenderTarget(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -1414,6 +1636,7 @@ LNResult LNTexture2D_CreateRenderTargetEx(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -1441,6 +1664,7 @@ LNResult LNTexture2D_CreateDepthStencil(
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;

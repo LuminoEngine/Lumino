@@ -63,6 +63,9 @@ public:
     Result<VkCommandBuffer> beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
+    /** VkResult を検査し、VK_ERROR_DEVICE_LOST であれば markDeviceLost する。r をそのまま返す。 */
+    VkResult checkDeviceLost(VkResult r, const char* what);
+
 private:
     void finalize() override;
     static VoidResult lookupQueueFamilies(

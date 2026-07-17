@@ -193,6 +193,17 @@ typedef struct LNRenderPassDesc {
  * 返された renderer, colorBuffer, depthBuffer ハンドルは graphicsContext が管理するため、
  * LNObject_Release を呼ぶ必要はありません。
  *
+ * デバイスロスト (GPU ドライバ更新、ブラウザのタブ復帰等) が検出された場合、
+ * 本関数は LN_ERROR_DEVICE_LOST を返します。復旧は Lumino 内部で自動的に進行し、
+ * 本関数の呼び出しが復旧処理を 1 ステップずつ進めるため、クライアントは
+ * フレームループを回し続けるだけでよく、復旧が完了すると再び LN_OK を返します。
+ *
+ * ハンドルの契約: Window / GraphicsContext / Camera のハンドルはロストをまたいで
+ * 有効です。Texture / Mesh / Material のハンドルは stale となり、描画に渡しても
+ * 無視 (スキップ) されるため、復旧後に LNObject_Release で解放して作り直して
+ * ください (Release はロスト中も常に成功します)。RenderTarget / DepthStencil の
+ * 内容は復旧時に失われます。
+ *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  width          描画先の幅 (ピクセル)
  * @param[in]  height         描画先の高さ (ピクセル)
@@ -1046,6 +1057,18 @@ extern LUMINO_API LNResult LNDebug_Print(
 extern LUMINO_API LNResult LNDebug_GetStructSize(
     const char* structName,
     uint32_t* outSize);
+
+/**
+ * デバイスロストをシミュレートします。テスト用。
+ * 以後の LNGraphicsContext_BeginFrame をはじめとする GPU 依存の API は
+ * LN_ERROR_DEVICE_LOST を返します。内部の自動復旧が完了すると
+ * LNGraphicsContext_BeginFrame は再び LN_OK を返すようになります。
+ *
+ * @param[in] deep LN_TRUE の場合、WebGPU では実際にデバイスを破棄し、
+ *                 後続 API のエラー挙動まで再現します (Vulkan では無視され、
+ *                 ロストフラグを立てるのみ)。
+ */
+extern LUMINO_API LNResult LNDebug_SimulateDeviceLost(LNBool deep);
 
 #ifdef __cplusplus
 } // extern "C"

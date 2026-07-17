@@ -1,4 +1,5 @@
-﻿#include "VulkanHelpers.hpp"
+﻿#include <LuminoBase/Logger.hpp>
+#include "VulkanHelpers.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanBackend.hpp"
 #include "VulkanTextureView.hpp"
@@ -65,10 +66,26 @@ void VulkanCommandBuffer::dispose() {
 }
 
 VoidResult VulkanCommandBuffer::begin() {
-    // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
-    //vkWaitForFences(m_device->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
     VkDevice vkDevice = m_device->vkDevice();
-    vkWaitForFences(vkDevice, 1, &m_inFlightFences, VK_TRUE, UINT64_MAX);
+
+    // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ。
+    // デバイスロスト時はフェンスが永遠にシグナルされない環境があるため、
+    // 無限待ちではなく有限タイムアウトで待ちながらロスト状態を確認する。
+    constexpr uint64_t kFenceTimeoutNs = 2'000'000'000ull; // 2秒
+    for (;;) {
+        VkResult r = m_device->checkDeviceLost(
+            vkWaitForFences(vkDevice, 1, &m_inFlightFences, VK_TRUE, kFenceTimeoutNs),
+            "vkWaitForFences");
+        if (r == VK_SUCCESS) break;
+        if (m_device->isDeviceLost()) {
+            return LN_MAKE_ERROR_WITH_CODE(
+                ln::ErrorCode::DeviceLost, "Device lost while waiting for in-flight fence.");
+        }
+        if (r != VK_TIMEOUT) {
+            return LN_MAKE_VULKAN_ERROR(r, "vkWaitForFences");
+        }
+        LN_LOG_WARNING("VulkanCommandBuffer::begin: in-flight fence wait timed out, retrying.");
+    }
     vkResetFences(vkDevice, 1, &m_inFlightFences);
 
     vkResetCommandBuffer(m_cmd, 0);
@@ -184,7 +201,9 @@ void VulkanCommandBuffer::submit() {
         submitInfo.pSignalSemaphores = &signalSemaphore; // 実行を完了したときに通知されるセマフォ
     }
 
-    vkQueueSubmit(m_device->graphicsQueue(), 1, &submitInfo, m_inFlightFences);
+    m_device->checkDeviceLost(
+        vkQueueSubmit(m_device->graphicsQueue(), 1, &submitInfo, m_inFlightFences),
+        "vkQueueSubmit");
 
     m_encoder = nullptr;
 }

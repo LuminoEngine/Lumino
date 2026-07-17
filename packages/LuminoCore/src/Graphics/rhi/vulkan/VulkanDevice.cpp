@@ -175,7 +175,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
 
     // Resource management subsystems
     m_descriptorPoolManager.init(m_device);
-    m_stagingPool.init(m_device, m_physicalDevice);
+    m_stagingPool.init(m_device, m_physicalDevice, this);
     return LN_MAKE_SUCCESS();
 }
 
@@ -520,9 +520,9 @@ Result<VkCommandBuffer> VulkanDevice::beginSingleTimeCommands() {
 }
 
 void VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
-    VkResult result = vkEndCommandBuffer(commandBuffer);
+    VkResult result = checkDeviceLost(vkEndCommandBuffer(commandBuffer), "vkEndCommandBuffer");
     if (result != VK_SUCCESS) {
-        LN_MAKE_VULKAN_ERROR(result, "vkEndCommandBuffer");
+        LN_LOG_ERROR("endSingleTimeCommands: vkEndCommandBuffer failed (%d)", static_cast<int>(result));
         // no return, continue.
     }
 
@@ -530,19 +530,28 @@ void VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
-    result = vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    result = checkDeviceLost(
+        vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit");
     if (result != VK_SUCCESS) {
-        LN_MAKE_VULKAN_ERROR(result, "vkQueueSubmit");
+        LN_LOG_ERROR("endSingleTimeCommands: vkQueueSubmit failed (%d)", static_cast<int>(result));
         // no return, continue.
     }
 
-    result = vkQueueWaitIdle(m_graphicsQueue);
+    result = checkDeviceLost(vkQueueWaitIdle(m_graphicsQueue), "vkQueueWaitIdle");
     if (result != VK_SUCCESS) {
-        LN_MAKE_VULKAN_ERROR(result, "vkQueueWaitIdle");
+        LN_LOG_ERROR("endSingleTimeCommands: vkQueueWaitIdle failed (%d)", static_cast<int>(result));
         // no return, continue.
     }
 
     vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
+}
+
+VkResult VulkanDevice::checkDeviceLost(VkResult r, const char* what) {
+    if (r == VK_ERROR_DEVICE_LOST) {
+        LN_LOG_ERROR("[Vulkan] VK_ERROR_DEVICE_LOST detected: %s", what ? what : "?");
+        markDeviceLost(what);
+    }
+    return r;
 }
 
 //VoidResult VulkanDevice::transitionImageLayoutImmediately(
@@ -699,6 +708,12 @@ Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
     }
 #endif
     return LN_MAKE_ERROR("Unsupported backend");
+}
+
+Result<Ref<Device>> Device::beginCreateAsync(const DeviceDesc& desc) {
+    // デスクトップのバックエンドは同期的に初期化できるため、ブロッキング作成に委譲する。
+    // (Vulkan は同期 API、ネイティブ Dawn のコールバックは AllowSpontaneous で同期的に呼ばれる)
+    return create(desc);
 }
 
 } // namespace ln::rhi

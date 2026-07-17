@@ -15,6 +15,7 @@
  */
 
 #include <LuminoBase/Types.hpp>
+#include <LuminoCore/Graphics/rhi/Rhi.hpp>
 
 #include <cstring>
 #include <vector>
@@ -24,9 +25,10 @@ namespace ln::rhi::vulkan {
 
 class StagingBufferPool {
 public:
-    void init(VkDevice device, VkPhysicalDevice physicalDevice) {
+    void init(VkDevice device, VkPhysicalDevice physicalDevice, Device* owner) {
         m_device = device;
         m_physicalDevice = physicalDevice;
+        m_owner = owner;
     }
 
     StagingBufferPool() = default;
@@ -82,8 +84,8 @@ public:
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmd;
-        vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(queue);
+        checkQueueResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
+        checkQueueResult(vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
 
         vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
         releasePage(staging);
@@ -165,8 +167,8 @@ public:
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmd;
-        vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(queue);
+        checkQueueResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
+        checkQueueResult(vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
 
         vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
         releasePage(staging);
@@ -246,8 +248,8 @@ public:
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmd;
-        vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(queue);
+        checkQueueResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
+        checkQueueResult(vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
 
         // Map staging buffer and copy to CPU vector.
         void* mapped = nullptr;
@@ -270,7 +272,15 @@ private:
 
     VkDevice m_device = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    Device* m_owner = nullptr; // non-owning (親の VulkanDevice)
     std::vector<Page> m_freePages;
+
+    /** キュー操作の結果を検査し、VK_ERROR_DEVICE_LOST であれば owner をロスト状態にする。 */
+    void checkQueueResult(VkResult r, const char* what) {
+        if (r == VK_ERROR_DEVICE_LOST && m_owner) {
+            m_owner->markDeviceLost(what);
+        }
+    }
 
     Page acquirePage(VkDeviceSize size) {
         // Reuse any free page that is large enough.

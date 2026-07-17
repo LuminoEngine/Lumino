@@ -10,7 +10,18 @@ namespace ln::rhi::webgpu {
 class WebGPUDevice final : public Device {
 public:
     WebGPUDevice();
+
+    /** ブロッキング初期化。initAsyncBegin + pumpAsyncInit の完了待ちループ。
+        Web では ASYNCIFY (emscripten_sleep) を使うため、ASYNCIFY 済みの
+        エントリポイント (LNInstance_Initialize) からのみ呼び出せる。 */
     VoidResult init(const DeviceDesc& desc);
+
+    /** 非ブロッキング初期化を開始する (インスタンス作成 + アダプタ要求)。
+        以後 pumpAsyncInit() で進行させる。デバイスロスト自動復旧用。 */
+    VoidResult initAsyncBegin(const DeviceDesc& desc);
+
+    /** 非ブロッキング初期化を 1 ステップ進める。 */
+    AsyncInitStatus pumpAsyncInit() override;
 
     bool isValid() const { return m_device != nullptr; }
 
@@ -28,6 +39,7 @@ public:
     Result<std::vector<uint8_t>> readbackTexture(TextureView* view) override;
     void waitIdle() override;
     Backend backend() const override { return Backend::WebGPU; }
+    void debugSimulateDeviceLost(bool deep) override;
 
     // Internal accessors
     WGPUInstance wgpuInstance() const { return m_instance; }
@@ -35,19 +47,45 @@ public:
     WGPUDevice wgpuDevice() const { return m_device; }
     WGPUQueue wgpuQueue() const { return m_queue; }
 
+    /** デバイスロストコールバックから参照する。擬似ロスト (deep) 中は
+        Destroyed 理由のコールバックもロスト扱いにするためのフラグ。 */
+    bool isSimulatingDeviceLost() const { return m_simulatingDeviceLost; }
+
 private:
     struct WebGPUAdapterEntry {
         WGPURequestAdapterStatus status;
         WGPUAdapter adapter;
     };
 
+    /** 非ブロッキング初期化の進行フェーズ。 */
+    enum class InitPhase {
+        NotStarted,
+        WaitingAdapter,
+        WaitingDevice,
+        Ready,
+        Failed,
+    };
+
+    /** デバイス要求コールバックの結果格納先。非同期完了に備えメンバで保持する。 */
+    struct DeviceRequest {
+        WGPUDevice device = nullptr;
+        WGPURequestDeviceStatus status = {};
+        bool done = false;
+    };
+
     void finalize() override;
+
+    /** アダプタ確定後にデバイスを要求する (pumpAsyncInit の一部)。 */
+    void requestDeviceFromAdapter();
 
     WGPUInstance m_instance = nullptr;
     WGPUAdapter  m_adapter  = nullptr;
     WGPUDevice   m_device   = nullptr;
     WGPUQueue    m_queue    = nullptr;
     std::vector<WebGPUAdapterEntry> m_adapters;
+    InitPhase m_initPhase = InitPhase::NotStarted;
+    DeviceRequest m_deviceReq;
+    bool m_simulatingDeviceLost = false;
 
 #ifdef _WIN32
     HMODULE m_hD3DCompilerDLL = nullptr;

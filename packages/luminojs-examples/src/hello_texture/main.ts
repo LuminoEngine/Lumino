@@ -55,7 +55,13 @@ async function main() {
     const identity: Transform = { position: [0, 0, 0], rotation: [0, 0, 0, 1], scale: [1, 1, 1] };
 
     function frame() {
-        const { renderer } = context.beginFrame();
+        const frameInfo = context.beginFrame();
+        if (!frameInfo) {
+            // デバイスロスト復旧待ち。このフレームはスキップする
+            requestAnimationFrame(frame);
+            return;
+        }
+        const { renderer } = frameInfo;
         renderer.beginRenderPass(
             context,
             {

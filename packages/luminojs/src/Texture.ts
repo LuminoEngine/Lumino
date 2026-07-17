@@ -6,7 +6,9 @@ import { Result, TextureFormat } from "./types";
 
 type TextureSource =
     | { kind: "pixels"; data: Uint8Array; width: number; height: number; format: TextureFormat }
-    | { kind: "external" };  // RenderTarget / DepthStencil - not a Residency target.
+    | { kind: "rt"; format: TextureFormat }  // RenderTarget: 生成情報のみ保持 (内容は揮発)
+    | { kind: "ds" }                         // DepthStencil: 生成情報のみ保持 (内容は揮発)
+    | { kind: "external" };                  // その他 (Residency / 復旧の対象外)
 
 export class Texture extends LuminoObject implements ResidentResource {
     private _source: TextureSource = { kind: "external" };
@@ -15,6 +17,8 @@ export class Texture extends LuminoObject implements ResidentResource {
     private _dirty = false;
     private _lastUsedFrame = 0;
     private _isResidencyTarget = false;
+    // RT / DS の場合のみ: デバイスロスト復旧時の再作成用 (non-owning)
+    private _externalCtx: GraphicsContext | null = null;
 
     get lastUsedFrame(): number { return this._lastUsedFrame; }
     get width(): number { return this._width; }
@@ -38,7 +42,9 @@ export class Texture extends LuminoObject implements ResidentResource {
         tex._setHandle(handle, true);
         tex._width = width;
         tex._height = height;
-        tex._source = { kind: "external" };
+        tex._source = { kind: "rt", format };
+        tex._externalCtx = ctx;
+        ctx._registerExternalTexture(tex);
         return tex;
     }
 
@@ -59,7 +65,9 @@ export class Texture extends LuminoObject implements ResidentResource {
         tex._setHandle(handle, true);
         tex._width = width;
         tex._height = height;
-        tex._source = { kind: "external" };
+        tex._source = { kind: "ds" };
+        tex._externalCtx = ctx;
+        ctx._registerExternalTexture(tex);
         return tex;
     }
 
@@ -184,12 +192,43 @@ export class Texture extends LuminoObject implements ResidentResource {
         this._handle = 0;
     }
 
+    /**
+     * @internal デバイスロスト復旧後に GraphicsContext から呼ばれる。
+     * RenderTarget / DepthStencil を生成情報から作り直す。内容はリセットされるため、
+     * 必要であればアプリが GraphicsContext.onDeviceRestored で再レンダリングする。
+     */
+    _recreateExternal(ctx: GraphicsContext): void {
+        if (this._source.kind !== "rt" && this._source.kind !== "ds") return;
+        if (this._handle !== 0) {
+            (API.LNObject_Release as (h: number) => number)(this._handle);
+            this._handle = 0;
+        }
+        if (this._source.kind === "rt") {
+            const format = this._source.format;
+            const handle = Runtime.safeCallWithReturnHandle((out) =>
+                (API.LNTexture2D_CreateRenderTargetEx as (
+                    ctx: number, w: number, h: number, fmt: number, out: number,
+                ) => number)(ctx.handle, this._width, this._height, format, out));
+            this._setHandle(handle, true);
+        } else {
+            const handle = Runtime.safeCallWithReturnHandle((out) =>
+                (API.LNTexture2D_CreateDepthStencil as (
+                    ctx: number, w: number, h: number, out: number,
+                ) => number)(ctx.handle, this._width, this._height, out));
+            this._setHandle(handle, true);
+        }
+    }
+
     override dispose(): void {
         if (this._isResidencyTarget) {
             this.evict();
             this._source = { kind: "external" };
             this._isResidencyTarget = false;
         } else {
+            if (this._externalCtx) {
+                this._externalCtx._unregisterExternalTexture(this);
+                this._externalCtx = null;
+            }
             super.dispose();
         }
     }

@@ -45,9 +45,13 @@ using VoidResult = tl::expected<void, Error>;
 // ErrorCode: RuntimeError
 #define LN_MAKE_ERROR(...) ::ln::detail::makeInternalError(::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
 
+// 指定した ErrorCode を持つエラーを生成する (例: ErrorCode::DeviceLost)
+#define LN_MAKE_ERROR_WITH_CODE(code, ...) ::ln::detail::makeInternalErrorWithCode(code, ::ln::detail::formatString(__VA_ARGS__), __FILE__, __func__, __LINE__);
+
 namespace detail {
 inline std::string formatString() { return {}; }
 std::string formatString(const char* format, ...);
 tl::unexpected<Error> makeInternalError(const std::string& message, const char* file, const char* function, int line);
+tl::unexpected<Error> makeInternalErrorWithCode(ErrorCode code, const std::string& message, const char* file, const char* function, int line);
 } // namespace detail
 } // namespace ln

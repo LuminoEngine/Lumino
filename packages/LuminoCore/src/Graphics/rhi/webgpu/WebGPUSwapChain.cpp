@@ -151,6 +151,13 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
     if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal &&
         surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal) {
         LN_LOG_ERROR("[WebGPU] wgpuSurfaceGetCurrentTexture failed: status=%d", static_cast<int>(surfaceTexture.status));
+        // Lost / Error はサーフェスの再構成では回復できない致命的状態で、
+        // デバイスロスト時にもこの status が返る。デバイスロストとして扱う。
+        // Timeout / Outdated は一時的または再構成 (リサイズ) で回復する事象のため対象外。
+        if (surfaceTexture.status == WGPUSurfaceGetCurrentTextureStatus_Lost ||
+            surfaceTexture.status == WGPUSurfaceGetCurrentTextureStatus_Error) {
+            m_device->markDeviceLost("wgpuSurfaceGetCurrentTexture");
+        }
         return nullptr;
     }
     m_currentTexture = surfaceTexture.texture;

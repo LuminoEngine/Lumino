@@ -18,6 +18,9 @@ GraphicsContext::GraphicsContext()
 }
 
 GraphicsContext::~GraphicsContext() {
+    if (m_module) {
+        m_module->unregisterContext(this);
+    }
     auto* dev = device();
     if (dev) {
         dev->waitIdle();
@@ -86,6 +89,10 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     if (!rendererResult) return LN_FORWARD_ERROR(rendererResult);
     ctx->m_renderer = std::move(*rendererResult);
 
+    // デバイスロスト復旧のための情報保持と再構築対象への登録
+    ctx->m_vsync = desc.vsync;
+    module->registerContext(ctx.get());
+
     return ctx;
 }
 
@@ -116,6 +123,12 @@ Result<const FramebufferInfo*> GraphicsContext::beginFrame(uint32_t width, uint3
 
     auto* colorTarget = m_swapChain->acquireNextTexture();
     if (!colorTarget) {
+        // acquire 中にデバイスロストが検知された場合はコード付きで返し、
+        // C API 層で LN_ERROR_DEVICE_LOST にマップできるようにする。
+        if (device() && device()->isDeviceLost()) {
+            return LN_MAKE_ERROR_WITH_CODE(
+                ErrorCode::DeviceLost, "Device lost while acquiring next texture");
+        }
         return LN_MAKE_ERROR("Failed to acquire next texture");
     }
 
@@ -287,7 +300,81 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
     if (!rendererResult) return LN_FORWARD_ERROR(rendererResult);
     ctx->m_renderer = std::move(*rendererResult);
 
+    // デバイスロスト復旧のための情報保持と再構築対象への登録
+    ctx->m_canvasSelector = canvasSelector;
+    ctx->m_vsync = desc.vsync;
+    module->registerContext(ctx.get());
+
     return ctx;
+}
+
+//------------------------------------------------------------------------------
+// デバイスロスト自動復旧
+//------------------------------------------------------------------------------
+
+void GraphicsContext::teardownForDeviceRecovery() {
+    // フレームスコープ状態のリセット
+    m_currentCmd = nullptr;
+    m_currentPass = nullptr;
+    m_captureRequested = false;
+    m_captureValid = false;
+
+    // GPU リソースの解放。Renderer が PipelineCache 内のパイプラインを参照する
+    // ため、Renderer -> PipelineCache -> SwapChain の順に破棄する。
+    m_renderer.reset();
+#if !defined(__EMSCRIPTEN__)
+    m_debugPrint.reset();
+#endif
+    if (m_pipelineCache) {
+        m_pipelineCache->clear();
+        m_pipelineCache.reset();
+    }
+    m_framebuffers.clear();
+    m_swapChain.reset();
+}
+
+Result<void> GraphicsContext::rebuildAfterDeviceRecovery() {
+    auto* dev = device();
+    if (!dev) {
+        return LN_MAKE_ERROR("rebuildAfterDeviceRecovery: device is null.");
+    }
+
+    m_pipelineCache = std::make_unique<PipelineCache>(dev);
+
+    // SwapChain の再作成。サーフェスの生成元 (GLFW ウィンドウ / canvas selector)
+    // はデバイスロスト後も有効なため、生成時と同じ情報から作り直せる。
+    rhi::SwapChainDesc scDesc;
+#if !defined(__EMSCRIPTEN__)
+    if (m_window) {
+        scDesc.nativeWindowHandle = m_window->nativeHandle().glfwWindow;
+    }
+#else
+    scDesc.nativeWindowHandle = const_cast<char*>(m_canvasSelector.c_str());
+#endif
+    scDesc.width = m_width;
+    scDesc.height = m_height;
+    scDesc.vsync = m_vsync;
+    auto swapChainResult = dev->createSwapChain(scDesc);
+    if (!swapChainResult) return LN_FORWARD_ERROR(swapChainResult);
+    m_swapChain = std::move(*swapChainResult);
+
+    // InFlightFrame ごとのフレームバッファを作り直す。深度バッファの内容は失われる。
+    const uint32_t inFlights = m_swapChain->maxFramesInFlight();
+    for (uint32_t i = 0; i < inFlights; i++) {
+        FramebufferInfo fb;
+        fb.colorTexture = Texture::createBackbufferWrapper();
+        auto result = Texture::createDepthStencil(dev, m_width, m_height);
+        if (!result) return LN_FORWARD_ERROR(result);
+        fb.depthTexture = *result;
+        m_framebuffers.push_back(std::move(fb));
+    }
+
+    // Renderer の再作成 (マテリアルキャッシュ・UBO アロケータ等を新デバイス上に構築)
+    auto rendererResult = Renderer::create(this);
+    if (!rendererResult) return LN_FORWARD_ERROR(rendererResult);
+    m_renderer = std::move(*rendererResult);
+
+    return {};
 }
 
 } // namespace ln

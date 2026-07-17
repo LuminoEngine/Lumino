@@ -71,6 +71,7 @@ test.beforeAll(async ({ browser }) => {
             helloTest: {},
             buildTimestamp: {},
             decodeImage: {},
+            deviceLost: { attempted: false },
         };
 
         // WebGPU アダプタの有無を先に調べる (skip 判定に使う)。
@@ -135,6 +136,93 @@ test.beforeAll(async ({ browser }) => {
             res.decodeImage = { ok: false, error: String(e && e.message ? e.message : e) };
         }
 
+        // 5. デバイスロスト自動復旧 (docs/plans/device-lost-design.md フェーズ B3)。
+        //    実 WebGPU デバイスを wgpuDeviceDestroy で破棄し (deep シミュレーション)、
+        //    フレームループを回すだけで自動復旧して描画が再開できることを検証する。
+        if (res.initialize.ok && res.webgpuAvailable) {
+            res.deviceLost.attempted = true;
+            try {
+                const { GraphicsContext, Camera, LoadOp } =
+                    await import(location.origin + "/lib/luminojs.mjs");
+
+                const canvas = document.createElement("canvas");
+                canvas.id = "lumino_devicelost_canvas";
+                canvas.width = 64;
+                canvas.height = 64;
+                document.body.appendChild(canvas);
+
+                const ctx = await GraphicsContext.createFromCanvas("#lumino_devicelost_canvas");
+                const camera = Camera.create();
+
+                const renderOnce = (frameInfo) => {
+                    frameInfo.renderer.beginRenderPass(ctx, {
+                        colorAttachments: [{ clearColor: [0, 0, 1, 1], loadOp: LoadOp.Clear }],
+                    }, camera);
+                    frameInfo.renderer.endRenderPass();
+                    ctx.endFrame();
+                };
+                const nextFrame = () => new Promise((r) => requestAnimationFrame(r));
+
+                // 正常フレームを数回描画する (前提確認)
+                for (let i = 0; i < 3; i++) {
+                    const f = ctx.beginFrame();
+                    if (!f) throw new Error("beginFrame returned null before simulate");
+                    renderOnce(f);
+                    await nextFrame();
+                }
+
+                // デバイスロストをシミュレートする (deep: 実際にデバイスを破棄する)
+                const simulate = Runtime.module.cwrap(
+                    "LNDebug_SimulateDeviceLost", "number", ["number"]);
+                const simRc = simulate(1);
+
+                // フレームループを回し続けるだけで自動復旧することを確認する。
+                // アダプタ/デバイスの再取得はブラウザのイベントループ経由で解決される
+                // ため、フレーム間で rAF により制御を返す。
+                let restoredCount = 0;
+                ctx.onDeviceRestored = () => restoredCount++;
+                let nullFrames = 0;
+                let recovered = false;
+                for (let i = 0; i < 600; i++) {
+                    const f = ctx.beginFrame();
+                    if (f) {
+                        renderOnce(f);
+                        recovered = true;
+                        break;
+                    }
+                    nullFrames++;
+                    await nextFrame();
+                }
+
+                // 復旧後も継続して描画できること
+                let postFrames = 0;
+                for (let i = 0; i < 3; i++) {
+                    await nextFrame();
+                    const f = ctx.beginFrame();
+                    if (f) {
+                        renderOnce(f);
+                        postFrames++;
+                    }
+                }
+
+                res.deviceLost = {
+                    attempted: true,
+                    ok: true,
+                    simRc,
+                    nullFrames,
+                    recovered,
+                    restoredCount,
+                    postFrames,
+                };
+            } catch (e) {
+                res.deviceLost = {
+                    attempted: true,
+                    ok: false,
+                    error: String(e && e.stack ? e.stack : e),
+                };
+            }
+        }
+
         return res;
     }, { pngBytes: Array.from(TEST_PNG) });
 
@@ -187,8 +275,27 @@ test("decodeImage() が小さな PNG を期待どおりの RGBA ピクセルに�
     expect(result.decodeImage.firstPixel).toEqual([255, 0, 0, 255]);
 });
 
-// TODO(#12): GPU (WebGPU) レンダリング経路のスモークは未対応。
-// BeginFrame / DrawSprite / DrawMesh / Capture 等は swapchain/canvas と実描画を
-// 伴い、headless GPU 環境への依存が強い (SwiftShader での安定動作が要検証)。
+test("デバイスロスト後、フレームループを回すだけで自動復旧して描画が再開できる", () => {
+    test.skip(
+        SKIP_INITIALIZE_WHEN_NO_WEBGPU && !result.webgpuAvailable,
+        "WebGPU アダプタが利用できない環境のため skip (SKIP_INITIALIZE_WHEN_NO_WEBGPU=true)");
+
+    expect(result.deviceLost.attempted, "deviceLost scenario not attempted").toBe(true);
+    expect(result.deviceLost.error ?? null, "deviceLost error").toBeNull();
+    expect(result.deviceLost.ok).toBe(true);
+    // LNDebug_SimulateDeviceLost が成功している (LN_OK = 0)
+    expect(result.deviceLost.simRc).toBe(0);
+    // ロスト直後は少なくとも 1 フレームは null (復旧待ち) が観測される
+    expect(result.deviceLost.nullFrames).toBeGreaterThan(0);
+    // 有限フレーム内に自動復旧して FrameInfo が返る
+    expect(result.deviceLost.recovered).toBe(true);
+    // onDeviceRestored フックが一度だけ呼ばれる
+    expect(result.deviceLost.restoredCount).toBe(1);
+    // 復旧後も継続して描画できる
+    expect(result.deviceLost.postFrames).toBeGreaterThan(0);
+});
+
+// TODO(#12): デバイスロスト復旧以外の GPU (WebGPU) レンダリング経路のスモーク
+// (DrawSprite / DrawMesh / Capture 等の描画結果検証) は未対応。
 // 将来 headless での実描画が安定して確認できたら、RenderTarget への描画 +
 // ピクセル読み戻しによる最小の実描画スモークをここに追加する。

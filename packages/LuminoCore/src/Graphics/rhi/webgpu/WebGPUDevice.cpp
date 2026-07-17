@@ -26,6 +26,33 @@ WebGPUDevice::WebGPUDevice() = default;
 VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
     LN_LOG_INFO("WebGPUDevice::init: begin");
 
+    auto beginResult = initAsyncBegin(desc);
+    if (!beginResult) {
+        return LN_FORWARD_ERROR(beginResult);
+    }
+
+    // 完了までポンプする。
+    for (;;) {
+        AsyncInitStatus st = pumpAsyncInit();
+        if (st == AsyncInitStatus::Ready) {
+            LN_LOG_INFO("WebGPUDevice::init: end (success)");
+            return LN_MAKE_SUCCESS();
+        }
+        if (st == AsyncInitStatus::Failed) {
+            return LN_MAKE_ERROR("WebGPUDevice::init failed.");
+        }
+#if defined(__EMSCRIPTEN__)
+        // ブラウザではコールバックがイベントループ経由で解決されるため、
+        // ASYNCIFY で制御を返しながら待つ。このため本関数は ASYNCIFY 済みの
+        // エントリポイント (LNInstance_Initialize) からのみ呼び出せる。
+        emscripten_sleep(10);
+#endif
+    }
+}
+
+VoidResult WebGPUDevice::initAsyncBegin(const DeviceDesc& desc) {
+    (void)desc;
+
     // WebGPU インスタンスを生成する
     {
 #if LN_WEBGPU_DAWN_LATEST
@@ -41,13 +68,14 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         instDesc.requiredLimits = &limits;
         m_instance = wgpuCreateInstance(&instDesc);
 #else
-        WGPUInstanceDescriptor desc = WGPU_INSTANCE_DESCRIPTOR_INIT;
-        desc.nextInChain = nullptr;
-        desc.capabilities.timedWaitAnyEnable = 1;
-        desc.capabilities.timedWaitAnyMaxCount = 8;
-        m_instance = wgpuCreateInstance(&desc);
+        WGPUInstanceDescriptor instDesc = WGPU_INSTANCE_DESCRIPTOR_INIT;
+        instDesc.nextInChain = nullptr;
+        instDesc.capabilities.timedWaitAnyEnable = 1;
+        instDesc.capabilities.timedWaitAnyMaxCount = 8;
+        m_instance = wgpuCreateInstance(&instDesc);
 #endif
         if (!m_instance) {
+            m_initPhase = InitPhase::Failed;
             return LN_MAKE_ERROR("wgpuCreateInstance failed.");
         }
     }
@@ -58,18 +86,13 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
     // - Error: DynamicLib.Open: d3dcompiler_47.dll Windows Error: 87
     // - [WebGPU] RequestDevice failed: DynamicLib.Open: dxil.dll Windows Error: 87
     m_hD3DCompilerDLL = ::LoadLibraryW(D3DCOMPILER_DLL_W);
-
 #endif
 
     // アダプターをリクエストする
-    // Dawn の WGPUCallbackMode_AllowSpontaneous モードではコールバックは同期的に呼ばれるため、
-    // 呼び出し直後に結果を参照できる。
+    // ネイティブ Dawn の WGPUCallbackMode_AllowSpontaneous モードではコールバックは
+    // 同期的に呼ばれるため、呼び出し直後に結果を参照できる。
+    // ブラウザではイベントループ経由で解決されるため、pumpAsyncInit で完了を確認する。
     {
-        //struct AdapterRequest {
-        //    WGPUAdapter adapter = nullptr;
-        //    WGPURequestAdapterStatus status = {};
-        //} adapterReq;
-
         WGPURequestAdapterOptions adapterOptions = WGPU_REQUEST_ADAPTER_OPTIONS_INIT;
         adapterOptions.nextInChain = nullptr;
         adapterOptions.featureLevel = WGPUFeatureLevel_Undefined;
@@ -88,9 +111,6 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
                                    void*) {
             WebGPUDevice* self = reinterpret_cast<WebGPUDevice*>(userdata1);
             self->m_adapters.push_back({status, adapter});
-            //auto* req = static_cast<AdapterRequest*>(userdata1);
-            //req->status = status;
-            //req->adapter = adapter;
             if (status != WGPURequestAdapterStatus_Success) {
                 LN_LOG_ERROR("[WebGPU] RequestAdapter failed: %.*s", (int)message.length, message.data);
             }
@@ -98,140 +118,164 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
         callbackInfo.userdata1 = this;
 
         WGPUFuture _ = wgpuInstanceRequestAdapter(m_instance, &adapterOptions, callbackInfo);
-
-        //if (adapterReq.status != WGPURequestAdapterStatus_Success || !adapterReq.adapter) {
-        //    return LN_MAKE_ERROR("wgpuInstanceRequestAdapter failed.");
-        //}
-
-        // Wait WGPUFuture
-#ifdef __EMSCRIPTEN__
-        while (m_adapters.empty()) {
-            emscripten_sleep(100);
-        }
-#endif // __EMSCRIPTEN__
-
-        if (m_adapters.empty()) {
-            return LN_MAKE_ERROR("Adapter not found.");
-        }
-
-        //printf("m_adapters %d\n", (int)m_adapters.size());
-        m_adapter = m_adapters[0].adapter; //adapterReq.adapter;
+        (void)_;
     }
 
-    // アダプター情報をログ出力する
-    {
-        WGPUAdapterInfo info = WGPU_ADAPTER_INFO_INIT;
-        WGPUStatus status = wgpuAdapterGetInfo(m_adapter, &info);
-        if (status != WGPUStatus_Success) {
-            LN_LOG_ERROR("wgpuAdapterGetInfo failed: %d", static_cast<int>(status));
-        }
-        LN_LOG_INFO(
-            "WebGPU Adapter: %s / %s / %s",
-            std::string(info.device.data, info.device.length).c_str(),
-            std::string(info.vendor.data, info.vendor.length).c_str(),
-            std::string(info.description.data, info.description.length).c_str());
+    m_initPhase = InitPhase::WaitingAdapter;
+    return LN_MAKE_SUCCESS();
+}
+
+Device::AsyncInitStatus WebGPUDevice::pumpAsyncInit() {
+    if (m_initPhase == InitPhase::Ready) {
+        return AsyncInitStatus::Ready;
+    }
+    if (m_initPhase == InitPhase::Failed || m_initPhase == InitPhase::NotStarted) {
+        return AsyncInitStatus::Failed;
     }
 
-    // デバイスをリクエストする
-    {
-        struct DeviceRequest {
-            WGPUDevice device = nullptr;
-            WGPURequestDeviceStatus status = {};
-        } deviceReq;
-
-        WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
-        deviceDesc.label = {"LuminoDevice", WGPU_STRLEN};
-
-        // RGBA32Float 等の float32 テクスチャをフィルタリング可能にする feature を要求する。
-        // これがないと float32 テクスチャのバインドグループレイアウトで
-        // UnfilterableFloat vs Float のバリデーションエラーが発生する。
-        // もしこれが使えない場合は TextureFormt で WGPUTextureSampleType_UnfilterableFloat を検討する必要があるかも。
-        std::vector<WGPUFeatureName> requiredFeatures;
-        if (wgpuAdapterHasFeature(m_adapter, WGPUFeatureName_Float32Filterable)) {
-            requiredFeatures.push_back(WGPUFeatureName_Float32Filterable);
-            LN_LOG_INFO("WebGPUDevice: enabling Float32Filterable feature.");
-        } else {
-            LN_LOG_WARNING("WebGPUDevice: Float32Filterable not supported by adapter.");
-        }
-        if (!requiredFeatures.empty()) {
-            deviceDesc.requiredFeatureCount = requiredFeatures.size();
-            deviceDesc.requiredFeatures = requiredFeatures.data();
-        }
-
-        // エラーコールバック
-        auto onUncapturedError =
-            [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {
-            LN_LOG_ERROR("[WebGPU] Uncaptured error [type=%d]: %s", static_cast<int>(type),
-                std::string(message.data, message.length).c_str());
-#if defined(_MSC_VER) && defined(_DEBUG)
-                __debugbreak();
+#if !defined(__EMSCRIPTEN__)
+    // ネイティブでは明示的にイベントを処理してコールバックを発火させる。
+    // (AllowSpontaneous では通常同期的に発火するため、これは保険である)
+    if (m_instance) {
+        wgpuInstanceProcessEvents(m_instance);
+    }
 #endif
-            };
-        deviceDesc.uncapturedErrorCallbackInfo.callback = onUncapturedError;
 
+    if (m_initPhase == InitPhase::WaitingAdapter) {
+        if (m_adapters.empty()) {
+            return AsyncInitStatus::Pending;
+        }
+        if (m_adapters[0].status != WGPURequestAdapterStatus_Success || !m_adapters[0].adapter) {
+            LN_LOG_ERROR("WebGPUDevice: adapter request failed.");
+            m_initPhase = InitPhase::Failed;
+            return AsyncInitStatus::Failed;
+        }
+        m_adapter = m_adapters[0].adapter;
 
+        // アダプター情報をログ出力する
+        {
+            WGPUAdapterInfo info = WGPU_ADAPTER_INFO_INIT;
+            WGPUStatus status = wgpuAdapterGetInfo(m_adapter, &info);
+            if (status != WGPUStatus_Success) {
+                LN_LOG_ERROR("wgpuAdapterGetInfo failed: %d", static_cast<int>(status));
+            }
+            LN_LOG_INFO(
+                "WebGPU Adapter: %s / %s / %s",
+                std::string(info.device.data, info.device.length).c_str(),
+                std::string(info.vendor.data, info.vendor.length).c_str(),
+                std::string(info.description.data, info.description.length).c_str());
+        }
 
-        // デバイスロストコールバック
-        // mode を AllowSpontaneous にしないとコールバックが EventManager にキューイングされ、
-        // Instance 破棄時に CallbackCancelled に書き換えられてしまう。
-        deviceDesc.deviceLostCallbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
-        deviceDesc.deviceLostCallbackInfo.callback =
-            [](WGPUDevice const*, WGPUDeviceLostReason reason, WGPUStringView message, void*, void*) {
-                if (reason == WGPUDeviceLostReason_Destroyed) {
-                    return; // 正常な破棄時は無視する
-                }
-                LN_LOG_ERROR(
-                    "[WebGPU] Device lost [reason=%d]: %s",
-                    static_cast<int>(reason),
-                    std::string(message.data, message.length).c_str());
-            };
+        requestDeviceFromAdapter();
+        m_initPhase = InitPhase::WaitingDevice;
+    }
 
-        auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status,
-                                       WGPUDevice device,
-                                       WGPUStringView message,
-                                       void* userdata1,
-                                       void* userdata2) {
-            auto* req = static_cast<DeviceRequest*>(userdata1);
-            req->status = status;
-            req->device = device;
-            if (status != WGPURequestDeviceStatus_Success) {
-                LN_LOG_ERROR(
-                    "[WebGPU] RequestDevice failed: %s",
-                    std::string(message.data, message.length).c_str());
+    if (m_initPhase == InitPhase::WaitingDevice) {
+        if (!m_deviceReq.done) {
+            return AsyncInitStatus::Pending;
+        }
+        if (m_deviceReq.status != WGPURequestDeviceStatus_Success || !m_deviceReq.device) {
+            LN_LOG_ERROR("wgpuAdapterRequestDevice failed.");
+            m_initPhase = InitPhase::Failed;
+            return AsyncInitStatus::Failed;
+        }
+        m_device = m_deviceReq.device;
+
+        // デフォルトキューを取得する
+        m_queue = wgpuDeviceGetQueue(m_device);
+        if (!m_queue) {
+            LN_LOG_ERROR("wgpuDeviceGetQueue failed.");
+            m_initPhase = InitPhase::Failed;
+            return AsyncInitStatus::Failed;
+        }
+
+        m_initPhase = InitPhase::Ready;
+        return AsyncInitStatus::Ready;
+    }
+
+    return AsyncInitStatus::Pending;
+}
+
+void WebGPUDevice::requestDeviceFromAdapter() {
+    m_deviceReq = DeviceRequest{};
+
+    WGPUDeviceDescriptor deviceDesc = WGPU_DEVICE_DESCRIPTOR_INIT;
+    deviceDesc.label = {"LuminoDevice", WGPU_STRLEN};
+
+    // RGBA32Float 等の float32 テクスチャをフィルタリング可能にする feature を要求する。
+    // これがないと float32 テクスチャのバインドグループレイアウトで
+    // UnfilterableFloat vs Float のバリデーションエラーが発生する。
+    // もしこれが使えない場合は TextureFormt で WGPUTextureSampleType_UnfilterableFloat を検討する必要があるかも。
+    std::vector<WGPUFeatureName> requiredFeatures;
+    if (wgpuAdapterHasFeature(m_adapter, WGPUFeatureName_Float32Filterable)) {
+        requiredFeatures.push_back(WGPUFeatureName_Float32Filterable);
+        LN_LOG_INFO("WebGPUDevice: enabling Float32Filterable feature.");
+    } else {
+        LN_LOG_WARNING("WebGPUDevice: Float32Filterable not supported by adapter.");
+    }
+    if (!requiredFeatures.empty()) {
+        deviceDesc.requiredFeatureCount = requiredFeatures.size();
+        deviceDesc.requiredFeatures = requiredFeatures.data();
+    }
+
+    // エラーコールバック
+    auto onUncapturedError =
+        [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {
+        LN_LOG_ERROR("[WebGPU] Uncaptured error [type=%d]: %s", static_cast<int>(type),
+            std::string(message.data, message.length).c_str());
+#if defined(_MSC_VER) && defined(_DEBUG)
+            __debugbreak();
+#endif
+        };
+    deviceDesc.uncapturedErrorCallbackInfo.callback = onUncapturedError;
+
+    // デバイスロストコールバック
+    // mode を AllowSpontaneous にしないとコールバックが EventManager にキューイングされ、
+    // Instance 破棄時に CallbackCancelled に書き換えられてしまう。
+    // AllowSpontaneous では他の wgpu API 呼び出し中に発火しうるため、
+    // コールバック内はフラグを立てる (markDeviceLost) 以外の処理を行ってはならない。
+    deviceDesc.deviceLostCallbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
+    deviceDesc.deviceLostCallbackInfo.userdata1 = this;
+    deviceDesc.deviceLostCallbackInfo.callback =
+        [](WGPUDevice const*, WGPUDeviceLostReason reason, WGPUStringView message, void* userdata1, void*) {
+            auto* self = reinterpret_cast<WebGPUDevice*>(userdata1);
+            if (reason == WGPUDeviceLostReason_Destroyed &&
+                !(self && self->isSimulatingDeviceLost())) {
+                return; // 正常な破棄時は無視する (擬似ロスト中の destroy はロスト扱い)
+            }
+            LN_LOG_ERROR(
+                "[WebGPU] Device lost [reason=%d]: %s",
+                static_cast<int>(reason),
+                std::string(message.data, message.length).c_str());
+            if (self) {
+                self->markDeviceLost("wgpu device lost callback");
             }
         };
 
-        WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
-        callbackInfo.nextInChain = nullptr;
-        callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
-        callbackInfo.callback = onDeviceRequestEnded;
-        //callbackInfo.userdata1 = this;
-        callbackInfo.userdata1 = &deviceReq;
-        callbackInfo.userdata2 = nullptr;
-        WGPUFuture _ = wgpuAdapterRequestDevice(m_adapter, &deviceDesc, callbackInfo);
-
-        // Wait WGPUFuture
-#ifdef __EMSCRIPTEN__
-        while (deviceReq.device == nullptr) {
-            emscripten_sleep(100);
+    auto onDeviceRequestEnded = [](WGPURequestDeviceStatus status,
+                                   WGPUDevice device,
+                                   WGPUStringView message,
+                                   void* userdata1,
+                                   void*) {
+        auto* self = reinterpret_cast<WebGPUDevice*>(userdata1);
+        self->m_deviceReq.status = status;
+        self->m_deviceReq.device = device;
+        self->m_deviceReq.done = true;
+        if (status != WGPURequestDeviceStatus_Success) {
+            LN_LOG_ERROR(
+                "[WebGPU] RequestDevice failed: %s",
+                std::string(message.data, message.length).c_str());
         }
-#endif // __EMSCRIPTEN__
+    };
 
-        if (deviceReq.status != WGPURequestDeviceStatus_Success || !deviceReq.device) {
-            return LN_MAKE_ERROR("wgpuAdapterRequestDevice failed.");
-        }
-        m_device = deviceReq.device;
-    }
-
-
-    // デフォルトキューを取得する
-    m_queue = wgpuDeviceGetQueue(m_device);
-    if (!m_queue) {
-        return LN_MAKE_ERROR("wgpuDeviceGetQueue failed.");
-    }
-
-    LN_LOG_INFO("WebGPUDevice::init: end (success)");
-    return LN_MAKE_SUCCESS();
+    WGPURequestDeviceCallbackInfo callbackInfo = WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;
+    callbackInfo.nextInChain = nullptr;
+    callbackInfo.mode = WGPUCallbackMode_AllowSpontaneous;
+    callbackInfo.callback = onDeviceRequestEnded;
+    callbackInfo.userdata1 = this;
+    callbackInfo.userdata2 = nullptr;
+    WGPUFuture _ = wgpuAdapterRequestDevice(m_adapter, &deviceDesc, callbackInfo);
+    (void)_;
 }
 
 void WebGPUDevice::finalize() {
@@ -477,6 +521,17 @@ void WebGPUDevice::waitIdle() {
         wgpuDeviceTick(m_device);
     }
 #endif
+}
+
+void WebGPUDevice::debugSimulateDeviceLost(bool deep) {
+    m_simulatingDeviceLost = true;
+    markDeviceLost("simulated");
+    if (deep && m_device) {
+        // 実際にデバイスを破棄し、後続 API 呼び出しのエラー挙動まで再現する。
+        // Destroyed 理由のロストコールバックが発火するが、m_simulatingDeviceLost が
+        // 立っているためロスト扱いとして処理される。
+        wgpuDeviceDestroy(m_device);
+    }
 }
 
 } // namespace ln::rhi::webgpu

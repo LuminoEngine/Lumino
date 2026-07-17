@@ -19,6 +19,7 @@
 #include <LuminoBase/math/Matrix4x4.hpp>
 #include "RHIObject.hpp"
 
+#include <atomic>
 #include <string>
 #include <vector>
 
@@ -507,10 +508,31 @@ struct DeviceLimits {
 
 class Device : public RHIObject {
 public:
+    /** beginCreateAsync で開始した非同期初期化の進行状態。 */
+    enum class AsyncInitStatus {
+        Pending,
+        Ready,
+        Failed,
+    };
+
     virtual ~Device() = default;
 
     /** Create a device with the given backend. */
     static Result<Ref<Device>> create(const DeviceDesc& desc);
+
+    /**
+     * 非ブロッキングのデバイス作成を開始する (デバイスロスト自動復旧用)。
+     * 返されたデバイスは pumpAsyncInit() が Ready を返すまで使用してはならない。
+     * Web (Emscripten) の WebGPU ではアダプタ/デバイス要求がブラウザのイベント
+     * ループ経由で解決されるため、毎フレーム pumpAsyncInit() を呼んで進行させる。
+     * 同期的に初期化できるバックエンド (Vulkan / ネイティブ WebGPU) では
+     * この呼び出し内で初期化が完了し、最初の pumpAsyncInit() が Ready を返す。
+     */
+    static Result<Ref<Device>> beginCreateAsync(const DeviceDesc& desc);
+
+    /** beginCreateAsync で開始した初期化を 1 ステップ進める。
+        同期的に初期化されるバックエンドの既定実装は常に Ready を返す。 */
+    virtual AsyncInitStatus pumpAsyncInit() { return AsyncInitStatus::Ready; }
 
     /** Query device limits. */
     virtual DeviceLimits deviceLimits() const = 0;
@@ -540,6 +562,40 @@ public:
 
     /** Get the backend type of this device. */
     virtual Backend backend() const = 0;
+
+    // ------ Device lost ------
+
+    /** デバイスロスト状態か。バックエンドの検知イベントにより true になる。
+        一度 true になったらこの Device インスタンスの寿命中は false に戻らない
+        (復旧は新しい Device インスタンスで行う)。 */
+    bool isDeviceLost() const { return m_deviceLost.load(std::memory_order_acquire); }
+
+    /** ロスト理由 (ログ・テレメトリ用)。未ロスト時は空文字列。 */
+    const std::string& deviceLostReason() const { return m_deviceLostReason; }
+
+    /** バックエンド実装がロスト検知時に呼ぶ。
+        フラグを立てる以外の副作用を持たない (解放や再作成をここから始めてはならない)。
+        WebGPU のコールバックは他の API 呼び出し中に spontaneous に発火しうるため、
+        スレッドセーフに実装している。 */
+    void markDeviceLost(const char* reason) {
+        // 最初の呼び出しだけが理由を書き込む。理由の書き込み完了後にフラグを公開する。
+        if (m_deviceLostGuard.exchange(true, std::memory_order_acq_rel)) return;
+        m_deviceLostReason = reason ? reason : "";
+        m_deviceLost.store(true, std::memory_order_release);
+    }
+
+    /** テスト用: デバイスロストをシミュレートする。
+        deep=true の場合、バックエンドによっては実デバイスを破棄して後続 API の
+        エラー挙動まで再現する (WebGPU)。既定実装はフラグを立てるのみ。 */
+    virtual void debugSimulateDeviceLost(bool deep) {
+        (void)deep;
+        markDeviceLost("simulated");
+    }
+
+private:
+    std::atomic<bool> m_deviceLostGuard{false};
+    std::atomic<bool> m_deviceLost{false};
+    std::string m_deviceLostReason;
 };
 
 } // namespace ln::rhi

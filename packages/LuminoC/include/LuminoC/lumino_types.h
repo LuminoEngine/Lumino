@@ -49,6 +49,13 @@ typedef enum LNResult {
 
     /** 現在のビルド/プラットフォームでは未対応の機能 (例: WASM ビルドでの一部 GraphicsContext API) */
     LN_ERROR_NOT_SUPPORTED = -5,
+
+    /**
+     * GPU デバイスロスト。復旧は Lumino 内部で自動的に行われるため、
+     * クライアントはこのフレームの描画をスキップし、次のフレームで
+     * LNGraphicsContext_BeginFrame を再試行してください。
+     */
+    LN_ERROR_DEVICE_LOST = -6,
 } LNResult;
 
 //------------------------------------------------------------------------------

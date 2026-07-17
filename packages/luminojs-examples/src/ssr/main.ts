@@ -138,7 +138,19 @@ async function main() {
             scale: [1, 1, 1],
         };
 
-        const { renderer, colorBuffer, depthBuffer } = context.beginFrame();
+        const frameInfo = context.beginFrame();
+
+        if (!frameInfo) {
+
+            // デバイスロスト復旧待ち。このフレームはスキップする
+
+            requestAnimationFrame(render);
+
+            return;
+
+        }
+
+        const { renderer, colorBuffer, depthBuffer } = frameInfo;
 
         // -- G-Buffer pass --
         renderer.beginRenderPass(

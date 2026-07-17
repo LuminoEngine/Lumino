@@ -69,7 +69,19 @@ async function main() {
     function render() {
         const t = frame * 0.02;
 
-        const { renderer } = context.beginFrame();
+        const frameInfo = context.beginFrame();
+
+        if (!frameInfo) {
+
+            // デバイスロスト復旧待ち。このフレームはスキップする
+
+            requestAnimationFrame(render);
+
+            return;
+
+        }
+
+        const { renderer } = frameInfo;
         renderer.beginRenderPass(
             context,
             {

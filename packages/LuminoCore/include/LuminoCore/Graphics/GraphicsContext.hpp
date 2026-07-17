@@ -69,6 +69,19 @@ public:
     Result<const FramebufferInfo*> beginFrame(uint32_t width, uint32_t height);
     const FramebufferInfo* currentFramebuffer() const;
 
+    /**
+     * デバイスロスト自動復旧: GPU リソース (SwapChain / 深度バッファ /
+     * PipelineCache / Renderer / DebugPrint) を解放します。
+     * GraphicsModule::pumpRecovery から呼ばれます。複数回呼んでも安全です。
+     */
+    void teardownForDeviceRecovery();
+
+    /**
+     * デバイスロスト自動復旧: 新しいデバイス上で GPU リソースを再構築します。
+     * GraphicsModule::pumpRecovery から呼ばれます。
+     */
+    Result<void> rebuildAfterDeviceRecovery();
+
     /** Present the current frame. */
     void endFrame();
 
@@ -182,6 +195,10 @@ private:
     uint32_t m_height = 0;
     std::unique_ptr<PipelineCache> m_pipelineCache;
     Ref<Renderer> m_renderer;
+
+    // デバイスロスト復旧時に SwapChain を作り直すための生成情報
+    std::string m_canvasSelector; // Web のみ。デスクトップでは空
+    bool m_vsync = false;
 };
 
 } // namespace ln

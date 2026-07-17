@@ -108,3 +108,25 @@ describe("ResidencyManager.disposeAll", () => {
         expect(a.evictedCount).toBe(0);
     });
 });
+
+describe("ResidencyManager.invalidateAll", () => {
+    it("handle を持つ全リソースを evict するが、追跡は維持する (デバイスロスト復旧用)", () => {
+        const rm = new ResidencyManager();
+        const a = new MockResource(1, 0);
+        const unloaded = new MockResource(0, 0);
+        rm.register(a);
+        rm.register(unloaded);
+
+        rm.invalidateAll();
+
+        expect(a.evictedCount).toBe(1);
+        expect(a.handle).toBe(0);
+        expect(unloaded.evictedCount).toBe(0);
+
+        // disposeAll と異なり追跡は維持されるため、再アップロード後の gc は機能する。
+        a.handle = 5; // ensure() による再アップロードを模擬
+        a.lastUsedFrame = 0;
+        rm.gc(rm.threshold + 1);
+        expect(a.evictedCount).toBe(2);
+    });
+});

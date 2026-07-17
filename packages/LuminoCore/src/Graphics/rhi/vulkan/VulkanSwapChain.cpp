@@ -1,5 +1,6 @@
 ﻿#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <LuminoBase/Logger.hpp>
 #include "VulkanHelpers.hpp"
 #include "VulkanBackend.hpp"
 #include "VulkanTextureView.hpp"
@@ -208,13 +209,22 @@ TextureView* VulkanSwapChain::acquireNextTexture() {
     m_device->beginFrame(m_currentFrame);
 
     // https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation
-    vkAcquireNextImageKHR(
-        vkDevice,
-        m_swapchain,
-        UINT64_MAX,
-        m_imageAvailableSemaphores[m_currentFrame],
-        VK_NULL_HANDLE,
-        &m_imageIndex);
+    VkResult acquireResult = m_device->checkDeviceLost(
+        vkAcquireNextImageKHR(
+            vkDevice,
+            m_swapchain,
+            UINT64_MAX,
+            m_imageAvailableSemaphores[m_currentFrame],
+            VK_NULL_HANDLE,
+            &m_imageIndex),
+        "vkAcquireNextImageKHR");
+    // VK_SUBOPTIMAL_KHR はイメージ取得自体は成功しているため続行する。
+    // VK_ERROR_OUT_OF_DATE_KHR / VK_ERROR_SURFACE_LOST_KHR はデバイスロストとは
+    // 別事象なので markDeviceLost せず、フレーム失敗として返す (リサイズ対応は別タスク)。
+    if (acquireResult != VK_SUCCESS && acquireResult != VK_SUBOPTIMAL_KHR) {
+        LN_LOG_ERROR("[Vulkan] vkAcquireNextImageKHR failed: %d", static_cast<int>(acquireResult));
+        return nullptr;
+    }
 
     // 取得したイメージが初めての acquire であれば、RenderPass が要求する
     // initialLayout=PRESENT_SRC_KHR に合わせて UNDEFINED から遷移させる。
@@ -262,7 +272,11 @@ void VulkanSwapChain::present() {
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = &m_swapchain;
     presentInfo.pImageIndices = &m_imageIndex;
-    vkQueuePresentKHR(m_device->graphicsQueue(), &presentInfo);
+    VkResult presentResult = m_device->checkDeviceLost(
+        vkQueuePresentKHR(m_device->graphicsQueue(), &presentInfo), "vkQueuePresentKHR");
+    if (presentResult != VK_SUCCESS && presentResult != VK_SUBOPTIMAL_KHR) {
+        LN_LOG_ERROR("[Vulkan] vkQueuePresentKHR failed: %d", static_cast<int>(presentResult));
+    }
 
     m_currentFrame = (m_currentFrame + 1) % m_maxFrames;
 }

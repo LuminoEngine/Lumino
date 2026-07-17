@@ -45,6 +45,18 @@ export class ResidencyManager {
         this._tracked.clear();
     }
 
+    /**
+     * デバイスロスト復旧後に GraphicsContext から呼び出す。
+     * 全リソースの stale な GPU ハンドルを解放する (disposeAll と異なり追跡は維持)。
+     * ソースデータは JS 側に保持されているため、次の描画時の ensure() で
+     * 自動的に再アップロードされる。
+     */
+    invalidateAll(): void {
+        for (const r of this._tracked) {
+            if (r.handle !== 0) r.evict();
+        }
+    }
+
     /** @internal デバッグ・テスト用 */
     get threshold(): number { return this._threshold; }
     set threshold(v: number) { this._threshold = v; }

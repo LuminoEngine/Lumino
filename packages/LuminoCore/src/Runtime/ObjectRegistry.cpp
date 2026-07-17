@@ -38,11 +38,15 @@ LNHandle ObjectRegistry::registerObject(Object* obj) {
 
 LNHandle ObjectRegistry::wrapOrRegisterObject(Object* obj) {
     if (!obj) return LN_NULL_HANDLE;
-    std::lock_guard<std::mutex> lock(m_mutex);
-    if (obj->m_registryIndex != 0) {
-        uint16_t index = obj->m_registryIndex;
-        if (index < m_slots.size() && m_slots[index].object == obj) {
-            return makeHandle(index, m_slots[index].generation);
+    // registerObject も m_mutex を取るため、ロックを保持したまま呼ぶと
+    // デッドロックする。既登録チェックのスコープでロックを解放してから呼ぶ。
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (obj->m_registryIndex != 0) {
+            uint16_t index = obj->m_registryIndex;
+            if (index < m_slots.size() && m_slots[index].object == obj) {
+                return makeHandle(index, m_slots[index].generation);
+            }
         }
     }
     return registerObject(obj);

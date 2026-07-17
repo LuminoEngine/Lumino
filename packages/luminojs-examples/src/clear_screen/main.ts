@@ -22,7 +22,13 @@ async function main() {
 
     // Render loop
     function frame() {
-        const { renderer } = context.beginFrame();
+        const frameInfo = context.beginFrame();
+        if (!frameInfo) {
+            // デバイスロスト復旧待ち。このフレームはスキップする
+            requestAnimationFrame(frame);
+            return;
+        }
+        const { renderer } = frameInfo;
         renderer.beginRenderPass(context, {
             colorAttachments: [
                 {

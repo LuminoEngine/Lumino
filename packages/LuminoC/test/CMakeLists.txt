@@ -44,12 +44,13 @@ add_dependencies(${PROJECT_NAME} LuminoC)
 #-------------------------------------------------------------------------------
 # gtest_discover_tests は POST_BUILD で実行ファイルを --gtest_list_tests 起動するため、
 # 依存 DLL (LuminoC.dll, glfw.dll 等) のコピーより後ろに置く必要がある。
-# 実 GPU 描画を伴う Test_Graphics.* は CI から除外しやすいよう label "gpu" を付ける。
+# 実 GPU 描画を伴う Test_Graphics.* / Test_DeviceLost.* は CI から除外しやすいよう
+# label "gpu" を付ける。
 include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME}
-    TEST_FILTER "-Test_Graphics.*"
+    TEST_FILTER "-Test_Graphics.*:Test_DeviceLost.*"
 )
 gtest_discover_tests(${PROJECT_NAME}
-    TEST_FILTER "Test_Graphics.*"
+    TEST_FILTER "Test_Graphics.*:Test_DeviceLost.*"
     PROPERTIES LABELS "gpu"
 )

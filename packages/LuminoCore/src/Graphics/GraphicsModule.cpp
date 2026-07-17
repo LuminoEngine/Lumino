@@ -1,4 +1,7 @@
-﻿#include <LuminoCore/Graphics/GraphicsModule.hpp>
+﻿#include <algorithm>
+#include <LuminoBase/Logger.hpp>
+#include <LuminoCore/Graphics/GraphicsModule.hpp>
+#include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
@@ -36,6 +39,9 @@ GraphicsModule::~GraphicsModule() {
 }
 
 VoidResult GraphicsModule::init(const Settings& settings) {
+    // デバイスロスト復旧時にデバイスを作り直すため、設定を保持しておく。
+    m_settings = settings;
+
     // Create the RHI device
     rhi::DeviceDesc devDesc;
     devDesc.backend = settings.preferredBackend;
@@ -44,6 +50,10 @@ VoidResult GraphicsModule::init(const Settings& settings) {
     if (!deviceResult) return LN_FORWARD_ERROR(deviceResult);
     m_device = std::move(*deviceResult);
 
+    return initDeviceResources();
+}
+
+VoidResult GraphicsModule::initDeviceResources() {
     // Initialize builtin shaders (now using ShaderPass)
     auto r1 = initBuiltinShader(BuiltinShader::Unlit, s_unlitShaderData, sizeof(s_unlitShaderData));
     if (!r1) return r1;
@@ -93,6 +103,129 @@ void GraphicsModule::dispose() {
     }
     m_whiteTexture.reset();
     m_device.reset();
+    m_retiredDevices.clear();
+}
+
+//------------------------------------------------------------------------------
+// デバイスロスト自動復旧
+//------------------------------------------------------------------------------
+
+void GraphicsModule::registerContext(GraphicsContext* ctx) {
+    if (!ctx) return;
+    m_contexts.push_back(ctx);
+}
+
+void GraphicsModule::unregisterContext(GraphicsContext* ctx) {
+    m_contexts.erase(
+        std::remove(m_contexts.begin(), m_contexts.end(), ctx), m_contexts.end());
+}
+
+void GraphicsModule::teardownDeviceResources() {
+    LN_LOG_INFO("GraphicsModule: device lost, tearing down GPU resources. reason=%s",
+        m_device ? m_device->deviceLostReason().c_str() : "?");
+
+    // 送信済みコマンドの完了をベストエフォートで待つ。
+    // 実ロスト時はエラーが即座に返るため、ハングはしない。
+    // (擬似ロストではデバイスは健在なため、実行中のフレームを正しく待てる)
+    if (m_device) {
+        m_device->waitIdle();
+    }
+
+    // 全 GraphicsContext の GPU リソース (SwapChain / 深度 / PipelineCache /
+    // Renderer / DebugPrint) を解放する。
+    for (auto* ctx : m_contexts) {
+        ctx->teardownForDeviceRecovery();
+    }
+
+    // GraphicsModule 内部の GPU リソースを解放する。
+    for (auto& passes : m_builtinShaders) {
+        passes.clear();
+    }
+    m_whiteTexture.reset();
+
+    // 旧デバイスを retired リストへ移す。クライアントが保持している stale
+    // リソースの解放が旧デバイスの API を呼ぶため、破棄せずに生存させる。
+    if (m_device) {
+        m_retiredDevices.push_back(m_device);
+        m_device.reset();
+    }
+}
+
+void GraphicsModule::pumpRecovery() {
+    if (deviceState() == DeviceState::Running) return;
+
+    // 失敗後のリトライ間隔 (フレーム数) を消化する。
+    if (m_recoveryCooldown > 0) {
+        m_recoveryCooldown--;
+        return;
+    }
+
+    // ステップ 1: Teardown (同期)。ロスト検知後の最初の pump で 1 回だけ実行される。
+    if (!m_recovering) {
+        teardownDeviceResources();
+        m_recovering = true;
+    }
+
+    // ステップ 2: 新デバイスの作成。
+    // Web (WebGPU) ではアダプタ/デバイス要求が非同期のため、要求を発行してから
+    // 完了するまで数フレームかかる。完了までは毎フレームここで Pending が返る。
+    if (!m_device) {
+        rhi::DeviceDesc devDesc;
+        devDesc.backend = m_settings.preferredBackend;
+        devDesc.enableValidation = m_settings.enableValidation;
+        auto deviceResult = rhi::Device::beginCreateAsync(devDesc);
+        if (!deviceResult) {
+            LN_LOG_ERROR("GraphicsModule: device re-creation failed. retrying later.");
+            m_recoveryCooldown = 60;
+            return;
+        }
+        m_device = std::move(*deviceResult);
+    }
+
+    switch (m_device->pumpAsyncInit()) {
+        case rhi::Device::AsyncInitStatus::Pending:
+            return; // 次のフレームで再確認する
+        case rhi::Device::AsyncInitStatus::Failed:
+            LN_LOG_ERROR("GraphicsModule: device initialization failed. retrying later.");
+            m_device.reset();
+            m_recoveryCooldown = 60;
+            return;
+        case rhi::Device::AsyncInitStatus::Ready:
+            break;
+    }
+
+    // ステップ 3: 内部リソースと全 GraphicsContext の再構築。
+    auto r = initDeviceResources();
+    if (!r) {
+        LN_LOG_ERROR("GraphicsModule: builtin resource rebuild failed. retrying later.");
+        // 部分的に構築されたリソースをデバイスより先に解放してから、
+        // 新デバイスを破棄してデバイス作成からやり直す (m_recovering は true のまま)。
+        for (auto& passes : m_builtinShaders) {
+            passes.clear();
+        }
+        m_whiteTexture.reset();
+        m_device.reset();
+        m_recoveryCooldown = 60;
+        return;
+    }
+    for (auto* ctx : m_contexts) {
+        auto cr = ctx->rebuildAfterDeviceRecovery();
+        if (!cr) {
+            LN_LOG_ERROR("GraphicsModule: GraphicsContext rebuild failed. retrying later.");
+            // 部分的に再構築された Context を解放し、次の pump で
+            // (同じ新デバイス上で) 再構築からやり直す (m_recovering は true のまま)。
+            for (auto* c : m_contexts) {
+                c->teardownForDeviceRecovery();
+            }
+            m_recoveryCooldown = 60;
+            return;
+        }
+    }
+
+    // 復旧完了。世代を進めることで、旧世代のリソースは stale として扱われる。
+    m_deviceGeneration++;
+    m_recovering = false;
+    LN_LOG_INFO("GraphicsModule: device recovery completed. generation=%u", m_deviceGeneration);
 }
 
 } // namespace ln

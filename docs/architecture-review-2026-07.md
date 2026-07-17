@@ -366,6 +366,10 @@
 - 優先度: B
 
 #### 26. デバイスロスト対応戦略
+- **ステータス: 実装済み (2026-07-17)**。設計と実装の詳細は
+  `docs/plans/device-lost-design.md` を参照。検知 (Vulkan/WebGPU 両対応)、
+  LN_ERROR_DEVICE_LOST の伝搬、BeginFrame ポンプ型の自動復旧、luminojs の
+  自動再アップロード、gtest / vitest / playwright smoke によるテストまで完了
 - 解決する課題: WebGPU はログのみ、Vulkan は検知なし。ブラウザのタブ復帰やドライバ更新で全損する
 - 期待効果: 長時間動作するエディタ (LYRIDRA) としての堅牢性
 - 作るもの: 検知とエラー伝搬 (LN_ERROR_DEVICE_LOST)、JS 側へのコールバック通知、ResidencyManager がソースデータから全リソースを再構築するフロー (AGENTS.md の「ビットマップは JS 側管理」方針はこのための布石であり、設計は既に半分できている)

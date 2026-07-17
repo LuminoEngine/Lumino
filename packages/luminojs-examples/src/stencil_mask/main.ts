@@ -102,7 +102,19 @@ async function main() {
         const t0 = performance.now();
         const phase = frame * 0.02;
 
-        const { renderer, depthBuffer } = context.beginFrame();
+        const frameInfo = context.beginFrame();
+
+        if (!frameInfo) {
+
+            // デバイスロスト復旧待ち。このフレームはスキップする
+
+            requestAnimationFrame(render);
+
+            return;
+
+        }
+
+        const { renderer, depthBuffer } = frameInfo;
 
         renderer.beginRenderPass(
             context,

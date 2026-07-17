@@ -20,6 +20,11 @@ std::string formatString(const char* format, ...) {
 // なので主に Dawn を参考にして、Error 発生時に合わせてエラーログを出力するようにしている。
 tl::unexpected<Error> makeInternalError(
     const std::string& message, const char* file, const char* function, int line) {
+    return makeInternalErrorWithCode(ErrorCode::RuntimeError, message, file, function, line);
+}
+
+tl::unexpected<Error> makeInternalErrorWithCode(
+    ErrorCode code, const std::string& message, const char* file, const char* function, int line) {
     const char* filename = Logger::getBaseName(file);
     std::string logMessage = formatString(
         "%s(%d): %s: %s",
@@ -29,11 +34,15 @@ tl::unexpected<Error> makeInternalError(
         message.c_str());
     LogLocation loc{file, line, function};
     Logger::log(loc, LogLevel::Error, logMessage.c_str());
-    
+
 #ifdef _MSC_VER
-    __debugbreak();
+    // DeviceLost はタブ復帰やドライバ更新で起きる想定内の実行時状態のため、
+    // デバッガ接続時でもブレークしない。
+    if (code != ErrorCode::DeviceLost) {
+        __debugbreak();
+    }
 #endif
-    return tl::make_unexpected(Error{ErrorCode::RuntimeError, logMessage});
+    return tl::make_unexpected(Error{code, logMessage});
 }
 } // namespace detail
 } // namespace ln

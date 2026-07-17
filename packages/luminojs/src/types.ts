@@ -10,6 +10,13 @@ export enum Result {
     ERROR_INVALID_ARGUMENT = -3,
     /** 無効なハンドル */
     ERROR_INVALID_HANDLE = -4,
+    /** 現在のビルド/プラットフォームでは未対応の機能 */
+    ERROR_NOT_SUPPORTED = -5,
+    /**
+     * GPU デバイスロスト。復旧は Lumino 内部で自動的に行われるため、
+     * このフレームの描画をスキップして次のフレームで再試行する。
+     */
+    ERROR_DEVICE_LOST = -6,
 }
 
 /** Graphics backend selection. */
