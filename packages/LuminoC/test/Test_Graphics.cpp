@@ -1254,3 +1254,83 @@ TEST_F(Test_Graphics, SamplerDefaultIsLinearClampToEdge) {
     LNObject_Release(material);
     LNObject_Release(texture);
 }
+
+//------------------------------------------------------------------------------
+// LNDebug_GetGraphicsProfiler の契約を固定するテスト。
+//
+// - drawCallCount は BeginFrame でリセットされ、EndFrame の後は「描き終えた
+//   フレームの値」として読める。
+// - 同一マテリアルのスプライトはバッチングされるため、枚数に比例して
+//   drawCallCount が増えない。
+// - fps / lastFrameTimeMs は EndFrame の中で更新されるため、EndFrame 後は正の値。
+//
+// この 3 項目は luminojs の GraphicsContext.getProfiler() が公開している値と
+// 同一のものです。
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics, GraphicsProfiler) {
+    // テクスチャなし Unlit (既定の白テクスチャ)。全スプライトで共有してバッチングさせる。
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetOrthographic2D(camera,
+        (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f, 0.5f, 0.5f));
+
+    // spriteCount 枚のスプライトを 1 フレーム描画し、EndFrame 後の計測値を返す。
+    auto renderSprites = [&](int spriteCount, LNGraphicsProfiler* outProfiler) {
+        LNHandle renderer, colorBuffer, depthBuffer;
+        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+
+        for (int i = 0; i < spriteCount; i++) {
+            LNMatrix xf = translationMatrix((float)i * 2.0f, 0.0f, 0.0f);
+            ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+                renderer, material, 0,
+                &xf,
+                0.0f, 0.0f,
+                8.0f, 8.0f,
+                0.5f, 0.5f,
+                0.0f, 0.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f, 1.0f));
+        }
+
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+        // 計測値は EndFrame の後に読む。
+        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfiler(graphicsContext, outProfiler));
+    };
+
+    LNGraphicsProfiler one = {};
+    renderSprites(1, &one);
+    LNGraphicsProfiler many = {};
+    renderSprites(16, &many);
+
+    // スプライトを 1 枚でも描けば 1 回以上のドローコールが記録される。
+    EXPECT_GT(one.drawCallCount, 0);
+
+    // 同一マテリアルの 16 枚はバッチングされ、枚数に比例して増えない。
+    EXPECT_LT(many.drawCallCount, 16)
+        << "スプライトのバッチングが効いていません (16 枚で drawCallCount="
+        << many.drawCallCount << ")";
+
+    // EndFrame の中でフレーム時間と FPS が更新される。
+    EXPECT_GT(many.lastFrameTimeMs, 0.0f);
+    EXPECT_GT(many.fps, 0.0f);
+
+    // NULL 引数は弾く。
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT,
+              LNDebug_GetGraphicsProfiler(graphicsContext, nullptr));
+    // 無効なハンドルは弾く。
+    LNGraphicsProfiler dummy = {};
+    EXPECT_EQ(LN_ERROR_INVALID_HANDLE,
+              LNDebug_GetGraphicsProfiler(LN_NULL_HANDLE, &dummy));
+
+    LNObject_Release(camera);
+    LNObject_Release(material);
+}

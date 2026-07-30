@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { writeRenderPassDesc, writeTransform } from "../../src/serialize";
+import { readGraphicsProfiler, writeRenderPassDesc, writeTransform } from "../../src/serialize";
 import {
     LoadOp,
     SortMode,
+    SIZEOF_GRAPHICS_PROFILER,
     SIZEOF_RENDER_PASS_DESC,
     SIZEOF_TRANSFORM,
     type RenderPassDesc,
@@ -38,6 +39,34 @@ describe("writeTransform", () => {
         expect(view.getFloat32(28, true)).toBe(8);
         expect(view.getFloat32(32, true)).toBe(9);
         expect(view.getFloat32(36, true)).toBe(10);
+    });
+});
+
+describe("readGraphicsProfiler", () => {
+    it("LNGraphicsProfiler のオフセット通りに読み出す", () => {
+        const view = makeView(SIZEOF_GRAPHICS_PROFILER);
+        view.setInt32(0, 123, true);      // drawCallCount
+        view.setFloat32(4, 59.5, true);   // fps
+        view.setFloat32(8, 16.75, true);  // lastFrameTimeMs
+
+        const p = readGraphicsProfiler(view);
+
+        expect(p.drawCallCount).toBe(123);
+        expect(p.fps).toBeCloseTo(59.5, 6);
+        expect(p.lastFrameTimeMs).toBeCloseTo(16.75, 6);
+    });
+
+    it("ゼロクリアされたバッファからは全て 0 が読める", () => {
+        const p = readGraphicsProfiler(makeView(SIZEOF_GRAPHICS_PROFILER));
+        expect(p).toEqual({ drawCallCount: 0, fps: 0, lastFrameTimeMs: 0 });
+    });
+
+    // drawCallCount は C 側で int32_t。符号付きとして読めていることを固定する
+    // (getUint32 で読むと 4294967295 になってしまう)。
+    it("drawCallCount は符号付き 32bit として読む", () => {
+        const view = makeView(SIZEOF_GRAPHICS_PROFILER);
+        view.setInt32(0, -1, true);
+        expect(readGraphicsProfiler(view).drawCallCount).toBe(-1);
     });
 });
 

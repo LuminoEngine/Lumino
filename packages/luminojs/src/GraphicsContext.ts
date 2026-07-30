@@ -2,7 +2,8 @@ import { LuminoObject } from "./LuminoObject";
 import { Renderer } from "./Renderer";
 import { ResidencyManager } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import { Result, type Handle } from "./types";
+import { readGraphicsProfiler } from "./serialize";
+import { Result, SIZEOF_GRAPHICS_PROFILER, type GraphicsProfiler, type Handle } from "./types";
 import type { Texture } from "./Texture";
 
 /**
@@ -25,6 +26,8 @@ export class GraphicsContext extends LuminoObject {
     private _residencyManager = new ResidencyManager();
     private _deviceLostPending = false;
     private _externalTextures: Set<Texture> = new Set();
+    /** getProfiler() 用の使い回しバッファ。毎フレーム呼ばれても malloc しないよう遅延確保する。 */
+    private _profilerPtr = 0;
 
     /**
      * デバイスロストからの自動復旧が完了した直後に呼ばれるフック。
@@ -183,10 +186,49 @@ export class GraphicsContext extends LuminoObject {
             (API.LNGraphicsContext_EndFrame as (h: number) => number)(this._handle));
     }
 
+    /**
+     * Read the graphics profiling counters.
+     * グラフィックスのプロファイリング情報 (ドローコール数 / FPS / フレーム時間) を取得します。
+     *
+     * **呼び出しタイミング**: `endFrame()` の後に呼び出してください。そうすると
+     * 直前に描画し終えたフレームの計測値が得られます。`fps` と `lastFrameTimeMs` は
+     * `endFrame()` の中で更新されるため、`beginFrame()` - `endFrame()` の間に
+     * 呼び出すと 1 フレーム古い値になります。また `drawCallCount` は
+     * `beginFrame()` でリセットされるため、フレームの途中で呼び出すと
+     * その時点までの途中経過になります。
+     *
+     * スプライトのバッチングが効いているかは `drawCallCount` で確認できます。
+     * バッチングされていればスプライト枚数を増やしてもこの値はほとんど増えません。
+     *
+     * ```ts
+     * ctx.endFrame();
+     * const p = ctx.getProfiler();
+     * console.log(`draw calls: ${p.drawCallCount}, ${p.fps.toFixed(1)} fps`);
+     * ```
+     */
+    getProfiler(): GraphicsProfiler {
+        const m = Runtime.module;
+        if (this._profilerPtr === 0) {
+            this._profilerPtr = m._malloc(SIZEOF_GRAPHICS_PROFILER);
+        }
+        const rc = (API.LNDebug_GetGraphicsProfiler as (ctx: number, out: number) => number)(
+            this._handle, this._profilerPtr);
+        if (rc !== Result.OK) {
+            throw new Error(`Lumino C-API error: LNDebug_GetGraphicsProfiler (${rc})`);
+        }
+        // WASM メモリ成長に備え、呼び出し後に view を作る。
+        const view = new DataView(m.HEAPU8.buffer, this._profilerPtr, SIZEOF_GRAPHICS_PROFILER);
+        return readGraphicsProfiler(view);
+    }
+
     override dispose(): void {
         this._residencyManager.disposeAll();
         this._externalTextures.clear();
         this._renderer = null;
+        if (this._profilerPtr !== 0) {
+            Runtime.module._free(this._profilerPtr);
+            this._profilerPtr = 0;
+        }
         if (this._windowHandle !== 0) {
             (API.LNObject_Release as (h: number) => number)(this._windowHandle);
             this._windowHandle = 0;

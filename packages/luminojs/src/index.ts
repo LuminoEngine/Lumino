@@ -24,6 +24,7 @@ export {
     SIZEOF_VERTEX,
     SIZEOF_SUBMESH,
     SIZEOF_TRANSFORM,
+    SIZEOF_GRAPHICS_PROFILER,
 } from "./types";
 export type {
     Handle,
@@ -35,4 +36,5 @@ export type {
     Vertex,
     SubMesh,
     Transform,
+    GraphicsProfiler,
 } from "./types";

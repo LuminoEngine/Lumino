@@ -262,6 +262,10 @@ export const SIZEOF_TRANSFORM = 40;
 /** Byte size of `LNMatrix` in wasm memory (列優先 4x4, float[16])。 */
 export const SIZEOF_MATRIX = 64;
 
+/** Byte size of `LNGraphicsProfiler` in wasm memory. */
+export const SIZEOF_GRAPHICS_PROFILER = 12;
+// Layout: drawCallCount(i32,0) fps(f32,4) lastFrameTimeMs(f32,8)
+
 /**
  * Vertex data matching C `LNVertex` (64 bytes).
  * 標準頂点データ (64 bytes)。
@@ -282,6 +286,24 @@ export interface SubMesh {
     indexOffset: number;
     indexCount: number;
     materialIndex: number;
+}
+
+/**
+ * Graphics profiling counters matching C `LNGraphicsProfiler` (12 bytes).
+ * グラフィックスのプロファイリング情報。`GraphicsContext.getProfiler()` で取得します。
+ */
+export interface GraphicsProfiler {
+    /**
+     * ドローコール数。
+     * `beginFrame()` でリセットされ、描画のたびに加算されます。
+     * スプライトのバッチングが効いていれば、スプライト枚数を増やしても
+     * この値はほとんど増えません。
+     */
+    drawCallCount: number;
+    /** 実際のフレームレート (FPS)。直前フレームの所要時間から算出した瞬間値です。 */
+    fps: number;
+    /** 直前フレームの所要時間 (ミリ秒)。 */
+    lastFrameTimeMs: number;
 }
 
 /**

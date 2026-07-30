@@ -12,6 +12,7 @@ import {
     SIZEOF_SUBMESH,
     SIZEOF_TRANSFORM,
     SIZEOF_MATRIX,
+    SIZEOF_GRAPHICS_PROFILER,
 } from "./types";
 
 //------------------------------------------------------------------------------
@@ -270,8 +271,9 @@ export class Runtime {
         API.LNHelloTest = cw("LNHelloTest", "number", ["number"]);
         API.LNBuildInfo_GetBuildTimestamp = cw("LNBuildInfo_GetBuildTimestamp", "number", []);
 
-        // Debug (ABI レイアウト検証)
-        API.LNDebug_GetStructSize = cw("LNDebug_GetStructSize", "number", ["string", "number"]);
+        // Debug (ABI レイアウト検証 / プロファイリング)
+        API.LNDebug_GetStructSize        = cw("LNDebug_GetStructSize",        "number", ["string", "number"]);
+        API.LNDebug_GetGraphicsProfiler  = cw("LNDebug_GetGraphicsProfiler",  "number", ["number", "number"]);
 
         // Instance
         API.LNInstance_Initialize = cw("LNInstance_Initialize", "number", ["number"], { async: true });
@@ -358,6 +360,7 @@ export class Runtime {
             ["LNSubMesh",                    SIZEOF_SUBMESH],
             ["LNTransform",                  SIZEOF_TRANSFORM],
             ["LNMatrix",                     SIZEOF_MATRIX],
+            ["LNGraphicsProfiler",           SIZEOF_GRAPHICS_PROFILER],
         ];
 
         const getStructSize = API.LNDebug_GetStructSize as

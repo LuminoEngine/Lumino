@@ -1078,6 +1078,8 @@ typedef struct LNGraphicsProfiler {
 /**
  * グラフィックスプロファイリング情報を取得します。
  * LNGraphicsContext_EndFrame の後に呼び出すと前フレームの計測値が得られます。
+ * (drawCallCount は LNGraphicsContext_BeginFrame でリセットされるため、
+ *  BeginFrame - EndFrame の間に呼び出すとその時点までの途中経過になります)
  *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[out] outProfiler    プロファイリング情報の出力先

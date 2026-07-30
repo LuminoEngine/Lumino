@@ -605,6 +605,28 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
 // LNDebug
 //------------------------------------------------------------------------------
 
+// プロファイリング情報の取得は GPU API を一切呼び出さず、フレーム処理中に
+// 蓄積済みのカウンタを読み出すだけなので、wasm32 でもそのまま利用できます
+// (LNDebug_Print と異なり __EMSCRIPTEN__ ガードの外に置いています)。
+// デバイスロスト中でも「ロスト直前の値」を読めるように LN_ERROR_DEVICE_LOST は
+// 返さず、計測値をそのまま返します。
+LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfiler* outProfiler) {
+    if (!outProfiler) return LN_ERROR_INVALID_ARGUMENT;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    // デバイスロスト復旧中は Renderer が作り直されるまで null になり得る。
+    auto* renderer = ctx->renderer();
+    outProfiler->drawCallCount   = renderer ? static_cast<int32_t>(renderer->drawCallCount()) : 0;
+    outProfiler->fps             = ctx->fps();
+    outProfiler->lastFrameTimeMs = ctx->lastFrameTimeMs();
+    return LN_OK;
+}
+
 //------------------------------------------------------------------------------
 // ABI レイアウト同期の表明 (wasm32)
 //
@@ -694,21 +716,6 @@ LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
     ctx->debugPrintText(str);
-    return LN_OK;
-}
-
-LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfiler* outProfiler) {
-    if (!outProfiler) return LN_ERROR_INVALID_ARGUMENT;
-
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
-
-    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
-    if (!ctx) return LN_ERROR_INVALID_HANDLE;
-
-    outProfiler->drawCallCount   = static_cast<int32_t>(ctx->renderer()->drawCallCount());
-    outProfiler->fps             = ctx->fps();
-    outProfiler->lastFrameTimeMs = ctx->lastFrameTimeMs();
     return LN_OK;
 }
 

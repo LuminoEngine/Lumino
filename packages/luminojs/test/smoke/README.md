@@ -13,8 +13,14 @@ luminojs が実際にロードする WASM バイナリ (`lib/LuminoC.wasm`) を�
 4. `Runtime.getBuildTimestamp()` が空でない文字列を返す
 5. `Runtime.decodeImage()` が小さな PNG を期待どおりの RGBA8 ピクセルにデコードする
    (GPU 非依存の純 CPU 経路)
+6. `LNDebug_GetGraphicsProfiler` が WASM にエクスポートされている (GPU 非依存)。
+   実バイナリが報告する `sizeof(LNGraphicsProfiler)` が 12 バイトであること、
+   無効ハンドルでの呼び出しが `LN_ERROR_INVALID_HANDLE` を返すことを確認します。
+7. `GraphicsContext.getProfiler()` が `drawCallCount` / `fps` / `lastFrameTimeMs` を返す
+   (WebGPU 必須)。同一マテリアルのスプライト 16 枚がバッチングされ、`drawCallCount` が
+   枚数に比例して増えないことも確認します。
 
-GPU (WebGPU) の実描画経路 (BeginFrame / DrawSprite / Capture 等) はスコープ外です
+GPU (WebGPU) の実描画経路のうち、描画結果のピクセル検証 (Capture 等) はスコープ外です
 (`smoke.spec.mjs` 末尾の TODO を参照)。
 
 ## 実行前提
@@ -41,19 +47,19 @@ npm run test:smoke
 
 ## WebGPU が無い環境での挙動 / スキップ切り替え
 
-検証項目のうち `Runtime.initialize()` だけが WebGPU デバイス生成を伴います
-(残り 4 項目は GPU 非依存で、WebGPU が無くても通ります)。WebGPU が使えない環境で
-この項目をどう扱うかは `smoke.spec.mjs` 冒頭の定数で切り替えます。
+検証項目のうち `Runtime.initialize()` / `getProfiler()` / デバイスロスト復旧が WebGPU
+デバイス生成を伴います (残りの項目は GPU 非依存で、WebGPU が無くても通ります)。
+WebGPU が使えない環境でこれらをどう扱うかは `smoke.spec.mjs` 冒頭の定数で切り替えます。
 
 ```js
 const SKIP_INITIALIZE_WHEN_NO_WEBGPU =
     false || process.env.LUMINO_SMOKE_SKIP_NO_WEBGPU === "1";
 ```
 
-- `false` (既定): skip しない。WebGPU が使えない環境では initialize 検証が 失敗 する。
+- `false` (既定): skip しない。WebGPU が使えない環境では WebGPU 依存の項目が 失敗 する。
   「どの環境で WebGPU が使える/使えないか」に気づくための設定。
-- `true`: WebGPU アダプタが取得できない環境では initialize 検証を 自動 skip する
-  (GPU 非依存の 4 項目だけを回す)。GPU 無しの CI でグリーンを保ちたいときに切り替える。
+- `true`: WebGPU アダプタが取得できない環境では WebGPU 依存の項目を 自動 skip する
+  (GPU 非依存の項目だけを回す)。GPU 無しの CI でグリーンを保ちたいときに切り替える。
 
 定数を書き換えても、環境変数 `LUMINO_SMOKE_SKIP_NO_WEBGPU=1` でも切り替えられます。
 なお WebGPU アダプタの有無と initialize の成否は分けて判定しているため、`true` にしても

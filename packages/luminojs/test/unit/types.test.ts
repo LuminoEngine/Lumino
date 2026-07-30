@@ -8,6 +8,7 @@ import {
     SIZEOF_SUBMESH,
     SIZEOF_TRANSFORM,
     SIZEOF_MATRIX,
+    SIZEOF_GRAPHICS_PROFILER,
     LN_MAX_COLOR_ATTACHMENTS,
 } from "../../src/types";
 
@@ -62,5 +63,10 @@ describe("types.ts SIZEOF_* layout constants", () => {
     it("SIZEOF_MATRIX = float[16] (列優先 4x4)", () => {
         expect(SIZEOF_MATRIX).toBe(16 * 4);
         expect(SIZEOF_MATRIX).toBe(64);
+    });
+
+    it("SIZEOF_GRAPHICS_PROFILER = drawCallCount(i32,4) + fps(f32,4) + lastFrameTimeMs(f32,4)", () => {
+        expect(SIZEOF_GRAPHICS_PROFILER).toBe(4 + 4 + 4);
+        expect(SIZEOF_GRAPHICS_PROFILER).toBe(12);
     });
 });

@@ -1,4 +1,4 @@
-import type { RenderPassDesc, Transform } from "./types";
+import type { GraphicsProfiler, RenderPassDesc, Transform } from "./types";
 import {
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
@@ -104,4 +104,25 @@ export function writeTransform(view: DataView, t: Transform): void {
     view.setFloat32(28, t.scale[0], true);
     view.setFloat32(32, t.scale[1], true);
     view.setFloat32(36, t.scale[2], true);
+}
+
+/**
+ * `LNGraphicsProfiler` を DataView から読み出す。
+ *
+ * C レイアウト (wasm32, 4 バイトアライン、合計 12 バイト):
+ * ```
+ * offset 0: int32_t drawCallCount
+ * offset 4: float   fps
+ * offset 8: float   lastFrameTimeMs
+ * ```
+ *
+ * @param view 読み出し元 (少なくとも `SIZEOF_GRAPHICS_PROFILER` バイト)。
+ */
+export function readGraphicsProfiler(view: DataView): GraphicsProfiler {
+    return {
+        // drawCallCount は C 側で int32_t なので符号付きで読む。
+        drawCallCount:   view.getInt32(0, true),
+        fps:             view.getFloat32(4, true),
+        lastFrameTimeMs: view.getFloat32(8, true),
+    };
 }

@@ -71,6 +71,8 @@ test.beforeAll(async ({ browser }) => {
             helloTest: {},
             buildTimestamp: {},
             decodeImage: {},
+            profilerExport: {},
+            profiler: { attempted: false },
             deviceLost: { attempted: false },
         };
 
@@ -136,7 +138,102 @@ test.beforeAll(async ({ browser }) => {
             res.decodeImage = { ok: false, error: String(e && e.message ? e.message : e) };
         }
 
-        // 5. デバイスロスト自動復旧 (docs/plans/device-lost-design.md フェーズ B3)。
+        // 5. LNDebug_GetGraphicsProfiler が WASM にエクスポートされている (GPU 非依存)。
+        //    この関数は元々 __EMSCRIPTEN__ ガードの内側にあり WASM に存在しなかったため、
+        //    「実バイナリから呼べること」を GPU の有無に関わらず検証する。
+        //    無効ハンドルを渡すと LN_ERROR_INVALID_HANDLE (-4) が返るので、
+        //    WebGPU デバイスが無い環境でもエクスポートの疎通を確認できる。
+        try {
+            const m = Runtime.module;
+            const getStructSize = m.cwrap("LNDebug_GetStructSize", "number", ["string", "number"]);
+            const getProfiler = m.cwrap("LNDebug_GetGraphicsProfiler", "number", ["number", "number"]);
+
+            const outPtr = m._malloc(12);
+            try {
+                // 実バイナリが報告する sizeof(LNGraphicsProfiler)。
+                const sizeRc = getStructSize("LNGraphicsProfiler", outPtr);
+                const wasmSize = new Uint32Array(m.HEAPU8.buffer, outPtr, 1)[0];
+
+                // 無効ハンドル (0) での呼び出し。エクスポートされていなければ
+                // cwrap の時点で例外になる。
+                const invalidRc = getProfiler(0, outPtr);
+
+                res.profilerExport = { ok: true, sizeRc, wasmSize, invalidRc };
+            } finally {
+                m._free(outPtr);
+            }
+        } catch (e) {
+            res.profilerExport = { ok: false, error: String(e && e.message ? e.message : e) };
+        }
+
+        // 6. GraphicsContext.getProfiler()。
+        //    LNDebug_GetGraphicsProfiler の WASM 経路での疎通と、スプライトの
+        //    バッチングが drawCallCount に反映されることを検証する。
+        if (res.initialize.ok && res.webgpuAvailable) {
+            res.profiler.attempted = true;
+            try {
+                const { GraphicsContext, Camera, Material, Matrix4x4, LoadOp } =
+                    await import(location.origin + "/lib/luminojs.mjs");
+
+                const canvas = document.createElement("canvas");
+                canvas.id = "lumino_profiler_canvas";
+                canvas.width = 64;
+                canvas.height = 64;
+                document.body.appendChild(canvas);
+
+                const ctx = await GraphicsContext.createFromCanvas("#lumino_profiler_canvas");
+                const camera = Camera.create();
+                camera.setOrthographic2D(64, 64, -100, 100);
+                const material = Material.createUnlit();
+                const nextFrame = () => new Promise((r) => requestAnimationFrame(r));
+
+                // 同一マテリアルのスプライトを spriteCount 枚描画し、endFrame 後の
+                // プロファイラ値を返す。
+                const renderSprites = async (spriteCount) => {
+                    const f = ctx.beginFrame();
+                    if (!f) throw new Error("beginFrame returned null");
+                    f.renderer.beginRenderPass(ctx, {
+                        colorAttachments: [{ clearColor: [0, 0, 0, 1], loadOp: LoadOp.Clear }],
+                    }, camera);
+                    for (let i = 0; i < spriteCount; i++) {
+                        f.renderer.drawSprite(
+                            material, 0,
+                            Matrix4x4.makeTranslation(i, 0, 0),
+                            0, 0, 1, 1, 0.5, 0.5,
+                            0, 0, 1, 1,
+                            1, 1, 1, 1);
+                    }
+                    f.renderer.endRenderPass();
+                    ctx.endFrame();
+                    // 計測値は endFrame の後に読む (fps / lastFrameTimeMs は
+                    // endFrame の中で更新される)。
+                    const p = ctx.getProfiler();
+                    await nextFrame();
+                    return p;
+                };
+
+                // 1 フレーム目は初期化コストで計測値が安定しないため捨てる。
+                await renderSprites(1);
+                const one = await renderSprites(1);
+                const many = await renderSprites(16);
+
+                res.profiler = {
+                    attempted: true,
+                    ok: true,
+                    one,
+                    many,
+                    keys: Object.keys(one).sort(),
+                };
+            } catch (e) {
+                res.profiler = {
+                    attempted: true,
+                    ok: false,
+                    error: String(e && e.stack ? e.stack : e),
+                };
+            }
+        }
+
+        // 7. デバイスロスト自動復旧 (docs/plans/device-lost-design.md フェーズ B3)。
         //    実 WebGPU デバイスを wgpuDeviceDestroy で破棄し (deep シミュレーション)、
         //    フレームループを回すだけで自動復旧して描画が再開できることを検証する。
         if (res.initialize.ok && res.webgpuAvailable) {
@@ -273,6 +370,49 @@ test("decodeImage() が小さな PNG を期待どおりの RGBA ピクセルに�
     expect(result.decodeImage.length).toBe(2 * 2 * 4);
     // 先頭ピクセル (左上) は赤。
     expect(result.decodeImage.firstPixel).toEqual([255, 0, 0, 255]);
+});
+
+// GPU 非依存。WebGPU が使えない環境でも常に実行される。
+test("LNDebug_GetGraphicsProfiler が WASM にエクスポートされている", () => {
+    expect(result.profilerExport.error ?? null, "profilerExport error").toBeNull();
+    expect(result.profilerExport.ok).toBe(true);
+
+    // LNDebug_GetStructSize が LNGraphicsProfiler を認識する (LN_OK = 0)。
+    expect(result.profilerExport.sizeRc).toBe(0);
+    // wasm32 での sizeof(LNGraphicsProfiler) = int32 + float + float。
+    // types.ts の SIZEOF_GRAPHICS_PROFILER と一致していなければならない。
+    expect(result.profilerExport.wasmSize).toBe(12);
+
+    // 無効ハンドルでの呼び出しが LN_ERROR_INVALID_HANDLE (-4) を返す
+    // = 関数が実バイナリに存在し、ブラウザから呼び出せている。
+    expect(result.profilerExport.invalidRc).toBe(-4);
+});
+
+test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameTimeMs を返す", () => {
+    test.skip(
+        SKIP_INITIALIZE_WHEN_NO_WEBGPU && !result.webgpuAvailable,
+        "WebGPU アダプタが利用できない環境のため skip (SKIP_INITIALIZE_WHEN_NO_WEBGPU=true)");
+
+    expect(result.profiler.attempted, "profiler scenario not attempted").toBe(true);
+    expect(result.profiler.error ?? null, "profiler error").toBeNull();
+    expect(result.profiler.ok).toBe(true);
+
+    // LNGraphicsProfiler の 3 項目がすべて公開されている。
+    expect(result.profiler.keys).toEqual(["drawCallCount", "fps", "lastFrameTimeMs"]);
+
+    const { one, many } = result.profiler;
+
+    // スプライトを 1 枚描いたフレームでは 1 回以上のドローコールが記録される。
+    expect(Number.isInteger(one.drawCallCount)).toBe(true);
+    expect(one.drawCallCount).toBeGreaterThan(0);
+
+    // endFrame の後に読んでいるので、フレーム時間と FPS は正の実測値になる。
+    expect(one.lastFrameTimeMs).toBeGreaterThan(0);
+    expect(one.fps).toBeGreaterThan(0);
+
+    // 同一マテリアルのスプライト 16 枚がバッチングされ、ドローコールが
+    // 枚数に比例して増えないこと (クライアントが確認したかった性質)。
+    expect(many.drawCallCount).toBeLessThan(16);
 });
 
 test("デバイスロスト後、フレームループを回すだけで自動復旧して描画が再開できる", () => {

@@ -55,6 +55,43 @@ bloom.setNamedSamplerState("u_noiseTexture", TextureFilterMode.Nearest, TextureA
 (ペアの `SamplerState` 変数名ではありません)。詳細は
 [shader-conventions.md](../../docs/shader-conventions.md) を参照してください。
 
+### プロファイリング
+
+`GraphicsContext.getProfiler()` で、ドローコール数・FPS・フレーム時間を取得できます
+(C-API の `LNGraphicsProfiler` に対応)。
+
+```ts
+import type { GraphicsProfiler } from "luminojs";
+
+function frame() {
+    const info = ctx.beginFrame();
+    if (info) {
+        // ...描画...
+        ctx.endFrame();
+
+        // endFrame の後に読むこと。直前に描画し終えたフレームの計測値が得られる。
+        const p: GraphicsProfiler = ctx.getProfiler();
+        hud.textContent =
+            `${p.drawCallCount} draws / ${p.fps.toFixed(1)} fps / ${p.lastFrameTimeMs.toFixed(2)} ms`;
+    }
+    requestAnimationFrame(frame);
+}
+```
+
+| プロパティ | 意味 |
+| --- | --- |
+| `drawCallCount` | ドローコール数。`beginFrame()` でリセットされ、描画のたびに加算されます。 |
+| `fps` | 実際のフレームレート。直前フレームの所要時間から算出した瞬間値です。 |
+| `lastFrameTimeMs` | 直前フレームの所要時間 (ミリ秒)。 |
+
+**呼び出しタイミングに注意してください。** `fps` と `lastFrameTimeMs` は `endFrame()` の
+中で更新されるため、`beginFrame()` - `endFrame()` の間に読むと 1 フレーム古い値になります。
+また `drawCallCount` は `beginFrame()` でリセットされるので、フレームの途中で読むと
+その時点までの途中経過になります。
+
+スプライトのバッチングが効いているかは `drawCallCount` で直接確認できます。同一マテリアルの
+スプライトがバッチングされていれば、描画枚数を増やしてもこの値はほとんど増えません。
+
 ## テスト
 
 実際にロードする WASM バイナリを検証するスモークテストがあります (Playwright + Chromium)。
