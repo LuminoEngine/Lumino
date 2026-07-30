@@ -498,6 +498,24 @@ typedef enum LNBlendMode {
     LN_BLEND_MODE_MULTIPLY = 4,
 } LNBlendMode;
 
+/** テクスチャのフィルタリング方法 */
+typedef enum LNTextureFilterMode {
+    /** 最近傍 (ドット絵の拡大表示向け) */
+    LN_TEXTURE_FILTER_MODE_NEAREST = 0,
+    /** 線形補間 (デフォルト) */
+    LN_TEXTURE_FILTER_MODE_LINEAR  = 1,
+} LNTextureFilterMode;
+
+/** テクスチャ座標が 0.0 - 1.0 の範囲外になったときの回り込み方法 */
+typedef enum LNTextureAddressMode {
+    /** 繰り返し (タイリングする模様やノイズテクスチャ向け) */
+    LN_TEXTURE_ADDRESS_MODE_REPEAT          = 0,
+    /** 反転繰り返し */
+    LN_TEXTURE_ADDRESS_MODE_MIRRORED_REPEAT = 1,
+    /** 端のピクセルを引き伸ばす (デフォルト) */
+    LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE   = 2,
+} LNTextureAddressMode;
+
 /** ポリゴンのカリングモード */
 typedef enum LNCullMode {
     /** カリングなし (両面描画) */
@@ -594,6 +612,46 @@ extern LUMINO_API LNResult LNMaterial_SetNamedTexture(
     LNHandle material,
     const char* name,
     LNHandle texture
+);
+
+/**
+ * マテリアル全体のテクスチャサンプリング方法を設定します。
+ *
+ * このマテリアルが参照する全テクスチャの既定値になります。個別のテクスチャだけ
+ * 変えたい場合は LNMaterial_SetNamedSamplerState で上書きしてください。
+ *
+ * 既定は LN_TEXTURE_FILTER_MODE_LINEAR + LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE です。
+ * ドット絵を拡大表示する場合は LN_TEXTURE_FILTER_MODE_NEAREST を、
+ * タイリングする模様やノイズテクスチャには LN_TEXTURE_ADDRESS_MODE_REPEAT を
+ * 指定します。
+ *
+ * @param[in] material    マテリアルのハンドル
+ * @param[in] filterMode  拡大/縮小フィルタ
+ * @param[in] addressMode UV が 0.0 - 1.0 の範囲外に出たときの回り込み方法
+ */
+extern LUMINO_API LNResult LNMaterial_SetSamplerState(
+    LNHandle material,
+    LNTextureFilterMode filterMode,
+    LNTextureAddressMode addressMode
+);
+
+/**
+ * 名前付きテクスチャ 1 スロットのサンプリング方法を設定します。
+ * LNMaterial_SetSamplerState によるマテリアル単位の設定を上書きします。
+ *
+ * name にはシェーダの uniform Texture2D 変数名 (例: "u_sceneColor") を指定します。
+ * ペアになる SamplerState 変数名 (例: "u_sceneColorSampler") ではありません。
+ *
+ * @param[in] material    マテリアルのハンドル
+ * @param[in] name        シェーダ内のテクスチャバインディング名 (UTF-8)
+ * @param[in] filterMode  拡大/縮小フィルタ
+ * @param[in] addressMode UV が 0.0 - 1.0 の範囲外に出たときの回り込み方法
+ */
+extern LUMINO_API LNResult LNMaterial_SetNamedSamplerState(
+    LNHandle material,
+    const char* name,
+    LNTextureFilterMode filterMode,
+    LNTextureAddressMode addressMode
 );
 
 /**

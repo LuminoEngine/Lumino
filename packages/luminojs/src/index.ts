@@ -17,6 +17,8 @@ export {
     TextureFormat,
     BlendMode,
     CullMode,
+    TextureFilterMode,
+    TextureAddressMode,
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
     SIZEOF_VERTEX,

@@ -222,12 +222,16 @@ struct TextureDesc {
     const void* initialData = nullptr; ///< If non-null, pixel data uploaded via staging buffer.
 };
 
+// 既定値は ln::SamplerState (Material.hpp) と揃えてある。
+// UV が範囲外に出たときに反対側の端から回り込む Repeat は、気付きにくい描画不具合
+// (ポストエフェクトの光漏れ、シャドウマップの回り込み) の原因になるため、
+// 既定は ClampToEdge とし、タイリングが必要な場合に明示的に Repeat を指定する。
 struct SamplerDesc {
     FilterMode magFilter = FilterMode::Linear;
     FilterMode minFilter = FilterMode::Linear;
-    AddressMode addressU = AddressMode::Repeat;
-    AddressMode addressV = AddressMode::Repeat;
-    AddressMode addressW = AddressMode::Repeat;
+    AddressMode addressU = AddressMode::ClampToEdge;
+    AddressMode addressV = AddressMode::ClampToEdge;
+    AddressMode addressW = AddressMode::ClampToEdge;
     uint32_t maxAnisotropy = 1;
 };
 

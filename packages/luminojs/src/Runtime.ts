@@ -316,6 +316,8 @@ export class Runtime {
         API.LNMaterial_SetColor                  = cw("LNMaterial_SetColor",                  "number", ["number", "number", "number", "number", "number"]);
         API.LNMaterial_SetFloat4                 = cw("LNMaterial_SetFloat4",                 "number", ["number", "string", "number"]);
         API.LNMaterial_SetNamedTexture           = cw("LNMaterial_SetNamedTexture",           "number", ["number", "string", "number"]);
+        API.LNMaterial_SetSamplerState           = cw("LNMaterial_SetSamplerState",           "number", ["number", "number", "number"]);
+        API.LNMaterial_SetNamedSamplerState      = cw("LNMaterial_SetNamedSamplerState",      "number", ["number", "string", "number", "number"]);
         API.LNMaterial_SetCullMode               = cw("LNMaterial_SetCullMode",               "number", ["number", "number"]);
         API.LNMaterial_SetBlendMode              = cw("LNMaterial_SetBlendMode",              "number", ["number", "number"]);
         API.LNMaterial_SetDepthTestEnabled       = cw("LNMaterial_SetDepthTestEnabled",       "number", ["number", "number"]);

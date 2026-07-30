@@ -83,6 +83,27 @@ export enum CullMode {
     Back  = 2,
 }
 
+/** Texture filter mode (matches C `LNTextureFilterMode`). テクスチャのフィルタリング方法。 */
+export enum TextureFilterMode {
+    /** 最近傍。ドット絵の拡大表示向け。 */
+    Nearest = 0,
+    /** 線形補間 (デフォルト)。 */
+    Linear  = 1,
+}
+
+/**
+ * Texture address mode (matches C `LNTextureAddressMode`).
+ * テクスチャ座標が 0.0 - 1.0 の範囲外になったときの回り込み方法。
+ */
+export enum TextureAddressMode {
+    /** 繰り返し。タイリングする模様やノイズテクスチャ向け。 */
+    Repeat         = 0,
+    /** 反転繰り返し。 */
+    MirroredRepeat = 1,
+    /** 端のピクセルを引き伸ばす (デフォルト)。 */
+    ClampToEdge    = 2,
+}
+
 /** Built-in shader kind (matches C `LNBuiltinShader`). ビルトインシェーダの種類。 */
 export enum BuiltinShader {
     /** Unlit: テクスチャ * カラー、ライティングなし。 */

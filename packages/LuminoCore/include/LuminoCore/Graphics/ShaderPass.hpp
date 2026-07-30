@@ -78,6 +78,17 @@ public:
     /** マテリアルセット内のバインディング名 (materialLayoutDesc().entries と対応)。 */
     const std::vector<std::string>& materialBindingNames() const { return m_materialBindingNames; }
 
+    /**
+     * 各 Sampler バインディングが担当するテクスチャのバインディング名
+     * (materialLayoutDesc().entries と対応。Sampler 以外のエントリと、対応先が
+     * 特定できなかった Sampler は空文字列)。
+     *
+     * Material の名前付きサンプラー設定 (Material::setNamedSamplerState) は
+     * テクスチャ名をキーにしているため、Sampler バインディングからテクスチャ名を
+     * 逆引きするためにパス構築時に一度だけ解決しておく。
+     */
+    const std::vector<std::string>& materialSamplerTextureNames() const { return m_materialSamplerTextureNames; }
+
     /** ビューデータのディスクリプタセットインデックス (シェーダリフレクションから取得)。 */
     int16_t viewSetIndex() const { return m_viewSetIndex; }
 
@@ -124,6 +135,7 @@ private:
     // リフレクションから取得したマテリアルセットレイアウト
     rhi::BindGroupLayoutDesc m_materialLayoutDesc;
     std::vector<std::string> m_materialBindingNames;
+    std::vector<std::string> m_materialSamplerTextureNames;
 
     // 共有 BindGroupLayoutDesc (値型、GPUオブジェクトは持たない)
     rhi::BindGroupLayoutDesc m_viewLayoutDesc;

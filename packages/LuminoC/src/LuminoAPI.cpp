@@ -957,6 +957,49 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* n
     return LN_OK;
 }
 
+// C-API の列挙値は rhi の列挙値をそのまま公開しているため、両者がずれないよう固定する。
+static_assert(static_cast<int>(ln::rhi::FilterMode::Nearest) == LN_TEXTURE_FILTER_MODE_NEAREST, "");
+static_assert(static_cast<int>(ln::rhi::FilterMode::Linear) == LN_TEXTURE_FILTER_MODE_LINEAR, "");
+static_assert(static_cast<int>(ln::rhi::AddressMode::Repeat) == LN_TEXTURE_ADDRESS_MODE_REPEAT, "");
+static_assert(static_cast<int>(ln::rhi::AddressMode::MirroredRepeat) == LN_TEXTURE_ADDRESS_MODE_MIRRORED_REPEAT, "");
+static_assert(static_cast<int>(ln::rhi::AddressMode::ClampToEdge) == LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE, "");
+
+// LNTextureFilterMode / LNTextureAddressMode を ln::SamplerState へ変換する。
+static ln::SamplerState toSamplerState(LNTextureFilterMode filterMode, LNTextureAddressMode addressMode) {
+    ln::SamplerState state;
+    state.filter = static_cast<ln::rhi::FilterMode>(filterMode);
+    state.address = static_cast<ln::rhi::AddressMode>(addressMode);
+    return state;
+}
+
+LNResult LNMaterial_SetSamplerState(
+    LNHandle material, LNTextureFilterMode filterMode, LNTextureAddressMode addressMode) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
+
+    mat->setSamplerState(toSamplerState(filterMode, addressMode));
+    return LN_OK;
+}
+
+LNResult LNMaterial_SetNamedSamplerState(
+    LNHandle material, const char* name,
+    LNTextureFilterMode filterMode, LNTextureAddressMode addressMode) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
+    if (!name) return LN_ERROR_INVALID_ARGUMENT;
+
+    mat->setNamedSamplerState(name, toSamplerState(filterMode, addressMode));
+    return LN_OK;
+}
+
 LNResult LNMaterial_SetBlendMode(LNHandle material, LNBlendMode blendMode) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;

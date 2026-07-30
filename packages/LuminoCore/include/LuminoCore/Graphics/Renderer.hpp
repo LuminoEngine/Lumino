@@ -331,7 +331,10 @@ private:
         // Per-binding texture tracking (binding index -> last texture pointer)
         std::unordered_map<uint32_t, rhi::Texture*> lastTextures;
         std::unordered_map<uint32_t, Ref<rhi::TextureView>> textureViews;
-        Ref<rhi::Sampler>     sampler;
+        // Sampler バインディングごとのサンプラー (binding index -> Sampler)。
+        // 名前付きテクスチャ単位でフィルタ/アドレッシングを変えられるよう binding 単位で保持する。
+        // 実体は m_samplerPool で設定が同じもの同士が共有される。
+        std::unordered_map<uint32_t, Ref<rhi::Sampler>> samplers;
         std::vector<Ref<rhi::Buffer>>    paramBuffers;
         std::vector<Ref<rhi::BindGroup>> bindGroups;
         std::vector<bool> dirty;
@@ -356,6 +359,15 @@ private:
 
     /** Get or create the BindGroup for (material, pass) and current frame slot. */
     Result<rhi::BindGroup*> getOrCreateMaterialBindGroup(Material* mat, ShaderPass* pass);
+
+    // ---- Sampler pool (Renderer-owned) ----
+    //
+    // サンプラーは設定の組み合わせが少なく、マテリアル間で共有できる。
+    // SamplerState をパックしたキーで引き当て、同じ設定なら GPU オブジェクトを共有する。
+    std::unordered_map<uint32_t, Ref<rhi::Sampler>> m_samplerPool;
+
+    /** SamplerState に対応する Sampler を取得 (無ければ作成してプールへ登録)。 */
+    Result<rhi::Sampler*> getOrCreateSampler(const SamplerState& state);
 
 };
 

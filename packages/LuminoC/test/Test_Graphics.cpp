@@ -2,6 +2,7 @@
 #include <LuminoC/lumino.h>
 #include "VisualTestHelper.hpp"
 #include <vector>
+#include <string>
 #include <cstdio>
 
 #define TEST_W 320
@@ -1013,4 +1014,243 @@ TEST_F(Test_Graphics, Orthographic2DPivotCenter) {
 
     LNObject_Release(camera);
     LNObject_Release(material);
+}
+
+//------------------------------------------------------------------------------
+// サンプラー設定 (フィルタ / アドレッシング) が実際にバックエンドまで効くことを検証する。
+//
+// 2x2 のテクスチャ (左上=赤, 右上=緑, 左下=青, 右下=黄) を、UV を -0.5 - 1.5 に
+// 引き伸ばしたスプライトで描画する。画面を左右に分け、
+//   左半分: Nearest + ClampToEdge
+//   右半分: Linear  + Repeat
+// を明示的に設定し、同じ相対位置のピクセルが異なる色になることを確認する。
+// これによりサンプラー設定が (a) 実際に反映され、(b) マテリアル単位で独立している
+// ことの両方を確認できる。
+// 既定値そのものは SamplerDefaultIsLinearClampToEdge で検証する。
+TEST_F(Test_Graphics, SamplerFilterAndAddressMode) {
+    // 2x2 RGBA8。行は上から順に格納される。
+    const uint8_t pixels[2 * 2 * 4] = {
+        255,   0,   0, 255,   0, 255,   0, 255, // 上段: 赤, 緑
+          0,   0, 255, 255, 255, 255,   0, 255, // 下段: 青, 黄
+    };
+    LNHandle texture = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromPixels(
+        graphicsContext, 2, 2, LN_TEXTURE_FORMAT_RGBA8_UNORM,
+        pixels, sizeof(pixels), &texture));
+
+    LNHandle matNearest = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matNearest));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(matNearest, texture));
+    ASSERT_EQ(LN_OK, LNMaterial_SetSamplerState(matNearest,
+        LN_TEXTURE_FILTER_MODE_NEAREST, LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE));
+
+    LNHandle matLinearRepeat = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &matLinearRepeat));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(matLinearRepeat, texture));
+    ASSERT_EQ(LN_OK, LNMaterial_SetSamplerState(matLinearRepeat,
+        LN_TEXTURE_FILTER_MODE_LINEAR, LN_TEXTURE_ADDRESS_MODE_REPEAT));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f);
+    LNCamera_SetLookAt(camera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+
+    LNMatrix identity = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
+    const float halfW = (float)TEST_W / 2.0f; // 160
+    const float fullH = (float)TEST_H;        // 240
+
+    // 左半分 (ワールド x = -80 中心)。UV は -0.5 - 1.5。
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, matNearest, 0, &identity,
+        -halfW / 2.0f, 0.0f,
+        halfW, fullH,
+        0.5f, 0.5f,
+        -0.5f, -0.5f, 2.0f, 2.0f,
+        1.0f, 1.0f, 1.0f, 1.0f));
+
+    // 右半分 (ワールド x = +80 中心)。同じ UV。
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, matLinearRepeat, 0, &identity,
+        halfW / 2.0f, 0.0f,
+        halfW, fullH,
+        0.5f, 0.5f,
+        -0.5f, -0.5f, 2.0f, 2.0f,
+        1.0f, 1.0f, 1.0f, 1.0f));
+
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    ASSERT_EQ(TEST_W, w);
+    ASSERT_EQ(TEST_H, h);
+
+    auto pixelAt = [&](int x, int y) { return data + (static_cast<size_t>(y) * w + x) * 4; };
+    auto rgbText = [](const uint8_t* p) {
+        return "RGBA=(" + std::to_string((int)p[0]) + "," + std::to_string((int)p[1]) +
+               "," + std::to_string((int)p[2]) + ")";
+    };
+
+    // スプライトローカルの水平位置 fx から、UV は u = -0.5 + 2*fx になる。
+    // 垂直位置 fy からは v = -0.5 + 2*fy。y=90 は fy=0.375 → v=0.25 (上段のテクセル中心)。
+    const int sampleY = 90;
+
+    // ---- 左半分: Nearest + ClampToEdge ----
+
+    // fx=0.125 → u=-0.25。ClampToEdge なので左列 (赤) に張り付く。
+    // Repeat なら u が 0.75 に回り込んで右列 (緑) になる。
+    {
+        const uint8_t* p = pixelAt(20, sampleY);
+        EXPECT_GT((int)p[0], 200) << "ClampToEdge が効いていません (左端の外側が赤になっていない)。" << rgbText(p);
+        EXPECT_LT((int)p[1], 60) << "ClampToEdge が効いていません (左端の外側に緑が回り込んでいる)。" << rgbText(p);
+    }
+
+    // fx=0.875 → u=1.25。ClampToEdge なので右列 (緑) に張り付く。
+    // Repeat なら u が 0.25 に回り込んで左列 (赤) になる。
+    {
+        const uint8_t* p = pixelAt(140, sampleY);
+        EXPECT_GT((int)p[1], 200) << "ClampToEdge が効いていません (右端の外側が緑になっていない)。" << rgbText(p);
+        EXPECT_LT((int)p[0], 60) << "ClampToEdge が効いていません (右端の外側に赤が回り込んでいる)。" << rgbText(p);
+    }
+
+    // fx=0.475 → u=0.45。テクセル境界 (0.5) の手前なので Nearest なら純粋な赤。
+    // Linear なら赤と緑が混ざって G が持ち上がる。
+    {
+        const uint8_t* p = pixelAt(76, sampleY);
+        EXPECT_GT((int)p[0], 200) << "Nearest が効いていません。" << rgbText(p);
+        EXPECT_LT((int)p[1], 60) << "Nearest が効いていません (赤と緑が補間されています)。" << rgbText(p);
+    }
+
+    // ---- 右半分: Linear + Repeat ----
+
+    // 左半分の fx=0.125 と同じ相対位置。Repeat なので u=-0.25 が 0.75 に回り込み緑になる。
+    // ここが赤だと、左半分のマテリアルの ClampToEdge が右半分に漏れている。
+    {
+        const uint8_t* p = pixelAt(160 + 20, sampleY);
+        EXPECT_GT((int)p[1], 200) << "Repeat が効いていません (回り込んだ緑にならない)。" << rgbText(p);
+        EXPECT_LT((int)p[0], 60) << "サンプラー設定がマテリアル間で漏れています。" << rgbText(p);
+    }
+
+    // 左半分の fx=0.475 と同じ相対位置。Linear なので赤と緑が混ざり G が 0 より明確に上がる。
+    // ここが純粋な赤だと、左半分のマテリアルの Nearest が右半分に漏れている。
+    {
+        const uint8_t* p = pixelAt(160 + 76, sampleY);
+        EXPECT_GT((int)p[1], 40) << "Linear 補間が効いていません (Nearest のように見えます)。" << rgbText(p);
+    }
+
+    LNObject_Release(camera);
+    LNObject_Release(matLinearRepeat);
+    LNObject_Release(matNearest);
+    LNObject_Release(texture);
+}
+
+//------------------------------------------------------------------------------
+// サンプラー設定を一切呼ばないマテリアルの既定値が Linear + ClampToEdge であることを
+// 検証する。
+//
+// 既定を Repeat から ClampToEdge に変更した意図 (ポストエフェクトやシャドウマップで
+// 反対側の端から色が回り込まないようにする) を固定するためのテスト。
+// UV を -0.5 - 1.5 に引き伸ばした全画面スプライトを 1 枚描き、範囲外の領域が
+// 端の色で埋まる (回り込まない) ことを確認する。
+TEST_F(Test_Graphics, SamplerDefaultIsLinearClampToEdge) {
+    // 2x2 RGBA8。行は上から順に格納される。
+    const uint8_t pixels[2 * 2 * 4] = {
+        255,   0,   0, 255,   0, 255,   0, 255, // 上段: 赤, 緑
+          0,   0, 255, 255, 255, 255,   0, 255, // 下段: 青, 黄
+    };
+    LNHandle texture = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromPixels(
+        graphicsContext, 2, 2, LN_TEXTURE_FORMAT_RGBA8_UNORM,
+        pixels, sizeof(pixels), &texture));
+
+    // サンプラー設定は明示的に呼ばない (既定値の検証が目的)。
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material, texture));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f);
+    LNCamera_SetLookAt(camera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+
+    LNMatrix identity = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, material, 0, &identity,
+        0.0f, 0.0f,
+        (float)TEST_W, (float)TEST_H,
+        0.5f, 0.5f,
+        -0.5f, -0.5f, 2.0f, 2.0f,
+        1.0f, 1.0f, 1.0f, 1.0f));
+
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    ASSERT_NE(nullptr, data);
+    ASSERT_EQ(TEST_W, w);
+    ASSERT_EQ(TEST_H, h);
+
+    auto pixelAt = [&](int x, int y) { return data + (static_cast<size_t>(y) * w + x) * 4; };
+    auto rgbText = [](const uint8_t* p) {
+        return "RGBA=(" + std::to_string((int)p[0]) + "," + std::to_string((int)p[1]) +
+               "," + std::to_string((int)p[2]) + ")";
+    };
+
+    // 全画面スプライトなので、画面上の位置 (fx, fy) から u = -0.5 + 2*fx, v = -0.5 + 2*fy。
+    // y=90 は fy=0.375 → v=0.25 (上段のテクセル中心)。
+    const int sampleY = 90;
+
+    // x=40 → fx=0.125 → u=-0.25 (テクスチャの左外側)。
+    // 既定が ClampToEdge なら左列 (赤) で埋まる。Repeat だと u が 0.75 に回り込み緑になる。
+    {
+        const uint8_t* p = pixelAt(40, sampleY);
+        EXPECT_GT((int)p[0], 200)
+            << "既定が ClampToEdge になっていません (左外側が赤で埋まらない)。" << rgbText(p);
+        EXPECT_LT((int)p[1], 60)
+            << "既定が Repeat のままです (左外側に反対端の緑が回り込んでいる)。" << rgbText(p);
+    }
+
+    // x=280 → fx=0.875 → u=1.25 (テクスチャの右外側)。
+    // 既定が ClampToEdge なら右列 (緑) で埋まる。Repeat だと u が 0.25 に回り込み赤になる。
+    {
+        const uint8_t* p = pixelAt(280, sampleY);
+        EXPECT_GT((int)p[1], 200)
+            << "既定が ClampToEdge になっていません (右外側が緑で埋まらない)。" << rgbText(p);
+        EXPECT_LT((int)p[0], 60)
+            << "既定が Repeat のままです (右外側に反対端の赤が回り込んでいる)。" << rgbText(p);
+    }
+
+    // x=152 → fx=0.475 → u=0.45。テクセル境界 (0.5) の手前。
+    // 既定が Linear なら赤と緑が混ざる (R も G も 0 でない)。Nearest なら純粋な赤。
+    {
+        const uint8_t* p = pixelAt(152, sampleY);
+        EXPECT_GT((int)p[1], 40)
+            << "既定が Linear になっていません (Nearest のように見えます)。" << rgbText(p);
+        EXPECT_GT((int)p[0], 100)
+            << "赤成分が低すぎます。u=0.45 は赤寄りの補間になるはずです。" << rgbText(p);
+    }
+
+    LNObject_Release(camera);
+    LNObject_Release(material);
+    LNObject_Release(texture);
 }

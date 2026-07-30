@@ -12,6 +12,44 @@
 
 namespace ln {
 
+/**
+ * サンプラー設定 (テクスチャのフィルタリングとアドレッシング)。
+ *
+ * mag/min フィルタと U/V/W アドレッシングを個別に指定する必要は現状無いため、
+ * それぞれ 1 つの値で全軸をまとめて指定します。細かい制御が必要になった場合は
+ * rhi::SamplerDesc へフィールドを追加する形で拡張します。
+ * @see LNTextureFilterMode, LNTextureAddressMode
+ */
+struct SamplerState {
+    /** 拡大/縮小フィルタ。既定は Linear。 */
+    rhi::FilterMode filter = rhi::FilterMode::Linear;
+    /**
+     * UV が 0..1 の範囲外に出たときの回り込み方法。既定は ClampToEdge。
+     *
+     * Repeat を既定にすると、ポストエフェクトが画面端の近傍をサンプルしたときに
+     * 反対側の端から色が漏れる、シャドウマップがライトの視錐台の外で回り込む、
+     * といった気付きにくい不具合を生む。タイリングが必要な場合に明示的に
+     * Repeat を指定する運用とする。
+     */
+    rhi::AddressMode address = rhi::AddressMode::ClampToEdge;
+
+    bool operator==(const SamplerState& o) const {
+        return filter == o.filter && address == o.address;
+    }
+    bool operator!=(const SamplerState& o) const { return !(*this == o); }
+
+    /** rhi レイヤの SamplerDesc へ変換します。 */
+    rhi::SamplerDesc toSamplerDesc() const {
+        rhi::SamplerDesc desc;
+        desc.magFilter = filter;
+        desc.minFilter = filter;
+        desc.addressU = address;
+        desc.addressV = address;
+        desc.addressW = address;
+        return desc;
+    }
+};
+
 /** @see LNBlendMode */
 enum class BlendMode {
     Normal = 0,
@@ -74,6 +112,23 @@ public:
     /** Set a texture by shader binding name (e.g., "u_sceneColor"). */
     void setNamedTexture(const std::string& name, rhi::Texture* texture);
 
+    // Sampler state
+
+    /**
+     * このマテリアルの全テクスチャに適用される既定のサンプラー設定を指定します。
+     * 名前付きの上書き (setNamedSamplerState) があるスロットにはそちらが優先されます。
+     */
+    void setSamplerState(const SamplerState& state);
+
+    /**
+     * 名前付きテクスチャ 1 スロットだけのサンプラー設定を指定します。
+     * マテリアル単位の設定 (setSamplerState) を上書きします。
+     *
+     * @param name  シェーダ内の Texture2D のバインディング名 (例: "u_sceneColor")。
+     *              対応する SamplerState の名前ではなくテクスチャ側の名前を指定します。
+     */
+    void setNamedSamplerState(const std::string& name, const SamplerState& state);
+
     // Render state
     void setBlendMode(BlendMode mode);
     void setCullMode(rhi::CullMode mode);
@@ -120,6 +175,25 @@ public:
     /** Named textures map (for reflection-driven bind group construction). */
     const std::unordered_map<std::string, Ref<rhi::Texture>>& namedTextures() const { return m_namedTextures; }
 
+    /** マテリアル単位の既定サンプラー設定。 */
+    const SamplerState& samplerState() const { return m_samplerState; }
+
+    /** 名前付きサンプラー設定の上書きマップ (キーはテクスチャのバインディング名)。 */
+    const std::unordered_map<std::string, SamplerState>& namedSamplerStates() const { return m_namedSamplerStates; }
+
+    /**
+     * 指定テクスチャバインディング名に適用されるサンプラー設定を解決します。
+     * 名前付きの上書きがあればそれを、無ければマテリアル単位の設定を返します。
+     * @param textureName テクスチャのバインディング名 (空文字列ならマテリアル単位の設定)
+     */
+    const SamplerState& resolveSamplerState(const std::string& textureName) const {
+        if (!textureName.empty()) {
+            auto it = m_namedSamplerStates.find(textureName);
+            if (it != m_namedSamplerStates.end()) return it->second;
+        }
+        return m_samplerState;
+    }
+
     /** Write material UBO data into the given mapped pointer. */
     void writeMaterialUBO(void* dst) const;
 
@@ -151,6 +225,10 @@ private:
 
     // Named texture slots (keyed by shader binding name, e.g., "u_sceneColor")
     std::unordered_map<std::string, Ref<rhi::Texture>> m_namedTextures;
+
+    // Sampler state (マテリアル単位の既定と、テクスチャバインディング名ごとの上書き)
+    SamplerState m_samplerState;
+    std::unordered_map<std::string, SamplerState> m_namedSamplerStates;
 
     // Render state
     rhi::CullMode m_cullMode;

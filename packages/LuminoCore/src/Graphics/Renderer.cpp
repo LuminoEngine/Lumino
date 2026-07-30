@@ -684,6 +684,21 @@ Result<void> Renderer::popStencilMask() {
     return {};
 }
 
+Result<rhi::Sampler*> Renderer::getOrCreateSampler(const SamplerState& state) {
+    // SamplerState は取りうる値が少ないので、そのままビットパックしてキーにする。
+    uint32_t key = static_cast<uint32_t>(state.filter) |
+                   (static_cast<uint32_t>(state.address) << 8);
+
+    auto it = m_samplerPool.find(key);
+    if (it != m_samplerPool.end()) return it->second.get();
+
+    auto sampResult = m_ctx->device()->createSampler(state.toSamplerDesc());
+    if (!sampResult) return LN_FORWARD_ERROR(sampResult);
+    auto* sampler = sampResult->get();
+    m_samplerPool.emplace(key, std::move(*sampResult));
+    return sampler;
+}
+
 Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, ShaderPass* pass) {
     auto* device = m_ctx->device();
     uint32_t frameSlot = m_currentFrameSlot;
@@ -737,12 +752,28 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         }
     }
 
-    // Create sampler if missing
-    if (!cache.sampler) {
-        rhi::SamplerDesc samplerDesc;
-        auto sampResult = device->createSampler(samplerDesc);
+    // Sampler バインディングごとにサンプラーを解決する。
+    // 名前付きの上書きが無ければマテリアル単位の設定が使われる。
+    // マテリアルのサンプラー設定変更は paramVersion を進めるため、上の dirty 判定で
+    // ここまで到達し、新しい設定の Sampler で BindGroup が作り直される。
+    static const std::string kNoTextureName;
+    const auto& samplerTextureNames = pass->materialSamplerTextureNames();
+    for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
+        const auto& layoutEntry = layoutDesc.entries[i];
+        if (layoutEntry.type != rhi::BindingType::Sampler) continue;
+
+        const std::string& texName =
+            (i < samplerTextureNames.size()) ? samplerTextureNames[i] : kNoTextureName;
+        auto sampResult = getOrCreateSampler(mat->resolveSamplerState(texName));
         if (!sampResult) return LN_FORWARD_ERROR(sampResult);
-        cache.sampler = std::move(*sampResult);
+
+        auto* sampler = *sampResult;
+        auto it = cache.samplers.find(layoutEntry.binding);
+        if (it == cache.samplers.end() || it->second.get() != sampler) {
+            cache.samplers[layoutEntry.binding] = Ref<rhi::Sampler>::retain(sampler);
+            // サンプラーが変わったので全フレームスロットの BindGroup を作り直す。
+            for (auto&& d : cache.dirty) d = true;
+        }
     }
 
     // Create per-frame buffer if missing.
@@ -796,7 +827,10 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
                     entry.textureView = viewIt->second.get();
                 }
             } else if (layoutEntry.type == rhi::BindingType::Sampler) {
-                entry.sampler = cache.sampler.get();
+                auto sampIt = cache.samplers.find(layoutEntry.binding);
+                if (sampIt != cache.samplers.end()) {
+                    entry.sampler = sampIt->second.get();
+                }
             }
             entries.push_back(entry);
         }

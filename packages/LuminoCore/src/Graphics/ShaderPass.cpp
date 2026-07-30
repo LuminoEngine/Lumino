@@ -23,6 +23,73 @@ static rhi::ShaderCodeFormat backendToCodeFormat(rhi::Backend backend) {
 }
 
 //------------------------------------------------------------------------------
+// Sampler バインディングと、それが担当するテクスチャバインディングを対応付ける。
+//
+// Lumino のシェーダ規約ではテクスチャとサンプラーをペアで宣言するが、命名は 2 通り
+// 存在する。
+//   (a) <テクスチャ名> + "Sampler"   例: u_gbufferA   / u_gbufferASampler
+//   (b) 共通接頭辞 + 役割サフィックス 例: u_baseTexture / u_baseSampler
+// そのため、次の順で対応先を探す。
+//   1. "Sampler" を除いた名前と完全一致するテクスチャ  -> (a)
+//   2. "Sampler" を除いた名前を接頭辞に持つテクスチャが 1 つだけある -> (b)
+//   3. 宣言順で直前にあるテクスチャ (規約から外れた命名へのフォールバック)
+// いずれも見つからない場合は空文字列とし、マテリアル単位のサンプラー設定だけが効く。
+static std::vector<std::string> resolveSamplerTextureNames(
+    const rhi::BindGroupLayoutDesc& layoutDesc,
+    const std::vector<std::string>& bindingNames) {
+
+    static const std::string kSamplerSuffix = "Sampler";
+    std::vector<std::string> result(layoutDesc.entries.size());
+
+    for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
+        if (layoutDesc.entries[i].type != rhi::BindingType::Sampler) continue;
+        if (i >= bindingNames.size()) continue;
+        const std::string& samplerName = bindingNames[i];
+
+        if (samplerName.size() > kSamplerSuffix.size() &&
+            samplerName.compare(samplerName.size() - kSamplerSuffix.size(),
+                                kSamplerSuffix.size(), kSamplerSuffix) == 0) {
+            std::string base = samplerName.substr(0, samplerName.size() - kSamplerSuffix.size());
+
+            // 1. 完全一致
+            bool matched = false;
+            for (size_t j = 0; j < layoutDesc.entries.size() && j < bindingNames.size(); ++j) {
+                if (layoutDesc.entries[j].type != rhi::BindingType::SampledTexture) continue;
+                if (bindingNames[j] == base) {
+                    result[i] = base;
+                    matched = true;
+                    break;
+                }
+            }
+            if (matched) continue;
+
+            // 2. 接頭辞一致 (候補が 1 つに絞れる場合のみ)
+            const std::string* prefixMatch = nullptr;
+            bool ambiguous = false;
+            for (size_t j = 0; j < layoutDesc.entries.size() && j < bindingNames.size(); ++j) {
+                if (layoutDesc.entries[j].type != rhi::BindingType::SampledTexture) continue;
+                if (bindingNames[j].compare(0, base.size(), base) != 0) continue;
+                if (prefixMatch) { ambiguous = true; break; }
+                prefixMatch = &bindingNames[j];
+            }
+            if (prefixMatch && !ambiguous) {
+                result[i] = *prefixMatch;
+                continue;
+            }
+        }
+
+        // 3. 直前のテクスチャへフォールバック
+        for (size_t j = i; j > 0; --j) {
+            if (layoutDesc.entries[j - 1].type != rhi::BindingType::SampledTexture) continue;
+            if (j - 1 < bindingNames.size()) result[i] = bindingNames[j - 1];
+            break;
+        }
+    }
+
+    return result;
+}
+
+//------------------------------------------------------------------------------
 // Internal: shared implementation used by createFromCompiledShader and createFromUnifiedShader
 Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     shader::UnifiedShader2* unifiedShader,
@@ -179,6 +246,8 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     sp->m_materialSetIndex = materialSetIdx;
     sp->m_materialMembers = std::move(members);
     sp->m_materialLayoutDesc = materialLayoutDesc;
+    sp->m_materialSamplerTextureNames =
+        resolveSamplerTextureNames(materialLayoutDesc, materialBindingNames);
     sp->m_materialBindingNames = std::move(materialBindingNames);
     sp->m_viewSetIndex = viewSetIndex;
     sp->m_sceneSetIndex = sceneSetIndex;

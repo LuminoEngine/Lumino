@@ -3,11 +3,17 @@ import type { GraphicsContext } from "./GraphicsContext";
 import type { Texture } from "./Texture";
 import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import { BlendMode, BuiltinShader, CullMode } from "./types";
+import { BlendMode, BuiltinShader, CullMode, TextureAddressMode, TextureFilterMode } from "./types";
 
 type MaterialSource =
     | { kind: "unlit" }
     | { kind: "compiled"; data: Uint8Array };
+
+/** サンプラー設定 (テクスチャのフィルタリングとアドレッシング)。 */
+interface SamplerState {
+    filter: TextureFilterMode;
+    address: TextureAddressMode;
+}
 
 export class Material extends LuminoObject implements ResidentResource {
     private _source: MaterialSource;
@@ -15,6 +21,8 @@ export class Material extends LuminoObject implements ResidentResource {
     private _namedTextures: Map<string, Texture> = new Map();
     private _color: [number, number, number, number] | null = null;
     private _float4s: Map<string, [number, number, number, number]> = new Map();
+    private _samplerState: SamplerState | null = null;
+    private _namedSamplerStates: Map<string, SamplerState> = new Map();
     private _cullMode: CullMode | null = null;
     private _blendMode: BlendMode | null = null;
     private _depthTestEnabled: boolean | null = null;
@@ -91,6 +99,37 @@ export class Material extends LuminoObject implements ResidentResource {
     }
 
     /**
+     * このマテリアルが参照する全テクスチャのサンプリング方法を設定します。
+     *
+     * 既定は `TextureFilterMode.Linear` + `TextureAddressMode.ClampToEdge` です。
+     * ドット絵を拡大表示する場合は `Nearest` を、タイリングする模様やノイズ
+     * テクスチャには `Repeat` を指定します。
+     *
+     * 個別のテクスチャだけ変えたい場合は `setNamedSamplerState` で上書きしてください。
+     * @param filter  拡大/縮小フィルタ
+     * @param address UV が 0.0 - 1.0 の範囲外に出たときの回り込み方法
+     */
+    setSamplerState(filter: TextureFilterMode, address: TextureAddressMode): void {
+        this._samplerState = { filter, address };
+        this._paramsDirty = true;
+    }
+
+    /**
+     * 名前付きテクスチャ 1 スロットのサンプリング方法を設定します。
+     * `setSamplerState` によるマテリアル単位の設定を上書きします。
+     *
+     * `name` にはシェーダ内の `Texture2D` 変数名 (例: `"u_sceneColor"`) を指定します。
+     * ペアになる `SamplerState` 変数名 (例: `"u_sceneColorSampler"`) ではありません。
+     * @param name    シェーダ内のテクスチャバインディング名 (例: `"u_sceneColor"`)
+     * @param filter  拡大/縮小フィルタ
+     * @param address UV が 0.0 - 1.0 の範囲外に出たときの回り込み方法
+     */
+    setNamedSamplerState(name: string, filter: TextureFilterMode, address: TextureAddressMode): void {
+        this._namedSamplerStates.set(name, { filter, address });
+        this._paramsDirty = true;
+    }
+
+    /**
      * フェースカリングモードを設定します。
      * @param mode カリングモード
      */
@@ -160,6 +199,7 @@ export class Material extends LuminoObject implements ResidentResource {
         this.evict();
         this._mainTexture = undefined;
         this._namedTextures.clear();
+        this._namedSamplerStates.clear();
         this._float4s.clear();
     }
 
@@ -235,6 +275,21 @@ export class Material extends LuminoObject implements ResidentResource {
             } finally {
                 m._free(ptr);
             }
+        }
+
+        if (this._samplerState !== null) {
+            const s = this._samplerState;
+            Runtime.safeCall(() =>
+                (API.LNMaterial_SetSamplerState as (
+                    mat: number, filter: number, address: number,
+                ) => number)(this._handle, s.filter, s.address));
+        }
+
+        for (const [name, s] of this._namedSamplerStates) {
+            Runtime.safeCall(() =>
+                (API.LNMaterial_SetNamedSamplerState as (
+                    mat: number, name: string, filter: number, address: number,
+                ) => number)(this._handle, name, s.filter, s.address));
         }
 
         if (this._cullMode !== null) {

@@ -105,6 +105,20 @@ void Material::setNamedTexture(const std::string& name, rhi::Texture* texture) {
     markDirty();
 }
 
+void Material::setSamplerState(const SamplerState& state) {
+    if (m_samplerState == state) return;
+    m_samplerState = state;
+    // サンプラーが変わると BindGroup を作り直す必要があるため paramVersion を進める。
+    markDirty();
+}
+
+void Material::setNamedSamplerState(const std::string& name, const SamplerState& state) {
+    auto it = m_namedSamplerStates.find(name);
+    if (it != m_namedSamplerStates.end() && it->second == state) return;
+    m_namedSamplerStates[name] = state;
+    markDirty();
+}
+
 void Material::setBlendMode(BlendMode mode) { m_blendMode = mode; }
 void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
 void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }

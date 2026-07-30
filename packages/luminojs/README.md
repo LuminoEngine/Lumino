@@ -33,6 +33,28 @@ requestAnimationFrame(frame);
 ABI レイアウト検証 (構造体サイズの照合)、`LNInstance_Initialize` の呼び出しまでを行います。
 動作するサンプルは [luminojs-examples](../luminojs-examples) を参照してください。
 
+### テクスチャのサンプリング設定
+
+テクスチャのフィルタリングとアドレッシングは `Material` に設定します。
+既定は `TextureFilterMode.Linear` + `TextureAddressMode.ClampToEdge` です。
+
+```ts
+import { Material, TextureAddressMode, TextureFilterMode } from "luminojs";
+
+// ドット絵を拡大表示する: 補間でボケないよう Nearest にする。
+const sprite = Material.createUnlit();
+sprite.setSamplerState(TextureFilterMode.Nearest, TextureAddressMode.ClampToEdge);
+
+// ポストエフェクト: 画面端の近傍をサンプルしても反対側の端から回り込まない
+// (既定が ClampToEdge)。タイリングさせたいノイズだけスロット単位で上書きする。
+const bloom = Material.createFromCompiledShader(bloomShaderData);
+bloom.setNamedSamplerState("u_noiseTexture", TextureFilterMode.Nearest, TextureAddressMode.Repeat);
+```
+
+`setNamedSamplerState` の名前にはシェーダの `Texture2D` 変数名を指定します
+(ペアの `SamplerState` 変数名ではありません)。詳細は
+[shader-conventions.md](../../docs/shader-conventions.md) を参照してください。
+
 ## テスト
 
 実際にロードする WASM バイナリを検証するスモークテストがあります (Playwright + Chromium)。

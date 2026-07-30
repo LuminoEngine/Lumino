@@ -276,6 +276,8 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
 | 鏡面反射（BasicLit） | `setSpecular(color, shininess)` | — | — |
 | メインテクスチャ | `setTexture(tex)` | `LNMaterial_SetMainTexture` | `setMainTexture(tex)` |
 | 名前付きテクスチャ | `setNamedTexture(name, tex)` | `LNMaterial_SetNamedTexture` | `setNamedTexture(name, tex)` |
+| サンプラー (マテリアル単位) | `setSamplerState(state)` | `LNMaterial_SetSamplerState` | `setSamplerState(filter, address)` |
+| サンプラー (テクスチャ単位) | `setNamedSamplerState(name, state)` | `LNMaterial_SetNamedSamplerState` | `setNamedSamplerState(name, filter, address)` |
 | カリングモード | `setCullMode(mode)` | `LNMaterial_SetCullMode` | `setCullMode(mode)` |
 | ブレンドモード | `setBlendMode(mode)` | `LNMaterial_SetBlendMode` | `setBlendMode(mode)` |
 | デプステスト | `setDepthTestEnabled(b)` | `LNMaterial_SetDepthTestEnabled` | `setDepthTestEnabled(b)` |
@@ -296,6 +298,78 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
 | `struct SSRParams { float4 ssrSettings; }; ... u_params;` | `setFloat4("ssrSettings", [10,0.05,0.3,128])` |
 | `uniform Texture2D u_gbufferA;` | `setNamedTexture("u_gbufferA", tex)` |
 | `uniform Texture2D u_baseTexture;` | `setMainTexture(tex)`（慣例スロット） |
+
+### サンプラー (フィルタ / アドレッシング)
+
+シェーダ側で `SamplerState` を宣言するだけでは、フィルタリング方法やアドレッシング方法は
+決まりません。これらは Material 側のレンダーステートとして設定します。
+
+- **既定値は Linear + ClampToEdge です。**
+- `filter` は拡大 (mag) / 縮小 (min) の両方に、`address` は U / V / W の全軸に適用されます。
+
+| 用途 | 設定 |
+|---|---|
+| ドット絵を拡大表示する | `Nearest` |
+| ポストエフェクト (bloom / DoF / SSR) で画面端の近傍をサンプルする | `ClampToEdge` (既定) |
+| シャドウマップをライトの視錐台の外までサンプルする | `ClampToEdge` (既定) |
+| タイリングするノイズ / 模様テクスチャ | `Repeat` |
+
+既定が `ClampToEdge` なので、UV が 0.0 - 1.0 の範囲外に出ても反対側の端から回り込みません。
+シェーダ内で UV を手動クランプする必要はありません。逆に、UV をスクロールさせて模様を
+タイリングしたい場合は明示的に `Repeat` を指定してください。
+
+> **なぜ Repeat を既定にしないのか**
+>
+> OpenGL / D3D9 由来の慣習では Repeat が既定でしたが、回り込みは「画面端だけ光が漏れる」
+> のような気付きにくい不具合として現れます。2D 向けのエンジンやライブラリ (Godot の
+> Canvas、Unity の Sprite テクスチャ、Pixi.js)、および WebGPU の `GPUSamplerDescriptor`
+> 自体の既定は Clamp 系です。Lumino もこれに合わせています。
+
+#### マテリアル単位とテクスチャ単位
+
+`setSamplerState` はマテリアルが参照する全テクスチャの既定値になります。
+`setNamedSamplerState` は 1 スロットだけをそれより優先して上書きします。ポストエフェクトで
+「シーン色は Linear + ClampToEdge、ノイズは Nearest + Repeat」のように混在させる場合に使います。
+
+```ts
+// シーン色は既定 (Linear + ClampToEdge) のまま、
+// ノイズテクスチャだけ Nearest + Repeat に上書きする。
+mat.setNamedSamplerState("u_noiseTexture", TextureFilterMode.Nearest, TextureAddressMode.Repeat);
+
+// マテリアル全体をドット絵向けにしたうえで、特定スロットだけ Linear に戻すこともできる。
+pixelMat.setSamplerState(TextureFilterMode.Nearest, TextureAddressMode.ClampToEdge);
+pixelMat.setNamedSamplerState("u_gradient", TextureFilterMode.Linear, TextureAddressMode.ClampToEdge);
+```
+
+```c
+LNMaterial_SetNamedSamplerState(material, "u_noiseTexture",
+    LN_TEXTURE_FILTER_MODE_NEAREST, LN_TEXTURE_ADDRESS_MODE_REPEAT);
+```
+
+#### 名前の指定は「テクスチャ側」の名前
+
+`setNamedSamplerState` に渡す名前は `Texture2D` の変数名です。ペアの `SamplerState` の
+変数名ではありません。
+
+```hlsl
+uniform Texture2D    u_sceneColor;
+uniform SamplerState u_sceneColorSampler;
+```
+
+に対しては `setNamedSamplerState("u_sceneColor", ...)` と書きます
+(`"u_sceneColorSampler"` ではありません)。
+
+ランタイムは各 `SamplerState` バインディングが担当するテクスチャを、パス構築時に次の順で
+解決します。
+
+1. `SamplerState` 名から末尾の `Sampler` を除いた名前と完全一致するテクスチャ
+   (例: `u_sceneColorSampler` -> `u_sceneColor`)
+2. その名前を接頭辞に持つテクスチャが 1 つだけある場合はそれ
+   (例: `u_baseSampler` -> `u_baseTexture`)
+3. 宣言順で直前にあるテクスチャ
+
+1 か 2 で解決できる命名 (テクスチャ名 + `Sampler`、または共通接頭辞のペア) を推奨します。
+どれにも当てはまらない場合、そのスロットにはマテリアル単位の設定だけが適用されます。
 
 ### C の例
 
@@ -372,5 +446,9 @@ auto mat = MaterialFactory::createFromShaderSourceFile(
 - [ ] 行列乗算を `mul(M, v)` の順で書いたか
 - [ ] `setFloat4` / `setNamedTexture` に渡す名前が、シェーダの CB フィールド名 / 変数名と一致するか
 - [ ] テクスチャと ペアのサンプラー を両方宣言したか（`u_baseTexture` と `u_baseSampler`）
+- [ ] サンプラー名を `<テクスチャ名>Sampler` か共通接頭辞のペアにしたか（テクスチャ単位の
+      サンプラー設定はこの命名から逆引きされる）
+- [ ] UV をタイリングさせる意図があるテクスチャに `Repeat` を設定したか（既定は
+      `ClampToEdge` なので、指定しないと端のピクセルが引き伸ばされる）
 - [ ] レンダーステートはシェーダではなく Material 側で設定したか
 
