@@ -109,11 +109,12 @@ export function writeTransform(view: DataView, t: Transform): void {
 /**
  * `LNGraphicsProfiler` を DataView から読み出す。
  *
- * C レイアウト (wasm32, 4 バイトアライン、合計 12 バイト):
+ * C レイアウト (wasm32, 4 バイトアライン、合計 16 バイト):
  * ```
- * offset 0: int32_t drawCallCount
- * offset 4: float   fps
- * offset 8: float   lastFrameTimeMs
+ * offset  0: int32_t drawCallCount
+ * offset  4: float   fps
+ * offset  8: float   lastFrameTimeMs
+ * offset 12: int32_t shaderPassCount
  * ```
  *
  * @param view 読み出し元 (少なくとも `SIZEOF_GRAPHICS_PROFILER` バイト)。
@@ -124,5 +125,6 @@ export function readGraphicsProfiler(view: DataView): GraphicsProfiler {
         drawCallCount:   view.getInt32(0, true),
         fps:             view.getFloat32(4, true),
         lastFrameTimeMs: view.getFloat32(8, true),
+        shaderPassCount: view.getInt32(12, true),
     };
 }

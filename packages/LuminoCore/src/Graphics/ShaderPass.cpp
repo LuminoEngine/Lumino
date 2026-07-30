@@ -6,6 +6,16 @@
 
 namespace ln {
 
+int32_t ShaderPass::s_liveCount = 0;
+
+ShaderPass::ShaderPass() {
+    ++s_liveCount;
+}
+
+ShaderPass::~ShaderPass() {
+    --s_liveCount;
+}
+
 static shader::ShaderTarget backendToShaderTarget(rhi::Backend backend) {
     switch (backend) {
         case rhi::Backend::Vulkan: return shader::ShaderTarget_SPIRV;
@@ -239,8 +249,11 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     sp->m_passName = globalPass->name;
     sp->m_vertShader = std::move(*vsResult);
     sp->m_fragShader = std::move(*fsResult);
-    sp->m_vertEntry = std::move(vertEP->name);
-    sp->m_fragEntry = std::move(fragEP->name);
+    // NOTE: エントリポイント名はコピーする。同一の UnifiedShader2 から複数のパスを
+    // 構築する場合 (Shader が全パスを一度に構築する経路) に move してしまうと、
+    // 2 つ目以降のパスがエントリポイント名を失うため。
+    sp->m_vertEntry = vertEP->name;
+    sp->m_fragEntry = fragEP->name;
     sp->m_pipelineLayout = std::move(*plResult);
     sp->m_materialParamBufferSize = static_cast<uint64_t>(cbSize);
     sp->m_materialSetIndex = materialSetIdx;

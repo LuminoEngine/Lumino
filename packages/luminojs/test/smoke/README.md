@@ -14,11 +14,16 @@ luminojs が実際にロードする WASM バイナリ (`lib/LuminoC.wasm`) を�
 5. `Runtime.decodeImage()` が小さな PNG を期待どおりの RGBA8 ピクセルにデコードする
    (GPU 非依存の純 CPU 経路)
 6. `LNDebug_GetGraphicsProfiler` が WASM にエクスポートされている (GPU 非依存)。
-   実バイナリが報告する `sizeof(LNGraphicsProfiler)` が 12 バイトであること、
+   実バイナリが報告する `sizeof(LNGraphicsProfiler)` が 16 バイトであること、
    無効ハンドルでの呼び出しが `LN_ERROR_INVALID_HANDLE` を返すことを確認します。
-7. `GraphicsContext.getProfiler()` が `drawCallCount` / `fps` / `lastFrameTimeMs` を返す
-   (WebGPU 必須)。同一マテリアルのスプライト 16 枚がバッチングされ、`drawCallCount` が
-   枚数に比例して増えないことも確認します。
+7. `GraphicsContext.getProfiler()` が `drawCallCount` / `fps` / `lastFrameTimeMs` /
+   `shaderPassCount` を返す (WebGPU 必須)。同一マテリアルのスプライト 16 枚が
+   バッチングされ、`drawCallCount` が枚数に比例して増えないことも確認します。
+8. 1 つの `Shader` から作った `Material` 群が GPU シェーダモジュール / パイプライン
+   レイアウトを共有する (WebGPU 必須)。`.lcsh` (GoogleTest と共有のテストデータ
+   `packages/LuminoC/test/Data/Unlit.lcsh`) から `Shader` を作り、Material を増やしても
+   `shaderPassCount` が増えないこと、`Material.createFromCompiledShader` では増えることを
+   確認します。WGSL ターゲットのカスタムシェーダ経路の疎通確認も兼ねています。
 
 GPU (WebGPU) の実描画経路のうち、描画結果のピクセル検証 (Capture 等) はスコープ外です
 (`smoke.spec.mjs` 末尾の TODO を参照)。
@@ -47,8 +52,9 @@ npm run test:smoke
 
 ## WebGPU が無い環境での挙動 / スキップ切り替え
 
-検証項目のうち `Runtime.initialize()` / `getProfiler()` / デバイスロスト復旧が WebGPU
-デバイス生成を伴います (残りの項目は GPU 非依存で、WebGPU が無くても通ります)。
+検証項目のうち `Runtime.initialize()` / `getProfiler()` / Shader の共有 /
+デバイスロスト復旧が WebGPU デバイス生成を伴います
+(残りの項目は GPU 非依存で、WebGPU が無くても通ります)。
 WebGPU が使えない環境でこれらをどう扱うかは `smoke.spec.mjs` 冒頭の定数で切り替えます。
 
 ```js
@@ -74,7 +80,7 @@ Chromium の起動フラグを `LUMINO_SMOKE_CHROMIUM_ARGS` で追加できま�
 # WebGPU 無しを再現 -> 既定 (skip OFF) では initialize が失敗する
 LUMINO_SMOKE_CHROMIUM_ARGS="--disable-gpu" npm run test:smoke
 
-# WebGPU 無し + skip ON -> initialize は skip され、残り 4 項目がグリーン
+# WebGPU 無し + skip ON -> WebGPU 依存の項目は skip され、GPU 非依存の項目がグリーン
 LUMINO_SMOKE_CHROMIUM_ARGS="--disable-gpu" LUMINO_SMOKE_SKIP_NO_WEBGPU=1 npm run test:smoke
 ```
 

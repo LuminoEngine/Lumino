@@ -2,14 +2,9 @@
 #include <LuminoCore/CoreInstance.hpp>
 #include <LuminoCore/Graphics/GraphicsContext.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
+#include <LuminoCore/Graphics/Shader.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
-#include <LuminoShader/UnifiedShader2.hpp>
-#include <LuminoShader/UnifiedShaderSerializer2.hpp>
 #include <cstring>
-
-#ifdef LUMINO_USE_SLANG
-#include <LuminoShader/ShaderCompiler2.hpp>
-#endif // LUMINO_USE_SLANG
 
 namespace ln {
 
@@ -195,29 +190,39 @@ Result<Ref<Material>> MaterialFactory::createStencilMask(GraphicsContext* ctx) {
     return createStencilMask(ctx->module());
 }
 
-Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
-    GraphicsModule* module, const void* data, size_t size) {
-    // Deserialize once so we can discover how many passes the shader contains.
-    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
-    if (!loadResult) return LN_FORWARD_ERROR(loadResult);
-    auto unifiedShader = std::move(*loadResult);
+Result<Ref<Material>> MaterialFactory::createFromShader(
+    GraphicsModule* module, Shader* shader) {
+    if (!shader) return LN_MAKE_ERROR("Shader is null");
 
-    auto& globalPasses = unifiedShader->globalShaderPasses();
-    if (globalPasses.empty()) {
+    const auto& passes = shader->passes();
+    if (passes.empty()) {
         return LN_MAKE_ERROR("No shader passes found");
     }
 
+    // ビルトインシェーダと同じく、既存の ShaderPass を共有する
+    // (シェーダモジュール / パイプラインレイアウトは新規生成しない)。
     auto mat = Ref<Material>::adopt(new Material());
-    for (size_t i = 0; i < globalPasses.size(); ++i) {
-        auto passResult = ShaderPass::createFromCompiledShader(
-            data, size, module->device(), i);
-        if (!passResult) return LN_FORWARD_ERROR(passResult);
-        registerPass(mat.get(), std::move(*passResult));
+    for (const auto& p : passes) {
+        registerPass(mat.get(), p);
     }
     mat->m_baseTexture = module->whiteTexture();
 
     initParamBufferFromDefaultPass(mat.get());
     return mat;
+}
+
+Result<Ref<Material>> MaterialFactory::createFromShader(
+    GraphicsContext* ctx, Shader* shader) {
+    return createFromShader(ctx->module(), shader);
+}
+
+Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
+    GraphicsModule* module, const void* data, size_t size) {
+    // このマテリアル専用の Shader を作り、そこから作成する。Shader は Material が
+    // 各パスを Ref で保持するためここで解放してよい。
+    auto shaderResult = Shader::createFromCompiledShader(module, data, size);
+    if (!shaderResult) return LN_FORWARD_ERROR(shaderResult);
+    return createFromShader(module, shaderResult->get());
 }
 
 Result<Ref<Material>> MaterialFactory::createFromCompiledShader(
@@ -229,46 +234,9 @@ Result<Ref<Material>> MaterialFactory::createFromShaderSourceFile(
     GraphicsContext* ctx,
     std::string_view shaderFilePath,
     std::string_view searchPath) {
-#ifdef LUMINO_USE_SLANG
-    using namespace ln::shader;
-    namespace fs = std::filesystem;
-
-    auto compilerResult = ShaderCompiler2::create();
-    if (!compilerResult) return LN_FORWARD_ERROR(compilerResult);
-    auto& compiler = *compilerResult;
-
-    if (!searchPath.empty()) {
-        compiler->addSearchPath(fs::path(searchPath));
-    }
-
-    auto buildResult = compiler->build(fs::path(shaderFilePath));
-    if (!buildResult) {
-        // TODO: ログとかにちゃんと出す
-        std::cerr << "Error: " << buildResult.error().message << std::endl;
-        return LN_FORWARD_ERROR(buildResult);
-    }
-
-    auto* unifiedShader = compiler->shader();
-    auto& globalPasses = unifiedShader->globalShaderPasses();
-    if (globalPasses.empty()) {
-        return LN_MAKE_ERROR("No shader passes found");
-    }
-
-    auto mat = Ref<Material>::adopt(new Material());
-    for (size_t i = 0; i < globalPasses.size(); ++i) {
-        auto passResult = ShaderPass::createFromUnifiedShader(
-            unifiedShader, ctx->module()->device(), i);
-        if (!passResult) return LN_FORWARD_ERROR(passResult);
-        registerPass(mat.get(), std::move(*passResult));
-    }
-    mat->m_baseTexture = ctx->module()->whiteTexture();
-
-    initParamBufferFromDefaultPass(mat.get());
-    return mat;
-#else
-    (void)ctx; (void)shaderFilePath; (void)searchPath;
-    return LN_MAKE_ERROR("LNMaterial_CreateFromShaderSourceFile requires LUMINO_USE_SLANG");
-#endif // LUMINO_USE_SLANG
+    auto shaderResult = Shader::createFromShaderSourceFile(ctx, shaderFilePath, searchPath);
+    if (!shaderResult) return LN_FORWARD_ERROR(shaderResult);
+    return createFromShader(ctx->module(), shaderResult->get());
 }
 
 } // namespace ln

@@ -269,7 +269,9 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
 | 目的 | C++ (`ln::Material`) | C (`LuminoC`) | TypeScript (`luminojs`) |
 |---|---|---|---|
 | 作成（Unlit） | `MaterialFactory::createUnlit(ctx)` | `LNMaterial_CreateUnlit` | `Material.createUnlit()` |
-| 作成（コンパイル済み） | `MaterialFactory::createFromCompiledShader(ctx, data, size)` | `LNMaterial_CreateFromCompiledShader` | `Material.createFromCompiledShader(data)` |
+| シェーダの作成（コンパイル済み） | `Shader::createFromCompiledShader(ctx, data, size)` | `LNShader_CreateFromCompiledShader` | `Shader.createFromCompiledShader(data)` |
+| 作成（シェーダから、推奨） | `MaterialFactory::createFromShader(ctx, shader)` | `LNMaterial_CreateFromShader` | `Material.createFromShader(shader)` |
+| 作成（コンパイル済みから直接） | `MaterialFactory::createFromCompiledShader(ctx, data, size)` | `LNMaterial_CreateFromCompiledShader` | `Material.createFromCompiledShader(data)` |
 | ベースカラー | `setColor(Color)` | `LNMaterial_SetColor` | `setColor(r,g,b,a)` |
 | 名前付き float4 | `setFloat4(name, float*)` | `LNMaterial_SetFloat4` | `setFloat4(name, [x,y,z,w])` |
 | 名前付き float | `setFloat(name, value)` | — | — |
@@ -287,6 +289,55 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
 > `setSpecular` はその次の `float4`（`u_params.specular`）に書き込みます。これら以外の
 > パラメータは `setFloat4(name, ...)` で名前指定して設定します。
 > `setFloat` / `setSpecular` は現状 C++ コアのみの提供です。
+
+### 1 つのシェーダから複数の Material を作る
+
+Material のパラメータ (`setFloat4` 等) はマテリアル単位の uniform buffer に載り、
+フレームスロットもフレーム単位です。そのため **同一フレーム内で同じ Material を
+複数回描画すると、パラメータは後勝ち**になります。
+
+したがって「1 フレーム内で異なるパラメータで描く箇所の数」だけ Material が必要です
+(ポストエフェクトを Viewport ごとに掛ける、テクスチャごとに Material を分ける等)。
+このとき `Material.createFromCompiledShader` を人数分呼ぶと、Material ごとに GPU
+シェーダモジュールとパイプラインレイアウトが作られてしまいます。
+
+**`Shader` を 1 つ作り、そこから Material を量産してください。** `Shader` が
+ShaderPass (シェーダモジュール + パイプラインレイアウト) を保持し、そこから作った
+Material はすべてそれを共有します。マテリアル単位の定数バッファと BindGroup は
+`(Material, ShaderPass)` をキーにキャッシュされるため、パラメータは Material ごとに
+独立したままです。
+
+```ts
+// 1 度だけ: GPU シェーダモジュールとパイプラインレイアウトを作る
+const bloomShader = Shader.createFromCompiledShader(bloomShaderData);
+
+// 描画箇所ごとに Material を作る (モジュールは共有される)
+const bloomForViewportA = Material.createFromShader(bloomShader);
+const bloomForViewportB = Material.createFromShader(bloomShader);
+bloomForViewportA.setFloat4("u_params", [1, 0, 0, 0]);
+bloomForViewportB.setFloat4("u_params", [0, 1, 0, 0]);
+```
+
+```c
+LNHandle shader = LN_NULL_HANDLE;
+LNShader_CreateFromCompiledShader(graphicsContext,
+    shaderData.data(), (uint32_t)shaderData.size(), &shader);
+
+LNHandle matA = LN_NULL_HANDLE, matB = LN_NULL_HANDLE;
+LNMaterial_CreateFromShader(shader, &matA);
+LNMaterial_CreateFromShader(shader, &matB);
+```
+
+共有できているかは **`LNGraphicsProfiler::shaderPassCount`**
+(TypeScript: `GraphicsContext.getProfiler().shaderPassCount`) で計測できます。
+これは生存している ShaderPass 数で、1 パスあたり GPU シェーダモジュール 2 個
+(頂点/フラグメント) とパイプラインレイアウト 1 個に対応します。ビルトインシェーダの
+分も含まれるため、絶対値ではなく **Material を増やしたときの増分** を見てください。
+共有できていれば Material をいくら増やしても増分は 0 です。
+
+> `Material.createFromCompiledShader` は後方互換のために残っています。内部的には
+> その Material 専用の `Shader` を作るため、呼び出しごとにシェーダモジュールが
+> 増えます。同一シェーダから複数の Material を作る場合は使わないでください。
 
 ### 対応の具体例
 
@@ -374,9 +425,12 @@ uniform SamplerState u_sceneColorSampler;
 ### C の例
 
 ```c
+LNHandle shader = LN_NULL_HANDLE;
+LNShader_CreateFromCompiledShader(graphicsContext,
+    shaderData.data(), (uint32_t)shaderData.size(), &shader);
+
 LNHandle material = LN_NULL_HANDLE;
-LNMaterial_CreateFromCompiledShader(graphicsContext,
-    shaderData.data(), (uint32_t)shaderData.size(), &material);
+LNMaterial_CreateFromShader(shader, &material);
 
 const float myColor[4] = { 0.0f, 1.0f, 0.0f, 1.0f }; // green
 LNMaterial_SetFloat4(material, "u_myColor", myColor);
@@ -389,7 +443,8 @@ LNMaterial_SetFloat4(material, "u_myColor", myColor);
 ```ts
 // コンパイル済みシェーダから作成
 const ssrResp = await fetch(new URL("../../public/SSR.lcsh", import.meta.url).href);
-const matSSR = Material.createFromCompiledShader(new Uint8Array(await ssrResp.arrayBuffer()));
+const ssrShader = Shader.createFromCompiledShader(new Uint8Array(await ssrResp.arrayBuffer()));
+const matSSR = Material.createFromShader(ssrShader);
 
 matSSR.setFloat4("ssrSettings", [10.0, 0.05, 0.3, 128.0]);
 matSSR.setNamedTexture("u_gbufferA", gbufferA);

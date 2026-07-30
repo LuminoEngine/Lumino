@@ -15,6 +15,7 @@
 
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
+#include <LuminoCore/Graphics/Shader.hpp>
 #include <stb_image.h>
 #include <LuminoCore/Graphics/Mesh.hpp>
 #include <LuminoCore/Graphics/Renderer.hpp>
@@ -624,6 +625,8 @@ LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfile
     outProfiler->drawCallCount   = renderer ? static_cast<int32_t>(renderer->drawCallCount()) : 0;
     outProfiler->fps             = ctx->fps();
     outProfiler->lastFrameTimeMs = ctx->lastFrameTimeMs();
+    // シェーダパス数はプロセス全体の生存数で、GraphicsContext には依存しない。
+    outProfiler->shaderPassCount = ln::ShaderPass::liveCount();
     return LN_OK;
 }
 
@@ -657,7 +660,7 @@ static_assert(sizeof(LNTransform) == 40,
     "LNTransform のレイアウトが変わりました。types.ts の SIZEOF_TRANSFORM を更新してください");
 static_assert(sizeof(LNMatrix) == 64,
     "LNMatrix のレイアウトが変わりました。types.ts の SIZEOF_MATRIX を更新してください");
-static_assert(sizeof(LNGraphicsProfiler) == 12,
+static_assert(sizeof(LNGraphicsProfiler) == 16,
     "LNGraphicsProfiler のレイアウトが変わりました。バインディング側の読み取り処理を更新してください");
 #endif // __EMSCRIPTEN__
 
@@ -846,6 +849,47 @@ LNResult LNImage_FreePixels(const void* pixels) {
 }
 
 //------------------------------------------------------------------------------
+// LNShader
+//------------------------------------------------------------------------------
+
+LNResult LNShader_CreateFromCompiledShader(LNHandle graphicsContext, const void* data, uint32_t size, LNHandle* outHandle) {
+    if (!data || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = ln::Shader::createFromCompiledShader(ctx, data, static_cast<size_t>(size));
+    if (!result) return toLNResult(result.error());
+    *outHandle = wrapObjectFromCreate(result->get());
+    return LN_OK;
+}
+
+LNResult LNShader_CreateFromShaderSourceFile(LNHandle graphicsContext, const char* shaderFilePath, const char* searchPathOrNull, LNHandle* outHandle) {
+    if (!shaderFilePath || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = ln::Shader::createFromShaderSourceFile(
+        ctx,
+        shaderFilePath,
+        searchPathOrNull ? searchPathOrNull : "");
+    if (!result) return toLNResult(result.error());
+    *outHandle = wrapObjectFromCreate(result->get());
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
 // LNMaterial
 //------------------------------------------------------------------------------
 
@@ -875,6 +919,33 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
         return LN_ERROR_INVALID_ARGUMENT;
     }
     if (!matResult) return LN_ERROR_UNKNOWN;
+    *outHandle = wrapObjectFromCreate(matResult->get());
+    return LN_OK;
+}
+
+LNResult LNMaterial_CreateFromShader(LNHandle shader, LNHandle* outHandle) {
+    if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
+    *outHandle = LN_NULL_HANDLE;
+
+    auto* instance = ln::CoreInstance::instance();
+    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
+
+    auto* module = instance->graphicsModule();
+    if (!module) return LN_RUNTIME_UNINITIALIZED;
+
+    auto* sh = resolveObject<ln::Shader>(shader);
+    if (!sh) return LN_ERROR_INVALID_HANDLE;
+    // デバイスロスト復旧をまたいだ Shader は旧デバイスのシェーダモジュールを
+    // 参照しているため、そこから Material を作らせない。呼び出し側は Shader を
+    // 作り直す必要がある。
+    if (isStaleResource(sh)) {
+        warnStaleResourceSkipped("shader");
+        return LN_ERROR_DEVICE_LOST;
+    }
+
+    auto matResult = ln::MaterialFactory::createFromShader(module, sh);
+    if (!matResult) return toLNResult(matResult.error());
     *outHandle = wrapObjectFromCreate(matResult->get());
     return LN_OK;
 }

@@ -4,6 +4,7 @@ export type { FrameInfo } from "./GraphicsContext";
 export { Renderer } from "./Renderer";
 export { Texture } from "./Texture";
 export { Material } from "./Material";
+export { Shader } from "./Shader";
 export { Mesh } from "./Mesh";
 export { Camera } from "./Camera";
 export { Matrix4x4 } from "./Matrix4x4";

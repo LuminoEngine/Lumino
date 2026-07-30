@@ -244,6 +244,7 @@ private:
 
 class GraphicsContext;
 class GraphicsModule;
+class Shader;
 enum class BuiltinShader;
 
 /** Factory for creating built-in materials from precompiled shaders. */
@@ -267,7 +268,27 @@ public:
     /** Create a StencilMask material from a GraphicsContext. */
     static Result<Ref<Material>> createStencilMask(GraphicsContext* ctx);
 
-    /** Create a material from a compiled shader binary (.lcsh). */
+    /**
+     * 生成済みの Shader からマテリアルを作成します。
+     *
+     * GPU シェーダモジュールとパイプラインレイアウトは Shader が保持しているものを
+     * 共有するため、同一 Shader から Material を何個作っても GPU リソースは増えません。
+     * フレーム内で異なるパラメータを使いたい場合やテクスチャごとに Material を
+     * 分けたい場合は、この経路で Material を量産してください。
+     * @see Shader::createFromCompiledShader
+     */
+    static Result<Ref<Material>> createFromShader(GraphicsModule* module, Shader* shader);
+
+    /** 生成済みの Shader からマテリアルを作成します。 */
+    static Result<Ref<Material>> createFromShader(GraphicsContext* ctx, Shader* shader);
+
+    /**
+     * Create a material from a compiled shader binary (.lcsh).
+     *
+     * この関数は呼び出しごとに GPU シェーダモジュールとパイプラインレイアウトを
+     * 新規生成します。同一シェーダから複数の Material を作る場合は
+     * Shader::createFromCompiledShader + createFromShader を使ってください。
+     */
     static Result<Ref<Material>> createFromCompiledShader(
         GraphicsModule* module, const void* data, size_t size);
 

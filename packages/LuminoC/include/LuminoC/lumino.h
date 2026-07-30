@@ -481,6 +481,51 @@ extern LUMINO_API LNResult LNImage_DecodeFromMemory(
 extern LUMINO_API LNResult LNImage_FreePixels(const void* pixels);
 
 //------------------------------------------------------------------------------
+// LNShader
+//------------------------------------------------------------------------------
+
+/**
+ * コンパイル済みシェーダ (.lcsh) のバイナリデータから Shader を作成します。
+ *
+ * Shader は GPU シェーダモジュールとパイプラインレイアウトを保持する共有オブジェクトです。
+ * LNMaterial_CreateFromShader で作成した Material はこれらを共有するため、
+ * 同一シェーダの Material を何個作っても GPU リソースは増えません。
+ *
+ * フレーム内で異なるパラメータを使いたい場合や、テクスチャごとに Material を
+ * 分けたい場合は、Shader を 1 つ作って Material を量産してください。
+ * 共有できているかは LNGraphicsProfiler::shaderPassCount で確認できます。
+ *
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  data            コンパイル済みシェーダのバイナリデータ
+ * @param[in]  size            バイナリデータのサイズ (バイト)
+ * @param[out] outHandle       作成されたシェーダのハンドル
+ */
+extern LUMINO_API LNResult LNShader_CreateFromCompiledShader(
+    LNHandle graphicsContext,
+    const void* data,
+    uint32_t size,
+    LNHandle* outHandle
+);
+
+/**
+ * シェーダソースファイル (.slang) を実行時コンパイルして Shader を作成します。
+ * デスクトップ環境 (LUMINO_USE_SLANG が有効な場合) のみ使用可能です。
+ * テストやサンプルプログラムでの利用を想定しており、本番環境では
+ * LNShader_CreateFromCompiledShader の使用を推奨します。
+ *
+ * @param[in]  graphicsContext  GraphicsContext のハンドル
+ * @param[in]  shaderFilePath   コンパイルする .slang ファイルのパス
+ * @param[in]  searchPathOrNull lumino.slang を含むディレクトリのパス (NULL 可)
+ * @param[out] outHandle        作成されたシェーダのハンドル
+ */
+extern LUMINO_API LNResult LNShader_CreateFromShaderSourceFile(
+    LNHandle graphicsContext,
+    const char* shaderFilePath,
+    const char* searchPathOrNull,
+    LNHandle* outHandle
+);
+
+//------------------------------------------------------------------------------
 // LNMaterial
 //------------------------------------------------------------------------------
 
@@ -540,7 +585,26 @@ extern LUMINO_API LNResult LNMaterial_CreateFromBuiltinShader(
 );
 
 /**
+ * 作成済みの Shader からマテリアルを作成します。
+ *
+ * GPU シェーダモジュールとパイプラインレイアウトは Shader が保持しているものを
+ * 共有するため、同一 Shader から Material を何個作っても GPU リソースは増えません。
+ *
+ * @param[in]  shader    LNShader_CreateFromCompiledShader 等で作成したシェーダのハンドル
+ * @param[out] outHandle 作成されたマテリアルのハンドル
+ */
+extern LUMINO_API LNResult LNMaterial_CreateFromShader(
+    LNHandle shader,
+    LNHandle* outHandle
+);
+
+/**
  * コンパイル済みシェーダ (.lcsh) のバイナリデータからマテリアルを作成します。
+ *
+ * この関数は呼び出しごとに GPU シェーダモジュールとパイプラインレイアウトを
+ * 新規生成します。同一シェーダから複数の Material を作る場合は
+ * LNShader_CreateFromCompiledShader と LNMaterial_CreateFromShader を
+ * 使用してください。
  *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  data            コンパイル済みシェーダのバイナリデータ
@@ -1073,6 +1137,22 @@ typedef struct LNGraphicsProfiler {
 
     /** 直前フレームの所要時間 (ミリ秒)。 */
     float lastFrameTimeMs;
+
+    /**
+     * 生存しているシェーダパスの数 (プロセス全体、フレームでリセットされません)。
+     *
+     * 1 パスが GPU シェーダモジュール 2 個 (頂点/フラグメント) と
+     * パイプラインレイアウト 1 個を所有するため、
+     * 「シェーダモジュール数 = この値 x 2」「パイプラインレイアウト数 = この値」です。
+     *
+     * LNShader_CreateFromCompiledShader で作った 1 つの Shader から
+     * LNMaterial_CreateFromShader で Material を複数作った場合、
+     * Material を増やしてもこの値は増えません。逆に
+     * LNMaterial_CreateFromCompiledShader は呼び出しごとに増えます。
+     * ビルトインシェーダの分も含まれるため、絶対値ではなく
+     * 「Material を増やしたときの増分」で確認してください。
+     */
+    int32_t shaderPassCount;
 } LNGraphicsProfiler;
 
 /**

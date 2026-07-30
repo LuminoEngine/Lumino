@@ -263,8 +263,9 @@ export const SIZEOF_TRANSFORM = 40;
 export const SIZEOF_MATRIX = 64;
 
 /** Byte size of `LNGraphicsProfiler` in wasm memory. */
-export const SIZEOF_GRAPHICS_PROFILER = 12;
+export const SIZEOF_GRAPHICS_PROFILER = 16;
 // Layout: drawCallCount(i32,0) fps(f32,4) lastFrameTimeMs(f32,8)
+//         shaderPassCount(i32,12)
 
 /**
  * Vertex data matching C `LNVertex` (64 bytes).
@@ -289,7 +290,7 @@ export interface SubMesh {
 }
 
 /**
- * Graphics profiling counters matching C `LNGraphicsProfiler` (12 bytes).
+ * Graphics profiling counters matching C `LNGraphicsProfiler` (16 bytes).
  * グラフィックスのプロファイリング情報。`GraphicsContext.getProfiler()` で取得します。
  */
 export interface GraphicsProfiler {
@@ -304,6 +305,20 @@ export interface GraphicsProfiler {
     fps: number;
     /** 直前フレームの所要時間 (ミリ秒)。 */
     lastFrameTimeMs: number;
+    /**
+     * 生存しているシェーダパスの数 (プロセス全体。フレームでリセットされません)。
+     *
+     * 1 パスが GPU シェーダモジュール 2 個 (頂点/フラグメント) と
+     * パイプラインレイアウト 1 個を所有するため、
+     * 「シェーダモジュール数 = この値 x 2」「パイプラインレイアウト数 = この値」です。
+     *
+     * 1 つの `Shader` から `Material.createFromShader` で Material を複数作った場合、
+     * Material を増やしてもこの値は増えません (共有できている証拠になります)。
+     * 逆に `Material.createFromCompiledShader` は Material ごとに増えます。
+     * ビルトインシェーダの分も含まれるため、絶対値ではなく
+     * 「Material を増やしたときの増分」で確認してください。
+     */
+    shaderPassCount: number;
 }
 
 /**

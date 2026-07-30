@@ -16,6 +16,7 @@
 // 実行前提はこのディレクトリの README.md を参照。
 
 import { test, expect } from "@playwright/test";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { startStaticServer } from "./static-server.mjs";
@@ -23,6 +24,11 @@ import { makePng } from "./make-png.mjs";
 
 // このファイルは test/smoke/ にあるため、../../ が luminojs パッケージルート。
 const packageRoot = path.resolve(fileURLToPath(new URL("../../", import.meta.url)));
+
+// コンパイル済みシェーダ (.lcsh)。GoogleTest と同じテストデータを使い、
+// WebGPU (WGSL) ターゲットのカスタムシェーダ経路を検証する。
+const COMPILED_SHADER = fs.readFileSync(
+    path.resolve(packageRoot, "../LuminoC/test/Data/Unlit.lcsh"));
 
 // 既知のピクセル値を持つ 2x2 PNG。上から下・左から右の RGBA8。
 //   (0,0)=赤  (1,0)=緑
@@ -62,7 +68,7 @@ test.beforeAll(async ({ browser }) => {
 
     await page.goto(server.baseURL + "/");
 
-    result = await page.evaluate(async ({ pngBytes }) => {
+    result = await page.evaluate(async ({ pngBytes, shaderBytes }) => {
         const res = {
             moduleLoaded: false,
             loadError: null,
@@ -73,6 +79,7 @@ test.beforeAll(async ({ browser }) => {
             decodeImage: {},
             profilerExport: {},
             profiler: { attempted: false },
+            sharedShader: { attempted: false },
             deviceLost: { attempted: false },
         };
 
@@ -148,7 +155,7 @@ test.beforeAll(async ({ browser }) => {
             const getStructSize = m.cwrap("LNDebug_GetStructSize", "number", ["string", "number"]);
             const getProfiler = m.cwrap("LNDebug_GetGraphicsProfiler", "number", ["number", "number"]);
 
-            const outPtr = m._malloc(12);
+            const outPtr = m._malloc(16);
             try {
                 // 実バイナリが報告する sizeof(LNGraphicsProfiler)。
                 const sizeRc = getStructSize("LNGraphicsProfiler", outPtr);
@@ -226,6 +233,87 @@ test.beforeAll(async ({ browser }) => {
                 };
             } catch (e) {
                 res.profiler = {
+                    attempted: true,
+                    ok: false,
+                    error: String(e && e.stack ? e.stack : e),
+                };
+            }
+        }
+
+        // 6b. Shader の共有 (WebGPU / WGSL 経路)。
+        //     コンパイル済みシェーダ (.lcsh) から Shader を 1 つ作り、そこから
+        //     Material を複数作っても GPU シェーダモジュール / パイプラインレイアウトが
+        //     増えないことを shaderPassCount で検証する。
+        if (res.initialize.ok && res.webgpuAvailable) {
+            res.sharedShader.attempted = true;
+            try {
+                const { GraphicsContext, Camera, Material, Shader, Matrix4x4, LoadOp } =
+                    await import(location.origin + "/lib/luminojs.mjs");
+
+                const canvas = document.createElement("canvas");
+                canvas.id = "lumino_sharedshader_canvas";
+                canvas.width = 64;
+                canvas.height = 64;
+                document.body.appendChild(canvas);
+
+                const ctx = await GraphicsContext.createFromCanvas("#lumino_sharedshader_canvas");
+                const camera = Camera.create();
+                camera.setOrthographic2D(64, 64, -100, 100);
+                const nextFrame = () => new Promise((r) => requestAnimationFrame(r));
+
+                // 渡された材料をすべて描画して 1 フレーム進め、shaderPassCount を返す。
+                // GPU リソースは初回描画時に遅延生成されるため、必ず描画してから測る。
+                const drawAndCount = async (materials) => {
+                    const f = ctx.beginFrame();
+                    if (!f) throw new Error("beginFrame returned null");
+                    f.renderer.beginRenderPass(ctx, {
+                        colorAttachments: [{ clearColor: [0, 0, 0, 1], loadOp: LoadOp.Clear }],
+                    }, camera);
+                    const xf = Matrix4x4.makeTranslation(0, 0, 0);
+                    for (const mat of materials) {
+                        f.renderer.drawSprite(
+                            mat, 0, xf,
+                            0, 0, 8, 8, 0.5, 0.5,
+                            0, 0, 1, 1,
+                            1, 1, 1, 1);
+                    }
+                    f.renderer.endRenderPass();
+                    ctx.endFrame();
+                    const count = ctx.getProfiler().shaderPassCount;
+                    await nextFrame();
+                    return count;
+                };
+
+                const shader = Shader.createFromCompiledShader(new Uint8Array(shaderBytes));
+
+                // 1 つ目の Material を描画 -> ここでシェーダモジュールが作られる。
+                const shared = [Material.createFromShader(shader)];
+                const countAfterFirst = await drawAndCount(shared);
+
+                // 同じ Shader から Material を 4 つ追加。パラメータも個別に設定する。
+                for (let i = 0; i < 4; i++) {
+                    const mat = Material.createFromShader(shader);
+                    mat.setColor(i / 4, 1 - i / 4, 0.5, 1);
+                    shared.push(mat);
+                }
+                const countAfterShared = await drawAndCount(shared);
+
+                // 比較: createFromCompiledShader は Material ごとに新規生成する。
+                const standalone = [];
+                for (let i = 0; i < 4; i++) {
+                    standalone.push(Material.createFromCompiledShader(new Uint8Array(shaderBytes)));
+                }
+                const countAfterStandalone = await drawAndCount(standalone);
+
+                res.sharedShader = {
+                    attempted: true,
+                    ok: true,
+                    countAfterFirst,
+                    countAfterShared,
+                    countAfterStandalone,
+                };
+            } catch (e) {
+                res.sharedShader = {
                     attempted: true,
                     ok: false,
                     error: String(e && e.stack ? e.stack : e),
@@ -321,7 +409,7 @@ test.beforeAll(async ({ browser }) => {
         }
 
         return res;
-    }, { pngBytes: Array.from(TEST_PNG) });
+    }, { pngBytes: Array.from(TEST_PNG), shaderBytes: Array.from(COMPILED_SHADER) });
 
     await page.close();
 });
@@ -379,9 +467,9 @@ test("LNDebug_GetGraphicsProfiler が WASM にエクスポートされている"
 
     // LNDebug_GetStructSize が LNGraphicsProfiler を認識する (LN_OK = 0)。
     expect(result.profilerExport.sizeRc).toBe(0);
-    // wasm32 での sizeof(LNGraphicsProfiler) = int32 + float + float。
+    // wasm32 での sizeof(LNGraphicsProfiler) = int32 + float + float + int32。
     // types.ts の SIZEOF_GRAPHICS_PROFILER と一致していなければならない。
-    expect(result.profilerExport.wasmSize).toBe(12);
+    expect(result.profilerExport.wasmSize).toBe(16);
 
     // 無効ハンドルでの呼び出しが LN_ERROR_INVALID_HANDLE (-4) を返す
     // = 関数が実バイナリに存在し、ブラウザから呼び出せている。
@@ -397,8 +485,9 @@ test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameT
     expect(result.profiler.error ?? null, "profiler error").toBeNull();
     expect(result.profiler.ok).toBe(true);
 
-    // LNGraphicsProfiler の 3 項目がすべて公開されている。
-    expect(result.profiler.keys).toEqual(["drawCallCount", "fps", "lastFrameTimeMs"]);
+    // LNGraphicsProfiler の全項目が公開されている (Object.keys().sort() で比較)。
+    expect(result.profiler.keys).toEqual(
+        ["drawCallCount", "fps", "lastFrameTimeMs", "shaderPassCount"]);
 
     const { one, many } = result.profiler;
 
@@ -413,6 +502,28 @@ test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameT
     // 同一マテリアルのスプライト 16 枚がバッチングされ、ドローコールが
     // 枚数に比例して増えないこと (クライアントが確認したかった性質)。
     expect(many.drawCallCount).toBeLessThan(16);
+});
+
+test("1 つの Shader から作った Material 群がシェーダモジュールを共有する (WebGPU)", () => {
+    test.skip(
+        SKIP_INITIALIZE_WHEN_NO_WEBGPU && !result.webgpuAvailable,
+        "WebGPU アダプタが利用できない環境のため skip (SKIP_INITIALIZE_WHEN_NO_WEBGPU=true)");
+
+    expect(result.sharedShader.attempted, "sharedShader scenario not attempted").toBe(true);
+    expect(result.sharedShader.error ?? null, "sharedShader error").toBeNull();
+    expect(result.sharedShader.ok).toBe(true);
+
+    const { countAfterFirst, countAfterShared, countAfterStandalone } = result.sharedShader;
+
+    // コンパイル済みシェーダのパスが実際に構築されている (WGSL ターゲットが選ばれている)。
+    expect(countAfterFirst).toBeGreaterThan(0);
+
+    // 同一 Shader から Material を 4 つ追加してもシェーダパスは増えない
+    // = シェーダモジュールとパイプラインレイアウトが共有されている。
+    expect(countAfterShared).toBe(countAfterFirst);
+
+    // 対照: Material.createFromCompiledShader は Material ごとに新規生成する。
+    expect(countAfterStandalone).toBeGreaterThan(countAfterShared);
 });
 
 test("デバイスロスト後、フレームループを回すだけで自動復旧して描画が再開できる", () => {

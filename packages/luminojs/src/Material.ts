@@ -1,13 +1,17 @@
 import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
 import type { Texture } from "./Texture";
+import { Shader } from "./Shader";
 import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
 import { BlendMode, BuiltinShader, CullMode, TextureAddressMode, TextureFilterMode } from "./types";
 
 type MaterialSource =
     | { kind: "unlit" }
-    | { kind: "compiled"; data: Uint8Array };
+    // owned: この Material だけが使う Shader (createFromCompiledShader 経由) かどうか。
+    // owned な Shader は Material の dispose() で一緒に解放する。共有された Shader
+    // (createFromShader 経由) は他の Material が使っているため解放しない。
+    | { kind: "shader"; shader: Shader; owned: boolean };
 
 /** サンプラー設定 (テクスチャのフィルタリングとアドレッシング)。 */
 interface SamplerState {
@@ -47,11 +51,38 @@ export class Material extends LuminoObject implements ResidentResource {
     }
 
     /**
+     * 作成済みの `Shader` からマテリアルを作成します。GPU 側生成は遅延。
+     *
+     * GPU シェーダモジュールとパイプラインレイアウトは `Shader` が保持しているものを
+     * 共有するため、同一 `Shader` から Material を何個作っても GPU リソースは増えません。
+     *
+     * Material のパラメータ (`setFloat4` 等) は同一フレーム内では後勝ちになるため、
+     * 「1 フレーム内で異なるパラメータで描く箇所の数」だけ Material が必要になります。
+     * そうした Material の量産にはこの経路を使ってください。
+     * @param shader `Shader.createFromCompiledShader` で作成したシェーダ
+     * @see Shader
+     */
+    static createFromShader(shader: Shader): Material {
+        const mat = new Material({ kind: "shader", shader, owned: false });
+        mat._dirty = true;
+        return mat;
+    }
+
+    /**
      * コンパイル済みシェーダバイナリ (.lcsh) からマテリアルを作成します。GPU 側生成は遅延。
+     *
+     * この関数は呼び出しごとに専用の `Shader` (GPU シェーダモジュールと
+     * パイプラインレイアウト) を作成します。同一シェーダから複数の Material を
+     * 作る場合は `Shader.createFromCompiledShader` + `Material.createFromShader` を
+     * 使ってください。
      * @param data コンパイル済みシェーダのバイナリデータ
      */
     static createFromCompiledShader(data: Uint8Array): Material {
-        const mat = new Material({ kind: "compiled", data });
+        const mat = new Material({
+            kind: "shader",
+            shader: Shader.createFromCompiledShader(data),
+            owned: true,
+        });
         mat._dirty = true;
         return mat;
     }
@@ -170,6 +201,12 @@ export class Material extends LuminoObject implements ResidentResource {
      * 初回使用時に C++ Material を生成し、シャドウされたパラメータ変更を適用します。
      */
     ensure(ctx: GraphicsContext): void {
+        // Shader は毎フレーム ensure する。GPU 側が既に在る場合は最終使用フレームの
+        // 更新だけで済み、Material が使われている間 Shader が evict されないようにする。
+        if (this._source.kind === "shader") {
+            this._source.shader.ensure(ctx);
+        }
+
         if (this._handle === 0) {
             this._createGpuMaterial(ctx);
             // 生成直後は _paramsDirty の以前の状態にかかわらず、
@@ -197,6 +234,10 @@ export class Material extends LuminoObject implements ResidentResource {
 
     override dispose(): void {
         this.evict();
+        // この Material だけが使う Shader は一緒に解放する。
+        if (this._source.kind === "shader" && this._source.owned) {
+            this._source.shader.dispose();
+        }
         this._mainTexture = undefined;
         this._namedTextures.clear();
         this._namedSamplerStates.clear();
@@ -213,19 +254,12 @@ export class Material extends LuminoObject implements ResidentResource {
                 ) => number)(ctx.handle, BuiltinShader.Unlit, out));
             this._setHandle(handle, true);
         } else {
-            const data = this._source.data;
-            const m = Runtime.module;
-            const ptr = m._malloc(data.byteLength);
-            try {
-                m.HEAPU8.set(data, ptr);
-                const handle = Runtime.safeCallWithReturnHandle((out) =>
-                    (API.LNMaterial_CreateFromCompiledShader as (
-                        ctx: number, data: number, size: number, out: number,
-                    ) => number)(ctx.handle, ptr, data.byteLength, out));
-                this._setHandle(handle, true);
-            } finally {
-                m._free(ptr);
-            }
+            const shader = this._source.shader;
+            const handle = Runtime.safeCallWithReturnHandle((out) =>
+                (API.LNMaterial_CreateFromShader as (
+                    shader: number, out: number,
+                ) => number)(shader.handle, out));
+            this._setHandle(handle, true);
         }
     }
 

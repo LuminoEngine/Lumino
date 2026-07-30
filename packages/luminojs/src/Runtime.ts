@@ -311,8 +311,12 @@ export class Runtime {
         API.LNImage_DecodeFromMemory = cw("LNImage_DecodeFromMemory", "number", ["number", "number", "number", "number", "number", "number"]);
         API.LNImage_FreePixels       = cw("LNImage_FreePixels",       "number", ["number"]);
 
+        // Shader
+        API.LNShader_CreateFromCompiledShader    = cw("LNShader_CreateFromCompiledShader",    "number", ["number", "number", "number", "number"]);
+
         // Material
         API.LNMaterial_CreateFromBuiltinShader  = cw("LNMaterial_CreateFromBuiltinShader",  "number", ["number", "number", "number"]);
+        API.LNMaterial_CreateFromShader          = cw("LNMaterial_CreateFromShader",          "number", ["number", "number"]);
         API.LNMaterial_CreateFromCompiledShader  = cw("LNMaterial_CreateFromCompiledShader",  "number", ["number", "number", "number", "number"]);
         API.LNMaterial_SetMainTexture            = cw("LNMaterial_SetMainTexture",            "number", ["number", "number"]);
         API.LNMaterial_SetColor                  = cw("LNMaterial_SetColor",                  "number", ["number", "number", "number", "number", "number"]);

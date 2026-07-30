@@ -2,8 +2,13 @@
  * CustomShader.c
  *
  * コンパイル済みシェーダ (.lcsh) をファイルから読み込み、
- * LNMaterial_CreateFromCompiledShader で Material を作成して
- * 赤い三角形を描画するデモ。
+ * LNShader_CreateFromCompiledShader で Shader を作成し、
+ * そこから LNMaterial_CreateFromShader で Material を作成して
+ * 三角形を描画するデモ。
+ *
+ * Shader は GPU シェーダモジュールとパイプラインレイアウトを保持する共有オブジェクトで、
+ * 1 つの Shader から Material を何個作ってもそれらは増えません
+ * (HUD の ShaderPass 表示で確認できます)。
  */
 #include "../Utils.h"
 
@@ -23,16 +28,21 @@ int main() {
         return 1;
     }
 
-    // 4. Create material from compiled shader
+    // 4. Create shader (GPU シェーダモジュール + パイプラインレイアウト)
+    LNHandle shader = LN_NULL_HANDLE;
+    LNShader_CreateFromCompiledShader(graphicsContext,
+        shaderData.data(), (uint32_t)shaderData.size(), &shader);
+
+    // 5. Create material from the shader
+    //    同じ Shader からいくつ Material を作っても GPU リソースは増えない。
     LNHandle material = LN_NULL_HANDLE;
-    LNMaterial_CreateFromCompiledShader(graphicsContext,
-        shaderData.data(), (uint32_t)shaderData.size(), &material);
+    LNMaterial_CreateFromShader(shader, &material);
     //LNMaterial_SetColor(material, 1.0f, 0.0f, 0.0f, 1.0f); // Red
 
     const float myColor[4] = {0.0f, 1.0f, 0.0f, 1.0f}; // Green
     LNMaterial_SetFloat4(material, "u_myColor", myColor);
 
-    // 5. Triangle mesh (3 vertices, 3 indices, CCW winding)
+    // 6. Triangle mesh (3 vertices, 3 indices, CCW winding)
     LNVertex vertices[3] = {
         // posX   posY   posZ   normX normY normZ  u    v    r    g    b    a    tanX tanY tanZ tanW
         {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f, 0.0f,  1,1,1,1,  0,0,0,0 }, // top
@@ -46,7 +56,7 @@ int main() {
     LNMesh_Create(graphicsContext, vertices, 3, indices, 3, &sub, 1, &mesh);
     LNMesh_SetMaterial(mesh, 0, material);
 
-    // 6. Perspective camera
+    // 7. Perspective camera
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
@@ -58,7 +68,7 @@ int main() {
         0.0f, 0.0f, 0.0f,   // target
         0.0f, 1.0f, 0.0f);  // up
 
-    // 7. Main loop
+    // 8. Main loop
     LNGraphicsProfiler profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;
@@ -75,13 +85,17 @@ int main() {
         LNDebug_Print(graphicsContext, (std::string("FPS: ") + std::to_string(profilering.fps)).c_str());
         LNDebug_Print(graphicsContext, (std::string("FrameTime(ms): ") + std::to_string(profilering.lastFrameTimeMs)).c_str());
         LNDebug_Print(graphicsContext, (std::string("DrawCall: ") + std::to_string(profilering.drawCallCount)).c_str());
+        // 生存シェーダパス数 (= シェーダモジュール数 / 2 = パイプラインレイアウト数)。
+        // Material を増やしても増えないことを確認できる。
+        LNDebug_Print(graphicsContext, (std::string("ShaderPass: ") + std::to_string(profilering.shaderPassCount)).c_str());
 
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 
-    // 8. Cleanup
+    // 9. Cleanup
     LNObject_Release(mesh);
     LNObject_Release(material);
+    LNObject_Release(shader);
     LNObject_Release(camera);
     LNObject_Release(window);
     LNInstance_Terminate();

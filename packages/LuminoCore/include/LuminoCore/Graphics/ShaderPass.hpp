@@ -28,6 +28,8 @@ class ShaderPass : public RefObject {
 public:
     inline static const char* kViewDataParameterBlockName = "viewData";
 
+    ~ShaderPass() override;
+
     /**
      * .lcshバイナリから指定インデックスのパス (GlobalShaderPass) のシェーダモジュールと
      * PipelineLayoutを一括構築する。
@@ -110,8 +112,24 @@ public:
     /** シェーダリフレクションから取得したオブジェクト単位の UBO サイズ。 */
     uint64_t objectUBOSize() const { return m_objectUBOSize; }
 
+    /**
+     * 現在生存している ShaderPass の数 (プロセス全体)。
+     *
+     * 1 つの ShaderPass は GPU シェーダモジュール 2 個 (頂点/フラグメント) と
+     * パイプラインレイアウト 1 個を所有するため、この値は
+     * 「GPU 上のシェーダモジュール数 / 2」「パイプラインレイアウト数」と一致する。
+     * Shader を共有して Material を複数作ったときに、シェーダモジュールが
+     * 増えていないことを計測するために公開している。
+     * @see LNGraphicsProfiler::shaderPassCount
+     */
+    static int32_t liveCount() { return s_liveCount; }
+
 private:
-    ShaderPass() = default;
+    ShaderPass();
+
+    // Shader は 1 度デシリアライズした UnifiedShader2 から全パスを構築するため、
+    // buildFromUnifiedShader を直接呼ぶ。
+    friend class Shader;
 
     /** 内部用: createFromCompiledShader と createFromUnifiedShader が共有する実装。 */
     static Result<Ref<ShaderPass>> buildFromUnifiedShader(
@@ -142,6 +160,9 @@ private:
     rhi::BindGroupLayoutDesc m_sceneLayoutDesc;
     rhi::BindGroupLayoutDesc m_objectLayoutDesc;
     uint64_t m_objectUBOSize = 0;
+
+    /** 生存インスタンス数。ShaderPass は生成・破棄がまれなので単純なカウンタで足りる。 */
+    static int32_t s_liveCount;
 };
 
 } // namespace ln
