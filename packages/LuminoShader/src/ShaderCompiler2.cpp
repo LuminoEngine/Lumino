@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
+#include <LuminoBase/Logger.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/ShaderCompiler2.hpp>
+#include <LuminoShader/WgslValidator.hpp>
 #include "ShaderMetadata.hpp"
 
 #ifdef LUMINO_USE_SLANG
@@ -130,6 +132,10 @@ VoidResult ShaderCompiler2::build(const fs::path& inputFilePath) {
     m_inputDirPath = inputFilePath.parent_path();
     m_shader = Ref<UnifiedShader2>::adopt(new UnifiedShader2());
     m_parameterBlocksBuilt = false;
+
+    // 実行時のエラーメッセージ / デバッグラベル用の識別名。
+    // フルパスはビルド環境依存なのでファイル名だけを記録する。
+    m_shader->setSourceName(inputFilePath.filename().string());
 
     if (m_dump) {
         m_dumpDirPath = inputFilePath;
@@ -618,6 +624,17 @@ VoidResult ShaderCompiler2::buildEntryPoint(
             }
         }
 
+        // Validate WGSL.
+        // Slang は WGSL 固有の制約を検査しないため、ここで実際の WebGPU 実装に通しておく。
+        // これを省くと、不正なシェーダはブラウザで実行するまで気づけない。
+        if (target == ShaderTarget_WGSL) {
+            auto r = validateWgsl(
+                entryPointReflection->getName(),
+                reinterpret_cast<const char*>(kernelBlob->getBufferPointer()),
+                kernelBlob->getBufferSize());
+            if (!r) return r;
+        }
+
         codeBlob = m_shader->createBlob();
         codeBlob->data.resize(kernelBlob->getBufferSize());
         memcpy(codeBlob->data.data(), kernelBlob->getBufferPointer(), kernelBlob->getBufferSize());
@@ -879,6 +896,110 @@ void ShaderCompiler2::traverseVariableSemantic(
     }
 }
 
+//------------------------------------------------------------------------------
+VoidResult ShaderCompiler2::validateWgsl(
+    const std::string& entryPointName, const char* code, size_t length) {
+    if (!m_validateWgsl || !WgslValidator::available()) {
+        return LNSHADER_OK();
+    }
+
+    if (!m_wgslValidator) {
+        auto createResult = WgslValidator::create();
+        if (!createResult) {
+            // 検証器を用意できない環境 (DLL が無いなど) ではコンパイル自体は止めない。
+            // ただし WGSL の不正を見逃す状態になるため警告する。
+            LN_LOG_WARNING(
+                "WGSL validation is disabled: %s", createResult.error().message.c_str());
+            m_validateWgsl = false;
+            return LNSHADER_OK();
+        }
+        m_wgslValidator = std::move(*createResult);
+    }
+
+    auto validateResult = m_wgslValidator->validate(code, length, entryPointName);
+    if (!validateResult) {
+        LN_LOG_WARNING(
+            "WGSL validation could not run: %s", validateResult.error().message.c_str());
+        return LNSHADER_OK();
+    }
+
+    const WgslValidationReport& report = *validateResult;
+
+    // 警告はコンパイルを止めない。
+    for (const auto& d : report.diagnostics) {
+        if (d.severity == WgslDiagnostic::Severity::Warning) {
+            LN_LOG_WARNING(
+                "%s(WGSL %llu:%llu) [%s] %s",
+                m_inputFilePath.string().c_str(),
+                static_cast<unsigned long long>(d.line),
+                static_cast<unsigned long long>(d.column),
+                entryPointName.c_str(),
+                d.message.c_str());
+        }
+    }
+
+    if (!report.failed) {
+        return LNSHADER_OK();
+    }
+
+    // 生成された WGSL を書き出しておく。診断の行番号はこのファイルに対応する。
+    const fs::path dumpedPath = dumpFailedWgsl(entryPointName, code, length);
+
+    std::string message =
+        "WGSL validation failed.\n"
+        "  shader     : " + m_inputFilePath.string() + "\n"
+        "  entryPoint : " + entryPointName + "\n";
+    if (!dumpedPath.empty()) {
+        message += "  generated  : " + dumpedPath.string() + "\n";
+    }
+    message +=
+        "  note       : line:column below refer to the generated WGSL, not the .slang source.\n";
+
+    // よくある原因に対するヒントを添える。
+    // メッセージはコンソールの文字化けを避けるため英語で出力する。
+    if (report.detail.find("uniform control flow") != std::string::npos) {
+        message +=
+            "  hint       : WGSL requires texture sampling to happen in uniform control flow.\n"
+            "               Sample the texture *before* any early return / discard / branch,\n"
+            "               or use an explicit-LOD variant such as SampleLevel().\n";
+    }
+
+    if (!report.detail.empty()) {
+        message += report.detail;
+        if (report.detail.back() != '\n') message += "\n";
+    }
+    else {
+        for (const auto& d : report.diagnostics) {
+            if (d.severity != WgslDiagnostic::Severity::Error) continue;
+            message += "  " + std::to_string(d.line) + ":" + std::to_string(d.column) + " error: " +
+                       d.message + "\n";
+        }
+    }
+
+    return LNSHADER_MAKE_ERROR(message);
+}
+
+//------------------------------------------------------------------------------
+fs::path ShaderCompiler2::dumpFailedWgsl(
+    const std::string& entryPointName, const char* code, size_t length) {
+    try {
+        fs::path dirPath = m_inputFilePath;
+        dirPath += ".dump";
+        fs::create_directories(dirPath);
+        fs::path filePath = dirPath / ("WGSL." + entryPointName + ".wgsl");
+        std::ofstream stream(filePath, std::ios::binary);
+        if (!stream) return fs::path();
+        stream.write(code, static_cast<std::streamsize>(length));
+        if (!stream) return fs::path();
+        return filePath;
+    }
+    catch (const std::exception&) {
+        // 書き出せなくても検証結果自体は報告したいので、パスを空にして続行する。
+        return fs::path();
+    }
+}
+
+//------------------------------------------------------------------------------
 VoidResult ShaderCompiler2::mergeTargetBindingLayouts() {
     const auto& targetEntryPoints = m_shader->targetEntryPoints();
     for (auto& targetShaderPass : m_shader->targetShaderPasses()) {

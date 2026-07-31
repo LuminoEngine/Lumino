@@ -71,6 +71,30 @@ float4 fsMain(VSOutput input) : SV_TARGET { ... }
 - `ParameterBlock<T>` 内に明示的な `ConstantBuffer<T>`, `Texture2D`, `SamplerState` を
   混在させた場合、各フィールドが個別のバインディングになる。
 
+### WGSL の制約に注意
+
+Slang では書けても **WGSL（WebGPU）では不正になる**コードがあります。代表例は
+「非 uniform な早期 `return` / `break` の後でテクスチャをサンプリングする」パターンです。
+
+```slang
+// NG: 早期 return の後にサンプリングしている
+if (input.uv.x > 0.5) { return float4(1, 0, 0, 1); }
+float4 c = u_baseTexture.Sample(u_baseSampler, input.uv);   // WGSL では不正
+
+// OK: サンプリングを分岐より前に巻き上げる
+float4 c = u_baseTexture.Sample(u_baseSampler, input.uv);
+if (input.uv.x > 0.5) { return float4(1, 0, 0, 1); }
+```
+
+これは `ShaderCompiler2` が生成 WGSL を Dawn で検証するため、**コンパイル時にエラー**
+になります（`WgslValidator`）。検証を持たない構成でこの種のシェーダを使うと、
+WebGPU 実行時にシェーダモジュールが無効になり画面が真っ黒になります。
+
+その他のパターン（`ddx` / `fwidth`、ループ内の `break`、ヘルパ関数経由のサンプリング、
+`SampleLevel` による回避など）は
+[docs/shader-conventions.md の「WGSL（WebGPU）の制約」](../../docs/shader-conventions.md#wgslwebgpu-の制約)
+にまとめてあります。
+
 ## C++ からの使い方
 
 ### コンパイル
@@ -81,6 +105,8 @@ float4 fsMain(VSOutput input) : SV_TARGET { ... }
 
 auto compiler = *ShaderCompiler2::create();
 compiler->addSearchPath("path/to/includes");  // 必要に応じて
+// 生成 WGSL の検証は既定で有効。切りたいときのみ:
+// compiler->setWgslValidationEnabled(false);
 
 auto result = compiler->build("BasicLit.slang");
 if (!result) {
@@ -157,6 +183,7 @@ auto loaded = *UnifiedShaderSerializer2::loadFromData(data.data(), data.size());
 | Class | Description |
 | --- | --- |
 | `ShaderCompiler2` | Compile Slang shaders, collect reflection info |
+| `WgslValidator` | Validate generated WGSL with Dawn (Null backend) |
 | `UnifiedShader2` | Data model holding compilation results |
 | `UnifiedShaderSerializer2` | Read/write `.lcsh` binary format |
 | `ParameterBlockLayout2` | ParameterBlock layout (set index, element list) |
@@ -178,7 +205,7 @@ auto loaded = *UnifiedShaderSerializer2::loadFromData(data.data(), data.size());
 ## バイナリフォーマット (`lcs2`)
 
 ```text
-Header:  "lcs2" (4 bytes) + version (int16)
+Header:  "lcs2" (4 bytes) + version (int16) + sourceName (string, v3 以降)
 Section: "lcs2.bl." -- Code Blobs
 Section: "lcs2.pb." -- ParameterBlockLayout
 Section: "lcs2.te." -- TargetEntryPoint

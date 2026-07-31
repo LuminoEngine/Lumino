@@ -102,7 +102,15 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
         return it->second.get();
     }
 
+    if (!key.shaderPass) {
+        return LN_MAKE_ERROR("PipelineCacheKey has no shaderPass.");
+    }
+
     rhi::RenderPipelineDesc rpDesc;
+    // debugName は WebGPU オブジェクトのラベルになる。パイプライン生成の失敗は
+    // `[Invalid RenderPipeline "<label>"]` として報告されるため、
+    // どのシェーダのどのパスなのかが分かる名前を入れる。
+    rpDesc.debugName       = key.shaderPass->debugLabel();
     rpDesc.layout          = key.shaderPass->pipelineLayout();
     rpDesc.vertexShader    = key.shaderPass->vertexShader();
     rpDesc.fragmentShader  = key.shaderPass->fragmentShader();
@@ -127,7 +135,18 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     }
 
     auto result = m_device->createRenderPipeline(rpDesc);
-    if (!result) return LN_FORWARD_ERROR(result);
+    if (!result) {
+        // シェーダ名とパス名を必ず載せる。WGSL の不正などでシェーダモジュールが
+        // 無効になっている場合、バックエンドのメッセージだけでは
+        // どのシェーダが原因なのか分からないことが多い。
+        return LN_MAKE_ERROR(
+            "Failed to create render pipeline. (shader: %s, pass: %s, vertexEntry: %s, fragmentEntry: %s) %s",
+            key.shaderPass->shaderName().c_str(),
+            key.shaderPass->passName().c_str(),
+            key.shaderPass->vertexEntry().c_str(),
+            key.shaderPass->fragmentEntry().c_str(),
+            result.error().message.c_str());
+    }
 
     auto [it2, inserted] = m_cache.emplace(key, std::move(*result));
     if (inserted) {

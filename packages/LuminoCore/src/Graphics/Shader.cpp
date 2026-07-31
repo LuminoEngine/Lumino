@@ -21,17 +21,21 @@ ShaderPass* Shader::findPass(const std::string& name) const {
 
 //------------------------------------------------------------------------------
 Result<Ref<Shader>> Shader::buildFromUnifiedShader(
-    shader::UnifiedShader2* unifiedShader, rhi::Device* device) {
+    shader::UnifiedShader2* unifiedShader, rhi::Device* device,
+    const std::string& shaderName) {
 
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
-        return LN_MAKE_ERROR("No shader passes found");
+        const std::string& name = shaderName.empty() ? unifiedShader->sourceName() : shaderName;
+        return LN_MAKE_ERROR(
+            "No shader passes found (shader: %s)",
+            name.empty() ? "(unnamed shader)" : name.c_str());
     }
 
     auto shader = Ref<Shader>::adopt(new Shader());
     shader->m_passes.reserve(globalPasses.size());
     for (size_t i = 0; i < globalPasses.size(); ++i) {
-        auto passResult = ShaderPass::buildFromUnifiedShader(unifiedShader, device, i);
+        auto passResult = ShaderPass::buildFromUnifiedShader(unifiedShader, device, i, shaderName);
         if (!passResult) return LN_FORWARD_ERROR(passResult);
         shader->m_passes.push_back(std::move(*passResult));
     }
@@ -40,18 +44,20 @@ Result<Ref<Shader>> Shader::buildFromUnifiedShader(
 
 //------------------------------------------------------------------------------
 Result<Ref<Shader>> Shader::createFromCompiledShader(
-    GraphicsModule* module, const void* data, size_t size) {
+    GraphicsModule* module, const void* data, size_t size,
+    const std::string& shaderName) {
     // デシリアライズはパスの数に関係なく 1 回だけ行う。
     auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
     if (!loadResult) return LN_FORWARD_ERROR(loadResult);
     auto unifiedShader = std::move(*loadResult);
 
-    return buildFromUnifiedShader(unifiedShader.get(), module->device());
+    return buildFromUnifiedShader(unifiedShader.get(), module->device(), shaderName);
 }
 
 Result<Ref<Shader>> Shader::createFromCompiledShader(
-    GraphicsContext* ctx, const void* data, size_t size) {
-    return createFromCompiledShader(ctx->module(), data, size);
+    GraphicsContext* ctx, const void* data, size_t size,
+    const std::string& shaderName) {
+    return createFromCompiledShader(ctx->module(), data, size, shaderName);
 }
 
 //------------------------------------------------------------------------------

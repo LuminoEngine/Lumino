@@ -244,6 +244,16 @@ struct ShaderModuleDesc {
     ShaderCodeFormat format = ShaderCodeFormat::SPIRV;
     const void* code = nullptr;
     size_t codeSizeBytes = 0;
+
+    /**
+     * デバッグ用の識別名 (例: "Unlit.slang:fsMain")。
+     *
+     * WebGPU バックエンドではそのままオブジェクトのラベルになる。
+     * ブラウザ / Dawn は不正なシェーダのエラーを
+     * `[Invalid ShaderModule "<label>"]` の形で報告するため、
+     * ここに名前を入れておくと「どのシェーダか」がログから分かる。
+     */
+    std::string debugName;
 };
 
 struct VertexAttribute {
@@ -335,6 +345,12 @@ struct RenderPipelineDesc {
     RenderPass* renderPass = nullptr;
     std::vector<BlendState> blendStates;
     DepthStencilState depthStencil;
+
+    /**
+     * デバッグ用の識別名 (例: "Unlit.slang:Forward")。
+     * @see ShaderModuleDesc::debugName
+     */
+    std::string debugName;
 };
 
 struct ColorAttachment {

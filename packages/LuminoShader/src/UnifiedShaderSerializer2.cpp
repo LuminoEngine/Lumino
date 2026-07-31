@@ -1,4 +1,4 @@
-// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
 #include <fstream>
 #include <LuminoShader/UnifiedShader2.hpp>
@@ -142,6 +142,8 @@ VoidResult UnifiedShaderSerializer2::saveToFile(const UnifiedShader2* shader, co
     {
         writer.write("lcs2", 4);
         writer.writeInt16(FileVersion_Current);
+        // v3: シェーダの識別名 (実行時のエラーメッセージ用)
+        writeString(writer, shader->sourceName());
     }
 
     // Blob
@@ -249,6 +251,10 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(const void* d
         fileVersion = reader.readInt16();
         if (fileVersion < FileVersion_1 || fileVersion >= FileVersion_Last) {
             return LNSHADER_MAKE_ERROR("Unsupported file version");
+        }
+        // v3: シェーダの識別名 (実行時のエラーメッセージ用)
+        if (fileVersion >= FileVersion_3) {
+            shader->setSourceName(readString(reader));
         }
     }
 

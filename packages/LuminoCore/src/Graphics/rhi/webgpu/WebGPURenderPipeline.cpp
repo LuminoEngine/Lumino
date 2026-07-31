@@ -20,8 +20,12 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
         return LN_MAKE_ERROR("RenderPipelineDesc requires a renderPass for format info.");
     }
 
+    // ラベルは WebGPU のエラーメッセージ (`[Invalid RenderPipeline "..."]`) に現れるため、
+    // どのシェーダのどのパスなのかが分かる名前を入れる。
+    m_debugName = desc.debugName.empty() ? std::string("LuminoPipeline") : desc.debugName;
+
     WGPURenderPipelineDescriptor pipelineDesc = WGPU_RENDER_PIPELINE_DESCRIPTOR_INIT;
-    pipelineDesc.label = {"LuminoPipeline", WGPU_STRLEN};
+    pipelineDesc.label = {m_debugName.c_str(), m_debugName.size()};
 
     // Layout
     pipelineDesc.layout = desc.layout
@@ -146,7 +150,7 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
 
     m_pipeline = wgpuDeviceCreateRenderPipeline(m_device->wgpuDevice(), &pipelineDesc);
     if (!m_pipeline) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateRenderPipeline failed.");
+        return LN_MAKE_ERROR("wgpuDeviceCreateRenderPipeline failed. (%s)", m_debugName.c_str());
     }
     return LN_MAKE_SUCCESS();
 }

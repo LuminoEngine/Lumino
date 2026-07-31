@@ -1,4 +1,4 @@
-// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 
 #include "Common.hpp"
@@ -14,6 +14,7 @@ public:
     enum FileVersion {
         FileVersion_1 = 1,
         FileVersion_2 = 2,   // Added GlobalMemberInfo to ParameterBlockLayout2
+        FileVersion_3 = 3,   // Added UnifiedShader2::sourceName
         FileVersion_Last,
         FileVersion_Current = FileVersion_Last - 1,
     };

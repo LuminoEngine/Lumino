@@ -219,15 +219,25 @@ void WebGPUDevice::requestDeviceFromAdapter() {
     }
 
     // エラーコールバック
+    // 同じエラーが毎フレーム報告されてもログが埋もれないよう、
+    // 出力は logUncapturedError で間引く。
     auto onUncapturedError =
-        [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {
-        LN_LOG_ERROR("[WebGPU] Uncaptured error [type=%d]: %s", static_cast<int>(type),
-            std::string(message.data, message.length).c_str());
-#if defined(_MSC_VER) && defined(_DEBUG)
-            __debugbreak();
-#endif
+        [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void* userdata1, void*) {
+            auto* self = reinterpret_cast<WebGPUDevice*>(userdata1);
+            // WGPUStringView の length は WGPU_STRLEN のとき「NUL 終端」を意味する。
+            const size_t length = !message.data ? 0
+                : (message.length == WGPU_STRLEN ? strlen(message.data) : message.length);
+            std::string text(message.data ? message.data : "", length);
+            if (self) {
+                self->logUncapturedError(type, text);
+            }
+            else {
+                LN_LOG_ERROR("[WebGPU] Uncaptured error [type=%d]: %s",
+                    static_cast<int>(type), text.c_str());
+            }
         };
     deviceDesc.uncapturedErrorCallbackInfo.callback = onUncapturedError;
+    deviceDesc.uncapturedErrorCallbackInfo.userdata1 = this;
 
     // デバイスロストコールバック
     // mode を AllowSpontaneous にしないとコールバックが EventManager にキューイングされ、
@@ -276,6 +286,46 @@ void WebGPUDevice::requestDeviceFromAdapter() {
     callbackInfo.userdata2 = nullptr;
     WGPUFuture _ = wgpuAdapterRequestDevice(m_adapter, &deviceDesc, callbackInfo);
     (void)_;
+}
+
+void WebGPUDevice::logUncapturedError(WGPUErrorType type, const std::string& message) {
+    // 無効なシェーダやパイプラインは描画のたびに同じエラーを報告する。
+    // 全部出すと最初の (本当の原因を含む) エラーが流れてしまうため、
+    // 同一メッセージは先頭数件だけ出力する。
+    uint32_t count = 0;
+    if (m_uncapturedErrorCounts.size() < kMaxTrackedMessages) {
+        count = ++m_uncapturedErrorCounts[message];
+    }
+    else {
+        auto it = m_uncapturedErrorCounts.find(message);
+        if (it != m_uncapturedErrorCounts.end()) {
+            count = ++it->second;
+        }
+        else {
+            // 記録枠を使い切っている場合は抑制せずに出力する
+            // (メッセージが多様すぎる異常時に、逆に隠してしまわないようにする)。
+            count = 1;
+        }
+    }
+
+    if (count > kMaxLogPerMessage) {
+        return;
+    }
+
+    LN_LOG_ERROR("[WebGPU] Uncaptured error [type=%d]: %s",
+        static_cast<int>(type), message.c_str());
+
+    if (count == kMaxLogPerMessage) {
+        LN_LOG_ERROR(
+            "[WebGPU] The error above has been reported %u times; "
+            "further occurrences of the same message are suppressed.",
+            count);
+    }
+
+#if defined(_MSC_VER) && defined(_DEBUG)
+    // 毎フレーム break すると操作できなくなるため、抑制されない間だけ break する。
+    __debugbreak();
+#endif
 }
 
 void WebGPUDevice::finalize() {

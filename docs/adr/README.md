@@ -24,4 +24,5 @@ AI エージェントとの設計相談は結論がチャットの中に埋も�
 |---|---------|------|------|
 | [0001](0001-xxxxxx.md) | (Example entry) | draft | 2026-07-03 |
 | [0002](0002-shared-compiled-shader-object.md) | コンパイル済みシェーダを Shader オブジェクトとして共有する | 承認 | 2026-07-30 |
+| [0003](0003-wgsl-validation-at-compile-time.md) | 生成した WGSL をコンパイル時に Dawn で検証する | 承認 | 2026-07-31 |
 

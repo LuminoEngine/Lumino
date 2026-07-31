@@ -21,13 +21,17 @@ VoidResult WebGPUShaderModule::init(WebGPUDevice* device, const ShaderModuleDesc
     wgslSource.code.data = reinterpret_cast<const char*>(desc.code);
     wgslSource.code.length = desc.codeSizeBytes;
 
+    // ラベルは WebGPU のエラーメッセージ (`[Invalid ShaderModule "..."]`) に現れるため、
+    // どのシェーダのどのエントリポイントなのかが分かる名前を入れる。
+    m_debugName = desc.debugName.empty() ? std::string("LuminoShaderModule") : desc.debugName;
+
     WGPUShaderModuleDescriptor moduleDesc = {};
     moduleDesc.nextInChain = &wgslSource.chain;
-    moduleDesc.label = {"LuminoShaderModule", WGPU_STRLEN};
+    moduleDesc.label = {m_debugName.c_str(), m_debugName.size()};
 
     m_module = wgpuDeviceCreateShaderModule(m_device->wgpuDevice(), &moduleDesc);
     if (!m_module) {
-        return LN_MAKE_ERROR("wgpuDeviceCreateShaderModule failed.");
+        return LN_MAKE_ERROR("wgpuDeviceCreateShaderModule failed. (%s)", m_debugName.c_str());
     }
     return LN_MAKE_SUCCESS();
 }

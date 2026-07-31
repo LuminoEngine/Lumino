@@ -474,12 +474,22 @@ luminosc -I path/to/shaders input.slang
 
 # 生成シェーダコード（SPIR-V / WGSL 等）をダンプ
 luminosc --dump input.slang
+
+# WGSL の検証をスキップする（通常は不要）
+luminosc --no-validate-wgsl input.slang
 ```
 
 | 出力 | 内容 |
 |---|---|
 | `<name>.lcsh` | 全ターゲットを束ねたバイナリ。ランタイムで読み込む |
 | `<name>.lcsh.inl` | C++ に埋め込む hex 配列 |
+
+`luminosc` は生成した WGSL を実際の WebGPU 実装（Dawn）に通して検証します。
+Slang のコンパイルが通っても WGSL では不正になるコード（後述の
+[WGSL（WebGPU）の制約](#wgslwebgpu-の制約)）は、ここでコンパイルエラーになります。
+検証に失敗すると、生成された WGSL が `<name>.slang.dump/WGSL.<entryPoint>.wgsl` に
+書き出されます。エラーメッセージの行番号はこのファイルに対応します
+（元の `.slang` の行番号ではない点に注意してください）。
 
 ### ランタイムコンパイル（デスクトップ）
 
@@ -489,6 +499,93 @@ luminosc --dump input.slang
 auto mat = MaterialFactory::createFromShaderSourceFile(
     ctx, "MyShader.slang", "path/to/shaders" /* lumino.slang の検索パス */);
 ```
+
+---
+
+## WGSL（WebGPU）の制約
+
+Slang は 1 つのソースから SPIR-V / DXIL / WGSL / Metal を生成しますが、
+**WGSL には他のターゲットにはない制約があります**。Slang のコンパイラはこれを検査しないため、
+「Slang では書けるがブラウザでは動かない」コードが書けてしまいます。
+
+`luminosc` は生成した WGSL を Dawn で検証するので、以下のパターンはコンパイル時に
+エラーになります。検証を無効化して実行した場合は、WebGPU 実行時に
+シェーダモジュールが無効になり、**画面が真っ黒になる**（そのマテリアルの描画が
+まるごと破棄される）症状として現れます。
+
+### テクスチャのサンプリングは「分岐より前」で行う
+
+WGSL は、暗黙の LOD 計算（画面上で隣り合うピクセル同士の微分）を使う組み込み関数を
+**uniform control flow から呼ぶこと**を要求します。対象は
+`Sample` / `SampleBias` / `SampleCmp`（WGSL の `textureSample*`）と
+`ddx` / `ddy` / `fwidth`（WGSL の `dpdx` / `dpdy` / `fwidth`）です。
+
+「uniform control flow」とは、そのクアッド（2x2 ピクセル）内の全ピクセルが必ず
+同じように到達する位置のことです。ピクセルごとに値が変わりうるもの
+（頂点シェーダからの補間値、`SV_POSITION` など）で分岐すると、
+その先は uniform ではなくなります。
+
+```hlsl
+// NG: 早期 return を挟んだ後にサンプリングしている
+[shader("fragment")]
+float4 fsMain(VSOutput input) : SV_TARGET {
+    if (u_params.debugParams.x > 0.5) {
+        if (input.uv.x > 0.5) {          // input.uv はピクセルごとに変わる = 非 uniform
+            return float4(1, 0, 0, 1);
+        }
+    }
+    const float4 gbA = u_gbufferA.Sample(u_gbufferASampler, input.uv);  // ここで違反
+    return gbA;
+}
+```
+
+```hlsl
+// OK: サンプリングを分岐より前に巻き上げる
+[shader("fragment")]
+float4 fsMain(VSOutput input) : SV_TARGET {
+    const float4 gbA = u_gbufferA.Sample(u_gbufferASampler, input.uv);  // 先にサンプル
+    if (u_params.debugParams.x > 0.5) {
+        if (input.uv.x > 0.5) {
+            return float4(1, 0, 0, 1);
+        }
+    }
+    return gbA;
+}
+```
+
+`luminosc` で実際に検証した可否は次の通りです。
+
+| パターン | 可否 |
+|---|---|
+| 分岐より前でサンプリングして、結果を後で使う | OK |
+| 非 uniform な値による早期 `return` の後でサンプリング | **NG** |
+| 非 uniform な条件の `if` の中でサンプリング | **NG** |
+| 非 uniform な条件で `break` するループの中でサンプリング | **NG** |
+| 非 uniform な値による早期 `return` の後で `ddx` / `ddy` / `fwidth` | **NG** |
+| 非 uniform な値による早期 `return` の後で、内部でサンプリングするヘルパ関数を呼ぶ | **NG** |
+| **uniform な値だけ**（定数バッファのメンバ等）で分岐した後でサンプリング | OK |
+| `SampleLevel` / `SampleGrad` なら、非 uniform な分岐の後でも呼べる | OK |
+| `discard` の後でサンプリング（`return` を挟まない場合） | OK |
+
+ポイントは次の 2 点です。
+
+- **`discard` は分岐を作らない**ので、その後のサンプリングは問題ありません。
+  問題になるのは `return` / `break` / `continue` のように**制御フローを抜けるもの**です。
+- **分岐条件が uniform かどうか**が判定基準です。マテリアルパラメータ（定数バッファ）
+  だけを条件にした分岐は uniform なので、その後でサンプリングできます。
+  補間値（`TEXCOORD` などの varying）が 1 つでも条件に混ざると非 uniform になります。
+
+回避方法は 3 つあります。
+
+1. **サンプリングを分岐より前に巻き上げる**（推奨。上の OK 例）
+2. **`SampleLevel(sampler, uv, 0)` / `SampleGrad` に置き換える**
+   （LOD を明示するので微分が不要になり、どこからでも呼べる）。
+   ミップマップの自動選択が効かなくなる点に注意してください。
+3. **分岐条件を uniform なものだけにする**（デバッグ表示の切り替えなど）
+
+ヘルパ関数の中でサンプリングしている場合、**呼び出し側の制御フロー**が判定対象になります。
+エラーメッセージには `called by 'sampleIt_0' from 'fsMain'` のように呼び出し経路が出るので、
+そこから元の `.slang` の該当箇所を探してください。
 
 ---
 
@@ -506,4 +603,6 @@ auto mat = MaterialFactory::createFromShaderSourceFile(
 - [ ] UV をタイリングさせる意図があるテクスチャに `Repeat` を設定したか（既定は
       `ClampToEdge` なので、指定しないと端のピクセルが引き伸ばされる）
 - [ ] レンダーステートはシェーダではなく Material 側で設定したか
+- [ ] テクスチャのサンプリングを、非 uniform な `return` / `break` より前で行ったか
+      （[WGSL（WebGPU）の制約](#wgslwebgpu-の制約)。守らないと WebGPU で画面が真っ黒になる）
 

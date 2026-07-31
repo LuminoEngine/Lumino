@@ -104,15 +104,26 @@ static std::vector<std::string> resolveSamplerTextureNames(
 Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     shader::UnifiedShader2* unifiedShader,
     rhi::Device* device,
-    size_t passIndex) {
+    size_t passIndex,
+    const std::string& shaderName) {
+
+    // シェーダの識別名。明示指定が無ければ .lcsh に記録されたソースファイル名を使う。
+    // 実行時のエラーメッセージと GPU オブジェクトのラベルに使うため、
+    // 「どのシェーダで失敗したのか」がここから先すべてに伝播する。
+    std::string resolvedName = shaderName.empty() ? unifiedShader->sourceName() : shaderName;
+    if (resolvedName.empty()) {
+        resolvedName = "(unnamed shader)";
+    }
 
     // Select the requested pass for the backend's shader target.
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
-        return LN_MAKE_ERROR("No shader passes found");
+        return LN_MAKE_ERROR("No shader passes found (shader: %s)", resolvedName.c_str());
     }
     if (passIndex >= globalPasses.size()) {
-        return LN_MAKE_ERROR("Shader pass index out of range");
+        return LN_MAKE_ERROR(
+            "Shader pass index out of range (shader: %s, index: %d, passCount: %d)",
+            resolvedName.c_str(), static_cast<int>(passIndex), static_cast<int>(globalPasses.size()));
     }
 
     auto shaderTarget = backendToShaderTarget(device->backend());
@@ -122,35 +133,50 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     auto targetPassId = globalPass->getTargetShaderPassId(shaderTarget);
     auto* targetPass = unifiedShader->targetShaderPass(targetPassId);
     if (!targetPass) {
-        return LN_MAKE_ERROR("No target pass found for the current backend");
+        return LN_MAKE_ERROR(
+            "No target pass found for the current backend (shader: %s, pass: %s)",
+            resolvedName.c_str(), globalPass->name.c_str());
     }
 
     auto* vertEP = unifiedShader->targetEntryPoint(targetPass->vertEntryPointId);
     auto* fragEP = unifiedShader->targetEntryPoint(targetPass->fragEntryPointId);
     if (!vertEP || !fragEP) {
-        return LN_MAKE_ERROR("Missing entry points");
+        return LN_MAKE_ERROR(
+            "Missing entry points (shader: %s, pass: %s)",
+            resolvedName.c_str(), globalPass->name.c_str());
     }
 
     auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
     auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
 
     // Create shader modules
+    // debugName は WebGPU オブジェクトのラベルになる。ブラウザ / Dawn は不正なシェーダを
+    // `[Invalid ShaderModule "<label>"]` の形で報告するため、ここに名前を載せておくと
+    // 実行時ログから「どのシェーダのどのエントリポイントか」が分かる。
     rhi::ShaderModuleDesc vsDesc;
     vsDesc.format = codeFormat;
     vsDesc.code = vertBlob->data.data();
     vsDesc.codeSizeBytes = vertBlob->data.size();
+    vsDesc.debugName = resolvedName + ":" + globalPass->name + ":" + vertEP->name;
     auto vsResult = device->createShaderModule(vsDesc);
     if (!vsResult) {
-        return LN_FORWARD_ERROR(vsResult);
+        return LN_MAKE_ERROR(
+            "Failed to create vertex shader module. (shader: %s, pass: %s, entryPoint: %s) %s",
+            resolvedName.c_str(), globalPass->name.c_str(), vertEP->name.c_str(),
+            vsResult.error().message.c_str());
     }
 
     rhi::ShaderModuleDesc fsDesc;
     fsDesc.format = codeFormat;
     fsDesc.code = fragBlob->data.data();
     fsDesc.codeSizeBytes = fragBlob->data.size();
+    fsDesc.debugName = resolvedName + ":" + globalPass->name + ":" + fragEP->name;
     auto fsResult = device->createShaderModule(fsDesc);
     if (!fsResult) {
-        return LN_FORWARD_ERROR(fsResult);
+        return LN_MAKE_ERROR(
+            "Failed to create fragment shader module. (shader: %s, pass: %s, entryPoint: %s) %s",
+            resolvedName.c_str(), globalPass->name.c_str(), fragEP->name.c_str(),
+            fsResult.error().message.c_str());
     }
 
     // Build material BindGroupLayout from the optional "$Material" ParameterBlock.
@@ -181,7 +207,9 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     auto* sceneBlock = detail::findParameterBlock(unifiedShader, "sceneData");
     auto* objectBlock = detail::findParameterBlock(unifiedShader, "objectData");
     if (!viewBlock || !sceneBlock || !objectBlock) {
-        return LN_MAKE_ERROR("Missing required ParameterBlocks (viewData, sceneData, objectData)");
+        return LN_MAKE_ERROR(
+            "Missing required ParameterBlocks (viewData, sceneData, objectData) (shader: %s, pass: %s)",
+            resolvedName.c_str(), globalPass->name.c_str());
     }
 
     int16_t viewSetIndex = viewBlock->setIndex;
@@ -206,7 +234,9 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
 
     int16_t objectCBSize = detail::findConstantBufferSize(*objectBlock);
     if (objectCBSize <= 0) {
-        return LN_MAKE_ERROR("Invalid object constant buffer size in reflection");
+        return LN_MAKE_ERROR(
+            "Invalid object constant buffer size in reflection (shader: %s, pass: %s)",
+            resolvedName.c_str(), globalPass->name.c_str());
     }
 
     // Collect binding names for the material set (parallel to materialLayoutDesc entries)
@@ -242,10 +272,13 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     // Create Instance
     auto plResult = device->createPipelineLayout(plDesc);
     if (!plResult) {
-        return LN_FORWARD_ERROR(plResult);
+        return LN_MAKE_ERROR(
+            "Failed to create pipeline layout. (shader: %s, pass: %s) %s",
+            resolvedName.c_str(), globalPass->name.c_str(), plResult.error().message.c_str());
     }
 
     auto sp = Ref<ShaderPass>::adopt(new ShaderPass());
+    sp->m_shaderName = resolvedName;
     sp->m_passName = globalPass->name;
     sp->m_vertShader = std::move(*vsResult);
     sp->m_fragShader = std::move(*fsResult);
@@ -277,7 +310,8 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
 Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     const void* data, size_t size,
     rhi::Device* device,
-    size_t passIndex) {
+    size_t passIndex,
+    const std::string& shaderName) {
 
     // Deserialize the unified shader from the binary blob.
     auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
@@ -286,7 +320,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     }
     auto unifiedShader = std::move(*loadResult);
 
-    return buildFromUnifiedShader(unifiedShader.get(), device, passIndex);
+    return buildFromUnifiedShader(unifiedShader.get(), device, passIndex, shaderName);
 }
 
 #ifdef LUMINO_USE_SLANG
@@ -294,8 +328,9 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
 Result<Ref<ShaderPass>> ShaderPass::createFromUnifiedShader(
     shader::UnifiedShader2* unifiedShader,
     rhi::Device* device,
-    size_t passIndex) {
-    return buildFromUnifiedShader(unifiedShader, device, passIndex);
+    size_t passIndex,
+    const std::string& shaderName) {
+    return buildFromUnifiedShader(unifiedShader, device, passIndex, shaderName);
 }
 #endif // LUMINO_USE_SLANG
 

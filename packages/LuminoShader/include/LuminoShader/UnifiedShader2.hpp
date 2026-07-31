@@ -1,4 +1,4 @@
-// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 
 #include "Common.hpp"
@@ -93,6 +93,16 @@ class UnifiedShader2 : public RefObject {
 public:
     UnifiedShader2();
 
+    /**
+     * このシェーダの元になったソースの名前 (通常は .slang のファイル名)。
+     *
+     * 実行時にシェーダモジュールやパイプラインの生成が失敗したとき、
+     * 「どのシェーダなのか」をエラーメッセージやグラフィックスデバッガのラベルに
+     * 載せるために使う。コンパイル時に ShaderCompiler2 が設定し、.lcsh に保存される。
+     */
+    const std::string& sourceName() const { return m_sourceName; }
+    void setSourceName(const std::string& name) { m_sourceName = name; }
+
     const std::vector<ParameterBlockLayout2>& parameterBlocks() const;
     const std::vector<std::unique_ptr<GlobalShaderPass2>>& globalShaderPasses() const;
     const std::vector<std::unique_ptr<TargetShaderPass2>>& targetShaderPasses() const;
@@ -114,6 +124,7 @@ public:
         TargetBindingLayout2& target, const TargetBindingLayout2& other, bool reset);
 
 private:
+    std::string m_sourceName;
     std::vector<ParameterBlockLayout2> m_parameterBlocks;
     std::vector<std::unique_ptr<GlobalShaderPass2>> m_globalShaderPasses;
     std::vector<std::unique_ptr<TargetShaderPass2>> m_targetShaderPasses;

@@ -41,7 +41,8 @@ public:
     static Result<Ref<ShaderPass>> createFromCompiledShader(
         const void* data, size_t size,
         rhi::Device* device,
-        size_t passIndex = 0);
+        size_t passIndex = 0,
+        const std::string& shaderName = std::string());
 
 #ifdef LUMINO_USE_SLANG
     /**
@@ -53,13 +54,27 @@ public:
     static Result<Ref<ShaderPass>> createFromUnifiedShader(
         shader::UnifiedShader2* unifiedShader,
         rhi::Device* device,
-        size_t passIndex = 0);
+        size_t passIndex = 0,
+        const std::string& shaderName = std::string());
 #endif // LUMINO_USE_SLANG
 
     // アクセサ
 
     /** このパスの名前 (例: "Forward", "GBuffer"). */
     const std::string& passName() const { return m_passName; }
+
+    /**
+     * このパスの元になったシェーダの識別名 (例: "Unlit.slang")。
+     *
+     * .lcsh に記録されたソースファイル名、または生成時に明示的に指定された名前。
+     * 実行時にパイプライン生成が失敗したときのエラーメッセージに使う。
+     */
+    const std::string& shaderName() const { return m_shaderName; }
+
+    /** エラーメッセージ用の識別子 ("<シェーダ名>:<パス名>")。 */
+    std::string debugLabel() const {
+        return (m_shaderName.empty() ? std::string("(unnamed shader)") : m_shaderName) + ":" + m_passName;
+    }
 
     rhi::ShaderModule* vertexShader() const { return m_vertShader.get(); }
     rhi::ShaderModule* fragmentShader() const { return m_fragShader.get(); }
@@ -131,10 +146,15 @@ private:
     // buildFromUnifiedShader を直接呼ぶ。
     friend class Shader;
 
-    /** 内部用: createFromCompiledShader と createFromUnifiedShader が共有する実装。 */
+    /**
+     * 内部用: createFromCompiledShader と createFromUnifiedShader が共有する実装。
+     * @param shaderName 空の場合は UnifiedShader2::sourceName() を使う。
+     */
     static Result<Ref<ShaderPass>> buildFromUnifiedShader(
-        shader::UnifiedShader2* unifiedShader, rhi::Device* device, size_t passIndex);
+        shader::UnifiedShader2* unifiedShader, rhi::Device* device, size_t passIndex,
+        const std::string& shaderName = std::string());
 
+    std::string m_shaderName;
     std::string m_passName;
     Ref<rhi::ShaderModule> m_vertShader;
     Ref<rhi::ShaderModule> m_fragShader;

@@ -65,6 +65,10 @@ int main(int argc, char** argv) {
     std::vector<fs::path> searchPaths;
     app.add_option("-I,--search-path", searchPaths, "Additional search paths for import.");
 
+    bool noValidateWgsl = false;
+    app.add_flag("--no-validate-wgsl", noValidateWgsl,
+        "Skip WGSL validation of the generated WebGPU shader code.");
+
     CLI11_PARSE(app, argc, argv);
 
 #ifdef LUMINO_USE_SLANG
@@ -76,6 +80,7 @@ int main(int argc, char** argv) {
 
     auto& compiler = compilerResult.value();
     compiler->setDumpEnabled(dumpEnabled);
+    compiler->setWgslValidationEnabled(!noValidateWgsl);
     for (const auto& sp : searchPaths) {
         compiler->addSearchPath(sp);
     }

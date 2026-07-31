@@ -35,13 +35,19 @@ class Shader : public Object {
 public:
     ~Shader() override = default;
 
-    /** コンパイル済みシェーダ (.lcsh) のバイナリデータから作成します。 */
+    /**
+     * コンパイル済みシェーダ (.lcsh) のバイナリデータから作成します。
+     * @param shaderName エラーメッセージやデバッグラベルに使う識別名。
+     *                   空の場合は .lcsh に記録されたソースファイル名を使います。
+     */
     static Result<Ref<Shader>> createFromCompiledShader(
-        GraphicsModule* module, const void* data, size_t size);
+        GraphicsModule* module, const void* data, size_t size,
+        const std::string& shaderName = std::string());
 
     /** コンパイル済みシェーダ (.lcsh) のバイナリデータから作成します。 */
     static Result<Ref<Shader>> createFromCompiledShader(
-        GraphicsContext* ctx, const void* data, size_t size);
+        GraphicsContext* ctx, const void* data, size_t size,
+        const std::string& shaderName = std::string());
 
     /**
      * .slang ソースファイルを実行時コンパイルして作成します。
@@ -69,7 +75,8 @@ private:
 
     /** 1 度デシリアライズした UnifiedShader2 から全パスを構築する共通処理。 */
     static Result<Ref<Shader>> buildFromUnifiedShader(
-        shader::UnifiedShader2* unifiedShader, rhi::Device* device);
+        shader::UnifiedShader2* unifiedShader, rhi::Device* device,
+        const std::string& shaderName = std::string());
 
     std::vector<Ref<ShaderPass>> m_passes;
 };

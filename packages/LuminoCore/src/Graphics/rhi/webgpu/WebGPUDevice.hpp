@@ -2,6 +2,8 @@
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 
 #include <webgpu/webgpu.h>
+#include <string>
+#include <unordered_map>
 
 namespace ln::rhi::webgpu {
 
@@ -78,6 +80,21 @@ private:
     /** アダプタ確定後にデバイスを要求する (pumpAsyncInit の一部)。 */
     void requestDeviceFromAdapter();
 
+    /**
+     * キャプチャされなかったエラーを (間引きつつ) ログ出力する。
+     *
+     * 無効なパイプラインは描画のたびに同じエラーを報告するため、そのまま出力すると
+     * 毎フレーム同じ行が流れて最初の原因がログから埋もれてしまう。
+     * そのため同一メッセージは先頭 kMaxLogPerMessage 件までに制限する。
+     */
+    void logUncapturedError(WGPUErrorType type, const std::string& message);
+
+    /** 同一メッセージをログ出力する上限。これを超えた分は抑制する。 */
+    static constexpr uint32_t kMaxLogPerMessage = 3;
+
+    /** 種類の異なるメッセージを記録する上限 (メモリの無制限な増加を防ぐ)。 */
+    static constexpr size_t kMaxTrackedMessages = 64;
+
     WGPUInstance m_instance = nullptr;
     WGPUAdapter  m_adapter  = nullptr;
     WGPUDevice   m_device   = nullptr;
@@ -86,6 +103,9 @@ private:
     InitPhase m_initPhase = InitPhase::NotStarted;
     DeviceRequest m_deviceReq;
     bool m_simulatingDeviceLost = false;
+
+    /** キャプチャされなかったエラーのメッセージごとの発生回数。 */
+    std::unordered_map<std::string, uint32_t> m_uncapturedErrorCounts;
 
 #ifdef _WIN32
     HMODULE m_hD3DCompilerDLL = nullptr;

@@ -1,4 +1,4 @@
-// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 
 #include "Common.hpp"
@@ -12,6 +12,7 @@ namespace ln {
 namespace shader {
 namespace fs = std::filesystem;
 class UnifiedShader2;
+class WgslValidator;
 struct GlobalShaderPass2;
 
 class ShaderCompiler2 final {
@@ -23,6 +24,16 @@ public:
 
     void setDumpEnabled(bool enabled) { m_dump = enabled; }
     void addSearchPath(const fs::path& path) { m_searchPaths.push_back(path); }
+
+    /**
+     * 生成した WGSL を Dawn で検証するかどうか (既定: 検証可能なビルドでは有効)。
+     *
+     * Slang は WGSL 固有の制約 (textureSample を uniform control flow から呼ぶ等) を
+     * 検査しないため、これを無効にすると WebGPU 実行時まで不正に気づけなくなる。
+     * @see WgslValidator
+     */
+    void setWgslValidationEnabled(bool enabled) { m_validateWgsl = enabled; }
+    bool isWgslValidationEnabled() const { return m_validateWgsl; }
 
     ~ShaderCompiler2();
 
@@ -42,6 +53,15 @@ private:
 
     VoidResult mergeTargetBindingLayouts();
 
+    /**
+     * 生成された WGSL を検証する。不正があればエラーを返す。
+     * 検証器が使えないビルドでは何もせず成功を返す。
+     */
+    VoidResult validateWgsl(const std::string& entryPointName, const char* code, size_t length);
+
+    /** 検証に失敗した WGSL をファイルへ書き出す。書き出せた場合はそのパスを返す。 */
+    fs::path dumpFailedWgsl(const std::string& entryPointName, const char* code, size_t length);
+
     Result<VertexInputAttribute> makeVertexInputAttribute(
         const std::string& varName,
         const std::string& semanticName,
@@ -58,6 +78,8 @@ private:
     std::vector<fs::path> m_searchPaths;
     Ref<UnifiedShader2> m_shader;
     bool m_parameterBlocksBuilt = false;
+    bool m_validateWgsl = true;
+    std::unique_ptr<WgslValidator> m_wgslValidator;
 };
 
 } // namespace shader
