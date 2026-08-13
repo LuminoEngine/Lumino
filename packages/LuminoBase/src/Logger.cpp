@@ -1,6 +1,6 @@
 ﻿#include "pch.hpp"
 #include <cstdarg>
-#include <mutex>
+#include <atomic>
 #include <LuminoBase/Logger.hpp>
 
 namespace ln {
@@ -10,66 +10,29 @@ namespace {
 // ログメッセージの固定バッファサイズ（超過分は切り捨て）
 static constexpr int kLogBufferSize = 1024;
 
-// ログレベルの 1 文字省略形
-static const char* levelChar(LogLevel level) {
-    switch (level) {
-        case LogLevel::Trace:
-            return "T";
-        case LogLevel::Debug:
-            return "D";
-        case LogLevel::Verbose:
-            return "V";
-        case LogLevel::Info:
-            return "I";
-        case LogLevel::Warning:
-            return "W";
-        case LogLevel::Error:
-            return "E";
-        case LogLevel::Fatal:
-            return "F";
-        default:
-            return "-";
-    }
-}
+// ログレベルの 1 文字省略形。LogLevel の値をそのまま添字にする。
+static constexpr char kLevelChars[] = "TDVIWEF";
 
-// ファイルスコープ globals（g_mutex で保護）
-static LogLevel g_level = LogLevel::Info;
-static LogCallback g_callback = nullptr;
-static std::mutex g_mutex;
+// ファイルスコープのグローバル変数
+static std::atomic<LogLevel> g_level{LogLevel::Info};
+static std::atomic<LogCallback> g_callback{nullptr};
 
 } // anonymous namespace
 
 void Logger::setLevel(LogLevel level) {
-    std::lock_guard<std::mutex> lock(g_mutex);
-    g_level = level;
-}
-
-LogLevel Logger::level() {
-    std::lock_guard<std::mutex> lock(g_mutex);
-    return g_level;
+    g_level.store(level, std::memory_order_relaxed);
 }
 
 bool Logger::shouldLog(LogLevel level) {
-    std::lock_guard<std::mutex> lock(g_mutex);
-    return level >= g_level;
+    return level >= g_level.load(std::memory_order_relaxed);
 }
 
 void Logger::setCallback(LogCallback cb) {
-    std::lock_guard<std::mutex> lock(g_mutex);
-    g_callback = cb;
-}
-
-void Logger::clearCallback() {
-    std::lock_guard<std::mutex> lock(g_mutex);
-    g_callback = nullptr;
+    g_callback.store(cb, std::memory_order_relaxed);
 }
 
 void Logger::log(LogLocation location, LogLevel level, const char* format, ...) {
-    // レベルフィルタ（ロックを短く取る）
-    {
-        std::lock_guard<std::mutex> lock(g_mutex);
-        if (level < g_level) return;
-    }
+    if (!shouldLog(level)) return;
 
     char buf[kLogBufferSize];
     va_list args;
@@ -78,18 +41,15 @@ void Logger::log(LogLocation location, LogLevel level, const char* format, ...) 
     va_end(args);
     buf[kLogBufferSize - 1] = '\0'; // 念のため終端保証
 
-    writeCore(location, level, buf);
-}
-
-void Logger::writeCore(LogLocation location, LogLevel level, const char* message) {
-    std::lock_guard<std::mutex> lock(g_mutex);
-
-    if (g_callback) {
-        g_callback(level, getBaseName(location.file), location.line, location.func, message);
+    const char* filename = getBaseName(location.file);
+    if (LogCallback cb = g_callback.load(std::memory_order_relaxed)) {
+        cb(level, filename, location.line, location.func, buf);
     }
     else {
         // デフォルト: "[L] file:line message\n" を stderr へ
-        std::fprintf(stderr, "[%s] %s:%d %s\n", levelChar(level), getBaseName(location.file), location.line, message);
+        const int index = static_cast<int>(level);
+        const char levelChar = (index >= 0 && index <= static_cast<int>(LogLevel::Fatal)) ? kLevelChars[index] : '-';
+        std::fprintf(stderr, "[%c] %s:%d %s\n", levelChar, filename, location.line, buf);
     }
 }
 

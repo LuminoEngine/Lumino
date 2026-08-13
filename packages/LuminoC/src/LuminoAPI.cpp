@@ -323,7 +323,7 @@ LNResult LNTexture2D_Create(
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto texture = ln::Ref<ln::Texture>::adopt(LN_NEW ln::Texture(
+    auto texture = ln::Ref<ln::Texture>::adopt(new ln::Texture(
         width,
         height,
         static_cast<ln::rhi::TextureFormat>(format)));
@@ -746,7 +746,7 @@ LNResult LNTexture2D_LoadFromFile(
     auto rhiTexture = std::move(*texResult);
     // TODO: extract actual width/height from rhi::Texture if accessor is available
     auto texture = ln::Ref<ln::Texture>::adopt(
-        LN_NEW ln::Texture(std::move(rhiTexture), 0, 0));
+        new ln::Texture(std::move(rhiTexture), 0, 0));
     *outHandle = wrapObjectFromCreate(texture.get());
     return LN_OK;
 }
@@ -773,7 +773,7 @@ LNResult LNTexture2D_LoadFromMemory(
 
     auto rhiTexture = std::move(*texResult);
     auto texture = ln::Ref<ln::Texture>::adopt(
-        LN_NEW ln::Texture(std::move(rhiTexture), 0, 0));
+        new ln::Texture(std::move(rhiTexture), 0, 0));
     *outHandle = wrapObjectFromCreate(texture.get());
     return LN_OK;
 }
@@ -806,7 +806,7 @@ LNResult LNTexture2D_CreateFromPixels(
 
     auto rhiTexture = std::move(*texResult);
     auto texture = ln::Ref<ln::Texture>::adopt(
-        LN_NEW ln::Texture(std::move(rhiTexture),
+        new ln::Texture(std::move(rhiTexture),
             static_cast<int>(width), static_cast<int>(height)));
     *outHandle = wrapObjectFromCreate(texture.get());
     return LN_OK;
@@ -1344,7 +1344,7 @@ LNResult LNCamera_Create(LNHandle* outHandle) {
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;
 
-    auto camObj = ln::Ref<CameraObject>::adopt(LN_NEW CameraObject());
+    auto camObj = ln::Ref<CameraObject>::adopt(new CameraObject());
     *outHandle = wrapObjectFromCreate(camObj.get());
     return LN_OK;
 }

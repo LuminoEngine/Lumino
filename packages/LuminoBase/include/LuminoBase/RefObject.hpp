@@ -19,7 +19,10 @@ public:
     uint32_t refCount() const { return refCount_.load(std::memory_order_relaxed); }
 
 protected:
-    /** 参照がなくなり、オブジェクトが削除されようとしているときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
+    /**
+     * 参照がなくなり、オブジェクトが削除されようとしているときに呼び出されます。
+     * デストラクタと違って仮想関数を呼び出せるため、デストラクタの制限を回避したいときに使用します。
+     */
     virtual void finalize();
 
 private:
@@ -29,8 +32,9 @@ private:
 };
 
 /**
- * RefObject 用スマートポインタ。生ポインタからの構築時に addRef を行わない
- * (初期参照の所有権を引き継ぐ)。Ref::adopt() または Ref::create() を使用すること。
+ * RefObject 用のスマートポインタ。
+ * 生ポインタからは暗黙に構築できないため、Ref::adopt() または Ref::retain() を使用してください。
+ * adopt() は既存の参照の所有権をそのまま引き継ぎ、retain() は参照カウントを 1 つ増やします。
  */
 template <typename T>
 class Ref {
@@ -69,7 +73,7 @@ public:
         if (ptr_) ptr_->addRef();
     }
 
-    /** 生ポインタを引き受ける (既存の参照の所有権を取得)。 */
+    /** 生ポインタを引き受ける (既存の参照の所有権を取得し、参照カウントは増やさない)。 */
     static Ref adopt(T* p) {
         Ref r;
         r.ptr_ = p;
@@ -97,7 +101,6 @@ public:
     void detach() { ptr_ = nullptr; }
 
     T* get() const { return ptr_; }
-    T& operator*() const { return *ptr_; }
     T* operator->() const { return ptr_; }
     explicit operator bool() const { return ptr_ != nullptr; }
 

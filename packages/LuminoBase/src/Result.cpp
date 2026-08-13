@@ -16,8 +16,8 @@ std::string formatString(const char* format, ...) {
     return buf;
 }
 
-// 0.11.0 移行の開発コンセプトで、よりモダングラフィックス API に似た振る舞いを目指すことにした。
-// なので主に Dawn を参考にして、Error 発生時に合わせてエラーログを出力するようにしている。
+// 0.11.0 以降の開発コンセプトとして、モダングラフィックス API に近い振る舞いを目指している。
+// そのため主に Dawn を参考にして、Error の生成時に合わせてエラーログも出力するようにしている。
 tl::unexpected<Error> makeInternalError(
     const std::string& message, const char* file, const char* function, int line) {
     return makeInternalErrorWithCode(ErrorCode::RuntimeError, message, file, function, line);

@@ -11,9 +11,9 @@ class Test_Matrix4x4 : public ::testing::Test {};
 static constexpr float kPi = 3.14159265358979323846f;
 static constexpr float kEps = 1e-5f;
 
-// float の演算方法がコンパイラによって異なり、結果が微妙に違くなる。
+// float の演算方法がコンパイラによって異なり、結果がわずかにずれることがある。
 // その差を吸収するため、比較する桁数を指定する。
-// (具体的にどう異なるのかは調査中。VS2010 と VS2013 では Vector3::project() の誤差が一番大きかった)
+// (具体的にどう異なるのかは未調査。VS2010 と VS2013 では Vector3::project() の誤差が最も大きかった)
 #define LN_FLOAT_THRESHOLD 0.0001f
 
 // Helper: 列優先行列とベクトルの積 (out = M * v, 列ベクトル規約)。

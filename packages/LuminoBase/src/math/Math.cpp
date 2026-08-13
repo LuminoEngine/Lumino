@@ -2,7 +2,9 @@
 
 namespace ln {
 
-// ─── Quaternion ──────────────────────────────────────────────────────────
+//------------------------------------------------------------------------------
+// Quaternion
+//------------------------------------------------------------------------------
 
 Quaternion Quaternion::fromAxisAngle(const Vector3& axis, float angle) {
     Vector3 n = axis.normalized();
@@ -28,7 +30,7 @@ Quaternion Quaternion::slerp(const Quaternion& a, const Quaternion& b, float t) 
     Quaternion b2 = b;
     if (d < 0) { b2 = {-b.x, -b.y, -b.z, -b.w}; d = -d; }
     if (d > 0.9995f) {
-        // Linear interpolation for very close quaternions.
+        // 2 つのクォータニオンがほぼ一致している場合は線形補間で代用する。
         return Quaternion{
             a.x + (b2.x - a.x) * t,
             a.y + (b2.y - a.y) * t,

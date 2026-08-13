@@ -1,4 +1,4 @@
-﻿// Umbrella header
+﻿// 数学関連の型をまとめて取り込むためのヘッダ
 #pragma once
 #include <cmath>
 #include "../Types.hpp"
@@ -33,12 +33,7 @@ struct Vector3 {
         float len = length();
         return (len > 0) ? Vector3{x / len, y / len, z / len} : Vector3{};
     }
-    void normalize() {
-        float t = 1.0f / length();
-        x *= t;
-        y *= t;
-        z *= t;
-    }
+    void normalize() { *this = normalized(); }
 
     static constexpr Vector3 cross(const Vector3& a, const Vector3& b) {
         return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};

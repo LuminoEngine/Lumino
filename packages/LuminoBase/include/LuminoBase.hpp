@@ -1,6 +1,4 @@
-﻿// Umbrella header
-#pragma once
-#include "LuminoBase/Memory.hpp"
+﻿#pragma once
 #include "LuminoBase/Result.hpp"
 #include "LuminoBase/RefObject.hpp"
 #include "LuminoBase/Types.hpp"

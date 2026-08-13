@@ -14,7 +14,7 @@ std::unique_ptr<CoreInstance> CoreInstance::s_instance;
 
 VoidResult CoreInstance::initialize(const Settings& settings) {
     if (s_instance) return LN_MAKE_SUCCESS();
-    s_instance = std::unique_ptr<CoreInstance>(LN_NEW CoreInstance());
+    s_instance = std::unique_ptr<CoreInstance>(new CoreInstance());
     return s_instance->init(settings);
 }
 

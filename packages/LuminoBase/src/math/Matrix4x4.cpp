@@ -28,9 +28,9 @@ Matrix4x4::Matrix4x4(
     } {
 }
 
-// perspectiveRH_ZO (クリップ空間 Z を 0..1 とする RH 射影。
-// WebGPU/Vulkan/D3D と同じ規約で、docs/graphics-conventions.md および ortho と整合する。
-// glm::perspectiveRH_ZO と一致する)
+// クリップ空間の Z を 0..1 とする右手系の射影 (perspectiveRH_ZO)。
+// WebGPU、Vulkan、D3D と同じ規約であり、docs/graphics-conventions.md と ortho() に整合する。
+// 結果は glm::perspectiveRH_ZO と一致する。
 Matrix4x4 Matrix4x4::perspectiveRH(float fovY, float aspect, float nearZ, float farZ) {
     Matrix4x4 r;
     const float tanHalf = std::tan(fovY * 0.5f);
@@ -57,17 +57,14 @@ Matrix4x4 Matrix4x4::ortho(float left, float right, float bottom, float top, flo
 }
 
 Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, const Vector3& up) {
-//Matrix4x4 Matrix4x4::lookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up) {
-    
     Vector3 xaxis, yaxis;
-    // 注視点からカメラ位置までのベクトルをZ軸とする
+    // カメラ位置から注視点へ向かうベクトルを Z 軸とする
     Vector3 zaxis = lookAt_ - position;
-    //Vector3 zaxis = position - lookAt_;
     zaxis.normalize();
-    // Z軸と上方向のベクトルの外積をとるとX軸が分かる
+    // Z 軸と上方向のベクトルの外積をとると X 軸が求まる
     xaxis = Vector3::cross(zaxis, up);
     xaxis.normalize();
-    // 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
+    // 2 つの軸が求まったので、その外積が残りの軸 (Y 軸) になる
     yaxis = Vector3::cross(xaxis, zaxis);
 
     return Matrix4x4(
@@ -78,26 +75,6 @@ Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, c
         -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z),
         (zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
         1.0f);
-    
-    
-    //Vector3 f = target - eye;
-    //const float fLen = f.length();
-    //if (fLen > 0) f = f * (1.0f / fLen);
-
-    //Vector3 s = Vector3::cross(f, up);
-    //const float sLen = s.length();
-    //if (sLen > 0) s = s * (1.0f / sLen);
-
-    //Vector3 u = Vector3::cross(s, f);
-
-    //Matrix4x4 r;
-    //r.m[0] = s.x;  r.m[4] = s.y;  r.m[8]  = s.z;  r.m[12] = -Vector3::dot(s, eye);
-    //r.m[1] = u.x;  r.m[5] = u.y;  r.m[9]  = u.z;  r.m[13] = -Vector3::dot(u, eye);
-    //r.m[2] = -f.x; r.m[6] = -f.y; r.m[10] = -f.z; r.m[14] = Vector3::dot(f, eye);
-    //r.m[3] = 0;    r.m[7] = 0;    r.m[11] = 0;    r.m[15] = 1;
-    //
-    //r = Matrix4x4::translate({0.5f, 0.f, 0.f});
-    //return r;
 }
 
 Vector3 Matrix4x4::transformCoord(const Vector3& v) const {
@@ -194,7 +171,7 @@ Matrix4x4 Matrix4x4::transposed() const {
 }
 
 Matrix4x4 Matrix4x4::inversed() const {
-    // Cofactor expansion (general 4x4 inverse).
+    // 余因子展開による一般的な 4x4 逆行列。
     float a00 = m[0], a01 = m[1], a02 = m[2],  a03 = m[3];
     float a10 = m[4], a11 = m[5], a12 = m[6],  a13 = m[7];
     float a20 = m[8], a21 = m[9], a22 = m[10], a23 = m[11];
