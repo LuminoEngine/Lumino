@@ -26,6 +26,20 @@ extern LUMINO_API int32_t LNHelloTest(int32_t value);
 extern LUMINO_API const char* LNBuildInfo_GetBuildTimestamp();
 
 //------------------------------------------------------------------------------
+// LNLogger
+//------------------------------------------------------------------------------
+
+/**
+ * ログ出力レベルを設定します。設定したレベル未満のログは破棄されます。 (Default: LN_LOG_LEVEL_INFO)
+ *
+ * この関数はランタイムの初期化を必要としません。初期化処理のログを制御したい場合は
+ * LNInstance_Initialize より前に呼び出してください。
+ *
+ * @param[in] level 出力するログの下限レベル
+ */
+extern LUMINO_API LNResult LNLogger_SetLevel(LNLogLevel level);
+
+//------------------------------------------------------------------------------
 // LNInstance
 //------------------------------------------------------------------------------
 typedef struct LNInstanceInitializeSettings {

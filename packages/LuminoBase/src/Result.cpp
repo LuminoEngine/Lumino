@@ -33,7 +33,7 @@ tl::unexpected<Error> makeInternalErrorWithCode(
         function,
         message.c_str());
     LogLocation loc{file, line, function};
-    Logger::log(loc, LogLevel::Error, logMessage.c_str());
+    Logger::log(loc, LN_LOG_LEVEL_ERROR, logMessage.c_str());
 
 #ifdef _MSC_VER
     // DeviceLost はタブ復帰やドライバ更新で起きる想定内の実行時状態のため、

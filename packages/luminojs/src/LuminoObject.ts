@@ -1,6 +1,7 @@
 import type { Handle } from "./types";
 import { Result } from "./types";
 import { API, Runtime } from "./Runtime";
+import { Logger } from "./Logger";
 
 /** Base class for all Lumino API objects that hold a C-side handle. */
 export class LuminoObject {
@@ -17,7 +18,7 @@ export class LuminoObject {
         if (this._autoRelease && this._handle !== 0) {
             const rc = (API.LNObject_Release as (h: number) => number)(this._handle);
             if (rc !== Result.OK) {
-                console.warn(`LNObject_Release(${this._handle}) returned ${rc}`);
+                Logger.warning(`LNObject_Release(${this._handle}) returned ${rc}`);
             }
             this._handle = 0;
         }

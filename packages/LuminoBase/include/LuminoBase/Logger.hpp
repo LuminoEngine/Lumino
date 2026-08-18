@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoC/lumino_types.h>
 
 #ifdef _MSC_VER
 #define LN_FUNC_SIG __FUNCTION__
@@ -10,25 +11,19 @@
 // ログ出力マクロ
 //------------------------------------------------------------------------------
 
-#define LN_LOG_TRACE(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, ::ln::LogLevel::Trace,   __VA_ARGS__)
-#define LN_LOG_DEBUG(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, ::ln::LogLevel::Debug,   __VA_ARGS__)
-#define LN_LOG_VERBOSE(...) ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, ::ln::LogLevel::Verbose, __VA_ARGS__)
-#define LN_LOG_INFO(...)    ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, ::ln::LogLevel::Info,    __VA_ARGS__)
-#define LN_LOG_WARNING(...) ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, ::ln::LogLevel::Warning, __VA_ARGS__)
-#define LN_LOG_ERROR(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, ::ln::LogLevel::Error,   __VA_ARGS__)
-#define LN_LOG_FATAL(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, ::ln::LogLevel::Fatal,   __VA_ARGS__)
+#define LN_LOG_TRACE(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_TRACE,   __VA_ARGS__)
+#define LN_LOG_DEBUG(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_DEBUG,   __VA_ARGS__)
+#define LN_LOG_VERBOSE(...) ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_VERBOSE, __VA_ARGS__)
+#define LN_LOG_INFO(...)    ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_INFO,    __VA_ARGS__)
+#define LN_LOG_WARNING(...) ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_WARNING, __VA_ARGS__)
+#define LN_LOG_ERROR(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_ERROR,   __VA_ARGS__)
+#define LN_LOG_FATAL(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_FATAL,   __VA_ARGS__)
 
 namespace ln {
 
-enum class LogLevel {
-    Trace   = 0, ///< 関数の入口や分岐のトレース
-    Debug   = 1, ///< デバッグに有用な情報
-    Verbose = 2, ///< Info に加えた詳細情報
-    Info    = 3, ///< 通常運用で有用な情報（Release デフォルト）
-    Warning = 4, ///< 問題になる可能性がある状況
-    Error   = 5, ///< 処理を続行できない障害
-    Fatal   = 6, ///< プログラム実行が不可能な状況
-};
+// ログレベルは C API と共通の LNLogLevel (lumino_types.h) を使用します。
+// C++ 側と C API 側で enum を二重定義すると値の同期を取り続ける必要があるため、
+// 定義を一本化しています。
 
 /** LogLocation ソースコード上の位置情報 */
 struct LogLocation {
@@ -51,7 +46,7 @@ struct LogLocation {
  * func    : 関数名
  * message : printf 展開済みのメッセージ文字列（UTF-8
  */
-using LogCallback = void (*)(LogLevel level, const char* file, int line,
+using LogCallback = void (*)(LNLogLevel level, const char* file, int line,
                               const char* func, const char* message);
 
 /**
@@ -66,10 +61,10 @@ using LogCallback = void (*)(LogLevel level, const char* file, int line,
 class Logger {
 public:
     /** ログ出力レベルフィルタを設定する。設定レベル未満のログは破棄される。 */
-    static void setLevel(LogLevel level);
+    static void setLevel(LNLogLevel level);
 
     /** 指定レベルのログを出力すべきか判定する。 */
-    static bool shouldLog(LogLevel level);
+    static bool shouldLog(LNLogLevel level);
 
     /**
      * カスタムコールバックを登録する。
@@ -79,7 +74,7 @@ public:
     static void setCallback(LogCallback cb);
 
     /** ログを出力する。printf 互換の書式指定子が使用可能。 */
-    static void log(LogLocation location, LogLevel level, const char* format, ...);
+    static void log(LogLocation location, LNLogLevel level, const char* format, ...);
 
     /** @internal */
     static const char* getBaseName(const char* path);

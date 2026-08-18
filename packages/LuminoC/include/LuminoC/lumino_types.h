@@ -62,6 +62,28 @@ typedef enum LNResult {
 // Enums
 //------------------------------------------------------------------------------
 
+/**
+ * ログ出力レベル。値が大きいほど重大です。
+ */
+typedef enum LNLogLevel {
+    /** 関数の入口や分岐のトレース */
+    LN_LOG_LEVEL_TRACE   = 0,
+    /** デバッグに有用な情報 (VERBOSE がクライアント向けの情報なのに対し、 DEBUG は Lumino 開発者向けの情報) */
+    LN_LOG_LEVEL_DEBUG   = 1,
+    /** Info に加えた詳細情報 */
+    LN_LOG_LEVEL_VERBOSE = 2,
+    /** 通常運用で有用な情報 (デフォルト) */
+    LN_LOG_LEVEL_INFO    = 3,
+    /** 問題になる可能性がある状況 */
+    LN_LOG_LEVEL_WARNING = 4,
+    /** 処理を続行できない障害 */
+    LN_LOG_LEVEL_ERROR   = 5,
+    /** プログラム実行が不可能な状況 */
+    LN_LOG_LEVEL_FATAL   = 6,
+    /** すべてのログを破棄します */
+    LN_LOG_LEVEL_DISABLE = 7,
+} LNLogLevel;
+
 /** Graphics Backend. */
 typedef enum LNGraphicsBackend {
     LN_GRAPHICS_BACKEND_DEFAULT = 0,

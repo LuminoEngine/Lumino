@@ -1,6 +1,7 @@
 import {
     Result,
     GraphicsBackend,
+    LogLevel,
     type Handle,
     type RuntimeOptions,
     type DecodedImage,
@@ -14,6 +15,7 @@ import {
     SIZEOF_MATRIX,
     SIZEOF_GRAPHICS_PROFILER,
 } from "./types";
+import { Logger } from "./Logger";
 
 //------------------------------------------------------------------------------
 // Emscripten Module type (subset we use)
@@ -71,6 +73,12 @@ export class Runtime {
     static async initialize(options?: RuntimeOptions): Promise<void> {
         if (this.initialized) return;
 
+        // ログレベルは WASM のロード中に出るログにも効かせるため、まず JS 側へ反映する。
+        // ネイティブ側への反映は cwrap 完了後 (後述)。
+        if (options?.logLevel !== undefined) {
+            Logger.setLevel(options.logLevel);
+        }
+
         // Dynamic import – the file sits in lib/ alongside the built TS output.
         const { default: LuminoC } = await import("./LuminoC.mjs") as { default: ModuleFactory };
 
@@ -85,15 +93,17 @@ export class Runtime {
         let printFunc: ((text: string) => void) | undefined = options?.print;
         let printErrFunc: ((text: string) => void) | undefined = options?.printErr;
         if (!printFunc)  {
-            printFunc = (text: string) => console.log("[stdout]", text);
+            // ネイティブ側の Logger 出力は stdout に流れてくる。
+            printFunc = (text: string) => Logger.writeNativeLine(text);
         }
         if (!printErrFunc)  {
-            printErrFunc = (text: string) => console.warn("[stderr]", text);
+            // stderr には Emscripten 自身の abort / assert などが流れてくる。
+            printErrFunc = (text: string) => Logger.error(text);
         }
         moduleOpts["print"]    = printFunc;
         moduleOpts["printErr"] = printErrFunc;
 
-        const preferredBackend: GraphicsBackend = GraphicsBackend.WebGPU;
+        const preferredBackend: GraphicsBackend = GraphicsBackend.WEBGPU;
 
         this.module = await LuminoC(moduleOpts);
 
@@ -103,7 +113,12 @@ export class Runtime {
         // Bind all C-API functions via cwrap.
         this._bindAPI();
 
-        console.log("[Lumino] Build:", Runtime.getBuildTimestamp());
+        // ログレベルをネイティブ側にも反映する。
+        if (options?.logLevel !== undefined) {
+            this.setLogLevel(options.logLevel);
+        }
+
+        Logger.verbose("Build:", Runtime.getBuildTimestamp());
 
         // C API と TS 側の構造体レイアウト同期を検証する。
         // 不一致があれば以降のシリアライズがヒープ外読み書き (未定義動作) を
@@ -123,6 +138,20 @@ export class Runtime {
         } finally {
             if (ptr) m._free(ptr);
         }
+    }
+
+    /**
+     * ログ出力レベルを設定する。設定したレベル未満のログは破棄される。
+     * `LogLevel.Off` ですべてのログ出力を停止できる。
+     * JS 側 (Logger) とネイティブ側の両方に反映される。
+     *
+     * ランタイムの初期化 (グラフィックスインスタンス) は不要だが、WASM モジュールの
+     * ロードは必要なため `initialize()` 完了後に呼ぶこと。初期化処理そのもののログを
+     * 制御したい場合は `initialize({ logLevel })` を使う。
+     */
+    static setLogLevel(level: LogLevel): void {
+        Logger.setLevel(level);
+        this.safeCall(() => (API.LNLogger_SetLevel as (level: number) => number)(level));
     }
 
     /** Shut down the Lumino runtime. */
@@ -270,6 +299,9 @@ export class Runtime {
         // Phase 0
         API.LNHelloTest = cw("LNHelloTest", "number", ["number"]);
         API.LNBuildInfo_GetBuildTimestamp = cw("LNBuildInfo_GetBuildTimestamp", "number", []);
+
+        // Logger
+        API.LNLogger_SetLevel = cw("LNLogger_SetLevel", "number", ["number"]);
 
         // Debug (ABI レイアウト検証 / プロファイリング)
         API.LNDebug_GetStructSize        = cw("LNDebug_GetStructSize",        "number", ["string", "number"]);

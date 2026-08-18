@@ -19,11 +19,33 @@ export enum Result {
     ERROR_DEVICE_LOST = -6,
 }
 
+/**
+ * ログ出力レベル 。値が大きいほど重大です。
+ */
+export enum LogLevel {
+    /** 関数の入口や分岐のトレース。 */
+    TRACE = 0,
+    /** デバッグに有用な情報。 */
+    DEBUG = 1,
+    /** Info に加えた詳細情報。 */
+    VERBOSE = 2,
+    /** 通常運用で有用な情報 (デフォルト)。 */
+    INFO = 3,
+    /** 問題になる可能性がある状況。 */
+    WARNING = 4,
+    /** 処理を続行できない障害。 */
+    ERROR = 5,
+    /** プログラム実行が不可能な状況。 */
+    FATAL = 6,
+    /** すべてのログを破棄します。 */
+    DISABLE = 7,
+}
+
 /** Graphics backend selection. */
 export enum GraphicsBackend {
-    Default = 0,
-    Vulkan = 1,
-    WebGPU = 2,
+    DEFAULT = 0,
+    VULKAN = 1,
+    WEBGPU = 2,
 }
 
 /**
@@ -218,6 +240,11 @@ export interface RuntimeOptions {
     printErr?: (text: string) => void;
     /** Enable graphics validation layer. */
     enableValidation?: boolean;
+    /**
+     * ログ出力レベル。省略時は `LogLevel.Info`。
+     * ランタイム初期化中のログも対象になります。
+     */
+    logLevel?: LogLevel;
 }
 
 //------------------------------------------------------------------------------

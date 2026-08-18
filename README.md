@@ -1,34 +1,35 @@
 ﻿Lumino
 ==========
 
-Lumino is an open source library for building interactive applications such as games and digital art.
-It provides a API that runs on multiple platforms and is available for multiple programming languages.
+Lumino is a platform abstraction library for game development. [Lyric Dragon RPG Editor](https://www.lyridra.com/) is currently our primary client. The documentation is written in Japanese, as it is intended for reference by their development team.
 
-Lumino はゲームやデジタルアートなどのインタラクティブアプリケーションを構築するためのオープンソースライブラリです。
-マルチプラットフォームで動作し複数のプログラミング言語から利用できる API を提供します。
+Luminoは、ゲーム開発向けのプラットフォーム抽象化ライブラリです。現在、LYRIDRA社が当社の主要なクライアントです。そちらの開発チームが参照することを想定しているため、ドキュメントは日本語で作成されています。
 
-## 💡 このプロジェクトの状態
+このリポジトリには現在以下のものが含まれています:
 
-Lumino は現在、次の2つのユースケースを想定して開発を続けています。
+- LuminoCore: コアモジュール (C++)
+- LuminoC: C API (FFI 境界)
+- luminosc: シェーダコンパイラ (Input: slang)
+- luminojs: JavaScript / TypeScript バインディング
 
-- A. ゲームエンジンのコアモジュール (Graphics, Audio, Input 等) を 他のゲームエンジンやアプリケーションで利用する。
-- B. 基礎的なモジュール (String, Array, FileSystem, 等) を IoTプラットフォームやテスティングツール で利用する。（補助的）
+## バックエンドおよびプラットフォームのサポート
 
-v0.10.1 までの Lumino はスタンドアロンゲームエンジンとして開発を続けていましたが、その主な動機は技術的探求でした。
+- Platform
+  - Windows
+  - Web Browser
 
-ここ数年は開発者が忙しく、メンテナンスが難しくなっていました。しかし、小規模ながら投資を得られる機会があり、今後はそれらにフォーカスしたいと考えています。
+- Graphics
+  - Vulkan
+  - WebGPU
 
-今後の開発コンセプトは次の通りです。
-
-- フレームワークのような機能をすべて廃止します。例えばゲームUIやシーングラフです。これらの機能はクライアント側のプログラム言語で書いた方が都合が良いことに気づきました。
-- ライブラリのコアモジュールを、 FFI (Foreign function interface) として提供します。 Lumino を直接利用してゲームを開発することは想定しません。他のゲームエンジンを開発する際の低レイヤーコンポーネントを想定し、プラットフォームの抽象化に注力します。
-- FFI の安定化に努めます。つまり、純粋な C 言語の API として提供することになります。おそらく Lumino を使って流暢なゲームプログラムを書くことはできなくなり、 Lumino は他のゲームエンジンを構築するためのライブラリとなります。今後の Lumino の活用のためには、イディオムやコーディングスタイルのトレンドに左右されない基盤が必要と考えています。
+- Input (TODO)
+- Audio (TODO)
 
 ## ドキュメント
 
 - [グラフィックス基本仕様](./docs/graphics-conventions.md)
 
-## ビルド方法
+## ビルド
 
 ```sh
 # vcpkg 準備
@@ -77,4 +78,3 @@ npm run dev
 
 1. Win + R キーを押し、gpedit.msc と入力してEnter
 2. コンピューターの構成 > 管理用テンプレート > システム > ファイル システム から [Win32の長いパスを有効にする] を有効にする。
-

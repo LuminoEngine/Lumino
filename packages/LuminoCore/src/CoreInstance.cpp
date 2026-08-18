@@ -26,7 +26,7 @@ void CoreInstance::terminate() {
 }
 
 VoidResult CoreInstance::init(const Settings& settings) {
-    LN_LOG_INFO("CoreInstance::init: begin");
+    LN_LOG_TRACE("CoreInstance::init: begin");
     m_settings = settings;
     m_objectRegistry = std::make_unique<ObjectRegistry>();
 
@@ -45,12 +45,12 @@ VoidResult CoreInstance::init(const Settings& settings) {
         m_graphicsModule = std::move(*result);
     }
 
-    LN_LOG_INFO("CoreInstance::init: end");
+    LN_LOG_TRACE("CoreInstance::init: end");
     return LN_MAKE_SUCCESS();
 }
 
 void CoreInstance::dispose() {
-    LN_LOG_INFO("CoreInstance::dispose: begin");
+    LN_LOG_TRACE("CoreInstance::dispose: begin");
     if (m_graphicsModule) {
         m_graphicsModule->dispose();
         m_graphicsModule.reset();
@@ -59,7 +59,7 @@ void CoreInstance::dispose() {
 #if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
     glfwTerminate();
 #endif
-    LN_LOG_INFO("CoreInstance::dispose: end");
+    LN_LOG_TRACE("CoreInstance::dispose: end");
 }
 
 rhi::Device* CoreInstance::rhiDevice() const {

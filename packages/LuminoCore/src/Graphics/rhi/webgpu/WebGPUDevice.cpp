@@ -24,7 +24,7 @@ namespace ln::rhi::webgpu {
 WebGPUDevice::WebGPUDevice() = default;
 
 VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
-    LN_LOG_INFO("WebGPUDevice::init: begin");
+    LN_LOG_TRACE("WebGPUDevice::init: begin");
 
     auto beginResult = initAsyncBegin(desc);
     if (!beginResult) {
@@ -35,7 +35,7 @@ VoidResult WebGPUDevice::init(const DeviceDesc& desc) {
     for (;;) {
         AsyncInitStatus st = pumpAsyncInit();
         if (st == AsyncInitStatus::Ready) {
-            LN_LOG_INFO("WebGPUDevice::init: end (success)");
+            LN_LOG_TRACE("WebGPUDevice::init: end (success)");
             return LN_MAKE_SUCCESS();
         }
         if (st == AsyncInitStatus::Failed) {
@@ -159,7 +159,7 @@ Device::AsyncInitStatus WebGPUDevice::pumpAsyncInit() {
             if (status != WGPUStatus_Success) {
                 LN_LOG_ERROR("wgpuAdapterGetInfo failed: %d", static_cast<int>(status));
             }
-            LN_LOG_INFO(
+            LN_LOG_VERBOSE(
                 "WebGPU Adapter: %s / %s / %s",
                 std::string(info.device.data, info.device.length).c_str(),
                 std::string(info.vendor.data, info.vendor.length).c_str(),
@@ -209,7 +209,7 @@ void WebGPUDevice::requestDeviceFromAdapter() {
     std::vector<WGPUFeatureName> requiredFeatures;
     if (wgpuAdapterHasFeature(m_adapter, WGPUFeatureName_Float32Filterable)) {
         requiredFeatures.push_back(WGPUFeatureName_Float32Filterable);
-        LN_LOG_INFO("WebGPUDevice: enabling Float32Filterable feature.");
+        LN_LOG_VERBOSE("WebGPUDevice: enabling Float32Filterable feature.");
     } else {
         LN_LOG_WARNING("WebGPUDevice: Float32Filterable not supported by adapter.");
     }

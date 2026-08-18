@@ -33,18 +33,22 @@ namespace {
 //--------------------------------------
 // Wasm: route LuminoBase logger to stdout so Emscripten forwards it to
 // the browser console.log.
+//
+// 出力書式 "[Lumino][X] file:line message" は luminojs 側がパースして
+// ログレベルを復元している (packages/luminojs/src/Logger.ts の
+// NATIVE_LOG_PREFIX)。書式を変更するときは両方を同時に変更すること。
 //--------------------------------------
-void luminoLogToStdout(ln::LogLevel level, const char* file, int line,
+void luminoLogToStdout(LNLogLevel level, const char* file, int line,
                        const char* /*func*/, const char* message) {
     const char* levelStr = "?";
     switch (level) {
-        case ln::LogLevel::Trace:   levelStr = "T"; break;
-        case ln::LogLevel::Debug:   levelStr = "D"; break;
-        case ln::LogLevel::Verbose: levelStr = "V"; break;
-        case ln::LogLevel::Info:    levelStr = "I"; break;
-        case ln::LogLevel::Warning: levelStr = "W"; break;
-        case ln::LogLevel::Error:   levelStr = "E"; break;
-        case ln::LogLevel::Fatal:   levelStr = "F"; break;
+        case LN_LOG_LEVEL_TRACE:   levelStr = "T"; break;
+        case LN_LOG_LEVEL_DEBUG:   levelStr = "D"; break;
+        case LN_LOG_LEVEL_VERBOSE: levelStr = "V"; break;
+        case LN_LOG_LEVEL_INFO:    levelStr = "I"; break;
+        case LN_LOG_LEVEL_WARNING: levelStr = "W"; break;
+        case LN_LOG_LEVEL_ERROR:   levelStr = "E"; break;
+        case LN_LOG_LEVEL_FATAL:   levelStr = "F"; break;
         default: break;
     }
     std::printf("[Lumino][%s] %s:%d %s\n", levelStr, file ? file : "?", line, message ? message : "");
@@ -52,9 +56,10 @@ void luminoLogToStdout(ln::LogLevel level, const char* file, int line,
 
 bool s_loggerInstalled = false;
 
+// ログレベルはここでは変更しない。既定値 (LN_LOG_LEVEL_INFO) を尊重し、
+// LNLogger_SetLevel で先に設定された値を上書きしないようにするため。
 void ensureLoggerInstalled() {
     if (s_loggerInstalled) return;
-    ln::Logger::setLevel(ln::LogLevel::Trace);
     ln::Logger::setCallback(&luminoLogToStdout);
     s_loggerInstalled = true;
 }
@@ -238,14 +243,30 @@ const char* LNBuildInfo_GetBuildTimestamp() {
 }
 
 //------------------------------------------------------------------------------
+// LNLogger
+//------------------------------------------------------------------------------
+
+LNResult LNLogger_SetLevel(LNLogLevel level) {
+    if (level < LN_LOG_LEVEL_TRACE || level > LN_LOG_LEVEL_DISABLE) {
+        return LN_ERROR_INVALID_ARGUMENT;
+    }
+#ifdef __EMSCRIPTEN__
+    // 初期化前に呼ばれても console へ出力されるよう、ここでもコールバックを導入する。
+    ensureLoggerInstalled();
+#endif
+    ln::Logger::setLevel(level);
+    return LN_OK;
+}
+
+//------------------------------------------------------------------------------
 // LNInstance
 //------------------------------------------------------------------------------
 
 LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
 #ifdef __EMSCRIPTEN__
     ensureLoggerInstalled();
-    std::printf("LNInstance_Initialize: called\n");
 #endif
+    LN_LOG_TRACE("LNInstance_Initialize: called");
 
     ln::CoreInstance::Settings s = {};
     if (settings) {
@@ -270,27 +291,21 @@ LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
 
     auto result = ln::CoreInstance::initialize(s);
     if (!result) {
-#ifdef __EMSCRIPTEN__
-        std::printf("LNInstance_Initialize: FAILED\n");
-#endif
+        LN_LOG_ERROR("LNInstance_Initialize: FAILED");
         return LN_ERROR_UNKNOWN;
     }
 
-#ifdef __EMSCRIPTEN__
-    std::printf("LNInstance_Initialize: success\n");
-#endif
+    LN_LOG_TRACE("LNInstance_Initialize: success");
     return LN_OK;
 }
 
 void LNInstance_Terminate() {
 #ifdef __EMSCRIPTEN__
     ensureLoggerInstalled();
-    std::printf("LNInstance_Terminate: called\n");
 #endif
+    LN_LOG_TRACE("LNInstance_Terminate: called");
     ln::CoreInstance::terminate();
-#ifdef __EMSCRIPTEN__
-    std::printf("LNInstance_Terminate: success\n");
-#endif
+    LN_LOG_TRACE("LNInstance_Terminate: success");
 }
 
 //------------------------------------------------------------------------------

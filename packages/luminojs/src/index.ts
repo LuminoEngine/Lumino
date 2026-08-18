@@ -10,9 +10,12 @@ export { Camera } from "./Camera";
 export { Matrix4x4 } from "./Matrix4x4";
 export type { Vec3 } from "./Matrix4x4";
 export { LuminoObject } from "./LuminoObject";
+export { Logger } from "./Logger";
+export type { LogSink } from "./Logger";
 export {
     Result,
     GraphicsBackend,
+    LogLevel,
     LoadOp,
     SortMode,
     TextureFormat,
