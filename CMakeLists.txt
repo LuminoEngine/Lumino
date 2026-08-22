@@ -83,6 +83,10 @@ endif()
 #-------------------------------------------------------------------------------
 if(LUMINO_BUILD_TESTS)
     enable_testing()
+    # 検出を ctest 実行時まで遅延させる。
+    # gtest_discover_tests の既定 (POST_BUILD) はビルド中にテスト実行ファイルを
+    # --gtest_list_tests で起動するため、タイムアウトなどでビルド自体が失敗する。
+    set(CMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
     find_package(GTest CONFIG REQUIRED)
 endif()
 

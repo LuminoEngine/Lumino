@@ -16,8 +16,7 @@ int main(void) {
     //    なおほとんどの API 関数は戻り値が LNResult となっており、エラーの有無を確認できます。
     //    以降のサンプルではエラーチェックを省略しています。
     LNInstanceInitializeSettings settings = {};
-    settings.preferredBackend =
-        LN_GRAPHICS_BACKEND_WEBGPU;
+    settings.preferredBackend = LN_GRAPHICS_BACKEND_VULKAN;
     LNResult result = LNInstance_Initialize(&settings);
     if (result != LN_OK) {
         fprintf(stderr, "LNInstance_Initialize failed: %d\n", result);

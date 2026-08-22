@@ -16,34 +16,18 @@ add_executable(
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoC GTest::gtest)
-if(LN_ENABLE_WEBGPU)
-    target_copy_webgpu_binaries(${PROJECT_NAME})
-endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest)
 
-# DLL をテスト実行ファイルのディレクトリへコピー (Windows)
-add_custom_command(
-    TARGET LuminoC_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:LuminoC>
-        $<TARGET_FILE_DIR:LuminoC_test>
-)
-
-# glfw.dll
-add_custom_command(
-    TARGET LuminoC_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:glfw>
-    $<TARGET_FILE_DIR:LuminoC_test>
-)
-
-add_dependencies(${PROJECT_NAME} LuminoC)
+# LuminoC.dll とその実行時依存 DLL (glfw3, slang-compiler, webgpu_dawn, dxc) の
+# コピーは C-API クライアント共通の設定にまとめてある。個別にコピーを書くと
+# slang-compiler.dll のような間接依存を取りこぼす。
+ln_setup_c_api_client_configurations(${PROJECT_NAME})
 
 #-------------------------------------------------------------------------------
 # Tests
 #-------------------------------------------------------------------------------
-# gtest_discover_tests は POST_BUILD で実行ファイルを --gtest_list_tests 起動するため、
-# 依存 DLL (LuminoC.dll, glfw.dll 等) のコピーより後ろに置く必要がある。
+# gtest_discover_tests は実行ファイルを --gtest_list_tests 起動するため、
+# 依存 DLL のコピーより後ろに置く必要がある。
 # 実 GPU 描画を伴う Test_Graphics.* / Test_DeviceLost.* は CI から除外しやすいよう
 # label "gpu" を付ける。
 #

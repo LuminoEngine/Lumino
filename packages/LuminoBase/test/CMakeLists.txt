@@ -21,4 +21,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LuminoBase GTest::gtest glm::glm)
 # Tests
 #-------------------------------------------------------------------------------
 include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME})
+gtest_discover_tests(${PROJECT_NAME} DISCOVERY_TIMEOUT 60)
