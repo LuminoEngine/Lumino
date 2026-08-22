@@ -27,12 +27,12 @@ VoidResult VulkanBuffer::init(VulkanDevice* device, VkPhysicalDevice physicalDev
     if (deviceLocal) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
     bufInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    if (vkCreateBuffer(dev, &bufInfo, nullptr, &m_buffer) != VK_SUCCESS) {
+    if (m_device->vk().vkCreateBuffer(dev, &bufInfo, nullptr, &m_buffer) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateBuffer failed.");
     }
 
     VkMemoryRequirements memReqs;
-    vkGetBufferMemoryRequirements(dev, m_buffer, &memReqs);
+    m_device->vk().vkGetBufferMemoryRequirements(dev, m_buffer, &memReqs);
 
     VkMemoryPropertyFlags memFlags = deviceLocal
         ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
@@ -42,10 +42,10 @@ VoidResult VulkanBuffer::init(VulkanDevice* device, VkPhysicalDevice physicalDev
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memReqs.size;
     allocInfo.memoryTypeIndex = VulkanHelpers::findMemoryType(physicalDevice, memReqs.memoryTypeBits, memFlags);
-    if (vkAllocateMemory(dev, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
+    if (m_device->vk().vkAllocateMemory(dev, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkAllocateMemory failed.");
     }
-    vkBindBufferMemory(dev, m_buffer, m_memory, 0);
+    m_device->vk().vkBindBufferMemory(dev, m_buffer, m_memory, 0);
 
     // Device-local buffers: initialData is uploaded by the caller (via StagingBufferPool).
     // Host-visible buffers: copy directly.
@@ -60,25 +60,26 @@ VoidResult VulkanBuffer::init(VulkanDevice* device, VkPhysicalDevice physicalDev
 }
 
 void VulkanBuffer::finalize() {
+    const VolkDeviceTable* vk = &m_device->vk();
     VkDevice dev = m_device->vkDevice();
     VkBuffer buf = m_buffer;
     VkDeviceMemory mem = m_memory;
-    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, buf, mem]() {
-        if (buf) vkDestroyBuffer(dev, buf, nullptr);
-        if (mem) vkFreeMemory(dev, mem, nullptr);
+    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [vk, dev, buf, mem]() {
+        if (buf) vk->vkDestroyBuffer(dev, buf, nullptr);
+        if (mem) vk->vkFreeMemory(dev, mem, nullptr);
     });
     Buffer::finalize();
 }
 
 void* VulkanBuffer::map() {
     if (m_deviceLocal) return nullptr;  // device-local memory cannot be CPU-mapped
-    if (!m_mapped) vkMapMemory(m_device->vkDevice(), m_memory, 0, m_size, 0, &m_mapped);
+    if (!m_mapped) m_device->vk().vkMapMemory(m_device->vkDevice(), m_memory, 0, m_size, 0, &m_mapped);
     return m_mapped;
 }
 
 void VulkanBuffer::unmap() {
     if (m_mapped) {
-        vkUnmapMemory(m_device->vkDevice(), m_memory);
+        m_device->vk().vkUnmapMemory(m_device->vkDevice(), m_memory);
         m_mapped = nullptr;
     }
 }

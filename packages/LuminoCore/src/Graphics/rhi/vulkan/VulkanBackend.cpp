@@ -44,17 +44,18 @@ VoidResult VulkanSampler::init(VulkanDevice* device, const SamplerDesc& desc) {
     info.anisotropyEnable = desc.maxAnisotropy > 1 ? VK_TRUE : VK_FALSE;
     info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    if (vkCreateSampler(m_device->vkDevice(), &info, nullptr, &m_sampler) != VK_SUCCESS) {
+    if (m_device->vk().vkCreateSampler(m_device->vkDevice(), &info, nullptr, &m_sampler) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateSampler failed.");
     }
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanSampler::finalize() {
+    const VolkDeviceTable* vk = &m_device->vk();
     VkDevice dev = m_device->vkDevice();
     VkSampler s = m_sampler;
-    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, s]() {
-        if (s) vkDestroySampler(dev, s, nullptr);
+    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [vk, dev, s]() {
+        if (s) vk->vkDestroySampler(dev, s, nullptr);
     });
     Sampler::finalize();
 }
@@ -63,7 +64,7 @@ void VulkanSampler::finalize() {
 
 VulkanShaderModule::VulkanShaderModule() = default;
 
-VoidResult VulkanShaderModule::init(VkDevice device, const ShaderModuleDesc& desc) {
+VoidResult VulkanShaderModule::init(VulkanDevice* device, const ShaderModuleDesc& desc) {
     m_device = device;
 
     if (desc.format != ShaderCodeFormat::SPIRV) {
@@ -77,14 +78,14 @@ VoidResult VulkanShaderModule::init(VkDevice device, const ShaderModuleDesc& des
     info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     info.codeSize = desc.codeSizeBytes;
     info.pCode = spirvCode;
-    if (vkCreateShaderModule(m_device, &info, nullptr, &m_module) != VK_SUCCESS) {
+    if (m_device->vk().vkCreateShaderModule(m_device->vkDevice(), &info, nullptr, &m_module) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateShaderModule failed.");
     }
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanShaderModule::finalize() {
-    if (m_module) vkDestroyShaderModule(m_device, m_module, nullptr);
+    if (m_module) m_device->vk().vkDestroyShaderModule(m_device->vkDevice(), m_module, nullptr);
     ShaderModule::finalize();
 }
 
@@ -111,7 +112,7 @@ static VkShaderStageFlags toVkShaderStage(ShaderStage s) {
 
 VulkanBindGroupLayout::VulkanBindGroupLayout() = default;
 
-VoidResult VulkanBindGroupLayout::init(VkDevice device, const BindGroupLayoutDesc& desc) {
+VoidResult VulkanBindGroupLayout::init(VulkanDevice* device, const BindGroupLayoutDesc& desc) {
     m_device = device;
 
     std::vector<VkDescriptorSetLayoutBinding> bindings;
@@ -142,14 +143,14 @@ VoidResult VulkanBindGroupLayout::init(VkDevice device, const BindGroupLayoutDes
     info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     info.bindingCount = static_cast<uint32_t>(bindings.size());
     info.pBindings = bindings.data();
-    if (vkCreateDescriptorSetLayout(m_device, &info, nullptr, &m_layout) != VK_SUCCESS) {
+    if (m_device->vk().vkCreateDescriptorSetLayout(m_device->vkDevice(), &info, nullptr, &m_layout) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateDescriptorSetLayout failed.");
     }
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanBindGroupLayout::finalize() {
-    if (m_layout) vkDestroyDescriptorSetLayout(m_device, m_layout, nullptr);
+    if (m_layout) m_device->vk().vkDestroyDescriptorSetLayout(m_device->vkDevice(), m_layout, nullptr);
     BindGroupLayout::finalize();
 }
 
@@ -210,18 +211,19 @@ VoidResult VulkanBindGroup::init(VulkanDevice* device, DescriptorPoolManager& po
     }
 
     if (!writes.empty()) {
-        vkUpdateDescriptorSets(m_device->vkDevice(), static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
+        m_device->vk().vkUpdateDescriptorSets(m_device->vkDevice(), static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
     }
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanBindGroup::finalize() {
+    const VolkDeviceTable* vk = &m_device->vk();
     VkDevice dev = m_device->vkDevice();
     VkDescriptorPool pool = m_pool;
     VkDescriptorSet set = m_set;
-    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, pool, set]() {
+    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [vk, dev, pool, set]() {
         if (set != VK_NULL_HANDLE && pool != VK_NULL_HANDLE)
-            vkFreeDescriptorSets(dev, pool, 1, &set);
+            vk->vkFreeDescriptorSets(dev, pool, 1, &set);
     });
     BindGroup::finalize();
 }
@@ -231,8 +233,7 @@ void VulkanBindGroup::finalize() {
 VulkanPipelineLayout::VulkanPipelineLayout() = default;
 
 VoidResult VulkanPipelineLayout::init(VulkanDevice* vulkanDevice, const PipelineLayoutDesc& desc) {
-    m_vulkanDevice = vulkanDevice;
-    m_device = vulkanDevice->vkDevice();
+    m_device = vulkanDevice;
 
     // Create internal BindGroupLayouts from the descriptor
     m_bindGroupLayouts.reserve(desc.setLayouts.size());
@@ -252,7 +253,7 @@ VoidResult VulkanPipelineLayout::init(VulkanDevice* vulkanDevice, const Pipeline
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     info.setLayoutCount = static_cast<uint32_t>(vkLayouts.size());
     info.pSetLayouts = vkLayouts.data();
-    if (vkCreatePipelineLayout(m_device, &info, nullptr, &m_layout) != VK_SUCCESS) {
+    if (m_device->vk().vkCreatePipelineLayout(m_device->vkDevice(), &info, nullptr, &m_layout) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreatePipelineLayout failed.");
     }
     return LN_MAKE_SUCCESS();
@@ -269,7 +270,7 @@ Result<Ref<BindGroup>> VulkanPipelineLayout::createBindGroup(
     bgDesc.entries = entries;
 
     auto bg = Ref<VulkanBindGroup>::adopt(new VulkanBindGroup());
-    if (!bg->init(m_vulkanDevice, m_vulkanDevice->descriptorPoolManager(),
+    if (!bg->init(m_device, m_device->descriptorPoolManager(),
                   m_bindGroupLayouts[setIndex].get(), bgDesc)) {
         return LN_MAKE_ERROR("Failed to create bind group.");
     }
@@ -277,7 +278,7 @@ Result<Ref<BindGroup>> VulkanPipelineLayout::createBindGroup(
 }
 
 void VulkanPipelineLayout::finalize() {
-    if (m_layout) vkDestroyPipelineLayout(m_device, m_layout, nullptr);
+    if (m_layout) m_device->vk().vkDestroyPipelineLayout(m_device->vkDevice(), m_layout, nullptr);
     PipelineLayout::finalize();
 }
 
@@ -498,7 +499,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
 
-    if (vkCreateGraphicsPipelines(m_device->vkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline) != VK_SUCCESS) {
+    if (m_device->vk().vkCreateGraphicsPipelines(m_device->vkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateGraphicsPipelines failed.");
     }
     m_layout = vkLayout;
@@ -506,10 +507,11 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
 }
 
 void VulkanRenderPipeline::finalize() {
+    const VolkDeviceTable* vk = &m_device->vk();
     VkDevice dev = m_device->vkDevice();
     VkPipeline p = m_pipeline;
-    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, p]() {
-        if (p) vkDestroyPipeline(dev, p, nullptr);
+    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [vk, dev, p]() {
+        if (p) vk->vkDestroyPipeline(dev, p, nullptr);
     });
     RenderPipeline::finalize();
 }
@@ -542,21 +544,21 @@ void VulkanRenderPass::beginEncoding(
     rpBegin.clearValueCount = static_cast<uint32_t>(clearValues.size());
     rpBegin.pClearValues = clearValues.data();
 
-    vkCmdBeginRenderPass(m_cmd, &rpBegin, VK_SUBPASS_CONTENTS_INLINE);
+    m_device->vk().vkCmdBeginRenderPass(m_cmd, &rpBegin, VK_SUBPASS_CONTENTS_INLINE);
 
     // Set default viewport and scissor.
     // Use negative height (y = height, h = -height) to flip Vulkan's Y axis so that
     // +Y points upward, matching standard math / OpenGL NDC convention.
     // (VK_KHR_maintenance1)
     VkViewport vp{0, static_cast<float>(extent.height), static_cast<float>(extent.width), -static_cast<float>(extent.height), 0, 1};
-    vkCmdSetViewport(m_cmd, 0, 1, &vp);
+    m_device->vk().vkCmdSetViewport(m_cmd, 0, 1, &vp);
     VkRect2D scissor{{0, 0}, extent};
-    vkCmdSetScissor(m_cmd, 0, 1, &scissor);
+    m_device->vk().vkCmdSetScissor(m_cmd, 0, 1, &scissor);
 }
 
 void VulkanRenderPass::setPipeline(RenderPipeline* pipeline) {
     auto* vp = static_cast<VulkanRenderPipeline*>(pipeline);
-    vkCmdBindPipeline(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vp->handle());
+    m_device->vk().vkCmdBindPipeline(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vp->handle());
     m_currentPipelineLayout = vp->layoutHandle();
 }
 
@@ -564,53 +566,53 @@ void VulkanRenderPass::setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t o
     auto* vb = static_cast<VulkanBuffer*>(buffer);
     VkBuffer buf = vb->handle();
     VkDeviceSize off = offset;
-    vkCmdBindVertexBuffers(m_cmd, slot, 1, &buf, &off);
+    m_device->vk().vkCmdBindVertexBuffers(m_cmd, slot, 1, &buf, &off);
 }
 
 void VulkanRenderPass::setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset) {
     auto* vb = static_cast<VulkanBuffer*>(buffer);
     VkIndexType type = format == IndexFormat::Uint16 ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32;
-    vkCmdBindIndexBuffer(m_cmd, vb->handle(), offset, type);
+    m_device->vk().vkCmdBindIndexBuffer(m_cmd, vb->handle(), offset, type);
 }
 
 void VulkanRenderPass::setBindGroup(uint32_t index, BindGroup* group) {
     auto* vg = static_cast<VulkanBindGroup*>(group);
     VkDescriptorSet set = vg->handle();
-    vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout, index, 1, &set, 0, nullptr);
+    m_device->vk().vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout, index, 1, &set, 0, nullptr);
 }
 
 void VulkanRenderPass::setBindGroup(uint32_t index, BindGroup* group,
                                      const uint32_t* dynamicOffsets, uint32_t dynamicOffsetCount) {
     auto* vg = static_cast<VulkanBindGroup*>(group);
     VkDescriptorSet set = vg->handle();
-    vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout,
+    m_device->vk().vkCmdBindDescriptorSets(m_cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_currentPipelineLayout,
                             index, 1, &set, dynamicOffsetCount, dynamicOffsets);
 }
 
 void VulkanRenderPass::setViewport(float x, float y, float w, float h, float minDepth, float maxDepth) {
     VkViewport vp{x, y, w, h, minDepth, maxDepth};
-    vkCmdSetViewport(m_cmd, 0, 1, &vp);
+    m_device->vk().vkCmdSetViewport(m_cmd, 0, 1, &vp);
 }
 
 void VulkanRenderPass::setScissorRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
     VkRect2D sc{{static_cast<int32_t>(x), static_cast<int32_t>(y)}, {w, h}};
-    vkCmdSetScissor(m_cmd, 0, 1, &sc);
+    m_device->vk().vkCmdSetScissor(m_cmd, 0, 1, &sc);
 }
 
 void VulkanRenderPass::setStencilReference(uint32_t reference) {
-    vkCmdSetStencilReference(m_cmd, VK_STENCIL_FACE_FRONT_AND_BACK, reference);
+    m_device->vk().vkCmdSetStencilReference(m_cmd, VK_STENCIL_FACE_FRONT_AND_BACK, reference);
 }
 
 void VulkanRenderPass::draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
-    vkCmdDraw(m_cmd, vertexCount, instanceCount, firstVertex, firstInstance);
+    m_device->vk().vkCmdDraw(m_cmd, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
 void VulkanRenderPass::drawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) {
-    vkCmdDrawIndexed(m_cmd, indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
+    m_device->vk().vkCmdDrawIndexed(m_cmd, indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 
 void VulkanRenderPass::end() {
-    vkCmdEndRenderPass(m_cmd);
+    m_device->vk().vkCmdEndRenderPass(m_cmd);
     m_cmd = VK_NULL_HANDLE;
 }
 

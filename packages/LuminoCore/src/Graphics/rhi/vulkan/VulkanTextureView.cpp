@@ -29,17 +29,18 @@ VoidResult VulkanTextureView::init(
     info.subresourceRange.levelCount = 1;
     info.subresourceRange.baseArrayLayer = 0;
     info.subresourceRange.layerCount = 1;
-    if (vkCreateImageView(m_device->vkDevice(), &info, nullptr, &m_view) != VK_SUCCESS) {
+    if (m_device->vk().vkCreateImageView(m_device->vkDevice(), &info, nullptr, &m_view) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateImageView failed.");
     }
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanTextureView::finalize() {
+    const VolkDeviceTable* vk = &m_device->vk();
     VkDevice dev = m_device->vkDevice();
     VkImageView view = m_view;
-    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, view]() {
-        if (view) vkDestroyImageView(dev, view, nullptr);
+    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [vk, dev, view]() {
+        if (view) vk->vkDestroyImageView(dev, view, nullptr);
     });
     TextureView::finalize();
 }

@@ -3,7 +3,7 @@
 #include <LuminoBase/Types.hpp>
 #include <LuminoBase/SmallVector.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
-#include <vulkan/vulkan.h>
+#include "VulkanLoader.hpp"
 
 namespace ln::rhi::vulkan {
 

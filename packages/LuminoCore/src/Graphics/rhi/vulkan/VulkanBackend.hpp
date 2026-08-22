@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <vulkan/vulkan.h>
+#include "VulkanLoader.hpp"
 #include <vector>
 #include <unordered_map>
 #include <mutex>
@@ -32,7 +32,7 @@ private:
 class VulkanShaderModule final : public ShaderModule {
 public:
     VulkanShaderModule();
-    VoidResult init(VkDevice device, const ShaderModuleDesc& desc);
+    VoidResult init(VulkanDevice* device, const ShaderModuleDesc& desc);
     VkShaderModule handle() const { return m_module; }
     const uint32_t* spirvData() const { return m_spirv.data(); }
     size_t spirvSizeBytes() const { return m_spirv.size() * sizeof(uint32_t); }
@@ -41,7 +41,7 @@ protected:
     void finalize() override;
 
 private:
-    VkDevice m_device = VK_NULL_HANDLE;
+    VulkanDevice* m_device = nullptr;
     VkShaderModule m_module = VK_NULL_HANDLE;
     std::vector<uint32_t> m_spirv;
 };
@@ -51,7 +51,7 @@ private:
 class VulkanBindGroupLayout final : public BindGroupLayout {
 public:
     VulkanBindGroupLayout();
-    VoidResult init(VkDevice device, const BindGroupLayoutDesc& desc);
+    VoidResult init(VulkanDevice* device, const BindGroupLayoutDesc& desc);
     VkDescriptorSetLayout handle() const { return m_layout; }
 
     /** Per-binding dynamic offset flags (parallel to desc.entries). */
@@ -61,7 +61,7 @@ protected:
     void finalize() override;
 
 private:
-    VkDevice m_device = VK_NULL_HANDLE;
+    VulkanDevice* m_device = nullptr;
     VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
     std::vector<bool> m_dynamicFlags;
 };
@@ -99,8 +99,7 @@ protected:
     void finalize() override;
 
 private:
-    VulkanDevice* m_vulkanDevice = nullptr;
-    VkDevice m_device = VK_NULL_HANDLE;
+    VulkanDevice* m_device = nullptr;
     VkPipelineLayout m_layout = VK_NULL_HANDLE;
     std::vector<Ref<VulkanBindGroupLayout>> m_bindGroupLayouts;
 };
@@ -109,8 +108,8 @@ private:
 
 class VulkanRenderPass final : public RenderPass {
 public:
-    VulkanRenderPass(VkRenderPass handle, const RenderPassLayoutDesc& desc)
-        : m_vkRenderPass(handle), m_desc(desc) {}
+    VulkanRenderPass(VulkanDevice* device, VkRenderPass handle, const RenderPassLayoutDesc& desc)
+        : m_device(device), m_vkRenderPass(handle), m_desc(desc) {}
     ~VulkanRenderPass() override = default;
 
     const RenderPassLayoutDesc& layoutDesc() const override { return m_desc; }
@@ -135,6 +134,8 @@ public:
     void end() override;
 
 private:
+    // コマンド記録に使う関数テーブルを引くためにデバイスを保持する (非所有)。
+    VulkanDevice* m_device = nullptr;
     VkRenderPass m_vkRenderPass;
     RenderPassLayoutDesc m_desc;
     // Encoding state (valid between beginEncoding and end)

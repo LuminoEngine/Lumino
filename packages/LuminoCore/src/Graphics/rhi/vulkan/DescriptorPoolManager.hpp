@@ -17,7 +17,7 @@
 
 #include <utility>
 #include <vector>
-#include <vulkan/vulkan.h>
+#include "VulkanLoader.hpp"
 
 namespace ln::rhi::vulkan {
 
@@ -30,14 +30,19 @@ public:
      */
     static constexpr uint32_t SETS_PER_POOL = 64;
 
-    void init(VkDevice device) {
+    /**
+     * @param vk      デバイス専用の Vulkan 関数テーブル (VulkanDevice が所有)。
+     * @param device  対象の VkDevice。
+     */
+    void init(const VolkDeviceTable* vk, VkDevice device) {
+        m_vk = vk;
         m_device = device;
         allocateNewPool();
     }
 
     void destroy() {
         for (auto pool : m_pools) {
-            vkDestroyDescriptorPool(m_device, pool, nullptr);
+            m_vk->vkDestroyDescriptorPool(m_device, pool, nullptr);
         }
         m_pools.clear();
     }
@@ -55,7 +60,7 @@ public:
             allocInfo.pSetLayouts = &layout;
 
             VkDescriptorSet set = VK_NULL_HANDLE;
-            VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, &set);
+            VkResult result = m_vk->vkAllocateDescriptorSets(m_device, &allocInfo, &set);
             if (result == VK_SUCCESS) {
                 return {m_pools.back(), set};
             }
@@ -70,6 +75,7 @@ public:
     }
 
 private:
+    const VolkDeviceTable* m_vk = nullptr; // non-owning (親の VulkanDevice が所有)
     VkDevice m_device = VK_NULL_HANDLE;
     std::vector<VkDescriptorPool> m_pools;
 
@@ -91,7 +97,7 @@ private:
         dpInfo.pPoolSizes = poolSizes;
 
         VkDescriptorPool pool = VK_NULL_HANDLE;
-        vkCreateDescriptorPool(m_device, &dpInfo, nullptr, &pool);
+        m_vk->vkCreateDescriptorPool(m_device, &dpInfo, nullptr, &pool);
         m_pools.push_back(pool);
     }
 };

@@ -3,6 +3,11 @@
 #include <LuminoCore/Runtime/ObjectRegistry.hpp>
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 
+#if defined(LN_ENABLE_VULKAN)
+    // GLFW より先に volk を取り込む (VulkanLoader.hpp のコメントを参照)。
+    #include "Graphics/rhi/vulkan/VulkanLoader.hpp"
+#endif
+
 #if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
     #define GLFW_INCLUDE_NONE
     #include <GLFW/glfw3.h>
@@ -31,6 +36,15 @@ VoidResult CoreInstance::init(const Settings& settings) {
     m_objectRegistry = std::make_unique<ObjectRegistry>();
 
 #if !defined(__EMSCRIPTEN__) && !defined(LN_NX)
+    #if defined(LN_ENABLE_VULKAN)
+    // GLFW は既定で自前に Vulkan ローダーを dlopen するが、Lumino が volk で
+    // ロードしたものを使わせることでローダーの実体を 1 つに統一する。
+    // glfwInit() より前に呼ぶ必要がある。ローダーが無い環境では何もしない
+    // (GLFW は Vulkan を使わないウィンドウ生成であれば問題なく動作する)。
+    if (rhi::vulkan::loadVulkanLoader()) {
+        glfwInitVulkanLoader(vkGetInstanceProcAddr);
+    }
+    #endif
     glfwInit();
 #endif
 

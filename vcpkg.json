@@ -4,8 +4,11 @@
   "description": "Game library",
   "dependencies": [
     "stb",
-    "tinygltf",
     "vulkan-headers",
+    {
+      "name": "volk",
+      "platform": "windows | linux | osx"
+    },
     "nlohmann-json",
     "tl-expected",
     {

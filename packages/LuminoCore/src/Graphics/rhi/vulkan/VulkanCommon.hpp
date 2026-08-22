@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <vulkan/vulkan.h>
+#include "VulkanLoader.hpp"
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 
 namespace ln::rhi::vulkan {

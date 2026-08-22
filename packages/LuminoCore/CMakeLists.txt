@@ -4,10 +4,10 @@
 # Dependencies
 #-------------------------------------------------------------------------------
 if(LN_ENABLE_VULKAN)
-    find_package(Vulkan QUIET)
-    if(NOT Vulkan_FOUND)
-        find_package(vulkan-headers CONFIG REQUIRED)
-    endif()
+    # Vulkan ローダーは volk 経由で実行時に動的ロードするため、ビルドに必要なのは
+    # ヘッダだけです。Vulkan SDK のインストールや vulkan-1.lib のリンクは不要です。
+    find_package(VulkanHeaders CONFIG REQUIRED)
+    find_package(volk CONFIG REQUIRED)
 endif()
 
 find_package(Stb REQUIRED)
@@ -108,17 +108,13 @@ target_include_directories(
 
 # Vulkan
 if(LN_ENABLE_VULKAN)
-    if(Vulkan_FOUND)
-        target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
-    else()
-        target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers)
-        # Link the Vulkan loader
-        if(WIN32)
-            target_link_libraries(${PROJECT_NAME} PRIVATE vulkan-1)
-        else()
-            target_link_libraries(${PROJECT_NAME} PRIVATE vulkan)
-        endif()
-    endif()
+    # volk::volk_headers はヘッダ (volk.h / volk.c) のみを提供します。
+    # 実装は VulkanLoader.cpp が VOLK_IMPLEMENTATION 付きで取り込むため、
+    # volk.c は Lumino 本体とまったく同じコンパイル定義でビルドされます。
+    # (プリビルドの volk::volk を使うと VK_USE_PLATFORM_* の差異で
+    #  VolkDeviceTable のレイアウトがずれる危険があります)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers volk::volk_headers)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_ENABLE_VULKAN=1)
 endif()
 
 # GLFW (desktop only)

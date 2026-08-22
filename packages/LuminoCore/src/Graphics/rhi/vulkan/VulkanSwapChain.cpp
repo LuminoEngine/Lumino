@@ -1,4 +1,8 @@
-﻿#define GLFW_INCLUDE_VULKAN
+﻿// volk.h (VulkanLoader.hpp 経由) を GLFW より先に取り込むこと。
+// GLFW_INCLUDE_VULKAN で先に vulkan.h を読ませると VK_NO_PROTOTYPES が付かず、
+// volk の関数ポインタ宣言と衝突する。volk が vulkan.h を取り込んだ時点で
+// VK_VERSION_1_0 が定義されるため、glfwCreateWindowSurface() などの宣言は有効になる。
+#include "VulkanLoader.hpp"
 #include <GLFW/glfw3.h>
 #include <LuminoBase/Logger.hpp>
 #include "VulkanHelpers.hpp"
@@ -60,13 +64,13 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     swapInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     swapInfo.presentMode = desc.vsync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_MAILBOX_KHR;
     swapInfo.clipped = VK_TRUE;
-    vkCreateSwapchainKHR(m_device->vkDevice(), &swapInfo, nullptr, &m_swapchain);
+    m_device->vk().vkCreateSwapchainKHR(m_device->vkDevice(), &swapInfo, nullptr, &m_swapchain);
 
     // Get swap chain images
-    vkGetSwapchainImagesKHR(m_device->vkDevice(), m_swapchain, &imageCount, nullptr);
+    m_device->vk().vkGetSwapchainImagesKHR(m_device->vkDevice(), m_swapchain, &imageCount, nullptr);
     m_images.resize(imageCount);
     m_maxFrames = imageCount;
-    vkGetSwapchainImagesKHR(m_device->vkDevice(), m_swapchain, &imageCount, m_images.data());
+    m_device->vk().vkGetSwapchainImagesKHR(m_device->vkDevice(), m_swapchain, &imageCount, m_images.data());
 
     // バックバッファのデフォルトレイアウトは VK_IMAGE_LAYOUT_UNDEFINED であり、
     // RenderPass 側 (VulkanDevice.cpp) は initialLayout=PRESENT_SRC_KHR を要求する。
@@ -111,23 +115,23 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     m_imageAvailableSemaphores.resize(m_maxFrames);
     m_renderFinished.resize(m_maxFrames);
     for (uint32_t i = 0; i < m_maxFrames; ++i) {
-        vkCreateSemaphore(m_device->vkDevice(), &semInfo, nullptr, &m_imageAvailableSemaphores[i]);
-        vkCreateSemaphore(m_device->vkDevice(), &semInfo, nullptr, &m_renderFinished[i]);
+        m_device->vk().vkCreateSemaphore(m_device->vkDevice(), &semInfo, nullptr, &m_imageAvailableSemaphores[i]);
+        m_device->vk().vkCreateSemaphore(m_device->vkDevice(), &semInfo, nullptr, &m_renderFinished[i]);
     }
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanSwapChain::finalize() {
     auto dev = m_device->vkDevice();
-    vkDeviceWaitIdle(dev);
+    m_device->vk().vkDeviceWaitIdle(dev);
 
     for (uint32_t i = 0; i < m_maxFrames; ++i) {
         if (m_imageAvailableSemaphores[i])
-            vkDestroySemaphore(dev, m_imageAvailableSemaphores[i], nullptr);
-        if (m_renderFinished[i]) vkDestroySemaphore(dev, m_renderFinished[i], nullptr);
+            m_device->vk().vkDestroySemaphore(dev, m_imageAvailableSemaphores[i], nullptr);
+        if (m_renderFinished[i]) m_device->vk().vkDestroySemaphore(dev, m_renderFinished[i], nullptr);
     }
     m_views.clear();
-    if (m_swapchain) vkDestroySwapchainKHR(dev, m_swapchain, nullptr);
+    if (m_swapchain) m_device->vk().vkDestroySwapchainKHR(dev, m_swapchain, nullptr);
     if (m_surface) vkDestroySurfaceKHR(m_device->instance(), m_surface, nullptr);
 }
 
@@ -210,7 +214,7 @@ TextureView* VulkanSwapChain::acquireNextTexture() {
 
     // https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation
     VkResult acquireResult = m_device->checkDeviceLost(
-        vkAcquireNextImageKHR(
+        m_device->vk().vkAcquireNextImageKHR(
             vkDevice,
             m_swapchain,
             UINT64_MAX,
@@ -245,7 +249,7 @@ TextureView* VulkanSwapChain::acquireNextTexture() {
         barrier.subresourceRange.layerCount = 1;
         barrier.srcAccessMask = 0;
         barrier.dstAccessMask = 0;
-        vkCmdPipelineBarrier(
+        m_device->vk().vkCmdPipelineBarrier(
             m_commandBuffers[m_currentFrame]->vkCommandBuffer(),
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
             VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
@@ -273,7 +277,7 @@ void VulkanSwapChain::present() {
     presentInfo.pSwapchains = &m_swapchain;
     presentInfo.pImageIndices = &m_imageIndex;
     VkResult presentResult = m_device->checkDeviceLost(
-        vkQueuePresentKHR(m_device->graphicsQueue(), &presentInfo), "vkQueuePresentKHR");
+        m_device->vk().vkQueuePresentKHR(m_device->graphicsQueue(), &presentInfo), "vkQueuePresentKHR");
     if (presentResult != VK_SUCCESS && presentResult != VK_SUBOPTIMAL_KHR) {
         LN_LOG_ERROR("[Vulkan] vkQueuePresentKHR failed: %d", static_cast<int>(presentResult));
     }
