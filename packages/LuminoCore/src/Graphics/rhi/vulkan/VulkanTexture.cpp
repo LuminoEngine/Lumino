@@ -49,12 +49,12 @@ VoidResult VulkanTexture::init(
         imgInfo.usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 
     VkDevice vkDevice = m_device->vkDevice();
-    if (m_device->vk().vkCreateImage(vkDevice, &imgInfo, nullptr, &m_image) != VK_SUCCESS) {
+    if (vkCreateImage(vkDevice, &imgInfo, nullptr, &m_image) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkCreateImage failed.");
     }
 
     VkMemoryRequirements memReqs;
-    m_device->vk().vkGetImageMemoryRequirements(vkDevice, m_image, &memReqs);
+    vkGetImageMemoryRequirements(vkDevice, m_image, &memReqs);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -63,10 +63,10 @@ VoidResult VulkanTexture::init(
         physicalDevice,
         memReqs.memoryTypeBits,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    if (m_device->vk().vkAllocateMemory(vkDevice, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
+    if (vkAllocateMemory(vkDevice, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkAllocateMemory failed.");
     }
-    m_device->vk().vkBindImageMemory(vkDevice, m_image, m_memory, 0);
+    vkBindImageMemory(vkDevice, m_image, m_memory, 0);
 
     // VkImageCreateInfo::initialLayout でレイアウトを指定できそうなものだけど、
     // ↑のコメントの通り実際にはできないので、ここで明示的にレイアウト遷移しておく。
@@ -110,7 +110,7 @@ VoidResult VulkanTexture::init(
         barrier.subresourceRange.baseArrayLayer = 0;
         barrier.subresourceRange.layerCount = 1;
 
-        m_device->vk().vkCmdPipelineBarrier(
+        vkCmdPipelineBarrier(
             commandBuffer,
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // Fragment Shader で使うまでにはレイアウト遷移しておく必要がある。
@@ -144,13 +144,12 @@ VoidResult VulkanTexture::initFromExternalImage(
 
 void VulkanTexture::finalize() {
     if (m_ownsImage) {
-        const VolkDeviceTable* vk = &m_device->vk();
         VkDevice dev = m_device->vkDevice();
         VkImage img = m_image;
         VkDeviceMemory mem = m_memory;
-        m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [vk, dev, img, mem]() {
-            if (img) vk->vkDestroyImage(dev, img, nullptr);
-            if (mem) vk->vkFreeMemory(dev, mem, nullptr);
+        m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, img, mem]() {
+            if (img) vkDestroyImage(dev, img, nullptr);
+            if (mem) vkFreeMemory(dev, mem, nullptr);
         });
     }
     Texture::finalize();

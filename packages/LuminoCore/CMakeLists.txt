@@ -53,7 +53,6 @@ if(EMSCRIPTEN)
     set(LN_DESKTOP_ONLY_GRAPHICS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/DebugPrint.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/ForwardRenderer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/MeshLoader.cpp
     )
     list(REMOVE_ITEM LN_LOCAL_SOURCES_Graphics ${LN_DESKTOP_ONLY_GRAPHICS})
 
@@ -112,7 +111,7 @@ if(LN_ENABLE_VULKAN)
     # 実装は VulkanLoader.cpp が VOLK_IMPLEMENTATION 付きで取り込むため、
     # volk.c は Lumino 本体とまったく同じコンパイル定義でビルドされます。
     # (プリビルドの volk::volk を使うと VK_USE_PLATFORM_* の差異で
-    #  VolkDeviceTable のレイアウトがずれる危険があります)
+    #  関数ポインタの集合がずれる危険があります)
     target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers volk::volk_headers)
     target_compile_definitions(${PROJECT_NAME} PRIVATE LN_ENABLE_VULKAN=1)
 endif()

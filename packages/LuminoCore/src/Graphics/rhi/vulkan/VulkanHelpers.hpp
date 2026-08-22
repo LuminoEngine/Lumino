@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "VulkanCommon.hpp"
-#include "VulkanLoader.hpp"
 
 #define LN_MAKE_VULKAN_ERROR(result, func) LN_MAKE_ERROR("Failed: " func "(%d)", result)
 

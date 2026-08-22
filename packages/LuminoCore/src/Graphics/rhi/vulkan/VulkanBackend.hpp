@@ -108,8 +108,8 @@ private:
 
 class VulkanRenderPass final : public RenderPass {
 public:
-    VulkanRenderPass(VulkanDevice* device, VkRenderPass handle, const RenderPassLayoutDesc& desc)
-        : m_device(device), m_vkRenderPass(handle), m_desc(desc) {}
+    VulkanRenderPass(VkRenderPass handle, const RenderPassLayoutDesc& desc)
+        : m_vkRenderPass(handle), m_desc(desc) {}
     ~VulkanRenderPass() override = default;
 
     const RenderPassLayoutDesc& layoutDesc() const override { return m_desc; }
@@ -134,8 +134,6 @@ public:
     void end() override;
 
 private:
-    // コマンド記録に使う関数テーブルを引くためにデバイスを保持する (非所有)。
-    VulkanDevice* m_device = nullptr;
     VkRenderPass m_vkRenderPass;
     RenderPassLayoutDesc m_desc;
     // Encoding state (valid between beginEncoding and end)

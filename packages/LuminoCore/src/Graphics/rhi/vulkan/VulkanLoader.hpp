@@ -14,9 +14,9 @@
  * - デバイスレベルの関数を vkGetDeviceProcAddr で直接取得できるため、
  *   ローダーのディスパッチを 1 段省けます。
  *
- * 注意: volk.h の VolkDeviceTable のレイアウトは VK_USE_PLATFORM_* の
- * 定義有無で変化します。Lumino ではサーフェス生成を GLFW に任せており
- * これらを定義しないため、volk.c も同じ条件でビルドする必要があります
+ * 注意: volk が宣言する関数ポインタの集合は VK_USE_PLATFORM_* の定義有無で
+ * 変化します。Lumino ではサーフェス生成を GLFW に任せておりこれらを定義しない
+ * ため、volk.c も同じ条件でビルドする必要があります
  * (CMakeLists.txt の volk::volk_headers を参照)。
  */
 
@@ -32,8 +32,5 @@ namespace ln::rhi::vulkan {
  * ローダーが見つからない環境では false を返すだけでプロセスは継続できる。
  */
 bool loadVulkanLoader();
-
-/** loadVulkanLoader() が成功済みかどうか。試行前は false。 */
-bool isVulkanLoaderLoaded();
 
 } // namespace ln::rhi::vulkan

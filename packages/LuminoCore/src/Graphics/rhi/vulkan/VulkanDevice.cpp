@@ -1,7 +1,4 @@
-﻿// volk.h (VulkanLoader.hpp 経由) を GLFW より先に取り込むこと。
-// GLFW_INCLUDE_VULKAN で先に vulkan.h を読ませると VK_NO_PROTOTYPES が付かず、
-// volk の関数ポインタ宣言と衝突する。volk が vulkan.h を取り込んだ時点で
-// VK_VERSION_1_0 が定義されるため、glfwCreateWindowSurface() などの宣言は有効になる。
+﻿// GLFW より先に取り込むこと (理由は VulkanLoader.hpp の注意書きを参照)。
 #include "VulkanLoader.hpp"
 #include <GLFW/glfw3.h>
 
@@ -120,17 +117,8 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("vkCreateInstance failed. (VkResult: %d)", static_cast<int>(r));
     }
 
-    // インスタンスレベルの関数のみをグローバルへロードする。デバイスレベルの関数は
-    // ここでは読み込まない (volkLoadInstance() ではなく volkLoadInstanceOnly())。
-    // グローバルのデバイス関数を空のままにしておくことで、テーブル経由への
-    // 移行漏れがあった場合に他のデバイスの関数を呼んでしまう事故を防ぐ。
-    //
-    // NOTE: インスタンスレベルの関数ポインタはグローバルに置かれるため、
-    //   VulkanDevice を複数生成すると後から作ったインスタンスのもので上書きされる。
-    //   これらはローダーの trampoline であり第 1 引数のハンドルでディスパッチされるので
-    //   実用上は問題ないが、将来的には VkInstance をデバイス間で共有するのが本筋。
-    //   一方デバイスレベルの関数は m_vk (VolkDeviceTable) に閉じているため、
-    //   複数の VkDevice を同時に扱っても互いに干渉しない。
+    // インスタンスレベルの関数をグローバルへロードする。デバイスレベルの関数は
+    // vkCreateDevice の後に volkLoadDevice() でロードする。
     volkLoadInstanceOnly(m_instance);
 
 #if 1
@@ -189,40 +177,41 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("vkCreateDevice failed.");
     }
 
-    // このデバイス専用の関数テーブルを構築する。vkGetDeviceProcAddr で取得するため
-    // ローダーのディスパッチを 1 段省けるうえ、グローバル状態を持たないので
-    // 1 プロセス内に複数の VkDevice を併存させられる。
-    volkLoadDeviceTable(&m_vk, m_device);
+    // デバイスレベルの関数を vkGetDeviceProcAddr で直接取得し、ローダーの
+    // ディスパッチを 1 段省く。
+    // ponytail: グローバルの関数ポインタへロードするため VkDevice は 1 プロセスに
+    // 1 つまで。複数デバイスを扱うなら volkLoadDeviceTable() + VolkDeviceTable へ。
+    volkLoadDevice(m_device);
 
-    m_vk.vkGetDeviceQueue(m_device, m_graphicsQueuFamily, 0, &m_graphicsQueue);
+    vkGetDeviceQueue(m_device, m_graphicsQueuFamily, 0, &m_graphicsQueue);
 
     // Command pool
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.queueFamilyIndex = m_graphicsQueuFamily;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    m_vk.vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
+    vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
 
     // Resource management subsystems
-    m_descriptorPoolManager.init(&m_vk, m_device);
-    m_stagingPool.init(&m_vk, m_device, m_physicalDevice, this);
+    m_descriptorPoolManager.init(m_device);
+    m_stagingPool.init(m_device, m_physicalDevice, this);
     return LN_MAKE_SUCCESS();
 }
 
 void VulkanDevice::finalize() {
-    if (m_device) m_vk.vkDeviceWaitIdle(m_device);
+    if (m_device) vkDeviceWaitIdle(m_device);
 
     // Flush any deferred cleanups (e.g., command buffers) before destroying the pool.
     m_frameResources.flushAll();
 
     // Destroy caches
-    for (auto& [key, fb] : m_framebufferCache) m_vk.vkDestroyFramebuffer(m_device, fb, nullptr);
-    for (auto& [key, rp] : m_renderPassCache) m_vk.vkDestroyRenderPass(m_device, rp, nullptr);
+    for (auto& [key, fb] : m_framebufferCache) vkDestroyFramebuffer(m_device, fb, nullptr);
+    for (auto& [key, rp] : m_renderPassCache) vkDestroyRenderPass(m_device, rp, nullptr);
 
     m_stagingPool.destroy();
     m_descriptorPoolManager.destroy();
-    if (m_commandPool) m_vk.vkDestroyCommandPool(m_device, m_commandPool, nullptr);
-    if (m_device) m_vk.vkDestroyDevice(m_device, nullptr);
+    if (m_commandPool) vkDestroyCommandPool(m_device, m_commandPool, nullptr);
+    if (m_device) vkDestroyDevice(m_device, nullptr);
     if (m_debugMessenger) DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
     if (m_instance) vkDestroyInstance(m_instance, nullptr);
     Device::finalize();
@@ -332,7 +321,7 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
     rpInfo.pDependencies = &dep;
 
     VkRenderPass rp = VK_NULL_HANDLE;
-    m_vk.vkCreateRenderPass(m_device, &rpInfo, nullptr, &rp);
+    vkCreateRenderPass(m_device, &rpInfo, nullptr, &rp);
     m_renderPassCache[key] = rp;
     return rp;
 }
@@ -352,7 +341,7 @@ VkFramebuffer VulkanDevice::getOrCreateFramebuffer(const FramebufferKey& key) {
     fbInfo.layers = 1;
 
     VkFramebuffer fb = VK_NULL_HANDLE;
-    m_vk.vkCreateFramebuffer(m_device, &fbInfo, nullptr, &fb);
+    vkCreateFramebuffer(m_device, &fbInfo, nullptr, &fb);
     m_framebufferCache[key] = fb;
     return fb;
 }
@@ -481,7 +470,7 @@ Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer cmd;
-    if (m_vk.vkAllocateCommandBuffers(m_device, &allocInfo, &cmd) != VK_SUCCESS) {
+    if (vkAllocateCommandBuffers(m_device, &allocInfo, &cmd) != VK_SUCCESS) {
         return LN_MAKE_ERROR("vkAllocateCommandBuffers failed.");
     }
     auto cb = Ref<VulkanCommandBuffer>::adopt(new VulkanCommandBuffer());
@@ -526,7 +515,7 @@ Result<std::vector<uint8_t>> VulkanDevice::readbackTexture(TextureView* view) {
 }
 
 void VulkanDevice::waitIdle() {
-    if (m_device) m_vk.vkDeviceWaitIdle(m_device);
+    if (m_device) vkDeviceWaitIdle(m_device);
 }
 
 Result<VkCommandBuffer> VulkanDevice::beginSingleTimeCommands() {
@@ -537,20 +526,20 @@ Result<VkCommandBuffer> VulkanDevice::beginSingleTimeCommands() {
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer commandBuffer;
-    m_vk.vkAllocateCommandBuffers(m_device, &allocInfo, &commandBuffer);
+    vkAllocateCommandBuffers(m_device, &allocInfo, &commandBuffer);
 
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    m_vk.vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
     // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#commandbuffers-lifecycle
 
     return commandBuffer;
 }
 
 void VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
-    VkResult result = checkDeviceLost(m_vk.vkEndCommandBuffer(commandBuffer), "vkEndCommandBuffer");
+    VkResult result = checkDeviceLost(vkEndCommandBuffer(commandBuffer), "vkEndCommandBuffer");
     if (result != VK_SUCCESS) {
         LN_LOG_ERROR("endSingleTimeCommands: vkEndCommandBuffer failed (%d)", static_cast<int>(result));
         // no return, continue.
@@ -561,19 +550,19 @@ void VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
     result = checkDeviceLost(
-        m_vk.vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit");
+        vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit");
     if (result != VK_SUCCESS) {
         LN_LOG_ERROR("endSingleTimeCommands: vkQueueSubmit failed (%d)", static_cast<int>(result));
         // no return, continue.
     }
 
-    result = checkDeviceLost(m_vk.vkQueueWaitIdle(m_graphicsQueue), "vkQueueWaitIdle");
+    result = checkDeviceLost(vkQueueWaitIdle(m_graphicsQueue), "vkQueueWaitIdle");
     if (result != VK_SUCCESS) {
         LN_LOG_ERROR("endSingleTimeCommands: vkQueueWaitIdle failed (%d)", static_cast<int>(result));
         // no return, continue.
     }
 
-    m_vk.vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
+    vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
 }
 
 VkResult VulkanDevice::checkDeviceLost(VkResult r, const char* what) {

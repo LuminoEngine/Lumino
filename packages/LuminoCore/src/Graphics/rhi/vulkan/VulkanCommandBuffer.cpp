@@ -17,7 +17,7 @@ VoidResult VulkanCommandBuffer::init(VulkanDevice* device, VkCommandBuffer cmd) 
     VkFenceCreateInfo fenceInfo = {};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-    if (m_device->vk().vkCreateFence(
+    if (vkCreateFence(
             m_device->vkDevice(),
             &fenceInfo,
             m_device->vulkanAllocator(),
@@ -35,33 +35,18 @@ void VulkanCommandBuffer::finalize() {
 void VulkanCommandBuffer::dispose() {
     if (m_inFlightFences) {
         // Wait for execution to complete as it may be pending.
-        m_device->vk().vkWaitForFences(m_device->vkDevice(), 1, &m_inFlightFences, VK_TRUE, UINT64_MAX);
+        vkWaitForFences(m_device->vkDevice(), 1, &m_inFlightFences, VK_TRUE, UINT64_MAX);
     }
 
     // CommandBuffer must be released before vkResetDescriptorPool.
     if (m_cmd) {
         VkCommandPool pool = m_device->commandPool();
-        m_device->vk().vkFreeCommandBuffers(m_device->vkDevice(), pool, 1, &m_cmd);
+        vkFreeCommandBuffers(m_device->vkDevice(), pool, 1, &m_cmd);
         m_cmd = VK_NULL_HANDLE;
     }
-    // Queue vkFreeCommandBuffers to run once the GPU finishes this frame.
-    // If the command buffer was never submitted, free immediately.
-    //const VolkDeviceTable* vk = &m_device->vk();
-    //VkDevice dev = m_device->vkDevice();
-    //VkCommandPool pool = m_device->commandPool();
-    //VkCommandBuffer cmd = m_cmd;
-
-    //if (m_submitted) {
-    //    m_device->frameResources().queueDelete(m_submittedFrame, [vk, dev, pool, cmd]() {
-    //        vk->vkFreeCommandBuffers(dev, pool, 1, &cmd);
-    //    });
-    //}
-    //else {
-    //    vk->vkFreeCommandBuffers(dev, pool, 1, &cmd);
-    //}
 
     if (m_inFlightFences) {
-        m_device->vk().vkDestroyFence(m_device->vkDevice(), m_inFlightFences, m_device->vulkanAllocator());
+        vkDestroyFence(m_device->vkDevice(), m_inFlightFences, m_device->vulkanAllocator());
         m_inFlightFences = VK_NULL_HANDLE;
     }
 }
@@ -75,7 +60,7 @@ VoidResult VulkanCommandBuffer::begin() {
     constexpr uint64_t kFenceTimeoutNs = 2'000'000'000ull; // 2秒
     for (;;) {
         VkResult r = m_device->checkDeviceLost(
-            m_device->vk().vkWaitForFences(vkDevice, 1, &m_inFlightFences, VK_TRUE, kFenceTimeoutNs),
+            vkWaitForFences(vkDevice, 1, &m_inFlightFences, VK_TRUE, kFenceTimeoutNs),
             "vkWaitForFences");
         if (r == VK_SUCCESS) break;
         if (m_device->isDeviceLost()) {
@@ -87,13 +72,13 @@ VoidResult VulkanCommandBuffer::begin() {
         }
         LN_LOG_WARNING("VulkanCommandBuffer::begin: in-flight fence wait timed out, retrying.");
     }
-    m_device->vk().vkResetFences(vkDevice, 1, &m_inFlightFences);
+    vkResetFences(vkDevice, 1, &m_inFlightFences);
 
-    m_device->vk().vkResetCommandBuffer(m_cmd, 0);
+    vkResetCommandBuffer(m_cmd, 0);
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    if (VkResult r = m_device->vk().vkBeginCommandBuffer(m_cmd, &beginInfo); r != VK_SUCCESS) {
+    if (VkResult r = vkBeginCommandBuffer(m_cmd, &beginInfo); r != VK_SUCCESS) {
         return LN_MAKE_VULKAN_ERROR(r, "vkBeginCommandBuffer");
     }
     return LN_MAKE_SUCCESS();
@@ -151,7 +136,7 @@ RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
                 static_cast<VulkanTextureView*>(desc.depthStencilAttachment->view)->vkFormat());
         }
 
-        auto rp = Ref<VulkanRenderPass>::adopt(new VulkanRenderPass(m_device, vkRenderPass, layoutDesc));
+        auto rp = Ref<VulkanRenderPass>::adopt(new VulkanRenderPass(vkRenderPass, layoutDesc));
         it = m_renderPassCache.emplace(rpKey, std::move(rp)).first;
     }
 
@@ -177,7 +162,7 @@ RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
 }
 
 void VulkanCommandBuffer::submit() {
-    m_device->vk().vkEndCommandBuffer(m_cmd);
+    vkEndCommandBuffer(m_cmd);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -191,8 +176,6 @@ void VulkanCommandBuffer::submit() {
 
     auto* sc = m_device->activeSwapChain();
     if (sc) {
-        m_submittedFrame = sc->currentFrame();
-        m_submitted = true;
         waitSemaphore = sc->imageAvailableSemaphore();
         signalSemaphore = sc->renderFinishedSemaphore();
         submitInfo.waitSemaphoreCount = 1;
@@ -203,7 +186,7 @@ void VulkanCommandBuffer::submit() {
     }
 
     m_device->checkDeviceLost(
-        m_device->vk().vkQueueSubmit(m_device->graphicsQueue(), 1, &submitInfo, m_inFlightFences),
+        vkQueueSubmit(m_device->graphicsQueue(), 1, &submitInfo, m_inFlightFences),
         "vkQueueSubmit");
 
     m_encoder = nullptr;

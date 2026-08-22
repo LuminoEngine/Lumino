@@ -25,11 +25,7 @@ namespace ln::rhi::vulkan {
 
 class StagingBufferPool {
 public:
-    /**
-     * @param vk  デバイス専用の Vulkan 関数テーブル (VulkanDevice が所有)。
-     */
-    void init(const VolkDeviceTable* vk, VkDevice device, VkPhysicalDevice physicalDevice, Device* owner) {
-        m_vk = vk;
+    void init(VkDevice device, VkPhysicalDevice physicalDevice, Device* owner) {
         m_device = device;
         m_physicalDevice = physicalDevice;
         m_owner = owner;
@@ -41,8 +37,8 @@ public:
 
     void destroy() {
         for (auto& page : m_freePages) {
-            m_vk->vkDestroyBuffer(m_device, page.buffer, nullptr);
-            m_vk->vkFreeMemory(m_device, page.memory, nullptr);
+            vkDestroyBuffer(m_device, page.buffer, nullptr);
+            vkFreeMemory(m_device, page.memory, nullptr);
         }
         m_freePages.clear();
     }
@@ -59,9 +55,9 @@ public:
 
         // Map and fill the staging buffer.
         void* mapped = nullptr;
-        m_vk->vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
+        vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
         std::memcpy(mapped, data, size);
-        m_vk->vkUnmapMemory(m_device, staging.memory);
+        vkUnmapMemory(m_device, staging.memory);
 
         // Allocate and record a one-time command buffer.
         VkCommandBufferAllocateInfo allocInfo{};
@@ -71,27 +67,27 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer cmd = VK_NULL_HANDLE;
-        m_vk->vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
+        vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        m_vk->vkBeginCommandBuffer(cmd, &beginInfo);
+        vkBeginCommandBuffer(cmd, &beginInfo);
 
         VkBufferCopy region{0, dstOffset, size};
-        m_vk->vkCmdCopyBuffer(cmd, staging.buffer, dstBuffer, 1, &region);
+        vkCmdCopyBuffer(cmd, staging.buffer, dstBuffer, 1, &region);
 
-        m_vk->vkEndCommandBuffer(cmd);
+        vkEndCommandBuffer(cmd);
 
         // Submit and wait for completion.
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmd;
-        checkQueueResult(m_vk->vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
-        checkQueueResult(m_vk->vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
+        checkQueueResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
+        checkQueueResult(vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
 
-        m_vk->vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
+        vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
         releasePage(staging);
     }
 
@@ -105,9 +101,9 @@ public:
         Page staging = acquirePage(size);
 
         void* mapped = nullptr;
-        m_vk->vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
+        vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
         std::memcpy(mapped, data, size);
-        m_vk->vkUnmapMemory(m_device, staging.memory);
+        vkUnmapMemory(m_device, staging.memory);
 
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -116,12 +112,12 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer cmd = VK_NULL_HANDLE;
-        m_vk->vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
+        vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        m_vk->vkBeginCommandBuffer(cmd, &beginInfo);
+        vkBeginCommandBuffer(cmd, &beginInfo);
 
         // Transition UNDEFINED → TRANSFER_DST_OPTIMAL
         VkImageMemoryBarrier barrier{};
@@ -138,7 +134,7 @@ public:
         barrier.subresourceRange.layerCount = 1;
         barrier.srcAccessMask = 0;
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        m_vk->vkCmdPipelineBarrier(cmd,
+        vkCmdPipelineBarrier(cmd,
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
             0, 0, nullptr, 0, nullptr, 1, &barrier);
 
@@ -153,7 +149,7 @@ public:
         region.imageSubresource.layerCount = 1;
         region.imageOffset = {0, 0, 0};
         region.imageExtent = {width, height, 1};
-        m_vk->vkCmdCopyBufferToImage(cmd, staging.buffer, dstImage,
+        vkCmdCopyBufferToImage(cmd, staging.buffer, dstImage,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
         // Transition TRANSFER_DST_OPTIMAL → SHADER_READ_ONLY_OPTIMAL
@@ -161,20 +157,20 @@ public:
         barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        m_vk->vkCmdPipelineBarrier(cmd,
+        vkCmdPipelineBarrier(cmd,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
             0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        m_vk->vkEndCommandBuffer(cmd);
+        vkEndCommandBuffer(cmd);
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmd;
-        checkQueueResult(m_vk->vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
-        checkQueueResult(m_vk->vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
+        checkQueueResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
+        checkQueueResult(vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
 
-        m_vk->vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
+        vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
         releasePage(staging);
     }
 
@@ -197,12 +193,12 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer cmd = VK_NULL_HANDLE;
-        m_vk->vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
+        vkAllocateCommandBuffers(m_device, &allocInfo, &cmd);
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        m_vk->vkBeginCommandBuffer(cmd, &beginInfo);
+        vkBeginCommandBuffer(cmd, &beginInfo);
 
         // Transition currentLayout → TRANSFER_SRC_OPTIMAL
         VkImageMemoryBarrier barrier{};
@@ -219,7 +215,7 @@ public:
         barrier.subresourceRange.layerCount = 1;
         barrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-        m_vk->vkCmdPipelineBarrier(cmd,
+        vkCmdPipelineBarrier(cmd,
             VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
             0, 0, nullptr, 0, nullptr, 1, &barrier);
 
@@ -234,7 +230,7 @@ public:
         region.imageSubresource.layerCount = 1;
         region.imageOffset = {0, 0, 0};
         region.imageExtent = {width, height, 1};
-        m_vk->vkCmdCopyImageToBuffer(cmd, srcImage,
+        vkCmdCopyImageToBuffer(cmd, srcImage,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, staging.buffer, 1, &region);
 
         // Transition TRANSFER_SRC_OPTIMAL → original layout
@@ -242,27 +238,27 @@ public:
         barrier.newLayout = currentLayout;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
         barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        m_vk->vkCmdPipelineBarrier(cmd,
+        vkCmdPipelineBarrier(cmd,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
             0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        m_vk->vkEndCommandBuffer(cmd);
+        vkEndCommandBuffer(cmd);
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmd;
-        checkQueueResult(m_vk->vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
-        checkQueueResult(m_vk->vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
+        checkQueueResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
+        checkQueueResult(vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
 
         // Map staging buffer and copy to CPU vector.
         void* mapped = nullptr;
-        m_vk->vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
+        vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
         std::vector<uint8_t> result(size);
         std::memcpy(result.data(), mapped, size);
-        m_vk->vkUnmapMemory(m_device, staging.memory);
+        vkUnmapMemory(m_device, staging.memory);
 
-        m_vk->vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
+        vkFreeCommandBuffers(m_device, cmdPool, 1, &cmd);
         releasePage(staging);
         return result;
     }
@@ -274,7 +270,6 @@ private:
         VkDeviceSize capacity = 0;
     };
 
-    const VolkDeviceTable* m_vk = nullptr; // non-owning (親の VulkanDevice が所有)
     VkDevice m_device = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     Device* m_owner = nullptr; // non-owning (親の VulkanDevice)
@@ -312,10 +307,10 @@ private:
         bufInfo.size = size;
         bufInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
         bufInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        m_vk->vkCreateBuffer(m_device, &bufInfo, nullptr, &page.buffer);
+        vkCreateBuffer(m_device, &bufInfo, nullptr, &page.buffer);
 
         VkMemoryRequirements memReqs;
-        m_vk->vkGetBufferMemoryRequirements(m_device, page.buffer, &memReqs);
+        vkGetBufferMemoryRequirements(m_device, page.buffer, &memReqs);
 
         VkPhysicalDeviceMemoryProperties memProps;
         vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProps);
@@ -336,8 +331,8 @@ private:
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memReqs.size;
         allocInfo.memoryTypeIndex = memTypeIdx;
-        m_vk->vkAllocateMemory(m_device, &allocInfo, nullptr, &page.memory);
-        m_vk->vkBindBufferMemory(m_device, page.buffer, page.memory, 0);
+        vkAllocateMemory(m_device, &allocInfo, nullptr, &page.memory);
+        vkBindBufferMemory(m_device, page.buffer, page.memory, 0);
 
         return page;
     }

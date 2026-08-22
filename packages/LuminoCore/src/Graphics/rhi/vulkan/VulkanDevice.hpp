@@ -37,16 +37,6 @@ public:
     // Internal accessors
     VkInstance instance() const { return m_instance; }
     VkDevice vkDevice() const { return m_device; }
-
-    /**
-     * この VkDevice 専用にロードされた Vulkan 関数テーブル。
-     *
-     * デバイスレベルの関数はグローバルの関数ポインタではなく必ずこのテーブル経由で
-     * 呼び出すこと。volk のグローバル関数ポインタは最後に volkLoadDevice() した
-     * デバイスで上書きされてしまうため、1 プロセスで複数の VkDevice を扱えなくなる。
-     * テーブル経由なら各デバイスが自分の関数を持つので併存できる。
-     */
-    const VolkDeviceTable& vk() const { return m_vk; }
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
     VkPhysicalDevice physicalDevice() const { return m_physicalDevice; }
     VkQueue graphicsQueue() const { return m_graphicsQueue; }
@@ -86,7 +76,6 @@ private:
     VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     VkDevice m_device = VK_NULL_HANDLE;
-    VolkDeviceTable m_vk{};
 
     uint32_t m_graphicsQueuFamily;
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;

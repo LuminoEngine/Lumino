@@ -25,9 +25,6 @@ private:
     VkCommandBuffer m_cmd = VK_NULL_HANDLE;
     VulkanRenderPass* m_encoder = nullptr; // non-owning; owned by m_renderPassCache
     VkFence m_inFlightFences = VK_NULL_HANDLE;
-    /** Frame index recorded at submit() time; used to schedule deferred cleanup. */
-    uint32_t m_submittedFrame = 0;
-    bool m_submitted = false;
 
     // Cached RenderPass objects keyed by attachment layout
     std::unordered_map<RenderPassKey, Ref<VulkanRenderPass>, RenderPassKeyHash> m_renderPassCache;

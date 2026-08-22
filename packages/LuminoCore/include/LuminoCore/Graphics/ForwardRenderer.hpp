@@ -6,12 +6,18 @@
 #include <LuminoCore/Graphics/Camera.hpp>
 #include <LuminoCore/Graphics/Material.hpp>
 #include <LuminoCore/Graphics/Mesh.hpp>
-#include <LuminoCore/Graphics/MeshLoader.hpp>
 #include <LuminoCore/Graphics/Renderer.hpp>
+#include <LuminoCore/Graphics/Transform.hpp>
 
 namespace ln {
 
 class GraphicsContext;
+
+/** 描画対象のオブジェクト。 */
+struct RenderObject {
+    Ref<Mesh> mesh;
+    Transform transform;
+};
 
 /** Lighting parameters for the forward renderer. */
 struct DirectionalLight {
